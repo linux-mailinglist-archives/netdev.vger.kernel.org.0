@@ -2,139 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9D6BE124E
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:40:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E405AE1256
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388836AbfJWGkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 02:40:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:60402 "EHLO mx1.suse.de"
+        id S2388581AbfJWGmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 02:42:52 -0400
+Received: from mail-eopbgr50075.outbound.protection.outlook.com ([40.107.5.75]:47918
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728697AbfJWGkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 02:40:16 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 9AD87B3F4;
-        Wed, 23 Oct 2019 06:40:13 +0000 (UTC)
-Date:   Wed, 23 Oct 2019 08:40:12 +0200
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH] mm: memcontrol: fix network errors from failing
- __GFP_ATOMIC charges
-Message-ID: <20191023064012.GB754@dhcp22.suse.cz>
-References: <20191022233708.365764-1-hannes@cmpxchg.org>
+        id S1727194AbfJWGmw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 02:42:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hr4uwMEusBTrlN7LuXfTL2jUSkJrRP6p0QTuoES7fIiQ/bpV6Qhj5D0bvxoHu792FE+1MCiyIVq/Ki9f24KB6XsfmHzARx44iHpTKjJCQ0iGKqDKOWbF1gs9eva8gO7cBkbXOi+jCoxbhkh1B6wbjOqtOmvNaVESa9qDc7rkcTzQP0v0/NppeUPludU0sf1p7XWNAFOThZduG5cU/90w/fbMpK6o8RmVd1C4JUV15vqgaYpudib29BOrzE9UH8xHyeV08/T4payhj6PkbsCh1yya4h+GfhzIAqeubj91/AdSrG9jF59jNvumUUCluEx05Yo683Qe49YH4QnAedCiEA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cyzByeITDsNzNBEO5rf++ImhSl+gTVQRBKP/wOXyUkI=;
+ b=WgpirVmOp99iJ7BFJMvkLNnt8dHvIjGkskWN4+DYZwwQYsVCYsgAXWnkBy1paMdrq4YNoFS/ic8CII4wnLWMUhk2LwcpAI4W4paYU3l3gBqfUY88esxIzPu4SXHfGbBY4rXCw6Vb3fOE3hX06cphp1RiIM7qDwsGY/qKvx48LInUzmrxXVeyiMqLBGTTMdEFDlcGxKvsGix78u/wscv/VNn+EoiI0XnXCK+k64sFNfTYsDMlyHIoM3e8Do6V8Xn9uNWjlkvRpRhZc0dRmdEjvYG5WhtQFxNCuvJpeZpPOYIq4tAbrKrOFLrcS1vV/pTJWFvgWLefDzWCbsZ10EOm3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cyzByeITDsNzNBEO5rf++ImhSl+gTVQRBKP/wOXyUkI=;
+ b=jRvspjR4NZS5q3YvadVsFArJU1Xksc5cp2Gcvblyyoxy0TDdnqSOkTyHWrArUPVMWp0jYmhQiSysXZgysV58yR0hNZ8z5023qK7nxpoIwTDiEZ9qU9V4XbuteGidc8xS72mRKcVottHPViS91afSfOBScG9drib+XgLyk7yIpGk=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB4240.eurprd05.prod.outlook.com (52.133.14.28) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Wed, 23 Oct 2019 06:42:06 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2367.025; Wed, 23 Oct 2019
+ 06:42:06 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Marcelo Ricardo Leitner <mleitner@redhat.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6dmxUYAgAAKWoCAABWbgIAA4vKA
+Date:   Wed, 23 Oct 2019 06:42:06 +0000
+Message-ID: <vbfimogvu84.fsf@mellanox.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <20191022151524.GZ4321@localhost.localdomain> <vbflftcwzes.fsf@mellanox.com>
+ <20191022170947.GA4321@localhost.localdomain>
+In-Reply-To: <20191022170947.GA4321@localhost.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0148.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9::16) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 11db9da6-cf06-4ca6-6131-08d757841f39
+x-ms-traffictypediagnostic: VI1PR05MB4240:|VI1PR05MB4240:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB42400B2B450989DCFEBA34A3AD6B0@VI1PR05MB4240.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 019919A9E4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(52314003)(189003)(199004)(8936002)(86362001)(4326008)(6246003)(8676002)(81156014)(71190400001)(71200400001)(54906003)(6512007)(81166006)(36756003)(229853002)(6486002)(386003)(26005)(76176011)(52116002)(25786009)(11346002)(99286004)(446003)(6436002)(102836004)(2616005)(316002)(486006)(476003)(6506007)(186003)(256004)(66066001)(2906002)(66946007)(7736002)(305945005)(6916009)(5660300002)(66476007)(14454004)(478600001)(14444005)(66446008)(6116002)(3846002)(64756008)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4240;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: V1hjQqBN5BeVvw3EfJpuyljBnfQs8P0nNsyy3ajjtVsvVW/dwzdLigCh/LY+6S6Is9yp8qUYCLpj6vPVdtxlURl9nOYY7twTyXB1Zawej50e7lpS1XTrPyHosP9jSskTnLmd1/S4jryXumoGrtc1OVGQUOtI1QGK6T90JEJc+OUy8KC4ZvenXSrW1aQGLzFd6+GOJBLLLwE5PWGceGzgR97k9tvzJv+RLs7oN1ilciPj6tEu7nrLjSO3pVhWApGBgX3qnQCS493PzRE85IYp1j37ttBwYgdgc1wWjg0nzTlZnZzmpbPAKEX5VvJ6rxjLBCv+6+xkXREYFUepE4nUfwHsMoi4Sj11TEPVSG9mD0MK7cLlbILRo2dG8cHdYhdSZwmNrLfqQ0fgaK35W8jAiUYauTG03MAIBuGZgAbXcUg/Ljtd5CWWjRijFycQ9G/N
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191022233708.365764-1-hannes@cmpxchg.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11db9da6-cf06-4ca6-6131-08d757841f39
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 06:42:06.8457
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fCj2wUpAa/5K8BSssfDz6lZD/mISfRICC1zTnTSjErbkrGy85x3OGZGfQ50GFaukYSn/GP2iPmz8klRzd1lf9g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4240
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 22-10-19 19:37:08, Johannes Weiner wrote:
-> While upgrading from 4.16 to 5.2, we noticed these allocation errors
-> in the log of the new kernel:
-> 
-> [ 8642.253395] SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-> [ 8642.269170]   cache: tw_sock_TCPv6(960:helper-logs), object size: 232, buffer size: 240, default order: 1, min order: 0
-> [ 8642.293009]   node 0: slabs: 5, objs: 170, free: 0
-> 
->         slab_out_of_memory+1
->         ___slab_alloc+969
->         __slab_alloc+14
->         kmem_cache_alloc+346
->         inet_twsk_alloc+60
->         tcp_time_wait+46
->         tcp_fin+206
->         tcp_data_queue+2034
->         tcp_rcv_state_process+784
->         tcp_v6_do_rcv+405
->         __release_sock+118
->         tcp_close+385
->         inet_release+46
->         __sock_release+55
->         sock_close+17
->         __fput+170
->         task_work_run+127
->         exit_to_usermode_loop+191
->         do_syscall_64+212
->         entry_SYSCALL_64_after_hwframe+68
-> 
-> accompanied by an increase in machines going completely radio silent
-> under memory pressure.
 
-This is really worrying because that suggests that something depends on
-GFP_ATOMIC allocation which is fragile and broken. 
- 
-> One thing that changed since 4.16 is e699e2c6a654 ("net, mm: account
-> sock objects to kmemcg"), which made these slab caches subject to
-> cgroup memory accounting and control.
-> 
-> The problem with that is that cgroups, unlike the page allocator, do
-> not maintain dedicated atomic reserves. As a cgroup's usage hovers at
-> its limit, atomic allocations - such as done during network rx - can
-> fail consistently for extended periods of time. The kernel is not able
-> to operate under these conditions.
-> 
-> We don't want to revert the culprit patch, because it indeed tracks a
-> potentially substantial amount of memory used by a cgroup.
-> 
-> We also don't want to implement dedicated atomic reserves for cgroups.
-> There is no point in keeping a fixed margin of unused bytes in the
-> cgroup's memory budget to accomodate a consumer that is impossible to
-> predict - we'd be wasting memory and get into configuration headaches,
-> not unlike what we have going with min_free_kbytes. We do this for
-> physical mem because we have to, but cgroups are an accounting game.
-> 
-> Instead, account these privileged allocations to the cgroup, but let
-> them bypass the configured limit if they have to. This way, we get the
-> benefits of accounting the consumed memory and have it exert pressure
-> on the rest of the cgroup, but like with the page allocator, we shift
-> the burden of reclaimining on behalf of atomic allocations onto the
-> regular allocations that can block.
+On Tue 22 Oct 2019 at 20:09, Marcelo Ricardo Leitner <mleitner@redhat.com> =
+wrote:
+> On Tue, Oct 22, 2019 at 03:52:31PM +0000, Vlad Buslov wrote:
+>>
+>> On Tue 22 Oct 2019 at 18:15, Marcelo Ricardo Leitner <mleitner@redhat.co=
+m> wrote:
+>> > On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
+>> >> - Extend actions that are used for hardware offloads with optional
+>> >>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action flag =
+and
+>> >>   update affected actions to not allocate percpu counters when the fl=
+ag
+>> >>   is set.
+>> >
+>> > I just went over all the patches and they mostly make sense to me. So
+>> > far the only point I'm uncertain of is the naming of the flag,
+>> > "fast_init".  That is not clear on what it does and can be overloaded
+>> > with other stuff later and we probably don't want that.
+>>
+>> I intentionally named it like that because I do want to overload it with
+>> other stuff in future, instead of adding new flag value for every single
+>> small optimization we might come up with :)
+>
+> Hah :-)
+>
+>>
+>> Also, I didn't want to hardcode implementation details into UAPI that we
+>> will have to maintain for long time after percpu allocator in kernel is
+>> potentially replaced with something new and better (like idr is being
+>> replaced with xarray now, for example)
+>
+> I see. OTOH, this also means that the UAPI here would be unstable
+> (different meanings over time for the same call), and hopefully new
+> behaviors would always be backwards compatible.
 
-On the other hand this would allow to break the isolation by an
-unpredictable amount. Should we put a simple cap on how much we can go
-over the limit. If the memcg limit reclaim is not able to keep up with
-those overflows then even __GFP_ATOMIC allocations have to fail. What do
-you think?
+This flag doesn't change any userland-visible behavior, just suggests
+different performance trade off (insertion rate for sw packet processing
+speed). Counters continue to work with or without the flag. Any
+optimization that actually modifies cls or act API behavior will have to
+use dedicated flag value.
 
-> Cc: stable@kernel.org # 4.18+
-> Fixes: e699e2c6a654 ("net, mm: account sock objects to kmemcg")
-> Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
-> ---
->  mm/memcontrol.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index 8090b4c99ac7..c7e3e758c165 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -2528,6 +2528,15 @@ static int try_charge(struct mem_cgroup *memcg, gfp_t gfp_mask,
->  		goto retry;
->  	}
->  
-> +	/*
-> +	 * Memcg doesn't have a dedicated reserve for atomic
-> +	 * allocations. But like the global atomic pool, we need to
-> +	 * put the burden of reclaim on regular allocation requests
-> +	 * and let these go through as privileged allocations.
-> +	 */
-> +	if (gfp_mask & __GFP_ATOMIC)
-> +		goto force;
-> +
->  	/*
->  	 * Unlike in global OOM situations, memcg is not in a physical
->  	 * memory shortage.  Allow dying and OOM-killed tasks to
-> -- 
-> 2.23.0
-> 
-
--- 
-Michal Hocko
-SUSE Labs
+>
+>>
+>> Anyway, lets see what other people think. I'm open to changing it.
+>>
+>> >
+>> > Say, for example, we want percpu counters but to disable allocating
+>> > the stats for hw, to make the counter in 28169abadb08 ("net/sched: Add
+>> > hardware specific counters to TC actions") optional.
+>> >
+>> > So what about:
+>> > TCA_ACT_FLAGS_NO_PERCPU_STATS
+>> > TCA_ACT_FLAGS_NO_HW_STATS (this one to be done on a subsequent patchse=
+t, yes)
+>> > ?
+>> >
+>> >   Marcelo
+>>
