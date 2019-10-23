@@ -2,69 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C760E24D5
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 22:56:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94D02E2503
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 23:16:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405344AbfJWU4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 16:56:06 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:36736 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405172AbfJWU4G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 16:56:06 -0400
-Received: by mail-pl1-f194.google.com with SMTP id j11so10684464plk.3;
-        Wed, 23 Oct 2019 13:56:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=07Atb/6gQrkEJ26f3FmK/lTnstI+R5Npacag/JwqRmk=;
-        b=NSGRlTlNMvNDTQo1Xgl6h/5SFLy3iEek92UpZddKGZwMLi9rm6RGvCk34EEpwcvnXY
-         2+iMcWENqwCSRCNothH74ArZl214/hY0l0D9qRpmD9sb5aagimUCcGhyKMcHY927Ztwg
-         c88Zb6dfsK9zLrmOUlKGkQ2OaAFRbcpk5PdWx48PbkJ7hAVXVVvxvFBHzLsKrx3KZh+k
-         oloiMzC1jMAVMs/Liz/LR49VcZKDdLsreuOQ6U3adWpOj4qEzFBih0FqRCrcz6T5PiG6
-         HZ4oILYz0NCSUjw/wa9Tp5fwowIlK2sD0Z0BNE00hFKfbXJ63XlUvWc52Ww4rmQsBja3
-         RQiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=07Atb/6gQrkEJ26f3FmK/lTnstI+R5Npacag/JwqRmk=;
-        b=KSZ++CNyggKwxHz176xD2xhKjW/B98z3sQga8cITRNGkFrro6mktT4BgV20JqZF7At
-         e78ZFxjE6BpxvCtYUyDTzAijhwik0L3VyojAp/Y6Wa0kXaUFsMdJ7L21aHIoaZO9awmc
-         4V6s+Esrj/7/aeyGreJ4CWJ9vi8oOaAxFe8+dH8vZ3TKNSpZtCHgmlU1dqWgE/Da9cRd
-         x4LCqzB8K4IK/nFE016Q5G/MGyEQ7WtK95DKbZNVhEceJ/ORq065+c9Ohgy5T6ZlnwFX
-         CCBMee/GlQTYzxDdY4/3XPt1r84zRFX7Ngy3hos5wCcqgry4UIWwPbLr9sJM04kZK8si
-         IE/A==
-X-Gm-Message-State: APjAAAW0KI/0psAoedB8f1Y9HxCT07qtIG/G5IlpSklHc1Qd4UNzeU+f
-        /a3I7Y0ZVFa2R94hpD7P/A==
-X-Google-Smtp-Source: APXvYqycKSXQGXAynFiufHVxYiQKe72QcM+36tuPsviNgI9wA+eb7Uq7f9nUd8r5SmkPlCDem3pktw==
-X-Received: by 2002:a17:902:d70a:: with SMTP id w10mr11144217ply.342.1571864165109;
-        Wed, 23 Oct 2019 13:56:05 -0700 (PDT)
-Received: from localhost.localdomain ([216.52.21.4])
-        by smtp.gmail.com with ESMTPSA id s11sm131885pjp.26.2019.10.23.13.56.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 23 Oct 2019 13:56:04 -0700 (PDT)
-From:   Praveen Chaudhary <praveen5582@gmail.com>
-X-Google-Original-From: Praveen Chaudhary <pchaudhary@linkedin.com>
-To:     fw@strlen.de
-Cc:     astracner@linkedin.com, davem@davemloft.net, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pablo@netfilter.org, praveen5582@gmail.com, zxu@linkedin.com
-Subject: RE: [PATCH] [netfilter]: Fix skb->csum calculation when netfilter
-Date:   Wed, 23 Oct 2019 13:56:02 -0700
-Message-Id: <1571864162-9097-1-git-send-email-pchaudhary@linkedin.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <20191023193337.GP25052@breakpoint.cc>
-References: <20191023193337.GP25052@breakpoint.cc>
+        id S2406247AbfJWVQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 17:16:28 -0400
+Received: from mga05.intel.com ([192.55.52.43]:46520 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406097AbfJWVQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 17:16:28 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2019 14:16:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,222,1569308400"; 
+   d="scan'208";a="204069103"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 23 Oct 2019 14:16:26 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iNNzW-0008Bq-5j; Thu, 24 Oct 2019 05:16:26 +0800
+Date:   Thu, 24 Oct 2019 05:15:27 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     kbuild-all@lists.01.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "epomozov@marvell.com" <epomozov@marvell.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Simon Edelhaus <sedelhaus@marvell.com>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>,
+        Pavel Belous <Pavel.Belous@aquantia.com>
+Subject: Re: [PATCH v3 net-next 11/12] net: aquantia: add support for PIN
+ funcs
+Message-ID: <201910240443.6k1OmpJd%lkp@intel.com>
+References: <a2a6ecfb5580858c2a690fa0ed1c98cffc61c4b9.1571737612.git.igor.russkikh@aquantia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a2a6ecfb5580858c2a690fa0ed1c98cffc61c4b9.1571737612.git.igor.russkikh@aquantia.com>
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian 
+Hi Igor,
 
-Thanks for the review,
+Thank you for the patch! Perhaps something to improve:
 
-inet_proto_csum_replace16 is called from many places, whereas this fix is applicable only for nf_nat_ipv6_csum_update, where we need to update skb->csum for ipv6 src/dst address change. 
-Also my point is, inet_proto_csum_replace16 is updating skb->csum for change in udp header checksum field, but that is not complete. So, I added a new function. Basically, I used a safe apprioach to fix it, without impacting other cases. Let me know other options,  I am open to suggestions.
+[auto build test WARNING on net-next/master]
 
-More importantly, I hope this is clear that the current code does not update skb->csum completely. Which is a bug. Thanks again.
+url:    https://github.com/0day-ci/linux/commits/Igor-Russkikh/net-aquantia-PTP-support-for-AQC-devices/20191023-194531
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 88652bf8ce4b91c49769a2a49c17dc44b85b4fa2
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+   drivers/net/ethernet/aquantia/atlantic/aq_ptp.c:950:34: sparse: sparse: Using plain integer as NULL pointer
+>> drivers/net/ethernet/aquantia/atlantic/aq_ptp.c:1378:6: sparse: sparse: symbol 'aq_ptp_poll_sync_work_cb' was not declared. Should it be static?
+--
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:795:45: sparse: sparse: cast to restricted __le16
+>> drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1155:5: sparse: sparse: symbol 'hw_atl_b0_ts_to_sys_clock' was not declared. Should it be static?
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1259:15: sparse: sparse: cast to restricted __be64
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
+   drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c:1260:14: sparse: sparse: cast to restricted __be32
+
+Please review and possibly fold the followup patch.
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
