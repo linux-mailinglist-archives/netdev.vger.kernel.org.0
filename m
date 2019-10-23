@@ -2,243 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7762DE11EF
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:09:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BAABE11F3
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:12:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731961AbfJWGJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 02:09:51 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2010 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725796AbfJWGJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 02:09:51 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9N69mto015475
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 23:09:50 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=CveCnJv9JWTKsW+4AKnwASjvVwxKVlYYo4TDMb7R/xc=;
- b=bwEGumzUNREExDg9O0mVgidwoLFtbHiLjkrSohxIrGJb01PU/JO9IirFHABvdiQvVcUo
- DgfXOMVwPtkOnSLUhXR2ZSMHg9b4rs7Jxux60IdrcO1PVFBQ6ndiO6ApdvUYMpg9Wb6L
- wyi29u9jKoKrRZ/iC8XzGjzfF7u9euPr2mM= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vt9td1qnf-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 22 Oct 2019 23:09:50 -0700
-Received: from 2401:db00:30:6007:face:0:1:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 22 Oct 2019 23:09:16 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 711E18619F8; Tue, 22 Oct 2019 23:09:14 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH bpf-next] selftests/bpf: move test_section_names into test_progs and fix it
-Date:   Tue, 22 Oct 2019 23:09:13 -0700
-Message-ID: <20191023060913.1713817-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1733214AbfJWGM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 02:12:28 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:37140 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729666AbfJWGM1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 02:12:27 -0400
+Received: by mail-qt1-f193.google.com with SMTP id g50so16522645qtb.4;
+        Tue, 22 Oct 2019 23:12:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hQskDhbKXFRJJrl8Iyiwwev9vkusM5amuQGHYUX5UvI=;
+        b=dkuX3JsLhAWaAplPzNHLtRJ2RLDHukZYEuM4P+yuH4xOIf07Z13TcAP7Jhj/t3WW4q
+         alK9h3ZKpUpiEKt6w0Xi1U/1zBiCDpGeW8eb3rUE+MIyy92Qycoq6WtuCDFoXyeGOjBk
+         KDM7ZOcrK/f3eyqIGykItEmCl4juJnZSh6hNGmyZVroikZftVrnwgQ4LmNYjZGgw6RWN
+         cFdCm7tt6ww4CqWCtglAtoXO/4HbXlJN1qXRweshx0tKNHEpQ/cpFnftrkXc+1ta3dQD
+         9Zxl5LGJiIX9vo7C3e0Qjm0/VYjwXqjpxO58trjVKT+2zBPsOITlsO7CbAucN645RsPa
+         OHsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hQskDhbKXFRJJrl8Iyiwwev9vkusM5amuQGHYUX5UvI=;
+        b=UdHTzi2Ufb4Je9h2FXm3Z9eJ092pZS+nrNOceu7DoBjkO4wUQVKoM8PM4j4RRbCgpN
+         yjMdi8dqnIsymeax5uO2XsgOuDXuixK8NdrFvOHAeKyMZoCi5gSMbvhkR/fLAfV3GMNY
+         Gd9V6yDwJK7w0NJHhJnc+JJKXCIF0MqGGrZ8YC4ttHT5I73LkgRySULNmaIGaWq4Old3
+         59J5YSqIBKf3nad/B7nUMgmwobXMPzWq2J6YD3I55X5sfIsooSPQz2SPmxqpO6r1NzeY
+         kxUH2lIa8eae+QivWssxBi02ZISuPYIw8McUhDUnH8pwEPGlzSv+ojfaw6CBURJtWJVG
+         ChHQ==
+X-Gm-Message-State: APjAAAWGVpfI69w0SPv34FAJfG9YTmhsWrn9JreMFGeV4iNfF8Wzo2dg
+        1bZRgso4mHqcLiR+X7KnBDz4I2DYPg0g5vz7MlM=
+X-Google-Smtp-Source: APXvYqx7Ov3L6IRaoLoggQZeAoHYdb3C46rrIzbElP1auVoYyGOXdX05Ekib01sdjrKNJJfMpgdY9nx7U/hx5VxUXok=
+X-Received: by 2002:a05:6214:1042:: with SMTP id l2mr7103874qvr.224.1571811146255;
+ Tue, 22 Oct 2019 23:12:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-23_01:2019-10-22,2019-10-23 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- mlxscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
- impostorscore=0 clxscore=1015 spamscore=0 phishscore=0 suspectscore=8
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910230061
-X-FB-Internal: deliver
+References: <20191021033902.3856966-5-andriin@fb.com> <20191023042444.GJ12647@shao2-debian>
+In-Reply-To: <20191023042444.GJ12647@shao2-debian>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 22 Oct 2019 23:12:15 -0700
+Message-ID: <CAEf4Bza1yefy6W86F3mkpwnVSEYMon6ncVr3FH5WqiHVnLBW_w@mail.gmail.com>
+Subject: Re: [libbpf] 651b775f02: kernel_selftests.bpf.test_section_names.fail
+To:     kernel test robot <rong.a.chen@intel.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>, lkp@lists.01.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make test_section_names into test_progs test. Also fix ESRCH expected
-results. Add uprobe/uretprobe and tp/raw_tp test cases.
+On Tue, Oct 22, 2019 at 9:25 PM kernel test robot <rong.a.chen@intel.com> w=
+rote:
+>
+> FYI, we noticed the following commit (built with gcc-7):
+>
+> commit: 651b775f027f9758740d748cc08c5a0661f13bb7 ("[PATCH bpf-next 4/7] l=
+ibbpf: teach bpf_object__open to guess program types")
+> url: https://github.com/0day-ci/linux/commits/Andrii-Nakryiko/Auto-guess-=
+program-type-on-bpf_object__open/20191021-214022
+> base: https://git.kernel.org/cgit/linux/kernel/git/bpf/bpf-next.git maste=
+r
+>
+> in testcase: kernel_selftests
+> with following parameters:
+>
+>         group: kselftests-00
+>
+> test-description: The kernel contains a set of "self tests" under the too=
+ls/testing/selftests/ directory. These are intended to be small unit tests =
+to exercise individual code paths in the kernel.
+> test-url: https://www.kernel.org/doc/Documentation/kselftest.txt
+>
+>
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -=
+m 8G
+>
+> caused below changes (please refer to attached dmesg/kmsg for entire log/=
+backtrace):
+>
+>
+>
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kernel test robot <rong.a.chen@intel.com>
 
-Fixes: dd4436bb8383 ("libbpf: Teach bpf_object__open to guess program types")
-Reported-by: kernel test robot <rong.a.chen@intel.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/testing/selftests/bpf/Makefile          |  2 +-
- .../section_names.c}                          | 90 +++++++------------
- 2 files changed, 31 insertions(+), 61 deletions(-)
- rename tools/testing/selftests/bpf/{test_section_names.c => prog_tests/section_names.c} (73%)
+Thanks, fixed in https://patchwork.ozlabs.org/patch/1181840/
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 11ff34e7311b..521fbdada5cc 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -28,7 +28,7 @@ LDLIBS += -lcap -lelf -lrt -lpthread
- TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test_progs \
- 	test_align test_verifier_log test_dev_cgroup test_tcpbpf_user \
- 	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
--	test_cgroup_storage test_select_reuseport test_section_names \
-+	test_cgroup_storage test_select_reuseport \
- 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
- 	test_cgroup_attach xdping test_progs-no_alu32
- 
-diff --git a/tools/testing/selftests/bpf/test_section_names.c b/tools/testing/selftests/bpf/prog_tests/section_names.c
-similarity index 73%
-rename from tools/testing/selftests/bpf/test_section_names.c
-rename to tools/testing/selftests/bpf/prog_tests/section_names.c
-index 29833aeaf0de..9d9351dc2ded 100644
---- a/tools/testing/selftests/bpf/test_section_names.c
-+++ b/tools/testing/selftests/bpf/prog_tests/section_names.c
-@@ -1,10 +1,8 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (c) 2018 Facebook
-+#include <test_progs.h>
- 
--#include <err.h>
--#include <bpf/libbpf.h>
--
--#include "bpf_util.h"
-+static int duration = 0;
- 
- struct sec_name_test {
- 	const char sec_name[32];
-@@ -20,19 +18,23 @@ struct sec_name_test {
- };
- 
- static struct sec_name_test tests[] = {
--	{"InvAliD", {-EINVAL, 0, 0}, {-EINVAL, 0} },
--	{"cgroup", {-EINVAL, 0, 0}, {-EINVAL, 0} },
-+	{"InvAliD", {-ESRCH, 0, 0}, {-EINVAL, 0} },
-+	{"cgroup", {-ESRCH, 0, 0}, {-EINVAL, 0} },
- 	{"socket", {0, BPF_PROG_TYPE_SOCKET_FILTER, 0}, {-EINVAL, 0} },
- 	{"kprobe/", {0, BPF_PROG_TYPE_KPROBE, 0}, {-EINVAL, 0} },
-+	{"uprobe/", {0, BPF_PROG_TYPE_KPROBE, 0}, {-EINVAL, 0} },
- 	{"kretprobe/", {0, BPF_PROG_TYPE_KPROBE, 0}, {-EINVAL, 0} },
-+	{"uretprobe/", {0, BPF_PROG_TYPE_KPROBE, 0}, {-EINVAL, 0} },
- 	{"classifier", {0, BPF_PROG_TYPE_SCHED_CLS, 0}, {-EINVAL, 0} },
- 	{"action", {0, BPF_PROG_TYPE_SCHED_ACT, 0}, {-EINVAL, 0} },
- 	{"tracepoint/", {0, BPF_PROG_TYPE_TRACEPOINT, 0}, {-EINVAL, 0} },
-+	{"tp/", {0, BPF_PROG_TYPE_TRACEPOINT, 0}, {-EINVAL, 0} },
- 	{
- 		"raw_tracepoint/",
- 		{0, BPF_PROG_TYPE_RAW_TRACEPOINT, 0},
- 		{-EINVAL, 0},
- 	},
-+	{"raw_tp/", {0, BPF_PROG_TYPE_RAW_TRACEPOINT, 0}, {-EINVAL, 0} },
- 	{"xdp", {0, BPF_PROG_TYPE_XDP, 0}, {-EINVAL, 0} },
- 	{"perf_event", {0, BPF_PROG_TYPE_PERF_EVENT, 0}, {-EINVAL, 0} },
- 	{"lwt_in", {0, BPF_PROG_TYPE_LWT_IN, 0}, {-EINVAL, 0} },
-@@ -146,7 +148,7 @@ static struct sec_name_test tests[] = {
- 	},
- };
- 
--static int test_prog_type_by_name(const struct sec_name_test *test)
-+static void test_prog_type_by_name(const struct sec_name_test *test)
- {
- 	enum bpf_attach_type expected_attach_type;
- 	enum bpf_prog_type prog_type;
-@@ -155,79 +157,47 @@ static int test_prog_type_by_name(const struct sec_name_test *test)
- 	rc = libbpf_prog_type_by_name(test->sec_name, &prog_type,
- 				      &expected_attach_type);
- 
--	if (rc != test->expected_load.rc) {
--		warnx("prog: unexpected rc=%d for %s", rc, test->sec_name);
--		return -1;
--	}
-+	CHECK(rc != test->expected_load.rc, "check_code",
-+	      "prog: unexpected rc=%d for %s", rc, test->sec_name);
- 
- 	if (rc)
--		return 0;
--
--	if (prog_type != test->expected_load.prog_type) {
--		warnx("prog: unexpected prog_type=%d for %s", prog_type,
--		      test->sec_name);
--		return -1;
--	}
-+		return;
- 
--	if (expected_attach_type != test->expected_load.expected_attach_type) {
--		warnx("prog: unexpected expected_attach_type=%d for %s",
--		      expected_attach_type, test->sec_name);
--		return -1;
--	}
-+	CHECK(prog_type != test->expected_load.prog_type, "check_prog_type",
-+	      "prog: unexpected prog_type=%d for %s",
-+	      prog_type, test->sec_name);
- 
--	return 0;
-+	CHECK(expected_attach_type != test->expected_load.expected_attach_type,
-+	      "check_attach_type", "prog: unexpected expected_attach_type=%d for %s",
-+	      expected_attach_type, test->sec_name);
- }
- 
--static int test_attach_type_by_name(const struct sec_name_test *test)
-+static void test_attach_type_by_name(const struct sec_name_test *test)
- {
- 	enum bpf_attach_type attach_type;
- 	int rc;
- 
- 	rc = libbpf_attach_type_by_name(test->sec_name, &attach_type);
- 
--	if (rc != test->expected_attach.rc) {
--		warnx("attach: unexpected rc=%d for %s", rc, test->sec_name);
--		return -1;
--	}
-+	CHECK(rc != test->expected_attach.rc, "check_ret",
-+	      "attach: unexpected rc=%d for %s", rc, test->sec_name);
- 
- 	if (rc)
--		return 0;
--
--	if (attach_type != test->expected_attach.attach_type) {
--		warnx("attach: unexpected attach_type=%d for %s", attach_type,
--		      test->sec_name);
--		return -1;
--	}
-+		return;
- 
--	return 0;
-+	CHECK(attach_type != test->expected_attach.attach_type,
-+	      "check_attach_type", "attach: unexpected attach_type=%d for %s",
-+	      attach_type, test->sec_name);
- }
- 
--static int run_test_case(const struct sec_name_test *test)
-+void test_section_names(void)
- {
--	if (test_prog_type_by_name(test))
--		return -1;
--	if (test_attach_type_by_name(test))
--		return -1;
--	return 0;
--}
--
--static int run_tests(void)
--{
--	int passes = 0;
--	int fails = 0;
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(tests); ++i) {
--		if (run_test_case(&tests[i]))
--			++fails;
--		else
--			++passes;
--	}
--	printf("Summary: %d PASSED, %d FAILED\n", passes, fails);
--	return fails ? -1 : 0;
--}
-+		struct sec_name_test *test = &tests[i];
- 
--int main(int argc, char **argv)
--{
--	return run_tests();
-+		test_prog_type_by_name(test);
-+		test_attach_type_by_name(test);
-+	}
- }
--- 
-2.17.1
-
+>
+>
+> # selftests: bpf: test_section_names
+> # libbpf: failed to guess program type based on ELF section name 'InvAliD=
+'
+> # libbpf: supported section(type) names are: socket kprobe/ uprobe/ kretp=
+robe/ uretprobe/ classifier action tracepoint/ tp/ raw_tracepoint/ raw_tp/ =
+tp_btf/ xdp perf_event lwt_in lwt_out lwt_xmit lwt_seg6local cgroup_skb/ing=
+ress cgroup_skb/egress cgroup/skb cgroup/sock cgroup/post_bind4 cgroup/post=
+_bind6 cgroup/dev sockops sk_skb/stream_parser sk_skb/stream_verdict sk_skb=
+ sk_msg lirc_mode2 flow_dissector cgroup/bind4 cgroup/bind6 cgroup/connect4=
+ cgroup/connect6 cgroup/sendmsg4 cgroup/sendmsg6 cgroup/recvmsg4 cgroup/rec=
+vmsg6 cgroup/sysctl cgroup/getsockopt cgroup/setsockopt
+> # test_section_names: prog: unexpected rc=3D-3 for InvAliD
+> # libbpf: failed to guess program type based on ELF section name 'cgroup'
+> # libbpf: supported section(type) names are: socket kprobe/ uprobe/ kretp=
+robe/ uretprobe/ classifier action tracepoint/ tp/ raw_tracepoint/ raw_tp/ =
+tp_btf/ xdp perf_event lwt_in lwt_out lwt_xmit lwt_seg6local cgroup_skb/ing=
+ress cgroup_skb/egress cgroup/skb cgroup/sock cgroup/post_bind4 cgroup/post=
+_bind6 cgroup/dev sockops sk_skb/stream_parser sk_skb/stream_verdict sk_skb=
+ sk_msg lirc_mode2 flow_dissector cgroup/bind4 cgroup/bind6 cgroup/connect4=
+ cgroup/connect6 cgroup/sendmsg4 cgroup/sendmsg6 cgroup/recvmsg4 cgroup/rec=
+vmsg6 cgroup/sysctl cgroup/getsockopt cgroup/setsockopt
+> # test_section_names: prog: unexpected rc=3D-3 for cgroup
+> # Summary: 38 PASSED, 2 FAILED
+> not ok 18 selftests: bpf: test_section_names
+>
+>
+> To reproduce:
+>
+>         # build kernel
+>         cd linux
+>         cp config-5.4.0-rc1-00593-g651b775f027f9 .config
+>         make HOSTCC=3Dgcc-7 CC=3Dgcc-7 ARCH=3Dx86_64 olddefconfig prepare=
+ modules_prepare bzImage
+>
+>         git clone https://github.com/intel/lkp-tests.git
+>         cd lkp-tests
+>         bin/lkp qemu -k <bzImage> job-script # job-script is attached in =
+this email
+>
+>
+>
+> Thanks,
+> Rong Chen
+>
