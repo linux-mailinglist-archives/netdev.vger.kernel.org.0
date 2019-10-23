@@ -2,163 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0065E123E
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:38:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71C84E1246
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 08:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389026AbfJWGih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 02:38:37 -0400
-Received: from mail-eopbgr50047.outbound.protection.outlook.com ([40.107.5.47]:3736
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728697AbfJWGig (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 02:38:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nHKUVFcKN+opZzFp91L/JN/9hT0ztvifYmBBWqEyfCnSdqF27l5MYNAB1+ytqj0MjIYa3OTnPibmt5RvgTnAUfXQrZuw2SyoxhxM9TfIYIbqYNrQthiaYndjEQDyDN0xGvSDJkp1Se2FbehooagutuePNWpQJ7JjuN4FTKT3PRm7WO/1ukuO+/jEVjPzUEbwGHwLb7tp4dS+72EdXhmIeKyQLxb8feH84KIM7GLYcf7uqz4JTRNYXA/+wtBmVn4EqbvEpvfdSG7040J3nZzDpv+TatxoZxTUGh8XsiIokNISXp9WHgExzNSDVzIj6K3u9uzZCGGQ1vNKs1XFideXtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RkdGJI6IQngHIAeLb7LKooOitNShcBWTl2PwXrAKE/o=;
- b=Rf9NvZoUrzqLVmIkiPf0C/Yooetr5MqH1fiDKwNTb3gYFJHY58RcsnOJYTeF2D4AbBNhtM/OkvRCDfDlACaykNNgH9hEXZuZsBrWIP2SghaaDZFIGgVZDrSp3poGHhmKWgrxk2MmvS1qgtbF7mJNd4b1jbSfnZvpnU2tOGbh3q1jERZBcfumCdnMzz9uCD+QpURwXCfpKyP5qciVII9iAt/ur9nQj2QEGP2g0MO+2p3/GSUAhfFHSfzpioABkz1dNAkJFT4AyU7irEwRhyej7IHQ8BA4DIuRA+WX6vmNleXzfqcoDIGhM5AmVh060KlxZ8V8owrJxfWm9yX8/bZnYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RkdGJI6IQngHIAeLb7LKooOitNShcBWTl2PwXrAKE/o=;
- b=SZxGnwUd/TUIrU7NiCW90ollYMplaubYFrfZovAbZyOVvrFY48+699zaUoRzpaqEY1rnG+Hy+TS8EC2WfqgtXxOseMlIt765RR/3H/rfI3qMipM+902r5TlIEOgav3v5Ej0zKoNwYRaLTzkmtwWL8ODkbOvzdPvfl96opCoShsI=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB4240.eurprd05.prod.outlook.com (52.133.14.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2347.16; Wed, 23 Oct 2019 06:38:32 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2367.025; Wed, 23 Oct 2019
- 06:38:32 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Roman Mashak <mrv@mojatatu.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6dmuiuAgAAEugCAADkq/IAAzxIA
-Date:   Wed, 23 Oct 2019 06:38:32 +0000
-Message-ID: <vbfk18wvued.fsf@mellanox.com>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <20191022143539.GY4321@localhost.localdomain> <vbfmudsx26l.fsf@mellanox.com>
- <85imog63xb.fsf@mojatatu.com>
-In-Reply-To: <85imog63xb.fsf@mojatatu.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0365.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a3::17) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 70cec1fc-e0cb-42cf-9e16-08d757839f39
-x-ms-traffictypediagnostic: VI1PR05MB4240:|VI1PR05MB4240:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB42402B854BE8E6F2D4760900AD6B0@VI1PR05MB4240.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 019919A9E4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(189003)(199004)(8936002)(86362001)(4326008)(6246003)(8676002)(81156014)(71190400001)(71200400001)(54906003)(6512007)(81166006)(36756003)(229853002)(6486002)(386003)(26005)(76176011)(52116002)(25786009)(11346002)(99286004)(446003)(6436002)(102836004)(2616005)(316002)(486006)(476003)(6506007)(186003)(256004)(66066001)(2906002)(66946007)(7736002)(305945005)(6916009)(5660300002)(66476007)(14454004)(478600001)(14444005)(66446008)(6116002)(3846002)(64756008)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4240;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: r8IzPEW/erZ0AA43eytazC/cObsxgLEjqFPZKCt04+7PLvkTsJRkaN2tuFdK4JXE1E+8l9wgSsNWvsqjDf//5NqSVONHR686sSQ24YMN0ABwzcXCx+QL8k/gImEf1RMOo/V6CbSKKYhdqw9Yt7vD+jo2yfK9TxkZe77Qcw0u14mDOkUj91ClFL/b0zADyncWNPqZyIvEgBqW5sDmy+cHXO2F/fun2jTniy7VnbBVWp2lMclVju5pFAZiGdi6VlRalfLb/BF8udsKck6GHxEp6Ut3o/8K2PsQDKWkU9mu78cao1nxlg0inMSHZ2qlIlRcaTSTBqxqSRnI4odEdRT82v7i0h6m2yFouzVMPrkbIXAWhVC0kh2cH0xoWmbN31Sjd9K30JI2C/fQm38ug+f5dx+Kr0eCXHdbzrq35XOJg05tHOILAck5oIOjbqtFpqgL
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2388034AbfJWGjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 02:39:37 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:49360 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729666AbfJWGjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 02:39:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571812776;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JPoAZ12wvzk0gM/LMQmdcsjRqyc3hj/9X0DxYyB3fTs=;
+        b=hVvgTKdc/bNeH9Wd6Ff8dmsch9XkS8ftV+OW2xaNYTq+d09Og0l3N50DSCJVWDrmDOfwrG
+        ZDu+gOyOaaUT/QkX4Ek0TL3OcwcevVsaegTwgK8nvzuwiJi8LbilbMrkxUO/Cg5ATJjpnw
+        YmfytHTxO9F5TQ30W1xO33jHs4CQA2g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-98-pxA18oaXO4G0FL33orpGpw-1; Wed, 23 Oct 2019 02:39:33 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A9AE801E52;
+        Wed, 23 Oct 2019 06:39:31 +0000 (UTC)
+Received: from [10.72.12.161] (ovpn-12-161.pek2.redhat.com [10.72.12.161])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6BB4A19C70;
+        Wed, 23 Oct 2019 06:39:16 +0000 (UTC)
+Subject: Re: [RFC 2/2] vhost: IFC VF vdpa layer
+To:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        Zhu Lingshan <lingshan.zhu@linux.intel.com>, mst@redhat.com,
+        alex.williamson@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com
+References: <20191016013050.3918-1-lingshan.zhu@intel.com>
+ <20191016013050.3918-3-lingshan.zhu@intel.com>
+ <9495331d-3c65-6f49-dcd9-bfdb17054cf0@redhat.com>
+ <f65358e9-6728-8260-74f7-176d7511e989@intel.com>
+ <1cae60b6-938d-e2df-2dca-fbf545f06853@redhat.com>
+ <ddf412c6-69e2-b3ca-d0c8-75de1db78ed9@linux.intel.com>
+ <b2adaab0-bbc3-b7f0-77da-e1e3cab93b76@redhat.com>
+ <6588d9f4-f357-ec78-16a4-ccaf0e3768e7@intel.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <02d44f0a-687f-ed87-518b-7a4d3e83c5d3@redhat.com>
+Date:   Wed, 23 Oct 2019 14:39:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70cec1fc-e0cb-42cf-9e16-08d757839f39
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2019 06:38:32.3508
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jMbsPXiDnbSwRgEM2qD6HvMM9BhAsNSNALtzTPvw0v/7KrgpCbbb9C/BmtEJ6G1SkUXys6Nmrdycu2W+8tFw8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4240
+In-Reply-To: <6588d9f4-f357-ec78-16a4-ccaf0e3768e7@intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: pxA18oaXO4G0FL33orpGpw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On Tue 22 Oct 2019 at 21:17, Roman Mashak <mrv@mojatatu.com> wrote:
-> Vlad Buslov <vladbu@mellanox.com> writes:
+On 2019/10/23 =E4=B8=8B=E5=8D=882:19, Zhu, Lingshan wrote:
 >
->> On Tue 22 Oct 2019 at 17:35, Marcelo Ricardo Leitner <mleitner@redhat.co=
-m> wrote:
->>> On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
->>>> Currently, significant fraction of CPU time during TC filter allocatio=
-n
->>>> is spent in percpu allocator. Moreover, percpu allocator is protected
->>>> with single global mutex which negates any potential to improve its
->>>> performance by means of recent developments in TC filter update API th=
-at
->>>> removed rtnl lock for some Qdiscs and classifiers. In order to
->>>> significantly improve filter update rate and reduce memory usage we
->>>> would like to allow users to skip percpu counters allocation for
->>>> specific action if they don't expect high traffic rate hitting the
->>>> action, which is a reasonable expectation for hardware-offloaded setup=
-.
->>>> In that case any potential gains to software fast-path performance
->>>> gained by usage of percpu-allocated counters compared to regular integ=
-er
->>>> counters protected by spinlock are not important, but amount of
->>>> additional CPU and memory consumed by them is significant.
->>>
->>> Yes!
->>>
->>> I wonder how this can play together with conntrack offloading.  With
->>> it the sw datapath will be more used, as a conntrack entry can only be
->>> offloaded after the handshake.  That said, the host can have to
->>> process quite some handshakes in sw datapath.  Seems OvS can then just
->>> not set this flag in act_ct (and others for this rule), and such cases
->>> will be able to leverage the percpu stats.  Right?
+> On 10/22/2019 9:05 PM, Jason Wang wrote:
 >>
->> The flag is set per each actions instance so client can chose not to use
->> the flag in case-by-case basis. Conntrack use case requires further
->> investigation since I'm not entirely convinced that handling first few
->> packets in sw (before connection reaches established state and is
->> offloaded) warrants having percpu counter.
+>> On 2019/10/22 =E4=B8=8B=E5=8D=882:53, Zhu Lingshan wrote:
+>>>
+>>> On 10/21/2019 6:19 PM, Jason Wang wrote:
+>>>>
+>>>> On 2019/10/21 =E4=B8=8B=E5=8D=885:53, Zhu, Lingshan wrote:
+>>>>>
+>>>>> On 10/16/2019 6:19 PM, Jason Wang wrote:
+>>>>>>
+>>>>>> On 2019/10/16 =E4=B8=8A=E5=8D=889:30, Zhu Lingshan wrote:
+>>>>>>> This commit introduced IFC VF operations for vdpa, which complys to
+>>>>>>> vhost_mdev interfaces, handles IFC VF initialization,
+>>>>>>> configuration and removal.
+>>>>>>>
+>>>>>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>>>>>> ---
+>>
+>>
+>> [...]
+>>
+>>
+>>>>
+>>>>
+>>>>>
+>>>>>>
+>>>>>>
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int ifcvf_mdev_set_features(struct mdev_device *mdev,=20
+>>>>>>> u64 features)
+>>>>>>> +{
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_adapter *adapter =3D mdev_get_drvd=
+ata(mdev);
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_hw *vf =3D IFC_PRIVATE_TO_VF(adapt=
+er);
+>>>>>>> +
+>>>>>>> +=C2=A0=C2=A0=C2=A0 vf->req_features =3D features;
+>>>>>>> +
+>>>>>>> +=C2=A0=C2=A0=C2=A0 return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static u64 ifcvf_mdev_get_vq_state(struct mdev_device *mdev,=20
+>>>>>>> u16 qid)
+>>>>>>> +{
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_adapter *adapter =3D mdev_get_drvd=
+ata(mdev);
+>>>>>>> +=C2=A0=C2=A0=C2=A0 struct ifcvf_hw *vf =3D IFC_PRIVATE_TO_VF(adapt=
+er);
+>>>>>>> +
+>>>>>>> +=C2=A0=C2=A0=C2=A0 return vf->vring[qid].last_avail_idx;
+>>>>>>
+>>>>>>
+>>>>>> Does this really work? I'd expect it should be fetched from hw=20
+>>>>>> since it's an internal state.
+>>>>> for now, it's working, we intend to support LM in next version=20
+>>>>> drivers.
+>>>>
+>>>>
+>>>> I'm not sure I understand here, I don't see any synchronization=20
+>>>> between the hardware and last_avail_idx, so last_avail_idx should=20
+>>>> not change.
+>>>>
+>>>> Btw, what did "LM" mean :) ?
+>>>
+>>> I can add bar IO operations here, LM =3D live migration, sorry for the=
+=20
+>>> abbreviation.
+>>
+>>
+>> Just make sure I understand here, I believe you mean reading=20
+>> last_avail_idx through IO bar here?
+>>
+>> Thanks
 >
-> Hi Vlad,
+> Hi Jason,
 >
-> Did you consider using TCA_ROOT_FLAGS instead of adding another
-> per-action 32-bit flag?
+> Yes, I mean last_avail_idx. is that correct?
+>
+> THanks
 
-Hi Roman,
 
-I considered it, but didn't find good way to implement my change with
-TCA_ROOT_FLAGS. I needed some flags to be per-action for following
-reasons:
+Yes.
 
-1. Not all actions support the flag (only implemented for hw offloaded
-   actions).
+Thanks
 
-2. TCA_ROOT_FLAGS is act API specific and I need this to work when
-   actions are created when actions are created with filters through cls
-   API. I guess I could have changed tcf_action_init_1() to require
-   having TCA_ROOT_FLAGS before actions attribute and then pass obtained
-   value to act_ops->init() as additional argument, but it sounds more
-   complex and ugly.
 
-Regards,
-Vlad
+>
+>>
+>>
+
