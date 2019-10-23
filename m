@@ -2,195 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 205E0E19AA
-	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:12:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0311E1A34
+	for <lists+netdev@lfdr.de>; Wed, 23 Oct 2019 14:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391213AbfJWMMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 08:12:34 -0400
-Received: from proxmox-new.maurer-it.com ([212.186.127.180]:10505 "EHLO
-        proxmox-new.maurer-it.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389256AbfJWMMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 08:12:34 -0400
-X-Greylist: delayed 463 seconds by postgrey-1.27 at vger.kernel.org; Wed, 23 Oct 2019 08:12:32 EDT
-Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
-        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id 9E7FC46109;
-        Wed, 23 Oct 2019 14:04:48 +0200 (CEST)
-Date:   Wed, 23 Oct 2019 14:04:46 +0200
-From:   Wolfgang Bumiller <w.bumiller@proxmox.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting
- files table
-Message-ID: <20191023120446.75oxdwom34nhe3l5@olga.proxmox.com>
-References: <20191017212858.13230-1-axboe@kernel.dk>
- <20191017212858.13230-2-axboe@kernel.dk>
+        id S2391346AbfJWMam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 08:30:42 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51794 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389735AbfJWMam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 08:30:42 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iNFmZ-0003sD-9j; Wed, 23 Oct 2019 14:30:31 +0200
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iNFmZ-000VID-0w; Wed, 23 Oct 2019 14:30:31 +0200
+Subject: Re: [PATCH bpf-next 2/3] libbpf: Support configurable pinning of maps
+ from BTF annotations
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <157175668770.112621.17344362302386223623.stgit@toke.dk>
+ <157175668991.112621.14204565208520782920.stgit@toke.dk>
+ <CAEf4BzaM32j4iLhvcuwMS+dPDBd52KwviwJuoAwVVr8EwoRpHA@mail.gmail.com>
+ <875zkgobf3.fsf@toke.dk>
+ <CAEf4BzY-buKFadzzAKpCdjAZ+1_UwSpQobdRH7yQn_fFXQYX0w@mail.gmail.com>
+ <87r233n8pl.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <6c0e6ebf-aebc-5e80-0e32-aa81857f3a74@iogearbox.net>
+Date:   Wed, 23 Oct 2019 14:30:30 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191017212858.13230-2-axboe@kernel.dk>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <87r233n8pl.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25611/Wed Oct 23 10:58:37 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 17, 2019 at 03:28:56PM -0600, Jens Axboe wrote:
-> This is in preparation for adding opcodes that need to modify files
-> in a process file table, either adding new ones or closing old ones.
+On 10/23/19 10:53 AM, Toke Høiland-Jørgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 > 
-> If an opcode needs this, it must set REQ_F_NEED_FILES in the request
-> structure. If work that needs to get punted to async context have this
-> set, they will grab a reference to the process file table. When the
-> work is completed, the reference is dropped again.
+>>>> 4. Once pinned, map knows its pinned path, just use that, I don't see
+>>>> any reasonable use case where you'd want to override path just for
+>>>> unpinning.
+>>>
+>>> Well, unpinning may need to re-construct the pin path. E.g.,
+>>> applications that exit after loading and are re-run after unloading,
+>>> such as iproute2, probably want to be able to unpin maps. Unfortunately
+>>> I don't think there is a way to get the pin path(s) of an object from
+>>> the kernel, though, is there? That would be kinda neat for implementing
+>>> something like `ip link set dev eth0 xdp off unpin`.
 
-I think IORING_OP_SENDMSG and _RECVMSG need to set this flag due to
-SCM_RIGHTS control messages.
-Thought I'd reply here since I just now ran into the issue that I was
-getting ever-increasing wrong file descriptor numbers on pretty much
-ever "other" async recvmsg() call I did via io-uring while receiving
-file descriptors from lxc for the seccomp-notify proxy. (I'm currently
-running an ubuntu based 5.3.1 kernel)
-I ended up finding them in /proc - they show up in all kernel threads,
-eg.:
+Yep, there is no way to get the pinned path(s) of an object from the
+kernel, there could be multiple bpf fs mounts (note that /sys/fs/bpf is
+just one/default location but not limited to that) where the map is pinned,
+even in different mount namespaces (e.g. container A has its own private
+mount ns and container B as well, both independent from each other, but
+in both could be pinned map X under some path), there could be various
+hard links etc, so the only way would be to query *all* system-wide bpf
+fs mounts for that given map id.
 
-root:/root # grep Name /proc/9/status
-Name:   mm_percpu_wq
-root:/root # ls -l /proc/9/fd
-total 0
-lr-x------ 1 root root 64 Oct 23 12:00 0 -> '/proc/512 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 1 -> /proc/512/mem
-lr-x------ 1 root root 64 Oct 23 12:00 10 -> '/proc/11782 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 11 -> /proc/11782/mem
-lr-x------ 1 root root 64 Oct 23 12:00 12 -> '/proc/12210 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 13 -> /proc/12210/mem
-lr-x------ 1 root root 64 Oct 23 12:00 14 -> '/proc/12298 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 15 -> /proc/12298/mem
-lr-x------ 1 root root 64 Oct 23 12:00 16 -> '/proc/13955 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 17 -> /proc/13955/mem
-lr-x------ 1 root root 64 Oct 23 12:00 18 -> '/proc/13989 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 19 -> /proc/13989/mem
-lr-x------ 1 root root 64 Oct 23 12:00 2 -> '/proc/584 (deleted)'
-lr-x------ 1 root root 64 Oct 23 12:00 20 -> '/proc/15502 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 21 -> /proc/15502/mem
-lr-x------ 1 root root 64 Oct 23 12:00 22 -> '/proc/15510 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 23 -> /proc/15510/mem
-lr-x------ 1 root root 64 Oct 23 12:00 24 -> '/proc/17833 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 25 -> /proc/17833/mem
-lr-x------ 1 root root 64 Oct 23 12:00 26 -> '/proc/17836 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 27 -> /proc/17836/mem
-lr-x------ 1 root root 64 Oct 23 12:00 28 -> '/proc/21929 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 29 -> /proc/21929/mem
-lrwx------ 1 root root 64 Oct 23 12:00 3 -> /proc/584/mem
-lr-x------ 1 root root 64 Oct 23 12:00 30 -> '/proc/22214 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 31 -> /proc/22214/mem
-lr-x------ 1 root root 64 Oct 23 12:00 32 -> '/proc/22283 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 33 -> /proc/22283/mem
-lr-x------ 1 root root 64 Oct 23 12:00 34 -> '/proc/29795 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 35 -> /proc/29795/mem
-lr-x------ 1 root root 64 Oct 23 12:00 36 -> '/proc/30124 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 37 -> /proc/30124/mem
-lr-x------ 1 root root 64 Oct 23 12:00 38 -> '/proc/31016 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 39 -> /proc/31016/mem
-lr-x------ 1 root root 64 Oct 23 12:00 4 -> '/proc/1632 (deleted)'
-lr-x------ 1 root root 64 Oct 23 12:00 40 -> '/proc/4137 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 41 -> /proc/4137/mem
-lrwx------ 1 root root 64 Oct 23 12:00 5 -> /proc/1632/mem
-lr-x------ 1 root root 64 Oct 23 12:00 6 -> '/proc/3655 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 7 -> /proc/3655/mem
-lr-x------ 1 root root 64 Oct 23 12:00 8 -> '/proc/7075 (deleted)'
-lrwx------ 1 root root 64 Oct 23 12:00 9 -> /proc/7075/mem
-root:/root #
-
-Those are the fds I expected to receive, and I get fd numbers
-consistently increasing with them.
-lxc sends the syscall-executing process' pidfd and its 'mem' fd via a
-socket, but instead of making it to the receiver, they end up there...
-
-I suspect that an async sendmsg() call could potentially end up
-accessing those instead of the ones from the sender process, but I
-haven't tested it...
-
-> Signed-off-by: Jens Axboe <axboe@kernel.dk>
-> ---
->  fs/io_uring.c | 21 ++++++++++++++++++---
->  1 file changed, 18 insertions(+), 3 deletions(-)
+>> Hm... It seems to me that if application exits and another instance
+>> starts, it should generate pin path using the same logic, then check
+>> if map is already pinned. Then based on settings, either reuse or
+>> unpin first. Either way, pin_path needs to be calculated from map
+>> attributes, not "guessed" by application.
 > 
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index 635856023fdf..ad462237275e 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -267,10 +267,11 @@ struct io_ring_ctx {
->  struct sqe_submit {
->  	const struct io_uring_sqe	*sqe;
->  	unsigned short			index;
-> +	bool				has_user : 1;
-> +	bool				in_async : 1;
-> +	bool				needs_fixed_file : 1;
->  	u32				sequence;
-> -	bool				has_user;
-> -	bool				in_async;
-> -	bool				needs_fixed_file;
-> +	struct files_struct		*files;
->  };
->  
->  /*
-> @@ -323,6 +324,7 @@ struct io_kiocb {
->  #define REQ_F_FAIL_LINK		256	/* fail rest of links */
->  #define REQ_F_SHADOW_DRAIN	512	/* link-drain shadow req */
->  #define REQ_F_TIMEOUT		1024	/* timeout request */
-> +#define REQ_F_NEED_FILES	2048	/* needs to assume file table */
->  	u64			user_data;
->  	u32			result;
->  	u32			sequence;
-> @@ -2191,6 +2193,7 @@ static inline bool io_sqe_needs_user(const struct io_uring_sqe *sqe)
->  static void io_sq_wq_submit_work(struct work_struct *work)
->  {
->  	struct io_kiocb *req = container_of(work, struct io_kiocb, work);
-> +	struct files_struct *old_files = NULL;
->  	struct io_ring_ctx *ctx = req->ctx;
->  	struct mm_struct *cur_mm = NULL;
->  	struct async_list *async_list;
-> @@ -2220,6 +2223,10 @@ static void io_sq_wq_submit_work(struct work_struct *work)
->  				set_fs(USER_DS);
->  			}
->  		}
-> +		if (s->files && !old_files) {
-> +			old_files = current->files;
-> +			current->files = s->files;
-> +		}
->  
->  		if (!ret) {
->  			s->has_user = cur_mm != NULL;
-> @@ -2312,6 +2319,11 @@ static void io_sq_wq_submit_work(struct work_struct *work)
->  		unuse_mm(cur_mm);
->  		mmput(cur_mm);
->  	}
-> +	if (old_files) {
-> +		struct files_struct *files = current->files;
-> +		current->files = old_files;
-> +		put_files_struct(files);
-> +	}
->  }
->  
->  /*
-> @@ -2413,6 +2425,8 @@ static int __io_queue_sqe(struct io_ring_ctx *ctx, struct io_kiocb *req,
->  
->  			s->sqe = sqe_copy;
->  			memcpy(&req->submit, s, sizeof(*s));
-> +			if (req->flags & REQ_F_NEED_FILES)
-> +				req->submit.files = get_files_struct(current);
->  			list = io_async_list_from_sqe(ctx, s->sqe);
->  			if (!io_add_to_prev_work(list, req)) {
->  				if (list)
-> @@ -2633,6 +2647,7 @@ static bool io_get_sqring(struct io_ring_ctx *ctx, struct sqe_submit *s)
->  		s->index = head;
->  		s->sqe = &ctx->sq_sqes[head];
->  		s->sequence = ctx->cached_sq_head;
-> +		s->files = NULL;
->  		ctx->cached_sq_head++;
->  		return true;
->  	}
-> -- 
-> 2.17.1
+> Yeah, ideally. However, the bpf object file may not be available (it's
+> not for iproute2, for instance). I'm not sure there's really anything we
+> *can* do about that, though, other than have the application guess.
+> Unless we add more state to the kernel.
+> 
+> Would it make sense to store the fact that a map was auto-pinned as a
+> flag in the kernel map info? That way, an application could read that
+> flag along with the name and go looking in /sys/fs/bpf.
 
+Don't think it makes sense, see above. I'm not 100% certain I'm following
+the use case. You are worried about the case where an application should
+be able to unpin the map before loading a new one so it doesn't get reused?
+We have similar use-case in Cilium: iproute2 bails out if map properties
+mismatch from the pinned map and the map in the object file. In some cases
+like tail call maps where they can be fully reloaded and state wouldn't
+need to be preserved across Cilium agents restarts, we simply move the
+currently active and pinned tail call map to a temp location in the BPF fs
+instance, reload the new program into the kernel and upon success just
+delete the old tail call map so kernel can recycle its resources, but in
+case the new program failed to load, we move the old map back to the old
+location thus the data path is kept alive and can be re-upgraded at a later
+point in time. Most of the map management in terms of cleanup or reuse is
+handled by the Cilium agent; iproute2 is mostly acting dumb on purpose in
+that it first probes whether the map name is present in BPF fs, if so, it
+retrieves the fd and reuses it, and it not, it creates a new one and pins
+it to the location.
+
+> Hmm, but I guess it could do that anyway; so maybe what we need is just
+> a "try to find all pinned maps of this program" function? That could
+> then to something like:
+> 
+> - Get the maps IDs and names of all maps attached to that program from
+>    the kernel.
+> 
+> - Look for each map name in /sys/fs/bpf
+> 
+> - If a pinned map with the same name exists, compare the IDs, and unlink
+>    if they match
+> 
+> I don't suppose it'll be possible to do all that in a race-free manner,
+> but that would go for any use of unlink() unless I'm missing something?
