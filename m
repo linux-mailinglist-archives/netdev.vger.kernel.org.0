@@ -2,117 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41830E3B49
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:47:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 261BDE3B5D
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:54:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440184AbfJXSri (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 14:47:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38652 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2440168AbfJXSrh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 14:47:37 -0400
-Received: from localhost (unknown [75.104.69.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4B01B20659;
-        Thu, 24 Oct 2019 18:47:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571942856;
-        bh=P2j4bA86XgvOqRFtfCl5MtPYc2xM05N5w3nh3XKCbOU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JXFsM9yewwErnF5S3LK+7K6bicNse77w5ov+K8sMXE1WbXMnNUxJ53lRpClS1Y1CC
-         11fXyyi93K6RL+XYzVbm018cMUVbdftXTSBMyZqzEhGJR0OX5ENyHkk/LV+cr97wvX
-         JQuzhFZ9aaA31ctCt2wdqqskCAv9tdJU2DNgNRus=
-Date:   Thu, 24 Oct 2019 14:47:28 -0400
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Mark Salyzyn <salyzyn@android.com>
-Cc:     Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        linux-kernel@vger.kernel.org, kernel-team@android.com,
+        id S2504127AbfJXSy1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 14:54:27 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:47001 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504117AbfJXSy1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 14:54:27 -0400
+Received: by mail-pg1-f194.google.com with SMTP id e15so14750166pgu.13
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 11:54:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=vEVyeTvvTMi6SAS+n9RsmrwWAaiY50FDey46sRKT/sM=;
+        b=jfPwFPGykj5dhxLIUWAgVMQEqQ/UTBWqbc41jOIx6udWAfDtGF4quyfWpuuyJMcaQ4
+         bm0UFTJiHo44ZvzxDnHWo7DZfVN9fFldQjbB/G/ocd8Ur+QvosJCO1Z2+kJNw4gcwTPl
+         tVHKop2VJD6uRvYNvw6PdBRTXSpmYGvY+ksU1tSOSJdQXJg8HXgEXCqchyUfr6JOkST0
+         T4sO82n5cS/t4aBJt5TGjIJ6jAgAfY4z/JMYHvEqK1vcZq7nBANGe5MY04Nl3yEOtkJ+
+         wo3QMpZt/yn7I/FuN7W4WsmZ8p6opRXzH3ugjVPFdkg51+KsAsIpmznSCiXbtvTaWJ2g
+         oaFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=vEVyeTvvTMi6SAS+n9RsmrwWAaiY50FDey46sRKT/sM=;
+        b=Fhlw5FaP94TinfmEaOyxzEQlblwwn+Jo5El75BJAGuJu8VRowN8ERrM+Tjzr9HLSDH
+         SLCd9xT0KjyPFMfAH6qhi6KK32FM4zEyjue26UKqDhb3lhZUb5n+umpOdpxPf8zh+K3L
+         SplmiXRMxEn2LBWC39jsT0xf681fkIk6TA3bmxeEElbIIYvjabRl3aNajV5Kg5Ev7WUM
+         nI1Z0lFymJt9vPnrortbgyAbH5qIF4wGVmAybwFNuhnERmO9gtTo3N/Z2Hs9VJfo59XK
+         XnJRgsvx+KDeD0crOImzXciv3a+7EfCT4O4LDRDxIyfHT1uNIDSgpyKPfNlplm8YOg23
+         uHQg==
+X-Gm-Message-State: APjAAAXP7jr8tQB4e98U+vdrye8D2pWV8/5Wr92lebDUgTlsw1oGcNiV
+        pJqz3b4WVsk31J+6+RgCaDSQrg==
+X-Google-Smtp-Source: APXvYqwBJyP4z+3uIeoy+lYU8bwkuR/LX939j6JJv4YuAESgml9v+T7vl/O91S6Uw3hGPgAaHYWIUA==
+X-Received: by 2002:a17:90a:ff07:: with SMTP id ce7mr9287662pjb.12.1571943266729;
+        Thu, 24 Oct 2019 11:54:26 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id b4sm2863506pju.16.2019.10.24.11.54.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2019 11:54:26 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 11:54:22 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Rajan Vaja <rajan.vaja@xilinx.com>,
+        Scott Branden <scott.branden@broadcom.com>,
+        Ray Jui <ray.jui@broadcom.com>,
+        Vikram Prakash <vikram.prakash@broadcom.com>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
+        Michael Chan <michael.chan@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "David (ChunMing) Zhou" <David1.Zhou@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        VMware Graphics <linux-graphics-maintainer@vmware.com>,
-        Thomas Hellstrom <thellstrom@vmware.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Matthew Garrett <matthewgarrett@google.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        hersen wu <hersenxs.wu@amd.com>, Roman Li <Roman.Li@amd.com>,
-        Maxim Martynov <maxim@arista.com>,
-        David Ahern <dsahern@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
-        Feng Tang <feng.tang@intel.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Rafael Aquini <aquini@redhat.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-efi@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH] Cleanup: replace prefered with preferred
-Message-ID: <20191024184728.GC260560@kroah.com>
-References: <20191022214208.211448-1-salyzyn@android.com>
- <20191023115637.GA23733@linux.intel.com>
- <fa12cb96-7a93-bf85-214d-a7bfaf8b8b0a@android.com>
+        Vikas Gupta <vikas.gupta@broadcom.com>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V3 1/3] firmware: broadcom: add OP-TEE based BNXT f/w
+ manager
+Message-ID: <20191024115422.5f4e16bc@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <1571895161-26487-2-git-send-email-sheetal.tigadoli@broadcom.com>
+References: <1571895161-26487-1-git-send-email-sheetal.tigadoli@broadcom.com>
+        <1571895161-26487-2-git-send-email-sheetal.tigadoli@broadcom.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa12cb96-7a93-bf85-214d-a7bfaf8b8b0a@android.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 08:40:59AM -0700, Mark Salyzyn wrote:
-> On 10/23/19 4:56 AM, Jarkko Sakkinen wrote:
-> > On Tue, Oct 22, 2019 at 02:41:45PM -0700, Mark Salyzyn wrote:
-> > > Replace all occurrences of prefered with preferred to make future
-> > > checkpatch.pl's happy.  A few places the incorrect spelling is
-> > > matched with the correct spelling to preserve existing user space API.
-> > > 
-> > > Signed-off-by: Mark Salyzyn <salyzyn@android.com>
-> > I'd fix such things when the code is otherwise change and scope this
-> > patch only to Documentation/. There is no pragmatic benefit of doing
-> > this for the code.
-> > 
-> > /Jarkko
+On Thu, 24 Oct 2019 11:02:39 +0530, Sheetal Tigadoli wrote:
+> From: Vikas Gupta <vikas.gupta@broadcom.com>
 > 
-> The pragmatic benefit comes with the use of an ABI/API checker (which is a
-> 'distro' thing, not a top of tree kernel thing) produces its map which is
-> typically required to be co-located in the same tree as the kernel
-> repository. Quite a few ABI/API update checkins result in a checkpatch.pl
-> complaint about the misspelled elements being (re-)recorded due to
-> proximity. We have a separate task to improve how it is tracked in Android
-> to reduce milepost marker changes that result in sweeping changes to the
-> database which would reduce the occurrences.
+> This driver registers on TEE bus to interact with OP-TEE based
+> BNXT firmware management modules
+> 
+> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
 
-Requiring checkpatch spelling warnings to be correct based on function
-names is crazy, you should fix your tools if you are requiring something
-as looney as that :)
+I don't know anything about TEE, but code looks reasonable.
 
-> I will split this between pure and inert documentation/comments for now,
-> with a followup later for the code portion which understandably is more
-> controversial.
-
-Please break up per subsystem, like all trivial patches, as this
-isn't anything special.
-
-thanks,
-
-greg k-h
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
