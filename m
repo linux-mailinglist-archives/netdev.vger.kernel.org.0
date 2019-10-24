@@ -2,100 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D332E3910
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 390D0E3943
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:05:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407807AbfJXQ7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 12:59:33 -0400
-Received: from mail-il1-f196.google.com ([209.85.166.196]:43341 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405976AbfJXQ7d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:59:33 -0400
-Received: by mail-il1-f196.google.com with SMTP id t5so23036603ilh.10;
-        Thu, 24 Oct 2019 09:59:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=J6cIyEOWdjlCo3WxpSxbJw4O5SIfcJm1CPBXanfu+xM=;
-        b=Ptq8nTS5o6TzUrMm9MB8ANO2yHy34z0C/j40+jeauPrMK1ui+Cj2l1U2REFdPofCO3
-         guMvB27Jbh8fe5GXqQn9wi4fKIsXcUxN6NoWnKS+xTeXyzHe2oxGZOLLHYrp6W/mly5L
-         NhTfWY1NJtjptXbxh9vTVVT8RDuDJ1Qsu9B/HR+xp3YOPuIVI2PCTwEm5R87MnTlRyYY
-         9v+d9sazNvxqJVnTrGgfHS7nXqN35yq++KIxc+jadIxA4Xb0LPPQcFDFsBP0pDbG9ya/
-         gGL7WakmpSkwzLJh2fphhZNLx+agJQXWL9oFUedrf5dy8mRAOu6Z3UsNMAuCZPBK1Fum
-         mHcQ==
+        id S2410202AbfJXRFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 13:05:37 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:50140 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2410141AbfJXRFV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 13:05:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571936720;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=03+5VBqCPd68lTAQRb1/kJfIJ/zUP3/Day5xyJuYTDk=;
+        b=b5dnk9uwGgi0rz+jo0IlGSqtTAqIujA1FLKcF19r2f/Inkygp/tEocCS760wqvdr8dLdcK
+        N5HlDVck8iUnXRtI8iILNPBPi5JmUUlP43AKgZDgoAV/cJtjsDHldN3MA/b49+m43pONsg
+        DI2or6DgKmuGUjS+ngBmNZFNegjROj8=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-L7hT95msMd6w09dT8Ve2hA-1; Thu, 24 Oct 2019 13:05:18 -0400
+Received: by mail-lj1-f199.google.com with SMTP id 205so4127875ljf.13
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 10:05:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=J6cIyEOWdjlCo3WxpSxbJw4O5SIfcJm1CPBXanfu+xM=;
-        b=mTc6pIu6y3JP0Q8sxmlTUibHy6/2nLrWNFIN7ReOSRWda5+GFUm1JApoHTfcPQ3DBA
-         GmwW7YNsaIsVwz1vNLcLv3wyURQfN2VnwhbBWEEYiugm0E5d3r7XlL4pGEim0UgtJ37b
-         o9mcksf4S3k20ujyUlTthoaqfKpidDhpwkFs953RP83s7/Mr2kHJIgzK9e7Q4K1WIQWF
-         4qZ44mfGcb5aOZBU+iSJtvDDPSmhc7fwE2y4g6+AEo2t2NZgqss+gKtz/BvNbJurexhn
-         W4NgQ1rYbNnYwZfRMcPtmPdLE9Qqk4kV/u7LNB6/1yEAqhwA6B1u4J9aHlSp1GVtw+qJ
-         aCCg==
-X-Gm-Message-State: APjAAAXWgk3oLGL7dRhkzicvzo2C75AHhVvkEYUE8I2gMfASqwUWcuMd
-        L+GHWMuZyq7LHFZC1ilDLH0=
-X-Google-Smtp-Source: APXvYqyRHcHwApDP3qZCLoIWShsLsHHVj943atq34QEfH7qMjbYAvVAfDNDHQCguOw/3shGV+BrKgg==
-X-Received: by 2002:a92:ccd0:: with SMTP id u16mr47017799ilq.296.1571936372309;
-        Thu, 24 Oct 2019 09:59:32 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id d6sm7527320iop.34.2019.10.24.09.59.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2019 09:59:31 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 09:59:22 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com
-Message-ID: <5db1d86ad61ae_5c282ada047205c0a8@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191022113730.29303-2-jakub@cloudflare.com>
-References: <20191022113730.29303-1-jakub@cloudflare.com>
- <20191022113730.29303-2-jakub@cloudflare.com>
-Subject: RE: [RFC bpf-next 1/5] bpf, sockmap: Let BPF helpers use lookup
- operation on SOCKMAP
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=j/o8TfhScpVV/SFKEy17AB1Zf2axWbjJiCRdK+oaodM=;
+        b=VGBNHFIiCh6mge9Ykh1bf8z9mTJL414dW1mctiBOrVOVTnbTnP3xiqRAGAdRNuWJ0P
+         SijakGfLI0qp7d/5egiuhCCmg9wDBJXAN98tx5AVviuijEFuu5C0uUoksckXQWj/hCgs
+         9wqKqHRf8Nkk9bi0TetcmgLEoWMPg9AUUl7UbzX34Dt9ae8LY6Y7wiFe2CkPlJ7K94nR
+         YcvTaWZnzKjMAJMs0lDMURqEY8eM3dQxkIUdbJGx/9Epdgv1lzU9xcPtlH5CoVfEz376
+         AEjO2nEjwsxS6Z7n84/bJFETHdZBcCMe5QuLQ5TqcCgfhYUCBZ98lTsLkTnxSHp2f+iM
+         +j8w==
+X-Gm-Message-State: APjAAAXNCXBi36LYQ8/n011CuDvmQBlKiGViZQiuQffEw+hS8BVYNp7Z
+        vrpMdtfOHJ+MckNDQmU+6J5rkuD7bGT7gsYruMuprMe73fb6jOHO4nWy7hHFBRy8ZlCZyK88W5Q
+        LJqMm7pAbQI3TNtg/Ejmz0EbaUoFUNZPJ
+X-Received: by 2002:a05:6512:51a:: with SMTP id o26mr3538273lfb.132.1571936717133;
+        Thu, 24 Oct 2019 10:05:17 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzIPhBNg98lecbpGanzXdv/jvDEOMcLhjDgpSTFOb/kzuzr1Y8DKoHvodVSYY7pWM8MkSV9AFU5hw5SZdcroyw=
+X-Received: by 2002:a05:6512:51a:: with SMTP id o26mr3538262lfb.132.1571936716917;
+ Thu, 24 Oct 2019 10:05:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191022141438.22002-1-mcroce@redhat.com> <20191023.202813.607713311547571229.davem@davemloft.net>
+In-Reply-To: <20191023.202813.607713311547571229.davem@davemloft.net>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Thu, 24 Oct 2019 19:04:40 +0200
+Message-ID: <CAGnkfhwbuXS7hYWuBqERi-FA1ZbjFqWN81aOP_MpcqsmPkkLVQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] mvpp2: prefetch frame header
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Stefan Chulski <stefanc@marvell.com>,
+        LKML <linux-kernel@vger.kernel.org>
+X-MC-Unique: L7hT95msMd6w09dT8Ve2hA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> Don't require the BPF helpers that need to access SOCKMAP maps to live in
-> the sock_map module. Expose SOCKMAP lookup to all kernel-land.
-> 
-> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
-> ---
->  net/core/sock_map.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> index eb114ee419b6..facacc296e6c 100644
-> --- a/net/core/sock_map.c
-> +++ b/net/core/sock_map.c
-> @@ -271,7 +271,9 @@ static struct sock *__sock_map_lookup_elem(struct bpf_map *map, u32 key)
->  
->  static void *sock_map_lookup(struct bpf_map *map, void *key)
->  {
-> -	return ERR_PTR(-EOPNOTSUPP);
-> +	u32 index = *(u32 *)key;
-> +
-> +	return __sock_map_lookup_elem(map, index);
->  }
->  
->  static int __sock_map_delete(struct bpf_stab *stab, struct sock *sk_test,
-> -- 
-> 2.20.1
-> 
+On Thu, Oct 24, 2019 at 5:28 AM David Miller <davem@davemloft.net> wrote:
+> You cannot unmap it this early, because of all of the err_drop_frame
+> code paths that might be taken next.  The DMA mapping must stay in place
+> in those cases.
 
-OK, I'm looking into the latest BTF bits to see if we can do something
-more useful here to keep the type information when the lookup is done so
-the sock can be feed from sk_lookup and actually read.
+Thanks for noting this.
+I'm sending a series with this and other small fixes.
 
-As this series stands after the lookup its just an opaque ptr_to_map_value
-right?
+Regards,
+--=20
+Matteo Croce
+per aspera ad upstream
+
