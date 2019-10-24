@@ -2,59 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3D08E3766
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:06:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45D88E378A
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407605AbfJXQFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 12:05:54 -0400
-Received: from muru.com ([72.249.23.125]:39772 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407544AbfJXQFy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 12:05:54 -0400
-Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 5D9B280C5;
-        Thu, 24 Oct 2019 16:06:27 +0000 (UTC)
-Date:   Thu, 24 Oct 2019 09:05:49 -0700
-From:   Tony Lindgren <tony@atomide.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 00/12] net: ethernet: ti: introduce new cpsw
- switchdev based driver
-Message-ID: <20191024160549.GY5610@atomide.com>
-References: <20191024100914.16840-1-grygorii.strashko@ti.com>
+        id S2439714AbfJXQLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 12:11:25 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:40368 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436655AbfJXQLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:11:25 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id D22F5611AD; Thu, 24 Oct 2019 16:11:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571933484;
+        bh=6BQeRd1YE343V3Pyn6bXhu7AVvclx5LyH+xiYk/mmsQ=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=TQNWdZPw1VNshMmWaBQj1Njknz4thr4uOvbL1s7+gUpZ2/S4Z6UPbwd/i0UR/Pl7b
+         Sp4caPzRIbVyjzYY/jo54suzPij6UtrkvF+XsYDXl1bDXeAvgT6m7F8e19ZDERebd7
+         vU/FhgsI3fyJCWKzlLamjK3sITo8j5Zub6XmHcBw=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (unknown [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id CE9586110A;
+        Thu, 24 Oct 2019 16:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571933480;
+        bh=6BQeRd1YE343V3Pyn6bXhu7AVvclx5LyH+xiYk/mmsQ=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=ad96iQEMymUX4ygi/5GDCdgFnmUhXDrCv64tNVhd3dPGHxI4cDyjZzfjbCwrwUedx
+         /jnhJJswJ5dPo4LKE68u2uv2H7SAvEKEbExn15lSHN9CohgbLdjqfa6M8ApqgrEYzy
+         NJ7yZ41/UYNotjEG+4ToTSevM23sPyCLz9KkbYLk=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CE9586110A
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jiri Kosina <trivial@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] [trivial] net: Fix misspellings of "configure" and "configuration"
+References: <20191024152201.29868-1-geert+renesas@glider.be>
+Date:   Thu, 24 Oct 2019 19:11:15 +0300
+In-Reply-To: <20191024152201.29868-1-geert+renesas@glider.be> (Geert
+        Uytterhoeven's message of "Thu, 24 Oct 2019 17:22:01 +0200")
+Message-ID: <878spaqg2k.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191024100914.16840-1-grygorii.strashko@ti.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Geert Uytterhoeven <geert+renesas@glider.be> writes:
 
-* Grygorii Strashko <grygorii.strashko@ti.com> [191024 10:10]:
-> This the RFC v5 which introduces new CPSW switchdev based driver which is 
-> operating in dual-emac mode by default, thus working as 2 individual
-> network interfaces. The Switch mode can be enabled by configuring devlink driver
-> parameter "switch_mode" to 1/true:
-> 	devlink dev param set platform/48484000.ethernet_switch \
-> 	name switch_mode value 1 cmode runtime
+> Fix various misspellings of "configuration" and "configure".
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> v2:
+>   - Merge
+>     [trivial] net/mlx5e: Spelling s/configuraiton/configuration/
+>     [trivial] qed: Spelling s/configuraiton/configuration/
+>   - Fix typo in subject,
+>   - Extend with various other similar misspellings.
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.c | 2 +-
+>  drivers/net/ethernet/qlogic/qed/qed_int.h                | 4 ++--
+>  drivers/net/ethernet/qlogic/qed/qed_sriov.h              | 2 +-
+>  drivers/net/ethernet/qlogic/qede/qede_filter.c           | 2 +-
+>  drivers/net/wireless/ath/ath9k/ar9003_hw.c               | 2 +-
+>  drivers/net/wireless/intel/iwlwifi/iwl-fh.h              | 2 +-
+>  drivers/net/wireless/ti/wlcore/spi.c                     | 2 +-
+>  include/uapi/linux/dcbnl.h                               | 2 +-
+>  8 files changed, 9 insertions(+), 9 deletions(-)
 
-Just wondering about the migration plan.. Is this a replacement
-driver or used in addition to the old driver?
+I hope this goes to net-next? Easier to handle possible conflicts that
+way.
 
-Regards,
+For the wireless part:
 
-Tony
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
