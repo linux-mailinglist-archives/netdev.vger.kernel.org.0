@@ -2,210 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B162E3FF2
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 01:08:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23A10E404A
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 01:13:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387704AbfJXXH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 19:07:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44966 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387620AbfJXXHz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 19:07:55 -0400
-Received: from lore-desk.lan (unknown [151.66.11.57])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B477E21A4C;
-        Thu, 24 Oct 2019 23:07:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571958473;
-        bh=o1NcdslAzBGfbyYaRz54TWyHpL3SLcEnEF/mZYPzsqY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yYtYwytN3tCFfbfGg5aJK/PA6FoaE0QsGbieeLrYOc0bXBm8CGW381RUMLHMLHV+o
-         CCLqu+HUww35OR0vRC2MCjlq4lA9qTLTZ2X40sOMQ8sZengjIp5xKUSIVU9MVHhA92
-         ekcqDGacVoSSew5/vePwhvn21DhGxssXXlqvvsus=
-Date:   Fri, 25 Oct 2019 01:07:47 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org, nbd@nbd.name,
-        sgruszka@redhat.com, lorenzo.bianconi@redhat.com,
-        oleksandr@natalenko.name, netdev@vger.kernel.org,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH wireless-drivers 1/2] mt76: mt76x2e: disable pcie_aspm by
- default
-Message-ID: <20191024230747.GA30614@lore-desk.lan>
-References: <cover.1571868221.git.lorenzo@kernel.org>
- <fec60f066bab1936d58b2e69bae3f20e645d1304.1571868221.git.lorenzo@kernel.org>
- <5924c8eb-7269-b8ef-ad0e-957104645638@gmail.com>
- <20191024215451.GA30822@lore-desk.lan>
- <9cac34a5-0bfe-0443-503f-218210dab4d6@gmail.com>
+        id S1727367AbfJXXNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 19:13:50 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:46414 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726683AbfJXXNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 19:13:49 -0400
+Received: by mail-oi1-f193.google.com with SMTP id c2so98004oic.13
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 16:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+eK+5fkzYxyunCal9Tn719EPwXUpc/8mT0s2MAFKdkg=;
+        b=SEJZ2Aok3JBqRf+BoSSTatvK5FJhVAunGdBbrWajS2C3I2Ekp6awq5ULZyam+OfhWy
+         f8AqWCKMJybqXCyotKpbxUcaHGA9VSXesT4+yv4jJnKZxMOTLaPixQSaPnJXozhDovWu
+         FaHnrKVCg7MnSJx7uFqvZsTnUYSGJB37ZfgG9HA7//tJQOYIYLXHRSBKsltv9ztj//Pl
+         RI6XgMx/o0gVHSaS+jjzg1CJzSUa9guzTIUmu052Ry7THJ1BS0a+e2cJmkPQWNar3FwT
+         Dv8iJ5m0106WUTaM2jLfKrJKOJyXLZZydjUii25wFWd9J7qEFwqGoQAklTuOr6FvgJUx
+         5ayg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+eK+5fkzYxyunCal9Tn719EPwXUpc/8mT0s2MAFKdkg=;
+        b=mFly/wvZG8zWjzKCw1IeBZJCtNTcFKREGJCkpqJ21geijknWDO2GopKOwLYRs8WcxW
+         s6mCKZ3k8T9re0ufkfo8FefbwdOcZVZ0PA1K53reTI7nzBORDbCIG9F2T2bm0hEP6voT
+         ifLchoTusXmIJ8a0gupzV+kQPwhFotXui+FtKWYFxgD783ZykGKB1dlQgXiR7s4iRavC
+         Hx8JTce7kDvofGEDtzuRlFPnG7tQg8r1mWckt6fJWiOla6e1nB9RLwTHkRIQG5Q2NMA1
+         6DWYg2Ci9irGf2VxUGjSKxegNE4qMOiVeTNFb0A5XoDq6eB4Pq+sk9wNNg7seY5cMNAN
+         vLPw==
+X-Gm-Message-State: APjAAAV2cqdEYXQxCUQUOI0x1BWGSEmYmSYwMFAuuar9R/vXyVot6jV/
+        1bR84uGho62auaa98hLLRbbOMhuCK75b9J2ZcYgumw==
+X-Google-Smtp-Source: APXvYqwQhv0NxIDV1LDcBAWZl5QLL4CwIafH4+3vgKwAP3NGx8ZDjESC5K2cau+hQoPGajKr2X/KHYG+ZVmqyb/DgYw=
+X-Received: by 2002:aca:cd4d:: with SMTP id d74mr468386oig.157.1571958827931;
+ Thu, 24 Oct 2019 16:13:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jRHKVT23PllUwdXP"
-Content-Disposition: inline
-In-Reply-To: <9cac34a5-0bfe-0443-503f-218210dab4d6@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20191017212858.13230-1-axboe@kernel.dk> <0fb9d9a0-6251-c4bd-71b0-6e34c6a1aab8@kernel.dk>
+ <CAG48ez181=JoYudXee0KbU0vDZ=EbxmgB7q0mmjaA0gyp6MFBQ@mail.gmail.com>
+ <a54329d5-a128-3ccd-7a12-f6cadaa20dbf@kernel.dk> <CAG48ez1SDQNHjgFku4ft4qw9hdv1g6-sf7-dxuU_tJSx+ofV-w@mail.gmail.com>
+ <dbcf874d-8484-9c27-157a-c2752181acb5@kernel.dk> <CAG48ez3KwaQ3DVH1VoWxFWTG2ZfCQ6M0oyv5vZqkLgY0QDEdiw@mail.gmail.com>
+ <a8fb7a1f-69c7-bf2a-b3dd-7886077d234b@kernel.dk> <572f40fb-201c-99ce-b3f5-05ff9369b895@kernel.dk>
+ <CAG48ez12pteHyZasU8Smup-0Mn3BWNMCVjybd1jvXsPrJ7OmYg@mail.gmail.com>
+ <20b44cc0-87b1-7bf8-d20e-f6131da9d130@kernel.dk> <2d208fc8-7c24-bca5-3d4a-796a5a8267eb@kernel.dk>
+ <CAG48ez2ZQBVEe8yYRwWX2=TMYWsJ=tK44NM+wqiLW2AmfYEcHw@mail.gmail.com>
+ <0a3de9b2-3d3a-07b5-0e1c-515f610fbf75@kernel.dk> <CAG48ez1akvnVpK3dMH4H=C2CsNGDZkDaxZEF2stGAPCnUcaa+g@mail.gmail.com>
+ <c3fb07d4-223c-8835-5c22-68367e957a4f@kernel.dk> <CAG48ez0K_wtHA4DSWjz4TjohHkMTGo2pTpDVMZPQWD2gtrqZJw@mail.gmail.com>
+ <c252182a-4d09-5e9b-112b-2dad9ef123b5@kernel.dk>
+In-Reply-To: <c252182a-4d09-5e9b-112b-2dad9ef123b5@kernel.dk>
+From:   Jann Horn <jannh@google.com>
+Date:   Fri, 25 Oct 2019 01:13:20 +0200
+Message-ID: <CAG48ez00zr2P1WCznnXmTvq+FQ4Ji8kDnuNqbeeMvOh_MhXeTg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] io_uring: add support for async work inheriting files table
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     linux-block@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---jRHKVT23PllUwdXP
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-> On 24.10.2019 23:54, Lorenzo Bianconi wrote:
-> >> On 24.10.2019 00:23, Lorenzo Bianconi wrote:
-> >>> On same device (e.g. U7612E-H1) PCIE_ASPM causes continuous mcu hangs=
- and
-> >>> instability and so let's disable PCIE_ASPM by default. This patch has
-> >>> been successfully tested on U7612E-H1 mini-pice card
+On Fri, Oct 25, 2019 at 12:04 AM Jens Axboe <axboe@kernel.dk> wrote:
+> On 10/24/19 2:31 PM, Jann Horn wrote:
+> > On Thu, Oct 24, 2019 at 9:41 PM Jens Axboe <axboe@kernel.dk> wrote:
+> >> On 10/18/19 12:50 PM, Jann Horn wrote:
+> >>> On Fri, Oct 18, 2019 at 8:16 PM Jens Axboe <axboe@kernel.dk> wrote:
+> >>>> On 10/18/19 12:06 PM, Jann Horn wrote:
+> >>>>> But actually, by the way: Is this whole files_struct thing creating a
+> >>>>> reference loop? The files_struct has a reference to the uring file,
+> >>>>> and the uring file has ACCEPT work that has a reference to the
+> >>>>> files_struct. If the task gets killed and the accept work blocks, the
+> >>>>> entire files_struct will stay alive, right?
+> >>>>
+> >>>> Yes, for the lifetime of the request, it does create a loop. So if the
+> >>>> application goes away, I think you're right, the files_struct will stay.
+> >>>> And so will the io_uring, for that matter, as we depend on the closing
+> >>>> of the files to do the final reap.
+> >>>>
+> >>>> Hmm, not sure how best to handle that, to be honest. We need some way to
+> >>>> break the loop, if the request never finishes.
 > >>>
-> >>> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> >>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> >>> ---
-> >>>  drivers/net/wireless/mediatek/mt76/mmio.c     | 47 +++++++++++++++++=
-++
-> >>>  drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
-> >>>  .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
-> >>>  3 files changed, 50 insertions(+)
-> >>>
-> >=20
-> > [...]
-> >=20
-> >>> +
-> >>> +	if (parent)
-> >>> +		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
-> >>> +					   aspm_conf);
+> >>> A wacky and dubious approach would be to, instead of taking a
+> >>> reference to the files_struct, abuse f_op->flush() to synchronously
+> >>> flush out pending requests with references to the files_struct... But
+> >>> it's probably a bad idea, given that in f_op->flush(), you can't
+> >>> easily tell which files_struct the close is coming from. I suppose you
+> >>> could keep a list of (fdtable, fd) pairs through which ACCEPT requests
+> >>> have come in and then let f_op->flush() probe whether the file
+> >>> pointers are gone from them...
 > >>
-> >> + linux-pci mailing list
-> >=20
-> > Hi Heiner,
-> >=20
+> >> Got back to this after finishing the io-wq stuff, which we need for the
+> >> cancel.
 > >>
-> >> All this seems to be legacy code copied from e1000e.
-> >> Fiddling with the low-level PCI(e) registers should be left to the
-> >> PCI core. It shouldn't be needed here, a simple call to
-> >> pci_disable_link_state() should be sufficient. Note that this function
-> >> has a return value meanwhile that you can check instead of reading
-> >> back low-level registers.
-> >=20
-> > ack, I will add it to v2
-> >=20
-> >> If BIOS forbids that OS changes ASPM settings, then this should be
-> >> respected (like PCI core does). Instead the network chip may provide
-> >> the option to configure whether it activates certain ASPM (sub-)states
-> >> or not. We went through a similar exercise with the r8169 driver,
-> >> you can check how it's done there.
-> >=20
-> > looking at the vendor sdk (at least in the version I currently have) th=
-ere are
-> > no particular ASPM configurations, it just optionally disables it writi=
-ng directly
-> > in pci registers.
-> > Moreover there are multiple drivers that are currently using this appro=
-ach:
-> > - ath9k in ath_pci_aspm_init()
-> > - tg3 in tg3_chip_reset()
-> > - e1000e in __e1000e_disable_aspm()
-> > - r8169 in rtl_enable_clock_request()/rtl_disable_clock_request()
-> >=20
-> All these drivers include quite some legacy code. I can mainly speak for =
-r8169:
-> First versions of the driver are almost as old as Linux. And even though I
-> refactored most of the driver still some legacy code for older chip versi=
-ons
-> (like the two functions you mentioned) is included.
->=20
-> > Is disabling the ASPM for the system the only option to make this minip=
-cie
-> > work?
-> >=20
->=20
-> No. What we do in r8169:
->=20
-> - call pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE=
-_L1)
-> - If it returns 0, then ASPM (including the L1 sub-states) is disabled.
-> - If it returns an errno, then disabling ASPM failed (most likely due to
->   BIOS forbidding ASPM changes - pci_disable_link_state will spit out
->   a related warning). In this case r8169 configures the chip to not initi=
-ate
->   transitions to L0s/L1 (the other end of the link may still try to enter
->   ASPM states). See rtl_hw_aspm_clkreq_enable(). That's sufficient
->   to avoid the ASPM-related problems with certain versions of this chip.
->   Maybe your HW provides similar functionality.
-
-yep, I looked at rtl_hw_aspm_clkreq_enable. This is more or less what I did=
- but
-unfortunately there is no specific code or documentation I can use for mt76=
-x2e.
-So as last chance I decided to disable ASPM directly (in this way the chip =
-is
-working fine).
-Do you think a kernel parameter to disable ASPM directly would be acceptabl=
-e?
-
-Regards,
-Lorenzo
-
->=20
-> > Regards,
-> > Lorenzo
-> >=20
-> Heiner
->=20
+> >> Here's an updated patch:
 > >>
-> >>> +}
-> >>> +EXPORT_SYMBOL_GPL(mt76_mmio_disable_aspm);
-> >>> +
-> >>>  void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs)
-> >>>  {
-> >>>  	static const struct mt76_bus_ops mt76_mmio_ops =3D {
-> >>> diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/=
-wireless/mediatek/mt76/mt76.h
-> >>> index 570c159515a0..962812b6247d 100644
-> >>> --- a/drivers/net/wireless/mediatek/mt76/mt76.h
-> >>> +++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-> >>> @@ -578,6 +578,7 @@ bool __mt76_poll_msec(struct mt76_dev *dev, u32 o=
-ffset, u32 mask, u32 val,
-> >>>  #define mt76_poll_msec(dev, ...) __mt76_poll_msec(&((dev)->mt76), __=
-VA_ARGS__)
-> >>> =20
-> >>>  void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs);
-> >>> +void mt76_mmio_disable_aspm(struct pci_dev *pdev);
-> >>> =20
-> >>>  static inline u16 mt76_chip(struct mt76_dev *dev)
-> >>>  {
-> >>> diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/driver=
-s/net/wireless/mediatek/mt76/mt76x2/pci.c
-> >>> index 73c3104f8858..264bef87e5c7 100644
-> >>> --- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-> >>> +++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-> >>> @@ -81,6 +81,8 @@ mt76pci_probe(struct pci_dev *pdev, const struct pc=
-i_device_id *id)
-> >>>  	/* RG_SSUSB_CDR_BR_PE1D =3D 0x3 */
-> >>>  	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
-> >>> =20
-> >>> +	mt76_mmio_disable_aspm(pdev);
-> >>> +
-> >>>  	return 0;
-> >>> =20
-> >>>  error:
-> >>>
+> >> http://git.kernel.dk/cgit/linux-block/commit/?h=for-5.5/io_uring-test&id=1ea847edc58d6a54ca53001ad0c656da57257570
 > >>
->=20
+> >> that seems to work for me (lightly tested), we correctly find and cancel
+> >> work that is holding on to the file table.
+> >>
+> >> The full series sits on top of my for-5.5/io_uring-wq branch, and can be
+> >> viewed here:
+> >>
+> >> http://git.kernel.dk/cgit/linux-block/log/?h=for-5.5/io_uring-test
+> >>
+> >> Let me know what you think!
+> >
+> > Ah, I didn't realize that the second argument to f_op->flush is a
+> > pointer to the files_struct. That's neat.
+> >
+> >
+> > Security: There is no guarantee that ->flush() will run after the last
+> > io_uring_enter() finishes. You can race like this, with threads A and
+> > B in one process and C in another one:
+> >
+> > A: sends uring fd to C via unix domain socket
+> > A: starts syscall io_uring_enter(fd, ...)
+> > A: calls fdget(fd), takes reference to file
+> > B: starts syscall close(fd)
+> > B: fd table entry is removed
+> > B: f_op->flush is invoked and finds no pending transactions
+> > B: syscall close() returns
+> > A: continues io_uring_enter(), grabbing current->files
+> > A: io_uring_enter() returns
+> > A and B: exit
+> > worker: use-after-free access to files_struct
+> >
+> > I think the solution to this would be (unless you're fine with adding
+> > some broad global read-write mutex) something like this in
+> > __io_queue_sqe(), where "fd" and "f" are the variables from
+> > io_uring_enter(), plumbed through the stack somehow:
+> >
+> > if (req->flags & REQ_F_NEED_FILES) {
+> >    rcu_read_lock();
+> >    spin_lock_irq(&ctx->inflight_lock);
+> >    if (fcheck(fd) == f) {
+> >      list_add(&req->inflight_list,
+> >        &ctx->inflight_list);
+> >      req->work.files = current->files;
+> >      ret = 0;
+> >    } else {
+> >      ret = -EBADF;
+> >    }
+> >    spin_unlock_irq(&ctx->inflight_lock);
+> >    rcu_read_unlock();
+> >    if (ret)
+> >      goto put_req;
+> > }
+>
+> First of all, thanks for the thorough look at this! We already have f
+> available here, it's req->file. And we just made a copy of the sqe, so
+> we have sqe->fd available as well. I fixed this up.
 
---jRHKVT23PllUwdXP
-Content-Type: application/pgp-signature; name="signature.asc"
+sqe->fd is the file descriptor we're doing I/O on, not the file
+descriptor of the uring file, right? Same thing for req->file. This
+check only detects whether the fd we're doing I/O on was closed, which
+is irrelevant.
 
------BEGIN PGP SIGNATURE-----
+> > Security + Correctness: If there is more than one io_wqe, it seems to
+> > me that io_uring_flush() calls io_wq_cancel_work(), which calls
+> > io_wqe_cancel_work(), which may return IO_WQ_CANCEL_OK if the first
+> > request it looks at is pending. In that case, io_wq_cancel_work() will
+> > immediately return, and io_uring_flush() will also immediately return.
+> > It looks like any other requests will continue running?
+>
+> Ah good point, I missed that. We need to keep looping until we get
+> NOTFOUND returned. Fixed as well.
+>
+> Also added cancellation if the task is going away. Here's the
+> incremental patch, I'll resend with the full version.
+[...]
+> +static int io_uring_flush(struct file *file, void *data)
+> +{
+> +       struct io_ring_ctx *ctx = file->private_data;
+> +
+> +       if (fatal_signal_pending(current) || (current->flags & PF_EXITING))
+> +               io_wq_cancel_all(ctx->io_wq);
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXbIuwAAKCRA6cBh0uS2t
-rN4BAQC6kPrwoEkmBP/u2ACDWJqjB4/X5iBWvx+HXhpVCu/eJQEAzV6WoLtAS7cB
-GfOExWhpf+rKfH58pSeOzArmgBsRago=
-=524V
------END PGP SIGNATURE-----
+Looking at io_wq_cancel_all(), this will just send a signal to the
+task without waiting for anything, right? Isn't that unsafe?
 
---jRHKVT23PllUwdXP--
+
+> +       else
+> +               io_uring_cancel_files(ctx, data);
+>         return 0;
+>  }
