@@ -2,309 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9125E3D81
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 22:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF970E3D94
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 22:50:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727174AbfJXUro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 16:47:44 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46160 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726973AbfJXUro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 16:47:44 -0400
-Received: by mail-pg1-f195.google.com with SMTP id f19so5054pgn.13
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 13:47:44 -0700 (PDT)
+        id S1728496AbfJXUuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 16:50:32 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:35323 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727338AbfJXUub (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 16:50:31 -0400
+Received: by mail-qt1-f193.google.com with SMTP id m15so40053750qtq.2;
+        Thu, 24 Oct 2019 13:50:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=6UtVkElgUlM/zYf2z9xQ4vpWwexeLVXf3dgUkD/4jLA=;
-        b=Eb3HOtWpI3HnJx2/NOGFzo4+gucLI3ndX6GG7L0sAGfQpyFn9LAwrmN/zYKRFjJPbm
-         SKgRMyHwy9oBW93pJ4uHBchJEzi2leiQgNVpZwhDcdg4u2+7udzeGiUAcJ8mcBRID2tu
-         LpMrRP9BOU7idXYykqoA4/vHlMf0KvagTICxEybHNTWQz6zzbcvy/lwU0xBtkyet1y2y
-         rYVplIHn0+IXeeF4bKLoCfYxnhbmLZ1Y96NoXynWoVjArvFdmWUn6D8sDOoz90Jckgy9
-         naARJhIqNgU9w6IxFiphdubpMMKSczfAKKm5fB3ik1uqHaRYV+FWvMhjUoi5p4BL9t8C
-         1aUQ==
+        bh=yiBNxTVjLKb3LJZRA9pl6gZMexfgF8lPwoDnT1vLA8g=;
+        b=gsr0P+AKeUbPo0SZQ9m052jHu47E2IhhB9AygnZGTUHegpz2XnMlB01F85FPA2Nwa5
+         LWC82oUttGymrxLgbvRbTmx6Lif9caZD0ONWLxvRdVkduwCjXuklWzQt3DV570BFKlul
+         AWfKbhVypbK8bwkoLhjYuHymSHpc55VloVsh3UD+w59cFHXCdjElxalxE988Nior67QK
+         tJ+pNxrh+YN9304oSTkvO7PXCQ1YUWMJIDIBciwHYh+K2FrEpaVfWfnVNApkh/aXtoox
+         zQmziuwlBZabXRggTZgS4xn8qrN5d4wJn/W93jovdn49VE3mGAxX/pw7rTninM3fXuUB
+         Mm5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6UtVkElgUlM/zYf2z9xQ4vpWwexeLVXf3dgUkD/4jLA=;
-        b=CMl7qJreFqGuwegE+Jc1ucNUMG0Aqp+AM3JNECd65/WdfwLup3Hm7QeGgEVTe/p3Yx
-         U1C3KtKJwiRzz165bFa3i/fEFshz0qkwMMdmnwQCtUqqT5nYH7ub62CT9rBflH2AhrjQ
-         y7ISlYsBcw1eUX563DSsEk67DiXUOyBNQPLaaQ+X6FuXOApdDxsCu9IerDNCbKYUCZir
-         49/iEoL25/ngjk4fBiUDeMsWKM4Ir4eVXGaC5NMOtAQ822ePahaqRKyz9F0voyKfLCFE
-         MTAcSShi3sSwTCxbpe+URCCQ/zh83BwJOuY5ultePPoHZcVNv25zrT1BQx5D6RyJb50X
-         brYQ==
-X-Gm-Message-State: APjAAAXsefIgxpzlyxhpYCDEe9iDk7hkORklUQX2Rq62n8dipP9g4AMV
-        1TZncC2B81demvw2NIrfYDs=
-X-Google-Smtp-Source: APXvYqyVDcLm+8DPjs6QbnXf7PrqXL32OqjmX4F9SWz3De0w7FtBcqt11xBB6C2EMUsGzG36wYfL6A==
-X-Received: by 2002:aa7:8197:: with SMTP id g23mr19682855pfi.247.1571950063370;
-        Thu, 24 Oct 2019 13:47:43 -0700 (PDT)
-Received: from gmail.com ([66.170.99.95])
-        by smtp.gmail.com with ESMTPSA id v19sm29231245pff.46.2019.10.24.13.47.42
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yiBNxTVjLKb3LJZRA9pl6gZMexfgF8lPwoDnT1vLA8g=;
+        b=Sb5U64Lec5rUM+RQ4SZeyB9D+bL+oeYHKgZtY6L71XIxceLaGF6OJb8EYbsYdNCx+X
+         RgAySgs++JqAcuB2Fmg53ojJO6zQ/BbdV39QilWq8EpkLeLsdCikQ32j9S5CWcIGrMDz
+         PMxdivAE8Ufa09eDPjBPohYiG/CgKhDN7KrfkFKgJ0hmxQSgyGZay16vXCqZ4hUWHEun
+         cu/uYAHRs3gwTu05QiKoYDuZf4lu/f4QfF/gHyaaY8joBmXrfzrVRneM2blnPXaw4umX
+         /mIku4XfYYywRObpV/AXXPYRM2F/ZfCZBvZS+TmNKG6WXlWZL1TzfyUBizc/xd8LdHdE
+         xs5g==
+X-Gm-Message-State: APjAAAVUT/WK67UxIaphi0/DpU3wGLgu3LluNyDoXtC5snRlBR9tptzu
+        Gf4Nrb34bti9t396QcEzCqg=
+X-Google-Smtp-Source: APXvYqya/7Yblx6OaWRLVv0bIdGPj4jN7xb3wMBDjV6dVc0GXOVyNjYufuwD5ghJwYUJHrLEDHRtGQ==
+X-Received: by 2002:ac8:6b12:: with SMTP id w18mr6480132qts.173.1571950230017;
+        Thu, 24 Oct 2019 13:50:30 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:500::3:b2e])
+        by smtp.gmail.com with ESMTPSA id m186sm13129881qkd.119.2019.10.24.13.50.28
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Oct 2019 13:47:42 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 13:47:40 -0700
-From:   William Tu <u9012063@gmail.com>
-To:     Martin Varghese <martinvarghesenokia@gmail.com>
-Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        scott.drennan@nokia.com, jbenc@redhat.com,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH v2] Change in Openvswitch to support MPLS label depth of
- 3 in ingress direction
-Message-ID: <20191024204740.GA74879@gmail.com>
-References: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
+        Thu, 24 Oct 2019 13:50:29 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 13:50:27 -0700
+From:   Tejun Heo <tj@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        linux-kernel@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, linux-mm@kvack.org,
+        Mel Gorman <mgorman@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH v2] net: fix sk_page_frag() recursion from memory reclaim
+Message-ID: <20191024205027.GF3622521@devbig004.ftw2.facebook.com>
+References: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 07:41:42PM +0530, Martin Varghese wrote:
-> From: Martin Varghese <martin.varghese@nokia.com>
-> 
-> The openvswitch was supporting a MPLS label depth of 1 in the ingress
-> direction though the userspace OVS supports a max depth of 3 labels.
-> This change enables openvswitch module to support a max depth of
-> 3 labels in the ingress.
-> 
+sk_page_frag() optimizes skb_frag allocations by using per-task
+skb_frag cache when it knows it's the only user.  The condition is
+determined by seeing whether the socket allocation mask allows
+blocking - if the allocation may block, it obviously owns the task's
+context and ergo exclusively owns current->task_frag.
 
-Hi Martin,
-Thanks for the patch. I have one comment below.
+Unfortunately, this misses recursion through memory reclaim path.
+Please take a look at the following backtrace.
 
-> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
-> ---
-> Changes in v2
->    - Moved MPLS count validation from datapath to configuration.
->    - Fixed set mpls function.
-> 
->  net/openvswitch/actions.c      |  2 +-
->  net/openvswitch/flow.c         | 20 ++++++++++-----
->  net/openvswitch/flow.h         |  9 ++++---
->  net/openvswitch/flow_netlink.c | 57 +++++++++++++++++++++++++++++++++---------
->  4 files changed, 66 insertions(+), 22 deletions(-)
-> 
-> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
-> index 3572e11..f3125d7 100644
-> --- a/net/openvswitch/actions.c
-> +++ b/net/openvswitch/actions.c
-> @@ -199,7 +199,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
->  	if (err)
->  		return err;
->  
-> -	flow_key->mpls.top_lse = lse;
-> +	flow_key->mpls.lse[0] = lse;
->  	return 0;
->  }
->  
-> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-> index dca3b1e..c101355 100644
-> --- a/net/openvswitch/flow.c
-> +++ b/net/openvswitch/flow.c
-> @@ -699,27 +699,35 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
->  			memset(&key->ipv4, 0, sizeof(key->ipv4));
->  		}
->  	} else if (eth_p_mpls(key->eth.type)) {
-> -		size_t stack_len = MPLS_HLEN;
-> +		u8 label_count = 1;
->  
-> +		memset(&key->mpls, 0, sizeof(key->mpls));
->  		skb_set_inner_network_header(skb, skb->mac_len);
->  		while (1) {
->  			__be32 lse;
->  
-> -			error = check_header(skb, skb->mac_len + stack_len);
-> +			error = check_header(skb, skb->mac_len +
-> +					     label_count * MPLS_HLEN);
->  			if (unlikely(error))
->  				return 0;
->  
->  			memcpy(&lse, skb_inner_network_header(skb), MPLS_HLEN);
->  
-> -			if (stack_len == MPLS_HLEN)
-> -				memcpy(&key->mpls.top_lse, &lse, MPLS_HLEN);
-> +			if (label_count <= MPLS_LABEL_DEPTH)
-> +				memcpy(&key->mpls.lse[label_count - 1], &lse,
-> +				       MPLS_HLEN);
->  
-> -			skb_set_inner_network_header(skb, skb->mac_len + stack_len);
-> +			skb_set_inner_network_header(skb, skb->mac_len +
-> +						     label_count * MPLS_HLEN);
->  			if (lse & htonl(MPLS_LS_S_MASK))
->  				break;
->  
-> -			stack_len += MPLS_HLEN;
-> +			label_count++;
->  		}
-> +		if (label_count > MPLS_LABEL_DEPTH)
-> +			label_count = MPLS_LABEL_DEPTH;
-> +
-> +		key->mpls.num_labels_mask = GENMASK(label_count - 1, 0);
+ [2] RIP: 0010:tcp_sendmsg_locked+0xccf/0xe10
+     ...
+     tcp_sendmsg+0x27/0x40
+     sock_sendmsg+0x30/0x40
+     sock_xmit.isra.24+0xa1/0x170 [nbd]
+     nbd_send_cmd+0x1d2/0x690 [nbd]
+     nbd_queue_rq+0x1b5/0x3b0 [nbd]
+     __blk_mq_try_issue_directly+0x108/0x1b0
+     blk_mq_request_issue_directly+0xbd/0xe0
+     blk_mq_try_issue_list_directly+0x41/0xb0
+     blk_mq_sched_insert_requests+0xa2/0xe0
+     blk_mq_flush_plug_list+0x205/0x2a0
+     blk_flush_plug_list+0xc3/0xf0
+ [1] blk_finish_plug+0x21/0x2e
+     _xfs_buf_ioapply+0x313/0x460
+     __xfs_buf_submit+0x67/0x220
+     xfs_buf_read_map+0x113/0x1a0
+     xfs_trans_read_buf_map+0xbf/0x330
+     xfs_btree_read_buf_block.constprop.42+0x95/0xd0
+     xfs_btree_lookup_get_block+0x95/0x170
+     xfs_btree_lookup+0xcc/0x470
+     xfs_bmap_del_extent_real+0x254/0x9a0
+     __xfs_bunmapi+0x45c/0xab0
+     xfs_bunmapi+0x15/0x30
+     xfs_itruncate_extents_flags+0xca/0x250
+     xfs_free_eofblocks+0x181/0x1e0
+     xfs_fs_destroy_inode+0xa8/0x1b0
+     destroy_inode+0x38/0x70
+     dispose_list+0x35/0x50
+     prune_icache_sb+0x52/0x70
+     super_cache_scan+0x120/0x1a0
+     do_shrink_slab+0x120/0x290
+     shrink_slab+0x216/0x2b0
+     shrink_node+0x1b6/0x4a0
+     do_try_to_free_pages+0xc6/0x370
+     try_to_free_mem_cgroup_pages+0xe3/0x1e0
+     try_charge+0x29e/0x790
+     mem_cgroup_charge_skmem+0x6a/0x100
+     __sk_mem_raise_allocated+0x18e/0x390
+     __sk_mem_schedule+0x2a/0x40
+ [0] tcp_sendmsg_locked+0x8eb/0xe10
+     tcp_sendmsg+0x27/0x40
+     sock_sendmsg+0x30/0x40
+     ___sys_sendmsg+0x26d/0x2b0
+     __sys_sendmsg+0x57/0xa0
+     do_syscall_64+0x42/0x100
+     entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
->  	} else if (key->eth.type == htons(ETH_P_IPV6)) {
->  		int nh_len;             /* IPv6 Header + Extensions */
->  
-> diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-> index 3e2cc22..d9eccbe 100644
-> --- a/net/openvswitch/flow.h
-> +++ b/net/openvswitch/flow.h
-> @@ -30,6 +30,7 @@ enum sw_flow_mac_proto {
->  	MAC_PROTO_ETHERNET,
->  };
->  #define SW_FLOW_KEY_INVALID	0x80
-> +#define MPLS_LABEL_DEPTH       3
->  
->  /* Store options at the end of the array if they are less than the
->   * maximum size. This allows us to get the benefits of variable length
-> @@ -85,9 +86,6 @@ struct sw_flow_key {
->  					 */
->  	union {
->  		struct {
-> -			__be32 top_lse;	/* top label stack entry */
-> -		} mpls;
-> -		struct {
->  			u8     proto;	/* IP protocol or lower 8 bits of ARP opcode. */
->  			u8     tos;	    /* IP ToS. */
->  			u8     ttl;	    /* IP TTL/hop limit. */
-> @@ -135,6 +133,11 @@ struct sw_flow_key {
->  				} nd;
->  			};
->  		} ipv6;
-> +		struct {
-> +			u32 num_labels_mask;    /* labels present bitmap of effective length MPLS_LABEL_DEPTH */
+In [0], tcp_send_msg_locked() was using current->page_frag when it
+called sk_wmem_schedule().  It already calculated how many bytes can
+be fit into current->page_frag.  Due to memory pressure,
+sk_wmem_schedule() called into memory reclaim path which called into
+xfs and then IO issue path.  Because the filesystem in question is
+backed by nbd, the control goes back into the tcp layer - back into
+tcp_sendmsg_locked().
 
-Why using a bitmap here? why not just num_labels?
-I saw that you have to convert it using hweight_long()
-to num_labels a couple places below.
+nbd sets sk_allocation to (GFP_NOIO | __GFP_MEMALLOC) which makes
+sense - it's in the process of freeing memory and wants to be able to,
+e.g., drop clean pages to make forward progress.  However, this
+confused sk_page_frag() called from [2].  Because it only tests
+whether the allocation allows blocking which it does, it now thinks
+current->page_frag can be used again although it already was being
+used in [0].
 
-Regards,
-William
+After [2] used current->page_frag, the offset would be increased by
+the used amount.  When the control returns to [0],
+current->page_frag's offset is increased and the previously calculated
+number of bytes now may overrun the end of allocated memory leading to
+silent memory corruptions.
 
-> +			__be32 lse[MPLS_LABEL_DEPTH];     /* label stack entry  */
-> +		} mpls;
-> +
->  		struct ovs_key_nsh nsh;         /* network service header */
->  	};
->  	struct {
-> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-> index d7559c6..21de061 100644
-> --- a/net/openvswitch/flow_netlink.c
-> +++ b/net/openvswitch/flow_netlink.c
-> @@ -424,7 +424,7 @@ size_t ovs_key_attr_size(void)
->  	[OVS_KEY_ATTR_DP_HASH]	 = { .len = sizeof(u32) },
->  	[OVS_KEY_ATTR_TUNNEL]	 = { .len = OVS_ATTR_NESTED,
->  				     .next = ovs_tunnel_key_lens, },
-> -	[OVS_KEY_ATTR_MPLS]	 = { .len = sizeof(struct ovs_key_mpls) },
-> +	[OVS_KEY_ATTR_MPLS]	 = { .len = OVS_ATTR_VARIABLE },
->  	[OVS_KEY_ATTR_CT_STATE]	 = { .len = sizeof(u32) },
->  	[OVS_KEY_ATTR_CT_ZONE]	 = { .len = sizeof(u16) },
->  	[OVS_KEY_ATTR_CT_MARK]	 = { .len = sizeof(u32) },
-> @@ -1628,10 +1628,25 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
->  
->  	if (attrs & (1 << OVS_KEY_ATTR_MPLS)) {
->  		const struct ovs_key_mpls *mpls_key;
-> +		u32 hdr_len;
-> +		u32 label_count, label_count_mask, i;
->  
->  		mpls_key = nla_data(a[OVS_KEY_ATTR_MPLS]);
-> -		SW_FLOW_KEY_PUT(match, mpls.top_lse,
-> -				mpls_key->mpls_lse, is_mask);
-> +		hdr_len = nla_len(a[OVS_KEY_ATTR_MPLS]);
-> +		label_count = hdr_len / sizeof(struct ovs_key_mpls);
-> +
-> +		if (label_count == 0 || label_count > MPLS_LABEL_DEPTH ||
-> +		    hdr_len % sizeof(struct ovs_key_mpls))
-> +			return -EINVAL;
-> +
-> +		label_count_mask =  GENMASK(label_count - 1, 0);
-> +
-> +		for (i = 0 ; i < label_count; i++)
-> +			SW_FLOW_KEY_PUT(match, mpls.lse[i],
-> +					mpls_key[i].mpls_lse, is_mask);
-> +
-> +		SW_FLOW_KEY_PUT(match, mpls.num_labels_mask,
-> +				label_count_mask, is_mask);
->  
->  		attrs &= ~(1 << OVS_KEY_ATTR_MPLS);
->  	 }
-> @@ -2114,13 +2129,18 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
->  		ether_addr_copy(arp_key->arp_sha, output->ipv4.arp.sha);
->  		ether_addr_copy(arp_key->arp_tha, output->ipv4.arp.tha);
->  	} else if (eth_p_mpls(swkey->eth.type)) {
-> +		u8 i, num_labels;
->  		struct ovs_key_mpls *mpls_key;
->  
-> -		nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS, sizeof(*mpls_key));
-> +		num_labels = hweight_long(output->mpls.num_labels_mask);
-> +		nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS,
-> +				  num_labels * sizeof(*mpls_key));
->  		if (!nla)
->  			goto nla_put_failure;
-> +
->  		mpls_key = nla_data(nla);
-> -		mpls_key->mpls_lse = output->mpls.top_lse;
-> +		for (i = 0; i < num_labels; i++)
-> +			mpls_key[i].mpls_lse = output->mpls.lse[i];
->  	}
->  
->  	if ((swkey->eth.type == htons(ETH_P_IP) ||
-> @@ -2957,6 +2977,10 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
->  	u8 mac_proto = ovs_key_mac_proto(key);
->  	const struct nlattr *a;
->  	int rem, err;
-> +	u32 mpls_label_count = 0;
-> +
-> +	if (eth_p_mpls(eth_type))
-> +		mpls_label_count = hweight_long(key->mpls.num_labels_mask);
->  
->  	nla_for_each_nested(a, attr, rem) {
->  		/* Expected argument lengths, (u32)-1 for variable length. */
-> @@ -3065,25 +3089,34 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
->  			     !eth_p_mpls(eth_type)))
->  				return -EINVAL;
->  			eth_type = mpls->mpls_ethertype;
-> +			mpls_label_count++;
->  			break;
->  		}
->  
-> -		case OVS_ACTION_ATTR_POP_MPLS:
-> +		case OVS_ACTION_ATTR_POP_MPLS: {
-> +			__be16  proto;
->  			if (vlan_tci & htons(VLAN_CFI_MASK) ||
->  			    !eth_p_mpls(eth_type))
->  				return -EINVAL;
->  
-> -			/* Disallow subsequent L2.5+ set and mpls_pop actions
-> -			 * as there is no check here to ensure that the new
-> -			 * eth_type is valid and thus set actions could
-> -			 * write off the end of the packet or otherwise
-> -			 * corrupt it.
-> +			/* Disallow subsequent L2.5+ set actions as there is
-> +			 * no check here to ensure that the new eth type is
-> +			 * valid and thus set actions could write off the
-> +			 * end of the packet or otherwise corrupt it.
->  			 *
->  			 * Support for these actions is planned using packet
->  			 * recirculation.
->  			 */
-> -			eth_type = htons(0);
-> +			proto = nla_get_be16(a);
-> +			mpls_label_count--;
-> +
-> +			if (!eth_p_mpls(proto) || !mpls_label_count)
-> +				eth_type = htons(0);
-> +			else
-> +				eth_type =  proto;
-> +
->  			break;
-> +		}
->  
->  		case OVS_ACTION_ATTR_SET:
->  			err = validate_set(a, key, sfa,
-> -- 
-> 1.8.3.1
-> 
+Fix it by adding gfpflags_normal_context() which tests sleepable &&
+!reclaim and use it to determine whether to use current->task_frag.
+
+v2: Eric didn't like gfp flags being tested twice.  Introduce a new
+    helper gfpflags_normal_context() and combine the two tests.
+
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: Eric Dumazet <eric.dumazet@gmail.com>
+Cc: stable@vger.kernel.org
+---
+ include/linux/gfp.h |   23 +++++++++++++++++++++++
+ include/net/sock.h  |   11 ++++++++---
+ 2 files changed, 31 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index fb07b503dc45..61f2f6ff9467 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -325,6 +325,29 @@ static inline bool gfpflags_allow_blocking(const gfp_t gfp_flags)
+ 	return !!(gfp_flags & __GFP_DIRECT_RECLAIM);
+ }
+ 
++/**
++ * gfpflags_normal_context - is gfp_flags a normal sleepable context?
++ * @gfp_flags: gfp_flags to test
++ *
++ * Test whether @gfp_flags indicates that the allocation is from the
++ * %current context and allowed to sleep.
++ *
++ * An allocation being allowed to block doesn't mean it owns the %current
++ * context.  When direct reclaim path tries to allocate memory, the
++ * allocation context is nested inside whatever %current was doing at the
++ * time of the original allocation.  The nested allocation may be allowed
++ * to block but modifying anything %current owns can corrupt the outer
++ * context's expectations.
++ *
++ * %true result from this function indicates that the allocation context
++ * can sleep and use anything that's associated with %current.
++ */
++static inline bool gfpflags_normal_context(const gfp_t gfp_flags)
++{
++	return (gfp_flags & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC)) ==
++		__GFP_DIRECT_RECLAIM;
++}
++
+ #ifdef CONFIG_HIGHMEM
+ #define OPT_ZONE_HIGHMEM ZONE_HIGHMEM
+ #else
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f69b58bff7e5..c31a9ed86d5a 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2242,12 +2242,17 @@ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp,
+  * sk_page_frag - return an appropriate page_frag
+  * @sk: socket
+  *
+- * If socket allocation mode allows current thread to sleep, it means its
+- * safe to use the per task page_frag instead of the per socket one.
++ * Use the per task page_frag instead of the per socket one for
++ * optimization when we know that we're in the normal context and owns
++ * everything that's associated with %current.
++ *
++ * gfpflags_allow_blocking() isn't enough here as direct reclaim may nest
++ * inside other socket operations and end up recursing into sk_page_frag()
++ * while it's already in use.
+  */
+ static inline struct page_frag *sk_page_frag(struct sock *sk)
+ {
+-	if (gfpflags_allow_blocking(sk->sk_allocation))
++	if (gfpflags_normal_context(sk->sk_allocation))
+ 		return &current->task_frag;
+ 
+ 	return &sk->sk_frag;
