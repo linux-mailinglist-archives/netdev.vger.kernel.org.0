@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14CB9E27F4
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 04:01:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EAF8E27FC
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 04:13:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408146AbfJXCBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 22:01:43 -0400
-Received: from verein.lst.de ([213.95.11.211]:43182 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2408092AbfJXCBm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 23 Oct 2019 22:01:42 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 3BD0B68BE1; Thu, 24 Oct 2019 04:01:40 +0200 (CEST)
-Date:   Thu, 24 Oct 2019 04:01:40 +0200
-From:   "hch@lst.de" <hch@lst.de>
-To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
-        "joro@8bytes.org" <joro@8bytes.org>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Leo Li <leoyang.li@nxp.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Madalin-cristian Bucur <madalin.bucur@nxp.com>
-Subject: Re: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
- dma_addr_to_phys_addr()
-Message-ID: <20191024020140.GA6057@lst.de>
-References: <20191022125502.12495-1-laurentiu.tudor@nxp.com> <20191022125502.12495-2-laurentiu.tudor@nxp.com> <62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com> <50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+        id S2436656AbfJXCNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 22:13:24 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40926 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436605AbfJXCNY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 22:13:24 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::b7e])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E5D8214B66DB9;
+        Wed, 23 Oct 2019 19:13:23 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 19:13:20 -0700 (PDT)
+Message-Id: <20191023.191320.2221170454789484606.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, dan.carpenter@oracle.com
+Subject: Re: [PATCH net-next] net: of_get_phy_mode: Change API to solve
+ int/unit warnings
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191022011817.29183-1-andrew@lunn.ch>
+References: <20191022011817.29183-1-andrew@lunn.ch>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 23 Oct 2019 19:13:24 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 11:53:41AM +0000, Laurentiu Tudor wrote:
-> We had an internal discussion over these points you are raising and 
-> Madalin (cc-ed) came up with another idea: instead of adding this prone 
-> to misuse api how about experimenting with a new dma unmap and dma sync 
-> variants that would return the physical address by calling the newly 
-> introduced dma map op. Something along these lines:
->   * phys_addr_t dma_unmap_page_ret_phys(...)
->   * phys_addr_t dma_unmap_single_ret_phys(...)
->   * phys_addr_t dma_sync_single_for_cpu_ret_phys(...)
-> I'm thinking that this proposal should reduce the risks opened by the 
-> initial variant.
-> Please let me know what you think.
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Tue, 22 Oct 2019 03:18:17 +0200
 
-I'm not sure what the ret is supposed to mean, but I generally like
-that idea better.  We also need to make sure there is an easy way
-to figure out if these APIs are available, as they generally aren't
-for any non-IOMMU API IOMMU drivers.
+> Before this change of_get_phy_mode() returned an enum,
+> phy_interface_t. On error, -ENODEV etc, is returned. If the result of
+> the function is stored in a variable of type phy_interface_t, and the
+> compiler has decided to represent this as an unsigned int, comparision
+> with -ENODEV etc, is a signed vs unsigned comparision.
+> 
+> Fix this problem by changing the API. Make the function return an
+> error, or 0 on success, and pass a pointer, of type phy_interface_t,
+> where the phy mode should be stored.
+> 
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+
+So now we have code that uses the 'interface' value without checking
+the error return value which means it's potentially uninitialized.
+
+There are also a bunch of reverse christmas tree violations created
+by this patch as well :-) :-) :-)
