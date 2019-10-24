@@ -2,87 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0BC2E3589
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:25:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBAEE34F6
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:04:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502853AbfJXOZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 10:25:20 -0400
-Received: from mga07.intel.com ([134.134.136.100]:38088 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732393AbfJXOZU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 10:25:20 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Oct 2019 07:25:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,224,1569308400"; 
-   d="scan'208";a="373233625"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga005.jf.intel.com with ESMTP; 24 Oct 2019 07:25:17 -0700
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH bpf-next 2/2] xsk: implement map_gen_lookup() callback for XSKMAP
-Date:   Thu, 24 Oct 2019 09:19:31 +0200
-Message-Id: <20191024071931.3628-3-maciej.fijalkowski@intel.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191024071931.3628-1-maciej.fijalkowski@intel.com>
-References: <20191024071931.3628-1-maciej.fijalkowski@intel.com>
+        id S2409284AbfJXOEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 10:04:33 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:34287 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730547AbfJXOEc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 10:04:32 -0400
+Received: by mail-pg1-f195.google.com with SMTP id k20so14337249pgi.1
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 07:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LzKMc+KJEQurq8v/8ez91cmyiKwiP5tr+Isvpi2+sjY=;
+        b=P4yb7raX14OnohPRrSYKLP25xLFl1WixYxDVLBOBwKwO6FvSBY4TtzntWuw/vi6P/f
+         5bKnbh36Vq5Xf/toebLk41Tqx9boFHac+EjVvAK6EAbaFpZIbYab9QUBraPSYxMOcRRX
+         l3Al870OPwU6L2IMgjZBGCLn67XUmshQ+HCBQErWUlhFr/6AHHaC4txhR19A1yHMSI/9
+         jvDgI8I9OZgFhmDkoZ+4jgtzikHBSporvHKb3ZB3+Pr+hdRPZ2elJRe8xa8b7p3ZUYiV
+         pW1raTVvsZI2V9bGkyCunD3TJTCdQGr5HXFbqKFO08sw6S8o29s2k/VRviY3mPFUMCVR
+         c8Zw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LzKMc+KJEQurq8v/8ez91cmyiKwiP5tr+Isvpi2+sjY=;
+        b=WlMzomW+TXmVB70LFpRm3a33XWsHD9VN2wd2j5Mo4TsG819A/xMKy6v6a462ZsFPGN
+         wPT+Fpwtgzc7C3V4xGy+VPamD7XFJ3XQ9CVTH+MVVTYyagypr0bOpJAiEhMFAIe77VNn
+         pX0ELZb1o12O6P6iKs76Lt1cgWbhoraeoBVaDknpXhnN4P9Ygs8XAm+HNYlP6MAkZQWq
+         JEDExktwxRZ64UeFPJc7fgqvEkv04eitCWYAXy5f+dLqgxdtB3cIs89mjEtUZQi7i/V8
+         plmMgjRzjhA1HMXozulzhE7ganh32M799AM3QxnPl+defcBYS2BuyRSCjp9Md1XlIp9j
+         +e4A==
+X-Gm-Message-State: APjAAAXgSaaDS0N3TRzKVOsoJTb8mAyNffG8MuBi/AuDBLIFDoMomucO
+        PakEsKeiNMabvjGlkrNeOi4=
+X-Google-Smtp-Source: APXvYqxh2t16LNc0KbmFIN7yF3TG8mnmR1ylThpbEDvtyijb0sdYVTmFMB8lfyfYxMrm8VkDO+iE5w==
+X-Received: by 2002:a63:b25d:: with SMTP id t29mr16424227pgo.395.1571925871921;
+        Thu, 24 Oct 2019 07:04:31 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id q6sm29217053pgn.44.2019.10.24.07.04.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2019 07:04:30 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 07:04:28 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "epomozov@marvell.com" <epomozov@marvell.com>,
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Simon Edelhaus <sedelhaus@marvell.com>,
+        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
+Subject: Re: [PATCH v3 net-next 03/12] net: aquantia: add basic ptp_clock
+ callbacks
+Message-ID: <20191024140428.GA1435@localhost>
+References: <cover.1571737612.git.igor.russkikh@aquantia.com>
+ <cc5ad0d429db914b3615d9a32224e1dc141ba91e.1571737612.git.igor.russkikh@aquantia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cc5ad0d429db914b3615d9a32224e1dc141ba91e.1571737612.git.igor.russkikh@aquantia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Inline the xsk_map_lookup_elem() via implementing the map_gen_lookup()
-callback. This results in emitting the bpf instructions in place of
-bpf_map_lookup_elem() helper call and better performance of bpf
-programs.
+On Tue, Oct 22, 2019 at 09:53:27AM +0000, Igor Russkikh wrote:
+> +/* aq_ptp_adjfine
+> + * @ptp: the ptp clock structure
+> + * @ppb: parts per billion adjustment from base
 
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
----
- kernel/bpf/xskmap.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Kdoc needs update.
 
-diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
-index 86e3027d4605..0103405f639a 100644
---- a/kernel/bpf/xskmap.c
-+++ b/kernel/bpf/xskmap.c
-@@ -165,6 +165,22 @@ struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map, u32 key)
- 	return xs;
- }
- 
-+static u32 xsk_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
-+{
-+	const int ret = BPF_REG_0, mp = BPF_REG_1, index = BPF_REG_2;
-+	struct bpf_insn *insn = insn_buf;
-+
-+	*insn++ = BPF_LDX_MEM(BPF_W, ret, index, 0);
-+	*insn++ = BPF_JMP_IMM(BPF_JGE, ret, map->max_entries, 5);
-+	*insn++ = BPF_ALU64_IMM(BPF_LSH, ret, ilog2(sizeof(struct xsk_sock *)));
-+	*insn++ = BPF_ALU64_IMM(BPF_ADD, mp, offsetof(struct xsk_map, xsk_map));
-+	*insn++ = BPF_ALU64_REG(BPF_ADD, ret, mp);
-+	*insn++ = BPF_LDX_MEM(BPF_DW, ret, ret, 0);
-+	*insn++ = BPF_JMP_IMM(BPF_JA, 0, 0, 1);
-+	*insn++ = BPF_MOV64_IMM(ret, 0);
-+	return insn - insn_buf;
-+}
-+
- int __xsk_map_redirect(struct bpf_map *map, struct xdp_buff *xdp,
- 		       struct xdp_sock *xs)
- {
-@@ -305,6 +321,7 @@ const struct bpf_map_ops xsk_map_ops = {
- 	.map_free = xsk_map_free,
- 	.map_get_next_key = xsk_map_get_next_key,
- 	.map_lookup_elem = xsk_map_lookup_elem,
-+	.map_gen_lookup = xsk_map_gen_lookup,
- 	.map_lookup_elem_sys_only = xsk_map_lookup_elem_sys_only,
- 	.map_update_elem = xsk_map_update_elem,
- 	.map_delete_elem = xsk_map_delete_elem,
--- 
-2.20.1
+> + *
+> + * adjust the frequency of the ptp cycle counter by the
+> + * indicated ppb from the base frequency.
+> + */
+> +static int aq_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+> +{
+> +	struct aq_ptp_s *aq_ptp = container_of(ptp, struct aq_ptp_s, ptp_info);
+> +	struct aq_nic_s *aq_nic = aq_ptp->aq_nic;
+> +
+> +	mutex_lock(&aq_nic->fwreq_mutex);
+> +	aq_nic->aq_hw_ops->hw_adj_clock_freq(aq_nic->aq_hw,
+> +					     scaled_ppm_to_ppb(scaled_ppm));
 
+If your HW has sub-ppm bits in its frequency word, then it does make a
+difference to actually use the low order bits (instead of truncating
+as you do here).
+
+> +	mutex_unlock(&aq_nic->fwreq_mutex);
+> +
+> +	return 0;
+> +}
+
+Thanks,
+Richard
