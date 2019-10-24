@@ -2,68 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D887E35E3
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:46:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8EACE35FC
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:52:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409468AbfJXOqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 10:46:09 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:36342 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732092AbfJXOqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 10:46:09 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 66148140071;
-        Thu, 24 Oct 2019 14:46:05 +0000 (UTC)
-Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 24 Oct 2019 15:46:00 +0100
-Subject: Re: [PATCH net-next 2/6] sfc: perform XDP processing on received
- packets.
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-net-drivers@solarflare.com>
-References: <05b72fdb-165c-1350-787b-ca8c5261c459@solarflare.com>
- <1c193147-d94a-111f-42d3-324c3e8b0282@solarflare.com>
- <20191023004501.4a78c300@carbon>
-From:   Charles McLachlan <cmclachlan@solarflare.com>
-Message-ID: <bdf2137e-808e-2607-0c65-e609741242c0@solarflare.com>
-Date:   Thu, 24 Oct 2019 15:45:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S2409520AbfJXOwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 10:52:33 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:42195 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2409497AbfJXOwd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 10:52:33 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id B54F4206FC;
+        Thu, 24 Oct 2019 10:52:29 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 24 Oct 2019 10:52:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=znKBAOkk+e/oSRCFn
+        dkQgLOtrHfcO8rNO9vfSmgnYkQ=; b=KzKXnlyFalTrgu3DZZre9d81khZ5QNcoH
+        gS0tAfojpzJqEXL4hR3LslR0gU6vRhT9icXemK99Ms9siWtRVBKhNCDgAt9PH4Ym
+        mpg6P5nQPAYhRCil/Z4Hk9n/DWUFDq40UBWOnarzmSYSOAh3hTbcvHKHcPHF6cDq
+        9FgTyHBIgdSluUeAglVLGYk3dSm0A3cmQtOnB9Lep6ebjGF2f97dGOs/yXnTfDHb
+        rHFX+5fmpNsXTX2Wvjdoabn7fUkm4fFpN+yhseCNsVR9OXSojGsECUQu5IwbkPiG
+        6M45kYN3nJUrAhgIePDKoZyET+ODd9lO2PTU6CRPhFEJTcFxcPKgA==
+X-ME-Sender: <xms:rbqxXeF8PonY3_PpoCKgUjpoLt_Ypr8k6kQ0TWB58u8g6YOaZdq0ww>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrledugdekudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
+    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
+    vgeptd
+X-ME-Proxy: <xmx:rbqxXaBX5q_PvzyDrSzuz1T5LulA77qYLvc-0Gn1hy57DqKi0djuog>
+    <xmx:rbqxXQ3Zzgz0oIfgd6MHD4P7LIFRQfCep995aLgj5RQt91YFRg2L1Q>
+    <xmx:rbqxXfO6BWNliBUiNMepjWcYF7bJdGixozd9Y66ledRWG247ULBicg>
+    <xmx:rbqxXXrgdO5SAE1d9vqUtO-MAsTxaOVSeeETwmnwrLHtgi7DX_TFyA>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0F4DC8005A;
+        Thu, 24 Oct 2019 10:52:27 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/3] mlxsw: Update firmware version
+Date:   Thu, 24 Oct 2019 17:51:46 +0300
+Message-Id: <20191024145149.6417-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20191023004501.4a78c300@carbon>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.154]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24998.003
-X-TM-AS-Result: No-2.712700-8.000000-10
-X-TMASE-MatchedRID: fgYTp5XatxbmLzc6AOD8DfHkpkyUphL9Ap+UH372RZWy1n9NBPtzNWdC
-        uMvHMJPk8OUA6T+rBZS85NPA3BnulKeOtM+NJ84fq5uw61JZjZCRk6XtYogiam+YnOq0coeP0C1
-        sQRfQzEHEQdG7H66TyN+E/XGDLHcMc4z1GNf6xcIHbkCSwZ987yY1AzE/RLQ+zDU4EMqAzxiHL4
-        /znrcJ3tQ17CngTb9OBKmZVgZCVnezGTWRXUlrxxtsJUxyzWNSVlxr1FJij9s=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.712700-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24998.003
-X-MDID: 1571928369-TTUxwAwogdOT
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/10/2019 23:45, Jesper Dangaard Brouer wrote:
+From: Ido Schimmel <idosch@mellanox.com>
 
->> +	case XDP_REDIRECT:
->> +		rc = xdp_do_redirect(efx->net_dev, &xdp, xdp_prog);
->> +		if (rc) {
-> 
-> Can we call the 'rc' variable 'err' instead?
-> And give it an unlikely().
+This patch set updates the firmware version for Spectrum-1 and enforces
+a firmware version for Spectrum-2.
 
-Yes. Done in next version of the patch set.
+The version adds support for querying port module type. It will be used
+by a followup patch set from Jiri to make port split code more generic.
+
+Patch #1 increases the size of an existing register in order to be
+compatible with the new firmware version. In the future the firmware
+will assign default values to fields not specified by the driver.
+
+Patch #2 bumps the firmware version for Spectrum-1.
+
+Patch #3 enforces a minimum firmware version for Spectrum-2.
+
+Ido Schimmel (3):
+  mlxsw: reg: Increase size of MPAR register
+  mlxsw: Bump firmware version to 13.2000.2308
+  mlxsw: Enforce firmware version for Spectrum-2
+
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  2 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 20 ++++++++++++++++++-
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+
+-- 
+2.21.0
+
