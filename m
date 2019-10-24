@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE09E2A6D
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 08:29:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2F89E2A71
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 08:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437754AbfJXG3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 02:29:21 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34248 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727750AbfJXG3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 02:29:21 -0400
-Received: by mail-pl1-f195.google.com with SMTP id k7so11355603pll.1;
-        Wed, 23 Oct 2019 23:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TnQ6iUBhZ6QDqwjf7E/1ik4QV2HCeGlGTNteQTzWdPE=;
-        b=Col7n+vz5f4YwdbhXX/IIWvYPUDLvSpR5WS/+OYA+B9B0KPYEmzTQwzE+8YS02cIsp
-         zAxUY4fxaMZWliWuGne7Q7u0CDNuNloUcByHFkJvjLJ2ZHLKBwlpnBZFLg18bWVn6Mcm
-         LifRkDSw9pgY02ohsvv69ZvC669TvdSgYTfCy4iRqKlTO7Gb6AR6z9qQzpaMcpGpxbP7
-         yeVhjSE79UlTsn03gABejtlu+nZd8BkMCldJ3iUF0EMFC/p5f4YB5hqueXs8o6IQzrxU
-         Nl3lJOf8dBoXIuZ1jO4g6AmIAjlnu46uuOk6FTgkffa8hkZrJHZSbYSTb5QBiZCNpNSs
-         cQkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TnQ6iUBhZ6QDqwjf7E/1ik4QV2HCeGlGTNteQTzWdPE=;
-        b=a6ZUQxUMC98DkMKKfEMiiZ6a6c/aIBZ8MmHxvG8HYvCrXFYyH4dTFXzbXcPtFjiXnp
-         X4JRNEn1uxA+4+uR1l1fybwqkSfv7/yQcNiXAdsSDokJbR9fE5qddtWcwB+Z3uFmzIzt
-         bzytX+ymSpKRECqN4Ex1B6+TPeM+nwXGDPO639VwyqGGfF0V1X9rNGsOxoGXrtOqczOh
-         nb5640JaZfTGRXIIiseXiAY5OaLXEDIjAKK9D6MNOQgb9FoGavK1aWb3/W140X9VihZ7
-         ZTcvwgnWdPLp0XWhDVq315auNjX7X/hI3tANab3s0tf7bh9JFdksRIDVWholq4dWAYq0
-         5v2A==
-X-Gm-Message-State: APjAAAUaUM5Vaa7oXE8k0cA+WPiZN6sYVwZNm7CV+csFa1253hcM8p7a
-        aqMpTwN0RqJ4gUWhfOazY+M=
-X-Google-Smtp-Source: APXvYqyZ3Bj2GsNfgwSkrUQpaXxBZQyDDxMEOxw9u5rcNyUF7sEPGB8cWdSZahnHBKymatS99bHpuA==
-X-Received: by 2002:a17:902:8505:: with SMTP id bj5mr13430539plb.296.1571898560629;
-        Wed, 23 Oct 2019 23:29:20 -0700 (PDT)
-Received: from taoren-ubuntuvm (c-24-4-25-55.hsd1.ca.comcast.net. [24.4.25.55])
-        by smtp.gmail.com with ESMTPSA id n3sm29168463pff.102.2019.10.23.23.29.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Oct 2019 23:29:20 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 23:29:03 -0700
-From:   Tao Ren <rentao.bupt@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, olteanv@gmail.com,
-        arun.parameswaran@broadcom.com, justinpopo6@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        openbmc@lists.ozlabs.org
-Subject: Re: [PATCH net-next v10 0/3] net: phy: support 1000Base-X
- auto-negotiation for BCM54616S
-Message-ID: <20191024062902.GA52817@taoren-ubuntuvm>
-References: <20191022183108.14029-1-rentao.bupt@gmail.com>
- <20191023.204311.1181447784152558295.davem@davemloft.net>
+        id S2437768AbfJXGa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 02:30:27 -0400
+Received: from nbd.name ([46.4.11.11]:38942 "EHLO nbd.name"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727750AbfJXGa0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Oct 2019 02:30:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xDfZuzNaf4heI4PEB4riPS2rBYIQORF5PqAALeNL0/8=; b=dlj8EmGcaI8lCUzn+PUdZVQRme
+        iHPaSNOulXuYkdsV/kuAppTJjUsB4SKg6x0n4cjwLbXjqX9d/mZ/qc4IhFBc9te53g7wQstX2eTKU
+        B7cTNNJ1Td/1zi4PsT/MYm96H7v416XI2h9sUETMU6lZFslANEEFyqScyNzfjYYdXfNw=;
+Received: from p4ff1389f.dip0.t-ipconnect.de ([79.241.56.159] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1iNWdb-0001El-IX; Thu, 24 Oct 2019 08:30:23 +0200
+Subject: Re: [PATCH wireless-drivers 2/2] mt76: dma: fix buffer unmap with
+ non-linear skbs
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, kvalo@codeaurora.org
+Cc:     linux-wireless@vger.kernel.org, sgruszka@redhat.com,
+        lorenzo.bianconi@redhat.com, oleksandr@natalenko.name,
+        netdev@vger.kernel.org
+References: <cover.1571868221.git.lorenzo@kernel.org>
+ <1f7560e10edd517bfd9d3c0dd9820e6f420726b6.1571868221.git.lorenzo@kernel.org>
+From:   Felix Fietkau <nbd@nbd.name>
+Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
+ xsDiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
+ ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
+ Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
+ AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
+ vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
+ wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
+ TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
+ l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwc0cRmVsaXggRmll
+ dGthdSA8bmJkQG5iZC5uYW1lPsJgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
+ HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
+ VrwYTIThkTlQzsFNBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
+ CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
+ VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
+ Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
+ DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
+ wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
+ f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
+ aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
+ FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
+ TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabwkkE
+ GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
+ RjMaxwtSdaCKMw3j33ZbsWS4
+Message-ID: <d1cf048c-3541-091e-7237-14199ddc89bc@nbd.name>
+Date:   Thu, 24 Oct 2019 08:30:22 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.1.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191023.204311.1181447784152558295.davem@davemloft.net>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <1f7560e10edd517bfd9d3c0dd9820e6f420726b6.1571868221.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 08:43:11PM -0700, David Miller wrote:
-> From: rentao.bupt@gmail.com
-> Date: Tue, 22 Oct 2019 11:31:05 -0700
+On 2019-10-24 00:23, Lorenzo Bianconi wrote:
+> mt76 dma layer is supposed to unmap skb data buffers while keep txwi
+> mapped on hw dma ring. At the moment mt76 wrongly unmap txwi or does
+> not unmap data fragments in even positions for non-linear skbs. This
+> issue may result in hw hangs with A-MSDU if the system relies on IOMMU
+> or SWIOTLB. Fix this behaviour properly unmapping data fragments on
+> non-linear skbs.
 > 
-> > From: Tao Ren <rentao.bupt@gmail.com>
-> > 
-> > This patch series aims at supporting auto negotiation when BCM54616S is
-> > running in 1000Base-X mode: without the patch series, BCM54616S PHY driver
-> > would report incorrect link speed in 1000Base-X mode.
-> > 
-> > Patch #1 (of 3) modifies assignment to OR when dealing with dev_flags in
-> > phy_attach_direct function, so that dev_flags updated in BCM54616S PHY's
-> > probe callback won't be lost.
-> > 
-> > Patch #2 (of 3) adds several genphy_c37_* functions to support clause 37
-> > 1000Base-X auto-negotiation, and these functions are called in BCM54616S
-> > PHY driver.
-> > 
-> > Patch #3 (of 3) detects BCM54616S PHY's operation mode and calls according
-> > genphy_c37_* functions to configure auto-negotiation and parse link
-> > attributes (speed, duplex, and etc.) in 1000Base-X mode.
+> Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chipsets")
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/wireless/mediatek/mt76/dma.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
 > 
-> Series applied to net-next, thank you.
+> diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+> index c747eb24581c..8c27956875e7 100644
+> --- a/drivers/net/wireless/mediatek/mt76/dma.c
+> +++ b/drivers/net/wireless/mediatek/mt76/dma.c
+> @@ -93,11 +93,14 @@ static void
+>  mt76_dma_tx_cleanup_idx(struct mt76_dev *dev, struct mt76_queue *q, int idx,
+>  			struct mt76_queue_entry *prev_e)
+>  {
+> -	struct mt76_queue_entry *e = &q->entry[idx];
+>  	__le32 __ctrl = READ_ONCE(q->desc[idx].ctrl);
+> +	struct mt76_queue_entry *e = &q->entry[idx];
+>  	u32 ctrl = le32_to_cpu(__ctrl);
+> +	bool mcu = e->skb && !e->txwi;
+> +	bool first = e->skb == DMA_DUMMY_DATA || e->txwi == DMA_DUMMY_DATA ||
+> +		     (e->skb && !skb_is_nonlinear(e->skb));
+It seems to me that these conditions could be true not just for the
+first entry, but also following entries except for the last one.
+I think we should add a 'bool has_txwi' field in struct mt76_queue_entry
+to indicate that the first dma address points to a txwi that should not
+be unmapped.
 
-Great. Thank you David!
-
-
-Cheers,
-
-Tao
+- Felix
