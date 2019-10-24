@@ -2,125 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29891E3A10
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:31:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FEF5E3A1D
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503818AbfJXRbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 13:31:13 -0400
-Received: from mga12.intel.com ([192.55.52.136]:33122 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729458AbfJXRbM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 13:31:12 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Oct 2019 10:31:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,225,1569308400"; 
-   d="scan'208";a="282008162"
-Received: from nesterov-mobl1.ccr.corp.intel.com (HELO localhost) ([10.252.8.153])
-  by orsmga001.jf.intel.com with ESMTP; 24 Oct 2019 10:30:52 -0700
-Date:   Thu, 24 Oct 2019 20:30:51 +0300
-From:   Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-To:     Mark Salyzyn <salyzyn@android.com>
-Cc:     linux-kernel@vger.kernel.org, kernel-team@android.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "David (ChunMing) Zhou" <David1.Zhou@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        VMware Graphics <linux-graphics-maintainer@vmware.com>,
-        Thomas Hellstrom <thellstrom@vmware.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Matthew Garrett <matthewgarrett@google.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        hersen wu <hersenxs.wu@amd.com>, Roman Li <Roman.Li@amd.com>,
-        Maxim Martynov <maxim@arista.com>,
-        David Ahern <dsahern@gmail.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Feng Tang <feng.tang@intel.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Rafael Aquini <aquini@redhat.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-efi@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH] Cleanup: replace prefered with preferred
-Message-ID: <20191024173051.GB7948@linux.intel.com>
-References: <20191022214208.211448-1-salyzyn@android.com>
- <20191023115637.GA23733@linux.intel.com>
- <fa12cb96-7a93-bf85-214d-a7bfaf8b8b0a@android.com>
+        id S2503824AbfJXRb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 13:31:56 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:30271 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729458AbfJXRbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 13:31:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571938313;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rCcikZum0+fRxHlX5MBh+qgzuS0QtH3FgkA7ZDqGjZY=;
+        b=g3IRn4pu1gMnyttp/8hUOMYp0HHgwRADlOUP2KmafVpwpWeyzTcCuiv6IxL/MKhPu4D8zu
+        VUAho2GpmsCBQXxUQsGo8C2eyapTsWMB2YxrxejRirs7A1kbq39eekeNFh1v1oPDKvtcph
+        8iHSIcGOcJ3wadrFlyoeO1ikKtU8RSU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-349-XDeJWQNvOAWWgwuW4GwK1A-1; Thu, 24 Oct 2019 13:31:49 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78A431800E00;
+        Thu, 24 Oct 2019 17:31:48 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-120-128.rdu2.redhat.com [10.10.120.128])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F0413100EA05;
+        Thu, 24 Oct 2019 17:31:47 +0000 (UTC)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id F2D48C0AD9; Thu, 24 Oct 2019 14:31:45 -0300 (-03)
+Date:   Thu, 24 Oct 2019 14:31:45 -0300
+From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Message-ID: <20191024173145.GO4321@localhost.localdomain>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <20191022151524.GZ4321@localhost.localdomain>
+ <vbflftcwzes.fsf@mellanox.com>
+ <20191022170947.GA4321@localhost.localdomain>
+ <CAJieiUiDC7U7cGDadSr1L8gUxS6QiW=x9+pkp=8thxbMsMYVCQ@mail.gmail.com>
+ <vbfy2xauq8s.fsf@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <vbfy2xauq8s.fsf@mellanox.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: XDeJWQNvOAWWgwuW4GwK1A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-In-Reply-To: <fa12cb96-7a93-bf85-214d-a7bfaf8b8b0a@android.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 08:40:59AM -0700, Mark Salyzyn wrote:
-> On 10/23/19 4:56 AM, Jarkko Sakkinen wrote:
-> > On Tue, Oct 22, 2019 at 02:41:45PM -0700, Mark Salyzyn wrote:
-> > > Replace all occurrences of prefered with preferred to make future
-> > > checkpatch.pl's happy.  A few places the incorrect spelling is
-> > > matched with the correct spelling to preserve existing user space API.
-> > > 
-> > > Signed-off-by: Mark Salyzyn <salyzyn@android.com>
-> > I'd fix such things when the code is otherwise change and scope this
-> > patch only to Documentation/. There is no pragmatic benefit of doing
-> > this for the code.
-> > 
-> > /Jarkko
-> 
-> The pragmatic benefit comes with the use of an ABI/API checker (which is a
-> 'distro' thing, not a top of tree kernel thing) produces its map which is
-> typically required to be co-located in the same tree as the kernel
-> repository. Quite a few ABI/API update checkins result in a checkpatch.pl
-> complaint about the misspelled elements being (re-)recorded due to
-> proximity. We have a separate task to improve how it is tracked in Android
-> to reduce milepost marker changes that result in sweeping changes to the
-> database which would reduce the occurrences.
-> 
-> I will split this between pure and inert documentation/comments for now,
-> with a followup later for the code portion which understandably is more
-> controversial.
-> 
-> Cleanup is the least appreciated part of kernel maintenance ;-}.
-> 
-> Sincerely -- Mark Salyzyn
+On Thu, Oct 24, 2019 at 03:18:00PM +0000, Vlad Buslov wrote:
+>=20
+> On Thu 24 Oct 2019 at 18:12, Roopa Prabhu <roopa@cumulusnetworks.com> wro=
+te:
+> > On Tue, Oct 22, 2019 at 10:10 AM Marcelo Ricardo Leitner
+> > <mleitner@redhat.com> wrote:
+> >>
+> >> On Tue, Oct 22, 2019 at 03:52:31PM +0000, Vlad Buslov wrote:
+> >> >
+> >> > On Tue 22 Oct 2019 at 18:15, Marcelo Ricardo Leitner <mleitner@redha=
+t.com> wrote:
+> >> > > On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
+> >> > >> - Extend actions that are used for hardware offloads with optiona=
+l
+> >> > >>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action f=
+lag and
+> >> > >>   update affected actions to not allocate percpu counters when th=
+e flag
+> >> > >>   is set.
+> >> > >
+> >> > > I just went over all the patches and they mostly make sense to me.=
+ So
+> >> > > far the only point I'm uncertain of is the naming of the flag,
+> >> > > "fast_init".  That is not clear on what it does and can be overloa=
+ded
+> >> > > with other stuff later and we probably don't want that.
+> >> >
+> >> > I intentionally named it like that because I do want to overload it =
+with
+> >> > other stuff in future, instead of adding new flag value for every si=
+ngle
+> >> > small optimization we might come up with :)
+> >>
+> >> Hah :-)
+> >>
+> >> >
+> >> > Also, I didn't want to hardcode implementation details into UAPI tha=
+t we
+> >> > will have to maintain for long time after percpu allocator in kernel=
+ is
+> >> > potentially replaced with something new and better (like idr is bein=
+g
+> >> > replaced with xarray now, for example)
+> >>
+> >> I see. OTOH, this also means that the UAPI here would be unstable
+> >> (different meanings over time for the same call), and hopefully new
+> >> behaviors would always be backwards compatible.
+> >
+> > +1, I also think optimization flags should be specific to what they opt=
+imize.
+> > TCA_ACT_FLAGS_NO_PERCPU_STATS seems like a better choice. It allows
+> > user to explicitly request for it.
+>=20
+> Why would user care about details of optimizations that doesn't produce
+> visible side effects for user land? Again, counters continue to work the
+> same with or without the flag.
 
-I'm a strong believer of "evolutionary" approach. Patch sets for the
-most part (everything in the end has to be considered case by case, not
-a strict rule) should have some functional changes involved.
+It's just just details of optimizations, on whether to use likely() or
+not, and it does produce user visible effects. Not in terms of API but
+of system behavior. Otherwise we wouldn't need the flag, right?
+_FAST_INIT, or the fact that it inits faster, is just one of the
+aspects of it, but one could also want it for being lighther in
+footprint as currently it is really easy to eat Gigs of RAM away on
+these percpu counters. So how should it be called, _FAST_INIT or
+_SLIM_RULES?
 
-What I do require for the parts that I maintain is that any new change
-will result cleaner code base than the one that existed before that
-change was applied. Again, there are some exceptions to this e.g.
-circulating a firmware bug but this is my driving guideline as a
-maintainer.
+It may be implementation detail, yes, but we shouldn't be building
+usage profiles and instead let the user pick what they want. Likewise,
+we don't have net.ipv4.fast_tcp, but net.ipv4.tcp_sack, tcp_timestamps
+& cia.
 
-Doing cleanups just for cleanups can sometimes add unnecessary merge
-conflicts when backporting patches to stable kernels. Thus, if you are
-doing just a cleanup you should have extremely good reasons to do so.
+If we can find another name then, without using 'percpu' on it but
+without stablishing profiles, that would be nice.
+Like TCA_ACT_FLAGS_SIMPLE_STATS, or so.
 
-/Jarkko
+Even though I still prefer the PERCPU, as it's as explicit as it can be. No=
+te
+that bpf does it like that already:
+uapi]$ grep BPF.*HASH -- linux/bpf.h
+        BPF_MAP_TYPE_HASH,
+        BPF_MAP_TYPE_PERCPU_HASH,
+        BPF_MAP_TYPE_LRU_HASH,
+        BPF_MAP_TYPE_LRU_PERCPU_HASH,
+...
+
