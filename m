@@ -2,136 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEE8FE3703
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 17:51:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45A69E3760
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:05:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409774AbfJXPvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 11:51:03 -0400
-Received: from mail-il1-f193.google.com ([209.85.166.193]:43381 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407481AbfJXPvC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 11:51:02 -0400
-Received: by mail-il1-f193.google.com with SMTP id t5so22820935ilh.10
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 08:51:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=91YCoLQglIjFy/V8ekofQrN5p+EG2Cg5zkInQ0hf2Iw=;
-        b=mrVhAIk5Kq9tm94pW8qHY8ikxBBKBeeCuPs14C3wfckC4EibFvfwN61vx2NAqCraLg
-         SLpiQPtOUUInFIRr8hFeHEaYGTmr837/+c0Ky0rhzesqcLSjjYB/8Q7/nihbc4/z65qB
-         qpzmOr/3tsRHAI7vB9VVukOXXuhW/MMX86VqmZgJTrUJ+Ngdp2C2BCdSZX8SDud5/k9s
-         ds19DE3LPcJGXW78pKEMsv0/4QKD+IP/n/8wqPKAOpNKi1brJHT4u97Qeo1bmnp5zgaG
-         S0uRarXQ0C/DqHv0je53lEowT2t6KAshWHIa66OUEc+2xuidyWqavfsdqO29ljY4g/mo
-         qZzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=91YCoLQglIjFy/V8ekofQrN5p+EG2Cg5zkInQ0hf2Iw=;
-        b=BPUR9xV51e7DnQlOe6/Y8CavnLCWlAFKreyCXy2kooxtDtCv9eNs2bW75JmZNDyv+v
-         q4mMi2sAMMXfXj42ZQ5a7QEB3Gk2Q9+GU+nUoqReR0SKcUzWpCIrjoNJfanUMNkzhLzC
-         QRrNWXl0dtmRbXxEzlRFr1y5ljgR7tAcGG40Nca3kvyhqrsbA/lNBHs34DoKuryWhNAO
-         jlIP9XH9zxEBggk7j2IP/xcKSHRtOWn4Q8/1Ry+ji8kZ9nCdBAqB8NmgTGyLdjHRZfPA
-         pZu/MM63jHBFTZBFGhkEbuZKW8bipp25TPi5FVTrMBOZ70RnRC7ELEwxtRbaR8IVIpZ+
-         O/NA==
-X-Gm-Message-State: APjAAAW1XPIEzgZTUTH8h6HVhRdk+/Q7uiIIFTJpzJ9yo7rVQdus7J9q
-        9OMtuCoumcXQzHD+5iIq/nyZeWfgQPM=
-X-Google-Smtp-Source: APXvYqwroipN9kMiYDpUMOks4c+0DNHxa7bO2dXjdSHh9fNfeFDzh7gaii30bCf7QnovZzKmhWVihw==
-X-Received: by 2002:a92:a103:: with SMTP id v3mr46654281ili.52.1571932261968;
-        Thu, 24 Oct 2019 08:51:01 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:cc37:f84e:7c6c:2bc6])
-        by smtp.googlemail.com with ESMTPSA id n2sm5864208ion.25.2019.10.24.08.50.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Oct 2019 08:51:00 -0700 (PDT)
-Subject: Re: [PATCH net] ipv4: fix route update on metric change.
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Beniamino Galvani <bgalvani@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <84623b02bd882d91555b9bf76ea58d6cff29cd2a.1571908701.git.pabeni@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a93347d4-b363-23c8-75e4-d5d0c8ad4592@gmail.com>
-Date:   Thu, 24 Oct 2019 09:50:58 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <84623b02bd882d91555b9bf76ea58d6cff29cd2a.1571908701.git.pabeni@redhat.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S2405842AbfJXQFA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Oct 2019 12:05:00 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:15388 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405273AbfJXQFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:05:00 -0400
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9OG4pG3030854
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 12:04:57 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vucuyxbmp-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 12:04:55 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Thu, 24 Oct 2019 17:04:14 +0100
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 24 Oct 2019 17:04:12 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9OG4BA033358016
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Oct 2019 16:04:11 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B18844C04E;
+        Thu, 24 Oct 2019 16:04:11 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 75C234C040;
+        Thu, 24 Oct 2019 16:04:11 +0000 (GMT)
+Received: from dyn-9-152-99-235.boeblingen.de.ibm.com (unknown [9.152.99.235])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 24 Oct 2019 16:04:11 +0000 (GMT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3594.4.19\))
+Subject: Re: Linux-5.4: bpf: test_core_reloc_arrays.o: Segmentation fault with
+ llc -march=bpf
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+In-Reply-To: <8080a9a2-82f1-20b5-8d5d-778536f91780@gmail.com>
+Date:   Thu, 24 Oct 2019 18:04:10 +0200
+Cc:     Yonghong Song <yhs@fb.com>, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+References: <8080a9a2-82f1-20b5-8d5d-778536f91780@gmail.com>
+To:     Prabhakar Kushwaha <prabhakar.pkin@gmail.com>
+X-Mailer: Apple Mail (2.3594.4.19)
+X-TM-AS-GCONF: 00
+x-cbid: 19102416-4275-0000-0000-00000376FBA2
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19102416-4276-0000-0000-0000388A26BE
+Message-Id: <C47F20A9-D34A-43C9-AAB5-6F125C73FA16@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-24_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910240149
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/24/19 3:19 AM, Paolo Abeni wrote:
-> Since commit af4d768ad28c ("net/ipv4: Add support for specifying metric
-> of connected routes"), when updating an IP address with a different metric,
-> the associated connected route is updated, too.
+> Am 23.10.2019 um 03:35 schrieb Prabhakar Kushwaha <prabhakar.pkin@gmail.com>:
 > 
-> Still, the mentioned commit doesn't handle properly some corner cases:
 > 
-> $ ip addr add dev eth0 192.168.1.0/24
-> $ ip addr add dev eth0 192.168.2.1/32 peer 192.168.2.2
-> $ ip addr add dev eth0 192.168.3.1/24
-> $ ip addr change dev eth0 192.168.1.0/24 metric 10
-> $ ip addr change dev eth0 192.168.2.1/32 peer 192.168.2.2 metric 10
-> $ ip addr change dev eth0 192.168.3.1/24 metric 10
-> $ ip -4 route
-> 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.0
-> 192.168.2.2 dev eth0 proto kernel scope link src 192.168.2.1
-> 192.168.3.0/24 dev eth0 proto kernel scope link src 192.168.2.1 metric 10
+> Adding other mailing list, folks...
+> 
+> Hi All,
+> 
+> I am trying to build kselftest on Linux-5.4 on ubuntu 18.04. I installed
+> LLVM-9.0.0 and Clang-9.0.0 from below links after following steps from
+> [1] because of discussion [2]
+> 
+> https://releases.llvm.org/9.0.0/llvm-9.0.0.src.tar.xz
+> https://releases.llvm.org/9.0.0/clang-tools-extra-9.0.0.src.tar.xz
+> https://releases.llvm.org/9.0.0/cfe-9.0.0.src.tar.xz
+> 
+> Now, i am trying with llc -march=bpf, with this segmentation fault is
+> coming as below:
+> 
+> gcc -g -Wall -O2 -I../../../include/uapi -I../../../lib
+> -I../../../lib/bpf -I../../../../include/generated -DHAVE_GENHDR
+> -I../../../include -Dbpf_prog_load=bpf_prog_test_load
+> -Dbpf_load_program=bpf_test_load_program    test_flow_dissector.c
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_stub.o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/libbpf.a -lcap -lelf
+> -lrt -lpthread -o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_flow_dissector
+> gcc -g -Wall -O2 -I../../../include/uapi -I../../../lib
+> -I../../../lib/bpf -I../../../../include/generated -DHAVE_GENHDR
+> -I../../../include -Dbpf_prog_load=bpf_prog_test_load
+> -Dbpf_load_program=bpf_test_load_program
+> test_tcp_check_syncookie_user.c
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_stub.o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/libbpf.a -lcap -lelf
+> -lrt -lpthread -o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_tcp_check_syncookie_user
+> gcc -g -Wall -O2 -I../../../include/uapi -I../../../lib
+> -I../../../lib/bpf -I../../../../include/generated -DHAVE_GENHDR
+> -I../../../include -Dbpf_prog_load=bpf_prog_test_load
+> -Dbpf_load_program=bpf_test_load_program    test_lirc_mode2_user.c
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_stub.o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/libbpf.a -lcap -lelf
+> -lrt -lpthread -o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_lirc_mode2_user
+> (clang -I. -I./include/uapi -I../../../include/uapi
+> -I/usr/src/tovards/linux/tools/testing/selftests/bpf/../usr/include
+> -D__TARGET_ARCH_arm64 -g -idirafter /usr/local/include -idirafter
+> /usr/local/lib/clang/9.0.0/include -idirafter
+> /usr/include/aarch64-linux-gnu -idirafter /usr/include
+> -Wno-compare-distinct-pointer-types -O2 -target bpf -emit-llvm \
+> -c progs/test_core_reloc_arrays.c -o - || echo "clang failed") | \
+> llc -march=bpf -mcpu=probe  -filetype=obj -o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_core_reloc_arrays.o
+> Stack dump:
+> 0. Program arguments: llc -march=bpf -mcpu=probe -filetype=obj -o
+> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_core_reloc_arrays.o
+> 1. Running pass 'Function Pass Manager' on module '<stdin>'.
+> 2. Running pass 'BPF Assembly Printer' on function '@test_core_arrays'
+> #0 0x0000aaaac618db08 llvm::sys::PrintStackTrace(llvm::raw_ostream&)
+> (/usr/local/bin/llc+0x152eb08)
+> Segmentation fault
 
-Please add this test and route checking to
-tools/testing/selftests/net/fib_tests.sh. There is a
-ipv4_addr_metric_test function that handles permutations and I guess the
-above was missed.
+Hi,
 
-Also, does a similar sequence for IPv6 work as expected?
+FWIW I can confirm that this is happening on s390 too with llvm-project
+commit 950b800c451f.
 
+Here is the reduced sample that triggers this (with -march=bpf
+-mattr=+alu32):
 
-> 
-> Only the last route is correctly updated.
-> 
-> The problem is the current test in fib_modify_prefix_metric():
-> 
-> 	if (!(dev->flags & IFF_UP) ||
-> 	    ifa->ifa_flags & (IFA_F_SECONDARY | IFA_F_NOPREFIXROUTE) ||
-> 	    ipv4_is_zeronet(prefix) ||
-> 	    prefix == ifa->ifa_local || ifa->ifa_prefixlen == 32)
-> 
-> Which should be the logical 'not' of the pre-existing test in
-> fib_add_ifaddr():
-> 
-> 	if (!ipv4_is_zeronet(prefix) && !(ifa->ifa_flags & IFA_F_SECONDARY) &&
-> 	    (prefix != addr || ifa->ifa_prefixlen < 32))
-> 
-> To properly negate the original expression, we need to change the last
-> logical 'or' to a logical 'and'.
-> 
-> Fixes: af4d768ad28c ("net/ipv4: Add support for specifying metric of connected routes")
-> Reported-and-suggested-by: Beniamino Galvani <bgalvani@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  net/ipv4/fib_frontend.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-> index dde77f72e03e..71c78d223dfd 100644
-> --- a/net/ipv4/fib_frontend.c
-> +++ b/net/ipv4/fib_frontend.c
-> @@ -1148,7 +1148,7 @@ void fib_modify_prefix_metric(struct in_ifaddr *ifa, u32 new_metric)
->  	if (!(dev->flags & IFF_UP) ||
->  	    ifa->ifa_flags & (IFA_F_SECONDARY | IFA_F_NOPREFIXROUTE) ||
->  	    ipv4_is_zeronet(prefix) ||
-> -	    prefix == ifa->ifa_local || ifa->ifa_prefixlen == 32)
-> +	    (prefix == ifa->ifa_local && ifa->ifa_prefixlen == 32))
->  		return;
->  
->  	/* add the new */
-> 
+struct b {
+  int e;
+} c;
+int f() {
+  return __builtin_preserve_field_info(c.e, 0);
+}
 
-Thanks for the patch
+This is compiled into:
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+0B      bb.0 (%ir-block.0):
+16B       %0:gpr = LD_imm64 @"b:0:0$0:0"
+32B       $w0 = COPY %0:gpr, debug-location !17; 1-E.c:5:3
+48B       RET implicit killed $w0, debug-location !17; 1-E.c:5:3
+
+and then BPFInstrInfo::copyPhysReg chokes on COPY, since $w0 and %0 are
+in different register classes.
+
+I'm currently bisecting, and also checking whether supporting asymmetric
+copies (like X86 does in CopyToFromAsymmetricReg) would resolve that.
+
+Best regards,
+Ilya
