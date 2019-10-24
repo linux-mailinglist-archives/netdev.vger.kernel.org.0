@@ -2,413 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19188E3D78
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 22:45:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9125E3D81
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 22:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbfJXUpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 16:45:16 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:23916 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727677AbfJXUpQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 16:45:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571949914;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tlUtBQGPFCbSO3DAgySYHCEeKLN2ykrpQWRzm+59VSE=;
-        b=ShEdiTIPwmzS3jSolunxKgWqViBKvYnAlmIXxBXw82Uo1ybXNGoFg1zpvu0FpPgTpnvBtW
-        ykMb5BDl92c7TOV3+wqOymVSnI9N0ivXrVXklosrlKf8x9miUY0tt8H/n1pysfYkF//56J
-        LJD4AgnDsdqxD0UvQjdC6QF3SIAgGvo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-37-LzpfL4iNOI2yLhwp9gmunA-1; Thu, 24 Oct 2019 16:45:10 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8FDD380183E;
-        Thu, 24 Oct 2019 20:45:03 +0000 (UTC)
-Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B772450A;
-        Thu, 24 Oct 2019 20:44:49 +0000 (UTC)
-Date:   Thu, 24 Oct 2019 14:44:49 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V5 4/6] mdev: introduce virtio device and its device ops
-Message-ID: <20191024144449.626d560b@x1.home>
-In-Reply-To: <1699cc4e-7d52-b2dc-8016-358a36a4f4ea@redhat.com>
-References: <20191023130752.18980-1-jasowang@redhat.com>
-        <20191023130752.18980-5-jasowang@redhat.com>
-        <20191023155728.2a55bc71@x1.home>
-        <1699cc4e-7d52-b2dc-8016-358a36a4f4ea@redhat.com>
-Organization: Red Hat
+        id S1727174AbfJXUro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 16:47:44 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46160 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726973AbfJXUro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 16:47:44 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f19so5054pgn.13
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 13:47:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=6UtVkElgUlM/zYf2z9xQ4vpWwexeLVXf3dgUkD/4jLA=;
+        b=Eb3HOtWpI3HnJx2/NOGFzo4+gucLI3ndX6GG7L0sAGfQpyFn9LAwrmN/zYKRFjJPbm
+         SKgRMyHwy9oBW93pJ4uHBchJEzi2leiQgNVpZwhDcdg4u2+7udzeGiUAcJ8mcBRID2tu
+         LpMrRP9BOU7idXYykqoA4/vHlMf0KvagTICxEybHNTWQz6zzbcvy/lwU0xBtkyet1y2y
+         rYVplIHn0+IXeeF4bKLoCfYxnhbmLZ1Y96NoXynWoVjArvFdmWUn6D8sDOoz90Jckgy9
+         naARJhIqNgU9w6IxFiphdubpMMKSczfAKKm5fB3ik1uqHaRYV+FWvMhjUoi5p4BL9t8C
+         1aUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=6UtVkElgUlM/zYf2z9xQ4vpWwexeLVXf3dgUkD/4jLA=;
+        b=CMl7qJreFqGuwegE+Jc1ucNUMG0Aqp+AM3JNECd65/WdfwLup3Hm7QeGgEVTe/p3Yx
+         U1C3KtKJwiRzz165bFa3i/fEFshz0qkwMMdmnwQCtUqqT5nYH7ub62CT9rBflH2AhrjQ
+         y7ISlYsBcw1eUX563DSsEk67DiXUOyBNQPLaaQ+X6FuXOApdDxsCu9IerDNCbKYUCZir
+         49/iEoL25/ngjk4fBiUDeMsWKM4Ir4eVXGaC5NMOtAQ822ePahaqRKyz9F0voyKfLCFE
+         MTAcSShi3sSwTCxbpe+URCCQ/zh83BwJOuY5ultePPoHZcVNv25zrT1BQx5D6RyJb50X
+         brYQ==
+X-Gm-Message-State: APjAAAXsefIgxpzlyxhpYCDEe9iDk7hkORklUQX2Rq62n8dipP9g4AMV
+        1TZncC2B81demvw2NIrfYDs=
+X-Google-Smtp-Source: APXvYqyVDcLm+8DPjs6QbnXf7PrqXL32OqjmX4F9SWz3De0w7FtBcqt11xBB6C2EMUsGzG36wYfL6A==
+X-Received: by 2002:aa7:8197:: with SMTP id g23mr19682855pfi.247.1571950063370;
+        Thu, 24 Oct 2019 13:47:43 -0700 (PDT)
+Received: from gmail.com ([66.170.99.95])
+        by smtp.gmail.com with ESMTPSA id v19sm29231245pff.46.2019.10.24.13.47.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 24 Oct 2019 13:47:42 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 13:47:40 -0700
+From:   William Tu <u9012063@gmail.com>
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
+        scott.drennan@nokia.com, jbenc@redhat.com,
+        martin.varghese@nokia.com
+Subject: Re: [PATCH v2] Change in Openvswitch to support MPLS label depth of
+ 3 in ingress direction
+Message-ID: <20191024204740.GA74879@gmail.com>
+References: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: LzpfL4iNOI2yLhwp9gmunA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Oct 2019 11:51:35 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+On Sun, Oct 20, 2019 at 07:41:42PM +0530, Martin Varghese wrote:
+> From: Martin Varghese <martin.varghese@nokia.com>
+> 
+> The openvswitch was supporting a MPLS label depth of 1 in the ingress
+> direction though the userspace OVS supports a max depth of 3 labels.
+> This change enables openvswitch module to support a max depth of
+> 3 labels in the ingress.
+> 
 
-> On 2019/10/24 =E4=B8=8A=E5=8D=885:57, Alex Williamson wrote:
-> > On Wed, 23 Oct 2019 21:07:50 +0800
-> > Jason Wang <jasowang@redhat.com> wrote:
-> > =20
-> >> This patch implements basic support for mdev driver that supports
-> >> virtio transport for kernel virtio driver.
-> >>
-> >> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> >> ---
-> >>   drivers/vfio/mdev/mdev_core.c    |  20 ++++
-> >>   drivers/vfio/mdev/mdev_private.h |   2 +
-> >>   include/linux/mdev.h             |   6 ++
-> >>   include/linux/virtio_mdev_ops.h  | 159 +++++++++++++++++++++++++++++=
-++
-> >>   4 files changed, 187 insertions(+)
-> >>   create mode 100644 include/linux/virtio_mdev_ops.h
-> >>
-> >> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_co=
-re.c
-> >> index 555bd61d8c38..9b00c3513120 100644
-> >> --- a/drivers/vfio/mdev/mdev_core.c
-> >> +++ b/drivers/vfio/mdev/mdev_core.c
-> >> @@ -76,6 +76,26 @@ const struct vfio_mdev_device_ops *mdev_get_vfio_op=
-s(struct mdev_device *mdev)
-> >>   }
-> >>   EXPORT_SYMBOL(mdev_get_vfio_ops);
-> >>  =20
-> >> +/* Specify the virtio device ops for the mdev device, this
-> >> + * must be called during create() callback for virtio mdev device.
-> >> + */
-> >> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> >> +=09=09=09 const struct virtio_mdev_device_ops *virtio_ops)
-> >> +{
-> >> +=09mdev_set_class(mdev, MDEV_CLASS_ID_VIRTIO);
-> >> +=09mdev->virtio_ops =3D virtio_ops;
-> >> +}
-> >> +EXPORT_SYMBOL(mdev_set_virtio_ops);
-> >> +
-> >> +/* Get the virtio device ops for the mdev device. */
-> >> +const struct virtio_mdev_device_ops *
-> >> +mdev_get_virtio_ops(struct mdev_device *mdev)
-> >> +{
-> >> +=09WARN_ON(mdev->class_id !=3D MDEV_CLASS_ID_VIRTIO);
-> >> +=09return mdev->virtio_ops;
-> >> +}
-> >> +EXPORT_SYMBOL(mdev_get_virtio_ops);
-> >> +
-> >>   struct device *mdev_dev(struct mdev_device *mdev)
-> >>   {
-> >>   =09return &mdev->dev;
-> >> diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev=
-_private.h
-> >> index 0770410ded2a..7b47890c34e7 100644
-> >> --- a/drivers/vfio/mdev/mdev_private.h
-> >> +++ b/drivers/vfio/mdev/mdev_private.h
-> >> @@ -11,6 +11,7 @@
-> >>   #define MDEV_PRIVATE_H
-> >>  =20
-> >>   #include <linux/vfio_mdev_ops.h>
-> >> +#include <linux/virtio_mdev_ops.h>
-> >>  =20
-> >>   int  mdev_bus_register(void);
-> >>   void mdev_bus_unregister(void);
-> >> @@ -38,6 +39,7 @@ struct mdev_device {
-> >>   =09u16 class_id;
-> >>   =09union {
-> >>   =09=09const struct vfio_mdev_device_ops *vfio_ops;
-> >> +=09=09const struct virtio_mdev_device_ops *virtio_ops;
-> >>   =09};
-> >>   };
-> >>  =20
-> >> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
-> >> index 4625f1a11014..9b69b0bbebfd 100644
-> >> --- a/include/linux/mdev.h
-> >> +++ b/include/linux/mdev.h
-> >> @@ -17,6 +17,7 @@
-> >>  =20
-> >>   struct mdev_device;
-> >>   struct vfio_mdev_device_ops;
-> >> +struct virtio_mdev_device_ops;
-> >>  =20
-> >>   /*
-> >>    * Called by the parent device driver to set the device which repres=
-ents
-> >> @@ -112,6 +113,10 @@ void mdev_set_class(struct mdev_device *mdev, u16=
- id);
-> >>   void mdev_set_vfio_ops(struct mdev_device *mdev,
-> >>   =09=09       const struct vfio_mdev_device_ops *vfio_ops);
-> >>   const struct vfio_mdev_device_ops *mdev_get_vfio_ops(struct mdev_dev=
-ice *mdev);
-> >> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> >> +=09=09=09 const struct virtio_mdev_device_ops *virtio_ops);
-> >> +const struct virtio_mdev_device_ops *
-> >> +mdev_get_virtio_ops(struct mdev_device *mdev);
-> >>  =20
-> >>   extern struct bus_type mdev_bus_type;
-> >>  =20
-> >> @@ -127,6 +132,7 @@ struct mdev_device *mdev_from_dev(struct device *d=
-ev);
-> >>  =20
-> >>   enum {
-> >>   =09MDEV_CLASS_ID_VFIO =3D 1,
-> >> +=09MDEV_CLASS_ID_VIRTIO =3D 2,
-> >>   =09/* New entries must be added here */
-> >>   };
-> >>  =20
-> >> diff --git a/include/linux/virtio_mdev_ops.h b/include/linux/virtio_md=
-ev_ops.h
-> >> new file mode 100644
-> >> index 000000000000..d417b41f2845
-> >> --- /dev/null
-> >> +++ b/include/linux/virtio_mdev_ops.h
-> >> @@ -0,0 +1,159 @@
-> >> +/* SPDX-License-Identifier: GPL-2.0-only */
-> >> +/*
-> >> + * Virtio mediated device driver
-> >> + *
-> >> + * Copyright 2019, Red Hat Corp.
-> >> + *     Author: Jason Wang <jasowang@redhat.com>
-> >> + */
-> >> +#ifndef _LINUX_VIRTIO_MDEV_H
-> >> +#define _LINUX_VIRTIO_MDEV_H
-> >> +
-> >> +#include <linux/interrupt.h>
-> >> +#include <linux/mdev.h>
-> >> +#include <uapi/linux/vhost.h>
-> >> +
-> >> +#define VIRTIO_MDEV_DEVICE_API_STRING=09=09"virtio-mdev"
-> >> +#define VIRTIO_MDEV_F_VERSION_1 0x1
-> >> +
-> >> +struct virtio_mdev_callback {
-> >> +=09irqreturn_t (*callback)(void *data);
-> >> +=09void *private;
-> >> +};
-> >> +
-> >> +/**
-> >> + * struct vfio_mdev_device_ops - Structure to be registered for each
-> >> + * mdev device to register the device for virtio/vhost drivers.
-> >> + *
-> >> + * The device ops that is supported by VIRTIO_MDEV_F_VERSION_1, the
-> >> + * callbacks are mandatory unless explicity mentioned. =20
-> > If the version of the callbacks is returned by a callback within the
-> > structure defined by the version... isn't that a bit circular?  This
-> > seems redundant to me versus the class id.  The fact that the parent
-> > driver defines the device as MDEV_CLASS_ID_VIRTIO should tell us this
-> > already.  If it was incremented, we'd need an MDEV_CLASS_ID_VIRTIOv2,
-> > which the virtio-mdev bus driver could add to its id table and handle
-> > differently. =20
->=20
->=20
-> My understanding is versions are only allowed to increase monotonically,=
-=20
-> this seems less flexible than features. E.g we have features A, B, C,=20
-> mdev device can choose to support only a subset. E.g when mdev device=20
-> can support dirty page logging, it can add a new feature bit for driver=
-=20
-> to know that it support new device ops. MDEV_CLASS_ID_VIRTIOv2 may only=
-=20
-> be useful when we will invent a complete new API.
+Hi Martin,
+Thanks for the patch. I have one comment below.
 
-But this interface rather conflates features and versions by returning
-a version as a feature.  If we simply want to say that there are no
-additional features, then get_mdev_features() should return an empty
-set.  If dirty page logging is a feature, then I'd expect a bit in the
-get_mdev_features() return value to identify that feature.
+> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> ---
+> Changes in v2
+>    - Moved MPLS count validation from datapath to configuration.
+>    - Fixed set mpls function.
+> 
+>  net/openvswitch/actions.c      |  2 +-
+>  net/openvswitch/flow.c         | 20 ++++++++++-----
+>  net/openvswitch/flow.h         |  9 ++++---
+>  net/openvswitch/flow_netlink.c | 57 +++++++++++++++++++++++++++++++++---------
+>  4 files changed, 66 insertions(+), 22 deletions(-)
+> 
+> diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> index 3572e11..f3125d7 100644
+> --- a/net/openvswitch/actions.c
+> +++ b/net/openvswitch/actions.c
+> @@ -199,7 +199,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
+>  	if (err)
+>  		return err;
+>  
+> -	flow_key->mpls.top_lse = lse;
+> +	flow_key->mpls.lse[0] = lse;
+>  	return 0;
+>  }
+>  
+> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+> index dca3b1e..c101355 100644
+> --- a/net/openvswitch/flow.c
+> +++ b/net/openvswitch/flow.c
+> @@ -699,27 +699,35 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
+>  			memset(&key->ipv4, 0, sizeof(key->ipv4));
+>  		}
+>  	} else if (eth_p_mpls(key->eth.type)) {
+> -		size_t stack_len = MPLS_HLEN;
+> +		u8 label_count = 1;
+>  
+> +		memset(&key->mpls, 0, sizeof(key->mpls));
+>  		skb_set_inner_network_header(skb, skb->mac_len);
+>  		while (1) {
+>  			__be32 lse;
+>  
+> -			error = check_header(skb, skb->mac_len + stack_len);
+> +			error = check_header(skb, skb->mac_len +
+> +					     label_count * MPLS_HLEN);
+>  			if (unlikely(error))
+>  				return 0;
+>  
+>  			memcpy(&lse, skb_inner_network_header(skb), MPLS_HLEN);
+>  
+> -			if (stack_len == MPLS_HLEN)
+> -				memcpy(&key->mpls.top_lse, &lse, MPLS_HLEN);
+> +			if (label_count <= MPLS_LABEL_DEPTH)
+> +				memcpy(&key->mpls.lse[label_count - 1], &lse,
+> +				       MPLS_HLEN);
+>  
+> -			skb_set_inner_network_header(skb, skb->mac_len + stack_len);
+> +			skb_set_inner_network_header(skb, skb->mac_len +
+> +						     label_count * MPLS_HLEN);
+>  			if (lse & htonl(MPLS_LS_S_MASK))
+>  				break;
+>  
+> -			stack_len += MPLS_HLEN;
+> +			label_count++;
+>  		}
+> +		if (label_count > MPLS_LABEL_DEPTH)
+> +			label_count = MPLS_LABEL_DEPTH;
+> +
+> +		key->mpls.num_labels_mask = GENMASK(label_count - 1, 0);
 
-However, I've been under the impression (perhaps wrongly) that the
-class-id has a 1:1 correlation to the device-ops exposed to the bus
-driver, so if dirty page logging requires extra callbacks, that would
-imply a new device-ops, which requires a new class-id.  In that case
-virtio-mdev would claim both class-ids and would need some way to
-differentiate them.  But I also see that such a solution can become
-unmanageable as the set of class-ids would need to encompass every
-combination of features.
+>  	} else if (key->eth.type == htons(ETH_P_IPV6)) {
+>  		int nh_len;             /* IPv6 Header + Extensions */
+>  
+> diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
+> index 3e2cc22..d9eccbe 100644
+> --- a/net/openvswitch/flow.h
+> +++ b/net/openvswitch/flow.h
+> @@ -30,6 +30,7 @@ enum sw_flow_mac_proto {
+>  	MAC_PROTO_ETHERNET,
+>  };
+>  #define SW_FLOW_KEY_INVALID	0x80
+> +#define MPLS_LABEL_DEPTH       3
+>  
+>  /* Store options at the end of the array if they are less than the
+>   * maximum size. This allows us to get the benefits of variable length
+> @@ -85,9 +86,6 @@ struct sw_flow_key {
+>  					 */
+>  	union {
+>  		struct {
+> -			__be32 top_lse;	/* top label stack entry */
+> -		} mpls;
+> -		struct {
+>  			u8     proto;	/* IP protocol or lower 8 bits of ARP opcode. */
+>  			u8     tos;	    /* IP ToS. */
+>  			u8     ttl;	    /* IP TTL/hop limit. */
+> @@ -135,6 +133,11 @@ struct sw_flow_key {
+>  				} nd;
+>  			};
+>  		} ipv6;
+> +		struct {
+> +			u32 num_labels_mask;    /* labels present bitmap of effective length MPLS_LABEL_DEPTH */
 
-So I think what's suggested by this is that the initial struct
-virtio_mdev_device_ops is a base set of callbacks which would be
-extended via features?  But then why does get_generation() not make use
-of this?  And if we can define get_generation() as optional and simply
-test if it's implemented, then it seems we don't need any feature bits
-to extend the structure (unless we're looking at binary compatibility).
-So maybe get_mdev_features() is meant to expose underlying features
-unrelated to the callbacks?  Which is not in line with the description?
-Hopefully you can see my confusion in what we're trying to do here.
-Thanks,
+Why using a bitmap here? why not just num_labels?
+I saw that you have to convert it using hweight_long()
+to num_labels a couple places below.
 
-Alex
+Regards,
+William
 
-> >> + *
-> >> + * @set_vq_address:=09=09Set the address of virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09@desc_area: address of desc area
-> >> + *=09=09=09=09@driver_area: address of driver area
-> >> + *=09=09=09=09@device_area: address of device area
-> >> + *=09=09=09=09Returns integer: success (0) or error (< 0)
-> >> + * @set_vq_num:=09=09=09Set the size of virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09@num: the size of virtqueue
-> >> + * @kick_vq:=09=09=09Kick the virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + * @set_vq_cb:=09=09=09Set the interrupt callback function for
-> >> + *=09=09=09=09a virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09@cb: virtio-mdev interrupt callback structure
-> >> + * @set_vq_ready:=09=09Set ready status for a virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09@ready: ready (true) not ready(false)
-> >> + * @get_vq_ready:=09=09Get ready status for a virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09Returns boolean: ready (true) or not (false)
-> >> + * @set_vq_state:=09=09Set the state for a virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09@state: virtqueue state (last_avail_idx)
-> >> + *=09=09=09=09Returns integer: success (0) or error (< 0)
-> >> + * @get_vq_state:=09=09Get the state for a virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@idx: virtqueue index
-> >> + *=09=09=09=09Returns virtqueue state (last_avail_idx)
-> >> + * @get_vq_align:=09=09Get the virtqueue align requirement
-> >> + *=09=09=09=09for the device
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns virtqueue algin requirement
-> >> + * @get_features:=09=09Get virtio features supported by the device
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns the virtio features support by the
-> >> + *=09=09=09=09device
-> >> + * @get_features:=09=09Set virtio features supported by the driver =
-=20
-> >         ^ s/g/s/
-> >
-> > Thanks,
-> > Alex =20
->=20
->=20
-> Will fix.
->=20
-> Thanks
->=20
->=20
-> > =20
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@features: feature support by the driver
-> >> + *=09=09=09=09Returns integer: success (0) or error (< 0)
-> >> + * @set_config_cb:=09=09Set the config interrupt callback
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@cb: virtio-mdev interrupt callback structure
-> >> + * @get_vq_num_max:=09=09Get the max size of virtqueue
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns u16: max size of virtqueue
-> >> + * @get_device_id:=09=09Get virtio device id
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns u32: virtio device id
-> >> + * @get_vendor_id:=09=09Get id for the vendor that provides this devi=
-ce
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns u32: virtio vendor id
-> >> + * @get_status:=09=09=09Get the device status
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns u8: virtio device status
-> >> + * @set_status:=09=09=09Set the device status
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@status: virtio device status
-> >> + * @get_config:=09=09=09Read from device specific configuration space
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@offset: offset from the beginning of
-> >> + *=09=09=09=09configuration space
-> >> + *=09=09=09=09@buf: buffer used to read to
-> >> + *=09=09=09=09@len: the length to read from
-> >> + *=09=09=09=09configration space
-> >> + * @set_config:=09=09=09Write to device specific configuration space
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09@offset: offset from the beginning of
-> >> + *=09=09=09=09configuration space
-> >> + *=09=09=09=09@buf: buffer used to write from
-> >> + *=09=09=09=09@len: the length to write to
-> >> + *=09=09=09=09configration space
-> >> + * @get_mdev_features:=09=09Get a set of bits that demonstrate
-> >> + *=09=09=09=09thecapability of the mdev device. New
-> >> + *=09=09=09=09features bits must be added when
-> >> + *=09=09=09=09introducing new device ops.
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns the mdev features (API) support by
-> >> + *=09=09=09=09the device.
-> >> + * @get_generation:=09=09Get device config generaton (optionally)
-> >> + *=09=09=09=09@mdev: mediated device
-> >> + *=09=09=09=09Returns u32: device generation
-> >> + */
-> >> +struct virtio_mdev_device_ops {
-> >> +=09/* Virtqueue ops */
-> >> +=09int (*set_vq_address)(struct mdev_device *mdev,
-> >> +=09=09=09      u16 idx, u64 desc_area, u64 driver_area,
-> >> +=09=09=09      u64 device_area);
-> >> +=09void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
-> >> +=09void (*kick_vq)(struct mdev_device *mdev, u16 idx);
-> >> +=09void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
-> >> +=09=09=09  struct virtio_mdev_callback *cb);
-> >> +=09void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool ready=
-);
-> >> +=09bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
-> >> +=09int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
-> >> +=09u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
-> >> +
-> >> +=09/* Virtio device ops */
-> >> +=09u16 (*get_vq_align)(struct mdev_device *mdev);
-> >> +=09u64 (*get_features)(struct mdev_device *mdev);
-> >> +=09int (*set_features)(struct mdev_device *mdev, u64 features);
-> >> +=09void (*set_config_cb)(struct mdev_device *mdev,
-> >> +=09=09=09      struct virtio_mdev_callback *cb);
-> >> +=09u16 (*get_vq_num_max)(struct mdev_device *mdev);
-> >> +=09u32 (*get_device_id)(struct mdev_device *mdev);
-> >> +=09u32 (*get_vendor_id)(struct mdev_device *mdev);
-> >> +=09u8 (*get_status)(struct mdev_device *mdev);
-> >> +=09void (*set_status)(struct mdev_device *mdev, u8 status);
-> >> +=09void (*get_config)(struct mdev_device *mdev, unsigned int offset,
-> >> +=09=09=09   void *buf, unsigned int len);
-> >> +=09void (*set_config)(struct mdev_device *mdev, unsigned int offset,
-> >> +=09=09=09   const void *buf, unsigned int len);
-> >> +=09u32 (*get_generation)(struct mdev_device *mdev);
-> >> +
-> >> +=09/* Mdev device ops */
-> >> +=09u64 (*get_mdev_features)(struct mdev_device *mdev);
-> >> +};
-> >> +
-> >> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> >> +=09=09=09 const struct virtio_mdev_device_ops *virtio_ops);
-> >> +
-> >> +#endif =20
-
+> +			__be32 lse[MPLS_LABEL_DEPTH];     /* label stack entry  */
+> +		} mpls;
+> +
+>  		struct ovs_key_nsh nsh;         /* network service header */
+>  	};
+>  	struct {
+> diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
+> index d7559c6..21de061 100644
+> --- a/net/openvswitch/flow_netlink.c
+> +++ b/net/openvswitch/flow_netlink.c
+> @@ -424,7 +424,7 @@ size_t ovs_key_attr_size(void)
+>  	[OVS_KEY_ATTR_DP_HASH]	 = { .len = sizeof(u32) },
+>  	[OVS_KEY_ATTR_TUNNEL]	 = { .len = OVS_ATTR_NESTED,
+>  				     .next = ovs_tunnel_key_lens, },
+> -	[OVS_KEY_ATTR_MPLS]	 = { .len = sizeof(struct ovs_key_mpls) },
+> +	[OVS_KEY_ATTR_MPLS]	 = { .len = OVS_ATTR_VARIABLE },
+>  	[OVS_KEY_ATTR_CT_STATE]	 = { .len = sizeof(u32) },
+>  	[OVS_KEY_ATTR_CT_ZONE]	 = { .len = sizeof(u16) },
+>  	[OVS_KEY_ATTR_CT_MARK]	 = { .len = sizeof(u32) },
+> @@ -1628,10 +1628,25 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
+>  
+>  	if (attrs & (1 << OVS_KEY_ATTR_MPLS)) {
+>  		const struct ovs_key_mpls *mpls_key;
+> +		u32 hdr_len;
+> +		u32 label_count, label_count_mask, i;
+>  
+>  		mpls_key = nla_data(a[OVS_KEY_ATTR_MPLS]);
+> -		SW_FLOW_KEY_PUT(match, mpls.top_lse,
+> -				mpls_key->mpls_lse, is_mask);
+> +		hdr_len = nla_len(a[OVS_KEY_ATTR_MPLS]);
+> +		label_count = hdr_len / sizeof(struct ovs_key_mpls);
+> +
+> +		if (label_count == 0 || label_count > MPLS_LABEL_DEPTH ||
+> +		    hdr_len % sizeof(struct ovs_key_mpls))
+> +			return -EINVAL;
+> +
+> +		label_count_mask =  GENMASK(label_count - 1, 0);
+> +
+> +		for (i = 0 ; i < label_count; i++)
+> +			SW_FLOW_KEY_PUT(match, mpls.lse[i],
+> +					mpls_key[i].mpls_lse, is_mask);
+> +
+> +		SW_FLOW_KEY_PUT(match, mpls.num_labels_mask,
+> +				label_count_mask, is_mask);
+>  
+>  		attrs &= ~(1 << OVS_KEY_ATTR_MPLS);
+>  	 }
+> @@ -2114,13 +2129,18 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
+>  		ether_addr_copy(arp_key->arp_sha, output->ipv4.arp.sha);
+>  		ether_addr_copy(arp_key->arp_tha, output->ipv4.arp.tha);
+>  	} else if (eth_p_mpls(swkey->eth.type)) {
+> +		u8 i, num_labels;
+>  		struct ovs_key_mpls *mpls_key;
+>  
+> -		nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS, sizeof(*mpls_key));
+> +		num_labels = hweight_long(output->mpls.num_labels_mask);
+> +		nla = nla_reserve(skb, OVS_KEY_ATTR_MPLS,
+> +				  num_labels * sizeof(*mpls_key));
+>  		if (!nla)
+>  			goto nla_put_failure;
+> +
+>  		mpls_key = nla_data(nla);
+> -		mpls_key->mpls_lse = output->mpls.top_lse;
+> +		for (i = 0; i < num_labels; i++)
+> +			mpls_key[i].mpls_lse = output->mpls.lse[i];
+>  	}
+>  
+>  	if ((swkey->eth.type == htons(ETH_P_IP) ||
+> @@ -2957,6 +2977,10 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
+>  	u8 mac_proto = ovs_key_mac_proto(key);
+>  	const struct nlattr *a;
+>  	int rem, err;
+> +	u32 mpls_label_count = 0;
+> +
+> +	if (eth_p_mpls(eth_type))
+> +		mpls_label_count = hweight_long(key->mpls.num_labels_mask);
+>  
+>  	nla_for_each_nested(a, attr, rem) {
+>  		/* Expected argument lengths, (u32)-1 for variable length. */
+> @@ -3065,25 +3089,34 @@ static int __ovs_nla_copy_actions(struct net *net, const struct nlattr *attr,
+>  			     !eth_p_mpls(eth_type)))
+>  				return -EINVAL;
+>  			eth_type = mpls->mpls_ethertype;
+> +			mpls_label_count++;
+>  			break;
+>  		}
+>  
+> -		case OVS_ACTION_ATTR_POP_MPLS:
+> +		case OVS_ACTION_ATTR_POP_MPLS: {
+> +			__be16  proto;
+>  			if (vlan_tci & htons(VLAN_CFI_MASK) ||
+>  			    !eth_p_mpls(eth_type))
+>  				return -EINVAL;
+>  
+> -			/* Disallow subsequent L2.5+ set and mpls_pop actions
+> -			 * as there is no check here to ensure that the new
+> -			 * eth_type is valid and thus set actions could
+> -			 * write off the end of the packet or otherwise
+> -			 * corrupt it.
+> +			/* Disallow subsequent L2.5+ set actions as there is
+> +			 * no check here to ensure that the new eth type is
+> +			 * valid and thus set actions could write off the
+> +			 * end of the packet or otherwise corrupt it.
+>  			 *
+>  			 * Support for these actions is planned using packet
+>  			 * recirculation.
+>  			 */
+> -			eth_type = htons(0);
+> +			proto = nla_get_be16(a);
+> +			mpls_label_count--;
+> +
+> +			if (!eth_p_mpls(proto) || !mpls_label_count)
+> +				eth_type = htons(0);
+> +			else
+> +				eth_type =  proto;
+> +
+>  			break;
+> +		}
+>  
+>  		case OVS_ACTION_ATTR_SET:
+>  			err = validate_set(a, key, sfa,
+> -- 
+> 1.8.3.1
+> 
