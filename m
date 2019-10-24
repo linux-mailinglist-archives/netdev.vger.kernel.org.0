@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5749BE2A1E
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 07:48:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C5DCE2A21
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 07:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408488AbfJXFsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 01:48:25 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:52904 "EHLO
+        id S2408504AbfJXFsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 01:48:50 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:53014 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404449AbfJXFsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 01:48:25 -0400
+        with ESMTP id S2404449AbfJXFsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 01:48:50 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 2F52060B6E; Thu, 24 Oct 2019 05:48:24 +0000 (UTC)
+        id 5BEE860E74; Thu, 24 Oct 2019 05:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571896104;
-        bh=9xfFYo0OwH9yxo1xzsgyupR8IvI/OSOKlVUq7Vey1jI=;
+        s=default; t=1571896129;
+        bh=0+XpGRo4KJBK5nPTsN/tQ2wYFnwui5wKor6T9RGaQr4=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=AJ9i8ntd0hXx7Q2uIyrff/OJ1aqWx+/IizHg5sJN7N0of+Kft5vaZlAkVRMaP4Vja
-         ha95IbygbA6TeLJ042pAXZJrR0MOO8DcYlEXhtI8oM6gXnuzIG8HfgCI00j6IWpVc0
-         IvzxJLJRj1bv+9YhUaBPXOHiBwEp5hNX92gJOPkE=
+        b=aU1dnSyKi6CRyvfCOOBwZpwNhGSA19HP3FF8wE1DASDn+H8g/ju5biXiOyaUeHnLj
+         xD2h2j2868+owCJoYlAsamRgnN8c2qKwmS6pdWVrfCrrIHateOIuQVfLtdbNxiS6XN
+         +ofPxUI0qJmUdQfBqnS/K1C2Dmxj4DN8lU05fYGA=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,35 +30,32 @@ Received: from potku.adurom.net (unknown [88.114.240.156])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3CB2260B6E;
-        Thu, 24 Oct 2019 05:48:20 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7821660DA9;
+        Thu, 24 Oct 2019 05:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571896102;
-        bh=9xfFYo0OwH9yxo1xzsgyupR8IvI/OSOKlVUq7Vey1jI=;
+        s=default; t=1571896129;
+        bh=0+XpGRo4KJBK5nPTsN/tQ2wYFnwui5wKor6T9RGaQr4=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=fDV7FIwv08wlJxfohk4iuWL8phzYJzhGOstoE/nfQ4LglDLPaGZRBnTeFbmZQQ1WR
-         cMtLp+ORDIcrWyQCN444zgWYQbzuyXWZmxbRZ+LOMNaixGiEdJg9NAGmjrK9/UQnQ3
-         Pi88kuLUmL7rHLUjU/ICEirSqPDdtRQ6sSVj09c8=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3CB2260B6E
+        b=WwHHq0VN8npqlTYYK2wpdSPOBRmtz0BTHOK10nZrxmdo/39HYJRba6ZwY94ezRaCa
+         qn6+UEfQFWJA7tZbpcbMehFeIK3+hWwSoMPRYuY0IQts6Rnh9sRabwkn0XTVVo1JZk
+         Mk6nrIQx/XSDKPKNAV69QvBa7otWNFakw14Dvbik=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7821660DA9
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] adm80211: remove set but not used variables 'mem_addr'
- and 'io_addr'
+Subject: Re: [PATCH] atmel: remove set but not used variable 'dev'
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191023073842.34512-1-yuehaibing@huawei.com>
-References: <20191023073842.34512-1-yuehaibing@huawei.com>
+In-Reply-To: <20191023074019.29708-1-yuehaibing@huawei.com>
+References: <20191023074019.29708-1-yuehaibing@huawei.com>
 To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <yuehaibing@huawei.com>,
-        <kstewart@linuxfoundation.org>, <allison@lohutok.net>,
-        <info@metux.net>, <tglx@linutronix.de>,
+Cc:     <simon@thekelleys.org.uk>, <davem@davemloft.net>,
         <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191024054824.2F52060B6E@smtp.codeaurora.org>
-Date:   Thu, 24 Oct 2019 05:48:24 +0000 (UTC)
+Message-Id: <20191024054849.5BEE860E74@smtp.codeaurora.org>
+Date:   Thu, 24 Oct 2019 05:48:49 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -68,21 +65,19 @@ YueHaibing <yuehaibing@huawei.com> wrote:
 
 > Fixes gcc '-Wunused-but-set-variable' warning:
 > 
-> drivers/net/wireless/admtek/adm8211.c:1784:16:
->  warning: variable mem_addr set but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/admtek/adm8211.c:1785:15:
->  warning: variable io_addr set but not used [-Wunused-but-set-variable]
+> drivers/net/wireless/atmel/atmel_cs.c:120:21:
+>  warning: variable dev set but not used [-Wunused-but-set-variable]
 > 
-> They are never used, so can be removed.
+> It is never used, so can remove it.
 > 
 > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-f64b06bd362a adm80211: remove set but not used variables 'mem_addr' and 'io_addr'
+d0c160b18ef5 atmel: remove set but not used variable 'dev'
 
 -- 
-https://patchwork.kernel.org/patch/11205833/
+https://patchwork.kernel.org/patch/11205835/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
