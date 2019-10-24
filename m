@@ -2,115 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9477E3795
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:12:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 787F1E379E
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:15:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439755AbfJXQMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 12:12:37 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:46909 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439732AbfJXQMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:12:37 -0400
-Received: by mail-io1-f67.google.com with SMTP id c6so30127367ioo.13
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 09:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=anJv3VLJIwno4S9hJGFaEhVurnYD4TuUs93wQHzn4B0=;
-        b=XX8UM5t97Z+NWeFcVuf7KW+0NgUrk1r49z25fGFRJEUnonQ5F+MSqDdQa8F6yGk+Yy
-         gQI0Eg5Scl5XMsamBsZm+9tqGHd8/f00uKojDr1x7fbYvafW6GeROgU5yNWDb22ECGBp
-         5EMA5yivnFHaSeNmZwxfSsKZCtmIoNgE9I7vyaxdz+rCms1MKePa7jMwA174Wtpoapge
-         Hwb0CtM0Vh7YdtWmUxF5zqK2dgUmgq11otg5PLojEX7+mD6tPYXGT+1cfeDFw47wh9aK
-         gHt+XkPNpwWyhoXVjIVpOQXRZPASiT5Sp9t8LkI8ZZwlW/VpvwmyaldwVc5t21W/LgcT
-         hh3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=anJv3VLJIwno4S9hJGFaEhVurnYD4TuUs93wQHzn4B0=;
-        b=g475BQ9AJMjDHc1mrXuFjfIY2bk5IOmiW3zs2xhmMauZVWgs/Y4qKHNnrhH8BaMVyr
-         9GkPiN61+X0CB0yQvUldOXl77Q5yoZz8mwd2mYFUGVtck/1azp6Yx59fV2t++o2weWdf
-         66i07Ihsce6tzeNvcUfmiK3JKYEmeW4p3FNZxAZEoS0b3WbxDKHL+aXf4dJmwRgqsnqg
-         tUtGQh0e7bfPiIsUoRcDPdwjyzvgSACenkNZ8NQMxZ66ASDSI3qlkUEiP2kBXvm6dbjD
-         j26+RQGMOKHDr4pTFMqCW+qIo9Dxcdn3MhniBBrru0ii2nYRrS0u+12OQZgRJvwUigA8
-         ov1w==
-X-Gm-Message-State: APjAAAX/TpdeZiuOsW5SVgSDT/GomcIk1p/hJEdOm/SbrQUThWR/Lmoi
-        xVtxMdK5bzZA+kj0Pl7nejxgyw==
-X-Google-Smtp-Source: APXvYqwnPRXyQhCVksUSR1QD0wlNoLHgVFlxZ7bz85ryO9WR6BHhBb1kkIYyHr38Au5gvQBNYTHGXg==
-X-Received: by 2002:a02:c519:: with SMTP id s25mr15760385jam.3.1571933554142;
-        Thu, 24 Oct 2019 09:12:34 -0700 (PDT)
-Received: from [10.0.0.194] ([64.26.149.125])
-        by smtp.googlemail.com with ESMTPSA id o5sm9322351ilc.68.2019.10.24.09.12.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Oct 2019 09:12:33 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mleitner@redhat.com" <mleitner@redhat.com>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
- <vbf7e4vy5nq.fsf@mellanox.com>
- <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
- <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
-Date:   Thu, 24 Oct 2019 12:12:22 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2407842AbfJXQOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 12:14:50 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:43050 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405661AbfJXQOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:14:50 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id BBF3960A0A; Thu, 24 Oct 2019 16:14:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571933688;
+        bh=5LYj+S7mUQpRFG78UNWcpu0TFawfTdvqUpL+Kysi69w=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=hrWNeIkToNDdVRdtpTlshKMIp37BiUqtnBsa0inqk3kgJbBJYuZoYulc+KvAIf9rc
+         rWGXjdWX/Knm99607FydhcAcuincgwTM7Pnx0psbG2wP+dZDm2eJ32bhWSkDZr6XBe
+         MzJkSv+DIrzri8haYWstUQ9nxRAfdcUYvPCFdFG8=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (unknown [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3BAAB60A0A;
+        Thu, 24 Oct 2019 16:14:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1571933686;
+        bh=5LYj+S7mUQpRFG78UNWcpu0TFawfTdvqUpL+Kysi69w=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=Q5EX7o8UOEsIEmJ98Y9SLgS044IficfMRDPf7VvWOvqSxHiA5pviytY7GK2fFtU6P
+         4AVgW+dQ+9swtwtQu+Or3dfKYeL+kmq4IOwxYNfd28CUUSZBI37hYfJT+BXMyo0wlG
+         ji+kcrlTq3lRLDp+MT7ApIpA416QkGjJkqsVkDN4=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3BAAB60A0A
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Jiri Kosina <trivial@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH trivial] net: Fix various misspellings of "connect"
+References: <20191024152323.29987-1-geert+renesas@glider.be>
+Date:   Thu, 24 Oct 2019 19:14:39 +0300
+In-Reply-To: <20191024152323.29987-1-geert+renesas@glider.be> (Geert
+        Uytterhoeven's message of "Thu, 24 Oct 2019 17:23:23 +0200")
+Message-ID: <874kzyqfww.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <vbfwocuupyz.fsf@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-10-24 11:23 a.m., Vlad Buslov wrote:
-> On Thu 24 Oct 2019 at 10:35, Jiri Pirko <jiri@resnulli.us> wrote:
->> Wed, Oct 23, 2019 at 04:21:51PM CEST, jhs@mojatatu.com wrote:
->>> On 2019-10-23 9:04 a.m., Vlad Buslov wrote:
->>>>
+Geert Uytterhoeven <geert+renesas@glider.be> writes:
 
-[..]
->>> Jiri complains constantly about all these new per-action TLVs
->>> which are generic. He promised to "fix it all" someday. Jiri i notice
->>> your ack here, what happened? ;->
->>
->> Correct, it would be great. However not sure how exactly to do that now.
->> Do you have some ideas.
->>
- >>
->> But basically this patchset does what was done many many times in the
->> past. I think it was a mistake in the original design not to have some
->> "common attrs" :/ Lesson learned for next interfaces.
-> 
+> Fix misspellings of "disconnect", "disconnecting", "connections", and
+> "disconnected".
+>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/net/wimax/i2400m/usb.c                      | 2 +-
+>  drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 4 ++--
+>  include/net/cfg80211.h                              | 2 +-
+>  net/netfilter/ipvs/ip_vs_ovf.c                      | 2 +-
+>  net/wireless/reg.h                                  | 2 +-
+>  5 files changed, 6 insertions(+), 6 deletions(-)
 
-Jiri, we have a high level TLV space which can be applied to all
-actions. See discussion below with Vlad. At least for this specific
-change we can get away from repeating that mistake.
+For the wireless:
 
-> Jamal, can we reach some conclusion? Do you still suggest to refactor
-> the patches to use TCA_ROOT_FLAGS and parse it in act API instead of
-> individual actions?
-> 
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
-IMO this would certainly help us walk away from having
-every action replicate the same attribute with common semantics.
-refactoring ->init() to take an extra attribute may look ugly but
-is cleaner from a uapi pov. Actions that dont implement the feature
-can ignore the extra parameter(s). It doesnt have to be TCA_ROOT_FLAGS
-but certainly that high level TLV space is the right place to put it.
-WDYT?
-
-cheers,
-jamal
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
