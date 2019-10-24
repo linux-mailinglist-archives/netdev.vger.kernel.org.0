@@ -2,110 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31679E3B6A
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1208E3B70
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504191AbfJXS4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 14:56:01 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:33133 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504162AbfJXSz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 14:55:58 -0400
-Received: by mail-pg1-f193.google.com with SMTP id u23so4088700pgo.0
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 11:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=skkWOjQAG2SIq7AkesQ7N9Msme6HEgCnl64zvN/Bfgc=;
-        b=gmYZ0ZzXFAhIzSn0RsC3E5IY9lO/5YCbqiPHNi32xz8spoK5ic6ykYwFs1FYgYuyey
-         gcSBD2gT0zJ1ONk5m3kGX9BkihBtmDZR4zhv5qJiFZj1KzesHfIkvdeP6G307k4UHrXQ
-         qBwTje3AIyhk8WyJSj1jfRQe9piFiiOHMYH+CHsV7T6zT9HkiC4oXZ/kz7QrHnTjlfhE
-         AnkKJRz+42vz1bkIJy3aohf+CuTT4SvjlNPEv/xMgRLUoRapXBcEzKpinlezFcT//pBX
-         L6NJoY5ibeSgSWkaZteYUoq7L0OCQAxdzPbYdrfXI6doMjJ1z8oxwrf4TYsG08t6/nte
-         qLFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=skkWOjQAG2SIq7AkesQ7N9Msme6HEgCnl64zvN/Bfgc=;
-        b=VwyXqq/nS+4+R6YNw1O07uENvIUzbXrsfD1J0uEoW/w6NLfIqxbxjSYUmRxA3PNEii
-         wC3o5QHLjoF/oPBMAgdoI7G3+TAiMugumR+iMf1XTvlLDaRgSEg+MI+hk5iUvjf1rZwU
-         eopAuMFfQfmopRxwr5b31LzFhUVmY5SHR985XqqiH6lPXaIbTqp4FGwn3xE1y96bOYVm
-         3buObvXr18T39YFscxBqNHYIeYSJli3fTzQcdl8/dtiY83Vm5PhgJ1rO3jXlEXmGitdG
-         r1TqlVcX5iU23XaIkOeZi38uLeSJeDWJoGhRB5YI9XHDSEPzcIhIIAg8keCGV6IW0SsG
-         kjqg==
-X-Gm-Message-State: APjAAAWLWPJh41Fs6Ubv7WJ5FhVOOmP3vvaJX9cVKrP7lj8cMcgxpw35
-        xHVP/nFSuwetw7QCiWX+1yK7rA==
-X-Google-Smtp-Source: APXvYqxkPjWyobL7PL4g3GBnG5LW/qPP3xnmD7I0AhT6krKXNPb0Dyo+2MgK0FL0VIAnXgtEOx6Xsg==
-X-Received: by 2002:a63:9208:: with SMTP id o8mr18075167pgd.256.1571943356385;
-        Thu, 24 Oct 2019 11:55:56 -0700 (PDT)
-Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id f25sm9448405pfk.10.2019.10.24.11.55.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2019 11:55:56 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 11:55:53 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
-Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rajan Vaja <rajan.vaja@xilinx.com>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Vikram Prakash <vikram.prakash@broadcom.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH V3 3/3] bnxt_en: Add support to collect crash dump via
- ethtool
-Message-ID: <20191024115553.11a6f4be@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <1571895161-26487-4-git-send-email-sheetal.tigadoli@broadcom.com>
-References: <1571895161-26487-1-git-send-email-sheetal.tigadoli@broadcom.com>
-        <1571895161-26487-4-git-send-email-sheetal.tigadoli@broadcom.com>
-Organization: Netronome Systems, Ltd.
+        id S2504187AbfJXS5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 14:57:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390146AbfJXS5I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Oct 2019 14:57:08 -0400
+Received: from localhost (unknown [75.104.69.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1FBEC2054F;
+        Thu, 24 Oct 2019 18:57:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571943427;
+        bh=6rAvhoWsIv9Iq+Qlx2pe69JPP8aqVI6WaKGDBiMFCEg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ykkcy/H7gKx/IcnAej6Ytk78cgJtceazuEetR1TkdzRtTRrKImXXA8XBxiPWmKaL6
+         k7vJOxwI0UzExvVbln0V+o+EkyW6mmQd3GT7eaomQ4T+QwoXuGiTBaI/xQ0kr7Jfa3
+         u46D506yl9oOGhkFuff6NN3gHWlLv/S+vPecMJs0=
+Date:   Thu, 24 Oct 2019 14:56:59 -0400
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device
+ to provide RDMA
+Message-ID: <20191024185659.GE260560@kroah.com>
+References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
+ <20190926164519.10471-2-jeffrey.t.kirsher@intel.com>
+ <20190926180556.GB1733924@kroah.com>
+ <7e7f6c159de52984b89c13982f0a7fd83f1bdcd4.camel@intel.com>
+ <20190927051320.GA1767635@kroah.com>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
+ <20191023174448.GP23952@ziepe.ca>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
+ <20191023180108.GQ23952@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191023180108.GQ23952@ziepe.ca>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Oct 2019 11:02:41 +0530, Sheetal Tigadoli wrote:
-> From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+On Wed, Oct 23, 2019 at 03:01:09PM -0300, Jason Gunthorpe wrote:
+> On Wed, Oct 23, 2019 at 05:55:38PM +0000, Ertman, David M wrote:
+> > > Did any resolution happen here? Dave, do you know what to do to get Greg's
+> > > approval?
+> > > 
+> > > Jason
+> > 
+> > This was the last communication that I saw on this topic.  I was taking Greg's silence as
+> > "Oh ok, that works" :)  I hope I was not being too optimistic!
+> > 
+> > If there is any outstanding issue I am not aware of it, but please let me know if I am 
+> > out of the loop!
+> > 
+> > Greg, if you have any other concerns or questions I would be happy to address them! 
 > 
-> Driver supports 2 types of core dumps.
-> 
-> 1. Live dump - Firmware dump when system is up and running.
-> 2. Crash dump - Dump which is collected during firmware crash
->                 that can be retrieved after recovery.
-> Crash dump is currently supported only on specific 58800 chips
-> which can be retrieved using OP-TEE API only, as firmware cannot
-> access this region directly.
-> 
-> User needs to set the dump flag using following command before
-> initiating the dump collection:
-> 
->     $ ethtool -W|--set-dump eth0 N
-> 
-> Where N is "0" for live dump and "1" for crash dump
-> 
-> Command to collect the dump after setting the flag:
-> 
->     $ ethtool -w eth0 data Filename
-> 
-> v3: Modify set_dump to support even when CONFIG_TEE_BNXT_FW=n.
-> Also change log message to netdev_info().
-> 
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Cc: Michael Chan <michael.chan@broadcom.com>
-> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> Signed-off-by: Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>
+> I was hoping to hear Greg say that taking a pci_device, feeding it to
+> the multi-function-device stuff to split it to a bunch of
+> platform_device's is OK, or that mfd should be changed somehow..
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Again, platform devices are ONLY for actual platform devices.  A PCI
+device is NOT a platform device, sorry.
+
+If MFD needs to be changed to handle non-platform devices, fine, but
+maybe what you really need to do here is make your own "bus" of
+individual devices and have drivers for them, as you can't have a
+"normal" PCI driver for these.
+
+Again, please stop abusing platform devices.
+
+greg k-h
