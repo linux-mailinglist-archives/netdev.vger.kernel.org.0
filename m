@@ -2,171 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DDFFE2B2B
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 09:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CE12E2B38
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 09:36:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408615AbfJXHc3 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Oct 2019 03:32:29 -0400
-Received: from mga14.intel.com ([192.55.52.115]:60448 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404582AbfJXHc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 03:32:28 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Oct 2019 00:32:28 -0700
-X-IronPort-AV: E=Sophos;i="5.68,223,1569308400"; 
-   d="scan'208";a="192102228"
-Received: from jnikula-mobl3.fi.intel.com (HELO localhost) ([10.237.66.161])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Oct 2019 00:32:23 -0700
-From:   Jani Nikula <jani.nikula@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        intel-gfx@lists.freedesktop.org,
-        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Julia Lawall <julia.lawall@lip6.fr>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v4] string-choice: add yesno(), onoff(), enableddisabled(), plural() helpers
-In-Reply-To: <20191023155619.43e0013f0c8c673a5c508c1e@linux-foundation.org>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20191023131308.9420-1-jani.nikula@intel.com> <20191023155619.43e0013f0c8c673a5c508c1e@linux-foundation.org>
-Date:   Thu, 24 Oct 2019 10:32:20 +0300
-Message-ID: <877e4uegzf.fsf@intel.com>
+        id S2408652AbfJXHgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 03:36:02 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37246 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727635AbfJXHgC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 03:36:02 -0400
+Received: by mail-wm1-f65.google.com with SMTP id q130so1308567wme.2
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 00:35:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=MP0k9oqLKo2MXql7ty87azfN4eOTLFzoHZI7hoeMdvc=;
+        b=NNSejzb4eR3GHLC/JNZuQcBQ/Zlm4fcxufJee63HiZHqvByCDVrSYX6ynmJUS1Vlri
+         swepfXtEx0dUmpUFu2U0HjfILEI/FnJX3O/D0lwJqRocpKTCty58EpxyqSTYQeQDmp3U
+         gQxwJrMeqdVorPsAyRRok/cZPSgBaSMFR4geWheyRAo9LSqUvVTS/grH0wR4hdfs3GhK
+         BU7aPby03zHrdw/uGY206JyEqdVcvgtdBF7ui5AZsaH4M4YE9edRHYTqUb7QyvDrqmRG
+         4v6WmdPD1jEXuJhPhunIIRDkNQ5dboU/0KF9VxN6Eby4aVw+cmwR1lFIf03UVpxDxWgC
+         NZfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=MP0k9oqLKo2MXql7ty87azfN4eOTLFzoHZI7hoeMdvc=;
+        b=l+WJ80JzjzywGHbimwCLZvEMX2V60pJJXhmDCXGBP7XMpIFH4+omoxvB7jPLCx14CH
+         ohQwBC6FkwliT5c8DWLqXE6Cn9U1RMrARejxS4gLsQvAVhHWfFqjjRxpg+ZuXnRusyD6
+         3WoG18ZsBW8IRLp/+B8/wGFTVMa794vN38AwIvX1aquy641vrPngnywOAwocyBzBW16P
+         8/xEsEMjm/LJuxcnmrxSQqheGwSNVXxpR5JmRIO7xy2wL7ORkFoTEQlR95QdzIAEvXOD
+         i36CMXLaI8PJiX+DBq88zZ2A66sJjcqYA/c84gBt8PXBXjcrjDg/hpAqdlyIY93DUIxn
+         AnRQ==
+X-Gm-Message-State: APjAAAXc/WbJ62Us7NTWtb3Xvuzj6QdQDFIZBofU74bbUPYzDo4ll7py
+        inWHWVxS7L3H81UN2F5m5BZ1UQ==
+X-Google-Smtp-Source: APXvYqz6LFfaxH3Sx7spSVp+Q0/tgPv2uBUnZshbDHE6mTa2V5f/oY0BwjHCivTkwwv0VuqXfNKNOQ==
+X-Received: by 2002:a1c:4d14:: with SMTP id o20mr3626561wmh.7.1571902558417;
+        Thu, 24 Oct 2019 00:35:58 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id o25sm15633338wro.21.2019.10.24.00.35.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2019 00:35:57 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 09:35:57 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Message-ID: <20191024073557.GB2233@nanopsycho.orion>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+ <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Oct 2019, Andrew Morton <akpm@linux-foundation.org> wrote:
-> On Wed, 23 Oct 2019 16:13:08 +0300 Jani Nikula <jani.nikula@intel.com> wrote:
->
->> The kernel has plenty of ternary operators to choose between constant
->> strings, such as condition ? "yes" : "no", as well as value == 1 ? "" :
->> "s":
+Wed, Oct 23, 2019 at 04:21:51PM CEST, jhs@mojatatu.com wrote:
+>On 2019-10-23 9:04 a.m., Vlad Buslov wrote:
 >> 
->> $ git grep '? "yes" : "no"' | wc -l
->> 258
->> $ git grep '? "on" : "off"' | wc -l
->> 204
->> $ git grep '? "enabled" : "disabled"' | wc -l
->> 196
->> $ git grep '? "" : "s"' | wc -l
->> 25
+>> On Wed 23 Oct 2019 at 15:49, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>> > Hi Vlad,
+>> > 
+>
+>> > I understand your use case being different since it is for h/w
+>> > offload. If you have time can you test with batching many actions
+>> > and seeing the before/after improvement?
 >> 
->> Additionally, there are some occurences of the same in reverse order,
->> split to multiple lines, or otherwise not caught by the simple grep.
+>> Will do.
+>
+>Thanks.
+>
+>I think you may have published number before, but would be interesting
+>to see the before and after of adding the action first and measuring the
+>filter improvement without caring about the allocator.
+>
 >> 
->> Add helpers to return the constant strings. Remove existing equivalent
->> and conflicting functions in i915, cxgb4, and USB core. Further
->> conversion can be done incrementally.
+>> > 
+>> > Note: even for h/w offload it makes sense to first create the actions
+>> > then bind to filters (in my world thats what we end up doing).
+>> > If we can improve the first phase it is a win for both s/w and hw use
+>> > cases.
+>> > 
+>> > Question:
+>> > Given TCA_ACT_FLAGS_FAST_INIT is common to all actions would it make
+>> > sense to use Could you have used a TLV in the namespace of TCA_ACT_MAX
+>> > (outer TLV)? You will have to pass a param to ->init().
 >> 
->> The main goal here is to abstract recurring patterns, and slightly clean
->> up the code base by not open coding the ternary operators.
+>> It is not common for all actions. I omitted modifying actions that are
+>> not offloaded and some actions don't user percpu allocator at all
+>> (pedit, for example) and have no use for this flag at the moment.
 >
-> Fair enough.
+>pedit just never got updated (its simple to update). There is
+>value in the software to have _all_ the actions use per cpu stats.
+>It improves fast path performance.
 >
->> --- /dev/null
->> +++ b/include/linux/string-choice.h
->> @@ -0,0 +1,31 @@
->> +/* SPDX-License-Identifier: MIT */
->> +/*
->> + * Copyright © 2019 Intel Corporation
->> + */
->> +
->> +#ifndef __STRING_CHOICE_H__
->> +#define __STRING_CHOICE_H__
->> +
->> +#include <linux/types.h>
->> +
->> +static inline const char *yesno(bool v)
->> +{
->> +	return v ? "yes" : "no";
->> +}
->> +
->> +static inline const char *onoff(bool v)
->> +{
->> +	return v ? "on" : "off";
->> +}
->> +
->> +static inline const char *enableddisabled(bool v)
->> +{
->> +	return v ? "enabled" : "disabled";
->> +}
->> +
->> +static inline const char *plural(long v)
->> +{
->> +	return v == 1 ? "" : "s";
->> +}
->> +
->> +#endif /* __STRING_CHOICE_H__ */
->
-> These aren't very good function names.  Better to create a kernel-style
-> namespace such as "choice_" and then add the expected underscores:
->
-> choice_yes_no()
-> choice_enabled_disabled()
-> choice_plural()
+>Jiri complains constantly about all these new per-action TLVs
+>which are generic. He promised to "fix it all" someday. Jiri i notice
+>your ack here, what happened? ;->
 
-I was merely using existing function names used in several drivers in
-the kernel. But I can rename no problem.
+Correct, it would be great. However not sure how exactly to do that now.
+Do you have some ideas.
 
-Are your suggestions the names we can settle on now, or should I expect
-to receive more opinions, but only after I send v5?
-
-> (Example: note that slabinfo.c already has an "onoff()").
-
-Under tools/ though? I did mean to address all conflicts in this patch.
-
-> Also, I worry that making these functions inline means that each .o
-> file will contain its own copy of the strings ("yes", "no", "enabled",
-> etc) if the .c file calls the relevant helper.  I'm not sure if the
-> linker is smart enough (yet) to fix this up.  If not, we will end up
-> with a smaller kernel by uninlining these functions. 
-> lib/string-choice.c would suit.
->
-> And doing this will cause additional savings: calling a single-arg
-> out-of-line function generates less .text than calling yesno().  When I
-> did this: 
->
-> --- a/include/linux/string-choice.h~string-choice-add-yesno-onoff-enableddisabled-plural-helpers-fix
-> +++ a/include/linux/string-choice.h
-> @@ -8,10 +8,7 @@
->  
->  #include <linux/types.h>
->  
-> -static inline const char *yesno(bool v)
-> -{
-> -	return v ? "yes" : "no";
-> -}
-> +const char *yesno(bool v);
->  
->  static inline const char *onoff(bool v)
->  {
->
-> The text segment of drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.o
-> (78 callsites) shrunk by 118 bytes.
-
-So we've already been back and forth on that particular topic in the
-history of this patch. v2 had lib/string-choice.c and no inlines [1].
-
-In the end, starting to use functions, inline or not, will let us rework
-the implementation as we see fit, without touching the callers.
-
-Again, it's no problem to go back to lib/string-choice.c, *once* more,
-and the effort is trivial, but the ping-pong is getting old.
-
-
-BR,
-Jani.
-
-
-[1] http://lore.kernel.org/r/20190930141842.15075-1-jani.nikula@intel.com
-
--- 
-Jani Nikula, Intel Open Source Graphics Center
+But basically this patchset does what was done many many times in the
+past. I think it was a mistake in the original design not to have some
+"common attrs" :/ Lesson learned for next interfaces.
