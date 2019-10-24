@@ -2,87 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1208E3B70
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:57:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E9AE3B8F
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 21:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504187AbfJXS5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 14:57:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40400 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390146AbfJXS5I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 14:57:08 -0400
-Received: from localhost (unknown [75.104.69.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1FBEC2054F;
-        Thu, 24 Oct 2019 18:57:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571943427;
-        bh=6rAvhoWsIv9Iq+Qlx2pe69JPP8aqVI6WaKGDBiMFCEg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ykkcy/H7gKx/IcnAej6Ytk78cgJtceazuEetR1TkdzRtTRrKImXXA8XBxiPWmKaL6
-         k7vJOxwI0UzExvVbln0V+o+EkyW6mmQd3GT7eaomQ4T+QwoXuGiTBaI/xQ0kr7Jfa3
-         u46D506yl9oOGhkFuff6NN3gHWlLv/S+vPecMJs0=
-Date:   Thu, 24 Oct 2019 14:56:59 -0400
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device
- to provide RDMA
-Message-ID: <20191024185659.GE260560@kroah.com>
-References: <20190926164519.10471-1-jeffrey.t.kirsher@intel.com>
- <20190926164519.10471-2-jeffrey.t.kirsher@intel.com>
- <20190926180556.GB1733924@kroah.com>
- <7e7f6c159de52984b89c13982f0a7fd83f1bdcd4.camel@intel.com>
- <20190927051320.GA1767635@kroah.com>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
- <20191023174448.GP23952@ziepe.ca>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
- <20191023180108.GQ23952@ziepe.ca>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191023180108.GQ23952@ziepe.ca>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+        id S2504243AbfJXTCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 15:02:11 -0400
+Received: from mail-yw1-f73.google.com ([209.85.161.73]:51275 "EHLO
+        mail-yw1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504227AbfJXTCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 15:02:10 -0400
+Received: by mail-yw1-f73.google.com with SMTP id c189so2003532ywe.18
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 12:02:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=StLsOwadC4o8p6VwUA79Cb5g5hBpyjdxZ8Va4K7Io2Y=;
+        b=QZhxhWfvgj/crSBx9d+GO3r08rd5P6BVS82LNd+Ehg/f0jTdzBLrAWrGMEvIdVP4So
+         xLhPAFCIpMtjXdHGwFect6AFUvfUFd+IVeY/umCEsFDjuz8O+g+O3UdJTQ/KW04oS0bq
+         tphX/B5Q+/2Tts6ASFcwP1m8d6ZTvrpdS7Wf8Y/RcniR30+O309uhBSFNNpON/fmNNAp
+         KRAdi522wh+TkDnIiBT7Z4HZ55B8mVV7sgY2paZq8DQgB8+VJa1wEv3+3105cm/EdZuK
+         Wms4gkFotY43Yd3dEREwoDYDJGZALonwJKUlH1g8D/kGhWWcR+1ffw6nNdrSM+AKkhg7
+         vJyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=StLsOwadC4o8p6VwUA79Cb5g5hBpyjdxZ8Va4K7Io2Y=;
+        b=H65Ne+2bklCX2A2i/C2SrJ6Dkum24zPtn/1xmRozj+xtjmpg+R6cZll60JMcKXO3LZ
+         frvQzCPRThzUf5gMndw323xF4dAqTZNX7KwWbt9qHL4Rw9tI03+O/xafJg4aYOaUErfG
+         8O9atS9fxEgFLzYvjvb35cR5RHl4UkSWo3Af7K5QNirCJnUgaqJKVxqW1eXqefFeojGr
+         h3Gw8lLMwWqAC5mPm8D5oWEZQRHpbvgBA/FqdAkvRahcsOmQvHvlEMxsVn9zZKnCK/OT
+         iqCJzrmw6Pf4cgE01/o5MfiteGTUKm/NueuKzqVmZSt3vmyb3wN6n+1rrmqgmgZM7InN
+         IVXQ==
+X-Gm-Message-State: APjAAAVUP6R6IOksfcAFT/VNj2G6StjPmy4I9NsSrrNQOh4Mwe69qmDO
+        lneOWDyc8ExY5nFwdUaOno4WwrPOwGRI
+X-Google-Smtp-Source: APXvYqwwBcGirXU8CMxMhVsbS7PauC9YYQN7HiutNMY0S16PECuKPj/2/yGYD9TCX9TG+ynf3AbW7fdfxlYV
+X-Received: by 2002:a0d:d84b:: with SMTP id a72mr7582697ywe.331.1571943727482;
+ Thu, 24 Oct 2019 12:02:07 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 12:01:53 -0700
+In-Reply-To: <20191023005337.196160-1-irogers@google.com>
+Message-Id: <20191024190202.109403-1-irogers@google.com>
+Mime-Version: 1.0
+References: <20191023005337.196160-1-irogers@google.com>
+X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
+Subject: [PATCH v3 0/9] Improvements to memory usage by parse events
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 03:01:09PM -0300, Jason Gunthorpe wrote:
-> On Wed, Oct 23, 2019 at 05:55:38PM +0000, Ertman, David M wrote:
-> > > Did any resolution happen here? Dave, do you know what to do to get Greg's
-> > > approval?
-> > > 
-> > > Jason
-> > 
-> > This was the last communication that I saw on this topic.  I was taking Greg's silence as
-> > "Oh ok, that works" :)  I hope I was not being too optimistic!
-> > 
-> > If there is any outstanding issue I am not aware of it, but please let me know if I am 
-> > out of the loop!
-> > 
-> > Greg, if you have any other concerns or questions I would be happy to address them! 
-> 
-> I was hoping to hear Greg say that taking a pci_device, feeding it to
-> the multi-function-device stuff to split it to a bunch of
-> platform_device's is OK, or that mfd should be changed somehow..
+The parse events parser leaks memory for certain expressions as well
+as allowing a char* to reference stack, heap or .rodata. This series
+of patches improves the hygeine and adds free-ing operations to
+reclaim memory in the parser in error and non-error situations.
 
-Again, platform devices are ONLY for actual platform devices.  A PCI
-device is NOT a platform device, sorry.
+The series of patches was generated with LLVM's address sanitizer and
+libFuzzer:
+https://llvm.org/docs/LibFuzzer.html
+called on the parse_events function with randomly generated input. With
+the patches no leaks or memory corruption issues were present.
 
-If MFD needs to be changed to handle non-platform devices, fine, but
-maybe what you really need to do here is make your own "bus" of
-individual devices and have drivers for them, as you can't have a
-"normal" PCI driver for these.
+The v3 patches address review comments from Jiri Olsa improving commit
+messages, handling ENOMEM errors from strdup better, and removing a
+printed warning if an invalid event is passed.
 
-Again, please stop abusing platform devices.
+The v2 patches are preferable to an earlier proposed patch:
+   perf tools: avoid reading out of scope array
 
-greg k-h
+Ian Rogers (9):
+  perf tools: add parse events append error
+  perf tools: splice events onto evlist even on error
+  perf tools: ensure config and str in terms are unique
+  perf tools: move ALLOC_LIST into a function
+  perf tools: avoid a malloc for array events
+  perf tools: add destructors for parse event terms
+  perf tools: before yyabort-ing free components
+  perf tools: if pmu configuration fails free terms
+  perf tools: add a deep delete for parse event terms
+
+ tools/perf/util/parse-events.c | 193 +++++++++++-----
+ tools/perf/util/parse-events.h |   3 +
+ tools/perf/util/parse-events.y | 388 ++++++++++++++++++++++++---------
+ tools/perf/util/pmu.c          |  32 +--
+ 4 files changed, 449 insertions(+), 167 deletions(-)
+
+-- 
+2.23.0.866.gb869b98d4c-goog
+
