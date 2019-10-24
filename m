@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8EACE35FC
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:52:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6599EE35FF
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:52:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409520AbfJXOwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2409516AbfJXOwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 24 Oct 2019 10:52:33 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:42195 "EHLO
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:33791 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2409497AbfJXOwd (ORCPT
+        by vger.kernel.org with ESMTP id S1732293AbfJXOwd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 10:52:33 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id B54F4206FC;
-        Thu, 24 Oct 2019 10:52:29 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id C02F521B10;
+        Thu, 24 Oct 2019 10:52:30 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 24 Oct 2019 10:52:29 -0400
+  by compute3.internal (MEProxy); Thu, 24 Oct 2019 10:52:30 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=znKBAOkk+e/oSRCFn
-        dkQgLOtrHfcO8rNO9vfSmgnYkQ=; b=KzKXnlyFalTrgu3DZZre9d81khZ5QNcoH
-        gS0tAfojpzJqEXL4hR3LslR0gU6vRhT9icXemK99Ms9siWtRVBKhNCDgAt9PH4Ym
-        mpg6P5nQPAYhRCil/Z4Hk9n/DWUFDq40UBWOnarzmSYSOAh3hTbcvHKHcPHF6cDq
-        9FgTyHBIgdSluUeAglVLGYk3dSm0A3cmQtOnB9Lep6ebjGF2f97dGOs/yXnTfDHb
-        rHFX+5fmpNsXTX2Wvjdoabn7fUkm4fFpN+yhseCNsVR9OXSojGsECUQu5IwbkPiG
-        6M45kYN3nJUrAhgIePDKoZyET+ODd9lO2PTU6CRPhFEJTcFxcPKgA==
-X-ME-Sender: <xms:rbqxXeF8PonY3_PpoCKgUjpoLt_Ypr8k6kQ0TWB58u8g6YOaZdq0ww>
+        :in-reply-to:message-id:mime-version:references:subject:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; bh=QJXXr10jtVMWkJj893hGQGpAkZiIW6A5BQ4tyaq05Ho=; b=AoJBdGr+
+        CPGJdzdw50lProJd6/ZN49nouupHRzZtjgWhE2mMc6bFovTZwfARv9ZIsCt8Bpu8
+        072/2LQz9AgZHAihnfnYAhPaHPEOs+vj9b43vYJkso8p2HKFySnwu6iulV9Z+Qaq
+        xZzcTGItUz6JHsLJuAje9ccxyERKsZy1xncQoSUXu+9dTimWhRWZd1e+Ce4MDX85
+        hy7NzsqEpLyuAxyJ07Yy3vPxcj+Wch9PuW9058DvR3FpE/LdZuSp6//oymcyVsuE
+        WXIOtkIIiclVISx67Dj6/rhBbmhimTPSrokNi6hJB59IrKB1K1ReK/tPNtY4JLEC
+        1b7cGaHOLsKqBA==
+X-ME-Sender: <xms:rrqxXXP-OzBuAwebgAYwImf_CFOalZ3B9pdDXGAStZ2t6h_7AiaaVQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrledugdekudcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
-    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
-    rdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihii
-    vgeptd
-X-ME-Proxy: <xmx:rbqxXaBX5q_PvzyDrSzuz1T5LulA77qYLvc-0Gn1hy57DqKi0djuog>
-    <xmx:rbqxXQ3Zzgz0oIfgd6MHD4P7LIFRQfCep995aLgj5RQt91YFRg2L1Q>
-    <xmx:rbqxXfO6BWNliBUiNMepjWcYF7bJdGixozd9Y66ledRWG247ULBicg>
-    <xmx:rbqxXXrgdO5SAE1d9vqUtO-MAsTxaOVSeeETwmnwrLHtgi7DX_TFyA>
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmh
+    grihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfu
+    ihiivgeptd
+X-ME-Proxy: <xmx:rrqxXZD6CSjbMksMChjdfbf91YGKpu-iIe9WqAKGCIxK0lEYG8SMGg>
+    <xmx:rrqxXa8zRA1nEA9zOpxdU8QdURrEDdA4h8whBDlkf8GmFZr1zUxfSA>
+    <xmx:rrqxXbn_3-K2gKBkPNsvZgLw_7WhMFdTUGlfbeTw3mnPpz-VT89R_A>
+    <xmx:rrqxXR8_ZbahHN0YfsOtG0osAdhJQHlFygTJ4pI-0hiie2aOgdVtZw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0F4DC8005A;
-        Thu, 24 Oct 2019 10:52:27 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 6515380064;
+        Thu, 24 Oct 2019 10:52:29 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 0/3] mlxsw: Update firmware version
-Date:   Thu, 24 Oct 2019 17:51:46 +0300
-Message-Id: <20191024145149.6417-1-idosch@idosch.org>
+Subject: [PATCH net-next 1/3] mlxsw: reg: Increase size of MPAR register
+Date:   Thu, 24 Oct 2019 17:51:47 +0300
+Message-Id: <20191024145149.6417-2-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20191024145149.6417-1-idosch@idosch.org>
+References: <20191024145149.6417-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -58,29 +61,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-This patch set updates the firmware version for Spectrum-1 and enforces
-a firmware version for Spectrum-2.
+In new firmware versions this register is extended with a sampling rate
+for Spectrum-2 and future ASICs.
 
-The version adds support for querying port module type. It will be used
-by a followup patch set from Jiri to make port split code more generic.
+Increase the size of the register to ensure the field is initialized to
+0 which means every packet is mirrored.
 
-Patch #1 increases the size of an existing register in order to be
-compatible with the new firmware version. In the future the firmware
-will assign default values to fields not specified by the driver.
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Petr Machata <petrm@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/reg.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch #2 bumps the firmware version for Spectrum-1.
-
-Patch #3 enforces a minimum firmware version for Spectrum-2.
-
-Ido Schimmel (3):
-  mlxsw: reg: Increase size of MPAR register
-  mlxsw: Bump firmware version to 13.2000.2308
-  mlxsw: Enforce firmware version for Spectrum-2
-
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  2 +-
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 20 ++++++++++++++++++-
- 2 files changed, 20 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+index adb63a266fc7..7f7f1b95290f 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
+@@ -8680,7 +8680,7 @@ mlxsw_reg_mpat_eth_rspan_l3_ipv6_pack(char *payload, u8 ttl,
+  * properties.
+  */
+ #define MLXSW_REG_MPAR_ID 0x901B
+-#define MLXSW_REG_MPAR_LEN 0x08
++#define MLXSW_REG_MPAR_LEN 0x0C
+ 
+ MLXSW_REG_DEFINE(mpar, MLXSW_REG_MPAR_ID, MLXSW_REG_MPAR_LEN);
+ 
 -- 
 2.21.0
 
