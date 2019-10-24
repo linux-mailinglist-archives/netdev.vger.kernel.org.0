@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72F56E2CBB
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 10:57:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDA5FE2CC1
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 11:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387888AbfJXI5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 04:57:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40942 "EHLO mail.kernel.org"
+        id S2388036AbfJXJBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 05:01:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727079AbfJXI5s (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 04:57:48 -0400
+        id S1727079AbfJXJBy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Oct 2019 05:01:54 -0400
 Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A391320684;
-        Thu, 24 Oct 2019 08:57:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B740120856;
+        Thu, 24 Oct 2019 09:01:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571907467;
-        bh=BTjr1t8fwFjOffdX8X6seEXqc/YhqXcaeGnwIltXBCs=;
+        s=default; t=1571907713;
+        bh=37iuuaGpSmraY0pA/lBQbaIYjNaOnB//MJRR10tlGlg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=P5YVo+tjFBL9EadMv5DGXk+gWlFsjGzZiJPQ8yl1PHoUUhyGtBviOCs+rRJABvnio
-         RJ/QYdTeqF5Qa0agkS5pYRj4GkrDqQbPnFhQf1HOcVYC9OPzOxj5Ibo31N6xUpTRwa
-         hcxwObmfhCHQd+cI7tFx0U8OPxQpAGXgxGsOef/w=
-Date:   Thu, 24 Oct 2019 10:57:41 +0200
+        b=WsYd/vXeUwGgRpVKkKMB3UTUOugINmUCmt2cIG6og3xSmeYIrEmJsw3QG8yaFNRMi
+         7pcoeqAIa7nI8dhQ/WyxVBaGMCSf1W/w39q7gaFHsLnv4U4gIIYKc+EsN2UND+5Fei
+         au6SML7ioSVxbWJZFH1odvzNnDd9NYyN5l9+L9Uo=
+Date:   Thu, 24 Oct 2019 11:01:48 +0200
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
-        sgruszka@redhat.com, lorenzo.bianconi@redhat.com,
-        oleksandr@natalenko.name, netdev@vger.kernel.org
+To:     Stanislaw Gruszka <sgruszka@redhat.com>
+Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org, nbd@nbd.name,
+        lorenzo.bianconi@redhat.com, oleksandr@natalenko.name,
+        netdev@vger.kernel.org
 Subject: Re: [PATCH wireless-drivers 2/2] mt76: dma: fix buffer unmap with
  non-linear skbs
-Message-ID: <20191024085741.GB9346@localhost.localdomain>
+Message-ID: <20191024090148.GC9346@localhost.localdomain>
 References: <cover.1571868221.git.lorenzo@kernel.org>
  <1f7560e10edd517bfd9d3c0dd9820e6f420726b6.1571868221.git.lorenzo@kernel.org>
- <d1cf048c-3541-091e-7237-14199ddc89bc@nbd.name>
+ <20191024081816.GA2440@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="61jdw2sOBCFtR2d/"
+        protocol="application/pgp-signature"; boundary="S1BNGpv0yoYahz37"
 Content-Disposition: inline
-In-Reply-To: <d1cf048c-3541-091e-7237-14199ddc89bc@nbd.name>
+In-Reply-To: <20191024081816.GA2440@redhat.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -47,20 +47,33 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---61jdw2sOBCFtR2d/
+--S1BNGpv0yoYahz37
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Oct 24, Felix Fietkau wrote:
-> On 2019-10-24 00:23, Lorenzo Bianconi wrote:
+> On Thu, Oct 24, 2019 at 12:23:16AM +0200, Lorenzo Bianconi wrote:
 > > mt76 dma layer is supposed to unmap skb data buffers while keep txwi
 > > mapped on hw dma ring. At the moment mt76 wrongly unmap txwi or does
 > > not unmap data fragments in even positions for non-linear skbs. This
 > > issue may result in hw hangs with A-MSDU if the system relies on IOMMU
 > > or SWIOTLB. Fix this behaviour properly unmapping data fragments on
 > > non-linear skbs.
-> >=20
+>=20
+> If we have to keep txwi mapped, before unmap fragments, when then
+> txwi is unmaped ?
+
+txwi are mapped when they are crated in mt76_alloc_txwi(). Whenever we need=
+ to
+modify them we sync the DMA in mt76_dma_tx_queue_skb(). txwi are unmapped in
+mt76_tx_free() at driver unload.
+
+Regards,
+Lorenzo
+
+>=20
+> Stanislaw
+>=20
 > > Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chi=
 psets")
 > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
@@ -86,38 +99,37 @@ t idx,
 > > +	bool first =3D e->skb =3D=3D DMA_DUMMY_DATA || e->txwi =3D=3D DMA_DUM=
 MY_DATA ||
 > > +		     (e->skb && !skb_is_nonlinear(e->skb));
-> It seems to me that these conditions could be true not just for the
-> first entry, but also following entries except for the last one.
-> I think we should add a 'bool has_txwi' field in struct mt76_queue_entry
-> to indicate that the first dma address points to a txwi that should not
-> be unmapped.
-
-I agree 'first' is misleading since this condition is used to unamp even the
-very last data fragment if we have an even number of data fragments
-(e.g linear area + one fragment). For the following entries except for the =
-last
-one 'first' is false since e->skb is NULL (e->skb is not NULL just for the =
-very
-last entry), right? Btw we can remove mcu bool.
-In order to improve code readability I agree to add a bool in mt76_queue_en=
-try to
-unmap buf0. I will fix it in v2.
-
-Regards,
-Lorenzo
-
+> > =20
+> > -	if (!e->txwi || !e->skb) {
+> > +	if (!first || mcu) {
+> >  		__le32 addr =3D READ_ONCE(q->desc[idx].buf0);
+> >  		u32 len =3D FIELD_GET(MT_DMA_CTL_SD_LEN0, ctrl);
+> > =20
+> > @@ -105,7 +108,8 @@ mt76_dma_tx_cleanup_idx(struct mt76_dev *dev, struc=
+t mt76_queue *q, int idx,
+> >  				 DMA_TO_DEVICE);
+> >  	}
+> > =20
+> > -	if (!(ctrl & MT_DMA_CTL_LAST_SEC0)) {
+> > +	if (!(ctrl & MT_DMA_CTL_LAST_SEC0) ||
+> > +	    e->txwi =3D=3D DMA_DUMMY_DATA) {
+> >  		__le32 addr =3D READ_ONCE(q->desc[idx].buf1);
+> >  		u32 len =3D FIELD_GET(MT_DMA_CTL_SD_LEN1, ctrl);
+> > =20
+> > --=20
+> > 2.21.0
+> >=20
 >=20
-> - Felix
 
---61jdw2sOBCFtR2d/
+--S1BNGpv0yoYahz37
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXbFngAAKCRA6cBh0uS2t
-rIOMAP4kXYaGXu6TyfeMHj4m9Sph4eULmVOtlmKWnY/rG9ZzPgD+Ig0ULFYk70p2
-x/mfRJzltLsK/Ek+dmCvDDUBYf58FAQ=
-=VoWZ
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXbFoeQAKCRA6cBh0uS2t
+rAfIAQCKXW+QaHwFSGNhLoEhG13ebnxRYqwqcGerYQkBKs7z2QEA0NHlfRKfi1KU
+hyVS0QnEWEh+SMgUeS3fVzeLjXCdHgU=
+=T+m5
 -----END PGP SIGNATURE-----
 
---61jdw2sOBCFtR2d/--
+--S1BNGpv0yoYahz37--
