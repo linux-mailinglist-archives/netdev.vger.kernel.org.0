@@ -2,108 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8747DE39EB
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29891E3A10
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:31:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503794AbfJXR0E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 13:26:04 -0400
-Received: from mout.gmx.net ([212.227.17.21]:55403 "EHLO mout.gmx.net"
+        id S2503818AbfJXRbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 13:31:13 -0400
+Received: from mga12.intel.com ([192.55.52.136]:33122 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389384AbfJXR0E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 13:26:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1571937941;
-        bh=KY68C9Yu5htKWu3Gi59bYPna7hMIfwfzLjRCUgSfA84=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=ba87kEAdPGHzcF9yZLUldTeAelIG+B6EH41VfPWNJBP5pjil2oyErGHZPmPojmMdZ
-         AeGv281bxMW4mAWNkaxutopdZuI7l5mubwgYKvZuzTfgyp7HQz1PF3ll9efTC45W0Y
-         5i0JHhTDJ7lTDTJbsmkhhJ0e2HIjvcnzINtvFWk0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.162] ([37.4.249.112]) by mail.gmx.com (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MK3Rm-1ij3VL0mVC-00LVdz; Thu, 24
- Oct 2019 19:25:41 +0200
-Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for interrupt
- handling
-To:     Daniel Wagner <dwagner@suse.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-References: <20191018082817.111480-1-dwagner@suse.de>
- <20191018131532.dsfhyiilsi7cy4cm@linutronix.de>
- <20191022101747.001b6d06@cakuba.netronome.com>
- <20191023074719.gcov5xfrcvns5tlg@beryllium.lan>
- <20191023080640.zcw2f2v7fpanoewm@beryllium.lan>
- <20191024104317.32bp32krrjmfb36p@linutronix.de>
- <20191024110610.lwwy75dkgwjdxml6@beryllium.lan>
- <20191024141216.wz2dcdxy4mrl2q5a@beryllium.lan>
-From:   Stefan Wahren <wahrenst@gmx.net>
-Message-ID: <78ab19da-2f30-86e0-fad1-667f5e6ba8b1@gmx.net>
-Date:   Thu, 24 Oct 2019 19:25:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729458AbfJXRbM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Oct 2019 13:31:12 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Oct 2019 10:31:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,225,1569308400"; 
+   d="scan'208";a="282008162"
+Received: from nesterov-mobl1.ccr.corp.intel.com (HELO localhost) ([10.252.8.153])
+  by orsmga001.jf.intel.com with ESMTP; 24 Oct 2019 10:30:52 -0700
+Date:   Thu, 24 Oct 2019 20:30:51 +0300
+From:   Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+To:     Mark Salyzyn <salyzyn@android.com>
+Cc:     linux-kernel@vger.kernel.org, kernel-team@android.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "David (ChunMing) Zhou" <David1.Zhou@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        VMware Graphics <linux-graphics-maintainer@vmware.com>,
+        Thomas Hellstrom <thellstrom@vmware.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Jukka Rissanen <jukka.rissanen@linux.intel.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Matthew Garrett <matthewgarrett@google.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        hersen wu <hersenxs.wu@amd.com>, Roman Li <Roman.Li@amd.com>,
+        Maxim Martynov <maxim@arista.com>,
+        David Ahern <dsahern@gmail.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Feng Tang <feng.tang@intel.com>,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Rafael Aquini <aquini@redhat.com>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-efi@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-wpan@vger.kernel.org
+Subject: Re: [PATCH] Cleanup: replace prefered with preferred
+Message-ID: <20191024173051.GB7948@linux.intel.com>
+References: <20191022214208.211448-1-salyzyn@android.com>
+ <20191023115637.GA23733@linux.intel.com>
+ <fa12cb96-7a93-bf85-214d-a7bfaf8b8b0a@android.com>
 MIME-Version: 1.0
-In-Reply-To: <20191024141216.wz2dcdxy4mrl2q5a@beryllium.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:hjlWqLnBbTZvsRMVvhS9+KeBYXyxE0wxS2hKJr3tZpXeXnUQWSG
- 52b4hCqDmBhPy53d+ftQ4wk08A/dNzBCP033Q4y1jRMHjsqc2r+tz1caYLeZ+vaLzy4tkbF
- x2+hULAO513/i8B4DU/fRSUQ7Az4vHZQ3WJekcgrWjiQ2qzFT18+El14i15TEg9v+wZlOz2
- OCdt/JHCzN6CW2RMawymA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eG/2jn090SA=:jlq9kslPHqyYUttM5c5zip
- oDhA/ZDnF2wu7OMPeFDpb+FTPw7jnSTTGeemYZxbmLM9BonU8Vo1k2d6vZWfur6trpuD7MvGt
- Y7Qr+j82KYiLB0POZo6NbRr19Kzl05xk5s9WJvTBElPX1VFaC/ty1VEBdcBnUCav2eBK0Pm1e
- X1inHueW9v+alntHNx2M5SEqfgbZ/XQUGYJfEBw5VbY4OkUxe+FE4NG/B5dRG9ewT/o00rSUj
- zX+wTbPRg5O+loHXcnKYDSjBWKwzYmObrv0aDfFvVSz4leSq0gYFJNF2YrtVGVMrWVLbzma1u
- h/52lkoGhyUWVS8B1dmjNsLLtE2Eh9qB2nPnY4QhTZm1zkeGpO5o38IMLeRf/xTteClBdr5eV
- 9CFSHdDLq7Q84TANLjw+Pxto1n0PkQoj7fI+04FZGA1vcK63/A5KK29Cj4FJfzRb9tiA3hars
- etmOP844lFdsMTOEwF0479spzMfn07fASbdSLZ6U7kdw6HIKAoiVSLfjXUeWJqG0Sp286WLuI
- fwK8Vj9qltIrJwZzd1PvD+JeaN3DEW8bexq5SQpksvMMiL0uspIKDQ1UFdbt4xqMx09THzqKf
- b6JWU2+5rRand2yaWFAS5bj9VVSLs0SQOsl1S6B4f0GgOqc2gh2Oy9goOGQgmj7l+Joviyddy
- FfgzL5nuEoftl8PgaEjOM5G5KSGj1nbOnlUk/vjopLSOo5VwaZ7PIfm+ReYUUyVlf2pPqp/EQ
- DSIkttdQlBqIjYxvI2YUPgRQhyydSpcuv0BCMzEgAKRQekC7UoTJyN8eF8kxwblf5ZJu95QgE
- E/Mie8G1Vq/ohm1+rvkJEdEpXjjGbDktnFs0USTpRiYZiBzbVBOEiEEx5GMApfTBtBjmd0R76
- qKWQFcD/0aG3P2bkHcz9rvWDYT5NeyC5c8fHvomlCExrMkn+WhBFlTmy2hwSVSRsoFJIoAynf
- SSBs66wHHuConiLYJrJ4zjIPugIuEp7WUA8Xk1Ty253HGbhIhwxBeRicoY0w4/eEohnW5HxkQ
- OM9h2oepH46A7Sal0ca29e7AmOcqQNfMKb5TvGC5Vxm7WBcLgabiyuZf5/u7taioa3jBktZ5y
- x9Kf6Iq6rK30bpfqJ/4D+n3jFjn6rpi0l/5SXYEUlLdWU93GvR7KTusoL//0qdI24jqZSTr1+
- FXj3p5wB2OKGcdqH3LFtNoDb3JWvtxJS6xTY2sb81Ek/udv+irkDaUtzQsbgWqV7et9ptNy5b
- gioi/Fd8uFqLXxkIE3CbVf3u+oYRqvcI9EGJts7FgYCsMorohrHLgTzYV1m0=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fa12cb96-7a93-bf85-214d-a7bfaf8b8b0a@android.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+On Wed, Oct 23, 2019 at 08:40:59AM -0700, Mark Salyzyn wrote:
+> On 10/23/19 4:56 AM, Jarkko Sakkinen wrote:
+> > On Tue, Oct 22, 2019 at 02:41:45PM -0700, Mark Salyzyn wrote:
+> > > Replace all occurrences of prefered with preferred to make future
+> > > checkpatch.pl's happy.  A few places the incorrect spelling is
+> > > matched with the correct spelling to preserve existing user space API.
+> > > 
+> > > Signed-off-by: Mark Salyzyn <salyzyn@android.com>
+> > I'd fix such things when the code is otherwise change and scope this
+> > patch only to Documentation/. There is no pragmatic benefit of doing
+> > this for the code.
+> > 
+> > /Jarkko
+> 
+> The pragmatic benefit comes with the use of an ABI/API checker (which is a
+> 'distro' thing, not a top of tree kernel thing) produces its map which is
+> typically required to be co-located in the same tree as the kernel
+> repository. Quite a few ABI/API update checkins result in a checkpatch.pl
+> complaint about the misspelled elements being (re-)recorded due to
+> proximity. We have a separate task to improve how it is tracked in Android
+> to reduce milepost marker changes that result in sweeping changes to the
+> database which would reduce the occurrences.
+> 
+> I will split this between pure and inert documentation/comments for now,
+> with a followup later for the code portion which understandably is more
+> controversial.
+> 
+> Cleanup is the least appreciated part of kernel maintenance ;-}.
+> 
+> Sincerely -- Mark Salyzyn
 
-Am 24.10.19 um 16:12 schrieb Daniel Wagner:
-> On Thu, Oct 24, 2019 at 01:06:10PM +0200, Daniel Wagner wrote:
->
-> Sebastians suggested to try the RPi kernel. The rpi-5.2.y kernel
-> behaves exactly the same. That is one PHY interrupt and later on NFS
-> timeouts.
->
-> According their website the current shipped RPi kernel is in version
-> 4.18. Here is what happends with rpi-4.18.y:
+I'm a strong believer of "evolutionary" approach. Patch sets for the
+most part (everything in the end has to be considered case by case, not
+a strict rule) should have some functional changes involved.
 
-No, it's 4.19. It's always a LTS kernel.
+What I do require for the parts that I maintain is that any new change
+will result cleaner code base than the one that existed before that
+change was applied. Again, there are some exceptions to this e.g.
+circulating a firmware bug but this is my driving guideline as a
+maintainer.
 
-I'm curious, what's the motivation behind this? The rpi tree contains
-additional hacks, so i'm not sure the results are comparable. Also the
-USB host driver is a different one.
+Doing cleanups just for cleanups can sometimes add unnecessary merge
+conflicts when backporting patches to stable kernels. Thus, if you are
+doing just a cleanup you should have extremely good reasons to do so.
 
-> There are no NFS timeouts and commands like 'apt update' work reasoble
-> fast. So no long delays or hangs. Time to burn this hardware.
-
-Since enabling lan78xx for Raspberry Pi 3B+, we found a lot of driver
-issues. So i'm not really surprised, that there are still more of them.
-
-Thanks Stefan
-
+/Jarkko
