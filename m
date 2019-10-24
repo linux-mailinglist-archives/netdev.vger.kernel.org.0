@@ -2,107 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86E65E2C6E
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 10:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72F56E2CBB
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 10:57:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730474AbfJXIrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 04:47:07 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:58530 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730201AbfJXIrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 04:47:07 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9O8hTNO077857;
-        Thu, 24 Oct 2019 08:46:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=RfrRaJR/ahcgDoFWrwiWyd18m7gro65Gj0xa2vHPqAI=;
- b=H7hU1GOa/YMyPthCNnuriytW00qqgcxZVlTveDy8v0CocFyuou45lLAdFIs/LOGSC0sf
- 4gZYsCyATGaRoqZn8Z+Vui2ISaZe/caSH3vNKDqarduKLZ8TZVY6Y7v3EOZkFtpnkCv3
- VjhStC8ugo3ZJUw8LIKZ6rXMpeDuJLdlxJyaF1vqabK6aOflAo6RPOjE+vDLPbZXCQWY
- iojgh64Arhx1CZ4Tecsubfkt3IfxIxOsD7y6CqHfQa9aVu5qVsZ+uoWl4Qpb9iKbhbli
- IXKIBQ5od+a82jCFHAq5Ep2SfsFWcXe1JtY8V+m8E0KBsXqeuN0K/Ei1u0RDWz33d1y0 Ug== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2vqteq25ue-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Oct 2019 08:46:54 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9O8cshv191023;
-        Thu, 24 Oct 2019 08:46:53 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2vtjkj17nb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Oct 2019 08:46:53 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x9O8kn3H021468;
-        Thu, 24 Oct 2019 08:46:49 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 24 Oct 2019 01:46:48 -0700
-Date:   Thu, 24 Oct 2019 11:46:40 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: of_get_phy_mode: Change API to solve
- int/unit warnings
-Message-ID: <20191024083744.GE17535@kadam>
-References: <20191022011817.29183-1-andrew@lunn.ch>
- <20191023.191320.2221170454789484606.davem@davemloft.net>
- <20191024024935.GM5707@lunn.ch>
+        id S2387888AbfJXI5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 04:57:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40942 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727079AbfJXI5s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Oct 2019 04:57:48 -0400
+Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A391320684;
+        Thu, 24 Oct 2019 08:57:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571907467;
+        bh=BTjr1t8fwFjOffdX8X6seEXqc/YhqXcaeGnwIltXBCs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=P5YVo+tjFBL9EadMv5DGXk+gWlFsjGzZiJPQ8yl1PHoUUhyGtBviOCs+rRJABvnio
+         RJ/QYdTeqF5Qa0agkS5pYRj4GkrDqQbPnFhQf1HOcVYC9OPzOxj5Ibo31N6xUpTRwa
+         hcxwObmfhCHQd+cI7tFx0U8OPxQpAGXgxGsOef/w=
+Date:   Thu, 24 Oct 2019 10:57:41 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Felix Fietkau <nbd@nbd.name>
+Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
+        sgruszka@redhat.com, lorenzo.bianconi@redhat.com,
+        oleksandr@natalenko.name, netdev@vger.kernel.org
+Subject: Re: [PATCH wireless-drivers 2/2] mt76: dma: fix buffer unmap with
+ non-linear skbs
+Message-ID: <20191024085741.GB9346@localhost.localdomain>
+References: <cover.1571868221.git.lorenzo@kernel.org>
+ <1f7560e10edd517bfd9d3c0dd9820e6f420726b6.1571868221.git.lorenzo@kernel.org>
+ <d1cf048c-3541-091e-7237-14199ddc89bc@nbd.name>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="61jdw2sOBCFtR2d/"
 Content-Disposition: inline
-In-Reply-To: <20191024024935.GM5707@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9419 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910240084
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9419 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910240085
+In-Reply-To: <d1cf048c-3541-091e-7237-14199ddc89bc@nbd.name>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 04:49:35AM +0200, Andrew Lunn wrote:
-> On Wed, Oct 23, 2019 at 07:13:20PM -0700, David Miller wrote:
-> > From: Andrew Lunn <andrew@lunn.ch>
-> > Date: Tue, 22 Oct 2019 03:18:17 +0200
-> > 
-> > > Before this change of_get_phy_mode() returned an enum,
-> > > phy_interface_t. On error, -ENODEV etc, is returned. If the result of
-> > > the function is stored in a variable of type phy_interface_t, and the
-> > > compiler has decided to represent this as an unsigned int, comparision
-> > > with -ENODEV etc, is a signed vs unsigned comparision.
-> > > 
-> > > Fix this problem by changing the API. Make the function return an
-> > > error, or 0 on success, and pass a pointer, of type phy_interface_t,
-> > > where the phy mode should be stored.
-> > > 
-> > > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > 
-> > So now we have code that uses the 'interface' value without checking
-> > the error return value which means it's potentially uninitialized.
-> 
-> Hi David
-> 
-> If it did not check before, it was passing -ENODEV to something. So it
-> was already broken. But an uninitialized value is worse. I can see
-> about adding error checking where there are none.
-> 
 
-We could make it __must_check.  We don't use that annotation much
-outside of core functions, but I don't see a downside to it.  Smatch and
-0day bot will hopefully catch most of the uninitialized variables as is.
+--61jdw2sOBCFtR2d/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-regards,
-dan carpenter
+On Oct 24, Felix Fietkau wrote:
+> On 2019-10-24 00:23, Lorenzo Bianconi wrote:
+> > mt76 dma layer is supposed to unmap skb data buffers while keep txwi
+> > mapped on hw dma ring. At the moment mt76 wrongly unmap txwi or does
+> > not unmap data fragments in even positions for non-linear skbs. This
+> > issue may result in hw hangs with A-MSDU if the system relies on IOMMU
+> > or SWIOTLB. Fix this behaviour properly unmapping data fragments on
+> > non-linear skbs.
+> >=20
+> > Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chi=
+psets")
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/net/wireless/mediatek/mt76/dma.c | 10 +++++++---
+> >  1 file changed, 7 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wir=
+eless/mediatek/mt76/dma.c
+> > index c747eb24581c..8c27956875e7 100644
+> > --- a/drivers/net/wireless/mediatek/mt76/dma.c
+> > +++ b/drivers/net/wireless/mediatek/mt76/dma.c
+> > @@ -93,11 +93,14 @@ static void
+> >  mt76_dma_tx_cleanup_idx(struct mt76_dev *dev, struct mt76_queue *q, in=
+t idx,
+> >  			struct mt76_queue_entry *prev_e)
+> >  {
+> > -	struct mt76_queue_entry *e =3D &q->entry[idx];
+> >  	__le32 __ctrl =3D READ_ONCE(q->desc[idx].ctrl);
+> > +	struct mt76_queue_entry *e =3D &q->entry[idx];
+> >  	u32 ctrl =3D le32_to_cpu(__ctrl);
+> > +	bool mcu =3D e->skb && !e->txwi;
+> > +	bool first =3D e->skb =3D=3D DMA_DUMMY_DATA || e->txwi =3D=3D DMA_DUM=
+MY_DATA ||
+> > +		     (e->skb && !skb_is_nonlinear(e->skb));
+> It seems to me that these conditions could be true not just for the
+> first entry, but also following entries except for the last one.
+> I think we should add a 'bool has_txwi' field in struct mt76_queue_entry
+> to indicate that the first dma address points to a txwi that should not
+> be unmapped.
 
+I agree 'first' is misleading since this condition is used to unamp even the
+very last data fragment if we have an even number of data fragments
+(e.g linear area + one fragment). For the following entries except for the =
+last
+one 'first' is false since e->skb is NULL (e->skb is not NULL just for the =
+very
+last entry), right? Btw we can remove mcu bool.
+In order to improve code readability I agree to add a bool in mt76_queue_en=
+try to
+unmap buf0. I will fix it in v2.
+
+Regards,
+Lorenzo
+
+>=20
+> - Felix
+
+--61jdw2sOBCFtR2d/
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXbFngAAKCRA6cBh0uS2t
+rIOMAP4kXYaGXu6TyfeMHj4m9Sph4eULmVOtlmKWnY/rG9ZzPgD+Ig0ULFYk70p2
+x/mfRJzltLsK/Ek+dmCvDDUBYf58FAQ=
+=VoWZ
+-----END PGP SIGNATURE-----
+
+--61jdw2sOBCFtR2d/--
