@@ -2,153 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FEF5E3A1D
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:31:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E87CE3A3F
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:41:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503824AbfJXRb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 13:31:56 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:30271 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729458AbfJXRbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 13:31:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571938313;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rCcikZum0+fRxHlX5MBh+qgzuS0QtH3FgkA7ZDqGjZY=;
-        b=g3IRn4pu1gMnyttp/8hUOMYp0HHgwRADlOUP2KmafVpwpWeyzTcCuiv6IxL/MKhPu4D8zu
-        VUAho2GpmsCBQXxUQsGo8C2eyapTsWMB2YxrxejRirs7A1kbq39eekeNFh1v1oPDKvtcph
-        8iHSIcGOcJ3wadrFlyoeO1ikKtU8RSU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-349-XDeJWQNvOAWWgwuW4GwK1A-1; Thu, 24 Oct 2019 13:31:49 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78A431800E00;
-        Thu, 24 Oct 2019 17:31:48 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-120-128.rdu2.redhat.com [10.10.120.128])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id F0413100EA05;
-        Thu, 24 Oct 2019 17:31:47 +0000 (UTC)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id F2D48C0AD9; Thu, 24 Oct 2019 14:31:45 -0300 (-03)
-Date:   Thu, 24 Oct 2019 14:31:45 -0300
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Message-ID: <20191024173145.GO4321@localhost.localdomain>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <20191022151524.GZ4321@localhost.localdomain>
- <vbflftcwzes.fsf@mellanox.com>
- <20191022170947.GA4321@localhost.localdomain>
- <CAJieiUiDC7U7cGDadSr1L8gUxS6QiW=x9+pkp=8thxbMsMYVCQ@mail.gmail.com>
- <vbfy2xauq8s.fsf@mellanox.com>
+        id S2503910AbfJXRkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 13:40:49 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:49092 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729458AbfJXRks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 13:40:48 -0400
+Received: from localhost.localdomain (p4FEFC197.dip0.t-ipconnect.de [79.239.193.151])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 602ADCECF4;
+        Thu, 24 Oct 2019 19:49:47 +0200 (CEST)
+From:   Marcel Holtmann <marcel@holtmann.org>
+To:     arnd@arndb.de, gregkh@linuxfoundation.org,
+        johannes@sipsolutions.net, davem@davemloft.net
+Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] rfkill: allocate static minor
+Date:   Thu, 24 Oct 2019 19:40:42 +0200
+Message-Id: <20191024174042.19851-1-marcel@holtmann.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <vbfy2xauq8s.fsf@mellanox.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: XDeJWQNvOAWWgwuW4GwK1A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 03:18:00PM +0000, Vlad Buslov wrote:
->=20
-> On Thu 24 Oct 2019 at 18:12, Roopa Prabhu <roopa@cumulusnetworks.com> wro=
-te:
-> > On Tue, Oct 22, 2019 at 10:10 AM Marcelo Ricardo Leitner
-> > <mleitner@redhat.com> wrote:
-> >>
-> >> On Tue, Oct 22, 2019 at 03:52:31PM +0000, Vlad Buslov wrote:
-> >> >
-> >> > On Tue 22 Oct 2019 at 18:15, Marcelo Ricardo Leitner <mleitner@redha=
-t.com> wrote:
-> >> > > On Tue, Oct 22, 2019 at 05:17:51PM +0300, Vlad Buslov wrote:
-> >> > >> - Extend actions that are used for hardware offloads with optiona=
-l
-> >> > >>   netlink 32bit flags field. Add TCA_ACT_FLAGS_FAST_INIT action f=
-lag and
-> >> > >>   update affected actions to not allocate percpu counters when th=
-e flag
-> >> > >>   is set.
-> >> > >
-> >> > > I just went over all the patches and they mostly make sense to me.=
- So
-> >> > > far the only point I'm uncertain of is the naming of the flag,
-> >> > > "fast_init".  That is not clear on what it does and can be overloa=
-ded
-> >> > > with other stuff later and we probably don't want that.
-> >> >
-> >> > I intentionally named it like that because I do want to overload it =
-with
-> >> > other stuff in future, instead of adding new flag value for every si=
-ngle
-> >> > small optimization we might come up with :)
-> >>
-> >> Hah :-)
-> >>
-> >> >
-> >> > Also, I didn't want to hardcode implementation details into UAPI tha=
-t we
-> >> > will have to maintain for long time after percpu allocator in kernel=
- is
-> >> > potentially replaced with something new and better (like idr is bein=
-g
-> >> > replaced with xarray now, for example)
-> >>
-> >> I see. OTOH, this also means that the UAPI here would be unstable
-> >> (different meanings over time for the same call), and hopefully new
-> >> behaviors would always be backwards compatible.
-> >
-> > +1, I also think optimization flags should be specific to what they opt=
-imize.
-> > TCA_ACT_FLAGS_NO_PERCPU_STATS seems like a better choice. It allows
-> > user to explicitly request for it.
->=20
-> Why would user care about details of optimizations that doesn't produce
-> visible side effects for user land? Again, counters continue to work the
-> same with or without the flag.
+udev has a feature of creating /dev/<node> device-nodes if it finds
+a devnode:<node> modalias. This allows for auto-loading of modules that
+provide the node. This requires to use a statically allocated minor
+number for misc character devices.
 
-It's just just details of optimizations, on whether to use likely() or
-not, and it does produce user visible effects. Not in terms of API but
-of system behavior. Otherwise we wouldn't need the flag, right?
-_FAST_INIT, or the fact that it inits faster, is just one of the
-aspects of it, but one could also want it for being lighther in
-footprint as currently it is really easy to eat Gigs of RAM away on
-these percpu counters. So how should it be called, _FAST_INIT or
-_SLIM_RULES?
+However, rfkill uses dynamic minor numbers and prevents auto-loading
+of the module. So allocate the next static misc minor number and use
+it for rfkill.
 
-It may be implementation detail, yes, but we shouldn't be building
-usage profiles and instead let the user pick what they want. Likewise,
-we don't have net.ipv4.fast_tcp, but net.ipv4.tcp_sack, tcp_timestamps
-& cia.
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+---
+ include/linux/miscdevice.h | 1 +
+ net/rfkill/core.c          | 9 +++++++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-If we can find another name then, without using 'percpu' on it but
-without stablishing profiles, that would be nice.
-Like TCA_ACT_FLAGS_SIMPLE_STATS, or so.
-
-Even though I still prefer the PERCPU, as it's as explicit as it can be. No=
-te
-that bpf does it like that already:
-uapi]$ grep BPF.*HASH -- linux/bpf.h
-        BPF_MAP_TYPE_HASH,
-        BPF_MAP_TYPE_PERCPU_HASH,
-        BPF_MAP_TYPE_LRU_HASH,
-        BPF_MAP_TYPE_LRU_PERCPU_HASH,
-...
+diff --git a/include/linux/miscdevice.h b/include/linux/miscdevice.h
+index 3247a3dc7934..b06b75776a32 100644
+--- a/include/linux/miscdevice.h
++++ b/include/linux/miscdevice.h
+@@ -57,6 +57,7 @@
+ #define UHID_MINOR		239
+ #define USERIO_MINOR		240
+ #define VHOST_VSOCK_MINOR	241
++#define RFKILL_MINOR		242
+ #define MISC_DYNAMIC_MINOR	255
+ 
+ struct device;
+diff --git a/net/rfkill/core.c b/net/rfkill/core.c
+index f9b08a6d8dbe..0bf9bf1ceb8f 100644
+--- a/net/rfkill/core.c
++++ b/net/rfkill/core.c
+@@ -1316,10 +1316,12 @@ static const struct file_operations rfkill_fops = {
+ 	.llseek		= no_llseek,
+ };
+ 
++#define RFKILL_NAME "rfkill"
++
+ static struct miscdevice rfkill_miscdev = {
+-	.name	= "rfkill",
+ 	.fops	= &rfkill_fops,
+-	.minor	= MISC_DYNAMIC_MINOR,
++	.name	= RFKILL_NAME,
++	.minor	= RFKILL_MINOR,
+ };
+ 
+ static int __init rfkill_init(void)
+@@ -1371,3 +1373,6 @@ static void __exit rfkill_exit(void)
+ 	class_unregister(&rfkill_class);
+ }
+ module_exit(rfkill_exit);
++
++MODULE_ALIAS_MISCDEV(RFKILL_MINOR);
++MODULE_ALIAS("devname:" RFKILL_NAME);
+-- 
+2.21.0
 
