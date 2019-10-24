@@ -2,74 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B5CFE38FC
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D332E3910
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 18:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409981AbfJXQ5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 12:57:10 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49126 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2409957AbfJXQ5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:57:10 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AB340147B15F2;
-        Thu, 24 Oct 2019 09:57:09 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 09:57:09 -0700 (PDT)
-Message-Id: <20191024.095709.187911510311520475.davem@davemloft.net>
-To:     kvalo@codeaurora.org
-Cc:     geert+renesas@glider.be, trivial@kernel.org,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] [trivial] net: Fix misspellings of "configure" and
- "configuration"
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <878spaqg2k.fsf@kamboji.qca.qualcomm.com>
-References: <20191024152201.29868-1-geert+renesas@glider.be>
-        <878spaqg2k.fsf@kamboji.qca.qualcomm.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
+        id S2407807AbfJXQ7d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 12:59:33 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:43341 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405976AbfJXQ7d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 12:59:33 -0400
+Received: by mail-il1-f196.google.com with SMTP id t5so23036603ilh.10;
+        Thu, 24 Oct 2019 09:59:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=J6cIyEOWdjlCo3WxpSxbJw4O5SIfcJm1CPBXanfu+xM=;
+        b=Ptq8nTS5o6TzUrMm9MB8ANO2yHy34z0C/j40+jeauPrMK1ui+Cj2l1U2REFdPofCO3
+         guMvB27Jbh8fe5GXqQn9wi4fKIsXcUxN6NoWnKS+xTeXyzHe2oxGZOLLHYrp6W/mly5L
+         NhTfWY1NJtjptXbxh9vTVVT8RDuDJ1Qsu9B/HR+xp3YOPuIVI2PCTwEm5R87MnTlRyYY
+         9v+d9sazNvxqJVnTrGgfHS7nXqN35yq++KIxc+jadIxA4Xb0LPPQcFDFsBP0pDbG9ya/
+         gGL7WakmpSkwzLJh2fphhZNLx+agJQXWL9oFUedrf5dy8mRAOu6Z3UsNMAuCZPBK1Fum
+         mHcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=J6cIyEOWdjlCo3WxpSxbJw4O5SIfcJm1CPBXanfu+xM=;
+        b=mTc6pIu6y3JP0Q8sxmlTUibHy6/2nLrWNFIN7ReOSRWda5+GFUm1JApoHTfcPQ3DBA
+         GmwW7YNsaIsVwz1vNLcLv3wyURQfN2VnwhbBWEEYiugm0E5d3r7XlL4pGEim0UgtJ37b
+         o9mcksf4S3k20ujyUlTthoaqfKpidDhpwkFs953RP83s7/Mr2kHJIgzK9e7Q4K1WIQWF
+         4qZ44mfGcb5aOZBU+iSJtvDDPSmhc7fwE2y4g6+AEo2t2NZgqss+gKtz/BvNbJurexhn
+         W4NgQ1rYbNnYwZfRMcPtmPdLE9Qqk4kV/u7LNB6/1yEAqhwA6B1u4J9aHlSp1GVtw+qJ
+         aCCg==
+X-Gm-Message-State: APjAAAXWgk3oLGL7dRhkzicvzo2C75AHhVvkEYUE8I2gMfASqwUWcuMd
+        L+GHWMuZyq7LHFZC1ilDLH0=
+X-Google-Smtp-Source: APXvYqyRHcHwApDP3qZCLoIWShsLsHHVj943atq34QEfH7qMjbYAvVAfDNDHQCguOw/3shGV+BrKgg==
+X-Received: by 2002:a92:ccd0:: with SMTP id u16mr47017799ilq.296.1571936372309;
+        Thu, 24 Oct 2019 09:59:32 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id d6sm7527320iop.34.2019.10.24.09.59.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2019 09:59:31 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 09:59:22 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>, bpf@vger.kernel.org
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com
+Message-ID: <5db1d86ad61ae_5c282ada047205c0a8@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191022113730.29303-2-jakub@cloudflare.com>
+References: <20191022113730.29303-1-jakub@cloudflare.com>
+ <20191022113730.29303-2-jakub@cloudflare.com>
+Subject: RE: [RFC bpf-next 1/5] bpf, sockmap: Let BPF helpers use lookup
+ operation on SOCKMAP
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 24 Oct 2019 09:57:09 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kalle Valo <kvalo@codeaurora.org>
-Date: Thu, 24 Oct 2019 19:11:15 +0300
+Jakub Sitnicki wrote:
+> Don't require the BPF helpers that need to access SOCKMAP maps to live in
+> the sock_map module. Expose SOCKMAP lookup to all kernel-land.
+> 
+> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> ---
+>  net/core/sock_map.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index eb114ee419b6..facacc296e6c 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -271,7 +271,9 @@ static struct sock *__sock_map_lookup_elem(struct bpf_map *map, u32 key)
+>  
+>  static void *sock_map_lookup(struct bpf_map *map, void *key)
+>  {
+> -	return ERR_PTR(-EOPNOTSUPP);
+> +	u32 index = *(u32 *)key;
+> +
+> +	return __sock_map_lookup_elem(map, index);
+>  }
+>  
+>  static int __sock_map_delete(struct bpf_stab *stab, struct sock *sk_test,
+> -- 
+> 2.20.1
+> 
 
-> Geert Uytterhoeven <geert+renesas@glider.be> writes:
-> 
->> Fix various misspellings of "configuration" and "configure".
->>
->> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
->> ---
->> v2:
->>   - Merge
->>     [trivial] net/mlx5e: Spelling s/configuraiton/configuration/
->>     [trivial] qed: Spelling s/configuraiton/configuration/
->>   - Fix typo in subject,
->>   - Extend with various other similar misspellings.
->> ---
->>  drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.c | 2 +-
->>  drivers/net/ethernet/qlogic/qed/qed_int.h                | 4 ++--
->>  drivers/net/ethernet/qlogic/qed/qed_sriov.h              | 2 +-
->>  drivers/net/ethernet/qlogic/qede/qede_filter.c           | 2 +-
->>  drivers/net/wireless/ath/ath9k/ar9003_hw.c               | 2 +-
->>  drivers/net/wireless/intel/iwlwifi/iwl-fh.h              | 2 +-
->>  drivers/net/wireless/ti/wlcore/spi.c                     | 2 +-
->>  include/uapi/linux/dcbnl.h                               | 2 +-
->>  8 files changed, 9 insertions(+), 9 deletions(-)
-> 
-> I hope this goes to net-next? Easier to handle possible conflicts that
-> way.
-> 
-> For the wireless part:
-> 
-> Acked-by: Kalle Valo <kvalo@codeaurora.org>
+OK, I'm looking into the latest BTF bits to see if we can do something
+more useful here to keep the type information when the lookup is done so
+the sock can be feed from sk_lookup and actually read.
 
-Yeah I can take it if that's easier.
+As this series stands after the lookup its just an opaque ptr_to_map_value
+right?
