@@ -2,188 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35656E3B27
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:40:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA4CE3B31
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:43:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440113AbfJXSj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 14:39:59 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:41412 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2440106AbfJXSj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 14:39:58 -0400
-Received: by mail-ed1-f67.google.com with SMTP id a21so2400116edj.8;
-        Thu, 24 Oct 2019 11:39:55 -0700 (PDT)
+        id S2504104AbfJXSni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 14:43:38 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:57282 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437045AbfJXSnh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 14:43:37 -0400
+Received: by mail-pf1-f202.google.com with SMTP id b17so19691792pfo.23
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 11:43:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=C1bh5n/xf11piXwY2og3Hyew3R1/gTscdEIIWfQpIFc=;
-        b=aITfjgs2zrQpKgd10Gh9pleo1jxTnSqBELnKvlqxU6l7rFg5RFSUXhnqBSUuK4oXtI
-         vQmfN9Z2lNublyB1caPtreIws7xYWtmsKpcIOWE+oYr1ELxKfzMVJSixCmN78lN0cEng
-         c+H2X9Qq6F+VzNU9fA+q3H6Enp4X6C+rAi3FZzLO+IuBUQFXli+W7HrUmcKZbF4jUG1a
-         H2cMNbT4e+YGSMWfKzG3/hmeHwcY5bt+8zmLGz96l8CfSh/lehtntcg6RBod6npv2rzP
-         4DhFJrxEPmGf9mCnXTeVVgZHJtUxCFUa3lir6MgqLlDQWW38HXPLO7RGyY3njKqMOyGf
-         jBQQ==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=SWHBwJpY+mbEJjd0jDnR51hAwk0LjNuD7KeX5zYB1k4=;
+        b=DbIxIjpWbAHzkhmaxO3Wz9cV8ARCqsDe/PvaH57j1Gxq/Gw4eKhPL4M+OdYpXp3BiG
+         DR9Y8CZhFhyJC4jGtLPcE2w1BBhzdCrjaD/zUypiE9TZJRyKZNOmSCB6yyAQvwtMxpWg
+         6P/FhlVhq3k5bWpZyrJId0bmHQ0jlDdjHRJRfP6prtPzCLQ+4d6bZ8fSqwOU/h/sl8AR
+         7D49YV9t69TUQjzXTGLL4QnyNQKxV2rvHKYe5F5uRALg/WeJPmSqdl43lGlvq+5qOBbY
+         aclr5VMYzZPXAviUkOOzcn/dnWzM8x3B69f/GDCsTs/XhdbHYBHt0JSER/pkbYIfB68c
+         EuZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=C1bh5n/xf11piXwY2og3Hyew3R1/gTscdEIIWfQpIFc=;
-        b=sKqaQQlzIdLtFTYFlIeTExDq+GowxpnTRjiDScTWUvW3HKjAVVYD84LKaISWt8JVfX
-         fKXY2LHkLDUihGnhycSLHjcEJVF7sVCcaoA7uixLQPPM/ZViRYlu/LCSQziVVKWjnJw5
-         aCMw4eNXz4dSZ8RfuOGjHEkYjKlmwa7SxjiXXSz6dxO0oYG6RCyD/zdgVH2wycV2UPV0
-         Eddrzk0C2OKIr+4hi9Ih+sPmaMKl5Cvo0/osZVZcE8V/JIi8NSXOX+LkESdezItcsi/P
-         G+PK529n0z/F1Z7evju6sThhAlA2KGpy+/73upKeiQVJGMq/BvJUM7yQifzvGJx+bwFk
-         s1qg==
-X-Gm-Message-State: APjAAAUQY1t0PoWcl3P9Cmx3MEsla39I0ZmVTaudQY8gmPj/GN5mMqDU
-        MgwgyyNY7EROsVh4ie1xBG6rztN+
-X-Google-Smtp-Source: APXvYqxgHpVsphPvBXxHOY0BnbCt2GRKgX0Q5q/t6cSfw9b607S4Vkz3G11kCVctmz+LGc+HbSTdMw==
-X-Received: by 2002:a17:906:f1c5:: with SMTP id gx5mr15825928ejb.314.1571942394100;
-        Thu, 24 Oct 2019 11:39:54 -0700 (PDT)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id j9sm975919edt.15.2019.10.24.11.39.44
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Oct 2019 11:39:53 -0700 (PDT)
-Subject: Re: [PATCH V3 0/3] Add OP-TEE based bnxt f/w manager
-To:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rajan Vaja <rajan.vaja@xilinx.com>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Vikram Prakash <vikram.prakash@broadcom.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org
-References: <1571895161-26487-1-git-send-email-sheetal.tigadoli@broadcom.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <183f68bc-8145-ef98-07ca-8d3f85d66a17@gmail.com>
-Date:   Thu, 24 Oct 2019 11:39:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <1571895161-26487-1-git-send-email-sheetal.tigadoli@broadcom.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=SWHBwJpY+mbEJjd0jDnR51hAwk0LjNuD7KeX5zYB1k4=;
+        b=BQyTVqZC56q5YA7PApRPZJe2sfzSEpLvi+CCN6i7lsNI6brkBxrDs1rU7jrEAr1WmC
+         s34uaFhsveh7AkHWJrahZYtn+obhQthejO8OnzdDBHeLMsH2aKraTLAul27Z+wYlMYCT
+         2wF1CGxqOXgI97ZtnpUFVe+vkVqkC6OJEdki9MCHmGVSO/4YX5yfOl/EnZQ9KEKliRbM
+         0S/V/ZzpOQGbjseqIcWz6rMdsaAYojzyq8FsrOf/+XyvCrtFhAsCnWKzpmGij5q4VGoe
+         aYpHNjhLEo1AK/2B7EBcv37NlAWN9i0rsrslVNeGmgYEV2e3bovEUJxOYz3m5KrnRvmN
+         WJww==
+X-Gm-Message-State: APjAAAWpWg8X5NTkuyHdhOTucNmOJ9PwHWq26ruWXh8lla0uaEAmkSNo
+        ypAFe9t+pjJbFaf54G/5pBFCFeDfc7tT+Q==
+X-Google-Smtp-Source: APXvYqyJwPapnnrpf2lbk1VnQ+OZUES3QDl/o4U8gCxxK4vMXkw+OJw2TibQLmXAM17E/Olc2n+juyUWO01tWQ==
+X-Received: by 2002:a63:e20c:: with SMTP id q12mr16230268pgh.275.1571942615238;
+ Thu, 24 Oct 2019 11:43:35 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 11:43:31 -0700
+Message-Id: <20191024184331.28920-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
+Subject: [PATCH net] udp: fix data-race in udp_set_dev_scratch()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/23/19 10:32 PM, Sheetal Tigadoli wrote:
-> This patch series adds support for TEE based BNXT firmware
-> management module and the driver changes to invoke OP-TEE
-> APIs to fastboot firmware and to collect crash dump.
+KCSAN reported a data-race in udp_set_dev_scratch() [1]
 
-Sorry for chiming on this so late, the more I look into this and the
-more it seems like you have built a custom TEE firmware loading solution
-rather than thinking about extending the firmware API to load a firmware
-opaque handle from somewhere other than the filesystem.
+The issue here is that we must not write over skb fields
+if skb is shared. A similar issue has been fixed in commit
+89c22d8c3b27 ("net: Fix skb csum races when peeking")
 
-The TEE integration appears okay to me in that you leverage the TEE bus
-to advertise your driver. What seems to violating layers is that you
-have bnxt directly tap into your TEE driver's services and that looks
-not ideal to say the least. That approach does not scale well over
-multiple drivers (bnxt or otherwise), but also does not really scale
-over trusted components providers. TEE is one of them, but conceptually
-the same thing could exist with ACPI/UEFI or any platform that has
-services that offer some sort of secure/non-secured world differentiation.
+While we are at it, use a helper only dealing with
+udp_skb_scratch(skb)->csum_unnecessary, as this allows
+udp_set_dev_scratch() to be called once and thus inlined.
 
-The way I would imagine you to integrate this is to basically register a
-TEE firmware provider through the firmware API, continue using the
-firmware API from within bnxt, possibly with using a specific file
-handle/flag that designates whether you want to favor loading from
-disk/file system or TEE. It should not matter to bnxt how the firmware
-is obtained basically.
+[1]
+BUG: KCSAN: data-race in udp_set_dev_scratch / udpv6_recvmsg
 
-> 
-> changes from v2:
->  - address review comments from Jakub
-> 
-> Vasundhara Volam (2):
->   bnxt_en: Add support to invoke OP-TEE API to reset firmware
->   bnxt_en: Add support to collect crash dump via ethtool
-> 
-> Vikas Gupta (1):
->   firmware: broadcom: add OP-TEE based BNXT f/w manager
-> 
->  drivers/firmware/broadcom/Kconfig                 |   8 +
->  drivers/firmware/broadcom/Makefile                |   1 +
->  drivers/firmware/broadcom/tee_bnxt_fw.c           | 277 ++++++++++++++++++++++
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  13 +-
->  drivers/net/ethernet/broadcom/bnxt/bnxt.h         |   6 +
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  37 ++-
->  drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h |   2 +
->  include/linux/firmware/broadcom/tee_bnxt_fw.h     |  14 ++
->  8 files changed, 354 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/firmware/broadcom/tee_bnxt_fw.c
->  create mode 100644 include/linux/firmware/broadcom/tee_bnxt_fw.h
-> 
+write to 0xffff888120278317 of 1 bytes by task 10411 on cpu 1:
+ udp_set_dev_scratch+0xea/0x200 net/ipv4/udp.c:1308
+ __first_packet_length+0x147/0x420 net/ipv4/udp.c:1556
+ first_packet_length+0x68/0x2a0 net/ipv4/udp.c:1579
+ udp_poll+0xea/0x110 net/ipv4/udp.c:2720
+ sock_poll+0xed/0x250 net/socket.c:1256
+ vfs_poll include/linux/poll.h:90 [inline]
+ do_select+0x7d0/0x1020 fs/select.c:534
+ core_sys_select+0x381/0x550 fs/select.c:677
+ do_pselect.constprop.0+0x11d/0x160 fs/select.c:759
+ __do_sys_pselect6 fs/select.c:784 [inline]
+ __se_sys_pselect6 fs/select.c:769 [inline]
+ __x64_sys_pselect6+0x12e/0x170 fs/select.c:769
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
+read to 0xffff888120278317 of 1 bytes by task 10413 on cpu 0:
+ udp_skb_csum_unnecessary include/net/udp.h:358 [inline]
+ udpv6_recvmsg+0x43e/0xe90 net/ipv6/udp.c:310
+ inet6_recvmsg+0xbb/0x240 net/ipv6/af_inet6.c:592
+ sock_recvmsg_nosec+0x5c/0x70 net/socket.c:871
+ ___sys_recvmsg+0x1a0/0x3e0 net/socket.c:2480
+ do_recvmmsg+0x19a/0x5c0 net/socket.c:2601
+ __sys_recvmmsg+0x1ef/0x200 net/socket.c:2680
+ __do_sys_recvmmsg net/socket.c:2703 [inline]
+ __se_sys_recvmmsg net/socket.c:2696 [inline]
+ __x64_sys_recvmmsg+0x89/0xb0 net/socket.c:2696
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 10413 Comm: syz-executor.0 Not tainted 5.4.0-rc3+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 2276f58ac589 ("udp: use a separate rx queue for packet reception")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+---
+ net/ipv4/udp.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 345a3d43f5a655e009e99c16bb19e047cdf003c6..d1ed160af202c054839387201abd3f13b55d00e9 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1316,6 +1316,20 @@ static void udp_set_dev_scratch(struct sk_buff *skb)
+ 		scratch->_tsize_state |= UDP_SKB_IS_STATELESS;
+ }
+ 
++static void udp_skb_csum_unnecessary_set(struct sk_buff *skb)
++{
++	/* We come here after udp_lib_checksum_complete() returned 0.
++	 * This means that __skb_checksum_complete() might have
++	 * set skb->csum_valid to 1.
++	 * On 64bit platforms, we can set csum_unnecessary
++	 * to true, but only if the skb is not shared.
++	 */
++#if BITS_PER_LONG == 64
++	if (!skb_shared(skb))
++		udp_skb_scratch(skb)->csum_unnecessary = true;
++#endif
++}
++
+ static int udp_skb_truesize(struct sk_buff *skb)
+ {
+ 	return udp_skb_scratch(skb)->_tsize_state & ~UDP_SKB_IS_STATELESS;
+@@ -1550,10 +1564,7 @@ static struct sk_buff *__first_packet_length(struct sock *sk,
+ 			*total += skb->truesize;
+ 			kfree_skb(skb);
+ 		} else {
+-			/* the csum related bits could be changed, refresh
+-			 * the scratch area
+-			 */
+-			udp_set_dev_scratch(skb);
++			udp_skb_csum_unnecessary_set(skb);
+ 			break;
+ 		}
+ 	}
 -- 
-Florian
+2.23.0.866.gb869b98d4c-goog
+
