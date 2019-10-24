@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B92E2E39E4
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39083E39E5
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 19:25:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503769AbfJXRZW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 13:25:22 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:50790 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2503754AbfJXRZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 13:25:19 -0400
+        id S2503773AbfJXRZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 13:25:23 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27846 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2503753AbfJXRZX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 13:25:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571937918;
+        s=mimecast20190719; t=1571937921;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=VpdbFdZ43dAdHsNmWOOWt4oPOrJUSHjTzkCpLMaCuuo=;
-        b=GsFXKGx7kTPujXEL9R0eMQjBW3UQn6hApjMIQSS9MxgIYl26NpZScrydsne1sXOafkyrgP
-        UudVun8t8HrAH2WFRVgeAgk45iEarGg0GDeTMIkZjq7kV4zGicROM01KYyUO9g0Rfzw2cf
-        t9PwKs0ndgPBhiu9sJXW8YzhSEqVz+g=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-224-bFzwgXgVMdit-WYs_w0amA-1; Thu, 24 Oct 2019 13:25:15 -0400
-Received: by mail-wr1-f72.google.com with SMTP id s9so13173104wrw.23
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 10:25:15 -0700 (PDT)
+        bh=iXOnFSfNhNPTjcWXUtOF+yLaeNt74t+Dwru1WIRQ94c=;
+        b=NHDmx0DDEPKnU9SX7Kz0sm4ryXG+ahsGT+uH80K6N2EoODXhdoGHVPwvrMSAryj9rZp2XE
+        kAlKQb0poZeECDHhYyVpKm79kHnISI3AEF4F/zMzUm6BNZV3QPV/X6odhEbpl5eKDRrBIT
+        leeo3Zp+epaSbqbgTEG98rkTl9v0i0I=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-185-_Czfr_FAN1ieTF1P6DBbzA-1; Thu, 24 Oct 2019 13:25:20 -0400
+Received: by mail-wr1-f71.google.com with SMTP id 4so9053722wrf.19
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 10:25:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=l73Ha7i7WUxT4bY8TPcGyLFhUvLl2Vyl/Ql8ZlKhlJA=;
-        b=MhtATVAQTy7gE1CjTErdW+SE/SkjEhfllTrOfjniVvLKyf5u03/iXaDpkSVQVTFPbT
-         f8GnmyssfhQAW1Y51vVwyWTfCav8pT2eONJXqmPdB9qUdiPKoIwdLSgIC9BwwNUnxrEX
-         cavBRQ7H4sVnuK8FX4uK+r8CbSRkYG8FTrlaL8pu30B6EkIsBIEgKsJo6m4IW/OPWT2y
-         bqTbRoplTUJOhUtCx0t1ckWB6KQnL1Jb235NyOlAK3Z5muHhytYcoX8L8fp7FNXz4qHA
-         4S0B0eElZdlY4I7/7RelASZw+nEsjkpKFG3t4rknc54GwpHZ6lpxa3Jf63VGdX3Q5cyz
-         0fdw==
-X-Gm-Message-State: APjAAAX6bwP4T09v+G28cF/W3DSeQGQHQxJ1KdxhhubhWEvbwKpxdzOZ
-        S7V85fVPJnKYI2cW9CGCZIWktXDcoTPeb+aLHJBoRUJeDGJxv5fQhKpDYGpOKtpL/uzvGIvJSzi
-        KZcTvQz5bkvwQHs1O
-X-Received: by 2002:a5d:4f89:: with SMTP id d9mr5056832wru.286.1571937913968;
-        Thu, 24 Oct 2019 10:25:13 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwHb1xE6BrpQ9IL+1bpB0SlzJ+EkiGGWVx3kl5wPRrTnXwQf2aGUhZCPyS1D1C/Gt0smnGOBg==
-X-Received: by 2002:a5d:4f89:: with SMTP id d9mr5056818wru.286.1571937913738;
-        Thu, 24 Oct 2019 10:25:13 -0700 (PDT)
+        bh=1tLVyJdKCuQgsNv1sXrcha1cG9zhjVmljxh1NemQynM=;
+        b=VkncP8e3keeSVq3/ueLV2DGOgiHL4JcPklnNRSHGYLtbE+g1pD9K++daUYaCJyk2Q8
+         bekt02YgRQw1mRdIff+LI6XQRFhr4cpGSgYIdr1J7HtotaJCBcTgJkhkL5sTcvvwr8ER
+         G1vYvVo6wLE0a7EM7lz/5lHyCf+PwS5ncM56EHz9CpMtztPiL51aNJZDT1fSGKJqqhDk
+         W2jpsJopPPi9k/EtDg03udd2Tyywg2HjAyu9Oja3WcWChdQfXGQ4t1g67x3R/8hHW34M
+         a5VqGbcmoIA0F8AbcObFcfeHzopVlYu/jROopaVez1lySLEayWDJEUeGT+qOtcsPs05m
+         LNqA==
+X-Gm-Message-State: APjAAAWGsG3kf6YHLWlNjLHQB1jzOwLhiuftNEwyitVQpLj5KDf9g2bp
+        b6eJ3cmbbozXACamFHT3dKtGkjoYkPsQkOckJUDmDpiiGcF/YLRsXwhsNjz64zyxTcTI3P9UYUt
+        k83SdEEANE/edMeQZ
+X-Received: by 2002:a5d:424a:: with SMTP id s10mr4699709wrr.108.1571937918920;
+        Thu, 24 Oct 2019 10:25:18 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyriwuqPsHKpY30rz7sHHDNla5FgdU0iJGQy5mR4Dg4Ubmi0Cx/2paGQ2bzZvi1RoZnn9Mlng==
+X-Received: by 2002:a5d:424a:: with SMTP id s10mr4699692wrr.108.1571937918722;
+        Thu, 24 Oct 2019 10:25:18 -0700 (PDT)
 Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
-        by smtp.gmail.com with ESMTPSA id 200sm4253443wme.32.2019.10.24.10.25.12
+        by smtp.gmail.com with ESMTPSA id 200sm4253443wme.32.2019.10.24.10.25.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2019 10:25:13 -0700 (PDT)
+        Thu, 24 Oct 2019 10:25:18 -0700 (PDT)
 From:   Matteo Croce <mcroce@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -57,14 +57,14 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Marcin Wojtas <mw@semihalf.com>,
         Stefan Chulski <stefanc@marvell.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/3] mvpp2: sync only the received frame
-Date:   Thu, 24 Oct 2019 19:24:57 +0200
-Message-Id: <20191024172458.7956-3-mcroce@redhat.com>
+Subject: [PATCH net-next v2 3/3] mvpp2: prefetch frame header
+Date:   Thu, 24 Oct 2019 19:24:58 +0200
+Message-Id: <20191024172458.7956-4-mcroce@redhat.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191024172458.7956-1-mcroce@redhat.com>
 References: <20191024172458.7956-1-mcroce@redhat.com>
 MIME-Version: 1.0
-X-MC-Unique: bFzwgXgVMdit-WYs_w0amA-1
+X-MC-Unique: _Czfr_FAN1ieTF1P6DBbzA-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -73,45 +73,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the RX path we always sync against the maximum frame size for that pool.
-Do the DMA sync and the unmap separately, so we can only sync by the
-size of the received frame.
+When receiving traffic, eth_type_trans() is high up on the perf top list,
+because it's the first function which access the packet data.
+
+Move the DMA unmap a bit higher, and put a prefetch just after it, so we
+have more time to load the data into the cache.
+
+The packet rate increase is about 14% with a tc drop test: 1620 =3D> 1853 k=
+pps
 
 Signed-off-by: Matteo Croce <mcroce@redhat.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/=
 ethernet/marvell/mvpp2/mvpp2_main.c
-index 33f327447b70..15818e1d6b04 100644
+index 15818e1d6b04..a55de943d5cb 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -2960,6 +2960,10 @@ static int mvpp2_rx(struct mvpp2_port *port, struct =
-napi_struct *napi,
- =09=09if (rx_status & MVPP2_RXD_ERR_SUMMARY)
- =09=09=09goto err_drop_frame;
+@@ -2963,6 +2963,7 @@ static int mvpp2_rx(struct mvpp2_port *port, struct n=
+api_struct *napi,
+ =09=09dma_sync_single_for_cpu(dev->dev.parent, dma_addr,
+ =09=09=09=09=09rx_bytes + MVPP2_MH_SIZE,
+ =09=09=09=09=09DMA_FROM_DEVICE);
++=09=09prefetch(data);
 =20
-+=09=09dma_sync_single_for_cpu(dev->dev.parent, dma_addr,
-+=09=09=09=09=09rx_bytes + MVPP2_MH_SIZE,
-+=09=09=09=09=09DMA_FROM_DEVICE);
-+
  =09=09if (bm_pool->frag_size > PAGE_SIZE)
  =09=09=09frag_size =3D 0;
- =09=09else
-@@ -2977,8 +2981,9 @@ static int mvpp2_rx(struct mvpp2_port *port, struct n=
-api_struct *napi,
- =09=09=09goto err_drop_frame;
- =09=09}
-=20
--=09=09dma_unmap_single(dev->dev.parent, dma_addr,
--=09=09=09=09 bm_pool->buf_size, DMA_FROM_DEVICE);
-+=09=09dma_unmap_single_attrs(dev->dev.parent, dma_addr,
-+=09=09=09=09       bm_pool->buf_size, DMA_FROM_DEVICE,
-+=09=09=09=09       DMA_ATTR_SKIP_CPU_SYNC);
-=20
- =09=09rcvd_pkts++;
- =09=09rcvd_bytes +=3D rx_bytes;
 --=20
 2.21.0
 
