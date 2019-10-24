@@ -2,286 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94B91E2750
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 02:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22F69E2752
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 02:11:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392816AbfJXAKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 20:10:39 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44910 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392153AbfJXAKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 20:10:38 -0400
-Received: by mail-pg1-f193.google.com with SMTP id e10so13080808pgd.11;
-        Wed, 23 Oct 2019 17:10:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=tSWb4QttAdCeMSDg05JKLAWlJHpDAqSxHnHlE7DDoXo=;
-        b=LgEOAh58uUqJt4fd3DS8E1vx9+3epBJi9Fcqe4kurYGj50ivvmfy+KVly6Q1N/9rkB
-         77GdchtPn8Iu8QnSnxOjjnMLTW6tZrl1m+lOClL6ySXJ6AVYrffJzKjRCkktKmX+oMDI
-         WbCIgNs8XoDg+Xp471d5oe8c2zLVfkjQ5ezx5TLrr2MziDlMdqqe3C+aa9plNF34ypIt
-         LqDI3zaPt+leXCeNgLMWUgHXXAsYm+PLN43a16GAdHMv15aQjct0zxgQHe5Ym73ne2dE
-         N60VUjPwblbTyJlQGVqXZHi26T71USA5pZC7tBebJZ873ipVlba87zntyD1MafZBbC5g
-         N73A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=tSWb4QttAdCeMSDg05JKLAWlJHpDAqSxHnHlE7DDoXo=;
-        b=N/KKjJeqIIvVyjSZxLUNZp7HdWqyT9h62s0ddfGQXfohVdBXUrlSqJziJayiUDoJ4O
-         O9DQCSN+Rk5P16x+UsgEmau/mjwiEUNe8Jx73Jq1QAFkhDTvKhS2N6UYs6Z2cMzmlqyt
-         PjaMCZPR3QTl9AxF5yZGTz1xts9DAh6aM0L1bP/UCzFTYH4g38HKjOlxZZT98Yl0LlJd
-         Q/UoW1A56xHuDZT5n1enSYIpKarXovC7TI1/LARbRYugQh/PExCNHUeBYMpVNJUsngmB
-         Ljk+sKB139VVorY8IFosVcYqCWsVXQ+UGXqDZMfw1Jf4lI87bB1WBhcB2PDDS6+mviwp
-         WUEg==
-X-Gm-Message-State: APjAAAUch9VmWB5sedkImbFkKU6tZX/x5LvViBKPGObAuT4voYWUAbpH
-        t0bWSEFD7jNbr4CXK5b5rtM=
-X-Google-Smtp-Source: APXvYqwbXktZGWaLczTHuTda4z2K8PmqiDeNvNMhbco45ESWNsMicgmTf2gAVMatYvIQufqDQ/eUsg==
-X-Received: by 2002:a17:90a:8d06:: with SMTP id c6mr3174671pjo.141.1571875835945;
-        Wed, 23 Oct 2019 17:10:35 -0700 (PDT)
-Received: from [172.26.117.3] ([2620:10d:c090:180::cbd8])
-        by smtp.gmail.com with ESMTPSA id f185sm27392836pfb.183.2019.10.23.17.10.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 23 Oct 2019 17:10:34 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
-Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, degeneloy@gmail.com,
-        john.fastabend@gmail.com
-Subject: Re: [PATCH bpf-next v2] libbpf: fix compatibility for kernels without
- need_wakeup
-Date:   Wed, 23 Oct 2019 17:10:33 -0700
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <E216E06A-0BE4-4221-BBF6-03017AB7D720@gmail.com>
-In-Reply-To: <1571732756-20692-1-git-send-email-magnus.karlsson@intel.com>
-References: <1571732756-20692-1-git-send-email-magnus.karlsson@intel.com>
+        id S2392821AbfJXALx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 20:11:53 -0400
+Received: from mail-eopbgr00062.outbound.protection.outlook.com ([40.107.0.62]:59738
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2392153AbfJXALx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 20:11:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NsU+Ktrd0PXP3NEIAiU7yPNzOQLwJSFMsGC5dsWAkrKt+Po5Y3sgQFsQHc9GaYRlEf5NQ+5GR6GWYut+ClntAd8NIjfUFNRq7EeCQxEMomww7gsNgjdjr9pJgrLgRHZGEumcCb4Dqy/2ecMXS46HuFTmAfJuRkiBth8NHzWS+f3ktUzHEEBalJfElHCsobcUcL0yfYRXTsEbVjT/oJM+B7NLUmRuvFnIO221mh6YvBgsPoU6B/RsQ2MEDS3zeB83PZqhC1tns+5IltRMQrC81qA7X7x1uVJolL8+5mtK2emvRZ5HQe3k414SWYysXRpcp6yNJ0zUHQKTZuu3v1YvOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p3OvVd96J3f2j5+AWFSBXGbvkoamDh46NpbQzZUZvOg=;
+ b=fmvDZFqT39UjAbGUh0Fytjl/R8LAWCjyJPAja0jzyg1rHbFRhR914anwOqdgemY/YLQ0WqeU1IEw2mobLxb01WRMShE6wAQPabjKXFY8vlu2J9nfhMwOE9UR9JvBL+XljIy36Tp54Jzz89xTpbIsKAJH80GUf8mjkBhJGhPKbkfry971SIl6fazZoI35zydLpSVzMU1V69Nv5CTDs65DWJSL2vp5tgUnv6ROPWJS5gY1s3C26aZ86bf59PE6z/tPnS6J7t3XqCM8AamWiotLeS0rx8SHJnzSNbrPr+Nbmx2njB0GMBavOeQiVweLVhtw+GVVrC7v20ayxyulYEdArQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p3OvVd96J3f2j5+AWFSBXGbvkoamDh46NpbQzZUZvOg=;
+ b=jyt+udDmCE0Bcnxbe8k3WyZ4fMcFRdodaj0JtOzHPGJJVE4Ibb8Od9CaEMRc44NWlcPT/5B/mOhdpNA5PkY+ySIYHTKFzU2XQlfHSj+nXablJtGRXxFAgEUt276qmIOOn6toOhJVBD5xTzyUmx0yYHnOolu7paHGRk0obqztM9Y=
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com (20.177.197.210) by
+ AM6PR05MB6343.eurprd05.prod.outlook.com (20.179.18.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2367.20; Thu, 24 Oct 2019 00:11:49 +0000
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::a496:d0f4:e244:6fa1]) by AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::a496:d0f4:e244:6fa1%5]) with mapi id 15.20.2387.021; Thu, 24 Oct 2019
+ 00:11:49 +0000
+From:   Yuval Avnery <yuvalav@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        Daniel Jurgens <danielj@mellanox.com>
+Subject: Re: [PATCH net-next 0/9] devlink vdev
+Thread-Topic: [PATCH net-next 0/9] devlink vdev
+Thread-Index: AQHViQAxdm3AcnGT3UW1BqH92IiL86dollkAgAAG1ACAAC80gIAAINSA
+Date:   Thu, 24 Oct 2019 00:11:48 +0000
+Message-ID: <9f3974a1-95e9-a482-3dcd-0b23246d9ab7@mellanox.com>
+References: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
+ <20191023120046.0f53b744@cakuba.netronome.com>
+ <20191023192512.GA2414@nanopsycho>
+ <20191023151409.75676835@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20191023151409.75676835@cakuba.hsd1.ca.comcast.net>
+Accept-Language: he-IL, en-US
+Content-Language: he-IL
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yuvalav@mellanox.com; 
+x-originating-ip: [70.66.202.183]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 99852607-b425-45ae-7ddf-08d75816c3a3
+x-ms-traffictypediagnostic: AM6PR05MB6343:|AM6PR05MB6343:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB6343573398C9F1E953DD1A7AC56A0@AM6PR05MB6343.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0200DDA8BE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(396003)(346002)(366004)(199004)(189003)(305945005)(229853002)(316002)(7736002)(76176011)(14444005)(14454004)(256004)(446003)(4001150100001)(31696002)(11346002)(8676002)(5660300002)(478600001)(6116002)(3846002)(6486002)(99286004)(6436002)(110136005)(36756003)(54906003)(6512007)(76116006)(25786009)(66946007)(66476007)(64756008)(66446008)(66556008)(6246003)(186003)(91956017)(86362001)(486006)(71190400001)(71200400001)(102836004)(31686004)(2906002)(476003)(6506007)(2616005)(81166006)(81156014)(4326008)(53546011)(26005)(66066001)(8936002)(107886003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6343;H:AM6PR05MB5142.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PgilXDtzwmeaL3HaGSMPe8H1+06MWSs1XICnOpsih8RSF+Sd6T4Isaj227+XcPofVkZFXV5kiq9VvKv/KXncyMUnvp0XJ3dZFSuBRTDKAtXuYp0Ke7Uds/3qprfUMiP9xzqid/o84JwuhPVkh917Q/SZe7/jRLkHvTN54lqEL2nCxgrrcj9jmGpEZYDHR0DGANYIlh8A0ZYjF7uZaMOdm8KeU1ld6CZGp9eTjWL8QCGBG9N1Nune0rxBV1AjBujc+yCEf0RcjEzjTKB3UdcujTWeZc3oSXi2Wndj2KDTNXJmEOZRmbo1n5QJ6bNZze+ECuA4vCRDC5lBK29VzXVp3Lyk40IH3xGF8NzYeOmPrlCLNGvRgdzDr1ZFAcrtO/cL8ewsPEh+NgWHpo0jOMbCkUvM+WUp4nm657CLxgl2+gj8bqB0Wa9siVWgb/wSAuz0
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FADB7D9EA994FC44B7820AEC06D8CEA4@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99852607-b425-45ae-7ddf-08d75816c3a3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2019 00:11:48.9032
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: D9dIwahzHNawlqLZyFLQZwfXtww4ET3eEIhefK0q3xV8UlzhPxLnZ+XIOD4Ws4pez6b0mpTKNGEm2zaKmHASPA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6343
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 22 Oct 2019, at 1:25, Magnus Karlsson wrote:
-
-> When the need_wakeup flag was added to AF_XDP, the format of the
-> XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the
-> kernel to take care of compatibility issues arrising from running
-> applications using any of the two formats. However, libbpf was
-> not extended to take care of the case when the application/libbpf
-> uses the new format but the kernel only supports the old
-> format. This patch adds support in libbpf for parsing the old
-> format, before the need_wakeup flag was added, and emulating a
-> set of static need_wakeup flags that will always work for the
-> application.
->
-> v1 -> v2:
-> * Rebased to bpf-next
-> * Rewrote the code as the previous version made you blind
->
-> Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in 
-> AF_XDP part")
-> Reported-by: Eloy Degen <degeneloy@gmail.com>
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> ---
->  tools/lib/bpf/xsk.c | 79 
-> +++++++++++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 67 insertions(+), 12 deletions(-)
->
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 7866500..aa16458 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -73,6 +73,21 @@ struct xsk_nl_info {
->  	int fd;
->  };
->
-> +/* Up until and including Linux 5.3 */
-> +struct xdp_ring_offset_no_flags {
-> +	__u64 producer;
-> +	__u64 consumer;
-> +	__u64 desc;
-> +};
-> +
-> +/* Up until and including Linux 5.3 */
-> +struct xdp_mmap_offsets_no_flags {
-> +	struct xdp_ring_offset_no_flags rx;
-> +	struct xdp_ring_offset_no_flags tx;
-> +	struct xdp_ring_offset_no_flags fr;
-> +	struct xdp_ring_offset_no_flags cr;
-> +};
-
-Why not name these with "_v1" instead of "_no_flags" in order to match
-the same definitions in net/xdp/xsk.h?  I'd rather not have two 
-identical
-structures different names if it can be avoided.
-
-
-> +
->  int xsk_umem__fd(const struct xsk_umem *umem)
->  {
->  	return umem ? umem->fd : -EINVAL;
-> @@ -133,6 +148,54 @@ static int xsk_set_xdp_socket_config(struct 
-> xsk_socket_config *cfg,
->  	return 0;
->  }
->
-> +static bool xsk_mmap_offsets_has_flags(socklen_t optlen)
-> +{
-> +	return (optlen == sizeof(struct xdp_mmap_offsets)) ? true : false;
-> +}
-> +
-> +static int xsk_get_mmap_offsets(int fd, struct xdp_mmap_offsets *off)
-> +{
-> +	struct xdp_mmap_offsets_no_flags off_no_flag;
-> +	socklen_t optlen;
-> +	int err;
-> +
-> +	optlen = sizeof(*off);
-> +	err = getsockopt(fd, SOL_XDP, XDP_MMAP_OFFSETS, off, &optlen);
-> +	if (err)
-> +		return err;
-> +
-> +	if (xsk_mmap_offsets_has_flags(optlen))
-
-I'd just use "if (optlen == sizeof(*off))" here.
-
-
-> +		return 0;
-> +
-> +	/* getsockopt on a kernel <= 5.3 has no flags fields.
-> +	 * Copy over the offsets to the correct places in the >=5.4 format
-> +	 * and put the flags where they would have been on that kernel.
-> +	 */
-
-Would it be worthwhile adding a length check here?
-Something like:
-
-     if (optlen == sizeof(struct xdp_mmap_offsets_v1)
-         return xsk_mmap_offset_v1(off);
-
-     return -EINVAL;
-
-Which makes it easy to revisit this later if the same
-problem crops up again.
-
-> +	memcpy(&off_no_flag, off, sizeof(off_no_flag));
-> +
-> +	off->rx.producer = off_no_flag.rx.producer;
-> +	off->rx.consumer = off_no_flag.rx.consumer;
-> +	off->rx.desc = off_no_flag.rx.desc;
-> +	off->rx.flags = off_no_flag.rx.consumer + sizeof(u32);
-> +
-> +	off->tx.producer = off_no_flag.tx.producer;
-> +	off->tx.consumer = off_no_flag.tx.consumer;
-> +	off->tx.desc = off_no_flag.tx.desc;
-> +	off->tx.flags = off_no_flag.tx.consumer + sizeof(u32);
-> +
-> +	off->fr.producer = off_no_flag.fr.producer;
-> +	off->fr.consumer = off_no_flag.fr.consumer;
-> +	off->fr.desc = off_no_flag.fr.desc;
-> +	off->fr.flags = off_no_flag.fr.consumer + sizeof(u32);
-> +
-> +	off->cr.producer = off_no_flag.cr.producer;
-> +	off->cr.consumer = off_no_flag.cr.consumer;
-> +	off->cr.desc = off_no_flag.cr.desc;
-> +	off->cr.flags = off_no_flag.cr.consumer + sizeof(u32);
-
-
-Then all this moves into a xsk_mmap_offset_v1() helper.
-
--- 
-Jonathan
-
-> +
-> +	return 0;
-> +}
-> +
->  int xsk_umem__create_v0_0_4(struct xsk_umem **umem_ptr, void 
-> *umem_area,
->  			    __u64 size, struct xsk_ring_prod *fill,
->  			    struct xsk_ring_cons *comp,
-> @@ -141,7 +204,6 @@ int xsk_umem__create_v0_0_4(struct xsk_umem 
-> **umem_ptr, void *umem_area,
->  	struct xdp_mmap_offsets off;
->  	struct xdp_umem_reg mr;
->  	struct xsk_umem *umem;
-> -	socklen_t optlen;
->  	void *map;
->  	int err;
->
-> @@ -190,8 +252,7 @@ int xsk_umem__create_v0_0_4(struct xsk_umem 
-> **umem_ptr, void *umem_area,
->  		goto out_socket;
->  	}
->
-> -	optlen = sizeof(off);
-> -	err = getsockopt(umem->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, 
-> &optlen);
-> +	err = xsk_get_mmap_offsets(umem->fd, &off);
->  	if (err) {
->  		err = -errno;
->  		goto out_socket;
-> @@ -492,7 +553,6 @@ int xsk_socket__create(struct xsk_socket 
-> **xsk_ptr, const char *ifname,
->  	struct sockaddr_xdp sxdp = {};
->  	struct xdp_mmap_offsets off;
->  	struct xsk_socket *xsk;
-> -	socklen_t optlen;
->  	int err;
->
->  	if (!umem || !xsk_ptr || !rx || !tx)
-> @@ -551,8 +611,7 @@ int xsk_socket__create(struct xsk_socket 
-> **xsk_ptr, const char *ifname,
->  		}
->  	}
->
-> -	optlen = sizeof(off);
-> -	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
-> +	err = xsk_get_mmap_offsets(xsk->fd, &off);
->  	if (err) {
->  		err = -errno;
->  		goto out_socket;
-> @@ -638,7 +697,6 @@ int xsk_socket__create(struct xsk_socket 
-> **xsk_ptr, const char *ifname,
->  int xsk_umem__delete(struct xsk_umem *umem)
->  {
->  	struct xdp_mmap_offsets off;
-> -	socklen_t optlen;
->  	int err;
->
->  	if (!umem)
-> @@ -647,8 +705,7 @@ int xsk_umem__delete(struct xsk_umem *umem)
->  	if (umem->refcount)
->  		return -EBUSY;
->
-> -	optlen = sizeof(off);
-> -	err = getsockopt(umem->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, 
-> &optlen);
-> +	err = xsk_get_mmap_offsets(umem->fd, &off);
->  	if (!err) {
->  		munmap(umem->fill->ring - off.fr.desc,
->  		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
-> @@ -666,7 +723,6 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->  {
->  	size_t desc_sz = sizeof(struct xdp_desc);
->  	struct xdp_mmap_offsets off;
-> -	socklen_t optlen;
->  	int err;
->
->  	if (!xsk)
-> @@ -677,8 +733,7 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->  		close(xsk->prog_fd);
->  	}
->
-> -	optlen = sizeof(off);
-> -	err = getsockopt(xsk->fd, SOL_XDP, XDP_MMAP_OFFSETS, &off, &optlen);
-> +	err = xsk_get_mmap_offsets(xsk->fd, &off);
->  	if (!err) {
->  		if (xsk->rx) {
->  			munmap(xsk->rx->ring - off.rx.desc,
-> -- 
-> 2.7.4
+T24gMjAxOS0xMC0yMyAzOjE0IHAubS4sIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiBPbiBXZWQs
+IDIzIE9jdCAyMDE5IDIxOjI1OjEyICswMjAwLCBKaXJpIFBpcmtvIHdyb3RlOg0KPj4gV2VkLCBP
+Y3QgMjMsIDIwMTkgYXQgMDk6MDA6NDZQTSBDRVNULCBqYWt1Yi5raWNpbnNraUBuZXRyb25vbWUu
+Y29tIHdyb3RlOg0KPj4+IE9uIFR1ZSwgMjIgT2N0IDIwMTkgMjA6NDM6MDEgKzAzMDAsIFl1dmFs
+IEF2bmVyeSB3cm90ZToNCj4+Pj4gVGhpcyBwYXRjaHNldCBpbnRyb2R1Y2VzIGRldmxpbmsgdmRl
+di4NCj4+Pj4NCj4+Pj4gQ3VycmVudGx5LCBsZWdhY3kgdG9vbHMgZG8gbm90IHByb3ZpZGUgYSBj
+b21wcmVoZW5zaXZlIHNvbHV0aW9uIHRoYXQgY2FuDQo+Pj4+IGJlIHVzZWQgaW4gYm90aCBTbWFy
+dE5pYyBhbmQgbm9uLVNtYXJ0TmljIG1vZGUuDQo+Pj4+IFZkZXYgcmVwcmVzZW50cyBhIGRldmlj
+ZSB0aGF0IGV4aXN0cyBvbiB0aGUgQVNJQyBidXQgaXMgbm90IG5lY2Vzc2FyaWx5DQo+Pj4+IHZp
+c2libGUgdG8gdGhlIGtlcm5lbC4NCj4+Pj4NCj4+Pj4gVXNpbmcgZGV2bGluayBwb3J0cyBpcyBu
+b3Qgc3VpdGFibGUgYmVjYXVzZToNCj4+Pj4NCj4+Pj4gMS4gVGhvc2UgZGV2aWNlcyBhcmVuJ3Qg
+bmVjZXNzYXJpbHkgbmV0d29yayBkZXZpY2VzIChzdWNoIGFzIE5WTWUgZGV2aWNlcykNCj4+Pj4g
+ICAgIGFuZCBkb2VzbuKAmXQgaGF2ZSBFLXN3aXRjaCByZXByZXNlbnRhdGlvbi4gVGhlcmVmb3Jl
+LCB0aGVyZSBpcyBuZWVkIGZvcg0KPj4+PiAgICAgbW9yZSBnZW5lcmljIHJlcHJlc2VudGF0aW9u
+IG9mIFBDSSBWRi4NCj4+Pj4gMi4gU29tZSBhdHRyaWJ1dGVzIGFyZSBub3QgbmVjZXNzYXJpbHkg
+cHVyZSBwb3J0IGF0dHJpYnV0ZXMNCj4+Pj4gICAgIChudW1iZXIgb2YgTVNJWCB2ZWN0b3JzKQ0K
+Pj4+PiAzLiBJdCBjcmVhdGVzIGEgY29uZnVzaW5nIGRldmxpbmsgdG9wb2xvZ3ksIHdpdGggbXVs
+dGlwbGUgcG9ydCBmbGF2b3Vycw0KPj4+PiAgICAgYW5kIGluZGljZXMuDQo+Pj4+DQo+Pj4+IFZk
+ZXYgd2lsbCBiZSBjcmVhdGVkIGFsb25nIHdpdGggZmxhdm91ciBhbmQgYXR0cmlidXRlcy4NCj4+
+Pj4gU29tZSBuZXR3b3JrIHZkZXZzIG1heSBiZSBsaW5rZWQgd2l0aCBhIGRldmxpbmsgcG9ydC4N
+Cj4+Pj4NCj4+Pj4gVGhpcyBpcyBhbHNvIGFpbWVkIHRvIHJlcGxhY2UgImlwIGxpbmsgdmYiIGNv
+bW1hbmRzIGFzIHRoZXkgYXJlIHN0cm9uZ2x5DQo+Pj4+IGxpbmtlZCB0byB0aGUgUENJIHRvcG9s
+b2d5IGFuZCBhbGxvdyBhY2Nlc3Mgb25seSB0byBlbmFibGVkIFZGcy4NCj4+Pj4gRXZlbiB0aG91
+Z2ggY3VycmVudCBwYXRjaHNldCBhbmQgZXhhbXBsZSBpcyBsaW1pdGVkIHRvIE1BQyBhZGRyZXNz
+DQo+Pj4+IG9mIHRoZSBWRiwgdGhpcyBpbnRlcmZhY2Ugd2lsbCBhbGxvdyB0byBtYW5hZ2UgUEYs
+IFZGLCBtZGV2IGluDQo+Pj4+IFNtYXJ0TmljIGFuZCBub24gU21hcnROaWMgbW9kZXMsIGluIHVu
+aWZpZWQgd2F5IGZvciBuZXR3b3JraW5nIGFuZA0KPj4+PiBub24tbmV0d29ya2luZyBkZXZpY2Vz
+IHZpYSBkZXZsaW5rIGluc3RhbmNlLg0KPj4+Pg0KPj4+PiBFeGFtcGxlOg0KPj4+Pg0KPj4+PiBB
+IHByaXZpbGVnZWQgdXNlciB3YW50cyB0byBjb25maWd1cmUgYSBWRidzIGh3X2FkZHIsIGJlZm9y
+ZSB0aGUgVkYgaXMNCj4+Pj4gZW5hYmxlZC4NCj4+Pj4NCj4+Pj4gJCBkZXZsaW5rIHZkZXYgc2V0
+IHBjaS8wMDAwOjAzOjAwLjAvMSBod19hZGRyIDEwOjIyOjMzOjQ0OjU1OjY2DQo+Pj4+DQo+Pj4+
+ICQgZGV2bGluayB2ZGV2IHNob3cgcGNpLzAwMDA6MDM6MDAuMC8xDQo+Pj4+IHBjaS8wMDAwOjAz
+OjAwLjAvMTogZmxhdm91ciBwY2l2ZiBwZiAwIHZmIDAgcG9ydF9pbmRleCAxIGh3X2FkZHIgMTA6
+MjI6MzM6NDQ6NTU6NjYNCj4+Pj4NCj4+Pj4gJCBkZXZsaW5rIHZkZXYgc2hvdyBwY2kvMDAwMDow
+MzowMC4wLzEgLWpwDQo+Pj4+IHsNCj4+Pj4gICAgICAidmRldiI6IHsNCj4+Pj4gICAgICAgICAg
+InBjaS8wMDAwOjAzOjAwLjAvMSI6IHsNCj4+Pj4gICAgICAgICAgICAgICJmbGF2b3VyIjogInBj
+aXZmIiwNCj4+Pj4gICAgICAgICAgICAgICJwZiI6IDAsDQo+Pj4+ICAgICAgICAgICAgICAidmYi
+OiAwLA0KPj4+PiAgICAgICAgICAgICAgInBvcnRfaW5kZXgiOiAxLA0KPj4+PiAgICAgICAgICAg
+ICAgImh3X2FkZHIiOiAiMTA6MjI6MzM6NDQ6NTU6NjYiDQo+Pj4+ICAgICAgICAgIH0NCj4+Pj4g
+ICAgICB9DQo+Pj4+IH0NCj4+PiBJIGRvbid0IHRydXN0IHRoaXMgaXMgYSBnb29kIGRlc2lnbi4N
+Cj4+Pg0KPj4+IFdlIG5lZWQgc29tZSBwcm9wZXIgb250b2xvZ3kgYW5kIGRlY2lzaW9ucyB3aGF0
+IGdvZXMgd2hlcmUuIFdlIGhhdmUNCj4+PiBoYWxmIG9mIHBvcnQgYXR0cmlidXRlcyBkdXBsaWNh
+dGVkIGhlcmUsIGFuZCBod19hZGRyIHdoaWNoIGhvbmVzdGx5DQo+Pj4gbWFrZXMgbW9yZSBzZW5z
+ZSBpbiBhIHBvcnQgKHNpbmNlIHBvcnQgaXMgbW9yZSBvZiBhIG5ldHdvcmtpbmcNCj4+PiBjb25z
+dHJ1Y3QsIHdoeSB3b3VsZCBlcCBzdG9yYWdlIGhhdmUgYSBod19hZGRyPykuIFRoZW4geW91IHNh
+eSB5b3UncmUNCj4+PiBnb2luZyB0byBkdW1wIG1vcmUgUENJIHN0dWZmIGluIGhlcmUgOigNCj4+
+IFdlbGwgYmFzaWNhbGx5IHdoYXQgdGhpcyAidmRldiIgaXMgaXMgdGhlICJwb3J0IHBlZXIiIHdl
+IGRpc2N1c3NlZA0KPj4gY291cGxlIG9mIG1vbnRocyBhZ28uIEl0IHByb3ZpZGVzIHBvc3NpYmls
+aXR5IGZvciB0aGUgdXNlciBvbiBiYXJlIG1ldGFsDQo+PiB0byBjb2ZpZ3VyZSB0aGluZ3MgZm9y
+IHRoZSBWRiAtIGZvciBleGFtcGxlLg0KPj4NCj4+IFJlZ2FyZGluZyBod19hZGRyIHZzLiBwb3J0
+IC0gaXQgaXMgbm90IGNvcnJlY3QgdG8gbWFrZSB0aGF0IGEgZGV2bGluaw0KPj4gcG9ydCBhdHRy
+aWJ1dGUuIEl0IGlzIG5vdCBwb3J0J3MgaHdfYWRkciwgYnV0IHRoZSBwb3J0J3MgcGVlciBod19h
+ZGRyLg0KPiBZZWFoLCBJIHJlbWVtYmVyIHVzIGFyZ3Vpbmcgd2l0aCBvdGhlcnMgdGhhdCAidGhl
+IG90aGVyIHNpZGUgb2YgdGhlDQo+IHdpcmUiIHNob3VsZCBub3QgYmUgYSBwb3J0Lg0KPg0KPj4+
+ICJ2ZGV2IiBzb3VuZHMgZW50aXJlbHkgbWVhbmluZ2xlc3MsIGFuZCBoYXMgYSBoaWdoIGNoYW5j
+ZSBvZiBiZWNvbWluZw0KPj4+IGEgZHVtcGluZyBncm91bmQgZm9yIGF0dHJpYnV0ZXMuDQo+PiBT
+dXJlLCBpdCBpcyBhIG1hZGV1cCBuYW1lLiBJZiB5b3UgaGF2ZSBhIGJldHRlciBuYW1lLCBwbGVh
+c2Ugc2hhcmUuDQo+IElESy4gSSB0aGluayBJIHN0YXJ0ZWQgdGhlICJwZWVyIiBzdHVmZiwgc28g
+aXQgbWFkZSBzZW5zZSB0byBtZS4NCj4gTm93IGl0IHNvdW5kcyBsaWtlIHlvdSdkIGxpa2UgdG8g
+a2lsbCBhIGxvdCBvZiBwcm9ibGVtcyB3aXRoIHRoaXMNCj4gb25lIHN0b25lLiBGb3IgUENJZSAi
+dmRldiIgaXMgZGVmIHdyb25nIGJlY2F1c2Ugc29tZSBvZiB0aGUgY29uZmlnDQo+IHdpbGwgYmUg
+Zm9yIFBGICh3aGljaCBpcyBub3QgdmlydHVhbCkuIEFsc28gZm9yIFBDSWUgdGhlIGNvbmZpZyBo
+YXMNCj4gdG8gYmUgZG9uZSB3aXRoIHBlcm1hbmVuY2UgaW4gbWluZCBmcm9tIGRheSAxLCBQQ0kg
+b2Z0ZW4gcmVxdWlyZXMNCj4gSFcgcmVzZXQgdG8gcmVjb25maWcuDQo+DQpUaGUgUEYgaXMgInZp
+cnR1YWwiIGZyb20gdGhlIFNtYXJ0TmljIGVtYmVkZGVkIENQVSBwb2ludCBvZiB2aWV3Lg0KDQpN
+YXliZSBnZGV2IGlzIGJldHRlcj8gKGdlbmVyaWMpDQoNCj4+IEJhc2ljYWxseSBpdCBpcyBzb21l
+dGhpbmcgdGhhdCByZXByZXNlbnRzIFZGL21kZXYgLSB0aGUgb3RoZXIgc2lkZSBvZg0KPj4gZGV2
+bGluayBwb3J0LiBCdXQgaW4gc29tZSBjYXNlcywgbGlrZSBOVk1lLCB0aGVyZSBpcyBubyBhc3Nv
+Y2lhdGVkDQo+PiBkZXZsaW5rIHBvcnQgLSB0aGF0IGlzIHdoeSAiZGV2bGluayBwb3J0IHBlZXIi
+IHdvdWxkIG5vdCB3b3JrIGhlcmUuDQo+IFdoYXQgYXJlIHRoZSBOVk1lIHBhcmFtZXRlcnMgd2Un
+ZCBjb25maWd1cmUgaGVyZT8gUXVldWVzIGV0Yy4gb3Igc29tZQ0KPiBJRHM/IFByZXN1bWFibHkg
+dGhlcmUgd2lsbCBiZSBhIE5WTWUtc3BlY2lmaWMgd2F5IHRvIGNvbmZpZ3VyZSB0aGluZ3M/DQo+
+IFNvbWV0aGluZyBoYXMgdG8gcG9pbnQgdGhlIE5WTWUgVkYgdG8gYSBiYWNrZW5kLCByaWdodD8N
+Cj4NCj4gKEkgaGF2ZW4ndCBsb29rZWQgbXVjaCBpbnRvIE5WTWUgbXlzZWxmIGluIGNhc2UgdGhh
+dCdzIG5vdCBvYnZpb3VzIDspKQ0KDQoNCg==
