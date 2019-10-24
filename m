@@ -2,64 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11263E3C56
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 21:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA344E3C8D
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 21:55:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437359AbfJXTs7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Oct 2019 15:48:59 -0400
-Received: from mga01.intel.com ([192.55.52.88]:59469 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437273AbfJXTs7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 24 Oct 2019 15:48:59 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Oct 2019 12:48:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,225,1569308400"; 
-   d="scan'208";a="399879464"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Oct 2019 12:48:59 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Davidlohr Bueso <dave@stgolabs.net>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: WARNING: at net/sched/sch_generic.c:448
-In-Reply-To: <20191024032105.xmewznsphltnrido@linux-p48b>
-References: <20191024032105.xmewznsphltnrido@linux-p48b>
-Date:   Thu, 24 Oct 2019 12:50:11 -0700
-Message-ID: <87mudpylcc.fsf@linux.intel.com>
+        id S2408334AbfJXTzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 15:55:02 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:48047 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2392889AbfJXTzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 15:55:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571946900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=46JWhWsVeq/tB0Aj5YNxoiRSmrwdl+Kq9BaeK3ujO0U=;
+        b=DFyau+12Pf776Ra8ToZbfReIJM3hr50lO1EqlGKpxMWpK9hKxLtlHi8EfiH8kRtmVZdQoy
+        JpVJ1IDyNc/Pr/+n55GZM09pcm0m0bUta4d7Y+ih7FqD71L+yAQS45IKjw0MPpLgdzHqOs
+        uuu/uL7ZxjoMq54T7hQLBG/3061NeOg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-310-rQGSdyFqNNOUITf7Nv_epw-1; Thu, 24 Oct 2019 15:54:58 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 85A4947B;
+        Thu, 24 Oct 2019 19:54:54 +0000 (UTC)
+Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1EB675D9D5;
+        Thu, 24 Oct 2019 19:54:42 +0000 (UTC)
+Date:   Thu, 24 Oct 2019 13:54:41 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V5 2/6] modpost: add support for mdev class id
+Message-ID: <20191024135441.160daa56@x1.home>
+In-Reply-To: <555a101e-0ed1-2e9d-c1a4-e3b37d76bd18@redhat.com>
+References: <20191023130752.18980-1-jasowang@redhat.com>
+        <20191023130752.18980-3-jasowang@redhat.com>
+        <20191023154245.32e4fa49@x1.home>
+        <555a101e-0ed1-2e9d-c1a4-e3b37d76bd18@redhat.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8BIT
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: rQGSdyFqNNOUITf7Nv_epw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, 24 Oct 2019 11:31:04 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-Davidlohr Bueso <dave@stgolabs.net> writes:
+> On 2019/10/24 =E4=B8=8A=E5=8D=885:42, Alex Williamson wrote:
+> > On Wed, 23 Oct 2019 21:07:48 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+> > =20
+> >> Add support to parse mdev class id table.
+> >>
+> >> Reviewed-by: Parav Pandit <parav@mellanox.com>
+> >> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> >> ---
+> >>   drivers/vfio/mdev/vfio_mdev.c     |  2 ++
+> >>   scripts/mod/devicetable-offsets.c |  3 +++
+> >>   scripts/mod/file2alias.c          | 10 ++++++++++
+> >>   3 files changed, 15 insertions(+)
+> >>
+> >> diff --git a/drivers/vfio/mdev/vfio_mdev.c b/drivers/vfio/mdev/vfio_md=
+ev.c
+> >> index 7b24ee9cb8dd..cb701cd646f0 100644
+> >> --- a/drivers/vfio/mdev/vfio_mdev.c
+> >> +++ b/drivers/vfio/mdev/vfio_mdev.c
+> >> @@ -125,6 +125,8 @@ static const struct mdev_class_id id_table[] =3D {
+> >>   =09{ 0 },
+> >>   };
+> >>  =20
+> >> +MODULE_DEVICE_TABLE(mdev, id_table);
+> >> + =20
+> > Two questions, first we have:
+> >
+> > #define MODULE_DEVICE_TABLE(type, name)                                =
+ \
+> > extern typeof(name) __mod_##type##__##name##_device_table              =
+ \
+> >    __attribute__ ((unused, alias(__stringify(name))))
+> >
+> > Therefore we're defining __mod_mdev__id_table_device_table with alias
+> > id_table.  When the virtio mdev bus driver is added in 5/6 it uses the
+> > same name value.  I see virtio types all register this way (virtio,
+> > id_table), so I assume there's no conflict, but pci types mostly (not
+> > entirely) seem to use unique names.  Is there a preference to one way
+> > or the other or it simply doesn't matter? =20
+>=20
+>=20
+> It looks to me that those symbol were local, so it doesn't matter. But=20
+> if you wish I can switch to use unique name.
 
-> Hi,
->
-> I'm hitting the following in linux-next, and as far back as v5.2, ring any bells?
->
-> [  478.588144] NETDEV WATCHDOG: eth0 (igb): transmit queue 0 timed out
-> [  478.601994] WARNING: CPU: 10 PID: 74 at net/sched/sch_generic.c:448 dev_watchdog+0x253/0x260
-> [  478.620613] Modules linked in: ebtable_filter(E) ebtables(E) ip6table_filter(E) ip6_tables(E) iptable_filter(E) ip_tables(E) x_tables(E) bpfilter(E) scsi_transport_iscsi(E) af_packet(E) iscsi_ibft(E) iscsi_boot_sysfs(E) ext4(E) intel_rapl_msr(E) intel_rapl_common(E) crc16(E) mbcache(E) jbd2(E) sb_edac(E) x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) kvm_intel(E) kvm(E) irqbypass(E) crc32_pclmul(E) iTCO_wdt(E) ghash_clmulni_intel(E) iTCO_vendor_support(E) aesni_intel(E) crypto_simd(E) cryptd(E) glue_helper(E) ipmi_si(E) igb(E) ioatdma(E) pcspkr(E) ipmi_devintf(E) mei_me(E) lpc_ich(E) mfd_core(E) ipmi_msghandler(E) joydev(E) i2c_i801(E) mei(E) dca(E) button(E) btrfs(E) libcrc32c(E) xor(E) raid6_pq(E) hid_generic(E) usbhid(E) sd_mod(E) mgag200(E) drm_kms_helper(E) syscopyarea(E) sysfillrect(E) sysimgblt(E) fb_sys_fops(E) i2c_algo_bit(E) isci(E) ehci_pci(E) drm_vram_helper(E) ahci(E) ehci_hcd(E) libsas(E) crc32c_intel(E) ttm(E) libahci(E) scsi_transport_sas(E) drm(E) usbcore(E)
-> [  478.620658]  libata(E) wmi(E) sg(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi_dh_alua(E) scsi_mod(E)
-> [  478.837008] CPU: 10 PID: 74 Comm: ksoftirqd/10 Kdump: loaded Tainted: G            E     5.4.0-rc4-2-default+ #2
-> [  478.859457] Hardware name: Intel Corporation LH Pass/SVRBD-ROW_P, BIOS SE5C600.86B.02.01.SP04.112220131546 11/22/2013
-> [  478.882867] RIP: 0010:dev_watchdog+0x253/0x260
+I don't have a strong opinion, I'm just trying to make sure we're not
+doing something obviously broken.
 
-Not ringing any bells, but if this timeout is happening, you should also
-be seeing some igb "TX Hang" warnings. Usually this warning happens when
-some packet is stuck (for whatever reason) in the transmission queue.
+> >>   static struct mdev_driver vfio_mdev_driver =3D {
+> >>   =09.name=09=3D "vfio_mdev",
+> >>   =09.probe=09=3D vfio_mdev_probe,
+> >> diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetab=
+le-offsets.c
+> >> index 054405b90ba4..6cbb1062488a 100644
+> >> --- a/scripts/mod/devicetable-offsets.c
+> >> +++ b/scripts/mod/devicetable-offsets.c
+> >> @@ -231,5 +231,8 @@ int main(void)
+> >>   =09DEVID(wmi_device_id);
+> >>   =09DEVID_FIELD(wmi_device_id, guid_string);
+> >>  =20
+> >> +=09DEVID(mdev_class_id);
+> >> +=09DEVID_FIELD(mdev_class_id, id);
+> >> +
+> >>   =09return 0;
+> >>   }
+> >> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+> >> index c91eba751804..d365dfe7c718 100644
+> >> --- a/scripts/mod/file2alias.c
+> >> +++ b/scripts/mod/file2alias.c
+> >> @@ -1335,6 +1335,15 @@ static int do_wmi_entry(const char *filename, v=
+oid *symval, char *alias)
+> >>   =09return 1;
+> >>   }
+> >>  =20
+> >> +/* looks like: "mdev:cN" */
+> >> +static int do_mdev_entry(const char *filename, void *symval, char *al=
+ias)
+> >> +{
+> >> +=09DEF_FIELD(symval, mdev_class_id, id);
+> >> +
+> >> +=09sprintf(alias, "mdev:c%02X", id); =20
+> > A lot of entries call add_wildcard() here, should we?  Sorry for the
+> > basic questions, I haven't played in this code.  Thanks, =20
+>=20
+>=20
+> It's really good question. My understanding is we won't have a module=20
+> that can deal with all kinds of classes like CLASS_ID_ANY. So there's=20
+> probably no need for the wildcard.
 
-Can you share more details about what you are running? specially the
-kind of configuration (if any) you are doing to the controller.
+The comment for add_wildcard() indicates future extension, so it's hard
+to know what we might need in the future until we do need it.  The
+majority of modules.alias entries on my laptop (even if I exclude pci
+aliases) end with a wildcard.  Thanks,
 
+Alex
 
-Cheers,
---
-Vinicius
