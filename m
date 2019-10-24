@@ -2,82 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B52F6E2A4D
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 08:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDE09E2A6D
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 08:29:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437721AbfJXGTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 02:19:09 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:41746 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403986AbfJXGTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 02:19:09 -0400
-Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 229A060D3F2;
-        Thu, 24 Oct 2019 08:19:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1571897946;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2cgaBnYz4a1qGwNBwfPw34bFfBPfd3lSFyIheuElHw8=;
-        b=a+kth0dQSGJ06qGmQi3wuwsnIvf3oGvwfZZBpAsRtonnY+BTfdRjUctnQbO5skefNMoLTa
-        Vv3yip+Jl1EisyvkAKmZDNf2mi6fIbV2XyOYcnb6A815qZeMOYdZVZ4McA5CGGSAN827Je
-        4cLdcB77cKe1/ffbzD3reFFM09FnEuQ=
+        id S2437754AbfJXG3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 02:29:21 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34248 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727750AbfJXG3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 02:29:21 -0400
+Received: by mail-pl1-f195.google.com with SMTP id k7so11355603pll.1;
+        Wed, 23 Oct 2019 23:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TnQ6iUBhZ6QDqwjf7E/1ik4QV2HCeGlGTNteQTzWdPE=;
+        b=Col7n+vz5f4YwdbhXX/IIWvYPUDLvSpR5WS/+OYA+B9B0KPYEmzTQwzE+8YS02cIsp
+         zAxUY4fxaMZWliWuGne7Q7u0CDNuNloUcByHFkJvjLJ2ZHLKBwlpnBZFLg18bWVn6Mcm
+         LifRkDSw9pgY02ohsvv69ZvC669TvdSgYTfCy4iRqKlTO7Gb6AR6z9qQzpaMcpGpxbP7
+         yeVhjSE79UlTsn03gABejtlu+nZd8BkMCldJ3iUF0EMFC/p5f4YB5hqueXs8o6IQzrxU
+         Nl3lJOf8dBoXIuZ1jO4g6AmIAjlnu46uuOk6FTgkffa8hkZrJHZSbYSTb5QBiZCNpNSs
+         cQkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TnQ6iUBhZ6QDqwjf7E/1ik4QV2HCeGlGTNteQTzWdPE=;
+        b=a6ZUQxUMC98DkMKKfEMiiZ6a6c/aIBZ8MmHxvG8HYvCrXFYyH4dTFXzbXcPtFjiXnp
+         X4JRNEn1uxA+4+uR1l1fybwqkSfv7/yQcNiXAdsSDokJbR9fE5qddtWcwB+Z3uFmzIzt
+         bzytX+ymSpKRECqN4Ex1B6+TPeM+nwXGDPO639VwyqGGfF0V1X9rNGsOxoGXrtOqczOh
+         nb5640JaZfTGRXIIiseXiAY5OaLXEDIjAKK9D6MNOQgb9FoGavK1aWb3/W140X9VihZ7
+         ZTcvwgnWdPLp0XWhDVq315auNjX7X/hI3tANab3s0tf7bh9JFdksRIDVWholq4dWAYq0
+         5v2A==
+X-Gm-Message-State: APjAAAUaUM5Vaa7oXE8k0cA+WPiZN6sYVwZNm7CV+csFa1253hcM8p7a
+        aqMpTwN0RqJ4gUWhfOazY+M=
+X-Google-Smtp-Source: APXvYqyZ3Bj2GsNfgwSkrUQpaXxBZQyDDxMEOxw9u5rcNyUF7sEPGB8cWdSZahnHBKymatS99bHpuA==
+X-Received: by 2002:a17:902:8505:: with SMTP id bj5mr13430539plb.296.1571898560629;
+        Wed, 23 Oct 2019 23:29:20 -0700 (PDT)
+Received: from taoren-ubuntuvm (c-24-4-25-55.hsd1.ca.comcast.net. [24.4.25.55])
+        by smtp.gmail.com with ESMTPSA id n3sm29168463pff.102.2019.10.23.23.29.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 23 Oct 2019 23:29:20 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 23:29:03 -0700
+From:   Tao Ren <rentao.bupt@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, olteanv@gmail.com,
+        arun.parameswaran@broadcom.com, justinpopo6@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH net-next v10 0/3] net: phy: support 1000Base-X
+ auto-negotiation for BCM54616S
+Message-ID: <20191024062902.GA52817@taoren-ubuntuvm>
+References: <20191022183108.14029-1-rentao.bupt@gmail.com>
+ <20191023.204311.1181447784152558295.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 24 Oct 2019 08:19:06 +0200
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org, nbd@nbd.name,
-        sgruszka@redhat.com, lorenzo.bianconi@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH wireless-drivers 0/2] fix mt76x2e hangs on U7612E
- mini-pcie
-In-Reply-To: <cover.1571868221.git.lorenzo@kernel.org>
-References: <cover.1571868221.git.lorenzo@kernel.org>
-Message-ID: <be773efbf97ddc4c79956ff03136b62e@natalenko.name>
-X-Sender: oleksandr@natalenko.name
-User-Agent: Roundcube Webmail/1.3.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191023.204311.1181447784152558295.davem@davemloft.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi.
-
-On 24.10.2019 00:23, Lorenzo Bianconi wrote:
-> Various mt76x2e issues have been reported on U7612E mini-pcie card [1].
-> On U7612E-H1 PCIE_ASPM causes continuous mcu hangs and instability and
-> so patch 1/2 disable it by default.
-> Moreover mt76 does not properly unmap dma buffers for non-linear skbs.
-> This issue may result in hw hangs if the system relies on IOMMU.
-> Patch 2/2 fix the problem properly unmapping data fragments on
-> non-linear skbs.
+On Wed, Oct 23, 2019 at 08:43:11PM -0700, David Miller wrote:
+> From: rentao.bupt@gmail.com
+> Date: Tue, 22 Oct 2019 11:31:05 -0700
 > 
-> [1]:
-> https://lore.kernel.org/netdev/deaafa7a3e9ea2111ebb5106430849c6@natalenko.name/
+> > From: Tao Ren <rentao.bupt@gmail.com>
+> > 
+> > This patch series aims at supporting auto negotiation when BCM54616S is
+> > running in 1000Base-X mode: without the patch series, BCM54616S PHY driver
+> > would report incorrect link speed in 1000Base-X mode.
+> > 
+> > Patch #1 (of 3) modifies assignment to OR when dealing with dev_flags in
+> > phy_attach_direct function, so that dev_flags updated in BCM54616S PHY's
+> > probe callback won't be lost.
+> > 
+> > Patch #2 (of 3) adds several genphy_c37_* functions to support clause 37
+> > 1000Base-X auto-negotiation, and these functions are called in BCM54616S
+> > PHY driver.
+> > 
+> > Patch #3 (of 3) detects BCM54616S PHY's operation mode and calls according
+> > genphy_c37_* functions to configure auto-negotiation and parse link
+> > attributes (speed, duplex, and etc.) in 1000Base-X mode.
 > 
-> Lorenzo Bianconi (2):
->   mt76: mt76x2e: disable pcie_aspm by default
->   mt76: dma: fix buffer unmap with non-linear skbs
-> 
->  drivers/net/wireless/mediatek/mt76/dma.c      | 10 ++--
->  drivers/net/wireless/mediatek/mt76/mmio.c     | 47 +++++++++++++++++++
->  drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
->  .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
->  4 files changed, 57 insertions(+), 3 deletions(-)
+> Series applied to net-next, thank you.
 
-Feel free to add my
+Great. Thank you David!
 
-Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
 
-and thanks for the submission.
+Cheers,
 
--- 
-   Oleksandr Natalenko (post-factum)
+Tao
