@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54378E2A24
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 07:49:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AD8E2A27
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 07:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408519AbfJXFt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 01:49:27 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:53152 "EHLO
+        id S2437590AbfJXFuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 01:50:23 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:53318 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404449AbfJXFt1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 01:49:27 -0400
+        with ESMTP id S2404449AbfJXFuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 01:50:23 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id C703660D7D; Thu, 24 Oct 2019 05:49:26 +0000 (UTC)
+        id 35EDA60DCE; Thu, 24 Oct 2019 05:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571896166;
-        bh=zBJyyCBKj4sAv/VGa+BHTvcgD+ISVRuOWnhGH3Cx1/I=;
+        s=default; t=1571896222;
+        bh=sntYvzeJGBcKz/3sm81RPEnwd/LVuuEDNDh2otjkO2M=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=ScY9rk20XR2tr+LMQ6vXkleajeQuwZnWkgBWp1jBoBGV3kXC9RgjJY4vyFkToRKL4
-         vWgXkfiKY/PoxVUoBQy1VkmfdtvYC6iSXAx9v7tdZe+8cDPJ9sPSfAaJMtdp+McZD7
-         cPnt5UzbqXQ2Qrs5c+Nw+ynDqF3DOufu1y1UrdJM=
+        b=JXfTjsRHoobw+opiGrDK76Y75ExfFiDMzNY7ovZBJsUsgKq3zD94eRfBKa89a+wmw
+         Sl8hikEA73nr1gTIL8RIRpLySBaVFP05hwjIp50b/FOCEpfoKtUxhCJ9hi6yExzuZF
+         3y5d3X9FVXuAXwSoOIFjXkfW0shhpJXU2V0OMvic=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,53 +30,57 @@ Received: from potku.adurom.net (unknown [88.114.240.156])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id DAC9060B6E;
-        Thu, 24 Oct 2019 05:49:24 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 436BE60B6E;
+        Thu, 24 Oct 2019 05:50:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1571896166;
-        bh=zBJyyCBKj4sAv/VGa+BHTvcgD+ISVRuOWnhGH3Cx1/I=;
+        s=default; t=1571896221;
+        bh=sntYvzeJGBcKz/3sm81RPEnwd/LVuuEDNDh2otjkO2M=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=f2F4JqiBb6VEkOHBAa+diGGZE0/e1vb7yZoTku5m0QS+aOkbTJHt3hswxjn3RgAUe
-         WPLZhUHirsGBM24hHdfkk0uxPCxn0fq06vGumjhEsht18UXgOsY34nPPnyN/w2WrU8
-         09iycX9TgS9hPDZf1Vw8dywzv3iFeK1rlWbbh9EI=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DAC9060B6E
+        b=CiVk3flsX0J1Rg3SbR2jPoKOZEn0jCC/sTxbon5oaIFQSnrLRat2l7JGFPCOirzkp
+         6s7JmUT/IL0sx9gk4eKnsjTFCHNaKn/41KuwC+MQRdA6mwOk9gz5vIfqgu5PkWfFeM
+         0nK6IhYK5iBwY+iYmF2sUorfm+fBETAbRylYtJtM=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 436BE60B6E
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtl8xxxu: remove set but not used variable 'rate_mask'
+Subject: Re: [PATCH] rtl8xxxu: fix warnings for symbol not declared
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191023075342.26656-1-yuehaibing@huawei.com>
-References: <20191023075342.26656-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <Jes.Sorensen@gmail.com>, <davem@davemloft.net>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+In-Reply-To: <20191023105407.92131-1-chiu@endlessm.com>
+References: <20191023105407.92131-1-chiu@endlessm.com>
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191024054926.C703660D7D@smtp.codeaurora.org>
-Date:   Thu, 24 Oct 2019 05:49:26 +0000 (UTC)
+Message-Id: <20191024055022.35EDA60DCE@smtp.codeaurora.org>
+Date:   Thu, 24 Oct 2019 05:50:22 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+Chris Chiu <chiu@endlessm.com> wrote:
 
-> drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:4484:6:
->  warning: variable rate_mask set but not used [-Wunused-but-set-variable]
+> Fix the following sparse warnings.
+> sparse: symbol 'rtl8723bu_set_coex_with_type' was not declared.
+> Should it be static?
+> sparse: symbol 'rtl8723bu_update_bt_link_info' was not declared.
+> Should it be static?
+> sparse: symbol 'rtl8723bu_handle_bt_inquiry' was not declared.
+> Should it be static?
+> sparse: symbol 'rtl8723bu_handle_bt_info' was not declared.
+> Should it be static?
 > 
-> It is never used since commit a9bb0b515778 ("rtl8xxxu: Improve
-> TX performance of RTL8723BU on rtl8xxxu driver")
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-4fcef8609132 rtl8xxxu: remove set but not used variable 'rate_mask'
+b298800dd8ee rtl8xxxu: fix warnings for symbol not declared
 
 -- 
-https://patchwork.kernel.org/patch/11205849/
+https://patchwork.kernel.org/patch/11206331/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
