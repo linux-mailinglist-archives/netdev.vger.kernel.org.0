@@ -2,184 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F331E3B0A
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:32:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D3D2E3B08
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 20:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394163AbfJXSca convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 24 Oct 2019 14:32:30 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:40880 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726155AbfJXSca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 14:32:30 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9OIRO0F060554
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 14:32:29 -0400
-Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2vucdrs4yt-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 14:32:16 -0400
-Received: from localhost
-        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
-        Thu, 24 Oct 2019 19:31:20 +0100
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
-        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 24 Oct 2019 19:31:16 +0100
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9OIVFSX29229186
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Oct 2019 18:31:16 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BB52C4C05E;
-        Thu, 24 Oct 2019 18:31:14 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 818E64C073;
-        Thu, 24 Oct 2019 18:31:14 +0000 (GMT)
-Received: from dyn-9-152-99-235.boeblingen.de.ibm.com (unknown [9.152.99.235])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 24 Oct 2019 18:31:14 +0000 (GMT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3594.4.19\))
-Subject: Re: Linux-5.4: bpf: test_core_reloc_arrays.o: Segmentation fault with
- llc -march=bpf
-From:   Ilya Leoshkevich <iii@linux.ibm.com>
-In-Reply-To: <5d2cf6b8-a634-62ea-0b80-1d499aa3c693@fb.com>
-Date:   Thu, 24 Oct 2019 20:31:14 +0200
-Cc:     Prabhakar Kushwaha <prabhakar.pkin@gmail.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-References: <8080a9a2-82f1-20b5-8d5d-778536f91780@gmail.com>
- <C47F20A9-D34A-43C9-AAB5-6F125C73FA16@linux.ibm.com>
- <5d2cf6b8-a634-62ea-0b80-1d499aa3c693@fb.com>
-To:     Yonghong Song <yhs@fb.com>
-X-Mailer: Apple Mail (2.3594.4.19)
-X-TM-AS-GCONF: 00
-x-cbid: 19102418-0028-0000-0000-000003AF057E
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19102418-0029-0000-0000-000024713903
-Message-Id: <85F5C807-EDAF-4A85-A5D4-D72FBFFD0A26@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-24_10:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910240173
+        id S2394152AbfJXScQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 14:32:16 -0400
+Received: from smtprelay0156.hostedemail.com ([216.40.44.156]:32801 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726155AbfJXScQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 14:32:16 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 029588E78;
+        Thu, 24 Oct 2019 18:32:15 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:355:379:800:960:966:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2559:2562:2828:2899:3138:3139:3140:3141:3142:3353:3865:3867:3868:3870:3871:3874:4250:4321:4385:5007:6117:6119:7875:7903:10004:10400:11026:11473:11658:11914:12043:12296:12297:12438:12555:12760:13141:13230:13439:14096:14097:14181:14394:14659:14721:21080:21433:21451:21611:21627:30046:30054,0,RBL:47.151.135.224:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:26,LUA_SUMMARY:none
+X-HE-Tag: vest26_87e0d9178874e
+X-Filterd-Recvd-Size: 2764
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf01.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 24 Oct 2019 18:32:13 +0000 (UTC)
+Message-ID: <4d53be6c963542878d370ff1a6dc7c3a89b28d23.camel@perches.com>
+Subject: [PATCH] mac80211.h: Trivial typo fixes
+From:   Joe Perches <joe@perches.com>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Thu, 24 Oct 2019 11:32:12 -0700
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Am 24.10.2019 um 19:49 schrieb Yonghong Song <yhs@fb.com>:
-> 
-> 
-> 
-> On 10/24/19 9:04 AM, Ilya Leoshkevich wrote:
->>> Am 23.10.2019 um 03:35 schrieb Prabhakar Kushwaha <prabhakar.pkin@gmail.com>:
->>> 
->>> 
->>> Adding other mailing list, folks...
->>> 
->>> Hi All,
->>> 
->>> I am trying to build kselftest on Linux-5.4 on ubuntu 18.04. I installed
->>> LLVM-9.0.0 and Clang-9.0.0 from below links after following steps from
->>> [1] because of discussion [2]
->>> 
->>> https://urldefense.proofpoint.com/v2/url?u=https-3A__releases.llvm.org_9.0.0_llvm-2D9.0.0.src.tar.xz&d=DwIFAg&c=5VD0RTtNlTh3ycd41b3MUw&r=DA8e1B5r073vIqRrFz7MRA&m=se8pV6OlDAeF2g5iEAvSB2qhLBJGPaHADv3NQVNFx6U&s=IzBxNhAvcILfAD_XcSB7t0s6-B-wFY3TBoVGH6WhRK8&e=
->>> https://urldefense.proofpoint.com/v2/url?u=https-3A__releases.llvm.org_9.0.0_clang-2Dtools-2Dextra-2D9.0.0.src.tar.xz&d=DwIFAg&c=5VD0RTtNlTh3ycd41b3MUw&r=DA8e1B5r073vIqRrFz7MRA&m=se8pV6OlDAeF2g5iEAvSB2qhLBJGPaHADv3NQVNFx6U&s=KkjCjWm_q2iMfFh50rTKtFqQEMbRBVhT9Oh8KMfgwW4&e=
->>> https://urldefense.proofpoint.com/v2/url?u=https-3A__releases.llvm.org_9.0.0_cfe-2D9.0.0.src.tar.xz&d=DwIFAg&c=5VD0RTtNlTh3ycd41b3MUw&r=DA8e1B5r073vIqRrFz7MRA&m=se8pV6OlDAeF2g5iEAvSB2qhLBJGPaHADv3NQVNFx6U&s=TvkN9sb5rSB5BNxJP27UmCsfNHsRQdaVeAnBa1TkyjM&e=
->>> 
->>> Now, i am trying with llc -march=bpf, with this segmentation fault is
->>> coming as below:
->>> 
->>> gcc -g -Wall -O2 -I../../../include/uapi -I../../../lib
->>> -I../../../lib/bpf -I../../../../include/generated -DHAVE_GENHDR
->>> -I../../../include -Dbpf_prog_load=bpf_prog_test_load
->>> -Dbpf_load_program=bpf_test_load_program    test_flow_dissector.c
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_stub.o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/libbpf.a -lcap -lelf
->>> -lrt -lpthread -o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_flow_dissector
->>> gcc -g -Wall -O2 -I../../../include/uapi -I../../../lib
->>> -I../../../lib/bpf -I../../../../include/generated -DHAVE_GENHDR
->>> -I../../../include -Dbpf_prog_load=bpf_prog_test_load
->>> -Dbpf_load_program=bpf_test_load_program
->>> test_tcp_check_syncookie_user.c
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_stub.o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/libbpf.a -lcap -lelf
->>> -lrt -lpthread -o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_tcp_check_syncookie_user
->>> gcc -g -Wall -O2 -I../../../include/uapi -I../../../lib
->>> -I../../../lib/bpf -I../../../../include/generated -DHAVE_GENHDR
->>> -I../../../include -Dbpf_prog_load=bpf_prog_test_load
->>> -Dbpf_load_program=bpf_test_load_program    test_lirc_mode2_user.c
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_stub.o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/libbpf.a -lcap -lelf
->>> -lrt -lpthread -o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_lirc_mode2_user
->>> (clang -I. -I./include/uapi -I../../../include/uapi
->>> -I/usr/src/tovards/linux/tools/testing/selftests/bpf/../usr/include
->>> -D__TARGET_ARCH_arm64 -g -idirafter /usr/local/include -idirafter
->>> /usr/local/lib/clang/9.0.0/include -idirafter
->>> /usr/include/aarch64-linux-gnu -idirafter /usr/include
->>> -Wno-compare-distinct-pointer-types -O2 -target bpf -emit-llvm \
->>> -c progs/test_core_reloc_arrays.c -o - || echo "clang failed") | \
->>> llc -march=bpf -mcpu=probe  -filetype=obj -o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_core_reloc_arrays.o
->>> Stack dump:
->>> 0. Program arguments: llc -march=bpf -mcpu=probe -filetype=obj -o
->>> /usr/src/tovards/linux/tools/testing/selftests/bpf/test_core_reloc_arrays.o
->>> 1. Running pass 'Function Pass Manager' on module '<stdin>'.
->>> 2. Running pass 'BPF Assembly Printer' on function '@test_core_arrays'
->>> #0 0x0000aaaac618db08 llvm::sys::PrintStackTrace(llvm::raw_ostream&)
->>> (/usr/local/bin/llc+0x152eb08)
->>> Segmentation fault
->> 
->> Hi,
->> 
->> FWIW I can confirm that this is happening on s390 too with llvm-project
->> commit 950b800c451f.
->> 
->> Here is the reduced sample that triggers this (with -march=bpf
->> -mattr=+alu32):
->> 
->> struct b {
->>   int e;
->> } c;
->> int f() {
->>   return __builtin_preserve_field_info(c.e, 0);
->> }
->> 
->> This is compiled into:
->> 
->> 0B      bb.0 (%ir-block.0):
->> 16B       %0:gpr = LD_imm64 @"b:0:0$0:0"
->> 32B       $w0 = COPY %0:gpr, debug-location !17; 1-E.c:5:3
->> 48B       RET implicit killed $w0, debug-location !17; 1-E.c:5:3
->> 
->> and then BPFInstrInfo::copyPhysReg chokes on COPY, since $w0 and %0 are
->> in different register classes.
-> 
-> Ilya,
-> 
-> Thanks for reporting. I can reproduce the issue with latest trunk.
-> I will investigate and fix the problem soon.
-> 
-> Yonghong
+Just typos...
 
-Thanks for taking care of this! Just FYI, bisect pointed to 05e46979d2f4
-("[BPF] do compile-once run-everywhere relocation for bitfields").
+Signed-off-by: Joe Perches <joe@perches.com>
+---
+ include/net/mac80211.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Could you please add me to Phabricator review? I'm curious what the
-proper solution is going to be, as I'm still not sure whether handling
-asymmetric copies is the right approach, or whether they should rather
-be prevented from occuring in the first place.
+diff --git a/include/net/mac80211.h b/include/net/mac80211.h
+index d69081..edd6d0 100644
+--- a/include/net/mac80211.h
++++ b/include/net/mac80211.h
+@@ -1702,7 +1702,7 @@ struct wireless_dev *ieee80211_vif_to_wdev(struct ieee80211_vif *vif);
+  *	%IEEE80211_KEY_FLAG_SW_MGMT_TX flag to encrypt such frames in SW.
+  * @IEEE80211_KEY_FLAG_GENERATE_IV_MGMT: This flag should be set by the
+  *	driver for a CCMP/GCMP key to indicate that is requires IV generation
+- *	only for managment frames (MFP).
++ *	only for management frames (MFP).
+  * @IEEE80211_KEY_FLAG_RESERVE_TAILROOM: This flag should be set by the
+  *	driver for a key to indicate that sufficient tailroom must always
+  *	be reserved for ICV or MIC, even when HW encryption is enabled.
+@@ -2626,7 +2626,7 @@ ieee80211_get_alt_retry_rate(const struct ieee80211_hw *hw,
+  * @hw: the hardware
+  * @skb: the skb
+  *
+- * Free a transmit skb. Use this funtion when some failure
++ * Free a transmit skb. Use this function when some failure
+  * to transmit happened and thus status cannot be reported.
+  */
+ void ieee80211_free_txskb(struct ieee80211_hw *hw, struct sk_buff *skb);
+@@ -3193,7 +3193,7 @@ enum ieee80211_rate_control_changed {
+  *
+  * @IEEE80211_ROC_TYPE_NORMAL: There are no special requirements for this ROC.
+  * @IEEE80211_ROC_TYPE_MGMT_TX: The remain on channel request is required
+- *	for sending managment frames offchannel.
++ *	for sending management frames offchannel.
+  */
+ enum ieee80211_roc_type {
+ 	IEEE80211_ROC_TYPE_NORMAL = 0,
+@@ -5616,7 +5616,7 @@ void ieee80211_iter_keys_rcu(struct ieee80211_hw *hw,
+ 
+ /**
+  * ieee80211_iter_chan_contexts_atomic - iterate channel contexts
+- * @hw: pointre obtained from ieee80211_alloc_hw().
++ * @hw: pointer obtained from ieee80211_alloc_hw().
+  * @iter: iterator function
+  * @iter_data: data passed to iterator function
+  *
 
-Best regards,
-Ilya
+
