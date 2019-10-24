@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD173E3EC3
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 00:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0620EE3EC4
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 00:06:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730064AbfJXWFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 18:05:05 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52484 "EHLO
+        id S1730043AbfJXWGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 18:06:44 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52522 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726516AbfJXWFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 18:05:05 -0400
+        with ESMTP id S1726516AbfJXWGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 18:06:44 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 20CA014B7273F;
-        Thu, 24 Oct 2019 15:05:04 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 15:05:03 -0700 (PDT)
-Message-Id: <20191024.150503.272673272041377721.davem@davemloft.net>
-To:     mcroce@redhat.com
-Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, sdf@google.com, daniel@iogearbox.net,
-        songliubraving@fb.com, ast@kernel.org, paulb@mellanox.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/4] ICMP flow improvements
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 062E214B73C47;
+        Thu, 24 Oct 2019 15:06:43 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 15:06:43 -0700 (PDT)
+Message-Id: <20191024.150643.616424177339719258.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com, jiri@mellanox.com
+Subject: Re: [PATCH v5 0/2] mv88e6xxx: Allow config of ATU hash algorithm
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191021200948.23775-1-mcroce@redhat.com>
-References: <20191021200948.23775-1-mcroce@redhat.com>
+In-Reply-To: <20191024024256.GL5707@lunn.ch>
+References: <20191022013436.29635-1-andrew@lunn.ch>
+        <20191023.191830.347702095940587406.davem@davemloft.net>
+        <20191024024256.GL5707@lunn.ch>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 24 Oct 2019 15:05:04 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 24 Oct 2019 15:06:44 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matteo Croce <mcroce@redhat.com>
-Date: Mon, 21 Oct 2019 22:09:44 +0200
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Thu, 24 Oct 2019 04:42:56 +0200
 
-> This series improves the flow inspector handling of ICMP packets:
-> The first two patches just add some comments in the code which would have saved
-> me a few minutes of time, and refactor a piece of code.
-> The third one adds to the flow inspector the capability to extract the
-> Identifier field, if present, so echo requests and replies are classified
-> as part of the same flow.
-> The fourth patch uses the function introduced earlier to the bonding driver,
-> so echo replies can be balanced across bonding slaves.
+> It was intended for net-next. Sorry. It could be that Viviens port
+> list patches got in the middle so that these did not cleanly apply to
+> net-next.
 
-Simon has unaddressed feedback for patch #3, and this has been sitting in that
-state for several days.
+Please respin, thank you.
 
-Please repost this series when everything is sorted, thank you.
+>> Please give me some guidance and use [PATCH net-next .. ] in the future.
+> 
+> I wonder if we could get checkpatch to warn about this?
+
+I'm sure it's possible.
