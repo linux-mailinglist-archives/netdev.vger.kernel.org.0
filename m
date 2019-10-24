@@ -2,184 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8015E28DE
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 05:31:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D979E28F5
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 05:39:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404051AbfJXDbs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 23:31:48 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:44877 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390835AbfJXDbq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 23:31:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571887905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9q/far8ZjPdd6hm4WFk0gBs9u30vGVUeCdmmKgZKaN4=;
-        b=NqHv9xqAuWmq8l9Yd6Y7bumojL1eiDWTHArYQRhqiI8X3EJL0Zpz7QTdSuDviGN5LBwDEG
-        BopLNLTqFaGI9UUqRX3b4KORyv0z3eP485NBiO/w35yhGCZJXW5ni+BVFAH49ngEab2r4E
-        yRaCYpOC0VraJiO+0bvDDmwttx65mcM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-240-PfRyBGzKPp-hwj43X41j_g-1; Wed, 23 Oct 2019 23:31:43 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6F6171005509;
-        Thu, 24 Oct 2019 03:31:39 +0000 (UTC)
-Received: from [10.72.12.199] (ovpn-12-199.pek2.redhat.com [10.72.12.199])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE78260BF1;
-        Thu, 24 Oct 2019 03:31:06 +0000 (UTC)
-Subject: Re: [PATCH V5 2/6] modpost: add support for mdev class id
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191023130752.18980-1-jasowang@redhat.com>
- <20191023130752.18980-3-jasowang@redhat.com>
- <20191023154245.32e4fa49@x1.home>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <555a101e-0ed1-2e9d-c1a4-e3b37d76bd18@redhat.com>
-Date:   Thu, 24 Oct 2019 11:31:04 +0800
+        id S2437321AbfJXDjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 23:39:05 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40167 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406521AbfJXDjF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 23:39:05 -0400
+Received: by mail-pl1-f196.google.com with SMTP id d22so11144520pll.7
+        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 20:39:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=W8sgLGjMxM6EuY1mpsS+9Tn33OqsmcrGz0uhv99VAHA=;
+        b=T2bbeZtvsO039PfGe+EjPR125EqRdU9mKD894GYoR0zBnNNVcSR1u3DGiXZFKGUrwF
+         Q1L4mEl5u7aBDGEgAvXjkzTOXSSGhbHMY7JwyTtpuA/1lUXfeioaDSSD5DwpPF81FKT1
+         ajJMYUZOWHJQq3Czs4YHreOwy2CVWx9lD7yEqbXak5+nnWYpgJsNSp3cviar/kEx8g3A
+         JL2eoJFhv69W7IpzFJO3QBiRSBRWpD2PYo0i6gZ0SVVJGOTgtJG3panMDXQqq/fdjcQQ
+         JYHL/HihPBR2U1KB50B+TI1h2RA9YPd7A7tX1ZQWp7kanwYzwZ3TCAZYt7pKgxi2zf4H
+         C+5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=W8sgLGjMxM6EuY1mpsS+9Tn33OqsmcrGz0uhv99VAHA=;
+        b=QgGN20CkMVmqvFd8GISPPRXKWnWSlPPhIzNpVxB6O47QO0WB0Qe6DVCPkjY+Ydt2or
+         JdhBk/objw+eeY2WUXv/TkU2EoI4KlampjH5qvq6fd2CuHmZban8UYK+VbjFj+Q15LPg
+         MiRPYC4Y2olCLEhgYwoIARD5cpA3756u2MYWHG3QbMGUzAa3h24glUAmVpOW2imLoBMz
+         T3khHQzaIfkrBgV6Fnqij03RFu/YUInXGH+I3491HZN2K6i4AkMLMu0gvKzvz2xAxoK2
+         u2NojZ7Jc4WDDw6ycs/8J3lFI+bKt3ayvB2EHxALEgtxmN3G8BmGMmJyCsXxtCqYvsPB
+         JYIw==
+X-Gm-Message-State: APjAAAWNacyv34YJzgr5vZrQIzcQMJ3LauWKWZBJ4rkaqRpccgUUGQj/
+        aGio3VvHtYTXByDzLuotng49iQ==
+X-Google-Smtp-Source: APXvYqzjuWYGP5CVydefv3aAYM4Zf7GeakbWEIFeuKC0sgKLKckuazE4qo+gNK3oOsra0rup9w7uiQ==
+X-Received: by 2002:a17:902:968f:: with SMTP id n15mr13304176plp.191.1571888344349;
+        Wed, 23 Oct 2019 20:39:04 -0700 (PDT)
+Received: from [192.168.1.188] ([66.219.217.79])
+        by smtp.gmail.com with ESMTPSA id b17sm9759144pfr.17.2019.10.23.20.39.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 23 Oct 2019 20:39:03 -0700 (PDT)
+Subject: Re: [Kgdb-bugreport] [PATCH] kernel: convert switch/case fallthrough
+ comments to fallthrough;
+To:     Joe Perches <joe@perches.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-pm@vger.kernel.org, kgdb-bugreport@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-security-module@vger.kernel.org, linux-audit@redhat.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <f31b38b9ad515a138edaecf85701b1e3db064114.camel@perches.com>
+ <20191021090909.yjyed4qodjjcioqc@holly.lan>
+ <bff0a1c4fc69b83c763ffbce42a0152e1573499a.camel@perches.com>
+From:   Jens Axboe <axboe@kernel.dk>
+Message-ID: <2808c960-6178-17b8-23d7-a6945987a658@kernel.dk>
+Date:   Wed, 23 Oct 2019 21:39:01 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191023154245.32e4fa49@x1.home>
+In-Reply-To: <bff0a1c4fc69b83c763ffbce42a0152e1573499a.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: PfRyBGzKPp-hwj43X41j_g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/10/24 =E4=B8=8A=E5=8D=885:42, Alex Williamson wrote:
-> On Wed, 23 Oct 2019 21:07:48 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
->
->> Add support to parse mdev class id table.
+On 10/23/19 12:49 PM, Joe Perches wrote:
+> On Mon, 2019-10-21 at 10:09 +0100, Daniel Thompson wrote:
+>> On Fri, Oct 18, 2019 at 09:35:08AM -0700, Joe Perches wrote:
+>>> Use the new pseudo keyword "fallthrough;" and not the
+>>> various /* fallthrough */ style comments.
+>>>
+>>> Signed-off-by: Joe Perches <joe@perches.com>
+>>> ---
+>>>
+>>> This is a single patch for the kernel/ source tree,
+>>> which would otherwise be sent through as separate
+>>> patches to 19 maintainer sections.
 >>
->> Reviewed-by: Parav Pandit <parav@mellanox.com>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   drivers/vfio/mdev/vfio_mdev.c     |  2 ++
->>   scripts/mod/devicetable-offsets.c |  3 +++
->>   scripts/mod/file2alias.c          | 10 ++++++++++
->>   3 files changed, 15 insertions(+)
+>> For the kernel/debug/ files:
 >>
->> diff --git a/drivers/vfio/mdev/vfio_mdev.c b/drivers/vfio/mdev/vfio_mdev=
-.c
->> index 7b24ee9cb8dd..cb701cd646f0 100644
->> --- a/drivers/vfio/mdev/vfio_mdev.c
->> +++ b/drivers/vfio/mdev/vfio_mdev.c
->> @@ -125,6 +125,8 @@ static const struct mdev_class_id id_table[] =3D {
->>   =09{ 0 },
->>   };
->>  =20
->> +MODULE_DEVICE_TABLE(mdev, id_table);
->> +
-> Two questions, first we have:
->
-> #define MODULE_DEVICE_TABLE(type, name)                                 \
-> extern typeof(name) __mod_##type##__##name##_device_table               \
->    __attribute__ ((unused, alias(__stringify(name))))
->
-> Therefore we're defining __mod_mdev__id_table_device_table with alias
-> id_table.  When the virtio mdev bus driver is added in 5/6 it uses the
-> same name value.  I see virtio types all register this way (virtio,
-> id_table), so I assume there's no conflict, but pci types mostly (not
-> entirely) seem to use unique names.  Is there a preference to one way
-> or the other or it simply doesn't matter?
+>> Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+>>
+>> Will you be putting this in an immutable branch once you've collected
+>> enough acks?
+> 
+> No, I expect Linus will either run the script
+> or apply this patch one day.
 
+Please coordinate and get something like this run/applied a few days
+before -rc1 to cause the least amount of needless merge issues.
 
-It looks to me that those symbol were local, so it doesn't matter. But=20
-if you wish I can switch to use unique name.
-
-
->
->>   static struct mdev_driver vfio_mdev_driver =3D {
->>   =09.name=09=3D "vfio_mdev",
->>   =09.probe=09=3D vfio_mdev_probe,
->> diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable=
--offsets.c
->> index 054405b90ba4..6cbb1062488a 100644
->> --- a/scripts/mod/devicetable-offsets.c
->> +++ b/scripts/mod/devicetable-offsets.c
->> @@ -231,5 +231,8 @@ int main(void)
->>   =09DEVID(wmi_device_id);
->>   =09DEVID_FIELD(wmi_device_id, guid_string);
->>  =20
->> +=09DEVID(mdev_class_id);
->> +=09DEVID_FIELD(mdev_class_id, id);
->> +
->>   =09return 0;
->>   }
->> diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
->> index c91eba751804..d365dfe7c718 100644
->> --- a/scripts/mod/file2alias.c
->> +++ b/scripts/mod/file2alias.c
->> @@ -1335,6 +1335,15 @@ static int do_wmi_entry(const char *filename, voi=
-d *symval, char *alias)
->>   =09return 1;
->>   }
->>  =20
->> +/* looks like: "mdev:cN" */
->> +static int do_mdev_entry(const char *filename, void *symval, char *alia=
-s)
->> +{
->> +=09DEF_FIELD(symval, mdev_class_id, id);
->> +
->> +=09sprintf(alias, "mdev:c%02X", id);
-> A lot of entries call add_wildcard() here, should we?  Sorry for the
-> basic questions, I haven't played in this code.  Thanks,
-
-
-It's really good question. My understanding is we won't have a module=20
-that can deal with all kinds of classes like CLASS_ID_ANY. So there's=20
-probably no need for the wildcard.
-
-Thanks
-
-
->
-> Alex
->
->> +=09return 1;
->> +}
->> +
->>   /* Does namelen bytes of name exactly match the symbol? */
->>   static bool sym_is(const char *name, unsigned namelen, const char *sym=
-bol)
->>   {
->> @@ -1407,6 +1416,7 @@ static const struct devtable devtable[] =3D {
->>   =09{"typec", SIZE_typec_device_id, do_typec_entry},
->>   =09{"tee", SIZE_tee_client_device_id, do_tee_entry},
->>   =09{"wmi", SIZE_wmi_device_id, do_wmi_entry},
->> +=09{"mdev", SIZE_mdev_class_id, do_mdev_entry},
->>   };
->>  =20
->>   /* Create MODULE_ALIAS() statements.
+-- 
+Jens Axboe
 
