@@ -2,53 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DD0E279D
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 03:12:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14CB9E27F4
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 04:01:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390097AbfJXBMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 21:12:23 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:60006 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388218AbfJXBMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 21:12:23 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1iNRfm-0007Dj-Uy; Thu, 24 Oct 2019 03:12:18 +0200
-Date:   Thu, 24 Oct 2019 03:12:18 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     praveen chaudhary <praveen5582@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        kadlec@netfilter.org, pablo@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zhenggen Xu <zxu@linkedin.com>,
-        Andy Stracner <astracner@linkedin.com>
-Subject: Re: [PATCH] [netfilter]: Fix skb->csum calculation when netfilter
- manipulation for NF_NAT_MANIP_SRC\DST is done on IPV6 packet.
-Message-ID: <20191024011218.GT25052@breakpoint.cc>
-References: <1571857342-8407-1-git-send-email-pchaudhary@linkedin.com>
- <1571857342-8407-2-git-send-email-pchaudhary@linkedin.com>
- <20191023193337.GP25052@breakpoint.cc>
- <CAJ_cd4qHM3kqz24Uywpyyz0mPz7axiNZk0Q385ROd4O8XZ11fA@mail.gmail.com>
+        id S2408146AbfJXCBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 22:01:43 -0400
+Received: from verein.lst.de ([213.95.11.211]:43182 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2408092AbfJXCBm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 23 Oct 2019 22:01:42 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 3BD0B68BE1; Thu, 24 Oct 2019 04:01:40 +0200 (CEST)
+Date:   Thu, 24 Oct 2019 04:01:40 +0200
+From:   "hch@lst.de" <hch@lst.de>
+To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Madalin-cristian Bucur <madalin.bucur@nxp.com>
+Subject: Re: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
+ dma_addr_to_phys_addr()
+Message-ID: <20191024020140.GA6057@lst.de>
+References: <20191022125502.12495-1-laurentiu.tudor@nxp.com> <20191022125502.12495-2-laurentiu.tudor@nxp.com> <62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com> <50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJ_cd4qHM3kqz24Uywpyyz0mPz7axiNZk0Q385ROd4O8XZ11fA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-praveen chaudhary <praveen5582@gmail.com> wrote:
-> inet_proto_csum_replace16 is called from many places, whereas this fix is
-> applicable only for nf_nat_ipv6_csum_update. where we need to update
-> skb->csum for ipv6 src/dst address change.
+On Wed, Oct 23, 2019 at 11:53:41AM +0000, Laurentiu Tudor wrote:
+> We had an internal discussion over these points you are raising and 
+> Madalin (cc-ed) came up with another idea: instead of adding this prone 
+> to misuse api how about experimenting with a new dma unmap and dma sync 
+> variants that would return the physical address by calling the newly 
+> introduced dma map op. Something along these lines:
+>   * phys_addr_t dma_unmap_page_ret_phys(...)
+>   * phys_addr_t dma_unmap_single_ret_phys(...)
+>   * phys_addr_t dma_sync_single_for_cpu_ret_phys(...)
+> I'm thinking that this proposal should reduce the risks opened by the 
+> initial variant.
+> Please let me know what you think.
 
-Under which circumstances does inet_proto_csum_replace16 upate
-skb->csum correctly?
-
-> So, I added a new function. Basically, I used a safe approach to fix it,
-> without impacting other cases. Let me know other options,  I am open to
-> suggestions.
-
-You seem to imply inet_proto_csum_replace16 is fine and only broken for ipv6
-nat.
+I'm not sure what the ret is supposed to mean, but I generally like
+that idea better.  We also need to make sure there is an easy way
+to figure out if these APIs are available, as they generally aren't
+for any non-IOMMU API IOMMU drivers.
