@@ -2,150 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 831F6E3E13
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 23:24:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C3D9E3E1C
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 23:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728985AbfJXVYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 17:24:00 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:46128 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728917AbfJXVX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 17:23:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571952237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FrgDI2gW2aiugtgpqG1ZL6sF4tooWRGmsSjSW32gsYw=;
-        b=bmWL0fM9TfiU0L3s6Q7hPUVkQwlrUGJa7P7YCgHqiFrezv/LfumiMZFk9ogXYOr7L12VZr
-        j62BKLaDzYK+Kk8WOPP33//lis/5sGUTiBb6ukG/u0AUCaDtmmHO+dqYb2jDoTMfub+svE
-        o5CcXu7NAAXja6niON+bYvy4SSe/1iM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-312-PWtRXmUyOIOZMecadsE0tQ-1; Thu, 24 Oct 2019 17:23:53 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C68E7476;
-        Thu, 24 Oct 2019 21:23:51 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 13D9D600C6;
-        Thu, 24 Oct 2019 21:23:37 +0000 (UTC)
-Date:   Thu, 24 Oct 2019 17:23:35 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Neil Horman <nhorman@tuxdriver.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        Dan Walsh <dwalsh@redhat.com>, mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V7 06/21] audit: contid limit of 32k imposed to
- avoid DoS
-Message-ID: <20191024212335.y4ou7g4tsxnotvnk@madcap2.tricolour.ca>
-References: <cover.1568834524.git.rgb@redhat.com>
- <230e91cd3e50a3d8015daac135c24c4c58cf0a21.1568834524.git.rgb@redhat.com>
- <20190927125142.GA25764@hmswarspite.think-freely.org>
- <CAHC9VhRbSUCB0OZorC4+y+5uJDR5uMXdRn2LOTYGu2gcFJSrcA@mail.gmail.com>
+        id S1729132AbfJXV0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 17:26:10 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:44384 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729109AbfJXV0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 17:26:10 -0400
+Received: by mail-il1-f199.google.com with SMTP id 13so304004iln.11
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 14:26:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=OgziGrqICJORLpk9uRJLJfmAgXK9EaKOjfhNbrWBTPU=;
+        b=WQdhyyEVFA5/URLPLDACUcL178ACVY77cMp4lq228Bl5fWuqL3GnWtU/VERTAUFHTr
+         80jN737Q2O7cL36ig/otDcnhZ6r1KTj+caSpWrxuvQoirX2tnxhnak8Vew05kg6LTIAS
+         Pbkb+CYMygAkdQQqkMJh6qox+GFe+B70rV03mnRRnrFPLGTPa0OscgrTGrJhmt+0aeAl
+         TWh7UjEbK5/WbAbU6pZcT0PI0eo00A5bj5EcMHoQjRxSjOrVWu9KG3BmxPRu4Nt6hGYg
+         EHKvTJT3bPWv6ZM0lOeOkqOKKDmjU9iEw/X0vE2JRAnsXhVkvu3NBh69M9StiPPZGhrI
+         s6Hg==
+X-Gm-Message-State: APjAAAVk+O/rnFtsBi1Dy+Ktxb5kfg6j0bjtDx89wjUkn85o4GPG1WzY
+        b89bKB+SJibjsrkpvu6Xrfhze32FcEq043yA49DwmV5AxzcM
+X-Google-Smtp-Source: APXvYqwhSejVvUD9IAyiXZ8CkYt98QbUnXdefY7RPmTUyw2EBJ2sogOLWSunzdUKfyJjn2mYuqmoMXPn3N0lU4HePuqlkBDgrTnX
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhRbSUCB0OZorC4+y+5uJDR5uMXdRn2LOTYGu2gcFJSrcA@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: PWtRXmUyOIOZMecadsE0tQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+X-Received: by 2002:a6b:8d09:: with SMTP id p9mr166371iod.227.1571952368718;
+ Thu, 24 Oct 2019 14:26:08 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 14:26:08 -0700
+In-Reply-To: <00000000000074bc3105958042ef@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008a9ab60595aeaede@google.com>
+Subject: Re: KASAN: use-after-free Read in nf_ct_deliver_cached_events
+From:   syzbot <syzbot+c7aabc9fe93e7f3637ba@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, fw@strlen.de,
+        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-10-10 20:38, Paul Moore wrote:
-> On Fri, Sep 27, 2019 at 8:52 AM Neil Horman <nhorman@tuxdriver.com> wrote=
-:
-> > On Wed, Sep 18, 2019 at 09:22:23PM -0400, Richard Guy Briggs wrote:
-> > > Set an arbitrary limit on the number of audit container identifiers t=
-o
-> > > limit abuse.
-> > >
-> > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-> > > ---
-> > >  kernel/audit.c | 8 ++++++++
-> > >  kernel/audit.h | 4 ++++
-> > >  2 files changed, 12 insertions(+)
-> > >
-> > > diff --git a/kernel/audit.c b/kernel/audit.c
-> > > index 53d13d638c63..329916534dd2 100644
-> > > --- a/kernel/audit.c
-> > > +++ b/kernel/audit.c
->=20
-> ...
->=20
-> > > @@ -2465,6 +2472,7 @@ int audit_set_contid(struct task_struct *task, =
-u64 contid)
-> > >                               newcont->owner =3D current;
-> > >                               refcount_set(&newcont->refcount, 1);
-> > >                               list_add_rcu(&newcont->list, &audit_con=
-tid_hash[h]);
-> > > +                             audit_contid_count++;
-> > >                       } else {
-> > >                               rc =3D -ENOMEM;
-> > >                               goto conterror;
-> > > diff --git a/kernel/audit.h b/kernel/audit.h
-> > > index 162de8366b32..543f1334ba47 100644
-> > > --- a/kernel/audit.h
-> > > +++ b/kernel/audit.h
-> > > @@ -219,6 +219,10 @@ static inline int audit_hash_contid(u64 contid)
-> > >       return (contid & (AUDIT_CONTID_BUCKETS-1));
-> > >  }
-> > >
-> > > +extern int audit_contid_count;
-> > > +
-> > > +#define AUDIT_CONTID_COUNT   1 << 16
-> > > +
-> >
-> > Just to ask the question, since it wasn't clear in the changelog, what
-> > abuse are you avoiding here?  Ostensibly you should be able to create a=
-s
-> > many container ids as you have space for, and the simple creation of
-> > container ids doesn't seem like the resource strain I would be concerne=
-d
-> > about here, given that an orchestrator can still create as many
-> > containers as the system will otherwise allow, which will consume
-> > significantly more ram/disk/etc.
->=20
-> I've got a similar question.  Up to this point in the patchset, there
-> is a potential issue of hash bucket chain lengths and traversing them
-> with a spinlock held, but it seems like we shouldn't be putting an
-> arbitrary limit on audit container IDs unless we have a good reason
-> for it.  If for some reason we do want to enforce a limit, it should
-> probably be a tunable value like a sysctl, or similar.
+syzbot has found a reproducer for the following crash on:
 
-Can you separate and clarify the concerns here?
+HEAD commit:    12d61c69 Add linux-next specific files for 20191024
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=121f85a7600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=afb75fd8c9fd5ed8
+dashboard link: https://syzkaller.appspot.com/bug?extid=c7aabc9fe93e7f3637ba
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10938e18e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147caa97600000
 
-I plan to move this patch to the end of the patchset and make it
-optional, possibly adding a tuning mechanism.  Like the migration from
-/proc to netlink for loginuid/sessionid/contid/capcontid, this was Eric
-Biederman's concern and suggested mitigation.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+c7aabc9fe93e7f3637ba@syzkaller.appspotmail.com
 
-As for the first issue of the bucket chain length traversal while
-holding the list spin-lock, would you prefer to use the rcu lock to
-traverse the list and then only hold the spin-lock when modifying the
-list, and possibly even make the spin-lock more fine-grained per list?
+==================================================================
+BUG: KASAN: use-after-free in __nf_ct_ext_exist  
+include/net/netfilter/nf_conntrack_extend.h:53 [inline]
+BUG: KASAN: use-after-free in nf_ct_ext_exist  
+include/net/netfilter/nf_conntrack_extend.h:58 [inline]
+BUG: KASAN: use-after-free in __nf_ct_ext_find  
+include/net/netfilter/nf_conntrack_extend.h:63 [inline]
+BUG: KASAN: use-after-free in nf_ct_ecache_find  
+include/net/netfilter/nf_conntrack_ecache.h:35 [inline]
+BUG: KASAN: use-after-free in nf_ct_deliver_cached_events+0x5c3/0x6d0  
+net/netfilter/nf_conntrack_ecache.c:205
+Read of size 1 at addr ffff88809b955204 by task syz-executor245/8557
 
-> paul moore
+CPU: 1 PID: 8557 Comm: syz-executor245 Not tainted 5.4.0-rc4-next-20191024  
+#0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
+  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
+  kasan_report+0x12/0x20 mm/kasan/common.c:634
+  __asan_report_load1_noabort+0x14/0x20 mm/kasan/generic_report.c:129
+  __nf_ct_ext_exist include/net/netfilter/nf_conntrack_extend.h:53 [inline]
+  nf_ct_ext_exist include/net/netfilter/nf_conntrack_extend.h:58 [inline]
+  __nf_ct_ext_find include/net/netfilter/nf_conntrack_extend.h:63 [inline]
+  nf_ct_ecache_find include/net/netfilter/nf_conntrack_ecache.h:35 [inline]
+  nf_ct_deliver_cached_events+0x5c3/0x6d0  
+net/netfilter/nf_conntrack_ecache.c:205
+  nf_conntrack_confirm include/net/netfilter/nf_conntrack_core.h:65 [inline]
+  nf_confirm+0x3d8/0x4d0 net/netfilter/nf_conntrack_proto.c:154
+  ipv4_confirm+0x14c/0x240 net/netfilter/nf_conntrack_proto.c:169
+  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+  nf_hook_slow+0xbc/0x1e0 net/netfilter/core.c:512
+  nf_hook include/linux/netfilter.h:262 [inline]
+  NF_HOOK_COND include/linux/netfilter.h:295 [inline]
+  ip_output+0x40d/0x670 net/ipv4/ip_output.c:432
+  dst_output include/net/dst.h:436 [inline]
+  ip_local_out+0xbb/0x1b0 net/ipv4/ip_output.c:125
+  ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1559
+  udp_send_skb.isra.0+0x6d5/0x11b0 net/ipv4/udp.c:891
+  udp_sendmsg+0x1e8f/0x2810 net/ipv4/udp.c:1178
+  inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  kernel_sendmsg+0x44/0x50 net/socket.c:678
+  rxrpc_send_data_packet+0x10cb/0x36b0 net/rxrpc/output.c:416
+  rxrpc_queue_packet net/rxrpc/sendmsg.c:220 [inline]
+  rxrpc_send_data+0x1097/0x4130 net/rxrpc/sendmsg.c:427
+  rxrpc_do_sendmsg+0xb8e/0x1d5f net/rxrpc/sendmsg.c:736
+  rxrpc_sendmsg+0x4d6/0x5f0 net/rxrpc/af_rxrpc.c:585
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  ___sys_sendmsg+0x3e2/0x920 net/socket.c:2312
+  __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2414
+  __do_sys_sendmmsg net/socket.c:2443 [inline]
+  __se_sys_sendmmsg net/socket.c:2440 [inline]
+  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2440
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x441279
+Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 9b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fffcbb84fa8 EFLAGS: 00000246 ORIG_RAX: 0000000000000133
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441279
+RDX: 0000000000000001 RSI: 0000000020005c00 RDI: 0000000000000003
+RBP: 00000000000141b6 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004020a0
+R13: 0000000000402130 R14: 0000000000000000 R15: 0000000000000000
 
-- RGB
+Allocated by task 8557:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc mm/kasan/common.c:510 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:483
+  kasan_krealloc+0x84/0xc0 mm/kasan/common.c:565
+  __do_krealloc mm/slab_common.c:1655 [inline]
+  krealloc+0xa6/0xd0 mm/slab_common.c:1710
+  nf_ct_ext_add+0x2c7/0x630 net/netfilter/nf_conntrack_extend.c:74
+  nf_ct_ecache_ext_add include/net/netfilter/nf_conntrack_ecache.h:55  
+[inline]
+  init_conntrack.isra.0+0x5ed/0x11a0 net/netfilter/nf_conntrack_core.c:1470
+  resolve_normal_ct net/netfilter/nf_conntrack_core.c:1547 [inline]
+  nf_conntrack_in+0xd94/0x1460 net/netfilter/nf_conntrack_core.c:1707
+  ipv4_conntrack_local+0x127/0x220 net/netfilter/nf_conntrack_proto.c:200
+  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+  nf_hook_slow+0xbc/0x1e0 net/netfilter/core.c:512
+  nf_hook include/linux/netfilter.h:262 [inline]
+  __ip_local_out+0x403/0x870 net/ipv4/ip_output.c:114
+  ip_local_out+0x2d/0x1b0 net/ipv4/ip_output.c:123
+  ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1559
+  udp_send_skb.isra.0+0x6d5/0x11b0 net/ipv4/udp.c:891
+  udp_sendmsg+0x1e8f/0x2810 net/ipv4/udp.c:1178
+  inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  kernel_sendmsg+0x44/0x50 net/socket.c:678
+  rxrpc_send_data_packet+0x10cb/0x36b0 net/rxrpc/output.c:416
+  rxrpc_queue_packet net/rxrpc/sendmsg.c:220 [inline]
+  rxrpc_send_data+0x1097/0x4130 net/rxrpc/sendmsg.c:427
+  rxrpc_do_sendmsg+0xb8e/0x1d5f net/rxrpc/sendmsg.c:736
+  rxrpc_sendmsg+0x4d6/0x5f0 net/rxrpc/af_rxrpc.c:585
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  ___sys_sendmsg+0x3e2/0x920 net/socket.c:2312
+  __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2414
+  __do_sys_sendmmsg net/socket.c:2443 [inline]
+  __se_sys_sendmmsg net/socket.c:2440 [inline]
+  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2440
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+Freed by task 8557:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  kasan_set_free_info mm/kasan/common.c:332 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:471
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
+  __cache_free mm/slab.c:3426 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3757
+  nf_ct_ext_destroy+0x2ab/0x2e0 net/netfilter/nf_conntrack_extend.c:38
+  nf_conntrack_free+0x8f/0xe0 net/netfilter/nf_conntrack_core.c:1418
+  destroy_conntrack+0x1a2/0x270 net/netfilter/nf_conntrack_core.c:626
+  nf_conntrack_destroy+0xed/0x230 net/netfilter/core.c:600
+  nf_conntrack_put include/linux/netfilter/nf_conntrack_common.h:34 [inline]
+  nf_conntrack_put include/linux/netfilter/nf_conntrack_common.h:31 [inline]
+  nf_ct_resolve_clash net/netfilter/nf_conntrack_core.c:915 [inline]
+  __nf_conntrack_confirm+0x21ca/0x2830 net/netfilter/nf_conntrack_core.c:1038
+  nf_conntrack_confirm include/net/netfilter/nf_conntrack_core.h:63 [inline]
+  nf_confirm+0x3e7/0x4d0 net/netfilter/nf_conntrack_proto.c:154
+  ipv4_confirm+0x14c/0x240 net/netfilter/nf_conntrack_proto.c:169
+  nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
+  nf_hook_slow+0xbc/0x1e0 net/netfilter/core.c:512
+  nf_hook include/linux/netfilter.h:262 [inline]
+  NF_HOOK_COND include/linux/netfilter.h:295 [inline]
+  ip_output+0x40d/0x670 net/ipv4/ip_output.c:432
+  dst_output include/net/dst.h:436 [inline]
+  ip_local_out+0xbb/0x1b0 net/ipv4/ip_output.c:125
+  ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1559
+  udp_send_skb.isra.0+0x6d5/0x11b0 net/ipv4/udp.c:891
+  udp_sendmsg+0x1e8f/0x2810 net/ipv4/udp.c:1178
+  inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  kernel_sendmsg+0x44/0x50 net/socket.c:678
+  rxrpc_send_data_packet+0x10cb/0x36b0 net/rxrpc/output.c:416
+  rxrpc_queue_packet net/rxrpc/sendmsg.c:220 [inline]
+  rxrpc_send_data+0x1097/0x4130 net/rxrpc/sendmsg.c:427
+  rxrpc_do_sendmsg+0xb8e/0x1d5f net/rxrpc/sendmsg.c:736
+  rxrpc_sendmsg+0x4d6/0x5f0 net/rxrpc/af_rxrpc.c:585
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  ___sys_sendmsg+0x3e2/0x920 net/socket.c:2312
+  __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2414
+  __do_sys_sendmmsg net/socket.c:2443 [inline]
+  __se_sys_sendmmsg net/socket.c:2440 [inline]
+  __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2440
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff88809b955200
+  which belongs to the cache kmalloc-128 of size 128
+The buggy address is located 4 bytes inside of
+  128-byte region [ffff88809b955200, ffff88809b955280)
+The buggy address belongs to the page:
+page:ffffea00026e5540 refcount:1 mapcount:0 mapping:ffff8880aa400700  
+index:0x0
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea0002867b48 ffffea0002a3df88 ffff8880aa400700
+raw: 0000000000000000 ffff88809b955000 0000000100000010 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88809b955100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88809b955180: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> ffff88809b955200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                    ^
+  ffff88809b955280: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+  ffff88809b955300: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
 
