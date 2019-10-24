@@ -2,96 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 755E6E28F9
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 05:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFC3AE28FB
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 05:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392922AbfJXDly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 23 Oct 2019 23:41:54 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45308 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390576AbfJXDlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 23:41:53 -0400
-Received: by mail-pg1-f194.google.com with SMTP id r1so13351560pgj.12
-        for <netdev@vger.kernel.org>; Wed, 23 Oct 2019 20:41:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=TGFLtAjB1A6DulK8cM5FwrQiz0bTM6YTABVrADPNxCM=;
-        b=RPgOtsnd45powVHiNiVSMAjDQOUuS45Lh/WotS4kDTiQpOiu77XgnTIjDEHv01qehj
-         DaSUOVoAJX0cKkYo63fmhVDTSX/p1nPWlW4wG/P9FLIXvMx8/v4JhR4vI0JL0uAkhPWS
-         6Ie4qlUmB86LrLw9+DlN3pkhR42ijMbjy4CoWIoh5mfIeb64ALJXiNmzidaFJrRWPfrF
-         JXhD+qkAZiJNJLx+k2rn7zzMIMpPZY2Q/i28s53U9oOXGAm9EM7RkLxZQls4IRPtSv/K
-         R2XD874JxQW66VfN7cTTFxQg01v5hCVlvUioBaC8MqaFyTjxYjvoTMsdZhz5MMtmDq/T
-         9Jxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=TGFLtAjB1A6DulK8cM5FwrQiz0bTM6YTABVrADPNxCM=;
-        b=pKxe4hsq+VB9H/axcKHjGAGf2/VQQ89AOsjhsjKCxTMuibn720bJc8uQn6Fvdzfn2J
-         Nnrn+BqEGsYR/VoucH+JI337mQWMxBCVFLlMNNy3oKLcgW2mAa/Nk4CZXFRoLLgGX/at
-         485KrdD/jz6rPEWzeP7uqjHYiF3KjfA1oKLVG8HQm1NSURYTSmiKMpUqGf+qLXbTIKeb
-         T6ei8SbX2tCfSxFiUmuiNkASRGztxOUsv1T+6tI+nMTJAdtEyan5J9uus0l8WVpgWbSU
-         AopLjfqysPICREC7wJdfmVI4LQKrZWVpN1Dt3webheOFObfmJ2wKYWJIbdeWBFiu6snv
-         Jy/w==
-X-Gm-Message-State: APjAAAV4/NIm92xGngepVWKGsHkzNrEMOD7EFlreaReI/Fqacx1cJ1kZ
-        EB50LNywr3bG3GfAsX8t7Zg45sLSopo=
-X-Google-Smtp-Source: APXvYqzTPK0UIjGxvUpb8wj1EGHH0Z87+bQho8OYzQMWFgxVKQTCxzSuRXHFv7T8cXeM7797aNRgXA==
-X-Received: by 2002:a63:6cf:: with SMTP id 198mr9989438pgg.259.1571888513157;
-        Wed, 23 Oct 2019 20:41:53 -0700 (PDT)
-Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id q26sm21628104pgk.60.2019.10.23.20.41.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Oct 2019 20:41:52 -0700 (PDT)
-Date:   Wed, 23 Oct 2019 20:41:49 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Arkadiusz Grubba <arkadiusz.grubba@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: Re: [net-next 02/11] i40e: Add ability to display VF stats along
- with PF core stats
-Message-ID: <20191023204149.4ae25f90@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20191023182426.13233-3-jeffrey.t.kirsher@intel.com>
-References: <20191023182426.13233-1-jeffrey.t.kirsher@intel.com>
-        <20191023182426.13233-3-jeffrey.t.kirsher@intel.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+        id S2392932AbfJXDnN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 23 Oct 2019 23:43:13 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:41544 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390576AbfJXDnN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 23 Oct 2019 23:43:13 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::b7e])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6796C14B7A921;
+        Wed, 23 Oct 2019 20:43:12 -0700 (PDT)
+Date:   Wed, 23 Oct 2019 20:43:11 -0700 (PDT)
+Message-Id: <20191023.204311.1181447784152558295.davem@davemloft.net>
+To:     rentao.bupt@gmail.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, olteanv@gmail.com,
+        arun.parameswaran@broadcom.com, justinpopo6@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        openbmc@lists.ozlabs.org
+Subject: Re: [PATCH net-next v10 0/3] net: phy: support 1000Base-X
+ auto-negotiation for BCM54616S
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191022183108.14029-1-rentao.bupt@gmail.com>
+References: <20191022183108.14029-1-rentao.bupt@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 23 Oct 2019 20:43:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 23 Oct 2019 11:24:17 -0700, Jeff Kirsher wrote:
-> From: Arkadiusz Grubba <arkadiusz.grubba@intel.com>
->=20
-> This change introduces the ability to display extended (enhanced)
-> statistics for PF interfaces.
->=20
-> The patch introduces new arrays defined for these
-> extra stats (in i40e_ethtool.c file) and enhances/extends ethtool ops
-> functions intended for dealing with PF stats (i.e.: i40e_get_stats_count(=
-),
-> i40e_get_ethtool_stats(), i40e_get_stat_strings() ).
+From: rentao.bupt@gmail.com
+Date: Tue, 22 Oct 2019 11:31:05 -0700
 
-This commit message doesn't explain _what_ stats your adding, and _why_.
+> From: Tao Ren <rentao.bupt@gmail.com>
+> 
+> This patch series aims at supporting auto negotiation when BCM54616S is
+> running in 1000Base-X mode: without the patch series, BCM54616S PHY driver
+> would report incorrect link speed in 1000Base-X mode.
+> 
+> Patch #1 (of 3) modifies assignment to OR when dealing with dev_flags in
+> phy_attach_direct function, so that dev_flags updated in BCM54616S PHY's
+> probe callback won't be lost.
+> 
+> Patch #2 (of 3) adds several genphy_c37_* functions to support clause 37
+> 1000Base-X auto-negotiation, and these functions are called in BCM54616S
+> PHY driver.
+> 
+> Patch #3 (of 3) detects BCM54616S PHY's operation mode and calls according
+> genphy_c37_* functions to configure auto-negotiation and parse link
+> attributes (speed, duplex, and etc.) in 1000Base-X mode.
 
-=46rom glancing at the code you're dumping 128 * 12 stats, which are
-basic netdev stats per-VF.=20
-
-These are trivially exposed on representors in modern designs.
-
-> There have also been introduced the new build flag named
-> "I40E_PF_EXTRA_STATS_OFF" to exclude from the driver code all code snippe=
-ts
-> associated with these extra stats.
-
-And this doesn't even exist in the patch.
-
-> Signed-off-by: Arkadiusz Grubba <arkadiusz.grubba@intel.com>
-> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-
+Series applied to net-next, thank you.
