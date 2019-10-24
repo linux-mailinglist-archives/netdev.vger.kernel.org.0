@@ -2,297 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB59FE3CE8
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 22:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43338E3CFD
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 22:15:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727003AbfJXUN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 16:13:57 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:37435 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726976AbfJXUN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 16:13:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571948034;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4okx/0WuIUvMfg3eEWnxYk0ixrLOf5XkOoO4HYGvUSc=;
-        b=CcowxEp76u4o2+LJHaVkifTvVhXq9l0etw3ahWCmEA57nC2nJELvMsGLK3SsIGVpOVe14R
-        MgqF7eG9YjwxX037i8AjdI58wBXOomVwBFu3iAGee3x+zQUWPhjHA8NpPNx1jeNkmUDO/A
-        DbAwMeRqj5OqWuD4Y6kDKMZ8VQ2CjG0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-363-5KVeD95sOy2OSN9aLjwQqQ-1; Thu, 24 Oct 2019 16:13:53 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D4CA1800DC7;
-        Thu, 24 Oct 2019 20:13:49 +0000 (UTC)
-Received: from x1.home (ovpn-118-102.phx2.redhat.com [10.3.118.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 971AE4530;
-        Thu, 24 Oct 2019 20:13:31 +0000 (UTC)
-Date:   Thu, 24 Oct 2019 14:13:30 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V5 1/6] mdev: class id support
-Message-ID: <20191024141330.017a6480@x1.home>
-In-Reply-To: <20191024134636.253131c5@x1.home>
-References: <20191023130752.18980-1-jasowang@redhat.com>
-        <20191023130752.18980-2-jasowang@redhat.com>
-        <20191023154204.31d74866@x1.home>
-        <38bdf762-524a-e0f1-6e9a-1102adfe8fb1@redhat.com>
-        <20191024134636.253131c5@x1.home>
-Organization: Red Hat
+        id S1727232AbfJXUPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 16:15:53 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2618 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725958AbfJXUPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 16:15:52 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9OKFoF3032162
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 13:15:51 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=AqguFbZ5f9u34b5gn1m0+C3/fKrXRL4Heu2+Fcpv7uw=;
+ b=KVIwobNlyBj7ZX46no+QcLPM0XqMdJWv+bBM74dE+jDDJ+IuD19x5sFsm7YA/YHtUbu+
+ c7Mky4/yR+TBKOCL3IhkkO/jZnTkYhKOUrGWm3XaOIOav9tGj1B/xSzVeWCxtITjzaJ8
+ diyAlig6veyMMTOR2zREmPHw85NosIfNN8E= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vu01p57vu-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 13:15:51 -0700
+Received: from 2401:db00:2050:5076:face:0:7:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 24 Oct 2019 13:15:25 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 7BFC52941F3D; Thu, 24 Oct 2019 13:15:24 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] bpf: Prepare btf_ctx_access for non raw_tp use case.
+Date:   Thu, 24 Oct 2019 13:15:24 -0700
+Message-ID: <20191024201524.685995-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: 5KVeD95sOy2OSN9aLjwQqQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-24_11:2019-10-23,2019-10-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ adultscore=0 mlxlogscore=999 spamscore=0 mlxscore=0 clxscore=1015
+ phishscore=0 impostorscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910240189
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Oct 2019 13:46:36 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+This patch makes a few changes to btf_ctx_access() to prepare
+it for non raw_tp use case.
 
-> On Thu, 24 Oct 2019 11:27:36 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
->=20
-> > On 2019/10/24 =E4=B8=8A=E5=8D=885:42, Alex Williamson wrote: =20
-> > > On Wed, 23 Oct 2019 21:07:47 +0800
-> > > Jason Wang <jasowang@redhat.com> wrote:
-> > >   =20
-> > >> Mdev bus only supports vfio driver right now, so it doesn't implemen=
-t
-> > >> match method. But in the future, we may add drivers other than vfio,
-> > >> the first driver could be virtio-mdev. This means we need to add
-> > >> device class id support in bus match method to pair the mdev device
-> > >> and mdev driver correctly.
-> > >>
-> > >> So this patch adds id_table to mdev_driver and class_id for mdev
-> > >> device with the match method for mdev bus.
-> > >>
-> > >> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> > >> ---
-> > >>   .../driver-api/vfio-mediated-device.rst       |  5 +++++
-> > >>   drivers/gpu/drm/i915/gvt/kvmgt.c              |  1 +
-> > >>   drivers/s390/cio/vfio_ccw_ops.c               |  1 +
-> > >>   drivers/s390/crypto/vfio_ap_ops.c             |  1 +
-> > >>   drivers/vfio/mdev/mdev_core.c                 | 18 +++++++++++++++
-> > >>   drivers/vfio/mdev/mdev_driver.c               | 22 +++++++++++++++=
-++++
-> > >>   drivers/vfio/mdev/mdev_private.h              |  1 +
-> > >>   drivers/vfio/mdev/vfio_mdev.c                 |  6 +++++
-> > >>   include/linux/mdev.h                          |  8 +++++++
-> > >>   include/linux/mod_devicetable.h               |  8 +++++++
-> > >>   samples/vfio-mdev/mbochs.c                    |  1 +
-> > >>   samples/vfio-mdev/mdpy.c                      |  1 +
-> > >>   samples/vfio-mdev/mtty.c                      |  1 +
-> > >>   13 files changed, 74 insertions(+)
-> > >>
-> > >> diff --git a/Documentation/driver-api/vfio-mediated-device.rst b/Doc=
-umentation/driver-api/vfio-mediated-device.rst
-> > >> index 25eb7d5b834b..6709413bee29 100644
-> > >> --- a/Documentation/driver-api/vfio-mediated-device.rst
-> > >> +++ b/Documentation/driver-api/vfio-mediated-device.rst
-> > >> @@ -102,12 +102,14 @@ structure to represent a mediated device's dri=
-ver::
-> > >>         * @probe: called when new device created
-> > >>         * @remove: called when device removed
-> > >>         * @driver: device driver structure
-> > >> +      * @id_table: the ids serviced by this driver
-> > >>         */
-> > >>        struct mdev_driver {
-> > >>   =09     const char *name;
-> > >>   =09     int  (*probe)  (struct device *dev);
-> > >>   =09     void (*remove) (struct device *dev);
-> > >>   =09     struct device_driver    driver;
-> > >> +=09     const struct mdev_class_id *id_table;
-> > >>        };
-> > >>  =20
-> > >>   A mediated bus driver for mdev should use this structure in the fu=
-nction calls
-> > >> @@ -170,6 +172,9 @@ that a driver should use to unregister itself wi=
-th the mdev core driver::
-> > >>  =20
-> > >>   =09extern void mdev_unregister_device(struct device *dev);
-> > >>  =20
-> > >> +It is also required to specify the class_id in create() callback th=
-rough::
-> > >> +
-> > >> +=09int mdev_set_class(struct mdev_device *mdev, u16 id);
-> > >>  =20
-> > >>   Mediated Device Management Interface Through sysfs
-> > >>   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
-> > >> diff --git a/drivers/gpu/drm/i915/gvt/kvmgt.c b/drivers/gpu/drm/i915=
-/gvt/kvmgt.c
-> > >> index 343d79c1cb7e..6420f0dbd31b 100644
-> > >> --- a/drivers/gpu/drm/i915/gvt/kvmgt.c
-> > >> +++ b/drivers/gpu/drm/i915/gvt/kvmgt.c
-> > >> @@ -678,6 +678,7 @@ static int intel_vgpu_create(struct kobject *kob=
-j, struct mdev_device *mdev)
-> > >>   =09=09     dev_name(mdev_dev(mdev)));
-> > >>   =09ret =3D 0;
-> > >>  =20
-> > >> +=09mdev_set_class(mdev, MDEV_CLASS_ID_VFIO);
-> > >>   out:
-> > >>   =09return ret;
-> > >>   }
-> > >> diff --git a/drivers/s390/cio/vfio_ccw_ops.c b/drivers/s390/cio/vfio=
-_ccw_ops.c
-> > >> index f0d71ab77c50..cf2c013ae32f 100644
-> > >> --- a/drivers/s390/cio/vfio_ccw_ops.c
-> > >> +++ b/drivers/s390/cio/vfio_ccw_ops.c
-> > >> @@ -129,6 +129,7 @@ static int vfio_ccw_mdev_create(struct kobject *=
-kobj, struct mdev_device *mdev)
-> > >>   =09=09=09   private->sch->schid.ssid,
-> > >>   =09=09=09   private->sch->schid.sch_no);
-> > >>  =20
-> > >> +=09mdev_set_class(mdev, MDEV_CLASS_ID_VFIO);
-> > >>   =09return 0;
-> > >>   }
-> > >>  =20
-> > >> diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto=
-/vfio_ap_ops.c
-> > >> index 5c0f53c6dde7..07c31070afeb 100644
-> > >> --- a/drivers/s390/crypto/vfio_ap_ops.c
-> > >> +++ b/drivers/s390/crypto/vfio_ap_ops.c
-> > >> @@ -343,6 +343,7 @@ static int vfio_ap_mdev_create(struct kobject *k=
-obj, struct mdev_device *mdev)
-> > >>   =09list_add(&matrix_mdev->node, &matrix_dev->mdev_list);
-> > >>   =09mutex_unlock(&matrix_dev->lock);
-> > >>  =20
-> > >> +=09mdev_set_class(mdev, MDEV_CLASS_ID_VFIO);
-> > >>   =09return 0;
-> > >>   }
-> > >>  =20
-> > >> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_=
-core.c
-> > >> index b558d4cfd082..3a9c52d71b4e 100644
-> > >> --- a/drivers/vfio/mdev/mdev_core.c
-> > >> +++ b/drivers/vfio/mdev/mdev_core.c
-> > >> @@ -45,6 +45,16 @@ void mdev_set_drvdata(struct mdev_device *mdev, v=
-oid *data)
-> > >>   }
-> > >>   EXPORT_SYMBOL(mdev_set_drvdata);
-> > >>  =20
-> > >> +/* Specify the class for the mdev device, this must be called durin=
-g
-> > >> + * create() callback.
-> > >> + */
-> > >> +void mdev_set_class(struct mdev_device *mdev, u16 id)
-> > >> +{
-> > >> +=09WARN_ON(mdev->class_id);
-> > >> +=09mdev->class_id =3D id;
-> > >> +}
-> > >> +EXPORT_SYMBOL(mdev_set_class);
-> > >> +
-> > >>   struct device *mdev_dev(struct mdev_device *mdev)
-> > >>   {
-> > >>   =09return &mdev->dev;
-> > >> @@ -135,6 +145,7 @@ static int mdev_device_remove_cb(struct device *=
-dev, void *data)
-> > >>    * mdev_register_device : Register a device
-> > >>    * @dev: device structure representing parent device.
-> > >>    * @ops: Parent device operation structure to be registered.
-> > >> + * @id: class id.
-> > >>    *
-> > >>    * Add device to list of registered parent devices.
-> > >>    * Returns a negative value on error, otherwise 0.
-> > >> @@ -324,6 +335,13 @@ int mdev_device_create(struct kobject *kobj,
-> > >>   =09if (ret)
-> > >>   =09=09goto ops_create_fail;
-> > >>  =20
-> > >> +=09if (!mdev->class_id) {
-> > >> +=09=09ret =3D -EINVAL;
-> > >> +=09=09WARN(1, "class id must be specified for device %s\n",
-> > >> +=09=09     dev_name(dev));   =20
-> > > Nit, dev_warn(dev, "mdev vendor driver failed to specify device class=
-\n");   =20
-> >=20
-> >=20
-> > Will fix.
-> >=20
-> >  =20
-> > >   =20
-> > >> +=09=09goto add_fail;
-> > >> +=09}
-> > >> +
-> > >>   =09ret =3D device_add(&mdev->dev);
-> > >>   =09if (ret)
-> > >>   =09=09goto add_fail;
-> > >> diff --git a/drivers/vfio/mdev/mdev_driver.c b/drivers/vfio/mdev/mde=
-v_driver.c
-> > >> index 0d3223aee20b..319d886ffaf7 100644
-> > >> --- a/drivers/vfio/mdev/mdev_driver.c
-> > >> +++ b/drivers/vfio/mdev/mdev_driver.c
-> > >> @@ -69,8 +69,30 @@ static int mdev_remove(struct device *dev)
-> > >>   =09return 0;
-> > >>   }
-> > >>  =20
-> > >> +static int mdev_match(struct device *dev, struct device_driver *drv=
-)
-> > >> +{
-> > >> +=09unsigned int i;
-> > >> +=09struct mdev_device *mdev =3D to_mdev_device(dev);
-> > >> +=09struct mdev_driver *mdrv =3D to_mdev_driver(drv);
-> > >> +=09const struct mdev_class_id *ids =3D mdrv->id_table;
-> > >> +   =20
-> > > Nit, as we start to allow new mdev bus drivers, mdev-core might want =
-to
-> > > protect itself from a NULL id_table, by either failing the
-> > > mdev_register_driver() or failing the match here.  I think such a
-> > > condition would segfault as written here, but clearly we don't have
-> > > such external drivers yet.  Thanks,   =20
-> >=20
-> >=20
-> > I'm not sure I get the point here. My understanding is that mdev-core=
-=20
-> > won't try to be matched here since it was not a complete mdev device. =
-=20
->=20
-> The parent driver failing to set a type vs the parent driver failing to
+btf_ctx_access() only needs the attach_btf_id from prog.  Hence, this patch
+only passes the attach_btf_id instead of passing prog.  It allows other
+use cases when the prog->aux->attach_btf_id may not be a typedef.
+For example, in the future, a bpf_prog can attach to
+"struct tcp_congestion_ops" and its attach_btf_id is
+pointing to the btf_id of "struct tcp_congestion_ops".
 
-Correction, the second half of this should be in reference to the mdev
-bus driver.
+While at it, allow btf_ctx_access to directly take a BTF_KIND_FUNC_PROTO
+btf_id.  It is to prepare for a later patch that does not need a "typedef"
+to figure out the func_proto.  For example, when attaching a bpf_prog
+to an ops in "struct tcp_congestion_ops", the func_proto can be
+found directly by following the members of "struct tcp_congestion_ops".
 
-> register with a struct mdev_driver where id_table is not null are
-> different issues.  I agree that if a vendor driver was not updated for
-> this series that they'd never successfully create a device because the
-> mdev-core would reject it for not setting a class, but mdev_match() is
-> called for devices that might be created by other vendor drivers, so
-> loading a parent driver with a null id_table potentially breaks
-> matching for everyone.  Thanks,
+For the no typedef use case, there is no extra first arg.  Hence, this
+patch only limits the skip arg logic to raw_tp only.
 
-The point is still valid though, for example if vfio-mdev registered
-with a null id_table it would break matching for virtio-mdev depending
-on the order we iterate through drivers as we call mdev_match().
-Thanks,
+Since a BTF_KIND_FUNC_PROTO type does not have a name (i.e. "(anon)"),
+an optional name arg is added also.  If specified, this name will be used
+in the bpf_log() message instead of the type's name obtained from btf_id.
+For example, the function pointer member name of
+"struct tcp_congestion_ops" can be used.
 
-Alex
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+---
+ include/linux/bpf.h      |  2 +-
+ kernel/bpf/btf.c         | 53 ++++++++++++++++++++++++++--------------
+ kernel/trace/bpf_trace.c |  3 ++-
+ 3 files changed, 38 insertions(+), 20 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 2c2c29b49845..1befe59331d9 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -766,7 +766,7 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
+ 				     const union bpf_attr *kattr,
+ 				     union bpf_attr __user *uattr);
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+-		    const struct bpf_prog *prog,
++		    u32 btf_id, const char *name,
+ 		    struct bpf_insn_access_aux *info);
+ int btf_struct_access(struct bpf_verifier_log *log,
+ 		      const struct btf_type *t, int off, int size,
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index f7557af39756..8c8174782675 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -346,6 +346,11 @@ static bool btf_type_is_func_proto(const struct btf_type *t)
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC_PROTO;
+ }
+ 
++static bool btf_type_is_typedef(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_TYPEDEF;
++}
++
+ static bool btf_type_nosize(const struct btf_type *t)
+ {
+ 	return btf_type_is_void(t) || btf_type_is_fwd(t) ||
+@@ -3439,16 +3444,16 @@ struct btf *btf_parse_vmlinux(void)
+ extern struct btf *btf_vmlinux;
+ 
+ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+-		    const struct bpf_prog *prog,
++		    u32 btf_id, const char *func_name,
+ 		    struct bpf_insn_access_aux *info)
+ {
+ 	struct bpf_verifier_log *log = info->log;
+-	u32 btf_id = prog->aux->attach_btf_id;
+ 	const struct btf_param *args;
+ 	const struct btf_type *t;
+ 	const char prefix[] = "btf_trace_";
+ 	const char *tname;
+ 	u32 nr_args, arg;
++	bool is_raw_tp = false;
+ 
+ 	if (!btf_id)
+ 		return true;
+@@ -3459,37 +3464,49 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 	}
+ 
+ 	t = btf_type_by_id(btf_vmlinux, btf_id);
+-	if (!t || BTF_INFO_KIND(t->info) != BTF_KIND_TYPEDEF) {
++	if (!t || (!btf_type_is_typedef(t) && !btf_type_is_func_proto(t))) {
+ 		bpf_log(log, "btf_id is invalid\n");
+ 		return false;
+ 	}
+ 
+ 	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
+-	if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
+-		bpf_log(log, "btf_id points to wrong type name %s\n", tname);
+-		return false;
++	if (btf_type_is_typedef(t)) {
++		if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
++			bpf_log(log, "btf_id points to wrong type name %s\n",
++				tname);
++			return false;
++		}
++		tname += sizeof(prefix) - 1;
++
++		t = btf_type_by_id(btf_vmlinux, t->type);
++		if (!btf_type_is_ptr(t))
++			return false;
++		t = btf_type_by_id(btf_vmlinux, t->type);
++		btf_id = t->type;
++		is_raw_tp = true;
+ 	}
+-	tname += sizeof(prefix) - 1;
+ 
+-	t = btf_type_by_id(btf_vmlinux, t->type);
+-	if (!btf_type_is_ptr(t))
+-		return false;
+-	t = btf_type_by_id(btf_vmlinux, t->type);
+ 	if (!btf_type_is_func_proto(t))
+ 		return false;
+ 
++	if (func_name)
++		tname = func_name;
++
+ 	if (off % 8) {
+-		bpf_log(log, "raw_tp '%s' offset %d is not multiple of 8\n",
++		bpf_log(log, "func '%s' offset %d is not multiple of 8\n",
+ 			tname, off);
+ 		return false;
+ 	}
+ 	arg = off / 8;
+ 	args = (const struct btf_param *)(t + 1);
++	nr_args = btf_type_vlen(t);
+ 	/* skip first 'void *__data' argument in btf_trace_##name typedef */
+-	args++;
+-	nr_args = btf_type_vlen(t) - 1;
++	if (is_raw_tp) {
++		args++;
++		nr_args--;
++	}
+ 	if (arg >= nr_args) {
+-		bpf_log(log, "raw_tp '%s' doesn't have %d-th argument\n",
++		bpf_log(log, "func '%s' doesn't have %d-th argument\n",
+ 			tname, arg);
+ 		return false;
+ 	}
+@@ -3503,7 +3520,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		return true;
+ 	if (!btf_type_is_ptr(t)) {
+ 		bpf_log(log,
+-			"raw_tp '%s' arg%d '%s' has type %s. Only pointer access is allowed\n",
++			"func '%s' arg%d '%s' has type %s. Only pointer access is allowed\n",
+ 			tname, arg,
+ 			__btf_name_by_offset(btf_vmlinux, t->name_off),
+ 			btf_kind_str[BTF_INFO_KIND(t->info)]);
+@@ -3526,11 +3543,11 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		t = btf_type_by_id(btf_vmlinux, t->type);
+ 	if (!btf_type_is_struct(t)) {
+ 		bpf_log(log,
+-			"raw_tp '%s' arg%d type %s is not a struct\n",
++			"func '%s' arg%d type %s is not a struct\n",
+ 			tname, arg, btf_kind_str[BTF_INFO_KIND(t->info)]);
+ 		return false;
+ 	}
+-	bpf_log(log, "raw_tp '%s' arg%d has btf_id %d type %s '%s'\n",
++	bpf_log(log, "func '%s' arg%d has btf_id %d type %s '%s'\n",
+ 		tname, arg, info->btf_id, btf_kind_str[BTF_INFO_KIND(t->info)],
+ 		__btf_name_by_offset(btf_vmlinux, t->name_off));
+ 	return true;
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index c3240898cc44..435869b1834a 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1080,7 +1080,8 @@ static bool raw_tp_prog_is_valid_access(int off, int size,
+ 		return false;
+ 	if (off % size != 0)
+ 		return false;
+-	return btf_ctx_access(off, size, type, prog, info);
++	return btf_ctx_access(off, size, type, prog->aux->attach_btf_id, NULL,
++			      info);
+ }
+ 
+ const struct bpf_verifier_ops raw_tracepoint_verifier_ops = {
+-- 
+2.17.1
 
