@@ -2,101 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EBAEE34F6
-	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:04:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10047E3503
+	for <lists+netdev@lfdr.de>; Thu, 24 Oct 2019 16:07:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409284AbfJXOEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 10:04:33 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34287 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730547AbfJXOEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 10:04:32 -0400
-Received: by mail-pg1-f195.google.com with SMTP id k20so14337249pgi.1
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 07:04:32 -0700 (PDT)
+        id S2409321AbfJXOHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 10:07:18 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42047 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2409078AbfJXOHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 10:07:18 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 21so3975298pfj.9
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 07:07:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LzKMc+KJEQurq8v/8ez91cmyiKwiP5tr+Isvpi2+sjY=;
-        b=P4yb7raX14OnohPRrSYKLP25xLFl1WixYxDVLBOBwKwO6FvSBY4TtzntWuw/vi6P/f
-         5bKnbh36Vq5Xf/toebLk41Tqx9boFHac+EjVvAK6EAbaFpZIbYab9QUBraPSYxMOcRRX
-         l3Al870OPwU6L2IMgjZBGCLn67XUmshQ+HCBQErWUlhFr/6AHHaC4txhR19A1yHMSI/9
-         jvDgI8I9OZgFhmDkoZ+4jgtzikHBSporvHKb3ZB3+Pr+hdRPZ2elJRe8xa8b7p3ZUYiV
-         pW1raTVvsZI2V9bGkyCunD3TJTCdQGr5HXFbqKFO08sw6S8o29s2k/VRviY3mPFUMCVR
-         c8Zw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uJy55SIwOEViP+KRXPJ0Yoq5S5v3p1+WPbnz7NQz+Rw=;
+        b=DHleAkBO43p7Td0l0m9fgcBg++GJfNaNysbPHYOR3EDKGcJfyjw+OFG87PHiqq46J0
+         b+PjEYAiFPnWvFmBCuHUuh6eAeOek4OscCicD3vplvCzdPMXyu657mMLAMkHbzjhK3jN
+         5K77AR3icppTUGMPykEyp4oE112KmrSJj7aOQ6jgUt8wMMmAGTFCPijZCHBiO0GhmhAg
+         Cun7dZY3nHT1/wd2XTEYPYzcj//YDCcQ6J2FC+aFksKcn4/Hp9MBI7iUDuDH0U+JUq6a
+         7e515Jz29iNCGkWrFI9AwL9HiU33MxNv4ofUHbXEiCz41WSYgUhgyfjgDDn7Tdq8wb+7
+         bSXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LzKMc+KJEQurq8v/8ez91cmyiKwiP5tr+Isvpi2+sjY=;
-        b=WlMzomW+TXmVB70LFpRm3a33XWsHD9VN2wd2j5Mo4TsG819A/xMKy6v6a462ZsFPGN
-         wPT+Fpwtgzc7C3V4xGy+VPamD7XFJ3XQ9CVTH+MVVTYyagypr0bOpJAiEhMFAIe77VNn
-         pX0ELZb1o12O6P6iKs76Lt1cgWbhoraeoBVaDknpXhnN4P9Ygs8XAm+HNYlP6MAkZQWq
-         JEDExktwxRZ64UeFPJc7fgqvEkv04eitCWYAXy5f+dLqgxdtB3cIs89mjEtUZQi7i/V8
-         plmMgjRzjhA1HMXozulzhE7ganh32M799AM3QxnPl+defcBYS2BuyRSCjp9Md1XlIp9j
-         +e4A==
-X-Gm-Message-State: APjAAAXgSaaDS0N3TRzKVOsoJTb8mAyNffG8MuBi/AuDBLIFDoMomucO
-        PakEsKeiNMabvjGlkrNeOi4=
-X-Google-Smtp-Source: APXvYqxh2t16LNc0KbmFIN7yF3TG8mnmR1ylThpbEDvtyijb0sdYVTmFMB8lfyfYxMrm8VkDO+iE5w==
-X-Received: by 2002:a63:b25d:: with SMTP id t29mr16424227pgo.395.1571925871921;
-        Thu, 24 Oct 2019 07:04:31 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id q6sm29217053pgn.44.2019.10.24.07.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Oct 2019 07:04:30 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 07:04:28 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "epomozov@marvell.com" <epomozov@marvell.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>,
-        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
-Subject: Re: [PATCH v3 net-next 03/12] net: aquantia: add basic ptp_clock
- callbacks
-Message-ID: <20191024140428.GA1435@localhost>
-References: <cover.1571737612.git.igor.russkikh@aquantia.com>
- <cc5ad0d429db914b3615d9a32224e1dc141ba91e.1571737612.git.igor.russkikh@aquantia.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uJy55SIwOEViP+KRXPJ0Yoq5S5v3p1+WPbnz7NQz+Rw=;
+        b=lDHJ9d0LoxuowzGAybsN9ssli7SVLUPbRYNM9mXP4aNnIKKFWt7+r6JSmxmfUgXcSO
+         d317uOTPrF41i8IStqeRbhG37xjwneVDN29eSJf8ttfnFojSrlyd1rH7O0nNcxNYpAhG
+         NV3aQhijJnUE7rLwXHfQdMBJ667MfG4DsAhT3lBziFmpTXrNGb+8eTV3KX8ZcLoLQuei
+         70KZuFGo/CJCQkyYr+qKKYBFOwDBM9Fa7H2OVc1i83VD+5/X2J2glJA2mJoScC9qSPoZ
+         IwaFbXEkIguKQNB1QgWQxYm6k5V9fMSb1MMf68Khav4+l8XT4jXLTqMk74nid30Mo58c
+         wjbA==
+X-Gm-Message-State: APjAAAXDmDEjmE1Zht9x0K0UfBVs1AodEvZNnVtt1OQmLkpsyF/o5tWB
+        IKRR8dQVaHucCSESVSG72p4jcRpGL0bkY1ld3A0rVA==
+X-Google-Smtp-Source: APXvYqyV0t4sRpTwI6AFnypLA2oz7oqaLuam9C1OVUwv5QmmO1DL5KIwlKtuylj4NxY4ud+gg2s3kte/wvyq7XiVR1g=
+X-Received: by 2002:a65:4c03:: with SMTP id u3mr16829386pgq.440.1571926037251;
+ Thu, 24 Oct 2019 07:07:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cc5ad0d429db914b3615d9a32224e1dc141ba91e.1571737612.git.igor.russkikh@aquantia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1571844200.git.andreyknvl@google.com> <beeae42e313ef57b4630cc9f36e2e78ad42fd5b7.1571844200.git.andreyknvl@google.com>
+ <CACT4Y+a6t08RmtSYfF=3TuASx9ReCEe0Qp0AP=GbCtNyL2j+TA@mail.gmail.com>
+In-Reply-To: <CACT4Y+a6t08RmtSYfF=3TuASx9ReCEe0Qp0AP=GbCtNyL2j+TA@mail.gmail.com>
+From:   Andrey Konovalov <andreyknvl@google.com>
+Date:   Thu, 24 Oct 2019 16:07:05 +0200
+Message-ID: <CAAeHK+xnRSZp5fxikyDzMB18bsDMmCvmrZexrjr_JV3Wgw80Ww@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] kcov: remote coverage support
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     USB list <linux-usb@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        David Windsor <dwindsor@gmail.com>,
+        Elena Reshetova <elena.reshetova@intel.com>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 22, 2019 at 09:53:27AM +0000, Igor Russkikh wrote:
-> +/* aq_ptp_adjfine
-> + * @ptp: the ptp clock structure
-> + * @ppb: parts per billion adjustment from base
+On Thu, Oct 24, 2019 at 9:27 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Wed, Oct 23, 2019 at 5:24 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+> >
+> > This patch adds background thread coverage collection ability to kcov.
+> ...
+> > +static struct kcov_remote *kcov_remote_add(struct kcov *kcov, u64 handle)
+> > +{
+> > +       struct kcov_remote *remote;
+> > +
+> > +       if (kcov_remote_find(handle))
+> > +               return ERR_PTR(-EEXIST);
+> > +       remote = kmalloc(sizeof(*remote), GFP_ATOMIC);
+> > +       if (!remote)
+> > +               return ERR_PTR(-ENOMEM);
+> > +       remote->handle = handle;
+> > +       remote->kcov = kcov;
+> > +       hash_add(kcov_remote_map, &remote->hnode, handle);
+>
+> I think it will make sense to check that there is no existing kcov
+> with the same handle registered. Such condition will be extremely hard
+> to debug based on episodically missing coverage.
 
-Kdoc needs update.
+Will do in v3.
 
-> + *
-> + * adjust the frequency of the ptp cycle counter by the
-> + * indicated ppb from the base frequency.
-> + */
-> +static int aq_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
-> +{
-> +	struct aq_ptp_s *aq_ptp = container_of(ptp, struct aq_ptp_s, ptp_info);
-> +	struct aq_nic_s *aq_nic = aq_ptp->aq_nic;
-> +
-> +	mutex_lock(&aq_nic->fwreq_mutex);
-> +	aq_nic->aq_hw_ops->hw_adj_clock_freq(aq_nic->aq_hw,
-> +					     scaled_ppm_to_ppb(scaled_ppm));
+>
+> ...
+> >  void kcov_task_exit(struct task_struct *t)
+> >  {
+> >         struct kcov *kcov;
+> > @@ -256,15 +401,23 @@ void kcov_task_exit(struct task_struct *t)
+> >         kcov = t->kcov;
+> >         if (kcov == NULL)
+> >                 return;
+> > +
+> >         spin_lock(&kcov->lock);
+> > +       kcov_debug("t = %px, kcov->t = %px\n", t, kcov->t);
+> > +       /*
+> > +        * If !kcov->remote, this checks that t->kcov->t == t.
+> > +        * If kcov->remote == true then the exiting task is either:
+> > +        * 1. a remote task between kcov_remote_start() and kcov_remote_stop(),
+> > +        *    in this case t != kcov->t and we'll print a warning; or
+>
+> Why? Is kcov->t == NULL for remote kcov's? May be worth mentioning in
+> the comment b/c it's a very condensed form to check lots of different
+> things at once.
 
-If your HW has sub-ppm bits in its frequency word, then it does make a
-difference to actually use the low order bits (instead of truncating
-as you do here).
+For remote kcov instances kcov->t points to the thread that created
+the kcov device (I'll update the comment in struct kcov). When a task
+is between kcov_remote_start() and kcov_remote_stop(), it's t->kcov
+point to the remote kcov. So t is current for this task, and
+t->kcov->t is the task that created the kcov instance. I'll expand the
+comment to explain this better.
 
-> +	mutex_unlock(&aq_nic->fwreq_mutex);
-> +
-> +	return 0;
-> +}
+> Otherwise the series look good to me:
+>
+> Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
 
-Thanks,
-Richard
+Great, thanks!
+
+>
+> But Andrew's comments stand. It's possible I understand all of this
+> only because I already know how it works and why it works this way.
