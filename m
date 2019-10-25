@@ -2,76 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EC2DE495C
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E6FE49B4
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439508AbfJYLJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 07:09:14 -0400
-Received: from baptiste.telenet-ops.be ([195.130.132.51]:55414 "EHLO
-        baptiste.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503226AbfJYLIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:08:47 -0400
-Received: from ramsan ([84.195.182.253])
-        by baptiste.telenet-ops.be with bizsmtp
-        id Hn8b210045USYZQ01n8b1h; Fri, 25 Oct 2019 13:08:46 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1iNxSN-0003rD-1k; Fri, 25 Oct 2019 13:08:35 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1iNw6A-0006nA-Oz; Fri, 25 Oct 2019 11:41:34 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jaehoon Chung <jh80.chung@samsung.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-doc@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH v2 7/7] mmc: dw_mmc: Remove superfluous cast in debugfs_create_u32() call
-Date:   Fri, 25 Oct 2019 11:41:30 +0200
-Message-Id: <20191025094130.26033-8-geert+renesas@glider.be>
+        id S2440034AbfJYLSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 07:18:12 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42533 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2439235AbfJYLSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:18:11 -0400
+Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1iNxJV-0002cs-0I; Fri, 25 Oct 2019 10:59:25 +0000
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     davem@davemloft.net, oliver@neukum.org
+Cc:     hayeswang@realtek.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: [PATCH 1/2] r8152: Pass driver_info to REALTEK_USB_DEVICE() macro
+Date:   Fri, 25 Oct 2019 18:59:18 +0800
+Message-Id: <20191025105919.689-1-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191025094130.26033-1-geert+renesas@glider.be>
-References: <20191025094130.26033-1-geert+renesas@glider.be>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"dw_mci.state" is an enum, which is compatible with u32, so there is no
-need to cast its address, preventing further compiler checks.
+REALTEK_USB_DEVICE() in current form doesn't take driver_info as its
+parameter.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
----
-v2:
-  - Add Acked-by.
----
- drivers/mmc/host/dw_mmc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+However, driver_info can be useful to add device specific information so
+let's adjust REALTEK_USB_DEVICE() macro to be able to do that.
 
-diff --git a/drivers/mmc/host/dw_mmc.c b/drivers/mmc/host/dw_mmc.c
-index b4c4a9cd6365f122..fc9d4d000f97e434 100644
---- a/drivers/mmc/host/dw_mmc.c
-+++ b/drivers/mmc/host/dw_mmc.c
-@@ -176,7 +176,7 @@ static void dw_mci_init_debugfs(struct dw_mci_slot *slot)
+It'll be used by later patch.
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/usb/r8152.c | 38 ++++++++++++++++++++------------------
+ 1 file changed, 20 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index d3c30ccc8577..1a987d4e45ab 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -6725,12 +6725,13 @@ static void rtl8152_disconnect(struct usb_interface *intf)
+ 	}
+ }
  
- 	debugfs_create_file("regs", S_IRUSR, root, host, &dw_mci_regs_fops);
- 	debugfs_create_file("req", S_IRUSR, root, slot, &dw_mci_req_fops);
--	debugfs_create_u32("state", S_IRUSR, root, (u32 *)&host->state);
-+	debugfs_create_u32("state", S_IRUSR, root, &host->state);
- 	debugfs_create_xul("pending_events", S_IRUSR, root,
- 			   &host->pending_events);
- 	debugfs_create_xul("completed_events", S_IRUSR, root,
+-#define REALTEK_USB_DEVICE(vend, prod)	\
++#define REALTEK_USB_DEVICE(vend, prod, info)	\
+ 	.match_flags = USB_DEVICE_ID_MATCH_DEVICE | \
+ 		       USB_DEVICE_ID_MATCH_INT_CLASS, \
+ 	.idVendor = (vend), \
+ 	.idProduct = (prod), \
+-	.bInterfaceClass = USB_CLASS_VENDOR_SPEC \
++	.bInterfaceClass = USB_CLASS_VENDOR_SPEC, \
++	.driver_info = (info) \
+ }, \
+ { \
+ 	.match_flags = USB_DEVICE_ID_MATCH_INT_INFO | \
+@@ -6739,25 +6740,26 @@ static void rtl8152_disconnect(struct usb_interface *intf)
+ 	.idProduct = (prod), \
+ 	.bInterfaceClass = USB_CLASS_COMM, \
+ 	.bInterfaceSubClass = USB_CDC_SUBCLASS_ETHERNET, \
+-	.bInterfaceProtocol = USB_CDC_PROTO_NONE
++	.bInterfaceProtocol = USB_CDC_PROTO_NONE, \
++	.driver_info = (info) \
+ 
+ /* table of devices that work with this driver */
+ static const struct usb_device_id rtl8152_table[] = {
+-	{REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8050)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8152)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8153)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff)},
+-	{REALTEK_USB_DEVICE(VENDOR_ID_TPLINK,  0x0601)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8050, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8152, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_REALTEK, 0x8153, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07ab, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x07c6, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff, 0)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_TPLINK,  0x0601, 0)},
+ 	{}
+ };
+ 
 -- 
 2.17.1
 
