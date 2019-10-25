@@ -2,94 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAC21E447F
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:33:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79624E44A0
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:36:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393242AbfJYHdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 03:33:08 -0400
-Received: from mx2.suse.de ([195.135.220.15]:34864 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726479AbfJYHdI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 03:33:08 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id C7075AFB7;
-        Fri, 25 Oct 2019 07:33:05 +0000 (UTC)
-Date:   Fri, 25 Oct 2019 09:33:04 +0200
-From:   Daniel Wagner <dwagner@suse.de>
-To:     Stefan Wahren <wahrenst@gmx.net>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rt-users@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
-        Thomas Gleixner <tglx@linutronix.de>
+        id S2407101AbfJYHgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 03:36:49 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:35638 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406055AbfJYHgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 03:36:49 -0400
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1iNu9K-0001MM-Tr; Fri, 25 Oct 2019 09:36:43 +0200
+Date:   Fri, 25 Oct 2019 09:36:42 +0200
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     David Miller <davem@davemloft.net>
+Cc:     dwagner@suse.de, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org,
+        woojung.huh@microchip.com, maz@kernel.org, andrew@lunn.ch,
+        wahrenst@gmx.net, Jisheng.Zhang@synaptics.com, tglx@linutronix.de
 Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for interrupt
  handling
-Message-ID: <20191025073304.zqw2yxaulkyopk5y@beryllium.lan>
+Message-ID: <20191025073642.3ov2lwo2sr4nrdzn@linutronix.de>
 References: <20191018082817.111480-1-dwagner@suse.de>
- <20191018131532.dsfhyiilsi7cy4cm@linutronix.de>
- <20191022101747.001b6d06@cakuba.netronome.com>
- <20191023074719.gcov5xfrcvns5tlg@beryllium.lan>
- <20191023080640.zcw2f2v7fpanoewm@beryllium.lan>
- <20191024104317.32bp32krrjmfb36p@linutronix.de>
- <20191024110610.lwwy75dkgwjdxml6@beryllium.lan>
- <20191024141216.wz2dcdxy4mrl2q5a@beryllium.lan>
- <78ab19da-2f30-86e0-fad1-667f5e6ba8b1@gmx.net>
+ <20191024.145716.1208414850964996816.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <78ab19da-2f30-86e0-fad1-667f5e6ba8b1@gmx.net>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20191024.145716.1208414850964996816.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
-
-On Thu, Oct 24, 2019 at 07:25:37PM +0200, Stefan Wahren wrote:
-> Am 24.10.19 um 16:12 schrieb Daniel Wagner:
-> > On Thu, Oct 24, 2019 at 01:06:10PM +0200, Daniel Wagner wrote:
-> >
-> > Sebastians suggested to try the RPi kernel. The rpi-5.2.y kernel
-> > behaves exactly the same. That is one PHY interrupt and later on NFS
-> > timeouts.
-> >
-> > According their website the current shipped RPi kernel is in version
-> > 4.18. Here is what happends with rpi-4.18.y:
+On 2019-10-24 14:57:16 [-0700], David Miller wrote:
+> From: Daniel Wagner <dwagner@suse.de>
+> Date: Fri, 18 Oct 2019 10:28:17 +0200
 > 
-> No, it's 4.19. It's always a LTS kernel.
-
-Ah okay and obviously, 4.19 works also nicely. No surprise here.
-
-> I'm curious, what's the motivation behind this? The rpi tree contains
-> additional hacks, so i'm not sure the results are comparable. Also the
-> USB host driver is a different one.
-
-The idea was to see what the PHY interrupt is doing. As it turns out
-the RPi tree and mainline have almost the same infrastructure code
-here (irqdomain). There are some additional tweaks in the RPi
-kernel. My initial revert patch removed all this infrastructure code,
-which is probably not a good idea. If the way forward is to steal the
-bits and pieces from the RPi tree which should keep this code in
-place.
-
-With the local_irq_disable() patch, which I am going to send asap, the
-warning which everyone is seeing should be gone. So one bug down.
-
-> > There are no NFS timeouts and commands like 'apt update' work reasoble
-> > fast. So no long delays or hangs. Time to burn this hardware.
+> > handle_simple_irq() expect interrupts to be disabled. The USB
+> > framework is using threaded interrupts, which implies that interrupts
+> > are re-enabled as soon as it has run.
+>  ...
 > 
-> Since enabling lan78xx for Raspberry Pi 3B+, we found a lot of driver
-> issues. So i'm not really surprised, that there are still more of them.
+> Where are we with this patch?  I'm tossing it.
+> 
+> It seems Sebastian made a suggestion, someone else said his suggestion
+> should be tried, then everything died.
+> 
+> Please follow up and post when something is ready.
 
-If the vendor would work on fixing the bugs it would not be real
-problem.
+My suggestion with the nested-handler was nonsense. The suggestion with
+the local_irq_disable() before invoking generic_handle_irq() did avoid
+the warning but the NFS-root was not stable (and Daniel reported a lot
+of USB interrupts coming which indicates that the interrupt-handler is
+not acknowledging the interrupt properly).
 
-Thanks,
-Daniel
+It works by reverting the IRQ-domain code as this patch does. "Works" as
+in "no warnings" and "NFS-root looks stable".
 
+You have two ACKs on that patch. I could ask Daniel to repost the patch
+with additional informations.
+My last information from Daniel was that the rpi tree works and I'm not
+sure if he is looking for the missing ingredient or preferring the
+removal of the non-working code.
+
+Sebastian
