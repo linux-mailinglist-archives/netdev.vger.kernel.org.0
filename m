@@ -2,41 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B07C0E4E6A
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAA82E4E75
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505074AbfJYNza (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:55:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49378 "EHLO mail.kernel.org"
+        id S2440445AbfJYOHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:07:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49412 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505056AbfJYNz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:28 -0400
+        id S2505063AbfJYNz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F233121D82;
-        Fri, 25 Oct 2019 13:55:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 95462222CB;
+        Fri, 25 Oct 2019 13:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011727;
-        bh=Y4a8nZRLPZyWJewIpXd7KkVvD4okkKWNtoDmdd8Yyx8=;
+        s=default; t=1572011728;
+        bh=9Lw0EJcXdnsqEQSTs6tupYCgekSutiDucheLmdlMFDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IduWuBUyf3I2mIkFgQYTow9XquYBsn4oR64N0PKdIt4tW94Xptv0xSILX9fCAoRSf
-         eFb17qpPXIM1O635buGE10cWelzdBZx8t6vzrSuVM4gbEobO8f22I1X/AYIXeFCkxk
-         /hZtOaGsGwUamMMY/7MTbw+LYIrq/tbYvEUGeG90=
+        b=s3V0p5RbodURsIF5p4pTu6QXwhpoOwKIvplDXVvvVWbS39euu8Lgk3xzZpg8YtOMx
+         B7jDhw4rRevxK3ybE5PBDMtWiHkoHZY+f7Q9HtToSYGHk0UF9diRB9vPq8MnQZgg67
+         cFrGAxwL3d7cISZ7AoNWj+MnBL9PxrhRspXtzZOM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 11/33] netfilter: conntrack: avoid possible false sharing
-Date:   Fri, 25 Oct 2019 09:54:43 -0400
-Message-Id: <20191025135505.24762-11-sashal@kernel.org>
+Cc:     Mahesh Bandewar <maheshb@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 12/33] blackhole_netdev: fix syzkaller reported issue
+Date:   Fri, 25 Oct 2019 09:54:44 -0400
+Message-Id: <20191025135505.24762-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -49,93 +43,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Mahesh Bandewar <maheshb@google.com>
 
-[ Upstream commit e37542ba111f3974dc622ae0a21c1787318de500 ]
+[ Upstream commit b0818f80c8c1bc215bba276bd61c216014fab23b ]
 
-As hinted by KCSAN, we need at least one READ_ONCE()
-to prevent a compiler optimization.
+While invalidating the dst, we assign backhole_netdev instead of
+loopback device. However, this device does not have idev pointer
+and hence no ip6_ptr even if IPv6 is enabled. Possibly this has
+triggered the syzbot reported crash.
 
-More details on :
-https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE#it-may-improve-performance
+The syzbot report does not have reproducer, however, this is the
+only device that doesn't have matching idev created.
 
-sysbot report :
-BUG: KCSAN: data-race in __nf_ct_refresh_acct / __nf_ct_refresh_acct
+Crash instruction is :
 
-read to 0xffff888123eb4f08 of 4 bytes by interrupt on cpu 0:
- __nf_ct_refresh_acct+0xd4/0x1b0 net/netfilter/nf_conntrack_core.c:1796
- nf_ct_refresh_acct include/net/netfilter/nf_conntrack.h:201 [inline]
- nf_conntrack_tcp_packet+0xd40/0x3390 net/netfilter/nf_conntrack_proto_tcp.c:1161
- nf_conntrack_handle_packet net/netfilter/nf_conntrack_core.c:1633 [inline]
- nf_conntrack_in+0x410/0xaa0 net/netfilter/nf_conntrack_core.c:1727
- ipv4_conntrack_in+0x27/0x40 net/netfilter/nf_conntrack_proto.c:178
- nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
- nf_hook_slow+0x83/0x160 net/netfilter/core.c:512
- nf_hook include/linux/netfilter.h:260 [inline]
- NF_HOOK include/linux/netfilter.h:303 [inline]
- ip_rcv+0x12f/0x1a0 net/ipv4/ip_input.c:523
- __netif_receive_skb_one_core+0xa7/0xe0 net/core/dev.c:5004
- __netif_receive_skb+0x37/0xf0 net/core/dev.c:5118
- netif_receive_skb_internal+0x59/0x190 net/core/dev.c:5208
- napi_skb_finish net/core/dev.c:5671 [inline]
- napi_gro_receive+0x28f/0x330 net/core/dev.c:5704
- receive_buf+0x284/0x30b0 drivers/net/virtio_net.c:1061
- virtnet_receive drivers/net/virtio_net.c:1323 [inline]
- virtnet_poll+0x436/0x7d0 drivers/net/virtio_net.c:1428
- napi_poll net/core/dev.c:6352 [inline]
- net_rx_action+0x3ae/0xa50 net/core/dev.c:6418
- __do_softirq+0x115/0x33f kernel/softirq.c:292
+static inline bool ip6_ignore_linkdown(const struct net_device *dev)
+{
+        const struct inet6_dev *idev = __in6_dev_get(dev);
 
-write to 0xffff888123eb4f08 of 4 bytes by task 7191 on cpu 1:
- __nf_ct_refresh_acct+0xfb/0x1b0 net/netfilter/nf_conntrack_core.c:1797
- nf_ct_refresh_acct include/net/netfilter/nf_conntrack.h:201 [inline]
- nf_conntrack_tcp_packet+0xd40/0x3390 net/netfilter/nf_conntrack_proto_tcp.c:1161
- nf_conntrack_handle_packet net/netfilter/nf_conntrack_core.c:1633 [inline]
- nf_conntrack_in+0x410/0xaa0 net/netfilter/nf_conntrack_core.c:1727
- ipv4_conntrack_local+0xbe/0x130 net/netfilter/nf_conntrack_proto.c:200
- nf_hook_entry_hookfn include/linux/netfilter.h:135 [inline]
- nf_hook_slow+0x83/0x160 net/netfilter/core.c:512
- nf_hook include/linux/netfilter.h:260 [inline]
- __ip_local_out+0x1f7/0x2b0 net/ipv4/ip_output.c:114
- ip_local_out+0x31/0x90 net/ipv4/ip_output.c:123
- __ip_queue_xmit+0x3a8/0xa40 net/ipv4/ip_output.c:532
- ip_queue_xmit+0x45/0x60 include/net/ip.h:236
- __tcp_transmit_skb+0xdeb/0x1cd0 net/ipv4/tcp_output.c:1158
- __tcp_send_ack+0x246/0x300 net/ipv4/tcp_output.c:3685
- tcp_send_ack+0x34/0x40 net/ipv4/tcp_output.c:3691
- tcp_cleanup_rbuf+0x130/0x360 net/ipv4/tcp.c:1575
+        return !!idev->cnf.ignore_routes_with_linkdown; <= crash
+}
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 7191 Comm: syz-fuzzer Not tainted 5.3.0+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Also ipv6 always assumes presence of idev and never checks for it
+being NULL (as does the above referenced code). So adding a idev
+for the blackhole_netdev to avoid this class of crashes in the future.
 
-Fixes: cc16921351d8 ("netfilter: conntrack: avoid same-timeout update")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc: Florian Westphal <fw@strlen.de>
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/addrconf.c |  7 ++++++-
+ net/ipv6/route.c    | 15 ++++++---------
+ 2 files changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index 81a8ef42b88d3..56b1cf82ed3aa 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -1793,8 +1793,8 @@ void __nf_ct_refresh_acct(struct nf_conn *ct,
- 	if (nf_ct_is_confirmed(ct))
- 		extra_jiffies += nfct_time_stamp;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 34ccef18b40e6..4c87594d1389d 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -6996,7 +6996,7 @@ static struct rtnl_af_ops inet6_ops __read_mostly = {
  
--	if (ct->timeout != extra_jiffies)
--		ct->timeout = extra_jiffies;
-+	if (READ_ONCE(ct->timeout) != extra_jiffies)
-+		WRITE_ONCE(ct->timeout, extra_jiffies);
- acct:
- 	if (do_acct)
- 		nf_ct_acct_update(ct, ctinfo, skb->len);
+ int __init addrconf_init(void)
+ {
+-	struct inet6_dev *idev;
++	struct inet6_dev *idev, *bdev;
+ 	int i, err;
+ 
+ 	err = ipv6_addr_label_init();
+@@ -7036,10 +7036,14 @@ int __init addrconf_init(void)
+ 	 */
+ 	rtnl_lock();
+ 	idev = ipv6_add_dev(init_net.loopback_dev);
++	bdev = ipv6_add_dev(blackhole_netdev);
+ 	rtnl_unlock();
+ 	if (IS_ERR(idev)) {
+ 		err = PTR_ERR(idev);
+ 		goto errlo;
++	} else if (IS_ERR(bdev)) {
++		err = PTR_ERR(bdev);
++		goto errlo;
+ 	}
+ 
+ 	ip6_route_init_special_entries();
+@@ -7124,6 +7128,7 @@ void addrconf_cleanup(void)
+ 		addrconf_ifdown(dev, 1);
+ 	}
+ 	addrconf_ifdown(init_net.loopback_dev, 2);
++	addrconf_ifdown(blackhole_netdev, 2);
+ 
+ 	/*
+ 	 *	Check hash table.
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 546088e508151..23164ac42826e 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -155,10 +155,9 @@ void rt6_uncached_list_del(struct rt6_info *rt)
+ 
+ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ {
+-	struct net_device *loopback_dev = net->loopback_dev;
+ 	int cpu;
+ 
+-	if (dev == loopback_dev)
++	if (dev == net->loopback_dev)
+ 		return;
+ 
+ 	for_each_possible_cpu(cpu) {
+@@ -171,7 +170,7 @@ static void rt6_uncached_list_flush_dev(struct net *net, struct net_device *dev)
+ 			struct net_device *rt_dev = rt->dst.dev;
+ 
+ 			if (rt_idev->dev == dev) {
+-				rt->rt6i_idev = in6_dev_get(loopback_dev);
++				rt->rt6i_idev = in6_dev_get(blackhole_netdev);
+ 				in6_dev_put(rt_idev);
+ 			}
+ 
+@@ -386,13 +385,11 @@ static void ip6_dst_ifdown(struct dst_entry *dst, struct net_device *dev,
+ {
+ 	struct rt6_info *rt = (struct rt6_info *)dst;
+ 	struct inet6_dev *idev = rt->rt6i_idev;
+-	struct net_device *loopback_dev =
+-		dev_net(dev)->loopback_dev;
+ 
+-	if (idev && idev->dev != loopback_dev) {
+-		struct inet6_dev *loopback_idev = in6_dev_get(loopback_dev);
+-		if (loopback_idev) {
+-			rt->rt6i_idev = loopback_idev;
++	if (idev && idev->dev != dev_net(dev)->loopback_dev) {
++		struct inet6_dev *ibdev = in6_dev_get(blackhole_netdev);
++		if (ibdev) {
++			rt->rt6i_idev = ibdev;
+ 			in6_dev_put(idev);
+ 		}
+ 	}
 -- 
 2.20.1
 
