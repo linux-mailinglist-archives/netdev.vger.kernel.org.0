@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2999E4E33
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F177E4E0B
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:04:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505198AbfJYNz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:55:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50058 "EHLO mail.kernel.org"
+        id S2395197AbfJYOEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:04:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505182AbfJYNz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:56 -0400
+        id S1732091AbfJYN4j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:56:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C03AB222C9;
-        Fri, 25 Oct 2019 13:55:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4AFED222C4;
+        Fri, 25 Oct 2019 13:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011754;
-        bh=rlocA8g38g9I8z4t3d/Svrv3R3ZY2CKk7/WiK2gEcvw=;
+        s=default; t=1572011798;
+        bh=Uo/2wz8IumRDL/GCR/T0JDnrYH1c4veTbSER1Hd9qyE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCqDzIM9KKygW74BtKRotsK9mtY07fORKLLuSlE8r5cvktIycnd7OKvjBCT38Bh6A
-         AyE0/UeTZh4V3KpxHRJKCxkO/uui5aSeJCt7DG+PPTKdSE5/OS1duPjnGT3okSbm38
-         MWqaTWHKz3l/9BEFSSAM48OdeKtI/AahMo95DuFM=
+        b=1kbKYys2veWQpxlNSWjG5I6PZF08L3IBqlGofmcdDzIUzOixQiUeyBoVCE9H2m3AL
+         +OwKjWtJ9OZZCT5T/XXyWcxdXkmaZUA8k/+1jLwanAQhhnCYd13MvD7hralS+UWiM8
+         6WL5VudorhPgSxzkgm3SHt0fm/qRmYhsHrLWh2Ho=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>, Ying Xu <yinxu@redhat.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 31/33] sctp: add chunks to sk_backlog when the newsk sk_socket is not set
-Date:   Fri, 25 Oct 2019 09:55:03 -0400
-Message-Id: <20191025135505.24762-31-sashal@kernel.org>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com,
+        syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com,
+        Edward Cree <ecree@solarflare.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 19/37] net: ipv6: fix listify ip6_rcv_finish in case of forwarding
+Date:   Fri, 25 Oct 2019 09:55:43 -0400
+Message-Id: <20191025135603.25093-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
-References: <20191025135505.24762-1-sashal@kernel.org>
+In-Reply-To: <20191025135603.25093-1-sashal@kernel.org>
+References: <20191025135603.25093-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -48,125 +48,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit 819be8108fded0b9e710bbbf81193e52f7bab2f7 ]
+[ Upstream commit c7a42eb49212f93a800560662d17d5293960d3c3 ]
 
-This patch is to fix a NULL-ptr deref in selinux_socket_connect_helper:
+We need a similar fix for ipv6 as Commit 0761680d5215 ("net: ipv4: fix
+listify ip_rcv_finish in case of forwarding") does for ipv4.
 
-  [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
-  [...] RIP: 0010:selinux_socket_connect_helper+0x94/0x460
-  [...] Call Trace:
-  [...]  selinux_sctp_bind_connect+0x16a/0x1d0
-  [...]  security_sctp_bind_connect+0x58/0x90
-  [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
-  [...]  sctp_sf_do_asconf+0x785/0x980 [sctp]
-  [...]  sctp_do_sm+0x175/0x5a0 [sctp]
-  [...]  sctp_assoc_bh_rcv+0x285/0x5b0 [sctp]
-  [...]  sctp_backlog_rcv+0x482/0x910 [sctp]
-  [...]  __release_sock+0x11e/0x310
-  [...]  release_sock+0x4f/0x180
-  [...]  sctp_accept+0x3f9/0x5a0 [sctp]
-  [...]  inet_accept+0xe7/0x720
+This issue can be reprocuded by syzbot since Commit 323ebb61e32b ("net:
+use listified RX for handling GRO_NORMAL skbs") on net-next. The call
+trace was:
 
-It was caused by that the 'newsk' sk_socket was not set before going to
-security sctp hook when processing asconf chunk with SCTP_PARAM_ADD_IP
-or SCTP_PARAM_SET_PRIMARY:
+  kernel BUG at include/linux/skbuff.h:2225!
+  RIP: 0010:__skb_pull include/linux/skbuff.h:2225 [inline]
+  RIP: 0010:skb_pull+0xea/0x110 net/core/skbuff.c:1902
+  Call Trace:
+    sctp_inq_pop+0x2f1/0xd80 net/sctp/inqueue.c:202
+    sctp_endpoint_bh_rcv+0x184/0x8d0 net/sctp/endpointola.c:385
+    sctp_inq_push+0x1e4/0x280 net/sctp/inqueue.c:80
+    sctp_rcv+0x2807/0x3590 net/sctp/input.c:256
+    sctp6_rcv+0x17/0x30 net/sctp/ipv6.c:1049
+    ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
+    ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
+    NF_HOOK include/linux/netfilter.h:305 [inline]
+    NF_HOOK include/linux/netfilter.h:299 [inline]
+    ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
+    dst_input include/net/dst.h:442 [inline]
+    ip6_sublist_rcv_finish+0x98/0x1e0 net/ipv6/ip6_input.c:84
+    ip6_list_rcv_finish net/ipv6/ip6_input.c:118 [inline]
+    ip6_sublist_rcv+0x80c/0xcf0 net/ipv6/ip6_input.c:282
+    ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:316
+    __netif_receive_skb_list_ptype net/core/dev.c:5049 [inline]
+    __netif_receive_skb_list_core+0x5fc/0x9d0 net/core/dev.c:5097
+    __netif_receive_skb_list net/core/dev.c:5149 [inline]
+    netif_receive_skb_list_internal+0x7eb/0xe60 net/core/dev.c:5244
+    gro_normal_list.part.0+0x1e/0xb0 net/core/dev.c:5757
+    gro_normal_list net/core/dev.c:5755 [inline]
+    gro_normal_one net/core/dev.c:5769 [inline]
+    napi_frags_finish net/core/dev.c:5782 [inline]
+    napi_gro_frags+0xa6a/0xea0 net/core/dev.c:5855
+    tun_get_user+0x2e98/0x3fa0 drivers/net/tun.c:1974
+    tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2020
 
-  inet_accept()->
-    sctp_accept():
-      lock_sock():
-          lock listening 'sk'
-                                          do_softirq():
-                                            sctp_rcv():  <-- [1]
-                                                asconf chunk arrives and
-                                                enqueued in 'sk' backlog
-      sctp_sock_migrate():
-          set asoc's sk to 'newsk'
-      release_sock():
-          sctp_backlog_rcv():
-            lock 'newsk'
-            sctp_process_asconf()  <-- [2]
-            unlock 'newsk'
-    sock_graft():
-        set sk_socket  <-- [3]
-
-As it shows, at [1] the asconf chunk would be put into the listening 'sk'
-backlog, as accept() was holding its sock lock. Then at [2] asconf would
-get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
-'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
-would deref it, then kernel crashed.
-
-Here to fix it by adding the chunk to sk_backlog until newsk sk_socket is
-set when .accept() is done.
-
-Note that sk->sk_socket can be NULL when the sock is closed, so SOCK_DEAD
-flag is also needed to check in sctp_newsk_ready().
-
-Thanks to Ondrej for reviewing the code.
-
-Fixes: d452930fd3b9 ("selinux: Add SCTP support")
-Reported-by: Ying Xu <yinxu@redhat.com>
-Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Fixes: d8269e2cbf90 ("net: ipv6: listify ipv6_rcv() and ip6_rcv_finish()")
+Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
+Reported-by: syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com
+Reported-by: syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Acked-by: Edward Cree <ecree@solarflare.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/sctp/sctp.h |  5 +++++
- net/sctp/input.c        | 12 +++++++++---
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ net/ipv6/ip6_input.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-index 5d60f13d2347b..3ab5c6bbb90bd 100644
---- a/include/net/sctp/sctp.h
-+++ b/include/net/sctp/sctp.h
-@@ -610,4 +610,9 @@ static inline __u32 sctp_min_frag_point(struct sctp_sock *sp, __u16 datasize)
- 	return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
+index 2b6d430223837..acf0749ee5bbd 100644
+--- a/net/ipv6/ip6_input.c
++++ b/net/ipv6/ip6_input.c
+@@ -80,8 +80,10 @@ static void ip6_sublist_rcv_finish(struct list_head *head)
+ {
+ 	struct sk_buff *skb, *next;
+ 
+-	list_for_each_entry_safe(skb, next, head, list)
++	list_for_each_entry_safe(skb, next, head, list) {
++		skb_list_del_init(skb);
+ 		dst_input(skb);
++	}
  }
  
-+static inline bool sctp_newsk_ready(const struct sock *sk)
-+{
-+	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
-+}
-+
- #endif /* __net_sctp_h__ */
-diff --git a/net/sctp/input.c b/net/sctp/input.c
-index 1008cdc44dd61..156e24ad54ea4 100644
---- a/net/sctp/input.c
-+++ b/net/sctp/input.c
-@@ -243,7 +243,7 @@ int sctp_rcv(struct sk_buff *skb)
- 		bh_lock_sock(sk);
- 	}
- 
--	if (sock_owned_by_user(sk)) {
-+	if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
- 		if (sctp_add_backlog(sk, skb)) {
- 			bh_unlock_sock(sk);
- 			sctp_chunk_free(chunk);
-@@ -321,7 +321,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
- 		local_bh_disable();
- 		bh_lock_sock(sk);
- 
--		if (sock_owned_by_user(sk)) {
-+		if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
- 			if (sk_add_backlog(sk, skb, sk->sk_rcvbuf))
- 				sctp_chunk_free(chunk);
- 			else
-@@ -336,7 +336,13 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
- 		if (backloged)
- 			return 0;
- 	} else {
--		sctp_inq_push(inqueue, chunk);
-+		if (!sctp_newsk_ready(sk)) {
-+			if (!sk_add_backlog(sk, skb, sk->sk_rcvbuf))
-+				return 0;
-+			sctp_chunk_free(chunk);
-+		} else {
-+			sctp_inq_push(inqueue, chunk);
-+		}
- 	}
- 
- done:
+ static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
 -- 
 2.20.1
 
