@@ -2,128 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4976FE4FF0
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 17:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 115B0E5008
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 17:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440614AbfJYPS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 11:18:58 -0400
-Received: from mail-eopbgr80058.outbound.protection.outlook.com ([40.107.8.58]:49637
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2439061AbfJYPS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 11:18:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QnEJhXJb/14TDAkZqpcjA/uwYZFZYw0lVlKYMH488o8VohfTcgNJUPpAeD3+53DPSnH+KafGjCGQR89gyWh0D76XTFSbJYOhAuFhRAwmMmOsXbT5kjxjZOkgj1E7DPWSJ12tVZn5UUKLK4BJ9d3FGjQ/f1iAJzWpyxPkC574HJueSECOpbLG3pifEDvhH5ABF6e0OjmnLfEOfGr1k2hzdwxQZNqiv4wcX5mdZGgg7RFn8gb2m9H+N0cHa+fnraaZiEgxka90txzlr4HoBRXPilyTcLMsaZp21ZSiyw3oVqJv9uPsxNY7F3nU2+k1pfPPcq9olA1Lljp9RSzsqmOa/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BEanw8AvG+JgSfm1pCupCEmmE5+hjnlOTc0sOAepWYE=;
- b=Enwyh+3HQjy45MsizvwgM79OJ6vHa2ie0IhIYKmWY3qxMgmplZvAQeADUjvwKMK125WCFMMW+YtMXlapoTCJU/CxYCzl5gJ7mIibtsmK65pk1gIpGdhLo66FoO7KPm4lxqhkxzT5fhPF7zXgsJpuLaLM6/7oSA8HgnlcxZaS88H4oXhoKetFlR8Peqz/0che+KUWDERFFrTAlMtD1Sy6HpKKGsuoMghvM4E99FKypDWZNqTJp1rI1pZKalp3Phuqjql9BzYioJzXTaNvM6G+woucWhiYPGzkG/mbsyCHGxNGgjrwypbdjhCGwZwKRAYf+GEW3T/SctLWUDTv8CrcbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BEanw8AvG+JgSfm1pCupCEmmE5+hjnlOTc0sOAepWYE=;
- b=Vv1SoXLcY5XyuiMx0Be5pA4Co6fI8oxbxqeTLLYAVZgKN2S+2ZexaO65Um9BKUjfRHyaKMdTOshoVpFWbnn6BEfmytxT4soHFBsumtl6w6jG5p2Ae23JnSz747xiYI6cIK+nSjz5vCLbHrLugxiqVeJT3WOho4XUN+entjJEZ7k=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB5135.eurprd05.prod.outlook.com (20.178.11.225) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.23; Fri, 25 Oct 2019 15:18:54 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2387.021; Fri, 25 Oct 2019
- 15:18:54 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mleitner@redhat.com" <mleitner@redhat.com>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6doLtcAgAAEK4CAABWjgIABIOyAgACCuACAAA2RAIABdMWAgAAIhYCAAAMgAIAAAvYA
-Date:   Fri, 25 Oct 2019 15:18:53 +0000
-Message-ID: <vbfsgngua3p.fsf@mellanox.com>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
- <vbf7e4vy5nq.fsf@mellanox.com>
- <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
- <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
- <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
- <vbftv7wuciu.fsf@mellanox.com>
- <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
- <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
-In-Reply-To: <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0398.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:f::26) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 906e1a2f-e54e-4545-5e1a-08d7595ea5ac
-x-ms-traffictypediagnostic: VI1PR05MB5135:|VI1PR05MB5135:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5135B3C58C4CDB78F97676C2AD650@VI1PR05MB5135.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 02015246A9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(136003)(366004)(376002)(189003)(199004)(446003)(316002)(6916009)(4001150100001)(2906002)(476003)(2616005)(4744005)(36756003)(99286004)(11346002)(25786009)(478600001)(52116002)(76176011)(86362001)(81166006)(81156014)(66066001)(229853002)(256004)(54906003)(8676002)(6436002)(6512007)(6246003)(66476007)(66946007)(64756008)(66556008)(8936002)(4326008)(66446008)(71190400001)(386003)(7736002)(53546011)(3846002)(6116002)(102836004)(486006)(6506007)(71200400001)(26005)(5660300002)(305945005)(186003)(14454004)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5135;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /S73FQgrumcyISU5Z5gbDcupfpCrCsWeHunNTJmkVMyNrDzqyx/VV/MiYp0JAoyl3CcSr/zbPHC3QH4aLqj0ydW6RMhzqyqyCpJ/ICfKDsiF19QOMMt56PzP3e7J3h/DV94o62DZXibStu4rO598spt0hwA/CXchIleQkODCHMkN9Be75QyIk/0SlbkCg96H/o/uh+QZt0FJYsvxpPJJahpWSDIAgfpelsY3XGazA0O1hUO+ammkDe7StFbtlLtwmoeQ47+KVVFKENXvsV6Jkad5YXAAXa8K4K8QZd1YU9RMqpvBdMeobf9pjpau2pY84H8M85wF535uLz1ECeql1CFx7gdnsag2fQQ37yXEYa2E6UJL8A44lCY2K68btiiODEnAAucnUujJY5Pep4+G/+qhQo1Uq6EJTqUziqx6fdu85F3LbYxov9/jziJk7aOo
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2440676AbfJYPXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 11:23:50 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:36234 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731226AbfJYPXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 11:23:50 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d17so3823727qto.3
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 08:23:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DvzfwhnT9IaTjdbhIECvSA2O6h/kQqSoCdxHpSMfKL8=;
+        b=b1ax0PypiHfa6GFOhzhWswUR1cZ9Qqm+5+rVHk7all6IqG8GOJIKVRgraEC1VheSNX
+         okWQod43VDuV4qmflG4SzpFNgsuOLt56Syg7qdXAMkyCQTOj6XuwcOKnI0zcRpnfmu1G
+         7PMhjVF0PbbMu8kFLXd6J8nCZ/g2eDSfuFICme+8l72pZPhwCMuwDga+DpSrn2Y2rvcs
+         ThI6Pc2GsYxBw11HCf3kTLx8dhPcWkr0KML1KwhnS18Ex1sa6Suiv7ao6bnWj3tMFdZb
+         jpBkJPZKQylf6JlpuHkvwVCBsUELjNrtq1ho5TV3fhRAAmLgMtNoGtmecyd4aHzXQXNA
+         gAyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DvzfwhnT9IaTjdbhIECvSA2O6h/kQqSoCdxHpSMfKL8=;
+        b=iyFrWX95pj321tVpumKr/v1poVIVnc60vPFPxnDCCxFeE12XDuHiR0WviYNgUiA5Yj
+         8oHgAuA0+BPyII8tUTccNV78Xm1rgzluP8tc/ykBoJA5cmCl269n5ccgbQZzP97GCQyo
+         uLcR6Tg1jWoXmeIH4HE/y0eIweRUhgH1mGh76jDslCkgM0qhSUhqc/ZxHCiVBPHHegCF
+         a2O+Ft8ppD0odTdAtZdGlKxFIbXvPlAhBm+gKfj5pFOy6UEQF4BvOqJYOf/99Ad7Ivpl
+         +iqSiJKAOwE3Wr2LyukalWGbGvtN10PRnowQ632ixRmv+qtpLiFqJ1iiyI3qM+e5TmNc
+         rnVA==
+X-Gm-Message-State: APjAAAUljADkEuRyhFwQNBZy0NkzKJ1aYVMEApJG4dZB0p8lcGYJo8+b
+        29SgbYd2sNI3S5Fyx/FwPbLOwPU502oKc+eJN0Y=
+X-Google-Smtp-Source: APXvYqyFbogcHLhZAT8V73SjVQ89to5YLztaNNqryqZAmO2HwZ4ypdjmrnL5SEEJeF0TKcuzUYNJhbgvR3FlzyS5Oyw=
+X-Received: by 2002:a0c:abcc:: with SMTP id k12mr3785851qvb.101.1572017028266;
+ Fri, 25 Oct 2019 08:23:48 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 906e1a2f-e54e-4545-5e1a-08d7595ea5ac
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2019 15:18:53.9518
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Rp0vdFfeJzlY5RBhEmf5dpysUaB9vGA3/Q5YOKZwxoidaCg/y76rJk54Klv+S+2apsamI1yTstVNqnWegiEMtg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5135
+References: <1571580702-18476-1-git-send-email-martinvarghesenokia@gmail.com>
+ <20191024204740.GA74879@gmail.com> <20191025023400.GA2564@martin-VirtualBox>
+In-Reply-To: <20191025023400.GA2564@martin-VirtualBox>
+From:   William Tu <u9012063@gmail.com>
+Date:   Fri, 25 Oct 2019 08:23:07 -0700
+Message-ID: <CALDO+SbQiAU3VY3osJhXgOPGJYVXnTuHLONqZedcykEqEqwHUg@mail.gmail.com>
+Subject: Re: [PATCH v2] Change in Openvswitch to support MPLS label depth of 3
+ in ingress direction
+To:     Martin Varghese <martinvarghesenokia@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        pravin shelar <pshelar@ovn.org>,
+        David Miller <davem@davemloft.net>, scott.drennan@nokia.com,
+        Jiri Benc <jbenc@redhat.com>, martin.varghese@nokia.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 24, 2019 at 7:34 PM Martin Varghese
+<martinvarghesenokia@gmail.com> wrote:
+>
+> On Thu, Oct 24, 2019 at 01:47:40PM -0700, William Tu wrote:
+> > On Sun, Oct 20, 2019 at 07:41:42PM +0530, Martin Varghese wrote:
+> > > From: Martin Varghese <martin.varghese@nokia.com>
+> > >
+> > > The openvswitch was supporting a MPLS label depth of 1 in the ingress
+> > > direction though the userspace OVS supports a max depth of 3 labels.
+> > > This change enables openvswitch module to support a max depth of
+> > > 3 labels in the ingress.
+> > >
+> >
+> > Hi Martin,
+> > Thanks for the patch. I have one comment below.
+> >
+> > > Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> > > ---
+> > > Changes in v2
+> > >    - Moved MPLS count validation from datapath to configuration.
+> > >    - Fixed set mpls function.
+> > >
+> > >  net/openvswitch/actions.c      |  2 +-
+> > >  net/openvswitch/flow.c         | 20 ++++++++++-----
+> > >  net/openvswitch/flow.h         |  9 ++++---
+> > >  net/openvswitch/flow_netlink.c | 57 +++++++++++++++++++++++++++++++++---------
+> > >  4 files changed, 66 insertions(+), 22 deletions(-)
+> > >
+> > > diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+> > > index 3572e11..f3125d7 100644
+> > > --- a/net/openvswitch/actions.c
+> > > +++ b/net/openvswitch/actions.c
+> > > @@ -199,7 +199,7 @@ static int set_mpls(struct sk_buff *skb, struct sw_flow_key *flow_key,
+> > >     if (err)
+> > >             return err;
+> > >
+> > > -   flow_key->mpls.top_lse = lse;
+> > > +   flow_key->mpls.lse[0] = lse;
+> > >     return 0;
+> > >  }
+> > >
+> > > diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+> > > index dca3b1e..c101355 100644
+> > > --- a/net/openvswitch/flow.c
+> > > +++ b/net/openvswitch/flow.c
+> > > @@ -699,27 +699,35 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
+> > >                     memset(&key->ipv4, 0, sizeof(key->ipv4));
+> > >             }
+> > >     } else if (eth_p_mpls(key->eth.type)) {
+> > > -           size_t stack_len = MPLS_HLEN;
+> > > +           u8 label_count = 1;
+> > >
+> > > +           memset(&key->mpls, 0, sizeof(key->mpls));
+> > >             skb_set_inner_network_header(skb, skb->mac_len);
+> > >             while (1) {
+> > >                     __be32 lse;
+> > >
+> > > -                   error = check_header(skb, skb->mac_len + stack_len);
+> > > +                   error = check_header(skb, skb->mac_len +
+> > > +                                        label_count * MPLS_HLEN);
+> > >                     if (unlikely(error))
+> > >                             return 0;
+> > >
+> > >                     memcpy(&lse, skb_inner_network_header(skb), MPLS_HLEN);
+> > >
+> > > -                   if (stack_len == MPLS_HLEN)
+> > > -                           memcpy(&key->mpls.top_lse, &lse, MPLS_HLEN);
+> > > +                   if (label_count <= MPLS_LABEL_DEPTH)
+> > > +                           memcpy(&key->mpls.lse[label_count - 1], &lse,
+> > > +                                  MPLS_HLEN);
+> > >
+> > > -                   skb_set_inner_network_header(skb, skb->mac_len + stack_len);
+> > > +                   skb_set_inner_network_header(skb, skb->mac_len +
+> > > +                                                label_count * MPLS_HLEN);
+> > >                     if (lse & htonl(MPLS_LS_S_MASK))
+> > >                             break;
+> > >
+> > > -                   stack_len += MPLS_HLEN;
+> > > +                   label_count++;
+> > >             }
+> > > +           if (label_count > MPLS_LABEL_DEPTH)
+> > > +                   label_count = MPLS_LABEL_DEPTH;
+> > > +
+> > > +           key->mpls.num_labels_mask = GENMASK(label_count - 1, 0);
+> >
+> > >     } else if (key->eth.type == htons(ETH_P_IPV6)) {
+> > >             int nh_len;             /* IPv6 Header + Extensions */
+> > >
+> > > diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
+> > > index 3e2cc22..d9eccbe 100644
+> > > --- a/net/openvswitch/flow.h
+> > > +++ b/net/openvswitch/flow.h
+> > > @@ -30,6 +30,7 @@ enum sw_flow_mac_proto {
+> > >     MAC_PROTO_ETHERNET,
+> > >  };
+> > >  #define SW_FLOW_KEY_INVALID        0x80
+> > > +#define MPLS_LABEL_DEPTH       3
+> > >
+> > >  /* Store options at the end of the array if they are less than the
+> > >   * maximum size. This allows us to get the benefits of variable length
+> > > @@ -85,9 +86,6 @@ struct sw_flow_key {
+> > >                                      */
+> > >     union {
+> > >             struct {
+> > > -                   __be32 top_lse; /* top label stack entry */
+> > > -           } mpls;
+> > > -           struct {
+> > >                     u8     proto;   /* IP protocol or lower 8 bits of ARP opcode. */
+> > >                     u8     tos;         /* IP ToS. */
+> > >                     u8     ttl;         /* IP TTL/hop limit. */
+> > > @@ -135,6 +133,11 @@ struct sw_flow_key {
+> > >                             } nd;
+> > >                     };
+> > >             } ipv6;
+> > > +           struct {
+> > > +                   u32 num_labels_mask;    /* labels present bitmap of effective length MPLS_LABEL_DEPTH */
+> >
+> > Why using a bitmap here? why not just num_labels?
+> > I saw that you have to convert it using hweight_long()
+> > to num_labels a couple places below.
+> >
+>
+> num_labels will not work when used in flow_key for flow match.
+> Assume a case where a packet with 3 labels are received and the configured
+> flow has a match condition for the top most label only.Num_labels cannot be
+> used in that case
+>
+> My original patch was with num_labels.And we found that it will not work for
+> the above case.
+> Jbenc@redhat.com proposed the idea of num_labels_mask.
+>
 
-On Fri 25 Oct 2019 at 18:08, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> On 2019-10-25 10:57 a.m., Jamal Hadi Salim wrote:
->> On 2019-10-25 10:26 a.m., Vlad Buslov wrote:
->
->>
->> I think i understand what you are saying. Let me take a quick
->> look at the code and get back to you.
->>
->
-> How about something like this (not even compile tested)..
->
-> Yes, that init is getting uglier... over time if we
-> are going to move things into shared attributes we will
-> need to introduce a new data struct to pass to ->init()
->
-> cheers,
-> jamal
-
-The problem with this approach is that it only works when actions are
-created through act API, and not when they are created together with
-filter by cls API which doesn't expect or parse TCA_ROOT. That is why I
-wanted to have something in tcf_action_init_1() which is called by both
-of them.
+Thank you. Now I understand.
+William
