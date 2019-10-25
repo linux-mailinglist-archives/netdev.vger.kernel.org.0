@@ -2,166 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2072DE5420
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 21:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E91E9E543D
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 21:21:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbfJYTLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 15:11:40 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:32698 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725811AbfJYTLj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 15:11:39 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9PJAYxI008602;
-        Fri, 25 Oct 2019 12:11:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=ixPHeucQRcIVsxhzploSBJRXghgFftytSMNEKRKxGFI=;
- b=hJZ3D6oya2nRihlV/Fdf38bcOP2OY8N+uCUrYWNgoudyTQaS5J7dMQYb1j+XE/e/9Xjx
- bl/EV5G3kFBLkLOBLFyeNZ+MX1EzlAkvWKRW/4hox8YSLT6BomIHHsp+PRcWjIwHBTuB
- z6AH9yBsFYasbFnvQNlEHg6mme3ywTfBof8= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vv228smrp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 25 Oct 2019 12:11:23 -0700
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 25 Oct 2019 12:11:22 -0700
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 25 Oct 2019 12:11:22 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hGlyEQJtPa5r9nJeFOI6mbzxq5ZemSH2gVPGBxD8WFxQ9RlIlykBaCemf0Vzvn00UTplvIywJN1qQqAcmgSURO/J6WuEPpnDz/pU+7gI49PTk85vpqL9iwzTUfs8zhfRu2c2qeEZwvJ7LinuX/qLOifx09qYrO2uQuAn58YeLfNjanRsxbLgLAUILkZWI80V/1mdmVe7B87Vg0Q6XsYcm6sasUpEqId99Y3RKEtHEPQLjy0yBBEey1y2mWtyYlrZTEDkwCFN9atmLioWZDl80eebRGFlvxs+4/tLxtOrAAkQ8cuy9XG7IuKT983uRWgsrDnPYsKGI9ZcfViLnGxV8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ixPHeucQRcIVsxhzploSBJRXghgFftytSMNEKRKxGFI=;
- b=ijDiSjWSYooD+X2050KrXvHB6chwv375d3gVvO6MT7ZraeAkKIx5mKEVsu9r6xL1gKJAR2PiCsfAY0TAI0XFxohwgtXcUTnI/5mboLayRZqiKZPBGVlXbCC9soqkSwob2gFjPDMCF7uJxY0Opthm/HNLcZ9PFh8NXKFG7KA3xbSTqdIUVjchxfPP9W0f3ja3FnUGVofZfNRudFL/xJByQqG9v03zSpMnG0DRkQA3vOV3LAI/ZztObJgzLxuKVShUL3pM/uqznOlLs7bHSfyFGk3dr13vgZkJI0H9vy+4oA9D8IdkMs9EadH7s7Rmy0bWDS+wm6X8ItjVa19MQHFUUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ixPHeucQRcIVsxhzploSBJRXghgFftytSMNEKRKxGFI=;
- b=enutPeY5QKsavHp7vEudbcr8geyXlPIMmVQlu1E3p0epguVdWB1ujd9KQs5vEJk5Frl2SQegGENm39pOQGjf0BYgeepTZ4u0vHu69/ym3kxe7VOhCde850fOHd48hgq89VuDMmQ8QUTT3UDIbnDOB3M68WLdglcUKX3J8t7spEs=
-Received: from BY5PR15MB3636.namprd15.prod.outlook.com (52.133.252.91) by
- BY5PR15MB3730.namprd15.prod.outlook.com (10.255.245.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.24; Fri, 25 Oct 2019 19:11:21 +0000
-Received: from BY5PR15MB3636.namprd15.prod.outlook.com
- ([fe80::7887:4f9c:70df:285c]) by BY5PR15MB3636.namprd15.prod.outlook.com
- ([fe80::7887:4f9c:70df:285c%4]) with mapi id 15.20.2387.021; Fri, 25 Oct 2019
- 19:11:21 +0000
-From:   Vijay Khemka <vijaykhemka@fb.com>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>
-Subject: Re: [PATCH] net: ethernet: ftgmac100: Fix DMA coherency issue with SW
- checksum
-Thread-Topic: [PATCH] net: ethernet: ftgmac100: Fix DMA coherency issue with
- SW checksum
-Thread-Index: AQHVit6c66EdjV5oI0is+zg9ZLMyJKdrROEA
-Date:   Fri, 25 Oct 2019 19:11:21 +0000
-Message-ID: <672FAA6F-5DA7-4AA7-A049-96DF82CEEA18@fb.com>
-References: <572a7d510ace5e5a5ba41c4774d330133291c82a.camel@kernel.crashing.org>
-In-Reply-To: <572a7d510ace5e5a5ba41c4774d330133291c82a.camel@kernel.crashing.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [2620:10d:c090:200::1:a02c]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9c774634-8443-4056-6a1d-08d7597f1ef2
-x-ms-traffictypediagnostic: BY5PR15MB3730:
-x-microsoft-antispam-prvs: <BY5PR15MB37307AACDD3047E108D77E08DD650@BY5PR15MB3730.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:644;
-x-forefront-prvs: 02015246A9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(376002)(366004)(396003)(346002)(189003)(199004)(256004)(99286004)(14444005)(478600001)(8676002)(305945005)(81156014)(81166006)(7736002)(6116002)(66556008)(91956017)(186003)(11346002)(2906002)(66476007)(2616005)(486006)(476003)(64756008)(66446008)(66946007)(46003)(446003)(76116006)(6512007)(76176011)(33656002)(102836004)(6506007)(6246003)(36756003)(6486002)(14454004)(71190400001)(71200400001)(25786009)(54906003)(110136005)(86362001)(4326008)(229853002)(316002)(5660300002)(6436002)(8936002);DIR:OUT;SFP:1102;SCL:1;SRVR:BY5PR15MB3730;H:BY5PR15MB3636.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fZOcvYlrA4OFXJS1BReVQf9UCJuZ6zS1t0dCtoi2LHOQraWoDqAZoTsXWYMmD5fEly75p96BXWvcymnFYfedpRSnIyf/9UhIo/ssmb3ZlBmih+PSz+bKdfWrD+x5I32UXA4qSZO68g2jU95iEkypTtERx3s8EcgqmIZvZMalFAZHysmVNWdFgPHOaJKW3TVb/EjqvYXkIiEGMsvpyZAGlGNES2kAtamw76cuqnQhGOp75GjdS7D4JPi2oEPGnjCb/xKZP7TedUpb2N5LHHVELrZf7ytZqLOVKazyMcVUzFWSKZ5oOR4hBL7t6K3kkNof0CnpPkNIR2/EpZV+HqBXeRQXvnvFfuP8IvBsOhJZJjOA3ptbUWk2+a/COsUn8q4HC2UXGQb51F00y/yV8z5c6elGbdGo1O+gnUjzDCVrBYxi4hmtKgt3qe1EvPbc3V8d
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <49B366D14C875646BD4F08CFAC54D4E8@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726991AbfJYTU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 15:20:59 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:44949 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726265AbfJYTU6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 15:20:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572031257;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=b4AyKgmfE6msyrF0y4ZsMwrJUW61YLBt7GbBRKBk9yQ=;
+        b=Z4ggmgeUstdoIIEkl6OVJG2ubNEEa1nEz5Dto33Yyc+zvmaU9iU2S45QBrWb3CaBfY0Z3J
+        dmLv41M82MgVpcjvPceBEfj+Fh9yoCrDpOFfvR68GRWykPkUpjzA0VxAUrWfQllLawyQUG
+        ZBfngPgXUT74rpOZREvb5RZ8no9thPM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-12-RryGXTfiNLSng7gCOjlTfA-1; Fri, 25 Oct 2019 15:20:50 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4DF7480183E;
+        Fri, 25 Oct 2019 19:20:48 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8614660167;
+        Fri, 25 Oct 2019 19:20:34 +0000 (UTC)
+Date:   Fri, 25 Oct 2019 15:20:31 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
+Subject: Re: [PATCH ghak90 V7 08/21] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20191025192031.ul3yjy2q57vsvier@madcap2.tricolour.ca>
+References: <cover.1568834524.git.rgb@redhat.com>
+ <0850eaa785e2ff30c8c4818fd53e9544b34ed884.1568834524.git.rgb@redhat.com>
+ <CAHC9VhQoFFaQACbV4QHG_NPUCJu1+V=x3=i-yyGjbsYq8HuPtg@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c774634-8443-4056-6a1d-08d7597f1ef2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2019 19:11:21.0386
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: p5qG5MX0oeaHB3FLSzx34RBLaNgrCtC1tpbxGqMbzT3JZ+HCPt7w0SHpijSjwyj2z1NS4wbL8DLqcE4Tz41jww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR15MB3730
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-25_09:2019-10-25,2019-10-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
- clxscore=1015 mlxlogscore=998 phishscore=0 malwarescore=0 bulkscore=0
- spamscore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
- priorityscore=1501 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1910250173
-X-FB-Internal: deliver
+In-Reply-To: <CAHC9VhQoFFaQACbV4QHG_NPUCJu1+V=x3=i-yyGjbsYq8HuPtg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: RryGXTfiNLSng7gCOjlTfA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TG9va3MgZ29vZCB0byBtZS4gQW5kIEkgaGF2ZSB0ZXN0ZWQgaXQuIEl0IHdvcmtzIHBlcmZlY3Rs
-eSBmaW5lLg0KDQpSZXZpZXdlZC1ieTogVmlqYXkgS2hlbWthIDx2aWpheWtoZW1rYUBmYi5jb20+
-DQpUZXN0ZWQtYnk6IFZpamF5IEtoZW1rYSA8dmlqYXlraGVta2FAZmIuY29tPg0KDQrvu79PbiAx
-MC8yNC8xOSwgNzo0NyBQTSwgIkJlbmphbWluIEhlcnJlbnNjaG1pZHQiIDxiZW5oQGtlcm5lbC5j
-cmFzaGluZy5vcmc+IHdyb3RlOg0KDQogICAgV2UgYXJlIGNhbGxpbmcgdGhlIGNoZWNrc3VtIGhl
-bHBlciBhZnRlciB0aGUgZG1hX21hcF9zaW5nbGUoKQ0KICAgIGNhbGwgdG8gbWFwIHRoZSBwYWNr
-ZXQuIFRoaXMgaXMgaW5jb3JyZWN0IGFzIHRoZSBjaGVja3N1bW1pbmcNCiAgICBjb2RlIHdpbGwg
-dG91Y2ggdGhlIHBhY2tldCBmcm9tIHRoZSBDUFUuIFRoaXMgbWVhbnMgdGhlIGNhY2hlDQogICAg
-d29uJ3QgYmUgcHJvcGVybHkgZmx1c2hlcyAob3IgdGhlIGJvdW5jZSBidWZmZXJpbmcgd2lsbCBs
-ZWF2ZQ0KICAgIHVzIHdpdGggdGhlIHVubW9kaWZpZWQgcGFja2V0IHRvIERNQSkuDQogICAgDQog
-ICAgVGhpcyBtb3ZlcyB0aGUgY2FsY3VsYXRpb24gb2YgdGhlIGNoZWNrc3VtICYgdmxhbiB0YWdz
-IHRvDQogICAgYmVmb3JlIHRoZSBETUEgbWFwcGluZy4NCiAgICANCiAgICBUaGlzIGFsc28gaGFz
-IHRoZSBzaWRlIGVmZmVjdCBvZiBmaXhpbmcgYW5vdGhlciBidWc6IElmIHRoZQ0KICAgIGNoZWNr
-c3VtIGhlbHBlciBmYWlscywgd2UgZ290byAiZHJvcCIgdG8gZHJvcCB0aGUgcGFja2V0LCB3aGlj
-aA0KICAgIHdpbGwgbm90IHVubWFwIHRoZSBETUEgbWFwcGluZy4NCiAgICANCiAgICBTaWduZWQt
-b2ZmLWJ5OiBCZW5qYW1pbiBIZXJyZW5zY2htaWR0IDxiZW5oQGtlcm5lbC5jcmFzaGluZy5vcmc+
-DQogICAgRml4ZXM6IDA1NjkwZDYzM2YzMCBmdGdtYWMxMDA6IFVwZ3JhZGUgdG8gTkVUSUZfRl9I
-V19DU1VNDQogICAgQ0M6IHN0YWJsZUB2Z2VyLmtlcm5lbC5vcmcgW3Y0LjEyK10NCiAgICAtLS0N
-CiAgICAgZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYyB8IDI1ICsrKysr
-KysrKysrKy0tLS0tLS0tLS0tLQ0KICAgICAxIGZpbGUgY2hhbmdlZCwgMTIgaW5zZXJ0aW9ucygr
-KSwgMTMgZGVsZXRpb25zKC0pDQogICAgDQogICAgZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0
-aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5
-L2Z0Z21hYzEwMC5jDQogICAgaW5kZXggOWI3YWY5NGE0MGJiLi45NmU5NTY1ZjFlMDggMTAwNjQ0
-DQogICAgLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMxMDAuYw0KICAg
-ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMNCiAgICBAQCAt
-NzI3LDYgKzcyNywxOCBAQCBzdGF0aWMgbmV0ZGV2X3R4X3QgZnRnbWFjMTAwX2hhcmRfc3RhcnRf
-eG1pdChzdHJ1Y3Qgc2tfYnVmZiAqc2tiLA0KICAgICAJICovDQogICAgIAluZnJhZ3MgPSBza2Jf
-c2hpbmZvKHNrYiktPm5yX2ZyYWdzOw0KICAgICANCiAgICArCS8qIFNldHVwIEhXIGNoZWNrc3Vt
-bWluZyAqLw0KICAgICsJY3N1bV92bGFuID0gMDsNCiAgICArCWlmIChza2ItPmlwX3N1bW1lZCA9
-PSBDSEVDS1NVTV9QQVJUSUFMICYmDQogICAgKwkgICAgIWZ0Z21hYzEwMF9wcmVwX3R4X2NzdW0o
-c2tiLCAmY3N1bV92bGFuKSkNCiAgICArCQlnb3RvIGRyb3A7DQogICAgKw0KICAgICsJLyogQWRk
-IFZMQU4gdGFnICovDQogICAgKwlpZiAoc2tiX3ZsYW5fdGFnX3ByZXNlbnQoc2tiKSkgew0KICAg
-ICsJCWNzdW1fdmxhbiB8PSBGVEdNQUMxMDBfVFhERVMxX0lOU19WTEFOVEFHOw0KICAgICsJCWNz
-dW1fdmxhbiB8PSBza2Jfdmxhbl90YWdfZ2V0KHNrYikgJiAweGZmZmY7DQogICAgKwl9DQogICAg
-Kw0KICAgICAJLyogR2V0IGhlYWRlciBsZW4gKi8NCiAgICAgCWxlbiA9IHNrYl9oZWFkbGVuKHNr
-Yik7DQogICAgIA0KICAgIEBAIC03NTMsMTkgKzc2NSw2IEBAIHN0YXRpYyBuZXRkZXZfdHhfdCBm
-dGdtYWMxMDBfaGFyZF9zdGFydF94bWl0KHN0cnVjdCBza19idWZmICpza2IsDQogICAgIAlpZiAo
-bmZyYWdzID09IDApDQogICAgIAkJZl9jdGxfc3RhdCB8PSBGVEdNQUMxMDBfVFhERVMwX0xUUzsN
-CiAgICAgCXR4ZGVzLT50eGRlczMgPSBjcHVfdG9fbGUzMihtYXApOw0KICAgIC0NCiAgICAtCS8q
-IFNldHVwIEhXIGNoZWNrc3VtbWluZyAqLw0KICAgIC0JY3N1bV92bGFuID0gMDsNCiAgICAtCWlm
-IChza2ItPmlwX3N1bW1lZCA9PSBDSEVDS1NVTV9QQVJUSUFMICYmDQogICAgLQkgICAgIWZ0Z21h
-YzEwMF9wcmVwX3R4X2NzdW0oc2tiLCAmY3N1bV92bGFuKSkNCiAgICAtCQlnb3RvIGRyb3A7DQog
-ICAgLQ0KICAgIC0JLyogQWRkIFZMQU4gdGFnICovDQogICAgLQlpZiAoc2tiX3ZsYW5fdGFnX3By
-ZXNlbnQoc2tiKSkgew0KICAgIC0JCWNzdW1fdmxhbiB8PSBGVEdNQUMxMDBfVFhERVMxX0lOU19W
-TEFOVEFHOw0KICAgIC0JCWNzdW1fdmxhbiB8PSBza2Jfdmxhbl90YWdfZ2V0KHNrYikgJiAweGZm
-ZmY7DQogICAgLQl9DQogICAgLQ0KICAgICAJdHhkZXMtPnR4ZGVzMSA9IGNwdV90b19sZTMyKGNz
-dW1fdmxhbik7DQogICAgIA0KICAgICAJLyogTmV4dCBkZXNjcmlwdG9yICovDQogICAgDQogICAg
-DQogICAgDQoNCg==
+On 2019-10-10 20:39, Paul Moore wrote:
+> On Wed, Sep 18, 2019 at 9:25 PM Richard Guy Briggs <rgb@redhat.com> wrote=
+:
+> > Add audit container identifier support to the action of signalling the
+> > audit daemon.
+> >
+> > Since this would need to add an element to the audit_sig_info struct,
+> > a new record type AUDIT_SIGNAL_INFO2 was created with a new
+> > audit_sig_info2 struct.  Corresponding support is required in the
+> > userspace code to reflect the new record request and reply type.
+> > An older userspace won't break since it won't know to request this
+> > record type.
+> >
+> > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > ---
+> >  include/linux/audit.h       |  7 +++++++
+> >  include/uapi/linux/audit.h  |  1 +
+> >  kernel/audit.c              | 28 ++++++++++++++++++++++++++++
+> >  kernel/audit.h              |  1 +
+> >  security/selinux/nlmsgtab.c |  1 +
+> >  5 files changed, 38 insertions(+)
+> >
+> > diff --git a/include/linux/audit.h b/include/linux/audit.h
+> > index 0c18d8e30620..7b640c4da4ee 100644
+> > --- a/include/linux/audit.h
+> > +++ b/include/linux/audit.h
+> > @@ -23,6 +23,13 @@ struct audit_sig_info {
+> >         char            ctx[0];
+> >  };
+> >
+> > +struct audit_sig_info2 {
+> > +       uid_t           uid;
+> > +       pid_t           pid;
+> > +       u64             cid;
+> > +       char            ctx[0];
+> > +};
+> > +
+> >  struct audit_buffer;
+> >  struct audit_context;
+> >  struct inode;
+> > diff --git a/include/uapi/linux/audit.h b/include/uapi/linux/audit.h
+> > index 4ed080f28b47..693ec6e0288b 100644
+> > --- a/include/uapi/linux/audit.h
+> > +++ b/include/uapi/linux/audit.h
+> > @@ -72,6 +72,7 @@
+> >  #define AUDIT_SET_FEATURE      1018    /* Turn an audit feature on or =
+off */
+> >  #define AUDIT_GET_FEATURE      1019    /* Get which features are enabl=
+ed */
+> >  #define AUDIT_CONTAINER_OP     1020    /* Define the container id and =
+info */
+> > +#define AUDIT_SIGNAL_INFO2     1021    /* Get info auditd signal sende=
+r */
+> >
+> >  #define AUDIT_FIRST_USER_MSG   1100    /* Userspace messages mostly un=
+interesting to kernel */
+> >  #define AUDIT_USER_AVC         1107    /* We filter this differently *=
+/
+> > diff --git a/kernel/audit.c b/kernel/audit.c
+> > index adfb3e6a7f0c..df3db29f5a8a 100644
+> > --- a/kernel/audit.c
+> > +++ b/kernel/audit.c
+> > @@ -125,6 +125,7 @@ struct audit_net {
+> >  kuid_t         audit_sig_uid =3D INVALID_UID;
+> >  pid_t          audit_sig_pid =3D -1;
+> >  u32            audit_sig_sid =3D 0;
+> > +u64            audit_sig_cid =3D AUDIT_CID_UNSET;
+> >
+> >  /* Records can be lost in several ways:
+> >     0) [suppressed in audit_alloc]
+> > @@ -1094,6 +1095,7 @@ static int audit_netlink_ok(struct sk_buff *skb, =
+u16 msg_type)
+> >         case AUDIT_ADD_RULE:
+> >         case AUDIT_DEL_RULE:
+> >         case AUDIT_SIGNAL_INFO:
+> > +       case AUDIT_SIGNAL_INFO2:
+> >         case AUDIT_TTY_GET:
+> >         case AUDIT_TTY_SET:
+> >         case AUDIT_TRIM:
+> > @@ -1257,6 +1259,7 @@ static int audit_receive_msg(struct sk_buff *skb,=
+ struct nlmsghdr *nlh)
+> >         struct audit_buffer     *ab;
+> >         u16                     msg_type =3D nlh->nlmsg_type;
+> >         struct audit_sig_info   *sig_data;
+> > +       struct audit_sig_info2  *sig_data2;
+> >         char                    *ctx =3D NULL;
+> >         u32                     len;
+> >
+> > @@ -1516,6 +1519,30 @@ static int audit_receive_msg(struct sk_buff *skb=
+, struct nlmsghdr *nlh)
+> >                                  sig_data, sizeof(*sig_data) + len);
+> >                 kfree(sig_data);
+> >                 break;
+> > +       case AUDIT_SIGNAL_INFO2:
+> > +               len =3D 0;
+> > +               if (audit_sig_sid) {
+> > +                       err =3D security_secid_to_secctx(audit_sig_sid,=
+ &ctx, &len);
+> > +                       if (err)
+> > +                               return err;
+> > +               }
+> > +               sig_data2 =3D kmalloc(sizeof(*sig_data2) + len, GFP_KER=
+NEL);
+> > +               if (!sig_data2) {
+> > +                       if (audit_sig_sid)
+> > +                               security_release_secctx(ctx, len);
+> > +                       return -ENOMEM;
+> > +               }
+> > +               sig_data2->uid =3D from_kuid(&init_user_ns, audit_sig_u=
+id);
+> > +               sig_data2->pid =3D audit_sig_pid;
+> > +               if (audit_sig_sid) {
+> > +                       memcpy(sig_data2->ctx, ctx, len);
+> > +                       security_release_secctx(ctx, len);
+> > +               }
+> > +               sig_data2->cid =3D audit_sig_cid;
+> > +               audit_send_reply(skb, seq, AUDIT_SIGNAL_INFO2, 0, 0,
+> > +                                sig_data2, sizeof(*sig_data2) + len);
+> > +               kfree(sig_data2);
+> > +               break;
+> >         case AUDIT_TTY_GET: {
+> >                 struct audit_tty_status s;
+> >                 unsigned int t;
+> > @@ -2384,6 +2411,7 @@ int audit_signal_info(int sig, struct task_struct=
+ *t)
+> >                 else
+> >                         audit_sig_uid =3D uid;
+> >                 security_task_getsecid(current, &audit_sig_sid);
+> > +               audit_sig_cid =3D audit_get_contid(current);
+> >         }
+>=20
+> I've been wondering something as I've been working my way through
+> these patches and this patch seems like a good spot to discuss this
+> ... Now that we have the concept of an audit container ID "lifetime"
+> in the kernel, when do we consider the ID gone?  Is it when the last
+> process in the container exits, or is it when we generate the last
+> audit record which could possibly contain the audit container ID?
+> This patch would appear to support the former, but if we wanted the
+> latter we would need to grab a reference to the audit container ID
+> struct so it wouldn't "die" on us before we could emit the signal info
+> record.
+
+Are you concerned with the availability of the data when the audit
+signal info record is generated, when the kernel last deals with a
+particular contid or when userspace thinks there will be no more
+references to it?
+
+I've got a bit of a dilemma with this one...
+
+In fact, the latter situation you describe isn't a concern at present to
+be able to deliver the information since the value is copied into the
+audit signal global internal variables before the signalling task dies
+and the audit signal info record is created from those copied (cached)
+values when requested from userspace.
+
+So the issue raised above I don't think is a problem.  However, patch 18
+(which wasn't reviewed because it was a patch to a number of preceeding
+patches) changes the reporting approach to give a chain of nested
+contids which isn't reflected in the same level of reporting for the
+audit signal patch/mechanism.  Solving this is a bit more complex.  We
+could have the audit signal internal caching store a pointer to the
+relevant container object and bump its refcount to ensure it doesn't
+vanish until we are done with it, but the audit signal info binary
+record format already has a variable length due to the selinux context
+at the end of that struct and adding a second variable length element to
+it would make it more complicated (but not impossible) to handle.
+
+> paul moore
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
+
