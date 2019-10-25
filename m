@@ -2,88 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3CA8E41ED
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 05:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097BAE4205
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 05:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391590AbfJYDAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 23:00:32 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35885 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391491AbfJYDAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 23:00:32 -0400
-Received: by mail-qt1-f195.google.com with SMTP id d17so1177960qto.3;
-        Thu, 24 Oct 2019 20:00:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=bHKg0eWYJUG+Fc0Bsd1BI5X7R49sURnA3NHe9WQ3b+0=;
-        b=hIOkYKdj/E6UqW3l+irtpwTBkKav5BgxHrES69zvqKWbcvXlvLQxv5pNJU0qk+aqUg
-         /56TmvrxwF6mxKKfENkpgjkAwphuwn02YKLw1mIYLNFMOj4vrtP7cIStNTvKWIkfpwfF
-         x0m5x9+P3vXUXx/Sj6JOgS1AWDjYF18x7QEscHMi16o7ikzhuPshZZr0/Sh+np9K13yK
-         0RiuUZKf1TJICf/Jdt0sooNEOJv/+XSBDdrRis7lFd4lukKxW7XDNarrogyiRjas8s4u
-         CxVQGqInpmNX1fV64DpuTxhQxpzXMv8KYI1ySxBQkDMDcqyRGu58dn/OaAnQiqypfgyS
-         p7FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=bHKg0eWYJUG+Fc0Bsd1BI5X7R49sURnA3NHe9WQ3b+0=;
-        b=Z1fm+YVb11aM3/e3Evx+2iFciOqYEVsZxMFM/M0eGdPjA4gRx0fBINVVYv5uU+I3JC
-         sHDxx+vKmLoqYzsUfml0hSf8QQeN5MRrmZobYcKzQZMGSyuB9PwXz7Hw6hL3BYAOIfu8
-         U6K8NEcIvT3XWdH4UdaqW9Tnoeftvk9yYwu/r/cqNYI/Sa9udnMAGQZLWD9aXDhLM3es
-         6HCcPJLabWQ6jGKryNQfLtCK0Xcw+N5m40F+xqslqI3l0B7pgMfOmx1tReuPyVljKN9E
-         h0p4xq1j/yRZP+Hs0OSsyje+81nS1uA7+nhrvz+uxY9AZbWgBio3HKXIH3GutU+Bpqcq
-         TrqQ==
-X-Gm-Message-State: APjAAAUetsGdPOrRcrjkyjF+5xHgAnxDzU35E/jXIbnIgqkQO0cmdfyl
-        Dr0kG3t28ZpQ55skvfc1LHmCLeaw74q7oxvnEhxOvdPf
-X-Google-Smtp-Source: APXvYqwA0AZDXPh7XF66dkZhEP/sa/kwrKxwHK75YFio7ixiuKHZvEpEHuOCAfx1LgZGGouzG131WS25qpfyN62fQbs=
-X-Received: by 2002:ac8:108e:: with SMTP id a14mr912956qtj.171.1571972430698;
- Thu, 24 Oct 2019 20:00:30 -0700 (PDT)
+        id S2404022AbfJYDRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 23:17:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42198 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727899AbfJYDRx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 24 Oct 2019 23:17:53 -0400
+Received: from localhost (unknown [38.98.37.137])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 33B4E2166E;
+        Fri, 25 Oct 2019 03:17:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571973472;
+        bh=QuOpuTEqghbYbDPXBE0/lyFy+emlMYI74JUhK1F3hPs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iZYuuaJcMIZ5wXZd8dRwccdFHUfkYYxyC3E8cKNjjyDRG9kywRVxGAjiUp/4oUgEy
+         DuYo+JNscpJ5ueO5X+GjXcjVp5hFaD/2T/iBAJWY4u1wGPNY5uLYZU95kX386Wu/6D
+         WfsW4X044JCqufauc4LP2vJzftBYMKUW/Kw8Go2Q=
+Date:   Thu, 24 Oct 2019 23:17:01 -0400
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Samuil Ivanov <samuil.ivanovbg@gmail.com>
+Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Staging: qlge: Rename of function prefix ql_ to qlge_
+Message-ID: <20191025031701.GA535333@kroah.com>
+References: <20191024212941.28149-1-samuil.ivanovbg@gmail.com>
 MIME-Version: 1.0
-References: <157192269744.234778.11792009511322809519.stgit@toke.dk> <157192269965.234778.8724720580046668597.stgit@toke.dk>
-In-Reply-To: <157192269965.234778.8724720580046668597.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 24 Oct 2019 20:00:18 -0700
-Message-ID: <CAEf4BzaXcNwYzkpsAmbVb10KaaSVcoci=qcVi4QcdU3oVGAR7A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/4] libbpf: Store map pin path and status in
- struct bpf_map
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191024212941.28149-1-samuil.ivanovbg@gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 6:11 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> Support storing and setting a pin path in struct bpf_map, which can be us=
-ed
-> for automatic pinning. Also store the pin status so we can avoid attempts
-> to re-pin a map that has already been pinned (or reused from a previous
-> pinning).
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+On Fri, Oct 25, 2019 at 12:29:38AM +0300, Samuil Ivanov wrote:
+> In terms of namespace, the driver uses either qlge_, ql_ (used by
+> other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
+> clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
+> prefix.
+> 
+> So I renamed three functions to the prefered namespace "qlge",
+> and updated the occurrences in the driver.
+> 
+> Samuil Ivanov (3):
+>   Staging: qlge: Rename prefix of a function to qlge
+>   Staging: qlge: Rename prefix of a function to qlge
+>   Staging: qlge: Rename prefix of a function to qlge
 
-Looks good!
+You sent 3 patches that do different things, yet have the same identical
+subject line :(
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Please fix up and resend the series.
 
->  tools/lib/bpf/libbpf.c   |  115 ++++++++++++++++++++++++++++++++++++----=
-------
->  tools/lib/bpf/libbpf.h   |    3 +
->  tools/lib/bpf/libbpf.map |    3 +
->  3 files changed, 97 insertions(+), 24 deletions(-)
->
+thanks,
+
+greg k-h
