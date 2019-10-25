@@ -2,382 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B2AEE4082
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 02:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E2DE4098
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 02:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733174AbfJYASR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 20:18:17 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1980 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732982AbfJYASR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 20:18:17 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9P0HuV9030361
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 17:18:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=NZiG9O33fntUJ/c7gNBy33V3qrchqSEVaLCmusy7340=;
- b=XxI8g7MGyJI8bGqqfpWk+tDappx4n/aGEYCkl5Y5UKhLWp1gweYQafewlaj2xLoQJnWe
- ZPMhziNAIYzYsBT3sE+IKzDLJt0VA1AglWVc96YAtVJjQPh5j0ngHdtwms7KXxaNwO6n
- jPBQB4Fiz+PERqDAH6dT88dbr9erW6zRzoQ= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vtyd6xak3-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 17:18:15 -0700
-Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 24 Oct 2019 17:18:13 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id A3D3B2943218; Thu, 24 Oct 2019 17:18:11 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] bpf: Prepare btf_ctx_access for non raw_tp use case
-Date:   Thu, 24 Oct 2019 17:18:11 -0700
-Message-ID: <20191025001811.1718491-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1730752AbfJYA2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 20:28:19 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:50575 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728445AbfJYA2T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 20:28:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571963297;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u/ZOKafSqcbNjqFdVZXED/KJXRu4OrJLpD9UUq91aWI=;
+        b=SMp3ZpI5ar/bAtyGT1SHFnpN7PAvHCa7qdb3grBS77MWuLkRIlzbwbtC8U9YW7Ci8uaVH1
+        mslVVlVfXewOqnnJXTi8cegffA2Igu1IU+jp5VugcJHii1VYG4H0kQSGBDVn/xh/6LsAdW
+        XqVmhfssZgbFNL+sTPW9KV1fMwXfPEE=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-135-Gbj-evKwO7Gl0nJZfPYZ5A-1; Thu, 24 Oct 2019 20:28:07 -0400
+Received: by mail-lf1-f72.google.com with SMTP id d11so115002lfj.3
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 17:28:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f/h48WimOkxwuWTFiUpPnQ+AjLWqpj9bNjA3x7P2LxY=;
+        b=PerPOmR+QwCo8r8c9uqWFRMZlZFUGwgTC5euh/T4mA+NkecNLwyVwDSJkTW5GTBgEd
+         9xGdrpLLBnxDoeg757Wc5PSmstRnwR0hfHghCk8vkLBBV1yj8KXSeoPuLN52R8RXcCjt
+         TrRwqlGzNXT9z1s9pj6UAPeUrICq4Th1UNpzbdpf+oR5aJCo9n9EGX1+7zeakmJWczTZ
+         qQ9Pt0HFCVAFaa26qTKzmoJ+YNpRGfxQMYHW6ruVlhIa9kku3eWQF65COff9Wkwu3flP
+         SspD3evPV1d8IXUXhsAPtvte4/4p+wsS2eIS3Q+Yce+B6iLSWMz8eXWcP6imB3o0FEAx
+         DJ5Q==
+X-Gm-Message-State: APjAAAUPs26LFzt1cN6CEywjF8EGjzRNRFM32qYASVrGTfW9CI/8tS8N
+        rrwqQUqf5zkvZ364og7lF1K+dg6OSUdyq47wqKZOqRGXmPvrRA+Hn0jCFvJChRaqcY3BAQ9WF9y
+        8uVA53jyb3i+bqPICsi6uLbjm9PFiyP8Q
+X-Received: by 2002:a19:22c4:: with SMTP id i187mr501155lfi.152.1571963286002;
+        Thu, 24 Oct 2019 17:28:06 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqym7fXeLAILTlm6k1G46RUJImDXCll6Wg9ol9S+dM0yK8R9moFI+ZU3df0ukjTnsrZDz4UD/s6A4arXkCsnm3c=
+X-Received: by 2002:a19:22c4:: with SMTP id i187mr501098lfi.152.1571963284768;
+ Thu, 24 Oct 2019 17:28:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-24_13:2019-10-23,2019-10-24 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- impostorscore=0 bulkscore=0 adultscore=0 mlxscore=0 suspectscore=9
- phishscore=0 spamscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910250002
-X-FB-Internal: deliver
+References: <20191021200948.23775-1-mcroce@redhat.com> <20191021200948.23775-4-mcroce@redhat.com>
+ <20191023100009.GC8732@netronome.com> <CAGnkfhxg1sXkmiNS-+H184omQaKbp_+_Sy7Vi-9W9qLwGGPU6g@mail.gmail.com>
+ <20191023175522.GB28355@netronome.com>
+In-Reply-To: <20191023175522.GB28355@netronome.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Fri, 25 Oct 2019 02:27:28 +0200
+Message-ID: <CAGnkfhyEB0JU7LPZfYxHiKkryrkzoOs3Krumt1Lph+Q=qx1s8A@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/4] flow_dissector: extract more ICMP information
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Paul Blakey <paulb@mellanox.com>,
+        LKML <linux-kernel@vger.kernel.org>
+X-MC-Unique: Gbj-evKwO7Gl0nJZfPYZ5A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch makes a few changes to btf_ctx_access() to prepare
-it for non raw_tp use case where the attach_btf_id is not
-necessary a BTF_KIND_TYPEDEF.
+On Wed, Oct 23, 2019 at 7:55 PM Simon Horman <simon.horman@netronome.com> w=
+rote:
+>
+> On Wed, Oct 23, 2019 at 12:53:37PM +0200, Matteo Croce wrote:
+> > On Wed, Oct 23, 2019 at 12:00 PM Simon Horman
+> > <simon.horman@netronome.com> wrote:
+> > > On Mon, Oct 21, 2019 at 10:09:47PM +0200, Matteo Croce wrote:
+> > > > +     switch (ih->type) {
+> > > > +     case ICMP_ECHO:
+> > > > +     case ICMP_ECHOREPLY:
+> > > > +     case ICMP_TIMESTAMP:
+> > > > +     case ICMP_TIMESTAMPREPLY:
+> > > > +     case ICMPV6_ECHO_REQUEST:
+> > > > +     case ICMPV6_ECHO_REPLY:
+> > > > +             /* As we use 0 to signal that the Id field is not pre=
+sent,
+> > > > +              * avoid confusion with packets without such field
+> > > > +              */
+> > > > +             key_icmp->id =3D ih->un.echo.id ? : 1;
+> > >
+> > > Its not obvious to me why the kernel should treat id-zero as a specia=
+l
+> > > value if it is not special on the wire.
+> > >
+> > > Perhaps a caller who needs to know if the id is present can
+> > > check the ICMP type as this code does, say using a helper.
+> > >
+> >
+> > Hi,
+> >
+> > The problem is that the 0-0 Type-Code pair identifies the echo replies.
+> > So instead of adding a bool is_present value I hardcoded the info in
+> > the ID field making it always non null, at the expense of a possible
+> > collision, which is harmless.
+>
+> Sorry, I feel that I'm missing something here.
+>
+> My reading of the code above is that for the cased types above
+> (echo, echo reply, ...) the id is present. Otherwise it is not.
+> My idea would be to put a check for those types in a helper.
+>
 
-It moves the "btf_trace_" prefix check and typedef-follow logic to a new
-function "check_attach_btf_id()" which is called only once during
-bpf_check().  btf_ctx_access() only operates on a BTF_KIND_FUNC_PROTO
-type now. That should also be more efficient since it is done only
-one instead of every-time check_ctx_access() is called.
+Something like icmp_has_id(), I like it.
 
-"check_attach_btf_id()" needs to find the func_proto type from
-the attach_btf_id.  It needs to store the result into the
-newly added prog->aux->attach_func_proto.  func_proto
-btf type has no name, so a proper name should be stored into
-"attach_func_name" also.
+> I do agree that the override you have used is harmless enough
+> in the context of the only user of the id which appears in
+> the following patch of this series.
+>
+>
+> Some other things I noticed in this patch on a second pass:
+>
+> * I think you can remove the icmp field from struct flow_dissector_key_po=
+rts
+>
 
-v2:
-- Move the "btf_trace_" check to an earlier verifier phase (Alexei)
+You mean flow_dissector_key_icmp maybe?
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- include/linux/bpf.h      |  5 +++
- include/linux/btf.h      | 31 +++++++++++++++++
- kernel/bpf/btf.c         | 73 +++++++---------------------------------
- kernel/bpf/syscall.c     |  4 +--
- kernel/bpf/verifier.c    | 52 +++++++++++++++++++++++++++-
- kernel/trace/bpf_trace.c |  2 ++
- 6 files changed, 103 insertions(+), 64 deletions(-)
+> * I think that adding icmp to struct flow_keys should be accompanied by
+>   adding ICMP to flow_keys_dissector_symmetric_keys. But I think this is
+>   not desirable outside of the bonding use-case and rather
+>   the bonding driver should define its own structures that
+>   includes the keys it needs - basically copies of struct flow_keys
+>   and flow_keys_dissector_symmetric_keys with some modifications.
+>
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 2c2c29b49845..171be30fe0ae 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -392,6 +392,11 @@ struct bpf_prog_aux {
- 	u32 attach_btf_id; /* in-kernel BTF type id to attach to */
- 	bool verifier_zext; /* Zero extensions has been inserted by verifier. */
- 	bool offload_requested;
-+	bool attach_btf_trace; /* true if attaching to BTF-enabled raw tp */
-+	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
-+	const struct btf_type *attach_func_proto;
-+	/* function name for valid attach_btf_id */
-+	const char *attach_func_name;
- 	struct bpf_prog **func;
- 	void *jit_data; /* JIT specific data. arch dependent */
- 	struct latch_tree_node ksym_tnode;
-diff --git a/include/linux/btf.h b/include/linux/btf.h
-index 55d43bc856be..9dee00859c5f 100644
---- a/include/linux/btf.h
-+++ b/include/linux/btf.h
-@@ -5,6 +5,7 @@
- #define _LINUX_BTF_H 1
- 
- #include <linux/types.h>
-+#include <uapi/linux/btf.h>
- 
- struct btf;
- struct btf_member;
-@@ -53,6 +54,36 @@ bool btf_member_is_reg_int(const struct btf *btf, const struct btf_type *s,
- int btf_find_spin_lock(const struct btf *btf, const struct btf_type *t);
- bool btf_type_is_void(const struct btf_type *t);
- 
-+static inline bool btf_type_is_ptr(const struct btf_type *t)
-+{
-+	return BTF_INFO_KIND(t->info) == BTF_KIND_PTR;
-+}
-+
-+static inline bool btf_type_is_int(const struct btf_type *t)
-+{
-+	return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
-+}
-+
-+static inline bool btf_type_is_enum(const struct btf_type *t)
-+{
-+	return BTF_INFO_KIND(t->info) == BTF_KIND_ENUM;
-+}
-+
-+static inline bool btf_type_is_typedef(const struct btf_type *t)
-+{
-+	return BTF_INFO_KIND(t->info) == BTF_KIND_TYPEDEF;
-+}
-+
-+static inline bool btf_type_is_func(const struct btf_type *t)
-+{
-+	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC;
-+}
-+
-+static inline bool btf_type_is_func_proto(const struct btf_type *t)
-+{
-+	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC_PROTO;
-+}
-+
- #ifdef CONFIG_BPF_SYSCALL
- const struct btf_type *btf_type_by_id(const struct btf *btf, u32 type_id);
- const char *btf_name_by_offset(const struct btf *btf, u32 offset);
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index f7557af39756..128d89601d73 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -336,16 +336,6 @@ static bool btf_type_is_fwd(const struct btf_type *t)
- 	return BTF_INFO_KIND(t->info) == BTF_KIND_FWD;
- }
- 
--static bool btf_type_is_func(const struct btf_type *t)
--{
--	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC;
--}
--
--static bool btf_type_is_func_proto(const struct btf_type *t)
--{
--	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC_PROTO;
--}
--
- static bool btf_type_nosize(const struct btf_type *t)
- {
- 	return btf_type_is_void(t) || btf_type_is_fwd(t) ||
-@@ -377,16 +367,6 @@ static bool btf_type_is_array(const struct btf_type *t)
- 	return BTF_INFO_KIND(t->info) == BTF_KIND_ARRAY;
- }
- 
--static bool btf_type_is_ptr(const struct btf_type *t)
--{
--	return BTF_INFO_KIND(t->info) == BTF_KIND_PTR;
--}
--
--static bool btf_type_is_int(const struct btf_type *t)
--{
--	return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
--}
--
- static bool btf_type_is_var(const struct btf_type *t)
- {
- 	return BTF_INFO_KIND(t->info) == BTF_KIND_VAR;
-@@ -3442,54 +3422,27 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info)
- {
-+	const struct btf_type *t = prog->aux->attach_func_proto;
-+	const char *tname = prog->aux->attach_func_name;
- 	struct bpf_verifier_log *log = info->log;
--	u32 btf_id = prog->aux->attach_btf_id;
- 	const struct btf_param *args;
--	const struct btf_type *t;
--	const char prefix[] = "btf_trace_";
--	const char *tname;
- 	u32 nr_args, arg;
- 
--	if (!btf_id)
--		return true;
--
--	if (IS_ERR(btf_vmlinux)) {
--		bpf_log(log, "btf_vmlinux is malformed\n");
--		return false;
--	}
--
--	t = btf_type_by_id(btf_vmlinux, btf_id);
--	if (!t || BTF_INFO_KIND(t->info) != BTF_KIND_TYPEDEF) {
--		bpf_log(log, "btf_id is invalid\n");
--		return false;
--	}
--
--	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
--	if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
--		bpf_log(log, "btf_id points to wrong type name %s\n", tname);
--		return false;
--	}
--	tname += sizeof(prefix) - 1;
--
--	t = btf_type_by_id(btf_vmlinux, t->type);
--	if (!btf_type_is_ptr(t))
--		return false;
--	t = btf_type_by_id(btf_vmlinux, t->type);
--	if (!btf_type_is_func_proto(t))
--		return false;
--
- 	if (off % 8) {
--		bpf_log(log, "raw_tp '%s' offset %d is not multiple of 8\n",
-+		bpf_log(log, "func '%s' offset %d is not multiple of 8\n",
- 			tname, off);
- 		return false;
- 	}
- 	arg = off / 8;
- 	args = (const struct btf_param *)(t + 1);
--	/* skip first 'void *__data' argument in btf_trace_##name typedef */
--	args++;
--	nr_args = btf_type_vlen(t) - 1;
-+	nr_args = btf_type_vlen(t);
-+	if (prog->aux->attach_btf_trace) {
-+		/* skip first 'void *__data' argument in btf_trace_##name typedef */
-+		args++;
-+		nr_args--;
-+	}
- 	if (arg >= nr_args) {
--		bpf_log(log, "raw_tp '%s' doesn't have %d-th argument\n",
-+		bpf_log(log, "func '%s' doesn't have %d-th argument\n",
- 			tname, arg);
- 		return false;
- 	}
-@@ -3503,7 +3456,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		return true;
- 	if (!btf_type_is_ptr(t)) {
- 		bpf_log(log,
--			"raw_tp '%s' arg%d '%s' has type %s. Only pointer access is allowed\n",
-+			"func '%s' arg%d '%s' has type %s. Only pointer access is allowed\n",
- 			tname, arg,
- 			__btf_name_by_offset(btf_vmlinux, t->name_off),
- 			btf_kind_str[BTF_INFO_KIND(t->info)]);
-@@ -3526,11 +3479,11 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		t = btf_type_by_id(btf_vmlinux, t->type);
- 	if (!btf_type_is_struct(t)) {
- 		bpf_log(log,
--			"raw_tp '%s' arg%d type %s is not a struct\n",
-+			"func '%s' arg%d type %s is not a struct\n",
- 			tname, arg, btf_kind_str[BTF_INFO_KIND(t->info)]);
- 		return false;
- 	}
--	bpf_log(log, "raw_tp '%s' arg%d has btf_id %d type %s '%s'\n",
-+	bpf_log(log, "func '%s' arg%d has btf_id %d type %s '%s'\n",
- 		tname, arg, info->btf_id, btf_kind_str[BTF_INFO_KIND(t->info)],
- 		__btf_name_by_offset(btf_vmlinux, t->name_off));
- 	return true;
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 16ea3c0db4f6..ff5225759553 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1848,9 +1848,7 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
- 			goto out_put_prog;
- 		}
- 		/* raw_tp name is taken from type name instead */
--		tp_name = kernel_type_name(prog->aux->attach_btf_id);
--		/* skip the prefix */
--		tp_name += sizeof("btf_trace_") - 1;
-+		tp_name = prog->aux->attach_func_name;
- 	} else {
- 		if (strncpy_from_user(buf,
- 				      u64_to_user_ptr(attr->raw_tracepoint.name),
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 556e82f8869b..c59778c0fc4d 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -9372,6 +9372,52 @@ static void print_verification_stats(struct bpf_verifier_env *env)
- 		env->peak_states, env->longest_mark_read_walk);
- }
- 
-+static int check_attach_btf_id(struct bpf_verifier_env *env)
-+{
-+	struct bpf_prog *prog = env->prog;
-+	u32 btf_id = prog->aux->attach_btf_id;
-+	const struct btf_type *t;
-+	const char *tname;
-+
-+	if (prog->type == BPF_PROG_TYPE_RAW_TRACEPOINT && btf_id) {
-+		const char prefix[] = "btf_trace_";
-+
-+		t = btf_type_by_id(btf_vmlinux, btf_id);
-+		if (!t) {
-+			verbose(env, "attach_btf_id %u is invalid\n", btf_id);
-+			return -EINVAL;
-+		}
-+		if (!btf_type_is_typedef(t)) {
-+			verbose(env, "attach_btf_id %u is not a typedef\n",
-+				btf_id);
-+			return -EINVAL;
-+		}
-+		tname = btf_name_by_offset(btf_vmlinux, t->name_off);
-+		if (!tname || strncmp(prefix, tname, sizeof(prefix) - 1)) {
-+			verbose(env, "attach_btf_id %u points to wrong type name %s\n",
-+				btf_id, tname);
-+			return -EINVAL;
-+		}
-+		tname += sizeof(prefix) - 1;
-+		t = btf_type_by_id(btf_vmlinux, t->type);
-+		if (!btf_type_is_ptr(t))
-+			/* should never happen in valid vmlinux build */
-+			return -EINVAL;
-+		t = btf_type_by_id(btf_vmlinux, t->type);
-+		if (!btf_type_is_func_proto(t))
-+			/* should never happen in valid vmlinux build */
-+			return -EINVAL;
-+
-+		/* remember two read only pointers that are valid for
-+		 * the life time of the kernel
-+		 */
-+		prog->aux->attach_func_name = tname;
-+		prog->aux->attach_func_proto = t;
-+		prog->aux->attach_btf_trace = true;
-+	}
-+	return 0;
-+}
-+
- int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
- 	      union bpf_attr __user *uattr)
- {
-@@ -9435,9 +9481,13 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
- 		/* Either gcc or pahole or kernel are broken. */
- 		verbose(env, "in-kernel BTF is malformed\n");
- 		ret = PTR_ERR(btf_vmlinux);
--		goto err_unlock;
-+		goto skip_full_check;
- 	}
- 
-+	ret = check_attach_btf_id(env);
-+	if (ret)
-+		goto skip_full_check;
-+
- 	env->strict_alignment = !!(attr->prog_flags & BPF_F_STRICT_ALIGNMENT);
- 	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))
- 		env->strict_alignment = true;
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index c3240898cc44..571c25d60710 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1080,6 +1080,8 @@ static bool raw_tp_prog_is_valid_access(int off, int size,
- 		return false;
- 	if (off % size != 0)
- 		return false;
-+	if (!prog->aux->attach_btf_id)
-+		return true;
- 	return btf_ctx_access(off, size, type, prog, info);
- }
- 
--- 
-2.17.1
+Just flow_keys_dissector_symmetric_keys or flow_keys_dissector_keys too?
+Anyway, it seems that the bonding uses the flow_dissector only when
+using encap2+3 or encap3+4 hashing, which means decap some known
+tunnels (mpls and gre and pppoe I think).
+For the other modes it just uses iph_to_flow_copy_v{4,6}addrs() and
+skb_flow_get_ports(), so maybe we can avoid copying that structure.
+
+> * Modifying flow_keys_have_l4 affects the behaviour of
+>   skb_get_hash_flowi6() but there is not a corresponding update
+>   to flow_keys_have_l4(). I didn't look at all the other call sites
+>   but it strikes me that this is a) a wide-spread behavioural change
+>   and b) is perhaps not required for the bond-use case.
+
+Right, no need to alter flow_keys_have_l4() at all.
+
+I'll send a v2 with those suggestions.
+
+Thanks,
+--
+Matteo Croce
+per aspera ad upstream
 
