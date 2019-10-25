@@ -2,92 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35921E4FB2
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:58:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF89BE4FAB
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440548AbfJYO6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:58:14 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:50496 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437476AbfJYO6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:58:14 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9PEmvJN049894;
-        Fri, 25 Oct 2019 14:58:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=8akM3Zo80mA5RvA40djKzIs5p/MWfdT9Yde14KUY/UA=;
- b=iEocMA83Pj8LY9Zd/2uc485IY6Do1XL8o5fnGFNh6ZbuhiOoUwpYh1jHzaXkUQs4Fskj
- 1E2ojgsrHBjs87M84qgW/pobc6G4LL+U85T1N3ES/eIqmzm2bygs0nkZMjDZuGiBj7eR
- DR1X9Oc6+sLhixukV7bgw6teFqA/PVwiAlz82pOtVlwqv0UnQQslSBUkKIrAKHV1EfJ2
- frLP4pLCGZkU97m34GfbujQKnpo70a/6zXS08MGWMlVf/Ss6/VBlqZteF3YdHaT8Vu44
- hWxCE7FVp8jvvFDxA/KFUp8aMSfNijkQpuRlz9wlKKuAosXZODxbLukGp11dcmbYLvX5 gQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 2vqswu3rss-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Oct 2019 14:58:07 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9PEnCUH167954;
-        Fri, 25 Oct 2019 14:56:06 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2vunbmjw9d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Oct 2019 14:56:06 +0000
-Received: from abhmp0021.oracle.com (abhmp0021.oracle.com [141.146.116.27])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9PEu6Qq000476;
-        Fri, 25 Oct 2019 14:56:06 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 25 Oct 2019 14:56:05 +0000
-Date:   Fri, 25 Oct 2019 17:55:54 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Samuil Ivanov <samuil.ivanovbg@gmail.com>
-Cc:     gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        netdev@vger.kernel.org, GR-Linux-NIC-Dev@marvell.com,
-        linux-kernel@vger.kernel.org, manishc@marvell.com
-Subject: Re: [PATCH 1/3] Staging: qlge: Rename prefix of a function to qlge
-Message-ID: <20191025145554.GB7244@kadam>
-References: <20191024212941.28149-1-samuil.ivanovbg@gmail.com>
- <20191024212941.28149-2-samuil.ivanovbg@gmail.com>
- <20191025101705.GM24678@kadam>
- <20191025142842.GA10016@sivanov-pc>
+        id S2440540AbfJYO5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:57:09 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:38995 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437476AbfJYO5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:57:08 -0400
+Received: by mail-io1-f67.google.com with SMTP id y12so2752113ioa.6
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 07:57:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xDzR+PZpROKL3+5LhbwoWb/bjK6m+YTscKDXD4yOOd0=;
+        b=Z5smjl8qk/qgHVdcpBkShzuIpQqPsHnI8q+Y1yF8hKxWZscjqZoZk+JfKygxG0ckH7
+         w9oVFwIV3UP1pf+qq9g5MUi0XNB5DaXZZUEM3diYo1F+FDU2AzXem0x47T8J5+bLTVCU
+         D/ZJ39XNAz/gDMSCVFJxWpoUEV6GJBTT12N9BDYT2xf3M2lk6WypS2lRYw6usrpTwTzJ
+         kgMUgIQifTYL5CUebGVjgwrIwSq9G1F3ysDy+VUsEEH06F1DGF7+HPuYhjIwcmRMz8qI
+         SpNglqW94C1WNKHc52RoADs9Zwjt1fWFSta3OqAJrRG0lDWjs8aS1kU+ASU+hk885vzK
+         wz0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xDzR+PZpROKL3+5LhbwoWb/bjK6m+YTscKDXD4yOOd0=;
+        b=CzERYseRrVLmrvIl3tYCsOj9TqqaJzzh+GufwGzK7XQ0nBfl0MUt+fIPX2j50Kt2zV
+         79L7tb6OO2nurMw/uH7nD9M0N21S6cAPEVHfQo+cptGCVVhJLIASv9jKvNTdd+ZDrHAy
+         93UQdHIMExiiy4cm+GuLLxaZq2FpI5IafRx5CkaP6niJERWS+ZxKpfqwHU8Ad7VKmSjK
+         RRyIzZl/oVGMt+NRldNXni0BUY43zZO+HK7+bI4dlSCcUowmDkL5/D+fsw42D67iVFS3
+         9Drp2VhNZP7FLftdCR6ZBB1XsPWJh9wr4cJNOoLdBkpO6nHRrJ8h70oDxVo5U0e7bken
+         kIIA==
+X-Gm-Message-State: APjAAAVC52f4/CLeLV2itwewnJqHl8AWeQhI7wAQf6mMMeoezugJMsq8
+        OQ2QIRKlewEMucY9A8S860+UBg==
+X-Google-Smtp-Source: APXvYqwwVNsTWYQa3Ob+S0b8W1I/liqK3/zlMpjfn7VE3AGiLdRIYQnRmokSfLOMk1TVih5ydqk4nw==
+X-Received: by 2002:a5d:9a10:: with SMTP id s16mr4056890iol.121.1572015427702;
+        Fri, 25 Oct 2019 07:57:07 -0700 (PDT)
+Received: from [10.0.0.194] ([64.26.149.125])
+        by smtp.googlemail.com with ESMTPSA id n2sm317242ion.25.2019.10.25.07.57.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Oct 2019 07:57:04 -0700 (PDT)
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+ <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+ <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
+ <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
+ <vbftv7wuciu.fsf@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
+Date:   Fri, 25 Oct 2019 10:57:03 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191025142842.GA10016@sivanov-pc>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9420 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=641
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910250142
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9420 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=727 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910250142
+In-Reply-To: <vbftv7wuciu.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 05:28:42PM +0300, Samuil Ivanov wrote:
-> Dan you are correct it is a bit of a hodge podge :)
-> I think that it is better to have a bigger patches that will rename
-> more functions, but I don't this it is good to have all the
-> functions renamed in one patch.
-> 
-> Just in the header file I counted around 55 function definitions,
-> and in the source files there are some more.
-> So that will make one huge patch.
-> 
+On 2019-10-25 10:26 a.m., Vlad Buslov wrote:
 
-I don't really have a problem if you rename everything at once.  Or if
-you want to rename all of them in a 55 patch patchset that's also fine
-with me...
+> I've been trying to re-design this change to use high level TLV, but I
+> don't understand how to make it backward compatible. If I just put new
+> attribute before nested action attributes, it will fail to parse when
+> older client send netlink packet without it and I don't see
+> straightforward way to distinguish between the new attribute and
+> following nested action attribute (which might accidentally have same
+> length and fall into allowed attribute range). I don't have much
+> experience working with netlink, so I might be missing something obvious
+> here. However, extending existing action attributes (which are already
+> conveniently parsed in tcf_action_init_1() function) with new optional
+> 'flags' value seems like straightforward and backward compatible
+> solution.
+>
 
-regards,
-dan carpenter
+I think i understand what you are saying. Let me take a quick
+look at the code and get back to you.
 
+cheers,
+jamal
