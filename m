@@ -2,122 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B14EAE5B86
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:23:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C58BE5D85
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:50:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729937AbfJZNXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:23:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45420 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729905AbfJZNXh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:23:37 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F46A20867;
-        Sat, 26 Oct 2019 13:23:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096216;
-        bh=zmCS8vj7AGjE7ByQs4OVVrBF7UKrVF1K9L42I/Wq2Z4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPt5kzmsEtejwi55xnE2Ia4VYe+Zlvpmw8VPn7WbfFS+F4lxZFshj+mcUNczhpLAj
-         si9fL3MmFTvqV3uFAikV2SOOxuo+dWDPH1hXarZWVIOf0g0L6IWDyTg9X1viLDoVcG
-         6xsf68Aa+oiIuQ10lPU2wTnFmOGAHswEIzrBkFiU=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 15/17] usb: hso: obey DMA rules in tiocmget
-Date:   Sat, 26 Oct 2019 09:22:59 -0400
-Message-Id: <20191026132302.4622-15-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191026132302.4622-1-sashal@kernel.org>
-References: <20191026132302.4622-1-sashal@kernel.org>
+        id S1726350AbfJZNuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:50:39 -0400
+Received: from email.epicentrk.ua ([194.183.174.42]:12769 "EHLO
+        zimbra.epicentrk.ua" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726173AbfJZNuj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 09:50:39 -0400
+X-Greylist: delayed 11471 seconds by postgrey-1.27 at vger.kernel.org; Sat, 26 Oct 2019 09:50:38 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.epicentrk.ua (Postfix) with ESMTP id 13CF72AF1D7;
+        Sat, 26 Oct 2019 00:17:46 +0300 (EEST)
+Received: from zimbra.epicentrk.ua ([127.0.0.1])
+        by localhost (zimbra.epicentrk.ua [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id pJXvFWxn4DDV; Sat, 26 Oct 2019 00:17:45 +0300 (EEST)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.epicentrk.ua (Postfix) with ESMTP id 57D942AF1CD;
+        Sat, 26 Oct 2019 00:17:45 +0300 (EEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra.epicentrk.ua 57D942AF1CD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=epicentrk.ua;
+        s=A3FCAC36-7C71-11E7-AFD3-3C252C4CD05F; t=1572038265;
+        bh=/eiQ/UiTy3/5P3f9rUTf1CY9ZZHpfNZAOMbtuF4euCY=;
+        h=Date:From:Message-ID:MIME-Version;
+        b=VR3e6RFzSE8o5fFoRz1wCGPDgZYdJgJWX0kF4G79VhC6aKpJoZF6LZBcpk4bepm9J
+         OtF6Dwjg/ItqtWfSrqmDpPh09DgL+Kt5kyr9QRR9dEe82FsIW3A97K0tIo+QRKkfvU
+         T6h4QfrfTq+7BvQTcq3ILX2O/nWoGj3xAX9UyLLx9+168gH8Uj1DoPV5VyN3A6By6b
+         sbak7vd/PrFfZGUasyYlyknfslDmqbPgcwbSsC43tgfHS2usHhkFPs93nFV/9tNha4
+         rrsdFZvdVc0zmdIJeVuhL65pxgPEmB6qf0ORZEyfxjUcd3FgTjoO3+8e9e/L/ZK69o
+         KXOZC6P9zjqHA==
+X-Virus-Scanned: amavisd-new at zimbra.epicentrk.ua
+Received: from zimbra.epicentrk.ua ([127.0.0.1])
+        by localhost (zimbra.epicentrk.ua [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id uvxzPDQoFhN9; Sat, 26 Oct 2019 00:17:45 +0300 (EEST)
+Received: from zimbra.epicentrk.ua (zimbra.epicentrk.ua [10.71.1.50])
+        by zimbra.epicentrk.ua (Postfix) with ESMTP id DBC212AC3D4;
+        Sat, 26 Oct 2019 00:17:43 +0300 (EEST)
+Date:   Sat, 26 Oct 2019 00:17:43 +0300 (EEST)
+From:   =?utf-8?B?0JrQvtGC0L7QstCw?= <o.kotova@epicentrk.ua>
+Reply-To: annie.martinez121@gmail.com
+Message-ID: <426306589.41179526.1572038263875.JavaMail.zimbra@epicentrk.ua>
+Subject: Proposition!
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [10.71.1.50]
+X-Mailer: Zimbra 8.7.7_GA_1787 (zclient/8.7.7_GA_1787)
+Thread-Index: xnX/Umem8/BAAubApULxQm/7HjaiTQ==
+Thread-Topic: Proposition!
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+Je voudrais r=C3=A9aliser un projet d=E2=80=99aide humanitaire =C3=A0 trave=
+rs vous bien qu=E2=80=99on ne se connait pas vraiment. J=E2=80=99ai alors d=
+=C3=A9cid=C3=A9 de vous l=C3=A9guer =C3=A0 titre de legs une somme de un mi=
+llion cinq cent mille dollars am=C3=A9ricain. Ma propre famille qui devrait=
+ en b=C3=A9n=C3=A9ficier m'avait rejet=C3=A9e pour la simple raison de mon =
+mariage avec un Arabe Libyen.
 
-[ Upstream commit af0de1303c4e8f44fadd7b4c593f09f22324b04f ]
+=C2=AB N=E2=80=99h=C3=A9sitez pas =C3=A0 me r=C3=A9pondre =C3=A0 cet courri=
+el: annie.martinez121@gmail.com pour me parl=C3=A9 directement =C2=BB
 
-The serial state information must not be embedded into another
-data structure, as this interferes with cache handling for DMA
-on architectures without cache coherence..
-That would result in data corruption on some architectures
-Allocating it separately.
+NB: Veuillez vous assurer de r=C3=A9pondre a la bonne adresse =C3=89mail me=
+rci et QUE DIEU VOUS B=C3=89NISSE.
 
-v2: fix syntax error
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/hso.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index cbbff16d438f5..faa9089aebcc2 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -210,7 +210,7 @@ struct hso_tiocmget {
- 	int    intr_completed;
- 	struct usb_endpoint_descriptor *endp;
- 	struct urb *urb;
--	struct hso_serial_state_notification serial_state_notification;
-+	struct hso_serial_state_notification *serial_state_notification;
- 	u16    prev_UART_state_bitmap;
- 	struct uart_icount icount;
- };
-@@ -1455,7 +1455,7 @@ static int tiocmget_submit_urb(struct hso_serial *serial,
- 			 usb_rcvintpipe(usb,
- 					tiocmget->endp->
- 					bEndpointAddress & 0x7F),
--			 &tiocmget->serial_state_notification,
-+			 tiocmget->serial_state_notification,
- 			 sizeof(struct hso_serial_state_notification),
- 			 tiocmget_intr_callback, serial,
- 			 tiocmget->endp->bInterval);
-@@ -1502,7 +1502,7 @@ static void tiocmget_intr_callback(struct urb *urb)
- 	/* wIndex should be the USB interface number of the port to which the
- 	 * notification applies, which should always be the Modem port.
- 	 */
--	serial_state_notification = &tiocmget->serial_state_notification;
-+	serial_state_notification = tiocmget->serial_state_notification;
- 	if (serial_state_notification->bmRequestType != BM_REQUEST_TYPE ||
- 	    serial_state_notification->bNotification != B_NOTIFICATION ||
- 	    le16_to_cpu(serial_state_notification->wValue) != W_VALUE ||
-@@ -2595,6 +2595,8 @@ static void hso_free_tiomget(struct hso_serial *serial)
- 		usb_free_urb(tiocmget->urb);
- 		tiocmget->urb = NULL;
- 		serial->tiocmget = NULL;
-+		kfree(tiocmget->serial_state_notification);
-+		tiocmget->serial_state_notification = NULL;
- 		kfree(tiocmget);
- 	}
- }
-@@ -2645,10 +2647,13 @@ static struct hso_device *hso_create_bulk_serial_device(
- 		num_urbs = 2;
- 		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
- 					   GFP_KERNEL);
-+		serial->tiocmget->serial_state_notification
-+			= kzalloc(sizeof(struct hso_serial_state_notification),
-+					   GFP_KERNEL);
- 		/* it isn't going to break our heart if serial->tiocmget
- 		 *  allocation fails don't bother checking this.
- 		 */
--		if (serial->tiocmget) {
-+		if (serial->tiocmget && serial->tiocmget->serial_state_notification) {
- 			tiocmget = serial->tiocmget;
- 			tiocmget->endp = hso_get_ep(interface,
- 						    USB_ENDPOINT_XFER_INT,
--- 
-2.20.1
-
+Sinc=C3=A8rement
+Mme ANNIE MARTINEZ
+E-mail Priv=C3=A9e: annie.martinez121@gmail.com
