@@ -2,158 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C63CE450A
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:00:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A648CE4516
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:01:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437528AbfJYIA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 04:00:27 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26587 "EHLO
+        id S2437589AbfJYIBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 04:01:55 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37775 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2437520AbfJYIA1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:00:27 -0400
+        with ESMTP id S2437583AbfJYIBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:01:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571990425;
+        s=mimecast20190719; t=1571990513;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/LoaaTv4vAnICJNi9X+ns+lbhK+lgVEY+k5kW3oHXGY=;
-        b=EVFb7boQUOjHNiUBbZ9P5jAp0HEDa+Evw83vtDR6zsIRA9rQcrzOtwxMo6LGegW2H3uLby
-        U8KTjGHH0GyT7YnUte6I4ZCTYGtv3N/PcfjtEGjQEDNi0FvK5ReFPCTyHyqgYCV3v6q+fG
-        2nai31WsIBDt5JWmq81UpAbeymVKmeg=
+        bh=otCDV1QKx3d7IK+sWoEGFb/N0+D+qi80epo1tUZLYdM=;
+        b=AtqC8MCWMDWZTD854HIWbUeizBluIKajJr6IDeSl/XUgGggungQbTnwwBlO8qrn6Z+fWPd
+        WYyfz4al1ixvxUOc2l2WfEF2gEVtVAAbS1ha5aOIJ8GlOTSP5da8w1CSatndfIGcFjg3BT
+        bcCfojpcxswdE7uUo2tH+1WUWjiHrwI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-264-VPCrquMeNZOwl9fTyy1DVw-1; Fri, 25 Oct 2019 04:00:20 -0400
+ us-mta-259-ETcj03UuP5WCRQnyylt_tg-1; Fri, 25 Oct 2019 04:01:50 -0400
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E295C1800E00;
-        Fri, 25 Oct 2019 08:00:18 +0000 (UTC)
-Received: from ovpn-116-201.ams2.redhat.com (ovpn-116-201.ams2.redhat.com [10.36.116.201])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 82CBE60852;
-        Fri, 25 Oct 2019 08:00:17 +0000 (UTC)
-Message-ID: <5ef3ce11785c58bc93ff7809cc1b35dfb354974f.camel@redhat.com>
-Subject: Re: [PATCH net] udp: fix data-race in udp_set_dev_scratch()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Date:   Fri, 25 Oct 2019 10:00:16 +0200
-In-Reply-To: <20191024184331.28920-1-edumazet@google.com>
-References: <20191024184331.28920-1-edumazet@google.com>
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2DE76107AD31;
+        Fri, 25 Oct 2019 08:01:47 +0000 (UTC)
+Received: from krava (unknown [10.43.17.61])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 1BCBF60852;
+        Fri, 25 Oct 2019 08:01:42 +0000 (UTC)
+Date:   Fri, 25 Oct 2019 10:01:42 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v3 2/9] perf tools: splice events onto evlist even on
+ error
+Message-ID: <20191025080142.GF31679@krava>
+References: <20191023005337.196160-1-irogers@google.com>
+ <20191024190202.109403-1-irogers@google.com>
+ <20191024190202.109403-3-irogers@google.com>
 MIME-Version: 1.0
+In-Reply-To: <20191024190202.109403-3-irogers@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: VPCrquMeNZOwl9fTyy1DVw-1
+X-MC-Unique: ETcj03UuP5WCRQnyylt_tg-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-10-24 at 11:43 -0700, Eric Dumazet wrote:
-> KCSAN reported a data-race in udp_set_dev_scratch() [1]
+On Thu, Oct 24, 2019 at 12:01:55PM -0700, Ian Rogers wrote:
+> If event parsing fails the event list is leaked, instead splice the list
+> onto the out result and let the caller cleanup.
 >=20
-> The issue here is that we must not write over skb fields
-> if skb is shared. A similar issue has been fixed in commit
-> 89c22d8c3b27 ("net: Fix skb csum races when peeking")
+> An example input for parse_events found by libFuzzer that reproduces
+> this memory leak is 'm{'.
 >=20
-> While we are at it, use a helper only dealing with
-> udp_skb_scratch(skb)->csum_unnecessary, as this allows
-> udp_set_dev_scratch() to be called once and thus inlined.
->=20
-> [1]
-> BUG: KCSAN: data-race in udp_set_dev_scratch / udpv6_recvmsg
->=20
-> write to 0xffff888120278317 of 1 bytes by task 10411 on cpu 1:
->  udp_set_dev_scratch+0xea/0x200 net/ipv4/udp.c:1308
->  __first_packet_length+0x147/0x420 net/ipv4/udp.c:1556
->  first_packet_length+0x68/0x2a0 net/ipv4/udp.c:1579
->  udp_poll+0xea/0x110 net/ipv4/udp.c:2720
->  sock_poll+0xed/0x250 net/socket.c:1256
->  vfs_poll include/linux/poll.h:90 [inline]
->  do_select+0x7d0/0x1020 fs/select.c:534
->  core_sys_select+0x381/0x550 fs/select.c:677
->  do_pselect.constprop.0+0x11d/0x160 fs/select.c:759
->  __do_sys_pselect6 fs/select.c:784 [inline]
->  __se_sys_pselect6 fs/select.c:769 [inline]
->  __x64_sys_pselect6+0x12e/0x170 fs/select.c:769
->  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->=20
-> read to 0xffff888120278317 of 1 bytes by task 10413 on cpu 0:
->  udp_skb_csum_unnecessary include/net/udp.h:358 [inline]
->  udpv6_recvmsg+0x43e/0xe90 net/ipv6/udp.c:310
->  inet6_recvmsg+0xbb/0x240 net/ipv6/af_inet6.c:592
->  sock_recvmsg_nosec+0x5c/0x70 net/socket.c:871
->  ___sys_recvmsg+0x1a0/0x3e0 net/socket.c:2480
->  do_recvmmsg+0x19a/0x5c0 net/socket.c:2601
->  __sys_recvmmsg+0x1ef/0x200 net/socket.c:2680
->  __do_sys_recvmmsg net/socket.c:2703 [inline]
->  __se_sys_recvmmsg net/socket.c:2696 [inline]
->  __x64_sys_recvmmsg+0x89/0xb0 net/socket.c:2696
->  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->=20
-> Reported by Kernel Concurrency Sanitizer on:
-> CPU: 0 PID: 10413 Comm: syz-executor.0 Not tainted 5.4.0-rc3+ #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
-oogle 01/01/2011
->=20
-> Fixes: 2276f58ac589 ("udp: use a separate rx queue for packet reception")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
->  net/ipv4/udp.c | 19 +++++++++++++++----
->  1 file changed, 15 insertions(+), 4 deletions(-)
+>  tools/perf/util/parse-events.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
 >=20
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 345a3d43f5a655e009e99c16bb19e047cdf003c6..d1ed160af202c054839387201=
-abd3f13b55d00e9 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -1316,6 +1316,20 @@ static void udp_set_dev_scratch(struct sk_buff *sk=
-b)
->  =09=09scratch->_tsize_state |=3D UDP_SKB_IS_STATELESS;
->  }
+> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
+s.c
+> index edb3ae76777d..f0d50f079d2f 100644
+> --- a/tools/perf/util/parse-events.c
+> +++ b/tools/perf/util/parse-events.c
+> @@ -1968,15 +1968,20 @@ int parse_events(struct evlist *evlist, const cha=
+r *str,
 > =20
-> +static void udp_skb_csum_unnecessary_set(struct sk_buff *skb)
-> +{
-> +=09/* We come here after udp_lib_checksum_complete() returned 0.
-> +=09 * This means that __skb_checksum_complete() might have
-> +=09 * set skb->csum_valid to 1.
-> +=09 * On 64bit platforms, we can set csum_unnecessary
-> +=09 * to true, but only if the skb is not shared.
-> +=09 */
-> +#if BITS_PER_LONG =3D=3D 64
-> +=09if (!skb_shared(skb))
-> +=09=09udp_skb_scratch(skb)->csum_unnecessary =3D true;
-> +#endif
-> +}
+>  =09ret =3D parse_events__scanner(str, &parse_state, PE_START_EVENTS);
+>  =09perf_pmu__parse_cleanup();
 > +
->  static int udp_skb_truesize(struct sk_buff *skb)
->  {
->  =09return udp_skb_scratch(skb)->_tsize_state & ~UDP_SKB_IS_STATELESS;
-> @@ -1550,10 +1564,7 @@ static struct sk_buff *__first_packet_length(struc=
-t sock *sk,
->  =09=09=09*total +=3D skb->truesize;
->  =09=09=09kfree_skb(skb);
->  =09=09} else {
-> -=09=09=09/* the csum related bits could be changed, refresh
-> -=09=09=09 * the scratch area
-> -=09=09=09 */
-> -=09=09=09udp_set_dev_scratch(skb);
-> +=09=09=09udp_skb_csum_unnecessary_set(skb);
->  =09=09=09break;
->  =09=09}
->  =09}
+> +=09if (!ret && list_empty(&parse_state.list)) {
+> +=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
+> +=09=09return -1;
+> +=09}
+> +
+> +=09/*
+> +=09 * Add list to the evlist even with errors to allow callers to clean =
+up.
+> +=09 */
+> +=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
 
-LGTM, Thanks Eric!
+I still dont understand this one.. if there was an error, the list
+should be empty, right? also if there's an error and there's something
+on the list, what is it? how it gets deleted?
 
-Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+thanks,
+jirka
+
+> +
+>  =09if (!ret) {
+>  =09=09struct evsel *last;
+> =20
+> -=09=09if (list_empty(&parse_state.list)) {
+> -=09=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
+> -=09=09=09return -1;
+> -=09=09}
+> -
+> -=09=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
+>  =09=09evlist->nr_groups +=3D parse_state.nr_groups;
+>  =09=09last =3D evlist__last(evlist);
+>  =09=09last->cmdline_group_boundary =3D true;
+> --=20
+> 2.23.0.866.gb869b98d4c-goog
+>=20
 
