@@ -2,502 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB23E4FE5
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 17:14:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4976FE4FF0
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 17:19:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440598AbfJYPOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 11:14:54 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45996 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2440582AbfJYPOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 11:14:53 -0400
-Received: by mail-wr1-f68.google.com with SMTP id q13so2732400wrs.12
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 08:14:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=T+Bv0KDvuw3zXjFcMykuhlzsgcG5x86hqhsyWGKJAKE=;
-        b=HTlq9o3+YNDDGDD7TahgG8mRuxc519LbkOHeT37SfqoeCxp1TVY+RybOxdVyvvnFD3
-         UlfwTQT9lRSgib/zZMqjXY6Dh1YMfC2BBQ+9VmdH11JOdx2ixMCs8UrkTrMittLhkBdU
-         vnF5RZTMoazwhe6SitYQLTA+Bq9IqGOyxdMRD0lT4Fr8PgjQwiRKDYYIRYmZT9ktoQUr
-         8X4wcAM7FkKCpeap5QKKDVJNi8ynsFVuAk311hylTVlYL3hIRZhnsOmfWU3+42WbBJj/
-         q3SRMiu5ovgy6QsA+tbcy+GEk034dmyg3ZERS9eHUFr7MSGxE9j9l68Gae555PCAA6dw
-         chmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=T+Bv0KDvuw3zXjFcMykuhlzsgcG5x86hqhsyWGKJAKE=;
-        b=c+CTeXLyXAuMa0lyAL9IxCyAFbGD9176bDkehiWPl+mB+VUSvDdwCoTwuaMS/Ra/Ti
-         OCbkaiqBonCXQbS36rFvDoIshgDy2LEjO8WJaxDMZHTO+Fx1+PPhCLUGMD01Q71rp4BO
-         WIY0ehp7pNZQ7yBkEtdeOKclWCcHXIt3O8UfDXUNcvlzBBN5emmnk1aq1i5B8zFhbIuh
-         96qVFJDnTdG7cpxiVzcsBEd18LMtiXDs3BtDt8MiPxuwJ2IjMoZfpnhPA6ZU3iH8GvnS
-         CkmsBGmNM6pm5lvXJKAe8xL2JNjlXKVYCE8jXtRiKBwQEMarP+PtChSPHqs1NOyBHjtU
-         TAOw==
-X-Gm-Message-State: APjAAAWIcB7MCR4IZ9d2PJ2ue9cu0swObznY7Yb7vbJTusA8SZhvwzXK
-        wAhkXduxhVVF1Qhi6FEcrKcZts3z+PAsr0VHBp6sYg==
-X-Google-Smtp-Source: APXvYqx0wabBX2GROOnLQ1/mF6u8ewFIkqx2Q1mzzWoRksLl6dpvRqEnq1q/YI9ndy00nOtpK5R5wOC30ELOYgKFF+o=
-X-Received: by 2002:a5d:6785:: with SMTP id v5mr3524578wru.174.1572016487559;
- Fri, 25 Oct 2019 08:14:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191023005337.196160-1-irogers@google.com> <20191024190202.109403-1-irogers@google.com>
- <20191024190202.109403-2-irogers@google.com> <20191025075820.GE31679@krava>
-In-Reply-To: <20191025075820.GE31679@krava>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 25 Oct 2019 08:14:36 -0700
-Message-ID: <CAP-5=fV3yruuFagTz4=8b9t6Y1tzZpFU=VhVcOmrSMiV+h2fQA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] perf tools: add parse events append error
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Stephane Eranian <eranian@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S2440614AbfJYPS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 11:18:58 -0400
+Received: from mail-eopbgr80058.outbound.protection.outlook.com ([40.107.8.58]:49637
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2439061AbfJYPS5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 11:18:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QnEJhXJb/14TDAkZqpcjA/uwYZFZYw0lVlKYMH488o8VohfTcgNJUPpAeD3+53DPSnH+KafGjCGQR89gyWh0D76XTFSbJYOhAuFhRAwmMmOsXbT5kjxjZOkgj1E7DPWSJ12tVZn5UUKLK4BJ9d3FGjQ/f1iAJzWpyxPkC574HJueSECOpbLG3pifEDvhH5ABF6e0OjmnLfEOfGr1k2hzdwxQZNqiv4wcX5mdZGgg7RFn8gb2m9H+N0cHa+fnraaZiEgxka90txzlr4HoBRXPilyTcLMsaZp21ZSiyw3oVqJv9uPsxNY7F3nU2+k1pfPPcq9olA1Lljp9RSzsqmOa/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BEanw8AvG+JgSfm1pCupCEmmE5+hjnlOTc0sOAepWYE=;
+ b=Enwyh+3HQjy45MsizvwgM79OJ6vHa2ie0IhIYKmWY3qxMgmplZvAQeADUjvwKMK125WCFMMW+YtMXlapoTCJU/CxYCzl5gJ7mIibtsmK65pk1gIpGdhLo66FoO7KPm4lxqhkxzT5fhPF7zXgsJpuLaLM6/7oSA8HgnlcxZaS88H4oXhoKetFlR8Peqz/0che+KUWDERFFrTAlMtD1Sy6HpKKGsuoMghvM4E99FKypDWZNqTJp1rI1pZKalp3Phuqjql9BzYioJzXTaNvM6G+woucWhiYPGzkG/mbsyCHGxNGgjrwypbdjhCGwZwKRAYf+GEW3T/SctLWUDTv8CrcbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BEanw8AvG+JgSfm1pCupCEmmE5+hjnlOTc0sOAepWYE=;
+ b=Vv1SoXLcY5XyuiMx0Be5pA4Co6fI8oxbxqeTLLYAVZgKN2S+2ZexaO65Um9BKUjfRHyaKMdTOshoVpFWbnn6BEfmytxT4soHFBsumtl6w6jG5p2Ae23JnSz747xiYI6cIK+nSjz5vCLbHrLugxiqVeJT3WOho4XUN+entjJEZ7k=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB5135.eurprd05.prod.outlook.com (20.178.11.225) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.23; Fri, 25 Oct 2019 15:18:54 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::3486:1273:89de:8cc7%3]) with mapi id 15.20.2387.021; Fri, 25 Oct 2019
+ 15:18:54 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Topic: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+Thread-Index: AQHViOOkkjw7TmA4ukWSexbeE6ZJ+6doLtcAgAAEK4CAABWjgIABIOyAgACCuACAAA2RAIABdMWAgAAIhYCAAAMgAIAAAvYA
+Date:   Fri, 25 Oct 2019 15:18:53 +0000
+Message-ID: <vbfsgngua3p.fsf@mellanox.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+ <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+ <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
+ <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
+ <vbftv7wuciu.fsf@mellanox.com>
+ <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
+ <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
+In-Reply-To: <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0398.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:f::26) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 906e1a2f-e54e-4545-5e1a-08d7595ea5ac
+x-ms-traffictypediagnostic: VI1PR05MB5135:|VI1PR05MB5135:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB5135B3C58C4CDB78F97676C2AD650@VI1PR05MB5135.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 02015246A9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(346002)(136003)(366004)(376002)(189003)(199004)(446003)(316002)(6916009)(4001150100001)(2906002)(476003)(2616005)(4744005)(36756003)(99286004)(11346002)(25786009)(478600001)(52116002)(76176011)(86362001)(81166006)(81156014)(66066001)(229853002)(256004)(54906003)(8676002)(6436002)(6512007)(6246003)(66476007)(66946007)(64756008)(66556008)(8936002)(4326008)(66446008)(71190400001)(386003)(7736002)(53546011)(3846002)(6116002)(102836004)(486006)(6506007)(71200400001)(26005)(5660300002)(305945005)(186003)(14454004)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5135;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /S73FQgrumcyISU5Z5gbDcupfpCrCsWeHunNTJmkVMyNrDzqyx/VV/MiYp0JAoyl3CcSr/zbPHC3QH4aLqj0ydW6RMhzqyqyCpJ/ICfKDsiF19QOMMt56PzP3e7J3h/DV94o62DZXibStu4rO598spt0hwA/CXchIleQkODCHMkN9Be75QyIk/0SlbkCg96H/o/uh+QZt0FJYsvxpPJJahpWSDIAgfpelsY3XGazA0O1hUO+ammkDe7StFbtlLtwmoeQ47+KVVFKENXvsV6Jkad5YXAAXa8K4K8QZd1YU9RMqpvBdMeobf9pjpau2pY84H8M85wF535uLz1ECeql1CFx7gdnsag2fQQ37yXEYa2E6UJL8A44lCY2K68btiiODEnAAucnUujJY5Pep4+G/+qhQo1Uq6EJTqUziqx6fdu85F3LbYxov9/jziJk7aOo
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 906e1a2f-e54e-4545-5e1a-08d7595ea5ac
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2019 15:18:53.9518
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rp0vdFfeJzlY5RBhEmf5dpysUaB9vGA3/Q5YOKZwxoidaCg/y76rJk54Klv+S+2apsamI1yTstVNqnWegiEMtg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5135
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 12:58 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Thu, Oct 24, 2019 at 12:01:54PM -0700, Ian Rogers wrote:
-> > Parse event error handling may overwrite one error string with another
-> > creating memory leaks and masking errors. Introduce a helper routine
-> > that appends error messages and avoids the memory leak.
-> >
-> > A reproduction of this problem can be seen with:
-> >   perf stat -e c/c/
-> > After this change this produces:
-> > event syntax error: 'c/c/'
-> >                        \___ unknown term (previous error: unknown term =
-(previous error: unknown term (previous error: unknown term (previous error=
-: unknown term (previous error: unknown term (previous error: unknown term =
-(previous error: unknown term (previous error: unknown term (previous error=
-: unknown term (previous error: unknown term (previous error: unknown term =
-(previous error: unknown term (previous error: unknown term (previous error=
-: unknown term (previous error: unknown term (previous error: unknown term =
-(previous error: unknown term (previous error: unknown term (previous error=
-: unknown term (previous error: unknown term (previous error: Cannot find P=
-MU `c'. Missing kernel support?)(help: valid terms: event,filter_rem,filter=
-_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umask,filter_opc=
-1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter_nm,config,c=
-onfig1,config2,name,period,percore))(help: valid terms: event,filter_rem,fi=
-lter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umask,filter=
-_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter_nm,conf=
-ig,config1,config2,name,period,percore))(help: valid terms: event,filter_re=
-m,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umask,fi=
-lter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter_nm,=
-config,config1,config2,name,period,percore))(help: valid terms: event,filte=
-r_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umas=
-k,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter=
-_nm,config,config1,config2,name,period,percore))(help: valid terms: event,f=
-ilter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,=
-umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,fi=
-lter_nm,config,config1,config2,name,period,percore))(help: valid terms: eve=
-nt,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,=
-inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_stat=
-e,filter_nm,config,config1,config2,name,period,percore))(help: valid terms:=
- event,pc,in_tx,edge,any,offcore_rsp,in_tx_cp,ldlat,inv,umask,frontend,cmas=
-k,config,config1,config2,name,period,percore))(help: valid terms: event,fil=
-ter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,um=
-ask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filt=
-er_nm,config,config1,config2,name,period,percore))(help: valid terms: event=
-,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,in=
-v,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,=
-filter_nm,config,config1,config2,name,period,percore))(help: valid terms: e=
-vent,config,config1,config2,name,period,percore))(help: valid terms: event,=
-filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv=
-,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,f=
-ilter_nm,config,config1,config2,name,period,percore))(help: valid terms: ev=
-ent,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc=
-,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_sta=
-te,filter_nm,config,config1,config2,name,period,percore))(help: valid terms=
-: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filte=
-r_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter=
-_state,filter_nm,config,config1,config2,name,period,percore))(help: valid t=
-erms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,f=
-ilter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,fi=
-lter_state,filter_nm,config,config1,config2,name,period,percore))(help: val=
-id terms: event,config,config1,config2,name,period,percore))(help: valid te=
-rms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,fi=
-lter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,fil=
-ter_state,filter_nm,config,config1,config2,name,period,percore))(help: vali=
-d terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_lo=
-c,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm=
-,filter_state,filter_nm,config,config1,config2,name,period,percore))(help: =
-valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filte=
-r_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_no=
-t_nm,filter_state,filter_nm,config,config1,config2,name,period,percore))(he=
-lp: valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,f=
-ilter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filte=
-r_not_nm,filter_state,filter_nm,config,config1,config2,name,period,percore)=
-)(help: valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_t=
-id,filter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,f=
-ilter_not_nm,filter_state,filter_nm,config,config1,config2,name,period,perc=
-ore))
->
->
-> hum... I'd argue that the previous state was better:
->
-> [jolsa@krava perf]$ ./perf stat -e c/c/
-> event syntax error: 'c/c/'
->                        \___ unknown term
->
->
-> jirka
 
-I am agnostic. We can either have the previous state or the new state,
-I'm keen to resolve the memory leak. Another alternative is to warn
-that multiple errors have occurred before dropping or printing the
-previous error. As the code is shared in memory places the approach
-taken here was to try to not conceal anything that could potentially
-be useful. Given this, is the preference to keep the status quo
-without any warning?
-
-Thanks,
-Ian
-
-> >
-> > valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,f=
-ilter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filte=
-r_not_nm,filter_state,filter_nm,config,config1,config2,name,period,percore
-> > Run 'perf list' for a list of valid events
-> >
-> >  Usage: perf stat [<options>] [<command>]
-> >
-> >     -e, --event <event>   event selector. use 'perf list' to list avail=
-able events
-> >
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/parse-events.c | 100 +++++++++++++++++++++++----------
-> >  tools/perf/util/parse-events.h |   2 +
-> >  tools/perf/util/pmu.c          |  30 ++++++----
-> >  3 files changed, 89 insertions(+), 43 deletions(-)
-> >
-> > diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-eve=
-nts.c
-> > index db882f630f7e..edb3ae76777d 100644
-> > --- a/tools/perf/util/parse-events.c
-> > +++ b/tools/perf/util/parse-events.c
-> > @@ -182,6 +182,38 @@ static int tp_event_has_id(const char *dir_path, s=
-truct dirent *evt_dir)
-> >
-> >  #define MAX_EVENT_LENGTH 512
-> >
-> > +void parse_events__append_error(struct parse_events_error *err, int id=
-x,
-> > +                             char *str, char *help)
-> > +{
-> > +     char *new_str =3D NULL;
-> > +
-> > +     if (WARN(!str, "WARNING: failed to provide error string")) {
-> > +             free(help);
-> > +             return;
-> > +     }
-> > +     if (err->str) {
-> > +             int ret;
-> > +
-> > +             if (err->help) {
-> > +                     ret =3D asprintf(&new_str,
-> > +                             "%s (previous error: %s(help: %s))",
-> > +                             str, err->str, err->help);
-> > +             } else {
-> > +                     ret =3D asprintf(&new_str,
-> > +                             "%s (previous error: %s)",
-> > +                             str, err->str);
-> > +             }
-> > +             if (ret < 0)
-> > +                     new_str =3D NULL;
-> > +             else
-> > +                     zfree(&str);
-> > +     }
-> > +     err->idx =3D idx;
-> > +     free(err->str);
-> > +     err->str =3D new_str ?: str;
-> > +     free(err->help);
-> > +     err->help =3D help;
-> > +}
-> >
-> >  struct tracepoint_path *tracepoint_id_to_path(u64 config)
-> >  {
-> > @@ -932,11 +964,11 @@ static int check_type_val(struct parse_events_ter=
-m *term,
-> >               return 0;
-> >
-> >       if (err) {
-> > -             err->idx =3D term->err_val;
-> > -             if (type =3D=3D PARSE_EVENTS__TERM_TYPE_NUM)
-> > -                     err->str =3D strdup("expected numeric value");
-> > -             else
-> > -                     err->str =3D strdup("expected string value");
-> > +             parse_events__append_error(err, term->err_val,
-> > +                                     type =3D=3D PARSE_EVENTS__TERM_TY=
-PE_NUM
-> > +                                     ? strdup("expected numeric value"=
-)
-> > +                                     : strdup("expected string value")=
-,
-> > +                                     NULL);
-> >       }
-> >       return -EINVAL;
-> >  }
-> > @@ -972,8 +1004,11 @@ static bool config_term_shrinked;
-> >  static bool
-> >  config_term_avail(int term_type, struct parse_events_error *err)
-> >  {
-> > +     char *err_str;
-> > +
-> >       if (term_type < 0 || term_type >=3D __PARSE_EVENTS__TERM_TYPE_NR)=
- {
-> > -             err->str =3D strdup("Invalid term_type");
-> > +             parse_events__append_error(err, -1,
-> > +                                     strdup("Invalid term_type"), NULL=
-);
-> >               return false;
-> >       }
-> >       if (!config_term_shrinked)
-> > @@ -992,9 +1027,9 @@ config_term_avail(int term_type, struct parse_even=
-ts_error *err)
-> >                       return false;
-> >
-> >               /* term_type is validated so indexing is safe */
-> > -             if (asprintf(&err->str, "'%s' is not usable in 'perf stat=
-'",
-> > -                          config_term_names[term_type]) < 0)
-> > -                     err->str =3D NULL;
-> > +             if (asprintf(&err_str, "'%s' is not usable in 'perf stat'=
-",
-> > +                             config_term_names[term_type]) >=3D 0)
-> > +                     parse_events__append_error(err, -1, err_str, NULL=
-);
-> >               return false;
-> >       }
-> >  }
-> > @@ -1036,17 +1071,20 @@ do {                                           =
-                          \
-> >       case PARSE_EVENTS__TERM_TYPE_BRANCH_SAMPLE_TYPE:
-> >               CHECK_TYPE_VAL(STR);
-> >               if (strcmp(term->val.str, "no") &&
-> > -                 parse_branch_str(term->val.str, &attr->branch_sample_=
-type)) {
-> > -                     err->str =3D strdup("invalid branch sample type")=
-;
-> > -                     err->idx =3D term->err_val;
-> > +                 parse_branch_str(term->val.str,
-> > +                                 &attr->branch_sample_type)) {
-> > +                     parse_events__append_error(err, term->err_val,
-> > +                                     strdup("invalid branch sample typ=
-e"),
-> > +                                     NULL);
-> >                       return -EINVAL;
-> >               }
-> >               break;
-> >       case PARSE_EVENTS__TERM_TYPE_TIME:
-> >               CHECK_TYPE_VAL(NUM);
-> >               if (term->val.num > 1) {
-> > -                     err->str =3D strdup("expected 0 or 1");
-> > -                     err->idx =3D term->err_val;
-> > +                     parse_events__append_error(err, term->err_val,
-> > +                                             strdup("expected 0 or 1")=
-,
-> > +                                             NULL);
-> >                       return -EINVAL;
-> >               }
-> >               break;
-> > @@ -1080,8 +1118,9 @@ do {                                             =
-                          \
-> >       case PARSE_EVENTS__TERM_TYPE_PERCORE:
-> >               CHECK_TYPE_VAL(NUM);
-> >               if ((unsigned int)term->val.num > 1) {
-> > -                     err->str =3D strdup("expected 0 or 1");
-> > -                     err->idx =3D term->err_val;
-> > +                     parse_events__append_error(err, term->err_val,
-> > +                                             strdup("expected 0 or 1")=
-,
-> > +                                             NULL);
-> >                       return -EINVAL;
-> >               }
-> >               break;
-> > @@ -1089,9 +1128,9 @@ do {                                             =
-                          \
-> >               CHECK_TYPE_VAL(NUM);
-> >               break;
-> >       default:
-> > -             err->str =3D strdup("unknown term");
-> > -             err->idx =3D term->err_term;
-> > -             err->help =3D parse_events_formats_error_string(NULL);
-> > +             parse_events__append_error(err, term->err_term,
-> > +                             strdup("unknown term"),
-> > +                             parse_events_formats_error_string(NULL));
-> >               return -EINVAL;
-> >       }
-> >
-> > @@ -1142,9 +1181,9 @@ static int config_term_tracepoint(struct perf_eve=
-nt_attr *attr,
-> >               return config_term_common(attr, term, err);
-> >       default:
-> >               if (err) {
-> > -                     err->idx =3D term->err_term;
-> > -                     err->str =3D strdup("unknown term");
-> > -                     err->help =3D strdup("valid terms: call-graph,sta=
-ck-size\n");
-> > +                     parse_events__append_error(err, term->err_term,
-> > +                             strdup("unknown term"),
-> > +                             strdup("valid terms: call-graph,stack-siz=
-e\n"));
-> >               }
-> >               return -EINVAL;
-> >       }
-> > @@ -1323,10 +1362,12 @@ int parse_events_add_pmu(struct parse_events_st=
-ate *parse_state,
-> >
-> >       pmu =3D perf_pmu__find(name);
-> >       if (!pmu) {
-> > -             if (asprintf(&err->str,
-> > +             char *err_str;
-> > +
-> > +             if (asprintf(&err_str,
-> >                               "Cannot find PMU `%s'. Missing kernel sup=
-port?",
-> > -                             name) < 0)
-> > -                     err->str =3D NULL;
-> > +                             name) >=3D 0)
-> > +                     parse_events__append_error(err, -1, err_str, NULL=
-);
-> >               return -EINVAL;
-> >       }
-> >
-> > @@ -2797,13 +2838,10 @@ void parse_events__clear_array(struct parse_eve=
-nts_array *a)
-> >  void parse_events_evlist_error(struct parse_events_state *parse_state,
-> >                              int idx, const char *str)
-> >  {
-> > -     struct parse_events_error *err =3D parse_state->error;
-> > -
-> > -     if (!err)
-> > +     if (!parse_state->error)
-> >               return;
-> > -     err->idx =3D idx;
-> > -     err->str =3D strdup(str);
-> > -     WARN_ONCE(!err->str, "WARNING: failed to allocate error string");
-> > +
-> > +     parse_events__append_error(parse_state->error, idx, strdup(str), =
-NULL);
-> >  }
-> >
-> >  static void config_terms_list(char *buf, size_t buf_sz)
-> > diff --git a/tools/perf/util/parse-events.h b/tools/perf/util/parse-eve=
-nts.h
-> > index 769e07cddaa2..a7d42faeab0c 100644
-> > --- a/tools/perf/util/parse-events.h
-> > +++ b/tools/perf/util/parse-events.h
-> > @@ -124,6 +124,8 @@ struct parse_events_state {
-> >       struct list_head          *terms;
-> >  };
-> >
-> > +void parse_events__append_error(struct parse_events_error *err, int id=
-x,
-> > +                             char *str, char *help);
-> >  void parse_events__shrink_config_terms(void);
-> >  int parse_events__is_hardcoded_term(struct parse_events_term *term);
-> >  int parse_events_term__num(struct parse_events_term **term,
-> > diff --git a/tools/perf/util/pmu.c b/tools/perf/util/pmu.c
-> > index adbe97e941dd..4015ec11944a 100644
-> > --- a/tools/perf/util/pmu.c
-> > +++ b/tools/perf/util/pmu.c
-> > @@ -1050,9 +1050,9 @@ static int pmu_config_term(struct list_head *form=
-ats,
-> >               if (err) {
-> >                       char *pmu_term =3D pmu_formats_string(formats);
-> >
-> > -                     err->idx  =3D term->err_term;
-> > -                     err->str  =3D strdup("unknown term");
-> > -                     err->help =3D parse_events_formats_error_string(p=
-mu_term);
-> > +                     parse_events__append_error(err, term->err_term,
-> > +                             strdup("unknown term"),
-> > +                             parse_events_formats_error_string(pmu_ter=
-m));
-> >                       free(pmu_term);
-> >               }
-> >               return -EINVAL;
-> > @@ -1080,8 +1080,9 @@ static int pmu_config_term(struct list_head *form=
-ats,
-> >               if (term->no_value &&
-> >                   bitmap_weight(format->bits, PERF_PMU_FORMAT_BITS) > 1=
-) {
-> >                       if (err) {
-> > -                             err->idx =3D term->err_val;
-> > -                             err->str =3D strdup("no value assigned fo=
-r term");
-> > +                             parse_events__append_error(err, term->err=
-_val,
-> > +                                        strdup("no value assigned for =
-term"),
-> > +                                        NULL);
-> >                       }
-> >                       return -EINVAL;
-> >               }
-> > @@ -1094,8 +1095,9 @@ static int pmu_config_term(struct list_head *form=
-ats,
-> >                                               term->config, term->val.s=
-tr);
-> >                       }
-> >                       if (err) {
-> > -                             err->idx =3D term->err_val;
-> > -                             err->str =3D strdup("expected numeric val=
-ue");
-> > +                             parse_events__append_error(err, term->err=
-_val,
-> > +                                     strdup("expected numeric value"),
-> > +                                     NULL);
-> >                       }
-> >                       return -EINVAL;
-> >               }
-> > @@ -1108,11 +1110,15 @@ static int pmu_config_term(struct list_head *fo=
-rmats,
-> >       max_val =3D pmu_format_max_value(format->bits);
-> >       if (val > max_val) {
-> >               if (err) {
-> > -                     err->idx =3D term->err_val;
-> > -                     if (asprintf(&err->str,
-> > -                                  "value too big for format, maximum i=
-s %llu",
-> > -                                  (unsigned long long)max_val) < 0)
-> > -                             err->str =3D strdup("value too big for fo=
-rmat");
-> > +                     char *err_str;
-> > +
-> > +                     parse_events__append_error(err, term->err_val,
-> > +                             asprintf(&err_str,
-> > +                                 "value too big for format, maximum is=
- %llu",
-> > +                                 (unsigned long long)max_val) < 0
-> > +                                 ? strdup("value too big for format")
-> > +                                 : err_str,
-> > +                                 NULL);
-> >                       return -EINVAL;
-> >               }
-> >               /*
-> > --
-> > 2.23.0.866.gb869b98d4c-goog
-> >
+On Fri 25 Oct 2019 at 18:08, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+> On 2019-10-25 10:57 a.m., Jamal Hadi Salim wrote:
+>> On 2019-10-25 10:26 a.m., Vlad Buslov wrote:
 >
+>>
+>> I think i understand what you are saying. Let me take a quick
+>> look at the code and get back to you.
+>>
+>
+> How about something like this (not even compile tested)..
+>
+> Yes, that init is getting uglier... over time if we
+> are going to move things into shared attributes we will
+> need to introduce a new data struct to pass to ->init()
+>
+> cheers,
+> jamal
+
+The problem with this approach is that it only works when actions are
+created through act API, and not when they are created together with
+filter by cls API which doesn't expect or parse TCA_ROOT. That is why I
+wanted to have something in tcf_action_init_1() which is called by both
+of them.
