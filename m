@@ -2,169 +2,382 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8832E407C
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 02:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B2AEE4082
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 02:18:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731516AbfJYAGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 20:06:52 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:40775 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729514AbfJYAGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 20:06:52 -0400
-Received: by mail-ed1-f66.google.com with SMTP id p59so409941edp.7;
-        Thu, 24 Oct 2019 17:06:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=WhvJaKFhhjEFVloj+73Eu6b1OrFYa3RNhWsBH0yTYlU=;
-        b=E2UFk8Hko4twqj9NJoNZBMg7VrpX+ywSQKClzDZnd73pyLr52GFRoIPsdHJSWT/n9F
-         usphciymIrFS1Mgxl9/9nTTFFxzSFIolwesXGpLBY+cSIqsfGd3HwrLrjhcAE28Yg7A/
-         in69NDDwJP5uWsGO+HJvSHvgHoKsQ1fCh1uZY184dzMMC7bwokj5Zl+imAYTOPjUhToM
-         cii8bmv5egUXBtnSXiwsDJ9T8OwaNzAlWsHJWoaaPHVMN0+r48LyTzsEjg/j/YjZPA0B
-         O3/T/TzURl/hKgEJxSqnhxf1ME9SjjO241Bew44IxWdk9i80xYHaX5i4UJFiEDL9YNW9
-         f3Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=WhvJaKFhhjEFVloj+73Eu6b1OrFYa3RNhWsBH0yTYlU=;
-        b=p8n4QlhSPM0LnjfkadQSKDTP8SxTBl3U9R/dHrFGbSLbYbGqbOy/TOfpsQDSy7/WKL
-         Xw5jxrNidhm2eG58FDw+RJAVq0LV2J9AhlkBHUhbIBaLjJIVfUrynirTBVbtY1N07h86
-         77Xaa/ciYGsw2oG0XtikR5H3jGvgJHe8nT3VKHnh2uiVWH3dcP815cUsKJMF7KihUcxB
-         wZrxjsQKhQUwg5g/TreyY0ZL3pU9hg40o/kWVkTC7UOaTFxYITP7cQ70aQVHE1/Si8Zd
-         g1URYpNJ8gSYHrwNXxoP41MvGTvoGdzCslzfuxCNsO3M1harGCdRWXm92tOINB5Wzue7
-         0ujQ==
-X-Gm-Message-State: APjAAAXyMjLBv2DlCkW4Ag7BZfGrAC3p8GTXH6yiJOb6vTUCTU46eY7b
-        Qnhd8aoxHic/BqieMvQDCUgRqptn
-X-Google-Smtp-Source: APXvYqwiyut+Va4+OyZ7ygdNHpglWdwFFne3/hYvHtW/aYqmO32Kug8YuyYv3utosom3uQ+i+ScPVA==
-X-Received: by 2002:a50:9269:: with SMTP id j38mr918501eda.5.1571962009053;
-        Thu, 24 Oct 2019 17:06:49 -0700 (PDT)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id sb3sm1867ejb.64.2019.10.24.17.06.43
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 24 Oct 2019 17:06:47 -0700 (PDT)
-Subject: Re: [PATCH V3 0/3] Add OP-TEE based bnxt f/w manager
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     Sheetal Tigadoli <sheetal.tigadoli@broadcom.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rajan Vaja <rajan.vaja@xilinx.com>,
-        Scott Branden <scott.branden@broadcom.com>,
-        Ray Jui <ray.jui@broadcom.com>,
-        Vikram Prakash <vikram.prakash@broadcom.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vikas Gupta <vikas.gupta@broadcom.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org
-References: <1571895161-26487-1-git-send-email-sheetal.tigadoli@broadcom.com>
- <183f68bc-8145-ef98-07ca-8d3f85d66a17@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <74e019d5-25cf-b2e8-6f54-9afbefa28568@gmail.com>
-Date:   Thu, 24 Oct 2019 17:06:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1733174AbfJYASR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 20:18:17 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:1980 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732982AbfJYASR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 20:18:17 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9P0HuV9030361
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 17:18:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=NZiG9O33fntUJ/c7gNBy33V3qrchqSEVaLCmusy7340=;
+ b=XxI8g7MGyJI8bGqqfpWk+tDappx4n/aGEYCkl5Y5UKhLWp1gweYQafewlaj2xLoQJnWe
+ ZPMhziNAIYzYsBT3sE+IKzDLJt0VA1AglWVc96YAtVJjQPh5j0ngHdtwms7KXxaNwO6n
+ jPBQB4Fiz+PERqDAH6dT88dbr9erW6zRzoQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2vtyd6xak3-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 17:18:15 -0700
+Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 24 Oct 2019 17:18:13 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id A3D3B2943218; Thu, 24 Oct 2019 17:18:11 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next] bpf: Prepare btf_ctx_access for non raw_tp use case
+Date:   Thu, 24 Oct 2019 17:18:11 -0700
+Message-ID: <20191025001811.1718491-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <183f68bc-8145-ef98-07ca-8d3f85d66a17@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-24_13:2019-10-23,2019-10-24 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ impostorscore=0 bulkscore=0 adultscore=0 mlxscore=0 suspectscore=9
+ phishscore=0 spamscore=0 lowpriorityscore=0 clxscore=1015 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910250002
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/24/19 11:39 AM, Florian Fainelli wrote:
-> On 10/23/19 10:32 PM, Sheetal Tigadoli wrote:
->> This patch series adds support for TEE based BNXT firmware
->> management module and the driver changes to invoke OP-TEE
->> APIs to fastboot firmware and to collect crash dump.
-> 
-> Sorry for chiming on this so late, the more I look into this and the
-> more it seems like you have built a custom TEE firmware loading solution
-> rather than thinking about extending the firmware API to load a firmware
-> opaque handle from somewhere other than the filesystem.
-> 
-> The TEE integration appears okay to me in that you leverage the TEE bus
-> to advertise your driver. What seems to violating layers is that you
-> have bnxt directly tap into your TEE driver's services and that looks
-> not ideal to say the least. That approach does not scale well over
-> multiple drivers (bnxt or otherwise), but also does not really scale
-> over trusted components providers. TEE is one of them, but conceptually
-> the same thing could exist with ACPI/UEFI or any platform that has
-> services that offer some sort of secure/non-secured world differentiation.
-> 
-> The way I would imagine you to integrate this is to basically register a
-> TEE firmware provider through the firmware API, continue using the
-> firmware API from within bnxt, possibly with using a specific file
-> handle/flag that designates whether you want to favor loading from
-> disk/file system or TEE. It should not matter to bnxt how the firmware
-> is obtained basically.
+This patch makes a few changes to btf_ctx_access() to prepare
+it for non raw_tp use case where the attach_btf_id is not
+necessary a BTF_KIND_TYPEDEF.
 
-And I should have probably ended this paragraph with saying that the
-suggestion does not need to happen right now but would be nice to be
-done as a cleanup exercise (of course, by saying that, I am also opening
-the door for this to not happen at all..).
+It moves the "btf_trace_" prefix check and typedef-follow logic to a new
+function "check_attach_btf_id()" which is called only once during
+bpf_check().  btf_ctx_access() only operates on a BTF_KIND_FUNC_PROTO
+type now. That should also be more efficient since it is done only
+one instead of every-time check_ctx_access() is called.
+
+"check_attach_btf_id()" needs to find the func_proto type from
+the attach_btf_id.  It needs to store the result into the
+newly added prog->aux->attach_func_proto.  func_proto
+btf type has no name, so a proper name should be stored into
+"attach_func_name" also.
+
+v2:
+- Move the "btf_trace_" check to an earlier verifier phase (Alexei)
+
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+---
+ include/linux/bpf.h      |  5 +++
+ include/linux/btf.h      | 31 +++++++++++++++++
+ kernel/bpf/btf.c         | 73 +++++++---------------------------------
+ kernel/bpf/syscall.c     |  4 +--
+ kernel/bpf/verifier.c    | 52 +++++++++++++++++++++++++++-
+ kernel/trace/bpf_trace.c |  2 ++
+ 6 files changed, 103 insertions(+), 64 deletions(-)
+
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 2c2c29b49845..171be30fe0ae 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -392,6 +392,11 @@ struct bpf_prog_aux {
+ 	u32 attach_btf_id; /* in-kernel BTF type id to attach to */
+ 	bool verifier_zext; /* Zero extensions has been inserted by verifier. */
+ 	bool offload_requested;
++	bool attach_btf_trace; /* true if attaching to BTF-enabled raw tp */
++	/* BTF_KIND_FUNC_PROTO for valid attach_btf_id */
++	const struct btf_type *attach_func_proto;
++	/* function name for valid attach_btf_id */
++	const char *attach_func_name;
+ 	struct bpf_prog **func;
+ 	void *jit_data; /* JIT specific data. arch dependent */
+ 	struct latch_tree_node ksym_tnode;
+diff --git a/include/linux/btf.h b/include/linux/btf.h
+index 55d43bc856be..9dee00859c5f 100644
+--- a/include/linux/btf.h
++++ b/include/linux/btf.h
+@@ -5,6 +5,7 @@
+ #define _LINUX_BTF_H 1
+ 
+ #include <linux/types.h>
++#include <uapi/linux/btf.h>
+ 
+ struct btf;
+ struct btf_member;
+@@ -53,6 +54,36 @@ bool btf_member_is_reg_int(const struct btf *btf, const struct btf_type *s,
+ int btf_find_spin_lock(const struct btf *btf, const struct btf_type *t);
+ bool btf_type_is_void(const struct btf_type *t);
+ 
++static inline bool btf_type_is_ptr(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_PTR;
++}
++
++static inline bool btf_type_is_int(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
++}
++
++static inline bool btf_type_is_enum(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_ENUM;
++}
++
++static inline bool btf_type_is_typedef(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_TYPEDEF;
++}
++
++static inline bool btf_type_is_func(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC;
++}
++
++static inline bool btf_type_is_func_proto(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC_PROTO;
++}
++
+ #ifdef CONFIG_BPF_SYSCALL
+ const struct btf_type *btf_type_by_id(const struct btf *btf, u32 type_id);
+ const char *btf_name_by_offset(const struct btf *btf, u32 offset);
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index f7557af39756..128d89601d73 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -336,16 +336,6 @@ static bool btf_type_is_fwd(const struct btf_type *t)
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_FWD;
+ }
+ 
+-static bool btf_type_is_func(const struct btf_type *t)
+-{
+-	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC;
+-}
+-
+-static bool btf_type_is_func_proto(const struct btf_type *t)
+-{
+-	return BTF_INFO_KIND(t->info) == BTF_KIND_FUNC_PROTO;
+-}
+-
+ static bool btf_type_nosize(const struct btf_type *t)
+ {
+ 	return btf_type_is_void(t) || btf_type_is_fwd(t) ||
+@@ -377,16 +367,6 @@ static bool btf_type_is_array(const struct btf_type *t)
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_ARRAY;
+ }
+ 
+-static bool btf_type_is_ptr(const struct btf_type *t)
+-{
+-	return BTF_INFO_KIND(t->info) == BTF_KIND_PTR;
+-}
+-
+-static bool btf_type_is_int(const struct btf_type *t)
+-{
+-	return BTF_INFO_KIND(t->info) == BTF_KIND_INT;
+-}
+-
+ static bool btf_type_is_var(const struct btf_type *t)
+ {
+ 	return BTF_INFO_KIND(t->info) == BTF_KIND_VAR;
+@@ -3442,54 +3422,27 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		    const struct bpf_prog *prog,
+ 		    struct bpf_insn_access_aux *info)
+ {
++	const struct btf_type *t = prog->aux->attach_func_proto;
++	const char *tname = prog->aux->attach_func_name;
+ 	struct bpf_verifier_log *log = info->log;
+-	u32 btf_id = prog->aux->attach_btf_id;
+ 	const struct btf_param *args;
+-	const struct btf_type *t;
+-	const char prefix[] = "btf_trace_";
+-	const char *tname;
+ 	u32 nr_args, arg;
+ 
+-	if (!btf_id)
+-		return true;
+-
+-	if (IS_ERR(btf_vmlinux)) {
+-		bpf_log(log, "btf_vmlinux is malformed\n");
+-		return false;
+-	}
+-
+-	t = btf_type_by_id(btf_vmlinux, btf_id);
+-	if (!t || BTF_INFO_KIND(t->info) != BTF_KIND_TYPEDEF) {
+-		bpf_log(log, "btf_id is invalid\n");
+-		return false;
+-	}
+-
+-	tname = __btf_name_by_offset(btf_vmlinux, t->name_off);
+-	if (strncmp(prefix, tname, sizeof(prefix) - 1)) {
+-		bpf_log(log, "btf_id points to wrong type name %s\n", tname);
+-		return false;
+-	}
+-	tname += sizeof(prefix) - 1;
+-
+-	t = btf_type_by_id(btf_vmlinux, t->type);
+-	if (!btf_type_is_ptr(t))
+-		return false;
+-	t = btf_type_by_id(btf_vmlinux, t->type);
+-	if (!btf_type_is_func_proto(t))
+-		return false;
+-
+ 	if (off % 8) {
+-		bpf_log(log, "raw_tp '%s' offset %d is not multiple of 8\n",
++		bpf_log(log, "func '%s' offset %d is not multiple of 8\n",
+ 			tname, off);
+ 		return false;
+ 	}
+ 	arg = off / 8;
+ 	args = (const struct btf_param *)(t + 1);
+-	/* skip first 'void *__data' argument in btf_trace_##name typedef */
+-	args++;
+-	nr_args = btf_type_vlen(t) - 1;
++	nr_args = btf_type_vlen(t);
++	if (prog->aux->attach_btf_trace) {
++		/* skip first 'void *__data' argument in btf_trace_##name typedef */
++		args++;
++		nr_args--;
++	}
+ 	if (arg >= nr_args) {
+-		bpf_log(log, "raw_tp '%s' doesn't have %d-th argument\n",
++		bpf_log(log, "func '%s' doesn't have %d-th argument\n",
+ 			tname, arg);
+ 		return false;
+ 	}
+@@ -3503,7 +3456,7 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		return true;
+ 	if (!btf_type_is_ptr(t)) {
+ 		bpf_log(log,
+-			"raw_tp '%s' arg%d '%s' has type %s. Only pointer access is allowed\n",
++			"func '%s' arg%d '%s' has type %s. Only pointer access is allowed\n",
+ 			tname, arg,
+ 			__btf_name_by_offset(btf_vmlinux, t->name_off),
+ 			btf_kind_str[BTF_INFO_KIND(t->info)]);
+@@ -3526,11 +3479,11 @@ bool btf_ctx_access(int off, int size, enum bpf_access_type type,
+ 		t = btf_type_by_id(btf_vmlinux, t->type);
+ 	if (!btf_type_is_struct(t)) {
+ 		bpf_log(log,
+-			"raw_tp '%s' arg%d type %s is not a struct\n",
++			"func '%s' arg%d type %s is not a struct\n",
+ 			tname, arg, btf_kind_str[BTF_INFO_KIND(t->info)]);
+ 		return false;
+ 	}
+-	bpf_log(log, "raw_tp '%s' arg%d has btf_id %d type %s '%s'\n",
++	bpf_log(log, "func '%s' arg%d has btf_id %d type %s '%s'\n",
+ 		tname, arg, info->btf_id, btf_kind_str[BTF_INFO_KIND(t->info)],
+ 		__btf_name_by_offset(btf_vmlinux, t->name_off));
+ 	return true;
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 16ea3c0db4f6..ff5225759553 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1848,9 +1848,7 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+ 			goto out_put_prog;
+ 		}
+ 		/* raw_tp name is taken from type name instead */
+-		tp_name = kernel_type_name(prog->aux->attach_btf_id);
+-		/* skip the prefix */
+-		tp_name += sizeof("btf_trace_") - 1;
++		tp_name = prog->aux->attach_func_name;
+ 	} else {
+ 		if (strncpy_from_user(buf,
+ 				      u64_to_user_ptr(attr->raw_tracepoint.name),
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 556e82f8869b..c59778c0fc4d 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9372,6 +9372,52 @@ static void print_verification_stats(struct bpf_verifier_env *env)
+ 		env->peak_states, env->longest_mark_read_walk);
+ }
+ 
++static int check_attach_btf_id(struct bpf_verifier_env *env)
++{
++	struct bpf_prog *prog = env->prog;
++	u32 btf_id = prog->aux->attach_btf_id;
++	const struct btf_type *t;
++	const char *tname;
++
++	if (prog->type == BPF_PROG_TYPE_RAW_TRACEPOINT && btf_id) {
++		const char prefix[] = "btf_trace_";
++
++		t = btf_type_by_id(btf_vmlinux, btf_id);
++		if (!t) {
++			verbose(env, "attach_btf_id %u is invalid\n", btf_id);
++			return -EINVAL;
++		}
++		if (!btf_type_is_typedef(t)) {
++			verbose(env, "attach_btf_id %u is not a typedef\n",
++				btf_id);
++			return -EINVAL;
++		}
++		tname = btf_name_by_offset(btf_vmlinux, t->name_off);
++		if (!tname || strncmp(prefix, tname, sizeof(prefix) - 1)) {
++			verbose(env, "attach_btf_id %u points to wrong type name %s\n",
++				btf_id, tname);
++			return -EINVAL;
++		}
++		tname += sizeof(prefix) - 1;
++		t = btf_type_by_id(btf_vmlinux, t->type);
++		if (!btf_type_is_ptr(t))
++			/* should never happen in valid vmlinux build */
++			return -EINVAL;
++		t = btf_type_by_id(btf_vmlinux, t->type);
++		if (!btf_type_is_func_proto(t))
++			/* should never happen in valid vmlinux build */
++			return -EINVAL;
++
++		/* remember two read only pointers that are valid for
++		 * the life time of the kernel
++		 */
++		prog->aux->attach_func_name = tname;
++		prog->aux->attach_func_proto = t;
++		prog->aux->attach_btf_trace = true;
++	}
++	return 0;
++}
++
+ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+ 	      union bpf_attr __user *uattr)
+ {
+@@ -9435,9 +9481,13 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+ 		/* Either gcc or pahole or kernel are broken. */
+ 		verbose(env, "in-kernel BTF is malformed\n");
+ 		ret = PTR_ERR(btf_vmlinux);
+-		goto err_unlock;
++		goto skip_full_check;
+ 	}
+ 
++	ret = check_attach_btf_id(env);
++	if (ret)
++		goto skip_full_check;
++
+ 	env->strict_alignment = !!(attr->prog_flags & BPF_F_STRICT_ALIGNMENT);
+ 	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS))
+ 		env->strict_alignment = true;
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index c3240898cc44..571c25d60710 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1080,6 +1080,8 @@ static bool raw_tp_prog_is_valid_access(int off, int size,
+ 		return false;
+ 	if (off % size != 0)
+ 		return false;
++	if (!prog->aux->attach_btf_id)
++		return true;
+ 	return btf_ctx_access(off, size, type, prog, info);
+ }
+ 
 -- 
-Florian
+2.17.1
+
