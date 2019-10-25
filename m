@@ -2,32 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2CBBE56BF
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 00:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E791E56ED
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 01:09:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726332AbfJYW5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 18:57:14 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55888 "EHLO
+        id S1726000AbfJYXJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 19:09:53 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58034 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfJYW5O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 18:57:14 -0400
+        with ESMTP id S1725847AbfJYXJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 19:09:53 -0400
 Received: from 33.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.33] helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1iO8W7-00018H-45; Sat, 26 Oct 2019 00:57:11 +0200
-Date:   Sat, 26 Oct 2019 00:57:10 +0200
+        id 1iO8E7-0008Dg-UA; Sat, 26 Oct 2019 00:38:36 +0200
+Date:   Sat, 26 Oct 2019 00:38:35 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Wenbo Zhang <ethercflow@gmail.com>
-Cc:     bpf@vger.kernel.org, yhs@fb.com, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3] bpf: add new helper fd2path for mapping a
- file descriptor to a pathname
-Message-ID: <20191025225710.GG14547@pc-63.home>
-References: <20191024143856.30562-1-ethercflow@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: Re: [PATCH bpf-next 5/5] bpf, testing: Add selftest to read/write
+ sockaddr from user space
+Message-ID: <20191025223835.GF14547@pc-63.home>
+References: <cover.1572010897.git.daniel@iogearbox.net>
+ <19ce2c58465c5fab4c94f23450a8b8d5016a35bb.1572010897.git.daniel@iogearbox.net>
+ <CAEf4BzajMmYLe8tY9NGV-34iYUFC_FrBp00a1uSgN-oW_F=+eg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191024143856.30562-1-ethercflow@gmail.com>
+In-Reply-To: <CAEf4BzajMmYLe8tY9NGV-34iYUFC_FrBp00a1uSgN-oW_F=+eg@mail.gmail.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 X-Authenticated-Sender: daniel@iogearbox.net
 X-Virus-Scanned: Clear (ClamAV 0.101.4/25613/Fri Oct 25 11:00:25 2019)
@@ -36,171 +40,94 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 10:38:56AM -0400, Wenbo Zhang wrote:
-[...]
-> index 2c2c29b49845..d73314a7e674 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1082,6 +1082,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
->  extern const struct bpf_func_proto bpf_strtol_proto;
->  extern const struct bpf_func_proto bpf_strtoul_proto;
->  extern const struct bpf_func_proto bpf_tcp_sock_proto;
-> +extern const struct bpf_func_proto bpf_fd2path_proto;
+On Fri, Oct 25, 2019 at 03:14:49PM -0700, Andrii Nakryiko wrote:
+> On Fri, Oct 25, 2019 at 1:44 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > Tested on x86-64 and Ilya was also kind enough to give it a spin on
+> > s390x, both passing with probe_user:OK there. The test is using the
+> > newly added bpf_probe_read_user() to dump sockaddr from connect call
+> > into BPF map and overrides the user buffer via bpf_probe_write_user():
+> >
+> >   # ./test_progs
+> >   [...]
+> >   #17 pkt_md_access:OK
+> >   #18 probe_user:OK
+> >   #19 prog_run_xattr:OK
+> >   [...]
+> >
+> > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> > Tested-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> > ---
+> >  .../selftests/bpf/prog_tests/probe_user.c     | 80 +++++++++++++++++++
+> >  .../selftests/bpf/progs/test_probe_user.c     | 33 ++++++++
+> >  2 files changed, 113 insertions(+)
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/probe_user.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_probe_user.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/probe_user.c b/tools/testing/selftests/bpf/prog_tests/probe_user.c
+> > new file mode 100644
+> > index 000000000000..e37761bda8a4
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/probe_user.c
+> > @@ -0,0 +1,80 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <test_progs.h>
+> > +
+> > +void test_probe_user(void)
+> > +{
+> > +#define kprobe_name "__sys_connect"
+> > +       const char *prog_name = "kprobe/" kprobe_name;
+> > +       const char *obj_file = "./test_probe_user.o";
+> > +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
+> > +               .relaxed_maps = true,
+> 
+> do we need relaxed_maps in this case?
 
-Don't think we need to expose it here. More below.
+Ah yeap, I'll remove. Test runs fine w/o it. Any particular reason you added it back in
+928ca75e59d7 ("selftests/bpf: switch tests to new bpf_object__open_{file, mem}() APIs")?
 
->  /* Shared helpers among cBPF and eBPF. */
->  void bpf_user_rnd_init_once(void);
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 4af8b0819a32..fdb37740951f 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -2773,6 +2773,15 @@ union bpf_attr {
->   *
->   * 		This helper is similar to **bpf_perf_event_output**\ () but
->   * 		restricted to raw_tracepoint bpf programs.
-> + *
-> + * int bpf_fd2path(char *path, u32 size, int fd)
-> + *	Description
-> + *		Get **file** atrribute from the current task by *fd*, then call
-> + *		**d_path** to get it's absolute path and copy it as string into
-> + *		*path* of *size*. The **path** also support pseudo filesystems
-> + *		(whether or not it can be mounted). The *size* must be strictly
-> + *		positive. On success, the helper makes sure that the *path* is
-> + *		NUL-terminated. On failure, it is filled with zeroes.
->   * 	Return
->   * 		0 on success, or a negative error in case of failure.
+> > +       );
+> > +       int err, results_map_fd, sock_fd, duration;
+> > +       struct sockaddr curr, orig, tmp;
+> > +       struct sockaddr_in *in = (struct sockaddr_in *)&curr;
+> > +       struct bpf_link *kprobe_link = NULL;
+> > +       struct bpf_program *kprobe_prog;
+> > +       struct bpf_object *obj;
+> > +       static const int zero = 0;
+> > +
+> 
+> [...]
+> 
+> > +
+> > +struct {
+> > +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> > +       __uint(max_entries, 1);
+> > +       __type(key, int);
+> > +       __type(value, struct sockaddr_in);
+> > +} results_map SEC(".maps");
+> > +
+> > +SEC("kprobe/__sys_connect")
+> > +int handle_sys_connect(struct pt_regs *ctx)
+> > +{
+> > +       void *ptr = (void *)PT_REGS_PARM2(ctx);
+> > +       struct sockaddr_in old, new;
+> > +       const int zero = 0;
+> > +
+> > +       bpf_probe_read_user(&old, sizeof(old), ptr);
+> > +       bpf_map_update_elem(&results_map, &zero, &old, 0);
+> 
+> could have used global data and read directly into it :)
 
-The 'Return' bits are now removed from prior helper description?
+Hehe, yeah sure, though that we have covered separately. :-) Wasn't planning to
+bug Ilya once again to recompile everything on his s390x box.
 
->   */
-> @@ -2888,7 +2897,8 @@ union bpf_attr {
->  	FN(sk_storage_delete),		\
->  	FN(send_signal),		\
->  	FN(tcp_gen_syncookie),		\
-> -	FN(skb_output),
-> +	FN(skb_output),			\
-> +	FN(fd2path),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 673f5d40a93e..6b44ed804280 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -2079,6 +2079,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
->  const struct bpf_func_proto bpf_get_current_comm_proto __weak;
->  const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
->  const struct bpf_func_proto bpf_get_local_storage_proto __weak;
-> +const struct bpf_func_proto bpf_fd2path_proto __weak;
-
-Ditto, not needed ...
-
->  const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
->  {
-> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-> index 5e28718928ca..8e6b4189a456 100644
-> --- a/kernel/bpf/helpers.c
-> +++ b/kernel/bpf/helpers.c
-> @@ -487,3 +487,39 @@ const struct bpf_func_proto bpf_strtoul_proto = {
->  	.arg4_type	= ARG_PTR_TO_LONG,
->  };
->  #endif
-> +
-> +BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
-> +{
-> +	struct fd f;
-> +	char *p;
-> +	int ret = -EINVAL;
-> +
-> +	f = fdget_raw(fd);
-
-What's the rationale for using the fdget_raw variant?
-
-> +	if (!f.file)
-> +		goto error;
-> +
-> +	p = d_path(&f.file->f_path, dst, size);
-> +	if (IS_ERR_OR_NULL(p)) {
-> +		ret = PTR_ERR(p);
-> +		goto error;
-> +	}
-> +
-> +	ret = strlen(p);
-> +	memmove(dst, p, ret);
-> +	dst[ret] = '\0';
-> +	goto end;
-> +
-> +error:
-> +	memset(dst, '0', size);
-> +end:
-> +	return ret;
-
-Where is fdput(f) in here?
-
-> +}
-> +
-> +const struct bpf_func_proto bpf_fd2path_proto = {
-> +	.func       = bpf_fd2path,
-> +	.gpl_only   = true,
-> +	.ret_type   = RET_INTEGER,
-> +	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
-> +	.arg2_type  = ARG_CONST_SIZE,
-> +	.arg3_type  = ARG_ANYTHING,
-> +};
-
-... as you can simply add the helper into kernel/trace/bpf_trace.c right
-away if it's only used form there anyway and make bpf_fd2path_proto static.
-
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index c3240898cc44..26f65abdb249 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  #endif
->  	case BPF_FUNC_send_signal:
->  		return &bpf_send_signal_proto;
-> +	case BPF_FUNC_fd2path:
-> +		return &bpf_fd2path_proto;
->  	default:
->  		return NULL;
->  	}
-> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> index 4af8b0819a32..fdb37740951f 100644
-> --- a/tools/include/uapi/linux/bpf.h
-> +++ b/tools/include/uapi/linux/bpf.h
-> @@ -2773,6 +2773,15 @@ union bpf_attr {
->   *
->   * 		This helper is similar to **bpf_perf_event_output**\ () but
->   * 		restricted to raw_tracepoint bpf programs.
-> + *
-> + * int bpf_fd2path(char *path, u32 size, int fd)
-> + *	Description
-> + *		Get **file** atrribute from the current task by *fd*, then call
-> + *		**d_path** to get it's absolute path and copy it as string into
-> + *		*path* of *size*. The **path** also support pseudo filesystems
-> + *		(whether or not it can be mounted). The *size* must be strictly
-> + *		positive. On success, the helper makes sure that the *path* is
-> + *		NUL-terminated. On failure, it is filled with zeroes.
->   * 	Return
->   * 		0 on success, or a negative error in case of failure.
->   */
-> @@ -2888,7 +2897,8 @@ union bpf_attr {
->  	FN(sk_storage_delete),		\
->  	FN(send_signal),		\
->  	FN(tcp_gen_syncookie),		\
-> -	FN(skb_output),
-> +	FN(skb_output),			\
-> +	FN(fd2path),
->  
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 933f39381039..32883cca7ea7 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-
-Would be good to split out selftests into a dedicated patch.
-
-Thanks,
-Daniel
+> > +       __builtin_memset(&new, 0xab, sizeof(new));
+> > +       bpf_probe_write_user(ptr, &new, sizeof(new));
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > --
+> > 2.21.0
+> >
