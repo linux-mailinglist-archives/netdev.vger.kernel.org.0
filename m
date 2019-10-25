@@ -2,90 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0106E477B
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 11:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7AAFE4788
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 11:41:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394375AbfJYJiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 05:38:03 -0400
-Received: from mail.jv-coder.de ([5.9.79.73]:55362 "EHLO mail.jv-coder.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730158AbfJYJiC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 05:38:02 -0400
-Received: from [10.61.40.7] (unknown [37.156.92.209])
-        by mail.jv-coder.de (Postfix) with ESMTPSA id 6619B9F64C;
-        Fri, 25 Oct 2019 09:38:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jv-coder.de; s=dkim;
-        t=1571996280; bh=3q0asO118tF1DALeYypzSAxsX3AgnykiKoF4WVnAhMk=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version;
-        b=UVm8WGJMD0FTuKmVfovQfnJa6AG7n9u5+ujc9faJRaNhjORK+A1BzW65fGe5l7HYD
-         kCrzw1sSBFUQ3k8KUJFF1w0VJzH/sjSQ7Y2ZUIwXJ3iixPwsgLEanPzVt+1hwZwuiY
-         0OCOM0ocPn4Qcfogk8ChIpv5DOvw5YYggER36tLc=
-Subject: Re: [PATCH v2 1/1] xfrm : lock input tasklet skb queue
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Tom Rix <trix@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <CACVy4SUkfn4642Vne=c1yuWhne=2cutPZQ5XeXz_QBz1g67CrA@mail.gmail.com>
- <20191024103134.GD13225@gauss3.secunet.de>
-From:   Joerg Vehlow <lkml@jv-coder.de>
-Message-ID: <ad094bfc-ebb3-012b-275b-05fb5a8f86e5@jv-coder.de>
-Date:   Fri, 25 Oct 2019 11:37:59 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S2438752AbfJYJlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 05:41:40 -0400
+Received: from mail-lj1-f177.google.com ([209.85.208.177]:46682 "EHLO
+        mail-lj1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436710AbfJYJlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 05:41:40 -0400
+Received: by mail-lj1-f177.google.com with SMTP id k20so676980ljk.13
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 02:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=6NfBzBODp+mvvMTG0sObTS1pzfB38qWD7gIfxONgitA=;
+        b=yQ7gCExzdPxwkXltZC+lHDsW6hVL1LMHb6vnSzWaWs/NgO0fEFdjqjCX1kB4yKn8dy
+         Ql1/h7AuQjOhw8NI9R3ewTyQf6nZOzPCYpSxA6ih9daDMEJWImQI2cdgWxkQhgNd7FR/
+         lWM81f0OuRQ34vZCSCF3J0MrI6QeYREW0ELsM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=6NfBzBODp+mvvMTG0sObTS1pzfB38qWD7gIfxONgitA=;
+        b=qXaSe3Oh+JaNXe3iqwCKvmHrgIZnskB36XJo17i/qlAbZBFApxhOsrszu4L69eHnDB
+         6hcXQBQwhHaotvXIaExaz86Pk4AJrjG6sdkfZYc3J5Y15z1L+0I2J6jq6C6wUv8++z38
+         5kGDz0pU+J5A1klhT2Cbk02eMrbfYJ6WnhYteNEVzmkZFW/Uhr+xqRMjEzfywEoARH1B
+         54W+8lcKas9uHHw/VYeBFIEyNpfPuuCIvN1OvOhWEOKc4+acSnITBU0xc4mDvri5FOFG
+         9Fecm/TXQJsPnJFuQQa9xPC+J72ce9E4i1yWA/MaFIAI0dkm7RQxt8Y5oqJzrxi75bqN
+         +P7g==
+X-Gm-Message-State: APjAAAXe7wIPnd62gZD+jZX7bmtUPUq+DGtnu+vw89329ydEJ7Ezq8qX
+        KBQ8JFdWvX4UdUReZbXFM1S+DQ==
+X-Google-Smtp-Source: APXvYqx42XUvXibIk8HAf3vkyMQNpwJARHxfEFCRIFuJYZ1UWBzpHnKMXcXkJFvvx1OnXzCbwb/fIw==
+X-Received: by 2002:a2e:87ca:: with SMTP id v10mr1709790ljj.43.1571996498157;
+        Fri, 25 Oct 2019 02:41:38 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id y8sm555637ljh.21.2019.10.25.02.41.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 02:41:37 -0700 (PDT)
+References: <20191022113730.29303-1-jakub@cloudflare.com> <20191022113730.29303-3-jakub@cloudflare.com> <5db1da20174b1_5c282ada047205c046@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com
+Subject: Re: [RFC bpf-next 2/5] bpf, sockmap: Allow inserting listening TCP sockets into SOCKMAP
+In-reply-to: <5db1da20174b1_5c282ada047205c046@john-XPS-13-9370.notmuch>
+Date:   Fri, 25 Oct 2019 11:41:36 +0200
+Message-ID: <87k18tcgbz.fsf@cloudflare.com>
 MIME-Version: 1.0
-In-Reply-To: <20191024103134.GD13225@gauss3.secunet.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=1.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
-        DKIM_VALID_AU,DKIM_VALID_EF,HELO_MISC_IP,RCVD_IN_DNSWL_BLOCKED,
-        RDNS_NONE autolearn=no autolearn_force=no version=3.4.2
-X-Spam-Level: *
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.jv-coder.de
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-I always expected this to be applied to the RT patches. That's why
-I originally send my patch to to Sebastian, Thomas and Steven (I added
-them again now. The website of the rt patches says patches for the
-CONFIG_REEMPT_RT patchset should be send to lkml.
-
-I hope one of the rt patch maintainers will reply here.
-
-Jörg
-
-Am 24.10.2019 um 12:31 schrieb Steffen Klassert:
-> On Tue, Oct 22, 2019 at 05:22:04PM -0700, Tom Rix wrote:
->> On PREEMPT_RT_FULL while running netperf, a corruption
->> of the skb queue causes an oops.
+On Thu, Oct 24, 2019 at 07:06 PM CEST, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+>> In order for SOCKMAP type to become a generic collection for storing socket
+>> references we need to loosen the checks in update callback.
 >>
->> This appears to be caused by a race condition here
->>          __skb_queue_tail(&trans->queue, skb);
->>          tasklet_schedule(&trans->tasklet);
->> Where the queue is changed before the tasklet is locked by
->> tasklet_schedule.
+>> Currently SOCKMAP requires the TCP socket to be in established state, which
+>> prevents us from using it to keep references to listening sockets.
 >>
->> The fix is to use the skb queue lock.
+>> Change the update pre-checks so that it is sufficient for socket to be in a
+>> hash table, i.e. have a local address/port, to be inserted.
 >>
->> This is the original work of Joerg Vehlow <joerg.vehlow@aox-tech.de>
->> https://lkml.org/lkml/2019/9/9/111
->>    xfrm_input: Protect queue with lock
+>> Return -EINVAL if the condition is not met to be consistent with
+>> REUSEPORT_SOCKARRY map type.
 >>
->>    During the skb_queue_splice_init the tasklet could have been preempted
->>    and __skb_queue_tail called, which led to an inconsistent queue.
->>
->> ifdefs for CONFIG_PREEMPT_RT_FULL added to reduce runtime effects
->> on the normal kernel.
-> Has Herbert commented on your initial patch, please
-> fix PREEMPT_RT_FULL instead. There are certainly many
-> more codepaths that take such assumptions. You can not
-> fix this by distributing a spin_lock_irqsave here
-> and there.
+>> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+>> ---
 >
+> We need to also have some tests then to verify redirecting to this listen socket
+> does the correct thing. Once its in the map we can redirect (ingress or egress)
+> to it and need to be sure the semantics are sane.
+
+You're right. The redirect BPF helpers that operate on SOCMAP might be
+relying on an assumption that sockets are in established state. I need
+look into that.
+
+Thanks,
+Jakub
 
