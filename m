@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F177E4E0B
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3009E4E05
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:04:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395197AbfJYOEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:04:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51050 "EHLO mail.kernel.org"
+        id S2395185AbfJYOEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:04:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51114 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732091AbfJYN4j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:56:39 -0400
+        id S2388595AbfJYN4k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:56:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4AFED222C4;
-        Fri, 25 Oct 2019 13:56:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B35E9222CB;
+        Fri, 25 Oct 2019 13:56:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011798;
-        bh=Uo/2wz8IumRDL/GCR/T0JDnrYH1c4veTbSER1Hd9qyE=;
+        s=default; t=1572011799;
+        bh=6W5HNADGc4CabEvBEhYpsYhjBmxvYzZ4R4Sdm9nqzpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1kbKYys2veWQpxlNSWjG5I6PZF08L3IBqlGofmcdDzIUzOixQiUeyBoVCE9H2m3AL
-         +OwKjWtJ9OZZCT5T/XXyWcxdXkmaZUA8k/+1jLwanAQhhnCYd13MvD7hralS+UWiM8
-         6WL5VudorhPgSxzkgm3SHt0fm/qRmYhsHrLWh2Ho=
+        b=uX9yq698843TN0cSwKG3vejAj5z9PgT+XW3Pa28ZnAzWj9JpnHCG9wReD2luhnWuW
+         u6N8dibdkwtEHJD7z3rtE6oaL8VnytTsTvbd/zCaZ0eL5ndv6vcAk8FxhEhwUW4IJE
+         fzMzxgAnuklHa9h7VCU98f+Af8keubXKFfHsAs74=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com,
-        syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com,
-        Edward Cree <ecree@solarflare.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 19/37] net: ipv6: fix listify ip6_rcv_finish in case of forwarding
-Date:   Fri, 25 Oct 2019 09:55:43 -0400
-Message-Id: <20191025135603.25093-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 20/37] sch_netem: fix rcu splat in netem_enqueue()
+Date:   Fri, 25 Oct 2019 09:55:44 -0400
+Message-Id: <20191025135603.25093-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135603.25093-1-sashal@kernel.org>
 References: <20191025135603.25093-1-sashal@kernel.org>
@@ -46,76 +44,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit c7a42eb49212f93a800560662d17d5293960d3c3 ]
+[ Upstream commit 159d2c7d8106177bd9a986fd005a311fe0d11285 ]
 
-We need a similar fix for ipv6 as Commit 0761680d5215 ("net: ipv4: fix
-listify ip_rcv_finish in case of forwarding") does for ipv4.
+qdisc_root() use from netem_enqueue() triggers a lockdep warning.
 
-This issue can be reprocuded by syzbot since Commit 323ebb61e32b ("net:
-use listified RX for handling GRO_NORMAL skbs") on net-next. The call
-trace was:
+__dev_queue_xmit() uses rcu_read_lock_bh() which is
+not equivalent to rcu_read_lock() + local_bh_disable_bh as far
+as lockdep is concerned.
 
-  kernel BUG at include/linux/skbuff.h:2225!
-  RIP: 0010:__skb_pull include/linux/skbuff.h:2225 [inline]
-  RIP: 0010:skb_pull+0xea/0x110 net/core/skbuff.c:1902
-  Call Trace:
-    sctp_inq_pop+0x2f1/0xd80 net/sctp/inqueue.c:202
-    sctp_endpoint_bh_rcv+0x184/0x8d0 net/sctp/endpointola.c:385
-    sctp_inq_push+0x1e4/0x280 net/sctp/inqueue.c:80
-    sctp_rcv+0x2807/0x3590 net/sctp/input.c:256
-    sctp6_rcv+0x17/0x30 net/sctp/ipv6.c:1049
-    ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
-    ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
-    NF_HOOK include/linux/netfilter.h:305 [inline]
-    NF_HOOK include/linux/netfilter.h:299 [inline]
-    ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
-    dst_input include/net/dst.h:442 [inline]
-    ip6_sublist_rcv_finish+0x98/0x1e0 net/ipv6/ip6_input.c:84
-    ip6_list_rcv_finish net/ipv6/ip6_input.c:118 [inline]
-    ip6_sublist_rcv+0x80c/0xcf0 net/ipv6/ip6_input.c:282
-    ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:316
-    __netif_receive_skb_list_ptype net/core/dev.c:5049 [inline]
-    __netif_receive_skb_list_core+0x5fc/0x9d0 net/core/dev.c:5097
-    __netif_receive_skb_list net/core/dev.c:5149 [inline]
-    netif_receive_skb_list_internal+0x7eb/0xe60 net/core/dev.c:5244
-    gro_normal_list.part.0+0x1e/0xb0 net/core/dev.c:5757
-    gro_normal_list net/core/dev.c:5755 [inline]
-    gro_normal_one net/core/dev.c:5769 [inline]
-    napi_frags_finish net/core/dev.c:5782 [inline]
-    napi_gro_frags+0xa6a/0xea0 net/core/dev.c:5855
-    tun_get_user+0x2e98/0x3fa0 drivers/net/tun.c:1974
-    tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2020
+WARNING: suspicious RCU usage
+5.3.0-rc7+ #0 Not tainted
+-----------------------------
+include/net/sch_generic.h:492 suspicious rcu_dereference_check() usage!
 
-Fixes: d8269e2cbf90 ("net: ipv6: listify ipv6_rcv() and ip6_rcv_finish()")
-Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
-Reported-by: syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com
-Reported-by: syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Acked-by: Edward Cree <ecree@solarflare.com>
+other info that might help us debug this:
+
+rcu_scheduler_active = 2, debug_locks = 1
+3 locks held by syz-executor427/8855:
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:92 [inline]
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: ip_finish_output2+0x2dc/0x2570 net/ipv4/ip_output.c:214
+ #1: 00000000b5525c01 (rcu_read_lock_bh){....}, at: __dev_queue_xmit+0x20a/0x3650 net/core/dev.c:3804
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_xmit_skb net/core/dev.c:3502 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_queue_xmit+0x14b8/0x3650 net/core/dev.c:3838
+
+stack backtrace:
+CPU: 0 PID: 8855 Comm: syz-executor427 Not tainted 5.3.0-rc7+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ lockdep_rcu_suspicious+0x153/0x15d kernel/locking/lockdep.c:5357
+ qdisc_root include/net/sch_generic.h:492 [inline]
+ netem_enqueue+0x1cfb/0x2d80 net/sched/sch_netem.c:479
+ __dev_xmit_skb net/core/dev.c:3527 [inline]
+ __dev_queue_xmit+0x15d2/0x3650 net/core/dev.c:3838
+ dev_queue_xmit+0x18/0x20 net/core/dev.c:3902
+ neigh_hh_output include/net/neighbour.h:500 [inline]
+ neigh_output include/net/neighbour.h:509 [inline]
+ ip_finish_output2+0x1726/0x2570 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:308 [inline]
+ __ip_finish_output+0x5fc/0xb90 net/ipv4/ip_output.c:290
+ ip_finish_output+0x38/0x1f0 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip_mc_output+0x292/0xf40 net/ipv4/ip_output.c:417
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0xbb/0x190 net/ipv4/ip_output.c:125
+ ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1555
+ udp_send_skb.isra.0+0x6b2/0x1160 net/ipv4/udp.c:887
+ udp_sendmsg+0x1e96/0x2820 net/ipv4/udp.c:1174
+ inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:657
+ ___sys_sendmsg+0x3e2/0x920 net/socket.c:2311
+ __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2439
+ do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/ip6_input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/net/sch_generic.h | 5 +++++
+ net/sched/sch_netem.c     | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 2b6d430223837..acf0749ee5bbd 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -80,8 +80,10 @@ static void ip6_sublist_rcv_finish(struct list_head *head)
- {
- 	struct sk_buff *skb, *next;
- 
--	list_for_each_entry_safe(skb, next, head, list)
-+	list_for_each_entry_safe(skb, next, head, list) {
-+		skb_list_del_init(skb);
- 		dst_input(skb);
-+	}
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index c44da48de7dfd..c9cd5086bd544 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -421,6 +421,11 @@ static inline struct Qdisc *qdisc_root(const struct Qdisc *qdisc)
+ 	return q;
  }
  
- static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
++static inline struct Qdisc *qdisc_root_bh(const struct Qdisc *qdisc)
++{
++	return rcu_dereference_bh(qdisc->dev_queue->qdisc);
++}
++
+ static inline struct Qdisc *qdisc_root_sleeping(const struct Qdisc *qdisc)
+ {
+ 	return qdisc->dev_queue->qdisc_sleeping;
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 86350fe5cfc8f..15f8f24c190d4 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -474,7 +474,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	 * skb will be queued.
+ 	 */
+ 	if (count > 1 && (skb2 = skb_clone(skb, GFP_ATOMIC)) != NULL) {
+-		struct Qdisc *rootq = qdisc_root(sch);
++		struct Qdisc *rootq = qdisc_root_bh(sch);
+ 		u32 dupsave = q->duplicate; /* prevent duplicating a dup... */
+ 
+ 		q->duplicate = 0;
 -- 
 2.20.1
 
