@@ -2,91 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E111E445F
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:27:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAC21E447F
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:33:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393347AbfJYH1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 03:27:12 -0400
-Received: from mout.kundenserver.de ([212.227.17.24]:46869 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389667AbfJYH1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 03:27:11 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MNbxN-1id7L519cB-00P8aS; Fri, 25 Oct 2019 09:27:00 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Mao Wenan <maowenan@huawei.com>,
+        id S2393242AbfJYHdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 03:33:08 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34864 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726479AbfJYHdI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 03:33:08 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id C7075AFB7;
+        Fri, 25 Oct 2019 07:33:05 +0000 (UTC)
+Date:   Fri, 25 Oct 2019 09:33:04 +0200
+From:   Daniel Wagner <dwagner@suse.de>
+To:     Stefan Wahren <wahrenst@gmx.net>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net] net: dsa: sja1105: improve NET_DSA_SJA1105_TAS dependency
-Date:   Fri, 25 Oct 2019 09:26:35 +0200
-Message-Id: <20191025072654.2860705-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rt-users@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] net: usb: lan78xx: Use phy_mac_interrupt() for interrupt
+ handling
+Message-ID: <20191025073304.zqw2yxaulkyopk5y@beryllium.lan>
+References: <20191018082817.111480-1-dwagner@suse.de>
+ <20191018131532.dsfhyiilsi7cy4cm@linutronix.de>
+ <20191022101747.001b6d06@cakuba.netronome.com>
+ <20191023074719.gcov5xfrcvns5tlg@beryllium.lan>
+ <20191023080640.zcw2f2v7fpanoewm@beryllium.lan>
+ <20191024104317.32bp32krrjmfb36p@linutronix.de>
+ <20191024110610.lwwy75dkgwjdxml6@beryllium.lan>
+ <20191024141216.wz2dcdxy4mrl2q5a@beryllium.lan>
+ <78ab19da-2f30-86e0-fad1-667f5e6ba8b1@gmx.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:h1VgGfUU1DXRVft0/mll3FnC14dAvqdBRJeJvlRH1rdPVsMM8yi
- 5dtnnHHNpUPBqqkmxSQr5LrHBaHbneRyL5yGl0ewMVCu6LVEiIleuNU0KL0PDrcXtxGG4S+
- nLon47qtOU3fdT3x8RVTEo4Yx3XUDq3NM8wToKW5QA9UF3VP9IuTwr9zpC0S0jN78F1ABla
- 2f8KMxSIqWHP/ztB1IAZQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:C7X5cOwiq2o=:ImT0kAVjbWxKk5ZyNCvp+O
- nhZsqKrVFJskLQCL+6miXsnb2XuGevt4LXVWuQZ/XtiYXfhgdMJhUpfHtRUrFQftsdTmTnEsT
- hx7J4qyyaytoPF/FKCP/KCFwlFBrxGq+L6KNAL4rB/PHh8JCHZSixx5lwe+2bJ7P/OaKhFSG8
- 2MRIoZcvfq2wS5Pnf4e0QxhtqEK7uv+3Ej9fS0qTvWwaFS9jC97gBKgFaIrefdCxAaWuRVP96
- xa2DwfaJKOigQtU/fjih+t39yky9KRWjjM9GTtdabE2mTMVi45ItWw8ySqLm2PDzsIie6aTbI
- wTGinSFvzcGBBDMta9gx/xeS9OgHKvu9wsQ935H1ggurJYVb0US/5+Et55eRXaL0WoIoo/Hpn
- XZHwTTzByNXw6wJFxOktaEltvckO2HsEKH3GL6VQAvcIUWbcxYCr8A56Gugit3HofzwChHptX
- /CGDSFUdKhD4Gu2zFDG/FbHkpM9Xzylz+xTTvTwjIVkJeGoshSWcXHnURbOHefR7cUTOTkyks
- kPiIQxxmopwQOG9jwZ8Mw7pEfNViX67tDGAxWKBXwjgLi5ocSII0QV0/QjIicEwisajk5dSeK
- 1d4cmoieptP1SyJ0qdKY0ZNmIRIr4ccV1UqKRfDIaqGRnSmoBWPBYi1bluDNrq+ImJHBHBpJY
- 2rVcqWiR1ZugemGTlWNNGtz61ngECNyyLmD43f4twAhhhPK4ekygvavglOZGjcwZH0SEqYJqz
- vpO+S3sZyKpRx328QmemIVml0DRgJEEsOZHX6keYl9lVW3LxlQAH7OukTVTHQWMiBGNWhOLgE
- 97A8Bk2a5+rICdVoinXlRnADJwelwLmBqsYkEZMVQZHxt2sSj4Gjh2BRfS+q8D1QLRzPz65rr
- aCr328awhq71stCyuQdA==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <78ab19da-2f30-86e0-fad1-667f5e6ba8b1@gmx.net>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-An earlier bugfix introduced a dependency on CONFIG_NET_SCH_TAPRIO,
-but this missed the case of NET_SCH_TAPRIO=m and NET_DSA_SJA1105=y,
-which still causes a link error:
+Hi Stefan,
 
-drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_setup_tc_taprio':
-sja1105_tas.c:(.text+0x5c): undefined reference to `taprio_offload_free'
-sja1105_tas.c:(.text+0x3b4): undefined reference to `taprio_offload_get'
-drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_tas_teardown':
-sja1105_tas.c:(.text+0x6ec): undefined reference to `taprio_offload_free'
+On Thu, Oct 24, 2019 at 07:25:37PM +0200, Stefan Wahren wrote:
+> Am 24.10.19 um 16:12 schrieb Daniel Wagner:
+> > On Thu, Oct 24, 2019 at 01:06:10PM +0200, Daniel Wagner wrote:
+> >
+> > Sebastians suggested to try the RPi kernel. The rpi-5.2.y kernel
+> > behaves exactly the same. That is one PHY interrupt and later on NFS
+> > timeouts.
+> >
+> > According their website the current shipped RPi kernel is in version
+> > 4.18. Here is what happends with rpi-4.18.y:
+> 
+> No, it's 4.19. It's always a LTS kernel.
 
-Change the dependency to only allow selecting the TAS code when it
-can link against the taprio code.
+Ah okay and obviously, 4.19 works also nicely. No surprise here.
 
-Fixes: a8d570de0cc6 ("net: dsa: sja1105: Add dependency for NET_DSA_SJA1105_TAS")
-Fixes: 317ab5b86c8e ("net: dsa: sja1105: Configure the Time-Aware Scheduler via tc-taprio offload")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/net/dsa/sja1105/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> I'm curious, what's the motivation behind this? The rpi tree contains
+> additional hacks, so i'm not sure the results are comparable. Also the
+> USB host driver is a different one.
 
-diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
-index f40b248f0b23..ffac0ea4e8d5 100644
---- a/drivers/net/dsa/sja1105/Kconfig
-+++ b/drivers/net/dsa/sja1105/Kconfig
-@@ -26,8 +26,8 @@ config NET_DSA_SJA1105_PTP
- 
- config NET_DSA_SJA1105_TAS
- 	bool "Support for the Time-Aware Scheduler on NXP SJA1105"
--	depends on NET_DSA_SJA1105
--	depends on NET_SCH_TAPRIO
-+	depends on NET_DSA_SJA1105 && NET_SCH_TAPRIO
-+	depends on NET_SCH_TAPRIO=y || NET_DSA_SJA1105=m
- 	help
- 	  This enables support for the TTEthernet-based egress scheduling
- 	  engine in the SJA1105 DSA driver, which is controlled using a
--- 
-2.20.0
+The idea was to see what the PHY interrupt is doing. As it turns out
+the RPi tree and mainline have almost the same infrastructure code
+here (irqdomain). There are some additional tweaks in the RPi
+kernel. My initial revert patch removed all this infrastructure code,
+which is probably not a good idea. If the way forward is to steal the
+bits and pieces from the RPi tree which should keep this code in
+place.
+
+With the local_irq_disable() patch, which I am going to send asap, the
+warning which everyone is seeing should be gone. So one bug down.
+
+> > There are no NFS timeouts and commands like 'apt update' work reasoble
+> > fast. So no long delays or hangs. Time to burn this hardware.
+> 
+> Since enabling lan78xx for Raspberry Pi 3B+, we found a lot of driver
+> issues. So i'm not really surprised, that there are still more of them.
+
+If the vendor would work on fixing the bugs it would not be real
+problem.
+
+Thanks,
+Daniel
 
