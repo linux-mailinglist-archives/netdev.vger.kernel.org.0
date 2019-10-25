@@ -2,148 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9AEEE50A8
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 17:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85156E50C5
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 18:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503721AbfJYP70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 11:59:26 -0400
-Received: from mail-il1-f196.google.com ([209.85.166.196]:35138 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503539AbfJYP70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 11:59:26 -0400
-Received: by mail-il1-f196.google.com with SMTP id p8so2301218ilp.2;
-        Fri, 25 Oct 2019 08:59:24 -0700 (PDT)
+        id S2504016AbfJYQGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 12:06:13 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:39322 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729004AbfJYQGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 12:06:13 -0400
+Received: by mail-io1-f65.google.com with SMTP id y12so3017432ioa.6
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 09:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=KRmEjEeRfORW7Zhwzm+56iwdVA+DMK8pNW+2olRUCp4=;
-        b=SfZiftI6fHGsdlZjwUUehK4oQVkDe+GcUEk+Exvuz6f47K9Zt2Ug6DBxpaFijvTjjv
-         XdeogX16PYIoiww/OuWRfqbb7RxRTwnPVujzXbhJqbcg84F6aFYKPmVxNgvQHITM94Pw
-         4S5WEOVwZNi58t5HOqhW5lFWAYwRpCyy/NccDX/vOu4BlfP7tR4pC1aT2yEslWJYloHL
-         8CMDgzrO+U+nAQmyHg3ocpI5uTY1RaXfOLyPknGiMflVUq99+RTWcYHUsseISkoq+PsS
-         2ncuJlUjx9j0X9l6MG0DDOeRRMtDOqM08GuX9LaPG6OvlKEirbxgzQXXdTdMMIqLsms/
-         8XsQ==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MaGqyIzCtt/ebql6HId0L1yRJIIFsMXkS/FqCE/23v0=;
+        b=GZlQGr4o7O+HUfzHe2Tz/W18Ci/ktLY3dM/bePcnhzFje1F074o5r7UVcpt7C3eLhx
+         SaPU3u8z4LrzLOGhtvDvq5Ewbf+36FJX/6p2YGT5G48j1lSvqXba/ROkTDKMUtXRDxXe
+         Xqs+h3CkBPWg0jL0VqQ3xlUa5A+61yAOMFwgjmAhIIyDpaMEP12yp1ABzgx/e116MAYZ
+         YyBZX7zxlXQyTpKELbW8fnr92pggft4gqfdBRRo1ck0t7cwWABjCpL8h7lIpFVqR4OT4
+         o/UG5WL2mTzvmc+RctMwav1Vnf+qscRFgSj6z470CE6bzbXd39baoThxq3FpiJ4tgTOQ
+         iRwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=KRmEjEeRfORW7Zhwzm+56iwdVA+DMK8pNW+2olRUCp4=;
-        b=Mk7H2ZTXXA6Bkw5TCwqQci5FNOeUgBQJlUGCOAeFb8KL0FyiVHCmtADeNTPPSK/cyH
-         jOyvI9Kjbv3JDKqVzCVgmu3JFvWeOJWcDBvkvKTB0EG8wOgCcshdOCQiENfExAjh8lgZ
-         17z8Gg6W7C0aznsb7uskQNLLUTzxIgWrhkArAxfiFb0NEVHWi4StNIHgUzZ4lH5OyNWP
-         If1uCibKr9GH1D/EcEyWVz9AlZOizz7x/KYclQIrr1hGv8lLvRHW+WBjBH5saE/2rVG+
-         X8waQVh4+MF9aTufsszL+0ZMpLVLs1OVDAkGQVjCIfz3k80KOZ0XXnrn1yMBlnVYnrQ3
-         isXw==
-X-Gm-Message-State: APjAAAUubYKfYzPC1AX/EBRVu3pQXeVyLxHhMV7580SlVAxRrC4DM1aw
-        IUBWQ/toSNOF4Mcq1OLyqAs=
-X-Google-Smtp-Source: APXvYqzBkVbIkEeNMmIIPAKKDFBDoq/QhCCNv5py+tutS6tUfAuAtkSN1PqczvXLysm7f+Dauts+pQ==
-X-Received: by 2002:a92:6a04:: with SMTP id f4mr4928570ilc.252.1572019163695;
-        Fri, 25 Oct 2019 08:59:23 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id b6sm200670ioc.79.2019.10.25.08.59.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 08:59:23 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 08:59:15 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Message-ID: <5db31bd33afbf_36802aec12c585b861@john-XPS-13-9370.notmuch>
-In-Reply-To: <CAEf4BzZ2SrR0CBhbXo64bwWuBq-=JDS6p6=KRaLtH1bCGBwa3w@mail.gmail.com>
-References: <157141046629.11948.8937909716570078019.stgit@john-XPS-13-9370>
- <CAEf4Bzbsg1dMBqPAL4NjXwAQ=nW-OX-Siv5NpC4Ad5ZY1ny4uQ@mail.gmail.com>
- <5dae8eafbf615_2abd2b0d886345b4b2@john-XPS-13-9370.notmuch>
- <20191022072023.GA31343@pc-66.home>
- <CAEf4BzbBoE=mVyxS9OHNn6eSvfEMgbcqiBh2b=nVmhWiLGEBNQ@mail.gmail.com>
- <5db1f389aa6f2_5c282ada047205c012@john-XPS-13-9370.notmuch>
- <CAEf4BzZ2SrR0CBhbXo64bwWuBq-=JDS6p6=KRaLtH1bCGBwa3w@mail.gmail.com>
-Subject: Re: [bpf-next PATCH] bpf: libbpf, support older style kprobe load
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MaGqyIzCtt/ebql6HId0L1yRJIIFsMXkS/FqCE/23v0=;
+        b=WMhE0av21SaWQ3/8oqm+KcgzABKMA1YFib/YR68jNqV6einkhNplFAStcuOMtQyViX
+         HvVYRMM6fG6srL43NSYHBwhiO2O/urN3lUwWA3+hjMYR1dQSVVD7fWdki8dyXPGjwBgC
+         uGHAhVC6mPvRcw9YoC4zqtUk7Dfcz3wnmqEElZfZOyGMt4m2iPVJuXCYYKwCCKH1GGUx
+         O41a9L0MfIuqQglCX4Oj0OSquosC8ZbqRVI/6LkbIFOFKeTgZ4ByEn4bms9omKuS6FJI
+         aQ+cjKNvM18P7OhywdZAwci4+bBDOO8x1lieMBVLhzDedTx/jKZPUeLzwSEhkWQJ1ei/
+         RsTQ==
+X-Gm-Message-State: APjAAAX6jV7Tk2wzxgxBLym2drapWbVtrqI4M8AjvOsZi/FO/hWFjYAl
+        2bQYTI+MWKlidHVVH6vtojSDeQ==
+X-Google-Smtp-Source: APXvYqx+FqYVCoLx2xg7vFZyQeEwvrMFsgmy097yJ2JXoD3XM7KAt6twKr73IpLi2T5wOHwe1XOIFQ==
+X-Received: by 2002:a5d:8415:: with SMTP id i21mr4501679ion.44.1572019572062;
+        Fri, 25 Oct 2019 09:06:12 -0700 (PDT)
+Received: from [10.0.0.194] ([64.26.149.125])
+        by smtp.googlemail.com with ESMTPSA id d6sm296531ioo.83.2019.10.25.09.06.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Oct 2019 09:06:09 -0700 (PDT)
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+ <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+ <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
+ <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
+ <vbftv7wuciu.fsf@mellanox.com>
+ <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
+ <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
+ <vbfsgngua3p.fsf@mellanox.com>
+ <7488b589-4e34-d94e-e8e1-aa8ab773891e@mojatatu.com>
+Message-ID: <43d4c598-88eb-27b3-a4bd-c777143acf89@mojatatu.com>
+Date:   Fri, 25 Oct 2019 12:06:08 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <7488b589-4e34-d94e-e8e1-aa8ab773891e@mojatatu.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko wrote:
-> On Thu, Oct 24, 2019 at 11:55 AM John Fastabend
-> <john.fastabend@gmail.com> wrote:
-> >
-> > Andrii Nakryiko wrote:
-> > > On Tue, Oct 22, 2019 at 12:20 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > >
-> > > > On Mon, Oct 21, 2019 at 10:07:59PM -0700, John Fastabend wrote:
-> > > > > Andrii Nakryiko wrote:
-> > > > > > On Sat, Oct 19, 2019 at 1:30 AM John Fastabend <john.fastabend@gmail.com> wrote:
-> > > > > > >
-> > > > > > > Following ./Documentation/trace/kprobetrace.rst add support for loading
-> > > > > > > kprobes programs on older kernels.
-> > > > > >
-> > > > > > My main concern with this is that this code is born bit-rotten,
-> > > > > > because selftests are never testing the legacy code path. How did you
-> > > > > > think about testing this and ensuring that this keeps working going
-> > > > > > forward?
-> > > > >
-> > > > > Well we use it, but I see your point and actually I even broke the retprobe
-> > > > > piece hastily fixing merge conflicts in this patch. When I ran tests on it
-> > > > > I missed running retprobe tests on the set of kernels that would hit that
-> > > > > code.
-> > > >
-> > > > If it also gets explicitly exposed as bpf_program__attach_legacy_kprobe() or
-> > > > such, it should be easy to add BPF selftests for that API to address the test
-> > > > coverage concern. Generally more selftests for exposed libbpf APIs is good to
-> > > > have anyway.
-> > > >
-> > >
-> > > Agree about tests. Disagree about more APIs, especially that the only
-> > > difference will be which underlying kernel machinery they are using to
-> > > set everything up. We should ideally avoid exposing that to users.
-> >
-> > Maybe a build flag to build with only the older style supported for testing?
-> > Then we could build, test in selftests at least. Be clear the flag is only
-> > for testing and can not be relied upon.
+On 2019-10-25 11:43 a.m., Jamal Hadi Salim wrote:
+> On 2019-10-25 11:18 a.m., Vlad Buslov wrote:
+>>
 > 
-> Build flag will necessitate another "flavor" of test_progs just to
-> test this. That seems like an overkill.
+>> The problem with this approach is that it only works when actions are
+>> created through act API, and not when they are created together with
+>> filter by cls API which doesn't expect or parse TCA_ROOT. That is why I
+>> wanted to have something in tcf_action_init_1() which is called by both
+>> of them.
+>>
 > 
-> How about this approach:
+> Aha. So the call path for tcf_action_init_1() via cls_api also needs
+> to have this infra. I think i understand better what you wanted
+> to do earlier with changing those enums.
+> 
 
-Sure sounds good. I'll do this next week along with the uprobe pieces
-as well so we can get both kprobe/uprobe running on older kernels.
+Hold on. Looking more at the code, direct call for tcf_action_init_1()
+from the cls code path is for backward compat of old policer approach.
+I think even modern iproute2 doesnt support that kind of call
+anymore. So you can pass NULL there for the *flags.
 
-> 
-> $ cat silent-features.c
-> #include <stdio.h>
-> 
-> int __attribute__((weak)) __bpf_internal__force_legacy_kprobe;
-> 
-> int main() {
->         if (__bpf_internal__force_legacy_kprobe)
->                 printf("LEGACY MODE!\n");
->         else
->                 printf("FANCY NEW MODE!\n");
->         return 0;
-> }
-> $ cat silent-features-testing.c
-> int __bpf_internal__force_legacy_kprobe = 1;
-> $ cc -g -O2 silent-features.c -o silent-features && ./silent-features
-> FANCY NEW MODE!
-> $ cc -g -O2 silent-features.c silent-features-testing.c -o
-> silent-features && ./silent-features
-> LEGACY MODE!
-> 
-> This seems like an extensible mechanism without introducing any new
-> public APIs or knobs, and we can control that in runtime. Some good
-> naming convention to emphasize this is only for testing and internal
-> needs, and I think it should be fine.
-> 
-> >
-> > >
-> > > > Cheers,
-> > > > Daniel
+But: for direct call to tcf_action_init() we would have
+to extract the flag from the TLV.
+The TLV already has TCA_ROOT_FLAGS in it.
+
+
+cheers,
+jamal
