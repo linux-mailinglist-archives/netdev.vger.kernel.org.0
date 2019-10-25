@@ -2,126 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 097EEE4872
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2BEAE487B
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:21:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409382AbfJYKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 06:19:22 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:49120 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389949AbfJYKTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 06:19:21 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9PA3Z9C190156;
-        Fri, 25 Oct 2019 10:19:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=Rk1YAxjxd6vBBuEKlpKWUiB6Af/3+SYZJkqaDV7EP5Y=;
- b=qKEQFie++BBeMkZQcWG6GiTD+QuTbscvYjwUBYRBnZLZzD9zClUArCehfbeceEnOcySq
- yJyGDE+OdDbd7U+k5B50C0Q6k5ji6O65ZtUMFD++bqho0HAok+i+jqp3HTP63Ux7pKDF
- xgm/digkj2Fw+OnRQPGFt/ZOxks/MTtxdZu6+yraV4p+9OV410TI654pOIXKLtwA6Ib9
- F3jbZyVSF+3OmwArpWzp1xJrx+hm+IqOcAdvjoqc5yC95EqB9gY/Cbe86Mej55kfzcdF
- Xqy4wdEBnMnid4yrr35PyKHD+F+2aFl1f1v8vb7BmZtflPKPh/N3QrlTFDd7tYL5jczR Xg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2vqswu25ds-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Oct 2019 10:19:14 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9P9vCNx010931;
-        Fri, 25 Oct 2019 10:19:13 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 2vu0fra5ne-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Oct 2019 10:19:13 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9PAJD6u001476;
-        Fri, 25 Oct 2019 10:19:13 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 25 Oct 2019 03:19:12 -0700
-Date:   Fri, 25 Oct 2019 13:19:05 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Samuil Ivanov <samuil.ivanovbg@gmail.com>
-Cc:     gregkh@linuxfoundation.org, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, devel@driverdev.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] Staging: qlge: Rename prefix of a function to qlge
-Message-ID: <20191025101705.GM24678@kadam>
-References: <20191024212941.28149-1-samuil.ivanovbg@gmail.com>
- <20191024212941.28149-2-samuil.ivanovbg@gmail.com>
+        id S2409431AbfJYKVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 06:21:32 -0400
+Received: from ni.piap.pl ([195.187.100.5]:43526 "EHLO ni.piap.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2407901AbfJYKVb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 06:21:31 -0400
+Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
+        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ni.piap.pl (Postfix) with ESMTPSA id 537F4442535;
+        Fri, 25 Oct 2019 12:21:25 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 537F4442535
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
+        t=1571998885; bh=sun4VvlMaGTBiByATlzJrvKsGY/hA5o6lYFps8BBRXI=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=NssrYNXCHiu67ElUYtL9U50/QUf+6vGBygdUyz3P2NrIb03HAkm6+P/SC464PshKg
+         1KvSpQhoIiV7BLaDqCknMp55EYcXIXTwvL4edonArFzxDbEssEmXDD+26un2QN1xrw
+         FhOPSahjr0IP0POX+PS4NSj6hKpSQAnBfVCzYZlQ=
+From:   khalasa@piap.pl (Krzysztof =?utf-8?Q?Ha=C5=82asa?=)
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] 802.11n IBSS: wlan0 stops receiving packets due to aggregation after sender reboot
+In-Reply-To: <m34l02mh71.fsf@t19.piap.pl>
+References: <m34l02mh71.fsf@t19.piap.pl>
+Date:   Fri, 25 Oct 2019 12:21:25 +0200
+Message-ID: <m37e4tjfbu.fsf@t19.piap.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191024212941.28149-2-samuil.ivanovbg@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9420 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=707
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910250093
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9420 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=787 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910250094
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-KLMS-Rule-ID: 4
+X-KLMS-Message-Action: skipped
+X-KLMS-AntiSpam-Status: not scanned, whitelist
+X-KLMS-AntiPhishing: not scanned, whitelist
+X-KLMS-AntiVirus: Kaspersky Security 8.0 for Linux Mail Server, version 8.0.1.721, not scanned, whitelist
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 12:29:39AM +0300, Samuil Ivanov wrote:
-> diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
-> index 6ec7e3ce3863..e9f1363c5bf2 100644
-> --- a/drivers/staging/qlge/qlge.h
-> +++ b/drivers/staging/qlge/qlge.h
-> @@ -2262,7 +2262,7 @@ int ql_write_mpi_reg(struct ql_adapter *qdev, u32 reg, u32 data);
->  int ql_unpause_mpi_risc(struct ql_adapter *qdev);
->  int ql_pause_mpi_risc(struct ql_adapter *qdev);
->  int ql_hard_reset_mpi_risc(struct ql_adapter *qdev);
-> -int ql_soft_reset_mpi_risc(struct ql_adapter *qdev);
-> +int qlge_soft_reset_mpi_risc(struct ql_adapter *qdev);
+Fix a bug where the mac80211 RX aggregation code sets a new aggregation
+"session" at the remote station's request, but the head_seq_num
+(the sequence number the receiver expects to receive) isn't reset.
 
-The patch series doesn't change all the functions so now it's hodge
-podge.
+Spotted on a pair of AR9580 in IBSS mode.
 
->  int ql_dump_risc_ram_area(struct ql_adapter *qdev, void *buf, u32 ram_addr,
->  			  int word_count);
->  int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump);
-> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
-> index 019b7e6a1b7a..df5344e113ca 100644
-> --- a/drivers/staging/qlge/qlge_dbg.c
-> +++ b/drivers/staging/qlge/qlge_dbg.c
-> @@ -1312,7 +1312,7 @@ void ql_get_dump(struct ql_adapter *qdev, void *buff)
->  
->  	if (!test_bit(QL_FRC_COREDUMP, &qdev->flags)) {
->  		if (!ql_core_dump(qdev, buff))
-> -			ql_soft_reset_mpi_risc(qdev);
-> +			qlge_soft_reset_mpi_risc(qdev);
->  		else
->  			netif_err(qdev, drv, qdev->ndev, "coredump failed!\n");
->  	} else {
-> diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
-> index 9e422bbbb6ab..efe893935929 100644
-> --- a/drivers/staging/qlge/qlge_mpi.c
-> +++ b/drivers/staging/qlge/qlge_mpi.c
-> @@ -88,9 +88,10 @@ int ql_write_mpi_reg(struct ql_adapter *qdev, u32 reg, u32 data)
->  	return status;
->  }
->  
-> -int ql_soft_reset_mpi_risc(struct ql_adapter *qdev)
-> +int qlge_soft_reset_mpi_risc(struct ql_adapter *qdev)
->  {
->  	int status;
-> +
->  	status = ql_write_mpi_reg(qdev, 0x00001010, 1);
+Signed-off-by: Krzysztof Halasa <khalasa@piap.pl>
 
-This white space change is unrelated.
+diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
+index 4d1c335e06e5..67733bd61297 100644
+--- a/net/mac80211/agg-rx.c
++++ b/net/mac80211/agg-rx.c
+@@ -354,10 +354,13 @@ void ___ieee80211_start_rx_ba_session(struct sta_info=
+ *sta,
+ 			 */
+ 			rcu_read_lock();
+ 			tid_rx =3D rcu_dereference(sta->ampdu_mlme.tid_rx[tid]);
+-			if (tid_rx && tid_rx->timeout =3D=3D timeout)
++			if (tid_rx && tid_rx->timeout =3D=3D timeout) {
++				tid_rx->ssn =3D start_seq_num;
++				tid_rx->head_seq_num =3D start_seq_num;
+ 				status =3D WLAN_STATUS_SUCCESS;
+-			else
++			} else {
+ 				status =3D WLAN_STATUS_REQUEST_DECLINED;
++			}
+ 			rcu_read_unlock();
+ 			goto end;
+ 		}
 
->  	return status;
->  }
+--=20
+Krzysztof Ha=C5=82asa
 
-regards,
-dan carpenter
-
+=C5=81UKASIEWICZ Research Network
+Industrial Research Institute for Automation and Measurements PIAP
+Al. Jerozolimskie 202, 02-486 Warsaw, Poland
