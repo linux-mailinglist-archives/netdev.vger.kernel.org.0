@@ -2,96 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C741E545D
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 21:30:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC94FE5464
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 21:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727150AbfJYTaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 15:30:20 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43001 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbfJYTaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 15:30:20 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 21so2228272pfj.9;
-        Fri, 25 Oct 2019 12:30:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=0Ol0Q9d+nzw7reP27LbGXzVnDznqVRhprPqADBgH/xI=;
-        b=jjAQriQ7nUxcSr1XFJkzKM1qjyQMsg0rjgisDNSiP7tBFzuDmawJSLzKQxDaZ1TZqX
-         rRFCyhh6VL8xnaVoLNG+6mDcY4JOLz9HaSzB59a1aE8ZU2Zqe/goi0KB2XWie302QG3N
-         bRf+D6Q0CDarWB91xusGQD7iYFGBfvZHbBlcCFeYWZuAoTBDdttlah8yTnxCpji2F8tq
-         tTD2bYTqPGX2ful7uVyRb9VRubALyTsWUDb4pEJLfaNTS3Ji+V4HUlZoqdbnf3n1JXp6
-         923ISWPmEHrN6Ys8ghc8HfVL4HSaK8D6tv2+cj9RkmGS+pY5sYRMVa8d7dbr2RuAZO7l
-         0FIQ==
+        id S1727225AbfJYTcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 15:32:31 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:33701 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbfJYTca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 15:32:30 -0400
+Received: by mail-oi1-f194.google.com with SMTP id a15so2377864oic.0;
+        Fri, 25 Oct 2019 12:32:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=0Ol0Q9d+nzw7reP27LbGXzVnDznqVRhprPqADBgH/xI=;
-        b=mCUFU4/zBUQoyX3Rm3kcS2ugPOQ1JaMIfKSVFVj1bMBAmwy8T3QudNuL7fS+NNu3SM
-         Eab4Ijh++VzibJkcd8oye3J7Uondmj0Xmt4IVOgMhoB8YyFhy49h+W2EvDN5I6c/0hiB
-         v5XmO4v1R7/EtX4RxbwFFAOcoHcMb2hsg13FhPc8clYVhqaHbksk+bcSj9rALdDTdZLM
-         SblZ+crwz0fOVmIzjOlrrMF4JUu5coK+pAX0CHN25HT0orRGvEZCAQ5koAD7mB31LF7E
-         NJGJ7g6YV1xR+2HPGMWghyq/g0ngKxETKopYfahQtiA8JFZ2caCoQDv7QqvmTsFmnZHA
-         knQw==
-X-Gm-Message-State: APjAAAW02uTyz3zkhefs09RvZf0xRD0/YCQsGmJn1uHfW76BxDPmZpXd
-        aTAhxcdcBoWjD8Z1oB9Mx5tNr/pB
-X-Google-Smtp-Source: APXvYqwZimV4wJux6JvoxjKcLblnon0CqTabNqkGEQa5sFF7dlM4OLeZoXS9X2fTJb58AjZjF2LISA==
-X-Received: by 2002:aa7:838f:: with SMTP id u15mr6327200pfm.74.1572031819294;
-        Fri, 25 Oct 2019 12:30:19 -0700 (PDT)
-Received: from [172.20.54.239] ([2620:10d:c090:200::1:4b93])
-        by smtp.gmail.com with ESMTPSA id v4sm3068298pff.181.2019.10.25.12.30.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Oct 2019 12:30:18 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
-Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, degeneloy@gmail.com,
-        john.fastabend@gmail.com
-Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without
- need_wakeup
-Date:   Fri, 25 Oct 2019 12:30:18 -0700
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <9CF134CD-CB33-48D0-BFAF-BCFC2F9AE6AD@gmail.com>
-In-Reply-To: <1571995035-21889-1-git-send-email-magnus.karlsson@intel.com>
-References: <1571995035-21889-1-git-send-email-magnus.karlsson@intel.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mXGKxFl6d9Tad1bXOR5KQzZcHvU397AW0AArFi6DfxM=;
+        b=WVEnLj2o706lId/1UETsUawHM2H2f2qjEep5xS/nnW9Y++hm4UBhVxl993EH9EbfF/
+         K7zV14M4qUT8YappXTAE0RR/90F2hVWrv8IHBzb+DjXgLy3Nd3/vcVQjMVWSzixcPQ77
+         pRZQRiVLyPI92lFGlArtThV9DkiG38Jrb1RRRXGpYWmTdJ5AwFsAEtY+SGcyRRppKcai
+         CXCjchzj5pEnbvoAQDw0WWt2O3McJr6kJZVfDSmoVm+Q4YzuHaJoojLTMvV4xZtn36Qd
+         xN9ASpHsyopqsG2c1A5DyOVBsuyhfNTswGPLu6FU4Jljti5gV7X+eCXgailG7N4VYAre
+         4gGA==
+X-Gm-Message-State: APjAAAWv6XCa2hmZSTA3KxPlvsi5b8B0D8bMYkiUw8Z67zgWQ2zcEFz4
+        mIh/XOu3uOsj+0z6G5VP6O/i38s=
+X-Google-Smtp-Source: APXvYqz471H2Ocr7A2/odSeE1SFq90vFIedMYY4Lihx8KArdbgC7Ngmc9bPTrZmbPIh8cFpnZHPH3w==
+X-Received: by 2002:aca:b841:: with SMTP id i62mr4248024oif.123.1572031949663;
+        Fri, 25 Oct 2019 12:32:29 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id t18sm990562otm.8.2019.10.25.12.32.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 12:32:29 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 14:32:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     vincent.cheng.xh@renesas.com
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, andrew@lunn.ch, mark.rutland@arm.com,
+        richardcochran@gmail.com
+Subject: Re: [PATCH v3 1/2] dt-bindings: ptp: Add bindings doc for IDT
+ ClockMatrix based PTP clock
+Message-ID: <20191025193228.GA31398@bogus>
+References: <1571687868-22834-1-git-send-email-vincent.cheng.xh@renesas.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571687868-22834-1-git-send-email-vincent.cheng.xh@renesas.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 21, 2019 at 03:57:47PM -0400, vincent.cheng.xh@renesas.com wrote:
+> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
+> 
+> Add device tree binding doc for the IDT ClockMatrix PTP clock.
+> 
+> Co-developed-by: Richard Cochran <richardcochran@gmail.com>
+> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+> ---
+> 
+> Changes since v2:
+>  - As suggested by Rob Herring:
+>    1. Replace with DT schema
+>    2. Remove '-ptp' from compatible string
+>    3. Replace wildcard 'x' with the part numbers.
+> 
+> Changes since v1:
+>  - No changes
+> ---
+>  .../devicetree/bindings/ptp/ptp-idtcm.yaml         | 63 ++++++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml b/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
+> new file mode 100644
+> index 0000000..d3771e0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/ptp/ptp-idtcm.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: IDT ClockMatrix (TM) PTP Clock Device Tree Bindings
+> +
+> +maintainers:
+> +  - Vincent Cheng <vincent.cheng.xh@renesas.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      # For System Synchronizer
+> +      - idt,8a34000
+> +      - idt,8a34001
+> +      - idt,8a34002
+> +      - idt,8a34003
+> +      - idt,8a34004
+> +      - idt,8a34005
+> +      - idt,8a34006
+> +      - idt,8a34007
+> +      - idt,8a34008
+> +      - idt,8a34009
+> +      # For Port Synchronizer
+> +      - idt,8a34010
+> +      - idt,8a34011
+> +      - idt,8a34012
+> +      - idt,8a34013
+> +      - idt,8a34014
+> +      - idt,8a34015
+> +      - idt,8a34016
+> +      - idt,8a34017
+> +      - idt,8a34018
+> +      - idt,8a34019
+> +      # For Universal Frequency Translator (UFT)
+> +      - idt,8a34040
+> +      - idt,8a34041
+> +      - idt,8a34042
+> +      - idt,8a34043
+> +      - idt,8a34044
+> +      - idt,8a34045
+> +      - idt,8a34046
+> +      - idt,8a34047
+> +      - idt,8a34048
+> +      - idt,8a34049
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description:
+> +      I2C slave address of the device.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    phc@5b {
 
+ptp@5b
 
-On 25 Oct 2019, at 2:17, Magnus Karlsson wrote:
+Examples are built now and this fails:
 
-> When the need_wakeup flag was added to AF_XDP, the format of the
-> XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the
-> kernel to take care of compatibility issues arrising from running
-> applications using any of the two formats. However, libbpf was
-> not extended to take care of the case when the application/libbpf
-> uses the new format but the kernel only supports the old
-> format. This patch adds support in libbpf for parsing the old
-> format, before the need_wakeup flag was added, and emulating a
-> set of static need_wakeup flags that will always work for the
-> application.
->
-> v2 -> v3:
-> * Incorporated code improvements suggested by Jonathan Lemon
+Documentation/devicetree/bindings/ptp/ptp-idtcm.example.dts:19.15-28: 
+Warning (reg_format): /example-0/phc@5b:reg: property has invalid length (4 bytes) (#address-cells == 1, #size-cells == 1)
 
-Thanks for doing this, Magnus!  It looks much simpler now.
+The problem is i2c devices need to be shown under an i2c bus node.
 
-
->
-> v1 -> v2:
-> * Rebased to bpf-next
-> * Rewrote the code as the previous version made you blind
->
-> Fixes: a4500432c2587cb2a ("libbpf: add support for need_wakeup flag in 
-> AF_XDP part")
-> Reported-by: Eloy Degen <degeneloy@gmail.com>
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> +          compatible = "idt,8a34000";
+> +          reg = <0x5b>;
+> +    };
+> -- 
+> 2.7.4
+> 
