@@ -2,165 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F143E4505
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:59:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C63CE450A
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437516AbfJYH7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 03:59:32 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:52000 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437404AbfJYH7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 03:59:32 -0400
-Received: by mail-wm1-f66.google.com with SMTP id q70so1009646wme.1;
-        Fri, 25 Oct 2019 00:59:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=isCj9HnqqlVH+KvOoOVR3CxVJIpBTR1R8pbElsHgbVE=;
-        b=N71jlKqvWY6To6CFU8Glc+6LzCivOuA+dHS214QqegVof6Kf+zSnzHfFlzRzvnNf0K
-         neXS36NBjnoEZatH1ssgbhMzrJHZJ7oCFRbLZCfNWTQ3iJtv9JwZaG8++gdrIa8eV0cT
-         GMzGm4N3VnprYTGPlOpJLzIuGkO35YjreLCZCpfjOCQqVjW9wPRunJT8WOCPrBnE4PqV
-         zDW6mbDYTcE2MiJEciy/L5Gm8mABRf1P5YNXJmrae+6JHy0M55u6HVr+qjcMzVjFuci1
-         wbnvChR8jBWtppRZXGKD+cWqxQM+msHbBQEvLb6xY6zCacm/occyqhY4I4HhZftZQ/R5
-         Vlhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=isCj9HnqqlVH+KvOoOVR3CxVJIpBTR1R8pbElsHgbVE=;
-        b=lhtP+84INROGQm5ARdb5CnyP9IH3GGuyVQ0z0wD8k5C9+u95OkXEBAdDklf/bQSeMv
-         DTcvDvEKstCQw2oVQ/4QoRnw4xna27McADxbMDpfg9mxGh82oUrFtUdrmKAGTyrEuvbB
-         oyoXAGSgpSzY2KwcQCRTwYZyBLmhgHdHEe5lmFQ+fuXk4K8iFctsE8yJjja3qGofq7v2
-         4V14DEK1Qg0zfTGHb6bXjbOWka4gVe9y6wW48AuR8kuY5Y4wHzdWZw8fydtU1VzVZ2S5
-         1rXR0zSm1rQLCZl3/h+8dYYf/zFftOPhDeuwev59NIrB3u36Y+GxJTOgys+87tLuUUfo
-         HlFQ==
-X-Gm-Message-State: APjAAAWpGyuqjFZRbI4B75jUwXYYlOdKiorOOxcvzcP3yrZY78tkG4YU
-        sFIdxtMwde97p+hlvPy2790q3XdO3dbA2p5Nuyc=
-X-Google-Smtp-Source: APXvYqztvyq4HwGG4C61dM+qDMWn7ks7Vj/J3vLNzVx7pQyRhSIAzA/M0myjXUa8gnauy4T6S8g7UhSISjEctLYpS7E=
-X-Received: by 2002:a7b:c3cf:: with SMTP id t15mr2114520wmj.85.1571990367836;
- Fri, 25 Oct 2019 00:59:27 -0700 (PDT)
+        id S2437528AbfJYIA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 04:00:27 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:26587 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2437520AbfJYIA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:00:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1571990425;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/LoaaTv4vAnICJNi9X+ns+lbhK+lgVEY+k5kW3oHXGY=;
+        b=EVFb7boQUOjHNiUBbZ9P5jAp0HEDa+Evw83vtDR6zsIRA9rQcrzOtwxMo6LGegW2H3uLby
+        U8KTjGHH0GyT7YnUte6I4ZCTYGtv3N/PcfjtEGjQEDNi0FvK5ReFPCTyHyqgYCV3v6q+fG
+        2nai31WsIBDt5JWmq81UpAbeymVKmeg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-264-VPCrquMeNZOwl9fTyy1DVw-1; Fri, 25 Oct 2019 04:00:20 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E295C1800E00;
+        Fri, 25 Oct 2019 08:00:18 +0000 (UTC)
+Received: from ovpn-116-201.ams2.redhat.com (ovpn-116-201.ams2.redhat.com [10.36.116.201])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 82CBE60852;
+        Fri, 25 Oct 2019 08:00:17 +0000 (UTC)
+Message-ID: <5ef3ce11785c58bc93ff7809cc1b35dfb354974f.camel@redhat.com>
+Subject: Re: [PATCH net] udp: fix data-race in udp_set_dev_scratch()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Date:   Fri, 25 Oct 2019 10:00:16 +0200
+In-Reply-To: <20191024184331.28920-1-edumazet@google.com>
+References: <20191024184331.28920-1-edumazet@google.com>
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
 MIME-Version: 1.0
-References: <cover.1571033544.git.lucien.xin@gmail.com> <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
- <20191025032156.GA4326@localhost.localdomain>
-In-Reply-To: <20191025032156.GA4326@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 25 Oct 2019 15:59:18 +0800
-Message-ID: <CADvbK_dzWt_LNu4sT5TtsOEzcg5cJvPqVqphE-QbFDgB7pPJdQ@mail.gmail.com>
-Subject: Re: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED notification
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Neil Horman <nhorman@tuxdriver.com>,
-        davem <davem@davemloft.net>,
-        David Laight <david.laight@aculab.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: VPCrquMeNZOwl9fTyy1DVw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 11:22 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> Hi,
->
-> Sorry for the long delay on this review.
->
-> On Mon, Oct 14, 2019 at 02:14:44PM +0800, Xin Long wrote:
-> > SCTP Quick failover draft section 5.1, point 5 has been removed
-> > from rfc7829. Instead, "the sender SHOULD (i) notify the Upper
-> > Layer Protocol (ULP) about this state transition", as said in
-> > section 3.2, point 8.
-> >
-> > So this patch is to add SCTP_ADDR_POTENTIALLY_FAILED, defined
-> > in section 7.1, "which is reported if the affected address
-> > becomes PF". Also remove transport cwnd's update when moving
-> > from PF back to ACTIVE , which is no longer in rfc7829 either.
-> >
-> > v1->v2:
-> >   - no change
-> > v2->v3:
-> >   - define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  include/uapi/linux/sctp.h |  2 ++
-> >  net/sctp/associola.c      | 17 ++++-------------
-> >  2 files changed, 6 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-> > index 6bce7f9..f4ab7bb 100644
-> > --- a/include/uapi/linux/sctp.h
-> > +++ b/include/uapi/linux/sctp.h
-> > @@ -410,6 +410,8 @@ enum sctp_spc_state {
-> >       SCTP_ADDR_ADDED,
-> >       SCTP_ADDR_MADE_PRIM,
-> >       SCTP_ADDR_CONFIRMED,
-> > +     SCTP_ADDR_POTENTIALLY_FAILED,
-> > +#define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
-> >  };
-> >
-> >
-> > diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-> > index 1ba893b..4f9efba 100644
-> > --- a/net/sctp/associola.c
-> > +++ b/net/sctp/associola.c
-> > @@ -801,14 +801,6 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
->
-> While at here, dealing with spc_state, please seize the moment and
-> initialize it to the enum instead:
->
-> @@ -787,7 +787,7 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
->                                   sctp_sn_error_t error)
+On Thu, 2019-10-24 at 11:43 -0700, Eric Dumazet wrote:
+> KCSAN reported a data-race in udp_set_dev_scratch() [1]
+>=20
+> The issue here is that we must not write over skb fields
+> if skb is shared. A similar issue has been fixed in commit
+> 89c22d8c3b27 ("net: Fix skb csum races when peeking")
+>=20
+> While we are at it, use a helper only dealing with
+> udp_skb_scratch(skb)->csum_unnecessary, as this allows
+> udp_set_dev_scratch() to be called once and thus inlined.
+>=20
+> [1]
+> BUG: KCSAN: data-race in udp_set_dev_scratch / udpv6_recvmsg
+>=20
+> write to 0xffff888120278317 of 1 bytes by task 10411 on cpu 1:
+>  udp_set_dev_scratch+0xea/0x200 net/ipv4/udp.c:1308
+>  __first_packet_length+0x147/0x420 net/ipv4/udp.c:1556
+>  first_packet_length+0x68/0x2a0 net/ipv4/udp.c:1579
+>  udp_poll+0xea/0x110 net/ipv4/udp.c:2720
+>  sock_poll+0xed/0x250 net/socket.c:1256
+>  vfs_poll include/linux/poll.h:90 [inline]
+>  do_select+0x7d0/0x1020 fs/select.c:534
+>  core_sys_select+0x381/0x550 fs/select.c:677
+>  do_pselect.constprop.0+0x11d/0x160 fs/select.c:759
+>  __do_sys_pselect6 fs/select.c:784 [inline]
+>  __se_sys_pselect6 fs/select.c:769 [inline]
+>  __x64_sys_pselect6+0x12e/0x170 fs/select.c:769
+>  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>=20
+> read to 0xffff888120278317 of 1 bytes by task 10413 on cpu 0:
+>  udp_skb_csum_unnecessary include/net/udp.h:358 [inline]
+>  udpv6_recvmsg+0x43e/0xe90 net/ipv6/udp.c:310
+>  inet6_recvmsg+0xbb/0x240 net/ipv6/af_inet6.c:592
+>  sock_recvmsg_nosec+0x5c/0x70 net/socket.c:871
+>  ___sys_recvmsg+0x1a0/0x3e0 net/socket.c:2480
+>  do_recvmmsg+0x19a/0x5c0 net/socket.c:2601
+>  __sys_recvmmsg+0x1ef/0x200 net/socket.c:2680
+>  __do_sys_recvmmsg net/socket.c:2703 [inline]
+>  __se_sys_recvmmsg net/socket.c:2696 [inline]
+>  __x64_sys_recvmmsg+0x89/0xb0 net/socket.c:2696
+>  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>=20
+> Reported by Kernel Concurrency Sanitizer on:
+> CPU: 0 PID: 10413 Comm: syz-executor.0 Not tainted 5.4.0-rc3+ #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS G=
+oogle 01/01/2011
+>=20
+> Fixes: 2276f58ac589 ("udp: use a separate rx queue for packet reception")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> ---
+>  net/ipv4/udp.c | 19 +++++++++++++++----
+>  1 file changed, 15 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> index 345a3d43f5a655e009e99c16bb19e047cdf003c6..d1ed160af202c054839387201=
+abd3f13b55d00e9 100644
+> --- a/net/ipv4/udp.c
+> +++ b/net/ipv4/udp.c
+> @@ -1316,6 +1316,20 @@ static void udp_set_dev_scratch(struct sk_buff *sk=
+b)
+>  =09=09scratch->_tsize_state |=3D UDP_SKB_IS_STATELESS;
+>  }
+> =20
+> +static void udp_skb_csum_unnecessary_set(struct sk_buff *skb)
+> +{
+> +=09/* We come here after udp_lib_checksum_complete() returned 0.
+> +=09 * This means that __skb_checksum_complete() might have
+> +=09 * set skb->csum_valid to 1.
+> +=09 * On 64bit platforms, we can set csum_unnecessary
+> +=09 * to true, but only if the skb is not shared.
+> +=09 */
+> +#if BITS_PER_LONG =3D=3D 64
+> +=09if (!skb_shared(skb))
+> +=09=09udp_skb_scratch(skb)->csum_unnecessary =3D true;
+> +#endif
+> +}
+> +
+>  static int udp_skb_truesize(struct sk_buff *skb)
 >  {
->         bool ulp_notify = true;
-> -       int spc_state = 0;
-> +       int spc_state = SCTP_ADDR_AVAILABLE;
->
->
-> >                       spc_state = SCTP_ADDR_CONFIRMED;
-> >               else
-> >                       spc_state = SCTP_ADDR_AVAILABLE;
->
-> This else could be removed (equals to initial value).
-yes, will improve it.
+>  =09return udp_skb_scratch(skb)->_tsize_state & ~UDP_SKB_IS_STATELESS;
+> @@ -1550,10 +1564,7 @@ static struct sk_buff *__first_packet_length(struc=
+t sock *sk,
+>  =09=09=09*total +=3D skb->truesize;
+>  =09=09=09kfree_skb(skb);
+>  =09=09} else {
+> -=09=09=09/* the csum related bits could be changed, refresh
+> -=09=09=09 * the scratch area
+> -=09=09=09 */
+> -=09=09=09udp_set_dev_scratch(skb);
+> +=09=09=09udp_skb_csum_unnecessary_set(skb);
+>  =09=09=09break;
+>  =09=09}
+>  =09}
 
->
-> > -             /* Don't inform ULP about transition from PF to
-> > -              * active state and set cwnd to 1 MTU, see SCTP
-> > -              * Quick failover draft section 5.1, point 5
-> > -              */
-> > -             if (transport->state == SCTP_PF) {
-> > -                     ulp_notify = false;
-> > -                     transport->cwnd = asoc->pathmtu;
-> > -             }
-> >               transport->state = SCTP_ACTIVE;
-> >               break;
-> >
-> > @@ -817,19 +809,18 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
-> >                * to inactive state.  Also, release the cached route since
-> >                * there may be a better route next time.
-> >                */
-> > -             if (transport->state != SCTP_UNCONFIRMED)
-> > +             if (transport->state != SCTP_UNCONFIRMED) {
-> >                       transport->state = SCTP_INACTIVE;
-> > -             else {
-> > +                     spc_state = SCTP_ADDR_UNREACHABLE;
-> > +             } else {
-> >                       sctp_transport_dst_release(transport);
-> >                       ulp_notify = false;
-> >               }
-> > -
-> > -             spc_state = SCTP_ADDR_UNREACHABLE;
-> >               break;
-> >
-> >       case SCTP_TRANSPORT_PF:
-> >               transport->state = SCTP_PF;
-> > -             ulp_notify = false;
-> > +             spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
-> >               break;
-> >
-> >       default:
-> > --
-> > 2.1.0
-> >
+LGTM, Thanks Eric!
+
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+
