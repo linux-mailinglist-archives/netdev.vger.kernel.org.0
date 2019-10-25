@@ -2,134 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C03FAE4220
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 05:39:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B6BE4253
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 06:20:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388477AbfJYDjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 23:39:36 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:40110 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727145AbfJYDjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 23:39:36 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o49so1245107qta.7;
-        Thu, 24 Oct 2019 20:39:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cd4TOVbvPNZYn1igZctkezc1pztol2h8rYUeMEkk5eY=;
-        b=NrUZ3isi0OKlyLOrM+bkB67cPUAFOTqokLi4n1X8o2n0wIZPzcsgixV1Peog3ITT4L
-         P6L2AeT/RdtSWnoRf0HKqi8uZBa3zmyiNMl8cCZjvYNoYGy3I3enNuc84nPuOBu8ytWQ
-         cvlsVxujTgFmQB5NTc/bRKrbhRhEkknf6a0zlkmV8aH6M7+jGc5H1Oe+80o4jVtXSx+E
-         mblZHzowY9NeECWhHfKI7vbgH0zIKthgl1gbXtvMTVGf6khqfNfv5NZAHXASmui/9c19
-         tAhH836dU+tOQA+Xb+biCgXNzb4oUM0kKjy+aXLhHcokh6II98iJHMjJvu5ZeYdOH94B
-         kSFA==
+        id S1730036AbfJYEUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 00:20:02 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:38659 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727511AbfJYEUC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 00:20:02 -0400
+Received: by mail-il1-f200.google.com with SMTP id f6so1135665ilg.5
+        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 21:20:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cd4TOVbvPNZYn1igZctkezc1pztol2h8rYUeMEkk5eY=;
-        b=TejdSdERgNyPCzL47b1PSzQJHJ2dGGJ8VF7QzHTlmNHEVrJohR+Zp9GpNiAlfVYEny
-         CCDnovgyEZ6aTqdx7/U9f7zOmy7KvT2DZzTLfsA+oIE638LWKNb5KB2q+vZXcNksmrqN
-         ZM+b2w1PDnMl1fiwzkc05HfQc1U+j4ASnSbbRh7bLMfdmQXQzTXUluF3c6I2iiMyieET
-         T/xXLn9czT87fP6rg5+qXVathk7BqfgCZJkfX6uNtZ8Zp/zUXgB6MA8GU9T+uxADfx09
-         zdeJaypgV0MsvRJr9xpvwOeUR+xCtw+LVOqwC/GikrIK7FeSo9QMxcSPM5qgjNWWDm2L
-         mWBg==
-X-Gm-Message-State: APjAAAVTGpvDtfozuazWDWDpSYE9PKHWMsomVGIQqOdHVpByozieB9pW
-        UZ0g56Wt3+n4oMM87WKcYqxeBDxiirODXdTl5LY=
-X-Google-Smtp-Source: APXvYqxRXF2fNyWevku302i8H0rWb1y4GmLGm3DZj281dHyZZUabqge5PWK6zGE8wU3bTxFg6cpY6PDWk26NnTWqzoA=
-X-Received: by 2002:a05:6214:16c5:: with SMTP id d5mr1192917qvz.247.1571974775162;
- Thu, 24 Oct 2019 20:39:35 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=NF2elsax11pXsnm+smX3VLKpwTuafbnzKYyInM/Zfhg=;
+        b=T/8zewNsAGQfv5cfO0zFCTBvhNlKMALHkSDP69epjdo7mpog5Dzr/9n90cuQFqsnxY
+         I1fO8EsE0BrJyUstE0w2ogW/KIrq3rTgNn1GL1jAqE1hERtXTPZaY6xJ5rIZWdgqbase
+         d8UUmlcEARVfGoZcYidmyn8enPFvKaJNialRNnY+ehUNNG0xUWth9FzZAATGbP/46L3a
+         6IE8KbGsFKYE1DS9LOspGkF5bYYn5TbMLiLutq6CtBzE2kG+p7A+YZDz0hUVqBE/pcK7
+         JpVcMYiMgAykoHtoXYPf3EbVgu44bAuwrLQ7jvDqa+1TPXYoSdCvrG2zHrA3syDikuih
+         81bw==
+X-Gm-Message-State: APjAAAWDltDH62GeFPR/onyIbkcS7ue6MRMZljRdGN5J9LdmcnnfCQnD
+        YWXGvfqNmm8vrDYq+aLIs8f4h24Uke6oZnMSF+UW343rxOqF
+X-Google-Smtp-Source: APXvYqxBLtXLb+ZNhposnuPP5R6TbEk6pDsIDIYFbKqUpk/R085DA7b4q4kzLVLphPbJ9kNcvFRhZFz7kEFExK0XH5h0eLU1wAlT
 MIME-Version: 1.0
-References: <157141046629.11948.8937909716570078019.stgit@john-XPS-13-9370>
- <CAEf4Bzbsg1dMBqPAL4NjXwAQ=nW-OX-Siv5NpC4Ad5ZY1ny4uQ@mail.gmail.com>
- <5dae8eafbf615_2abd2b0d886345b4b2@john-XPS-13-9370.notmuch>
- <20191022072023.GA31343@pc-66.home> <CAEf4BzbBoE=mVyxS9OHNn6eSvfEMgbcqiBh2b=nVmhWiLGEBNQ@mail.gmail.com>
- <5db1f389aa6f2_5c282ada047205c012@john-XPS-13-9370.notmuch>
-In-Reply-To: <5db1f389aa6f2_5c282ada047205c012@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 24 Oct 2019 20:39:23 -0700
-Message-ID: <CAEf4BzZ2SrR0CBhbXo64bwWuBq-=JDS6p6=KRaLtH1bCGBwa3w@mail.gmail.com>
-Subject: Re: [bpf-next PATCH] bpf: libbpf, support older style kprobe load
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a92:ccd0:: with SMTP id u16mr1924578ilq.296.1571977201370;
+ Thu, 24 Oct 2019 21:20:01 -0700 (PDT)
+Date:   Thu, 24 Oct 2019 21:20:01 -0700
+In-Reply-To: <00000000000074bc3105958042ef@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aecf020595b4762f@google.com>
+Subject: Re: KASAN: use-after-free Read in nf_ct_deliver_cached_events
+From:   syzbot <syzbot+c7aabc9fe93e7f3637ba@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, dhowells@redhat.com,
+        fw@strlen.de, kadlec@netfilter.org, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 11:55 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
->
-> Andrii Nakryiko wrote:
-> > On Tue, Oct 22, 2019 at 12:20 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > >
-> > > On Mon, Oct 21, 2019 at 10:07:59PM -0700, John Fastabend wrote:
-> > > > Andrii Nakryiko wrote:
-> > > > > On Sat, Oct 19, 2019 at 1:30 AM John Fastabend <john.fastabend@gmail.com> wrote:
-> > > > > >
-> > > > > > Following ./Documentation/trace/kprobetrace.rst add support for loading
-> > > > > > kprobes programs on older kernels.
-> > > > >
-> > > > > My main concern with this is that this code is born bit-rotten,
-> > > > > because selftests are never testing the legacy code path. How did you
-> > > > > think about testing this and ensuring that this keeps working going
-> > > > > forward?
-> > > >
-> > > > Well we use it, but I see your point and actually I even broke the retprobe
-> > > > piece hastily fixing merge conflicts in this patch. When I ran tests on it
-> > > > I missed running retprobe tests on the set of kernels that would hit that
-> > > > code.
-> > >
-> > > If it also gets explicitly exposed as bpf_program__attach_legacy_kprobe() or
-> > > such, it should be easy to add BPF selftests for that API to address the test
-> > > coverage concern. Generally more selftests for exposed libbpf APIs is good to
-> > > have anyway.
-> > >
-> >
-> > Agree about tests. Disagree about more APIs, especially that the only
-> > difference will be which underlying kernel machinery they are using to
-> > set everything up. We should ideally avoid exposing that to users.
->
-> Maybe a build flag to build with only the older style supported for testing?
-> Then we could build, test in selftests at least. Be clear the flag is only
-> for testing and can not be relied upon.
+syzbot has bisected this bug to:
 
-Build flag will necessitate another "flavor" of test_progs just to
-test this. That seems like an overkill.
+commit 2341e0775747864b684abe8627f3d45b167f2940
+Author: David Howells <dhowells@redhat.com>
+Date:   Thu Jun 9 22:02:51 2016 +0000
 
-How about this approach:
+     rxrpc: Simplify connect() implementation and simplify sendmsg() op
 
-$ cat silent-features.c
-#include <stdio.h>
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12f869df600000
+start commit:   12d61c69 Add linux-next specific files for 20191024
+git tree:       linux-next
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=11f869df600000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16f869df600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=afb75fd8c9fd5ed8
+dashboard link: https://syzkaller.appspot.com/bug?extid=c7aabc9fe93e7f3637ba
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10938e18e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147caa97600000
 
-int __attribute__((weak)) __bpf_internal__force_legacy_kprobe;
+Reported-by: syzbot+c7aabc9fe93e7f3637ba@syzkaller.appspotmail.com
+Fixes: 2341e0775747 ("rxrpc: Simplify connect() implementation and simplify  
+sendmsg() op")
 
-int main() {
-        if (__bpf_internal__force_legacy_kprobe)
-                printf("LEGACY MODE!\n");
-        else
-                printf("FANCY NEW MODE!\n");
-        return 0;
-}
-$ cat silent-features-testing.c
-int __bpf_internal__force_legacy_kprobe = 1;
-$ cc -g -O2 silent-features.c -o silent-features && ./silent-features
-FANCY NEW MODE!
-$ cc -g -O2 silent-features.c silent-features-testing.c -o
-silent-features && ./silent-features
-LEGACY MODE!
-
-This seems like an extensible mechanism without introducing any new
-public APIs or knobs, and we can control that in runtime. Some good
-naming convention to emphasize this is only for testing and internal
-needs, and I think it should be fine.
-
->
-> >
-> > > Cheers,
-> > > Daniel
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
