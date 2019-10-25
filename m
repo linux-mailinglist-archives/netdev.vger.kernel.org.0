@@ -2,110 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7C9E45DE
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:38:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ADA8E4626
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:48:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408012AbfJYIiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 04:38:15 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:38244 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407336AbfJYIiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:38:14 -0400
-Received: by mail-il1-f197.google.com with SMTP id f6so1602413ilg.5
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 01:38:13 -0700 (PDT)
+        id S2392981AbfJYIso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 04:48:44 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:42741 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389425AbfJYIso (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:48:44 -0400
+Received: by mail-oi1-f196.google.com with SMTP id i185so1050033oif.9;
+        Fri, 25 Oct 2019 01:48:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Xx2ilS5o98N5EWeA3DS9BzkSPRq1qrT7n0PMAlOFbY8=;
-        b=uQT+DmHU1fkvHSzHyysk0fxwy6tp1UR9jA6th674k5ZXFY244gR737eqTHq8jXXUOz
-         6jHBIqqqKeboo9oj+hrHt/CJg5NI8fW1ayUcws9HUSHlsKAEHYqZHynOYslkBemmjkwE
-         shNXoVlW5GS7tmMDFG8U19xmVMUUQAwGtKQMxtiqFA36rTdiPXGzJronQhPxKlWQhaM0
-         Vh3IcHSwbyUQBjNrsoN09MHnJdtAzSjt8RNr2LLtma1HXmx6uPiRm57+JLywxhdOYMUT
-         L7RjO2QtG+xsEjWiA4+m1SMu+HeD7YZE6xmvyzRHx1Bj14LMsPgV44j872L5oGUAjBUH
-         Dfug==
-X-Gm-Message-State: APjAAAUiJp5EsgM9t+DAT/fwwJJthMAApaI4Tesxo7Rug3ysWrisoAfR
-        9CCk750JRXPnzi/h/LNpLK0CNAfPlbxthwQrcYkXX8TnhDmG
-X-Google-Smtp-Source: APXvYqyGIgGMWwSwmp7dv/vinP8k9GbsPCnDljuS1bRDLNuHaYz7l+t+DoF01rQS0n34/MlnEOtAB3p6GxnPpYdNtOZM4CpXPBGR
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uA6lSNHDRCatiJVJ/bgW4yuf0LByUeyt0njk9B4ukrc=;
+        b=pB1+s7USrm2jK85Akcv2CH3fUw/7POfgi/pgDdjS44HoqmOwhRJtXlOBQHZ2MEEmZz
+         zu9xxhWTFFKoHoaQMdR60oyEToi9uPlwzM1BBa2FNJ2D58lrim6ylC/Z1eY04ZZg6Fi4
+         yXdYkFlm7DbQBtjVP2+uFUxx+0qkSBCyk3gYQuXKGl/yTFANNMvx1reHErjCeQePx++4
+         8wY3yEAY+hSwF4/cEGQxXi8/Q6yJIXeITmGmxUARPAP4I+TM3sLtu3MgrZmOM1wpvbQg
+         FtcJRprTvebpzrS4IP17JXY7ad5Vw6O52Pjz8/W6o05yoDGNbPO3HcFv+5oFuSAfmDwv
+         K69A==
+X-Gm-Message-State: APjAAAXd7HRybCHuKR49gUG/tXaXd9tT+IRTL99HwWmVJ6M1pCcKlTS7
+        cJgcweT4SFuFCbApgqlqv7rlhXFWaEQDhZF7W+c=
+X-Google-Smtp-Source: APXvYqy3g9SYZvOxsJVmghtKOBqa12cq3/vF5Q6/wloURwxegziLuCjjGM4yxIDdlwF02aQ5tVVijREi3KOgNM/I0d4=
+X-Received: by 2002:aca:882:: with SMTP id 124mr2027997oii.54.1571993322988;
+ Fri, 25 Oct 2019 01:48:42 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a02:a786:: with SMTP id e6mr135587jaj.29.1571992692688;
- Fri, 25 Oct 2019 01:38:12 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 01:38:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000098bee0595b81273@google.com>
-Subject: KASAN: stack-out-of-bounds Read in finish_writeback_work
-From:   syzbot <syzbot+357de617b97752833bd5@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20191024152201.29868-1-geert+renesas@glider.be>
+ <878spaqg2k.fsf@kamboji.qca.qualcomm.com> <20191024.095709.187911510311520475.davem@davemloft.net>
+In-Reply-To: <20191024.095709.187911510311520475.davem@davemloft.net>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 25 Oct 2019 10:48:31 +0200
+Message-ID: <CAMuHMdXLyoxpjYYVhnZ35hwD25+MPXkte5QV_YYOadPVTf9_zA@mail.gmail.com>
+Subject: Re: [PATCH v2] [trivial] net: Fix misspellings of "configure" and "configuration"
+To:     David Miller <davem@davemloft.net>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Jiri Kosina <trivial@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi David,
 
-syzbot found the following crash on:
+On Thu, Oct 24, 2019 at 6:57 PM David Miller <davem@davemloft.net> wrote:
+> From: Kalle Valo <kvalo@codeaurora.org>
+> Date: Thu, 24 Oct 2019 19:11:15 +0300
+>
+> > Geert Uytterhoeven <geert+renesas@glider.be> writes:
+> >
+> >> Fix various misspellings of "configuration" and "configure".
+> >>
+> >> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> >> ---
+> >> v2:
+> >>   - Merge
+> >>     [trivial] net/mlx5e: Spelling s/configuraiton/configuration/
+> >>     [trivial] qed: Spelling s/configuraiton/configuration/
+> >>   - Fix typo in subject,
+> >>   - Extend with various other similar misspellings.
+> >> ---
+> >>  drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.c | 2 +-
+> >>  drivers/net/ethernet/qlogic/qed/qed_int.h                | 4 ++--
+> >>  drivers/net/ethernet/qlogic/qed/qed_sriov.h              | 2 +-
+> >>  drivers/net/ethernet/qlogic/qede/qede_filter.c           | 2 +-
+> >>  drivers/net/wireless/ath/ath9k/ar9003_hw.c               | 2 +-
+> >>  drivers/net/wireless/intel/iwlwifi/iwl-fh.h              | 2 +-
+> >>  drivers/net/wireless/ti/wlcore/spi.c                     | 2 +-
+> >>  include/uapi/linux/dcbnl.h                               | 2 +-
+> >>  8 files changed, 9 insertions(+), 9 deletions(-)
+> >
+> > I hope this goes to net-next? Easier to handle possible conflicts that
+> > way.
+> >
+> > For the wireless part:
+> >
+> > Acked-by: Kalle Valo <kvalo@codeaurora.org>
+>
+> Yeah I can take it if that's easier.
 
-HEAD commit:    05679ca6 xdp: Prevent overflow in devmap_hash cost calcula..
-git tree:       bpf
-console output: https://syzkaller.appspot.com/x/log.txt?x=12d37fcf600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ebb95b9e9f5291dd
-dashboard link: https://syzkaller.appspot.com/bug?extid=357de617b97752833bd5
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+That would be great, thanks!
 
-Unfortunately, I don't have any reproducer for this crash yet.
+Gr{oetje,eeting}s,
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+357de617b97752833bd5@syzkaller.appspotmail.com
+                        Geert
 
-==================================================================
-BUG: KASAN: stack-out-of-bounds in finish_writeback_work.isra.0+0x11b/0x120  
-fs/fs-writeback.c:168
-Read of size 8 at addr ffff88806f04f9c8 by task kworker/u4:2/33
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-CPU: 1 PID: 33 Comm: kworker/u4:2 Not tainted 5.4.0-rc1+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: writeback wb_workfn (flush-8:0)
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  print_address_description.constprop.0.cold+0xd4/0x30b mm/kasan/report.c:374
-  __kasan_report.cold+0x1b/0x41 mm/kasan/report.c:506
-  kasan_report+0x12/0x20 mm/kasan/common.c:634
-  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
-  finish_writeback_work.isra.0+0x11b/0x120 fs/fs-writeback.c:168
-  wb_do_writeback fs/fs-writeback.c:2030 [inline]
-  wb_workfn+0x34f/0x1220 fs/fs-writeback.c:2070
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-The buggy address belongs to the page:
-page:ffffea0001bc13c0 refcount:0 mapcount:0 mapping:0000000000000000  
-index:0x0
-flags: 0x1fffc0000000000()
-raw: 01fffc0000000000 0000000000000000 ffffffff01bc0101 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff88806f04f880: 00 00 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1
-  ffff88806f04f900: f1 00 00 f3 f3 00 00 00 00 00 00 00 00 00 00 00
-> ffff88806f04f980: 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00 f3 f3 f3
-                                               ^
-  ffff88806f04fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 f1
-  ffff88806f04fa80: f1 f1 f1 00 f2 f2 f2 00 00 00 00 00 00 00 00 00
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
