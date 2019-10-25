@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE4C8E4D9B
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 231C6E4DA3
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:02:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505434AbfJYN57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:57:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53078 "EHLO mail.kernel.org"
+        id S2505524AbfJYN6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 09:58:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505420AbfJYN56 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:57:58 -0400
+        id S2505514AbfJYN6S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:58:18 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF47D222CB;
-        Fri, 25 Oct 2019 13:57:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4F145222C2;
+        Fri, 25 Oct 2019 13:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011876;
-        bh=5mE6OzLGrrycxdes0Is7V01InxLIU/ke8n3+7PpvcVU=;
+        s=default; t=1572011898;
+        bh=6fwHDYAVti6MCwtld+8+l3TvOFU3KBYtoriCECp5pMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXMmsAyoDngbTdk5dFH/0mPnw1J8SAYaBjir2YE5xRjIzLPRqgetMQ+tBPPAhWuL6
-         h23+nrLw+vWZv7C/BjZv3WGQFctE+eP2o4Edo7RjtUiP5Dot09Jn9zaALgWSdk9ADd
-         /59M5EbEkZQ0DWTHpzxT1XWcAQPAgG2yS091iImI=
+        b=oi+l7OHVloAJ/tHT9Gqs8X+zhUjIY7rG7fuuZPz25wv4wWL0fEXjKC6PYXSgglw+a
+         QQq1MO0tVtT33Ee5i6vizWU4xuQp5OIxhEIxgXe8Hd8W2IvgAbbKDMRC9GZ1VDzaNc
+         pjdy/6KvR0wGcH2Q5JRGHZg1tdLZYdZ4akiB7yGk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
-        Eric Dumazet <edumazet@google.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 24/25] ipv6: Handle race in addrconf_dad_work
-Date:   Fri, 25 Oct 2019 09:57:12 -0400
-Message-Id: <20191025135715.25468-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 09/20] sch_netem: fix rcu splat in netem_enqueue()
+Date:   Fri, 25 Oct 2019 09:57:49 -0400
+Message-Id: <20191025135801.25739-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191025135715.25468-1-sashal@kernel.org>
-References: <20191025135715.25468-1-sashal@kernel.org>
+In-Reply-To: <20191025135801.25739-1-sashal@kernel.org>
+References: <20191025135801.25739-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,93 +44,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
+[ Upstream commit 159d2c7d8106177bd9a986fd005a311fe0d11285 ]
 
-Rajendra reported a kernel panic when a link was taken down:
+qdisc_root() use from netem_enqueue() triggers a lockdep warning.
 
-[ 6870.263084] BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
-[ 6870.271856] IP: [<ffffffff8efc5764>] __ipv6_ifa_notify+0x154/0x290
+__dev_queue_xmit() uses rcu_read_lock_bh() which is
+not equivalent to rcu_read_lock() + local_bh_disable_bh as far
+as lockdep is concerned.
 
-<snip>
+WARNING: suspicious RCU usage
+5.3.0-rc7+ #0 Not tainted
+-----------------------------
+include/net/sch_generic.h:492 suspicious rcu_dereference_check() usage!
 
-[ 6870.570501] Call Trace:
-[ 6870.573238] [<ffffffff8efc58c6>] ? ipv6_ifa_notify+0x26/0x40
-[ 6870.579665] [<ffffffff8efc98ec>] ? addrconf_dad_completed+0x4c/0x2c0
-[ 6870.586869] [<ffffffff8efe70c6>] ? ipv6_dev_mc_inc+0x196/0x260
-[ 6870.593491] [<ffffffff8efc9c6a>] ? addrconf_dad_work+0x10a/0x430
-[ 6870.600305] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-[ 6870.606732] [<ffffffff8ea93a7a>] ? process_one_work+0x18a/0x430
-[ 6870.613449] [<ffffffff8ea93d6d>] ? worker_thread+0x4d/0x490
-[ 6870.619778] [<ffffffff8ea93d20>] ? process_one_work+0x430/0x430
-[ 6870.626495] [<ffffffff8ea99dd9>] ? kthread+0xd9/0xf0
-[ 6870.632145] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-[ 6870.638573] [<ffffffff8ea99d00>] ? kthread_park+0x60/0x60
-[ 6870.644707] [<ffffffff8f01ae77>] ? ret_from_fork+0x57/0x70
-[ 6870.650936] Code: 31 c0 31 d2 41 b9 20 00 08 02 b9 09 00 00 0
+other info that might help us debug this:
 
-addrconf_dad_work is kicked to be scheduled when a device is brought
-up. There is a race between addrcond_dad_work getting scheduled and
-taking the rtnl lock and a process taking the link down (under rtnl).
-The latter removes the host route from the inet6_addr as part of
-addrconf_ifdown which is run for NETDEV_DOWN. The former attempts
-to use the host route in ipv6_ifa_notify. If the down event removes
-the host route due to the race to the rtnl, then the BUG listed above
-occurs.
+rcu_scheduler_active = 2, debug_locks = 1
+3 locks held by syz-executor427/8855:
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:92 [inline]
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: ip_finish_output2+0x2dc/0x2570 net/ipv4/ip_output.c:214
+ #1: 00000000b5525c01 (rcu_read_lock_bh){....}, at: __dev_queue_xmit+0x20a/0x3650 net/core/dev.c:3804
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_xmit_skb net/core/dev.c:3502 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_queue_xmit+0x14b8/0x3650 net/core/dev.c:3838
 
-This scenario does not occur when the ipv6 address is not kept
-(net.ipv6.conf.all.keep_addr_on_down = 0) as addrconf_ifdown sets the
-state of the ifp to DEAD. Handle when the addresses are kept by checking
-IF_READY which is reset by addrconf_ifdown.
+stack backtrace:
+CPU: 0 PID: 8855 Comm: syz-executor427 Not tainted 5.3.0-rc7+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ lockdep_rcu_suspicious+0x153/0x15d kernel/locking/lockdep.c:5357
+ qdisc_root include/net/sch_generic.h:492 [inline]
+ netem_enqueue+0x1cfb/0x2d80 net/sched/sch_netem.c:479
+ __dev_xmit_skb net/core/dev.c:3527 [inline]
+ __dev_queue_xmit+0x15d2/0x3650 net/core/dev.c:3838
+ dev_queue_xmit+0x18/0x20 net/core/dev.c:3902
+ neigh_hh_output include/net/neighbour.h:500 [inline]
+ neigh_output include/net/neighbour.h:509 [inline]
+ ip_finish_output2+0x1726/0x2570 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:308 [inline]
+ __ip_finish_output+0x5fc/0xb90 net/ipv4/ip_output.c:290
+ ip_finish_output+0x38/0x1f0 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip_mc_output+0x292/0xf40 net/ipv4/ip_output.c:417
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0xbb/0x190 net/ipv4/ip_output.c:125
+ ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1555
+ udp_send_skb.isra.0+0x6b2/0x1160 net/ipv4/udp.c:887
+ udp_sendmsg+0x1e96/0x2820 net/ipv4/udp.c:1174
+ inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:657
+ ___sys_sendmsg+0x3e2/0x920 net/socket.c:2311
+ __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2439
+ do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-The 'dead' flag for an inet6_addr is set only under rtnl, in
-addrconf_ifdown and it means the device is getting removed (or IPv6 is
-disabled). The interesting cases for changing the idev flag are
-addrconf_notify (NETDEV_UP and NETDEV_CHANGE) and addrconf_ifdown
-(reset the flag). The former does not have the idev lock - only rtnl;
-the latter has both. Based on that the existing dead + IF_READY check
-can be moved to right after the rtnl_lock in addrconf_dad_work.
-
-Fixes: f1705ec197e7 ("net: ipv6: Make address flushing on ifdown optional")
-Reported-by: Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ include/net/sch_generic.h | 5 +++++
+ net/sched/sch_netem.c     | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index a81201dd3a1a5..57bc05ff88d34 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -3908,6 +3908,12 @@ static void addrconf_dad_work(struct work_struct *w)
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 538f3c4458b04..5d5a137b9067f 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -276,6 +276,11 @@ static inline struct Qdisc *qdisc_root(const struct Qdisc *qdisc)
+ 	return q;
+ }
  
- 	rtnl_lock();
- 
-+	/* check if device was taken down before this delayed work
-+	 * function could be canceled
-+	 */
-+	if (idev->dead || !(idev->if_flags & IF_READY))
-+		goto out;
++static inline struct Qdisc *qdisc_root_bh(const struct Qdisc *qdisc)
++{
++	return rcu_dereference_bh(qdisc->dev_queue->qdisc);
++}
 +
- 	spin_lock_bh(&ifp->lock);
- 	if (ifp->state == INET6_IFADDR_STATE_PREDAD) {
- 		action = DAD_BEGIN;
-@@ -3953,11 +3959,6 @@ static void addrconf_dad_work(struct work_struct *w)
- 		goto out;
+ static inline struct Qdisc *qdisc_root_sleeping(const struct Qdisc *qdisc)
+ {
+ 	return qdisc->dev_queue->qdisc_sleeping;
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 12e3ae09c4ba1..95002e56fa48b 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -475,7 +475,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	 * skb will be queued.
+ 	 */
+ 	if (count > 1 && (skb2 = skb_clone(skb, GFP_ATOMIC)) != NULL) {
+-		struct Qdisc *rootq = qdisc_root(sch);
++		struct Qdisc *rootq = qdisc_root_bh(sch);
+ 		u32 dupsave = q->duplicate; /* prevent duplicating a dup... */
  
- 	write_lock_bh(&idev->lock);
--	if (idev->dead || !(idev->if_flags & IF_READY)) {
--		write_unlock_bh(&idev->lock);
--		goto out;
--	}
--
- 	spin_lock(&ifp->lock);
- 	if (ifp->state == INET6_IFADDR_STATE_DEAD) {
- 		spin_unlock(&ifp->lock);
+ 		q->duplicate = 0;
 -- 
 2.20.1
 
