@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B084AE4E88
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:08:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80BCAE4E7D
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503091AbfJYOHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:07:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48942 "EHLO mail.kernel.org"
+        id S2505024AbfJYNzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 09:55:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2504980AbfJYNzN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:13 -0400
+        id S2505014AbfJYNzT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:19 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B96EA21D7F;
-        Fri, 25 Oct 2019 13:55:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4459420679;
+        Fri, 25 Oct 2019 13:55:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011713;
-        bh=i6OBQan2kKE6S0mHWye64Z4OOzcnSu3pGuUf59jIpnk=;
+        s=default; t=1572011718;
+        bh=q1E0FxPMYC4aSCbIZPtT/+vHqf1AwqFt2itoITXyEh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HTMRv6yq+fSN0QAS6EgWgiunXXw4Zs6YEPEukiQMf/aJpwR5RxBrAeJvvdL4aidqu
-         hXxVKR9PQuO0FlzzZgwxp93ggrs6Z8K/4LcSNNkSDUqC1GgJ6VmneVRhjYQRCI+Bvi
-         rdXKBBZmXYLDT3S5MtA/NRLi/i2002CqjaiXj8/8=
+        b=M9ywqO8ncC6xK9dgTEtPyHxTKLTZzolQmipQ05m9zZg2AVlUqHYmDYi0gxJOV6ovh
+         W1nh95w06TURD8tL2Li8eqCrs5MKwr117UbG8C8F5E0xsUCITvfaX4AeqfG/unm/nn
+         y3TfbKrun74Yh/uQ+2Ei/QMeGYDh8sVh5ZmpwqjM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 06/33] rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record
-Date:   Fri, 25 Oct 2019 09:54:38 -0400
-Message-Id: <20191025135505.24762-6-sashal@kernel.org>
+Cc:     Eric Biggers <ebiggers@google.com>,
+        syzbot+6bf095f9becf5efef645@syzkaller.appspotmail.com,
+        syzbot+31c16aa4202dace3812e@syzkaller.appspotmail.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 07/33] llc: fix sk_buff leak in llc_sap_state_process()
+Date:   Fri, 25 Oct 2019 09:54:39 -0400
+Message-Id: <20191025135505.24762-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -44,71 +45,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 9ebeddef58c41bd700419cdcece24cf64ce32276 ]
+[ Upstream commit c6ee11c39fcc1fb55130748990a8f199e76263b4 ]
 
-The rxrpc_peer record needs to hold a reference on the rxrpc_local record
-it points as the peer is used as a base to access information in the
-rxrpc_local record.
+syzbot reported:
 
-This can cause problems in __rxrpc_put_peer(), where we need the network
-namespace pointer, and in rxrpc_send_keepalive(), where we need to access
-the UDP socket, leading to symptoms like:
+    BUG: memory leak
+    unreferenced object 0xffff888116270800 (size 224):
+       comm "syz-executor641", pid 7047, jiffies 4294947360 (age 13.860s)
+       hex dump (first 32 bytes):
+         00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+         00 20 e1 2a 81 88 ff ff 00 40 3d 2a 81 88 ff ff  . .*.....@=*....
+       backtrace:
+         [<000000004d41b4cc>] kmemleak_alloc_recursive  include/linux/kmemleak.h:55 [inline]
+         [<000000004d41b4cc>] slab_post_alloc_hook mm/slab.h:439 [inline]
+         [<000000004d41b4cc>] slab_alloc_node mm/slab.c:3269 [inline]
+         [<000000004d41b4cc>] kmem_cache_alloc_node+0x153/0x2a0 mm/slab.c:3579
+         [<00000000506a5965>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:198
+         [<000000001ba5a161>] alloc_skb include/linux/skbuff.h:1058 [inline]
+         [<000000001ba5a161>] alloc_skb_with_frags+0x5f/0x250  net/core/skbuff.c:5327
+         [<0000000047d9c78b>] sock_alloc_send_pskb+0x269/0x2a0  net/core/sock.c:2225
+         [<000000003828fe54>] sock_alloc_send_skb+0x32/0x40 net/core/sock.c:2242
+         [<00000000e34d94f9>] llc_ui_sendmsg+0x10a/0x540 net/llc/af_llc.c:933
+         [<00000000de2de3fb>] sock_sendmsg_nosec net/socket.c:652 [inline]
+         [<00000000de2de3fb>] sock_sendmsg+0x54/0x70 net/socket.c:671
+         [<000000008fe16e7a>] __sys_sendto+0x148/0x1f0 net/socket.c:1964
+	 [...]
 
-    BUG: KASAN: use-after-free in __rxrpc_put_peer net/rxrpc/peer_object.c:411
-    [inline]
-    BUG: KASAN: use-after-free in rxrpc_put_peer+0x685/0x6a0
-    net/rxrpc/peer_object.c:435
-    Read of size 8 at addr ffff888097ec0058 by task syz-executor823/24216
+The bug is that llc_sap_state_process() always takes an extra reference
+to the skb, but sometimes neither llc_sap_next_state() nor
+llc_sap_state_process() itself drops this reference.
 
-Fix this by taking a ref on the local record for the peer record.
+Fix it by changing llc_sap_next_state() to never consume a reference to
+the skb, rather than sometimes do so and sometimes not.  Then remove the
+extra skb_get() and kfree_skb() from llc_sap_state_process().
 
-Fixes: ace45bec6d77 ("rxrpc: Fix firewall route keepalive")
-Fixes: 2baec2c3f854 ("rxrpc: Support network namespacing")
-Reported-by: syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
+Reported-by: syzbot+6bf095f9becf5efef645@syzkaller.appspotmail.com
+Reported-by: syzbot+31c16aa4202dace3812e@syzkaller.appspotmail.com
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/peer_object.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/llc/llc_s_ac.c | 12 +++++++++---
+ net/llc/llc_sap.c  | 23 ++++++++---------------
+ 2 files changed, 17 insertions(+), 18 deletions(-)
 
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index b700b7ecaa3d8..64830d8c1fdb5 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -216,7 +216,7 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
- 	peer = kzalloc(sizeof(struct rxrpc_peer), gfp);
- 	if (peer) {
- 		atomic_set(&peer->usage, 1);
--		peer->local = local;
-+		peer->local = rxrpc_get_local(local);
- 		INIT_HLIST_HEAD(&peer->error_targets);
- 		peer->service_conns = RB_ROOT;
- 		seqlock_init(&peer->service_conn_lock);
-@@ -307,7 +307,6 @@ void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
- 	unsigned long hash_key;
- 
- 	hash_key = rxrpc_peer_hash_key(local, &peer->srx);
--	peer->local = local;
- 	rxrpc_init_peer(rx, peer, hash_key);
- 
- 	spin_lock(&rxnet->peer_hash_lock);
-@@ -417,6 +416,7 @@ static void __rxrpc_put_peer(struct rxrpc_peer *peer)
- 	list_del_init(&peer->keepalive_link);
- 	spin_unlock_bh(&rxnet->peer_hash_lock);
- 
-+	rxrpc_put_local(peer->local);
- 	kfree_rcu(peer, rcu);
+diff --git a/net/llc/llc_s_ac.c b/net/llc/llc_s_ac.c
+index a94bd56bcac6f..7ae4cc684d3ab 100644
+--- a/net/llc/llc_s_ac.c
++++ b/net/llc/llc_s_ac.c
+@@ -58,8 +58,10 @@ int llc_sap_action_send_ui(struct llc_sap *sap, struct sk_buff *skb)
+ 			    ev->daddr.lsap, LLC_PDU_CMD);
+ 	llc_pdu_init_as_ui_cmd(skb);
+ 	rc = llc_mac_hdr_init(skb, ev->saddr.mac, ev->daddr.mac);
+-	if (likely(!rc))
++	if (likely(!rc)) {
++		skb_get(skb);
+ 		rc = dev_queue_xmit(skb);
++	}
+ 	return rc;
  }
  
-@@ -453,6 +453,7 @@ void rxrpc_put_peer_locked(struct rxrpc_peer *peer)
- 	if (n == 0) {
- 		hash_del_rcu(&peer->hash_link);
- 		list_del_init(&peer->keepalive_link);
-+		rxrpc_put_local(peer->local);
- 		kfree_rcu(peer, rcu);
+@@ -81,8 +83,10 @@ int llc_sap_action_send_xid_c(struct llc_sap *sap, struct sk_buff *skb)
+ 			    ev->daddr.lsap, LLC_PDU_CMD);
+ 	llc_pdu_init_as_xid_cmd(skb, LLC_XID_NULL_CLASS_2, 0);
+ 	rc = llc_mac_hdr_init(skb, ev->saddr.mac, ev->daddr.mac);
+-	if (likely(!rc))
++	if (likely(!rc)) {
++		skb_get(skb);
+ 		rc = dev_queue_xmit(skb);
++	}
+ 	return rc;
+ }
+ 
+@@ -135,8 +139,10 @@ int llc_sap_action_send_test_c(struct llc_sap *sap, struct sk_buff *skb)
+ 			    ev->daddr.lsap, LLC_PDU_CMD);
+ 	llc_pdu_init_as_test_cmd(skb);
+ 	rc = llc_mac_hdr_init(skb, ev->saddr.mac, ev->daddr.mac);
+-	if (likely(!rc))
++	if (likely(!rc)) {
++		skb_get(skb);
+ 		rc = dev_queue_xmit(skb);
++	}
+ 	return rc;
+ }
+ 
+diff --git a/net/llc/llc_sap.c b/net/llc/llc_sap.c
+index a7f7b8ff47292..be419062e19a6 100644
+--- a/net/llc/llc_sap.c
++++ b/net/llc/llc_sap.c
+@@ -197,29 +197,22 @@ static int llc_sap_next_state(struct llc_sap *sap, struct sk_buff *skb)
+  *	After executing actions of the event, upper layer will be indicated
+  *	if needed(on receiving an UI frame). sk can be null for the
+  *	datalink_proto case.
++ *
++ *	This function always consumes a reference to the skb.
+  */
+ static void llc_sap_state_process(struct llc_sap *sap, struct sk_buff *skb)
+ {
+ 	struct llc_sap_state_ev *ev = llc_sap_ev(skb);
+ 
+-	/*
+-	 * We have to hold the skb, because llc_sap_next_state
+-	 * will kfree it in the sending path and we need to
+-	 * look at the skb->cb, where we encode llc_sap_state_ev.
+-	 */
+-	skb_get(skb);
+ 	ev->ind_cfm_flag = 0;
+ 	llc_sap_next_state(sap, skb);
+-	if (ev->ind_cfm_flag == LLC_IND) {
+-		if (skb->sk->sk_state == TCP_LISTEN)
+-			kfree_skb(skb);
+-		else {
+-			llc_save_primitive(skb->sk, skb, ev->prim);
+ 
+-			/* queue skb to the user. */
+-			if (sock_queue_rcv_skb(skb->sk, skb))
+-				kfree_skb(skb);
+-		}
++	if (ev->ind_cfm_flag == LLC_IND && skb->sk->sk_state != TCP_LISTEN) {
++		llc_save_primitive(skb->sk, skb, ev->prim);
++
++		/* queue skb to the user. */
++		if (sock_queue_rcv_skb(skb->sk, skb) == 0)
++			return;
  	}
+ 	kfree_skb(skb);
  }
 -- 
 2.20.1
