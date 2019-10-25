@@ -2,92 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F53FE4E0D
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 867F9E4EC3
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:19:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395210AbfJYOEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:04:38 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:42108 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732091AbfJYOEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:04:37 -0400
-Received: by mail-qt1-f194.google.com with SMTP id w14so3361185qto.9
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 07:04:36 -0700 (PDT)
+        id S1730051AbfJYOTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:19:06 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:42872 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729544AbfJYOTG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:19:06 -0400
+Received: by mail-io1-f68.google.com with SMTP id i26so2577615iog.9;
+        Fri, 25 Oct 2019 07:19:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=okI+WKXZnivApTS1Oqi6dD5Ms0rFCprYxF1H61WduWk=;
-        b=nEmUBDAzjHOqU3KbXmoRcz8KPeUTuzXIS+JiSbLO+I22b5gGDQQVNzXwIPsTS3RV1p
-         xJp4vb7bv9REeHCzy+as9dZVFXJb+aSnQDWmZ2g4L8f5MYV+Yz9mbssF9qrIejKknjYJ
-         2WYJuSAfOxY+pD5YL5QgKtHuUgMPUNhxjQu2TA7cevPrATXlyQUADgtDoWUsnSZ6gr8W
-         XJU7uKG2yyG7SDSZFGOpl31haTkr/PCkgLgjx2p2mEUrJ26bqsIkb8FCS1XzlO+50OrZ
-         7+9bCcbQhiTq8yrPpaz6jHeFmi3waDUfT2NVAyLJdDbYIrQQ3XQhQYoGbDdbX3BvEZOQ
-         LtMA==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=2jFeG2dUcr+Q7csipkPUf6YfvtHqZfoRNXMbriXYupI=;
+        b=mmafdueEKa7k1jkCLhfmsMo7VlYyA9wSpyIts4A3m+sDCCOCJyi0AQLe1Cy739Nb9r
+         aY0Ie4Gb7MwS1bQPO253l4OJj7RgN07RnGlwPnXIHlgmR08RSYTD2A/LEbRthJ2zbcF9
+         PgSjGf2a45K/0zZptIcYq9SKqQkdMrvKzf7mgdIjjQCdrDooUV+zEvWGQtHy7xvOGNt0
+         2gf3zwEF9K3oMpXrb8H/eYt/CyNy9NZGn/f+/Dp/mnzOBxGgLkNs7mb2aNf6UdNZ3XoN
+         VHqpVyfO+maovB+bhVybGF1A0azRUQD8KAHd8yzyEpjKHXOiNW8HpFGPV4jKX3Ca27ni
+         bugw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=okI+WKXZnivApTS1Oqi6dD5Ms0rFCprYxF1H61WduWk=;
-        b=T76X+Gp2WfyhZ6/mKOn1mmUQfvBCO6JGe8ZMKbkukkIZao+v9pJZFGStZKej5+2XVv
-         dbLjXWXZAIC385vP/5m6bmi+YkMJh9nEACvHiNzatqGQi9WBwFf1MKG9E/e9rfzpCK/a
-         sBKF/gr6+sriD+ePMjhmQuOsaVeXM+ezpXtwa9+6WcciDYmZc4fpABEncs19iyjXtSEz
-         LqOoX4ldGT2n1fIy2nvZRuL/ZwpnVtu8v9E9pU4KFPjL/MF08yDzMyvJUeq8yhkpw+nH
-         bpJdi7CTd3GqFvEOejfT5bQ24mWQVXWdox0pAYj0TKCotG1dYdRQwHVFLo4st7i76m70
-         Z9wA==
-X-Gm-Message-State: APjAAAUj3Syww1zJn+m6Ol90u5TZC5rGBJMOk7DjtuzYri7mH9H5JWBa
-        elbfG9h/JxwA9V6ZQg477z2OypVw/pdt9yCGVIQ=
-X-Google-Smtp-Source: APXvYqwcafiZAWv3czOb1uLuSbKDvERrRJDgiUDJwCH5EdrUF7O6xCKXXmLRoWDFwkI1quapzhRzUNqCI1TWvhwDWzM=
-X-Received: by 2002:ad4:4345:: with SMTP id q5mr3412020qvs.80.1572012276143;
- Fri, 25 Oct 2019 07:04:36 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:ac8:6615:0:0:0:0:0 with HTTP; Fri, 25 Oct 2019 07:04:35
- -0700 (PDT)
-Reply-To: eddywilliam0002@gmail.com
-From:   eddy william <ed7293954@gmail.com>
-Date:   Fri, 25 Oct 2019 16:04:35 +0200
-Message-ID: <CAN9EptK3CG+01XzxV8z181P=SKs0MUQxWPksYyT-TbXSnPC-zQ@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=2jFeG2dUcr+Q7csipkPUf6YfvtHqZfoRNXMbriXYupI=;
+        b=Mp25H/eCOkn5rpr5OkqjGY3aR90/RaXHXgLQkPCOMgmjAMdNjPAe0RxUMMf4Y813bi
+         FTEHuSY6cYuKOi90pQisqGygMhNnpPIDivRukteFGmAflS2IplRkRX18KmT0sjKi7Pz4
+         RJfN6PsTlDt9bimT9Cs1Q90aLNYixFe6/j3v0UWt1U2FGCmKBlTfovcncpp6e1WaeDqb
+         UW1An8/ixFycbuByADdoq6w3jQ9gUQFjuWr2ZwEwFDzK82TXxf0ML9n3xaMMtExWQNqv
+         36fqMVsviK/4bzPpDkXHLFrSFK7HTS/N9jVmBPxxo8i4Rk8kcdzsX+7y6Mj16sRNUJJf
+         /ZKQ==
+X-Gm-Message-State: APjAAAXjXOnACStqqaixHIz+bbrzTvIU+SWQWaOjdLTJRV0fanNRxO96
+        PShhUvgEU+odh/VmWT7lE+I=
+X-Google-Smtp-Source: APXvYqx/wGZ0iiL3VvW2qhbOevq3mUSVhYVqkeqX1nFtKciqDcJKI+chDzAcMM67YScoeET3kYwrDw==
+X-Received: by 2002:a6b:ee18:: with SMTP id i24mr3877990ioh.163.1572013144337;
+        Fri, 25 Oct 2019 07:19:04 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id t16sm296728iol.12.2019.10.25.07.19.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 07:19:02 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 07:18:55 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com
+Message-ID: <5db3044f82e10_36802aec12c585b83b@john-XPS-13-9370.notmuch>
+In-Reply-To: <87lft9ch0k.fsf@cloudflare.com>
+References: <20191022113730.29303-1-jakub@cloudflare.com>
+ <5db1d7a810bdb_5c282ada047205c08f@john-XPS-13-9370.notmuch>
+ <87lft9ch0k.fsf@cloudflare.com>
+Subject: Re: [RFC bpf-next 0/5] Extend SOCKMAP to store listening sockets
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo
+Jakub Sitnicki wrote:
+> On Thu, Oct 24, 2019 at 06:56 PM CEST, John Fastabend wrote:
+> > Jakub Sitnicki wrote:
+> 
+> [...]
+> 
+> >> I'm looking for feedback if there's anything fundamentally wrong with
+> >> extending SOCKMAP map type like this that I might have missed.
+> >
+> > I think this looks good. The main reason I blocked it off before is mostly
+> > because I had no use-case for it and the complication with what to do with
+> > child sockets. Clearing the psock state seems OK to me if user wants to
+> > add it back to a map they can simply grab it again from a sockops
+> > event.
+> 
+> Thanks for taking a look at the code.
+> 
+> > By the way I would eventually like to see the lookup hook return the
+> > correct type (PTR_TO_SOCKET_OR_NULL) so that the verifier "knows" the type
+> > and the socket can be used the same as if it was pulled from a sk_lookup
+> > helper.
+> 
+> Wait... you had me scratching my head there for a minute.
+> 
+> I haven't whitelisted bpf_map_lookup_elem for SOCKMAP in
+> check_map_func_compatibility so verifier won't allow lookups from BPF.
+> 
+> If we wanted to do that, I don't actually have a use-case for it, I
+> think would have to extend get_func_proto for SK_SKB and SK_REUSEPORT
+> prog types. At least that's what docs for bpf_map_lookup_elem suggest:
 
-Mein Name ist Eddy William. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte
-Ihnen anbieten
-die n=C3=A4chsten Verwandten zu meinem Klienten. Sie erben die Summe von
-($8,5 Millionen US-Dollar)
-Dollar, die mein Kunde vor seinem Tod in der Bank gelassen hat.
+Right, so its not required for your series just letting you know I will
+probably look to do this shortly. It would be useful for some use cases
+we have.
 
-Mein Mandant ist ein Staatsb=C3=BCrger Ihres Landes, der mit seiner Frau
-bei einem Autounfall ums Leben gekommen ist
-und nur Sohn. Ich werde mit 50% des Gesamtfonds berechtigt sein, w=C3=A4hre=
-nd 50%
-sein f=C3=BCr dich.
-Bitte kontaktieren Sie meine private E-Mail hier f=C3=BCr weitere
-Informationen: eddywilliam0002gmail.com
+> 
+> /* If kernel subsystem is allowing eBPF programs to call this function,
+>  * inside its own verifier_ops->get_func_proto() callback it should return
+>  * bpf_map_lookup_elem_proto, so that verifier can properly check the arguments
+>  *
+>  * Different map implementations will rely on rcu in map methods
+>  * lookup/update/delete, therefore eBPF programs must run under rcu lock
+>  * if program is allowed to access maps, so check rcu_read_lock_held in
+>  * all three functions.
+>  */
+> BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
+> {
+> 	WARN_ON_ONCE(!rcu_read_lock_held());
+> 	return (unsigned long) map->ops->map_lookup_elem(map, key);
+> }
+> 
+> -Jakub
 
-Vielen Dank im Voraus,
-Mr. Eddy William,
 
-
-
-Hello
-
-My name is Eddy William I am a lawyer by profession. I wish to offer you
-the next of kin to my client. You will inherit the sum of ($8.5 Million)
-dollars my client left in the bank before his death.
-
-My client is a citizen of your country who died in auto crash with his wife
-and only son. I will be entitled with 50% of the total fund while 50% will
-be for you.
-Please contact my private email here for more details:eddywilliam0002gmail.=
-com
-
-Many thanks in advance,
-Mr.Eddy William,
