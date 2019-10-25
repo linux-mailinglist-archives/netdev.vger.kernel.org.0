@@ -2,90 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 109B9E564A
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 23:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC371E5653
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 23:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbfJYVz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 17:55:28 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38976 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725897AbfJYVz0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 17:55:26 -0400
-Received: by mail-pl1-f196.google.com with SMTP id s17so1978445plp.6
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 14:55:25 -0700 (PDT)
+        id S1726334AbfJYV7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 17:59:37 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:44863 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbfJYV7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 17:59:37 -0400
+Received: by mail-qk1-f196.google.com with SMTP id g21so3147568qkm.11;
+        Fri, 25 Oct 2019 14:59:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7uKa34kYvsX7BroFGlpYBz0Sd8dZ85UkHcONCBB1nmI=;
-        b=mVoUJAapx+uOBznFP8kPMazgbHKDh/1nmbF+I3B+I6pGY1Bc0SXxsWWOwS6ZqaoJ8s
-         MZwQqVJx/GAL3Dx9IjsemZnfdzeglMPrWkMYkWqz0w97Ar+Oo94dGyVVXX910/Ivgo/8
-         UOyu6jroYVgGEnJcyAEBMuAzV/hMF9wsf+NvI=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=diVVDRLsiGaS8JrOzp3ioJRMj0sbhJfnpLdNNy/AZcM=;
+        b=BnG9jQKYdLn5H6R6C/QHkiX2I+WZDSCWYXk5h2vkKjdcj38MJjy8FYBNmSSx3DrEWX
+         ELH45zl9WJAyv+K8ajmaLb4lolLA28/tqnhJkicj0B30+AykGfbX8PfbHDpcuJYZ4WAN
+         HTrK0N2JtW1go8Bg+DRg+aIeiYerPKgzB+27xk6PokwkojPAm7kTPqOsxIbbh++M/BkB
+         HOWFg2nsl7FYjU3yVOcIYlqMV3LGkEj3OU5IsSlGrs68oIT9VrCwEm+1hj8tSOGXKk4I
+         4JHE6RtInCT+nrPrQ1VRU2wINr7CV/JWJIL5DnEGwyXgn3v2fr6lwH6lYq3ZiI/tQH0t
+         TMiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7uKa34kYvsX7BroFGlpYBz0Sd8dZ85UkHcONCBB1nmI=;
-        b=XTKf+EPs+9KWv4XLgqXzKfm5RPIDoKJv3EcYLWf+sEF0WoD+LYreLFGJ1kJs3YMayj
-         4XYJNi3+0pIpytCqXu3id+ld7v1I0KrKDEF7EJnDxW5FOoLjukARQ0YLggnT109xYZ1T
-         CfYz3aH/nqDpHYwQ9eblGN9iDyxS7ZqWJ7aGwBkokQo48TMbR5G0grLCPMYWMi+jOeqQ
-         CiaqgZfA4Ym5o6A7eP90p1hUn+JqTDTeBIuV2YN6I8mMRtqhw1ISm+c2pkiJtajsFwSV
-         TgJFJXcLlS8LbA8/1UEEEUgvGifdf9yHaMh8gG+Nrl2a/+vJxTxSowv4lsUbzMKd6oXB
-         A67g==
-X-Gm-Message-State: APjAAAXRkVaPhtijCZcim+/riauCc+UXXR9C6Lx+XNzLidz0IU9vvg1n
-        UA5AjFqgTy9DD4LN5wlp9wBKtg==
-X-Google-Smtp-Source: APXvYqz/ooBuyGY1IHf6DZksSTGAVttn8pjAAVhvqvN5QaSKbLw1d5alO5D0UMlMwup7Kjy2l0zWiw==
-X-Received: by 2002:a17:902:b687:: with SMTP id c7mr6367753pls.214.1572040525016;
-        Fri, 25 Oct 2019 14:55:25 -0700 (PDT)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id y80sm3815110pfc.30.2019.10.25.14.55.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 14:55:24 -0700 (PDT)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Cc:     linux-bluetooth@vger.kernel.org, dianders@chromium.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 2/3] dt-bindings: net: broadcom-bluetooth: Add BCM43540 compatible string
-Date:   Fri, 25 Oct 2019 14:54:27 -0700
-Message-Id: <20191025215428.31607-3-abhishekpandit@chromium.org>
-X-Mailer: git-send-email 2.24.0.rc0.303.g954a862665-goog
-In-Reply-To: <20191025215428.31607-1-abhishekpandit@chromium.org>
-References: <20191025215428.31607-1-abhishekpandit@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=diVVDRLsiGaS8JrOzp3ioJRMj0sbhJfnpLdNNy/AZcM=;
+        b=FrAF/3SBUdYHd11YY6BOJAorVwuxMOqV7mrvQoENiY9oCrNiF93zp3nRkf0Ch46wDO
+         ySHIcHEseGhwMmw65/zqB1KtH6QBy/YSjuxyNYG7vgnLrQ9ZoYNP2DlJUrhDStk4EjBW
+         hHRSZkoh4wYnkfkYl5gs/+OTCNWpYe/PtHTOsqV/HeWCwK1hCvSkvHpWh0PYW8ymreQd
+         uMWT9oH3MmJ3inzn47NPXAfrN+yKdIog2HqM5J6cXgi+RydqVG3Dge2HcO05zv4Ocv5I
+         6GGoDtgpAhcRmuKpT/gSA3RIoIdBbCnTTaA4RfewzG7WmJ6qFxr98rVuAXKp0D5zd9Yq
+         3R4A==
+X-Gm-Message-State: APjAAAWuQ4tgiCf9Y1j71kab1cP97DI08ClXy8NgMvOKjXT2Y+kAjdKo
+        9hL4r7c+/soJtIkTnx6s/o76nnY4nLPLqsi1nJw=
+X-Google-Smtp-Source: APXvYqxzMfutjNHO8g22h4S8AvD36rvyV7JP/6wJ0sO86TarLKPImcxWAA37yn4OUL6oqeF07i9rpx4ZGD4Qj7ab7OM=
+X-Received: by 2002:a37:520a:: with SMTP id g10mr4966027qkb.39.1572040774872;
+ Fri, 25 Oct 2019 14:59:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1572010897.git.daniel@iogearbox.net> <51b9752121c1c06197291ea6b395d163313ac6ea.1572010897.git.daniel@iogearbox.net>
+In-Reply-To: <51b9752121c1c06197291ea6b395d163313ac6ea.1572010897.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 25 Oct 2019 14:59:23 -0700
+Message-ID: <CAEf4Bza1Pt4CbpSYrr1VsOCeJR=4p7es8UycpPXrnZwqn+XyKg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/5] bpf: Make use of probe_user_write in probe
+ write helper
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BCM43540 is a 802.11 a/b/g/n/ac WiFi + Bluetooth 4.1 chip from
-Broadcom. This is present in Azurewave AW-CM195NF WiFi+BT module.
+On Fri, Oct 25, 2019 at 1:44 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Convert the bpf_probe_write_user() helper to probe_user_write() such that
+> writes are not attempted under KERNEL_DS anymore which is buggy as kernel
+> and user space pointers can have overlapping addresses. Also, given we have
+> the access_ok() check inside probe_user_write(), the helper doesn't need
+> to do it twice.
+>
+> Fixes: 96ae52279594 ("bpf: Add bpf_probe_write_user BPF helper to be called in tracers")
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
- Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-index 4fa00e2eafcf..c749dc297624 100644
---- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-+++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-@@ -14,6 +14,7 @@ Required properties:
-    * "brcm,bcm4330-bt"
-    * "brcm,bcm43438-bt"
-    * "brcm,bcm4345c5"
-+   * "brcm,bcm43540-bt"
- 
- Optional properties:
- 
--- 
-2.24.0.rc0.303.g954a862665-goog
-
+[...]
