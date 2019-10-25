@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16F00E4E71
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B201E4E57
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505117AbfJYNzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:55:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49530 "EHLO mail.kernel.org"
+        id S2632751AbfJYNzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 09:55:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505101AbfJYNzf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:35 -0400
+        id S2632731AbfJYNzm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7234222BD;
-        Fri, 25 Oct 2019 13:55:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BDEBF222D1;
+        Fri, 25 Oct 2019 13:55:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011734;
-        bh=ZZjjnG3npdaGzZzxef3vjTrq7vHubzzO5lJ6IcAPVKA=;
+        s=default; t=1572011740;
+        bh=TgHgFRPkTtXZrx3dH/wH0Sh7Sunx/cPD0igSj6wTcSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HNSG62Phu14zNrKY4EJOnALBH7CTO63QES+mP8l0NAXA2N92+CEWj0M8VslHDRE0T
-         DsaxTk67I4v2lMJMRXFpE8KfhI126A+yHg89JT+4o7wq9oFxy3ktn52CgGVLfMEQCP
-         /2tjF1cTebVqgDn5wq9K9/R6UHmMzst3gC1RbN/Q=
+        b=DQBo+gsGyfyxC9kj+hSUyOlqz6WhYOOiQ6tLVRiNAJvDiI9jBAhGlA3LVr51LjpRU
+         b5iY3wR39g96wkhggWtcWUye9oTKBiy37/gv9JlwDnGOwjGKLIygGH+PrkHhhxpHKp
+         zOUErA3o9LC+KcEVs9Pxk+GacA2Ewc6GaYMLepDw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        Koen Vandeputte <koen.vandeputte@ncentric.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 16/33] netfilter: connlabels: prefer static lock initialiser
-Date:   Fri, 25 Oct 2019 09:54:48 -0400
-Message-Id: <20191025135505.24762-16-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 21/33] ath9k: dynack: fix possible deadlock in ath_dynack_node_{de}init
+Date:   Fri, 25 Oct 2019 09:54:53 -0400
+Message-Id: <20191025135505.24762-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -45,56 +45,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 105333435b4f3b21ffc325f32fae17719310db64 ]
+[ Upstream commit e1aa1a1db3b01c9890e82cf065cee99962ba1ed9 ]
 
-seen during boot:
-BUG: spinlock bad magic on CPU#2, swapper/0/1
- lock: nf_connlabels_lock+0x0/0x60, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
-Call Trace:
- do_raw_spin_lock+0x14e/0x1b0
- nf_connlabels_get+0x15/0x40
- ct_init_net+0xc4/0x270
- ops_init+0x56/0x1c0
- register_pernet_operations+0x1c8/0x350
- register_pernet_subsys+0x1f/0x40
- tcf_register_action+0x7c/0x1a0
- do_one_initcall+0x13d/0x2d9
+Fix following lockdep warning disabling bh in
+ath_dynack_node_init/ath_dynack_node_deinit
 
-Problem is that ct action init function can run before
-connlabels_init().  Lock has not been initialised yet.
+[   75.955878] --------------------------------
+[   75.955880] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+[   75.955884] swapper/0/0 [HC0[0]:SC1[3]:HE1:SE0] takes:
+[   75.955888] 00000000792a7ee0 (&(&da->qlock)->rlock){+.?.}, at: ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
+[   75.955905] {SOFTIRQ-ON-W} state was registered at:
+[   75.955912]   lock_acquire+0x9a/0x160
+[   75.955917]   _raw_spin_lock+0x2c/0x70
+[   75.955927]   ath_dynack_node_init+0x2a/0x60 [ath9k_hw]
+[   75.955934]   ath9k_sta_state+0xec/0x160 [ath9k]
+[   75.955976]   drv_sta_state+0xb2/0x740 [mac80211]
+[   75.956008]   sta_info_insert_finish+0x21a/0x420 [mac80211]
+[   75.956039]   sta_info_insert_rcu+0x12b/0x2c0 [mac80211]
+[   75.956069]   sta_info_insert+0x7/0x70 [mac80211]
+[   75.956093]   ieee80211_prep_connection+0x42e/0x730 [mac80211]
+[   75.956120]   ieee80211_mgd_auth.cold+0xb9/0x15c [mac80211]
+[   75.956152]   cfg80211_mlme_auth+0x143/0x350 [cfg80211]
+[   75.956169]   nl80211_authenticate+0x25e/0x2b0 [cfg80211]
+[   75.956172]   genl_family_rcv_msg+0x198/0x400
+[   75.956174]   genl_rcv_msg+0x42/0x90
+[   75.956176]   netlink_rcv_skb+0x35/0xf0
+[   75.956178]   genl_rcv+0x1f/0x30
+[   75.956180]   netlink_unicast+0x154/0x200
+[   75.956182]   netlink_sendmsg+0x1bf/0x3d0
+[   75.956186]   ___sys_sendmsg+0x2c2/0x2f0
+[   75.956187]   __sys_sendmsg+0x44/0x80
+[   75.956190]   do_syscall_64+0x55/0x1a0
+[   75.956192]   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[   75.956194] irq event stamp: 2357092
+[   75.956196] hardirqs last  enabled at (2357092): [<ffffffff818c62de>] _raw_spin_unlock_irqrestore+0x3e/0x50
+[   75.956199] hardirqs last disabled at (2357091): [<ffffffff818c60b1>] _raw_spin_lock_irqsave+0x11/0x80
+[   75.956202] softirqs last  enabled at (2357072): [<ffffffff8106dc09>] irq_enter+0x59/0x60
+[   75.956204] softirqs last disabled at (2357073): [<ffffffff8106dcbe>] irq_exit+0xae/0xc0
+[   75.956206]
+               other info that might help us debug this:
+[   75.956207]  Possible unsafe locking scenario:
 
-Fix it by using a static initialiser.
+[   75.956208]        CPU0
+[   75.956209]        ----
+[   75.956210]   lock(&(&da->qlock)->rlock);
+[   75.956213]   <Interrupt>
+[   75.956214]     lock(&(&da->qlock)->rlock);
+[   75.956216]
+                *** DEADLOCK ***
 
-Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+[   75.956217] 1 lock held by swapper/0/0:
+[   75.956219]  #0: 000000003bb5675c (&(&sc->sc_pcu_lock)->rlock){+.-.}, at: ath9k_tasklet+0x55/0x240 [ath9k]
+[   75.956225]
+               stack backtrace:
+[   75.956228] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.3.0-rc1-wdn+ #13
+[   75.956229] Hardware name: Dell Inc. Studio XPS 1340/0K183D, BIOS A11 09/08/2009
+[   75.956231] Call Trace:
+[   75.956233]  <IRQ>
+[   75.956236]  dump_stack+0x67/0x90
+[   75.956239]  mark_lock+0x4c1/0x640
+[   75.956242]  ? check_usage_backwards+0x130/0x130
+[   75.956245]  ? sched_clock_local+0x12/0x80
+[   75.956247]  __lock_acquire+0x484/0x7a0
+[   75.956250]  ? __lock_acquire+0x3b9/0x7a0
+[   75.956252]  lock_acquire+0x9a/0x160
+[   75.956259]  ? ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
+[   75.956262]  _raw_spin_lock_bh+0x34/0x80
+[   75.956268]  ? ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
+[   75.956275]  ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
+[   75.956280]  ath_rx_tasklet+0xd09/0xe90 [ath9k]
+[   75.956286]  ath9k_tasklet+0x102/0x240 [ath9k]
+[   75.956288]  tasklet_action_common.isra.0+0x6d/0x170
+[   75.956291]  __do_softirq+0xcc/0x425
+[   75.956294]  irq_exit+0xae/0xc0
+[   75.956296]  do_IRQ+0x8a/0x110
+[   75.956298]  common_interrupt+0xf/0xf
+[   75.956300]  </IRQ>
+[   75.956303] RIP: 0010:cpuidle_enter_state+0xb2/0x400
+[   75.956308] RSP: 0018:ffffffff82203e70 EFLAGS: 00000202 ORIG_RAX: ffffffffffffffd7
+[   75.956310] RAX: ffffffff82219800 RBX: ffffffff822bd0a0 RCX: 0000000000000000
+[   75.956312] RDX: 0000000000000046 RSI: 0000000000000006 RDI: ffffffff82219800
+[   75.956314] RBP: ffff888155a01c00 R08: 00000011af51aabe R09: 0000000000000000
+[   75.956315] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
+[   75.956317] R13: 00000011af51aabe R14: 0000000000000003 R15: ffffffff82219800
+[   75.956321]  cpuidle_enter+0x24/0x40
+[   75.956323]  do_idle+0x1ac/0x220
+[   75.956326]  cpu_startup_entry+0x14/0x20
+[   75.956329]  start_kernel+0x482/0x489
+[   75.956332]  secondary_startup_64+0xa4/0xb0
+
+Fixes: c774d57fd47c ("ath9k: add dynamic ACK timeout estimation")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Tested-by: Koen Vandeputte <koen.vandeputte@ncentric.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_labels.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath9k/dynack.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_labels.c b/net/netfilter/nf_conntrack_labels.c
-index 74b8113f7aebe..d1c6b2a2e7bd1 100644
---- a/net/netfilter/nf_conntrack_labels.c
-+++ b/net/netfilter/nf_conntrack_labels.c
-@@ -11,7 +11,7 @@
- #include <net/netfilter/nf_conntrack_ecache.h>
- #include <net/netfilter/nf_conntrack_labels.h>
+diff --git a/drivers/net/wireless/ath/ath9k/dynack.c b/drivers/net/wireless/ath/ath9k/dynack.c
+index f112fa5b2eacf..1ccf20d8c1607 100644
+--- a/drivers/net/wireless/ath/ath9k/dynack.c
++++ b/drivers/net/wireless/ath/ath9k/dynack.c
+@@ -298,9 +298,9 @@ void ath_dynack_node_init(struct ath_hw *ah, struct ath_node *an)
  
--static spinlock_t nf_connlabels_lock;
-+static __read_mostly DEFINE_SPINLOCK(nf_connlabels_lock);
+ 	an->ackto = ackto;
  
- static int replace_u32(u32 *address, u32 mask, u32 new)
- {
-@@ -89,7 +89,6 @@ int nf_conntrack_labels_init(void)
- {
- 	BUILD_BUG_ON(NF_CT_LABELS_MAX_SIZE / sizeof(long) >= U8_MAX);
- 
--	spin_lock_init(&nf_connlabels_lock);
- 	return nf_ct_extend_register(&labels_extend);
+-	spin_lock(&da->qlock);
++	spin_lock_bh(&da->qlock);
+ 	list_add_tail(&an->list, &da->nodes);
+-	spin_unlock(&da->qlock);
++	spin_unlock_bh(&da->qlock);
  }
+ EXPORT_SYMBOL(ath_dynack_node_init);
+ 
+@@ -314,9 +314,9 @@ void ath_dynack_node_deinit(struct ath_hw *ah, struct ath_node *an)
+ {
+ 	struct ath_dynack *da = &ah->dynack;
+ 
+-	spin_lock(&da->qlock);
++	spin_lock_bh(&da->qlock);
+ 	list_del(&an->list);
+-	spin_unlock(&da->qlock);
++	spin_unlock_bh(&da->qlock);
+ }
+ EXPORT_SYMBOL(ath_dynack_node_deinit);
  
 -- 
 2.20.1
