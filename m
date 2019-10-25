@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18190E515D
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 18:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70AD3E515F
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 18:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633092AbfJYQhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 12:37:22 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52474 "EHLO
+        id S2633097AbfJYQhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 12:37:23 -0400
+Received: from www62.your-server.de ([213.133.104.62]:52480 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2633053AbfJYQhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 12:37:21 -0400
+        with ESMTP id S2633084AbfJYQhW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 12:37:22 -0400
 Received: from 33.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.33] helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1iO2aV-0003ax-TR; Fri, 25 Oct 2019 18:37:19 +0200
+        id 1iO2aW-0003b7-DW; Fri, 25 Oct 2019 18:37:20 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     ast@kernel.org
 Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf-next 4/5] bpf, samples: Use bpf_probe_read_user where appropriate
-Date:   Fri, 25 Oct 2019 18:37:10 +0200
-Message-Id: <d4ed775a802df0df6aeee84537bb9b3cad32746d.1572010897.git.daniel@iogearbox.net>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ilya Leoshkevich <iii@linux.ibm.com>
+Subject: [PATCH bpf-next 5/5] bpf, testing: Add selftest to read/write sockaddr from user space
+Date:   Fri, 25 Oct 2019 18:37:11 +0200
+Message-Id: <19ce2c58465c5fab4c94f23450a8b8d5016a35bb.1572010897.git.daniel@iogearbox.net>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1572010897.git.daniel@iogearbox.net>
 References: <cover.1572010897.git.daniel@iogearbox.net>
@@ -35,66 +36,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use bpf_probe_read_user() helper instead of bpf_probe_read() for samples that
-attach to kprobes probing on user addresses.
+Tested on x86-64 and Ilya was also kind enough to give it a spin on
+s390x, both passing with probe_user:OK there. The test is using the
+newly added bpf_probe_read_user() to dump sockaddr from connect call
+into BPF map and overrides the user buffer via bpf_probe_write_user():
+
+  # ./test_progs
+  [...]
+  #17 pkt_md_access:OK
+  #18 probe_user:OK
+  #19 prog_run_xattr:OK
+  [...]
 
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Tested-by: Ilya Leoshkevich <iii@linux.ibm.com>
 ---
- samples/bpf/map_perf_test_kern.c         | 4 ++--
- samples/bpf/test_map_in_map_kern.c       | 4 ++--
- samples/bpf/test_probe_write_user_kern.c | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ .../selftests/bpf/prog_tests/probe_user.c     | 80 +++++++++++++++++++
+ .../selftests/bpf/progs/test_probe_user.c     | 33 ++++++++
+ 2 files changed, 113 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/probe_user.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_probe_user.c
 
-diff --git a/samples/bpf/map_perf_test_kern.c b/samples/bpf/map_perf_test_kern.c
-index 5c11aefbc489..281bcdaee58e 100644
---- a/samples/bpf/map_perf_test_kern.c
-+++ b/samples/bpf/map_perf_test_kern.c
-@@ -181,8 +181,8 @@ int stress_lru_hmap_alloc(struct pt_regs *ctx)
- 	if (addrlen != sizeof(*in6))
- 		return 0;
- 
--	ret = bpf_probe_read(test_params.dst6, sizeof(test_params.dst6),
--			     &in6->sin6_addr);
-+	ret = bpf_probe_read_user(test_params.dst6, sizeof(test_params.dst6),
-+				  &in6->sin6_addr);
- 	if (ret)
- 		goto done;
- 
-diff --git a/samples/bpf/test_map_in_map_kern.c b/samples/bpf/test_map_in_map_kern.c
-index 4f80cbe74c72..32ee752f19df 100644
---- a/samples/bpf/test_map_in_map_kern.c
-+++ b/samples/bpf/test_map_in_map_kern.c
-@@ -118,7 +118,7 @@ int trace_sys_connect(struct pt_regs *ctx)
- 	if (addrlen != sizeof(*in6))
- 		return 0;
- 
--	ret = bpf_probe_read(dst6, sizeof(dst6), &in6->sin6_addr);
-+	ret = bpf_probe_read_user(dst6, sizeof(dst6), &in6->sin6_addr);
- 	if (ret) {
- 		inline_ret = ret;
- 		goto done;
-@@ -129,7 +129,7 @@ int trace_sys_connect(struct pt_regs *ctx)
- 
- 	test_case = dst6[7];
- 
--	ret = bpf_probe_read(&port, sizeof(port), &in6->sin6_port);
-+	ret = bpf_probe_read_user(&port, sizeof(port), &in6->sin6_port);
- 	if (ret) {
- 		inline_ret = ret;
- 		goto done;
-diff --git a/samples/bpf/test_probe_write_user_kern.c b/samples/bpf/test_probe_write_user_kern.c
-index a543358218e6..b7c48f37132c 100644
---- a/samples/bpf/test_probe_write_user_kern.c
-+++ b/samples/bpf/test_probe_write_user_kern.c
-@@ -37,7 +37,7 @@ int bpf_prog1(struct pt_regs *ctx)
- 	if (sockaddr_len > sizeof(orig_addr))
- 		return 0;
- 
--	if (bpf_probe_read(&orig_addr, sizeof(orig_addr), sockaddr_arg) != 0)
-+	if (bpf_probe_read_user(&orig_addr, sizeof(orig_addr), sockaddr_arg) != 0)
- 		return 0;
- 
- 	mapped_addr = bpf_map_lookup_elem(&dnat_map, &orig_addr);
+diff --git a/tools/testing/selftests/bpf/prog_tests/probe_user.c b/tools/testing/selftests/bpf/prog_tests/probe_user.c
+new file mode 100644
+index 000000000000..e37761bda8a4
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/probe_user.c
+@@ -0,0 +1,80 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++
++void test_probe_user(void)
++{
++#define kprobe_name "__sys_connect"
++	const char *prog_name = "kprobe/" kprobe_name;
++	const char *obj_file = "./test_probe_user.o";
++	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
++		.relaxed_maps = true,
++	);
++	int err, results_map_fd, sock_fd, duration;
++	struct sockaddr curr, orig, tmp;
++	struct sockaddr_in *in = (struct sockaddr_in *)&curr;
++	struct bpf_link *kprobe_link = NULL;
++	struct bpf_program *kprobe_prog;
++	struct bpf_object *obj;
++	static const int zero = 0;
++
++	obj = bpf_object__open_file(obj_file, &opts);
++	if (CHECK(IS_ERR(obj), "obj_open_file", "err %ld\n", PTR_ERR(obj)))
++		return;
++
++	kprobe_prog = bpf_object__find_program_by_title(obj, prog_name);
++	if (CHECK(!kprobe_prog, "find_probe",
++		  "prog '%s' not found\n", prog_name))
++		goto cleanup;
++
++	err = bpf_object__load(obj);
++	if (CHECK(err, "obj_load", "err %d\n", err))
++		goto cleanup;
++
++	results_map_fd = bpf_find_map(__func__, obj, "results_map");
++	if (CHECK(results_map_fd < 0, "find_results_map",
++		  "err %d\n", results_map_fd))
++		goto cleanup;
++
++	kprobe_link = bpf_program__attach_kprobe(kprobe_prog, false,
++						 kprobe_name);
++	if (CHECK(IS_ERR(kprobe_link), "attach_kprobe",
++		  "err %ld\n", PTR_ERR(kprobe_link))) {
++		kprobe_link = NULL;
++		goto cleanup;
++	}
++
++	memset(&curr, 0, sizeof(curr));
++	in->sin_family = AF_INET;
++	in->sin_port = htons(5555);
++	in->sin_addr.s_addr = inet_addr("255.255.255.255");
++	memcpy(&orig, &curr, sizeof(curr));
++
++	sock_fd = socket(AF_INET, SOCK_STREAM, 0);
++	if (CHECK(sock_fd < 0, "create_sock_fd", "err %d\n", sock_fd))
++		goto cleanup;
++
++	connect(sock_fd, &curr, sizeof(curr));
++	close(sock_fd);
++
++	err = bpf_map_lookup_elem(results_map_fd, &zero, &tmp);
++	if (CHECK(err, "get_kprobe_res",
++		  "failed to get kprobe res: %d\n", err))
++		goto cleanup;
++
++	in = (struct sockaddr_in *)&tmp;
++	if (CHECK(memcmp(&tmp, &orig, sizeof(orig)), "check_kprobe_res",
++		  "wrong kprobe res from probe read: %s:%u\n",
++		  inet_ntoa(in->sin_addr), ntohs(in->sin_port)))
++		goto cleanup;
++
++	memset(&tmp, 0xab, sizeof(tmp));
++
++	in = (struct sockaddr_in *)&curr;
++	if (CHECK(memcmp(&curr, &tmp, sizeof(tmp)), "check_kprobe_res",
++		  "wrong kprobe res from probe write: %s:%u\n",
++		  inet_ntoa(in->sin_addr), ntohs(in->sin_port)))
++		goto cleanup;
++cleanup:
++	bpf_link__destroy(kprobe_link);
++	bpf_object__close(obj);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_probe_user.c b/tools/testing/selftests/bpf/progs/test_probe_user.c
+new file mode 100644
+index 000000000000..a9b8a0bde0b9
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_probe_user.c
+@@ -0,0 +1,33 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/ptrace.h>
++#include <linux/bpf.h>
++
++#include <netinet/in.h>
++
++#include "bpf_helpers.h"
++#include "bpf_tracing.h"
++
++struct {
++	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, int);
++	__type(value, struct sockaddr_in);
++} results_map SEC(".maps");
++
++SEC("kprobe/__sys_connect")
++int handle_sys_connect(struct pt_regs *ctx)
++{
++	void *ptr = (void *)PT_REGS_PARM2(ctx);
++	struct sockaddr_in old, new;
++	const int zero = 0;
++
++	bpf_probe_read_user(&old, sizeof(old), ptr);
++	bpf_map_update_elem(&results_map, &zero, &old, 0);
++	__builtin_memset(&new, 0xab, sizeof(new));
++	bpf_probe_write_user(ptr, &new, sizeof(new));
++
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.21.0
 
