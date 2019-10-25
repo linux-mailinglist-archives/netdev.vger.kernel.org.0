@@ -2,93 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF68DE4889
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8C9EE489B
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438844AbfJYKY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 06:24:29 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:39581 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2438821AbfJYKY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 06:24:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571999067;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Fd3Y3oI+rraDy+voQIUbavglENhhZeRqRgQHciU38fk=;
-        b=VUreUnu/VHC7lLzD5Fz+/YvNzndK6UEC8FKwjKQgtaM23B4uuftEMc4WnFDpGTaTfMIfZ3
-        AW7Kjk7zoit+fPVdHb2WGnmWrRW+pYdCzP/pMbu3p4jHx4RWMGYdATKsDchmrVoYc5PzHw
-        9rQxiQQBBzU85x70n3ygnhwvreO4myM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-270-fTKGBHY-MAOjZVqjlRZ2hg-1; Fri, 25 Oct 2019 06:24:26 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D9D961005509;
-        Fri, 25 Oct 2019 10:24:24 +0000 (UTC)
-Received: from ovpn-116-201.ams2.redhat.com (ovpn-116-201.ams2.redhat.com [10.36.116.201])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AA7AB1001B28;
-        Fri, 25 Oct 2019 10:24:23 +0000 (UTC)
-Message-ID: <e73c5f4e91c194a35fcb07a824dec3b0335494b3.camel@redhat.com>
-Subject: Re: [PATCH net] ipv4: fix route update on metric change.
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     Beniamino Galvani <bgalvani@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Fri, 25 Oct 2019 12:24:22 +0200
-In-Reply-To: <a93347d4-b363-23c8-75e4-d5d0c8ad4592@gmail.com>
-References: <84623b02bd882d91555b9bf76ea58d6cff29cd2a.1571908701.git.pabeni@redhat.com>
-         <a93347d4-b363-23c8-75e4-d5d0c8ad4592@gmail.com>
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30)
+        id S2438529AbfJYKcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 06:32:47 -0400
+Received: from relay-b01.edpnet.be ([212.71.1.221]:35618 "EHLO
+        relay-b01.edpnet.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438055AbfJYKcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 06:32:47 -0400
+X-ASG-Debug-ID: 1571999564-0a7ff54e9618dbad0001-BZBGGp
+Received: from zotac.vandijck-laurijssen.be (77.109.77.221.wls.msr91gen3.adsl.dyn.edpnet.net [77.109.77.221]) by relay-b01.edpnet.be with ESMTP id CeI4JD5S3ixiZEfx; Fri, 25 Oct 2019 12:32:44 +0200 (CEST)
+X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
+X-Barracuda-Effective-Source-IP: 77.109.77.221.wls.msr91gen3.adsl.dyn.edpnet.net[77.109.77.221]
+X-Barracuda-Apparent-Source-IP: 77.109.77.221
+Received: from x1.vandijck-laurijssen.be (74.250-240-81.adsl-static.isp.belgacom.be [81.240.250.74])
+        by zotac.vandijck-laurijssen.be (Postfix) with ESMTPSA id 5587EAA6DC8;
+        Fri, 25 Oct 2019 12:32:43 +0200 (CEST)
+Date:   Fri, 25 Oct 2019 12:32:42 +0200
+From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     mkl@pengutronix.de, wg@grandegger.com, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v1] j1939: transport: make sure EOMA is send with the
+ total message size set
+Message-ID: <20191025103242.GA2031@x1.vandijck-laurijssen.be>
+X-ASG-Orig-Subj: Re: [PATCH v1] j1939: transport: make sure EOMA is send with the
+ total message size set
+Mail-Followup-To: Oleksij Rempel <o.rempel@pengutronix.de>,
+        mkl@pengutronix.de, wg@grandegger.com, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+References: <20191025093015.24506-1-o.rempel@pengutronix.de>
+ <20191025093626.snrkgseuuyjejvbv@pengutronix.de>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: fTKGBHY-MAOjZVqjlRZ2hg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20191025093626.snrkgseuuyjejvbv@pengutronix.de>
+User-Agent: Mutt/1.5.22 (2013-10-16)
+X-Barracuda-Connect: 77.109.77.221.wls.msr91gen3.adsl.dyn.edpnet.net[77.109.77.221]
+X-Barracuda-Start-Time: 1571999564
+X-Barracuda-URL: https://212.71.1.221:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at edpnet.be
+X-Barracuda-Scan-Msg-Size: 1031
+X-Barracuda-BRTS-Status: 1
+X-Barracuda-Bayes: INNOCENT GLOBAL 0.7223 1.0000 1.5425
+X-Barracuda-Spam-Score: 1.54
+X-Barracuda-Spam-Status: No, SCORE=1.54 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
+X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.77578
+        Rule breakdown below
+         pts rule name              description
+        ---- ---------------------- --------------------------------------------------
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-10-24 at 09:50 -0600, David Ahern wrote:
-> On 10/24/19 3:19 AM, Paolo Abeni wrote:
-> > Since commit af4d768ad28c ("net/ipv4: Add support for specifying metric
-> > of connected routes"), when updating an IP address with a different met=
-ric,
-> > the associated connected route is updated, too.
-> >=20
-> > Still, the mentioned commit doesn't handle properly some corner cases:
-> >=20
-> > $ ip addr add dev eth0 192.168.1.0/24
-> > $ ip addr add dev eth0 192.168.2.1/32 peer 192.168.2.2
-> > $ ip addr add dev eth0 192.168.3.1/24
-> > $ ip addr change dev eth0 192.168.1.0/24 metric 10
-> > $ ip addr change dev eth0 192.168.2.1/32 peer 192.168.2.2 metric 10
-> > $ ip addr change dev eth0 192.168.3.1/24 metric 10
-> > $ ip -4 route
-> > 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.0
-> > 192.168.2.2 dev eth0 proto kernel scope link src 192.168.2.1
-> > 192.168.3.0/24 dev eth0 proto kernel scope link src 192.168.2.1 metric =
-10
->=20
-> Please add this test and route checking to
-> tools/testing/selftests/net/fib_tests.sh. There is a
-> ipv4_addr_metric_test function that handles permutations and I guess the
-> above was missed.
+On vr, 25 okt 2019 11:36:26 +0200, Oleksij Rempel wrote:
+> Hi all,
+> 
+> i decided to be strict here and drop malformed EOMA packages. At least
+> it makes testing easier.
+> I have no idea how far is it from reality. Will it brake some thing?
+> 
+> 
+> On Fri, Oct 25, 2019 at 11:30:15AM +0200, Oleksij Rempel wrote:
+> > We was sending malformed EOMA with total message size set to 0. So, fix this
+> > bug and add sanity check to the RX path.
+> > 
+...
+> > +	if (session->total_message_size != len) {
+> > +		netdev_warn(session->priv->ndev, "%s: 0x%p: Incorrect size. Expected: %i; got: %i.\n",
+> > +			    __func__, session, session->total_message_size,
+> > +			    len);
 
-Do you prefer a net-next patch for that, or a repost on -net with a
-separate patch for the self-test appended?
+A warning is usefull here, maybe rate-limited.
 
-> Also, does a similar sequence for IPv6 work as expected?
+> > +		return;
 
-Just tested, it works without issue, It looks like IPv6 has not special
-handing connected route with peers/128 bit masks.
+But returning an otherwise complete transfer is rough.
+I'm sure verifying this at this stage is unusual.
+I'm sure there are little controllers out there that fail here.
 
-Thank you,
+Be tolerant on the input and strict on the output, isn't it?
 
-Paolo
-
+Kind regards,
+Kurt 
+> > +	}
+> > +
