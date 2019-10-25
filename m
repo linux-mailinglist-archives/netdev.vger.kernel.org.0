@@ -2,190 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA742E4FB3
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:58:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8188E4FCF
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 17:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440559AbfJYO6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:58:20 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33363 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2440556AbfJYO6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:58:20 -0400
-Received: by mail-wr1-f68.google.com with SMTP id s1so2730302wro.0
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 07:58:19 -0700 (PDT)
+        id S2440538AbfJYPGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 11:06:35 -0400
+Received: from mail-eopbgr720055.outbound.protection.outlook.com ([40.107.72.55]:43104
+        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2436893AbfJYPGf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 11:06:35 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iT/6rP+CfS0LlcRyKbV+3a4mYUzOpZUlyB7D+nmdy4pDbrto9AQAa3e3ot7snwqgJSg6DDXFcKwKcAd1hhmaYXTcwly0Umc0cBpjpLRDMCYbStUxAyS65fiZUQnUcuHzw16yXriIle7NVXAQbKWraUuVO4nYOyd0AdKgUkoPWVhNOJsAi2GhIdq2V++F6GpxEMaODKUdylIOKoX+hGAhBRbuU4RDEzcgh81yxJJNVQfgS/TbXDGz2dtq2Pey90Vxdfl6065uhiKF4XlOpprcbsyQUrlSLqWhF5MOM3UUk/bbK5n27UgtllN/OpcH5NOmU90rf0sNHHbOuCmYMXHokQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DlTzp2nm49mb+C+DlK45o+ydRrwDf97826K0GkDbsNk=;
+ b=Og7nxL1AxNgyk7UO5CBSBMXy7P4nhxKnnAV1NlAUJeH2Gork8FwlBXbb8seFVXQsBiiunnyZRFYOPbGl/WWIcEcuwSOCK3aaqymQYT7BIJfmpob35vn7SilabU+B9+dtAtrWAoxGUZ8u0krTF7X9yL1tmAQGyniaY5kNOSZCSILEKkkfIqPIUVCbvQDa2BQYVEFTi29mT2C4T1GlkA8bWMuJp4uHb+DsUd2cOQ7pN3ToTCbUsPkYnRZtBjBoxCjFZQjkX0a+Ah4YWvnCNxBWbGPC05JLC43zCzFb+9iLNjuE7vS6J26vl8puqPgeA18LgOPYVSpPEAx8Cvsk8OmDQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
+ dkim=pass header.d=aquantia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zWtmQgZd9qbJzOqM2DSwxug87rUgvdTiQSkRKil1cAM=;
-        b=U0YuSm4Pg1mbO4rxc8yp+n9GA0EVAzVT1Ghjs8X+pc/WQBi1fp79leUbj6Ln+w5O8u
-         /JuMQu+44P0qrUd3cqYVjJiofWXv79fH88GzpPr3fXkbj2VCoSHOKe10Sx4Id2oam7vJ
-         p5InUFoUNKDsLUjbVvFzEaJtpihRTFgrj4mqk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zWtmQgZd9qbJzOqM2DSwxug87rUgvdTiQSkRKil1cAM=;
-        b=MfG1oNR8ASEK0vsWAtpUnY1DOJrINMJDc/3qV8+zVbIq+SEjAD/LOxJ1gQDrvJmX/Q
-         mrZqI7Yxztv6N9U8GjXH4YfVT8UDmYE8bgUDhqUAsi00ZsdyCx2S3hT+9nyZ/FIXwUyK
-         BOR1XbokPDpotLyDzayABhr9aSmk4My9EqdibTuJIR2FG0PMx4y8XCA86EW5zcVB7b9g
-         1BpA8yU6wt79kuvELcPqj5dL+8FkFADuu7w4XIM/RP43j1HXVkRS9oCRddDQuCe5al23
-         ZdouSYWgdp1uYd0uB1nw4XvX9/AmJva4wlgIOJijkUsbJspUV7ujZvQ+8t7/3lKxpdCk
-         wJvA==
-X-Gm-Message-State: APjAAAWwXAKmDWIHIsQK2OxOfRIAg4RdPG2Vhr/o7Ao3DamIGjDyjoA3
-        MEOgef9f4tPYavz5ddNRiPshxQ==
-X-Google-Smtp-Source: APXvYqyl0n3QkHv3N54N7r/a7DJmOwf7FZczcIrjlSYG775k9E8BjEtFCRHVIsW09ISLObQs1/5F5w==
-X-Received: by 2002:adf:ea50:: with SMTP id j16mr3348843wrn.295.1572015498451;
-        Fri, 25 Oct 2019 07:58:18 -0700 (PDT)
-Received: from C02YVCJELVCG.dhcp.broadcom.net ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id d8sm2146190wrr.71.2019.10.25.07.58.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Oct 2019 07:58:17 -0700 (PDT)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Fri, 25 Oct 2019 10:58:08 -0400
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Yuval Avnery <yuvalav@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
+ d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DlTzp2nm49mb+C+DlK45o+ydRrwDf97826K0GkDbsNk=;
+ b=OZJ96x4JvIWD6/H5Lqlm25PJUceEd9edlO0Cf7443nlPlZLrgeafkR4d/JhnzrmMvlZ3ghltqtOOG4C58drjm06mcU/kg2POTBJleEk3i95l2JPg2YV5ZMwtvRlm70UA6dwg4UGJo+JgKFJqiIy+RHKwnOM+Z1U6NKyk13TD2a4=
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
+ BN8PR11MB3731.namprd11.prod.outlook.com (20.178.220.219) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.22; Fri, 25 Oct 2019 15:06:26 +0000
+Received: from BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
+ ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2387.023; Fri, 25 Oct 2019
+ 15:06:26 +0000
+From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
+To:     YueHaibing <yuehaibing@huawei.com>,
+        Egor Pomozov <epomozov@marvell.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        andrew.gospodarek@broadcom.com,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH net-next 0/9] devlink vdev
-Message-ID: <20191025145808.GA20298@C02YVCJELVCG.dhcp.broadcom.net>
-References: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
- <20191023120046.0f53b744@cakuba.netronome.com>
- <20191023192512.GA2414@nanopsycho>
- <20191023151409.75676835@cakuba.hsd1.ca.comcast.net>
- <9f3974a1-95e9-a482-3dcd-0b23246d9ab7@mellanox.com>
- <20191023195141.48775df1@cakuba.hsd1.ca.comcast.net>
+        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
+        Sergey Samoilenko <Sergey.Samoilenko@aquantia.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXT] [PATCH net-next] net: aquantia: Fix build error wihtout
+ CONFIG_PTP_1588_CLOCK
+Thread-Topic: [EXT] [PATCH net-next] net: aquantia: Fix build error wihtout
+ CONFIG_PTP_1588_CLOCK
+Thread-Index: AQHVi0XB+OhMsSq30UWkt4i3ZpBEGg==
+Date:   Fri, 25 Oct 2019 15:06:25 +0000
+Message-ID: <cdef0123-89da-b9ff-1f52-6d838846ffc9@aquantia.com>
+References: <20191025133726.31796-1-yuehaibing@huawei.com>
+In-Reply-To: <20191025133726.31796-1-yuehaibing@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0044.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1::32) To BN8PR11MB3762.namprd11.prod.outlook.com
+ (2603:10b6:408:8d::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Igor.Russkikh@aquantia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [95.79.108.179]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d98c9ea1-ac7f-4a04-a23b-08d7595ce7dd
+x-ms-traffictypediagnostic: BN8PR11MB3731:
+x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR11MB3731E1D0C7B27D3053E8EAA798650@BN8PR11MB3731.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02015246A9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39850400004)(396003)(366004)(376002)(136003)(346002)(199004)(189003)(71200400001)(54906003)(99286004)(6636002)(6116002)(2501003)(66066001)(6246003)(3846002)(256004)(7736002)(8936002)(81166006)(81156014)(316002)(8676002)(186003)(26005)(110136005)(31696002)(229853002)(386003)(6506007)(76176011)(102836004)(52116002)(6512007)(6486002)(71190400001)(476003)(66476007)(86362001)(66556008)(4744005)(64756008)(446003)(36756003)(2616005)(66446008)(31686004)(508600001)(25786009)(4326008)(6436002)(14454004)(2906002)(5660300002)(44832011)(11346002)(66946007)(305945005)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3731;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: aquantia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RoYTf5M3Oh4aPXSPrcZqfI5vqoJtqpLbpOyN70IEQIVpJZKSNhva3gO400j7fWYJol1DqPwoos2pBB6qPxoRftWM+l/Cv+R9z+Ns+Fum2UckJ6PQRd9IPw8Lv6Shzx79OqbJEuY0z4X6WQO1fnjWty1tPxf7In+sc1l7rhtp7029cBTFjtQUlhEMJnOwajieedCd/KVXOrX8iDyUA4O8lf6LXvHlS3JhPcaK2B7nwZyTxN/epSiBN5cuj0m+hva7UN4VqjZ0VVMeoMes4YRLOGDblMAoa9f5+51CSbbvXw/cHRbg90vQ8q20nccDv/ihwc403lPYxZbvKefhO2GEyZm0Rmdwifh06x6jGwUu6T5Q5FDUjrx2/+UfOO95nLs/EWk6RSEZvAhbEuJA3sFtVeOifCfyES1yQZBSEf0w4qNQiOY1UG3KYhu6Wj1pqwCC
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FE749B4AAE57FF498DA6F3A63793CE55@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191023195141.48775df1@cakuba.hsd1.ca.comcast.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: aquantia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d98c9ea1-ac7f-4a04-a23b-08d7595ce7dd
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2019 15:06:25.9259
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Xpk6ruTOCw/naSCWhUif1OSdrHi7UWr/YNng9ImOi96JlupMOrqtb/lJFH5ufVLOvYAsikYXMlaj/ierVdDSmw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3731
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 23, 2019 at 07:51:41PM -0700, Jakub Kicinski wrote:
-> On Thu, 24 Oct 2019 00:11:48 +0000, Yuval Avnery wrote:
-> > >>> We need some proper ontology and decisions what goes where. We have
-> > >>> half of port attributes duplicated here, and hw_addr which honestly
-> > >>> makes more sense in a port (since port is more of a networking
-> > >>> construct, why would ep storage have a hw_addr?). Then you say you're
-> > >>> going to dump more PCI stuff in here :(  
-> > >> Well basically what this "vdev" is is the "port peer" we discussed
-> > >> couple of months ago. It provides possibility for the user on bare metal
-> > >> to cofigure things for the VF - for example.
-> > >>
-> > >> Regarding hw_addr vs. port - it is not correct to make that a devlink
-> > >> port attribute. It is not port's hw_addr, but the port's peer hw_addr.  
-> > > Yeah, I remember us arguing with others that "the other side of the
-> > > wire" should not be a port.
-> > >  
-> > >>> "vdev" sounds entirely meaningless, and has a high chance of becoming
-> > >>> a dumping ground for attributes.  
-> > >> Sure, it is a madeup name. If you have a better name, please share.  
-> > > IDK. I think I started the "peer" stuff, so it made sense to me.
-> > > Now it sounds like you'd like to kill a lot of problems with this
-> > > one stone. For PCIe "vdev" is def wrong because some of the config
-> > > will be for PF (which is not virtual). Also for PCIe the config has
-> > > to be done with permanence in mind from day 1, PCI often requires
-> > > HW reset to reconfig.
-> >
-> > The PF is "virtual" from the SmartNic embedded CPU point of view.
-> 
-> We also want to configure PCIe on local host thru this in non-SmartNIC
-> case, having the virtual in the name would be confusing there.
-> 
-> > Maybe gdev is better? (generic)
-> 
-> Let's focus on the scope and semantics of the object we are modelling
-> first. Can we talk goals, requirements, user scenarios etc.?
-> 
-> IMHO the hw_addr use case is kind of weak, clouds usually do tunnelling
-> so nobody cares which MAC customer has assigned in the overlay.
-> 
-> CCing Andy and Michael from Broadcom for their perspective and
-> requirements.
-
-Thanks, Jakub, I'm happy to chime in based on our deployment experience.
-We definitely understand the desire to be able to configure properties
-of devices on the SmartNIC (the kind with general purpose cores not the
-kind with only flow offload) from the server side.
-
-In addition to addressing NVMe devices, I'd also like to be be able to
-create virtual or real serial ports as well as there is an interest in
-*sometimes* being able to gain direct access to the SmartNIC console not
-just a shell via ssh.  So my point is that there are multiple use-cases.
-
-Arm are also _extremely_ interested in developing a method to enable
-some form of SmartNIC discovery method and while lots of ideas have been
-thrown around, discovery via devlink is a reasonable option.  So while
-doing all this will be much more work than simply handling this case
-where we set the peer or local MAC for a vdev, I think it will be worth
-it to make this more usable for all^W more types of devices.  I also
-agree that not everything on the other side of the wire should be a
-port. 
-
-So if we agree that addressing this device as a PCIe device then it
-feels like we would be better served to query device capabilities and
-depending on what capabilities exist we would be able to configure
-properties for those.  In an ideal world, I could query a device using
-devlink ('devlink info'?) and it would show me different devices that
-are available for configuration on the SmartNIC and would also give me a
-way to address them.  So while I like the idea of being able to address
-and set parameters as shown in patch 05 of this series, I would like to
-see a bit more flexibility to define what type of device is available
-and how it might be configured.
-
-So if we took the devlink info command as an example (whether its the
-proper place for this or not), it could look _like_ this:
-
-$ devlink dev info pci/0000:03:00.0
-pci/0000:03:00.0:
-  driver foo
-  serial_number 8675309
-  versions:
-[...]
-  capabilities:
-      storage 0
-      console 1
-      mdev 1024
-      [something else] [limit]
-
-(Additionally rather than putting this as part of 'info' the device
-capabilities and limits could be part of the 'resource' section and
-frankly may make more sense if this is part of that.)
-
-and then those capabilities would be something that could be set using the
-'vdev' or whatever-it-is-named interface:
-
-# devlink vdev show pci/0000:03:00.0
-pci/0000:03:00.0/console/0: speed 115200 device /dev/ttySNIC0
-pci/0000:03:00.0/mdev/0: hw_addr 02:00:00:00:00:00
-[...]
-pci/0000:03:00.0/mdev/1023: hw_addr 02:00:00:00:03:ff
-
-# devlink vdev set pci/0000:03:00.0/mdev/0 hw_addr 00:22:33:44:55:00
-
-Since these Arm/RISC-V based SmartNICs are going to be used in a variety
-of different ways and will have a variety of different personalities
-(not just different SKUs that vendors will offer but different ways in
-which these will be deployed), I think it's critical that we consider
-more than just the mdev/representer case from the start.
-
-> > >> Basically it is something that represents VF/mdev - the other side of
-> > >> devlink port. But in some cases, like NVMe, there is no associated
-> > >> devlink port - that is why "devlink port peer" would not work here.  
-> > > What are the NVMe parameters we'd configure here? Queues etc. or some
-> > > IDs? Presumably there will be a NVMe-specific way to configure things?
-> > > Something has to point the NVMe VF to a backend, right?
-> > >
-> > > (I haven't looked much into NVMe myself in case that's not obvious ;))  
+DQo+IElmIFBUUF8xNTg4X0NMT0NLIGlzIG4sIGJ1aWxkaW5nIGZhaWxzOg0KPiANCj4gZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvYXF1YW50aWEvYXRsYW50aWMvYXFfcHRwLmM6IEluIGZ1bmN0aW9uIGFx
+X3B0cF9hZGpmaW5lOg0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9hcXVhbnRpYS9hdGxhbnRpYy9h
+cV9wdHAuYzoyNzk6MTE6DQo+ICBlcnJvcjogaW1wbGljaXQgZGVjbGFyYXRpb24gb2YgZnVuY3Rp
+b24gc2NhbGVkX3BwbV90b19wcGIgWy1XZXJyb3I9aW1wbGljaXQtZnVuY3Rpb24tZGVjbGFyYXRp
+b25dDQo+ICAgICAgICAgICAgc2NhbGVkX3BwbV90b19wcGIoc2NhbGVkX3BwbSkpOw0KDQpIaSBZ
+dWUsDQoNClRoYW5rcyBmb3Igbm90aWNpbmcgdGhpcy4gSXQgc2VlbXMgSSd2ZSBhZGRlZCBzY2Fs
+ZWRfcHBtX3RvX3BwYiB1c2FnZSBidXQgZGlkDQpub3QgY2hlY2tlZCBQVFBfMTU4OF9DTE9DSz1u
+IGNhc2UgYWZ0ZXIgdGhhdC4NCg0KPiANCj4gSnVzdCBjcCBzY2FsZWRfcHBtX3RvX3BwYigpIGZy
+b20gcHRwX2Nsb2NrLmMgdG8gZml4IHRoaXMuDQoNCkknbSBob25lc3RseSBub3Qgc3VyZSBpZiBk
+dXBsaWNhdGluZyB0aGUgY29kZSBpcyBhIGdvb2Qgd2F5IGhlcmUuDQpJJ2xsIHRoaW5rIG9uIGhv
+dyB0byBleGNsdWRlIGF0X3B0cCBhdCBhbGwgb24gc3VjaCBhIGNvbmZpZy4NCg0KUmVnYXJkcywN
+CiAgSWdvcg0K
