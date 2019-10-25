@@ -2,134 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BFC2E4208
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 05:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C9CE420B
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 05:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391987AbfJYDUJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 24 Oct 2019 23:20:09 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:40491 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731941AbfJYDUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 23:20:09 -0400
-Received: by mail-qt1-f195.google.com with SMTP id o49so1194591qta.7;
-        Thu, 24 Oct 2019 20:20:08 -0700 (PDT)
+        id S2404059AbfJYDWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 24 Oct 2019 23:22:02 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38642 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731941AbfJYDWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 24 Oct 2019 23:22:01 -0400
+Received: by mail-qt1-f194.google.com with SMTP id o25so1213257qtr.5;
+        Thu, 24 Oct 2019 20:22:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TXoMu70Skd+AjU0XvxD9gZV0D2TDPPVNchRF+onkavU=;
-        b=oJ1CkIhGxUtW/fUs7P9kgo+4Me2erAFSX59kTV0sLQ6b8fK1SCYt85Af4vYpm9lmwl
-         zALVByfZNlmdRuJ1fLSkyBF2XXHVISbcCoV9ecoJXu9LOLxGu+vZthckihmRx3zJzdRM
-         /GtqphhI+K3WS5RDmu5W/s+XuL5cFqNV0anV/ixRm+agh9G+a1hYclUD45KxMXDwdxeP
-         mGnWhibB6Yuhm7KSu2hSDmxWOY6Ina+nE4WuRdu7hqhL9ph4T46Q377mvQskJZUeYRN0
-         0luq5nPHmaZCOEyuK6KViDnDj+sdq4yVHzwd1WwVMY9y5nu1P2irWVYQR/KmgWwpuJmC
-         RIOA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=s3InfjO9Pb2WNJ6n4eiBhTWH+wqZSiTt+aWjUBe2lpw=;
+        b=BY6w9qR9LbNXPMJgd4P2NPJgNrLgfBoAsL7ZxJyjHLtvFf0LzFl7zLDQ+/wNyTemYW
+         LuAlqlpLpOKORJr2MB358ZYBKXYKNzcJeUFEEEcmkn4t2nT/+HyQ6uPMuTZT4w+akxKB
+         Cne6MuEh9iBME0FPPs/G2e2zhF8/2NPKBQD78TNFTkpSE2wzw9ZB+eH1U1ToSyImdeul
+         YALbGceIVO231Mxdxn+G2AZbX6103XKzq7kOlPpopSqNPqVmdLMHFinA/V1VzBwXFMVJ
+         p8v2/HHQOcB5DALJ/CXKQ8rgU8Xh/CDpiKlo7TfYWg00VJcl6IrBc49U1x/gGR3YfaVb
+         Io/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TXoMu70Skd+AjU0XvxD9gZV0D2TDPPVNchRF+onkavU=;
-        b=HLR9neT4D8N+9lW+ven/HCecvk2BsRLltNN27ogNiZfr5jsWbdnfXBVu3vHJz1K+Yn
-         jHFnZnmZTUtR6kE+EDz6cZLn7t1RtJeIKzVqjKDh+4hHU9mBHmFru9s+LxrePWc+4Jsw
-         qq3N6CX503uLrhjzaXfnIF490mv/ztknyJzGbD3l4GCiJc7k9wJmR1sFdR9dyFaGDXpw
-         8L1XGNbVEaPfckiGzPvyHvC4fWxhZeR7L+VWFrS7kTLaKUb8ITxF+Xv9gBqALyNNdEuz
-         Qj2aZwC6izEvP7vXu7eY5lDrhViBeKh7tRNasaCoYxF0w9KFYkWVhm9f/nM7wGXozu2A
-         Fs0g==
-X-Gm-Message-State: APjAAAVnF/VuhGnff3oYUEgQCjpySXr3I9sYi8gmyVTYItrm0tN4Wiej
-        /7ajcv8W6x0wxsBXsCLDa6uaqFunRKIuQv1WIgA=
-X-Google-Smtp-Source: APXvYqzSvHf+kdIRRSJY+Ggp0N0kupP7Hc+WUthE6IlMm9g4aSDtMz8IrDDFWj6k/y/gTUqlb7+Z8V9MSTFGrI1TF1Y=
-X-Received: by 2002:a05:6214:16c5:: with SMTP id d5mr1145417qvz.247.1571973607706;
- Thu, 24 Oct 2019 20:20:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=s3InfjO9Pb2WNJ6n4eiBhTWH+wqZSiTt+aWjUBe2lpw=;
+        b=M9FwhNjUQIWr6Sb+RwhPfofG2minA3wBIh/ivNeF1YANPypuv/th1ItXXshYtoj3JH
+         vpgs7/0NLx5WGBgj7H8Hl4sT/K4zSi6gKyXttfR2NkwoF/Z82h3Teap57BkqfVXg9uiN
+         lM5AA/dAoADwKcv2hsJjJtyoX2fzT4VNdT1zq8bF0k79LS3GszIRk0yoXdUE2a3zuW9o
+         wLJ/Dj2HEJDXYpJ4KagA8ySY5gvEHR407oEUWHRbUnRrJmZVG46NEQDpneAX4XoHYVJU
+         7eZ7SwygXmw+uQUY610Js4cU8c9TAZo4r2X4PfAPZJGk33SC6rcfMkqiZ3RoyRMSjoci
+         GR1Q==
+X-Gm-Message-State: APjAAAV4qGQlkc4AeCXT9a6TxsmlTF9ZYT9wqEZ86V11htGIj42F2biL
+        9YPIByaPTKq16odCguq5sN8=
+X-Google-Smtp-Source: APXvYqwkJmpEtXDUhjJL4x18jGyacmx0x7aPMnl2U/prxsMi3+qSnAL04XlogDZSJWTmRYgpvyotmw==
+X-Received: by 2002:a0c:ea34:: with SMTP id t20mr1199158qvp.242.1571973720270;
+        Thu, 24 Oct 2019 20:22:00 -0700 (PDT)
+Received: from localhost.localdomain ([168.181.48.193])
+        by smtp.gmail.com with ESMTPSA id p56sm452054qtp.81.2019.10.24.20.21.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Oct 2019 20:21:59 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 96995C0AD9; Fri, 25 Oct 2019 00:21:56 -0300 (-03)
+Date:   Fri, 25 Oct 2019 00:21:56 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
+        David Laight <david.laight@aculab.com>
+Subject: Re: [PATCHv3 net-next 1/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED
+ notification
+Message-ID: <20191025032156.GA4326@localhost.localdomain>
+References: <cover.1571033544.git.lucien.xin@gmail.com>
+ <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
 MIME-Version: 1.0
-References: <157192269744.234778.11792009511322809519.stgit@toke.dk> <157192270077.234778.5965993521171571751.stgit@toke.dk>
-In-Reply-To: <157192270077.234778.5965993521171571751.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 24 Oct 2019 20:19:56 -0700
-Message-ID: <CAEf4BzYeMBYDx6TXAqdkpWpW43yKWNbGaA+67LV1zPao-u779A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/4] libbpf: Support configurable pinning of
- maps from BTF annotations
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7d08b42f4c1480caa855776d92331fe9beed001d.1571033544.git.lucien.xin@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 6:11 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> This adds support to libbpf for setting map pinning information as part o=
-f
-> the BTF map declaration. We introduce a version new
-> bpf_object__map_pin_opts() function to pin maps based on this setting, as
-> well as a getter and setter function for the pin information that callers
-> can use after map load.
->
-> The pinning type currently only supports a single PIN_BY_NAME mode, where
-> each map will be pinned by its name in a path that can be overridden, but
-> defaults to /sys/fs/bpf.
->
-> The pinning options supports a 'pin_all' setting, which corresponds to th=
-e
-> old bpf_object__map_pin() function with an explicit path. In addition, th=
-e
-> function now defaults to just skipping over maps that are already
-> pinned (since the previous commit started recording this in struct
-> bpf_map). This behaviour can be turned off with the 'no_skip_pinned' opti=
-on.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+Hi,
+
+Sorry for the long delay on this review.
+
+On Mon, Oct 14, 2019 at 02:14:44PM +0800, Xin Long wrote:
+> SCTP Quick failover draft section 5.1, point 5 has been removed
+> from rfc7829. Instead, "the sender SHOULD (i) notify the Upper
+> Layer Protocol (ULP) about this state transition", as said in
+> section 3.2, point 8.
+> 
+> So this patch is to add SCTP_ADDR_POTENTIALLY_FAILED, defined
+> in section 7.1, "which is reported if the affected address
+> becomes PF". Also remove transport cwnd's update when moving
+> from PF back to ACTIVE , which is no longer in rfc7829 either.
+> 
+> v1->v2:
+>   - no change
+> v2->v3:
+>   - define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED
+> 
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 > ---
+>  include/uapi/linux/sctp.h |  2 ++
+>  net/sctp/associola.c      | 17 ++++-------------
+>  2 files changed, 6 insertions(+), 13 deletions(-)
+> 
+> diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+> index 6bce7f9..f4ab7bb 100644
+> --- a/include/uapi/linux/sctp.h
+> +++ b/include/uapi/linux/sctp.h
+> @@ -410,6 +410,8 @@ enum sctp_spc_state {
+>  	SCTP_ADDR_ADDED,
+>  	SCTP_ADDR_MADE_PRIM,
+>  	SCTP_ADDR_CONFIRMED,
+> +	SCTP_ADDR_POTENTIALLY_FAILED,
+> +#define SCTP_ADDR_PF	SCTP_ADDR_POTENTIALLY_FAILED
+>  };
+>  
+>  
+> diff --git a/net/sctp/associola.c b/net/sctp/associola.c
+> index 1ba893b..4f9efba 100644
+> --- a/net/sctp/associola.c
+> +++ b/net/sctp/associola.c
+> @@ -801,14 +801,6 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
 
-I think you are overcomplicating this... Here's how I think we can
-satisfy both simplicity goals, as well as good usability:
+While at here, dealing with spc_state, please seize the moment and
+initialize it to the enum instead:
 
-1. add `const char *pin_root_path` to bpf_object_open_opts. This
-pinning path override doesn't need to leave in some separate set of
-options, it's BPF object's parameter, so let's put it into open
-settings.
-
-2. If BTF-defined map definition has pinning set to PIN_BY_NAME, that
-means bpf_object__load should do auto-pinning. If not, no
-auto-pinning, only if manually requested by explicit bpf_map__pin.
-Further, if someone wants to auto-pin map to a custom location, do
-bpf_map__set_pin_path() before bpf_object__load(), and load should
-auto-pin it as well.
-
-3. bpf_map__get_pinning/bpf_map__set_pinning are unnecessary, at least
-for now. Let's not add unnecessary APIs.
-
-4. pin_all/skip_pinned seems unnecessary. What scenarios are you
-solving with them? Given #1 and #4, just drop
-bpf_object__pin_maps_opts().
-
-The way I see it, libbpf should behave sanely for declarative use
-case, but allow custom tuning programmatically. If map is set to
-PIN_BY_NAME in map definition - we derive pin_path (potentially taking
-into account custom pin root path from open opts) and auto-pin on load
-(unless application set pin_path manually). In a weird case, where map
-is declaratively defined as auto-pinnable, but application for
-whatever reason decides not to do it - it can unset pin_path with
-bpf_map__set_pin_path(NULL).
-
-Full control, but simple and intuitive default behavior? Does it make sense=
-?
+@@ -787,7 +787,7 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+                                  sctp_sn_error_t error)
+ {
+        bool ulp_notify = true;
+-       int spc_state = 0;
++       int spc_state = SCTP_ADDR_AVAILABLE;
 
 
->  tools/lib/bpf/bpf_helpers.h |    6 ++
->  tools/lib/bpf/libbpf.c      |  134 ++++++++++++++++++++++++++++++++++---=
-------
->  tools/lib/bpf/libbpf.h      |   26 ++++++++
->  tools/lib/bpf/libbpf.map    |    3 +
->  4 files changed, 142 insertions(+), 27 deletions(-)
->
+>  			spc_state = SCTP_ADDR_CONFIRMED;
+>  		else
+>  			spc_state = SCTP_ADDR_AVAILABLE;
+
+This else could be removed (equals to initial value).
+
+> -		/* Don't inform ULP about transition from PF to
+> -		 * active state and set cwnd to 1 MTU, see SCTP
+> -		 * Quick failover draft section 5.1, point 5
+> -		 */
+> -		if (transport->state == SCTP_PF) {
+> -			ulp_notify = false;
+> -			transport->cwnd = asoc->pathmtu;
+> -		}
+>  		transport->state = SCTP_ACTIVE;
+>  		break;
+>  
+> @@ -817,19 +809,18 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
+>  		 * to inactive state.  Also, release the cached route since
+>  		 * there may be a better route next time.
+>  		 */
+> -		if (transport->state != SCTP_UNCONFIRMED)
+> +		if (transport->state != SCTP_UNCONFIRMED) {
+>  			transport->state = SCTP_INACTIVE;
+> -		else {
+> +			spc_state = SCTP_ADDR_UNREACHABLE;
+> +		} else {
+>  			sctp_transport_dst_release(transport);
+>  			ulp_notify = false;
+>  		}
+> -
+> -		spc_state = SCTP_ADDR_UNREACHABLE;
+>  		break;
+>  
+>  	case SCTP_TRANSPORT_PF:
+>  		transport->state = SCTP_PF;
+> -		ulp_notify = false;
+> +		spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
+>  		break;
+>  
+>  	default:
+> -- 
+> 2.1.0
+> 
