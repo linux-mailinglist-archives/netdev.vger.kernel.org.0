@@ -2,148 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A50C2E497E
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0168E49AA
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:16:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439705AbfJYLMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 07:12:32 -0400
-Received: from kirsty.vergenet.net ([202.4.237.240]:33392 "EHLO
-        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439120AbfJYLMc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:12:32 -0400
-Received: from penelope.horms.nl (ip4dab7138.direct-adsl.nl [77.171.113.56])
-        by kirsty.vergenet.net (Postfix) with ESMTPA id 175B625BDD7;
-        Fri, 25 Oct 2019 22:12:25 +1100 (AEDT)
-Received: by penelope.horms.nl (Postfix, from userid 7100)
-        id 77019376E; Fri, 25 Oct 2019 13:12:20 +0200 (CEST)
-From:   Simon Horman <horms@verge.net.au>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org,
-        Wensong Zhang <wensong@linux-vs.org>,
-        Julian Anastasov <ja@ssi.bg>,
-        Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Simon Horman <horms@verge.net.au>
-Subject: [PATCH 2/2] ipvs: move old_secure_tcp into struct netns_ipvs
-Date:   Fri, 25 Oct 2019 13:12:05 +0200
-Message-Id: <20191025111205.30555-3-horms@verge.net.au>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191025111205.30555-1-horms@verge.net.au>
-References: <20191025111205.30555-1-horms@verge.net.au>
+        id S1729203AbfJYLQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 07:16:32 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42375 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726339AbfJYLQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:16:32 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r1so1864908wrs.9
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 04:16:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=aggsABIYRRLswIwxQlk1bc5yL6gnA80dLaHTc+5bzIY=;
+        b=ZfEnKerJnYGRWOAiA9ZGyMPPaOei4svG9M9ngzt/VRWxfhX1aGYgh7sICeNUFn1fR7
+         t7icu56KqU/9tCId7Kbi7XkVfxv6YB4BLQPMyse3pLgbKdOBq2RnyADMVQmd7OK9ZdfE
+         snsj1mRqO6GJrZCrrYszrJDK3DbAA75l/ppva5wwEcTvIw7vEnNc/cev+coPLU2L0ekv
+         3wsk9Ftia043GAUvXZsDZix9D2JBQbktFGsKUG9Q4cii8tapwG9WaH+FCQQldf7eurht
+         ucacZH6tfAmoBM06Wt/OCCtxtKp6bw0SPtuv54rM6jCPZXz5rxqyFhaMA2mYwITH16OH
+         8b5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aggsABIYRRLswIwxQlk1bc5yL6gnA80dLaHTc+5bzIY=;
+        b=jLYr3aoLscGcXxMJ6X9A33sGMK/KWAX+N6780ts7iCf36OVAWF5OZRmiKELp9e+WGU
+         FZ30xfcehxQt4dP/Pt/GSs6EbNd1hj1gXn19+4q4a1ow10Q+9A6SzGey3d4GeUse/5Dl
+         Pw30Rpj83mhRbmYk1Sj8LvR/wFRWOXyHZIOkki9m9XYgDbRxUdiY2opXBXUvaFc0nhGy
+         ZvKcJMQ4lxGwYXdbmM8r+Hcbwyw26pMr/TdS4iQMRGs5cXND61+5WbeIwkWr/gxZNjXC
+         DhdCapAE8xP84mUNuZTUSnhI/LIMXKA1KdlREPIB/zJpYDVQUjSDLzC0LA/nHYOLWEfr
+         jOgQ==
+X-Gm-Message-State: APjAAAWwAkt145YhTl8Y8VATnVggsHyoDIyfbU+UC7hVgEk4oAVdQYiS
+        Jb9mURlABK9w1E+9WywCjTNbkw==
+X-Google-Smtp-Source: APXvYqye0bMzabbhMdyIpkhP6DJpiYxdibp9PiqfCR0Gpk686vQs9d9QZOMBWqPETxqNqJFJXkTTxw==
+X-Received: by 2002:a5d:544d:: with SMTP id w13mr2562396wrv.19.1572002189723;
+        Fri, 25 Oct 2019 04:16:29 -0700 (PDT)
+Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id v20sm1571589wml.26.2019.10.25.04.16.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 04:16:29 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 13:16:27 +0200
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Pankaj Sharma <pankj.sharma@samsung.com>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wg@grandegger.com,
+        mkl@pengutronix.de, davem@davemloft.net,
+        eugen.hristev@microchip.com, ludovic.desroches@microchip.com,
+        pankaj.dubey@samsung.com, rcsekar@samsung.com,
+        jhofstee@victronenergy.com, Sriram Dash <sriram.dash@samsung.com>
+Subject: Re: [PATCH v2] can: m_can: add support for handling arbitration error
+Message-ID: <20191025111626.GA31153@netronome.com>
+References: <CGME20191021121350epcas5p3313e54a3bc5c8600c52a6db299893f78@epcas5p3.samsung.com>
+ <1571660016-29726-1-git-send-email-pankj.sharma@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571660016-29726-1-git-send-email-pankj.sharma@samsung.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Mon, Oct 21, 2019 at 05:43:36PM +0530, Pankaj Sharma wrote:
+> The Bosch MCAN hardware (3.1.0 and above) supports interrupt flag to
+> detect Protocol error in arbitration phase.
+> 
+> Transmit error statistics is currently not updated from the MCAN driver.
+> Protocol error in arbitration phase is a TX error and the network
+> statistics should be updated accordingly.
+> 
+> The member "tx_error" of "struct net_device_stats" should be incremented
+> as arbitration is a transmit protocol error. Also "arbitration_lost" of
+> "struct can_device_stats" should be incremented to report arbitration
+> lost.
+> 
+> Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
+> Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
+> ---
+> 
+> changes in v2:
+> - common m_can_ prefix for is_protocol_err function
+> - handling stats even if the allocation of the skb fails
+> - resolving build errors on net-next branch
 
-syzbot reported the following issue :
-
-BUG: KCSAN: data-race in update_defense_level / update_defense_level
-
-read to 0xffffffff861a6260 of 4 bytes by task 3006 on cpu 1:
- update_defense_level+0x621/0xb30 net/netfilter/ipvs/ip_vs_ctl.c:177
- defense_work_handler+0x3d/0xd0 net/netfilter/ipvs/ip_vs_ctl.c:225
- process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
- worker_thread+0xa0/0x800 kernel/workqueue.c:2415
- kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-
-write to 0xffffffff861a6260 of 4 bytes by task 7333 on cpu 0:
- update_defense_level+0xa62/0xb30 net/netfilter/ipvs/ip_vs_ctl.c:205
- defense_work_handler+0x3d/0xd0 net/netfilter/ipvs/ip_vs_ctl.c:225
- process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
- worker_thread+0xa0/0x800 kernel/workqueue.c:2415
- kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 7333 Comm: kworker/0:5 Not tainted 5.4.0-rc3+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events defense_work_handler
-
-Indeed, old_secure_tcp is currently a static variable, while it
-needs to be a per netns variable.
-
-Fixes: a0840e2e165a ("IPVS: netns, ip_vs_ctl local vars moved to ipvs struct.")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Simon Horman <horms@verge.net.au>
----
- include/net/ip_vs.h            |  1 +
- net/netfilter/ipvs/ip_vs_ctl.c | 15 +++++++--------
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/include/net/ip_vs.h b/include/net/ip_vs.h
-index 3759167f91f5..078887c8c586 100644
---- a/include/net/ip_vs.h
-+++ b/include/net/ip_vs.h
-@@ -889,6 +889,7 @@ struct netns_ipvs {
- 	struct delayed_work	defense_work;   /* Work handler */
- 	int			drop_rate;
- 	int			drop_counter;
-+	int			old_secure_tcp;
- 	atomic_t		dropentry;
- 	/* locks in ctl.c */
- 	spinlock_t		dropentry_lock;  /* drop entry handling */
-diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
-index c8f81dd15c83..3cccc88ef817 100644
---- a/net/netfilter/ipvs/ip_vs_ctl.c
-+++ b/net/netfilter/ipvs/ip_vs_ctl.c
-@@ -93,7 +93,6 @@ static bool __ip_vs_addr_is_local_v6(struct net *net,
- static void update_defense_level(struct netns_ipvs *ipvs)
- {
- 	struct sysinfo i;
--	static int old_secure_tcp = 0;
- 	int availmem;
- 	int nomem;
- 	int to_change = -1;
-@@ -174,35 +173,35 @@ static void update_defense_level(struct netns_ipvs *ipvs)
- 	spin_lock(&ipvs->securetcp_lock);
- 	switch (ipvs->sysctl_secure_tcp) {
- 	case 0:
--		if (old_secure_tcp >= 2)
-+		if (ipvs->old_secure_tcp >= 2)
- 			to_change = 0;
- 		break;
- 	case 1:
- 		if (nomem) {
--			if (old_secure_tcp < 2)
-+			if (ipvs->old_secure_tcp < 2)
- 				to_change = 1;
- 			ipvs->sysctl_secure_tcp = 2;
- 		} else {
--			if (old_secure_tcp >= 2)
-+			if (ipvs->old_secure_tcp >= 2)
- 				to_change = 0;
- 		}
- 		break;
- 	case 2:
- 		if (nomem) {
--			if (old_secure_tcp < 2)
-+			if (ipvs->old_secure_tcp < 2)
- 				to_change = 1;
- 		} else {
--			if (old_secure_tcp >= 2)
-+			if (ipvs->old_secure_tcp >= 2)
- 				to_change = 0;
- 			ipvs->sysctl_secure_tcp = 1;
- 		}
- 		break;
- 	case 3:
--		if (old_secure_tcp < 2)
-+		if (ipvs->old_secure_tcp < 2)
- 			to_change = 1;
- 		break;
- 	}
--	old_secure_tcp = ipvs->sysctl_secure_tcp;
-+	ipvs->old_secure_tcp = ipvs->sysctl_secure_tcp;
- 	if (to_change >= 0)
- 		ip_vs_protocol_timeout_change(ipvs,
- 					      ipvs->sysctl_secure_tcp > 1);
--- 
-2.20.1
-
+No objections from my side.
