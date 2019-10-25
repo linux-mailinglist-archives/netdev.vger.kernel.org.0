@@ -2,120 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 867F9E4EC3
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23435E4ED9
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730051AbfJYOTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:19:06 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:42872 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729544AbfJYOTG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:19:06 -0400
-Received: by mail-io1-f68.google.com with SMTP id i26so2577615iog.9;
-        Fri, 25 Oct 2019 07:19:04 -0700 (PDT)
+        id S2393994AbfJYOXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:23:03 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:36143 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392999AbfJYOXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:23:03 -0400
+Received: by mail-il1-f196.google.com with SMTP id s75so2009519ilc.3;
+        Fri, 25 Oct 2019 07:23:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=2jFeG2dUcr+Q7csipkPUf6YfvtHqZfoRNXMbriXYupI=;
-        b=mmafdueEKa7k1jkCLhfmsMo7VlYyA9wSpyIts4A3m+sDCCOCJyi0AQLe1Cy739Nb9r
-         aY0Ie4Gb7MwS1bQPO253l4OJj7RgN07RnGlwPnXIHlgmR08RSYTD2A/LEbRthJ2zbcF9
-         PgSjGf2a45K/0zZptIcYq9SKqQkdMrvKzf7mgdIjjQCdrDooUV+zEvWGQtHy7xvOGNt0
-         2gf3zwEF9K3oMpXrb8H/eYt/CyNy9NZGn/f+/Dp/mnzOBxGgLkNs7mb2aNf6UdNZ3XoN
-         VHqpVyfO+maovB+bhVybGF1A0azRUQD8KAHd8yzyEpjKHXOiNW8HpFGPV4jKX3Ca27ni
-         bugw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ePhtzU5NI6z2BX2GKzTIAEd2EINs+iRTKDQWAsMttns=;
+        b=V6JKuvB8C9r57btbIHWT9QPSij4Qf9wRAL966ReKuoUJJQsIL7YcP62zdSPHfNJdhS
+         BRJYHY6s2yx/0uMtNUNPftQ2Q3WVS64fUCSIW0D2K7ljqduyMiKms6uxLENAtGvOVesG
+         m1R74DhamLyH8vrS28kWW0hlDZnj/6+3o9G9AJi82IYKOoMAhfWr8g8ZYp2IziO6l5Ps
+         ejzCcVf1U3a/YY1w6ZZDCTQeBkHzQVh8oWAtLn9KNUur1v01Jo/c/OfI8eOOqDbhoCM2
+         SSOxSRZqdbrV69DMcKz4zCQ4LRW4iXiT/dHttQCMW7zOxHbQc8r76055f/GaCCK7903t
+         SNjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=2jFeG2dUcr+Q7csipkPUf6YfvtHqZfoRNXMbriXYupI=;
-        b=Mp25H/eCOkn5rpr5OkqjGY3aR90/RaXHXgLQkPCOMgmjAMdNjPAe0RxUMMf4Y813bi
-         FTEHuSY6cYuKOi90pQisqGygMhNnpPIDivRukteFGmAflS2IplRkRX18KmT0sjKi7Pz4
-         RJfN6PsTlDt9bimT9Cs1Q90aLNYixFe6/j3v0UWt1U2FGCmKBlTfovcncpp6e1WaeDqb
-         UW1An8/ixFycbuByADdoq6w3jQ9gUQFjuWr2ZwEwFDzK82TXxf0ML9n3xaMMtExWQNqv
-         36fqMVsviK/4bzPpDkXHLFrSFK7HTS/N9jVmBPxxo8i4Rk8kcdzsX+7y6Mj16sRNUJJf
-         /ZKQ==
-X-Gm-Message-State: APjAAAXjXOnACStqqaixHIz+bbrzTvIU+SWQWaOjdLTJRV0fanNRxO96
-        PShhUvgEU+odh/VmWT7lE+I=
-X-Google-Smtp-Source: APXvYqx/wGZ0iiL3VvW2qhbOevq3mUSVhYVqkeqX1nFtKciqDcJKI+chDzAcMM67YScoeET3kYwrDw==
-X-Received: by 2002:a6b:ee18:: with SMTP id i24mr3877990ioh.163.1572013144337;
-        Fri, 25 Oct 2019 07:19:04 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id t16sm296728iol.12.2019.10.25.07.19.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 07:19:02 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 07:18:55 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com
-Message-ID: <5db3044f82e10_36802aec12c585b83b@john-XPS-13-9370.notmuch>
-In-Reply-To: <87lft9ch0k.fsf@cloudflare.com>
-References: <20191022113730.29303-1-jakub@cloudflare.com>
- <5db1d7a810bdb_5c282ada047205c08f@john-XPS-13-9370.notmuch>
- <87lft9ch0k.fsf@cloudflare.com>
-Subject: Re: [RFC bpf-next 0/5] Extend SOCKMAP to store listening sockets
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ePhtzU5NI6z2BX2GKzTIAEd2EINs+iRTKDQWAsMttns=;
+        b=obtC0t7w2c+PPtd4kf8SytFD3NWiy3HVsVYB6iOx6penPGjg2UCEGoPy2+G2qDbEiW
+         +AE7pbHDqx0PHJTkUj8a+qMD76TTzsCRAi3qat5Bg7VlSrgvY0hLy5b7RN5loQc5o71c
+         vuA/+XU2dSVm1F4smidCGzutIyjhao2U9zeKBIV7Dx8vAcK2J7+MEdVv02kW1ger2D8L
+         hmblUOZlHXTV0XKZo52g8VvatkrBTqBELA3Ld3256UGfmnfPkVNp4AOODL07jVzyAGsA
+         DRLxoS2YluLLHNowEyiQAaiVlIsxQa8x64mF/Ch9POB47aH27HMUb5QeAes6z3NpE+zj
+         idDA==
+X-Gm-Message-State: APjAAAXLf5tQ2DsxpR6rckcKrOP2yBoSUCiZF+pQWY4kLlpAGZbs9dPS
+        xeFe9ep2QWm/CKYI/D/7Qd9ltZxE
+X-Google-Smtp-Source: APXvYqwd5FaJDyLRZxvSrDF+ugbwgjF6WU/G/6DS2v6aOS1/J+mH1PSz7Wdg6gxoi7G+N9WlwBonpQ==
+X-Received: by 2002:a92:9a54:: with SMTP id t81mr4282508ili.147.1572013381778;
+        Fri, 25 Oct 2019 07:23:01 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:b19c:9c8b:8bde:d55c? ([2601:282:800:fd80:b19c:9c8b:8bde:d55c])
+        by smtp.googlemail.com with ESMTPSA id j21sm297593ioj.86.2019.10.25.07.23.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Oct 2019 07:23:00 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 4.9 19/20] ipv6: Handle race in addrconf_dad_work
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <20191025135801.25739-1-sashal@kernel.org>
+ <20191025135801.25739-19-sashal@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f3c4a11c-b5b5-455a-6c88-83b8cc56623d@gmail.com>
+Date:   Fri, 25 Oct 2019 08:22:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <20191025135801.25739-19-sashal@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Thu, Oct 24, 2019 at 06:56 PM CEST, John Fastabend wrote:
-> > Jakub Sitnicki wrote:
+On 10/25/19 7:57 AM, Sasha Levin wrote:
+> From: David Ahern <dsahern@gmail.com>
 > 
-> [...]
+> [ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
 > 
-> >> I'm looking for feedback if there's anything fundamentally wrong with
-> >> extending SOCKMAP map type like this that I might have missed.
-> >
-> > I think this looks good. The main reason I blocked it off before is mostly
-> > because I had no use-case for it and the complication with what to do with
-> > child sockets. Clearing the psock state seems OK to me if user wants to
-> > add it back to a map they can simply grab it again from a sockops
-> > event.
-> 
-> Thanks for taking a look at the code.
-> 
-> > By the way I would eventually like to see the lookup hook return the
-> > correct type (PTR_TO_SOCKET_OR_NULL) so that the verifier "knows" the type
-> > and the socket can be used the same as if it was pulled from a sk_lookup
-> > helper.
-> 
-> Wait... you had me scratching my head there for a minute.
-> 
-> I haven't whitelisted bpf_map_lookup_elem for SOCKMAP in
-> check_map_func_compatibility so verifier won't allow lookups from BPF.
-> 
-> If we wanted to do that, I don't actually have a use-case for it, I
-> think would have to extend get_func_proto for SK_SKB and SK_REUSEPORT
-> prog types. At least that's what docs for bpf_map_lookup_elem suggest:
 
-Right, so its not required for your series just letting you know I will
-probably look to do this shortly. It would be useful for some use cases
-we have.
-
-> 
-> /* If kernel subsystem is allowing eBPF programs to call this function,
->  * inside its own verifier_ops->get_func_proto() callback it should return
->  * bpf_map_lookup_elem_proto, so that verifier can properly check the arguments
->  *
->  * Different map implementations will rely on rcu in map methods
->  * lookup/update/delete, therefore eBPF programs must run under rcu lock
->  * if program is allowed to access maps, so check rcu_read_lock_held in
->  * all three functions.
->  */
-> BPF_CALL_2(bpf_map_lookup_elem, struct bpf_map *, map, void *, key)
-> {
-> 	WARN_ON_ONCE(!rcu_read_lock_held());
-> 	return (unsigned long) map->ops->map_lookup_elem(map, key);
-> }
-> 
-> -Jakub
-
+that patch was reverted in favor of a different solution. It should NOT
+be backported to any releases.
 
