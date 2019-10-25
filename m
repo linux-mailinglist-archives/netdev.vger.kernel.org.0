@@ -2,170 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0A6E4837
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:10:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FE61E485D
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409036AbfJYKK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 06:10:28 -0400
-Received: from mail-eopbgr50079.outbound.protection.outlook.com ([40.107.5.79]:48289
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2409013AbfJYKK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 06:10:28 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TcXuTjg3FwcW58324mbN1Kept4rj7vOmh+LVB/5h1lkzS4vePzgpk8hGSUZlm4mcXmznCBE571qC83c8EYBFiJujZOH8A9fwNtSYll+J/50Rbr9cuKSo5cpRQp/h8JlvSsNprj1upZaq+XDASytTv0J6912sqNi2Uzh6w0CK6Ibr0iajTtdqqdkDM+bQr9zazKrt5aXV78Rxw9oMrl9CIdNR/hAy4OaetRmkWz7qw3qnYaKzD77/7hP29Qrawmw0//7niPoCI1uWrPBein9ecC06cQMRqluAk+QQGEb5eHXVz2jw+jqd7qk5QXlETS9pvPzh6m6FTMj+0FBroW1T7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kyulIfEZG1bmG/QoE/xHxG29FVNHBtNAn8XCm6/MepA=;
- b=Hp3YiAs90/U2HTshAsZhK5wIc3Mat36f7QcYR0DyLqBPz19nN+U0KbYsN1zt26sNWjIbzk+n2zFGJu42iShbLoGLXFicQ5DBeA2K6ZCcdusTJUN0d3aiK/Dn+y43rbDS4ctO0iozOx4O1E4wvmFxJzG0z9a2g7wC95DHv2nsWLcE/EwXanjZfM9WaxrfK/9N0/sK5EIT2hWSiTv1Md8DI09y75MyVNPfU+EA6mgcBjU1/uJj3P7OXda4ffe7pidp8YCUs/OYhNTncIXRVx4lyFk3l7RrCuDRaQftSPWAhAPN0o4X6dyJDREYiO8xb9Jn6/HEpqqb2GG8AxJ9ltMSoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kyulIfEZG1bmG/QoE/xHxG29FVNHBtNAn8XCm6/MepA=;
- b=Jx0HRvOd+B6bx1oH9FuOw+dIK3/xCtN0m+biG+5556O1d++EHm33CYzq8QdynnptPGgCgitaR55izk+zoA2ANa427lnaKwyF3rWITzUXUhbYurZ79GSeO60mGNAG4Xifh8wYkrepgZqgr9ZUaeTSYpcmteLg4T+hH6rpH/wwKlA=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4969.eurprd04.prod.outlook.com (20.176.234.81) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.22; Fri, 25 Oct 2019 10:10:22 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::79f1:61a7:4076:8679]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::79f1:61a7:4076:8679%3]) with mapi id 15.20.2367.029; Fri, 25 Oct 2019
- 10:10:22 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sean@geanix.com" <sean@geanix.com>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: RE: [PATCH V4 1/2] can: flexcan: fix deadlock when using self wakeup
-Thread-Topic: [PATCH V4 1/2] can: flexcan: fix deadlock when using self wakeup
-Thread-Index: AQHVfnlfcicpFKT7vkKHRAXdf1SEk6drO7hg
-Date:   Fri, 25 Oct 2019 10:10:22 +0000
-Message-ID: <DB7PR04MB4618B68B92D802B62EFB2F40E6650@DB7PR04MB4618.eurprd04.prod.outlook.com>
-References: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191009080956.29128-1-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ad9467c2-0106-49f5-22bb-08d759338be4
-x-ms-traffictypediagnostic: DB7PR04MB4969:|DB7PR04MB4969:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB49690685C717026C480F9F8EE6650@DB7PR04MB4969.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 02015246A9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(136003)(396003)(39860400002)(376002)(189003)(199004)(54534003)(13464003)(66066001)(569044001)(486006)(54906003)(316002)(86362001)(55016002)(6436002)(229853002)(9686003)(5660300002)(81166006)(2501003)(11346002)(14454004)(71190400001)(81156014)(110136005)(8676002)(8936002)(478600001)(33656002)(476003)(446003)(6506007)(6116002)(3846002)(74316002)(99286004)(14444005)(305945005)(7736002)(256004)(25786009)(52536014)(71200400001)(5024004)(53546011)(7696005)(76176011)(64756008)(66556008)(76116006)(66476007)(66446008)(66946007)(26005)(6246003)(4326008)(186003)(2906002)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4969;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 03nqUTRCCPgIWCAgVnUzkcVTtQlSTx64155GcIWKRCs6xvb1jHB04+Ien+UZtQQlqK2CAfVk9DjONd/+RX4/Aaa44PputqciQfnrXLeyu++g4SvyPJPDCL1WbqabiD+ROCc1MbWEgJmGtI/ES5i1i3nIGnRGKeuHbc+iH+n6FXNlfhC9MGp2fGxNzIv0jMeNuSpHWIGEUpgUuCF8CThR0AgSM4rTxAPCOUZ3oTSU1y4o+o25B6m6juYMMBHxUCnxOS4zZnnSNUfIsz9IFFoOHeJ754MDwSigUfd7x9HgvHiGu4aEiYBF7e8wMGg8pqpv46p9Zoa8cB388UtueYqgvlS/QlGpPOmazZLY4jA8imapSOSbWRaxf3OdjxrW55xwvRIKnVnmwDLCtVsG3NiV0QjHV0/By9XZhz7Ol6GetKQHZbIUxcb6m/aBosh8dwth
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S2409218AbfJYKPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 06:15:03 -0400
+Received: from mail.jv-coder.de ([5.9.79.73]:56566 "EHLO mail.jv-coder.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2409192AbfJYKPD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 06:15:03 -0400
+Received: from [10.61.40.7] (unknown [37.156.92.209])
+        by mail.jv-coder.de (Postfix) with ESMTPSA id DE6049F64C;
+        Fri, 25 Oct 2019 10:14:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jv-coder.de; s=dkim;
+        t=1571998500; bh=l6SMEEglbngUE1u9wb5gv9AnEVw28sr8tAsIuis+AgI=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version;
+        b=TNS2p7nFpVBUBCB6MB2bSg55s/ff4MNGPsg7LhgkkywahAYiodOzfRvAg/W4X61ze
+         4HzRj30WOf6QBBvXX4BP1tgR8zu2NDmewiS+3y6FzdoPu0CmhDzeNRNGpGd5T79WjA
+         uWJq9ufks7txNb5HM6jyYK0nIPTiE5TChr7vAkY4=
+Subject: Re: [PATCH v2 1/1] xfrm : lock input tasklet skb queue
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Tom Rix <trix@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        herbert@gondor.apana.org.au, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <CACVy4SUkfn4642Vne=c1yuWhne=2cutPZQ5XeXz_QBz1g67CrA@mail.gmail.com>
+ <20191024103134.GD13225@gauss3.secunet.de>
+ <ad094bfc-ebb3-012b-275b-05fb5a8f86e5@jv-coder.de>
+ <20191025094758.pchz4wupvo3qs6hy@linutronix.de>
+From:   Joerg Vehlow <lkml@jv-coder.de>
+Message-ID: <202da67b-95c7-3355-1abc-f67a40a554e9@jv-coder.de>
+Date:   Fri, 25 Oct 2019 12:14:59 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad9467c2-0106-49f5-22bb-08d759338be4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2019 10:10:22.0623
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gviLlKOPb8GzhryFG0HFoFFumDH1fm3kpj8tzWiBEN8MOAYZPMuzStUJroEs1jzWJZ48qwrrADVKtLmc3cWYkQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4969
+In-Reply-To: <20191025094758.pchz4wupvo3qs6hy@linutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.1 required=5.0 tests=DKIM_SIGNED,DKIM_VALID,
+        DKIM_VALID_AU,DKIM_VALID_EF,HELO_MISC_IP,RDNS_NONE autolearn=no
+        autolearn_force=no version=3.4.2
+X-Spam-Level: *
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.jv-coder.de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpLaW5kbHkgUGluZy4uLg0KDQpCZXN0IFJlZ2FyZHMsDQpKb2FraW0gWmhhbmcNCg0KPiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56
-aGFuZ0BueHAuY29tPg0KPiBTZW50OiAyMDE5xOoxMNTCOcjVIDE2OjEzDQo+IFRvOiBta2xAcGVu
-Z3V0cm9uaXguZGU7IGxpbnV4LWNhbkB2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IHdnQGdyYW5kZWdn
-ZXIuY29tOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBzZWFuQGdlYW5peC5jb207DQo+IGRsLWxp
-bnV4LWlteCA8bGludXgtaW14QG54cC5jb20+OyBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFu
-Z0BueHAuY29tPg0KPiBTdWJqZWN0OiBbUEFUQ0ggVjQgMS8yXSBjYW46IGZsZXhjYW46IGZpeCBk
-ZWFkbG9jayB3aGVuIHVzaW5nIHNlbGYgd2FrZXVwDQo+IA0KPiBBcyByZXByb3RlZCBieSBTZWFu
-IE55ZWtqYWVyIGJlbG93Og0KPiBXaGVuIHN1c3BlbmRpbmcsIHdoZW4gdGhlcmUgaXMgc3RpbGwg
-Y2FuIHRyYWZmaWMgb24gdGhlIGludGVyZmFjZXMgdGhlIGZsZXhjYW4NCj4gaW1tZWRpYXRlbHkg
-d2FrZXMgdGhlIHBsYXRmb3JtIGFnYWluLiBBcyBpdCBzaG91bGQgOi0pLiBCdXQgaXQgdGhyb3dz
-IHRoaXMgZXJyb3INCj4gbXNnOg0KPiBbIDMxNjkuMzc4NjYxXSBQTTogbm9pcnEgc3VzcGVuZCBv
-ZiBkZXZpY2VzIGZhaWxlZA0KPiANCj4gT24gdGhlIHdheSBkb3duIHRvIHN1c3BlbmQgdGhlIGlu
-dGVyZmFjZSB0aGF0IHRocm93cyB0aGUgZXJyb3IgbWVzc2FnZSBkb2VzDQo+IGNhbGwgZmxleGNh
-bl9zdXNwZW5kIGJ1dCBmYWlscyB0byBjYWxsIGZsZXhjYW5fbm9pcnFfc3VzcGVuZC4gVGhhdCBt
-ZWFucyB0aGUNCj4gZmxleGNhbl9lbnRlcl9zdG9wX21vZGUgaXMgY2FsbGVkLCBidXQgb24gdGhl
-IHdheSBvdXQgb2Ygc3VzcGVuZCB0aGUgZHJpdmVyDQo+IG9ubHkgY2FsbHMgZmxleGNhbl9yZXN1
-bWUgYW5kIHNraXBzIGZsZXhjYW5fbm9pcnFfcmVzdW1lLCB0aHVzIGl0IGRvZXNuJ3QgY2FsbA0K
-PiBmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlLiBUaGlzIGxlYXZlcyB0aGUgZmxleGNhbiBpbiBzdG9w
-IG1vZGUsIGFuZCB3aXRoIHRoZQ0KPiBjdXJyZW50IGRyaXZlciBpdCBjYW4ndCByZWNvdmVyIGZy
-b20gdGhpcyBldmVuIHdpdGggYSBzb2Z0IHJlYm9vdCwgaXQgcmVxdWlyZXMgYQ0KPiBoYXJkIHJl
-Ym9vdC4NCj4gDQo+IFRoZSBiZXN0IHdheSB0byBleGl0IHN0b3AgbW9kZSBpcyBpbiBXYWtlIFVw
-IGludGVycnVwdCBjb250ZXh0LCBhbmQgdGhlbg0KPiBzdXNwZW5kKCkgYW5kIHJlc3VtZSgpIGZ1
-bmN0aW9ucyBjYW4gYmUgc3ltbWV0cmljLiBIb3dldmVyLCBzdG9wIG1vZGUNCj4gcmVxdWVzdCBh
-bmQgYWNrIHdpbGwgYmUgY29udHJvbGxlZCBieSBTQ1UoU3lzdGVtIENvbnRyb2wgVW5pdCkNCj4g
-ZmlybXdhcmUobWFuYWdlIGNsb2NrLHBvd2VyLHN0b3AgbW9kZSwgZXRjLiBieSBDb3J0ZXgtTTQg
-Y29yZSkgaW4gY29taW5nDQo+IGkuTVg4KFFNL1FYUCkuIEFuZCBTQ1UgZmlybXdhcmUgaW50ZXJm
-YWNlIGNhbid0IGJlIGF2YWlsYWJsZSBpbiBpbnRlcnJ1cHQNCj4gY29udGV4dC4NCj4gDQo+IEZv
-ciBjb21wYXRpYmlsbGl0eSwgdGhlIHdha2UgdXAgbWVjaGFuaXNtIGNhbid0IGJlIHN5bW1ldHJp
-Yywgc28gd2UgbmVlZA0KPiBpbl9zdG9wX21vZGUgaGFjay4NCj4gDQo+IEZpeGVzOiBkZTM1Nzhj
-MTk4YzYgKCJjYW46IGZsZXhjYW46IGFkZCBzZWxmIHdha2V1cCBzdXBwb3J0IikNCj4gUmVwb3J0
-ZWQtYnk6IFNlYW4gTnlla2phZXIgPHNlYW5AZ2Vhbml4LmNvbT4NCj4gVGVzdGVkLWJ5OiBTZWFu
-IE55ZWtqYWVyIDxzZWFuQGdlYW5peC5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IEpvYWtpbSBaaGFu
-ZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+DQo+IA0KPiBDaGFuZ2Vsb2c6DQo+IFYxLT5WMjoN
-Cj4gCSogYWRkIFJlcG9ydGVkLWJ5IHRhZy4NCj4gCSogcmViYXNlIG9uIHBhdGNoOiBjYW46Zmxl
-eGNhbjpmaXggc3RvcCBtb2RlIGFja25vd2xlZGdtZW50Lg0KPiBWMi0+VjM6DQo+IAkqIHJlYmFz
-ZSBvbiBsaW51eC1jYW4vdGVzdGluZy4NCj4gCSogY2hhbmdlIGludG8gcGF0Y2ggc2V0Lg0KPiBW
-My0+VjQ6DQo+IAkqIGFkZCBUZXN0ZWQtYnkgdGFnLg0KPiAtLS0NCj4gIGRyaXZlcnMvbmV0L2Nh
-bi9mbGV4Y2FuLmMgfCAyMyArKysrKysrKysrKysrKysrKysrKysrKw0KPiAgMSBmaWxlIGNoYW5n
-ZWQsIDIzIGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9jYW4v
-ZmxleGNhbi5jIGIvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4uYyBpbmRleA0KPiAxY2Q1MTc5Y2I4
-NzYuLjI0Y2MzODZjNGJjZSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvY2FuL2ZsZXhjYW4u
-Yw0KPiArKysgYi9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jDQo+IEBAIC0yODYsNiArMjg2LDcg
-QEAgc3RydWN0IGZsZXhjYW5fcHJpdiB7DQo+ICAJY29uc3Qgc3RydWN0IGZsZXhjYW5fZGV2dHlw
-ZV9kYXRhICpkZXZ0eXBlX2RhdGE7DQo+ICAJc3RydWN0IHJlZ3VsYXRvciAqcmVnX3hjZWl2ZXI7
-DQo+ICAJc3RydWN0IGZsZXhjYW5fc3RvcF9tb2RlIHN0bTsNCj4gKwlib29sIGluX3N0b3BfbW9k
-ZTsNCj4gDQo+ICAJLyogUmVhZCBhbmQgV3JpdGUgQVBJcyAqLw0KPiAgCXUzMiAoKnJlYWQpKHZv
-aWQgX19pb21lbSAqYWRkcik7DQo+IEBAIC0xNjcwLDYgKzE2NzEsOCBAQCBzdGF0aWMgaW50IF9f
-bWF5YmVfdW51c2VkIGZsZXhjYW5fc3VzcGVuZChzdHJ1Y3QNCj4gZGV2aWNlICpkZXZpY2UpDQo+
-ICAJCQllcnIgPSBmbGV4Y2FuX2VudGVyX3N0b3BfbW9kZShwcml2KTsNCj4gIAkJCWlmIChlcnIp
-DQo+ICAJCQkJcmV0dXJuIGVycjsNCj4gKw0KPiArCQkJcHJpdi0+aW5fc3RvcF9tb2RlID0gdHJ1
-ZTsNCj4gIAkJfSBlbHNlIHsNCj4gIAkJCWVyciA9IGZsZXhjYW5fY2hpcF9kaXNhYmxlKHByaXYp
-Ow0KPiAgCQkJaWYgKGVycikNCj4gQEAgLTE2OTYsNiArMTY5OSwxNSBAQCBzdGF0aWMgaW50IF9f
-bWF5YmVfdW51c2VkIGZsZXhjYW5fcmVzdW1lKHN0cnVjdA0KPiBkZXZpY2UgKmRldmljZSkNCj4g
-IAkJbmV0aWZfZGV2aWNlX2F0dGFjaChkZXYpOw0KPiAgCQluZXRpZl9zdGFydF9xdWV1ZShkZXYp
-Ow0KPiAgCQlpZiAoZGV2aWNlX21heV93YWtldXAoZGV2aWNlKSkgew0KPiArCQkJaWYgKHByaXYt
-PmluX3N0b3BfbW9kZSkgew0KPiArCQkJCWZsZXhjYW5fZW5hYmxlX3dha2V1cF9pcnEocHJpdiwg
-ZmFsc2UpOw0KPiArCQkJCWVyciA9IGZsZXhjYW5fZXhpdF9zdG9wX21vZGUocHJpdik7DQo+ICsJ
-CQkJaWYgKGVycikNCj4gKwkJCQkJcmV0dXJuIGVycjsNCj4gKw0KPiArCQkJCXByaXYtPmluX3N0
-b3BfbW9kZSA9IGZhbHNlOw0KPiArCQkJfQ0KPiArDQo+ICAJCQlkaXNhYmxlX2lycV93YWtlKGRl
-di0+aXJxKTsNCj4gIAkJfSBlbHNlIHsNCj4gIAkJCWVyciA9IHBtX3J1bnRpbWVfZm9yY2VfcmVz
-dW1lKGRldmljZSk7IEBAIC0xNzMyLDYgKzE3NDQsMTENCj4gQEAgc3RhdGljIGludCBfX21heWJl
-X3VudXNlZCBmbGV4Y2FuX25vaXJxX3N1c3BlbmQoc3RydWN0IGRldmljZSAqZGV2aWNlKQ0KPiAg
-CXN0cnVjdCBuZXRfZGV2aWNlICpkZXYgPSBkZXZfZ2V0X2RydmRhdGEoZGV2aWNlKTsNCj4gIAlz
-dHJ1Y3QgZmxleGNhbl9wcml2ICpwcml2ID0gbmV0ZGV2X3ByaXYoZGV2KTsNCj4gDQo+ICsJLyog
-TmVlZCB0byBlbmFibGUgd2FrZXVwIGludGVycnVwdCBpbiBub2lycSBzdXNwZW5kIHN0YWdlLiBP
-dGhlcndpc2UsDQo+ICsJICogaXQgd2lsbCB0cmlnZ2VyIGNvbnRpbnVvdXNseSB3YWtldXAgaW50
-ZXJydXB0IGlmIHRoZSB3YWtldXAgZXZlbnQNCj4gKwkgKiBjb21lcyBiZWZvcmUgbm9pcnEgc3Vz
-cGVuZCBzdGFnZSwgYW5kIHNpbXVsdGFuZW91c2x5IGl0IGhhcyBlbnRlcg0KPiArCSAqIHRoZSBz
-dG9wIG1vZGUuDQo+ICsJICovDQo+ICAJaWYgKG5ldGlmX3J1bm5pbmcoZGV2KSAmJiBkZXZpY2Vf
-bWF5X3dha2V1cChkZXZpY2UpKQ0KPiAgCQlmbGV4Y2FuX2VuYWJsZV93YWtldXBfaXJxKHByaXYs
-IHRydWUpOw0KPiANCj4gQEAgLTE3NDQsMTEgKzE3NjEsMTcgQEAgc3RhdGljIGludCBfX21heWJl
-X3VudXNlZA0KPiBmbGV4Y2FuX25vaXJxX3Jlc3VtZShzdHJ1Y3QgZGV2aWNlICpkZXZpY2UpDQo+
-ICAJc3RydWN0IGZsZXhjYW5fcHJpdiAqcHJpdiA9IG5ldGRldl9wcml2KGRldik7DQo+ICAJaW50
-IGVycjsNCj4gDQo+ICsJLyogTmVlZCB0byBleGl0IHN0b3AgbW9kZSBpbiBub2lycSByZXN1bWUg
-c3RhZ2UuIE90aGVyd2lzZSwgaXQgd2lsbA0KPiArCSAqIHRyaWdnZXIgY29udGludW91c2x5IHdh
-a2V1cCBpbnRlcnJ1cHQgaWYgdGhlIHdha2V1cCBldmVudCBjb21lcywNCj4gKwkgKiBhbmQgc2lt
-dWx0YW5lb3VzbHkgaXQgaGFzIHN0aWxsIGluIHN0b3AgbW9kZS4NCj4gKwkgKi8NCj4gIAlpZiAo
-bmV0aWZfcnVubmluZyhkZXYpICYmIGRldmljZV9tYXlfd2FrZXVwKGRldmljZSkpIHsNCj4gIAkJ
-ZmxleGNhbl9lbmFibGVfd2FrZXVwX2lycShwcml2LCBmYWxzZSk7DQo+ICAJCWVyciA9IGZsZXhj
-YW5fZXhpdF9zdG9wX21vZGUocHJpdik7DQo+ICAJCWlmIChlcnIpDQo+ICAJCQlyZXR1cm4gZXJy
-Ow0KPiArDQo+ICsJCXByaXYtPmluX3N0b3BfbW9kZSA9IGZhbHNlOw0KPiAgCX0NCj4gDQo+ICAJ
-cmV0dXJuIDA7DQo+IC0tDQo+IDIuMTcuMQ0KDQo=
+Now that I look back at my mail, you are right, I did not say anything
+about rt, my bad. But maybe you could add too the rt patches website, that
+an RT tag has to be added.
+
+@Tom Rix, will you resend the patch? You may also add the information,
+that I found the bug running the ipsec_stress ltp tests. Generating any
+ipsec traffic (maybe concurrent) should be sufficient.
+
+Here is one of the oops logs I still have:
+
+[  139.717259] BUG: unable to handle kernel NULL pointer dereference at 
+0000000000000518
+[  139.717260] PGD 0 P4D 0
+[  139.717262] Oops: 0000 [#1] PREEMPT SMP PTI
+[  139.717273] CPU: 2 PID: 11987 Comm: netstress Not tainted 
+4.19.59-rt24-preemt-rt #1
+[  139.717274] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
+BIOS rel-1.12.0-0-ga698c8995f-prebuilt.qemu.org 04/01/2014
+[  139.717306] RIP: 0010:xfrm_trans_reinject+0x97/0xd0
+[  139.717307] Code: 42 eb 45 83 6d b0 01 31 f6 48 8b 42 08 48 c7 42 08 
+00 00 00 00 48 8b 0a 48 c7 02 00 00 00 00 48 89 41 08 48 89 08 48 8b 42 
+10 <48> 8b b8 18 05 00 00 48 8b 42 40 e8 d9 e1 4b 00 48 8b 55 a0 48 39
+[  139.717307] RSP: 0018:ffffc900007b37e8 EFLAGS: 00010246
+[  139.717308] RAX: 0000000000000000 RBX: ffffc900007b37e8 RCX: 
+ffff88807db206a8
+[  139.717309] RDX: ffff88807db206a8 RSI: 0000000000000000 RDI: 
+0000000000000000
+[  139.717309] RBP: ffffc900007b3848 R08: 0000000000000001 R09: 
+ffffc900007b35c8
+[  139.717309] R10: ffffea0001dcfc00 R11: 00000000000890c4 R12: 
+ffff88807db20680
+[  139.717310] R13: 00000000000f4240 R14: 0000000000000000 R15: 
+0000000000000000
+[  139.717310] FS:  00007f4643034700(0000) GS:ffff88807db00000(0000) 
+knlGS:0000000000000000
+[  139.717311] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  139.717337] CR2: 0000000000000518 CR3: 00000000769c6000 CR4: 
+00000000000006e0
+[  139.717350] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
+0000000000000000
+[  139.717350] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
+0000000000000400
+[  139.717350] Call Trace:
+[  139.717387]  tasklet_action_common.isra.18+0x6d/0xd0
+[  139.717388]  tasklet_action+0x1d/0x20
+[  139.717389]  do_current_softirqs+0x196/0x360
+[  139.717390]  __local_bh_enable+0x51/0x60
+[  139.717397]  ip_finish_output2+0x18b/0x3f0
+[  139.717408]  ? task_rq_lock+0x53/0xe0
+[  139.717415]  ip_finish_output+0xbe/0x1b0
+[  139.717416]  ip_output+0x72/0x100
+[  139.717422]  ? ipcomp_output+0x5e/0x280
+[  139.717424]  xfrm_output_resume+0x4b5/0x540
+[  139.717436]  ? refcount_dec_and_test_checked+0x11/0x20
+[  139.717443]  ? kfree_skbmem+0x33/0x80
+[  139.717444]  xfrm_output+0xd7/0x110
+[  139.717451]  xfrm4_output_finish+0x2b/0x30
+[  139.717452]  __xfrm4_output+0x3a/0x50
+[  139.717453]  xfrm4_output+0x40/0xe0
+[  139.717454]  ? xfrm_dst_check+0x174/0x250
+[  139.717455]  ? xfrm4_output+0x40/0xe0
+[  139.717456]  ? xfrm_dst_check+0x174/0x250
+[  139.717457]  ip_local_out+0x3b/0x50
+[  139.717458]  __ip_queue_xmit+0x16b/0x420
+[  139.717464]  ip_queue_xmit+0x10/0x20
+[  139.717466]  __tcp_transmit_skb+0x566/0xad0
+[  139.717467]  tcp_write_xmit+0x3a4/0x1050
+[  139.717468]  __tcp_push_pending_frames+0x35/0xe0
+[  139.717469]  tcp_push+0xdb/0x100
+[  139.717469]  tcp_sendmsg_locked+0x491/0xd70
+[  139.717470]  tcp_sendmsg+0x2c/0x50
+[  139.717476]  inet_sendmsg+0x3e/0xf0
+[  139.717483]  sock_sendmsg+0x3e/0x50
+[  139.717484]  __sys_sendto+0x114/0x1a0
+[  139.717491]  ? __rt_mutex_unlock+0xe/0x10
+[  139.717492]  ? _mutex_unlock+0xe/0x10
+[  139.717500]  ? ksys_write+0xc5/0xe0
+[  139.717501]  __x64_sys_sendto+0x28/0x30
+[  139.717503]  do_syscall_64+0x4d/0x110
+[  139.717504]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Am 25.10.2019 um 11:47 schrieb Sebastian Andrzej Siewior:
+> On 2019-10-25 11:37:59 [+0200], Joerg Vehlow wrote:
+>> Hi,
+>>
+>> I always expected this to be applied to the RT patches. That's why
+>> I originally send my patch to to Sebastian, Thomas and Steven (I added
+>> them again now. The website of the rt patches says patches for the
+>> CONFIG_REEMPT_RT patchset should be send to lkml.
+>>
+>> I hope one of the rt patch maintainers will reply here.
+> I've seen the first patch and it was not mentioned that it was RT
+> related so I did not pay any attention to it.
+> Please repost your v2, please add RT next to patch, please state the RT
+> version and the actual problem and I take a look.
+>
+>> Jörg
+> Sebastian
+
