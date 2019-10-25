@@ -2,91 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0168E49AA
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29679E4A00
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:32:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729203AbfJYLQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 07:16:32 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42375 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726339AbfJYLQc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:16:32 -0400
-Received: by mail-wr1-f67.google.com with SMTP id r1so1864908wrs.9
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 04:16:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aggsABIYRRLswIwxQlk1bc5yL6gnA80dLaHTc+5bzIY=;
-        b=ZfEnKerJnYGRWOAiA9ZGyMPPaOei4svG9M9ngzt/VRWxfhX1aGYgh7sICeNUFn1fR7
-         t7icu56KqU/9tCId7Kbi7XkVfxv6YB4BLQPMyse3pLgbKdOBq2RnyADMVQmd7OK9ZdfE
-         snsj1mRqO6GJrZCrrYszrJDK3DbAA75l/ppva5wwEcTvIw7vEnNc/cev+coPLU2L0ekv
-         3wsk9Ftia043GAUvXZsDZix9D2JBQbktFGsKUG9Q4cii8tapwG9WaH+FCQQldf7eurht
-         ucacZH6tfAmoBM06Wt/OCCtxtKp6bw0SPtuv54rM6jCPZXz5rxqyFhaMA2mYwITH16OH
-         8b5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aggsABIYRRLswIwxQlk1bc5yL6gnA80dLaHTc+5bzIY=;
-        b=jLYr3aoLscGcXxMJ6X9A33sGMK/KWAX+N6780ts7iCf36OVAWF5OZRmiKELp9e+WGU
-         FZ30xfcehxQt4dP/Pt/GSs6EbNd1hj1gXn19+4q4a1ow10Q+9A6SzGey3d4GeUse/5Dl
-         Pw30Rpj83mhRbmYk1Sj8LvR/wFRWOXyHZIOkki9m9XYgDbRxUdiY2opXBXUvaFc0nhGy
-         ZvKcJMQ4lxGwYXdbmM8r+Hcbwyw26pMr/TdS4iQMRGs5cXND61+5WbeIwkWr/gxZNjXC
-         DhdCapAE8xP84mUNuZTUSnhI/LIMXKA1KdlREPIB/zJpYDVQUjSDLzC0LA/nHYOLWEfr
-         jOgQ==
-X-Gm-Message-State: APjAAAWwAkt145YhTl8Y8VATnVggsHyoDIyfbU+UC7hVgEk4oAVdQYiS
-        Jb9mURlABK9w1E+9WywCjTNbkw==
-X-Google-Smtp-Source: APXvYqye0bMzabbhMdyIpkhP6DJpiYxdibp9PiqfCR0Gpk686vQs9d9QZOMBWqPETxqNqJFJXkTTxw==
-X-Received: by 2002:a5d:544d:: with SMTP id w13mr2562396wrv.19.1572002189723;
-        Fri, 25 Oct 2019 04:16:29 -0700 (PDT)
-Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id v20sm1571589wml.26.2019.10.25.04.16.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 04:16:29 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 13:16:27 +0200
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Pankaj Sharma <pankj.sharma@samsung.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, wg@grandegger.com,
-        mkl@pengutronix.de, davem@davemloft.net,
-        eugen.hristev@microchip.com, ludovic.desroches@microchip.com,
-        pankaj.dubey@samsung.com, rcsekar@samsung.com,
-        jhofstee@victronenergy.com, Sriram Dash <sriram.dash@samsung.com>
-Subject: Re: [PATCH v2] can: m_can: add support for handling arbitration error
-Message-ID: <20191025111626.GA31153@netronome.com>
-References: <CGME20191021121350epcas5p3313e54a3bc5c8600c52a6db299893f78@epcas5p3.samsung.com>
- <1571660016-29726-1-git-send-email-pankj.sharma@samsung.com>
+        id S2440121AbfJYLbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 07:31:08 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:42810 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727602AbfJYLbI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:31:08 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1iNxo1-0004N2-3o; Fri, 25 Oct 2019 11:30:57 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Chris Chiu <chiu@endlessm.com>,
+        Tzu-En Huang <tehuang@realtek.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] rtw88: remove redundant null pointer check on arrays
+Date:   Fri, 25 Oct 2019 12:30:56 +0100
+Message-Id: <20191025113056.19167-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1571660016-29726-1-git-send-email-pankj.sharma@samsung.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 21, 2019 at 05:43:36PM +0530, Pankaj Sharma wrote:
-> The Bosch MCAN hardware (3.1.0 and above) supports interrupt flag to
-> detect Protocol error in arbitration phase.
-> 
-> Transmit error statistics is currently not updated from the MCAN driver.
-> Protocol error in arbitration phase is a TX error and the network
-> statistics should be updated accordingly.
-> 
-> The member "tx_error" of "struct net_device_stats" should be incremented
-> as arbitration is a transmit protocol error. Also "arbitration_lost" of
-> "struct can_device_stats" should be incremented to report arbitration
-> lost.
-> 
-> Signed-off-by: Pankaj Sharma <pankj.sharma@samsung.com>
-> Signed-off-by: Sriram Dash <sriram.dash@samsung.com>
-> ---
-> 
-> changes in v2:
-> - common m_can_ prefix for is_protocol_err function
-> - handling stats even if the allocation of the skb fails
-> - resolving build errors on net-next branch
+From: Colin Ian King <colin.king@canonical.com>
 
-No objections from my side.
+The checks to see if swing_table->n or swing_table->p are null are
+redundant since n and p are arrays and can never be null if
+swing_table is non-null.  I believe these are redundant checks
+and can be safely removed, especially the checks implies that these
+are not arrays which can lead to confusion.
+
+Addresses-Coverity: ("Array compared against 0")
+Fixes: c97ee3e0bea2 ("rtw88: add power tracking support")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/wireless/realtek/rtw88/phy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/phy.c b/drivers/net/wireless/realtek/rtw88/phy.c
+index 69e7edb629f4..11893ec73376 100644
+--- a/drivers/net/wireless/realtek/rtw88/phy.c
++++ b/drivers/net/wireless/realtek/rtw88/phy.c
+@@ -2071,7 +2071,7 @@ s8 rtw_phy_pwrtrack_get_pwridx(struct rtw_dev *rtwdev,
+ 		return 0;
+ 	}
+ 
+-	if (!swing_table || !swing_table->n || !swing_table->p) {
++	if (!swing_table) {
+ 		rtw_warn(rtwdev, "swing table not configured\n");
+ 		return 0;
+ 	}
+-- 
+2.20.1
+
