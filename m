@@ -2,103 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60008E4F37
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:35:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C688CE4F77
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:45:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392858AbfJYOfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:35:15 -0400
-Received: from mail-eopbgr700048.outbound.protection.outlook.com ([40.107.70.48]:20864
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729132AbfJYOfP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 10:35:15 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jdpqvZeVU/x04oFvmsimDHeXY+3IkOsjKybh9+o+fQLS4VI3JKHHQwdZ/MZa8rzgJTOECGN+pTH4bqG/Pw7qaqbjv/0DbX0AFTZCCRA1ven5zIKpcMyhG5nnU/B/MK/7MtBAAHGKHN7auLKvfWU+o6R90SzFII3+D/CVYzu1MgqtCW+vKw/xtyduAFFV1xGkSlgPvXLdBxFOwYbw4hwzI9aTw8lnRFH8EJTbQAbFnFYVilZx37Qpwh+zLb992U3qNGc89BuEw5sbNYw5p/oXLib2oVUt8HSz975M+FmmB1I5X0GZHsKoOS6PG7X23wtqOH2acC8+rHzXuLM2sCk9OQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YCqw1umRSodcBGACcLog5jXOxH0uDRUaxwOiwJYZlSk=;
- b=gPeT220HbbeMwVOrijp8PFq9cyyjwlUTC9XCpGLci4ocuMCaTXxVSE9YhfIK0QrcENOHYF5/TkIHBi4Z5GyWt1M6FNBcWjgt1nCMJnvh3APLshs0zBLg0+juaY7C/se2QkAXrSCqYLkZhdKNVSRskINff1LwtRoEwXrU6GkY1HmX7EUX0O1pGpYMYql1/RP0Jx/7W225r1UKlWQfQkTXdDVZTtqUZlmGXBOmV84KUxxBqA0Kn0oHG2EUGzigTSPqm//ifhLRHftMt0F6duS51fKEexax1OVLFp5XWHEQDTMda37WhG7Lm2hdwzqoVqPtMzXHA13ZXO3sVCRKYuNXOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
- dkim=pass header.d=aquantia.com; arc=none
+        id S2394795AbfJYOpz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:45:55 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37901 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390195AbfJYOpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 10:45:54 -0400
+Received: by mail-qt1-f196.google.com with SMTP id o25so3593036qtr.5;
+        Fri, 25 Oct 2019 07:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YCqw1umRSodcBGACcLog5jXOxH0uDRUaxwOiwJYZlSk=;
- b=8IP1yzaa12aNNrQFtK5jjszgCbPPdccJ6xBt2K5JDGcmH76wyUKpoX2SCBY0jmRp4ncn2iQTGdUQT+7hgNzR4nYau+zv+guJxJBzwIr+m7zUZg6cEBKgIw+MK+dIJBAhA3JKoGFopOQdCG+uHrwiTKdCiw1eITD5bjVo5xQkzNg=
-Received: from BN8PR11MB3762.namprd11.prod.outlook.com (20.178.221.83) by
- BN8PR11MB3555.namprd11.prod.outlook.com (20.178.218.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.22; Fri, 25 Oct 2019 14:35:11 +0000
-Received: from BN8PR11MB3762.namprd11.prod.outlook.com
- ([fe80::accc:44e2:f64d:f2f]) by BN8PR11MB3762.namprd11.prod.outlook.com
- ([fe80::accc:44e2:f64d:f2f%3]) with mapi id 15.20.2387.023; Fri, 25 Oct 2019
- 14:35:11 +0000
-From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
-To:     David Miller <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Egor Pomozov <epomozov@marvell.com>,
-        Dmitry Bezrukov <Dmitry.Bezrukov@aquantia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        Simon Edelhaus <sedelhaus@marvell.com>
-Subject: Re: [PATCH v3 net-next 00/12] net: aquantia: PTP support for AQC
- devices
-Thread-Topic: [PATCH v3 net-next 00/12] net: aquantia: PTP support for AQC
- devices
-Thread-Index: AQHViL6JpaiqbV9+r0Kgd1DtsoK9Uqdp2JiAgAAskwCAAWwfAA==
-Date:   Fri, 25 Oct 2019 14:35:11 +0000
-Message-ID: <4248b01d-10f2-35ea-5d30-bc33b12de739@aquantia.com>
-References: <cover.1571737612.git.igor.russkikh@aquantia.com>
- <20191024141217.GC1435@localhost>
- <20191024.095150.1788364595890052897.davem@davemloft.net>
-In-Reply-To: <20191024.095150.1788364595890052897.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: GVAP278CA0005.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:710:20::15) To BN8PR11MB3762.namprd11.prod.outlook.com
- (2603:10b6:408:8d::19)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Igor.Russkikh@aquantia.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3e500e22-cd9a-41f0-98a8-08d759588a6b
-x-ms-traffictypediagnostic: BN8PR11MB3555:
-x-ld-processed: 83e2e134-991c-4ede-8ced-34d47e38e6b1,ExtFwd
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR11MB355555D188A8B08DA10EF57098650@BN8PR11MB3555.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-forefront-prvs: 02015246A9
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(396003)(39850400004)(136003)(346002)(376002)(189003)(199004)(54906003)(2501003)(52116002)(2906002)(558084003)(99286004)(110136005)(86362001)(6512007)(229853002)(36756003)(3846002)(6486002)(66476007)(66946007)(6116002)(6436002)(66446008)(64756008)(66556008)(14454004)(305945005)(7736002)(25786009)(31686004)(5660300002)(6246003)(8936002)(4326008)(71200400001)(316002)(76176011)(102836004)(26005)(44832011)(6506007)(186003)(386003)(256004)(2616005)(486006)(446003)(11346002)(81156014)(81166006)(508600001)(8676002)(476003)(66066001)(71190400001)(31696002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR11MB3555;H:BN8PR11MB3762.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: aquantia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Z0A1FzUFeVbXzpVKztOV1VN+8Efbk7j1p2u0T19DSnrQUd7lIS/lrxmArbTJmjFOhjGtroyebf2ogaVRdHZWskD2FwjjT+W99rXPFNOSVEROf0mfeF2/hfcq/8DXPiCAXJbZyoGfmj4IHBYWW6ER9OCAAqzGeYaW4yjw8wd/U6WXzDM0+nX65sUa8xQkJIn4auT0sPu7SEdCZ0rMs6OrdkTwDGvwbDZyXnhFUDRY/pguw6bXatBbFJ8xafa7IMIQp0SIWnDDlYHqSVUpUgQAnKUOHsc7EQDJcqeSlLnPXDL/lM7KJut/qp7eE1y+xCpccr56eDyOq4pE0Nnuyl090G3gjSP4v/NkF+ysH04HKDoLmDnwG/SZkczm/xZXIASSmfJeL7cvOyeGLl5bjXzfLYLAkXIy5pqQraIR6tiBvUeqehbS4JcUxDSRJl7DpbI8
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D25E79E007E0EC4F8A2DCFA6D49E3C06@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=9BRM8iwifp5rc3DOXo9jMjEw2J8GEyh4mI6AGYoEA0w=;
+        b=Os+IxUORuv4Mc4G8QTjhUY7FsHkZ45PeRc4c9H07jIH2Uzmrrb5mRsAlIWkpSFUPA2
+         B2mQ7GFGeIzhHBzKffuYor0vHyjM6M5p3HDmv3RO2VnrruS+GExAzqnXYsUFwjZmjNJ2
+         8qlwTAxwxhg9wUoO5rSsecs8ecrpJcHLLeyPSkp6G/qISnLfHroxjZOqupnRcWx9ilIt
+         7WZybsxlG4E32iTFJVeyveSyOya7pyPo+vuMnvJI0TMM4H/dJieAYcDoGA7kEr70Irsq
+         No601ExAcKRg/xccmuoubNV7c7dzpRNpHppFFoYG1R7aQlr/E9AlLecqOoCFEARnZ3c+
+         DrXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=9BRM8iwifp5rc3DOXo9jMjEw2J8GEyh4mI6AGYoEA0w=;
+        b=S6PysZv81sg45wbZ61Ul4N2qmw1JeSZOuImvduhmYR3pnT4BKWQQk3O592kJ/+4te4
+         PgqfPgYmWgMxPULloYgjDIHnPNwUchVBXnMDlV57VhTLadYdE5hsQ3nFPgukwQErMjxj
+         MaHVOwsNCn+6qXFwPBa+EIMi530+dW1m3teTItRCMnd95T8JdDGBIZ1mqRqFgphonfC0
+         33UjHTbQTuSJ/QYuOndIj/ilw9cRbQR9fgvRsrxYdsc1sK69IY67+qZ+v0A3CPJhY6ZK
+         E/OYNiYS9APPKAPmjoQMcCanO700I8/Q7mWTE4FIQlsLfpIuc02nq/jBxXxAFB3J+JZ9
+         5C+w==
+X-Gm-Message-State: APjAAAV0rucfjjUz5p0ba6i3NgLQjhY05ciAoWQbPpuU/pHKjIt3TI7G
+        ruDy6R1klXf9LBko8uYXsv2Keb0I0WA=
+X-Google-Smtp-Source: APXvYqzvi98NyWa7+i+1Bk+cLwCdOLQxCQpuATgCHJcIuE+LM0P147ybUskvBqU1LH+5DoieA/KJ5Q==
+X-Received: by 2002:ac8:2ce5:: with SMTP id 34mr3395600qtx.308.1572014751725;
+        Fri, 25 Oct 2019 07:45:51 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:4432:ec84:3b11:57ab:7f98])
+        by smtp.gmail.com with ESMTPSA id l3sm1560594qtc.33.2019.10.25.07.45.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 07:45:50 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 7F658C0AD9; Fri, 25 Oct 2019 11:45:48 -0300 (-03)
+Date:   Fri, 25 Oct 2019 11:45:48 -0300
+From:   'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [PATCHv3 net-next 2/5] sctp: add pf_expose per netns and sock
+ and asoc
+Message-ID: <20191025144548.GC4250@localhost.localdomain>
+References: <cover.1571033544.git.lucien.xin@gmail.com>
+ <f4c99c3d918c0d82f5d5c60abd6abcf381292f1f.1571033544.git.lucien.xin@gmail.com>
+ <20191025032337.GC4326@localhost.localdomain>
+ <995e44322af74c41bbff2c77338f83bf@AcuMS.aculab.com>
+ <20191025132151.GF4326@localhost.localdomain>
+ <715b91a4a86547eb874874eda125c2ba@AcuMS.aculab.com>
 MIME-Version: 1.0
-X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3e500e22-cd9a-41f0-98a8-08d759588a6b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2019 14:35:11.3054
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8GO700TXj2A3xAa7k630GLwd0aXDxz8pephdl4+zkAJvZjs+JJGqOe7L7jYwBHS5BbDCZWm1B8LF+lojmbOUHw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3555
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <715b91a4a86547eb874874eda125c2ba@AcuMS.aculab.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+Pg0KPj4gRm9yIHRoZSBzZXJpZXM6DQo+Pg0KPj4gQWNrZWQtYnk6IFJpY2hhcmQgQ29jaHJh
-biA8cmljaGFyZGNvY2hyYW5AZ21haWwuY29tPg0KPiANCj4gU2VyaWVzIGFwcGxpZWQuDQo+IA0K
-PiBJZ29yLCBwbGVhc2UgYWRkcmVzcyB0aGUgaXNzdWVzIHJlcG9ydGVkIGJ5IHRoZSBrYnVpbGQg
-cm9ib3QuDQoNCkhpIERhdmlkLCB3aWxsIGRvLg0KDQpSaWNoYXJkLCB0aGFua3MgZm9yIHlvdXIg
-cmV2aWV3IQ0KDQpSZWdhcmRzLA0KICBJZ29yDQo=
+On Fri, Oct 25, 2019 at 02:26:57PM +0000, David Laight wrote:
+> From: 'Marcelo Ricardo Leitner'
+> > Sent: 25 October 2019 14:22
+> > On Fri, Oct 25, 2019 at 09:00:45AM +0000, David Laight wrote:
+> > > From: Marcelo Ricardo Leitner
+> > > > Sent: 25 October 2019 04:24
+> > > ...
+> > > > > @@ -5521,8 +5522,16 @@ static int sctp_getsockopt_peer_addr_info(struct sock *sk, int len,
+> > > > >
+> > > > >  	transport = sctp_addr_id2transport(sk, &pinfo.spinfo_address,
+> > > > >  					   pinfo.spinfo_assoc_id);
+> > > > > -	if (!transport)
+> > > > > -		return -EINVAL;
+> > > > > +	if (!transport) {
+> > > > > +		retval = -EINVAL;
+> > > > > +		goto out;
+> > > > > +	}
+> > > > > +
+> > > > > +	if (transport->state == SCTP_PF &&
+> > > > > +	    transport->asoc->pf_expose == SCTP_PF_EXPOSE_DISABLE) {
+> > > > > +		retval = -EACCES;
+> > > > > +		goto out;
+> > > > > +	}
+> > > >
+> > > > As is on v3, this is NOT an UAPI violation. The user has to explicitly
+> > > > set the system or the socket into the disabled state in order to
+> > > > trigger this new check.
+> > >
+> > > Only because the default isn't to be backwards compatible with the
+> >                            ^^^^^
+> > 
+> > You meant "is", right? Then we're agreeing.
+> 
+> No, I meant isn't.
+
+Then you missed this detail in the patch. The default here IS to be
+backwards compatible.
+
+> The application must see a backwards compatible interface unless
+> the application itself requests something different.
+> The sysadmin can't be allowed to change the API seen by old applications.
+
+Disagree. Sysadmins should be able to harden their systems as much as
+they want/need. Yet, if that causes issues with old applications,
+that's on them.
+
+> 
+> AFAICT if the protocol part of PF is enabled (which handles primary path
+> failure better than the older version) and ' transport->state == SCTP_PF'
+> is true then an old application binary will  get a completely unexpected -EACCESS
+> rather than a valid state (out of the old valid states) if it requests 'peer addr_info'.
+> 
+> You cannot assume that just because some sysctl is set (because someone
+> building a distribution suddenly decided it was a 'good idea') that an
+> application binary will not fall in a big heap due to an error condition
+> that couldn't ever happen before.
+
+Agree, but that assumption doesn't have a room here. If the
+distribution decided to harden the system, that's on them. Ditto for
+many many other decisions, like having SELinux policies to block sshd
+to bind only on port 22 and so, or for building the kernel without
+SCTP_COOKIE_HMAC_MD5 because they think it's weak, etc.
+
+  Marcelo
