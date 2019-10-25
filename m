@@ -2,129 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B65E568C
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 00:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2CBBE56BF
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 00:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726100AbfJYWnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 18:43:21 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:34129 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfJYWnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 18:43:21 -0400
-Received: by mail-qk1-f194.google.com with SMTP id f18so3263395qkm.1;
-        Fri, 25 Oct 2019 15:43:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+2E0rH9gnao9G50mrtVlqLqlh+I5+1po+LaLlLD8SKg=;
-        b=ow6OD+X+WKKpGgEPtOwjm2qe2G+iKtXkEaqdglb6vq9KOYlI21/+XhUZkOjswgFUBx
-         oU14TA5Su22Mp/sl1ZutEiIU/0Iq2lBhKq42x5KXIg9L/xfU7jpziTckvX3NPaZBGilu
-         SA472R9szK7nh6vFmfVKdaIZ/WprwD8NwqC4jr166/7yaHoO/rNw6JUFynIchweLR1PA
-         QULbd33+afumdcz4IJ+d8phoY17K/vsSrA2vge1EYcRXa7PDt70lz7eR2UYicQ1o9UbA
-         F4dip0uha/Isy7b4J6WhiJQP2JTaZAJ2KGETgI6/BozJ0EupM3PASsOxqAoIsHy66Nnv
-         Ay3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+2E0rH9gnao9G50mrtVlqLqlh+I5+1po+LaLlLD8SKg=;
-        b=K7ehNDjqEzi0157BMze4DNPsZ1TvOaS4jjoYRAJW0x3hc40HNE4p6j4OGP79ik+t8g
-         7+jl3zSYCZ5z8G7tgUkkNEUksameNdHha4yp2e9BfAsGYg/9gF5pCqmapenZ7dSpQb/8
-         OPy0DZAKSdm9jwStFLofStZ0c4+rO9sb7QM2KeXagiOD1N7OClajEAy5TqBogqDO3Z2M
-         I+tCzT8LOBJlC1TLgi3qNXCx37KOxq3R6qjmyZX0wdgFzVZNJ2H0Vwhu0Sx1vN9khZO3
-         ENydRW5TKcu+dUJ36EO55mBquqVANOlJUnBRouVgMioKipuJP/81xl3f/DJPjPh6CueE
-         AR5Q==
-X-Gm-Message-State: APjAAAUkJwbTlnC6ncMhXoJTgLK+d/oZJlOEErasa5VcuxTs7fNAntgc
-        s55vQuoueWYRWqj05k8AwZBwS2kESS1wKQBCLieeshf/
-X-Google-Smtp-Source: APXvYqwHdfbYgejwUsgPAp1c12ilxYS+VZ4XPhy7iuvoBn5eLwPPsPR2UTTSEji/CBRLcC9l3m3wuPqpU2pT+1OTAUE=
-X-Received: by 2002:a37:4c13:: with SMTP id z19mr5318532qka.449.1572043400366;
- Fri, 25 Oct 2019 15:43:20 -0700 (PDT)
+        id S1726332AbfJYW5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 18:57:14 -0400
+Received: from www62.your-server.de ([213.133.104.62]:55888 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbfJYW5O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 18:57:14 -0400
+Received: from 33.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.33] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iO8W7-00018H-45; Sat, 26 Oct 2019 00:57:11 +0200
+Date:   Sat, 26 Oct 2019 00:57:10 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     Wenbo Zhang <ethercflow@gmail.com>
+Cc:     bpf@vger.kernel.org, yhs@fb.com, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3] bpf: add new helper fd2path for mapping a
+ file descriptor to a pathname
+Message-ID: <20191025225710.GG14547@pc-63.home>
+References: <20191024143856.30562-1-ethercflow@gmail.com>
 MIME-Version: 1.0
-References: <cover.1572010897.git.daniel@iogearbox.net> <8e63f4005c7139d88c5c78e2a19f539b2a1ff988.1572010897.git.daniel@iogearbox.net>
- <CAEf4BzbTKeBabyb3C3Yj5iT8TQC7A7SeUAe=PafaKnqeA4zoVQ@mail.gmail.com> <20191025221530.GD14547@pc-63.home>
-In-Reply-To: <20191025221530.GD14547@pc-63.home>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 25 Oct 2019 15:43:08 -0700
-Message-ID: <CAEf4BzbUk31xTyTEZgoZLaQjhgge=KEiR_GX0RnJDUZVaOu44A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/5] uaccess: Add non-pagefault user-space write function
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191024143856.30562-1-ethercflow@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25613/Fri Oct 25 11:00:25 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 3:15 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On Fri, Oct 25, 2019 at 02:53:07PM -0700, Andrii Nakryiko wrote:
-> > On Fri, Oct 25, 2019 at 1:44 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > >
-> > > Commit 3d7081822f7f ("uaccess: Add non-pagefault user-space read functions")
-> > > missed to add probe write function, therefore factor out a probe_write_common()
-> > > helper with most logic of probe_kernel_write() except setting KERNEL_DS, and
-> > > add a new probe_user_write() helper so it can be used from BPF side.
-> > >
-> > > Again, on some archs, the user address space and kernel address space can
-> > > co-exist and be overlapping, so in such case, setting KERNEL_DS would mean
-> > > that the given address is treated as being in kernel address space.
-> > >
-> > > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> >
-> > LGTM. See an EFAULT comment below, though.
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
-> >
-> > [...]
-> >
-> > > +/**
-> > > + * probe_user_write(): safely attempt to write to a user-space location
-> > > + * @dst: address to write to
-> > > + * @src: pointer to the data that shall be written
-> > > + * @size: size of the data chunk
-> > > + *
-> > > + * Safely write to address @dst from the buffer at @src.  If a kernel fault
-> > > + * happens, handle that and return -EFAULT.
-> > > + */
-> > > +
-> > > +long __weak probe_user_write(void __user *dst, const void *src, size_t size)
-> > > +    __attribute__((alias("__probe_user_write")));
-> >
-> > curious, why is there this dance of probe_user_write alias to
-> > __probe_user_write (and for other pairs of functions as well)?
->
-> Seems done by convention to allow archs to override the __weak marked
-> functions in order to add additional checks and being able to then call
-> into the __ prefixed variant.
->
-> > > +long __probe_user_write(void __user *dst, const void *src, size_t size)
-> > > +{
-> > > +       long ret = -EFAULT;
-> >
-> > This initialization is not necessary, is it? Similarly in
-> > __probe_user_read higher in this file.
->
-> Not entirely sure what you mean. In both there's access_ok() check before
-> invoking the common helper.
+On Thu, Oct 24, 2019 at 10:38:56AM -0400, Wenbo Zhang wrote:
+[...]
+> index 2c2c29b49845..d73314a7e674 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1082,6 +1082,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+>  extern const struct bpf_func_proto bpf_strtol_proto;
+>  extern const struct bpf_func_proto bpf_strtoul_proto;
+>  extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> +extern const struct bpf_func_proto bpf_fd2path_proto;
 
-ah, right, if, yeah, never mind then.
+Don't think we need to expose it here. More below.
 
->
-> > > +       mm_segment_t old_fs = get_fs();
-> > > +
-> > > +       set_fs(USER_DS);
-> > > +       if (access_ok(dst, size))
-> > > +               ret = probe_write_common(dst, src, size);
-> > > +       set_fs(old_fs);
-> > > +
-> > > +       return ret;
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(probe_user_write);
-> > >
-> > >  /**
-> > >   * strncpy_from_unsafe: - Copy a NUL terminated string from unsafe address.
-> > > --
-> > > 2.21.0
-> > >
+>  /* Shared helpers among cBPF and eBPF. */
+>  void bpf_user_rnd_init_once(void);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 4af8b0819a32..fdb37740951f 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2773,6 +2773,15 @@ union bpf_attr {
+>   *
+>   * 		This helper is similar to **bpf_perf_event_output**\ () but
+>   * 		restricted to raw_tracepoint bpf programs.
+> + *
+> + * int bpf_fd2path(char *path, u32 size, int fd)
+> + *	Description
+> + *		Get **file** atrribute from the current task by *fd*, then call
+> + *		**d_path** to get it's absolute path and copy it as string into
+> + *		*path* of *size*. The **path** also support pseudo filesystems
+> + *		(whether or not it can be mounted). The *size* must be strictly
+> + *		positive. On success, the helper makes sure that the *path* is
+> + *		NUL-terminated. On failure, it is filled with zeroes.
+>   * 	Return
+>   * 		0 on success, or a negative error in case of failure.
+
+The 'Return' bits are now removed from prior helper description?
+
+>   */
+> @@ -2888,7 +2897,8 @@ union bpf_attr {
+>  	FN(sk_storage_delete),		\
+>  	FN(send_signal),		\
+>  	FN(tcp_gen_syncookie),		\
+> -	FN(skb_output),
+> +	FN(skb_output),			\
+> +	FN(fd2path),
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 673f5d40a93e..6b44ed804280 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2079,6 +2079,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+>  const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+>  const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+>  const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> +const struct bpf_func_proto bpf_fd2path_proto __weak;
+
+Ditto, not needed ...
+
+>  const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+>  {
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 5e28718928ca..8e6b4189a456 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -487,3 +487,39 @@ const struct bpf_func_proto bpf_strtoul_proto = {
+>  	.arg4_type	= ARG_PTR_TO_LONG,
+>  };
+>  #endif
+> +
+> +BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
+> +{
+> +	struct fd f;
+> +	char *p;
+> +	int ret = -EINVAL;
+> +
+> +	f = fdget_raw(fd);
+
+What's the rationale for using the fdget_raw variant?
+
+> +	if (!f.file)
+> +		goto error;
+> +
+> +	p = d_path(&f.file->f_path, dst, size);
+> +	if (IS_ERR_OR_NULL(p)) {
+> +		ret = PTR_ERR(p);
+> +		goto error;
+> +	}
+> +
+> +	ret = strlen(p);
+> +	memmove(dst, p, ret);
+> +	dst[ret] = '\0';
+> +	goto end;
+> +
+> +error:
+> +	memset(dst, '0', size);
+> +end:
+> +	return ret;
+
+Where is fdput(f) in here?
+
+> +}
+> +
+> +const struct bpf_func_proto bpf_fd2path_proto = {
+> +	.func       = bpf_fd2path,
+> +	.gpl_only   = true,
+> +	.ret_type   = RET_INTEGER,
+> +	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
+> +	.arg2_type  = ARG_CONST_SIZE,
+> +	.arg3_type  = ARG_ANYTHING,
+> +};
+
+... as you can simply add the helper into kernel/trace/bpf_trace.c right
+away if it's only used form there anyway and make bpf_fd2path_proto static.
+
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index c3240898cc44..26f65abdb249 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -735,6 +735,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  #endif
+>  	case BPF_FUNC_send_signal:
+>  		return &bpf_send_signal_proto;
+> +	case BPF_FUNC_fd2path:
+> +		return &bpf_fd2path_proto;
+>  	default:
+>  		return NULL;
+>  	}
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index 4af8b0819a32..fdb37740951f 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -2773,6 +2773,15 @@ union bpf_attr {
+>   *
+>   * 		This helper is similar to **bpf_perf_event_output**\ () but
+>   * 		restricted to raw_tracepoint bpf programs.
+> + *
+> + * int bpf_fd2path(char *path, u32 size, int fd)
+> + *	Description
+> + *		Get **file** atrribute from the current task by *fd*, then call
+> + *		**d_path** to get it's absolute path and copy it as string into
+> + *		*path* of *size*. The **path** also support pseudo filesystems
+> + *		(whether or not it can be mounted). The *size* must be strictly
+> + *		positive. On success, the helper makes sure that the *path* is
+> + *		NUL-terminated. On failure, it is filled with zeroes.
+>   * 	Return
+>   * 		0 on success, or a negative error in case of failure.
+>   */
+> @@ -2888,7 +2897,8 @@ union bpf_attr {
+>  	FN(sk_storage_delete),		\
+>  	FN(send_signal),		\
+>  	FN(tcp_gen_syncookie),		\
+> -	FN(skb_output),
+> +	FN(skb_output),			\
+> +	FN(fd2path),
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 933f39381039..32883cca7ea7 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+
+Would be good to split out selftests into a dedicated patch.
+
+Thanks,
+Daniel
