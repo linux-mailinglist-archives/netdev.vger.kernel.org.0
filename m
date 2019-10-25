@@ -2,108 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44B5EE5628
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 23:52:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79847E562A
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 23:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726266AbfJYVww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 17:52:52 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:42656 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbfJYVww (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 17:52:52 -0400
-Received: by mail-il1-f195.google.com with SMTP id o16so3091835ilq.9
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 14:52:51 -0700 (PDT)
+        id S1726283AbfJYVxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 17:53:19 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33952 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbfJYVxT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 17:53:19 -0400
+Received: by mail-qt1-f196.google.com with SMTP id e14so5550590qto.1;
+        Fri, 25 Oct 2019 14:53:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=U/XWgTNc45a7TLQZXtrXyswOpLPgr5RcFtG6hODuS8E=;
-        b=gfxNYywipcWP7EuMxw2bJwVSbSfONWb/fDvOSG/um+JMb1KylliAil3I74JAnBhJd3
-         YcX15Tz083jX4tdAA8du5dtVof7n6Dg9KxPVMNFLDTCccCtZkYHEKaddF/NhPkY3wNv+
-         INvwZLCGnSpbp53B1x+dKWvjh2VnYg0O5C6u16qIuZlaTfCq0GP6VaZyN9FihLXp6nr/
-         G0rT0FirIK7YTQwWGX5f8syMkutnFL/iBP4RZ48QjJYVa8FXlQGGY1EL+NrbohYH21vI
-         cvRjha5HlhrxEGj7vUiBPhKBZS2B+vQC2nF25c2JT5zHER8oKXFYYSLqbuxIawIs5WAY
-         YQ7A==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=knNmyzgenjCtHaLe2L9fLzRzUUoNvAmF7VPjiqMDdwo=;
+        b=d8z4LnRIlYYrw2omzpxTMIT0LRNCehzf1c99bA9TCM1Z11Gz1P6Gum9DQLhqvegRH3
+         5rxvFEK3gI2h84VdVOkhiNP0E9+hDR/phSe1MiADTt4qaJet+kMnFsIakmLQeDPyIM0p
+         L7sB3NFzQqKpZ14eT54StGv54Oer/VeXvg8x1UmB3CJ7yFDo/4wumLisWTtIwtNv/4LV
+         c+iGFmdhufy85BSQy748axdhGTaBFXiqJ4gRXMJTMZRYKQsYECEw0Uajio9FqhvVNH/Y
+         XQJsviZDz8a7SPfxeVrTR6yOWer8fjsdcG5AMWS9tEvcGrBPA/3poSCIpxnDHKUB9zwX
+         WUnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=U/XWgTNc45a7TLQZXtrXyswOpLPgr5RcFtG6hODuS8E=;
-        b=ohMe0YPu6OyeSzI+5do2QWev6rbzul6w4tv8lCWJREWWloRM19CTNgGqV//ePFrOr9
-         AByjaWv7ZmLf21gJIgcpk/yd5+z1JSADzxladAtmgo4MZ6Wx1R3vu7fDeJ5gL8RyOZdz
-         DO1ulopq/9uWPc9iHY1g3TFClQICSzbKTOdbC0859/Iuf6BqEpLk9OzJTyllZaj6sBbp
-         eGx4CwYfs6NscLbusx4rrsSQ4pl1FX3Ry3CwD/RMMHtMxo/cX7z5zEudkdaN2e2wxC5w
-         vsjVGn8xpG3sA7jE4T7l50yT+o/4ArcHduRlmQEq+G+pwnLcc1z+VpVZJeGW78yyOuh0
-         CbDg==
-X-Gm-Message-State: APjAAAXrCpRhFChDHB9rGI/lBRaddoj7PRIlMeQnMTpFaD3041dPssKu
-        S3XmGRsijW3y0Wm+Vv4ZIyO9IA==
-X-Google-Smtp-Source: APXvYqxCwi/ReIsPZGGXbZwMUBZeL45jhvs7ZUToBFgZfin/2LfyoF+n0g9dwev+ybd++QxQ2GWv6g==
-X-Received: by 2002:a92:d211:: with SMTP id y17mr7033417ily.28.1572040371527;
-        Fri, 25 Oct 2019 14:52:51 -0700 (PDT)
-Received: from [10.0.0.194] ([64.26.149.125])
-        by smtp.googlemail.com with ESMTPSA id t74sm499001ili.17.2019.10.25.14.52.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Oct 2019 14:52:48 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
- by netlink flag
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "mleitner@redhat.com" <mleitner@redhat.com>,
-        "dcaratti@redhat.com" <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-References: <20191022141804.27639-1-vladbu@mellanox.com>
- <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
- <vbf7e4vy5nq.fsf@mellanox.com>
- <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
- <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
- <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
- <vbftv7wuciu.fsf@mellanox.com>
- <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
- <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
- <vbfsgngua3p.fsf@mellanox.com>
- <7488b589-4e34-d94e-e8e1-aa8ab773891e@mojatatu.com>
- <43d4c598-88eb-27b3-a4bd-c777143acf89@mojatatu.com>
- <vbfpniku7pr.fsf@mellanox.com>
- <07a6ceec-3a87-44cb-f92d-6a6d9d9bef81@mojatatu.com>
- <vbfmudou5qp.fsf@mellanox.com>
- <894e7d98-83b0-2eaf-000e-0df379e2d1f4@mojatatu.com>
- <d2ec62c3-afab-8a55-9329-555fc3ff23f0@mojatatu.com>
- <710bf705-6a58-c158-4fdc-9158dfa34ed3@mojatatu.com>
-Message-ID: <fcd34a45-13ac-18d2-b01a-b0e51663f95d@mojatatu.com>
-Date:   Fri, 25 Oct 2019 17:52:47 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=knNmyzgenjCtHaLe2L9fLzRzUUoNvAmF7VPjiqMDdwo=;
+        b=URxrhN8LJmtuNr7NftdkdRMaVUN9dTRiVf0ucBo3Jj2DEbFcfvkQr5KSQ2pX0IXoEL
+         EbVZ31Ix9VYvuzcVREBAQmqIO8c84HKOv6QJhqv1DWgA92qkTZSp6p2lSGAv4kcJEW4s
+         876DMnvVvtk0q0dhdHMt3czquKHxa5nV7JyOUW7FUmz628M3YvvDhEZ3wQOspJwwHp1+
+         +pOx88diGmNxpQ4yF0aVdVQEYvBKXVhg94bRKXuhaP3qS9oenf3JcUMgigzAeJoarszG
+         cNicD5Y/BkDlcDRUgiZS2XqEQEnQvEQuhiU6CZCNyge3uRbnEftA6P/Bn+SUBwMyUU43
+         8XJQ==
+X-Gm-Message-State: APjAAAUE+DgkNfnkC9CSsrLLCSusH9nTmwjSP5/VYW84NHMzWx8Jy3/d
+        aFg44rHvnDiKkbN3FkCSSQDcLUvfFwq5vCEKQqMv/nww
+X-Google-Smtp-Source: APXvYqx57aEGpEOOpy8pwCyf2KtxfRQ69VP99y8xEk6oBB4hWeD6HR+ZOO5qZL++VLHrDWvU1G1u7Ymrk4FJbmh0KCE=
+X-Received: by 2002:ad4:4e4a:: with SMTP id eb10mr4344615qvb.228.1572040397992;
+ Fri, 25 Oct 2019 14:53:17 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <710bf705-6a58-c158-4fdc-9158dfa34ed3@mojatatu.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <cover.1572010897.git.daniel@iogearbox.net> <8e63f4005c7139d88c5c78e2a19f539b2a1ff988.1572010897.git.daniel@iogearbox.net>
+In-Reply-To: <8e63f4005c7139d88c5c78e2a19f539b2a1ff988.1572010897.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 25 Oct 2019 14:53:07 -0700
+Message-ID: <CAEf4BzbTKeBabyb3C3Yj5iT8TQC7A7SeUAe=PafaKnqeA4zoVQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] uaccess: Add non-pagefault user-space write function
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-10-25 5:10 p.m., Jamal Hadi Salim wrote:
-> On 2019-10-25 5:05 p.m., Jamal Hadi Salim wrote:
->> +    if (!root_flags && tb[TCA_ACT_ROOT_FLAGS]) {
->> +        rf = nla_get_bitfield32(tb[TCA_ACT_ROOT_FLAGS]);
->> +        root_flags = &rf;
->> +    }
-> 
-> 
-> 
-> !root_flags check doesnt look right.
-> Hopefully it makes more sense now....
-> 
+On Fri, Oct 25, 2019 at 1:44 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Commit 3d7081822f7f ("uaccess: Add non-pagefault user-space read functions")
+> missed to add probe write function, therefore factor out a probe_write_common()
+> helper with most logic of probe_kernel_write() except setting KERNEL_DS, and
+> add a new probe_user_write() helper so it can be used from BPF side.
+>
+> Again, on some archs, the user address space and kernel address space can
+> co-exist and be overlapping, so in such case, setting KERNEL_DS would mean
+> that the given address is treated as being in kernel address space.
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
 
-For completion:
-It compiled ;->
+LGTM. See an EFAULT comment below, though.
 
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-cheers,
-jamal
+>  include/linux/uaccess.h | 12 +++++++++++
+>  mm/maccess.c            | 45 +++++++++++++++++++++++++++++++++++++----
+>  2 files changed, 53 insertions(+), 4 deletions(-)
+>
+> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+> index e47d0522a1f4..86dcf2894672 100644
+> --- a/include/linux/uaccess.h
+> +++ b/include/linux/uaccess.h
+> @@ -337,6 +337,18 @@ extern long __probe_user_read(void *dst, const void __user *src, size_t size);
+>  extern long notrace probe_kernel_write(void *dst, const void *src, size_t size);
+>  extern long notrace __probe_kernel_write(void *dst, const void *src, size_t size);
+>
+> +/*
+> + * probe_user_write(): safely attempt to write to a location in user space
+> + * @dst: address to write to
+> + * @src: pointer to the data that shall be written
+> + * @size: size of the data chunk
+> + *
+> + * Safely write to address @dst from the buffer at @src.  If a kernel fault
+> + * happens, handle that and return -EFAULT.
+> + */
+> +extern long notrace probe_user_write(void __user *dst, const void *src, size_t size);
+> +extern long notrace __probe_user_write(void __user *dst, const void *src, size_t size);
+> +
+>  extern long strncpy_from_unsafe(char *dst, const void *unsafe_addr, long count);
+>  extern long strncpy_from_unsafe_user(char *dst, const void __user *unsafe_addr,
+>                                      long count);
+> diff --git a/mm/maccess.c b/mm/maccess.c
+> index d065736f6b87..2d3c3d01064c 100644
+> --- a/mm/maccess.c
+
+[...]
+
+>
+> +/**
+> + * probe_user_write(): safely attempt to write to a user-space location
+> + * @dst: address to write to
+> + * @src: pointer to the data that shall be written
+> + * @size: size of the data chunk
+> + *
+> + * Safely write to address @dst from the buffer at @src.  If a kernel fault
+> + * happens, handle that and return -EFAULT.
+> + */
+> +
+> +long __weak probe_user_write(void __user *dst, const void *src, size_t size)
+> +    __attribute__((alias("__probe_user_write")));
+
+curious, why is there this dance of probe_user_write alias to
+__probe_user_write (and for other pairs of functions as well)?
+
+> +
+> +long __probe_user_write(void __user *dst, const void *src, size_t size)
+> +{
+> +       long ret = -EFAULT;
+
+This initialization is not necessary, is it? Similarly in
+__probe_user_read higher in this file.
+
+> +       mm_segment_t old_fs = get_fs();
+> +
+> +       set_fs(USER_DS);
+> +       if (access_ok(dst, size))
+> +               ret = probe_write_common(dst, src, size);
+> +       set_fs(old_fs);
+> +
+> +       return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(probe_user_write);
+>
+>  /**
+>   * strncpy_from_unsafe: - Copy a NUL terminated string from unsafe address.
+> --
+> 2.21.0
+>
