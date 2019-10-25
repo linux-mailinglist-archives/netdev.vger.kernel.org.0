@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A38CE4E44
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2999E4E33
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502845AbfJYOGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 10:06:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49958 "EHLO mail.kernel.org"
+        id S2505198AbfJYNz5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 09:55:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50058 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505167AbfJYNzv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:51 -0400
+        id S2505182AbfJYNz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:56 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E1375222C2;
-        Fri, 25 Oct 2019 13:55:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C03AB222C9;
+        Fri, 25 Oct 2019 13:55:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011750;
-        bh=Sxa8wRC11rWsINlFZLN/cLO++PkBrFEDiIWX5gjlWZs=;
+        s=default; t=1572011754;
+        bh=rlocA8g38g9I8z4t3d/Svrv3R3ZY2CKk7/WiK2gEcvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rS6Hy1jAA/9RoIAFasqum2VgS6SdoOfmJkhamIzDObeBQW5l6Y4ZkLT3BiS/7KeiX
-         r7WWGqf38QYBUaQWdWLXpwOsgIOTrkVwMGa42Ak4Hgaz0mZD9kwI2nsTNFkslX/lal
-         qscsJbdzkRyrO1yDRVO/EiX6zaZmRjRzU1GO2hRM=
+        b=PCqDzIM9KKygW74BtKRotsK9mtY07fORKLLuSlE8r5cvktIycnd7OKvjBCT38Bh6A
+         AyE0/UeTZh4V3KpxHRJKCxkO/uui5aSeJCt7DG+PPTKdSE5/OS1duPjnGT3okSbm38
+         MWqaTWHKz3l/9BEFSSAM48OdeKtI/AahMo95DuFM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 29/33] ipv6: Handle race in addrconf_dad_work
-Date:   Fri, 25 Oct 2019 09:55:01 -0400
-Message-Id: <20191025135505.24762-29-sashal@kernel.org>
+Cc:     Xin Long <lucien.xin@gmail.com>, Ying Xu <yinxu@redhat.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 31/33] sctp: add chunks to sk_backlog when the newsk sk_socket is not set
+Date:   Fri, 25 Oct 2019 09:55:03 -0400
+Message-Id: <20191025135505.24762-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -45,93 +46,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-[ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
+[ Upstream commit 819be8108fded0b9e710bbbf81193e52f7bab2f7 ]
 
-Rajendra reported a kernel panic when a link was taken down:
+This patch is to fix a NULL-ptr deref in selinux_socket_connect_helper:
 
-[ 6870.263084] BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
-[ 6870.271856] IP: [<ffffffff8efc5764>] __ipv6_ifa_notify+0x154/0x290
+  [...] kasan: GPF could be caused by NULL-ptr deref or user memory access
+  [...] RIP: 0010:selinux_socket_connect_helper+0x94/0x460
+  [...] Call Trace:
+  [...]  selinux_sctp_bind_connect+0x16a/0x1d0
+  [...]  security_sctp_bind_connect+0x58/0x90
+  [...]  sctp_process_asconf+0xa52/0xfd0 [sctp]
+  [...]  sctp_sf_do_asconf+0x785/0x980 [sctp]
+  [...]  sctp_do_sm+0x175/0x5a0 [sctp]
+  [...]  sctp_assoc_bh_rcv+0x285/0x5b0 [sctp]
+  [...]  sctp_backlog_rcv+0x482/0x910 [sctp]
+  [...]  __release_sock+0x11e/0x310
+  [...]  release_sock+0x4f/0x180
+  [...]  sctp_accept+0x3f9/0x5a0 [sctp]
+  [...]  inet_accept+0xe7/0x720
 
-<snip>
+It was caused by that the 'newsk' sk_socket was not set before going to
+security sctp hook when processing asconf chunk with SCTP_PARAM_ADD_IP
+or SCTP_PARAM_SET_PRIMARY:
 
-[ 6870.570501] Call Trace:
-[ 6870.573238] [<ffffffff8efc58c6>] ? ipv6_ifa_notify+0x26/0x40
-[ 6870.579665] [<ffffffff8efc98ec>] ? addrconf_dad_completed+0x4c/0x2c0
-[ 6870.586869] [<ffffffff8efe70c6>] ? ipv6_dev_mc_inc+0x196/0x260
-[ 6870.593491] [<ffffffff8efc9c6a>] ? addrconf_dad_work+0x10a/0x430
-[ 6870.600305] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-[ 6870.606732] [<ffffffff8ea93a7a>] ? process_one_work+0x18a/0x430
-[ 6870.613449] [<ffffffff8ea93d6d>] ? worker_thread+0x4d/0x490
-[ 6870.619778] [<ffffffff8ea93d20>] ? process_one_work+0x430/0x430
-[ 6870.626495] [<ffffffff8ea99dd9>] ? kthread+0xd9/0xf0
-[ 6870.632145] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
-[ 6870.638573] [<ffffffff8ea99d00>] ? kthread_park+0x60/0x60
-[ 6870.644707] [<ffffffff8f01ae77>] ? ret_from_fork+0x57/0x70
-[ 6870.650936] Code: 31 c0 31 d2 41 b9 20 00 08 02 b9 09 00 00 0
+  inet_accept()->
+    sctp_accept():
+      lock_sock():
+          lock listening 'sk'
+                                          do_softirq():
+                                            sctp_rcv():  <-- [1]
+                                                asconf chunk arrives and
+                                                enqueued in 'sk' backlog
+      sctp_sock_migrate():
+          set asoc's sk to 'newsk'
+      release_sock():
+          sctp_backlog_rcv():
+            lock 'newsk'
+            sctp_process_asconf()  <-- [2]
+            unlock 'newsk'
+    sock_graft():
+        set sk_socket  <-- [3]
 
-addrconf_dad_work is kicked to be scheduled when a device is brought
-up. There is a race between addrcond_dad_work getting scheduled and
-taking the rtnl lock and a process taking the link down (under rtnl).
-The latter removes the host route from the inet6_addr as part of
-addrconf_ifdown which is run for NETDEV_DOWN. The former attempts
-to use the host route in ipv6_ifa_notify. If the down event removes
-the host route due to the race to the rtnl, then the BUG listed above
-occurs.
+As it shows, at [1] the asconf chunk would be put into the listening 'sk'
+backlog, as accept() was holding its sock lock. Then at [2] asconf would
+get processed with 'newsk' as asoc's sk had been set to 'newsk'. However,
+'newsk' sk_socket is not set until [3], while selinux_sctp_bind_connect()
+would deref it, then kernel crashed.
 
-This scenario does not occur when the ipv6 address is not kept
-(net.ipv6.conf.all.keep_addr_on_down = 0) as addrconf_ifdown sets the
-state of the ifp to DEAD. Handle when the addresses are kept by checking
-IF_READY which is reset by addrconf_ifdown.
+Here to fix it by adding the chunk to sk_backlog until newsk sk_socket is
+set when .accept() is done.
 
-The 'dead' flag for an inet6_addr is set only under rtnl, in
-addrconf_ifdown and it means the device is getting removed (or IPv6 is
-disabled). The interesting cases for changing the idev flag are
-addrconf_notify (NETDEV_UP and NETDEV_CHANGE) and addrconf_ifdown
-(reset the flag). The former does not have the idev lock - only rtnl;
-the latter has both. Based on that the existing dead + IF_READY check
-can be moved to right after the rtnl_lock in addrconf_dad_work.
+Note that sk->sk_socket can be NULL when the sock is closed, so SOCK_DEAD
+flag is also needed to check in sctp_newsk_ready().
 
-Fixes: f1705ec197e7 ("net: ipv6: Make address flushing on ifdown optional")
-Reported-by: Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>
-Signed-off-by: David Ahern <dsahern@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Thanks to Ondrej for reviewing the code.
+
+Fixes: d452930fd3b9 ("selinux: Add SCTP support")
+Reported-by: Ying Xu <yinxu@redhat.com>
+Suggested-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Acked-by: Neil Horman <nhorman@tuxdriver.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/addrconf.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ include/net/sctp/sctp.h |  5 +++++
+ net/sctp/input.c        | 12 +++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 4c87594d1389d..10093b8dd5483 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4032,6 +4032,12 @@ static void addrconf_dad_work(struct work_struct *w)
+diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
+index 5d60f13d2347b..3ab5c6bbb90bd 100644
+--- a/include/net/sctp/sctp.h
++++ b/include/net/sctp/sctp.h
+@@ -610,4 +610,9 @@ static inline __u32 sctp_min_frag_point(struct sctp_sock *sp, __u16 datasize)
+ 	return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+ }
  
- 	rtnl_lock();
- 
-+	/* check if device was taken down before this delayed work
-+	 * function could be canceled
-+	 */
-+	if (idev->dead || !(idev->if_flags & IF_READY))
-+		goto out;
++static inline bool sctp_newsk_ready(const struct sock *sk)
++{
++	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
++}
 +
- 	spin_lock_bh(&ifp->lock);
- 	if (ifp->state == INET6_IFADDR_STATE_PREDAD) {
- 		action = DAD_BEGIN;
-@@ -4077,11 +4083,6 @@ static void addrconf_dad_work(struct work_struct *w)
- 		goto out;
+ #endif /* __net_sctp_h__ */
+diff --git a/net/sctp/input.c b/net/sctp/input.c
+index 1008cdc44dd61..156e24ad54ea4 100644
+--- a/net/sctp/input.c
++++ b/net/sctp/input.c
+@@ -243,7 +243,7 @@ int sctp_rcv(struct sk_buff *skb)
+ 		bh_lock_sock(sk);
+ 	}
  
- 	write_lock_bh(&idev->lock);
--	if (idev->dead || !(idev->if_flags & IF_READY)) {
--		write_unlock_bh(&idev->lock);
--		goto out;
--	}
--
- 	spin_lock(&ifp->lock);
- 	if (ifp->state == INET6_IFADDR_STATE_DEAD) {
- 		spin_unlock(&ifp->lock);
+-	if (sock_owned_by_user(sk)) {
++	if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+ 		if (sctp_add_backlog(sk, skb)) {
+ 			bh_unlock_sock(sk);
+ 			sctp_chunk_free(chunk);
+@@ -321,7 +321,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+ 		local_bh_disable();
+ 		bh_lock_sock(sk);
+ 
+-		if (sock_owned_by_user(sk)) {
++		if (sock_owned_by_user(sk) || !sctp_newsk_ready(sk)) {
+ 			if (sk_add_backlog(sk, skb, sk->sk_rcvbuf))
+ 				sctp_chunk_free(chunk);
+ 			else
+@@ -336,7 +336,13 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
+ 		if (backloged)
+ 			return 0;
+ 	} else {
+-		sctp_inq_push(inqueue, chunk);
++		if (!sctp_newsk_ready(sk)) {
++			if (!sk_add_backlog(sk, skb, sk->sk_rcvbuf))
++				return 0;
++			sctp_chunk_free(chunk);
++		} else {
++			sctp_inq_push(inqueue, chunk);
++		}
+ 	}
+ 
+ done:
 -- 
 2.20.1
 
