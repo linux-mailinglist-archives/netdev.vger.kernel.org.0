@@ -2,87 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99509E4432
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:15:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2B2CE443E
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 09:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406662AbfJYHPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 03:15:35 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:30376 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2406555AbfJYHPf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 03:15:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571987734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rTRslYrHSdW7igFaHUholgbG5slSK/amyRgWotfdeUo=;
-        b=IVNls4wTx4n+83JlWuQEL6JqJSL44Y9dmiQrNEjlDIvHvIcXy4xGHhrALANSUuNCYmD052
-        wZvn971QiCxUDOumbG++do1pCAgiMFtZRW/AIkmUHU8YAj6bP0vzP6JzbKo17RJFgmj7Qk
-        nRm9R36bcrLlrz+S/hl2oK9wI3gjdkQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-169-g7UiYoUTNgKgioDVGFZYkQ-1; Fri, 25 Oct 2019 03:15:30 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 19FC71005509;
-        Fri, 25 Oct 2019 07:15:29 +0000 (UTC)
-Received: from krava (unknown [10.43.17.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 1F5AC5D9CA;
-        Fri, 25 Oct 2019 07:15:26 +0000 (UTC)
-Date:   Fri, 25 Oct 2019 09:15:26 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>
-Subject: Re: [PATCH] bpftool: Allow to read btf as raw data
-Message-ID: <20191025071526.GB31679@krava>
-References: <20191024133025.10691-1-jolsa@kernel.org>
- <20191024105537.0c824bcb@cakuba.hsd1.ca.comcast.net>
+        id S2406760AbfJYHTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 03:19:02 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45204 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733140AbfJYHTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 03:19:01 -0400
+Received: by mail-pg1-f194.google.com with SMTP id r1so926486pgj.12;
+        Fri, 25 Oct 2019 00:19:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1FkSDn5KxWB0OA8DzTKMRxKr6IBPdsqPwb0nb2bPS14=;
+        b=ANznHP9cZqICAlgei46L0uQIvhy5V2xZs2Hcwc6DClSKSNG97nTKhIICGs/k9fpwW0
+         1Eczy2TDDXQoBlUohhzDJ/B2CV7dPqfDVdmEdIZfS7auZefEtL9KkDPtV+SegHnliHXb
+         NqMIOYcacdP0RyUMYwjescgzbl2PLV9/gE/46xuuLraGD56o4SpKwQcsI7iYW02iuMPy
+         JGoQAmL1NulMEwFEugRqTVTyfMkXZWEkq7uHzevKjbvMFodz+CjAdGB0l0OWwEHX6Jik
+         HrmcEaav4ux/PdtrAiZd5O3g1u0KOqeehEhqmBvTWLBaTDAlpBho+fW3FOHL+Ldgdx+B
+         BU4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1FkSDn5KxWB0OA8DzTKMRxKr6IBPdsqPwb0nb2bPS14=;
+        b=iMciCn6+R62fcPAmA11XZoD0+26plqhqqfWf3nbW7G/4zfuih0Q+nSPK4a33CQsUjr
+         K28ZgQif1Xu7Jo/YmewYwSyw/+NazHlbHJgsjfTXJoYbTHIHXg8TxKcAcdrnw9MrpGyW
+         /ZiPzjiP+WnSbYg+f7FdsV5lkR6yL+9ScNC2n9MIaAmoWErlHBBpfRxE4D1XztlMiT9v
+         pvkgsLwvxkA3IBWoqAdPiyz7EU1302OJNt/Z37cLu5crI8EuUt5eIiHd5PLoaKH1SODt
+         bHeQUS4cZ/Afr4KG2JFZxOPgeFSW2pqTuLuM93zUfF5offSRiy2LJGLShH7vju1Jv0xf
+         u4Vg==
+X-Gm-Message-State: APjAAAXO2tdCepAJF2ygc4tNe9PtnupZPWmBTyW1ZvJEsAfcThYX2UJq
+        OiPDqtuJtaNrYaXtPTzvfVFpu8JbTfA=
+X-Google-Smtp-Source: APXvYqxOg5k7FmVI4YN3eqoYHqnhhoI84rxFyZDHsG/vXX9axkZpOP0euclDuDBBRMHiLQZX2hzp+w==
+X-Received: by 2002:a63:ab49:: with SMTP id k9mr179745pgp.34.1571987940114;
+        Fri, 25 Oct 2019 00:19:00 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com (fmdmzpr04-ext.fm.intel.com. [192.55.55.39])
+        by smtp.gmail.com with ESMTPSA id t27sm1165065pfq.169.2019.10.25.00.18.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 00:18:59 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        jakub.kicinski@netronome.com
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        toke@redhat.com
+Subject: [PATCH bpf-next v2 0/2] xsk: XSKMAP lookup improvements
+Date:   Fri, 25 Oct 2019 09:18:39 +0200
+Message-Id: <20191025071842.7724-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20191024105537.0c824bcb@cakuba.hsd1.ca.comcast.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: g7UiYoUTNgKgioDVGFZYkQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 10:55:37AM -0700, Jakub Kicinski wrote:
-> On Thu, 24 Oct 2019 15:30:25 +0200, Jiri Olsa wrote:
-> > The bpftool interface stays the same, but now it's possible
-> > to run it over BTF raw data, like:
-> >=20
-> >   $ bpftool btf dump file /sys/kernel/btf/vmlinux
-> >   [1] INT '(anon)' size=3D4 bits_offset=3D0 nr_bits=3D32 encoding=3D(no=
-ne)
-> >   [2] INT 'long unsigned int' size=3D8 bits_offset=3D0 nr_bits=3D64 enc=
-oding=3D(none)
-> >   [3] CONST '(anon)' type_id=3D2
-> >=20
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> > v3 changes:
-> >  - fix title
-> >=20
-> > v2 changes:
-> >  - added is_btf_raw to find out which btf__parse_* function to call
-> >  - changed labels and error propagation in btf__parse_raw
-> >  - drop the err initialization, which is not needed under this change
->=20
->=20
-> Aw, this is v3? Looks like I replied to the older now, such confusion :)
+Hi,
 
-yea, that went well.. sry, missed the v3 in title
+This small set consists of two patches from Maciej and myself which
+are optimizing the XSKMAP lookups.  In the first patch, the sockets
+are moved to be stored at the tail of the struct xsk_map. The second
+patch, Maciej implements map_gen_lookup() for XSKMAP.
 
-jirka
+Based on the XDP program from tools/lib/bpf/xsk.c where
+bpf_map_lookup_elem() is explicitly called, this work yields the 5%
+improvement for xdpsock's rxdrop scenario.
+
+Cheers,
+Björn and Maciej
+
+v1->v2: * Change size/cost to size_t and use {struct, array}_size
+          where appropriate. (Jakub)
+
+Björn Töpel (1):
+  xsk: store struct xdp_sock as a flexible array member of the XSKMAP
+
+Maciej Fijalkowski (1):
+  bpf: implement map_gen_lookup() callback for XSKMAP
+
+ kernel/bpf/xskmap.c | 72 +++++++++++++++++++++++++--------------------
+ 1 file changed, 40 insertions(+), 32 deletions(-)
+
+-- 
+2.20.1
 
