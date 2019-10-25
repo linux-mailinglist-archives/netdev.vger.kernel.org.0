@@ -2,132 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A648CE4516
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:01:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4794BE451B
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 10:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437589AbfJYIBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 04:01:55 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37775 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2437583AbfJYIBy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:01:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1571990513;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=otCDV1QKx3d7IK+sWoEGFb/N0+D+qi80epo1tUZLYdM=;
-        b=AtqC8MCWMDWZTD854HIWbUeizBluIKajJr6IDeSl/XUgGggungQbTnwwBlO8qrn6Z+fWPd
-        WYyfz4al1ixvxUOc2l2WfEF2gEVtVAAbS1ha5aOIJ8GlOTSP5da8w1CSatndfIGcFjg3BT
-        bcCfojpcxswdE7uUo2tH+1WUWjiHrwI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-259-ETcj03UuP5WCRQnyylt_tg-1; Fri, 25 Oct 2019 04:01:50 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2DE76107AD31;
-        Fri, 25 Oct 2019 08:01:47 +0000 (UTC)
-Received: from krava (unknown [10.43.17.61])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 1BCBF60852;
-        Fri, 25 Oct 2019 08:01:42 +0000 (UTC)
-Date:   Fri, 25 Oct 2019 10:01:42 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v3 2/9] perf tools: splice events onto evlist even on
- error
-Message-ID: <20191025080142.GF31679@krava>
-References: <20191023005337.196160-1-irogers@google.com>
- <20191024190202.109403-1-irogers@google.com>
- <20191024190202.109403-3-irogers@google.com>
+        id S2437633AbfJYICh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 04:02:37 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42525 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437519AbfJYICg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 04:02:36 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r1so1164179wrs.9;
+        Fri, 25 Oct 2019 01:02:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eoe1jm+S/J7sLO7uqwBuLWMAwNPuBQISVnb82FJ2SwI=;
+        b=ITBLMXzxsfgASrU2BFTFAbDzUSKaeAvaVihaOZeuExOygFUPcqxmeibyH/YaHOQXGV
+         bmATIHeE0brs/QUdlLoUDk4HfaSyYz5Zd/yYJUskISJ8as1a+6cIJEkvLgGsFDd4IixW
+         PIAMMRqlRuVILswf0N0+1astoiPP2qVCfi0rEcn+wjdrY+f9wxVmObepuUwashkD8WGh
+         vH0qWk99Y1FOnOUyqLXlYUCyjCmh3sJDmu9N1CkLLKAGNZpyhWxgWCGr577me1AU56v1
+         ntRIyWjBxv2AAZBvsGfYwrbS0QH95ukc56yASNSBv46K9CskzWBZLp+sPHzx2ECYuOkc
+         njRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eoe1jm+S/J7sLO7uqwBuLWMAwNPuBQISVnb82FJ2SwI=;
+        b=dN6ZSxCr+9e9an9DAA6kQgn/Al37PF1uNcQlSxL0zo8K02CCyeNCYST8c2VRNGifCv
+         gmCc2Yw3b6sGxe0d+OvM+QNx/ei+Sc/IwOPAre6XbVgc3qyxclE53WW+Io1XTTb2/m6N
+         W5P4EYD8pcE731vbiSjEUwF8s+omu3SjDuw8Sbrpr3m2KKf/WSNWFFqpBKRePmSJnr70
+         gLalbFKkbjwafhGxOLkjSv5Uh7NyNCfsZ9F7oILMxvWW9/OQMCFsmyU0HKQ9WpbuyWUV
+         qH0lo5Z87Izp4mm7ckJl5eXP7D7eQ49pcIXP6nBEQBupXDXCQXrcU01gRBuZQBxBO9La
+         fKyg==
+X-Gm-Message-State: APjAAAWSV1vEOfpq9rL7vvq+Z1DIVrn1h7Qs/bMX8Y4j9AM+TfsUDQix
+        ZVieXVFW1N6j+8WyaKhNnd2YoN6mFKhQ5h3kuj8=
+X-Google-Smtp-Source: APXvYqzkigecxyl5WV8qufxu2TDn1hxGJ2Q3WBCV4xcfrF2p55FLQ9pXXSPDot+9FA/1cgTyRyvo/nVl0D2F+C+DIWs=
+X-Received: by 2002:a5d:4945:: with SMTP id r5mr1593258wrs.37.1571990552949;
+ Fri, 25 Oct 2019 01:02:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191024190202.109403-3-irogers@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: ETcj03UuP5WCRQnyylt_tg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+References: <cover.1571033544.git.lucien.xin@gmail.com> <f4c99c3d918c0d82f5d5c60abd6abcf381292f1f.1571033544.git.lucien.xin@gmail.com>
+ <20191025032337.GC4326@localhost.localdomain>
+In-Reply-To: <20191025032337.GC4326@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 25 Oct 2019 16:02:22 +0800
+Message-ID: <CADvbK_f4zSD6e3JYEKRuFx2CnSqo+0HmnYC0iinyGM63aep7HQ@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 2/5] sctp: add pf_expose per netns and sock and asoc
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        davem <davem@davemloft.net>,
+        David Laight <david.laight@aculab.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 12:01:55PM -0700, Ian Rogers wrote:
-> If event parsing fails the event list is leaked, instead splice the list
-> onto the out result and let the caller cleanup.
->=20
-> An example input for parse_events found by libFuzzer that reproduces
-> this memory leak is 'm{'.
->=20
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/parse-events.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
->=20
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
-s.c
-> index edb3ae76777d..f0d50f079d2f 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -1968,15 +1968,20 @@ int parse_events(struct evlist *evlist, const cha=
-r *str,
-> =20
->  =09ret =3D parse_events__scanner(str, &parse_state, PE_START_EVENTS);
->  =09perf_pmu__parse_cleanup();
-> +
-> +=09if (!ret && list_empty(&parse_state.list)) {
-> +=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
-> +=09=09return -1;
-> +=09}
-> +
-> +=09/*
-> +=09 * Add list to the evlist even with errors to allow callers to clean =
-up.
-> +=09 */
-> +=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
+On Fri, Oct 25, 2019 at 11:23 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Mon, Oct 14, 2019 at 02:14:45PM +0800, Xin Long wrote:
+> > As said in rfc7829, section 3, point 12:
+> >
+> >   The SCTP stack SHOULD expose the PF state of its destination
+> >   addresses to the ULP as well as provide the means to notify the
+> >   ULP of state transitions of its destination addresses from
+> >   active to PF, and vice versa.  However, it is recommended that
+> >   an SCTP stack implementing SCTP-PF also allows for the ULP to be
+> >   kept ignorant of the PF state of its destinations and the
+> >   associated state transitions, thus allowing for retention of the
+> >   simpler state transition model of [RFC4960] in the ULP.
+> >
+> > Not only does it allow to expose the PF state to ULP, but also
+> > allow to ignore sctp-pf to ULP.
+> >
+> > So this patch is to add pf_expose per netns, sock and asoc. And in
+> > sctp_assoc_control_transport(), ulp_notify will be set to false if
+> > asoc->expose is not set.
+> >
+> > It also allows a user to change pf_expose per netns by sysctl, and
+> > pf_expose per sock and asoc will be initialized with it.
+>
+> I also do see value on this sysctl. We currently have an
+> implementation that sits in between the states that the RFC defines
+> and this allows the system to remain using the original Linux
+> behavior, while also forcing especially the disabled state. This can
+> help on porting applications to Linux.
+Agreed.
 
-I still dont understand this one.. if there was an error, the list
-should be empty, right? also if there's an error and there's something
-on the list, what is it? how it gets deleted?
+>
+> >
+> > Note that pf_expose also works for SCTP_GET_PEER_ADDR_INFO sockopt,
+> > to not allow a user to query the state of a sctp-pf peer address
+> > when pf_expose is not enabled, as said in section 7.3.
+> >
+> > v1->v2:
+> >   - Fix a build warning noticed by Nathan Chancellor.
+> > v2->v3:
+> >   - set pf_expose to UNUSED by default to keep compatible with old
+> >     applications.
+>
+> Hmmm UNUSED can be quite confusing.
+> What about "UNSET" instead? (though I'm not that happy with UNSET
+> either, but couldn't come up with a better name)
+> And make UNSET=0. (first on the enum)
+>
+> So we have it like:
+> "If unset, the exposure is done as Linux used to do it, while setting
+> it to 1 blocks it and 2, enables it, according to the RFC."
+>
+> Needs a new entry on Documentation/ip-sysctl.txt, btw. We have
+> pf_enable in there.
+will add it meanwhile. Thanks.
 
-thanks,
-jirka
+>
+> ...
+>
+> > @@ -5521,8 +5522,16 @@ static int sctp_getsockopt_peer_addr_info(struct sock *sk, int len,
+> >
+> >       transport = sctp_addr_id2transport(sk, &pinfo.spinfo_address,
+> >                                          pinfo.spinfo_assoc_id);
+> > -     if (!transport)
+> > -             return -EINVAL;
+> > +     if (!transport) {
+> > +             retval = -EINVAL;
+> > +             goto out;
+> > +     }
+> > +
+> > +     if (transport->state == SCTP_PF &&
+> > +         transport->asoc->pf_expose == SCTP_PF_EXPOSE_DISABLE) {
+> > +             retval = -EACCES;
+> > +             goto out;
+> > +     }
+>
+> As is on v3, this is NOT an UAPI violation. The user has to explicitly
+> set the system or the socket into the disabled state in order to
+> trigger this new check.
+Agreed.
 
-> +
->  =09if (!ret) {
->  =09=09struct evsel *last;
-> =20
-> -=09=09if (list_empty(&parse_state.list)) {
-> -=09=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
-> -=09=09=09return -1;
-> -=09=09}
-> -
-> -=09=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
->  =09=09evlist->nr_groups +=3D parse_state.nr_groups;
->  =09=09last =3D evlist__last(evlist);
->  =09=09last->cmdline_group_boundary =3D true;
-> --=20
-> 2.23.0.866.gb869b98d4c-goog
->=20
-
+>
+> >
+> >       pinfo.spinfo_assoc_id = sctp_assoc2id(transport->asoc);
+> >       pinfo.spinfo_state = transport->state;
+> > diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
+> > index 238cf17..5d1ad44 100644
+> > --- a/net/sctp/sysctl.c
+> > +++ b/net/sctp/sysctl.c
+> > @@ -34,6 +34,7 @@ static int rto_alpha_min = 0;
+> >  static int rto_beta_min = 0;
+> >  static int rto_alpha_max = 1000;
+> >  static int rto_beta_max = 1000;
+> > +static int pf_expose_max = SCTP_PF_EXPOSE_MAX;
+> >
+> >  static unsigned long max_autoclose_min = 0;
+> >  static unsigned long max_autoclose_max =
+> > @@ -318,6 +319,15 @@ static struct ctl_table sctp_net_table[] = {
+> >               .mode           = 0644,
+> >               .proc_handler   = proc_dointvec,
+> >       },
+> > +     {
+> > +             .procname       = "pf_expose",
+> > +             .data           = &init_net.sctp.pf_expose,
+> > +             .maxlen         = sizeof(int),
+> > +             .mode           = 0644,
+> > +             .proc_handler   = proc_dointvec_minmax,
+> > +             .extra1         = SYSCTL_ZERO,
+> > +             .extra2         = &pf_expose_max,
+> > +     },
+> >
+> >       { /* sentinel */ }
+> >  };
+> > --
+> > 2.1.0
+> >
