@@ -2,130 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1A55E4ADD
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 14:16:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 252DEE4B12
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 14:32:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504429AbfJYMQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 08:16:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50190 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2504406AbfJYMQf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 08:16:35 -0400
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2440228AbfJYMcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 08:32:22 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:27188 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726484AbfJYMcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 08:32:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572006741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=g04fRvWpLJOl6APLyZDpLmq+uVvPo5Fylj6B2BnXRdA=;
+        b=Sf3zVVaKFrzshZtYJ+U6Xl6bs+xZkitajYLTybhIrD4mIVsIx8NCnTJi5806f8/6BXITAc
+        m1Y1oshe2/BuYtRQKyyoAOaZ/kgdTIVe3habp1sjCkyC3kqclxpNaPGK7NBhDtblskQHlg
+        kVrNCoHS2czF/QioE6LuehlDGSUY7hY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-75-gb1Fe7ouMZ6a8wiQmDKI7Q-1; Fri, 25 Oct 2019 08:32:17 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id ACBC7C057F2C
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 12:16:34 +0000 (UTC)
-Received: by mail-qk1-f199.google.com with SMTP id x186so1937295qke.13
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 05:16:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=lDtOQyoiNI8iBD+BJV41nuz3/0N81N8+l8LN/u4t5zU=;
-        b=nsxlDp6sTOhG674pX8Brhj68dO96q6Z4Q+N3lBs07HYHTfTugGUHbsv4GvauvfRnOJ
-         zG/dN4oA1Vj31eqUx8y2dC0N2RGTyKpMT78RHIauEXYzObPRPSw8hV9JK4DcNm9q0/lC
-         lueXwiGo4Yph8MG6pdPCqSAjrq+Mz7ZD/GL8wQNFo3aO8T4Jp8/HnHdxY52bczr1vnyb
-         bSGyJQxSj/EX44BN5Dcx9p/MPhqULEUe7LcuPF2Aq7DiLu+bmBzy2LMNXlWzjW3Unp/8
-         ejRSrynUjjWtkvYO9RHikAmmqm2rqesW/k+41xP08NYfGxCOfI0p9RtnAG87HIOQQzoI
-         XyfQ==
-X-Gm-Message-State: APjAAAWe82+RWj949ultrLC8t7kOWO15o5mcjUHq3vXHuw8UxPH1lopO
-        wIkTNJsuqLD92upTPqREjr8cHjc8fHCH5KsrSTpWDatQNa+WFFU5TCGd8aS7I/bDqX2Ip5jiz/B
-        /Z8iN9JpGLn8kSl3R
-X-Received: by 2002:ac8:1109:: with SMTP id c9mr2661814qtj.10.1572005794008;
-        Fri, 25 Oct 2019 05:16:34 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwK3+y0bW2iZzlHnWckL9qOZZ46Wovnc/341JCURY96Ut9tQ0zB6Sv5xfgv85VGvBF7MyqL9g==
-X-Received: by 2002:ac8:1109:: with SMTP id c9mr2661774qtj.10.1572005793671;
-        Fri, 25 Oct 2019 05:16:33 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-10-77.red.bezeqint.net. [79.176.10.77])
-        by smtp.gmail.com with ESMTPSA id s21sm1555600qtc.12.2019.10.25.05.16.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 05:16:32 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 08:16:26 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Tiwei Bie <tiwei.bie@intel.com>, alex.williamson@redhat.com,
-        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        lingshan.zhu@intel.com
-Subject: Re: [PATCH v2] vhost: introduce mdev based hardware backend
-Message-ID: <20191025080143-mutt-send-email-mst@kernel.org>
-References: <20191023070747.GA30533@___>
- <106834b5-dae5-82b2-0f97-16951709d075@redhat.com>
- <20191023101135.GA6367@___>
- <5a7bc5da-d501-2750-90bf-545dd55f85fa@redhat.com>
- <20191024042155.GA21090@___>
- <d37529e1-5147-bbe5-cb9d-299bd6d4aa1a@redhat.com>
- <d4cc4f4e-2635-4041-2f68-cd043a97f25a@redhat.com>
- <20191024091839.GA17463@___>
- <fefc82a3-a137-bc03-e1c3-8de79b238080@redhat.com>
- <e7e239ba-2461-4f8d-7dd7-0f557ac7f4bf@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BF2B11800E00;
+        Fri, 25 Oct 2019 12:32:14 +0000 (UTC)
+Received: from carbon (ovpn-200-21.brq.redhat.com [10.40.200.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4D88960852;
+        Fri, 25 Oct 2019 12:32:05 +0000 (UTC)
+Date:   Fri, 25 Oct 2019 14:32:03 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, brouer@redhat.com
+Subject: Re: [PATCH bpf-next v2 3/4] libbpf: Support configurable pinning of
+ maps from BTF annotations
+Message-ID: <20191025143203.7e8fd0b4@carbon>
+In-Reply-To: <157192270077.234778.5965993521171571751.stgit@toke.dk>
+References: <157192269744.234778.11792009511322809519.stgit@toke.dk>
+        <157192270077.234778.5965993521171571751.stgit@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e7e239ba-2461-4f8d-7dd7-0f557ac7f4bf@redhat.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: gb1Fe7ouMZ6a8wiQmDKI7Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 05:54:55PM +0800, Jason Wang wrote:
-> 
-> On 2019/10/24 下午6:42, Jason Wang wrote:
-> > 
-> > Yes.
-> > 
-> > 
-> > >   And we should try to avoid
-> > > putting ctrl vq and Rx/Tx vqs in the same DMA space to prevent
-> > > guests having the chance to bypass the host (e.g. QEMU) to
-> > > setup the backend accelerator directly.
-> > 
-> > 
-> > That's really good point.  So when "vhost" type is created, parent
-> > should assume addr of ctrl_vq is hva.
-> > 
-> > Thanks
-> 
-> 
-> This works for vhost but not virtio since there's no way for virtio kernel
-> driver to differ ctrl_vq with the rest when doing DMA map. One possible
-> solution is to provide DMA domain isolation between virtqueues. Then ctrl vq
-> can use its dedicated DMA domain for the work.
-> 
-> Anyway, this could be done in the future. We can have a version first that
-> doesn't support ctrl_vq.
-> 
-> Thanks
+On Thu, 24 Oct 2019 15:11:40 +0200
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
 
-Well no ctrl_vq implies either no offloads, or no XDP (since XDP needs
-to disable offloads dynamically).
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>=20
+> This adds support to libbpf for setting map pinning information as part o=
+f
+> the BTF map declaration. We introduce a version new
+> bpf_object__map_pin_opts() function to pin maps based on this setting, as
+> well as a getter and setter function for the pin information that callers
+> can use after map load.
+>=20
+> The pinning type currently only supports a single PIN_BY_NAME mode, where
+> each map will be pinned by its name in a path that can be overridden, but
+> defaults to /sys/fs/bpf.
+>=20
+> The pinning options supports a 'pin_all' setting, which corresponds to th=
+e
+> old bpf_object__map_pin() function with an explicit path. In addition, th=
+e
+> function now defaults to just skipping over maps that are already
+> pinned (since the previous commit started recording this in struct
+> bpf_map). This behaviour can be turned off with the 'no_skip_pinned' opti=
+on.
+>=20
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/lib/bpf/bpf_helpers.h |    6 ++
+>  tools/lib/bpf/libbpf.c      |  134 ++++++++++++++++++++++++++++++++++---=
+------
+>  tools/lib/bpf/libbpf.h      |   26 ++++++++
+>  tools/lib/bpf/libbpf.map    |    3 +
+>  4 files changed, 142 insertions(+), 27 deletions(-)
+>=20
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index 2203595f38c3..0c7d28292898 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -38,4 +38,10 @@ struct bpf_map_def {
+>  =09unsigned int map_flags;
+>  };
+> =20
+> +enum libbpf_pin_type {
+> +=09LIBBPF_PIN_NONE,
+> +=09/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
+> +=09LIBBPF_PIN_BY_NAME,
+> +};
+> +
+>  #endif
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 848e6710b8e6..179c9911458d 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -226,6 +226,7 @@ struct bpf_map {
+>  =09void *priv;
+>  =09bpf_map_clear_priv_t clear_priv;
+>  =09enum libbpf_map_type libbpf_type;
+> +=09enum libbpf_pin_type pinning;
+>  =09char *pin_path;
+>  =09bool pinned;
+>  };
+> @@ -1271,6 +1272,22 @@ static int bpf_object__init_user_btf_map(struct bp=
+f_object *obj,
+>  =09=09=09}
+>  =09=09=09map->def.value_size =3D sz;
+>  =09=09=09map->btf_value_type_id =3D t->type;
+> +=09=09} else if (strcmp(name, "pinning") =3D=3D 0) {
+> +=09=09=09__u32 val;
+> +
+> +=09=09=09if (!get_map_field_int(map_name, obj->btf, def, m,
+> +=09=09=09=09=09       &val))
+> +=09=09=09=09return -EINVAL;
+> +=09=09=09pr_debug("map '%s': found pinning =3D %u.\n",
+> +=09=09=09=09 map_name, val);
+> +
+> +=09=09=09if (val !=3D LIBBPF_PIN_NONE &&
+> +=09=09=09    val !=3D LIBBPF_PIN_BY_NAME) {
+> +=09=09=09=09pr_warning("map '%s': invalid pinning value %u.\n",
+> +=09=09=09=09=09   map_name, val);
+> +=09=09=09=09return -EINVAL;
+> +=09=09=09}
+> +=09=09=09map->pinning =3D val;
+>  =09=09} else {
+>  =09=09=09if (strict) {
+>  =09=09=09=09pr_warning("map '%s': unknown field '%s'.\n",
+[...]
 
-        if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)
-            && (virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-                virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
-                virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
-                virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
-                virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
-                NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
-                return -EOPNOTSUPP;
-        }
+How does this prepare for being compatible with iproute2 pinning?
 
-neither is very attractive.
+iproute2 have these defines (in include/bpf_elf.h):
 
-So yes ok just for development but we do need to figure out how it will
-work down the road in production.
+ /* Object pinning settings */
+ #define PIN_NONE                0
+ #define PIN_OBJECT_NS           1
+ #define PIN_GLOBAL_NS           2
 
-So really this specific virtio net device does not support control vq,
-instead it supports a different transport specific way to send commands
-to device.
+I do know above strcmp(name, "pinning") look at BTF info 'name' and not
+directly at the ELF struct for maps.  I don't know enough about BTF
+(yet), but won't BTF automatically create a "pinning" info 'name' ???
+(with above defines as content/values)
 
-Some kind of extension to the transport? Ideas?
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
+From above enum:
+ LIBBPF_PIN_BY_NAME =3D 1=20
 
--- 
-MST
+iproute2 ELF map struct:
+
+/* ELF map definition */
+struct bpf_elf_map {
+        __u32 type;
+        __u32 size_key;
+        __u32 size_value;
+        __u32 max_elem;
+        __u32 flags;
+        __u32 id;
+        __u32 pinning;
+        __u32 inner_id;
+        __u32 inner_idx;
+};
+
