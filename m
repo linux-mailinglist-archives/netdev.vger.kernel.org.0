@@ -2,72 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B6BE4253
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 06:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A4BE428D
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 06:37:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730036AbfJYEUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 00:20:02 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:38659 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727511AbfJYEUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 00:20:02 -0400
-Received: by mail-il1-f200.google.com with SMTP id f6so1135665ilg.5
-        for <netdev@vger.kernel.org>; Thu, 24 Oct 2019 21:20:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=NF2elsax11pXsnm+smX3VLKpwTuafbnzKYyInM/Zfhg=;
-        b=T/8zewNsAGQfv5cfO0zFCTBvhNlKMALHkSDP69epjdo7mpog5Dzr/9n90cuQFqsnxY
-         I1fO8EsE0BrJyUstE0w2ogW/KIrq3rTgNn1GL1jAqE1hERtXTPZaY6xJ5rIZWdgqbase
-         d8UUmlcEARVfGoZcYidmyn8enPFvKaJNialRNnY+ehUNNG0xUWth9FzZAATGbP/46L3a
-         6IE8KbGsFKYE1DS9LOspGkF5bYYn5TbMLiLutq6CtBzE2kG+p7A+YZDz0hUVqBE/pcK7
-         JpVcMYiMgAykoHtoXYPf3EbVgu44bAuwrLQ7jvDqa+1TPXYoSdCvrG2zHrA3syDikuih
-         81bw==
-X-Gm-Message-State: APjAAAWDltDH62GeFPR/onyIbkcS7ue6MRMZljRdGN5J9LdmcnnfCQnD
-        YWXGvfqNmm8vrDYq+aLIs8f4h24Uke6oZnMSF+UW343rxOqF
-X-Google-Smtp-Source: APXvYqxBLtXLb+ZNhposnuPP5R6TbEk6pDsIDIYFbKqUpk/R085DA7b4q4kzLVLphPbJ9kNcvFRhZFz7kEFExK0XH5h0eLU1wAlT
+        id S2388787AbfJYEhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 00:37:36 -0400
+Received: from proxima.lasnet.de ([78.47.171.185]:48255 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388369AbfJYEhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 00:37:36 -0400
+Received: from PC192.168.2.106 (p4FE7198A.dip0.t-ipconnect.de [79.231.25.138])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id CE58CC1BBA;
+        Fri, 25 Oct 2019 06:37:33 +0200 (CEST)
+Subject: Re: [PATCH net-next] ieee802154: remove set but not used variable
+ 'status'
+To:     YueHaibing <yuehaibing@huawei.com>, varkabhadram@gmail.com,
+        alex.aring@gmail.com, davem@davemloft.net
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20191023070618.30044-1-yuehaibing@huawei.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <aadfdcc0-06df-5c17-dc14-11d54ac8b65f@datenfreihafen.org>
+Date:   Fri, 25 Oct 2019 06:37:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:ccd0:: with SMTP id u16mr1924578ilq.296.1571977201370;
- Thu, 24 Oct 2019 21:20:01 -0700 (PDT)
-Date:   Thu, 24 Oct 2019 21:20:01 -0700
-In-Reply-To: <00000000000074bc3105958042ef@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000aecf020595b4762f@google.com>
-Subject: Re: KASAN: use-after-free Read in nf_ct_deliver_cached_events
-From:   syzbot <syzbot+c7aabc9fe93e7f3637ba@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, dhowells@redhat.com,
-        fw@strlen.de, kadlec@netfilter.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20191023070618.30044-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+Hello.
 
-commit 2341e0775747864b684abe8627f3d45b167f2940
-Author: David Howells <dhowells@redhat.com>
-Date:   Thu Jun 9 22:02:51 2016 +0000
+On 23.10.19 09:06, YueHaibing wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
+> 
+> drivers/net/ieee802154/cc2520.c:221:5: warning:
+>   variable status set but not used [-Wunused-but-set-variable]
+> 
+> It is never used, so can be removed.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+>   drivers/net/ieee802154/cc2520.c | 3 ---
+>   1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/net/ieee802154/cc2520.c b/drivers/net/ieee802154/cc2520.c
+> index 4350694..89c046b 100644
+> --- a/drivers/net/ieee802154/cc2520.c
+> +++ b/drivers/net/ieee802154/cc2520.c
+> @@ -218,7 +218,6 @@ static int
+>   cc2520_cmd_strobe(struct cc2520_private *priv, u8 cmd)
+>   {
+>   	int ret;
+> -	u8 status = 0xff;
+>   	struct spi_message msg;
+>   	struct spi_transfer xfer = {
+>   		.len = 0,
+> @@ -236,8 +235,6 @@ cc2520_cmd_strobe(struct cc2520_private *priv, u8 cmd)
+>   		 priv->buf[0]);
+>   
+>   	ret = spi_sync(priv->spi, &msg);
+> -	if (!ret)
+> -		status = priv->buf[0];
+>   	dev_vdbg(&priv->spi->dev,
+>   		 "buf[0] = %02x\n", priv->buf[0]);
+>   	mutex_unlock(&priv->buffer_mutex);
+> 
 
-     rxrpc: Simplify connect() implementation and simplify sendmsg() op
+Applied to wpan-next. Thanks!
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12f869df600000
-start commit:   12d61c69 Add linux-next specific files for 20191024
-git tree:       linux-next
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=11f869df600000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16f869df600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=afb75fd8c9fd5ed8
-dashboard link: https://syzkaller.appspot.com/bug?extid=c7aabc9fe93e7f3637ba
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10938e18e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=147caa97600000
-
-Reported-by: syzbot+c7aabc9fe93e7f3637ba@syzkaller.appspotmail.com
-Fixes: 2341e0775747 ("rxrpc: Simplify connect() implementation and simplify  
-sendmsg() op")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+regards
+Stefan Schmidt
