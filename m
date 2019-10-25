@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B089E4E81
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68E50E4E7F
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504990AbfJYNzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:55:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48874 "EHLO mail.kernel.org"
+        id S2505000AbfJYNzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 09:55:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2504973AbfJYNzL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:11 -0400
+        id S2504807AbfJYNzN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:13 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6920F21D82;
-        Fri, 25 Oct 2019 13:55:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 94DA9222C4;
+        Fri, 25 Oct 2019 13:55:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011711;
-        bh=SDGyo0NT2cQC5avrsBr7kyb3jRJsCnz9UDUEz/Zvzg8=;
+        s=default; t=1572011712;
+        bh=6aVhr7608eofXvvGSLtA+juskwIu+HL1BwWnA/CWjJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WR+lTL69EKVNUWFlWSwEI4A6ovuRHdmiTE3tsb3oF/+rmISrImUj59IRRZCeZpSaM
-         tKapeJfrEqD5hfGwZby/O6HPQCu5IbTa3z38RrWIyK1L9WoEQVVydCQbup5JHftkqd
-         ruvaFvLTHlGhb5FHzuSeJSHs8AWP9jS2YAu/g1B8=
+        b=qN5x0aE3abSCYCAOkHFGy7fnLYXy+ED0xGmFF1tHDmJ9bATfkIpMZW5MkEonoL4Jr
+         EWDhVO4MLMeKMnhBukRmEUkbFt+m4JyumsiLxftWHGhhfdSeDHKZHlw+BvQyY4RpTJ
+         e3kY5qcrCzy8+Ampbrc+sVTl730uvDwmIBymQoNg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     David Howells <dhowells@redhat.com>,
-        syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com,
+        syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com,
         Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 04/33] rxrpc: Fix call ref leak
-Date:   Fri, 25 Oct 2019 09:54:36 -0400
-Message-Id: <20191025135505.24762-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 05/33] rxrpc: Fix trace-after-put looking at the put peer record
+Date:   Fri, 25 Oct 2019 09:54:37 -0400
+Message-Id: <20191025135505.24762-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -46,47 +46,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit c48fc11b69e95007109206311b0187a3090591f3 ]
+[ Upstream commit 55f6c98e3674ce16038a1949c3f9ca5a9a99f289 ]
 
-When sendmsg() finds a call to continue on with, if the call is in an
-inappropriate state, it doesn't release the ref it just got on that call
-before returning an error.
+rxrpc_put_peer() calls trace_rxrpc_peer() after it has done the decrement
+of the refcount - which looks at the debug_id in the peer record.  But
+unless the refcount was reduced to zero, we no longer have the right to
+look in the record and, indeed, it may be deleted by some other thread.
 
-This causes the following symptom to show up with kasan:
+Fix this by getting the debug_id out before decrementing the refcount and
+then passing that into the tracepoint.
 
-	BUG: KASAN: use-after-free in rxrpc_send_keepalive+0x8a2/0x940
-	net/rxrpc/output.c:635
-	Read of size 8 at addr ffff888064219698 by task kworker/0:3/11077
+This can cause the following symptoms:
 
-where line 635 is:
+    BUG: KASAN: use-after-free in __rxrpc_put_peer net/rxrpc/peer_object.c:411
+    [inline]
+    BUG: KASAN: use-after-free in rxrpc_put_peer+0x685/0x6a0
+    net/rxrpc/peer_object.c:435
+    Read of size 8 at addr ffff888097ec0058 by task syz-executor823/24216
 
-	whdr.epoch	= htonl(peer->local->rxnet->epoch);
-
-The local endpoint (which cannot be pinned by the call) has been released,
-but not the peer (which is pinned by the call).
-
-Fix this by releasing the call in the error path.
-
-Fixes: 37411cad633f ("rxrpc: Fix potential NULL-pointer exception")
-Reported-by: syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com
+Fixes: 1159d4b496f5 ("rxrpc: Add a tracepoint to track rxrpc_peer refcounting")
+Reported-by: syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com
 Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/sendmsg.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/trace/events/rxrpc.h |  6 +++---
+ net/rxrpc/peer_object.c      | 11 +++++++----
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 6a1547b270fef..22f51a7e356ee 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -661,6 +661,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 		case RXRPC_CALL_SERVER_PREALLOC:
- 		case RXRPC_CALL_SERVER_SECURING:
- 		case RXRPC_CALL_SERVER_ACCEPTING:
-+			rxrpc_put_call(call, rxrpc_call_put);
- 			ret = -EBUSY;
- 			goto error_release_sock;
- 		default:
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index edc5c887a44c8..45556fe771c36 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -519,10 +519,10 @@ TRACE_EVENT(rxrpc_local,
+ 	    );
+ 
+ TRACE_EVENT(rxrpc_peer,
+-	    TP_PROTO(struct rxrpc_peer *peer, enum rxrpc_peer_trace op,
++	    TP_PROTO(unsigned int peer_debug_id, enum rxrpc_peer_trace op,
+ 		     int usage, const void *where),
+ 
+-	    TP_ARGS(peer, op, usage, where),
++	    TP_ARGS(peer_debug_id, op, usage, where),
+ 
+ 	    TP_STRUCT__entry(
+ 		    __field(unsigned int,	peer		)
+@@ -532,7 +532,7 @@ TRACE_EVENT(rxrpc_peer,
+ 			     ),
+ 
+ 	    TP_fast_assign(
+-		    __entry->peer = peer->debug_id;
++		    __entry->peer = peer_debug_id;
+ 		    __entry->op = op;
+ 		    __entry->usage = usage;
+ 		    __entry->where = where;
+diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
+index 9c3ac96f71cbf..b700b7ecaa3d8 100644
+--- a/net/rxrpc/peer_object.c
++++ b/net/rxrpc/peer_object.c
+@@ -382,7 +382,7 @@ struct rxrpc_peer *rxrpc_get_peer(struct rxrpc_peer *peer)
+ 	int n;
+ 
+ 	n = atomic_inc_return(&peer->usage);
+-	trace_rxrpc_peer(peer, rxrpc_peer_got, n, here);
++	trace_rxrpc_peer(peer->debug_id, rxrpc_peer_got, n, here);
+ 	return peer;
+ }
+ 
+@@ -396,7 +396,7 @@ struct rxrpc_peer *rxrpc_get_peer_maybe(struct rxrpc_peer *peer)
+ 	if (peer) {
+ 		int n = atomic_fetch_add_unless(&peer->usage, 1, 0);
+ 		if (n > 0)
+-			trace_rxrpc_peer(peer, rxrpc_peer_got, n + 1, here);
++			trace_rxrpc_peer(peer->debug_id, rxrpc_peer_got, n + 1, here);
+ 		else
+ 			peer = NULL;
+ 	}
+@@ -426,11 +426,13 @@ static void __rxrpc_put_peer(struct rxrpc_peer *peer)
+ void rxrpc_put_peer(struct rxrpc_peer *peer)
+ {
+ 	const void *here = __builtin_return_address(0);
++	unsigned int debug_id;
+ 	int n;
+ 
+ 	if (peer) {
++		debug_id = peer->debug_id;
+ 		n = atomic_dec_return(&peer->usage);
+-		trace_rxrpc_peer(peer, rxrpc_peer_put, n, here);
++		trace_rxrpc_peer(debug_id, rxrpc_peer_put, n, here);
+ 		if (n == 0)
+ 			__rxrpc_put_peer(peer);
+ 	}
+@@ -443,10 +445,11 @@ void rxrpc_put_peer(struct rxrpc_peer *peer)
+ void rxrpc_put_peer_locked(struct rxrpc_peer *peer)
+ {
+ 	const void *here = __builtin_return_address(0);
++	unsigned int debug_id = peer->debug_id;
+ 	int n;
+ 
+ 	n = atomic_dec_return(&peer->usage);
+-	trace_rxrpc_peer(peer, rxrpc_peer_put, n, here);
++	trace_rxrpc_peer(debug_id, rxrpc_peer_put, n, here);
+ 	if (n == 0) {
+ 		hash_del_rcu(&peer->hash_link);
+ 		list_del_init(&peer->keepalive_link);
 -- 
 2.20.1
 
