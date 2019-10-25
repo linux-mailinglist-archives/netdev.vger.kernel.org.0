@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B201E4E57
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:07:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEDE9E4E4E
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2632751AbfJYNzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:55:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49718 "EHLO mail.kernel.org"
+        id S2502981AbfJYOG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:06:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49810 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2632731AbfJYNzm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:42 -0400
+        id S2505138AbfJYNzq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:46 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BDEBF222D1;
-        Fri, 25 Oct 2019 13:55:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3756D2084C;
+        Fri, 25 Oct 2019 13:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011740;
-        bh=TgHgFRPkTtXZrx3dH/wH0Sh7Sunx/cPD0igSj6wTcSA=;
+        s=default; t=1572011744;
+        bh=vcEe/AZRcAACSEWJpKR8lWOXG7KeCano0noHAQBGTgU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DQBo+gsGyfyxC9kj+hSUyOlqz6WhYOOiQ6tLVRiNAJvDiI9jBAhGlA3LVr51LjpRU
-         b5iY3wR39g96wkhggWtcWUye9oTKBiy37/gv9JlwDnGOwjGKLIygGH+PrkHhhxpHKp
-         zOUErA3o9LC+KcEVs9Pxk+GacA2Ewc6GaYMLepDw=
+        b=giifTOcdoDpypXG6cgB+mrTsgkBCdeP9KL+HJUQ70nCrRrp8tzqPzviBxAlophz1+
+         Ci3jbvDRV4gvguiwtShSY+WthCXHYfhMmCbBNTGOMFMLanMuELNXWGFZgCW8gAXh4l
+         2Nn4aFbMihEGRLHFZ9oxLft/uVUw93CUN464Czxc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Koen Vandeputte <koen.vandeputte@ncentric.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 21/33] ath9k: dynack: fix possible deadlock in ath_dynack_node_{de}init
-Date:   Fri, 25 Oct 2019 09:54:53 -0400
-Message-Id: <20191025135505.24762-21-sashal@kernel.org>
+Cc:     Vlad Buslov <vladbu@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 25/33] net: sched: sch_htb: don't call qdisc_put() while holding tree lock
+Date:   Fri, 25 Oct 2019 09:54:57 -0400
+Message-Id: <20191025135505.24762-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -45,134 +43,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Vlad Buslov <vladbu@mellanox.com>
 
-[ Upstream commit e1aa1a1db3b01c9890e82cf065cee99962ba1ed9 ]
+[ Upstream commit 4ce70b4aed5752332b268909336b351721965dc4 ]
 
-Fix following lockdep warning disabling bh in
-ath_dynack_node_init/ath_dynack_node_deinit
+Recent changes that removed rtnl dependency from rules update path of tc
+also made tcf_block_put() function sleeping. This function is called from
+ops->destroy() of several Qdisc implementations, which in turn is called by
+qdisc_put(). Some Qdiscs call qdisc_put() while holding sch tree spinlock,
+which results sleeping-while-atomic BUG.
 
-[   75.955878] --------------------------------
-[   75.955880] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-[   75.955884] swapper/0/0 [HC0[0]:SC1[3]:HE1:SE0] takes:
-[   75.955888] 00000000792a7ee0 (&(&da->qlock)->rlock){+.?.}, at: ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.955905] {SOFTIRQ-ON-W} state was registered at:
-[   75.955912]   lock_acquire+0x9a/0x160
-[   75.955917]   _raw_spin_lock+0x2c/0x70
-[   75.955927]   ath_dynack_node_init+0x2a/0x60 [ath9k_hw]
-[   75.955934]   ath9k_sta_state+0xec/0x160 [ath9k]
-[   75.955976]   drv_sta_state+0xb2/0x740 [mac80211]
-[   75.956008]   sta_info_insert_finish+0x21a/0x420 [mac80211]
-[   75.956039]   sta_info_insert_rcu+0x12b/0x2c0 [mac80211]
-[   75.956069]   sta_info_insert+0x7/0x70 [mac80211]
-[   75.956093]   ieee80211_prep_connection+0x42e/0x730 [mac80211]
-[   75.956120]   ieee80211_mgd_auth.cold+0xb9/0x15c [mac80211]
-[   75.956152]   cfg80211_mlme_auth+0x143/0x350 [cfg80211]
-[   75.956169]   nl80211_authenticate+0x25e/0x2b0 [cfg80211]
-[   75.956172]   genl_family_rcv_msg+0x198/0x400
-[   75.956174]   genl_rcv_msg+0x42/0x90
-[   75.956176]   netlink_rcv_skb+0x35/0xf0
-[   75.956178]   genl_rcv+0x1f/0x30
-[   75.956180]   netlink_unicast+0x154/0x200
-[   75.956182]   netlink_sendmsg+0x1bf/0x3d0
-[   75.956186]   ___sys_sendmsg+0x2c2/0x2f0
-[   75.956187]   __sys_sendmsg+0x44/0x80
-[   75.956190]   do_syscall_64+0x55/0x1a0
-[   75.956192]   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   75.956194] irq event stamp: 2357092
-[   75.956196] hardirqs last  enabled at (2357092): [<ffffffff818c62de>] _raw_spin_unlock_irqrestore+0x3e/0x50
-[   75.956199] hardirqs last disabled at (2357091): [<ffffffff818c60b1>] _raw_spin_lock_irqsave+0x11/0x80
-[   75.956202] softirqs last  enabled at (2357072): [<ffffffff8106dc09>] irq_enter+0x59/0x60
-[   75.956204] softirqs last disabled at (2357073): [<ffffffff8106dcbe>] irq_exit+0xae/0xc0
-[   75.956206]
-               other info that might help us debug this:
-[   75.956207]  Possible unsafe locking scenario:
+Steps to reproduce for htb:
 
-[   75.956208]        CPU0
-[   75.956209]        ----
-[   75.956210]   lock(&(&da->qlock)->rlock);
-[   75.956213]   <Interrupt>
-[   75.956214]     lock(&(&da->qlock)->rlock);
-[   75.956216]
-                *** DEADLOCK ***
+tc qdisc add dev ens1f0 root handle 1: htb default 12
+tc class add dev ens1f0 parent 1: classid 1:1 htb rate 100kbps ceil 100kbps
+tc qdisc add dev ens1f0 parent 1:1 handle 40: sfq perturb 10
+tc class add dev ens1f0 parent 1:1 classid 1:2 htb rate 100kbps ceil 100kbps
 
-[   75.956217] 1 lock held by swapper/0/0:
-[   75.956219]  #0: 000000003bb5675c (&(&sc->sc_pcu_lock)->rlock){+.-.}, at: ath9k_tasklet+0x55/0x240 [ath9k]
-[   75.956225]
-               stack backtrace:
-[   75.956228] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.3.0-rc1-wdn+ #13
-[   75.956229] Hardware name: Dell Inc. Studio XPS 1340/0K183D, BIOS A11 09/08/2009
-[   75.956231] Call Trace:
-[   75.956233]  <IRQ>
-[   75.956236]  dump_stack+0x67/0x90
-[   75.956239]  mark_lock+0x4c1/0x640
-[   75.956242]  ? check_usage_backwards+0x130/0x130
-[   75.956245]  ? sched_clock_local+0x12/0x80
-[   75.956247]  __lock_acquire+0x484/0x7a0
-[   75.956250]  ? __lock_acquire+0x3b9/0x7a0
-[   75.956252]  lock_acquire+0x9a/0x160
-[   75.956259]  ? ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.956262]  _raw_spin_lock_bh+0x34/0x80
-[   75.956268]  ? ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.956275]  ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.956280]  ath_rx_tasklet+0xd09/0xe90 [ath9k]
-[   75.956286]  ath9k_tasklet+0x102/0x240 [ath9k]
-[   75.956288]  tasklet_action_common.isra.0+0x6d/0x170
-[   75.956291]  __do_softirq+0xcc/0x425
-[   75.956294]  irq_exit+0xae/0xc0
-[   75.956296]  do_IRQ+0x8a/0x110
-[   75.956298]  common_interrupt+0xf/0xf
-[   75.956300]  </IRQ>
-[   75.956303] RIP: 0010:cpuidle_enter_state+0xb2/0x400
-[   75.956308] RSP: 0018:ffffffff82203e70 EFLAGS: 00000202 ORIG_RAX: ffffffffffffffd7
-[   75.956310] RAX: ffffffff82219800 RBX: ffffffff822bd0a0 RCX: 0000000000000000
-[   75.956312] RDX: 0000000000000046 RSI: 0000000000000006 RDI: ffffffff82219800
-[   75.956314] RBP: ffff888155a01c00 R08: 00000011af51aabe R09: 0000000000000000
-[   75.956315] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
-[   75.956317] R13: 00000011af51aabe R14: 0000000000000003 R15: ffffffff82219800
-[   75.956321]  cpuidle_enter+0x24/0x40
-[   75.956323]  do_idle+0x1ac/0x220
-[   75.956326]  cpu_startup_entry+0x14/0x20
-[   75.956329]  start_kernel+0x482/0x489
-[   75.956332]  secondary_startup_64+0xa4/0xb0
+Resulting dmesg:
 
-Fixes: c774d57fd47c ("ath9k: add dynamic ACK timeout estimation")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Tested-by: Koen Vandeputte <koen.vandeputte@ncentric.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+[ 4791.148551] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:909
+[ 4791.151354] in_atomic(): 1, irqs_disabled(): 0, pid: 27273, name: tc
+[ 4791.152805] INFO: lockdep is turned off.
+[ 4791.153605] CPU: 19 PID: 27273 Comm: tc Tainted: G        W         5.3.0-rc8+ #721
+[ 4791.154336] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+[ 4791.155075] Call Trace:
+[ 4791.155803]  dump_stack+0x85/0xc0
+[ 4791.156529]  ___might_sleep.cold+0xac/0xbc
+[ 4791.157251]  __mutex_lock+0x5b/0x960
+[ 4791.157966]  ? console_unlock+0x363/0x5d0
+[ 4791.158676]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
+[ 4791.159395]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
+[ 4791.160103]  tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
+[ 4791.160815]  tcf_block_put_ext.part.0+0x21/0x50
+[ 4791.161530]  tcf_block_put+0x50/0x70
+[ 4791.162233]  sfq_destroy+0x15/0x50 [sch_sfq]
+[ 4791.162936]  qdisc_destroy+0x5f/0x160
+[ 4791.163642]  htb_change_class.cold+0x5df/0x69d [sch_htb]
+[ 4791.164505]  tc_ctl_tclass+0x19d/0x480
+[ 4791.165360]  rtnetlink_rcv_msg+0x170/0x4b0
+[ 4791.166191]  ? netlink_deliver_tap+0x95/0x400
+[ 4791.166907]  ? rtnl_dellink+0x2d0/0x2d0
+[ 4791.167625]  netlink_rcv_skb+0x49/0x110
+[ 4791.168345]  netlink_unicast+0x171/0x200
+[ 4791.169058]  netlink_sendmsg+0x224/0x3f0
+[ 4791.169771]  sock_sendmsg+0x5e/0x60
+[ 4791.170475]  ___sys_sendmsg+0x2ae/0x330
+[ 4791.171183]  ? ___sys_recvmsg+0x159/0x1f0
+[ 4791.171894]  ? do_wp_page+0x9c/0x790
+[ 4791.172595]  ? __handle_mm_fault+0xcd3/0x19e0
+[ 4791.173309]  __sys_sendmsg+0x59/0xa0
+[ 4791.174024]  do_syscall_64+0x5c/0xb0
+[ 4791.174725]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[ 4791.175435] RIP: 0033:0x7f0aa41497b8
+[ 4791.176129] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 5
+4
+[ 4791.177532] RSP: 002b:00007fff4e37d588 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[ 4791.178243] RAX: ffffffffffffffda RBX: 000000005d8132f7 RCX: 00007f0aa41497b8
+[ 4791.178947] RDX: 0000000000000000 RSI: 00007fff4e37d5f0 RDI: 0000000000000003
+[ 4791.179662] RBP: 0000000000000000 R08: 0000000000000001 R09: 00000000020149a0
+[ 4791.180382] R10: 0000000000404eda R11: 0000000000000246 R12: 0000000000000001
+[ 4791.181100] R13: 000000000047f640 R14: 0000000000000000 R15: 0000000000000000
+
+In htb_change_class() function save parent->leaf.q to local temporary
+variable and put reference to it after sch tree lock is released in order
+not to call potentially sleeping cls API in atomic section. This is safe to
+do because Qdisc has already been reset by qdisc_purge_queue() inside sch
+tree lock critical section.
+
+Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/dynack.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/sched/sch_htb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/dynack.c b/drivers/net/wireless/ath/ath9k/dynack.c
-index f112fa5b2eacf..1ccf20d8c1607 100644
---- a/drivers/net/wireless/ath/ath9k/dynack.c
-+++ b/drivers/net/wireless/ath/ath9k/dynack.c
-@@ -298,9 +298,9 @@ void ath_dynack_node_init(struct ath_hw *ah, struct ath_node *an)
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index 7bcf20ef91453..8184c87da8bec 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1302,6 +1302,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 	struct htb_class *cl = (struct htb_class *)*arg, *parent;
+ 	struct nlattr *opt = tca[TCA_OPTIONS];
+ 	struct nlattr *tb[TCA_HTB_MAX + 1];
++	struct Qdisc *parent_qdisc = NULL;
+ 	struct tc_htb_opt *hopt;
+ 	u64 rate64, ceil64;
+ 	int warn = 0;
+@@ -1401,7 +1402,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 		if (parent && !parent->level) {
+ 			/* turn parent into inner node */
+ 			qdisc_purge_queue(parent->leaf.q);
+-			qdisc_put(parent->leaf.q);
++			parent_qdisc = parent->leaf.q;
+ 			if (parent->prio_activity)
+ 				htb_deactivate(q, parent);
  
- 	an->ackto = ackto;
+@@ -1480,6 +1481,7 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
+ 	cl->cbuffer = PSCHED_TICKS2NS(hopt->cbuffer);
  
--	spin_lock(&da->qlock);
-+	spin_lock_bh(&da->qlock);
- 	list_add_tail(&an->list, &da->nodes);
--	spin_unlock(&da->qlock);
-+	spin_unlock_bh(&da->qlock);
- }
- EXPORT_SYMBOL(ath_dynack_node_init);
+ 	sch_tree_unlock(sch);
++	qdisc_put(parent_qdisc);
  
-@@ -314,9 +314,9 @@ void ath_dynack_node_deinit(struct ath_hw *ah, struct ath_node *an)
- {
- 	struct ath_dynack *da = &ah->dynack;
- 
--	spin_lock(&da->qlock);
-+	spin_lock_bh(&da->qlock);
- 	list_del(&an->list);
--	spin_unlock(&da->qlock);
-+	spin_unlock_bh(&da->qlock);
- }
- EXPORT_SYMBOL(ath_dynack_node_deinit);
- 
+ 	if (warn)
+ 		pr_warn("HTB: quantum of class %X is %s. Consider r2q change.\n",
 -- 
 2.20.1
 
