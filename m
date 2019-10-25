@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACD4DE4E40
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:06:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A38CE4E44
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:06:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505157AbfJYNzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:55:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49850 "EHLO mail.kernel.org"
+        id S2502845AbfJYOGG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:06:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49958 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505144AbfJYNzr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:55:47 -0400
+        id S2505167AbfJYNzv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:55:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48080222D0;
-        Fri, 25 Oct 2019 13:55:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E1375222C2;
+        Fri, 25 Oct 2019 13:55:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011746;
-        bh=FdpQwXixoHuVOooSA5WTzdAodDKtPvZp4MqVNm8aagk=;
+        s=default; t=1572011750;
+        bh=Sxa8wRC11rWsINlFZLN/cLO++PkBrFEDiIWX5gjlWZs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Xftprn4otOqnLmaywzSc/ktKs6PAOOCR9F5J/yxbIQOugf6wKSeGFmXC5L5W46ea
-         ZzCFK14DUe0WPhuQdWwIVcZzZl6cmno+8Gf5Ir4cZN9XgkUIs/aO/jj2pr2+DTXYm9
-         8lJ74dPmVcsUCUL5yUSTUcI60xRb8Nx2QGv/02nE=
+        b=rS6Hy1jAA/9RoIAFasqum2VgS6SdoOfmJkhamIzDObeBQW5l6Y4ZkLT3BiS/7KeiX
+         r7WWGqf38QYBUaQWdWLXpwOsgIOTrkVwMGa42Ak4Hgaz0mZD9kwI2nsTNFkslX/lal
+         qscsJbdzkRyrO1yDRVO/EiX6zaZmRjRzU1GO2hRM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vlad Buslov <vladbu@mellanox.com>,
+Cc:     David Ahern <dsahern@gmail.com>,
+        Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 26/33] net: sched: multiq: don't call qdisc_put() while holding tree lock
-Date:   Fri, 25 Oct 2019 09:54:58 -0400
-Message-Id: <20191025135505.24762-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 29/33] ipv6: Handle race in addrconf_dad_work
+Date:   Fri, 25 Oct 2019 09:55:01 -0400
+Message-Id: <20191025135505.24762-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191025135505.24762-1-sashal@kernel.org>
 References: <20191025135505.24762-1-sashal@kernel.org>
@@ -43,153 +45,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+From: David Ahern <dsahern@gmail.com>
 
-[ Upstream commit c2999f7fb05b87da4060e38150c70fa46794d82b ]
+[ Upstream commit a3ce2a21bb8969ae27917281244fa91bf5f286d7 ]
 
-Recent changes that removed rtnl dependency from rules update path of tc
-also made tcf_block_put() function sleeping. This function is called from
-ops->destroy() of several Qdisc implementations, which in turn is called by
-qdisc_put(). Some Qdiscs call qdisc_put() while holding sch tree spinlock,
-which results sleeping-while-atomic BUG.
+Rajendra reported a kernel panic when a link was taken down:
 
-Steps to reproduce for multiq:
+[ 6870.263084] BUG: unable to handle kernel NULL pointer dereference at 00000000000000a8
+[ 6870.271856] IP: [<ffffffff8efc5764>] __ipv6_ifa_notify+0x154/0x290
 
-tc qdisc add dev ens1f0 root handle 1: multiq
-tc qdisc add dev ens1f0 parent 1:10 handle 50: sfq perturb 10
-ethtool -L ens1f0 combined 2
-tc qdisc change dev ens1f0 root handle 1: multiq
+<snip>
 
-Resulting dmesg:
+[ 6870.570501] Call Trace:
+[ 6870.573238] [<ffffffff8efc58c6>] ? ipv6_ifa_notify+0x26/0x40
+[ 6870.579665] [<ffffffff8efc98ec>] ? addrconf_dad_completed+0x4c/0x2c0
+[ 6870.586869] [<ffffffff8efe70c6>] ? ipv6_dev_mc_inc+0x196/0x260
+[ 6870.593491] [<ffffffff8efc9c6a>] ? addrconf_dad_work+0x10a/0x430
+[ 6870.600305] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
+[ 6870.606732] [<ffffffff8ea93a7a>] ? process_one_work+0x18a/0x430
+[ 6870.613449] [<ffffffff8ea93d6d>] ? worker_thread+0x4d/0x490
+[ 6870.619778] [<ffffffff8ea93d20>] ? process_one_work+0x430/0x430
+[ 6870.626495] [<ffffffff8ea99dd9>] ? kthread+0xd9/0xf0
+[ 6870.632145] [<ffffffff8f01ade4>] ? __switch_to_asm+0x34/0x70
+[ 6870.638573] [<ffffffff8ea99d00>] ? kthread_park+0x60/0x60
+[ 6870.644707] [<ffffffff8f01ae77>] ? ret_from_fork+0x57/0x70
+[ 6870.650936] Code: 31 c0 31 d2 41 b9 20 00 08 02 b9 09 00 00 0
 
-[ 5539.419344] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:909
-[ 5539.420945] in_atomic(): 1, irqs_disabled(): 0, pid: 27658, name: tc
-[ 5539.422435] INFO: lockdep is turned off.
-[ 5539.423904] CPU: 21 PID: 27658 Comm: tc Tainted: G        W         5.3.0-rc8+ #721
-[ 5539.425400] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[ 5539.426911] Call Trace:
-[ 5539.428380]  dump_stack+0x85/0xc0
-[ 5539.429823]  ___might_sleep.cold+0xac/0xbc
-[ 5539.431262]  __mutex_lock+0x5b/0x960
-[ 5539.432682]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 5539.434103]  ? __nla_validate_parse+0x51/0x840
-[ 5539.435493]  ? tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 5539.436903]  tcf_chain0_head_change_cb_del.isra.0+0x1b/0xf0
-[ 5539.438327]  tcf_block_put_ext.part.0+0x21/0x50
-[ 5539.439752]  tcf_block_put+0x50/0x70
-[ 5539.441165]  sfq_destroy+0x15/0x50 [sch_sfq]
-[ 5539.442570]  qdisc_destroy+0x5f/0x160
-[ 5539.444000]  multiq_tune+0x14a/0x420 [sch_multiq]
-[ 5539.445421]  tc_modify_qdisc+0x324/0x840
-[ 5539.446841]  rtnetlink_rcv_msg+0x170/0x4b0
-[ 5539.448269]  ? netlink_deliver_tap+0x95/0x400
-[ 5539.449691]  ? rtnl_dellink+0x2d0/0x2d0
-[ 5539.451116]  netlink_rcv_skb+0x49/0x110
-[ 5539.452522]  netlink_unicast+0x171/0x200
-[ 5539.453914]  netlink_sendmsg+0x224/0x3f0
-[ 5539.455304]  sock_sendmsg+0x5e/0x60
-[ 5539.456686]  ___sys_sendmsg+0x2ae/0x330
-[ 5539.458071]  ? ___sys_recvmsg+0x159/0x1f0
-[ 5539.459461]  ? do_wp_page+0x9c/0x790
-[ 5539.460846]  ? __handle_mm_fault+0xcd3/0x19e0
-[ 5539.462263]  __sys_sendmsg+0x59/0xa0
-[ 5539.463661]  do_syscall_64+0x5c/0xb0
-[ 5539.465044]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[ 5539.466454] RIP: 0033:0x7f1fe08177b8
-[ 5539.467863] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83 ec 28 89 5
-4
-[ 5539.470906] RSP: 002b:00007ffe812de5d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[ 5539.472483] RAX: ffffffffffffffda RBX: 000000005d8135e3 RCX: 00007f1fe08177b8
-[ 5539.474069] RDX: 0000000000000000 RSI: 00007ffe812de640 RDI: 0000000000000003
-[ 5539.475655] RBP: 0000000000000000 R08: 0000000000000001 R09: 000000000182e9b0
-[ 5539.477203] R10: 0000000000404eda R11: 0000000000000246 R12: 0000000000000001
-[ 5539.478699] R13: 000000000047f640 R14: 0000000000000000 R15: 0000000000000000
+addrconf_dad_work is kicked to be scheduled when a device is brought
+up. There is a race between addrcond_dad_work getting scheduled and
+taking the rtnl lock and a process taking the link down (under rtnl).
+The latter removes the host route from the inet6_addr as part of
+addrconf_ifdown which is run for NETDEV_DOWN. The former attempts
+to use the host route in ipv6_ifa_notify. If the down event removes
+the host route due to the race to the rtnl, then the BUG listed above
+occurs.
 
-Rearrange locking in multiq_tune() in following ways:
+This scenario does not occur when the ipv6 address is not kept
+(net.ipv6.conf.all.keep_addr_on_down = 0) as addrconf_ifdown sets the
+state of the ifp to DEAD. Handle when the addresses are kept by checking
+IF_READY which is reset by addrconf_ifdown.
 
-- In loop that removes Qdiscs from disabled queues, call
-  qdisc_purge_queue() instead of qdisc_tree_flush_backlog() on Qdisc that
-  is being destroyed. Save the Qdisc in temporary allocated array and call
-  qdisc_put() on each element of the array after sch tree lock is released.
-  This is safe to do because Qdiscs have already been reset by
-  qdisc_purge_queue() inside sch tree lock critical section.
+The 'dead' flag for an inet6_addr is set only under rtnl, in
+addrconf_ifdown and it means the device is getting removed (or IPv6 is
+disabled). The interesting cases for changing the idev flag are
+addrconf_notify (NETDEV_UP and NETDEV_CHANGE) and addrconf_ifdown
+(reset the flag). The former does not have the idev lock - only rtnl;
+the latter has both. Based on that the existing dead + IF_READY check
+can be moved to right after the rtnl_lock in addrconf_dad_work.
 
-- Do the same change for second loop that initializes Qdiscs for newly
-  enabled queues in multiq_tune() function. Since sch tree lock is obtained
-  and released on each iteration of this loop, just call qdisc_put()
-  directly outside of critical section. Don't verify that old Qdisc is not
-  noop_qdisc before releasing reference to it because such check is already
-  performed by qdisc_put*() functions.
-
-Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+Fixes: f1705ec197e7 ("net: ipv6: Make address flushing on ifdown optional")
+Reported-by: Rajendra Dendukuri <rajendra.dendukuri@broadcom.com>
+Signed-off-by: David Ahern <dsahern@gmail.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/sch_multiq.c | 23 ++++++++++++++++-------
- 1 file changed, 16 insertions(+), 7 deletions(-)
+ net/ipv6/addrconf.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
-index e1087746f6a29..b2b7fdb06fc62 100644
---- a/net/sched/sch_multiq.c
-+++ b/net/sched/sch_multiq.c
-@@ -174,7 +174,8 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt,
- {
- 	struct multiq_sched_data *q = qdisc_priv(sch);
- 	struct tc_multiq_qopt *qopt;
--	int i;
-+	struct Qdisc **removed;
-+	int i, n_removed = 0;
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 4c87594d1389d..10093b8dd5483 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4032,6 +4032,12 @@ static void addrconf_dad_work(struct work_struct *w)
  
- 	if (!netif_is_multiqueue(qdisc_dev(sch)))
- 		return -EOPNOTSUPP;
-@@ -185,6 +186,11 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt,
+ 	rtnl_lock();
  
- 	qopt->bands = qdisc_dev(sch)->real_num_tx_queues;
- 
-+	removed = kmalloc(sizeof(*removed) * (q->max_bands - q->bands),
-+			  GFP_KERNEL);
-+	if (!removed)
-+		return -ENOMEM;
++	/* check if device was taken down before this delayed work
++	 * function could be canceled
++	 */
++	if (idev->dead || !(idev->if_flags & IF_READY))
++		goto out;
 +
- 	sch_tree_lock(sch);
- 	q->bands = qopt->bands;
- 	for (i = q->bands; i < q->max_bands; i++) {
-@@ -192,13 +198,17 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt,
- 			struct Qdisc *child = q->queues[i];
+ 	spin_lock_bh(&ifp->lock);
+ 	if (ifp->state == INET6_IFADDR_STATE_PREDAD) {
+ 		action = DAD_BEGIN;
+@@ -4077,11 +4083,6 @@ static void addrconf_dad_work(struct work_struct *w)
+ 		goto out;
  
- 			q->queues[i] = &noop_qdisc;
--			qdisc_tree_flush_backlog(child);
--			qdisc_put(child);
-+			qdisc_purge_queue(child);
-+			removed[n_removed++] = child;
- 		}
- 	}
- 
- 	sch_tree_unlock(sch);
- 
-+	for (i = 0; i < n_removed; i++)
-+		qdisc_put(removed[i]);
-+	kfree(removed);
-+
- 	for (i = 0; i < q->bands; i++) {
- 		if (q->queues[i] == &noop_qdisc) {
- 			struct Qdisc *child, *old;
-@@ -213,11 +223,10 @@ static int multiq_tune(struct Qdisc *sch, struct nlattr *opt,
- 				if (child != &noop_qdisc)
- 					qdisc_hash_add(child, true);
- 
--				if (old != &noop_qdisc) {
--					qdisc_tree_flush_backlog(old);
--					qdisc_put(old);
--				}
-+				if (old != &noop_qdisc)
-+					qdisc_purge_queue(old);
- 				sch_tree_unlock(sch);
-+				qdisc_put(old);
- 			}
- 		}
- 	}
+ 	write_lock_bh(&idev->lock);
+-	if (idev->dead || !(idev->if_flags & IF_READY)) {
+-		write_unlock_bh(&idev->lock);
+-		goto out;
+-	}
+-
+ 	spin_lock(&ifp->lock);
+ 	if (ifp->state == INET6_IFADDR_STATE_DEAD) {
+ 		spin_unlock(&ifp->lock);
 -- 
 2.20.1
 
