@@ -2,103 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C2AEE5138
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 18:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D98E5142
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 18:31:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633052AbfJYQaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 12:30:23 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:42662 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2633030AbfJYQaX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 12:30:23 -0400
-Received: by mail-lj1-f194.google.com with SMTP id a21so3375242ljh.9;
-        Fri, 25 Oct 2019 09:30:20 -0700 (PDT)
+        id S2407831AbfJYQbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 12:31:23 -0400
+Received: from mail-pl1-f180.google.com ([209.85.214.180]:45058 "EHLO
+        mail-pl1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391211AbfJYQbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 12:31:23 -0400
+Received: by mail-pl1-f180.google.com with SMTP id y24so1486405plr.12
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 09:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W8J7V85mTgUhcGIBJTP6zmLNsIPhGohEfQkJqat8vKA=;
-        b=ITLlzA8qlEIUMjjAQz11eDGYglS0ok8jLTJF9Ji05ZJ6jnnC61ulj9OM2JJZb1v4aa
-         CPWyrysDzXZWwlfHWbyaVYp0Uo6u748ZfvLIxsQV1DjXgDlAa5i0McPraMDjEasv4HaR
-         a5+G4dyVr2YW2fvEXGoH3fVyCQsMpkPfCaNmF4OR5QZjw4tGQqbdOfTqkvQytytbMzYr
-         a21gywBXNwu7N+aOvflT1fxVN5tFtFVp7ScESW8nmQPEVJugtItTM09fOdlTbLgOB6BH
-         /TCE5WX6WiAeUZG6BdldwKfJmAyf8i6oW67GVw3+UNZFZt7asod8FbHumI5U9RWYDgmu
-         NbpQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=1EUj3irj6XVPBQ7Z9U8k8kcmlKkmc6kitqhex26/WnQ=;
+        b=BwtEXlJcQ20cGQDYIU0gfNYys1FpKTgFQKDLWNAUjvxMX2F14kbUC3qhq96Z0ctb7h
+         lRnPUrg3flmm1/MWivhAZAQAEUEsf6Mh0ZPOD36R56J4PIHmtFfM6XR37CveYwE6yUlI
+         NqAbJ61nbX/ByJzeus/lVFpOxvGYJDOrtSqAJc75b7zsAQ3AUXS5JBRRPRNbICHcTV48
+         20rPm5BTtmnOdADNFins1B6g38HPS2lYb7IvuDLnoKwv6wNFDfD53RFTi2VF4V8YVgDq
+         Vodepyjg+xpt8wRjx7AqRXIcG5TmQecDJBFKpocxnxX8hNjxs/dmM72U0W+5LVMGXGcd
+         PR9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W8J7V85mTgUhcGIBJTP6zmLNsIPhGohEfQkJqat8vKA=;
-        b=U0RyvxX2R1Sp/+l6sfjuqbb4AhBoRJ1ZPVDsTXD3+gP/Fu74ZgRs6yjf8hF6nqzSgu
-         eLrQRC/diIvQIuwf1pgp5JhIIMzX8cYcuWBwXZzK6zCZfex8WZvQOkGmSHTg+YRlDVEl
-         qvCvtpLut4ZQvqAPMVEQsmvGu0kA/TQ5x1myWp6top469ZFktpcrmf60xGuP2tRBrA7C
-         eEAIoXVwIDEBexqO9RjaagGrV8cRDNeY2RHqZT0AjeBqzpZEJnjzh544u5sED+YsX8nM
-         xmmAtIkm2rLTISihxOunJMRsaVB37FTcdpVpnqU8SeyvpO067Y4SxS9pohJEzOqtTZIo
-         O9OA==
-X-Gm-Message-State: APjAAAUv6CjwNdCbUyUv8/c5TKhb/pqEOqrrn6J3q5PyhVadBI+qIkvH
-        xphF9S40OAKwszC2WfI9qlI1akbdvAo69vDO3fcBHA==
-X-Google-Smtp-Source: APXvYqwzVj6ckBGoV1DyaaT5oFgF0xb3whhdSuGvZPSPVI1gAVZHZE4oWPB1dKkKovNMMOKmHN46OMuPKwKPk9ikfvM=
-X-Received: by 2002:a2e:b17b:: with SMTP id a27mr3110442ljm.243.1572021019412;
- Fri, 25 Oct 2019 09:30:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=1EUj3irj6XVPBQ7Z9U8k8kcmlKkmc6kitqhex26/WnQ=;
+        b=bL05m1WBbquofuApSOdjwwk3Aq0sG1uxaQB7SjSNws9+BLoMGwrIZH0sLJFj/mtRFc
+         q3gAhP+6e8ibqlS/XGfsiiWoiYAGPBEA+u0nbKGZ5joYwVtNF6wJXWRPb026wm/Xf0Zo
+         9oP5MDIEnlRE7+Kqa9A0b6rfrAfs6f5+lx+gh9k/bFVFEsRA3NxeXQI5ikqQuwCLgn4j
+         8wT3g7ADZS/7/1QAKYDvCBO+KaFl/maZHStj8JNaK/hfgGpbH33r7hANrJUTo0ja2RNI
+         pO1HG5fGScI1RgxXIWwtmy/zGLdU6oxLvrWK2ciQGjfjlFZMDFDjKsRg7hZURnzSzSZT
+         bmww==
+X-Gm-Message-State: APjAAAWFpA5Uf0fxz/5gdqog75FwQG901oJ8ijMAK2vtR40cmU4gZ0lB
+        2CIJM0NpB+v7ur5v9QE/y6Jhiw==
+X-Google-Smtp-Source: APXvYqxIgWYAro3JplidCsKmEFeX4IA3PodO6Cd0sdWb14wx/ymxyllaQfpPEWRPtsASesqW2n/1Kw==
+X-Received: by 2002:a17:902:7885:: with SMTP id q5mr4646650pll.317.1572021081092;
+        Fri, 25 Oct 2019 09:31:21 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id y20sm2822910pge.48.2019.10.25.09.31.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Oct 2019 09:31:20 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 09:31:16 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Martin Lau <kafai@fb.com>,
+        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCHv2] bpftool: Try to read btf as raw data if elf read
+ fails
+Message-ID: <20191025093116.67756660@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <aeb566cd-42a7-9b3a-d495-c71cdca08b86@fb.com>
+References: <20191024132341.8943-1-jolsa@kernel.org>
+        <20191024105414.65f7e323@cakuba.hsd1.ca.comcast.net>
+        <aeb566cd-42a7-9b3a-d495-c71cdca08b86@fb.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <157046883502.2092443.146052429591277809.stgit@alrua-x1>
- <157046883614.2092443.9861796174814370924.stgit@alrua-x1> <20191007204234.p2bh6sul2uakpmnp@ast-mbp.dhcp.thefacebook.com>
- <87sgo3lkx9.fsf@toke.dk> <20191009015117.pldowv6n3k5p3ghr@ast-mbp.dhcp.thefacebook.com>
- <87o8yqjqg0.fsf@toke.dk> <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
- <87v9srijxa.fsf@toke.dk> <20191016022849.weomgfdtep4aojpm@ast-mbp>
- <8736fshk7b.fsf@toke.dk> <20191019200939.kiwuaj7c4bg25vqs@ast-mbp> <874l03d6ov.fsf@toke.dk>
-In-Reply-To: <874l03d6ov.fsf@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 25 Oct 2019 09:30:07 -0700
-Message-ID: <CAADnVQKOJZhova8GsUug364+QETPFq1DmGO5-P7YBjyDF99y9Q@mail.gmail.com>
-Subject: Re: bpf indirect calls
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 20, 2019 at 3:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
-> Great! I think it's probably more productive for everyone involved if I
-> just wait for you to get around to this, rather than try my own hand at
-> this. I'll go hash out the userspace management semantics of chain calls
-> in the meantime (using my kernel support patch), since that will surely
-> be needed anyway.
+On Fri, 25 Oct 2019 05:01:17 +0000, Andrii Nakryiko wrote:
+> >> +static bool is_btf_raw(const char *file)
+> >> +{
+> >> +	__u16 magic = 0;
+> >> +	int fd;
+> >> +
+> >> +	fd = open(file, O_RDONLY);
+> >> +	if (fd < 0)
+> >> +		return false;
+> >> +
+> >> +	read(fd, &magic, sizeof(magic));
+> >> +	close(fd);
+> >> +	return magic == BTF_MAGIC;  
+> > 
+> > Isn't it suspicious to read() 2 bytes into an u16 and compare to a
+> > constant like endianness doesn't matter? Quick grep doesn't reveal
+> > BTF_MAGIC being endian-aware..  
+> 
+> Right now we support only loading BTF in native endianness, so I think 
+> this should do. If we ever add ability to load non-native endianness, 
+> then we'll have to adjust this.
 
-No problem. Indirect calls are next on my todo list.
-Shouldn't take long.
-
-Right now I'm hacking accelerated kretprobes for tracing.
-I've shared first rough draft of patches with few folks and they
-quickly pointed out that the same logic can be used to
-create arbitrary call chains.
-To make kretprobe+bpf fast I'm replacing:
-  call foo
-with
-  prologue
-  capture args
-  call foo
-  capture return
-  call bpf_prog
-  epilogue
-That "call foo" can be anything. Including another bpf prog.
-Patches are too rough for public review.
-I hope to get them cleaned up by the end of next week.
-
-Jesper request to capture both struct xdp_md and return
-value after prog returns will be possible soon.
-xdpdump before and after xdp prog.. here I come :)
+This doesn't do native endianness, this does LE-only. It will not work
+on BE machines.
