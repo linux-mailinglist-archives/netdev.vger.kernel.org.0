@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4FBCE4DEA
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB7E0E4DCF
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 16:03:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394773AbfJYN5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:57:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51558 "EHLO mail.kernel.org"
+        id S2394667AbfJYOCo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 10:02:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52466 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394759AbfJYN5A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 09:57:00 -0400
+        id S2505312AbfJYN5f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:57:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9A8B421E6F;
-        Fri, 25 Oct 2019 13:56:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8DCD4222CE;
+        Fri, 25 Oct 2019 13:57:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572011819;
-        bh=M+mdSED+ku2Dex57fysCFC6s0u2WCo4GX+Um1EfdXmU=;
+        s=default; t=1572011854;
+        bh=itu8u6XZH3Cf69v2c8xvFTnUCGWk0DrtvFGM5duP8IQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qC2hyzyefC4z7dLA6TtAsNdAIv4Y7E4muvVeMKrMcfpgqJmlcMsSRzwgxG9JBbZQ7
-         doZNjqd1HuGZtW7ssaLFY6aSJw3kVH8Q8JSKp1nuxlAff0BoeAGdQJIZZEFV6qSj6F
-         pM0hDNTBw6VOpfgz0isGxiIXLOr2QbQw+J+z/VvY=
+        b=rp4O6luVTpisPSFP13Lji5+3OsvA1yjh+pDY1+0evogVWR9DM4kk1IlXXw+PJZUkz
+         UzyS5G4Q73pYVWqc/Bq2DBMkr5gufSmjnu2jMoC+Y2EP1QuyPSU2uKh++/aFSP1qlk
+         V6gaFDxGcxCWZ6KU0qipwUhQWRBDUzXNUpvLe9bs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Koen Vandeputte <koen.vandeputte@ncentric.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 30/37] ath9k: dynack: fix possible deadlock in ath_dynack_node_{de}init
-Date:   Fri, 25 Oct 2019 09:55:54 -0400
-Message-Id: <20191025135603.25093-30-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 12/25] sch_netem: fix rcu splat in netem_enqueue()
+Date:   Fri, 25 Oct 2019 09:57:00 -0400
+Message-Id: <20191025135715.25468-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191025135603.25093-1-sashal@kernel.org>
-References: <20191025135603.25093-1-sashal@kernel.org>
+In-Reply-To: <20191025135715.25468-1-sashal@kernel.org>
+References: <20191025135715.25468-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,134 +44,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit e1aa1a1db3b01c9890e82cf065cee99962ba1ed9 ]
+[ Upstream commit 159d2c7d8106177bd9a986fd005a311fe0d11285 ]
 
-Fix following lockdep warning disabling bh in
-ath_dynack_node_init/ath_dynack_node_deinit
+qdisc_root() use from netem_enqueue() triggers a lockdep warning.
 
-[   75.955878] --------------------------------
-[   75.955880] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-[   75.955884] swapper/0/0 [HC0[0]:SC1[3]:HE1:SE0] takes:
-[   75.955888] 00000000792a7ee0 (&(&da->qlock)->rlock){+.?.}, at: ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.955905] {SOFTIRQ-ON-W} state was registered at:
-[   75.955912]   lock_acquire+0x9a/0x160
-[   75.955917]   _raw_spin_lock+0x2c/0x70
-[   75.955927]   ath_dynack_node_init+0x2a/0x60 [ath9k_hw]
-[   75.955934]   ath9k_sta_state+0xec/0x160 [ath9k]
-[   75.955976]   drv_sta_state+0xb2/0x740 [mac80211]
-[   75.956008]   sta_info_insert_finish+0x21a/0x420 [mac80211]
-[   75.956039]   sta_info_insert_rcu+0x12b/0x2c0 [mac80211]
-[   75.956069]   sta_info_insert+0x7/0x70 [mac80211]
-[   75.956093]   ieee80211_prep_connection+0x42e/0x730 [mac80211]
-[   75.956120]   ieee80211_mgd_auth.cold+0xb9/0x15c [mac80211]
-[   75.956152]   cfg80211_mlme_auth+0x143/0x350 [cfg80211]
-[   75.956169]   nl80211_authenticate+0x25e/0x2b0 [cfg80211]
-[   75.956172]   genl_family_rcv_msg+0x198/0x400
-[   75.956174]   genl_rcv_msg+0x42/0x90
-[   75.956176]   netlink_rcv_skb+0x35/0xf0
-[   75.956178]   genl_rcv+0x1f/0x30
-[   75.956180]   netlink_unicast+0x154/0x200
-[   75.956182]   netlink_sendmsg+0x1bf/0x3d0
-[   75.956186]   ___sys_sendmsg+0x2c2/0x2f0
-[   75.956187]   __sys_sendmsg+0x44/0x80
-[   75.956190]   do_syscall_64+0x55/0x1a0
-[   75.956192]   entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   75.956194] irq event stamp: 2357092
-[   75.956196] hardirqs last  enabled at (2357092): [<ffffffff818c62de>] _raw_spin_unlock_irqrestore+0x3e/0x50
-[   75.956199] hardirqs last disabled at (2357091): [<ffffffff818c60b1>] _raw_spin_lock_irqsave+0x11/0x80
-[   75.956202] softirqs last  enabled at (2357072): [<ffffffff8106dc09>] irq_enter+0x59/0x60
-[   75.956204] softirqs last disabled at (2357073): [<ffffffff8106dcbe>] irq_exit+0xae/0xc0
-[   75.956206]
-               other info that might help us debug this:
-[   75.956207]  Possible unsafe locking scenario:
+__dev_queue_xmit() uses rcu_read_lock_bh() which is
+not equivalent to rcu_read_lock() + local_bh_disable_bh as far
+as lockdep is concerned.
 
-[   75.956208]        CPU0
-[   75.956209]        ----
-[   75.956210]   lock(&(&da->qlock)->rlock);
-[   75.956213]   <Interrupt>
-[   75.956214]     lock(&(&da->qlock)->rlock);
-[   75.956216]
-                *** DEADLOCK ***
+WARNING: suspicious RCU usage
+5.3.0-rc7+ #0 Not tainted
+-----------------------------
+include/net/sch_generic.h:492 suspicious rcu_dereference_check() usage!
 
-[   75.956217] 1 lock held by swapper/0/0:
-[   75.956219]  #0: 000000003bb5675c (&(&sc->sc_pcu_lock)->rlock){+.-.}, at: ath9k_tasklet+0x55/0x240 [ath9k]
-[   75.956225]
-               stack backtrace:
-[   75.956228] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.3.0-rc1-wdn+ #13
-[   75.956229] Hardware name: Dell Inc. Studio XPS 1340/0K183D, BIOS A11 09/08/2009
-[   75.956231] Call Trace:
-[   75.956233]  <IRQ>
-[   75.956236]  dump_stack+0x67/0x90
-[   75.956239]  mark_lock+0x4c1/0x640
-[   75.956242]  ? check_usage_backwards+0x130/0x130
-[   75.956245]  ? sched_clock_local+0x12/0x80
-[   75.956247]  __lock_acquire+0x484/0x7a0
-[   75.956250]  ? __lock_acquire+0x3b9/0x7a0
-[   75.956252]  lock_acquire+0x9a/0x160
-[   75.956259]  ? ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.956262]  _raw_spin_lock_bh+0x34/0x80
-[   75.956268]  ? ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.956275]  ath_dynack_sample_ack_ts+0x4d/0xa0 [ath9k_hw]
-[   75.956280]  ath_rx_tasklet+0xd09/0xe90 [ath9k]
-[   75.956286]  ath9k_tasklet+0x102/0x240 [ath9k]
-[   75.956288]  tasklet_action_common.isra.0+0x6d/0x170
-[   75.956291]  __do_softirq+0xcc/0x425
-[   75.956294]  irq_exit+0xae/0xc0
-[   75.956296]  do_IRQ+0x8a/0x110
-[   75.956298]  common_interrupt+0xf/0xf
-[   75.956300]  </IRQ>
-[   75.956303] RIP: 0010:cpuidle_enter_state+0xb2/0x400
-[   75.956308] RSP: 0018:ffffffff82203e70 EFLAGS: 00000202 ORIG_RAX: ffffffffffffffd7
-[   75.956310] RAX: ffffffff82219800 RBX: ffffffff822bd0a0 RCX: 0000000000000000
-[   75.956312] RDX: 0000000000000046 RSI: 0000000000000006 RDI: ffffffff82219800
-[   75.956314] RBP: ffff888155a01c00 R08: 00000011af51aabe R09: 0000000000000000
-[   75.956315] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000002
-[   75.956317] R13: 00000011af51aabe R14: 0000000000000003 R15: ffffffff82219800
-[   75.956321]  cpuidle_enter+0x24/0x40
-[   75.956323]  do_idle+0x1ac/0x220
-[   75.956326]  cpu_startup_entry+0x14/0x20
-[   75.956329]  start_kernel+0x482/0x489
-[   75.956332]  secondary_startup_64+0xa4/0xb0
+other info that might help us debug this:
 
-Fixes: c774d57fd47c ("ath9k: add dynamic ACK timeout estimation")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Tested-by: Koen Vandeputte <koen.vandeputte@ncentric.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+rcu_scheduler_active = 2, debug_locks = 1
+3 locks held by syz-executor427/8855:
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: lwtunnel_xmit_redirect include/net/lwtunnel.h:92 [inline]
+ #0: 00000000b5525c01 (rcu_read_lock_bh){....}, at: ip_finish_output2+0x2dc/0x2570 net/ipv4/ip_output.c:214
+ #1: 00000000b5525c01 (rcu_read_lock_bh){....}, at: __dev_queue_xmit+0x20a/0x3650 net/core/dev.c:3804
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_xmit_skb net/core/dev.c:3502 [inline]
+ #2: 00000000364bae92 (&(&sch->q.lock)->rlock){+.-.}, at: __dev_queue_xmit+0x14b8/0x3650 net/core/dev.c:3838
+
+stack backtrace:
+CPU: 0 PID: 8855 Comm: syz-executor427 Not tainted 5.3.0-rc7+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+ lockdep_rcu_suspicious+0x153/0x15d kernel/locking/lockdep.c:5357
+ qdisc_root include/net/sch_generic.h:492 [inline]
+ netem_enqueue+0x1cfb/0x2d80 net/sched/sch_netem.c:479
+ __dev_xmit_skb net/core/dev.c:3527 [inline]
+ __dev_queue_xmit+0x15d2/0x3650 net/core/dev.c:3838
+ dev_queue_xmit+0x18/0x20 net/core/dev.c:3902
+ neigh_hh_output include/net/neighbour.h:500 [inline]
+ neigh_output include/net/neighbour.h:509 [inline]
+ ip_finish_output2+0x1726/0x2570 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:308 [inline]
+ __ip_finish_output+0x5fc/0xb90 net/ipv4/ip_output.c:290
+ ip_finish_output+0x38/0x1f0 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip_mc_output+0x292/0xf40 net/ipv4/ip_output.c:417
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0xbb/0x190 net/ipv4/ip_output.c:125
+ ip_send_skb+0x42/0xf0 net/ipv4/ip_output.c:1555
+ udp_send_skb.isra.0+0x6b2/0x1160 net/ipv4/udp.c:887
+ udp_sendmsg+0x1e96/0x2820 net/ipv4/udp.c:1174
+ inet_sendmsg+0x9e/0xe0 net/ipv4/af_inet.c:807
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0xd7/0x130 net/socket.c:657
+ ___sys_sendmsg+0x3e2/0x920 net/socket.c:2311
+ __sys_sendmmsg+0x1bf/0x4d0 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x9d/0x100 net/socket.c:2439
+ do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/dynack.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/net/sch_generic.h | 5 +++++
+ net/sched/sch_netem.c     | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/dynack.c b/drivers/net/wireless/ath/ath9k/dynack.c
-index 6e236a4854311..71b4888b30e71 100644
---- a/drivers/net/wireless/ath/ath9k/dynack.c
-+++ b/drivers/net/wireless/ath/ath9k/dynack.c
-@@ -300,9 +300,9 @@ void ath_dynack_node_init(struct ath_hw *ah, struct ath_node *an)
- 
- 	an->ackto = ackto;
- 
--	spin_lock(&da->qlock);
-+	spin_lock_bh(&da->qlock);
- 	list_add_tail(&an->list, &da->nodes);
--	spin_unlock(&da->qlock);
-+	spin_unlock_bh(&da->qlock);
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index f59acacaa2652..37876d842f2e6 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -305,6 +305,11 @@ static inline struct Qdisc *qdisc_root(const struct Qdisc *qdisc)
+ 	return q;
  }
- EXPORT_SYMBOL(ath_dynack_node_init);
  
-@@ -316,9 +316,9 @@ void ath_dynack_node_deinit(struct ath_hw *ah, struct ath_node *an)
++static inline struct Qdisc *qdisc_root_bh(const struct Qdisc *qdisc)
++{
++	return rcu_dereference_bh(qdisc->dev_queue->qdisc);
++}
++
+ static inline struct Qdisc *qdisc_root_sleeping(const struct Qdisc *qdisc)
  {
- 	struct ath_dynack *da = &ah->dynack;
+ 	return qdisc->dev_queue->qdisc_sleeping;
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 787aa52e5991c..6266121a03f9a 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -469,7 +469,7 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	 * skb will be queued.
+ 	 */
+ 	if (count > 1 && (skb2 = skb_clone(skb, GFP_ATOMIC)) != NULL) {
+-		struct Qdisc *rootq = qdisc_root(sch);
++		struct Qdisc *rootq = qdisc_root_bh(sch);
+ 		u32 dupsave = q->duplicate; /* prevent duplicating a dup... */
  
--	spin_lock(&da->qlock);
-+	spin_lock_bh(&da->qlock);
- 	list_del(&an->list);
--	spin_unlock(&da->qlock);
-+	spin_unlock_bh(&da->qlock);
- }
- EXPORT_SYMBOL(ath_dynack_node_deinit);
- 
+ 		q->duplicate = 0;
 -- 
 2.20.1
 
