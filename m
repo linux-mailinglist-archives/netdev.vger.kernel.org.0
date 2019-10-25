@@ -2,59 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CF5E4A18
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F4CE4A1E
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:40:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440188AbfJYLid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 07:38:33 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:42931 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727283AbfJYLid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:38:33 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1iNxvI-0004kV-8s; Fri, 25 Oct 2019 11:38:28 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Egor Pomozov <epomozov@marvell.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] net: aquantia: fix spelling mistake: tx_queus -> tx_queues
-Date:   Fri, 25 Oct 2019 12:38:28 +0100
-Message-Id: <20191025113828.19710-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S2409222AbfJYLjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 07:39:52 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:37776 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727283AbfJYLjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:39:52 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9PBdp3j090721;
+        Fri, 25 Oct 2019 06:39:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1572003591;
+        bh=TtOkjwPBoPyM5VIPZXm9zE0mKlSziofkfWXNj6bcDwE=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=l9xTYOq4CAazDACc6FEUJ7/oDWIbbFh7FrESwg53t9Lsvf62dAamf589mhg6YvqCa
+         5hyMxFPr7gCujCU8l6LhYp/SsUcZ5SDj4RMasCoO0R2Uu8q7A1RIgWET22ZM/Q5MW7
+         Iawy6HEi1gF2rpD8B/Us/1MG0V50qTaLtKGJH7vg=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x9PBdouE096419
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 25 Oct 2019 06:39:50 -0500
+Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 25
+ Oct 2019 06:39:40 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE101.ent.ti.com
+ (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Fri, 25 Oct 2019 06:39:39 -0500
+Received: from [172.24.190.233] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9PBdlCa063355;
+        Fri, 25 Oct 2019 06:39:48 -0500
+Subject: Re: [PATCH] phy: ti: gmii-sel: fix mac tx internal delay for
+ rgmii-rxid
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     <netdev@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        <linux-kernel@vger.kernel.org>
+References: <20191023144744.1246-1-grygorii.strashko@ti.com>
+ <45a6ffd4-c0bd-1845-cb71-9adbafde2dd8@gmail.com>
+ <98235ce5-a86b-46be-c390-18bbbfd1df03@ti.com>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+Message-ID: <55af0ece-be69-ae73-8b57-43cd6750664b@ti.com>
+Date:   Fri, 25 Oct 2019 17:09:17 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <98235ce5-a86b-46be-c390-18bbbfd1df03@ti.com>
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
 
-There is a spelling mistake in a netdev_err error message. Fix it.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_ptp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 24/10/19 11:12 AM, Grygorii Strashko wrote:
+> 
+> 
+> On 24/10/2019 05:41, Florian Fainelli wrote:
+>>
+>>
+>> On 10/23/2019 7:47 AM, Grygorii Strashko wrote:
+>>> Now phy-gmii-sel will disable MAC TX internal delay for PHY interface mode
+>>> "rgmii-rxid" which is incorrect.
+>>> Hence, fix it by enabling MAC TX internal delay in the case of "rgmii-rxid"
+>>> mode.
+>>>
+>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>>
+>> Should this have a:
+>>
+>> Fixes: 92b58b34741f ("phy: ti: introduce phy-gmii-sel driver")
+>>
+> 
+> Yes. it should.
+> Kishon, would you like me to re-submit or can you fix while applying?
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-index 3ec08415e53e..232df785488c 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-@@ -533,7 +533,7 @@ void aq_ptp_tx_hwtstamp(struct aq_nic_s *aq_nic, u64 timestamp)
- 	struct skb_shared_hwtstamps hwtstamp;
- 
- 	if (!skb) {
--		netdev_err(aq_nic->ndev, "have timestamp but tx_queus empty\n");
-+		netdev_err(aq_nic->ndev, "have timestamp but tx_queues empty\n");
- 		return;
- 	}
- 
--- 
-2.20.1
 
+merged now, thanks!
+
+-Kishon
