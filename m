@@ -2,155 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1E8BE4C84
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 15:42:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 504BFE4CA2
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 15:48:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504884AbfJYNmt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 09:42:49 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36495 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504875AbfJYNms (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 09:42:48 -0400
-Received: by mail-wr1-f65.google.com with SMTP id w18so2419697wrt.3
-        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 06:42:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=metanetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0mnmJjgSlbBJ30kBXAxihFKleD83aqV+FTUAUtrG3yA=;
-        b=Li6TPKlS1dN7+hG4fVg7M1mBLXyZSf07oSkHnNQubaNALerMXZKLDxK7R9u+lzqxCy
-         ogprTCWDbICgJw0yomR4qlKWK64bTcZ7INGxfNig4hcYRHNrTzDv69+wbwZzcR6lhuf7
-         fyzfxPa1PjHRBK+jFpQ/Gv7TKnU4DXkigWg+0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0mnmJjgSlbBJ30kBXAxihFKleD83aqV+FTUAUtrG3yA=;
-        b=M6LCuu4+TbVfrD4uDkQ9fH4476dSmsjBiiQEMg3Ujp/nBf7nGGZ6jQoUcViG41dkzz
-         h43KeuwYvdFBriRrbV3uMt2bKqmK1fXK4QD79NNqyUNexgmxC/OBz1fj2Zrxlea6Coes
-         GHwddQoNlaKfPdmsALN3/pv/lS2QZ/r0i1E/gGNZktBJhI0IcubEjtrCHLZwqguletxY
-         QqgOhrYl/i5GAIqHMMbKGi5LvIRKZ/t8e5fkWFooySapidIO6PNX9er1YrCpcsXUbvFu
-         +pit1Ngco8wrLIh/GQH/ORhQROM3TnSRJekryOQsptLI8zpZRxV9aXVXRDOttlsdp8AR
-         TXjw==
-X-Gm-Message-State: APjAAAX61D9/JaikMBjjKtye1t61ictCt0HGuKpXq6sN/86ha9Yp6orX
-        ktcMRPZi9VhOv1LWfysqC84Nxw==
-X-Google-Smtp-Source: APXvYqwupdv7Fh2oROTvgM21NgJagri/TBE8LfHiqS9h+SXH5+3S+USNhdGzYSHXAQdz0PZWE1FJkQ==
-X-Received: by 2002:adf:e585:: with SMTP id l5mr3085728wrm.156.1572010966360;
-        Fri, 25 Oct 2019 06:42:46 -0700 (PDT)
-Received: from localhost.localdomain ([94.230.83.169])
-        by smtp.gmail.com with ESMTPSA id v11sm2194730wrw.97.2019.10.25.06.42.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Oct 2019 06:42:45 -0700 (PDT)
-From:   Shmulik Ladkani <shmulik@metanetworks.com>
-X-Google-Original-From: Shmulik Ladkani <shmulik.ladkani@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Subject: [PATCH bpf-next 2/2] test_bpf: Introduce 'gso_linear_no_head_frag' skb_segment test
-Date:   Fri, 25 Oct 2019 16:42:23 +0300
-Message-Id: <20191025134223.2761-3-shmulik.ladkani@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191025134223.2761-1-shmulik.ladkani@gmail.com>
-References: <20191025134223.2761-1-shmulik.ladkani@gmail.com>
+        id S2504908AbfJYNsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 09:48:46 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4764 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2502085AbfJYNsq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 09:48:46 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DD827330F78C1E52A52B;
+        Fri, 25 Oct 2019 21:48:41 +0800 (CST)
+Received: from huawei.com (10.67.189.167) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Fri, 25 Oct 2019
+ 21:48:34 +0800
+From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+To:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <xiaojiangfeng@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <leeyou.li@huawei.com>, <zhanghan23@huawei.com>,
+        <nixiaoming@huawei.com>
+Subject: [PATCH] net: hisilicon: Fix "Trying to free already-free IRQ"
+Date:   Fri, 25 Oct 2019 21:48:22 +0800
+Message-ID: <1572011302-48605-1-git-send-email-xiaojiangfeng@huawei.com>
+X-Mailer: git-send-email 1.8.5.6
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.189.167]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Following reports of skb_segment() hitting a BUG_ON when working on
-GROed skbs which have their gso_size mangled (e.g. after a
-bpf_skb_change_proto call), add a reproducer test that mimics the
-input skbs that lead to the mentioned BUG_ON as in [1] and validates the
-fix submitted in [2].
+When rmmod hip04_eth.ko, we can get the following warning:
 
-[1] https://lists.openwall.net/netdev/2019/08/26/110
-[2] commit 3dcbdb134f32 ("net: gso: Fix skb_segment splat when splitting gso_size mangled skb having linear-headed frag_list")
+Task track: rmmod(1623)>bash(1591)>login(1581)>init(1)
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 1623 at kernel/irq/manage.c:1557 __free_irq+0xa4/0x2ac()
+Trying to free already-free IRQ 200
+Modules linked in: ping(O) pramdisk(O) cpuinfo(O) rtos_snapshot(O) interrupt_ctrl(O) mtdblock mtd_blkdevrtfs nfs_acl nfs lockd grace sunrpc xt_tcpudp ipt_REJECT iptable_filter ip_tables x_tables nf_reject_ipv
+CPU: 0 PID: 1623 Comm: rmmod Tainted: G           O    4.4.193 #1
+Hardware name: Hisilicon A15
+[<c020b408>] (rtos_unwind_backtrace) from [<c0206624>] (show_stack+0x10/0x14)
+[<c0206624>] (show_stack) from [<c03f2be4>] (dump_stack+0xa0/0xd8)
+[<c03f2be4>] (dump_stack) from [<c021a780>] (warn_slowpath_common+0x84/0xb0)
+[<c021a780>] (warn_slowpath_common) from [<c021a7e8>] (warn_slowpath_fmt+0x3c/0x68)
+[<c021a7e8>] (warn_slowpath_fmt) from [<c026876c>] (__free_irq+0xa4/0x2ac)
+[<c026876c>] (__free_irq) from [<c0268a14>] (free_irq+0x60/0x7c)
+[<c0268a14>] (free_irq) from [<c0469e80>] (release_nodes+0x1c4/0x1ec)
+[<c0469e80>] (release_nodes) from [<c0466924>] (__device_release_driver+0xa8/0x104)
+[<c0466924>] (__device_release_driver) from [<c0466a80>] (driver_detach+0xd0/0xf8)
+[<c0466a80>] (driver_detach) from [<c0465e18>] (bus_remove_driver+0x64/0x8c)
+[<c0465e18>] (bus_remove_driver) from [<c02935b0>] (SyS_delete_module+0x198/0x1e0)
+[<c02935b0>] (SyS_delete_module) from [<c0202ed0>] (__sys_trace_return+0x0/0x10)
+---[ end trace bb25d6123d849b44 ]---
 
-Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Currently "rmmod hip04_eth.ko" call free_irq more than once
+as devres_release_all and hip04_remove both call free_irq.
+This results in a 'Trying to free already-free IRQ' warning.
+To solve the problem free_irq has been moved out of hip04_remove.
+
+Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 ---
- lib/test_bpf.c | 63 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 63 insertions(+)
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/lib/test_bpf.c b/lib/test_bpf.c
-index c952df82b515..cecb230833be 100644
---- a/lib/test_bpf.c
-+++ b/lib/test_bpf.c
-@@ -6859,6 +6859,60 @@ static __init struct sk_buff *build_test_skb(void)
- 	return NULL;
- }
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index c841674..ad6d912 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -1038,7 +1038,6 @@ static int hip04_remove(struct platform_device *pdev)
  
-+static __init struct sk_buff *build_test_skb_linear_no_head_frag(void)
-+{
-+	unsigned int alloc_size = 2000;
-+	unsigned int headroom = 102, doffset = 72, data_size = 1308;
-+	struct sk_buff *skb[2];
-+	int i;
-+
-+	/* skbs linked in a frag_list, both with linear data, with head_frag=0
-+	 * (data allocated by kmalloc), both have tcp data of 1308 bytes
-+	 * (total payload is 2616 bytes).
-+	 * Data offset is 72 bytes (40 ipv6 hdr, 32 tcp hdr). Some headroom.
-+	 */
-+	for (i = 0; i < 2; i++) {
-+		skb[i] = alloc_skb(alloc_size, GFP_KERNEL);
-+		if (!skb[i]) {
-+			if (i == 0)
-+				goto err_skb0;
-+			else
-+				goto err_skb1;
-+		}
-+
-+		skb[i]->protocol = htons(ETH_P_IPV6);
-+		skb_reserve(skb[i], headroom);
-+		skb_put(skb[i], doffset + data_size);
-+		skb_reset_network_header(skb[i]);
-+		if (i == 0)
-+			skb_reset_mac_header(skb[i]);
-+		else
-+			skb_set_mac_header(skb[i], -ETH_HLEN);
-+		__skb_pull(skb[i], doffset);
-+	}
-+
-+	/* setup shinfo.
-+	 * mimic bpf_skb_proto_4_to_6, which resets gso_segs and assigns a
-+	 * reduced gso_size.
-+	 */
-+	skb_shinfo(skb[0])->gso_size = 1288;
-+	skb_shinfo(skb[0])->gso_type = SKB_GSO_TCPV6 | SKB_GSO_DODGY;
-+	skb_shinfo(skb[0])->gso_segs = 0;
-+	skb_shinfo(skb[0])->frag_list = skb[1];
-+
-+	/* adjust skb[0]'s len */
-+	skb[0]->len += skb[1]->len;
-+	skb[0]->data_len += skb[1]->len;
-+	skb[0]->truesize += skb[1]->truesize;
-+
-+	return skb[0];
-+
-+err_skb1:
-+	kfree_skb(skb[0]);
-+err_skb0:
-+	return NULL;
-+}
-+
- struct skb_segment_test {
- 	const char *descr;
- 	struct sk_buff *(*build_skb)(void);
-@@ -6871,6 +6925,15 @@ static struct skb_segment_test skb_segment_tests[] __initconst = {
- 		.build_skb = build_test_skb,
- 		.features = NETIF_F_SG | NETIF_F_GSO_PARTIAL | NETIF_F_IP_CSUM |
- 			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM
-+	},
-+	{
-+		.descr = "gso_linear_no_head_frag",
-+		.build_skb = build_test_skb_linear_no_head_frag,
-+		.features = NETIF_F_SG | NETIF_F_FRAGLIST |
-+			    NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_GSO |
-+			    NETIF_F_LLTX_BIT | NETIF_F_GRO |
-+			    NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
-+			    NETIF_F_HW_VLAN_STAG_TX_BIT
- 	}
- };
- 
+ 	hip04_free_ring(ndev, d);
+ 	unregister_netdev(ndev);
+-	free_irq(ndev->irq, ndev);
+ 	of_node_put(priv->phy_node);
+ 	cancel_work_sync(&priv->tx_timeout_task);
+ 	free_netdev(ndev);
 -- 
-2.17.1
+1.8.5.6
 
