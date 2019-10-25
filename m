@@ -2,92 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30A2CE473A
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 11:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DBC6E473D
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 11:30:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438336AbfJYJa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 05:30:26 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:57165 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437782AbfJYJa0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 05:30:26 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iNvvJ-0002B0-0O; Fri, 25 Oct 2019 11:30:21 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1iNvvG-0006PQ-Gf; Fri, 25 Oct 2019 11:30:18 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
-        wg@grandegger.com
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v1] j1939: transport: make sure EOMA is send with the total message size set
-Date:   Fri, 25 Oct 2019 11:30:15 +0200
-Message-Id: <20191025093015.24506-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.23.0
+        id S2438573AbfJYJaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 05:30:55 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:43340 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2438521AbfJYJay (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 05:30:54 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DFE559FBAB0490E9D0C7;
+        Fri, 25 Oct 2019 17:30:52 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Fri, 25 Oct 2019
+ 17:30:46 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <3chas3@gmail.com>, <davem@davemloft.net>
+CC:     <linux-atm-general@lists.sourceforge.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] atm: remove unneeded semicolon
+Date:   Fri, 25 Oct 2019 17:30:30 +0800
+Message-ID: <20191025093030.956-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We was sending malformed EOMA with total message size set to 0. So, fix this
-bug and add sanity check to the RX path.
+remove unneeded semicolon.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- net/can/j1939/transport.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+ drivers/atm/firestream.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index fe000ea757ea..a82097427642 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -1273,9 +1273,27 @@ j1939_xtp_rx_abort(struct j1939_priv *priv, struct sk_buff *skb,
- static void
- j1939_xtp_rx_eoma_one(struct j1939_session *session, struct sk_buff *skb)
- {
-+	struct j1939_sk_buff_cb *skcb = j1939_skb_to_cb(skb);
-+	const u8 *dat;
-+	int len;
-+
- 	if (j1939_xtp_rx_cmd_bad_pgn(session, skb))
- 		return;
- 
-+	dat = skb->data;
-+
-+	if (skcb->addr.type == J1939_ETP)
-+		len = j1939_etp_ctl_to_size(dat);
-+	else
-+		len = j1939_tp_ctl_to_size(dat);
-+
-+	if (session->total_message_size != len) {
-+		netdev_warn(session->priv->ndev, "%s: 0x%p: Incorrect size. Expected: %i; got: %i.\n",
-+			    __func__, session, session->total_message_size,
-+			    len);
-+		return;
-+	}
-+
- 	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
- 
- 	session->pkt.tx_acked = session->pkt.total;
-@@ -1432,7 +1450,7 @@ j1939_session *j1939_session_fresh_new(struct j1939_priv *priv,
- 	skcb = j1939_skb_to_cb(skb);
- 	memcpy(skcb, rel_skcb, sizeof(*skcb));
- 
--	session = j1939_session_new(priv, skb, skb->len);
-+	session = j1939_session_new(priv, skb, size);
- 	if (!session) {
- 		kfree_skb(skb);
- 		return NULL;
+diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
+index 2bbab02..aad00d2 100644
+--- a/drivers/atm/firestream.c
++++ b/drivers/atm/firestream.c
+@@ -1070,7 +1070,7 @@ static int fs_open(struct atm_vcc *atm_vcc)
+ 					RC_FLAGS_BFPS_BFP * bfp |
+ 					RC_FLAGS_RXBM_PSB, 0, 0);
+ 			break;
+-		};
++		}
+ 		if (IS_FS50 (dev)) {
+ 			submit_command (dev, &dev->hp_txq, 
+ 					QE_CMD_REG_WR | QE_CMD_IMM_INQ,
 -- 
-2.23.0
+2.7.4
+
 
