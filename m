@@ -2,277 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8A0E486A
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:17:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 097EEE4872
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 12:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409348AbfJYKRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 06:17:40 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:45626 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409238AbfJYKRj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 06:17:39 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D4E161A0A40;
-        Fri, 25 Oct 2019 12:17:36 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C7CF41A07CA;
-        Fri, 25 Oct 2019 12:17:36 +0200 (CEST)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 7D989205DB;
-        Fri, 25 Oct 2019 12:17:36 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     laurentiu.tudor@nxp.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next v3 5/5] net: documentation: add docs for MAC/PHY support in DPAA2
-Date:   Fri, 25 Oct 2019 13:17:10 +0300
-Message-Id: <1571998630-17108-6-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1571998630-17108-1-git-send-email-ioana.ciornei@nxp.com>
-References: <1571998630-17108-1-git-send-email-ioana.ciornei@nxp.com>
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2409382AbfJYKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 06:19:22 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:49120 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389949AbfJYKTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 06:19:21 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9PA3Z9C190156;
+        Fri, 25 Oct 2019 10:19:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=Rk1YAxjxd6vBBuEKlpKWUiB6Af/3+SYZJkqaDV7EP5Y=;
+ b=qKEQFie++BBeMkZQcWG6GiTD+QuTbscvYjwUBYRBnZLZzD9zClUArCehfbeceEnOcySq
+ yJyGDE+OdDbd7U+k5B50C0Q6k5ji6O65ZtUMFD++bqho0HAok+i+jqp3HTP63Ux7pKDF
+ xgm/digkj2Fw+OnRQPGFt/ZOxks/MTtxdZu6+yraV4p+9OV410TI654pOIXKLtwA6Ib9
+ F3jbZyVSF+3OmwArpWzp1xJrx+hm+IqOcAdvjoqc5yC95EqB9gY/Cbe86Mej55kfzcdF
+ Xqy4wdEBnMnid4yrr35PyKHD+F+2aFl1f1v8vb7BmZtflPKPh/N3QrlTFDd7tYL5jczR Xg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 2vqswu25ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Oct 2019 10:19:14 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9P9vCNx010931;
+        Fri, 25 Oct 2019 10:19:13 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2vu0fra5ne-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Oct 2019 10:19:13 +0000
+Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9PAJD6u001476;
+        Fri, 25 Oct 2019 10:19:13 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 25 Oct 2019 03:19:12 -0700
+Date:   Fri, 25 Oct 2019 13:19:05 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Samuil Ivanov <samuil.ivanovbg@gmail.com>
+Cc:     gregkh@linuxfoundation.org, manishc@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, devel@driverdev.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] Staging: qlge: Rename prefix of a function to qlge
+Message-ID: <20191025101705.GM24678@kadam>
+References: <20191024212941.28149-1-samuil.ivanovbg@gmail.com>
+ <20191024212941.28149-2-samuil.ivanovbg@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191024212941.28149-2-samuil.ivanovbg@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9420 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=707
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910250093
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9420 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=787 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910250094
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation file for the MAC/PHY support in the DPAA2
-architecture. This describes the architecture and implementation of the
-interface between phylink and a DPAA2 network driver.
+On Fri, Oct 25, 2019 at 12:29:39AM +0300, Samuil Ivanov wrote:
+> diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+> index 6ec7e3ce3863..e9f1363c5bf2 100644
+> --- a/drivers/staging/qlge/qlge.h
+> +++ b/drivers/staging/qlge/qlge.h
+> @@ -2262,7 +2262,7 @@ int ql_write_mpi_reg(struct ql_adapter *qdev, u32 reg, u32 data);
+>  int ql_unpause_mpi_risc(struct ql_adapter *qdev);
+>  int ql_pause_mpi_risc(struct ql_adapter *qdev);
+>  int ql_hard_reset_mpi_risc(struct ql_adapter *qdev);
+> -int ql_soft_reset_mpi_risc(struct ql_adapter *qdev);
+> +int qlge_soft_reset_mpi_risc(struct ql_adapter *qdev);
 
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-Changes in v2:
- - none
-Changes in v3:
- - none
+The patch series doesn't change all the functions so now it's hodge
+podge.
 
- .../device_drivers/freescale/dpaa2/index.rst       |   1 +
- .../freescale/dpaa2/mac-phy-support.rst            | 191 +++++++++++++++++++++
- MAINTAINERS                                        |   2 +
- 3 files changed, 194 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
+>  int ql_dump_risc_ram_area(struct ql_adapter *qdev, void *buf, u32 ram_addr,
+>  			  int word_count);
+>  int ql_core_dump(struct ql_adapter *qdev, struct ql_mpi_coredump *mpi_coredump);
+> diff --git a/drivers/staging/qlge/qlge_dbg.c b/drivers/staging/qlge/qlge_dbg.c
+> index 019b7e6a1b7a..df5344e113ca 100644
+> --- a/drivers/staging/qlge/qlge_dbg.c
+> +++ b/drivers/staging/qlge/qlge_dbg.c
+> @@ -1312,7 +1312,7 @@ void ql_get_dump(struct ql_adapter *qdev, void *buff)
+>  
+>  	if (!test_bit(QL_FRC_COREDUMP, &qdev->flags)) {
+>  		if (!ql_core_dump(qdev, buff))
+> -			ql_soft_reset_mpi_risc(qdev);
+> +			qlge_soft_reset_mpi_risc(qdev);
+>  		else
+>  			netif_err(qdev, drv, qdev->ndev, "coredump failed!\n");
+>  	} else {
+> diff --git a/drivers/staging/qlge/qlge_mpi.c b/drivers/staging/qlge/qlge_mpi.c
+> index 9e422bbbb6ab..efe893935929 100644
+> --- a/drivers/staging/qlge/qlge_mpi.c
+> +++ b/drivers/staging/qlge/qlge_mpi.c
+> @@ -88,9 +88,10 @@ int ql_write_mpi_reg(struct ql_adapter *qdev, u32 reg, u32 data)
+>  	return status;
+>  }
+>  
+> -int ql_soft_reset_mpi_risc(struct ql_adapter *qdev)
+> +int qlge_soft_reset_mpi_risc(struct ql_adapter *qdev)
+>  {
+>  	int status;
+> +
+>  	status = ql_write_mpi_reg(qdev, 0x00001010, 1);
 
-diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-index 67bd87fe6c53..ee40fcc5ddff 100644
---- a/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-+++ b/Documentation/networking/device_drivers/freescale/dpaa2/index.rst
-@@ -8,3 +8,4 @@ DPAA2 Documentation
-    overview
-    dpio-driver
-    ethernet-driver
-+   mac-phy-support
-diff --git a/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-new file mode 100644
-index 000000000000..51e6624fb774
---- /dev/null
-+++ b/Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
-@@ -0,0 +1,191 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+.. include:: <isonum.txt>
-+
-+=======================
-+DPAA2 MAC / PHY support
-+=======================
-+
-+:Copyright: |copy| 2019 NXP
-+
-+Overview
-+--------
-+
-+The DPAA2 MAC / PHY support consists of a set of APIs that help DPAA2 network
-+drivers (dpaa2-eth, dpaa2-ethsw) interract with the PHY library.
-+
-+DPAA2 Software Architecture
-+---------------------------
-+
-+Among other DPAA2 objects, the fsl-mc bus exports DPNI objects (abstracting a
-+network interface) and DPMAC objects (abstracting a MAC). The dpaa2-eth driver
-+probes on the DPNI object and connects to and configures a DPMAC object with
-+the help of phylink.
-+
-+Data connections may be established between a DPNI and a DPMAC, or between two
-+DPNIs. Depending on the connection type, the netif_carrier_[on/off] is handled
-+directly by the dpaa2-eth driver or by phylink.
-+
-+.. code-block:: none
-+
-+  Sources of abstracted link state information presented by the MC firmware
-+
-+                                               +--------------------------------------+
-+  +------------+                  +---------+  |                           xgmac_mdio |
-+  | net_device |                  | phylink |--|  +-----+  +-----+  +-----+  +-----+  |
-+  +------------+                  +---------+  |  | PHY |  | PHY |  | PHY |  | PHY |  |
-+        |                             |        |  +-----+  +-----+  +-----+  +-----+  |
-+      +------------------------------------+   |                    External MDIO bus |
-+      |            dpaa2-eth               |   +--------------------------------------+
-+      +------------------------------------+
-+        |                             |                                           Linux
-+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+        |                             |                                     MC firmware
-+        |              /|             V
-+  +----------+        / |       +----------+
-+  |          |       /  |       |          |
-+  |          |       |  |       |          |
-+  |   DPNI   |<------|  |<------|   DPMAC  |
-+  |          |       |  |       |          |
-+  |          |       \  |<---+  |          |
-+  +----------+        \ |    |  +----------+
-+                       \|    |
-+                             |
-+           +--------------------------------------+
-+           | MC firmware polling MAC PCS for link |
-+           |  +-----+  +-----+  +-----+  +-----+  |
-+           |  | PCS |  | PCS |  | PCS |  | PCS |  |
-+           |  +-----+  +-----+  +-----+  +-----+  |
-+           |                    Internal MDIO bus |
-+           +--------------------------------------+
-+
-+
-+Depending on an MC firmware configuration setting, each MAC may be in one of two modes:
-+
-+- DPMAC_LINK_TYPE_FIXED: the link state management is handled exclusively by
-+  the MC firmware by polling the MAC PCS. Without the need to register a
-+  phylink instance, the dpaa2-eth driver will not bind to the connected dpmac
-+  object at all.
-+
-+- DPMAC_LINK_TYPE_PHY: The MC firmware is left waiting for link state update
-+  events, but those are in fact passed strictly between the dpaa2-mac (based on
-+  phylink) and its attached net_device driver (dpaa2-eth, dpaa2-ethsw),
-+  effectively bypassing the firmware.
-+
-+Implementation
-+--------------
-+
-+At probe time or when a DPNI's endpoint is dynamically changed, the dpaa2-eth
-+is responsible to find out if the peer object is a DPMAC and if this is the
-+case, to integrate it with PHYLINK using the dpaa2_mac_connect() API, which
-+will do the following:
-+
-+ - look up the device tree for PHYLINK-compatible of binding (phy-handle)
-+ - will create a PHYLINK instance associated with the received net_device
-+ - connect to the PHY using phylink_of_phy_connect()
-+
-+The following phylink_mac_ops callback are implemented:
-+
-+ - .validate() will populate the supported linkmodes with the MAC capabilities
-+   only when the phy_interface_t is RGMII_* (at the moment, this is the only
-+   link type supported by the driver).
-+
-+ - .mac_config() will configure the MAC in the new configuration using the
-+   dpmac_set_link_state() MC firmware API.
-+
-+ - .mac_link_up() / .mac_link_down() will update the MAC link using the same
-+   API described above.
-+
-+At driver unbind() or when the DPNI object is disconnected from the DPMAC, the
-+dpaa2-eth driver calls dpaa2_mac_disconnect() which will, in turn, disconnect
-+from the PHY and destroy the PHYLINK instance.
-+
-+In case of a DPNI-DPMAC connection, an 'ip link set dev eth0 up' would start
-+the following sequence of operations:
-+
-+(1) phylink_start() called from .dev_open().
-+(2) The .mac_config() and .mac_link_up() callbacks are called by PHYLINK.
-+(3) In order to configure the HW MAC, the MC Firmware API
-+    dpmac_set_link_state() is called.
-+(4) The firmware will eventually setup the HW MAC in the new configuration.
-+(5) A netif_carrier_on() call is made directly from PHYLINK on the associated
-+    net_device.
-+(6) The dpaa2-eth driver handles the LINK_STATE_CHANGE irq in order to
-+    enable/disable Rx taildrop based on the pause frame settings.
-+
-+.. code-block:: none
-+
-+  +---------+               +---------+
-+  | PHYLINK |-------------->|  eth0   |
-+  +---------+           (5) +---------+
-+  (1) ^  |
-+      |  |
-+      |  v (2)
-+  +-----------------------------------+
-+  |             dpaa2-eth             |
-+  +-----------------------------------+
-+         |                    ^ (6)
-+         |                    |
-+         v (3)                |
-+  +---------+---------------+---------+
-+  |  DPMAC  |               |  DPNI   |
-+  +---------+               +---------+
-+  |            MC Firmware            |
-+  +-----------------------------------+
-+         |
-+         |
-+         v (4)
-+  +-----------------------------------+
-+  |             HW MAC                |
-+  +-----------------------------------+
-+
-+In case of a DPNI-DPNI connection, a usual sequence of operations looks like
-+the following:
-+
-+(1) ip link set dev eth0 up
-+(2) The dpni_enable() MC API called on the associated fsl_mc_device.
-+(3) ip link set dev eth1 up
-+(4) The dpni_enable() MC API called on the associated fsl_mc_device.
-+(5) The LINK_STATE_CHANGED irq is received by both instances of the dpaa2-eth
-+    driver because now the operational link state is up.
-+(6) The netif_carrier_on() is called on the exported net_device from
-+    link_state_update().
-+
-+.. code-block:: none
-+
-+  +---------+               +---------+
-+  |  eth0   |               |  eth1   |
-+  +---------+               +---------+
-+      |  ^                     ^  |
-+      |  |                     |  |
-+  (1) v  | (6)             (6) |  v (3)
-+  +---------+               +---------+
-+  |dpaa2-eth|               |dpaa2-eth|
-+  +---------+               +---------+
-+      |  ^                     ^  |
-+      |  |                     |  |
-+  (2) v  | (5)             (5) |  v (4)
-+  +---------+---------------+---------+
-+  |  DPNI   |               |  DPNI   |
-+  +---------+               +---------+
-+  |            MC Firmware            |
-+  +-----------------------------------+
-+
-+
-+Exported API
-+------------
-+
-+Any DPAA2 driver that drivers endpoints of DPMAC objects should service its
-+_EVENT_ENDPOINT_CHANGED irq and connect/disconnect from the associated DPMAC
-+when necessary using the below listed API::
-+
-+ - int dpaa2_mac_connect(struct dpaa2_mac *mac);
-+ - void dpaa2_mac_disconnect(struct dpaa2_mac *mac);
-+
-+A phylink integration is necessary only when the partner DPMAC is not of TYPE_FIXED.
-+One can check for this condition using the below API::
-+
-+ - bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,struct fsl_mc_io *mc_io);
-+
-+Before connection to a MAC, the caller must allocate and populate the
-+dpaa2_mac structure with the associated net_device, a pointer to the MC portal
-+to be used and the actual fsl_mc_device structure of the DPMAC.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e6bed70805f5..982c083568c7 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5059,6 +5059,8 @@ F:	drivers/net/ethernet/freescale/dpaa2/dpmac*
- F:	drivers/net/ethernet/freescale/dpaa2/dpkg.h
- F:	drivers/net/ethernet/freescale/dpaa2/Makefile
- F:	drivers/net/ethernet/freescale/dpaa2/Kconfig
-+F:	Documentation/networking/device_drivers/freescale/dpaa2/ethernet-driver.rst
-+F:	Documentation/networking/device_drivers/freescale/dpaa2/mac-phy-support.rst
- 
- DPAA2 ETHERNET SWITCH DRIVER
- M:	Ioana Radulescu <ruxandra.radulescu@nxp.com>
--- 
-1.9.1
+This white space change is unrelated.
+
+>  	return status;
+>  }
+
+regards,
+dan carpenter
 
