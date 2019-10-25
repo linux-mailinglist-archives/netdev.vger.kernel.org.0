@@ -2,56 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA2BEE4A35
-	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE97E4A3A
+	for <lists+netdev@lfdr.de>; Fri, 25 Oct 2019 13:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502015AbfJYLp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 07:45:29 -0400
-Received: from sonic307-1.consmr.mail.bf2.yahoo.com ([74.6.134.40]:38111 "EHLO
-        sonic307-1.consmr.mail.bf2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2501994AbfJYLp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:45:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1572003927; bh=IF5V/U/WurT+AiOPTJHR/xJXZxB3Za5bphIXo/fXWgU=; h=Date:From:Reply-To:Subject:From:Subject; b=FUS++uzcqwPISOj+2usBN0tdFXALcjNWwE9P3A3Py5p5rIh5pYSUyNE9H8UdVu5gFsfpGbQx3O/FZ7ibS+Kcwgegnye3ULlZPEB+mS4dGC2vfoRxSrcCZRX6w3X9qOgWJ5T4a9U1mosNJpzIypHSoFfX/GTVBOypl0A1KW3Blj79SVpMXOEP5Fl7hi3NktfZCs2rcKe6tg3miF1h/i8mveWJHaSlDVZ/+eMX/Y/3lCxUh2L31TuFAN9+oz3cf8K7i5jB4XFUpihweo9iMd13JaTl1DE1hE8oSHDkMe80FnLtx+9seg2zSzh99bt3aQmMrBeRNAJvfKWjYFNsXrAmyg==
-X-YMail-OSG: _V0yO.IVM1mUdlkmODf2LKaq67n5DTIRZWh42yxVKfeL35M5P4qR95RMM8zV2bH
- NUU3qJaE.tyeH03UScXal631DuezZCVaWMCQErVDe1EpLLDeiJruq_0f._qugRz3pb6QC9_Q0n9u
- bVAcumI2s3u3KLxQ3mOOMA0zEBYKToOCp8CSwUX693DXgaJY70S9PlE0M.3bqthL23VY7_p8.RBl
- I0G3Dd.HsDAjomKUXUY23atJ2v5mX1ztFl1wlrrIvWWXuxexuATLafewTNeEh_mzGY_aNQ2zRY4v
- S2sEAez_XEKShXCJRpeWGATFVpHW_TeYePi1k4kg5_3eHWB8FXwGgCjxK53c7v42vIiZypGb3LL9
- SVuh8KhGuL13WR5qUByXJ.rxCdcBTVRLcmfs8jndh4owmvWjAhdt1DtJtIj2pQ9hN8DPmx6D1.Hk
- WgdR_R4rjrhw.l_7oV4g_ereBmOx9AUF1o7gvRImGtdA_fIYPKb_RH3baw4pRrysNx2LMc3JejtK
- TIFXVEwqCBMhz7Sbw6TtBlek0McJucUWh06NWkNn1g48iomBezF7daicdQiVYuH.38kWhLbLGrbD
- 7Xb5qI7rvY3VvliGxMBv1kgerRqXFIeIKh7x0wEjp5HjFfW11flIGAhj.Ohgz0uxiwl.glstXB53
- oVhQgtDi9pUIiPPNhOKFr94ycl8LymCEYw8.M6PaVBaNtcxRER.0PMreZNFxI.MxDZ0fHa1IFi8a
- AxfMLFpvcAdEoSYsBK4RAEcD3B.l4Ncqo1fcsdF0wVyUb__va2yP14iz2pVUB_o6r.swmPatVF9g
- 5BjbPCziq5Dv3toGp.0_xaDlGn07ygVfiqv2BkTvw90TpDpYjP_riujIOzrkUKDL6YASfB.MT3nn
- YbUb8xkLjxUc6f8dFEG9v4dhLbGnVlPL3mqPz1BIqw9eraNzWAR3e6jMUE1Rs3oZNOeDw4suf1b5
- ARtoRpg8qcEkLrnNm0IYvMCt_0Ckk43ddSR2chCPWdBXqRcvwKOT5vRlD3GgeOyC.oPa8CVxypqO
- ._.bHPpxR1kmi3f0WZUNsxUbd14LPUxDh5k10Ezkw24tv70oILUwjaLBs3U0EKsT0KT9wZRayUAW
- eTu7JEQX2rZmR5cLAIxC_yTN.s531ZmOFBEJ8z1XyOrUryOX8APGF8bQ8EGVMVOH7zDFPFUt2bvx
- p_j6I6NplBgdsJ83Yngpl621v6DcyXog6Q0Yk9qnMByN6YapUM9cuEe8Q5U6FrEha9OHK7FmAgZ9
- v4kiIjKcQYvPsVAV6PtOvda913L0xiW8EsAiWgo.BJhfzey7swlrPlID6yp3ns7fWCPK1fYAreNl
- u9A--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.bf2.yahoo.com with HTTP; Fri, 25 Oct 2019 11:45:27 +0000
-Date:   Fri, 25 Oct 2019 11:45:26 +0000 (UTC)
-From:   Christopher Bernard <jenkins.lisa@frontier.com>
-Reply-To: chrisben697@gmail.com
-Message-ID: <1718113956.528056.1572003926257@mail.yahoo.com>
-Subject: hi
+        id S2502025AbfJYLqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 07:46:03 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:45545 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730372AbfJYLqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 07:46:03 -0400
+Received: by mail-il1-f196.google.com with SMTP id u1so1533119ilq.12
+        for <netdev@vger.kernel.org>; Fri, 25 Oct 2019 04:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tYaEkgIB9GWVlm/FJ7iRMkqgyqU72eCgGRd6HkRmWj8=;
+        b=xAlEN6fWmVr5/JU3L0H/lJXgXb7dJIDyju0PXQi0WqZHtjQUku6EjDrvfgzmu7khGt
+         G7aCzb+5WyYNBQxxnzT8n85H83dyj+DJ/GbHP8fJ5pOR8EAH++865PMJR3UMlKmpELn8
+         7cBgFRnbRkT6BwhFL2ByQ6gM0H97D0ErJrlwHRpYgz4xbgev0PnaUkvLE4pLCQPacXVZ
+         OUwuLZgpwcNGvaAePue2nSIpacwGPEmZLwYf3jOhJqEpEj1ostUeno6ZO1gAkIFX5Gmb
+         GIbErTO4HVxnds0BRF9Xe77mplr1o7Lkhg0b+rRoavu99uJWqHRLQVbzAFiziVPJ7wpJ
+         fxiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tYaEkgIB9GWVlm/FJ7iRMkqgyqU72eCgGRd6HkRmWj8=;
+        b=BZAzeDTE1j8o/MVrZSK2vjLbgtbJdJEl2zNy9raRbjIVwrR//is8mVwuf4OneIrXAJ
+         upVrz9Lo3WG/Z28l6mYDD3S9oFxlAPAQ/YKRJ/Wh1lj5l1+qbxEYU+MVS2q6m0nw2K5r
+         XLboVVoZSVOdLt9jLnt8ir26AyxuXTUudQG215u2yx5rLfS/D6ptIl6MRJ4U+AvZDXWB
+         t6Ca9N6oEPBvzMtr2wC21WNDSCfqQ+usrEzWyY93tr95O7S0jRWX/8C3Y3oaxQHrmGym
+         CKbWexSquwtokblftPSnsM76NQvrCMNfGq4BmdZi/OFImZP8v3j8hUhCfTEX27zSaM74
+         Z7GQ==
+X-Gm-Message-State: APjAAAWlS9cFQeUJgcdf4PwhAZGTOmvoEFLm3ia0b0oM5skafLFSOpsn
+        V9so3xmaRV742dXZ/TpYtgeZ7A==
+X-Google-Smtp-Source: APXvYqyY34HWGExpARsP76styMb+0Zxjg4E0G8ye5pGne/vgnrw91w32ID8q9/Og30VKS3Y/Q/ubNg==
+X-Received: by 2002:a92:8703:: with SMTP id m3mr3783104ild.233.1572003962494;
+        Fri, 25 Oct 2019 04:46:02 -0700 (PDT)
+Received: from [192.168.0.124] (198-84-204-252.cpe.teksavvy.com. [198.84.204.252])
+        by smtp.googlemail.com with ESMTPSA id u85sm322760ili.28.2019.10.25.04.46.00
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 25 Oct 2019 04:46:01 -0700 (PDT)
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation
+ by netlink flag
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "mleitner@redhat.com" <mleitner@redhat.com>,
+        "dcaratti@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+ <78ec25e4-dea9-4f70-4196-b93fbc87208d@mojatatu.com>
+ <vbf7e4vy5nq.fsf@mellanox.com>
+ <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+ <20191024073557.GB2233@nanopsycho.orion> <vbfwocuupyz.fsf@mellanox.com>
+ <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
+ <vbfv9se6qkr.fsf@mellanox.com>
+ <200557cb-59a9-4dd7-b317-08d2dac8fa96@mojatatu.com>
+ <vbfsgni6mun.fsf@mellanox.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <2f389edd-a0d1-2e44-4e14-64ddbd581d3d@mojatatu.com>
+Date:   Fri, 25 Oct 2019 07:46:00 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <vbfsgni6mun.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2019-10-24 2:05 p.m., Vlad Buslov wrote:
+> 
 
+> 
+> Yes, of course. I was talking strictly about naming of
+> TCA_ACT_FLAGS_FAST_INIT flag value constant.
+> 
 
-Greetings,
+Sorry, I missed that. You know discussions on names and
+punctiations can last a lifetime;->[1].
+A name which reflects semantics or established style
+is always helpful. So Marcelo's suggestion is reasonable..
+In the same spirit as TCA_FLAG_LARGE_DUMP_ON, how about:
+TCA_FLAG_NO_PERCPU_STATS?
 
-How are you doing Hope you are alright, I sent you message earlier but no response from you, did you read my proposal email message? Please, I await your feedback.
-
-Regards,
-
-Christopher Bernard.
+cheers,
+jamal
+[1]http://bikeshed.com/
