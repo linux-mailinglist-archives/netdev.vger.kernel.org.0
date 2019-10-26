@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F2E5E5D3A
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EACD2E5D2D
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:35:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbfJZNgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:36:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38520 "EHLO mail.kernel.org"
+        id S1727085AbfJZNQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:16:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727008AbfJZNQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:16:56 -0400
+        id S1727031AbfJZNQ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:16:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3B72921897;
-        Sat, 26 Oct 2019 13:16:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 80D9F21D80;
+        Sat, 26 Oct 2019 13:16:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095816;
-        bh=2Zr63LfHAD3BEw5wTukfWSw3Tffj2QuG/1gRpsOupMc=;
+        s=default; t=1572095817;
+        bh=CTxPRFMTqgXMeITV6UjE6o5IR2+8hVr3NsBOlG8dFbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UY5Zm3IrybDhV81b8mQoRi4LNvyrBsg/2m8Pu0N5/7bSiZ3qPRNEVGxNx1a8ji6FT
-         Bh6aSXANeN7+RZYsg8PpTZRGIyq9R834/WHmX02oSLKNANPlhgdRAy3Fuw65Zj5JRJ
-         /cJL02CLyA6LfgQz5I1bALA0x7rPFvYCrP2SNZVc=
+        b=pEPjsxXek2WHlYl/Fith7l/Yw5aYVj6AgOdEr152YnnMxvW+QgUAr5BDADOYzxQEE
+         htzqfl54Dlpi7gE3ralZlix7pzuEKqCn+UeUEfGjF0UbbkYnxs0vzz1tzpxMtIwLkF
+         4clmqQhgzwXmyej8XoPwkUeU/2+fzQIX/EjsBMrk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Benc <jbenc@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 30/99] selftests/bpf: More compatible nc options in test_lwt_ip_encap
-Date:   Sat, 26 Oct 2019 09:14:51 -0400
-Message-Id: <20191026131600.2507-30-sashal@kernel.org>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 31/99] net_sched: fix backward compatibility for TCA_KIND
+Date:   Sat, 26 Oct 2019 09:14:52 -0400
+Message-Id: <20191026131600.2507-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -45,46 +46,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Benc <jbenc@redhat.com>
+From: Cong Wang <xiyou.wangcong@gmail.com>
 
-[ Upstream commit 106c35dda32f8b63f88cad7433f1b8bb0056958a ]
+[ Upstream commit 6f96c3c6904c26cea9ca2726d5d8a9b0b8205b3c ]
 
-Out of the three nc implementations widely in use, at least two (BSD netcat
-and nmap-ncat) do not support -l combined with -s. Modify the nc invocation
-to be accepted by all of them.
+Marcelo noticed a backward compatibility issue of TCA_KIND
+after we move from NLA_STRING to NLA_NUL_STRING, so it is probably
+too late to change it.
 
-Fixes: 17a90a788473 ("selftests/bpf: test that GSO works in lwt_ip_encap")
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/9f177682c387f3f943bb64d849e6c6774df3c5b4.1570539863.git.jbenc@redhat.com
+Instead, to make everyone happy, we can just insert a NUL to
+terminate the string with nla_strlcpy() like we do for TC actions.
+
+Fixes: 62794fc4fbf5 ("net_sched: add max len check for TCA_KIND")
+Reported-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Reviewed-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_lwt_ip_encap.sh | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/sched/cls_api.c | 36 +++++++++++++++++++++++++++++++++---
+ net/sched/sch_api.c |  3 +--
+ 2 files changed, 34 insertions(+), 5 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-index acf7a74f97cd9..59ea56945e6cd 100755
---- a/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-+++ b/tools/testing/selftests/bpf/test_lwt_ip_encap.sh
-@@ -314,15 +314,15 @@ test_gso()
- 	command -v nc >/dev/null 2>&1 || \
- 		{ echo >&2 "nc is not available: skipping TSO tests"; return; }
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 9aef93300f1c1..6b12883e04b8f 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -160,11 +160,22 @@ static inline u32 tcf_auto_prio(struct tcf_proto *tp)
+ 	return TC_H_MAJ(first);
+ }
  
--	# listen on IPv*_DST, capture TCP into $TMPFILE
-+	# listen on port 9000, capture TCP into $TMPFILE
- 	if [ "${PROTO}" == "IPv4" ] ; then
- 		IP_DST=${IPv4_DST}
- 		ip netns exec ${NS3} bash -c \
--			"nc -4 -l -s ${IPv4_DST} -p 9000 > ${TMPFILE} &"
-+			"nc -4 -l -p 9000 > ${TMPFILE} &"
- 	elif [ "${PROTO}" == "IPv6" ] ; then
- 		IP_DST=${IPv6_DST}
- 		ip netns exec ${NS3} bash -c \
--			"nc -6 -l -s ${IPv6_DST} -p 9000 > ${TMPFILE} &"
-+			"nc -6 -l -p 9000 > ${TMPFILE} &"
- 		RET=$?
- 	else
- 		echo "    test_gso: unknown PROTO: ${PROTO}"
++static bool tcf_proto_check_kind(struct nlattr *kind, char *name)
++{
++	if (kind)
++		return nla_strlcpy(name, kind, IFNAMSIZ) >= IFNAMSIZ;
++	memset(name, 0, IFNAMSIZ);
++	return false;
++}
++
+ static bool tcf_proto_is_unlocked(const char *kind)
+ {
+ 	const struct tcf_proto_ops *ops;
+ 	bool ret;
+ 
++	if (strlen(kind) == 0)
++		return false;
++
+ 	ops = tcf_proto_lookup_ops(kind, false, NULL);
+ 	/* On error return false to take rtnl lock. Proto lookup/create
+ 	 * functions will perform lookup again and properly handle errors.
+@@ -1976,6 +1987,7 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	struct nlattr *tca[TCA_MAX + 1];
++	char name[IFNAMSIZ];
+ 	struct tcmsg *t;
+ 	u32 protocol;
+ 	u32 prio;
+@@ -2032,13 +2044,19 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	if (err)
+ 		return err;
+ 
++	if (tcf_proto_check_kind(tca[TCA_KIND], name)) {
++		NL_SET_ERR_MSG(extack, "Specified TC filter name too long");
++		err = -EINVAL;
++		goto errout;
++	}
++
+ 	/* Take rtnl mutex if rtnl_held was set to true on previous iteration,
+ 	 * block is shared (no qdisc found), qdisc is not unlocked, classifier
+ 	 * type is not specified, classifier is not unlocked.
+ 	 */
+ 	if (rtnl_held ||
+ 	    (q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
+-	    !tca[TCA_KIND] || !tcf_proto_is_unlocked(nla_data(tca[TCA_KIND]))) {
++	    !tcf_proto_is_unlocked(name)) {
+ 		rtnl_held = true;
+ 		rtnl_lock();
+ 	}
+@@ -2196,6 +2214,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	struct nlattr *tca[TCA_MAX + 1];
++	char name[IFNAMSIZ];
+ 	struct tcmsg *t;
+ 	u32 protocol;
+ 	u32 prio;
+@@ -2235,13 +2254,18 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	if (err)
+ 		return err;
+ 
++	if (tcf_proto_check_kind(tca[TCA_KIND], name)) {
++		NL_SET_ERR_MSG(extack, "Specified TC filter name too long");
++		err = -EINVAL;
++		goto errout;
++	}
+ 	/* Take rtnl mutex if flushing whole chain, block is shared (no qdisc
+ 	 * found), qdisc is not unlocked, classifier type is not specified,
+ 	 * classifier is not unlocked.
+ 	 */
+ 	if (!prio ||
+ 	    (q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
+-	    !tca[TCA_KIND] || !tcf_proto_is_unlocked(nla_data(tca[TCA_KIND]))) {
++	    !tcf_proto_is_unlocked(name)) {
+ 		rtnl_held = true;
+ 		rtnl_lock();
+ 	}
+@@ -2349,6 +2373,7 @@ static int tc_get_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ {
+ 	struct net *net = sock_net(skb->sk);
+ 	struct nlattr *tca[TCA_MAX + 1];
++	char name[IFNAMSIZ];
+ 	struct tcmsg *t;
+ 	u32 protocol;
+ 	u32 prio;
+@@ -2385,12 +2410,17 @@ static int tc_get_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	if (err)
+ 		return err;
+ 
++	if (tcf_proto_check_kind(tca[TCA_KIND], name)) {
++		NL_SET_ERR_MSG(extack, "Specified TC filter name too long");
++		err = -EINVAL;
++		goto errout;
++	}
+ 	/* Take rtnl mutex if block is shared (no qdisc found), qdisc is not
+ 	 * unlocked, classifier type is not specified, classifier is not
+ 	 * unlocked.
+ 	 */
+ 	if ((q && !(q->ops->cl_ops->flags & QDISC_CLASS_OPS_DOIT_UNLOCKED)) ||
+-	    !tca[TCA_KIND] || !tcf_proto_is_unlocked(nla_data(tca[TCA_KIND]))) {
++	    !tcf_proto_is_unlocked(name)) {
+ 		rtnl_held = true;
+ 		rtnl_lock();
+ 	}
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 81d58b2806122..1047825d9f48d 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1390,8 +1390,7 @@ check_loop_fn(struct Qdisc *q, unsigned long cl, struct qdisc_walker *w)
+ }
+ 
+ const struct nla_policy rtm_tca_policy[TCA_MAX + 1] = {
+-	[TCA_KIND]		= { .type = NLA_NUL_STRING,
+-				    .len = IFNAMSIZ - 1 },
++	[TCA_KIND]		= { .type = NLA_STRING },
+ 	[TCA_RATE]		= { .type = NLA_BINARY,
+ 				    .len = sizeof(struct tc_estimator) },
+ 	[TCA_STAB]		= { .type = NLA_NESTED },
 -- 
 2.20.1
 
