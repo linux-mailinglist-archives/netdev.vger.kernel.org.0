@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69F50E5AF4
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:19:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2759E5AFC
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbfJZNTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:19:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41118 "EHLO mail.kernel.org"
+        id S1728261AbfJZNT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:19:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726330AbfJZNTM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:19:12 -0400
+        id S1728238AbfJZNTZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:19:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 648F92070B;
-        Sat, 26 Oct 2019 13:19:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D4BC321D7F;
+        Sat, 26 Oct 2019 13:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095952;
-        bh=OIZ6EXwHD5c8//jk+AXuRD+N7T25MxUNW2lB0iTm3+I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=0ICES4KRgOu7rWK827qRoOmctrE7BQmBGlTeL2Na+VAjHkKnVs34uPZBy1QCVmk+x
-         Org01q//TpfDdbVjzdbgIMNuChrFrqJRsM5qhyPK5r0U9keEXhDULVBPiSOk0uU3ll
-         /4zoZyKegSFXgcTq9n+SDciwfMzlZ5diCZOeKYr0=
+        s=default; t=1572095964;
+        bh=1oQgUWXsnyNQ3oyHEoHZ3MyPQnHIg/LZon8cKAsd5ik=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H3Y35YkpgbGlAO4dCf4S8wLzw2qPzlQpF6FiQWLmu97VbOr5N6Bw+h+UapzlY14LO
+         UPI/ieB/Gjmp2EkFfyG0aHF6UOmeFeBXi1m1hIRlK0IJ/L4tsVLx66EA44v5J0mRY2
+         G/Lm3aB7Db+RSGGHSOwqodLQ3d2nDQjfncVQu21I=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shuah Khan <skhan@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/59] tools: bpf: Use !building_out_of_srctree to determine srctree
-Date:   Sat, 26 Oct 2019 09:18:12 -0400
-Message-Id: <20191026131910.3435-1-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 10/59] rxrpc: Fix call ref leak
+Date:   Sat, 26 Oct 2019 09:18:21 -0400
+Message-Id: <20191026131910.3435-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191026131910.3435-1-sashal@kernel.org>
+References: <20191026131910.3435-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,69 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 55d554f5d14071f7c2c5dbd88d0a2eb695c97d16 ]
+[ Upstream commit c48fc11b69e95007109206311b0187a3090591f3 ]
 
-make TARGETS=bpf kselftest fails with:
+When sendmsg() finds a call to continue on with, if the call is in an
+inappropriate state, it doesn't release the ref it just got on that call
+before returning an error.
 
-Makefile:127: tools/build/Makefile.include: No such file or directory
+This causes the following symptom to show up with kasan:
 
-When the bpf tool make is invoked from tools Makefile, srctree is
-cleared and the current logic check for srctree equals to empty
-string to determine srctree location from CURDIR.
+	BUG: KASAN: use-after-free in rxrpc_send_keepalive+0x8a2/0x940
+	net/rxrpc/output.c:635
+	Read of size 8 at addr ffff888064219698 by task kworker/0:3/11077
 
-When the build in invoked from selftests/bpf Makefile, the srctree
-is set to "." and the same logic used for srctree equals to empty is
-needed to determine srctree.
+where line 635 is:
 
-Check building_out_of_srctree undefined as the condition for both
-cases to fix "make TARGETS=bpf kselftest" build failure.
+	whdr.epoch	= htonl(peer->local->rxnet->epoch);
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Song Liu <songliubraving@fb.com>
-Link: https://lore.kernel.org/bpf/20190927011344.4695-1-skhan@linuxfoundation.org
+The local endpoint (which cannot be pinned by the call) has been released,
+but not the peer (which is pinned by the call).
+
+Fix this by releasing the call in the error path.
+
+Fixes: 37411cad633f ("rxrpc: Fix potential NULL-pointer exception")
+Reported-by: syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/Makefile     | 6 +++++-
- tools/lib/bpf/Makefile | 6 +++++-
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ net/rxrpc/sendmsg.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
-index 53b60ad452f5d..93a84965345dc 100644
---- a/tools/bpf/Makefile
-+++ b/tools/bpf/Makefile
-@@ -12,7 +12,11 @@ INSTALL ?= install
- CFLAGS += -Wall -O2
- CFLAGS += -D__EXPORTED_HEADERS__ -I$(srctree)/include/uapi -I$(srctree)/include
- 
--ifeq ($(srctree),)
-+# This will work when bpf is built in tools env. where srctree
-+# isn't set and when invoked from selftests build, where srctree
-+# is set to ".". building_out_of_srctree is undefined for in srctree
-+# builds
-+ifndef building_out_of_srctree
- srctree := $(patsubst %/,%,$(dir $(CURDIR)))
- srctree := $(patsubst %/,%,$(dir $(srctree)))
- endif
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index 3624557550a1f..5cd2786cc437c 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -7,7 +7,11 @@ BPF_EXTRAVERSION = 1
- 
- MAKEFLAGS += --no-print-directory
- 
--ifeq ($(srctree),)
-+# This will work when bpf is built in tools env. where srctree
-+# isn't set and when invoked from selftests build, where srctree
-+# is a ".". building_out_of_srctree is undefined for in srctree
-+# builds
-+ifndef building_out_of_srctree
- srctree := $(patsubst %/,%,$(dir $(CURDIR)))
- srctree := $(patsubst %/,%,$(dir $(srctree)))
- srctree := $(patsubst %/,%,$(dir $(srctree)))
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 5d6ab4f6fd7ab..3e54ead1e921a 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -661,6 +661,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 		case RXRPC_CALL_SERVER_PREALLOC:
+ 		case RXRPC_CALL_SERVER_SECURING:
+ 		case RXRPC_CALL_SERVER_ACCEPTING:
++			rxrpc_put_call(call, rxrpc_call_put);
+ 			ret = -EBUSY;
+ 			goto error_release_sock;
+ 		default:
 -- 
 2.20.1
 
