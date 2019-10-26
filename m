@@ -2,38 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BA2AE5AA9
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:16:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA37E5AB5
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:17:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbfJZNQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:16:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38484 "EHLO mail.kernel.org"
+        id S1727244AbfJZNRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:17:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38832 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727001AbfJZNQz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:16:55 -0400
+        id S1727225AbfJZNRO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:17:14 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2C0321E6F;
-        Sat, 26 Oct 2019 13:16:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7391D21655;
+        Sat, 26 Oct 2019 13:17:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095814;
-        bh=n8LV+Zy/n4u8Rf26UdYHsaoqWPPxw9wALgq1SRMH8WM=;
+        s=default; t=1572095834;
+        bh=P+x0vk8c6GjcSwPpPa+2eiHOdIpm+8+UEleTFKRbyOs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1a/0ZsceQky8W6QCWEgW84LbJjDzi3JLya3BftgEBM4OaYTkikAA+q6GeL1WsraKl
-         hljfG3VypbqlVymWI/DStb+Cqn3Tfe/EbjqUWASmV7dNgD7+ik1yMvEgRucMmFiF8x
-         kpTHUmWV1kAltRsEZSPFQluEeWzXeTd3COMdQgmE=
+        b=EOPwo2t1SG4oE+WymKEDzvlZqzz6xgekMorPGK76/i5viXNCcjSCSzREjWDoFvbLO
+         iAuGi98kJQcL64Z80iTPlfHYLSFcn7SNjo2vYAMStK42GTsk978IjRy7n+GCZq3qp/
+         CwVo5qcbZ0VJLvfkrLVpuqDaU0W6DvKKcYPZRApk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Benc <jbenc@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Petar Penkov <ppenkov@google.com>,
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 29/99] selftests/bpf: Set rp_filter in test_flow_dissector
-Date:   Sat, 26 Oct 2019 09:14:50 -0400
-Message-Id: <20191026131600.2507-29-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 38/99] iwlwifi: exclude GEO SAR support for 3168
+Date:   Sat, 26 Oct 2019 09:14:59 -0400
+Message-Id: <20191026131600.2507-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -46,41 +43,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Benc <jbenc@redhat.com>
+From: Luca Coelho <luciano.coelho@intel.com>
 
-[ Upstream commit fd418b01fe26c2430b1091675cceb3ab2b52e1e0 ]
+[ Upstream commit 12e36d98d3e5acf5fc57774e0a15906d55f30cb9 ]
 
-Many distributions enable rp_filter. However, the flow dissector test
-generates packets that have 1.1.1.1 set as (inner) source address without
-this address being reachable. This causes the selftest to fail.
+We currently support two NICs in FW version 29, namely 7265D and 3168.
+Out of these, only 7265D supports GEO SAR, so adjust the function that
+checks for it accordingly.
 
-The selftests should not assume a particular initial configuration. Switch
-off rp_filter.
-
-Fixes: 50b3ed57dee9 ("selftests/bpf: test bpf flow dissection")
-Signed-off-by: Jiri Benc <jbenc@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Petar Penkov <ppenkov@google.com>
-Link: https://lore.kernel.org/bpf/513a298f53e99561d2f70b2e60e2858ea6cda754.1570539863.git.jbenc@redhat.com
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fixes: f5a47fae6aa3 ("iwlwifi: mvm: fix version check for GEO_TX_POWER_LIMIT support")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_flow_dissector.sh | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_flow_dissector.sh b/tools/testing/selftests/bpf/test_flow_dissector.sh
-index d23d4da66b834..e2d06191bd35c 100755
---- a/tools/testing/selftests/bpf/test_flow_dissector.sh
-+++ b/tools/testing/selftests/bpf/test_flow_dissector.sh
-@@ -63,6 +63,9 @@ fi
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+index 8b0b464a1f213..c520f42d165cd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
+@@ -887,15 +887,17 @@ static bool iwl_mvm_sar_geo_support(struct iwl_mvm *mvm)
+ 	 * firmware versions.  Unfortunately, we don't have a TLV API
+ 	 * flag to rely on, so rely on the major version which is in
+ 	 * the first byte of ucode_ver.  This was implemented
+-	 * initially on version 38 and then backported to29 and 17.
+-	 * The intention was to have it in 36 as well, but not all
+-	 * 8000 family got this feature enabled.  The 8000 family is
+-	 * the only one using version 36, so skip this version
+-	 * entirely.
++	 * initially on version 38 and then backported to 17.  It was
++	 * also backported to 29, but only for 7265D devices.  The
++	 * intention was to have it in 36 as well, but not all 8000
++	 * family got this feature enabled.  The 8000 family is the
++	 * only one using version 36, so skip this version entirely.
+ 	 */
+ 	return IWL_UCODE_SERIAL(mvm->fw->ucode_ver) >= 38 ||
+-	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 29 ||
+-	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 17;
++	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 17 ||
++	       (IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 29 &&
++		((mvm->trans->hw_rev & CSR_HW_REV_TYPE_MSK) ==
++		 CSR_HW_REV_TYPE_7265D));
+ }
  
- # Setup
- tc qdisc add dev lo ingress
-+echo 0 > /proc/sys/net/ipv4/conf/default/rp_filter
-+echo 0 > /proc/sys/net/ipv4/conf/all/rp_filter
-+echo 0 > /proc/sys/net/ipv4/conf/lo/rp_filter
- 
- echo "Testing IPv4..."
- # Drops all IP/UDP packets coming from port 9
+ int iwl_mvm_get_sar_geo_profile(struct iwl_mvm *mvm)
 -- 
 2.20.1
 
