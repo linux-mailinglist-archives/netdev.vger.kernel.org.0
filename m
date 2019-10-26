@@ -2,115 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04901E5FF8
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 01:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B93E5FF9
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 01:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726521AbfJZXEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 19:04:33 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:36117 "EHLO
+        id S1726533AbfJZXFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 19:05:37 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:51399 "EHLO
         relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbfJZXEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 19:04:33 -0400
+        with ESMTP id S1726443AbfJZXFh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 19:05:37 -0400
 X-Originating-IP: 92.184.102.220
 Received: from localhost (unknown [92.184.102.220])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 4D68F240005;
-        Sat, 26 Oct 2019 23:04:11 +0000 (UTC)
-Date:   Sun, 27 Oct 2019 01:03:18 +0200
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 0AAA3240004;
+        Sat, 26 Oct 2019 23:05:34 +0000 (UTC)
+Date:   Sun, 27 Oct 2019 01:05:11 +0200
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Vladimir Oltean <olteanv@gmail.com>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
         antoine.tenart@bootlin.com, f.fainelli@gmail.com,
         vivien.didelot@gmail.com, andrew@lunn.ch
-Subject: Re: [PATCH net 1/2] net: mscc: ocelot: fix vlan_filtering when
- enslaving to bridge before link is up
-Message-ID: <20191026230318.GE3125@piout.net>
+Subject: Re: [PATCH net 2/2] net: mscc: ocelot: refuse to overwrite the
+ port's native vlan
+Message-ID: <20191026230511.GF3125@piout.net>
 References: <20191026180427.14039-1-olteanv@gmail.com>
- <20191026180427.14039-2-olteanv@gmail.com>
+ <20191026180427.14039-3-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191026180427.14039-2-olteanv@gmail.com>
+In-Reply-To: <20191026180427.14039-3-olteanv@gmail.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/10/2019 21:04:26+0300, Vladimir Oltean wrote:
-> Background information: the driver operates the hardware in a mode where
-> a single VLAN can be transmitted as untagged on a particular egress
-> port. That is the "native VLAN on trunk port" use case. Its value is
-> held in port->vid.
+On 26/10/2019 21:04:27+0300, Vladimir Oltean wrote:
+> The switch driver keeps a "vid" variable per port, which signifies _the_
+> VLAN ID that is stripped on that port's egress (aka the native VLAN on a
+> trunk port).
 > 
-> Consider the following command sequence (no network manager, all
-> interfaces are down, debugging prints added by me):
+> That is the way the hardware is designed (mostly). The port->vid is
+> programmed into REW:PORT:PORT_VLAN_CFG:PORT_VID and the rewriter is told
+> to send all traffic as tagged except the one having port->vid.
 > 
-> $ ip link add dev br0 type bridge vlan_filtering 1
-> $ ip link set dev swp0 master br0
+> There exists a possibility of finer-grained egress untagging decisions:
+> using the VCAP IS1 engine, one rule can be added to match every
+> VLAN-tagged frame whose VLAN should be untagged, and set POP_CNT=1 as
+> action. However, the IS1 can hold at most 512 entries, and the VLANs are
+> in the order of 6 * 4096.
 > 
-> Kernel code path during last command:
+> So the code is fine for now. But this sequence of commands:
 > 
-> br_add_slave -> ocelot_netdevice_port_event (NETDEV_CHANGEUPPER):
-> [   21.401901] ocelot_vlan_port_apply: port 0 vlan aware 0 pvid 0 vid 0
+> $ bridge vlan add dev swp0 vid 1 pvid untagged
+> $ bridge vlan add dev swp0 vid 2 untagged
 > 
-> br_add_slave -> nbp_vlan_init -> switchdev_port_attr_set -> ocelot_port_attr_set (SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING):
-> [   21.413335] ocelot_vlan_port_apply: port 0 vlan aware 1 pvid 0 vid 0
+> makes untagged and pvid-tagged traffic be sent out of swp0 as tagged
+> with VID 1, despite user's request.
 > 
-> br_add_slave -> nbp_vlan_init -> nbp_vlan_add -> br_switchdev_port_vlan_add -> switchdev_port_obj_add -> ocelot_port_obj_add -> ocelot_vlan_vid_add
-> [   21.667421] ocelot_vlan_port_apply: port 0 vlan aware 1 pvid 1 vid 1
-> 
-> So far so good. The bridge has replaced the driver's default pvid used
-> in standalone mode (0) with its own default_pvid (1). The port's vid
-> (native VLAN) has also changed from 0 to 1.
-> 
-> $ ip link set dev swp0 up
-> 
-> [   31.722956] 8021q: adding VLAN 0 to HW filter on device swp0
-> do_setlink -> dev_change_flags -> vlan_vid_add -> ocelot_vlan_rx_add_vid -> ocelot_vlan_vid_add:
-> [   31.728700] ocelot_vlan_port_apply: port 0 vlan aware 1 pvid 1 vid 0
-> 
-> The 8021q module uses the .ndo_vlan_rx_add_vid API on .ndo_open to make
-> ports be able to transmit and receive 802.1p-tagged traffic by default.
-> This API is supposed to offload a VLAN sub-interface, which for a switch
-> port means to add a VLAN that is not a pvid, and tagged on egress.
-> 
-> But the driver implementation of .ndo_vlan_rx_add_vid is wrong: it adds
-> back vid 0 as "egress untagged". Now back to the initial paragraph:
-> there is a single untagged VID that the driver keeps track of, and that
-> has just changed from 1 (the pvid) to 0. So this breaks the bridge
-> core's expectation, because it has changed vid 1 from untagged to
-> tagged, when what the user sees is.
-> 
-> $ bridge vlan
-> port    vlan ids
-> swp0     1 PVID Egress Untagged
-> 
-> br0      1 PVID Egress Untagged
-> 
-> But curiously, instead of manifesting itself as "untagged and
-> pvid-tagged traffic gets sent as tagged on egress", the bug:
-> 
-> - is hidden when vlan_filtering=0
-> - manifests as dropped traffic when vlan_filtering=1, due to this setting:
-> 
-> 	if (port->vlan_aware && !port->vid)
-> 		/* If port is vlan-aware and tagged, drop untagged and priority
-> 		 * tagged frames.
-> 		 */
-> 		val |= ANA_PORT_DROP_CFG_DROP_UNTAGGED_ENA |
-> 		       ANA_PORT_DROP_CFG_DROP_PRIO_S_TAGGED_ENA |
-> 		       ANA_PORT_DROP_CFG_DROP_PRIO_C_TAGGED_ENA;
-> 
-> which would have made sense if it weren't for this bug. The setting's
-> intention was "this is a trunk port with no native VLAN, so don't accept
-> untagged traffic". So the driver was never expecting to set VLAN 0 as
-> the value of the native VLAN, 0 was just encoding for "invalid".
-> 
-> So the fix is to not send 802.1p traffic as untagged, because that would
-> change the port's native vlan to 0, unbeknownst to the bridge, and
-> trigger unexpected code paths in the driver.
+> Prevent that from happening. The user should temporarily remove the
+> existing untagged VLAN (1 in this case), add it back as tagged, and then
+> add the new untagged VLAN (2 in this case).
 > 
 > Cc: Antoine Tenart <antoine.tenart@bootlin.com>
 > Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
@@ -119,22 +72,30 @@ On 26/10/2019 21:04:26+0300, Vladimir Oltean wrote:
 Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
 > ---
->  drivers/net/ethernet/mscc/ocelot.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/net/ethernet/mscc/ocelot.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index 7190fe4c1095..552252331e55 100644
+> index 552252331e55..18d7ba033d05 100644
 > --- a/drivers/net/ethernet/mscc/ocelot.c
 > +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -915,7 +915,7 @@ static int ocelot_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
->  static int ocelot_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
->  				  u16 vid)
->  {
-> -	return ocelot_vlan_vid_add(dev, vid, false, true);
-> +	return ocelot_vlan_vid_add(dev, vid, false, false);
->  }
+> @@ -262,8 +262,15 @@ static int ocelot_vlan_vid_add(struct net_device *dev, u16 vid, bool pvid,
+>  		port->pvid = vid;
 >  
->  static int ocelot_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+>  	/* Untagged egress vlan clasification */
+> -	if (untagged)
+> +	if (untagged && port->vid != vid) {
+> +		if (port->vid) {
+> +			dev_err(ocelot->dev,
+> +				"Port already has a native VLAN: %d\n",
+> +				port->vid);
+> +			return -EBUSY;
+> +		}
+>  		port->vid = vid;
+> +	}
+>  
+>  	ocelot_vlan_port_apply(ocelot, port);
+>  
 > -- 
 > 2.17.1
 > 
