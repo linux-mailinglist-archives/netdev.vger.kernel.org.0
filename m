@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA37E5AB5
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BFBDE5ABB
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:17:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727244AbfJZNRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:17:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38832 "EHLO mail.kernel.org"
+        id S1727303AbfJZNRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:17:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727225AbfJZNRO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:17:14 -0400
+        id S1727281AbfJZNRX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:17:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7391D21655;
-        Sat, 26 Oct 2019 13:17:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F33572070B;
+        Sat, 26 Oct 2019 13:17:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095834;
-        bh=P+x0vk8c6GjcSwPpPa+2eiHOdIpm+8+UEleTFKRbyOs=;
+        s=default; t=1572095842;
+        bh=XE1eQ/h5CCe9a5XWcVT1HygStTWvXjWp9ol+/2CGAO8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EOPwo2t1SG4oE+WymKEDzvlZqzz6xgekMorPGK76/i5viXNCcjSCSzREjWDoFvbLO
-         iAuGi98kJQcL64Z80iTPlfHYLSFcn7SNjo2vYAMStK42GTsk978IjRy7n+GCZq3qp/
-         CwVo5qcbZ0VJLvfkrLVpuqDaU0W6DvKKcYPZRApk=
+        b=yL3jpX29rSn4CxhjD3nnF5ixYpHsCwKKFLGauuDke+8E2OqmVKrm9ChamPajspV7c
+         SgWwpQMROG4kZzMf0tuSOdC7m0KWT+hXfXY4ZxqZUYXbxgA0An00BypLXmGXKLu2C8
+         nRX369hfi2TPHaSeq5x8MjPpZTT91RFpAupEzh+s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 38/99] iwlwifi: exclude GEO SAR support for 3168
-Date:   Sat, 26 Oct 2019 09:14:59 -0400
-Message-Id: <20191026131600.2507-38-sashal@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 42/99] bonding: fix potential NULL deref in bond_update_slave_arr
+Date:   Sat, 26 Oct 2019 09:15:03 -0400
+Message-Id: <20191026131600.2507-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -43,51 +45,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 12e36d98d3e5acf5fc57774e0a15906d55f30cb9 ]
+[ Upstream commit a7137534b597b7c303203e6bc3ed87e87a273bb8 ]
 
-We currently support two NICs in FW version 29, namely 7265D and 3168.
-Out of these, only 7265D supports GEO SAR, so adjust the function that
-checks for it accordingly.
+syzbot got a NULL dereference in bond_update_slave_arr() [1],
+happening after a failure to allocate bond->slave_arr
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Fixes: f5a47fae6aa3 ("iwlwifi: mvm: fix version check for GEO_TX_POWER_LIMIT support")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+A workqueue (bond_slave_arr_handler) is supposed to retry
+the allocation later, but if the slave is removed before
+the workqueue had a chance to complete, bond->slave_arr
+can still be NULL.
+
+[1]
+
+Failed to build slave-array.
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] SMP KASAN PTI
+Modules linked in:
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:bond_update_slave_arr.cold+0xc6/0x198 drivers/net/bonding/bond_main.c:4039
+RSP: 0018:ffff88018fe33678 EFLAGS: 00010246
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000290b000
+RDX: 0000000000000000 RSI: ffffffff82b63037 RDI: ffff88019745ea20
+RBP: ffff88018fe33760 R08: ffff880170754280 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: ffff88019745ea00 R14: 0000000000000000 R15: ffff88018fe338b0
+FS:  00007febd837d700(0000) GS:ffff8801dad00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000004540a0 CR3: 00000001c242e005 CR4: 00000000001626f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ [<ffffffff82b5b45e>] __bond_release_one+0x43e/0x500 drivers/net/bonding/bond_main.c:1923
+ [<ffffffff82b5b966>] bond_release drivers/net/bonding/bond_main.c:2039 [inline]
+ [<ffffffff82b5b966>] bond_do_ioctl+0x416/0x870 drivers/net/bonding/bond_main.c:3562
+ [<ffffffff83ae25f4>] dev_ifsioc+0x6f4/0x940 net/core/dev_ioctl.c:328
+ [<ffffffff83ae2e58>] dev_ioctl+0x1b8/0xc70 net/core/dev_ioctl.c:495
+ [<ffffffff83995ffd>] sock_do_ioctl+0x1bd/0x300 net/socket.c:1088
+ [<ffffffff83996a80>] sock_ioctl+0x300/0x5d0 net/socket.c:1196
+ [<ffffffff81b124db>] vfs_ioctl fs/ioctl.c:47 [inline]
+ [<ffffffff81b124db>] file_ioctl fs/ioctl.c:501 [inline]
+ [<ffffffff81b124db>] do_vfs_ioctl+0xacb/0x1300 fs/ioctl.c:688
+ [<ffffffff81b12dc6>] SYSC_ioctl fs/ioctl.c:705 [inline]
+ [<ffffffff81b12dc6>] SyS_ioctl+0xb6/0xe0 fs/ioctl.c:696
+ [<ffffffff8101ccc8>] do_syscall_64+0x528/0x770 arch/x86/entry/common.c:305
+ [<ffffffff84400091>] entry_SYSCALL_64_after_hwframe+0x42/0xb7
+
+Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Mahesh Bandewar <maheshb@google.com>
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/net/bonding/bond_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-index 8b0b464a1f213..c520f42d165cd 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/fw.c
-@@ -887,15 +887,17 @@ static bool iwl_mvm_sar_geo_support(struct iwl_mvm *mvm)
- 	 * firmware versions.  Unfortunately, we don't have a TLV API
- 	 * flag to rely on, so rely on the major version which is in
- 	 * the first byte of ucode_ver.  This was implemented
--	 * initially on version 38 and then backported to29 and 17.
--	 * The intention was to have it in 36 as well, but not all
--	 * 8000 family got this feature enabled.  The 8000 family is
--	 * the only one using version 36, so skip this version
--	 * entirely.
-+	 * initially on version 38 and then backported to 17.  It was
-+	 * also backported to 29, but only for 7265D devices.  The
-+	 * intention was to have it in 36 as well, but not all 8000
-+	 * family got this feature enabled.  The 8000 family is the
-+	 * only one using version 36, so skip this version entirely.
- 	 */
- 	return IWL_UCODE_SERIAL(mvm->fw->ucode_ver) >= 38 ||
--	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 29 ||
--	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 17;
-+	       IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 17 ||
-+	       (IWL_UCODE_SERIAL(mvm->fw->ucode_ver) == 29 &&
-+		((mvm->trans->hw_rev & CSR_HW_REV_TYPE_MSK) ==
-+		 CSR_HW_REV_TYPE_7265D));
- }
- 
- int iwl_mvm_get_sar_geo_profile(struct iwl_mvm *mvm)
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 931d9d9356869..21d8fcc83c9ce 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -4039,7 +4039,7 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
+ 		 * this to-be-skipped slave to send a packet out.
+ 		 */
+ 		old_arr = rtnl_dereference(bond->slave_arr);
+-		for (idx = 0; idx < old_arr->count; idx++) {
++		for (idx = 0; old_arr != NULL && idx < old_arr->count; idx++) {
+ 			if (skipslave == old_arr->arr[idx]) {
+ 				old_arr->arr[idx] =
+ 				    old_arr->arr[old_arr->count-1];
 -- 
 2.20.1
 
