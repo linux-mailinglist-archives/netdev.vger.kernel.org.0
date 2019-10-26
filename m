@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 559E4E5BB6
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:25:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A81B9E5BA8
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728455AbfJZNZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:25:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44486 "EHLO mail.kernel.org"
+        id S1729533AbfJZNWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:22:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729459AbfJZNWn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:22:43 -0400
+        id S1729514AbfJZNWv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:22:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4FB20222CD;
-        Sat, 26 Oct 2019 13:22:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 541B5222C1;
+        Sat, 26 Oct 2019 13:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096163;
-        bh=ujLst6JtZwRSd+wBg3q4vJSyk3J/9wsGc6v0hbwbTTY=;
+        s=default; t=1572096171;
+        bh=7HyvC/lBMxpLlVbngviHNBqkN9JKVAgdgrbfC9IKURw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eY8K3gr167PBeQJwAxBcsycz1QEj3D/JBptkvinMNEKxQfkgNrcswdEig3Eedd5yY
-         u5Ie2igUlxry/iJSHtCK+U+ba/fZiv0Woqva2Vgx1uBsKojYCbYZvmDVove/1SzuH9
-         mG/sbb+i9zZ40sOAT4xC8n1ifWGbAfBK8UVYC6no=
+        b=V/sH6XTM4X00NO9DtWSeOSsgfdvLcRTLHKyjGV/HFbCmqQU6dTkTjTyOBciYTh8mA
+         MBVQNS0M+TAgAh83Dygj2ixV8Jjls6dPPUz6sEjJ5gU78WHnNpbATu9r+FtldderRx
+         btkxLj9PUnfk6HkAn+jxxq2OHh6fKwb5weAvV3Iw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 13/21] net: usb: qmi_wwan: add Telit 0x1050 composition
-Date:   Sat, 26 Oct 2019 09:22:09 -0400
-Message-Id: <20191026132217.4380-13-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 17/21] net: bcmgenet: Fix RGMII_MODE_EN value for GENET v1/2/3
+Date:   Sat, 26 Oct 2019 09:22:13 -0400
+Message-Id: <20191026132217.4380-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026132217.4380-1-sashal@kernel.org>
 References: <20191026132217.4380-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,34 +45,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit e0ae2c578d3909e60e9448207f5d83f785f1129f ]
+[ Upstream commit efb86fede98cdc70b674692ff617b1162f642c49 ]
 
-This patch adds support for Telit FN980 0x1050 composition
+The RGMII_MODE_EN bit value was 0 for GENET versions 1 through 3, and
+became 6 for GENET v4 and above, account for that difference.
 
-0x1050: tty, adb, rmnet, tty, tty, tty, tty
-
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Fixes: aa09677cba42 ("net: bcmgenet: add MDIO routines")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h | 1 +
+ drivers/net/ethernet/broadcom/genet/bcmmii.c   | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 0d48714c3f286..cfc37962f6e3d 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -922,6 +922,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x2357, 0x0201, 4)},	/* TP-LINK HSUPA Modem MA180 */
- 	{QMI_FIXED_INTF(0x2357, 0x9000, 4)},	/* TP-LINK MA260 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+index 3f8858db12eb3..dcf10ea60e7fe 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+@@ -362,6 +362,7 @@ struct bcmgenet_mib_counters {
+ #define  EXT_ENERGY_DET_MASK		(1 << 12)
+ 
+ #define EXT_RGMII_OOB_CTRL		0x0C
++#define  RGMII_MODE_EN_V123		(1 << 0)
+ #define  RGMII_LINK			(1 << 4)
+ #define  OOB_DISABLE			(1 << 5)
+ #define  RGMII_MODE_EN			(1 << 6)
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index 9bd90a7c4d40f..c3ca0515c6a05 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -328,7 +328,11 @@ int bcmgenet_mii_config(struct net_device *dev)
+ 	 */
+ 	if (priv->ext_phy) {
+ 		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
+-		reg |= RGMII_MODE_EN | id_mode_dis;
++		reg |= id_mode_dis;
++		if (GENET_IS_V1(priv) || GENET_IS_V2(priv) || GENET_IS_V3(priv))
++			reg |= RGMII_MODE_EN_V123;
++		else
++			reg |= RGMII_MODE_EN;
+ 		bcmgenet_ext_writel(priv, reg, EXT_RGMII_OOB_CTRL);
+ 	}
+ 
 -- 
 2.20.1
 
