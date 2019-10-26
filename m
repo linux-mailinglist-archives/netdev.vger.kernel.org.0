@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BE0FEE5C80
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:31:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E42B0E5C7A
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:31:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728328AbfJZNTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:19:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41468 "EHLO mail.kernel.org"
+        id S1728361AbfJZNTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:19:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728295AbfJZNTa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:19:30 -0400
+        id S1728329AbfJZNTc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:19:32 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 84152222BE;
-        Sat, 26 Oct 2019 13:19:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E127E21871;
+        Sat, 26 Oct 2019 13:19:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095969;
-        bh=aGP91nYaydYyiw1aEEPUAzgyU8YIqN75+zUdllje6y8=;
+        s=default; t=1572095971;
+        bh=0P9BcpGTjiTlvWRIBGOW4ovug3EeLWVynQqJgcKYs6w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SBWS5ieZMfcGwNtWKQk1l+TMj01HwqDC4YLN56qubOwpIHKzPBN6nGashycK6LmSu
-         qU3crAWm9yVZ4qBkzduqivMdtWKPSg/EKQ7mxoV6wlahhYnYg69twQ6Am3NrWbTOfA
-         S5COWGJmKilTHw/kijT5ARDPgdKGbmDXtqRN5uyU=
+        b=ZHpRXCgK2ohLxyVq8mIStOCyW/Wd95Tw7bKSaVGA5hv0zPNaQbMN1sjBCHuMbE4nM
+         D9z5r38hHZiJVqGAjIMrMfRiY4F1KMcBpox07Ly+euTDjtX8X/WuYnRO2DpNBtXjwT
+         nstA/QCi26tqFARfwp5Pp4uO6ESbmce74iz+fmDo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 14/59] rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record
-Date:   Sat, 26 Oct 2019 09:18:25 -0400
-Message-Id: <20191026131910.3435-14-sashal@kernel.org>
+Cc:     Aaron Komisar <aaron.komisar@tandemg.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 16/59] mac80211: fix scan when operating on DFS channels in ETSI domains
+Date:   Sat, 26 Oct 2019 09:18:27 -0400
+Message-Id: <20191026131910.3435-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131910.3435-1-sashal@kernel.org>
 References: <20191026131910.3435-1-sashal@kernel.org>
@@ -44,72 +44,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Aaron Komisar <aaron.komisar@tandemg.com>
 
-[ Upstream commit 9ebeddef58c41bd700419cdcece24cf64ce32276 ]
+[ Upstream commit dc0c18ed229cdcca283dd78fefa38273ec37a42c ]
 
-The rxrpc_peer record needs to hold a reference on the rxrpc_local record
-it points as the peer is used as a base to access information in the
-rxrpc_local record.
+In non-ETSI regulatory domains scan is blocked when operating channel
+is a DFS channel. For ETSI, however, once DFS channel is marked as
+available after the CAC, this channel will remain available (for some
+time) even after leaving this channel.
 
-This can cause problems in __rxrpc_put_peer(), where we need the network
-namespace pointer, and in rxrpc_send_keepalive(), where we need to access
-the UDP socket, leading to symptoms like:
+Therefore a scan can be done without any impact on the availability
+of the DFS channel as no new CAC is required after the scan.
 
-    BUG: KASAN: use-after-free in __rxrpc_put_peer net/rxrpc/peer_object.c:411
-    [inline]
-    BUG: KASAN: use-after-free in rxrpc_put_peer+0x685/0x6a0
-    net/rxrpc/peer_object.c:435
-    Read of size 8 at addr ffff888097ec0058 by task syz-executor823/24216
+Enable scan in mac80211 in these cases.
 
-Fix this by taking a ref on the local record for the peer record.
-
-Fixes: ace45bec6d77 ("rxrpc: Fix firewall route keepalive")
-Fixes: 2baec2c3f854 ("rxrpc: Support network namespacing")
-Reported-by: syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Aaron Komisar <aaron.komisar@tandemg.com>
+Link: https://lore.kernel.org/r/1570024728-17284-1-git-send-email-aaron.komisar@tandemg.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/peer_object.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/net/cfg80211.h |  8 ++++++++
+ net/mac80211/scan.c    | 30 ++++++++++++++++++++++++++++--
+ net/wireless/reg.c     |  1 +
+ net/wireless/reg.h     |  8 --------
+ 4 files changed, 37 insertions(+), 10 deletions(-)
 
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index 72b4ad210426e..b91b090217cdb 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -220,7 +220,7 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
- 	peer = kzalloc(sizeof(struct rxrpc_peer), gfp);
- 	if (peer) {
- 		atomic_set(&peer->usage, 1);
--		peer->local = local;
-+		peer->local = rxrpc_get_local(local);
- 		INIT_HLIST_HEAD(&peer->error_targets);
- 		peer->service_conns = RB_ROOT;
- 		seqlock_init(&peer->service_conn_lock);
-@@ -311,7 +311,6 @@ void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
- 	unsigned long hash_key;
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index 468deae5d603e..e9e8ac4df36aa 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -4842,6 +4842,14 @@ const struct ieee80211_reg_rule *freq_reg_info(struct wiphy *wiphy,
+  */
+ const char *reg_initiator_name(enum nl80211_reg_initiator initiator);
  
- 	hash_key = rxrpc_peer_hash_key(local, &peer->srx);
--	peer->local = local;
- 	rxrpc_init_peer(rx, peer, hash_key);
- 
- 	spin_lock(&rxnet->peer_hash_lock);
-@@ -421,6 +420,7 @@ static void __rxrpc_put_peer(struct rxrpc_peer *peer)
- 	list_del_init(&peer->keepalive_link);
- 	spin_unlock_bh(&rxnet->peer_hash_lock);
- 
-+	rxrpc_put_local(peer->local);
- 	kfree_rcu(peer, rcu);
++/**
++ * regulatory_pre_cac_allowed - check if pre-CAC allowed in the current regdom
++ * @wiphy: wiphy for which pre-CAC capability is checked.
++ *
++ * Pre-CAC is allowed only in some regdomains (notable ETSI).
++ */
++bool regulatory_pre_cac_allowed(struct wiphy *wiphy);
++
+ /**
+  * DOC: Internal regulatory db functions
+  *
+diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
+index 5d2a11777718c..9121013cab9d5 100644
+--- a/net/mac80211/scan.c
++++ b/net/mac80211/scan.c
+@@ -501,10 +501,33 @@ static int ieee80211_start_sw_scan(struct ieee80211_local *local,
+ 	return 0;
  }
  
-@@ -457,6 +457,7 @@ void rxrpc_put_peer_locked(struct rxrpc_peer *peer)
- 	if (n == 0) {
- 		hash_del_rcu(&peer->hash_link);
- 		list_del_init(&peer->keepalive_link);
-+		rxrpc_put_local(peer->local);
- 		kfree_rcu(peer, rcu);
- 	}
++static bool __ieee80211_can_leave_ch(struct ieee80211_sub_if_data *sdata)
++{
++	struct ieee80211_local *local = sdata->local;
++	struct ieee80211_sub_if_data *sdata_iter;
++
++	if (!ieee80211_is_radar_required(local))
++		return true;
++
++	if (!regulatory_pre_cac_allowed(local->hw.wiphy))
++		return false;
++
++	mutex_lock(&local->iflist_mtx);
++	list_for_each_entry(sdata_iter, &local->interfaces, list) {
++		if (sdata_iter->wdev.cac_started) {
++			mutex_unlock(&local->iflist_mtx);
++			return false;
++		}
++	}
++	mutex_unlock(&local->iflist_mtx);
++
++	return true;
++}
++
+ static bool ieee80211_can_scan(struct ieee80211_local *local,
+ 			       struct ieee80211_sub_if_data *sdata)
+ {
+-	if (ieee80211_is_radar_required(local))
++	if (!__ieee80211_can_leave_ch(sdata))
+ 		return false;
+ 
+ 	if (!list_empty(&local->roc_list))
+@@ -610,7 +633,10 @@ static int __ieee80211_start_scan(struct ieee80211_sub_if_data *sdata,
+ 
+ 	lockdep_assert_held(&local->mtx);
+ 
+-	if (local->scan_req || ieee80211_is_radar_required(local))
++	if (local->scan_req)
++		return -EBUSY;
++
++	if (!__ieee80211_can_leave_ch(sdata))
+ 		return -EBUSY;
+ 
+ 	if (!ieee80211_can_scan(local, sdata)) {
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index cccbf845079c8..e83e40764b0ab 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -3780,6 +3780,7 @@ bool regulatory_pre_cac_allowed(struct wiphy *wiphy)
+ 
+ 	return pre_cac_allowed;
  }
++EXPORT_SYMBOL(regulatory_pre_cac_allowed);
+ 
+ void regulatory_propagate_dfs_state(struct wiphy *wiphy,
+ 				    struct cfg80211_chan_def *chandef,
+diff --git a/net/wireless/reg.h b/net/wireless/reg.h
+index 9ceeb5f3a7cbc..af92612edd1e4 100644
+--- a/net/wireless/reg.h
++++ b/net/wireless/reg.h
+@@ -153,14 +153,6 @@ bool regulatory_indoor_allowed(void);
+  */
+ #define REG_PRE_CAC_EXPIRY_GRACE_MS 2000
+ 
+-/**
+- * regulatory_pre_cac_allowed - if pre-CAC allowed in the current dfs domain
+- * @wiphy: wiphy for which pre-CAC capability is checked.
+-
+- * Pre-CAC is allowed only in ETSI domain.
+- */
+-bool regulatory_pre_cac_allowed(struct wiphy *wiphy);
+-
+ /**
+  * regulatory_propagate_dfs_state - Propagate DFS channel state to other wiphys
+  * @wiphy - wiphy on which radar is detected and the event will be propagated
 -- 
 2.20.1
 
