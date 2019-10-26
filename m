@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60842E5D32
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:35:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0667CE5D2B
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727135AbfJZNRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:17:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38624 "EHLO mail.kernel.org"
+        id S1727161AbfJZNRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:17:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727108AbfJZNRC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727114AbfJZNRC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 26 Oct 2019 09:17:02 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8FA6721655;
-        Sat, 26 Oct 2019 13:17:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B3CB2222BE;
+        Sat, 26 Oct 2019 13:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095821;
-        bh=YMIA8rjAV5K28qn2+cRhD8XtwVSArNt+QfSzG8Gnd1I=;
+        s=default; t=1572095822;
+        bh=VzRzt+ya9hGFOk9QNHrPmzOE1KFCO7G1Hf7shEKQJBY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iljvVMjZGcCFsGpOaf953Vqw0fPqijwAOyJZF4CBMKV9rGyKnkOFdInrMMUoN/8Fa
-         acCfYd5sEYpfnTRwqBhGR1mgyBGo2PfHhsKtJRjPQz/0sWL0O4YH3hKbd1gVipXyPb
-         NefCQBFxJG7xX9N5O9B+2H7VFXxVE2cLlVcRssSU=
+        b=AWrhtS0Lxjix7Hpx/pVAvH7oXR4grXHaBZbh5jMoefMNM5ROEolxm+mIVZQsSkQML
+         EHo6UDCcW5oDMS+0tyrSdtOZW5shzRYH8bNAgToiVIKuJrXiOwd2aJTLjE0SKbN9J7
+         +YQh4PED0a9evK7YmfvoURssqi0W5VEG574GGWnM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johan Hovold <johan@kernel.org>,
-        syzbot+cb035c75c03dbe34b796@syzkaller.appspotmail.com,
+Cc:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>,
+        William Tu <u9012063@gmail.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 33/99] NFC: pn533: fix use-after-free and memleaks
-Date:   Sat, 26 Oct 2019 09:14:54 -0400
-Message-Id: <20191026131600.2507-33-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 34/99] ip6erspan: remove the incorrect mtu limit for ip6erspan
+Date:   Sat, 26 Oct 2019 09:14:55 -0400
+Message-Id: <20191026131600.2507-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -44,53 +44,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
 
-[ Upstream commit 6af3aa57a0984e061f61308fe181a9a12359fecc ]
+[ Upstream commit 4123f637a5129470ff9d3cb00a5a4e213f2e15cc ]
 
-The driver would fail to deregister and its class device and free
-related resources on late probe errors.
+ip6erspan driver calls ether_setup(), after commit 61e84623ace3
+("net: centralize net_device min/max MTU checking"), the range
+of mtu is [min_mtu, max_mtu], which is [68, 1500] by default.
 
-Reported-by: syzbot+cb035c75c03dbe34b796@syzkaller.appspotmail.com
-Fixes: 32ecc75ded72 ("NFC: pn533: change order operations in dev registation")
-Signed-off-by: Johan Hovold <johan@kernel.org>
+It causes the dev mtu of the erspan device to not be greater
+than 1500, this limit value is not correct for ip6erspan tap
+device.
+
+Fixes: 61e84623ace3 ("net: centralize net_device min/max MTU checking")
+Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Acked-by: William Tu <u9012063@gmail.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/pn533/usb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/ipv6/ip6_gre.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/nfc/pn533/usb.c b/drivers/nfc/pn533/usb.c
-index c5289eaf17eef..e897e4d768ef7 100644
---- a/drivers/nfc/pn533/usb.c
-+++ b/drivers/nfc/pn533/usb.c
-@@ -547,18 +547,25 @@ static int pn533_usb_probe(struct usb_interface *interface,
+diff --git a/net/ipv6/ip6_gre.c b/net/ipv6/ip6_gre.c
+index d5779d6a60650..787d9f2a6e990 100644
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -2192,6 +2192,7 @@ static void ip6erspan_tap_setup(struct net_device *dev)
+ {
+ 	ether_setup(dev);
  
- 	rc = pn533_finalize_setup(priv);
- 	if (rc)
--		goto error;
-+		goto err_deregister;
- 
- 	usb_set_intfdata(interface, phy);
- 
- 	return 0;
- 
-+err_deregister:
-+	pn533_unregister_device(phy->priv);
- error:
-+	usb_kill_urb(phy->in_urb);
-+	usb_kill_urb(phy->out_urb);
-+	usb_kill_urb(phy->ack_urb);
-+
- 	usb_free_urb(phy->in_urb);
- 	usb_free_urb(phy->out_urb);
- 	usb_free_urb(phy->ack_urb);
- 	usb_put_dev(phy->udev);
- 	kfree(in_buf);
-+	kfree(phy->ack_buffer);
- 
- 	return rc;
- }
++	dev->max_mtu = 0;
+ 	dev->netdev_ops = &ip6erspan_netdev_ops;
+ 	dev->needs_free_netdev = true;
+ 	dev->priv_destructor = ip6gre_dev_free;
 -- 
 2.20.1
 
