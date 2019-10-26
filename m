@@ -2,157 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 730B4E5EB8
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 20:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18142E5EBC
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 20:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfJZStC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 14:49:02 -0400
-Received: from mail-wm1-f48.google.com ([209.85.128.48]:40397 "EHLO
-        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726315AbfJZStB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 14:49:01 -0400
-Received: by mail-wm1-f48.google.com with SMTP id w9so5188305wmm.5
-        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 11:49:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GpjThdJvTg/hT90gxlIb7dIYQPCkvTYQ3DV36zfR49k=;
-        b=P4+u5BTixASGOQKmPJLWol6eOnnUsewNJKv2Mr6i4qKQOQYIwyIEHwaNMDM/FeN/3E
-         LKAvXQtUkPG7fStYufaJ+yAi3QNaT1ptAoVxWvoOReIdNB5hLa8cQE9RJTAEjR63SBQT
-         ftTHqxOD2U6YGLHiG1UvdTftemGxJvwT6/B4Lb28xYiGekyvvxBI6y9KchOTI1Z2sgyM
-         jU0rNnaYUb4L20V/BVcvxvbuTErmmkJNVLHxB3n7vUj8R73MlfWDv+cy1EDD7g+aLKvQ
-         mC5nQnI/fEJv6d3CXhVNbqT0HtryTbpYy9P2R4x8V6OprMsqmTNbEoZXLcWfmDKtG+Ly
-         bGVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GpjThdJvTg/hT90gxlIb7dIYQPCkvTYQ3DV36zfR49k=;
-        b=LRzNCUHVPcOOvGB4KKXyjqa4k5ThKO8O62/I3GFsUpucUfNZ0+wDFTzkCkptdaqcvf
-         MK5env/UCHMMDSYYuEK2jIkvfzjcYNkB0Px7F1t8eDw6P0ygIfG751gscKXRgXybV1Ur
-         itLxdyONFs2u/LQbMn4ahIfre5slNyeq20cgDDs6WGb8hE5MI1x4j9EnPNGdjOxy7EVx
-         t2nMeAgNKWXVqCBECVjdYw/qHkFmQm6vq3L6e5U/X+KVqFTQdF5DGQ782elYcbSZYc4V
-         iAQLDgsfyQJs9Gs8Hhcf6CaEh/A5rW+mdgkwmYN1yll4Oe8hS0fXEt9MhVB83zwzgIiO
-         U/mw==
-X-Gm-Message-State: APjAAAU6ABGTvGJqpJ1rMqTWKC+Rdi+V9O+lO/As+iSq4fy4+rYI9IWN
-        X5pqem/LTb4aYcw+lbEfd/9t/yLu
-X-Google-Smtp-Source: APXvYqyA+8GeLxfvNMKOYVgPraEfEUPm2NxhS6GQyy/9Yk03jMkN8KAIpWZJ9VEKKQZ/P7vuvLkWEw==
-X-Received: by 2002:a7b:c444:: with SMTP id l4mr8806545wmi.49.1572115739471;
-        Sat, 26 Oct 2019 11:48:59 -0700 (PDT)
-Received: from pif.criteois.lan ([91.199.242.236])
-        by smtp.gmail.com with ESMTPSA id q25sm11170773wra.3.2019.10.26.11.48.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Oct 2019 11:48:58 -0700 (PDT)
-From:   William Dauchy <wdauchy@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     William Dauchy <wdauchy@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2] tcp: add timestamp options fetcher
-Date:   Sat, 26 Oct 2019 20:45:54 +0200
-Message-Id: <20191026184554.32648-1-wdauchy@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191002221017.2085-1-wdauchy@gmail.com>
-References: <20191002221017.2085-1-wdauchy@gmail.com>
+        id S1726318AbfJZSxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 14:53:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42430 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726087AbfJZSxm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 14:53:42 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C5B920679;
+        Sat, 26 Oct 2019 18:53:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572116020;
+        bh=n+kEyU6+PGJjH2XR+N7wGK//VrFS1Z13Ae9uB82AeLI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=f+PlJK6JGofWboFUpywSerq+KYkNablyHTYrQZFjW2c6zm/Rw58UuCkCgvLZKNUg7
+         QrBaP+oQvYZrdVfkptjGvWmBPX7ufZVOhY0bZpOcDnRFIzQWMocwNV3mECBdJ3427Z
+         0+6SgJpauGaw5bUyJJPXy8GT4HbZjxCrA0ZMd83U=
+Date:   Sat, 26 Oct 2019 20:53:38 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>
+Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device
+ to provide RDMA
+Message-ID: <20191026185338.GA804892@kroah.com>
+References: <20190927051320.GA1767635@kroah.com>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
+ <20191023174448.GP23952@ziepe.ca>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
+ <20191023180108.GQ23952@ziepe.ca>
+ <20191024185659.GE260560@kroah.com>
+ <20191024191037.GC23952@ziepe.ca>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2E1D29@ORSMSX101.amr.corp.intel.com>
+ <20191025013048.GB265361@kroah.com>
+ <2B0E3F215D1AB84DA946C8BEE234CCC97B2E2FE6@ORSMSX101.amr.corp.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2B0E3F215D1AB84DA946C8BEE234CCC97B2E2FE6@ORSMSX101.amr.corp.intel.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tsval and tsecr are useful in some cases to diagnose TCP issues from the
-sender point of view where unexplained RTT values are seen. Getting the
-the timestamps from both ends will help understand those issues more
-easily.
-It can be mostly use in some specific cases, e.g a http server where
-requests are tagged with such informations, which later helps to
-diagnose some issues and create some useful metrics to give a general
-signal.
+On Fri, Oct 25, 2019 at 10:27:46PM +0000, Ertman, David M wrote:
+> > -----Original Message-----
+> > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
+> > Sent: Thursday, October 24, 2019 6:31 PM
+> > To: Ertman, David M <david.m.ertman@intel.com>
+> > Cc: Jason Gunthorpe <jgg@ziepe.ca>; Nguyen, Anthony L
+> > <anthony.l.nguyen@intel.com>; Kirsher, Jeffrey T
+> > <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org; linux-
+> > rdma@vger.kernel.org; dledford@redhat.com; Ismail, Mustafa
+> > <mustafa.ismail@intel.com>; Patil, Kiran <kiran.patil@intel.com>;
+> > lee.jones@linaro.org
+> > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
+> > provide RDMA
+> > 
+> > On Thu, Oct 24, 2019 at 10:25:36PM +0000, Ertman, David M wrote:
+> > > The direct access of the platform bus was unacceptable, and the MFD
+> > > sub-system was suggested by Greg as the solution.  The MFD sub-system
+> > > uses the platform bus in the background as a base to perform its
+> > > functions, since it is a purely software construct that is handy and
+> > > fulfills its needs.  The question then is:  If the MFD sub- system is
+> > > using the platform bus for all of its background functionality, is the platform
+> > bus really only for platform devices?
+> > 
+> > Yes, how many times do I have to keep saying this?
+> > 
+> > The platform bus should ONLY be used for devices that are actually platform
+> > devices and can not be discovered any other way and are not on any other type
+> > of bus.
+> > 
+> > If you try to add platform devices for a PCI device, I am going to continue to
+> > complain.  I keep saying this and am getting tired.
+> > 
+> > Now yes, MFD does do "fun" things here, and that should probably be fixed up
+> > one of these days.  But I still don't see why a real bus would not work for you.
+> > 
+> > greg "platform devices are dead, long live the platform device" k-h
+> 
+> > -----Original Message-----
+> > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
+> > Sent: Thursday, October 24, 2019 6:31 PM
+> > To: Ertman, David M <david.m.ertman@intel.com>
+> > Cc: Jason Gunthorpe <jgg@ziepe.ca>; Nguyen, Anthony L
+> > <anthony.l.nguyen@intel.com>; Kirsher, Jeffrey T
+> > <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org; linux-
+> > rdma@vger.kernel.org; dledford@redhat.com; Ismail, Mustafa
+> > <mustafa.ismail@intel.com>; Patil, Kiran <kiran.patil@intel.com>;
+> > lee.jones@linaro.org
+> > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
+> > provide RDMA
+> > 
+> > On Thu, Oct 24, 2019 at 10:25:36PM +0000, Ertman, David M wrote:
+> > > The direct access of the platform bus was unacceptable, and the MFD
+> > > sub-system was suggested by Greg as the solution.  The MFD sub-system
+> > > uses the platform bus in the background as a base to perform its
+> > > functions, since it is a purely software construct that is handy and
+> > > fulfills its needs.  The question then is:  If the MFD sub- system is
+> > > using the platform bus for all of its background functionality, is the platform
+> > bus really only for platform devices?
+> > 
+> > Yes, how many times do I have to keep saying this?
+> > 
+> > The platform bus should ONLY be used for devices that are actually platform
+> > devices and can not be discovered any other way and are not on any other type
+> > of bus.
+> > 
+> > If you try to add platform devices for a PCI device, I am going to continue to
+> > complain.  I keep saying this and am getting tired.
+> > 
+> > Now yes, MFD does do "fun" things here, and that should probably be fixed up
+> > one of these days.  But I still don't see why a real bus would not work for you.
+> > 
+> > greg "platform devices are dead, long live the platform device" k-h
+> 
+> I'm sorry, the last thing I want to do is to annoy you! I just need to
+> figure out where to go from here.  Please, don't take anything I say as
+> argumentative.
+> 
+> I don't understand what you mean by "a real bus".  The irdma driver does
+> not have access to any physical bus.  It utilizes resources provided by
+> the PCI LAN drivers, but to receive those resources it needs a mechanism
+> to "hook up" with the PCI drivers.  The only way it has to locate them
+> is to register a driver function with a software based bus of some kind
+> and have the bus match it up to a compatible entity to achieve that hook up.
+> 
+> The PCI LAN driver has a function that controls the PCI hardware, and then
+> we want to present an entity for the RDMA driver to connect to.
+> 
+> To move forward, we are thinking of the following design proposal:
+> 
+> We could add a new module to the kernel named generic_bus.ko.  This would
+> create a new generic software bus and a set of APIs that would allow for
+> adding and removing simple generic virtual devices and drivers, not as
+> a MFD cell or a platform device. The power management events would also
+> be handled by the generic_bus infrastructure (suspend, resume, shutdown).
+> We would use this for matching up by having the irdma driver register
+> with this generic bus and hook to virtual devices that were added from
+> different PCI LAN drivers.
+> 
+> Pros:
+> 1) This would avoid us attaching anything to the platform bus
+> 2) Avoid having each PCI LAN driver creating its own software bus
+> 3) Provide a common matching ground for generic devices and drivers that
+> eliminates problems caused by load order (all dependent on generic_bus.ko)
+> 4) Usable by any other entity that wants a lightweight matching system
+> or information exchange mechanism
+> 
+> Cons:
+> 1) Duplicates part of the platform bus functionality
+> 2) Adds a new software bus to the kernel architecture
+> 
+> Is this path forward acceptable?
 
-Signed-off-by: William Dauchy <wdauchy@gmail.com>
+Yes, that is much better.  But how about calling it a "virtual bus"?
+It's not really virtualization, but we already have virtual devices
+today when you look in sysfs for devices that are created that are not
+associated with any specific bus.  So this could take those over quite
+nicely!  Look at how /sys/devices/virtual/ works for specifics, you
+could create a new virtual bus of a specific "name" and then add devices
+to that bus directly.
 
----
+thanks,
 
-Changes in v2:
-- change from tcp_info to a new getsockopt() to avoid making tcp_info
-  bigger for everyone
----
- include/uapi/linux/tcp.h |  6 ++++++
- net/ipv4/tcp.c           | 30 ++++++++++++++++++++++++++++++
- 2 files changed, 36 insertions(+)
-
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index 81e697978e8b..2a9685216aef 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -128,12 +128,18 @@ enum {
- #define TCP_CM_INQ		TCP_INQ
- 
- #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
-+#define TCP_TIMESTAMP_OPT	38	/* timestamps option with tsval and tsecr values */
- 
- 
- #define TCP_REPAIR_ON		1
- #define TCP_REPAIR_OFF		0
- #define TCP_REPAIR_OFF_NO_WP	-1	/* Turn off without window probes */
- 
-+struct tcp_timestamp_opt {
-+	__u32	tcp_tsval;
-+	__u32	tcp_tsecr;
-+};
-+
- struct tcp_repair_opt {
- 	__u32	opt_code;
- 	__u32	opt_val;
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 42187a3b82f4..b9c34a5477dd 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3309,6 +3309,21 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- }
- EXPORT_SYMBOL_GPL(tcp_get_info);
- 
-+/* Return timestamps option of tcp endpoint. */
-+static void tcp_get_tsopt(struct sock *sk, struct tcp_timestamp_opt *tsopt)
-+{
-+	const struct tcp_sock *tp = tcp_sk(sk);
-+
-+	memset(tsopt, 0, sizeof(*tsopt));
-+	if (sk->sk_type != SOCK_STREAM)
-+		return;
-+
-+	if (tp->rx_opt.tstamp_ok) {
-+		tsopt->tcp_tsval = tp->rx_opt.rcv_tsval;
-+		tsopt->tcp_tsecr = tp->rx_opt.rcv_tsecr;
-+	}
-+}
-+
- static size_t tcp_opt_stats_get_size(void)
- {
- 	return
-@@ -3668,6 +3683,21 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
- 		return err;
- 	}
- #endif
-+	case TCP_TIMESTAMP_OPT: {
-+		struct tcp_timestamp_opt tsopt;
-+
-+		if (get_user(len, optlen))
-+			return -EFAULT;
-+
-+		tcp_get_tsopt(sk, &tsopt);
-+
-+		len = min_t(unsigned int, len, sizeof(tsopt));
-+		if (put_user(len, optlen))
-+			return -EFAULT;
-+		if (copy_to_user(optval, &tsopt, len))
-+			return -EFAULT;
-+		return 0;
-+	}
- 	default:
- 		return -ENOPROTOOPT;
- 	}
--- 
-2.23.0
-
+greg k-h
