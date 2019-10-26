@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBE71E5CB0
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:32:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED1A4E5CB6
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727838AbfJZNSd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:18:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40306 "EHLO mail.kernel.org"
+        id S1727304AbfJZNca (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:32:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726521AbfJZNSd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727857AbfJZNSd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 26 Oct 2019 09:18:33 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 45E4D2245C;
-        Sat, 26 Oct 2019 13:18:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 73C9021871;
+        Sat, 26 Oct 2019 13:18:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095912;
-        bh=bebExF6wLrezS/IsdwHyYqny+OFLq0wu+rB6JGGgIUc=;
+        s=default; t=1572095913;
+        bh=Bw+3inR4gFpPut2zAV1narDpoGAN/nMUFG1hkJV4n28=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u4apdDivii+ZKwWGex7y2hu+cgJWZpM3eF1y/w+pSiyuvVbCV7+Dbq32jCxTgKa4Q
-         59S7HMtdGQ/+MJMyi+QtZ0AOLPGMB1jTE0JXYMbY9pHgXV58FBvrmneYnhIY8iHa4t
-         8fE+tedGQmjZmFMTpWf8MIIORXZ/A+6Zw8dupsR8=
+        b=lvLDaU4SS8qITtI5s8HpcULC4RtfaZOjHaRzhiwuxhqFLYc8yzGFeIw+jQX06pB/C
+         B1cQm0Bol8Vt73xi9xFI6dK3IJr/DWF26CaMqqhXZUHdRkIvgQhFbPAngPxEqHk4Vr
+         /z7NMLkStMTimNCN/MVecDx254wR+tDl2uWZqYEc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Oliver Neukum <oneukum@suse.com>,
+Cc:     Florin Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 84/99] usb: hso: obey DMA rules in tiocmget
-Date:   Sat, 26 Oct 2019 09:15:45 -0400
-Message-Id: <20191026131600.2507-84-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 85/99] dpaa2-eth: add irq for the dpmac connect/disconnect event
+Date:   Sat, 26 Oct 2019 09:15:46 -0400
+Message-Id: <20191026131600.2507-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -44,80 +44,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
 
-[ Upstream commit af0de1303c4e8f44fadd7b4c593f09f22324b04f ]
+[ Upstream commit 8398b375a9e3f5e4bba9bcdfed152a8a247dee01 ]
 
-The serial state information must not be embedded into another
-data structure, as this interferes with cache handling for DMA
-on architectures without cache coherence..
-That would result in data corruption on some architectures
-Allocating it separately.
+Add IRQ for the DPNI endpoint change event, resolving the issue
+when a dynamically created DPNI gets a randomly generated hw address
+when the endpoint is a DPMAC object.
 
-v2: fix syntax error
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Signed-off-by: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/hso.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 6 +++++-
+ drivers/net/ethernet/freescale/dpaa2/dpni.h      | 5 ++++-
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
-index a505b2ab88b8a..74849da031fab 100644
---- a/drivers/net/usb/hso.c
-+++ b/drivers/net/usb/hso.c
-@@ -186,7 +186,7 @@ struct hso_tiocmget {
- 	int    intr_completed;
- 	struct usb_endpoint_descriptor *endp;
- 	struct urb *urb;
--	struct hso_serial_state_notification serial_state_notification;
-+	struct hso_serial_state_notification *serial_state_notification;
- 	u16    prev_UART_state_bitmap;
- 	struct uart_icount icount;
- };
-@@ -1432,7 +1432,7 @@ static int tiocmget_submit_urb(struct hso_serial *serial,
- 			 usb_rcvintpipe(usb,
- 					tiocmget->endp->
- 					bEndpointAddress & 0x7F),
--			 &tiocmget->serial_state_notification,
-+			 tiocmget->serial_state_notification,
- 			 sizeof(struct hso_serial_state_notification),
- 			 tiocmget_intr_callback, serial,
- 			 tiocmget->endp->bInterval);
-@@ -1479,7 +1479,7 @@ static void tiocmget_intr_callback(struct urb *urb)
- 	/* wIndex should be the USB interface number of the port to which the
- 	 * notification applies, which should always be the Modem port.
- 	 */
--	serial_state_notification = &tiocmget->serial_state_notification;
-+	serial_state_notification = tiocmget->serial_state_notification;
- 	if (serial_state_notification->bmRequestType != BM_REQUEST_TYPE ||
- 	    serial_state_notification->bNotification != B_NOTIFICATION ||
- 	    le16_to_cpu(serial_state_notification->wValue) != W_VALUE ||
-@@ -2565,6 +2565,8 @@ static void hso_free_tiomget(struct hso_serial *serial)
- 		usb_free_urb(tiocmget->urb);
- 		tiocmget->urb = NULL;
- 		serial->tiocmget = NULL;
-+		kfree(tiocmget->serial_state_notification);
-+		tiocmget->serial_state_notification = NULL;
- 		kfree(tiocmget);
- 	}
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 0acb11557ed1c..488e8e446e17d 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -3219,6 +3219,9 @@ static irqreturn_t dpni_irq0_handler_thread(int irq_num, void *arg)
+ 	if (status & DPNI_IRQ_EVENT_LINK_CHANGED)
+ 		link_state_update(netdev_priv(net_dev));
+ 
++	if (status & DPNI_IRQ_EVENT_ENDPOINT_CHANGED)
++		set_mac_addr(netdev_priv(net_dev));
++
+ 	return IRQ_HANDLED;
  }
-@@ -2615,10 +2617,13 @@ static struct hso_device *hso_create_bulk_serial_device(
- 		num_urbs = 2;
- 		serial->tiocmget = kzalloc(sizeof(struct hso_tiocmget),
- 					   GFP_KERNEL);
-+		serial->tiocmget->serial_state_notification
-+			= kzalloc(sizeof(struct hso_serial_state_notification),
-+					   GFP_KERNEL);
- 		/* it isn't going to break our heart if serial->tiocmget
- 		 *  allocation fails don't bother checking this.
- 		 */
--		if (serial->tiocmget) {
-+		if (serial->tiocmget && serial->tiocmget->serial_state_notification) {
- 			tiocmget = serial->tiocmget;
- 			tiocmget->endp = hso_get_ep(interface,
- 						    USB_ENDPOINT_XFER_INT,
+ 
+@@ -3244,7 +3247,8 @@ static int setup_irqs(struct fsl_mc_device *ls_dev)
+ 	}
+ 
+ 	err = dpni_set_irq_mask(ls_dev->mc_io, 0, ls_dev->mc_handle,
+-				DPNI_IRQ_INDEX, DPNI_IRQ_EVENT_LINK_CHANGED);
++				DPNI_IRQ_INDEX, DPNI_IRQ_EVENT_LINK_CHANGED |
++				DPNI_IRQ_EVENT_ENDPOINT_CHANGED);
+ 	if (err < 0) {
+ 		dev_err(&ls_dev->dev, "dpni_set_irq_mask(): %d\n", err);
+ 		goto free_irq;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+index a521242e23537..72cf1258f40fb 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+@@ -133,9 +133,12 @@ int dpni_reset(struct fsl_mc_io	*mc_io,
+  */
+ #define DPNI_IRQ_INDEX				0
+ /**
+- * IRQ event - indicates a change in link state
++ * IRQ events:
++ *       indicates a change in link state
++ *       indicates a change in endpoint
+  */
+ #define DPNI_IRQ_EVENT_LINK_CHANGED		0x00000001
++#define DPNI_IRQ_EVENT_ENDPOINT_CHANGED		0x00000002
+ 
+ int dpni_set_irq_enable(struct fsl_mc_io	*mc_io,
+ 			u32			cmd_flags,
 -- 
 2.20.1
 
