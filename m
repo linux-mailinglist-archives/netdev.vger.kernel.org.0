@@ -2,113 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3F3E5DB1
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 16:27:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E351EE5DBE
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 16:53:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbfJZO0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 10:26:23 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:58780 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbfJZO0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 10:26:23 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9QEORdr139601;
-        Sat, 26 Oct 2019 14:25:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=g0EobvnuNtLD/kX6AGj4Z/TZ+7lRKu7nyaQLzoUBx5I=;
- b=BQlez8emRUWSibANBLQXkIRr+NQC5XfbrmMQf4rd3PBr0hHWd0cGYQ5Wgo22VVDH7WU5
- XYbo1LqrNUAUOfEH47zkqnmQ+Uu1v0YVOFHDxbP60xx7cqB7AJ8zHwhS+JqY3F0nzfyl
- T+hvFL1INqhN7UhL3/3sxumzqVCRiXlcrmiyy99fIVDluB7v5CHxVJVWSciqMd2w9IXG
- nCLUdGe1JXuPGTY1Qn7d54PYUmhjOMnTjo+jVr0QcAbCc3jKrR3f03bKQBe/EJh16g6B
- lQSLWGq5dzu0sntRKT8NdU23ACvKJxeuaR1eZHeGndyqXA43S70v51R9SU3CQzBeHPoy Fw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2vve3ptf4w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 26 Oct 2019 14:25:27 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9QEO9rj011950;
-        Sat, 26 Oct 2019 14:25:27 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 2vvb8wkseq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 26 Oct 2019 14:25:27 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x9QEPCHp031477;
-        Sat, 26 Oct 2019 14:25:12 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 26 Oct 2019 07:25:12 -0700
-Date:   Sat, 26 Oct 2019 17:24:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     zhanglin <zhang.lin16@zte.com.cn>
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        jakub.kicinski@netronome.com, hawk@kernel.org,
-        john.fastabend@gmail.com, mkubecek@suse.cz, jiri@mellanox.com,
-        pablo@netfilter.org, f.fainelli@gmail.com,
-        maxime.chevallier@bootlin.com, lirongqing@baidu.com,
-        vivien.didelot@gmail.com, linyunsheng@huawei.com,
-        natechancellor@gmail.com, arnd@arndb.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
-        jiang.xuexin@zte.com.cn
-Subject: Re: [PATCH] net: Zeroing the structure ethtool_wolinfo in
- ethtool_get_wol()
-Message-ID: <20191026142458.GJ23523@kadam>
-References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
+        id S1726202AbfJZOxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 10:53:16 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:39971 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726162AbfJZOxP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 10:53:15 -0400
+Received: by mail-yb1-f195.google.com with SMTP id d12so2282649ybn.7
+        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 07:53:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=wLHc6xVX23o25w4Uy9ZLDreD0/areLd8xcc6Rj0gcMg=;
+        b=HajS5JbS8EXetkchiaF3YsegrCmtAr/EW1fKR/MzhFiOvcksA0HLZawzf7USJXCB/C
+         kN/PyvC8NJZu63XNxod/1LF9QicoVoB/iZg2bHJ6bo87/oFLzMJQy4YQUPDEaC+lOCme
+         Jp2422X0PmOby+bN+KxbBy0P0XoMNh/8CQPctaNXL60jJhna+Ub34BS1tMO7Aht9fuyi
+         giTGkZWvqIKDezJFy16jpTBPypOj3+A4PEh28clrtUoW4x8wp+PPp8L6plYcpiLunTs3
+         rAPFwDn6Ly8aoEwp+U6tLdtLCqEsyiCR44wD8GS/S3sU44NXTWRZzaMvhwAIH2y0sd1j
+         sQpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=wLHc6xVX23o25w4Uy9ZLDreD0/areLd8xcc6Rj0gcMg=;
+        b=A6XXtTHoB0p9j5A4EFnQ1z9Q8dQHdxLfUsPbC5Xx516rfAGzrJRw5PZqdC+eOzsC0f
+         8eLNGOvV6u6H226nZ0nYBaSy0CJTbbS8wVc3VfoB8cMdAgNsw1MTssl8KFft78zAIfc5
+         jK551BqA5Gu9KdKGcQlTPYpLQ4aeN0uNaLE4lLnlrS6xwabV4IIm0nGy+k+9d0y2Qtvt
+         2h6zFpIq2ISnAFdl+PSByrXCHDqZ88ZfcMtqgxC0nJk8IBFvOlntc8Bma70XTabpYsP0
+         icFnihpuh529inNEDh4R6phG6VWIkq9FVbdUL/PTDb3O1l38hgI6IFDbznXRpIm2y7EA
+         n2qg==
+X-Gm-Message-State: APjAAAVM0s+OR+7nw/3cpM6zpR4x2n+R4gcxwQ6Dmrj6pjQX9Q6IVK4E
+        hZ39dsuAZWOIoJlSIG3n7DFG2Q==
+X-Google-Smtp-Source: APXvYqxjhov5ni2/7gWoHww+Fvl2OgNrLYfq1T2XI9spVCHk7vv1481EwAB4gFWAAYB6evcTMqDgmA==
+X-Received: by 2002:a25:4607:: with SMTP id t7mr8104795yba.383.1572101593571;
+        Sat, 26 Oct 2019 07:53:13 -0700 (PDT)
+Received: from sevai ([74.127.202.187])
+        by smtp.gmail.com with ESMTPSA id x201sm6273931ywx.34.2019.10.26.07.53.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 26 Oct 2019 07:53:12 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "mleitner\@redhat.com" <mleitner@redhat.com>,
+        "dcaratti\@redhat.com" <dcaratti@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation by netlink flag
+References: <20191022141804.27639-1-vladbu@mellanox.com>
+        <vbf7e4vy5nq.fsf@mellanox.com>
+        <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
+        <20191024073557.GB2233@nanopsycho.orion>
+        <vbfwocuupyz.fsf@mellanox.com>
+        <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
+        <vbftv7wuciu.fsf@mellanox.com>
+        <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
+        <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
+        <vbfsgngua3p.fsf@mellanox.com>
+        <7488b589-4e34-d94e-e8e1-aa8ab773891e@mojatatu.com>
+        <43d4c598-88eb-27b3-a4bd-c777143acf89@mojatatu.com>
+        <vbfpniku7pr.fsf@mellanox.com>
+        <07a6ceec-3a87-44cb-f92d-6a6d9d9bef81@mojatatu.com>
+        <vbfmudou5qp.fsf@mellanox.com>
+        <894e7d98-83b0-2eaf-000e-0df379e2d1f4@mojatatu.com>
+        <d2ec62c3-afab-8a55-9329-555fc3ff23f0@mojatatu.com>
+        <710bf705-6a58-c158-4fdc-9158dfa34ed3@mojatatu.com>
+        <fcd34a45-13ac-18d2-b01a-b0e51663f95d@mojatatu.com>
+        <vbflft7u9hy.fsf@mellanox.com>
+        <517f26b9-89cc-df14-c903-e750c96d5713@mojatatu.com>
+Date:   Sat, 26 Oct 2019 10:52:58 -0400
+In-Reply-To: <517f26b9-89cc-df14-c903-e750c96d5713@mojatatu.com> (Jamal Hadi
+        Salim's message of "Sat, 26 Oct 2019 08:26:16 -0400")
+Message-ID: <85eeyzk185.fsf@mojatatu.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9422 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910260146
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9422 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910260146
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 26, 2019 at 03:54:16PM +0800, zhanglin wrote:
-> memset() the structure ethtool_wolinfo that has padded bytes
-> but the padded bytes have not been zeroed out.
-> 
-> Signed-off-by: zhanglin <zhang.lin16@zte.com.cn>
-> ---
->  net/core/ethtool.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
-> index aeabc48..563a845 100644
-> --- a/net/core/ethtool.c
-> +++ b/net/core/ethtool.c
-> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
->  
->  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
->  {
-> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
-> +	struct ethtool_wolinfo wol;
->  
+Jamal Hadi Salim <jhs@mojatatu.com> writes:
 
-How did you detect that they weren't initialized?  Is this a KASAN
-thing?
+> On 2019-10-26 5:44 a.m., Vlad Buslov wrote:
+>>
+>
+>> Okay, I understand now what you suggest. But why not unify cls and act
+>> API, and always have flags parsed in tcf_action_init_1() as
+>> TCA_ACT_ROOT_FLAGS like I suggested in one of my previous mails? That
+>> way we don't have to pass pointers around.
+>
+> That would work.
+> I am being a sucker for optimization - one flag for a batch
+> of actions vs one per action.
+> It is a good compromise, go for it.
 
-Most of the time GCC will zero out the padding bytes when you have an
-initializer like this, but sometimes it just makes the intialization a
-series of assignments which leaves the holes uninitialized.  I wish I
-knew the rules so that I could check for it in Smatch.  Or even better,
-I wish that there were an option to always zero the holes in this
-situation...
+But why do we need to have two attributes, one at the root level
+TCA_ROOT_FLAGS and the other at the inner TCA_ACT_* level, but in fact
+serving the same purpose -- passing flags for optimizations?
 
-regards,
-dan carpenter
-
+The whole nest of action attributes including root ones is passed as 3rd
+argument of tcf_exts_validate(), so it can be validated and extracted at
+that level and passed to tcf_action_init_1() as pointer to 32-bit flag,
+admittedly it's ugly given the growing number of arguments to
+tcf_action_init_1(). With old iproute2 the pointer will always be NULL,
+so I think backward compatibilty will be preserved.
