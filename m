@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5894DE5B7C
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:23:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2683AE5B8E
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:24:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729826AbfJZNX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:23:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45160 "EHLO mail.kernel.org"
+        id S1728176AbfJZNXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:23:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45318 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726173AbfJZNXY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:23:24 -0400
+        id S1729850AbfJZNXb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:23:31 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A055A222BD;
-        Sat, 26 Oct 2019 13:23:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F0596222C1;
+        Sat, 26 Oct 2019 13:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096203;
-        bh=yrTfGxuoAKd0rtVXttdz3w5GMeSVpYt0714sd4Oul8s=;
+        s=default; t=1572096210;
+        bh=/eRYkDadNPYvXA6E/tQcrOM9czvltO6wddzIyLxtzzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hhet+DiNqlKVTqkp79F7s/I7WqhUCO9oINfv7+xRG8k55fB+hdKpIfDuBMTcE4+aC
-         8bZ/neFlfFZ3TAORNe5uNLojWOmYvYSGXKiaVUSgvg2DcNnH/PDCOwD89/Q4vmNjo1
-         d9UXR6oBeMj7Pv+Zn50YZ3R4zPtj7SfPBkDnU9iM=
+        b=rt3Vyc0OvAqnw3YTWRFlclNpTWfbzNDJGgpUz6qwHYgb+rRzFl4JWLzovN3GlagRn
+         N4C+yTTTohX78Osib1do+65+SViZAKZRsXzXPWJSWs7moYoP+Hkgz2qAe+fc415fRp
+         cL7mnRv2B8Gr9p2q49kpd0yB4eUEGtilLSCXCtOk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 09/17] bonding: fix potential NULL deref in bond_update_slave_arr
-Date:   Sat, 26 Oct 2019 09:22:53 -0400
-Message-Id: <20191026132302.4622-9-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Doug Berger <opendmb@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 13/17] net: bcmgenet: Fix RGMII_MODE_EN value for GENET v1/2/3
+Date:   Sat, 26 Oct 2019 09:22:57 -0400
+Message-Id: <20191026132302.4622-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026132302.4622-1-sashal@kernel.org>
 References: <20191026132302.4622-1-sashal@kernel.org>
@@ -45,77 +45,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit a7137534b597b7c303203e6bc3ed87e87a273bb8 ]
+[ Upstream commit efb86fede98cdc70b674692ff617b1162f642c49 ]
 
-syzbot got a NULL dereference in bond_update_slave_arr() [1],
-happening after a failure to allocate bond->slave_arr
+The RGMII_MODE_EN bit value was 0 for GENET versions 1 through 3, and
+became 6 for GENET v4 and above, account for that difference.
 
-A workqueue (bond_slave_arr_handler) is supposed to retry
-the allocation later, but if the slave is removed before
-the workqueue had a chance to complete, bond->slave_arr
-can still be NULL.
-
-[1]
-
-Failed to build slave-array.
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] SMP KASAN PTI
-Modules linked in:
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:bond_update_slave_arr.cold+0xc6/0x198 drivers/net/bonding/bond_main.c:4039
-RSP: 0018:ffff88018fe33678 EFLAGS: 00010246
-RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffc9000290b000
-RDX: 0000000000000000 RSI: ffffffff82b63037 RDI: ffff88019745ea20
-RBP: ffff88018fe33760 R08: ffff880170754280 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: ffff88019745ea00 R14: 0000000000000000 R15: ffff88018fe338b0
-FS:  00007febd837d700(0000) GS:ffff8801dad00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000004540a0 CR3: 00000001c242e005 CR4: 00000000001626f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- [<ffffffff82b5b45e>] __bond_release_one+0x43e/0x500 drivers/net/bonding/bond_main.c:1923
- [<ffffffff82b5b966>] bond_release drivers/net/bonding/bond_main.c:2039 [inline]
- [<ffffffff82b5b966>] bond_do_ioctl+0x416/0x870 drivers/net/bonding/bond_main.c:3562
- [<ffffffff83ae25f4>] dev_ifsioc+0x6f4/0x940 net/core/dev_ioctl.c:328
- [<ffffffff83ae2e58>] dev_ioctl+0x1b8/0xc70 net/core/dev_ioctl.c:495
- [<ffffffff83995ffd>] sock_do_ioctl+0x1bd/0x300 net/socket.c:1088
- [<ffffffff83996a80>] sock_ioctl+0x300/0x5d0 net/socket.c:1196
- [<ffffffff81b124db>] vfs_ioctl fs/ioctl.c:47 [inline]
- [<ffffffff81b124db>] file_ioctl fs/ioctl.c:501 [inline]
- [<ffffffff81b124db>] do_vfs_ioctl+0xacb/0x1300 fs/ioctl.c:688
- [<ffffffff81b12dc6>] SYSC_ioctl fs/ioctl.c:705 [inline]
- [<ffffffff81b12dc6>] SyS_ioctl+0xb6/0xe0 fs/ioctl.c:696
- [<ffffffff8101ccc8>] do_syscall_64+0x528/0x770 arch/x86/entry/common.c:305
- [<ffffffff84400091>] entry_SYSCALL_64_after_hwframe+0x42/0xb7
-
-Fixes: ee6377147409 ("bonding: Simplify the xmit function for modes that use xmit_hash")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: Mahesh Bandewar <maheshb@google.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Fixes: aa09677cba42 ("net: bcmgenet: add MDIO routines")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Acked-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h | 1 +
+ drivers/net/ethernet/broadcom/genet/bcmmii.c   | 6 +++++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index fd6aff9f0052e..1bf4f54c2befb 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -3889,7 +3889,7 @@ int bond_update_slave_arr(struct bonding *bond, struct slave *skipslave)
- 		 * this to-be-skipped slave to send a packet out.
- 		 */
- 		old_arr = rtnl_dereference(bond->slave_arr);
--		for (idx = 0; idx < old_arr->count; idx++) {
-+		for (idx = 0; old_arr != NULL && idx < old_arr->count; idx++) {
- 			if (skipslave == old_arr->arr[idx]) {
- 				old_arr->arr[idx] =
- 				    old_arr->arr[old_arr->count-1];
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.h b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+index ce20bc939b385..e651845c66050 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.h
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.h
+@@ -362,6 +362,7 @@ struct bcmgenet_mib_counters {
+ #define  EXT_ENERGY_DET_MASK		(1 << 12)
+ 
+ #define EXT_RGMII_OOB_CTRL		0x0C
++#define  RGMII_MODE_EN_V123		(1 << 0)
+ #define  RGMII_LINK			(1 << 4)
+ #define  OOB_DISABLE			(1 << 5)
+ #define  RGMII_MODE_EN			(1 << 6)
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index 0565efad6e6ea..01e6e6a36b9cf 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -328,7 +328,11 @@ int bcmgenet_mii_config(struct net_device *dev)
+ 	 */
+ 	if (priv->ext_phy) {
+ 		reg = bcmgenet_ext_readl(priv, EXT_RGMII_OOB_CTRL);
+-		reg |= RGMII_MODE_EN | id_mode_dis;
++		reg |= id_mode_dis;
++		if (GENET_IS_V1(priv) || GENET_IS_V2(priv) || GENET_IS_V3(priv))
++			reg |= RGMII_MODE_EN_V123;
++		else
++			reg |= RGMII_MODE_EN;
+ 		bcmgenet_ext_writel(priv, reg, EXT_RGMII_OOB_CTRL);
+ 	}
+ 
 -- 
 2.20.1
 
