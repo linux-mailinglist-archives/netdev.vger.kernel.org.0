@@ -2,113 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E351EE5DBE
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 16:53:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71A4E5DE1
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 17:11:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbfJZOxQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 10:53:16 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:39971 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726162AbfJZOxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 10:53:15 -0400
-Received: by mail-yb1-f195.google.com with SMTP id d12so2282649ybn.7
-        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 07:53:14 -0700 (PDT)
+        id S1726365AbfJZPLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 11:11:31 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:43575 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726257AbfJZPLa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 11:11:30 -0400
+Received: by mail-yw1-f65.google.com with SMTP id g77so2103736ywb.10
+        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 08:11:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=wLHc6xVX23o25w4Uy9ZLDreD0/areLd8xcc6Rj0gcMg=;
-        b=HajS5JbS8EXetkchiaF3YsegrCmtAr/EW1fKR/MzhFiOvcksA0HLZawzf7USJXCB/C
-         kN/PyvC8NJZu63XNxod/1LF9QicoVoB/iZg2bHJ6bo87/oFLzMJQy4YQUPDEaC+lOCme
-         Jp2422X0PmOby+bN+KxbBy0P0XoMNh/8CQPctaNXL60jJhna+Ub34BS1tMO7Aht9fuyi
-         giTGkZWvqIKDezJFy16jpTBPypOj3+A4PEh28clrtUoW4x8wp+PPp8L6plYcpiLunTs3
-         rAPFwDn6Ly8aoEwp+U6tLdtLCqEsyiCR44wD8GS/S3sU44NXTWRZzaMvhwAIH2y0sd1j
-         sQpQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=EUuMwUZAF3XeoEXT2139Y7T1weEKSqhdCDgcy9JEUQU=;
+        b=LFH4Md2fQFCpFka5XIjS5IY4185oJk+4v7V2tW0QgQn42LpYBkWgTk+RrXwCvUfBP9
+         Xi5fRa6RiAPYcc4Mx8ga29HxsXJN19jDk/StlQ+fhPO/GkOJVy6tAOCqdcMLju8dGYLn
+         98dwrZPejBeZj2DhzNDooqN54nW/mruaxopavHS8D9H+AQewcS8FXUjyx95S782/FtGs
+         ZOMrowBZ+jkuqz/hdgLFEoRzasuOHV2v8fzMKKbpUXejA0IxsykYbL3AuTRnLRNf9N09
+         ZK3+rrRmR7zHEs8k5pNdXviyPWwj5DZ26P69QJPvHhIDCvGSpoi0dCdAFFw4jqOWl7SV
+         6tZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=wLHc6xVX23o25w4Uy9ZLDreD0/areLd8xcc6Rj0gcMg=;
-        b=A6XXtTHoB0p9j5A4EFnQ1z9Q8dQHdxLfUsPbC5Xx516rfAGzrJRw5PZqdC+eOzsC0f
-         8eLNGOvV6u6H226nZ0nYBaSy0CJTbbS8wVc3VfoB8cMdAgNsw1MTssl8KFft78zAIfc5
-         jK551BqA5Gu9KdKGcQlTPYpLQ4aeN0uNaLE4lLnlrS6xwabV4IIm0nGy+k+9d0y2Qtvt
-         2h6zFpIq2ISnAFdl+PSByrXCHDqZ88ZfcMtqgxC0nJk8IBFvOlntc8Bma70XTabpYsP0
-         icFnihpuh529inNEDh4R6phG6VWIkq9FVbdUL/PTDb3O1l38hgI6IFDbznXRpIm2y7EA
-         n2qg==
-X-Gm-Message-State: APjAAAVM0s+OR+7nw/3cpM6zpR4x2n+R4gcxwQ6Dmrj6pjQX9Q6IVK4E
-        hZ39dsuAZWOIoJlSIG3n7DFG2Q==
-X-Google-Smtp-Source: APXvYqxjhov5ni2/7gWoHww+Fvl2OgNrLYfq1T2XI9spVCHk7vv1481EwAB4gFWAAYB6evcTMqDgmA==
-X-Received: by 2002:a25:4607:: with SMTP id t7mr8104795yba.383.1572101593571;
-        Sat, 26 Oct 2019 07:53:13 -0700 (PDT)
-Received: from sevai ([74.127.202.187])
-        by smtp.gmail.com with ESMTPSA id x201sm6273931ywx.34.2019.10.26.07.53.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 26 Oct 2019 07:53:12 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EUuMwUZAF3XeoEXT2139Y7T1weEKSqhdCDgcy9JEUQU=;
+        b=NWrYMtlQ3R/cknXEQNhEokct0knCXL/Gp8KlGoOX/zbi4M2+c329Zar/Hn6SHtzFSG
+         I2c0sWJdtSuC2S0OsigTTYSOpLF3Pg/0FN2OWpqukWpvFfSBiH2w1lS1VTR7pYjGGAy7
+         /OdyYS1lbM6ueai5YDVex5xbYpBdticEHRjyshpKegMI5T7oxpjl8M4I8BzTuYuJwtPE
+         Kt3l38zQxbGycUrl52zdpG6sz+zf3ZSUmpc2jcpKrE8r+gOXFgjUbaLNdk4ap+lOMamj
+         BJArRVzXoBCJeXcFdoeBmxisdh3sVbA8ElG48+ZEWG6XIYCP1cfonPIp5qL5JB0TxtdO
+         yeoA==
+X-Gm-Message-State: APjAAAWtdxNSczvQWFirTGoCVuIpsFA/1LxT/QgucausCTn84k0HOpAk
+        AUl/A9LWyvsLPDSP+4QnRTKRkA==
+X-Google-Smtp-Source: APXvYqw8xi6AGFI6rXINa2H6wO4BDm4GVN838fohJ1GLtMzc6xkzUM9iUeAU87UmLhp3rXsNv2Poxw==
+X-Received: by 2002:a81:9884:: with SMTP id p126mr6232372ywg.486.1572102689719;
+        Sat, 26 Oct 2019 08:11:29 -0700 (PDT)
+Received: from mojatatu.com ([74.127.202.187])
+        by smtp.gmail.com with ESMTPSA id n185sm1588809ywf.86.2019.10.26.08.11.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sat, 26 Oct 2019 08:11:29 -0700 (PDT)
 From:   Roman Mashak <mrv@mojatatu.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-Cc:     Vlad Buslov <vladbu@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "mleitner\@redhat.com" <mleitner@redhat.com>,
-        "dcaratti\@redhat.com" <dcaratti@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 00/13] Control action percpu counters allocation by netlink flag
-References: <20191022141804.27639-1-vladbu@mellanox.com>
-        <vbf7e4vy5nq.fsf@mellanox.com>
-        <dc00c7a4-a3a2-cf12-66e1-49ce41842181@mojatatu.com>
-        <20191024073557.GB2233@nanopsycho.orion>
-        <vbfwocuupyz.fsf@mellanox.com>
-        <90c329f6-f2c6-240f-f9c1-70153edd639f@mojatatu.com>
-        <vbftv7wuciu.fsf@mellanox.com>
-        <fab8fd1a-319c-0e9a-935d-a26c535acc47@mojatatu.com>
-        <48a75bf9-d496-b265-bdb7-025dd2e5f9f9@mojatatu.com>
-        <vbfsgngua3p.fsf@mellanox.com>
-        <7488b589-4e34-d94e-e8e1-aa8ab773891e@mojatatu.com>
-        <43d4c598-88eb-27b3-a4bd-c777143acf89@mojatatu.com>
-        <vbfpniku7pr.fsf@mellanox.com>
-        <07a6ceec-3a87-44cb-f92d-6a6d9d9bef81@mojatatu.com>
-        <vbfmudou5qp.fsf@mellanox.com>
-        <894e7d98-83b0-2eaf-000e-0df379e2d1f4@mojatatu.com>
-        <d2ec62c3-afab-8a55-9329-555fc3ff23f0@mojatatu.com>
-        <710bf705-6a58-c158-4fdc-9158dfa34ed3@mojatatu.com>
-        <fcd34a45-13ac-18d2-b01a-b0e51663f95d@mojatatu.com>
-        <vbflft7u9hy.fsf@mellanox.com>
-        <517f26b9-89cc-df14-c903-e750c96d5713@mojatatu.com>
-Date:   Sat, 26 Oct 2019 10:52:58 -0400
-In-Reply-To: <517f26b9-89cc-df14-c903-e750c96d5713@mojatatu.com> (Jamal Hadi
-        Salim's message of "Sat, 26 Oct 2019 08:26:16 -0400")
-Message-ID: <85eeyzk185.fsf@mojatatu.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net-next 1/1] tc-testing: list required kernel options for act_ct action
+Date:   Sat, 26 Oct 2019 11:11:09 -0400
+Message-Id: <1572102669-19910-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jamal Hadi Salim <jhs@mojatatu.com> writes:
+Updated config with required kernel options for conntrac TC action,
+so that tdc can run the tests.
 
-> On 2019-10-26 5:44 a.m., Vlad Buslov wrote:
->>
->
->> Okay, I understand now what you suggest. But why not unify cls and act
->> API, and always have flags parsed in tcf_action_init_1() as
->> TCA_ACT_ROOT_FLAGS like I suggested in one of my previous mails? That
->> way we don't have to pass pointers around.
->
-> That would work.
-> I am being a sucker for optimization - one flag for a batch
-> of actions vs one per action.
-> It is a good compromise, go for it.
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ tools/testing/selftests/tc-testing/config | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-But why do we need to have two attributes, one at the root level
-TCA_ROOT_FLAGS and the other at the inner TCA_ACT_* level, but in fact
-serving the same purpose -- passing flags for optimizations?
+diff --git a/tools/testing/selftests/tc-testing/config b/tools/testing/selftests/tc-testing/config
+index 7c551968d184..477bc61b374a 100644
+--- a/tools/testing/selftests/tc-testing/config
++++ b/tools/testing/selftests/tc-testing/config
+@@ -1,3 +1,12 @@
++#
++# Core Netfilter Configuration
++#
++CONFIG_NF_CONNTRACK=m
++CONFIG_NF_CONNTRACK_MARK=y
++CONFIG_NF_CONNTRACK_ZONES=y
++CONFIG_NF_CONNTRACK_LABELS=y
++CONFIG_NF_NAT=m
++
+ CONFIG_NET_SCHED=y
+ 
+ #
+@@ -42,6 +51,7 @@ CONFIG_NET_ACT_CTINFO=m
+ CONFIG_NET_ACT_SKBMOD=m
+ CONFIG_NET_ACT_IFE=m
+ CONFIG_NET_ACT_TUNNEL_KEY=m
++CONFIG_NET_ACT_CT=m
+ CONFIG_NET_ACT_MPLS=m
+ CONFIG_NET_IFE_SKBMARK=m
+ CONFIG_NET_IFE_SKBPRIO=m
+-- 
+2.7.4
 
-The whole nest of action attributes including root ones is passed as 3rd
-argument of tcf_exts_validate(), so it can be validated and extracted at
-that level and passed to tcf_action_init_1() as pointer to 32-bit flag,
-admittedly it's ugly given the growing number of arguments to
-tcf_action_init_1(). With old iproute2 the pointer will always be NULL,
-so I think backward compatibilty will be preserved.
