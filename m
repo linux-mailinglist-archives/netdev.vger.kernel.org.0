@@ -2,60 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FD04E582B
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 04:51:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA04DE5837
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 05:18:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbfJZCva (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 22:51:30 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:52296 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725957AbfJZCva (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 22:51:30 -0400
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id AF52D9F0D7FC51A6691C;
-        Sat, 26 Oct 2019 10:51:26 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.439.0; Sat, 26 Oct 2019 10:51:18 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     Egor Pomozov <epomozov@marvell.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     YueHaibing <yuehaibing@huawei.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net: aquantia: remove unused including <linux/version.h>
-Date:   Sat, 26 Oct 2019 02:51:09 +0000
-Message-ID: <20191026025109.75721-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        id S1726069AbfJZDPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 23:15:50 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40176 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725996AbfJZDPu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 23:15:50 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 37EFC14B7BF70;
+        Fri, 25 Oct 2019 20:15:49 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 20:15:45 -0700 (PDT)
+Message-Id: <20191025.201545.532234176918755972.davem@davemloft.net>
+To:     gnault@redhat.com
+Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        nicolas.dichtel@6wind.com, alexei.starovoitov@gmail.com,
+        pshelar@ovn.org, jbenc@redhat.com
+Subject: Re: [PATCH net] netns: fix GFP flags in rtnl_net_notifyid()
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <d2d9d7a0168e9c216b6755021ef4cf5b3baaf3b9.1571848485.git.gnault@redhat.com>
+References: <d2d9d7a0168e9c216b6755021ef4cf5b3baaf3b9.1571848485.git.gnault@redhat.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 25 Oct 2019 20:15:49 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove including <linux/version.h> that don't need it.
+From: Guillaume Nault <gnault@redhat.com>
+Date: Wed, 23 Oct 2019 18:39:04 +0200
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_ptp.h | 1 -
- 1 file changed, 1 deletion(-)
+> In rtnl_net_notifyid(), we certainly can't pass a null GFP flag to
+> rtnl_notify(). A GFP_KERNEL flag would be fine in most circumstances,
+> but there are a few paths calling rtnl_net_notifyid() from atomic
+> context or from RCU critical sections. The later also precludes the use
+> of gfp_any() as it wouldn't detect the RCU case. Also, the nlmsg_new()
+> call is wrong too, as it uses GFP_KERNEL unconditionally.
+> 
+> Therefore, we need to pass the GFP flags as parameter and propagate it
+> through function calls until the proper flags can be determined.
+> 
+> In most cases, GFP_KERNEL is fine. The exceptions are:
+>   * openvswitch: ovs_vport_cmd_get() and ovs_vport_cmd_dump()
+>     indirectly call rtnl_net_notifyid() from RCU critical section,
+> 
+>   * rtnetlink: rtmsg_ifinfo_build_skb() already receives GFP flags as
+>     parameter.
+> 
+> Also, in ovs_vport_cmd_build_info(), let's change the GFP flags used
+> by nlmsg_new(). The function is allowed to sleep, so better make the
+> flags consistent with the ones used in the following
+> ovs_vport_cmd_fill_info() call.
+> 
+> Found by code inspection.
+> 
+> Fixes: 9a9634545c70 ("netns: notify netns id events")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
-index 3de4682f7c06..61486757c789 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
-@@ -9,7 +9,6 @@
- #define AQ_PTP_H
- 
- #include <linux/net_tstamp.h>
--#include <linux/version.h>
- 
- /* Common functions */
- int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec);
-
-
-
+Applied and queued up for -stable, thank you.
