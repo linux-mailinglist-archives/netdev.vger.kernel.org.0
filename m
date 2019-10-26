@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D16A9E5A93
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D000E5A9A
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbfJZNQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:16:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37738 "EHLO mail.kernel.org"
+        id S1726758AbfJZNQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:16:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38020 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726566AbfJZNQQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:16:16 -0400
+        id S1726730AbfJZNQ3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:16:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6B83721897;
-        Sat, 26 Oct 2019 13:16:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C5002070B;
+        Sat, 26 Oct 2019 13:16:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095776;
-        bh=NQ0FnJ1VBANMVsMUTfmcHRHbQvXmLQjJYYhHODkSERc=;
+        s=default; t=1572095788;
+        bh=SDGyo0NT2cQC5avrsBr7kyb3jRJsCnz9UDUEz/Zvzg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p11wgfF/ez48B8UA/kQZYySvqHW6RAwkVFOSTsY3rlUY5sihPg3UiTzBUcp/XJvD/
-         KMzFKYcinGhAQ1NuzMWN0GY9AV/CdVPDERJx/JNxHZa06d65RZOW2HcgZQSl7Zialv
-         QYnBPx7CFfHU7iLJnYEpsy+jg7ZYP0zO0iVKwT54=
+        b=RmS1aFPB1sQ5bhvwwv9loD27u5ySn1wJowHvWB5Cuyd+FG4I1xGH8cTyStVOfmX2u
+         +didjmDetN4A4eNNbz0jZW9vojUrNdIz9c1mojqHgURsmXPXb1wJQMMeo40wRRuu6r
+         AL/xaX6APe97zH/sl4aV2YnUy6+TDcxFDhMK/pw0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Vassernis <michael.vassernis@tandemg.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 07/99] mac80211_hwsim: fix incorrect dev_alloc_name failure goto
-Date:   Sat, 26 Oct 2019 09:14:28 -0400
-Message-Id: <20191026131600.2507-7-sashal@kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 16/99] rxrpc: Fix call ref leak
+Date:   Sat, 26 Oct 2019 09:14:37 -0400
+Message-Id: <20191026131600.2507-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -44,36 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Vassernis <michael.vassernis@tandemg.com>
+From: David Howells <dhowells@redhat.com>
 
-[ Upstream commit 313c3fe9c2348e7147eca38bb446f295b45403a0 ]
+[ Upstream commit c48fc11b69e95007109206311b0187a3090591f3 ]
 
-If dev_alloc_name fails, hwsim_mon's memory allocated in alloc_netdev
-needs to be freed.
-Change goto command in dev_alloc_name failure to out_free_mon in
-order to perform free_netdev.
+When sendmsg() finds a call to continue on with, if the call is in an
+inappropriate state, it doesn't release the ref it just got on that call
+before returning an error.
 
-Signed-off-by: Michael Vassernis <michael.vassernis@tandemg.com>
-Link: https://lore.kernel.org/r/20191003073049.3760-1-michael.vassernis@tandemg.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+This causes the following symptom to show up with kasan:
+
+	BUG: KASAN: use-after-free in rxrpc_send_keepalive+0x8a2/0x940
+	net/rxrpc/output.c:635
+	Read of size 8 at addr ffff888064219698 by task kworker/0:3/11077
+
+where line 635 is:
+
+	whdr.epoch	= htonl(peer->local->rxnet->epoch);
+
+The local endpoint (which cannot be pinned by the call) has been released,
+but not the peer (which is pinned by the call).
+
+Fix this by releasing the call in the error path.
+
+Fixes: 37411cad633f ("rxrpc: Fix potential NULL-pointer exception")
+Reported-by: syzbot+d850c266e3df14da1d31@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/rxrpc/sendmsg.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 772e54f0696fd..141508e01c31f 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -3929,7 +3929,7 @@ static int __init init_mac80211_hwsim(void)
- 	err = dev_alloc_name(hwsim_mon, hwsim_mon->name);
- 	if (err < 0) {
- 		rtnl_unlock();
--		goto out_free_radios;
-+		goto out_free_mon;
- 	}
- 
- 	err = register_netdevice(hwsim_mon);
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 6a1547b270fef..22f51a7e356ee 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -661,6 +661,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 		case RXRPC_CALL_SERVER_PREALLOC:
+ 		case RXRPC_CALL_SERVER_SECURING:
+ 		case RXRPC_CALL_SERVER_ACCEPTING:
++			rxrpc_put_call(call, rxrpc_call_put);
+ 			ret = -EBUSY;
+ 			goto error_release_sock;
+ 		default:
 -- 
 2.20.1
 
