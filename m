@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1F4EE5CFC
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AEC2E5D01
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727463AbfJZNRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:17:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39248 "EHLO mail.kernel.org"
+        id S1727944AbfJZNe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:34:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727436AbfJZNRk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:17:40 -0400
+        id S1727450AbfJZNRl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:17:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF6D921D80;
-        Sat, 26 Oct 2019 13:17:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F24A821E6F;
+        Sat, 26 Oct 2019 13:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095859;
-        bh=gLuv0ViqIe1fFmez2VjqsfZQFJHxgs11NaHlN2+O+zg=;
+        s=default; t=1572095860;
+        bh=Erj0YtBMybGdaqN3l1d/8o3zG1P1aQifLZxJEmEjtgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LGcWESv3jsaZSERSyJAZ3OsPxEqEXDOdpImmPXnDKpg19cj5UfXUvDsZjbAJYVoce
-         GYNy2kfFY1h9aab4xfTaR5toNf0TO8rFbuF8PklevjZpjluks17B2jGT6myDTXsCPc
-         KPBlX8C658R0u0V6ak5AnHSAvz2bpyykM3/NuLgs=
+        b=xUXGG0BkdWBfMWuA9uZXELrdkvxXq0n8ipqyykNUinnZnpgp1fbqBuCStRH9oHhlW
+         saHbuNF+GDd0CvqexQ6K3rB3oOgHgqSIJUutboUz/s1hP4WoWQfA47nXI7ggNnW0vE
+         MwNlYb01zOVrLV/seDHjKkGQl7rVT/XWsumJx3fA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Ursula Braun <ubraun@linux.ibm.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 52/99] net: add {READ|WRITE}_ONCE() annotations on ->rskq_accept_head
-Date:   Sat, 26 Oct 2019 09:15:13 -0400
-Message-Id: <20191026131600.2507-52-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 53/99] net/smc: fix SMCD link group creation with VLAN id
+Date:   Sat, 26 Oct 2019 09:15:14 -0400
+Message-Id: <20191026131600.2507-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -43,74 +45,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ursula Braun <ubraun@linux.ibm.com>
 
-[ Upstream commit 60b173ca3d1cd1782bd0096dc17298ec242f6fb1 ]
+[ Upstream commit 29ee2701529e1905c0e948688f9688c68c8d4ea4 ]
 
-reqsk_queue_empty() is called from inet_csk_listen_poll() while
-other cpus might write ->rskq_accept_head value.
+If creation of an SMCD link group with VLAN id fails, the initial
+smc_ism_get_vlan() step has to be reverted as well.
 
-Use {READ|WRITE}_ONCE() to avoid compiler tricks
-and potential KCSAN splats.
-
-Fixes: fff1f3001cc5 ("tcp: add a spinlock to protect struct request_sock_queue")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: c6ba7c9ba43d ("net/smc: add base infrastructure for SMC-D and ISM")
+Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/pvcalls-back.c      | 2 +-
- include/net/request_sock.h      | 4 ++--
- net/ipv4/inet_connection_sock.c | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ net/smc/smc_core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/xen/pvcalls-back.c b/drivers/xen/pvcalls-back.c
-index 69a626b0e5942..c57c71b7d53db 100644
---- a/drivers/xen/pvcalls-back.c
-+++ b/drivers/xen/pvcalls-back.c
-@@ -775,7 +775,7 @@ static int pvcalls_back_poll(struct xenbus_device *dev,
- 	mappass->reqcopy = *req;
- 	icsk = inet_csk(mappass->sock->sk);
- 	queue = &icsk->icsk_accept_queue;
--	data = queue->rskq_accept_head != NULL;
-+	data = READ_ONCE(queue->rskq_accept_head) != NULL;
- 	if (data) {
- 		mappass->reqcopy.cmd = 0;
- 		ret = 0;
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index fd178d58fa84e..cf8b33213bbc2 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -185,7 +185,7 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
- 
- static inline bool reqsk_queue_empty(const struct request_sock_queue *queue)
- {
--	return queue->rskq_accept_head == NULL;
-+	return READ_ONCE(queue->rskq_accept_head) == NULL;
- }
- 
- static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue *queue,
-@@ -197,7 +197,7 @@ static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue
- 	req = queue->rskq_accept_head;
- 	if (req) {
- 		sk_acceptq_removed(parent);
--		queue->rskq_accept_head = req->dl_next;
-+		WRITE_ONCE(queue->rskq_accept_head, req->dl_next);
- 		if (queue->rskq_accept_head == NULL)
- 			queue->rskq_accept_tail = NULL;
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 4ca50ddf8d161..88556f0251ab9 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -213,7 +213,7 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 	lgr = kzalloc(sizeof(*lgr), GFP_KERNEL);
+ 	if (!lgr) {
+ 		rc = SMC_CLC_DECL_MEM;
+-		goto out;
++		goto ism_put_vlan;
  	}
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index a9183543ca305..dbcf34ec8dd20 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -934,7 +934,7 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
- 		req->sk = child;
- 		req->dl_next = NULL;
- 		if (queue->rskq_accept_head == NULL)
--			queue->rskq_accept_head = req;
-+			WRITE_ONCE(queue->rskq_accept_head, req);
- 		else
- 			queue->rskq_accept_tail->dl_next = req;
- 		queue->rskq_accept_tail = req;
+ 	lgr->is_smcd = ini->is_smcd;
+ 	lgr->sync_err = 0;
+@@ -289,6 +289,9 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 	smc_llc_link_clear(lnk);
+ free_lgr:
+ 	kfree(lgr);
++ism_put_vlan:
++	if (ini->is_smcd && ini->vlan_id)
++		smc_ism_put_vlan(ini->ism_dev, ini->vlan_id);
+ out:
+ 	if (rc < 0) {
+ 		if (rc == -ENOMEM)
 -- 
 2.20.1
 
