@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD76E5815
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 04:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD04E582B
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 04:51:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726079AbfJZCap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 22:30:45 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:39842 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfJZCap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 22:30:45 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2123614B7A0B1;
-        Fri, 25 Oct 2019 19:30:44 -0700 (PDT)
-Date:   Fri, 25 Oct 2019 19:30:42 -0700 (PDT)
-Message-Id: <20191025.193042.2056491201491217086.davem@davemloft.net>
-To:     nishadkamdar@gmail.com
-Cc:     ulli.kroll@googlemail.com, linus.walleij@linaro.org,
-        gregkh@linuxfoundation.org, joe@perches.com,
-        u.kleine-koenig@pengutronix.de,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: ethernet: Use the correct style for SPDX License
- Identifier
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191023152634.GA3749@nishad>
-References: <20191023152634.GA3749@nishad>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 25 Oct 2019 19:30:44 -0700 (PDT)
+        id S1726137AbfJZCva (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 22:51:30 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:52296 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725957AbfJZCva (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 25 Oct 2019 22:51:30 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id AF52D9F0D7FC51A6691C;
+        Sat, 26 Oct 2019 10:51:26 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.439.0; Sat, 26 Oct 2019 10:51:18 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     Egor Pomozov <epomozov@marvell.com>,
+        Igor Russkikh <igor.russkikh@aquantia.com>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     YueHaibing <yuehaibing@huawei.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: aquantia: remove unused including <linux/version.h>
+Date:   Sat, 26 Oct 2019 02:51:09 +0000
+Message-ID: <20191026025109.75721-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nishad Kamdar <nishadkamdar@gmail.com>
-Date: Wed, 23 Oct 2019 20:56:38 +0530
+Remove including <linux/version.h> that don't need it.
 
-> This patch corrects the SPDX License Identifier style in
-> header file related to ethernet driver for Cortina Gemini
-> devices. For C header files Documentation/process/license-rules.rst
-> mandates C-like comments (opposed to C source files where
-> C++ style should be used)
-> 
-> Changes made by using a script provided by Joe Perches here:
-> https://lkml.org/lkml/2019/2/7/46.
-> 
-> Suggested-by: Joe Perches <joe@perches.com>
-> Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/aquantia/atlantic/aq_ptp.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-Applied, thanks.
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
+index 3de4682f7c06..61486757c789 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.h
+@@ -9,7 +9,6 @@
+ #define AQ_PTP_H
+ 
+ #include <linux/net_tstamp.h>
+-#include <linux/version.h>
+ 
+ /* Common functions */
+ int aq_ptp_init(struct aq_nic_s *aq_nic, unsigned int idx_vec);
+
+
+
