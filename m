@@ -2,56 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB022E5E9F
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 20:22:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47682E5EA2
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 20:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726483AbfJZSWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 14:22:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:47836 "EHLO
+        id S1726395AbfJZS1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 14:27:00 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:47890 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726340AbfJZSWg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 14:22:36 -0400
+        with ESMTP id S1726340AbfJZS1A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 14:27:00 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id EA13614DE9796;
-        Sat, 26 Oct 2019 11:22:35 -0700 (PDT)
-Date:   Sat, 26 Oct 2019 11:22:35 -0700 (PDT)
-Message-Id: <20191026.112235.711416398803098524.davem@davemloft.net>
-To:     xiaojiangfeng@huawei.com
-Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        leeyou.li@huawei.com, zhanghan23@huawei.com, nixiaoming@huawei.com,
-        zhangqiang.cn@hisilicon.com, dingjingcheng@hisilicon.com
-Subject: Re: [PATCH] net: hisilicon: Fix ping latency when deal with high
- throughput
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A0D9B1424DB5B;
+        Sat, 26 Oct 2019 11:26:59 -0700 (PDT)
+Date:   Sat, 26 Oct 2019 11:26:59 -0700 (PDT)
+Message-Id: <20191026.112659.712173290222153597.davem@davemloft.net>
+To:     pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, bgalvani@redhat.com
+Subject: Re: [PATCH v2 0/2] ipv4: fix route update on metric change.
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1572079779-76449-1-git-send-email-xiaojiangfeng@huawei.com>
-References: <1572079779-76449-1-git-send-email-xiaojiangfeng@huawei.com>
+In-Reply-To: <cover.1572083332.git.pabeni@redhat.com>
+References: <cover.1572083332.git.pabeni@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 26 Oct 2019 11:22:36 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 26 Oct 2019 11:26:59 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Date: Sat, 26 Oct 2019 16:49:39 +0800
+From: Paolo Abeni <pabeni@redhat.com>
+Date: Sat, 26 Oct 2019 11:53:38 +0200
 
-> diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-> index ad6d912..78f338a 100644
-> --- a/drivers/net/ethernet/hisilicon/hip04_eth.c
-> +++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-> @@ -575,7 +575,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
->  	struct hip04_priv *priv = container_of(napi, struct hip04_priv, napi);
->  	struct net_device *ndev = priv->ndev;
->  	struct net_device_stats *stats = &ndev->stats;
-> -	unsigned int cnt = hip04_recv_cnt(priv);
-> +	static unsigned int cnt_remaining;
+> This fixes connected route update on some edge cases for ip addr metric
+> change.
+> It additionally includes self tests for the covered scenarios. The new tests
+> fail on unpatched kernels and pass on the patched one.
+> 
+> v1 -> v2:
+>  - add selftests
 
-There is no way a piece of software state should be system wide, this is
-a per device instance value.
+Series applied and queued up for -stable, thanks.
