@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4332AE5C4D
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30405E5C4A
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:29:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728630AbfJZN3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:29:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42136 "EHLO mail.kernel.org"
+        id S1728614AbfJZNU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:20:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727224AbfJZNUW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:20:22 -0400
+        id S1728580AbfJZNUY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:20:24 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D53121871;
-        Sat, 26 Oct 2019 13:20:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6EF6B21E6F;
+        Sat, 26 Oct 2019 13:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096022;
-        bh=pmxV/SlpEYrr1w9y8sURiWSGLlr1WxFYesa/HfqsWRg=;
+        s=default; t=1572096023;
+        bh=XieehLMI9ijgk/aQ2IMhJQtqYpIgGUTBAsCbAggIvp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pvJvnhi/UsL4uE+VfIw1uB+rAB23Tk+XSUqwy2daBaUTVXfGRqHmbcqePaXdFeBQr
-         0W7jWaJeugb5KhBnzTiKmHzsi99IpzcEEXqaV8BrURT6FcpKbDw2fFLZ6RotorbfqD
-         oGyfeecL5KMq9tPz7MetNT94YMW4YsxSKptKFb/w=
+        b=MuweaUD9HrA+FWo0bkxy8aRM8P03XqXXoXV6r6ZXwjJyDdiYfWZaUy8dd8ii1h97k
+         zwFVo9XYaN3l1a14gqe3r44mXktLTukD3zQ7yHR+tjLBjv6ivxKbwl88vCVnwO6eIV
+         JTP2vkadUnVNipYcW0yqE+h9GgnCb0laAoo4oNjA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
+Cc:     Karsten Graul <kgraul@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 35/59] net: add {READ|WRITE}_ONCE() annotations on ->rskq_accept_head
-Date:   Sat, 26 Oct 2019 09:18:46 -0400
-Message-Id: <20191026131910.3435-35-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 36/59] net/smc: receive returns without data
+Date:   Sat, 26 Oct 2019 09:18:47 -0400
+Message-Id: <20191026131910.3435-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131910.3435-1-sashal@kernel.org>
 References: <20191026131910.3435-1-sashal@kernel.org>
@@ -43,74 +45,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Karsten Graul <kgraul@linux.ibm.com>
 
-[ Upstream commit 60b173ca3d1cd1782bd0096dc17298ec242f6fb1 ]
+[ Upstream commit 882dcfe5a1785c20f45820cbe6fec4b8b647c946 ]
 
-reqsk_queue_empty() is called from inet_csk_listen_poll() while
-other cpus might write ->rskq_accept_head value.
+smc_cdc_rxed_any_close_or_senddone() is used as an end condition for the
+receive loop. This conflicts with smc_cdc_msg_recv_action() which could
+run in parallel and set the bits checked by
+smc_cdc_rxed_any_close_or_senddone() before the receive is processed.
+In that case we could return from receive with no data, although data is
+available. The same applies to smc_rx_wait().
+Fix this by checking for RCV_SHUTDOWN only, which is set in
+smc_cdc_msg_recv_action() after the receive was actually processed.
 
-Use {READ|WRITE}_ONCE() to avoid compiler tricks
-and potential KCSAN splats.
-
-Fixes: fff1f3001cc5 ("tcp: add a spinlock to protect struct request_sock_queue")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: 952310ccf2d8 ("smc: receive data from RMBE")
+Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/pvcalls-back.c      | 2 +-
- include/net/request_sock.h      | 4 ++--
- net/ipv4/inet_connection_sock.c | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ net/smc/smc_rx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/xen/pvcalls-back.c b/drivers/xen/pvcalls-back.c
-index d4ea33581ac26..b3fbfed28682f 100644
---- a/drivers/xen/pvcalls-back.c
-+++ b/drivers/xen/pvcalls-back.c
-@@ -784,7 +784,7 @@ static int pvcalls_back_poll(struct xenbus_device *dev,
- 	mappass->reqcopy = *req;
- 	icsk = inet_csk(mappass->sock->sk);
- 	queue = &icsk->icsk_accept_queue;
--	data = queue->rskq_accept_head != NULL;
-+	data = READ_ONCE(queue->rskq_accept_head) != NULL;
- 	if (data) {
- 		mappass->reqcopy.cmd = 0;
- 		ret = 0;
-diff --git a/include/net/request_sock.h b/include/net/request_sock.h
-index 347015515a7de..1653435f18f5c 100644
---- a/include/net/request_sock.h
-+++ b/include/net/request_sock.h
-@@ -183,7 +183,7 @@ void reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,
+diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
+index bbcf0fe4ae10f..1ee5fdbf8284e 100644
+--- a/net/smc/smc_rx.c
++++ b/net/smc/smc_rx.c
+@@ -212,8 +212,7 @@ int smc_rx_wait(struct smc_sock *smc, long *timeo,
+ 	rc = sk_wait_event(sk, timeo,
+ 			   sk->sk_err ||
+ 			   sk->sk_shutdown & RCV_SHUTDOWN ||
+-			   fcrit(conn) ||
+-			   smc_cdc_rxed_any_close_or_senddone(conn),
++			   fcrit(conn),
+ 			   &wait);
+ 	remove_wait_queue(sk_sleep(sk), &wait);
+ 	sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+@@ -311,7 +310,6 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
+ 			smc_rx_update_cons(smc, 0);
  
- static inline bool reqsk_queue_empty(const struct request_sock_queue *queue)
- {
--	return queue->rskq_accept_head == NULL;
-+	return READ_ONCE(queue->rskq_accept_head) == NULL;
- }
+ 		if (sk->sk_shutdown & RCV_SHUTDOWN ||
+-		    smc_cdc_rxed_any_close_or_senddone(conn) ||
+ 		    conn->local_tx_ctrl.conn_state_flags.peer_conn_abort)
+ 			break;
  
- static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue *queue,
-@@ -195,7 +195,7 @@ static inline struct request_sock *reqsk_queue_remove(struct request_sock_queue
- 	req = queue->rskq_accept_head;
- 	if (req) {
- 		sk_acceptq_removed(parent);
--		queue->rskq_accept_head = req->dl_next;
-+		WRITE_ONCE(queue->rskq_accept_head, req->dl_next);
- 		if (queue->rskq_accept_head == NULL)
- 			queue->rskq_accept_tail = NULL;
- 	}
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 15e7f7915a21e..2acee8ddf45ba 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -937,7 +937,7 @@ struct sock *inet_csk_reqsk_queue_add(struct sock *sk,
- 		req->sk = child;
- 		req->dl_next = NULL;
- 		if (queue->rskq_accept_head == NULL)
--			queue->rskq_accept_head = req;
-+			WRITE_ONCE(queue->rskq_accept_head, req);
- 		else
- 			queue->rskq_accept_tail->dl_next = req;
- 		queue->rskq_accept_tail = req;
 -- 
 2.20.1
 
