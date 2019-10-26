@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D13E5ABD
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:17:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2218DE5AC8
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:17:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbfJZNRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:17:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39082 "EHLO mail.kernel.org"
+        id S1727525AbfJZNRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:17:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39368 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727348AbfJZNR3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:17:29 -0400
+        id S1727503AbfJZNRr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:17:47 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 545432070B;
-        Sat, 26 Oct 2019 13:17:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C42B21E6F;
+        Sat, 26 Oct 2019 13:17:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095849;
-        bh=bPFoI/OoIrZWhYtL8URNtW6H/PsvkIBxccGk60w9p8A=;
+        s=default; t=1572095867;
+        bh=e8P5zc33e5phKu6LdejVEInb2mZmqaRPq2wqjeZobb4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lt+wr5t5+yaOd1AUXvWaf9E56RGbWPZOUHQeme5+QfAh3M5iPSIdjmBiCp3G4LSWI
-         oeNGlHc4iUHiyKYFaZO7dCJRG8ZZBQnrpdngnaHw0CH2LsOJu6zSBNX25pNYclC9o0
-         XhcTuVplxfp1LX9Y1jUdjdImEjRZQEceBl3EqXXg=
+        b=Pnri5QBo6pVruvY3Exmr4YCVsBwqvQCZUYM6XlHlVKJxwCQu4/fQZSnqTpVZ4T8fV
+         2i4bwQICZ9GXK+nwg0xtIigG8xr3ZiLhCyykmXzGojiABhZr2HONNNzNuzqLUM1yoV
+         NPwQUawce1CGjv1k0VouRr6HcY7RWb6jPQfcoV6A=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Daniele Palmas <dnlplm@gmail.com>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 47/99] net: usb: qmi_wwan: add Telit 0x1050 composition
-Date:   Sat, 26 Oct 2019 09:15:08 -0400
-Message-Id: <20191026131600.2507-47-sashal@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 57/99] vhost/test: stop device before reset
+Date:   Sat, 26 Oct 2019 09:15:18 -0400
+Message-Id: <20191026131600.2507-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -46,34 +43,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: "Michael S. Tsirkin" <mst@redhat.com>
 
-[ Upstream commit e0ae2c578d3909e60e9448207f5d83f785f1129f ]
+[ Upstream commit 245cdd9fbd396483d501db83047116e2530f245f ]
 
-This patch adds support for Telit FN980 0x1050 composition
+When device stop was moved out of reset, test device wasn't updated to
+stop before reset, this resulted in a use after free.  Fix by invoking
+stop appropriately.
 
-0x1050: tty, adb, rmnet, tty, tty, tty, tty
-
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Fixes: b211616d7125 ("vhost: move -net specific code out")
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/vhost/test.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 3d77cd402ba9c..596428ec71df6 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1327,6 +1327,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x2357, 0x0201, 4)},	/* TP-LINK HSUPA Modem MA180 */
- 	{QMI_FIXED_INTF(0x2357, 0x9000, 4)},	/* TP-LINK MA260 */
- 	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1040, 2)},	/* Telit LE922A */
-+	{QMI_QUIRK_SET_DTR(0x1bc7, 0x1050, 2)},	/* Telit FN980 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1100, 3)},	/* Telit ME910 */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1101, 3)},	/* Telit ME910 dual modem */
- 	{QMI_FIXED_INTF(0x1bc7, 0x1200, 5)},	/* Telit LE920 */
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index 7804869c6a313..056308008288c 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -161,6 +161,7 @@ static int vhost_test_release(struct inode *inode, struct file *f)
+ 
+ 	vhost_test_stop(n, &private);
+ 	vhost_test_flush(n);
++	vhost_dev_stop(&n->dev);
+ 	vhost_dev_cleanup(&n->dev);
+ 	/* We do an extra flush before freeing memory,
+ 	 * since jobs can re-queue themselves. */
+@@ -237,6 +238,7 @@ static long vhost_test_reset_owner(struct vhost_test *n)
+ 	}
+ 	vhost_test_stop(n, &priv);
+ 	vhost_test_flush(n);
++	vhost_dev_stop(&n->dev);
+ 	vhost_dev_reset_owner(&n->dev, umem);
+ done:
+ 	mutex_unlock(&n->dev.mutex);
 -- 
 2.20.1
 
