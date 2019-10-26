@@ -2,74 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C58BE5D85
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 961DBE5D75
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:37:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbfJZNuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:50:39 -0400
-Received: from email.epicentrk.ua ([194.183.174.42]:12769 "EHLO
-        zimbra.epicentrk.ua" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726173AbfJZNuj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 09:50:39 -0400
-X-Greylist: delayed 11471 seconds by postgrey-1.27 at vger.kernel.org; Sat, 26 Oct 2019 09:50:38 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by zimbra.epicentrk.ua (Postfix) with ESMTP id 13CF72AF1D7;
-        Sat, 26 Oct 2019 00:17:46 +0300 (EEST)
-Received: from zimbra.epicentrk.ua ([127.0.0.1])
-        by localhost (zimbra.epicentrk.ua [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id pJXvFWxn4DDV; Sat, 26 Oct 2019 00:17:45 +0300 (EEST)
-Received: from localhost (localhost [127.0.0.1])
-        by zimbra.epicentrk.ua (Postfix) with ESMTP id 57D942AF1CD;
-        Sat, 26 Oct 2019 00:17:45 +0300 (EEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra.epicentrk.ua 57D942AF1CD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=epicentrk.ua;
-        s=A3FCAC36-7C71-11E7-AFD3-3C252C4CD05F; t=1572038265;
-        bh=/eiQ/UiTy3/5P3f9rUTf1CY9ZZHpfNZAOMbtuF4euCY=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=VR3e6RFzSE8o5fFoRz1wCGPDgZYdJgJWX0kF4G79VhC6aKpJoZF6LZBcpk4bepm9J
-         OtF6Dwjg/ItqtWfSrqmDpPh09DgL+Kt5kyr9QRR9dEe82FsIW3A97K0tIo+QRKkfvU
-         T6h4QfrfTq+7BvQTcq3ILX2O/nWoGj3xAX9UyLLx9+168gH8Uj1DoPV5VyN3A6By6b
-         sbak7vd/PrFfZGUasyYlyknfslDmqbPgcwbSsC43tgfHS2usHhkFPs93nFV/9tNha4
-         rrsdFZvdVc0zmdIJeVuhL65pxgPEmB6qf0ORZEyfxjUcd3FgTjoO3+8e9e/L/ZK69o
-         KXOZC6P9zjqHA==
-X-Virus-Scanned: amavisd-new at zimbra.epicentrk.ua
-Received: from zimbra.epicentrk.ua ([127.0.0.1])
-        by localhost (zimbra.epicentrk.ua [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id uvxzPDQoFhN9; Sat, 26 Oct 2019 00:17:45 +0300 (EEST)
-Received: from zimbra.epicentrk.ua (zimbra.epicentrk.ua [10.71.1.50])
-        by zimbra.epicentrk.ua (Postfix) with ESMTP id DBC212AC3D4;
-        Sat, 26 Oct 2019 00:17:43 +0300 (EEST)
-Date:   Sat, 26 Oct 2019 00:17:43 +0300 (EEST)
-From:   =?utf-8?B?0JrQvtGC0L7QstCw?= <o.kotova@epicentrk.ua>
-Reply-To: annie.martinez121@gmail.com
-Message-ID: <426306589.41179526.1572038263875.JavaMail.zimbra@epicentrk.ua>
-Subject: Proposition!
+        id S1726362AbfJZNQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:16:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37402 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726162AbfJZNQD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:16:03 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A219B2070B;
+        Sat, 26 Oct 2019 13:16:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572095762;
+        bh=Qx5Mwi+ZX7G4BJNl1HaOQ3XGU6C1kwNJVmzWlWuN+8U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=IfUMJKm1yyQAa1pYDb3Wx4BbSGBd6FbBzVBiADMeLCWzSCLdeBHN0My1xoOf5kHHF
+         hHJ8Wami0zaHUfwPEMlhQd16mNTbSF2aCmkkvZBspU8Bm5hJmifS4k7pf4RgaxI6/4
+         YyLq4FvVfig89qBuzKZgfbjYHssInKXU+4DRxIgs=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 01/99] tools: bpf: Use !building_out_of_srctree to determine srctree
+Date:   Sat, 26 Oct 2019 09:14:22 -0400
+Message-Id: <20191026131600.2507-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [10.71.1.50]
-X-Mailer: Zimbra 8.7.7_GA_1787 (zclient/8.7.7_GA_1787)
-Thread-Index: xnX/Umem8/BAAubApULxQm/7HjaiTQ==
-Thread-Topic: Proposition!
-To:     unlisted-recipients:; (no To-header on input)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Je voudrais r=C3=A9aliser un projet d=E2=80=99aide humanitaire =C3=A0 trave=
-rs vous bien qu=E2=80=99on ne se connait pas vraiment. J=E2=80=99ai alors d=
-=C3=A9cid=C3=A9 de vous l=C3=A9guer =C3=A0 titre de legs une somme de un mi=
-llion cinq cent mille dollars am=C3=A9ricain. Ma propre famille qui devrait=
- en b=C3=A9n=C3=A9ficier m'avait rejet=C3=A9e pour la simple raison de mon =
-mariage avec un Arabe Libyen.
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-=C2=AB N=E2=80=99h=C3=A9sitez pas =C3=A0 me r=C3=A9pondre =C3=A0 cet courri=
-el: annie.martinez121@gmail.com pour me parl=C3=A9 directement =C2=BB
+[ Upstream commit 55d554f5d14071f7c2c5dbd88d0a2eb695c97d16 ]
 
-NB: Veuillez vous assurer de r=C3=A9pondre a la bonne adresse =C3=89mail me=
-rci et QUE DIEU VOUS B=C3=89NISSE.
+make TARGETS=bpf kselftest fails with:
 
-Sinc=C3=A8rement
-Mme ANNIE MARTINEZ
-E-mail Priv=C3=A9e: annie.martinez121@gmail.com
+Makefile:127: tools/build/Makefile.include: No such file or directory
+
+When the bpf tool make is invoked from tools Makefile, srctree is
+cleared and the current logic check for srctree equals to empty
+string to determine srctree location from CURDIR.
+
+When the build in invoked from selftests/bpf Makefile, the srctree
+is set to "." and the same logic used for srctree equals to empty is
+needed to determine srctree.
+
+Check building_out_of_srctree undefined as the condition for both
+cases to fix "make TARGETS=bpf kselftest" build failure.
+
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Song Liu <songliubraving@fb.com>
+Link: https://lore.kernel.org/bpf/20190927011344.4695-1-skhan@linuxfoundation.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/bpf/Makefile     | 6 +++++-
+ tools/lib/bpf/Makefile | 6 +++++-
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/tools/bpf/Makefile b/tools/bpf/Makefile
+index 53b60ad452f5d..93a84965345dc 100644
+--- a/tools/bpf/Makefile
++++ b/tools/bpf/Makefile
+@@ -12,7 +12,11 @@ INSTALL ?= install
+ CFLAGS += -Wall -O2
+ CFLAGS += -D__EXPORTED_HEADERS__ -I$(srctree)/include/uapi -I$(srctree)/include
+ 
+-ifeq ($(srctree),)
++# This will work when bpf is built in tools env. where srctree
++# isn't set and when invoked from selftests build, where srctree
++# is set to ".". building_out_of_srctree is undefined for in srctree
++# builds
++ifndef building_out_of_srctree
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+ srctree := $(patsubst %/,%,$(dir $(srctree)))
+ endif
+diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+index 9312066a1ae38..f23e5e285541d 100644
+--- a/tools/lib/bpf/Makefile
++++ b/tools/lib/bpf/Makefile
+@@ -7,7 +7,11 @@ BPF_EXTRAVERSION = 4
+ 
+ MAKEFLAGS += --no-print-directory
+ 
+-ifeq ($(srctree),)
++# This will work when bpf is built in tools env. where srctree
++# isn't set and when invoked from selftests build, where srctree
++# is a ".". building_out_of_srctree is undefined for in srctree
++# builds
++ifndef building_out_of_srctree
+ srctree := $(patsubst %/,%,$(dir $(CURDIR)))
+ srctree := $(patsubst %/,%,$(dir $(srctree)))
+ srctree := $(patsubst %/,%,$(dir $(srctree)))
+-- 
+2.20.1
+
