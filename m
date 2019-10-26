@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9DDE5B60
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:22:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62F9CE5BB9
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:25:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729435AbfJZNWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:22:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44354 "EHLO mail.kernel.org"
+        id S1729457AbfJZNWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:22:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44404 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729384AbfJZNWh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:22:37 -0400
+        id S1729427AbfJZNWj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:22:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 541A22070B;
-        Sat, 26 Oct 2019 13:22:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B52FC21D7F;
+        Sat, 26 Oct 2019 13:22:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096156;
-        bh=X21N+LCGLUDR14Qww4ntmMMQRBL/u5OwRnmFlrDhhR0=;
+        s=default; t=1572096158;
+        bh=xAXZtDYlOlILeGtjxh9GRlm/T1K2DnWjZ7gl8/6GPJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dEN+liFtL2wt7sQUtKgzT8fBtviZntIe24f2+FmTfhdyG+jfD1PDumrC5Dphyce3x
-         AgJ3NRi7rTQ0OeUCocraRJbGxaO+AdiwQ1MGvRwzpyndG8lFdU6rZHVdfHNNXPMaKT
-         H9LywzJuv/wkzmNhtIsrjMQiHOSvsTPP+kdNR33c=
+        b=farLQvBoQvEz/fkVuymG9I4UQGirJRTYkbHS2HvV8Nh0k9NHRhs8tKMFmV8UpGbwu
+         AdcncIr0D1BauEE2dJ/+S20bvF1ybfVQhFE61s3GVaCxdEzGXqHkts73VXUG/ibKLk
+         /KbdkIkmW9ab7L6Jm/+1vqOm4d6yAAtoL8nKtT78=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Biggers <ebiggers@google.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 08/21] llc: fix another potential sk_buff leak in llc_ui_sendmsg()
-Date:   Sat, 26 Oct 2019 09:22:04 -0400
-Message-Id: <20191026132217.4380-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 09/21] llc: fix sk_buff refcounting in llc_conn_state_process()
+Date:   Sat, 26 Oct 2019 09:22:05 -0400
+Message-Id: <20191026132217.4380-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026132217.4380-1-sashal@kernel.org>
 References: <20191026132217.4380-1-sashal@kernel.org>
@@ -45,192 +45,121 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit fc8d5db10cbe1338a52ebc74e7feab9276721774 ]
+[ Upstream commit 36453c852816f19947ca482a595dffdd2efa4965 ]
 
-All callers of llc_conn_state_process() except llc_build_and_send_pkt()
-(via llc_ui_sendmsg() -> llc_ui_send_data()) assume that it always
-consumes a reference to the skb.  Fix this caller to do the same.
+If llc_conn_state_process() sees that llc_conn_service() put the skb on
+a list, it will drop one fewer references to it.  This is wrong because
+the current behavior is that llc_conn_service() never consumes a
+reference to the skb.
+
+The code also makes the number of skb references being dropped
+conditional on which of ind_prim and cfm_prim are nonzero, yet neither
+of these affects how many references are *acquired*.  So there is extra
+code that tries to fix this up by sometimes taking another reference.
+
+Remove the unnecessary/broken refcounting logic and instead just add an
+skb_get() before the only two places where an extra reference is
+actually consumed.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Eric Biggers <ebiggers@google.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/llc/af_llc.c   | 34 ++++++++++++++++++++--------------
- net/llc/llc_conn.c |  2 ++
- net/llc/llc_if.c   | 12 ++++++++----
- 3 files changed, 30 insertions(+), 18 deletions(-)
+ net/llc/llc_conn.c | 33 ++++++---------------------------
+ 1 file changed, 6 insertions(+), 27 deletions(-)
 
-diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
-index 789e66b0187a4..2a859f967c8af 100644
---- a/net/llc/af_llc.c
-+++ b/net/llc/af_llc.c
-@@ -111,22 +111,26 @@ static inline u8 llc_ui_header_len(struct sock *sk, struct sockaddr_llc *addr)
-  *
-  *	Send data via reliable llc2 connection.
-  *	Returns 0 upon success, non-zero if action did not succeed.
-+ *
-+ *	This function always consumes a reference to the skb.
-  */
- static int llc_ui_send_data(struct sock* sk, struct sk_buff *skb, int noblock)
- {
- 	struct llc_sock* llc = llc_sk(sk);
--	int rc = 0;
- 
- 	if (unlikely(llc_data_accept_state(llc->state) ||
- 		     llc->remote_busy_flag ||
- 		     llc->p_flag)) {
- 		long timeout = sock_sndtimeo(sk, noblock);
-+		int rc;
- 
- 		rc = llc_ui_wait_for_busy_core(sk, timeout);
-+		if (rc) {
-+			kfree_skb(skb);
-+			return rc;
-+		}
- 	}
--	if (unlikely(!rc))
--		rc = llc_build_and_send_pkt(sk, skb);
--	return rc;
-+	return llc_build_and_send_pkt(sk, skb);
- }
- 
- static void llc_ui_sk_init(struct socket *sock, struct sock *sk)
-@@ -896,7 +900,7 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	DECLARE_SOCKADDR(struct sockaddr_llc *, addr, msg->msg_name);
- 	int flags = msg->msg_flags;
- 	int noblock = flags & MSG_DONTWAIT;
--	struct sk_buff *skb;
-+	struct sk_buff *skb = NULL;
- 	size_t size = 0;
- 	int rc = -EINVAL, copied = 0, hdrlen;
- 
-@@ -905,10 +909,10 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	lock_sock(sk);
- 	if (addr) {
- 		if (msg->msg_namelen < sizeof(*addr))
--			goto release;
-+			goto out;
- 	} else {
- 		if (llc_ui_addr_null(&llc->addr))
--			goto release;
-+			goto out;
- 		addr = &llc->addr;
- 	}
- 	/* must bind connection to sap if user hasn't done it. */
-@@ -916,7 +920,7 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 		/* bind to sap with null dev, exclusive. */
- 		rc = llc_ui_autobind(sock, addr);
- 		if (rc)
--			goto release;
-+			goto out;
- 	}
- 	hdrlen = llc->dev->hard_header_len + llc_ui_header_len(sk, addr);
- 	size = hdrlen + len;
-@@ -925,12 +929,12 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	copied = size - hdrlen;
- 	rc = -EINVAL;
- 	if (copied < 0)
--		goto release;
-+		goto out;
- 	release_sock(sk);
- 	skb = sock_alloc_send_skb(sk, size, noblock, &rc);
- 	lock_sock(sk);
- 	if (!skb)
--		goto release;
-+		goto out;
- 	skb->dev      = llc->dev;
- 	skb->protocol = llc_proto_type(addr->sllc_arphrd);
- 	skb_reserve(skb, hdrlen);
-@@ -940,29 +944,31 @@ static int llc_ui_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
- 	if (sk->sk_type == SOCK_DGRAM || addr->sllc_ua) {
- 		llc_build_and_send_ui_pkt(llc->sap, skb, addr->sllc_mac,
- 					  addr->sllc_sap);
-+		skb = NULL;
- 		goto out;
- 	}
- 	if (addr->sllc_test) {
- 		llc_build_and_send_test_pkt(llc->sap, skb, addr->sllc_mac,
- 					    addr->sllc_sap);
-+		skb = NULL;
- 		goto out;
- 	}
- 	if (addr->sllc_xid) {
- 		llc_build_and_send_xid_pkt(llc->sap, skb, addr->sllc_mac,
- 					   addr->sllc_sap);
-+		skb = NULL;
- 		goto out;
- 	}
- 	rc = -ENOPROTOOPT;
- 	if (!(sk->sk_type == SOCK_STREAM && !addr->sllc_ua))
- 		goto out;
- 	rc = llc_ui_send_data(sk, skb, noblock);
-+	skb = NULL;
- out:
--	if (rc) {
--		kfree_skb(skb);
--release:
-+	kfree_skb(skb);
-+	if (rc)
- 		dprintk("%s: failed sending from %02X to %02X: %d\n",
- 			__func__, llc->laddr.lsap, llc->daddr.lsap, rc);
--	}
- 	release_sock(sk);
- 	return rc ? : copied;
- }
 diff --git a/net/llc/llc_conn.c b/net/llc/llc_conn.c
-index 94c78cc49d3e0..2689e95471dc4 100644
+index 2689e95471dc4..1bdbd134bd7a8 100644
 --- a/net/llc/llc_conn.c
 +++ b/net/llc/llc_conn.c
-@@ -55,6 +55,8 @@ int sysctl_llc2_busy_timeout = LLC2_BUSY_TIME * HZ;
-  *	(executing it's actions and changing state), upper layer will be
-  *	indicated or confirmed, if needed. Returns 0 for success, 1 for
-  *	failure. The socket lock has to be held before calling this function.
-+ *
-+ *	This function always consumes a reference to the skb.
-  */
- int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
- {
-diff --git a/net/llc/llc_if.c b/net/llc/llc_if.c
-index 6daf391b3e847..fc4d2bd8816f5 100644
---- a/net/llc/llc_if.c
-+++ b/net/llc/llc_if.c
-@@ -38,6 +38,8 @@
-  *	closed and -EBUSY when sending data is not permitted in this state or
-  *	LLC has send an I pdu with p bit set to 1 and is waiting for it's
-  *	response.
-+ *
-+ *	This function always consumes a reference to the skb.
-  */
- int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
- {
-@@ -46,20 +48,22 @@ int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb)
- 	struct llc_sock *llc = llc_sk(sk);
+@@ -64,12 +64,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 	struct llc_sock *llc = llc_sk(skb->sk);
+ 	struct llc_conn_state_ev *ev = llc_conn_ev(skb);
  
- 	if (unlikely(llc->state == LLC_CONN_STATE_ADM))
--		goto out;
-+		goto out_free;
- 	rc = -EBUSY;
- 	if (unlikely(llc_data_accept_state(llc->state) || /* data_conn_refuse */
- 		     llc->p_flag)) {
- 		llc->failed_data_req = 1;
--		goto out;
-+		goto out_free;
+-	/*
+-	 * We have to hold the skb, because llc_conn_service will kfree it in
+-	 * the sending path and we need to look at the skb->cb, where we encode
+-	 * llc_conn_state_ev.
+-	 */
+-	skb_get(skb);
+ 	ev->ind_prim = ev->cfm_prim = 0;
+ 	/*
+ 	 * Send event to state machine
+@@ -77,21 +71,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 	rc = llc_conn_service(skb->sk, skb);
+ 	if (unlikely(rc != 0)) {
+ 		printk(KERN_ERR "%s: llc_conn_service failed\n", __func__);
+-		goto out_kfree_skb;
+-	}
+-
+-	if (unlikely(!ev->ind_prim && !ev->cfm_prim)) {
+-		/* indicate or confirm not required */
+-		if (!skb->next)
+-			goto out_kfree_skb;
+ 		goto out_skb_put;
  	}
- 	ev = llc_conn_ev(skb);
- 	ev->type      = LLC_CONN_EV_TYPE_PRIM;
- 	ev->prim      = LLC_DATA_PRIM;
- 	ev->prim_type = LLC_PRIM_TYPE_REQ;
- 	skb->dev      = llc->dev;
--	rc = llc_conn_state_process(sk, skb);
--out:
-+	return llc_conn_state_process(sk, skb);
-+
-+out_free:
-+	kfree_skb(skb);
- 	return rc;
- }
  
+-	if (unlikely(ev->ind_prim && ev->cfm_prim)) /* Paranoia */
+-		skb_get(skb);
+-
+ 	switch (ev->ind_prim) {
+ 	case LLC_DATA_PRIM:
++		skb_get(skb);
+ 		llc_save_primitive(sk, skb, LLC_DATA_PRIM);
+ 		if (unlikely(sock_queue_rcv_skb(sk, skb))) {
+ 			/*
+@@ -108,6 +93,7 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 		 * skb->sk pointing to the newly created struct sock in
+ 		 * llc_conn_handler. -acme
+ 		 */
++		skb_get(skb);
+ 		skb_queue_tail(&sk->sk_receive_queue, skb);
+ 		sk->sk_state_change(sk);
+ 		break;
+@@ -123,7 +109,6 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 				sk->sk_state_change(sk);
+ 			}
+ 		}
+-		kfree_skb(skb);
+ 		sock_put(sk);
+ 		break;
+ 	case LLC_RESET_PRIM:
+@@ -132,14 +117,11 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 		 * RESET is not being notified to upper layers for now
+ 		 */
+ 		printk(KERN_INFO "%s: received a reset ind!\n", __func__);
+-		kfree_skb(skb);
+ 		break;
+ 	default:
+-		if (ev->ind_prim) {
++		if (ev->ind_prim)
+ 			printk(KERN_INFO "%s: received unknown %d prim!\n",
+ 				__func__, ev->ind_prim);
+-			kfree_skb(skb);
+-		}
+ 		/* No indication */
+ 		break;
+ 	}
+@@ -181,15 +163,12 @@ int llc_conn_state_process(struct sock *sk, struct sk_buff *skb)
+ 		printk(KERN_INFO "%s: received a reset conf!\n", __func__);
+ 		break;
+ 	default:
+-		if (ev->cfm_prim) {
++		if (ev->cfm_prim)
+ 			printk(KERN_INFO "%s: received unknown %d prim!\n",
+ 					__func__, ev->cfm_prim);
+-			break;
+-		}
+-		goto out_skb_put; /* No confirmation */
++		/* No confirmation */
++		break;
+ 	}
+-out_kfree_skb:
+-	kfree_skb(skb);
+ out_skb_put:
+ 	kfree_skb(skb);
+ 	return rc;
 -- 
 2.20.1
 
