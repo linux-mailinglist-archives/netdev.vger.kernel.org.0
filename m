@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 494D1E5BCC
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FB91E5B58
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729031AbfJZNZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:25:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44124 "EHLO mail.kernel.org"
+        id S1729362AbfJZNWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:22:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728187AbfJZNWV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:22:21 -0400
+        id S1728258AbfJZNWX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:22:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DFD8D222D1;
-        Sat, 26 Oct 2019 13:22:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15DB4222C1;
+        Sat, 26 Oct 2019 13:22:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096140;
-        bh=Vt7CJhpB0LiswZHCEHqxV9uDX/kHekbB8hF5SvXRc8U=;
+        s=default; t=1572096142;
+        bh=/188A5AV3dmrQIx72hiPDcmOUbywvXgwVDruUKUM3fk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pru1u12E1Gtx7A2BBWrKHt0E1oRUqyNDjIfjIaoNvhFhGy2vXHw8YXuB0P4pisiCg
-         Ag4bhYGVXhMv8/hqF2AlKkpAgOHpCq0pFAi9ZU/IHGGbw/KUum6NoOIZ6l/7KmFtvI
-         5dfZ5NxFxdrpnXk3arXlpZCjMniIlksJHGVeZENw=
+        b=cJFJhtkJKhOphjn8a4KvqXSgtpIP2QsoloQa9EeOr7vrhh4I+DUR7g1WwuWVYknze
+         8mvQbq2q13EkG034J83pFLtTe4bBeH4Fyhei/p6v2aEi4JRHBNcqhEOArNJdM6C/OI
+         ZTMs7K840s28kBPYheImBeJdpSR/4obLG3cv/fjk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Vassernis <michael.vassernis@tandemg.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 02/21] mac80211_hwsim: fix incorrect dev_alloc_name failure goto
-Date:   Sat, 26 Oct 2019 09:21:58 -0400
-Message-Id: <20191026132217.4380-2-sashal@kernel.org>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 04/21] net: stmmac: gmac4+: Not all Unicast addresses may be available
+Date:   Sat, 26 Oct 2019 09:22:00 -0400
+Message-Id: <20191026132217.4380-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026132217.4380-1-sashal@kernel.org>
 References: <20191026132217.4380-1-sashal@kernel.org>
@@ -44,36 +43,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Vassernis <michael.vassernis@tandemg.com>
+From: Jose Abreu <Jose.Abreu@synopsys.com>
 
-[ Upstream commit 313c3fe9c2348e7147eca38bb446f295b45403a0 ]
+[ Upstream commit 25683bab09a70542b9f8e3e28f79b3369e56701f ]
 
-If dev_alloc_name fails, hwsim_mon's memory allocated in alloc_netdev
-needs to be freed.
-Change goto command in dev_alloc_name failure to out_free_mon in
-order to perform free_netdev.
+Some setups may not have all Unicast addresses filters available. Check
+the number of available filters before trying to setup it.
 
-Signed-off-by: Michael Vassernis <michael.vassernis@tandemg.com>
-Link: https://lore.kernel.org/r/20191003073049.3760-1-michael.vassernis@tandemg.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 477286b53f55 ("stmmac: add GMAC4 core support")
+Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 2 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index e9ec1da9935d8..0651a323b64f1 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -3502,7 +3502,7 @@ static int __init init_mac80211_hwsim(void)
- 	err = dev_alloc_name(hwsim_mon, hwsim_mon->name);
- 	if (err < 0) {
- 		rtnl_unlock();
--		goto out_free_radios;
-+		goto out_free_mon;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index f46f2bfc2cc09..4216c0a5eaf5a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -168,7 +168,7 @@ static void dwmac4_set_filter(struct mac_device_info *hw,
  	}
  
- 	err = register_netdevice(hwsim_mon);
+ 	/* Handle multiple unicast addresses */
+-	if (netdev_uc_count(dev) > GMAC_MAX_PERFECT_ADDRESSES) {
++	if (netdev_uc_count(dev) > hw->unicast_filter_entries) {
+ 		/* Switch to promiscuous mode if more than 128 addrs
+ 		 * are required
+ 		 */
 -- 
 2.20.1
 
