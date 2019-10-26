@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B529E5BF0
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:27:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0DFEE5BF8
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729099AbfJZNVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:21:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43396 "EHLO mail.kernel.org"
+        id S1729356AbfJZN1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:27:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43420 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729068AbfJZNVi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:21:38 -0400
+        id S1729080AbfJZNVj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:21:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 046D62070B;
-        Sat, 26 Oct 2019 13:21:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 26D86214DA;
+        Sat, 26 Oct 2019 13:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096097;
-        bh=Xst7r6Og8CbzbfVwav+UJkWGXsNWcL/fy+F8I9Q6Ql0=;
+        s=default; t=1572096098;
+        bh=MOYuMSe5m+xPdrBUrgqNDECPFxtnpuMy0BGF0ZkhL74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vU9EFiZCsx8jyZlhQzPBEpM8zD1pZ7IJfkxI115Yor6OQvLKaNsjdQUSBwvv9HBdz
-         flIMHZh3yW8UU6HJ1FQgzF8i+awoD2Xxm9gvuujy6/M1qy5RrHySr3pn1KkWuMD+69
-         qywdzAVLQJEMIobQRs6uL9BQYgypp1nSKiGyDfZo=
+        b=BP+9rcmUGOUUSJ/hGjCntiPwIEn+IbBglADrdzXW20iRhf36rLYsmc19vvL4pnttq
+         e2XU06Qb+YvMw5y5lWlHxeuo+6UBTwC7ypdi4aSA0vpk8Q8xE1JbiuNWEcNQSbh7nB
+         zyom1wkf5qG6s1wVsGJDHAG76krtsprY3WKLIEmY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 13/33] iwlwifi: dbg_ini: fix memory leak in alloc_sgtable
-Date:   Sat, 26 Oct 2019 09:20:50 -0400
-Message-Id: <20191026132110.4026-13-sashal@kernel.org>
+Cc:     Antonio Borneo <antonio.borneo@st.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 14/33] net: stmmac: fix length of PTP clock's name string
+Date:   Sat, 26 Oct 2019 09:20:51 -0400
+Message-Id: <20191026132110.4026-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026132110.4026-1-sashal@kernel.org>
 References: <20191026132110.4026-1-sashal@kernel.org>
@@ -44,32 +43,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Navid Emamdoost <navid.emamdoost@gmail.com>
+From: Antonio Borneo <antonio.borneo@st.com>
 
-[ Upstream commit b4b814fec1a5a849383f7b3886b654a13abbda7d ]
+[ Upstream commit 5da202c88f8c355ad79bc2e8eb582e6d433060e7 ]
 
-In alloc_sgtable if alloc_page fails, the alocated table should be
-released.
+The field "name" in struct ptp_clock_info has a fixed size of 16
+chars and is used as zero terminated string by clock_name_show()
+in drivers/ptp/ptp_sysfs.c
+The current initialization value requires 17 chars to fit also the
+null termination, and this causes overflow to the next bytes in
+the struct when the string is read as null terminated:
+	hexdump -C /sys/class/ptp/ptp0/clock_name
+	00000000  73 74 6d 6d 61 63 5f 70  74 70 5f 63 6c 6f 63 6b  |stmmac_ptp_clock|
+	00000010  a0 ac b9 03 0a                                    |.....|
+where the extra 4 bytes (excluding the newline) after the string
+represent the integer 0x03b9aca0 = 62500000 assigned to the field
+"max_adj" that follows "name" in the same struct.
 
-Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+There is no strict requirement for the "name" content and in the
+comment in ptp_clock_kernel.h it's reported it should just be 'A
+short "friendly name" to identify the clock'.
+Replace it with "stmmac ptp".
+
+Signed-off-by: Antonio Borneo <antonio.borneo@st.com>
+Fixes: 92ba6888510c ("stmmac: add the support for PTP hw clock driver")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index 8390104172410..2ae5c831764a9 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -532,6 +532,7 @@ static struct scatterlist *alloc_sgtable(int size)
- 				if (new_page)
- 					__free_page(new_page);
- 			}
-+			kfree(table);
- 			return NULL;
- 		}
- 		alloc_size = min_t(int, size, PAGE_SIZE);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+index e471a903c6543..1c1d6a9428229 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
+@@ -154,7 +154,7 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
+ /* structure describing a PTP hardware clock */
+ static const struct ptp_clock_info stmmac_ptp_clock_ops = {
+ 	.owner = THIS_MODULE,
+-	.name = "stmmac_ptp_clock",
++	.name = "stmmac ptp",
+ 	.max_adj = 62500000,
+ 	.n_alarm = 0,
+ 	.n_ext_ts = 0,
 -- 
 2.20.1
 
