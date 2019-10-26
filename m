@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83009E5B01
+	by mail.lfdr.de (Postfix) with ESMTP id F0E45E5B03
 	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728308AbfJZNTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:19:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41436 "EHLO mail.kernel.org"
+        id S1728341AbfJZNTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:19:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41480 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728281AbfJZNT3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:19:29 -0400
+        id S1726967AbfJZNTa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:19:30 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 70CF021D7F;
-        Sat, 26 Oct 2019 13:19:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A3D2321655;
+        Sat, 26 Oct 2019 13:19:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095968;
-        bh=v4XNolINGmmhCLcQEr2RPFLn/beAvYiy47KnsHxry3c=;
+        s=default; t=1572095970;
+        bh=l7sfTKa4zeehDC6TY34c96HkC1AAaWqOrVcSqeuLV60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T6pI3nkVF6kFftyvSeETPtfaC5ENGwNLV5kXAKSKpE7aHk1ueLeJ5NUkfZkpduu2l
-         XC77Oxwemhv/xRkKEJc4vTD+xTevom5nXSaUCa2twG/J5xATqP1a8GW7tncURg0VjB
-         iW6+C2oUXIYCXlVOqcZvq9iFyrSUQy/2GNyvdfRg=
+        b=JJSJ881vRFQTH8/R/fgeU11+I8gyvcym4DuzocJxsfU/2I0oEiXc69ChJoEj9OPNx
+         PdeJGz3yFr7z3zmI91HCSjJ73vDjBTQLuOFOfsX/97nHKXM4QNwZDSoXWeRB61/nJn
+         m+zsAvmNQvXttgYGkQG2EiXv4ODDaf2B+zNiWsrc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 13/59] rxrpc: Fix trace-after-put looking at the put call record
-Date:   Sat, 26 Oct 2019 09:18:24 -0400
-Message-Id: <20191026131910.3435-13-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 15/59] mac80211: accept deauth frames in IBSS mode
+Date:   Sat, 26 Oct 2019 09:18:26 -0400
+Message-Id: <20191026131910.3435-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131910.3435-1-sashal@kernel.org>
 References: <20191026131910.3435-1-sashal@kernel.org>
@@ -43,166 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 48c9e0ec7cbbb7370448f859ccc8e3b7eb69e755 ]
+[ Upstream commit 95697f9907bfe3eab0ef20265a766b22e27dde64 ]
 
-rxrpc_put_call() calls trace_rxrpc_call() after it has done the decrement
-of the refcount - which looks at the debug_id in the call record.  But
-unless the refcount was reduced to zero, we no longer have the right to
-look in the record and, indeed, it may be deleted by some other thread.
+We can process deauth frames and all, but we drop them very
+early in the RX path today - this could never have worked.
 
-Fix this by getting the debug_id out before decrementing the refcount and
-then passing that into the tracepoint.
-
-Fixes: e34d4234b0b7 ("rxrpc: Trace rxrpc_call usage")
-Signed-off-by: David Howells <dhowells@redhat.com>
+Fixes: 2cc59e784b54 ("mac80211: reply to AUTH with DEAUTH if sta allocation fails in IBSS")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20191004123706.15768-2-luca@coelho.fi
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/rxrpc.h |  6 +++---
- net/rxrpc/call_accept.c      |  2 +-
- net/rxrpc/call_object.c      | 28 +++++++++++++++++-----------
- 3 files changed, 21 insertions(+), 15 deletions(-)
+ net/mac80211/rx.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index 0924119bcfa40..d496794a8f59d 100644
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -614,10 +614,10 @@ TRACE_EVENT(rxrpc_client,
- 	    );
- 
- TRACE_EVENT(rxrpc_call,
--	    TP_PROTO(struct rxrpc_call *call, enum rxrpc_call_trace op,
-+	    TP_PROTO(unsigned int call_debug_id, enum rxrpc_call_trace op,
- 		     int usage, const void *where, const void *aux),
- 
--	    TP_ARGS(call, op, usage, where, aux),
-+	    TP_ARGS(call_debug_id, op, usage, where, aux),
- 
- 	    TP_STRUCT__entry(
- 		    __field(unsigned int,		call		)
-@@ -628,7 +628,7 @@ TRACE_EVENT(rxrpc_call,
- 			     ),
- 
- 	    TP_fast_assign(
--		    __entry->call = call->debug_id;
-+		    __entry->call = call_debug_id;
- 		    __entry->op = op;
- 		    __entry->usage = usage;
- 		    __entry->where = where;
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index c5566bc4aaca3..47cf24630c708 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -101,7 +101,7 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
- 	call->flags |= (1 << RXRPC_CALL_IS_SERVICE);
- 	call->state = RXRPC_CALL_SERVER_PREALLOC;
- 
--	trace_rxrpc_call(call, rxrpc_call_new_service,
-+	trace_rxrpc_call(call->debug_id, rxrpc_call_new_service,
- 			 atomic_read(&call->usage),
- 			 here, (const void *)user_call_ID);
- 
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 215f4d98baa0f..f58e624490a97 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -242,7 +242,8 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	}
- 
- 	call->tx_total_len = p->tx_total_len;
--	trace_rxrpc_call(call, rxrpc_call_new_client, atomic_read(&call->usage),
-+	trace_rxrpc_call(call->debug_id, rxrpc_call_new_client,
-+			 atomic_read(&call->usage),
- 			 here, (const void *)p->user_call_ID);
- 
- 	/* We need to protect a partially set up call against the user as we
-@@ -292,8 +293,8 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	if (ret < 0)
- 		goto error;
- 
--	trace_rxrpc_call(call, rxrpc_call_connected, atomic_read(&call->usage),
--			 here, NULL);
-+	trace_rxrpc_call(call->debug_id, rxrpc_call_connected,
-+			 atomic_read(&call->usage), here, NULL);
- 
- 	rxrpc_start_call_timer(call);
- 
-@@ -315,8 +316,8 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- error:
- 	__rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
- 				    RX_CALL_DEAD, ret);
--	trace_rxrpc_call(call, rxrpc_call_error, atomic_read(&call->usage),
--			 here, ERR_PTR(ret));
-+	trace_rxrpc_call(call->debug_id, rxrpc_call_error,
-+			 atomic_read(&call->usage), here, ERR_PTR(ret));
- 	rxrpc_release_call(rx, call);
- 	mutex_unlock(&call->user_mutex);
- 	rxrpc_put_call(call, rxrpc_call_put);
-@@ -420,7 +421,8 @@ bool rxrpc_queue_call(struct rxrpc_call *call)
- 	if (n == 0)
- 		return false;
- 	if (rxrpc_queue_work(&call->processor))
--		trace_rxrpc_call(call, rxrpc_call_queued, n + 1, here, NULL);
-+		trace_rxrpc_call(call->debug_id, rxrpc_call_queued, n + 1,
-+				 here, NULL);
- 	else
- 		rxrpc_put_call(call, rxrpc_call_put_noqueue);
- 	return true;
-@@ -435,7 +437,8 @@ bool __rxrpc_queue_call(struct rxrpc_call *call)
- 	int n = atomic_read(&call->usage);
- 	ASSERTCMP(n, >=, 1);
- 	if (rxrpc_queue_work(&call->processor))
--		trace_rxrpc_call(call, rxrpc_call_queued_ref, n, here, NULL);
-+		trace_rxrpc_call(call->debug_id, rxrpc_call_queued_ref, n,
-+				 here, NULL);
- 	else
- 		rxrpc_put_call(call, rxrpc_call_put_noqueue);
- 	return true;
-@@ -450,7 +453,8 @@ void rxrpc_see_call(struct rxrpc_call *call)
- 	if (call) {
- 		int n = atomic_read(&call->usage);
- 
--		trace_rxrpc_call(call, rxrpc_call_seen, n, here, NULL);
-+		trace_rxrpc_call(call->debug_id, rxrpc_call_seen, n,
-+				 here, NULL);
- 	}
- }
- 
-@@ -462,7 +466,7 @@ void rxrpc_get_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
- 	const void *here = __builtin_return_address(0);
- 	int n = atomic_inc_return(&call->usage);
- 
--	trace_rxrpc_call(call, op, n, here, NULL);
-+	trace_rxrpc_call(call->debug_id, op, n, here, NULL);
- }
- 
- /*
-@@ -477,7 +481,8 @@ void rxrpc_release_call(struct rxrpc_sock *rx, struct rxrpc_call *call)
- 
- 	_enter("{%d,%d}", call->debug_id, atomic_read(&call->usage));
- 
--	trace_rxrpc_call(call, rxrpc_call_release, atomic_read(&call->usage),
-+	trace_rxrpc_call(call->debug_id, rxrpc_call_release,
-+			 atomic_read(&call->usage),
- 			 here, (const void *)call->flags);
- 
- 	ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
-@@ -625,12 +630,13 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
- {
- 	struct rxrpc_net *rxnet = call->rxnet;
- 	const void *here = __builtin_return_address(0);
-+	unsigned int debug_id = call->debug_id;
- 	int n;
- 
- 	ASSERT(call != NULL);
- 
- 	n = atomic_dec_return(&call->usage);
--	trace_rxrpc_call(call, op, n, here, NULL);
-+	trace_rxrpc_call(debug_id, op, n, here, NULL);
- 	ASSERTCMP(n, >=, 0);
- 	if (n == 0) {
- 		_debug("call %d dead", call->debug_id);
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index b12f23c996f4e..02d0b22d01141 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -3391,9 +3391,18 @@ ieee80211_rx_h_mgmt(struct ieee80211_rx_data *rx)
+ 	case cpu_to_le16(IEEE80211_STYPE_PROBE_RESP):
+ 		/* process for all: mesh, mlme, ibss */
+ 		break;
++	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
++		if (is_multicast_ether_addr(mgmt->da) &&
++		    !is_broadcast_ether_addr(mgmt->da))
++			return RX_DROP_MONITOR;
++
++		/* process only for station/IBSS */
++		if (sdata->vif.type != NL80211_IFTYPE_STATION &&
++		    sdata->vif.type != NL80211_IFTYPE_ADHOC)
++			return RX_DROP_MONITOR;
++		break;
+ 	case cpu_to_le16(IEEE80211_STYPE_ASSOC_RESP):
+ 	case cpu_to_le16(IEEE80211_STYPE_REASSOC_RESP):
+-	case cpu_to_le16(IEEE80211_STYPE_DEAUTH):
+ 	case cpu_to_le16(IEEE80211_STYPE_DISASSOC):
+ 		if (is_multicast_ether_addr(mgmt->da) &&
+ 		    !is_broadcast_ether_addr(mgmt->da))
 -- 
 2.20.1
 
