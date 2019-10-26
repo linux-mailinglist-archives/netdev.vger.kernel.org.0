@@ -2,70 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78B46E580C
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 04:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D719E580F
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 04:25:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbfJZCWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 25 Oct 2019 22:22:01 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51160 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725954AbfJZCWB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 25 Oct 2019 22:22:01 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 5A43728DCB9BFF378242;
-        Sat, 26 Oct 2019 10:21:59 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.439.0; Sat, 26 Oct 2019 10:21:53 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <andrew@lunn.ch>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        <jbe@pengutronix.de>, <robh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, Mao Wenan <maowenan@huawei.com>
-Subject: [PATCH -next] net: dsa: LAN9303: select REGMAP when LAN9303 enable
-Date:   Sat, 26 Oct 2019 10:21:39 +0800
-Message-ID: <20191026022139.179166-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        id S1726124AbfJZCZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 25 Oct 2019 22:25:08 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:39786 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbfJZCZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 25 Oct 2019 22:25:07 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 175FA14B7272C;
+        Fri, 25 Oct 2019 19:25:07 -0700 (PDT)
+Date:   Fri, 25 Oct 2019 19:25:06 -0700 (PDT)
+Message-Id: <20191025.192506.1304179203606625698.davem@davemloft.net>
+To:     grygorii.strashko@ti.com
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, nsekhar@ti.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] net: phy: dp83867: enable robust auto-mdix
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191023144846.1381-1-grygorii.strashko@ti.com>
+References: <20191023144846.1381-1-grygorii.strashko@ti.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 25 Oct 2019 19:25:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When NET_DSA_SMSC_LAN9303=y and NET_DSA_SMSC_LAN9303_MDIO=y,
-below errors can be seen:
-drivers/net/dsa/lan9303_mdio.c:87:23: error: REGMAP_ENDIAN_LITTLE
-undeclared here (not in a function)
-  .reg_format_endian = REGMAP_ENDIAN_LITTLE,
-drivers/net/dsa/lan9303_mdio.c:93:3: error: const struct regmap_config
-has no member named reg_read
-  .reg_read = lan9303_mdio_read,
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+Date: Wed, 23 Oct 2019 17:48:44 +0300
 
-It should select REGMAP in config NET_DSA_SMSC_LAN9303.
+> Patch 1 - improves link detection when dp83867 PHY is configured in manual mode
+> by enabling CFG3[9] Robust Auto-MDIX option.
+> 
+> Patch 2 - is minor optimization.
 
-Fixes: dc7005831523 ("net: dsa: LAN9303: add MDIO managed mode support")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- drivers/net/dsa/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
-index f6232ce..685e12b 100644
---- a/drivers/net/dsa/Kconfig
-+++ b/drivers/net/dsa/Kconfig
-@@ -77,6 +77,7 @@ config NET_DSA_REALTEK_SMI
- config NET_DSA_SMSC_LAN9303
- 	tristate
- 	select NET_DSA_TAG_LAN9303
-+	select REGMAP
- 	---help---
- 	  This enables support for the SMSC/Microchip LAN9303 3 port ethernet
- 	  switch chips.
--- 
-2.7.4
-
+Series applied to net-next.
