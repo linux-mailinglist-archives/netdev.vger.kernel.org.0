@@ -2,104 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA48CE5FF2
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 00:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 864F4E5FF6
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 00:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726508AbfJZWkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 18:40:19 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43546 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726263AbfJZWkT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 18:40:19 -0400
-Received: from 33.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.33] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iOUj9-0008Jp-Dk; Sun, 27 Oct 2019 00:40:07 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2019-10-27
-Date:   Sun, 27 Oct 2019 00:40:06 +0200
-Message-Id: <20191026224006.18149-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1726505AbfJZW6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 18:58:47 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35959 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726443AbfJZW6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 18:58:47 -0400
+Received: by mail-ed1-f66.google.com with SMTP id bm15so4874613edb.3
+        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 15:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=P/Ugsl7XIxjg/QCuqwUudFlCF92K2LNOHdehACrO+9M=;
+        b=fkwAyfYEKmcEtjK6GMobHlY4kCPN3I3RzfBe92slzkQhs6m189UyhJc0cgtCWDjSDA
+         kkxKP1czMsnAjUin7Bvifqc9G95DiaiABPAPINcPe0G9mXck5a5fvwvvzPGL+tRQtCQj
+         rdvpK7BiVVLUlRgTV83zUzLktJIKm5CFYRN4SkRI02htePOikfFE+B4/X+hoyVDHZenz
+         mUOe5fK8sNwBY63CGF0l5Qi9kzsRWhfJTrjNM81evjqiF5g4sD24s6RCE32oKQB+6dy7
+         oRA+cDrPi1p/Sh/DtcHhQpVP6rNXz8AQzDbz7gOwkSjxLtO3pgKBWXm+nYiF4Q0flblM
+         +UwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=P/Ugsl7XIxjg/QCuqwUudFlCF92K2LNOHdehACrO+9M=;
+        b=N0yxOHxKdEANPUf9KUv2OdS16kLY7G8HFDAQp2PlfU3Cx8trr6ptb4fEVj7Xp749Rx
+         e3TlOe7DVdiqruBP7lw7d7SZ/HzKnTOUINDTPPVOgWS308qhwNPqwJG5tE6/lWxLFufi
+         pAdmQ0WfELSrcytmqh0PFnE7tIwSA4naTYWe1Yk7CBY7ldh63cmsjvpdjQuWFiiK9TBO
+         39D0XUwVfjUcsw3pEQbMUzwtWeZdP+Rzg6s2g6YgaRjhh58vjNaTilPrLbbIp9qvrGZ8
+         J/E0Dux28bbG64+D5remLXRGxQGVoGzqldm5IIkBpfuuH+cX+opFvu2GjbzbNuvxyWcA
+         oKzw==
+X-Gm-Message-State: APjAAAWZoqcSOsgHDaQTALOfQAk0YE9EMtjluwC1L9q8uBLIyTlWye+W
+        hsLXnhei+/WEYvHXd1DbxSBq+I4UKbhHW+Uzmzo=
+X-Google-Smtp-Source: APXvYqyBHuLQYFyEqFyJY738LyaR9Gnzvw1vvnU7Ax1AZEJBgo2pyn7GHsdYp2kUSzj8GdaQYiXKTLwJhMpHcd8w9so=
+X-Received: by 2002:a17:906:d9d0:: with SMTP id qk16mr9470389ejb.70.1572130725447;
+ Sat, 26 Oct 2019 15:58:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25614/Sat Oct 26 11:04:41 2019)
+References: <20191026180427.14039-1-olteanv@gmail.com> <20191026180427.14039-3-olteanv@gmail.com>
+ <5a0b7e8b-851e-2523-c6c1-da6fbd0c3dac@gmail.com>
+In-Reply-To: <5a0b7e8b-851e-2523-c6c1-da6fbd0c3dac@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 27 Oct 2019 01:58:34 +0300
+Message-ID: <CA+h21ho76-Kxjc6R7eHcdHMBag1cu9pZMdbaFYXgT_u4-Fy9pQ@mail.gmail.com>
+Subject: Re: [PATCH net 2/2] net: mscc: ocelot: refuse to overwrite the port's
+ native vlan
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Sat, 26 Oct 2019 at 23:34, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 10/26/2019 11:04 AM, Vladimir Oltean wrote:
+> > The switch driver keeps a "vid" variable per port, which signifies _the_
+> > VLAN ID that is stripped on that port's egress (aka the native VLAN on a
+> > trunk port).
+> >
+> > That is the way the hardware is designed (mostly). The port->vid is
+> > programmed into REW:PORT:PORT_VLAN_CFG:PORT_VID and the rewriter is told
+> > to send all traffic as tagged except the one having port->vid.
+> >
+> > There exists a possibility of finer-grained egress untagging decisions:
+> > using the VCAP IS1 engine, one rule can be added to match every
+> > VLAN-tagged frame whose VLAN should be untagged, and set POP_CNT=1 as
+> > action. However, the IS1 can hold at most 512 entries, and the VLANs are
+> > in the order of 6 * 4096.
+> >
+> > So the code is fine for now. But this sequence of commands:
+> >
+> > $ bridge vlan add dev swp0 vid 1 pvid untagged
+> > $ bridge vlan add dev swp0 vid 2 untagged
+> >
+> > makes untagged and pvid-tagged traffic be sent out of swp0 as tagged
+> > with VID 1, despite user's request.
+> >
+> > Prevent that from happening. The user should temporarily remove the
+> > existing untagged VLAN (1 in this case), add it back as tagged, and then
+> > add the new untagged VLAN (2 in this case).>
+> > Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+> > Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > Fixes: 7142529f1688 ("net: mscc: ocelot: add VLAN filtering")
+> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+>
 
-The following pull-request contains BPF updates for your *net* tree.
+Thanks, Florian.
 
-We've added 7 non-merge commits during the last 11 day(s) which contain
-a total of 7 files changed, 66 insertions(+), 16 deletions(-).
+> [snip]
+>
+> > +     if (untagged && port->vid != vid) {
+> > +             if (port->vid) {
+> > +                     dev_err(ocelot->dev,
+> > +                             "Port already has a native VLAN: %d\n",
+> > +                             port->vid);
+>
+> This sounds like a extended netlink ack candidate for improving user
+> experience, but this should do for now.
+> --
+> Florian
 
-The main changes are:
+I know what you're saying. I wanted to drag in minimal dependencies
+for the fix. The driver is going to see major rework anyway soon (will
+gain a DSA front-end), hence the reason why I copied the DSA people to
+the fixes. Having extack propagate to more drivers is always welcome,
+and DSA would be a good start to see that being implemented.
 
-1) Fix two use-after-free bugs in relation to RCU in jited symbol exposure to
-   kallsyms, from Daniel Borkmann.
-
-2) Fix NULL pointer dereference in AF_XDP rx-only sockets, from Magnus Karlsson.
-
-3) Fix hang in netdev unregister for hash based devmap as well as another overflow
-   bug on 32 bit archs in memlock cost calculation, from Toke Høiland-Jørgensen.
-
-4) Fix wrong memory access in LWT BPF programs on reroute due to invalid dst.
-   Also fix BPF selftests to use more compatible nc options, from Jiri Benc.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Jonathan Lemon, Kal Cutter Conley, Martin KaFai Lau, Peter Oskolkov, 
-Tetsuo Handa, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit 33902b4a4227877896dd9368ac10f4ca0d100de5:
-
-  netdevsim: Fix error handling in nsim_fib_init and nsim_fib_exit (2019-10-13 11:30:14 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 2afd23f78f39da84937006ecd24aa664a4ab052b:
-
-  xsk: Fix registration of Rx-only sockets (2019-10-23 20:22:11 -0700)
-
-----------------------------------------------------------------
-Daniel Borkmann (2):
-      bpf: Fix use after free in subprog's jited symbol removal
-      bpf: Fix use after free in bpf_get_prog_name
-
-Jiri Benc (2):
-      bpf: lwtunnel: Fix reroute supplying invalid dst
-      selftests/bpf: More compatible nc options in test_tc_edt
-
-Magnus Karlsson (1):
-      xsk: Fix registration of Rx-only sockets
-
-Toke Høiland-Jørgensen (2):
-      xdp: Prevent overflow in devmap_hash cost calculation for 32-bit builds
-      xdp: Handle device unregister for devmap_hash map type
-
- include/linux/filter.h                     |  1 -
- kernel/bpf/core.c                          |  2 +-
- kernel/bpf/devmap.c                        | 33 +++++++++++++++++++++++++++++-
- kernel/bpf/syscall.c                       | 31 ++++++++++++++++++----------
- net/core/lwt_bpf.c                         |  7 ++++++-
- net/xdp/xdp_umem.c                         |  6 ++++++
- tools/testing/selftests/bpf/test_tc_edt.sh |  2 +-
- 7 files changed, 66 insertions(+), 16 deletions(-)
+Regards,
+-Vladimir
