@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C0C6E5B3F
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:21:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B529E5BF0
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729067AbfJZNVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:21:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43316 "EHLO mail.kernel.org"
+        id S1729099AbfJZNVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:21:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43396 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729049AbfJZNVf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:21:35 -0400
+        id S1729068AbfJZNVi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:21:38 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 24B0C2070B;
-        Sat, 26 Oct 2019 13:21:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 046D62070B;
+        Sat, 26 Oct 2019 13:21:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572096094;
-        bh=a+GKRQsj12e49IKqnLb4YIPS1p3NkJgRmAz+07Mktog=;
+        s=default; t=1572096097;
+        bh=Xst7r6Og8CbzbfVwav+UJkWGXsNWcL/fy+F8I9Q6Ql0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q91BbDVIvbzuECsa2oepatvAIsd14Yl/Bg5QuRVvKf/15kV6DGWmd5ravpFFISrSf
-         O3D/cNM1AWsp8Iezr+tbd/rb2xKfyjmOhWo2PpNCB29fiLMrtINol3uR4StrSV1nam
-         72eXvdDONbDD/02JaJVo4vh1VRuijelf+91mArqc=
+        b=vU9EFiZCsx8jyZlhQzPBEpM8zD1pZ7IJfkxI115Yor6OQvLKaNsjdQUSBwvv9HBdz
+         flIMHZh3yW8UU6HJ1FQgzF8i+awoD2Xxm9gvuujy6/M1qy5RrHySr3pn1KkWuMD+69
+         qywdzAVLQJEMIobQRs6uL9BQYgypp1nSKiGyDfZo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johan Hovold <johan@kernel.org>,
-        syzbot+cb035c75c03dbe34b796@syzkaller.appspotmail.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 12/33] NFC: pn533: fix use-after-free and memleaks
-Date:   Sat, 26 Oct 2019 09:20:49 -0400
-Message-Id: <20191026132110.4026-12-sashal@kernel.org>
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/33] iwlwifi: dbg_ini: fix memory leak in alloc_sgtable
+Date:   Sat, 26 Oct 2019 09:20:50 -0400
+Message-Id: <20191026132110.4026-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026132110.4026-1-sashal@kernel.org>
 References: <20191026132110.4026-1-sashal@kernel.org>
@@ -44,53 +44,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-[ Upstream commit 6af3aa57a0984e061f61308fe181a9a12359fecc ]
+[ Upstream commit b4b814fec1a5a849383f7b3886b654a13abbda7d ]
 
-The driver would fail to deregister and its class device and free
-related resources on late probe errors.
+In alloc_sgtable if alloc_page fails, the alocated table should be
+released.
 
-Reported-by: syzbot+cb035c75c03dbe34b796@syzkaller.appspotmail.com
-Fixes: 32ecc75ded72 ("NFC: pn533: change order operations in dev registation")
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/pn533/usb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/nfc/pn533/usb.c b/drivers/nfc/pn533/usb.c
-index 5d823e965883b..fcb57d64d97e6 100644
---- a/drivers/nfc/pn533/usb.c
-+++ b/drivers/nfc/pn533/usb.c
-@@ -559,18 +559,25 @@ static int pn533_usb_probe(struct usb_interface *interface,
- 
- 	rc = pn533_finalize_setup(priv);
- 	if (rc)
--		goto error;
-+		goto err_deregister;
- 
- 	usb_set_intfdata(interface, phy);
- 
- 	return 0;
- 
-+err_deregister:
-+	pn533_unregister_device(phy->priv);
- error:
-+	usb_kill_urb(phy->in_urb);
-+	usb_kill_urb(phy->out_urb);
-+	usb_kill_urb(phy->ack_urb);
-+
- 	usb_free_urb(phy->in_urb);
- 	usb_free_urb(phy->out_urb);
- 	usb_free_urb(phy->ack_urb);
- 	usb_put_dev(phy->udev);
- 	kfree(in_buf);
-+	kfree(phy->ack_buffer);
- 
- 	return rc;
- }
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+index 8390104172410..2ae5c831764a9 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+@@ -532,6 +532,7 @@ static struct scatterlist *alloc_sgtable(int size)
+ 				if (new_page)
+ 					__free_page(new_page);
+ 			}
++			kfree(table);
+ 			return NULL;
+ 		}
+ 		alloc_size = min_t(int, size, PAGE_SIZE);
 -- 
 2.20.1
 
