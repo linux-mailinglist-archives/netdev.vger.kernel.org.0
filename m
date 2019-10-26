@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C59E5A35
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 13:48:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1779E5A16
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 13:48:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbfJZLsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 07:48:24 -0400
-Received: from correo.us.es ([193.147.175.20]:46410 "EHLO mail.us.es"
+        id S1726596AbfJZLrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 07:47:55 -0400
+Received: from correo.us.es ([193.147.175.20]:46416 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726516AbfJZLrw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726524AbfJZLrw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 26 Oct 2019 07:47:52 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 592DA8C3C62
+        by mail.us.es (Postfix) with ESMTP id EF5378C3C68
         for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 13:47:48 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4A4C8B8009
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E4233A7EE6
         for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 13:47:48 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 3FF8BB8001; Sat, 26 Oct 2019 13:47:48 +0200 (CEST)
+        id D9972A7EE4; Sat, 26 Oct 2019 13:47:48 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 38CB9A7EC8;
+        by antivirus1-rhel7.int (Postfix) with ESMTP id D0A41DA72F;
         Sat, 26 Oct 2019 13:47:46 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
@@ -32,15 +32,15 @@ Received: from 192.168.1.97 (192.168.1.97)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (sys.soleta.eu [212.170.55.40])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 052C242EE393;
-        Sat, 26 Oct 2019 13:47:45 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id A31A842EE393;
+        Sat, 26 Oct 2019 13:47:46 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 15/31] netfilter: ctnetlink: don't dump ct extensions of unconfirmed conntracks
-Date:   Sat, 26 Oct 2019 13:47:17 +0200
-Message-Id: <20191026114733.28111-16-pablo@netfilter.org>
+Subject: [PATCH 16/31] netfilter: conntrack: free extension area immediately
+Date:   Sat, 26 Oct 2019 13:47:18 +0200
+Message-Id: <20191026114733.28111-17-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20191026114733.28111-1-pablo@netfilter.org>
 References: <20191026114733.28111-1-pablo@netfilter.org>
@@ -52,154 +52,132 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-When dumping the unconfirmed lists, the cpu that is processing the ct
-entry can reallocate ct->ext at any time.
+Instead of waiting for rcu grace period just free it directly.
 
-Right now accessing the extensions from another CPU is ok provided
-we're holding rcu read lock: extension reallocation does use rcu.
+This is safe because conntrack lookup doesn't consider extensions.
 
-Once RCU isn't used anymore this becomes unsafe, so skip extensions for
-the unconfirmed list.
+Other accesses happen while ct->ext can't be free'd, either because
+a ct refcount was taken or because the conntrack hash bucket lock or
+the dying list spinlock have been taken.
 
-Dumping the extension area for confirmed or dying conntracks is fine:
-no reallocations are allowed and list iteration holds appropriate
-locks that prevent ct (and this ct->ext) from getting free'd.
-
-v2: fix compiler warnings due to misue of 'const' and missing return
-    statement (kbuild robot).
+This allows to remove __krealloc in a followup patch, netfilter was the
+only user.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_netlink.c | 76 ++++++++++++++++++++++++------------
- 1 file changed, 50 insertions(+), 26 deletions(-)
+ include/net/netfilter/nf_conntrack_extend.h | 10 ----------
+ net/netfilter/nf_conntrack_core.c           |  2 --
+ net/netfilter/nf_conntrack_extend.c         | 21 ++++++++++-----------
+ 3 files changed, 10 insertions(+), 23 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index e2d13cd18875..d8d33ef52ce0 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -506,9 +506,45 @@ static int ctnetlink_dump_use(struct sk_buff *skb, const struct nf_conn *ct)
- 	return -1;
- }
+diff --git a/include/net/netfilter/nf_conntrack_extend.h b/include/net/netfilter/nf_conntrack_extend.h
+index 112a6f40dfaf..5ae5295aa46d 100644
+--- a/include/net/netfilter/nf_conntrack_extend.h
++++ b/include/net/netfilter/nf_conntrack_extend.h
+@@ -43,7 +43,6 @@ enum nf_ct_ext_id {
  
-+/* all these functions access ct->ext. Caller must either hold a reference
-+ * on ct or prevent its deletion by holding either the bucket spinlock or
-+ * pcpu dying list lock.
-+ */
-+static int ctnetlink_dump_extinfo(struct sk_buff *skb,
-+				  struct nf_conn *ct, u32 type)
-+{
-+	if (ctnetlink_dump_acct(skb, ct, type) < 0 ||
-+	    ctnetlink_dump_timestamp(skb, ct) < 0 ||
-+	    ctnetlink_dump_helpinfo(skb, ct) < 0 ||
-+	    ctnetlink_dump_labels(skb, ct) < 0 ||
-+	    ctnetlink_dump_ct_seq_adj(skb, ct) < 0 ||
-+	    ctnetlink_dump_ct_synproxy(skb, ct) < 0)
-+		return -1;
-+
-+	return 0;
-+}
-+
-+static int ctnetlink_dump_info(struct sk_buff *skb, struct nf_conn *ct)
-+{
-+	if (ctnetlink_dump_status(skb, ct) < 0 ||
-+	    ctnetlink_dump_mark(skb, ct) < 0 ||
-+	    ctnetlink_dump_secctx(skb, ct) < 0 ||
-+	    ctnetlink_dump_id(skb, ct) < 0 ||
-+	    ctnetlink_dump_use(skb, ct) < 0 ||
-+	    ctnetlink_dump_master(skb, ct) < 0)
-+		return -1;
-+
-+	if (!test_bit(IPS_OFFLOAD_BIT, &ct->status) &&
-+	    (ctnetlink_dump_timeout(skb, ct) < 0 ||
-+	     ctnetlink_dump_protoinfo(skb, ct) < 0))
-+		return -1;
-+
-+	return 0;
-+}
-+
- static int
- ctnetlink_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
--		    struct nf_conn *ct)
-+		    struct nf_conn *ct, bool extinfo)
- {
- 	const struct nf_conntrack_zone *zone;
- 	struct nlmsghdr *nlh;
-@@ -552,23 +588,9 @@ ctnetlink_fill_info(struct sk_buff *skb, u32 portid, u32 seq, u32 type,
- 				   NF_CT_DEFAULT_ZONE_DIR) < 0)
- 		goto nla_put_failure;
+ /* Extensions: optional stuff which isn't permanently in struct. */
+ struct nf_ct_ext {
+-	struct rcu_head rcu;
+ 	u8 offset[NF_CT_EXT_NUM];
+ 	u8 len;
+ 	char data[0];
+@@ -72,15 +71,6 @@ static inline void *__nf_ct_ext_find(const struct nf_conn *ct, u8 id)
+ /* Destroy all relationships */
+ void nf_ct_ext_destroy(struct nf_conn *ct);
  
--	if (ctnetlink_dump_status(skb, ct) < 0 ||
--	    ctnetlink_dump_acct(skb, ct, type) < 0 ||
--	    ctnetlink_dump_timestamp(skb, ct) < 0 ||
--	    ctnetlink_dump_helpinfo(skb, ct) < 0 ||
--	    ctnetlink_dump_mark(skb, ct) < 0 ||
--	    ctnetlink_dump_secctx(skb, ct) < 0 ||
--	    ctnetlink_dump_labels(skb, ct) < 0 ||
--	    ctnetlink_dump_id(skb, ct) < 0 ||
--	    ctnetlink_dump_use(skb, ct) < 0 ||
--	    ctnetlink_dump_master(skb, ct) < 0 ||
--	    ctnetlink_dump_ct_seq_adj(skb, ct) < 0 ||
--	    ctnetlink_dump_ct_synproxy(skb, ct) < 0)
-+	if (ctnetlink_dump_info(skb, ct) < 0)
- 		goto nla_put_failure;
+-/* Free operation. If you want to free a object referred from private area,
+- * please implement __nf_ct_ext_free() and call it.
+- */
+-static inline void nf_ct_ext_free(struct nf_conn *ct)
+-{
+-	if (ct->ext)
+-		kfree_rcu(ct->ext, rcu);
+-}
 -
--	if (!test_bit(IPS_OFFLOAD_BIT, &ct->status) &&
--	    (ctnetlink_dump_timeout(skb, ct) < 0 ||
--	     ctnetlink_dump_protoinfo(skb, ct) < 0))
-+	if (extinfo && ctnetlink_dump_extinfo(skb, ct, type) < 0)
- 		goto nla_put_failure;
+ /* Add this type, returns pointer to data or NULL. */
+ void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp);
  
- 	nlmsg_end(skb, nlh);
-@@ -953,13 +975,11 @@ ctnetlink_dump_table(struct sk_buff *skb, struct netlink_callback *cb)
- 			if (!ctnetlink_filter_match(ct, cb->data))
- 				continue;
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index 0c63120b2db2..bcccaa7ec34c 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -573,7 +573,6 @@ EXPORT_SYMBOL_GPL(nf_ct_tmpl_alloc);
+ void nf_ct_tmpl_free(struct nf_conn *tmpl)
+ {
+ 	nf_ct_ext_destroy(tmpl);
+-	nf_ct_ext_free(tmpl);
  
--			rcu_read_lock();
- 			res =
- 			ctnetlink_fill_info(skb, NETLINK_CB(cb->skb).portid,
- 					    cb->nlh->nlmsg_seq,
- 					    NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
--					    ct);
--			rcu_read_unlock();
-+					    ct, true);
- 			if (res < 0) {
- 				nf_conntrack_get(&ct->ct_general);
- 				cb->args[1] = (unsigned long)ct;
-@@ -1364,10 +1384,8 @@ static int ctnetlink_get_conntrack(struct net *net, struct sock *ctnl,
- 		return -ENOMEM;
+ 	if (ARCH_KMALLOC_MINALIGN <= NFCT_INFOMASK)
+ 		kfree((char *)tmpl - tmpl->proto.tmpl_padto);
+@@ -1417,7 +1416,6 @@ void nf_conntrack_free(struct nf_conn *ct)
+ 	WARN_ON(atomic_read(&ct->ct_general.use) != 0);
+ 
+ 	nf_ct_ext_destroy(ct);
+-	nf_ct_ext_free(ct);
+ 	kmem_cache_free(nf_conntrack_cachep, ct);
+ 	smp_mb__before_atomic();
+ 	atomic_dec(&net->ct.count);
+diff --git a/net/netfilter/nf_conntrack_extend.c b/net/netfilter/nf_conntrack_extend.c
+index d4ed1e197921..c24e5b64b00c 100644
+--- a/net/netfilter/nf_conntrack_extend.c
++++ b/net/netfilter/nf_conntrack_extend.c
+@@ -34,21 +34,24 @@ void nf_ct_ext_destroy(struct nf_conn *ct)
+ 			t->destroy(ct);
+ 		rcu_read_unlock();
  	}
- 
--	rcu_read_lock();
- 	err = ctnetlink_fill_info(skb2, NETLINK_CB(skb).portid, nlh->nlmsg_seq,
--				  NFNL_MSG_TYPE(nlh->nlmsg_type), ct);
--	rcu_read_unlock();
-+				  NFNL_MSG_TYPE(nlh->nlmsg_type), ct, true);
- 	nf_ct_put(ct);
- 	if (err <= 0)
- 		goto free;
-@@ -1429,12 +1447,18 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
- 					continue;
- 				cb->args[1] = 0;
- 			}
--			rcu_read_lock();
 +
-+			/* We can't dump extension info for the unconfirmed
-+			 * list because unconfirmed conntracks can have
-+			 * ct->ext reallocated (and thus freed).
-+			 *
-+			 * In the dying list case ct->ext can't be free'd
-+			 * until after we drop pcpu->lock.
-+			 */
- 			res = ctnetlink_fill_info(skb, NETLINK_CB(cb->skb).portid,
- 						  cb->nlh->nlmsg_seq,
- 						  NFNL_MSG_TYPE(cb->nlh->nlmsg_type),
--						  ct);
--			rcu_read_unlock();
-+						  ct, dying ? true : false);
- 			if (res < 0) {
- 				if (!atomic_inc_not_zero(&ct->ct_general.use))
- 					continue;
++	kfree(ct->ext);
+ }
+ EXPORT_SYMBOL(nf_ct_ext_destroy);
+ 
+ void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp)
+ {
+ 	unsigned int newlen, newoff, oldlen, alloc;
+-	struct nf_ct_ext *old, *new;
+ 	struct nf_ct_ext_type *t;
++	struct nf_ct_ext *new;
+ 
+ 	/* Conntrack must not be confirmed to avoid races on reallocation. */
+ 	WARN_ON(nf_ct_is_confirmed(ct));
+ 
+-	old = ct->ext;
+ 
+-	if (old) {
++	if (ct->ext) {
++		const struct nf_ct_ext *old = ct->ext;
++
+ 		if (__nf_ct_ext_exist(old, id))
+ 			return NULL;
+ 		oldlen = old->len;
+@@ -68,22 +71,18 @@ void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp)
+ 	rcu_read_unlock();
+ 
+ 	alloc = max(newlen, NF_CT_EXT_PREALLOC);
+-	kmemleak_not_leak(old);
+-	new = __krealloc(old, alloc, gfp);
++	new = krealloc(ct->ext, alloc, gfp);
+ 	if (!new)
+ 		return NULL;
+ 
+-	if (!old) {
++	if (!ct->ext)
+ 		memset(new->offset, 0, sizeof(new->offset));
+-		ct->ext = new;
+-	} else if (new != old) {
+-		kfree_rcu(old, rcu);
+-		rcu_assign_pointer(ct->ext, new);
+-	}
+ 
+ 	new->offset[id] = newoff;
+ 	new->len = newlen;
+ 	memset((void *)new + newoff, 0, newlen - newoff);
++
++	ct->ext = new;
+ 	return (void *)new + newoff;
+ }
+ EXPORT_SYMBOL(nf_ct_ext_add);
 -- 
 2.11.0
 
