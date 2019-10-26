@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07C62E5D52
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:36:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1AC7E5D49
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbfJZNQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:16:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38110 "EHLO mail.kernel.org"
+        id S1726881AbfJZNQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:16:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726805AbfJZNQd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:16:33 -0400
+        id S1726846AbfJZNQg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:16:36 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 52572222C2;
-        Sat, 26 Oct 2019 13:16:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9B3A0222C4;
+        Sat, 26 Oct 2019 13:16:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095793;
-        bh=i6OBQan2kKE6S0mHWye64Z4OOzcnSu3pGuUf59jIpnk=;
+        s=default; t=1572095795;
+        bh=D5MAHeyDcTYlwUrhihOy3TU+/cG5UlEbHY58W5ziSO4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2bcGXzL6cq8pZ6bVAOo8c0vufFvwq1Ikxk3/qZ1RjIFPKPMCW37yWS1lUrIoGS/rF
-         36gANyfgfVzm3BoBj3ULSRy786R/3QZRdz/aPjd05+ATLCQtFRS+K4ThpmNjY6ck14
-         9RZznq7F5yWCymqmzveYRVgve6wqBbLXgiZqQsLY=
+        b=NBxF0+760NuqAo8yDFeGf3FX+66Ngza80PryGU1Oxb5yh77J5q1299PbCPAWJrWUg
+         MLjIvMfw6vJynhvuvg3Oi0G0rP7AczA1GYcFu1IgKp+egGe+u6CFvkDiYhGXyoLwbj
+         hB3Whm4zHg8ZMjZ5hEvCsHS2NwgSvvnw7bWtf4m0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Howells <dhowells@redhat.com>,
-        syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, linux-afs@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 20/99] rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record
-Date:   Sat, 26 Oct 2019 09:14:41 -0400
-Message-Id: <20191026131600.2507-20-sashal@kernel.org>
+Cc:     Sara Sharon <sara.sharon@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 22/99] cfg80211: fix a bunch of RCU issues in multi-bssid code
+Date:   Sat, 26 Oct 2019 09:14:43 -0400
+Message-Id: <20191026131600.2507-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -44,71 +45,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Sara Sharon <sara.sharon@intel.com>
 
-[ Upstream commit 9ebeddef58c41bd700419cdcece24cf64ce32276 ]
+[ Upstream commit 461c4c2b4c0731d7452bad4e77c0cdbdcea1804c ]
 
-The rxrpc_peer record needs to hold a reference on the rxrpc_local record
-it points as the peer is used as a base to access information in the
-rxrpc_local record.
+cfg80211_update_notlisted_nontrans() leaves the RCU critical session
+too early, while still using nontrans_ssid which is RCU protected. In
+addition, it performs a bunch of RCU pointer update operations such
+as rcu_access_pointer and rcu_assign_pointer.
 
-This can cause problems in __rxrpc_put_peer(), where we need the network
-namespace pointer, and in rxrpc_send_keepalive(), where we need to access
-the UDP socket, leading to symptoms like:
+The caller, cfg80211_inform_bss_frame_data(), also accesses the RCU
+pointer without holding the lock.
 
-    BUG: KASAN: use-after-free in __rxrpc_put_peer net/rxrpc/peer_object.c:411
-    [inline]
-    BUG: KASAN: use-after-free in rxrpc_put_peer+0x685/0x6a0
-    net/rxrpc/peer_object.c:435
-    Read of size 8 at addr ffff888097ec0058 by task syz-executor823/24216
+Just wrap all of this with bss_lock.
 
-Fix this by taking a ref on the local record for the peer record.
-
-Fixes: ace45bec6d77 ("rxrpc: Fix firewall route keepalive")
-Fixes: 2baec2c3f854 ("rxrpc: Support network namespacing")
-Reported-by: syzbot+b9be979c55f2bea8ed30@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Sara Sharon <sara.sharon@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20191004123706.15768-3-luca@coelho.fi
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/rxrpc/peer_object.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/wireless/scan.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/net/rxrpc/peer_object.c b/net/rxrpc/peer_object.c
-index b700b7ecaa3d8..64830d8c1fdb5 100644
---- a/net/rxrpc/peer_object.c
-+++ b/net/rxrpc/peer_object.c
-@@ -216,7 +216,7 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
- 	peer = kzalloc(sizeof(struct rxrpc_peer), gfp);
- 	if (peer) {
- 		atomic_set(&peer->usage, 1);
--		peer->local = local;
-+		peer->local = rxrpc_get_local(local);
- 		INIT_HLIST_HEAD(&peer->error_targets);
- 		peer->service_conns = RB_ROOT;
- 		seqlock_init(&peer->service_conn_lock);
-@@ -307,7 +307,6 @@ void rxrpc_new_incoming_peer(struct rxrpc_sock *rx, struct rxrpc_local *local,
- 	unsigned long hash_key;
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index 27d76c4c5cea1..00f7a4630f45d 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -1691,8 +1691,7 @@ cfg80211_parse_mbssid_frame_data(struct wiphy *wiphy,
+ static void
+ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
+ 				   struct cfg80211_bss *nontrans_bss,
+-				   struct ieee80211_mgmt *mgmt, size_t len,
+-				   gfp_t gfp)
++				   struct ieee80211_mgmt *mgmt, size_t len)
+ {
+ 	u8 *ie, *new_ie, *pos;
+ 	const u8 *nontrans_ssid, *trans_ssid, *mbssid;
+@@ -1703,6 +1702,8 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
+ 	const struct cfg80211_bss_ies *old;
+ 	u8 cpy_len;
  
- 	hash_key = rxrpc_peer_hash_key(local, &peer->srx);
--	peer->local = local;
- 	rxrpc_init_peer(rx, peer, hash_key);
++	lockdep_assert_held(&wiphy_to_rdev(wiphy)->bss_lock);
++
+ 	ie = mgmt->u.probe_resp.variable;
  
- 	spin_lock(&rxnet->peer_hash_lock);
-@@ -417,6 +416,7 @@ static void __rxrpc_put_peer(struct rxrpc_peer *peer)
- 	list_del_init(&peer->keepalive_link);
- 	spin_unlock_bh(&rxnet->peer_hash_lock);
+ 	new_ie_len = ielen;
+@@ -1719,23 +1720,22 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
+ 	if (!mbssid || mbssid < trans_ssid)
+ 		return;
+ 	new_ie_len -= mbssid[1];
+-	rcu_read_lock();
++
+ 	nontrans_ssid = ieee80211_bss_get_ie(nontrans_bss, WLAN_EID_SSID);
+-	if (!nontrans_ssid) {
+-		rcu_read_unlock();
++	if (!nontrans_ssid)
+ 		return;
+-	}
++
+ 	new_ie_len += nontrans_ssid[1];
+-	rcu_read_unlock();
  
-+	rxrpc_put_local(peer->local);
- 	kfree_rcu(peer, rcu);
- }
+ 	/* generate new ie for nontrans BSS
+ 	 * 1. replace SSID with nontrans BSS' SSID
+ 	 * 2. skip MBSSID IE
+ 	 */
+-	new_ie = kzalloc(new_ie_len, gfp);
++	new_ie = kzalloc(new_ie_len, GFP_ATOMIC);
+ 	if (!new_ie)
+ 		return;
+-	new_ies = kzalloc(sizeof(*new_ies) + new_ie_len, gfp);
++
++	new_ies = kzalloc(sizeof(*new_ies) + new_ie_len, GFP_ATOMIC);
+ 	if (!new_ies)
+ 		goto out_free;
  
-@@ -453,6 +453,7 @@ void rxrpc_put_peer_locked(struct rxrpc_peer *peer)
- 	if (n == 0) {
- 		hash_del_rcu(&peer->hash_link);
- 		list_del_init(&peer->keepalive_link);
-+		rxrpc_put_local(peer->local);
- 		kfree_rcu(peer, rcu);
+@@ -1895,6 +1895,8 @@ cfg80211_inform_bss_frame_data(struct wiphy *wiphy,
+ 	cfg80211_parse_mbssid_frame_data(wiphy, data, mgmt, len,
+ 					 &non_tx_data, gfp);
+ 
++	spin_lock_bh(&wiphy_to_rdev(wiphy)->bss_lock);
++
+ 	/* check if the res has other nontransmitting bss which is not
+ 	 * in MBSSID IE
+ 	 */
+@@ -1909,8 +1911,9 @@ cfg80211_inform_bss_frame_data(struct wiphy *wiphy,
+ 		ies2 = rcu_access_pointer(tmp_bss->ies);
+ 		if (ies2->tsf < ies1->tsf)
+ 			cfg80211_update_notlisted_nontrans(wiphy, tmp_bss,
+-							   mgmt, len, gfp);
++							   mgmt, len);
  	}
++	spin_unlock_bh(&wiphy_to_rdev(wiphy)->bss_lock);
+ 
+ 	return res;
  }
 -- 
 2.20.1
