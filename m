@@ -2,103 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19AD6E5984
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 11:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589EBE59AD
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 12:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726217AbfJZJx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 05:53:58 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:20312 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726010AbfJZJx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 05:53:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572083637;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=esglW9VvaMYDb8USCDJSehOzdbrr2VhCQxqKk8rc+vQ=;
-        b=brciXjzRNqchZIYu6jYVcqN3LJukBkAlYFCq7DaTp9pSQ9f0aTpzH/BhAsT+DiDv7c6AOw
-        AO5SDUDpbKEGZKvmhXmgNhNY1rN9GJ+vVqW7qebbPvgaURyU+Og63A/vBOnvfPGmNT42+1
-        rKlgjHw7rn6AzshNnTuGpRlHscNQu24=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-357-9rZtOzzGO-mc6_RhiExW7g-1; Sat, 26 Oct 2019 05:53:52 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726266AbfJZKsa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 06:48:30 -0400
+Received: from correo.us.es ([193.147.175.20]:35392 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726138AbfJZKs3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 06:48:29 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 157144A2B83
+        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 12:48:25 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 08AD7DA801
+        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 12:48:25 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id E07FBCE15C; Sat, 26 Oct 2019 12:48:24 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B3A06DA7B6;
+        Sat, 26 Oct 2019 12:48:22 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sat, 26 Oct 2019 12:48:22 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (sys.soleta.eu [212.170.55.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 938251800DCB;
-        Sat, 26 Oct 2019 09:53:51 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-116-60.ams2.redhat.com [10.36.116.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 815A75C1B5;
-        Sat, 26 Oct 2019 09:53:50 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>,
-        Beniamino Galvani <bgalvani@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v2 2/2] selftests: fib_tests: add more tests for metric update
-Date:   Sat, 26 Oct 2019 11:53:40 +0200
-Message-Id: <8dd671ca9cdf27d8b06998c1686b42d83681d352.1572083332.git.pabeni@redhat.com>
-In-Reply-To: <cover.1572083332.git.pabeni@redhat.com>
-References: <cover.1572083332.git.pabeni@redhat.com>
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 8E61042EE38E;
+        Sat, 26 Oct 2019 12:48:22 +0200 (CEST)
+Date:   Sat, 26 Oct 2019 12:48:24 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Simon Horman <horms@verge.net.au>
+Cc:     lvs-devel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Julian Anastasov <ja@ssi.bg>
+Subject: Re: [GIT PULL] IPVS fixes for v5.4
+Message-ID: <20191026104824.kareh25qmgfp4tuk@salvia>
+References: <20191025111205.30555-1-horms@verge.net.au>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: 9rZtOzzGO-mc6_RhiExW7g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191025111205.30555-1-horms@verge.net.au>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds two more tests to ipv4_addr_metric_test() to
-explicitly cover the scenarios fixed by the previous patch.
+On Fri, Oct 25, 2019 at 01:12:03PM +0200, Simon Horman wrote:
+> Hi Pablo,
+> 
+> please consider these IPVS fixes for v5.4.
+> 
+> * Eric Dumazet resolves a race condition in switching the defense level
+> 
+> * Davide Caratti resolves a race condition in module removal
+> 
+> This pull request is based on nf.
+> 
+> 
+> The following changes since commit 085461c8976e6cb4d5b608a7b7062f394c51a253:
+> 
+>   netfilter: nf_tables_offload: restore basechain deletion (2019-10-23 13:14:50 +0200)
+> 
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git tags/ipvs-fixes-for-v5.4
 
-Suggested-by: David Ahern <dsahern@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- tools/testing/selftests/net/fib_tests.sh | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-
-diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selft=
-ests/net/fib_tests.sh
-index c4ba0ff4a53f..76c1897e6352 100755
---- a/tools/testing/selftests/net/fib_tests.sh
-+++ b/tools/testing/selftests/net/fib_tests.sh
-@@ -1438,6 +1438,27 @@ ipv4_addr_metric_test()
- =09fi
- =09log_test $rc 0 "Prefix route with metric on link up"
-=20
-+=09# explicitly check for metric changes on edge scenarios
-+=09run_cmd "$IP addr flush dev dummy2"
-+=09run_cmd "$IP addr add dev dummy2 172.16.104.0/24 metric 259"
-+=09run_cmd "$IP addr change dev dummy2 172.16.104.0/24 metric 260"
-+=09rc=3D$?
-+=09if [ $rc -eq 0 ]; then
-+=09=09check_route "172.16.104.0/24 dev dummy2 proto kernel scope link src =
-172.16.104.0 metric 260"
-+=09=09rc=3D$?
-+=09fi
-+=09log_test $rc 0 "Modify metric of .0/24 address"
-+
-+=09run_cmd "$IP addr flush dev dummy2"
-+=09run_cmd "$IP addr add dev dummy2 172.16.104.1/32 peer 172.16.104.2 metr=
-ic 260"
-+=09run_cmd "$IP addr change dev dummy2 172.16.104.1/32 peer 172.16.104.2 m=
-etric 261"
-+=09rc=3D$?
-+=09if [ $rc -eq 0 ]; then
-+=09=09check_route "172.16.104.2 dev dummy2 proto kernel scope link src 172=
-.16.104.1 metric 261"
-+=09=09rc=3D$?
-+=09fi
-+=09log_test $rc 0 "Modify metric of address with peer route"
-+
- =09$IP li del dummy1
- =09$IP li del dummy2
- =09cleanup
---=20
-2.21.0
-
+Pulled, thanks Simon.
