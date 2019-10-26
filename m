@@ -2,126 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 864F4E5FF6
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 00:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04901E5FF8
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 01:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfJZW6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 18:58:47 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35959 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbfJZW6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 18:58:47 -0400
-Received: by mail-ed1-f66.google.com with SMTP id bm15so4874613edb.3
-        for <netdev@vger.kernel.org>; Sat, 26 Oct 2019 15:58:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P/Ugsl7XIxjg/QCuqwUudFlCF92K2LNOHdehACrO+9M=;
-        b=fkwAyfYEKmcEtjK6GMobHlY4kCPN3I3RzfBe92slzkQhs6m189UyhJc0cgtCWDjSDA
-         kkxKP1czMsnAjUin7Bvifqc9G95DiaiABPAPINcPe0G9mXck5a5fvwvvzPGL+tRQtCQj
-         rdvpK7BiVVLUlRgTV83zUzLktJIKm5CFYRN4SkRI02htePOikfFE+B4/X+hoyVDHZenz
-         mUOe5fK8sNwBY63CGF0l5Qi9kzsRWhfJTrjNM81evjqiF5g4sD24s6RCE32oKQB+6dy7
-         oRA+cDrPi1p/Sh/DtcHhQpVP6rNXz8AQzDbz7gOwkSjxLtO3pgKBWXm+nYiF4Q0flblM
-         +UwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P/Ugsl7XIxjg/QCuqwUudFlCF92K2LNOHdehACrO+9M=;
-        b=N0yxOHxKdEANPUf9KUv2OdS16kLY7G8HFDAQp2PlfU3Cx8trr6ptb4fEVj7Xp749Rx
-         e3TlOe7DVdiqruBP7lw7d7SZ/HzKnTOUINDTPPVOgWS308qhwNPqwJG5tE6/lWxLFufi
-         pAdmQ0WfELSrcytmqh0PFnE7tIwSA4naTYWe1Yk7CBY7ldh63cmsjvpdjQuWFiiK9TBO
-         39D0XUwVfjUcsw3pEQbMUzwtWeZdP+Rzg6s2g6YgaRjhh58vjNaTilPrLbbIp9qvrGZ8
-         J/E0Dux28bbG64+D5remLXRGxQGVoGzqldm5IIkBpfuuH+cX+opFvu2GjbzbNuvxyWcA
-         oKzw==
-X-Gm-Message-State: APjAAAWZoqcSOsgHDaQTALOfQAk0YE9EMtjluwC1L9q8uBLIyTlWye+W
-        hsLXnhei+/WEYvHXd1DbxSBq+I4UKbhHW+Uzmzo=
-X-Google-Smtp-Source: APXvYqyBHuLQYFyEqFyJY738LyaR9Gnzvw1vvnU7Ax1AZEJBgo2pyn7GHsdYp2kUSzj8GdaQYiXKTLwJhMpHcd8w9so=
-X-Received: by 2002:a17:906:d9d0:: with SMTP id qk16mr9470389ejb.70.1572130725447;
- Sat, 26 Oct 2019 15:58:45 -0700 (PDT)
+        id S1726521AbfJZXEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 19:04:33 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:36117 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726443AbfJZXEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 19:04:33 -0400
+X-Originating-IP: 92.184.102.220
+Received: from localhost (unknown [92.184.102.220])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 4D68F240005;
+        Sat, 26 Oct 2019 23:04:11 +0000 (UTC)
+Date:   Sun, 27 Oct 2019 01:03:18 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
+        antoine.tenart@bootlin.com, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch
+Subject: Re: [PATCH net 1/2] net: mscc: ocelot: fix vlan_filtering when
+ enslaving to bridge before link is up
+Message-ID: <20191026230318.GE3125@piout.net>
+References: <20191026180427.14039-1-olteanv@gmail.com>
+ <20191026180427.14039-2-olteanv@gmail.com>
 MIME-Version: 1.0
-References: <20191026180427.14039-1-olteanv@gmail.com> <20191026180427.14039-3-olteanv@gmail.com>
- <5a0b7e8b-851e-2523-c6c1-da6fbd0c3dac@gmail.com>
-In-Reply-To: <5a0b7e8b-851e-2523-c6c1-da6fbd0c3dac@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 27 Oct 2019 01:58:34 +0300
-Message-ID: <CA+h21ho76-Kxjc6R7eHcdHMBag1cu9pZMdbaFYXgT_u4-Fy9pQ@mail.gmail.com>
-Subject: Re: [PATCH net 2/2] net: mscc: ocelot: refuse to overwrite the port's
- native vlan
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191026180427.14039-2-olteanv@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 26 Oct 2019 at 23:34, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 10/26/2019 11:04 AM, Vladimir Oltean wrote:
-> > The switch driver keeps a "vid" variable per port, which signifies _the_
-> > VLAN ID that is stripped on that port's egress (aka the native VLAN on a
-> > trunk port).
-> >
-> > That is the way the hardware is designed (mostly). The port->vid is
-> > programmed into REW:PORT:PORT_VLAN_CFG:PORT_VID and the rewriter is told
-> > to send all traffic as tagged except the one having port->vid.
-> >
-> > There exists a possibility of finer-grained egress untagging decisions:
-> > using the VCAP IS1 engine, one rule can be added to match every
-> > VLAN-tagged frame whose VLAN should be untagged, and set POP_CNT=1 as
-> > action. However, the IS1 can hold at most 512 entries, and the VLANs are
-> > in the order of 6 * 4096.
-> >
-> > So the code is fine for now. But this sequence of commands:
-> >
-> > $ bridge vlan add dev swp0 vid 1 pvid untagged
-> > $ bridge vlan add dev swp0 vid 2 untagged
-> >
-> > makes untagged and pvid-tagged traffic be sent out of swp0 as tagged
-> > with VID 1, despite user's request.
-> >
-> > Prevent that from happening. The user should temporarily remove the
-> > existing untagged VLAN (1 in this case), add it back as tagged, and then
-> > add the new untagged VLAN (2 in this case).>
-> > Cc: Antoine Tenart <antoine.tenart@bootlin.com>
-> > Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > Fixes: 7142529f1688 ("net: mscc: ocelot: add VLAN filtering")
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
->
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
->
+On 26/10/2019 21:04:26+0300, Vladimir Oltean wrote:
+> Background information: the driver operates the hardware in a mode where
+> a single VLAN can be transmitted as untagged on a particular egress
+> port. That is the "native VLAN on trunk port" use case. Its value is
+> held in port->vid.
+> 
+> Consider the following command sequence (no network manager, all
+> interfaces are down, debugging prints added by me):
+> 
+> $ ip link add dev br0 type bridge vlan_filtering 1
+> $ ip link set dev swp0 master br0
+> 
+> Kernel code path during last command:
+> 
+> br_add_slave -> ocelot_netdevice_port_event (NETDEV_CHANGEUPPER):
+> [   21.401901] ocelot_vlan_port_apply: port 0 vlan aware 0 pvid 0 vid 0
+> 
+> br_add_slave -> nbp_vlan_init -> switchdev_port_attr_set -> ocelot_port_attr_set (SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING):
+> [   21.413335] ocelot_vlan_port_apply: port 0 vlan aware 1 pvid 0 vid 0
+> 
+> br_add_slave -> nbp_vlan_init -> nbp_vlan_add -> br_switchdev_port_vlan_add -> switchdev_port_obj_add -> ocelot_port_obj_add -> ocelot_vlan_vid_add
+> [   21.667421] ocelot_vlan_port_apply: port 0 vlan aware 1 pvid 1 vid 1
+> 
+> So far so good. The bridge has replaced the driver's default pvid used
+> in standalone mode (0) with its own default_pvid (1). The port's vid
+> (native VLAN) has also changed from 0 to 1.
+> 
+> $ ip link set dev swp0 up
+> 
+> [   31.722956] 8021q: adding VLAN 0 to HW filter on device swp0
+> do_setlink -> dev_change_flags -> vlan_vid_add -> ocelot_vlan_rx_add_vid -> ocelot_vlan_vid_add:
+> [   31.728700] ocelot_vlan_port_apply: port 0 vlan aware 1 pvid 1 vid 0
+> 
+> The 8021q module uses the .ndo_vlan_rx_add_vid API on .ndo_open to make
+> ports be able to transmit and receive 802.1p-tagged traffic by default.
+> This API is supposed to offload a VLAN sub-interface, which for a switch
+> port means to add a VLAN that is not a pvid, and tagged on egress.
+> 
+> But the driver implementation of .ndo_vlan_rx_add_vid is wrong: it adds
+> back vid 0 as "egress untagged". Now back to the initial paragraph:
+> there is a single untagged VID that the driver keeps track of, and that
+> has just changed from 1 (the pvid) to 0. So this breaks the bridge
+> core's expectation, because it has changed vid 1 from untagged to
+> tagged, when what the user sees is.
+> 
+> $ bridge vlan
+> port    vlan ids
+> swp0     1 PVID Egress Untagged
+> 
+> br0      1 PVID Egress Untagged
+> 
+> But curiously, instead of manifesting itself as "untagged and
+> pvid-tagged traffic gets sent as tagged on egress", the bug:
+> 
+> - is hidden when vlan_filtering=0
+> - manifests as dropped traffic when vlan_filtering=1, due to this setting:
+> 
+> 	if (port->vlan_aware && !port->vid)
+> 		/* If port is vlan-aware and tagged, drop untagged and priority
+> 		 * tagged frames.
+> 		 */
+> 		val |= ANA_PORT_DROP_CFG_DROP_UNTAGGED_ENA |
+> 		       ANA_PORT_DROP_CFG_DROP_PRIO_S_TAGGED_ENA |
+> 		       ANA_PORT_DROP_CFG_DROP_PRIO_C_TAGGED_ENA;
+> 
+> which would have made sense if it weren't for this bug. The setting's
+> intention was "this is a trunk port with no native VLAN, so don't accept
+> untagged traffic". So the driver was never expecting to set VLAN 0 as
+> the value of the native VLAN, 0 was just encoding for "invalid".
+> 
+> So the fix is to not send 802.1p traffic as untagged, because that would
+> change the port's native vlan to 0, unbeknownst to the bridge, and
+> trigger unexpected code paths in the driver.
+> 
+> Cc: Antoine Tenart <antoine.tenart@bootlin.com>
+> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Fixes: 7142529f1688 ("net: mscc: ocelot: add VLAN filtering")
+> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Thanks, Florian.
+> ---
+>  drivers/net/ethernet/mscc/ocelot.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> index 7190fe4c1095..552252331e55 100644
+> --- a/drivers/net/ethernet/mscc/ocelot.c
+> +++ b/drivers/net/ethernet/mscc/ocelot.c
+> @@ -915,7 +915,7 @@ static int ocelot_fdb_dump(struct sk_buff *skb, struct netlink_callback *cb,
+>  static int ocelot_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+>  				  u16 vid)
+>  {
+> -	return ocelot_vlan_vid_add(dev, vid, false, true);
+> +	return ocelot_vlan_vid_add(dev, vid, false, false);
+>  }
+>  
+>  static int ocelot_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+> -- 
+> 2.17.1
+> 
 
-> [snip]
->
-> > +     if (untagged && port->vid != vid) {
-> > +             if (port->vid) {
-> > +                     dev_err(ocelot->dev,
-> > +                             "Port already has a native VLAN: %d\n",
-> > +                             port->vid);
->
-> This sounds like a extended netlink ack candidate for improving user
-> experience, but this should do for now.
-> --
-> Florian
-
-I know what you're saying. I wanted to drag in minimal dependencies
-for the fix. The driver is going to see major rework anyway soon (will
-gain a DSA front-end), hence the reason why I copied the DSA people to
-the fixes. Having extack propagate to more drivers is always welcome,
-and DSA would be a good start to see that being implemented.
-
-Regards,
--Vladimir
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
