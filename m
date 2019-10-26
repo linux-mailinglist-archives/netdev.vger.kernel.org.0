@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED1A4E5CB6
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:32:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C243E5CAF
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbfJZNca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:32:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40332 "EHLO mail.kernel.org"
+        id S1727901AbfJZNSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:18:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40340 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727857AbfJZNSd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:18:33 -0400
+        id S1727880AbfJZNSf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:18:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 73C9021871;
-        Sat, 26 Oct 2019 13:18:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 97D0121655;
+        Sat, 26 Oct 2019 13:18:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095913;
-        bh=Bw+3inR4gFpPut2zAV1narDpoGAN/nMUFG1hkJV4n28=;
+        s=default; t=1572095914;
+        bh=ZnwUf7S1kxzIWSSKaI2hTjSkgyg6l2w2zizALkYNYDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lvLDaU4SS8qITtI5s8HpcULC4RtfaZOjHaRzhiwuxhqFLYc8yzGFeIw+jQX06pB/C
-         B1cQm0Bol8Vt73xi9xFI6dK3IJr/DWF26CaMqqhXZUHdRkIvgQhFbPAngPxEqHk4Vr
-         /z7NMLkStMTimNCN/MVecDx254wR+tDl2uWZqYEc=
+        b=SUcfKOStS2jbcM5FdrjfGZi2VpuyDVHDb57Q0WZ78xPASNxU3gIhzjkMIlV5GbFrQ
+         fiMKQ0SddSqfFWhSyjRCSqNfrARN77ck5HoVKRgCUeu1uvJRiqsG3ZmbalZt9Mt1E1
+         IsafR/Js4qD6POHZM5CPMT7E/JjKiddVM2hWf1Ic=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florin Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
+Cc:     "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 85/99] dpaa2-eth: add irq for the dpmac connect/disconnect event
-Date:   Sat, 26 Oct 2019 09:15:46 -0400
-Message-Id: <20191026131600.2507-85-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 86/99] net: stmmac: fix argument to stmmac_pcs_ctrl_ane()
+Date:   Sat, 26 Oct 2019 09:15:47 -0400
+Message-Id: <20191026131600.2507-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -44,65 +43,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
+From: "Ben Dooks (Codethink)" <ben.dooks@codethink.co.uk>
 
-[ Upstream commit 8398b375a9e3f5e4bba9bcdfed152a8a247dee01 ]
+[ Upstream commit c9ad4c1049f7e0e8d59e975963dda002af47d93e ]
 
-Add IRQ for the DPNI endpoint change event, resolving the issue
-when a dynamically created DPNI gets a randomly generated hw address
-when the endpoint is a DPMAC object.
+The stmmac_pcs_ctrl_ane() expects a register address as
+argument 1, but for some reason the mac_device_info is
+being passed.
 
-Signed-off-by: Florin Chiculita <florinlaurentiu.chiculita@nxp.com>
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+Fix the warning (and possible bug) from sparse:
+
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17: warning: incorrect type in argument 1 (different address spaces)
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17:    expected void [noderef] <asn:2> *ioaddr
+drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:2613:17:    got struct mac_device_info *hw
+
+Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 6 +++++-
- drivers/net/ethernet/freescale/dpaa2/dpni.h      | 5 ++++-
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 0acb11557ed1c..488e8e446e17d 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -3219,6 +3219,9 @@ static irqreturn_t dpni_irq0_handler_thread(int irq_num, void *arg)
- 	if (status & DPNI_IRQ_EVENT_LINK_CHANGED)
- 		link_state_update(netdev_priv(net_dev));
- 
-+	if (status & DPNI_IRQ_EVENT_ENDPOINT_CHANGED)
-+		set_mac_addr(netdev_priv(net_dev));
-+
- 	return IRQ_HANDLED;
- }
- 
-@@ -3244,7 +3247,8 @@ static int setup_irqs(struct fsl_mc_device *ls_dev)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 374f9b49bcc14..2722778a50051 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2564,7 +2564,7 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
  	}
  
- 	err = dpni_set_irq_mask(ls_dev->mc_io, 0, ls_dev->mc_handle,
--				DPNI_IRQ_INDEX, DPNI_IRQ_EVENT_LINK_CHANGED);
-+				DPNI_IRQ_INDEX, DPNI_IRQ_EVENT_LINK_CHANGED |
-+				DPNI_IRQ_EVENT_ENDPOINT_CHANGED);
- 	if (err < 0) {
- 		dev_err(&ls_dev->dev, "dpni_set_irq_mask(): %d\n", err);
- 		goto free_irq;
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-index a521242e23537..72cf1258f40fb 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
-@@ -133,9 +133,12 @@ int dpni_reset(struct fsl_mc_io	*mc_io,
-  */
- #define DPNI_IRQ_INDEX				0
- /**
-- * IRQ event - indicates a change in link state
-+ * IRQ events:
-+ *       indicates a change in link state
-+ *       indicates a change in endpoint
-  */
- #define DPNI_IRQ_EVENT_LINK_CHANGED		0x00000001
-+#define DPNI_IRQ_EVENT_ENDPOINT_CHANGED		0x00000002
+ 	if (priv->hw->pcs)
+-		stmmac_pcs_ctrl_ane(priv, priv->hw, 1, priv->hw->ps, 0);
++		stmmac_pcs_ctrl_ane(priv, priv->ioaddr, 1, priv->hw->ps, 0);
  
- int dpni_set_irq_enable(struct fsl_mc_io	*mc_io,
- 			u32			cmd_flags,
+ 	/* set TX and RX rings length */
+ 	stmmac_set_rings_length(priv);
 -- 
 2.20.1
 
