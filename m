@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B640FE5CCA
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:33:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E518E5CBF
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 15:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727641AbfJZNSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 09:18:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39794 "EHLO mail.kernel.org"
+        id S1727788AbfJZNSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 09:18:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40064 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727689AbfJZNSI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 09:18:08 -0400
+        id S1727781AbfJZNSW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 26 Oct 2019 09:18:22 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C6546222C1;
-        Sat, 26 Oct 2019 13:18:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 74589214DA;
+        Sat, 26 Oct 2019 13:18:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572095887;
-        bh=WwaPMs6a0XVnuyot8vmAQRgX38Uz3dfCVG1j8TJ1ExI=;
+        s=default; t=1572095901;
+        bh=LqDGJdi5OWBQxcBO1AEODAmneVGL2UOiAb5nGZcb8dM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A5QrFRJ8zZrBnG49srjq5nUguepx4f34IL2vJycn1TsnEFUqtYfV7eJTU8ey6uoA4
-         +q9+KoT3GV4Z3RM5ixSmcvXoz4eb9vUdLr3MkqM3xyerFYNS8TfwxAdE+ZlILoP9dF
-         qiw4TsFTO21Z7Y6yTRG4bc0To57gzyuztFbUTThA=
+        b=o6HniNcBFMpFo8mVIRjcsXLLrNEa1VbctpCLW+ValVTmoq0Yt3Hoyxn2zC4Jeti6y
+         TjZAT/TywqIpQfUVbVLBlmEdytAQ+rpBMnVIUA8hEOz77I4A/W2KnsXqelGoTJnZ3r
+         FP1q/bwC//6pjaNlS/Xh5ka7kptPBDlUklvmSFOA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
+Cc:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 71/99] net: aquantia: correctly handle macvlan and multicast coexistence
-Date:   Sat, 26 Oct 2019 09:15:32 -0400
-Message-Id: <20191026131600.2507-71-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 78/99] net: i82596: fix dma_alloc_attr for sni_82596
+Date:   Sat, 26 Oct 2019 09:15:39 -0400
+Message-Id: <20191026131600.2507-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191026131600.2507-1-sashal@kernel.org>
 References: <20191026131600.2507-1-sashal@kernel.org>
@@ -44,126 +43,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
+From: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 
-[ Upstream commit 9f051db566da1e8110659ab4ab188af1c2510bb4 ]
+[ Upstream commit 61c1d33daf7b5146f44d4363b3322f8cda6a6c43 ]
 
-macvlan and multicast handling is now mixed up.
-The explicit issue is that macvlan interface gets broken (no traffic)
-after clearing MULTICAST flag on the real interface.
+Commit 7f683b920479 ("i825xx: switch to switch to dma_alloc_attrs")
+switched dma allocation over to dma_alloc_attr, but didn't convert
+the SNI part to request consistent DMA memory. This broke sni_82596
+since driver doesn't do dma_cache_sync for performance reasons.
+Fix this by using different DMA_ATTRs for lasi_82596 and sni_82596.
 
-We now do separate logic and consider both ALLMULTI and MULTICAST
-flags on the device.
-
-Fixes: 11ba961c9161 ("net: aquantia: Fix IFF_ALLMULTI flag functionality")
-Signed-off-by: Dmitry Bogdanov <dmitry.bogdanov@aquantia.com>
-Signed-off-by: Igor Russkikh <igor.russkikh@aquantia.com>
+Fixes: 7f683b920479 ("i825xx: switch to switch to dma_alloc_attrs")
+Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/aquantia/atlantic/aq_main.c  |  4 +--
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 32 +++++++++----------
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  7 ++--
- 3 files changed, 21 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/i825xx/lasi_82596.c | 4 +++-
+ drivers/net/ethernet/i825xx/lib82596.c   | 4 ++--
+ drivers/net/ethernet/i825xx/sni_82596.c  | 4 +++-
+ 3 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-index b4a0fb281e69e..bb65dd39f8474 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
-@@ -194,9 +194,7 @@ static void aq_ndev_set_multicast_settings(struct net_device *ndev)
- {
- 	struct aq_nic_s *aq_nic = netdev_priv(ndev);
+diff --git a/drivers/net/ethernet/i825xx/lasi_82596.c b/drivers/net/ethernet/i825xx/lasi_82596.c
+index 211c5f74b4c86..aec7e98bcc853 100644
+--- a/drivers/net/ethernet/i825xx/lasi_82596.c
++++ b/drivers/net/ethernet/i825xx/lasi_82596.c
+@@ -96,6 +96,8 @@
  
--	aq_nic_set_packet_filter(aq_nic, ndev->flags);
--
--	aq_nic_set_multicast_list(aq_nic, ndev);
-+	(void)aq_nic_set_multicast_list(aq_nic, ndev);
+ #define OPT_SWAP_PORT	0x0001	/* Need to wordswp on the MPU port */
+ 
++#define LIB82596_DMA_ATTR	DMA_ATTR_NON_CONSISTENT
++
+ #define DMA_WBACK(ndev, addr, len) \
+ 	do { dma_cache_sync((ndev)->dev.parent, (void *)addr, len, DMA_TO_DEVICE); } while (0)
+ 
+@@ -200,7 +202,7 @@ static int __exit lan_remove_chip(struct parisc_device *pdev)
+ 
+ 	unregister_netdev (dev);
+ 	dma_free_attrs(&pdev->dev, sizeof(struct i596_private), lp->dma,
+-		       lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
++		       lp->dma_addr, LIB82596_DMA_ATTR);
+ 	free_netdev (dev);
+ 	return 0;
  }
+diff --git a/drivers/net/ethernet/i825xx/lib82596.c b/drivers/net/ethernet/i825xx/lib82596.c
+index 1274ad24d6af1..f9742af7f142d 100644
+--- a/drivers/net/ethernet/i825xx/lib82596.c
++++ b/drivers/net/ethernet/i825xx/lib82596.c
+@@ -1065,7 +1065,7 @@ static int i82596_probe(struct net_device *dev)
  
- static int aq_ndo_vlan_rx_add_vid(struct net_device *ndev, __be16 proto,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 8f66e78178118..2a18439b36fbe 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -631,9 +631,12 @@ int aq_nic_set_packet_filter(struct aq_nic_s *self, unsigned int flags)
- 
- int aq_nic_set_multicast_list(struct aq_nic_s *self, struct net_device *ndev)
- {
--	unsigned int packet_filter = self->packet_filter;
-+	const struct aq_hw_ops *hw_ops = self->aq_hw_ops;
-+	struct aq_nic_cfg_s *cfg = &self->aq_nic_cfg;
-+	unsigned int packet_filter = ndev->flags;
- 	struct netdev_hw_addr *ha = NULL;
- 	unsigned int i = 0U;
-+	int err = 0;
- 
- 	self->mc_list.count = 0;
- 	if (netdev_uc_count(ndev) > AQ_HW_MULTICAST_ADDRESS_MAX) {
-@@ -641,29 +644,26 @@ int aq_nic_set_multicast_list(struct aq_nic_s *self, struct net_device *ndev)
- 	} else {
- 		netdev_for_each_uc_addr(ha, ndev) {
- 			ether_addr_copy(self->mc_list.ar[i++], ha->addr);
--
--			if (i >= AQ_HW_MULTICAST_ADDRESS_MAX)
--				break;
- 		}
+ 	dma = dma_alloc_attrs(dev->dev.parent, sizeof(struct i596_dma),
+ 			      &lp->dma_addr, GFP_KERNEL,
+-			      DMA_ATTR_NON_CONSISTENT);
++			      LIB82596_DMA_ATTR);
+ 	if (!dma) {
+ 		printk(KERN_ERR "%s: Couldn't get shared memory\n", __FILE__);
+ 		return -ENOMEM;
+@@ -1087,7 +1087,7 @@ static int i82596_probe(struct net_device *dev)
+ 	i = register_netdev(dev);
+ 	if (i) {
+ 		dma_free_attrs(dev->dev.parent, sizeof(struct i596_dma),
+-			       dma, lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
++			       dma, lp->dma_addr, LIB82596_DMA_ATTR);
+ 		return i;
  	}
  
--	if (i + netdev_mc_count(ndev) > AQ_HW_MULTICAST_ADDRESS_MAX) {
--		packet_filter |= IFF_ALLMULTI;
--	} else {
--		netdev_for_each_mc_addr(ha, ndev) {
--			ether_addr_copy(self->mc_list.ar[i++], ha->addr);
--
--			if (i >= AQ_HW_MULTICAST_ADDRESS_MAX)
--				break;
-+	cfg->is_mc_list_enabled = !!(packet_filter & IFF_MULTICAST);
-+	if (cfg->is_mc_list_enabled) {
-+		if (i + netdev_mc_count(ndev) > AQ_HW_MULTICAST_ADDRESS_MAX) {
-+			packet_filter |= IFF_ALLMULTI;
-+		} else {
-+			netdev_for_each_mc_addr(ha, ndev) {
-+				ether_addr_copy(self->mc_list.ar[i++],
-+						ha->addr);
-+			}
- 		}
- 	}
+diff --git a/drivers/net/ethernet/i825xx/sni_82596.c b/drivers/net/ethernet/i825xx/sni_82596.c
+index 6eb6c2ff7f099..6436a98c5953f 100644
+--- a/drivers/net/ethernet/i825xx/sni_82596.c
++++ b/drivers/net/ethernet/i825xx/sni_82596.c
+@@ -24,6 +24,8 @@
  
- 	if (i > 0 && i <= AQ_HW_MULTICAST_ADDRESS_MAX) {
--		packet_filter |= IFF_MULTICAST;
- 		self->mc_list.count = i;
--		self->aq_hw_ops->hw_multicast_list_set(self->aq_hw,
--						       self->mc_list.ar,
--						       self->mc_list.count);
-+		err = hw_ops->hw_multicast_list_set(self->aq_hw,
-+						    self->mc_list.ar,
-+						    self->mc_list.count);
- 	}
- 	return aq_nic_set_packet_filter(self, packet_filter);
- }
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 30f7fc4c97ff4..e6b5ab9b5bae7 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -818,14 +818,15 @@ static int hw_atl_b0_hw_packet_filter_set(struct aq_hw_s *self,
- 				     cfg->is_vlan_force_promisc);
+ static const char sni_82596_string[] = "snirm_82596";
  
- 	hw_atl_rpfl2multicast_flr_en_set(self,
--					 IS_FILTER_ENABLED(IFF_ALLMULTI), 0);
-+					 IS_FILTER_ENABLED(IFF_ALLMULTI) &&
-+					 IS_FILTER_ENABLED(IFF_MULTICAST), 0);
++#define LIB82596_DMA_ATTR	0
++
+ #define DMA_WBACK(priv, addr, len)     do { } while (0)
+ #define DMA_INV(priv, addr, len)       do { } while (0)
+ #define DMA_WBACK_INV(priv, addr, len) do { } while (0)
+@@ -152,7 +154,7 @@ static int sni_82596_driver_remove(struct platform_device *pdev)
  
- 	hw_atl_rpfl2_accept_all_mc_packets_set(self,
--					       IS_FILTER_ENABLED(IFF_ALLMULTI));
-+					      IS_FILTER_ENABLED(IFF_ALLMULTI) &&
-+					      IS_FILTER_ENABLED(IFF_MULTICAST));
- 
- 	hw_atl_rpfl2broadcast_en_set(self, IS_FILTER_ENABLED(IFF_BROADCAST));
- 
--	cfg->is_mc_list_enabled = IS_FILTER_ENABLED(IFF_MULTICAST);
- 
- 	for (i = HW_ATL_B0_MAC_MIN; i < HW_ATL_B0_MAC_MAX; ++i)
- 		hw_atl_rpfl2_uc_flr_en_set(self,
+ 	unregister_netdev(dev);
+ 	dma_free_attrs(dev->dev.parent, sizeof(struct i596_private), lp->dma,
+-		       lp->dma_addr, DMA_ATTR_NON_CONSISTENT);
++		       lp->dma_addr, LIB82596_DMA_ATTR);
+ 	iounmap(lp->ca);
+ 	iounmap(lp->mpu_port);
+ 	free_netdev (dev);
 -- 
 2.20.1
 
