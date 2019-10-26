@@ -2,182 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18142E5EBC
-	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 20:53:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2B0AE5F41
+	for <lists+netdev@lfdr.de>; Sat, 26 Oct 2019 21:41:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726318AbfJZSxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 26 Oct 2019 14:53:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42430 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726087AbfJZSxm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 26 Oct 2019 14:53:42 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C5B920679;
-        Sat, 26 Oct 2019 18:53:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572116020;
-        bh=n+kEyU6+PGJjH2XR+N7wGK//VrFS1Z13Ae9uB82AeLI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f+PlJK6JGofWboFUpywSerq+KYkNablyHTYrQZFjW2c6zm/Rw58UuCkCgvLZKNUg7
-         QrBaP+oQvYZrdVfkptjGvWmBPX7ufZVOhY0bZpOcDnRFIzQWMocwNV3mECBdJ3427Z
-         0+6SgJpauGaw5bUyJJPXy8GT4HbZjxCrA0ZMd83U=
-Date:   Sat, 26 Oct 2019 20:53:38 +0200
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     "Ertman, David M" <david.m.ertman@intel.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>,
-        "lee.jones@linaro.org" <lee.jones@linaro.org>
-Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device
- to provide RDMA
-Message-ID: <20191026185338.GA804892@kroah.com>
-References: <20190927051320.GA1767635@kroah.com>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
- <20191023174448.GP23952@ziepe.ca>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
- <20191023180108.GQ23952@ziepe.ca>
- <20191024185659.GE260560@kroah.com>
- <20191024191037.GC23952@ziepe.ca>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2E1D29@ORSMSX101.amr.corp.intel.com>
- <20191025013048.GB265361@kroah.com>
- <2B0E3F215D1AB84DA946C8BEE234CCC97B2E2FE6@ORSMSX101.amr.corp.intel.com>
+        id S1726442AbfJZTkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 26 Oct 2019 15:40:33 -0400
+Received: from smtprelay0186.hostedemail.com ([216.40.44.186]:42911 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726342AbfJZTkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 26 Oct 2019 15:40:33 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 3C59D180357D1;
+        Sat, 26 Oct 2019 19:40:31 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::::::::::::::::::::::::::::::::::::,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3150:3353:3622:3653:3865:3866:3867:3868:3870:3871:3872:3874:4321:5007:6119:6742:6743:7903:10004:10044:10400:10848:11026:11473:11658:11914:12043:12048:12049:12296:12297:12740:12760:12895:13161:13229:13439:14096:14097:14181:14659:14721:21080:21324:21451:21627:21939:30029:30051:30054:30091,0,RBL:47.151.135.224:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: stone20_785fe5ad57825
+X-Filterd-Recvd-Size: 3871
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf12.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 26 Oct 2019 19:40:27 +0000 (UTC)
+Message-ID: <c790578751dd69fb1080b355f5847c9ea5fb0e15.camel@perches.com>
+Subject: Re: [PATCH] net: Zeroing the structure ethtool_wolinfo in
+ ethtool_get_wol()
+From:   Joe Perches <joe@perches.com>
+To:     zhanglin <zhang.lin16@zte.com.cn>, davem@davemloft.net,
+        cocci <cocci@systeme.lip6.fr>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     ast@kernel.org, daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        hawk@kernel.org, john.fastabend@gmail.com, mkubecek@suse.cz,
+        jiri@mellanox.com, pablo@netfilter.org, f.fainelli@gmail.com,
+        maxime.chevallier@bootlin.com, lirongqing@baidu.com,
+        vivien.didelot@gmail.com, linyunsheng@huawei.com,
+        natechancellor@gmail.com, arnd@arndb.de, dan.carpenter@oracle.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
+        jiang.xuexin@zte.com.cn
+Date:   Sat, 26 Oct 2019 12:40:23 -0700
+In-Reply-To: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
+References: <1572076456-12463-1-git-send-email-zhang.lin16@zte.com.cn>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2B0E3F215D1AB84DA946C8BEE234CCC97B2E2FE6@ORSMSX101.amr.corp.intel.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 25, 2019 at 10:27:46PM +0000, Ertman, David M wrote:
-> > -----Original Message-----
-> > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
-> > Sent: Thursday, October 24, 2019 6:31 PM
-> > To: Ertman, David M <david.m.ertman@intel.com>
-> > Cc: Jason Gunthorpe <jgg@ziepe.ca>; Nguyen, Anthony L
-> > <anthony.l.nguyen@intel.com>; Kirsher, Jeffrey T
-> > <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org; linux-
-> > rdma@vger.kernel.org; dledford@redhat.com; Ismail, Mustafa
-> > <mustafa.ismail@intel.com>; Patil, Kiran <kiran.patil@intel.com>;
-> > lee.jones@linaro.org
-> > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
-> > provide RDMA
-> > 
-> > On Thu, Oct 24, 2019 at 10:25:36PM +0000, Ertman, David M wrote:
-> > > The direct access of the platform bus was unacceptable, and the MFD
-> > > sub-system was suggested by Greg as the solution.  The MFD sub-system
-> > > uses the platform bus in the background as a base to perform its
-> > > functions, since it is a purely software construct that is handy and
-> > > fulfills its needs.  The question then is:  If the MFD sub- system is
-> > > using the platform bus for all of its background functionality, is the platform
-> > bus really only for platform devices?
-> > 
-> > Yes, how many times do I have to keep saying this?
-> > 
-> > The platform bus should ONLY be used for devices that are actually platform
-> > devices and can not be discovered any other way and are not on any other type
-> > of bus.
-> > 
-> > If you try to add platform devices for a PCI device, I am going to continue to
-> > complain.  I keep saying this and am getting tired.
-> > 
-> > Now yes, MFD does do "fun" things here, and that should probably be fixed up
-> > one of these days.  But I still don't see why a real bus would not work for you.
-> > 
-> > greg "platform devices are dead, long live the platform device" k-h
-> 
-> > -----Original Message-----
-> > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
-> > Sent: Thursday, October 24, 2019 6:31 PM
-> > To: Ertman, David M <david.m.ertman@intel.com>
-> > Cc: Jason Gunthorpe <jgg@ziepe.ca>; Nguyen, Anthony L
-> > <anthony.l.nguyen@intel.com>; Kirsher, Jeffrey T
-> > <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org; linux-
-> > rdma@vger.kernel.org; dledford@redhat.com; Ismail, Mustafa
-> > <mustafa.ismail@intel.com>; Patil, Kiran <kiran.patil@intel.com>;
-> > lee.jones@linaro.org
-> > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
-> > provide RDMA
-> > 
-> > On Thu, Oct 24, 2019 at 10:25:36PM +0000, Ertman, David M wrote:
-> > > The direct access of the platform bus was unacceptable, and the MFD
-> > > sub-system was suggested by Greg as the solution.  The MFD sub-system
-> > > uses the platform bus in the background as a base to perform its
-> > > functions, since it is a purely software construct that is handy and
-> > > fulfills its needs.  The question then is:  If the MFD sub- system is
-> > > using the platform bus for all of its background functionality, is the platform
-> > bus really only for platform devices?
-> > 
-> > Yes, how many times do I have to keep saying this?
-> > 
-> > The platform bus should ONLY be used for devices that are actually platform
-> > devices and can not be discovered any other way and are not on any other type
-> > of bus.
-> > 
-> > If you try to add platform devices for a PCI device, I am going to continue to
-> > complain.  I keep saying this and am getting tired.
-> > 
-> > Now yes, MFD does do "fun" things here, and that should probably be fixed up
-> > one of these days.  But I still don't see why a real bus would not work for you.
-> > 
-> > greg "platform devices are dead, long live the platform device" k-h
-> 
-> I'm sorry, the last thing I want to do is to annoy you! I just need to
-> figure out where to go from here.  Please, don't take anything I say as
-> argumentative.
-> 
-> I don't understand what you mean by "a real bus".  The irdma driver does
-> not have access to any physical bus.  It utilizes resources provided by
-> the PCI LAN drivers, but to receive those resources it needs a mechanism
-> to "hook up" with the PCI drivers.  The only way it has to locate them
-> is to register a driver function with a software based bus of some kind
-> and have the bus match it up to a compatible entity to achieve that hook up.
-> 
-> The PCI LAN driver has a function that controls the PCI hardware, and then
-> we want to present an entity for the RDMA driver to connect to.
-> 
-> To move forward, we are thinking of the following design proposal:
-> 
-> We could add a new module to the kernel named generic_bus.ko.  This would
-> create a new generic software bus and a set of APIs that would allow for
-> adding and removing simple generic virtual devices and drivers, not as
-> a MFD cell or a platform device. The power management events would also
-> be handled by the generic_bus infrastructure (suspend, resume, shutdown).
-> We would use this for matching up by having the irdma driver register
-> with this generic bus and hook to virtual devices that were added from
-> different PCI LAN drivers.
-> 
-> Pros:
-> 1) This would avoid us attaching anything to the platform bus
-> 2) Avoid having each PCI LAN driver creating its own software bus
-> 3) Provide a common matching ground for generic devices and drivers that
-> eliminates problems caused by load order (all dependent on generic_bus.ko)
-> 4) Usable by any other entity that wants a lightweight matching system
-> or information exchange mechanism
-> 
-> Cons:
-> 1) Duplicates part of the platform bus functionality
-> 2) Adds a new software bus to the kernel architecture
-> 
-> Is this path forward acceptable?
+On Sat, 2019-10-26 at 15:54 +0800, zhanglin wrote:
+> memset() the structure ethtool_wolinfo that has padded bytes
+> but the padded bytes have not been zeroed out.
+[]
+> diff --git a/net/core/ethtool.c b/net/core/ethtool.c
+[]
+> @@ -1471,11 +1471,13 @@ static int ethtool_reset(struct net_device *dev, char __user *useraddr)
+>  
+>  static int ethtool_get_wol(struct net_device *dev, char __user *useraddr)
+>  {
+> -	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+> +	struct ethtool_wolinfo wol;
+>  
+>  	if (!dev->ethtool_ops->get_wol)
+>  		return -EOPNOTSUPP;
+>  
+> +	memset(&wol, 0, sizeof(struct ethtool_wolinfo));
+> +	wol.cmd = ETHTOOL_GWOL;
+>  	dev->ethtool_ops->get_wol(dev, &wol);
+>  
+>  	if (copy_to_user(useraddr, &wol, sizeof(wol)))
 
-Yes, that is much better.  But how about calling it a "virtual bus"?
-It's not really virtualization, but we already have virtual devices
-today when you look in sysfs for devices that are created that are not
-associated with any specific bus.  So this could take those over quite
-nicely!  Look at how /sys/devices/virtual/ works for specifics, you
-could create a new virtual bus of a specific "name" and then add devices
-to that bus directly.
+It seems likely there are more of these.
 
-thanks,
+Is there any way for coccinelle to find them?
 
-greg k-h
+There are ~4000 structs in include/uapi and
+there are ~3000 uses of copy_to_user in the tree.
+
+$ git grep -P '\bstruct\s+\w+\s*{' include/uapi/ | cut -f2 -d" "|sort|uniq|wc -l
+3785
+$ git grep -w copy_to_user|wc -l
+2854
+
+A trivial grep and manual search using:
+
+$ git grep -B20 -w copy_to_user | grep -A20 -P '\bstruct\s+\w+\s*=\s*{'
+
+shows at least 1 (I didn't look very hard and stopped after finding 1):
+
+   include/uapi/linux/utsname.h:struct oldold_utsname {
+   include/uapi/linux/utsname.h-   char sysname[9];
+   include/uapi/linux/utsname.h-   char nodename[9];
+   include/uapi/linux/utsname.h-   char release[9];
+   include/uapi/linux/utsname.h-   char version[9];
+   include/uapi/linux/utsname.h-   char machine[9];
+   include/uapi/linux/utsname.h-};
+
+and 
+
+   kernel/sys.c-	struct oldold_utsname tmp = {};
+   kernel/sys.c-
+   kernel/sys.c-	if (!name)
+   kernel/sys.c-		return -EFAULT;
+   kernel/sys.c-
+   kernel/sys.c-	down_read(&uts_sem);
+   kernel/sys.c-	memcpy(&tmp.sysname, &utsname()->sysname, __OLD_UTS_LEN);
+   kernel/sys.c-	memcpy(&tmp.nodename, &utsname()->nodename, __OLD_UTS_LEN);
+   kernel/sys.c-	memcpy(&tmp.release, &utsname()->release, __OLD_UTS_LEN);
+   kernel/sys.c-	memcpy(&tmp.version, &utsname()->version, __OLD_UTS_LEN);
+   kernel/sys.c-	memcpy(&tmp.machine, &utsname()->machine, __OLD_UTS_LEN);
+   kernel/sys.c-	up_read(&uts_sem);
+   kernel/sys.c:	if (copy_to_user(name, &tmp, sizeof(tmp)))
+
+where there is likely 3 bytes of padding after 45 bytes of data
+in the struct.
+
+
