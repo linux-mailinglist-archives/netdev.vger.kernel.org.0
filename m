@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3711E629F
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 14:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF13E62A5
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 14:27:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbfJ0NTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 09:19:30 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37481 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726533AbfJ0NT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 09:19:29 -0400
-Received: by mail-pl1-f194.google.com with SMTP id p13so3980914pll.4;
-        Sun, 27 Oct 2019 06:19:29 -0700 (PDT)
+        id S1726786AbfJ0N1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 09:27:07 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37621 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726713AbfJ0N1H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 09:27:07 -0400
+Received: by mail-pg1-f195.google.com with SMTP id p1so4699989pgi.4;
+        Sun, 27 Oct 2019 06:27:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:subject:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aqiPAQOQdhVbPzRrIVxnYSbImQng6lfDfF1oCvH5oYg=;
-        b=IVXKSePxzJ1AjT1zoV9GLId9GJlxFy+W1Z/7LUjDXMBUJ0/bQxQx6lE4CqhPy2dOo1
-         eR9YFSVukFk0BPWCCPP3JuDDOuEMOlWlERpZ/KoMfdatHHDcMZstsCIO7EtkGPSCs1Br
-         WOLZRJdsSTtHI6jYGFk0iMp9KVkOzIdAKxk03VFZUFgDwDuRpB0F7aKbty+0licDEe59
-         bglKotw2vFVzRQcFJNEfApEVqia0/WMsTGF2DSnAlHurf1JjXR3DK3KGsWEut3t82hvO
-         vwAux1ZWr1JjylImNvLEMSGJXcRou6LhowIHXfZzjx4S9J8M9/i8wX15EYYj6V0XBelx
-         j//w==
+        bh=J1bavfccI2qFKVkTh17EGAGauWkdAR0kG7npyThEbQA=;
+        b=IXBKIR77NygY3MN/M63mJS8qMbO2u7ftIJ63oF7/zhsMuhx2YKxkhZuz+IvH1+LYo4
+         jvnd0WpXqhPFsPGZbFmjQ7aSYebDN4+ym82I3nRijvViX1MT9pXDHoWw61HUHMhsVUd/
+         MNY/2fnTlp4u3zma3eZKscrgZRNj3Vp6Sz7k7bpPBFVCskFp10ovhjDwitwX1AYwcH7t
+         wbiKEGNnEGtMPcfk7pan6EYXSWFLHzXL4wC5zJvY5jKttK1EpbyUUF36gc92X0duxpAu
+         AtGD+9TlJ7ZPq9vgSY+W7uNuAOuUj30nxeOj2GRTbOBD68FVwDuPMJWqb9XDFJor3MGn
+         l8sw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:subject:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=aqiPAQOQdhVbPzRrIVxnYSbImQng6lfDfF1oCvH5oYg=;
-        b=Tcvo6H9jPou4rXg/y1JlMXxM3/liOfllHEs5BhkYl1xmd+zY2XqLRpYzaWVzJKB/Bd
-         VbmW5aq3SDi3rhMXRRkZDmwgHVjENB10MEh7pk5Q9yKFyPO9vDCDi9mhapHbyRHUW4FZ
-         wPzdBrMCe1ii8N0WCPl7a3VYzEU9tRd/nu7NSAWxR6sGeAa1V1umgQa7mA95WZj4UCBA
-         vu3RGeZSsQ1pEQUwJhXQW2i+bIStPBjZK438S7xR8muCSpFCkduncxaVvOwNJp+nn359
-         TSe+OlfrI4v6lRJp/fqTLl0HDU/kFOPp5SqRhm+6+uQsTXwRnBuff3O917alOhrn+io/
-         s68A==
-X-Gm-Message-State: APjAAAVysq0NDl5ZQ4/psC+4g5Gj2RMwW5DXvEQdZUIioJL33Aud42HM
-        zXmjbh6ieqr1uzO1B1zM+fk=
-X-Google-Smtp-Source: APXvYqwKwykv6CN/6bn3KQnNaNVokMtRB+BjV4mtu8tMvc5lHSqX096tnSYLJXDbRbOsd2uRcQ0rvA==
-X-Received: by 2002:a17:902:ba8f:: with SMTP id k15mr13996732pls.93.1572182369249;
-        Sun, 27 Oct 2019 06:19:29 -0700 (PDT)
+        bh=J1bavfccI2qFKVkTh17EGAGauWkdAR0kG7npyThEbQA=;
+        b=s9db8UbQ9stNAEcoDC1cC8vA+THUO0iLgeQ10KM4cNf8NBMQ26NjaVWAnbcGvffAxB
+         WVQOzqOSIG/LJjPVGaKPVq9HbeKrBDHn1g4ExX5h5Ct1bcUs6ZLVHA7kfUDrn8j5oxFm
+         uI4IdlIFddovZxwwkRAR+9lKkskhU0ILW4oU10i95UABProPKYYA6X9k/S2cLwI1N7/D
+         f0Kmckz46hCDv2okmrwOMN6fjMo/+pqVQLJ8hZJSs9/3YGdo5XxxH5F96SLUcaUTChzd
+         1eWWM8j4GMuq6js83W8xEI4W6WDpzY7d3ZkxubvFPAt4sFH/JMiJax/ovNSe+61Q9nZW
+         YhQQ==
+X-Gm-Message-State: APjAAAUCJhGpRH21r63CF28ljIjxNRzWibYJQ0IQjM+Vh4vNz2qrrne1
+        pbHu21ZIFa9/uFoFB9FE0VQX+z+1
+X-Google-Smtp-Source: APXvYqzDglLsf2WK3oHUFRdRjnbFS3wno+tLLSa6SYq2vhkhObUC8TjTrOrVqYuV7jnKuqbJIqnIRQ==
+X-Received: by 2002:a63:c446:: with SMTP id m6mr15477221pgg.136.1572182826253;
+        Sun, 27 Oct 2019 06:27:06 -0700 (PDT)
 Received: from [192.168.1.9] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
-        by smtp.googlemail.com with ESMTPSA id b17sm9318209pfr.17.2019.10.27.06.19.24
+        by smtp.googlemail.com with ESMTPSA id q6sm10418678pgn.44.2019.10.27.06.27.01
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Oct 2019 06:19:28 -0700 (PDT)
+        Sun, 27 Oct 2019 06:27:05 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+To:     Jamal Hadi Salim <jhs@mojatatu.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -56,7 +56,6 @@ To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
         Cong Wang <xiyou.wangcong@gmail.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
@@ -70,15 +69,13 @@ References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
  <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
  <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com>
  <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
- <87h840oese.fsf@toke.dk>
- <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch>
- <87sgniladm.fsf@toke.dk>
-Message-ID: <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com>
-Date:   Sun, 27 Oct 2019 22:19:24 +0900
+ <1c794797-db6f-83a7-30b4-aa864f798e5b@mojatatu.com>
+Message-ID: <421d6fa7-487a-f653-f520-7050a7892ab9@gmail.com>
+Date:   Sun, 27 Oct 2019 22:27:01 +0900
 User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <87sgniladm.fsf@toke.dk>
+In-Reply-To: <1c794797-db6f-83a7-30b4-aa864f798e5b@mojatatu.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -87,63 +84,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/24 (木) 19:13:09, Toke Høiland-Jørgensen wrote:
-> John Fastabend <john.fastabend@gmail.com> writes:
+On 19/10/23 (水) 23:11:25, Jamal Hadi Salim wrote:
 > 
->> Toke Høiland-Jørgensen wrote:
->>> John Fastabend <john.fastabend@gmail.com> writes:
->>>
->>>> I think for sysadmins in general (not OVS) use case I would work
->>>> with Jesper and Toke. They seem to be working on this specific
->>>> problem.
->>>
->>> We're definitely thinking about how we can make "XDP magically speeds up
->>> my network stack" a reality, if that's what you mean. Not that we have
->>> arrived at anything specific yet...
->>
->> There seemed to be two thoughts in the cover letter one how to make
->> OVS flow tc path faster via XDP. And the other how to make other users
->> of tc flower software stack faster.
->>
->> For the OVS case seems to me that OVS should create its own XDP
->> datapath if its 5x faster than the tc flower datapath. Although
->> missing from the data was comparing against ovs kmod so that
-
-In the cover letter there is
-
-  xdp_flow  TC        ovs kmod
-  --------  --------  --------
-  5.2 Mpps  1.2 Mpps  1.1 Mpps
-
-Or are you talking about something different?
-
->> comparison would also be interesting. This way OVS could customize
->> things and create only what they need.
->>
->> But the other case for a transparent tc flower XDP a set of user tools
->> could let users start using XDP for this use case without having to
->> write their own BPF code. Anyways I had the impression that might be
->> something you and Jesper are thinking about, general usability for
->> users that are not necessarily writing their own network.
+> Sorry - didnt read every detail of this thread so i may
+> be missing something.
 > 
-> Yeah, you are right that it's something we're thinking about. I'm not
-> sure we'll actually have the bandwidth to implement a complete solution
-> ourselves, but we are very much interested in helping others do this,
-> including smoothing out any rough edges (or adding missing features) in
-> the core XDP feature set that is needed to achieve this :)
+> On 2019-10-22 12:54 p.m., John Fastabend wrote:
+>> Toshiaki Makita wrote:
+>>> On 2019/10/19 0:22, John Fastabend wrote:
+>>>> Toshiaki Makita wrote:
+>>>>> This is a PoC for an idea to offload flow, i.e. TC flower and 
+>>>>> nftables,
+>>>>> to XDP.
+>>>>>
+> 
+>>
+>> I don't know who this "someone" is that wants to use XDP through TC
+>> flower or nftables transparently. TC at least is not known for a
+>> great uapi. 
+> 
+> 
+> The uapi is netlink. You may be talking about lack of a friendly
+> application library that abstracts out concepts?
+> 
+>> It seems to me that it would be a relatively small project
+>> to write a uapi that ran on top of a canned XDP program to add
+>> flow rules. This could match tc cli if you wanted but why not take
+>> the opportunity to write a UAPI that does flow management well.
+>>
+> 
+> Disagreement:
+> Unfortunately legacy utilities and apps cant just be magically wished
+> away. There's a lot of value in transparently making them work with
+> new infrastructure. My usual exaggerated pitch: 1000 books have been
+> written on this stuff, 100K people have RH certificates which entitle
+> them to be "experts"; dinasour kernels exist in data centres and
+> (/giggle) "enteprise". You cant just ignore all that.
+> 
+> Summary: there is value in what Toshiaki is doing.
+> 
+> I am disappointed that given a flexible canvas like XDP, we are still
+> going after something like flower... if someone was using u32 as the
+> abstraction it will justify it a lot more in my mind.
+> Tying it to OVS as well is not doing it justice.
 
-I'm very interested in general usability solutions.
-I'd appreciate if you could join the discussion.
+Flexibility is good for the time when very complicated or unusual flow 
+handling is needed. OTOH, good flexibility often sacrifices good 
+usability IMO. Configuration tends to be difficult.
 
-Here the basic idea of my approach is to reuse HW-offload infrastructure 
-in kernel.
-Typical networking features in kernel have offload mechanism (TC flower, 
-nftables, bridge, routing, and so on).
-In general these are what users want to accelerate, so easy XDP use also 
-should support these features IMO. With this idea, reusing existing 
-HW-offload mechanism is a natural way to me. OVS uses TC to offload 
-flows, then use TC for XDP as well...
-Of course as John suggested there are other ways to do that. Probably we 
-should compare them more thoroughly to discuss it more?
+What I want to do here is to make XDP easy for sysadmins for typical 
+use-cases. u32 is good for flexibility, but to me flower is easier to 
+use. Using flower fits better in my intention.
+
+> 
+> Agreement:
+> Having said that I dont think that flower/OVS should be the interface
+> that XDP should be aware of. Neither do i agree that kernel "real
+> estate" should belong to Oneway(TM) of doing things (we are still stuck
+> with netfilter planting the columbus flag on all networking hooks).
+> Let 1000 flowers bloom.
+> So: couldnt Toshiaki's requirement be met with writting a user space
+> daemon that trampolines flower to "XDP format" flow transforms? That way
+> in the future someone could add a u32->XDP format flow definition and we
+> are not doomed to forever just use flower.
+
+Userspace daemon is possible. Do you mean adding notification points in 
+TC and listen filter modification events from userspace? If so, I'm not 
+so positive about this, as it seems difficult to emulate TC/kernel 
+behavior from userspace.
+Note that I think u32 offload can be added in the future even with 
+current xdp_flow implementation.
 
 Toshiaki Makita
