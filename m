@@ -2,182 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8E2E6255
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 13:02:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13309E625A
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 13:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfJ0MCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 08:02:45 -0400
-Received: from correo.us.es ([193.147.175.20]:60146 "EHLO mail.us.es"
+        id S1726944AbfJ0MEj convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 27 Oct 2019 08:04:39 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48518 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726810AbfJ0MCn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Oct 2019 08:02:43 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 6FEAE7FC3F
-        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 13:02:39 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6140EB8009
-        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 13:02:39 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 56FA9B8004; Sun, 27 Oct 2019 13:02:39 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 5FCA8DA72F;
-        Sun, 27 Oct 2019 13:02:37 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 27 Oct 2019 13:02:37 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (sys.soleta.eu [212.170.55.40])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 2E56C42EE38F;
-        Sun, 27 Oct 2019 13:02:37 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 5/5] netfilter: nft_payload: fix missing check for matching length in offloads
-Date:   Sun, 27 Oct 2019 13:02:21 +0100
-Message-Id: <20191027120221.2884-6-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20191027120221.2884-1-pablo@netfilter.org>
-References: <20191027120221.2884-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726836AbfJ0MEj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Oct 2019 08:04:39 -0400
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id D94587BDA0
+        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 12:04:38 +0000 (UTC)
+Received: by mail-lj1-f199.google.com with SMTP id l9so1407330lja.0
+        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 05:04:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=WAC0ltLf5/k9Fk3oOw2pDdZIy6OL9TvyNRdiY94Gu8M=;
+        b=j6ryKMbk+OnIEDe4yMZdDCjhG5iYUg/4s7Ea6VLrT7uPDs/5dYZwvlUjYia6o1PFYS
+         BLvEYpp7VYY+/aaR9TzRH7NVhuMXNPS18q3um5S8aBDxe7/7TUEP7BxMXddvZKHz8O9I
+         48sronJ1JtvMZ3Jpq6vzKehsPzdKLnU4IY0BP3c+v/8AgPIr4sp5fQtbJ/VxixOhebVT
+         fIRuptAsdJddPkyYiHagoxfiSvTIs/SGnX5CLfi8U/8LR5wI/1Wit0w9sRfQneHFtV7I
+         OI/sFuGc//6Yo/pddRKZLssbp3T8A+SUAvEc3C/2fZoDI0GgIGPdVyPLdddOoo6c9dEJ
+         yiFg==
+X-Gm-Message-State: APjAAAXzON+XSvHmTw+kwmDl0uokzGUMeQSkTa/5Vy917E/x3LO5iY7m
+        xDIZ1+dD01pBH38dUa3k/1oQ1qqOkxGhGG3aB2l4H3awjuoH3FFEbw9vCc0ixbOAO/lgSF6fgvU
+        hOaj1KHEtEyYJJdiF
+X-Received: by 2002:a2e:9e1a:: with SMTP id e26mr8590145ljk.17.1572177877358;
+        Sun, 27 Oct 2019 05:04:37 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwXLhFqhvcNHt87IB3WnN1OtKoJglNbImP2QD7dO/JqDftrb1/lzIvLRTW0OSsLn8HiQDk3Sw==
+X-Received: by 2002:a2e:9e1a:: with SMTP id e26mr8590129ljk.17.1572177877099;
+        Sun, 27 Oct 2019 05:04:37 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id c24sm3857946lfm.20.2019.10.27.05.04.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Oct 2019 05:04:36 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 5255A1818B4; Sun, 27 Oct 2019 13:04:35 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2 4/4] libbpf: Add option to auto-pin maps when opening BPF object
+In-Reply-To: <CAEf4BzbBmm3GfytbEtHwoD71p2XfuxuSYjhbb7rqPwUaYqvk7g@mail.gmail.com>
+References: <157192269744.234778.11792009511322809519.stgit@toke.dk> <157192270189.234778.14607584397750494265.stgit@toke.dk> <CAEf4BzbBmm3GfytbEtHwoD71p2XfuxuSYjhbb7rqPwUaYqvk7g@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sun, 27 Oct 2019 13:04:35 +0100
+Message-ID: <87pniijsx8.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-Payload offload rule should also check the length of the match.
-Moreover, check for unsupported link-layer fields:
+> On Thu, Oct 24, 2019 at 6:11 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> From: Toke Høiland-Jørgensen <toke@redhat.com>
+>>
+>> With the functions added in previous commits that can automatically pin
+>> maps based on their 'pinning' setting, we can support auto-pinning of maps
+>> by the simple setting of an option to bpf_object__open.
+>>
+>> Since auto-pinning only does something if any maps actually have a
+>> 'pinning' BTF attribute set, we default the new option to enabled, on the
+>> assumption that seamless pinning is what most callers want.
+>>
+>> When a map has a pin_path set at load time, libbpf will compare the map
+>> pinned at that location (if any), and if the attributes match, will re-use
+>> that map instead of creating a new one. If no existing map is found, the
+>> newly created map will instead be pinned at the location.
+>>
+>> Programs wanting to customise the pinning can override the pinning paths
+>> using bpf_map__set_pin_path() before calling bpf_object__load().
+>>
+>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+>> ---
+>
+> How have you tested this? From reading the code, all the maps will be
+> pinned irregardless of their .pinning setting?
 
- nft --debug=netlink add rule firewall zones vlan id 100
- ...
- [ payload load 2b @ link header + 0 => reg 1 ]
+No, build_pin_path() checks map->pinning :)
 
-this loads 2byte base on ll header and offset 0.
+> Please add proper tests to test_progs, testing various modes and
+> overrides.
 
-This also fixes unsupported raw payload match.
+Can do.
 
-Fixes: 92ad6325cb89 ("netfilter: nf_tables: add hardware offload support")
-Signed-off-by: wenxu <wenxu@ucloud.cn>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_payload.c | 38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+> You keep trying to add more and more knobs :) Please stop doing that,
+> even if we have a good mechanism for extensibility, it doesn't mean we
+> need to increase a proliferation of options.
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index 22a80eb60222..5cb2d8908d2a 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -161,13 +161,21 @@ static int nft_payload_offload_ll(struct nft_offload_ctx *ctx,
- 
- 	switch (priv->offset) {
- 	case offsetof(struct ethhdr, h_source):
-+		if (priv->len != ETH_ALEN)
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_ETH_ADDRS, eth_addrs,
- 				  src, ETH_ALEN, reg);
- 		break;
- 	case offsetof(struct ethhdr, h_dest):
-+		if (priv->len != ETH_ALEN)
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_ETH_ADDRS, eth_addrs,
- 				  dst, ETH_ALEN, reg);
- 		break;
-+	default:
-+		return -EOPNOTSUPP;
- 	}
- 
- 	return 0;
-@@ -181,14 +189,23 @@ static int nft_payload_offload_ip(struct nft_offload_ctx *ctx,
- 
- 	switch (priv->offset) {
- 	case offsetof(struct iphdr, saddr):
-+		if (priv->len != sizeof(struct in_addr))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4, src,
- 				  sizeof(struct in_addr), reg);
- 		break;
- 	case offsetof(struct iphdr, daddr):
-+		if (priv->len != sizeof(struct in_addr))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4, dst,
- 				  sizeof(struct in_addr), reg);
- 		break;
- 	case offsetof(struct iphdr, protocol):
-+		if (priv->len != sizeof(__u8))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_BASIC, basic, ip_proto,
- 				  sizeof(__u8), reg);
- 		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_TRANSPORT);
-@@ -208,14 +225,23 @@ static int nft_payload_offload_ip6(struct nft_offload_ctx *ctx,
- 
- 	switch (priv->offset) {
- 	case offsetof(struct ipv6hdr, saddr):
-+		if (priv->len != sizeof(struct in6_addr))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6, src,
- 				  sizeof(struct in6_addr), reg);
- 		break;
- 	case offsetof(struct ipv6hdr, daddr):
-+		if (priv->len != sizeof(struct in6_addr))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_IPV6_ADDRS, ipv6, dst,
- 				  sizeof(struct in6_addr), reg);
- 		break;
- 	case offsetof(struct ipv6hdr, nexthdr):
-+		if (priv->len != sizeof(__u8))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_BASIC, basic, ip_proto,
- 				  sizeof(__u8), reg);
- 		nft_offload_set_dependency(ctx, NFT_OFFLOAD_DEP_TRANSPORT);
-@@ -255,10 +281,16 @@ static int nft_payload_offload_tcp(struct nft_offload_ctx *ctx,
- 
- 	switch (priv->offset) {
- 	case offsetof(struct tcphdr, source):
-+		if (priv->len != sizeof(__be16))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, src,
- 				  sizeof(__be16), reg);
- 		break;
- 	case offsetof(struct tcphdr, dest):
-+		if (priv->len != sizeof(__be16))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, dst,
- 				  sizeof(__be16), reg);
- 		break;
-@@ -277,10 +309,16 @@ static int nft_payload_offload_udp(struct nft_offload_ctx *ctx,
- 
- 	switch (priv->offset) {
- 	case offsetof(struct udphdr, source):
-+		if (priv->len != sizeof(__be16))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, src,
- 				  sizeof(__be16), reg);
- 		break;
- 	case offsetof(struct udphdr, dest):
-+		if (priv->len != sizeof(__be16))
-+			return -EOPNOTSUPP;
-+
- 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_PORTS, tp, dst,
- 				  sizeof(__be16), reg);
- 		break;
--- 
-2.11.0
+But I like options! ;)
 
+> Each option has to be tested. In current version of your patches, you
+> have something like 4 or 5 different knobs, do you really want to
+> write tests testing each of them? ;)
+
+Heh, I guess I can cut down the number of options to the number of tests :P
+
+> Another high-level feedback. I think having separate passes over all
+> maps (build_map_pin_paths, reuse, then we already have create_maps) is
+> actually making everything more verbose and harder to extend. I'm
+> thinking about all these as sub-steps of map creation. Can you please
+> try refactoring so all these steps are happening per each map in one
+> place: if map needs to be pinned, check if it can be reused, if not -
+> create it. This actually will allow to handle races better, because
+> you will be able to retry easily, while if it's all spread in
+> independent passes, it becomes much harder. Please consider that.
+
+We'll need at least two passes: set pin_path on open, and check reuse /
+create / pin on load. Don't have any objections to consolidating the
+other passes into create_maps; will fix, along with your comments below.
+
+-Toke
