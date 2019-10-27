@@ -2,129 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13309E625A
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 13:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CC5FE626D
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 13:15:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbfJ0MEj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 27 Oct 2019 08:04:39 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48518 "EHLO mx1.redhat.com"
+        id S1726752AbfJ0MPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 08:15:09 -0400
+Received: from mout.gmx.net ([212.227.15.15]:57777 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726836AbfJ0MEj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Oct 2019 08:04:39 -0400
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D94587BDA0
-        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 12:04:38 +0000 (UTC)
-Received: by mail-lj1-f199.google.com with SMTP id l9so1407330lja.0
-        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 05:04:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=WAC0ltLf5/k9Fk3oOw2pDdZIy6OL9TvyNRdiY94Gu8M=;
-        b=j6ryKMbk+OnIEDe4yMZdDCjhG5iYUg/4s7Ea6VLrT7uPDs/5dYZwvlUjYia6o1PFYS
-         BLvEYpp7VYY+/aaR9TzRH7NVhuMXNPS18q3um5S8aBDxe7/7TUEP7BxMXddvZKHz8O9I
-         48sronJ1JtvMZ3Jpq6vzKehsPzdKLnU4IY0BP3c+v/8AgPIr4sp5fQtbJ/VxixOhebVT
-         fIRuptAsdJddPkyYiHagoxfiSvTIs/SGnX5CLfi8U/8LR5wI/1Wit0w9sRfQneHFtV7I
-         OI/sFuGc//6Yo/pddRKZLssbp3T8A+SUAvEc3C/2fZoDI0GgIGPdVyPLdddOoo6c9dEJ
-         yiFg==
-X-Gm-Message-State: APjAAAXzON+XSvHmTw+kwmDl0uokzGUMeQSkTa/5Vy917E/x3LO5iY7m
-        xDIZ1+dD01pBH38dUa3k/1oQ1qqOkxGhGG3aB2l4H3awjuoH3FFEbw9vCc0ixbOAO/lgSF6fgvU
-        hOaj1KHEtEyYJJdiF
-X-Received: by 2002:a2e:9e1a:: with SMTP id e26mr8590145ljk.17.1572177877358;
-        Sun, 27 Oct 2019 05:04:37 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwXLhFqhvcNHt87IB3WnN1OtKoJglNbImP2QD7dO/JqDftrb1/lzIvLRTW0OSsLn8HiQDk3Sw==
-X-Received: by 2002:a2e:9e1a:: with SMTP id e26mr8590129ljk.17.1572177877099;
-        Sun, 27 Oct 2019 05:04:37 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id c24sm3857946lfm.20.2019.10.27.05.04.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Oct 2019 05:04:36 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 5255A1818B4; Sun, 27 Oct 2019 13:04:35 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v2 4/4] libbpf: Add option to auto-pin maps when opening BPF object
-In-Reply-To: <CAEf4BzbBmm3GfytbEtHwoD71p2XfuxuSYjhbb7rqPwUaYqvk7g@mail.gmail.com>
-References: <157192269744.234778.11792009511322809519.stgit@toke.dk> <157192270189.234778.14607584397750494265.stgit@toke.dk> <CAEf4BzbBmm3GfytbEtHwoD71p2XfuxuSYjhbb7rqPwUaYqvk7g@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 27 Oct 2019 13:04:35 +0100
-Message-ID: <87pniijsx8.fsf@toke.dk>
+        id S1726661AbfJ0MPJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Oct 2019 08:15:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1572178483;
+        bh=hzFiu0s1u36lbFL+Sm9oiww/ZbzJI1xnUJXEm4icdTo=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=BW1zpR5Ta7ncnQqOvekklsntEhirIr3KAOSW4A1k6viRfqDhznCRywCckhtCrsSRY
+         yXOszMhui/P0zQDkJPYy9lHJtQItD6tMmZd59UjROu5MBh3M2RKwGSYA5j5CGNAGK2
+         iWNz9V4NmjVHq+J6MlbLmHFLdp5QzAwXS5kUL7DY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.1.162] ([37.4.249.112]) by mail.gmx.com (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4zAs-1hxAjH1PAS-010qGa; Sun, 27
+ Oct 2019 13:14:43 +0100
+Subject: Re: [PATCH] net: usb: lan78xx: Disable interrupts before calling
+ generic_handle_irq()
+To:     Daniel Wagner <dwagner@suse.de>, netdev@vger.kernel.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        David Miller <davem@davemloft.net>
+References: <20191025080413.22665-1-dwagner@suse.de>
+From:   Stefan Wahren <wahrenst@gmx.net>
+Message-ID: <46b35c32-4383-c630-3c52-b59bf7908c36@gmx.net>
+Date:   Sun, 27 Oct 2019 13:14:41 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <20191025080413.22665-1-dwagner@suse.de>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Provags-ID: V03:K1:v5mliJ6wThw2tCSLVO1SujmRbc7WST509PmL6NPAFGOCl91mn0g
+ jNStYQ+eGPj6wJxQjHQ5LtN/PPobbST2tTkBAusWDg7ybb4EqFqEm4a1pyQaCXQOQHd11ey
+ qIXVnd41DoYn6wQS0J8cKkYnEYkpHLiB/ep1+7NjtY6HtHzoXk4VHsHgSUsUzmzkU9DsdZC
+ 826JCv8X1iACsy65Cf+Rg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yATG3UeRTho=:pzoxsdOfAetcRZpiMmoqvp
+ Wwn5rj6pv4xPdBlSUOZ0fLxCkfwRX3dYFyNd0NESSPLANMWoEe2kXXdq6skOEBf5ZFgreaJBL
+ D0qxWhf70A2hOnfE2V6u28uOAcpU5OYmSySUogUnil6Z0OkA8IquWQ4rBTfcyDUv0KaGyAge9
+ GVtqDzMpP13dTOL4THucv1kBNAReon4w2aqFHAWF3vuVgWUUzczWtBhxg7Xb6F4wlXg4i1MC0
+ 0Fjn5DCZcmj+uH/XwGfRwU1Yapogm6upnslUEcnXCP2OnyiE/Jr7m+MFBUFcBeVzdhy6/cjCj
+ Od3czv8t9YMwBZMlbsCV+aqbNt9m31yloWjebnpZuWt6k6OkfIgdvxRriTAGt239jaAKRAp3Q
+ h2Z3FhHIhZctAItslVRY2IfckA/fk8DchXZq02gtV95uTrgmQMDdobKdeEzgMKRsdGXCNlIlZ
+ iaq2x7TaDDfe6i4Wc2bP3qiukBpqEVWATav4bpm1Wt0gf6SWRFGxwGtjioyUstKFirhrVJ4U9
+ lhIVfKmvrIR4PRH66ARDXr2+oQ52S4Z/0OdOletgMWwfV80+L8cA5aHwjQYotP1mbL4UBsvpE
+ cuyOUlngv9cGiiHkPg03c+Vtl0lEG+VhX9c3B+JE2dixgfPAXYUkUuOrzxp1vC2cn5NMJxLNZ
+ SMgEubzRwPB/1Cr877RzY+FoHs5Iz6gfvbKzdOnNbjfk93SYYtYIC+la+XjvqulCWtjC24thQ
+ o8GJfQ81xKCSh/ziusBFOSVoFxBLnVi3KmM8Ltn2BP4HPKf//fe93AvR6KZVqgGqCiDRBQe4O
+ V76j+vnJTgAK0X6l/JDTcB1ckIPI78sQkqV2Et2sQZsqoYA/Lp/CPZfRwYUcCaRIkZkAz38GY
+ lJXHhpIbzF4adaVI1U3E9ncy0/VnpOlzruhlK7gDb4HzQN3q4x8azJFHzMdNgamGBNrhmh3SH
+ /kYvqPeNt2YHB/l9ieBu8DX73o5WENIxV+oFoH+a/URhsQrzzRGcwFw5snpuhZG4Npsyeq5dK
+ dduKqWBHCjNCYy60rEVu5vOz6kOJVvJexkowK2iLwH5tLXwT8ZS5Irx1J6y9pQT/56zlzIriC
+ QHGCaKBqVGhiUx0DQLGuxrvqKsJkjAeN7TklEgapHh1OEICKsFIsS+k85EHJ4lQsf0K6YQutB
+ yTL4oCmJsyU6tmzWksmq5FQjf4puKKhO6ZWTJ0j/kjCMDCW6FuH4VCdXA6gq3KfKV6r9VaDYA
+ ohon6T6zQ9PWvQzf6ql4PZLXOY3an4ARZGQ734QCvJWjb2/Z9rZmhZe1q4QI=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+Hi Daniel,
 
-> On Thu, Oct 24, 2019 at 6:11 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>
->> With the functions added in previous commits that can automatically pin
->> maps based on their 'pinning' setting, we can support auto-pinning of maps
->> by the simple setting of an option to bpf_object__open.
->>
->> Since auto-pinning only does something if any maps actually have a
->> 'pinning' BTF attribute set, we default the new option to enabled, on the
->> assumption that seamless pinning is what most callers want.
->>
->> When a map has a pin_path set at load time, libbpf will compare the map
->> pinned at that location (if any), and if the attributes match, will re-use
->> that map instead of creating a new one. If no existing map is found, the
->> newly created map will instead be pinned at the location.
->>
->> Programs wanting to customise the pinning can override the pinning paths
->> using bpf_map__set_pin_path() before calling bpf_object__load().
->>
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
+Am 25.10.19 um 10:04 schrieb Daniel Wagner:
+> ...
 >
-> How have you tested this? From reading the code, all the maps will be
-> pinned irregardless of their .pinning setting?
+> Fixes: ed194d136769 ("usb: core: remove local_irq_save() around ->complete() handler")
+> Cc: Woojung Huh <woojung.huh@microchip.com>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Stefan Wahren <wahrenst@gmx.net>
+> Cc: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: David Miller <davem@davemloft.net>
+> Signed-off-by: Daniel Wagner <dwagner@suse.de>
+> ---
+>
+> Hi,
+>
+> This patch just fixes the warning. There are still problems left (the
+> unstable NFS report from me) but I suggest to look at this
+> separately. The initial patch to revert all the irqdomain code might
+> just hide the problem. At this point I don't know what's going on so I
+> rather go baby steps. The revert is still possible if nothing else
+> works.
 
-No, build_pin_path() checks map->pinning :)
+did you ever see this pseudo lan78xx-irqs fire? I examined
+/proc/interrupts on RPi 3B+ and always saw a 0.
 
-> Please add proper tests to test_progs, testing various modes and
-> overrides.
+FWIW you can have:
 
-Can do.
+Tested-by: Stefan Wahren <wahrenst@gmx.net>
 
-> You keep trying to add more and more knobs :) Please stop doing that,
-> even if we have a good mechanism for extensibility, it doesn't mean we
-> need to increase a proliferation of options.
+for this patch.
 
-But I like options! ;)
+Regards
+Stefan
 
-> Each option has to be tested. In current version of your patches, you
-> have something like 4 or 5 different knobs, do you really want to
-> write tests testing each of them? ;)
-
-Heh, I guess I can cut down the number of options to the number of tests :P
-
-> Another high-level feedback. I think having separate passes over all
-> maps (build_map_pin_paths, reuse, then we already have create_maps) is
-> actually making everything more verbose and harder to extend. I'm
-> thinking about all these as sub-steps of map creation. Can you please
-> try refactoring so all these steps are happening per each map in one
-> place: if map needs to be pinned, check if it can be reused, if not -
-> create it. This actually will allow to handle races better, because
-> you will be able to retry easily, while if it's all spread in
-> independent passes, it becomes much harder. Please consider that.
-
-We'll need at least two passes: set pin_path on open, and check reuse /
-create / pin on load. Don't have any objections to consolidating the
-other passes into create_maps; will fix, along with your comments below.
-
--Toke
