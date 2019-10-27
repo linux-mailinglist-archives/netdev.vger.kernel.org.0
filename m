@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6FE1E6522
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 20:53:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA072E6524
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 20:53:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727432AbfJ0Txg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 15:53:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42366 "EHLO mail.kernel.org"
+        id S1727488AbfJ0Txj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 15:53:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42392 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726444AbfJ0Txg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Oct 2019 15:53:36 -0400
+        id S1726444AbfJ0Txi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Oct 2019 15:53:38 -0400
 Received: from localhost.localdomain (unknown [151.66.57.46])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5E79A20650;
-        Sun, 27 Oct 2019 19:53:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 714B820873;
+        Sun, 27 Oct 2019 19:53:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572206015;
-        bh=MzubQBUSSLxgrzhRneK0OoJ2aTvF7dNg3YN6/OHjT6Y=;
+        s=default; t=1572206018;
+        bh=N4c146QPl39kJoKg4OtifqGseychqFfgprLDU7S1gvc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pN/RHBeBaRrViWurhFMSf0tr6KETiixvVbsrEj6m/F3VF8XUGXrKlqh3iFahmaWRv
-         GqDHmRcOFreqL3815HXGSSrlwl15X5aKb4wriG00+iQq3JqZVC0TYWsO19gm6TUAqs
-         bZ+FH9kmUhQlZtS3UYNzcGKG0WyqK+oPYnqghtTc=
+        b=rT7MsNPENnigWEuwqbDRj8pTsj6BzubD9T+31gPAhxF3wuf1UW9ixG1Vil5dfeWA8
+         3rOzkZpWNThynpggshHxDSeUgCQQafJ49Ah86JfBZ8ZkYgl8VqCVSbxNBGjdsSU6G5
+         aj6M/wRIwM0VqBUQ9O48XB6Tdn3JbXUC+cMNeK40=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     kvalo@codeaurora.org
 Cc:     linux-wireless@vger.kernel.org, nbd@nbd.name, hkallweit1@gmail.com,
         sgruszka@redhat.com, lorenzo.bianconi@redhat.com,
         oleksandr@natalenko.name, netdev@vger.kernel.org
-Subject: [PATCH v3 wireless-drivers 1/2] mt76: mt76x2e: disable pcie_aspm by default
-Date:   Sun, 27 Oct 2019 20:53:08 +0100
-Message-Id: <cbd541284b80a966e2050ac809a495c55cfb591e.1572204430.git.lorenzo@kernel.org>
+Subject: [PATCH v3 wireless-drivers 2/2] mt76: dma: fix buffer unmap with non-linear skbs
+Date:   Sun, 27 Oct 2019 20:53:09 +0100
+Message-Id: <b9c87448d9e5f3cf9cd5de5050f5c62e42c3de31.1572204430.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1572204430.git.lorenzo@kernel.org>
 References: <cover.1572204430.git.lorenzo@kernel.org>
@@ -41,113 +41,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On same device (e.g. U7612E-H1) PCIE_ASPM causes continuous mcu hangs and
-instability. Since mt76x2 series does not manage PCIE PS states, first we
-try to disable ASPM using pci_disable_link_state. If it fails, we will
-disable PCIE PS configuring PCI registers.
-This patch has been successfully tested on U7612E-H1 mini-pice card
+mt76 dma layer is supposed to unmap skb data buffers while keep txwi
+mapped on hw dma ring. At the moment mt76 wrongly unmap txwi or does
+not unmap data fragments in even positions for non-linear skbs. This
+issue may result in hw hangs with A-MSDU if the system relies on IOMMU
+or SWIOTLB. Fix this behaviour properly unmapping data fragments on
+non-linear skbs.
 
-Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 17f1de56df05 ("mt76: add common code shared between multiple chipsets")
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/Makefile   |  2 +
- drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
- .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
- drivers/net/wireless/mediatek/mt76/pci.c      | 46 +++++++++++++++++++
- 4 files changed, 51 insertions(+)
- create mode 100644 drivers/net/wireless/mediatek/mt76/pci.c
+ drivers/net/wireless/mediatek/mt76/dma.c  | 6 ++++--
+ drivers/net/wireless/mediatek/mt76/mt76.h | 5 +++--
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/Makefile b/drivers/net/wireless/mediatek/mt76/Makefile
-index 4d03596e891f..d7a1ddc9e407 100644
---- a/drivers/net/wireless/mediatek/mt76/Makefile
-+++ b/drivers/net/wireless/mediatek/mt76/Makefile
-@@ -8,6 +8,8 @@ mt76-y := \
- 	mmio.o util.o trace.o dma.o mac80211.o debugfs.o eeprom.o \
- 	tx.o agg-rx.o mcu.o
+diff --git a/drivers/net/wireless/mediatek/mt76/dma.c b/drivers/net/wireless/mediatek/mt76/dma.c
+index c747eb24581c..8f69d00bd940 100644
+--- a/drivers/net/wireless/mediatek/mt76/dma.c
++++ b/drivers/net/wireless/mediatek/mt76/dma.c
+@@ -53,8 +53,10 @@ mt76_dma_add_buf(struct mt76_dev *dev, struct mt76_queue *q,
+ 	u32 ctrl;
+ 	int i, idx = -1;
  
-+mt76-$(CONFIG_PCI) += pci.o
-+
- mt76-usb-y := usb.o usb_trace.o
+-	if (txwi)
++	if (txwi) {
+ 		q->entry[q->head].txwi = DMA_DUMMY_DATA;
++		q->entry[q->head].skip_buf0 = true;
++	}
  
- CFLAGS_trace.o := -I$(src)
+ 	for (i = 0; i < nbufs; i += 2, buf += 2) {
+ 		u32 buf0 = buf[0].addr, buf1 = 0;
+@@ -97,7 +99,7 @@ mt76_dma_tx_cleanup_idx(struct mt76_dev *dev, struct mt76_queue *q, int idx,
+ 	__le32 __ctrl = READ_ONCE(q->desc[idx].ctrl);
+ 	u32 ctrl = le32_to_cpu(__ctrl);
+ 
+-	if (!e->txwi || !e->skb) {
++	if (!e->skip_buf0) {
+ 		__le32 addr = READ_ONCE(q->desc[idx].buf0);
+ 		u32 len = FIELD_GET(MT_DMA_CTL_SD_LEN0, ctrl);
+ 
 diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h b/drivers/net/wireless/mediatek/mt76/mt76.h
-index 570c159515a0..dc468ed9434a 100644
+index dc468ed9434a..8aec7ccf2d79 100644
 --- a/drivers/net/wireless/mediatek/mt76/mt76.h
 +++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-@@ -578,6 +578,7 @@ bool __mt76_poll_msec(struct mt76_dev *dev, u32 offset, u32 mask, u32 val,
- #define mt76_poll_msec(dev, ...) __mt76_poll_msec(&((dev)->mt76), __VA_ARGS__)
+@@ -93,8 +93,9 @@ struct mt76_queue_entry {
+ 		struct urb *urb;
+ 	};
+ 	enum mt76_txq_id qid;
+-	bool schedule;
+-	bool done;
++	bool skip_buf0:1;
++	bool schedule:1;
++	bool done:1;
+ };
  
- void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs);
-+void mt76_pci_disable_aspm(struct pci_dev *pdev);
- 
- static inline u16 mt76_chip(struct mt76_dev *dev)
- {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-index 73c3104f8858..cf611d1b817c 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-@@ -81,6 +81,8 @@ mt76pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
- 	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
- 
-+	mt76_pci_disable_aspm(pdev);
-+
- 	return 0;
- 
- error:
-diff --git a/drivers/net/wireless/mediatek/mt76/pci.c b/drivers/net/wireless/mediatek/mt76/pci.c
-new file mode 100644
-index 000000000000..04c5a692bc85
---- /dev/null
-+++ b/drivers/net/wireless/mediatek/mt76/pci.c
-@@ -0,0 +1,46 @@
-+// SPDX-License-Identifier: ISC
-+/*
-+ * Copyright (C) 2019 Lorenzo Bianconi <lorenzo@kernel.org>
-+ */
-+
-+#include <linux/pci.h>
-+
-+void mt76_pci_disable_aspm(struct pci_dev *pdev)
-+{
-+	struct pci_dev *parent = pdev->bus->self;
-+	u16 aspm_conf, parent_aspm_conf = 0;
-+
-+	pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);
-+	aspm_conf &= PCI_EXP_LNKCTL_ASPMC;
-+	if (parent) {
-+		pcie_capability_read_word(parent, PCI_EXP_LNKCTL,
-+					  &parent_aspm_conf);
-+		parent_aspm_conf &= PCI_EXP_LNKCTL_ASPMC;
-+	}
-+
-+	if (!aspm_conf && (!parent || !parent_aspm_conf)) {
-+		/* aspm already disabled */
-+		return;
-+	}
-+
-+	dev_info(&pdev->dev, "disabling ASPM %s %s\n",
-+		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L0S) ? "L0s" : "",
-+		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L1) ? "L1" : "");
-+
-+	if (IS_ENABLED(CONFIG_PCIEASPM)) {
-+		int err;
-+
-+		err = pci_disable_link_state(pdev, aspm_conf);
-+		if (!err)
-+			return;
-+	}
-+
-+	/* both device and parent should have the same ASPM setting.
-+	 * disable ASPM in downstream component first and then upstream.
-+	 */
-+	pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_conf);
-+	if (parent)
-+		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
-+					   aspm_conf);
-+}
-+EXPORT_SYMBOL_GPL(mt76_pci_disable_aspm);
+ struct mt76_queue_regs {
 -- 
 2.21.0
 
