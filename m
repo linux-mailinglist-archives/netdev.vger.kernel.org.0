@@ -2,184 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EE60E69C3
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 22:40:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEC3BE6A44
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 01:00:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727648AbfJ0Vke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 17:40:34 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:39636 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727314AbfJ0Vkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 17:40:33 -0400
-Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728175AbfJ0X77 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 19:59:59 -0400
+Received: from ozlabs.org ([203.11.71.1]:60967 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726909AbfJ0X76 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Oct 2019 19:59:58 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id A267860ED9E;
-        Sun, 27 Oct 2019 22:40:30 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1572212430;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bZP0mft83BfuXGY/KXrwzMMUx2sl7QD4/f6jdUdhc4g=;
-        b=NxOkaGRwbowyz4jbGpUv6h4T8YUZ43SIP8+ZHTgx5Q9zSKPAaigmo25wxpyAYQ1TOdlu3N
-        EwPUzXDyeJML0MUyr/4jQLKEnI0d4tJ2mIvoFZYn31qku9+N3SLyGvtREb06wg0OHf4MWj
-        ubcuX1jxSgryRmQA+M0uRbhK7NOEGL4=
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 471ZbG5qmXz9sPc;
+        Mon, 28 Oct 2019 10:59:54 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1572220794;
+        bh=QrSoyHYQ0Ycn44hBKdEsLJOcly+kFqqej3PJVjHb4yw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=GAyoknIG1bd68tjPtfnpgWkHFBCTUZEIuuOkvn4TqxEmqIcivrpCQbFXudf5Bk+bC
+         nt9RomkheYzaZPaGIToV7GhVnz+o3YJct0T6zVhc4gawpXe16Qk9NZfhly3lgbL+Yu
+         gGFMMk/3ainXo4VuARXr/dartV9sPqyF/QkrWSQG6E3sCR8VDinHkkmccxh4f0wSJZ
+         C7L17jZzHpLp7J0/hskidPDHlwap7SVlgoJOrOrnTcPfonJQbFN2s95ymlUlEmhrDc
+         gS8iQvIbJY/7jZPo33dsxvwivQlDHgSypQKoKA9to3t/612RLrhPMUd0QMbnpoG7J7
+         3/j9RqrA6770Q==
+Date:   Mon, 28 Oct 2019 10:59:34 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Taehee Yoo <ap420073@gmail.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20191028105934.5c0ea3b0@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Sun, 27 Oct 2019 22:40:30 +0100
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org, nbd@nbd.name,
-        hkallweit1@gmail.com, sgruszka@redhat.com,
-        lorenzo.bianconi@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 wireless-drivers 1/2] mt76: mt76x2e: disable pcie_aspm
- by default
-In-Reply-To: <cbd541284b80a966e2050ac809a495c55cfb591e.1572204430.git.lorenzo@kernel.org>
-References: <cover.1572204430.git.lorenzo@kernel.org>
- <cbd541284b80a966e2050ac809a495c55cfb591e.1572204430.git.lorenzo@kernel.org>
-Message-ID: <3e11e1da564178e43ab745c780094098@natalenko.name>
-X-Sender: oleksandr@natalenko.name
-User-Agent: Roundcube Webmail/1.3.10
+Content-Type: multipart/signed; boundary="Sig_/kK6aRZVlZsqijIZJLsg9PQv";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi.
+--Sig_/kK6aRZVlZsqijIZJLsg9PQv
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On 27.10.2019 20:53, Lorenzo Bianconi wrote:
-> On same device (e.g. U7612E-H1) PCIE_ASPM causes continuous mcu hangs 
-> and
-> instability. Since mt76x2 series does not manage PCIE PS states, first 
-> we
-> try to disable ASPM using pci_disable_link_state. If it fails, we will
-> disable PCIE PS configuring PCI registers.
-> This patch has been successfully tested on U7612E-H1 mini-pice card
-> 
-> Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Hi all,
 
-For this revision, not yet ;) (see below).
+Today's linux-next merge of the net-next tree got a conflict in:
 
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  drivers/net/wireless/mediatek/mt76/Makefile   |  2 +
->  drivers/net/wireless/mediatek/mt76/mt76.h     |  1 +
->  .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
->  drivers/net/wireless/mediatek/mt76/pci.c      | 46 +++++++++++++++++++
->  4 files changed, 51 insertions(+)
->  create mode 100644 drivers/net/wireless/mediatek/mt76/pci.c
-> 
-> diff --git a/drivers/net/wireless/mediatek/mt76/Makefile
-> b/drivers/net/wireless/mediatek/mt76/Makefile
-> index 4d03596e891f..d7a1ddc9e407 100644
-> --- a/drivers/net/wireless/mediatek/mt76/Makefile
-> +++ b/drivers/net/wireless/mediatek/mt76/Makefile
-> @@ -8,6 +8,8 @@ mt76-y := \
->  	mmio.o util.o trace.o dma.o mac80211.o debugfs.o eeprom.o \
->  	tx.o agg-rx.o mcu.o
-> 
-> +mt76-$(CONFIG_PCI) += pci.o
-> +
->  mt76-usb-y := usb.o usb_trace.o
-> 
->  CFLAGS_trace.o := -I$(src)
-> diff --git a/drivers/net/wireless/mediatek/mt76/mt76.h
-> b/drivers/net/wireless/mediatek/mt76/mt76.h
-> index 570c159515a0..dc468ed9434a 100644
-> --- a/drivers/net/wireless/mediatek/mt76/mt76.h
-> +++ b/drivers/net/wireless/mediatek/mt76/mt76.h
-> @@ -578,6 +578,7 @@ bool __mt76_poll_msec(struct mt76_dev *dev, u32
-> offset, u32 mask, u32 val,
->  #define mt76_poll_msec(dev, ...) __mt76_poll_msec(&((dev)->mt76), 
-> __VA_ARGS__)
-> 
->  void mt76_mmio_init(struct mt76_dev *dev, void __iomem *regs);
-> +void mt76_pci_disable_aspm(struct pci_dev *pdev);
-> 
->  static inline u16 mt76_chip(struct mt76_dev *dev)
->  {
-> diff --git a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-> b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-> index 73c3104f8858..cf611d1b817c 100644
-> --- a/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-> +++ b/drivers/net/wireless/mediatek/mt76/mt76x2/pci.c
-> @@ -81,6 +81,8 @@ mt76pci_probe(struct pci_dev *pdev, const struct
-> pci_device_id *id)
->  	/* RG_SSUSB_CDR_BR_PE1D = 0x3 */
->  	mt76_rmw_field(dev, 0x15c58, 0x3 << 6, 0x3);
-> 
-> +	mt76_pci_disable_aspm(pdev);
-> +
->  	return 0;
-> 
->  error:
-> diff --git a/drivers/net/wireless/mediatek/mt76/pci.c
-> b/drivers/net/wireless/mediatek/mt76/pci.c
-> new file mode 100644
-> index 000000000000..04c5a692bc85
-> --- /dev/null
-> +++ b/drivers/net/wireless/mediatek/mt76/pci.c
-> @@ -0,0 +1,46 @@
-> +// SPDX-License-Identifier: ISC
-> +/*
-> + * Copyright (C) 2019 Lorenzo Bianconi <lorenzo@kernel.org>
-> + */
-> +
-> +#include <linux/pci.h>
+  include/linux/netdevice.h
 
-FYI, I had to #include <linux/pci-aspm.h> on 5.3 kernel because this is 
-where pci_disable_link_state() is defined. It is not needed on 5.4+ 
-since the declaration got moved to pci.h; this is just a note for those 
-who are going to test these changes on 5.3.
+between commit:
 
-I'm still building the kernel, though. Will get back with the results 
-later.
+  ab92d68fc22f ("net: core: add generic lockdep keys")
 
-> +
-> +void mt76_pci_disable_aspm(struct pci_dev *pdev)
-> +{
-> +	struct pci_dev *parent = pdev->bus->self;
-> +	u16 aspm_conf, parent_aspm_conf = 0;
-> +
-> +	pcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);
-> +	aspm_conf &= PCI_EXP_LNKCTL_ASPMC;
-> +	if (parent) {
-> +		pcie_capability_read_word(parent, PCI_EXP_LNKCTL,
-> +					  &parent_aspm_conf);
-> +		parent_aspm_conf &= PCI_EXP_LNKCTL_ASPMC;
-> +	}
-> +
-> +	if (!aspm_conf && (!parent || !parent_aspm_conf)) {
-> +		/* aspm already disabled */
-> +		return;
-> +	}
-> +
-> +	dev_info(&pdev->dev, "disabling ASPM %s %s\n",
-> +		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L0S) ? "L0s" : "",
-> +		 (aspm_conf & PCI_EXP_LNKCTL_ASPM_L1) ? "L1" : "");
-> +
-> +	if (IS_ENABLED(CONFIG_PCIEASPM)) {
-> +		int err;
-> +
-> +		err = pci_disable_link_state(pdev, aspm_conf);
-> +		if (!err)
-> +			return;
-> +	}
-> +
-> +	/* both device and parent should have the same ASPM setting.
-> +	 * disable ASPM in downstream component first and then upstream.
-> +	 */
-> +	pcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_conf);
-> +	if (parent)
-> +		pcie_capability_clear_word(parent, PCI_EXP_LNKCTL,
-> +					   aspm_conf);
-> +}
-> +EXPORT_SYMBOL_GPL(mt76_pci_disable_aspm);
+from the net tree and commits:
 
--- 
-   Oleksandr Natalenko (post-factum)
+  ff92741270bf ("net: introduce name_node struct to be used in hashlist")
+  36fbf1e52bd3 ("net: rtnetlink: add linkprop commands to add and delete al=
+ternative ifnames")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc include/linux/netdevice.h
+index c20f190b4c18,3207e0b9ec4e..000000000000
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@@ -925,7 -925,16 +925,17 @@@ struct dev_ifalias=20
+  struct devlink;
+  struct tlsdev_ops;
+ =20
++ struct netdev_name_node {
++ 	struct hlist_node hlist;
++ 	struct list_head list;
++ 	struct net_device *dev;
++ 	const char *name;
++ };
++=20
++ int netdev_name_node_alt_create(struct net_device *dev, const char *name);
++ int netdev_name_node_alt_destroy(struct net_device *dev, const char *name=
+);
++=20
+ +
+  /*
+   * This structure defines the management hooks for network devices.
+   * The following hooks can be defined; unless noted otherwise, they are
+
+--Sig_/kK6aRZVlZsqijIZJLsg9PQv
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl22L2YACgkQAVBC80lX
+0GzgtggAlddLT6NHCp4RDHqUsSFctlKCqeCArCK9c842OFIlQQH9nlhCNA6rMghT
+8wdHy2kFfvIw4RviCT1j4+QHLv2BESJBdumDHl2Fje2lxPKkvYt6hPsU3fEWZDGT
+QuqeHB1dlzEQPlW58OJWRs5OLoOISIj6tzjQLaHu+CA/lVSQnWCYLmPRwkBrgAnz
+EshwKsqmewDQF24YPZaVDwuq6QkltrOsL1HJ48RhT10AMbxe8+opf3LVoRIO5dQo
+DdbVTH4099lO6M+esnxDcOHoidanDlkRMsVG8ZHiCLtVybtUmGn6XyDbq+hMJH+k
+WVpNsBBQwlx8Q+gPa3sLi6i7llW6ow==
+=vPrl
+-----END PGP SIGNATURE-----
+
+--Sig_/kK6aRZVlZsqijIZJLsg9PQv--
