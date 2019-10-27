@@ -2,82 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD288E623A
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 12:23:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAD9E624D
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 13:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726804AbfJ0LXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 07:23:22 -0400
-Received: from mga05.intel.com ([192.55.52.43]:45067 "EHLO mga05.intel.com"
+        id S1726706AbfJ0MCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 08:02:39 -0400
+Received: from correo.us.es ([193.147.175.20]:60104 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726469AbfJ0LXV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Oct 2019 07:23:21 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 27 Oct 2019 04:23:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,236,1569308400"; 
-   d="scan'208";a="399196419"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 27 Oct 2019 04:23:18 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1iOgdh-0001B1-Po; Sun, 27 Oct 2019 19:23:17 +0800
-Date:   Sun, 27 Oct 2019 19:22:56 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: Re: [PATCH v5 net-next 07/12] net: ethernet: ti: introduce cpsw
- switchdev based driver part 2 - switch
-Message-ID: <201910271911.gUJglaTl%lkp@intel.com>
-References: <20191024100914.16840-8-grygorii.strashko@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191024100914.16840-8-grygorii.strashko@ti.com>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1726713AbfJ0MCi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Oct 2019 08:02:38 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id CC9EE7FC3D
+        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 13:02:33 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id BE17666DD
+        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 13:02:33 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B3633DA7B6; Sun, 27 Oct 2019 13:02:33 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 71624DA801;
+        Sun, 27 Oct 2019 13:02:31 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 27 Oct 2019 13:02:31 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 3F53142EE395;
+        Sun, 27 Oct 2019 13:02:31 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/5] Netfilter/IPVS fixes for net
+Date:   Sun, 27 Oct 2019 13:02:16 +0100
+Message-Id: <20191027120221.2884-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Grygorii,
+Hi,
 
-I love your patch! Perhaps something to improve:
+The following patchset contains Netfilter/IPVS fixes for net:
 
-[auto build test WARNING on net-next/master]
+1) Fix crash on flowtable due to race between garbage collection
+   and insertion.
 
-url:    https://github.com/0day-ci/linux/commits/Grygorii-Strashko/net-ethernet-ti-introduce-new-cpsw-switchdev-based-driver/20191027-143414
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 503a64635d5ef7351657c78ad77f8b5ff658d5fc
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+2) Restore callback unbinding in netfilter offloads.
 
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+3) Fix races on IPVS module removal, from Davide Caratti.
 
+4) Make old_secure_tcp per-netns to fix sysbot report,
+   from Eric Dumazet.
 
-sparse warnings: (new ones prefixed by >>)
+5) Validate matching length in netfilter offloads, from wenxu.
 
->> drivers/net/ethernet/ti/cpsw_new.c:1444:6: sparse: sparse: symbol 'cpsw_port_offload_fwd_mark_update' was not declared. Should it be static?
+You can pull these changes from:
 
-Please review and possibly fold the followup patch.
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
 
----
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 6c5d9c2a6bedbb3c3c14253776320c0ee564f064:
+
+  ipv6: include <net/addrconf.h> for missing declarations (2019-10-22 15:17:03 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 52b33b4f8186669ab88b56cf5b2812e3996ef289:
+
+  Merge tag 'ipvs-fixes-for-v5.4' of https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs (2019-10-26 12:42:45 +0200)
+
+----------------------------------------------------------------
+Davide Caratti (1):
+      ipvs: don't ignore errors in case refcounting ip_vs module fails
+
+Eric Dumazet (1):
+      ipvs: move old_secure_tcp into struct netns_ipvs
+
+Pablo Neira Ayuso (3):
+      netfilter: nf_flow_table: set timeout before insertion into hashes
+      netfilter: nf_tables_offload: restore basechain deletion
+      Merge tag 'ipvs-fixes-for-v5.4' of https://git.kernel.org/.../horms/ipvs
+
+wenxu (1):
+      netfilter: nft_payload: fix missing check for matching length in offloads
+
+ include/net/ip_vs.h                |  1 +
+ net/netfilter/ipvs/ip_vs_app.c     | 12 ++++++++++--
+ net/netfilter/ipvs/ip_vs_ctl.c     | 29 +++++++++++------------------
+ net/netfilter/ipvs/ip_vs_pe.c      |  3 ++-
+ net/netfilter/ipvs/ip_vs_sched.c   |  3 ++-
+ net/netfilter/ipvs/ip_vs_sync.c    | 13 ++++++++++---
+ net/netfilter/nf_flow_table_core.c |  3 ++-
+ net/netfilter/nf_tables_offload.c  |  2 +-
+ net/netfilter/nft_payload.c        | 38 ++++++++++++++++++++++++++++++++++++++
+ 9 files changed, 77 insertions(+), 27 deletions(-)
