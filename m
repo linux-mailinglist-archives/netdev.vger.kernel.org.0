@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88160E68F3
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 22:33:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 666B8E69A5
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 22:38:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730163AbfJ0VNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 17:13:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60038 "EHLO mail.kernel.org"
+        id S1726930AbfJ0VEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 17:04:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730153AbfJ0VNB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 27 Oct 2019 17:13:01 -0400
+        id S1727572AbfJ0VED (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 27 Oct 2019 17:04:03 -0400
 Received: from localhost (100.50.158.77.rev.sfr.net [77.158.50.100])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2268320B7C;
-        Sun, 27 Oct 2019 21:13:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 02FAB208C0;
+        Sun, 27 Oct 2019 21:04:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572210780;
-        bh=trbv+VX8ypWF9nLMq+Swrlq2rc9HVtwaARcsqoqOohU=;
+        s=default; t=1572210242;
+        bh=uowiTPItwsRrmuICZPSjEomKfgT65K0+Y34I2IFq3jw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h6+XW2OVFg5JsCeo99PThywQCkAcznWTbgQPyrksDNjbTOolgSmrvwTS+H9j5Tr1W
-         PquMyYSCYwGcxLHNAhfxsGvjy4zcd5OHwxgo7wdqd2pG6MpG8949oNQcljfZzhZAgk
-         6RmOucwt+jXSdXKC1AuqOM/RYLfHPqzf0CEFUdFM=
+        b=V5MFZTxotCQwSS1QgKxavccoXW5lgPv7hDSyWDqY4wb8u6Lfv74tknV++SBDnQQq4
+         dQA6F/8v9NADy47wpAiECWUrBAZz7jE4IIR7EbWYQcRMnTQD5VAitIKByVEF8PMrkg
+         h1EJQnJs/Qxa3jSiDS3yNNGcKqNFli9z5dr/6v3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Yang <wenyang@linux.alibaba.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 15/93] net: dsa: rtl8366rb: add missing of_node_put after calling of_get_child_by_name
-Date:   Sun, 27 Oct 2019 22:00:27 +0100
-Message-Id: <20191027203254.973862216@linuxfoundation.org>
+        Kees Cook <keescook@chromium.org>,
+        Zubin Mithra <zsm@chromium.org>
+Subject: [PATCH 4.4 40/41] net: sched: Fix memory exposure from short TCA_U32_SEL
+Date:   Sun, 27 Oct 2019 22:01:18 +0100
+Message-Id: <20191027203136.357413424@linuxfoundation.org>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191027203251.029297948@linuxfoundation.org>
-References: <20191027203251.029297948@linuxfoundation.org>
+In-Reply-To: <20191027203056.220821342@linuxfoundation.org>
+References: <20191027203056.220821342@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,92 +48,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Yang <wenyang@linux.alibaba.com>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit f32eb9d80470dab05df26b6efd02d653c72e6a11 ]
+commit 98c8f125fd8a6240ea343c1aa50a1be9047791b8 upstream.
 
-of_node_put needs to be called when the device node which is got
-from of_get_child_by_name finished using.
-irq_domain_add_linear() also calls of_node_get() to increase refcount,
-so irq_domain will not be affected when it is released.
+Via u32_change(), TCA_U32_SEL has an unspecified type in the netlink
+policy, so max length isn't enforced, only minimum. This means nkeys
+(from userspace) was being trusted without checking the actual size of
+nla_len(), which could lead to a memory over-read, and ultimately an
+exposure via a call to u32_dump(). Reachability is CAP_NET_ADMIN within
+a namespace.
 
-Fixes: d8652956cf37 ("net: dsa: realtek-smi: Add Realtek SMI driver")
-Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Vivien Didelot <vivien.didelot@gmail.com>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zubin Mithra <zsm@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
 ---
- drivers/net/dsa/rtl8366rb.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ net/sched/cls_u32.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index a4d5049df6928..f4b14b6acd22d 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -507,7 +507,8 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
- 	irq = of_irq_get(intc, 0);
- 	if (irq <= 0) {
- 		dev_err(smi->dev, "failed to get parent IRQ\n");
--		return irq ? irq : -EINVAL;
-+		ret = irq ? irq : -EINVAL;
-+		goto out_put_node;
- 	}
+--- a/net/sched/cls_u32.c
++++ b/net/sched/cls_u32.c
+@@ -734,6 +734,7 @@ static int u32_change(struct net *net, s
+ 	struct nlattr *opt = tca[TCA_OPTIONS];
+ 	struct nlattr *tb[TCA_U32_MAX + 1];
+ 	u32 htid;
++	size_t sel_size;
+ 	int err;
+ #ifdef CONFIG_CLS_U32_PERF
+ 	size_t size;
+@@ -827,8 +828,11 @@ static int u32_change(struct net *net, s
+ 		return -EINVAL;
  
- 	/* This clears the IRQ status register */
-@@ -515,7 +516,7 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
- 			  &val);
- 	if (ret) {
- 		dev_err(smi->dev, "can't read interrupt status\n");
--		return ret;
-+		goto out_put_node;
- 	}
+ 	s = nla_data(tb[TCA_U32_SEL]);
++	sel_size = sizeof(*s) + sizeof(*s->keys) * s->nkeys;
++	if (nla_len(tb[TCA_U32_SEL]) < sel_size)
++		return -EINVAL;
  
- 	/* Fetch IRQ edge information from the descriptor */
-@@ -537,7 +538,7 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
- 				 val);
- 	if (ret) {
- 		dev_err(smi->dev, "could not configure IRQ polarity\n");
--		return ret;
-+		goto out_put_node;
- 	}
+-	n = kzalloc(sizeof(*n) + s->nkeys*sizeof(struct tc_u32_key), GFP_KERNEL);
++	n = kzalloc(offsetof(typeof(*n), sel) + sel_size, GFP_KERNEL);
+ 	if (n == NULL)
+ 		return -ENOBUFS;
  
- 	ret = devm_request_threaded_irq(smi->dev, irq, NULL,
-@@ -545,7 +546,7 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
- 					"RTL8366RB", smi);
- 	if (ret) {
- 		dev_err(smi->dev, "unable to request irq: %d\n", ret);
--		return ret;
-+		goto out_put_node;
+@@ -841,7 +845,7 @@ static int u32_change(struct net *net, s
  	}
- 	smi->irqdomain = irq_domain_add_linear(intc,
- 					       RTL8366RB_NUM_INTERRUPT,
-@@ -553,12 +554,15 @@ static int rtl8366rb_setup_cascaded_irq(struct realtek_smi *smi)
- 					       smi);
- 	if (!smi->irqdomain) {
- 		dev_err(smi->dev, "failed to create IRQ domain\n");
--		return -EINVAL;
-+		ret = -EINVAL;
-+		goto out_put_node;
- 	}
- 	for (i = 0; i < smi->num_ports; i++)
- 		irq_set_parent(irq_create_mapping(smi->irqdomain, i), irq);
+ #endif
  
--	return 0;
-+out_put_node:
-+	of_node_put(intc);
-+	return ret;
- }
- 
- static int rtl8366rb_set_addr(struct realtek_smi *smi)
--- 
-2.20.1
-
+-	memcpy(&n->sel, s, sizeof(*s) + s->nkeys*sizeof(struct tc_u32_key));
++	memcpy(&n->sel, s, sel_size);
+ 	RCU_INIT_POINTER(n->ht_up, ht);
+ 	n->handle = handle;
+ 	n->fshift = s->hmask ? ffs(ntohl(s->hmask)) - 1 : 0;
 
 
