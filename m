@@ -2,104 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A758E6334
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 15:44:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F41DE6317
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 15:39:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727216AbfJ0On4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 10:43:56 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38436 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726690AbfJ0Onh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 10:43:37 -0400
-Received: by mail-wr1-f68.google.com with SMTP id v9so7233336wrq.5;
-        Sun, 27 Oct 2019 07:43:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8m+44Vom44C3KhaUynaGnY+KEBMnlLX9FyMyBId8qoU=;
-        b=NQH/OeWG8WdxJzcEjzA4jcs0prQEWO9Pvc/hRibnmA2kGfBX9GXKEPzG8QBt0r5gt5
-         WjLH9+UgxdiMjt+Upsns+/VTt4xZduF/oj+56GLFkWyGTeKIpVPddDxRQ18hMU6VTzeS
-         Q3APORHOhFrh88B0ZczEmBrll1sBbpDk005nfDYQ/7lqddPN6exe7WgjGRpcLNfCPILS
-         +14lN+4eH5gYalHUk+tGCUcgJEewmLLRDKhU7lLUE4pyu4YYaZl3gnGoFEdH1F25bdIf
-         XVk9yXZgNi8mgQrhxWHxwRSseL6MeWEYAlASPhmRobVUJyTznxd8fFxLT1eXbZbR6cvB
-         bVdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8m+44Vom44C3KhaUynaGnY+KEBMnlLX9FyMyBId8qoU=;
-        b=rD7xonPjPw2V2NGlaZyxGxwFs34j3r58fKoXukBX8bXjL9qXBk0Hh57toN2tiwIkp3
-         nT+GNmOpkJghtN4jBA+ke0kSwfLIg5MVhMy++nRhF6a46aTJZn+Tetkv3xp3TfsdzN4u
-         tiUFa0q09oxHhG7Gfpkj2SevgBF4Y8vMaPtzmL4JLXeYr7xYO+LjVCfzuqimz8aXkfAd
-         J0P+f3fchnqR22CHxNr8pwO7fsXoSbo26KqlJ6WzdRqCTFI/J6P//pOUPym1Y3b+EMxX
-         gwpXhBac6xYK06L5X067hHB53r6whBVCJ2Whzv+8AsLaSYRzn6JIQsfYXm8jPTE+3WAR
-         r+bw==
-X-Gm-Message-State: APjAAAXfBajN564otYlbOLr34mb6/XQnoDYqbY65mqUHq5WXRSH7fr3m
-        ZLNPNUzKEeo6pCqa90XvmZM=
-X-Google-Smtp-Source: APXvYqyiG2KCZCSee9Vwv5D88dH0uhGwkGZqT0L2pQDFD9DyKBWheclB6McEARrC/xn+QILCohGoMQ==
-X-Received: by 2002:a05:6000:92:: with SMTP id m18mr11842859wrx.105.1572187415060;
-        Sun, 27 Oct 2019 07:43:35 -0700 (PDT)
-Received: from localhost (94.222.26.109.rev.sfr.net. [109.26.222.94])
-        by smtp.gmail.com with ESMTPSA id f17sm8378029wrs.66.2019.10.27.07.43.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Oct 2019 07:43:34 -0700 (PDT)
-Date:   Sun, 27 Oct 2019 09:17:52 +0100
-From:   Stefan Hajnoczi <stefanha@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
-        linux-hyperv@vger.kernel.org,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Arnd Bergmann <arnd@arndb.de>, kvm@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [PATCH net-next 12/14] vsock/vmci: register vmci_transport only
- when VMCI guest/host are active
-Message-ID: <20191027081752.GD4472@stefanha-x1.localdomain>
-References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-13-sgarzare@redhat.com>
+        id S1726796AbfJ0Oja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 10:39:30 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40687 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726674AbfJ0Oj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 10:39:29 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 27 Oct 2019 16:39:27 +0200
+Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.134.206.5])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9REdRUH019598;
+        Sun, 27 Oct 2019 16:39:27 +0200
+From:   Tariq Toukan <tariqt@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Eran Ben Elisha <eranbe@mellanox.com>,
+        Jack Morgenstein <jackm@dev.mellanox.co.il>,
+        Tariq Toukan <tariqt@mellanox.com>
+Subject: [PATCH net] net/mlx4_core: Dynamically set guaranteed amount of counters per VF
+Date:   Sun, 27 Oct 2019 16:39:15 +0200
+Message-Id: <20191027143915.5232-1-tariqt@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="C1iGAkRnbeBonpVg"
-Content-Disposition: inline
-In-Reply-To: <20191023095554.11340-13-sgarzare@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eran Ben Elisha <eranbe@mellanox.com>
 
---C1iGAkRnbeBonpVg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Prior to this patch, the amount of counters guaranteed per VF in the
+resource tracker was MLX4_VF_COUNTERS_PER_PORT * MLX4_MAX_PORTS. It was
+set regardless if the VF was single or dual port.
+This caused several VFs to have no guaranteed counters although the
+system could satisfy their request.
 
-On Wed, Oct 23, 2019 at 11:55:52AM +0200, Stefano Garzarella wrote:
-> +static int __init vmci_transport_init(void)
-> +{
-> +	int features = VSOCK_TRANSPORT_F_DGRAM;
+The fix is to dynamically guarantee counters, based on each VF
+specification.
 
-Where is this variable used?
+Fixes: 9de92c60beaa ("net/mlx4_core: Adjust counter grant policy in the resource tracker")
+Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+Signed-off-by: Jack Morgenstein <jackm@dev.mellanox.co.il>
+Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+---
+ .../ethernet/mellanox/mlx4/resource_tracker.c | 42 ++++++++++++-------
+ 1 file changed, 26 insertions(+), 16 deletions(-)
 
---C1iGAkRnbeBonpVg
-Content-Type: application/pgp-signature; name="signature.asc"
+Please queue to -stable >= v4.2.
 
------BEGIN PGP SIGNATURE-----
+diff --git a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
+index 4356f3a58002..1187ef1375e2 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
++++ b/drivers/net/ethernet/mellanox/mlx4/resource_tracker.c
+@@ -471,12 +471,31 @@ void mlx4_init_quotas(struct mlx4_dev *dev)
+ 		priv->mfunc.master.res_tracker.res_alloc[RES_MPT].quota[pf];
+ }
+ 
+-static int get_max_gauranteed_vfs_counter(struct mlx4_dev *dev)
++static int
++mlx4_calc_res_counter_guaranteed(struct mlx4_dev *dev,
++				 struct resource_allocator *res_alloc,
++				 int vf)
+ {
+-	/* reduce the sink counter */
+-	return (dev->caps.max_counters - 1 -
+-		(MLX4_PF_COUNTERS_PER_PORT * MLX4_MAX_PORTS))
+-		/ MLX4_MAX_PORTS;
++	struct mlx4_active_ports actv_ports;
++	int ports, counters_guaranteed;
++
++	/* For master, only allocate according to the number of phys ports */
++	if (vf == mlx4_master_func_num(dev))
++		return MLX4_PF_COUNTERS_PER_PORT * dev->caps.num_ports;
++
++	/* calculate real number of ports for the VF */
++	actv_ports = mlx4_get_active_ports(dev, vf);
++	ports = bitmap_weight(actv_ports.ports, dev->caps.num_ports);
++	counters_guaranteed = ports * MLX4_VF_COUNTERS_PER_PORT;
++
++	/* If we do not have enough counters for this VF, do not
++	 * allocate any for it. '-1' to reduce the sink counter.
++	 */
++	if ((res_alloc->res_reserved + counters_guaranteed) >
++	    (dev->caps.max_counters - 1))
++		return 0;
++
++	return counters_guaranteed;
+ }
+ 
+ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
+@@ -484,7 +503,6 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
+ 	struct mlx4_priv *priv = mlx4_priv(dev);
+ 	int i, j;
+ 	int t;
+-	int max_vfs_guarantee_counter = get_max_gauranteed_vfs_counter(dev);
+ 
+ 	priv->mfunc.master.res_tracker.slave_list =
+ 		kcalloc(dev->num_slaves, sizeof(struct slave_list),
+@@ -603,16 +621,8 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
+ 				break;
+ 			case RES_COUNTER:
+ 				res_alloc->quota[t] = dev->caps.max_counters;
+-				if (t == mlx4_master_func_num(dev))
+-					res_alloc->guaranteed[t] =
+-						MLX4_PF_COUNTERS_PER_PORT *
+-						MLX4_MAX_PORTS;
+-				else if (t <= max_vfs_guarantee_counter)
+-					res_alloc->guaranteed[t] =
+-						MLX4_VF_COUNTERS_PER_PORT *
+-						MLX4_MAX_PORTS;
+-				else
+-					res_alloc->guaranteed[t] = 0;
++				res_alloc->guaranteed[t] =
++					mlx4_calc_res_counter_guaranteed(dev, res_alloc, t);
+ 				break;
+ 			default:
+ 				break;
+-- 
+2.21.0
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl21UrAACgkQnKSrs4Gr
-c8iGGgf/YjP9kPT916spdjeVdu2Wg8PPuw60Kt/da2i6Qp1hdl0CTXaK1RJxoH8F
-FYtdWNROfs6CPSHEP5xVD4xBeHvZEST4BgeVr/hFZYbw4F5vVb9OIDpSln7JkN/r
-zldMb0Q+UjbvTUZm9buMeb08nbzn9CdeaCJDGPIRHOZjDNw+wL0cilfVm5NMDR4L
-pNbLtyJJliiIZeh2CxCu0k8Kd25OUlwDfqHHuFvDn/kmcNyQlVOUwb0VRnDts8mW
-ian+XNpRXDY24xdyZ9F2UxA6wvwOleFhEN/La2euNs8Iv38liHKNgiCDHe/+br/t
-vuMWadKe9tonhgk7iUlCA5hNDKgKiQ==
-=CXM0
------END PGP SIGNATURE-----
-
---C1iGAkRnbeBonpVg--
