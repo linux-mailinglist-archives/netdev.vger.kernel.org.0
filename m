@@ -2,128 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EDEAE63B8
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 16:24:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCEAE6467
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 18:16:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727334AbfJ0PYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 11:24:31 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25673 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727319AbfJ0PYa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 11:24:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572189869;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k0PF6fDa4IHrKYA/cwKAZkTPLP3n9Ork1zMp9PtEt4U=;
-        b=Mpz3E9KVMQ0xC52YzPo4Tz7kKO9qNp/NyRNgNojyfBiRFCQC6YBSiHcCPK380HXYxO0dkn
-        Unv9xtqqr93KpZ7Xt5gCfSM5K5l4UcpDKueS+YygEP7Vq2Sf+fmMNlrOgtZM1wSQYMaul1
-        +OSPT3uIwb06+7bzBGl5uKyZxWgZQRA=
-Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
- [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-156-qt8f8K2AMzimJrF5FD_Pqw-1; Sun, 27 Oct 2019 11:24:27 -0400
-Received: by mail-lj1-f197.google.com with SMTP id 205so1446881ljf.13
-        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 08:24:27 -0700 (PDT)
+        id S1727617AbfJ0RQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 13:16:30 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45397 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726884AbfJ0RQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 13:16:30 -0400
+Received: by mail-pg1-f193.google.com with SMTP id r1so4860349pgj.12
+        for <netdev@vger.kernel.org>; Sun, 27 Oct 2019 10:16:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=sXnU8nCV2BfhJoFUX/CDVL2xSQlQoK/uzdmFqhYbq38=;
+        b=rKM0wlYLRiF2yI/zMxWSkKcHcWYABvfPqGZz5Dl/IU5l3CtFKuOrLLAYGt0lziBXzJ
+         dXqYDXt3iBDCMLcgR1O99s8HL4Db2obqQ/snMjO59l7FlqeEhEuMP85jVHhAbisynL/b
+         eUQPuUc+Em84Hfynr/YohseEp3+dR/zuDX2OkU1ScG14o+4Hd0MD/KVEBZX1EDCJCKaI
+         wbw0YTCbs5ENp/0xIil4o3egQ6ogKM96UvStGz+/ozIWa+0yq2GDaTL37bJND9H1MfLK
+         N7K9AyTtNpvqCq/7EZufEPaQxFK8SI4rQL3Xn/d8xtmzsstlPEQi7/ObQVIUbvuoiCSP
+         xWsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=k0PF6fDa4IHrKYA/cwKAZkTPLP3n9Ork1zMp9PtEt4U=;
-        b=fPxfuWrusTPwSZq2uSbIu5De29wb2MrtK6b/dX1OGjQOQ/2bmj1+pUt4vKY1+6NE0k
-         /SoiqZipAFd8MbWLF08izQzaJsVzh3YoiJz6uphbkLt+XCk7Hx3O2NJJ+HMQznA3edNW
-         2lmdvTNAKyr5rDTGBSPJyOFY16efnWPub7R3g9LgNTr1ffHzAdhU66BLP+AkqB8kWKDe
-         KB8lEp/35yVdveCZRcor1lJDe2XIjYXJVt+GYlAbLCXJo/Fwyv4Uw36lUIq8e0fiQpm5
-         n6jSdmyPzDL0+mWkCFeob1aSzbZfCvq8SNCLK9lgecaYVs0P2kvu6EyvxOrFXt8RQzNX
-         MAEQ==
-X-Gm-Message-State: APjAAAU1zAuXnb1yXE+jHCCucTxiIzqHSnI632tMvOyjZgvBo5ekH/4j
-        tOxJ13reznDpIXGp7S97frEoycoQxK1P3ZMEs6QIe3JgXmJDZU/eP6T7WGA1XFUe4wJYYLOd/2s
-        LYARqSIqHt2dCEDQf
-X-Received: by 2002:ac2:57cb:: with SMTP id k11mr422573lfo.87.1572189866050;
-        Sun, 27 Oct 2019 08:24:26 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzCX6pcIFHS8vTHfvaGy23y34eKpDgWZoOBBqOkCVB20JMYYV2lMdxl4FbPoE3QfgopaVeaVg==
-X-Received: by 2002:ac2:57cb:: with SMTP id k11mr422552lfo.87.1572189865846;
-        Sun, 27 Oct 2019 08:24:25 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id 4sm4114513ljv.87.2019.10.27.08.24.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Oct 2019 08:24:25 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 858011818B6; Sun, 27 Oct 2019 16:24:24 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-In-Reply-To: <282d61fe-7178-ebf1-e0da-bdc3fb724e4b@gmail.com>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com> <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch> <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch> <87h840oese.fsf@toke.dk> <282d61fe-7178-ebf1-e0da-bdc3fb724e4b@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 27 Oct 2019 16:24:24 +0100
-Message-ID: <87wocqrz2v.fsf@toke.dk>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=sXnU8nCV2BfhJoFUX/CDVL2xSQlQoK/uzdmFqhYbq38=;
+        b=PYP2TdD8bO8jsRxfluM0/xLW7VFnXYUDemAR+JQxTegipsnbXDAoTAZljRcIlpzfBJ
+         Cty2K0+N/t1W1AQtMU1Oz1aTK/eMgxlXFsc6lt2xLDyA672wZjl24Y5Z4cPHfK6qlJzD
+         nb8S3mdxGYLtHswM5s4ERZAWCgobL6GF2Y6zPz+rYtOsOxKF1WBs5jR3lBl275c35ScQ
+         CTvOQ9wnGVCVUiZVdp/zoxwFaSa8Y4PZ3m7xSBxqMmYnI/uRCYtF1ry2cyXGFxxOE1tZ
+         +Lu6Kt3U/46GjbEE7/9OO3SXZbvYFJQO1aUcpgsV6IIF+mqxwT976TXDLKqPfGc5Ff4f
+         MAJw==
+X-Gm-Message-State: APjAAAUxwNrANZ2VA3j8ZZTBftBn2W2sHhXDeH/lIWYS8kyB5MGlTv+C
+        m22UO1rbY0iwb0rzqvSGu1HJc3EQk8I=
+X-Google-Smtp-Source: APXvYqwCPFCSvQLMw0bUppOAzQXTDNYlkO+IYGOxpm0XAJV+69MhGCOnc8fTx0nd0TQWWEzbbLU0IQ==
+X-Received: by 2002:a17:90a:8c92:: with SMTP id b18mr17275087pjo.136.1572196589432;
+        Sun, 27 Oct 2019 10:16:29 -0700 (PDT)
+Received: from [172.27.227.183] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id q42sm8252698pja.16.2019.10.27.10.16.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 27 Oct 2019 10:16:28 -0700 (PDT)
+Subject: Re: [patch iproute2-next v5 0/3] ip: add support for alternative
+ names
+To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        stephen@networkplumber.org, roopa@cumulusnetworks.com,
+        dcbw@redhat.com, nikolay@cumulusnetworks.com, mkubecek@suse.cz,
+        andrew@lunn.ch, parav@mellanox.com, saeedm@mellanox.com,
+        f.fainelli@gmail.com, sd@queasysnail.net, sbrivio@redhat.com,
+        pabeni@redhat.com, mlxsw@mellanox.com
+References: <20191024102052.4118-1-jiri@resnulli.us>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c8201b72-90c4-d8e6-65b9-b7f7ed55f0f5@gmail.com>
+Date:   Sun, 27 Oct 2019 11:16:25 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-X-MC-Unique: qt8f8K2AMzimJrF5FD_Pqw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191024102052.4118-1-jiri@resnulli.us>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
+On 10/24/19 4:20 AM, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
+> 
+> This patchset adds support for alternative names caching,
+> manipulation and usage.
+> 
 
-> On 19/10/23 (=E6=B0=B4) 2:45:05, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> John Fastabend <john.fastabend@gmail.com> writes:
->>=20
->>> I think for sysadmins in general (not OVS) use case I would work
->>> with Jesper and Toke. They seem to be working on this specific
->>> problem.
->>=20
->> We're definitely thinking about how we can make "XDP magically speeds up
->> my network stack" a reality, if that's what you mean. Not that we have
->> arrived at anything specific yet...
->>=20
->> And yeah, I'd also be happy to discuss what it would take to make a
->> native XDP implementation of the OVS datapath; including what (if
->> anything) is missing from the current XDP feature set to make this
->> feasible. I must admit that I'm not quite clear on why that wasn't the
->> approach picked for the first attempt to speed up OVS using XDP...
->
-> Here's some history from William Tu et al.
-> https://linuxplumbersconf.org/event/2/contributions/107/
->
-> Although his aim was not to speed up OVS but to add kernel-independent=20
-> datapath, his experience shows full OVS support by eBPF is very
-> difficult.
+something is still not right with this change:
 
-Yeah, I remember seeing that presentation; it still isn't clear to me
-what exactly the issue was with implementing the OVS datapath in eBPF.
-As far as I can tell from glancing through the paper, only lists program
-size and lack of loops as limitations; both of which have been lifted
-now.
+$ ip li add veth1 type veth peer name veth2
+$ ip li prop add dev veth1 altname veth1_by_another_name
 
-The results in the paper also shows somewhat disappointing performance
-for the eBPF implementation, but that is not too surprising given that
-it's implemented as a TC eBPF hook, not an XDP program. I seem to recall
-that this was also one of the things puzzling to me back when this was
-presented...
+$ ip li sh dev veth1
+15: veth1@veth2: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state
+DOWN mode DEFAULT group default qlen 1000
+    link/ether 1e:6e:bc:26:52:f6 brd ff:ff:ff:ff:ff:ff
+    altname veth1_by_another_name
 
--Toke
+$ ip li sh dev veth1_by_another_name
+Device "veth1_by_another_name" does not exist.
+
+$ ip li set dev veth1_by_another_name up
+Error: argument "veth1_by_another_name" is wrong: "dev" not a valid ifname
 
