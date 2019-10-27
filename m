@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E402EE6330
-	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 15:43:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5B44E632A
+	for <lists+netdev@lfdr.de>; Sun, 27 Oct 2019 15:43:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727118AbfJ0Onh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727135AbfJ0Onh (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 27 Oct 2019 10:43:37 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55447 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727069AbfJ0One (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 10:43:34 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g24so6812078wmh.5;
-        Sun, 27 Oct 2019 07:43:32 -0700 (PDT)
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34082 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727089AbfJ0Onf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 10:43:35 -0400
+Received: by mail-wm1-f67.google.com with SMTP id v3so7713227wmh.1;
+        Sun, 27 Oct 2019 07:43:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=K1drSj56NAMifp0a52nujMXEWxvKYc9KCSSsaeobpyU=;
-        b=TyzHBKD+Hyl4HO0A4bnaZYaumW+Bj/xP+SRf/Gyzp9LM2IPa0nApKEzMny34zY2nni
-         /jZhVQQMkOA6w1fkLsXyCvZ4wSYOTFxaO3AjVsJGJvJkcsO/lzGVgGeQngK/RNc7Egri
-         vcK+0EhYd7ZlM1z6inTn6NOxMFHs+Pb3pOBZ6vhw7YSe4PqKmG/frwtLNLcEq6k2+aE9
-         jxtFwZ4mg+SL5Ee4EKdIpMQC0OuOLgcrxmGnPBP4d4E92oNWKVi+Puh4M0wCaNJr6lHn
-         0Rh0AMSpRQsCmYGBDT4pEtOzApgtfEeCQGkf3x3kQqyZwQ73BtMFIzymjJc/+v70cVZO
-         NIcQ==
+        bh=qE0X3ogtNhn0ebFIC/w7JpP2rq2/beNy9tfdgFGDWNI=;
+        b=c0fZnZa8IRC4VhCN+ke+befKGunIOO7DkdhdFaW+KDbpyWHkOsSjIKR9Dc0Rq7Kuj3
+         Ncr3xzia093wSTG7NjjuBjEOWtDraFGsGPGhWkXSmkyaYAXRGMlB9f4dUS6EkQJ3h87m
+         gfgMYdQ+LpSTpCSfgf/PfkwJXXm4DgWlfZExXMdaoyzWYDpTa17vp2m5Z048vWoi3i00
+         rcrdtNHrHcrhEyE+Bb6tefzIrXXhFszP1SO1ADgz7YvTfDTI6Qm+FdmI/a3V8SNTbaez
+         LA946Gk8I6ZGviJVfCUYd+IiTIJbKwK2jQvvWcsZQkd97KZuUI6T6IrzGOM5UW8dBgnJ
+         N8bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=K1drSj56NAMifp0a52nujMXEWxvKYc9KCSSsaeobpyU=;
-        b=Y0q8T62VnWU6VKDda6nMPZIIMZZprfgE2JdbFTKovIWUZtEigA7EpJqBesrcS7I3rW
-         hUF+rFzdWlRV4RGfHio5XjKyRnNIRNK5HlXqGqq6LmnrHqMj+BSvYaLgsSPhAwSsWxS6
-         LT9B0A7lNg2yzrMnkaz8MRnNw8KnMuu3oC/9USg+85pa5nZrYpXFzl82vGYPPvAhiKuq
-         mfW3Ou/hb2vphMxV9txqVUgs0F4UbgpBWundDrzRUELXL0p/Tz21MNFOlFt1RiVZoxQk
-         eHO0XqjygBOV80lGveY05afKC7XCZ4P8Ejdf6DNVJ5e4BESiJ+cpZY+hOzBd3EcnVdWU
-         r8kA==
-X-Gm-Message-State: APjAAAXwp4YhG/9Ax3NTvDFWbXVyLZ0fPIwhToU5rINVblJ0Y/Okap2M
-        qn25m32MRTQTqIjND8vs73E=
-X-Google-Smtp-Source: APXvYqxLw4bBUvZYDSjjOukhCIcplahm2+ltAyfvlmEEdDvw7ye8qdWpBrNXeBrD9mv/HgOQmciqAg==
-X-Received: by 2002:a1c:5f82:: with SMTP id t124mr12409011wmb.114.1572187411930;
-        Sun, 27 Oct 2019 07:43:31 -0700 (PDT)
+        bh=qE0X3ogtNhn0ebFIC/w7JpP2rq2/beNy9tfdgFGDWNI=;
+        b=Mq0eXFIHbDsV7LucG/66LmzYxDqrpcqLXRjUyiUkrLkHzJIkGVIdI5RrRRC5YmJk4f
+         KCdO9z43am4yvwVW/1AUVYFhuFQZifrN6KflBr6xfrTKP63OxNrNEY9H2x4j2c5SLmX6
+         r4mWbpxarksGs9dMkNfRoiin504I2IkJNJ6TzLVjoMpeg+pwN816Shhelbv2S3fk7Njr
+         xlT+L2AJiBNLFr+ksbwzTMvNLkm9xfb1OTGhLHdCveJon/GbjuGoaYCqWOdTqQD2IDZa
+         ofTMoXP10JvEnARCHs9pQoO2KjnLiOqZuhjgZHd3E7uHLA9SE1WoQhUfhb7XCi0W2znd
+         nLlA==
+X-Gm-Message-State: APjAAAXxIjUdW+C2lFZLp6YJRWy8cHUPEZAN5DesgRcDoPnHWvKz/oYU
+        o7TOnLeooGBtrNwie9g6rcI=
+X-Google-Smtp-Source: APXvYqyBiUGAZ2CjiSe1OPmeBxzC1CyoaPv3kh/kHYYIFyajS1xQnlY1UJFFT+LYInWLXZcO8WGb+Q==
+X-Received: by 2002:a7b:cd86:: with SMTP id y6mr12203560wmj.101.1572187413656;
+        Sun, 27 Oct 2019 07:43:33 -0700 (PDT)
 Received: from localhost (94.222.26.109.rev.sfr.net. [109.26.222.94])
-        by smtp.gmail.com with ESMTPSA id h124sm1133697wmf.30.2019.10.27.07.43.31
+        by smtp.gmail.com with ESMTPSA id l15sm1194788wme.5.2019.10.27.07.43.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Oct 2019 07:43:31 -0700 (PDT)
-Date:   Sun, 27 Oct 2019 09:08:23 +0100
+        Sun, 27 Oct 2019 07:43:32 -0700 (PDT)
+Date:   Sun, 27 Oct 2019 09:12:13 +0100
 From:   Stefan Hajnoczi <stefanha@gmail.com>
 To:     Stefano Garzarella <sgarzare@redhat.com>
 Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
@@ -59,16 +59,16 @@ Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jorgen Hansen <jhansen@vmware.com>
-Subject: Re: [PATCH net-next 07/14] vsock: handle buffer_size sockopts in the
- core
-Message-ID: <20191027080823.GB4472@stefanha-x1.localdomain>
+Subject: Re: [PATCH net-next 08/14] vsock: add vsock_create_connected()
+ called by transports
+Message-ID: <20191027081213.GC4472@stefanha-x1.localdomain>
 References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-8-sgarzare@redhat.com>
+ <20191023095554.11340-9-sgarzare@redhat.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="rS8CxjVDS/+yyDmU"
+        protocol="application/pgp-signature"; boundary="DSayHWYpDlRfCAAQ"
 Content-Disposition: inline
-In-Reply-To: <20191023095554.11340-8-sgarzare@redhat.com>
+In-Reply-To: <20191023095554.11340-9-sgarzare@redhat.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -76,57 +76,44 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---rS8CxjVDS/+yyDmU
+--DSayHWYpDlRfCAAQ
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 23, 2019 at 11:55:47AM +0200, Stefano Garzarella wrote:
-> virtio_transport and vmci_transport handle the buffer_size
-> sockopts in a very similar way.
+On Wed, Oct 23, 2019 at 11:55:48AM +0200, Stefano Garzarella wrote:
+> All transports call __vsock_create() with the same parameters,
+> most of them depending on the parent socket. In order to simplify
+> the VSOCK core APIs exposed to the transports, this patch adds
+> the vsock_create_connected() callable from transports to create
+> a new socket when a connection request is received.
+> We also unexported the __vsock_create().
 >=20
-> In order to support multiple transports, this patch moves this
-> handling in the core to allow the user to change the options
-> also if the socket is not yet assigned to any transport.
->=20
-> This patch also adds the '.notify_buffer_size' callback in the
-> 'struct virtio_transport' in order to inform the transport,
-> when the buffer_size is changed by the user. It is also useful
-> to limit the 'buffer_size' requested (e.g. virtio transports).
->=20
-> Acked-by: Dexuan Cui <decui@microsoft.com>
+> Suggested-by: Stefan Hajnoczi <stefanha@redhat.com>
 > Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 > ---
-> RFC -> v1:
-> - changed .notify_buffer_size return to void (Stefan)
-> - documented that .notify_buffer_size is called with sk_lock held (Stefan)
-> ---
->  drivers/vhost/vsock.c                   |  7 +-
->  include/linux/virtio_vsock.h            | 15 +----
->  include/net/af_vsock.h                  | 15 ++---
->  net/vmw_vsock/af_vsock.c                | 43 ++++++++++---
->  net/vmw_vsock/hyperv_transport.c        | 36 -----------
->  net/vmw_vsock/virtio_transport.c        |  8 +--
->  net/vmw_vsock/virtio_transport_common.c | 79 ++++-------------------
->  net/vmw_vsock/vmci_transport.c          | 86 +++----------------------
->  net/vmw_vsock/vmci_transport.h          |  3 -
->  9 files changed, 65 insertions(+), 227 deletions(-)
+>  include/net/af_vsock.h                  |  5 +----
+>  net/vmw_vsock/af_vsock.c                | 20 +++++++++++++-------
+>  net/vmw_vsock/hyperv_transport.c        |  3 +--
+>  net/vmw_vsock/virtio_transport_common.c |  3 +--
+>  net/vmw_vsock/vmci_transport.c          |  3 +--
+>  5 files changed, 17 insertions(+), 17 deletions(-)
 
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 
---rS8CxjVDS/+yyDmU
+--DSayHWYpDlRfCAAQ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl21UHcACgkQnKSrs4Gr
-c8jf5wf6ArMyUiMMsXentQxUSlbUpCtIRf1HllqzAAYdsb4/GngX/TcZHaVU4JYg
-vnMxPnYs9IatdJgEmJ2oV7Xemt2KdT67eqeqpeUuvOXzwCFTqx7gmCq0GYXPobTW
-5Km+oVwrDxfzrUNVK5ZmeFhOSQuB09zbY1JhuwXTiX+nXOVOBP91Mt3i5wijc6a1
-M6W2KtgysSkW1K4tf+8/c12QdNlB5bwL6HX2Tgop6bE+yTFpxmykopRkXonrLSQ7
-2Ba02wkFAOakw0f9AlF0xBCJfY8OvHUNPYRvnh5g9OJc9DjvZPl2p2PLTpMv7DLm
-XF8KeD/VWkSjA8RIYlUYmzUdVvshGA==
-=oEzi
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl21UV0ACgkQnKSrs4Gr
+c8j8/ggAyDA6UkgCfi0daj2HF5HCXYLlJ9/XXtklusGF1Wc9tWjzw/GXPdNlYum9
+SqWtDu4YlWC3HH5TXKiMuTFjsumU6qJOSXKbPTFOmHdsQAnYeBMB1LZZRAd1O85T
+LeBzRaNJjd+3qcjEeGf4gy7TuHGk49qnJaaP9n+SvheaN6DRf4cVJYhVYHf15xnI
+qyhbT8cq5YcgszT/mp/D4guFPl9gYFPT7IqFvN8FOhELWmj7q6noJqAlEiUMsOSW
+fg8L76b1v8h04Q7iF2lmvUMFu3q9POIgkxqCQcYZzxJUMFLJez2y8nWnRIbNLJnJ
+l70AGpwkVMKXrJfa8DwyCI39cmT1Hg==
+=06uZ
 -----END PGP SIGNATURE-----
 
---rS8CxjVDS/+yyDmU--
+--DSayHWYpDlRfCAAQ--
