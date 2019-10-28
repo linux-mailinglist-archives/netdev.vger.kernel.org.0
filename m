@@ -2,34 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1DFE72F0
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 14:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19578E72F9
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 14:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389679AbfJ1N4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 09:56:35 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54232 "EHLO
+        id S2389687AbfJ1N7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 09:59:10 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:44318 "EHLO
         dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727567AbfJ1N4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 09:56:35 -0400
+        by vger.kernel.org with ESMTP id S1727243AbfJ1N7J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 09:59:09 -0400
 X-Virus-Scanned: Proofpoint Essentials engine
 Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id AC1DF140078;
-        Mon, 28 Oct 2019 13:56:33 +0000 (UTC)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8C2A2140073;
+        Mon, 28 Oct 2019 13:59:08 +0000 (UTC)
 Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
  ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Mon, 28 Oct 2019 13:56:28 +0000
+ 15.0.1395.4; Mon, 28 Oct 2019 13:59:03 +0000
 From:   Charles McLachlan <cmclachlan@solarflare.com>
-Subject: [PATCH net-next v2 0/6] sfc: Add XDP support
+Subject: [PATCH net-next v2 1/6] sfc: support encapsulation of xdp_frames in
+ efx_tx_buffer
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
         <brouer@redhat.com>
-Message-ID: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
-Date:   Mon, 28 Oct 2019 13:56:17 +0000
+References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
+Message-ID: <24dbbb44-3f73-6017-225a-30d9dff8e954@solarflare.com>
+Date:   Mon, 28 Oct 2019 13:59:00 +0000
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.1
 MIME-Version: 1.0
+In-Reply-To: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
 Content-Type: text/plain; charset="windows-1252"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -37,49 +40,86 @@ X-Originating-IP: [10.17.20.154]
 X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
  ukex01.SolarFlarecom.com (10.17.10.4)
 X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25006.003
-X-TM-AS-Result: No-0.704000-8.000000-10
-X-TMASE-MatchedRID: rx+pvSBilgzSfkI8LIozOyAI8aJmq0jw4+QcMo54nTiMUViaYYbK3JdL
-        XG1oAbASHBeCYRWJgIo/R3Sjv4UxLqn7cUty5471qjZ865FPtpoO9z+P2gwiBcz/SxKo9mJ44rl
-        +FHG3VoAGUmUBKg9hSaLbzE92hJygs+W45XOOo5duh7qwx+D6T3qLr3o+NE+IHdFjikZMLIdcpk
-        b9zUI7BOGgS4rOorYrl6GYMIzN7TujxYyRBa/qJX3mXSdV7KK4mVLlQk0G3GfCttcwYNipX2Piw
-        HD6nUln2OZlONgsq0dKEri3IQEi12u9DhurUq4RbLuk4LhSCe1Bi+tUnmGHEx/5XyyFA1u2oHnG
-        G8wRbgR1+S2w0xe3ShWrbX22XTSOfObqGK9JplminaV/dK0aEhK3Vty8oXtk2SsLyY4gH4tVyvb
-        Tg/runA==
+X-TM-AS-Result: No-0.364200-8.000000-10
+X-TMASE-MatchedRID: Bb4UMhd8oSWhqGDU6KwoEDCMW7zNwFaIURtSyr9IJuWdzjX37VUcWsiT
+        Wug2C4DNl1M7KT9/aqA0uSYsteWBcgihmwiXCMoGPwKTD1v8YV5MkOX0UoduuWOMyb1Ixq8VpIs
+        onG6IBJL3r6E0eamPVLdcsksEb7ZAOzpEi4NJ5xP1xv2JHBkcH0T0lGtfbK/pQW6eCaGxKwJ4pq
+        O87q5acCDNUEs+GH8s3yKsu6qwUKcX/ky8TX34OqubsOtSWY2QkZOl7WKIImpvmJzqtHKHjwtuK
+        BGekqUpOlxBO2IcOBbWk0nQ4NX0AhgFUF08WyGJ2RutfHU9JiQPqyY8fNao6lUNc2D7Sygp4d8q
+        xAlWF8CRWYuNJeJdSC/ozfsngTZul4VSsRFgu5cXxY6mau8LG3IJh4dBcU42f4hpTpoBF9JqxGC
+        SzFD9Mq9DVtyhkQKh
 X-TM-AS-User-Approved-Sender: Yes
 X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-0.704000-8.000000
+X-TMASE-Result: 10--0.364200-8.000000
 X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25006.003
-X-MDID: 1572270994-01sN_pB0Yhw8
+X-MDID: 1572271149-P9W_DFIpTS-3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Supply the XDP callbacks in netdevice ops that enable lower level processing
-of XDP frames.
+Add a field to efx_tx_buffer so that we can track xdp_frames. Add a
+flag so that buffers that contain xdp_frames can be identified and
+passed to xdp_return_frame.
 
-Changes since last submission:
-- Use of xdp_return_frame_rx_napi() in tx.c
-- Addition of xdp_rxq_info_valid and xdp_rxq_info_failed to track when
-  xdp_rxq_info failures occur.
-- Renaming of rc to err and more use of unlikely().
-- Cut some duplicated code and fix an array overrun.
-- Actually increment n_rx_xdp_tx when packets are transmitted.
+Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
+---
+ drivers/net/ethernet/sfc/net_driver.h | 10 ++++++++--
+ drivers/net/ethernet/sfc/tx.c         |  2 ++
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-Charles McLachlan (6):
-  sfc: support encapsulation of xdp_frames in efx_tx_buffer
-  sfc: perform XDP processing on received packets
-  sfc: Enable setting of xdp_prog
-  sfc: allocate channels for XDP tx queues
-  sfc: handle XDP_TX outcomes of XDP eBPF programs
-  sfc: add XDP counters to ethtool stats
-
- drivers/net/ethernet/sfc/ef10.c       |  10 +-
- drivers/net/ethernet/sfc/efx.c        | 269 ++++++++++++++++++++++----
- drivers/net/ethernet/sfc/efx.h        |   3 +
- drivers/net/ethernet/sfc/ethtool.c    |  25 +++
- drivers/net/ethernet/sfc/net_driver.h |  64 +++++-
- drivers/net/ethernet/sfc/rx.c         | 147 +++++++++++++-
- drivers/net/ethernet/sfc/tx.c         |  74 +++++++
- 7 files changed, 549 insertions(+), 43 deletions(-)
-
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 284a1b047ac2..7394d901e021 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -27,6 +27,7 @@
+ #include <linux/i2c.h>
+ #include <linux/mtd/mtd.h>
+ #include <net/busy_poll.h>
++#include <net/xdp.h>
+ 
+ #include "enum.h"
+ #include "bitfield.h"
+@@ -136,7 +137,8 @@ struct efx_special_buffer {
+  * struct efx_tx_buffer - buffer state for a TX descriptor
+  * @skb: When @flags & %EFX_TX_BUF_SKB, the associated socket buffer to be
+  *	freed when descriptor completes
+- * @option: When @flags & %EFX_TX_BUF_OPTION, a NIC-specific option descriptor.
++ * @xdpf: When @flags & %EFX_TX_BUF_XDP, the XDP frame information; its @data
++ *	member is the associated buffer to drop a page reference on.
+  * @dma_addr: DMA address of the fragment.
+  * @flags: Flags for allocation and DMA mapping type
+  * @len: Length of this fragment.
+@@ -146,7 +148,10 @@ struct efx_special_buffer {
+  * Only valid if @unmap_len != 0.
+  */
+ struct efx_tx_buffer {
+-	const struct sk_buff *skb;
++	union {
++		const struct sk_buff *skb;
++		struct xdp_frame *xdpf;
++	};
+ 	union {
+ 		efx_qword_t option;
+ 		dma_addr_t dma_addr;
+@@ -160,6 +165,7 @@ struct efx_tx_buffer {
+ #define EFX_TX_BUF_SKB		2	/* buffer is last part of skb */
+ #define EFX_TX_BUF_MAP_SINGLE	8	/* buffer was mapped with dma_map_single() */
+ #define EFX_TX_BUF_OPTION	0x10	/* empty buffer for option descriptor */
++#define EFX_TX_BUF_XDP		0x20	/* buffer was sent with XDP */
+ 
+ /**
+  * struct efx_tx_queue - An Efx TX queue
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/tx.c
+index 65e81ec1b314..204aafb3d96a 100644
+--- a/drivers/net/ethernet/sfc/tx.c
++++ b/drivers/net/ethernet/sfc/tx.c
+@@ -95,6 +95,8 @@ static void efx_dequeue_buffer(struct efx_tx_queue *tx_queue,
+ 		netif_vdbg(tx_queue->efx, tx_done, tx_queue->efx->net_dev,
+ 			   "TX queue %d transmission id %x complete\n",
+ 			   tx_queue->queue, tx_queue->read_count);
++	} else if (buffer->flags & EFX_TX_BUF_XDP) {
++		xdp_return_frame_rx_napi(buffer->xdpf);
+ 	}
+ 
+ 	buffer->len = 0;
