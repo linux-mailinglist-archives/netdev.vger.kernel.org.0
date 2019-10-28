@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17452E78C4
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5895CE78DF
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 20:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728819AbfJ1Svk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 14:51:40 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:43726 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727218AbfJ1Svk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:51:40 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 3so7481033pfb.10;
-        Mon, 28 Oct 2019 11:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=4FYNWJKX/XjWeMthjDP9NPXXb7ZZAxlczEJEW9ICuKU=;
-        b=ZWfPnOj/qdzvpgxr9MmWErn5OrmtLT+k/g3sZTHiCQeeQK0ROyMMDhI9w67lzmwIn8
-         OpjFKAHZ3aRh4EaUTmXG59bPGfFi9RFrIXdnMJSLyW+bFJATYfarz461YX7DeKwwAoPw
-         RNEU4Iz8pI/eykMx8MUY0SAtbedrhXI9MVDsMUaNLwYFc5YT4K0p8ugo+Ut77ZXvTeL7
-         MhEMq2QMTpHu2oTmqwh5Smc4s71mnklIKkAKDrei17uu9zGfL7GzC+d3JB87lUJCbI/6
-         Tp9BLLo7TwLN9uqQah2NLQ9515q8f0gZ+2QOxLINCCYN2z1maYGVOLXLAuMtpPKTp26W
-         Aa/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=4FYNWJKX/XjWeMthjDP9NPXXb7ZZAxlczEJEW9ICuKU=;
-        b=FPO6JRkMYZ/K8GApAZoZA9324YhNxZPMVoq+zdWsaASiVTjSrCbQBTfnLQXKIHVGXH
-         IFuxuFqk+pglU8KmQaXTXPphNzN46FSC+Wa9nO9WGCUA/MXBgz1063OW1cj42X1mOrTG
-         D3J8WJfajPcdiDN3jozkuwaIIVe0NxJBS+sPlBXCjzOLYj6U1SU+vERoYIg+Q9r1klN8
-         +bZ031ekNJMXsv/PyJhQ/LCtv63R2hHaMCGB83sK+WH8ecLZmQYUyqs5xTpvTjjcKbGD
-         MgKd48QFW7FbZyofhuuwtUEu2tVfU+MTWBdfKlahJw0fzIul8mvSZHjYrGKlvbe3dLE3
-         v/Mg==
-X-Gm-Message-State: APjAAAXDV+fDPVthd7NdJ2hfbvd7zo8QGdlGDsAwDV+k44lsK3xAcNiV
-        BR8RufX1pE9PCTMf+yMl7QY=
-X-Google-Smtp-Source: APXvYqz9KuP8dCjEM+asWAoWnPH6ltjtJ4yxUQQDnNOLpZ3OiJVgE8P66QG/GmHdNAjoHYVJGFwX0w==
-X-Received: by 2002:a63:f923:: with SMTP id h35mr22990453pgi.323.1572288699408;
-        Mon, 28 Oct 2019 11:51:39 -0700 (PDT)
-Received: from saurav ([27.62.167.137])
-        by smtp.gmail.com with ESMTPSA id p9sm6250257pfq.40.2019.10.28.11.51.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 11:51:38 -0700 (PDT)
-Date:   Tue, 29 Oct 2019 00:21:30 +0530
-From:   Saurav Girepunje <saurav.girepunje@gmail.com>
-To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
-        Larry.Finger@lwfinger.net, saurav.girepunje@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     saurav.girepunje@hotmail.com
-Subject: [PATCH] rtlwifi: rtl8192c: Drop condition with no effect
-Message-ID: <20191028185130.GA26825@saurav>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1729275AbfJ1TBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 15:01:16 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:43406 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727218AbfJ1TBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 15:01:16 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7D90C13EA7015;
+        Mon, 28 Oct 2019 12:01:14 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 12:01:13 -0700 (PDT)
+Message-Id: <20191028.120113.302853319604481823.davem@davemloft.net>
+To:     sheetal.tigadoli@broadcom.com
+Cc:     zajec5@gmail.com, gregkh@linuxfoundation.org,
+        michal.simek@xilinx.com, rajan.vaja@xilinx.com,
+        scott.branden@broadcom.com, ray.jui@broadcom.com,
+        vikram.prakash@broadcom.com, jens.wiklander@linaro.org,
+        michael.chan@broadcom.com, vikas.gupta@broadcom.com,
+        vasundhara-v.volam@broadcom.com, linux-kernel@vger.kernel.org,
+        tee-dev@lists.linaro.org, bcm-kernel-feedback-list@broadcom.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH V3 0/3] Add OP-TEE based bnxt f/w manager
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191028.114915.4026077453899574.davem@davemloft.net>
+References: <1571895161-26487-1-git-send-email-sheetal.tigadoli@broadcom.com>
+        <20191028.114915.4026077453899574.davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=iso-8859-7
+Content-Transfer-Encoding: base64
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 28 Oct 2019 12:01:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the "else if" and "else" branch body are identical the condition
-has no effect. So drop the "else if" condition.
-
-Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
----
- drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c
-index f2908ee5f860..4bef237f488d 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192c/dm_common.c
-@@ -1649,8 +1649,6 @@ static void rtl92c_bt_ant_isolation(struct ieee80211_hw *hw, u8 tmp1byte)
- 			    (rtlpriv->btcoexist.bt_rssi_state &
- 			    BT_RSSI_STATE_SPECIAL_LOW)) {
- 			rtl_write_byte(rtlpriv, REG_GPIO_MUXCFG, 0xa0);
--		} else if (rtlpriv->btcoexist.bt_service == BT_PAN) {
--			rtl_write_byte(rtlpriv, REG_GPIO_MUXCFG, tmp1byte);
- 		} else {
- 			rtl_write_byte(rtlpriv, REG_GPIO_MUXCFG, tmp1byte);
- 		}
--- 
-2.20.1
-
+RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogTW9uLCAyOCBP
+Y3QgMjAxOSAxMTo0OToxNSAtMDcwMCAoUERUKQ0KDQo+IEZyb206IFNoZWV0YWwgVGlnYWRvbGkg
+PHNoZWV0YWwudGlnYWRvbGlAYnJvYWRjb20uY29tPg0KPiBEYXRlOiBUaHUsIDI0IE9jdCAyMDE5
+IDExOjAyOjM4ICswNTMwDQo+IA0KPj4gVGhpcyBwYXRjaCBzZXJpZXMgYWRkcyBzdXBwb3J0IGZv
+ciBURUUgYmFzZWQgQk5YVCBmaXJtd2FyZQ0KPj4gbWFuYWdlbWVudCBtb2R1bGUgYW5kIHRoZSBk
+cml2ZXIgY2hhbmdlcyB0byBpbnZva2UgT1AtVEVFDQo+PiBBUElzIHRvIGZhc3Rib290IGZpcm13
+YXJlIGFuZCB0byBjb2xsZWN0IGNyYXNoIGR1bXAuDQo+PiANCj4+IGNoYW5nZXMgZnJvbSB2MjoN
+Cj4+ICAtIGFkZHJlc3MgcmV2aWV3IGNvbW1lbnRzIGZyb20gSmFrdWINCj4gDQo+IFNlcmllcyBh
+cHBsaWVkIHRvIG5ldC1uZXh0Lg0KPiANCj4gUGxlYXNlIHByb3Blcmx5IGFubm90YXRlIHlvdXIg
+U3ViamVjdCBsaW5lcyBpbiB0aGUgZnV0dXJlIHRvIGluZGljYXRlDQo+IHRoZSBleGFjdCBHSVQg
+dHJlZSB5b3VyIHBhdGNoZXMgYXJlIHRhcmdldHRpbmcsIGFsYSAiW1BBVENIIG5ldC1uZXh0IC4u
+Ll0iDQoNCkFjdHVhbGx5LCByZXZlcnRlZCwgdGhpcyBkb2Vzbid0IGV2ZW4gY29tcGlsZToNCg0K
+ZHJpdmVycy9maXJtd2FyZS9icm9hZGNvbS90ZWVfYm54dF9mdy5jOiBJbiBmdW5jdGlvbiChcHJl
+cGFyZV9hcmdzojoNCmRyaXZlcnMvZmlybXdhcmUvYnJvYWRjb20vdGVlX2JueHRfZncuYzoxNDoy
+NDogZXJyb3I6IKFTWl80TaIgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rpb24p
+DQogI2RlZmluZSBNQVhfU0hNX01FTV9TWiBTWl80TQ0KICAgICAgICAgICAgICAgICAgICAgICAg
+Xn5+fn4NCmRyaXZlcnMvZmlybXdhcmUvYnJvYWRjb20vdGVlX2JueHRfZncuYzo4MToyODogbm90
+ZTogaW4gZXhwYW5zaW9uIG9mIG1hY3JvIKFNQVhfU0hNX01FTV9TWqINCiAgIHBhcmFtWzBdLnUu
+bWVtcmVmLnNpemUgPSBNQVhfU0hNX01FTV9TWjsNCiAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBefn5+fn5+fn5+fn5+fg0KZHJpdmVycy9maXJtd2FyZS9icm9hZGNvbS90ZWVfYm54dF9mdy5j
+OjE0OjI0OiBub3RlOiBlYWNoIHVuZGVjbGFyZWQgaWRlbnRpZmllciBpcyByZXBvcnRlZCBvbmx5
+IG9uY2UgZm9yIGVhY2ggZnVuY3Rpb24gaXQgYXBwZWFycyBpbg0KICNkZWZpbmUgTUFYX1NITV9N
+RU1fU1ogU1pfNE0NCiAgICAgICAgICAgICAgICAgICAgICAgIF5+fn5+DQpkcml2ZXJzL2Zpcm13
+YXJlL2Jyb2FkY29tL3RlZV9ibnh0X2Z3LmM6ODE6Mjg6IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBt
+YWNybyChTUFYX1NITV9NRU1fU1qiDQogICBwYXJhbVswXS51Lm1lbXJlZi5zaXplID0gTUFYX1NI
+TV9NRU1fU1o7DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn4NCmRy
+aXZlcnMvZmlybXdhcmUvYnJvYWRjb20vdGVlX2JueHRfZncuYzogSW4gZnVuY3Rpb24goXRlZV9i
+bnh0X2Z3X3Byb2JlojoNCmRyaXZlcnMvZmlybXdhcmUvYnJvYWRjb20vdGVlX2JueHRfZncuYzox
+NDoyNDogZXJyb3I6IKFTWl80TaIgdW5kZWNsYXJlZCAoZmlyc3QgdXNlIGluIHRoaXMgZnVuY3Rp
+b24pDQogI2RlZmluZSBNQVhfU0hNX01FTV9TWiBTWl80TQ0KICAgICAgICAgICAgICAgICAgICAg
+ICAgXn5+fn4NCmRyaXZlcnMvZmlybXdhcmUvYnJvYWRjb20vdGVlX2JueHRfZncuYzoyMTQ6NDQ6
+IG5vdGU6IGluIGV4cGFuc2lvbiBvZiBtYWNybyChTUFYX1NITV9NRU1fU1qiDQogIGZ3X3NobV9w
+b29sID0gdGVlX3NobV9hbGxvYyhwdnRfZGF0YS5jdHgsIE1BWF9TSE1fTUVNX1NaLA0KICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBefn5+fn5+fn5+fn5+fg0K
