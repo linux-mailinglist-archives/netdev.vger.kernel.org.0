@@ -2,87 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6709BE77CC
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:46:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35133E77E3
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:55:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404171AbfJ1Rq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 13:46:28 -0400
-Received: from dispatchb-us1.ppe-hosted.com ([148.163.129.53]:51292 "EHLO
-        dispatchb-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731878AbfJ1Rq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:46:28 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C9E72940054;
-        Mon, 28 Oct 2019 17:46:26 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 28 Oct
- 2019 17:46:21 +0000
-Subject: Re: [PATCH net-next v2 2/6] sfc: perform XDP processing on received
- packets
-To:     Charles McLachlan <cmclachlan@solarflare.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-net-drivers@solarflare.com>
-References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
- <38a43fa5-5682-ffd9-f33e-5b7e04d50903@solarflare.com>
- <20191028173321.5254abf3@carbon>
- <094a9975-f1bb-7e44-10e4-64456f924ac9@solarflare.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <f9de8c74-b567-ac57-b1d5-dff8ce6ff191@solarflare.com>
-Date:   Mon, 28 Oct 2019 17:46:18 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        id S2390746AbfJ1RzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 13:55:13 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:44353 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730395AbfJ1RzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:55:13 -0400
+Received: by mail-pg1-f195.google.com with SMTP id e10so7363243pgd.11
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 10:55:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=XzpTan8+i3B861bOkzCgxWVBcpdZyq9MdPABjYUZBgQ=;
+        b=oSy+4rOh8KWTH/gIyqSaytcg7to4HP8L8rh7yGFyrKygpn7vuTWG1Y4quilc3aX4dW
+         Quq+GiHWZ1SiV3QId+vN6XMHjSJsmTnwsvdsvp/zAPO9ELfFpHyj6yZZpJNSfym+NVgw
+         HzSvO5YaC9G6UiBFjUsIQ6dw70Ujc+c8gGusIZp94sB4exmhtoOb9URSq1Dx/RfOPFEs
+         a9bD12RsLVBhYkRmFwEyZDi6xkiwKshdO5lYIhI7SmGlL7S/NahyCgXZF0EzZ9F71L3q
+         oWqiDkaVJUtS9jf6otdaODvMAhqRD3INHQ8qey5joUdm8UfFYeu3t3TpgYlcKoKImkjU
+         KaRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=XzpTan8+i3B861bOkzCgxWVBcpdZyq9MdPABjYUZBgQ=;
+        b=NpzWaD5KJg+13Y+O36kFYdJqIZ1OWGObJgQXSOTA+AwhNJeB++FTq8SzsirBbxt6Lq
+         VCq9zeagy2x+QrZvxGQnwxL1Ezll5u5OWmk2SUHweFIHSyoAA++aLlhbPrr/LXm7JHAn
+         2zsU4xm1AStUg3M9J/uCxFsRCFjltoryqithHHAAmYSdXW6u+7sJGmc56mpK3kP4z3yT
+         hVYwlzieb8vfR/3FEXaOzc6WkWZw7tRMUb71L5i8XxlGTgXzoTahd5Quq19oh/OYFwkG
+         GeINCClPytGq/DDSNYQopqmlb5gVpBZgInFYF1Ck+D1m2sEdL9gCmftzL34foqd8f0VH
+         w4pg==
+X-Gm-Message-State: APjAAAUakCf5ZWoPFnpTUCMxqHn+03WQNbOorn/+Xk2qFNTf+LvtTkw2
+        Tg3ojyqBJ1/P36Q0DcawxSBtwQ==
+X-Google-Smtp-Source: APXvYqw9h0io44UIDPb6BEpXUzgy/w877Ppb+p+ryUkh+wd7UWlExOeW5pyTQArXeU2xjBzv2aqfKQ==
+X-Received: by 2002:aa7:9295:: with SMTP id j21mr22355815pfa.223.1572285312139;
+        Mon, 28 Oct 2019 10:55:12 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id w27sm9763868pgc.20.2019.10.28.10.55.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 10:55:11 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 10:55:08 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        toke@redhat.com
+Subject: Re: [PATCH bpf-next v2 1/2] xsk: store struct xdp_sock as a
+ flexible array member of the XSKMAP
+Message-ID: <20191028105508.4173bf8b@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20191025071842.7724-2-bjorn.topel@gmail.com>
+References: <20191025071842.7724-1-bjorn.topel@gmail.com>
+        <20191025071842.7724-2-bjorn.topel@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <094a9975-f1bb-7e44-10e4-64456f924ac9@solarflare.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25006.003
-X-TM-AS-Result: No-2.190100-8.000000-10
-X-TMASE-MatchedRID: cgbqQT5W8hfmLzc6AOD8DfHkpkyUphL9xmJ6Bfwk3mXRLEyE6G4DRPKD
-        H4hGq6yQAtF46hV6z7l7T7wx4sxS+0rYfGvC1HVrX77gEfDSNJwhBdUXaqx1XbxgMf9QE2ebIqm
-        Bfx8U8pmAAEhDtVVmUOYLxu5+inGRvSgjMukRBnQI5rLLSVe5tH0tCKdnhB58vqq8s2MNhPCXxk
-        CsDPSYDBQabjOuIvShC24oEZ6SpSlR8RAUGq/SZxhwMlrB6gTpl/fsk/SGUQVb0mlmdMFWmSRSp
-        slWJr+nMz/fMtcfViVqvVUJrgGm8pVVROsIqAyn4dkWtaEht9TpSZ2gObfVi4fMZMegLDIeGU0p
-        Knas+RbnCJftFZkZizYJYNFU00e7O8/z8zQ+NO3AvpLE+mvX8g==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-2.190100-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25006.003
-X-MDID: 1572284787-B6EyFtL0FN57
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/10/2019 17:11, Charles McLachlan wrote:
->>> +		efx_free_rx_buffers(rx_queue, rx_buf, 1);
->>> +		break;
->> You can do a /* Fall through */ to case XDP_DROP.
-> but not if I put the trace_xdp_exception in as well. I think we're always going 
-> to need two efx_free_rx_buffers calls.
+On Fri, 25 Oct 2019 09:18:40 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>=20
+> Prior this commit, the array storing XDP socket instances were stored
+> in a separate allocated array of the XSKMAP. Now, we store the sockets
+> as a flexible array member in a similar fashion as the arraymap. Doing
+> so, we do less pointer chasing in the lookup.
+>=20
+> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
 
-This will probably make people scream, but I have an evil hack to deal with
- situations like this:
+Thanks for the re-spin.
 
-	default:
-		bpf_warn_invalid_xdp_action(xdp_act);
-		if (0) /* Fall further */
-			/* Fall through */
-	case XDP_ABORTED:
-		trace_xdp_exception(netdev, xdp_prog, xdp_act);
-		/* Fall through */
-	case XDP_DROP:
-		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-		break;
+> diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+> index 82a1ffe15dfa..a83e92fe2971 100644
+> --- a/kernel/bpf/xskmap.c
+> +++ b/kernel/bpf/xskmap.c
 
-I wonder if gcc's Wimplicit-fallthrough logic can comprehend that?  Or if
- it'll trigger -Wmisleading-indentation?
+> @@ -92,44 +93,35 @@ static struct bpf_map *xsk_map_alloc(union bpf_attr *=
+attr)
+>  	    attr->map_flags & ~(BPF_F_NUMA_NODE | BPF_F_RDONLY | BPF_F_WRONLY))
+>  		return ERR_PTR(-EINVAL);
+> =20
+> -	m =3D kzalloc(sizeof(*m), GFP_USER);
+> -	if (!m)
+> +	numa_node =3D bpf_map_attr_numa_node(attr);
+> +	size =3D struct_size(m, xsk_map, attr->max_entries);
+> +	cost =3D size + array_size(sizeof(*m->flush_list), num_possible_cpus());
 
--Ed
+Now we didn't use array_size() previously because the sum here may
+overflow.
+
+We could use __ab_c_size() here, the name is probably too ugly to use
+directly and IDK what we'd have to name such a accumulation helper...
+
+So maybe just make cost and size a u64 and we should be in the clear.
+
+> +	err =3D bpf_map_charge_init(&mem, cost);
+> +	if (err < 0)
+> +		return ERR_PTR(err);
+> +
+> +	m =3D bpf_map_area_alloc(size, numa_node);
+> +	if (!m) {
+> +		bpf_map_charge_finish(&mem);
+>  		return ERR_PTR(-ENOMEM);
+> +	}
+> =20
+>  	bpf_map_init_from_attr(&m->map, attr);
+> +	bpf_map_charge_move(&m->map.memory, &mem);
+>  	spin_lock_init(&m->lock);
+> =20
+> -	cost =3D (u64)m->map.max_entries * sizeof(struct xdp_sock *);
+> -	cost +=3D sizeof(struct list_head) * num_possible_cpus();
+> -
+> -	/* Notice returns -EPERM on if map size is larger than memlock limit */
+> -	err =3D bpf_map_charge_init(&m->map.memory, cost);
+> -	if (err)
+> -		goto free_m;
+> -
+> -	err =3D -ENOMEM;
+> -
+>  	m->flush_list =3D alloc_percpu(struct list_head);
+> -	if (!m->flush_list)
+> -		goto free_charge;
+> +	if (!m->flush_list) {
+> +		bpf_map_charge_finish(&m->map.memory);
+> +		bpf_map_area_free(m);
+> +		return ERR_PTR(-ENOMEM);
+> +	}
+> =20
+>  	for_each_possible_cpu(cpu)
+>  		INIT_LIST_HEAD(per_cpu_ptr(m->flush_list, cpu));
+> =20
+> -	m->xsk_map =3D bpf_map_area_alloc(m->map.max_entries *
+> -					sizeof(struct xdp_sock *),
+> -					m->map.numa_node);
+> -	if (!m->xsk_map)
+> -		goto free_percpu;
+>  	return &m->map;
+> -
+> -free_percpu:
+> -	free_percpu(m->flush_list);
+> -free_charge:
+> -	bpf_map_charge_finish(&m->map.memory);
+> -free_m:
+> -	kfree(m);
+> -	return ERR_PTR(err);
+>  }
+> =20
+>  static void xsk_map_free(struct bpf_map *map)
