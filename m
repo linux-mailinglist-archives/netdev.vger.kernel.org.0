@@ -2,87 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EEE7E778E
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:24:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA5C0E77B3
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:36:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731836AbfJ1RYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 13:24:42 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45762 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730402AbfJ1RYm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:24:42 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c7so6151153pfo.12
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 10:24:41 -0700 (PDT)
+        id S1732058AbfJ1Rgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 13:36:36 -0400
+Received: from mail-pg1-f169.google.com ([209.85.215.169]:41433 "EHLO
+        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbfJ1Rgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:36:36 -0400
+Received: by mail-pg1-f169.google.com with SMTP id l3so7342170pgr.8
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 10:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=zei+itK9l69qPYdDOUyL0hXlzNIrf8Um9vf7savw6V4=;
-        b=t7Y4Vog/pNMataqZxWwJT9FT7uAbIUVK+nAfptFm3IO4rv0ewiwF3fXFx4uQvbYp1M
-         EL/5VT35pPuXh4/9RixFUn4q7+WyzktngKpHejkVXUJHR8nqsusKu1ooekXI+nYoa6kg
-         ocDlBxWaIuB44Ur79ASHY0sgfzCAPBPlrQiI0UJG61wgBojAuv4FtPB4brYHMP6axQXP
-         400c2jmN66USsHCHt6KNXwi7AsQusLULU1noM+4lkRSVFWWUdGtkHdVXURue84T2Ztwv
-         8M3jsBheqoGLhaZoI6ljvA5T1SQ8/ikohLqHlPJ82vHYMyldY/zM+3ExkVHuSVbQz1ei
-         QDoA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=rptm860BHGLEoa5GDqx1r11J8moja2nBrNeOQaD1UVY=;
+        b=UVBIgrUV79dn/FgtGv+G6IJZln9p8w1vjCWIMjTrfzAOnajQXbTSF1+i24UykPe3yw
+         uF+wgUCiPUOgqsDO2uSl/DFxewvkzXqujAH+p8Fh5SvdOV7JNEMjlmfBC+yEQRCq69lE
+         6zUAFRA0Lgy8ovEYBo6fVpWOcHA1gXlUHVQL1NOxI7hdiaOA0ZfKKORoUL/s7Un/WJ9Z
+         APmN/Chgfp90ciskrfArk2C6qR9XNiW0UCa8lRRI0iJl7fDfBkhJ9qwjIcaQehsswi4W
+         FZu1ziNFGSPhI/sCCS6I3HS9vrd3ANrFVWrJ0VOf7SaBL9fsy4S1z4FHTNWO9jNdgXlK
+         ELPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zei+itK9l69qPYdDOUyL0hXlzNIrf8Um9vf7savw6V4=;
-        b=Uvz73RR5CqDNFCnOm8+V1+qKD7dtBPwgmIuROv9g49f7+AFomp7gelBwnAx//03heL
-         WG6aotp2Fy9/au+2ExufcPrSfo7QCIclAe3ythS5Sa3I/hPsQdcfuSYaUbPxruVCIFIp
-         KlsISnfMYGz330iTu7A9kOgg3FKbGSmc5CRhs15BH+lza0oQet9ZIjw6h+gWG2tI0j+q
-         hghW6L5WJqNxdRdmXpypJezqKtlirFxyyrjgJIhA2M/cyVpeVeRM4A6ukshHUR2+el8Y
-         WSwKY8dNQgRaflqQiGixpP4wf4kzieBYxTEd5aKM5qLtAngiHn+6HV9QSnYiU46GAdqq
-         dPIw==
-X-Gm-Message-State: APjAAAWhdwembjrzVsH+XqPMUX/4U6ZxqqKmGk//1Hzsy8HA2q3fqfi1
-        8H70aRBIGmGqVICpjIH1U4Bjtr26
-X-Google-Smtp-Source: APXvYqxEP2lDwqhnASv28JfFmrqjCBpUJUnGYAhP4j6XEqN4aS2E2YVCWdhnVVzob4sUXz+bA5H5sQ==
-X-Received: by 2002:a63:c405:: with SMTP id h5mr21996468pgd.60.1572283481037;
-        Mon, 28 Oct 2019 10:24:41 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id q8sm11060377pgg.15.2019.10.28.10.24.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 28 Oct 2019 10:24:40 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Thomas Graf <tgraf@suug.ch>
-Subject: [PATCH net] vxlan: check tun_info options_len properly
-Date:   Tue, 29 Oct 2019 01:24:32 +0800
-Message-Id: <7cd6d34cc1a13810805b08da771848cfff315d5c.1572283472.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=rptm860BHGLEoa5GDqx1r11J8moja2nBrNeOQaD1UVY=;
+        b=pKODA32Jn1T5IhHHrAbN1/nnu5rLaFUFjtWUzax2wQ+0K9SoXsHX3hFFqeG7JJQ3lb
+         1Du0K6GdG0aUzjlCuhPhhGps3PheDi39Iaf6vAoEkX5RmtCn6KS1IOuxgE7ZUpt4K1St
+         Gsg9ZKFVt9OBtaA/mHfzWT3QcjXcImSPlyR3QdR+TvApousJ7doacvAmpjrUUbKe4Wb8
+         G9YBuhG5eTTBIwUdqycpMVGYUUoEnmvkt1fLDYy60oNLgAqtdSOGLfTHicmS+NlAyewu
+         2u46ctt6r62cIqjKUbHojYqVR4s+aMyMz3SGnp6suMspBMB7Z6wGL01UgIUZqdIDuhu1
+         FnOA==
+X-Gm-Message-State: APjAAAXX93euGgKYdgreksMrRWehzcALPDu7IBEa4do7+oEzl/9eXqcW
+        QeJsRFYNryEuibGKSfriJZzke1azK00=
+X-Google-Smtp-Source: APXvYqxyKfLtyxPOAG2wqJWr1+OvQTSuARciT5Rv9dYwRj2XIBjKa6Eh2FFZLwiyr1x4IGiSEL80EQ==
+X-Received: by 2002:a63:1f52:: with SMTP id q18mr22429682pgm.35.1572283851408;
+        Mon, 28 Oct 2019 10:30:51 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id w10sm134380pjq.3.2019.10.28.10.30.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 10:30:51 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 10:30:47 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Grubba, Arkadiusz" <arkadiusz.grubba@intel.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "Michael, Alice" <alice.michael@intel.com>
+Subject: Re: [net-next 02/11] i40e: Add ability to display VF stats along
+ with PF core stats
+Message-ID: <20191028103047.6d868753@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <35C27A066ED4844F952811E08E4D95090D398A32@IRSMSX103.ger.corp.intel.com>
+References: <20191023182426.13233-1-jeffrey.t.kirsher@intel.com>
+        <20191023182426.13233-3-jeffrey.t.kirsher@intel.com>
+        <20191023204149.4ae25f90@cakuba.hsd1.ca.comcast.net>
+        <35C27A066ED4844F952811E08E4D95090D398A32@IRSMSX103.ger.corp.intel.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to improve the tun_info options_len by dropping
-the skb when TUNNEL_VXLAN_OPT is set but options_len is less
-than vxlan_metadata. This can void a potential out-of-bounds
-access on ip_tun_info.
+On Mon, 28 Oct 2019 13:51:07 +0000, Grubba, Arkadiusz wrote:
+> Hi,
 
-Fixes: ee122c79d422 ("vxlan: Flow based tunneling")
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- drivers/net/vxlan.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Please don't top post.
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index fcf0282..ac5c597 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -2487,9 +2487,11 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
- 		vni = tunnel_id_to_key32(info->key.tun_id);
- 		ifindex = 0;
- 		dst_cache = &info->dst_cache;
--		if (info->options_len &&
--		    info->key.tun_flags & TUNNEL_VXLAN_OPT)
-+		if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
-+			if (info->options_len < sizeof(*md))
-+				goto drop;
- 			md = ip_tunnel_info_opts(info);
-+		}
- 		ttl = info->key.ttl;
- 		tos = info->key.tos;
- 		label = info->key.label;
--- 
-2.1.0
+> The main info about _what_ and _why_ , as you wrote, is explained in the first (i.e. title) line.
+> Namely, this change was introduced to "Add ability to display VF stats along with PF core stats" (for i40e equipment as prefix "i40e:" stands for it in the title).
+> 
+> (And if it was about general issues, i.e. why we introduce such changes, then, of course, they usually result mostly from the needs reported, e.g. by users using a given solution, although this does not change the nature/significance of the change from a technical point of view.)
+> 
+> As for further comments, that's right, you rightly notice here that the basic VF statistics are displayed and there may actually be an alternative possibility to check them (or other, newer solutions may appear that may enable it). The solution introduced here is simply one of the options (and maybe also the basis for further development of it).
+> But I don't know exactly for what specific purpose you mention it here?
+> What is the question? ...
+> (but for sure, if I guess right what you would like to ask, it's good to keep in mind that no tool is perfectly well in itself to the full extent of all use cases or... preferences - that's why we have alternatives and generally good to have them.)
+> 
+> [But also, such considerations already fall, for example, into the area of user preferences. And of course, the role of this patch is not to want to influence someone's preferences but only to provide some opportunity (as opposed to limiting the possibility of using various solutions, which should probably not be our goal...)
+> because among others here, this particular change is to be made available in connection with the exact and targeted needs raised by the users of the equipment affected by this code.]
+
+It's not a matter of preference. I object to abuse of free-form APIs
+for things which have proper, modern interfaces.
+
+You're adding 12 * 128 = 1536 statistics to ethtool -S. That's
+going to make the output absolutely unreadable for a human being.
+
+> As for the last point, this is indeed some oversight - yes, the last sentence is now unnecessary after rearranging this patch to meet the final requirements / agreements for the upstream (in-tree) version of it (as I also mentioned in my previous email - see attachment).
+> I think that instead of this last sentence in the commit message discussed here, and if you think it is important here, we may add (copy) from the original commit message this part of the text regarding description of displayed statistics:
+> 
+> +Testing hints:
+> +
+> +Use ethtool -S with this PF interface and check the output.
+> +Extra lines with the prefix "vf" should be displayed, e.g.:
+> +"
+> +     vf012.rx_bytes: 69264721849
+> +     vf012.rx_unicast: 45629259
+> +     vf012.rx_multicast: 9
+> +     vf012.rx_broadcast: 1
+> +     vf012.rx_discards: 2958
+> +     vf012.rx_unknown_protocol: 0
+> +     vf012.tx_bytes: 93048734
+> +     vf012.tx_unicast: 1409700
+> +     vf012.tx_multicast: 11
+> +     vf012.tx_broadcast: 0
+> +     vf012.tx_discards: 0
+> +     vf012.tx_errors: 0
+> +"
+> +(it's an example of a whole stats block for one VF).
+> +
+> +(For more specific tests:
+> +Create some VF interfaces, link them and give them IP addresses.
+> +Generate same network traffic and then follow the instructions above.)
+> 
+> 
+> (but for me it's really not certain whether in this particular case a larger description means better, especially since it is not so important from the point of view of the functioning of the kernel / driver or the system or interaction with them.)
+> 
+> Best Regards
+> A.G.
+> 
+> 
+> -----Original Message-----
+> From: Jakub Kicinski [mailto:jakub.kicinski@netronome.com] 
+> Sent: Thursday, October 24, 2019 5:42 AM
+> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: davem@davemloft.net; Grubba, Arkadiusz <arkadiusz.grubba@intel.com>; netdev@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com; Bowers, AndrewX <andrewx.bowers@intel.com>
+> Subject: Re: [net-next 02/11] i40e: Add ability to display VF stats along with PF core stats
+> 
+> On Wed, 23 Oct 2019 11:24:17 -0700, Jeff Kirsher wrote:
+> > From: Arkadiusz Grubba <arkadiusz.grubba@intel.com>
+> > 
+> > This change introduces the ability to display extended (enhanced) 
+> > statistics for PF interfaces.
+> > 
+> > The patch introduces new arrays defined for these extra stats (in 
+> > i40e_ethtool.c file) and enhances/extends ethtool ops functions 
+> > intended for dealing with PF stats (i.e.: i40e_get_stats_count(), 
+> > i40e_get_ethtool_stats(), i40e_get_stat_strings() ).  
+> 
+> This commit message doesn't explain _what_ stats your adding, and _why_.
+> 
+> From glancing at the code you're dumping 128 * 12 stats, which are basic netdev stats per-VF. 
+> 
+> These are trivially exposed on representors in modern designs.
+> 
+> > There have also been introduced the new build flag named 
+> > "I40E_PF_EXTRA_STATS_OFF" to exclude from the driver code all code 
+> > snippets associated with these extra stats.  
+> 
+> And this doesn't even exist in the patch.
+> 
+> > Signed-off-by: Arkadiusz Grubba <arkadiusz.grubba@intel.com>
+> > Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>  
+> 
+> --------------------------------------------------------------------
+> 
+> Intel Technology Poland sp. z o.o.
+> ul. Slowackiego 173 | 80-298 Gdansk | Sad Rejonowy Gdansk Polnoc | VII Wydzial Gospodarczy Krajowego Rejestru Sadowego - KRS 101882 | NIP 957-07-52-316 | Kapital zakladowy 200.000 PLN.
+> 
+> Ta wiadomosc wraz z zalacznikami jest przeznaczona dla okreslonego adresata i moze zawierac informacje poufne. W razie przypadkowego otrzymania tej wiadomosci, prosimy o powiadomienie nadawcy oraz trwale jej usuniecie; jakiekolwiek
+> przegladanie lub rozpowszechnianie jest zabronione.
+> This e-mail and any attachments may contain confidential material for the sole use of the intended recipient(s). If you are not the intended recipient, please contact the sender and delete all copies; any review or distribution by
+> others is strictly prohibited.
 
