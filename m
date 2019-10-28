@@ -2,93 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5933E6EF9
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 10:21:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E03E6EFC
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 10:22:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387991AbfJ1JVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 05:21:15 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:53488 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731818AbfJ1JVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 05:21:14 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 1804D60AD7; Mon, 28 Oct 2019 09:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572254474;
-        bh=VadqlEYYfxB7OwaJryx2n7rtLMjDQtS6L+9F+QovAbc=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=WKz+T/W5uKEyyW/O27wOpwhCdee/+JYZpj1lC8uhPHZeMV90qnZBEUU1hE1ATU3zx
-         dvnwkzNs+ZpMRGQnPmacOBk/D9ImEwzBEuVUJTXBYeTaG8GQpAYL93+GkJZWlO/YD3
-         9LamebTs+Mukr5XHg1mk2pqXAUuHOOuTay0smbYA=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (unknown [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 245736078F;
-        Mon, 28 Oct 2019 09:21:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572254472;
-        bh=VadqlEYYfxB7OwaJryx2n7rtLMjDQtS6L+9F+QovAbc=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=BdpVt/ohSPBR7p2rO6SPXPW9cFEAK4uwm4aH6CJZR/v9kZuK6rWpRnmdFTQvQujEs
-         4gvci4q/6+ySyXE/Ivj6B4mNKOWYeN+N8su3LLoY4EiR7Ah1cyAnR1DRl4hMr7933u
-         UGuNnejw+TkYRIXHydpStd+SJZFa410ecaGvD1Ko=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 245736078F
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Saurav Girepunje <saurav.girepunje@gmail.com>
-Cc:     davem@davemloft.net, allison@lohutok.net,
-        kstewart@linuxfoundation.org, opensource@jilayne.com,
-        mcgrof@kernel.org, saurav.girepunje@gmail.com, tglx@linutronix.de,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        saurav.girepunje@hotmail.com
-Subject: Re: [PATCH] net: wireless: broadcom: Fix use true/false for bool type variable.
-References: <20191027042422.GA7956@saurav>
-Date:   Mon, 28 Oct 2019 11:21:05 +0200
-In-Reply-To: <20191027042422.GA7956@saurav> (Saurav Girepunje's message of
-        "Sun, 27 Oct 2019 09:54:26 +0530")
-Message-ID: <87wocp8bum.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1731890AbfJ1JWA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 28 Oct 2019 05:22:00 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:54491 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728941AbfJ1JV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 05:21:59 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x9S9LbRM014005, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x9S9LbRM014005
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Mon, 28 Oct 2019 17:21:41 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Mon, 28 Oct
+ 2019 17:21:29 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "oliver@neukum.org" <oliver@neukum.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>
+Subject: RE: [PATCH 2/2] r8152: Add macpassthru support for ThinkPad Thunderbolt 3 Dock Gen 2
+Thread-Topic: [PATCH 2/2] r8152: Add macpassthru support for ThinkPad
+ Thunderbolt 3 Dock Gen 2
+Thread-Index: AQHViyNIwWDKAImfZESSShiKae+s26dvaNpQ//+TW4CAAMxToA==
+Date:   Mon, 28 Oct 2019 09:21:28 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18EF17F@RTITMBSVM03.realtek.com.tw>
+References: <20191025105919.689-1-kai.heng.feng@canonical.com>
+ <20191025105919.689-2-kai.heng.feng@canonical.com>
+ <0835B3720019904CB8F7AA43166CEEB2F18EEE4D@RTITMBSVM03.realtek.com.tw>
+ <3980F066-6783-45A6-9B34-1D838C2C1A2C@canonical.com>
+In-Reply-To: <3980F066-6783-45A6-9B34-1D838C2C1A2C@canonical.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(manually fixing the Cc field)
+Kai-Heng Feng [mailto:kai.heng.feng@canonical.com]
+> Sent: Monday, October 28, 2019 12:58 PM
+[...]
+> >> @@ -6754,6 +6779,8 @@ static const struct usb_device_id rtl8152_table[]
+> = {
+> >> 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f, 0)},
+> >> 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062, 0)},
+> >> 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069, 0)},
+> >> +	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3082,
+> >> +			R8152_QUIRK_LENOVO_MACPASSTHRU)},
+> >
+> > This limits the usage of driver_info. For example, I couldn't
+> > use it to store a pointer address anymore.
+> 
+> But will the driver ever use .driver_info for pointers?
+> There are many driver use it for quirks and quirks only.
 
-Saurav Girepunje <saurav.girepunje@gmail.com> writes:
+I prefer to keep .driver_info empty, even though it is not
+used currently.
 
-> use true/false for bool type variables assignment.
->
-> Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+The R8152_QUIRK_LENOVO_MACPASSTHRU is only used to set the
+flag of LENOVO_MACPASSTHRU in probe(), and it is used only once.
+Besides, it could be replaced by checking the vendor ID and
+product ID. Therefore, I don't think it is necessary to use
+driver_info , unless there are more devices needing it.
 
-I don't see any of your three patches in linux-wireless list and hence
-neither in patchwork:
+Best Regards,
+Hayes
 
-https://patchwork.kernel.org/project/linux-wireless/list/?state=*
 
-One reason might be the ';' character in the To field:
-
-To: kvalo@codeaurora.org;, davem@davemloft.net;, allison@lohutok.net;,
-	kstewart@linuxfoundation.org;, opensource@jilayne.com;,
-	mcgrof@kernel.org;, saurav.girepunje@gmail.com;, tglx@linutronix.de
-	;, linux-wireless@vger.kernel.org;, b43-dev@lists.infradead.org;,
-	netdev@vger.kernel.org;, linux-kernel@vger.kernel.org;
-
-Please fix that and resend all patches. Also the title prefix should be
-'b43:':
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#commit_title_is_wrong
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
