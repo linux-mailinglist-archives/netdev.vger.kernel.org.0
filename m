@@ -2,78 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11912E7873
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:34:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AFB1E78AF
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbfJ1Sed (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 14:34:33 -0400
-Received: from mail-yb1-f175.google.com ([209.85.219.175]:45268 "EHLO
-        mail-yb1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726706AbfJ1Sed (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:34:33 -0400
-Received: by mail-yb1-f175.google.com with SMTP id q143so4399550ybg.12
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 11:34:31 -0700 (PDT)
+        id S1727519AbfJ1Sn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 14:43:26 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38095 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726822AbfJ1Sn0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:43:26 -0400
+Received: by mail-qt1-f193.google.com with SMTP id t26so6041237qtr.5;
+        Mon, 28 Oct 2019 11:43:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XuZVBPNVHOV/lYT6HFSUjO3ekOeALhnMwVwLviZbIew=;
-        b=RNdCthK6XOl6jaU0cMlaao0aya+0jhpJ+5aeOlF7loj1QHJukzKTiAWuRwI5cCQmXc
-         YFP6FHJpkiV6+4qkM9szbm9EmzW69xhsAUHV+0lJhKqRQUOJ37tgj8d5awe+y2Lsb8mw
-         egXv5WfHMm0+hsKUW84baQkGOIdE/5gKII3duYPYmQ2u9gzpnNi7EQJzpopuCQG683hV
-         H/EBkBbG1EsvbL+xqLfBG2SF35RjX4OLRjV6v/VIY/9HwV1P1z3giFQR8Uy7AxO74P9t
-         7lJ/qrLT34Igl/dGYS4QzaOkMTmmD98p+83jf/HKMVqKv1W8oan8RQdryaBqm4Ji9uCz
-         cT2w==
+         :cc:content-transfer-encoding;
+        bh=3BNJfD66jRJDdvcQiIti5lw3kf5uDFmZbb4exmHMhAA=;
+        b=RDya/XLS2h+byE7Kaar9+V7Nu+RRvjBJ+cJ7aOlcq1Mk7bA3pP9ZdO8FfEhWOpuBCR
+         E8OQ12fHG99z0wRFV/4HFSnKSaaEP0Fq3RWY6tygNrodKpDqmDrHY/+bJSJWY/I0bIdO
+         mlRj6JMTa1Pxh/toQbzW3O2DyPPYQ4OpuB1UOQSt7EZafNY81MNkMcO5u5ZLcRbL1aLM
+         B6Glhxaaj42r9UHjVvnCj36Ke4f+eSbZXA9fDsWrj9i7NvnzCCntAPUg5o0g0OmPmi0o
+         PnqwmbWHqXc45mnG1pcyLEoQ6HKLK3NKOXK7ev0OWPXKSmwkIfL1Q0C+imLxhhizWzwH
+         mDCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XuZVBPNVHOV/lYT6HFSUjO3ekOeALhnMwVwLviZbIew=;
-        b=QM/9vN1Wpby7w2Mhu/L7J3vCGiFJD55oiDGVsLkUvaKJkVKWvuyxXyDS9SFcK0L5qv
-         NFlipuJua/FT/jD0ch2LvnI7wpfArP22jKz4isz1wjUa0qAKeit11cCQ9jhk2edOjY8u
-         aMusOIJ0vPR1a9i/Gp2JVjwTQC2ftxoKx4bLOmgDRYAFdx7SnL2a7PW7okFzJZrP+E97
-         xpHD79EUNmrXhfEPt57wrhHcYzfDxEzZtmmwOyeVb7KJchdiqX/Yz+qRgB2x31Y5y/DJ
-         1IKmEPIwzRUc2Ns4L/Z01yKm4Bmsso3PpeCS5ZAdohGTAK/hMwMGCoPMguR4y+75zgpt
-         awTQ==
-X-Gm-Message-State: APjAAAWeDYpXiudQGQMSKbwvmC5LUuBvr0NYzbVVIHyVzXWcAcXO7yy+
-        0paZ+6N7Co2VvwvpYkP0FS1DhlPbxGYVsMQ9g22Lpg==
-X-Google-Smtp-Source: APXvYqxkzaJMcoK0z3hqPEUB7wPcJ5NNmf40cBWej5p5FC/nve/TXNyCaMWcpjvDAIwxlrLEoNI2G6NdEf+0At4PnuA=
-X-Received: by 2002:a25:a085:: with SMTP id y5mr15553018ybh.408.1572287670182;
- Mon, 28 Oct 2019 11:34:30 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=3BNJfD66jRJDdvcQiIti5lw3kf5uDFmZbb4exmHMhAA=;
+        b=pg/Z/vcq9m1THc4DiLuZ8tgoC8GiMrNPUOnbDKB93vNuzJcM1vxdPp0K5Fl6rgg7+T
+         u5K4sd4pB4XM3Bl5NY/ApStPsMNStkYHuHPQXejQ7yfi6HaGHM9MufofBH49TgBC2IaJ
+         dPXV7y97sFcIsm29Vanu4O6nsTqujR9YLZcj19l3UaZ8S9UtGm3hLE+ELiUqkLuaBimG
+         e/YL5EgQy/YQv7E1E7nwM8HO9eLomg8mu/D08lh50cpvJPL656/YzxQPKOLwVUMozK/P
+         pz6/lbWOfZJr8Jr+vh6WvOJ95be9LugWyeocXQhgQRUPdOhKpHqaslj0SgzoEcEQgDPV
+         ZaUA==
+X-Gm-Message-State: APjAAAUggNSYGO3RrmCRmJhqPQ2LrfOeenKTELo5qjMnBXt8ZVtPZotn
+        d0J1bxdI8Ir9Npuns21QHgDdpeKMffJc+VoSXZI=
+X-Google-Smtp-Source: APXvYqwQuhj5NPy3nlTzAz6h++Thd7OKuFGzicOxBIGZNdb+nUwx8dUDWWdwJEnEEf6lbz91zbVjf9/WkdxNcoBS4bU=
+X-Received: by 2002:aed:35e7:: with SMTP id d36mr18618698qte.59.1572288203373;
+ Mon, 28 Oct 2019 11:43:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191022231051.30770-1-xiyou.wangcong@gmail.com> <20191028.112904.824821320861730754.davem@davemloft.net>
-In-Reply-To: <20191028.112904.824821320861730754.davem@davemloft.net>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 28 Oct 2019 11:34:18 -0700
-Message-ID: <CANn89iKeB9+6xAyjQUZvtX3ioLNs3sBwCDq0QxmYEy5X_nF+LA@mail.gmail.com>
-Subject: Re: [Patch net-next 0/3] tcp: decouple TLP timer from RTO timer
-To:     David Miller <davem@davemloft.net>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>
+References: <157220959547.48922.6623938299823744715.stgit@toke.dk> <157220959980.48922.12100884213362040360.stgit@toke.dk>
+In-Reply-To: <157220959980.48922.12100884213362040360.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 28 Oct 2019 11:43:11 -0700
+Message-ID: <CAEf4BzZdXX0P=3O_-tWWUqZwDHNofme+_nC6+TyUV+ngW343GA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/4] selftests: Add tests for automatic map pinning
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 11:29 AM David Miller <davem@davemloft.net> wrote:
+On Sun, Oct 27, 2019 at 1:53 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> From: Cong Wang <xiyou.wangcong@gmail.com>
-> Date: Tue, 22 Oct 2019 16:10:48 -0700
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 >
-> > This patchset contains 3 patches: patch 1 is a cleanup,
-> > patch 2 is a small change preparing for patch 3, patch 3 is the
-> > one does the actual change. Please find details in each of them.
+> This adds a new BPF selftest to exercise the new automatic map pinning
+> code.
 >
-> Eric, have you had a chance to test this on a system with
-> suitable CPU arity?
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/pinning.c |   91 ++++++++++++++++=
+++++++
+>  tools/testing/selftests/bpf/progs/test_pinning.c |   29 +++++++
+>  2 files changed, 120 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/pinning.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/pinning.c b/tools/tes=
+ting/selftests/bpf/prog_tests/pinning.c
+> new file mode 100644
+> index 000000000000..d4a63de72f5a
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/pinning.c
+> @@ -0,0 +1,91 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <sys/types.h>
+> +#include <sys/stat.h>
+> +#include <unistd.h>
+> +#include <test_progs.h>
+> +
+> +__u32 get_map_id(struct bpf_object *obj, const char *name)
+> +{
+> +       __u32 map_info_len, duration, retval;
+> +       struct bpf_map_info map_info =3D {};
+> +       struct bpf_map *map;
+> +       int err;
+> +
+> +       map_info_len =3D sizeof(map_info);
+> +
+> +       map =3D bpf_object__find_map_by_name(obj, name);
+> +       if (!CHECK(!map, "find map", "NULL map")) {
 
-Yes, and I confirm I could not repro the issues at all.
+please follow the pattern of "if (CHECK()) { return or goto cleanup
+}". There is literally zero cases where we have `if (!CHECK())` in
+selftests.
 
-I got a 100Gbit NIC, trying to increase the pressure a bit, and
-driving this NIC at line rate was only using 2% of my 96 cpus host,
-no spinlock contention of any sort.
+> +               err =3D bpf_obj_get_info_by_fd(bpf_map__fd(map),
+> +                                            &map_info, &map_info_len);
+> +               CHECK(err, "get map info", "err %d errno %d", err, errno)=
+;
+> +               return map_info.id;
+> +       }
+> +       return 0;
+> +}
+> +
+> +void test_pinning(void)
+> +{
+> +       __u32 duration, retval, size, map_id, map_id2;
+> +       const char *custpinpath =3D "/sys/fs/bpf/custom/pinmap";
+> +       const char *nopinpath =3D "/sys/fs/bpf/nopinmap";
+> +       const char *custpath =3D "/sys/fs/bpf/custom";
+> +       const char *pinpath =3D "/sys/fs/bpf/pinmap";
+> +       const char *file =3D "./test_pinning.o";
+> +       struct stat statbuf =3D {};
+> +       struct bpf_object *obj;
+> +       DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
+> +               .auto_pin_path =3D custpath,
+> +       );
+> +
+> +       int err;
+> +       obj =3D bpf_object__open_file(file, NULL);
+> +       if (CHECK_FAIL(libbpf_get_error(obj)))
+> +               return;
+> +
+> +       err =3D bpf_object__load(obj);
+> +       CHECK(err, "default load", "err %d errno %d\n", err, errno);
 
-Thanks.
+cleanup and exit, you don't have a valid set up to proceed with
+testing. Same for almost every check below.
+
+> +
+> +       /* check that pinmap was pinned */
+> +       err =3D stat(pinpath, &statbuf);
+> +       CHECK(err, "stat pinpath", "err %d errno %d\n", err, errno);
+> +
+> +        /* check that nopinmap was *not* pinned */
+> +       err =3D stat(nopinpath, &statbuf);
+> +       CHECK(errno !=3D ENOENT, "stat nopinpath", "err %d errno %d\n", e=
+rr, errno);
+
+if previous stat succeeded, errno might be from other syscall, you
+have to check both
+
+> +
+> +        map_id =3D get_map_id(obj, "pinmap");
+
+formatting? check that get_map_id succeeded?
+
+> +       bpf_object__close(obj);
+> +
+> +       obj =3D bpf_object__open_file(file, NULL);
+> +       if (CHECK_FAIL(libbpf_get_error(obj)))
+> +               return;
+> +
+> +       err =3D bpf_object__load(obj);
+> +       CHECK(err, "default load", "err %d errno %d\n", err, errno);
+> +
+> +       /* check that same map ID was reused for second load */
+> +       map_id2 =3D get_map_id(obj, "pinmap");
+> +       CHECK(map_id !=3D map_id2, "check reuse",
+> +             "err %d errno %d id %d id2 %d\n", err, errno, map_id, map_i=
+d2);
+> +       unlink(pinpath);
+> +       bpf_object__close(obj);
+> +
+> +       err =3D mkdir(custpath, 0700);
+> +       CHECK(err, "mkdir custpath",  "err %d errno %d\n", err, errno);
+> +
+> +       obj =3D bpf_object__open_file(file, &opts);
+> +       if (CHECK_FAIL(libbpf_get_error(obj)))
+> +               return;
+> +
+> +       err =3D bpf_object__load(obj);
+> +       CHECK(err, "custom load", "err %d errno %d\n", err, errno);
+> +
+> +       /* check that pinmap was pinned at the custom path */
+> +       err =3D stat(custpinpath, &statbuf);
+> +       CHECK(err, "stat custpinpath", "err %d errno %d\n", err, errno);
+> +
+> +       unlink(custpinpath);
+> +       rmdir(custpath);
+> +       bpf_object__close(obj);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_pinning.c b/tools/tes=
+ting/selftests/bpf/progs/test_pinning.c
+> new file mode 100644
+> index 000000000000..ff2d7447777e
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_pinning.c
+> @@ -0,0 +1,29 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <linux/bpf.h>
+> +#include "bpf_helpers.h"
+> +
+> +int _version SEC("version") =3D 1;
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, 1);
+> +       __type(key, __u32);
+> +       __type(value, __u64);
+> +       __uint(pinning, LIBBPF_PIN_BY_NAME);
+> +} pinmap SEC(".maps");
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, 1);
+> +       __type(key, __u32);
+> +       __type(value, __u64);
+> +} nopinmap SEC(".maps");
+> +
+> +SEC("xdp_prog")
+> +int _xdp_prog(struct xdp_md *xdp)
+> +{
+> +       return XDP_PASS;
+> +}
+> +
+> +char _license[] SEC("license") =3D "GPL";
+>
