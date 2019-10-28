@@ -2,152 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB5F7E7B49
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:22:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B25FBE7B63
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:33:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729790AbfJ1VWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 17:22:16 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38283 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729265AbfJ1VWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 17:22:15 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c13so7812240pfp.5
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 14:22:15 -0700 (PDT)
+        id S1730820AbfJ1Vd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 17:33:29 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37283 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728338AbfJ1Vd2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 17:33:28 -0400
+Received: by mail-pg1-f194.google.com with SMTP id p1so7855282pgi.4
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 14:33:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=ghF2T58c6S9slMAJkpCLtc3UdC1RItqnkJJASi25+To=;
-        b=Hs5ja3P3D6dVlTop62PWNevoF76220HFaQC+KWCqFfqb4aMJbKdyv8Y2OPUF6EsVE7
-         Iph5Rl1hsQd3tHeXMlQ/nDf161cJamH/NswfSb+iVY3vP8vypgzgNXPVcclTGuFfeID4
-         JUXFakbU7LG8hyN+GFaHs5EI+7s26DXxeSM2Ill0ySp88JWpBXiwAkbiG9DC3gCQacXs
-         ag2dqpzvYUlCkZvO/hOaCrUCmXJqlq65HU20G7D50H3dnlvwL92rmOpajJ1ED0e7txC4
-         rhawDuU9U6x+BWsH0CIKG+3cE8di/mD8+JfHYaSLX5Zpl5kbU2IRkkEs7hnkykUue1H+
-         984w==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=jEdPM8+CeSN6YUxMRCSzn6h9zX/2P2PBOeSoWjOyGwU=;
+        b=bdl88kZF4sDffbc4FuxXRHGyWjQp7MkgkLicu4ygU8bjQP92Pk0Iz9iWsO9KDkuc4/
+         OWXgXpNgDaAyo15UFcQjqsHvBdmND76PEX359b0q8/jMTyJBJMTBx5b8QUaUG4ctQI8O
+         G1t8aNCXViLW/M6z74CJRHSjbi/PV17zzIy0jlj1JX1SSHZU8KmU8wohwGeDehZ1VXzE
+         /4wqibp0QVsR97msGf8JKGASqC1PIkhD59WPj2JwtDmSBr0kQpdlLO7doLn+B53l+eMZ
+         vkcj2cAn+t9m/hIRtyG8OA4RzULPw+QxE6ZpPUuGPRV1Q/7YwPWALUxGCTVUd/Y3woho
+         M6ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ghF2T58c6S9slMAJkpCLtc3UdC1RItqnkJJASi25+To=;
-        b=HUcLCPuGS69TmZS15VsL0ApLqj6nIOa1v60LFOy1l9BbP4Xa3j/cUKh28SjyDg5t7O
-         tKWkpd73QxFY/72Dxa3RTNaTy4fhDg95YOnY1uczPRl0e1CjCbBdt9Q3KnOy2ieBmIqo
-         v71PHi9jDwNbTC+n3tN6aUYr2tCY41gIU+FmbNr7mFFwUloMjPSIgUjNkH8Qn6zlUtzk
-         +kdlBP1UWlmHsEbb8F0saWkWfEX58bJcsOIhh22JxFxDx2cXI31w6KedtA3VrDWB/L6Q
-         9a4MgSQ0Oz27q6Jt+LYvwcNGVUeubNisKT3XcyFIjrnvQuLB38oSnwfFQGMefj9TxZXz
-         lrHg==
-X-Gm-Message-State: APjAAAWtF8qQB9kyPDWou1rWEtk0Tyhol3dvMH++kHontu1kH1TIRjj4
-        FvRiUAIdEJp74f3yVv24VTI=
-X-Google-Smtp-Source: APXvYqw+IHg2Qmfwu9N9+oriFx58BwktVpROtcl4tMmGxEODEQ3pEXUOJ1CuwuKcqWbtMK+pmhOlQg==
-X-Received: by 2002:a63:1b58:: with SMTP id b24mr23006146pgm.127.1572297734657;
-        Mon, 28 Oct 2019 14:22:14 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id y17sm3443306pfl.7.2019.10.28.14.22.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Oct 2019 14:22:13 -0700 (PDT)
-Subject: Re: Fw: [Bug 205339] New: epoll can fail to report a socket readable
- after enabling SO_OOBINLINE
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org, njs@pobox.com
-References: <20191028081107.38b73eb1@hermes.lan>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <a863e2a4-8d31-c8d8-2f85-7fe3fa30104f@gmail.com>
-Date:   Mon, 28 Oct 2019 14:22:13 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=jEdPM8+CeSN6YUxMRCSzn6h9zX/2P2PBOeSoWjOyGwU=;
+        b=K8AdmnYOg3XbNdcmu3RhEtuAGZ1iu1EJg50nwrebU9UrAn3eNMSlKXGxUejct04/ac
+         B9wozznqQw+CnYs8eid4LxToo5u0/ReZ0sebQZI/lQEh7tR2YADqRneQ4ba/zehMAtyn
+         n/Q2HDuVQdDHsPoql1Mc9dtuMWf8nLKISwaI70Rv9qCUZoOLJyqv6kSnxkkI8e5BEym8
+         82+8a+q10gt/ouIF00rIH1/DMMnowAlj3qEDKBz01TrdCzCskfGkAHUyJGzjJv6leFVs
+         0jJDLrFSnsz/LZJlkLllmIUMU/6fgf4kHi3jV+CSWak2BHQsI75caaVzdwCSqD2n4BuN
+         VlFQ==
+X-Gm-Message-State: APjAAAVUAkJI5ZojCNvLDw+yD6LXTPCByXiAHfkrkTjsS+GSTW+aoOay
+        YEg0VGCRnE166BYb1cY5NY3N6A==
+X-Google-Smtp-Source: APXvYqy9OriwAtFJ734hHSc7dz3dHQ5c1a6LhaFVhJVlRYd1p7+V+rQWXdKlsj5AENvQYC6Tl4P2Gw==
+X-Received: by 2002:a17:90a:a882:: with SMTP id h2mr1782558pjq.1.1572298407836;
+        Mon, 28 Oct 2019 14:33:27 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id b14sm11228415pfi.95.2019.10.28.14.33.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 14:33:27 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 14:33:22 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next, 3/4] hv_netvsc: Add XDP support
+Message-ID: <20191028143322.45d81da4@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <1572296801-4789-4-git-send-email-haiyangz@microsoft.com>
+References: <1572296801-4789-1-git-send-email-haiyangz@microsoft.com>
+        <1572296801-4789-4-git-send-email-haiyangz@microsoft.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191028081107.38b73eb1@hermes.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please Stephen CC the reporter when you forward a bugzilla bug to the list
+On Mon, 28 Oct 2019 21:07:04 +0000, Haiyang Zhang wrote:
+> This patch adds support of XDP in native mode for hv_netvsc driver, and
+> transparently sets the XDP program on the associated VF NIC as well.
+> 
+> XDP program cannot run with LRO (RSC) enabled, so you need to disable LRO
+> before running XDP:
+>         ethtool -K eth0 lro off
+> 
+> XDP actions not yet supported:
+>         XDP_TX, XDP_REDIRECT
 
-On 10/28/19 8:11 AM, Stephen Hemminger wrote:
-> 
-> 
-> Begin forwarded message:
-> 
-> Date: Mon, 28 Oct 2019 02:55:44 +0000
-> From: bugzilla-daemon@bugzilla.kernel.org
-> To: stephen@networkplumber.org
-> Subject: [Bug 205339] New: epoll can fail to report a socket readable after enabling SO_OOBINLINE
-> 
-> 
-> https://bugzilla.kernel.org/show_bug.cgi?id=205339
-> 
->             Bug ID: 205339
->            Summary: epoll can fail to report a socket readable after
->                     enabling SO_OOBINLINE
->            Product: Networking
->            Version: 2.5
->     Kernel Version: 5.0
->           Hardware: All
->                 OS: Linux
->               Tree: Mainline
->             Status: NEW
->           Severity: low
->           Priority: P1
->          Component: Other
->           Assignee: stephen@networkplumber.org
->           Reporter: njs@pobox.com
->         Regression: No
+I don't think we want to merge support without at least XDP_TX these
+days..
 
-> Created attachment 285671
->   --> https://bugzilla.kernel.org/attachment.cgi?id=285671&action=edit  
-> reproducer
-> 
-> Consider the following sequence of events:
-> 
-> 1. OOB data arrives on a socket.
-> 2. The socket is registered with epoll with EPOLLIN
-> 3. The socket has SO_OOBINLINE toggled from False → True
-> 
-> In this case, the socket is now readable, and select() reports that it's
-> readable, but epoll does *not* report that it's readable.
-> 
-> This is a pretty minor issue, but it seems like an unambiguous bug so I figured
-> I'd report it.
-> 
-> Weirdly, this doesn't appear to be a general problem with SO_OOBINLINE+epoll.
-> For example, this very similar sequence works correctly:
-> 
-> 1. The socket is registered with epoll with EPOLLIN
-> 2. OOB data arrives on the socket.
-> 3. The socket has SO_OOBINLINE toggled from False → True
-> 
-> After step 2, epoll reports the socket as not readable, and then after step 3
-> it reports it as readable, as you'd expect.
-> 
-> In the attached reproducer script, "scenario 4" is the buggy one, and "scenario
-> 3" is the very similar non-buggy one. Output on Ubuntu 19.04, kernel
-> 5.0.0-32-generic, x86-64:
-> 
-> -- Scenario 1: no data --
-> select() says: sock is NOT readable
-> epoll says: sock is NOT readable
-> reality: NOT readable
-> 
-> -- Scenario 2: OOB data arrives --
-> select() says: sock is NOT readable
-> epoll says: sock is NOT readable
-> reality: NOT readable
-> 
-> -- Scenario 3: register -> OOB data arrives -> toggle SO_OOBINLINE=True --
-> select() says: sock is readable
-> epoll says: sock is readable
-> reality: read succeeded
-> 
-> -- Scenario 4: OOB data arrives -> register -> toggle SO_OOBINLINE=True --
-> select() says: sock is readable
-> epoll says: sock is NOT readable
-> reality: read succeeded
-> 
+And without the ability to prepend headers this may be the least
+complete initial XDP implementation we've seen :(
 
-I really wonder how much energy we should put in maintaining this archaic thing.
+> Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
 
-We do not have a single packetdrill test at Google using URG stuff.
+> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+> index d22a36f..688487b 100644
+> --- a/drivers/net/hyperv/netvsc.c
+> +++ b/drivers/net/hyperv/netvsc.c
+> @@ -122,8 +122,10 @@ static void free_netvsc_device(struct rcu_head *head)
+>  	vfree(nvdev->send_buf);
+>  	kfree(nvdev->send_section_map);
+>  
+> -	for (i = 0; i < VRSS_CHANNEL_MAX; i++)
+> +	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
+> +		xdp_rxq_info_unreg(&nvdev->chan_table[i].xdp_rxq);
+>  		vfree(nvdev->chan_table[i].mrc.slots);
+> +	}
+>  
+>  	kfree(nvdev);
+>  }
+> @@ -1370,6 +1372,10 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
+>  		nvchan->net_device = net_device;
+>  		u64_stats_init(&nvchan->tx_stats.syncp);
+>  		u64_stats_init(&nvchan->rx_stats.syncp);
+> +
+> +		xdp_rxq_info_reg(&nvchan->xdp_rxq, ndev, i);
+> +		xdp_rxq_info_reg_mem_model(&nvchan->xdp_rxq,
+> +					   MEM_TYPE_PAGE_SHARED, NULL);
+
+These can fail.
+
+>  	}
+>  
+>  	/* Enable NAPI handler before init callbacks */
+> diff --git a/drivers/net/hyperv/netvsc_bpf.c b/drivers/net/hyperv/netvsc_bpf.c
+> new file mode 100644
+> index 0000000..4d235ac
+> --- /dev/null
+> +++ b/drivers/net/hyperv/netvsc_bpf.c
+> @@ -0,0 +1,211 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (c) 2019, Microsoft Corporation.
+> + *
+> + * Author:
+> + *   Haiyang Zhang <haiyangz@microsoft.com>
+> + */
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <linux/netdevice.h>
+> +#include <linux/etherdevice.h>
+> +#include <linux/ethtool.h>
+> +#include <linux/bpf.h>
+> +#include <linux/bpf_trace.h>
+> +#include <linux/kernel.h>
+> +#include <net/xdp.h>
+> +
+> +#include <linux/mutex.h>
+> +#include <linux/rtnetlink.h>
+> +
+> +#include "hyperv_net.h"
+> +
+> +u32 netvsc_run_xdp(struct net_device *ndev, struct netvsc_channel *nvchan,
+> +		   void **p_pbuf)
+> +{
+> +	struct page *page = NULL;
+> +	void *data = nvchan->rsc.data[0];
+> +	u32 len = nvchan->rsc.len[0];
+> +	void *pbuf = data;
+> +	struct bpf_prog *prog;
+> +	struct xdp_buff xdp;
+> +	u32 act = XDP_PASS;
+> +
+> +	*p_pbuf = NULL;
+> +
+> +	rcu_read_lock();
+> +	prog = rcu_dereference(nvchan->bpf_prog);
+> +
+> +	if (!prog || nvchan->rsc.cnt > 1)
+
+Can rsc.cnt == 1 not be ensured at setup time? This looks quite
+limiting if random frames could be forced to bypass the filter.
+
+> +		goto out;
+> +
+> +	/* copy to a new page buffer if data are not within a page */
+> +	if (virt_to_page(data) != virt_to_page(data + len - 1)) {
+> +		page = alloc_page(GFP_ATOMIC);
+> +		if (!page)
+> +			goto out;
+
+Returning XDP_PASS on allocation failure seems highly questionable.
+
+> +		pbuf = page_address(page);
+> +		memcpy(pbuf, nvchan->rsc.data[0], len);
+> +
+> +		*p_pbuf = pbuf;
+> +	}
+> +
+> +	xdp.data_hard_start = pbuf;
+> +	xdp.data = xdp.data_hard_start;
+
+This patch also doesn't add any headroom for XDP to prepend data :(
+
+> +	xdp_set_data_meta_invalid(&xdp);
+> +	xdp.data_end = xdp.data + len;
+> +	xdp.rxq = &nvchan->xdp_rxq;
+> +	xdp.handle = 0;
+> +
+> +	act = bpf_prog_run_xdp(prog, &xdp);
+> +
+> +	switch (act) {
+> +	case XDP_PASS:
+> +		/* Pass to upper layers */
+> +		break;
+> +
+> +	case XDP_ABORTED:
+> +		trace_xdp_exception(ndev, prog, act);
+> +		break;
+> +
+> +	case XDP_DROP:
+> +		break;
+> +
+> +	default:
+> +		bpf_warn_invalid_xdp_action(act);
+> +	}
+> +
+> +out:
+> +	rcu_read_unlock();
+> +
+> +	if (page && act != XDP_PASS) {
+> +		*p_pbuf = NULL;
+> +		__free_page(page);
+> +	}
+> +
+> +	return act;
+> +}
+> +
+> +unsigned int netvsc_xdp_fraglen(unsigned int len)
+> +{
+> +	return SKB_DATA_ALIGN(len) +
+> +	       SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+> +}
+> +
+> +struct bpf_prog *netvsc_xdp_get(struct netvsc_device *nvdev)
+> +{
+> +	return rtnl_dereference(nvdev->chan_table[0].bpf_prog);
+> +}
+> +
+> +int netvsc_xdp_set(struct net_device *dev, struct bpf_prog *prog,
+> +		   struct netvsc_device *nvdev)
+> +{
+> +	struct bpf_prog *old_prog;
+> +	int frag_max, i;
+> +
+> +	old_prog = netvsc_xdp_get(nvdev);
+> +
+> +	if (!old_prog && !prog)
+> +		return 0;
+
+I think this case is now handled by the core.
+
+> +	frag_max = netvsc_xdp_fraglen(dev->mtu + ETH_HLEN);
+> +	if (prog && frag_max > PAGE_SIZE) {
+> +		netdev_err(dev, "XDP: mtu:%u too large, frag:%u\n",
+> +			   dev->mtu, frag_max);
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (prog && (dev->features & NETIF_F_LRO)) {
+> +		netdev_err(dev, "XDP: not support LRO\n");
+
+Please report this via extack, that way users will see it in the console
+in which they're installing the program.
+
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (prog) {
+> +		prog = bpf_prog_add(prog, nvdev->num_chn);
+> +		if (IS_ERR(prog))
+> +			return PTR_ERR(prog);
+> +	}
+> +
+> +	for (i = 0; i < nvdev->num_chn; i++)
+> +		rcu_assign_pointer(nvdev->chan_table[i].bpf_prog, prog);
+> +
+> +	if (old_prog)
+> +		for (i = 0; i < nvdev->num_chn; i++)
+> +			bpf_prog_put(old_prog);
+> +
+> +	return 0;
+> +}
+> +
+> +int netvsc_vf_setxdp(struct net_device *vf_netdev, struct bpf_prog *prog)
+> +{
+> +	struct netdev_bpf xdp;
+> +	bpf_op_t ndo_bpf;
+> +
+> +	ASSERT_RTNL();
+> +
+> +	if (!vf_netdev)
+> +		return 0;
+> +
+> +	ndo_bpf = vf_netdev->netdev_ops->ndo_bpf;
+> +	if (!ndo_bpf)
+> +		return 0;
+> +
+> +	memset(&xdp, 0, sizeof(xdp));
+> +
+> +	xdp.command = XDP_SETUP_PROG;
+> +	xdp.prog = prog;
+> +
+> +	return ndo_bpf(vf_netdev, &xdp);
+
+IMHO the automatic propagation is not a good idea. Especially if the
+propagation doesn't make the entire installation fail if VF doesn't
+have ndo_bpf.
+
+> +}
