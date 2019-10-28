@@ -2,21 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7D36E6CCC
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 08:19:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50CECE6CA8
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 08:04:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732427AbfJ1HTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 03:19:34 -0400
-Received: from gateway23.websitewelcome.com ([192.185.48.71]:24113 "EHLO
+        id S1732093AbfJ1HEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 03:04:50 -0400
+Received: from gateway23.websitewelcome.com ([192.185.48.71]:28148 "EHLO
         gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730751AbfJ1HTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 03:19:34 -0400
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 82F4C54F9
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 01:56:36 -0500 (CDT)
+        by vger.kernel.org with ESMTP id S1730616AbfJ1HEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 03:04:49 -0400
+X-Greylist: delayed 492 seconds by postgrey-1.27 at vger.kernel.org; Mon, 28 Oct 2019 03:04:49 EDT
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 79EEB2509
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 02:04:49 -0500 (CDT)
 Received: from gator4166.hostgator.com ([108.167.133.22])
         by cmsmtp with SMTP
-        id OyxAiPXsLOdBHOyxAiiMjd; Mon, 28 Oct 2019 01:56:36 -0500
+        id Oz57i0OB1BnGaOz57ieo49; Mon, 28 Oct 2019 02:04:49 -0500
 X-Authority-Reason: nr=8
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
@@ -24,27 +25,27 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=oCTskRlbgqD+J7aWayjsVtQZcA0SIwA4npc4QiguN5o=; b=xWHIGGQZ1Iab0c2jpYjZZ0O1Oy
-        idQhgFCv+VHyiZt9qhZtSPdqDV6XWoIjQ9LD9elLoup1AYbW8Td72bRF5lr0kkTihUp9DFdPudO0w
-        KilHebfPbteyYM7s9JyCgKXe6/ElNoP+cG7dRzqIL1av6S0RlGiwAw9u/tNY93aU9rsixr8gzgC58
-        d9XboNFx4FZBVoAi7BKsnMhiX1fqZqBhQf0s5TLXo0rPGmRIKAWt/7DM9p3HQu3YiVKUoXYUiW4V9
-        ZNmCDkfOgd5NUgYkoeyuMfUpp9/IE/PiVxJiM1ix1ElIS4MotV1xg2ioyWlJqbnSE88n/uPSbEkS2
-        cPVkDtwA==;
-Received: from [187.192.2.30] (port=58438 helo=embeddedor)
+        bh=cc1Lq/1I6uaUptz7nqvA6hsrq7d4wgFlwqeS4oYmYzU=; b=WoVLRJRJ59aEd0sJv0mgkAnfA6
+        ZwEXpix02KGKjEbIw+HFzZ4aiMfvGWbufEN5SopsynMu7MJPd5GpQW6fNuuYtWAmfY+PCptigBnoi
+        HJmG4SsWFG4lsAg2cJE0v3UWQOJ2xyUtGnJMIqQOXmBNDO8n+662Yxg8MGnuQxq8DPLn29U1ttsN8
+        C/ErRTaDE1Uv4APq0v0LvoX8voeiR/YCsggjKYKrFbRwoQoio6edcrjnRgmH58lr02y+2PzFcWScl
+        Kenk96P6DgVuCtjE7REdkTLemeGS8AWPVkIZvaNBp2/6p5yDjyBJD61/zID6Dha8Vl5NSEeg98R0a
+        r6TuMI0g==;
+Received: from [187.192.2.30] (port=58482 helo=embeddedor)
         by gator4166.hostgator.com with esmtpa (Exim 4.92)
         (envelope-from <gustavo@embeddedor.com>)
-        id 1iOyx9-0040bs-6Y; Mon, 28 Oct 2019 01:56:35 -0500
-Date:   Mon, 28 Oct 2019 01:56:33 -0500
+        id 1iOz56-0046Kp-7m; Mon, 28 Oct 2019 02:04:48 -0500
+Date:   Mon, 28 Oct 2019 02:04:47 -0500
 From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Igor Russkikh <igor.russkikh@aquantia.com>,
+To:     Egor Pomozov <epomozov@marvell.com>,
+        Igor Russkikh <igor.russkikh@aquantia.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>,
-        Nikita Danilov <nikita.danilov@aquantia.com>,
-        Andrew Lunn <andrew@lunn.ch>
+        Sergey Samoilenko <sergey.samoilenko@aquantia.com>,
+        Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH net-next] net: aquantia: fix error handling in aq_nic_init
-Message-ID: <20191028065633.GA2412@embeddedor>
+Subject: [PATCH net-next] net: aquantia: fix error handling in aq_ptp_poll
+Message-ID: <20191028070447.GA3659@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -57,11 +58,11 @@ X-AntiAbuse: Sender Address Domain - embeddedor.com
 X-BWhitelist: no
 X-Source-IP: 187.192.2.30
 X-Source-L: No
-X-Exim-ID: 1iOyx9-0040bs-6Y
+X-Exim-ID: 1iOz56-0046Kp-7m
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
-X-Source-Sender: (embeddedor) [187.192.2.30]:58438
+X-Source-Sender: (embeddedor) [187.192.2.30]:58482
 X-Source-Auth: gustavo@embeddedor.com
 X-Email-Count: 6
 X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
@@ -71,30 +72,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix currenty ignored returned error by properly error checking
-aq_phy_init().
+Fix currenty ignored returned error by properly checking *err* after
+calling aq_nic->aq_hw_ops->hw_ring_hwts_rx_fill().
 
-Addresses-Coverity-ID: 1487376 ("Unused value")
-Fixes: dbcd6806af42 ("net: aquantia: add support for Phy access")
+Addresses-Coverity-ID: 1487357 ("Unused value")
+Fixes: 04a1839950d9 ("net: aquantia: implement data PTP datapath")
 Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_ptp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-index 433adc099e44..1914aa0a19d0 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -341,7 +341,8 @@ int aq_nic_init(struct aq_nic_s *self)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+index 3ec08415e53e..92b666f7d242 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
+@@ -678,6 +678,8 @@ static int aq_ptp_poll(struct napi_struct *napi, int budget)
  
- 	if (self->aq_nic_cfg.aq_hw_caps->media_type == AQ_HW_MEDIA_TYPE_TP) {
- 		self->aq_hw->phy_id = HW_ATL_PHY_ID_MAX;
--		err = aq_phy_init(self->aq_hw);
-+		if (!aq_phy_init(self->aq_hw))
+ 		err = aq_nic->aq_hw_ops->hw_ring_hwts_rx_fill(aq_nic->aq_hw,
+ 							      &aq_ptp->hwts_rx);
++		if (err < 0)
 +			goto err_exit;
- 	}
  
- 	for (i = 0U, aq_vec = self->aq_vec[0];
+ 		was_cleaned = true;
+ 	}
 -- 
 2.23.0
 
