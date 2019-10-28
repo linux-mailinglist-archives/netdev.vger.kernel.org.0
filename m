@@ -2,276 +2,346 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7D1E7B77
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:38:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D97FE7BDF
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:58:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731493AbfJ1ViR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 17:38:17 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:36082 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728338AbfJ1ViR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 17:38:17 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9SLYe0b030551;
-        Mon, 28 Oct 2019 14:38:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=rFndJV6VyNdDSEpfSusTPqgww3TVUVKgq7KQZznIxCo=;
- b=O4vGQXy7ebXQjF4XsgprhrMpZJ8hEudm9T3lZMBv+8a4Lx0Z/hzn0Vdoh2brgW1PNRI9
- nPMAAJQaxmCWBSf9uHD5crc8VmGu0MVFK1U5FD9vW9CA9jLlyR2eY881zhbBpf0LT4vC
- bK/fz1rLbhDxENtusNKBAxZejjWqBlqGX2c= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vvkvq2vf9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 28 Oct 2019 14:38:14 -0700
-Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 28 Oct 2019 14:38:13 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 28 Oct 2019 14:38:12 -0700
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 28 Oct 2019 14:38:12 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FapPofDPbbKHk5scvrObHm9JmI06fbXY3S7f4ZTvN/+pMgKGDolEzlPT59hzZ5Qr7mzdD9kXkw7uTzRsHXKw3h5veUETDyInM1qW6gHfME5x185ogxdvx93fKXfcsN1DxVAI8fhk27uuFu1PTiYD5Q/r7yKD5ZAZ7sPO6fZYZmMtkcRq+gFLoMaIXrjpYy7kkqk+vXQqaWQK5tdPGYpUXXYjm25Rhihy8QRG24Az0Oc4xCMZckQwfbFduKJksU0XHI/bc8EH13WG5Dv1pB43qhHEnALqk0XuwDQoFa5cCyUFp9kPPx4kVk3IRbdhwKFCm86vQpjxNFdsErOpLJYisw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rFndJV6VyNdDSEpfSusTPqgww3TVUVKgq7KQZznIxCo=;
- b=SY9dhoVkDMkxUoCCSZhwXAuKj/W1Cl1iLmY81cwSAdRFOAHwwvGQtnwTG3c/QfAByRBFI05isiDQfnG157gEJbAW3f/YEBuUJHeEJWw4Dqwt9TNLvPfCgOChxAdrZ8IBiJ/A2OKY80TlDOEWgaIWcOaydSa96+JmEqD5Dw+R8IkLpvGgF6mnFGEymqHeH43P3WdgBb7Bgxy1wHxVS9vFzSp2QrO5AS7ZI77d5LSvwqlyzm01JKTd6nqp3gTswoV8R/BZJR+CY3QgoKUVQVKTCTFkVyMlaPk62mtnDV4qxDRvFko1nWZEBJLUAPODvLIY3LJDmVRM8OkwkScCB0bBuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rFndJV6VyNdDSEpfSusTPqgww3TVUVKgq7KQZznIxCo=;
- b=UNOuJM0MAOEThRrPBVzvgv2nm5SvgC79n6y9/IOmtOi7fUrwQcEu8igu1KzKwd15KJNTiSekk58kNXZc8Vu277Ps/foJzhjJ3tfUceQOUjDGodQBiiSa/6IkD3VSMQ23xMWs1mMH4uJPzm+xP+/RE4bzRYSCNfuanNTuRrW5GOg=
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
- MN2PR15MB3056.namprd15.prod.outlook.com (20.178.254.80) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.22; Mon, 28 Oct 2019 21:38:11 +0000
-Received: from MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::d5a4:a2a6:a805:6647]) by MN2PR15MB3213.namprd15.prod.outlook.com
- ([fe80::d5a4:a2a6:a805:6647%7]) with mapi id 15.20.2387.023; Mon, 28 Oct 2019
- 21:38:11 +0000
-From:   Martin Lau <kafai@fb.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-CC:     Jakub Sitnicki <jakub@cloudflare.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>
-Subject: Re: [RFC bpf-next 0/5] Extend SOCKMAP to store listening sockets
-Thread-Topic: [RFC bpf-next 0/5] Extend SOCKMAP to store listening sockets
-Thread-Index: AQHViM0cMelp7mfgSECOn4gRCJXJt6dvlj+AgABwfwCAAIg0gIAABkgAgAAJIQA=
-Date:   Mon, 28 Oct 2019 21:38:11 +0000
-Message-ID: <20191028213804.yv3xfjjlayfghkcr@kafai-mbp>
-References: <20191022113730.29303-1-jakub@cloudflare.com>
- <20191028055247.bh5bctgxfvmr3zjh@kafai-mbp.dhcp.thefacebook.com>
- <875zk9oxo1.fsf@cloudflare.com>
- <20191028204255.jmkraj3xlp346xz4@kafai-mbp.dhcp.thefacebook.com>
- <5db758142fac5_6642abc699aa5c4fd@john-XPS-13-9370.notmuch>
-In-Reply-To: <5db758142fac5_6642abc699aa5c4fd@john-XPS-13-9370.notmuch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR15CA0063.namprd15.prod.outlook.com
- (2603:10b6:301:4c::25) To MN2PR15MB3213.namprd15.prod.outlook.com
- (2603:10b6:208:3d::12)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:5bd3]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fc92daad-39b0-41a3-d8a4-08d75bef2160
-x-ms-traffictypediagnostic: MN2PR15MB3056:
-x-ms-exchange-purlcount: 4
-x-microsoft-antispam-prvs: <MN2PR15MB30566AC6D9E4DB6C44023615D5660@MN2PR15MB3056.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 0204F0BDE2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(396003)(39860400002)(136003)(376002)(346002)(366004)(199004)(189003)(305945005)(478600001)(11346002)(7736002)(54906003)(476003)(316002)(53546011)(386003)(6916009)(6506007)(102836004)(14444005)(66476007)(5660300002)(186003)(33716001)(64756008)(66446008)(14454004)(66556008)(6512007)(99286004)(9686003)(52116002)(76176011)(6306002)(256004)(6116002)(5024004)(81156014)(71200400001)(8676002)(446003)(71190400001)(81166006)(486006)(325944009)(1076003)(229853002)(8936002)(4326008)(2906002)(86362001)(6486002)(6436002)(46003)(25786009)(966005)(66946007)(6246003);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB3056;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZrnOYAka+VVwONjaj6u97ZClUt45BGHquRZ+WSs668mheKjqE1Pwdu/CF9bBGNES3WTktFVNYt+Qlh3WAQrUwgNE+Xz5YJNpKc2NOCEgb/in81J0ruNEbnWmnZzvClL/GKoyRS0ohZVqB9EDpS9QQxU+ZuzPB9pDwjZXzgh7m9QJcQHo4pZ5xKptRL4kEM0iDzpm0nLEMIN82q29cGvPGiAy2jqOEO+w/Bps+U/Dylf6SEImK9NysgTwLmjB+r+Rvt+KJHsW3FACfbiMe4CsaXTFh6L+5yG3w5kIueuPRex3N5TxBVzLf+uddxxB8Jb5dlD+53zcfsN+FnRHsvdgg3am+d178wPH67TNy3LIYpoGSwdOiU4Nc81EpmDxU6koPlPdwyaFs+Ba4LLGWz29KtTw/x2HkQ769f9pUzO1C1tCGb6ni9UrmjSKQ2Ey9WOLeU7obuFxVtpGZLA+qgPiGXqueY02a8+vn2Bax/2GxCk=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3288108447EB9642BFA4E97A37D472FC@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2389135AbfJ1V6n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 17:58:43 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:40408 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729738AbfJ1V6m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 17:58:42 -0400
+Received: by mail-il1-f195.google.com with SMTP id d83so9560681ilk.7
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 14:58:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cuqLlOvwFQybViTG6mctYmzDQi68WgMBcKajjI9VfQA=;
+        b=NBioJgkSFQkg9z3SK96hquTNA7F4qJpammx/7r25sHbpdVUZwHEQfDEpf6rEtAzxn4
+         5tZBB9+HGKARXJ7FSeoAta8yU5fjfnGiCip0NWOR4YQ6/xTtowiP/sN82XRRl8ctSKtK
+         ZRQuSFztUWF+gcfxL4ANC+fqM0J7/y+Ic4h9PKxR4Bg+TSgMTG8XMrySlSp+6nWQ18yy
+         6UvL3tc98t3NSTNC+f+8lRKbn9OwS0aaUxRm6e+jtkYXMkAXIDl/wlqxwdbuoWYBoGEV
+         U1e+kI6rgvW12NyCT7cKZl96CdOOQY6cHEdQIKjpqdx+XmYY0LUu80lVqpZ1x++oJiOv
+         KVIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cuqLlOvwFQybViTG6mctYmzDQi68WgMBcKajjI9VfQA=;
+        b=Ly0f6JSQ5y/lZ3U+zeYMj0QB/nlIYL9+UvHfpLKTphfJW0rn0Dh8YrcrhKZd4YLs6z
+         PaMVMymBoIftc9vlWGx5bvK3zMbYq8tTzo90zX1v5qmb0nkoO2MhHEwrshTVG0jro/fD
+         gF3JI0DHpaYr5HzJXgxZwNZn5Y1Oi+BfGM80fQdhPkX4lTjOBY6D7WyLURava4hKbmb2
+         3wqiON3x5UdOnKna7gT5K+8I3rZ0DI73gLo38zN9gkQRiRhLrj7O9IZLXfpGQj9jGgmw
+         KEASiV4i3Jc/kfYdfVgpXbCT8sYVaAHR4uDiU7js2SPL0OPDLudgBJacsxO86i1/GgMz
+         a9Gg==
+X-Gm-Message-State: APjAAAX1K04kACC8mhBxC38cH1yfA0Irt+X9E4Po/IeodaGundfqIFEl
+        uPi4C0TWCEACl0I7VLZpyyqp4NiTavoe3ejvW0A=
+X-Google-Smtp-Source: APXvYqwCCtNC83P4mABWfpNmQAOefuD0wg/T7uv4sQhJv+K4rgI0ZHgCWpqKZta0SaiksG3Gc5KSnuvJGOMeRR3cFC0=
+X-Received: by 2002:a92:5d88:: with SMTP id e8mr21987703ilg.95.1572299921396;
+ Mon, 28 Oct 2019 14:58:41 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc92daad-39b0-41a3-d8a4-08d75bef2160
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 21:38:11.3189
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Meks8t4fAeribiK4xxHoCHFICp8tEv4rhRSIdK6YM1TR4vXoYYdApJGBMKbMINDD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3056
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-28_07:2019-10-28,2019-10-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
- lowpriorityscore=0 spamscore=0 priorityscore=1501 suspectscore=0
- bulkscore=0 adultscore=0 phishscore=0 mlxlogscore=999 impostorscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1908290000 definitions=main-1910280202
-X-FB-Internal: deliver
+References: <20191023182426.13233-1-jeffrey.t.kirsher@intel.com> <20191023182426.13233-3-jeffrey.t.kirsher@intel.com>
+In-Reply-To: <20191023182426.13233-3-jeffrey.t.kirsher@intel.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 28 Oct 2019 14:58:30 -0700
+Message-ID: <CAKgT0Udd52vy8F_CWWZWuxYxk-ZijWQ9oHaMBVBK-RHqOrTApg@mail.gmail.com>
+Subject: Re: [net-next 02/11] i40e: Add ability to display VF stats along with
+ PF core stats
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Arkadiusz Grubba <arkadiusz.grubba@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        Neil Horman <nhorman@redhat.com>,
+        Stefan Assmann <sassmann@redhat.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 02:05:24PM -0700, John Fastabend wrote:
-> Martin Lau wrote:
-> > On Mon, Oct 28, 2019 at 01:35:26PM +0100, Jakub Sitnicki wrote:
-> > > On Mon, Oct 28, 2019 at 06:52 AM CET, Martin Lau wrote:
-> > > > On Tue, Oct 22, 2019 at 01:37:25PM +0200, Jakub Sitnicki wrote:
-> > > >> This patch set is a follow up on a suggestion from LPC '19 discuss=
-ions to
-> > > >> make SOCKMAP (or a new map type derived from it) a generic type fo=
-r storing
-> > > >> established as well as listening sockets.
-> > > >>
-> > > >> We found ourselves in need of a map type that keeps references to =
-listening
-> > > >> sockets when working on making the socket lookup programmable, aka=
- BPF
-> > > >> inet_lookup [1].  Initially we repurposed REUSEPORT_SOCKARRAY but =
-found it
-> > > >> problematic to extend due to being tightly coupled with reuseport
-> > > >> logic (see slides [2]).
-> > > >> So we've turned our attention to SOCKMAP instead.
-> > > >>
-> > > >> As it turns out the changes needed to make SOCKMAP suitable for st=
-oring
-> > > >> listening sockets are self-contained and have use outside of progr=
-amming
-> > > >> the socket lookup. Hence this patch set.
-> > > >>
-> > > >> With these patches SOCKMAP can be used in SK_REUSEPORT BPF program=
-s as a
-> > > >> drop-in replacement for REUSEPORT_SOCKARRAY for TCP. This can hope=
-fully
-> > > >> lead to code consolidation between the two map types in the future=
-.
-> > > > What is the plan for UDP support in sockmap?
-> > >=20
-> > > It's on our road-map because without SOCKMAP support for UDP we won't=
- be
-> > > able to move away from TPROXY [1] and custom SO_BINDTOPREFIX extensio=
-n
-> > > [2] for steering new UDP flows to receiving sockets. Also we would li=
-ke
-> > > to look into using SOCKMAP for connected UDP socket splicing in the
-> > > future [3].
-> > >=20
-> > > I was planning to split work as follows:
-> > >=20
-> > > 1. SOCKMAP support for listening sockets (this series)
-> > > 2. programmable socket lookup for TCP (cut-down version of [4])
-> > > 3. SOCKMAP support for UDP (work not started)
-> > hmm...It is hard to comment how the full UDP sockmap may
-> > work out without a code attempt because I am not fluent in
-> > sock_map ;)
-> >=20
-> > From a quick look, it seems there are quite a few things to do.
-> > For example, the TCP_SKB_CB(skb) usage and how that may look
-> > like in UDP.  "struct udp_skb_cb" is 28 bytes while "struct napi_gro_cb=
-"
-> > seems to be 48 bytes already which may need a closer look.
->=20
-> The extra bits sockmap needs are used for redirecting between
-> between sockets. These will fit in the udp cb area with some
-> extra room to spare. If that is paticularly challenging we can
-> also create a program attach type which would preclude using
-> those bits in the sk_reuseport bpf program types. We already
-> have types for rx, tx, nop progs, so one more should be fine.
->=20
-> So at least that paticular concern is not difficult to fix.
->=20
-> >=20
-> > > 4. programmable socket lookup for UDP (rest of [4])
-> > >=20
-> > > I'm open to suggestions on how to organize it.
-> > >=20
-> > > >> Having said that, the main intention here is to lay groundwork for=
- using
-> > > >> SOCKMAP in the next iteration of programmable socket lookup patche=
-s.
-> > > > What may be the minimal to get only lookup work for UDP sockmap?
-> > > > .close() and .unhash()?
-> > >=20
-> > > John would know better. I haven't tried doing it yet.
-> > >=20
-> > > From just reading the code - override the two proto ops you mentioned=
-,
-> > > close and unhash, and adapt the socket checks in SOCKMAP.
-> > Do your use cases need bpf prog attached to sock_map?
->=20
-> Perhaps not specifically sock_map but they do need to be consolidated
-> into a map somewhere IMO this has proven to be the most versatile. We
-> can add sockets from the various BPF hooks or from user space and have
-> the ability to use the existing map tools, etc.
->=20
-> >=20
-> > If not, would it be cleaner to delicate another map_type
-> > for lookup-only use case to have both TCP and UDP support.
->=20
-> But we (Cilium project and above splicing use case is also interested)
-> will need UDP support so it will be supported regardless of the
-> SK_REUSEPORT_BPF so I think it makes sense to consolidate all these
-> use cases on to the existing sockmap.
->=20
-> Also sockmap supports inserting sockets from BPF and from userspace
-> which actually requires a bit of logic to track state, etc. Its been
-> in use and been beat on by various automated test tools so I think
-> at minimum this needs to be reused. Re-implementing this logic seems
-> a waste of time and it wasn't exactly trivial and took some work.
->=20
-> Being able to insert the sockets from XDP (support coming soon) and
-> from sock_ops programs turns out to be fairly powerful.
->=20
-> So in short I think it makes most sense to consolidate on sock_map
-> because
->=20
->   (a) we need and will add udp support regardless,
+On Thu, Oct 24, 2019 at 2:08 AM Jeff Kirsher
+<jeffrey.t.kirsher@intel.com> wrote:
+>
+> From: Arkadiusz Grubba <arkadiusz.grubba@intel.com>
+>
+> This change introduces the ability to display extended (enhanced)
+> statistics for PF interfaces.
+>
+> The patch introduces new arrays defined for these
+> extra stats (in i40e_ethtool.c file) and enhances/extends ethtool ops
+> functions intended for dealing with PF stats (i.e.: i40e_get_stats_count(),
+> i40e_get_ethtool_stats(), i40e_get_stat_strings() ).
+>
+> There have also been introduced the new build flag named
+> "I40E_PF_EXTRA_STATS_OFF" to exclude from the driver code all code snippets
+> associated with these extra stats.
+>
+> Signed-off-by: Arkadiusz Grubba <arkadiusz.grubba@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
->   (b) we already handle the tricky parts inerting/removing live sockets
-I didn't mean not to reuse the existing sockmap logic on tracking
-socks life-time.  I was exploring options if the first step for UDP
-could be lookup-only support first.
+So this patch is bad. It is overwriting the statistics strings for
+each VF separately. In addition the code isn't really easy to follow
+for the stats update as it seems like it is doing a bunch of extra
+work and generating far more noise then it needs to.
 
-It is always better to get full UDP support ;)
-It seems to be confident also, then there is little reason not to do
-so in UDP sockmap support v1.
+>  .../net/ethernet/intel/i40e/i40e_ethtool.c    | 149 ++++++++++++++++++
+>  1 file changed, 149 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+> index 41e1240acaea..c814c756b4bb 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+> @@ -389,6 +389,7 @@ static const struct i40e_stats i40e_gstrings_pfc_stats[] = {
+>
+>  #define I40E_GLOBAL_STATS_LEN  ARRAY_SIZE(i40e_gstrings_stats)
+>
+> +/* Length (number) of PF core stats only (i.e. without queues / extra stats): */
+>  #define I40E_PF_STATS_LEN      (I40E_GLOBAL_STATS_LEN + \
+>                                  I40E_PFC_STATS_LEN + \
+>                                  I40E_VEB_STATS_LEN + \
+> @@ -397,6 +398,44 @@ static const struct i40e_stats i40e_gstrings_pfc_stats[] = {
+>  /* Length of stats for a single queue */
+>  #define I40E_QUEUE_STATS_LEN   ARRAY_SIZE(i40e_gstrings_queue_stats)
+>
+> +#define I40E_STATS_NAME_VFID_EXTRA "vf___."
+> +#define I40E_STATS_NAME_VFID_EXTRA_LEN (sizeof(I40E_STATS_NAME_VFID_EXTRA) - 1)
+> +
 
->   (c) from this series it looks like its fairly straight forward
->   (d) we get lots of shared code
->=20
-> Thanks,
-> John
->=20
->=20
-> >=20
-> > >=20
-> > > -Jakub
-> > >=20
-> > > [1] https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__blog.cloud=
-flare.com_how-2Dwe-2Dbuilt-2Dspectrum_&d=3DDwIBAg&c=3D5VD0RTtNlTh3ycd41b3MU=
-w&r=3DVQnoQ7LvghIj0gVEaiQSUw&m=3DlSo-FsOeNl_8znZZ07H8I6ZYAinPKTR5C3Cn_Ol3QY=
-Q&s=3DDZgW8-2Xl1P8NU59ji4ieQLzwWpx4t3gGq_tqB0l3Bo&e=3D=20
-> > > [2] https://lore.kernel.org/netdev/1458699966-3752-1-git-send-email-g=
-ilberto.bertin@gmail.com/
-> > > [3] https://lore.kernel.org/bpf/20190828072250.29828-1-jakub@cloudfla=
-re.com/
-> > > [4] https://urldefense.proofpoint.com/v2/url?u=3Dhttps-3A__blog.cloud=
-flare.com_sockmap-2Dtcp-2Dsplicing-2Dof-2Dthe-2Dfuture_&d=3DDwIBAg&c=3D5VD0=
-RTtNlTh3ycd41b3MUw&r=3DVQnoQ7LvghIj0gVEaiQSUw&m=3DlSo-FsOeNl_8znZZ07H8I6ZYA=
-inPKTR5C3Cn_Ol3QYQ&s=3DNerUqb4j7IsGBTcni6Yxk40wf6kTkckHXn3Nx5i4mCU&e=3D=20
->=20
->=20
+Why bother with this? If you are just going to skip over it in
+__i40e_update_vfid_in_stats_strings() anyway why waste the memory on 5
+characters per stat? It would simplify your code to just skip it here
+since you are inserting it later anyway.
+
+> +static struct i40e_stats i40e_gstrings_eth_stats_extra[] = {
+
+This should be const.
+
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "rx_bytes", eth_stats.rx_bytes),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "rx_unicast", eth_stats.rx_unicast),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "rx_multicast", eth_stats.rx_multicast),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "rx_broadcast", eth_stats.rx_broadcast),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "rx_discards", eth_stats.rx_discards),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "rx_unknown_protocol", eth_stats.rx_unknown_protocol),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "tx_bytes", eth_stats.tx_bytes),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "tx_unicast", eth_stats.tx_unicast),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "tx_multicast", eth_stats.tx_multicast),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "tx_broadcast", eth_stats.tx_broadcast),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "tx_discards", eth_stats.tx_discards),
+> +       I40E_VSI_STAT(I40E_STATS_NAME_VFID_EXTRA
+> +                     "tx_errors", eth_stats.tx_errors),
+> +};
+> +
+> +#define I40E_STATS_EXTRA_COUNT 128  /* as for now only I40E_MAX_VF_COUNT */
+> +/* Following length value does not include the length values for queues stats */
+> +#define I40E_STATS_EXTRA_LEN   ARRAY_SIZE(i40e_gstrings_eth_stats_extra)
+> +/* Length (number) of PF extra stats only (i.e. without core stats / queues): */
+> +#define I40E_PF_STATS_EXTRA_LEN (I40E_STATS_EXTRA_COUNT * I40E_STATS_EXTRA_LEN)
+> +/* Length (number) of enhanced/all PF stats (i.e. core with extra stats): */
+> +#define I40E_PF_STATS_ENHANCE_LEN (I40E_PF_STATS_LEN + I40E_PF_STATS_EXTRA_LEN)
+> +
+>  enum i40e_ethtool_test_id {
+>         I40E_ETH_TEST_REG = 0,
+>         I40E_ETH_TEST_EEPROM,
+> @@ -2190,6 +2229,9 @@ static int i40e_get_stats_count(struct net_device *netdev)
+>          */
+>         stats_len += I40E_QUEUE_STATS_LEN * 2 * netdev->num_tx_queues;
+>
+> +       if (vsi == pf->vsi[pf->lan_vsi] && pf->hw.partition_id == 1)
+> +               stats_len += I40E_PF_STATS_EXTRA_LEN;
+> +
+>         return stats_len;
+>  }
+>
+
+This bit is just wasteful. You already have this check up above in
+this function. Why not just add this to I40E_PF_STATS_LEN and be done
+with it?
+
+> @@ -2258,6 +2300,10 @@ static void i40e_get_ethtool_stats(struct net_device *netdev,
+>         struct i40e_vsi *vsi = np->vsi;
+>         struct i40e_pf *pf = vsi->back;
+>         struct i40e_veb *veb = NULL;
+> +       unsigned int vsi_idx;
+> +       unsigned int vf_idx;
+> +       unsigned int vf_id;
+> +       bool is_vf_valid;
+>         unsigned int i;
+>         bool veb_stats;
+>         u64 *p = data;
+> @@ -2307,11 +2353,109 @@ static void i40e_get_ethtool_stats(struct net_device *netdev,
+>                 i40e_add_ethtool_stats(&data, &pfc, i40e_gstrings_pfc_stats);
+>         }
+>
+> +       /* As for now, we only process the SRIOV type VSIs (as extra stats to
+> +        * PF core stats) which are correlated with VF LAN VSI (hence below,
+> +        * in this for-loop instruction block, only VF's LAN VSIs are currently
+> +        * processed).
+> +        */
+> +       for (vf_id = 0; vf_id < pf->num_alloc_vfs; vf_id++) {
+> +               is_vf_valid = true;
+> +               for (vf_idx = 0; vf_idx < pf->num_alloc_vfs; vf_idx++)
+> +                       if (pf->vf[vf_idx].vf_id == vf_id)
+> +                               break;
+> +               if (vf_idx >= pf->num_alloc_vfs) {
+> +                       dev_info(&pf->pdev->dev,
+> +                                "In the PF's array, there is no VF instance with VF_ID identifier %d or it is not set/initialized correctly yet\n",
+> +                                vf_id);
+> +                       is_vf_valid = false;
+> +                       goto check_vf;
+> +               }
+> +               vsi_idx = pf->vf[vf_idx].lan_vsi_idx;
+> +
+
+Okay so this whole block here is just ugly.Why bother with trying to
+output this all in-order? We have the stats you need to output as a
+giant array, and you should know the base index of that array. So
+instead of making this way more complicated and expensive then it
+needs to be why not just determine the offset  that you need to output
+the stats to based off of the vf_id? It would be much more readable
+then the approach you have taken.
+
+> +               vsi = pf->vsi[vsi_idx];
+> +               if (!vsi) {
+> +                       /* It means empty field in the PF VSI array... */
+> +                       dev_info(&pf->pdev->dev,
+> +                                "No LAN VSI instance referenced by VF %d or it is not set/initialized correctly yet\n",
+> +                                vf_id);
+> +                       is_vf_valid = false;
+> +                       goto check_vf;
+> +               }
+
+This is getting noisy really quick. Do you really need to dump
+information if you cannot collect stats on a given VF? There are way
+too many messages in here in my opinion.
+
+> +               if (vsi->vf_id != vf_id) {
+> +                       dev_info(&pf->pdev->dev,
+> +                                "In the PF's array, there is incorrectly set/initialized LAN VSI or reference to it from VF %d is not set/initialized correctly yet\n",
+> +                                vf_id);
+> +                       is_vf_valid = false;
+> +                       goto check_vf;
+> +               }
+
+This is more noise. It concerns me that you need all these checks. Is
+this something you can actually encounter. If so then maybe these
+should be wrapped in some sort of reader/writer lock like what we have
+for the netdev queue statistics.
+
+> +               if (vsi->vf_id != pf->vf[vf_idx].vf_id ||
+> +                   !i40e_find_vsi_from_id(pf, pf->vf[vsi->vf_id].lan_vsi_id)) {
+> +                       /* Disjointed identifiers or broken references VF-VSI */
+> +                       dev_warn(&pf->pdev->dev,
+> +                                "SRIOV LAN VSI (index %d in PF VSI array) with invalid VF Identifier %d (referenced by VF %d, ordered as %d in VF array)\n",
+> +                                vsi_idx, pf->vsi[vsi_idx]->vf_id,
+> +                                pf->vf[vf_idx].vf_id, vf_idx);
+> +                       is_vf_valid = false;
+> +               }
+
+Here we finally get to any productive work.
+
+So as I mentioned before there is a much simpler way to deal with all
+of this. What you can do is zero out all of the stats, and then when
+you hit this part you just have to access "data + (vf_id *
+I40E_STATS_EXTRA_LEN)".
+
+> +check_vf:
+> +               if (!is_vf_valid) {
+> +                       i40e_add_ethtool_stats(&data, NULL,
+> +                                              i40e_gstrings_eth_stats_extra);
+> +               } else {
+> +                       i40e_update_eth_stats(vsi);
+> +                       i40e_add_ethtool_stats(&data, vsi,
+> +                                              i40e_gstrings_eth_stats_extra);
+> +               }
+> +       }
+> +       for (; vf_id < I40E_STATS_EXTRA_COUNT; vf_id++)
+> +               i40e_add_ethtool_stats(&data, NULL,
+> +                                      i40e_gstrings_eth_stats_extra);
+> +
+>  check_data_pointer:
+>         WARN_ONCE(data - p != i40e_get_stats_count(netdev),
+>                   "ethtool stats count mismatch!");
+>  }
+>
+> +/**
+> + * __i40e_update_vfid_in_stats_strings - print VF num to stats names
+> + * @stats_extra: array of stats structs with stats name strings
+> + * @strings_num: number of stats name strings in array above (length)
+> + * @vf_id: VF number to update stats name strings with
+> + *
+> + * Helper function to i40e_get_stat_strings() in case of extra stats.
+> + **/
+> +static inline void
+> +__i40e_update_vfid_in_stats_strings(struct i40e_stats stats_extra[],
+> +                                   int strings_num, int vf_id)
+> +{
+> +       int i;
+> +
+> +       for (i = 0; i < strings_num; i++) {
+> +               snprintf(stats_extra[i].stat_string,
+> +                        I40E_STATS_NAME_VFID_EXTRA_LEN, "vf%03d", vf_id);
+> +               stats_extra[i].stat_string[I40E_STATS_NAME_VFID_EXTRA_LEN -
+> +                                                                      1] = '.';
+> +       }
+> +}
+> +
+
+So this is just ugly on so many levels. Actually now that I have
+looked into it a bit more why couldn't you simply re-purpose the
+__i40e-add_stat_strings() code? You could pre-format your VF strings
+and then just have them all get inserted with the correct names and
+indexes later.
+
+> +/**
+> + * i40e_update_vfid_in_stats - print VF num to stat names
+> + * @stats_extra: array of stats structs with stats name strings
+> + * @vf_id: VF number to update stats name strings with
+> + *
+> + * Helper macro to i40e_get_stat_strings() to ease use of
+> + * __i40e_update_vfid_in_stats_strings() function due to extra stats.
+> + *
+> + * Macro to ease the use of __i40e_update_vfid_in_stats_strings by taking
+> + * a static constant stats array and passing the ARRAY_SIZE(). This avoids typos
+> + * by ensuring that we pass the size associated with the given stats array.
+> + *
+> + * The parameter @stats_extra is evaluated twice, so parameters with side
+> + * effects should be avoided.
+> + **/
+> +#define i40e_update_vfid_in_stats(stats_extra, vf_id) \
+> +__i40e_update_vfid_in_stats_strings(stats_extra, ARRAY_SIZE(stats_extra), vf_id)
+> +
+>  /**
+>   * i40e_get_stat_strings - copy stat strings into supplied buffer
+>   * @netdev: the netdev to collect strings for
+> @@ -2354,6 +2498,11 @@ static void i40e_get_stat_strings(struct net_device *netdev, u8 *data)
+>         for (i = 0; i < I40E_MAX_USER_PRIORITY; i++)
+>                 i40e_add_stat_strings(&data, i40e_gstrings_pfc_stats, i);
+>
+> +       for (i = 0; i < I40E_STATS_EXTRA_COUNT; i++) {
+> +               i40e_update_vfid_in_stats(i40e_gstrings_eth_stats_extra, i);
+> +               i40e_add_stat_strings(&data, i40e_gstrings_eth_stats_extra);
+> +       }
+> +
+
+Okay, now this is officially a hard NAK. I hadn't noticed this until
+now but you are overwriting the i40e_gstrings_eth_stats_extra? That
+should be a const value.
+
+My advice is that this should work like the Tx/Rx rings and PFC stats
+do. You cannot be rewriting the strings for every VF. It makes much
+more sense to simply use them as an input string and out put the
+formatted string into the destination.
