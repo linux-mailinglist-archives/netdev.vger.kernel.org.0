@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A9AEE779C
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:32:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6709BE77CC
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:46:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732091AbfJ1Rcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 13:32:41 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:32778 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731917AbfJ1Rck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:32:40 -0400
-Received: by mail-lj1-f195.google.com with SMTP id t5so4422035ljk.0;
-        Mon, 28 Oct 2019 10:32:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5FilHHLZDaJVtvWFtCYcCAhZY22iViXiwl01pdpanDE=;
-        b=kJOnL1zu00cU6AIB3ANGSLRnVAy0sEtzlfZwc5U5bbJVImX/jG+vkVbdUBSgYC0T4u
-         VIJE/KSJV7tBBAafm/erazpEXjcN8b1pxnOg72jB6L8POffrf6lzZ8ZQ9km9+eIM33Y9
-         ZohB9ytTFbR52U6tY87VLOreay5IEHgKrksAXUJ7K+7jywptv+eBu1lYqiuPJ/7vW7VS
-         5d7kqZ6YmMlEw+xl6ufc8tpfSnPFqgOcc4O+w5bFpB84E8qgt5ansW9U9lSWf9cqBDtB
-         UPT+NO01fCztOnpsOX+TMzSRee5jRKkUlu6xMRiE1mgTUe4dZDznhUBXoHOc9q946Hoh
-         OBuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5FilHHLZDaJVtvWFtCYcCAhZY22iViXiwl01pdpanDE=;
-        b=TWnRIBaojtaZtqCG6GS41zr/bDRacnQbjyIl1PLtfCkC9TeVcS5jEvd6i0ONytbWIe
-         fDXCGG2o+w5pnxFY8IdWhJlbIaYQCIYyqOS7ynZ4xqHsFcdwj+qFOBiZsamjxsuqCPct
-         AHIBRnbzgaYyp1vpMJfJbqeM63xFDQ8bERKWB4V8LMq1pYxumc2E14BqJ+AQOD7u4Qfu
-         tVCTJgV/4lLpFZoV3BAAH44c04OuiUSN87XnjjvnIkI4vnqd+iYp4pjqs7jjwxEoulBW
-         etzrf1u7taHPaHGJctmLe02OaYWLnxK5N9odRYF+tZp0821GTKUYUrK5xwwMFgTbUHC8
-         EsZw==
-X-Gm-Message-State: APjAAAWjb44Rq48eDlSyGHDfon2URaQQhyXQGeAlW3Sp58fJ+PAzN4Z/
-        zIORZp4YhnYVEq27Pku8ef+KGuusVOW8LBiKCaA=
-X-Google-Smtp-Source: APXvYqye0j4NL6Qk0XEscCAsEQWDP5b99dNybQUMq6K1ce8WzT32YvRDIlRYXouK2KRYRbs0v+iwc/0+A6JrgpP4iv8=
-X-Received: by 2002:a2e:82cd:: with SMTP id n13mr12472445ljh.2.1572283958241;
- Mon, 28 Oct 2019 10:32:38 -0700 (PDT)
+        id S2404171AbfJ1Rq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 13:46:28 -0400
+Received: from dispatchb-us1.ppe-hosted.com ([148.163.129.53]:51292 "EHLO
+        dispatchb-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731878AbfJ1Rq2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:46:28 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id C9E72940054;
+        Mon, 28 Oct 2019 17:46:26 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 28 Oct
+ 2019 17:46:21 +0000
+Subject: Re: [PATCH net-next v2 2/6] sfc: perform XDP processing on received
+ packets
+To:     Charles McLachlan <cmclachlan@solarflare.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-net-drivers@solarflare.com>
+References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
+ <38a43fa5-5682-ffd9-f33e-5b7e04d50903@solarflare.com>
+ <20191028173321.5254abf3@carbon>
+ <094a9975-f1bb-7e44-10e4-64456f924ac9@solarflare.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <f9de8c74-b567-ac57-b1d5-dff8ce6ff191@solarflare.com>
+Date:   Mon, 28 Oct 2019 17:46:18 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <157220959547.48922.6623938299823744715.stgit@toke.dk>
- <157220959980.48922.12100884213362040360.stgit@toke.dk> <20191028140624.584bcc1e@carbon>
- <87imo9roxf.fsf@toke.dk> <483546c6-14b9-e1f1-b4c1-424d6b8d4ace@fb.com> <20191028171303.3e7e4601@carbon>
-In-Reply-To: <20191028171303.3e7e4601@carbon>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 28 Oct 2019 10:32:25 -0700
-Message-ID: <CAADnVQLoZ4YLNh+xPEvEYTmQjQppXUbTUNyYKxQ-fhn8_2QW8w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 4/4] selftests: Add tests for automatic map pinning
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Anton Protopopov <aspsk2@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <094a9975-f1bb-7e44-10e4-64456f924ac9@solarflare.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25006.003
+X-TM-AS-Result: No-2.190100-8.000000-10
+X-TMASE-MatchedRID: cgbqQT5W8hfmLzc6AOD8DfHkpkyUphL9xmJ6Bfwk3mXRLEyE6G4DRPKD
+        H4hGq6yQAtF46hV6z7l7T7wx4sxS+0rYfGvC1HVrX77gEfDSNJwhBdUXaqx1XbxgMf9QE2ebIqm
+        Bfx8U8pmAAEhDtVVmUOYLxu5+inGRvSgjMukRBnQI5rLLSVe5tH0tCKdnhB58vqq8s2MNhPCXxk
+        CsDPSYDBQabjOuIvShC24oEZ6SpSlR8RAUGq/SZxhwMlrB6gTpl/fsk/SGUQVb0mlmdMFWmSRSp
+        slWJr+nMz/fMtcfViVqvVUJrgGm8pVVROsIqAyn4dkWtaEht9TpSZ2gObfVi4fMZMegLDIeGU0p
+        Knas+RbnCJftFZkZizYJYNFU00e7O8/z8zQ+NO3AvpLE+mvX8g==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-2.190100-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25006.003
+X-MDID: 1572284787-B6EyFtL0FN57
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 9:13 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
->
-> LLVM 9.0.0 is still very new:
->  - 19 September 2019: LLVM 9.0.0 is now available
->
-> For my XDP-tutorial[1], I cannot required people to have this new llvm
-> version.
+On 28/10/2019 17:11, Charles McLachlan wrote:
+>>> +		efx_free_rx_buffers(rx_queue, rx_buf, 1);
+>>> +		break;
+>> You can do a /* Fall through */ to case XDP_DROP.
+> but not if I put the trace_xdp_exception in as well. I think we're always going 
+> to need two efx_free_rx_buffers calls.
 
-what's a concern?
-It's a released version.
-We recommend the latest kernel for new features. Same goes for compiler.
+This will probably make people scream, but I have an evil hack to deal with
+ situations like this:
+
+	default:
+		bpf_warn_invalid_xdp_action(xdp_act);
+		if (0) /* Fall further */
+			/* Fall through */
+	case XDP_ABORTED:
+		trace_xdp_exception(netdev, xdp_prog, xdp_act);
+		/* Fall through */
+	case XDP_DROP:
+		efx_free_rx_buffers(rx_queue, rx_buf, 1);
+		break;
+
+I wonder if gcc's Wimplicit-fallthrough logic can comprehend that?  Or if
+ it'll trigger -Wmisleading-indentation?
+
+-Ed
