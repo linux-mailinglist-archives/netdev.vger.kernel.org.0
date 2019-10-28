@@ -2,94 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 753B2E6CC9
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 08:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6143DE6D54
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 08:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731011AbfJ1HRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 03:17:06 -0400
-Received: from vulcan.natalenko.name ([104.207.131.136]:39440 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730751AbfJ1HRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 03:17:06 -0400
-Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id A3DCE60EFBC;
-        Mon, 28 Oct 2019 08:17:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1572247022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GpScNA8k1wNynPH+2njANhiKTtFuRG/+CoTwLULQUMU=;
-        b=Z2OfiMrOL9ZuQSbl5Y5PfE3jj8D/dJHYYnSrGfNykqXTg8Hn+od9ZCtFcczuOn6l81KZ71
-        0RZ0D5CnvdfX6RN/yHD7doRpkMl1h/OrUdqc+PU/L22Cc1KYAtghkloLVK7cnhDw225ed3
-        9yBtoF0hOEig9jRK9QHbR8wgq/V2JFM=
+        id S1732319AbfJ1HiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 03:38:03 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42641 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729420AbfJ1HiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 03:38:02 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r1so8671144wrs.9
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 00:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DdypZHLrKa7TVi8gRS0GU+loqobZcRyMq1zPxMplx9g=;
+        b=Oto1zxac4tS2ogiCydsNw+kunj6gCHg0v98m8qLUDRRZUsLvi05+3wwvyBi4LuLJ/k
+         tKEfV10DasI4n/ToqayQbwnkzdbiO4qfQ1NfuUuUoadYrOxwBnOd1CMjtsP9d9hBbcZv
+         p8iDg5utDDTp3Cw+SS8uVpYiX6qWkSgiSLG2ApIuqerzSL5dlwfsv8DfDNym7pb8fZbF
+         LK7p1TXbkYepEGp9OtQZG9Bmg6BjeLgn8Owv0UGW/a1jBKbWvKiDoS/bwVpM8CKbDm/5
+         b2lBrzR4NVelbzTyHUPLx2m1Puvg4cekkiobEmmVtJb0DECl549+EFULFJYN8NbSsecG
+         1opg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DdypZHLrKa7TVi8gRS0GU+loqobZcRyMq1zPxMplx9g=;
+        b=n3+ZR7Ue9lImTc2+lr5AHDcXnKe/BWSSr1YubvVI3FL9vaSPxe81RcS9t5mZkngyoz
+         KHA4s7m5IhIDn5yZ+YasDfbdULCxZy9YF/hNn6GKhWd6YlAVZbvhfpnZ94/WKUoZvXXe
+         Yu6EVm8lw2EIbKundYluodJiemt+Szjmb5BiwWDrRjqFe0crH7pCxrLRDIJ4m+5uF+Nq
+         7s/08pbnAhvRwvyBl9sZqEmv4QOe1D0Nt2lfbdd7gFTrZEusJXIG19gOVidVJe6M1H94
+         abS18xDPzoGDaXuX9fEdl015ow0tKX8BciFvgOyNpkTtmRybBojhUW6zynme8bwru4qR
+         vo5A==
+X-Gm-Message-State: APjAAAXWfXkUutKywY8GmYPENFjQkWi4dyrppdEsRUz1TnFgllOGN+fN
+        +2OUgxlrAenVRpa17ezsGewD6g==
+X-Google-Smtp-Source: APXvYqwcj87bw8lOVArXqR+XJGvgvLYer6ZYl0POgShlbgBJ+FZeP+VM8gD31aCkMJZMAgzJR/ZIwA==
+X-Received: by 2002:adf:fcc7:: with SMTP id f7mr14071702wrs.345.1572248281259;
+        Mon, 28 Oct 2019 00:38:01 -0700 (PDT)
+Received: from localhost (ip-94-113-126-64.net.upcbroadband.cz. [94.113.126.64])
+        by smtp.gmail.com with ESMTPSA id o73sm10913132wme.34.2019.10.28.00.38.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 00:38:00 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 08:38:00 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jakub.kicinski@netronome.com, stephen@networkplumber.org,
+        roopa@cumulusnetworks.com, dcbw@redhat.com,
+        nikolay@cumulusnetworks.com, mkubecek@suse.cz, andrew@lunn.ch,
+        parav@mellanox.com, saeedm@mellanox.com, f.fainelli@gmail.com,
+        sd@queasysnail.net, sbrivio@redhat.com, pabeni@redhat.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch iproute2-next v5 0/3] ip: add support for alternative
+ names
+Message-ID: <20191028073800.GC2193@nanopsycho>
+References: <20191024102052.4118-1-jiri@resnulli.us>
+ <c8201b72-90c4-d8e6-65b9-b7f7ed55f0f5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 28 Oct 2019 08:17:02 +0100
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org, nbd@nbd.name,
-        hkallweit1@gmail.com, sgruszka@redhat.com,
-        lorenzo.bianconi@redhat.com, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 wireless-drivers 0/2] fix mt76x2e hangs on U7612E
- mini-pcie
-In-Reply-To: <cover.1572204430.git.lorenzo@kernel.org>
-References: <cover.1572204430.git.lorenzo@kernel.org>
-Message-ID: <5c6bdfd65ae3178cff2f55233e9e8465@natalenko.name>
-X-Sender: oleksandr@natalenko.name
-User-Agent: Roundcube Webmail/1.3.10
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c8201b72-90c4-d8e6-65b9-b7f7ed55f0f5@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.10.2019 20:53, Lorenzo Bianconi wrote:
-> Various mt76x2e issues have been reported on U7612E mini-pcie card [1].
-> On U7612E-H1 PCIE_ASPM causes continuous mcu hangs and instability and
-> so patch 1/2 disable it by default.
-> Moreover mt76 does not properly unmap dma buffers for non-linear skbs.
-> This issue may result in hw hangs if the system relies on IOMMU.
-> Patch 2/2 fix the problem properly unmapping data fragments on
-> non-linear skbs.
-> 
-> Changes since v2:
-> - fix compilation error if PCI support is not compiled
-> 
-> Changes since v1:
-> - simplify buf0 unmap condition
-> - use IS_ENABLED(CONFIG_PCIEASPM) instead of ifdef CONFIG_PCIEASPM
-> - check pci_disable_link_state return value
-> 
-> [1]:
-> https://lore.kernel.org/netdev/deaafa7a3e9ea2111ebb5106430849c6@natalenko.name/
-> 
-> 
-> Lorenzo Bianconi (2):
->   mt76: mt76x2e: disable pcie_aspm by default
->   mt76: dma: fix buffer unmap with non-linear skbs
-> 
->  drivers/net/wireless/mediatek/mt76/Makefile   |  2 +
->  drivers/net/wireless/mediatek/mt76/dma.c      |  6 ++-
->  drivers/net/wireless/mediatek/mt76/mt76.h     |  6 ++-
->  .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
->  drivers/net/wireless/mediatek/mt76/pci.c      | 46 +++++++++++++++++++
->  5 files changed, 58 insertions(+), 4 deletions(-)
->  create mode 100644 drivers/net/wireless/mediatek/mt76/pci.c
+Sun, Oct 27, 2019 at 06:16:25PM CET, dsahern@gmail.com wrote:
+>On 10/24/19 4:20 AM, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> This patchset adds support for alternative names caching,
+>> manipulation and usage.
+>> 
+>
+>something is still not right with this change:
+>
+>$ ip li add veth1 type veth peer name veth2
+>$ ip li prop add dev veth1 altname veth1_by_another_name
+>
+>$ ip li sh dev veth1
+>15: veth1@veth2: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop state
+>DOWN mode DEFAULT group default qlen 1000
+>    link/ether 1e:6e:bc:26:52:f6 brd ff:ff:ff:ff:ff:ff
+>    altname veth1_by_another_name
+>
+>$ ip li sh dev veth1_by_another_name
+>Device "veth1_by_another_name" does not exist.
+>
+>$ ip li set dev veth1_by_another_name up
+>Error: argument "veth1_by_another_name" is wrong: "dev" not a valid ifname
 
-So, works fine for me. Checked with 5.3 and additional include fix I've 
-mentioned previously.
+Odd. This works for me fine:
+bash-5.0# ip li prop add dev veth1 altname veth1_by_another_name
+bash-5.0# ip li sh dev veth1
+4: veth1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 82:ce:19:28:bb:f5 brd ff:ff:ff:ff:ff:ff
+    altname veth1_by_another_name
+bash-5.0# ip li sh dev veth1_by_another_name
+4: veth1: <BROADCAST,NOARP> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 82:ce:19:28:bb:f5 brd ff:ff:ff:ff:ff:ff
+    altname veth1_by_another_name
+bash-5.0# ip li set dev veth1_by_another_name up
 
-With that, for the whole series feel free to add:
 
-Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
-
-Thank you.
-
--- 
-   Oleksandr Natalenko (post-factum)
+Did you by any chance forget to apply the last patch?
