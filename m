@@ -2,190 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 508CDE731E
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 15:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA1CEE736F
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 15:11:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389971AbfJ1OAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 10:00:37 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56800 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389967AbfJ1OAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 10:00:35 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3A20CB0008A;
-        Mon, 28 Oct 2019 14:00:34 +0000 (UTC)
-Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Mon, 28 Oct 2019 14:00:21 +0000
-From:   Charles McLachlan <cmclachlan@solarflare.com>
-Subject: [PATCH net-next v2 6/6] sfc: add XDP counters to ethtool stats
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
-        <brouer@redhat.com>
-References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
-Message-ID: <02ea2190-b770-c10a-d4b7-5d3442688759@solarflare.com>
-Date:   Mon, 28 Oct 2019 14:00:17 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
-MIME-Version: 1.0
-In-Reply-To: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.154]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25006.003
-X-TM-AS-Result: No-3.640600-8.000000-10
-X-TMASE-MatchedRID: NWSsFFuu76tbbYRuf3nrh7sHVDDM5xAP1JP9NndNOkVZXO8zVe6AWnnU
-        bFaXoymefGzuoVn0Vs6PQi9XuOWoOHI/MxNRI7UkiwmGIOAfkmEKogTtqoQiBuD0a1g8E91LNOo
-        nVn0dhPcvGKSWy7bk6ABHRU9VJ7rBUneYLfqI2oh1e7Xbb6Im2mf6wD367VgtUjFJwpdmcrQ2m2
-        uVGloE8VWrn6UBj2xcWfXwCgkDovjHx0bvkFFh/r6EJGSqPePTB4Id7CiQcz/J2YQ3RSF2RHm5f
-        Qprv+BB4HEFwUDiSZ6NwXNpr2GcsKPFjJEFr+olfeZdJ1XsorjMA6TEdjm6mAtuKBGekqUpOlxB
-        O2IcOBaJqeJRFzphSN48bmIYFUaEV/jN8YWrHnsVQ9NpLVU4oGa1CnGORU3GULbEc8rcMl8BnwM
-        ktTDS2kWNVo0lOODzVeCfTfNg26YXxY6mau8LG3IJh4dBcU42f4hpTpoBF9JqxGCSzFD9MrDMWv
-        XXz1lrlExlQIQeRG0=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.640600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25006.003
-X-MDID: 1572271235-bDzlLcmLb23w
+        id S2389775AbfJ1OLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 10:11:09 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:33435 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728383AbfJ1OLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 10:11:09 -0400
+Received: by mail-pl1-f193.google.com with SMTP id y8so5650358plk.0;
+        Mon, 28 Oct 2019 07:11:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Wr2qSyKGZ5IFDokw96ZYkbcrvyw06+H0FC+Bn5dRPyo=;
+        b=e6slJevoqQo/YVUh8Xnkc+rmtrZ19Jfw4qAIzn3tx/aoR18jKNZ2RWjMZtr6UnBIn4
+         ahqcsijX/DfE4GJ6miHo/D3a+49jUmz6NKP84n7W7X4Ak+s+18Pz5hyngNb3qvSXNsLU
+         5N0svGRhafuwDhPbDBFApjgerE6qkjMXUMxmA+QbGO0goIKG3Rg1TwIMSX8jARhFXTr3
+         JT7O52ag5m1tgkcgudzyyeU48v91jV11m0muPjRmI81XW0D3aV0gNsDKF+E+wFTWBYCC
+         oIYckdKaTahVaiVPvl4LUQTZZpsUrz8F28nQT5qxROw/0Q7uR62SA7VWPoeXeWEq6ZaP
+         9hqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Wr2qSyKGZ5IFDokw96ZYkbcrvyw06+H0FC+Bn5dRPyo=;
+        b=CjhBigvY2rwqs4uIx/o49dF8ldDTxdLzBjKThTUBvXNsty8B2F5knV/AQCzJ7efHEu
+         DG50DD2pMUcsjAbtkv8lZF2mdbxBFgVpumIE0ySUdsj4QD2o8IlNppELg8q+a5Xz5q8Q
+         WqU27taD9Cm6JyDQ3GaHT3csUD43uToTd5LIg/befkqJQkbt6zfky3xf8Q/QGDSwP+9Q
+         RyrwFo/DncTrMoFULRboY36ED8y16TGJQQ5OtVmGD903eyWvY/cDQ4G3MjghqxukBWH7
+         e6LLkfyUFRkeL36+EYJYtkihxJt2uXnpF8qN2ssztyFAPjzauEiIOgnjR5MBPdT0AXD7
+         cO0Q==
+X-Gm-Message-State: APjAAAXztbXOfFMZV8srZfNoo5IqbwUoNClo/K0XpKQPrZMoc5REaDFm
+        asDB39NGMCTVgeM3zOjpGUkUbKeMMXo=
+X-Google-Smtp-Source: APXvYqxBY5ok3G+PuasR6A0BTc8qsqOZ+7HIbeyw3CsDHVDTrB+P06rbxpdYq98lDdiAApXjsBaIsA==
+X-Received: by 2002:a17:902:6a81:: with SMTP id n1mr19182160plk.173.1572271867602;
+        Mon, 28 Oct 2019 07:11:07 -0700 (PDT)
+Received: from ubuntu-18.04-x8664 ([128.1.49.85])
+        by smtp.gmail.com with ESMTPSA id a5sm2579125pfk.172.2019.10.28.07.11.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 07:11:07 -0700 (PDT)
+From:   Wenbo Zhang <ethercflow@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     yhs@fb.com, daniel@iogearbox.net, netdev@vger.kernel.org,
+        Wenbo Zhang <ethercflow@gmail.com>
+Subject: [PATCH bpf-next v4] bpf: add new helper fd2path for mapping a file descriptor to a pathname
+Date:   Mon, 28 Oct 2019 10:10:53 -0400
+Message-Id: <20191028141053.12267-1-ethercflow@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Count XDP packet drops, error drops, transmissions and redirects and
-expose these counters via the ethtool stats command.
+When people want to identify which file system files are being opened,
+read, and written to, they can use this helper with file descriptor as
+input to achieve this goal. Other pseudo filesystems are also supported.
 
-Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
+This requirement is mainly discussed here:
+
+  https://github.com/iovisor/bcc/issues/237
+
+v3->v4:
+- fix missing fdput()
+- move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
+- move fd2path's test code to another patch
+
+v2->v3:
+- remove unnecessary LOCKDOWN_BPF_READ
+- refactor error handling section for enhanced readability
+- provide a test case in tools/testing/selftests/bpf
+
+v1->v2:
+- fix backward compatibility
+- add this helper description
+- fix signed-off name
+
+Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
 ---
- drivers/net/ethernet/sfc/ethtool.c    | 25 +++++++++++++++++++++++++
- drivers/net/ethernet/sfc/net_driver.h |  8 ++++++++
- drivers/net/ethernet/sfc/rx.c         |  9 +++++++++
- 3 files changed, 42 insertions(+)
+ include/uapi/linux/bpf.h       | 14 +++++++++++-
+ kernel/trace/bpf_trace.c       | 40 ++++++++++++++++++++++++++++++++++
+ tools/include/uapi/linux/bpf.h | 14 +++++++++++-
+ 3 files changed, 66 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 86b965875540..8db593fb9699 100644
---- a/drivers/net/ethernet/sfc/ethtool.c
-+++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -83,6 +83,10 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_frm_trunc),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_events),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_packets),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_drops),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_bad_drops),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_tx),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_redirect),
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 4af8b0819a32..124632b2a697 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -2775,6 +2775,17 @@ union bpf_attr {
+  * 		restricted to raw_tracepoint bpf programs.
+  * 	Return
+  * 		0 on success, or a negative error in case of failure.
++ *
++ * int bpf_fd2path(char *path, u32 size, int fd)
++ *	Description
++ *		Get **file** atrribute from the current task by *fd*, then call
++ *		**d_path** to get it's absolute path and copy it as string into
++ *		*path* of *size*. The **path** also support pseudo filesystems
++ *		(whether or not it can be mounted). The *size* must be strictly
++ *		positive. On success, the helper makes sure that the *path* is
++ *		NUL-terminated. On failure, it is filled with zeroes.
++ *	Return
++ *		0 on success, or a negative error in case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2888,7 +2899,8 @@ union bpf_attr {
+ 	FN(sk_storage_delete),		\
+ 	FN(send_signal),		\
+ 	FN(tcp_gen_syncookie),		\
+-	FN(skb_output),
++	FN(skb_output),			\
++	FN(fd2path),
+ 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 571c25d60710..dd7b070df3d6 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -683,6 +683,44 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
+ 	.arg1_type	= ARG_ANYTHING,
  };
  
- #define EFX_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efx_sw_stat_desc)
-@@ -399,6 +403,19 @@ static size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
- 			}
- 		}
- 	}
-+	if (efx->xdp_tx_queue_count && efx->xdp_tx_queues) {
-+		unsigned short xdp;
++BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
++{
++	struct fd f;
++	char *p;
++	int ret = -EINVAL;
 +
-+		for (xdp = 0; xdp < efx->xdp_tx_queue_count; xdp++) {
-+			n_stats++;
-+			if (strings) {
-+				snprintf(strings, ETH_GSTRING_LEN,
-+					 "tx-xdp-cpu-%hu.tx_packets", xdp);
-+				strings += ETH_GSTRING_LEN;
-+			}
-+		}
++	/* Use fdget_raw instead of fdget to support O_PATH */
++	f = fdget_raw(fd);
++	if (!f.file)
++		goto error;
++
++	p = d_path(&f.file->f_path, dst, size);
++	if (IS_ERR_OR_NULL(p)) {
++		ret = PTR_ERR(p);
++		goto error;
 +	}
 +
- 	return n_stats;
- }
- 
-@@ -509,6 +526,14 @@ static void efx_ethtool_get_stats(struct net_device *net_dev,
- 			data++;
- 		}
- 	}
-+	if (efx->xdp_tx_queue_count && efx->xdp_tx_queues) {
-+		int xdp;
++	ret = strlen(p);
++	memmove(dst, p, ret);
++	dst[ret] = '\0';
++	goto end;
 +
-+		for (xdp = 0; xdp < efx->xdp_tx_queue_count; xdp++) {
-+			data[0] = efx->xdp_tx_queues[xdp]->tx_packets;
-+			data++;
-+		}
-+	}
- 
- 	efx_ptp_update_stats(efx, data);
- }
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 505ddc060e64..04e49eac7327 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -453,6 +453,10 @@ enum efx_sync_events_state {
-  *	lack of descriptors
-  * @n_rx_merge_events: Number of RX merged completion events
-  * @n_rx_merge_packets: Number of RX packets completed by merged events
-+ * @n_rx_xdp_drops: Count of RX packets intentionally dropped due to XDP
-+ * @n_rx_xdp_bad_drops: Count of RX packets dropped due to XDP errors
-+ * @n_rx_xdp_tx: Count of RX packets retransmitted due to XDP
-+ * @n_rx_xdp_redirect: Count of RX packets redirected to a different NIC by XDP
-  * @rx_pkt_n_frags: Number of fragments in next packet to be delivered by
-  *	__efx_rx_packet(), or zero if there is none
-  * @rx_pkt_index: Ring index of first buffer for next packet to be delivered
-@@ -506,6 +510,10 @@ struct efx_channel {
- 	unsigned int n_rx_nodesc_trunc;
- 	unsigned int n_rx_merge_events;
- 	unsigned int n_rx_merge_packets;
-+	unsigned int n_rx_xdp_drops;
-+	unsigned int n_rx_xdp_bad_drops;
-+	unsigned int n_rx_xdp_tx;
-+	unsigned int n_rx_xdp_redirect;
- 
- 	unsigned int rx_pkt_n_frags;
- 	unsigned int rx_pkt_index;
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index cc365ea19928..815e1b64f904 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -676,6 +676,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 			netif_err(efx, rx_err, efx->net_dev,
- 				  "XDP is not possible with multiple receive fragments (%d)\n",
- 				  channel->rx_pkt_n_frags);
-+		channel->n_rx_xdp_bad_drops++;
- 		return false;
++error:
++	memset(dst, '0', size);
++end:
++	fdput(f);
++	return ret;
++}
++
++static const struct bpf_func_proto bpf_fd2path_proto = {
++	.func       = bpf_fd2path,
++	.gpl_only   = true,
++	.ret_type   = RET_INTEGER,
++	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
++	.arg2_type  = ARG_CONST_SIZE,
++	.arg3_type  = ARG_ANYTHING,
++};
++
+ static const struct bpf_func_proto *
+ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+@@ -735,6 +773,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ #endif
+ 	case BPF_FUNC_send_signal:
+ 		return &bpf_send_signal_proto;
++	case BPF_FUNC_fd2path:
++		return &bpf_fd2path_proto;
+ 	default:
+ 		return NULL;
  	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 4af8b0819a32..124632b2a697 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -2775,6 +2775,17 @@ union bpf_attr {
+  * 		restricted to raw_tracepoint bpf programs.
+  * 	Return
+  * 		0 on success, or a negative error in case of failure.
++ *
++ * int bpf_fd2path(char *path, u32 size, int fd)
++ *	Description
++ *		Get **file** atrribute from the current task by *fd*, then call
++ *		**d_path** to get it's absolute path and copy it as string into
++ *		*path* of *size*. The **path** also support pseudo filesystems
++ *		(whether or not it can be mounted). The *size* must be strictly
++ *		positive. On success, the helper makes sure that the *path* is
++ *		NUL-terminated. On failure, it is filled with zeroes.
++ *	Return
++ *		0 on success, or a negative error in case of failure.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -2888,7 +2899,8 @@ union bpf_attr {
+ 	FN(sk_storage_delete),		\
+ 	FN(send_signal),		\
+ 	FN(tcp_gen_syncookie),		\
+-	FN(skb_output),
++	FN(skb_output),			\
++	FN(fd2path),
  
-@@ -721,6 +722,9 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 			if (net_ratelimit())
- 				netif_err(efx, rx_err, efx->net_dev,
- 					  "XDP TX failed (%d)\n", err);
-+			channel->n_rx_xdp_bad_drops++;
-+		} else {
-+			channel->n_rx_xdp_tx++;
- 		}
- 		break;
- 
-@@ -731,6 +735,9 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 			if (net_ratelimit())
- 				netif_err(efx, rx_err, efx->net_dev,
- 					  "XDP redirect failed (%d)\n", err);
-+			channel->n_rx_xdp_bad_drops++;
-+		} else {
-+			channel->n_rx_xdp_redirect++;
- 		}
- 		break;
- 
-@@ -739,10 +746,12 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 		/* Fall through */
- 	case XDP_ABORTED:
- 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		channel->n_rx_xdp_bad_drops++;
- 		break;
- 
- 	case XDP_DROP:
- 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		channel->n_rx_xdp_drops++;
- 		break;
- 	}
- 
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+  * function eBPF program intends to call
+-- 
+2.17.1
+
