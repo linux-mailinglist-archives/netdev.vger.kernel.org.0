@@ -2,88 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0855E79C3
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:13:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45825E79D9
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:16:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731085AbfJ1UNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 16:13:19 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38130 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726483AbfJ1UNS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 16:13:18 -0400
-Received: by mail-pf1-f196.google.com with SMTP id c13so7667461pfp.5
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 13:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Pt5I/I5h4Wv/bTOiFA1nQtOPc9xtCs00uVzh+0NgzFo=;
-        b=ORAUPDn0xqRHNPv7q/t/fryPMDka1e4usg7Czof7TITqS0SUWWFnlRS5GhR53lt4Hq
-         OoHEKDl/jAjRpNRPsKhQ2oWH9jJkbt6krVGjMsqvQp/XmLaiqUvFNzJNKjHCNT0/R/Qr
-         4gD3WNhbNKoI0lPnKNlzSGkRCQ8AAH2Neo+om9c0CR8TIz7wStVz9qJBn+jetbr/44qY
-         vyTkXNssseO9+wzI0QrAElgsvSVk8COtVdp9Tl5WFyzDGZndTCnmqG0gBlQzFXxMgnxW
-         0t48nyVXHVTJ683vh7XN210EOakYc8pASG6X+K2teT8YHOQOzf4sXt4X4BWCUDOKaiWF
-         4IDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Pt5I/I5h4Wv/bTOiFA1nQtOPc9xtCs00uVzh+0NgzFo=;
-        b=STeb0UDEgGxK6O8hGPp4QFvrFoswulNQ+1VA+p+5rkHfCVYtobo7oxbzwBYX+3ZjD+
-         24jO+G2NsuJHRZMuEmCe7mGU32KieMGx8mJcC2mQqPKtXqZzgEXBMbdulRo1f9tENxqo
-         EFEdsB43gQVana0iGc5D7wWYv0NDzb4mRs6Dr46Zp95wbPVrDHXjGvO7pw8QJcWdq1gd
-         p0W1zBQovy4OXiz15zeRnZyg4AInJr9zpWVUqvNQohNVHQ3vj92O6sHIr248RcqyCsyy
-         abYpb216RPAq2t1HUV8l1jhGo7heuDVUfv4fEZJfFWgSJbWQBbNhBCXcru97YfgrzAU3
-         sYBQ==
-X-Gm-Message-State: APjAAAXxvtLGkXIDxwpY7LGmtqcYYT1/L8St1nMAkdSfvYeEQZqFo/cK
-        7CYcuPfKACN0fVu+0tFvhri8Xg5UFWcWmssDgRruZxna
-X-Google-Smtp-Source: APXvYqxSH1MGg5UCal6TDerPycgPwUEYqiXvQJY0eoqVWuYoTecCmSdGyUWULIYdvWT66dKFhSfB/nOL9b3neYVUPdA=
-X-Received: by 2002:a17:90a:c48:: with SMTP id u8mr1499261pje.16.1572293598080;
- Mon, 28 Oct 2019 13:13:18 -0700 (PDT)
+        id S1728361AbfJ1UQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 16:16:00 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39004 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726483AbfJ1UQA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Oct 2019 16:16:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=MR3qQXq6D3fnR/mRwAsKkVGp0L0BCXTk2l0dnxNTYMI=; b=mm0l+BfiVdce/0diy/ZppZIRgB
+        B7RrdoML3gD/+nFF0rbOX83bbXWbc+Dh1VI9d2T8CC4EgYJLOsbMW68dzWXQiMo00jyQ9M6YQc2/F
+        7c8ovX1ksYasCQmvokiGB3hPXF+YQpnQjzdL/OUpFrCzQ08VnXskvkNbG8Cx8ChPIkcM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iPBQj-0008RL-0u; Mon, 28 Oct 2019 21:15:57 +0100
+Date:   Mon, 28 Oct 2019 21:15:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Chris Healy <Chris.Healy@zii.aero>
+Subject: Re: [PATCH net-next 4/4] net: phy: marvell: add PHY tunable support
+ for more PHY versions
+Message-ID: <20191028201557.GJ17625@lunn.ch>
+References: <4ae7d05a-4d1d-024f-ebdf-c92798f1a770@gmail.com>
+ <e74bb89c-f510-61f7-f2fc-41fe0114c282@gmail.com>
 MIME-Version: 1.0
-References: <20191022231051.30770-1-xiyou.wangcong@gmail.com>
- <20191028.112904.824821320861730754.davem@davemloft.net> <CANn89iKeB9+6xAyjQUZvtX3ioLNs3sBwCDq0QxmYEy5X_nF+LA@mail.gmail.com>
-In-Reply-To: <CANn89iKeB9+6xAyjQUZvtX3ioLNs3sBwCDq0QxmYEy5X_nF+LA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 28 Oct 2019 13:13:06 -0700
-Message-ID: <CAM_iQpU1oG8J9Nf-nZoZDf3wO9c4dHAaa0=HK0X-QMeHMtmrCQ@mail.gmail.com>
-Subject: Re: [Patch net-next 0/3] tcp: decouple TLP timer from RTO timer
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e74bb89c-f510-61f7-f2fc-41fe0114c282@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 11:34 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Mon, Oct 28, 2019 at 11:29 AM David Miller <davem@davemloft.net> wrote:
-> >
-> > From: Cong Wang <xiyou.wangcong@gmail.com>
-> > Date: Tue, 22 Oct 2019 16:10:48 -0700
-> >
-> > > This patchset contains 3 patches: patch 1 is a cleanup,
-> > > patch 2 is a small change preparing for patch 3, patch 3 is the
-> > > one does the actual change. Please find details in each of them.
-> >
-> > Eric, have you had a chance to test this on a system with
-> > suitable CPU arity?
->
-> Yes, and I confirm I could not repro the issues at all.
->
-> I got a 100Gbit NIC, trying to increase the pressure a bit, and
-> driving this NIC at line rate was only using 2% of my 96 cpus host,
-> no spinlock contention of any sort.
+On Mon, Oct 28, 2019 at 08:54:17PM +0100, Heiner Kallweit wrote:
+> More PHY versions are compatible with the existing downshift
+> implementation, so let's add downshift support for them.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Please let me know if there is anything else I can provide to help
-you to make the decision.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-All I can say so far is this only happens on our hosts with 128
-AMD CPU's. I don't see anything here related to AMD, so I think
-only the number of CPU's (vs. number of TX queues?) matters.
-
-Thanks.
+    Andrew
