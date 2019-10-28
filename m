@@ -2,111 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21241E6B5D
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 04:16:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 450D8E6B9A
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 04:51:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727119AbfJ1DQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 27 Oct 2019 23:16:48 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:38419 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726711AbfJ1DQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 23:16:47 -0400
-Received: by mail-io1-f66.google.com with SMTP id u8so9097076iom.5;
-        Sun, 27 Oct 2019 20:16:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aqAqtrPtaQ6SOYmf4+7ZtG8UMxXeG76gJLsRBVsOpfY=;
-        b=kJkeQLjgwySWAlgE8Q5Gbq/6tuaBeAA1QvXD3s0dmIEz8BS99gduUlmUgQyZCmprN8
-         S0NladyzZwKaQBZfcAn08zwj00XMhISXvUMLlmTk6JGYeivb84UEfsPFLbJNPtxJ5NlX
-         iTqWz9B4A5kuM0QNu1Y9yGtVUTpW+Lj4RP030YoSIf6J6kdfhspZ3TjYGZpFvWEtjkxP
-         62SUtI44rtbOHACsTWLjDABmunBSBcpi4MAbYXwouUoAGXBmZGxK8/ivgK8QjTDa2oki
-         VAyFwGgLoGAVm9fGVh7qqOafa6T8n8tVgjmNqHY4o0U08IO4WwDnOKocT/2tJcqdx4W2
-         VgOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aqAqtrPtaQ6SOYmf4+7ZtG8UMxXeG76gJLsRBVsOpfY=;
-        b=bcHD1ffQ/KKgS2QZk+nnHiQ3ok0FLYQcKcMLY8FddBZmKff3AXe77RqUzagX03BklZ
-         ndigo3mannOTpHezOBE2WP8QBoiPUp8ES0pc3Nltn0npB6+oxjbc+JNyZJ8ibOKaHfzZ
-         15ilJw1GbZkj5EBq16CqOXy6hbNKaD3xKmJpuwFixRtKVHuvS8qRFvl9f3OTEjm/TQTz
-         jGcKjMOVj9mYk58NSIGoYeZBOAwOf/NOawclypMujsXOzDoVY3SrYQxYNr9UreSx21/G
-         XLNK1J98hKCwq3jgT4L+pOoWoAcRKlUa1VugdEVh1kmmW6gmfPZUp515I02HiM1DbWJ+
-         krrg==
-X-Gm-Message-State: APjAAAX7c3RaqdJ/RIvTmhoquavqYvreEXU6tU+aGpPyVd/3Hgqv588z
-        UpcGhiQChVZKHIKnAKnf+Hk=
-X-Google-Smtp-Source: APXvYqwpz/txjnYaIF2QPrUDMnRkFRB0pWdNykXTjbHChVA+/IutmJCkl6OPT+7RgTuNLBGHHPiIJw==
-X-Received: by 2002:a5e:d707:: with SMTP id v7mr16397874iom.226.1572232605632;
-        Sun, 27 Oct 2019 20:16:45 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:284:8202:10b0:9e2:b1b6:1e7e:b71e])
-        by smtp.googlemail.com with ESMTPSA id f25sm1305021ila.71.2019.10.27.20.16.42
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 27 Oct 2019 20:16:44 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
- <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
- <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com>
- <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
- <87h840oese.fsf@toke.dk>
- <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch>
- <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com>
- <87zhhmrz7w.fsf@toke.dk>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <47f1a7e2-0d3a-e324-20c5-ba3aed216ddf@gmail.com>
-Date:   Sun, 27 Oct 2019 21:16:42 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        id S1731519AbfJ1DvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 27 Oct 2019 23:51:08 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:24223 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731480AbfJ1DvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 27 Oct 2019 23:51:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572234666;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=c3g4UjEb9DWKqjphn6WUlg8TodMgT3MFxKe3D2APMzQ=;
+        b=O58oaPqCBm2CehB2m7pxkM4bzB0imAOwss6cOANmChQeDoeCTrPTwiZ5U6RX96sVWjjJ4y
+        nPBhsvxi6fn1I8KvNcNKAG63lZa8RQiULW2ewId2F3t5W0ALB8KCS2Pac/5oGmk2n+pBEk
+        r0uzNzFFjOr9AcIFKcv14Ne9osO85c8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-193-ZuWQpeT7OoiBddLiSa6f_Q-1; Sun, 27 Oct 2019 23:51:02 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D0C975EC;
+        Mon, 28 Oct 2019 03:51:00 +0000 (UTC)
+Received: from [10.72.12.246] (ovpn-12-246.pek2.redhat.com [10.72.12.246])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D0AC35C219;
+        Mon, 28 Oct 2019 03:50:51 +0000 (UTC)
+Subject: Re: [PATCH v2] vhost: introduce mdev based hardware backend
+To:     Tiwei Bie <tiwei.bie@intel.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     alex.williamson@redhat.com, maxime.coquelin@redhat.com,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dan.daly@intel.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, lingshan.zhu@intel.com
+References: <106834b5-dae5-82b2-0f97-16951709d075@redhat.com>
+ <20191023101135.GA6367@___> <5a7bc5da-d501-2750-90bf-545dd55f85fa@redhat.com>
+ <20191024042155.GA21090@___>
+ <d37529e1-5147-bbe5-cb9d-299bd6d4aa1a@redhat.com>
+ <d4cc4f4e-2635-4041-2f68-cd043a97f25a@redhat.com>
+ <20191024091839.GA17463@___>
+ <fefc82a3-a137-bc03-e1c3-8de79b238080@redhat.com>
+ <e7e239ba-2461-4f8d-7dd7-0f557ac7f4bf@redhat.com>
+ <20191025080143-mutt-send-email-mst@kernel.org> <20191028015842.GA9005@___>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5e8a623d-9d91-607a-1f9e-7a7086ba9a68@redhat.com>
+Date:   Mon, 28 Oct 2019 11:50:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <87zhhmrz7w.fsf@toke.dk>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20191028015842.GA9005@___>
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: ZuWQpeT7OoiBddLiSa6f_Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/27/19 9:21 AM, Toke Høiland-Jørgensen wrote:
-> Rather, what we should be doing is exposing the functionality through
-> helpers so XDP can hook into the data structures already present in the
-> kernel and make decisions based on what is contained there. We already
-> have that for routing; L2 bridging, and some kind of connection
-> tracking, are obvious contenders for similar additions.
 
-The way OVS is coded and expected to flow (ovs_vport_receive ->
-ovs_dp_process_packet -> ovs_execute_actions -> do_execute_actions) I do
-not see any way to refactor it to expose a hook to XDP. But, if the use
-case is not doing anything big with OVS (e.g., just ACLs and forwarding)
-that is easy to replicate in XDP - but then that means duplicate data
-and code.
+On 2019/10/28 =E4=B8=8A=E5=8D=889:58, Tiwei Bie wrote:
+> On Fri, Oct 25, 2019 at 08:16:26AM -0400, Michael S. Tsirkin wrote:
+>> On Fri, Oct 25, 2019 at 05:54:55PM +0800, Jason Wang wrote:
+>>> On 2019/10/24 =E4=B8=8B=E5=8D=886:42, Jason Wang wrote:
+>>>> Yes.
+>>>>
+>>>>
+>>>>>  =C2=A0 And we should try to avoid
+>>>>> putting ctrl vq and Rx/Tx vqs in the same DMA space to prevent
+>>>>> guests having the chance to bypass the host (e.g. QEMU) to
+>>>>> setup the backend accelerator directly.
+>>>>
+>>>> That's really good point.=C2=A0 So when "vhost" type is created, paren=
+t
+>>>> should assume addr of ctrl_vq is hva.
+>>>>
+>>>> Thanks
+>>>
+>>> This works for vhost but not virtio since there's no way for virtio ker=
+nel
+>>> driver to differ ctrl_vq with the rest when doing DMA map. One possible
+>>> solution is to provide DMA domain isolation between virtqueues. Then ct=
+rl vq
+>>> can use its dedicated DMA domain for the work.
+> It might not be a bad idea to let the parent drivers distinguish
+> between virtio-mdev mdevs and vhost-mdev mdevs in ctrl-vq handling
+> by mdev's class id.
 
-Linux bridge on the other hand seems fairly straightforward to refactor.
-One helper is needed to convert ingress <port,mac,vlan> to an L2 device
-(and needs to consider stacked devices) and then a second one to access
-the fdb for that device.
 
-Either way, bypassing the bridge has mixed results: latency improves but
-throughput takes a hit (no GRO).
+Yes, that should work, I have something probable better, see below.
+
+
+>
+>>> Anyway, this could be done in the future. We can have a version first t=
+hat
+>>> doesn't support ctrl_vq.
+> +1, thanks
+>
+>>> Thanks
+>> Well no ctrl_vq implies either no offloads, or no XDP (since XDP needs
+>> to disable offloads dynamically).
+>>
+>>          if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLO=
+ADS)
+>>              && (virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO4) |=
+|
+>>                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) |=
+|
+>>                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
+>>                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
+>>                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM)))=
+ {
+>>                  NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is=
+ implementing LRO/CSUM, disable LRO/CSUM first");
+>>                  return -EOPNOTSUPP;
+>>          }
+>>
+>> neither is very attractive.
+>>
+>> So yes ok just for development but we do need to figure out how it will
+>> work down the road in production.
+> Totally agree.
+>
+>> So really this specific virtio net device does not support control vq,
+>> instead it supports a different transport specific way to send commands
+>> to device.
+>>
+>> Some kind of extension to the transport? Ideas?
+
+
+So it's basically an issue of isolating DMA domains. Maybe we can start=20
+with transport API for querying per vq DMA domain/ASID?
+
+- for vhost-mdev, userspace can query the DMA domain for each specific=20
+virtqueue. For control vq, mdev can return id for software domain, for=20
+the rest mdev will return id of VFIO domain. Then userspace know that it=20
+should use different API for preparing the virtqueue, e.g for vq other=20
+than control vq, it should use VFIO DMA API. The control vq it should=20
+use hva instead.
+
+- for virito-mdev, we can introduce per-vq DMA device, and route DMA=20
+mapping request for control vq back to mdev instead of the hardware. (We=20
+can wrap them into library or helpers to ease the development of vendor=20
+physical drivers).
+
+Thanks
+
+
+>>
+>>
+>> --=20
+>> MST
+
