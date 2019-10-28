@@ -2,101 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C8EE7C46
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:25:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE873E7C50
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:26:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727847AbfJ1WY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 18:24:59 -0400
-Received: from mail-eopbgr60054.outbound.protection.outlook.com ([40.107.6.54]:42660
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725776AbfJ1WY7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 18:24:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=irXl96XIEb5rZJhnLsHJdqo/s9EQMqiVq5Jkfep8vmO4eC86MF3z4ZS4NQrtoWtRzDMUmHu18dScgQWk0Szch163uTNeBwU3AnP47hQbmynQSQn35FyUb1lpnWXyaGZhLybCQXkD34emPRW5PbsaOWDq5R/buLT6lhikcjWR82y/ZZU4q2BWZL/HxxRg8Oo5bCnW7G3FOZPDT0AROSJqZ09SfrEGwZ7wUNW+cXpxlLTlIkiO1BM1iE3TPgYg1c+aXArbH26w+NpGI/gwVav62SqxwbS/qxCQ3Rq1MU1YE8CNZZ3sqNFOIQ/zXLbsk28jI4YUSNlxLqojATFbiNVbdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vdz54+G8iWBgC0A7s+hLxs8iH5+LveLakXUOCPnmFuw=;
- b=PIJSbOGnu9m9OXIbVSJl+upJrzBhfRxLPTa9TKc2it5h9RxCUIFQdKQ0MfMzT389q1UaqfGO/CZyseRpRCr3mAySfx+S8kUS1Cjl9qSw4S7Xe2E6v9lLHYKFemkHpb8USuN8TMEUGndDYm+2yBNe4BBz0zFZrtLWLu5KAPwouu7c7bKXj2+aXHeposj2sdTGxVAMgqFIBqmKRp6jlOgTGl7tvRfVwdhnRQ9gggexgYgioV/yooe+G94Tlxd2NsiVxscX3jznmzlQwP6+l8isJ2JkHC6MKxyve7mgzVvFm3Ulm4gve16TUAuLa67CXcmEHU5yUA3PH6z7O1rctpnOiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vdz54+G8iWBgC0A7s+hLxs8iH5+LveLakXUOCPnmFuw=;
- b=nHBLLmLgeAw6K0+CeyDdVACAAG0wi3nmyoIxlNTnInsZJ9rIuWyqqYBXuY3DpSKL3BMCATUjYHGwRU+7WrhlKgGtFfmVWY3eHeutylRLodE/+/ZuGcVLHHD+O81qVeFOZ71DS8CFHGVF99Fyv03BLf1DX0nvOIn7pBrVMPpYnuI=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3197.eurprd05.prod.outlook.com (10.170.239.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.24; Mon, 28 Oct 2019 22:24:54 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2387.027; Mon, 28 Oct 2019
- 22:24:54 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        Li Rongqing <lirongqing@baidu.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>
-Subject: Re: [PATCH][net-next] net/mlx5: rate limit alloc_ent error messages
-Thread-Topic: [PATCH][net-next] net/mlx5: rate limit alloc_ent error messages
-Thread-Index: AQHVikSMOg43rHdSRUi/KFNF8UE98qdwic8AgAAesAA=
-Date:   Mon, 28 Oct 2019 22:24:54 +0000
-Message-ID: <79ff25f57f6616ee5dfdfe75010d83cf8f43f031.camel@mellanox.com>
-References: <1571905413-28405-1-git-send-email-lirongqing@baidu.com>
-         <20191028.133502.1532748858682850578.davem@davemloft.net>
-In-Reply-To: <20191028.133502.1532748858682850578.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 959791cf-5d41-4ea3-4750-08d75bf5a885
-x-ms-traffictypediagnostic: VI1PR05MB3197:
-x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-x-microsoft-antispam-prvs: <VI1PR05MB3197B2535F667590CDC812CABE660@VI1PR05MB3197.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0204F0BDE2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(39860400002)(396003)(366004)(376002)(189003)(199004)(118296001)(6436002)(4001150100001)(54906003)(446003)(476003)(110136005)(11346002)(2616005)(26005)(229853002)(71190400001)(486006)(71200400001)(6486002)(76176011)(91956017)(6506007)(99286004)(186003)(102836004)(478600001)(76116006)(3846002)(316002)(6116002)(14454004)(6512007)(15650500001)(66946007)(5660300002)(66446008)(36756003)(86362001)(64756008)(66556008)(66476007)(256004)(8676002)(2501003)(25786009)(6246003)(81166006)(81156014)(4326008)(58126008)(2906002)(8936002)(66066001)(7736002)(305945005)(4744005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3197;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: u9LuBg+bMsPRE/lTaQuIlv1YqznPg4OMzV4lLvVLZPqIstL6SPr2SNpU2WPlT7gx0kDbdFHaoJ1WW8PbIjLPsZottxRd+VF65VxZi0dj3KyGFWwOabbP4p4Rujz3JSUrlIQbEb1cwDYrq8ESFRxESoh9FnCF5pFMHXYS/9JGXgjhpV9Ztg3irC2lL5lN+VTVVep5A8yvL6imhgZTWF5GgPjCGlsTjtaeag4zigc8g8rk0Zqrb+4FvwcIQ7nrDb9T1LcfCKpSUNXGD0x8i9XRxZuj14GOjvuFc6f0bjkks2Ilgauhxn6CqFsp55RL6RxVVfAWpENRHOrW/Jx4uAtfiUfOvfo7MmTZO0ROPsYWs8cBNf2+TnrDDcSJD2kh6J3x8aq0e7eYqJGPXyC+FBfhOX2+iC6UKJ/Zml2axt67tLNmRk3yxUjnsPEOXc1Y8hTH
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F17D805171D9A445BF8826E73EAF7320@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728302AbfJ1W0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 18:26:50 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:42447 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728299AbfJ1W0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 18:26:46 -0400
+Received: by mail-lj1-f194.google.com with SMTP id a21so13061883ljh.9
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 15:26:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=+W8NXcUMSwQU4tmWfuOjXH/YdczQr29wVj3/RDD0bRE=;
+        b=kAQ5WV3bLgfo64Lew3HD3JkAqmnXGW8EGdSLFobCNrQWlHVtRSuj+9KTJt9vRTOZZZ
+         1zWImeybPuLKtyihHrRQDDxKgdDLDV12tXcy+/6T4OF6Rm6T/+rbtlZ5PYqSiqN5n+du
+         /kvSgzQeZvst4kWeKjfA7ViGEc+uzMl9nFufr7qYRCNwXgXNaAQXd0fOqdFGSM27itge
+         phfX2YE8emB5BwDErQHOaWXJJg9k9pwe7WH/HWqK2cO0GnpFjpfMjx9c+jR3P1nJNVJH
+         sGNouUkN6qlxYS9hT0sPL3krK/EHj3tYJdBhXs69TNlIPCv7uMbDcDOoqcY1iMUkBZ8f
+         CVeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=+W8NXcUMSwQU4tmWfuOjXH/YdczQr29wVj3/RDD0bRE=;
+        b=ESenUH/ZR6+pSMAMhFYBWH7nayf7tYt4cXF6UbI8PGV8sSyJ9moPLt1WjmRkrcdra+
+         i84G90kV73a9rdUu6jiI7C6XHwepA6UjQkj+Ou/077KgEW+VlPFcuTTqqI9ZvvsxNXdq
+         CEAUm/N4a0Hsg7ybZ/38Yd+5GapTuTGhZipvtly4uItDo54ay5cOuxk0h99PfiKu5NnE
+         BuG9SFO5X3gxkwQ08hpDERcI4kNm7vvhuywdyjMaKjyXYtdfD5wfp8Hwb8MhV3sr2nof
+         8+9Oj3onKnrP9l/P3cDs/B/znYo2BHYZDgXLtEOkZQpjvBMybjz79tnIIBpAyvDHNLK7
+         +ZNg==
+X-Gm-Message-State: APjAAAVqC4ZmNH5bGCEu3CkGC5icsnROS2N1kRWSC8Oyo7GFbQf3v1YJ
+        nOtvdMCkgluVjt09X/IiMiYEYg==
+X-Google-Smtp-Source: APXvYqwwFRD1vnHvtflc3Mc6RCCZDoEmrCV9uRcWlO/RBW6fjxl0Jr5nT+DXCW+hUsW8kJVT8gRr/A==
+X-Received: by 2002:a2e:3304:: with SMTP id d4mr117466ljc.142.1572301604235;
+        Mon, 28 Oct 2019 15:26:44 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id u26sm6050415lfd.19.2019.10.28.15.26.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 15:26:43 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 15:26:29 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNl?= =?UTF-8?B?bg==?= 
+        <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v2 1/2] xsk: store struct xdp_sock as a
+ flexible array member of the XSKMAP
+Message-ID: <20191028152629.0dec07d1@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <CAJ+HfNhVZFNV3bZPhhiAd8ObechCJ5CdODM=W1Qf0wdN97TL=w@mail.gmail.com>
+References: <20191025071842.7724-1-bjorn.topel@gmail.com>
+        <20191025071842.7724-2-bjorn.topel@gmail.com>
+        <20191028105508.4173bf8b@cakuba.hsd1.ca.comcast.net>
+        <CAJ+HfNhVZFNV3bZPhhiAd8ObechCJ5CdODM=W1Qf0wdN97TL=w@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 959791cf-5d41-4ea3-4750-08d75bf5a885
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 22:24:54.7467
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jC/gN2Pl1CF7hs/d11RgeyMgrOseySY3761e1DQWyotEhkNL0lFDFqGGWKruU4vyRp9Zu8EjfrAHgoNU7laf3w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3197
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTEwLTI4IGF0IDEzOjM1IC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IEZyb206IExpIFJvbmdRaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gRGF0ZTogVGh1LCAy
-NCBPY3QgMjAxOSAxNjoyMzozMyArMDgwMA0KPiANCj4gPiB3aGVuIGRlYnVnIGEgYnVnLCB3aGlj
-aCB0cmlnZ2VycyBUWCBoYW5nLCBhbmQga2VybmVsIGxvZyBpcw0KPiA+IHNwYW1tZWQgd2l0aCB0
-aGUgZm9sbG93aW5nIGluZm8gbWVzc2FnZQ0KPiA+IA0KPiA+ICAgICBbIDExNzIuMDQ0NzY0XSBt
-bHg1X2NvcmUgMDAwMDoyMTowMC4wOg0KPiBjbWRfd29ya19oYW5kbGVyOjkzMDoocGlkIDgpOg0K
-PiA+ICAgICBmYWlsZWQgdG8gYWxsb2NhdGUgY29tbWFuZCBlbnRyeQ0KPiA+IA0KPiA+IFNpZ25l
-ZC1vZmYtYnk6IExpIFJvbmdRaW5nIDxsaXJvbmdxaW5nQGJhaWR1LmNvbT4NCj4gDQo+IFNhZWVk
-LCBwbGVhc2UgcGljayB0aGlzIHVwIGlmIHlvdSBoYXZlbid0IGFscmVhZHkuDQo+IA0KPiBUaGFu
-ayB5b3UuDQoNClNvcnJ5IGZvciB0aGUgZGVsYXlzLCBhcHBsaWVkIHRvIG5ldC1uZXh0LW1seDUs
-IHdpbGwgYmUgc3VibWl0dGVkIHRvDQpuZXQtbmV4dCBzaG9ydGx5Lg0K
+On Mon, 28 Oct 2019 23:11:50 +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+> On Mon, 28 Oct 2019 at 18:55, Jakub Kicinski
+> <jakub.kicinski@netronome.com> wrote:
+> >
+> > On Fri, 25 Oct 2019 09:18:40 +0200, Bj=C3=B6rn T=C3=B6pel wrote: =20
+> > > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> > >
+> > > Prior this commit, the array storing XDP socket instances were stored
+> > > in a separate allocated array of the XSKMAP. Now, we store the sockets
+> > > as a flexible array member in a similar fashion as the arraymap. Doing
+> > > so, we do less pointer chasing in the lookup.
+> > >
+> > > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> =20
+> >
+> > Thanks for the re-spin.
+> > =20
+> > > diff --git a/kernel/bpf/xskmap.c b/kernel/bpf/xskmap.c
+> > > index 82a1ffe15dfa..a83e92fe2971 100644
+> > > --- a/kernel/bpf/xskmap.c
+> > > +++ b/kernel/bpf/xskmap.c =20
+> > =20
+> > > @@ -92,44 +93,35 @@ static struct bpf_map *xsk_map_alloc(union bpf_at=
+tr *attr)
+> > >           attr->map_flags & ~(BPF_F_NUMA_NODE | BPF_F_RDONLY | BPF_F_=
+WRONLY))
+> > >               return ERR_PTR(-EINVAL);
+> > >
+> > > -     m =3D kzalloc(sizeof(*m), GFP_USER);
+> > > -     if (!m)
+> > > +     numa_node =3D bpf_map_attr_numa_node(attr);
+> > > +     size =3D struct_size(m, xsk_map, attr->max_entries);
+> > > +     cost =3D size + array_size(sizeof(*m->flush_list), num_possible=
+_cpus()); =20
+> >
+> > Now we didn't use array_size() previously because the sum here may
+> > overflow.
+> >
+> > We could use __ab_c_size() here, the name is probably too ugly to use
+> > directly and IDK what we'd have to name such a accumulation helper...
+> >
+> > So maybe just make cost and size a u64 and we should be in the clear.
+> > =20
+>=20
+> Hmm, but both:
+>   int bpf_map_charge_init(struct bpf_map_memory *mem, size_t size);
+>   void *bpf_map_area_alloc(size_t size, int numa_node);
+> pass size as size_t, so casting to u64 doesn't really help on 32-bit
+> systems, right?
+
+Yup :( IOW looks like the overflows will not be caught on 32bit
+machines in all existing code that does the (u64) cast. I hope=20
+I'm wrong there.
+
+> Wdyt about simply adding:
+>   if (cost < size)
+>     return ERR_PTR(-EINVAL)
+> after the cost calculation for explicit overflow checking?
+
+We'd need that for all users of these helpers. Could it perhaps makes
+sense to pass "alloc_size" and "extra_cost" as separate size_t to
+bpf_map_charge_init() and then we can do the overflow checking there,
+centrally?
+
+We can probably get rid of all the u64 casting too at that point,
+and use standard overflow helpers, yuppie :)
+
+> So, if size's struct_size overflows, the allocation will fail.
+> And we'll catch the cost overflow with the if-statement, no?
+>=20
+> Another option is changing the size_t in bpf_map_... to u64. Maybe
+> that's better, since arraymap and devmap uses u64 for cost/size.
