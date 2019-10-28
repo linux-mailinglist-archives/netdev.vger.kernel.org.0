@@ -2,288 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93986E6DCE
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 09:08:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EFCDE6E55
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 09:36:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733189AbfJ1IIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 04:08:21 -0400
-Received: from mail-eopbgr40080.outbound.protection.outlook.com ([40.107.4.80]:49028
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731255AbfJ1IIU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 04:08:20 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=K/5eXYhBuyVhKzeurhcDxzQApZAlng8oysLixhyMfD3MAsEEigoPYV2F0bHva8OAWVuhLLK3hDzcfY956nsnQfXedUiXgNclRSPk01gMml0XRF2VHDMS1SZdrN/84tQ16SrZej68xFRrmhqbB1G6quOGpqBxRIbae05qnBihwJsx9kYUYyJ0HRCXaOrkm+FqOUTUc3s+drRqMUOmx3hOPqodH6yeqmVCcN28gY7uFhzP+8WSjZ+s0mFwCUi/HSevqzK6KjIsRC1DRX2eKLIGZ/rfSUIfg5EcYUjwsb1G4z2hQk9Dr+zpjIo42RDyVdeEplW+fMVQ2kvOvOjOqfKN8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vCzNX7T/nwfDeit6HRfOGuDfULS4nNgEcS0fRiM+dbM=;
- b=kjwcs/NQA0OUcogrP8l2Zw7c/NG472LOdchbjbzDrSjDcbKal1zFlOFrH3FTqadxUd3iFu2oix7k5Uctb/Paum/LhSF1sQ8n/o0XqXpjpVGEcsFh9fxz3NiBqWqsmili63+GMugoeDFuRLJ2D6OJrPlogZ0sGlQGe9VIXro9Cb9bDHkcZVJvsnylIV+iDt2YPQwUbiRRmWKyEreg9ogWl42zE2X35SJsGfoSefBYsG2upgt4PZLNmJ3VxzVdSKD9HD/UQ4hZIgd0v6G5imE4CkvLDr5kAqZR/OmykrtRCGxUD1ru31xzCqE+NRtD1elWxhdRqTbdTyqZapxZqRnfMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=wolfvision.net; dmarc=pass action=none
- header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vCzNX7T/nwfDeit6HRfOGuDfULS4nNgEcS0fRiM+dbM=;
- b=BL0bsyH1EMOLCRJVjurSO27lqRRSXVgNkiBMFmwzYEu4WirAFxo6TKogjhC7AxU2qNSSsndJkpTUK7baOY2u5M1PwD5JSADg0jOgvng4ExUz3CQMXQmedMH1eBAB4bE1tkGVfCKS/Tdb97dM955ufBpEbmgGRDzaPwfDuvcsCrs=
-Received: from VI1PR08MB3358.eurprd08.prod.outlook.com (52.133.15.144) by
- VI1PR08MB5520.eurprd08.prod.outlook.com (52.133.245.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.22; Mon, 28 Oct 2019 08:08:14 +0000
-Received: from VI1PR08MB3358.eurprd08.prod.outlook.com
- ([fe80::8161:607a:cde6:dc5]) by VI1PR08MB3358.eurprd08.prod.outlook.com
- ([fe80::8161:607a:cde6:dc5%3]) with mapi id 15.20.2387.021; Mon, 28 Oct 2019
- 08:08:14 +0000
-From:   =?iso-8859-1?Q?Thomas_H=E4mmerle?= 
-        <Thomas.Haemmerle@wolfvision.net>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "m.tretter@pengutronix.de" <m.tretter@pengutronix.de>,
-        =?iso-8859-1?Q?Thomas_H=E4mmerle?= 
-        <Thomas.Haemmerle@wolfvision.net>
-Subject: [PATCH v3] net: phy: dp83867: support Wake on LAN
-Thread-Topic: [PATCH v3] net: phy: dp83867: support Wake on LAN
-Thread-Index: AQHVjWbZgpWvG4Tvd0qmuRYM0WX6bQ==
-Date:   Mon, 28 Oct 2019 08:08:14 +0000
-Message-ID: <1572250079-17677-1-git-send-email-thomas.haemmerle@wolfvision.net>
-References: <1571742645-13800-1-git-send-email-thomas.haemmerle@wolfvision.net>
-In-Reply-To: <1571742645-13800-1-git-send-email-thomas.haemmerle@wolfvision.net>
-Accept-Language: de-AT, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: VI1P190CA0024.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:802:2b::37) To VI1PR08MB3358.eurprd08.prod.outlook.com
- (2603:10a6:803:47::16)
-x-mailer: git-send-email 2.7.4
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Thomas.Haemmerle@wolfvision.net; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [91.118.163.37]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e54800d7-c5f1-4c6f-59bd-08d75b7dfb88
-x-ms-traffictypediagnostic: VI1PR08MB5520:|VI1PR08MB5520:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR08MB5520416F6680A5CF69FBA518ED660@VI1PR08MB5520.eurprd08.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1850;
-x-forefront-prvs: 0204F0BDE2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39840400004)(396003)(376002)(366004)(346002)(136003)(189003)(199004)(305945005)(86362001)(8936002)(6506007)(81166006)(8676002)(66476007)(446003)(5660300002)(386003)(102836004)(11346002)(2616005)(476003)(26005)(52116002)(99286004)(76176011)(2501003)(14444005)(50226002)(5024004)(64756008)(36756003)(186003)(25786009)(486006)(2906002)(6116002)(3846002)(66066001)(508600001)(1730700003)(256004)(66946007)(45776006)(71200400001)(66556008)(66446008)(71190400001)(5640700003)(316002)(6436002)(54906003)(6486002)(6916009)(107886003)(6512007)(4326008)(2351001)(81156014)(7736002)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR08MB5520;H:VI1PR08MB3358.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: wolfvision.net does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8BFqnyWEhCIwEMpfzcB83Ktb+vJuL6Ie2HfVzJL5qOrGzUFbbKBVS+puaxoXkL/tSBg57+rUhLeaB8Mi+o5z3qveJSscxScNMmmC4BKjefeWCK+bBpIaij7cdX6+Fki3Gwck+s5DsKyMa7GB0K6UUY+j1G7ttwIF4+mN4HUC4zKPYzoaeYk6eIG9HzkZ1/WvwE8wNEB2T7FH6tWxnodpErfvaHyXl6KntKURzMkyHJknu8c8j+QSqA2jzkXuV5qcLX367o9ys9fnEIxn9/lm/0b1+3KoSWKnh8iQceV0ITS6dkWouFCtB/hZtcZ52GXdBAGmOg/KkiRxBwCnGUWzQFCJed4P0zC6dMEmkWMJ7fHN3yqDYbAPazKcaMQo1bt+46+i85k1UjhQnWmxErvaxJq+mAgR5JYLm2MEhtwhUK1LTpwg72eAUfXa1+MUhJf5
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2387527AbfJ1Iga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 04:36:30 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:47353 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731639AbfJ1Iga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 04:36:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572251788;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JRuL2BkbB+a2GJ+8JaKpKSwC2v1Z0RtMywL1CPTxmnM=;
+        b=WsU6eH2IVzOFNKHFItYg9B4YNtCT2c9G9Qod+Ku1THbGPe67wxf9qBaD3a4xS1sVt6f1cP
+        +3UbUlnKqTrV0aVCQ8n7dHtHDXJLBhulgWIVDjiQegWBxr4YQhTUnBhyyQ7O/90LlA8rbB
+        qrT2diE19NnFqbWWZPbLxhisSN+UEq8=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-32-AlWYJCF9O2KxattjMoorgA-1; Mon, 28 Oct 2019 04:36:25 -0400
+Received: by mail-lj1-f200.google.com with SMTP id q185so674950ljq.21
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 01:36:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=JRuL2BkbB+a2GJ+8JaKpKSwC2v1Z0RtMywL1CPTxmnM=;
+        b=Y/3wCJK/Zj1Xd/mF1/mhDa6Dzm7HKML/i2lIM3per956o3mycQ7Cwoo/fAMAnjCDZm
+         dCSsEFSXO80Nbdz5Kmhh/WPUWwWXl+ACEbfu5LqBGG5Oxbe8LCymBG1qOS4f6zxs45eo
+         I/iE8idVJzaoWh4GI5v4A4oGMZI0YtgHsnjGKhFj0yKHHUF/Bku10WfhN5deBMPhqv3k
+         u+6kEFtx5cKo8PIxHcd9BlajLfJlNUZ/f+21vhRUVcq+rOYZZm1HrMmlPIrA0r30eDbI
+         FuBy3uZ4gtCTrRUf1Yutg8aQidjGJVxFvAotDMnAtfOSSrxbWHAvNx/HnmVc8OmkXXqI
+         xMgQ==
+X-Gm-Message-State: APjAAAV0vJF/GC1ou7EMd1Li3P0Pntfz2MT4Ula1o5QVIaz2Y9KoiEU3
+        6tZuWkpRpjcvfcHIvrKSdmxXYCocv09GWzGntLOmjxB5gnRsyCwTkxnqWf+67DzgCFM+Ww4vcqD
+        01Lnn2qx0V0kcOXSF
+X-Received: by 2002:ac2:5c1b:: with SMTP id r27mr10568396lfp.172.1572251783815;
+        Mon, 28 Oct 2019 01:36:23 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqybrSiG3iGTQBRgdSqi/nOXWRKJK0ZAvTlqP1CnZDT99j5pVGWuRBov3U5MLvB6wWlxd1tV/A==
+X-Received: by 2002:ac2:5c1b:: with SMTP id r27mr10568368lfp.172.1572251783528;
+        Mon, 28 Oct 2019 01:36:23 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id y28sm4846689lfg.31.2019.10.28.01.36.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 01:36:14 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AB6DF1800E2; Mon, 28 Oct 2019 09:36:12 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>,
+        Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pravin B Shelar <pshelar@ovn.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        William Tu <u9012063@gmail.com>,
+        Stanislav Fomichev <sdf@fomichev.me>
+Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
+In-Reply-To: <47f1a7e2-0d3a-e324-20c5-ba3aed216ddf@gmail.com>
+References: <20191018040748.30593-1-toshiaki.makita1@gmail.com> <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch> <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch> <87h840oese.fsf@toke.dk> <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch> <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com> <87zhhmrz7w.fsf@toke.dk> <47f1a7e2-0d3a-e324-20c5-ba3aed216ddf@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 28 Oct 2019 09:36:12 +0100
+Message-ID: <87o8y1s1vn.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: e54800d7-c5f1-4c6f-59bd-08d75b7dfb88
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 08:08:14.7879
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e94ec9da-9183-471e-83b3-51baa8eb804f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qPqea2h+VdNov4OZ0PU+kBJillnTsgdG+w4Nfuq9puWP8kpqpMjI3cbdzlhEvzUL7EAnCrj3s4wl+coE3dvHlkXY+MQ/J7rTsJ1g2Mry0rk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB5520
+X-MC-Unique: AlWYJCF9O2KxattjMoorgA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Haemmerle <thomas.haemmerle@wolfvision.net>
+David Ahern <dsahern@gmail.com> writes:
 
-This adds WoL support on TI DP83867 for magic, magic secure, unicast and
-broadcast.
+> On 10/27/19 9:21 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Rather, what we should be doing is exposing the functionality through
+>> helpers so XDP can hook into the data structures already present in the
+>> kernel and make decisions based on what is contained there. We already
+>> have that for routing; L2 bridging, and some kind of connection
+>> tracking, are obvious contenders for similar additions.
+>
+> The way OVS is coded and expected to flow (ovs_vport_receive ->
+> ovs_dp_process_packet -> ovs_execute_actions -> do_execute_actions) I do
+> not see any way to refactor it to expose a hook to XDP. But, if the use
+> case is not doing anything big with OVS (e.g., just ACLs and forwarding)
+> that is easy to replicate in XDP - but then that means duplicate data
+> and code.
 
-Signed-off-by: Thomas Haemmerle <thomas.haemmerle@wolfvision.net>
----
- drivers/net/phy/dp83867.c | 131 ++++++++++++++++++++++++++++++++++++++++++=
-+++-
- 1 file changed, 130 insertions(+), 1 deletion(-)
+Yeah, I didn't mean that part for OVS, that was a general comment for
+reusing kernel functionality.
 
-diff --git a/drivers/net/phy/dp83867.c b/drivers/net/phy/dp83867.c
-index 37fceaf..7874271 100644
---- a/drivers/net/phy/dp83867.c
-+++ b/drivers/net/phy/dp83867.c
-@@ -12,6 +12,8 @@
- #include <linux/of.h>
- #include <linux/phy.h>
- #include <linux/delay.h>
-+#include <linux/netdevice.h>
-+#include <linux/etherdevice.h>
-=20
- #include <dt-bindings/net/ti-dp83867.h>
-=20
-@@ -21,8 +23,9 @@
- #define MII_DP83867_PHYCTRL	0x10
- #define MII_DP83867_MICR	0x12
- #define MII_DP83867_ISR		0x13
--#define DP83867_CTRL		0x1f
-+#define DP83867_CFG2		0x14
- #define DP83867_CFG3		0x1e
-+#define DP83867_CTRL		0x1f
-=20
- /* Extended Registers */
- #define DP83867_CFG4            0x0031
-@@ -36,6 +39,13 @@
- #define DP83867_STRAP_STS1	0x006E
- #define DP83867_STRAP_STS2	0x006f
- #define DP83867_RGMIIDCTL	0x0086
-+#define DP83867_RXFCFG		0x0134
-+#define DP83867_RXFPMD1	0x0136
-+#define DP83867_RXFPMD2	0x0137
-+#define DP83867_RXFPMD3	0x0138
-+#define DP83867_RXFSOP1	0x0139
-+#define DP83867_RXFSOP2	0x013A
-+#define DP83867_RXFSOP3	0x013B
- #define DP83867_IO_MUX_CFG	0x0170
- #define DP83867_SGMIICTL	0x00D3
- #define DP83867_10M_SGMII_CFG   0x016F
-@@ -65,6 +75,13 @@
- /* SGMIICTL bits */
- #define DP83867_SGMII_TYPE		BIT(14)
-=20
-+/* RXFCFG bits*/
-+#define DP83867_WOL_MAGIC_EN		BIT(0)
-+#define DP83867_WOL_BCAST_EN		BIT(2)
-+#define DP83867_WOL_UCAST_EN		BIT(4)
-+#define DP83867_WOL_SEC_EN		BIT(5)
-+#define DP83867_WOL_ENH_MAC		BIT(7)
-+
- /* STRAP_STS1 bits */
- #define DP83867_STRAP_STS1_RESERVED		BIT(11)
-=20
-@@ -126,6 +143,115 @@ static int dp83867_ack_interrupt(struct phy_device *p=
-hydev)
- 	return 0;
- }
-=20
-+static int dp83867_set_wol(struct phy_device *phydev,
-+			   struct ethtool_wolinfo *wol)
-+{
-+	struct net_device *ndev =3D phydev->attached_dev;
-+	u16 val_rxcfg, val_micr;
-+	u8 *mac;
-+
-+	val_rxcfg =3D phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG);
-+	val_micr =3D phy_read(phydev, MII_DP83867_MICR);
-+
-+	if (wol->wolopts & (WAKE_MAGIC | WAKE_MAGICSECURE | WAKE_UCAST |
-+			    WAKE_BCAST)) {
-+		val_rxcfg |=3D DP83867_WOL_ENH_MAC;
-+		val_micr |=3D MII_DP83867_MICR_WOL_INT_EN;
-+
-+		if (wol->wolopts & WAKE_MAGIC) {
-+			mac =3D (u8 *)ndev->dev_addr;
-+
-+			if (!is_valid_ether_addr(mac))
-+				return -EINVAL;
-+
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFPMD1,
-+				      (mac[1] << 8 | mac[0]));
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFPMD2,
-+				      (mac[3] << 8 | mac[2]));
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFPMD3,
-+				      (mac[5] << 8 | mac[4]));
-+
-+			val_rxcfg |=3D DP83867_WOL_MAGIC_EN;
-+		} else {
-+			val_rxcfg &=3D ~DP83867_WOL_MAGIC_EN;
-+		}
-+
-+		if (wol->wolopts & WAKE_MAGICSECURE) {
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
-+				      (wol->sopass[1] << 8) | wol->sopass[0]);
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
-+				      (wol->sopass[3] << 8) | wol->sopass[2]);
-+			phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFSOP1,
-+				      (wol->sopass[5] << 8) | wol->sopass[4]);
-+
-+			val_rxcfg |=3D DP83867_WOL_SEC_EN;
-+		} else {
-+			val_rxcfg &=3D ~DP83867_WOL_SEC_EN;
-+		}
-+
-+		if (wol->wolopts & WAKE_UCAST)
-+			val_rxcfg |=3D DP83867_WOL_UCAST_EN;
-+		else
-+			val_rxcfg &=3D ~DP83867_WOL_UCAST_EN;
-+
-+		if (wol->wolopts & WAKE_BCAST)
-+			val_rxcfg |=3D DP83867_WOL_BCAST_EN;
-+		else
-+			val_rxcfg &=3D ~DP83867_WOL_BCAST_EN;
-+	} else {
-+		val_rxcfg &=3D ~DP83867_WOL_ENH_MAC;
-+		val_micr &=3D ~MII_DP83867_MICR_WOL_INT_EN;
-+	}
-+
-+	phy_write_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG, val_rxcfg);
-+	phy_write(phydev, MII_DP83867_MICR, val_micr);
-+
-+	return 0;
-+}
-+
-+static void dp83867_get_wol(struct phy_device *phydev,
-+			    struct ethtool_wolinfo *wol)
-+{
-+	u16 value, sopass_val;
-+
-+	wol->supported =3D (WAKE_UCAST | WAKE_BCAST | WAKE_MAGIC |
-+			WAKE_MAGICSECURE);
-+	wol->wolopts =3D 0;
-+
-+	value =3D phy_read_mmd(phydev, DP83867_DEVADDR, DP83867_RXFCFG);
-+
-+	if (value & DP83867_WOL_UCAST_EN)
-+		wol->wolopts |=3D WAKE_UCAST;
-+
-+	if (value & DP83867_WOL_BCAST_EN)
-+		wol->wolopts |=3D WAKE_BCAST;
-+
-+	if (value & DP83867_WOL_MAGIC_EN)
-+		wol->wolopts |=3D WAKE_MAGIC;
-+
-+	if (value & DP83867_WOL_SEC_EN) {
-+		sopass_val =3D phy_read_mmd(phydev, DP83867_DEVADDR,
-+					  DP83867_RXFSOP1);
-+		wol->sopass[0] =3D (sopass_val & 0xff);
-+		wol->sopass[1] =3D (sopass_val >> 8);
-+
-+		sopass_val =3D phy_read_mmd(phydev, DP83867_DEVADDR,
-+					  DP83867_RXFSOP2);
-+		wol->sopass[2] =3D (sopass_val & 0xff);
-+		wol->sopass[3] =3D (sopass_val >> 8);
-+
-+		sopass_val =3D phy_read_mmd(phydev, DP83867_DEVADDR,
-+					  DP83867_RXFSOP3);
-+		wol->sopass[4] =3D (sopass_val & 0xff);
-+		wol->sopass[5] =3D (sopass_val >> 8);
-+
-+		wol->wolopts |=3D WAKE_MAGICSECURE;
-+	}
-+
-+	if (!(value & DP83867_WOL_ENH_MAC))
-+		wol->wolopts =3D 0;
-+}
-+
- static int dp83867_config_intr(struct phy_device *phydev)
- {
- 	int micr_status;
-@@ -463,6 +589,9 @@ static struct phy_driver dp83867_driver[] =3D {
- 		.config_init	=3D dp83867_config_init,
- 		.soft_reset	=3D dp83867_phy_reset,
-=20
-+		.get_wol	=3D dp83867_get_wol,
-+		.set_wol	=3D dp83867_set_wol,
-+
- 		/* IRQ related */
- 		.ack_interrupt	=3D dp83867_ack_interrupt,
- 		.config_intr	=3D dp83867_config_intr,
---=20
-2.7.4
+> Linux bridge on the other hand seems fairly straightforward to
+> refactor. One helper is needed to convert ingress <port,mac,vlan> to
+> an L2 device (and needs to consider stacked devices) and then a second
+> one to access the fdb for that device.
+
+Why not just a single lookup like what you did for routing? Not too
+familiar with the routing code...
+
+> Either way, bypassing the bridge has mixed results: latency improves
+> but throughput takes a hit (no GRO).
+
+Well, for some traffic mixes XDP should be able to keep up without GRO.
+And longer term, we probably want to support GRO with XDP anyway
+(I believe Jesper has plans for supporting bigger XDP frames)...
+
+-Toke
 
