@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CED9E7C23
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:03:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A34E7C2B
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:11:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727130AbfJ1WDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 18:03:16 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:39501 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbfJ1WDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 18:03:16 -0400
-Received: by mail-pg1-f194.google.com with SMTP id p12so7910816pgn.6
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 15:03:16 -0700 (PDT)
+        id S1726175AbfJ1WLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 18:11:48 -0400
+Received: from mail-lj1-f180.google.com ([209.85.208.180]:44124 "EHLO
+        mail-lj1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbfJ1WLs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 18:11:48 -0400
+Received: by mail-lj1-f180.google.com with SMTP id c4so13019442lja.11
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 15:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ayHeK6JSrV5mX+VQA5GXXP/WrgH0T4zF2nzaKBMGqTE=;
-        b=PBaV+zEC2dSXacfwTKn0Ugw4lQ/upQKoU2SYjFa/iFeRoLpmek7yZtKJZ2Y2MkeuSc
-         ROtXd7RQLn7J/nW9dKxj5sms6L5uolgkm48bKSRIPVlwWLdKMGRDiHqaMvD0xkvtVAOF
-         1EpPT5EyzV3AJ3C18agdle2wMwt9D6ycmRE9dyrnIHq32KMYVh2e0ZKH72XvI59F0azE
-         zPlyBpfYYv1Jz1a5GgIdL0He4iyEtd8TtV+SSKbyccju7aKXPywl+VdLs6Uj5B2RCY3c
-         t7trEl5WbpWeptq3cXaDU9xc6Q4StVfY27iC8lFWljj26RXT2evxHXn9CV4MKVtUlJVn
-         koKQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8Be/cdDZ19YZM4Q1cKVJ4g/t6FyGR/e9GyMJtmFdqwk=;
+        b=BmrlP7Nz6rIcwNKabF33JrCuzZjUgZSVVacFvmRV6BAfV0A0Du/bpQ9wG30kiGTu/D
+         qXdXKHQN4d+mTMOqbUQDYtaJ4bh+gYClz9akrzXi6P29G+bWX3VeujZpWFiH4ZCR9WWr
+         Uq7jQNMYU2X4Eqry/4cRT7N5WAhBE7N5Csy11dFPVOjiTsSNzvGMK9o+h2cdt51Pb2iw
+         05SuAEH1sMO/OOftYOO/QzEGbDhDgSVTrZR27hTZ7lNgwEXSFyaf4BaQmivAes0uL67K
+         +5hM+dVB9C6IVqtKTeBwtuLk17goGqFFNMcq7bUPFQJtsw/S1MlLD6DN5BfE0JIudTFd
+         Byug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=ayHeK6JSrV5mX+VQA5GXXP/WrgH0T4zF2nzaKBMGqTE=;
-        b=CwxYCN5mo2W90Go+t9ru/V6gvMov22Dc9vlCE+j6Au4g7pCcYSY36vnnZ82JWrCrw9
-         llJBjagMRUkPG9czmvvfgjdpKadO79EB/v161QMufxV22sATgicDH/5cAeHt/sT4yZFA
-         mCKU+6hFBpKadikO/oMKyjrDLKDwxRtuy/JG/syNLrxwqq6CE1naEANcr9AFcNUbdvFl
-         nyohCjcx7ofp1bD59ySpYFGWGzpmD0xegdYHCyXnKWVlFC2COm/YQbgE0zPYJZL7opVq
-         2Lz0r06JXdEBwCxHRAkpCIwzLtVkKYju6hupLwkyJV9n6JC57NuD+sTW/ivqoCMpmWwy
-         /eSg==
-X-Gm-Message-State: APjAAAXvlxASi9Yl99JAw3rOc7Gr8Q/+xL+6esO7xmuuqbfZ0uaOHg/H
-        i2Vy9n0fWwDr7OLH0T+ftFs=
-X-Google-Smtp-Source: APXvYqzNvA/+D0D6TR8hqaX5B84X1ynVWpSjf4mIuLeR6WQNuDtqWJw/K3trUgAnzfDu7ilNHaf4fg==
-X-Received: by 2002:a63:2042:: with SMTP id r2mr1887863pgm.32.1572300195827;
-        Mon, 28 Oct 2019 15:03:15 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:284:8202:10b0:9e2:b1b6:1e7e:b71e])
-        by smtp.googlemail.com with ESMTPSA id i123sm13850703pfe.145.2019.10.28.15.03.14
+        bh=8Be/cdDZ19YZM4Q1cKVJ4g/t6FyGR/e9GyMJtmFdqwk=;
+        b=G/Gf9+Og+MJFhAHVZyfGatSWjjqJGEqGZTtR/EJOZ5Zwgt5wb0nmjAW+vFQ/Oq9Hqw
+         5Zc0Y0QkFK4NKPj0SustOH4vwHgwCgrPzrBI8+2zmvM4rqf6lkQMoKIsWBpufwmuaLe/
+         skmpd1vJfFgFqynH78cMSUGu0GytVp1WMH55DSXrerzWMlM9I0+fFvbzQ0D4/2mAMKVh
+         7G65zUrr3ZTnjnX1GhqlIGd3yG0WwJQqKWuriLDQIjL7tSUQmGB1wAZ8B+0Tx/YuDF3S
+         hGlJ8iPkb6zWdQEgZk2vEbK8+30jYljwYt7JFRjaJ7ESjHFp3LrIFLzhxmSQk1G9CKlv
+         t75g==
+X-Gm-Message-State: APjAAAVsMZ5XJs1E5ban+HdGoE6kCXniOmaI6T1VAmOzo/l2J4aD/3i3
+        qhzYotAZ3ZieF1gQFCx+XSYa7A==
+X-Google-Smtp-Source: APXvYqy6H9L1BR3FMcLteHoweuEuIbynWzaa5KJqjVWl6ABfB7ckp7GS7ZujlvpFMI/3E7B7n8EgXw==
+X-Received: by 2002:a2e:87d1:: with SMTP id v17mr73884ljj.5.1572300706317;
+        Mon, 28 Oct 2019 15:11:46 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id l5sm5469518lfk.17.2019.10.28.15.11.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 28 Oct 2019 15:03:14 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 0/6] sfc: Add XDP support
-To:     Charles McLachlan <cmclachlan@solarflare.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
-        brouer@redhat.com
-References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8af30fef-6998-ed20-ba7c-982c9a4d263a@gmail.com>
-Date:   Mon, 28 Oct 2019 16:03:13 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        Mon, 28 Oct 2019 15:11:45 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Simon Horman <simon.horman@netronome.com>
+Subject: [PATCH net] MAINTAINERS: remove Dave Watson as TLS maintainer
+Date:   Mon, 28 Oct 2019 15:11:31 -0700
+Message-Id: <20191028221131.2315-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/28/19 7:56 AM, Charles McLachlan wrote:
-> Supply the XDP callbacks in netdevice ops that enable lower level processing
-> of XDP frames.
-> 
-> Changes since last submission:
-> - Use of xdp_return_frame_rx_napi() in tx.c
-> - Addition of xdp_rxq_info_valid and xdp_rxq_info_failed to track when
->   xdp_rxq_info failures occur.
-> - Renaming of rc to err and more use of unlikely().
-> - Cut some duplicated code and fix an array overrun.
-> - Actually increment n_rx_xdp_tx when packets are transmitted.
-> 
->
+Dave's Facebook email address is not working, and my attempts
+to contact him are failing. Let's remove it to trim down the
+list of TLS maintainers.
 
-Hi:
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+---
+David W please speak up if you're seeing this, if you're
+interested in continuing the TLS work we'd much rather just
+update your email..
+---
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
 
-I was hoping to try out this patch set, but when I rebooted the server
-with these applied I hit the BUG_ON in efx_ef10_link_piobufs:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e51a68bf8ca8..b6b6c75f7e6f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11407,7 +11407,6 @@ F:	include/trace/events/tcp.h
+ NETWORKING [TLS]
+ M:	Boris Pismenny <borisp@mellanox.com>
+ M:	Aviad Yehezkel <aviadye@mellanox.com>
+-M:	Dave Watson <davejwatson@fb.com>
+ M:	John Fastabend <john.fastabend@gmail.com>
+ M:	Daniel Borkmann <daniel@iogearbox.net>
+ M:	Jakub Kicinski <jakub.kicinski@netronome.com>
+-- 
+2.23.0
 
-	if (tx_queue->queue == nic_data->pio_write_vi_base) {
-		BUG_ON(index != 0);
-		...
