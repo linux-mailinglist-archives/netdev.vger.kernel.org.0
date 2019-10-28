@@ -2,81 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 477C3E7840
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:19:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A4CE7858
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:23:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391086AbfJ1STI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 14:19:08 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33277 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730690AbfJ1STI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:19:08 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s1so10969059wro.0
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 11:19:06 -0700 (PDT)
+        id S2404375AbfJ1SXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 14:23:33 -0400
+Received: from mail-pf1-f201.google.com ([209.85.210.201]:43676 "EHLO
+        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404359AbfJ1SXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:23:33 -0400
+Received: by mail-pf1-f201.google.com with SMTP id i187so9212001pfc.10
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 11:23:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LtkWh5ANBgNqobXnHOEpoIBhsjc5qh0/GvIr+uBPE2k=;
-        b=jjf6kqtM1nKFxCWFvZ8SPbGqrzgDfBMvujxRqR+EtFBLvyHrzWZTl4u3vqJ7glFnXI
-         yLZ2gzYZvhoqCALxrRsAB1CQnbhU5h1qjtIyB3L37mdnMjHN8sariAQpbDo4YlzjgBIc
-         prl7f2EnXRMIfqRMPgUDQo1tUL9nBSAZKFfFE14wBDGBSaEznZWos/c/3JhAvgY0PV/M
-         Io558AkynBBwEvhtp5m6TWGhs/wnqtITZfAACiqOAk1RatOL8WkRF8dGDHOPRIRa9GEi
-         0MAMeW1qvhd49gUR1m4kRNeojh0HyVrlmx5CEuxGOkxryyK0HQVsqd7KBtsqYXJcgCDX
-         nIlA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=ppBm0fKmBOdTFuSEk0MbgqDNTEpNStWaVhz7C3CAoKc=;
+        b=kgzQ8vTpFHUX41G9N2wcnnfdfvvAXw/h5rhlQAiLOwYeelUTMO/Xl8BOV/0Nhr+nf9
+         fH2VVpLX3BYcd+8RNK1FzahlWq7d+2OGSDxEUp1N39iB9cxU4/uAAsUTtXXC1XZvYz37
+         HMGktcY8UTaUbJl8QqkD23k3jNHDT7qfpOlyzehxGwM/jeJJjFQmdZrox4O6iE57UElL
+         wrqEfhrULDUaE+tfIHfajtSnsgKWDTDAXDlQg51+M9N8alvNezrXXDlesC5DCvFg8UK2
+         PYsdSYUWR3su8pl6CQa6/4HA4hLav6EvINiGex7dpTZpXbMFrU0qyq1B4BFlc4BRUEU7
+         teZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LtkWh5ANBgNqobXnHOEpoIBhsjc5qh0/GvIr+uBPE2k=;
-        b=tiB0ZBGJDI8aJ8g0hWjjzpLgUMuNQyVdM4fikHymuFVhZMMR7yQE7ltNfAd7D/8rXt
-         CcsiL8WbBFW492Wlpd1fNSDew0tdW8rpX5YFi6X7vX8Sgtm/HweE1dXlvCThIFGqV5C6
-         kIvpVcoD4atPqYoqocBvKPQxexI7PhJWxgLmEX3E3Ciq5QSUJqBkpsjpG6sFY8dXKtS/
-         G9RHvAHEUpOg/W9Oa4JFGu576YTK2Ik/HZUjLkionxJJl5H9Hdi4zdp8vfUzQEppnMJa
-         lntgkp5pDKPKW0DRkn5l1Wdm4jK/Eh775siR85M3zhKR+KQISJsim7AwmCMrxSIST7HE
-         YKuw==
-X-Gm-Message-State: APjAAAWUDs6pjJ0boF1cflKKdRjo4Lwa82v2OBlBk/wa51k/ZUl+tjU9
-        omZfHj0V6t6NawG8Aom6zPHGrw==
-X-Google-Smtp-Source: APXvYqyWmwhNNFKTXh/jZuAzPtstHg65hqAW9GlagHK4rmmvUVhT9kvViH1lSj436f4vL0+0il2kvw==
-X-Received: by 2002:a5d:55c2:: with SMTP id i2mr16605169wrw.176.1572286745725;
-        Mon, 28 Oct 2019 11:19:05 -0700 (PDT)
-Received: from localhost (ip-94-113-126-64.net.upcbroadband.cz. [94.113.126.64])
-        by smtp.gmail.com with ESMTPSA id f204sm350862wmf.32.2019.10.28.11.19.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 11:19:05 -0700 (PDT)
-Date:   Mon, 28 Oct 2019 19:19:04 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, stephen@networkplumber.org,
-        roopa@cumulusnetworks.com, dcbw@redhat.com,
-        nikolay@cumulusnetworks.com, mkubecek@suse.cz, andrew@lunn.ch,
-        parav@mellanox.com, saeedm@mellanox.com, f.fainelli@gmail.com,
-        sd@queasysnail.net, sbrivio@redhat.com, pabeni@redhat.com,
-        mlxsw@mellanox.com
-Subject: Re: [patch iproute2-next v5 0/3] ip: add support for alternative
- names
-Message-ID: <20191028181904.GB16772@nanopsycho>
-References: <20191024102052.4118-1-jiri@resnulli.us>
- <c8201b72-90c4-d8e6-65b9-b7f7ed55f0f5@gmail.com>
- <20191028073800.GC2193@nanopsycho>
- <057f3a0d-b4ae-8810-28dc-a92866f976ae@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <057f3a0d-b4ae-8810-28dc-a92866f976ae@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=ppBm0fKmBOdTFuSEk0MbgqDNTEpNStWaVhz7C3CAoKc=;
+        b=bXrAzysIXCxK4nTDvmBS6V4e+iws3N3XW+CW+H7DQEbRftHSmFLpCAauKM7CK1kQKL
+         mPRm44RNKgGWQm16rJxnwRC+SQHSOLJDkli+6O3Uuu5J7aWutBGBDe5Y3sLEMTJTMh6B
+         b5qROaadhfhk/jkG1yT++fIHjL3y8VX73qW5z4pMWKVIYhghp3flpNGU4l8hFhEY6nj/
+         g5urZScp2JRTB/ja248g4WpSsE4l3MiNPqPlqCCyn8BsrcqEngHXzkCKwyuDbxY2JoOo
+         x2uT5YhjFxJ9hP9Gl0BOJp63RQti/b+Jl03B/s5FMHjbenGUEn8hTcWJi6QTGkm8LDDB
+         oorA==
+X-Gm-Message-State: APjAAAVLseLee6XO4l9std+hEg6qU0vonolTcj8kwSjhORGnhlE3qr9F
+        AUMr6pG3u10Hfri8IdJpMjtqwYMO8QgdN3FNIxRRLsQjmisAA6mGwxUlfhU0TDVEOC3r2ngsIW9
+        H8rC0jZQmS4M7vZU5tuUPoO8XClLFFSx1Jrb2kwH031mI/8uQdbfCBC6Eaec6aSq1CqM=
+X-Google-Smtp-Source: APXvYqz1KupkG5XJycSqSPEVglUXOeFCGYKeGuzuN+OIWDTJeILOotgValcZ0mL5S+3bC8BRrkhwdEfqRkeuXg==
+X-Received: by 2002:a63:6287:: with SMTP id w129mr1618617pgb.162.1572287010443;
+ Mon, 28 Oct 2019 11:23:30 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 11:23:09 -0700
+Message-Id: <20191028182309.73313-1-yangchun@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.rc0.303.g954a862665-goog
+Subject: [PATCH net] gve: Fixes DMA synchronization.
+From:   Yangchun Fu <yangchun@google.com>
+To:     netdev@vger.kernel.org
+Cc:     Yangchun Fu <yangchun@google.com>,
+        Catherine Sullivan <csully@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Oct 28, 2019 at 03:49:57PM CET, dsahern@gmail.com wrote:
->On 10/28/19 1:38 AM, Jiri Pirko wrote:
->> Did you by any chance forget to apply the last patch?
->
->apparently so. With the 3rd patch it worked fine.
->
->Applied all 3 to iproute2-next.
+Synces the DMA buffer properly in order for CPU and device to see
+the most up-to-data data.
 
-Great. Thanks!
+Signed-off-by: Yangchun Fu <yangchun@google.com>
+Reviewed-by: Catherine Sullivan <csully@google.com>
+---
+ drivers/net/ethernet/google/gve/gve_rx.c |  2 ++
+ drivers/net/ethernet/google/gve/gve_tx.c | 26 ++++++++++++++++++++++--
+ 2 files changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+index 59564ac99d2a..edec61dfc868 100644
+--- a/drivers/net/ethernet/google/gve/gve_rx.c
++++ b/drivers/net/ethernet/google/gve/gve_rx.c
+@@ -289,6 +289,8 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
+ 
+ 	len = be16_to_cpu(rx_desc->len) - GVE_RX_PAD;
+ 	page_info = &rx->data.page_info[idx];
++	dma_sync_single_for_cpu(&priv->pdev->dev, rx->data.qpl->page_buses[idx],
++				PAGE_SIZE, DMA_FROM_DEVICE);
+ 
+ 	/* gvnic can only receive into registered segments. If the buffer
+ 	 * can't be recycled, our only choice is to copy the data out of
+diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
+index 778b87b5a06c..d8342b7b9764 100644
+--- a/drivers/net/ethernet/google/gve/gve_tx.c
++++ b/drivers/net/ethernet/google/gve/gve_tx.c
+@@ -390,7 +390,23 @@ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
+ 	seg_desc->seg.seg_addr = cpu_to_be64(addr);
+ }
+ 
+-static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
++static inline void gve_dma_sync_for_device(struct gve_priv *priv,
++					   dma_addr_t *page_buses,
++					   u64 iov_offset, u64 iov_len)
++{
++	u64 addr;
++	dma_addr_t dma;
++
++	for (addr = iov_offset; addr < iov_offset + iov_len;
++	     addr += PAGE_SIZE) {
++		dma = page_buses[addr / PAGE_SIZE];
++		dma_sync_single_for_device(&priv->pdev->dev, dma, PAGE_SIZE,
++					   DMA_TO_DEVICE);
++	}
++}
++
++static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb,
++			  struct gve_priv *priv)
+ {
+ 	int pad_bytes, hlen, hdr_nfrags, payload_nfrags, l4_hdr_offset;
+ 	union gve_tx_desc *pkt_desc, *seg_desc;
+@@ -432,6 +448,9 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
+ 	skb_copy_bits(skb, 0,
+ 		      tx->tx_fifo.base + info->iov[hdr_nfrags - 1].iov_offset,
+ 		      hlen);
++	gve_dma_sync_for_device(priv, tx->tx_fifo.qpl->page_buses,
++				info->iov[hdr_nfrags - 1].iov_offset,
++				info->iov[hdr_nfrags - 1].iov_len);
+ 	copy_offset = hlen;
+ 
+ 	for (i = payload_iov; i < payload_nfrags + payload_iov; i++) {
+@@ -445,6 +464,9 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
+ 		skb_copy_bits(skb, copy_offset,
+ 			      tx->tx_fifo.base + info->iov[i].iov_offset,
+ 			      info->iov[i].iov_len);
++		gve_dma_sync_for_device(priv, tx->tx_fifo.qpl->page_buses,
++					info->iov[i].iov_offset,
++					info->iov[i].iov_len);
+ 		copy_offset += info->iov[i].iov_len;
+ 	}
+ 
+@@ -473,7 +495,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
+ 		gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
+ 		return NETDEV_TX_BUSY;
+ 	}
+-	nsegs = gve_tx_add_skb(tx, skb);
++	nsegs = gve_tx_add_skb(tx, skb, priv);
+ 
+ 	netdev_tx_sent_queue(tx->netdev_txq, skb->len);
+ 	skb_tx_timestamp(skb);
+-- 
+2.24.0.rc0.303.g954a862665-goog
+
