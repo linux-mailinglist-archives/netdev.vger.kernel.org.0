@@ -2,55 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45825E79D9
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:16:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56293E79DC
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:16:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbfJ1UQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 16:16:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39004 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726483AbfJ1UQA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 16:16:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=MR3qQXq6D3fnR/mRwAsKkVGp0L0BCXTk2l0dnxNTYMI=; b=mm0l+BfiVdce/0diy/ZppZIRgB
-        B7RrdoML3gD/+nFF0rbOX83bbXWbc+Dh1VI9d2T8CC4EgYJLOsbMW68dzWXQiMo00jyQ9M6YQc2/F
-        7c8ovX1ksYasCQmvokiGB3hPXF+YQpnQjzdL/OUpFrCzQ08VnXskvkNbG8Cx8ChPIkcM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iPBQj-0008RL-0u; Mon, 28 Oct 2019 21:15:57 +0100
-Date:   Mon, 28 Oct 2019 21:15:57 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chris Healy <Chris.Healy@zii.aero>
-Subject: Re: [PATCH net-next 4/4] net: phy: marvell: add PHY tunable support
- for more PHY versions
-Message-ID: <20191028201557.GJ17625@lunn.ch>
-References: <4ae7d05a-4d1d-024f-ebdf-c92798f1a770@gmail.com>
- <e74bb89c-f510-61f7-f2fc-41fe0114c282@gmail.com>
+        id S1732094AbfJ1UQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 16:16:45 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:35231 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726483AbfJ1UQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 16:16:45 -0400
+Received: by mail-pl1-f195.google.com with SMTP id x6so2170817pln.2;
+        Mon, 28 Oct 2019 13:16:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=fEA7ooZYsW9f2zsWHFTpKrN6BsLkB7vzBQpHQTnjp1g=;
+        b=cQc7oeQ5ZHHkhhNd/b2s2mMhmIWL4si/YBpDjg0ls7NS0kw4C5qbe9Xg4xuM9GBEHZ
+         tNqxWL7jNPAXcp+KB92ZOFFyvPVMHyOYAXWBOXLw0lHlAFNSvcraloKaljVwXmicI5o8
+         IszvneXrtDv0PaXxKU2wmu4Il5q/JwPZWmI//YrTlSEF9WCqNJfMmL14JxINgWdS2bEc
+         0iJjNTYuxqn29HXTZiQZPq6wv8wFZlNuQljZ5gSQCg2L48elxhjPYrj+qWQMGaJ6d2cI
+         lLndTXQncj3I5ea34BbS42PWjvloHX69xQP0110TB/DkBOazZBGKkh4UywxgkhL7BsAa
+         GWZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=fEA7ooZYsW9f2zsWHFTpKrN6BsLkB7vzBQpHQTnjp1g=;
+        b=MDXJm4eIeXORxJEH1waTnZXYVLcDB962GSV8IjhFF76mGtZDszwPdfqPj+yb0WTT32
+         045rHH8SU9X0Q1CIF0OGF9Ctyg4Tvjt5zm0DjbQi+H5KwbeZ/PN07L17dB+p07vLcOD7
+         ojSDnlKbpmcQsO/0pCLgzOkHPrkunmDDFrHlLdk6WxlIGBH6xH9Lg9sYaT1b+7KJhfLT
+         gfCFhBOrsUQl0m1SFHECJpH+j7lrrk6bAiAQuKHyc2W2HFNjo8pctIQzPgMnIDOofnuR
+         CKHZik+Sx+itRqnCMrpKld+kniVTs4fXtRrXFgYGARDyalO1G3A9aRwSGsSOQtz/N8/E
+         BzNQ==
+X-Gm-Message-State: APjAAAXJLgV0wX+83FOUl9EQikCoPAx/XZpJkeI0fQ0z2lWcbseLjMiz
+        xbBxZRRlsuIHoI6BfTnJ4U0=
+X-Google-Smtp-Source: APXvYqwL6B1acZKmR+QwXEDv5axLbGxnYEyX8uPTqAO+ePZ8S2BQvgEVHFOeOmUJoeRmXexCmdjdAw==
+X-Received: by 2002:a17:902:b489:: with SMTP id y9mr21206837plr.9.1572293803186;
+        Mon, 28 Oct 2019 13:16:43 -0700 (PDT)
+Received: from saurav ([27.62.167.137])
+        by smtp.gmail.com with ESMTPSA id i187sm12988692pfc.177.2019.10.28.13.16.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 13:16:42 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 01:46:35 +0530
+From:   Saurav Girepunje <saurav.girepunje@gmail.com>
+To:     michael.chan@broadcom.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     saurav.girepunje@hotmail.com
+Subject: [PATCH] broadcom: bnxt: Fix use true/false for bool
+Message-ID: <20191028201634.GA29069@saurav>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e74bb89c-f510-61f7-f2fc-41fe0114c282@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 08:54:17PM +0100, Heiner Kallweit wrote:
-> More PHY versions are compatible with the existing downshift
-> implementation, so let's add downshift support for them.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Use true/false for bool type in bnxt_timer function.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-    Andrew
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index b4a8cf620a0c..8cdf71f8824d 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10004,7 +10004,7 @@ static void bnxt_timer(struct timer_list *t)
+ 
+ 	if (bp->link_info.phy_retry) {
+ 		if (time_after(jiffies, bp->link_info.phy_retry_expires)) {
+-			bp->link_info.phy_retry = 0;
++			bp->link_info.phy_retry = false;
+ 			netdev_warn(bp->dev, "failed to update phy settings after maximum retries.\n");
+ 		} else {
+ 			set_bit(BNXT_UPDATE_PHY_SP_EVENT, &bp->sp_event);
+-- 
+2.20.1
+
