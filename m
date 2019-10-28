@@ -2,119 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05199E7AD2
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:06:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 726DCE7AE9
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:06:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389469AbfJ1VF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 17:05:58 -0400
-Received: from mail-eopbgr720106.outbound.protection.outlook.com ([40.107.72.106]:61027
-        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728898AbfJ1VF5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 17:05:57 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BWbaYZXUAHAePcHlzoJAdCTi9p5esULjEN7Kg7ZzGDKvgqjCG+vfFbw4ntZcyO01zZoEZbdUQAEAduj0Bio7DL7n+7UuZOxl9ZKrndYWDlIDeOaAOdA1JyqE2uIYj9YqugfRUebNt1nYYyqlHhd7g2w3IzqtJdevgvr2OnNkDBIx1z/WXxGAXTfdBx1r9mJpXlry6O4c2OalF+KA8IRPMd+MoNBv/b2N3M3Pq10EKPvsLP99tFsJvgACO6PJ9iVc6M/6sNJvr3eEtXs94jNjFRVKKRiek7atP982APVzqLMtGkvhPrO9flHPI4nY58jVAtzSevY2a4yWs2ZyGmroWQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PMQHH992GH6xm7PefP3WLRh4uhfxzuoIrpD1II7fCHU=;
- b=SS22IwFBu0hUdtXQvGIX6sp2d8NCoT+QJgUViKJMIB0KTdAeG0r9GfA6N7/ImjQ6AVp3OXp1D50D9fH2PXO+rzgFItfkAP9VyCOWe32kfwjYVrUl4E3UN7SHz0O4itkEEb+dmjusXiz/Cn3TxJqh7c0J1/PyKADBVTOPTa/YrBRtHihqv8CpUTsRAQo8lHFo07i7AGP85/oVaVzHkEwwmetqoQvTf6tbIua8qaoeNNOrjdEGgxwl4EeRq8+Crtx36OTbqYFDGiNT5gNsp7gzs96CZHRcgwG0X+gBAgiV0rizX6msVtGhPL7S4hUlnucf0YXlKCBjXFKNEpca6+Fmjw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PMQHH992GH6xm7PefP3WLRh4uhfxzuoIrpD1II7fCHU=;
- b=Pdz/q+9OxcdgRPo+wLFISnw0l7+tJhjPYtZoPP/RiB4d54Z10hGPdkhZ/aM5AE8HFWgpuYhgVWByBEBShzyT2snSu/z/kdekdO30wk5cID1ZlF8Vu76ZCIlDsmgGb2ppPisqeJDOznP8K79rvDdz+dmwZscrsIU/v38/dVBCBqg=
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
- DM6PR21MB1291.namprd21.prod.outlook.com (20.179.52.16) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.8; Mon, 28 Oct 2019 21:05:55 +0000
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::756e:8d3f:e463:3bf7]) by DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::756e:8d3f:e463:3bf7%3]) with mapi id 15.20.2408.016; Mon, 28 Oct 2019
- 21:05:55 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     "sashal@kernel.org" <sashal@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next, 0/4] hv_netvsc: Add XDP support and some error
- handling fixes
-Thread-Topic: [PATCH net-next, 0/4] hv_netvsc: Add XDP support and some error
- handling fixes
-Thread-Index: AQHVjdN8XpVK0YFZh0GRTvA7dQ24Yg==
-Date:   Mon, 28 Oct 2019 21:05:55 +0000
-Message-ID: <1572296693-4431-1-git-send-email-haiyangz@microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1401CA0008.namprd14.prod.outlook.com
- (2603:10b6:301:4b::18) To DM6PR21MB1242.namprd21.prod.outlook.com
- (2603:10b6:5:169::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lkmlhyz@microsoft.com; 
-x-ms-exchange-messagesentrepresentingtype: 2
-x-mailer: git-send-email 1.8.3.1
-x-originating-ip: [13.77.154.182]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f340c248-fe83-4a03-7952-08d75bea9f2e
-x-ms-traffictypediagnostic: DM6PR21MB1291:|DM6PR21MB1291:|DM6PR21MB1291:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR21MB1291ACB9509B4C0FE7D32306AC660@DM6PR21MB1291.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2958;
-x-forefront-prvs: 0204F0BDE2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(366004)(396003)(39860400002)(376002)(136003)(189003)(199004)(8936002)(26005)(10290500003)(5660300002)(256004)(7736002)(186003)(6116002)(10090500001)(6506007)(25786009)(386003)(102836004)(305945005)(71190400001)(14444005)(4326008)(3846002)(6436002)(36756003)(7846003)(6392003)(81156014)(81166006)(5024004)(8676002)(6486002)(66066001)(6512007)(54906003)(478600001)(2201001)(71200400001)(110136005)(22452003)(50226002)(52116002)(2616005)(4720700003)(14454004)(486006)(476003)(99286004)(66446008)(66946007)(64756008)(66556008)(66476007)(2906002)(2501003)(316002)(4744005);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1291;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7tiUchZFI0K+Qs0EKtQSrxPsl6RX7up3hD4pfIGCizN26cDFmMbmDeNk0dGklBEBQ1qrhJcO56p2EkFo+/30IZ7uFYhu2bFPVeXiSRiIto5eCC2cNlzyUO3rNmewlSAQeJn4PIBmK9mYGmuQZKA3gaJuHpPO0NMKPJGZI4FTlcke7rlKmG54bYbAggl2Zx4qDIPHimeutOHeFJCPoOzfK6wiN+bLuBFWp7K1DnlowmJ2ePFv8JcLEYS1rsTNtPHgRMIan/N5rF6rfeiW5WGLGNJgrIQoiBfG7guMoNDfe+kk1xRQW5sVcyG05ksjFNGLrgd9BYQDWbRGfBk6vheZ/nSIf4tvu0BNYpGNqKZlzG1pdnLbiE4I69R5YmuoW9nBP4LeWM3YJVnpZK0U7yTLR44iRPWCQHbr2y9jnnhUZzly+hkw8GEGLgidurK+S+AD
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2389802AbfJ1VGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 17:06:41 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35615 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389756AbfJ1VGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 17:06:40 -0400
+Received: by mail-wr1-f66.google.com with SMTP id l10so11396183wrb.2
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 14:06:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=kmLbG7xlFIRZD/3ijO96lnD7meByS4x923IZvFm+VaA=;
+        b=VM9Fmn7ylvsracAY5d67AGb8xMK9Q7dfb07/Z1Dsv5UMk9FTP5XpwxJJqz7VdC9j78
+         ldevEHz1yYwS2tNXj7wxKOhczCRP63xrVgyJcrfm5r61pDYme4Nf4Y2erQeiD3On5GnL
+         xvN/oqQyMVxjnSpPo5uLMNOgAULI5Y7Gky6AF+eQJh2p7gmiZ6AkccxgFdMbcdV94iZm
+         qDKORxrHoaoGFEzLHLJ4WqPDDqs6SEk8vr7v6oEneCPiTENkwmIDb6JaQVzCH6SLFFh0
+         tJgXPsA+9D4gaydluWCSXph/1LFhh97v2HOQvZCfYXt2kVenQtfHIKNMnujPm6pP7uu2
+         uWOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kmLbG7xlFIRZD/3ijO96lnD7meByS4x923IZvFm+VaA=;
+        b=WZD3lhhwMBZVocFVgtQZCw1ppQYLK7m71xFbeDLUwX0+fjh9pQu4sORYhkAv/QLQTq
+         isOlxNwEBhohsxfGtKWw4IydOIA8wAJucgzZ+vjdW9/9AmNDlRigV8/nuhGB0VdSDTHP
+         XYI2l0/rB4snY9TBUUwo68j/VN1ec+uLJwi+o5h9nmbpNHSLPLWcKBgGULvJSpSWsCsX
+         Pe5htgzVVRTbOpxbFfFXGeEoGTWpoz3vitLZYa64+Ap/g5TJ6YYP07nAymqpiVlcv/Fc
+         HYSEG9fi/tqgQHLnQhLBD7S0Rc6IO6mcDlcSSxiO4mdBcy9KvRgJ3m1Z0Ps024JPpOWc
+         gbfQ==
+X-Gm-Message-State: APjAAAVO2/sZeM2UGf6FMPAAMPw4+AbjHLQKtfQhmY0M0lrTKJ9k0KWO
+        ZfPp3tkPshNj/3PWZPuOdoo1Otdhi1LeQVjLyzhoew==
+X-Google-Smtp-Source: APXvYqwASj4zprMprFIDA63PNWyUrrAq3SNIE66VlztI0flnsZYjGBs3OYEuA8ZG2zn/WxQAvn9S5Z16l5g1NPAAeOY=
+X-Received: by 2002:a5d:6785:: with SMTP id v5mr12529813wru.174.1572296796532;
+ Mon, 28 Oct 2019 14:06:36 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f340c248-fe83-4a03-7952-08d75bea9f2e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 21:05:55.0480
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Xz9xXICF4Ktzm+hFA8oR1wjppMEhCCWG6u2sY2treulsHrzE1wH7walR3KjHAO/c4RyKSKzp5dgD0BTW5CRzMA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1291
+References: <20191023005337.196160-1-irogers@google.com> <20191024190202.109403-1-irogers@google.com>
+ <20191024190202.109403-2-irogers@google.com> <20191025075820.GE31679@krava>
+ <CAP-5=fV3yruuFagTz4=8b9t6Y1tzZpFU=VhVcOmrSMiV+h2fQA@mail.gmail.com> <20191028193224.GB28772@krava>
+In-Reply-To: <20191028193224.GB28772@krava>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 28 Oct 2019 14:06:24 -0700
+Message-ID: <CAP-5=fWqzT24JwuYYdH=4auB0EB2P4MMw4bvqGd02fTShXnJfg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/9] perf tools: add parse events append error
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set fixes some error handling issues in netvsc driver,
-and add XDP support.
+On Mon, Oct 28, 2019 at 12:32 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Fri, Oct 25, 2019 at 08:14:36AM -0700, Ian Rogers wrote:
+> > On Fri, Oct 25, 2019 at 12:58 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> > >
+> > > On Thu, Oct 24, 2019 at 12:01:54PM -0700, Ian Rogers wrote:
+> > > > Parse event error handling may overwrite one error string with anot=
+her
+> > > > creating memory leaks and masking errors. Introduce a helper routin=
+e
+> > > > that appends error messages and avoids the memory leak.
+> > > >
+> > > > A reproduction of this problem can be seen with:
+> > > >   perf stat -e c/c/
+> > > > After this change this produces:
+> > > > event syntax error: 'c/c/'
+> > > >                        \___ unknown term (previous error: unknown t=
+erm (previous error: unknown term (previous error: unknown term (previous e=
+rror: unknown term (previous error: unknown term (previous error: unknown t=
+erm (previous error: unknown term (previous error: unknown term (previous e=
+rror: unknown term (previous error: unknown term (previous error: unknown t=
+erm (previous error: unknown term (previous error: unknown term (previous e=
+rror: unknown term (previous error: unknown term (previous error: unknown t=
+erm (previous error: unknown term (previous error: unknown term (previous e=
+rror: unknown term (previous error: unknown term (previous error: Cannot fi=
+nd PMU `c'. Missing kernel support?)(help: valid terms: event,filter_rem,fi=
+lter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umask,filter=
+_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter_nm,conf=
+ig,config1,config2,name,period,percore))(help: valid terms: event,filter_re=
+m,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umask,fi=
+lter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter_nm,=
+config,config1,config2,name,period,percore))(help: valid terms: event,filte=
+r_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,umas=
+k,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,filter=
+_nm,config,config1,config2,name,period,percore))(help: valid terms: event,f=
+ilter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,inv,=
+umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,fi=
+lter_nm,config,config1,config2,name,period,percore))(help: valid terms: eve=
+nt,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,=
+inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_stat=
+e,filter_nm,config,config1,config2,name,period,percore))(help: valid terms:=
+ event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter=
+_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_=
+state,filter_nm,config,config1,config2,name,period,percore))(help: valid te=
+rms: event,pc,in_tx,edge,any,offcore_rsp,in_tx_cp,ldlat,inv,umask,frontend,=
+cmask,config,config1,config2,name,period,percore))(help: valid terms: event=
+,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc,in=
+v,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_state,=
+filter_nm,config,config1,config2,name,period,percore))(help: valid terms: e=
+vent,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_n=
+c,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_st=
+ate,filter_nm,config,config1,config2,name,period,percore))(help: valid term=
+s: event,config,config1,config2,name,period,percore))(help: valid terms: ev=
+ent,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filter_nc=
+,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter_sta=
+te,filter_nm,config,config1,config2,name,period,percore))(help: valid terms=
+: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,filte=
+r_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,filter=
+_state,filter_nm,config,config1,config2,name,period,percore))(help: valid t=
+erms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_loc,f=
+ilter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm,fi=
+lter_state,filter_nm,config,config1,config2,name,period,percore))(help: val=
+id terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_l=
+oc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_n=
+m,filter_state,filter_nm,config,config1,config2,name,period,percore))(help:=
+ valid terms: event,config,config1,config2,name,period,percore))(help: vali=
+d terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filter_lo=
+c,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_not_nm=
+,filter_state,filter_nm,config,config1,config2,name,period,percore))(help: =
+valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,filte=
+r_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_no=
+t_nm,filter_state,filter_nm,config,config1,config2,name,period,percore))(he=
+lp: valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,f=
+ilter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filte=
+r_not_nm,filter_state,filter_nm,config,config1,config2,name,period,percore)=
+)(help: valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_t=
+id,filter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,f=
+ilter_not_nm,filter_state,filter_nm,config,config1,config2,name,period,perc=
+ore))(help: valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filt=
+er_tid,filter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_=
+op,filter_not_nm,filter_state,filter_nm,config,config1,config2,name,period,=
+percore))
+> > >
+> > >
+> > > hum... I'd argue that the previous state was better:
+> > >
+> > > [jolsa@krava perf]$ ./perf stat -e c/c/
+> > > event syntax error: 'c/c/'
+> > >                        \___ unknown term
+> > >
+> > >
+> > > jirka
+> >
+> > I am agnostic. We can either have the previous state or the new state,
+> > I'm keen to resolve the memory leak. Another alternative is to warn
+> > that multiple errors have occurred before dropping or printing the
+> > previous error. As the code is shared in memory places the approach
+> > taken here was to try to not conceal anything that could potentially
+> > be useful. Given this, is the preference to keep the status quo
+> > without any warning?
+>
+> if the other alternative is string above, yes.. but perhaps
+> keeping just the first error would be the best way?
+>
+> here it seems to be the:
+>    "Cannot find PMU `c'. Missing kernel support?)(help: valid..."
 
-Haiyang Zhang (4):
-  hv_netvsc: Fix error handling in netvsc_set_features()
-  hv_netvsc: Fix error handling in netvsc_attach()
-  hv_netvsc: Add XDP support
-  hv_netvsc: Update document for XDP support
+I think this is a reasonable idea. I'd propose doing it as an
+additional patch, the purpose of this patch is to avoid a possible
+memory leak. I can write the patch and base it on this series.
+To resolve the issue, I'd add an extra first error to the struct
+parse_events_error. All callers would need to be responsible for
+cleaning this up when present, which is why I'd rather not make it
+part of this patch.
+Does this sound reasonable?
 
- .../networking/device_drivers/microsoft/netvsc.txt |  14 ++
- drivers/net/hyperv/Makefile                        |   2 +-
- drivers/net/hyperv/hyperv_net.h                    |  15 ++
- drivers/net/hyperv/netvsc.c                        |   8 +-
- drivers/net/hyperv/netvsc_bpf.c                    | 211 +++++++++++++++++=
-++++
- drivers/net/hyperv/netvsc_drv.c                    | 150 ++++++++++++---
- 6 files changed, 374 insertions(+), 26 deletions(-)
- create mode 100644 drivers/net/hyperv/netvsc_bpf.c
+Thanks,
+Ian
 
---=20
-1.8.3.1
-
+> jirka
+>
