@@ -2,133 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0786EE7C60
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:32:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C73D2E7C93
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:55:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728968AbfJ1Wcx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 18:32:53 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54370 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725829AbfJ1Wcw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 18:32:52 -0400
-Received: by mail-wm1-f68.google.com with SMTP id g7so588829wmk.4
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 15:32:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NRXdgAc0PcgTXqIaaJzCtAmcNG62VLkqQ9HRilNs6zE=;
-        b=ZHIxAVYyRjROE32D+4tXWNI+kto7Xb09zjTOvcw/H/buB5PgOTxrv6V6Fx8KUcilZS
-         sxfNwosrz1QSk68MwAtEJ9qI8AbY7x/H8BNKp6aNswu8Q0CE8kKJZdNS9AltSKPyUYkS
-         sf1C9RXq98MwBRsntX9QMxU6t+yMo2FpwGo3BSKg1muk6WLBTpLCEuL7RZ4794h1+4M5
-         I35sodn741Dlw1fNbgqMijQc78bXkT0IULlcL+wS4DXFl4YloNWQnuO9rQKLV0JWh3Dh
-         wP3YODwzIhUZSGqulgPu+jgYkvvbUh7q1YQtq1v0oTT/raFGCfMLjVGLoiC0eehu9AdZ
-         5HYA==
+        id S1730374AbfJ1WzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 18:55:11 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:53511 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730293AbfJ1WzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 18:55:10 -0400
+Received: by mail-il1-f199.google.com with SMTP id a17so11076663ilb.20
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 15:55:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=NRXdgAc0PcgTXqIaaJzCtAmcNG62VLkqQ9HRilNs6zE=;
-        b=SxXwoo9NKTDrGjCYdYHhPnZMUIQnvRurjEfU9w3+G+C63Lx/bqyZb3GGXUEsW4zYd6
-         WNRwyqNTrDuQMakmzrDkNoqpVue3ZmAOptNhFjbtL7A6Ie1Ikdt+na7h7BqbCy0uDoUm
-         yds/C0a6hVKSyxwze7jym1lFyoMn3/YQsKNm1YrQeUNrM+VgOliLet736h1hZyTxYMFc
-         FnQbYBX0/POu2PXC4lbNBQQUXzl+cWuI5jRKg/tUl6WJDQPNkW3jXF0oQC4XRi6haP96
-         yJqa7J+NXgp0NEvyXfW4TFM+LKkLgaS9gEeQbOxaJ5ofhjx1+s6ISWid0vv4XITmFmVu
-         3i9g==
-X-Gm-Message-State: APjAAAWVB8s10AfHOLZqZ4KpdqrjvZQU5yWSvxL6q+ME2Kg96a9AbtJD
-        6FsDJ86u9GaFe/9t3N0O6+iohVA5
-X-Google-Smtp-Source: APXvYqw9CbcSLr8899Un44D3Envf664o1tc76Ntt8bUZUxDMixKzcA5ErFm7H4+FOzG/8mSWUcetDA==
-X-Received: by 2002:a1c:28d4:: with SMTP id o203mr1306627wmo.147.1572301970576;
-        Mon, 28 Oct 2019 15:32:50 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id s21sm17551607wrb.31.2019.10.28.15.32.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 15:32:49 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, davem@davemloft.net,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net-next 2/2] net: dsa: b53: Add CPU port election callback
-Date:   Mon, 28 Oct 2019 15:32:36 -0700
-Message-Id: <20191028223236.31642-3-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191028223236.31642-1-f.fainelli@gmail.com>
-References: <20191028223236.31642-1-f.fainelli@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vY/N7v2t/GE362uzn4Abb/5HTpyYYD2/oUVWVp0aInw=;
+        b=TQJRxgFiQ0J1Xjjh8TaoxxvfFrfLi1WKqD29kVGM9vi+6dfAF3gkHZaix81t5M0qkn
+         PR7PPUUYF+KphgwsdoY0aCAu3aKCWkHR9EDxZMA0NxkkzTz65kIWV838jGry1iIpcCKZ
+         tdLodBrDNS+24F9graLkt838N1+ADMOY/uoro0sjLzk3JV7QknyywMIzuCMY9AshRZme
+         zrqa/9RxTfs6rg0lTDSNovAxD6RGdDW+E4EQqx8h2xtMN+faKMoeiY6pl5NwHVuBKK/e
+         Ohhu/25oR8Qdfs+SjzlNbvbB6wcrS5BnWiS3iZL6rZiov3mHiSh6wNIA1aszheebACIK
+         B1fw==
+X-Gm-Message-State: APjAAAUr8L1Dx3IbjvPAW2ASbUFEgFIJQ7Ii20833G/0Obldw9mg8LaQ
+        cc3HoFTiaAM3wFTt895nndkiKljSQRKOklmkqknvxn6OKsOO
+X-Google-Smtp-Source: APXvYqzPfK+JP3d2xM6YXsCnlTrI2nYCxZllII3PTOxvU7AU4AiC4aD61MVhn3Da0ul4xjSyA0WNFZgH00ONhENi/WAwXHH3EUkA
+MIME-Version: 1.0
+X-Received: by 2002:a92:104a:: with SMTP id y71mr22333594ill.220.1572303309421;
+ Mon, 28 Oct 2019 15:55:09 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 15:55:09 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003cc4980596006472@google.com>
+Subject: general protection fault in ip6_sublist_rcv
+From:   syzbot <syzbot+c54f457cad330e57e967@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net, ecree@solarflare.com,
+        fw@strlen.de, kadlec@netfilter.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        syzkaller-bugs@googlegroups.com, yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the ability to select a particular CPU port to be chosen when
-multiple such ports are defined/available in the platform configuration.
-On all Broadcom switches but 5325 and 5365, port 8 should be selected.
+Hello,
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+syzbot found the following crash on:
+
+HEAD commit:    12d61c69 Add linux-next specific files for 20191024
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10608674e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=afb75fd8c9fd5ed8
+dashboard link: https://syzkaller.appspot.com/bug?extid=c54f457cad330e57e967
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=134be44ce00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15938e18e00000
+
+The bug was bisected to:
+
+commit ca58fbe06c54795f00db79e447f94c2028d30124
+Author: Florian Westphal <fw@strlen.de>
+Date:   Thu Oct 10 22:30:37 2019 +0000
+
+     netfilter: add and use nf_hook_slow_list()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16366800e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=15366800e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11366800e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+c54f457cad330e57e967@syzkaller.appspotmail.com
+Fixes: ca58fbe06c54 ("netfilter: add and use nf_hook_slow_list()")
+
+kasan: CONFIG_KASAN_INLINE enabled
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 9027 Comm: syz-executor906 Not tainted 5.4.0-rc4-next-20191024  
+#0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+RIP: 0010:__read_once_size include/linux/compiler.h:199 [inline]
+RIP: 0010:NF_HOOK_LIST include/linux/netfilter.h:331 [inline]
+RIP: 0010:ip6_sublist_rcv+0x5c9/0x930 net/ipv6/ip6_input.c:292
+Code: 0f 85 73 01 00 00 e8 06 63 24 fb 48 8b 85 00 ff ff ff 48 8d b8 10 0f  
+00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
+85 44 03 00 00 48 8b 85 00 ff ff ff 4c 8b a0 10 0f
+RSP: 0018:ffff8880956af3c0 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff864f0e0e
+RDX: 00000000000001e2 RSI: ffffffff864f0c6a RDI: 0000000000000f10
+RBP: ffff8880956af4f0 R08: ffff8880a1778040 R09: ffffed1015d26b7d
+R10: ffffed1015d26b7c R11: ffff8880ae935be3 R12: 0000000000000001
+R13: ffff8880956af4c8 R14: ffff8880956af558 R15: ffff8880956af680
+FS:  0000000000819880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000780 CR3: 0000000089dec000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+  ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:328
+  __netif_receive_skb_list_ptype net/core/dev.c:5274 [inline]
+  __netif_receive_skb_list_core+0x5fc/0x9d0 net/core/dev.c:5322
+  __netif_receive_skb_list net/core/dev.c:5374 [inline]
+  netif_receive_skb_list_internal+0x7eb/0xe50 net/core/dev.c:5469
+  gro_normal_list.part.0+0x1e/0xb0 net/core/dev.c:5892
+  gro_normal_list net/core/dev.c:5905 [inline]
+  gro_normal_one+0x184/0x1d0 net/core/dev.c:5904
+  napi_frags_finish net/core/dev.c:6008 [inline]
+  napi_gro_frags+0x915/0xd00 net/core/dev.c:6081
+  tun_get_user+0x2e8e/0x3f80 drivers/net/tun.c:1976
+  tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2022
+  call_write_iter include/linux/fs.h:1902 [inline]
+  do_iter_readv_writev+0x5f8/0x8f0 fs/read_write.c:693
+  do_iter_write fs/read_write.c:970 [inline]
+  do_iter_write+0x184/0x610 fs/read_write.c:951
+  vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
+  do_writev+0x15b/0x330 fs/read_write.c:1058
+  __do_sys_writev fs/read_write.c:1131 [inline]
+  __se_sys_writev fs/read_write.c:1128 [inline]
+  __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x441d80
+Code: 05 48 3d 01 f0 ff ff 0f 83 5d 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00  
+00 66 90 83 3d 91 92 29 00 00 75 14 b8 14 00 00 00 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 34 09 fc ff c3 48 83 ec 08 e8 ba 2b 00 00
+RSP: 002b:00007ffc73f8e2e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000014
+RAX: ffffffffffffffda RBX: 00007ffc73f8e300 RCX: 0000000000441d80
+RDX: 0000000000000001 RSI: 00007ffc73f8e330 RDI: 00000000000000f0
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000004
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000012dae
+R13: 0000000000402bd0 R14: 0000000000000000 R15: 0000000000000000
+Modules linked in:
+---[ end trace b92638c9e1a03392 ]---
+RIP: 0010:__read_once_size include/linux/compiler.h:199 [inline]
+RIP: 0010:NF_HOOK_LIST include/linux/netfilter.h:331 [inline]
+RIP: 0010:ip6_sublist_rcv+0x5c9/0x930 net/ipv6/ip6_input.c:292
+Code: 0f 85 73 01 00 00 e8 06 63 24 fb 48 8b 85 00 ff ff ff 48 8d b8 10 0f  
+00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
+85 44 03 00 00 48 8b 85 00 ff ff ff 4c 8b a0 10 0f
+RSP: 0018:ffff8880956af3c0 EFLAGS: 00010206
+RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff864f0e0e
+RDX: 00000000000001e2 RSI: ffffffff864f0c6a RDI: 0000000000000f10
+RBP: ffff8880956af4f0 R08: ffff8880a1778040 R09: ffffed1015d26b7d
+R10: ffffed1015d26b7c R11: ffff8880ae935be3 R12: 0000000000000001
+R13: ffff8880956af4c8 R14: ffff8880956af558 R15: ffff8880956af680
+FS:  0000000000819880(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020000780 CR3: 0000000089dec000 CR4: 00000000001406e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+
 ---
- drivers/net/dsa/b53/b53_common.c | 17 +++++++++++++++++
- drivers/net/dsa/b53/b53_priv.h   |  1 +
- drivers/net/dsa/bcm_sf2.c        |  1 +
- 3 files changed, 19 insertions(+)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index baadf622ac55..ce7c22f151a6 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1833,6 +1833,22 @@ enum dsa_tag_protocol b53_get_tag_protocol(struct dsa_switch *ds, int port)
- }
- EXPORT_SYMBOL(b53_get_tag_protocol);
- 
-+int b53_elect_cpu_port(struct dsa_switch *ds, int port)
-+{
-+	struct b53_device *dev = ds->priv;
-+	int cpu_port = dev->cpu_port;
-+
-+	if (is5325(dev) || is5365(dev))
-+		cpu_port = B53_CPU_PORT_25;
-+
-+	/* We would prefer to use a different CPU port that this one */
-+	if (port != cpu_port)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(b53_elect_cpu_port);
-+
- int b53_mirror_add(struct dsa_switch *ds, int port,
- 		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress)
- {
-@@ -1962,6 +1978,7 @@ EXPORT_SYMBOL(b53_set_mac_eee);
- 
- static const struct dsa_switch_ops b53_switch_ops = {
- 	.get_tag_protocol	= b53_get_tag_protocol,
-+	.elect_cpu_port		= b53_elect_cpu_port,
- 	.setup			= b53_setup,
- 	.get_strings		= b53_get_strings,
- 	.get_ethtool_stats	= b53_get_ethtool_stats,
-diff --git a/drivers/net/dsa/b53/b53_priv.h b/drivers/net/dsa/b53/b53_priv.h
-index a7dd8acc281b..f12b0fae6743 100644
---- a/drivers/net/dsa/b53/b53_priv.h
-+++ b/drivers/net/dsa/b53/b53_priv.h
-@@ -354,6 +354,7 @@ int b53_fdb_dump(struct dsa_switch *ds, int port,
- int b53_mirror_add(struct dsa_switch *ds, int port,
- 		   struct dsa_mall_mirror_tc_entry *mirror, bool ingress);
- enum dsa_tag_protocol b53_get_tag_protocol(struct dsa_switch *ds, int port);
-+int b53_elect_cpu_port(struct dsa_switch *ds, int port);
- void b53_mirror_del(struct dsa_switch *ds, int port,
- 		    struct dsa_mall_mirror_tc_entry *mirror);
- int b53_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy);
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index c068a3b7207b..ab399d7d76b6 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -934,6 +934,7 @@ static int bcm_sf2_sw_get_sset_count(struct dsa_switch *ds, int port,
- 
- static const struct dsa_switch_ops bcm_sf2_ops = {
- 	.get_tag_protocol	= b53_get_tag_protocol,
-+	.elect_cpu_port		= b53_elect_cpu_port,
- 	.setup			= bcm_sf2_sw_setup,
- 	.get_strings		= bcm_sf2_sw_get_strings,
- 	.get_ethtool_stats	= bcm_sf2_sw_get_ethtool_stats,
--- 
-2.17.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
