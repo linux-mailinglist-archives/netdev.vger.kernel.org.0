@@ -2,96 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E07EDE754C
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 16:37:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01799E7590
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 16:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731923AbfJ1Pgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 11:36:53 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:39815 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbfJ1Pgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 11:36:53 -0400
-Received: by mail-qt1-f194.google.com with SMTP id t8so15174376qtc.6;
-        Mon, 28 Oct 2019 08:36:52 -0700 (PDT)
+        id S2390156AbfJ1PyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 11:54:21 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:39055 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726387AbfJ1PyU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 11:54:20 -0400
+Received: by mail-io1-f65.google.com with SMTP id 18so4283462ion.6;
+        Mon, 28 Oct 2019 08:54:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=X/AyUl2apR1iCfwj2kG9abOusf6OXMfXucKK4+wE+uQ=;
-        b=KsoHc9+W6GrxaU4WH0NzZ7G6kzBg0b0z8dTYFiJ4Wg3ccWBwvIqmsbRc48h8ZesB7j
-         GpiB1D67APHsIL5nBr4bq1cywQUmlPqkfGUh5p5ilesffsd+dYKo2qdrSyjRtLqiKZX2
-         tm8TISpGQdaGd7p7iKWBYNq+ksjvRS0kmrOFmQ40RMBTjyAsUJwr178a3JgtJ/KY+Don
-         piZK/q99/KgWT3WCe6O4zcoastXxdlTkeaxN5HPIRzCRv6a0jgtfYW23ibGIGozBNkU8
-         nH53xNYApd8jZeUifEm2vNdG4HJ/EgT6aI2IMte5HbK1Yj2pRxY6XziFLN9YxiZXDnQs
-         +15w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/K4LnDEAV8yJmNpGUurIA8x9iTL6nILqkGCecbIEJ9E=;
+        b=I5JlTeIOoe+JV17+CDBqXoRf046iD/y90lrRZgsq//LcSx/m6g1QTSSsdRM3J3kX5m
+         C11dWQFVCNULz0OfXuIJMxyLUvjmZHeZO9TpiT+aWRTLs26d6ztTPKiwjTIwD5TgSFOp
+         Ro1dABUqHUa7T4iQFRcuF1XrNG9UBxy7tvIu7AzlYpCXOAJ0Pc6AERuSqKBCGtns5D3G
+         tQcluzzlDZOR/puhfuXdneNSuVY6hjbeTOBQDdQeE6kcHPLH9zSanys9gXNPAB9WTU7M
+         /clKj6m/0J2lUjypG4pTqjtSwVsinOoQGdG/Uh7Iwpqg6bAXUsRRrV2JZD2NtSjAieio
+         x8Ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=X/AyUl2apR1iCfwj2kG9abOusf6OXMfXucKK4+wE+uQ=;
-        b=sh0gCUpto9CUSDSh8ccehb7QvX3Z+ZPCezkrsHRoCY9KARz/ucV2Vr1uCHkUqKXZm6
-         GNhydT1hYIe2ua5QDIy1zTc/84UwwjVWgWKvjjDY1UIvzf3GtRTrRUBsDd/QR2UuP8lQ
-         Gh5dsnxjmHvWWibZ2Ts2INwIFpj9FjpAVqxtcCD8WLe+DCUvCL48qKtEPw56zUpFxxb3
-         IeJxFWGdGIHRAMVLT0ayQiI7c65+5ixyp8tpSnjG1yXkl8n9jtM6QNUjhfZfK04Fkz+9
-         CZC5KR7CI9C2ICG7qIV84ZltUCQZ7o4I+oyVKcjkUQOcxoF1Ntz+Dyb/seR/+R6O6JAX
-         f/zA==
-X-Gm-Message-State: APjAAAXfVHEsviHQMaTpaRBQmkN2vApyBoPZqr9aE6Pwi2J9fPltnHUV
-        fxiaAoAUgryZ7Mt2Hrqd+oQ=
-X-Google-Smtp-Source: APXvYqymZABOv21SsYV9D8JTRdSkOnK9lkbnddolPIkUK1UpDSlv+qwInskpJwT/9VwSwKc/EEJcUA==
-X-Received: by 2002:a0c:f851:: with SMTP id g17mr16291522qvo.157.1572277011591;
-        Mon, 28 Oct 2019 08:36:51 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:326e:3cb7:46e:7f5e:cff5])
-        by smtp.gmail.com with ESMTPSA id y186sm6327995qkd.71.2019.10.28.08.36.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 08:36:50 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 6FE69C0AD9; Mon, 28 Oct 2019 12:36:48 -0300 (-03)
-Date:   Mon, 28 Oct 2019 12:36:48 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     syzbot <syzbot+e5b57b8780297657b25b@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, leon@kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com, roid@mellanox.com,
-        saeedm@mellanox.com, syzkaller-bugs@googlegroups.com,
-        vladbu@mellanox.com, vyasevich@gmail.com
-Subject: Re: KASAN: use-after-free Read in sctp_sock_dump
-Message-ID: <20191028153648.GF4250@localhost.localdomain>
-References: <000000000000e68ee20595fa33be@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/K4LnDEAV8yJmNpGUurIA8x9iTL6nILqkGCecbIEJ9E=;
+        b=cK+K/P5rWJNI6L+RFoG9MpgDV6Bp7zOYhA8ms4cfw6Uqdk5+tIQ8VOsGdmEcyC+us6
+         UFLlURKR45ohTYW5lrnB9qm0nX+wK0M6BRGCxqKB0szMs9D2KNTrcG2VZXGZuV1lbmGR
+         nrodo0PptkP6DsbOSmzTaEOcdQkrPzvMioqUTDOBF4OBEFD9AafR1WQ9+Iu6PhUjeKYb
+         u+RW5JeRyPgpUatPQ+yOxEyGyRQG/cxuaQAvL/RkHcovk568e0WyxCj40fV0LlZzP/dN
+         rWxv93voxvIZmfUaDAXTLAMZ3ByLNxTB+DHWXEczGF9uzpZzIlv9YCgifsvy4iRgek0c
+         GhvQ==
+X-Gm-Message-State: APjAAAWm+57T8NjlmTx+4VXEnWqhUsTbJLYbVwUDTxvimnDDvZN9hJ+f
+        6HL2tIdBkN8loeDMTPFPNM6Yni9zgEWfYWWtQlOuF/u0
+X-Google-Smtp-Source: APXvYqwb7kJVSuN6p1MhnedgbvFQU8PPyFPSW7UGdcgrGYnEqToa+7C32rN20O6HUK7+yyPctlfXAgySuJgdmbj8q3Q=
+X-Received: by 2002:a02:77c4:: with SMTP id g187mr16511183jac.83.1572278059165;
+ Mon, 28 Oct 2019 08:54:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <000000000000e68ee20595fa33be@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <YWOrt002RdCqkBeUL04N1MVxcsjRvmCb4iqMW67EmAQIG5erLlSntgQWmSYiHXAT8kgFTceURhTaP8dAp9nPD9q3lquhb0MTIRlP4Vy5k3Y=@protonmail.com>
+In-Reply-To: <YWOrt002RdCqkBeUL04N1MVxcsjRvmCb4iqMW67EmAQIG5erLlSntgQWmSYiHXAT8kgFTceURhTaP8dAp9nPD9q3lquhb0MTIRlP4Vy5k3Y=@protonmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Mon, 28 Oct 2019 08:54:08 -0700
+Message-ID: <CAKgT0Uc5Ba3Vno39KqdBRSXGYpyuGHeyef9=CkthoVkWipLS7g@mail.gmail.com>
+Subject: Re: Commit 0ddcf43d5d4a causes the local table to conflict with the
+ main table
+To:     Ttttabcd <ttttabcd@protonmail.com>
+Cc:     "alexander.h.duyck@redhat.com" <alexander.h.duyck@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "lartc@vger.kernel.org" <lartc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 08:32:08AM -0700, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    d6d5df1d Linux 5.4-rc5
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=17ef5a70e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=2bcb64e504d04eff
-> dashboard link: https://syzkaller.appspot.com/bug?extid=e5b57b8780297657b25b
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> userspace arch: i386
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16cd8800e00000
-> 
-> The bug was bisected to:
-> 
-> commit 61086f391044fd587af9d70a9b8f6f800dd474ba
-> Author: Vlad Buslov <vladbu@mellanox.com>
-> Date:   Fri Aug 2 19:21:56 2019 +0000
-> 
->     net/mlx5e: Protect encap hash table with mutex
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=135960af600000
+On Sat, Oct 26, 2019 at 12:10 AM Ttttabcd <ttttabcd@protonmail.com> wrote:
 
-This is weird. This mlx5e commit has nothing to do with SCTP diag
-dump.
+I am dropping all of the above. The fact is commit 0ddcf43d5d4a
+("ipv4: FIB Local/MAIN table collapse") has been in the kernel for
+over 4 and a half years so hopefully by now most of the network
+developers are aware that the tables are merged, and become unmerged
+when custom rules are added.
 
-  Marcelo
+<snip>
+
+> Suppose now that a software engineer wants to add 192.168.0.0/16 to the l=
+ocal address, so he naturally executed the following command.
+>
+> ip route add local 192.168.0.0/16 dev lo
+>
+> But he does not know that there is a trap in the main table, another over=
+lapping route!
+
+So the first question I would have is why is the developer
+intentionally overlapping the routes and creating duplicate routes?
+For most users any address other than the localhost route is always a
+/32 when it comes to local routing. Why is there a need to create
+another route that is looped back into the system?
+
+> ip route
+> 192.168.3.0/24 dev wlan0 proto kernel scope link src 192.168.3.62 metric =
+600
+>
+> ip route get 192.168.1.100
+> local 192.168.1.100 dev lo src 192.168.1.100 uid 0
+>     cache <local>
+>
+> ip route get 192.168.3.100
+> 192.168.3.100 dev wlan0 src 192.168.3.62 uid 0
+>     cache
+>
+> This will cause the entire network of 192.168.3.0/24 not to be routed to =
+the local lo interface as he thought!
+
+I agree this is the behavior. However it muddles the routing tables as
+you have overlapping entries in the first place. As it stands doesn't
+this effectively render 192.168.0.0/16 a blackhole since what you end
+up with is it trying to loop back packets that will be recognized as
+something from the local system anyway?
+
+> This will lead to bugs that are very difficult to find! If I am not a pro=
+grammer who knows a little about the kernel implementation, I can't find ou=
+t what caused the problem (I checked a lot of source code and read a lot of=
+ patches and kernel mail to solve this problem).
+>
+> Of course, you can say that no one will modify the local routing table un=
+der normal circumstances. But is the linux system also designed for geeks? =
+Is it also designed for programmers who want to exploit the full potential =
+of the system?
+
+I would argue that adding routes to the local table is a very "geek"
+thing to do. Normally people aren't going to be adding routes there in
+the first place. Normally routes are added to main as the assumption
+is you are attempting to route traffic out to some external entity.
+The local table normally only consists of the localhost route and a
+set of /32 addresses as I mentioned earlier.
+
+> If you provide a mechanism to modify the local table, you must ensure tha=
+t the mechanism is working correctly.
+>
+> And it's absolutely impossible to make this mechanism a significant diffe=
+rence in the execution process after triggering some incredible conditions =
+(custom FIB rules are enabled, even if they are later disabled).
+>
+> In summary, I don't think this Commit 0ddcf43d5d4a is a good idea.
+>
+> Welcome to discuss.
+
+I would disagree. There is a significant performance gain to be had
+from this commit. What it is basically doing is taking advantage of
+the fact that normally your local trie is going to consist of /32
+routes and localhost. In the vast majority of cases there will never
+be a clash as you have pointed out.
+
+If anything what I would suggest, assuming the priority inversion
+issue you have pointed out needs to be addressed, would be to look at
+adding a special case for the addition of non /32 non-localhost routes
+to local so that we could unmerge the table on such an addition. The
+instance of non-/32 routes being added to local has apparently been
+low enough that this hasn't been an issue up until now, and if we are
+wanting to focus on the correctness of the fib lookup then this would
+be the easiest way to sort it out while maintaining both the
+performance and correctness.
+
+Thanks.
+
+- Alex
