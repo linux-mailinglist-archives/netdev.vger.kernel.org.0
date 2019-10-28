@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEBF0E7A64
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:43:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A38E7A91
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:54:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388056AbfJ1Un1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 16:43:27 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:38901 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726508AbfJ1Un1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 16:43:27 -0400
-Received: by mail-pg1-f193.google.com with SMTP id w3so7742642pgt.5;
-        Mon, 28 Oct 2019 13:43:27 -0700 (PDT)
+        id S2388493AbfJ1UyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 16:54:19 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:38003 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbfJ1UyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 16:54:18 -0400
+Received: by mail-qk1-f195.google.com with SMTP id e2so1352101qkn.5;
+        Mon, 28 Oct 2019 13:54:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=4zLDgL2Tv+U6+2fqrJoYSvbV/fzHrzrxd+zfcyEk0Mg=;
-        b=fC0Arx2fP2pQajMaoYQZ8TldvHGcKz83ifiEWa3vIhZIIL4m0B2Nergp1GFdE4kms0
-         heC85V7W9rGI1CCl+vSLDtKIyiPi/xWuiS5R4FVZRLLarsv1vMVWybHGsisAgwvUF8Mb
-         UBNDNIlIuFmtymhcFTDeDMpJVmc2Aq09jD0+5lg12gnYMvg3UhrWVs7rnHsZfXYq+wIm
-         NbYFld4OYbQl98JQkjElKmtwgsXmjXfXnP8GuQD86u/adwTy8edic8m4ByC33mIMV12t
-         qfPpwbE3lZyDyyDgNq2kpw+NrlM4xhM3jZKaBFhe4s6nwmz7wO1ydIcs+A5mlbhXn1ew
-         mxGA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ELFM7hs7CuuuKZAdnwtMxunSGfP74t02oivKE3X+k/I=;
+        b=Vjcs/dfM9W6Rjh0ZvrvJsgLzY3MijGyij4P7qrBvA5TsXM2ZhW4pVsFT2Gj28DGud1
+         bbQ2qtb1C/Rl7QoNC5SGUHSxZ2D27rrqaq7ajJ5t6hgIo0Dz5cwXENlQc1oWNpUwP7i3
+         oLrjix4MJwInv6vTcki1RSv3mOwQ/dw3jZUfinNMaOamslEEqWkg7EQdagh4woKJmvWU
+         hGbZHHk5UQzNtLWldWO/mhXHExXDvR2V3Kf4khlZUl7N11A1Yggu+4z4KieE2Sa40CfK
+         CULhkREGV8vLDtHTLuX34iGOwwbIEiTz70BbkEB6DsuoQBmJxflEGFWeuv3br8B4ugBd
+         bt3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=4zLDgL2Tv+U6+2fqrJoYSvbV/fzHrzrxd+zfcyEk0Mg=;
-        b=Ucd3vfgeZRVTgC8RM5l4vAbBMCT7BmkgWxaTAO0IcOc/SQ4J10lskOqk3wRc4ZEy5I
-         uWU6wQIGgKgu0OWLg6+jIVz/e0nuX2nM/vtt8sw1y8dqvsTlMyrqIcwO0lJQC2KVB5KI
-         JzrmRDIMU+gmUmoduaWdUr9Nx+dz9iWfJxBYRW8t4WH7HXLuDpuCVJc6F+huMSbuBHDu
-         IMIqPZ9vxL5n/mENlFMbAjrCkida49nad0dMDYPQuIj3ZMuI+NJQ6NmXuFvGZ9Z9+Wo1
-         vib2F92skImWSXakRY1pbX8XuQssR0108oUwyIRtxAQbTLa8z3Xuht6zGN3RseDTnB6Z
-         Kjyg==
-X-Gm-Message-State: APjAAAWBKTtTJ/qfGl2K3fnXyaMhOsZJ3H04cxIhCqN3wcFFGgj8nbm5
-        1c0onNdFl/oLUWGDYoqrbPQ=
-X-Google-Smtp-Source: APXvYqycfDtHncZtnj9Mi+Cs0rySqwXwx1Y/ecr4wfkWllPbSLcM/VJPhFzr5rGuTklLWd1CPzBRWw==
-X-Received: by 2002:a63:d10c:: with SMTP id k12mr14234478pgg.344.1572295406616;
-        Mon, 28 Oct 2019 13:43:26 -0700 (PDT)
-Received: from saurav ([27.62.167.137])
-        by smtp.gmail.com with ESMTPSA id 13sm13705579pgq.72.2019.10.28.13.43.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 13:43:26 -0700 (PDT)
-Date:   Tue, 29 Oct 2019 02:13:17 +0530
-From:   Saurav Girepunje <saurav.girepunje@gmail.com>
-To:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
-        davem@davemloft.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     saurav.girepunje@hotmail.com
-Subject: [PATCH] ath: ath9k: Remove unneeded variable
-Message-ID: <20191028204317.GA29468@saurav>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ELFM7hs7CuuuKZAdnwtMxunSGfP74t02oivKE3X+k/I=;
+        b=G9GC9+BIovpKVZcap0OyTZld8kj4DsDt8cddzfqzPeIkrFFH6b6px/1zJ9pfHe3Z5F
+         fmmIrUEAl3Kv4dK6qqJ6L7xI5Ej/WOmSZ6b4SEyIpsCJpNUPemGOfMlEOqUmezYn36Rw
+         M5Q3KCyCx0MD6cDsJEB1tRGTeDKcsvC3rdhAJ04sEgD00yJwoRh9RpGk2y5DCDuke8L7
+         4oB3OqyZ0Vv7YX0Yfia3sR+Sf8quig5f5POmfDkuvj7cQ8GWQ+nMcZKbo459LHZXwZv3
+         z9wSoWzeteK/jjO1r/MPySZ6TAwhRnND/yBhZAO1uD8pgQpo59lzbahHRlUmnGfd3yQF
+         ckTQ==
+X-Gm-Message-State: APjAAAUhhQr/Zeh0hczOWYhE6bgd5HFDgbdJy6rgm7pSeBlTiPpQlALG
+        +e2A1wze9S7iiP65KFV1KKtFWqjiGticpWjGC1WWk7k3
+X-Google-Smtp-Source: APXvYqzwSXznPpcqOt4g32qV5OQYKyieOMOxaiFdl3+jkuAgACK41q+X56rvjYLZ30DHhTRDdo0mD8vkiDN0ZwJNPEA=
+X-Received: by 2002:ac8:6f27:: with SMTP id i7mr466326qtv.359.1572296056426;
+ Mon, 28 Oct 2019 13:54:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20191025093219.10290-1-bjorn.topel@gmail.com> <20191025093219.10290-2-bjorn.topel@gmail.com>
+ <20191028110056.17eea9fb@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20191028110056.17eea9fb@cakuba.hsd1.ca.comcast.net>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Mon, 28 Oct 2019 21:54:04 +0100
+Message-ID: <CAJ+HfNhoRy=mEw=qNRCYwjcn+cANb0wTO4kgs=iU4W0bvoPyVw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/2] xsk: store struct xdp_sock as a flexible
+ array member of the XSKMAP
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove "len" variable which is not used in ath9k_dump_legacy_btcoex.
+On Mon, 28 Oct 2019 at 19:01, Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Fri, 25 Oct 2019 11:32:18 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> >
+> > Prior this commit, the array storing XDP socket instances were stored
+> > in a separate allocated array of the XSKMAP. Now, we store the sockets
+> > as a flexible array member in a similar fashion as the arraymap. Doing
+> > so, we do less pointer chasing in the lookup.
+> >
+> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> Damn, looks like I managed to reply to v2.
+>
 
-Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
----
- drivers/net/wireless/ath/ath9k/gpio.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+No worries! Thanks for taking a second look.
 
-diff --git a/drivers/net/wireless/ath/ath9k/gpio.c b/drivers/net/wireless/ath/ath9k/gpio.c
-index b457e52dd365..f3d1bc02e633 100644
---- a/drivers/net/wireless/ath/ath9k/gpio.c
-+++ b/drivers/net/wireless/ath/ath9k/gpio.c
-@@ -498,14 +498,13 @@ static int ath9k_dump_legacy_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
- {
- 
- 	struct ath_btcoex *btcoex = &sc->btcoex;
--	u32 len = 0;
- 
- 	ATH_DUMP_BTCOEX("Stomp Type", btcoex->bt_stomp_type);
- 	ATH_DUMP_BTCOEX("BTCoex Period (msec)", btcoex->btcoex_period);
- 	ATH_DUMP_BTCOEX("Duty Cycle", btcoex->duty_cycle);
- 	ATH_DUMP_BTCOEX("BT Wait time", btcoex->bt_wait_time);
- 
--	return len;
-+	return 0;
- }
- 
- int ath9k_dump_btcoex(struct ath_softc *sc, u8 *buf, u32 size)
--- 
-2.20.1
+> I think the size maths may overflow on 32bit machines on the addition.
 
+Ugh, right. Re-reading the older threads. Thanks for pointing this
+out!I'll get back with a v4.
+
+
+Bj=C3=B6rn
