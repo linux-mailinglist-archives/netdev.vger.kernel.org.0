@@ -2,99 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50CECE6CA8
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 08:04:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 753B2E6CC9
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 08:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732093AbfJ1HEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 03:04:50 -0400
-Received: from gateway23.websitewelcome.com ([192.185.48.71]:28148 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730616AbfJ1HEt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 03:04:49 -0400
-X-Greylist: delayed 492 seconds by postgrey-1.27 at vger.kernel.org; Mon, 28 Oct 2019 03:04:49 EDT
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 79EEB2509
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 02:04:49 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id Oz57i0OB1BnGaOz57ieo49; Mon, 28 Oct 2019 02:04:49 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=cc1Lq/1I6uaUptz7nqvA6hsrq7d4wgFlwqeS4oYmYzU=; b=WoVLRJRJ59aEd0sJv0mgkAnfA6
-        ZwEXpix02KGKjEbIw+HFzZ4aiMfvGWbufEN5SopsynMu7MJPd5GpQW6fNuuYtWAmfY+PCptigBnoi
-        HJmG4SsWFG4lsAg2cJE0v3UWQOJ2xyUtGnJMIqQOXmBNDO8n+662Yxg8MGnuQxq8DPLn29U1ttsN8
-        C/ErRTaDE1Uv4APq0v0LvoX8voeiR/YCsggjKYKrFbRwoQoio6edcrjnRgmH58lr02y+2PzFcWScl
-        Kenk96P6DgVuCtjE7REdkTLemeGS8AWPVkIZvaNBp2/6p5yDjyBJD61/zID6Dha8Vl5NSEeg98R0a
-        r6TuMI0g==;
-Received: from [187.192.2.30] (port=58482 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1iOz56-0046Kp-7m; Mon, 28 Oct 2019 02:04:48 -0500
-Date:   Mon, 28 Oct 2019 02:04:47 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Egor Pomozov <epomozov@marvell.com>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sergey Samoilenko <sergey.samoilenko@aquantia.com>,
-        Dmitry Bezrukov <dmitry.bezrukov@aquantia.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH net-next] net: aquantia: fix error handling in aq_ptp_poll
-Message-ID: <20191028070447.GA3659@embeddedor>
+        id S1731011AbfJ1HRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 03:17:06 -0400
+Received: from vulcan.natalenko.name ([104.207.131.136]:39440 "EHLO
+        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730751AbfJ1HRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 03:17:06 -0400
+Received: from mail.natalenko.name (vulcan.natalenko.name [IPv6:fe80::5400:ff:fe0c:dfa0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id A3DCE60EFBC;
+        Mon, 28 Oct 2019 08:17:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1572247022;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GpScNA8k1wNynPH+2njANhiKTtFuRG/+CoTwLULQUMU=;
+        b=Z2OfiMrOL9ZuQSbl5Y5PfE3jj8D/dJHYYnSrGfNykqXTg8Hn+od9ZCtFcczuOn6l81KZ71
+        0RZ0D5CnvdfX6RN/yHD7doRpkMl1h/OrUdqc+PU/L22Cc1KYAtghkloLVK7cnhDw225ed3
+        9yBtoF0hOEig9jRK9QHbR8wgq/V2JFM=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.192.2.30
-X-Source-L: No
-X-Exim-ID: 1iOz56-0046Kp-7m
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [187.192.2.30]:58482
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 6
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Mon, 28 Oct 2019 08:17:02 +0100
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     kvalo@codeaurora.org, linux-wireless@vger.kernel.org, nbd@nbd.name,
+        hkallweit1@gmail.com, sgruszka@redhat.com,
+        lorenzo.bianconi@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 wireless-drivers 0/2] fix mt76x2e hangs on U7612E
+ mini-pcie
+In-Reply-To: <cover.1572204430.git.lorenzo@kernel.org>
+References: <cover.1572204430.git.lorenzo@kernel.org>
+Message-ID: <5c6bdfd65ae3178cff2f55233e9e8465@natalenko.name>
+X-Sender: oleksandr@natalenko.name
+User-Agent: Roundcube Webmail/1.3.10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix currenty ignored returned error by properly checking *err* after
-calling aq_nic->aq_hw_ops->hw_ring_hwts_rx_fill().
+On 27.10.2019 20:53, Lorenzo Bianconi wrote:
+> Various mt76x2e issues have been reported on U7612E mini-pcie card [1].
+> On U7612E-H1 PCIE_ASPM causes continuous mcu hangs and instability and
+> so patch 1/2 disable it by default.
+> Moreover mt76 does not properly unmap dma buffers for non-linear skbs.
+> This issue may result in hw hangs if the system relies on IOMMU.
+> Patch 2/2 fix the problem properly unmapping data fragments on
+> non-linear skbs.
+> 
+> Changes since v2:
+> - fix compilation error if PCI support is not compiled
+> 
+> Changes since v1:
+> - simplify buf0 unmap condition
+> - use IS_ENABLED(CONFIG_PCIEASPM) instead of ifdef CONFIG_PCIEASPM
+> - check pci_disable_link_state return value
+> 
+> [1]:
+> https://lore.kernel.org/netdev/deaafa7a3e9ea2111ebb5106430849c6@natalenko.name/
+> 
+> 
+> Lorenzo Bianconi (2):
+>   mt76: mt76x2e: disable pcie_aspm by default
+>   mt76: dma: fix buffer unmap with non-linear skbs
+> 
+>  drivers/net/wireless/mediatek/mt76/Makefile   |  2 +
+>  drivers/net/wireless/mediatek/mt76/dma.c      |  6 ++-
+>  drivers/net/wireless/mediatek/mt76/mt76.h     |  6 ++-
+>  .../net/wireless/mediatek/mt76/mt76x2/pci.c   |  2 +
+>  drivers/net/wireless/mediatek/mt76/pci.c      | 46 +++++++++++++++++++
+>  5 files changed, 58 insertions(+), 4 deletions(-)
+>  create mode 100644 drivers/net/wireless/mediatek/mt76/pci.c
 
-Addresses-Coverity-ID: 1487357 ("Unused value")
-Fixes: 04a1839950d9 ("net: aquantia: implement data PTP datapath")
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_ptp.c | 2 ++
- 1 file changed, 2 insertions(+)
+So, works fine for me. Checked with 5.3 and additional include fix I've 
+mentioned previously.
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-index 3ec08415e53e..92b666f7d242 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ptp.c
-@@ -678,6 +678,8 @@ static int aq_ptp_poll(struct napi_struct *napi, int budget)
- 
- 		err = aq_nic->aq_hw_ops->hw_ring_hwts_rx_fill(aq_nic->aq_hw,
- 							      &aq_ptp->hwts_rx);
-+		if (err < 0)
-+			goto err_exit;
- 
- 		was_cleaned = true;
- 	}
+With that, for the whole series feel free to add:
+
+Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+
+Thank you.
+
 -- 
-2.23.0
-
+   Oleksandr Natalenko (post-factum)
