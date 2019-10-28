@@ -2,125 +2,356 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EFCDE6E55
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 09:36:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D21BE6EC1
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 10:12:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387527AbfJ1Iga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 04:36:30 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:47353 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731639AbfJ1Iga (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 04:36:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572251788;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JRuL2BkbB+a2GJ+8JaKpKSwC2v1Z0RtMywL1CPTxmnM=;
-        b=WsU6eH2IVzOFNKHFItYg9B4YNtCT2c9G9Qod+Ku1THbGPe67wxf9qBaD3a4xS1sVt6f1cP
-        +3UbUlnKqTrV0aVCQ8n7dHtHDXJLBhulgWIVDjiQegWBxr4YQhTUnBhyyQ7O/90LlA8rbB
-        qrT2diE19NnFqbWWZPbLxhisSN+UEq8=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-32-AlWYJCF9O2KxattjMoorgA-1; Mon, 28 Oct 2019 04:36:25 -0400
-Received: by mail-lj1-f200.google.com with SMTP id q185so674950ljq.21
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 01:36:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=JRuL2BkbB+a2GJ+8JaKpKSwC2v1Z0RtMywL1CPTxmnM=;
-        b=Y/3wCJK/Zj1Xd/mF1/mhDa6Dzm7HKML/i2lIM3per956o3mycQ7Cwoo/fAMAnjCDZm
-         dCSsEFSXO80Nbdz5Kmhh/WPUWwWXl+ACEbfu5LqBGG5Oxbe8LCymBG1qOS4f6zxs45eo
-         I/iE8idVJzaoWh4GI5v4A4oGMZI0YtgHsnjGKhFj0yKHHUF/Bku10WfhN5deBMPhqv3k
-         u+6kEFtx5cKo8PIxHcd9BlajLfJlNUZ/f+21vhRUVcq+rOYZZm1HrMmlPIrA0r30eDbI
-         FuBy3uZ4gtCTrRUf1Yutg8aQidjGJVxFvAotDMnAtfOSSrxbWHAvNx/HnmVc8OmkXXqI
-         xMgQ==
-X-Gm-Message-State: APjAAAV0vJF/GC1ou7EMd1Li3P0Pntfz2MT4Ula1o5QVIaz2Y9KoiEU3
-        6tZuWkpRpjcvfcHIvrKSdmxXYCocv09GWzGntLOmjxB5gnRsyCwTkxnqWf+67DzgCFM+Ww4vcqD
-        01Lnn2qx0V0kcOXSF
-X-Received: by 2002:ac2:5c1b:: with SMTP id r27mr10568396lfp.172.1572251783815;
-        Mon, 28 Oct 2019 01:36:23 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqybrSiG3iGTQBRgdSqi/nOXWRKJK0ZAvTlqP1CnZDT99j5pVGWuRBov3U5MLvB6wWlxd1tV/A==
-X-Received: by 2002:ac2:5c1b:: with SMTP id r27mr10568368lfp.172.1572251783528;
-        Mon, 28 Oct 2019 01:36:23 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id y28sm4846689lfg.31.2019.10.28.01.36.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 01:36:14 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id AB6DF1800E2; Mon, 28 Oct 2019 09:36:12 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-In-Reply-To: <47f1a7e2-0d3a-e324-20c5-ba3aed216ddf@gmail.com>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com> <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch> <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch> <87h840oese.fsf@toke.dk> <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch> <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com> <87zhhmrz7w.fsf@toke.dk> <47f1a7e2-0d3a-e324-20c5-ba3aed216ddf@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 28 Oct 2019 09:36:12 +0100
-Message-ID: <87o8y1s1vn.fsf@toke.dk>
+        id S2387825AbfJ1JMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 05:12:40 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:53316 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387596AbfJ1JMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 05:12:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=GAgGAUJziIAZoCqHkKoD8AXS8jroyopvdOonwHmBT8Y=; b=Sby/GrYJpm26R/oCT4tElJP61
+        P587ZlFbL4xuE8zYgZZAaEau4CM6TUWaan+j6TY5oif7drpbuzIQgBt7ZBU3fQ7lh0nEhCDqDji8S
+        QZ80cMPJDjWcy73bObVjCfrqh2Qn4tkF5eRp74Cgvloj+2Rn6bVaV8LdB1fXiw6dY//5knI1H9aY5
+        SVymgo39zXiXuRyKEgqy45Tu0Yy/llWcrIjAzhOoOhrziWnFnimqSzzcUHtrdruZfF7WURLmMkU/p
+        8GuaT10CpEQF8C44C/za/NN6AovHxJeSR/m7ZW/xUjrtjDt/uXLV9mfF6MeObUsVO0vf0yLo04C8L
+        BlFTJVRIg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iP14h-0002DE-S4; Mon, 28 Oct 2019 09:12:32 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 8EFFC30025A;
+        Mon, 28 Oct 2019 10:11:29 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 9343D20AD6A3E; Mon, 28 Oct 2019 10:12:29 +0100 (CET)
+Date:   Mon, 28 Oct 2019 10:12:29 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        mingo@redhat.com, acme@kernel.org, ast@fb.com,
+        alexander.shishkin@linux.intel.com, namhyung@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH bpf-next 1/5] perf/core: Add PERF_FORMAT_LOST read_format
+Message-ID: <20191028091229.GJ4131@hirez.programming.kicks-ass.net>
+References: <20190917133056.5545-1-dxu@dxuuu.xyz>
+ <20190917133056.5545-2-dxu@dxuuu.xyz>
+ <20190924083342.GA21640@krava>
 MIME-Version: 1.0
-X-MC-Unique: AlWYJCF9O2KxattjMoorgA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190924083342.GA21640@krava>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
+On Tue, Sep 24, 2019 at 10:33:42AM +0200, Jiri Olsa wrote:
+> On Tue, Sep 17, 2019 at 06:30:52AM -0700, Daniel Xu wrote:
+> 
+> SNIP
+> 
+> > +	PERF_FORMAT_MAX = 1U << 5,		/* non-ABI */
+> >  };
+> >  
+> >  #define PERF_ATTR_SIZE_VER0	64	/* sizeof first published struct */
+> > diff --git a/kernel/events/core.c b/kernel/events/core.c
+> > index 0463c1151bae..ee08d3ed6299 100644
+> > --- a/kernel/events/core.c
+> > +++ b/kernel/events/core.c
+> > @@ -1715,6 +1715,9 @@ static void __perf_event_read_size(struct perf_event *event, int nr_siblings)
+> >  	if (event->attr.read_format & PERF_FORMAT_ID)
+> >  		entry += sizeof(u64);
+> >  
+> > +	if (event->attr.read_format & PERF_FORMAT_LOST)
+> > +		entry += sizeof(u64);
+> > +
+> >  	if (event->attr.read_format & PERF_FORMAT_GROUP) {
+> >  		nr += nr_siblings;
+> >  		size += sizeof(u64);
+> > @@ -4734,6 +4737,24 @@ u64 perf_event_read_value(struct perf_event *event, u64 *enabled, u64 *running)
+> >  }
+> >  EXPORT_SYMBOL_GPL(perf_event_read_value);
+> >  
+> > +static struct pmu perf_kprobe;
+> > +static u64 perf_event_lost(struct perf_event *event)
+> > +{
+> > +	struct ring_buffer *rb;
+> > +	u64 lost = 0;
+> > +
+> > +	rcu_read_lock();
+> > +	rb = rcu_dereference(event->rb);
+> > +	if (likely(!!rb))
+> > +		lost += local_read(&rb->lost);
+> > +	rcu_read_unlock();
+> > +
+> > +	if (event->attr.type == perf_kprobe.type)
+> > +		lost += perf_kprobe_missed(event);
+> 
+> not sure what was the peterz's suggestion, but here you are mixing
+> ring buffer's lost count with kprobes missed count, seems wrong
 
-> On 10/27/19 9:21 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Rather, what we should be doing is exposing the functionality through
->> helpers so XDP can hook into the data structures already present in the
->> kernel and make decisions based on what is contained there. We already
->> have that for routing; L2 bridging, and some kind of connection
->> tracking, are obvious contenders for similar additions.
->
-> The way OVS is coded and expected to flow (ovs_vport_receive ->
-> ovs_dp_process_packet -> ovs_execute_actions -> do_execute_actions) I do
-> not see any way to refactor it to expose a hook to XDP. But, if the use
-> case is not doing anything big with OVS (e.g., just ACLs and forwarding)
-> that is easy to replicate in XDP - but then that means duplicate data
-> and code.
+Jiri is right, this isn't quite what I meant.
 
-Yeah, I didn't mean that part for OVS, that was a general comment for
-reusing kernel functionality.
+The below is what I was thinking of (I also renamed everything to
+missing, to avoid confusion).
 
-> Linux bridge on the other hand seems fairly straightforward to
-> refactor. One helper is needed to convert ingress <port,mac,vlan> to
-> an L2 device (and needs to consider stacked devices) and then a second
-> one to access the fdb for that device.
+But now that I wrote it, I'm a little scared of what I had to do for
+__perf_sw_event(). Let me ponder that a little bit more.
 
-Why not just a single lookup like what you did for routing? Not too
-familiar with the routing code...
+---
+ include/linux/perf_event.h      |  1 +
+ include/linux/trace_events.h    |  1 +
+ include/uapi/linux/perf_event.h |  5 ++++-
+ kernel/events/core.c            | 42 +++++++++++++++++++++++++++++++++--------
+ kernel/trace/trace_event_perf.c |  4 +++-
+ kernel/trace/trace_kprobe.c     |  8 ++++++++
+ 6 files changed, 51 insertions(+), 10 deletions(-)
 
-> Either way, bypassing the bridge has mixed results: latency improves
-> but throughput takes a hit (no GRO).
-
-Well, for some traffic mixes XDP should be able to keep up without GRO.
-And longer term, we probably want to support GRO with XDP anyway
-(I believe Jesper has plans for supporting bigger XDP frames)...
-
--Toke
-
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index a9ef8be8c83a..ec6c867203c3 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -625,6 +625,7 @@ struct perf_event {
+ 	unsigned int			attach_state;
+ 	local64_t			count;
+ 	atomic64_t			child_count;
++	local64_t			missed;
+ 
+ 	/*
+ 	 * These are the total time in nanoseconds that the event
+diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+index a379255c14a9..18d315a0f0f9 100644
+--- a/include/linux/trace_events.h
++++ b/include/linux/trace_events.h
+@@ -603,6 +603,7 @@ extern int bpf_get_kprobe_info(const struct perf_event *event,
+ 			       u32 *fd_type, const char **symbol,
+ 			       u64 *probe_offset, u64 *probe_addr,
+ 			       bool perf_type_tracepoint);
++extern u64 perf_kprobe_missed(const struct perf_event *event);
+ #endif
+ #ifdef CONFIG_UPROBE_EVENTS
+ extern int  perf_uprobe_init(struct perf_event *event,
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index bb7b271397a6..2dd3c3f21087 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -273,6 +273,7 @@ enum {
+  *	  { u64		time_enabled; } && PERF_FORMAT_TOTAL_TIME_ENABLED
+  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
+  *	  { u64		id;           } && PERF_FORMAT_ID
++ *	  { u64		missed;       } && PERF_FORMAT_MISSED
+  *	} && !PERF_FORMAT_GROUP
+  *
+  *	{ u64		nr;
+@@ -280,6 +281,7 @@ enum {
+  *	  { u64		time_running; } && PERF_FORMAT_TOTAL_TIME_RUNNING
+  *	  { u64		value;
+  *	    { u64	id;           } && PERF_FORMAT_ID
++ *	    { u64	missed;       } && PERF_FORMAT_MISSED
+  *	  }		cntr[nr];
+  *	} && PERF_FORMAT_GROUP
+  * };
+@@ -289,8 +291,9 @@ enum perf_event_read_format {
+ 	PERF_FORMAT_TOTAL_TIME_RUNNING		= 1U << 1,
+ 	PERF_FORMAT_ID				= 1U << 2,
+ 	PERF_FORMAT_GROUP			= 1U << 3,
++	PERF_FORMAT_MISSED			= 1U << 4,
+ 
+-	PERF_FORMAT_MAX = 1U << 4,		/* non-ABI */
++	PERF_FORMAT_MAX = 1U << 5,		/* non-ABI */
+ };
+ 
+ #define PERF_ATTR_SIZE_VER0	64	/* sizeof first published struct */
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index d8b9034857d7..7e72f919d2e7 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -1817,6 +1817,9 @@ static void __perf_event_read_size(struct perf_event *event, int nr_siblings)
+ 	if (event->attr.read_format & PERF_FORMAT_ID)
+ 		entry += sizeof(u64);
+ 
++	if (event->attr.read_format & PERF_FORMAT_MISSED)
++		entry += sizeof(u64);
++
+ 	if (event->attr.read_format & PERF_FORMAT_GROUP) {
+ 		nr += nr_siblings;
+ 		size += sizeof(u64);
+@@ -4994,6 +4997,15 @@ u64 perf_event_read_value(struct perf_event *event, u64 *enabled, u64 *running)
+ }
+ EXPORT_SYMBOL_GPL(perf_event_read_value);
+ 
++static struct pmu perf_kprobe;
++static u64 perf_event_missed(struct perf_event *event)
++{
++	if (event->attr.type == perf_kprobe.type)
++		return perf_kprobe_missed(event);
++
++	return local64_read(&event->missed);
++}
++
+ static int __perf_read_group_add(struct perf_event *leader,
+ 					u64 read_format, u64 *values)
+ {
+@@ -5030,11 +5042,15 @@ static int __perf_read_group_add(struct perf_event *leader,
+ 	values[n++] += perf_event_count(leader);
+ 	if (read_format & PERF_FORMAT_ID)
+ 		values[n++] = primary_event_id(leader);
++	if (read_format & PERF_FORMAT_MISSED)
++		values[n++] = perf_event_missed(leader);
+ 
+ 	for_each_sibling_event(sub, leader) {
+ 		values[n++] += perf_event_count(sub);
+ 		if (read_format & PERF_FORMAT_ID)
+ 			values[n++] = primary_event_id(sub);
++		if (read_format & PERF_FORMAT_MISSED)
++			values[n++] = perf_event_missed(sub);
+ 	}
+ 
+ 	raw_spin_unlock_irqrestore(&ctx->lock, flags);
+@@ -5091,7 +5107,7 @@ static int perf_read_one(struct perf_event *event,
+ 				 u64 read_format, char __user *buf)
+ {
+ 	u64 enabled, running;
+-	u64 values[4];
++	u64 values[5];
+ 	int n = 0;
+ 
+ 	values[n++] = __perf_event_read_value(event, &enabled, &running);
+@@ -5101,6 +5117,8 @@ static int perf_read_one(struct perf_event *event,
+ 		values[n++] = running;
+ 	if (read_format & PERF_FORMAT_ID)
+ 		values[n++] = primary_event_id(event);
++	if (read_format & PERF_FORMAT_MISSED)
++		values[n++] = perf_event_lost(event);
+ 
+ 	if (copy_to_user(buf, values, n * sizeof(u64)))
+ 		return -EFAULT;
+@@ -6427,7 +6445,7 @@ static void perf_output_read_one(struct perf_output_handle *handle,
+ 				 u64 enabled, u64 running)
+ {
+ 	u64 read_format = event->attr.read_format;
+-	u64 values[4];
++	u64 values[5];
+ 	int n = 0;
+ 
+ 	values[n++] = perf_event_count(event);
+@@ -6441,6 +6459,8 @@ static void perf_output_read_one(struct perf_output_handle *handle,
+ 	}
+ 	if (read_format & PERF_FORMAT_ID)
+ 		values[n++] = primary_event_id(event);
++	if (read_format & PERF_FORMAT_MISSED)
++		values[n++] = perf_event_lost(event);
+ 
+ 	__output_copy(handle, values, n * sizeof(u64));
+ }
+@@ -6451,7 +6471,7 @@ static void perf_output_read_group(struct perf_output_handle *handle,
+ {
+ 	struct perf_event *leader = event->group_leader, *sub;
+ 	u64 read_format = event->attr.read_format;
+-	u64 values[5];
++	u64 values[6];
+ 	int n = 0;
+ 
+ 	values[n++] = 1 + leader->nr_siblings;
+@@ -6469,6 +6489,8 @@ static void perf_output_read_group(struct perf_output_handle *handle,
+ 	values[n++] = perf_event_count(leader);
+ 	if (read_format & PERF_FORMAT_ID)
+ 		values[n++] = primary_event_id(leader);
++	if (read_format & PERF_FORMAT_MISSED)
++		values[n++] = perf_event_lost(leader);
+ 
+ 	__output_copy(handle, values, n * sizeof(u64));
+ 
+@@ -6482,6 +6504,8 @@ static void perf_output_read_group(struct perf_output_handle *handle,
+ 		values[n++] = perf_event_count(sub);
+ 		if (read_format & PERF_FORMAT_ID)
+ 			values[n++] = primary_event_id(sub);
++		if (read_format & PERF_FORMAT_MISSED)
++			values[n++] = perf_event_lost(sub);
+ 
+ 		__output_copy(handle, values, n * sizeof(u64));
+ 	}
+@@ -8500,7 +8524,6 @@ static int perf_exclude_event(struct perf_event *event,
+ static int perf_swevent_match(struct perf_event *event,
+ 				enum perf_type_id type,
+ 				u32 event_id,
+-				struct perf_sample_data *data,
+ 				struct pt_regs *regs)
+ {
+ 	if (event->attr.type != type)
+@@ -8579,8 +8602,12 @@ static void do_perf_sw_event(enum perf_type_id type, u32 event_id,
+ 		goto end;
+ 
+ 	hlist_for_each_entry_rcu(event, head, hlist_entry) {
+-		if (perf_swevent_match(event, type, event_id, data, regs))
+-			perf_swevent_event(event, nr, data, regs);
++		if (perf_swevent_match(event, type, event_id, regs)) {
++			if (nr == ~0ULL)
++				local64_inc(&event->missed);
++			else
++				perf_swevent_event(event, nr, data, regs);
++		}
+ 	}
+ end:
+ 	rcu_read_unlock();
+@@ -8621,12 +8648,11 @@ void __perf_sw_event(u32 event_id, u64 nr, struct pt_regs *regs, u64 addr)
+ 	preempt_disable_notrace();
+ 	rctx = perf_swevent_get_recursion_context();
+ 	if (unlikely(rctx < 0))
+-		goto fail;
++		nr = ~0ULL;
+ 
+ 	___perf_sw_event(event_id, nr, regs, addr);
+ 
+ 	perf_swevent_put_recursion_context(rctx);
+-fail:
+ 	preempt_enable_notrace();
+ }
+ 
+diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
+index 0917fee6ee7c..73a0de204d7a 100644
+--- a/kernel/trace/trace_event_perf.c
++++ b/kernel/trace/trace_event_perf.c
+@@ -458,8 +458,10 @@ perf_ftrace_function_call(unsigned long ip, unsigned long parent_ip,
+ 	perf_fetch_caller_regs(&regs);
+ 
+ 	entry = perf_trace_buf_alloc(ENTRY_SIZE, NULL, &rctx);
+-	if (!entry)
++	if (!entry) {
++		local64_inc(&event->missed);
+ 		return;
++	}
+ 
+ 	entry->ip = ip;
+ 	entry->parent_ip = parent_ip;
+diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
+index 66e0a8ff1c01..5e1889c161e3 100644
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -233,6 +233,14 @@ bool trace_kprobe_error_injectable(struct trace_event_call *call)
+ 	       false;
+ }
+ 
++u64 perf_kprobe_missed(const struct perf_event *event)
++{
++	struct trace_event_call *call = event->tp_event;
++	struct trace_kprobe *tk = (struct trace_kprobe *)call->data;
++
++	return tk->rp.kp.nmissed;
++}
++
+ static int register_kprobe_event(struct trace_kprobe *tk);
+ static int unregister_kprobe_event(struct trace_kprobe *tk);
+ 
