@@ -2,104 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4073FE78EE
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 20:08:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2912E7909
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 20:13:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729511AbfJ1TH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 15:07:59 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34806 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727664AbfJ1TH7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 15:07:59 -0400
-Received: by mail-pf1-f195.google.com with SMTP id b128so7548000pfa.1;
-        Mon, 28 Oct 2019 12:07:57 -0700 (PDT)
+        id S1729915AbfJ1TNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 15:13:09 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37202 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729730AbfJ1TNJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 15:13:09 -0400
+Received: by mail-pg1-f193.google.com with SMTP id p1so7551767pgi.4;
+        Mon, 28 Oct 2019 12:13:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sWlJ7B/9Vfh+xQYxGKKS4F2uqwdNOzC/mhNw49wSeZA=;
-        b=LwNpyX6nS4G0f1n0NT4S7E9jMRR5sxZSi4tQK7RiCEM6QViBr/3E1kMT8EvIZToFhi
-         pCs7hC6+iY/di/OgWaKjzx9dzouoR4CBxuU/flV9T9MU1imhuV5WnYwy9Xa2jpOD6XkX
-         dlXKdK8kaUCmJ3W1fh3YT7rlUYNNn93++wdfKjq0j5zYDkvAntHEwXnnx9wYUfZ5bM1d
-         iwqT/KlUDSrEL8lMDdoL8GIFVLFbGaqSIAVm2aq9nrdi92MGy5szfUfdZWwSue5wD+4p
-         A7fBIEXM/2l9NrE+KWREnuy/ZkrDJRPehURLsYx1+eUa4khlj11R9LGMG21QwjVjZtQp
-         thyA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=CgcQlM5VLCXCNyfNxz6Q2XQFojiEUKbWR1CtYMYCie4=;
+        b=lyIFkDoJnC8Z2LPIiCcX8Bm2LQhPW6iHZwPkIMIw2QreWTRQEJl6ElcuwvsbfIt2Pl
+         Z7f0YvEoJRXe/VPB8s6EQqeBGIWdGfkld2NHRHJ35uk/F8OaAAW47Ps/Av5eazEjD+An
+         6PH96HiDTsF0HlU5rF8xcDcHbdTpTFB+3m65AL5Lh5RAd0K8QevBCFdbqIQnXT9WgPw0
+         x7LJmC1ypRWJME7QYAb2+PaasAqEki0J9ymj50ePWkgzRlNg7YLE3e0lH8BJUCXYXWTI
+         Lqt5JC/Jj0sSrPSIpG3Di+2FMNRyiBj+G8i9TTQfQUIZwfm0sNgkULJKQD7+8Pq8Yzew
+         mmmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sWlJ7B/9Vfh+xQYxGKKS4F2uqwdNOzC/mhNw49wSeZA=;
-        b=YOdD5f6MCCFfzgJYhXGxWg/y0CicUnhL4SE/XRzcVCsv3tI0GhFHYtjLYXx3ynPXne
-         ftvfmZ0pHRLyZtc/cimsHNAlpppONmj/viJSQ9WjnfEWGwd5f/rLYhVYku/wMGk2ToIS
-         X2rojV6kf91u1bwW+7O0cZQPuPhuRkvWWNTXAWhr6S5p3rhcazLJP7tihhK9SIPWkZAG
-         CQuFdICAxwC/Vamhqj5nUBKeZyZaPOWlll7mhZp3GyzR6Zxl+MMkfUanApwftVtceGZ/
-         F55Zjw5OK/wGdOsnZo5eDpdGWb1yZaKW8xjOCTpDakPCGXTKZZ8pTH7Z12acUajnFnbl
-         qHvw==
-X-Gm-Message-State: APjAAAVjWDQ97Elm0UpZFq6JUBF+cC3ridLLSk02kdG6U/G9V8xLqh9n
-        HZ7k0VR2gYszNzfCOWfI5LA=
-X-Google-Smtp-Source: APXvYqx4MSKJ70mZgf/paKh3ZbYyC5V9YY0iuNKWHOA2FjWmakMhBkoQmVsAYoWoq2/qrArg8RugxQ==
-X-Received: by 2002:a63:a5b:: with SMTP id z27mr19262444pgk.416.1572289677196;
-        Mon, 28 Oct 2019 12:07:57 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:284:8202:10b0:9e2:b1b6:1e7e:b71e])
-        by smtp.googlemail.com with ESMTPSA id x190sm12799777pfc.89.2019.10.28.12.07.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 28 Oct 2019 12:07:56 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>,
-        Stanislav Fomichev <sdf@fomichev.me>
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
- <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
- <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com>
- <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
- <87h840oese.fsf@toke.dk>
- <5db128153c75_549d2affde7825b85e@john-XPS-13-9370.notmuch>
- <87sgniladm.fsf@toke.dk> <a7f3d86b-c83c-7b0d-c426-684b8dfe4344@gmail.com>
- <87zhhmrz7w.fsf@toke.dk> <47f1a7e2-0d3a-e324-20c5-ba3aed216ddf@gmail.com>
- <87o8y1s1vn.fsf@toke.dk> <20191028110828.512eb99c@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8b23e06d-f3b3-65b3-2aa6-363812e71817@gmail.com>
-Date:   Mon, 28 Oct 2019 13:07:54 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=CgcQlM5VLCXCNyfNxz6Q2XQFojiEUKbWR1CtYMYCie4=;
+        b=K4dcN5L2JNv56MJaf5LiJ1UpPWSaJfaRDqu2dWfFbS5rYpbETTcWe1liljRMLmN5rd
+         sbin8nifwfz3HTCMS98xUXjH52tFq5OahkxmHD6uVgL+2Kade7h9jD/ECA3Kkn2dW4Aq
+         a+CZMQpTDJ+25MtMRanLEHbYespLSYGD0BUAOAlVL6xt69aze4olg9gQfSZxYWiJJra7
+         DHyL5jiE1dTuowad6tVUNpaRnwSDz9iXbqfRsSGZLq0HTaJ1wYs2JuPaCCDM/17sPsS7
+         ex++kOVSTTMZFPmvOcV2mCrcLHFXUskSDSQEhnl1fshLChkhYPfTwb4Ja7FafAKl1mRz
+         nQbA==
+X-Gm-Message-State: APjAAAXKayhVH25DmLRMwPA5RnTCsKIyKG0BQRPTNMlpPlM87Wrd1YdS
+        x1orb3c6tSvsC+MEYPJ66Pk=
+X-Google-Smtp-Source: APXvYqzgrcUnqmrda+MVYp4HuNS7YIINeAgPJFZJDnRCLKbsdypzwML326SsLcgem4CrN/TaVHcT+g==
+X-Received: by 2002:a17:90a:749:: with SMTP id s9mr1032746pje.135.1572289988287;
+        Mon, 28 Oct 2019 12:13:08 -0700 (PDT)
+Received: from saurav ([27.62.167.137])
+        by smtp.gmail.com with ESMTPSA id t9sm275740pjq.21.2019.10.28.12.13.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 12:13:07 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 00:42:59 +0530
+From:   Saurav Girepunje <saurav.girepunje@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net, tglx@linutronix.de,
+        saurav.girepunje@gmail.com, allison@lohutok.net,
+        swinslow@gmail.com, mcgrof@kernel.org,
+        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     saurav.girepunje@hotmail.com
+Subject: [PATCH] b43: Fix use true/false for bool type variable.
+Message-ID: <20191028191259.GA27369@saurav>
 MIME-Version: 1.0
-In-Reply-To: <20191028110828.512eb99c@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/28/19 4:08 AM, Jesper Dangaard Brouer wrote:
->>> Either way, bypassing the bridge has mixed results: latency improves
->>> but throughput takes a hit (no GRO).  
->>
->> Well, for some traffic mixes XDP should be able to keep up without GRO.
->> And longer term, we probably want to support GRO with XDP anyway
-> 
-> Do you have any numbers to back up your expected throughput decrease,
-> due to lack of GRO?  Or is it a theory?
-> 
+use true/false for bool type variables assignment.
 
-of course. I'll start a new thread about this rather than go too far
-down this tangent relative to the current patches.
+Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+---
+ drivers/net/wireless/broadcom/b43/dma.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/b43/dma.c b/drivers/net/wireless/broadcom/b43/dma.c
+index 31bf71a80c26..9733c64bf978 100644
+--- a/drivers/net/wireless/broadcom/b43/dma.c
++++ b/drivers/net/wireless/broadcom/b43/dma.c
+@@ -1400,7 +1400,7 @@ int b43_dma_tx(struct b43_wldev *dev, struct sk_buff *skb)
+ 		/* This TX ring is full. */
+ 		unsigned int skb_mapping = skb_get_queue_mapping(skb);
+ 		ieee80211_stop_queue(dev->wl->hw, skb_mapping);
+-		dev->wl->tx_queue_stopped[skb_mapping] = 1;
++		dev->wl->tx_queue_stopped[skb_mapping] = true;
+ 		ring->stopped = true;
+ 		if (b43_debug(dev, B43_DBG_DMAVERBOSE)) {
+ 			b43dbg(dev->wl, "Stopped TX ring %d\n", ring->index);
+@@ -1566,7 +1566,7 @@ void b43_dma_handle_txstatus(struct b43_wldev *dev,
+ 	}
+ 
+ 	if (dev->wl->tx_queue_stopped[ring->queue_prio]) {
+-		dev->wl->tx_queue_stopped[ring->queue_prio] = 0;
++		dev->wl->tx_queue_stopped[ring->queue_prio] = false;
+ 	} else {
+ 		/* If the driver queue is running wake the corresponding
+ 		 * mac80211 queue. */
+-- 
+2.20.1
+
