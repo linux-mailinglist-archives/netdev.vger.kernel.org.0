@@ -2,81 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 568E0E77FE
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:01:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84713E780E
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 19:04:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404249AbfJ1SBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 14:01:01 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33436 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729738AbfJ1SBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:01:00 -0400
-Received: by mail-pf1-f194.google.com with SMTP id c184so7419263pfb.0
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 11:01:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=mFR9DJBz4aaSJA6Lp+Gxf14PeSYZwISp0W0+RRJlLaY=;
-        b=TxZ1dYYP5sCvuc/G/vsVQZeFEQV6aPYwbiShE+J0+/hTuDkChBkPUWKH31XeHoyFWP
-         mp469jb3ziur13QTCBOSpZypO5WPKrylEZfGFg9Hn16P4v8b8UvpGAQUc91pN2g98Lrj
-         vf4JYpxfR2GSy6o83cK2SCNr1rz2EslYifVV5pINWltfakM+8HrZReuL2N+RtebqO860
-         oz7CQuGhAXI9o28TJ3u273/VuogvrvQ75DLMVjsppvgzU1PS48PrqX9FPQCiN8A2LXKR
-         OuOvW+k1sIcQb63WjURoniXxXjf9YlAyBrNIV7S3Mq6w/1n9UzUxdkIK9wWjEFFlckXg
-         G+Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=mFR9DJBz4aaSJA6Lp+Gxf14PeSYZwISp0W0+RRJlLaY=;
-        b=lL4yEwGIaggj9RKkzPwGOg5vtKfseUtGzH64UKf7S+vOin5wsgj5H82ZUjnBSgEOK9
-         cP0tPO0vlXTTou6ijhAcDs7piiou7TaQiDu3jWU/0smnsggax+wLVMznyvkLH9oIDUgd
-         YbCS3aMRPKCZzFpkVpes78h/pZLZlC3ixoS9k3KUpb/NTa+ugp5gbG4pRUS2ZRhcltfE
-         JUuEXJ27k53QK9X2e4OEZEOA2vWEuGLy7IfHiYe562YmyyiWql6w8I9RwI7xNyjc65pz
-         it3RQRipyx0btoPmFU7P4mv2pvkeHaenGLzpOzQcUUKNKVMUeV8rXUB2LjkvA5m7NZlL
-         qHqw==
-X-Gm-Message-State: APjAAAVfZOeYNQkDBb55iLB6D97WXHLz7KJFHOmW8zu6aqWZ9XPiQ86L
-        Xa8m6aSoKFNmGthr1zDck6SMHw==
-X-Google-Smtp-Source: APXvYqzPxwLVdq14TKHElmnIG+DCNhkQfxGivfW43j+TLX4y79TdDmbfnHUQXDTexo9uvgwpyylFvg==
-X-Received: by 2002:a17:90a:741:: with SMTP id s1mr639682pje.113.1572285660180;
-        Mon, 28 Oct 2019 11:01:00 -0700 (PDT)
-Received: from cakuba.hsd1.ca.comcast.net ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id r19sm11312566pgj.43.2019.10.28.11.00.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 11:01:00 -0700 (PDT)
-Date:   Mon, 28 Oct 2019 11:00:56 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        jonathan.lemon@gmail.com, toke@redhat.com
-Subject: Re: [PATCH bpf-next v3 1/2] xsk: store struct xdp_sock as a
- flexible array member of the XSKMAP
-Message-ID: <20191028110056.17eea9fb@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20191025093219.10290-2-bjorn.topel@gmail.com>
-References: <20191025093219.10290-1-bjorn.topel@gmail.com>
-        <20191025093219.10290-2-bjorn.topel@gmail.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1732178AbfJ1SEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 14:04:52 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:42810 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730690AbfJ1SEw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 14:04:52 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E43FF1481AD0D;
+        Mon, 28 Oct 2019 11:04:51 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 11:04:47 -0700 (PDT)
+Message-Id: <20191028.110447.585551933821344446.davem@davemloft.net>
+To:     jakub.kicinski@netronome.com
+Cc:     arkadiusz.grubba@intel.com, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com, andrewx.bowers@intel.com,
+        jeffrey.t.kirsher@intel.com, alice.michael@intel.com
+Subject: Re: [net-next 02/11] i40e: Add ability to display VF stats along
+ with PF core stats
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191028103047.6d868753@cakuba.hsd1.ca.comcast.net>
+References: <20191023204149.4ae25f90@cakuba.hsd1.ca.comcast.net>
+        <35C27A066ED4844F952811E08E4D95090D398A32@IRSMSX103.ger.corp.intel.com>
+        <20191028103047.6d868753@cakuba.hsd1.ca.comcast.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 28 Oct 2019 11:04:52 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 25 Oct 2019 11:32:18 +0200, Bj=C3=B6rn T=C3=B6pel wrote:
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->=20
-> Prior this commit, the array storing XDP socket instances were stored
-> in a separate allocated array of the XSKMAP. Now, we store the sockets
-> as a flexible array member in a similar fashion as the arraymap. Doing
-> so, we do less pointer chasing in the lookup.
->=20
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+From: Jakub Kicinski <jakub.kicinski@netronome.com>
+Date: Mon, 28 Oct 2019 10:30:47 -0700
 
-Damn, looks like I managed to reply to v2.=20
+> It's not a matter of preference. I object to abuse of free-form APIs
+> for things which have proper, modern interfaces.
 
-I think the size maths may overflow on 32bit machines on the addition.
++1
