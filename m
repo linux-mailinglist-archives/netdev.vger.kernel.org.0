@@ -2,63 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84F31E7020
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 12:08:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09928E708B
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 12:38:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbfJ1LI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 07:08:29 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:39680 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726124AbfJ1LI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 07:08:28 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iP2si-0001fM-5v; Mon, 28 Oct 2019 12:08:16 +0100
-Message-ID: <c062695f8d05a4c36a6d69f421b05208ac51fd2c.camel@sipsolutions.net>
-Subject: Re: pull-request: mac80211-next 2019-07-31
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        John Crispin <john@phrozen.org>
-Date:   Mon, 28 Oct 2019 12:08:15 +0100
-In-Reply-To: <CAK8P3a2BiDYXR-x_RyAOLZL_dL6m49JMy13U5VQ_gp9MbLfGGA@mail.gmail.com>
-References: <20190731155057.23035-1-johannes@sipsolutions.net>
-         <CAK8P3a10Gz_aDaOKBDtoPyaUc-OuCmn2buY4+GHHdWERnU+jrg@mail.gmail.com>
-         <2f64367daad256b1f1999797786763fa8091faa1.camel@sipsolutions.net>
-         <CAK8P3a2BiDYXR-x_RyAOLZL_dL6m49JMy13U5VQ_gp9MbLfGGA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S2388514AbfJ1LiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 07:38:19 -0400
+Received: from verein.lst.de ([213.95.11.211]:34037 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726463AbfJ1LiS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Oct 2019 07:38:18 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id C917068BE1; Mon, 28 Oct 2019 12:38:16 +0100 (CET)
+Date:   Mon, 28 Oct 2019 12:38:16 +0100
+From:   "hch@lst.de" <hch@lst.de>
+To:     Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Cc:     Jonathan Lemon <jlemon@flugsvamp.com>, "hch@lst.de" <hch@lst.de>,
+        "joro@8bytes.org" <joro@8bytes.org>,
+        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>
+Subject: Re: [PATCH v2 3/3] dpaa2_eth: use new unmap and sync dma api
+ variants
+Message-ID: <20191028113816.GB24055@lst.de>
+References: <20191024124130.16871-1-laurentiu.tudor@nxp.com> <20191024124130.16871-4-laurentiu.tudor@nxp.com> <BC2F1623-D8A5-4A6E-BAF4-5C551637E472@flugsvamp.com> <00a138f0-3651-5441-7241-5f02956b6c2c@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <00a138f0-3651-5441-7241-5f02956b6c2c@nxp.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-10-28 at 11:53 +0100, Arnd Bergmann wrote:
+On Mon, Oct 28, 2019 at 10:55:05AM +0000, Laurentiu Tudor wrote:
+> >> @@ -85,9 +75,10 @@ static void free_rx_fd(struct dpaa2_eth_priv *priv,
+> >>      sgt = vaddr + dpaa2_fd_get_offset(fd);
+> >>      for (i = 1; i < DPAA2_ETH_MAX_SG_ENTRIES; i++) {
+> >>          addr = dpaa2_sg_get_addr(&sgt[i]);
+> >> -        sg_vaddr = dpaa2_iova_to_virt(priv->iommu_domain, addr);
+> >> -        dma_unmap_page(dev, addr, DPAA2_ETH_RX_BUF_SIZE,
+> >> -                   DMA_BIDIRECTIONAL);
+> >> +        sg_vaddr = page_to_virt
+> >> +                (dma_unmap_page_desc(dev, addr,
+> >> +                            DPAA2_ETH_RX_BUF_SIZE,
+> >> +                            DMA_BIDIRECTIONAL));
+> > 
+> > This is doing virt -> page -> virt.  Why not just have the new
+> > function return the VA corresponding to the addr, which would
+> > match the other functions?
 > 
-> > Why do you say 32-bit btw, it should be *bigger* on 64-bit, but I didn't
-> > see this ... hmm.
-> 
-> That is correct. For historic reasons, both the total amount of stack space
-> per thread and the warning limit on 64 bit are twice the amount that we
-> have on 32-bit kernels, so even though the problem is more serious on
-> 64-bit architectures, we do not see a warning about it because we remain
-> well under the warning limit.
+> I'd really like that as it would get rid of the page_to_virt() calls but 
+> it will break the symmetry with the dma_map_page() API. I'll let the 
+> maintainers decide.
 
-Hmm, but I have:
-
-CONFIG_FRAME_WARN=1024
-
-in my compilation?
-
-Maybe I do in fact have merging of the storage space, and you don't? I
-see another copy of it that shouldn't be merged ("bss_elems"), but ...
-
-Hmm.
-
-johannes
-
+It would be symmetric with dma_map_single, though.  Maybe we need
+both variants?
