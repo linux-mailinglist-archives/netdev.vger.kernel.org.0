@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA499E795F
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 20:51:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43737E7970
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 20:53:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730796AbfJ1Tvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 15:51:41 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:33384 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730286AbfJ1Tvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 15:51:41 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 6so427553wmf.0
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 12:51:39 -0700 (PDT)
+        id S1731436AbfJ1Twa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 15:52:30 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46322 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730286AbfJ1Twa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 15:52:30 -0400
+Received: by mail-qt1-f195.google.com with SMTP id u22so16381535qtq.13;
+        Mon, 28 Oct 2019 12:52:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=MRWApwEiItkRYIG1V0fGz+2p6oujl5iqIGp28bh2XIA=;
-        b=Fy1aWVtB5XbIH/l6/QlOSsW6o54J4Poe9X5m6csnyjMtiG2JIeCNiHwx6Q8uFE0+SA
-         VuoK2utUtB6RJlBYAov2GWtpMaX4thGN7/0a8daGNo3L5zrPpKkMtSvw0S0+ybNX76cc
-         eWo1tFTElxToPa8ax1EymtI3CPOe3AYiIVqN3l6VVn08LkkGQRZoUuOxDMlhl+AB5rte
-         01MAOLnyucXV6kLKA6guObTkkgw0jxGK6LPb+UqZv+HbMGwwnxgm5RJj3666J6Kw9Hy1
-         9gqSjaPLooVMPMVfK8RatTYvgDdSw1l9lm3WRflSmG7edpAKrJ+e5xw7eCdGouSz+j0r
-         2Kmw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gH4y2MFqABtX7zjcmdwe1o93nYkmE33y7ZMgRkG6HKA=;
+        b=UyMY9isgczsRGGj0g1nqEHPUKIFtiw+ehWC7EFwImXQeQBD9BqdyPNl2Wds9pczum2
+         xO9qxFYd8gPGOKZGaz38YVSemepFNwVA7MDvC3bqefM5DreHWQMguKpGzIBu+Mpje1aM
+         BwE0Dm+WQ9/vRyx9hw0slP6z8jlQ2zHOBYJF5EYWeh3bhUJPFqZODjocfr29EjfUlwdW
+         zUzaz515Iq8IORYd+QiBfvmsGT1Fnnq+l+EzqtjEzdl+OQJqeenwMXfPzU5NGUQXMDTI
+         jOmzYFlii/9bc9WVLyV6ahqI1hFNbuSVzgbxhpEPNo0qbXw7HXm0w0C3jgzrDeYi4AAf
+         iSWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=MRWApwEiItkRYIG1V0fGz+2p6oujl5iqIGp28bh2XIA=;
-        b=P6Hc7F1nA12fuEF+kdpQk0a7iMa4BMUfQ8tBpF+QVZ6kHNKyuTUvE7ceyi4Arc0p5K
-         YT4Um/TMNSHzvKo2DeBnRO0voWO/nDwx3tIen9bf8eOxhX7jrGZYjvMJHHD5a5jwTMgx
-         9tC0Uj2caVDrofaQr/vAQpQdWrnagKDcj6uXCCAJrdsLCYIf3CmfG8efgXBronNGLWYc
-         nHvYPIcgHKwownO/LmB4N0GIEiJlO9Yya/Py4tpdRLxkKC2xmS4owndwejeNWv45TmDw
-         MGFH6IYJdSztayIiRx4gqS3WSbxtw/jCzjRzmVmg5DUOoTMvVWYoW51BQsua8wzj+GvQ
-         8fkQ==
-X-Gm-Message-State: APjAAAWT9We+FroiMvKBraa3396GJEIOo+Na7yr53RTOe92CLrTq1edV
-        v19oPENTgwCF5MlLdScEMJI=
-X-Google-Smtp-Source: APXvYqyDrz57YmZ4Nyr+vOvIOEHDFHZb9Yzs63myangjlYPiSuc1vSmDzU8ZKaSqF1AParPBisGXHA==
-X-Received: by 2002:a05:600c:22c4:: with SMTP id 4mr849290wmg.177.1572292298982;
-        Mon, 28 Oct 2019 12:51:38 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f17:6e00:9578:29b8:2cd4:8cd8? (p200300EA8F176E00957829B82CD48CD8.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:9578:29b8:2cd4:8cd8])
-        by smtp.googlemail.com with ESMTPSA id o73sm678642wme.34.2019.10.28.12.51.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 28 Oct 2019 12:51:38 -0700 (PDT)
-To:     Andrew Lunn <andrew@lunn.ch>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gH4y2MFqABtX7zjcmdwe1o93nYkmE33y7ZMgRkG6HKA=;
+        b=mWfQU0N7y2Qj6Ha6bT4rkAZoEOHHJUL/jzrHdCxsVpFtyZ/3YNvV9rG3Oxt8o7R88e
+         Hf3pfzMrGbw3SyXLO/BazJAkIL8YD8JARflZAq6i89Uxvitf/rZUF2rXJePvyTh8quKc
+         JxjmLGlo5ox9I8855F22/8x5RGj2f/7B3es5owg5LRCOV+9w5S9hrSl2rMhJnMjKSkF2
+         zKIrpzICR/xg3eVHP4jywkBHSFlhDYk64ZwA2YJHlFMdSI45HSPMq9cDH4hK9nd/QAWh
+         a5Zp2N1zltGgXi/pu5c0nhYH7KvKtkm1UjSJ79EIGrgCogo6WKS2wkPWF7sn1EHMLBOf
+         VrjQ==
+X-Gm-Message-State: APjAAAWznDYI5wqEU7sfmXj6I5ByVA9RMDEMpZq+K+zezzjnZmcouOeN
+        qgrGHJZ3Kxws7A0LjXz5nqxuY6tH
+X-Google-Smtp-Source: APXvYqz/r5oIKJ4Ebe62mr0bZwyPRcPYHmln5UQpZG2k3xPXZBAp8k74ZHmTkvf8ylemlJXPm+xRLQ==
+X-Received: by 2002:ac8:2fda:: with SMTP id m26mr213925qta.374.1572292348833;
+        Mon, 28 Oct 2019 12:52:28 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id m72sm3115968qke.5.2019.10.28.12.52.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 12:52:27 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chris Healy <Chris.Healy@zii.aero>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/4] net: phy: marvell: fix and extend downshift
- support
-Message-ID: <4ae7d05a-4d1d-024f-ebdf-c92798f1a770@gmail.com>
-Date:   Mon, 28 Oct 2019 20:51:27 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/7] net: dsa: replace routing tables with a list
+Date:   Mon, 28 Oct 2019 15:52:13 -0400
+Message-Id: <20191028195220.2371843-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series includes two fixes and two extensions for downshift support.
+This branch gets rid of the ds->rtable static arrays in favor of
+a single dst->rtable list. This allows us to move away from the
+DSA_MAX_SWITCHES limitation and simplify the switch fabric setup.
 
-Heiner Kallweit (4):
-  net: phy: marvell: fix typo in constant
-    MII_M1011_PHY_SRC_DOWNSHIFT_MASK
-  net: phy: marvell: fix downshift function naming
-  net: phy: marvell: add downshift support for M88E1111
-  net: phy: marvell: add PHY tunable support for more PHY versions
+This branch applies on top of Colin's "net: dsa: fix dereference on
+ds->dev before null check error" commit.
 
- drivers/net/phy/marvell.c | 112 ++++++++++++++++++++++++++++++++------
- 1 file changed, 94 insertions(+), 18 deletions(-)
+Vivien Didelot (7):
+  net: dsa: list DSA links in the fabric
+  net: dsa: remove ds->rtable
+  net: dsa: remove switch routing table setup code
+  net: dsa: remove the dst->ds array
+  net: dsa: remove tree functions related to switches
+  net: dsa: remove limitation of switch index value
+  net: dsa: tag_8021q: clarify index limitation
+
+ drivers/net/dsa/mv88e6xxx/chip.c |   8 +--
+ include/net/dsa.h                |  39 ++++++----
+ net/dsa/dsa2.c                   | 119 +++++++++++++------------------
+ net/dsa/tag_8021q.c              |   5 +-
+ 4 files changed, 83 insertions(+), 88 deletions(-)
 
 -- 
 2.23.0
