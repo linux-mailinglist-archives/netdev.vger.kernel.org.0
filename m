@@ -2,211 +2,388 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA1CEE736F
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 15:11:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EC8DE73E2
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 15:43:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389775AbfJ1OLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 10:11:09 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:33435 "EHLO
+        id S2390268AbfJ1Om7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 10:42:59 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42415 "EHLO
         mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728383AbfJ1OLJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 10:11:09 -0400
-Received: by mail-pl1-f193.google.com with SMTP id y8so5650358plk.0;
-        Mon, 28 Oct 2019 07:11:08 -0700 (PDT)
+        with ESMTP id S1727982AbfJ1Om6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 10:42:58 -0400
+Received: by mail-pl1-f193.google.com with SMTP id c16so5672308plz.9;
+        Mon, 28 Oct 2019 07:42:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=Wr2qSyKGZ5IFDokw96ZYkbcrvyw06+H0FC+Bn5dRPyo=;
-        b=e6slJevoqQo/YVUh8Xnkc+rmtrZ19Jfw4qAIzn3tx/aoR18jKNZ2RWjMZtr6UnBIn4
-         ahqcsijX/DfE4GJ6miHo/D3a+49jUmz6NKP84n7W7X4Ak+s+18Pz5hyngNb3qvSXNsLU
-         5N0svGRhafuwDhPbDBFApjgerE6qkjMXUMxmA+QbGO0goIKG3Rg1TwIMSX8jARhFXTr3
-         JT7O52ag5m1tgkcgudzyyeU48v91jV11m0muPjRmI81XW0D3aV0gNsDKF+E+wFTWBYCC
-         oIYckdKaTahVaiVPvl4LUQTZZpsUrz8F28nQT5qxROw/0Q7uR62SA7VWPoeXeWEq6ZaP
-         9hqg==
+        bh=KXTM9wjTCDEhM+U2wdS5axezLQ6AWvEGDvrrE8C/yZc=;
+        b=cpAkNaGj2hVuLXgZkaRW3QeITKW+CE3nnry7VYPitqbG8l05G3I9nx/KZWDKHK7tKX
+         3JoStWl/sBaEcSn5fXdUQyVAn5yx/hbHWQBKifEiJiEwQlB8vzaqyfBpd10/b1aEDlwV
+         XSGbOBl5v5Rab+6X4nkqLJJCxfSVUb+eMFD/XhNEs7bMr9VdSgU3D6IWLoK9CFfhqi7S
+         5XpqWQ3QfWd0DQNY7d4jruu+QSh1gF+PVmrVQf4f6/RdaqsxyICkgBnKywztLP75W4eQ
+         WgO8U8gs5k/VdeV6tzAEXmp9HFVplCO443b6GQxfI3/GU3T8v3P9lH7O/VmW5u9bmwll
+         IoIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Wr2qSyKGZ5IFDokw96ZYkbcrvyw06+H0FC+Bn5dRPyo=;
-        b=CjhBigvY2rwqs4uIx/o49dF8ldDTxdLzBjKThTUBvXNsty8B2F5knV/AQCzJ7efHEu
-         DG50DD2pMUcsjAbtkv8lZF2mdbxBFgVpumIE0ySUdsj4QD2o8IlNppELg8q+a5Xz5q8Q
-         WqU27taD9Cm6JyDQ3GaHT3csUD43uToTd5LIg/befkqJQkbt6zfky3xf8Q/QGDSwP+9Q
-         RyrwFo/DncTrMoFULRboY36ED8y16TGJQQ5OtVmGD903eyWvY/cDQ4G3MjghqxukBWH7
-         e6LLkfyUFRkeL36+EYJYtkihxJt2uXnpF8qN2ssztyFAPjzauEiIOgnjR5MBPdT0AXD7
-         cO0Q==
-X-Gm-Message-State: APjAAAXztbXOfFMZV8srZfNoo5IqbwUoNClo/K0XpKQPrZMoc5REaDFm
-        asDB39NGMCTVgeM3zOjpGUkUbKeMMXo=
-X-Google-Smtp-Source: APXvYqxBY5ok3G+PuasR6A0BTc8qsqOZ+7HIbeyw3CsDHVDTrB+P06rbxpdYq98lDdiAApXjsBaIsA==
-X-Received: by 2002:a17:902:6a81:: with SMTP id n1mr19182160plk.173.1572271867602;
-        Mon, 28 Oct 2019 07:11:07 -0700 (PDT)
+        bh=KXTM9wjTCDEhM+U2wdS5axezLQ6AWvEGDvrrE8C/yZc=;
+        b=LdgwWamzrj7BZ5Lf6+pfQMvyhiKh+jtWIqpKuu1rbDcAmtd84uoL6YPd3c1IJ4W8I9
+         FdIb1fqQ4OCIJ2MDDzqjMIv+8q/6QxNLsIRHwmmWeZSfR0HODVFNztak+x8R50gwGFFM
+         q3ZP0M+1U+puEOzAJQxmUKtr7G/lsEOn5W0fdB2WHnygLSlncfwcbyM2Lp9k/kE9yK4v
+         UCYyCIpWTIFxuss4vd1cr/oVl6M3bYvqLs8a25CYj3MqD9B7p5gquQLcZS+T1wBY2ZW/
+         zmLpU/Jlu94MTKdFz89o6HOlPitokUasRp70WJ/FF8JgQ6skqMO/8Flvi0b6iwJVQfxi
+         yYyQ==
+X-Gm-Message-State: APjAAAUasLG59os6eRfNIO6KtJavKPWjn1E00eHmwZljHsIWXRBBK7wY
+        ATJNph6a8lHWcyWe26HbC81E37Wm3BA=
+X-Google-Smtp-Source: APXvYqyY74FVbGwmCd3X46ff1RRxYtFUOULDqD6z6ffwBC2lnn3s+D+pbUqjaS8eEXAGis4Uw7ZySQ==
+X-Received: by 2002:a17:902:a610:: with SMTP id u16mr19507837plq.130.1572273776040;
+        Mon, 28 Oct 2019 07:42:56 -0700 (PDT)
 Received: from ubuntu-18.04-x8664 ([128.1.49.85])
-        by smtp.gmail.com with ESMTPSA id a5sm2579125pfk.172.2019.10.28.07.11.05
+        by smtp.gmail.com with ESMTPSA id c128sm11068545pfc.166.2019.10.28.07.42.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 07:11:07 -0700 (PDT)
+        Mon, 28 Oct 2019 07:42:55 -0700 (PDT)
 From:   Wenbo Zhang <ethercflow@gmail.com>
 To:     bpf@vger.kernel.org
 Cc:     yhs@fb.com, daniel@iogearbox.net, netdev@vger.kernel.org,
         Wenbo Zhang <ethercflow@gmail.com>
-Subject: [PATCH bpf-next v4] bpf: add new helper fd2path for mapping a file descriptor to a pathname
-Date:   Mon, 28 Oct 2019 10:10:53 -0400
-Message-Id: <20191028141053.12267-1-ethercflow@gmail.com>
+Subject: [PATCH bpf-next] selftests/bpf: test for bpf_fd2path() from raw tracepoint
+Date:   Mon, 28 Oct 2019 10:42:44 -0400
+Message-Id: <20191028144244.16507-1-ethercflow@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When people want to identify which file system files are being opened,
-read, and written to, they can use this helper with file descriptor as
-input to achieve this goal. Other pseudo filesystems are also supported.
-
-This requirement is mainly discussed here:
-
-  https://github.com/iovisor/bcc/issues/237
-
-v3->v4:
-- fix missing fdput()
-- move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-- move fd2path's test code to another patch
-
-v2->v3:
-- remove unnecessary LOCKDOWN_BPF_READ
-- refactor error handling section for enhanced readability
-- provide a test case in tools/testing/selftests/bpf
-
-v1->v2:
-- fix backward compatibility
-- add this helper description
-- fix signed-off name
+trace fstat events by raw tracepoint sys_enter:newfstat, and handle events
+only produced by fd2path_loadgen, the fd2path_loadgen call fstat on several
+different types of files to test bpf_fd2path's feature.
 
 Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
 ---
- include/uapi/linux/bpf.h       | 14 +++++++++++-
- kernel/trace/bpf_trace.c       | 40 ++++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h | 14 +++++++++++-
- 3 files changed, 66 insertions(+), 2 deletions(-)
+ tools/testing/selftests/bpf/Makefile          |   8 +-
+ tools/testing/selftests/bpf/fd2path_loadgen.c |  75 ++++++++++
+ .../selftests/bpf/prog_tests/fd2path.c        | 130 ++++++++++++++++++
+ .../selftests/bpf/progs/test_fd2path.c        |  58 ++++++++
+ 4 files changed, 269 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/fd2path_loadgen.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/fd2path.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_fd2path.c
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 4af8b0819a32..124632b2a697 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -2775,6 +2775,17 @@ union bpf_attr {
-  * 		restricted to raw_tracepoint bpf programs.
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-+ *
-+ * int bpf_fd2path(char *path, u32 size, int fd)
-+ *	Description
-+ *		Get **file** atrribute from the current task by *fd*, then call
-+ *		**d_path** to get it's absolute path and copy it as string into
-+ *		*path* of *size*. The **path** also support pseudo filesystems
-+ *		(whether or not it can be mounted). The *size* must be strictly
-+ *		positive. On success, the helper makes sure that the *path* is
-+ *		NUL-terminated. On failure, it is filled with zeroes.
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2888,7 +2899,8 @@ union bpf_attr {
- 	FN(sk_storage_delete),		\
- 	FN(send_signal),		\
- 	FN(tcp_gen_syncookie),		\
--	FN(skb_output),
-+	FN(skb_output),			\
-+	FN(fd2path),
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 933f39381039..32883cca7ea7 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -72,7 +72,7 @@ TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
+ 	flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
+ 	test_lirc_mode2_user
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 571c25d60710..dd7b070df3d6 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -683,6 +683,44 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
- 	.arg1_type	= ARG_ANYTHING,
- };
+-TEST_CUSTOM_PROGS = urandom_read
++TEST_CUSTOM_PROGS = urandom_read fd2path_loadgen
  
-+BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
-+{
-+	struct fd f;
-+	char *p;
-+	int ret = -EINVAL;
+ include ../lib.mk
+ 
+@@ -89,6 +89,9 @@ $(notdir $(TEST_GEN_PROGS)						\
+ $(OUTPUT)/urandom_read: urandom_read.c
+ 	$(CC) -o $@ $< -Wl,--build-id
+ 
++$(OUTPUT)/fd2path_loadgen: fd2path_loadgen.c
++	$(CC) -o $@ $< -Wl,--build-id
 +
-+	/* Use fdget_raw instead of fdget to support O_PATH */
-+	f = fdget_raw(fd);
-+	if (!f.file)
-+		goto error;
+ BPFOBJ := $(OUTPUT)/libbpf.a
+ 
+ $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED): $(OUTPUT)/test_stub.o $(BPFOBJ)
+@@ -258,7 +261,8 @@ TRUNNER_TESTS_DIR := prog_tests
+ TRUNNER_BPF_PROGS_DIR := progs
+ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c	\
+ 			 flow_dissector_load.h
+-TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read				\
++TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read 				\
++		       $(OUTPUT)/fd2path_loadgen                        \
+ 		       $(wildcard progs/btf_dump_test_case_*.c)
+ TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+ TRUNNER_BPF_CFLAGS := -I. -I$(OUTPUT) $(BPF_CFLAGS) $(CLANG_CFLAGS)
+diff --git a/tools/testing/selftests/bpf/fd2path_loadgen.c b/tools/testing/selftests/bpf/fd2path_loadgen.c
+new file mode 100644
+index 000000000000..afa9d6b233b2
+--- /dev/null
++++ b/tools/testing/selftests/bpf/fd2path_loadgen.c
+@@ -0,0 +1,75 @@
++// SPDX-License-Identifier: GPL-2.0
++#define _GNU_SOURCE
++#include <stdio.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <sys/socket.h>
++#include <alloca.h>
++#include <sys/stat.h>
 +
-+	p = d_path(&f.file->f_path, dst, size);
-+	if (IS_ERR_OR_NULL(p)) {
-+		ret = PTR_ERR(p);
-+		goto error;
-+	}
-+
-+	ret = strlen(p);
-+	memmove(dst, p, ret);
-+	dst[ret] = '\0';
-+	goto end;
-+
-+error:
-+	memset(dst, '0', size);
-+end:
-+	fdput(f);
-+	return ret;
-+}
-+
-+static const struct bpf_func_proto bpf_fd2path_proto = {
-+	.func       = bpf_fd2path,
-+	.gpl_only   = true,
-+	.ret_type   = RET_INTEGER,
-+	.arg1_type  = ARG_PTR_TO_UNINIT_MEM,
-+	.arg2_type  = ARG_CONST_SIZE,
-+	.arg3_type  = ARG_ANYTHING,
++enum FS_TYPE {
++	PIPE_0,
++	PIPE_1,
++	SOCK,
++	PROC,
++	DEV,
++	LOCAL,
++	INDICATOR,
++	MAX_FDS
 +};
 +
- static const struct bpf_func_proto *
- tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- {
-@@ -735,6 +773,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- #endif
- 	case BPF_FUNC_send_signal:
- 		return &bpf_send_signal_proto;
-+	case BPF_FUNC_fd2path:
-+		return &bpf_fd2path_proto;
- 	default:
- 		return NULL;
- 	}
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4af8b0819a32..124632b2a697 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -2775,6 +2775,17 @@ union bpf_attr {
-  * 		restricted to raw_tracepoint bpf programs.
-  * 	Return
-  * 		0 on success, or a negative error in case of failure.
-+ *
-+ * int bpf_fd2path(char *path, u32 size, int fd)
-+ *	Description
-+ *		Get **file** atrribute from the current task by *fd*, then call
-+ *		**d_path** to get it's absolute path and copy it as string into
-+ *		*path* of *size*. The **path** also support pseudo filesystems
-+ *		(whether or not it can be mounted). The *size* must be strictly
-+ *		positive. On success, the helper makes sure that the *path* is
-+ *		NUL-terminated. On failure, it is filled with zeroes.
-+ *	Return
-+ *		0 on success, or a negative error in case of failure.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -2888,7 +2899,8 @@ union bpf_attr {
- 	FN(sk_storage_delete),		\
- 	FN(send_signal),		\
- 	FN(tcp_gen_syncookie),		\
--	FN(skb_output),
-+	FN(skb_output),			\
-+	FN(fd2path),
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-  * function eBPF program intends to call
++#ifndef MAX_LOOP_TIMES
++#define MAX_LOOP_TIMES		100
++#endif
++
++int main(int argc, char *argv[])
++{
++	int *fds = alloca(sizeof(int) * MAX_FDS);
++	int *pipefd = fds;
++	int *sockfd = fds + SOCK;
++	int *procfd = fds + PROC;
++	int *devfd = fds + DEV;
++	int *localfd = fds + LOCAL;
++	int *indicatorfd = fds + INDICATOR;
++	int times = MAX_LOOP_TIMES;
++
++	/* unmountable pseudo-filesystems */
++	if (pipe(pipefd) < 0)
++		return 1;
++
++	/* unmountable pseudo-filesystems */
++	*sockfd = socket(AF_INET, SOCK_STREAM, 0);
++	if (sockfd < 0)
++		return 1;
++
++	/* mountable pseudo-filesystems */
++	*procfd = open("/proc/self/comm", O_RDONLY);
++	if (procfd < 0)
++		return 1;
++
++	*devfd = open("/dev/urandom", O_RDONLY);
++	if (devfd < 0)
++		return 1;
++
++	*localfd = open("/tmp/fd2path_loadgen.txt", O_CREAT|O_RDONLY);
++	if (localfd < 0)
++		return 1;
++
++	*indicatorfd = open("/tmp/", O_PATH);
++
++	while (times--) {
++		struct stat fileStat;
++
++		for (int i = 0; i < MAX_FDS; i++) {
++			fstat(fds[i], &fileStat);
++			usleep(1);
++		}
++	}
++
++	for (int i = 0; i < MAX_FDS; i++)
++		close(fds[i]);
++
++	remove("/tmp/fd2path_loadgen.txt");
++
++	return 0;
++}
+diff --git a/tools/testing/selftests/bpf/prog_tests/fd2path.c b/tools/testing/selftests/bpf/prog_tests/fd2path.c
+new file mode 100644
+index 000000000000..3b7532afceb5
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/fd2path.c
+@@ -0,0 +1,130 @@
++// SPDX-License-Identifier: GPL-2.0
++#define _GNU_SOURCE
++#include <pthread.h>
++#include <test_progs.h>
++
++#ifndef MAX_PATH_LENGTH
++#define MAX_PATH_LENGTH		128
++#endif
++
++#ifndef TASK_COMM_LEN
++#define TASK_COMM_LEN		16
++#endif
++
++#ifndef MAX_STAT_EVENTS
++#define MAX_STAT_EVENTS		64ull
++#endif
++
++struct get_path_trace_t {
++	int pid;
++	unsigned long fd;
++	char comm[TASK_COMM_LEN];
++	char path[MAX_PATH_LENGTH];
++};
++
++static const char *loadgen = "./fd2path_loadgen";
++static int exp_cnt = MAX_STAT_EVENTS;
++
++void *thread_loadgen(void *arg)
++{
++	assert(system(loadgen) == 0);
++	return NULL;
++}
++
++static void get_path_print_output(void *ctx, int cpu, void *data, __u32 size)
++{
++	struct get_path_trace_t *e = data;
++	char pathname[MAX_PATH_LENGTH] = {'0'};
++	char buf[MAX_PATH_LENGTH] = {'0'};
++	int ret, duration = 0;
++
++	if (strncmp(e->comm, &loadgen[2], MAX_PATH_LENGTH))
++		return;
++	snprintf(pathname, MAX_PATH_LENGTH, "/proc/%d/fd/%lu", e->pid, e->fd);
++	readlink(pathname, buf, MAX_PATH_LENGTH);
++	exp_cnt--;
++	ret = strncmp(buf, e->path, MAX_PATH_LENGTH);
++	CHECK(ret != 0, "fd2path", "failed to get path: %lu->%s\n",
++			e->fd, e->path);
++}
++
++void test_fd2path(void)
++{
++	const char *prog_name = "raw_tracepoint/sys_enter:newfstat";
++	const char *file = "./test_fd2path.o";
++	int err, nr_cpus, duration = 0;
++	struct perf_buffer_opts pb_opts = {};
++	struct perf_buffer *pb = NULL;
++	struct bpf_map *perf_buf_map;
++	cpu_set_t cpu_set, cpu_seen;
++	struct bpf_link *link = NULL;
++	struct timespec tv = {0, 10};
++	struct bpf_program *prog;
++	struct bpf_object *obj;
++	pthread_t t = 0;
++
++	obj = bpf_object__open_file(file, NULL);
++	if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
++		return;
++
++	err = bpf_object__load(obj);
++	if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
++		goto out_close;
++
++	prog = bpf_object__find_program_by_title(obj, prog_name);
++	if (CHECK(!prog, "find_prog", "prog '%s' not found\n", prog_name))
++		goto out_close;
++
++	link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
++	if (CHECK(IS_ERR(link), "attach_tp", "err %ld\n", PTR_ERR(link)))
++		goto out_close;
++
++	nr_cpus = libbpf_num_possible_cpus();
++	if (CHECK(nr_cpus < 0, "nr_cpus", "err %d\n", nr_cpus))
++		goto out_close;
++
++	CPU_ZERO(&cpu_seen);
++	for (int i = 0; i < nr_cpus; i++) {
++		CPU_ZERO(&cpu_set);
++		CPU_SET(i, &cpu_set);
++
++		err = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set),
++				&cpu_set);
++		if (err && CHECK(err, "set_affinity", "cpu #%d, err %d\n",
++				i, err))
++			goto out_detach;
++
++		usleep(1);
++	}
++
++	perf_buf_map = bpf_object__find_map_by_name(obj, "perfmap");
++	if (CHECK(!perf_buf_map, "bpf_find_map", "not found\n"))
++		goto out_close;
++
++	pb_opts.sample_cb = get_path_print_output;
++	pb_opts.ctx = &cpu_seen;
++	pb = perf_buffer__new(bpf_map__fd(perf_buf_map), 1, &pb_opts);
++	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
++		goto out_detach;
++
++	pthread_create(&t, NULL, thread_loadgen, NULL);
++
++	/* trigger some fstat syscall action */
++	for (int i = 0; i < MAX_STAT_EVENTS; i++)
++		nanosleep(&tv, NULL);
++
++	while (exp_cnt > 0) {
++		err = perf_buffer__poll(pb, 100);
++		if (err < 0 && CHECK(err < 0, "pb__poll", "err %d\n", err))
++			goto out_free_pb;
++	}
++
++out_free_pb:
++	perf_buffer__free(pb);
++out_detach:
++	bpf_link__destroy(link);
++out_close:
++	bpf_object__close(obj);
++
++	pthread_join(t, NULL);
++}
+diff --git a/tools/testing/selftests/bpf/progs/test_fd2path.c b/tools/testing/selftests/bpf/progs/test_fd2path.c
+new file mode 100644
+index 000000000000..5e29807a8fba
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_fd2path.c
+@@ -0,0 +1,58 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/bpf.h>
++#include <linux/ptrace.h>
++#include <stdbool.h>
++#include <string.h>
++#include "bpf_helpers.h"
++
++#ifndef MAX_PATH_LENGTH
++#define MAX_PATH_LENGTH		128
++#endif
++
++#ifndef TASK_COMM_LEN
++#define TASK_COMM_LEN		16
++#endif
++
++struct path_trace_t {
++	int pid;
++	unsigned long fd;
++	char comm[TASK_COMM_LEN];
++	char path[MAX_PATH_LENGTH];
++};
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
++	__uint(max_entries, 128);
++	__uint(key_size, sizeof(int));
++	__uint(value_size, sizeof(__u32));
++} perfmap SEC(".maps");
++
++struct {
++	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
++	__uint(max_entries, 1);
++	__type(key, __u32);
++	__type(value, struct path_trace_t);
++} pathdata_map SEC(".maps");
++
++SEC("raw_tracepoint/sys_enter:newfstat")
++int bpf_prog(struct bpf_raw_tracepoint_args *ctx)
++{
++	struct path_trace_t *data;
++	struct pt_regs *regs;
++	__u32 key = 0;
++
++	data = bpf_map_lookup_elem(&pathdata_map, &key);
++	if (!data)
++		return 0;
++	data->pid = bpf_get_current_pid_tgid() >> 32;
++	regs = (struct pt_regs *)ctx->args[0];
++	bpf_probe_read(&data->fd, sizeof(data->fd), &regs->rdi);
++	bpf_get_current_comm(&data->comm, TASK_COMM_LEN);
++	if (bpf_fd2path(data->path, MAX_PATH_LENGTH, data->fd) < 0)
++		return 0;
++	bpf_perf_event_output(ctx, &perfmap, BPF_F_CURRENT_CPU,
++			data, sizeof(*data));
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.17.1
 
