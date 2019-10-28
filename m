@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25556E79C2
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:12:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0855E79C3
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 21:13:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728361AbfJ1UMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 16:12:38 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37992 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726483AbfJ1UMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 16:12:38 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 22so252978wms.3
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 13:12:36 -0700 (PDT)
+        id S1731085AbfJ1UNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 16:13:19 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38130 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726483AbfJ1UNS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 16:13:18 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c13so7667461pfp.5
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 13:13:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Jps7p+7emVos88H/xl9wAvfrJF2VcfG9jOAx3iDsxr8=;
-        b=CfI/1k9IvYr/2+4QlDQvaESE+Kkz7qFow6SmpoSAZDqQ6Q6kJB4spAwzK4e+7WKTIF
-         T9pE9MQyHn1byXzhvUb4lCykj13t1SyEzM2KD9P4heBud5EJtxjRya6/mySt9wYwM7eu
-         NdfE7PZ2BMXC/ZWU6GUQhnIc4VBdGSRRVXCGhdOuRvB4uolQCPYr01huCDfYWgGocBsK
-         MtA3RzZtGx+sFYToqAHpwUJNy/xcpXec7ExHo9B8YIpVg9nP/O2kWlTRg1VJAEUAWG8w
-         JMz8RddKQUXL/ISqpYHIGX1sw+vt39bfYbZWqiToro64YjHlYkeMWS87ehpAE77MEI2+
-         ArMA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Pt5I/I5h4Wv/bTOiFA1nQtOPc9xtCs00uVzh+0NgzFo=;
+        b=ORAUPDn0xqRHNPv7q/t/fryPMDka1e4usg7Czof7TITqS0SUWWFnlRS5GhR53lt4Hq
+         OoHEKDl/jAjRpNRPsKhQ2oWH9jJkbt6krVGjMsqvQp/XmLaiqUvFNzJNKjHCNT0/R/Qr
+         4gD3WNhbNKoI0lPnKNlzSGkRCQ8AAH2Neo+om9c0CR8TIz7wStVz9qJBn+jetbr/44qY
+         vyTkXNssseO9+wzI0QrAElgsvSVk8COtVdp9Tl5WFyzDGZndTCnmqG0gBlQzFXxMgnxW
+         0t48nyVXHVTJ683vh7XN210EOakYc8pASG6X+K2teT8YHOQOzf4sXt4X4BWCUDOKaiWF
+         4IDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Jps7p+7emVos88H/xl9wAvfrJF2VcfG9jOAx3iDsxr8=;
-        b=RiN44tmWNQj6E2g0x1JgF/LHgGzU+MIJFoTPn7ebZvygJrCdvH4TAytko3FOyRajrh
-         dhm2+j+CLMiu61b4J+ml2F4xEIdBaKcQ0KDKtn88CkB1XP6eelBK3wh3iCiK//0SnJ3J
-         vtW4EnAnWFbXEpKOVWHt5/MZUSqfC8aE/0QPBVLvjKeT3Sg5eujXR1LVMsEDJuIPXLm0
-         ghrYN1xSFHyMBkZ4rLCQY/yduCTxbz1nL7kpxOA0r9RvZ9GTkdF1J7NaRfAAhl8qfDvA
-         fm16nav733A193Lxg32NEnJyI17Ilfw1JpBaNEdTzVMrZz5eaSrhP+bWgzgBmcYS7FOW
-         aaiA==
-X-Gm-Message-State: APjAAAUvL3llN4T/IpAob9PuMNJzx8yaFlgRE7WyCFNH3FfYvmgoEgtC
-        BUlEQWIzYklRODW5Mqe51PU=
-X-Google-Smtp-Source: APXvYqyaIisgQY39onQa+j/yqCLXowsHRpFmbKJbLSUA6O9VZkmyMGUf59vPuFp6Sh7EeXuaKo+0XQ==
-X-Received: by 2002:a05:600c:1009:: with SMTP id c9mr922284wmc.6.1572293556028;
-        Mon, 28 Oct 2019 13:12:36 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f17:6e00:9578:29b8:2cd4:8cd8? (p200300EA8F176E00957829B82CD48CD8.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:9578:29b8:2cd4:8cd8])
-        by smtp.googlemail.com with ESMTPSA id t4sm564368wmi.39.2019.10.28.13.12.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 28 Oct 2019 13:12:35 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/4] net: phy: marvell: add downshift support for
- M88E1111
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chris Healy <Chris.Healy@zii.aero>
-References: <4ae7d05a-4d1d-024f-ebdf-c92798f1a770@gmail.com>
- <7c5be98d-6b75-68fe-c642-568943c5c4b6@gmail.com>
- <20191028200952.GH17625@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <05887c69-f2e5-b8a0-e8a0-60e1279dcb1b@gmail.com>
-Date:   Mon, 28 Oct 2019 21:12:27 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Pt5I/I5h4Wv/bTOiFA1nQtOPc9xtCs00uVzh+0NgzFo=;
+        b=STeb0UDEgGxK6O8hGPp4QFvrFoswulNQ+1VA+p+5rkHfCVYtobo7oxbzwBYX+3ZjD+
+         24jO+G2NsuJHRZMuEmCe7mGU32KieMGx8mJcC2mQqPKtXqZzgEXBMbdulRo1f9tENxqo
+         EFEdsB43gQVana0iGc5D7wWYv0NDzb4mRs6Dr46Zp95wbPVrDHXjGvO7pw8QJcWdq1gd
+         p0W1zBQovy4OXiz15zeRnZyg4AInJr9zpWVUqvNQohNVHQ3vj92O6sHIr248RcqyCsyy
+         abYpb216RPAq2t1HUV8l1jhGo7heuDVUfv4fEZJfFWgSJbWQBbNhBCXcru97YfgrzAU3
+         sYBQ==
+X-Gm-Message-State: APjAAAXxvtLGkXIDxwpY7LGmtqcYYT1/L8St1nMAkdSfvYeEQZqFo/cK
+        7CYcuPfKACN0fVu+0tFvhri8Xg5UFWcWmssDgRruZxna
+X-Google-Smtp-Source: APXvYqxSH1MGg5UCal6TDerPycgPwUEYqiXvQJY0eoqVWuYoTecCmSdGyUWULIYdvWT66dKFhSfB/nOL9b3neYVUPdA=
+X-Received: by 2002:a17:90a:c48:: with SMTP id u8mr1499261pje.16.1572293598080;
+ Mon, 28 Oct 2019 13:13:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191028200952.GH17625@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191022231051.30770-1-xiyou.wangcong@gmail.com>
+ <20191028.112904.824821320861730754.davem@davemloft.net> <CANn89iKeB9+6xAyjQUZvtX3ioLNs3sBwCDq0QxmYEy5X_nF+LA@mail.gmail.com>
+In-Reply-To: <CANn89iKeB9+6xAyjQUZvtX3ioLNs3sBwCDq0QxmYEy5X_nF+LA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 28 Oct 2019 13:13:06 -0700
+Message-ID: <CAM_iQpU1oG8J9Nf-nZoZDf3wO9c4dHAaa0=HK0X-QMeHMtmrCQ@mail.gmail.com>
+Subject: Re: [Patch net-next 0/3] tcp: decouple TLP timer from RTO timer
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.10.2019 21:09, Andrew Lunn wrote:
-> On Mon, Oct 28, 2019 at 08:53:25PM +0100, Heiner Kallweit wrote:
->> This patch adds downshift support for M88E1111. This PHY version uses
->> another register for downshift configuration, reading downshift status
->> is possible via the same register as for other PHY versions.
-> 
-> Hi Heiner
-> 
-Hi Andrew,
+On Mon, Oct 28, 2019 at 11:34 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Oct 28, 2019 at 11:29 AM David Miller <davem@davemloft.net> wrote:
+> >
+> > From: Cong Wang <xiyou.wangcong@gmail.com>
+> > Date: Tue, 22 Oct 2019 16:10:48 -0700
+> >
+> > > This patchset contains 3 patches: patch 1 is a cleanup,
+> > > patch 2 is a small change preparing for patch 3, patch 3 is the
+> > > one does the actual change. Please find details in each of them.
+> >
+> > Eric, have you had a chance to test this on a system with
+> > suitable CPU arity?
+>
+> Yes, and I confirm I could not repro the issues at all.
+>
+> I got a 100Gbit NIC, trying to increase the pressure a bit, and
+> driving this NIC at line rate was only using 2% of my 96 cpus host,
+> no spinlock contention of any sort.
 
-> I think this method is also valid for the 88E1145.
-> 
-for this one I don't have the datasheet, therefore I didn't
-consider it. Then we can add downshift support for 88E1145
-in a follow-up patch, similar to patch 4.
+Please let me know if there is anything else I can provide to help
+you to make the decision.
 
->   Andrew
-> 
-Heiner
+All I can say so far is this only happens on our hosts with 128
+AMD CPU's. I don't see anything here related to AMD, so I think
+only the number of CPU's (vs. number of TX queues?) matters.
+
+Thanks.
