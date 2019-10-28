@@ -2,177 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB6AEE778A
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:23:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEE7E778E
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 18:24:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404160AbfJ1RXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 13:23:19 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:35762 "EHLO
+        id S1731836AbfJ1RYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 13:24:42 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:45762 "EHLO
         mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404154AbfJ1RXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:23:19 -0400
-Received: by mail-pf1-f193.google.com with SMTP id d13so6274333pfq.2
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 10:23:18 -0700 (PDT)
+        with ESMTP id S1730402AbfJ1RYm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 13:24:42 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c7so6151153pfo.12
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 10:24:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UflXfL3dwhO51RWNtr30ZieO/LUtszv77VC5R3Td5p4=;
-        b=djoanQkiGA3fqiuTCeMp3PS0KDhFi1gk6EjakgwdacK8Hqk8l3UxxOnnkSpDAvM+ZD
-         tljXKBoM/Gl5mK8Ort4gG8L54R4wqn5HKR5qrEPSHNovOdL1GqR6CBgB+WEjAyr1smkG
-         RXSyvwASJ+KQCGxGJmBSvJC4ZdCK0PsvSUOtqtl8COFWH3EG9a15NN1IeB2tqZBWko/0
-         cQ1SPDIoC3nO8FtJaVzKO5dDuENqFfiOk5axnAjDEMM1O6mD1sHR5yxBwMUg1RqPnrZP
-         fvkc7EbqnRJoVLNXND4vGBALh7PmRcbUeD9eQNcbz7HfnHCjag9qCo5s31LIMqZfHIAX
-         CUsA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=zei+itK9l69qPYdDOUyL0hXlzNIrf8Um9vf7savw6V4=;
+        b=t7Y4Vog/pNMataqZxWwJT9FT7uAbIUVK+nAfptFm3IO4rv0ewiwF3fXFx4uQvbYp1M
+         EL/5VT35pPuXh4/9RixFUn4q7+WyzktngKpHejkVXUJHR8nqsusKu1ooekXI+nYoa6kg
+         ocDlBxWaIuB44Ur79ASHY0sgfzCAPBPlrQiI0UJG61wgBojAuv4FtPB4brYHMP6axQXP
+         400c2jmN66USsHCHt6KNXwi7AsQusLULU1noM+4lkRSVFWWUdGtkHdVXURue84T2Ztwv
+         8M3jsBheqoGLhaZoI6ljvA5T1SQ8/ikohLqHlPJ82vHYMyldY/zM+3ExkVHuSVbQz1ei
+         QDoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UflXfL3dwhO51RWNtr30ZieO/LUtszv77VC5R3Td5p4=;
-        b=GWo9MiT1bwwsXWjTmEeKGdHa2c6JfmPp4Mb/syHQZZksZDFOfseE73ZWiQ0BZXufYx
-         3zOxt3gHLT4BVRVIvmkPh3ZbVc1G2oabXL72Rks9OmISuaxdn/hfIdMzhZQ4OAxP7fUC
-         p/mPnlRvmm5hypByZFq4J/WZG+SYaRwuRqdZxTQ85C0faDeMZq70qoz1xhg6i7140PPR
-         30ZUoj3dRtjEzl8L6CZnq0Q/GQNH+8NMwUhyB6teNTfF0vQYtX4j7T7Dm+HOH5K/+OfB
-         BMbjvzwnz5qcnMv26uUk6JygUdwt/0ksaO74PWwuRLEXwIyUbLEfpwFdsMtfDVgk42OB
-         U0Og==
-X-Gm-Message-State: APjAAAUF8SwN0pOECdSPMA3lL8buwjgADKi7NQ7x3oNNjUVG1otX32H+
-        tQffTIH+52AXhdVQt+a2gE+XmmZ9R9LUMV1oaxKiTw==
-X-Google-Smtp-Source: APXvYqytcmgUBglTw+96rAxyA8UoLZEEWQtQv6S5qGrK/cGa88KPzT32foKerAZ8x0LkY9vPTs4Gdwj3wPvVn1QVv48=
-X-Received: by 2002:a17:90a:6509:: with SMTP id i9mr449000pjj.47.1572283397935;
- Mon, 28 Oct 2019 10:23:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1571844200.git.andreyknvl@google.com> <beeae42e313ef57b4630cc9f36e2e78ad42fd5b7.1571844200.git.andreyknvl@google.com>
- <20191023152216.796aeafd832ba5351d86d3ca@linux-foundation.org>
-In-Reply-To: <20191023152216.796aeafd832ba5351d86d3ca@linux-foundation.org>
-From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Mon, 28 Oct 2019 18:23:06 +0100
-Message-ID: <CAAeHK+w1SB7Z7ndB3nocO3vKwBhPrr6GFZa6EYeApyppx7gYYw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] kcov: remote coverage support
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     USB list <linux-usb@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        David Windsor <dwindsor@gmail.com>,
-        Elena Reshetova <elena.reshetova@intel.com>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=zei+itK9l69qPYdDOUyL0hXlzNIrf8Um9vf7savw6V4=;
+        b=Uvz73RR5CqDNFCnOm8+V1+qKD7dtBPwgmIuROv9g49f7+AFomp7gelBwnAx//03heL
+         WG6aotp2Fy9/au+2ExufcPrSfo7QCIclAe3ythS5Sa3I/hPsQdcfuSYaUbPxruVCIFIp
+         KlsISnfMYGz330iTu7A9kOgg3FKbGSmc5CRhs15BH+lza0oQet9ZIjw6h+gWG2tI0j+q
+         hghW6L5WJqNxdRdmXpypJezqKtlirFxyyrjgJIhA2M/cyVpeVeRM4A6ukshHUR2+el8Y
+         WSwKY8dNQgRaflqQiGixpP4wf4kzieBYxTEd5aKM5qLtAngiHn+6HV9QSnYiU46GAdqq
+         dPIw==
+X-Gm-Message-State: APjAAAWhdwembjrzVsH+XqPMUX/4U6ZxqqKmGk//1Hzsy8HA2q3fqfi1
+        8H70aRBIGmGqVICpjIH1U4Bjtr26
+X-Google-Smtp-Source: APXvYqxEP2lDwqhnASv28JfFmrqjCBpUJUnGYAhP4j6XEqN4aS2E2YVCWdhnVVzob4sUXz+bA5H5sQ==
+X-Received: by 2002:a63:c405:: with SMTP id h5mr21996468pgd.60.1572283481037;
+        Mon, 28 Oct 2019 10:24:41 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id q8sm11060377pgg.15.2019.10.28.10.24.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 28 Oct 2019 10:24:40 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, Thomas Graf <tgraf@suug.ch>
+Subject: [PATCH net] vxlan: check tun_info options_len properly
+Date:   Tue, 29 Oct 2019 01:24:32 +0800
+Message-Id: <7cd6d34cc1a13810805b08da771848cfff315d5c.1572283472.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 24, 2019 at 12:22 AM Andrew Morton
-<akpm@linux-foundation.org> wrote:
->
-> On Wed, 23 Oct 2019 17:24:29 +0200 Andrey Konovalov <andreyknvl@google.com> wrote:
->
-> > This patch adds background thread coverage collection ability to kcov.
-> >
-> > With KCOV_ENABLE coverage is collected only for syscalls that are issued
-> > from the current process. With KCOV_REMOTE_ENABLE it's possible to collect
-> > coverage for arbitrary parts of the kernel code, provided that those parts
-> > are annotated with kcov_remote_start()/kcov_remote_stop().
-> >
-> > This allows to collect coverage from two types of kernel background
-> > threads: the global ones, that are spawned during kernel boot and are
-> > always running (e.g. USB hub_event()); and the local ones, that are
-> > spawned when a user interacts with some kernel interface (e.g. vhost
-> > workers).
-> >
-> > To enable collecting coverage from a global background thread, a unique
-> > global handle must be assigned and passed to the corresponding
-> > kcov_remote_start() call. Then a userspace process can pass a list of such
-> > handles to the KCOV_REMOTE_ENABLE ioctl in the handles array field of the
-> > kcov_remote_arg struct. This will attach the used kcov device to the code
-> > sections, that are referenced by those handles.
-> >
-> > Since there might be many local background threads spawned from different
-> > userspace processes, we can't use a single global handle per annotation.
-> > Instead, the userspace process passes a non-zero handle through the
-> > common_handle field of the kcov_remote_arg struct. This common handle gets
-> > saved to the kcov_handle field in the current task_struct and needs to be
-> > passed to the newly spawned threads via custom annotations. Those threads
-> > should in turn be annotated with kcov_remote_start()/kcov_remote_stop().
-> >
-> > Internally kcov stores handles as u64 integers. The top byte of a handle
-> > is used to denote the id of a subsystem that this handle belongs to, and
-> > the lower 4 bytes are used to denote a handle id within that subsystem.
-> > A reserved value 0 is used as a subsystem id for common handles as they
-> > don't belong to a particular subsystem. The bytes 4-7 are currently
-> > reserved and must be zero. In the future the number of bytes used for the
-> > subsystem or handle ids might be increased.
-> >
-> > When a particular userspace proccess collects coverage by via a common
-> > handle, kcov will collect coverage for each code section that is annotated
-> > to use the common handle obtained as kcov_handle from the current
-> > task_struct. However non common handles allow to collect coverage
-> > selectively from different subsystems.
-> >
-> > ...
-> >
-> > +static struct kcov_remote *kcov_remote_add(struct kcov *kcov, u64 handle)
-> > +{
-> > +     struct kcov_remote *remote;
-> > +
-> > +     if (kcov_remote_find(handle))
-> > +             return ERR_PTR(-EEXIST);
-> > +     remote = kmalloc(sizeof(*remote), GFP_ATOMIC);
-> > +     if (!remote)
-> > +             return ERR_PTR(-ENOMEM);
-> > +     remote->handle = handle;
-> > +     remote->kcov = kcov;
-> > +     hash_add(kcov_remote_map, &remote->hnode, handle);
-> > +     return remote;
-> > +}
-> > +
-> >
-> > ...
-> >
-> > +             spin_lock(&kcov_remote_lock);
-> > +             for (i = 0; i < remote_arg->num_handles; i++) {
-> > +                     kcov_debug("handle %llx\n", remote_arg->handles[i]);
-> > +                     if (!kcov_check_handle(remote_arg->handles[i],
-> > +                                             false, true, false)) {
-> > +                             spin_unlock(&kcov_remote_lock);
-> > +                             kcov_disable(t, kcov);
-> > +                             return -EINVAL;
-> > +                     }
-> > +                     remote = kcov_remote_add(kcov, remote_arg->handles[i]);
-> > +                     if (IS_ERR(remote)) {
-> > +                             spin_unlock(&kcov_remote_lock);
-> > +                             kcov_disable(t, kcov);
-> > +                             return PTR_ERR(remote);
-> > +                     }
-> > +             }
->
-> It's worrisome that this code can perform up to 65536 GFP_ATOMIC
-> allocations without coming up for air.  The possibility of ENOMEM or of
-> causing collateral problems is significant.  It doesn't look too hard
-> to change this to use GFP_KERNEL?
+This patch is to improve the tun_info options_len by dropping
+the skb when TUNNEL_VXLAN_OPT is set but options_len is less
+than vxlan_metadata. This can void a potential out-of-bounds
+access on ip_tun_info.
 
-Looking at this again: it seems easy to get rid of locking
-kcov_remote_lock when doing kmalloc, but a bit harder to get rid of
-kcov->lock. Andrew, would it be OK to just change the max number of
-GFP_ATOMIC allocations to 256?
+Fixes: ee122c79d422 ("vxlan: Flow based tunneling")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ drivers/net/vxlan.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
->
-> > +u64 kcov_common_handle(void)
-> > +{
-> > +     return current->kcov_handle;
-> > +}
->
-> I don't immediately understand what this "common handle" thing is all about.
-> Code is rather lacking in this sort of high-level commentary?
->
->
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index fcf0282..ac5c597 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -2487,9 +2487,11 @@ static void vxlan_xmit_one(struct sk_buff *skb, struct net_device *dev,
+ 		vni = tunnel_id_to_key32(info->key.tun_id);
+ 		ifindex = 0;
+ 		dst_cache = &info->dst_cache;
+-		if (info->options_len &&
+-		    info->key.tun_flags & TUNNEL_VXLAN_OPT)
++		if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
++			if (info->options_len < sizeof(*md))
++				goto drop;
+ 			md = ip_tunnel_info_opts(info);
++		}
+ 		ttl = info->key.ttl;
+ 		tos = info->key.tos;
+ 		label = info->key.label;
+-- 
+2.1.0
+
