@@ -2,137 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D43DE7AFB
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:07:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 661FDE7AFD
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 22:07:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391190AbfJ1VHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 17:07:22 -0400
-Received: from mail-eopbgr750137.outbound.protection.outlook.com ([40.107.75.137]:55799
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730207AbfJ1VHN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 17:07:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fubqZpJnaC8u5GQihyapZd/aXLRv3dEb8BL9o5zpcFFtZgQrSUlW0IicQCa1q0wktoIrA6beu7ElxqDyR2ceqdrorhQSUG7ZQQfiz19+5WbkGrtoiFXB9Rq7W+ImlfUZLkww0DdctbAPDsGJURxl6X4u1bBZsby67lnG1jOb1GDjSNkj+fMzgfNAcREMjGAav9H6o6+pZuaLneYXlcIX14YEETXUFOPrsrB5K0FJdQnoJjZ7grjeH5QtcoftECY2pafBOd0iyfEZzVU1LEY4JakuLW0rqEQmuD5P+hSWCRqyYAvhrtc+kzIP6+CGZkuf2uaFwwEi5xbUh8lTht7B7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PXEKnuN40jJ5SBw+kVEj2OgD4rOSYa6KtHCy4GTVcp0=;
- b=MsH/aNLD6wsFdiQOg0ZtzVwP8gLPGPbK7eLxHJx9PM4ts4+T0DXiDuB3Ug53Yvu2SoM9mnQ2UqjczkXQ4mRmvC5uU33cvPM/Jf5NJdeh/9dDgziaHQQp0lspI5A9YuRQlp9275Sz7Us7KKwaqPdkhV6L8raKr0OcW0LxKPskZ0BH5U+TsM0wgCbDCiAvfZlO4a6qWKXIyzlr1qoCM+0ZMBDlSP8eUYtiEZXvV4ScnK8+2g3zeHqCUPV21GMjqgtSkCcVei/5WWuCQJP8iHZvwSwVCbUz7BkHBSYBlV8JVmUOwGaSAZ2eKxeK8acunTr0qY6UPXIEE/s7KLDZctz5Sg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PXEKnuN40jJ5SBw+kVEj2OgD4rOSYa6KtHCy4GTVcp0=;
- b=KfLt3mCCdtZPX7zXPTxXGznGIz1TBdy+jkm/wTI1s4BY8RKAIoEahwdNqnUBelXEKCoyWiC6aY2Rz9ljBw+HgrCojkBGAlK2itE8lCfePiqDUDDR9d9Kl7GmZM7mIOoZunwpdQnatuIRrXbP+jqXHZfE/HaGuXc7WlnORsD7nks=
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
- DM6PR21MB1404.namprd21.prod.outlook.com (20.180.22.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.8; Mon, 28 Oct 2019 21:07:11 +0000
-Received: from DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::756e:8d3f:e463:3bf7]) by DM6PR21MB1242.namprd21.prod.outlook.com
- ([fe80::756e:8d3f:e463:3bf7%3]) with mapi id 15.20.2408.016; Mon, 28 Oct 2019
- 21:07:11 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     "sashal@kernel.org" <sashal@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next, 4/4] hv_netvsc: Update document for XDP support
-Thread-Topic: [PATCH net-next, 4/4] hv_netvsc: Update document for XDP support
-Thread-Index: AQHVjdOqeF2skKD6Y0io1FAqZWRRAw==
-Date:   Mon, 28 Oct 2019 21:07:11 +0000
-Message-ID: <1572296801-4789-5-git-send-email-haiyangz@microsoft.com>
-References: <1572296801-4789-1-git-send-email-haiyangz@microsoft.com>
-In-Reply-To: <1572296801-4789-1-git-send-email-haiyangz@microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0076.namprd04.prod.outlook.com
- (2603:10b6:102:1::44) To DM6PR21MB1242.namprd21.prod.outlook.com
- (2603:10b6:5:169::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lkmlhyz@microsoft.com; 
-x-ms-exchange-messagesentrepresentingtype: 2
-x-mailer: git-send-email 1.8.3.1
-x-originating-ip: [13.77.154.182]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b5df6643-1b7a-423a-8c18-08d75beacc99
-x-ms-traffictypediagnostic: DM6PR21MB1404:|DM6PR21MB1404:|DM6PR21MB1404:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR21MB14049BFC29E7ADE4E00BE821AC660@DM6PR21MB1404.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0204F0BDE2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(346002)(396003)(39860400002)(136003)(199004)(189003)(6512007)(446003)(36756003)(54906003)(50226002)(486006)(22452003)(2616005)(476003)(305945005)(14454004)(478600001)(2501003)(6392003)(66066001)(7846003)(66476007)(66446008)(64756008)(66556008)(66946007)(10290500003)(6436002)(386003)(10090500001)(102836004)(7736002)(99286004)(11346002)(76176011)(52116002)(5660300002)(186003)(26005)(6506007)(256004)(8936002)(81156014)(81166006)(6116002)(6486002)(3846002)(4326008)(8676002)(2201001)(316002)(110136005)(25786009)(2906002)(4720700003)(71200400001)(71190400001);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1404;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: N2iu8QmvCapfjPeyHZjuDypd2A2cbxTl33hDk1j8ao+8ILwOJ+Fc2R6k4BdfcO78e8jF//lop4cZy87auDxGCJTpKZn/1fmNSLPRoHgmLU5Da8g4vRWKtj1/Mj0yMP3xCwcVLc1mIdsHG9QZDvKbqjGknOEataRn/XX5wO9QzYna8rEsiKT7LN0Dj4X93h1iMJv1hKDHEs6Blaxt2BZ/+9wVfa5Rt5QsOKJmZvx6mHbFm+GIgDi4uns7bsIMcMwmm6UZgm4mryky/XdvfnZ0U1IamvT8HyfjakdVsuOIW9q9vC4xJbHLu42oXshrqRhlpcBpCONoKoMtPJPcjojRl25f1QtFn68vyDS/VZZX2gPIKrfW2Ytyi3gdVJN6AVUObs0ohG7HFp8b16rhfZaY1KoMdFR4WWXR6+uWVCfomtJx0z8PHviqhvghED9FnO40
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2391202AbfJ1VH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 17:07:27 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:27823 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2391195AbfJ1VHY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 17:07:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572296843;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vaN691EUnxF95m8CQyGbqME6xNGoyr91KYIIBfK7uXs=;
+        b=NsYY3RCcrSSRK7N43bEJtZ75r4ut492io9M3kXqnv1Vnd2QxLuOUk2tRBmrI0f7Xc6siyu
+        PLyC2rwit7/d19vH3a4fMivKPMHLVxqCFihwoi7g76UrbDkdmmdWqwNKP0/Ke/hF7eILQP
+        5sycfsZPQXb9TKA2RCgr4zZ9MT7NfHY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-124-pWsCm5gWORa93cR4oE7e_g-1; Mon, 28 Oct 2019 17:07:20 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 851AF1804971;
+        Mon, 28 Oct 2019 21:07:17 +0000 (UTC)
+Received: from krava (ovpn-204-45.brq.redhat.com [10.40.204.45])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 4928926359;
+        Mon, 28 Oct 2019 21:07:13 +0000 (UTC)
+Date:   Mon, 28 Oct 2019 22:07:12 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v4 4/9] perf tools: splice events onto evlist even on
+ error
+Message-ID: <20191028210712.GB6158@krava>
+References: <20191024190202.109403-1-irogers@google.com>
+ <20191025180827.191916-1-irogers@google.com>
+ <20191025180827.191916-5-irogers@google.com>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5df6643-1b7a-423a-8c18-08d75beacc99
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 21:07:11.1213
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KMNWNELcFRmEOdzrLnQ8aJ1PWR/TcqXTh4no8W6DD5VLqb5BCr9e4fY8t8kLD991IRZAn7Fv7XtbDIlepQ/OOQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1404
+In-Reply-To: <20191025180827.191916-5-irogers@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: pWsCm5gWORa93cR4oE7e_g-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added the new section in the document regarding XDP support
-by hv_netvsc driver.
+On Fri, Oct 25, 2019 at 11:08:22AM -0700, Ian Rogers wrote:
+> If event parsing fails the event list is leaked, instead splice the list
+> onto the out result and let the caller cleanup.
+>=20
+> An example input for parse_events found by libFuzzer that reproduces
+> this memory leak is 'm{'.
+>=20
+> Signed-off-by: Ian Rogers <irogers@google.com>
 
-Signed-off-by: Haiyang Zhang <haiyangz@microsoft.com>
----
- .../networking/device_drivers/microsoft/netvsc.txt         | 14 ++++++++++=
-++++
- 1 file changed, 14 insertions(+)
+Acked-by: Jiri Olsa <jolsa@kernel.org>
 
-diff --git a/Documentation/networking/device_drivers/microsoft/netvsc.txt b=
-/Documentation/networking/device_drivers/microsoft/netvsc.txt
-index 3bfa635..69ccfca 100644
---- a/Documentation/networking/device_drivers/microsoft/netvsc.txt
-+++ b/Documentation/networking/device_drivers/microsoft/netvsc.txt
-@@ -82,3 +82,17 @@ Features
-   contain one or more packets. The send buffer is an optimization, the dri=
-ver
-   will use slower method to handle very large packets or if the send buffe=
-r
-   area is exhausted.
-+
-+  XDP support
-+  -----------
-+  XDP (eXpress Data Path) is a feature that runs eBPF bytecode at the earl=
-y
-+  stage when packets arrive at a NIC card. The goal is to increase perform=
-ance
-+  for packet processing, reducing the overhead of SKB allocation and other
-+  upper network layers.
-+
-+  hv_netvsc supports XDP in native mode, and transparently sets the XDP
-+  program on the associated VF NIC as well.
-+
-+  XDP program cannot run with LRO (RSC) enabled, so you need to disable LR=
-O
-+  before running XDP:
-+	ethtool -K eth0 lro off
---=20
-1.8.3.1
+thanks,
+jirka
+
+> ---
+>  tools/perf/util/parse-events.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
+s.c
+> index c516d0cce946..4c4c6f3e866a 100644
+> --- a/tools/perf/util/parse-events.c
+> +++ b/tools/perf/util/parse-events.c
+> @@ -1952,15 +1952,20 @@ int parse_events(struct evlist *evlist, const cha=
+r *str,
+> =20
+>  =09ret =3D parse_events__scanner(str, &parse_state, PE_START_EVENTS);
+>  =09perf_pmu__parse_cleanup();
+> +
+> +=09if (!ret && list_empty(&parse_state.list)) {
+> +=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
+> +=09=09return -1;
+> +=09}
+> +
+> +=09/*
+> +=09 * Add list to the evlist even with errors to allow callers to clean =
+up.
+> +=09 */
+> +=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
+> +
+>  =09if (!ret) {
+>  =09=09struct evsel *last;
+> =20
+> -=09=09if (list_empty(&parse_state.list)) {
+> -=09=09=09WARN_ONCE(true, "WARNING: event parser found nothing\n");
+> -=09=09=09return -1;
+> -=09=09}
+> -
+> -=09=09perf_evlist__splice_list_tail(evlist, &parse_state.list);
+>  =09=09evlist->nr_groups +=3D parse_state.nr_groups;
+>  =09=09last =3D evlist__last(evlist);
+>  =09=09last->cmdline_group_boundary =3D true;
+> --=20
+> 2.24.0.rc0.303.g954a862665-goog
+>=20
 
