@@ -2,110 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E4FE75C9
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 17:08:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77140E75E5
+	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 17:13:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390802AbfJ1QIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 12:08:10 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:55478 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730787AbfJ1QIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 12:08:10 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9SFqUmT011338
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 12:08:08 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2vx06x82yw-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 12:08:08 -0400
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
-        Mon, 28 Oct 2019 16:08:06 -0000
-Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Mon, 28 Oct 2019 16:08:03 -0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9SG7TWW37290408
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Oct 2019 16:07:29 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E8F6C52065;
-        Mon, 28 Oct 2019 16:08:02 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A7D4352051;
-        Mon, 28 Oct 2019 16:08:02 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     <netdev@vger.kernel.org>, Julian Wiedmann <jwi@linux.ibm.com>,
-        Jarod Wilson <jarod@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: [PATCH net-next] Documentation: net-sysfs: describe missing statistics
-Date:   Mon, 28 Oct 2019 17:08:00 +0100
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-x-cbid: 19102816-4275-0000-0000-0000037880A9
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19102816-4276-0000-0000-0000388BB441
-Message-Id: <20191028160800.69707-1-jwi@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-28_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1910280160
+        id S1731998AbfJ1QNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 12:13:21 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:59905 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729832AbfJ1QNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 12:13:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572279199;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DFiblGAKSFgYEKWTph3vJ5WK7UUGnBjGo40Q9X49580=;
+        b=gEG95R6iGrg/b2qi3dyPVVzAH1Zw/WxDEuXPeqEO+bdvKGZD46nYNKmFfmFA/78snYAqpg
+        nH+RDgEFxBn4MCUBKqd0sx4nXOoT1e6J2eJTKQW3ynb+XkKQrCnbsXDJrmr+nrJanFxYbP
+        UsYoGSfnbmwcTrAbas6KN1Gd7ejlSsY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-243-BCnI5LkbOV28b2LVSkNTTg-1; Mon, 28 Oct 2019 12:13:18 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 980F1107AD28;
+        Mon, 28 Oct 2019 16:13:16 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0FD5B5DA5B;
+        Mon, 28 Oct 2019 16:13:04 +0000 (UTC)
+Date:   Mon, 28 Oct 2019 17:13:03 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "David Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>, brouer@redhat.com,
+        Anton Protopopov <aspsk2@gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/4] selftests: Add tests for automatic map
+ pinning
+Message-ID: <20191028171303.3e7e4601@carbon>
+In-Reply-To: <483546c6-14b9-e1f1-b4c1-424d6b8d4ace@fb.com>
+References: <157220959547.48922.6623938299823744715.stgit@toke.dk>
+        <157220959980.48922.12100884213362040360.stgit@toke.dk>
+        <20191028140624.584bcc1e@carbon>
+        <87imo9roxf.fsf@toke.dk>
+        <483546c6-14b9-e1f1-b4c1-424d6b8d4ace@fb.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: BCnI5LkbOV28b2LVSkNTTg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sync the ABI description with the interface statistics that are currently
-available through sysfs.
+On Mon, 28 Oct 2019 15:32:26 +0000
+Yonghong Song <yhs@fb.com> wrote:
 
-CC: Jarod Wilson <jarod@redhat.com>
-CC: Jonathan Corbet <corbet@lwn.net>
-CC: linux-doc@vger.kernel.org
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- .../ABI/testing/sysfs-class-net-statistics       | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+> On 10/28/19 6:15 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> >  =20
+> >> On Sun, 27 Oct 2019 21:53:19 +0100
+> >> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+> >> =20
+> >>> diff --git a/tools/testing/selftests/bpf/progs/test_pinning.c b/tools=
+/testing/selftests/bpf/progs/test_pinning.c
+> >>> new file mode 100644
+> >>> index 000000000000..ff2d7447777e
+> >>> --- /dev/null
+> >>> +++ b/tools/testing/selftests/bpf/progs/test_pinning.c
+> >>> @@ -0,0 +1,29 @@
+> >>> +// SPDX-License-Identifier: GPL-2.0
+> >>> +
+> >>> +#include <linux/bpf.h>
+> >>> +#include "bpf_helpers.h"
+> >>> +
+> >>> +int _version SEC("version") =3D 1;
+> >>> +
+> >>> +struct {
+> >>> +=09__uint(type, BPF_MAP_TYPE_ARRAY);
+> >>> +=09__uint(max_entries, 1);
+> >>> +=09__type(key, __u32);
+> >>> +=09__type(value, __u64);
+> >>> +=09__uint(pinning, LIBBPF_PIN_BY_NAME);
+> >>> +} pinmap SEC(".maps"); =20
+> >>
+> >> So, this is the new BTF-defined maps syntax.
+> >>
+> >> Please remind me, what version of LLVM do we need to compile this? =20
+> >=20
+> > No idea what the minimum version is. I'm running LLVM 9.0 :) =20
+>=20
+> LLVM 9.0 starts to support .maps.
+> There is no dependency on pahole.
 
-diff --git a/Documentation/ABI/testing/sysfs-class-net-statistics b/Documentation/ABI/testing/sysfs-class-net-statistics
-index 397118de7b5e..55db27815361 100644
---- a/Documentation/ABI/testing/sysfs-class-net-statistics
-+++ b/Documentation/ABI/testing/sysfs-class-net-statistics
-@@ -51,6 +51,14 @@ Description:
- 		packet processing. See the network driver for the exact
- 		meaning of this value.
- 
-+What:		/sys/class/<iface>/statistics/rx_errors
-+Date:		April 2005
-+KernelVersion:	2.6.12
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		Indicates the number of receive errors on this network device.
-+		See the network driver for the exact meaning of this value.
-+
- What:		/sys/class/<iface>/statistics/rx_fifo_errors
- Date:		April 2005
- KernelVersion:	2.6.12
-@@ -88,6 +96,14 @@ Description:
- 		due to lack of capacity in the receive side. See the network
- 		driver for the exact meaning of this value.
- 
-+What:		/sys/class/<iface>/statistics/rx_nohandler
-+Date:		February 2016
-+KernelVersion:	4.6
-+Contact:	netdev@vger.kernel.org
-+Description:
-+		Indicates the number of received packets that were dropped on
-+		an inactive device by the network core.
-+
- What:		/sys/class/<iface>/statistics/rx_over_errors
- Date:		April 2005
- KernelVersion:	2.6.12
--- 
-2.17.1
+LLVM 9.0.0 is still very new:
+ - 19 September 2019: LLVM 9.0.0 is now available
+
+For my XDP-tutorial[1], I cannot required people to have this new llvm
+version.  But I would like to teach people about this new syntax (note,
+I can upgrade libbpf version via git-submodule, and update bpf_helpers.h).
+
+To Andrii, any recommendations on how I can do the transition?=20
+
+I'm thinking, it should be possible to define both ELF-object sections
+SEC "maps" and ".maps" at the same time. But how does libbpf handle that?
+(Who takes precedence?)
+
+
+(Alternatively, I can detect the LLVM version, in the Makefile, and have
+a #ifdef define in the code)
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+[1] https://github.com/xdp-project/xdp-tutorial
 
