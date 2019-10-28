@@ -2,193 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD65E7C96
-	for <lists+netdev@lfdr.de>; Mon, 28 Oct 2019 23:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EDE8E7CC7
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 00:18:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730464AbfJ1W6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 18:58:01 -0400
-Received: from mail-eopbgr80052.outbound.protection.outlook.com ([40.107.8.52]:52291
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730303AbfJ1W6B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 18:58:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QUksh540cltZhmTL0dFZnpruYqYlg7IgfFRPYxC1LCHG6ExDIshycLwuRELwYFUN0w3SJkgwspiSs5hWPfKEvxaHOuPvIqsXOAsa4syNTUDzog9NvDVped1mQlCOQcF3enEdxsNB+L/vHzwflL0GdgHA0vQoSXT0YG3egXGLjh/kzJb9mcVF/qiuGn4bW/gTP05cpgf6P6ADALXKrGvfYu7/yqCXnH5MbEpFlKYmMv5Z0DdvevwLu9ve6C7W5oD8XsZCI2AiNmShId++YbIBnT+lHJEYsKcbFjVOvgdFwbTIB+WQVne/B/AnA5Qgs3wgPfXBszL9TV1edN0aCQ5BMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jE+aLPDb/0lz8dKqVcPBO59alx80tGd5h3ZzCWMSIbo=;
- b=ScqONoAJ3REX1Ld/9ROswHVvmPFfw6nGZ4YGWnhEJ2zIYu8GWFgdWVYg9/UzTQJzAqawz84pB+INwHgLPAQni+YTZN6k6TFCh2QqwzTx57PCNl22eDJL9q0ht/Tkqhr1jKgrCZ6uiredMCw99nQfL0PLO0y0RxGsBQU5Jg8SlAlosCmHm9pjjlSiqKYezjQNDKlU4VtRyBbQfNFW2kCUvV+MDaeEBjggTRBIQZQAv5NanAc+wlHjaIWk2KOhhDExItO179c0451hTmWx7bspXksTFUFMW3luTD8/jzBJHtlqXEP24BMPyGZvc8v0iuB9FjhpgiT5ytuWn8ntEZl3Aw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jE+aLPDb/0lz8dKqVcPBO59alx80tGd5h3ZzCWMSIbo=;
- b=EKW7B9gEsl1jL11Xn05DLx979jnvFLAZdN5wiXzrTTRmcHlNtXeI02pBg0gNfBfM+ZikxZ8DDggH7xi8RxMWDncGgM+4cNuRTLIiMlYJEOWrkQa+3Sop8OqtnbSYhvhDs5I3/c5Dkw2VI2VYuOPc1UNNLQ5EhfPIELYLk80I2Eg=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB4671.eurprd05.prod.outlook.com (20.176.3.156) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.22; Mon, 28 Oct 2019 22:57:41 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2387.027; Mon, 28 Oct 2019
- 22:57:41 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "brouer@redhat.com" <brouer@redhat.com>
-CC:     "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>
-Subject: Re: [PATCH net-nex V2 2/3] page_pool: Don't recycle non-reusable
- pages
-Thread-Topic: [PATCH net-nex V2 2/3] page_pool: Don't recycle non-reusable
- pages
-Thread-Index: AQHVidk91v+5ha9RXkyIDz/qcdenMqdrXfyAgAVUgQA=
-Date:   Mon, 28 Oct 2019 22:57:41 +0000
-Message-ID: <89990daed0dee8c8703a1c970c8c53fa49d04dba.camel@mellanox.com>
-References: <20191023193632.26917-1-saeedm@mellanox.com>
-         <20191023193632.26917-3-saeedm@mellanox.com>
-         <20191025153353.606e4b0d@carbon>
-In-Reply-To: <20191025153353.606e4b0d@carbon>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 16c66a69-ad6e-408a-2bde-08d75bfa3c95
-x-ms-traffictypediagnostic: VI1PR05MB4671:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <VI1PR05MB46717DBC1ED09F7DA4375FA0BE660@VI1PR05MB4671.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0204F0BDE2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(39860400002)(346002)(376002)(189003)(199004)(486006)(966005)(305945005)(76116006)(11346002)(7736002)(76176011)(58126008)(102836004)(6506007)(91956017)(6916009)(54906003)(316002)(64756008)(5660300002)(118296001)(26005)(2616005)(476003)(66446008)(66556008)(186003)(6306002)(6512007)(99286004)(2351001)(14444005)(256004)(14454004)(66066001)(71190400001)(6486002)(229853002)(81166006)(81156014)(71200400001)(1730700003)(6116002)(8676002)(446003)(6246003)(2906002)(66946007)(66476007)(3846002)(4001150100001)(8936002)(4326008)(86362001)(6436002)(36756003)(2501003)(5640700003)(25786009)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4671;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O1/vaBv3JG2QoBkdsxGwVtvnu1NVQrFZsCMleCYCw+URtspePJfkr3UrsqoMSrp5PFF58Jc1OY4BCnY4x24fHUCtcFOsy7XO9EvR19bUio/hAWhI6+2RvGVUcUoQWThGAnKTPnf0Yre4GXs8vQlb7VxEO+AHMXSyvkh1/ZAUGeC4JRBAMs9zLHqs1AnvvzpIjliLNu9Z+XhDgQwr4EZap+D73eK7vacw9hEK7AJAhwHSpCT0wVBxtWkgxrd2nlK/4PklRL5+cpjMGU3HGwYnhXzqbFs8c7RL5d9QvmjCB+Rdinp+Mu50l5rP8FZve8OTXgo/sB4Cu3aBKsx1+ezU8uMy04z6nHVJlY1gtoqglhbNlezRAREs+jPRMIc9CoJISPUajhA098l31sVnLin8VSdC0G07jtczJedGGN16Y/FbKY0EsIctv7nZGDZdHSwMGKtNq6chsdAg5qeJFfRUIeFI8h1LMMMUD7Nn2DKhe4s=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7AB830AB015C3148B4D248143269F779@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16c66a69-ad6e-408a-2bde-08d75bfa3c95
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 22:57:41.1805
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: B/wGi3cpxcjBmQXy1aYMHJLCagcl84VkSWZxDkDhG5wekdV9wIpJazFEZZMvUS4Fimkd3/R7AT+K+Wn1PtJFNQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4671
+        id S1727827AbfJ1XSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 19:18:21 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:46448 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726154AbfJ1XSU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 19:18:20 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id AEEE214BE72C3;
+        Mon, 28 Oct 2019 16:18:17 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 16:18:17 -0700 (PDT)
+Message-Id: <20191028.161817.126838643568293118.davem@davemloft.net>
+To:     tj@kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        linux-kernel@vger.kernel.org, josef@toxicpanda.com,
+        eric.dumazet@gmail.com, jakub.kicinski@netronome.com,
+        hannes@cmpxchg.org, linux-mm@kvack.org, mgorman@suse.de,
+        akpm@linux-foundation.org
+Subject: Re: [PATCH v2] net: fix sk_page_frag() recursion from memory
+ reclaim
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191024205027.GF3622521@devbig004.ftw2.facebook.com>
+References: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
+        <20191024205027.GF3622521@devbig004.ftw2.facebook.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 28 Oct 2019 16:18:18 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTEwLTI1IGF0IDE1OjMzICswMjAwLCBKZXNwZXIgRGFuZ2FhcmQgQnJvdWVy
-IHdyb3RlOg0KPiBPbiBXZWQsIDIzIE9jdCAyMDE5IDE5OjM3OjAwICswMDAwDQo+IFNhZWVkIE1h
-aGFtZWVkIDxzYWVlZG1AbWVsbGFub3guY29tPiB3cm90ZToNCj4gDQo+ID4gQSBwYWdlIGlzIE5P
-VCByZXVzYWJsZSB3aGVuIGF0IGxlYXN0IG9uZSBvZiB0aGUgZm9sbG93aW5nIGlzIHRydWU6DQo+
-ID4gMSkgYWxsb2NhdGVkIHdoZW4gc3lzdGVtIHdhcyB1bmRlciBzb21lIHByZXNzdXJlLg0KPiA+
-IChwYWdlX2lzX3BmbWVtYWxsb2MpDQo+ID4gMikgYmVsb25ncyB0byBhIGRpZmZlcmVudCBOVU1B
-IG5vZGUgdGhhbiBwb29sLT5wLm5pZC4NCj4gPiANCj4gPiBUbyB1cGRhdGUgcG9vbC0+cC5uaWQg
-dXNlcnMgc2hvdWxkIGNhbGwgcGFnZV9wb29sX3VwZGF0ZV9uaWQoKS4NCj4gPiANCj4gPiBIb2xk
-aW5nIG9uIHRvIHN1Y2ggcGFnZXMgaW4gdGhlIHBvb2wgd2lsbCBodXJ0IHRoZSBjb25zdW1lcg0K
-PiA+IHBlcmZvcm1hbmNlDQo+ID4gd2hlbiB0aGUgcG9vbCBtaWdyYXRlcyB0byBhIGRpZmZlcmVu
-dCBudW1hIG5vZGUuDQo+ID4gDQo+ID4gUGVyZm9ybWFuY2UgdGVzdGluZzoNCj4gPiBYRFAgZHJv
-cC90eCByYXRlIGFuZCBUQ1Agc2luZ2xlL211bHRpIHN0cmVhbSwgb24gbWx4NSBkcml2ZXINCj4g
-PiB3aGlsZSBtaWdyYXRpbmcgcnggcmluZyBpcnEgZnJvbSBjbG9zZSB0byBmYXIgbnVtYToNCj4g
-PiANCj4gPiBtbHg1IGludGVybmFsIHBhZ2UgY2FjaGUgd2FzIGxvY2FsbHkgZGlzYWJsZWQgdG8g
-Z2V0IHB1cmUgcGFnZSBwb29sDQo+ID4gcmVzdWx0cy4NCj4gDQo+IENvdWxkIHlvdSBzaG93IHVz
-IHRoZSBjb2RlIHRoYXQgZGlzYWJsZSB0aGUgbG9jYWwgcGFnZSBjYWNoZT8NCj4gDQoNCmhlcmUg
-eW91IGdvLCB2ZXJ5IHNpbXBsZSBwYXRjaCwganVzdCBhdm9pZCBjYWxsaW5nIG1seDUgaW50ZXJu
-YWwgY2FjaGUNCkFQSSBhbmQgYXZvaWQgZG1hIG1hcHBpbmcvdW5tYXBwaW5nLg0KDQpodHRwczov
-L2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9zYWVlZC9saW51eC5naXQv
-Y29tbWl0Lz9oPXRvcGljL3BhZ2UtcG9vbC1udW1hJmlkPWFhNzM0NWY2MmNhZDYyY2YxOWZiZjJk
-ZWUyYThiMTVkZTM0YjMzZTMNCg0KPiANCj4gPiBDUFU6IEludGVsKFIpIFhlb24oUikgQ1BVIEU1
-LTI2MDMgdjQgQCAxLjcwR0h6DQo+ID4gTklDOiBNZWxsYW5veCBUZWNobm9sb2dpZXMgTVQyNzcw
-MCBGYW1pbHkgW0Nvbm5lY3RYLTRdICgxMDBHKQ0KPiA+IA0KPiA+IFhEUCBEcm9wL1RYIHNpbmds
-ZSBjb3JlOg0KPiA+IE5VTUEgIHwgWERQICB8IEJlZm9yZSAgICB8IEFmdGVyDQo+ID4gLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gQ2xvc2UgfCBEcm9wIHwgMTEg
-ICBNcHBzIHwgMTAuOSBNcHBzDQo+ID4gRmFyICAgfCBEcm9wIHwgNC40ICBNcHBzIHwgNS44ICBN
-cHBzDQo+ID4gDQo+ID4gQ2xvc2UgfCBUWCAgIHwgNi41IE1wcHMgIHwgNi41IE1wcHMNCj4gPiBG
-YXIgICB8IFRYICAgfCAzLjUgTXBwcyAgfCA0ICBNcHBzDQo+ID4gDQo+ID4gSW1wcm92ZW1lbnQg
-aXMgYWJvdXQgMzAlIGRyb3AgcGFja2V0IHJhdGUsIDE1JSB0eCBwYWNrZXQgcmF0ZSBmb3INCj4g
-PiBudW1hDQo+ID4gZmFyIHRlc3QuDQo+ID4gTm8gZGVncmFkYXRpb24gZm9yIG51bWEgY2xvc2Ug
-dGVzdHMuDQo+ID4gDQo+ID4gVENQIHNpbmdsZS9tdWx0aSBjcHUvc3RyZWFtOg0KPiA+IE5VTUEg
-IHwgI2NwdSB8IEJlZm9yZSAgfCBBZnRlcg0KPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tDQo+ID4gQ2xvc2UgfCAxICAgIHwgMTggR2JwcyB8IDE4IEdicHMNCj4gPiBG
-YXIgICB8IDEgICAgfCAxNSBHYnBzIHwgMTggR2Jwcw0KPiA+IENsb3NlIHwgMTIgICB8IDgwIEdi
-cHMgfCA4MCBHYnBzDQo+ID4gRmFyICAgfCAxMiAgIHwgNjggR2JwcyB8IDgwIEdicHMNCj4gPiAN
-Cj4gPiBJbiBhbGwgdGVzdCBjYXNlcyB3ZSBzZWUgaW1wcm92ZW1lbnQgZm9yIHRoZSBmYXIgbnVt
-YSBjYXNlLCBhbmQgbm8NCj4gPiBpbXBhY3Qgb24gdGhlIGNsb3NlIG51bWEgY2FzZS4NCj4gPiAN
-Cj4gPiBUaGUgaW1wYWN0IG9mIGFkZGluZyBhIGNoZWNrIHBlciBwYWdlIGlzIHZlcnkgbmVnbGln
-aWJsZSwgYW5kIHNob3dzDQo+ID4gbm8NCj4gPiBwZXJmb3JtYW5jZSBkZWdyYWRhdGlvbiB3aGF0
-c29ldmVyLCBhbHNvIGZ1bmN0aW9uYWxpdHkgd2lzZSBpdA0KPiA+IHNlZW1zIG1vcmUNCj4gPiBj
-b3JyZWN0IGFuZCBtb3JlIHJvYnVzdCBmb3IgcGFnZSBwb29sIHRvIHZlcmlmeSB3aGVuIHBhZ2Vz
-IHNob3VsZA0KPiA+IGJlDQo+ID4gcmVjeWNsZWQsIHNpbmNlIHBhZ2UgcG9vbCBjYW4ndCBndWFy
-YW50ZWUgd2hlcmUgcGFnZXMgYXJlIGNvbWluZw0KPiA+IGZyb20uDQo+ID4gDQo+ID4gU2lnbmVk
-LW9mZi1ieTogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQo+ID4gQWNrZWQt
-Ynk6IEpvbmF0aGFuIExlbW9uIDxqb25hdGhhbi5sZW1vbkBnbWFpbC5jb20+DQo+ID4gLS0tDQo+
-ID4gIG5ldC9jb3JlL3BhZ2VfcG9vbC5jIHwgMTQgKysrKysrKysrKysrKy0NCj4gPiAgMSBmaWxl
-IGNoYW5nZWQsIDEzIGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCj4gPiANCj4gPiBkaWZm
-IC0tZ2l0IGEvbmV0L2NvcmUvcGFnZV9wb29sLmMgYi9uZXQvY29yZS9wYWdlX3Bvb2wuYw0KPiA+
-IGluZGV4IDk1M2FmNmQ0MTRmYi4uNzNlNDE3M2M0ZGNlIDEwMDY0NA0KPiA+IC0tLSBhL25ldC9j
-b3JlL3BhZ2VfcG9vbC5jDQo+ID4gKysrIGIvbmV0L2NvcmUvcGFnZV9wb29sLmMNCj4gPiBAQCAt
-MjgzLDYgKzI4MywxNyBAQCBzdGF0aWMgYm9vbCBfX3BhZ2VfcG9vbF9yZWN5Y2xlX2RpcmVjdChz
-dHJ1Y3QNCj4gPiBwYWdlICpwYWdlLA0KPiA+ICAJcmV0dXJuIHRydWU7DQo+ID4gIH0NCj4gPiAg
-DQo+ID4gKy8qIHBhZ2UgaXMgTk9UIHJldXNhYmxlIHdoZW46DQo+ID4gKyAqIDEpIGFsbG9jYXRl
-ZCB3aGVuIHN5c3RlbSBpcyB1bmRlciBzb21lIHByZXNzdXJlLg0KPiA+IChwYWdlX2lzX3BmbWVt
-YWxsb2MpDQo+ID4gKyAqIDIpIGJlbG9uZ3MgdG8gYSBkaWZmZXJlbnQgTlVNQSBub2RlIHRoYW4g
-cG9vbC0+cC5uaWQuDQo+ID4gKyAqDQo+ID4gKyAqIFRvIHVwZGF0ZSBwb29sLT5wLm5pZCB1c2Vy
-cyBtdXN0IGNhbGwgcGFnZV9wb29sX3VwZGF0ZV9uaWQuDQo+ID4gKyAqLw0KPiA+ICtzdGF0aWMg
-Ym9vbCBwb29sX3BhZ2VfcmV1c2FibGUoc3RydWN0IHBhZ2VfcG9vbCAqcG9vbCwgc3RydWN0IHBh
-Z2UNCj4gPiAqcGFnZSkNCj4gPiArew0KPiA+ICsJcmV0dXJuICFwYWdlX2lzX3BmbWVtYWxsb2Mo
-cGFnZSkgJiYgcGFnZV90b19uaWQocGFnZSkgPT0gcG9vbC0NCj4gPiA+cC5uaWQ7DQo+ID4gK30N
-Cj4gPiArDQo+ID4gIHZvaWQgX19wYWdlX3Bvb2xfcHV0X3BhZ2Uoc3RydWN0IHBhZ2VfcG9vbCAq
-cG9vbCwNCj4gPiAgCQkJICBzdHJ1Y3QgcGFnZSAqcGFnZSwgYm9vbCBhbGxvd19kaXJlY3QpDQo+
-ID4gIHsNCj4gPiBAQCAtMjkyLDcgKzMwMyw4IEBAIHZvaWQgX19wYWdlX3Bvb2xfcHV0X3BhZ2Uo
-c3RydWN0IHBhZ2VfcG9vbA0KPiA+ICpwb29sLA0KPiA+ICAJICoNCj4gPiAgCSAqIHJlZmNudCA9
-PSAxIG1lYW5zIHBhZ2VfcG9vbCBvd25zIHBhZ2UsIGFuZCBjYW4gcmVjeWNsZSBpdC4NCj4gPiAg
-CSAqLw0KPiA+IC0JaWYgKGxpa2VseShwYWdlX3JlZl9jb3VudChwYWdlKSA9PSAxKSkgew0KPiA+
-ICsJaWYgKGxpa2VseShwYWdlX3JlZl9jb3VudChwYWdlKSA9PSAxICYmDQo+ID4gKwkJICAgcG9v
-bF9wYWdlX3JldXNhYmxlKHBvb2wsIHBhZ2UpKSkgew0KPiANCj4gSSdtIGFmcmFpZCB0aGF0IHdl
-IGFyZSBzbG93bHkgY2hpcHBpbmcgYXdheSB0aGUgcGVyZm9ybWFuY2UgYmVuZWZpdA0KPiB3aXRo
-IHRoZXNlIGluY3JlbWVudGFsIGNoYW5nZXMsIGFkZGluZyBtb3JlIGNoZWNrcy4gV2UgaGF2ZSBh
-bg0KPiBleHRyZW1lDQo+IHBlcmZvcm1hbmNlIHVzZS1jYXNlIHdpdGggWERQX0RST1AsIHdoZXJl
-IHdlIHdhbnQgZHJpdmVycyB0byB1c2UgdGhpcw0KPiBjb2RlIHBhdGggdG8gaGl0IF9fcGFnZV9w
-b29sX3JlY3ljbGVfZGlyZWN0KCksIHRoYXQgaXMgYSBzaW1wbGUgYXJyYXkNCj4gdXBkYXRlIChw
-cm90ZWN0ZWQgdW5kZXIgTkFQSSkgaW50byBwb29sLT5hbGxvYy5jYWNoZVtdLg0KPiANCj4gVG8g
-cHJlc2VydmUgdGhpcyBob3QtcGF0aCwgeW91IGNvdWxkIGluc3RlYWQgZmx1c2ggcG9vbC0NCj4g
-PmFsbG9jLmNhY2hlW10NCj4gaW4gdGhlIGNhbGwgcGFnZV9wb29sX3VwZGF0ZV9uaWQoKS4gIEFu
-ZCBtb3ZlIHRoZQ0KPiBwb29sX3BhZ2VfcmV1c2FibGUoKQ0KPiBjaGVjayBpbnRvIF9fcGFnZV9w
-b29sX3JlY3ljbGVfaW50b19yaW5nKCkuICAoQmVsb3cgYWRkZWQgdGhlICc+PicNCj4gd2l0aA0K
-PiByZW1haW5pbmcgY29kZSB0byBtYWtlIHRoaXMgZWFzaWVyIHRvIHNlZSkNCj4gDQoNCkZsdXNo
-IHNpbXBseSB3b24ndCB3b3JrLCB3aGF0IGFib3V0IHBhZ2VzIHRoYXQgYXJlIGN1cnJlbnRseSBp
-biB1c2UgYnkNCnRoZSBkcml2ZXIgSFcsIGFuZCB3aWxsIGJlIHJldHVybmVkIHRvIHRoZSBjYWNo
-ZSBvbmx5IGFmdGVyIHRoZSBmbHVzaCA/DQp3aG8gd2lsbCBmbHVzaCB0aG9zZSBwYWdlcyA/IGFu
-ZCBmbHVzaGluZyB0aGUgSFcgcXVldWUgd2lsbCBiZSB0b28NCmhlYXZ5ICENCg0KQXMgSm9uYXRo
-YW4gcG9pbnRlZCBvdXQsIGFsbCBkcml2ZXJzIGFyZSBkb2luZyB0aGlzIGNoZWNrIHRvZGF5LCBh
-bGwgd2UNCm5lZWQgaXMgdG8gc2ltcGx5IG1vdmUgdGhpcyB0byB0aGUgY2FjaGUgYW5kIHRha2Ug
-aXQgb3V0IG9mIHRoZSBkcml2ZXJzDQpyZXNwb25zaWJpbGl0eS4gDQoNCmZvciB0aGUgcGZtZW1h
-bGxvYywgd2UgY2FuIG1ha2Ugc3VyZSB0aGUgcGFnZSBwb29sIHdpbGwgbmV2ZXIgYWxsb3cNCnN1
-Y2ggcGFnZXMgdG8gYmUgYWxsb2NhdGVkIGluIGZpcnN0IHBsYWNlLCBidXQgdGhpcyBpcyB2ZXJ5
-IHJpc2t5IGFuZA0KY2FuIGJyZWFrIG1hbnkgImtlcm5lbCBpbiBlbWVyZ2VuY3kiIGZlYXR1cmVz
-Lg0KDQpJIHRoaW5rIHdoYXQgSm9uYXRoYW4gYW5kIEkgZGlkIGhlcmUsIGlzIHRoZSBiZXN0IGNv
-dXJzZSBvZiBhY3Rpb24uDQoNCj4gDQo+ID4gIAkJLyogUmVhZCBiYXJyaWVyIGRvbmUgaW4gcGFn
-ZV9yZWZfY291bnQgLyBSRUFEX09OQ0UgKi8NCj4gPiAgDQo+ID4gIAkJaWYgKGFsbG93X2RpcmVj
-dCAmJiBpbl9zZXJ2aW5nX3NvZnRpcnEoKSkNCj4gPiA+IAkJCWlmIChfX3BhZ2VfcG9vbF9yZWN5
-Y2xlX2RpcmVjdChwYWdlLCBwb29sKSkNCj4gPiA+IAkJCQlyZXR1cm47DQo+ID4gPiANCj4gPiA+
-IAkJaWYgKCFfX3BhZ2VfcG9vbF9yZWN5Y2xlX2ludG9fcmluZyhwb29sLCBwYWdlKSkgew0KPiA+
-ID4gCQkJLyogQ2FjaGUgZnVsbCwgZmFsbGJhY2sgdG8gZnJlZSBwYWdlcyAqLw0KPiA+ID4gCQkJ
-X19wYWdlX3Bvb2xfcmV0dXJuX3BhZ2UocG9vbCwgcGFnZSk7DQo+ID4gPiAJCX0NCj4gPiA+IAkJ
-cmV0dXJuOw0KPiA+ID4gCX0NCj4gPiA+IAkvKiBGYWxsYmFjay9ub24tWERQIG1vZGU6IEFQSSB1
-c2VyIGhhdmUgZWxldmF0ZWQgcmVmY250Lg0KPiANCj4gDQo=
+From: Tejun Heo <tj@kernel.org>
+Date: Thu, 24 Oct 2019 13:50:27 -0700
+
+> sk_page_frag() optimizes skb_frag allocations by using per-task
+> skb_frag cache when it knows it's the only user.  The condition is
+> determined by seeing whether the socket allocation mask allows
+> blocking - if the allocation may block, it obviously owns the task's
+> context and ergo exclusively owns current->task_frag.
+> 
+> Unfortunately, this misses recursion through memory reclaim path.
+> Please take a look at the following backtrace.
+ ...
+> In [0], tcp_send_msg_locked() was using current->page_frag when it
+> called sk_wmem_schedule().  It already calculated how many bytes can
+> be fit into current->page_frag.  Due to memory pressure,
+> sk_wmem_schedule() called into memory reclaim path which called into
+> xfs and then IO issue path.  Because the filesystem in question is
+> backed by nbd, the control goes back into the tcp layer - back into
+> tcp_sendmsg_locked().
+> 
+> nbd sets sk_allocation to (GFP_NOIO | __GFP_MEMALLOC) which makes
+> sense - it's in the process of freeing memory and wants to be able to,
+> e.g., drop clean pages to make forward progress.  However, this
+> confused sk_page_frag() called from [2].  Because it only tests
+> whether the allocation allows blocking which it does, it now thinks
+> current->page_frag can be used again although it already was being
+> used in [0].
+> 
+> After [2] used current->page_frag, the offset would be increased by
+> the used amount.  When the control returns to [0],
+> current->page_frag's offset is increased and the previously calculated
+> number of bytes now may overrun the end of allocated memory leading to
+> silent memory corruptions.
+> 
+> Fix it by adding gfpflags_normal_context() which tests sleepable &&
+> !reclaim and use it to determine whether to use current->task_frag.
+> 
+> v2: Eric didn't like gfp flags being tested twice.  Introduce a new
+>     helper gfpflags_normal_context() and combine the two tests.
+> 
+> Signed-off-by: Tejun Heo <tj@kernel.org>
+
+Applied and queued up for -stable, thanks Tejun.
