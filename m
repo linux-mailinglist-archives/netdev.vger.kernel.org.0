@@ -2,75 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 726A5E8497
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:41:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6611E84AE
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731531AbfJ2JlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 05:41:08 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:35478 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728575AbfJ2JlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 05:41:07 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D4786B40075;
-        Tue, 29 Oct 2019 09:41:05 +0000 (UTC)
-Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Tue, 29 Oct 2019 09:40:57 +0000
-Subject: Re: [PATCH net-next v2 0/6] sfc: Add XDP support
-To:     David Ahern <dsahern@gmail.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
-        <brouer@redhat.com>
-References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
- <8af30fef-6998-ed20-ba7c-982c9a4d263a@gmail.com>
-From:   Charles McLachlan <cmclachlan@solarflare.com>
-Message-ID: <add2ae6c-14cd-59c7-02aa-43d83f0a07a6@solarflare.com>
-Date:   Tue, 29 Oct 2019 09:40:49 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1728608AbfJ2JrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 05:47:11 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42641 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727504AbfJ2JrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 05:47:10 -0400
+Received: by mail-wr1-f67.google.com with SMTP id a15so574656wrf.9
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 02:47:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ncentric-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=89r1rNHEMVi51X8QptG2oJ8PZcM46Qw8VvMwF8b1wgo=;
+        b=wiEzjzXZjxbDnTURVXFofslvFJq1OnqyzLxdVOYTiEK4BkKtV9oSdFm/F24JGKSKqH
+         sJ3VU9bJai0Nd261G++OtTT/wZhXe9FuJ8SofZb0B8j7NngXjv6qFTH9tEImIwGHKg0/
+         opCMiE1lfo6WxkMYwfiiEsAN4QwZAW+TQuus/EtEwd5tXjEgSmRdWs4ixZtIJyktgOOt
+         zuBzBT34xzcKnKe1CK5OVdeUze3ktefiP7LhxMbKcNN4dUmRBYHYDmEcCp47ykpm4zNH
+         y7jpULJazBd3Mq6DftIH/r7aUsS3Nsx0ryO+8ttaIN5ZlnokpEE4MAjYzPuRE1NPnTKk
+         3uuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=89r1rNHEMVi51X8QptG2oJ8PZcM46Qw8VvMwF8b1wgo=;
+        b=WzYGzxV3ytjrdxkiypB2TuVqH8UdIHMEZOZ8t6lLYBQqjmr6yV1/9GcJB3Gk/7VM7w
+         e6FJmpmVA2IX1Wc4wAWHrcs7txYceqp05LQj2nVFxLuMEXTq4VkRDEktygLkuBG3fqz/
+         5juF4sVub8ddZgN2hoqthgCRjxIrKiYMJnUBmqT+fKVeGrs2PkGhLhMQZ0ow5zVIUQhn
+         PqBhnCd+F8TgEx3Ia1yyupHmcPHsmePccF4Q0mr6gwyCgWdtr9j4jzwRidubMfgSLVoe
+         5e6WgDZgMYUQN79/wj8mDTy9EtYreg188+iztctaCkrLx2REzdQPFJzHyQwbi+Ce6vlL
+         o9lA==
+X-Gm-Message-State: APjAAAXqaqBivDlQwq1B2YCuqJQEOrYw5pzd9ocD2RzxLBKQUPMiUXxl
+        6JmHLIHURGj/EJcTLVKym7xMHA==
+X-Google-Smtp-Source: APXvYqyr6dueVY98vyKdLQa7Cf+zesIqhhu9E22W8jO6/0960zTgfomp23nR4r174U6ZncxgF8OO4g==
+X-Received: by 2002:adf:e850:: with SMTP id d16mr18218775wrn.251.1572342428276;
+        Tue, 29 Oct 2019 02:47:08 -0700 (PDT)
+Received: from [192.168.3.176] (d515300d8.static.telenet.be. [81.83.0.216])
+        by smtp.gmail.com with ESMTPSA id v6sm15209634wru.72.2019.10.29.02.47.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 29 Oct 2019 02:47:07 -0700 (PDT)
+Subject: Re: [PATCH v2] 802.11n IBSS: wlan0 stops receiving packets due to
+ aggregation after sender reboot
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <m34l02mh71.fsf@t19.piap.pl> <m37e4tjfbu.fsf@t19.piap.pl>
+ <e5b07b4ce51f806ce79b1ae06ff3cbabbaa4873d.camel@sipsolutions.net>
+ <30465e05-3465-f496-d57f-5e115551f5cb@ncentric.com>
+ <dbbc8c3e898ec499f30a6ac1f262666ced6905fb.camel@sipsolutions.net>
+From:   Koen Vandeputte <koen.vandeputte@ncentric.com>
+Message-ID: <6967a862-c040-565a-3644-c804b188d13e@ncentric.com>
+Date:   Tue, 29 Oct 2019 10:47:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <8af30fef-6998-ed20-ba7c-982c9a4d263a@gmail.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
+In-Reply-To: <dbbc8c3e898ec499f30a6ac1f262666ced6905fb.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.154]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25008.003
-X-TM-AS-Result: No-3.017600-8.000000-10
-X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9TkUH66TwzU50FoS1aixTNeey
-        WMLRVf2LTPkqidFNTAV1S4DqawMuWrT0jVEXWzBwMiMrbc70Pfem3yCZiGA94J+4ziUPq4LxqRF
-        iyZgRFsSt2gtuWr1Lmn/RPVYI5XEWvfz3vfVTDjUo7b5tLxYZrR5FmvZzFEQuy5JfHvVu9IviB6
-        i8hqdc130tCKdnhB58vqq8s2MNhPCXxkCsDPSYDMIs1+7Tk9qQC24oEZ6SpSk6XEE7Yhw4Fnus9
-        2ZdPpqR7fI59DQdemL83BedG+JmKwav/jmmHNL5Da5hPzvP8qY0P7G54/cycrLqMhfbZwUJTSXx
-        jH1QGXOImdR/5ZBoKeL59MzH0po2K2yzo9Rrj9wPoYC35RuihKPUI7hfQSp53zHerOgw3HE=
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.017600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25008.003
-X-MDID: 1572342066-M3ISl81XhNbd
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28/10/2019 22:03, David Ahern wrote:
-> On 10/28/19 7:56 AM, Charles McLachlan wrote:
->> Supply the XDP callbacks in netdevice ops that enable lower level processing
->> of XDP frames.
-> 
-> Hi:
-> 
-> I was hoping to try out this patch set, but when I rebooted the server
-> with these applied I hit the BUG_ON in efx_ef10_link_piobufs:
-> 
-> 	if (tx_queue->queue == nic_data->pio_write_vi_base) {
-> 		BUG_ON(index != 0);
-> 		...
 
-Interesting. 
+On 29.10.19 10:03, Johannes Berg wrote:
+> On Tue, 2019-10-29 at 09:41 +0100, Koen Vandeputte wrote:
+>
+>> I can confirm the issue as I'm also seeing this sometimes in the field here.
+>>
+>> Sometimes when a devices goes out of range and then re-enters,
+>> the link refuses to "come up", as in rx looks to be "stuck" without any
+>> reports in system log or locking issues (lockdep enabled)
+> Right. I've recently debugged this due to issues in distributed
+> beaconing (rather than moving in/out of range), but I guess it would be
+> relatively simple to reproduce this with wmediumd, if that can be
+> controlled dynamically?
+>
+> What kernel are you running? You could check if you have
+>
+> 95697f9907bf ("mac80211: accept deauth frames in IBSS mode")
+> 4b08d1b6a994 ("mac80211: IBSS: send deauth when expiring inactive STAs")
+>
+> which might help somewhat, but don't fully cover the case of moving out
+> of range.
+>
+> johannes
+>
+I'm running OpenWrt (kernel 4.14.150 with 4.19.79 mac80211)
+I noticed these fixes last week and made a build 2 days ago with them 
+backported to it.
+Running in the field on roughly 4 devices since a day.
 
-Let's take this off the mailing list as I'd like to get you to collect some logs.
+Koen
+
