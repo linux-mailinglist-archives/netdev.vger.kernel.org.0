@@ -2,145 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4918AE8727
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 12:31:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7424DE873D
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 12:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbfJ2LbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 07:31:20 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:34970 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726952AbfJ2LbU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 07:31:20 -0400
-Received: by mail-oi1-f195.google.com with SMTP id n16so6346483oig.2
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 04:31:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N2Vs3cRRCc6B5vK67euaImf60RIslPFTMeoJVQCsjKA=;
-        b=JebjQDXtvFYK/dXO6St7oLssHDJft9yXmCqh/8DABSWzkrd1Fp3TCbYcdSi85FHcf4
-         iVQHZy7LxiSSvv47Lt0+xF9I1qUyAddtdj7FcwmQiPxsmS8brV9DvBY0bVD8xYIOCCv1
-         dn+X5MdzcG6Dp8NeRoGf5pyE50xlada5clH24H9W/Hkjk8RPo8yS9UbkkANgwKlefpqx
-         pk8IljRa+GJbQTemc0gpS/QS9F6BvCHuclV70KcrFH8uy2nOYCyGw2hy+Q6QWXuYNezC
-         zHHvroNybmCa4U5LKm7h0zMoBsvqrbTJv+ookHYFWFjo1fNFq/2TxSxTjP6gdm0aQc8D
-         Y04w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N2Vs3cRRCc6B5vK67euaImf60RIslPFTMeoJVQCsjKA=;
-        b=iEjK39CJ3b8dqSCZ0VTha9SH5WAk9Gpj+cT1KjU0VD8dpwl0eKSlIsLxvMaXkEGTeO
-         ckHNpGD6y7xTXsOEFkgCN9xHVxyhXgYV+/9FtMHSa7E7aXHgv8pQSzW+lRJqEAxTjGQf
-         IdLWqHmgesPKQgcX5+YorYDEynXoiuqkBgbZolim0d1Y0L94RccrY0l2qCSY9jVmmM3p
-         uZKH2/pK2T7YSPNrRZJw88yGdNsEl/7sM9SQgCUCAjvaEyfV4kicJYx+oNWdfYVDAxXx
-         v9LVXAb2l1hzlio7Ca455zV1RGhY+FatGbRkeDxgr3vy5cuwSv9u4BDhuORwq+LEUt96
-         S9Ig==
-X-Gm-Message-State: APjAAAVk5/iELTGamsNZXfFwlY7Q19D2708nRMH3UfonGfqjxNZbeanH
-        Vb/E7WD6JowE7PPlemUQdtxOpKXIuW0RaDS8nIM=
-X-Google-Smtp-Source: APXvYqy22d5E6+14qpzpvArfvgmmYL/W1BG634SoQee31VCd9KZsbQslS4px6uWQrszPxxgCh/IWoQnSPePZYv81P7Q=
-X-Received: by 2002:aca:b503:: with SMTP id e3mr3624288oif.177.1572348679120;
- Tue, 29 Oct 2019 04:31:19 -0700 (PDT)
+        id S1731205AbfJ2Lfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 07:35:54 -0400
+Received: from cache12.mydevil.net ([128.204.216.223]:28450 "EHLO
+        cache12.mydevil.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729070AbfJ2Lfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 07:35:54 -0400
+From:   michal.lyszczek@bofc.pl
+Date:   Tue, 29 Oct 2019 12:35:50 +0100
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] libnetlink.c, ss.c: properly handle fread()
+ error
+Message-ID: <20191029113550.fax6b4hmbhutciwx@c-ml-p3510.redembedded.pl>
+References: <20191024212001.7020-1-michal.lyszczek@bofc.pl>
+ <20191028212128.1b8c5054@hermes.lan>
 MIME-Version: 1.0
-References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com>
- <1571135440-24313-9-git-send-email-xiangxia.m.yue@gmail.com>
- <CAOrHB_B5dLuvoTxGpmaMiX9deEk9KjQHacqNKEpzHA2m5YS7jw@mail.gmail.com>
- <CAMDZJNWD=a+EBneEU-qs3pzXSBoOdzidn5cgOKs-y8G0UWvbnA@mail.gmail.com>
- <CAOrHB_BqGdFmmzTEPxejt0QXmyC_QtAXG=S8kzKi=3w-PacwUw@mail.gmail.com>
- <CAMDZJNXdu3R_GkHEBbwycEpe0wnwNmGzHx-8gUxtwiW1mEy7uw@mail.gmail.com>
- <CAOrHB_DdMX7sZkk79esdZkmb8RGaX_XiMAxhGz1LgWx50eFD9g@mail.gmail.com>
- <CAMDZJNVfyzmnd4qhp_esE-s3+-z8K=6tBP63X+SCEcjBon60eQ@mail.gmail.com>
- <CAOrHB_CnpcQoztqnfBkaDhTCK5nti8agtRmbbzZH+BfrPpiZ1g@mail.gmail.com>
- <CAMDZJNWeUoXD9SOBXfWes7Xk=BLRPs1iti+Kwz7YfC0NSE6oig@mail.gmail.com> <CAOrHB_BADQMdhFk4a8BJ0qaUeLf+2+H=cLf9q80U2g1AxewY2A@mail.gmail.com>
-In-Reply-To: <CAOrHB_BADQMdhFk4a8BJ0qaUeLf+2+H=cLf9q80U2g1AxewY2A@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Tue, 29 Oct 2019 19:30:43 +0800
-Message-ID: <CAMDZJNWzsP+sb+pXbxEXFpYQLy6TJQ_eqaseC8v5YNbFDA844Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 08/10] net: openvswitch: fix possible memleak
- on destroy flow-table
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Greg Rose <gvrose8192@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="qt2pijgyhjquszvj"
+Content-Disposition: inline
+In-Reply-To: <20191028212128.1b8c5054@hermes.lan>
+User-Agent: NeoMutt/20180716
+X-AV-Check: Passed
+X-System-Sender: michal.lyszczek@bofc.pl
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 3:38 PM Pravin Shelar <pshelar@ovn.org> wrote:
+
+--qt2pijgyhjquszvj
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hello Stephen,
+On 2019-10-28 21:21:28, Stephen Hemminger wrote:
+> On Thu, 24 Oct 2019 23:20:01 +0200
+> Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl> wrote:
 >
-> On Sun, Oct 27, 2019 at 11:49 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> >
-> > On Thu, Oct 24, 2019 at 3:14 PM Pravin Shelar <pshelar@ovn.org> wrote:
-> > >
-> > > On Tue, Oct 22, 2019 at 7:35 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
-> > > >
-> > > > On Tue, Oct 22, 2019 at 2:58 PM Pravin Shelar <pshelar@ovn.org> wrote:
-> > > > >
-> > > ...
-> > >
-> ...
-> > > >  struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *ti,
-> > > > @@ -400,10 +458,9 @@ static struct table_instance
-> > > > *table_instance_rehash(struct table_instance *ti,
-> > > >         return new_ti;
-> > > >  }
-> > > >
-> > > > -int ovs_flow_tbl_flush(struct flow_table *flow_table)
-> > > > +int ovs_flow_tbl_flush(struct flow_table *table)
-> > > >  {
-> > > > -       struct table_instance *old_ti, *new_ti;
-> > > > -       struct table_instance *old_ufid_ti, *new_ufid_ti;
-> > > > +       struct table_instance *new_ti, *new_ufid_ti;
-> > > >
-> > > >         new_ti = table_instance_alloc(TBL_MIN_BUCKETS);
-> > > >         if (!new_ti)
-> > > > @@ -412,16 +469,12 @@ int ovs_flow_tbl_flush(struct flow_table *flow_table)
-> > > >         if (!new_ufid_ti)
-> > > >                 goto err_free_ti;
-> > > >
-> > > > -       old_ti = ovsl_dereference(flow_table->ti);
-> > > > -       old_ufid_ti = ovsl_dereference(flow_table->ufid_ti);
-> > > > +       table_instance_destroy(table, true);
-> > > >
-> > > This would destroy running table causing unnecessary flow miss. Lets
-> > > keep current scheme of setting up new table before destroying current
-> > > one.
-> > >
-> > > > -       rcu_assign_pointer(flow_table->ti, new_ti);
-> ....
-> ...
-> >  /* Must be called with OVS mutex held. */
-> >  void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow *flow)
-> >  {
-> > @@ -752,17 +794,7 @@ void ovs_flow_tbl_remove(struct flow_table
-> > *table, struct sw_flow *flow)
-> >         struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
-> >
-> >         BUG_ON(table->count == 0);
-> > -       hlist_del_rcu(&flow->flow_table.node[ti->node_ver]);
-> > -       table->count--;
-> > -       if (ovs_identifier_is_ufid(&flow->id)) {
-> > -               hlist_del_rcu(&flow->ufid_table.node[ufid_ti->node_ver]);
-> > -               table->ufid_count--;
-> > -       }
-> > -
-> > -       /* RCU delete the mask. 'flow->mask' is not NULLed, as it should be
-> > -        * accessible as long as the RCU read lock is held.
-> > -        */
-> > -       flow_mask_remove(table, flow->mask);
-> > +       table_instance_remove(table, ti, ufid_ti, flow, true);
-> >  }
-> Lets rename table_instance_remove() to imply it is freeing a flow.
-hi Pravin, the function ovs_flow_free will free the flow actually. In
--ovs_flow_cmd_del
-ovs_flow_tbl_remove
-...
-ovs_flow_free
+> > fread(3) returns size_t data type which is unsigned, thus check
+> > `if (fread(...) < 0)' is always false. To check if fread(3) has
+> > failed, user should check if return is 0 and then check error
+> > indicator with ferror(3).
+>
+> You did find something that probably has been broken for a long time.
+>
+> First off, not sure why libnetlink is using fread here anyway.
+> It adds another copy to all I/O which can matter with 1M routes.
 
-In -table_instance_destroy
-table_instance_remove
-ovs_flow_free
+I don't this is a problem. Of course, this could be optimized with read(2)
+but these functions are (or at least I think they are) called very rarely.
+Optimal solution with read(2) will surely be much more complex than using
+fread(3). I'm not sure if minor performance gain is worth bigger complexity.
 
-But if rename the table_instance_remove, table_instance_flow_free ?
-> Otherwise looks good.
+> Also the man page for fread() implies that truncated reads (not
+> just zero) can happen on error. Better to check that full read was
+> completed or at least a valid netlink header?
+
+Yes, you are right, I must have missed that. I've changed patch to
+take this into account. I think, since this code parses precise binary
+data, each call to fread(3) should return exact ammount of bytes as
+what was requested as reading less then expected could lead to corrupt
+read later anyway.
+
+For example if `l =3D 3' and `NLMSG_ALIGN(l) =3D=3D 4' doing
+
+    status =3D fread(NLMSG_DATA(h), 1, NLMSG_ALIGN(l), rtnl);
+    if (status < l)
+        error;
+
+Will result in error when fread(3) returns 3 bytes (and error), as
+this will move stream pointer by 3 bytes instead of 4, and next
+call to fread(3) will first read last DATA byte and then header
+bytes, which will result in corrupted header and possible misleading
+error later in execution - I belive errors should be reported as
+soon as possible.
+
+
+Please review newly attached patch (in another mail).
+
+--=20
+=2E-----------------.-------------------.---------------------.------------=
+------.
+| Michal Lyszczek | Embedded C, Linux |   Company Address   |  .-. open sou=
+rce |
+| +48 727 564 419 | Software Engineer | Leszczynskiego 4/29 |  oo|  support=
+er  |
+| https://bofc.pl `----.--------------: 50-078 Wroclaw, Pol | /`'\      &  =
+    |
+| GPG FF1EBFE7E3A974B1 | Bits of Code | NIP:  813 349 58 78 |(\_;/) program=
+er  |
+`----------------------^--------------^---------------------^--------------=
+----'
+
+--qt2pijgyhjquszvj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEE75TheM5OqeB/xDzA/x6/5+OpdLEFAl24JAwACgkQ/x6/5+Op
+dLEHNQf+PYOQtZCLi4b2vRxZuZebl7gGhsKZO5HSfO+4wq4JzoyKsnTlZmLrE+7p
+p9hSNmGVgJTYWj1OwIOZQRUG/NVrtWjazIaFp0HN2fjwWkTuAc3h8DEmSqNwWVK3
+OHmF+Bn15fM6tsz9Ow8ZmQy5RV3iSjP6vLU6sNcaDAeqHRTYHPhDAwKs7HO6KE+A
+YX+CDYYkf795oDa86bGkR40SX0yvlWI3DfM9OHQT/Rc/2tgwQshLK1NTA4+UEIQB
+2+Wpz/FHvVMVA/XO8fP6cr6Sz0d0IXznkMcHjCb+qwHFEyHN+JIqCi9JlUfG9Eb2
+m6DrV9ROi0vABGPLWNyewdOB8Yn4Og==
+=sRAF
+-----END PGP SIGNATURE-----
+
+--qt2pijgyhjquszvj--
