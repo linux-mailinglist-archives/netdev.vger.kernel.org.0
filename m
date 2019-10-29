@@ -2,106 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3AD6E9093
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 21:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2580CE90C8
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 21:27:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727227AbfJ2UIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 16:08:05 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39542 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727182AbfJ2UIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 16:08:05 -0400
-Received: by mail-lj1-f196.google.com with SMTP id y3so41363ljj.6
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 13:08:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fW2Zh/fTxEZOQPa2raWuuwC2pp8Sz2KHBFNnTB4eWEs=;
-        b=RUiChNT+/TnFFn5bjZwy2byqh22AKTbCJCBObmS8MMm0mlDFMZ3+ZUQvfEUKFxPfHG
-         gKxqOXG9HM6Q9ws432DlC69CJ1HXXWAvsTZqvIDSOMrVjajWeWOgimDKr+6kQy+WHMTC
-         b29b5ymq9R3f4xru5r7JFju+iQs56sx4I/u3o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fW2Zh/fTxEZOQPa2raWuuwC2pp8Sz2KHBFNnTB4eWEs=;
-        b=tTrmybT3lhTFO92E6lOR66H+dc7hwyRcFaJggQarMu5JThElImKghDfxpi0tyznnKo
-         g++5Z/Q5cZt1sP6ETEsCwzmJm/rMjlHzBSRP4DRz7fyfDC/ceFARLJTyO8HRvUXuuYY2
-         PNn5lB2eSH3uvKumJcBZ+sHDKdIQ5RdK2kzekECi4y4z/lTNNHJSdcg7myEArFcTn2gz
-         fc4oIqvLmAyhRUu54DpnOMeUbkOlQVUZYQo3LcdFa7tu1vJzsctGbZISHydgmUEciRNK
-         sFazmhg3OMzc+TK/l6H+jb8Alm+6MlugJC+K4RWLLTCTu1nprWa/ePOBzjyArn0rWOh+
-         QKwA==
-X-Gm-Message-State: APjAAAWHMY83h+2TLegjuaUOhmwCJpTpX3FHUI0vi/9RZWW1j9GvPtgo
-        x1JaLhoGFJCoXUrqc8Fv7VbwpQ==
-X-Google-Smtp-Source: APXvYqzrxTfHZiXkL4r08L/mBr55DZk5LZ8cDufkeXKRww3LG076jKVtRPf00+Gs2EEPUjqjgwsFZQ==
-X-Received: by 2002:a2e:8204:: with SMTP id w4mr3977803ljg.212.1572379683232;
-        Tue, 29 Oct 2019 13:08:03 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id w20sm9606082lff.46.2019.10.29.13.07.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 29 Oct 2019 13:08:00 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 4/4] bonding: balance ICMP echoes in layer3+4
- mode
-To:     Matteo Croce <mcroce@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20191029135053.10055-1-mcroce@redhat.com>
- <20191029135053.10055-5-mcroce@redhat.com>
- <5be14e4e-807f-486d-d11a-3113901e72fe@cumulusnetworks.com>
- <a7ef0f1b-e7f5-229c-3087-6eaed9652185@cumulusnetworks.com>
- <CAGnkfhwmPxFhhEawxgTp9qt_Uw=HiN3kDVk9f33mr7wEJyp1NA@mail.gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <568200b1-fa27-6cb2-7586-d79829b24e4c@cumulusnetworks.com>
-Date:   Tue, 29 Oct 2019 22:07:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1726861AbfJ2U1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 16:27:47 -0400
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:39049 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725840AbfJ2U1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 16:27:47 -0400
+X-Originating-IP: 209.85.217.44
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com [209.85.217.44])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 661C91C0003
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 20:27:44 +0000 (UTC)
+Received: by mail-vs1-f44.google.com with SMTP id l5so108375vsh.12
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 13:27:44 -0700 (PDT)
+X-Gm-Message-State: APjAAAXK5QiCUU1sZbmL1O/9UlNEUTpNKCtjWXKeweHBHHHhd/EEjv9k
+        KdoioH98+69mq7hJ6+73PJjT/bees0tYNV6eBtQ=
+X-Google-Smtp-Source: APXvYqwSWsJlwAE1sRK+CYN7cLgpZ6Z8Uf0Ld5pHHkF6t1eMsl4iablwcFfanr5fLMpxpSGUrOj5SO6dVE86h2I0xmU=
+X-Received: by 2002:a67:2804:: with SMTP id o4mr2978192vso.47.1572380862914;
+ Tue, 29 Oct 2019 13:27:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAGnkfhwmPxFhhEawxgTp9qt_Uw=HiN3kDVk9f33mr7wEJyp1NA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1571135440-24313-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <1571135440-24313-9-git-send-email-xiangxia.m.yue@gmail.com>
+ <CAOrHB_B5dLuvoTxGpmaMiX9deEk9KjQHacqNKEpzHA2m5YS7jw@mail.gmail.com>
+ <CAMDZJNWD=a+EBneEU-qs3pzXSBoOdzidn5cgOKs-y8G0UWvbnA@mail.gmail.com>
+ <CAOrHB_BqGdFmmzTEPxejt0QXmyC_QtAXG=S8kzKi=3w-PacwUw@mail.gmail.com>
+ <CAMDZJNXdu3R_GkHEBbwycEpe0wnwNmGzHx-8gUxtwiW1mEy7uw@mail.gmail.com>
+ <CAOrHB_DdMX7sZkk79esdZkmb8RGaX_XiMAxhGz1LgWx50eFD9g@mail.gmail.com>
+ <CAMDZJNVfyzmnd4qhp_esE-s3+-z8K=6tBP63X+SCEcjBon60eQ@mail.gmail.com>
+ <CAOrHB_CnpcQoztqnfBkaDhTCK5nti8agtRmbbzZH+BfrPpiZ1g@mail.gmail.com>
+ <CAMDZJNWeUoXD9SOBXfWes7Xk=BLRPs1iti+Kwz7YfC0NSE6oig@mail.gmail.com>
+ <CAOrHB_BADQMdhFk4a8BJ0qaUeLf+2+H=cLf9q80U2g1AxewY2A@mail.gmail.com> <CAMDZJNWzsP+sb+pXbxEXFpYQLy6TJQ_eqaseC8v5YNbFDA844Q@mail.gmail.com>
+In-Reply-To: <CAMDZJNWzsP+sb+pXbxEXFpYQLy6TJQ_eqaseC8v5YNbFDA844Q@mail.gmail.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Tue, 29 Oct 2019 13:27:31 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_CMX_heb+wfhiVWdc5Q1qLOTk8X0oz3TRPsci2yMb2=SA@mail.gmail.com>
+Message-ID: <CAOrHB_CMX_heb+wfhiVWdc5Q1qLOTk8X0oz3TRPsci2yMb2=SA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 08/10] net: openvswitch: fix possible memleak
+ on destroy flow-table
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Greg Rose <gvrose8192@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/10/2019 21:45, Matteo Croce wrote:
-> On Tue, Oct 29, 2019 at 7:41 PM Nikolay Aleksandrov
-> <nikolay@cumulusnetworks.com> wrote:
->>
->> On 29/10/2019 20:35, Nikolay Aleksandrov wrote:
->>> Hi Matteo,
->>> Wouldn't it be more useful and simpler to use some field to choose the slave (override the hash
->>> completely) in a deterministic way from user-space ?
->>> For example the mark can be interpreted as a slave id in the bonding (should be
->>> optional, to avoid breaking existing setups). ping already supports -m and
->>> anything else can set it, this way it can be used to do monitoring for a specific
->>> slave with any protocol and would be a much simpler change.
->>> User-space can then implement any logic for the monitoring case and as a minor bonus
->>> can monitor the slaves in parallel. And the opposite as well - if people don't want
->>> these balanced for some reason, they wouldn't enable it.
->>>
->>
->> Ooh I just noticed you'd like to balance replies as well. Nevermind
->>
-> 
-> Also, the bonding could be in a router in the middle so no way to read the mark.
-> 
-
-Yeah, of course. I was just thinking from the host monitoring POV as I thought
-that was the initial intent (reading the last set's discussion).
-
-Anyway the patch looks good to me,
-Reviewed-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-
+On Tue, Oct 29, 2019 at 4:31 AM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>
+> On Tue, Oct 29, 2019 at 3:38 PM Pravin Shelar <pshelar@ovn.org> wrote:
+> >
+> > On Sun, Oct 27, 2019 at 11:49 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > >
+> > > On Thu, Oct 24, 2019 at 3:14 PM Pravin Shelar <pshelar@ovn.org> wrote:
+> > > >
+> > > > On Tue, Oct 22, 2019 at 7:35 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+> > > > >
+> > > > > On Tue, Oct 22, 2019 at 2:58 PM Pravin Shelar <pshelar@ovn.org> wrote:
+> > > > > >
+> > > > ...
+> > > >
+> > ...
+> > > > >  struct sw_flow *ovs_flow_tbl_dump_next(struct table_instance *ti,
+> > > > > @@ -400,10 +458,9 @@ static struct table_instance
+> > > > > *table_instance_rehash(struct table_instance *ti,
+> > > > >         return new_ti;
+> > > > >  }
+> > > > >
+> > > > > -int ovs_flow_tbl_flush(struct flow_table *flow_table)
+> > > > > +int ovs_flow_tbl_flush(struct flow_table *table)
+> > > > >  {
+> > > > > -       struct table_instance *old_ti, *new_ti;
+> > > > > -       struct table_instance *old_ufid_ti, *new_ufid_ti;
+> > > > > +       struct table_instance *new_ti, *new_ufid_ti;
+> > > > >
+> > > > >         new_ti = table_instance_alloc(TBL_MIN_BUCKETS);
+> > > > >         if (!new_ti)
+> > > > > @@ -412,16 +469,12 @@ int ovs_flow_tbl_flush(struct flow_table *flow_table)
+> > > > >         if (!new_ufid_ti)
+> > > > >                 goto err_free_ti;
+> > > > >
+> > > > > -       old_ti = ovsl_dereference(flow_table->ti);
+> > > > > -       old_ufid_ti = ovsl_dereference(flow_table->ufid_ti);
+> > > > > +       table_instance_destroy(table, true);
+> > > > >
+> > > > This would destroy running table causing unnecessary flow miss. Lets
+> > > > keep current scheme of setting up new table before destroying current
+> > > > one.
+> > > >
+> > > > > -       rcu_assign_pointer(flow_table->ti, new_ti);
+> > ....
+> > ...
+> > >  /* Must be called with OVS mutex held. */
+> > >  void ovs_flow_tbl_remove(struct flow_table *table, struct sw_flow *flow)
+> > >  {
+> > > @@ -752,17 +794,7 @@ void ovs_flow_tbl_remove(struct flow_table
+> > > *table, struct sw_flow *flow)
+> > >         struct table_instance *ufid_ti = ovsl_dereference(table->ufid_ti);
+> > >
+> > >         BUG_ON(table->count == 0);
+> > > -       hlist_del_rcu(&flow->flow_table.node[ti->node_ver]);
+> > > -       table->count--;
+> > > -       if (ovs_identifier_is_ufid(&flow->id)) {
+> > > -               hlist_del_rcu(&flow->ufid_table.node[ufid_ti->node_ver]);
+> > > -               table->ufid_count--;
+> > > -       }
+> > > -
+> > > -       /* RCU delete the mask. 'flow->mask' is not NULLed, as it should be
+> > > -        * accessible as long as the RCU read lock is held.
+> > > -        */
+> > > -       flow_mask_remove(table, flow->mask);
+> > > +       table_instance_remove(table, ti, ufid_ti, flow, true);
+> > >  }
+> > Lets rename table_instance_remove() to imply it is freeing a flow.
+> hi Pravin, the function ovs_flow_free will free the flow actually. In
+> -ovs_flow_cmd_del
+> ovs_flow_tbl_remove
+> ...
+> ovs_flow_free
+>
+> In -table_instance_destroy
+> table_instance_remove
+> ovs_flow_free
+>
+> But if rename the table_instance_remove, table_instance_flow_free ?
+table_instance_flow_free() looks good.
