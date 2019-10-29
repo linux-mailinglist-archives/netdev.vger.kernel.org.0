@@ -2,113 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC7C0E8D73
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 17:59:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B52E8E8D6F
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 17:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390765AbfJ2Q71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 12:59:27 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40553 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390785AbfJ2Q71 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 12:59:27 -0400
-Received: by mail-pg1-f194.google.com with SMTP id 15so9993698pgt.7;
-        Tue, 29 Oct 2019 09:59:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=KCNhk6Yyd07rDJH7lQx7kz/Ad42c+i5/xKh7Sj0sJEQ=;
-        b=QR0rThkgr8CuA3Iz9x+OXG2n78b36W+SuAbts3NDbG0QugZD3+iKZfrjKTIxXbaBtC
-         C+Y6ycxu2c4G1d7oH8fpdHVux43AaGxUNwIBbVKg0DEoKZPW9lbljtjM7PzUKBYcdmnX
-         Uaj9bTD0PMb2Uo3W8VQrDFmvFlr5M2/G8GvxrJVWH0uEqqBWwE6Yp4ogLheYYTWe3bTF
-         zXbM0V5Osw3sOkV/Iu7hp6w7CHkf5NzK4U7LU/sgSTT9EGYT6XYMb8IjDlN9+JcdMqcY
-         qZWOEbR4QLn7OZ3sjjGgubCgxNyRQLrOMtKixAn0yUvUT3OOJiHm73RfCNkbqcK3mjES
-         l47w==
+        id S2403780AbfJ2Q7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 12:59:30 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:36102 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403779AbfJ2Q7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 12:59:30 -0400
+Received: by mail-oi1-f193.google.com with SMTP id j7so9539158oib.3;
+        Tue, 29 Oct 2019 09:59:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=KCNhk6Yyd07rDJH7lQx7kz/Ad42c+i5/xKh7Sj0sJEQ=;
-        b=qwa1TJaiooPtocFUXI79zeQTGMzkcgn5ce5DwHqUl9nkQJgvFg5Fnd06cDTD1QlCip
-         qAcagkwLKiE3E0WpCxDe8feorCeGjdhoclHxap4wXkDf/jQLlNaiVT8tsK4G2oxhF4m5
-         rKg8HFpSxHAn7x9SW2G28M7UyT6K9eARbWYjFjok7gWEyZKmQ7ZGtDSJz4W4ngV7Q1dr
-         icLvmrGM9AhmvNqtCuT7bLgGIQvdzBonNkWfmnoX8lGeZ4D6KckQ5/RTaJr/I/GToZp8
-         1pJtFaNU8jLaf0UlsxOaacOtI3Vx2zDN5nrgpTNgryugCaAEgNZNPAABRtsqR7iNwTZf
-         qPcw==
-X-Gm-Message-State: APjAAAXrPUjZbGr4uXEIBOx1mjM4QU33jUtyv7HVpGgZfkCfoGzQqWkC
-        KLdtTds+WhB4HpWUYzcBdw==
-X-Google-Smtp-Source: APXvYqwtndnUnpXGYFo0j440tyVgOz/e0L1PpTBpjkbheGFr1ZQ2ySKh0q94bQxxlwUJobKft2V6pA==
-X-Received: by 2002:aa7:908b:: with SMTP id i11mr29026643pfa.140.1572368364864;
-        Tue, 29 Oct 2019 09:59:24 -0700 (PDT)
-Received: from localhost.localdomain ([216.52.21.4])
-        by smtp.gmail.com with ESMTPSA id w6sm14384147pfw.84.2019.10.29.09.59.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 29 Oct 2019 09:59:24 -0700 (PDT)
-From:   Praveen Chaudhary <praveen5582@gmail.com>
-X-Google-Original-From: Praveen Chaudhary <pchaudhary@linkedin.com>
-To:     fw@strlen.de, davem@davemloft.net, kadlec@netfilter.org,
-        pablo@netfilter.org, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Zhenggen Xu <zxu@linkedin.com>,
-        Andy Stracner <astracner@linkedin.com>
-Subject: [PATCH v2] [netfilter]: Fix skb->csum calculation when netfilter manipulation for NF_NAT_MANIP_SRC\DST is done on IPV6 packet.
-Date:   Tue, 29 Oct 2019 09:59:11 -0700
-Message-Id: <1572368351-3156-2-git-send-email-pchaudhary@linkedin.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1572368351-3156-1-git-send-email-pchaudhary@linkedin.com>
-References: <1572368351-3156-1-git-send-email-pchaudhary@linkedin.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WEljFb7fdnZ7H/05vl76i/wPX1q7/WajKC2wO1/piAU=;
+        b=nZXXNNjy+EexryRB4bFSJYIgTFQAOwzQ7RnFyNFtfoYtyuQov5wDmhB5o93eImRLPX
+         YgnmDba+laPHuJtOt1gWavzolkAxfMDUrDgDuMYwbs2xU/evaejmbBuc702y93dcOzTc
+         o7OvhzGyIQ9UeJUm87Yx3TisEBiFP7WrusDiZuA4J4EfUjwjQzfvz0zfhC2OrP1X2ddD
+         6YtPopAin1QwN6jceNQ4MtXP+DFSzPMhU/1t2c9Ry+PaZ4qSZLAbEQqZeNfEakdN/QwA
+         Pd3mmBETWoCoYX/COMFciK7pSydBomuhIItyz31vdoarkkSQnfuAKGSfbbEhDIUTN8Pw
+         G8aw==
+X-Gm-Message-State: APjAAAX/250iOhF8iYB9SNfOO8lZe7V+joHurFPClvfpp26zXAduDdT+
+        E5FquYCVOSADpSEU63z3SJm8gIM=
+X-Google-Smtp-Source: APXvYqzZn8tr0orO+5cx6rMdFkShcbrABGLcIDgX+2WMu+I6/bo6/LAyDfAJE1DqoVUT6p1xLa0LDA==
+X-Received: by 2002:aca:5015:: with SMTP id e21mr5136685oib.174.1572368368009;
+        Tue, 29 Oct 2019 09:59:28 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id o22sm4676415otk.47.2019.10.29.09.59.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 09:59:27 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 11:59:26 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Maxime Ripard <mripard@kernel.org>
+Cc:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: can: Convert Allwinner A10 CAN controller
+ to a schema
+Message-ID: <20191029165926.GA13915@bogus>
+References: <20191022154745.41865-1-mripard@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191022154745.41865-1-mripard@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No need to update skb->csum in function inet_proto_csum_replace16(),
-even if skb->ip_summed == CHECKSUM_COMPLETE, because change in L4
-header checksum field and change in IPV6 header cancels each other
-for skb->csum calculation.
+On Tue, 22 Oct 2019 17:47:45 +0200, Maxime Ripard wrote:
+> The older Allwinner SoCs have a CAN controller that is supported in Linux,
+> with a matching Device Tree binding.
+> 
+> Now that we have the DT validation in place, let's convert the device tree
+> bindings for that controller over to a YAML schemas.
+> 
+> Signed-off-by: Maxime Ripard <mripard@kernel.org>
+> ---
+>  .../net/can/allwinner,sun4i-a10-can.yaml      | 51 +++++++++++++++++++
+>  .../devicetree/bindings/net/can/sun4i_can.txt | 36 -------------
+>  2 files changed, 51 insertions(+), 36 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/allwinner,sun4i-a10-can.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/can/sun4i_can.txt
+> 
 
-Signed-off-by: Praveen Chaudhary <pchaudhary@linkedin.com>
-Signed-off-by: Zhenggen Xu <zxu@linkedin.com>
-Signed-off-by: Andy Stracner <astracner@linkedin.com>
+Applied, thanks.
 
-Reviewed-by: Florian Westphal <fw@strlen.de>
----
-Changes in V2.
-1.) Updating diff as per email discussion with Florian Westphal.
-    Since inet_proto_csum_replace16() does incorrect calculation
-    for skb->csum in all cases.
-2.) Change in Commmit logs.
----
----
- net/core/utils.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/net/core/utils.c b/net/core/utils.c
-index 6b6e51d..cec9924 100644
---- a/net/core/utils.c
-+++ b/net/core/utils.c
-@@ -438,6 +438,12 @@ void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
- }
- EXPORT_SYMBOL(inet_proto_csum_replace4);
- 
-+/**
-+ * No need to update skb->csum in this function, even if
-+ * skb->ip_summed == CHECKSUM_COMPLETE, because change in
-+ * L4 header checksum field and change in IPV6 header
-+ * cancels each other for skb->csum calculation.
-+ */
- void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
- 			       const __be32 *from, const __be32 *to,
- 			       bool pseudohdr)
-@@ -449,9 +455,6 @@ void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
- 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
- 		*sum = csum_fold(csum_partial(diff, sizeof(diff),
- 				 ~csum_unfold(*sum)));
--		if (skb->ip_summed == CHECKSUM_COMPLETE && pseudohdr)
--			skb->csum = ~csum_partial(diff, sizeof(diff),
--						  ~skb->csum);
- 	} else if (pseudohdr)
- 		*sum = ~csum_fold(csum_partial(diff, sizeof(diff),
- 				  csum_unfold(*sum)));
--- 
-2.7.4
-
+Rob
