@@ -2,133 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EA22E8AC4
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 15:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CC27E8B0C
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 15:43:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389145AbfJ2O2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 10:28:35 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:53832 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388871AbfJ2O2f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 10:28:35 -0400
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 89C9BC0C3C;
-        Tue, 29 Oct 2019 14:28:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1572359314; bh=h5gtIpA8YjzCDEZUirmF08xpzRXiU54ysGbGHhBp+NU=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=fGGfN+/tWisCH5qkvfJs28cl684dihRMQASEuYnelqeOySyISsAh0K1ykX9ziz3Ux
-         lZ9A/3jfyxQ++06C5HGnzf4bhv318ga92yQ2CewaXJiOhdLwN3Qwe2ffiIZR957fcu
-         37G/b4horxHIiezLiK8lmaDkuWpPTdfUClx6mQqXM8UYskyuWh/02jCEd80brB26GZ
-         m5MSoz0qK3W8lQhKNA+VlskBJI1Rmc82jpak95RODD+afmCow1SSTRSqGsflI3alDC
-         py5ekSpkFvXGNj1YKCWA8CV8BakNUqU+bxyNtSYWwX+o4zrDb+Zor4rbblR1Yh7zoo
-         +6swdSp0ojmFg==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id BA02DA0085;
-        Tue, 29 Oct 2019 14:28:33 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 29 Oct 2019 07:28:33 -0700
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Tue, 29 Oct 2019 07:28:33 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PpahytwP8H2v86B5BQlR7MnNGIkUuReSy+l9YdjBJlC1XYA6mAVq4TzxLxZvyaTtdMFL2qNt+2H05KUYNYhvk1X3xhfXR0bs0Kx8SbgJWXtWlsdLWhmQ34vgrtrcs+cI1E4eB33jCJhGgnafErwfEbLwryfBiCdzn5r9cvOf7zgXE3U9hPf0t93I885RBHUfbDyjPRvPTSjzn3hXBf+g0biS4Dn+5DaIKtIMswX/1kdzplaFfoHrjAEB9wdPC+gM0W2vpRHZUfm0HKg7GqwOz/v0RQdUxZH3qUg+o66n1RAIiHEeb7oZE4IfNo6/Di3Mbxe4wkVBr/0TWXlQBWMgjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h5gtIpA8YjzCDEZUirmF08xpzRXiU54ysGbGHhBp+NU=;
- b=O2xAbYiXSQ8R/XJpYC5vPvwTgCAnIeN7eizyTR+Cs1XMn6puuQ/JzhiLsQTlTvmq1kEe6sB95pH6AdxwA3pVMAJ62TWDmpTNVx5jSlDI6EffhfIFdguZlbG9pRcljybJ1d6v6fkjq2fhH5sSiF+j0rAR9BZv/3uBq5Coodyjwo0MxKdIgsxTzOwa73b4WMeUKJkCXpCdeMiEJeBXrCKSHFCLxD5g/KNIbrmkIRKHpa4UqCAxij7EWTRajtb17MHNwEpcAq75Xq51JC07pRRpGLu8DGLweduEmcDUU2zc4BWRtclEo7ePeui++cmL3vDUiKVBjOiJv5nyiaSNE05E3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h5gtIpA8YjzCDEZUirmF08xpzRXiU54ysGbGHhBp+NU=;
- b=EVbdTM4ZCcPh/Ea6C2Bhtk50G1lx5+owhkaJl0PWSCygTfz5Dv5XBOcKPpXO0EmtQ7ZAUEfsPPlEOA8R9aB2rp2EXzOZ/ZP7/p2Hgs036ZR+SLTq++zDFP8J3mMkjJoCWGmYim/Q2LBSwY6dfXW2+flsibpy3KnFmMD1CN9Ck2A=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3122.namprd12.prod.outlook.com (20.178.211.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.20; Tue, 29 Oct 2019 14:28:24 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8%5]) with mapi id 15.20.2408.018; Tue, 29 Oct 2019
- 14:28:24 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 5/9] net: stmmac: xgmac: Only get SPH header len if
- available
-Thread-Topic: [PATCH net 5/9] net: stmmac: xgmac: Only get SPH header len if
- available
-Thread-Index: AQHVjmNlGpdY/wr1i0CUE5JPinf626dxrUcA
-Date:   Tue, 29 Oct 2019 14:28:24 +0000
-Message-ID: <BN8PR12MB32667D41FC3A12A717F77BB5D3610@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <cover.1572355609.git.Jose.Abreu@synopsys.com>
- <ef314ca26e4a621fa8464d76aed07882dd4b0ee5.1572355609.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <ef314ca26e4a621fa8464d76aed07882dd4b0ee5.1572355609.git.Jose.Abreu@synopsys.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 88db2f14-6103-4fb8-7329-08d75c7c41a2
-x-ms-traffictypediagnostic: BN8PR12MB3122:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB31221A14BC2D0BFAEC071523D3610@BN8PR12MB3122.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3513;
-x-forefront-prvs: 0205EDCD76
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(396003)(136003)(346002)(39860400002)(199004)(189003)(4744005)(5660300002)(14454004)(99286004)(316002)(33656002)(11346002)(66446008)(81166006)(26005)(76116006)(64756008)(4326008)(66946007)(66556008)(6506007)(476003)(66476007)(478600001)(256004)(55016002)(8936002)(6116002)(3846002)(2906002)(186003)(25786009)(305945005)(74316002)(71190400001)(71200400001)(7736002)(2501003)(8676002)(486006)(6436002)(9686003)(66066001)(54906003)(102836004)(446003)(6246003)(86362001)(52536014)(81156014)(76176011)(229853002)(7696005)(110136005);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3122;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4ozrLPE+l9IHUItzz4FclTut9we8v98P0UUqEBP7tjveQPmMU2SBfBQW1dAnysMFEvx51sWLzYId4FjOtrQpXyta0aUFU38WTCrhwoEmE22RXk81qqnnpXtTdyVvAQ3GoZAJLw2KshYYOk8YSAJmELkaCD1ro8hgabWozvabziICbPeJ7aa2QxCSBMXIKsbLDrS6ikFpI3esq/eUb4bnV/ouT/MUI0aNQATSv7Lj+1mHxwhF1TvncYnsQVlV6wnqMJlqodJYf6p/DBJOAioSLsNvljUiIP7A3QJLsnrRCeHewIXWrUIAJNevek3AP3W9AYcA/L1/gbgz1yvC2hOQz8hSrWAj+Kwc/qCXkmy56k9kMQ9jQ/mwQT/1v2fu7nRBY7WvKIxMkVGKXKPoyugBA1XLhu+wJa9m10QyeqNwWKJa2Kzy1WnZ1LjwVytWktmF
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88db2f14-6103-4fb8-7329-08d75c7c41a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2019 14:28:24.1870
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Crk6S03bEL4m0NPQnXpTGWkzfjT5NUyBK1/UAjlPf3ooSibBv2fNyJgmwex88Nt4gS3eIBjmlRXDhc5gsOG3gw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3122
-X-OriginatorOrg: synopsys.com
+        id S2389446AbfJ2OnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 10:43:15 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:63214 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388712AbfJ2OnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 10:43:14 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9TEYHi0032653;
+        Tue, 29 Oct 2019 10:43:11 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vxqa8gcss-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 29 Oct 2019 10:43:10 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x9TEYST7033682;
+        Tue, 29 Oct 2019 10:43:10 -0400
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2vxqa8gcrt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 29 Oct 2019 10:43:10 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x9TEPEXC021088;
+        Tue, 29 Oct 2019 14:43:09 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma05wdc.us.ibm.com with ESMTP id 2vvds6v4dy-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 29 Oct 2019 14:43:09 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9TEh86T22479298
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 29 Oct 2019 14:43:08 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2B7526A061;
+        Tue, 29 Oct 2019 14:43:08 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C92F56A04F;
+        Tue, 29 Oct 2019 14:43:07 +0000 (GMT)
+Received: from [9.53.179.206] (unknown [9.53.179.206])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 29 Oct 2019 14:43:07 +0000 (GMT)
+Subject: Re: [next-queue PATCH v2 0/2] Address IRQ related crash seen due
+ to io_perm_failure
+From:   "David Z. Dai" <zdai@linux.vnet.ibm.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     alexander.h.duyck@linux.intel.com,
+        intel-wired-lan@lists.osuosl.org, jeffrey.t.kirsher@intel.com,
+        netdev@vger.kernel.org, zdai@us.ibm.com
+In-Reply-To: <20191011153219.22313.60179.stgit@localhost.localdomain>
+References: <20191011153219.22313.60179.stgit@localhost.localdomain>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Tue, 29 Oct 2019 09:43:07 -0500
+Message-ID: <1572360187.12281.4.camel@oc5348122405>
+Mime-Version: 1.0
+X-Mailer: Evolution 2.32.3 (2.32.3-36.el6) 
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-29_04:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910290140
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
-Date: Oct/29/2019, 14:14:49 (UTC+00:00)
+On Fri, 2019-10-11 at 08:34 -0700, Alexander Duyck wrote:
+> David Dai had submitted a patch[1] to address a reported issue with e1000e
+> calling pci_disable_msi without first freeing the interrupts. Looking over
+> the issue it seems the problem was the fact that e1000e_down was being
+> called in e1000_io_error_detected without calling e1000_free_irq, and this
+> was resulting in e1000e_close skipping over the call to e1000e_down and
+> e1000_free_irq.
+> 
+> The use of the __E1000_DOWN flag for the close test seems to have come from
+> the runtime power management changes that were made some time ago. From
+> what I can tell in the close path we should be disabling runtime power
+> management via a call to pm_runtime_get_sync. As such we can remove the
+> test for the __E1000_DOWN bit. However in comparing this with other drivers
+> we do need to avoid freeing the IRQs more than once. So in order to address
+> that I have copied the approach taken in igb and taken it a bit further so
+> that we will always detach the interface and if the interface is up we will
+> bring it down and free the IRQs. In addition we are able to reuse some of
+> the power management code so I have taken the opportunity to merge those
+> bits.
+> 
+> [1]: https://lore.kernel.org/lkml/1570121672-12172-1-git-send-email-zdai@linux.vnet.ibm.com/
+> 
+> v2: Move e1000e_pm_thaw out of CONFIG_PM region to fix build issue on Sparc64
+> 
+> ---
+> 
+> Alexander Duyck (2):
+>       e1000e: Use rtnl_lock to prevent race conditions between net and pci/pm
+>       e1000e: Drop unnecessary __E1000_DOWN bit twiddling
+> 
+> 
+>  drivers/net/ethernet/intel/e1000e/netdev.c |   75 +++++++++++++---------------
+>  1 file changed, 36 insertions(+), 39 deletions(-)
+> 
+I am not familiar with the process. Don't mean to push you in any way.
+Just want to check if these 2 v2 patches will be accepted by upstream?
+or any thing else needs to be done to finish the process? 
 
-> Split Header length is only available when L34T =3D=3D 0. Fix this by
-> correctly checking if L34T is zero before trying to get Header length.
+Thanks! - David
 
-This is a typo, sorry. I mean:
-
-"Split Header length is only available when L34T !=3D 0."
-
----
-Thanks,
-Jose Miguel Abreu
