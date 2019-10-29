@@ -2,74 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEE13E986B
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B8DE98E9
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 10:11:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbfJ3Ioh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 04:44:37 -0400
-Received: from ms.lwn.net ([45.79.88.28]:48670 "EHLO ms.lwn.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726096AbfJ3Iog (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 04:44:36 -0400
-Received: from localhost.localdomain (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id DA9EE2E4;
-        Wed, 30 Oct 2019 08:44:34 +0000 (UTC)
-Date:   Wed, 30 Oct 2019 02:44:30 -0600
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, linux-doc@vger.kernel.org,
-        Simon Horman <simon.horman@netronome.com>
-Subject: Re: [PATCH net] Documentation: netdev-FAQ: make all questions into
- headings
-Message-ID: <20191030024430.719c73be@lwn.net>
-In-Reply-To: <20191029171215.6861-1-jakub.kicinski@netronome.com>
-References: <20191029171215.6861-1-jakub.kicinski@netronome.com>
-Organization: LWN.net
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1726518AbfJ3JLB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 30 Oct 2019 05:11:01 -0400
+Received: from email.epicentrk.ua ([194.183.174.42]:62477 "EHLO
+        zimbra.epicentrk.ua" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726109AbfJ3JLA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 05:11:00 -0400
+X-Greylist: delayed 20899 seconds by postgrey-1.27 at vger.kernel.org; Wed, 30 Oct 2019 05:10:59 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.epicentrk.ua (Postfix) with ESMTP id 4D4DE2AA7B2;
+        Wed, 30 Oct 2019 00:26:20 +0200 (EET)
+Received: from zimbra.epicentrk.ua ([127.0.0.1])
+        by localhost (zimbra.epicentrk.ua [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id OSWPd2WnASGP; Wed, 30 Oct 2019 00:26:05 +0200 (EET)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra.epicentrk.ua (Postfix) with ESMTP id A770B2AA7C5;
+        Wed, 30 Oct 2019 00:25:33 +0200 (EET)
+X-Virus-Scanned: amavisd-new at zimbra.epicentrk.ua
+Received: from zimbra.epicentrk.ua ([127.0.0.1])
+        by localhost (zimbra.epicentrk.ua [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id iJ5LgQ6DnIV8; Wed, 30 Oct 2019 00:25:33 +0200 (EET)
+Received: from zimbra.epicentrk.ua (zimbra.epicentrk.ua [10.71.1.50])
+        by zimbra.epicentrk.ua (Postfix) with ESMTP id 24C782AA6D7;
+        Wed, 30 Oct 2019 00:25:31 +0200 (EET)
+Date:   Wed, 30 Oct 2019 00:25:31 +0200 (EET)
+From:   Mme Annie MARTINEZ <bc.kom@epicentrk.com>
+Reply-To: annie.martinez121@gmail.com
+Message-ID: <17085746.321560.1572387931111.JavaMail.zimbra@epicentrk.com>
+Subject: Proposition!
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.71.1.50]
+X-Mailer: Zimbra 8.7.7_GA_1787 (zclient/8.7.7_GA_1787)
+Thread-Index: Yz87rBCisXkwzxXtXbywtzWtVTqymw==
+Thread-Topic: Proposition!
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Oct 2019 10:12:15 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+Je voudrais réaliser un projet d’aide humanitaire à travers vous bien qu’on ne se connait pas vraiment. J’ai alors décidé de vous léguer à titre de legs une somme de un million cinq cent mille dollars américain. Ma propre famille qui devrait en bénéficier m'avait rejetée pour la simple raison de mon mariage avec un Arabe Libyen.
 
-> Make sure all questions are headings. Some questions are
-> currently on multiple lines, and the continuation lines
-> appear as part of the answer when rendered. One question
-> was also missing an underline completely.
-> 
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
-> ---
->  Documentation/networking/netdev-FAQ.rst | 35 +++++++++----------------
->  1 file changed, 13 insertions(+), 22 deletions(-)
+« N’hésitez pas à me répondre à cet courriel: annie.martinez121@gmail.com pour me parlé directement »
 
-Thanks for working to improve our documentation!
+NB: Veuillez vous assurer de répondre a la bonne adresse Émail merci et QUE DIEU VOUS BÉNISSE.
 
-One quick comment...
-
-[...]
-
-> -Q: I see a network patch and I think it should be backported to stable.
-> ------------------------------------------------------------------------
-> -Q: Should I request it via stable@vger.kernel.org like the references in
-> -the kernel's Documentation/process/stable-kernel-rules.rst file say?
-> +Q: I see a network patch and I think it should be backported to stable. Should I request it via stable@vger.kernel.org like the references in the kernel's Documentation/process/stable-kernel-rules.rst file say?
-> +------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-I don't think that making these massive heading lines actually improves the
-experience - for readers of either the plain-text or formatted docs.  If
-you really want to create headings, the heading here should be "Stable
-backports" or some such with the question appearing below.  But do the
-questions really need to be headings?
-
-Thanks,
-
-jon
+Sincèrement
+Mme ANNIE MARTINEZ
+E-mail Privée: annie.martinez121@gmail.com
