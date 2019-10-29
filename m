@@ -2,35 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F748E8EC6
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:57:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D9FE8EC9
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:57:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728798AbfJ2R5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 13:57:10 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:47841 "EHLO
+        id S1727655AbfJ2R5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 13:57:06 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:40997 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726635AbfJ2R5H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:57:07 -0400
-X-Greylist: delayed 491 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Oct 2019 13:57:05 EDT
+        with ESMTP id S1726713AbfJ2R5G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:57:06 -0400
 Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 0ABE822EE3;
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 42D7822EE4;
         Tue, 29 Oct 2019 18:48:53 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
         s=mail2016061301; t=1572371333;
-        bh=e1PTLm3kTFCklCK3oiHVFGQvwxFH6DrXm3LEg+OEI8c=;
+        bh=PbfA7H2lwRKfSuMsRBe42p6Zb1q6FIEe3795UNqR4bI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F4NLtkxgSLXyxaYmtKxWmRFv/qyczxB0I25+PqIMTc3eGShbTlub7cs7A8VP9RCFD
-         CxxAafyLM9d8M56Wgpzem4uHJ/m9OXwcgHdBOBZAhw8101fQ0OYATc/IgWc9FfIZBP
-         x47Pua2KPXZA7d5rfRm6pG9JjIkdFZLWn1fuPD7A=
+        b=YFoia7pxEXBX7aG7MOFMI+VAK0xmtS6JrxS3qPeIwCIefNCalHFpgCJH9/Tajj4kT
+         GgH1SKAvQo7VvEwg0bCVRWp+DI+AI+35kzGvVFlBpVIU4/KpT29Uqmw+JX1ih7tfzh
+         eGz7XqYya37WWQv1Er3sU7yd7rzJ3O0PZYVwWnkU=
 From:   Michael Walle <michael@walle.cc>
 To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Michael Walle <michael@walle.cc>
-Subject: [PATCH 1/3] dt-bindings: net: phy: Add reg-init property
-Date:   Tue, 29 Oct 2019 18:48:17 +0100
-Message-Id: <20191029174819.3502-2-michael@walle.cc>
+Subject: [PATCH 2/3] net: phy: export __phy_{read|write}_page
+Date:   Tue, 29 Oct 2019 18:48:18 +0100
+Message-Id: <20191029174819.3502-3-michael@walle.cc>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191029174819.3502-1-michael@walle.cc>
 References: <20191029174819.3502-1-michael@walle.cc>
@@ -43,100 +42,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe the reg-init property to configure PHY registers.
+Also check if the op is actually available. Otherwise return -ENOTSUPP.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- .../devicetree/bindings/net/ethernet-phy.yaml | 31 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- include/dt-bindings/net/phy.h                 | 18 +++++++++++
- 3 files changed, 50 insertions(+)
- create mode 100644 include/dt-bindings/net/phy.h
+ drivers/net/phy/phy-core.c | 24 ++++++++++++++++++++++--
+ include/linux/phy.h        |  2 ++
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index f70f18ff821f..d2dda1f33119 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -153,6 +153,28 @@ properties:
-       Delay after the reset was deasserted in microseconds. If
-       this property is missing the delay will be skipped.
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 9412669b579c..70f93e405e91 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -687,15 +687,35 @@ int phy_modify_mmd(struct phy_device *phydev, int devad, u32 regnum,
+ }
+ EXPORT_SYMBOL_GPL(phy_modify_mmd);
  
-+  reg-init:
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+        items:
-+          items:
-+            - description:
-+                Set this to zero to write clause-22 register.
-+                Set the page ORed with PHY_REG_PAGE to write to
-+                a paged register. Set to devad ORed with
-+                PHY_REG_C45 to write a clause-45 register.
-+            - description:
-+                The PHY register.
-+            - description:
-+                Mask, if non-zero, ANDed with existing register
-+                value.
-+            - description:
-+                Value, ORed with the masked value and written to
-+                the register.
-+    description:
-+      A list of <page_or_devad reg mask value> tuples to configure
-+      the PHY registers at startup.
-+
- required:
-   - reg
- 
-@@ -173,5 +195,14 @@ examples:
-             reset-gpios = <&gpio1 4 1>;
-             reset-assert-us = <1000>;
-             reset-deassert-us = <2000>;
-+
-+            reg-init =
-+                /* Fix RX and TX clock transition timing */
-+                <(PHY_REG_PAGE | 2) 0x15 0xffcf 0>, /* Reg 2,21 Clear bits 4, 5 */
-+                /* Adjust LED drive. */
-+                <(PHY_REG_PAGE | 3) 0x11 0 0x442a>, /* Reg 3,17 <- 0442a */
-+                /* irq, blink-activity, blink-link */
-+                <(PHY_REG_PAGE | 3) 0x10 0 0x0242>; /* Reg 3,16 <- 0x0242 */
-+
-         };
-     };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a69e6db80c79..493ea5e13c2c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6147,6 +6147,7 @@ F:	Documentation/networking/phy.rst
- F:	drivers/net/phy/
- F:	drivers/of/of_mdio.c
- F:	drivers/of/of_net.c
-+F:	include/dt-bindings/net/phy.h
- F:	include/linux/*mdio*.h
- F:	include/linux/of_net.h
- F:	include/linux/phy.h
-diff --git a/include/dt-bindings/net/phy.h b/include/dt-bindings/net/phy.h
-new file mode 100644
-index 000000000000..b37853144719
---- /dev/null
-+++ b/include/dt-bindings/net/phy.h
-@@ -0,0 +1,18 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Device Tree constants for a generic network PHY
+-static int __phy_read_page(struct phy_device *phydev)
++/**
++ * __phy_read_page - get currently selected page
++ * @phydev: the phy_device struct
 + *
-+ * Author: Michael Walle <michael@walle.cc>
-+ *
++ * Get the current PHY page. On error, returns a negative errno, otherwise
++ * returns the selected page number.
 + */
-+
-+#ifndef _DT_BINDINGS_NET_PHY_H
-+#define _DT_BINDINGS_NET_PHY_H
-+
-+/* PHY write selection bits */
-+
-+#define PHY_REG_C22	(0)
-+#define PHY_REG_PAGE	(1 << 31)
-+#define PHY_REG_C45	(1 << 30)
-+
-+#endif /* _DT_BINDINGS_NET_PHY_H */
++int __phy_read_page(struct phy_device *phydev)
+ {
++	if (!phydev->drv->read_page)
++		return -ENOTSUPP;
+ 	return phydev->drv->read_page(phydev);
+ }
++EXPORT_SYMBOL_GPL(__phy_read_page);
+ 
+-static int __phy_write_page(struct phy_device *phydev, int page)
++/**
++ * __phy_write_page - set the current page
++ * @phydev: the phy_device struct
++ * @page: desired page
++ *
++ * Set the current PHY page. On error, returns a negative errno.
++ */
++int __phy_write_page(struct phy_device *phydev, int page)
+ {
++	if (!phydev->drv->write_page)
++		return -ENOTSUPP;
+ 	return phydev->drv->write_page(phydev, page);
+ }
++EXPORT_SYMBOL_GPL(__phy_write_page);
+ 
+ /**
+  * phy_save_page() - take the bus lock and save the current page
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 9a0e981df502..70eca3cb25ff 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -797,6 +797,8 @@ int __phy_modify_mmd(struct phy_device *phydev, int devad, u32 regnum,
+ 		     u16 mask, u16 set);
+ int phy_modify_mmd(struct phy_device *phydev, int devad, u32 regnum,
+ 		   u16 mask, u16 set);
++int __phy_read_page(struct phy_device *phydev);
++int __phy_write_page(struct phy_device *phydev, int page);
+ 
+ /**
+  * __phy_set_bits - Convenience function for setting bits in a PHY register
 -- 
 2.20.1
 
