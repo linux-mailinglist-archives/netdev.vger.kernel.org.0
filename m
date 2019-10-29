@@ -2,83 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0504E87A1
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 12:59:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB026E880E
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 13:24:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730303AbfJ2L7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 07:59:48 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:34945 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbfJ2L7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 07:59:48 -0400
-Received: by mail-lj1-f193.google.com with SMTP id m7so14958524lji.2
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 04:59:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nfVQKB9XJT9KAwa7OFFOsDXrEQ0Ltetf7X8GhpgG8Mk=;
-        b=AXePf6WJERlDTRRyN0F5iLH7cfTDnSdT5WkUQmR85EQPlXFzHiNXXbafMApbp03sp/
-         NEbGiW94bRaK4npLJvDXdmLGKVrQ8HipKvRdHPyiBQEx0Te5MJHoLyQ8qjCqgqA21eLA
-         gTLD3n2mfokvc0rgMkTTdQz5crzNDR4mSSyo4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nfVQKB9XJT9KAwa7OFFOsDXrEQ0Ltetf7X8GhpgG8Mk=;
-        b=sJ4rTR18vGUqalCaHd2sRmo4jZ/6uLYuP5kaLXBw3Ad6+G1HY5od5MmFDH2qSCiS9v
-         OP+1df7i6nY6VlN2mwvpB72+SE98becdk7LDfz8gpUSSRYhqHJGvLkJAlh/fJsMw/+DT
-         HT/rAa3Ocsk3/SpDiRscSCS/JiJZIwmqc5h44A4o+tw177J7PURXROx/nyWFFveOOGfS
-         zDuKO1tHIFIDQhHT8Mor8jrNR4PxLG6vMpkO5IwGZdkYFLHGU1KwzjtJFLWCYX+T8UQ2
-         Mshdwu9Z1eoV3cg8nuxYFl9WzuYjE9oIdn+gEP0iSi+ekOUuCL6bs+DD8+aMXhSKlXhd
-         0ESQ==
-X-Gm-Message-State: APjAAAXu7nNXC/bfea1789ZBunfKu0goLr5oi3WnnyvEvVGYqMMyj7OJ
-        Ak4XWEe+NGr8IXUySp8Lf4rn/xdDuy8=
-X-Google-Smtp-Source: APXvYqypuG2kW1CxsdV9GzKJd0XB9WUkdfjzItNNbHdD5ptveoreGQs+pqUMXUVPtW0hJtFlIsax6g==
-X-Received: by 2002:a05:651c:1066:: with SMTP id y6mr2435959ljm.96.1572350385631;
-        Tue, 29 Oct 2019 04:59:45 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id 27sm7079313ljv.82.2019.10.29.04.59.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Oct 2019 04:59:44 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net] net: rtnetlink: fix a typo fbd -> fdb
-Date:   Tue, 29 Oct 2019 13:59:32 +0200
-Message-Id: <20191029115932.399-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.21.0
+        id S1733120AbfJ2MYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 08:24:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40154 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727924AbfJ2MYr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 08:24:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=xMtT1n7AGoA6K6DL5+Z4fPFRQg3Fuamc+hw6KUzP67Y=; b=zNhKyuRv6c3/TY+bX38MgSdr+I
+        7s0s1TX0blmE8PR+mGvXzmwk420bC2zv+5gvQ2ujcvf1luG4aE0+an1qdxxH5kHyExHXE/SD4qje/
+        oAYbVWaRPpQctx5Z5VT5LTP0a2dxe/yxELgl1ovPZgjp0IwoY9CFbexUnZJ27lxHxwDk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iPQXu-00044i-Ft; Tue, 29 Oct 2019 13:24:22 +0100
+Date:   Tue, 29 Oct 2019 13:24:22 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 06/12] net: ethernet: ti: introduce cpsw
+  switchdev based driver part 1 - dual-emac
+Message-ID: <20191029122422.GL15259@lunn.ch>
+References: <20191024100914.16840-1-grygorii.strashko@ti.com>
+ <20191024100914.16840-7-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191024100914.16840-7-grygorii.strashko@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A simple typo fix in the nl error message (fbd -> fdb).
+>  config TI_CPTS
+>  	bool "TI Common Platform Time Sync (CPTS) Support"
+> -	depends on TI_CPSW || TI_KEYSTONE_NETCP || COMPILE_TEST
+> +	depends on TI_CPSW || TI_KEYSTONE_NETCP || COMPILE_TEST || TI_CPSW_SWITCHDEV
 
-CC: David Ahern <dsahern@gmail.com>
-Fixes: 8c6e137fbc7f ("rtnetlink: Update rtnl_fdb_dump for strict data checking")
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
- net/core/rtnetlink.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+nit picking, but COMPILE_TEST is generally last on the line.
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 1ee6460f8275..05bdf5908472 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3916,7 +3916,7 @@ static int valid_fdb_dump_strict(const struct nlmsghdr *nlh,
- 	ndm = nlmsg_data(nlh);
- 	if (ndm->ndm_pad1  || ndm->ndm_pad2  || ndm->ndm_state ||
- 	    ndm->ndm_flags || ndm->ndm_type) {
--		NL_SET_ERR_MSG(extack, "Invalid values in header for fbd dump request");
-+		NL_SET_ERR_MSG(extack, "Invalid values in header for fdb dump request");
- 		return -EINVAL;
- 	}
- 
--- 
-2.21.0
+> +/**
+> + * cpsw_set_mc - adds multicast entry to the table if it's not added or deletes
+> + * if it's not deleted
+> + * @ndev: device to sync
+> + * @addr: address to be added or deleted
+> + * @vid: vlan id, if vid < 0 set/unset address for real device
+> + * @add: add address if the flag is set or remove otherwise
+> + */
+> +static int cpsw_set_mc(struct net_device *ndev, const u8 *addr,
+> +		       int vid, int add)
+> +{
+> +	struct cpsw_priv *priv = netdev_priv(ndev);
+> +	struct cpsw_common *cpsw = priv->cpsw;
+> +	int slave_no = cpsw_slave_index(cpsw, priv);
+> +	int mask, flags, ret;
 
+David will complain about reverse Christmas tree. You need to move
+some of the assignments into the body of the function. This problems
+happens a few times in the code.
+
+> +static int cpsw_set_pauseparam(struct net_device *ndev,
+> +			       struct ethtool_pauseparam *pause)
+> +{
+> +	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
+> +	struct cpsw_priv *priv = netdev_priv(ndev);
+> +
+> +	priv->rx_pause = pause->rx_pause ? true : false;
+> +	priv->tx_pause = pause->tx_pause ? true : false;
+> +
+> +	return phy_restart_aneg(cpsw->slaves[priv->emac_port - 1].phy);
+> +}
+
+You should look at the value of pause.autoneg.
+
+> +static const struct devlink_ops cpsw_devlink_ops;
+
+It would be nice to avoid this forward declaration.
+
+> +static const struct devlink_param cpsw_devlink_params[] = {
+> +	DEVLINK_PARAM_DRIVER(CPSW_DL_PARAM_ALE_BYPASS,
+> +			     "ale_bypass", DEVLINK_PARAM_TYPE_BOOL,
+> +			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
+> +			     cpsw_dl_ale_ctrl_get, cpsw_dl_ale_ctrl_set, NULL),
+> +};
+
+Is this documented?
+
+   Andrew
