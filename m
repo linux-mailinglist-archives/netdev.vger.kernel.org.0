@@ -2,620 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B728E7DA5
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 01:53:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB65E7DC7
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727333AbfJ2Aw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 20:52:59 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:32793 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725848AbfJ2Aw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 20:52:59 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 48DB748CDB;
-        Tue, 29 Oct 2019 11:52:47 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=content-transfer-encoding:mime-version:x-mailer:message-id
-        :date:date:subject:subject:from:from:received:received:received;
-         s=mail_dkim; t=1572310367; bh=DagUZL58PrhdAiyW+mchzxs4u9ePQoeys
-        pVMcCnqDUQ=; b=hrtY4tPVEt9+cezpZSAO8lNk16Hc1JCAp1GoxNG3OideLTel7
-        Ruofj/kga2t5DUYNhckURKbfUuWqJc8/Uf7ALHee4VYMbDNzR9n26Vjt1U4yweYI
-        X5KX89b0pTfS2WtHFLH6CzQD0tpVw2N2KCu9RVAq3mBX8WwcxMNlB7P6f4=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id EQc_ZVro5h6O; Tue, 29 Oct 2019 11:52:47 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id A214348EA5;
-        Tue, 29 Oct 2019 11:52:44 +1100 (AEDT)
-Received: from dhost.dek-tpc.internal (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 26A5248CDB;
-        Tue, 29 Oct 2019 11:52:43 +1100 (AEDT)
-From:   Hoang Le <hoang.h.le@dektech.com.au>
-To:     tipc-discussion@lists.sourceforge.net, jon.maloy@ericsson.com,
-        maloy@donjonn.com, eric.dumazet@gmail.com, ying.xue@windriver.com,
-        netdev@vger.kernel.org
-Subject: [net-next v2] tipc: improve throughput between nodes in netns
-Date:   Tue, 29 Oct 2019 07:51:21 +0700
-Message-Id: <20191029005121.18680-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.20.1
+        id S1727778AbfJ2BKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 21:10:10 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:56836 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726365AbfJ2BKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 21:10:09 -0400
+Received: by mail-il1-f199.google.com with SMTP id e15so11353534ilq.23
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 18:10:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=cB6cvA8GxN2NTL00Iw/U17L1GLZzJfZEAVHRPwWdzgw=;
+        b=qmwlidYnohVvMe/bsNbGajQ+QB3eWeXzDqZef5REJkNvgw0YdSA53Tdu6wKq4wyAoG
+         /6dOcMbOpMV37VYBBjRYwurtuXAa2BIXx0dRhXAl5uiizpWdueOO5PXonyAIBha6dW5I
+         ECOqmO9vhGe3d89J+KC423hvgbVMQIsgs9iMc7a8kjP4kEjvgkFhmGvsYcjjbqyz+60R
+         xBVl6lhu509sw7pxYeC4PXWItAJrVjVjcoDPNOxyhwTGyaclytngIjSRIVbdWVtT122N
+         eBoPsnAXIkdtVNzdDIZQ2aA0x6YGk68yhgX3FS2zUvxnDVcb94i+jICj3nsvPCs6ND9a
+         vNpA==
+X-Gm-Message-State: APjAAAX2N1VcfAKBrb8guA9L83fmpPf8O4yTUxJVYJL77cSVsTWVElg7
+        B4LXAkguuIBaF8TPpNfFIzJ6V+WdFtYI27vCExxxMS0Fnchp
+X-Google-Smtp-Source: APXvYqy9/aueHOje7a487Yj+qIrFBXmQhynu1txhyI2e1kEkkdScqj9T8Ugl2XVuHChbGlpEPv52Z4jpXjX+9CptFW8rnZe3BK3t
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a92:1d44:: with SMTP id d65mr22458572ild.14.1572311408580;
+ Mon, 28 Oct 2019 18:10:08 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 18:10:08 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fc25a1059602460a@google.com>
+Subject: INFO: trying to register non-static key in bond_3ad_update_lacp_rate
+From:   syzbot <syzbot+0d083911ab18b710da71@syzkaller.appspotmail.com>
+To:     andy@greyhouse.net, davem@davemloft.net, j.vosburgh@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vfalico@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, TIPC transports intra-node user data messages directly
-socket to socket, hence shortcutting all the lower layers of the
-communication stack. This gives TIPC very good intra node performance,
-both regarding throughput and latency.
+Hello,
 
-We now introduce a similar mechanism for TIPC data traffic across
-network namespaces located in the same kernel. On the send path, the
-call chain is as always accompanied by the sending node's network name
-space pointer. However, once we have reliably established that the
-receiving node is represented by a namespace on the same host, we just
-replace the namespace pointer with the receiving node/namespace's
-ditto, and follow the regular socket receive patch though the receiving
-node. This technique gives us a throughput similar to the node internal
-throughput, several times larger than if we let the traffic go though
-the full network stacks. As a comparison, max throughput for 64k
-messages is four times larger than TCP throughput for the same type of
-traffic.
+syzbot found the following crash on:
 
-To meet any security concerns, the following should be noted.
+HEAD commit:    60c1769a Add linux-next specific files for 20191028
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=11151ad4e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cb86688f30db053d
+dashboard link: https://syzkaller.appspot.com/bug?extid=0d083911ab18b710da71
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15381ee0e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11571570e00000
 
-- All nodes joining a cluster are supposed to have been be certified
-and authenticated by mechanisms outside TIPC. This is no different for
-nodes/namespaces on the same host; they have to auto discover each
-other using the attached interfaces, and establish links which are
-supervised via the regular link monitoring mechanism. Hence, a kernel
-local node has no other way to join a cluster than any other node, and
-have to obey to policies set in the IP or device layers of the stack.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+0d083911ab18b710da71@syzkaller.appspotmail.com
 
-- Only when a sender has established with 100% certainty that the peer
-node is located in a kernel local namespace does it choose to let user
-data messages, and only those, take the crossover path to the receiving
-node/namespace.
+netlink: 'syz-executor241': attribute type 21 has an invalid length.
+netlink: 'syz-executor241': attribute type 1 has an invalid length.
+INFO: trying to register non-static key.
+the code is fine but needs lockdep annotation.
+turning off the locking correctness validator.
+CPU: 1 PID: 8825 Comm: syz-executor241 Not tainted 5.4.0-rc5-next-20191028  
+#0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  assign_lock_key kernel/locking/lockdep.c:881 [inline]
+  register_lock_class+0x179e/0x1850 kernel/locking/lockdep.c:1190
+  __lock_acquire+0xf4/0x4a00 kernel/locking/lockdep.c:3837
+  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4487
+  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+  _raw_spin_lock_bh+0x33/0x50 kernel/locking/spinlock.c:175
+  spin_lock_bh include/linux/spinlock.h:343 [inline]
+  bond_3ad_update_lacp_rate+0xb9/0x290 drivers/net/bonding/bond_3ad.c:2694
+  bond_option_lacp_rate_set+0x66/0x80 drivers/net/bonding/bond_options.c:1293
+  __bond_opt_set+0x2a1/0x540 drivers/net/bonding/bond_options.c:677
+  bond_changelink+0x139e/0x1bd0 drivers/net/bonding/bond_netlink.c:395
+  bond_newlink+0x2d/0x90 drivers/net/bonding/bond_netlink.c:454
+  __rtnl_newlink+0x10a1/0x16e0 net/core/rtnetlink.c:3268
+  rtnl_newlink+0x69/0xa0 net/core/rtnetlink.c:3326
+  rtnetlink_rcv_msg+0x45e/0xaf0 net/core/rtnetlink.c:5387
+  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+  rtnetlink_rcv+0x1d/0x30 net/core/rtnetlink.c:5405
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0x8cf/0xda0 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:638 [inline]
+  sock_sendmsg+0xd7/0x130 net/socket.c:658
+  ___sys_sendmsg+0x803/0x920 net/socket.c:2312
+  __sys_sendmsg+0x105/0x1d0 net/socket.c:2357
+  __do_sys_sendmsg net/socket.c:2366 [inline]
+  __se_sys_sendmsg net/socket.c:2364 [inline]
+  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2364
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4402b9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffce2473e18 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 00000000004402b9
+RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
+RBP: 00000000006ca018 R08: 0000000000000001 R09: 00000000004002c8
+R10: 000000000000000c R11: 0000000000000246 R12: 0000000000401b40
+R13: 0000000000401bd0 R14: 0000000000000000 R15: 0000000000000000
+kobject: 'bond1' (00000000babd83e5): kobject_add_internal: parent: 'net',  
+set: 'devices'
+kobject: 'bond1' (00000000babd83e5): kobject_uevent_env
+kobject: 'bond1' (00000000babd83e5): fill_kobj_path: path  
+= '/devices/virtual/net/bond1'
+kobject: 'queues' (00000000e75fd84a): kobject_add_internal:  
+parent: 'bond1', set: '<NULL>'
+kobject: 'queues' (00000000e75fd84a): kobject_uevent_env
+kobject: 'queues' (00000000e75fd84a): kobject_uevent_env: filter function  
+caused the event to drop!
+kobject: 'rx-0' (00000000e9a254f1): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-0' (00000000e9a254f1): kobject_uevent_env
+kobject: 'rx-0' (00000000e9a254f1): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-0'
+kobject: 'rx-1' (000000009ff0a2ea): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-1' (000000009ff0a2ea): kobject_uevent_env
+kobject: 'rx-1' (000000009ff0a2ea): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-1'
+kobject: 'rx-2' (00000000771a0432): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-2' (00000000771a0432): kobject_uevent_env
+kobject: 'rx-2' (00000000771a0432): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-2'
+kobject: 'rx-3' (000000008fbd4308): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-3' (000000008fbd4308): kobject_uevent_env
+kobject: 'rx-3' (000000008fbd4308): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-3'
+kobject: 'rx-4' (00000000e9e849b2): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-4' (00000000e9e849b2): kobject_uevent_env
+kobject: 'rx-4' (00000000e9e849b2): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-4'
+kobject: 'rx-5' (000000001599d31c): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-5' (000000001599d31c): kobject_uevent_env
+kobject: 'rx-5' (000000001599d31c): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-5'
+kobject: 'rx-6' (0000000035c79e5c): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-6' (0000000035c79e5c): kobject_uevent_env
+kobject: 'rx-6' (0000000035c79e5c): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-6'
+kobject: 'rx-7' (000000007a6348ea): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-7' (000000007a6348ea): kobject_uevent_env
+kobject: 'rx-7' (000000007a6348ea): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-7'
+kobject: 'rx-8' (00000000b6efbc00): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-8' (00000000b6efbc00): kobject_uevent_env
+kobject: 'rx-8' (00000000b6efbc00): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-8'
+kobject: 'rx-9' (000000003f2c9c88): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'rx-9' (000000003f2c9c88): kobject_uevent_env
+kobject: 'rx-9' (000000003f2c9c88): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-9'
+kobject: 'rx-10' (0000000014cafa47): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'rx-10' (0000000014cafa47): kobject_uevent_env
+kobject: 'rx-10' (0000000014cafa47): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-10'
+kobject: 'rx-11' (00000000d6d7c697): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'rx-11' (00000000d6d7c697): kobject_uevent_env
+kobject: 'rx-11' (00000000d6d7c697): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-11'
+kobject: 'rx-12' (0000000049162d98): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'rx-12' (0000000049162d98): kobject_uevent_env
+kobject: 'rx-12' (0000000049162d98): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-12'
+kobject: 'rx-13' (00000000abfdfa04): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'rx-13' (00000000abfdfa04): kobject_uevent_env
+kobject: 'rx-13' (00000000abfdfa04): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-13'
+kobject: 'rx-14' (00000000af052089): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'rx-14' (00000000af052089): kobject_uevent_env
+kobject: 'rx-14' (00000000af052089): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-14'
+kobject: 'rx-15' (00000000b0f431c4): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'rx-15' (00000000b0f431c4): kobject_uevent_env
+kobject: 'rx-15' (00000000b0f431c4): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/rx-15'
+kobject: 'tx-0' (000000003e5205bd): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-0' (000000003e5205bd): kobject_uevent_env
+kobject: 'tx-0' (000000003e5205bd): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-0'
+kobject: 'tx-1' (000000004a6e3a1f): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-1' (000000004a6e3a1f): kobject_uevent_env
+kobject: 'tx-1' (000000004a6e3a1f): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-1'
+kobject: 'tx-2' (0000000062516d14): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-2' (0000000062516d14): kobject_uevent_env
+kobject: 'tx-2' (0000000062516d14): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-2'
+kobject: 'tx-3' (00000000e816cdc5): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-3' (00000000e816cdc5): kobject_uevent_env
+kobject: 'tx-3' (00000000e816cdc5): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-3'
+kobject: 'tx-4' (00000000354484c4): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-4' (00000000354484c4): kobject_uevent_env
+kobject: 'tx-4' (00000000354484c4): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-4'
+kobject: 'tx-5' (00000000249faa27): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-5' (00000000249faa27): kobject_uevent_env
+kobject: 'tx-5' (00000000249faa27): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-5'
+kobject: 'tx-6' (0000000086f0c013): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-6' (0000000086f0c013): kobject_uevent_env
+kobject: 'tx-6' (0000000086f0c013): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-6'
+kobject: 'tx-7' (000000009f854e23): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-7' (000000009f854e23): kobject_uevent_env
+kobject: 'tx-7' (000000009f854e23): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-7'
+kobject: 'tx-8' (000000008149c52d): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-8' (000000008149c52d): kobject_uevent_env
+kobject: 'tx-8' (000000008149c52d): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-8'
+kobject: 'tx-9' (000000006642fcfb): kobject_add_internal: parent: 'queues',  
+set: 'queues'
+kobject: 'tx-9' (000000006642fcfb): kobject_uevent_env
+kobject: 'tx-9' (000000006642fcfb): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-9'
+kobject: 'tx-10' (00000000a81ace8d): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'tx-10' (00000000a81ace8d): kobject_uevent_env
+kobject: 'tx-10' (00000000a81ace8d): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-10'
+kobject: 'tx-11' (0000000082d86d67): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'tx-11' (0000000082d86d67): kobject_uevent_env
+kobject: 'tx-11' (0000000082d86d67): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-11'
+kobject: 'tx-12' (00000000f88e9bc2): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'tx-12' (00000000f88e9bc2): kobject_uevent_env
+kobject: 'tx-12' (00000000f88e9bc2): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-12'
+kobject: 'tx-13' (00000000f5c01991): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'tx-13' (00000000f5c01991): kobject_uevent_env
+kobject: 'tx-13' (00000000f5c01991): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-13'
+kobject: 'tx-14' (00000000f01d7ebb): kobject_add_internal:  
+parent: 'queues', set: 'queues'
+kobject: 'tx-14' (00000000f01d7ebb): kobject_uevent_env
+kobject: 'tx-14' (00000000f01d7ebb): fill_kobj_path: path  
+= '/devices/virtual/net/bond1/queues/tx-14'
+kobject: 'tx-15' (000000001891794b): kobject_add_internal:  
+parent: 'queues', set: 'queues'
 
-- If the receiving node/namespace is removed, its namespace pointer
-is invalidated at all peer nodes, and their neighbor link monitoring
-will eventually note that this node is gone.
 
-- To ensure the "100% certainty" criteria, and prevent any possible
-spoofing, received discovery messages must contain a proof that the
-sender knows a common secret. We use the hash mix of the sending
-node/namespace for this purpose, since it can be accessed directly by
-all other namespaces in the kernel. Upon reception of a discovery
-message, the receiver checks this proof against all the local
-namespaces'hash_mix:es. If it finds a match, that, along with a
-matching node id and cluster id, this is deemed sufficient proof that
-the peer node in question is in a local namespace, and a wormhole can
-be opened.
-
-- We should also consider that TIPC is intended to be a cluster local
-IPC mechanism (just like e.g. UNIX sockets) rather than a network
-protocol, and hence we think it can justified to allow it to shortcut the
-lower protocol layers.
-
-Regarding traceability, we should notice that since commit 6c9081a3915d
-("tipc: add loopback device tracking") it is possible to follow the node
-internal packet flow by just activating tcpdump on the loopback
-interface. This will be true even for this mechanism; by activating
-tcpdump on the involved nodes' loopback interfaces their inter-name
-space messaging can easily be tracked.
-
-v2:
-- update 'net' pointer when node left/rejoined
-v3:
-- grab read/write lock when using node ref obj
-v4:
-- clone traffics between netns to loopback
-
-Suggested-by: Jon Maloy <jon.maloy@ericsson.com>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
 ---
- net/tipc/core.c       |  16 +++++
- net/tipc/core.h       |   6 ++
- net/tipc/discover.c   |   4 +-
- net/tipc/msg.h        |  14 ++++
- net/tipc/name_distr.c |   2 +-
- net/tipc/node.c       | 155 ++++++++++++++++++++++++++++++++++++++++--
- net/tipc/node.h       |   5 +-
- net/tipc/socket.c     |   6 +-
- 8 files changed, 197 insertions(+), 11 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/tipc/core.c b/net/tipc/core.c
-index 23cb379a93d6..ab648dd150ee 100644
---- a/net/tipc/core.c
-+++ b/net/tipc/core.c
-@@ -105,6 +105,15 @@ static void __net_exit tipc_exit_net(struct net *net=
-)
- 	tipc_sk_rht_destroy(net);
- }
-=20
-+static void __net_exit tipc_pernet_pre_exit(struct net *net)
-+{
-+	tipc_node_pre_cleanup_net(net);
-+}
-+
-+static struct pernet_operations tipc_pernet_pre_exit_ops =3D {
-+	.pre_exit =3D tipc_pernet_pre_exit,
-+};
-+
- static struct pernet_operations tipc_net_ops =3D {
- 	.init =3D tipc_init_net,
- 	.exit =3D tipc_exit_net,
-@@ -151,6 +160,10 @@ static int __init tipc_init(void)
- 	if (err)
- 		goto out_pernet_topsrv;
-=20
-+	err =3D register_pernet_subsys(&tipc_pernet_pre_exit_ops);
-+	if (err)
-+		goto out_register_pernet_subsys;
-+
- 	err =3D tipc_bearer_setup();
- 	if (err)
- 		goto out_bearer;
-@@ -158,6 +171,8 @@ static int __init tipc_init(void)
- 	pr_info("Started in single node mode\n");
- 	return 0;
- out_bearer:
-+	unregister_pernet_subsys(&tipc_pernet_pre_exit_ops);
-+out_register_pernet_subsys:
- 	unregister_pernet_device(&tipc_topsrv_net_ops);
- out_pernet_topsrv:
- 	tipc_socket_stop();
-@@ -177,6 +192,7 @@ static int __init tipc_init(void)
- static void __exit tipc_exit(void)
- {
- 	tipc_bearer_cleanup();
-+	unregister_pernet_subsys(&tipc_pernet_pre_exit_ops);
- 	unregister_pernet_device(&tipc_topsrv_net_ops);
- 	tipc_socket_stop();
- 	unregister_pernet_device(&tipc_net_ops);
-diff --git a/net/tipc/core.h b/net/tipc/core.h
-index 60d829581068..8776d32a4a47 100644
---- a/net/tipc/core.h
-+++ b/net/tipc/core.h
-@@ -59,6 +59,7 @@
- #include <net/netns/generic.h>
- #include <linux/rhashtable.h>
- #include <net/genetlink.h>
-+#include <net/netns/hash.h>
-=20
- struct tipc_node;
- struct tipc_bearer;
-@@ -185,6 +186,11 @@ static inline int in_range(u16 val, u16 min, u16 max=
-)
- 	return !less(val, min) && !more(val, max);
- }
-=20
-+static inline u32 tipc_net_hash_mixes(struct net *net, int tn_rand)
-+{
-+	return net_hash_mix(&init_net) ^ net_hash_mix(net) ^ tn_rand;
-+}
-+
- #ifdef CONFIG_SYSCTL
- int tipc_register_sysctl(void);
- void tipc_unregister_sysctl(void);
-diff --git a/net/tipc/discover.c b/net/tipc/discover.c
-index c138d68e8a69..b043e8c6397a 100644
---- a/net/tipc/discover.c
-+++ b/net/tipc/discover.c
-@@ -94,6 +94,7 @@ static void tipc_disc_init_msg(struct net *net, struct =
-sk_buff *skb,
- 	msg_set_dest_domain(hdr, dest_domain);
- 	msg_set_bc_netid(hdr, tn->net_id);
- 	b->media->addr2msg(msg_media_addr(hdr), &b->addr);
-+	msg_set_peer_net_hash(hdr, tipc_net_hash_mixes(net, tn->random));
- 	msg_set_node_id(hdr, tipc_own_id(net));
- }
-=20
-@@ -242,7 +243,8 @@ void tipc_disc_rcv(struct net *net, struct sk_buff *s=
-kb,
- 	if (!tipc_in_scope(legacy, b->domain, src))
- 		return;
- 	tipc_node_check_dest(net, src, peer_id, b, caps, signature,
--			     &maddr, &respond, &dupl_addr);
-+			     msg_peer_net_hash(hdr), &maddr, &respond,
-+			     &dupl_addr);
- 	if (dupl_addr)
- 		disc_dupl_alert(b, src, &maddr);
- 	if (!respond)
-diff --git a/net/tipc/msg.h b/net/tipc/msg.h
-index 0daa6f04ca81..2d7cb66a6912 100644
---- a/net/tipc/msg.h
-+++ b/net/tipc/msg.h
-@@ -1026,6 +1026,20 @@ static inline bool msg_is_reset(struct tipc_msg *h=
-dr)
- 	return (msg_user(hdr) =3D=3D LINK_PROTOCOL) && (msg_type(hdr) =3D=3D RE=
-SET_MSG);
- }
-=20
-+/* Word 13
-+ */
-+static inline void msg_set_peer_net_hash(struct tipc_msg *m, u32 n)
-+{
-+	msg_set_word(m, 13, n);
-+}
-+
-+static inline u32 msg_peer_net_hash(struct tipc_msg *m)
-+{
-+	return msg_word(m, 13);
-+}
-+
-+/* Word 14
-+ */
- static inline u32 msg_sugg_node_addr(struct tipc_msg *m)
- {
- 	return msg_word(m, 14);
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index 836e629e8f4a..5feaf3b67380 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -146,7 +146,7 @@ static void named_distribute(struct net *net, struct =
-sk_buff_head *list,
- 	struct publication *publ;
- 	struct sk_buff *skb =3D NULL;
- 	struct distr_item *item =3D NULL;
--	u32 msg_dsz =3D ((tipc_node_get_mtu(net, dnode, 0) - INT_H_SIZE) /
-+	u32 msg_dsz =3D ((tipc_node_get_mtu(net, dnode, 0, false) - INT_H_SIZE)=
- /
- 			ITEM_SIZE) * ITEM_SIZE;
- 	u32 msg_rem =3D msg_dsz;
-=20
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index f2e3cf70c922..4b60928049ea 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -126,6 +126,8 @@ struct tipc_node {
- 	struct timer_list timer;
- 	struct rcu_head rcu;
- 	unsigned long delete_at;
-+	struct net *peer_net;
-+	u32 peer_hash_mix;
- };
-=20
- /* Node FSM states and events:
-@@ -184,7 +186,7 @@ static struct tipc_link *node_active_link(struct tipc=
-_node *n, int sel)
- 	return n->links[bearer_id].link;
- }
-=20
--int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel)
-+int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel, bool connected=
-)
- {
- 	struct tipc_node *n;
- 	int bearer_id;
-@@ -194,6 +196,14 @@ int tipc_node_get_mtu(struct net *net, u32 addr, u32=
- sel)
- 	if (unlikely(!n))
- 		return mtu;
-=20
-+	/* Allow MAX_MSG_SIZE when building connection oriented message
-+	 * if they are in the same core network
-+	 */
-+	if (n->peer_net && connected) {
-+		tipc_node_put(n);
-+		return mtu;
-+	}
-+
- 	bearer_id =3D n->active_links[sel & 1];
- 	if (likely(bearer_id !=3D INVALID_BEARER_ID))
- 		mtu =3D n->links[bearer_id].mtu;
-@@ -360,8 +370,37 @@ static void tipc_node_write_unlock(struct tipc_node =
-*n)
- 	}
- }
-=20
-+static void tipc_node_assign_peer_net(struct tipc_node *n, u32 hash_mixe=
-s)
-+{
-+	int net_id =3D tipc_netid(n->net);
-+	struct tipc_net *tn_peer;
-+	struct net *tmp;
-+	u32 hash_chk;
-+
-+	if (n->peer_net)
-+		return;
-+
-+	for_each_net_rcu(tmp) {
-+		tn_peer =3D tipc_net(tmp);
-+		if (!tn_peer)
-+			continue;
-+		/* Integrity checking whether node exists in namespace or not */
-+		if (tn_peer->net_id !=3D net_id)
-+			continue;
-+		if (memcmp(n->peer_id, tn_peer->node_id, NODE_ID_LEN))
-+			continue;
-+		hash_chk =3D tipc_net_hash_mixes(tmp, tn_peer->random);
-+		if (hash_mixes ^ hash_chk)
-+			continue;
-+		n->peer_net =3D tmp;
-+		n->peer_hash_mix =3D hash_mixes;
-+		break;
-+	}
-+}
-+
- static struct tipc_node *tipc_node_create(struct net *net, u32 addr,
--					  u8 *peer_id, u16 capabilities)
-+					  u8 *peer_id, u16 capabilities,
-+					  u32 signature, u32 hash_mixes)
- {
- 	struct tipc_net *tn =3D net_generic(net, tipc_net_id);
- 	struct tipc_node *n, *temp_node;
-@@ -372,6 +411,8 @@ static struct tipc_node *tipc_node_create(struct net =
-*net, u32 addr,
- 	spin_lock_bh(&tn->node_list_lock);
- 	n =3D tipc_node_find(net, addr);
- 	if (n) {
-+		if (n->peer_hash_mix ^ hash_mixes)
-+			tipc_node_assign_peer_net(n, hash_mixes);
- 		if (n->capabilities =3D=3D capabilities)
- 			goto exit;
- 		/* Same node may come back with new capabilities */
-@@ -389,6 +430,7 @@ static struct tipc_node *tipc_node_create(struct net =
-*net, u32 addr,
- 		list_for_each_entry_rcu(temp_node, &tn->node_list, list) {
- 			tn->capabilities &=3D temp_node->capabilities;
- 		}
-+
- 		goto exit;
- 	}
- 	n =3D kzalloc(sizeof(*n), GFP_ATOMIC);
-@@ -399,6 +441,10 @@ static struct tipc_node *tipc_node_create(struct net=
- *net, u32 addr,
- 	n->addr =3D addr;
- 	memcpy(&n->peer_id, peer_id, 16);
- 	n->net =3D net;
-+	n->peer_net =3D NULL;
-+	n->peer_hash_mix =3D 0;
-+	/* Assign kernel local namespace if exists */
-+	tipc_node_assign_peer_net(n, hash_mixes);
- 	n->capabilities =3D capabilities;
- 	kref_init(&n->kref);
- 	rwlock_init(&n->lock);
-@@ -426,6 +472,10 @@ static struct tipc_node *tipc_node_create(struct net=
- *net, u32 addr,
- 				 tipc_bc_sndlink(net),
- 				 &n->bc_entry.link)) {
- 		pr_warn("Broadcast rcv link creation failed, no memory\n");
-+		if (n->peer_net) {
-+			n->peer_net =3D NULL;
-+			n->peer_hash_mix =3D 0;
-+		}
- 		kfree(n);
- 		n =3D NULL;
- 		goto exit;
-@@ -979,7 +1029,7 @@ u32 tipc_node_try_addr(struct net *net, u8 *id, u32 =
-addr)
-=20
- void tipc_node_check_dest(struct net *net, u32 addr,
- 			  u8 *peer_id, struct tipc_bearer *b,
--			  u16 capabilities, u32 signature,
-+			  u16 capabilities, u32 signature, u32 hash_mixes,
- 			  struct tipc_media_addr *maddr,
- 			  bool *respond, bool *dupl_addr)
- {
-@@ -998,7 +1048,8 @@ void tipc_node_check_dest(struct net *net, u32 addr,
- 	*dupl_addr =3D false;
- 	*respond =3D false;
-=20
--	n =3D tipc_node_create(net, addr, peer_id, capabilities);
-+	n =3D tipc_node_create(net, addr, peer_id, capabilities, signature,
-+			     hash_mixes);
- 	if (!n)
- 		return;
-=20
-@@ -1343,6 +1394,10 @@ static void node_lost_contact(struct tipc_node *n,
- 	/* Notify publications from this node */
- 	n->action_flags |=3D TIPC_NOTIFY_NODE_DOWN;
-=20
-+	if (n->peer_net) {
-+		n->peer_net =3D NULL;
-+		n->peer_hash_mix =3D 0;
-+	}
- 	/* Notify sockets connected to node */
- 	list_for_each_entry_safe(conn, safe, conns, list) {
- 		skb =3D tipc_msg_create(TIPC_CRITICAL_IMPORTANCE, TIPC_CONN_MSG,
-@@ -1424,6 +1479,56 @@ static int __tipc_nl_add_node(struct tipc_nl_msg *=
-msg, struct tipc_node *node)
- 	return -EMSGSIZE;
- }
-=20
-+static void tipc_lxc_xmit(struct net *peer_net, struct sk_buff_head *lis=
-t)
-+{
-+	struct tipc_msg *hdr =3D buf_msg(skb_peek(list));
-+	struct sk_buff_head inputq;
-+
-+	switch (msg_user(hdr)) {
-+	case TIPC_LOW_IMPORTANCE:
-+	case TIPC_MEDIUM_IMPORTANCE:
-+	case TIPC_HIGH_IMPORTANCE:
-+	case TIPC_CRITICAL_IMPORTANCE:
-+		if (msg_connected(hdr) || msg_named(hdr)) {
-+			tipc_loopback_trace(peer_net, list);
-+			spin_lock_init(&list->lock);
-+			tipc_sk_rcv(peer_net, list);
-+			return;
-+		}
-+		if (msg_mcast(hdr)) {
-+			tipc_loopback_trace(peer_net, list);
-+			skb_queue_head_init(&inputq);
-+			tipc_sk_mcast_rcv(peer_net, list, &inputq);
-+			__skb_queue_purge(list);
-+			skb_queue_purge(&inputq);
-+			return;
-+		}
-+		return;
-+	case MSG_FRAGMENTER:
-+		if (tipc_msg_assemble(list)) {
-+			tipc_loopback_trace(peer_net, list);
-+			skb_queue_head_init(&inputq);
-+			tipc_sk_mcast_rcv(peer_net, list, &inputq);
-+			__skb_queue_purge(list);
-+			skb_queue_purge(&inputq);
-+		}
-+		return;
-+	case GROUP_PROTOCOL:
-+	case CONN_MANAGER:
-+		tipc_loopback_trace(peer_net, list);
-+		spin_lock_init(&list->lock);
-+		tipc_sk_rcv(peer_net, list);
-+		return;
-+	case LINK_PROTOCOL:
-+	case NAME_DISTRIBUTOR:
-+	case TUNNEL_PROTOCOL:
-+	case BCAST_PROTOCOL:
-+		return;
-+	default:
-+		return;
-+	};
-+}
-+
- /**
-  * tipc_node_xmit() is the general link level function for message sendi=
-ng
-  * @net: the applicable net namespace
-@@ -1439,6 +1544,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_=
-head *list,
- 	struct tipc_link_entry *le =3D NULL;
- 	struct tipc_node *n;
- 	struct sk_buff_head xmitq;
-+	bool node_up =3D false;
- 	int bearer_id;
- 	int rc;
-=20
-@@ -1456,6 +1562,17 @@ int tipc_node_xmit(struct net *net, struct sk_buff=
-_head *list,
- 	}
-=20
- 	tipc_node_read_lock(n);
-+	node_up =3D node_is_up(n);
-+	if (node_up && n->peer_net && check_net(n->peer_net)) {
-+		/* xmit inner linux container */
-+		tipc_lxc_xmit(n->peer_net, list);
-+		if (likely(skb_queue_empty(list))) {
-+			tipc_node_read_unlock(n);
-+			tipc_node_put(n);
-+			return 0;
-+		}
-+	}
-+
- 	bearer_id =3D n->active_links[selector & 1];
- 	if (unlikely(bearer_id =3D=3D INVALID_BEARER_ID)) {
- 		tipc_node_read_unlock(n);
-@@ -2587,3 +2704,33 @@ int tipc_node_dump(struct tipc_node *n, bool more,=
- char *buf)
-=20
- 	return i;
- }
-+
-+void tipc_node_pre_cleanup_net(struct net *exit_net)
-+{
-+	struct tipc_node *n;
-+	struct tipc_net *tn;
-+	struct net *tmp;
-+
-+	rcu_read_lock();
-+	for_each_net_rcu(tmp) {
-+		if (tmp =3D=3D exit_net)
-+			continue;
-+		tn =3D tipc_net(tmp);
-+		if (!tn)
-+			continue;
-+		spin_lock_bh(&tn->node_list_lock);
-+		list_for_each_entry_rcu(n, &tn->node_list, list) {
-+			if (!n->peer_net)
-+				continue;
-+			if (n->peer_net !=3D exit_net)
-+				continue;
-+			tipc_node_write_lock(n);
-+			n->peer_net =3D NULL;
-+			n->peer_hash_mix =3D 0;
-+			tipc_node_write_unlock_fast(n);
-+			break;
-+		}
-+		spin_unlock_bh(&tn->node_list_lock);
-+	}
-+	rcu_read_unlock();
-+}
-diff --git a/net/tipc/node.h b/net/tipc/node.h
-index 291d0ecd4101..30563c4f35d5 100644
---- a/net/tipc/node.h
-+++ b/net/tipc/node.h
-@@ -75,7 +75,7 @@ u32 tipc_node_get_addr(struct tipc_node *node);
- u32 tipc_node_try_addr(struct net *net, u8 *id, u32 addr);
- void tipc_node_check_dest(struct net *net, u32 onode, u8 *peer_id128,
- 			  struct tipc_bearer *bearer,
--			  u16 capabilities, u32 signature,
-+			  u16 capabilities, u32 signature, u32 hash_mixes,
- 			  struct tipc_media_addr *maddr,
- 			  bool *respond, bool *dupl_addr);
- void tipc_node_delete_links(struct net *net, int bearer_id);
-@@ -92,7 +92,7 @@ void tipc_node_unsubscribe(struct net *net, struct list=
-_head *subscr, u32 addr);
- void tipc_node_broadcast(struct net *net, struct sk_buff *skb);
- int tipc_node_add_conn(struct net *net, u32 dnode, u32 port, u32 peer_po=
-rt);
- void tipc_node_remove_conn(struct net *net, u32 dnode, u32 port);
--int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel);
-+int tipc_node_get_mtu(struct net *net, u32 addr, u32 sel, bool connected=
-);
- bool tipc_node_is_up(struct net *net, u32 addr);
- u16 tipc_node_get_capabilities(struct net *net, u32 addr);
- int tipc_nl_node_dump(struct sk_buff *skb, struct netlink_callback *cb);
-@@ -107,4 +107,5 @@ int tipc_nl_node_get_monitor(struct sk_buff *skb, str=
-uct genl_info *info);
- int tipc_nl_node_dump_monitor(struct sk_buff *skb, struct netlink_callba=
-ck *cb);
- int tipc_nl_node_dump_monitor_peer(struct sk_buff *skb,
- 				   struct netlink_callback *cb);
-+void tipc_node_pre_cleanup_net(struct net *exit_net);
- #endif
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 35e32ffc2b90..2bcacd6022d5 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -854,7 +854,7 @@ static int tipc_send_group_msg(struct net *net, struc=
-t tipc_sock *tsk,
-=20
- 	/* Build message as chain of buffers */
- 	__skb_queue_head_init(&pkts);
--	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid);
-+	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid, false);
- 	rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc !=3D dlen))
- 		return rc;
-@@ -1388,7 +1388,7 @@ static int __tipc_sendmsg(struct socket *sock, stru=
-ct msghdr *m, size_t dlen)
- 		return rc;
-=20
- 	__skb_queue_head_init(&pkts);
--	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid);
-+	mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid, false);
- 	rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc !=3D dlen))
- 		return rc;
-@@ -1526,7 +1526,7 @@ static void tipc_sk_finish_conn(struct tipc_sock *t=
-sk, u32 peer_port,
- 	sk_reset_timer(sk, &sk->sk_timer, jiffies + CONN_PROBING_INTV);
- 	tipc_set_sk_state(sk, TIPC_ESTABLISHED);
- 	tipc_node_add_conn(net, peer_node, tsk->portid, peer_port);
--	tsk->max_pkt =3D tipc_node_get_mtu(net, peer_node, tsk->portid);
-+	tsk->max_pkt =3D tipc_node_get_mtu(net, peer_node, tsk->portid, true);
- 	tsk->peer_caps =3D tipc_node_get_capabilities(net, peer_node);
- 	__skb_queue_purge(&sk->sk_write_queue);
- 	if (tsk->peer_caps & TIPC_BLOCK_FLOWCTL)
---=20
-2.20.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
