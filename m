@@ -2,114 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D31EE8EFF
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:08:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5AEE8F0D
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:11:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729951AbfJ2SIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 14:08:36 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38644 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726310AbfJ2SIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:08:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572372514;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+AFrkPshIHm3cxzJTEBVMXAP6hJQIAiuU+zH/SUBwUo=;
-        b=fbcIoTRGL9efDL4P4PibWEWe2FSsTAy60fgCgYvztjnVJXFSmLyXPgB82ruW5T7LQuu7zB
-        EvQqKxJNfwlR0EAVo2WkIwkJ4Pkrpb9pFReKJi8i2AerVa/jeceioSBOhAFXR6738oEKeD
-        iXO9wZ4EE7v1IcLJtz2Tc+sy9DmcipI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-SGVItaXjOai_BH_g-5ZtXw-1; Tue, 29 Oct 2019 14:08:33 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EF4B981A334;
-        Tue, 29 Oct 2019 18:08:31 +0000 (UTC)
-Received: from localhost.localdomain (ovpn-125-132.rdu2.redhat.com [10.10.125.132])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B643C600CC;
-        Tue, 29 Oct 2019 18:08:31 +0000 (UTC)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id E0E91C0D97; Tue, 29 Oct 2019 15:08:29 -0300 (-03)
-Date:   Tue, 29 Oct 2019 15:08:29 -0300
-From:   Marcelo Ricardo Leitner <mleitner@redhat.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, paulb@mellanox.com
-Subject: Re: [PATCH iproute2 net] tc: remove duplicated NEXT_ARG_FWD() in
- parse_ct()
-Message-ID: <20191029180829.GH4321@localhost.localdomain>
-References: <20191029175346.14564-1-vladbu@mellanox.com>
+        id S1731015AbfJ2SLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 14:11:39 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:44773 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731001AbfJ2SLj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:11:39 -0400
+Received: by mail-pl1-f195.google.com with SMTP id q16so7779249pll.11
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:11:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=jbQ7pz86X1iiboU3cdGxpqzWGnWZ4lFtYHMWEz+Utcw=;
+        b=dlWPnhkiE+Nk+EdfiHUfS8zOLmB1WoYJND5gSLHr/n58Q0naCTHfu9tUEFdQySLRh5
+         ZGLTtmbT6LCS0gQIx8VjaybiKhSYzCqTU75eDO2U0haCK9exIzARJ7gghhl1hxN3QkQI
+         IU6IZUQu5UIE/5y9ixaQsM3r0AwvpOVgThMt4gSR3kXw3hpRfDjasmbJZNGL3Xq16cmE
+         LVJm/veQk122crdLtbN5du2yxT33pPQAodQRYPXAUCin9C8Hxu4sx9LfJJTWW33XDW0K
+         O8fUl+252aRySjBASCl8Diq2R0OtTz9FcCnpZRrUez/ofwA3Qk1tJGG/PMYoII5r7jl0
+         Lohg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=jbQ7pz86X1iiboU3cdGxpqzWGnWZ4lFtYHMWEz+Utcw=;
+        b=YfrxX3aSCgKC8TgJK9L/6VCJ4ItuLPQGAxaPNFZhpDdACefxrOaW5DuVEvbAKOrVE9
+         UD4DvRQa93CoJ8kG3ZfT+WvC+X6wYcDULePEVnibFJ7yQJxTV5ysv40lAmoDss5ZJXv8
+         f1O0NqOy7t8+z5vMR5s/M0hWfFZYEJ3aQGzMwaJdSQlJz5BS7Ta3MtdCl6MB7i1OiH9J
+         8galrLm7WSjeU3/4Ia+Lp2PcHTkPErJlqciu3+tH+yboBP11P201aQLXboINFOW05A7L
+         8noNPyvZGkCrlBtqyDBAC6jXaVbGgWbbr0ycEILK+Q6/oj0klX2Uv3Cg9pB/Kqu5Uoqs
+         YbWA==
+X-Gm-Message-State: APjAAAU5wYYogmYLmXt8v3y66tTH8Td15ZQnjhDtbfW/P0Ydu8U1wi2z
+        AnB1k3AvbmPE2PDFeWVAX9WVaDYi
+X-Google-Smtp-Source: APXvYqwduDOI6TASiTy5s/9Tj5EPzV0vzFQTzdyhET6cl+d5glekXlwsRV/v8GqVHIUuVGj2rrrvrQ==
+X-Received: by 2002:a17:902:5a06:: with SMTP id q6mr5508680pli.246.1572372698461;
+        Tue, 29 Oct 2019 11:11:38 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:850c:8c04:b28e:fe4])
+        by smtp.googlemail.com with ESMTPSA id j126sm15953886pfb.186.2019.10.29.11.11.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Oct 2019 11:11:37 -0700 (PDT)
+Subject: Re: [PATCH net] net: rtnetlink: fix a typo fbd -> fdb
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <20191029115932.399-1-nikolay@cumulusnetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <6b4e8885-6aba-ebad-e687-1ebbb0acffa9@gmail.com>
+Date:   Tue, 29 Oct 2019 12:11:36 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.0
 MIME-Version: 1.0
-In-Reply-To: <20191029175346.14564-1-vladbu@mellanox.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: SGVItaXjOai_BH_g-5ZtXw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+In-Reply-To: <20191029115932.399-1-nikolay@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 07:53:46PM +0200, Vlad Buslov wrote:
-> Function parse_ct() manually calls NEXT_ARG_FWD() after
-> parse_action_control_dflt(). This is redundant because
-> parse_action_control_dflt() modifies argc and argv itself. Moreover, such
-> implementation parses out any following actions option. For example, addi=
-ng
-> action ct with cookie errors:
->=20
-> $ sudo tc actions add action ct cookie 111111111111
-> Bad action type 111111111111
-> Usage: ... gact <ACTION> [RAND] [INDEX]
-> Where:  ACTION :=3D reclassify | drop | continue | pass | pipe |
->                   goto chain <CHAIN_INDEX> | jump <JUMP_COUNT>
->         RAND :=3D random <RANDTYPE> <ACTION> <VAL>
->         RANDTYPE :=3D netrand | determ
->         VAL : =3D value not exceeding 10000
->         JUMP_COUNT :=3D Absolute jump from start of action list
->         INDEX :=3D index value used
->=20
-> With fix:
->=20
-> $ sudo tc actions add action ct cookie 111111111111
-> $ sudo tc actions list action ct
-> total acts 1
->=20
->         action order 0: ct zone 0 pipe
->          index 1 ref 1 bind 0
->         cookie 111111111111
->=20
-> Fixes: c8a494314c40 ("tc: Introduce tc ct action")
-> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-
-Thanks Vlad.
-
+On 10/29/19 5:59 AM, Nikolay Aleksandrov wrote:
+> A simple typo fix in the nl error message (fbd -> fdb).
+> 
+> CC: David Ahern <dsahern@gmail.com>
+> Fixes: 8c6e137fbc7f ("rtnetlink: Update rtnl_fdb_dump for strict data checking")
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 > ---
->  tc/m_ct.c | 1 -
->  1 file changed, 1 deletion(-)
->=20
-> diff --git a/tc/m_ct.c b/tc/m_ct.c
-> index 8589cb9a3c51..d79eb5e361ac 100644
-> --- a/tc/m_ct.c
-> +++ b/tc/m_ct.c
-> @@ -316,7 +316,6 @@ parse_ct(struct action_util *a, int *argc_p, char ***=
-argv_p, int tca_id,
-> =20
->  =09parse_action_control_dflt(&argc, &argv, &sel.action, false,
->  =09=09=09=09  TC_ACT_PIPE);
-> -=09NEXT_ARG_FWD();
-> =20
->  =09addattr16(n, MAX_MSG, TCA_CT_ACTION, ct_action);
->  =09addattr_l(n, MAX_MSG, TCA_CT_PARMS, &sel, sizeof(sel));
-> --=20
-> 2.21.0
->=20
+>  net/core/rtnetlink.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+> index 1ee6460f8275..05bdf5908472 100644
+> --- a/net/core/rtnetlink.c
+> +++ b/net/core/rtnetlink.c
+> @@ -3916,7 +3916,7 @@ static int valid_fdb_dump_strict(const struct nlmsghdr *nlh,
+>  	ndm = nlmsg_data(nlh);
+>  	if (ndm->ndm_pad1  || ndm->ndm_pad2  || ndm->ndm_state ||
+>  	    ndm->ndm_flags || ndm->ndm_type) {
+> -		NL_SET_ERR_MSG(extack, "Invalid values in header for fbd dump request");
+> +		NL_SET_ERR_MSG(extack, "Invalid values in header for fdb dump request");
+>  		return -EINVAL;
+>  	}
+>  
+> 
 
+thanks, Nik.
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
