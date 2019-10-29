@@ -2,160 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E31F8E8DCA
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D8B1E8E17
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390872AbfJ2RM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 13:12:28 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:43137 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390744AbfJ2RM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:12:27 -0400
-Received: by mail-lf1-f66.google.com with SMTP id j5so4755923lfh.10
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 10:12:26 -0700 (PDT)
+        id S1727792AbfJ2R3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 13:29:24 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:36148 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727456AbfJ2R3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:29:23 -0400
+Received: by mail-ed1-f66.google.com with SMTP id bm15so11395454edb.3
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 10:29:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=RJj2qY+wWadbp/frvkYUfZeoO8SyUDjf00hUMJMOl7o=;
-        b=lWtSj2dAww3gvfuDK3RYsh/OlRzFTAkge7Sj3Ryz5YhurvSdFtXA5hzU2G9RdDPSUt
-         wSuthKyHG3i2blExm1jDoTkCg1BqMPVj8iHAXKR+HlgQSqBDcgoQ17H/dIlRVgSkQZnb
-         wbSStVGmy9SfehbZqzlTQbBjK7V5jn54YcgZ8chvO+IkBjNwv9NwCOjtRR3lDneGzf8U
-         bvUEJxqNu4e5G1zGIvklYFFQWUJ6Z9QrsSTrkSSbQrZj+Z4kedlRS9LzBIVAVfyoMs3S
-         dgNrhad2rT/sKT2epekUJBrJT4Pss2XYy2neyrOCjojAPb8gjSug3DmVlwHwssQ7eOkR
-         dzOg==
+        bh=InKFbvD0px/g8dMpbilYBgPtyAvwKrDpGEcYIAOth54=;
+        b=j57caUNW//CPVBr4nV11snKZG2Z5L1Y1EqN5aAiHx6YRmSYqPFtLl88R2cCozNVGCK
+         np74zyz1CuOBUyiFhwRg9crXWnNTNqNISwKIgo4gTuazFEhCTZkQHWO4hXWfUqruyJwb
+         vvo2LXGY8Q3QI3PZdPuzJ/ooMobhiN5i8PjADtbfLoPMFsPkocmKtdl0PToZ0KIBOX6o
+         D+ioYRm0KGa027KDtJpDKXo6/n4boNTi7KcvHUHi9DwS4Yh22xJHDQXxP3K851bfC7J0
+         XejdvyNgWm9BHgeM163ne0DBbH89IGhmiNequW1S/JGf2hSDWQyqaa9ZBXbZ+i9wnzEm
+         arDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RJj2qY+wWadbp/frvkYUfZeoO8SyUDjf00hUMJMOl7o=;
-        b=oh8wyD6YMoS1cTSxTopKxSZTQGd4VR2rBaoshdnjYObHARCvdyCFHYWNvXq8ot4a6/
-         +Q/oYPLRwE0kzxotMpcn+WiPc6BdlsJCxEce7tmt2dcyZVGkuWCmA/vb/qlWnlsohVGI
-         caaxjio9l2/mCB9XfEHjxif5y0zhm+5XBeTQz2UYM8J/fjSI7f/KLbWE4wg6Qyca0q6e
-         91lCCeQ/FE5FPM6NdeRnE5yBXInFuDerzW7Yfma3mtgrqa8mH4IOk2Rw1qUw/CWZhgjX
-         Nfc5XufgiVf9Iqg7/XkxmMz37HKIinquznkwA62QB9S3ENiy4gigtgVFeofL6mlJKl1p
-         PQ5w==
-X-Gm-Message-State: APjAAAX8wwgxNxwQe5crjTT2vjOtqBQYccyXiSRcUZsGVKjcpxbBriAy
-        vHy8mLD/6+wzhUVCg1PEZ9aHCw==
-X-Google-Smtp-Source: APXvYqzvww1Km84Vyks1zXg7FGvX0slqjz6NHlTnlhfFO5LDoV2zyC5m2lOrxdQKGcNdpemCORO0UQ==
-X-Received: by 2002:a19:ec02:: with SMTP id b2mr3100657lfa.121.1572369145424;
-        Tue, 29 Oct 2019 10:12:25 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id e9sm6577492ljo.71.2019.10.29.10.12.22
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=InKFbvD0px/g8dMpbilYBgPtyAvwKrDpGEcYIAOth54=;
+        b=DGnk+TT5wtIqgzdwyDTACTHOiiFHOo0q8bYyCiaFse9NVIQQ4NN97tUfZSsQnuMCBS
+         5J13LXL5ZQrxvUPL7/fMZf5tySitC2IYFnqCy2aPCALlNPROVylWGKW2eA3/x/ECX1DH
+         OmN1Ra6IVoLEJXUlm/VkFh4fWHsSSMj/6BnSQS5OZCgC7b35CLGyTRFZEbwTSnp1VPx6
+         o26j8xxNHEKoNIY66h1nRdR8bnf4iKP8MixdcOSDQMYvSr/W5uxxVafXkBk3qPlFdIr0
+         TSUsQWigW09XDxrwNo1PKjPLODpGLdleinj8+Elw+Nn0meuBq5nqcJnkfEoQ6iAnf923
+         sWkA==
+X-Gm-Message-State: APjAAAUXqFKxtVn60MQq3zyeN9nKFcTlv+iVJDPbewag/v7XI8Pshogn
+        YyaUghx/nZeSvDPPcxJ/5bc=
+X-Google-Smtp-Source: APXvYqxmFaM09mpgrypnHcT3zrXLAtJHNFfC30COKJPFiryreLeahwsy1UG4Ow6EVOh16BllLbYypQ==
+X-Received: by 2002:a05:6402:60d:: with SMTP id n13mr25800838edv.218.1572369819537;
+        Tue, 29 Oct 2019 10:23:39 -0700 (PDT)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id p20sm673902edt.63.2019.10.29.10.23.27
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 10:12:24 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net] Documentation: netdev-FAQ: make all questions into headings
-Date:   Tue, 29 Oct 2019 10:12:15 -0700
-Message-Id: <20191029171215.6861-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.23.0
+        Tue, 29 Oct 2019 10:23:38 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] net: dsa: Add ability to elect CPU port
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        davem@davemloft.net, Jakub Kicinski <jakub.kicinski@netronome.com>
+References: <20191028223236.31642-1-f.fainelli@gmail.com>
+ <20191028223236.31642-2-f.fainelli@gmail.com>
+ <20191029013938.GG15259@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <21f28a95-9eea-19b4-fee9-c9f436bf2416@gmail.com>
+Date:   Tue, 29 Oct 2019 10:23:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <20191029013938.GG15259@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure all questions are headings. Some questions are
-currently on multiple lines, and the continuation lines
-appear as part of the answer when rendered. One question
-was also missing an underline completely.
+Hi Andrew,
 
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
----
- Documentation/networking/netdev-FAQ.rst | 35 +++++++++----------------
- 1 file changed, 13 insertions(+), 22 deletions(-)
+On 10/28/19 6:39 PM, Andrew Lunn wrote:
+> On Mon, Oct 28, 2019 at 03:32:35PM -0700, Florian Fainelli wrote:
+>> In a configuration where multiple CPU ports are declared within the
+>> platform configuration, it may be desirable to make sure that a
+>> particular CPU port gets used. This is particularly true for Broadcom
+>> switch that are fairly flexible to some extent in which port can be the
+>> CPU port, yet will be more featureful if port 8 is elected.
+> 
+>> -static struct dsa_port *dsa_tree_find_first_cpu(struct dsa_switch_tree *dst)
+>> +static struct dsa_port *dsa_tree_find_cpu(struct dsa_switch_tree *dst)
+>>  {
+>> +	struct dsa_switch *ds;
+>>  	struct dsa_port *dp;
+>> +	int err;
+>>  
+>> -	list_for_each_entry(dp, &dst->ports, list)
+>> -		if (dsa_port_is_cpu(dp))
+>> +	list_for_each_entry(dp, &dst->ports, list) {
+>> +		ds = dp->ds;
+>> +		if (!dsa_port_is_cpu(dp))
+>> +			continue;
+>> +
+>> +		if (!ds->ops->elect_cpu_port)
+>>  			return dp;
+>>  
+>> +		err = ds->ops->elect_cpu_port(ds, dp->index);
+>> +		if (err == 0)
+>> +			return dp;
+>> +	}
+>> +
+>>  	return NULL;
+>>  }
+> 
+> Hi Florian
+> 
+> I think is_preferred_cpu_port() would be a better name, and maybe a
+> bool?
+> 
+> Also, i don't think we should be returning NULL at the end like
+> this. If the device tree does not have the preferred port as CPU port,
+> we should use dsa_tree_find_cpu() to pick one of the actually offered
+> CPU ports in DT? It sounds like your hardware will still work if any
+> port is used as the CPU port.
 
-diff --git a/Documentation/networking/netdev-FAQ.rst b/Documentation/networking/netdev-FAQ.rst
-index 642fa963be3c..633d558743b2 100644
---- a/Documentation/networking/netdev-FAQ.rst
-+++ b/Documentation/networking/netdev-FAQ.rst
-@@ -82,7 +82,7 @@ focus for ``net`` is on stabilization and bug fixes.
- Finally, the vX.Y gets released, and the whole cycle starts over.
- 
- Q: So where are we now in this cycle?
--
-+-------------------------------------
- Load the mainline (Linus) page here:
- 
-   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-@@ -105,9 +105,8 @@ in the above is just the subject text of the outgoing e-mail, and you
- can manually change it yourself with whatever MUA you are comfortable
- with.
- 
--Q: I sent a patch and I'm wondering what happened to it?
----------------------------------------------------------
--Q: How can I tell whether it got merged?
-+Q: I sent a patch and I'm wondering what happened to it? How can I tell whether it got merged?
-+----------------------------------------------------------------------------------------------
- A: Start by looking at the main patchworks queue for netdev:
- 
-   http://patchwork.ozlabs.org/project/netdev/list/
-@@ -122,10 +121,8 @@ A: Generally speaking, the patches get triaged quickly (in less than
- patch is a good way to ensure your patch is ignored or pushed to the
- bottom of the priority list.
- 
--Q: I submitted multiple versions of the patch series
------------------------------------------------------
--Q: should I directly update patchwork for the previous versions of these
--patch series?
-+Q: I submitted multiple versions of the patch series should I directly update patchwork for the previous versions of these patch series?
-+----------------------------------------------------------------------------------------------------------------------------------------
- A: No, please don't interfere with the patch status on patchwork, leave
- it to the maintainer to figure out what is the most recent and current
- version that should be applied. If there is any doubt, the maintainer
-@@ -169,10 +166,8 @@ simply clone the repo, and then git grep the mainline commit ID, e.g.
-   releases/3.9.8/ipv6-fix-possible-crashes-in-ip6_cork_release.patch
-   stable/stable-queue$
- 
--Q: I see a network patch and I think it should be backported to stable.
-------------------------------------------------------------------------
--Q: Should I request it via stable@vger.kernel.org like the references in
--the kernel's Documentation/process/stable-kernel-rules.rst file say?
-+Q: I see a network patch and I think it should be backported to stable. Should I request it via stable@vger.kernel.org like the references in the kernel's Documentation/process/stable-kernel-rules.rst file say?
-+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- A: No, not for networking.  Check the stable queues as per above first
- to see if it is already queued.  If not, then send a mail to netdev,
- listing the upstream commit ID and why you think it should be a stable
-@@ -190,10 +185,8 @@ mainline, the better the odds that it is an OK candidate for stable.  So
- scrambling to request a commit be added the day after it appears should
- be avoided.
- 
--Q: I have created a network patch and I think it should be backported to stable.
----------------------------------------------------------------------------------
--Q: Should I add a Cc: stable@vger.kernel.org like the references in the
--kernel's Documentation/ directory say?
-+Q: I have created a network patch and I think it should be backported to stable. Should I add a Cc: stable@vger.kernel.org like the references in the kernel's Documentation/ directory say?
-+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- A: No.  See above answer.  In short, if you think it really belongs in
- stable, then ensure you write a decent commit log that describes who
- gets impacted by the bug fix and how it manifests itself, and when the
-@@ -231,15 +224,13 @@ Q: Is the comment style convention different for the networking content?
-    * another line of text
-    */
- 
--Q: I am working in existing code that has the former comment style and not the latter.
----------------------------------------------------------------------------------------
--Q: Should I submit new code in the former style or the latter?
-+Q: I am working in existing code that has the former comment style and not the latter. Should I submit new code in the former style or the latter?
-+--------------------------------------------------------------------------------------------------------------------------------------------------
- A: Make it the latter style, so that eventually all code in the domain
- of netdev is of this format.
- 
--Q: I found a bug that might have possible security implications or similar.
-----------------------------------------------------------------------------
--Q: Should I mail the main netdev maintainer off-list?**
-+Q: I found a bug that might have possible security implications or similar. Should I mail the main netdev maintainer off-list?
-+------------------------------------------------------------------------------------------------------------------------------
- A: No. The current netdev maintainer has consistently requested that
- people use the mailing lists and not reach out directly.  If you aren't
- OK with that, then perhaps consider mailing security@kernel.org or
+It would indeed work, although most likely in a degraded mode, so not a
+great fit usually.
+
+> 
+> And maybe we need a is_valid_cpu_port()? Some of the chipsets only
+> have a subset which can be CPU ports, the hardware is not as flexible.
+> The core can then validate the CPU port really is valid, rather than
+> the driver, e.g. qca8k, validating the CPU port in setup() and
+> returning an error.
+
+Initially I had added a port_validate() function and had it be called
+from dsa_switch_parse_ports_of() and dsa_switch_parse_ports() such that
+the driver could check whether the port type (DSA, USER, CPU) was valid
+and return 0, an error or -EAGAIN if the CPU port was not the preferred one.
+
+Later on, I did introduce is_preferred_cpu_port() returning a bool, but
+thought this was too long of a name and went for elect_cpu_port which is
+not really an election process.... Now you know my thought process :)
+
+Let me sleep on it a bit, maybe coming back with the port_validate()
+approach is the most flexible/capable solution.
 -- 
-2.23.0
-
+Florian
