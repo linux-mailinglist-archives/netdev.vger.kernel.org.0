@@ -2,88 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A8F2E862E
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 11:57:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D492E865D
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 12:13:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731512AbfJ2K5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 06:57:30 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:33916 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726175AbfJ2K5a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 06:57:30 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.92.2)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1iPPBm-00079g-HF; Tue, 29 Oct 2019 11:57:26 +0100
-Message-ID: <9086eeae04476adbd957b8d4df0e1a3ba0e7af93.camel@sipsolutions.net>
-Subject: Re: [PATCH v2] 802.11n IBSS: wlan0 stops receiving packets due to
- aggregation after sender reboot
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Krzysztof =?UTF-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 29 Oct 2019 11:57:24 +0100
-In-Reply-To: <m336fbsu2r.fsf@t19.piap.pl>
-References: <m34l02mh71.fsf@t19.piap.pl> <m37e4tjfbu.fsf@t19.piap.pl>
-         <e5b07b4ce51f806ce79b1ae06ff3cbabbaa4873d.camel@sipsolutions.net>
-         <m37e4orkxr.fsf@t19.piap.pl>
-         <4725dcbd6297c74bf949671e7ad48eeeb0ceb0d0.camel@sipsolutions.net>
-         <m336fbsu2r.fsf@t19.piap.pl>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1728898AbfJ2LN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 07:13:28 -0400
+Received: from cache12.mydevil.net ([128.204.216.223]:45630 "EHLO
+        cache12.mydevil.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728152AbfJ2LN2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 07:13:28 -0400
+From:   =?UTF-8?q?Micha=C5=82=20=C5=81yszczek?= <michal.lyszczek@bofc.pl>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Micha=C5=82=20=C5=81yszczek?= <michal.lyszczek@bofc.pl>
+Subject: [PATCH v2 iproute2] libnetlink.c, ss.c: properly handle fread() errors
+Date:   Tue, 29 Oct 2019 12:13:11 +0100
+Message-Id: <20191029111311.7000-1-michal.lyszczek@bofc.pl>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191028212128.1b8c5054@hermes.lan>
+References: <20191028212128.1b8c5054@hermes.lan>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-AV-Check: Passed
+X-System-Sender: michal.lyszczek@bofc.pl
+X-Spam-Flag: NO
+X-Spam-Status: NO, score=0.8 required=5.0, tests=(BAYES_50=0.8,
+        NO_RELAYS=-0.001, URIBL_BLOCKED=0.001) autolearn=disabled
+        version=3.4.2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-10-29 at 11:51 +0100, Krzysztof Hałasa wrote:
-> Johannes Berg <johannes@sipsolutions.net> writes:
-> 
-> > > The problem I can see is that the dialog_tokens are 8-bit, way too small
-> > > to eliminate conflicts.
-> > 
-> > Well, they're also per station, we could just randomize the start and
-> > then we'd delete the old session and start a new one, on the receiver.
-> > 
-> > So that would improve robustness somewhat (down to a 1/256 chance to hit
-> > this problem).
-> 
-> That was what I meant. Still, 1/256 seems hardly acceptable to me -
-> unless there is some work around (a short timeout or something similar).
-> Remember that when it doesn't work, it doesn't work - it won't recover
-> until the sequence catches up, which may mean basically forever.
+fread(3) returns size_t data type which is unsigned, thus check
+`if (fread(...) < 0)' is always false. To check if fread(3) has
+failed, user should check error indicator with ferror(3).
 
-Agree, it just helps in "most" cases to do this. Perhaps we shouldn't do
-this then so that we find the problem more easily...
+This commit also changes read logic a little bit by being less
+forgiving for errors. Previous logic was checking if fread(3)
+read *at least* required ammount of data, now code checks if
+fread(3) read *exactly* expected ammount of data. This makes
+sense because code parses very specific binary file, and reading
+even 1 less/more byte than expected, will later corrupt data anyway.
 
-> Or, maybe the remote station can request de-aggregation first, so the
-> subsequent aggregation request is always treated as new?
+Signed-off-by: Michał Łyszczek <michal.lyszczek@bofc.pl>
 
-> Alternatively, perhaps the remote can signal that it's a new request and
-> not merely an existing session?
+---
+v1 -> v2: fread(3) can also return error on truncated reads and
+            not only on 0bytes read (suggested by Stephen Hemminger)
 
-I think we should just implement authentication and reset of the station
-properly, instead of fudging around with aggregation. This is just one
-possible problematic scenario ... what if the station was reconfigured
-with a different number of antennas in the meantime, for example, or
-whatnot. There's a lot of state we keep for each station.
+---
+ lib/libnetlink.c | 26 +++++++++++++-------------
+ misc/ss.c        | 26 +++++++++++++-------------
+ 2 files changed, 26 insertions(+), 26 deletions(-)
 
-> > That's the situation though - the local station needs to know that it
-> > has in fact *not* seen the same instance of the station, but that the
-> > station has reset and needs to be removed & re-added.
-> 
-> Precisely. And it seems to me that the first time the local station
-> learns of this is when a new, regular, non-aggregated packet arrives.
-> Or, when a new aggregation request arrives.
-
-Well, it should learn about the station when there's a beacon from it,
-or if not ... we have a patch to force a probe request/response cycle so
-we have all the capabilities properly. We should upstream that patch,
-but need to do something to avoid being able to use this for traffic
-amplification attacks.
-
-johannes
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index 6ce8b199..e02d6294 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -1174,7 +1174,7 @@ int rtnl_listen(struct rtnl_handle *rtnl,
+ int rtnl_from_file(FILE *rtnl, rtnl_listen_filter_t handler,
+ 		   void *jarg)
+ {
+-	int status;
++	size_t status;
+ 	char buf[16384];
+ 	struct nlmsghdr *h = (struct nlmsghdr *)buf;
+ 
+@@ -1184,14 +1184,15 @@ int rtnl_from_file(FILE *rtnl, rtnl_listen_filter_t handler,
+ 
+ 		status = fread(&buf, 1, sizeof(*h), rtnl);
+ 
+-		if (status < 0) {
+-			if (errno == EINTR)
+-				continue;
+-			perror("rtnl_from_file: fread");
++		if (status == 0 && feof(rtnl))
++			return 0;
++		if (status != sizeof(*h)) {
++			if (ferror(rtnl))
++				perror("rtnl_from_file: fread");
++			if (feof(rtnl))
++				fprintf(stderr, "rtnl-from_file: truncated message\n");
+ 			return -1;
+ 		}
+-		if (status == 0)
+-			return 0;
+ 
+ 		len = h->nlmsg_len;
+ 		l = len - sizeof(*h);
+@@ -1204,12 +1205,11 @@ int rtnl_from_file(FILE *rtnl, rtnl_listen_filter_t handler,
+ 
+ 		status = fread(NLMSG_DATA(h), 1, NLMSG_ALIGN(l), rtnl);
+ 
+-		if (status < 0) {
+-			perror("rtnl_from_file: fread");
+-			return -1;
+-		}
+-		if (status < l) {
+-			fprintf(stderr, "rtnl-from_file: truncated message\n");
++		if (status != NLMSG_ALIGN(l)) {
++			if (ferror(rtnl))
++				perror("rtnl_from_file: fread");
++			if (feof(rtnl))
++				fprintf(stderr, "rtnl-from_file: truncated message\n");
+ 			return -1;
+ 		}
+ 
+diff --git a/misc/ss.c b/misc/ss.c
+index 363b4c8d..efa87781 100644
+--- a/misc/ss.c
++++ b/misc/ss.c
+@@ -3329,28 +3329,28 @@ static int tcp_show_netlink_file(struct filter *f)
+ 	}
+ 
+ 	while (1) {
+-		int status, err2;
++		int err2;
++		size_t status, nitems;
+ 		struct nlmsghdr *h = (struct nlmsghdr *)buf;
+ 		struct sockstat s = {};
+ 
+ 		status = fread(buf, 1, sizeof(*h), fp);
+-		if (status < 0) {
+-			perror("Reading header from $TCPDIAG_FILE");
+-			break;
+-		}
+ 		if (status != sizeof(*h)) {
+-			perror("Unexpected EOF reading $TCPDIAG_FILE");
++			if (ferror(fp))
++				perror("Reading header from $TCPDIAG_FILE");
++			if (feof(fp))
++				fprintf(stderr, "Unexpected EOF reading $TCPDIAG_FILE");
+ 			break;
+ 		}
+ 
+-		status = fread(h+1, 1, NLMSG_ALIGN(h->nlmsg_len-sizeof(*h)), fp);
++		nitems = NLMSG_ALIGN(h->nlmsg_len - sizeof(*h));
++		status = fread(h+1, 1, nitems, fp);
+ 
+-		if (status < 0) {
+-			perror("Reading $TCPDIAG_FILE");
+-			break;
+-		}
+-		if (status + sizeof(*h) < h->nlmsg_len) {
+-			perror("Unexpected EOF reading $TCPDIAG_FILE");
++		if (status != nitems) {
++			if (ferror(fp))
++				perror("Reading $TCPDIAG_FILE");
++			if (feof(fp))
++				fprintf(stderr, "Unexpected EOF reading $TCPDIAG_FILE");
+ 			break;
+ 		}
+ 
+-- 
+2.23.0
 
