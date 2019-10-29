@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C15FE8ED3
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:59:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33228E8EE4
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:00:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729848AbfJ2R7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 13:59:15 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36282 "EHLO
+        id S1730036AbfJ2SAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 14:00:38 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:39136 "EHLO
         mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726635AbfJ2R7P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:59:15 -0400
-Received: by mail-ed1-f65.google.com with SMTP id bm15so11468559edb.3;
-        Tue, 29 Oct 2019 10:59:13 -0700 (PDT)
+        with ESMTP id S1726091AbfJ2SAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:00:38 -0400
+Received: by mail-ed1-f65.google.com with SMTP id l25so11470926edt.6
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:00:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=vtkybI0/lDodgOpmR/uxPbwhX9qmhMQCPdvVmWENPGs=;
-        b=Sz7tDBubw8TLcrmtEfxCBVcc47cAwfvdCYzv60vloHxiUQylDqWyhVi/IJ3doFwy5D
-         4mN2KPDxw9FX7eMzdGv3sI7ZWO17GDLFb8PvWnaTsFpzAoWP7NkdUwnr1AFHvjdP8hku
-         R1tH4fEVhLwCi3XIFOKrMbKExq/r4ZIZ/FSrUKsOYgNDq124Q756mKI84tGe+LAZ9HJ/
-         bHAdiUgUdKhmDOI25Vf1h3tQlwvDZwyLcARmaWRgvM1zYFCTTekHnIgmWMCdEKdEtcMo
-         44fgG9px15vs/5mnXoANdYfn0IWFv1PGZg9JzPu2cdj9hN4tPBiDvExN54mSvUa2KjDz
-         yoKA==
+        bh=JH6Eknc0300orQDOSIlx9rRhfhpTeq8iaA84NtfO82c=;
+        b=LubRoVXXBaurAGUDXI/0/ffK6OHlBy1z037MsSfbQsznzWbToC0BPlwSuZK5GSYfrG
+         Vy3BmVsP/U3uDkx3AkLxO7Y62IePjwLCuzZ4XG50W+CvECG0IUOVrlJM3AtQXusaM9bX
+         hiLLdE3H0WcdCRHnVFpQLNR8wccgtWOegnwb7b0n3JpJ9k9pA7eJjG0vPTH9lAzlU7bC
+         gip13A+Re96vaNZ8ApkUqliEIzeB0tPaFGsZIClK5TxGr13OShu8QpgVFdxyENOdewNm
+         SmIYw0Ir9ohXb4PBzlcZ1MgX1Xqu8nKKuc/c1fbcvugrU+wDnCh0It6myTyHIPqLk5Bt
+         cI2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=vtkybI0/lDodgOpmR/uxPbwhX9qmhMQCPdvVmWENPGs=;
-        b=Km3LrSbFGjg0IFio80q/vHcdA255jyJ00K1mxe7HxtizQiWpApuMyNBojoYfb78PQt
-         L5nso0U/950nt9GXWfvuNiJaC3ED7H/K4TZ/zGZEKhJHqA8+xE+0LVLJHcIdpgpUZZDc
-         ZtxuOTrvBZ+4Q2esRl4VtTxpx+AaikiFTSd1S+RIsjeI5BGkXOkBWooKEX2BnE76rqdf
-         rRvA4htlKMaF0kv6hQIr76FSaN3+p/uIqkUvrnFNq/cy3OyM7auQBChbePg65/64NzNt
-         pezvtDYfZ+HVFG1S8hDe6JXmFkuceYAwBkmoL4uRQRLAPcpvd2G7vjPy2oPmGNwZJtjK
-         Comw==
-X-Gm-Message-State: APjAAAVIMnum7fGfbhA7hMjz4FxManb8pOx3mT6hfbj5FiLgnLXeMbJ0
-        VbZOF9CGGGqo7JcEAuuwFsg=
-X-Google-Smtp-Source: APXvYqw/lROTgvOeZRiNkBEwjjN+y8ZiFN4/tDCom7Cc73977G0rScnP2kZba5tbrjvgP5VxE2zrXg==
-X-Received: by 2002:aa7:cd01:: with SMTP id b1mr27284800edw.122.1572371952820;
-        Tue, 29 Oct 2019 10:59:12 -0700 (PDT)
+        bh=JH6Eknc0300orQDOSIlx9rRhfhpTeq8iaA84NtfO82c=;
+        b=TjwrkU3JwqUnWg86FrNEzlsjTnzu8FQv0SqEmNDpt2XyGCFigJ5yfr6pPWbqtHJK8w
+         OtNnDJOF/yxN891x7bKzt9lQx31FxHuLe7MOYFbI+T9frnve9s1x5+Oyhb1L6hiJNxtx
+         cDo2g9BEvLtlsXGR5J3FqgPkrSh6uNcgAPJGONZVtzEHRksNz2/xvT0EbTBDvZRBTpGG
+         nvauvpg8M1zWCk76hB+iTE9n9YhyAwSAlec1ICNgrwXqVK0DmuGjUzCQJU4NlXlh1CUQ
+         i+hSOc9yaGc4fwUJ2yx76I+8ayAlziq977Y+to0pj64spjBXX8TYKQMEaaQ0V+HSNnI0
+         xfKA==
+X-Gm-Message-State: APjAAAVuGmRSWRHymrHBHHZqWSi/UD+0pHv2BTcVwbxPw7Zmz5EMcQDQ
+        uBHRCnk3LwUVMuW3sJkNUd0=
+X-Google-Smtp-Source: APXvYqzC7nzgEE41Ln9wCXRkXSJWTgPrVnYyJ9ENN2GGm8Oq0nrNMwwG9c5wb/uDxNsXvAwa/CXq2Q==
+X-Received: by 2002:a05:6402:3c7:: with SMTP id t7mr27189500edw.232.1572372035581;
+        Tue, 29 Oct 2019 11:00:35 -0700 (PDT)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id r2sm546024edo.0.2019.10.29.10.59.08
+        by smtp.googlemail.com with ESMTPSA id p88sm630785edd.22.2019.10.29.11.00.32
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 10:59:11 -0700 (PDT)
-Subject: Re: [PATCH 0/3] net: phy: initialize PHYs via device tree properties
-To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-References: <20191029174819.3502-1-michael@walle.cc>
+        Tue, 29 Oct 2019 11:00:34 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/4] net: phy: marvell: add downshift support for
+ M88E1111
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Chris Healy <Chris.Healy@zii.aero>
+References: <4ae7d05a-4d1d-024f-ebdf-c92798f1a770@gmail.com>
+ <7c5be98d-6b75-68fe-c642-568943c5c4b6@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -111,75 +111,27 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <519d52d2-cd83-b544-591b-ca9d9bb16dfa@gmail.com>
-Date:   Tue, 29 Oct 2019 10:59:07 -0700
+Message-ID: <17460336-193b-6fc9-0bc8-ce7230cd70f5@gmail.com>
+Date:   Tue, 29 Oct 2019 11:00:31 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191029174819.3502-1-michael@walle.cc>
+In-Reply-To: <7c5be98d-6b75-68fe-c642-568943c5c4b6@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/19 10:48 AM, Michael Walle wrote:
-> I was trying to configure the Atheros PHY for my board. There are fixups
-> all over the place, for example to enable the 125MHz clock output in almost
-> any i.MX architecture. Instead of adding another fixup in architecture
-> specific code, try to provide a generic way to init the PHY registers.
+On 10/28/19 12:53 PM, Heiner Kallweit wrote:
+> This patch adds downshift support for M88E1111. This PHY version uses
+> another register for downshift configuration, reading downshift status
+> is possible via the same register as for other PHY versions.
 > 
-> This patch series tries to pick up the "broadcom,reg-init" and
-> "marvell,reg-init" device tree properties idea and make it a more generic
-> "reg-init" which is handled by phy_device instead of a particular phy
-> driver.
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-These two examples are actually quite bad and were symptomatic of a few
-things at the time:
-
-- rush to get a specific feature/device supported without thinking about
-the big picture
-- lack of appropriate review on the Device Tree bindings
-
-Fortunately, the last item is now not happening anymore.
-
-The problem with letting that approach go through is that the Device
-Tree can now hold a configuration policy which is passed through as-is
-from DT to the PHY device, this is bad on so many different levels,
-starting with abstraction.
-
-If all you need is to enable a particular clock, introduce device
-specific properties that describe the hardware, and make the necessary
-change to the local driver that needs to act on those. You can always
-define a more generic scope property if you see a recurring pattern.
-
-So just to be clear on the current approach: NACK.
-
-> 
-> Michael Walle (3):
->   dt-bindings: net: phy: Add reg-init property
->   net: phy: export __phy_{read|write}_page
->   net: phy: Use device tree properties to initialize any PHYs
-> 
->  .../devicetree/bindings/net/ethernet-phy.yaml | 31 ++++++
->  MAINTAINERS                                   |  1 +
->  drivers/net/phy/phy-core.c                    | 24 ++++-
->  drivers/net/phy/phy_device.c                  | 97 ++++++++++++++++++-
->  include/dt-bindings/net/phy.h                 | 18 ++++
->  include/linux/phy.h                           |  2 +
->  6 files changed, 170 insertions(+), 3 deletions(-)
->  create mode 100644 include/dt-bindings/net/phy.h
-> 
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> 
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
