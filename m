@@ -2,158 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9CCEE8F5C
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:35:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 452A2E8F5D
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:36:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728267AbfJ2Sfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 14:35:30 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42462 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbfJ2Sf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:35:29 -0400
-Received: by mail-qt1-f195.google.com with SMTP id z17so15047664qts.9
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:35:28 -0700 (PDT)
+        id S1728821AbfJ2Sf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 14:35:59 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39204 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725962AbfJ2Sf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:35:59 -0400
+Received: by mail-lj1-f194.google.com with SMTP id y3so16431235ljj.6
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:35:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qEA3yNEaGGRl9BKuKN3E5MZ7584xsnQwcKFnAhdENh4=;
-        b=BAqeOKNcQ6F9fALhYv4eZ7KKhPlgTSz/SrWp7lgfi4OC3agXzidqt9rJyaWGiaWeXc
-         Yi5PYwqAJ6TbfDytxDK9kOB2/j5p3bPxsIB25dN8lHYXPGp0crso+lOigcqAX3uvSkg6
-         piKX5U6NPks8KubIWWGq5GU48rlnQN23vAVsM=
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VVzOWaW+8WScZs4n+Dg4lETcm9GAwtrOVevdTx2yiNw=;
+        b=HKsjqS2IAM573Lz8ROLM6jfS3knA1pQ01xLeIp0aBxdvWQ3mG/tT4NDr9gfClzXGRE
+         1XbK1E6SADvZEn87iaBrrsojdnnf3XWdqvrOjzsZvhHfM1XMQgARJHMNRySqyBCF54Fw
+         uRTMQ7TxhcGdShK8QiEyXimlf+yK8At44wDag=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qEA3yNEaGGRl9BKuKN3E5MZ7584xsnQwcKFnAhdENh4=;
-        b=tyvc+ISIFgh8D1vt2bhkeVkWEyEphkLnGPbMo5RBpGukrlrQJ4kp5mKhbSU9rLLbdr
-         AW0P4TU/QHgRgxgbiOEZfPeUokMjmRAR0dZfhYkHCyYa9n/2ijWgOeXtze49+RhrW8To
-         f16mO8kmr9VXy5sPsMtKPgjbxRjhBw4EF/7N6R4dxKFmwnkkaUYtAgzbLl0Cwzd1HP66
-         CkoJPomPVfLJy6osG/A47XmZFJNCufQzApmfqedL/1QlfxGY8kyngyQUYkG9TapEFXQI
-         fkYejVgAxnZerUDSz8rJDXOAFLjDS8wr7Dg3oevDRnz+oc55E60b2/X068mmrI+cqlGk
-         vSWg==
-X-Gm-Message-State: APjAAAV3Bx1FC/+iqc6Exp/eBzn0kti3Ohib8Z8HwIiy+2llOX8i3hw/
-        uafVMn8hF7jukJHDYxU7vfc3drP8J+6PEAgWghPknmaosbc=
-X-Google-Smtp-Source: APXvYqwhdezEyt1hOxGNnBBcUiM0HmSC4lMEUTQ3vSMj3ogG+5y6U80EgC378QJlgKv0U/bFbY36SDWI/jwqjFCGkwE=
-X-Received: by 2002:a0c:e80d:: with SMTP id y13mr9591956qvn.24.1572374128348;
- Tue, 29 Oct 2019 11:35:28 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VVzOWaW+8WScZs4n+Dg4lETcm9GAwtrOVevdTx2yiNw=;
+        b=fS/IP4DunWo62zakHUI4StSkhcJQ3DxdjfX2E+Ysp5d78mHvO63kM2UOQGjKFclLf8
+         xFm7kl5gpHwe9FE9qss80EA8d8AiVt2R+h4/xR85TbEFfXmCLdsz+828sX/YavK8lvXq
+         04N3e5/iJ/0FI7DiAfbXpEU/wuQhcVpWmP/RsYP9egNeYtWzvTFRWHvQZXzwX83POfFO
+         NguD+QyAQyiIrTR1XZrBccwOBeRluKNSXgWNhzKLRIFzuA0yEl3ufsdV7cCqQ2GUN+vJ
+         6eRI3rhUkfKUr3OTfdl5u3QFDalYzYte8ywSYh/kSLAOMGvSavonlhTfCurUTWE9O8n+
+         j3jA==
+X-Gm-Message-State: APjAAAUEYrDH21GlFQ99gVy6iHOUOhBulMrBqbTGmZejQlAjz+AYdBPT
+        4SxgtU1fG7ipslAGq47gBHNMuw==
+X-Google-Smtp-Source: APXvYqws9Kvxp5AtGZPOyHwWm0t5qtGaVHPqspQuzOKUufQe6npJGSXYa12tKIEgABu5BSjWbLnPug==
+X-Received: by 2002:a2e:9595:: with SMTP id w21mr3649227ljh.181.1572374157687;
+        Tue, 29 Oct 2019 11:35:57 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id u11sm3665585ljo.17.2019.10.29.11.35.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Oct 2019 11:35:57 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 4/4] bonding: balance ICMP echoes in layer3+4
+ mode
+To:     Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Paul Blakey <paulb@mellanox.com>, linux-kernel@vger.kernel.org
+References: <20191029135053.10055-1-mcroce@redhat.com>
+ <20191029135053.10055-5-mcroce@redhat.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <5be14e4e-807f-486d-d11a-3113901e72fe@cumulusnetworks.com>
+Date:   Tue, 29 Oct 2019 20:35:55 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-References: <CABWYdi1QmrHxNZT_DK4A2WUoj=r1+wxSngzaaTuGCatHisaTRw@mail.gmail.com>
- <CANn89iLE-3zxROxGOusPBRmQL4oN2Nqtg3rqXnpO8bkiFAw8EQ@mail.gmail.com>
- <CABWYdi2Eq30vEKKYxr-diofpeATNXiB3ZYKL6Q15y10w+vsCLg@mail.gmail.com> <CANn89iJYKurw-3-EooE9qyM8-2MzQvCz8qdV91J1hVNxXwsyng@mail.gmail.com>
-In-Reply-To: <CANn89iJYKurw-3-EooE9qyM8-2MzQvCz8qdV91J1hVNxXwsyng@mail.gmail.com>
-From:   Ivan Babrou <ivan@cloudflare.com>
-Date:   Tue, 29 Oct 2019 11:35:17 -0700
-Message-ID: <CABWYdi0nmGE6Y+iUkfGvR07zU640Fu4op4EXbCp6ou6GJMcfww@mail.gmail.com>
-Subject: Re: fq dropping packets between vlan and ethernet interfaces
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191029135053.10055-5-mcroce@redhat.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-5.4-rc5 has it, but we still experience the issue.
+On 29/10/2019 15:50, Matteo Croce wrote:
+> The bonding uses the L4 ports to balance flows between slaves. As the ICMP
+> protocol has no ports, those packets are sent all to the same device:
+> 
+>     # tcpdump -qltnni veth0 ip |sed 's/^/0: /' &
+>     # tcpdump -qltnni veth1 ip |sed 's/^/1: /' &
+>     # ping -qc1 192.168.0.2
+>     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 315, seq 1, length 64
+>     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 315, seq 1, length 64
+>     # ping -qc1 192.168.0.2
+>     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 316, seq 1, length 64
+>     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 316, seq 1, length 64
+>     # ping -qc1 192.168.0.2
+>     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 317, seq 1, length 64
+>     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 317, seq 1, length 64
+> 
+> But some ICMP packets have an Identifier field which is
+> used to match packets within sessions, let's use this value in the hash
+> function to balance these packets between bond slaves:
+> 
+>     # ping -qc1 192.168.0.2
+>     0: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 303, seq 1, length 64
+>     0: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 303, seq 1, length 64
+>     # ping -qc1 192.168.0.2
+>     1: IP 192.168.0.1 > 192.168.0.2: ICMP echo request, id 304, seq 1, length 64
+>     1: IP 192.168.0.2 > 192.168.0.1: ICMP echo reply, id 304, seq 1, length 64
+> 
+> Aso, let's use a flow_dissector_key which defines FLOW_DISSECTOR_KEY_ICMP,
 
-On Tue, Oct 29, 2019 at 11:33 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Tue, Oct 29, 2019 at 11:31 AM Ivan Babrou <ivan@cloudflare.com> wrote:
-> >
-> > I'm on 5.4-rc5. Let me apply e7a409c3f46cb0dbc7bfd4f6f9421d53e92614a5
-> > on top and report back to you.
->
->
-> Oops, wrong copy/paste. I really meant this one :
->
-> 9669fffc1415bb0c30e5d2ec98a8e1c3a418cb9c net: ensure correct
-> skb->tstamp in various fragmenters
->
->
-> >
-> > On Tue, Oct 29, 2019 at 11:27 AM Eric Dumazet <edumazet@google.com> wrote:
-> > >
-> > > On Tue, Oct 29, 2019 at 11:20 AM Ivan Babrou <ivan@cloudflare.com> wrote:
-> > > >
-> > > > Hello,
-> > > >
-> > > > We're trying to test Linux 5.4 early and hit an issue with FQ.
-> > > >
-> > > > The relevant part of our network setup involves four interfaces:
-> > > >
-> > > > * ext0 (ethernet, internet facing)
-> > > > * vlan101@ext0 (vlan)
-> > > > * int0 (ethernet, lan facing)
-> > > > * vlan11@int0 (vlan)
-> > > >
-> > > > Both int0 and ext0 have fq on them:
-> > > >
-> > > > qdisc fq 1: dev ext0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > buckets 1024 orphan_mask 1023 quantum 3228 initial_quantum 16140
-> > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > > qdisc fq 8003: dev int0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > buckets 1024 orphan_mask 1023 quantum 3028 initial_quantum 15140
-> > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > >
-> > > > The issue itself is that after some time ext0 stops feeding off
-> > > > vlan101, which is visible as tcpdump not seeing packets on ext0, while
-> > > > they flow over vlan101.
-> > > >
-> > > > I can see that fq_dequeue does not report any packets:
-> > > >
-> > > > $ sudo perf record -e qdisc:qdisc_dequeue -aR sleep 1
-> > > > hping3 40335 [006] 63920.881016: qdisc:qdisc_dequeue: dequeue
-> > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > packets=0 skbaddr=(nil)
-> > > > hping3 40335 [006] 63920.881030: qdisc:qdisc_dequeue: dequeue
-> > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > packets=0 skbaddr=(nil)
-> > > > hping3 40335 [006] 63920.881041: qdisc:qdisc_dequeue: dequeue
-> > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > packets=0 skbaddr=(nil)
-> > > > hping3 40335 [006] 63920.881070: qdisc:qdisc_dequeue: dequeue
-> > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > packets=0 skbaddr=(nil)
-> > > >
-> > > > Inside of fq_dequeue I'm able to see that we throw away packets in here:
-> > > >
-> > > > * https://elixir.bootlin.com/linux/v5.4-rc2/source/net/sched/sch_fq.c#L510
-> > > >
-> > > > The output of tc -s qdisc shows the following:
-> > > >
-> > > > qdisc fq 1: dev ext0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > buckets 1024 orphan_mask 1023 quantum 3228 initial_quantum 16140
-> > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > >  Sent 4872143400 bytes 8448638 pkt (dropped 201276670, overlimits 0
-> > > > requeues 103)
-> > > >  backlog 779376b 10000p requeues 103
-> > > >   2806 flows (2688 inactive, 118 throttled), next packet delay
-> > > > 1572240566653952889 ns
-> > > >   354201 gc, 0 highprio, 804560 throttled, 3919 ns latency, 19492 flows_plimit
-> > > > qdisc fq 8003: dev int0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > buckets 1024 orphan_mask 1023 quantum 3028 initial_quantum 15140
-> > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > >  Sent 15869093876 bytes 17387110 pkt (dropped 0, overlimits 0 requeues 2817)
-> > > >  backlog 0b 0p requeues 2817
-> > > >   2047 flows (2035 inactive, 0 throttled)
-> > > >   225074 gc, 10 highprio, 102308 throttled, 7525 ns latency
-> > > >
-> > > > The key part here is probably that next packet delay for ext0 is the
-> > > > current unix timestamp in nanoseconds. Naturally, we see this code
-> > > > path being executed:
-> > > >
-> > > > * https://elixir.bootlin.com/linux/v5.4-rc2/source/net/sched/sch_fq.c#L462
-> > > >
-> > > > Unfortunately, I don't have a reliable reproduction for this issue. It
-> > > > appears naturally with some traffic and I can do limited tracing with
-> > > > perf and bcc tools while running hping3 to generate packets.
-> > > >
-> > > > The issue goes away if I replace fq with pfifo_fast on ext0.
-> > >
-> > > At which commit is your tree  precisely ?
-> > >
-> > > This sounds like the recent fix we had for fragmented packets.
-> > >
-> > > e7a409c3f46cb0dbc7bfd4f6f9421d53e92614a5 ipv4: fix IPSKB_FRAG_PMTU
-> > > handling with fragmentation
+Also ?
+
+> so we can balance pings encapsulated in a tunnel when using mode encap3+4:
+> 
+>     # ping -q 192.168.1.2 -c1
+>     0: IP 192.168.0.1 > 192.168.0.2: GREv0, length 102: IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 585, seq 1, length 64
+>     0: IP 192.168.0.2 > 192.168.0.1: GREv0, length 102: IP 192.168.1.2 > 192.168.1.1: ICMP echo reply, id 585, seq 1, length 64
+>     # ping -q 192.168.1.2 -c1
+>     1: IP 192.168.0.1 > 192.168.0.2: GREv0, length 102: IP 192.168.1.1 > 192.168.1.2: ICMP echo request, id 586, seq 1, length 64
+>     1: IP 192.168.0.2 > 192.168.0.1: GREv0, length 102: IP 192.168.1.2 > 192.168.1.1: ICMP echo reply, id 586, seq 1, length 64
+> 
+> Signed-off-by: Matteo Croce <mcroce@redhat.com>
+> ---
+>  drivers/net/bonding/bond_main.c | 77 ++++++++++++++++++++++++++++++---
+>  1 file changed, 70 insertions(+), 7 deletions(-)
+> 
+
+Hi Matteo,
+Wouldn't it be more useful and simpler to use some field to choose the slave (override the hash
+completely) in a deterministic way from user-space ?
+For example the mark can be interpreted as a slave id in the bonding (should be
+optional, to avoid breaking existing setups). ping already supports -m and
+anything else can set it, this way it can be used to do monitoring for a specific
+slave with any protocol and would be a much simpler change.
+User-space can then implement any logic for the monitoring case and as a minor bonus
+can monitor the slaves in parallel. And the opposite as well - if people don't want
+these balanced for some reason, they wouldn't enable it.
+
+Or maybe I've misunderstood why this change is needed. :)
+It would actually be nice to include the use-case which brought this on
+in the commit message.
+
+Cheers,
+ Nik
+
