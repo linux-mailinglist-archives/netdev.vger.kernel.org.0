@@ -2,116 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEC3EE8317
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 09:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7B3EE832A
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 09:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729068AbfJ2ITy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 04:19:54 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39519 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729040AbfJ2ITy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 04:19:54 -0400
-Received: by mail-qt1-f195.google.com with SMTP id t8so18961986qtc.6;
-        Tue, 29 Oct 2019 01:19:53 -0700 (PDT)
+        id S1729134AbfJ2IYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 04:24:31 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:56026 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727331AbfJ2IYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 04:24:31 -0400
+Received: by mail-wm1-f68.google.com with SMTP id g24so1490207wmh.5
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 01:24:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=PVI2OQ5lGd+deR12IVFnVb/9vuCzshNV43sWHU4PiNM=;
-        b=SHYbO8tiuE55WImyXvZMkhiwlSxgF1ecP6g54mh/sslqzxwHDAhhzaWbdI4Lkot+x6
-         7WsMSNMCCBeYE2/wzx2GcUCQJGdUEAaCklzKglXCEeJOeH8lW44sPQFWJlqHKt5CfBHU
-         BvqE1LTRRdJKei5FZH9Zs1Uon8mWzVGp4ot+ZF38f8+PPVJCABtWHaEBg/koaUfRY542
-         apdHgytTm+V1gT0/xobuko012T6TGg0wgT48hegYXVPKGFgoyScYogl7z8rh3KBWzwQF
-         eEmPh1RHIuWxP9iBR4qmXrFfJJIEi4DtVvaw/enQHkwRTyLKvx32OW8ybfkNcjquKERB
-         Wiig==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=mlvWUHz6b/I7z2o6G925iPKfRblwtc3ymYLiU24jl8Y=;
+        b=znJoO/4IcDqIxbCVMPW+19bVBXc9sqwbd7aZWWqNPGo3LmGX2CLxOoCeZeP0nLObqa
+         u06zZhdIVgYt/u9fE7Pkq+FDbWGt50hkMi2TDCNCORd3PbP65XA91VNNkPbGOj0ikZsn
+         GNN37Kh92uMv8OLqpIBnEvbYuwP2nwQWx2bRbZqAJ/0vvxY7Yjq6JgcqOjOkJJJVcwwp
+         JJS8wD97kwyOzxa0glC5AMUiRsyfFOYUkA3o5QzEhp/rWxlv7P+uOFP2Lnxe+7oCcv9p
+         I6q9un3AtibUNcLt/LGVA/DCuybUP6j1NJQnJ9t51hMRUcgU/MIFCYiEDgpMHgslO9Ul
+         /HNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=PVI2OQ5lGd+deR12IVFnVb/9vuCzshNV43sWHU4PiNM=;
-        b=kiG6rLYyXBPJB7ups9BmZTdlynGUW2LFkP5iX4ZL0091kgyIo7yfSWV8bk2AQUeXWI
-         e1OgYqwGP6IKe03nyu/kUG/nWkJHAXMmNC5TFaAlBFKSW3Nt1zkklgb+OI1T+WvVZ43o
-         gLo2Gi21Pw5N/d/BHCeyfLUEXVWgD9WCKOwTkyuBmJKmffi/EFG/l2FJ/PDhgma6Xbzh
-         3OruWswOvTPmlfqF0XObmV2eFOJjpgaknTamkh3Zv2z3kP6lxaZgBntm3Z1fyzTGncnA
-         kayN/+aTTCmvlOiGjzIYCEg2wAgwUtKiBoWr+DBzKhyta8IukRX5pbSIBmPdJYhSxysL
-         NOkQ==
-X-Gm-Message-State: APjAAAVBiUEyqMyINaEXFVc4c9gam/e2DS8jBcnBH/QssMkpFsYQtcUf
-        5wx3MFKEid3ACNHgBHveFWgkaelLrJtpJ5qkDBU=
-X-Google-Smtp-Source: APXvYqzIRO6n4UNkzmiBnah4OuxcFzBzQ+s8JAdrDdxIvfT4haEldEjC55ikFhQmznl7onOx/p2kU7WTGMBxE8OzGIA=
-X-Received: by 2002:a05:6214:1ca:: with SMTP id c10mr21843161qvt.233.1572337193364;
- Tue, 29 Oct 2019 01:19:53 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=mlvWUHz6b/I7z2o6G925iPKfRblwtc3ymYLiU24jl8Y=;
+        b=NRJaQIR+1Ftn86hJz3xtNbTgCTxWIthaNrYVTewsJjJtl2vQ1oEmfzlooxCY/lS4aH
+         7jAjhJPc+FMKnIMPPWaRjQGwnYjH5czv5mlgfAVqQgABQMrz2CrpuQbY4+Nny8xIwK5B
+         b5WoWZEBjP70JXZ6Z0dT+RwCDFqrmj59SU9D83P6y2gA33LvzeXoX/QNMNvlJqU8wg03
+         +28QgxMIYC48Vt+tcVS5CkKC6pESe18EBZzY8ST1EBq5Dm1Vowcr4AXGm4H1YCOd3WVB
+         JfDB12B88Q5zYuNTW4OnFmdVB68mu29Scqs/W3LOZ4r4Nx4XKc4gnXncw7GBPIM1KoIt
+         krYA==
+X-Gm-Message-State: APjAAAVaKRRkj6sSISauS04uGA4nn6H9EaG15BscFAx/bbyaMe04WjB5
+        FTMbvCM/JhYSIxJKsmffFQAGnw==
+X-Google-Smtp-Source: APXvYqyaUuIZzfuyser7xEw58tuvIXgnZdKtOozf/OE2exXkKYqPqXT6Z0Ey71mdOmuLPrwcvaQymA==
+X-Received: by 2002:a7b:caa9:: with SMTP id r9mr2699781wml.47.1572337469034;
+        Tue, 29 Oct 2019 01:24:29 -0700 (PDT)
+Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id y5sm2001272wmi.10.2019.10.29.01.24.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 01:24:28 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 09:24:27 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Saurav Girepunje <saurav.girepunje@gmail.com>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, swinslow@gmail.com,
+        will@kernel.org, opensource@jilayne.com, baijiaju1990@gmail.com,
+        tglx@linutronix.de, linux-wireless@vger.kernel.org,
+        b43-dev@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, saurav.girepunje@hotmail.com
+Subject: Re: [PATCH] b43: Fix use true/false for bool type
+Message-ID: <20191029082427.GB23615@netronome.com>
+References: <20191028190204.GA27248@saurav>
 MIME-Version: 1.0
-References: <20191029055953.2461336-1-andriin@fb.com>
-In-Reply-To: <20191029055953.2461336-1-andriin@fb.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 29 Oct 2019 09:19:41 +0100
-Message-ID: <CAJ+HfNgOHwSDpkMh=+Z42V5Y2K+-BsTkuux7XCO=5Qk=d6hSLg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: don't use kernel-side u32 type in xsk.c
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191028190204.GA27248@saurav>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Oct 2019 at 08:26, Andrii Nakryiko <andriin@fb.com> wrote:
->
-> u32 is a kernel-side typedef. User-space library is supposed to use __u32=
-.
-> This breaks Github's projection of libbpf. Do u32 -> __u32 fix.
->
-> Fixes: 94ff9ebb49a5 ("libbpf: Fix compatibility for kernels without need_=
-wakeup")
-> Cc: Magnus Karlsson <magnus.karlsson@intel.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Hi Saurav,
 
-Thanks Andrii!
+thanks for your patch.
 
-Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+On Tue, Oct 29, 2019 at 12:32:04AM +0530, Saurav Girepunje wrote:
+> use true/false on bool type variable assignment.
+> 
+> Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
+
+This does not seem to cover the case in dma.c,
+which seems to want fixing for the sake of consistency.
+
+Also, I wonder why bools rather than a bitmask was chosen
+for this field, it seems rather space intensive in its current form.
 
 > ---
->  tools/lib/bpf/xsk.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index d54111133123..74d84f36a5b2 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -161,22 +161,22 @@ static void xsk_mmap_offsets_v1(struct xdp_mmap_off=
-sets *off)
->         off->rx.producer =3D off_v1.rx.producer;
->         off->rx.consumer =3D off_v1.rx.consumer;
->         off->rx.desc =3D off_v1.rx.desc;
-> -       off->rx.flags =3D off_v1.rx.consumer + sizeof(u32);
-> +       off->rx.flags =3D off_v1.rx.consumer + sizeof(__u32);
->
->         off->tx.producer =3D off_v1.tx.producer;
->         off->tx.consumer =3D off_v1.tx.consumer;
->         off->tx.desc =3D off_v1.tx.desc;
-> -       off->tx.flags =3D off_v1.tx.consumer + sizeof(u32);
-> +       off->tx.flags =3D off_v1.tx.consumer + sizeof(__u32);
->
->         off->fr.producer =3D off_v1.fr.producer;
->         off->fr.consumer =3D off_v1.fr.consumer;
->         off->fr.desc =3D off_v1.fr.desc;
-> -       off->fr.flags =3D off_v1.fr.consumer + sizeof(u32);
-> +       off->fr.flags =3D off_v1.fr.consumer + sizeof(__u32);
->
->         off->cr.producer =3D off_v1.cr.producer;
->         off->cr.consumer =3D off_v1.cr.consumer;
->         off->cr.desc =3D off_v1.cr.desc;
-> -       off->cr.flags =3D off_v1.cr.consumer + sizeof(u32);
-> +       off->cr.flags =3D off_v1.cr.consumer + sizeof(__u32);
->  }
->
->  static int xsk_get_mmap_offsets(int fd, struct xdp_mmap_offsets *off)
-> --
-> 2.17.1
->
+>  drivers/net/wireless/broadcom/b43/main.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/broadcom/b43/main.c b/drivers/net/wireless/broadcom/b43/main.c
+> index b85603e91c7a..39da1a4c30ac 100644
+> --- a/drivers/net/wireless/broadcom/b43/main.c
+> +++ b/drivers/net/wireless/broadcom/b43/main.c
+> @@ -3600,7 +3600,7 @@ static void b43_tx_work(struct work_struct *work)
+>  			else
+>  				err = b43_dma_tx(dev, skb);
+>  			if (err == -ENOSPC) {
+> -				wl->tx_queue_stopped[queue_num] = 1;
+> +				wl->tx_queue_stopped[queue_num] = true;
+>  				ieee80211_stop_queue(wl->hw, queue_num);
+>  				skb_queue_head(&wl->tx_queue[queue_num], skb);
+>  				break;
+> @@ -3611,7 +3611,7 @@ static void b43_tx_work(struct work_struct *work)
+>  		}
+>  
+>  		if (!err)
+> -			wl->tx_queue_stopped[queue_num] = 0;
+> +			wl->tx_queue_stopped[queue_num] = false;
+>  	}
+>  
+>  #if B43_DEBUG
+> @@ -5603,7 +5603,7 @@ static struct b43_wl *b43_wireless_init(struct b43_bus_dev *dev)
+>  	/* Initialize queues and flags. */
+>  	for (queue_num = 0; queue_num < B43_QOS_QUEUE_NUM; queue_num++) {
+>  		skb_queue_head_init(&wl->tx_queue[queue_num]);
+> -		wl->tx_queue_stopped[queue_num] = 0;
+> +		wl->tx_queue_stopped[queue_num] = false;
+>  	}
+>  
+>  	snprintf(chip_name, ARRAY_SIZE(chip_name),
+> -- 
+> 2.20.1
+> 
