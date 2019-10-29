@@ -2,205 +2,334 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B2BE8F9B
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 084C5E8F9E
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:56:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732145AbfJ2Syo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 14:54:44 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:34687 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728181AbfJ2Syo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:54:44 -0400
-Received: by mail-yw1-f65.google.com with SMTP id d192so5474167ywa.1
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:54:43 -0700 (PDT)
+        id S1732082AbfJ2S4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 14:56:47 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40295 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727222AbfJ2S4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:56:47 -0400
+Received: by mail-qt1-f194.google.com with SMTP id o49so21791970qta.7;
+        Tue, 29 Oct 2019 11:56:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tCsM+F3miCULt/gY/WW+4RJNfi/IOoW/fMArF9UpILY=;
-        b=ru0cYWorNDdiOUsvnCXXT6N0xwGju4hHLZXWLSBNouMFRwoVfVkRjEtClV4vKKtOEg
-         P++rvn1eLsUgN6xEkW7PSy/kPkJuyc0E5+nZ4XXrAhkrqoQN0xi4uCg80uZlcPjE0JTF
-         IdONUykHltfyebRKgJb8PjvS961cdnsp/Ruz0Dh7VYHrdDqzJBJFUnPdBADf/O6M2zL7
-         l/F0HxNFacsBg4v2wyBmLfx0TA+vdIjG1jqteT3tkLqPZ7uZ5bb9NR/nEJTg4gE6axIk
-         u1eUfXYNc3ONt0oBvr/x/3qZtMSNR4U1akg9hnuaRuBwoIKMk6sDG1AdycJEtcQ1jiJd
-         ehnQ==
+         :cc:content-transfer-encoding;
+        bh=MKFB23Bkm+ppiouFk9iltp5ZtIwxBMue7vPQWmQ4M+0=;
+        b=QS6wTH3UW3CsAYtOYo6fQ2uskCgaQzlPsWf2MvoPFfRG3EjGdosHfvuwr+6EcahQRW
+         GamAtSJbBBbZobFtDifaP+lhf6Sy5kE65rFQVg/wmro4ykq4svn4jN2C0KWm4/UkfxZS
+         Hn9c7PIKDvhyDH6SlVtu/0bBu4LPax3s5JXTfZOau7JIFRXISUEKAvhCXnEwCGUkf4pi
+         asYQ5AAYeGpcVFIFaIybYKexnH1ivJ5Wd3NbSTz/DeFtqVc9/Q6cJJDgnPS6xtYZbT1j
+         RSKVt23y0nAmUej56bCc/8R5FjHsMG66Cvm+Urqn5usObQyHME0qPUJU77MeMQ4/Zs00
+         gyZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tCsM+F3miCULt/gY/WW+4RJNfi/IOoW/fMArF9UpILY=;
-        b=jY/f74u+5hORuswhfFhpToPUZxKmWTteyPmb4oziNlYTqg1awHuKQnsGSC/6RBP0ab
-         P+MyNqBO+RarfIYDD1jT9+CXSdqc+/4pYEs9EeJ/vipM9KnxTmsiXZMYhhU3+KYLa/wI
-         g0lKk8rY4I6GCUMYDexSlnVrPRumxIDBPol4pDvJRVvtDKvkD8Z1k8yc8HEy/8k7+efa
-         +R02rNQH/4+TTZMBo5Qa4Z2RYF9ZALuq7ztBa86xdlnvsTWN4Xop+J+N2s+kQLgfP7Tz
-         eLk2Hg3AdhN+8AmVzvmb25i9ZsBKgDj8qEJ/fXznXDVyuSD5PPuiIGJ6mifoqGOQjXMA
-         CH5A==
-X-Gm-Message-State: APjAAAXaHH3afXrIz5HrMec4EWeS2luOi4k4qD3jFOycPapSl6aYDp92
-        AQwF2aHgcvGzYzD1VauGZCtsmFoTWpcjPjEbQ3iD7Q==
-X-Google-Smtp-Source: APXvYqwFzfPIgmgqEPumA5fHRTkZflCMijOYJlhUg5Ram1iEuur13Yu8woZoXqPTlVKUxA8M5/BISOjxGOX3B4FOHsQ=
-X-Received: by 2002:a0d:df17:: with SMTP id i23mr16847892ywe.92.1572375282397;
- Tue, 29 Oct 2019 11:54:42 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MKFB23Bkm+ppiouFk9iltp5ZtIwxBMue7vPQWmQ4M+0=;
+        b=t7zVLun9ZlCUqmQK8jvGQF6uh+5nGnTtqRh2O6IRgFa2mzsVknyLG9cuOWrPUGRquR
+         k/TO5+URIrzUcGk59z/qMk6wt+6Uy2eZ3CBgazXJ1+mKMhEArq0SPzxcX3yOSro+w3f+
+         ck+rAAqYTC24NVwlJOBOzd+DZ0zeZ6WYUdmIrpNxqQGCRfaq0fU4iCrzUwSQTBW+vFGl
+         9L9KMuDCex+75qdfFzcFs2SmC1+D+SN/Kvs0+buufphfp0fzZJ/Zfa0EZAlkjML5SFD4
+         7Gbxc87xmDQoyseAUomCSkhuCrcl4nofkWZpdND+Xvpq6AwVe97DN5tOrEJ6L0MhBLG0
+         flzQ==
+X-Gm-Message-State: APjAAAXEF+PFuiNrVQa8YRi/mblL+r6VXaz/s9PRzcetdCOsvJOCN38o
+        XLQfcFKLqIF12eB5Z1gW+A1FzQrlmUVIfb4RuM8=
+X-Google-Smtp-Source: APXvYqxN1yjpxi2P9z0duE+mLI3+qZa7dnE3EZsbS1o6UGF35sVhGzOmBnxKyWwqowaEqzwIvI6+8KqCYactHGLpRfQ=
+X-Received: by 2002:ac8:199d:: with SMTP id u29mr559190qtj.93.1572375405681;
+ Tue, 29 Oct 2019 11:56:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <CABWYdi1QmrHxNZT_DK4A2WUoj=r1+wxSngzaaTuGCatHisaTRw@mail.gmail.com>
- <CANn89iLE-3zxROxGOusPBRmQL4oN2Nqtg3rqXnpO8bkiFAw8EQ@mail.gmail.com>
- <CABWYdi2Eq30vEKKYxr-diofpeATNXiB3ZYKL6Q15y10w+vsCLg@mail.gmail.com>
- <CANn89iJYKurw-3-EooE9qyM8-2MzQvCz8qdV91J1hVNxXwsyng@mail.gmail.com>
- <CABWYdi0nmGE6Y+iUkfGvR07zU640Fu4op4EXbCp6ou6GJMcfww@mail.gmail.com> <CANn89iKvLFDHPU2W86TfC7jNFW8HM5o8tE8wiRc7E=CRXLT=-Q@mail.gmail.com>
-In-Reply-To: <CANn89iKvLFDHPU2W86TfC7jNFW8HM5o8tE8wiRc7E=CRXLT=-Q@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 29 Oct 2019 11:54:31 -0700
-Message-ID: <CANn89i+uxbxB8vTWXhOuW4-weP-NO2yFbbs15cJh7+BJtjSSkA@mail.gmail.com>
-Subject: Re: fq dropping packets between vlan and ethernet interfaces
-To:     Ivan Babrou <ivan@cloudflare.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
+References: <157220959547.48922.6623938299823744715.stgit@toke.dk>
+ <157220959873.48922.4763375792594816553.stgit@toke.dk> <CAEf4BzYoEPKNFnzOEAhhE2w=U11cYfTN4o_23kjzY4ByEt5y-g@mail.gmail.com>
+ <877e4nsxth.fsf@toke.dk> <CAEf4BzZe6h=0KN+uWdKcGU5VoRDDsvjNzyqh0=aT1u+EvT1x_g@mail.gmail.com>
+ <878sp3qtln.fsf@toke.dk>
+In-Reply-To: <878sp3qtln.fsf@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 29 Oct 2019 11:56:34 -0700
+Message-ID: <CAEf4BzYhaCpiP3QZJ9zoKq6CujF-49HsNXfMSYmnWqBTq2z2Nw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/4] libbpf: Add auto-pinning of maps when
+ loading BPF objects
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 11:41 AM Eric Dumazet <edumazet@google.com> wrote:
+On Tue, Oct 29, 2019 at 11:44 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
 >
-> On Tue, Oct 29, 2019 at 11:35 AM Ivan Babrou <ivan@cloudflare.com> wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>
+> > On Tue, Oct 29, 2019 at 2:30 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
+redhat.com> wrote:
+> >>
+> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >>
+> >> > On Sun, Oct 27, 2019 at 1:53 PM Toke H=C3=B8iland-J=C3=B8rgensen <to=
+ke@redhat.com> wrote:
+> >> >>
+> >> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> >>
+> >> >> This adds support to libbpf for setting map pinning information as =
+part of
+> >> >> the BTF map declaration, to get automatic map pinning (and reuse) o=
+n load.
+> >> >> The pinning type currently only supports a single PIN_BY_NAME mode,=
+ where
+> >> >> each map will be pinned by its name in a path that can be overridde=
+n, but
+> >> >> defaults to /sys/fs/bpf.
+> >> >>
+> >> >> Since auto-pinning only does something if any maps actually have a
+> >> >> 'pinning' BTF attribute set, we default the new option to enabled, =
+on the
+> >> >> assumption that seamless pinning is what most callers want.
+> >> >>
+> >> >> When a map has a pin_path set at load time, libbpf will compare the=
+ map
+> >> >> pinned at that location (if any), and if the attributes match, will=
+ re-use
+> >> >> that map instead of creating a new one. If no existing map is found=
+, the
+> >> >> newly created map will instead be pinned at the location.
+> >> >>
+> >> >> Programs wanting to customise the pinning can override the pinning =
+paths
+> >> >> using bpf_map__set_pin_path() before calling bpf_object__load() (in=
+cluding
+> >> >> setting it to NULL to disable pinning of a particular map).
+> >> >>
+> >> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> >> >> ---
+> >> >>  tools/lib/bpf/bpf_helpers.h |    6 ++
+> >> >>  tools/lib/bpf/libbpf.c      |  142 +++++++++++++++++++++++++++++++=
++++++++++++-
+> >> >>  tools/lib/bpf/libbpf.h      |   11 +++
+> >> >>  3 files changed, 154 insertions(+), 5 deletions(-)
+> >> >>
+> >> >
+> >> > [...]
+> >> >
+> >> >>
+> >> >> -static int bpf_object__init_maps(struct bpf_object *obj, bool rela=
+xed_maps)
+> >> >> +static int bpf_object__build_map_pin_paths(struct bpf_object *obj,
+> >> >> +                                          const char *path)
+> >> >> +{
+> >> >> +       struct bpf_map *map;
+> >> >> +
+> >> >> +       if (!path)
+> >> >> +               path =3D "/sys/fs/bpf";
+> >> >> +
+> >> >> +       bpf_object__for_each_map(map, obj) {
+> >> >> +               char buf[PATH_MAX];
+> >> >> +               int err, len;
+> >> >> +
+> >> >> +               if (map->pinning !=3D LIBBPF_PIN_BY_NAME)
+> >> >> +                       continue;
+> >> >
+> >> > still think it's better be done from map definition parsing code
+> >> > instead of a separate path, which will ignore most of maps anyways (=
+of
+> >> > course by extracting this whole buffer creation logic into a
+> >> > function).
+> >>
+> >> Hmm, okay, can do that. I think we should still store the actual value
+> >> of the 'pinning' attribute, though; and even have a getter for it. The
+> >> app may want to do something with that information instead of having t=
+o
+> >> infer it from map->pin_path. Certainly when we add other values of the
+> >> pinning attribute, but we may as well add the API to get the value
+> >> now...
 > >
-> > 5.4-rc5 has it, but we still experience the issue.
+> > Let's now expose more stuff than what we need to expose. If we really
+> > will have a need for that, it's really easy to add. Right now you
+> > won't even need to store pinning attribute in bpf_map, because you'll
+> > be just setting proper pin_path in init_user_maps(), as suggested
+> > above.
 >
-> Please refrain from top-posting on netdev@
+> While I do think it's a bit weird that there's an attribute you can set
+> but can't get at, I will grudgingly admit that it's not strictly needed
+> right now... So OK, I'll leave it out :)
 >
-> You could try the debug patch I have posted earlier.
->
-> Something like :
->
-> diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-> index 98dd87ce15108cfe1c011da44ba32f97763776c8..2b9697e05115d334fd6d3a2909d5112d04032420
-> 100644
-> --- a/net/sched/sch_fq.c
-> +++ b/net/sched/sch_fq.c
-> @@ -380,9 +380,14 @@ static void flow_queue_add(struct fq_flow *flow,
-> struct sk_buff *skb)
->  {
->         struct rb_node **p, *parent;
->         struct sk_buff *head, *aux;
-> +       u64 now = ktime_get_ns();
->
-> -       fq_skb_cb(skb)->time_to_send = skb->tstamp ?: ktime_get_ns();
-> -
-> +       if (skb->tstamp) {
-> +               WARN_ON_ONCE(skb->tstamp - now > 30LLU * NSEC_PER_SEC);
-
-Probably needs to use s64 as in :
-
-WARN_ON_ONCE((s64)(skb->tstamp - now) > (s64)(30LLU * NSEC_PER_SEC));
-
-> +               fq_skb_cb(skb)->time_to_send = skb->tstamp;
-> +       } else {
-> +               fq_skb_cb(skb)->time_to_send = now;
-> +       }
->         head = flow->head;
->         if (!head ||
->             fq_skb_cb(skb)->time_to_send >=
-> fq_skb_cb(flow->tail)->time_to_send) {
->
->
+> >> >> +
+> >> >> +               len =3D snprintf(buf, PATH_MAX, "%s/%s", path, bpf_=
+map__name(map));
+> >> >> +               if (len < 0)
+> >> >> +                       return -EINVAL;
+> >> >> +               else if (len >=3D PATH_MAX)
+> >> >
+> >> > [...]
+> >> >
+> >> >>         return 0;
+> >> >>  }
+> >> >>
+> >> >> +static bool map_is_reuse_compat(const struct bpf_map *map,
+> >> >> +                               int map_fd)
+> >> >
+> >> > nit: this should fit on single line?
+> >> >
+> >> >> +{
+> >> >> +       struct bpf_map_info map_info =3D {};
+> >> >> +       char msg[STRERR_BUFSIZE];
+> >> >> +       __u32 map_info_len;
+> >> >> +
+> >> >> +       map_info_len =3D sizeof(map_info);
+> >> >> +
+> >> >> +       if (bpf_obj_get_info_by_fd(map_fd, &map_info, &map_info_len=
+)) {
+> >> >> +               pr_warn("failed to get map info for map FD %d: %s\n=
+",
+> >> >> +                       map_fd, libbpf_strerror_r(errno, msg, sizeo=
+f(msg)));
+> >> >> +               return false;
+> >> >> +       }
+> >> >> +
+> >> >> +       return (map_info.type =3D=3D map->def.type &&
+> >> >> +               map_info.key_size =3D=3D map->def.key_size &&
+> >> >> +               map_info.value_size =3D=3D map->def.value_size &&
+> >> >> +               map_info.max_entries =3D=3D map->def.max_entries &&
+> >> >> +               map_info.map_flags =3D=3D map->def.map_flags &&
+> >> >> +               map_info.btf_key_type_id =3D=3D map->btf_key_type_i=
+d &&
+> >> >> +               map_info.btf_value_type_id =3D=3D map->btf_value_ty=
+pe_id);
+> >> >
+> >> > If map was pinned by older version of the same app, key and value ty=
+pe
+> >> > id are probably gonna be different, even if the type definition itse=
+lf
+> >> > it correct. We probably shouldn't check that?
+> >>
+> >> Oh, I thought the type IDs would stay relatively stable. If not then I
+> >> agree that we shouldn't be checking them here. Will fix.
 > >
-> > On Tue, Oct 29, 2019 at 11:33 AM Eric Dumazet <edumazet@google.com> wrote:
-> > >
-> > > On Tue, Oct 29, 2019 at 11:31 AM Ivan Babrou <ivan@cloudflare.com> wrote:
-> > > >
-> > > > I'm on 5.4-rc5. Let me apply e7a409c3f46cb0dbc7bfd4f6f9421d53e92614a5
-> > > > on top and report back to you.
-> > >
-> > >
-> > > Oops, wrong copy/paste. I really meant this one :
-> > >
-> > > 9669fffc1415bb0c30e5d2ec98a8e1c3a418cb9c net: ensure correct
-> > > skb->tstamp in various fragmenters
-> > >
-> > >
-> > > >
-> > > > On Tue, Oct 29, 2019 at 11:27 AM Eric Dumazet <edumazet@google.com> wrote:
-> > > > >
-> > > > > On Tue, Oct 29, 2019 at 11:20 AM Ivan Babrou <ivan@cloudflare.com> wrote:
-> > > > > >
-> > > > > > Hello,
-> > > > > >
-> > > > > > We're trying to test Linux 5.4 early and hit an issue with FQ.
-> > > > > >
-> > > > > > The relevant part of our network setup involves four interfaces:
-> > > > > >
-> > > > > > * ext0 (ethernet, internet facing)
-> > > > > > * vlan101@ext0 (vlan)
-> > > > > > * int0 (ethernet, lan facing)
-> > > > > > * vlan11@int0 (vlan)
-> > > > > >
-> > > > > > Both int0 and ext0 have fq on them:
-> > > > > >
-> > > > > > qdisc fq 1: dev ext0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > > > buckets 1024 orphan_mask 1023 quantum 3228 initial_quantum 16140
-> > > > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > > > > qdisc fq 8003: dev int0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > > > buckets 1024 orphan_mask 1023 quantum 3028 initial_quantum 15140
-> > > > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > > > >
-> > > > > > The issue itself is that after some time ext0 stops feeding off
-> > > > > > vlan101, which is visible as tcpdump not seeing packets on ext0, while
-> > > > > > they flow over vlan101.
-> > > > > >
-> > > > > > I can see that fq_dequeue does not report any packets:
-> > > > > >
-> > > > > > $ sudo perf record -e qdisc:qdisc_dequeue -aR sleep 1
-> > > > > > hping3 40335 [006] 63920.881016: qdisc:qdisc_dequeue: dequeue
-> > > > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > > > packets=0 skbaddr=(nil)
-> > > > > > hping3 40335 [006] 63920.881030: qdisc:qdisc_dequeue: dequeue
-> > > > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > > > packets=0 skbaddr=(nil)
-> > > > > > hping3 40335 [006] 63920.881041: qdisc:qdisc_dequeue: dequeue
-> > > > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > > > packets=0 skbaddr=(nil)
-> > > > > > hping3 40335 [006] 63920.881070: qdisc:qdisc_dequeue: dequeue
-> > > > > > ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
-> > > > > > packets=0 skbaddr=(nil)
-> > > > > >
-> > > > > > Inside of fq_dequeue I'm able to see that we throw away packets in here:
-> > > > > >
-> > > > > > * https://elixir.bootlin.com/linux/v5.4-rc2/source/net/sched/sch_fq.c#L510
-> > > > > >
-> > > > > > The output of tc -s qdisc shows the following:
-> > > > > >
-> > > > > > qdisc fq 1: dev ext0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > > > buckets 1024 orphan_mask 1023 quantum 3228 initial_quantum 16140
-> > > > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > > > >  Sent 4872143400 bytes 8448638 pkt (dropped 201276670, overlimits 0
-> > > > > > requeues 103)
-> > > > > >  backlog 779376b 10000p requeues 103
-> > > > > >   2806 flows (2688 inactive, 118 throttled), next packet delay
-> > > > > > 1572240566653952889 ns
-> > > > > >   354201 gc, 0 highprio, 804560 throttled, 3919 ns latency, 19492 flows_plimit
-> > > > > > qdisc fq 8003: dev int0 root refcnt 65 limit 10000p flow_limit 100p
-> > > > > > buckets 1024 orphan_mask 1023 quantum 3028 initial_quantum 15140
-> > > > > > low_rate_threshold 550Kbit refill_delay 40.0ms
-> > > > > >  Sent 15869093876 bytes 17387110 pkt (dropped 0, overlimits 0 requeues 2817)
-> > > > > >  backlog 0b 0p requeues 2817
-> > > > > >   2047 flows (2035 inactive, 0 throttled)
-> > > > > >   225074 gc, 10 highprio, 102308 throttled, 7525 ns latency
-> > > > > >
-> > > > > > The key part here is probably that next packet delay for ext0 is the
-> > > > > > current unix timestamp in nanoseconds. Naturally, we see this code
-> > > > > > path being executed:
-> > > > > >
-> > > > > > * https://elixir.bootlin.com/linux/v5.4-rc2/source/net/sched/sch_fq.c#L462
-> > > > > >
-> > > > > > Unfortunately, I don't have a reliable reproduction for this issue. It
-> > > > > > appears naturally with some traffic and I can do limited tracing with
-> > > > > > perf and bcc tools while running hping3 to generate packets.
-> > > > > >
-> > > > > > The issue goes away if I replace fq with pfifo_fast on ext0.
-> > > > >
-> > > > > At which commit is your tree  precisely ?
-> > > > >
-> > > > > This sounds like the recent fix we had for fragmented packets.
-> > > > >
-> > > > > e7a409c3f46cb0dbc7bfd4f6f9421d53e92614a5 ipv4: fix IPSKB_FRAG_PMTU
-> > > > > handling with fragmentation
+> > type IDs are just an ordered index of a type, as generated by Clang.
+> > No stability guarantees. Just adding extra typedef somewhere in
+> > unrelated type might shift all the type IDs around.
+>
+> Ah, so it's just numbering types within the same translation unit? I
+> thought it was somehow globally (or system-wide) unique (though not sure
+> how I imagined that would be achieved, TBH).
+>
+> >> >> +}
+> >> >> +
+> >> >> +static int
+> >> >> +bpf_object__reuse_map(struct bpf_map *map)
+> >> >> +{
+> >> >> +       char *cp, errmsg[STRERR_BUFSIZE];
+> >> >> +       int err, pin_fd;
+> >> >> +
+> >> >> +       pin_fd =3D bpf_obj_get(map->pin_path);
+> >> >> +       if (pin_fd < 0) {
+> >> >> +               if (errno =3D=3D ENOENT) {
+> >> >> +                       pr_debug("found no pinned map to reuse at '=
+%s'\n",
+> >> >> +                                map->pin_path);
+> >> >> +                       return 0;
+> >> >> +               }
+> >> >> +
+> >> >> +               cp =3D libbpf_strerror_r(errno, errmsg, sizeof(errm=
+sg));
+> >> >> +               pr_warn("couldn't retrieve pinned map '%s': %s\n",
+> >> >> +                       map->pin_path, cp);
+> >> >> +               return -errno;
+> >> >
+> >> > store errno locally
+> >>
+> >> *shrugs* okay, if you insist...
+> >
+> > I guess I do insist on correct handling of errno, instead of
+> > potentially returning garbage value from some unrelated syscall from
+> > inside of pr_warn's user-provided callback.
+> >
+> > Even libbpf_strerror_r can garble errno (e.g., through its strerror_r
+> > call), so make sure you store it before passing into
+> > libbpf_strerror_r().
+>
+> Ohh, right, didn't think about those having side effects; then your
+> worry makes more sense. I thought you were just being pedantic, which is
+> why I was being grumpy (did change it, though) :)
+>
+> >>
+> >> >> +       }
+> >> >> +
+> >> >> +       if (!map_is_reuse_compat(map, pin_fd)) {
+> >> >> +               pr_warn("couldn't reuse pinned map at '%s': "
+> >> >> +                       "parameter mismatch\n", map->pin_path);
+> >> >> +               close(pin_fd);
+> >> >> +               return -EINVAL;
+> >> >> +       }
+> >> >> +
+> >> >> +       err =3D bpf_map__reuse_fd(map, pin_fd);
+> >> >> +       if (err) {
+> >> >> +               close(pin_fd);
+> >> >> +               return err;
+> >> >> +       }
+> >> >> +       map->pinned =3D true;
+> >> >> +       pr_debug("reused pinned map at '%s'\n", map->pin_path);
+> >> >> +
+> >> >> +       return 0;
+> >> >> +}
+> >> >> +
+> >> >
+> >> > [...]
+> >> >
+> >> >> +enum libbpf_pin_type {
+> >> >> +       LIBBPF_PIN_NONE,
+> >> >> +       /* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default=
+) */
+> >> >> +       LIBBPF_PIN_BY_NAME,
+> >> >> +};
+> >> >> +
+> >> >>  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const =
+char *path);
+> >> >
+> >> > pin_maps should take into account opts->auto_pin_path, shouldn't it?
+> >> >
+> >> > Which is why I also think that auto_pin_path is bad name, because it=
+'s
+> >> > not only for auto-pinning, it's a pinning root path, so something li=
+ke
+> >> > pin_root_path or just pin_root is better and less misleading name.
+> >>
+> >> I view auto_pin_path as something that is used specifically for the
+> >> automatic pinning based on the 'pinning' attribute. Any other use of
+> >> pinning is for custom use and the user can pass a custom pin path to
+> >> those functions.
+> >
+> > What's the benefit of restricting it to just this use case? If app
+> > wants to use something other than /sys/fs/bpf as a default root path,
+> > why would that be restricted only to auto-pinned maps? It seems to me
+> > that having set this on bpf_object__open() and then calling
+> > bpf_object__pin_maps(NULL) should just take this overridden root path
+> > into account. Isn't that a logical behavior?
+>
+> No, I think the logical behaviour is for pin_maps(NULL) to just pin all
+> maps at map->pin_path if set (and same for unpin). Already changed it to
+> this behaviour, actually.
+
+Sure, I guess that makes sense as well. Can you please add comment to
+pin_maps describing this convention?
+
+I still think that auto_pin_path is both too specific and also
+imprecise at the same time :) It's not really a pin path, it's a part
+of a pin path for any particular map, it's a root of those paths. And
+let's not corner us to just auto-pinning use case yet by saying it's
+auto_pin_path? So something like pin_root_path or root_pin_path is
+generic enough to allow extensions if we need them, but without being
+misleading.
+
+>
+> -Toke
