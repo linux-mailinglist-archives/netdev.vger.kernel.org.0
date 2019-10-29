@@ -2,100 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FBEAE8C87
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 17:16:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 614D0E8CA4
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 17:27:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390237AbfJ2QQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 12:16:36 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35422 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389902AbfJ2QQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 12:16:36 -0400
-Received: by mail-qt1-f193.google.com with SMTP id l3so10486660qtp.2;
-        Tue, 29 Oct 2019 09:16:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TTlfYRCpg135DhMROmOFDqOshy8nA4VrPEygQSyIN0w=;
-        b=XieAxBD6jhGtyt2lZ3YvnlrJCgX20KDLHd/479bTJrAgwFXLM6hxGqHnqW3w1eeI96
-         wmNtLIUZDojnpf4losxFWYQGV4mm4s213f1lCFPI7a1G4A3sL+k51BfBSPlVwdIYGAR8
-         Gv2zWWF2a2jvR/NzkJofNM+Br/4iCH0pMCnfdya5Xr1FRj97V8XBsIuGnXAu/DKi1ncm
-         O9GLaonyhAyjz7KkuxjDfU9RuSgcDqPv0F/3x4jz1GkFvfQ7WZwVBh913efdIGb9xzYJ
-         gKH41pUXCZPDe7adLW5esUoG7F8EU37ajzIqy/V6sXPd5mNRpUHzkrmxvI12tUvNzJGL
-         bcpA==
+        id S2390345AbfJ2Q1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 12:27:24 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48250 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390374AbfJ2Q1Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 12:27:24 -0400
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9C9DDC0528DD
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 16:27:23 +0000 (UTC)
+Received: by mail-wr1-f70.google.com with SMTP id h4so8782297wrx.15
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 09:27:23 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TTlfYRCpg135DhMROmOFDqOshy8nA4VrPEygQSyIN0w=;
-        b=Q8XrY1A/sMNHzN5oeD5rtJRaRbRNRQZWHu1Ilvdvk3oxlzWo3u4f3CN5YFyRX1FPLg
-         GAx154rpld6MuxkzUFwyquphwiJ0Fwii79KgwLn9hjmU0fMIL8JBClSZH3fSLdpsq6SL
-         JEFdHE+rTbmlhFZ3E4n6OoCO+Id97Xlm6qPU0r+Yy7CnlZ6MiJ+Z7AJ75SjNshY/inPj
-         cHoFztQfwQzYZAQfLsPrRkPLov70MIxpkYB8zttopKzaseBku2Co3w4lLED5UNIK/+hG
-         d3Y/za72ikzafLGuzjupYo3MTW+RDVQtgowbiCDLPL1f1OC4TMaqqe+2HiAC0/ClhDfw
-         ZVGQ==
-X-Gm-Message-State: APjAAAW9oPlv1rGIQLN6PQICm7004BLSDo9C4abKON69VH1z5w+n9a9x
-        d2hLHsW3sgIed+NGwD+VU9V8247Zn1iuaFoxLWg=
-X-Google-Smtp-Source: APXvYqydjzzlGdhmb3jIi3/gDcM5OoqEyPS4ksvg6TngRvujjXZzUivR9OlAeka+nty0E0hU8L4pMJcR7O7lQsWg3cM=
-X-Received: by 2002:ac8:6f27:: with SMTP id i7mr5255963qtv.359.1572365795225;
- Tue, 29 Oct 2019 09:16:35 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=C6bDuPajdG9JVS65/nNfvWestag5Xwy94+uZABzDGas=;
+        b=SEfvTB+m4fWHDrrkZ7EiI3JXvs3uQfEQUmYlYMmDwGEFz5MEFuhznXgbfE5bawxDRO
+         FNBWSMTZukQWbPfuTsBXElAoxifsVqIiqcYsTHy4uQLfQY5aeLxKQ7zgLrkuAuN5cEHg
+         l/d4Qx6CiDrCW/SLLC6DbR2MIGzfmNDZEhCzpidebyZWfOF76tL33g8Kk70thbmO4JjQ
+         NT+rLpnZE00D7IEhY5Y5HpkAhW46jEU+7QVJv1oJoMJYMEZS4c9d+9QFQFlaDJsoO3aS
+         s+vM1MA3MFn7dCLIz2UgvvE5qiAkj7fmdrqKWYTGm6dmUGxaVnoXKf3S0Y0e01KklbPy
+         1HrQ==
+X-Gm-Message-State: APjAAAXbxcLtOkMuZCeMl5v6Zc2qwmVVFttF0RqVC2zha8L4RvXuVeYM
+        hrNHP2odN/3tAzGvejZ4FtbNBP3uzk2onfl6Q32DO0gURRcpJCcmMsj5kHqVSFeQn3aKngPXR+c
+        25jeg0p0sAPdQYOxm
+X-Received: by 2002:a7b:c924:: with SMTP id h4mr5203724wml.143.1572366442237;
+        Tue, 29 Oct 2019 09:27:22 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwqcoHXB/eGlbAvP8/zQv1DhxCc9oHsJCpQ0Me1i12d1jrxIWteVIy4TZqjG4WQmNpAjkkq4g==
+X-Received: by 2002:a7b:c924:: with SMTP id h4mr5203696wml.143.1572366441980;
+        Tue, 29 Oct 2019 09:27:21 -0700 (PDT)
+Received: from steredhat (94.222.26.109.rev.sfr.net. [109.26.222.94])
+        by smtp.gmail.com with ESMTPSA id v10sm4015055wmg.48.2019.10.29.09.27.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 09:27:21 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 17:27:12 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Stefan Hajnoczi <stefanha@gmail.com>,
+        Adit Ranadive <aditr@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>, Andy king <acking@vmware.com>,
+        Aditya Sarwade <asarwade@vmware.com>,
+        George Zhang <georgezhang@vmware.com>,
+        Jorgen Hansen <jhansen@vmware.com>
+Cc:     netdev@vger.kernel.org, Sasha Levin <sashal@kernel.org>,
+        linux-hyperv@vger.kernel.org,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Arnd Bergmann <arnd@arndb.de>, kvm@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dexuan Cui <decui@microsoft.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 00/14] vsock: add multi-transports support
+Message-ID: <20191029162712.fn5rgxrwdrbxuehw@steredhat>
+References: <20191023095554.11340-1-sgarzare@redhat.com>
+ <20191027080146.GA4472@stefanha-x1.localdomain>
 MIME-Version: 1.0
-References: <20191029154307.23053-1-bjorn.topel@gmail.com> <20191029091210.0a7f0b37@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20191029091210.0a7f0b37@cakuba.hsd1.ca.comcast.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Tue, 29 Oct 2019 17:16:24 +0100
-Message-ID: <CAJ+HfNgENGHSC-BCgOpDiWrNGJD0uSgK-2qeiaOHxbO9JXJySg@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: change size to u64 for bpf_map_{area_alloc,charge_init}()
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191027080146.GA4472@stefanha-x1.localdomain>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Oct 2019 at 17:12, Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Tue, 29 Oct 2019 16:43:07 +0100, Bj=C3=B6rn T=C3=B6pel wrote:
-> > From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >
-> > The functions bpf_map_area_alloc() and bpf_map_charge_init() prior
-> > this commit passed the size parameter as size_t. In this commit this
-> > is changed to u64.
-> >
-> > All users of these functions avoid size_t overflows on 32-bit systems,
-> > by explicitly using u64 when calculating the allocation size and
-> > memory charge cost. However, since the result was narrowed by the
-> > size_t when passing size and cost to the functions, the overflow
-> > handling was in vain.
-> >
-> > Instead of changing all call sites to size_t and handle overflow at
-> > the call site, the parameter is changed to u64 and checked in the
-> > functions above.
-> >
-> > Fixes: d407bd25a204 ("bpf: don't trigger OOM killer under pressure with=
- map alloc")
-> > Fixes: c85d69135a91 ("bpf: move memory size checks to bpf_map_charge_in=
-it()")
-> > Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->
-> Okay, I guess that's the smallest change we can make here.
->
-> I'd prefer we went the way of using the standard overflow handling the
-> kernel has, rather than proliferating this u64 + U32_MAX comparison
-> stuff. But it's hard to argue with the patch length in light of the
-> necessary backports..
->
+On Sun, Oct 27, 2019 at 09:01:46AM +0100, Stefan Hajnoczi wrote:
+> On Wed, Oct 23, 2019 at 11:55:40AM +0200, Stefano Garzarella wrote:
+> > This series adds the multi-transports support to vsock, following
+> > this proposal: https://www.spinics.net/lists/netdev/msg575792.html
+> > 
+> > With the multi-transports support, we can use VSOCK with nested VMs
+> > (using also different hypervisors) loading both guest->host and
+> > host->guest transports at the same time.
+> > Before this series, vmci-transport supported this behavior but only
+> > using VMware hypervisor on L0, L1, etc.
+> > 
+> > RFC: https://patchwork.ozlabs.org/cover/1168442/
+> > RFC -> v1:
+> > - Added R-b/A-b from Dexuan and Stefan
+> > - Fixed comments and typos in several patches (Stefan)
+> > - Patch 7: changed .notify_buffer_size return to void (Stefan)
+> > - Added patch 8 to simplify the API exposed to the transports (Stefan)
+> > - Patch 11:
+> >   + documented VSOCK_TRANSPORT_F_* flags (Stefan)
+> >   + fixed vsock_assign_transport() when the socket is already assigned
+> >   + moved features outside of struct vsock_transport, and used as
+> >     parameter of vsock_core_register() as a preparation of Patch 12
+> > - Removed "vsock: add 'transport_hg' to handle g2h\h2g transports" patch
+> > - Added patch 12 to register vmci_transport only when VMCI guest/host
+> >   are active
+> 
+> Has there been feedback from Jorgen or someone else from VMware?  A
+> Reviewed-by or Acked-by would be nice since this patch series affects
+> VMCI AF_VSOCK.
+> 
 
-I agree with you, but this is a start, and then maps can gradually
-move over to standard overflow handling.
+Unfortunately not for now, I'm adding to this thread some VMware guys that
+reviewed latest vmci patches.
 
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Would be nice to have your feedback for these changes.
+
+Thanks in advance,
+Stefano
