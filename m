@@ -2,116 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7424DE873D
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 12:35:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87617E8753
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 12:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731205AbfJ2Lfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 07:35:54 -0400
-Received: from cache12.mydevil.net ([128.204.216.223]:28450 "EHLO
-        cache12.mydevil.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729070AbfJ2Lfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 07:35:54 -0400
-From:   michal.lyszczek@bofc.pl
-Date:   Tue, 29 Oct 2019 12:35:50 +0100
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] libnetlink.c, ss.c: properly handle fread()
- error
-Message-ID: <20191029113550.fax6b4hmbhutciwx@c-ml-p3510.redembedded.pl>
-References: <20191024212001.7020-1-michal.lyszczek@bofc.pl>
- <20191028212128.1b8c5054@hermes.lan>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qt2pijgyhjquszvj"
-Content-Disposition: inline
-In-Reply-To: <20191028212128.1b8c5054@hermes.lan>
-User-Agent: NeoMutt/20180716
-X-AV-Check: Passed
-X-System-Sender: michal.lyszczek@bofc.pl
+        id S1731814AbfJ2Llk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 07:41:40 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:50148 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725776AbfJ2Llk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 07:41:40 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x9TBb6IO143834
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 07:41:38 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2vxmeq0t6p-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 07:41:38 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <ubraun@linux.ibm.com>;
+        Tue, 29 Oct 2019 11:41:36 -0000
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 29 Oct 2019 11:41:34 -0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x9TBevBr18284994
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 29 Oct 2019 11:40:57 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1FA7352051;
+        Tue, 29 Oct 2019 11:41:31 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B687D52059;
+        Tue, 29 Oct 2019 11:41:30 +0000 (GMT)
+From:   Ursula Braun <ubraun@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        gor@linux.ibm.com, heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        kgraul@linux.ibm.com, ubraun@linux.ibm.com
+Subject: [PATCH net 1/1] net/smc: fix refcounting for non-blocking connect()
+Date:   Tue, 29 Oct 2019 12:41:26 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19102911-0016-0000-0000-000002BEC0A7
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19102911-0017-0000-0000-000033201812
+Message-Id: <20191029114126.59907-1-ubraun@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-10-29_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=977 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1908290000 definitions=main-1910290118
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+If a nonblocking socket is immediately closed after connect(),
+the connect worker may not have started. This results in a refcount
+problem, since sock_hold() is called from the connect worker.
+This patch moves the sock_hold in front of the connect worker
+scheduling.
 
---qt2pijgyhjquszvj
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reported-by: syzbot+4c063e6dea39e4b79f29@syzkaller.appspotmail.com
+Fixes: 50717a37db03 ("net/smc: nonblocking connect rework")
+Reviewed-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
+---
+ net/smc/af_smc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Hello Stephen,
-On 2019-10-28 21:21:28, Stephen Hemminger wrote:
-> On Thu, 24 Oct 2019 23:20:01 +0200
-> Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl> wrote:
->
-> > fread(3) returns size_t data type which is unsigned, thus check
-> > `if (fread(...) < 0)' is always false. To check if fread(3) has
-> > failed, user should check if return is 0 and then check error
-> > indicator with ferror(3).
->
-> You did find something that probably has been broken for a long time.
->
-> First off, not sure why libnetlink is using fread here anyway.
-> It adds another copy to all I/O which can matter with 1M routes.
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index cea3c36ea0da..47946f489fd4 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -707,8 +707,6 @@ static int __smc_connect(struct smc_sock *smc)
+ 	int smc_type;
+ 	int rc = 0;
+ 
+-	sock_hold(&smc->sk); /* sock put in passive closing */
+-
+ 	if (smc->use_fallback)
+ 		return smc_connect_fallback(smc, smc->fallback_rsn);
+ 
+@@ -853,6 +851,8 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 	rc = kernel_connect(smc->clcsock, addr, alen, flags);
+ 	if (rc && rc != -EINPROGRESS)
+ 		goto out;
++
++	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (flags & O_NONBLOCK) {
+ 		if (schedule_work(&smc->connect_work))
+ 			smc->connect_nonblock = 1;
+-- 
+2.17.1
 
-I don't this is a problem. Of course, this could be optimized with read(2)
-but these functions are (or at least I think they are) called very rarely.
-Optimal solution with read(2) will surely be much more complex than using
-fread(3). I'm not sure if minor performance gain is worth bigger complexity.
-
-> Also the man page for fread() implies that truncated reads (not
-> just zero) can happen on error. Better to check that full read was
-> completed or at least a valid netlink header?
-
-Yes, you are right, I must have missed that. I've changed patch to
-take this into account. I think, since this code parses precise binary
-data, each call to fread(3) should return exact ammount of bytes as
-what was requested as reading less then expected could lead to corrupt
-read later anyway.
-
-For example if `l =3D 3' and `NLMSG_ALIGN(l) =3D=3D 4' doing
-
-    status =3D fread(NLMSG_DATA(h), 1, NLMSG_ALIGN(l), rtnl);
-    if (status < l)
-        error;
-
-Will result in error when fread(3) returns 3 bytes (and error), as
-this will move stream pointer by 3 bytes instead of 4, and next
-call to fread(3) will first read last DATA byte and then header
-bytes, which will result in corrupted header and possible misleading
-error later in execution - I belive errors should be reported as
-soon as possible.
-
-
-Please review newly attached patch (in another mail).
-
---=20
-=2E-----------------.-------------------.---------------------.------------=
-------.
-| Michal Lyszczek | Embedded C, Linux |   Company Address   |  .-. open sou=
-rce |
-| +48 727 564 419 | Software Engineer | Leszczynskiego 4/29 |  oo|  support=
-er  |
-| https://bofc.pl `----.--------------: 50-078 Wroclaw, Pol | /`'\      &  =
-    |
-| GPG FF1EBFE7E3A974B1 | Bits of Code | NIP:  813 349 58 78 |(\_;/) program=
-er  |
-`----------------------^--------------^---------------------^--------------=
-----'
-
---qt2pijgyhjquszvj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEE75TheM5OqeB/xDzA/x6/5+OpdLEFAl24JAwACgkQ/x6/5+Op
-dLEHNQf+PYOQtZCLi4b2vRxZuZebl7gGhsKZO5HSfO+4wq4JzoyKsnTlZmLrE+7p
-p9hSNmGVgJTYWj1OwIOZQRUG/NVrtWjazIaFp0HN2fjwWkTuAc3h8DEmSqNwWVK3
-OHmF+Bn15fM6tsz9Ow8ZmQy5RV3iSjP6vLU6sNcaDAeqHRTYHPhDAwKs7HO6KE+A
-YX+CDYYkf795oDa86bGkR40SX0yvlWI3DfM9OHQT/Rc/2tgwQshLK1NTA4+UEIQB
-2+Wpz/FHvVMVA/XO8fP6cr6Sz0d0IXznkMcHjCb+qwHFEyHN+JIqCi9JlUfG9Eb2
-m6DrV9ROi0vABGPLWNyewdOB8Yn4Og==
-=sRAF
------END PGP SIGNATURE-----
-
---qt2pijgyhjquszvj--
