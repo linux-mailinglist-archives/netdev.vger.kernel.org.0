@@ -2,75 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E929E7E0E
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:36:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78F50E7E15
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:39:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728415AbfJ2Bgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 21:36:37 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:37128 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727703AbfJ2Bgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 21:36:37 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 89F2960D82; Tue, 29 Oct 2019 01:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572312996;
-        bh=Mv2J845sZ1e4fsPYWzkhpXf5jScuwP+p1t+8zgQxR5o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G+I4lHua2nOIO1gBo7zGQLd+Bm6sdsQKImmPFIWu5d/+EZGNGbyIOIaPvPPM6pYgF
-         00Hy58QcPgLkV6DzNA00dAr+OJxojNmSoEj9viS9zF+2nGN6gcobcqzs0glTugc5DV
-         tf3avWuT0/uU5FIl8Z/aZGAV9r0aIVpsDzDw1PT8=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED autolearn=no autolearn_force=no version=3.4.0
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by smtp.codeaurora.org (Postfix) with ESMTP id 21AC36081E;
-        Tue, 29 Oct 2019 01:36:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572312996;
-        bh=Mv2J845sZ1e4fsPYWzkhpXf5jScuwP+p1t+8zgQxR5o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G+I4lHua2nOIO1gBo7zGQLd+Bm6sdsQKImmPFIWu5d/+EZGNGbyIOIaPvPPM6pYgF
-         00Hy58QcPgLkV6DzNA00dAr+OJxojNmSoEj9viS9zF+2nGN6gcobcqzs0glTugc5DV
-         tf3avWuT0/uU5FIl8Z/aZGAV9r0aIVpsDzDw1PT8=
+        id S1729473AbfJ2Bjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 21:39:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39434 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727931AbfJ2Bjl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Oct 2019 21:39:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=WWPqqpxMK49aX8fxq2Vp7OQYSMvT98SnujSdTfgf4ts=; b=qpizOuVKfF2ZOjdNvONrI9tbvy
+        NWEHbpgPyIb9QFWtR9EvX58E38TY5SMldtbSIsyF22tVXlRxoDrolH0NKjRCkexhWA1D1Be91iagk
+        3Gg5agceubRVq7QtnYe53lwYC5nh/BtVX/uo2H+rjgi4Olia5R2dcq7yv9CJedEsMycA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iPGTy-0001E1-8A; Tue, 29 Oct 2019 02:39:38 +0100
+Date:   Tue, 29 Oct 2019 02:39:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        davem@davemloft.net, Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH net-next 1/2] net: dsa: Add ability to elect CPU port
+Message-ID: <20191029013938.GG15259@lunn.ch>
+References: <20191028223236.31642-1-f.fainelli@gmail.com>
+ <20191028223236.31642-2-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Mon, 28 Oct 2019 19:36:36 -0600
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-In-Reply-To: <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
- <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
- <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
- <2279a8988c3f37771dda5593b350d014@codeaurora.org>
- <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
- <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org>
- <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
-Message-ID: <81ace6052228e12629f73724236ade63@codeaurora.org>
-X-Sender: subashab@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191028223236.31642-2-f.fainelli@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->> I've queued up a build which logs calls to tcp_write_queue_purge and
->> clears tp->highest_sack and tp->sacked_out. I will let you know how
->> it fares by end of week.
-> 
-> OK, thanks. That should be a useful data point.
+On Mon, Oct 28, 2019 at 03:32:35PM -0700, Florian Fainelli wrote:
+> In a configuration where multiple CPU ports are declared within the
+> platform configuration, it may be desirable to make sure that a
+> particular CPU port gets used. This is particularly true for Broadcom
+> switch that are fairly flexible to some extent in which port can be the
+> CPU port, yet will be more featureful if port 8 is elected.
 
-I haven't seen the crash in the testing so far.
-Looks like clearing these values seems to help.
+> -static struct dsa_port *dsa_tree_find_first_cpu(struct dsa_switch_tree *dst)
+> +static struct dsa_port *dsa_tree_find_cpu(struct dsa_switch_tree *dst)
+>  {
+> +	struct dsa_switch *ds;
+>  	struct dsa_port *dp;
+> +	int err;
+>  
+> -	list_for_each_entry(dp, &dst->ports, list)
+> -		if (dsa_port_is_cpu(dp))
+> +	list_for_each_entry(dp, &dst->ports, list) {
+> +		ds = dp->ds;
+> +		if (!dsa_port_is_cpu(dp))
+> +			continue;
+> +
+> +		if (!ds->ops->elect_cpu_port)
+>  			return dp;
+>  
+> +		err = ds->ops->elect_cpu_port(ds, dp->index);
+> +		if (err == 0)
+> +			return dp;
+> +	}
+> +
+>  	return NULL;
+>  }
 
--- 
-Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Hi Florian
+
+I think is_preferred_cpu_port() would be a better name, and maybe a
+bool?
+
+Also, i don't think we should be returning NULL at the end like
+this. If the device tree does not have the preferred port as CPU port,
+we should use dsa_tree_find_cpu() to pick one of the actually offered
+CPU ports in DT? It sounds like your hardware will still work if any
+port is used as the CPU port.
+
+And maybe we need a is_valid_cpu_port()? Some of the chipsets only
+have a subset which can be CPU ports, the hardware is not as flexible.
+The core can then validate the CPU port really is valid, rather than
+the driver, e.g. qca8k, validating the CPU port in setup() and
+returning an error.
+
+    Andrew
