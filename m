@@ -2,129 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A1CAAE911A
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 21:55:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3A3BE9121
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 21:57:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728512AbfJ2UzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 16:55:01 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:58365 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726401AbfJ2UzA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 16:55:00 -0400
-Received: from [100.68.212.125] (ip-109-40-129-141.web.vodafone.de [109.40.129.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D39A922E07;
-        Tue, 29 Oct 2019 21:54:55 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
-        s=mail2016061301; t=1572382496;
-        bh=3aiIfyWXY1iPXO+4Ob07dVw4rPtBd4EDLCI8JulktDs=;
-        h=Date:In-Reply-To:References:Subject:To:CC:From:From;
-        b=aXoVegOLM+oArB/yjNaGjvBEgwLi/VPUsPvYGNT3IyhfGbhKnd3q3U6HMSpEeUic8
-         0f/ArgltNnU572xY57tcbA5F8A3/pPclA4t57/D/iTsqIx2pLCHAKwDYbxYHrUlJub
-         LxNDK6prYzHW4s/96e+HrVB4UvkZjD0g9M2L9gho=
-Date:   Tue, 29 Oct 2019 21:54:53 +0100
-User-Agent: K-9 Mail for Android
-In-Reply-To: <519d52d2-cd83-b544-591b-ca9d9bb16dfa@gmail.com>
-References: <20191029174819.3502-1-michael@walle.cc> <519d52d2-cd83-b544-591b-ca9d9bb16dfa@gmail.com>
+        id S1728523AbfJ2U5Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 16:57:24 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:35558 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727545AbfJ2U5Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 16:57:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572382642;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=I4J5qAB+5RFtqFp6r7FKOzdmQSWWB1YJC490t19dC1w=;
+        b=ELb0HtW2h+/iMJrcGuw7vGtGbFMaQvLu/n1KOH14gWqjysDW83kSXtEHjxJOH04cxEcZoQ
+        bCKYg/P67hTr40sDz9ID+86/vZOayXstz3YnYdMfcDgNUKiMqhlk8ej9fYfImUnVoO1LTv
+        r40Mglk3zAfpOCYRLF7v3zQc+slLeY4=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-133-BwSJvzuMMcSGCgeWEG_klQ-1; Tue, 29 Oct 2019 16:57:14 -0400
+Received: by mail-wr1-f69.google.com with SMTP id 7so81073wrl.2
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 13:57:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=GTlMSkWIOdhQJyhaU9xDqRpYB6UT9098TiEsw62v4l0=;
+        b=g8Ra4d1yh4yjE8ipMx58eJ7G36v9khZ5TxvGnJcMb8WenpImF4fX1grlFJrAGPYgVd
+         SIZ4fo3AivYyBvJg+s4k4b7PQEF2duezkmgF/sR6k/xj83/31eDRFqv0IZLSWFh00Xy+
+         cxn1ECpFE+QKmAkHc9PGtnAYPZWOGu+dHjTKJcdYM9Yt6yrU5O0xjQ5GMuP4BVFRG/NQ
+         aL7JgPMLGa3jcms2ej3v6ewaxLl8Ggv1cw90HAI+JhMZAMDeLsHWgZjIK5Ey1rVJ5efR
+         X8MKTJSZhLCdHktZhkTgZQ3maRnYQMq46QUPNVCgiBjCXihKZ2Msidr241G8MzuC0Jj7
+         KGMQ==
+X-Gm-Message-State: APjAAAWdmcaZvaLwTEqkxBKyIBlPgJynlij5J35m7al3P9zkb1uBbgZ/
+        tC/Oo77/CK7QNPVJVuRX9jvyzGrV1CisL+xeOpvthS0hgAkYiL/5D6VlrWQrKOs7kJ0kdqzK2Bs
+        9uQwHn1AReJfLaaos
+X-Received: by 2002:adf:fe10:: with SMTP id n16mr22953572wrr.288.1572382633388;
+        Tue, 29 Oct 2019 13:57:13 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwDAOPbZjoUub7XfKmpminHRgePRpno+56f/wEZdjeqM1v63sfdh00hT6h06Wxqe969EonlTA==
+X-Received: by 2002:adf:fe10:: with SMTP id n16mr22953561wrr.288.1572382633189;
+        Tue, 29 Oct 2019 13:57:13 -0700 (PDT)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id 62sm135829wre.38.2019.10.29.13.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 13:57:12 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 21:57:10 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>
+Subject: [PATCH net-next] vxlan: drop "vxlan" parameter in vxlan_fdb_alloc()
+Message-ID: <909fa55ac93fa8727ee1d9ec273011056ad7d61f.1572382598.git.gnault@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: BwSJvzuMMcSGCgeWEG_klQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 0/3] net: phy: initialize PHYs via device tree properties
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-From:   Michael Walle <michael@walle.cc>
-Message-ID: <4B4A80A7-05C8-441A-B224-7CC01E3D8C30@walle.cc>
-X-Virus-Scanned: clamav-milter 0.101.4 at web
-X-Virus-Status: Clean
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 29=2E Oktober 2019 18:59:07 MEZ schrieb Florian Fainelli <f=2Efainelli@g=
-mail=2Ecom>:
->On 10/29/19 10:48 AM, Michael Walle wrote:
->> I was trying to configure the Atheros PHY for my board=2E There are
->fixups
->> all over the place, for example to enable the 125MHz clock output in
->almost
->> any i=2EMX architecture=2E Instead of adding another fixup in
->architecture
->> specific code, try to provide a generic way to init the PHY
->registers=2E
->>=20
->> This patch series tries to pick up the "broadcom,reg-init" and
->> "marvell,reg-init" device tree properties idea and make it a more
->generic
->> "reg-init" which is handled by phy_device instead of a particular phy
->> driver=2E
->
->These two examples are actually quite bad and were symptomatic of a few
->things at the time:
->
->- rush to get a specific feature/device supported without thinking
->about
->the big picture
->- lack of appropriate review on the Device Tree bindings
->
->Fortunately, the last item is now not happening anymore=2E
->
->The problem with letting that approach go through is that the Device
->Tree can now hold a configuration policy which is passed through as-is
->from DT to the PHY device, this is bad on so many different levels,
->starting with abstraction=2E
+This parameter has never been used.
 
-I see=2E
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ drivers/net/vxlan.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
->If all you need is to enable a particular clock, introduce device
->specific properties that describe the hardware, and make the necessary
->change to the local driver that needs to act on those=2E You can always
->define a more generic scope property if you see a recurring pattern=2E
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index 3d9bcc957f7d..5ffea8e34771 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -793,8 +793,7 @@ static int vxlan_gro_complete(struct sock *sk, struct s=
+k_buff *skb, int nhoff)
+ =09return eth_gro_complete(skb, nhoff + sizeof(struct vxlanhdr));
+ }
+=20
+-static struct vxlan_fdb *vxlan_fdb_alloc(struct vxlan_dev *vxlan,
+-=09=09=09=09=09 const u8 *mac, __u16 state,
++static struct vxlan_fdb *vxlan_fdb_alloc(const u8 *mac, __u16 state,
+ =09=09=09=09=09 __be32 src_vni, __u16 ndm_flags)
+ {
+ =09struct vxlan_fdb *f;
+@@ -835,7 +834,7 @@ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+ =09=09return -ENOSPC;
+=20
+ =09netdev_dbg(vxlan->dev, "add %pM -> %pIS\n", mac, ip);
+-=09f =3D vxlan_fdb_alloc(vxlan, mac, state, src_vni, ndm_flags);
++=09f =3D vxlan_fdb_alloc(mac, state, src_vni, ndm_flags);
+ =09if (!f)
+ =09=09return -ENOMEM;
+=20
+--=20
+2.21.0
 
-Could you have a quick look at the following patch I made for u-boot, whic=
-h adds a binding for the Atheros PHY=2E If that is the right direction=2E Y=
-eah, I should have made it first to Linux to get some feedback on the bindi=
-ng :p
-
-https://patchwork=2Eozlabs=2Eorg/patch/1184516/
-
-I'd then prepare another patch for Linux based on your suggestions=2E=20
-
--michael=20
-
->
->So just to be clear on the current approach: NACK=2E
->
->>=20
->> Michael Walle (3):
->>   dt-bindings: net: phy: Add reg-init property
->>   net: phy: export __phy_{read|write}_page
->>   net: phy: Use device tree properties to initialize any PHYs
->>=20
->>  =2E=2E=2E/devicetree/bindings/net/ethernet-phy=2Eyaml | 31 ++++++
->>  MAINTAINERS                                   |  1 +
->>  drivers/net/phy/phy-core=2Ec                    | 24 ++++-
->>  drivers/net/phy/phy_device=2Ec                  | 97
->++++++++++++++++++-
->>  include/dt-bindings/net/phy=2Eh                 | 18 ++++
->>  include/linux/phy=2Eh                           |  2 +
->>  6 files changed, 170 insertions(+), 3 deletions(-)
->>  create mode 100644 include/dt-bindings/net/phy=2Eh
->>=20
->> Cc: Andrew Lunn <andrew@lunn=2Ech>
->> Cc: Florian Fainelli <f=2Efainelli@gmail=2Ecom>
->> Cc: Heiner Kallweit <hkallweit1@gmail=2Ecom>
->> Cc: "David S=2E Miller" <davem@davemloft=2Enet>
->> Cc: Rob Herring <robh+dt@kernel=2Eorg>
->> Cc: Mark Rutland <mark=2Erutland@arm=2Ecom>
->>=20
-
-Hi Florian, 
