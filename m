@@ -2,80 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79558E7F28
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 05:21:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8311E7F2B
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 05:25:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731622AbfJ2EVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 00:21:39 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38401 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731556AbfJ2EVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 00:21:39 -0400
-Received: by mail-pf1-f195.google.com with SMTP id c13so8585688pfp.5
-        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 21:21:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0pNMZdcb7hVw4JvKyqQGkwHY7dkaCsSGzyWz9BVtGQk=;
-        b=1wikhcf2LRKaXjQCCzMfjKPCzaSjrvLfAGFPVLqBYwwW8D7XZIg9JYqysxwfVaeuP9
-         0uhtCR2XtkEYXHieiYFJxD3A8WzmkxnF8I2tJ4ZR4DUaZYSw4f3T28ZL+86jOLdCqQtk
-         ujpEN1OZGppjBKoVj5tuGk9+XOscsNzxg0JwrWDghbWBsoWIpYFgUU4V0fi+qFPdlP9g
-         4F6v/X+yDRh4Fiy/m/wIhQzI+4qpxqUaeTIb/45CcDOSr8rX/JtY1gqAt8di541rX60W
-         izx6IumZ5kf4vlDBFkenIPT43Xhe1yDIdLInBxz1KN8phwJpM/3U3ygZVi04/XadPY3O
-         kd/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0pNMZdcb7hVw4JvKyqQGkwHY7dkaCsSGzyWz9BVtGQk=;
-        b=WEKnHY1xXSSTVCnQEPfYEiY0wbh478SxD1G/+MVLQBEZ7bHpmvQXNVxQu7XVtY/Qxt
-         PTBdjrAbu6Bz11yYtOC57LcLQs6lpyvQLHG2UgfJ7FRi1wrB3E9HW+maO7/NW+fwF6sm
-         CrJwNpdKdMzSJRWefMMjMS8L/N/0n2YESRiQNsgzvtkWhZbgnotYOiFeyG1o3MRtX8Ed
-         wl3ppbzHfbcraT13/+W0T5CD5Ix7sLgPFpviHsoXeinhvNUVFCE/wVjg6+FyVeIaiAUv
-         DXc/feVPzK501i2RUz5HUwzvgfbDMyNZQO2lzQLiqPNiDCeOfo5/dd+LMmAoaYazcX/R
-         TnoA==
-X-Gm-Message-State: APjAAAUCgFES9wJ04FX/WLwtNUhKlLK+MDThvpuqgPHX9lKeXNyNC8DQ
-        VI/tMF6DtW2uNDHFvi1tBY5vniLrhKQqlA==
-X-Google-Smtp-Source: APXvYqwSgmBcd+DESWoToa7lDva6YzfefQ6XWGcg4mWr0crZHAfHX+Q7/uJrTc63owA6ECoEdPtHcA==
-X-Received: by 2002:a63:4562:: with SMTP id u34mr24201060pgk.399.1572322897610;
-        Mon, 28 Oct 2019 21:21:37 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id k24sm12051003pgl.6.2019.10.28.21.21.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Oct 2019 21:21:37 -0700 (PDT)
-Date:   Mon, 28 Oct 2019 21:21:28 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     =?UTF-8?B?TWljaGHFgiDFgXlzemN6ZWs=?= <michal.lyszczek@bofc.pl>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] libnetlink.c, ss.c: properly handle fread()
- error
-Message-ID: <20191028212128.1b8c5054@hermes.lan>
-In-Reply-To: <20191024212001.7020-1-michal.lyszczek@bofc.pl>
-References: <20191024212001.7020-1-michal.lyszczek@bofc.pl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        id S1728264AbfJ2EYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 00:24:50 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49132 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727099AbfJ2EYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 00:24:50 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EED7614CEC933;
+        Mon, 28 Oct 2019 21:24:49 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 21:24:49 -0700 (PDT)
+Message-Id: <20191028.212449.1389218373993746531.davem@davemloft.net>
+To:     syzbot+8da67f407bcba2c72e6e@syzkaller.appspotmail.com
+Cc:     andy@greyhouse.net, j.vosburgh@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, vfalico@gmail.com,
+        ap420073@gmail.com
+Subject: Re: INFO: trying to register non-static key in
+ bond_3ad_update_ad_actor_settings
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <000000000000929f990596024a82@google.com>
+References: <000000000000044a7f0595fbaf2c@google.com>
+        <000000000000929f990596024a82@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 28 Oct 2019 21:24:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 24 Oct 2019 23:20:01 +0200
-Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl> wrote:
+From: syzbot <syzbot+8da67f407bcba2c72e6e@syzkaller.appspotmail.com>
+Date: Mon, 28 Oct 2019 18:11:08 -0700
 
-> fread(3) returns size_t data type which is unsigned, thus check
-> `if (fread(...) < 0)' is always false. To check if fread(3) has
-> failed, user should check if return is 0 and then check error
-> indicator with ferror(3).
->=20
-> Signed-off-by: Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl>
+> syzbot has found a reproducer for the following crash on:
+> 
+> HEAD commit:    60c1769a Add linux-next specific files for 20191028
+> git tree:       linux-next
+> console output:
+> https://syzkaller.appspot.com/x/log.txt?x=154d4374e00000
+> kernel config:
+> https://syzkaller.appspot.com/x/.config?x=cb86688f30db053d
+> dashboard link:
+> https://syzkaller.appspot.com/bug?extid=8da67f407bcba2c72e6e
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=14d43a04e00000
+> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=16be3b9ce00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the
+> commit:
+> Reported-by: syzbot+8da67f407bcba2c72e6e@syzkaller.appspotmail.com
 
-You did find something that probably has been broken for a long time.
+This might be because of the lockdep depth changes.
 
-First off, not sure why libnetlink is using fread here anyway.
-It adds another copy to all I/O which can matter with 1M routes.
+Taehee, please take a look.
 
-Also the man page for fread() implies that truncated reads (not
-just zero) can happen on error. Better to check that full read was
-completed or at least a valid netlink header?
+Thanks.
