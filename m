@@ -2,193 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B4FFE7ED7
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 04:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79558E7F28
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 05:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730382AbfJ2DXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 23:23:05 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:46964 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730153AbfJ2DXE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 23:23:04 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9T3JWiF177200;
-        Tue, 29 Oct 2019 03:22:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
- date : message-id; s=corp-2019-08-05;
- bh=1gMN7XpFdn//+OSv8RfjdGsM0W4lCXtPtQmL7v/v18k=;
- b=ebzmx2lW9kpISPH2JqsMJt3iZ/Rg7PQD9u7ugm2hIxmlpm0rI8jq/K0sZi/nQpsbvmv6
- y++nyfLQHaPSTsa33h7hVY0pACa83HhQ158mm+4bRBD/XHr+hd6YLIEkQxGPh/j9kYUY
- mKNJjLyOZ+PpchV0oKhDX4pz09KNzL/nvSEL7YPFB6kqpMEf1y0CNyf4uUK40E7r4OrU
- ADkZ6iRSs064aWgzf9h88fL1D2am/EonQM4rgzpPShJBcicciLWNk9M1fpUnJWZpMTU2
- nVnfzdNouI1KNRpeAyoYPpsQy2yhQDJGgvfVlDw5OijlSBEQ1adJlVsang1xgHTy5u+P yg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2vvdju63ce-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Oct 2019 03:22:53 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9T3JRTJ018071;
-        Tue, 29 Oct 2019 03:20:52 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by aserp3020.oracle.com with ESMTP id 2vvyn0wx6w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 29 Oct 2019 03:20:52 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9T3KoO4001185;
-        Tue, 29 Oct 2019 03:20:50 GMT
-Received: from shipfan.cn.oracle.com (/10.113.210.105)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 28 Oct 2019 20:20:50 -0700
-From:   Zhu Yanjun <yanjun.zhu@oracle.com>
-To:     rain.1986.08.12@gmail.com, yanjun.zhu@oracle.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCHv3 1/1] net: forcedeth: add xmit_more support
-Date:   Mon, 28 Oct 2019 23:30:12 -0400
-Message-Id: <1572319812-27196-1-git-send-email-yanjun.zhu@oracle.com>
-X-Mailer: git-send-email 2.7.4
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9424 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1908290000 definitions=main-1910290034
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9424 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910290034
+        id S1731622AbfJ2EVj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 00:21:39 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38401 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731556AbfJ2EVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 00:21:39 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c13so8585688pfp.5
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 21:21:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=0pNMZdcb7hVw4JvKyqQGkwHY7dkaCsSGzyWz9BVtGQk=;
+        b=1wikhcf2LRKaXjQCCzMfjKPCzaSjrvLfAGFPVLqBYwwW8D7XZIg9JYqysxwfVaeuP9
+         0uhtCR2XtkEYXHieiYFJxD3A8WzmkxnF8I2tJ4ZR4DUaZYSw4f3T28ZL+86jOLdCqQtk
+         ujpEN1OZGppjBKoVj5tuGk9+XOscsNzxg0JwrWDghbWBsoWIpYFgUU4V0fi+qFPdlP9g
+         4F6v/X+yDRh4Fiy/m/wIhQzI+4qpxqUaeTIb/45CcDOSr8rX/JtY1gqAt8di541rX60W
+         izx6IumZ5kf4vlDBFkenIPT43Xhe1yDIdLInBxz1KN8phwJpM/3U3ygZVi04/XadPY3O
+         kd/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=0pNMZdcb7hVw4JvKyqQGkwHY7dkaCsSGzyWz9BVtGQk=;
+        b=WEKnHY1xXSSTVCnQEPfYEiY0wbh478SxD1G/+MVLQBEZ7bHpmvQXNVxQu7XVtY/Qxt
+         PTBdjrAbu6Bz11yYtOC57LcLQs6lpyvQLHG2UgfJ7FRi1wrB3E9HW+maO7/NW+fwF6sm
+         CrJwNpdKdMzSJRWefMMjMS8L/N/0n2YESRiQNsgzvtkWhZbgnotYOiFeyG1o3MRtX8Ed
+         wl3ppbzHfbcraT13/+W0T5CD5Ix7sLgPFpviHsoXeinhvNUVFCE/wVjg6+FyVeIaiAUv
+         DXc/feVPzK501i2RUz5HUwzvgfbDMyNZQO2lzQLiqPNiDCeOfo5/dd+LMmAoaYazcX/R
+         TnoA==
+X-Gm-Message-State: APjAAAUCgFES9wJ04FX/WLwtNUhKlLK+MDThvpuqgPHX9lKeXNyNC8DQ
+        VI/tMF6DtW2uNDHFvi1tBY5vniLrhKQqlA==
+X-Google-Smtp-Source: APXvYqwSgmBcd+DESWoToa7lDva6YzfefQ6XWGcg4mWr0crZHAfHX+Q7/uJrTc63owA6ECoEdPtHcA==
+X-Received: by 2002:a63:4562:: with SMTP id u34mr24201060pgk.399.1572322897610;
+        Mon, 28 Oct 2019 21:21:37 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id k24sm12051003pgl.6.2019.10.28.21.21.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Oct 2019 21:21:37 -0700 (PDT)
+Date:   Mon, 28 Oct 2019 21:21:28 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     =?UTF-8?B?TWljaGHFgiDFgXlzemN6ZWs=?= <michal.lyszczek@bofc.pl>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] libnetlink.c, ss.c: properly handle fread()
+ error
+Message-ID: <20191028212128.1b8c5054@hermes.lan>
+In-Reply-To: <20191024212001.7020-1-michal.lyszczek@bofc.pl>
+References: <20191024212001.7020-1-michal.lyszczek@bofc.pl>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds support for xmit_more based on the igb commit 6f19e12f6230
-("igb: flush when in xmit_more mode and under descriptor pressure") and
-commit 6b16f9ee89b8 ("net: move skb->xmit_more hint to softnet data") that
-were made to igb to support this feature. The function netif_xmit_stopped
-is called to check whether transmit queue on device is currently unable to
-send to determine whether we must write the tail because we can add no further
-buffers.
-When normal packets and/or xmit_more packets fill up tx_desc, it is
-necessary to trigger NIC tx reg.
+On Thu, 24 Oct 2019 23:20:01 +0200
+Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl> wrote:
 
-Tested:
-  - pktgen (xmit_more packets) SMP x86_64 ->
-    Test command:
-    ./pktgen_sample03_burst_single_flow.sh ... -b 8 -n 1000000
-    Test results:
-    Params:
-    ...
-    burst: 8
-    ...
-    Result: OK: 12194004(c12188996+d5007) usec, 1000001 (1500byte,0frags)
-    82007pps 984Mb/sec (984084000bps) errors: 0
+> fread(3) returns size_t data type which is unsigned, thus check
+> `if (fread(...) < 0)' is always false. To check if fread(3) has
+> failed, user should check if return is 0 and then check error
+> indicator with ferror(3).
+>=20
+> Signed-off-by: Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl>
 
-  - iperf (normal packets) SMP x86_64 ->
-    Test command:
-    Server: iperf -s
-    Client: iperf -c serverip
-    Result:
-    TCP window size: 85.0 KByte (default)
-    ------------------------------------------------------------
-    [ ID] Interval       Transfer     Bandwidth
-    [  3]  0.0-10.0 sec  1.10 GBytes   942 Mbits/sec
+You did find something that probably has been broken for a long time.
 
-CC: Joe Jin <joe.jin@oracle.com>
-CC: JUNXIAO_BI <junxiao.bi@oracle.com>
-Reported-and-tested-by: Nan san <nan.1986san@gmail.com>
-Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
-Acked-by: Rain River <rain.1986.08.12@gmail.com>
----
-V2->V3: fix typo errors.
-V1->V2: use the lower case label.
----
- drivers/net/ethernet/nvidia/forcedeth.c | 37 +++++++++++++++++++++++++++------
- 1 file changed, 31 insertions(+), 6 deletions(-)
+First off, not sure why libnetlink is using fread here anyway.
+It adds another copy to all I/O which can matter with 1M routes.
 
-diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-index 05d2b47..e2bb0cd 100644
---- a/drivers/net/ethernet/nvidia/forcedeth.c
-+++ b/drivers/net/ethernet/nvidia/forcedeth.c
-@@ -2225,6 +2225,7 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct nv_skb_map *prev_tx_ctx;
- 	struct nv_skb_map *tmp_tx_ctx = NULL, *start_tx_ctx = NULL;
- 	unsigned long flags;
-+	netdev_tx_t ret = NETDEV_TX_OK;
- 
- 	/* add fragments to entries count */
- 	for (i = 0; i < fragments; i++) {
-@@ -2240,7 +2241,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 		netif_stop_queue(dev);
- 		np->tx_stop = 1;
- 		spin_unlock_irqrestore(&np->lock, flags);
--		return NETDEV_TX_BUSY;
-+
-+		/* When normal packets and/or xmit_more packets fill up
-+		 * tx_desc, it is necessary to trigger NIC tx reg.
-+		 */
-+		ret = NETDEV_TX_BUSY;
-+		goto txkick;
- 	}
- 	spin_unlock_irqrestore(&np->lock, flags);
- 
-@@ -2357,8 +2363,14 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	spin_unlock_irqrestore(&np->lock, flags);
- 
--	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
--	return NETDEV_TX_OK;
-+txkick:
-+	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
-+		u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
-+
-+		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
-+	}
-+
-+	return ret;
- }
- 
- static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
-@@ -2381,6 +2393,7 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
- 	struct nv_skb_map *start_tx_ctx = NULL;
- 	struct nv_skb_map *tmp_tx_ctx = NULL;
- 	unsigned long flags;
-+	netdev_tx_t ret = NETDEV_TX_OK;
- 
- 	/* add fragments to entries count */
- 	for (i = 0; i < fragments; i++) {
-@@ -2396,7 +2409,13 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
- 		netif_stop_queue(dev);
- 		np->tx_stop = 1;
- 		spin_unlock_irqrestore(&np->lock, flags);
--		return NETDEV_TX_BUSY;
-+
-+		/* When normal packets and/or xmit_more packets fill up
-+		 * tx_desc, it is necessary to trigger NIC tx reg.
-+		 */
-+		ret = NETDEV_TX_BUSY;
-+
-+		goto txkick;
- 	}
- 	spin_unlock_irqrestore(&np->lock, flags);
- 
-@@ -2542,8 +2561,14 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
- 
- 	spin_unlock_irqrestore(&np->lock, flags);
- 
--	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
--	return NETDEV_TX_OK;
-+txkick:
-+	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
-+		u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
-+
-+		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
-+	}
-+
-+	return ret;
- }
- 
- static inline void nv_tx_flip_ownership(struct net_device *dev)
--- 
-2.7.4
-
+Also the man page for fread() implies that truncated reads (not
+just zero) can happen on error. Better to check that full read was
+completed or at least a valid netlink header?
