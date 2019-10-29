@@ -2,89 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C00E8443
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:21:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D32E8464
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:26:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727867AbfJ2JVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 05:21:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727257AbfJ2JVr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Oct 2019 05:21:47 -0400
-Received: from localhost (unknown [77.137.89.37])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D6AF920717;
-        Tue, 29 Oct 2019 09:21:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572340906;
-        bh=mKrTfUmlDRX78JPqZRqY49HWUeLghpN6sp6EkI3pjx8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=v7mVXLAG6ZPoJ83FJQR1OWC53S6aInMEE5A1KQdh8N0hQqVqstJNksQt0JKtkueAt
-         2aaeuRkep/Mc9jThwHl8JffOlRQE5gK6p6+jKH2Y5stl+JgSQQ/vvxr/usKwRyba7I
-         ZVrROXm/wGDdKM/p4Bi3HnYbbSIyJY4+ljRoIvSE=
-Date:   Tue, 29 Oct 2019 11:21:42 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     netdev@vger.kernel.org,
-        syzbot+c54f457cad330e57e967@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, netfilter-devel@vger.kernel.org,
-        Edward Cree <ecree@solarflare.com>
-Subject: Re: [PATCH net-next] inet: do not call sublist_rcv on empty list
-Message-ID: <20191029092142.GC5545@unreal>
-References: <0000000000003cc4980596006472@google.com>
- <20191029004404.8563-1-fw@strlen.de>
+        id S1732609AbfJ2J0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 05:26:07 -0400
+Received: from mail-eopbgr30077.outbound.protection.outlook.com ([40.107.3.77]:54903
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730793AbfJ2J0H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 05:26:07 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XTF1t0uOU9ndTVPGBdjHGyBFJSX+1izQT2Yz+JoPENtZ4+DA1Td0uA6xZ9hFq+y6Wujcbdg5kRo973ReXwD3rnUixM99Yr4HuTDC0lKvhsgSu2jP+3lGFdFdJCcXsnoCjPIxrbuLb8DlAlm0Bs2mUUo/mQ6aZZJl2OPgYJ2Vhkf2EGe5lQZv7vx2Ic2TZY4M52UAAWEJzAeJWXu22e102eIxthQ9TLA618QvHJ1NcDsk9cJEZ6Xz0oquCCjeEaWISeAnC0/NxvT0eTbJqoQmlnqZZ3fBdLhAvXqpchd3xLxnd+86/GXFHsIRQ8+kpLZl4PnrIKu+3RTCYk5VvNOGUw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vdP0fdHQR4VN+9eiuvP8Y4SYnBRTFVsW6pjAdIwg5p0=;
+ b=Xe1wuhuO9FIjsf7tkipFtmW9mcjikGSLn6oQqzF6kz88xDDkN8eR5R32RA/anAO9WfwTIEOdnsM0np8+rG+yL6QI5cPht/w260/RyRSerMWs89pSQvpnvnvsAwx4M15FS7wB34ornP1/k0iq4k2/roPc3tQTpcAiRSpT2g+WqTlOpuFswNzgqgTFopOIkpF67i3v/jN2SnsKvEP1vvMARHxfXFBOtoV1w9hI7EPBlXjSKOia+aATC1LNAdLZKdzWJQlRORXwy4+3saRwIMyVUAPhn71gsMXQckqKqoZ3NLt1xoJrEsVdW0U9ep85hzDdw53c6whGEYuZf3cYrqvK7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vdP0fdHQR4VN+9eiuvP8Y4SYnBRTFVsW6pjAdIwg5p0=;
+ b=hzmaHniA8ReK69lbq0Hplmg0L3nEgXhofEAfGUk+Jd6+tjWKN9yl8iBRuJZbk62X6k/8TKdXBBhVc0jLXstjL8Q3bUffGSMFhNs30r0ryogm0mUNFI4xsKPx2a8fhm7sHeKzVipHxovQ2JFxGlcoeYlSv9uWZnFiptj4QuU2gv4=
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com (10.175.24.138) by
+ VI1PR0402MB3741.eurprd04.prod.outlook.com (52.134.12.14) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.20; Tue, 29 Oct 2019 09:26:02 +0000
+Received: from VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::749b:178a:b8c5:5aaa]) by VI1PR0402MB2800.eurprd04.prod.outlook.com
+ ([fe80::749b:178a:b8c5:5aaa%11]) with mapi id 15.20.2387.027; Tue, 29 Oct
+ 2019 09:26:02 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>
+Subject: RE: [PATCH net-next v3 2/5] bus: fsl-mc: add the fsl_mc_get_endpoint
+ function
+Thread-Topic: [PATCH net-next v3 2/5] bus: fsl-mc: add the fsl_mc_get_endpoint
+ function
+Thread-Index: AQHVix1sOC+L+Xa0dkS4RnM3YQGOjadw3tOAgACALwA=
+Date:   Tue, 29 Oct 2019 09:26:02 +0000
+Message-ID: <VI1PR0402MB2800DA31D3CBF552B4B77FB9E0610@VI1PR0402MB2800.eurprd04.prod.outlook.com>
+References: <1571998630-17108-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571998630-17108-3-git-send-email-ioana.ciornei@nxp.com>
+ <20191029014523.GH15259@lunn.ch>
+In-Reply-To: <20191029014523.GH15259@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ioana.ciornei@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f7164900-70ea-4125-0be7-08d75c52045c
+x-ms-traffictypediagnostic: VI1PR0402MB3741:|VI1PR0402MB3741:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB374168D4CE775D5350E8B96EE0610@VI1PR0402MB3741.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0205EDCD76
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(376002)(39860400002)(366004)(396003)(199004)(189003)(66476007)(52536014)(76116006)(14454004)(6246003)(5660300002)(186003)(99286004)(86362001)(446003)(26005)(102836004)(71200400001)(66066001)(6506007)(256004)(6436002)(74316002)(6116002)(3846002)(7736002)(66946007)(7696005)(55016002)(66556008)(44832011)(64756008)(66446008)(11346002)(476003)(71190400001)(316002)(2906002)(76176011)(478600001)(305945005)(54906003)(8676002)(81156014)(4326008)(6916009)(8936002)(9686003)(33656002)(229853002)(25786009)(486006)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3741;H:VI1PR0402MB2800.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Vh+6ngx04JupnUX7Y7eSbOHHjnVgJHzNQ9t3SvZ9aY+odT22zcAa6gedqYKgHvr/Lkig73FxbrntmjIWAEdgZ/dZdtFjqxcpqYMgVfHLUu7OzQf73VOdYyMZGAQ8drhyZ6++HnAb+DpYS+9FwX3bdY44OHHV716Ktdw0NDLz3oz9KbCrvWd8yZUugciQNkSqifs9efz07W8zZNPCSmt+m9U4d+V1C66CTMM8c6wISFSGNDNagbnfznGKG9f7xLryhKjs4s+Ei76TrgGrk9xhYCDIE4H0vdLh3qWt57etuAc4yPbxLD1jGt8fX8kKJfm/2sayqepaBCJ0wLBM8k9/HhR+dxvhULK1u11oSieiJ6g8lqfCizI43BT0OGOwuN28nWCiJSI8juUER8HualFIsNpmVuJTqKWML7IdJwH7o+P1qnbHVYAluPr47IYp7ikT
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191029004404.8563-1-fw@strlen.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7164900-70ea-4125-0be7-08d75c52045c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2019 09:26:02.4530
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Kfu2cKoCrv3Zp/+toxkgfP8r5cZAi0d3a/1KH6acm4LLrhkjDH+JE+PAxNhsYcJFDz/a+Ddg/7ne5tQiKGRIiA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3741
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 01:44:04AM +0100, Florian Westphal wrote:
-> syzbot triggered struct net NULL deref in NF_HOOK_LIST:
-> RIP: 0010:NF_HOOK_LIST include/linux/netfilter.h:331 [inline]
-> RIP: 0010:ip6_sublist_rcv+0x5c9/0x930 net/ipv6/ip6_input.c:292
->  ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:328
->  __netif_receive_skb_list_ptype net/core/dev.c:5274 [inline]
->
-> Reason:
-> void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
->                    struct net_device *orig_dev)
-> [..]
->         list_for_each_entry_safe(skb, next, head, list) {
-> 		/* iterates list */
->                 skb = ip6_rcv_core(skb, dev, net);
-> 		/* ip6_rcv_core drops skb -> NULL is returned */
->                 if (skb == NULL)
->                         continue;
-> 	[..]
-> 	}
-> 	/* sublist is empty -> curr_net is NULL */
->         ip6_sublist_rcv(&sublist, curr_dev, curr_net);
->
-> Before the recent change NF_HOOK_LIST did a list iteration before
-> struct net deref, i.e. it was a no-op in the empty list case.
->
-> List iteration now happens after *net deref, causing crash.
->
-> Follow the same pattern as the ip(v6)_list_rcv loop and add a list_empty
-> test for the final sublist dispatch too.
->
-> Cc: Edward Cree <ecree@solarflare.com>
-> Reported-by: syzbot+c54f457cad330e57e967@syzkaller.appspotmail.com
-> Fixes: ca58fbe06c54 ("netfilter: add and use nf_hook_slow_list()")
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
->  net/ipv4/ip_input.c  | 3 ++-
->  net/ipv6/ip6_input.c | 3 ++-
->  2 files changed, 4 insertions(+), 2 deletions(-)
->
+> Subject: Re: [PATCH net-next v3 2/5] bus: fsl-mc: add the fsl_mc_get_endp=
+oint
+> function
+>=20
+> > +struct fsl_mc_device *fsl_mc_get_endpoint(struct fsl_mc_device
+> > +*mc_dev) {
+> > +	struct fsl_mc_device *mc_bus_dev, *endpoint;
+> > +	struct fsl_mc_obj_desc endpoint_desc =3D { 0 };
+> > +	struct dprc_endpoint endpoint1 =3D { 0 };
+> > +	struct dprc_endpoint endpoint2 =3D { 0 };
+> > +	int state, err;
+> > +
+> > +	mc_bus_dev =3D to_fsl_mc_device(mc_dev->dev.parent);
+> > +	strcpy(endpoint1.type, mc_dev->obj_desc.type);
+> > +	endpoint1.id =3D mc_dev->obj_desc.id;
+> > +
+> > +	err =3D dprc_get_connection(mc_bus_dev->mc_io, 0,
+> > +				  mc_bus_dev->mc_handle,
+> > +				  &endpoint1, &endpoint2,
+> > +				  &state);
+> > +
+> > +	if (err =3D=3D -ENOTCONN || state =3D=3D -1)
+> > +		return NULL;
+> > +
+> > +	if (err < 0) {
+> > +		dev_err(&mc_bus_dev->dev, "dprc_get_connection() =3D %d\n",
+> err);
+> > +		return NULL;
+> > +	}
+>=20
+> You could return these errors with ERR_PRT(err)
+>=20
+>     Andrew
 
-It fixed my crash on boot.
+I could but the caller would still take the same action disregarding the ac=
+tual error code.
+I don't find it really useful to return ERR_PTR().
 
-Thanks,
-Tested-by: Leon Romanovsky <leonro@mellanox.com>
+Ioana
