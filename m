@@ -2,101 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F13C3E7DAA
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 01:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA4A4E7D9E
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 01:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727447AbfJ2Ayc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 20:54:32 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:55350 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727336AbfJ2Ayb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 20:54:31 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1iPFmH-0000V8-1x; Tue, 29 Oct 2019 01:54:29 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     <netdev@vger.kernel.org>
-Cc:     syzbot+c54f457cad330e57e967@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, netfilter-devel@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>,
-        Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next] inet: do not call sublist_rcv on empty list
-Date:   Tue, 29 Oct 2019 01:44:04 +0100
-Message-Id: <20191029004404.8563-1-fw@strlen.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <0000000000003cc4980596006472@google.com>
-References: <0000000000003cc4980596006472@google.com>
+        id S1727228AbfJ2Att (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 20:49:49 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42357 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725848AbfJ2Ats (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 20:49:48 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f14so8227052pgi.9
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 17:49:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rbjv+0Gpbrf5P8/4TYl2ACIT3sF2IgpZBFpaTxjVPCM=;
+        b=CXZfP1FxkBB09x9+OoCDBMceR3tyI0wLbWDZDtieTJ5HBBals+J8qqX/rAfi+yaur1
+         ALe5B0znSCMZD/Bkz4sxnZXxqf8vsQF8e5PI1YlC+psaHMB2pmNCaipl7/drD9Ze+On8
+         RtGbValaW7iyvz8fYxSXKHSnPWZvG5rdWcPVE5UnDfpWfVzTa1oBbLy9zFSeKOBSYQEE
+         3s91tDJZTf9V6rnNWksZZ68qf0hfbylWzeo6N438O2ikRqxLTgp15hkwcUWs0fVwQlUN
+         Z29t5/I1dWBSusln+Q1Rz029X4/YyJpmiqMl2/pRGUJkvnt2LHDCjjerjM/U76T6yq+I
+         VWqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rbjv+0Gpbrf5P8/4TYl2ACIT3sF2IgpZBFpaTxjVPCM=;
+        b=XVwE3Mmj7sY9Tnx12r1UNhO88z3jaHG87k/EdrvbsvcDrS3mYGi1X3Z0uUx17LghLx
+         cGtEPad7OIX+rufM49J1uvcgBhq6Ha8l6+lKbSz/o0VfuAVMCJZ1he6fsBNGRAYuPeUy
+         ChOpsJwiC81JGMKiGmx6Aj94ZN65a3HRS9WPNNVZav+TToU/CF+6tdR3VH8F2e2H//Z0
+         03Lq8DCVie2yY35jr6m2Je9mChjyp2xeTOlEyQohfUhoM6BYqoCjrKE/1xJbGt7CMlur
+         6KedBgacKqp4bScha8YXZO8N4mrzuQqVB1oioynJOMgMgyLVK64EK/Jmv2DdRrsmgHA/
+         ikYA==
+X-Gm-Message-State: APjAAAVxsd9dM/VdmARAkjDSjSnualCHphsOEtTn1y4BH93x+4HGBKa2
+        e7+yveZmARa+oWvI5fHyHIVcQw6QeJ+dIxrcdPg2djXm
+X-Google-Smtp-Source: APXvYqy/CyTh6VHl9lV5jCFgRlzDSeq/XBiyXuuuZabo33QYf6svVnfuNkUKYz576h9J197kpwEq3FHzZsaH8OcFHjU=
+X-Received: by 2002:aa7:8dd9:: with SMTP id j25mr23312064pfr.94.1572310187711;
+ Mon, 28 Oct 2019 17:49:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191022231051.30770-1-xiyou.wangcong@gmail.com>
+ <20191028.112904.824821320861730754.davem@davemloft.net> <CANn89iKeB9+6xAyjQUZvtX3ioLNs3sBwCDq0QxmYEy5X_nF+LA@mail.gmail.com>
+ <CAM_iQpU1oG8J9Nf-nZoZDf3wO9c4dHAaa0=HK0X-QMeHMtmrCQ@mail.gmail.com> <CANn89iL1Fpn3g-SS3hYEhdKaZiMr0BP8WPJ7oM1Ta13xJHUFnw@mail.gmail.com>
+In-Reply-To: <CANn89iL1Fpn3g-SS3hYEhdKaZiMr0BP8WPJ7oM1Ta13xJHUFnw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 28 Oct 2019 17:49:35 -0700
+Message-ID: <CAM_iQpW=VXDRbOkEuK+mr+4G2FgfmT11yYKt4DbhGB2QGqeeYA@mail.gmail.com>
+Subject: Re: [Patch net-next 0/3] tcp: decouple TLP timer from RTO timer
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot triggered struct net NULL deref in NF_HOOK_LIST:
-RIP: 0010:NF_HOOK_LIST include/linux/netfilter.h:331 [inline]
-RIP: 0010:ip6_sublist_rcv+0x5c9/0x930 net/ipv6/ip6_input.c:292
- ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:328
- __netif_receive_skb_list_ptype net/core/dev.c:5274 [inline]
+On Mon, Oct 28, 2019 at 1:31 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Mon, Oct 28, 2019 at 1:13 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > On Mon, Oct 28, 2019 at 11:34 AM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Mon, Oct 28, 2019 at 11:29 AM David Miller <davem@davemloft.net> wrote:
+> > > >
+> > > > From: Cong Wang <xiyou.wangcong@gmail.com>
+> > > > Date: Tue, 22 Oct 2019 16:10:48 -0700
+> > > >
+> > > > > This patchset contains 3 patches: patch 1 is a cleanup,
+> > > > > patch 2 is a small change preparing for patch 3, patch 3 is the
+> > > > > one does the actual change. Please find details in each of them.
+> > > >
+> > > > Eric, have you had a chance to test this on a system with
+> > > > suitable CPU arity?
+> > >
+> > > Yes, and I confirm I could not repro the issues at all.
+> > >
+> > > I got a 100Gbit NIC, trying to increase the pressure a bit, and
+> > > driving this NIC at line rate was only using 2% of my 96 cpus host,
+> > > no spinlock contention of any sort.
+> >
+> > Please let me know if there is anything else I can provide to help
+> > you to make the decision.
+> >
+> > All I can say so far is this only happens on our hosts with 128
+> > AMD CPU's. I don't see anything here related to AMD, so I think
+> > only the number of CPU's (vs. number of TX queues?) matters.
+> >
+>
+> I also have AMD hosts with 256 cpus, I can try them later (not today,
+> I am too busy)
+>
+> But I feel you are trying to work around a more fundamental issue if
+> this problem only shows up on AMD hosts.
 
-Reason:
-void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
-                   struct net_device *orig_dev)
-[..]
-        list_for_each_entry_safe(skb, next, head, list) {
-		/* iterates list */
-                skb = ip6_rcv_core(skb, dev, net);
-		/* ip6_rcv_core drops skb -> NULL is returned */
-                if (skb == NULL)
-                        continue;
-	[..]
-	}
-	/* sublist is empty -> curr_net is NULL */
-        ip6_sublist_rcv(&sublist, curr_dev, curr_net);
+I wish I have Intel hosts with the same number of CPU's, but I don't,
+all Intel ones have less, probably 80 at max. This is why I think it
+is related to the number of CPU's.
 
-Before the recent change NF_HOOK_LIST did a list iteration before
-struct net deref, i.e. it was a no-op in the empty list case.
+Also, IOMMU is turned off explicitly, I don't see anything else could
+be AMD specific along the TCP path.
 
-List iteration now happens after *net deref, causing crash.
-
-Follow the same pattern as the ip(v6)_list_rcv loop and add a list_empty
-test for the final sublist dispatch too.
-
-Cc: Edward Cree <ecree@solarflare.com>
-Reported-by: syzbot+c54f457cad330e57e967@syzkaller.appspotmail.com
-Fixes: ca58fbe06c54 ("netfilter: add and use nf_hook_slow_list()")
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/ipv4/ip_input.c  | 3 ++-
- net/ipv6/ip6_input.c | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv4/ip_input.c b/net/ipv4/ip_input.c
-index c59a78a267c3..24a95126e698 100644
---- a/net/ipv4/ip_input.c
-+++ b/net/ipv4/ip_input.c
-@@ -611,5 +611,6 @@ void ip_list_rcv(struct list_head *head, struct packet_type *pt,
- 		list_add_tail(&skb->list, &sublist);
- 	}
- 	/* dispatch final sublist */
--	ip_sublist_rcv(&sublist, curr_dev, curr_net);
-+	if (!list_empty(&sublist))
-+		ip_sublist_rcv(&sublist, curr_dev, curr_net);
- }
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index 3d71c7d6102c..ef7f707d9ae3 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -325,7 +325,8 @@ void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
- 		list_add_tail(&skb->list, &sublist);
- 	}
- 	/* dispatch final sublist */
--	ip6_sublist_rcv(&sublist, curr_dev, curr_net);
-+	if (!list_empty(&sublist))
-+		ip6_sublist_rcv(&sublist, curr_dev, curr_net);
- }
- 
- INDIRECT_CALLABLE_DECLARE(int udpv6_rcv(struct sk_buff *));
--- 
-2.23.0
-
+Thanks.
