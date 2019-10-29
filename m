@@ -2,73 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0B8E7E44
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA4DE7E3D
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730201AbfJ2B4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 21:56:42 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:58290 "EHLO inva020.nxp.com"
+        id S1730011AbfJ2Bzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 21:55:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39460 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730082AbfJ2B4h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 21:56:37 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CCB4F1A00F4;
-        Tue, 29 Oct 2019 02:56:35 +0100 (CET)
-Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 40EAD1A0310;
-        Tue, 29 Oct 2019 02:56:33 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B4FE3402E2;
-        Tue, 29 Oct 2019 09:56:29 +0800 (SGT)
-From:   Anson Huang <Anson.Huang@nxp.com>
-To:     fugang.duan@nxp.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Linux-imx@nxp.com
-Subject: [PATCH RESEND 2/2] net: fec_ptp: Use platform_get_irq_xxx_optional() to avoid error message
-Date:   Tue, 29 Oct 2019 09:53:19 +0800
-Message-Id: <1572313999-23317-2-git-send-email-Anson.Huang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1572313999-23317-1-git-send-email-Anson.Huang@nxp.com>
-References: <1572313999-23317-1-git-send-email-Anson.Huang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1728432AbfJ2Bzk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Oct 2019 21:55:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=sjXFPKiWrLyR6LHPsDmQMC4ULkd5iUf14tApuhtKjWI=; b=IAt6IlL7bCnqA3YBZLRZvaQQW1
+        jX/49ygOkpMCKL4CYlyAL3+myL5k2dBmepZJ0srWGH5EaG4V+v2aQZiL37wdBxOGAB/1NrXKXRzoO
+        8KHPgiKv82Qihw59TQeEUycm98Z8T7P+p1pD4waTBYzgN5hk8ESJhSML+9djW52PtPGA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iPGjR-0001Hv-VC; Tue, 29 Oct 2019 02:55:37 +0100
+Date:   Tue, 29 Oct 2019 02:55:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        laurentiu.tudor@nxp.com, f.fainelli@gmail.com,
+        linux@armlinux.org.uk
+Subject: Re: [PATCH net-next v3 4/5] dpaa2-eth: add MAC/PHY support through
+ phylink
+Message-ID: <20191029015537.GI15259@lunn.ch>
+References: <1571998630-17108-1-git-send-email-ioana.ciornei@nxp.com>
+ <1571998630-17108-5-git-send-email-ioana.ciornei@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1571998630-17108-5-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use platform_get_irq_byname_optional() and platform_get_irq_optional()
-instead of platform_get_irq_byname() and platform_get_irq() for optional
-IRQs to avoid below error message during probe:
+On Fri, Oct 25, 2019 at 01:17:09PM +0300, Ioana Ciornei wrote:
+> The dpaa2-eth driver now has support for connecting to its associated
+> PHY device found through standard OF bindings.
+> 
+> This happens when the DPNI object (that the driver probes on) gets
+> connected to a DPMAC. When that happens, the device tree is looked up by
+> the DPMAC ID, and the associated PHY bindings are found.
+> 
+> The old logic of handling the net device's link state by hand still
+> needs to be kept, as the DPNI can be connected to other devices on the
+> bus than a DPMAC: other DPNI, DPSW ports, etc. This logic is only
+> engaged when there is no DPMAC (and therefore no phylink instance)
+> attached.
+> 
+> The MC firmware support multiple type of DPMAC links: TYPE_FIXED,
+> TYPE_PHY. The TYPE_FIXED mode does not require any DPMAC management from
+> Linux side, and as such, the driver will not handle such a DPMAC.
+> 
+> Although PHYLINK typically handles SFP cages and in-band AN modes, for
+> the moment the driver only supports the RGMII interfaces found on the
+> LX2160A. Support for other modes will come later.
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-[    0.795803] fec 30be0000.ethernet: IRQ pps not found
-[    0.800787] fec 30be0000.ethernet: IRQ index 3 not found
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
-Acked-by: Fugang Duan <fugang.duan@nxp.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
-	- The patch f1da567f1dc1 ("driver core: platform: Add platform_get_irq_byname_optional()")
-	  already landed on network/master, resend this patch set.
----
- drivers/net/ethernet/freescale/fec_ptp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index 19e2365..945643c 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -600,9 +600,9 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
- 
- 	INIT_DELAYED_WORK(&fep->time_keep, fec_time_keep);
- 
--	irq = platform_get_irq_byname(pdev, "pps");
-+	irq = platform_get_irq_byname_optional(pdev, "pps");
- 	if (irq < 0)
--		irq = platform_get_irq(pdev, irq_idx);
-+		irq = platform_get_irq_optional(pdev, irq_idx);
- 	/* Failure to get an irq is not fatal,
- 	 * only the PTP_CLOCK_PPS clock events should stop
- 	 */
--- 
-2.7.4
-
+    Andrew
