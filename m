@@ -2,73 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 944D8E7E28
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:45:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10AE0E7E42
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 02:56:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728321AbfJ2Bp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 21:45:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39444 "EHLO vps0.lunn.ch"
+        id S1730111AbfJ2B4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 21:56:37 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:60602 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727379AbfJ2Bp2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 28 Oct 2019 21:45:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=RuYxUdc/W/7NxTob3mw2B6JKicPy2tWU1RDw/ewMbEk=; b=IqBNceA6l4TwMcDxPk9wTKqfk9
-        fOtugh4OGcQD9r47U/By99/6jgJZowuU1NaxeNJ+cipYoSVNyjCQMC5AzsbysYiRfkiQ/YiOgOd6M
-        7sBxMXUjbdrcj1ln951X5uAr7cdgQHx4dYJeTDn3wxQh9asGtZ7IDAF5dMg4kaRmH9rc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iPGZX-0001Fg-8n; Tue, 29 Oct 2019 02:45:23 +0100
-Date:   Tue, 29 Oct 2019 02:45:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        laurentiu.tudor@nxp.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk
-Subject: Re: [PATCH net-next v3 2/5] bus: fsl-mc: add the fsl_mc_get_endpoint
- function
-Message-ID: <20191029014523.GH15259@lunn.ch>
-References: <1571998630-17108-1-git-send-email-ioana.ciornei@nxp.com>
- <1571998630-17108-3-git-send-email-ioana.ciornei@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1571998630-17108-3-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1729440AbfJ2B4h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 28 Oct 2019 21:56:37 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 2AF452000DC;
+        Tue, 29 Oct 2019 02:56:35 +0100 (CET)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 92E73200355;
+        Tue, 29 Oct 2019 02:56:32 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 12E8D402A2;
+        Tue, 29 Oct 2019 09:56:29 +0800 (SGT)
+From:   Anson Huang <Anson.Huang@nxp.com>
+To:     fugang.duan@nxp.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Linux-imx@nxp.com
+Subject: [PATCH RESEND 1/2] net: fec_main: Use platform_get_irq_byname_optional() to avoid error message
+Date:   Tue, 29 Oct 2019 09:53:18 +0800
+Message-Id: <1572313999-23317-1-git-send-email-Anson.Huang@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +struct fsl_mc_device *fsl_mc_get_endpoint(struct fsl_mc_device *mc_dev)
-> +{
-> +	struct fsl_mc_device *mc_bus_dev, *endpoint;
-> +	struct fsl_mc_obj_desc endpoint_desc = { 0 };
-> +	struct dprc_endpoint endpoint1 = { 0 };
-> +	struct dprc_endpoint endpoint2 = { 0 };
-> +	int state, err;
-> +
-> +	mc_bus_dev = to_fsl_mc_device(mc_dev->dev.parent);
-> +	strcpy(endpoint1.type, mc_dev->obj_desc.type);
-> +	endpoint1.id = mc_dev->obj_desc.id;
-> +
-> +	err = dprc_get_connection(mc_bus_dev->mc_io, 0,
-> +				  mc_bus_dev->mc_handle,
-> +				  &endpoint1, &endpoint2,
-> +				  &state);
-> +
-> +	if (err == -ENOTCONN || state == -1)
-> +		return NULL;
-> +
-> +	if (err < 0) {
-> +		dev_err(&mc_bus_dev->dev, "dprc_get_connection() = %d\n", err);
-> +		return NULL;
-> +	}
+Failed to get irq using name is NOT fatal as driver will use index
+to get irq instead, use platform_get_irq_byname_optional() instead
+of platform_get_irq_byname() to avoid below error message during
+probe:
 
-You could return these errors with ERR_PRT(err)
+[    0.819312] fec 30be0000.ethernet: IRQ int0 not found
+[    0.824433] fec 30be0000.ethernet: IRQ int1 not found
+[    0.829539] fec 30be0000.ethernet: IRQ int2 not found
 
-    Andrew
+Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+Acked-by: Fugang Duan <fugang.duan@nxp.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+	- The patch f1da567f1dc1 ("driver core: platform: Add platform_get_irq_byname_optional()")
+	  already landed on network/master, resend this patch set.
+---
+ drivers/net/ethernet/freescale/fec_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index d4d4c72..22c01b2 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3558,7 +3558,7 @@ fec_probe(struct platform_device *pdev)
+ 
+ 	for (i = 0; i < irq_cnt; i++) {
+ 		snprintf(irq_name, sizeof(irq_name), "int%d", i);
+-		irq = platform_get_irq_byname(pdev, irq_name);
++		irq = platform_get_irq_byname_optional(pdev, irq_name);
+ 		if (irq < 0)
+ 			irq = platform_get_irq(pdev, i);
+ 		if (irq < 0) {
+-- 
+2.7.4
+
