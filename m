@@ -2,129 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5766AE7EDF
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 04:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B4FFE7ED7
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 04:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730995AbfJ2D3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 28 Oct 2019 23:29:17 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:32966 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726411AbfJ2D3Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 23:29:16 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9T3RtAu005058;
-        Mon, 28 Oct 2019 20:29:04 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=1cwE6wyeIj6W/9HsIMFfdnxE3ISE4N6KRYcYOorFTr8=;
- b=EaL100WCyh+B7Rg9qlfnl0MnPOeixv3/Bh2ZPDFebnrPPYnZtiDuwMG3rA8DA2e2w6wo
- RUU4OgMIHVUTU59//04fnbu9mqCJCl8bmvHycf9FhZ+kNN5OWSS2p8hp4EidBiFieryu
- 2EycOiMua2N+BWEXYzms/Gi71GT+knMw9Tk= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2vvhtpmbhr-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 28 Oct 2019 20:29:04 -0700
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-hub01.TheFacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 28 Oct 2019 20:29:02 -0700
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 28 Oct 2019 20:29:02 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TIBPD8iBvgz9xNdy97UWqKGAFf2HqRF35uehZRoLM2U5jcj91wuBxAl+ogbqnsbAjxFAVyc2RGHO+Rghfdbvp0vSjFL5juinQtvKwsIDbAkcUv2s49mbQblkvG2a+guqbHLT+VfvOwxfNfPJlJttuDave3503Y+2gHmRCKl3HnD0Bxowh37kUx9/B+4sdumLkx5DtPqSlNCQwqyswyB9mhYH1ehEuuiQlwjMHwhOkzCVHAr6zGM8xgtRqEkaouNUhIuMrEvOJMZBihvU2/IIuzfktqCikJXFKMmjvvtjpmQhKJeGEL3Xn0dAkfV+J4twMV/+s59PrgIJf/Sz7nM8ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1cwE6wyeIj6W/9HsIMFfdnxE3ISE4N6KRYcYOorFTr8=;
- b=hTKpf+CQOQ8z9GwJ82XWJKBsvP6CPVm/KoCcJutNf3mGvkfUvg3mOrIFZy4gSlgAAXkZezuzDC1njnypxyPB4swKqI7RRJqPSo2GYV4LJ1Do2RIq6W6XlVfxlLACwFUYdMPll6MRjrnCkkR5q/y0wf/77zavUbZekxaYmr5DwTFFF8g9bd1PZ6A5BArKB1OzrrCacY6gDLTEIBRfR4kj1GduP7IJN9CmFt5jMcna+SZLLmVorVzWs4K/AzdN31yHnuDkSEVaZg4ickIoaKwwb7s7oevBsaI8u5/hiaa2VcUZHeudWTri5cRmCX4c1sGAWmH0vtwaC8a4k5fpWFs6zg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1cwE6wyeIj6W/9HsIMFfdnxE3ISE4N6KRYcYOorFTr8=;
- b=UzsLPkOvAk7iyM3PGaUeClsKldYlu2480wkB9ZqGjctHAjbgmsCiH5D+e6Dcr2PjJRSV50qNLgfoBq6IHQuKf9UIKkjsH2n+uD1d3Btq0L6OEB52n4tV72kqz4I3tdFIL+ZJ5wpxq6R8Y9Pt08naOUCBi2XDtSr6fa4tXRPui9k=
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
- BYAPR15MB3493.namprd15.prod.outlook.com (20.179.56.221) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.24; Tue, 29 Oct 2019 03:29:01 +0000
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::707c:3161:d472:18c5]) by BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::707c:3161:d472:18c5%4]) with mapi id 15.20.2387.025; Tue, 29 Oct 2019
- 03:29:00 +0000
-From:   Alexei Starovoitov <ast@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>
-CC:     "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf: fix off-by-one error in ELF sanity check
-Thread-Topic: [PATCH bpf-next] libbpf: fix off-by-one error in ELF sanity
- check
-Thread-Index: AQHVje//2Io4QtScMUyUGlobiBgmzadw9heA
-Date:   Tue, 29 Oct 2019 03:29:00 +0000
-Message-ID: <fd09a18e-812a-4996-bfe0-6d8bb79de788@fb.com>
-References: <20191028233727.1286699-1-andriin@fb.com>
-In-Reply-To: <20191028233727.1286699-1-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR05CA0006.namprd05.prod.outlook.com
- (2603:10b6:102:2::16) To BYAPR15MB2501.namprd15.prod.outlook.com
- (2603:10b6:a02:88::11)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::f43e]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3264fe17-def9-4f60-dca5-08d75c2023af
-x-ms-traffictypediagnostic: BYAPR15MB3493:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB34930744800B062D892F2BE3D7610@BYAPR15MB3493.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0205EDCD76
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(346002)(396003)(136003)(39860400002)(366004)(199004)(189003)(386003)(102836004)(53546011)(25786009)(36756003)(256004)(99286004)(2501003)(64756008)(66556008)(66476007)(486006)(66446008)(476003)(66946007)(76176011)(186003)(478600001)(46003)(4744005)(446003)(2616005)(5660300002)(71200400001)(71190400001)(52116002)(6506007)(31686004)(4326008)(8936002)(2906002)(6116002)(31696002)(14454004)(305945005)(7736002)(6436002)(316002)(6512007)(86362001)(6486002)(2201001)(54906003)(8676002)(229853002)(81156014)(6246003)(81166006)(110136005)(11346002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3493;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fHGW4Qw9O+mdcpH50XM8PNw+i3JAzQ1jpXlpBFGvO0Psmfz8p1xqwX7hMNfmGpnoaBor6cOMRiohU6LOeS0n5UXX6SQsIZ1oKfmNxjvTEiM08sKy36AfDXtxBCDQhedJ4a8sy7kPnOFyQzephbnjXU3VyDYEXawxBZeCFuPelzHYjymCGQcbzjoiaLJqdvkwVlVMAHIU93YsmzXjDQ5xyf+K1bbrbRg0mzYd3HDgiIL4wskW9kkqKf8uT9D42Q5xaVPWM9dkm9KFbMcKavg/30CJO5ZVl4uUW04K/zIKEPOxYyl/PRPjArBZy8l9mAmtut0W6L9FQx7kf5BwiXcqa64gBBc9SUazUPkvLowybIlfAy1V0asO1aBaak+7Z4stVoZisprIWg046ZRNfWv1ENFouDl9MkjhVNMaaiiU414VPOohA5FWfpTyBHHSUUTV
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A45C5A4568D9BB4BB34C7798D6B87735@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3264fe17-def9-4f60-dca5-08d75c2023af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2019 03:29:00.7478
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: H0dz1T5+9ZB7zTEScHMcT/QtVxYiXAk/SvPuv4WSQkJDmq/TyL/3nXiGqeVRr/3s
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3493
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-28_07:2019-10-28,2019-10-28 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- mlxlogscore=999 phishscore=0 spamscore=0 adultscore=0 clxscore=1015
- mlxscore=0 suspectscore=0 malwarescore=0 lowpriorityscore=0
- priorityscore=1501 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1910290036
-X-FB-Internal: deliver
+        id S1730382AbfJ2DXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 28 Oct 2019 23:23:05 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:46964 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730153AbfJ2DXE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 28 Oct 2019 23:23:04 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9T3JWiF177200;
+        Tue, 29 Oct 2019 03:22:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id; s=corp-2019-08-05;
+ bh=1gMN7XpFdn//+OSv8RfjdGsM0W4lCXtPtQmL7v/v18k=;
+ b=ebzmx2lW9kpISPH2JqsMJt3iZ/Rg7PQD9u7ugm2hIxmlpm0rI8jq/K0sZi/nQpsbvmv6
+ y++nyfLQHaPSTsa33h7hVY0pACa83HhQ158mm+4bRBD/XHr+hd6YLIEkQxGPh/j9kYUY
+ mKNJjLyOZ+PpchV0oKhDX4pz09KNzL/nvSEL7YPFB6kqpMEf1y0CNyf4uUK40E7r4OrU
+ ADkZ6iRSs064aWgzf9h88fL1D2am/EonQM4rgzpPShJBcicciLWNk9M1fpUnJWZpMTU2
+ nVnfzdNouI1KNRpeAyoYPpsQy2yhQDJGgvfVlDw5OijlSBEQ1adJlVsang1xgHTy5u+P yg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 2vvdju63ce-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 29 Oct 2019 03:22:53 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9T3JRTJ018071;
+        Tue, 29 Oct 2019 03:20:52 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2vvyn0wx6w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 29 Oct 2019 03:20:52 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9T3KoO4001185;
+        Tue, 29 Oct 2019 03:20:50 GMT
+Received: from shipfan.cn.oracle.com (/10.113.210.105)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 28 Oct 2019 20:20:50 -0700
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+To:     rain.1986.08.12@gmail.com, yanjun.zhu@oracle.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCHv3 1/1] net: forcedeth: add xmit_more support
+Date:   Mon, 28 Oct 2019 23:30:12 -0400
+Message-Id: <1572319812-27196-1-git-send-email-yanjun.zhu@oracle.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9424 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910290034
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9424 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910290034
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTAvMjgvMTkgNDozNyBQTSwgQW5kcmlpIE5ha3J5aWtvIHdyb3RlOg0KPiBsaWJicGYncyBi
-cGZfb2JqZWN0X19lbGZfY29sbGVjdCgpIGRvZXMgc2ltcGxlIHNhbml0eSBjaGVjayBhZnRlciBp
-dGVyYXRpbmcNCj4gb3ZlciBhbGwgRUxGIHNlY3Rpb25zLCBpZiBjaGVja3MgdGhhdCAuc3RydGFi
-IGluZGV4IGlzIGNvcnJlY3QuIFVuZm9ydHVuYXRlbHksDQo+IGR1ZSB0byBzZWN0aW9uIGluZGlj
-ZXMgYmVpbmcgMS1iYXNlZCwgdGhlIGNoZWNrIGJyZWFrcyBmb3IgY2FzZXMgd2hlbiAuc3RydGFi
-DQo+IGVuZHMgdXAgYmVpbmcgdGhlIHZlcnkgbGFzdCBzZWN0aW9uIGluIEVMRi4NCj4gDQo+IEZp
-eGVzOiA3N2JhOWE1YjQ4YTcgKCJ0b29scyBsaWIgYnBmOiBGZXRjaCBtYXAgbmFtZXMgZnJvbSBj
-b3JyZWN0IHN0cnRhYiIpDQo+IFNpZ25lZC1vZmYtYnk6IEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlp
-bkBmYi5jb20+DQoNCjQgeWVhciBvbGQgYnVnLiBOaWNlIQ0KQXBwbGllZC4gVGhhbmtzLg0K
+This change adds support for xmit_more based on the igb commit 6f19e12f6230
+("igb: flush when in xmit_more mode and under descriptor pressure") and
+commit 6b16f9ee89b8 ("net: move skb->xmit_more hint to softnet data") that
+were made to igb to support this feature. The function netif_xmit_stopped
+is called to check whether transmit queue on device is currently unable to
+send to determine whether we must write the tail because we can add no further
+buffers.
+When normal packets and/or xmit_more packets fill up tx_desc, it is
+necessary to trigger NIC tx reg.
+
+Tested:
+  - pktgen (xmit_more packets) SMP x86_64 ->
+    Test command:
+    ./pktgen_sample03_burst_single_flow.sh ... -b 8 -n 1000000
+    Test results:
+    Params:
+    ...
+    burst: 8
+    ...
+    Result: OK: 12194004(c12188996+d5007) usec, 1000001 (1500byte,0frags)
+    82007pps 984Mb/sec (984084000bps) errors: 0
+
+  - iperf (normal packets) SMP x86_64 ->
+    Test command:
+    Server: iperf -s
+    Client: iperf -c serverip
+    Result:
+    TCP window size: 85.0 KByte (default)
+    ------------------------------------------------------------
+    [ ID] Interval       Transfer     Bandwidth
+    [  3]  0.0-10.0 sec  1.10 GBytes   942 Mbits/sec
+
+CC: Joe Jin <joe.jin@oracle.com>
+CC: JUNXIAO_BI <junxiao.bi@oracle.com>
+Reported-and-tested-by: Nan san <nan.1986san@gmail.com>
+Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
+Acked-by: Rain River <rain.1986.08.12@gmail.com>
+---
+V2->V3: fix typo errors.
+V1->V2: use the lower case label.
+---
+ drivers/net/ethernet/nvidia/forcedeth.c | 37 +++++++++++++++++++++++++++------
+ 1 file changed, 31 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index 05d2b47..e2bb0cd 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -2225,6 +2225,7 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct nv_skb_map *prev_tx_ctx;
+ 	struct nv_skb_map *tmp_tx_ctx = NULL, *start_tx_ctx = NULL;
+ 	unsigned long flags;
++	netdev_tx_t ret = NETDEV_TX_OK;
+ 
+ 	/* add fragments to entries count */
+ 	for (i = 0; i < fragments; i++) {
+@@ -2240,7 +2241,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		netif_stop_queue(dev);
+ 		np->tx_stop = 1;
+ 		spin_unlock_irqrestore(&np->lock, flags);
+-		return NETDEV_TX_BUSY;
++
++		/* When normal packets and/or xmit_more packets fill up
++		 * tx_desc, it is necessary to trigger NIC tx reg.
++		 */
++		ret = NETDEV_TX_BUSY;
++		goto txkick;
+ 	}
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+@@ -2357,8 +2363,14 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+-	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
+-	return NETDEV_TX_OK;
++txkick:
++	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
++		u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
++
++		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
++	}
++
++	return ret;
+ }
+ 
+ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+@@ -2381,6 +2393,7 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 	struct nv_skb_map *start_tx_ctx = NULL;
+ 	struct nv_skb_map *tmp_tx_ctx = NULL;
+ 	unsigned long flags;
++	netdev_tx_t ret = NETDEV_TX_OK;
+ 
+ 	/* add fragments to entries count */
+ 	for (i = 0; i < fragments; i++) {
+@@ -2396,7 +2409,13 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 		netif_stop_queue(dev);
+ 		np->tx_stop = 1;
+ 		spin_unlock_irqrestore(&np->lock, flags);
+-		return NETDEV_TX_BUSY;
++
++		/* When normal packets and/or xmit_more packets fill up
++		 * tx_desc, it is necessary to trigger NIC tx reg.
++		 */
++		ret = NETDEV_TX_BUSY;
++
++		goto txkick;
+ 	}
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+@@ -2542,8 +2561,14 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+-	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
+-	return NETDEV_TX_OK;
++txkick:
++	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
++		u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
++
++		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
++	}
++
++	return ret;
+ }
+ 
+ static inline void nv_tx_flip_ownership(struct net_device *dev)
+-- 
+2.7.4
+
