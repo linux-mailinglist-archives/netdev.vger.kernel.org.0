@@ -2,185 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78608E8EBC
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:56:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C15FE8ED3
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:59:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbfJ2R4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 13:56:18 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38882 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726336AbfJ2R4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:56:17 -0400
-Received: by mail-wr1-f67.google.com with SMTP id v9so14670919wrq.5
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 10:56:14 -0700 (PDT)
+        id S1729848AbfJ2R7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 13:59:15 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:36282 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726635AbfJ2R7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:59:15 -0400
+Received: by mail-ed1-f65.google.com with SMTP id bm15so11468559edb.3;
+        Tue, 29 Oct 2019 10:59:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9y5pAuKUQe+2mP2sM59Bqs+PcCYg/QelzhgIbR5sqHk=;
-        b=bMnWnc4xjuF6LpYbt+ZL/mcJP0eo2Kl9FtQ+5gS6Ksju7a4KnGCrvqF1YRV6Q+Ke7u
-         MT/cAAXLCI5jSb4XF0+SMgx+DZxsd9uEtNbR7Gqv9o2HLFmjV5Yo/+7MduRG7pnEF91Z
-         TiQeROStJ1b8PhLEEmnMxhXpZ1FZEQDogWOTs=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vtkybI0/lDodgOpmR/uxPbwhX9qmhMQCPdvVmWENPGs=;
+        b=Sz7tDBubw8TLcrmtEfxCBVcc47cAwfvdCYzv60vloHxiUQylDqWyhVi/IJ3doFwy5D
+         4mN2KPDxw9FX7eMzdGv3sI7ZWO17GDLFb8PvWnaTsFpzAoWP7NkdUwnr1AFHvjdP8hku
+         R1tH4fEVhLwCi3XIFOKrMbKExq/r4ZIZ/FSrUKsOYgNDq124Q756mKI84tGe+LAZ9HJ/
+         bHAdiUgUdKhmDOI25Vf1h3tQlwvDZwyLcARmaWRgvM1zYFCTTekHnIgmWMCdEKdEtcMo
+         44fgG9px15vs/5mnXoANdYfn0IWFv1PGZg9JzPu2cdj9hN4tPBiDvExN54mSvUa2KjDz
+         yoKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9y5pAuKUQe+2mP2sM59Bqs+PcCYg/QelzhgIbR5sqHk=;
-        b=i0uD56q10o6t3oqFUX1OERxiC8UbOyQ3C1oxNMq5EXQ8lNlCJOg05PjYaR4kYZ3KXJ
-         DnHlJt/QsuIMWZ7rsVTjHpSYOi4X0WzcIQzwafjrl7f/gxg6I1z19OH85fXCJ0LbN8gQ
-         nPAX19eewDg7tDgdckbw5cJptejY5tqPsdmQYYl2sUVBzTMVNBh59F8F07evo4dhqRcO
-         eEy3cERCCsiP8ytF2RQDxDp0BpUP1OqFx+b4sXGADgcqRUm4XBk1SSXbaKGxLz7c8TeT
-         8bh+jmPgXWpoanNrg6v040jhY+tEEgY3L3qAq3sXs7L8b2yQz85LRGt7a5b9VNtAakfY
-         g/vA==
-X-Gm-Message-State: APjAAAUPx9rXi83Dm77Lo69/HAhjj7kGIAsifqKwzU9XhfXbPkY28NRV
-        Hd2GlazdZdxjq4ofnBGOsXJLlA==
-X-Google-Smtp-Source: APXvYqxdVgTtMhAxKmjAtssL2oi1jS5QOGQGujQbarrLtMAN7iD+obcAKqV3DppxJANkQIqPTjvffA==
-X-Received: by 2002:adf:a506:: with SMTP id i6mr20448647wrb.159.1572371773846;
-        Tue, 29 Oct 2019 10:56:13 -0700 (PDT)
-Received: from C02YVCJELVCG.dhcp.broadcom.net ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id l4sm2894418wml.33.2019.10.29.10.56.11
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=vtkybI0/lDodgOpmR/uxPbwhX9qmhMQCPdvVmWENPGs=;
+        b=Km3LrSbFGjg0IFio80q/vHcdA255jyJ00K1mxe7HxtizQiWpApuMyNBojoYfb78PQt
+         L5nso0U/950nt9GXWfvuNiJaC3ED7H/K4TZ/zGZEKhJHqA8+xE+0LVLJHcIdpgpUZZDc
+         ZtxuOTrvBZ+4Q2esRl4VtTxpx+AaikiFTSd1S+RIsjeI5BGkXOkBWooKEX2BnE76rqdf
+         rRvA4htlKMaF0kv6hQIr76FSaN3+p/uIqkUvrnFNq/cy3OyM7auQBChbePg65/64NzNt
+         pezvtDYfZ+HVFG1S8hDe6JXmFkuceYAwBkmoL4uRQRLAPcpvd2G7vjPy2oPmGNwZJtjK
+         Comw==
+X-Gm-Message-State: APjAAAVIMnum7fGfbhA7hMjz4FxManb8pOx3mT6hfbj5FiLgnLXeMbJ0
+        VbZOF9CGGGqo7JcEAuuwFsg=
+X-Google-Smtp-Source: APXvYqw/lROTgvOeZRiNkBEwjjN+y8ZiFN4/tDCom7Cc73977G0rScnP2kZba5tbrjvgP5VxE2zrXg==
+X-Received: by 2002:aa7:cd01:: with SMTP id b1mr27284800edw.122.1572371952820;
+        Tue, 29 Oct 2019 10:59:12 -0700 (PDT)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id r2sm546024edo.0.2019.10.29.10.59.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 10:56:13 -0700 (PDT)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Tue, 29 Oct 2019 13:56:03 -0400
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH net-next 0/9] devlink vdev
-Message-ID: <20191029175603.GA76503@C02YVCJELVCG.dhcp.broadcom.net>
-References: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
- <20191023120046.0f53b744@cakuba.netronome.com>
- <20191023192512.GA2414@nanopsycho>
- <20191023151409.75676835@cakuba.hsd1.ca.comcast.net>
- <9f3974a1-95e9-a482-3dcd-0b23246d9ab7@mellanox.com>
- <20191023195141.48775df1@cakuba.hsd1.ca.comcast.net>
- <20191025145808.GA20298@C02YVCJELVCG.dhcp.broadcom.net>
- <20191029100810.66b1695a@cakuba.hsd1.ca.comcast.net>
+        Tue, 29 Oct 2019 10:59:11 -0700 (PDT)
+Subject: Re: [PATCH 0/3] net: phy: initialize PHYs via device tree properties
+To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+References: <20191029174819.3502-1-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <519d52d2-cd83-b544-591b-ca9d9bb16dfa@gmail.com>
+Date:   Tue, 29 Oct 2019 10:59:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191029100810.66b1695a@cakuba.hsd1.ca.comcast.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191029174819.3502-1-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 10:08:10AM -0700, Jakub Kicinski wrote:
-> On Fri, 25 Oct 2019 10:58:08 -0400, Andy Gospodarek wrote:
-> > Thanks, Jakub, I'm happy to chime in based on our deployment experience.
-> > We definitely understand the desire to be able to configure properties
-> > of devices on the SmartNIC (the kind with general purpose cores not the
-> > kind with only flow offload) from the server side.
+On 10/29/19 10:48 AM, Michael Walle wrote:
+> I was trying to configure the Atheros PHY for my board. There are fixups
+> all over the place, for example to enable the 125MHz clock output in almost
+> any i.MX architecture. Instead of adding another fixup in architecture
+> specific code, try to provide a generic way to init the PHY registers.
 > 
-> Thanks!
-> 
-> > In addition to addressing NVMe devices, I'd also like to be be able to
-> > create virtual or real serial ports as well as there is an interest in
-> > *sometimes* being able to gain direct access to the SmartNIC console not
-> > just a shell via ssh.  So my point is that there are multiple use-cases.
-> 
-> Shelling into a NIC is the ultimate API backdoor. IMO we should try to
-> avoid that as much as possible.
+> This patch series tries to pick up the "broadcom,reg-init" and
+> "marvell,reg-init" device tree properties idea and make it a more generic
+> "reg-init" which is handled by phy_device instead of a particular phy
+> driver.
 
-In the case of a network controlled device (where the host has no real
-knowledge that the NIC contains general purpose cores), we definitely do
-not want to shell into the NIC, but there are requests to have this
-available from many users.
+These two examples are actually quite bad and were symptomatic of a few
+things at the time:
 
-Even if there is a way to get console with a cable, there is an interest
-in not having to wire-up a another cable for every device in the
-network.
+- rush to get a specific feature/device supported without thinking about
+the big picture
+- lack of appropriate review on the Device Tree bindings
 
-> > Arm are also _extremely_ interested in developing a method to enable
-> > some form of SmartNIC discovery method and while lots of ideas have been
-> > thrown around, discovery via devlink is a reasonable option.  So while
-> > doing all this will be much more work than simply handling this case
-> > where we set the peer or local MAC for a vdev, I think it will be worth
-> > it to make this more usable for all^W more types of devices.  I also
-> > agree that not everything on the other side of the wire should be a
-> > port. 
-> > 
-> > So if we agree that addressing this device as a PCIe device then it
-> > feels like we would be better served to query device capabilities and
-> > depending on what capabilities exist we would be able to configure
-> > properties for those.  In an ideal world, I could query a device using
-> > devlink ('devlink info'?) and it would show me different devices that
-> > are available for configuration on the SmartNIC and would also give me a
-> > way to address them.  So while I like the idea of being able to address
-> > and set parameters as shown in patch 05 of this series, I would like to
-> > see a bit more flexibility to define what type of device is available
-> > and how it might be configured.
+Fortunately, the last item is now not happening anymore.
+
+The problem with letting that approach go through is that the Device
+Tree can now hold a configuration policy which is passed through as-is
+from DT to the PHY device, this is bad on so many different levels,
+starting with abstraction.
+
+If all you need is to enable a particular clock, introduce device
+specific properties that describe the hardware, and make the necessary
+change to the local driver that needs to act on those. You can always
+define a more generic scope property if you see a recurring pattern.
+
+So just to be clear on the current approach: NACK.
+
 > 
-> We shall see how this develops. For now sounds pretty high level.
-> If the NIC needs to expose many "devices" that are independently
-> controlled we should probably look at re-using the standard device
-> model and not reinvent the wheel. 
-> If we need to configure particular aspects and resource allocation, 
-> we can add dedicated APIs as needed.
+> Michael Walle (3):
+>   dt-bindings: net: phy: Add reg-init property
+>   net: phy: export __phy_{read|write}_page
+>   net: phy: Use device tree properties to initialize any PHYs
 > 
-> What I definitely want to avoid is adding a catch-all API with unclear
-> semantics which will become the SmartNIC dumping ground.
-
-Despite the fact that I proposed this, that is also my concern.  That
-said I think there is a definite need to be able to understand the
-hardware capabilities present on a PCI device.
-
-> > So if we took the devlink info command as an example (whether its the
-> > proper place for this or not), it could look _like_ this:
-> > 
-> > $ devlink dev info pci/0000:03:00.0
-> > pci/0000:03:00.0:
-> >   driver foo
-> >   serial_number 8675309
-> >   versions:
-> > [...]
-> >   capabilities:
-> >       storage 0
-> >       console 1
-> >       mdev 1024
-> >       [something else] [limit]
-> > 
-> > (Additionally rather than putting this as part of 'info' the device
-> > capabilities and limits could be part of the 'resource' section and
-> > frankly may make more sense if this is part of that.)
-> > 
-> > and then those capabilities would be something that could be set using the
-> > 'vdev' or whatever-it-is-named interface:
-> > 
-> > # devlink vdev show pci/0000:03:00.0
-> > pci/0000:03:00.0/console/0: speed 115200 device /dev/ttySNIC0
+>  .../devicetree/bindings/net/ethernet-phy.yaml | 31 ++++++
+>  MAINTAINERS                                   |  1 +
+>  drivers/net/phy/phy-core.c                    | 24 ++++-
+>  drivers/net/phy/phy_device.c                  | 97 ++++++++++++++++++-
+>  include/dt-bindings/net/phy.h                 | 18 ++++
+>  include/linux/phy.h                           |  2 +
+>  6 files changed, 170 insertions(+), 3 deletions(-)
+>  create mode 100644 include/dt-bindings/net/phy.h
 > 
-> The speed in this console example makes no sense to me.
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
 > 
-> The patches as they stand are about the peer side/other side of the
-> port. So which side of the serial device is the speed set on? One can
-> just read the speed from /dev/ttySNIC0. And link that serial device to
-> the appropriate parent via sysfs.
 
-That's true and setting the speed is probably not that valuable, so we
-do not need that option.  Proposal to set/read speed rescinded.  :)
 
->  This is pure wheel reinvention.
-> 
-> > pci/0000:03:00.0/mdev/0: hw_addr 02:00:00:00:00:00
-> > [...]
-> > pci/0000:03:00.0/mdev/1023: hw_addr 02:00:00:00:03:ff
-> > 
-> > # devlink vdev set pci/0000:03:00.0/mdev/0 hw_addr 00:22:33:44:55:00
-> > 
-> > Since these Arm/RISC-V based SmartNICs are going to be used in a variety
-> > of different ways and will have a variety of different personalities
-> > (not just different SKUs that vendors will offer but different ways in
-> > which these will be deployed), I think it's critical that we consider
-> > more than just the mdev/representer case from the start.
+-- 
+Florian
