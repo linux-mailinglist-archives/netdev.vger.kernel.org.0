@@ -2,161 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 327F0E837B
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 09:51:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C32E837C
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 09:52:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728757AbfJ2IvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 04:51:17 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:33367 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726566AbfJ2IvR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 04:51:17 -0400
-X-Greylist: delayed 356 seconds by postgrey-1.27 at vger.kernel.org; Tue, 29 Oct 2019 04:51:16 EDT
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6A1985E7F;
-        Tue, 29 Oct 2019 04:45:20 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 29 Oct 2019 04:45:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=wZYWFgqPL1c2WRcnaF/3gKe5yAeygMaGZr20SfJtc
-        Ro=; b=eh3Y9XroeRVhyb8GKs22A2wm2MHnwDboaZuCNYo9WwerBLWCh6awkkIJV
-        5i8zj+tuks2JA/9lgRaOcTvdxEHKC3aoamv26oepcpVaNNS5UYjvsts3aWggXzPP
-        RF9SRA024hnnMDzXzHsc3UK/OURGvhdb8jSqxeKFKGW0/dj1kagb2/qfpX8PPzdY
-        n9b+oyv5pxy54/iedHny17kFtbSgZw64Mc74tI5TgAeT7MZWwRPgNnhu9FxvOm79
-        F6KaCCtM8l6F93VoOoCkbE3zM4N0L7k4nXT6j1CVsPBlkBIlLOfbgmgkg+KAPpwh
-        PnGBtWaMWoPC0/+T2BKAknHfFdzSQ==
-X-ME-Sender: <xms:H_y3XXen5NUrHCcIwFyo78OpHy6S7XDvbD9mrBSxjvpoqqOrMkmtzA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddttddguddvhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enogfuuhhsphgvtghtffhomhgrihhnucdlgeelmdenucfjughrpeffhffvuffkfhggtggu
-    gfgjfgesthekredttderjeenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguoh
-    hstghhsehiughoshgthhdrohhrgheqnecuffhomhgrihhnpehgohhoghhlvgdrtghomhdp
-    ghhoohdrghhlpdgrphhpshhpohhtrdgtohhmnecukfhppeduleefrdegjedrudeihedrvd
-    ehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhr
-    ghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:H_y3XVZI9tbtbuVLpe1yOas1py-8ulzpCzshT-Pg0-OxeFhVDaHxZQ>
-    <xmx:H_y3XcHSnJizpOU0vUPyIohe9PLUJ0ij7sucjZC8nhtXtY0hJjvYZg>
-    <xmx:H_y3XTmog-pql_WADySoqllekjutCHzV4hPAPjdnYvErG-iTh6QYqA>
-    <xmx:IPy3XZVWfAvMC2KowKjIDNX0Tby_qzPZ96vvH_jfMWp13aQnWUds9g>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 26A5A8005A;
-        Tue, 29 Oct 2019 04:45:19 -0400 (EDT)
-Date:   Tue, 29 Oct 2019 10:45:17 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: general protection fault in process_one_work
-Message-ID: <20191029084517.GA24289@splinter>
-References: <0000000000001c46d5059608892f@google.com>
- <CACT4Y+b7nkRO_Q6X3sTWbGU5Y6bGuZPmKzoPL2uoFpA4KCP2hw@mail.gmail.com>
+        id S1727525AbfJ2Iwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 04:52:50 -0400
+Received: from mail-lj1-f171.google.com ([209.85.208.171]:40766 "EHLO
+        mail-lj1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725867AbfJ2Iwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 04:52:49 -0400
+Received: by mail-lj1-f171.google.com with SMTP id u22so14336452lji.7
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 01:52:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=z9sSAeXwIIyWFJluy+PNLaUWnTRoMLyFJ5At2Xlt+m0=;
+        b=ti8plfew2iEyvf78VTb4TBvOXiLwp9GFFIz/Ric9blzrB72focf5MU750fBBYpPWf6
+         l8qNSfa0mP0dQNHC1TejY+vd9FrfMtcxGFlE1O2v+XGfcvxhqvrkWlS34i4Sl11ezHHU
+         8M81Ah8g6V3LWAOFA79Z1Ja6q6Am3dqJxVvsM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=z9sSAeXwIIyWFJluy+PNLaUWnTRoMLyFJ5At2Xlt+m0=;
+        b=SSuUzcAEL6i4oKVb1adIdg7djRQzGm4HkUku2SWSLDnBFT86F9M+WajXJcCOGyI6Xc
+         Tl29IKnNseLIWUkUB4p8+MKBNYWwf51zwRZfROS+oxn3eYz8VzRrKFcp4GwsSWilCcBv
+         BW4E3WdtYFXFb1CCwGAT9wCduEm+mSY5fvzWggJL1IPkBYIGqsr5olnm5Al363Q/GBve
+         NFU8KBesYB+kaMv84wl5+WJdweGk9k4MYzzqGg3akm5KaNYVuey/nT9aveAcEN7i2TNn
+         g9/JXL7k8B6sOOMkbzlotJM+zNbRN0C+ZYoeLPLBz5CIjER1ZR3j6Dd/twHorYqYrEqS
+         ex2w==
+X-Gm-Message-State: APjAAAUbdxvPLp2RPxNvi7cjRHSFzehqT68JkJsSclT9d2TPCcwZY0EC
+        Q2YbRkJH5mcmzUCqantM7eNVHg==
+X-Google-Smtp-Source: APXvYqyIaIKMz1788bTKcYpjSxvaDrqkAnJWpKQP74P5I3mBXH7xTw4B072YGtWxMNlzw3hadatdZw==
+X-Received: by 2002:a2e:9112:: with SMTP id m18mr1728661ljg.75.1572339167284;
+        Tue, 29 Oct 2019 01:52:47 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id c76sm7893903lfg.11.2019.10.29.01.52.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 01:52:46 -0700 (PDT)
+References: <20191022113730.29303-1-jakub@cloudflare.com> <20191028055247.bh5bctgxfvmr3zjh@kafai-mbp.dhcp.thefacebook.com> <875zk9oxo1.fsf@cloudflare.com> <20191028204255.jmkraj3xlp346xz4@kafai-mbp.dhcp.thefacebook.com> <5db758142fac5_6642abc699aa5c4fd@john-XPS-13-9370.notmuch> <20191028213804.yv3xfjjlayfghkcr@kafai-mbp>
+User-agent: mu4e 1.1.0; emacs 26.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Martin Lau <kafai@fb.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        "bpf\@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-team\@cloudflare.com" <kernel-team@cloudflare.com>
+Subject: Re: [RFC bpf-next 0/5] Extend SOCKMAP to store listening sockets
+In-reply-to: <20191028213804.yv3xfjjlayfghkcr@kafai-mbp>
+Date:   Tue, 29 Oct 2019 09:52:45 +0100
+Message-ID: <874kzsorvm.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACT4Y+b7nkRO_Q6X3sTWbGU5Y6bGuZPmKzoPL2uoFpA4KCP2hw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 09:43:27AM +0100, Dmitry Vyukov wrote:
-> On Tue, Oct 29, 2019 at 9:38 AM syzbot
-> <syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com> wrote:
-> >
-> > Hello,
-> >
-> > syzbot found the following crash on:
-> >
-> > HEAD commit:    38207291 bpf: Prepare btf_ctx_access for non raw_tp use case
-> > git tree:       bpf-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=14173c0f600000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=41648156aa09be10
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=9ed8f68ab30761f3678e
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > Unfortunately, I don't have any reproducer for this crash yet.
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > Reported-by: syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com
-> 
-> +Jiří Pírko, this seems to be related to netdevsim.
+On Mon, Oct 28, 2019 at 10:38 PM CET, Martin Lau wrote:
+> It is always better to get full UDP support ;)
+> It seems to be confident also, then there is little reason not to do
+> so in UDP sockmap support v1.
 
-Will check it.
-
-> 
-> > kasan: CONFIG_KASAN_INLINE enabled
-> > kasan: GPF could be caused by NULL-ptr deref or user memory access
-> > general protection fault: 0000 [#1] PREEMPT SMP KASAN
-> > CPU: 1 PID: 9149 Comm: kworker/1:3 Not tainted 5.4.0-rc1+ #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
-> > Google 01/01/2011
-> > Workqueue: events nsim_dev_trap_report_work
-> > RIP: 0010:nsim_dev_trap_report_work+0xc4/0xaf0
-> > drivers/net/netdevsim/dev.c:409
-> > Code: 89 45 d0 0f 84 8b 07 00 00 49 bc 00 00 00 00 00 fc ff df e8 3e ae ef
-> > fc 48 8b 45 d0 48 05 68 01 00 00 48 89 45 90 48 c1 e8 03 <42> 80 3c 20 00
-> > 0f 85 b1 09 00 00 48 8b 45 d0 48 8b 98 68 01 00 00
-> > RSP: 0018:ffff88806c98fc90 EFLAGS: 00010a06
-> > RAX: 1bd5a0000000004d RBX: 0000000000000000 RCX: ffffffff84836e22
-> > RDX: 0000000000000000 RSI: ffffffff84836db2 RDI: 0000000000000001
-> > RBP: ffff88806c98fd30 R08: ffff88806c9863c0 R09: ffffed100d75f3d9
-> > R10: ffffed100d75f3d8 R11: ffff88806baf9ec7 R12: dffffc0000000000
-> > R13: ffff88806baf9ec0 R14: ffff8880a9a13900 R15: ffff8880ae934500
-> > FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007efdd0c9e000 CR3: 000000009cc1b000 CR4: 00000000001406e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >   process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
-> >   worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-> >   kthread+0x361/0x430 kernel/kthread.c:255
-> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-> > Modules linked in:
-> > ---[ end trace ba29cd1c27f63d86 ]---
-> > RIP: 0010:nsim_dev_trap_report_work+0xc4/0xaf0
-> > drivers/net/netdevsim/dev.c:409
-> > Code: 89 45 d0 0f 84 8b 07 00 00 49 bc 00 00 00 00 00 fc ff df e8 3e ae ef
-> > fc 48 8b 45 d0 48 05 68 01 00 00 48 89 45 90 48 c1 e8 03 <42> 80 3c 20 00
-> > 0f 85 b1 09 00 00 48 8b 45 d0 48 8b 98 68 01 00 00
-> > RSP: 0018:ffff88806c98fc90 EFLAGS: 00010a06
-> > RAX: 1bd5a0000000004d RBX: 0000000000000000 RCX: ffffffff84836e22
-> > RDX: 0000000000000000 RSI: ffffffff84836db2 RDI: 0000000000000001
-> > RBP: ffff88806c98fd30 R08: ffff88806c9863c0 R09: ffffed100d75f3d9
-> > R10: ffffed100d75f3d8 R11: ffff88806baf9ec7 R12: dffffc0000000000
-> > R13: ffff88806baf9ec0 R14: ffff8880a9a13900 R15: ffff8880ae934500
-> > FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00007efdd0c9e000 CR3: 000000009cc1b000 CR4: 00000000001406e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> >
-> >
-> > ---
-> > This bug is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this bug report. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> >
-> > --
-> > You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> > To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/0000000000001c46d5059608892f%40google.com.
+Let me give it a shot :-)
