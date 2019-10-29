@@ -2,158 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C84E8492
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 726A5E8497
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729339AbfJ2JkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 05:40:11 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55257 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726025AbfJ2JkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 05:40:11 -0400
-Received: by mail-wm1-f67.google.com with SMTP id g7so1748497wmk.4
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 02:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ncentric-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=2Aa5j2eV/0WKF03bDFsIwtghRGSKb/OqNGsEyVUDvWw=;
-        b=b7Wvn9TYfGj9kmhJZFlMf0XSxya4fT2WHQUdC9GD4TP99uxK3aR55urIElBfE0YGRc
-         SrdjJ0UtTiQhsA0a5PXzKo1xDTLywFg8w4FbuhuEdWJvVkYXmR3mPL47gc8cGG1HL/So
-         zZhhMnoQai5MOJnRY3CV0itPx0qrD53DBC0gujZ6bJYV2l4xbhLjimkVKFYU0Fem2Bv8
-         I4XmrSFAFDF+K2VlY2I0OglJQKSjNP/Dag6k9dWCMctxRdXdaXRp+OvaGWlfILAkocwT
-         3uCbPr5qTQcw4MYPyH5Yhgd3VreRJptew48RprMLz1kRyL6CvMA5+hm7GL1q+8UEVrVj
-         F+sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=2Aa5j2eV/0WKF03bDFsIwtghRGSKb/OqNGsEyVUDvWw=;
-        b=X1l02NKg3ENfJnPyOken60CLAcV87JiMywqgYvbxvayrle0QIdDhVZRL69djlc3ufl
-         6LhKwZujYy2u44/wusH+otu4RM2V3uP8HDpwRszU6ar10phnRuhWG7JFXE2qkPUHhZlg
-         cypfY9U4nNu7p879YCJlJN8yqmSils1Hei/FqQ/7MxDrPvPW6HPV65TScTDPUyZ50Ejh
-         yCFR7O1bip0zVPtdObH3NsR+tGj31wfeuJuH3vP7MugElSpjoqlkP4dbIlHXarjlV9zv
-         GCHoMYvzEHXGDdBBs77Q6WhMr97vA5n/bzaR/W6UKKHwu4O6c93GiAMGoMtXTl6v/U31
-         OtTw==
-X-Gm-Message-State: APjAAAV6ckk8RqdmepJU2VAsykLVkCZ4AfR2Yn9PT9HeZa81Q30LTBpI
-        SdFfOvfww7Ee9gi2GZ4Sjtrw5A==
-X-Google-Smtp-Source: APXvYqybfJwsbSSLUwelX1MCkNxRbHTiindnv/Z3xFpqXx2ui62l5VksJqY5AC/XaTjKFMQQK0R9OA==
-X-Received: by 2002:a1c:ed0e:: with SMTP id l14mr3125989wmh.102.1572342008103;
-        Tue, 29 Oct 2019 02:40:08 -0700 (PDT)
-Received: from [192.168.3.176] (d515300d8.static.telenet.be. [81.83.0.216])
-        by smtp.gmail.com with ESMTPSA id v8sm16115329wra.79.2019.10.29.02.40.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 02:40:07 -0700 (PDT)
-Subject: Re: [PATCH v2] 802.11n IBSS: wlan0 stops receiving packets due to
- aggregation after sender reboot
-To:     Sebastian Gottschall <s.gottschall@newmedia-net.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <m34l02mh71.fsf@t19.piap.pl> <m37e4tjfbu.fsf@t19.piap.pl>
- <e5b07b4ce51f806ce79b1ae06ff3cbabbaa4873d.camel@sipsolutions.net>
- <30465e05-3465-f496-d57f-5e115551f5cb@ncentric.com>
- <b51030e8-7c56-0e24-4454-ff70f83d5ae8@newmedia-net.de>
-From:   Koen Vandeputte <koen.vandeputte@ncentric.com>
-Message-ID: <8c4325e2-6ec6-59f1-89df-36392f674530@ncentric.com>
-Date:   Tue, 29 Oct 2019 10:40:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1731531AbfJ2JlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 05:41:08 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:35478 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728575AbfJ2JlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 05:41:07 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D4786B40075;
+        Tue, 29 Oct 2019 09:41:05 +0000 (UTC)
+Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
+ ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Tue, 29 Oct 2019 09:40:57 +0000
+Subject: Re: [PATCH net-next v2 0/6] sfc: Add XDP support
+To:     David Ahern <dsahern@gmail.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
+        <brouer@redhat.com>
+References: <74c15338-c13e-5b7b-9cc5-844cd9262be3@solarflare.com>
+ <8af30fef-6998-ed20-ba7c-982c9a4d263a@gmail.com>
+From:   Charles McLachlan <cmclachlan@solarflare.com>
+Message-ID: <add2ae6c-14cd-59c7-02aa-43d83f0a07a6@solarflare.com>
+Date:   Tue, 29 Oct 2019 09:40:49 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-In-Reply-To: <b51030e8-7c56-0e24-4454-ff70f83d5ae8@newmedia-net.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <8af30fef-6998-ed20-ba7c-982c9a4d263a@gmail.com>
+Content-Type: text/plain; charset="windows-1252"
 Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.154]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25008.003
+X-TM-AS-Result: No-3.017600-8.000000-10
+X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9TkUH66TwzU50FoS1aixTNeey
+        WMLRVf2LTPkqidFNTAV1S4DqawMuWrT0jVEXWzBwMiMrbc70Pfem3yCZiGA94J+4ziUPq4LxqRF
+        iyZgRFsSt2gtuWr1Lmn/RPVYI5XEWvfz3vfVTDjUo7b5tLxYZrR5FmvZzFEQuy5JfHvVu9IviB6
+        i8hqdc130tCKdnhB58vqq8s2MNhPCXxkCsDPSYDMIs1+7Tk9qQC24oEZ6SpSk6XEE7Yhw4Fnus9
+        2ZdPpqR7fI59DQdemL83BedG+JmKwav/jmmHNL5Da5hPzvP8qY0P7G54/cycrLqMhfbZwUJTSXx
+        jH1QGXOImdR/5ZBoKeL59MzH0po2K2yzo9Rrj9wPoYC35RuihKPUI7hfQSp53zHerOgw3HE=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.017600-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25008.003
+X-MDID: 1572342066-M3ISl81XhNbd
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 28/10/2019 22:03, David Ahern wrote:
+> On 10/28/19 7:56 AM, Charles McLachlan wrote:
+>> Supply the XDP callbacks in netdevice ops that enable lower level processing
+>> of XDP frames.
+> 
+> Hi:
+> 
+> I was hoping to try out this patch set, but when I rebooted the server
+> with these applied I hit the BUG_ON in efx_ef10_link_piobufs:
+> 
+> 	if (tx_queue->queue == nic_data->pio_write_vi_base) {
+> 		BUG_ON(index != 0);
+> 		...
 
-On 29.10.19 09:58, Sebastian Gottschall wrote:
-> 35 km? for 802.11n with ht40 this is out of the ack timing range the 
-> chipset supports. so this should be considered at any troubles with 
-> connections
->
-(Please don't top-post)
+Interesting. 
 
-When we know a link can exceed ~ 21km, it's set to HT20 for this reason.
-
-Koen
-
-> Am 29.10.2019 um 09:41 schrieb Koen Vandeputte:
->>
->> On 28.10.19 13:21, Johannes Berg wrote:
->>> On Fri, 2019-10-25 at 12:21 +0200, Krzysztof Hałasa wrote:
->>>> Fix a bug where the mac80211 RX aggregation code sets a new 
->>>> aggregation
->>>> "session" at the remote station's request, but the head_seq_num
->>>> (the sequence number the receiver expects to receive) isn't reset.
->>>>
->>>> Spotted on a pair of AR9580 in IBSS mode.
->>>>
->>>> Signed-off-by: Krzysztof Halasa <khalasa@piap.pl>
->>>>
->>>> diff --git a/net/mac80211/agg-rx.c b/net/mac80211/agg-rx.c
->>>> index 4d1c335e06e5..67733bd61297 100644
->>>> --- a/net/mac80211/agg-rx.c
->>>> +++ b/net/mac80211/agg-rx.c
->>>> @@ -354,10 +354,13 @@ void ___ieee80211_start_rx_ba_session(struct 
->>>> sta_info *sta,
->>>>                */
->>>>               rcu_read_lock();
->>>>               tid_rx = rcu_dereference(sta->ampdu_mlme.tid_rx[tid]);
->>>> -            if (tid_rx && tid_rx->timeout == timeout)
->>>> +            if (tid_rx && tid_rx->timeout == timeout) {
->>>> +                tid_rx->ssn = start_seq_num;
->>>> +                tid_rx->head_seq_num = start_seq_num;
->>>>                   status = WLAN_STATUS_SUCCESS;
->>> This is wrong, this is the case of *updating an existing session*, we
->>> must not reset the head SN then.
->>>
->>> I think you just got very lucky (or unlucky) to have the same dialog
->>> token, because we start from 0 - maybe we should initialize it to a
->>> random value to flush out such issues.
->>>
->>> Really what I think probably happened is that one of your stations lost
->>> the connection to the other, and didn't tell it about it in any way 
->>> - so
->>> the other kept all the status alive.
->>>
->>> I suspect to make all this work well we need to not only have the fixes
->>> I made recently to actually send and parse deauth frames, but also to
->>> even send an auth and reset the state when we receive that, so if we
->>> move out of range and even the deauth frame is lost, we can still reset
->>> properly.
->>>
->>> In any case, this is not the right approach - we need to handle the
->>> "lost connection" case better I suspect, but since you don't say what
->>> really happened I don't really know that that's what you're seeing.
->>>
->>> johannes
->>
->> Hi all,
->>
->> I can confirm the issue as I'm also seeing this sometimes in the 
->> field here.
->>
->> Sometimes when a devices goes out of range and then re-enters,
->> the link refuses to "come up", as in rx looks to be "stuck" without 
->> any reports in system log or locking issues (lockdep enabled)
->>
->> I have dozens of devices installed offshore (802.11n based), both on 
->> static and moving assets,
->> which cover from short (250m) up to very long distances (~35km)
->>
->> So .. while there is some momentum for this issue,
->> I'm more than happy to provide extensive testing should fixes be 
->> posted regarding IBSS in general.
->>
->> Regards,
->>
->> Koen
->>
->>
+Let's take this off the mailing list as I'd like to get you to collect some logs.
