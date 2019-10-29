@@ -2,179 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65271E8555
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 11:17:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48A68E85E8
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 11:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730311AbfJ2KRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 06:17:00 -0400
-Received: from mga17.intel.com ([192.55.52.151]:33370 "EHLO mga17.intel.com"
+        id S1728610AbfJ2KlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 06:41:05 -0400
+Received: from correo.us.es ([193.147.175.20]:41562 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728868AbfJ2KRA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Oct 2019 06:17:00 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2019 03:16:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,243,1569308400"; 
-   d="scan'208";a="283199335"
-Received: from dpdk-virtio-tbie-2.sh.intel.com ([10.67.104.74])
-  by orsmga001.jf.intel.com with ESMTP; 29 Oct 2019 03:16:57 -0700
-From:   Tiwei Bie <tiwei.bie@intel.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dan.daly@intel.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, lingshan.zhu@intel.com, tiwei.bie@intel.com
-Subject: [RFC] vhost_mdev: add network control vq support
-Date:   Tue, 29 Oct 2019 18:17:26 +0800
-Message-Id: <20191029101726.12699-1-tiwei.bie@intel.com>
-X-Mailer: git-send-email 2.23.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728317AbfJ2KlF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 06:41:05 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8903E303D0F
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:41:00 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7CB1CCA0F2
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:41:00 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 727063532; Tue, 29 Oct 2019 11:41:00 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 738C3B7FFB;
+        Tue, 29 Oct 2019 11:40:58 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 29 Oct 2019 11:40:58 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 4036841E480C;
+        Tue, 29 Oct 2019 11:40:58 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     jiri@resnulli.us, netdev@vger.kernel.org
+Subject: [PATCH nf-next] netfilter: nf_tables_offload: allow ethernet interface type only
+Date:   Tue, 29 Oct 2019 11:40:57 +0100
+Message-Id: <20191029104057.21894-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the network control vq support in vhost-mdev.
-A vhost-mdev specific op is introduced to allow parent drivers
-to handle the network control commands come from userspace.
+Hardware offload support at this stage assumes an ethernet device in
+place. The flow dissector provides the intermediate representation to
+express this selector, so extend it to allow to store the interface
+type. Flower does not uses this, so skb_flow_dissect_meta() is not
+extended to allow to match on this new field.
 
-Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
-This patch depends on below patch:
-https://lkml.org/lkml/2019/10/29/335
+@Jiri: flower ignores this when checking for the ingress device, probably
+       that should restricted there too?
 
- drivers/vhost/mdev.c             | 37 ++++++++++++++++++++++++++++++--
- include/linux/virtio_mdev_ops.h  | 10 +++++++++
- include/uapi/linux/vhost.h       |  7 ++++++
- include/uapi/linux/vhost_types.h |  6 ++++++
- 4 files changed, 58 insertions(+), 2 deletions(-)
+ include/net/flow_dissector.h | 2 ++
+ net/netfilter/nft_cmp.c      | 7 +++++++
+ net/netfilter/nft_meta.c     | 4 ++++
+ 3 files changed, 13 insertions(+)
 
-diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
-index 35b2fb33e686..c9b3eaa77405 100644
---- a/drivers/vhost/mdev.c
-+++ b/drivers/vhost/mdev.c
-@@ -47,6 +47,13 @@ enum {
- 		(1ULL << VIRTIO_NET_F_HOST_UFO) |
- 		(1ULL << VIRTIO_NET_F_MRG_RXBUF) |
- 		(1ULL << VIRTIO_NET_F_STATUS) |
-+		(1ULL << VIRTIO_NET_F_CTRL_GUEST_OFFLOADS) |
-+		(1ULL << VIRTIO_NET_F_CTRL_VQ) |
-+		(1ULL << VIRTIO_NET_F_CTRL_RX) |
-+		(1ULL << VIRTIO_NET_F_CTRL_VLAN) |
-+		(1ULL << VIRTIO_NET_F_CTRL_RX_EXTRA) |
-+		(1ULL << VIRTIO_NET_F_GUEST_ANNOUNCE) |
-+		(1ULL << VIRTIO_NET_F_CTRL_MAC_ADDR) |
- 		(1ULL << VIRTIO_NET_F_SPEED_DUPLEX),
- };
- 
-@@ -362,6 +369,29 @@ static long vhost_mdev_vring_ioctl(struct vhost_mdev *m, unsigned int cmd,
- 	return r;
- }
- 
-+/*
-+ * Device specific (e.g. network) ioctls.
-+ */
-+static long vhost_mdev_dev_ioctl(struct vhost_mdev *m, unsigned int cmd,
-+				 void __user *argp)
-+{
-+	struct mdev_device *mdev = m->mdev;
-+	const struct virtio_mdev_device_ops *ops = mdev_get_vhost_ops(mdev);
-+
-+	switch (m->virtio_id) {
-+	case VIRTIO_ID_NET:
-+		switch (cmd) {
-+		case VHOST_MDEV_NET_CTRL:
-+			if (!ops->net.ctrl)
-+				return -ENOTSUPP;
-+			return ops->net.ctrl(mdev, argp);
-+		}
-+		break;
-+	}
-+
-+	return -ENOIOCTLCMD;
-+}
-+
- static int vhost_mdev_open(void *device_data)
- {
- 	struct vhost_mdev *m = device_data;
-@@ -460,8 +490,11 @@ static long vhost_mdev_unlocked_ioctl(void *device_data,
- 		 * VHOST_SET_LOG_FD are not used yet.
- 		 */
- 		r = vhost_dev_ioctl(&m->dev, cmd, argp);
--		if (r == -ENOIOCTLCMD)
--			r = vhost_mdev_vring_ioctl(m, cmd, argp);
-+		if (r == -ENOIOCTLCMD) {
-+			r = vhost_mdev_dev_ioctl(m, cmd, argp);
-+			if (r == -ENOIOCTLCMD)
-+				r = vhost_mdev_vring_ioctl(m, cmd, argp);
-+		}
- 	}
- 
- 	mutex_unlock(&m->mutex);
-diff --git a/include/linux/virtio_mdev_ops.h b/include/linux/virtio_mdev_ops.h
-index d417b41f2845..622861804ebd 100644
---- a/include/linux/virtio_mdev_ops.h
-+++ b/include/linux/virtio_mdev_ops.h
-@@ -20,6 +20,8 @@ struct virtio_mdev_callback {
- 	void *private;
- };
- 
-+struct vhost_mdev_net_ctrl;
-+
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 5cd12276ae21..7d804db85442 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -204,9 +204,11 @@ struct flow_dissector_key_ip {
  /**
-  * struct vfio_mdev_device_ops - Structure to be registered for each
-  * mdev device to register the device for virtio/vhost drivers.
-@@ -151,6 +153,14 @@ struct virtio_mdev_device_ops {
- 
- 	/* Mdev device ops */
- 	u64 (*get_mdev_features)(struct mdev_device *mdev);
-+
-+	/* Vhost-mdev (MDEV_CLASS_ID_VHOST) specific ops */
-+	union {
-+		struct {
-+			int (*ctrl)(struct mdev_device *mdev,
-+				    struct vhost_mdev_net_ctrl __user *ctrl);
-+		} net;
-+	};
+  * struct flow_dissector_key_meta:
+  * @ingress_ifindex: ingress ifindex
++ * @iiftype: interface type
+  */
+ struct flow_dissector_key_meta {
+ 	int ingress_ifindex;
++	u16 ingress_iftype;
  };
  
- void mdev_set_virtio_ops(struct mdev_device *mdev,
-diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-index 061a2824a1b3..3693b2cba0c4 100644
---- a/include/uapi/linux/vhost.h
-+++ b/include/uapi/linux/vhost.h
-@@ -134,4 +134,11 @@
- /* Get the max ring size. */
- #define VHOST_MDEV_GET_VRING_NUM	_IOR(VHOST_VIRTIO, 0x76, __u16)
+ /**
+diff --git a/net/netfilter/nft_cmp.c b/net/netfilter/nft_cmp.c
+index a0cd6e48e1a0..799acb069d59 100644
+--- a/net/netfilter/nft_cmp.c
++++ b/net/netfilter/nft_cmp.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/netlink.h>
+ #include <linux/netfilter.h>
++#include <linux/if_arp.h>
+ #include <linux/netfilter/nf_tables.h>
+ #include <net/netfilter/nf_tables_core.h>
+ #include <net/netfilter/nf_tables_offload.h>
+@@ -113,6 +114,7 @@ static int __nft_cmp_offload(struct nft_offload_ctx *ctx,
+ 			     const struct nft_cmp_expr *priv)
+ {
+ 	struct nft_offload_reg *reg = &ctx->regs[priv->sreg];
++	static u16 iftype_ether = ARPHRD_ETHER;
+ 	u8 *mask = (u8 *)&flow->match.mask;
+ 	u8 *key = (u8 *)&flow->match.key;
  
-+/* VHOST_MDEV device specific defines */
-+
-+/* Send virtio-net commands. The commands follow the same definition
-+ * of the virtio-net commands defined in virtio-spec.
-+ */
-+#define VHOST_MDEV_NET_CTRL		_IOW(VHOST_VIRTIO, 0x77, struct vhost_mdev_net_ctrl *)
-+
- #endif
-diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
-index 7b105d0b2fb9..e76b4d8e35e5 100644
---- a/include/uapi/linux/vhost_types.h
-+++ b/include/uapi/linux/vhost_types.h
-@@ -127,6 +127,12 @@ struct vhost_mdev_config {
- 	__u8 buf[0];
- };
+@@ -125,6 +127,11 @@ static int __nft_cmp_offload(struct nft_offload_ctx *ctx,
+ 	flow->match.dissector.used_keys |= BIT(reg->key);
+ 	flow->match.dissector.offset[reg->key] = reg->base_offset;
  
-+struct vhost_mdev_net_ctrl {
-+	__u8 class;
-+	__u8 cmd;
-+	__u8 cmd_data[0];
-+} __attribute__((packed));
++	if (reg->key == FLOW_DISSECTOR_KEY_META &&
++	    reg->offset == offsetof(struct nft_flow_key, meta.ingress_iftype) &&
++	    memcmp(&priv->data, &iftype_ether, priv->len))
++		return -EOPNOTSUPP;
 +
- /* Feature bits */
- /* Log all write descriptors. Can be changed while device is active. */
- #define VHOST_F_LOG_ALL 26
+ 	nft_offload_update_dependency(ctx, &priv->data, priv->len);
+ 
+ 	return 0;
+diff --git a/net/netfilter/nft_meta.c b/net/netfilter/nft_meta.c
+index 8fd21f436347..6fb6a6778e68 100644
+--- a/net/netfilter/nft_meta.c
++++ b/net/netfilter/nft_meta.c
+@@ -551,6 +551,10 @@ static int nft_meta_get_offload(struct nft_offload_ctx *ctx,
+ 		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_META, meta,
+ 				  ingress_ifindex, sizeof(__u32), reg);
+ 		break;
++	case NFT_META_IIFTYPE:
++		NFT_OFFLOAD_MATCH(FLOW_DISSECTOR_KEY_META, meta,
++				  ingress_iftype, sizeof(__u16), reg);
++		break;
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
 -- 
-2.23.0
+2.11.0
 
