@@ -2,137 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CCD6E8D99
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E2DE8DA6
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 18:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390734AbfJ2RFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 13:05:02 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:44324 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390606AbfJ2RFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:05:01 -0400
-Received: by mail-ed1-f68.google.com with SMTP id b18so4802306edr.11
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 10:04:59 -0700 (PDT)
+        id S2390384AbfJ2RIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 13:08:15 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45696 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731599AbfJ2RIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 13:08:15 -0400
+Received: by mail-pg1-f194.google.com with SMTP id r1so9985485pgj.12
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 10:08:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xbNEp8Xil1ZFod1BpCC7Ry+Jc6kcJd0LrS6/DbmqG04=;
-        b=Nivaw1q0gX/7+WVhOVekm12Z+/uANVSy+Fc4GozkuKhbzr5bsl4ejK/UYdZ1zAZ03q
-         8vHuPOAbdfi/CM8mUFvyc4MoabyOD/rzVSOiLgLoLEAvYTpDqujA2QA/1mLy43IZ4xAj
-         j70G6Bu9lUWGBmJt7njOFG2tmXK0d5tCymiuViaiBokhQpm7SReT7antrr8SuWj5lIzo
-         cAvA4jaPOMcN5eW171QTZik62zfqTFm+LN3DKZwys+/L6PuBbuE+jc/cBZLe+/gPCH1m
-         yf5VKw7iJ+zetpxGjN/4At8+k4y2w8uybhU0ErBD/X4pJJuUW4lJrQsEp2DXZLTDSccc
-         MiIA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ZfA2zVe0l1PwZ0mmyfvGo2F5TQ1DfYfhQZ9VtVxgNOE=;
+        b=wOrh4R3TnMeMB+AjYkA8bkcgXRnBjaklUuPM6+ma9LbUqJlwITqqBRBp0BXRZWmjWO
+         Dex2JI3mJ68B49XAoZ+uP0Ro/6y+ILU2MBiHvi8D5gMpjLJ3QjcOobnulfwjdoMcLgPY
+         AX8qNIPNoJAKUARXRjGoBoztNUsHtY0WJCrVsJl3pbGd7U4udBWY2xWK62t+bIvLfrUj
+         NOk6yTSAryY9nf9pXESaC/rK8s3qgyV09xbGM0vuXU4wrxrLBL4VP57ZMOfDUPsy80pL
+         qz7Ahqe/A3xVsCFmjn5Ig4c0RcElEblYO5/p6qbPiXW3sQgIT7IQ6r8ud/V1qirD4Gax
+         fAeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=xbNEp8Xil1ZFod1BpCC7Ry+Jc6kcJd0LrS6/DbmqG04=;
-        b=h6xGmWrYjOXYYZnf/Qpr6iE5cZBckb9ROFWzJj3G7u7Mu1Gus7KBeT7gV5IM3EGGY1
-         yrronAPnesnVQJ5z5iU4SdfX5A4k5aSbqo/QrJMfz1ksUTIR6lt9iQMM1HHra99jRs/Z
-         5GpFJmn7kGLl9FR5QAIjXZpNUJD4JAFt5yr5XyqWqtumVxTMYX0OPPOt0NRNAI962hZV
-         mz1T+6VGNYalukW00NLVXHy6s+Ott8N25jzThbxxf41tbE0SWQ3Lnh3VCdcNpZboTCUF
-         bu1B8dKon1CKvZEcmsGUlsJwDFV37CuHFrMMIQ6QBY/xNhBjkI0gw2rlcGajtkk6tjcb
-         ydPw==
-X-Gm-Message-State: APjAAAW0OtJxDWZJW12NBa3T1sLUuHNS2SJnFwyhoFdnwJ62hpl8uDm3
-        m8udd5EPPtl1hGPzIEsQga8=
-X-Google-Smtp-Source: APXvYqzLeyKnY8Gy+M6f3ioGNNGVbzRXraBq8bFzLQ9jX2WZ1O7MXS0bec2MVazwYA78Tb96Jlc5sw==
-X-Received: by 2002:a17:906:49d1:: with SMTP id w17mr4455197ejv.101.1572368698935;
-        Tue, 29 Oct 2019 10:04:58 -0700 (PDT)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b21sm627540edv.59.2019.10.29.10.04.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 10:04:58 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/4] net: phy: marvell: fix typo in constant
- MII_M1011_PHY_SRC_DOWNSHIFT_MASK
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chris Healy <Chris.Healy@zii.aero>
-References: <4ae7d05a-4d1d-024f-ebdf-c92798f1a770@gmail.com>
- <8828cb2a-4628-a58c-8dbb-104ada3bf37a@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ca1bcdac-71b6-1c81-88e3-0b83955677fd@gmail.com>
-Date:   Tue, 29 Oct 2019 10:04:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ZfA2zVe0l1PwZ0mmyfvGo2F5TQ1DfYfhQZ9VtVxgNOE=;
+        b=G2wO1wzjNahYRDhCPmSVwaG29I1w430Ea+2Utdmw4avF8f040sgJDPzKxxa3L8/YCI
+         cJ0NiZBMbtBdafOl7O213B7Pq7wJGyfTT02fEcESxPNOSX4p22wlUwnjDoJx171Zb1UG
+         pSVkoX+vDaMUXG+U+fsClNiLKi8Mg9h7tfaiz/3iheMS8fOHZBsAbVkaKEyXZ0A6Khax
+         qc5UqKFr88OuDLZ6qBadVtc1oiAOJJSWp20hhAckur4yfWhSKk5tFJ0S5p1zz7CkPYzD
+         48/TLx88gAxxksaBYE0SOClQxYhm06NhbOJNhDNSOzITQB/wtpTody6WYNauvbikg/2/
+         YCbg==
+X-Gm-Message-State: APjAAAXhLXNNWYiM5xCwD/oMFCeIPOQEGKU+4c29GyG0vvMYRBJVk5Eg
+        hHZ36qfSnNwDUsQxO2auCOYssw==
+X-Google-Smtp-Source: APXvYqznu+dqe9KNJkaD1QaIKNP63RYiVNLozoeTPsP3CBlefqwjWj4FSgE0+uNTy/aei6uJGQKMIQ==
+X-Received: by 2002:a17:90a:348c:: with SMTP id p12mr1289225pjb.105.1572368894478;
+        Tue, 29 Oct 2019 10:08:14 -0700 (PDT)
+Received: from cakuba.hsd1.ca.comcast.net (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id r185sm14566081pfr.68.2019.10.29.10.08.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Oct 2019 10:08:14 -0700 (PDT)
+Date:   Tue, 29 Oct 2019 10:08:10 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
+Cc:     Yuval Avnery <yuvalav@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        Daniel Jurgens <danielj@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH net-next 0/9] devlink vdev
+Message-ID: <20191029100810.66b1695a@cakuba.hsd1.ca.comcast.net>
+In-Reply-To: <20191025145808.GA20298@C02YVCJELVCG.dhcp.broadcom.net>
+References: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
+        <20191023120046.0f53b744@cakuba.netronome.com>
+        <20191023192512.GA2414@nanopsycho>
+        <20191023151409.75676835@cakuba.hsd1.ca.comcast.net>
+        <9f3974a1-95e9-a482-3dcd-0b23246d9ab7@mellanox.com>
+        <20191023195141.48775df1@cakuba.hsd1.ca.comcast.net>
+        <20191025145808.GA20298@C02YVCJELVCG.dhcp.broadcom.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <8828cb2a-4628-a58c-8dbb-104ada3bf37a@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/28/19 12:52 PM, Heiner Kallweit wrote:
-> Fix typo and use PHY_SCR for PHY-specific Control Register.
+On Fri, 25 Oct 2019 10:58:08 -0400, Andy Gospodarek wrote:
+> Thanks, Jakub, I'm happy to chime in based on our deployment experience.
+> We definitely understand the desire to be able to configure properties
+> of devices on the SmartNIC (the kind with general purpose cores not the
+> kind with only flow offload) from the server side.
+
+Thanks!
+
+> In addition to addressing NVMe devices, I'd also like to be be able to
+> create virtual or real serial ports as well as there is an interest in
+> *sometimes* being able to gain direct access to the SmartNIC console not
+> just a shell via ssh.  So my point is that there are multiple use-cases.
+
+Shelling into a NIC is the ultimate API backdoor. IMO we should try to
+avoid that as much as possible.
+
+> Arm are also _extremely_ interested in developing a method to enable
+> some form of SmartNIC discovery method and while lots of ideas have been
+> thrown around, discovery via devlink is a reasonable option.  So while
+> doing all this will be much more work than simply handling this case
+> where we set the peer or local MAC for a vdev, I think it will be worth
+> it to make this more usable for all^W more types of devices.  I also
+> agree that not everything on the other side of the wire should be a
+> port. 
 > 
-> Fixes: a3bdfce7bf9c ("net: phy: marvell: support downshift as PHY tunable")
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> So if we agree that addressing this device as a PCIe device then it
+> feels like we would be better served to query device capabilities and
+> depending on what capabilities exist we would be able to configure
+> properties for those.  In an ideal world, I could query a device using
+> devlink ('devlink info'?) and it would show me different devices that
+> are available for configuration on the SmartNIC and would also give me a
+> way to address them.  So while I like the idea of being able to address
+> and set parameters as shown in patch 05 of this series, I would like to
+> see a bit more flexibility to define what type of device is available
+> and how it might be configured.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+We shall see how this develops. For now sounds pretty high level.
+If the NIC needs to expose many "devices" that are independently
+controlled we should probably look at re-using the standard device
+model and not reinvent the wheel. 
+If we need to configure particular aspects and resource allocation, 
+we can add dedicated APIs as needed.
 
-Providing a Fixes tag here sounds a bit excessive, but this looking good.
--- 
-Florian
+What I definitely want to avoid is adding a catch-all API with unclear
+semantics which will become the SmartNIC dumping ground.
+
+> So if we took the devlink info command as an example (whether its the
+> proper place for this or not), it could look _like_ this:
+> 
+> $ devlink dev info pci/0000:03:00.0
+> pci/0000:03:00.0:
+>   driver foo
+>   serial_number 8675309
+>   versions:
+> [...]
+>   capabilities:
+>       storage 0
+>       console 1
+>       mdev 1024
+>       [something else] [limit]
+> 
+> (Additionally rather than putting this as part of 'info' the device
+> capabilities and limits could be part of the 'resource' section and
+> frankly may make more sense if this is part of that.)
+> 
+> and then those capabilities would be something that could be set using the
+> 'vdev' or whatever-it-is-named interface:
+> 
+> # devlink vdev show pci/0000:03:00.0
+> pci/0000:03:00.0/console/0: speed 115200 device /dev/ttySNIC0
+
+The speed in this console example makes no sense to me.
+
+The patches as they stand are about the peer side/other side of the
+port. So which side of the serial device is the speed set on? One can
+just read the speed from /dev/ttySNIC0. And link that serial device to
+the appropriate parent via sysfs. This is pure wheel reinvention.
+
+> pci/0000:03:00.0/mdev/0: hw_addr 02:00:00:00:00:00
+> [...]
+> pci/0000:03:00.0/mdev/1023: hw_addr 02:00:00:00:03:ff
+> 
+> # devlink vdev set pci/0000:03:00.0/mdev/0 hw_addr 00:22:33:44:55:00
+> 
+> Since these Arm/RISC-V based SmartNICs are going to be used in a variety
+> of different ways and will have a variety of different personalities
+> (not just different SKUs that vendors will offer but different ways in
+> which these will be deployed), I think it's critical that we consider
+> more than just the mdev/representer case from the start.
