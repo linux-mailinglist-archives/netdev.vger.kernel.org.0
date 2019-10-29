@@ -2,61 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EDAAE9343
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 00:04:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97142E9347
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 00:04:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726116AbfJ2XET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 19:04:19 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59355 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725839AbfJ2XET (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 19:04:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572390257;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lC6RkTPds4S9HR6LQLQv9YuO8abma8vmlimyl+6x1u8=;
-        b=SsABcgksX3E4h14V67FzeZXyHATCOczELnWYNVz4i+YNZwe2pyq28HR3yd0yChwnUqWniF
-        UQbH2sFLS4OwIE7JUHiYt9kZIUOcRuHbsUuAMPQuDFGBMIN8Q9gz3Dk8uDO7MT9YbfIEU7
-        41se61WkM4MOH0k1i1Ik5bVhESkQIYg=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-9-bPP3veGAMKSNUJ9-B_hnZg-1; Tue, 29 Oct 2019 19:04:16 -0400
-Received: by mail-oi1-f198.google.com with SMTP id b2so184166oie.21
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 16:04:16 -0700 (PDT)
+        id S1726047AbfJ2XEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 19:04:48 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:45788 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725839AbfJ2XEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 19:04:48 -0400
+Received: by mail-pl1-f196.google.com with SMTP id y24so26161plr.12;
+        Tue, 29 Oct 2019 16:04:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=z94quiijBmOlndVrWv7kp6lTcJTttQzC4W5Rz0hgJvU=;
+        b=F/AlGELVGzAVCG9R0R+fH4wqJwzS30vt9rJwtrAinD/2lOLue2OOJntNXCvO9nY1+B
+         gi4GrTJCPdsdrxEk0eW0AwJZnJcoaaQj2xdWmq52kF8wtKpA8IwHKWGr13sepL88Ay3t
+         bExuPBlb7b74UauiUigvQ9+EFrDQgGeDs554JSvFqw5tLpwcvTAqEu8t/7spQ3P8BdUs
+         OfxBjlNxby2uPQ1drm8chNpqf8JE/kHFnosFji5hXGDrwkFwBndNslumLxkxyHtJ45rd
+         qIh8w27yJ1VxATkzQJz3z75/IrM6z1+AItY4LfVCddd50HGnZx/JgxyNptHm+nVKkSAu
+         8C3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wl7YIQbPAgHE/Mh/x+ZbND7svWyQMZORYikb1F19SjY=;
-        b=JpbnL2SwBuDcukLBARj9Z3elUxbI5xJxC3OERL/UoyNyg/lUa6oePWtSWETSTsy1Af
-         57aCMtcTZuuafCVT+D1O+jLfQwkKnqyvOP9mWzGCdY9GjuRIMttVGH90LvJQtkbO9rwT
-         ljncnGJNf01ImSKJpxoNZ2K57jB16m3OkLYT8PNCNjGfd9e5txYePmwdAKQCPOeLp0hp
-         g5+oD/fsVxyZxuxM9ykEmrFI89AyHIH3n5sbuvMOQGVB1VA4/cRch4FCe41eTIfa8yMw
-         KX0Z57yumLgsB+z9P1ykINBOsWqhQkOLLAy6YIKqz43Ne0HhUTT4ht6bLA4ISfOn82Cf
-         2MQQ==
-X-Gm-Message-State: APjAAAWAqmSHzbz/dssXb9SHVi8zF65NinpX8YA3VvfqiZxtJ+CQdVb9
-        bTQYrv51FsW5elecSjFnhzHc2dXSmHf5E/Drm5WZBEKZwKt0uh++1cE5K8cN6mNbcsS+zrCj2Id
-        WO5e9ja0aNxnEPCvyrLWfQ9T2aqjm8Ucy
-X-Received: by 2002:aca:5148:: with SMTP id f69mr6344026oib.159.1572390255131;
-        Tue, 29 Oct 2019 16:04:15 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyrOvo2ebV8RyPvfdiZT6nEJRpNOU3bEpPZCDUbj09hF/s+Zdz/zPptHOhdj4P6FjVeiauQvnuRwh7Ip1+jFHU=
-X-Received: by 2002:aca:5148:: with SMTP id f69mr6344005oib.159.1572390254853;
- Tue, 29 Oct 2019 16:04:14 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191029135053.10055-1-mcroce@redhat.com> <20191029135053.10055-5-mcroce@redhat.com>
- <5be14e4e-807f-486d-d11a-3113901e72fe@cumulusnetworks.com> <576a4a96-861b-6a86-b059-6621a22d191c@gmail.com>
-In-Reply-To: <576a4a96-861b-6a86-b059-6621a22d191c@gmail.com>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Wed, 30 Oct 2019 00:03:38 +0100
-Message-ID: <CAGnkfhzEgaH1-YNWw1_HzB5FOhZHjKewLD9NP+rnTP21Htxnjw@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 4/4] bonding: balance ICMP echoes in layer3+4 mode
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev <netdev@vger.kernel.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=z94quiijBmOlndVrWv7kp6lTcJTttQzC4W5Rz0hgJvU=;
+        b=GrW9E+V2btJmrPACDz0EoJ1FcK+wo5lare/PXpxh7L8UM/lQvCk1fERGjP6LwBSLAz
+         uEli02GjDji6cp8WO4u7sOQA+8Z/qxUgOKaE3O9ES8q0sXQP89DBZNVZKoPR8skgcNkv
+         kfzKefMhyXoS3zGwVcESVkuTF3iTS4Y9guamGsbj6OrNta1tx7dYhxjNZzcRWBUXaVeR
+         SXfTLamvaCZdv55nFQmkp5UeVYV+jKH6zWVfc1F7d4ifXnKM2KMeFUUbu6kdbtgHXm0O
+         lxNJpslln7U/n+D2w55pGrwwCcKWTy+JRL5SfyG2P7T1nmdBRA8kgmq+8pIttBbIBBCn
+         VW4w==
+X-Gm-Message-State: APjAAAXdBGNLBQAsrs7o6OAzLptSc9Mv1LeBcRgErarkuAC0KDO9M0r3
+        uJdzi5J8ZDEVGn4/sZLss5U08YmS
+X-Google-Smtp-Source: APXvYqzRSRQOcjk4lZcZOzu/Fx8cgyFTYK/7ClJRnQW/kmP29wnKmxW+jJbL2tlXMhFCe7U5vYkuEQ==
+X-Received: by 2002:a17:902:9042:: with SMTP id w2mr1198605plz.323.1572390285086;
+        Tue, 29 Oct 2019 16:04:45 -0700 (PDT)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id e1sm249355pgv.82.2019.10.29.16.04.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Oct 2019 16:04:44 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 4/4] bonding: balance ICMP echoes in layer3+4
+ mode
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
         Veaceslav Falico <vfalico@gmail.com>,
         Andy Gospodarek <andy@greyhouse.net>,
         "David S . Miller" <davem@davemloft.net>,
@@ -64,72 +58,108 @@ Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Song Liu <songliubraving@fb.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        LKML <linux-kernel@vger.kernel.org>
-X-MC-Unique: bPP3veGAMKSNUJ9-B_hnZg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        Paul Blakey <paulb@mellanox.com>, linux-kernel@vger.kernel.org
+References: <20191029135053.10055-1-mcroce@redhat.com>
+ <20191029135053.10055-5-mcroce@redhat.com>
+ <5be14e4e-807f-486d-d11a-3113901e72fe@cumulusnetworks.com>
+ <576a4a96-861b-6a86-b059-6621a22d191c@gmail.com>
+ <afdfd237-124d-0050-606f-cb5516c9e4d8@cumulusnetworks.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <294b9604-8d43-4a31-9324-6368c584fd63@gmail.com>
+Date:   Tue, 29 Oct 2019 16:04:43 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <afdfd237-124d-0050-606f-cb5516c9e4d8@cumulusnetworks.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 10:03 PM Eric Dumazet <eric.dumazet@gmail.com> wrot=
-e:
->
->
->
-> On 10/29/19 11:35 AM, Nikolay Aleksandrov wrote:
->
-> > Hi Matteo,
-> > Wouldn't it be more useful and simpler to use some field to choose the =
-slave (override the hash
-> > completely) in a deterministic way from user-space ?
-> > For example the mark can be interpreted as a slave id in the bonding (s=
-hould be
-> > optional, to avoid breaking existing setups). ping already supports -m =
-and
-> > anything else can set it, this way it can be used to do monitoring for =
-a specific
-> > slave with any protocol and would be a much simpler change.
-> > User-space can then implement any logic for the monitoring case and as =
-a minor bonus
-> > can monitor the slaves in parallel. And the opposite as well - if peopl=
-e don't want
-> > these balanced for some reason, they wouldn't enable it.
-> >
->
-> I kind of agree giving user more control. But I do not believe we need to=
- use the mark
-> (this might be already used by other layers)
->
-> TCP uses sk->sk_hash to feed skb->hash.
->
-> Anything using skb_set_owner_w() is also using sk->sk_hash if set.
->
-> So presumably we could add a generic SO_TXHASH socket option to let user =
-space
-> read/set this field.
->
 
-Hi Eric,
 
-this would work for locally generated echoes, but what about forwarded pack=
-ets?
-The point behind my changeset is to provide consistent results within
-a session by using the same path for request and response,
-but avoid all sessions flowing to the same path.
-This should resemble what happens with TCP and UDP: different
-connections, different port, probably a different path. And by doing
-this in the flow dissector, other applications could benefit it.
+On 10/29/19 2:50 PM, Nikolay Aleksandrov wrote:
 
-Also, this should somewhat balance the traffic of a router forwarding
-those packets. Maybe it's not so much in percentage, but in some
-gateways be a considerable volume.
+> Right, I was just giving it as an example. Your suggestion sounds much better and
+> wouldn't interfere with other layers, plus we already use skb->hash in bond_xmit_hash()
+> and skb_set_owner_w() sets l4_hash if txhash is present which is perfect.
+> 
+> One thing - how do we deal with sk_rethink_txhash() ? I guess we'll need some way to
+> signal that the user specified the txhash and it is not to be recomputed ?
+> That can also be used to avoid the connect txhash set as well if SO_TXHASH was set prior
+> to the connect. It's quite late here, I'll look into it more tomorrow. :)
 
-Regards,
---=20
-Matteo Croce
-per aspera ad upstream
+I guess that we have something similar with SO_RCVBUF/SO_SNDBUF
 
+autotuning is disabled when/if they are used :
+
+ SOCK_RCVBUF_LOCK & SOCK_SNDBUF_LOCK
+
+We could add a SOCK_TXHASH_LOCK so that sk_rethink_txhash() does nothing if
+user forced a TXHASH value.
+
+Something like the following (probably not complete) patch.
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 380312cc67a9d9ee8720eb2db82b1f7f8a5615ab..a8882738710eaa9d9d629e1207837a798401a594 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1354,6 +1354,7 @@ static inline int __sk_prot_rehash(struct sock *sk)
+ #define SOCK_RCVBUF_LOCK       2
+ #define SOCK_BINDADDR_LOCK     4
+ #define SOCK_BINDPORT_LOCK     8
++#define SOCK_TXHASH_LOCK       16
+ 
+ struct socket_alloc {
+        struct socket socket;
+@@ -1852,7 +1853,8 @@ static inline u32 net_tx_rndhash(void)
+ 
+ static inline void sk_set_txhash(struct sock *sk)
+ {
+-       sk->sk_txhash = net_tx_rndhash();
++       if (!(sk->sk_userlocks & SOCK_TXHASH_LOCK))
++               sk->sk_txhash = net_tx_rndhash();
+ }
+ 
+ static inline void sk_rethink_txhash(struct sock *sk)
+diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
+index 77f7c1638eb1ce7d3e143bbffd60056e472b1122..998be6ee7991de3a76d4ad33df3a38dbe791eae8 100644
+--- a/include/uapi/asm-generic/socket.h
++++ b/include/uapi/asm-generic/socket.h
+@@ -118,6 +118,7 @@
+ #define SO_SNDTIMEO_NEW         67
+ 
+ #define SO_DETACH_REUSEPORT_BPF 68
++#define SO_TXHASH              69
+ 
+ #if !defined(__KERNEL__)
+ 
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 997b352c2a72ee39f00b102a553ac1191202b74f..85b85dffd462bc3b497e0432100ff24b759832e0 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -770,6 +770,10 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+        case SO_BROADCAST:
+                sock_valbool_flag(sk, SOCK_BROADCAST, valbool);
+                break;
++       case SO_TXHASH:
++               sk->sk_txhash = val;
++               sk->sk_userlocks |= SOCK_TXHASH_LOCK;
++               break;
+        case SO_SNDBUF:
+                /* Don't error on this BSD doesn't and if you think
+                 * about it this is right. Otherwise apps have to
+@@ -1249,6 +1253,10 @@ int sock_getsockopt(struct socket *sock, int level, int optname,
+                v.val = sock_flag(sk, SOCK_BROADCAST);
+                break;
+ 
++       case SO_TXHASH:
++               v.val = sk->sk_txhash;
++               break;
++
+        case SO_SNDBUF:
+                v.val = sk->sk_sndbuf;
+                break;
