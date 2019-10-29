@@ -2,103 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6611E84AE
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:47:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A9A8E84F0
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 10:57:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728608AbfJ2JrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 05:47:11 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42641 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727504AbfJ2JrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 05:47:10 -0400
-Received: by mail-wr1-f67.google.com with SMTP id a15so574656wrf.9
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 02:47:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ncentric-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=89r1rNHEMVi51X8QptG2oJ8PZcM46Qw8VvMwF8b1wgo=;
-        b=wiEzjzXZjxbDnTURVXFofslvFJq1OnqyzLxdVOYTiEK4BkKtV9oSdFm/F24JGKSKqH
-         sJ3VU9bJai0Nd261G++OtTT/wZhXe9FuJ8SofZb0B8j7NngXjv6qFTH9tEImIwGHKg0/
-         opCMiE1lfo6WxkMYwfiiEsAN4QwZAW+TQuus/EtEwd5tXjEgSmRdWs4ixZtIJyktgOOt
-         zuBzBT34xzcKnKe1CK5OVdeUze3ktefiP7LhxMbKcNN4dUmRBYHYDmEcCp47ykpm4zNH
-         y7jpULJazBd3Mq6DftIH/r7aUsS3Nsx0ryO+8ttaIN5ZlnokpEE4MAjYzPuRE1NPnTKk
-         3uuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=89r1rNHEMVi51X8QptG2oJ8PZcM46Qw8VvMwF8b1wgo=;
-        b=WzYGzxV3ytjrdxkiypB2TuVqH8UdIHMEZOZ8t6lLYBQqjmr6yV1/9GcJB3Gk/7VM7w
-         e6FJmpmVA2IX1Wc4wAWHrcs7txYceqp05LQj2nVFxLuMEXTq4VkRDEktygLkuBG3fqz/
-         5juF4sVub8ddZgN2hoqthgCRjxIrKiYMJnUBmqT+fKVeGrs2PkGhLhMQZ0ow5zVIUQhn
-         PqBhnCd+F8TgEx3Ia1yyupHmcPHsmePccF4Q0mr6gwyCgWdtr9j4jzwRidubMfgSLVoe
-         5e6WgDZgMYUQN79/wj8mDTy9EtYreg188+iztctaCkrLx2REzdQPFJzHyQwbi+Ce6vlL
-         o9lA==
-X-Gm-Message-State: APjAAAXqaqBivDlQwq1B2YCuqJQEOrYw5pzd9ocD2RzxLBKQUPMiUXxl
-        6JmHLIHURGj/EJcTLVKym7xMHA==
-X-Google-Smtp-Source: APXvYqyr6dueVY98vyKdLQa7Cf+zesIqhhu9E22W8jO6/0960zTgfomp23nR4r174U6ZncxgF8OO4g==
-X-Received: by 2002:adf:e850:: with SMTP id d16mr18218775wrn.251.1572342428276;
-        Tue, 29 Oct 2019 02:47:08 -0700 (PDT)
-Received: from [192.168.3.176] (d515300d8.static.telenet.be. [81.83.0.216])
-        by smtp.gmail.com with ESMTPSA id v6sm15209634wru.72.2019.10.29.02.47.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 02:47:07 -0700 (PDT)
-Subject: Re: [PATCH v2] 802.11n IBSS: wlan0 stops receiving packets due to
- aggregation after sender reboot
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        =?UTF-8?Q?Krzysztof_Ha=c5=82asa?= <khalasa@piap.pl>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <m34l02mh71.fsf@t19.piap.pl> <m37e4tjfbu.fsf@t19.piap.pl>
- <e5b07b4ce51f806ce79b1ae06ff3cbabbaa4873d.camel@sipsolutions.net>
- <30465e05-3465-f496-d57f-5e115551f5cb@ncentric.com>
- <dbbc8c3e898ec499f30a6ac1f262666ced6905fb.camel@sipsolutions.net>
-From:   Koen Vandeputte <koen.vandeputte@ncentric.com>
-Message-ID: <6967a862-c040-565a-3644-c804b188d13e@ncentric.com>
-Date:   Tue, 29 Oct 2019 10:47:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727514AbfJ2J4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 05:56:51 -0400
+Received: from mga17.intel.com ([192.55.52.151]:31715 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726342AbfJ2J4u (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 05:56:50 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2019 02:56:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,243,1569308400"; 
+   d="scan'208";a="374497156"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.74])
+  by orsmga005.jf.intel.com with ESMTP; 29 Oct 2019 02:56:47 -0700
+Date:   Tue, 29 Oct 2019 17:57:38 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+Subject: Re: [PATCH v2] vhost: introduce mdev based hardware backend
+Message-ID: <20191029095738.GA7228@___>
+References: <5a7bc5da-d501-2750-90bf-545dd55f85fa@redhat.com>
+ <20191024042155.GA21090@___>
+ <d37529e1-5147-bbe5-cb9d-299bd6d4aa1a@redhat.com>
+ <d4cc4f4e-2635-4041-2f68-cd043a97f25a@redhat.com>
+ <20191024091839.GA17463@___>
+ <fefc82a3-a137-bc03-e1c3-8de79b238080@redhat.com>
+ <e7e239ba-2461-4f8d-7dd7-0f557ac7f4bf@redhat.com>
+ <20191025080143-mutt-send-email-mst@kernel.org>
+ <20191028015842.GA9005@___>
+ <5e8a623d-9d91-607a-1f9e-7a7086ba9a68@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <dbbc8c3e898ec499f30a6ac1f262666ced6905fb.camel@sipsolutions.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5e8a623d-9d91-607a-1f9e-7a7086ba9a68@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 28, 2019 at 11:50:49AM +0800, Jason Wang wrote:
+> On 2019/10/28 上午9:58, Tiwei Bie wrote:
+> > On Fri, Oct 25, 2019 at 08:16:26AM -0400, Michael S. Tsirkin wrote:
+> > > On Fri, Oct 25, 2019 at 05:54:55PM +0800, Jason Wang wrote:
+> > > > On 2019/10/24 下午6:42, Jason Wang wrote:
+> > > > > Yes.
+> > > > > 
+> > > > > 
+> > > > > >    And we should try to avoid
+> > > > > > putting ctrl vq and Rx/Tx vqs in the same DMA space to prevent
+> > > > > > guests having the chance to bypass the host (e.g. QEMU) to
+> > > > > > setup the backend accelerator directly.
+> > > > > 
+> > > > > That's really good point.  So when "vhost" type is created, parent
+> > > > > should assume addr of ctrl_vq is hva.
+> > > > > 
+> > > > > Thanks
+> > > > 
+> > > > This works for vhost but not virtio since there's no way for virtio kernel
+> > > > driver to differ ctrl_vq with the rest when doing DMA map. One possible
+> > > > solution is to provide DMA domain isolation between virtqueues. Then ctrl vq
+> > > > can use its dedicated DMA domain for the work.
+> > It might not be a bad idea to let the parent drivers distinguish
+> > between virtio-mdev mdevs and vhost-mdev mdevs in ctrl-vq handling
+> > by mdev's class id.
+> 
+> 
+> Yes, that should work, I have something probable better, see below.
+> 
+> 
+> > 
+> > > > Anyway, this could be done in the future. We can have a version first that
+> > > > doesn't support ctrl_vq.
+> > +1, thanks
+> > 
+> > > > Thanks
+> > > Well no ctrl_vq implies either no offloads, or no XDP (since XDP needs
+> > > to disable offloads dynamically).
+> > > 
+> > >          if (!virtio_has_feature(vi->vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)
+> > >              && (virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+> > >                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
+> > >                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
+> > >                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
+> > >                  virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
+> > >                  NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing LRO/CSUM, disable LRO/CSUM first");
+> > >                  return -EOPNOTSUPP;
+> > >          }
+> > > 
+> > > neither is very attractive.
+> > > 
+> > > So yes ok just for development but we do need to figure out how it will
+> > > work down the road in production.
+> > Totally agree.
+> > 
+> > > So really this specific virtio net device does not support control vq,
+> > > instead it supports a different transport specific way to send commands
+> > > to device.
+> > > 
+> > > Some kind of extension to the transport? Ideas?
+> 
+> 
+> So it's basically an issue of isolating DMA domains. Maybe we can start with
+> transport API for querying per vq DMA domain/ASID?
+> 
+> - for vhost-mdev, userspace can query the DMA domain for each specific
+> virtqueue. For control vq, mdev can return id for software domain, for the
+> rest mdev will return id of VFIO domain. Then userspace know that it should
+> use different API for preparing the virtqueue, e.g for vq other than control
+> vq, it should use VFIO DMA API. The control vq it should use hva instead.
+> 
+> - for virito-mdev, we can introduce per-vq DMA device, and route DMA mapping
+> request for control vq back to mdev instead of the hardware. (We can wrap
+> them into library or helpers to ease the development of vendor physical
+> drivers).
 
-On 29.10.19 10:03, Johannes Berg wrote:
-> On Tue, 2019-10-29 at 09:41 +0100, Koen Vandeputte wrote:
->
->> I can confirm the issue as I'm also seeing this sometimes in the field here.
->>
->> Sometimes when a devices goes out of range and then re-enters,
->> the link refuses to "come up", as in rx looks to be "stuck" without any
->> reports in system log or locking issues (lockdep enabled)
-> Right. I've recently debugged this due to issues in distributed
-> beaconing (rather than moving in/out of range), but I guess it would be
-> relatively simple to reproduce this with wmediumd, if that can be
-> controlled dynamically?
->
-> What kernel are you running? You could check if you have
->
-> 95697f9907bf ("mac80211: accept deauth frames in IBSS mode")
-> 4b08d1b6a994 ("mac80211: IBSS: send deauth when expiring inactive STAs")
->
-> which might help somewhat, but don't fully cover the case of moving out
-> of range.
->
-> johannes
->
-I'm running OpenWrt (kernel 4.14.150 with 4.19.79 mac80211)
-I noticed these fixes last week and made a build 2 days ago with them 
-backported to it.
-Running in the field on roughly 4 devices since a day.
+Thanks for this proposal! I'm thinking about it these days.
+I think it might be too complicated. I'm wondering whether we
+can have something simpler. I will post a RFC patch to show
+my idea today.
 
-Koen
+Thanks,
+Tiwei
 
+> 
+> Thanks
+> 
+> 
+> > > 
+> > > 
+> > > -- 
+> > > MST
+> 
