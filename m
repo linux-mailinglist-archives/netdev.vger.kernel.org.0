@@ -2,62 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6093BE9214
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 22:33:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CE72E9261
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 22:50:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729072AbfJ2Vc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 17:32:57 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39885 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbfJ2Vc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 17:32:56 -0400
-Received: by mail-wr1-f66.google.com with SMTP id a11so22359wra.6
-        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 14:32:53 -0700 (PDT)
+        id S1729904AbfJ2Vul (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 17:50:41 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:42211 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729848AbfJ2Vuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 17:50:40 -0400
+Received: by mail-lj1-f194.google.com with SMTP id a21so289133ljh.9
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 14:50:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=v15BYYuClTGl12XK91aICrUb3FYJTXLKNHXeKtYe/c0=;
-        b=RVxYmP2mffkT9lDSU7KOlqHPuHpWOUOtPoSYT9CM/63ZoF1/aYS++Sc2OJhM4Eog9z
-         oYffCGb1rn+zsq6ZNV9xMMbJeOuMkmF7eTJeSR7KA1XTN4yLBA7f8PT3GxJPMAgH5vHA
-         37uvvidC0LqDXsup94a0x8zWgLGmkov0UqLV2ZQY80xiYjf9UG3DMDswYf1pGdC81I+Q
-         yKGddObve/Kga/XWOz1esDRnNqbLT+f9EySyjlj6eR3adoJvMnru4AHKXLjrWL3uy8eX
-         9azdUlu0ZI65P36B6m8LvMBcR7H3rA39XH4zfB/w+uhRY2KT2FxjF/N9XZ4+TDhAXWrQ
-         ys8g==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5w42mSO+u7mTiYLrDKEQn5Iqp5s1P00zLfBBlqGFSko=;
+        b=b6r4WuTXHsg+po0/kmbiwEwcvN069ujoT/d2kPcxjVcYxpS41vdV6H6yGj/rXDnn3I
+         bPfQoCkuLJ8TlIHxOFHOEGlFrMyfrTClTWqvR+am5SHjMkgrrrC5ylkOzJMTer+HfPP4
+         oSOPRLAN82jlL1Z6kvjmK8QeoJuipufr8zkrs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=v15BYYuClTGl12XK91aICrUb3FYJTXLKNHXeKtYe/c0=;
-        b=WjENEtULVgt4yu4dS8MEhVMGedlUYk8cEr6vGVFTYt/2PVc+cJlCNVXJp3sO5hdohB
-         HIT22cyr25obUnJLLUDJXCERC4sCIZDO0b+ywD06mgqJR7O6KTdh3VBdx0HM7cg2KqM5
-         dU81QTT84af72pH0EdrOw0IUhLYtFNjP9tmNYLFuNsXNMwWn+rgfyNi3JKV3K/TCFx8H
-         ugqEQiQj6UwnYVi/E2ZPfXE4YTb++W0GKIWIX26tKWYSaHl7vOApLC4nX/c2PE7CS4fn
-         O0+57l/KmdPUd1JnYy+dEQqyCAby6aOrPX42K93VURdcpf5eCJoJe5J1i4LPZCHOsFPJ
-         zQcQ==
-X-Gm-Message-State: APjAAAUPsOFdPj1vpCJ+Ut7nSrs3UFC6tX8w8TTi2AEYqk5ViXxU/pTO
-        /yDB1HTFKBvhwWPoO2fJ8pEXh86y
-X-Google-Smtp-Source: APXvYqw+ULibTCYHmwbD1s0c85zBKQ12FSSv3dw4997pXIaah3gL8FsFQWJzAEPyNa5FA9wh2kfVHw==
-X-Received: by 2002:adf:ee4f:: with SMTP id w15mr22692755wro.378.1572384772584;
-        Tue, 29 Oct 2019 14:32:52 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f17:6e00:ccde:2c29:a00c:dbef? (p200300EA8F176E00CCDE2C29A00CDBEF.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:ccde:2c29:a00c:dbef])
-        by smtp.googlemail.com with ESMTPSA id t24sm394950wra.55.2019.10.29.14.32.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 29 Oct 2019 14:32:51 -0700 (PDT)
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] net: dsa: add ethtool pause configuration support
-Message-ID: <eb248743-4407-93a6-2e80-e84b7510ca49@gmail.com>
-Date:   Tue, 29 Oct 2019 22:32:48 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5w42mSO+u7mTiYLrDKEQn5Iqp5s1P00zLfBBlqGFSko=;
+        b=rXkJ/u3pMTwXSFcrm6f2mEXkZtv9uwicIwo2XczO0Qz5lrBUp9m3Kv9CfeFBpOB33R
+         VH2MmkLPH4eKP7v4tb4dodtm1qSaZT0bEPqBdrR3yHo2fUAqy5mEc3XvqF/qJG39DQF0
+         c7weH1to7LLxIMO3vkow2kYOuBj8g7Xxabf3SspBnX7v6BZiI9wdfPEmR7q/4m+Ikn8O
+         4HlPg3SrQa9pwDfmdTqvWJjlVJLC5cbQjcsDxWCiN0d9Tcj0QwlSuZ9WMn+8SF8aQuWZ
+         6e06oC/zcO8xtfymJnFrBLe6cwR53/7xIS/qiPnisjOUmw2yEGdqqO6cdMjNv54EngtI
+         0Efw==
+X-Gm-Message-State: APjAAAXmPfMGc+Ex2jZWouoSnKcEAGw2Tms2YZoqFGi08j5Op45ySB6a
+        87IdkULChfeSit9XmY5K3P3srA==
+X-Google-Smtp-Source: APXvYqyyipjjIhwC3Q2wW3zXN6CCYJ5yZ4W7qyXvacAjcmwrj1Sqwp5OqUTBOD7JRvKilDxiiFf/kw==
+X-Received: by 2002:a2e:1bd5:: with SMTP id c82mr3718419ljf.207.1572385836669;
+        Tue, 29 Oct 2019 14:50:36 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id r18sm38411ljg.32.2019.10.29.14.50.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 29 Oct 2019 14:50:35 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 4/4] bonding: balance ICMP echoes in layer3+4
+ mode
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Matteo Croce <mcroce@redhat.com>, netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Paul Blakey <paulb@mellanox.com>, linux-kernel@vger.kernel.org
+References: <20191029135053.10055-1-mcroce@redhat.com>
+ <20191029135053.10055-5-mcroce@redhat.com>
+ <5be14e4e-807f-486d-d11a-3113901e72fe@cumulusnetworks.com>
+ <576a4a96-861b-6a86-b059-6621a22d191c@gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <afdfd237-124d-0050-606f-cb5516c9e4d8@cumulusnetworks.com>
+Date:   Tue, 29 Oct 2019 23:50:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <576a4a96-861b-6a86-b059-6621a22d191c@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,50 +74,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds glue logic to make pause settings per port
-configurable vie ethtool.
+On 29/10/2019 23:03, Eric Dumazet wrote:
+> 
+> 
+> On 10/29/19 11:35 AM, Nikolay Aleksandrov wrote:
+> 
+>> Hi Matteo,
+>> Wouldn't it be more useful and simpler to use some field to choose the slave (override the hash
+>> completely) in a deterministic way from user-space ?
+>> For example the mark can be interpreted as a slave id in the bonding (should be
+>> optional, to avoid breaking existing setups). ping already supports -m and
+>> anything else can set it, this way it can be used to do monitoring for a specific
+>> slave with any protocol and would be a much simpler change.
+>> User-space can then implement any logic for the monitoring case and as a minor bonus
+>> can monitor the slaves in parallel. And the opposite as well - if people don't want
+>> these balanced for some reason, they wouldn't enable it.
+>>
+> 
+> I kind of agree giving user more control. But I do not believe we need to use the mark
+> (this might be already used by other layers)
+> 
+> TCP uses sk->sk_hash to feed skb->hash.
+> 
+> Anything using skb_set_owner_w() is also using sk->sk_hash if set.
+> 
+> So presumably we could add a generic SO_TXHASH socket option to let user space
+> read/set this field.
+> 
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- net/dsa/slave.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Right, I was just giving it as an example. Your suggestion sounds much better and
+wouldn't interfere with other layers, plus we already use skb->hash in bond_xmit_hash()
+and skb_set_owner_w() sets l4_hash if txhash is present which is perfect.
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 028e65f4b..d18761649 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -789,6 +789,22 @@ static int dsa_slave_set_link_ksettings(struct net_device *dev,
- 	return phylink_ethtool_ksettings_set(dp->pl, cmd);
- }
- 
-+static void dsa_slave_get_pauseparam(struct net_device *dev,
-+				     struct ethtool_pauseparam *pause)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+
-+	phylink_ethtool_get_pauseparam(dp->pl, pause);
-+}
-+
-+static int dsa_slave_set_pauseparam(struct net_device *dev,
-+				    struct ethtool_pauseparam *pause)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+
-+	return phylink_ethtool_set_pauseparam(dp->pl, pause);
-+}
-+
- #ifdef CONFIG_NET_POLL_CONTROLLER
- static int dsa_slave_netpoll_setup(struct net_device *dev,
- 				   struct netpoll_info *ni)
-@@ -1192,6 +1208,8 @@ static const struct ethtool_ops dsa_slave_ethtool_ops = {
- 	.get_eee		= dsa_slave_get_eee,
- 	.get_link_ksettings	= dsa_slave_get_link_ksettings,
- 	.set_link_ksettings	= dsa_slave_set_link_ksettings,
-+	.get_pauseparam		= dsa_slave_get_pauseparam,
-+	.set_pauseparam		= dsa_slave_set_pauseparam,
- 	.get_rxnfc		= dsa_slave_get_rxnfc,
- 	.set_rxnfc		= dsa_slave_set_rxnfc,
- 	.get_ts_info		= dsa_slave_get_ts_info,
--- 
-2.23.0
+One thing - how do we deal with sk_rethink_txhash() ? I guess we'll need some way to
+signal that the user specified the txhash and it is not to be recomputed ?
+That can also be used to avoid the connect txhash set as well if SO_TXHASH was set prior
+to the connect. It's quite late here, I'll look into it more tomorrow. :)
+
+Thanks,
+ Nik
+
+
+
+
 
