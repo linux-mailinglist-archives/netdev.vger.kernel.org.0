@@ -2,55 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1C9DE8F3A
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:26:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86D64E8F43
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 19:27:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730632AbfJ2SZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 14:25:57 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40780 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726923AbfJ2SZ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Oct 2019 14:25:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=RrTFIroBu9lPNwntdMkG+w1XY6/n6kgTXNLIm3VXF9A=; b=Es5p6ZnBD/axwzYIUw7jbZ5t32
-        TzpQpVBtm8utmfFVKawYMpRZahyx+hhsBMteniZ/W4BPu33B4hmb6LghNCD5RG775oyLJA8zN579m
-        cu2pAw9Lt6eMghSzy+hDAPvBLENqVfmS3yQJb+HeO/O0Pb8nJezNLWAHX4x1YFUVb6kI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iPWBk-0006ly-Ds; Tue, 29 Oct 2019 19:25:52 +0100
-Date:   Tue, 29 Oct 2019 19:25:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 0/3] net: phy: initialize PHYs via device tree properties
-Message-ID: <20191029182552.GB19662@lunn.ch>
-References: <20191029174819.3502-1-michael@walle.cc>
- <519d52d2-cd83-b544-591b-ca9d9bb16dfa@gmail.com>
+        id S1731421AbfJ2S10 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 14:27:26 -0400
+Received: from mail-yb1-f176.google.com ([209.85.219.176]:39299 "EHLO
+        mail-yb1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727282AbfJ2S10 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 14:27:26 -0400
+Received: by mail-yb1-f176.google.com with SMTP id e9so5744720ybp.6
+        for <netdev@vger.kernel.org>; Tue, 29 Oct 2019 11:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CbHEUPGiO2xXLDP1pQhm/RlbkvGz7+p5cRWU2d3UQfw=;
+        b=ZYEOlB3QAnAEndpwSW5QyXZnoGONoBDMNGcpQT0zYIIzYcIMeda9eN0UDCb8dG1Agz
+         yvH2i1XZ0qvNLCzxmhfqkbjSDPArsdAaW3TNm4JwGY4VZD8nvYOVXURMv2Q2iJ+UWTHV
+         npkU84axMZlB//K1czOMiPd3kw/7TefJ04Evf0WU40Xca7LiWeVVqVBv5ZNLm1KFKY/i
+         tOCrwkD4MU5KOOXQWu7jZ4fTEW1UK4QlswR3FOL/xhK84Aol4nSsrjeM8OjKIkjWzO2p
+         8b/5LAz8cLCBvbnYojJOKKNmlPfNUJ6/+6cxYgQrqlVU8SPIshR4m02jhcbxyFBiY+QO
+         BUbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CbHEUPGiO2xXLDP1pQhm/RlbkvGz7+p5cRWU2d3UQfw=;
+        b=IopSVtVFtEWw/XJU7ShziCJnmUO/w+hIjELwuCo7v9AmCdppzNavGlY/JlCPX61sca
+         iI2lCHYu277/IB0AnP9rD6+OOnBoBXByMKoUwNYtJJTJdv1wKSBcmqIA0nGB/4IxLbFO
+         bqSNgNHMICWP2+dvt9COsSxp4t1Om+aPbbpII/CcPoz7C7OqN2LxkXYiuHqTcVWPiTX0
+         dufF8e9l+OfeZVfJ8Q+YVckN5YxiVpViiIrZG98eGrjbU/HfPH5HIoB3iVP09QtRBan6
+         lEEUUu2Kuebvny8FpDKGQbls6z+cT4lYU3DRMqOUpkIDnZFh03fWNlYT1o02IcNSdt5S
+         Pb8Q==
+X-Gm-Message-State: APjAAAWJnm4ymqzKgrBleDPjcRldXBSGmUHuvP/DkXo1DFRbPZOW0Xra
+        RKeMW7J76RwVkS/+08q9ommqYb0FRMupBFzvbbdZMg==
+X-Google-Smtp-Source: APXvYqxv0KeAY92xYLCeXy3ePgyy8iCC5pnPsszuzLa3iHRoZHn1U5ezF6Kg+PNL/u6OwXFp8m9IWM0FThLGtJAfOGA=
+X-Received: by 2002:a25:aac8:: with SMTP id t66mr19100764ybi.364.1572373644781;
+ Tue, 29 Oct 2019 11:27:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <519d52d2-cd83-b544-591b-ca9d9bb16dfa@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <CABWYdi1QmrHxNZT_DK4A2WUoj=r1+wxSngzaaTuGCatHisaTRw@mail.gmail.com>
+In-Reply-To: <CABWYdi1QmrHxNZT_DK4A2WUoj=r1+wxSngzaaTuGCatHisaTRw@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 29 Oct 2019 11:27:13 -0700
+Message-ID: <CANn89iLE-3zxROxGOusPBRmQL4oN2Nqtg3rqXnpO8bkiFAw8EQ@mail.gmail.com>
+Subject: Re: fq dropping packets between vlan and ethernet interfaces
+To:     Ivan Babrou <ivan@cloudflare.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> So just to be clear on the current approach: NACK.
+On Tue, Oct 29, 2019 at 11:20 AM Ivan Babrou <ivan@cloudflare.com> wrote:
+>
+> Hello,
+>
+> We're trying to test Linux 5.4 early and hit an issue with FQ.
+>
+> The relevant part of our network setup involves four interfaces:
+>
+> * ext0 (ethernet, internet facing)
+> * vlan101@ext0 (vlan)
+> * int0 (ethernet, lan facing)
+> * vlan11@int0 (vlan)
+>
+> Both int0 and ext0 have fq on them:
+>
+> qdisc fq 1: dev ext0 root refcnt 65 limit 10000p flow_limit 100p
+> buckets 1024 orphan_mask 1023 quantum 3228 initial_quantum 16140
+> low_rate_threshold 550Kbit refill_delay 40.0ms
+> qdisc fq 8003: dev int0 root refcnt 65 limit 10000p flow_limit 100p
+> buckets 1024 orphan_mask 1023 quantum 3028 initial_quantum 15140
+> low_rate_threshold 550Kbit refill_delay 40.0ms
+>
+> The issue itself is that after some time ext0 stops feeding off
+> vlan101, which is visible as tcpdump not seeing packets on ext0, while
+> they flow over vlan101.
+>
+> I can see that fq_dequeue does not report any packets:
+>
+> $ sudo perf record -e qdisc:qdisc_dequeue -aR sleep 1
+> hping3 40335 [006] 63920.881016: qdisc:qdisc_dequeue: dequeue
+> ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
+> packets=0 skbaddr=(nil)
+> hping3 40335 [006] 63920.881030: qdisc:qdisc_dequeue: dequeue
+> ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
+> packets=0 skbaddr=(nil)
+> hping3 40335 [006] 63920.881041: qdisc:qdisc_dequeue: dequeue
+> ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
+> packets=0 skbaddr=(nil)
+> hping3 40335 [006] 63920.881070: qdisc:qdisc_dequeue: dequeue
+> ifindex=4 qdisc handle=0x10000 parent=0xFFFFFFFF txq_state=0x0
+> packets=0 skbaddr=(nil)
+>
+> Inside of fq_dequeue I'm able to see that we throw away packets in here:
+>
+> * https://elixir.bootlin.com/linux/v5.4-rc2/source/net/sched/sch_fq.c#L510
+>
+> The output of tc -s qdisc shows the following:
+>
+> qdisc fq 1: dev ext0 root refcnt 65 limit 10000p flow_limit 100p
+> buckets 1024 orphan_mask 1023 quantum 3228 initial_quantum 16140
+> low_rate_threshold 550Kbit refill_delay 40.0ms
+>  Sent 4872143400 bytes 8448638 pkt (dropped 201276670, overlimits 0
+> requeues 103)
+>  backlog 779376b 10000p requeues 103
+>   2806 flows (2688 inactive, 118 throttled), next packet delay
+> 1572240566653952889 ns
+>   354201 gc, 0 highprio, 804560 throttled, 3919 ns latency, 19492 flows_plimit
+> qdisc fq 8003: dev int0 root refcnt 65 limit 10000p flow_limit 100p
+> buckets 1024 orphan_mask 1023 quantum 3028 initial_quantum 15140
+> low_rate_threshold 550Kbit refill_delay 40.0ms
+>  Sent 15869093876 bytes 17387110 pkt (dropped 0, overlimits 0 requeues 2817)
+>  backlog 0b 0p requeues 2817
+>   2047 flows (2035 inactive, 0 throttled)
+>   225074 gc, 10 highprio, 102308 throttled, 7525 ns latency
+>
+> The key part here is probably that next packet delay for ext0 is the
+> current unix timestamp in nanoseconds. Naturally, we see this code
+> path being executed:
+>
+> * https://elixir.bootlin.com/linux/v5.4-rc2/source/net/sched/sch_fq.c#L462
+>
+> Unfortunately, I don't have a reliable reproduction for this issue. It
+> appears naturally with some traffic and I can do limited tracing with
+> perf and bcc tools while running hping3 to generate packets.
+>
+> The issue goes away if I replace fq with pfifo_fast on ext0.
 
-Agreed.
+At which commit is your tree  precisely ?
 
-And the Marvell one has only been used to set LEDs, as far as i
-know. I would definitely push back on using it for anything else.
+This sounds like the recent fix we had for fragmented packets.
 
-      Andrew
+e7a409c3f46cb0dbc7bfd4f6f9421d53e92614a5 ipv4: fix IPSKB_FRAG_PMTU
+handling with fragmentation
