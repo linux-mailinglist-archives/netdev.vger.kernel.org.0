@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 848B0E7F70
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 06:09:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C58DE7FFF
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 07:00:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728868AbfJ2FJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 01:09:20 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:34242 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbfJ2FJU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 01:09:20 -0400
-Received: by mail-lf1-f66.google.com with SMTP id f5so9524396lfp.1;
-        Mon, 28 Oct 2019 22:09:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fu23a2LiYeTVsc9FCtPm8Q6gbyK53FnRd2mwyu6MHEA=;
-        b=p86UAwzTfWSV5qnbeDVwySXbkLwyZFQhpyCnw+CDA3b4IYxyZgIkkMgii79VmGBQ+L
-         cg0XnHnLVD7AHbKWYp48dfJNtG3x8DcJqbWTt/uH4uKFqccJPRpYxCGXiIbqE1Qvdu9j
-         xLyUC38Z0xMQ1Y9NG3zJzhSlLs9a9sq0vxgD03V4DKtut/LQK9wzwj2Wa2tBmFyKdugr
-         IiyEJ0n2sPAL7K0MRR/W5fSc8Sg9dogdkAfdHBjBgpxkX9zFBnl86qmBIYoSh+rB5LMy
-         MED1mbdV3FQzID66LwoPVLZMkkoebDAuqiOR4N9EJHBSlHV9Rn7w0JhxSnSYLw0LUyYT
-         mvOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fu23a2LiYeTVsc9FCtPm8Q6gbyK53FnRd2mwyu6MHEA=;
-        b=bDrStdp/75KHURBEHFJycSWBGI9DkybUjRw7sNeGA9niW6pLE+rGCBqFA8pxnQrAw8
-         kxt4Rsvhu7dzDc/FmcEN/Rwmn6aTsQb7EsLwcRxBwQ/yTXBeIaLAzKMTfe5mb4Y8N+2m
-         Cr6jPFQdUrrtfctaoU4gxvOV+SuluFw2ru30iQjCCNepwr4OdraXBnd0I554315fEGuU
-         8FXKhg7t5IedoUU/QphSmvxtArSoG0Ji4s04GBFpLQoDJycYSdNjmN5sEjSIGjJooTy4
-         zt78fOLiKzwzPNBJoXtPKO7PbIFtBegaE7WvZz5FzB/RZerxSso6iVPZFlXEJxd1aqtD
-         LKNw==
-X-Gm-Message-State: APjAAAXj/E4zSpz8xY/MHee9bPY4JnZHOeYGSMgNEL6hZkp1f/RXfdka
-        RQwTXNbI4CYtiU5e+o3yvDirQRkrW80Wbp6S6LQ=
-X-Google-Smtp-Source: APXvYqxKxrrM1VocolZa2pPapP0O3kvBAS6ElTmJAPv16Ov2Pd9v0w72m+FKAySdpT86pdN395XdxsAt36cBi0NJ4WE=
-X-Received: by 2002:a05:6512:146:: with SMTP id m6mr827514lfo.98.1572325758469;
- Mon, 28 Oct 2019 22:09:18 -0700 (PDT)
+        id S1732074AbfJ2GAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 02:00:05 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:12358 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726034AbfJ2GAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 02:00:05 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id x9T5vY1b008602
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 23:00:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=41JfYLKTUlhkyGd+w/AeqfNtHOua4m6JwYmAe8FXJTI=;
+ b=mzuvuDT70jS/lv9Ld+MOrqwoe/vHGzN9LgAEWUlMt1eddmogqGM+Tt7K1w39+S5Lg/WZ
+ z3GMrynR0Zjko/89tu9+cjpl5cP7lx4ohaKiWrmkO81BtLwxk66/8bZCBqShhYBiyslv
+ fOYHCTzsa3h806KHBJKx8F1LuLywJp5qjoQ= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2vvhtpmsbg-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 28 Oct 2019 23:00:02 -0700
+Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Mon, 28 Oct 2019 23:00:00 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id BB2312EC038A; Mon, 28 Oct 2019 22:59:59 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] libbpf: don't use kernel-side u32 type in xsk.c
+Date:   Mon, 28 Oct 2019 22:59:53 -0700
+Message-ID: <20191029055953.2461336-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <000000000000044a7f0595fbaf2c@google.com> <000000000000929f990596024a82@google.com>
- <20191028.212449.1389218373993746531.davem@davemloft.net>
-In-Reply-To: <20191028.212449.1389218373993746531.davem@davemloft.net>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Tue, 29 Oct 2019 14:09:07 +0900
-Message-ID: <CAMArcTUMcWm4McPGTDK9+Cf5jUKbzSRaio4BA1vs1nhugfsQ1w@mail.gmail.com>
-Subject: Re: INFO: trying to register non-static key in bond_3ad_update_ad_actor_settings
-To:     David Miller <davem@davemloft.net>
-Cc:     syzbot+8da67f407bcba2c72e6e@syzkaller.appspotmail.com,
-        Andy Gospodarek <andy@greyhouse.net>, j.vosburgh@gmail.com,
-        linux-kernel@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs@googlegroups.com, vfalico@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-29_02:2019-10-28,2019-10-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ mlxlogscore=814 phishscore=0 spamscore=0 adultscore=0 clxscore=1015
+ mlxscore=0 suspectscore=8 malwarescore=0 lowpriorityscore=0
+ priorityscore=1501 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1908290000 definitions=main-1910290064
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Oct 2019 at 13:24, David Miller <davem@davemloft.net> wrote:
->
+u32 is a kernel-side typedef. User-space library is supposed to use __u32.
+This breaks Github's projection of libbpf. Do u32 -> __u32 fix.
 
-Hi David,
+Fixes: 94ff9ebb49a5 ("libbpf: Fix compatibility for kernels without need_wakeup")
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/xsk.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-> From: syzbot <syzbot+8da67f407bcba2c72e6e@syzkaller.appspotmail.com>
-> Date: Mon, 28 Oct 2019 18:11:08 -0700
->
-> > syzbot has found a reproducer for the following crash on:
-> >
-> > HEAD commit:    60c1769a Add linux-next specific files for 20191028
-> > git tree:       linux-next
-> > console output:
-> > https://syzkaller.appspot.com/x/log.txt?x=154d4374e00000
-> > kernel config:
-> > https://syzkaller.appspot.com/x/.config?x=cb86688f30db053d
-> > dashboard link:
-> > https://syzkaller.appspot.com/bug?extid=8da67f407bcba2c72e6e
-> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > syz repro: https://syzkaller.appspot.com/x/repro.syz?x=14d43a04e00000
-> > C reproducer: https://syzkaller.appspot.com/x/repro.c?x=16be3b9ce00000
-> >
-> > IMPORTANT: if you fix the bug, please add the following tag to the
-> > commit:
-> > Reported-by: syzbot+8da67f407bcba2c72e6e@syzkaller.appspotmail.com
->
-> This might be because of the lockdep depth changes.
->
-> Taehee, please take a look.
->
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index d54111133123..74d84f36a5b2 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -161,22 +161,22 @@ static void xsk_mmap_offsets_v1(struct xdp_mmap_offsets *off)
+ 	off->rx.producer = off_v1.rx.producer;
+ 	off->rx.consumer = off_v1.rx.consumer;
+ 	off->rx.desc = off_v1.rx.desc;
+-	off->rx.flags = off_v1.rx.consumer + sizeof(u32);
++	off->rx.flags = off_v1.rx.consumer + sizeof(__u32);
+ 
+ 	off->tx.producer = off_v1.tx.producer;
+ 	off->tx.consumer = off_v1.tx.consumer;
+ 	off->tx.desc = off_v1.tx.desc;
+-	off->tx.flags = off_v1.tx.consumer + sizeof(u32);
++	off->tx.flags = off_v1.tx.consumer + sizeof(__u32);
+ 
+ 	off->fr.producer = off_v1.fr.producer;
+ 	off->fr.consumer = off_v1.fr.consumer;
+ 	off->fr.desc = off_v1.fr.desc;
+-	off->fr.flags = off_v1.fr.consumer + sizeof(u32);
++	off->fr.flags = off_v1.fr.consumer + sizeof(__u32);
+ 
+ 	off->cr.producer = off_v1.cr.producer;
+ 	off->cr.consumer = off_v1.cr.consumer;
+ 	off->cr.desc = off_v1.cr.desc;
+-	off->cr.flags = off_v1.cr.consumer + sizeof(u32);
++	off->cr.flags = off_v1.cr.consumer + sizeof(__u32);
+ }
+ 
+ static int xsk_get_mmap_offsets(int fd, struct xdp_mmap_offsets *off)
+-- 
+2.17.1
 
-Thank you for forwarding this,
-I will take a look at this issue.
-
-Thank you
-Taehee Yoo
-
-> Thanks.
