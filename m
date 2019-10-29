@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4F7DE8A73
-	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 15:15:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 288D9E8A7D
+	for <lists+netdev@lfdr.de>; Tue, 29 Oct 2019 15:15:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389177AbfJ2OPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2389155AbfJ2OPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 29 Oct 2019 10:15:18 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:53332 "EHLO
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:53318 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388988AbfJ2OPR (ORCPT
+        by vger.kernel.org with ESMTP id S2389090AbfJ2OPR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 29 Oct 2019 10:15:17 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 7D27FC0C3F;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 814CFC0C40;
         Tue, 29 Oct 2019 14:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1572358517; bh=sqeaRb0tZGvD7E7A9/5JfuhQALlctRTMEjpejmhQcb8=;
+        t=1572358517; bh=YDnL8bpwK/tRJL9FcP1ml8xixy+yOmNErBznAAvEsXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=O06JVMIhjb9OPQoasP74FxSvDbiGET/AOIwdvqbMYpsBMFoYkUckqKoaourMQgstj
-         RGBakA9pyn+7W8RSDtxYh/8Wp3ETSIsDMJUd8jCtjRg+9Ui4iqu6Tl3Y/x7DwQMU/M
-         31cJncjuEtU9QHm84XEYJ8fmkx2WSKmvYOgf1TPbeL0sb5HEtAyldwjwH7um78o3Dh
-         DMtu0uzuGKBkQENSYZPKIYfo/upznRZVKywgjLchSQTD61kW9uVGvltiaF1Q29heow
-         XAZda1SfCRbpb1045105W9pux19MqMiLmrI4ztpPhpUAFNmdlF+A1I2O77egSqyD0Y
-         k6Qa5e1sDvU2g==
+        b=Rwr5V11uBs9LeQGmi99GYlUb0IqNiA6e1qolrjxyTpqCuC3Cicfk2uT/nzBGpxk8W
+         +jXvIMeQWjJJdOYq4RFQodQhJ35/PeYcUY5P/9BOS7YyatD0N2V6Lx+EPQxfRW9AoB
+         7lkkWZGcO7j91ONJr/NgaVMV9rnpPQMVBztHuZaCXEdRXoqLTtIuEPBphduL++PF7J
+         g6ZZmBgUmtNFFRmwtz3Kl9c9J3GUXp+vO2nGt1n+6N9pQOx6DqEZc/syY4FedsHdwN
+         7OELlq3edN8pp9W8Ke7U0HwvpyErLglkwj517Qes3BwCTyyqN2B3anTxr6rh2SPl71
+         0gxP4YXRZiz/A==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 186C1A0079;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 20D86A007D;
         Tue, 29 Oct 2019 14:15:15 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 7/9] net: stmmac: xgmac: Fix AV Feature detection
-Date:   Tue, 29 Oct 2019 15:14:51 +0100
-Message-Id: <210c64859abaa41d4bd9fb68c4df3a2c8a9cf29c.1572355609.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net 8/9] net: stmmac: xgmac: Disable Flow Control when 1 or more queues are in AV
+Date:   Tue, 29 Oct 2019 15:14:52 +0100
+Message-Id: <238f9ff3de526e122a4f2db43a597553649c4339.1572355609.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1572355609.git.Jose.Abreu@synopsys.com>
 References: <cover.1572355609.git.Jose.Abreu@synopsys.com>
@@ -53,11 +53,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix incorrect precedence of operators. For reference: AV implies AV
-Feature but RAV implies only RX side AV Feature. As we want full AV
-features we need to check RAV.
+When in AVB mode we need to disable flow control to prevent MAC from
+pausing in TX side.
 
-Fixes: c2b69474d63b ("net: stmmac: xgmac: Correct RAVSEL field interpretation")
+Fixes: ec6ea8e3eee9 ("net: stmmac: Add CBS support in XGMAC2")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
@@ -71,22 +70,29 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 7cc331996cd8..7bd1447f9f47 100644
+index 7bd1447f9f47..f148cb2061d8 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -372,7 +372,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
- 	dma_cap->eee = (hw_cap & XGMAC_HWFEAT_EEESEL) >> 13;
- 	dma_cap->atime_stamp = (hw_cap & XGMAC_HWFEAT_TSSEL) >> 12;
- 	dma_cap->av = (hw_cap & XGMAC_HWFEAT_AVSEL) >> 11;
--	dma_cap->av &= !(hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10;
-+	dma_cap->av &= !((hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10);
- 	dma_cap->arpoffsel = (hw_cap & XGMAC_HWFEAT_ARPOFFSEL) >> 9;
- 	dma_cap->rmon = (hw_cap & XGMAC_HWFEAT_MMCSEL) >> 8;
- 	dma_cap->pmt_magic_frame = (hw_cap & XGMAC_HWFEAT_MGKSEL) >> 7;
+@@ -473,6 +473,7 @@ static void dwxgmac2_enable_tso(void __iomem *ioaddr, bool en, u32 chan)
+ static void dwxgmac2_qmode(void __iomem *ioaddr, u32 channel, u8 qmode)
+ {
+ 	u32 value = readl(ioaddr + XGMAC_MTL_TXQ_OPMODE(channel));
++	u32 flow = readl(ioaddr + XGMAC_RX_FLOW_CTRL);
+ 
+ 	value &= ~XGMAC_TXQEN;
+ 	if (qmode != MTL_QUEUE_AVB) {
+@@ -480,6 +481,7 @@ static void dwxgmac2_qmode(void __iomem *ioaddr, u32 channel, u8 qmode)
+ 		writel(0, ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(channel));
+ 	} else {
+ 		value |= 0x1 << XGMAC_TXQEN_SHIFT;
++		writel(flow & (~XGMAC_RFE), ioaddr + XGMAC_RX_FLOW_CTRL);
+ 	}
+ 
+ 	writel(value, ioaddr +  XGMAC_MTL_TXQ_OPMODE(channel));
 -- 
 2.7.4
 
