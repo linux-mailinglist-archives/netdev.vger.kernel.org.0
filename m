@@ -2,79 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE52EA556
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:23:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8005EA5AF
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:49:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727154AbfJ3VXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 17:23:14 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:35622 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726261AbfJ3VXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:23:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=87X+oyehu7JN6cXbNSmkqxhLbbV13utM66QLaFqOq30=; b=C0K0acY3VsFEjNSc5aNiAJFe4
-        d54AjrBqdl31EiwE3juEmhzyVlbqM+vV8tLM0pK41NKkIBPSSjSJhZxLTJf1ZR1dUzQPd3P7Bfepo
-        N5/Js2feq2atD6kIsq2nEI0zR7hMtJPFvxme4ObJ++6o7y3Lv9Q2ez3hM7Ym6z9j6MFfCzNt1u3UN
-        DH4xUDvfwjWGNhxU+bGtqYo33RhrKWLa7yiZ4XkUlrrgYqN77HzLVIF3OHkXVDSNjno7AvoAzFX22
-        YURfaj2i3xyAz42tT3zZ7C5c1fxke8BVtS/Kq2nwouudZaM5RtFilstS8C0cp7b25PYnwqyWSHF/R
-        PnCRVVR8Q==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iPvQu-00034L-4b; Wed, 30 Oct 2019 21:23:12 +0000
-Date:   Wed, 30 Oct 2019 14:23:12 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V6 6/6] docs: sample driver to demonstrate how to
- implement virtio-mdev framework
-Message-ID: <20191030212312.GA4251@infradead.org>
-References: <20191030064444.21166-1-jasowang@redhat.com>
- <20191030064444.21166-7-jasowang@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191030064444.21166-7-jasowang@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S1727213AbfJ3VtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 17:49:10 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:51018 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727099AbfJ3VtJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:49:09 -0400
+Received: from dalmore.blr.asicdesigners.com ([10.193.186.161])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id x9ULn3B0024886;
+        Wed, 30 Oct 2019 14:49:04 -0700
+From:   Vishal Kulkarni <vishal@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     nirranjan@chelsio.com, dt@chelsio.com,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Shahjada Abul Husain <shahjada@chelsio.com>
+Subject: [PATCH net v2] cxgb4: fix panic when attaching to ULD fail
+Date:   Wed, 30 Oct 2019 20:17:57 +0530
+Message-Id: <1572446877-29202-1-git-send-email-vishal@chelsio.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 02:44:44PM +0800, Jason Wang wrote:
-> This sample driver creates mdev device that simulate virtio net device
-> over virtio mdev transport. The device is implemented through vringh
-> and workqueue. A device specific dma ops is to make sure HVA is used
-> directly as the IOVA. This should be sufficient for kernel virtio
-> driver to work.
-> 
-> Only 'virtio' type is supported right now. I plan to add 'vhost' type
-> on top which requires some virtual IOMMU implemented in this sample
-> driver.
+Release resources when attaching to ULD fail. Otherwise, data
+mismatch is seen between LLD and ULD later on, which lead to
+kernel panic when accessing resources that should not even
+exist in the first place.
 
-Can we please submit a real driver for it?  A more or less useless
-sample driver doesn't really qualify for our normal kernel requirements
-that infrastructure should have a real user.
+Fixes: 94cdb8bb993a ("cxgb4: Add support for dynamic allocation of resources for ULD")
+Signed-off-by: Shahjada Abul Husain <shahjada@chelsio.com>
+Signed-off-by: Vishal Kulkarni <vishal@chelsio.com>
+---
+v2:
+- Added txq release if ULD fails to attach
+- Changed comment of cxgb4_register_uld into correct format
+v1:
+- Added the ULD attach check
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c | 28 +++++++++++++++-----------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+index a4dead4..86b528d 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+@@ -695,10 +695,10 @@ static void uld_init(struct adapter *adap, struct cxgb4_lld_info *lld)
+ 	lld->write_cmpl_support = adap->params.write_cmpl_support;
+ }
+ 
+-static void uld_attach(struct adapter *adap, unsigned int uld)
++static int uld_attach(struct adapter *adap, unsigned int uld)
+ {
+-	void *handle;
+ 	struct cxgb4_lld_info lli;
++	void *handle;
+ 
+ 	uld_init(adap, &lli);
+ 	uld_queue_init(adap, uld, &lli);
+@@ -708,7 +708,7 @@ static void uld_attach(struct adapter *adap, unsigned int uld)
+ 		dev_warn(adap->pdev_dev,
+ 			 "could not attach to the %s driver, error %ld\n",
+ 			 adap->uld[uld].name, PTR_ERR(handle));
+-		return;
++		return PTR_ERR(handle);
+ 	}
+ 
+ 	adap->uld[uld].handle = handle;
+@@ -716,22 +716,22 @@ static void uld_attach(struct adapter *adap, unsigned int uld)
+ 
+ 	if (adap->flags & CXGB4_FULL_INIT_DONE)
+ 		adap->uld[uld].state_change(handle, CXGB4_STATE_UP);
++
++	return 0;
+ }
+ 
+-/**
+- *	cxgb4_register_uld - register an upper-layer driver
+- *	@type: the ULD type
+- *	@p: the ULD methods
++/* cxgb4_register_uld - register an upper-layer driver
++ * @type: the ULD type
++ * @p: the ULD methods
+  *
+- *	Registers an upper-layer driver with this driver and notifies the ULD
+- *	about any presently available devices that support its type.  Returns
+- *	%-EBUSY if a ULD of the same type is already registered.
++ * Registers an upper-layer driver with this driver and notifies the ULD
++ * about any presently available devices that support its type.
+  */
+ void cxgb4_register_uld(enum cxgb4_uld type,
+ 			const struct cxgb4_uld_info *p)
+ {
+-	int ret = 0;
+ 	struct adapter *adap;
++	int ret = 0;
+ 
+ 	if (type >= CXGB4_ULD_MAX)
+ 		return;
+@@ -763,8 +763,12 @@ void cxgb4_register_uld(enum cxgb4_uld type,
+ 		if (ret)
+ 			goto free_irq;
+ 		adap->uld[type] = *p;
+-		uld_attach(adap, type);
++		ret = uld_attach(adap, type);
++		if (ret)
++			goto free_txq;
+ 		continue;
++free_txq:
++		release_sge_txq_uld(adap, type);
+ free_irq:
+ 		if (adap->flags & CXGB4_FULL_INIT_DONE)
+ 			quiesce_rx_uld(adap, type);
+-- 
+1.8.3.1
+
