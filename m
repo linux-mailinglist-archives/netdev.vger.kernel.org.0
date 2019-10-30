@@ -2,203 +2,257 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0116E9E39
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 16:01:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1ED6E9E59
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 16:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726976AbfJ3PBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 11:01:43 -0400
-Received: from mail-eopbgr820085.outbound.protection.outlook.com ([40.107.82.85]:49520
-        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726554AbfJ3PBm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 11:01:42 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fE0PSbk55wvf4vWXjF4k0O7tUYSlWKTPMgRUt7VyXkhZIE/LbE9ri+wwweWbohLbuZWx+/up00brLUZQZJDinPREfTtX/aj0juse8cu1qHT/a5bPrdxNut892W2fBQm/M5eToO2rn8aRsT2Kby+12yZbR3Hwn0eHVyOQr9b+yYsX96KTbuw90WfIzFiKMpOeC26XFd4T8KjXlIP0aN98/z3Tcb+u2b3LeCOF6uB0Mhi19WIouHKqjgmPPnnCQvsDG8K4HavUbtf1x41+J9q+kOD1LKRaCsE0JK4Nu50wj4vBrAA5oFJ9Oe/IMX8Bk3igX34cStRUvcQSlJdkkzpSMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TR1n0eyok09KYq4v7J8+0LUCaFEo+foVc2EVXUhe0z0=;
- b=h/u5w1ht793oIUtVAVr3FYV+5vtIRZd8+zoO9W9Hot/hSf0dZ824FuEY/DbwT1qivKtf8XFHKtyyYEIkhgYL/TLfz88SPqB+WWjqhWIYZXej+/HBOufool84Oi9tMw5w+l7fZboroEB7To8pWYrwNAhEhD60O58aEzJb2/+GR+2Ue7dz781DlUdtpRNB9uGUsAGdPBkW1oZbV5t1lRE8oCEngQUhsJgaMHuegYMP8IPKDJ6FwcTW5LNRishsOtb82ihG65uA4j8aty36THznYWBEkz0F/CciiiJpSD6wFsIH0t1uOUmhpXHS8PajbofZnJyR1E+KHs7f/yZyTS1/vg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TR1n0eyok09KYq4v7J8+0LUCaFEo+foVc2EVXUhe0z0=;
- b=b3+FpbIsE6hue/XfvQhxjXV0nqJA4KuwmuMghVG469Sw2kIXVY5VvvW93jjGG+a1Nu3h1xIwIT9wcSCHX0/z7L9yhgjsRaDLdzhOOenYb+6Qk4peknGz2+p9EDtFvmyOsuhgEei+22ePPDBUc3jKIgtUtCpPudHZ4VXdQFs6srM=
-Received: from MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) by
- MWHPR05MB3390.namprd05.prod.outlook.com (10.174.175.151) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.15; Wed, 30 Oct 2019 15:01:39 +0000
-Received: from MWHPR05MB3376.namprd05.prod.outlook.com
- ([fe80::4098:2c39:d8d3:a209]) by MWHPR05MB3376.namprd05.prod.outlook.com
- ([fe80::4098:2c39:d8d3:a209%7]) with mapi id 15.20.2408.018; Wed, 30 Oct 2019
- 15:01:39 +0000
-From:   Jorgen Hansen <jhansen@vmware.com>
-To:     'Stefano Garzarella' <sgarzare@redhat.com>
-CC:     "Michael S. Tsirkin" <mst@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 06/14] vsock: add 'struct vsock_sock *' param to
- vsock_core_get_transport()
-Thread-Topic: [PATCH net-next 06/14] vsock: add 'struct vsock_sock *' param to
- vsock_core_get_transport()
-Thread-Index: AQHViYhVbfxCaQWpnUKTckVdAjR646dzUpNw
-Date:   Wed, 30 Oct 2019 15:01:39 +0000
-Message-ID: <MWHPR05MB3376B7BEE1400BDEFCC64EDDDA600@MWHPR05MB3376.namprd05.prod.outlook.com>
-References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-7-sgarzare@redhat.com>
-In-Reply-To: <20191023095554.11340-7-sgarzare@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jhansen@vmware.com; 
-x-originating-ip: [146.247.47.49]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a98c5fa0-be00-478b-582e-08d75d4a1114
-x-ms-traffictypediagnostic: MWHPR05MB3390:
-x-microsoft-antispam-prvs: <MWHPR05MB339032923155C92008BDC43BDA600@MWHPR05MB3390.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(366004)(396003)(39860400002)(376002)(199004)(189003)(81156014)(33656002)(52536014)(55016002)(54906003)(4326008)(81166006)(2906002)(316002)(86362001)(25786009)(8676002)(478600001)(7416002)(256004)(14444005)(6436002)(14454004)(66066001)(8936002)(99286004)(9686003)(6116002)(71190400001)(64756008)(6246003)(102836004)(66476007)(66946007)(76116006)(6916009)(229853002)(53546011)(71200400001)(66446008)(74316002)(486006)(7696005)(6506007)(186003)(11346002)(476003)(446003)(26005)(7736002)(305945005)(3846002)(76176011)(5660300002)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB3390;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: vmware.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZW6FeDcBb3TC6Hi6WRg5hDeHgBHt2YNiwSDp4pzVkKE3c0wstX8V1KzG/G30l/Mil/qOfeFQUtIF7YozjWzGUj3p/jokn5xDfi0qVPhMSEmbjMB74bN2aK/6mB1ZuOnLusBDHwq3Mrp+8tzuiiVTAmKbZOKo+0NBKQl9TOMtfwNWlmFA3P249bX3OV76c+0T3HbsqT/+UdpqGOkIfHxSJDr918tJxzCSbpgMeqCXCERKl/gFcTd5eWHpWgqDInCQCxkVD7E/faIP5ySKwv6VUD28v6rH4TxOhWqgAemx9VJqBcQrY6WKy1RfBu/mMNwN59GNMb6JISx+uv7+g5hJQNt2t+zwH09ARdhZDUF92IXqGp3EOt2UN0Qq3zTorLHZ6rIfoLPjOHexSrSBIhefx2QEoJx2l5Q/lIrwM2KmThxe42vIsEYSB9kYKk7ENsZq
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726759AbfJ3PHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 11:07:39 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34926 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726321AbfJ3PHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 11:07:39 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <borkmann@iogearbox.net>)
+        id 1iPpZN-000252-5l; Wed, 30 Oct 2019 16:07:33 +0100
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <borkmann@iogearbox.net>)
+        id 1iPpZM-0003iH-So; Wed, 30 Oct 2019 16:07:32 +0100
+Subject: Re: Compile build issues with samples/bpf/ again
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Sage <eric@sage.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+References: <20191030114313.75b3a886@carbon>
+ <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
+ <20191030120551.68f8b67b@carbon>
+From:   Daniel Borkmann <borkmann@iogearbox.net>
+Message-ID: <d7d91ac5-a579-2ada-f96d-4239b8dc11b6@iogearbox.net>
+Date:   Wed, 30 Oct 2019 16:07:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a98c5fa0-be00-478b-582e-08d75d4a1114
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 15:01:39.0624
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: By7qsopOQnj1xtPWfgAYuCw73oiGOmpvWgk58axhPybcgH6fQEGoMYQR1sYDal5aS4OUQuX/tPrjNxO/3CuczA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB3390
+In-Reply-To: <20191030120551.68f8b67b@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: borkmann@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25618/Wed Oct 30 09:54:22 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
-> Sent: Wednesday, October 23, 2019 11:56 AM
-> Subject: [PATCH net-next 06/14] vsock: add 'struct vsock_sock *' param to
-> vsock_core_get_transport()
->=20
-> Since now the 'struct vsock_sock' object contains a pointer to the transp=
-ort,
-> this patch adds a parameter to the
-> vsock_core_get_transport() to return the right transport assigned to the
-> socket.
->=20
-> This patch modifies also the virtio_transport_get_ops(), that uses the
-> vsock_core_get_transport(), adding the 'struct vsock_sock *' parameter.
->=20
-> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
-> RFC -> v1:
-> - Removed comment about protecting transport_single (Stefan)
-> ---
->  include/net/af_vsock.h                  | 2 +-
->  net/vmw_vsock/af_vsock.c                | 7 ++-----
->  net/vmw_vsock/virtio_transport_common.c | 9 +++++----
->  3 files changed, 8 insertions(+), 10 deletions(-)
->=20
-> diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h index
-> a5e1e134261d..2ca67d048de4 100644
-> --- a/include/net/af_vsock.h
-> +++ b/include/net/af_vsock.h
-> @@ -166,7 +166,7 @@ static inline int vsock_core_init(const struct
-> vsock_transport *t)  void vsock_core_exit(void);
->=20
->  /* The transport may downcast this to access transport-specific function=
-s */
-> -const struct vsock_transport *vsock_core_get_transport(void);
-> +const struct vsock_transport *vsock_core_get_transport(struct
-> +vsock_sock *vsk);
->=20
->  /**** UTILS ****/
->=20
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c index
-> c3a14f853eb0..eaea159006c8 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -2001,12 +2001,9 @@ void vsock_core_exit(void)  }
-> EXPORT_SYMBOL_GPL(vsock_core_exit);
->=20
-> -const struct vsock_transport *vsock_core_get_transport(void)
-> +const struct vsock_transport *vsock_core_get_transport(struct
-> +vsock_sock *vsk)
->  {
-> -	/* vsock_register_mutex not taken since only the transport uses this
-> -	 * function and only while registered.
-> -	 */
-> -	return transport_single;
-> +	return vsk->transport;
->  }
->  EXPORT_SYMBOL_GPL(vsock_core_get_transport);
->=20
-> diff --git a/net/vmw_vsock/virtio_transport_common.c
-> b/net/vmw_vsock/virtio_transport_common.c
-> index 9763394f7a61..37a1c7e7c7fe 100644
-> --- a/net/vmw_vsock/virtio_transport_common.c
-> +++ b/net/vmw_vsock/virtio_transport_common.c
-> @@ -29,9 +29,10 @@
->  /* Threshold for detecting small packets to copy */  #define
-> GOOD_COPY_LEN  128
->=20
-> -static const struct virtio_transport *virtio_transport_get_ops(void)
-> +static const struct virtio_transport *
-> +virtio_transport_get_ops(struct vsock_sock *vsk)
->  {
-> -	const struct vsock_transport *t =3D vsock_core_get_transport();
-> +	const struct vsock_transport *t =3D vsock_core_get_transport(vsk);
->=20
->  	return container_of(t, struct virtio_transport, transport);  } @@ -
-> 168,7 +169,7 @@ static int virtio_transport_send_pkt_info(struct vsock_so=
-ck
-> *vsk,
->  	struct virtio_vsock_pkt *pkt;
->  	u32 pkt_len =3D info->pkt_len;
->=20
-> -	src_cid =3D virtio_transport_get_ops()->transport.get_local_cid();
-> +	src_cid =3D virtio_transport_get_ops(vsk)->transport.get_local_cid();
->  	src_port =3D vsk->local_addr.svm_port;
->  	if (!info->remote_cid) {
->  		dst_cid	=3D vsk->remote_addr.svm_cid;
-> @@ -201,7 +202,7 @@ static int virtio_transport_send_pkt_info(struct
-> vsock_sock *vsk,
->=20
->  	virtio_transport_inc_tx_pkt(vvs, pkt);
->=20
-> -	return virtio_transport_get_ops()->send_pkt(pkt);
-> +	return virtio_transport_get_ops(vsk)->send_pkt(pkt);
->  }
->=20
->  static bool virtio_transport_inc_rx_pkt(struct virtio_vsock_sock *vvs,
-> --
-> 2.21.0
+On 10/30/19 12:05 PM, Jesper Dangaard Brouer wrote:
+> On Wed, 30 Oct 2019 11:53:21 +0100
+> Björn Töpel <bjorn.topel@gmail.com> wrote:
+>> On Wed, 30 Oct 2019 at 11:43, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+[...]
+>>> It is annoy to experience that simply building kernel tree samples/bpf/
+>>> is broken as often as it is.  Right now, build is broken in both DaveM
+>>> net.git and bpf.git.  ACME have some build fixes queued from Björn
+>>> Töpel. But even with those fixes, build (for samples/bpf/task_fd_query_user.c)
+>>> are still broken, as reported by Eric Sage (15 Oct), which I have a fix for.
+>>
+>> Hmm, something else than commit e55190f26f92 ("samples/bpf: Fix build
+>> for task_fd_query_user.c")?
+> 
+> I see, you already fixed this... and it is in the bpf.git tree.
+> 
+> Then we only need your other fixes from ACME's tree.  I just cloned a
+> fresh version of git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+> to check that 'make M=samples/bpf' still fails.
 
-Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
+Correct, the two fixes from Bjorn which made the test_attr__* optional were
+taken by Arnaldo given the main change was under tools/perf/perf-sys.h. If
+you cherry pick these ...
+
+https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=06f84d1989b7e58d56fa2e448664585749d41221
+https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=fce9501aec6bdda45ef3a5e365a5e0de7de7fe2d
+
+... into bpf tree, then all builds fine. When Arnaldo took them, my assumption
+was that these fixes would have been routed by him to Linus' tree, and upon
+resync we pull them automatically into bpf tree again.
+
+Look like didn't happen yet at this point, Arnaldo?
+
+Build after cherry-pick:
+
+root@foo1:~/bpf# make -j8 M=samples/bpf/ clean
+   CLEAN   samples/bpf/
+   CLEAN   samples/bpf//Module.symvers
+root@foo1:~/bpf# make -j8 M=samples/bpf/
+   AR      samples/bpf//built-in.a
+make -C /root/bpf/samples/bpf/../../tools/lib/bpf/ RM='rm -rf' LDFLAGS= srctree=/root/bpf/samples/bpf/../../ O=
+   HOSTCC  samples/bpf//bpf_load.o
+   HOSTCC  samples/bpf//xdp1_user.o
+   HOSTCC  samples/bpf//cookie_uid_helper_example.o
+   HOSTCC  samples/bpf//test_lru_dist
+   HOSTCC  samples/bpf//sock_example
+   HOSTCC  samples/bpf//fds_example.o
+   HOSTCC  samples/bpf//sockex1_user.o
+   HOSTCC  samples/bpf//sockex2_user.o
+   HOSTCC  samples/bpf//sockex3_user.o
+   HOSTCC  samples/bpf//tracex1_user.o
+   HOSTCC  samples/bpf//tracex2_user.o
+   HOSTCC  samples/bpf//tracex3_user.o
+   HOSTCC  samples/bpf//tracex4_user.o
+   HOSTCC  samples/bpf//tracex5_user.o
+   HOSTCC  samples/bpf//tracex6_user.o
+   HOSTCC  samples/bpf//tracex7_user.o
+   HOSTCC  samples/bpf//test_probe_write_user_user.o
+   HOSTCC  samples/bpf//trace_output_user.o
+   HOSTCC  samples/bpf//lathist_user.o
+   HOSTCC  samples/bpf//offwaketime_user.o
+   HOSTCC  samples/bpf//spintest_user.o
+   HOSTCC  samples/bpf//map_perf_test_user.o
+   HOSTCC  samples/bpf//test_overhead_user.o
+   HOSTCC  samples/bpf//test_cgrp2_array_pin.o
+   HOSTCC  samples/bpf//test_cgrp2_attach.o
+   HOSTCC  samples/bpf//test_cgrp2_sock.o
+   HOSTCC  samples/bpf//test_cgrp2_sock2.o
+   HOSTLD  samples/bpf//xdp1
+   HOSTLD  samples/bpf//xdp2
+   HOSTCC  samples/bpf//xdp_router_ipv4_user.o
+   HOSTCC  samples/bpf//test_current_task_under_cgroup_user.o
+   HOSTCC  samples/bpf//trace_event_user.o
+   HOSTCC  samples/bpf//sampleip_user.o
+   HOSTCC  samples/bpf//tc_l2_redirect_user.o
+   HOSTCC  samples/bpf//lwt_len_hist_user.o
+   HOSTCC  samples/bpf//xdp_tx_iptunnel_user.o
+   HOSTCC  samples/bpf//test_map_in_map_user.o
+   HOSTLD  samples/bpf//per_socket_stats_example
+   HOSTCC  samples/bpf//xdp_redirect_user.o
+   HOSTCC  samples/bpf//xdp_redirect_map_user.o
+   HOSTCC  samples/bpf//xdp_redirect_cpu_user.o
+   HOSTCC  samples/bpf//xdp_monitor_user.o
+   HOSTCC  samples/bpf//xdp_rxq_info_user.o
+   HOSTCC  samples/bpf//syscall_tp_user.o
+   HOSTCC  samples/bpf//cpustat_user.o
+   HOSTCC  samples/bpf//xdp_adjust_tail_user.o
+   HOSTCC  samples/bpf//xdpsock_user.o
+   HOSTCC  samples/bpf//xdp_fwd_user.o
+   HOSTCC  samples/bpf//task_fd_query_user.o
+   HOSTCC  samples/bpf//xdp_sample_pkts_user.o
+   HOSTCC  samples/bpf//ibumad_user.o
+   HOSTCC  samples/bpf//hbm.o
+   CLANG-bpf  samples/bpf//sockex1_kern.o
+   CLANG-bpf  samples/bpf//sockex2_kern.o
+   CLANG-bpf  samples/bpf//sockex3_kern.o
+   CLANG-bpf  samples/bpf//tracex1_kern.o
+   CLANG-bpf  samples/bpf//tracex2_kern.o
+   CLANG-bpf  samples/bpf//tracex3_kern.o
+   CLANG-bpf  samples/bpf//tracex4_kern.o
+   CC      samples/bpf//syscall_nrs.s
+   CLANG-bpf  samples/bpf//tracex6_kern.o
+   CLANG-bpf  samples/bpf//tracex7_kern.o
+   CLANG-bpf  samples/bpf//sock_flags_kern.o
+   CLANG-bpf  samples/bpf//test_probe_write_user_kern.o
+   CLANG-bpf  samples/bpf//trace_output_kern.o
+   CLANG-bpf  samples/bpf//tcbpf1_kern.o
+   CLANG-bpf  samples/bpf//tc_l2_redirect_kern.o
+   CLANG-bpf  samples/bpf//lathist_kern.o
+   CLANG-bpf  samples/bpf//offwaketime_kern.o
+   CLANG-bpf  samples/bpf//spintest_kern.o
+   CLANG-bpf  samples/bpf//map_perf_test_kern.o
+   CLANG-bpf  samples/bpf//test_overhead_tp_kern.o
+   CLANG-bpf  samples/bpf//test_overhead_raw_tp_kern.o
+   CLANG-bpf  samples/bpf//test_overhead_kprobe_kern.o
+   CLANG-bpf  samples/bpf//parse_varlen.o
+   CLANG-bpf  samples/bpf//parse_simple.o
+   CLANG-bpf  samples/bpf//parse_ldabs.o
+   CLANG-bpf  samples/bpf//test_cgrp2_tc_kern.o
+   CLANG-bpf  samples/bpf//xdp1_kern.o
+   CLANG-bpf  samples/bpf//xdp2_kern.o
+   CLANG-bpf  samples/bpf//xdp_router_ipv4_kern.o
+   CLANG-bpf  samples/bpf//test_current_task_under_cgroup_kern.o
+   CLANG-bpf  samples/bpf//trace_event_kern.o
+   CLANG-bpf  samples/bpf//sampleip_kern.o
+   CLANG-bpf  samples/bpf//lwt_len_hist_kern.o
+   CLANG-bpf  samples/bpf//xdp_tx_iptunnel_kern.o
+   CLANG-bpf  samples/bpf//test_map_in_map_kern.o
+   CLANG-bpf  samples/bpf//tcp_synrto_kern.o
+   CLANG-bpf  samples/bpf//tcp_rwnd_kern.o
+   CLANG-bpf  samples/bpf//tcp_bufs_kern.o
+   CLANG-bpf  samples/bpf//tcp_cong_kern.o
+   CLANG-bpf  samples/bpf//tcp_iw_kern.o
+   CLANG-bpf  samples/bpf//tcp_clamp_kern.o
+   CLANG-bpf  samples/bpf//tcp_basertt_kern.o
+   CLANG-bpf  samples/bpf//tcp_tos_reflect_kern.o
+   CLANG-bpf  samples/bpf//tcp_dumpstats_kern.o
+   CLANG-bpf  samples/bpf//xdp_redirect_kern.o
+   CLANG-bpf  samples/bpf//xdp_redirect_map_kern.o
+   CLANG-bpf  samples/bpf//xdp_redirect_cpu_kern.o
+   CLANG-bpf  samples/bpf//xdp_monitor_kern.o
+   CLANG-bpf  samples/bpf//xdp_rxq_info_kern.o
+   CLANG-bpf  samples/bpf//xdp2skb_meta_kern.o
+   CLANG-bpf  samples/bpf//syscall_tp_kern.o
+   CLANG-bpf  samples/bpf//cpustat_kern.o
+   CLANG-bpf  samples/bpf//xdp_adjust_tail_kern.o
+   CLANG-bpf  samples/bpf//xdp_fwd_kern.o
+   CLANG-bpf  samples/bpf//task_fd_query_kern.o
+   CLANG-bpf  samples/bpf//xdp_sample_pkts_kern.o
+   CLANG-bpf  samples/bpf//ibumad_kern.o
+   CLANG-bpf  samples/bpf//hbm_out_kern.o
+   CLANG-bpf  samples/bpf//hbm_edt_kern.o
+   HOSTLD  samples/bpf//fds_example
+   HOSTLD  samples/bpf//sockex1
+   HOSTLD  samples/bpf//sockex2
+   HOSTLD  samples/bpf//sockex3
+   HOSTLD  samples/bpf//tracex1
+   HOSTLD  samples/bpf//tracex2
+   HOSTLD  samples/bpf//tracex3
+   HOSTLD  samples/bpf//tracex4
+   HOSTLD  samples/bpf//tracex5
+   HOSTLD  samples/bpf//tracex6
+   HOSTLD  samples/bpf//tracex7
+   HOSTLD  samples/bpf//test_probe_write_user
+   HOSTLD  samples/bpf//trace_output
+   HOSTLD  samples/bpf//lathist
+   HOSTLD  samples/bpf//offwaketime
+   HOSTLD  samples/bpf//spintest
+   HOSTLD  samples/bpf//map_perf_test
+   HOSTLD  samples/bpf//test_overhead
+   HOSTLD  samples/bpf//test_cgrp2_array_pin
+   HOSTLD  samples/bpf//test_cgrp2_attach
+   HOSTLD  samples/bpf//test_cgrp2_sock
+   HOSTLD  samples/bpf//test_cgrp2_sock2
+   HOSTLD  samples/bpf//xdp_router_ipv4
+   HOSTLD  samples/bpf//test_current_task_under_cgroup
+   HOSTLD  samples/bpf//trace_event
+   HOSTLD  samples/bpf//sampleip
+   HOSTLD  samples/bpf//tc_l2_redirect
+   HOSTLD  samples/bpf//lwt_len_hist
+   HOSTLD  samples/bpf//xdp_tx_iptunnel
+   HOSTLD  samples/bpf//test_map_in_map
+   HOSTLD  samples/bpf//xdp_redirect
+   HOSTLD  samples/bpf//xdp_redirect_map
+   HOSTLD  samples/bpf//xdp_redirect_cpu
+   HOSTLD  samples/bpf//xdp_monitor
+   HOSTLD  samples/bpf//xdp_rxq_info
+   HOSTLD  samples/bpf//syscall_tp
+   HOSTLD  samples/bpf//cpustat
+   HOSTLD  samples/bpf//xdp_adjust_tail
+   HOSTLD  samples/bpf//xdpsock
+   HOSTLD  samples/bpf//xdp_fwd
+   HOSTLD  samples/bpf//task_fd_query
+   HOSTLD  samples/bpf//xdp_sample_pkts
+   HOSTLD  samples/bpf//ibumad
+   HOSTLD  samples/bpf//hbm
+   UPD     samples/bpf//syscall_nrs.h
+   CLANG-bpf  samples/bpf//tracex5_kern.o
+   Building modules, stage 2.
+   MODPOST 0 modules
+root@foo1:~/bpf#
