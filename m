@@ -2,184 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E9BEA6B3
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25828EA779
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 00:05:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbfJ3WuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 18:50:13 -0400
-Received: from mail-eopbgr10082.outbound.protection.outlook.com ([40.107.1.82]:34634
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727852AbfJ3WuM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 18:50:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HuTRno2CR13h+SO1B8KABwIoB0NA/gSe8ZAPw50C10Qah3iYufTngXnb+HZZ0O2NOOE82YTLCox9yldOiXvgfhqxyYbze/Pl82MRbaK4f8A8Bm9LTLaXE7y9OlMn1TV9r9deL0dwSU956aMOpWY7768dJQlmQr9aTdOxyWWVRyUxbJdKr9Am4xpcSItrIpbMnTcRZFDMXlDU/JDyWvx1S9LQLHhN2EJN0Diw6BwTBVDNUYUdpBjpUf7RPbJCyFLmp7ht4rLbVt/wkQDUJ0GVmoe5omQhXb2sg+4fpWKwF5Z0hvdc29tLQlnnmsXVQJ+DfiUBc6W16tJHc1KYApb2uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9lJ9nlVFDXF3p6qYTd9q91t0qMVGZicpI3eCQ/ZA3eY=;
- b=LHHGLUhyNUoFcw9DHXefvuSIYH2+EHSZL8u+iPZnxwgbw8M2C0OZhDE1acHnTQg/tBkfl9D0dC3lKnwarjNOXHnuFTePhOF0NGGtX+lxhO7Vpc0uMyJcr4POz/EG1QbqfPQ0Mhs5S2+WAbPYPHC5py7Gq8Ninp3i89/L4MgCnGosLkXhzSjRyHmV4SGW9AKM4dEsqJ0ROadxfYrE7A+QeITct8MZ7ZN7YDx5SibZksXhNQuXOCF9Ic7SI3s1xhMT+jqlt8B1s0KngsDcEa4H5Aec/8LS4FngmUcPkxmRk2YWgQSw0vsOBTB8s2iWJ/JLQaZ0yqyrw8l7nGKlDq5VWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9lJ9nlVFDXF3p6qYTd9q91t0qMVGZicpI3eCQ/ZA3eY=;
- b=MAQIUnRbqQhKkUtbkaXgeJhHxTkUza5pRj2/BxyUHJ2v3/F8gSwYxev5u3ogegeyC7/YV+VRYsU/I1xKoN5WvXJItvPkugr886jd51O73sTySRPpzOD9srTMio6ua6UNySntktOOApzqetyw8ERWU6bLBJPyvL285ArgWuXbBcA=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB5886.eurprd05.prod.outlook.com (20.178.127.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.17; Wed, 30 Oct 2019 22:50:06 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2387.027; Wed, 30 Oct 2019
- 22:50:06 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Ariel Levkovich <lariel@mellanox.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-CC:     "dsahern@gmail.com" <dsahern@gmail.com>,
-        "sbrivio@redhat.com" <sbrivio@redhat.com>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "gerlitz.or@gmail.com" <gerlitz.or@gmail.com>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next 2/3] net: Add SRIOV VGT+ support
-Thread-Topic: [PATCH net-next 2/3] net: Add SRIOV VGT+ support
-Thread-Index: AQHVj2LdKsgfGbOxW0WpT6jm8LtwB6dztO8AgAAVCAA=
-Date:   Wed, 30 Oct 2019 22:50:06 +0000
-Message-ID: <89b961d92baebe8a2a541d2eb9ff3e1d9e9ddb52.camel@mellanox.com>
-References: <1572468274-30748-1-git-send-email-lariel@mellanox.com>
-         <1572468274-30748-3-git-send-email-lariel@mellanox.com>
-         <20191030143438.00b3ce1a@cakuba.netronome.com>
-In-Reply-To: <20191030143438.00b3ce1a@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b72886ce-3211-425a-c9d2-08d75d8b8233
-x-ms-traffictypediagnostic: VI1PR05MB5886:|VI1PR05MB5886:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB58867FB5F2FBB9310945B2EFBE600@VI1PR05MB5886.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(346002)(39860400002)(376002)(366004)(189003)(199004)(478600001)(107886003)(71200400001)(14454004)(305945005)(2501003)(71190400001)(6512007)(4326008)(91956017)(7736002)(76116006)(66946007)(66066001)(6436002)(14444005)(256004)(6486002)(316002)(6246003)(54906003)(58126008)(36756003)(186003)(26005)(11346002)(6506007)(8936002)(2616005)(2906002)(99286004)(110136005)(76176011)(81166006)(81156014)(5660300002)(66556008)(3846002)(64756008)(86362001)(486006)(476003)(66446008)(229853002)(118296001)(66476007)(25786009)(102836004)(8676002)(4001150100001)(6116002)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5886;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: cCqm2fB7XfBMEwBPUmKf3+XT6sTt1wH++m7zTWdg03iowUIcNPE7A0+2CZXwro9MgYi+j0TcAtchqVo/4LI1YvilMyZqFdPz2Vr/83tg4E3uCvdy60l+wjHnFq7cFQCYCI1nQdaD0VKRWx1N8IqD08o0HX1sEl5QMBLqLr4wGEqOylaAWHwK82pQoY+kGMwacJ6oyL7VxwDkPXbbHFi1JSxhyEy+nWrNBxZ+amYC5Q7x258GDxDpeZhfq1GMd9+TciaQUBpZt5qoqVDAKpvVSlQatDm0I0XIFlKarIskYvblQxf6j0SPWh3fau074VpO9VIZuyKDeVOPzmWiEePo1FgMRjUQuprGkFh7npzu8lmOYWtTN8nwZUAnxN8gBbW8pxH7gHr8NKYbKLsAEzaG5GYmrCxQiJYkxzZzRmenYl//aLCDG8zKzuD/gMRxmOz3
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D700D864C6E76B43842816B0643F58DA@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727549AbfJ3XF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 19:05:29 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:17582 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbfJ3XF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 19:05:28 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dba17390001>; Wed, 30 Oct 2019 16:05:29 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Wed, 30 Oct 2019 16:05:23 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Wed, 30 Oct 2019 16:05:23 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 30 Oct
+ 2019 23:05:22 +0000
+Subject: Re: [PATCH 14/19] vfio, mm: pin_longterm_pages (FOLL_PIN) and
+ put_user_page() conversion
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-15-jhubbard@nvidia.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <cfa579f0-999c-9712-494a-9d519bbc4314@nvidia.com>
+Date:   Wed, 30 Oct 2019 16:05:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b72886ce-3211-425a-c9d2-08d75d8b8233
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 22:50:06.1414
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: j0xqRqd+28G+olezQUsZV2KvD0PxRzcqe+Vzwv5UuF+kHH46nb98L+Ap4xjUqpbBbtC2xIpHovrj5hP3azT8ag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5886
+In-Reply-To: <20191030224930.3990755-15-jhubbard@nvidia.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1572476729; bh=53l+EYxovXaJJmkDDYPwp5PBwN0eKGoaifL7qKM0Mds=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=md/zgeBc2zml8TuAaTKRK2oyv1Btng0H6ozq8zn2sRJiXmTfxKbYsvkGcjK6gQS+q
+         3nPYnJq+1Eps5VG6ooIJSjGzkjOCMYIGUlSFcOJoUyjFNZ1H0vd+dWvWBSOqDkH5Uc
+         dvFo63nthImmg9iCDmU6xj0EE8b8pgUM6g95EetFKN1/r0QnPl5BygVRpoyVLlCyiH
+         iCMwhme/pZSwh1q5oOeHae8CYEOAkIwb1y6ebulV3/7WSgE5bb3SmwuYCg/xWfmbmX
+         iPDY0K1xyswztlMvQmBw8+uJFpl2scC5scONZ/nlQeN+ZcWegNbDORlz6y4lLuTxuj
+         WJ+vmX9yZfaww==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTEwLTMwIGF0IDE0OjM0IC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gV2VkLCAzMCBPY3QgMjAxOSAyMDo0NDo0NCArMDAwMCwgQXJpZWwgTGV2a292aWNoIHdy
-b3RlOg0KPiA+IFZHVCsgaXMgYSBzZWN1cml0eSBmZWF0dXJlIHRoYXQgZ2l2ZXMgdGhlIGFkbWlu
-aXN0cmF0b3IgdGhlIGFiaWxpdHkNCj4gPiBvZg0KPiA+IGNvbnRyb2xsaW5nIHRoZSBhbGxvd2Vk
-IHZsYW4taWRzIGxpc3QgdGhhdCBjYW4gYmUNCj4gPiB0cmFuc21pdHRlZC9yZWNlaXZlZA0KPiA+
-IGZyb20vdG8gdGhlIFZGLg0KPiA+IFRoZSBhbGxvd2VkIHZsYW4taWRzIGxpc3QgaXMgY2FsbGVk
-ICJ0cnVuayIuDQo+ID4gQWRtaW4gY2FuIGFkZC9yZW1vdmUgYSByYW5nZSBvZiBhbGxvd2VkIHZs
-YW4taWRzIHZpYSBpcHRvb2wuDQo+ID4gRXhhbXBsZToNCj4gPiBBZnRlciB0aGlzIHNlcmllcyBv
-ZiBjb25maWd1cmF0aW9uIDoNCj4gPiAxKSBpcCBsaW5rIHNldCBldGgzIHZmIDAgdHJ1bmsgYWRk
-IDEwIDEwMCAoYWxsb3cgdmxhbi1pZCAxMC0xMDAsDQo+ID4gZGVmYXVsdCB0cGlkIDB4ODEwMCkN
-Cj4gPiAyKSBpcCBsaW5rIHNldCBldGgzIHZmIDAgdHJ1bmsgYWRkIDEwNSBwcm90byA4MDIuMXEg
-KGFsbG93IHZsYW4taWQNCj4gPiAxMDUgdHBpZCAweDgxMDApDQo+ID4gMykgaXAgbGluayBzZXQg
-ZXRoMyB2ZiAwIHRydW5rIGFkZCAxMDUgcHJvdG8gODAyLjFhZCAoYWxsb3cgdmxhbi1pZCANCj4g
-PiAxMDUgdHBpZCAweDg4YTgpDQo+ID4gNCkgaXAgbGluayBzZXQgZXRoMyB2ZiAwIHRydW5rIHJl
-bSA5MCAoYmxvY2sgdmxhbi1pZCA5MCkNCj4gPiA1KSBpcCBsaW5rIHNldCBldGgzIHZmIDAgdHJ1
-bmsgcmVtIDUwIDYwIChibG9jayB2bGFuLWlkcyA1MC02MCkNCj4gPiANCj4gPiBUaGUgVkYgMCBj
-YW4gb25seSBjb21tdW5pY2F0ZSBvbiB2bGFuLWlkczogMTAtNDksNjEtODksOTEtMTAwLDEwNQ0K
-PiA+IHdpdGgNCj4gPiB0cGlkIDB4ODEwMCBhbmQgdmxhbi1pZCAxMDUgd2l0aCB0cGlkIDB4ODhh
-OC4NCj4gPiANCj4gPiBGb3IgdGhpcyBwdXJwb3NlIHdlIGFkZGVkIHRoZSBmb2xsb3dpbmcgbmV0
-bGluayBzci1pb3YgY29tbWFuZHM6DQo+ID4gDQo+ID4gMSkgSUZMQV9WRl9WTEFOX1JBTkdFOiB1
-c2VkIHRvIGFkZC9yZW1vdmUgYWxsb3dlZCB2bGFuLWlkcyByYW5nZS4NCj4gPiBXZSBhZGRlZCB0
-aGUgaWZsYV92Zl92bGFuX3JhbmdlIHN0cnVjdCB0byBzcGVjaWZ5IHRoZSByYW5nZSB3ZSB3YW50
-DQo+ID4gdG8NCj4gPiBhZGQvcmVtb3ZlIGZyb20gdGhlIHVzZXJzcGFjZS4NCj4gPiBXZSBhZGRl
-ZCBuZG9fYWRkX3ZmX3ZsYW5fdHJ1bmtfcmFuZ2UgYW5kDQo+ID4gbmRvX2RlbF92Zl92bGFuX3Ry
-dW5rX3JhbmdlDQo+ID4gbmV0ZGV2IG9wcyB0byBhZGQvcmVtb3ZlIGFsbG93ZWQgdmxhbi1pZHMg
-cmFuZ2UgaW4gdGhlIG5ldGRldi4NCj4gPiANCj4gPiAyKSBJRkxBX1ZGX1ZMQU5fVFJVTks6IHVz
-ZWQgdG8gcXVlcnkgdGhlIGFsbG93ZWQgdmxhbi1pZHMgdHJ1bmsuDQo+ID4gV2UgYWRkZWQgdHJ1
-bmsgYml0bWFwIHRvIHRoZSBpZmxhX3ZmX2luZm8gc3RydWN0IHRvIGdldCB0aGUgY3VycmVudA0K
-PiA+IGFsbG93ZWQgdmxhbi1pZHMgdHJ1bmsgZnJvbSB0aGUgbmV0ZGV2Lg0KPiA+IFdlIGFkZGVk
-IGlmbGFfdmZfdmxhbl90cnVuayBzdHJ1Y3QgZm9yIHNlbmRpbmcgdGhlIGFsbG93ZWQgdmxhbi1p
-ZHMNCj4gPiB0cnVuayB0byB0aGUgdXNlcnNwYWNlLg0KPiA+IFNpbmNlIHRoZSB0cnVuayBiaXRt
-YXAgbmVlZHMgdG8gY29udGFpbiBhIGJpdCBwZXIgcG9zc2libGUgZW5hYmxlZA0KPiA+IHZsYW4g
-aWQsIHRoZSBzaXplIGFkZGl0aW9uIHRvIGlmbGFfdmZfaW5mbyBpcyBzaWduaWZpY2FudCB3aGlj
-aCBtYXkNCj4gPiBjcmVhdGUgYXR0cmlidXRlIGxlbmd0aCBvdmVycnVuIHdoZW4gcXVlcnlpbmcg
-YWxsIHRoZSBWRnMuDQo+ID4gDQo+ID4gVGhlcmVmb3JlLCB0aGUgcmV0dXJuIG9mIHRoZSBmdWxs
-IGJpdG1hcCBpcyBsaW1pdGVkIHRvIHRoZSBjYXNlDQo+ID4gd2hlcmUgdGhlIGFkbWluIHF1ZXJp
-ZXMgYSBzcGVjaWZpYyBWRiBvbmx5IGFuZCBmb3IgdGhlIFZGIGxpc3QNCj4gPiBxdWVyeSB3ZSBp
-bnRyb2R1Y2UgYSBuZXcgdmZfaW5mbyBhdHRyaWJ1dGUgY2FsbGVkIGlmbGFfdmZfdmxhbl9tb2Rl
-DQo+ID4gdGhhdCB3aWxsIHByZXNlbnQgdGhlIGN1cnJlbnQgVkYgdGFnZ2luZyBtb2RlIC0gVkdU
-LCBWU1Qgb3INCj4gPiBWR1QrKHRydW5rKS4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBBcmll
-bCBMZXZrb3ZpY2ggPGxhcmllbEBtZWxsYW5veC5jb20+DQo+ID4gZGlmZiAtLWdpdCBhL2luY2x1
-ZGUvbGludXgvbmV0ZGV2aWNlLmggYi9pbmNsdWRlL2xpbnV4L25ldGRldmljZS5oDQo+ID4gaW5k
-ZXggMzIwN2UwYi4uZGE3OTk3NiAxMDA2NDQNCj4gPiAtLS0gYS9pbmNsdWRlL2xpbnV4L25ldGRl
-dmljZS5oDQo+ID4gKysrIGIvaW5jbHVkZS9saW51eC9uZXRkZXZpY2UuaA0KPiA+IEBAIC0xMDY3
-LDYgKzEwNjcsMTAgQEAgc3RydWN0IG5ldGRldl9uYW1lX25vZGUgew0KPiA+ICAgKiAgICAgIEhh
-c2ggS2V5LiBUaGlzIGlzIG5lZWRlZCBzaW5jZSBvbiBzb21lIGRldmljZXMgVkYgc2hhcmUNCj4g
-PiB0aGlzIGluZm9ybWF0aW9uDQo+ID4gICAqICAgICAgd2l0aCBQRiBhbmQgcXVlcnlpbmcgaXQg
-bWF5IGludHJvZHVjZSBhIHRoZW9yZXRpY2FsDQo+ID4gc2VjdXJpdHkgcmlzay4NCj4gPiAgICog
-aW50ICgqbmRvX3NldF92Zl9yc3NfcXVlcnlfZW4pKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYsIGlu
-dCB2ZiwNCj4gPiBib29sIHNldHRpbmcpOw0KPiA+ICsgKiBpbnQgKCpuZG9fYWRkX3ZmX3ZsYW5f
-dHJ1bmtfcmFuZ2UpKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYsIGludA0KPiA+IHZmLA0KPiA+ICsg
-KgkJCQkgICAgICB1MTYgc3RhcnRfdmlkLCB1MTYgZW5kX3ZpZCwNCj4gPiBfX2JlMTYgcHJvdG8p
-Ow0KPiA+ICsgKiBpbnQgKCpuZG9fZGVsX3ZmX3ZsYW5fdHJ1bmtfcmFuZ2UpKHN0cnVjdCBuZXRf
-ZGV2aWNlICpkZXYsIGludA0KPiA+IHZmLA0KPiA+ICsgKgkJCQkgICAgICB1MTYgc3RhcnRfdmlk
-LCB1MTYgZW5kX3ZpZCwNCj4gPiBfX2JlMTYgcHJvdG8pOw0KPiA+ICAgKiBpbnQgKCpuZG9fZ2V0
-X3ZmX3BvcnQpKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYsIGludCB2Ziwgc3RydWN0DQo+ID4gc2tf
-YnVmZiAqc2tiKTsNCj4gPiAgICogaW50ICgqbmRvX3NldHVwX3RjKShzdHJ1Y3QgbmV0X2Rldmlj
-ZSAqZGV2LCBlbnVtIHRjX3NldHVwX3R5cGUNCj4gPiB0eXBlLA0KPiA+ICAgKgkJICAgICAgIHZv
-aWQgKnR5cGVfZGF0YSk7DQo+ID4gQEAgLTEzMzIsNiArMTMzNiwxNCBAQCBzdHJ1Y3QgbmV0X2Rl
-dmljZV9vcHMgew0KPiA+ICAJaW50CQkJKCpuZG9fc2V0X3ZmX3Jzc19xdWVyeV9lbikoDQo+ID4g
-IAkJCQkJCSAgIHN0cnVjdCBuZXRfZGV2aWNlDQo+ID4gKmRldiwNCj4gPiAgCQkJCQkJICAgaW50
-IHZmLCBib29sDQo+ID4gc2V0dGluZyk7DQo+ID4gKwlpbnQJCQkoKm5kb19hZGRfdmZfdmxhbl90
-cnVua19yYW5nZSkoDQo+ID4gKwkJCQkJCSAgIHN0cnVjdCBuZXRfZGV2aWNlDQo+ID4gKmRldiwN
-Cj4gPiArCQkJCQkJICAgaW50IHZmLCB1MTYNCj4gPiBzdGFydF92aWQsDQo+ID4gKwkJCQkJCSAg
-IHUxNiBlbmRfdmlkLCBfX2JlMTYNCj4gPiBwcm90byk7DQo+ID4gKwlpbnQJCQkoKm5kb19kZWxf
-dmZfdmxhbl90cnVua19yYW5nZSkoDQo+ID4gKwkJCQkJCSAgIHN0cnVjdCBuZXRfZGV2aWNlDQo+
-ID4gKmRldiwNCj4gPiArCQkJCQkJICAgaW50IHZmLCB1MTYNCj4gPiBzdGFydF92aWQsDQo+ID4g
-KwkJCQkJCSAgIHUxNiBlbmRfdmlkLCBfX2JlMTYNCj4gPiBwcm90byk7DQo+ID4gIAlpbnQJCQko
-Km5kb19zZXR1cF90Yykoc3RydWN0IG5ldF9kZXZpY2UgKmRldiwNCj4gPiAgCQkJCQkJZW51bSB0
-Y19zZXR1cF90eXBlDQo+ID4gdHlwZSwNCj4gPiAgCQkJCQkJdm9pZCAqdHlwZV9kYXRhKTsNCj4g
-DQo+IElzIHRoaXMgb2ZmaWNpYWwgTWVsbGFub3ggcGF0Y2ggc3VibWlzc2lvbiBvciBkbyB5b3Ug
-Z3V5cyBuZWVkIHRpbWUNCj4gdG8NCj4gZGVjaWRlIGJldHdlZW4gZWFjaCBvdGhlciBpZiB5b3Ug
-bGlrZSBsZWdhY3kgVkYgbmRvcyBvciBub3Q/IDstKQ0KDQpJdCBpcyBvZmZpY2lhbCA6KSwgYXMg
-bXVjaCBhcyB3ZSB3YW50IHRvIG1vdmUgYXdheSBmcm9tIGxlZ2FjeSBtb2RlLCB3ZQ0KZG8gc3Rp
-bGwgaGF2ZSB0d28gbWFqb3IgY3VzdG9tZXJzIHRoYXQgYXJlIG5vdCBxdWl0ZSByZWFkeSB5ZXQg
-dG8gbW92ZQ0KdG8gc3dpdGNoZGV2IG1vZGUuIHRoZSBzaWx2ZXItbGluaW5nIGhlcmUgaXMgdGhh
-dCB0aGV5IGFyZSB3ZWxsaW5nIHRvDQptb3ZlIHRvIHVwc3RyZWFtIGtlcm5lbCAoYWR2YW5jZWQg
-ZGlzdHJvcyksIGJ1dCB3ZSBuZWVkIHRoaXMgZmVhdHVyZSBpbg0KbGVnYWN5IG1vZGUuDQoNClRo
-ZSBhYmlsaXR5IHRvIGNvbmZpZ3VyZSBwZXIgVkYgQUNMIHRhYmxlcyB2bGFuIGZpbHRlcnMgaXMg
-YSBtdXN0Lg0KDQpJIHRyaWVkIHRvIHRoaW5rIG9mIGFuIEFQSSB3aGVyZSB3ZSBjYW4gZXhwb3Nl
-IHRoZSB3aG9sZSBWRiBBQ0wgdGFibGVzDQp0byB1c2VycyBhbmQgbGV0IHRoZW0gY29uZmlndXJl
-IGl0IHRoZSB3YXkgdGhleSB3YW50IHdpdGggVEMgZmxvd2VyDQptYXliZSAoc29ydCBvZiBoeWJy
-aWQgbGVnYWN5LXN3aXRjaGRldiBtb2RlIHRoYXQgY2FuIGFjdCBvbmx5IG9uIFZGIEFDTA0KdGFi
-bGVzIGJ1dCBub3Qgb24gdGhlIEZEQikuIFRoZSBwcm9ibGVtIHdpdGggdGhpcyBpcyB0aGF0IGl0
-IGNhbiBlYXNpbHkNCmNvbmZsaWN0IHdpdGggVlNUL3RydXN0IG1vZGUgYW5kIG90aGVyIHNldHRp
-bmdzIHRoYXQgY2FuIGJlIGRvbmUgdmlhDQpsZWdhY3kgVkYgbmRvcy4uLiBzbyBpIGd1ZXNzIHRo
-ZSBjb21wbGV4aXR5IG9mIHN1Y2ggQVBJIGlzIG5vdCB3b3J0aHkNCmFuZCBhIHNpbXBsZSB2bGFu
-IGxpc3QgZmlsdGVyIEFQSSBpcyBtb3JlIG5hdHVyYWwgZm9yIGxlZ2FjeSBzcmlvdiA/IQ0KDQoN
-Cg0K
+On 10/30/19 3:49 PM, John Hubbard wrote:
+> This also fixes one or two likely bugs.
+
+Well, actually just one...
+
+> 
+> 1. Change vfio from get_user_pages(FOLL_LONGTERM), to
+> pin_longterm_pages(), which sets both FOLL_LONGTERM and FOLL_PIN.
+> 
+> Note that this is a change in behavior, because the
+> get_user_pages_remote() call was not setting FOLL_LONGTERM, but the
+> new pin_user_pages_remote() call that replaces it, *is* setting
+> FOLL_LONGTERM. It is important to set FOLL_LONGTERM, because the
+> DMA case requires it. Please see the FOLL_PIN documentation in
+> include/linux/mm.h, and Documentation/pin_user_pages.rst for details.
+
+Correction: the above comment is stale and wrong. I wrote it before 
+getting further into the details, and the patch doesn't do this. 
+
+Instead, it keeps exactly the old behavior: pin_longterm_pages_remote()
+is careful to avoid setting FOLL_LONGTERM. Instead of setting that flag,
+it drops in a "TODO" comment nearby. :)
+
+I'll update the commit description in the next version of the series.
+
+
+thanks,
+
+John Hubbard
+NVIDIA
+
+> 
+> 2. Because all FOLL_PIN-acquired pages must be released via
+> put_user_page(), also convert the put_page() call over to
+> put_user_pages().
+> 
+> Note that this effectively changes the code's behavior in
+> vfio_iommu_type1.c: put_pfn(): it now ultimately calls
+> set_page_dirty_lock(), instead of set_page_dirty(). This is
+> probably more accurate.
+> 
+> As Christoph Hellwig put it, "set_page_dirty() is only safe if we are
+> dealing with a file backed page where we have reference on the inode it
+> hangs off." [1]
+> 
+> [1] https://lore.kernel.org/r/20190723153640.GB720@lst.de
+> 
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 15 +++++++--------
+>  1 file changed, 7 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index d864277ea16f..795e13f3ef08 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -327,9 +327,8 @@ static int put_pfn(unsigned long pfn, int prot)
+>  {
+>  	if (!is_invalid_reserved_pfn(pfn)) {
+>  		struct page *page = pfn_to_page(pfn);
+> -		if (prot & IOMMU_WRITE)
+> -			SetPageDirty(page);
+> -		put_page(page);
+> +
+> +		put_user_pages_dirty_lock(&page, 1, prot & IOMMU_WRITE);
+>  		return 1;
+>  	}
+>  	return 0;
+> @@ -349,11 +348,11 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  
+>  	down_read(&mm->mmap_sem);
+>  	if (mm == current->mm) {
+> -		ret = get_user_pages(vaddr, 1, flags | FOLL_LONGTERM, page,
+> -				     vmas);
+> +		ret = pin_longterm_pages(vaddr, 1, flags, page, vmas);
+>  	} else {
+> -		ret = get_user_pages_remote(NULL, mm, vaddr, 1, flags, page,
+> -					    vmas, NULL);
+> +		ret = pin_longterm_pages_remote(NULL, mm, vaddr, 1,
+> +						flags, page, vmas,
+> +						NULL);
+>  		/*
+>  		 * The lifetime of a vaddr_get_pfn() page pin is
+>  		 * userspace-controlled. In the fs-dax case this could
+> @@ -363,7 +362,7 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  		 */
+>  		if (ret > 0 && vma_is_fsdax(vmas[0])) {
+>  			ret = -EOPNOTSUPP;
+> -			put_page(page[0]);
+> +			put_user_page(page[0]);
+>  		}
+>  	}
+>  	up_read(&mm->mmap_sem);
+> 
