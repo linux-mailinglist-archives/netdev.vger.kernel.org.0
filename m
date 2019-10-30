@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CDC0E9D22
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:09:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39319E9D29
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:09:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726509AbfJ3OJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 10:09:22 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55247 "EHLO
+        id S1726371AbfJ3OJV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 10:09:21 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55249 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726334AbfJ3OJV (ORCPT
+        with ESMTP id S1726328AbfJ3OJV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:09:21 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 30 Oct 2019 16:09:15 +0200
 Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9UE9EDb020747;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9UE9EDc020747;
         Wed, 30 Oct 2019 16:09:15 +0200
 From:   Vlad Buslov <vladbu@mellanox.com>
 To:     netdev@vger.kernel.org
@@ -23,9 +23,9 @@ Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         mrv@mojatatu.com, roopa@cumulusnetworks.com,
         Vlad Buslov <vladbu@mellanox.com>,
         Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next v2 1/8] net: sched: extract common action counters update code into function
-Date:   Wed, 30 Oct 2019 16:09:00 +0200
-Message-Id: <20191030140907.18561-2-vladbu@mellanox.com>
+Subject: [PATCH net-next v2 2/8] net: sched: extract bstats update code into function
+Date:   Wed, 30 Oct 2019 16:09:01 +0200
+Message-Id: <20191030140907.18561-3-vladbu@mellanox.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191030140907.18561-1-vladbu@mellanox.com>
 References: <20191030140907.18561-1-vladbu@mellanox.com>
@@ -36,151 +36,121 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, all implementations of tc_action_ops->stats_update() callback
-have almost exactly the same implementation of counters update
-code (besides gact which also updates drop counter). In order to simplify
-support for using both percpu-allocated and regular action counters
-depending on run-time flag in following patches, extract action counters
-update code into standalone function in act API.
+Extract common code that increments cpu_bstats counter into standalone act
+API function. Change hardware offloaded actions that use percpu counter
+allocation to use the new function instead of incrementing cpu_bstats
+directly.
 
 This commit doesn't change functionality.
 
 Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/act_api.h  |  2 ++
- net/sched/act_api.c    | 14 ++++++++++++++
- net/sched/act_ct.c     |  6 +-----
- net/sched/act_gact.c   | 10 +---------
- net/sched/act_mirred.c |  5 +----
- net/sched/act_police.c |  5 +----
- net/sched/act_vlan.c   |  5 +----
- 7 files changed, 21 insertions(+), 26 deletions(-)
+ include/net/act_api.h      | 7 +++++++
+ net/sched/act_csum.c       | 2 +-
+ net/sched/act_ct.c         | 2 +-
+ net/sched/act_gact.c       | 2 +-
+ net/sched/act_mirred.c     | 2 +-
+ net/sched/act_tunnel_key.c | 2 +-
+ net/sched/act_vlan.c       | 2 +-
+ 7 files changed, 13 insertions(+), 6 deletions(-)
 
 diff --git a/include/net/act_api.h b/include/net/act_api.h
-index b18c699681ca..f6f66c692385 100644
+index f6f66c692385..9a32853f77f9 100644
 --- a/include/net/act_api.h
 +++ b/include/net/act_api.h
-@@ -186,6 +186,8 @@ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[], int bind,
+@@ -186,6 +186,13 @@ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[], int bind,
  		    int ref);
  int tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int, int);
  int tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int, int);
-+void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
-+			     bool drop, bool hw);
- int tcf_action_copy_stats(struct sk_buff *, struct tc_action *, int);
- 
- int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 69d4676a402f..0638afa2fc3f 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -989,6 +989,20 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
- 	return err;
- }
- 
-+void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
-+			     bool drop, bool hw)
++
++static inline void tcf_action_update_bstats(struct tc_action *a,
++					    struct sk_buff *skb)
 +{
-+	_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
-+
-+	if (drop)
-+		this_cpu_ptr(a->cpu_qstats)->drops += packets;
-+
-+	if (hw)
-+		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
-+				   bytes, packets);
++	bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), skb);
 +}
-+EXPORT_SYMBOL(tcf_action_update_stats);
 +
- int tcf_action_copy_stats(struct sk_buff *skb, struct tc_action *p,
- 			  int compat_mode)
- {
+ void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
+ 			     bool drop, bool hw);
+ int tcf_action_copy_stats(struct sk_buff *, struct tc_action *, int);
+diff --git a/net/sched/act_csum.c b/net/sched/act_csum.c
+index d3cfad88dc3a..69747b1860aa 100644
+--- a/net/sched/act_csum.c
++++ b/net/sched/act_csum.c
+@@ -580,7 +580,7 @@ static int tcf_csum_act(struct sk_buff *skb, const struct tc_action *a,
+ 	params = rcu_dereference_bh(p->params);
+ 
+ 	tcf_lastuse_update(&p->tcf_tm);
+-	bstats_cpu_update(this_cpu_ptr(p->common.cpu_bstats), skb);
++	tcf_action_update_bstats(&p->common, skb);
+ 
+ 	action = READ_ONCE(p->tcf_action);
+ 	if (unlikely(action == TC_ACT_SHOT))
 diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index fcc46025e790..ba76857754e5 100644
+index ba76857754e5..f9779907dcf7 100644
 --- a/net/sched/act_ct.c
 +++ b/net/sched/act_ct.c
-@@ -905,11 +905,7 @@ static void tcf_stats_update(struct tc_action *a, u64 bytes, u32 packets,
- {
- 	struct tcf_ct *c = to_ct(a);
+@@ -465,7 +465,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
+ 	skb_push_rcsum(skb, nh_ofs);
  
--	_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
--
--	if (hw)
--		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
--				   bytes, packets);
-+	tcf_action_update_stats(a, bytes, packets, false, hw);
- 	c->tcf_tm.lastuse = max_t(u64, c->tcf_tm.lastuse, lastuse);
- }
+ out:
+-	bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), skb);
++	tcf_action_update_bstats(&c->common, skb);
+ 	return retval;
  
+ drop:
 diff --git a/net/sched/act_gact.c b/net/sched/act_gact.c
-index 324f1d1f6d47..569cec63d4c3 100644
+index 569cec63d4c3..a7e3d5621608 100644
 --- a/net/sched/act_gact.c
 +++ b/net/sched/act_gact.c
-@@ -177,15 +177,7 @@ static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u32 packets,
- 	int action = READ_ONCE(gact->tcf_action);
- 	struct tcf_t *tm = &gact->tcf_tm;
- 
--	_bstats_cpu_update(this_cpu_ptr(gact->common.cpu_bstats), bytes,
--			   packets);
--	if (action == TC_ACT_SHOT)
--		this_cpu_ptr(gact->common.cpu_qstats)->drops += packets;
--
--	if (hw)
--		_bstats_cpu_update(this_cpu_ptr(gact->common.cpu_bstats_hw),
--				   bytes, packets);
--
-+	tcf_action_update_stats(a, bytes, packets, action == TC_ACT_SHOT, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
+@@ -161,7 +161,7 @@ static int tcf_gact_act(struct sk_buff *skb, const struct tc_action *a,
+ 		action = gact_rand[ptype](gact);
+ 	}
+ #endif
+-	bstats_cpu_update(this_cpu_ptr(gact->common.cpu_bstats), skb);
++	tcf_action_update_bstats(&gact->common, skb);
+ 	if (action == TC_ACT_SHOT)
+ 		qstats_drop_inc(this_cpu_ptr(gact->common.cpu_qstats));
  
 diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 08923b21e566..621686a6b5be 100644
+index 621686a6b5be..e5216f80883b 100644
 --- a/net/sched/act_mirred.c
 +++ b/net/sched/act_mirred.c
-@@ -318,10 +318,7 @@ static void tcf_stats_update(struct tc_action *a, u64 bytes, u32 packets,
- 	struct tcf_mirred *m = to_mirred(a);
- 	struct tcf_t *tm = &m->tcf_tm;
+@@ -231,7 +231,7 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 	}
  
--	_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
--	if (hw)
--		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
--				   bytes, packets);
-+	tcf_action_update_stats(a, bytes, packets, false, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
+ 	tcf_lastuse_update(&m->tcf_tm);
+-	bstats_cpu_update(this_cpu_ptr(m->common.cpu_bstats), skb);
++	tcf_action_update_bstats(&m->common, skb);
  
-diff --git a/net/sched/act_police.c b/net/sched/act_police.c
-index 981a9eca0c52..51d34b1a61d5 100644
---- a/net/sched/act_police.c
-+++ b/net/sched/act_police.c
-@@ -294,10 +294,7 @@ static void tcf_police_stats_update(struct tc_action *a,
- 	struct tcf_police *police = to_police(a);
- 	struct tcf_t *tm = &police->tcf_tm;
+ 	m_mac_header_xmit = READ_ONCE(m->tcfm_mac_header_xmit);
+ 	m_eaction = READ_ONCE(m->tcfm_eaction);
+diff --git a/net/sched/act_tunnel_key.c b/net/sched/act_tunnel_key.c
+index 2f83a79f76aa..9ab2d3b4a9fc 100644
+--- a/net/sched/act_tunnel_key.c
++++ b/net/sched/act_tunnel_key.c
+@@ -31,7 +31,7 @@ static int tunnel_key_act(struct sk_buff *skb, const struct tc_action *a,
+ 	params = rcu_dereference_bh(t->params);
  
--	_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
--	if (hw)
--		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
--				   bytes, packets);
-+	tcf_action_update_stats(a, bytes, packets, false, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
+ 	tcf_lastuse_update(&t->tcf_tm);
+-	bstats_cpu_update(this_cpu_ptr(t->common.cpu_bstats), skb);
++	tcf_action_update_bstats(&t->common, skb);
+ 	action = READ_ONCE(t->tcf_action);
  
+ 	switch (params->tcft_action) {
 diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
-index 08aaf719a70f..9e68edb22e53 100644
+index 9e68edb22e53..f6dccaa29239 100644
 --- a/net/sched/act_vlan.c
 +++ b/net/sched/act_vlan.c
-@@ -307,10 +307,7 @@ static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u32 packets,
- 	struct tcf_vlan *v = to_vlan(a);
- 	struct tcf_t *tm = &v->tcf_tm;
+@@ -29,7 +29,7 @@ static int tcf_vlan_act(struct sk_buff *skb, const struct tc_action *a,
+ 	u16 tci;
  
--	_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
--	if (hw)
--		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
--				   bytes, packets);
-+	tcf_action_update_stats(a, bytes, packets, false, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
+ 	tcf_lastuse_update(&v->tcf_tm);
+-	bstats_cpu_update(this_cpu_ptr(v->common.cpu_bstats), skb);
++	tcf_action_update_bstats(&v->common, skb);
  
+ 	/* Ensure 'data' points at mac_header prior calling vlan manipulating
+ 	 * functions.
 -- 
 2.21.0
 
