@@ -2,100 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D565E9740
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 08:36:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D6F1E9744
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 08:37:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726088AbfJ3Hgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 03:36:44 -0400
-Received: from mga14.intel.com ([192.55.52.115]:53590 "EHLO mga14.intel.com"
+        id S1726177AbfJ3HhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 03:37:12 -0400
+Received: from ozlabs.org ([203.11.71.1]:38035 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725822AbfJ3Hgn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 03:36:43 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 30 Oct 2019 00:36:42 -0700
-X-IronPort-AV: E=Sophos;i="5.68,246,1569308400"; 
-   d="scan'208";a="193881565"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.238.129.48]) ([10.238.129.48])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-SHA; 30 Oct 2019 00:36:33 -0700
-Subject: Re: [PATCH V5 4/6] mdev: introduce virtio device and its device ops
-To:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191023130752.18980-1-jasowang@redhat.com>
- <20191023130752.18980-5-jasowang@redhat.com>
- <df1eb77c-d159-da11-bb8f-df2c19089ac6@linux.intel.com>
- <14410ac9-cc01-185a-5dcf-7f6c78aefd65@redhat.com>
-From:   Zhu Lingshan <lingshan.zhu@linux.intel.com>
-Message-ID: <bc6b2565-b0b6-bf0a-812f-d0bb157be086@linux.intel.com>
-Date:   Wed, 30 Oct 2019 15:36:24 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S1726063AbfJ3HhM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Oct 2019 03:37:12 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4730dx15kxz9sPj;
+        Wed, 30 Oct 2019 18:37:08 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1572421029;
+        bh=H+kCivoo/fdkkJhkIk3buQt9CJCsa6pzinINvIZthU4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rusQw2jNJsM02alZcjJXPg1lEnWR17cC8n+h8X+CI0Y/pJzRPuI594RpUdIuUdi5W
+         9SXWGFlvQYVsTXhQsBhVrMfKj60Htou/A99ci0jZSCaQJnZlRhkfJbgldThVpyVxWV
+         E3H4gMbP8i7iEwHGHKtGPZH9oPWYDFg68fpM0qJaX/O3CnR8pmOeIiRQtBKazRwdv6
+         xTX77nzlXVQCH92+T6x+1C+BUflV7W9bT8gC+4afFF3ysAK6OTybR3DCZmp3IUwtqV
+         7Lrmq1/vffpl2soXVbM2hDgzKOQgYPFdo3Ig+4NYdl5c0OljBkDks9vW3h200gAMjl
+         V6mq82anGjL5w==
+Date:   Wed, 30 Oct 2019 18:37:06 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xin Long <lucien.xin@gmail.com>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20191030183706.1644aec4@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <14410ac9-cc01-185a-5dcf-7f6c78aefd65@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: multipart/signed; boundary="Sig_/Mma_yey.JLjjLttMwpjFTY1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/29/2019 6:42 PM, Jason Wang wrote:
-> On 2019/10/29 下午3:42, Zhu Lingshan wrote:
->>> +    void (*set_status)(struct mdev_device *mdev, u8 status);
->> Hi Jason
->>
->> Is it possible to make set_status() return an u8 or bool, because this
->> may fail in real hardware. Without a returned code, I am not sure
->> whether it is a good idea to set the status | NEED_RESET when fail.
->>
->> Thanks,
->> BR
->> Zhu Lingshan
->
-> Hi:
->
->
-> It's possible but I'm not sure whether any user will care about it. E.g
-> see virtio_add_status():
->
-> void virtio_add_status(struct virtio_device *dev, unsigned int status)
-> {
->      might_sleep();
->      dev->config->set_status(dev, dev->config->get_status(dev) | status);
-> }
-> EXPORT_SYMBOL_GPL(virtio_add_status);
->
-> And I believe how it work should be:
->
-> virtio_add_status(xyz);
->
-> status = virtio_get_status();
->
-> if (!(status & xyz))
->
->      error;
->
-> Thanks
->
-Thanks Jason, then I believe upper layer can handle this well.
->
+--Sig_/Mma_yey.JLjjLttMwpjFTY1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,
+
+In commit
+
+  2eb8d6d2910c ("erspan: fix the tun_info options_len check for erspan")
+
+Fixes tag
+
+  Fixes: 1a66a836da ("gre: add collect_md mode to ERSPAN tunnel")
+
+has these problem(s):
+
+  - SHA1 should be at least 12 digits long
+    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+    or later) just making sure it is not set (or set to "auto").
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/Mma_yey.JLjjLttMwpjFTY1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl25PaIACgkQAVBC80lX
+0GyZDgf+OE2oA8QgflE2vxinfphOV4fdTxLisivhof/AzY/VuJg/2zWPvFAWRsxi
+TEegh2XfT+sSWdV0+st1aNpL0lsYbbhdxacuest6LUUCPMIrefaULarBH3Q3FrxJ
+twvbTDdM0C70PCFU++J1aDrYvPrysmNT7negMLCwimjA+4FWpXQEKRgBXDgSfvI5
+BMtP2+8JsJ1ysUxn9BZuLgXXAInwz0KUwHE1HOVj1xzOhe77Wq85k2fAksMFaJdL
+eAPGqy7o1SHk6o+0keXUH4vtUaaMSk8t10TGmkyKqI82XHC6uaDE/WUpXNnUIM+t
+Tdfi5U5jRDCaIQU6WWw1Hkm+cNv39Q==
+=DN7x
+-----END PGP SIGNATURE-----
+
+--Sig_/Mma_yey.JLjjLttMwpjFTY1--
