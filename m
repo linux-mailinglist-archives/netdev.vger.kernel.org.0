@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA2CE97E8
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 33043E9798
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:08:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfJ3IPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 04:15:21 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:40219 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfJ3IPU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 04:15:20 -0400
-Received: by mail-pg1-f195.google.com with SMTP id 15so960911pgt.7
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 01:15:20 -0700 (PDT)
+        id S1726255AbfJ3IIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 04:08:13 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33328 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbfJ3IIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 04:08:12 -0400
+Received: by mail-pf1-f194.google.com with SMTP id c184so1057320pfb.0;
+        Wed, 30 Oct 2019 01:08:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=vYtZtkYWDvDzQYnS3hqTyuwFeB/obLgObO09ABiBAGs=;
-        b=SLaQDwL7QIvKkNUICNySeM+o0gJkN9Tqtm/44IgQGYd/xfViWeGBGxMHf48KppeZ5u
-         rmpMYZs6K7wPEhp+nobGOSUdxakfP/yQ/1/NWNMYJr60fMTeWRtLVQDbeA2Tiq9e86Ji
-         1y/e0QqDw6JX5ikrtsWVtUHDx1ybnr5tK4PD2jPJVPjPGcYrTbQiyKm6RPWtyENVhHAJ
-         N+smL/ojVPQM2KTVpzgvn3o0+qRscZ4XTM0PgOP4gvESahaRB7ch1VVVqqb6chfBfSdf
-         LPEfO2SJil5j1GUAXTuGpRuhsyoSOBG4Db8jvYnUYYXyHLagtGJxJlgyp/bqz+01nwos
-         HWvA==
+        bh=ZMISj/ns6B4cF3UhPoAMo+kmbpNZlZvaXYeyqScyGFM=;
+        b=gPQddsZE9bsl5uNjvCgbqdth67MQP3Qtt+YqM73jh/W5xsp2tzkoj0/mibl3pfrwzT
+         iWqmSXaf1dmbkXZhdlLTqo9OVlNQMk/PbwGk3My+1ByP3dLacdwAf0MUZvwQ6WNvHBtV
+         OmDvO0rNUhtooTqI4MnwbDj6GWWuoWjjZgbeMiRIKNat1/evUm37tipgKHqLTNbaysVI
+         kCfIT8ZSvQHO+nAQ7pBVACAPiY8YIdnI1BhgkjXLuYuawVQfG35lbO/b2o1HszAoMf5n
+         7mjgXO52exBNvQ+9rog9gi/wszb8ATyVWAB7kWAKpQt7b2w9GMw/zTIbxUSbkE6kuulU
+         U7vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=vYtZtkYWDvDzQYnS3hqTyuwFeB/obLgObO09ABiBAGs=;
-        b=qGWRrzezFwrtSiVGn9N/vFtGSFye84c3f+gk3EYehvWeeFaSEACrXfTdftx78fKeYm
-         QclgqtxStJDQuPLwGySkkwsZKIzTwjXw7BswOOapsIjLdtr7vcl+n/BAgNA+/QT+HnLC
-         9EdoIvX4bbgFlW8PbnOkNkHwCrDbMstU0PeSUF+0aoaQXzveTETaKQ6efeslbazQk+y1
-         /q+tyMox7PvRnJjrs45HGnOEa1GNo5V7wzA9GB9EcjljNFQ67Ar/XjnvkxzbkEEihMy4
-         abNojIUIh1BFA4Yls9XliGWdagmEHW7S0fLxm0VZ8dJZ1+NLDAcEBfimkrZcIrnlWZkN
-         Xp0w==
-X-Gm-Message-State: APjAAAUZqs7DSdYeiNYzEKLrOWwLwygb72PprftWXpGH1ZjlYNgYjU39
-        UQEjGsSywcavdusKeS6W1LA=
-X-Google-Smtp-Source: APXvYqzbIhdls5mdU1iGJMpfwxHjCpnj/uaZIL9FZ11Wh6a5nqGI72a/CQMJOGngL/TlpU4yFnXtFA==
-X-Received: by 2002:aa7:971d:: with SMTP id a29mr27451500pfg.205.1572423320122;
-        Wed, 30 Oct 2019 01:15:20 -0700 (PDT)
-Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id z7sm1738532pfr.165.2019.10.30.01.15.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Oct 2019 01:15:19 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net] vxlan: fix unexpected failure of vxlan_changelink()
-Date:   Wed, 30 Oct 2019 08:15:12 +0000
-Message-Id: <20191030081512.25743-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        bh=ZMISj/ns6B4cF3UhPoAMo+kmbpNZlZvaXYeyqScyGFM=;
+        b=Ebtr4t3GO7rZGcqJw4bYNu4Axv++9nzgZ35oNpq/Z4Au3pJyZ6R4woKio9fOOON5g+
+         IqT4p8O6ruodtAiBl0/sLLWiP4C87Br/Yc7GlmUC6yyGXpa8sD9JIRPDvKpwlZQM8Mwd
+         ox0Jwd4EpIpxUkvsaVq2N510nu4nTWnA0iG6sHJ4VdQ8+w8a1mfRCMrNv5JlqGq/6H6A
+         sz9f2q2AlhOjR8wLuNJlheIOEhNCy8e0ogSoqbHy+E3EIZKYz5nOw3+rn7mPzfN9CWlN
+         WoRPodIKbVUTVlPmYZbXd15ZTFZxtULfPXn0TU9bFwfDG23zE6EUrTec8NWVkG5LDPD5
+         K9/Q==
+X-Gm-Message-State: APjAAAWMQXD76mPxxCTT/6n51qE+lBE8e5nyNdq61Suq6kMb6bnKrR0k
+        xPDLGy63aLXFZR2tZqX1/bQ=
+X-Google-Smtp-Source: APXvYqzE9e1rdKwPzXpv8ZeTxli7VKdejkS4sb4tOMCYGPkpkK0oCg8f28IClskVmrJekjNbiVKNiw==
+X-Received: by 2002:a63:5d04:: with SMTP id r4mr32369447pgb.22.1572422890492;
+        Wed, 30 Oct 2019 01:08:10 -0700 (PDT)
+Received: from centOS76.localdomain ([131.228.66.14])
+        by smtp.gmail.com with ESMTPSA id z13sm2062923pgz.42.2019.10.30.01.08.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 30 Oct 2019 01:08:09 -0700 (PDT)
+From:   Wally Zhao <wallyzhao@gmail.com>
+To:     vyasevich@gmail.com, nhorman@tuxdriver.com,
+        marcelo.leitner@gmail.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     wally.zhao@nokia-sbell.com, Wally Zhao <wallyzhao@gmail.com>
+Subject: [PATCH] sctp: set ooo_okay properly for Transmit Packet Steering
+Date:   Wed, 30 Oct 2019 12:07:17 -0400
+Message-Id: <1572451637-14085-1-git-send-email-wallyzhao@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 0ce1822c2a08 ("vxlan: add adjacent link to limit depth
-level"), vxlan_changelink() could fail because of
-netdev_adjacent_change_prepare().
-netdev_adjacent_change_prepare() returns -EEXIST when old lower device
-and new lower device are same.
-(old lower device is "dst->remote_dev" and new lower device is "lowerdev")
-So, before calling it, lowerdev should be NULL if these devices are same.
+Unlike tcp_transmit_skb,
+sctp_packet_transmit does not set ooo_okay explicitly,
+causing unwanted Tx queue switching when multiqueue is in use;
+Tx queue switching may cause out-of-order packets.
+Change sctp_packet_transmit to allow Tx queue switching only for
+the first in flight packet, to avoid unwanted Tx queue switching.
 
-Test command1:
-    ip link add dummy0 type dummy
-    ip link add vxlan0 type vxlan dev dummy0 dstport 4789 vni 1
-    ip link set vxlan0 type vxlan ttl 5
-    RTNETLINK answers: File exists
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 0ce1822c2a08 ("vxlan: add adjacent link to limit depth level")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Wally Zhao <wallyzhao@gmail.com>
 ---
- drivers/net/vxlan.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/sctp/output.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index fcf028220bca..a01b8ddaa44a 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -3965,6 +3965,9 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
- 	if (err)
- 		return err;
- 
-+	if (dst->remote_dev == lowerdev)
-+		lowerdev = NULL;
+diff --git a/net/sctp/output.c b/net/sctp/output.c
+index dbda7e7..5ff75cc 100644
+--- a/net/sctp/output.c
++++ b/net/sctp/output.c
+@@ -626,6 +626,10 @@ int sctp_packet_transmit(struct sctp_packet *packet, gfp_t gfp)
+ 	/* neighbour should be confirmed on successful transmission or
+ 	 * positive error
+ 	 */
 +
- 	err = netdev_adjacent_change_prepare(dst->remote_dev, lowerdev, dev,
- 					     extack);
- 	if (err)
-@@ -4006,10 +4009,10 @@ static int vxlan_changelink(struct net_device *dev, struct nlattr *tb[],
- 		mod_timer(&vxlan->age_timer, jiffies);
- 
- 	netdev_adjacent_change_commit(dst->remote_dev, lowerdev, dev);
--	if (lowerdev && lowerdev != dst->remote_dev)
-+	if (lowerdev && lowerdev != dst->remote_dev) {
- 		dst->remote_dev = lowerdev;
--
--	netdev_update_lockdep_key(lowerdev);
-+		netdev_update_lockdep_key(lowerdev);
-+	}
- 	vxlan_config_apply(dev, &conf, lowerdev, vxlan->net, true);
- 	return 0;
- }
++	/* allow switch tx queue only for the first in flight pkt */
++	head->ooo_okay = asoc->outqueue.outstanding_bytes == 0;
++
+ 	if (tp->af_specific->sctp_xmit(head, tp) >= 0 &&
+ 	    tp->dst_pending_confirm)
+ 		tp->dst_pending_confirm = 0;
 -- 
-2.17.1
+1.8.3.1
 
