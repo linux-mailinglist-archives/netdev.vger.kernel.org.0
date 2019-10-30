@@ -2,117 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE4EE9D3F
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:16:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6979BE9D54
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:20:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbfJ3OQH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 10:16:07 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:35748 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726096AbfJ3OQH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:16:07 -0400
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 8A892C0C4F
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 14:16:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1572444966; bh=i1d8imZo5vYM2Cy3TU45K00jW4FPEmATV+fjqao/MQk=;
-        h=From:To:CC:Subject:Date:From;
-        b=HaGFuYd5OVl+V/gbY4Buzf+8kpnEhlkugFsWMFg+72yorhIThRjFiGvtNO+rjKMZJ
-         Vt902GwczE99qfUYE2LGWCqH8haWEoqSqpwU2wVcuAGA9fzY11xJOU76RankPpp4In
-         IKtHixlkae5YkmShM8iuhhPlJT0MtMsS3U7y9OkCKBpf4AiQWkR6OUDv1i5qydjBsO
-         GiBHxWi2GpQ7RNtsAxcEVmoFbXOyO9+FvaFi4MpUkHQ/bzowet4GtFREOxyuf0qOI4
-         oVmNX+kP2FJCV5qJohKOPuDpE6FW0LrYaSbrdhWysqSqdh+BN2BNBiyCSL08bTPSgF
-         1bUs8JyZl6Czw==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 4802AA0069
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 14:16:06 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 30 Oct 2019 07:16:01 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Wed, 30 Oct 2019 07:16:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nUbP6Pl4d7jKp4btZGfwogi85d3GiIQ8G4AeUnvECYY7OL9WPX8Nh/UMcMY7PVzk5UDLHgowBUR2W8YoGCAEO/DPBlhFUIQfYotOCFlM2BagCEN9HazwbrMn5vDuZToPIvgKGHUZ0RNFgpajNe9qhuUR+gBU9khYi9orcpcgzO9HKyBRIQ3GpR3/LcfMHjO0m3I3aVzl61+sUjkrQvJwaYJQI7QtKkSFU0oZQEPBpcc71JX/i3zac/A2CPAojgHL2HA8IxymPhfOu1hD22Rqr4nBuLxr9XKjZ0sH5SK1Y/S+Jj6syLesYWvUbAlFp9V06Bq3yIwC/77U87zIT0aPxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i1d8imZo5vYM2Cy3TU45K00jW4FPEmATV+fjqao/MQk=;
- b=G9C6QjazKCzPbXeKK7ahCiXVAdKYWFpagOjI4MpOCWhz/iG+sl7luzhIceCkoMuusZq7voqlX9lVooGHS+hCDRe0/Vm3PBqElDv2SwTj2MsTYuR54gYFOP+UP1F+s00eutskuo/o9AYZm33I3FDIMu8GyStCGntn2i9Kp4RLcNno8d6EECxC948JCofagHa/99HjCCwWsWpw2vauU4SLnoj9mYc0mc/iSyM14hw4St4MnVHV0jB/L5DKim+WBNbkhS++jwJU8efwr5SHhRjFRbeOJv7tILgpgWtCR6Fin4rBhGXY6a1aOSgVJlHsFzNGOYseGXEArDVH+Kx32cSUzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i1d8imZo5vYM2Cy3TU45K00jW4FPEmATV+fjqao/MQk=;
- b=kfmQLy2MTRDFZSDxKHdkEOElsdmJP6OZ/3KwOCBVNlKWBtdY9PP+7a+90ZnYYQ9HL7cuaPGDCBt/8OzdkdZE1lEHkyifkw9JRjrJ9fF1jGM30wgMOgQqtF/JVrAHEm8z0AKJfyPGYyNuVaRfihkwxFFHAMTmiUQ3M5DlJ7kY7VA=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3092.namprd12.prod.outlook.com (20.178.212.12) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.22; Wed, 30 Oct 2019 14:15:59 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8%5]) with mapi id 15.20.2408.018; Wed, 30 Oct 2019
- 14:15:59 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Joao Pinto <Joao.Pinto@synopsys.com>
-Subject: USO / UFO status ?
-Thread-Topic: USO / UFO status ?
-Thread-Index: AdWPLBeus8XJlFS/Sue5aUntLc/tSw==
-Date:   Wed, 30 Oct 2019 14:15:58 +0000
-Message-ID: <BN8PR12MB326699DDA44E0EABB5C422E4D3600@BN8PR12MB3266.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: de46b051-ed68-4905-4390-08d75d43afd7
-x-ms-traffictypediagnostic: BN8PR12MB3092:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB309204C9BC0D6F06EDAE179DD3600@BN8PR12MB3092.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(39860400002)(376002)(346002)(136003)(189003)(199004)(2501003)(102836004)(5660300002)(55016002)(107886003)(316002)(2906002)(5640700003)(478600001)(2351001)(33656002)(71190400001)(71200400001)(7696005)(86362001)(25786009)(52536014)(4326008)(6506007)(6916009)(6436002)(186003)(305945005)(66066001)(74316002)(66446008)(14454004)(7736002)(486006)(26005)(476003)(76116006)(99286004)(8676002)(6116002)(256004)(9686003)(1730700003)(81166006)(81156014)(4744005)(3846002)(64756008)(8936002)(66556008)(66946007)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3092;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +6j0OJ1MaDR5e44KfiSlX8MxNMHXmXJx31qMk7hAaaMBiliPN3+HOBBkIRJlKg/1f+aZfZdP8y1PGJAU2MiZm9xIpxUfcB9PsXJUuN0ZFnYDt6siTQpdXUmVcQr4YYGGXCNUyBE/IoBieGfq3reqlbF+eaW5TsYCQtUkuvYnyhGI5r5qhdE3Ue5eP/BEfPfzNB3NGft3avKfVstFJzJXLtBr+C8pskgM1BwCHKQurf2n7RWGX69XvP2h7aD//LJUg/0lUJ6L0VB9wRYvhh74Q/QrXWAuxtNWYiDYp4mdbnBkq9Rjp+CA4aAy2i6VLVRvSDRDe4Bg4/ktI8VJC/U+oOxBLI4Gnm+zJWZChRpyYHQCIbDYSTdvjWuRikF5ekYnFvxen+ZejftUggV5hfdWhyV6L2814sBwh+EIwjVAIFaB6aKdTPFLgojH+PZuRVZM
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1726540AbfJ3OUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 10:20:53 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56624 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726321AbfJ3OUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:20:53 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 30 Oct 2019 16:20:49 +0200
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x9UEKn6w003862;
+        Wed, 30 Oct 2019 16:20:49 +0200
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com,
+        Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH iproute2 net-next v2] tc: implement support for action flags
+Date:   Wed, 30 Oct 2019 16:20:40 +0200
+Message-Id: <20191030142040.19404-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20191030140907.18561-1-vladbu@mellanox.com>
+References: <20191030140907.18561-1-vladbu@mellanox.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: de46b051-ed68-4905-4390-08d75d43afd7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 14:15:58.8288
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: g7aWHdTB+CgSoi3s8O1RPWF007jsLauwCDfhrOM8Ft1ywgM4kdRKUlcqlW0yLKs0+p0Ctz89EvOXCxeINPgwoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3092
-X-OriginatorOrg: synopsys.com
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi netdev,
+Implement setting and printing of action flags with single available flag
+value "no_percpu" that translates to kernel UAPI TCA_ACT_FLAGS value
+TCA_ACT_FLAGS_NO_PERCPU_STATS. Update man page with information regarding
+usage of action flags.
 
-What's the status of UDP Segmentation Offload (USO) and UDP=20
-Fragmentation Offloading (UFO) on current mainline ?
+Example usage:
 
-I see that NETIF_F_GSO_UDP_L4 is only supported by Mellanox NIC's but I=20
-also saw some patches from Intel submitting the support. Is there any=20
-tool to test this (besides the -net selftests) ?
+ # tc actions add action gact drop no_percpu
+ # sudo tc actions list action gact
+ total acts 1
 
+        action order 0: gact action drop
+         random type none pass val 0
+         index 1 ref 1 bind 0
+        no_percpu
+
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 ---
-Thanks,
-Jose Miguel Abreu
+
+Notes:
+    Changes V1 -> V2:
+    
+    - Rework the change to use action API TCA_ACT_FLAGS instead of
+      per-action flags implementation.
+
+ include/uapi/linux/pkt_cls.h |  5 +++++
+ man/man8/tc-actions.8        | 14 ++++++++++++++
+ tc/m_action.c                | 19 +++++++++++++++++++
+ 3 files changed, 38 insertions(+)
+
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index a6aa466fac9e..c6ad22f76ede 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -16,9 +16,14 @@ enum {
+ 	TCA_ACT_STATS,
+ 	TCA_ACT_PAD,
+ 	TCA_ACT_COOKIE,
++	TCA_ACT_FLAGS,
+ 	__TCA_ACT_MAX
+ };
+ 
++#define TCA_ACT_FLAGS_NO_PERCPU_STATS 1 /* Don't use percpu allocator for
++					 * actions stats.
++					 */
++
+ #define TCA_ACT_MAX __TCA_ACT_MAX
+ #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
+ #define TCA_ACT_MAX_PRIO 32
+diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
+index f46166e3f685..bee59f7247fa 100644
+--- a/man/man8/tc-actions.8
++++ b/man/man8/tc-actions.8
+@@ -47,6 +47,8 @@ actions \- independently defined actions in tc
+ ] [
+ .I COOKIESPEC
+ ] [
++.I FLAGS
++] [
+ .I CONTROL
+ ]
+ 
+@@ -71,6 +73,10 @@ ACTNAME
+ :=
+ .BI cookie " COOKIE"
+ 
++.I FLAGS
++:=
++.I no_percpu
++
+ .I ACTDETAIL
+ :=
+ .I ACTNAME ACTPARAMS
+@@ -186,6 +192,14 @@ As such, it can be used as a correlating value for maintaining user state.
+ The value to be stored is completely arbitrary and does not require a specific
+ format. It is stored inside the action structure itself.
+ 
++.TP
++.I FLAGS
++Action-specific flags. Currently, the only supported flag is
++.I no_percpu
++which indicates that action is expected to have minimal software data-path
++traffic and doesn't need to allocate stat counters with percpu allocator.
++This option is intended to be used by hardware-offloaded actions.
++
+ .TP
+ .BI since " MSTIME"
+ When dumping large number of actions, a millisecond time-filter can be
+diff --git a/tc/m_action.c b/tc/m_action.c
+index 36c744bbe374..4da810c8c0aa 100644
+--- a/tc/m_action.c
++++ b/tc/m_action.c
+@@ -250,6 +250,16 @@ done0:
+ 				addattr_l(n, MAX_MSG, TCA_ACT_COOKIE,
+ 					  &act_ck, act_ck_len);
+ 
++			if (*argv && strcmp(*argv, "no_percpu") == 0) {
++				struct nla_bitfield32 flags =
++					{ TCA_ACT_FLAGS_NO_PERCPU_STATS,
++					  TCA_ACT_FLAGS_NO_PERCPU_STATS };
++
++				addattr_l(n, MAX_MSG, TCA_ACT_FLAGS, &flags,
++					  sizeof(struct nla_bitfield32));
++				NEXT_ARG_FWD();
++			}
++
+ 			addattr_nest_end(n, tail);
+ 			ok++;
+ 		}
+@@ -318,6 +328,15 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
+ 					   strsz, b1, sizeof(b1)));
+ 		print_string(PRINT_FP, NULL, "%s", _SL_);
+ 	}
++	if (tb[TCA_ACT_FLAGS]) {
++		struct nla_bitfield32 *flags = RTA_DATA(tb[TCA_ACT_FLAGS]);
++
++		if (flags->selector & TCA_ACT_FLAGS_NO_PERCPU_STATS)
++			print_bool(PRINT_ANY, "no_percpu", "\tno_percpu",
++				   flags->value &
++				   TCA_ACT_FLAGS_NO_PERCPU_STATS);
++		print_string(PRINT_FP, NULL, "%s", _SL_);
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.21.0
+
