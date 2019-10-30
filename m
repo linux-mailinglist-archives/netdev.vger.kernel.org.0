@@ -2,172 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71EC2E9F12
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 16:32:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0BBE9F18
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 16:33:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727317AbfJ3PcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 11:32:06 -0400
-Received: from www62.your-server.de ([213.133.104.62]:38936 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727201AbfJ3PcG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 11:32:06 -0400
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iPpx5-0004rK-TU; Wed, 30 Oct 2019 16:32:03 +0100
-Date:   Wed, 30 Oct 2019 16:32:03 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Wenbo Zhang <ethercflow@gmail.com>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v4] bpf: add new helper fd2path for mapping a
- file descriptor to a pathname
-Message-ID: <20191030153203.GA2675@pc-63.home>
-References: <20191028141053.12267-1-ethercflow@gmail.com>
- <CAEf4BzY5XfX1_Txomnz1G4PCq=E4JSPVD+_BQ7qwn8=WM_imVA@mail.gmail.com>
+        id S1727330AbfJ3PcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 11:32:09 -0400
+Received: from mail-eopbgr770097.outbound.protection.outlook.com ([40.107.77.97]:47697
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727201AbfJ3PcI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 30 Oct 2019 11:32:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TDxWWPAa6Gz0BZHtCdV0EvB6R8tGaEUiXM/otwMPFjCMs++SSeRJMJUOFO1tV167JAAGLzwyU2oP/+IuVcxKogIjO1wwGZU7aFPv5TL45xDNGepdDDUwWzeRVef00iRWdNJ8FZZJr30fhFIKFmEoHspJIStYWzWrTITTpKvFwDfC3VkYlstBfCW9kue7ptkCCZ2Wd/FFd/nhO2k/n/JnEZqkwxMQ8uSDSZV8UdbYL6VBFY7DzKwWzeqcTgXU8bdn0xoX1wffXOeOBg/TaLF2WXTEJ1v1BoRkkkrTbn8/MfHM8n84fMfFVlkbrxQqHk3vQYecgbFWkiV7YxuvdMfO3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RH+IFTFh1MtdP5mb8WuXy3H4/zp96T9vHC2n7oOu/+E=;
+ b=CnMGIHBpaA2xnGDEU1P4g1F+N44wSGHEmVj1TwwksqxqDpMBeG/XrqOpmQRJ00isFJMApRDqFmipYyVQy0VlXyt+RTtygL4Djgn9ltDsMbGCGzOLBRUrKvUDvmmF7SzmLp8+++Mz2sfMg69v4M7A9u2+YD3PWSIo06DemNvtY0xS7GH7a/GfN4i4lyqYDdEqRg8suRO194Jr73wnY3PnbB7sM4Himq+8k9Ch4TrJK7eI15u0PGuk34FHVZLikR8lTz0xuioMtr6C8v75YWnyLFLptUPN5ZCoh+Rjl1AgKM6gIbZPe4LXLBinuUtfhu64UC0odrgQCPU0prpxeq5RxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RH+IFTFh1MtdP5mb8WuXy3H4/zp96T9vHC2n7oOu/+E=;
+ b=IDQuvb5U5PeOW7lufHr9X41OtWO8Mf2A+P/WiLN5OkTS8o9an5IGhF3qPRxCXRfzLM79eS6qd2/72eMLvtsq8qRtWDp7GvBl+fHFlnA5aHjwCXn+K/fBEgw9JB/Pm9d2qoRQqQhpgt+zy2XY7oyk393ZJaY4XNr0uePJFbSYs1Q=
+Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
+ DM6PR21MB1323.namprd21.prod.outlook.com (20.179.53.74) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2408.9; Wed, 30 Oct 2019 15:32:06 +0000
+Received: from DM6PR21MB1242.namprd21.prod.outlook.com
+ ([fe80::756e:8d3f:e463:3bf7]) by DM6PR21MB1242.namprd21.prod.outlook.com
+ ([fe80::756e:8d3f:e463:3bf7%3]) with mapi id 15.20.2408.016; Wed, 30 Oct 2019
+ 15:32:06 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     "sashal@kernel.org" <sashal@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "olaf@aepfle.de" <olaf@aepfle.de>, vkuznets <vkuznets@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH net, 0/2] hv_netvsc: fix error handling in
+ netvsc_attach/set_features
+Thread-Topic: [PATCH net, 0/2] hv_netvsc: fix error handling in
+ netvsc_attach/set_features
+Thread-Index: AQHVjzcvjnsDJtWSIUabk6TBDOaP1w==
+Date:   Wed, 30 Oct 2019 15:32:05 +0000
+Message-ID: <1572449471-5219-1-git-send-email-haiyangz@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR01CA0027.prod.exchangelabs.com (2603:10b6:300:101::13)
+ To DM6PR21MB1242.namprd21.prod.outlook.com (2603:10b6:5:169::22)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=lkmlhyz@microsoft.com; 
+x-ms-exchange-messagesentrepresentingtype: 2
+x-mailer: git-send-email 1.8.3.1
+x-originating-ip: [13.77.154.182]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 453eb235-655c-49d4-2cce-08d75d4e51c3
+x-ms-traffictypediagnostic: DM6PR21MB1323:|DM6PR21MB1323:|DM6PR21MB1323:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <DM6PR21MB132391983D7D82151B32DA88AC600@DM6PR21MB1323.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-forefront-prvs: 02065A9E77
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(39860400002)(376002)(366004)(396003)(346002)(189003)(199004)(5660300002)(2906002)(4720700003)(54906003)(110136005)(71190400001)(71200400001)(25786009)(10290500003)(8936002)(22452003)(2501003)(478600001)(6512007)(52116002)(4326008)(6436002)(7846003)(6392003)(8676002)(81156014)(6486002)(81166006)(10090500001)(486006)(476003)(66446008)(256004)(305945005)(2616005)(7736002)(5024004)(50226002)(186003)(66946007)(26005)(64756008)(66556008)(66476007)(6506007)(386003)(102836004)(2201001)(99286004)(3846002)(316002)(6116002)(66066001)(14454004)(4744005)(36756003);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1323;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9ZA3lF1VaMNluhrreh5jJroqa+vn7whiliEDetj7YQNjhJp+Keb/O7T8VLlxHrJ/S29mP6QaTkACN6rhxQkwG0mCnGO8kWmWf0MwHxKuOU38gcn2qwzFLVXi7/Z2vF7IurITQwoxFFdN93kvV+6oX7moPWgn/Ohva0nBUG9RiqPP5eVnjOCerNrcagBjo8LUcCT5EWM1iCqqrnv4eGwyytXAM/asZxmY9THUVKgiVUzDzhV7UeULOKIqifJL6hFTbmtS6a7Z3BnnV/hh9ssRIXhsQki+DiYx+e92k5+93jl9jV2o9odNHVAug5qevww+OMuFclMQGceGGyvA2/3J1C1yrg51AqmEXD8hHMeZY4FivP9cmDQXRJnvzV6u6ZWiFW7uGwrVCDZ8EB1KbCBsyqMI0U5s/GASvkjRFBHxwGttvn2y8xW5E2lQSPursiXS
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY5XfX1_Txomnz1G4PCq=E4JSPVD+_BQ7qwn8=WM_imVA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25618/Wed Oct 30 09:54:22 2019)
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 453eb235-655c-49d4-2cce-08d75d4e51c3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 15:32:06.0200
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PbRgHlcc9EyR+72ffM/FdW3BdruFUrGvmtx1gY+WpE6omR0oBhYlD64usjarz0vIwW4rJQIK8HCgvyHngeGzZA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1323
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 11:48:44AM -0700, Andrii Nakryiko wrote:
-> On Mon, Oct 28, 2019 at 1:59 PM Wenbo Zhang <ethercflow@gmail.com> wrote:
-> >
-> > When people want to identify which file system files are being opened,
-> > read, and written to, they can use this helper with file descriptor as
-> > input to achieve this goal. Other pseudo filesystems are also supported.
-> >
-> > This requirement is mainly discussed here:
-> >
-> >   https://github.com/iovisor/bcc/issues/237
-> >
-> > v3->v4:
-> > - fix missing fdput()
-> > - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-> > - move fd2path's test code to another patch
-> >
-> > v2->v3:
-> > - remove unnecessary LOCKDOWN_BPF_READ
-> > - refactor error handling section for enhanced readability
-> > - provide a test case in tools/testing/selftests/bpf
-> >
-> > v1->v2:
-> > - fix backward compatibility
-> > - add this helper description
-> > - fix signed-off name
-> >
-> > Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
-> > ---
-> >  include/uapi/linux/bpf.h       | 14 +++++++++++-
-> >  kernel/trace/bpf_trace.c       | 40 ++++++++++++++++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h | 14 +++++++++++-
-> >  3 files changed, 66 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 4af8b0819a32..124632b2a697 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -2775,6 +2775,17 @@ union bpf_attr {
-> >   *             restricted to raw_tracepoint bpf programs.
-> >   *     Return
-> >   *             0 on success, or a negative error in case of failure.
-> > + *
-> > + * int bpf_fd2path(char *path, u32 size, int fd)
-> 
-> from what I can see, we don't have any BPF helper with this naming
-> approach(2 -> to, 4 -> for, etc). How about something like
-> bpf_get_file_path?
-> 
-> > + *     Description
-> > + *             Get **file** atrribute from the current task by *fd*, then call
-> > + *             **d_path** to get it's absolute path and copy it as string into
-> > + *             *path* of *size*. The **path** also support pseudo filesystems
-> > + *             (whether or not it can be mounted). The *size* must be strictly
-> > + *             positive. On success, the helper makes sure that the *path* is
-> > + *             NUL-terminated. On failure, it is filled with zeroes.
-> > + *     Return
-> > + *             0 on success, or a negative error in case of failure.
-> 
-> Mention that we actually return a positive number on success, which is
-> a size of the string + 1 for NUL byte (the +1 is not true right now,
-> but I think should be).
-> 
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -2888,7 +2899,8 @@ union bpf_attr {
-> >         FN(sk_storage_delete),          \
-> >         FN(send_signal),                \
-> >         FN(tcp_gen_syncookie),          \
-> > -       FN(skb_output),
-> > +       FN(skb_output),                 \
-> > +       FN(fd2path),
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-> >   * function eBPF program intends to call
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 571c25d60710..dd7b070df3d6 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -683,6 +683,44 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
-> >         .arg1_type      = ARG_ANYTHING,
-> >  };
-> >
-> > +BPF_CALL_3(bpf_fd2path, char *, dst, u32, size, int, fd)
-> > +{
-> > +       struct fd f;
-> > +       char *p;
-> > +       int ret = -EINVAL;
-> > +
-> > +       /* Use fdget_raw instead of fdget to support O_PATH */
-> > +       f = fdget_raw(fd);
-> 
-> I haven't followed previous discussions, so sorry if this was asked
-> before. Can either fdget_raw or d_path sleep? Also, d_path seems to be
-> relying on current, which in the interrupt context might not be what
-> you really want. Have you considered these problems?
-> 
-> > +       if (!f.file)
-> > +               goto error;
-> > +
-> > +       p = d_path(&f.file->f_path, dst, size);
-> > +       if (IS_ERR_OR_NULL(p)) {
-> > +               ret = PTR_ERR(p);
-> 
-> if p can really be NULL, you'd get ret == 0 here, which is probably
-> not what you want.
-> But reading d_path, it seems like it's either valid pointer or error,
-> so just use IS_ERR above?
-> 
-> > +               goto error;
-> > +       }
-> > +
-> > +       ret = strlen(p);
-> > +       memmove(dst, p, ret);
-> > +       dst[ret] = '\0';
-> 
-> I think returning number of useful bytes (including terminating NUL)
-> is good and follows bpf_probe_read_str() convention. So ret++ here?
-> 
-> > +       goto end;
-> > +
-> > +error:
-> > +       memset(dst, '0', size);
-> > +end:
-> > +       fdput(f);
+The error handling code path in these functions are not correct.
+This patch set fixes them.
 
-Also I'd prefer fdget_*()'s error path not calling fdput(f).
+Haiyang Zhang (2):
+  hv_netvsc: Fix error handling in netvsc_set_features()
+  hv_netvsc: Fix error handling in netvsc_attach()
 
-> > +       return ret;
-> > +}
-> > +
-> 
-> [...]
+ drivers/net/hyperv/netvsc_drv.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+--=20
+1.8.3.1
+
