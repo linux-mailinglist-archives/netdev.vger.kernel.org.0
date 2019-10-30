@@ -2,142 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F029DEA5DF
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 776F4EA5E6
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:02:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727232AbfJ3WAh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 18:00:37 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:51164 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726826AbfJ3WAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:00:37 -0400
-Received: by mail-pg1-f201.google.com with SMTP id r24so2643187pgj.17
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 15:00:36 -0700 (PDT)
+        id S1727281AbfJ3WCR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 18:02:17 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41783 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726864AbfJ3WCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:02:17 -0400
+Received: by mail-qk1-f194.google.com with SMTP id m125so4556490qkd.8;
+        Wed, 30 Oct 2019 15:02:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=9Z9PJE69TkRCWWWgXqh2ZJ/7GTRBKRNuATEMcFOp0CM=;
-        b=lByoByFZfLZYQI0AQyAPr9z8c545l7VCopi+1HaXw/gHZ2gM7lOOMUI0ApksIUviAL
-         QOT2ZJJByCdi5a29eWsd1btMiAaTBSAeAFerDHnCbbI9PwTpFsxQ36XHuzsWUDr8SE0i
-         i6SYA8yad3UHR0Rxj4Xxx2njf1NCsFEkFDLL2Ddb42teaoRahf3i5WkvQ2kk3zG4mwFT
-         Je1VECUuRBLjJNLF8wpEvu6c68OpbHKLLIaNj1R9PdipqmsqI3RJY6Ddve+mOoqIzMbx
-         QI+NS7oEU/6PzbrlDo1xW7etz/BQkKZv7bTCLesSCxshltENsIZ5AB8Rb16UoRMYAV/c
-         p4XQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CLkGBi8AqHwrrJaihuM7DKFQ0v3RjSOmcnIcPEdKZmo=;
+        b=gx/fSHaMHMO2e4QlyV+fMumiHehoYvvEIr7JObwae1STNgM4X6BNbGUxzzJeg5/4sN
+         ObmFm7JwTxkO1e1RwJ2cdy1X5etsN85krZRcG3wGaBvRpj3hlJw3wOAMDDkLBCYJ9diq
+         D333HKzvWPnNcN3B+u39aBm46U+VrebUVrJuJpIk7XycZNJ9wLF87mLzZN9LDlmguNYH
+         irErRDFTgK3GjUchhh45f5POisydwUJY6SUR68TEKfDyDx8pj1Dj0zt3vqqv9xtZWFfr
+         XsW4O976ZURYL77kywZe1ONRB5Kem5WXFqkkuYCfjfp8yMjS5bolhtvlO6oaTgZ8PU8o
+         SOhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=9Z9PJE69TkRCWWWgXqh2ZJ/7GTRBKRNuATEMcFOp0CM=;
-        b=ldt8wb9Y8ST7ODHlwur/wnNkxiZKNnRGpKmbuQBluqp/NpSDego3/Km/zbSvRYr2ZX
-         2ow6870+GKoKPEiNrIIOAk9mg/cEZAfpD5VKkDJqofGDgxcSL1hj8i1jVrKVDeCE3mnU
-         w3TUl2VCmq2GUfgMhXC6UI88HbQChFgcnQ2Ieipc1QPfEEJBhVLgr3Xm8tfT6Z2s21GY
-         brueoROPdqE//xLSD86bXcyRF3sS9HDkGsSA35CfdYqNUvVVAvrVJxI5P/7d5F16Az6f
-         43qXLzjeYdq7h6vuwGTvkKae0iJorGTeCC1r7MVty5zgZWWmlD79tdyWbCUSQwAyTGPV
-         lCcg==
-X-Gm-Message-State: APjAAAWiOsEyGr7tobROMN/8dLwcB20iaoBzF6/uZusn23aYXOyttje5
-        yfL3zN8r4KsHBoHlNNirVMfEskB8tKv4z57KqjKq62mwnIF9WzqC0ThElk8Ago3rGo3jMAyeFyS
-        88JhW8ptsQvKbYvZwmI3n7Iae7/qj7D2bYfkcFoe7173f9vLkG+DDcV/UTIZaxpNY97M=
-X-Google-Smtp-Source: APXvYqzLU5I9oWdrb/08ByyckVxtuoLLGMHmgGZjOiZ/HulC91ZXOXoUfuG8WY3jjBL2YQ+hCs3Ddao0zNPpEw==
-X-Received: by 2002:a63:5810:: with SMTP id m16mr1858943pgb.162.1572472835785;
- Wed, 30 Oct 2019 15:00:35 -0700 (PDT)
-Date:   Wed, 30 Oct 2019 15:00:32 -0700
-Message-Id: <20191030220032.199832-1-yangchun@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.rc0.303.g954a862665-goog
-Subject: [PATCH net v2] gve: Fixes DMA synchronization.
-From:   Yangchun Fu <yangchun@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, simon.horman@netronome.com,
-        Yangchun Fu <yangchun@google.com>,
-        Catherine Sullivan <csully@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CLkGBi8AqHwrrJaihuM7DKFQ0v3RjSOmcnIcPEdKZmo=;
+        b=OITi/R2+CrzA59hkO6xy9y/2sVSGq/ciblaYARKNmphHBtsYMrAyeNMu4A/1ihW607
+         68mm2ngQ1Rry6fEJt8PufklGrXfFpAaCCcqX0DU6Q1e3v9JKpKJaBd/zZrI64Hq+5/KB
+         EykRf6jwCouArZu5VfBR6AlnR5m+Io097SQqn4hcU/6drVI/NPsHeCIICoz9lwOfwGjb
+         pPGgYzMBshM8sX6EILF9WbXRh+Uw6FfQk1+Zx2KozagWDd3a90FD0TD7MrBbwChH6ghH
+         9zu0j3m4yJvgUZyy28XpH3rc8Sbu+x63yLk/RHnNgKA0evTMjIYMZ8qBWVclIlqsRv3X
+         pkdw==
+X-Gm-Message-State: APjAAAVulfwjxZghobIzEvv17pvsVzpum07eSysLJKH6CLmmCDgoj9FO
+        zuThWmG3/38UrumqnMjE/O1znqSV1gZN3JyJVxsFv0ga
+X-Google-Smtp-Source: APXvYqyTM5Z8tVgUxLFVunQ+4Rrl79JwwzLqauxP5TLnJVPgUMt7+5X/x24HK+uB83k0l2YMXHDThULFCzlcMQfKgdg=
+X-Received: by 2002:a37:8f83:: with SMTP id r125mr2300280qkd.36.1572472934233;
+ Wed, 30 Oct 2019 15:02:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191030193532.262014-1-ast@kernel.org> <20191030193532.262014-3-ast@kernel.org>
+In-Reply-To: <20191030193532.262014-3-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 30 Oct 2019 15:02:03 -0700
+Message-ID: <CAEf4BzatBeCW0mLWSuO_LFguwnT8RXr=WoUJFR_rjKHbyvukaQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/2] libbpf: add support for prog_tracing
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Synces the DMA buffer properly in order for CPU and device to see
-the most up-to-data data.
+On Wed, Oct 30, 2019 at 12:36 PM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> Cleanup libbpf from expected_attach_type == attach_btf_id hack
+> and introduce BPF_PROG_TYPE_TRACING.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
-Signed-off-by: Yangchun Fu <yangchun@google.com>
-Reviewed-by: Catherine Sullivan <csully@google.com>
----
-Changes in v2:
-	- Passes priv->pdev->dev directly instead of whole priv.
-	- Removes inline keyword for function.
-	
- drivers/net/ethernet/google/gve/gve_rx.c |  2 ++
- drivers/net/ethernet/google/gve/gve_tx.c | 24 ++++++++++++++++++++++--
- 2 files changed, 24 insertions(+), 2 deletions(-)
+Looks good overall, but please replace all u32 to __u32 and add proper
+LIBBPF_APIs for all the new exposed functions from libbpf.h, with
+those changes:
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 59564ac99d2a..edec61dfc868 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -289,6 +289,8 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
- 
- 	len = be16_to_cpu(rx_desc->len) - GVE_RX_PAD;
- 	page_info = &rx->data.page_info[idx];
-+	dma_sync_single_for_cpu(&priv->pdev->dev, rx->data.qpl->page_buses[idx],
-+				PAGE_SIZE, DMA_FROM_DEVICE);
- 
- 	/* gvnic can only receive into registered segments. If the buffer
- 	 * can't be recycled, our only choice is to copy the data out of
-diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
-index 778b87b5a06c..a0a911cd1184 100644
---- a/drivers/net/ethernet/google/gve/gve_tx.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx.c
-@@ -390,7 +390,21 @@ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
- 	seg_desc->seg.seg_addr = cpu_to_be64(addr);
- }
- 
--static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
-+static void gve_dma_sync_for_device(struct device *dev, dma_addr_t *page_buses,
-+				    u64 iov_offset, u64 iov_len)
-+{
-+	u64 addr;
-+	dma_addr_t dma;
-+
-+	for (addr = iov_offset; addr < iov_offset + iov_len;
-+	     addr += PAGE_SIZE) {
-+		dma = page_buses[addr / PAGE_SIZE];
-+		dma_sync_single_for_device(dev, dma, PAGE_SIZE, DMA_TO_DEVICE);
-+	}
-+}
-+
-+static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb,
-+			  struct device *dev)
- {
- 	int pad_bytes, hlen, hdr_nfrags, payload_nfrags, l4_hdr_offset;
- 	union gve_tx_desc *pkt_desc, *seg_desc;
-@@ -432,6 +446,9 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
- 	skb_copy_bits(skb, 0,
- 		      tx->tx_fifo.base + info->iov[hdr_nfrags - 1].iov_offset,
- 		      hlen);
-+	gve_dma_sync_for_device(dev, tx->tx_fifo.qpl->page_buses,
-+				info->iov[hdr_nfrags - 1].iov_offset,
-+				info->iov[hdr_nfrags - 1].iov_len);
- 	copy_offset = hlen;
- 
- 	for (i = payload_iov; i < payload_nfrags + payload_iov; i++) {
-@@ -445,6 +462,9 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
- 		skb_copy_bits(skb, copy_offset,
- 			      tx->tx_fifo.base + info->iov[i].iov_offset,
- 			      info->iov[i].iov_len);
-+		gve_dma_sync_for_device(dev, tx->tx_fifo.qpl->page_buses,
-+					info->iov[i].iov_offset,
-+					info->iov[i].iov_len);
- 		copy_offset += info->iov[i].iov_len;
- 	}
- 
-@@ -473,7 +493,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
- 		gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
- 		return NETDEV_TX_BUSY;
- 	}
--	nsegs = gve_tx_add_skb(tx, skb);
-+	nsegs = gve_tx_add_skb(tx, skb, &priv->pdev->dev);
- 
- 	netdev_tx_sent_queue(tx->netdev_txq, skb->len);
- 	skb_tx_timestamp(skb);
--- 
-2.24.0.rc0.303.g954a862665-goog
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
+>  tools/include/uapi/linux/bpf.h |  2 +
+>  tools/lib/bpf/bpf.c            |  8 ++--
+>  tools/lib/bpf/bpf.h            |  5 +-
+>  tools/lib/bpf/libbpf.c         | 88 +++++++++++++++++++++++++---------
+>  tools/lib/bpf/libbpf.h         |  4 ++
+>  tools/lib/bpf/libbpf_probes.c  |  1 +
+>  6 files changed, 80 insertions(+), 28 deletions(-)
+>
+
+[...]
+
+>
+> +static int libbpf_attach_btf_id_by_name(const char *name, u32 *btf_id);
+
+here and in few places below, u32 will break libbpf on Github, please use __u32
+
+> +
+>  static struct bpf_object *
+>  __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+>                    struct bpf_object_open_opts *opts)
+> @@ -3656,6 +3660,7 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+>         bpf_object__for_each_program(prog, obj) {
+>                 enum bpf_prog_type prog_type;
+>                 enum bpf_attach_type attach_type;
+> +               u32 btf_id;
+>
+>                 err = libbpf_prog_type_by_name(prog->section_name, &prog_type,
+>                                                &attach_type);
+> @@ -3667,6 +3672,12 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
+>
+>                 bpf_program__set_type(prog, prog_type);
+>                 bpf_program__set_expected_attach_type(prog, attach_type);
+> +               if (prog_type == BPF_PROG_TYPE_TRACING) {
+> +                       err = libbpf_attach_btf_id_by_name(prog->section_name, &btf_id);
+> +                       if (err)
+> +                               goto out;
+> +                       bpf_program__set_attach_btf_id(prog, btf_id);
+> +               }
+>         }
+>
+>         return obj;
+
+[...]
+
+>
+> +#define BTF_PREFIX "btf_trace_"
+> +static int libbpf_attach_btf_id_by_name(const char *name, u32 *btf_id)
+> +{
+> +       struct btf *btf = bpf_core_find_kernel_btf();
+> +       char raw_tp_btf_name[128] = BTF_PREFIX;
+> +       char *dst = raw_tp_btf_name + sizeof(BTF_PREFIX) - 1;
+> +       int ret, i, err;
+> +
+> +       if (IS_ERR(btf)) {
+> +               pr_warn("vmlinux BTF is not found\n");
+> +               return -EINVAL;
+> +       }
+> +
+> +       if (!name) {
+> +               err = -EINVAL;
+> +               goto err;
+> +       }
+> +
+> +       for (i = 0; i < ARRAY_SIZE(section_names); i++) {
+> +               if (!section_names[i].is_attach_btf)
+> +                       continue;
+> +               if (strncmp(name, section_names[i].sec, section_names[i].len))
+> +                       continue;
+> +               /* prepend "btf_trace_" prefix per kernel convention */
+> +               strncat(dst, name + section_names[i].len,
+> +                       sizeof(raw_tp_btf_name) - sizeof(BTF_PREFIX));
+> +               ret = btf__find_by_name(btf, raw_tp_btf_name);
+> +               if (ret <= 0) {
+> +                       pr_warn("%s is not found in vmlinux BTF\n", dst);
+> +                       err = -EINVAL;
+> +                       goto err;
+> +               }
+> +               *btf_id = ret;
+> +               err = 0;
+
+nit: I'd just initialize err to zero, it will be easy to miss this if
+we need to extend this function a bit.
+
+> +               goto err;
+> +       }
+> +       pr_warn("failed to identify btf_id based on ELF section name '%s'\n", name);
+> +       err = -ESRCH;
+> +err:
+
+err is misleading, it's just exit, really
+
+> +       btf__free(btf);
+> +       return err;
+> +}
+> +
+>  int libbpf_attach_type_by_name(const char *name,
+>                                enum bpf_attach_type *attach_type)
+>  {
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index c63e2ff84abc..a3f5b8d3398d 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -307,6 +307,7 @@ LIBBPF_API int bpf_program__set_sched_cls(struct bpf_program *prog);
+>  LIBBPF_API int bpf_program__set_sched_act(struct bpf_program *prog);
+>  LIBBPF_API int bpf_program__set_xdp(struct bpf_program *prog);
+>  LIBBPF_API int bpf_program__set_perf_event(struct bpf_program *prog);
+> +int bpf_program__set_tracing(struct bpf_program *prog);
+
+LIBBPF_API? same few places below
+
+>
+>  LIBBPF_API enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog);
+>  LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
+> @@ -317,6 +318,8 @@ bpf_program__get_expected_attach_type(struct bpf_program *prog);
+>  LIBBPF_API void
+>  bpf_program__set_expected_attach_type(struct bpf_program *prog,
+>                                       enum bpf_attach_type type);
+> +void
+> +bpf_program__set_attach_btf_id(struct bpf_program *prog, u32 btf_id);
+>
+
+[...]
