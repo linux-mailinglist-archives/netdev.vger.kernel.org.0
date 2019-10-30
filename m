@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECDFEEA5B9
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:50:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4866CEA5BA
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbfJ3Vuf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 17:50:35 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:41006 "EHLO
+        id S1727326AbfJ3Vv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 17:51:27 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:37678 "EHLO
         mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727015AbfJ3Vuf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:50:35 -0400
-Received: by mail-oi1-f194.google.com with SMTP id g81so3366083oib.8
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 14:50:34 -0700 (PDT)
+        with ESMTP id S1727015AbfJ3Vv1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:51:27 -0400
+Received: by mail-oi1-f194.google.com with SMTP id y194so3390352oie.4
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 14:51:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=96XMMtdJ245IEwl8JA/QwitEsK6iJbDAKrGxck2zsvI=;
-        b=YmI5ezq8Ab8to17yW7PbMNdi53SB5CAGrF5WdxL7YDg5iLGksFsn1X3ekdybKGCdom
-         GalNNGq9HWkxNO8KdpP7FQno0k5NoPuzsHNiIVl63sMmLpzLpDXIBUwwRa37oRTGb7P0
-         Bb1Hdf0pppOU1GdOxnoCqKgE2ei7PDpY4UKvBfUpyT3guy9Sggsm8UqyzAbgg1kEV096
-         HbcVT6xzQ5DP7vRyCxiRYoBQSnAoSPLKWuds+2Wl1FCsy2G33+Gh9gLD7oDmku7wQASZ
-         jd+KkttY2Xn0xg25svsRyjIfHiDhewF5ksVurMoKnKAAmUqf9ZOSWFJK9TC3mNtidJYn
-         n9MA==
+        bh=f/22oU9ITDEvWLVMzt6EYHu2iWpHwZHJesTlfTtN7lU=;
+        b=njYzlWbGXTl+tfgI7t23Nk5LWBCiu2FGV6yJe7yaC6gOLmq6pIEbn32+r3g1o9Yjfg
+         ExP8TyGbW5+Qr3WvsefvM1X1urd/QSFUClt+Wi8tthdGAL/Jj7KQRli4xkxZ1KvpiVQL
+         7Qqtk2h5VhuEED7UCe1Nx70DGXGhVhHQyAiDhMflTQAl8Q5DiVy2aym/c47zsZ9xB0pl
+         bdyZmPEDHP2fAwMBrxgciW245c4IVVJU3+TQcsc8TVfYCwo5SoswDckbWVN69w9C4+hB
+         EuYB0tAVeYDm80JjVfOBU2FkUWu77UW3zN6rZ72/+w54hnDLJDJ21j375XHb8cF7Nxnu
+         MXJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=96XMMtdJ245IEwl8JA/QwitEsK6iJbDAKrGxck2zsvI=;
-        b=KZF/aDQMa418HKC1fa7zb7tVSCXnzDMcDE7kmKsRK1bxk/zCXxp4N3MT0iO26vINZ2
-         DvukVGG4Z/7dsnMcLNYTBn0fvjInVPz7cpZ9+NE8x5817Fc0K7xtyS8S+8K4ohkFXA02
-         Ieihju5nrPWb7KFWX+A8SQwqeD3UqMAJUrgvnj3HE4tPe+PXNSXKOxU2himZJNsMw+Hw
-         mpBWfgRicm5sV8YjyerB3qY7xB/EZNkk+arnkwrlfBNmFs4SkeTYyc0Llbcm8Aswv1FA
-         E5SCmcHVSQQ8IHn75uIlqYDRWiCg5Jdout+m+gvx8eLUgObudFfEd0NXnt4W/s6kg5/J
-         pKgA==
-X-Gm-Message-State: APjAAAVqmiEEJgdO3kguOVAR7ADUo1eBITXKdvW0y6XHRLSMUP+9pwHh
-        LQw513xbOo2OmFuJGYmT8XcRX+e07vLFs2MCr/LKig==
-X-Google-Smtp-Source: APXvYqxbDcOvEYqUTB/BGSklp4tzoF82IbfkTtKdAa/v6XOYWI89ByMNV1DhgvsEKlxibtDLvwrZ2RnIDoAdE5w2MjI=
-X-Received: by 2002:aca:4489:: with SMTP id r131mr1242344oia.60.1572472234045;
- Wed, 30 Oct 2019 14:50:34 -0700 (PDT)
+        bh=f/22oU9ITDEvWLVMzt6EYHu2iWpHwZHJesTlfTtN7lU=;
+        b=re0ENgaOtQcAHu1MBpqNmLZwSQ7bJOblrGbuBD3dxPIcR2OPMxRkRCRRjX8od1oICJ
+         y/Zn4vmkVuIL2+KOXNBTZw2UQCx7xrZFAa1nbeyOePSZofSGm0+hicztbpwTF+aTrRgE
+         tEgBKVTfjF+KPFCfzt2cnyKsatcEffS+0ptqHOgG347D3scC8CH+jNFGiIJOZOUTvG1N
+         aMjjehz8plT9gUEpXtdIUrSYWkEsYie2eBrnjyX7gTgOMcDZNJrE9PRyjGu0KePrFppL
+         ZMLwPJGscPJcph6IBfKjJXXRlCvUm4+KI8fl2I+FfIBbnuYJoYoHYYXTt6MzzipGDXJo
+         Cm3w==
+X-Gm-Message-State: APjAAAU0B4vcgF+jFh8yNL+Qn7/RMf8g8pKvE2lUlYCIz6koUMm7eMqZ
+        fYYXENJW3xhpcg4kcPd7c/7SrF26bqu2zksFcSOjOQ==
+X-Google-Smtp-Source: APXvYqzTrAp9KSLID9rvJNHqyzuvH+E1yrN3XepMl8KLAcbD9/r/kA8c6lF7iIGIuuTcMPtA3ezg68fH/TDKsc6xYig=
+X-Received: by 2002:aca:602:: with SMTP id 2mr1228585oig.19.1572472286034;
+ Wed, 30 Oct 2019 14:51:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191028182309.73313-1-yangchun@google.com> <20191029081851.GA23615@netronome.com>
-In-Reply-To: <20191029081851.GA23615@netronome.com>
+References: <20191028182309.73313-1-yangchun@google.com> <20191029.174111.1326267225443351642.davem@davemloft.net>
+In-Reply-To: <20191029.174111.1326267225443351642.davem@davemloft.net>
 From:   Yangchun Fu <yangchun@google.com>
-Date:   Wed, 30 Oct 2019 14:50:23 -0700
-Message-ID: <CAOPXMbm-rtONc+HLvVc8tuo1ftdkfkKX83DK0sFhb53aujrwWg@mail.gmail.com>
+Date:   Wed, 30 Oct 2019 14:51:14 -0700
+Message-ID: <CAOPXMbnBtxY4bkXkCJY3hUZjF48V7eoXa6oLmY9EO456kr4svQ@mail.gmail.com>
 Subject: Re: [PATCH net] gve: Fixes DMA synchronization.
-To:     Simon Horman <simon.horman@netronome.com>
+To:     David Miller <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -55,10 +55,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 28, 2019 at 11:23:09AM -0700, Yangchun Fu wrote:
+On Tue, Oct 29, 2019 at 5:41 PM David Miller <davem@davemloft.net> wrote:
+>> diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
+>> index 778b87b5a06c..d8342b7b9764 100644
+>> --- a/drivers/net/ethernet/google/gve/gve_tx.c
+>> +++ b/drivers/net/ethernet/google/gve/gve_tx.c
+>> @@ -390,7 +390,23 @@ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
+>>       seg_desc->seg.seg_addr = cpu_to_be64(addr);
+>>  }
+>>
+>> -static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
 >> +static inline void gve_dma_sync_for_device(struct gve_priv *priv,
+>> +                                        dma_addr_t *page_buses,
+>> +                                        u64 iov_offset, u64 iov_len)
 >
-> It seems that only priv->pdev->dev is used in this function.  Perhaps it
-> would be better to pass it to this function rather than all of priv.
+> Never use the inline keyword in foo.c files, let the compiler device
 
-Thanks for the review. I will send v2 patch with the fix.
+Thanks for the review. I will send the v2 patch with the fix.
