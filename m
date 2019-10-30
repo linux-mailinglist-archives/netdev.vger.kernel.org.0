@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87591E993B
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 10:35:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0124DE993C
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 10:35:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbfJ3JfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 05:35:07 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44233 "EHLO
+        id S1726532AbfJ3JfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 05:35:09 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:55637 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725822AbfJ3JfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 05:35:05 -0400
+        by vger.kernel.org with ESMTP id S1726225AbfJ3JfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 05:35:06 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 68BD921C24;
-        Wed, 30 Oct 2019 05:35:04 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9A92421E56;
+        Wed, 30 Oct 2019 05:35:05 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 30 Oct 2019 05:35:04 -0400
+  by compute3.internal (MEProxy); Wed, 30 Oct 2019 05:35:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=QJXXr10jtVMWkJj893hGQGpAkZiIW6A5BQ4tyaq05Ho=; b=uWqTuy6s
-        wJCGdLbVSOKzDECNB8OsbnKx9OtRxSCcrufTCXY8SHPRdJzzjifAIopRJ9MAx0Gw
-        BETB711irRAAAeQ5grXln2AhYbcNqjKYcYZfVhHYbWKSzrzUMRrmW2AFJHjcWdSy
-        YzIi5oxRAKNr+zbRK7FqDSWKhT4l+Xxm6ShU7BCebqEKDX698KUeUAMpl0gGOdLh
-        eHCKJw0xbi+TVOjux5xetvqaUrVRMLPGjcrigUOE7y08HuJg8AQ76Ia91BPjeyth
-        WvNpdFT3yxZbpSzlPemrWJE1v4Sce6nfoS6dZUYi37dPMIkshkamYHNvxVNfa2jw
-        fyzkx235yzlepw==
-X-ME-Sender: <xms:SFm5XbCxfjfdqOU721DXD4XxV06z346uhh07rlAE9WZ3CC6iP2eAFA>
+        fm1; bh=Kh3VhDxGTHNVwDk3ke13dr/GBfP13vmPWi8IS027GME=; b=I6dqE9dt
+        ni2vG+TsMCR7INvvl9KmXU3/1vsY1j8dhvK5Ca7UdBrULbp1opDiCC/asu5hQJs5
+        UUrUFlkPvgR+XCIABXlXzFoAZZLpr5owt5F3nWCo4VlRKk9M3JH88iYiR1doIyrw
+        2e9PXIDZ6pUN+im6aqWNTmavm+E11QqqRLz/PioEIrBSSG/HjqoKh8hUp9lrvurF
+        H3GxxZHgdn4rXnIxm11Md2Ip+oUWdxXpAFBITLiDa6SxiNx1dU6mnEVH5pw4AwHu
+        txjs+9nzP/hRxA7iNPUJWSmtfs0yQOuk6Sk+4/0gUvJtVlzyx4hbEyyCtw/dfVtE
+        tBm9/LMiwuPZXw==
+X-ME-Sender: <xms:SVm5XY-VBXZwmdkrm6ZmTV7k5S2xXH5Ew305aHqfUXOjD3LC5hzxxA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddtfedgtdehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:SFm5XWW71UCwxGNP6V7qkcqxIrMiyxzVZzkSBf_7p-NK0LRqW6JzHg>
-    <xmx:SFm5XfAiA-ukMEoFfJt_9Ur5iIquvy3FCK2wbstNOHQ27nKWZ1nvdw>
-    <xmx:SFm5XUgiOPJZGhaeyU9gUFAHsY-YV3Kf6kYq07dxUglK5ceWdO8yKQ>
-    <xmx:SFm5XXsbKPhCOTFP0HhgpQ63DrY9nVYmWmYSLCxsA7KHxFanoiIHEQ>
+    ufhiiigvpedu
+X-ME-Proxy: <xmx:SVm5XQTmKvRU76c-graWR9PJxYd5xOagr2aBJZfa0-0MaVVqxbwGxA>
+    <xmx:SVm5XSEpT2LpJ-kBbgV4UwThIHbKCffgb8p1C33qHTdpCW5KmIxEKg>
+    <xmx:SVm5XYO4hjY0DVYJoncziEhKfJLnFjQl1k7cI1PtvMdyTs_3_JbaAg>
+    <xmx:SVm5XdT4biAG_iHP8mtQZdbJap-MalKx2qDqfltvw50ukitkv0x2Kg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4BBD63060068;
-        Wed, 30 Oct 2019 05:35:03 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 77C5C3060060;
+        Wed, 30 Oct 2019 05:35:04 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 1/4] mlxsw: reg: Increase size of MPAR register
-Date:   Wed, 30 Oct 2019 11:34:48 +0200
-Message-Id: <20191030093451.26325-2-idosch@idosch.org>
+Subject: [PATCH net-next v2 2/4] mlxsw: pci: Increase PCI reset timeout for SN3800 systems
+Date:   Wed, 30 Oct 2019 11:34:49 +0200
+Message-Id: <20191030093451.26325-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191030093451.26325-1-idosch@idosch.org>
 References: <20191030093451.26325-1-idosch@idosch.org>
@@ -61,32 +61,34 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-In new firmware versions this register is extended with a sampling rate
-for Spectrum-2 and future ASICs.
+SN3800 Spectrum-2 based systems have gearboxes that need to be
+initialized by the firmware during its initialization flow. In certain
+cases, the firmware might need to flash these gearboxes, which is
+currently a time-consuming process.
 
-Increase the size of the register to ensure the field is initialized to
-0 which means every packet is mirrored.
+In newer firmware versions, the firmware will not signal to the driver
+that it is ready until the gearboxes are flashed. Increase the PCI reset
+timeout for these situations. In normal cases, the driver will need to
+wait no longer than 5 seconds.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Petr Machata <petrm@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h | 2 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci_hw.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index adb63a266fc7..7f7f1b95290f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -8680,7 +8680,7 @@ mlxsw_reg_mpat_eth_rspan_l3_ipv6_pack(char *payload, u8 ttl,
-  * properties.
-  */
- #define MLXSW_REG_MPAR_ID 0x901B
--#define MLXSW_REG_MPAR_LEN 0x08
-+#define MLXSW_REG_MPAR_LEN 0x0C
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h b/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
+index 2b3aec482742..e0d7d2d9a0c8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci_hw.h
+@@ -27,7 +27,7 @@
  
- MLXSW_REG_DEFINE(mpar, MLXSW_REG_MPAR_ID, MLXSW_REG_MPAR_LEN);
- 
+ #define MLXSW_PCI_SW_RESET			0xF0010
+ #define MLXSW_PCI_SW_RESET_RST_BIT		BIT(0)
+-#define MLXSW_PCI_SW_RESET_TIMEOUT_MSECS	20000
++#define MLXSW_PCI_SW_RESET_TIMEOUT_MSECS	900000
+ #define MLXSW_PCI_SW_RESET_WAIT_MSECS		100
+ #define MLXSW_PCI_FW_READY			0xA1844
+ #define MLXSW_PCI_FW_READY_MASK			0xFFFF
 -- 
 2.21.0
 
