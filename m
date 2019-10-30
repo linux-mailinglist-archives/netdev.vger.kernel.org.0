@@ -2,149 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CCBBE9A95
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 12:06:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 970B6E9ADC
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 12:34:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726566AbfJ3LGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 07:06:10 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39701 "EHLO
+        id S1726636AbfJ3LeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 07:34:18 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:24683 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726082AbfJ3LGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 07:06:09 -0400
+        with ESMTP id S1726065AbfJ3LeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 07:34:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572433568;
+        s=mimecast20190719; t=1572435256;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=i7I2LBO3foUDB/5ZE0ixnicShI637mLGxaYmf81WNPQ=;
-        b=IHq16m9/aUjFUPv9mcA18IB44R7q5phqeOhSFSGV3yWS0fJ7DhHYuqZ8dmckoMh4F1CrW3
-        h08ruOatbF7OA1TPEInm/pVOSoFQhX7uWmqf8NpPH+NPnizDkF1EBmm+u/Uimj7P8CW/QA
-        Ecq4OjrUktjRf4hB5NoFjIabw0gTQJ4=
+        bh=iYqPtmtVuORRd78w7wOm8MNZw4AO7262LQ25jsWgirg=;
+        b=bEaJu0Vs4t+M7LFqJp1uDCiPifGof46ydT3QV7VJoYU09jHlzZNdRdBpKJ99xtOI7C593w
+        BtbRImZXumKgBj8jajVwDJE01U63iHKDaw3Z9YpeDAuc2NnY+JvYFszgM1WPcv99R0nUYk
+        xV/fUQkPFsq5s9orBa9r362266NqcJY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-357-17shLM9zMgO_atjVng0yAw-1; Wed, 30 Oct 2019 07:06:05 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+ us-mta-336-2fEkVjaHNB6BBljxlQ1ZgA-1; Wed, 30 Oct 2019 07:34:12 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F2E751800DFD;
-        Wed, 30 Oct 2019 11:06:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CF4CE107ACC0;
+        Wed, 30 Oct 2019 11:34:11 +0000 (UTC)
 Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D715710016DA;
-        Wed, 30 Oct 2019 11:05:52 +0000 (UTC)
-Date:   Wed, 30 Oct 2019 12:05:51 +0100
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AB97A5D6D4;
+        Wed, 30 Oct 2019 11:34:07 +0000 (UTC)
+Date:   Wed, 30 Oct 2019 12:34:06 +0100
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Sage <eric@sage.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        brouer@redhat.com
-Subject: Re: Compile build issues with samples/bpf/ again
-Message-ID: <20191030120551.68f8b67b@carbon>
-In-Reply-To: <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
-References: <20191030114313.75b3a886@carbon>
-        <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
+To:     Charles McLachlan <cmclachlan@solarflare.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-net-drivers@solarflare.com>, brouer@redhat.com
+Subject: Re: [PATCH net-next v3 5/6] sfc: handle XDP_TX outcomes of XDP eBPF
+ programs
+Message-ID: <20191030123406.762a51d3@carbon>
+In-Reply-To: <40f6e6c0-843a-e43b-a136-8ec1979a32e3@solarflare.com>
+References: <515c107e-cecb-869a-6c84-1f3c1bd3afce@solarflare.com>
+        <40f6e6c0-843a-e43b-a136-8ec1979a32e3@solarflare.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: 17shLM9zMgO_atjVng0yAw-1
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: 2fEkVjaHNB6BBljxlQ1ZgA-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Oct 2019 11:53:21 +0100
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+On Wed, 30 Oct 2019 10:52:04 +0000
+Charles McLachlan <cmclachlan@solarflare.com> wrote:
 
-> On Wed, 30 Oct 2019 at 11:43, Jesper Dangaard Brouer <brouer@redhat.com> =
-wrote:
-> >
-> > Hi Maintainers,
-> >
-> > It is annoy to experience that simply building kernel tree samples/bpf/
-> > is broken as often as it is.  Right now, build is broken in both DaveM
-> > net.git and bpf.git.  ACME have some build fixes queued from Bj=C3=B6rn
-> > T=C3=B6pel. But even with those fixes, build (for samples/bpf/task_fd_q=
-uery_user.c)
-> > are still broken, as reported by Eric Sage (15 Oct), which I have a fix=
- for.
-> > =20
->=20
-> Hmm, something else than commit e55190f26f92 ("samples/bpf: Fix build
-> for task_fd_query_user.c")?
+> +/* Transmit a packet from an XDP buffer
+> + *
+> + * Returns number of packets sent on success, error code otherwise.
+> + * Runs in NAPI context, either in our poll (for XDP TX) or a different =
+NIC
+> + * (for XDP redirect).
+> + */
+> +int efx_xdp_tx_buffers(struct efx_nic *efx, int n, struct xdp_frame **xd=
+pfs,
+> +=09=09       bool flush)
+> +{
+> +=09struct efx_tx_buffer *tx_buffer;
+> +=09struct efx_tx_queue *tx_queue;
+> +=09struct xdp_frame *xdpf;
+> +=09dma_addr_t dma_addr;
+> +=09unsigned int len;
+> +=09int space;
+> +=09int cpu;
+> +=09int i;
+> +
+> +=09cpu =3D raw_smp_processor_id();
+> +
+> +=09if (!efx->xdp_tx_queue_count ||
+> +=09    unlikely(cpu >=3D efx->xdp_tx_queue_count))
+> +=09=09return -EINVAL;
+> +
+> +=09tx_queue =3D efx->xdp_tx_queues[cpu];
+> +=09if (unlikely(!tx_queue))
+> +=09=09return -EINVAL;
+> +
 
-I see, you already fixed this... and it is in the bpf.git tree.
+If you return a negative value, then it is the caller responsibility
+to free *all* the xdp_frame's, e.g. see bq_xmit_all() in devmap.c.
 
-Then we only need your other fixes from ACME's tree.  I just cloned a
-fresh version of git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-to check that 'make M=3Dsamples/bpf' still fails.
+BUT if you start to process packets, and return a positive value, then
+this function MUST handle freeing the frames it couldn't send.
 
+> +=09if (n && xdpfs) {
+> +=09=09/* Check for available space. We should never need multiple
+> +=09=09 * descriptors per frame.
+> +=09=09 */
+> +=09=09space =3D efx->txq_entries +
+> +=09=09=09tx_queue->read_count - tx_queue->insert_count;
+> +=09=09n =3D min(n, space);
 
-> > Could maintainers add building samples/bpf/ to their build test scripts=
-?
-> > (make headers_install && make M=3Dsamples/bpf)
-> >
-> > Also I discovered, the command to build have also recently changed:
-> > - Before : make samples/bpf/   or  simply make in subdir samples/bpf/
-> > - new cmd: make M=3Dsamples/bpf  and in subdir is broken
-> >
-> > Anyone knows what commit introduced this change?
-> > (I need it for a fixes tag, when updating README.rst doc)
-
-The make cmdline change is confusing, because the old command
-'make samples/bpf/' reports success (remember last '/') ... this could
-be why maintainers are not catching this.
-
-See: old make cmd
-
- $ touch samples/bpf/*kern.c
- $ make samples/bpf/
-   CALL    scripts/checksyscalls.sh
-   CALL    scripts/atomic/check-atomics.sh
-   DESCEND  objtool
- $
+This looks broken.  In case 'space' is too small, there will be
+xdp_frame's left in xdpfs[] that was not send.  As desc above, this
+function have to free those.
 
 
-New make cmd fails:
+> +=09=09for (i =3D 0; i < n; i++) {
+> +=09=09=09xdpf =3D xdpfs[i];
+> +
+> +=09=09=09/* We'll want a descriptor for this tx. */
+> +=09=09=09prefetchw(__efx_tx_queue_get_insert_buffer(tx_queue));
+> +
+> +=09=09=09len =3D xdpf->len;
+> +
+> +=09=09=09/* Map for DMA. */
+> +=09=09=09dma_addr =3D dma_map_single(&efx->pci_dev->dev,
+> +=09=09=09=09=09=09  xdpf->data, len,
+> +=09=09=09=09=09=09  DMA_TO_DEVICE);
+> +=09=09=09if (dma_mapping_error(&efx->pci_dev->dev, dma_addr))
+> +=09=09=09=09return -EIO;
+> +
+> +=09=09=09/*  Create descriptor and set up for unmapping DMA. */
+> +=09=09=09tx_buffer =3D efx_tx_map_chunk(tx_queue, dma_addr, len);
+> +=09=09=09tx_buffer->xdpf =3D xdpf;
+> +=09=09=09tx_buffer->flags =3D EFX_TX_BUF_XDP |
+> +=09=09=09=09=09   EFX_TX_BUF_MAP_SINGLE;
+> +=09=09=09tx_buffer->dma_offset =3D 0;
+> +=09=09=09tx_buffer->unmap_len =3D len;
+> +=09=09}
+> +=09}
+> +
+> +=09/* Pass to hardware. */
+> +=09if (flush)
+> +=09=09efx_nic_push_buffers(tx_queue);
+> +
+> +=09tx_queue->tx_packets +=3D n;
+> +
+> +=09return n;
+> +}
+> +
 
-$ make M=3Dsamples/bpf
-samples/bpf/Makefile:209: WARNING: Detected possible issues with include pa=
-th.
-samples/bpf/Makefile:210: WARNING: Please install kernel headers locally (m=
-ake headers_install).
-  AR      samples/bpf/built-in.a
-make -C /home/hawk/git/kernel/bpf/samples/bpf/../../tools/lib/bpf/ RM=3D'rm=
- -rf' LDFLAGS=3D srctree=3D/home/hawk/git/kernel/bpf/samples/bpf/../../ O=
-=3D
-  HOSTCC  samples/bpf/test_lru_dist
-  HOSTCC  samples/bpf/sock_example
-  HOSTCC  samples/bpf/fds_example.o
-  HOSTLD  samples/bpf/fds_example
-  HOSTCC  samples/bpf/sockex1_user.o
-  HOSTLD  samples/bpf/sockex1
-  HOSTCC  samples/bpf/sockex2_user.o
-  HOSTLD  samples/bpf/sockex2
-  HOSTCC  samples/bpf/bpf_load.o
-  HOSTCC  samples/bpf/sockex3_user.o
-  HOSTLD  samples/bpf/sockex3
-/usr/bin/ld: samples/bpf/bpf_load.o: in function `do_load_bpf_file.part.2':
-bpf_load.c:(.text+0x91a): undefined reference to `test_attr__enabled'
-/usr/bin/ld: bpf_load.c:(.text+0x1403): undefined reference to `test_attr__=
-open'
-collect2: error: ld returned 1 exit status
-make[1]: *** [scripts/Makefile.host:116: samples/bpf/sockex3] Error 1
-make: *** [Makefile:1649: samples/bpf] Error 2
 
 --=20
 Best regards,
