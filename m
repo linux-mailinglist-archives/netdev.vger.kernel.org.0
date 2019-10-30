@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B72E954A
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 04:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50DF0E954B
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 04:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727253AbfJ3D3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 23:29:19 -0400
-Received: from mga03.intel.com ([134.134.136.65]:2937 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727165AbfJ3D3O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727121AbfJ3D3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 29 Oct 2019 23:29:14 -0400
+Received: from mga01.intel.com ([192.55.52.88]:43132 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726990AbfJ3D3N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 23:29:13 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2019 20:29:12 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Oct 2019 20:29:12 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,245,1569308400"; 
-   d="scan'208";a="205673652"
+   d="scan'208";a="205673656"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by FMSMGA003.fm.intel.com with ESMTP; 29 Oct 2019 20:29:12 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -27,9 +27,9 @@ Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 6/9] ice: introduce legacy Rx flag
-Date:   Tue, 29 Oct 2019 20:29:07 -0700
-Message-Id: <20191030032910.24261-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 7/9] ice: introduce frame padding computation logic
+Date:   Tue, 29 Oct 2019 20:29:08 -0700
+Message-Id: <20191030032910.24261-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191030032910.24261-1-jeffrey.t.kirsher@intel.com>
 References: <20191030032910.24261-1-jeffrey.t.kirsher@intel.com>
@@ -42,297 +42,250 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-Add an ethtool "legacy-rx" priv flag for toggling the Rx path. This
-control knob will be mainly used for build_skb usage as well as buffer
-size/MTU manipulation.
+Take into account the underlying architecture specific settings and
+based on that calculate the possible padding that can be supplied.
+Typically, for x86 and standard MTU size we will end up with 192 bytes
+of headroom. This is the same behavior as our other drivers have and we
+can dedicate it for XDP purposes.
 
-In preparation for adding build_skb support in a way that it takes
-care of how we set the values of max_frame and rx_buf_len fields of
-struct ice_vsi. Specifically, in this patch mentioned fields are set to
-values that will allow us to provide headroom and tailroom in-place.
-
-This can be mostly broken down onto following:
-- for legacy-rx "on" ethtool control knob, old behaviour is kept;
-- for standard 1500 MTU size configure the buffer of size 1536, as
-  network stack is expecting the NET_SKB_PAD to be provided and
-  NET_IP_ALIGN can have a non-zero value (these can be typically equal
-  to 32 and 2, respectively);
-- for larger MTUs go with max_frame set to 9k and configure the 3k
-  buffer in case when PAGE_SIZE of underlying arch is less than 8k; 3k
-  buffer is implying the need for order 1 page, so that our page
-  recycling scheme can still be applied;
-
-With that said, substitute the hardcoded ICE_RXBUF_2048 and PAGE_SIZE
-values in DMA API that we're making use of with rx_ring->rx_buf_len and
-ice_rx_pg_size(rx_ring). The latter is an introduced helper for
-determining the page size based on its order (which was figured out via
-ice_rx_pg_order). Last but not least, take care of truesize calculation.
-
-In the followup patch the headroom/tailroom computation logic will be
-introduced.
-
-This change aligns the buffer and frame configuration with other Intel
-drivers, most importantly with iavf.
+Furthermore, introduce the Rx ring flag for indicating whether build_skb
+is used on particular. Based on that invoke the routines for padding
+calculation.
 
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h         |  1 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c |  6 +++
- drivers/net/ethernet/intel/ice/ice_lib.c     | 22 +++++++---
- drivers/net/ethernet/intel/ice/ice_txrx.c    | 46 ++++++++++++--------
- drivers/net/ethernet/intel/ice/ice_txrx.h    | 13 ++++++
- 5 files changed, 63 insertions(+), 25 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_base.c    |  6 ++
+ drivers/net/ethernet/intel/ice/ice_ethtool.c |  2 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c     |  3 +-
+ drivers/net/ethernet/intel/ice/ice_txrx.c    | 42 +++++-----
+ drivers/net/ethernet/intel/ice/ice_txrx.h    | 81 ++++++++++++++++++++
+ 5 files changed, 114 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index a0eff20ba91f..3097dc0a8da0 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -331,6 +331,7 @@ enum ice_pf_flags {
- 	ICE_FLAG_NO_MEDIA,
- 	ICE_FLAG_FW_LLDP_AGENT,
- 	ICE_FLAG_ETHTOOL_CTXT,		/* set when ethtool holds RTNL lock */
-+	ICE_FLAG_LEGACY_RX,
- 	ICE_PF_FLAGS_NBITS		/* must be last */
- };
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index 2904de054c10..69d2da14fe5c 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -406,6 +406,12 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 	if (vsi->type == ICE_VSI_VF)
+ 		return 0;
  
++	/* configure Rx buffer alignment */
++	if (!vsi->netdev || test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags))
++		ice_clear_ring_build_skb_ena(ring);
++	else
++		ice_set_ring_build_skb_ena(ring);
++
+ 	/* init queue specific tail register */
+ 	ring->tail = hw->hw_addr + QRX_TAIL(pf_q);
+ 	writel(0, ring->tail);
 diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 42b032620f66..c1737625bbc2 100644
+index c1737625bbc2..7e779060069c 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -156,6 +156,7 @@ struct ice_priv_flag {
- static const struct ice_priv_flag ice_gstrings_priv_flags[] = {
- 	ICE_PRIV_FLAG("link-down-on-close", ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA),
- 	ICE_PRIV_FLAG("fw-lldp-agent", ICE_FLAG_FW_LLDP_AGENT),
-+	ICE_PRIV_FLAG("legacy-rx", ICE_FLAG_LEGACY_RX),
- };
+@@ -624,7 +624,7 @@ static int ice_lbtest_receive_frames(struct ice_ring *rx_ring)
+ 			continue;
  
- #define ICE_PRIV_FLAG_ARRAY_SIZE	ARRAY_SIZE(ice_gstrings_priv_flags)
-@@ -1256,6 +1257,11 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
- 					"Fail to enable MIB change events\n");
- 		}
- 	}
-+	if (test_bit(ICE_FLAG_LEGACY_RX, change_flags)) {
-+		/* down and up VSI so that changes of Rx cfg are reflected. */
-+		ice_down(vsi);
-+		ice_up(vsi);
-+	}
- 	clear_bit(ICE_FLAG_ETHTOOL_CTXT, pf->flags);
- 	return ret;
- }
+ 		rx_buf = &rx_ring->rx_buf[i];
+-		received_buf = page_address(rx_buf->page);
++		received_buf = page_address(rx_buf->page) + rx_buf->page_offset;
+ 
+ 		if (ice_lbtest_check_frame(received_buf))
+ 			valid_frames++;
 diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index 5fa92801b5a3..21c6198fca54 100644
+index 21c6198fca54..50eb723502d0 100644
 --- a/drivers/net/ethernet/intel/ice/ice_lib.c
 +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -1190,12 +1190,22 @@ int ice_vsi_kill_vlan(struct ice_vsi *vsi, u16 vid)
+@@ -1194,7 +1194,8 @@ void ice_vsi_cfg_frame_size(struct ice_vsi *vsi)
+ 		vsi->max_frame = ICE_AQ_SET_MAC_FRAME_SIZE_MAX;
+ 		vsi->rx_buf_len = ICE_RXBUF_2048;
+ #if (PAGE_SIZE < 8192)
+-	} else if (vsi->netdev->mtu <= ETH_DATA_LEN) {
++	} else if (!ICE_2K_TOO_SMALL_WITH_PADDING &&
++		   (vsi->netdev->mtu <= ETH_DATA_LEN)) {
+ 		vsi->max_frame = ICE_RXBUF_1536 - NET_IP_ALIGN;
+ 		vsi->rx_buf_len = ICE_RXBUF_1536 - NET_IP_ALIGN;
+ #endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index 63fe73c5097c..71c4464934af 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -415,7 +415,12 @@ int ice_setup_rx_ring(struct ice_ring *rx_ring)
   */
- void ice_vsi_cfg_frame_size(struct ice_vsi *vsi)
+ static unsigned int ice_rx_offset(struct ice_ring *rx_ring)
  {
--	if (vsi->netdev && vsi->netdev->mtu > ETH_DATA_LEN)
--		vsi->max_frame = vsi->netdev->mtu + ICE_ETH_PKT_HDR_PAD;
--	else
--		vsi->max_frame = ICE_RXBUF_2048;
--
--	vsi->rx_buf_len = ICE_RXBUF_2048;
-+	if (!vsi->netdev || test_bit(ICE_FLAG_LEGACY_RX, vsi->back->flags)) {
-+		vsi->max_frame = ICE_AQ_SET_MAC_FRAME_SIZE_MAX;
-+		vsi->rx_buf_len = ICE_RXBUF_2048;
-+#if (PAGE_SIZE < 8192)
-+	} else if (vsi->netdev->mtu <= ETH_DATA_LEN) {
-+		vsi->max_frame = ICE_RXBUF_1536 - NET_IP_ALIGN;
-+		vsi->rx_buf_len = ICE_RXBUF_1536 - NET_IP_ALIGN;
-+#endif
-+	} else {
-+		vsi->max_frame = ICE_AQ_SET_MAC_FRAME_SIZE_MAX;
-+#if (PAGE_SIZE < 8192)
-+		vsi->rx_buf_len = ICE_RXBUF_3072;
-+#else
-+		vsi->rx_buf_len = ICE_RXBUF_2048;
-+#endif
-+	}
+-	return ice_is_xdp_ena_vsi(rx_ring->vsi) ? XDP_PACKET_HEADROOM : 0;
++	if (ice_ring_uses_build_skb(rx_ring))
++		return ICE_SKB_PAD;
++	else if (ice_is_xdp_ena_vsi(rx_ring->vsi))
++		return XDP_PACKET_HEADROOM;
++
++	return 0;
  }
  
  /**
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index acf834a7130a..63fe73c5097c 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -310,10 +310,11 @@ void ice_clean_rx_ring(struct ice_ring *rx_ring)
- 		 */
- 		dma_sync_single_range_for_cpu(dev, rx_buf->dma,
- 					      rx_buf->page_offset,
--					      ICE_RXBUF_2048, DMA_FROM_DEVICE);
-+					      rx_ring->rx_buf_len,
-+					      DMA_FROM_DEVICE);
- 
- 		/* free resources associated with mapping */
--		dma_unmap_page_attrs(dev, rx_buf->dma, PAGE_SIZE,
-+		dma_unmap_page_attrs(dev, rx_buf->dma, ice_rx_pg_size(rx_ring),
- 				     DMA_FROM_DEVICE, ICE_RX_DMA_ATTR);
- 		__page_frag_cache_drain(rx_buf->page, rx_buf->pagecnt_bias);
- 
-@@ -529,21 +530,21 @@ ice_alloc_mapped_page(struct ice_ring *rx_ring, struct ice_rx_buf *bi)
- 	}
- 
- 	/* alloc new page for storage */
--	page = alloc_page(GFP_ATOMIC | __GFP_NOWARN);
-+	page = dev_alloc_pages(ice_rx_pg_order(rx_ring));
- 	if (unlikely(!page)) {
- 		rx_ring->rx_stats.alloc_page_failed++;
- 		return false;
- 	}
- 
- 	/* map page for use */
--	dma = dma_map_page_attrs(rx_ring->dev, page, 0, PAGE_SIZE,
-+	dma = dma_map_page_attrs(rx_ring->dev, page, 0, ice_rx_pg_size(rx_ring),
- 				 DMA_FROM_DEVICE, ICE_RX_DMA_ATTR);
- 
- 	/* if mapping failed free memory back to system since
- 	 * there isn't much point in holding memory we can't use
- 	 */
- 	if (dma_mapping_error(rx_ring->dev, dma)) {
--		__free_pages(page, 0);
-+		__free_pages(page, ice_rx_pg_order(rx_ring));
- 		rx_ring->rx_stats.alloc_page_failed++;
- 		return false;
- 	}
-@@ -592,7 +593,7 @@ bool ice_alloc_rx_bufs(struct ice_ring *rx_ring, u16 cleaned_count)
- 		/* sync the buffer for use by the device */
- 		dma_sync_single_range_for_device(rx_ring->dev, bi->dma,
- 						 bi->page_offset,
--						 ICE_RXBUF_2048,
-+						 rx_ring->rx_buf_len,
- 						 DMA_FROM_DEVICE);
- 
- 		/* Refresh the desc even if buffer_addrs didn't change
-@@ -663,9 +664,6 @@ ice_rx_buf_adjust_pg_offset(struct ice_rx_buf *rx_buf, unsigned int size)
-  */
- static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
- {
--#if (PAGE_SIZE >= 8192)
--	unsigned int last_offset = PAGE_SIZE - ICE_RXBUF_2048;
--#endif
- 	unsigned int pagecnt_bias = rx_buf->pagecnt_bias;
- 	struct page *page = rx_buf->page;
- 
-@@ -678,7 +676,9 @@ static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
- 	if (unlikely((page_count(page) - pagecnt_bias) > 1))
- 		return false;
- #else
--	if (rx_buf->page_offset > last_offset)
-+#define ICE_LAST_OFFSET \
-+	(SKB_WITH_OVERHEAD(PAGE_SIZE) - ICE_RXBUF_2048)
-+	if (rx_buf->page_offset > ICE_LAST_OFFSET)
- 		return false;
- #endif /* PAGE_SIZE < 8192) */
- 
-@@ -696,6 +696,7 @@ static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
- 
- /**
-  * ice_add_rx_frag - Add contents of Rx buffer to sk_buff as a frag
-+ * @rx_ring: Rx descriptor ring to transact packets on
-  * @rx_buf: buffer containing page to add
-  * @skb: sk_buff to place the data into
-  * @size: packet length from rx_desc
-@@ -705,13 +706,13 @@ static bool ice_can_reuse_rx_page(struct ice_rx_buf *rx_buf)
-  * The function will then update the page offset.
-  */
- static void
--ice_add_rx_frag(struct ice_rx_buf *rx_buf, struct sk_buff *skb,
--		unsigned int size)
-+ice_add_rx_frag(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
-+		struct sk_buff *skb, unsigned int size)
+@@ -710,7 +715,7 @@ ice_add_rx_frag(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
+ 		struct sk_buff *skb, unsigned int size)
  {
  #if (PAGE_SIZE >= 8192)
- 	unsigned int truesize = SKB_DATA_ALIGN(size);
+-	unsigned int truesize = SKB_DATA_ALIGN(size);
++	unsigned int truesize = SKB_DATA_ALIGN(size + ice_rx_offset(rx_ring));
  #else
--	unsigned int truesize = ICE_RXBUF_2048;
-+	unsigned int truesize = ice_rx_pg_size(rx_ring) / 2;
+ 	unsigned int truesize = ice_rx_pg_size(rx_ring) / 2;
  #endif
+@@ -1008,27 +1013,28 @@ static int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
  
- 	if (!size)
-@@ -830,7 +831,7 @@ ice_construct_skb(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
- #if (PAGE_SIZE >= 8192)
- 		unsigned int truesize = SKB_DATA_ALIGN(size);
- #else
--		unsigned int truesize = ICE_RXBUF_2048;
-+		unsigned int truesize = ice_rx_pg_size(rx_ring) / 2;
- #endif
- 		skb_add_rx_frag(skb, 0, rx_buf->page,
- 				rx_buf->page_offset + headlen, size, truesize);
-@@ -873,8 +874,9 @@ static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
- 		rx_ring->rx_stats.page_reuse_count++;
- 	} else {
- 		/* we are not reusing the buffer so unmap it */
--		dma_unmap_page_attrs(rx_ring->dev, rx_buf->dma, PAGE_SIZE,
--				     DMA_FROM_DEVICE, ICE_RX_DMA_ATTR);
-+		dma_unmap_page_attrs(rx_ring->dev, rx_buf->dma,
-+				     ice_rx_pg_size(rx_ring), DMA_FROM_DEVICE,
-+				     ICE_RX_DMA_ATTR);
- 		__page_frag_cache_drain(rx_buf->page, rx_buf->pagecnt_bias);
- 	}
- 
-@@ -1008,9 +1010,15 @@ static int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 		xdp_res = ice_run_xdp(rx_ring, &xdp, xdp_prog);
  		rcu_read_unlock();
- 		if (xdp_res) {
- 			if (xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR)) {
-+				unsigned int truesize;
-+
-+#if (PAGE_SIZE < 8192)
-+				truesize = ice_rx_pg_size(rx_ring) / 2;
-+#else
-+				truesize = SKB_DATA_ALIGN(size);
-+#endif
- 				xdp_xmit |= xdp_res;
--				ice_rx_buf_adjust_pg_offset(rx_buf,
--							    ICE_RXBUF_2048);
-+				ice_rx_buf_adjust_pg_offset(rx_buf, truesize);
- 			} else {
- 				rx_buf->pagecnt_bias++;
- 			}
-@@ -1023,7 +1031,7 @@ static int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+-		if (xdp_res) {
+-			if (xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR)) {
+-				unsigned int truesize;
++		if (!xdp_res)
++			goto construct_skb;
++		if (xdp_res & (ICE_XDP_TX | ICE_XDP_REDIR)) {
++			unsigned int truesize;
+ 
+ #if (PAGE_SIZE < 8192)
+-				truesize = ice_rx_pg_size(rx_ring) / 2;
++			truesize = ice_rx_pg_size(rx_ring) / 2;
+ #else
+-				truesize = SKB_DATA_ALIGN(size);
++			truesize = SKB_DATA_ALIGN(ice_rx_offset(rx_ring) +
++						  size);
+ #endif
+-				xdp_xmit |= xdp_res;
+-				ice_rx_buf_adjust_pg_offset(rx_buf, truesize);
+-			} else {
+-				rx_buf->pagecnt_bias++;
+-			}
+-			total_rx_bytes += size;
+-			total_rx_pkts++;
+-
+-			cleaned_count++;
+-			ice_put_rx_buf(rx_ring, rx_buf);
+-			continue;
++			xdp_xmit |= xdp_res;
++			ice_rx_buf_adjust_pg_offset(rx_buf, truesize);
++		} else {
++			rx_buf->pagecnt_bias++;
  		}
++		total_rx_bytes += size;
++		total_rx_pkts++;
++
++		cleaned_count++;
++		ice_put_rx_buf(rx_ring, rx_buf);
++		continue;
  construct_skb:
  		if (skb)
--			ice_add_rx_frag(rx_buf, skb, size);
-+			ice_add_rx_frag(rx_ring, rx_buf, skb, size);
- 		else
- 			skb = ice_construct_skb(rx_ring, rx_buf, &xdp);
- 
+ 			ice_add_rx_frag(rx_ring, rx_buf, skb, size);
 diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
-index d5d243b8e69f..6a6e3d2339ba 100644
+index 6a6e3d2339ba..a84cc0e6dd27 100644
 --- a/drivers/net/ethernet/intel/ice/ice_txrx.h
 +++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
-@@ -7,7 +7,9 @@
- #include "ice_type.h"
+@@ -26,6 +26,71 @@
+ #define ICE_RX_BUF_WRITE	16	/* Must be power of 2 */
+ #define ICE_MAX_TXQ_PER_TXQG	128
  
- #define ICE_DFLT_IRQ_WORK	256
-+#define ICE_RXBUF_3072		3072
- #define ICE_RXBUF_2048		2048
-+#define ICE_RXBUF_1536		1536
- #define ICE_MAX_CHAINED_RX_BUFS	5
- #define ICE_MAX_BUF_TXD		8
- #define ICE_MIN_TX_LEN		17
-@@ -262,6 +264,17 @@ struct ice_ring_container {
- #define ice_for_each_ring(pos, head) \
- 	for (pos = (head).ring; pos; pos = pos->next)
- 
-+static inline unsigned int ice_rx_pg_order(struct ice_ring *ring)
-+{
++/* Attempt to maximize the headroom available for incoming frames. We use a 2K
++ * buffer for MTUs <= 1500 and need 1536/1534 to store the data for the frame.
++ * This leaves us with 512 bytes of room.  From that we need to deduct the
++ * space needed for the shared info and the padding needed to IP align the
++ * frame.
++ *
++ * Note: For cache line sizes 256 or larger this value is going to end
++ *       up negative.  In these cases we should fall back to the legacy
++ *       receive path.
++ */
 +#if (PAGE_SIZE < 8192)
-+	if (ring->rx_buf_len > (PAGE_SIZE / 2))
-+		return 1;
-+#endif
-+	return 0;
++#define ICE_2K_TOO_SMALL_WITH_PADDING \
++((NET_SKB_PAD + ICE_RXBUF_1536) > SKB_WITH_OVERHEAD(ICE_RXBUF_2048))
++
++/**
++ * ice_compute_pad - compute the padding
++ * rx_buf_len: buffer length
++ *
++ * Figure out the size of half page based on given buffer length and
++ * then subtract the skb_shared_info followed by subtraction of the
++ * actual buffer length; this in turn results in the actual space that
++ * is left for padding usage
++ */
++static inline int ice_compute_pad(int rx_buf_len)
++{
++	int half_page_size;
++
++	half_page_size = ALIGN(rx_buf_len, PAGE_SIZE / 2);
++	return SKB_WITH_OVERHEAD(half_page_size) - rx_buf_len;
 +}
 +
-+#define ice_rx_pg_size(_ring) (PAGE_SIZE << ice_rx_pg_order(_ring))
++/**
++ * ice_skb_pad - determine the padding that we can supply
++ *
++ * Figure out the right Rx buffer size and based on that calculate the
++ * padding
++ */
++static inline int ice_skb_pad(void)
++{
++	int rx_buf_len;
 +
- union ice_32b_rx_flex_desc;
++	/* If a 2K buffer cannot handle a standard Ethernet frame then
++	 * optimize padding for a 3K buffer instead of a 1.5K buffer.
++	 *
++	 * For a 3K buffer we need to add enough padding to allow for
++	 * tailroom due to NET_IP_ALIGN possibly shifting us out of
++	 * cache-line alignment.
++	 */
++	if (ICE_2K_TOO_SMALL_WITH_PADDING)
++		rx_buf_len = ICE_RXBUF_3072 + SKB_DATA_ALIGN(NET_IP_ALIGN);
++	else
++		rx_buf_len = ICE_RXBUF_1536;
++
++	/* if needed make room for NET_IP_ALIGN */
++	rx_buf_len -= NET_IP_ALIGN;
++
++	return ice_compute_pad(rx_buf_len);
++}
++
++#define ICE_SKB_PAD ice_skb_pad()
++#else
++#define ICE_2K_TOO_SMALL_WITH_PADDING false
++#define ICE_SKB_PAD (NET_SKB_PAD + NET_IP_ALIGN)
++#endif
++
+ /* We are assuming that the cache line is always 64 Bytes here for ice.
+  * In order to make sure that is a correct assumption there is a check in probe
+  * to print a warning if the read from GLPCI_CNF2 tells us that the cache line
+@@ -231,6 +296,7 @@ struct ice_ring {
+ 	 * in their own cache line if possible
+ 	 */
+ #define ICE_TX_FLAGS_RING_XDP		BIT(0)
++#define ICE_RX_FLAGS_RING_BUILD_SKB	BIT(1)
+ 	u8 flags;
+ 	dma_addr_t dma;			/* physical address of ring */
+ 	unsigned int size;		/* length of descriptor ring in bytes */
+@@ -239,6 +305,21 @@ struct ice_ring {
+ 	u8 dcb_tc;			/* Traffic class of ring */
+ } ____cacheline_internodealigned_in_smp;
  
- bool ice_alloc_rx_bufs(struct ice_ring *rxr, u16 cleaned_count);
++static inline bool ice_ring_uses_build_skb(struct ice_ring *ring)
++{
++	return !!(ring->flags & ICE_RX_FLAGS_RING_BUILD_SKB);
++}
++
++static inline void ice_set_ring_build_skb_ena(struct ice_ring *ring)
++{
++	ring->flags |= ICE_RX_FLAGS_RING_BUILD_SKB;
++}
++
++static inline void ice_clear_ring_build_skb_ena(struct ice_ring *ring)
++{
++	ring->flags &= ~ICE_RX_FLAGS_RING_BUILD_SKB;
++}
++
+ static inline bool ice_ring_is_xdp(struct ice_ring *ring)
+ {
+ 	return !!(ring->flags & ICE_TX_FLAGS_RING_XDP);
 -- 
 2.21.0
 
