@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01321E9780
+	by mail.lfdr.de (Postfix) with ESMTP id 9E739E9781
 	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:00:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726336AbfJ3IAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 04:00:02 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46280 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfJ3IAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 04:00:02 -0400
-Received: by mail-pf1-f194.google.com with SMTP id b25so997270pfi.13
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 01:00:01 -0700 (PDT)
+        id S1726353AbfJ3IAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 04:00:05 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34141 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbfJ3IAF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 04:00:05 -0400
+Received: by mail-pg1-f194.google.com with SMTP id e4so955220pgs.1
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 01:00:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=GR/F5TH53j9xb8dCjUMFFAWLakr7P4+VWnWrX2ocn6k=;
-        b=bmR0mZyUD8NFme+7ON+ws+v75WjwFParxPixbeBVYfvTiNrCOVxnhL5TRwX+1UxLWd
-         SBhvm0MLDTwrz93ItjXK0L5v325KsPYXLKG67MhvJM+iahAVwLeJdsVN2Y/EHApuUc0O
-         erhZHe9Qw1BR8szUwKraff72ZJW5mXOK3pu9Y=
+        bh=0inWimpKUVT5C5KA+DbIHCVfN6nyrFXG5TcvEphFKOY=;
+        b=dVKdLY+WOk2IMiZRhIGHqump9YNyBfz3bEaJDM3hZmfwaDHTwSZ5RKrEl0kJzoqo5B
+         MmBb8I53OFbhPNgGlBKWyLMWEH023Cj1W5IY5zz5DlApu8hbuUqKw8shfaSUhvBCNHFI
+         bokqNzashuGjK8kXI+KqS8s8U6FslSthmHYd4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=GR/F5TH53j9xb8dCjUMFFAWLakr7P4+VWnWrX2ocn6k=;
-        b=sIfw592skuXcRG0jgchEV4exsHYOxcMNw2yvaYH3R/sOwrS2xmy9LfBSLIdZxNUsfP
-         48/kwVMWoinFDnnURonJkTZkDK4a64tfsu/wOT1rzZeRzNY2INVtF3hFgWm9NteRDduZ
-         a5SvJctI8mgF3+IJ38oWoBMoR/WaoXmfTcLAHlAD8M0YnUszYJBVDUwyBE8EnMe3h5e+
-         Bx/KoLtnFVpP98/tl1D+ODniFyfVvKlgMnYJJLRQq4hSsN1B9tWK3Sv6KsuhWbuTgPUq
-         dlsT+JHRDhO6x86zrCS5tPMz2ctBofkvrFAF62ETfayav63En/TER2Ar7OEkY89sU6G4
-         Z83w==
-X-Gm-Message-State: APjAAAVMfk3lVflDs/TXLKuC59mD1vR3/mAUONTMEyRYYQlm/7Shs19n
-        QR+VEKtugRnHP9HZsulgikT6Bw==
-X-Google-Smtp-Source: APXvYqw3vQrOr2d5HGi7ASSxa2QvBNJuZ4yZcr3KDxGlhlt+Od7c4p6nNexIvKn269EYdvBY8JHrqw==
-X-Received: by 2002:a63:1743:: with SMTP id 3mr33654220pgx.161.1572422401298;
-        Wed, 30 Oct 2019 01:00:01 -0700 (PDT)
+        bh=0inWimpKUVT5C5KA+DbIHCVfN6nyrFXG5TcvEphFKOY=;
+        b=Cm4qKNGecE+ZlfpGLJy8BOi0wk5ROgn5u5K12xkPrKPWBXnBxTFrJ1E7YV18oC1M80
+         nkGM/Vivx9gD3DVVlLpZ5CRy6nnUMbCd4zDB0hptaYWbqjMP9laR0hWyb2neyX1IGK5q
+         awDHPTZZcuEUS8uxm/ZzAwa7nMofzSDznhacqYwjx98wjw75MS2N+K31ERxNCSssDP8m
+         87tQI79nvJxuv+Lx2/Oh1gCrkBa51Cpq78bE3NfsOju1sdMxRnJSNLTv63FopJXuswKy
+         6pWnG7Mi/DQNgtT7HnBaE9vC0eMQ8+Jvl9mP0/NKKXvEdoZOn9j+E6STeSsQ//LKghXU
+         L6YA==
+X-Gm-Message-State: APjAAAUHIK93XDVXT9hrCM8dgjRu4BvNom1H+d6IUsvscEg6wU11dazJ
+        ta4PwdX3MUpz15mVWJmNOivwbvCOGyk=
+X-Google-Smtp-Source: APXvYqxdH2rwmM5S3HGk7nD1cwFCzhmj+WdsKX5jXKICuZv0hzLW9aIcmzMvo3Wx+HuK7eMYK1SpZg==
+X-Received: by 2002:a63:f852:: with SMTP id v18mr10185609pgj.71.1572422403742;
+        Wed, 30 Oct 2019 01:00:03 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r21sm1960649pfc.27.2019.10.30.00.59.59
+        by smtp.gmail.com with ESMTPSA id r21sm1960649pfc.27.2019.10.30.01.00.01
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Oct 2019 01:00:00 -0700 (PDT)
+        Wed, 30 Oct 2019 01:00:03 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>
-Subject: [PATCH net-next 3/7] bnxt_en: Add support for NAT(L3/L4 rewrite)
-Date:   Wed, 30 Oct 2019 03:59:31 -0400
-Message-Id: <1572422375-7269-4-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org,
+        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+Subject: [PATCH net-next 4/7] bnxt_en: flow_offload: offload tunnel decap rules via indirect callbacks
+Date:   Wed, 30 Oct 2019 03:59:32 -0400
+Message-Id: <1572422375-7269-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1572422375-7269-1-git-send-email-michael.chan@broadcom.com>
 References: <1572422375-7269-1-git-send-email-michael.chan@broadcom.com>
@@ -54,259 +55,260 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Somnath Kotur <somnath.kotur@broadcom.com>
+From: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
 
-Provides support for modifying L3/L4 Header parameters to support NAT.
-Sets the appropriate fields/bits in cfa_flow_alloc cmd.
+The decap (VXLAN tunnel) flow rules are not getting offloaded with
+upstream kernel. This is because TC block callback infrastructure has
+been updated to use indirect callbacks to get offloaded rules from
+other higher level devices (such as tunnels), instead of ndo_setup_tc().
+Since the decap rules are applied to the tunnel devices (e.g, vxlan_sys),
+the driver should register for indirect TC callback with tunnel devices
+to get the rules for offloading. This patch updates the driver to
+register and process indirect TC block callbacks from VXLAN tunnels.
 
-Sample cmd for offloading an IPv4 flow with SNAT:
-
-ovs-ofctl add-flow ovsbr0 "ip,nw_src=192.168.201.44 \
-actions=mod_nw_src:203.31.220.144,output:p7p1"
-
-Replace 'nw_src' with 'nw_dst' in above cmd for DNAT with IPv4
-
-Sample cmd for offloading an IPv4 flow with SNAPT:
-
-ovs-ofctl add-flow ovsbr0 "ip,nw_src=192.168.201.44 \
-actions=mod_nw_src:203.31.220.144, mod_tp_src:6789,output:p7p1"
-
-Similar to DNAT, replace 'tp_src' with 'tp_dst' for offloading flow
-with DNAPT
-
-Sample cmd for offloading an IPv6 flow with SNAT:
-
-ovs-ofctl add-flow ovsbr0 "ipv6, ipv6_src=2001:5c0:9168::2/64 \
-actions=load:0x1->NXM_NX_IPV6_SRC[0..63], \
-load:0x20010db801920000->NXM_NX_IPV6_SRC[64..127],output:p7p1"
-
-Replace 'SRC' with DST' above for IPv6 DNAT
-
-Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 140 +++++++++++++++++++++++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h |  11 ++-
- 2 files changed, 144 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c    |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h    |  12 +++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 153 ++++++++++++++++++++++++++-
+ 3 files changed, 165 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 2d86796..272a9fb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -114,7 +114,8 @@ static int bnxt_tc_parse_tunnel_set(struct bnxt *bp,
- 	return 0;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 8cdf71f..708d724 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10936,7 +10936,7 @@ static int bnxt_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+ 	}
  }
  
--/* Key & Mask from the stack comes unaligned in multiple iterations.
-+/* Key & Mask from the stack comes unaligned in multiple iterations of 4 bytes
-+ * each(u32).
-  * This routine consolidates such multiple unaligned values into one
-  * field each for Key & Mask (for src and dst macs separately)
-  * For example,
-@@ -178,14 +179,19 @@ bnxt_fill_l2_rewrite_fields(struct bnxt_tc_actions *actions,
+-static LIST_HEAD(bnxt_block_cb_list);
++LIST_HEAD(bnxt_block_cb_list);
  
- static int
- bnxt_tc_parse_pedit(struct bnxt *bp, struct bnxt_tc_actions *actions,
--		    struct flow_action_entry *act, u8 *eth_addr,
-+		    struct flow_action_entry *act, int act_idx, u8 *eth_addr,
- 		    u8 *eth_addr_mask)
- {
--	u32 mask, val, offset;
-+	size_t offset_of_ip6_daddr = offsetof(struct ipv6hdr, daddr);
-+	size_t offset_of_ip6_saddr = offsetof(struct ipv6hdr, saddr);
-+	u32 mask, val, offset, idx;
- 	u8 htype;
+ static int bnxt_setup_tc(struct net_device *dev, enum tc_setup_type type,
+ 			 void *type_data)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index d333589..7bd8ad9 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -26,6 +26,8 @@
+ #include <net/xdp.h>
+ #include <linux/dim.h>
  
- 	offset = act->mangle.offset;
- 	htype = act->mangle.htype;
-+	mask = ~act->mangle.mask;
-+	val = act->mangle.val;
++extern struct list_head bnxt_block_cb_list;
 +
- 	switch (htype) {
- 	case FLOW_ACT_MANGLE_HDR_TYPE_ETH:
- 		if (offset > PEDIT_OFFSET_SMAC_LAST_4_BYTES) {
-@@ -195,12 +201,73 @@ bnxt_tc_parse_pedit(struct bnxt *bp, struct bnxt_tc_actions *actions,
- 			return -EINVAL;
- 		}
- 		actions->flags |= BNXT_TC_ACTION_FLAG_L2_REWRITE;
--		mask = ~act->mangle.mask;
--		val = act->mangle.val;
+ struct page_pool;
  
- 		bnxt_set_l2_key_mask(val, mask, &eth_addr[offset],
- 				     &eth_addr_mask[offset]);
- 		break;
-+	case FLOW_ACT_MANGLE_HDR_TYPE_IP4:
-+		actions->flags |= BNXT_TC_ACTION_FLAG_NAT_XLATE;
-+		actions->nat.l3_is_ipv4 = true;
-+		if (offset ==  offsetof(struct iphdr, saddr)) {
-+			actions->nat.src_xlate = true;
-+			actions->nat.l3.ipv4.saddr.s_addr = htonl(val);
-+		} else if (offset ==  offsetof(struct iphdr, daddr)) {
-+			actions->nat.src_xlate = false;
-+			actions->nat.l3.ipv4.daddr.s_addr = htonl(val);
-+		} else {
-+			netdev_err(bp->dev,
-+				   "%s: IPv4_hdr: Invalid pedit field\n",
-+				   __func__);
-+			return -EINVAL;
-+		}
-+
-+		netdev_dbg(bp->dev, "nat.src_xlate = %d src IP: %pI4 dst ip : %pI4\n",
-+			   actions->nat.src_xlate, &actions->nat.l3.ipv4.saddr,
-+			   &actions->nat.l3.ipv4.daddr);
-+		break;
-+
-+	case FLOW_ACT_MANGLE_HDR_TYPE_IP6:
-+		actions->flags |= BNXT_TC_ACTION_FLAG_NAT_XLATE;
-+		actions->nat.l3_is_ipv4 = false;
-+		if (offset >= offsetof(struct ipv6hdr, saddr) &&
-+		    offset < offset_of_ip6_daddr) {
-+			/* 16 byte IPv6 address comes in 4 iterations of
-+			 * 4byte chunks each
-+			 */
-+			actions->nat.src_xlate = true;
-+			idx = (offset - offset_of_ip6_saddr) / 4;
-+			/* First 4bytes will be copied to idx 0 and so on */
-+			actions->nat.l3.ipv6.saddr.s6_addr32[idx] = htonl(val);
-+		} else if (offset >= offset_of_ip6_daddr &&
-+			   offset < offset_of_ip6_daddr + 16) {
-+			actions->nat.src_xlate = false;
-+			idx = (offset - offset_of_ip6_daddr) / 4;
-+			actions->nat.l3.ipv6.saddr.s6_addr32[idx] = htonl(val);
-+		} else {
-+			netdev_err(bp->dev,
-+				   "%s: IPv6_hdr: Invalid pedit field\n",
-+				   __func__);
-+			return -EINVAL;
-+		}
-+		break;
-+	case FLOW_ACT_MANGLE_HDR_TYPE_TCP:
-+	case FLOW_ACT_MANGLE_HDR_TYPE_UDP:
-+		/* HW does not support L4 rewrite alone without L3
-+		 * rewrite
-+		 */
-+		if (!(actions->flags & BNXT_TC_ACTION_FLAG_NAT_XLATE)) {
-+			netdev_err(bp->dev,
-+				   "Need to specify L3 rewrite as well\n");
-+			return -EINVAL;
-+		}
-+		if (actions->nat.src_xlate)
-+			actions->nat.l4.ports.sport = htons(val);
-+		else
-+			actions->nat.l4.ports.dport = htons(val);
-+		netdev_dbg(bp->dev, "actions->nat.sport = %d dport = %d\n",
-+			   actions->nat.l4.ports.sport,
-+			   actions->nat.l4.ports.dport);
-+		break;
- 	default:
- 		netdev_err(bp->dev, "%s: Unsupported pedit hdr type\n",
- 			   __func__);
-@@ -258,7 +325,7 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
- 			break;
- 		/* Packet edit: L2 rewrite, NAT, NAPT */
- 		case FLOW_ACTION_MANGLE:
--			rc = bnxt_tc_parse_pedit(bp, actions, act, eth_addr,
-+			rc = bnxt_tc_parse_pedit(bp, actions, act, i, eth_addr,
- 						 eth_addr_mask);
- 			if (rc)
- 				return rc;
-@@ -532,6 +599,67 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
- 			CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_L2_HEADER_REWRITE;
- 	}
- 
-+	if (actions->flags & BNXT_TC_ACTION_FLAG_NAT_XLATE) {
-+		if (actions->nat.l3_is_ipv4) {
-+			action_flags |=
-+				CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_IPV4_ADDRESS;
-+
-+			if (actions->nat.src_xlate) {
-+				action_flags |=
-+					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_SRC;
-+				/* L3 source rewrite */
-+				req.nat_ip_address[0] =
-+					actions->nat.l3.ipv4.saddr.s_addr;
-+				/* L4 source port */
-+				if (actions->nat.l4.ports.sport)
-+					req.nat_port =
-+						actions->nat.l4.ports.sport;
-+			} else {
-+				action_flags |=
-+					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_DEST;
-+				/* L3 destination rewrite */
-+				req.nat_ip_address[0] =
-+					actions->nat.l3.ipv4.daddr.s_addr;
-+				/* L4 destination port */
-+				if (actions->nat.l4.ports.dport)
-+					req.nat_port =
-+						actions->nat.l4.ports.dport;
-+			}
-+			netdev_dbg(bp->dev,
-+				   "req.nat_ip_address: %pI4 src_xlate: %d req.nat_port: %x\n",
-+				   req.nat_ip_address, actions->nat.src_xlate,
-+				   req.nat_port);
-+		} else {
-+			if (actions->nat.src_xlate) {
-+				action_flags |=
-+					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_SRC;
-+				/* L3 source rewrite */
-+				memcpy(req.nat_ip_address,
-+				       actions->nat.l3.ipv6.saddr.s6_addr32,
-+				       sizeof(req.nat_ip_address));
-+				/* L4 source port */
-+				if (actions->nat.l4.ports.sport)
-+					req.nat_port =
-+						actions->nat.l4.ports.sport;
-+			} else {
-+				action_flags |=
-+					CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_NAT_DEST;
-+				/* L3 destination rewrite */
-+				memcpy(req.nat_ip_address,
-+				       actions->nat.l3.ipv6.daddr.s6_addr32,
-+				       sizeof(req.nat_ip_address));
-+				/* L4 destination port */
-+				if (actions->nat.l4.ports.dport)
-+					req.nat_port =
-+						actions->nat.l4.ports.dport;
-+			}
-+			netdev_dbg(bp->dev,
-+				   "req.nat_ip_address: %pI6 src_xlate: %d req.nat_port: %x\n",
-+				   req.nat_ip_address, actions->nat.src_xlate,
-+				   req.nat_port);
-+		}
-+	}
-+
- 	if (actions->flags & BNXT_TC_ACTION_FLAG_TUNNEL_DECAP ||
- 	    actions->flags & BNXT_TC_ACTION_FLAG_TUNNEL_ENCAP) {
- 		req.tunnel_handle = tunnel_handle;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-index 6d0d485..2867549 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-@@ -78,6 +78,7 @@ struct bnxt_tc_actions {
- #define BNXT_TC_ACTION_FLAG_TUNNEL_ENCAP	BIT(6)
- #define BNXT_TC_ACTION_FLAG_TUNNEL_DECAP	BIT(7)
- #define BNXT_TC_ACTION_FLAG_L2_REWRITE		BIT(8)
-+#define BNXT_TC_ACTION_FLAG_NAT_XLATE		BIT(9)
- 
- 	u16				dst_fid;
- 	struct net_device		*dst_dev;
-@@ -89,7 +90,15 @@ struct bnxt_tc_actions {
- #define	PEDIT_OFFSET_SMAC_LAST_4_BYTES		0x8
- 	__be16				l2_rewrite_dmac[3];
- 	__be16				l2_rewrite_smac[3];
--
-+	struct {
-+		bool src_xlate;  /* true => translate src,
-+				  * false => translate dst
-+				  * Mutually exclusive, i.e cannot set both
-+				  */
-+		bool l3_is_ipv4; /* false means L3 is ipv6 */
-+		struct bnxt_tc_l3_key l3;
-+		struct bnxt_tc_l4_key l4;
-+	} nat;
+ struct tx_bd {
+@@ -1241,6 +1243,14 @@ struct bnxt_tc_flow_stats {
+ 	u64		bytes;
  };
  
- struct bnxt_tc_flow {
++#ifdef CONFIG_BNXT_FLOWER_OFFLOAD
++struct bnxt_flower_indr_block_cb_priv {
++	struct net_device *tunnel_netdev;
++	struct bnxt *bp;
++	struct list_head list;
++};
++#endif
++
+ struct bnxt_tc_info {
+ 	bool				enabled;
+ 
+@@ -1815,6 +1825,8 @@ struct bnxt {
+ 	u16			*cfa_code_map; /* cfa_code -> vf_idx map */
+ 	u8			switch_id[8];
+ 	struct bnxt_tc_info	*tc_info;
++	struct list_head	tc_indr_block_list;
++	struct notifier_block	tc_netdev_nb;
+ 	struct dentry		*debugfs_pdev;
+ 	struct device		*hwmon_dev;
+ };
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index 272a9fb..3ad027e 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -18,6 +18,7 @@
+ #include <net/tc_act/tc_vlan.h>
+ #include <net/tc_act/tc_pedit.h>
+ #include <net/tc_act/tc_tunnel_key.h>
++#include <net/vxlan.h>
+ 
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+@@ -1840,6 +1841,147 @@ int bnxt_tc_setup_flower(struct bnxt *bp, u16 src_fid,
+ 	}
+ }
+ 
++static int bnxt_tc_setup_indr_block_cb(enum tc_setup_type type,
++				       void *type_data, void *cb_priv)
++{
++	struct bnxt_flower_indr_block_cb_priv *priv = cb_priv;
++	struct flow_cls_offload *flower = type_data;
++	struct bnxt *bp = priv->bp;
++
++	if (flower->common.chain_index)
++		return -EOPNOTSUPP;
++
++	switch (type) {
++	case TC_SETUP_CLSFLOWER:
++		return bnxt_tc_setup_flower(bp, bp->pf.fw_fid, flower);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static struct bnxt_flower_indr_block_cb_priv *
++bnxt_tc_indr_block_cb_lookup(struct bnxt *bp, struct net_device *netdev)
++{
++	struct bnxt_flower_indr_block_cb_priv *cb_priv;
++
++	/* All callback list access should be protected by RTNL. */
++	ASSERT_RTNL();
++
++	list_for_each_entry(cb_priv, &bp->tc_indr_block_list, list)
++		if (cb_priv->tunnel_netdev == netdev)
++			return cb_priv;
++
++	return NULL;
++}
++
++static void bnxt_tc_setup_indr_rel(void *cb_priv)
++{
++	struct bnxt_flower_indr_block_cb_priv *priv = cb_priv;
++
++	list_del(&priv->list);
++	kfree(priv);
++}
++
++static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
++				    struct flow_block_offload *f)
++{
++	struct bnxt_flower_indr_block_cb_priv *cb_priv;
++	struct flow_block_cb *block_cb;
++
++	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
++		return -EOPNOTSUPP;
++
++	switch (f->command) {
++	case FLOW_BLOCK_BIND:
++		cb_priv = kmalloc(sizeof(*cb_priv), GFP_KERNEL);
++		if (!cb_priv)
++			return -ENOMEM;
++
++		cb_priv->tunnel_netdev = netdev;
++		cb_priv->bp = bp;
++		list_add(&cb_priv->list, &bp->tc_indr_block_list);
++
++		block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
++					       cb_priv, cb_priv,
++					       bnxt_tc_setup_indr_rel);
++		if (IS_ERR(block_cb)) {
++			list_del(&cb_priv->list);
++			kfree(cb_priv);
++			return PTR_ERR(block_cb);
++		}
++
++		flow_block_cb_add(block_cb, f);
++		list_add_tail(&block_cb->driver_list, &bnxt_block_cb_list);
++		break;
++	case FLOW_BLOCK_UNBIND:
++		cb_priv = bnxt_tc_indr_block_cb_lookup(bp, netdev);
++		if (!cb_priv)
++			return -ENOENT;
++
++		block_cb = flow_block_cb_lookup(f->block,
++						bnxt_tc_setup_indr_block_cb,
++						cb_priv);
++		if (!block_cb)
++			return -ENOENT;
++
++		flow_block_cb_remove(block_cb, f);
++		list_del(&block_cb->driver_list);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++	return 0;
++}
++
++static int bnxt_tc_setup_indr_cb(struct net_device *netdev, void *cb_priv,
++				 enum tc_setup_type type, void *type_data)
++{
++	switch (type) {
++	case TC_SETUP_BLOCK:
++		return bnxt_tc_setup_indr_block(netdev, cb_priv, type_data);
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
++static bool bnxt_is_netdev_indr_offload(struct net_device *netdev)
++{
++	return netif_is_vxlan(netdev);
++}
++
++static int bnxt_tc_indr_block_event(struct notifier_block *nb,
++				    unsigned long event, void *ptr)
++{
++	struct net_device *netdev;
++	struct bnxt *bp;
++	int rc;
++
++	netdev = netdev_notifier_info_to_dev(ptr);
++	if (!bnxt_is_netdev_indr_offload(netdev))
++		return NOTIFY_OK;
++
++	bp = container_of(nb, struct bnxt, tc_netdev_nb);
++
++	switch (event) {
++	case NETDEV_REGISTER:
++		rc = __flow_indr_block_cb_register(netdev, bp,
++						   bnxt_tc_setup_indr_cb,
++						   bp);
++		if (rc)
++			netdev_info(bp->dev,
++				    "Failed to register indirect blk: dev: %s",
++				    netdev->name);
++		break;
++	case NETDEV_UNREGISTER:
++		__flow_indr_block_cb_unregister(netdev,
++						bnxt_tc_setup_indr_cb,
++						bp);
++		break;
++	}
++
++	return NOTIFY_DONE;
++}
++
+ static const struct rhashtable_params bnxt_tc_flow_ht_params = {
+ 	.head_offset = offsetof(struct bnxt_tc_flow_node, node),
+ 	.key_offset = offsetof(struct bnxt_tc_flow_node, cookie),
+@@ -1923,7 +2065,15 @@ int bnxt_init_tc(struct bnxt *bp)
+ 	bp->dev->hw_features |= NETIF_F_HW_TC;
+ 	bp->dev->features |= NETIF_F_HW_TC;
+ 	bp->tc_info = tc_info;
+-	return 0;
++
++	/* init indirect block notifications */
++	INIT_LIST_HEAD(&bp->tc_indr_block_list);
++	bp->tc_netdev_nb.notifier_call = bnxt_tc_indr_block_event;
++	rc = register_netdevice_notifier(&bp->tc_netdev_nb);
++	if (!rc)
++		return 0;
++
++	rhashtable_destroy(&tc_info->encap_table);
+ 
+ destroy_decap_table:
+ 	rhashtable_destroy(&tc_info->decap_table);
+@@ -1945,6 +2095,7 @@ void bnxt_shutdown_tc(struct bnxt *bp)
+ 	if (!bnxt_tc_flower_enabled(bp))
+ 		return;
+ 
++	unregister_netdevice_notifier(&bp->tc_netdev_nb);
+ 	rhashtable_destroy(&tc_info->flow_table);
+ 	rhashtable_destroy(&tc_info->l2_table);
+ 	rhashtable_destroy(&tc_info->decap_l2_table);
 -- 
 2.5.1
 
