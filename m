@@ -2,330 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 704D3EA636
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:32:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48BBBEA63A
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:34:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727073AbfJ3WcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 18:32:20 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55826 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726377AbfJ3WcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:32:19 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9UMUl8O014557
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 15:32:18 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2vxwn6x8u2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 15:32:18 -0700
-Received: from 2401:db00:2050:5076:face:0:1f:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 30 Oct 2019 15:32:17 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 2ED72760903; Wed, 30 Oct 2019 15:32:17 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 2/2] libbpf: add support for prog_tracing
-Date:   Wed, 30 Oct 2019 15:32:12 -0700
-Message-ID: <20191030223212.953010-3-ast@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191030223212.953010-1-ast@kernel.org>
-References: <20191030223212.953010-1-ast@kernel.org>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-30_09:2019-10-30,2019-10-30 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- mlxscore=0 spamscore=0 clxscore=1034 phishscore=0 impostorscore=0
- bulkscore=0 priorityscore=1501 lowpriorityscore=0 suspectscore=3
- malwarescore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1910300200
-X-FB-Internal: deliver
+        id S1727128AbfJ3Wey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 18:34:54 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:35482 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726793AbfJ3Wex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:34:53 -0400
+Received: by mail-pg1-f201.google.com with SMTP id s1so2747047pgm.2
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 15:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=SRqw2LSx0YB2BdwYQ6EePHj++2f3aHwtcvmz2x8WsbQ=;
+        b=gcodcIUvslFSwPfERYqecGIMte9yZP43PhQ2Qu2F0DwSy4nX1lyCG88L9b1XI1X+5I
+         90cZ4xb6DDfBB4c3rGWuqDz8/ZuDnttkFXaLS41zGenOuxdev/msOAnwI9zLKNXG5PMm
+         k/5nc5BKy0uwCDpRdGMXE5FtRp0c/Rr69FiBA+uuwwdAR5z1SVcESm+VaTtERF8dplMX
+         cwmci8lP8mY9/PqIxVDQdpIOBNrtTzEmBPGDupEYl1hl9bFDkJfk9b3uSfeoaCjQUe+F
+         0dBqIB9Acr8kyBTr6JmUqBsUoYjHFnH/pLGsgo09O/OmseQoNhxFZj4/xclg3WbcadkG
+         15tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=SRqw2LSx0YB2BdwYQ6EePHj++2f3aHwtcvmz2x8WsbQ=;
+        b=lvIsjpBqKkh333Comk1Gz0XM7NOV5co210Ro8/HiaVDZOikkbRFQKEvKcH5qDnmJ8q
+         DTexQrr4E3jDS84JLYSwSe8FwXp3/dmDlI5W2ijKlpZ4RQanuF8hHLI+L2v9tAjNjVRz
+         DDVH+Bs+zg/X/NUWu99jQmEKsgUt3cE/8isOJ2JQzKr/MVRXQpeWenXIuUqBLfHcVAUG
+         T/T+6E8ZjpGn89y3bcPdfxiZHkE0gUK7Wuka0U4jYXOqibIRHpogND/SlJeVboQNuYeV
+         kZLkiYG4jMEUyRuItSS2blTgQCJWuMmoUG/fgCOnfGpLivXXG9lYNJQ+X+H8k/9bk3GI
+         3W1w==
+X-Gm-Message-State: APjAAAUEP2w2IQeGnTdjLxiNw7m8sjPfzGq6gVxdVxFd8c2xSxrlg/fH
+        KPj0qLs+H3ChjbZfUAWIAyxYa6iMGdGZ
+X-Google-Smtp-Source: APXvYqy9Ma/nNUlrb2KjTqrKbpXVkwQKxeJS0X5WWuIRbJghR6jybob5m6FKIPhd8WkYpa5BE2yhCG7IFYJJ
+X-Received: by 2002:a65:588e:: with SMTP id d14mr2063152pgu.56.1572474892551;
+ Wed, 30 Oct 2019 15:34:52 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 15:34:38 -0700
+In-Reply-To: <20191025180827.191916-1-irogers@google.com>
+Message-Id: <20191030223448.12930-1-irogers@google.com>
+Mime-Version: 1.0
+References: <20191025180827.191916-1-irogers@google.com>
+X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+Subject: [PATCH v5 00/10] Improvements to memory usage by parse events
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cleanup libbpf from expected_attach_type == attach_btf_id hack
-and introduce BPF_PROG_TYPE_TRACING.
+The parse events parser leaks memory for certain expressions as well
+as allowing a char* to reference stack, heap or .rodata. This series
+of patches improves the hygeine and adds free-ing operations to
+reclaim memory in the parser in error and non-error situations.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/include/uapi/linux/bpf.h |  2 +
- tools/lib/bpf/bpf.c            |  8 ++--
- tools/lib/bpf/bpf.h            |  5 ++-
- tools/lib/bpf/libbpf.c         | 79 ++++++++++++++++++++++++----------
- tools/lib/bpf/libbpf.h         |  2 +
- tools/lib/bpf/libbpf.map       |  2 +
- tools/lib/bpf/libbpf_probes.c  |  1 +
- 7 files changed, 71 insertions(+), 28 deletions(-)
+The series of patches was generated with LLVM's address sanitizer and
+libFuzzer:
+https://llvm.org/docs/LibFuzzer.html
+called on the parse_events function with randomly generated input. With
+the patches no leaks or memory corruption issues were present.
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4af8b0819a32..a6bf19dabaab 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -173,6 +173,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_CGROUP_SYSCTL,
- 	BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE,
- 	BPF_PROG_TYPE_CGROUP_SOCKOPT,
-+	BPF_PROG_TYPE_TRACING,
- };
- 
- enum bpf_attach_type {
-@@ -199,6 +200,7 @@ enum bpf_attach_type {
- 	BPF_CGROUP_UDP6_RECVMSG,
- 	BPF_CGROUP_GETSOCKOPT,
- 	BPF_CGROUP_SETSOCKOPT,
-+	BPF_TRACE_RAW_TP,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 79046067720f..ca0d635b1d5e 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -228,9 +228,10 @@ int bpf_load_program_xattr(const struct bpf_load_program_attr *load_attr,
- 	memset(&attr, 0, sizeof(attr));
- 	attr.prog_type = load_attr->prog_type;
- 	attr.expected_attach_type = load_attr->expected_attach_type;
--	if (attr.prog_type == BPF_PROG_TYPE_RAW_TRACEPOINT)
--		/* expected_attach_type is ignored for tracing progs */
--		attr.attach_btf_id = attr.expected_attach_type;
-+	if (attr.prog_type == BPF_PROG_TYPE_TRACING)
-+		attr.attach_btf_id = load_attr->attach_btf_id;
-+	else
-+		attr.prog_ifindex = load_attr->prog_ifindex;
- 	attr.insn_cnt = (__u32)load_attr->insns_cnt;
- 	attr.insns = ptr_to_u64(load_attr->insns);
- 	attr.license = ptr_to_u64(load_attr->license);
-@@ -245,7 +246,6 @@ int bpf_load_program_xattr(const struct bpf_load_program_attr *load_attr,
- 	}
- 
- 	attr.kern_version = load_attr->kern_version;
--	attr.prog_ifindex = load_attr->prog_ifindex;
- 	attr.prog_btf_fd = load_attr->prog_btf_fd;
- 	attr.func_info_rec_size = load_attr->func_info_rec_size;
- 	attr.func_info_cnt = load_attr->func_info_cnt;
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 0db01334740f..1c53bc5b4b3c 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -78,7 +78,10 @@ struct bpf_load_program_attr {
- 	size_t insns_cnt;
- 	const char *license;
- 	__u32 kern_version;
--	__u32 prog_ifindex;
-+	union {
-+		__u32 prog_ifindex;
-+		__u32 attach_btf_id;
-+	};
- 	__u32 prog_btf_fd;
- 	__u32 func_info_rec_size;
- 	const void *func_info;
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 5d15cc4dfcd6..c80f316f1320 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -188,6 +188,7 @@ struct bpf_program {
- 	bpf_program_clear_priv_t clear_priv;
- 
- 	enum bpf_attach_type expected_attach_type;
-+	__u32 attach_btf_id;
- 	void *func_info;
- 	__u32 func_info_rec_size;
- 	__u32 func_info_cnt;
-@@ -3446,6 +3447,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
- 	load_attr.line_info_cnt = prog->line_info_cnt;
- 	load_attr.log_level = prog->log_level;
- 	load_attr.prog_flags = prog->prog_flags;
-+	load_attr.attach_btf_id = prog->attach_btf_id;
- 
- retry_load:
- 	log_buf = malloc(log_buf_size);
-@@ -3607,6 +3609,8 @@ bpf_object__load_progs(struct bpf_object *obj, int log_level)
- 	return 0;
- }
- 
-+static int libbpf_attach_btf_id_by_name(const char *name, __u32 *btf_id);
-+
- static struct bpf_object *
- __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
- 		   struct bpf_object_open_opts *opts)
-@@ -3656,6 +3660,7 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
- 	bpf_object__for_each_program(prog, obj) {
- 		enum bpf_prog_type prog_type;
- 		enum bpf_attach_type attach_type;
-+		__u32 btf_id;
- 
- 		err = libbpf_prog_type_by_name(prog->section_name, &prog_type,
- 					       &attach_type);
-@@ -3667,6 +3672,12 @@ __bpf_object__open(const char *path, const void *obj_buf, size_t obj_buf_sz,
- 
- 		bpf_program__set_type(prog, prog_type);
- 		bpf_program__set_expected_attach_type(prog, attach_type);
-+		if (prog_type == BPF_PROG_TYPE_TRACING) {
-+			err = libbpf_attach_btf_id_by_name(prog->section_name, &btf_id);
-+			if (err)
-+				goto out;
-+			prog->attach_btf_id = btf_id;
-+		}
- 	}
- 
- 	return obj;
-@@ -4518,6 +4529,7 @@ BPF_PROG_TYPE_FNS(tracepoint, BPF_PROG_TYPE_TRACEPOINT);
- BPF_PROG_TYPE_FNS(raw_tracepoint, BPF_PROG_TYPE_RAW_TRACEPOINT);
- BPF_PROG_TYPE_FNS(xdp, BPF_PROG_TYPE_XDP);
- BPF_PROG_TYPE_FNS(perf_event, BPF_PROG_TYPE_PERF_EVENT);
-+BPF_PROG_TYPE_FNS(tracing, BPF_PROG_TYPE_TRACING);
- 
- enum bpf_attach_type
- bpf_program__get_expected_attach_type(struct bpf_program *prog)
-@@ -4546,7 +4558,8 @@ void bpf_program__set_expected_attach_type(struct bpf_program *prog,
- 	BPF_PROG_SEC_IMPL(string, ptype, eatype, 1, 0, eatype)
- 
- /* Programs that use BTF to identify attach point */
--#define BPF_PROG_BTF(string, ptype) BPF_PROG_SEC_IMPL(string, ptype, 0, 0, 1, 0)
-+#define BPF_PROG_BTF(string, ptype, eatype) \
-+	BPF_PROG_SEC_IMPL(string, ptype, eatype, 0, 1, 0)
- 
- /* Programs that can be attached but attach type can't be identified by section
-  * name. Kept for backward compatibility.
-@@ -4573,7 +4586,8 @@ static const struct {
- 	BPF_PROG_SEC("tp/",			BPF_PROG_TYPE_TRACEPOINT),
- 	BPF_PROG_SEC("raw_tracepoint/",		BPF_PROG_TYPE_RAW_TRACEPOINT),
- 	BPF_PROG_SEC("raw_tp/",			BPF_PROG_TYPE_RAW_TRACEPOINT),
--	BPF_PROG_BTF("tp_btf/",			BPF_PROG_TYPE_RAW_TRACEPOINT),
-+	BPF_PROG_BTF("tp_btf/",			BPF_PROG_TYPE_TRACING,
-+						BPF_TRACE_RAW_TP),
- 	BPF_PROG_SEC("xdp",			BPF_PROG_TYPE_XDP),
- 	BPF_PROG_SEC("perf_event",		BPF_PROG_TYPE_PERF_EVENT),
- 	BPF_PROG_SEC("lwt_in",			BPF_PROG_TYPE_LWT_IN),
-@@ -4678,27 +4692,6 @@ int libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
- 			continue;
- 		*prog_type = section_names[i].prog_type;
- 		*expected_attach_type = section_names[i].expected_attach_type;
--		if (section_names[i].is_attach_btf) {
--			struct btf *btf = bpf_core_find_kernel_btf();
--			char raw_tp_btf_name[128] = "btf_trace_";
--			char *dst = raw_tp_btf_name + sizeof("btf_trace_") - 1;
--			int ret;
--
--			if (IS_ERR(btf)) {
--				pr_warn("vmlinux BTF is not found\n");
--				return -EINVAL;
--			}
--			/* prepend "btf_trace_" prefix per kernel convention */
--			strncat(dst, name + section_names[i].len,
--				sizeof(raw_tp_btf_name) - sizeof("btf_trace_"));
--			ret = btf__find_by_name(btf, raw_tp_btf_name);
--			btf__free(btf);
--			if (ret <= 0) {
--				pr_warn("%s is not found in vmlinux BTF\n", dst);
--				return -EINVAL;
--			}
--			*expected_attach_type = ret;
--		}
- 		return 0;
- 	}
- 	pr_warn("failed to guess program type based on ELF section name '%s'\n", name);
-@@ -4711,6 +4704,46 @@ int libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
- 	return -ESRCH;
- }
- 
-+#define BTF_PREFIX "btf_trace_"
-+static int libbpf_attach_btf_id_by_name(const char *name, __u32 *btf_id)
-+{
-+	struct btf *btf = bpf_core_find_kernel_btf();
-+	char raw_tp_btf_name[128] = BTF_PREFIX;
-+	char *dst = raw_tp_btf_name + sizeof(BTF_PREFIX) - 1;
-+	int ret, i, err = -EINVAL;
-+
-+	if (IS_ERR(btf)) {
-+		pr_warn("vmlinux BTF is not found\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!name)
-+		goto out;
-+
-+	for (i = 0; i < ARRAY_SIZE(section_names); i++) {
-+		if (!section_names[i].is_attach_btf)
-+			continue;
-+		if (strncmp(name, section_names[i].sec, section_names[i].len))
-+			continue;
-+		/* prepend "btf_trace_" prefix per kernel convention */
-+		strncat(dst, name + section_names[i].len,
-+			sizeof(raw_tp_btf_name) - sizeof(BTF_PREFIX));
-+		ret = btf__find_by_name(btf, raw_tp_btf_name);
-+		if (ret <= 0) {
-+			pr_warn("%s is not found in vmlinux BTF\n", dst);
-+			goto out;
-+		}
-+		*btf_id = ret;
-+		err = 0;
-+		goto out;
-+	}
-+	pr_warn("failed to identify btf_id based on ELF section name '%s'\n", name);
-+	err = -ESRCH;
-+out:
-+	btf__free(btf);
-+	return err;
-+}
-+
- int libbpf_attach_type_by_name(const char *name,
- 			       enum bpf_attach_type *attach_type)
- {
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index c63e2ff84abc..2b126ee5e173 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -307,6 +307,7 @@ LIBBPF_API int bpf_program__set_sched_cls(struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_sched_act(struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_xdp(struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_perf_event(struct bpf_program *prog);
-+LIBBPF_API int bpf_program__set_tracing(struct bpf_program *prog);
- 
- LIBBPF_API enum bpf_prog_type bpf_program__get_type(struct bpf_program *prog);
- LIBBPF_API void bpf_program__set_type(struct bpf_program *prog,
-@@ -326,6 +327,7 @@ LIBBPF_API bool bpf_program__is_sched_cls(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__is_sched_act(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__is_xdp(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__is_perf_event(const struct bpf_program *prog);
-+LIBBPF_API bool bpf_program__is_tracing(const struct bpf_program *prog);
- 
- /*
-  * No need for __attribute__((packed)), all members of 'bpf_map_def'
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index d1473ea4d7a5..69dded5af00b 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -197,4 +197,6 @@ LIBBPF_0.0.6 {
- 		bpf_object__open_mem;
- 		bpf_program__get_expected_attach_type;
- 		bpf_program__get_type;
-+		bpf_program__is_tracing;
-+		bpf_program__set_tracing;
- } LIBBPF_0.0.5;
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index 4b0b0364f5fc..a9eb8b322671 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -102,6 +102,7 @@ probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-+	case BPF_PROG_TYPE_TRACING:
- 	default:
- 		break;
- 	}
+The v5 patches add initial error print to the set, as requested by
+Jiri Olsa. They also fix additional 2 missed frees in the patch
+'before yyabort-ing free components' and remove a redundant new_str
+variable from the patch 'add parse events handle error' as spotted by
+Stephane Eranian.
+
+The v4 patches address review comments from Jiri Olsa, turning a long
+error message into a single warning, fixing the data type in a list
+iterator and reordering patches.
+
+The v3 patches address review comments from Jiri Olsa improving commit
+messages, handling ENOMEM errors from strdup better, and removing a
+printed warning if an invalid event is passed.
+
+The v2 patches are preferable to an earlier proposed patch:
+   perf tools: avoid reading out of scope array
+
+Ian Rogers (10):
+  perf tools: add parse events handle error
+  perf tools: move ALLOC_LIST into a function
+  perf tools: avoid a malloc for array events
+  perf tools: splice events onto evlist even on error
+  perf tools: ensure config and str in terms are unique
+  perf tools: add destructors for parse event terms
+  perf tools: before yyabort-ing free components
+  perf tools: if pmu configuration fails free terms
+  perf tools: add a deep delete for parse event terms
+  perf tools: report initial event parsing error
+
+ tools/perf/arch/powerpc/util/kvm-stat.c |   9 +-
+ tools/perf/builtin-stat.c               |   2 +
+ tools/perf/builtin-trace.c              |  16 +-
+ tools/perf/tests/parse-events.c         |   3 +-
+ tools/perf/util/metricgroup.c           |   2 +-
+ tools/perf/util/parse-events.c          | 236 ++++++++++----
+ tools/perf/util/parse-events.h          |   7 +
+ tools/perf/util/parse-events.y          | 390 +++++++++++++++++-------
+ tools/perf/util/pmu.c                   |  32 +-
+ 9 files changed, 509 insertions(+), 188 deletions(-)
+
 -- 
-2.17.1
+2.24.0.rc1.363.gb1bccd3e3d-goog
 
