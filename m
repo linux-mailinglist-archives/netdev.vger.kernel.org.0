@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4866CEA5BA
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF3CEA5C0
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727326AbfJ3Vv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 17:51:27 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:37678 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727015AbfJ3Vv1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:51:27 -0400
-Received: by mail-oi1-f194.google.com with SMTP id y194so3390352oie.4
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 14:51:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f/22oU9ITDEvWLVMzt6EYHu2iWpHwZHJesTlfTtN7lU=;
-        b=njYzlWbGXTl+tfgI7t23Nk5LWBCiu2FGV6yJe7yaC6gOLmq6pIEbn32+r3g1o9Yjfg
-         ExP8TyGbW5+Qr3WvsefvM1X1urd/QSFUClt+Wi8tthdGAL/Jj7KQRli4xkxZ1KvpiVQL
-         7Qqtk2h5VhuEED7UCe1Nx70DGXGhVhHQyAiDhMflTQAl8Q5DiVy2aym/c47zsZ9xB0pl
-         bdyZmPEDHP2fAwMBrxgciW245c4IVVJU3+TQcsc8TVfYCwo5SoswDckbWVN69w9C4+hB
-         EuYB0tAVeYDm80JjVfOBU2FkUWu77UW3zN6rZ72/+w54hnDLJDJ21j375XHb8cF7Nxnu
-         MXJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f/22oU9ITDEvWLVMzt6EYHu2iWpHwZHJesTlfTtN7lU=;
-        b=re0ENgaOtQcAHu1MBpqNmLZwSQ7bJOblrGbuBD3dxPIcR2OPMxRkRCRRjX8od1oICJ
-         y/Zn4vmkVuIL2+KOXNBTZw2UQCx7xrZFAa1nbeyOePSZofSGm0+hicztbpwTF+aTrRgE
-         tEgBKVTfjF+KPFCfzt2cnyKsatcEffS+0ptqHOgG347D3scC8CH+jNFGiIJOZOUTvG1N
-         aMjjehz8plT9gUEpXtdIUrSYWkEsYie2eBrnjyX7gTgOMcDZNJrE9PRyjGu0KePrFppL
-         ZMLwPJGscPJcph6IBfKjJXXRlCvUm4+KI8fl2I+FfIBbnuYJoYoHYYXTt6MzzipGDXJo
-         Cm3w==
-X-Gm-Message-State: APjAAAU0B4vcgF+jFh8yNL+Qn7/RMf8g8pKvE2lUlYCIz6koUMm7eMqZ
-        fYYXENJW3xhpcg4kcPd7c/7SrF26bqu2zksFcSOjOQ==
-X-Google-Smtp-Source: APXvYqzTrAp9KSLID9rvJNHqyzuvH+E1yrN3XepMl8KLAcbD9/r/kA8c6lF7iIGIuuTcMPtA3ezg68fH/TDKsc6xYig=
-X-Received: by 2002:aca:602:: with SMTP id 2mr1228585oig.19.1572472286034;
- Wed, 30 Oct 2019 14:51:26 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191028182309.73313-1-yangchun@google.com> <20191029.174111.1326267225443351642.davem@davemloft.net>
-In-Reply-To: <20191029.174111.1326267225443351642.davem@davemloft.net>
-From:   Yangchun Fu <yangchun@google.com>
-Date:   Wed, 30 Oct 2019 14:51:14 -0700
-Message-ID: <CAOPXMbnBtxY4bkXkCJY3hUZjF48V7eoXa6oLmY9EO456kr4svQ@mail.gmail.com>
-Subject: Re: [PATCH net] gve: Fixes DMA synchronization.
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727296AbfJ3Vwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 17:52:37 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:47144 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727166AbfJ3Vwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:52:36 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5DB1114CFAAEA;
+        Wed, 30 Oct 2019 14:52:35 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 14:52:34 -0700 (PDT)
+Message-Id: <20191030.145234.1629187794527849559.davem@davemloft.net>
+To:     Jose.Abreu@synopsys.com
+Cc:     netdev@vger.kernel.org, Joao.Pinto@synopsys.com,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        mcoquelin.stm32@gmail.com,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 4/9] net: stmmac: selftests: Must remove UC/MC
+ addresses to prevent false positives
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <36d9af9080068c4e38cf50e80b6f2a5eafc9ed99.1572355609.git.Jose.Abreu@synopsys.com>
+References: <cover.1572355609.git.Jose.Abreu@synopsys.com>
+        <cover.1572355609.git.Jose.Abreu@synopsys.com>
+        <36d9af9080068c4e38cf50e80b6f2a5eafc9ed99.1572355609.git.Jose.Abreu@synopsys.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 30 Oct 2019 14:52:35 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 5:41 PM David Miller <davem@davemloft.net> wrote:
->> diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
->> index 778b87b5a06c..d8342b7b9764 100644
->> --- a/drivers/net/ethernet/google/gve/gve_tx.c
->> +++ b/drivers/net/ethernet/google/gve/gve_tx.c
->> @@ -390,7 +390,23 @@ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
->>       seg_desc->seg.seg_addr = cpu_to_be64(addr);
->>  }
->>
->> -static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
->> +static inline void gve_dma_sync_for_device(struct gve_priv *priv,
->> +                                        dma_addr_t *page_buses,
->> +                                        u64 iov_offset, u64 iov_len)
->
-> Never use the inline keyword in foo.c files, let the compiler device
+From: Jose Abreu <Jose.Abreu@synopsys.com>
+Date: Tue, 29 Oct 2019 15:14:48 +0100
 
-Thanks for the review. I will send the v2 patch with the fix.
+> @@ -499,9 +501,18 @@ static int stmmac_test_hfilt(struct stmmac_priv *priv)
+>  	if (netdev_mc_count(priv->dev) >= priv->hw->multicast_filter_bins)
+>  		return -EOPNOTSUPP;
+
+This test above...
+
+> +	dummy_dev = alloc_etherdev(0);
+> +	if (!dummy_dev)
+> +		return -ENOMEM;
+> +
+> +	/* Remove all MC addresses */
+> +	netdev_for_each_mc_addr(ha, priv->dev)
+> +		dev_mc_add(dummy_dev, ha->addr);
+> +	dev_mc_flush(priv->dev);
+
+No longer makes any sense now that you're removing all of the MC
+addresses.
+
+Also I know it seems that it should be guaranteed that re-adding all of
+the previously configured MC addresses should succeed.  But I am always
+wary when I see error codes ignored like this.
+
+This test makes destructure changes to the device's configuration,
+perhaps in a non-restorable fashion if errors occur re-adding the MC
+list entries.
+
+Running a test should never even remotely introduce a change in the
+device state like that.
+
+I really don't like this, to be honest.  I'd hate to be the user who
+had this somehow trigger on them and then have to diagnose it. :-/
+
