@@ -2,140 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 755CBEA5EF
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:04:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A1A9EA5F3
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:04:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727405AbfJ3WEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 18:04:08 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:42293 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726910AbfJ3WEI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:04:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572473046;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IZ23M/gMQsnd17K54zQYAc0WcgVlZvNdQOyTSj0SueE=;
-        b=SNiDRvpl36/lQi73+cAgETh20xX6XJ8JlG/3IVGCqrl8Ctcz2XBUVDEQj39h1Wbflukt5X
-        Pv3ox8iWU0WNh1uJWti/11oTwSC48wz3MB5MeRgVJ+agP+/VrxQVkJE6VWMDI0nbg7ob2K
-        UKek+mNzBVZK5nF1ZBNBIUeDrxRpXf0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-346-YodGD9WtO8qS3uIWWEjLYA-1; Wed, 30 Oct 2019 18:04:03 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31D371005502;
-        Wed, 30 Oct 2019 22:04:00 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4FBB15C548;
-        Wed, 30 Oct 2019 22:03:22 +0000 (UTC)
-Date:   Wed, 30 Oct 2019 18:03:20 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
-        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid
- outside init_user_ns
-Message-ID: <20191030220320.tnwkaj5gbzchcn7j@madcap2.tricolour.ca>
-References: <cover.1568834524.git.rgb@redhat.com>
- <214163d11a75126f610bcedfad67a4d89575dc77.1568834525.git.rgb@redhat.com>
- <20191019013904.uevmrzbmztsbhpnh@madcap2.tricolour.ca>
- <CAHC9VhRPygA=LsHLUqv+K=ouAiPFJ6fb2_As=OT-_zB7kGc_aQ@mail.gmail.com>
- <20191021213824.6zti5ndxu7sqs772@madcap2.tricolour.ca>
- <CAHC9VhRdNXsY4neJpSoNyJoAVEoiEc2oW5kSscF99tjmoQAxFA@mail.gmail.com>
- <20191021235734.mgcjotdqoe73e4ha@madcap2.tricolour.ca>
- <CAHC9VhSiwnY-+2awxvGeO4a0NgfVkOPd8fzzBVujp=HtjskTuQ@mail.gmail.com>
- <20191024210010.owwgc3bqbvtdsqws@madcap2.tricolour.ca>
- <CAHC9VhRDoX9du4XbCnBtBzsNPMGOsb-TKM1CC+sCL7HP=FuTRQ@mail.gmail.com>
+        id S1727381AbfJ3WEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 18:04:32 -0400
+Received: from mail-pg1-f176.google.com ([209.85.215.176]:42297 "EHLO
+        mail-pg1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbfJ3WEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:04:31 -0400
+Received: by mail-pg1-f176.google.com with SMTP id c23so1759414pgn.9
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 15:04:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5KO8lw5WrPMW4jI7/3ky9Q/uhKbd1XClfKh4Z0rfzAI=;
+        b=JtjfBQtUolIpQaZJ9E9TpsyeWSIbbZaW77PFBMaR6FOxHMgJYsa7iUU5YqVA1SqiYn
+         f7Ffn9/eZCuyq6oGVzA3/jxNAp98vOAJ1XOUp9+Gl0y+Yw5VOfU/fV5YYksQ4dzy7Z3W
+         LCrYLZwLLowtRls63hZ3OO4OHyY/iX0QSrLvUNbqYBWW8X1GTyTDjQQN9flyYRQbRfKV
+         MhhDZ7j0peNF9UH/aIazsEW+fORycBknDjMalueKOHvprr7fg+Jr6TYGofZXvEb2km08
+         Tre15YnD/j249P0s4WLyVdmE5Gba02YBEUpdEya6mGDuOFi/wnP+v8wu+JLq1kUUFAsB
+         JEFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5KO8lw5WrPMW4jI7/3ky9Q/uhKbd1XClfKh4Z0rfzAI=;
+        b=dEcbIE/MymGlF00zvRHm5De/9FpdIXRNdtt7XYtPy4Itltgi//isGlhB6nxDbFN3Hy
+         IzgZ5lnvwR2tFySDsJ+4OVM8LlWGm+EAbChnV8QacFHS93Yk8vve/ET5b3evscVtCV7C
+         Uzw04hncoTUr56NMKDoEc7+eIs7cBP5+U8F4WxMqVM3OaeXPWhYL3hEroLq9vakoqdlR
+         LGXVLOvPVb9k18fg+gVTbHKDOFG7ZYdTxalrcNNP/TvNx5ktHaMYEmFxtf/ymLdvq35m
+         stxBelHsdsSFZt8SxDIDn3Zvvj+HbUWticwSNFtaAvc6dPzB4vbPLol9OekeGv4u/4Yd
+         m7Kw==
+X-Gm-Message-State: APjAAAW8TvXnqD3Dck/XwP7m3a/yuz8vNUge9avrjbdfIap2xFFzd95r
+        nBDq6To3SP9he0VDlkPwKNM=
+X-Google-Smtp-Source: APXvYqzmfNqGoi80menHFzqI4FvmCndeanYEBmieRQX2IwRgrhB+rPeGWF14l9/cx0tzH4OWWyRh7g==
+X-Received: by 2002:a17:90b:310:: with SMTP id ay16mr1879879pjb.25.1572473070899;
+        Wed, 30 Oct 2019 15:04:30 -0700 (PDT)
+Received: from localhost ([192.55.54.44])
+        by smtp.gmail.com with ESMTPSA id i71sm956155pfe.103.2019.10.30.15.04.27
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 30 Oct 2019 15:04:30 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 23:04:06 +0100
+From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        Krzysztof Kazimierczak <krzysztof.kazimierczak@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next 5/9] ice: Add support for AF_XDP
+Message-ID: <20191030230406.00004e3c@gmail.com>
+In-Reply-To: <20191030115009.6168b50f@cakuba.netronome.com>
+References: <20191030032910.24261-1-jeffrey.t.kirsher@intel.com>
+ <20191030032910.24261-6-jeffrey.t.kirsher@intel.com>
+ <20191030115009.6168b50f@cakuba.netronome.com>
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <CAHC9VhRDoX9du4XbCnBtBzsNPMGOsb-TKM1CC+sCL7HP=FuTRQ@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: YodGD9WtO8qS3uIWWEjLYA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-10-30 16:27, Paul Moore wrote:
-> On Thu, Oct 24, 2019 at 5:00 PM Richard Guy Briggs <rgb@redhat.com> wrote=
-:
-> > Here's the note I had from that meeting:
-> >
-> > - Eric raised the issue that using /proc is likely to get more and more
-> >   hoary due to mount namespaces and suggested that we use a netlink
-> > audit message (or a new syscall) to set the audit container identifier
-> > and since the loginuid is a similar type of operation, that it should b=
-e
-> > migrated over to a similar mechanism to get it away from /proc.  Get
-> > could be done with a netlink audit message that triggers an audit log
-> > message to deliver the information.  I'm reluctant to further pollute
-> > the syscall space if we can find another method.  The netlink audit
-> > message makes sense since any audit-enabled service is likely to alread=
-y
-> > have an audit socket open.
->=20
-> Thanks for the background info on the off-list meeting.  I would
-> encourage you to have discussions like this on-list in the future; if
-> that isn't possible, hosting a public call would okay-ish, but a
-> distant second.
+On Wed, 30 Oct 2019 11:50:09 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-I'm still trying to get Eric's attention to get him to weigh in here and
-provide a more eloquent representation of his ideas and concerns.  Some
-of it was related to CRIU(sp?) issues which we've already of which we've
-already seen similar concerns in namespace identifiers including the
-device identity to qualify it.
+> On Tue, 29 Oct 2019 20:29:06 -0700, Jeff Kirsher wrote:
+> > +/**
+> > + * ice_run_xdp_zc - Executes an XDP program in zero-copy path
+> > + * @rx_ring: Rx ring
+> > + * @xdp: xdp_buff used as input to the XDP program
+> > + *
+> > + * Returns any of ICE_XDP_{PASS, CONSUMED, TX, REDIR}
+> > + */
+> > +static int
+> > +ice_run_xdp_zc(struct ice_ring *rx_ring, struct xdp_buff *xdp)
+> > +{
+> > +	int err, result = ICE_XDP_PASS;
+> > +	struct bpf_prog *xdp_prog;
+> > +	struct ice_ring *xdp_ring;
+> > +	u32 act;
+> > +
+> > +	rcu_read_lock();
+> > +	xdp_prog = READ_ONCE(rx_ring->xdp_prog);
+> > +	if (!xdp_prog) {
+> > +		rcu_read_unlock();
+> > +		return ICE_XDP_PASS;
+> > +	}
+> > +
+> > +	act = bpf_prog_run_xdp(xdp_prog, xdp);
+> > +	xdp->handle += xdp->data - xdp->data_hard_start;
+> > +	switch (act) {
+> > +	case XDP_PASS:
+> > +		break;
+> > +	case XDP_TX:
+> > +		xdp_ring = rx_ring->vsi->xdp_rings[rx_ring->q_index];
+> > +		result = ice_xmit_xdp_buff(xdp, xdp_ring);
+> > +		break;  
+> 
+> From the quick look at the code it wasn't clear to me how you deal with
+> XDP_TX on ZC frames. Could you describe the flow of such frames a
+> little bit?
 
-> At this point in time I'm not overly concerned about /proc completely
-> going away in namespaces/containers that are full featured enough to
-> host a container orchestrator.  If/when reliance on procfs becomes an
-> issue, we can look at alternate APIs, but given the importance of
-> /proc to userspace (including to audit) I suspect we are going to see
-> it persist for some time.  I would prefer to see you to drop the audit
-> container ID netlink API portions of this patchset and focus on the
-> procfs API.
+Sure, here we go.
+The ice_xmit_xdp_buff() is calling a convert_to_xdp_frame(xdp) which in that
+case falls to the xdp_convert_zc_to_xdp_frame(xdp), because xdp->rxq->mem.type
+is set to MEM_TYPE_ZERO_COPY. 
 
-I've already refactored the code to put the netlink bits at the end as
-completely optional pieces for completeness so they won't get in the way
-of the real substance of this patchset.  The nesting depth and total
-number of containers checks have also been punted to the end of the
-patchset to get them out of the way of discussion.
+Now we are in the xdp_convert_zc_to_xdp_frame(xdp), where we allocate the
+extra page dedicated for struct xdp_frame, copy into this page the data that are
+within the current struct xdp_buff and everything is finished with a
+xdp_return_buff(xdp) call. Again, the mem->type is the MEM_TYPE_ZERO_COPY so
+the callback for freeing ZC frames is invoked, via:
 
-> Also, for the record, removing the audit loginuid from procfs is not
-> something to take lightly, if at all; like it or not, it's part of the
-> kernel API.
+xa->zc_alloc->free(xa->zc_alloc, handle);
 
-Oh, I'm quite aware of how important this change is and it was discussed
-with Steve Grubb who saw the concern and value of considering such a
-disruptive change.  Removing proc support for auid/ses would be a
-long-term deprecation if accepted.
+And this guy was set during the Rx context initialization:
 
-Really, I should have labelled the v7 patchset as RFC since there were
-so many new and disruptive ideas presented in it.
+ring->zca.free = ice_zca_free;
+err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
+				 MEM_TYPE_ZERO_COPY,
+				 &ring->zca);
 
-> paul moore
-> www.paul-moore.com
+Finally, the ice_zca_free will put the ZC frame back to HW Rx ring. At this
+point, the ZC frame was recycled and the content from that frame sit in the
+standalone page, represented by struct xdp_frame, so we are free to proceed
+with transmission and that extra page will be freed during the cleanup of Tx
+irq, after it got transmitted successfully.
 
-- RGB
+I might over-complicate this description with too much code examples, so let me
+know if that makes sense to you.
 
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+Maciej
+
+> 
+> > +	case XDP_REDIRECT:
+> > +		err = xdp_do_redirect(rx_ring->netdev, xdp, xdp_prog);
+> > +		result = !err ? ICE_XDP_REDIR : ICE_XDP_CONSUMED;
+> > +		break;
+> > +	default:
+> > +		bpf_warn_invalid_xdp_action(act);
+> > +		/* fallthrough -- not supported action */
+> > +	case XDP_ABORTED:
+> > +		trace_xdp_exception(rx_ring->netdev, xdp_prog, act);
+> > +		/* fallthrough -- handle aborts by dropping frame */
+> > +	case XDP_DROP:
+> > +		result = ICE_XDP_CONSUMED;
+> > +		break;
+> > +	}
+> > +
+> > +	rcu_read_unlock();
+> > +	return result;
+> > +}  
+> 
 
