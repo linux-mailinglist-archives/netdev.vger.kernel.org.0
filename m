@@ -2,1261 +2,641 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABCADEA4F1
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 21:45:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1245EA4F7
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 21:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726979AbfJ3UpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 16:45:05 -0400
-Received: from mail-eopbgr70072.outbound.protection.outlook.com ([40.107.7.72]:61631
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726973AbfJ3UpF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 16:45:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RF1zW3PDjvXpyTy1dg3DmnAT/6e616F0gMJKZX6tXoBi0dE4PRONG4QX04iyYiBDRZgHk61O0GJPbBdS2FGchxdUAGZR4VzNrt1NmXWEt/OaTsDTWiWC2c4JL+T3cg0WNSk80nFF9w6eJ/sWS4XoJYBV96WdA+QeI03THiCUFKQlFc2Znzrcx3s75x5f7LR86lKt1WTzfMSAAmTF7hQf8TVfRovBOdkJNEfMeZrrnahun17V33Y2UlDPIfY+qgTUC+heUiu9sQ1Mr0Lijc6bEijnEz6TGwBnsy+TIRH7Gvgu1rDrj9FbjsFNa00Y2fR1cigpfMzJKrtuU+RQcFIN8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QxpvwjLtNTghbuuXE9tP4h1Z0cPftf9NIv+aPoR352o=;
- b=gabVWW8ifj0g8+NgcPST57nnlXB78DtS2N0x2i8QSCnOPRoRRkstkF9/dE5QDSTCG20oPsLOvcthiT1QqRxjagqpDP6zi6f/uljm/wprDmzOYMnZU/RtCVCnTdn/O0GmQWeBwEXI7zQUcyShDWSdS/h3CpnvSbXEscj/r0cpHK5v+B1dJv4YnrHAKrsMia2uiMv5375Fru/S78Mc84rGVn+tHm7H+9lsJQt8nRvgFEDzUC006q5KYYmWBes4eZ8bujeh5e3wRxPEBWxz/7l1r/oF6mGYNGWDllk8WCRT+GPWkP2fx17FH3P5BrZvxyHZlpC2BzOwmV+DAQOuS3UUxw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QxpvwjLtNTghbuuXE9tP4h1Z0cPftf9NIv+aPoR352o=;
- b=r4MNzS+WWsqNZtJVvGa2Y005wVkv4819xDGx7sQBY11IXqrD8YqrJ/1bLyFg7aq2OSjgD3j6F7rxKelFkS5GDvWGZqc4u+meEug85vhSFKSC+JqFXp1I3RfMpa1329Xy9GDf/R6nTFzMSpdv0ZGjUTz+exNu/hDHhVaJKx+4PZM=
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com (10.171.189.29) by
- AM4PR05MB3267.eurprd05.prod.outlook.com (10.171.188.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.20; Wed, 30 Oct 2019 20:44:46 +0000
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc]) by AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc%4]) with mapi id 15.20.2408.016; Wed, 30 Oct 2019
- 20:44:46 +0000
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Saeed Mahameed <saeedm@mellanox.com>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "sbrivio@redhat.com" <sbrivio@redhat.com>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        Ariel Levkovich <lariel@mellanox.com>
-Subject: [PATCH net-next 3/3] net/mlx5: Add SRIOV VGT+ support
-Thread-Topic: [PATCH net-next 3/3] net/mlx5: Add SRIOV VGT+ support
-Thread-Index: AQHVj2LdkTU0Bcg4YE6HUbNChmOGMw==
-Date:   Wed, 30 Oct 2019 20:44:46 +0000
-Message-ID: <1572468274-30748-4-git-send-email-lariel@mellanox.com>
-References: <1572468274-30748-1-git-send-email-lariel@mellanox.com>
-In-Reply-To: <1572468274-30748-1-git-send-email-lariel@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [94.188.199.18]
-x-mailer: git-send-email 1.8.3.1
-x-clientproxiedby: AM0PR06CA0066.eurprd06.prod.outlook.com
- (2603:10a6:208:aa::43) To AM4PR05MB3313.eurprd05.prod.outlook.com
- (2603:10a6:205:9::29)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lariel@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: afcae0f8-9149-4307-f800-08d75d79ffba
-x-ms-traffictypediagnostic: AM4PR05MB3267:|AM4PR05MB3267:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB32679976B05638B36BA8DB0CBA600@AM4PR05MB3267.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(39860400002)(136003)(366004)(346002)(199004)(189003)(14454004)(1730700003)(6486002)(476003)(486006)(8936002)(186003)(11346002)(6512007)(446003)(478600001)(316002)(26005)(54906003)(81166006)(2616005)(6436002)(81156014)(8676002)(50226002)(5640700003)(86362001)(107886003)(25786009)(99286004)(52116002)(386003)(2906002)(102836004)(5024004)(2501003)(6116002)(14444005)(71200400001)(36756003)(71190400001)(76176011)(6506007)(64756008)(66556008)(4720700003)(2351001)(66446008)(30864003)(66476007)(3846002)(7736002)(6916009)(5660300002)(66066001)(305945005)(256004)(4326008)(66946007)(579004)(559001)(569006);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3267;H:AM4PR05MB3313.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0tew9kTMixFWuLVvyRBDSK6RcNHB8dLMAx9wyWkyTQJC76XWbqSl5M8F8oU73fwJUNZ8lqn+ZEnnLZBpfQc6MeuyLOsClqOwkErjIG5kYsKmEJudachQlit84PrbOsj5g47wPZDhKoSA7c1aM202Q7r1oV/TMn3jfqhr2v97fsZtVmi5rFJPJDMmlP8c67ALrrTBLYdNv/4xNfTzWQRiey5MHmN2GWCZ8F+bxj5N18FHjh0qXpVSY95RaCWTqp/HuMBdWMh7FT1ZXuS57W1G2495SBezIVS5wg5+H2N/Vxw1KErWxv+EtPkewbTC/M15u1NSiNYdqaKTP0InVoszSJKuKdsJhzoosdideQEwqxJpJkYLbcVaC0R2jWrn2CNrtVlUMDiZeSYYNJRGu2ChmA9fyFzIVqbt50YxR8mFrFIzfmJpiaodfDUrHtdNP0Oq
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1726945AbfJ3Ury (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 16:47:54 -0400
+Received: from mail-vs1-f54.google.com ([209.85.217.54]:44398 "EHLO
+        mail-vs1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbfJ3Urx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 16:47:53 -0400
+Received: by mail-vs1-f54.google.com with SMTP id j85so2583332vsd.11
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 13:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=B+CI5ROaJZrTlPP/bvTxKR8sUWlwRxBXLcfE48Oj8lY=;
+        b=ns3gPEEFn/v/pPrmWpY20tryRJtBgfIKtinpT6rZhPkMGt97f9AUrwPdbFyksTVHww
+         hAV7CDogbbMkC3h+32ym+sNzSCZWUy2FachTyR07qs19j+WTFcvk/LjqYgSkii7UJjki
+         mXGwD00x1hAP+WekyoIoUL7KiFJPqRxK5Aua/Fp4M8kDX+0xitUlQ2HOxdy8lLdqrtcy
+         ckq2diHts8Ua46LWBHcc+TQU8PGGABHLlb4QALF7K8O4og21RgSyTCYzS2yk4N7AubDP
+         PVotem/0UvZKROCQueR14/ATx+Auuc+sgo8DBYurgs3SVGf8rQvYhuRvkrXFDss4XwAR
+         X1cQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=B+CI5ROaJZrTlPP/bvTxKR8sUWlwRxBXLcfE48Oj8lY=;
+        b=UpyGqKOxjK4PEmtMeETzcyoBWoAuMamGmZUtht3GLlU0jpdCxLIEaKa1EpRzR9DltG
+         MsoJKjdcvlNSNwg+djNfRLid2wNQ15BNZNXjfcnO0pC2ThjJESHR555G1XbRUwLQpP5O
+         fwOReqzIXFy+o6zP1zYkU0i5+VNZWX5wRI67p9sMcqWDEuQswhUBQ7iawV4ebY/nQ2+v
+         aOI3obuafKUYapm0adnf3gq9Jbd15HiCuVr/q/S4JfKyplHWw22QQs5+Cb4c6zQKpaM4
+         gfWSqpKXxAB+XOfZIBCXdM2nZKi2e7+uYDh1ihwa+rADa6naz322q22K0Zh1ONfPXogC
+         xpPw==
+X-Gm-Message-State: APjAAAVjHkRUWT8vYs6blX5ysBKZYQXCjDj05TF6Gxyi87oeOnimkWJr
+        WuNOIExAoIexVdwm4CICqBKLuQC+6HJX13BQdKLSRnthaoA=
+X-Google-Smtp-Source: APXvYqxJc9rY42cc4Dv0uaExvvlaAuwQqi7kD7xpGZ7OvYTgIWZxznNoc8qniJG3lb0Nq71r32mbeXbPZGBTd3/uAmU=
+X-Received: by 2002:a67:d20e:: with SMTP id y14mr946133vsi.16.1572468471200;
+ Wed, 30 Oct 2019 13:47:51 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afcae0f8-9149-4307-f800-08d75d79ffba
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 20:44:46.0792
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RVnQr8Q/1qA/HMNrNuE1SE943EJgaRDjR98r7d+DCtSygXdL1op89gOzQabklIkKM4zxOR5JUNAMfHnwOaG55g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3267
+From:   JD <jdtxs00@gmail.com>
+Date:   Wed, 30 Oct 2019 15:47:40 -0500
+Message-ID: <CAMnf+PjGq2qsZzg=+H5Z5kO+PSQbo=R0MHW5rv1CWrqoS=biqw@mail.gmail.com>
+Subject: Followup: Kernel memory leak on 4.11+ & 5.3.x with IPsec
+To:     netdev@vger.kernel.org
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implementing the VGT+ feature via acl tables.
-The acl tables will hold the actual needed rules which is only the
-intersection of the requested vlan-ids list and the allowed vlan-ids
-list from the administrator.
+Hello, this is a followup to my previous email I sent regarding a
+kernel memory leak with IPsec.
 
-Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  30 ++
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 600 ++++++++++++++++-=
-----
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  27 +-
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   8 +-
- 4 files changed, 533 insertions(+), 132 deletions(-)
+After a lot of testing and narrowing down, I've figured out the leak
+begins as of the kernel 4.11 release. It is still occurring in the
+latest mainline kernel too.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/en_main.c
-index 7569287..9253bfd 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4061,6 +4061,34 @@ static int mlx5e_set_vf_vlan(struct net_device *dev,=
- int vf, u16 vlan, u8 qos,
- 					   vlan, qos);
- }
-=20
-+static int mlx5e_add_vf_vlan_trunk_range(struct net_device *dev, int vf,
-+					 u16 start_vid, u16 end_vid,
-+					 __be16 vlan_proto)
-+{
-+	struct mlx5e_priv *priv =3D netdev_priv(dev);
-+	struct mlx5_core_dev *mdev =3D priv->mdev;
-+
-+	if (vlan_proto !=3D htons(ETH_P_8021Q))
-+		return -EPROTONOSUPPORT;
-+
-+	return mlx5_eswitch_add_vport_trunk_range(mdev->priv.eswitch, vf + 1,
-+						  start_vid, end_vid);
-+}
-+
-+static int mlx5e_del_vf_vlan_trunk_range(struct net_device *dev, int vf,
-+					 u16 start_vid, u16 end_vid,
-+					 __be16 vlan_proto)
-+{
-+	struct mlx5e_priv *priv =3D netdev_priv(dev);
-+	struct mlx5_core_dev *mdev =3D priv->mdev;
-+
-+	if (vlan_proto !=3D htons(ETH_P_8021Q))
-+		return -EPROTONOSUPPORT;
-+
-+	return mlx5_eswitch_del_vport_trunk_range(mdev->priv.eswitch, vf + 1,
-+						  start_vid, end_vid);
-+}
-+
- static int mlx5e_set_vf_spoofchk(struct net_device *dev, int vf, bool sett=
-ing)
- {
- 	struct mlx5e_priv *priv =3D netdev_priv(dev);
-@@ -4589,6 +4617,8 @@ static int mlx5e_bridge_setlink(struct net_device *de=
-v, struct nlmsghdr *nlh,
- 	/* SRIOV E-Switch NDOs */
- 	.ndo_set_vf_mac          =3D mlx5e_set_vf_mac,
- 	.ndo_set_vf_vlan         =3D mlx5e_set_vf_vlan,
-+	.ndo_add_vf_vlan_trunk_range =3D mlx5e_add_vf_vlan_trunk_range,
-+	.ndo_del_vf_vlan_trunk_range =3D mlx5e_del_vf_vlan_trunk_range,
- 	.ndo_set_vf_spoofchk     =3D mlx5e_set_vf_spoofchk,
- 	.ndo_set_vf_trust        =3D mlx5e_set_vf_trust,
- 	.ndo_set_vf_rate         =3D mlx5e_set_vf_rate,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/eswitch.c
-index 7baade9..911421e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
-@@ -58,6 +58,11 @@ struct vport_addr {
- 	bool mc_promisc;
- };
-=20
-+struct mlx5_acl_vlan {
-+	struct mlx5_flow_handle	*acl_vlan_rule;
-+	struct list_head	list;
-+};
-+
- static void esw_destroy_legacy_fdb_table(struct mlx5_eswitch *esw);
- static void esw_cleanup_vepa_rules(struct mlx5_eswitch *esw);
-=20
-@@ -452,6 +457,7 @@ static void esw_destroy_legacy_table(struct mlx5_eswitc=
-h *esw)
-=20
- #define MLX5_LEGACY_SRIOV_VPORT_EVENTS (MLX5_VPORT_UC_ADDR_CHANGE | \
- 					MLX5_VPORT_MC_ADDR_CHANGE | \
-+					MLX5_VPORT_VLAN_CHANGE | \
- 					MLX5_VPORT_PROMISC_CHANGE)
-=20
- static int esw_legacy_enable(struct mlx5_eswitch *esw)
-@@ -793,6 +799,94 @@ static void esw_update_vport_addr_list(struct mlx5_esw=
-itch *esw,
- 	kfree(mac_list);
- }
-=20
-+static void esw_update_acl_trunk_bitmap(struct mlx5_eswitch *esw, u32 vpor=
-t_num)
-+{
-+	struct mlx5_vport *vport =3D &esw->vports[vport_num];
-+
-+	bitmap_and(vport->acl_vlan_8021q_bitmap, vport->req_vlan_bitmap,
-+		   vport->info.vlan_trunk_8021q_bitmap, VLAN_N_VID);
-+}
-+
-+static int mlx5_query_nic_vport_vlans(struct mlx5_core_dev *dev, u32 vport=
-,
-+				      unsigned long *vlans)
-+{
-+	u32 in[MLX5_ST_SZ_DW(query_nic_vport_context_in)];
-+	void *nic_vport_ctx;
-+	int req_list_size;
-+	int out_sz;
-+	void *out;
-+	int err;
-+	int i;
-+
-+	req_list_size =3D 1 << MLX5_CAP_GEN(dev, log_max_vlan_list);
-+	out_sz =3D MLX5_ST_SZ_BYTES(modify_nic_vport_context_in) +
-+		req_list_size * MLX5_ST_SZ_BYTES(vlan_layout);
-+
-+	memset(in, 0, sizeof(in));
-+	out =3D kzalloc(out_sz, GFP_KERNEL);
-+	if (!out)
-+		return -ENOMEM;
-+
-+	MLX5_SET(query_nic_vport_context_in, in, opcode,
-+		 MLX5_CMD_OP_QUERY_NIC_VPORT_CONTEXT);
-+	MLX5_SET(query_nic_vport_context_in, in, allowed_list_type,
-+		 MLX5_NVPRT_LIST_TYPE_VLAN);
-+	MLX5_SET(query_nic_vport_context_in, in, vport_number, vport);
-+
-+	if (vport)
-+		MLX5_SET(query_nic_vport_context_in, in, other_vport, 1);
-+
-+	err =3D mlx5_cmd_exec(dev, in, sizeof(in), out, out_sz);
-+	if (err)
-+		goto out;
-+
-+	nic_vport_ctx =3D MLX5_ADDR_OF(query_nic_vport_context_out, out,
-+				     nic_vport_context);
-+	req_list_size =3D MLX5_GET(nic_vport_context, nic_vport_ctx,
-+				 allowed_list_size);
-+
-+	for (i =3D 0; i < req_list_size; i++) {
-+		void *vlan_addr =3D MLX5_ADDR_OF(nic_vport_context,
-+					       nic_vport_ctx,
-+					       current_uc_mac_address[i]);
-+		bitmap_set(vlans, MLX5_GET(vlan_layout, vlan_addr, vlan), 1);
-+	}
-+out:
-+	kfree(out);
-+	return err;
-+}
-+
-+static int esw_vport_egress_config(struct mlx5_eswitch *esw,
-+				   struct mlx5_vport *vport);
-+static int esw_vport_ingress_config(struct mlx5_eswitch *esw,
-+				    struct mlx5_vport *vport);
-+
-+/* Sync vport vlan list from vport context */
-+static void esw_update_vport_vlan_list(struct mlx5_eswitch *esw, u32 vport=
-_num)
-+{
-+	struct mlx5_vport *vport =3D &esw->vports[vport_num];
-+	DECLARE_BITMAP(prev_vlans_bitmap, VLAN_N_VID);
-+	int err;
-+
-+	bitmap_copy(prev_vlans_bitmap, vport->req_vlan_bitmap, VLAN_N_VID);
-+	bitmap_zero(vport->req_vlan_bitmap, VLAN_N_VID);
-+
-+	if (!vport->enabled)
-+		return;
-+
-+	err =3D mlx5_query_nic_vport_vlans(esw->dev, vport_num, vport->req_vlan_b=
-itmap);
-+	if (err)
-+		return;
-+
-+	bitmap_xor(prev_vlans_bitmap, prev_vlans_bitmap, vport->req_vlan_bitmap, =
-VLAN_N_VID);
-+	if (!bitmap_weight(prev_vlans_bitmap, VLAN_N_VID))
-+		return;
-+
-+	esw_update_acl_trunk_bitmap(esw, vport_num);
-+	esw_vport_egress_config(esw, vport);
-+	esw_vport_ingress_config(esw, vport);
-+}
-+
- /* Sync vport UC/MC list from vport context
-  * Must be called after esw_update_vport_addr_list
-  */
-@@ -920,6 +1014,9 @@ static void esw_vport_change_handle_locked(struct mlx5=
-_vport *vport)
- 	if (vport->enabled_events & MLX5_VPORT_MC_ADDR_CHANGE)
- 		esw_update_vport_addr_list(esw, vport, MLX5_NVPRT_LIST_TYPE_MC);
-=20
-+	if (vport->enabled_events & MLX5_VPORT_VLAN_CHANGE)
-+		esw_update_vport_vlan_list(esw, vport->vport);
-+
- 	if (vport->enabled_events & MLX5_VPORT_PROMISC_CHANGE) {
- 		esw_update_vport_rx_mode(esw, vport);
- 		if (!IS_ERR_OR_NULL(vport->allmulti_rule))
-@@ -950,18 +1047,20 @@ int esw_vport_enable_egress_acl(struct mlx5_eswitch =
-*esw,
- 				struct mlx5_vport *vport)
- {
- 	int inlen =3D MLX5_ST_SZ_BYTES(create_flow_group_in);
-+	struct mlx5_flow_group *untagged_grp =3D NULL;
- 	struct mlx5_flow_group *vlan_grp =3D NULL;
- 	struct mlx5_flow_group *drop_grp =3D NULL;
- 	struct mlx5_core_dev *dev =3D esw->dev;
- 	struct mlx5_flow_namespace *root_ns;
- 	struct mlx5_flow_table *acl;
-+	/* The egress acl table contains 3 groups:
-+	 * 1)Allow tagged traffic with vlan_tag=3Dvst_vlan_id/vgt+_vlan_id
-+	 * 2)Allow untagged traffic
-+	 * 3)Drop all other traffic
-+	 */
-+	int table_size =3D VLAN_N_VID + 2;
- 	void *match_criteria;
- 	u32 *flow_group_in;
--	/* The egress acl table contains 2 rules:
--	 * 1)Allow traffic with vlan_tag=3Dvst_vlan_id
--	 * 2)Drop all other traffic.
--	 */
--	int table_size =3D 2;
- 	int err =3D 0;
-=20
- 	if (!MLX5_CAP_ESW_EGRESS_ACL(dev, ft_support))
-@@ -994,11 +1093,25 @@ int esw_vport_enable_egress_acl(struct mlx5_eswitch =
-*esw,
-=20
- 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable, MLX5=
-_MATCH_OUTER_HEADERS);
- 	match_criteria =3D MLX5_ADDR_OF(create_flow_group_in, flow_group_in, matc=
-h_criteria);
-+
-+	/* Create flow group for allowed untagged flow rule */
- 	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.cvlan_tag=
-);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.first_vid=
-);
- 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
- 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 0);
-=20
-+	untagged_grp =3D mlx5_create_flow_group(acl, flow_group_in);
-+	if (IS_ERR(untagged_grp)) {
-+		err =3D PTR_ERR(untagged_grp);
-+		esw_warn(dev, "Failed to create E-Switch vport[%d] egress untagged flow =
-group, err(%d)\n",
-+			 vport->vport, err);
-+		goto out;
-+	}
-+
-+	/* Create flow group for allowed tagged flow rules */
-+	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.first_vid=
-);
-+	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 1);
-+	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, VLAN_N_VID)=
-;
-+
- 	vlan_grp =3D mlx5_create_flow_group(acl, flow_group_in);
- 	if (IS_ERR(vlan_grp)) {
- 		err =3D PTR_ERR(vlan_grp);
-@@ -1007,9 +1120,10 @@ int esw_vport_enable_egress_acl(struct mlx5_eswitch =
-*esw,
- 		goto out;
- 	}
-=20
-+	/* Create flow group for drop rule */
- 	memset(flow_group_in, 0, inlen);
--	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 1);
--	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 1);
-+	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, VLAN_N_VI=
-D + 1);
-+	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, VLAN_N_VID =
-+ 1);
- 	drop_grp =3D mlx5_create_flow_group(acl, flow_group_in);
- 	if (IS_ERR(drop_grp)) {
- 		err =3D PTR_ERR(drop_grp);
-@@ -1021,27 +1135,45 @@ int esw_vport_enable_egress_acl(struct mlx5_eswitch=
- *esw,
- 	vport->egress.acl =3D acl;
- 	vport->egress.drop_grp =3D drop_grp;
- 	vport->egress.allowed_vlans_grp =3D vlan_grp;
-+	vport->egress.allow_untagged_grp =3D untagged_grp;
-+
- out:
-+	if (err) {
-+		if (!IS_ERR_OR_NULL(vlan_grp))
-+			mlx5_destroy_flow_group(vlan_grp);
-+		if (!IS_ERR_OR_NULL(untagged_grp))
-+			mlx5_destroy_flow_group(untagged_grp);
-+		if (!IS_ERR_OR_NULL(acl))
-+			mlx5_destroy_flow_table(acl);
-+	}
- 	kvfree(flow_group_in);
--	if (err && !IS_ERR_OR_NULL(vlan_grp))
--		mlx5_destroy_flow_group(vlan_grp);
--	if (err && !IS_ERR_OR_NULL(acl))
--		mlx5_destroy_flow_table(acl);
- 	return err;
- }
-=20
- void esw_vport_cleanup_egress_rules(struct mlx5_eswitch *esw,
- 				    struct mlx5_vport *vport)
- {
--	if (!IS_ERR_OR_NULL(vport->egress.allowed_vlan)) {
--		mlx5_del_flow_rules(vport->egress.allowed_vlan);
--		vport->egress.allowed_vlan =3D NULL;
-+	struct mlx5_acl_vlan *trunk_vlan_rule, *tmp;
-+
-+	if (!IS_ERR_OR_NULL(vport->egress.allowed_vst_vlan)) {
-+		mlx5_del_flow_rules(vport->egress.allowed_vst_vlan);
-+		vport->egress.allowed_vst_vlan =3D NULL;
-+	}
-+
-+	list_for_each_entry_safe(trunk_vlan_rule, tmp,
-+				 &vport->egress.legacy.allowed_vlans_rules, list) {
-+		mlx5_del_flow_rules(trunk_vlan_rule->acl_vlan_rule);
-+		list_del(&trunk_vlan_rule->list);
-+		kfree(trunk_vlan_rule);
- 	}
-=20
- 	if (!IS_ERR_OR_NULL(vport->egress.legacy.drop_rule)) {
- 		mlx5_del_flow_rules(vport->egress.legacy.drop_rule);
- 		vport->egress.legacy.drop_rule =3D NULL;
- 	}
-+
-+	if (!IS_ERR_OR_NULL(vport->egress.legacy.allow_untagged_rule))
-+		mlx5_del_flow_rules(vport->egress.legacy.allow_untagged_rule);
- }
-=20
- void esw_vport_disable_egress_acl(struct mlx5_eswitch *esw,
-@@ -1053,9 +1185,11 @@ void esw_vport_disable_egress_acl(struct mlx5_eswitc=
-h *esw,
- 	esw_debug(esw->dev, "Destroy vport[%d] E-Switch egress ACL\n", vport->vpo=
-rt);
-=20
- 	esw_vport_cleanup_egress_rules(esw, vport);
-+	mlx5_destroy_flow_group(vport->egress.allow_untagged_grp);
- 	mlx5_destroy_flow_group(vport->egress.allowed_vlans_grp);
- 	mlx5_destroy_flow_group(vport->egress.drop_grp);
- 	mlx5_destroy_flow_table(vport->egress.acl);
-+	vport->egress.allow_untagged_grp =3D NULL;
- 	vport->egress.allowed_vlans_grp =3D NULL;
- 	vport->egress.drop_grp =3D NULL;
- 	vport->egress.acl =3D NULL;
-@@ -1065,12 +1199,21 @@ void esw_vport_disable_egress_acl(struct mlx5_eswit=
-ch *esw,
- esw_vport_create_legacy_ingress_acl_groups(struct mlx5_eswitch *esw,
- 					   struct mlx5_vport *vport)
- {
-+	bool need_vlan_filter =3D !!bitmap_weight(vport->info.vlan_trunk_8021q_bi=
-tmap,
-+						VLAN_N_VID);
- 	int inlen =3D MLX5_ST_SZ_BYTES(create_flow_group_in);
-+	struct mlx5_flow_group *untagged_spoof_grp =3D NULL;
-+	struct mlx5_flow_table *acl =3D vport->ingress.acl;
-+	struct mlx5_flow_group *tagged_spoof_grp =3D NULL;
-+	struct mlx5_flow_group *drop_grp =3D NULL;
- 	struct mlx5_core_dev *dev =3D esw->dev;
--	struct mlx5_flow_group *g;
- 	void *match_criteria;
- 	u32 *flow_group_in;
--	int err;
-+	int allow_grp_sz =3D 0;
-+	int err =3D 0;
-+
-+	if (!acl)
-+		return -EINVAL;
-=20
- 	flow_group_in =3D kvzalloc(inlen, GFP_KERNEL);
- 	if (!flow_group_in)
-@@ -1079,83 +1222,68 @@ void esw_vport_disable_egress_acl(struct mlx5_eswit=
-ch *esw,
- 	match_criteria =3D MLX5_ADDR_OF(create_flow_group_in, flow_group_in, matc=
-h_criteria);
-=20
- 	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable, MLX5=
-_MATCH_OUTER_HEADERS);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.cvlan_tag=
-);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.smac_47_1=
-6);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.smac_15_0=
-);
-+
-+	if (vport->info.vlan || vport->info.qos || need_vlan_filter)
-+		MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.cvlan_ta=
-g);
-+
-+	if (vport->info.spoofchk) {
-+		MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.smac_47_=
-16);
-+		MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.smac_15_=
-0);
-+	}
-+
- 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 0);
- 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 0);
-=20
--	g =3D mlx5_create_flow_group(vport->ingress.acl, flow_group_in);
--	if (IS_ERR(g)) {
--		err =3D PTR_ERR(g);
-+	untagged_spoof_grp =3D mlx5_create_flow_group(acl, flow_group_in);
-+	if (IS_ERR(untagged_spoof_grp)) {
-+		err =3D PTR_ERR(untagged_spoof_grp);
- 		esw_warn(dev, "vport[%d] ingress create untagged spoofchk flow group, er=
-r(%d)\n",
- 			 vport->vport, err);
--		goto spoof_err;
-+		goto out;
- 	}
--	vport->ingress.legacy.allow_untagged_spoofchk_grp =3D g;
-+	allow_grp_sz +=3D 1;
-=20
--	memset(flow_group_in, 0, inlen);
--	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable, MLX5=
-_MATCH_OUTER_HEADERS);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.cvlan_tag=
-);
-+	if (!need_vlan_filter)
-+		goto drop_grp;
-+
-+	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.first_vid=
-);
- 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 1);
--	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 1);
-+	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, VLAN_N_VID)=
-;
-=20
--	g =3D mlx5_create_flow_group(vport->ingress.acl, flow_group_in);
--	if (IS_ERR(g)) {
--		err =3D PTR_ERR(g);
--		esw_warn(dev, "vport[%d] ingress create untagged flow group, err(%d)\n",
-+	tagged_spoof_grp =3D mlx5_create_flow_group(acl, flow_group_in);
-+	if (IS_ERR(tagged_spoof_grp)) {
-+		err =3D PTR_ERR(tagged_spoof_grp);
-+		esw_warn(dev, "Failed to create E-Switch vport[%d] ingress tagged spoofc=
-hk flow group, err(%d)\n",
- 			 vport->vport, err);
--		goto untagged_err;
-+		goto out;
- 	}
--	vport->ingress.legacy.allow_untagged_only_grp =3D g;
-+	allow_grp_sz +=3D VLAN_N_VID;
-=20
-+drop_grp:
- 	memset(flow_group_in, 0, inlen);
--	MLX5_SET(create_flow_group_in, flow_group_in, match_criteria_enable, MLX5=
-_MATCH_OUTER_HEADERS);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.smac_47_1=
-6);
--	MLX5_SET_TO_ONES(fte_match_param, match_criteria, outer_headers.smac_15_0=
-);
--	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 2);
--	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 2);
-+	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, allow_grp=
-_sz);
-+	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, allow_grp_s=
-z);
-=20
--	g =3D mlx5_create_flow_group(vport->ingress.acl, flow_group_in);
--	if (IS_ERR(g)) {
--		err =3D PTR_ERR(g);
--		esw_warn(dev, "vport[%d] ingress create spoofchk flow group, err(%d)\n",
-+	drop_grp =3D mlx5_create_flow_group(vport->ingress.acl, flow_group_in);
-+	if (IS_ERR(drop_grp)) {
-+		err =3D PTR_ERR(drop_grp);
-+		esw_warn(dev, "vport[%d] ingress create drop flow group, err(%d)\n",
- 			 vport->vport, err);
--		goto allow_spoof_err;
-+		goto out;
- 	}
--	vport->ingress.legacy.allow_spoofchk_only_grp =3D g;
-=20
--	memset(flow_group_in, 0, inlen);
--	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, 3);
--	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, 3);
-+	vport->ingress.legacy.allow_untagged_spoofchk_grp =3D untagged_spoof_grp;
-+	vport->ingress.legacy.allow_tagged_spoofchk_grp =3D tagged_spoof_grp;
-+	vport->ingress.legacy.drop_grp =3D drop_grp;
-=20
--	g =3D mlx5_create_flow_group(vport->ingress.acl, flow_group_in);
--	if (IS_ERR(g)) {
--		err =3D PTR_ERR(g);
--		esw_warn(dev, "vport[%d] ingress create drop flow group, err(%d)\n",
--			 vport->vport, err);
--		goto drop_err;
-+out:
-+	if (err) {
-+		if (!IS_ERR_OR_NULL(tagged_spoof_grp))
-+			mlx5_destroy_flow_group(tagged_spoof_grp);
-+		if (!IS_ERR_OR_NULL(untagged_spoof_grp))
-+			mlx5_destroy_flow_group(untagged_spoof_grp);
- 	}
--	vport->ingress.legacy.drop_grp =3D g;
--	kvfree(flow_group_in);
--	return 0;
-=20
--drop_err:
--	if (!IS_ERR_OR_NULL(vport->ingress.legacy.allow_spoofchk_only_grp)) {
--		mlx5_destroy_flow_group(vport->ingress.legacy.allow_spoofchk_only_grp);
--		vport->ingress.legacy.allow_spoofchk_only_grp =3D NULL;
--	}
--allow_spoof_err:
--	if (!IS_ERR_OR_NULL(vport->ingress.legacy.allow_untagged_only_grp)) {
--		mlx5_destroy_flow_group(vport->ingress.legacy.allow_untagged_only_grp);
--		vport->ingress.legacy.allow_untagged_only_grp =3D NULL;
--	}
--untagged_err:
--	if (!IS_ERR_OR_NULL(vport->ingress.legacy.allow_untagged_spoofchk_grp)) {
--		mlx5_destroy_flow_group(vport->ingress.legacy.allow_untagged_spoofchk_gr=
-p);
--		vport->ingress.legacy.allow_untagged_spoofchk_grp =3D NULL;
--	}
--spoof_err:
- 	kvfree(flow_group_in);
- 	return err;
- }
-@@ -1207,14 +1335,23 @@ void esw_vport_destroy_ingress_acl_table(struct mlx=
-5_vport *vport)
- void esw_vport_cleanup_ingress_rules(struct mlx5_eswitch *esw,
- 				     struct mlx5_vport *vport)
- {
-+	struct mlx5_acl_vlan *trunk_vlan_rule, *tmp;
-+
- 	if (vport->ingress.legacy.drop_rule) {
- 		mlx5_del_flow_rules(vport->ingress.legacy.drop_rule);
- 		vport->ingress.legacy.drop_rule =3D NULL;
- 	}
-=20
--	if (vport->ingress.allow_rule) {
--		mlx5_del_flow_rules(vport->ingress.allow_rule);
--		vport->ingress.allow_rule =3D NULL;
-+	list_for_each_entry_safe(trunk_vlan_rule, tmp,
-+				 &vport->ingress.legacy.allowed_vlans_rules, list) {
-+		mlx5_del_flow_rules(trunk_vlan_rule->acl_vlan_rule);
-+		list_del(&trunk_vlan_rule->list);
-+		kfree(trunk_vlan_rule);
-+	}
-+
-+	if (vport->ingress.allow_untagged_rule) {
-+		mlx5_del_flow_rules(vport->ingress.allow_untagged_rule);
-+		vport->ingress.allow_untagged_rule =3D NULL;
- 	}
- }
-=20
-@@ -1227,18 +1364,14 @@ static void esw_vport_disable_legacy_ingress_acl(st=
-ruct mlx5_eswitch *esw,
- 	esw_debug(esw->dev, "Destroy vport[%d] E-Switch ingress ACL\n", vport->vp=
-ort);
-=20
- 	esw_vport_cleanup_ingress_rules(esw, vport);
--	if (vport->ingress.legacy.allow_spoofchk_only_grp) {
--		mlx5_destroy_flow_group(vport->ingress.legacy.allow_spoofchk_only_grp);
--		vport->ingress.legacy.allow_spoofchk_only_grp =3D NULL;
--	}
--	if (vport->ingress.legacy.allow_untagged_only_grp) {
--		mlx5_destroy_flow_group(vport->ingress.legacy.allow_untagged_only_grp);
--		vport->ingress.legacy.allow_untagged_only_grp =3D NULL;
--	}
- 	if (vport->ingress.legacy.allow_untagged_spoofchk_grp) {
- 		mlx5_destroy_flow_group(vport->ingress.legacy.allow_untagged_spoofchk_gr=
-p);
- 		vport->ingress.legacy.allow_untagged_spoofchk_grp =3D NULL;
- 	}
-+	if (vport->ingress.legacy.allow_tagged_spoofchk_grp) {
-+		mlx5_destroy_flow_group(vport->ingress.legacy.allow_tagged_spoofchk_grp)=
-;
-+		vport->ingress.legacy.allow_tagged_spoofchk_grp =3D NULL;
-+	}
- 	if (vport->ingress.legacy.drop_grp) {
- 		mlx5_destroy_flow_group(vport->ingress.legacy.drop_grp);
- 		vport->ingress.legacy.drop_grp =3D NULL;
-@@ -1249,33 +1382,47 @@ static void esw_vport_disable_legacy_ingress_acl(st=
-ruct mlx5_eswitch *esw,
- static int esw_vport_ingress_config(struct mlx5_eswitch *esw,
- 				    struct mlx5_vport *vport)
- {
-+	bool need_vlan_filter =3D !!bitmap_weight(vport->info.vlan_trunk_8021q_bi=
-tmap,
-+						VLAN_N_VID);
- 	struct mlx5_fc *counter =3D vport->ingress.legacy.drop_counter;
- 	struct mlx5_flow_destination drop_ctr_dst =3D {0};
- 	struct mlx5_flow_destination *dst =3D NULL;
-+	struct mlx5_acl_vlan *trunk_vlan_rule;
- 	struct mlx5_flow_act flow_act =3D {0};
- 	struct mlx5_flow_spec *spec;
-+	bool need_acl_table;
- 	int dest_num =3D 0;
-+	u16 vlan_id =3D 0;
- 	int err =3D 0;
- 	u8 *smac_v;
-=20
--	/* The ingress acl table contains 4 groups
-+	/* The ingress acl table contains 3 groups
- 	 * (2 active rules at the same time -
--	 *      1 allow rule from one of the first 3 groups.
--	 *      1 drop rule from the last group):
--	 * 1)Allow untagged traffic with smac=3Doriginal mac.
--	 * 2)Allow untagged traffic.
--	 * 3)Allow traffic with smac=3Doriginal mac.
--	 * 4)Drop all other traffic.
-+	 *	1 allow rule from one of the first 2 groups.
-+	 *	1 drop rule from the last group):
-+	 * 1)Allow untagged traffic with/without smac=3Doriginal mac.
-+	 * 2)Allow tagged (VLAN trunk list) traffic with/without smac=3Doriginal =
-mac.
-+	 * 3)Drop all other traffic.
- 	 */
--	int table_size =3D 4;
-+	int table_size =3D need_vlan_filter ? 8192 : 4;
-=20
- 	esw_vport_cleanup_ingress_rules(esw, vport);
-=20
--	if (!vport->info.vlan && !vport->info.qos && !vport->info.spoofchk) {
-+	need_acl_table =3D vport->info.vlan || vport->info.qos ||
-+			 vport->info.spoofchk || need_vlan_filter;
-+
-+	if (!need_acl_table) {
- 		esw_vport_disable_legacy_ingress_acl(esw, vport);
- 		return 0;
- 	}
-=20
-+	if ((vport->info.vlan || vport->info.qos) && need_vlan_filter) {
-+		mlx5_core_warn(esw->dev,
-+			       "vport[%d] configure ingress rules failed, Cannot enable both VG=
-T+ and VST\n",
-+			       vport->vport);
-+		return -EPERM;
-+	}
-+
- 	if (!vport->ingress.acl) {
- 		err =3D esw_vport_create_ingress_acl_table(esw, vport, table_size);
- 		if (err) {
-@@ -1300,7 +1447,10 @@ static int esw_vport_ingress_config(struct mlx5_eswi=
-tch *esw,
- 		goto out;
- 	}
-=20
--	if (vport->info.vlan || vport->info.qos)
-+	spec->match_criteria_enable =3D MLX5_MATCH_OUTER_HEADERS;
-+	flow_act.action =3D MLX5_FLOW_CONTEXT_ACTION_ALLOW;
-+
-+	if (vport->info.vlan || vport->info.qos || need_vlan_filter)
- 		MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.cv=
-lan_tag);
-=20
- 	if (vport->info.spoofchk) {
-@@ -1312,20 +1462,52 @@ static int esw_vport_ingress_config(struct mlx5_esw=
-itch *esw,
- 		ether_addr_copy(smac_v, vport->info.mac);
- 	}
-=20
--	spec->match_criteria_enable =3D MLX5_MATCH_OUTER_HEADERS;
--	flow_act.action =3D MLX5_FLOW_CONTEXT_ACTION_ALLOW;
--	vport->ingress.allow_rule =3D
--		mlx5_add_flow_rules(vport->ingress.acl, spec,
--				    &flow_act, NULL, 0);
--	if (IS_ERR(vport->ingress.allow_rule)) {
--		err =3D PTR_ERR(vport->ingress.allow_rule);
--		esw_warn(esw->dev,
--			 "vport[%d] configure ingress allow rule, err(%d)\n",
--			 vport->vport, err);
--		vport->ingress.allow_rule =3D NULL;
--		goto out;
-+	/* Allow untagged */
-+	if (!need_vlan_filter ||
-+	    (need_vlan_filter && test_bit(0, vport->info.vlan_trunk_8021q_bitmap)=
-)) {
-+		vport->ingress.allow_untagged_rule =3D
-+			mlx5_add_flow_rules(vport->ingress.acl, spec,
-+					    &flow_act, NULL, 0);
-+		if (IS_ERR(vport->ingress.allow_untagged_rule)) {
-+			err =3D PTR_ERR(vport->ingress.allow_untagged_rule);
-+			esw_warn(esw->dev,
-+				 "vport[%d] configure ingress allow rule, err(%d)\n",
-+				 vport->vport, err);
-+			vport->ingress.allow_untagged_rule =3D NULL;
-+			goto out;
-+		}
- 	}
-=20
-+	if (!need_vlan_filter)
-+		goto drop_rule;
-+
-+	/* Allow tagged (VLAN trunk list) */
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_value, outer_headers.cvlan_=
-tag);
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.fir=
-st_vid);
-+
-+	for_each_set_bit(vlan_id, vport->acl_vlan_8021q_bitmap, VLAN_N_VID) {
-+		trunk_vlan_rule =3D kzalloc(sizeof(*trunk_vlan_rule), GFP_KERNEL);
-+		if (!trunk_vlan_rule) {
-+			err =3D -ENOMEM;
-+			goto out;
-+		}
-+
-+		MLX5_SET(fte_match_param, spec->match_value, outer_headers.first_vid,
-+			 vlan_id);
-+		trunk_vlan_rule->acl_vlan_rule =3D
-+			mlx5_add_flow_rules(vport->ingress.acl, spec, &flow_act, NULL, 0);
-+		if (IS_ERR(trunk_vlan_rule->acl_vlan_rule)) {
-+			err =3D PTR_ERR(trunk_vlan_rule->acl_vlan_rule);
-+			esw_warn(esw->dev,
-+				 "vport[%d] configure ingress allowed vlan rule failed, err(%d)\n",
-+				 vport->vport, err);
-+			kfree(trunk_vlan_rule);
-+			continue;
-+		}
-+		list_add(&trunk_vlan_rule->list, &vport->ingress.legacy.allowed_vlans_ru=
-les);
-+	}
-+
-+drop_rule:
- 	memset(spec, 0, sizeof(*spec));
- 	flow_act.action =3D MLX5_FLOW_CONTEXT_ACTION_DROP;
-=20
-@@ -1348,11 +1530,11 @@ static int esw_vport_ingress_config(struct mlx5_esw=
-itch *esw,
- 		vport->ingress.legacy.drop_rule =3D NULL;
- 		goto out;
- 	}
--	kvfree(spec);
--	return 0;
-=20
- out:
--	esw_vport_disable_legacy_ingress_acl(esw, vport);
-+	if (err)
-+		esw_vport_disable_legacy_ingress_acl(esw, vport);
-+
- 	kvfree(spec);
- 	return err;
- }
-@@ -1365,7 +1547,7 @@ int mlx5_esw_create_vport_egress_acl_vlan(struct mlx5=
-_eswitch *esw,
- 	struct mlx5_flow_spec *spec;
- 	int err =3D 0;
-=20
--	if (vport->egress.allowed_vlan)
-+	if (vport->egress.allowed_vst_vlan)
- 		return -EEXIST;
-=20
- 	spec =3D kvzalloc(sizeof(*spec), GFP_KERNEL);
-@@ -1379,15 +1561,15 @@ int mlx5_esw_create_vport_egress_acl_vlan(struct ml=
-x5_eswitch *esw,
-=20
- 	spec->match_criteria_enable =3D MLX5_MATCH_OUTER_HEADERS;
- 	flow_act.action =3D flow_action;
--	vport->egress.allowed_vlan =3D
-+	vport->egress.allowed_vst_vlan =3D
- 		mlx5_add_flow_rules(vport->egress.acl, spec,
- 				    &flow_act, NULL, 0);
--	if (IS_ERR(vport->egress.allowed_vlan)) {
--		err =3D PTR_ERR(vport->egress.allowed_vlan);
-+	if (IS_ERR(vport->egress.allowed_vst_vlan)) {
-+		err =3D PTR_ERR(vport->egress.allowed_vst_vlan);
- 		esw_warn(esw->dev,
- 			 "vport[%d] configure egress vlan rule failed, err(%d)\n",
- 			 vport->vport, err);
--		vport->egress.allowed_vlan =3D NULL;
-+		vport->egress.allowed_vst_vlan =3D NULL;
- 	}
-=20
- 	kvfree(spec);
-@@ -1397,17 +1579,22 @@ int mlx5_esw_create_vport_egress_acl_vlan(struct ml=
-x5_eswitch *esw,
- static int esw_vport_egress_config(struct mlx5_eswitch *esw,
- 				   struct mlx5_vport *vport)
- {
-+	bool need_vlan_filter =3D !!bitmap_weight(vport->info.vlan_trunk_8021q_bi=
-tmap,
-+						VLAN_N_VID);
-+	bool need_acl_table =3D vport->info.vlan || vport->info.qos || need_vlan_=
-filter;
-+	struct mlx5_acl_vlan *trunk_vlan_rule;
- 	struct mlx5_fc *counter =3D vport->egress.legacy.drop_counter;
- 	struct mlx5_flow_destination drop_ctr_dst =3D {0};
- 	struct mlx5_flow_destination *dst =3D NULL;
- 	struct mlx5_flow_act flow_act =3D {0};
- 	struct mlx5_flow_spec *spec;
- 	int dest_num =3D 0;
-+	u16 vlan_id =3D 0;
- 	int err =3D 0;
-=20
- 	esw_vport_cleanup_egress_rules(esw, vport);
-=20
--	if (!vport->info.vlan && !vport->info.qos) {
-+	if (!need_acl_table) {
- 		esw_vport_disable_egress_acl(esw, vport);
- 		return 0;
- 	}
-@@ -1424,17 +1611,67 @@ static int esw_vport_egress_config(struct mlx5_eswi=
-tch *esw,
- 		  "vport[%d] configure egress rules, vlan(%d) qos(%d)\n",
- 		  vport->vport, vport->info.vlan, vport->info.qos);
-=20
--	/* Allowed vlan rule */
--	err =3D mlx5_esw_create_vport_egress_acl_vlan(esw, vport, vport->info.vla=
-n,
--						    MLX5_FLOW_CONTEXT_ACTION_ALLOW);
--	if (err)
--		return err;
--
--	/* Drop others rule (star rule) */
- 	spec =3D kvzalloc(sizeof(*spec), GFP_KERNEL);
--	if (!spec)
-+	if (!spec) {
-+		err =3D -ENOMEM;
- 		goto out;
-+	}
-+
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.cvl=
-an_tag);
-+	spec->match_criteria_enable =3D MLX5_MATCH_OUTER_HEADERS;
-+	flow_act.action =3D MLX5_FLOW_CONTEXT_ACTION_ALLOW;
-+
-+	/* Allow untagged */
-+	if (need_vlan_filter && test_bit(0, vport->info.vlan_trunk_8021q_bitmap))=
- {
-+		vport->egress.legacy.allow_untagged_rule =3D
-+			mlx5_add_flow_rules(vport->egress.acl, spec,
-+					    &flow_act, NULL, 0);
-+		if (IS_ERR(vport->egress.legacy.allow_untagged_rule)) {
-+			err =3D PTR_ERR(vport->egress.legacy.allow_untagged_rule);
-+			esw_warn(esw->dev,
-+				 "vport[%d] configure egress allow rule, err(%d)\n",
-+				 vport->vport, err);
-+			vport->egress.legacy.allow_untagged_rule =3D NULL;
-+		}
-+	}
-+
-+	/* VST rule */
-+	if (vport->info.vlan || vport->info.qos) {
-+		err =3D mlx5_esw_create_vport_egress_acl_vlan(esw, vport, vport->info.vl=
-an,
-+							    MLX5_FLOW_CONTEXT_ACTION_ALLOW);
-+		if (err)
-+			goto out;
-+	}
-+
-+	/* Allowed trunk vlans rules (VGT+) */
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_value, outer_headers.cvlan_=
-tag);
-+	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.fir=
-st_vid);
-=20
-+	for_each_set_bit(vlan_id, vport->acl_vlan_8021q_bitmap, VLAN_N_VID) {
-+		trunk_vlan_rule =3D kzalloc(sizeof(*trunk_vlan_rule), GFP_KERNEL);
-+		if (!trunk_vlan_rule) {
-+			err =3D -ENOMEM;
-+			goto out;
-+		}
-+
-+		MLX5_SET(fte_match_param, spec->match_value, outer_headers.first_vid,
-+			 vlan_id);
-+		trunk_vlan_rule->acl_vlan_rule =3D
-+			mlx5_add_flow_rules(vport->egress.acl, spec, &flow_act, NULL, 0);
-+		if (IS_ERR(trunk_vlan_rule->acl_vlan_rule)) {
-+			err =3D PTR_ERR(trunk_vlan_rule->acl_vlan_rule);
-+			esw_warn(esw->dev,
-+				 "vport[%d] configure egress allowed vlan rule failed, err(%d)\n",
-+				 vport->vport, err);
-+			kfree(trunk_vlan_rule);
-+			continue;
-+		}
-+		list_add(&trunk_vlan_rule->list, &vport->egress.legacy.allowed_vlans_rul=
-es);
-+	}
-+
-+	/* Drop others rule (star rule) */
-+
-+	memset(spec, 0, sizeof(*spec));
- 	flow_act.action =3D MLX5_FLOW_CONTEXT_ACTION_DROP;
-=20
- 	/* Attach egress drop flow counter */
-@@ -1455,7 +1692,11 @@ static int esw_vport_egress_config(struct mlx5_eswit=
-ch *esw,
- 			 vport->vport, err);
- 		vport->egress.legacy.drop_rule =3D NULL;
- 	}
-+
- out:
-+	if (err)
-+		esw_vport_cleanup_egress_rules(esw, vport);
-+
- 	kvfree(spec);
- 	return err;
- }
-@@ -1787,6 +2028,12 @@ static int esw_enable_vport(struct mlx5_eswitch *esw=
-, struct mlx5_vport *vport,
-=20
- 	esw_debug(esw->dev, "Enabling VPORT(%d)\n", vport_num);
-=20
-+	bitmap_zero(vport->req_vlan_bitmap, VLAN_N_VID);
-+	bitmap_zero(vport->acl_vlan_8021q_bitmap, VLAN_N_VID);
-+	bitmap_zero(vport->info.vlan_trunk_8021q_bitmap, VLAN_N_VID);
-+	INIT_LIST_HEAD(&vport->egress.legacy.allowed_vlans_rules);
-+	INIT_LIST_HEAD(&vport->ingress.legacy.allowed_vlans_rules);
-+
- 	/* Restore old vport configuration */
- 	esw_apply_vport_conf(esw, vport);
-=20
-@@ -2268,6 +2515,17 @@ int mlx5_eswitch_get_vport_config(struct mlx5_eswitc=
-h *esw,
- 	ivi->trusted =3D evport->info.trusted;
- 	ivi->min_tx_rate =3D evport->info.min_rate;
- 	ivi->max_tx_rate =3D evport->info.max_rate;
-+
-+	if (bitmap_weight(evport->info.vlan_trunk_8021q_bitmap, VLAN_N_VID)) {
-+		bitmap_copy((unsigned long *)ivi->trunk_8021q,
-+			    evport->info.vlan_trunk_8021q_bitmap, VLAN_N_VID);
-+		ivi->vlan_mode =3D IFLA_VF_VLAN_MODE_TRUNK;
-+	} else if (ivi->vlan) {
-+		ivi->vlan_mode =3D IFLA_VF_VLAN_MODE_VST;
-+	} else {
-+		ivi->vlan_mode =3D IFLA_VF_VLAN_MODE_VGT;
-+	};
-+
- 	mutex_unlock(&esw->state_lock);
-=20
- 	return 0;
-@@ -2286,6 +2544,14 @@ int __mlx5_eswitch_set_vport_vlan(struct mlx5_eswitc=
-h *esw,
- 	if (vlan > 4095 || qos > 7)
- 		return -EINVAL;
-=20
-+	if (bitmap_weight(evport->info.vlan_trunk_8021q_bitmap, VLAN_N_VID)) {
-+		err =3D -EPERM;
-+		mlx5_core_warn(esw->dev,
-+			       "VST is not allowed when operating in VGT+ mode vport(%d)\n",
-+			       vport);
-+		return -EPERM;
-+	}
-+
- 	err =3D modify_esw_vport_cvlan(esw->dev, vport, vlan, qos, set_flags);
- 	if (err)
- 		return err;
-@@ -2628,6 +2894,92 @@ static int mlx5_eswitch_query_vport_drop_stats(struc=
-t mlx5_core_dev *dev,
- 	return 0;
- }
-=20
-+static int mlx5_eswitch_update_vport_trunk(struct mlx5_eswitch *esw,
-+					   struct mlx5_vport *evport,
-+					   unsigned long *old_trunk)
-+{
-+	DECLARE_BITMAP(diff_vlan_bm, VLAN_N_VID);
-+	int err =3D 0;
-+
-+	bitmap_xor(diff_vlan_bm, old_trunk,
-+		   evport->info.vlan_trunk_8021q_bitmap, VLAN_N_VID);
-+	if (!bitmap_weight(diff_vlan_bm, VLAN_N_VID))
-+		return err;
-+
-+	esw_update_acl_trunk_bitmap(esw, evport->vport);
-+	if (evport->enabled && esw->mode =3D=3D MLX5_ESWITCH_LEGACY) {
-+		err =3D esw_vport_egress_config(esw, evport);
-+		if (!err)
-+			err =3D esw_vport_ingress_config(esw, evport);
-+	}
-+
-+	if (err) {
-+		bitmap_copy(evport->info.vlan_trunk_8021q_bitmap, old_trunk, VLAN_N_VID)=
-;
-+		esw_update_acl_trunk_bitmap(esw, evport->vport);
-+		esw_vport_egress_config(esw, evport);
-+		esw_vport_ingress_config(esw, evport);
-+	}
-+
-+	return err;
-+}
-+
-+int mlx5_eswitch_add_vport_trunk_range(struct mlx5_eswitch *esw,
-+				       u16 vport, u16 start_vlan, u16 end_vlan)
-+{
-+	struct mlx5_vport *evport =3D mlx5_eswitch_get_vport(esw, vport);
-+	DECLARE_BITMAP(prev_vport_bitmap, VLAN_N_VID);
-+	int err =3D 0;
-+
-+	if (!ESW_ALLOWED(esw))
-+		return -EPERM;
-+
-+	if (IS_ERR(evport) || end_vlan > VLAN_N_VID || start_vlan > end_vlan)
-+		return -EINVAL;
-+
-+	mutex_lock(&esw->state_lock);
-+
-+	if (evport->info.vlan || evport->info.qos) {
-+		err =3D -EPERM;
-+		mlx5_core_warn(esw->dev,
-+			       "VGT+ is not allowed when operating in VST mode vport(%d)\n",
-+			       vport);
-+		goto unlock;
-+	}
-+
-+	bitmap_copy(prev_vport_bitmap, evport->info.vlan_trunk_8021q_bitmap, VLAN=
-_N_VID);
-+	bitmap_set(evport->info.vlan_trunk_8021q_bitmap, start_vlan,
-+		   end_vlan - start_vlan + 1);
-+	err =3D mlx5_eswitch_update_vport_trunk(esw, evport, prev_vport_bitmap);
-+
-+unlock:
-+	mutex_unlock(&esw->state_lock);
-+
-+	return err;
-+}
-+
-+int mlx5_eswitch_del_vport_trunk_range(struct mlx5_eswitch *esw,
-+				       u16 vport, u16 start_vlan, u16 end_vlan)
-+{
-+	struct mlx5_vport *evport =3D mlx5_eswitch_get_vport(esw, vport);
-+	DECLARE_BITMAP(prev_vport_bitmap, VLAN_N_VID);
-+	int err =3D 0;
-+
-+	if (!ESW_ALLOWED(esw))
-+		return -EPERM;
-+
-+	if (IS_ERR(evport) || end_vlan > VLAN_N_VID || start_vlan > end_vlan)
-+		return -EINVAL;
-+
-+	mutex_lock(&esw->state_lock);
-+	bitmap_copy(prev_vport_bitmap, evport->info.vlan_trunk_8021q_bitmap, VLAN=
-_N_VID);
-+	bitmap_clear(evport->info.vlan_trunk_8021q_bitmap, start_vlan,
-+		     end_vlan - start_vlan + 1);
-+	err =3D mlx5_eswitch_update_vport_trunk(esw, evport, prev_vport_bitmap);
-+	mutex_unlock(&esw->state_lock);
-+
-+	return err;
-+}
-+
- int mlx5_eswitch_get_vport_stats(struct mlx5_eswitch *esw,
- 				 u16 vport_num,
- 				 struct ifla_vf_stats *vf_stats)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/eswitch.h
-index 920d8f5..1ba7aa3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
-@@ -35,6 +35,8 @@
-=20
- #include <linux/if_ether.h>
- #include <linux/if_link.h>
-+#include <linux/if_vlan.h>
-+#include <linux/bitmap.h>
- #include <linux/atomic.h>
- #include <net/devlink.h>
- #include <linux/mlx5/device.h>
-@@ -51,6 +53,9 @@
- #define MLX5_MAX_MC_PER_VPORT(dev) \
- 	(1 << MLX5_CAP_GEN(dev, log_max_current_mc_list))
-=20
-+#define MLX5_MAX_VLAN_PER_VPORT(dev) \
-+	(1 << MLX5_CAP_GEN(dev, log_max_vlan_list))
-+
- #define MLX5_MIN_BW_SHARE 1
-=20
- #define MLX5_RATE_TO_BW_SHARE(rate, divider, limit) \
-@@ -65,14 +70,14 @@
-=20
- struct vport_ingress {
- 	struct mlx5_flow_table *acl;
--	struct mlx5_flow_handle *allow_rule;
-+	struct mlx5_flow_handle *allow_untagged_rule;
- 	struct {
--		struct mlx5_flow_group *allow_spoofchk_only_grp;
- 		struct mlx5_flow_group *allow_untagged_spoofchk_grp;
--		struct mlx5_flow_group *allow_untagged_only_grp;
-+		struct mlx5_flow_group *allow_tagged_spoofchk_grp;
- 		struct mlx5_flow_group *drop_grp;
- 		struct mlx5_flow_handle *drop_rule;
- 		struct mlx5_fc *drop_counter;
-+		struct list_head allowed_vlans_rules;
- 	} legacy;
- 	struct {
- 		struct mlx5_flow_group *metadata_grp;
-@@ -83,11 +88,14 @@ struct vport_ingress {
-=20
- struct vport_egress {
- 	struct mlx5_flow_table *acl;
-+	struct mlx5_flow_group *allow_untagged_grp;
- 	struct mlx5_flow_group *allowed_vlans_grp;
- 	struct mlx5_flow_group *drop_grp;
--	struct mlx5_flow_handle  *allowed_vlan;
-+	struct mlx5_flow_handle  *allowed_vst_vlan;
- 	struct {
- 		struct mlx5_flow_handle *drop_rule;
-+		struct list_head allowed_vlans_rules;
-+		struct mlx5_flow_handle *allow_untagged_rule;
- 		struct mlx5_fc *drop_counter;
- 	} legacy;
- };
-@@ -107,12 +115,15 @@ struct mlx5_vport_info {
- 	u32                     max_rate;
- 	bool                    spoofchk;
- 	bool                    trusted;
-+	/* the admin approved vlan list */
-+	DECLARE_BITMAP(vlan_trunk_8021q_bitmap, VLAN_N_VID);
- };
-=20
- /* Vport context events */
- enum mlx5_eswitch_vport_event {
- 	MLX5_VPORT_UC_ADDR_CHANGE =3D BIT(0),
- 	MLX5_VPORT_MC_ADDR_CHANGE =3D BIT(1),
-+	MLX5_VPORT_VLAN_CHANGE =3D BIT(2),
- 	MLX5_VPORT_PROMISC_CHANGE =3D BIT(3),
- };
-=20
-@@ -121,6 +132,10 @@ struct mlx5_vport {
- 	int                     vport;
- 	struct hlist_head       uc_list[MLX5_L2_ADDR_HASH_SIZE];
- 	struct hlist_head       mc_list[MLX5_L2_ADDR_HASH_SIZE];
-+	/* The requested vlan list from the vport side */
-+	DECLARE_BITMAP(req_vlan_bitmap, VLAN_N_VID);
-+	/* Actual accepted vlans on the acl tables */
-+	DECLARE_BITMAP(acl_vlan_8021q_bitmap, VLAN_N_VID);
- 	struct mlx5_flow_handle *promisc_rule;
- 	struct mlx5_flow_handle *allmulti_rule;
- 	struct work_struct      vport_change_handler;
-@@ -292,6 +307,10 @@ int mlx5_eswitch_set_vport_rate(struct mlx5_eswitch *e=
-sw, u16 vport,
- int mlx5_eswitch_get_vepa(struct mlx5_eswitch *esw, u8 *setting);
- int mlx5_eswitch_get_vport_config(struct mlx5_eswitch *esw,
- 				  u16 vport, struct ifla_vf_info *ivi);
-+int mlx5_eswitch_add_vport_trunk_range(struct mlx5_eswitch *esw,
-+				       u16 vport, u16 start_vlan, u16 end_vlan);
-+int mlx5_eswitch_del_vport_trunk_range(struct mlx5_eswitch *esw,
-+				       u16 vport, u16 start_vlan, u16 end_vlan);
- int mlx5_eswitch_get_vport_stats(struct mlx5_eswitch *esw,
- 				 u16 vport,
- 				 struct ifla_vf_stats *vf_stats);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/d=
-rivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-index 9924f06..2db872a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -1783,15 +1783,15 @@ static int esw_vport_ingress_prio_tag_config(struct=
- mlx5_eswitch *esw,
- 		flow_act.modify_hdr =3D vport->ingress.offloads.modify_metadata;
- 	}
-=20
--	vport->ingress.allow_rule =3D
-+	vport->ingress.allow_untagged_rule =3D
- 		mlx5_add_flow_rules(vport->ingress.acl, spec,
- 				    &flow_act, NULL, 0);
--	if (IS_ERR(vport->ingress.allow_rule)) {
--		err =3D PTR_ERR(vport->ingress.allow_rule);
-+	if (IS_ERR(vport->ingress.allow_untagged_rule)) {
-+		err =3D PTR_ERR(vport->ingress.allow_untagged_rule);
- 		esw_warn(esw->dev,
- 			 "vport[%d] configure ingress untagged allow rule, err(%d)\n",
- 			 vport->vport, err);
--		vport->ingress.allow_rule =3D NULL;
-+		vport->ingress.allow_untagged_rule =3D NULL;
- 		goto out;
- 	}
-=20
---=20
-1.8.3.1
+For brief context, there's a kernel memory leak in IPsec where passing
+traffic through the tunnel eats away at available memory and OOMkiller
+kicks in.
 
+This memory usage doesn't appear in slab or userspace. Nor is it
+reclaimed by bringing down the tunnels, or unloading the respective
+kernel modules.
+The only way to get the memory back is by rebooting.
+
+To keep things simple, here are some facts around the issue:
+- It is definitely related to IPsec/xfrm in some way. The boxes I have
+tested on are fresh installs, no other software or customization
+whatsoever. Only used for IPsec tunnels.
+- Memory can leak at a rate of ~150MB per day.
+- The issue begins as of kernel 4.11.  Kernel 4.10 does not have this leak.
+- You can only reproduce the problem by passing traffic through
+multiple IPsec tunnels. Keeping the tunnels idle does not eat away at
+memory.
+- The issue affects the current mainline kernel.
+- Ubuntu 19.10/CentOS 7 & RHEL 8 have been tested, all exhibit the behavior.
+- The issue happens on both bare metal and virtual machines.
+- kmemleak does not produce any results, however, memleak-bpfcc does.
+
+I have attached the output of meminfo, slabinfo and the results from
+"memleak-bpfcc 3 -o 600000" to the bottom of this email.  These are
+from a system running the 5.3.0-18 kernel on Ubuntu 19.10.
+
+Also attached smem with dates which shows kernel memory growing by 2x.
+
+Here are some clear steps to reproduce:
+- On your preferred OS, install an IPsec daemon/software
+(strongswan/openswan/whatever)
+- Setup a IKEv2 conn in tunnel mode. Use a RFC1918 private range for
+your client IP pool. e.g: 10.2.0.0/16
+- Enable IP forwarding (net.ipv4.ip_forward = 1)
+- MASQUERADE the 10.2.0.0/16 range using iptables, e.g: "-A
+POSTROUTING -s 10.2.0.0/16 -o eth0 -j MASQUERADE"
+- Connect some IKEv2 clients (any device, any platform, doesn't
+matter) and pass traffic through the tunnel.
+^^ It speeds up the leak if you have multiple tunnels passing traffic
+at the same time.
+
+- Observe memory is lost over time and never recovered. Doesn't matter
+if you restart the daemon, bring down the tunnels, or even unload
+xfrm/ipsec modules. The memory goes into the void. Only way to reclaim
+is by restarting completely.
+
+Please let me know if anything further is needed to diagnose/debug
+this problem. We're stuck with the 4.9 kernel because all newer
+kernels leak memory. Any help or advice is appreciated.
+
+Thank you.
+
+
+Here's the slabinfo/meminfo/slab/memleak-bpfcc output.
+
+==== meminfo ===
+MemTotal:        8152876 kB
+MemFree:         4851964 kB
+MemAvailable:    7357172 kB
+Buffers:           76244 kB
+Cached:          2530008 kB
+SwapCached:            0 kB
+Active:          1474888 kB
+Inactive:        1255692 kB
+Active(anon):     133180 kB
+Inactive(anon):      180 kB
+Active(file):    1341708 kB
+Inactive(file):  1255512 kB
+Unevictable:       18288 kB
+Mlocked:           18288 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                 0 kB
+Writeback:             0 kB
+AnonPages:        142624 kB
+Mapped:           281916 kB
+Shmem:               936 kB
+KReclaimable:     211744 kB
+Slab:             281588 kB
+SReclaimable:     211744 kB
+SUnreclaim:        69844 kB
+KernelStack:        2768 kB
+PageTables:         3112 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     4076436 kB
+Committed_AS:     561124 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      142540 kB
+VmallocChunk:          0 kB
+Percpu:             3056 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:      204780 kB
+DirectMap2M:     6086656 kB
+DirectMap1G:     2097152 kB
+
+
+==== smem ====
+root@ubuntu:~# date; smem -tkw
+Wed Oct 30 00:39:52 UTC 2019
+kernel dynamic memory        753.4M     657.0M      96.3M
+
+after running ipsec tunnels with traffic for 17h:
+
+root@ubuntu:~# date; smem -tkw
+Wed Oct 30 17:58:55 UTC 2019
+kernel dynamic memory          2.5G       2.3G     187.5M
+
+root@ubuntu:~# uname -r
+5.3.0-18-generic
+
+root@ubuntu:~# tail -n1 /etc/lsb-release
+DISTRIB_DESCRIPTION="Ubuntu 19.10"
+
+==== slabinfo ====
+slabinfo - version: 2.1
+# name            <active_objs> <num_objs> <objsize> <objperslab>
+<pagesperslab> : tunables <limit> <batchcount> <sharedfactor> :
+slabdata <active_slabs> <num_slabs> <sharedavail>
+ufs_inode_cache        0      0    792   20    4 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_dqtrx              0      0    528   31    4 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_dquot              0      0    496   16    2 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_buf                0      0    384   21    2 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_rui_item           0      0    696   23    4 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_rud_item           0      0    176   23    1 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_inode              0      0   1024   16    4 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_efd_item           0      0    440   18    2 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_buf_item           0      0    272   30    2 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_trans              0      0    232   17    1 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_da_state           0      0    480   17    2 : tunables    0    0
+  0 : slabdata      0      0      0
+xfs_btree_cur          0      0    224   18    1 : tunables    0    0
+  0 : slabdata      0      0      0
+nf_conntrack         725    725    320   25    2 : tunables    0    0
+  0 : slabdata     29     29      0
+kvm_async_pf           0      0    136   30    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kvm_vcpu               0      0  17216    1    8 : tunables    0    0
+  0 : slabdata      0      0      0
+kvm_mmu_page_header      0      0    160   25    1 : tunables    0
+0    0 : slabdata      0      0      0
+x86_fpu                0      0   4160    7    8 : tunables    0    0
+  0 : slabdata      0      0      0
+ext4_groupinfo_4k   1288   1288    144   28    1 : tunables    0    0
+  0 : slabdata     46     46      0
+btrfs_delayed_node      0      0    312   26    2 : tunables    0    0
+   0 : slabdata      0      0      0
+btrfs_ordered_extent      0      0    416   19    2 : tunables    0
+0    0 : slabdata      0      0      0
+btrfs_extent_map       0      0    144   28    1 : tunables    0    0
+  0 : slabdata      0      0      0
+btrfs_path             0      0    112   36    1 : tunables    0    0
+  0 : slabdata      0      0      0
+btrfs_inode            0      0   1152   28    8 : tunables    0    0
+  0 : slabdata      0      0      0
+ip6-frags              0      0    184   22    1 : tunables    0    0
+  0 : slabdata      0      0      0
+PINGv6                 0      0   1216   26    8 : tunables    0    0
+  0 : slabdata      0      0      0
+RAWv6                182    182   1216   26    8 : tunables    0    0
+  0 : slabdata      7      7      0
+UDPv6                275    275   1280   25    8 : tunables    0    0
+  0 : slabdata     11     11      0
+tw_sock_TCPv6          0      0    240   17    1 : tunables    0    0
+  0 : slabdata      0      0      0
+request_sock_TCPv6      0      0    304   26    2 : tunables    0    0
+   0 : slabdata      0      0      0
+TCPv6                 52     52   2368   13    8 : tunables    0    0
+  0 : slabdata      4      4      0
+kcopyd_job             0      0   3312    9    8 : tunables    0    0
+  0 : slabdata      0      0      0
+dm_uevent              0      0   2632   12    8 : tunables    0    0
+  0 : slabdata      0      0      0
+scsi_sense_cache     448    448    128   32    1 : tunables    0    0
+  0 : slabdata     14     14      0
+mqueue_inode_cache     17     17    960   17    4 : tunables    0    0
+   0 : slabdata      1      1      0
+fuse_request           0      0    392   20    2 : tunables    0    0
+  0 : slabdata      0      0      0
+fuse_inode             0      0    832   19    4 : tunables    0    0
+  0 : slabdata      0      0      0
+ecryptfs_key_record_cache      0      0    576   28    4 : tunables
+0    0    0 : slabdata      0      0      0
+ecryptfs_inode_cache      0      0    960   17    4 : tunables    0
+0    0 : slabdata      0      0      0
+ecryptfs_file_cache      0      0     16  256    1 : tunables    0
+0    0 : slabdata      0      0      0
+ecryptfs_auth_tok_list_item      0      0    832   19    4 : tunables
+  0    0    0 : slabdata      0      0      0
+fat_inode_cache       47     66    728   22    4 : tunables    0    0
+  0 : slabdata      3      3      0
+fat_cache              0      0     40  102    1 : tunables    0    0
+  0 : slabdata      0      0      0
+squashfs_inode_cache   1774   1886    704   23    4 : tunables    0
+0    0 : slabdata     82     82      0
+jbd2_journal_head   1632   1700    120   34    1 : tunables    0    0
+  0 : slabdata     50     50      0
+jbd2_revoke_table_s    256    256     16  256    1 : tunables    0
+0    0 : slabdata      1      1      0
+ext4_inode_cache   57351  59460   1080   30    8 : tunables    0    0
+  0 : slabdata   1982   1982      0
+ext4_allocation_context    128    128    128   32    1 : tunables    0
+   0    0 : slabdata      4      4      0
+ext4_pending_reservation    640    640     32  128    1 : tunables
+0    0    0 : slabdata      5      5      0
+ext4_extent_status  74358  74358     40  102    1 : tunables    0    0
+   0 : slabdata    729    729      0
+mbcache              365    365     56   73    1 : tunables    0    0
+  0 : slabdata      5      5      0
+fscrypt_info         512    512     64   64    1 : tunables    0    0
+  0 : slabdata      8      8      0
+fscrypt_ctx          340    340     48   85    1 : tunables    0    0
+  0 : slabdata      4      4      0
+userfaultfd_ctx_cache      0      0    192   21    1 : tunables    0
+ 0    0 : slabdata      0      0      0
+dnotify_struct         0      0     32  128    1 : tunables    0    0
+  0 : slabdata      0      0      0
+pid_namespace          0      0    208   19    1 : tunables    0    0
+  0 : slabdata      0      0      0
+posix_timers_cache     34     34    240   17    1 : tunables    0    0
+   0 : slabdata      2      2      0
+UNIX                1600   1600   1024   16    4 : tunables    0    0
+  0 : slabdata    100    100      0
+ip4-frags              0      0    200   20    1 : tunables    0    0
+  0 : slabdata      0      0      0
+xfrm_state           552    552    704   23    4 : tunables    0    0
+  0 : slabdata     24     24      0
+PING                   0      0    960   17    4 : tunables    0    0
+  0 : slabdata      0      0      0
+RAW                  192    192   1024   16    4 : tunables    0    0
+  0 : slabdata     12     12      0
+tw_sock_TCP           17     17    240   17    1 : tunables    0    0
+  0 : slabdata      1      1      0
+request_sock_TCP     182    182    304   26    2 : tunables    0    0
+  0 : slabdata      7      7      0
+TCP                  140    140   2240   14    8 : tunables    0    0
+  0 : slabdata     10     10      0
+hugetlbfs_inode_cache     52     52    616   26    4 : tunables    0
+ 0    0 : slabdata      2      2      0
+dquot                400    400    256   16    1 : tunables    0    0
+  0 : slabdata     25     25      0
+eventpoll_pwq       2632   2632     72   56    1 : tunables    0    0
+  0 : slabdata     47     47      0
+dax_cache             21     21    768   21    4 : tunables    0    0
+  0 : slabdata      1      1      0
+request_queue         90    150   2088   15    8 : tunables    0    0
+  0 : slabdata     10     10      0
+biovec-max           204    208   4096    8    8 : tunables    0    0
+  0 : slabdata     26     26      0
+biovec-128            16     16   2048   16    8 : tunables    0    0
+  0 : slabdata      1      1      0
+biovec-64             64     64   1024   16    4 : tunables    0    0
+  0 : slabdata      4      4      0
+user_namespace         0      0    536   30    4 : tunables    0    0
+  0 : slabdata      0      0      0
+dmaengine-unmap-256     15     15   2112   15    8 : tunables    0
+0    0 : slabdata      1      1      0
+dmaengine-unmap-128     30     30   1088   30    8 : tunables    0
+0    0 : slabdata      1      1      0
+dmaengine-unmap-16    884    945    192   21    1 : tunables    0    0
+   0 : slabdata     45     45      0
+dmaengine-unmap-2  30208  30208     64   64    1 : tunables    0    0
+  0 : slabdata    472    472      0
+sock_inode_cache    2338   2356    832   19    4 : tunables    0    0
+  0 : slabdata    124    124      0
+skbuff_ext_cache    2048   2048    128   32    1 : tunables    0    0
+  0 : slabdata     64     64      0
+skbuff_fclone_cache    240    240    512   16    2 : tunables    0
+0    0 : slabdata     15     15      0
+skbuff_head_cache   2992   3072    256   16    1 : tunables    0    0
+  0 : slabdata    192    192      0
+configfs_dir_cache     84     84     96   42    1 : tunables    0    0
+   0 : slabdata      2      2      0
+file_lock_cache       72     72    216   18    1 : tunables    0    0
+  0 : slabdata      4      4      0
+fsnotify_mark_connector    512    512     32  128    1 : tunables    0
+   0    0 : slabdata      4      4      0
+net_namespace          6      6   4928    6    8 : tunables    0    0
+  0 : slabdata      1      1      0
+task_delay_info     4437   4437     80   51    1 : tunables    0    0
+  0 : slabdata     87     87      0
+taskstats             92     92    344   23    2 : tunables    0    0
+  0 : slabdata      4      4      0
+proc_dir_entry       483    483    192   21    1 : tunables    0    0
+  0 : slabdata     23     23      0
+pde_opener          7140   7140     40  102    1 : tunables    0    0
+  0 : slabdata     70     70      0
+proc_inode_cache   29275  29808    664   24    4 : tunables    0    0
+  0 : slabdata   1242   1242      0
+bdev_cache            76     76    832   19    4 : tunables    0    0
+  0 : slabdata      4      4      0
+shmem_inode_cache   1819   2254    704   23    4 : tunables    0    0
+  0 : slabdata     98     98      0
+kernfs_node_cache  69270  69270    136   30    1 : tunables    0    0
+  0 : slabdata   2309   2309      0
+mnt_cache           1058   1100    320   25    2 : tunables    0    0
+  0 : slabdata     44     44      0
+filp               12429  13328    256   16    1 : tunables    0    0
+  0 : slabdata    833    833      0
+inode_cache        26833  27378    592   27    4 : tunables    0    0
+  0 : slabdata   1014   1014      0
+dentry            156821 163443    192   21    1 : tunables    0    0
+  0 : slabdata   7783   7783      0
+names_cache           56     56   4096    8    8 : tunables    0    0
+  0 : slabdata      7      7      0
+iint_cache             0      0    120   34    1 : tunables    0    0
+  0 : slabdata      0      0      0
+lsm_file_cache      3230   3230     24  170    1 : tunables    0    0
+  0 : slabdata     19     19      0
+buffer_head       573955 582075    104   39    1 : tunables    0    0
+  0 : slabdata  14925  14925      0
+uts_namespace         36     36    440   18    2 : tunables    0    0
+  0 : slabdata      2      2      0
+nsproxy              511    511     56   73    1 : tunables    0    0
+  0 : slabdata      7      7      0
+vm_area_struct     21462  22116    208   19    1 : tunables    0    0
+  0 : slabdata   1164   1164      0
+mm_struct           2100   2100   1088   30    8 : tunables    0    0
+  0 : slabdata     70     70      0
+files_cache         1472   1472    704   23    4 : tunables    0    0
+  0 : slabdata     64     64      0
+signal_cache        2280   2280   1088   30    8 : tunables    0    0
+  0 : slabdata     76     76      0
+sighand_cache       1275   1275   2112   15    8 : tunables    0    0
+  0 : slabdata     85     85      0
+task_struct          845    890   5888    5    8 : tunables    0    0
+  0 : slabdata    178    178      0
+cred_jar            3528   3528    192   21    1 : tunables    0    0
+  0 : slabdata    168    168      0
+anon_vma_chain     39618  40000     64   64    1 : tunables    0    0
+  0 : slabdata    625    625      0
+anon_vma           22217  22402     88   46    1 : tunables    0    0
+  0 : slabdata    487    487      0
+pid                 4193   4224    128   32    1 : tunables    0    0
+  0 : slabdata    132    132      0
+Acpi-Operand        1120   1120     72   56    1 : tunables    0    0
+  0 : slabdata     20     20      0
+Acpi-ParseExt        156    156    104   39    1 : tunables    0    0
+  0 : slabdata      4      4      0
+Acpi-State           357    357     80   51    1 : tunables    0    0
+  0 : slabdata      7      7      0
+Acpi-Namespace       510    510     40  102    1 : tunables    0    0
+  0 : slabdata      5      5      0
+numa_policy           31     31    264   31    2 : tunables    0    0
+  0 : slabdata      1      1      0
+ftrace_event_field   5015   5015     48   85    1 : tunables    0    0
+   0 : slabdata     59     59      0
+pool_workqueue       176    176    256   16    1 : tunables    0    0
+  0 : slabdata     11     11      0
+radix_tree_node    22018  24080    584   28    4 : tunables    0    0
+  0 : slabdata    860    860      0
+task_group           100    100    640   25    4 : tunables    0    0
+  0 : slabdata      4      4      0
+vmap_area           3489   4876     88   46    1 : tunables    0    0
+  0 : slabdata    106    106      0
+dma-kmalloc-8k         0      0   8192    4    8 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-4k         0      0   4096    8    8 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-2k         0      0   2048   16    8 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-1k         0      0   1024   16    4 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-512        0      0    512   16    2 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-256        0      0    256   16    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-128        0      0    128   32    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-64         0      0     64   64    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-32         0      0     32  128    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-16         0      0     16  256    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-8          0      0      8  512    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-192        0      0    192   21    1 : tunables    0    0
+  0 : slabdata      0      0      0
+dma-kmalloc-96         0      0     96   42    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-8k         0      0   8192    4    8 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-4k         0      0   4096    8    8 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-2k         0      0   2048   16    8 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-1k         0      0   1024   16    4 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-512        0      0    512   16    2 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-256        0      0    256   16    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-192        0      0    192   21    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-128      634    704    128   32    1 : tunables    0    0
+  0 : slabdata     22     22      0
+kmalloc-rcl-96      1719   2310     96   42    1 : tunables    0    0
+  0 : slabdata     55     55      0
+kmalloc-rcl-64      5248   6272     64   64    1 : tunables    0    0
+  0 : slabdata     98     98      0
+kmalloc-rcl-32         0      0     32  128    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-16         0      0     16  256    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-rcl-8          0      0      8  512    1 : tunables    0    0
+  0 : slabdata      0      0      0
+kmalloc-8k           126    140   8192    4    8 : tunables    0    0
+  0 : slabdata     35     35      0
+kmalloc-4k          1704   1704   4096    8    8 : tunables    0    0
+  0 : slabdata    213    213      0
+kmalloc-2k          1344   1344   2048   16    8 : tunables    0    0
+  0 : slabdata     84     84      0
+kmalloc-1k          3084   3408   1024   16    4 : tunables    0    0
+  0 : slabdata    213    213      0
+kmalloc-512         3559   3696    512   16    2 : tunables    0    0
+  0 : slabdata    231    231      0
+kmalloc-256          992    992    256   16    1 : tunables    0    0
+  0 : slabdata     62     62      0
+kmalloc-192         3087   3087    192   21    1 : tunables    0    0
+  0 : slabdata    147    147      0
+kmalloc-128         1530   2080    128   32    1 : tunables    0    0
+  0 : slabdata     65     65      0
+kmalloc-96          4435   4536     96   42    1 : tunables    0    0
+  0 : slabdata    108    108      0
+kmalloc-64         15360  15360     64   64    1 : tunables    0    0
+  0 : slabdata    240    240      0
+kmalloc-32         40960  40960     32  128    1 : tunables    0    0
+  0 : slabdata    320    320      0
+kmalloc-16          9984   9984     16  256    1 : tunables    0    0
+  0 : slabdata     39     39      0
+kmalloc-8           8192   8192      8  512    1 : tunables    0    0
+  0 : slabdata     16     16      0
+kmem_cache_node     1600   1600     64   64    1 : tunables    0    0
+  0 : slabdata     25     25      0
+kmem_cache          1478   1494    448   18    2 : tunables    0    0
+  0 : slabdata     83     83      0
+
+==== truncated memleak-bpfcc entries ====
+Attaching to kernel allocators, Ctrl+C to quit.
+
+    2654208 bytes in 81 allocations from stack
+        __alloc_pages_nodemask+0x239 [kernel]
+        __alloc_pages_nodemask+0x239 [kernel]
+        alloc_pages_current+0x87 [kernel]
+        skb_page_frag_refill+0x80 [kernel]
+        esp_output_tail+0x3a5 [kernel]
+        esp_output+0x11f [kernel]
+        xfrm_output_resume+0x480 [kernel]
+        xfrm_output+0x81 [kernel]
+        xfrm4_output_finish+0x2b [kernel]
+        __xfrm4_output+0x44 [kernel]
+        xfrm4_output+0x3f [kernel]
+        ip_forward_finish+0x58 [kernel]
+        ip_forward+0x3f9 [kernel]
+        ip_rcv_finish+0x85 [kernel]
+        ip_rcv+0xbc [kernel]
+        __netif_receive_skb_one_core+0x87 [kernel]
+        __netif_receive_skb+0x18 [kernel]
+        netif_receive_skb_internal+0x45 [kernel]
+        napi_gro_receive+0xff [kernel]
+        receive_buf+0x175 [kernel]
+        virtnet_poll+0x158 [kernel]
+        net_rx_action+0x13a [kernel]
+        __softirqentry_text_start+0xe1 [kernel]
+        run_ksoftirqd+0x2b [kernel]
+        smpboot_thread_fn+0xd0 [kernel]
+        kthread+0x104 [kernel]
+        ret_from_fork+0x35 [kernel]
+    6500352 bytes in 1587 allocations from stack
+        __alloc_pages_nodemask+0x239 [kernel]
+        __alloc_pages_nodemask+0x239 [kernel]
+        alloc_pages_vma+0xda [kernel]
+        do_anonymous_page+0x115 [kernel]
+        __handle_mm_fault+0x760 [kernel]
+        handle_mm_fault+0xca [kernel]
+        do_user_addr_fault+0x1f9 [kernel]
+        __do_page_fault+0x58 [kernel]
+        do_page_fault+0x2c [kernel]
+        do_async_page_fault+0x39 [kernel]
+        async_page_fault+0x34 [kernel]
+    11038720 bytes in 2695 allocations from stack
+        __kmalloc_track_caller+0x162 [kernel]
+        __kmalloc_track_caller+0x162 [kernel]
+        kmemdup+0x1c [kernel]
+        bpf_prepare_filter+0x3d5 [kernel]
+        bpf_prog_create_from_user+0xc7 [kernel]
+        seccomp_set_mode_filter+0x11a [kernel]
+        do_seccomp+0x39 [kernel]
+        prctl_set_seccomp+0x2c [kernel]
+        __x64_sys_prctl+0x52c [kernel]
+        do_syscall_64+0x5a [kernel]
+        entry_SYSCALL_64_after_hwframe+0x44 [kernel]
+    11063296 bytes in 2701 allocations from stack
+        __alloc_pages_nodemask+0x239 [kernel]
+        __alloc_pages_nodemask+0x239 [kernel]
+        alloc_pages_vma+0xda [kernel]
+        wp_page_copy+0x8a [kernel]
+        do_wp_page+0x94 [kernel]
+        __handle_mm_fault+0x771 [kernel]
+        handle_mm_fault+0xca [kernel]
+        do_user_addr_fault+0x1f9 [kernel]
+        __do_page_fault+0x58 [kernel]
+        do_page_fault+0x2c [kernel]
+        do_async_page_fault+0x39 [kernel]
+        async_page_fault+0x34 [kernel]
+[18:57:37] Top 10 stacks with outstanding allocations:
+    421888 bytes in 103 allocations from stack
+        __alloc_pages_nodemask+0x239 [kernel]
+        __alloc_pages_nodemask+0x239 [kernel]
+        alloc_pages_current+0x87 [kernel]
+        alloc_slab_page+0x17b [kernel]
+        allocate_slab+0x7d [kernel]
+        new_slab+0x4a [kernel]
+        ___slab_alloc+0x338 [kernel]
+        __slab_alloc+0x20 [kernel]
+        kmem_cache_alloc+0x204 [kernel]
+        __alloc_file+0x28 [kernel]
+        alloc_empty_file+0x46 [kernel]
+        path_openat+0x47 [kernel]
+        do_filp_open+0x91 [kernel]
+        do_sys_open+0x17e [kernel]
+        __x64_sys_openat+0x20 [kernel]
+        do_syscall_64+0x5a [kernel]
+        entry_SYSCALL_64_after_hwframe+0x44 [kernel]
+    425984 bytes in 13 allocations from stack
+        __alloc_pages_nodemask+0x239 [kernel]
+        __alloc_pages_nodemask+0x239 [kernel]
+        alloc_pages_current+0x87 [kernel]
+        skb_page_frag_refill+0x80 [kernel]
+        esp_output_tail+0x3a5 [kernel]
+        esp_output+0x11f [kernel]
+        xfrm_output_resume+0x480 [kernel]
+        xfrm_output+0x81 [kernel]
+        xfrm4_output_finish+0x2b [kernel]
+        __xfrm4_output+0x44 [kernel]
+        xfrm4_output+0x3f [kernel]
+        ip_forward_finish+0x58 [kernel]
+        ip_forward+0x3f9 [kernel]
+        ip_rcv_finish+0x85 [kernel]
+        ip_rcv+0xbc [kernel]
+        __netif_receive_skb_one_core+0x87 [kernel]
+        __netif_receive_skb+0x18 [kernel]
+        netif_receive_skb_internal+0x45 [kernel]
+        napi_gro_receive+0xff [kernel]
+        receive_buf+0x175 [kernel]
+        virtnet_poll+0x158 [kernel]
+        net_rx_action+0x13a [kernel]
+        __softirqentry_text_start+0xe1 [kernel]
+        irq_exit+0xae [kernel]
+        do_IRQ+0x86 [kernel]
+        ret_from_intr+0x0 [kernel]
+        native_safe_halt+0xe [kernel]
+        arch_cpu_idle+0x15 [kernel]
+        default_idle_call+0x23 [kernel]
+        do_idle+0x209 [kernel]
+        cpu_startup_entry+0x20 [kernel]
+        start_secondary+0x168 [kernel]
+        secondary_startup_64+0xa4 [kernel]
