@@ -2,101 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADE8E9A74
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 11:55:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CCBBE9A95
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 12:06:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbfJ3Kz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 06:55:29 -0400
-Received: from pegase1.c-s.fr ([93.17.236.30]:9010 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726184AbfJ3Kz3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 06:55:29 -0400
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 47352k62rMz9vC12;
-        Wed, 30 Oct 2019 11:55:26 +0100 (CET)
-Authentication-Results: localhost; dkim=pass
-        reason="1024-bit key; insecure key"
-        header.d=c-s.fr header.i=@c-s.fr header.b=XPYljseg; dkim-adsp=pass;
-        dkim-atps=neutral
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id uu25dTN3YMcD; Wed, 30 Oct 2019 11:55:26 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 47352k4xR0z9vC0y;
-        Wed, 30 Oct 2019 11:55:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
-        t=1572432926; bh=HBlLtJ215+QvNQV7weZ8681fHhQDwH2De/MKiJrOgxs=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=XPYljsegKvIoZZ73/DxSEYx5OsvSxbA+Hd6P+HQiQ3ZUh4+jo5s+sZzSK7NK4s9yC
-         JLx4+RhY6mEPpHzgt4+APDzn6+yfkVGrNWrsLyZBWSsZZ/Qmu0xyZ6GN7pHcx2b0b6
-         fTiwtAD8hBNHVYODKxDOn6blIOsbkSbkX7ginzsA=
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D07E58B7C8;
-        Wed, 30 Oct 2019 11:55:27 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id W6nV1hCwWHCU; Wed, 30 Oct 2019 11:55:27 +0100 (CET)
-Received: from [192.168.4.90] (unknown [192.168.4.90])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id D23078B86A;
-        Wed, 30 Oct 2019 11:55:25 +0100 (CET)
-Subject: Re: [PATCH v2 19/23] net: ethernet: freescale: make UCC_GETH
- explicitly depend on PPC32
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>,
-        Valentin Longchamp <valentin.longchamp@keymile.com>,
-        netdev@vger.kernel.org
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191025124058.22580-1-linux@rasmusvillemoes.dk>
- <20191025124058.22580-20-linux@rasmusvillemoes.dk>
-From:   Christophe Leroy <christophe.leroy@c-s.fr>
-Message-ID: <a8b52b7f-9a96-7f7e-1360-7e4ed723d286@c-s.fr>
-Date:   Wed, 30 Oct 2019 11:55:25 +0100
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726566AbfJ3LGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 07:06:10 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:39701 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726082AbfJ3LGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 07:06:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572433568;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=i7I2LBO3foUDB/5ZE0ixnicShI637mLGxaYmf81WNPQ=;
+        b=IHq16m9/aUjFUPv9mcA18IB44R7q5phqeOhSFSGV3yWS0fJ7DhHYuqZ8dmckoMh4F1CrW3
+        h08ruOatbF7OA1TPEInm/pVOSoFQhX7uWmqf8NpPH+NPnizDkF1EBmm+u/Uimj7P8CW/QA
+        Ecq4OjrUktjRf4hB5NoFjIabw0gTQJ4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-357-17shLM9zMgO_atjVng0yAw-1; Wed, 30 Oct 2019 07:06:05 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F2E751800DFD;
+        Wed, 30 Oct 2019 11:06:03 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D715710016DA;
+        Wed, 30 Oct 2019 11:05:52 +0000 (UTC)
+Date:   Wed, 30 Oct 2019 12:05:51 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Sage <eric@sage.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        brouer@redhat.com
+Subject: Re: Compile build issues with samples/bpf/ again
+Message-ID: <20191030120551.68f8b67b@carbon>
+In-Reply-To: <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
+References: <20191030114313.75b3a886@carbon>
+        <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191025124058.22580-20-linux@rasmusvillemoes.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: 17shLM9zMgO_atjVng0yAw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 30 Oct 2019 11:53:21 +0100
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> wrote:
+
+> On Wed, 30 Oct 2019 at 11:43, Jesper Dangaard Brouer <brouer@redhat.com> =
+wrote:
+> >
+> > Hi Maintainers,
+> >
+> > It is annoy to experience that simply building kernel tree samples/bpf/
+> > is broken as often as it is.  Right now, build is broken in both DaveM
+> > net.git and bpf.git.  ACME have some build fixes queued from Bj=C3=B6rn
+> > T=C3=B6pel. But even with those fixes, build (for samples/bpf/task_fd_q=
+uery_user.c)
+> > are still broken, as reported by Eric Sage (15 Oct), which I have a fix=
+ for.
+> > =20
+>=20
+> Hmm, something else than commit e55190f26f92 ("samples/bpf: Fix build
+> for task_fd_query_user.c")?
+
+I see, you already fixed this... and it is in the bpf.git tree.
+
+Then we only need your other fixes from ACME's tree.  I just cloned a
+fresh version of git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+to check that 'make M=3Dsamples/bpf' still fails.
 
 
-Le 25/10/2019 à 14:40, Rasmus Villemoes a écrit :
-> Currently, QUICC_ENGINE depends on PPC32, so this in itself does not
-> change anything. In order to allow removing the PPC32 dependency from
-> QUICC_ENGINE and avoid allmodconfig build failures, add this explicit
-> dependency.
-> 
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> ---
->   drivers/net/ethernet/freescale/Kconfig | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
-> index 6a7e8993119f..97d27c7740d4 100644
-> --- a/drivers/net/ethernet/freescale/Kconfig
-> +++ b/drivers/net/ethernet/freescale/Kconfig
-> @@ -75,6 +75,7 @@ config FSL_XGMAC_MDIO
->   config UCC_GETH
->   	tristate "Freescale QE Gigabit Ethernet"
->   	depends on QUICC_ENGINE
-> +	depends on PPC32
+> > Could maintainers add building samples/bpf/ to their build test scripts=
+?
+> > (make headers_install && make M=3Dsamples/bpf)
+> >
+> > Also I discovered, the command to build have also recently changed:
+> > - Before : make samples/bpf/   or  simply make in subdir samples/bpf/
+> > - new cmd: make M=3Dsamples/bpf  and in subdir is broken
+> >
+> > Anyone knows what commit introduced this change?
+> > (I need it for a fixes tag, when updating README.rst doc)
 
-I think it would be more obvious to have:
-	depends on QUICC_ENGINE && PPC32
+The make cmdline change is confusing, because the old command
+'make samples/bpf/' reports success (remember last '/') ... this could
+be why maintainers are not catching this.
 
-Christophe
+See: old make cmd
 
->   	select FSL_PQ_MDIO
->   	select PHYLIB
->   	---help---
-> 
+ $ touch samples/bpf/*kern.c
+ $ make samples/bpf/
+   CALL    scripts/checksyscalls.sh
+   CALL    scripts/atomic/check-atomics.sh
+   DESCEND  objtool
+ $
+
+
+New make cmd fails:
+
+$ make M=3Dsamples/bpf
+samples/bpf/Makefile:209: WARNING: Detected possible issues with include pa=
+th.
+samples/bpf/Makefile:210: WARNING: Please install kernel headers locally (m=
+ake headers_install).
+  AR      samples/bpf/built-in.a
+make -C /home/hawk/git/kernel/bpf/samples/bpf/../../tools/lib/bpf/ RM=3D'rm=
+ -rf' LDFLAGS=3D srctree=3D/home/hawk/git/kernel/bpf/samples/bpf/../../ O=
+=3D
+  HOSTCC  samples/bpf/test_lru_dist
+  HOSTCC  samples/bpf/sock_example
+  HOSTCC  samples/bpf/fds_example.o
+  HOSTLD  samples/bpf/fds_example
+  HOSTCC  samples/bpf/sockex1_user.o
+  HOSTLD  samples/bpf/sockex1
+  HOSTCC  samples/bpf/sockex2_user.o
+  HOSTLD  samples/bpf/sockex2
+  HOSTCC  samples/bpf/bpf_load.o
+  HOSTCC  samples/bpf/sockex3_user.o
+  HOSTLD  samples/bpf/sockex3
+/usr/bin/ld: samples/bpf/bpf_load.o: in function `do_load_bpf_file.part.2':
+bpf_load.c:(.text+0x91a): undefined reference to `test_attr__enabled'
+/usr/bin/ld: bpf_load.c:(.text+0x1403): undefined reference to `test_attr__=
+open'
+collect2: error: ld returned 1 exit status
+make[1]: *** [scripts/Makefile.host:116: samples/bpf/sockex3] Error 1
+make: *** [Makefile:1649: samples/bpf] Error 2
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
