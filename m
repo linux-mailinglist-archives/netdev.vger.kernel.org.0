@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57DB2EA7C1
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 00:28:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A709EEA7C5
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 00:28:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727743AbfJ3X2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 19:28:09 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:41999 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727071AbfJ3X2J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 19:28:09 -0400
-Received: by mail-ed1-f67.google.com with SMTP id s20so3248582edq.9;
-        Wed, 30 Oct 2019 16:28:06 -0700 (PDT)
+        id S1727778AbfJ3X2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 19:28:55 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:38582 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726273AbfJ3X2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 19:28:54 -0400
+Received: by mail-ed1-f65.google.com with SMTP id d23so558691edr.5;
+        Wed, 30 Oct 2019 16:28:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BlYopNUsFRAdjg3wcJutkL1mfyGctHwyIsU+buix7WU=;
-        b=JFKNgr2nq9eu+YsIbwv+pAHs7QcJvHjXXeYaTnBwVHCAfItuJW2aPC9z7lWnDyiLnp
-         Kei+HL4EMOqeT74FsqttZl8EvMxfvxOscmc++wa8R9ba+DLYlatQZuWPDiKDvEq/Stxo
-         L8wflxVh/QFjmsdX9gzqkNKxrNjPjRMsUPcSDbo5tUEHVRM38zPL5lCr/rAz4zdeYamC
-         L4IIPR2Mq/5igaF73apUtO6Qntr0JZhyjMJllIbPaAdxyYW8luZpj6ojvALYtmS13tOF
-         aly5cAX6OvOgc/44lZ9h2Oe4Ex/YI/6yXT8ukmgvvbmBp9eILvD9P4JDuDmL500kZEW9
-         keAg==
+        bh=+24XCwnTFDCBoW4hF1216FJ7KR0Ap2KPs77lPcv6LTI=;
+        b=d01SDI/6AOYdVlceGpy7zctYdOJmVK1FfXa3bDLUAS8FdNoHRYxW3UFMLIalQSR5sE
+         a6rD5APUZ7rVb+gTnk4hblmDHtK5oSZmNfN8ZPPZ01dbufK5lvNHlxcIF96inVj0Vk8b
+         oyemJ+L+C3Re2hhdnyk9k66GgVMDVPzUSZRLB1dG6SvGb/uSq2mGmesHRdsvHbMmJjQj
+         HB5JBa/mMeWGbAq+g5ZaNb1FN58uadZQa3jf0QArcfJ+rWzDEKfDLqBPRDoZTzs6Cagh
+         JOYt2Hx36ZkAQY4CD+UyEzwfS9gXinNuV9r8/aZKqh3mKzCm8rrNdusJD3KH0d1bOeB7
+         DXIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=BlYopNUsFRAdjg3wcJutkL1mfyGctHwyIsU+buix7WU=;
-        b=kCvyjMs7lxOz4qjfqDBa4A0ngZTDdzgBx+cUzTRbKa4xYq3yv2Np7ijCwFuAXNb1OD
-         dxlwpSfcu8JS5Pr4ifoMuHM4nCythqijak3G/ziEP++fp4XKFWCzO1/35FNJPT3amnAR
-         bVZPCfcc6pNwIK+VEJva5Eq3fLHd3HBU0mx6pMTSXMjlrxkL4Iv3FT1eexkDfEB0uUN5
-         Sv/Lbuh42XgGYdmpbodoGUpqRkroYajYCkLWeGbaE1spZKVtbmEgxxtulI2HJ3Ds48rR
-         24A16EjPyl3/FgtXkL5WHOyHUqZAlEfuJNQrfbk8/HqPqBwYtYmddvpcyVM9zdgn1B3D
-         PO2A==
-X-Gm-Message-State: APjAAAXC4yfDHomG8E7GflFZuGwR0EKFzbaIzYjR+gmSKtAjPQZcfrlI
-        CFB5MZ/9qGGesubVjeBlZyg=
-X-Google-Smtp-Source: APXvYqxtaWVvDN1AsxoMXbQY2mMWBT1mimfks9Dl7WAzAV38XtY4C59dwKRgYFrM2ekYW2yg9RpM8w==
-X-Received: by 2002:a17:906:7212:: with SMTP id m18mr870652ejk.88.1572478086201;
-        Wed, 30 Oct 2019 16:28:06 -0700 (PDT)
+        bh=+24XCwnTFDCBoW4hF1216FJ7KR0Ap2KPs77lPcv6LTI=;
+        b=cWvf0Zd+WHJUYB+PULrHugvtoe6oJb4qKc/f6QrbII3YjuttFFcwsCRg7OUOM6RdtV
+         /nCYXvLmRO8e+s4BNVXY6UYZEcaXeN1Ngk6U3gr5VspG31Tf+viBuUY8PJxxYc1g1aUi
+         A0APF45qZDXA5Y69wIlAWxsBXWFwVyI/naLcuG/kfPhSOQeGilkA26xHqcHKu0FdUD72
+         PfhLbG9qUs0K2sA98G9MW2l79UZJ7Dx6gY2uDZkHsPQuIMtO60nTPfdKo9Rfu6IZ5ygG
+         DW4F0JQBgGwKaN2MGJKSqV0xnNnT/TPsX7K/borGdJ3bQCMXpjcVj3q7yGDrGUwYj1pk
+         p+yg==
+X-Gm-Message-State: APjAAAV35ue/NOWB1uZWHbx//ghXuBM46ZMxFowjXURMeJozl9oZISrH
+        An/Nq876Kc/ARhqL74GrcSr3LDBJ
+X-Google-Smtp-Source: APXvYqzBk36HYQLTGOfKAZNpxuATidha1q1v50qS12/sNZIuQCMKRUXpPIrUdtSx5cspEdW8UL/u+A==
+X-Received: by 2002:a50:f096:: with SMTP id v22mr2663214edl.149.1572478131764;
+        Wed, 30 Oct 2019 16:28:51 -0700 (PDT)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o26sm30879edt.55.2019.10.30.16.28.04
+        by smtp.googlemail.com with ESMTPSA id g43sm33546edb.14.2019.10.30.16.28.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Oct 2019 16:28:05 -0700 (PDT)
-Subject: Re: [RFC PATCH 3/3] net: phy: at803x: add device tree binding
+        Wed, 30 Oct 2019 16:28:51 -0700 (PDT)
+Subject: Re: [RFC PATCH 2/3] dt-bindings: net: phy: Add support for AT803X
 To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
 References: <20191030224251.21578-1-michael@walle.cc>
- <20191030224251.21578-4-michael@walle.cc>
+ <20191030224251.21578-3-michael@walle.cc>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -109,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <754a493b-a557-c369-96e1-6701ba5d5a30@gmail.com>
-Date:   Wed, 30 Oct 2019 16:28:02 -0700
+Message-ID: <408bb56b-efe9-21c4-0177-2d433a7c20ce@gmail.com>
+Date:   Wed, 30 Oct 2019 16:28:47 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191030224251.21578-4-michael@walle.cc>
+In-Reply-To: <20191030224251.21578-3-michael@walle.cc>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -124,101 +122,72 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 10/30/19 3:42 PM, Michael Walle wrote:
-> Add support for configuring the CLK_25M pin as well as the RGMII I/O
-> voltage by the device tree.
+> Document the Atheros AR803x PHY bindings.
 > 
 > Signed-off-by: Michael Walle <michael@walle.cc>
 > ---
->  drivers/net/phy/at803x.c | 156 ++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 154 insertions(+), 2 deletions(-)
+>  .../bindings/net/atheros,at803x.yaml          | 58 +++++++++++++++++++
+>  include/dt-bindings/net/atheros-at803x.h      | 13 +++++
+>  2 files changed, 71 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/atheros,at803x.yaml
+>  create mode 100644 include/dt-bindings/net/atheros-at803x.h
 > 
-> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-> index 1eb5d4fb8925..32be4c72cf4b 100644
-> --- a/drivers/net/phy/at803x.c
-> +++ b/drivers/net/phy/at803x.c
-> @@ -13,7 +13,9 @@
->  #include <linux/netdevice.h>
->  #include <linux/etherdevice.h>
->  #include <linux/of_gpio.h>
-> +#include <linux/bitfield.h>
->  #include <linux/gpio/consumer.h>
-> +#include <dt-bindings/net/atheros-at803x.h>
->  
->  #define AT803X_SPECIFIC_STATUS			0x11
->  #define AT803X_SS_SPEED_MASK			(3 << 14)
-> @@ -62,6 +64,37 @@
->  #define AT803X_DEBUG_REG_5			0x05
->  #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
->  
-> +#define AT803X_DEBUG_REG_1F			0x1F
-> +#define AT803X_DEBUG_PLL_ON			BIT(2)
-> +#define AT803X_DEBUG_RGMII_1V8			BIT(3)
+> diff --git a/Documentation/devicetree/bindings/net/atheros,at803x.yaml b/Documentation/devicetree/bindings/net/atheros,at803x.yaml
+> new file mode 100644
+> index 000000000000..60500fd90fd8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/atheros,at803x.yaml
+> @@ -0,0 +1,58 @@
+> +# SPDX-License-Identifier: GPL-2.0+
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/atheros,at803x.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +/* AT803x supports either the XTAL input pad, an internal PLL or the
-> + * DSP as clock reference for the clock output pad. The XTAL reference
-> + * is only used for 25 MHz output, all other frequencies need the PLL.
-> + * The DSP as a clock reference is used in synchronous ethernet
-> + * applications.
-
-How does that tie in the mode in which the PHY is configured? In reverse
-MII mode, the PHY provides the TX clock which can be either 25Mhz or
-50Mhz AFAIR, in RGMII mode, the TXC provided by the MAC is internally
-resynchronized and then fed back to the MAC as a 125Mhz clock.
-
-Do you possibly need to cross check the clock output selection with the
-PHY interface?
-
-[snip]
-> +static int at803x_parse_dt(struct phy_device *phydev)
-> +{
-> +	struct device_node *node = phydev->mdio.dev.of_node;
-> +	struct at803x_priv *priv = phydev->priv;
-> +	u32 freq, strength;
-> +	unsigned int sel;
-> +	int ret;
+> +title: Atheros AR803x PHY
 > +
-> +	if (!IS_ENABLED(CONFIG_OF_MDIO))
-> +		return 0;
+> +maintainers:
+> +  - TBD
 > +
-> +	if (!node)
-> +		return 0;
-
-I don't think you need either of those two things, every of_* function
-would check whether the node reference is non-NULL.
-
+> +description: |
+> +  Bindings for Atheros AR803x PHYs
 > +
-> +	if (of_property_read_bool(node, "atheros,keep-pll-enabled"))
-> +		priv->flags |= AT803X_KEEP_PLL_ENABLED;
-
-This should probably be a PHY tunable rather than a Device Tree property
-as this delves more into the policy than the pure hardware description.
-
+> +allOf:
+> +  - $ref: ethernet-phy.yaml#
 > +
-> +	if (of_property_read_bool(node, "atheros,rgmii-io-1v8"))
-> +		priv->flags |= AT803X_RGMII_1V8;> +
-> +	ret = of_property_read_u32(node, "atheros,clk-out-frequency", &freq);
-> +	if (!ret) {
-> +		switch (freq) {
-> +		case 25000000:
-> +			sel = AT803X_CLK_OUT_25MHZ_XTAL;
-> +			break;
-> +		case 50000000:
-> +			sel = AT803X_CLK_OUT_50MHZ_PLL;
-> +			break;
-> +		case 62500000:
-> +			sel = AT803X_CLK_OUT_62_5MHZ_PLL;
-> +			break;
-> +		case 125000000:
-> +			sel = AT803X_CLK_OUT_125MHZ_PLL;
-> +			break;
-> +		default:
-> +			phydev_err(phydev,
-> +				   "invalid atheros,clk-out-frequency\n");
-> +			return -EINVAL;
-> +		}
+> +properties:
+> +  atheros,clk-out-frequency:
+> +    description: Clock output frequency in Hertz.
+> +    enum: [ 25000000, 50000000, 62500000, 125000000 ]
+> +
+> +  atheros,clk-out-strength:
+> +    description: Clock output driver strength.
+> +    enum: [ 0, 1, 2 ]
+> +
+> +  atheros,keep-pll-enabled:
+> +    description: |
+> +      If set, keep the PLL enabled even if there is no link. Useful if you
+> +      want to use the clock output without an ethernet link.
 
-Maybe the PHY should be a clock provider of some sort, this might be
-especially important if the PHY supplies the Ethernet MAC's RXC (which
-would be the case in a RGMII configuration).
+This is more of a policy than a hardware description. Implementing this
+has a PHY tunable, possibly as a form of auto-power down
+
+> +    type: boolean
+> +
+> +  atheros,rgmii-io-1v8:
+> +    description: |
+> +      The PHY supports RGMII I/O voltages of 2.5V, 1.8V and 1.5V. By default,
+> +      the PHY uses a voltage of 1.5V. If this is set, the voltage will changed
+> +      to 1.8V.
+
+will be changed?
+
+This looks like a possibly dangerous configuration as it really can lead
+to some good damage happening on the pins if there is an incompatible
+voltage on the MAC and PHY side... of course, you have no way to tell
+ahead of time other than by looking at the board schematics, lovely.
+
+Does the PHY come up in some sort of super isolatation mode by default
+at least?
 -- 
 Florian
