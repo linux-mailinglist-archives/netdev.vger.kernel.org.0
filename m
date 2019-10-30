@@ -2,47 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A39D8EA666
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:38:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9017EA681
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 23:43:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727230AbfJ3WiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 18:38:21 -0400
-Received: from verein.lst.de ([213.95.11.211]:48074 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726377AbfJ3WiV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 18:38:21 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id B09CA68B05; Wed, 30 Oct 2019 23:38:18 +0100 (CET)
-Date:   Wed, 30 Oct 2019 23:38:18 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Christoph Hellwig <hch@lst.de>,
+        id S1727341AbfJ3WnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 18:43:06 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:57933 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726268AbfJ3WnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 18:43:05 -0400
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 81FA222178;
+        Wed, 30 Oct 2019 23:43:00 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
+        s=mail2016061301; t=1572475383;
+        bh=Ev/ubprJwnpqeqFsz+uRMTbLx49cuK2FjmTFTyw6tCI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=LAjdN+AIMOBWrn3tGxQMOY6WcCtUoTZ6SQZs8BNBYhhFDsLZKtKvWoO1+q945gyG6
+         Dym3IRCuau5g/gmD7x6Zp8m8jNXb1jFpSvNMQJAXHFvsT+/01qSIUsdk971uoQd1Ts
+         SR0pnfCWRfCh7aQ/j/EbrYaicgBB4qFDslNx+GMQ=
+From:   Michael Walle <michael@walle.cc>
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Michael Walle <michael@walle.cc>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] net: sgi: ioc3-eth: don't abuse dma_direct_* calls
-Message-ID: <20191030223818.GA23807@lst.de>
-References: <20191030211233.30157-1-hch@lst.de> <20191030211233.30157-2-hch@lst.de> <20191030230549.ef9b99b5d36b0a818d904eee@suse.de>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [RFC PATCH 0/3] net: phy: at803x device tree binding
+Date:   Wed, 30 Oct 2019 23:42:48 +0100
+Message-Id: <20191030224251.21578-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191030230549.ef9b99b5d36b0a818d904eee@suse.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.101.4 at web
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 11:05:49PM +0100, Thomas Bogendoerfer wrote:
-> On Wed, 30 Oct 2019 14:12:30 -0700
-> Christoph Hellwig <hch@lst.de> wrote:
-> 
-> > dma_direct_ is a low-level API that must never be used by drivers
-> > directly.  Switch to use the proper DMA API instead.
-> 
-> is the 4kb/16kb alignment still guaranteed ? If not how is the way
-> to get such an alignment ?
+Adds a device tree binding to configure the clock and the RGMII voltage.
 
-The DMA API gives you page aligned memory. dma_direct doesn't give you
-any gurantees as it is an internal API explicitly documented as not
-for driver usage that can change at any time.
+I do have the following questions:
+ - Who should be the maintainer of the atheros,at803x.yaml file?
+ - Is the "atheros,rgmii-io-1v8" boolean property ok or should it be a
+   "atheros,rgmii-io-microvolt = <1800000>"?
+ - There is actually a typo throughout the whole at803x file. The actual
+   name of the PHY is "Atheros AR803x". What should be the name of the yaml
+   file and the dt-bindings header file? atheros,at803x.yaml or
+   atheros,ar803x.yaml. Likewise for the header file.
+
+Michael Walle (3):
+  net: phy: at803x: fix Kconfig description
+  dt-bindings: net: phy: Add support for AT803X
+  net: phy: at803x: add device tree binding
+
+ .../bindings/net/atheros,at803x.yaml          |  58 +++++++
+ drivers/net/phy/Kconfig                       |   4 +-
+ drivers/net/phy/at803x.c                      | 156 +++++++++++++++++-
+ include/dt-bindings/net/atheros-at803x.h      |  13 ++
+ 4 files changed, 227 insertions(+), 4 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/atheros,at803x.yaml
+ create mode 100644 include/dt-bindings/net/atheros-at803x.h
+
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+-- 
+2.20.1
+
