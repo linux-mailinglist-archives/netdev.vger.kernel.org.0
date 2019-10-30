@@ -2,145 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B5E6E9F47
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 16:40:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A7E0E9F62
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 16:43:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727278AbfJ3PkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 11:40:10 -0400
-Received: from mail-eopbgr700045.outbound.protection.outlook.com ([40.107.70.45]:63968
-        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726302AbfJ3PkK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 11:40:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BTWmVKCBvLcveUa7heIEJSz5GFAkv8nmmlQzRoqbZQrfACX3giVPstiON2J+0+SiKsyqhFFiIOE+WSd2NASAo74QPpdOvl9/sg7NtXWIAxH2aIMBr7GY6JsSNv5qhT++OiI2CzySnZ/cn5QczRHAzBCi02CI63+P0kOSmWqzcNx+mbyM1EvtkzoOdNlUineNJ7sN+IotzK35anOsmU0gwQFFVkeGTey07eO+6nCI36cz+UE+JnfHRU4aoDY8Dl5OTQnmtgOOPvXQ0TqrYVBNjrJzUqZeV3kfWnaLwD7Mys49d/4GNRfK+mpimcCKgaZIEWTIMjxn06WgbLzk/pK04w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vc07ImVMgNVyLiULifycZRo6xqCv5Ysb5B4Llv8uH6k=;
- b=ONv7/B3fU82AAHksjsl0HAQtr8IIPltC8D0TUR1cXDv+Hgg8Gp46U3LFLRLwBeM6kyxF1THqNctHoZAPF7+1GtTpOjBPpQpXeVbSnRvl2go2GIgg9NfxFmyLFpdaqnBbqyn+X9xsHdm32eDuB2zVOqlJe0Koe941Den1I0aYJ8HrVS5t00wyfp117+fJrOrvrOuE+DYZvA18OmkDjfF1zq5BMtXFkAolp2rNJoXGqBzuaHdZCVBMsdjlTiVbAkaruNCdS9VQwJK8T+Z1ltyD/4YoWTY7IsSa0lGwg38OSjspGD5LAlCGCKj5avwpO+n0U8+tsVoxOd1ALO6KGJkRcg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vc07ImVMgNVyLiULifycZRo6xqCv5Ysb5B4Llv8uH6k=;
- b=P4sJgcQ7fTR3kYfo4kNOmjNRxzxgjLpBaPNAciBibbddM0Fc9XpcCNOOZnppPEIDF3z4921YTb/fzJwid2OLzp3aRl2GxA0NejmLIvomW1MkGadp+UBYz9Dcz+IMB2Rm3DtJpwB6T3ogxZTAQUvyYL1M7bg1tmy604MOczB9oFk=
-Received: from MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) by
- MWHPR05MB2957.namprd05.prod.outlook.com (10.168.246.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.15; Wed, 30 Oct 2019 15:40:05 +0000
-Received: from MWHPR05MB3376.namprd05.prod.outlook.com
- ([fe80::4098:2c39:d8d3:a209]) by MWHPR05MB3376.namprd05.prod.outlook.com
- ([fe80::4098:2c39:d8d3:a209%7]) with mapi id 15.20.2408.018; Wed, 30 Oct 2019
- 15:40:05 +0000
-From:   Jorgen Hansen <jhansen@vmware.com>
-To:     'Stefano Garzarella' <sgarzare@redhat.com>
-CC:     Sasha Levin <sashal@kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Arnd Bergmann <arnd@arndb.de>, kvm <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next 11/14] vsock: add multi-transports support
-Thread-Topic: [PATCH net-next 11/14] vsock: add multi-transports support
-Thread-Index: AQHViYhm3+s3qIN1EEmJgzgCfyvFAqdoVEGAgAsGKDA=
-Date:   Wed, 30 Oct 2019 15:40:05 +0000
-Message-ID: <MWHPR05MB3376E623764F54D39D8135A9DA600@MWHPR05MB3376.namprd05.prod.outlook.com>
-References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-12-sgarzare@redhat.com>
- <CAGxU2F7n48kBy_y2GB=mcvraK=mw_2Jn8=2hvQnEOWqWuT9OjA@mail.gmail.com>
-In-Reply-To: <CAGxU2F7n48kBy_y2GB=mcvraK=mw_2Jn8=2hvQnEOWqWuT9OjA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jhansen@vmware.com; 
-x-originating-ip: [146.247.47.49]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0bc0d4f6-649e-4161-7d74-08d75d4f6fb3
-x-ms-traffictypediagnostic: MWHPR05MB2957:
-x-microsoft-antispam-prvs: <MWHPR05MB295719D2CCD818E455543E0DDA600@MWHPR05MB2957.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(396003)(136003)(366004)(376002)(199004)(189003)(8936002)(66476007)(305945005)(64756008)(66446008)(316002)(7416002)(7736002)(66556008)(81166006)(81156014)(74316002)(478600001)(52536014)(55016002)(66066001)(8676002)(9686003)(54906003)(6246003)(86362001)(25786009)(66946007)(5660300002)(33656002)(4326008)(76116006)(6436002)(6506007)(14454004)(76176011)(6916009)(476003)(2906002)(7696005)(186003)(71200400001)(71190400001)(6116002)(99286004)(26005)(3846002)(102836004)(256004)(229853002)(446003)(486006)(14444005)(11346002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB2957;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: vmware.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lWTiDen5iXKOdLsNU+yjRrfkfy4j2Ny7Ga3uNA4mVYRmgAurEhkdxyahG/ldTgLkslcAbLp3lfkhNFOqWnS5uaFo8AUA0bTkElB0/fzbdv9sVc2OfnOJO67FNY82viBZcW0/8LQFU0ptaum1nnTJ6hDk7YuynnIz+loPrTdHOoX9uIpw+7DppTrOB52qwnwQAlST1M+/9Sobw2qGe6V1XVf6VPgqewSFNYJIFjx/t7lj3Ww5zwS2XZSCTtS7fAg7pqDFrr7YqyB4Y9x9wCzYj470kZFTGQ42lwxWtfcp/OXFySGH+sBByPCUo1rUD4aqK7iQu/NDcAsBnY2W6UFin05yKWB1H+G+ouo0c0idmHTzPXS6Ud3rNxp1xUct8FKPxAvgfgU4MrXqFkli31mwew/UHxnrbpkFRVDuygCRqA76KGUdsmWp+v5JZWpk2GXg
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727533AbfJ3Pnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 11:43:32 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55564 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727519AbfJ3Pnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 11:43:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572450210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gdd9cCjAtlepKq87OMAJm91YGZlanwB5qxkXhBSjz/M=;
+        b=FH8osFtrCaKvqbUM2e4nvfGOsy17rxgVklmL30hhzvKBBomFZ+kSrkmQwS5MUVMadsI00v
+        w4ctVrktpIfGsCqv+bODxWi+IjJp1DBn5CqKcWcMy7ihkIneHyL9VkHEoyRoJ2R0BEaJ/h
+        FB8Uw6Bj0D/V/VQb20QFOkNnoAAvn3g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-99-VclQOFIiOK-GfgwiohyncQ-1; Wed, 30 Oct 2019 11:43:27 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 03192800EB5;
+        Wed, 30 Oct 2019 15:43:26 +0000 (UTC)
+Received: from krava (unknown [10.43.17.61])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 6E886619A9;
+        Wed, 30 Oct 2019 15:43:24 +0000 (UTC)
+Date:   Wed, 30 Oct 2019 16:43:23 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, x86@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [BUG] bpf:
+Message-ID: <20191030154323.GJ20826@krava>
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bc0d4f6-649e-4161-7d74-08d75d4f6fb3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 15:40:05.2998
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ri/s3DjZk4FvNg+1W27BHZSABEN1A34AsICGmdjBsfrxKBRrFkqV2yB8GZfZLBGk64e3FNuMcYv8s9nlESoi/A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB2957
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: VclQOFIiOK-GfgwiohyncQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
-> > +/* Assign a transport to a socket and call the .init transport callbac=
-k.
-> > + *
-> > + * Note: for stream socket this must be called when vsk->remote_addr
-> > +is set
-> > + * (e.g. during the connect() or when a connection request on a
-> > +listener
-> > + * socket is received).
-> > + * The vsk->remote_addr is used to decide which transport to use:
-> > + *  - remote CID > VMADDR_CID_HOST will use host->guest transport
-> > + *  - remote CID <=3D VMADDR_CID_HOST will use guest->host transport
-> > +*/ int vsock_assign_transport(struct vsock_sock *vsk, struct
-> > +vsock_sock *psk) {
-> > +       const struct vsock_transport *new_transport;
-> > +       struct sock *sk =3D sk_vsock(vsk);
-> > +
-> > +       switch (sk->sk_type) {
-> > +       case SOCK_DGRAM:
-> > +               new_transport =3D transport_dgram;
-> > +               break;
-> > +       case SOCK_STREAM:
-> > +               if (vsk->remote_addr.svm_cid > VMADDR_CID_HOST)
-> > +                       new_transport =3D transport_h2g;
-> > +               else
-> > +                       new_transport =3D transport_g2h;
->=20
-> I just noticed that this break the loopback in the guest.
-> As a fix, we should use 'transport_g2h' when remote_cid <=3D
-> VMADDR_CID_HOST or remote_cid is the id of 'transport_g2h'.
->=20
-> To do that we also need to avoid that L2 guests can have the same CID of =
-L1.
-> For vhost_vsock I can call vsock_find_cid() in vhost_vsock_set_cid()
->=20
-> @Jorgen: for vmci we need to do the same? or it is guaranteed, since it's
-> already support nested VMs, that a L2 guests cannot have the same CID as
-> the L1.
 
-As far as I can tell, we have the same issue with the current support for n=
-ested VMs in
-VMCI. If we have an L2 guest with the same CID as the L1 guest, we will alw=
-ays send to
-the L2 guest, and we may assign an L2 guest the same CID as L1. It should b=
-e straight
-forward to avoid this, though.
+hi,
+I'm getting oops when running the kfree_skb test:
+
+dell-r440-01 login: [  758.049877] BUG: kernel NULL pointer dereference, ad=
+dress: 0000000000000000^M
+[  758.056834] #PF: supervisor read access in kernel mode^M
+[  758.061975] #PF: error_code(0x0000) - not-present page^M
+[  758.067112] PGD 8000000befba8067 P4D 8000000befba8067 PUD bffe11067 PMD =
+0 ^M
+[  758.073987] Oops: 0000 [#1] SMP PTI^M
+[  758.077478] CPU: 16 PID: 6854 Comm: test_progs Not tainted 5.4.0-rc3+ #9=
+6^M
+[  758.084263] Hardware name: Dell Inc. PowerEdge R440/08CYF7, BIOS 1.7.0 1=
+2/14/2018^M
+[  758.091745] RIP: 0010:0xffffffffc03b672c^M
+[  758.095669] Code: 4c 8b 6a 00 4c 89 6d c0 8b 77 00 89 75 cc 31 ff 89 75 =
+fc 48 8b 71 00 48 01 fe bf 78 00 00 00 48 89 da 48 01 fa bf 08 00 00 00 <4c=
+> 8b 76 00 4c 89 f6 48 01 fe 4c 8b 7e 00 48 89 ef 48 83 c7 f9 be^M
+[  758.114414] RSP: 0018:ffffaa3287583d20 EFLAGS: 00010286^M
+[  758.119640] RAX: ffffffffc03b66ac RBX: ffff9cef028c3900 RCX: ffff9cef0a6=
+52018^M
+[  758.126775] RDX: ffff9cef028c3978 RSI: 0000000000000000 RDI: 00000000000=
+00008^M
+[  758.133906] RBP: ffffaa3287583d90 R08: 00000000000000b0 R09: 00000000000=
+00000^M
+[  758.141040] R10: 98ff036c00000000 R11: 0000000000000040 R12: ffffffffba8=
+b5c37^M
+[  758.148170] R13: ffff9cfb05daf440 R14: 0000000000000000 R15: 00000000000=
+0004a^M
+[  758.155303] FS:  00007f08a18d3740(0000) GS:ffff9cef10c00000(0000) knlGS:=
+0000000000000000^M
+[  758.163392] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033^M
+[  758.169136] CR2: 0000000000000000 CR3: 0000000c08e50001 CR4: 00000000007=
+606e0^M
+[  758.176268] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 00000000000=
+00000^M
+[  758.183401] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 00000000000=
+00400^M
+[  758.190534] PKRU: 55555554^M
+[  758.193248] Call Trace:^M
+[  758.195704]  ? bpf_test_run+0x13d/0x230^M
+[  758.199539]  ? _cond_resched+0x15/0x30^M
+[  758.203304]  bpf_trace_run2+0x37/0x90^M
+[  758.206967]  ? bpf_prog_test_run_skb+0x337/0x450^M
+[  758.211589]  kfree_skb+0x73/0xa0^M
+[  758.214820]  bpf_prog_test_run_skb+0x337/0x450^M
+[  758.219293]  __do_sys_bpf+0x82e/0x1730^M
+[  758.223043]  ? ep_show_fdinfo+0x80/0x80^M
+[  758.226885]  do_syscall_64+0x5b/0x180^M
+[  758.230550]  entry_SYSCALL_64_after_hwframe+0x44/0xa9^M
+[  758.235620] RIP: 0033:0x7f08a19e91fd^M
+[  758.239198] Code: 00 c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa 48 =
+89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48=
+> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 5b 8c 0c 00 f7 d8 64 89 01 48^M
+
+
+this seems to be the culprit:
+
+; ptr =3D dev->ifalias->rcuhead.next;
+  80:   mov    0x0(%rsi),%r14
+
+I used the patch below to bypass the crash, but I guess
+verifier should not let this through
+
+also the net_device struct in the test seems outdated
+
+thanks,
+jirka
+
+
+---
+ tools/testing/selftests/bpf/progs/kfree_skb.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/=
+selftests/bpf/progs/kfree_skb.c
+index 89af8a921ee4..64d8c0237186 100644
+--- a/tools/testing/selftests/bpf/progs/kfree_skb.c
++++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
+@@ -3,6 +3,7 @@
+ #include <linux/bpf.h>
+ #include "bpf_helpers.h"
+ #include "bpf_endian.h"
++#include "bpf_core_read.h"
+=20
+ char _license[] SEC("license") =3D "GPL";
+ struct {
+@@ -70,14 +71,12 @@ int trace_kfree_skb(struct trace_kfree_skb *ctx)
+ =09unsigned short pkt_data;
+ =09char pkt_type;
+=20
+-=09__builtin_preserve_access_index(({
+-=09=09users =3D skb->users.refs.counter;
+-=09=09data =3D skb->data;
+-=09=09dev =3D skb->dev;
+-=09=09ifindex =3D dev->ifindex;
+-=09=09ptr =3D dev->ifalias->rcuhead.next;
+-=09=09func =3D ptr->func;
+-=09}));
++=09users   =3D BPF_CORE_READ(skb, users.refs.counter);
++=09data    =3D BPF_CORE_READ(skb, data);
++=09dev     =3D BPF_CORE_READ(skb, dev);
++=09ifindex =3D BPF_CORE_READ(dev, ifindex);
++=09ptr     =3D BPF_CORE_READ(dev, ifalias, rcuhead.next);
++=09func    =3D BPF_CORE_READ(ptr, func);
+=20
+ =09bpf_probe_read(&pkt_type, sizeof(pkt_type), _(&skb->__pkt_type_offset))=
+;
+ =09pkt_type &=3D 7;
+--=20
+2.21.0
 
