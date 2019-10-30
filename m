@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E739E9781
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:00:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95BC0E9782
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:00:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbfJ3IAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 04:00:05 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34141 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfJ3IAF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 04:00:05 -0400
-Received: by mail-pg1-f194.google.com with SMTP id e4so955220pgs.1
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 01:00:04 -0700 (PDT)
+        id S1726371AbfJ3IAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 04:00:08 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:35355 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbfJ3IAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 04:00:07 -0400
+Received: by mail-pf1-f194.google.com with SMTP id d13so1034657pfq.2
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 01:00:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0inWimpKUVT5C5KA+DbIHCVfN6nyrFXG5TcvEphFKOY=;
-        b=dVKdLY+WOk2IMiZRhIGHqump9YNyBfz3bEaJDM3hZmfwaDHTwSZ5RKrEl0kJzoqo5B
-         MmBb8I53OFbhPNgGlBKWyLMWEH023Cj1W5IY5zz5DlApu8hbuUqKw8shfaSUhvBCNHFI
-         bokqNzashuGjK8kXI+KqS8s8U6FslSthmHYd4=
+        bh=Qb+oP8mIrG5a0gYr0lRrYM6tmzsnm3k9lDLprRIuJm0=;
+        b=asOLKdoqW84aSjjTXZsH1kCCz9Tp9VBpI2MUKCVmML21KU7VixHgKjnPCX10+R2UVU
+         EYSrc3aEw4GdT1/acuZ5tA21Qd/OWaO/gdxl6sR1b4eexJeSfxM+kB1pNmpTrslygZcI
+         +0aFSvXrFyPKXB+B6OIquY2iZOwsOhN1akgkM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=0inWimpKUVT5C5KA+DbIHCVfN6nyrFXG5TcvEphFKOY=;
-        b=Cm4qKNGecE+ZlfpGLJy8BOi0wk5ROgn5u5K12xkPrKPWBXnBxTFrJ1E7YV18oC1M80
-         nkGM/Vivx9gD3DVVlLpZ5CRy6nnUMbCd4zDB0hptaYWbqjMP9laR0hWyb2neyX1IGK5q
-         awDHPTZZcuEUS8uxm/ZzAwa7nMofzSDznhacqYwjx98wjw75MS2N+K31ERxNCSssDP8m
-         87tQI79nvJxuv+Lx2/Oh1gCrkBa51Cpq78bE3NfsOju1sdMxRnJSNLTv63FopJXuswKy
-         6pWnG7Mi/DQNgtT7HnBaE9vC0eMQ8+Jvl9mP0/NKKXvEdoZOn9j+E6STeSsQ//LKghXU
-         L6YA==
-X-Gm-Message-State: APjAAAUHIK93XDVXT9hrCM8dgjRu4BvNom1H+d6IUsvscEg6wU11dazJ
-        ta4PwdX3MUpz15mVWJmNOivwbvCOGyk=
-X-Google-Smtp-Source: APXvYqxdH2rwmM5S3HGk7nD1cwFCzhmj+WdsKX5jXKICuZv0hzLW9aIcmzMvo3Wx+HuK7eMYK1SpZg==
-X-Received: by 2002:a63:f852:: with SMTP id v18mr10185609pgj.71.1572422403742;
-        Wed, 30 Oct 2019 01:00:03 -0700 (PDT)
+        bh=Qb+oP8mIrG5a0gYr0lRrYM6tmzsnm3k9lDLprRIuJm0=;
+        b=PbtxRAfH1ArSZMb8ho3DIrxrxLTsU0Jg2qFBbsMKDkNrhCdGfAd4GKxVbYF5L3UQip
+         MTyjEVgrB/0rLrzDZM9xhaZYP1D0P0GPVI8xAKfiEi1DUxEsIzJTe4eiYCN3V8dSoRxx
+         InJ3oaHcUqeWpY3yMwJceok3iK7DJ/uxXUC8o2q8flae2nAfQUHIG/w2skOvYW2jdszS
+         EZUcGrkXyOU9BCeq/4rhQKfeU6bM2ZByq3MnsviHoOx+UiKCj18JeOeMf/nRr3y5F/ok
+         Un2wQ2c8jQSHR0C/ZG+ItXR2qCNx1Q8b1n3MTkQ2fZc+LSS2H9XUI4E0X4Q1/ZJ7M7Wu
+         b9sA==
+X-Gm-Message-State: APjAAAVYYOCdtZGD+XzeGuFZjmRFNZvC8AJUHNRuCV4h39QBg6QMWFeI
+        m0LZYH+cdsHARZfekJalRN5Gzw==
+X-Google-Smtp-Source: APXvYqw8qgYUz5uZ647WywqZHglsLZSMmVsgGd4F5JGyXOKsixdIh+3JajFKS6tZ66QYMQa8Bk475Q==
+X-Received: by 2002:a63:4b52:: with SMTP id k18mr10058087pgl.394.1572422406267;
+        Wed, 30 Oct 2019 01:00:06 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r21sm1960649pfc.27.2019.10.30.01.00.01
+        by smtp.gmail.com with ESMTPSA id r21sm1960649pfc.27.2019.10.30.01.00.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Oct 2019 01:00:03 -0700 (PDT)
+        Wed, 30 Oct 2019 01:00:05 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org,
-        Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
-Subject: [PATCH net-next 4/7] bnxt_en: flow_offload: offload tunnel decap rules via indirect callbacks
-Date:   Wed, 30 Oct 2019 03:59:32 -0400
-Message-Id: <1572422375-7269-5-git-send-email-michael.chan@broadcom.com>
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net-next 5/7] bnxt_en: Improve bnxt_ulp_stop()/bnxt_ulp_start() call sequence.
+Date:   Wed, 30 Oct 2019 03:59:33 -0400
+Message-Id: <1572422375-7269-6-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1572422375-7269-1-git-send-email-michael.chan@broadcom.com>
 References: <1572422375-7269-1-git-send-email-michael.chan@broadcom.com>
@@ -55,260 +55,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-The decap (VXLAN tunnel) flow rules are not getting offloaded with
-upstream kernel. This is because TC block callback infrastructure has
-been updated to use indirect callbacks to get offloaded rules from
-other higher level devices (such as tunnels), instead of ndo_setup_tc().
-Since the decap rules are applied to the tunnel devices (e.g, vxlan_sys),
-the driver should register for indirect TC callback with tunnel devices
-to get the rules for offloading. This patch updates the driver to
-register and process indirect TC block callbacks from VXLAN tunnels.
+We call bnxt_ulp_stop() to notify the RDMA driver that some error or
+imminent reset is about to happen.  After that we always call
+some variants of bnxt_close().
 
-Signed-off-by: Sriharsha Basavapatna <sriharsha.basavapatna@broadcom.com>
+In the next patch, we will integrate the recently added error
+recovery with the RDMA driver.  In response to ulp_stop, the
+RDMA driver may free MSIX vectors and that will also trigger
+bnxt_close().  To avoid bnxt_close() from being called twice,
+we set a new flag after ulp_stop is called.  If the RDMA driver
+frees MSIX vectors while the new flag is set, we will not call
+bnxt_close(), knowing that it will happen in due course.
+
+With this change, we must make sure that the bnxt_close() call
+after ulp_stop will reset IRQ.  Modify bnxt_reset_task()
+accordingly if we call ulp_stop.
+
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c    |   2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h    |  12 +++
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 153 ++++++++++++++++++++++++++-
- 3 files changed, 165 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 18 ++++++++++--------
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 10 ++++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |  3 ++-
+ 3 files changed, 20 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 8cdf71f..708d724 100644
+index 708d724..df843f2 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10936,7 +10936,7 @@ static int bnxt_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
- 	}
- }
+@@ -9927,12 +9927,15 @@ static void bnxt_reset_task(struct bnxt *bp, bool silent)
+ 	if (netif_running(bp->dev)) {
+ 		int rc;
  
--static LIST_HEAD(bnxt_block_cb_list);
-+LIST_HEAD(bnxt_block_cb_list);
- 
- static int bnxt_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			 void *type_data)
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index d333589..7bd8ad9 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -26,6 +26,8 @@
- #include <net/xdp.h>
- #include <linux/dim.h>
- 
-+extern struct list_head bnxt_block_cb_list;
-+
- struct page_pool;
- 
- struct tx_bd {
-@@ -1241,6 +1243,14 @@ struct bnxt_tc_flow_stats {
- 	u64		bytes;
- };
- 
-+#ifdef CONFIG_BNXT_FLOWER_OFFLOAD
-+struct bnxt_flower_indr_block_cb_priv {
-+	struct net_device *tunnel_netdev;
-+	struct bnxt *bp;
-+	struct list_head list;
-+};
-+#endif
-+
- struct bnxt_tc_info {
- 	bool				enabled;
- 
-@@ -1815,6 +1825,8 @@ struct bnxt {
- 	u16			*cfa_code_map; /* cfa_code -> vf_idx map */
- 	u8			switch_id[8];
- 	struct bnxt_tc_info	*tc_info;
-+	struct list_head	tc_indr_block_list;
-+	struct notifier_block	tc_netdev_nb;
- 	struct dentry		*debugfs_pdev;
- 	struct device		*hwmon_dev;
- };
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 272a9fb..3ad027e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -18,6 +18,7 @@
- #include <net/tc_act/tc_vlan.h>
- #include <net/tc_act/tc_pedit.h>
- #include <net/tc_act/tc_tunnel_key.h>
-+#include <net/vxlan.h>
- 
- #include "bnxt_hsi.h"
- #include "bnxt.h"
-@@ -1840,6 +1841,147 @@ int bnxt_tc_setup_flower(struct bnxt *bp, u16 src_fid,
- 	}
- }
- 
-+static int bnxt_tc_setup_indr_block_cb(enum tc_setup_type type,
-+				       void *type_data, void *cb_priv)
-+{
-+	struct bnxt_flower_indr_block_cb_priv *priv = cb_priv;
-+	struct flow_cls_offload *flower = type_data;
-+	struct bnxt *bp = priv->bp;
-+
-+	if (flower->common.chain_index)
-+		return -EOPNOTSUPP;
-+
-+	switch (type) {
-+	case TC_SETUP_CLSFLOWER:
-+		return bnxt_tc_setup_flower(bp, bp->pf.fw_fid, flower);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static struct bnxt_flower_indr_block_cb_priv *
-+bnxt_tc_indr_block_cb_lookup(struct bnxt *bp, struct net_device *netdev)
-+{
-+	struct bnxt_flower_indr_block_cb_priv *cb_priv;
-+
-+	/* All callback list access should be protected by RTNL. */
-+	ASSERT_RTNL();
-+
-+	list_for_each_entry(cb_priv, &bp->tc_indr_block_list, list)
-+		if (cb_priv->tunnel_netdev == netdev)
-+			return cb_priv;
-+
-+	return NULL;
-+}
-+
-+static void bnxt_tc_setup_indr_rel(void *cb_priv)
-+{
-+	struct bnxt_flower_indr_block_cb_priv *priv = cb_priv;
-+
-+	list_del(&priv->list);
-+	kfree(priv);
-+}
-+
-+static int bnxt_tc_setup_indr_block(struct net_device *netdev, struct bnxt *bp,
-+				    struct flow_block_offload *f)
-+{
-+	struct bnxt_flower_indr_block_cb_priv *cb_priv;
-+	struct flow_block_cb *block_cb;
-+
-+	if (f->binder_type != FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS)
-+		return -EOPNOTSUPP;
-+
-+	switch (f->command) {
-+	case FLOW_BLOCK_BIND:
-+		cb_priv = kmalloc(sizeof(*cb_priv), GFP_KERNEL);
-+		if (!cb_priv)
-+			return -ENOMEM;
-+
-+		cb_priv->tunnel_netdev = netdev;
-+		cb_priv->bp = bp;
-+		list_add(&cb_priv->list, &bp->tc_indr_block_list);
-+
-+		block_cb = flow_block_cb_alloc(bnxt_tc_setup_indr_block_cb,
-+					       cb_priv, cb_priv,
-+					       bnxt_tc_setup_indr_rel);
-+		if (IS_ERR(block_cb)) {
-+			list_del(&cb_priv->list);
-+			kfree(cb_priv);
-+			return PTR_ERR(block_cb);
+-		if (!silent)
++		if (silent) {
++			bnxt_close_nic(bp, false, false);
++			bnxt_open_nic(bp, false, false);
++		} else {
+ 			bnxt_ulp_stop(bp);
+-		bnxt_close_nic(bp, false, false);
+-		rc = bnxt_open_nic(bp, false, false);
+-		if (!silent && !rc)
+-			bnxt_ulp_start(bp);
++			bnxt_close_nic(bp, true, false);
++			rc = bnxt_open_nic(bp, true, false);
++			bnxt_ulp_start(bp, rc);
 +		}
-+
-+		flow_block_cb_add(block_cb, f);
-+		list_add_tail(&block_cb->driver_list, &bnxt_block_cb_list);
-+		break;
-+	case FLOW_BLOCK_UNBIND:
-+		cb_priv = bnxt_tc_indr_block_cb_lookup(bp, netdev);
-+		if (!cb_priv)
-+			return -ENOENT;
-+
-+		block_cb = flow_block_cb_lookup(f->block,
-+						bnxt_tc_setup_indr_block_cb,
-+						cb_priv);
-+		if (!block_cb)
-+			return -ENOENT;
-+
-+		flow_block_cb_remove(block_cb, f);
-+		list_del(&block_cb->driver_list);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return 0;
-+}
-+
-+static int bnxt_tc_setup_indr_cb(struct net_device *netdev, void *cb_priv,
-+				 enum tc_setup_type type, void *type_data)
-+{
-+	switch (type) {
-+	case TC_SETUP_BLOCK:
-+		return bnxt_tc_setup_indr_block(netdev, cb_priv, type_data);
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static bool bnxt_is_netdev_indr_offload(struct net_device *netdev)
-+{
-+	return netif_is_vxlan(netdev);
-+}
-+
-+static int bnxt_tc_indr_block_event(struct notifier_block *nb,
-+				    unsigned long event, void *ptr)
-+{
-+	struct net_device *netdev;
-+	struct bnxt *bp;
-+	int rc;
-+
-+	netdev = netdev_notifier_info_to_dev(ptr);
-+	if (!bnxt_is_netdev_indr_offload(netdev))
-+		return NOTIFY_OK;
-+
-+	bp = container_of(nb, struct bnxt, tc_netdev_nb);
-+
-+	switch (event) {
-+	case NETDEV_REGISTER:
-+		rc = __flow_indr_block_cb_register(netdev, bp,
-+						   bnxt_tc_setup_indr_cb,
-+						   bp);
-+		if (rc)
-+			netdev_info(bp->dev,
-+				    "Failed to register indirect blk: dev: %s",
-+				    netdev->name);
-+		break;
-+	case NETDEV_UNREGISTER:
-+		__flow_indr_block_cb_unregister(netdev,
-+						bnxt_tc_setup_indr_cb,
-+						bp);
-+		break;
-+	}
-+
-+	return NOTIFY_DONE;
-+}
-+
- static const struct rhashtable_params bnxt_tc_flow_ht_params = {
- 	.head_offset = offsetof(struct bnxt_tc_flow_node, node),
- 	.key_offset = offsetof(struct bnxt_tc_flow_node, cookie),
-@@ -1923,7 +2065,15 @@ int bnxt_init_tc(struct bnxt *bp)
- 	bp->dev->hw_features |= NETIF_F_HW_TC;
- 	bp->dev->features |= NETIF_F_HW_TC;
- 	bp->tc_info = tc_info;
--	return 0;
-+
-+	/* init indirect block notifications */
-+	INIT_LIST_HEAD(&bp->tc_indr_block_list);
-+	bp->tc_netdev_nb.notifier_call = bnxt_tc_indr_block_event;
-+	rc = register_netdevice_notifier(&bp->tc_netdev_nb);
-+	if (!rc)
-+		return 0;
-+
-+	rhashtable_destroy(&tc_info->encap_table);
+ 	}
+ }
  
- destroy_decap_table:
- 	rhashtable_destroy(&tc_info->decap_table);
-@@ -1945,6 +2095,7 @@ void bnxt_shutdown_tc(struct bnxt *bp)
- 	if (!bnxt_tc_flower_enabled(bp))
+@@ -11996,10 +11999,9 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
+ 		if (!err && netif_running(netdev))
+ 			err = bnxt_open(netdev);
+ 
+-		if (!err) {
++		if (!err)
+ 			result = PCI_ERS_RESULT_RECOVERED;
+-			bnxt_ulp_start(bp);
+-		}
++		bnxt_ulp_start(bp, err);
+ 	}
+ 
+ 	if (result != PCI_ERS_RESULT_RECOVERED && netif_running(netdev))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+index b2c1609..077fd10 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
+@@ -182,7 +182,7 @@ static int bnxt_free_msix_vecs(struct bnxt_en_dev *edev, int ulp_id)
+ 
+ 	edev->ulp_tbl[ulp_id].msix_requested = 0;
+ 	edev->flags &= ~BNXT_EN_FLAG_MSIX_REQUESTED;
+-	if (netif_running(dev)) {
++	if (netif_running(dev) && !(edev->flags & BNXT_EN_FLAG_ULP_STOPPED)) {
+ 		bnxt_close_nic(bp, true, false);
+ 		bnxt_open_nic(bp, true, false);
+ 	}
+@@ -266,6 +266,7 @@ void bnxt_ulp_stop(struct bnxt *bp)
+ 	if (!edev)
  		return;
  
-+	unregister_netdevice_notifier(&bp->tc_netdev_nb);
- 	rhashtable_destroy(&tc_info->flow_table);
- 	rhashtable_destroy(&tc_info->l2_table);
- 	rhashtable_destroy(&tc_info->decap_l2_table);
++	edev->flags |= BNXT_EN_FLAG_ULP_STOPPED;
+ 	for (i = 0; i < BNXT_MAX_ULP; i++) {
+ 		struct bnxt_ulp *ulp = &edev->ulp_tbl[i];
+ 
+@@ -276,7 +277,7 @@ void bnxt_ulp_stop(struct bnxt *bp)
+ 	}
+ }
+ 
+-void bnxt_ulp_start(struct bnxt *bp)
++void bnxt_ulp_start(struct bnxt *bp, int err)
+ {
+ 	struct bnxt_en_dev *edev = bp->edev;
+ 	struct bnxt_ulp_ops *ops;
+@@ -285,6 +286,11 @@ void bnxt_ulp_start(struct bnxt *bp)
+ 	if (!edev)
+ 		return;
+ 
++	edev->flags &= ~BNXT_EN_FLAG_ULP_STOPPED;
++
++	if (err)
++		return;
++
+ 	for (i = 0; i < BNXT_MAX_ULP; i++) {
+ 		struct bnxt_ulp *ulp = &edev->ulp_tbl[i];
+ 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+index cd78453..9895406 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
+@@ -64,6 +64,7 @@ struct bnxt_en_dev {
+ 	#define BNXT_EN_FLAG_ROCE_CAP		(BNXT_EN_FLAG_ROCEV1_CAP | \
+ 						 BNXT_EN_FLAG_ROCEV2_CAP)
+ 	#define BNXT_EN_FLAG_MSIX_REQUESTED	0x4
++	#define BNXT_EN_FLAG_ULP_STOPPED	0x8
+ 	const struct bnxt_en_ops	*en_ops;
+ 	struct bnxt_ulp			ulp_tbl[BNXT_MAX_ULP];
+ };
+@@ -92,7 +93,7 @@ int bnxt_get_ulp_msix_num(struct bnxt *bp);
+ int bnxt_get_ulp_msix_base(struct bnxt *bp);
+ int bnxt_get_ulp_stat_ctxs(struct bnxt *bp);
+ void bnxt_ulp_stop(struct bnxt *bp);
+-void bnxt_ulp_start(struct bnxt *bp);
++void bnxt_ulp_start(struct bnxt *bp, int err);
+ void bnxt_ulp_sriov_cfg(struct bnxt *bp, int num_vfs);
+ void bnxt_ulp_shutdown(struct bnxt *bp);
+ void bnxt_ulp_irq_stop(struct bnxt *bp);
 -- 
 2.5.1
 
