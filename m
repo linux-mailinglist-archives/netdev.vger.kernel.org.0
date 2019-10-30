@@ -2,223 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10A2DE9504
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 03:30:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77191E9511
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 03:46:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfJ3CaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 29 Oct 2019 22:30:18 -0400
-Received: from mail-eopbgr40070.outbound.protection.outlook.com ([40.107.4.70]:15430
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        id S1727021AbfJ3CqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 29 Oct 2019 22:46:09 -0400
+Received: from mail-eopbgr1310130.outbound.protection.outlook.com ([40.107.131.130]:58221
+        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726037AbfJ3CaR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 29 Oct 2019 22:30:17 -0400
+        id S1726831AbfJ3CqJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 29 Oct 2019 22:46:09 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a7iHYbaG6OkeqdGILJFsGxlNggPQESoYEdeb0kT5+lOiwGfvMtVa2zOOKaf30u+oS4K+RBnCp6oF1pWttZdt0ypxG1Wbwp+rK2jbRScNalyTeFIUgUIn76pTOjxEAgSTKHLpLbJIRn5CLvy+Ph8FbFDxPDCZO6+IR97oBxDniR5S9kKmOCo2Fd6+o2nLzhys3Ed+PRPZOMFfp3m66JP0K4jE1WMvHPEz/Al0iXkpOvxqTKJHW41TBGCRQSMMEHXBNy0MLCZR45rpDrbMBnvbvBfaO4cC6AV18+u4B2PCxMdaEr9BdKqIOTE8Wu1OTJwQ8XyU2eGWXHSM6jffZw2akg==
+ b=d/jgGGFkOf1Uo+5yhFMO65kVm7BMrVbsRt74IYnz4M9PhANR+DKTjU1TEuKBuYBC+Rtgdp0LLQUexQlAbGcbIqAVvlu0My/NX+HS12KAgIuzSqX8yfr9vc+h3tBGP3NQg0l765ERqkQrJmljwH6BLduH/imLdcZPedsSAX1cRFnb/D4jkVz+Rmuj4UYC3OmXIwN6RiQn9md2PIuS/NyiZJ97R5X1ya6Gm+Fys4InzNhAhTKs0xJXlafjq5XlTwLD+5A0mseWj1UVek7F+vZakQQ7wyuMi/7GfPod59S7230yB2FvESgoRvz+txpM+Xa0dgp2s4VWN8eeru+zpiD8gw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KBIuaQ66R88bTHOiNRMlNsK6qEH1p4U4NrXV9PTU20U=;
- b=Ud+AREHZOXQvrLZkEibHDHNV80w8cV1iPGU+qpklbXGSw1N7/uG56wXJtf5VnWIzRoY9p3ntkhu0wXiSfJtRkHRNxW+diAuA7nZ0QGoQBrjIeJr3eW9BgsHsm+XM7zvznHNQzWKNLUkVR5130QfKw+w3SWU4gZw1n0LbMkifjJI/YuE6yJokYEfvDXg7rBWOn0Ae4tjTrlDGjwtqcpVokanrfKvheHLr3uauuZd1vzOPD2nAJYP3oPwGY2onvnbQe0AMabOkfFt6ReKg6TryS6/br2oviKsECdLSf6yzX5UInFjcHGv9WN/FG0NOPcZ1g5ahYHwN5bfUTKZ5gEdTRg==
+ bh=HwnVf/0VIyB5552nZ0j1gi+f/jJekj69kP5d8X/7cg8=;
+ b=Rl1FJ9cJxr1sKTyN67pTxF0Qb0ev7WIOjqAMxR0AJFHjCrpfHlvNgLi2iHFimkWtuN+S6V4XPjqxRiSFQfGsgGCwHYTxOpJTSVI+zm5WjSGEt0/mp1Bn6Cwe8iAjc8h17jsFhqgPcztOjdpKq71qfZTfd9TEIm3Bo0QADvbOTSU+Su3Om5bwoX/G5Tb+5wdJ+dT8prbrghrScLn7EBx8Pta5M+9rLL38CAjdbmnlhVBpQ4BkC+nPCmZssVaPJEg3831SRbGzLK3i1DN/N/nhDs/bPbZUJWfVvPCMjdMGD7L0M584DhEOpwDvCGMXhZyylKp5ZqbCPaMzHxLb8GKloQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KBIuaQ66R88bTHOiNRMlNsK6qEH1p4U4NrXV9PTU20U=;
- b=bfVWrMCrRfRaE+wkpXT0kjDkOqMhf/Hh8QNGALPkx+7hESXWIQ7cowj6n46JXz0WH+fehbFwIVS2Z2zfbazWg2+JKnEbufYGtUEHZMNN1za3qfN+UTMyFUnIgDqaP/SjAK9BvMOFXAtDjSr+W129ubqWD0wXQFtnibNvjME1AUI=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4529.eurprd05.prod.outlook.com (52.133.52.146) with Microsoft SMTP
+ bh=HwnVf/0VIyB5552nZ0j1gi+f/jJekj69kP5d8X/7cg8=;
+ b=SJ7nxb0rBua2daAfvvfbs42J5PRuq77vYaLiMGfYd4K9ZTtoSn/MwsxvmouzB9faVkImNLyoImAXT+at1VKNHYaqyJTaD2z1chN9FLmv8UEnuX9qzBJXiLm1EM5huTPMO2kGldtwHO2GCg11Wbze3KG0qyoSizfa8TvoGR/MwVk=
+Received: from TY2PR01MB3034.jpnprd01.prod.outlook.com (20.177.100.140) by
+ TY2PR01MB4970.jpnprd01.prod.outlook.com (20.179.169.21) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.17; Wed, 30 Oct 2019 02:30:12 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::64b2:6eb4:f000:3432]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::64b2:6eb4:f000:3432%7]) with mapi id 15.20.2387.028; Wed, 30 Oct 2019
- 02:30:12 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Andy Gospodarek <andrew.gospodarek@broadcom.com>
-CC:     Yuval Avnery <yuvalav@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+ 15.20.2387.23; Wed, 30 Oct 2019 02:45:53 +0000
+Received: from TY2PR01MB3034.jpnprd01.prod.outlook.com
+ ([fe80::3c2f:6301:8f68:4c37]) by TY2PR01MB3034.jpnprd01.prod.outlook.com
+ ([fe80::3c2f:6301:8f68:4c37%6]) with mapi id 15.20.2387.025; Wed, 30 Oct 2019
+ 02:45:53 +0000
+From:   Vincent Cheng <vincent.cheng.xh@renesas.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: RE: [PATCH net-next 0/9] devlink vdev
-Thread-Topic: [PATCH net-next 0/9] devlink vdev
-Thread-Index: AQHViQAzNybbKwGptUuLvXy+Vpqae6dollkAgAAG1ACAAC80gIAAIN8AgAAsrICAAl1MAIAGbagAgACbb3A=
-Date:   Wed, 30 Oct 2019 02:30:12 +0000
-Message-ID: <AM0PR05MB48669FDC1776B7BB0BB1A41ED1600@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <1571766190-23943-1-git-send-email-yuvalav@mellanox.com>
-        <20191023120046.0f53b744@cakuba.netronome.com>
-        <20191023192512.GA2414@nanopsycho>
-        <20191023151409.75676835@cakuba.hsd1.ca.comcast.net>
-        <9f3974a1-95e9-a482-3dcd-0b23246d9ab7@mellanox.com>
-        <20191023195141.48775df1@cakuba.hsd1.ca.comcast.net>
-        <20191025145808.GA20298@C02YVCJELVCG.dhcp.broadcom.net>
- <20191029100810.66b1695a@cakuba.hsd1.ca.comcast.net>
-In-Reply-To: <20191029100810.66b1695a@cakuba.hsd1.ca.comcast.net>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: ptp: Add bindings doc for IDT
+ ClockMatrix based PTP clock
+Thread-Topic: [PATCH v3 1/2] dt-bindings: ptp: Add bindings doc for IDT
+ ClockMatrix based PTP clock
+Thread-Index: AQHViEnsnceJntXJaUCNpjtJej9X26drxUsAgAW6HgCAAK1EgIAAWvuA
+Date:   Wed, 30 Oct 2019 02:45:52 +0000
+Message-ID: <20191030024539.GA13815@renesas.com>
+References: <1571687868-22834-1-git-send-email-vincent.cheng.xh@renesas.com>
+ <20191025193228.GA31398@bogus> <20191029145953.GA29825@renesas.com>
+ <CAL_JsqLteAdjk+4KQ2hd5m16irT9_70EAxNWdTDLFHCZkex2Bg@mail.gmail.com>
+In-Reply-To: <CAL_JsqLteAdjk+4KQ2hd5m16irT9_70EAxNWdTDLFHCZkex2Bg@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+x-originating-ip: [173.195.53.163]
+x-clientproxiedby: BYAPR05CA0031.namprd05.prod.outlook.com
+ (2603:10b6:a03:c0::44) To TY2PR01MB3034.jpnprd01.prod.outlook.com
+ (2603:1096:404:7c::12)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [2605:6000:ec82:1c00:6dc9:f7cb:99b:a6d6]
+ smtp.mailfrom=vincent.cheng.xh@renesas.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 11fdf54a-dbc1-4046-d30e-08d75ce11725
-x-ms-traffictypediagnostic: AM0PR05MB4529:|AM0PR05MB4529:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB45294EF13FFACABB61E88B75D1600@AM0PR05MB4529.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-office365-filtering-correlation-id: 2843cab3-f990-46ad-82f9-08d75ce3478f
+x-ms-traffictypediagnostic: TY2PR01MB4970:
+x-microsoft-antispam-prvs: <TY2PR01MB49703E44BC79DF451CA523D9D2600@TY2PR01MB4970.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:923;
 x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(136003)(366004)(396003)(346002)(199004)(189003)(13464003)(14444005)(256004)(229853002)(8676002)(71190400001)(6246003)(52536014)(81156014)(476003)(5660300002)(478600001)(486006)(7736002)(74316002)(81166006)(2906002)(305945005)(71200400001)(8936002)(6116002)(25786009)(4326008)(53546011)(102836004)(66446008)(86362001)(66946007)(66556008)(66476007)(64756008)(6436002)(6506007)(76116006)(7696005)(99286004)(54906003)(76176011)(55016002)(14454004)(9686003)(46003)(11346002)(446003)(33656002)(110136005)(316002)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4529;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(346002)(39860400002)(136003)(396003)(366004)(199004)(189003)(51914003)(3846002)(478600001)(64756008)(6486002)(6116002)(11346002)(486006)(7736002)(2906002)(2616005)(6436002)(99286004)(6306002)(86362001)(8936002)(305945005)(476003)(6512007)(8676002)(81166006)(81156014)(4326008)(6246003)(14454004)(1076003)(5660300002)(256004)(386003)(6916009)(229853002)(316002)(14444005)(186003)(6506007)(25786009)(71200400001)(66066001)(66946007)(36756003)(76176011)(52116002)(54906003)(26005)(71190400001)(446003)(102836004)(33656002)(66556008)(66446008)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:TY2PR01MB4970;H:TY2PR01MB3034.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: renesas.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZPhPZsQSIUCKPuM18JSjx55LviB9OoZKHDfDUaMn/vCjUUnR112aICRt4hRRRnq2gAK9cZUbV9+Ok3u0c3uRoeidDsyZAEFj7YKcrSLepITxYvSVMEDwogw8N6s9TtNpTrGuGIaj+p6sSlNkdpWlhR/4UL6H+tUeCONwKb5RtOWo6SO58aa8ZejKtABqdjCwOEqgrgYSHDXE+SvMNhXGM+ibtGoPk7v5rmsE0P/UU/ran9KNpgqjS9v4NSe93KSKb9tLZ3crcS9DvM9ZwU+NvBhuV0CljqBIE0wPcalhy7lTdfL6oTqCnWrc7wqP20FhLIL3hZjGZmI4qNoj24J+KmbodXU1TyRlHYo+WQVTBP/UGfyroYDy/LmW4Gd1b8gYC9uatCvTmstIJiV/mwowEQY6HCSAZHuF5bMi7GWHq9z/qMI/cpBo4s2KHkQFR2f3
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: OE3VHRgxkw6A5QwQHGLeTjyY4lVIBM+TwgoZYsnqK+5cOZfQzy8rGBLj0aR3WRFNqX2MxuA2Vtncl6J58SxwBDpSIQO4NGDJzhjciRvcvt6E9mK8Q6YltC7dMiCC4d1TNlSnp1WnTXVAft0EVjS9ZYuklOkapYgBc6Lmy/Mn/5D2JmpiPhJqxAlRYZ8YTcnKrpoUEaVdNLIwevAZ5XepCd4Zd73Bcn2xMRtaHOqZEzSw6znLOjpZVlo4K301waRfYz/zosmaUmAWABc3MTBAHvMvVOwAmvVUoJJoONlbm+7sAYYBd9BvcnE9HbYEpJRRLsUWILkLn/cYmV7gBmKSYqIlmuaWVpsUr3rrT97CpU879OdVjNdmHLH9wIuV+p8+dSAfzpLeX+113pjIygHfAiK+yvatF5Hkzc06yZUgyRjAp3tdo8B75CraoGNkHX37
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9F553A8CD117CE4DB11506C3D1615967@jpnprd01.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11fdf54a-dbc1-4046-d30e-08d75ce11725
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 02:30:12.1106
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2843cab3-f990-46ad-82f9-08d75ce3478f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 02:45:52.8790
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2cQJg6H+VoFeCT9FgmyWIP4+dnADJOLI7iPbZwH8+qBjpBm/DxYGIszJW9VkcG5VB/4CC6Lv4RsV9uxSlHzfbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4529
+X-MS-Exchange-CrossTenant-userprincipalname: kqLZdbl1oxewtL4Smx84f8qkr3OcKP/bwHzS+Bh2hbUg862RByNdvo+YHiE5hXlEh0IbuNpULm9FG/IdQnM2LbPKj9jYQujr11kNIEzCEG4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY2PR01MB4970
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Jakub Kicinski
-> Sent: Tuesday, October 29, 2019 12:08 PM
-> To: Andy Gospodarek <andrew.gospodarek@broadcom.com>
-> Cc: Yuval Avnery <yuvalav@mellanox.com>; Jiri Pirko <jiri@resnulli.us>;
-> netdev@vger.kernel.org; Jiri Pirko <jiri@mellanox.com>; Saeed Mahameed
-> <saeedm@mellanox.com>; leon@kernel.org; davem@davemloft.net;
-> shuah@kernel.org; Daniel Jurgens <danielj@mellanox.com>; Michael Chan
-> <michael.chan@broadcom.com>
-> Subject: Re: [PATCH net-next 0/9] devlink vdev
->=20
-> On Fri, 25 Oct 2019 10:58:08 -0400, Andy Gospodarek wrote:
-> > Thanks, Jakub, I'm happy to chime in based on our deployment experience=
-.
-> > We definitely understand the desire to be able to configure properties
-> > of devices on the SmartNIC (the kind with general purpose cores not
-> > the kind with only flow offload) from the server side.
->=20
-> Thanks!
->=20
-> > In addition to addressing NVMe devices, I'd also like to be be able to
-> > create virtual or real serial ports as well as there is an interest in
-> > *sometimes* being able to gain direct access to the SmartNIC console
-> > not just a shell via ssh.  So my point is that there are multiple use-c=
-ases.
->=20
-> Shelling into a NIC is the ultimate API backdoor. IMO we should try to av=
-oid
-> that as much as possible.
->=20
-> > Arm are also _extremely_ interested in developing a method to enable
-> > some form of SmartNIC discovery method and while lots of ideas have
-> > been thrown around, discovery via devlink is a reasonable option.  So
-> > while doing all this will be much more work than simply handling this
-> > case where we set the peer or local MAC for a vdev, I think it will be
-> > worth it to make this more usable for all^W more types of devices.  I
-> > also agree that not everything on the other side of the wire should be
-> > a port.
-> >
-> > So if we agree that addressing this device as a PCIe device then it
-> > feels like we would be better served to query device capabilities and
-> > depending on what capabilities exist we would be able to configure
-> > properties for those.  In an ideal world, I could query a device using
-> > devlink ('devlink info'?) and it would show me different devices that
-> > are available for configuration on the SmartNIC and would also give me
-> > a way to address them.  So while I like the idea of being able to
-> > address and set parameters as shown in patch 05 of this series, I
-> > would like to see a bit more flexibility to define what type of device
-> > is available and how it might be configured.
->=20
-> We shall see how this develops. For now sounds pretty high level.
-> If the NIC needs to expose many "devices" that are independently controll=
-ed
-> we should probably look at re-using the standard device model and not
-> reinvent the wheel.
-> If we need to configure particular aspects and resource allocation, we ca=
-n
-> add dedicated APIs as needed.
->=20
-> What I definitely want to avoid is adding a catch-all API with unclear
-> semantics which will become the SmartNIC dumping ground.
->=20
-What part is unclear in API? Can you be specific?
-Subdev is not a dumping ground and so the devlink port is not a dumping gro=
-und either.
-Having a more well defined object such as subdev with covers more than just=
- port attribute (instead of devlink port) doesn't make it a dumping ground.
-
-As I explained in previous email, subdev is intended to have attributes of =
-the device (PF/VF/mdev).
-Additionally as Andy described, resources will be linked to such subdev.
-
-Keep in mind that this is anyway useful without smartnic usecase too immedi=
-ately.
-
-> > So if we took the devlink info command as an example (whether its the
-> > proper place for this or not), it could look _like_ this:
-> >
-> > $ devlink dev info pci/0000:03:00.0
-> > pci/0000:03:00.0:
-> >   driver foo
-> >   serial_number 8675309
-> >   versions:
-> > [...]
-> >   capabilities:
-> >       storage 0
-> >       console 1
-> >       mdev 1024
-> >       [something else] [limit]
-> >
-> > (Additionally rather than putting this as part of 'info' the device
-> > capabilities and limits could be part of the 'resource' section and
-> > frankly may make more sense if this is part of that.)
-> >
-> > and then those capabilities would be something that could be set using
-> > the 'vdev' or whatever-it-is-named interface:
-> >
-> > # devlink vdev show pci/0000:03:00.0
-> > pci/0000:03:00.0/console/0: speed 115200 device /dev/ttySNIC0
->=20
-> The speed in this console example makes no sense to me.
->=20
-> The patches as they stand are about the peer side/other side of the port.=
- So
-> which side of the serial device is the speed set on? One can just read th=
-e
-> speed from /dev/ttySNIC0. And link that serial device to the appropriate
-> parent via sysfs. This is pure wheel reinvention.
->=20
-> > pci/0000:03:00.0/mdev/0: hw_addr 02:00:00:00:00:00 [...]
-> > pci/0000:03:00.0/mdev/1023: hw_addr 02:00:00:00:03:ff
-> >
-> > # devlink vdev set pci/0000:03:00.0/mdev/0 hw_addr 00:22:33:44:55:00
-> >
-> > Since these Arm/RISC-V based SmartNICs are going to be used in a
-> > variety of different ways and will have a variety of different
-> > personalities (not just different SKUs that vendors will offer but
-> > different ways in which these will be deployed), I think it's critical
-> > that we consider more than just the mdev/representer case from the star=
-t.
+T24gVHVlLCBPY3QgMjksIDIwMTkgYXQgMDU6MjA6MDNQTSBFRFQsIFJvYiBIZXJyaW5nIHdyb3Rl
+Og0KPk9uIFR1ZSwgT2N0IDI5LCAyMDE5IGF0IDEwOjAwIEFNIFZpbmNlbnQgQ2hlbmcNCj48dmlu
+Y2VudC5jaGVuZy54aEByZW5lc2FzLmNvbT4gd3JvdGU6DQo+Pg0KPj4gT24gRnJpLCBPY3QgMjUs
+IDIwMTkgYXQgMDM6MzI6MjhQTSBFRFQsIFJvYiBIZXJyaW5nIHdyb3RlOg0KPj4gPk9uIE1vbiwg
+T2N0IDIxLCAyMDE5IGF0IDAzOjU3OjQ3UE0gLTA0MDAsIHZpbmNlbnQuY2hlbmcueGhAcmVuZXNh
+cy5jb20gd3JvdGU6DQo+PiA+PiBGcm9tOiBWaW5jZW50IENoZW5nIDx2aW5jZW50LmNoZW5nLnho
+QHJlbmVzYXMuY29tPg0KPj4gPj4NCj4+ID4+IEFkZCBkZXZpY2UgdHJlZSBiaW5kaW5nIGRvYyBm
+b3IgdGhlIElEVCBDbG9ja01hdHJpeCBQVFAgY2xvY2suDQo+PiA+Pg0KPj4gPj4gKw0KPj4gPj4g
+K2V4YW1wbGVzOg0KPj4gPj4gKyAgLSB8DQo+PiA+PiArICAgIHBoY0A1YiB7DQo+PiA+DQo+PiA+
+cHRwQDViDQo+PiA+DQo+PiA+RXhhbXBsZXMgYXJlIGJ1aWx0IG5vdyBhbmQgdGhpcyBmYWlsczoN
+Cj4+ID4NCj4+ID5Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHRwL3B0cC1pZHRj
+bS5leGFtcGxlLmR0czoxOS4xNS0yODoNCj4+ID5XYXJuaW5nIChyZWdfZm9ybWF0KTogL2V4YW1w
+bGUtMC9waGNANWI6cmVnOiBwcm9wZXJ0eSBoYXMgaW52YWxpZCBsZW5ndGggKDQgYnl0ZXMpICgj
+YWRkcmVzcy1jZWxscyA9PSAxLCAjc2l6ZS1jZWxscyA9PSAxKQ0KPj4gPg0KPj4gPlRoZSBwcm9i
+bGVtIGlzIGkyYyBkZXZpY2VzIG5lZWQgdG8gYmUgc2hvd24gdW5kZXIgYW4gaTJjIGJ1cyBub2Rl
+Lg0KPj4gPg0KPj4gPj4gKyAgICAgICAgICBjb21wYXRpYmxlID0gImlkdCw4YTM0MDAwIjsNCj4+
+ID4+ICsgICAgICAgICAgcmVnID0gPDB4NWI+Ow0KPj4gPj4gKyAgICB9Ow0KPj4NCj4+IEkgYW0g
+dHJ5aW5nIHRvIHJlcGxpY2F0ZSB0aGUgcHJvYmxlbSBsb2NhbGx5IHRvIGNvbmZpcm0gdGhlIGZp
+eCBwcmlvciB0byByZS1zdWJtaXNzaW9uLg0KPj4NCj4+IEkgaGF2ZSB0cmllZCB0aGUgZm9sbG93
+aW5nOg0KPj4NCj4+IC4vdG9vbHMvZHQtZG9jLXZhbGlkYXRlIH4vcHJvamVjdHMvbGludXgvRG9j
+dW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3B0cC9wdHAtaWR0Y20ueWFtbA0KPj4gLi90
+b29scy9kdC1leHRyYWN0LWV4YW1wbGUgfi9wcm9qZWN0cy9saW51eC9Eb2N1bWVudGF0aW9uL2Rl
+dmljZXRyZWUvYmluZGluZ3MvcHRwL3B0cC1pZHRjbS55YW1sID4gZXhhbXBsZS5kdHMNCj4+DQo+
+PiBIb3cgdG8gdmFsaWRhdGUgdGhlIGV4YW1wbGUuZHRzIGZpbGUgYWdhaW5zdCB0aGUgc2NoZW1h
+IGluIHB0cC1pZHRjbS55YW1sPw0KPg0KPidtYWtlIC1rIGR0X2JpbmRpbmdfY2hlY2snIGluIHRo
+ZSBrZXJuZWwgdHJlZS4NCg0KVGhhbmtzIGZvciB0aGUgdGlwIC0gdGhhdCBsZWQgbWUgdG8gcmUt
+ZGlzY292ZXIgd3JpdGUtc2NoZW1hLnJzdA0KDQpEaWQgdGhlIGZvbGxvd2luZyB0byBlbnN1cmUg
+ZHQtc2NoZW1hIGFuZCB5YW1sIGlzIGluc3RhbGxlZDoNCiQgcGlwMyBpbnN0YWxsIGdpdCtodHRw
+czovL2dpdGh1Yi5jb20vZGV2aWNldHJlZS1vcmcvZHQtc2NoZW1hLmdpdEBtYXN0ZXINCg0KJCBw
+a2ctY29uZmlnIC0tZXhpc3RzIHlhbWwtMC4xICYmIGVjaG8geWVzDQp5ZXMNCg0KJCBwa2ctY29u
+ZmlnIHlhbWwtMC4xIC0tbGlicw0KLWx5YW1sDQoNCg0KSG93ZXZlciwgSSBnZXQgJ05vIHJ1bGUg
+dG8gbWFrZSB0YXJnZXQiIGVycm9yIHdpdGggJ21ha2UgLWsgZHRfYmluZGluZ19jaGVjaycuDQoN
+Ck9uIGxpbnV4OiBUdWUgT2N0IDI5LCBjb21taXQgMjNmZGIxOThhZTgNCg0KJCBtYWtlIC1rIGR0
+X2JpbmRpbmdfY2hlY2sgXA0KICAgIERUX1NDSEVNQV9GSUxFUz1Eb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvdHJpdmlhbC1kZXZpY2VzLnlhbWwNCiAgU0NIRU1BICBEb2N1bWVudGF0
+aW9uL2RldmljZXRyZWUvYmluZGluZ3MvcHJvY2Vzc2VkLXNjaGVtYS55YW1sDQogIENIS0RUICAg
+RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL3RyaXZpYWwtZGV2aWNlcy55YW1sDQpt
+YWtlWzFdOiAqKiogTm8gcnVsZSB0byBtYWtlIHRhcmdldA0KCSdEb2N1bWVudGF0aW9uL2Rldmlj
+ZXRyZWUvYmluZGluZ3MvdHJpdmlhbC1kZXZpY2VzLmV4YW1wbGUuZHQueWFtbCcsDQoJIG5lZWRl
+ZCBieSAnX19idWlsZCcuDQoJCQkJCQkJCQ0KT24gbGludXgtbmV4dC1taXJyb3I6IFR1ZSBPY3Qg
+MjksIGNvbW1pdCBjNTdjZjM4MzNjNg0KDQokIG1ha2UgLWsgZHRfYmluZGluZ19jaGVjayBcDQoJ
+RFRfU0NIRU1BX0ZJTEVTPURvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy90cml2aWFs
+LWRldmljZXMueWFtbA0KICBTQ0hFTUEgIERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
+cy9wcm9jZXNzZWQtc2NoZW1hLnlhbWwNCiAgQ0hLRFQgICBEb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3MvdHJpdmlhbC1kZXZpY2VzLnlhbWwNCm1ha2VbMV06ICoqKiBObyBydWxlIHRv
+IG1ha2UgdGFyZ2V0IA0KCSdEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdHJpdmlh
+bC1kZXZpY2VzLmV4YW1wbGUuZHQueWFtbCcsIA0KCW5lZWRlZCBieSAnX19idWlsZCcuDQoNCkkg
+d2lsbCBrZWVwIGdvb2dsaW5nLCBidXQgYW55IHRpcHMgd2lsbCBiZSBncmVhdGx5IGFwcHJlY2lh
+dGVkLg0KDQpSZWdhcmRzLA0KVmluY2VudA0K
