@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8B0E977E
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:00:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6853EE977F
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 09:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726269AbfJ3H76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 03:59:58 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:39985 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725822AbfJ3H76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 03:59:58 -0400
-Received: by mail-pl1-f193.google.com with SMTP id p5so618312plr.7
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 00:59:57 -0700 (PDT)
+        id S1726316AbfJ3IAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 04:00:00 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37549 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725822AbfJ3H77 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 03:59:59 -0400
+Received: by mail-pg1-f194.google.com with SMTP id p1so946876pgi.4
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 00:59:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=MvLGe1y5EFFiUjiPFMwso54Q6S4hzkU8Nu11f15etKk=;
-        b=RJ3+0LUyvsDDbPGiRh+oR9Oykzlw/3zG46JSS8ufMsWwPQlFm+0w6sRAJu/5mvDPUY
-         ceoKRFgu8YehAE4VFFg1tfzzu99pMDUMVWP+bX+UN+omg7cVujtB+n8EqOnWwCqhG93O
-         gef35P5TF5rEpQ0lJkU5xan0c9t5R+hwWGoqE=
+        bh=wAR6DL7kvNJa9zycRx+anT2MCxHiDXG/E0WRkd4FHO0=;
+        b=L8sbUWnl6Kx5vMvOjS6zYIJF5mVgBERadjbm50197rcmFIfMCthTMioQRMXCjjc5ix
+         0lIrqRfCyCsAWbnTnCnmnFLf7AbRQNa9NDsgGE7DLKOfdroRg7RvV57qve683oBEfb0z
+         iBfb5jzeb+2SMYcQeMgdZt2vJOrrxSEwUuVQk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=MvLGe1y5EFFiUjiPFMwso54Q6S4hzkU8Nu11f15etKk=;
-        b=is/AzszgzbPYglL/m0u0IYJFLEiT5T1iZ6VPt9jqgoa85Qf4Ccz040Brrja4ubvxPW
-         VV2jFYgbWX2in4lAOJDlvvKz5/Jg2Hsv6iexAAEAQcHyNZQ4iywyWjgMhB+uclWBZiI7
-         MzFoQb4VTXHcGkzMajxDetVoTClmQiGWUP6suLDLUb94t82n//RZXMaELSeI6pij66zj
-         xRutvafi4hLlDsmQP5pzd+SAu2oLPkhA9ZkLQ+wyMuq5odM7nwZuMSVaDmDALvZ+YzQA
-         i4DmkJSII23fZqWdgb6Swpm+RKrEKFrcdnlvUs6bq+ObCT7e0vFL6nerVrEjzb0rf5dU
-         D12Q==
-X-Gm-Message-State: APjAAAXwe7hIEAZNxmVo97aJu1seyTCosqGN+/NYH8MhNjNXPO7keWuL
-        qec81TB2GEH9bRUzm2J+0oTAl/kdsvY=
-X-Google-Smtp-Source: APXvYqzqezeymj9koRvUcBRTFu3fggz/P0aZmLorbL4+nHXs2pboopwRybrKtIFk/d/nui1O6IInEQ==
-X-Received: by 2002:a17:902:6bc8:: with SMTP id m8mr3109094plt.49.1572422396767;
-        Wed, 30 Oct 2019 00:59:56 -0700 (PDT)
+        bh=wAR6DL7kvNJa9zycRx+anT2MCxHiDXG/E0WRkd4FHO0=;
+        b=a2bJ8Z6ZLkC45wi727JysddGZw+kO+038uFAwR0lC9fbBFIYbdMYDKjadTEXImv3nc
+         /YIGJQDZ/fqkd5zMDEzVh6H36hsWhFfD/7ri4Nzg3UiDLmdeL/TCZ3HPQhV+djr3D38s
+         HN/o9M63l9Rw76FSG8kwPGoU3Up9rD/w2vqA6KfT64cquERww2hB5ir1Zk75E/yshqxe
+         VcdJXDv/4UL1cJFtdVzIVWmsfhzus+SlWdeMj4Q0JewCE0RgiFpII/p9gkIm+i28l8FV
+         sgOdChjy+vv2JwQJWQ1Zya9nJhG5w8kz2OeTHQt4wdZlJmOU25fMzy5LQ26gQ0+jqk1Y
+         wnXw==
+X-Gm-Message-State: APjAAAXFgVFoyCWld0glGkWivg8qXX2efJeWkb1+Y6+zNdLcI121Rk6D
+        KllsV36XWSs6Ox/gzXp8j8//HA==
+X-Google-Smtp-Source: APXvYqwv3J4Uam3fiJNt99IIgwaZvMZhoiIskrXOwkpu/Tq7XFqA19E5yTjXFOONdZzk3OYKje0TAA==
+X-Received: by 2002:a65:6456:: with SMTP id s22mr31602014pgv.287.1572422399026;
+        Wed, 30 Oct 2019 00:59:59 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id r21sm1960649pfc.27.2019.10.30.00.59.54
+        by smtp.gmail.com with ESMTPSA id r21sm1960649pfc.27.2019.10.30.00.59.57
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 30 Oct 2019 00:59:56 -0700 (PDT)
+        Wed, 30 Oct 2019 00:59:58 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
-Subject: [PATCH net-next 1/7] bnxt_en: Add support for L2 rewrite
-Date:   Wed, 30 Oct 2019 03:59:29 -0400
-Message-Id: <1572422375-7269-2-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>
+Subject: [PATCH net-next 2/7] bnxt: Avoid logging an unnecessary message when a flow can't be offloaded
+Date:   Wed, 30 Oct 2019 03:59:30 -0400
+Message-Id: <1572422375-7269-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1572422375-7269-1-git-send-email-michael.chan@broadcom.com>
 References: <1572422375-7269-1-git-send-email-michael.chan@broadcom.com>
@@ -55,235 +54,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-This patch adds support for packet edit offload of L2 fields (src mac &
-dst mac, also referred as L2 rewrite). Only when the mask is fully exact
-match for a field, the command is sent down to the adapter to offload
-such a flow. Otherwise, an error is returned.
+For every single case where bnxt_tc_can_offload() can fail, we are
+logging a user friendly descriptive message anyway, but because of the
+path it would take in case of failure, another redundant error message
+would get logged. Just freeing the node and returning from the point of
+failure should suffice.
 
-Signed-off-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 131 +++++++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h |  11 +++
- 2 files changed, 142 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index c8062d0..6734825 100644
+index 6734825..2d86796 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -16,6 +16,7 @@
- #include <net/tc_act/tc_skbedit.h>
- #include <net/tc_act/tc_mirred.h>
- #include <net/tc_act/tc_vlan.h>
-+#include <net/tc_act/tc_pedit.h>
- #include <net/tc_act/tc_tunnel_key.h>
+@@ -1405,7 +1405,8 @@ static int bnxt_tc_add_flow(struct bnxt *bp, u16 src_fid,
  
- #include "bnxt_hsi.h"
-@@ -36,6 +37,8 @@
- #define is_vid_exactmatch(vlan_tci_mask)	\
- 	((ntohs(vlan_tci_mask) & VLAN_VID_MASK) == VLAN_VID_MASK)
- 
-+static bool is_wildcard(void *mask, int len);
-+static bool is_exactmatch(void *mask, int len);
- /* Return the dst fid of the func for flow forwarding
-  * For PFs: src_fid is the fid of the PF
-  * For VF-reps: src_fid the fid of the VF
-@@ -111,10 +114,115 @@ static int bnxt_tc_parse_tunnel_set(struct bnxt *bp,
- 	return 0;
- }
- 
-+/* Key & Mask from the stack comes unaligned in multiple iterations.
-+ * This routine consolidates such multiple unaligned values into one
-+ * field each for Key & Mask (for src and dst macs separately)
-+ * For example,
-+ *			Mask/Key	Offset	Iteration
-+ *			==========	======	=========
-+ *	dst mac		0xffffffff	0	1
-+ *	dst mac		0x0000ffff	4	2
-+ *
-+ *	src mac		0xffff0000	4	1
-+ *	src mac		0xffffffff	8	2
-+ *
-+ * The above combination coming from the stack will be consolidated as
-+ *			Mask/Key
-+ *			==============
-+ *	src mac:	0xffffffffffff
-+ *	dst mac:	0xffffffffffff
-+ */
-+static void bnxt_set_l2_key_mask(u32 part_key, u32 part_mask,
-+				 u8 *actual_key, u8 *actual_mask)
-+{
-+	u32 key = get_unaligned((u32 *)actual_key);
-+	u32 mask = get_unaligned((u32 *)actual_mask);
-+
-+	part_key &= part_mask;
-+	part_key |= key & ~part_mask;
-+
-+	put_unaligned(mask | part_mask, (u32 *)actual_mask);
-+	put_unaligned(part_key, (u32 *)actual_key);
-+}
-+
-+static int
-+bnxt_fill_l2_rewrite_fields(struct bnxt_tc_actions *actions,
-+			    u8 *eth_addr, u8 *eth_addr_mask)
-+{
-+	int j;
-+	u16 *p;
-+
-+	if (unlikely(bnxt_eth_addr_key_mask_invalid(eth_addr, eth_addr_mask)))
-+		return -EINVAL;
-+
-+	if (!is_wildcard(&eth_addr_mask[0], ETH_ALEN)) {
-+		if (!is_exactmatch(&eth_addr_mask[0], ETH_ALEN))
-+			return -EINVAL;
-+		/* FW expects dmac to be in u16 array format */
-+		p = (u16 *)&eth_addr[0];
-+		for (j = 0; j < 3; j++)
-+			actions->l2_rewrite_dmac[j] = cpu_to_be16(*(p + j));
-+	}
-+
-+	if (!is_wildcard(&eth_addr_mask[ETH_ALEN], ETH_ALEN)) {
-+		if (!is_exactmatch(&eth_addr_mask[ETH_ALEN], ETH_ALEN))
-+			return -EINVAL;
-+		/* FW expects smac to be in u16 array format */
-+		p = (u16 *)&eth_addr[ETH_ALEN];
-+		for (j = 0; j < 3; j++)
-+			actions->l2_rewrite_smac[j] = cpu_to_be16(*(p + j));
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+bnxt_tc_parse_pedit(struct bnxt *bp, struct bnxt_tc_actions *actions,
-+		    struct flow_action_entry *act, u8 *eth_addr,
-+		    u8 *eth_addr_mask)
-+{
-+	u32 mask, val, offset;
-+	u8 htype;
-+
-+	offset = act->mangle.offset;
-+	htype = act->mangle.htype;
-+	switch (htype) {
-+	case FLOW_ACT_MANGLE_HDR_TYPE_ETH:
-+		if (offset > PEDIT_OFFSET_SMAC_LAST_4_BYTES) {
-+			netdev_err(bp->dev,
-+				   "%s: eth_hdr: Invalid pedit field\n",
-+				   __func__);
-+			return -EINVAL;
-+		}
-+		actions->flags |= BNXT_TC_ACTION_FLAG_L2_REWRITE;
-+		mask = ~act->mangle.mask;
-+		val = act->mangle.val;
-+
-+		bnxt_set_l2_key_mask(val, mask, &eth_addr[offset],
-+				     &eth_addr_mask[offset]);
-+		break;
-+	default:
-+		netdev_err(bp->dev, "%s: Unsupported pedit hdr type\n",
-+			   __func__);
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
- static int bnxt_tc_parse_actions(struct bnxt *bp,
- 				 struct bnxt_tc_actions *actions,
- 				 struct flow_action *flow_action)
- {
-+	/* Used to store the L2 rewrite mask for dmac (6 bytes) followed by
-+	 * smac (6 bytes) if rewrite of both is specified, otherwise either
-+	 * dmac or smac
-+	 */
-+	u8 eth_addr_mask[ETH_ALEN * 2] = { 0 };
-+	/* Used to store the L2 rewrite key for dmac (6 bytes) followed by
-+	 * smac (6 bytes) if rewrite of both is specified, otherwise either
-+	 * dmac or smac
-+	 */
-+	u8 eth_addr[ETH_ALEN * 2] = { 0 };
- 	struct flow_action_entry *act;
- 	int i, rc;
- 
-@@ -148,11 +256,25 @@ static int bnxt_tc_parse_actions(struct bnxt *bp,
- 		case FLOW_ACTION_TUNNEL_DECAP:
- 			actions->flags |= BNXT_TC_ACTION_FLAG_TUNNEL_DECAP;
- 			break;
-+		/* Packet edit: L2 rewrite, NAT, NAPT */
-+		case FLOW_ACTION_MANGLE:
-+			rc = bnxt_tc_parse_pedit(bp, actions, act, eth_addr,
-+						 eth_addr_mask);
-+			if (rc)
-+				return rc;
-+			break;
- 		default:
- 			break;
- 		}
+ 	if (!bnxt_tc_can_offload(bp, flow)) {
+ 		rc = -EOPNOTSUPP;
+-		goto free_node;
++		kfree_rcu(new_node, rcu);
++		return rc;
  	}
  
-+	if (actions->flags & BNXT_TC_ACTION_FLAG_L2_REWRITE) {
-+		rc = bnxt_fill_l2_rewrite_fields(actions, eth_addr,
-+						 eth_addr_mask);
-+		if (rc)
-+			return rc;
-+	}
-+
- 	if (actions->flags & BNXT_TC_ACTION_FLAG_FWD) {
- 		if (actions->flags & BNXT_TC_ACTION_FLAG_TUNNEL_ENCAP) {
- 			/* dst_fid is PF's fid */
-@@ -401,6 +523,15 @@ static int bnxt_hwrm_cfa_flow_alloc(struct bnxt *bp, struct bnxt_tc_flow *flow,
- 	req.src_fid = cpu_to_le16(flow->src_fid);
- 	req.ref_flow_handle = ref_flow_handle;
- 
-+	if (actions->flags & BNXT_TC_ACTION_FLAG_L2_REWRITE) {
-+		memcpy(req.l2_rewrite_dmac, actions->l2_rewrite_dmac,
-+		       ETH_ALEN);
-+		memcpy(req.l2_rewrite_smac, actions->l2_rewrite_smac,
-+		       ETH_ALEN);
-+		action_flags |=
-+			CFA_FLOW_ALLOC_REQ_ACTION_FLAGS_L2_HEADER_REWRITE;
-+	}
-+
- 	if (actions->flags & BNXT_TC_ACTION_FLAG_TUNNEL_DECAP ||
- 	    actions->flags & BNXT_TC_ACTION_FLAG_TUNNEL_ENCAP) {
- 		req.tunnel_handle = tunnel_handle;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-index 4f05305..6d0d485 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-@@ -62,6 +62,12 @@ struct bnxt_tc_tunnel_key {
- 	__be32			id;
- };
- 
-+#define bnxt_eth_addr_key_mask_invalid(eth_addr, eth_addr_mask)		\
-+	((is_wildcard(&(eth_addr)[0], ETH_ALEN) &&			\
-+	 is_wildcard(&(eth_addr)[ETH_ALEN], ETH_ALEN)) ||		\
-+	(is_wildcard(&(eth_addr_mask)[0], ETH_ALEN) &&			\
-+	 is_wildcard(&(eth_addr_mask)[ETH_ALEN], ETH_ALEN)))
-+
- struct bnxt_tc_actions {
- 	u32				flags;
- #define BNXT_TC_ACTION_FLAG_FWD			BIT(0)
-@@ -71,6 +77,7 @@ struct bnxt_tc_actions {
- #define BNXT_TC_ACTION_FLAG_DROP		BIT(5)
- #define BNXT_TC_ACTION_FLAG_TUNNEL_ENCAP	BIT(6)
- #define BNXT_TC_ACTION_FLAG_TUNNEL_DECAP	BIT(7)
-+#define BNXT_TC_ACTION_FLAG_L2_REWRITE		BIT(8)
- 
- 	u16				dst_fid;
- 	struct net_device		*dst_dev;
-@@ -79,6 +86,10 @@ struct bnxt_tc_actions {
- 
- 	/* tunnel encap */
- 	struct ip_tunnel_key		tun_encap_key;
-+#define	PEDIT_OFFSET_SMAC_LAST_4_BYTES		0x8
-+	__be16				l2_rewrite_dmac[3];
-+	__be16				l2_rewrite_smac[3];
-+
- };
- 
- struct bnxt_tc_flow {
+ 	/* If a flow exists with the same cookie, delete it */
 -- 
 2.5.1
 
