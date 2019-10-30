@@ -2,31 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A60D5E9CEB
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D75FE9CF4
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:01:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbfJ3OBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 10:01:33 -0400
-Received: from forward106j.mail.yandex.net ([5.45.198.249]:33401 "EHLO
-        forward106j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726261AbfJ3OBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:01:32 -0400
-X-Greylist: delayed 411 seconds by postgrey-1.27 at vger.kernel.org; Wed, 30 Oct 2019 10:01:29 EDT
-Received: from mxback10j.mail.yandex.net (mxback10j.mail.yandex.net [IPv6:2a02:6b8:0:1619::113])
-        by forward106j.mail.yandex.net (Yandex) with ESMTP id 3135A11A1F94;
-        Wed, 30 Oct 2019 16:54:46 +0300 (MSK)
+        id S1726673AbfJ3OBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 10:01:44 -0400
+Received: from forward105o.mail.yandex.net ([37.140.190.183]:57827 "EHLO
+        forward105o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726656AbfJ3OBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:01:44 -0400
+Received: from mxback27g.mail.yandex.net (mxback27g.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:327])
+        by forward105o.mail.yandex.net (Yandex) with ESMTP id 502484200ED8;
+        Wed, 30 Oct 2019 16:54:56 +0300 (MSK)
 Received: from iva8-e1a842234f87.qloud-c.yandex.net (iva8-e1a842234f87.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:e1a8:4223])
-        by mxback10j.mail.yandex.net (nwsmtp/Yandex) with ESMTP id V5E8gqFvMo-sjkCoBaY;
-        Wed, 30 Oct 2019 16:54:46 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; s=mail; t=1572443686;
-        bh=gWEa5FRcTgUF0nhJEpPZLRQAybGIQLvAfMzmy9iALuU=;
+        by mxback27g.mail.yandex.net (nwsmtp/Yandex) with ESMTP id 7uGwIg3QMS-st8S4JGH;
+        Wed, 30 Oct 2019 16:54:56 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; s=mail; t=1572443696;
+        bh=ARWVQLt1dWTnBId169FvLsAgeDt/XuDlOiFp1rFzjZQ=;
         h=In-Reply-To:Subject:To:From:Cc:References:Date:Message-Id;
-        b=IOw2lJSLcgJgAiZbMTlg7+x1VaooTXAwE6jj0gMZGk7J5MyHLNqfW94LJLIM1z+/z
-         mIzcq7YoUGpgeAZI3GH1NjqAojg2Pwszjmy9Gm1Xx1whBV/VImBVTSbc9iuYA6Aziy
-         zCietABTtDDeDm9ZHK0BvlcREke9RmEz6WyJUc7I=
-Authentication-Results: mxback10j.mail.yandex.net; dkim=pass header.i=@flygoat.com
-Received: by iva8-e1a842234f87.qloud-c.yandex.net (nwsmtp/Yandex) with ESMTPSA id iQ85YfuBaZ-sbUu9RH8;
-        Wed, 30 Oct 2019 16:54:43 +0300
+        b=TK4EPcMd+uMyrwR/jJaCbKycYOzuQEY0ykw2BJkgg9+t2DcnYJ8TNZNbyIaRHnNIk
+         Rl3SPtnHGHxpUON23jol9EUi4qs0tLyY89XDe3HTbuiyJW8Zc0MA2vSEBG/8WVf3Mh
+         zm2t8a7h51ZVfX5351ynrY5gYQa+LZ1qJQy5G8r8=
+Authentication-Results: mxback27g.mail.yandex.net; dkim=pass header.i=@flygoat.com
+Received: by iva8-e1a842234f87.qloud-c.yandex.net (nwsmtp/Yandex) with ESMTPSA id iQ85YfuBaZ-skUufJNa;
+        Wed, 30 Oct 2019 16:54:54 +0300
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (Client certificate not present)
 From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
@@ -36,9 +35,9 @@ Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
         joabreu@synopsys.com, bhelgaas@google.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-ide@vger.kernel.org,
         linux-pci@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
-Subject: [PATCH 4/5] dt-bindings: net: document loongson.pci-gmac
-Date:   Wed, 30 Oct 2019 21:53:46 +0800
-Message-Id: <20191030135347.3636-5-jiaxun.yang@flygoat.com>
+Subject: [PATCH 5/5] libata/ahci: Apply non-standard BAR fix for Loongson
+Date:   Wed, 30 Oct 2019 21:53:47 +0800
+Message-Id: <20191030135347.3636-6-jiaxun.yang@flygoat.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191030135347.3636-1-jiaxun.yang@flygoat.com>
 References: <20191030135347.3636-1-jiaxun.yang@flygoat.com>
@@ -49,92 +48,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This binding will provide extra information for PCI enabled
-device.
+Loongson is using BAR0 as AHCI registers BAR.
 
 Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
 ---
- .../net/wireless/loongson,pci-gmac.yaml       | 71 +++++++++++++++++++
- 1 file changed, 71 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
+ drivers/ata/ahci.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml b/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
-new file mode 100644
-index 000000000000..5f764bd46735
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
-@@ -0,0 +1,71 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/allwinner,sun7i-a20-gmac.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
+index dd92faf197d5..db3d7b94ad53 100644
+--- a/drivers/ata/ahci.c
++++ b/drivers/ata/ahci.c
+@@ -42,6 +42,7 @@ enum {
+ 	AHCI_PCI_BAR_CAVIUM	= 0,
+ 	AHCI_PCI_BAR_ENMOTUS	= 2,
+ 	AHCI_PCI_BAR_CAVIUM_GEN5	= 4,
++	AHCI_PCI_BAR_LOONGSON	= 0,
+ 	AHCI_PCI_BAR_STANDARD	= 5,
+ };
+ 
+@@ -575,6 +576,9 @@ static const struct pci_device_id ahci_pci_tbl[] = {
+ 	/* Enmotus */
+ 	{ PCI_DEVICE(0x1c44, 0x8000), board_ahci },
+ 
++	/* Loongson */
++	{ PCI_VDEVICE(LOONGSON, 0x7a08), board_ahci },
 +
-+title: Loongson PCI GMAC Device Tree Bindings
-+
-+allOf:
-+  - $ref: "snps,dwmac.yaml#"
-+
-+maintainers:
-+  - Jiaxun Yang <jiaxun.yang@flygoat.com>
-+
-+properties:
-+  compatible:
-+    const: loongson,pci-gmac
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 3
-+    items:
-+      - description: Combined signal for various interrupt events
-+      - description: The interrupt to manage the remote wake-up packet detection
-+      - description: The interrupt that occurs when Rx exits the LPI state
-+
-+  interrupt-names:
-+    minItems: 1
-+    maxItems: 3
-+    items:
-+      - const: macirq
-+      - const: eth_wake_irq
-+      - const: eth_lpi
-+
-+  clocks:
-+    items:
-+      - description: GMAC main clock
-+
-+  clock-names:
-+    items:
-+      - const: stmmaceth
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-names
-+  - clocks
-+  - clock-names
-+  - phy-mode
-+
-+examples:
-+  - |
-+    gmac: ethernet@ {
-+        compatible = "loongson,pci-irq";
-+        reg = <0x00001800 0 0 0 0>;
-+        interrupts = <12>, <13>;
-+        interrupt-names = "macirq", "eth_lpi";
-+        clocks =  <&clk_pch_gmac>;
-+        clock-names = "stmmaceth";
-+        phy-mode = "rgmii";
-+    };
-+
-+# FIXME: We should set it, but it would report all the generic
-+# properties as additional properties.
-+# additionalProperties: false
-+
-+...
+ 	/* Generic, PCI class code for AHCI */
+ 	{ PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
+ 	  PCI_CLASS_STORAGE_SATA_AHCI, 0xffffff, board_ahci },
+@@ -1663,6 +1667,9 @@ static int ahci_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			ahci_pci_bar = AHCI_PCI_BAR_CAVIUM;
+ 		if (pdev->device == 0xa084)
+ 			ahci_pci_bar = AHCI_PCI_BAR_CAVIUM_GEN5;
++	} else if (pdev->vendor == PCI_VENDOR_ID_LOONGSON) {
++		if (pdev->device == PCI_DEVICE_ID_LOONGSON_AHCI)
++			ahci_pci_bar = AHCI_PCI_BAR_LOONGSON;
+ 	}
+ 
+ 	/* acquire resources */
 -- 
 2.23.0
 
