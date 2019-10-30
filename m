@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49453E9CF6
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:01:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A60D5E9CEB
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 15:01:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726700AbfJ3OBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 10:01:46 -0400
-Received: from forward103j.mail.yandex.net ([5.45.198.246]:54056 "EHLO
-        forward103j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726607AbfJ3OBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:01:45 -0400
-Received: from mxback7o.mail.yandex.net (mxback7o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::21])
-        by forward103j.mail.yandex.net (Yandex) with ESMTP id E32C96741E8E;
-        Wed, 30 Oct 2019 16:54:36 +0300 (MSK)
+        id S1726596AbfJ3OBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 10:01:33 -0400
+Received: from forward106j.mail.yandex.net ([5.45.198.249]:33401 "EHLO
+        forward106j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726261AbfJ3OBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 10:01:32 -0400
+X-Greylist: delayed 411 seconds by postgrey-1.27 at vger.kernel.org; Wed, 30 Oct 2019 10:01:29 EDT
+Received: from mxback10j.mail.yandex.net (mxback10j.mail.yandex.net [IPv6:2a02:6b8:0:1619::113])
+        by forward106j.mail.yandex.net (Yandex) with ESMTP id 3135A11A1F94;
+        Wed, 30 Oct 2019 16:54:46 +0300 (MSK)
 Received: from iva8-e1a842234f87.qloud-c.yandex.net (iva8-e1a842234f87.qloud-c.yandex.net [2a02:6b8:c0c:77a0:0:640:e1a8:4223])
-        by mxback7o.mail.yandex.net (nwsmtp/Yandex) with ESMTP id 48FFXf50Ah-sZN0FjPD;
-        Wed, 30 Oct 2019 16:54:36 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; s=mail; t=1572443676;
-        bh=j0qExup+mjN9/866l9U9/4+EErx2RZW+CoBkOGAlloM=;
+        by mxback10j.mail.yandex.net (nwsmtp/Yandex) with ESMTP id V5E8gqFvMo-sjkCoBaY;
+        Wed, 30 Oct 2019 16:54:46 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; s=mail; t=1572443686;
+        bh=gWEa5FRcTgUF0nhJEpPZLRQAybGIQLvAfMzmy9iALuU=;
         h=In-Reply-To:Subject:To:From:Cc:References:Date:Message-Id;
-        b=dYPNLQ+JtpRNu+87bHmlt3SOg/VR93n/nw51idJw3BG9Xny4NRxHUQEHSIIYPtddE
-         FwGOs9eALbIioCxlSgTBSVFvrOY1zCk6WQvy5alkktNQvqBrWamjW2FoY4uQ4AaGh3
-         PeGd6tCV1HUjQNF/otycaUVpZoVvQtbThU0ORzb8=
-Authentication-Results: mxback7o.mail.yandex.net; dkim=pass header.i=@flygoat.com
-Received: by iva8-e1a842234f87.qloud-c.yandex.net (nwsmtp/Yandex) with ESMTPSA id iQ85YfuBaZ-sOUuwUUB;
-        Wed, 30 Oct 2019 16:54:34 +0300
+        b=IOw2lJSLcgJgAiZbMTlg7+x1VaooTXAwE6jj0gMZGk7J5MyHLNqfW94LJLIM1z+/z
+         mIzcq7YoUGpgeAZI3GH1NjqAojg2Pwszjmy9Gm1Xx1whBV/VImBVTSbc9iuYA6Aziy
+         zCietABTtDDeDm9ZHK0BvlcREke9RmEz6WyJUc7I=
+Authentication-Results: mxback10j.mail.yandex.net; dkim=pass header.i=@flygoat.com
+Received: by iva8-e1a842234f87.qloud-c.yandex.net (nwsmtp/Yandex) with ESMTPSA id iQ85YfuBaZ-sbUu9RH8;
+        Wed, 30 Oct 2019 16:54:43 +0300
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (Client certificate not present)
 From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
@@ -35,9 +36,9 @@ Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
         joabreu@synopsys.com, bhelgaas@google.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-ide@vger.kernel.org,
         linux-pci@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>
-Subject: [PATCH 3/5] net: stmmac: pci: Add Loongson GMAC
-Date:   Wed, 30 Oct 2019 21:53:45 +0800
-Message-Id: <20191030135347.3636-4-jiaxun.yang@flygoat.com>
+Subject: [PATCH 4/5] dt-bindings: net: document loongson.pci-gmac
+Date:   Wed, 30 Oct 2019 21:53:46 +0800
+Message-Id: <20191030135347.3636-5-jiaxun.yang@flygoat.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191030135347.3636-1-jiaxun.yang@flygoat.com>
 References: <20191030135347.3636-1-jiaxun.yang@flygoat.com>
@@ -48,107 +49,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This device will be setup by parsing DeviceTree node
-of pci device.
+This binding will provide extra information for PCI enabled
+device.
 
 Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_pci.c  | 52 ++++++++++++++++++-
- 1 file changed, 50 insertions(+), 2 deletions(-)
+ .../net/wireless/loongson,pci-gmac.yaml       | 71 +++++++++++++++++++
+ 1 file changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index 292045f4581f..640a2a5b8d41 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -12,8 +12,11 @@
- #include <linux/clk-provider.h>
- #include <linux/pci.h>
- #include <linux/dmi.h>
-+#include <linux/of.h>
-+#include <linux/of_irq.h>
- 
- #include "stmmac.h"
-+#include "stmmac_platform.h"
- 
- /*
-  * This struct is used to associate PCI Function of MAC controller on a board,
-@@ -33,6 +36,7 @@ struct stmmac_pci_dmi_data {
- 
- struct stmmac_pci_info {
- 	int (*setup)(struct pci_dev *pdev, struct plat_stmmacenet_data *plat);
-+	bool of_irq;
- };
- 
- static int stmmac_pci_find_phy_addr(struct pci_dev *pdev,
-@@ -444,6 +448,30 @@ static const struct stmmac_pci_info snps_gmac5_pci_info = {
- 	.setup = snps_gmac5_default_data,
- };
- 
-+static int loongson_pci_of_setup(struct pci_dev *pdev,
-+			struct plat_stmmacenet_data *plat)
-+{
-+	struct device_node  *np;
-+	np = pci_device_to_OF_node(pdev);
+diff --git a/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml b/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
+new file mode 100644
+index 000000000000..5f764bd46735
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/allwinner,sun7i-a20-gmac.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	if(!np) {
-+		dev_err(&pdev->dev, "Unable to get OF node\n");
-+		return -ENODEV;
-+	}
++title: Loongson PCI GMAC Device Tree Bindings
 +
-+	if(!of_device_is_compatible(np, "loongson,pci-gmac")) {
-+		dev_err(&pdev->dev, "Device compatible mismatch\n");
-+		return -ENODEV;
-+	}
++allOf:
++  - $ref: "snps,dwmac.yaml#"
 +
-+	return  stmmac_parse_config_dt(np, plat);
-+}
++maintainers:
++  - Jiaxun Yang <jiaxun.yang@flygoat.com>
 +
-+static const struct stmmac_pci_info loongson_of_pci_info = {
-+	.setup = loongson_pci_of_setup,
-+	.of_irq = true,
-+};
++properties:
++  compatible:
++    const: loongson,pci-gmac
 +
- /**
-  * stmmac_pci_probe
-  *
-@@ -508,8 +536,27 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 
- 	memset(&res, 0, sizeof(res));
- 	res.addr = pcim_iomap_table(pdev)[i];
--	res.wol_irq = pdev->irq;
--	res.irq = pdev->irq;
++  reg:
++    maxItems: 1
 +
-+	if(info->of_irq) {
-+		struct device_node  *np;	
-+		np = pci_device_to_OF_node(pdev);
++  interrupts:
++    minItems: 1
++    maxItems: 3
++    items:
++      - description: Combined signal for various interrupt events
++      - description: The interrupt to manage the remote wake-up packet detection
++      - description: The interrupt that occurs when Rx exits the LPI state
 +
-+		res.irq = of_irq_get_byname(np, "macirq");
-+		if (res.irq < 0)
-+			return res.irq;
-+		res.wol_irq = of_irq_get_byname(np, "eth_wake_irq");
-+		if (res.wol_irq < 0) {
-+		if (res.wol_irq == -EPROBE_DEFER)
-+			return -EPROBE_DEFER;
-+		res.wol_irq = res.irq;
-+		}
-+		res.lpi_irq = of_irq_get_byname(np, "eth_lpi");
-+		if (res.lpi_irq == -EPROBE_DEFER)
-+			return -EPROBE_DEFER;
-+	} else {
-+		res.wol_irq = pdev->irq;
-+		res.irq = pdev->irq;
-+	}
- 
- 	return stmmac_dvr_probe(&pdev->dev, plat, &res);
- }
-@@ -602,6 +649,7 @@ static const struct pci_device_id stmmac_id_table[] = {
- 	STMMAC_DEVICE(INTEL, STMMAC_EHL_SGMII1G_ID, ehl_sgmii1g_pci_info),
- 	STMMAC_DEVICE(INTEL, STMMAC_TGL_SGMII1G_ID, tgl_sgmii1g_pci_info),
- 	STMMAC_DEVICE(SYNOPSYS, STMMAC_GMAC5_ID, snps_gmac5_pci_info),
-+	STMMAC_DEVICE(LOONGSON,  PCI_DEVICE_ID_LOONGSON_GMAC, loongson_of_pci_info),
- 	{}
- };
- 
++  interrupt-names:
++    minItems: 1
++    maxItems: 3
++    items:
++      - const: macirq
++      - const: eth_wake_irq
++      - const: eth_lpi
++
++  clocks:
++    items:
++      - description: GMAC main clock
++
++  clock-names:
++    items:
++      - const: stmmaceth
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - clocks
++  - clock-names
++  - phy-mode
++
++examples:
++  - |
++    gmac: ethernet@ {
++        compatible = "loongson,pci-irq";
++        reg = <0x00001800 0 0 0 0>;
++        interrupts = <12>, <13>;
++        interrupt-names = "macirq", "eth_lpi";
++        clocks =  <&clk_pch_gmac>;
++        clock-names = "stmmaceth";
++        phy-mode = "rgmii";
++    };
++
++# FIXME: We should set it, but it would report all the generic
++# properties as additional properties.
++# additionalProperties: false
++
++...
 -- 
 2.23.0
 
