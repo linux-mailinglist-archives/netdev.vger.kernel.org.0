@@ -2,146 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B3FE9B33
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 12:56:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7B4BE9B80
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 13:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726677AbfJ3L4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 07:56:34 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:36343 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726109AbfJ3L4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 07:56:34 -0400
-Received: by mail-qt1-f194.google.com with SMTP id x14so2810043qtq.3;
-        Wed, 30 Oct 2019 04:56:33 -0700 (PDT)
+        id S1726332AbfJ3M1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 08:27:05 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:33271 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726088AbfJ3M1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 08:27:05 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 6so4193433wmf.0
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 05:27:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=9VRvwupe1Us8UkNQwMDn+6sFPpjxIr5st7RpNyH9QM4=;
-        b=TPN+erso+wzp3wJvXdGWSctMy6KBHzbD6wR04o/Aqvn3k79RXz6tgq9PpfG5jvad+m
-         GJA5uiTG3ccIQ0yhpGJellPz6PbO8XNVXF1HGw2lruzU3qv3jJslIQsq83EU+fLB8LHe
-         w/VBs1tnlPR2R2DPCwckiCqKUOhHT553zr22j2JjzkoYCmuRhYS/MvxmN4GCGRMXKlgs
-         1Gv6oC0g4VAFxgqnRKBp6OFtjojanjv8ZopqE6Y/sX+91nSsBhrpopvPZvTtEmxyGe0b
-         FrpSCh7FDHqxe8L7e5jED6DIY72JeGgEbh6Xd7HHFHsS5ugiEoDABdqG/fII54i5S+Qd
-         ZMow==
+        bh=XVKpGoUhirqwJE5BNip9AuEsjjkqPLjlUkZwutxFNvk=;
+        b=AzLTn0DjJZlWH2FxEaXNPJxk9GH3nMvP/VvWXnUZ5xuRCsSjokGfK+dF2OkDbRsZ4V
+         xkqhril9yLMDM89vhEluvgodsCzgWgvwKxwwpKJZLdXn+dK2F9k2U+r93olfyc7+oyAQ
+         uIGlhyGTx1RImTswkpnTjLkIIone5y6eEAhlq1D0KoL93pzUCSY2V+VVTBVdqkd8tZ5P
+         9o+RoNp5ffyIUFDqmtLeaIDFp4euqtI5czO4/8Y1uRB+mv6Mh6FyfQoLrCo61NV3R7iW
+         V11ZJ5I0DxK9jH1r5vvn5I+jyYCdtGoL5G2ZugWk6xZACy4B5cYdvr2yc6ReBJ7AzTOD
+         k6jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9VRvwupe1Us8UkNQwMDn+6sFPpjxIr5st7RpNyH9QM4=;
-        b=dokMnhQXiOIPOcd3Orre4lvS0RSwDSOvmo45/caDaArS/rSc6zeDrs+ikSfLAoqQVJ
-         KWG7e5Ig7gdG0aVX6EJRoGTC5S+zqTvl1lE8vPAw6z3lJ+CY5B08N12NoQp7eAdeUnHK
-         zWNibFnuoJtqH5knJrB7y6qw8NBOP7goxwEvo//UyPgJvO6UoaXIPwPLklJMUIuIHyn2
-         Yf/ryRdIE4TqSKJTbgzTQQL+JfDVbPqWR4OJ6t6iIR7Hze4lySx8HcoshimdGvhWE7zA
-         CYf/JiKsti8AOBiR1J1ydUY8y+7eeAxy0W2dd/geucfeUSNxCOpMDu8qlI77eKAdta1X
-         4uhA==
-X-Gm-Message-State: APjAAAXS7DkSUsxEQe5bbRDL63skw4udPiX86tiCWFv4jK1qiehLE/hQ
-        3W0yL3xOATwVTC2Fr2wjhdA=
-X-Google-Smtp-Source: APXvYqxxqesP5RziDOAjL4/Qu38GF5afIzyj0oWgUb8Gys4rgwSK0lCEzGixCSGV08mdx8RZSN+ObQ==
-X-Received: by 2002:aed:3e75:: with SMTP id m50mr4307731qtf.87.1572436593246;
-        Wed, 30 Oct 2019 04:56:33 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id w15sm1200336qtk.43.2019.10.30.04.56.31
+        bh=XVKpGoUhirqwJE5BNip9AuEsjjkqPLjlUkZwutxFNvk=;
+        b=MTqTCRpXBl8T+0rnFEq1dLbvy52uQbaPG9O0IBC+rjLcNSx9S/JVrvMQVXmOM79OOw
+         wAcMK2KiMtN5X74oKgXWQx7uT+kxlheQHjz4moq66hxs7gy1Esbs1q6a+WbaLGPTPbmZ
+         2JwD492Uz2jBlOVRAuz17gRvS/mby7JiMWi/nIQhGlRm8GhuFzgZg1IhUTwwv3u/Ewpo
+         hO6oAC8eG4wHFSVpPAJFxFyzbCHVVfsusYF0HldEhXXXw3ZO4UCLqdrvVBegId+mHi39
+         mUdVMblDtDo+ooakgPBvGk/NE5Ou2taUB8Gwgf8/qOcVJ+TRdXu0wseUp90ROkFQNUZC
+         LskA==
+X-Gm-Message-State: APjAAAUGtHZXQRYYumP+z3v67WxkDAu6K1vdz1rL0xysqgboXdvQqa44
+        4Y8dJ/0DQ90PTK7hPtPCkZ6mcA==
+X-Google-Smtp-Source: APXvYqzkGUr0Mx6P0pMJsEbVboXoMhHx8b/mm2CQC73mt2NxuLweNlLVP5FfJjSDyR1BPn1otqEm5g==
+X-Received: by 2002:a1c:2344:: with SMTP id j65mr9245128wmj.38.1572438422957;
+        Wed, 30 Oct 2019 05:27:02 -0700 (PDT)
+Received: from netronome.com ([217.149.135.181])
+        by smtp.gmail.com with ESMTPSA id z9sm105972wrv.1.2019.10.30.05.27.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Oct 2019 04:56:32 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 28557410D7; Wed, 30 Oct 2019 08:56:30 -0300 (-03)
-Date:   Wed, 30 Oct 2019 08:56:30 -0300
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v4 4/9] perf tools: splice events onto evlist even on
- error
-Message-ID: <20191030115630.GC27327@kernel.org>
-References: <20191024190202.109403-1-irogers@google.com>
- <20191025180827.191916-1-irogers@google.com>
- <20191025180827.191916-5-irogers@google.com>
- <20191028210712.GB6158@krava>
+        Wed, 30 Oct 2019 05:27:02 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 13:27:01 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, Roopa Prabhu <roopa@cumulusnetworks.com>
+Subject: Re: [PATCH net-next] vxlan: drop "vxlan" parameter in
+ vxlan_fdb_alloc()
+Message-ID: <20191030122659.GA23163@netronome.com>
+References: <909fa55ac93fa8727ee1d9ec273011056ad7d61f.1572382598.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191028210712.GB6158@krava>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <909fa55ac93fa8727ee1d9ec273011056ad7d61f.1572382598.git.gnault@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Mon, Oct 28, 2019 at 10:07:12PM +0100, Jiri Olsa escreveu:
-> On Fri, Oct 25, 2019 at 11:08:22AM -0700, Ian Rogers wrote:
-> > If event parsing fails the event list is leaked, instead splice the list
-> > onto the out result and let the caller cleanup.
-> > 
-> > An example input for parse_events found by libFuzzer that reproduces
-> > this memory leak is 'm{'.
-> > 
-> > Signed-off-by: Ian Rogers <irogers@google.com>
+On Tue, Oct 29, 2019 at 09:57:10PM +0100, Guillaume Nault wrote:
+> This parameter has never been used.
 > 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
-Thanks, applied.
- 
-> thanks,
-> jirka
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
+
+> ---
+>  drivers/net/vxlan.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> > ---
-> >  tools/perf/util/parse-events.c | 17 +++++++++++------
-> >  1 file changed, 11 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> > index c516d0cce946..4c4c6f3e866a 100644
-> > --- a/tools/perf/util/parse-events.c
-> > +++ b/tools/perf/util/parse-events.c
-> > @@ -1952,15 +1952,20 @@ int parse_events(struct evlist *evlist, const char *str,
-> >  
-> >  	ret = parse_events__scanner(str, &parse_state, PE_START_EVENTS);
-> >  	perf_pmu__parse_cleanup();
-> > +
-> > +	if (!ret && list_empty(&parse_state.list)) {
-> > +		WARN_ONCE(true, "WARNING: event parser found nothing\n");
-> > +		return -1;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Add list to the evlist even with errors to allow callers to clean up.
-> > +	 */
-> > +	perf_evlist__splice_list_tail(evlist, &parse_state.list);
-> > +
-> >  	if (!ret) {
-> >  		struct evsel *last;
-> >  
-> > -		if (list_empty(&parse_state.list)) {
-> > -			WARN_ONCE(true, "WARNING: event parser found nothing\n");
-> > -			return -1;
-> > -		}
-> > -
-> > -		perf_evlist__splice_list_tail(evlist, &parse_state.list);
-> >  		evlist->nr_groups += parse_state.nr_groups;
-> >  		last = evlist__last(evlist);
-> >  		last->cmdline_group_boundary = true;
-> > -- 
-> > 2.24.0.rc0.303.g954a862665-goog
-> > 
-
--- 
-
-- Arnaldo
+> diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+> index 3d9bcc957f7d..5ffea8e34771 100644
+> --- a/drivers/net/vxlan.c
+> +++ b/drivers/net/vxlan.c
+> @@ -793,8 +793,7 @@ static int vxlan_gro_complete(struct sock *sk, struct sk_buff *skb, int nhoff)
+>  	return eth_gro_complete(skb, nhoff + sizeof(struct vxlanhdr));
+>  }
+>  
+> -static struct vxlan_fdb *vxlan_fdb_alloc(struct vxlan_dev *vxlan,
+> -					 const u8 *mac, __u16 state,
+> +static struct vxlan_fdb *vxlan_fdb_alloc(const u8 *mac, __u16 state,
+>  					 __be32 src_vni, __u16 ndm_flags)
+>  {
+>  	struct vxlan_fdb *f;
+> @@ -835,7 +834,7 @@ static int vxlan_fdb_create(struct vxlan_dev *vxlan,
+>  		return -ENOSPC;
+>  
+>  	netdev_dbg(vxlan->dev, "add %pM -> %pIS\n", mac, ip);
+> -	f = vxlan_fdb_alloc(vxlan, mac, state, src_vni, ndm_flags);
+> +	f = vxlan_fdb_alloc(mac, state, src_vni, ndm_flags);
+>  	if (!f)
+>  		return -ENOMEM;
+>  
+> -- 
+> 2.21.0
+> 
