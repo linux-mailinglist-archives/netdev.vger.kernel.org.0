@@ -2,192 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA556E9A65
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 11:52:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A78E9A69
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 11:53:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726940AbfJ3Kw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 06:52:26 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54872 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726096AbfJ3Kw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 06:52:26 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E791A58006C;
-        Wed, 30 Oct 2019 10:52:24 +0000 (UTC)
-Received: from cim-opti7060.uk.solarflarecom.com (10.17.20.154) by
- ukex01.SolarFlarecom.com (10.17.10.4) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Wed, 30 Oct 2019 10:52:20 +0000
-From:   Charles McLachlan <cmclachlan@solarflare.com>
-Subject: [PATCH net-next v3 6/6] sfc: add XDP counters to ethtool stats
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
-        <brouer@redhat.com>
-References: <515c107e-cecb-869a-6c84-1f3c1bd3afce@solarflare.com>
-Message-ID: <a03d3a1a-5b66-63ae-6f41-417d93479a9e@solarflare.com>
-Date:   Wed, 30 Oct 2019 10:52:16 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1726783AbfJ3Kxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 06:53:33 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37354 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726096AbfJ3Kxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 06:53:33 -0400
+Received: by mail-qk1-f194.google.com with SMTP id u184so2216606qkd.4;
+        Wed, 30 Oct 2019 03:53:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=8zfQv3Xki4Cwco9FWvIu+r1BeLLDFHeAY3R7QSmiuMo=;
+        b=Glb/pI8vDZQT+iB1Ltkzc9PN1qYd+MB8Z1qRCP/KQih+4RPEk4C3vkbB1NkMED7lSc
+         ZBKjH7X+FVQgD/2vngEhE79Mw6QRMj4vrkgGte1f1jV+VqFajDkfHm/FJCykKak0wZQB
+         A3m/fpAifNUHRXajaeNwdCyIMF+5LIjdx2hCarVmkAdGPOJRs/Ap2n9hX+t3j2jpgKRe
+         fzJ2RZuc43Vvdb6jMTvw7YXoJHFXVjQwTg6a1NF6kqxRHqOVxTkUbrxxoDd1liOiNqUH
+         iRKSB6p/5LL2QQiiUV1WqBG2h2hERCQoRhaXhxZAr9DEKnNpjGv1KaBGyzbwoudL9GSM
+         seyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=8zfQv3Xki4Cwco9FWvIu+r1BeLLDFHeAY3R7QSmiuMo=;
+        b=eJ+F2yuX8dLJHhP1upu4s2bF3uLPBedp2ppbyhOb0nQOATc1sD6ypIv3J3YLXwvJGU
+         FD3tXtcm9h+G17gMPX5fWurV4YL2nn/YPodFeJCAdal1MBjF8e0t7F3B+onPF+p2SIe8
+         lCfu47Vk/Ex+auepDYjZsZhEzbXEWwimMNv6h0GbpPMlGDhda9Dumf1twQq4WkUB7+RG
+         mpPPDqnExOs83IHpurOTe//qdk9a94Q0iR1kOXUGfSoRI4yx7ktkIHrpH+pgiX/tY1RF
+         GIFOTyq/p+HtX9nOq6K8LaVIBw0EJ6UwAL0QLa7IPJc1bpMmpRZqhlssfmvoB5G8zood
+         C4dA==
+X-Gm-Message-State: APjAAAWas+hFbxlMk/r8lzcIlF16kmSPeT2Yp9ZirVenmi5Wz1CJGJcX
+        XqyYOCRN4BeFCRgqYSMEuLravwO622LRcT/7/44=
+X-Google-Smtp-Source: APXvYqz1DHXJvOx3DQNntXZk6zfb54piZB5aA5siCOTzUlgd8mL4J9ciwq9W1fGLzrcU6fLeXPrkDJZCQJiT9hlGHCU=
+X-Received: by 2002:a05:620a:1364:: with SMTP id d4mr26418046qkl.218.1572432812006;
+ Wed, 30 Oct 2019 03:53:32 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <515c107e-cecb-869a-6c84-1f3c1bd3afce@solarflare.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.154]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25010.003
-X-TM-AS-Result: No-2.817000-8.000000-10
-X-TMASE-MatchedRID: As0DhXnwvkdbbYRuf3nrh7sHVDDM5xAP1JP9NndNOkVZXO8zVe6AWnnU
-        bFaXoymefGzuoVn0Vs6PQi9XuOWoOHI/MxNRI7UkiwmGIOAfkmEKogTtqoQiBuD0a1g8E91LNOo
-        nVn0dhPcvGKSWy7bk6ABHRU9VJ7rBUneYLfqI2oh1e7Xbb6Im2mf6wD367VgtUjFJwpdmcrQ2m2
-        uVGloE8VWrn6UBj2xcWfXwCgkDovjHx0bvkFFh/r6EJGSqPePTB4Id7CiQcz/J2YQ3RSF2REcqj
-        CyI/1gNbXRjJgWvj8tf3B3TCH0gItMsGRKm0bkEzNIobH2DzGHrixWWWJYrH01+zyfzlN7yvaMR
-        kAFPKY2tIWznhjjBtfoLR4+zsDTt+GYUedkXNWrDwRlVKYTqhQqv6RYqUunntxL0bNKc4kEHHKY
-        s/hkM9MShshNOfu2M1sAV2HFW6Zpf2Tsd8RnhwJahDd8y7PVEXQ90N6gfeDrtfQ1SPvnqTJqVXU
-        XjGsjz2F+vBZls4K+yaqc7gc0b5cNrTE0oNMe+
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.817000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25010.003
-X-MDID: 1572432745-QEyGz33h_UwC
+References: <20191030114313.75b3a886@carbon>
+In-Reply-To: <20191030114313.75b3a886@carbon>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 30 Oct 2019 11:53:21 +0100
+Message-ID: <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
+Subject: Re: Compile build issues with samples/bpf/ again
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Sage <eric@sage.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Count XDP packet drops, error drops, transmissions and redirects and
-expose these counters via the ethtool stats command.
+On Wed, 30 Oct 2019 at 11:43, Jesper Dangaard Brouer <brouer@redhat.com> wr=
+ote:
+>
+> Hi Maintainers,
+>
+> It is annoy to experience that simply building kernel tree samples/bpf/
+> is broken as often as it is.  Right now, build is broken in both DaveM
+> net.git and bpf.git.  ACME have some build fixes queued from Bj=C3=B6rn
+> T=C3=B6pel. But even with those fixes, build (for samples/bpf/task_fd_que=
+ry_user.c)
+> are still broken, as reported by Eric Sage (15 Oct), which I have a fix f=
+or.
+>
 
-Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
----
- drivers/net/ethernet/sfc/ethtool.c    | 25 +++++++++++++++++++++++++
- drivers/net/ethernet/sfc/net_driver.h |  8 ++++++++
- drivers/net/ethernet/sfc/rx.c         |  9 +++++++++
- 3 files changed, 42 insertions(+)
+Hmm, something else than commit e55190f26f92 ("samples/bpf: Fix build
+for task_fd_query_user.c")?
 
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
-index 86b965875540..8db593fb9699 100644
---- a/drivers/net/ethernet/sfc/ethtool.c
-+++ b/drivers/net/ethernet/sfc/ethtool.c
-@@ -83,6 +83,10 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[] = {
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_frm_trunc),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_events),
- 	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_packets),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_drops),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_bad_drops),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_tx),
-+	EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_redirect),
- };
- 
- #define EFX_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efx_sw_stat_desc)
-@@ -399,6 +403,19 @@ static size_t efx_describe_per_queue_stats(struct efx_nic *efx, u8 *strings)
- 			}
- 		}
- 	}
-+	if (efx->xdp_tx_queue_count && efx->xdp_tx_queues) {
-+		unsigned short xdp;
-+
-+		for (xdp = 0; xdp < efx->xdp_tx_queue_count; xdp++) {
-+			n_stats++;
-+			if (strings) {
-+				snprintf(strings, ETH_GSTRING_LEN,
-+					 "tx-xdp-cpu-%hu.tx_packets", xdp);
-+				strings += ETH_GSTRING_LEN;
-+			}
-+		}
-+	}
-+
- 	return n_stats;
- }
- 
-@@ -509,6 +526,14 @@ static void efx_ethtool_get_stats(struct net_device *net_dev,
- 			data++;
- 		}
- 	}
-+	if (efx->xdp_tx_queue_count && efx->xdp_tx_queues) {
-+		int xdp;
-+
-+		for (xdp = 0; xdp < efx->xdp_tx_queue_count; xdp++) {
-+			data[0] = efx->xdp_tx_queues[xdp]->tx_packets;
-+			data++;
-+		}
-+	}
- 
- 	efx_ptp_update_stats(efx, data);
- }
-diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-index 505ddc060e64..04e49eac7327 100644
---- a/drivers/net/ethernet/sfc/net_driver.h
-+++ b/drivers/net/ethernet/sfc/net_driver.h
-@@ -453,6 +453,10 @@ enum efx_sync_events_state {
-  *	lack of descriptors
-  * @n_rx_merge_events: Number of RX merged completion events
-  * @n_rx_merge_packets: Number of RX packets completed by merged events
-+ * @n_rx_xdp_drops: Count of RX packets intentionally dropped due to XDP
-+ * @n_rx_xdp_bad_drops: Count of RX packets dropped due to XDP errors
-+ * @n_rx_xdp_tx: Count of RX packets retransmitted due to XDP
-+ * @n_rx_xdp_redirect: Count of RX packets redirected to a different NIC by XDP
-  * @rx_pkt_n_frags: Number of fragments in next packet to be delivered by
-  *	__efx_rx_packet(), or zero if there is none
-  * @rx_pkt_index: Ring index of first buffer for next packet to be delivered
-@@ -506,6 +510,10 @@ struct efx_channel {
- 	unsigned int n_rx_nodesc_trunc;
- 	unsigned int n_rx_merge_events;
- 	unsigned int n_rx_merge_packets;
-+	unsigned int n_rx_xdp_drops;
-+	unsigned int n_rx_xdp_bad_drops;
-+	unsigned int n_rx_xdp_tx;
-+	unsigned int n_rx_xdp_redirect;
- 
- 	unsigned int rx_pkt_n_frags;
- 	unsigned int rx_pkt_index;
-diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-index 91f6d5b9ceac..a7d9841105d8 100644
---- a/drivers/net/ethernet/sfc/rx.c
-+++ b/drivers/net/ethernet/sfc/rx.c
-@@ -677,6 +677,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 			netif_err(efx, rx_err, efx->net_dev,
- 				  "XDP is not possible with multiple receive fragments (%d)\n",
- 				  channel->rx_pkt_n_frags);
-+		channel->n_rx_xdp_bad_drops++;
- 		return false;
- 	}
- 
-@@ -722,6 +723,9 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 			if (net_ratelimit())
- 				netif_err(efx, rx_err, efx->net_dev,
- 					  "XDP TX failed (%d)\n", err);
-+			channel->n_rx_xdp_bad_drops++;
-+		} else {
-+			channel->n_rx_xdp_tx++;
- 		}
- 		break;
- 
-@@ -732,12 +736,16 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 			if (net_ratelimit())
- 				netif_err(efx, rx_err, efx->net_dev,
- 					  "XDP redirect failed (%d)\n", err);
-+			channel->n_rx_xdp_bad_drops++;
-+		} else {
-+			channel->n_rx_xdp_redirect++;
- 		}
- 		break;
- 
- 	default:
- 		bpf_warn_invalid_xdp_action(xdp_act);
- 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		channel->n_rx_xdp_bad_drops++;
- 		break;
- 
- 	case XDP_ABORTED:
-@@ -745,6 +753,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
- 		/* Fall through */
- 	case XDP_DROP:
- 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
-+		channel->n_rx_xdp_drops++;
- 		break;
- 	}
- 
+> Could maintainers add building samples/bpf/ to their build test scripts?
+> (make headers_install && make M=3Dsamples/bpf)
+>
+> Also I discovered, the command to build have also recently changed:
+> - Before : make samples/bpf/   or  simply make in subdir samples/bpf/
+> - new cmd: make M=3Dsamples/bpf  and in subdir is broken
+>
+> Anyone knows what commit introduced this change?
+> (I need it for a fixes tag, when updating README.rst doc)
+>
+> --
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>
