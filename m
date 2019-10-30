@@ -2,81 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2596DEA53F
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:13:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0C74EA545
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 22:18:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727231AbfJ3VND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 17:13:03 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:60360 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726261AbfJ3VNC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:13:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-        :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=o8QfUcMnS8gUqdR9fcwA2U7OZTwxBYhfTAbhIYY+zu4=; b=Oqch6uLD557DcBUZjgvWwwMX4l
-        Xe8fOdomS+HhHcCbKcIdk1C6JWUJeEoAiTL47GZFFbWIeTAOS+NrbZql1Vy1VRYb1a0UTHq7hDS40
-        VPga50HTic0DuL3sDepHWITdnLB8Ln0qe/Z/rIuWvQGSa/a8htWX8Ow1bpobltTesY8+yDeV7FJFJ
-        jzvU7sMRNXByvRbd4qM91DxiIMj3uQ4fRezQvwflh31XX82UJCaXaiDjlTgGSrZPmieLP1Tbnchiz
-        9Bl0+0lTQoHDSfVYMMorsOJjW4duVTdpL+jN1dUJI9UTEHA6tr7v3FJI5tt3C7m/MfdAxi4FYKDFm
-        8mthse8A==;
-Received: from [199.255.44.128] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iPvH3-0007gs-Pf; Wed, 30 Oct 2019 21:13:01 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     linux-mips@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] net: sgi: ioc3-eth: fix setting NETIF_F_HIGHDMA
-Date:   Wed, 30 Oct 2019 14:12:33 -0700
-Message-Id: <20191030211233.30157-5-hch@lst.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191030211233.30157-1-hch@lst.de>
-References: <20191030211233.30157-1-hch@lst.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        id S1727043AbfJ3VSi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 17:18:38 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:46686 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726261AbfJ3VSi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 17:18:38 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 735C814C60CF9;
+        Wed, 30 Oct 2019 14:18:37 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 14:18:34 -0700 (PDT)
+Message-Id: <20191030.141834.1101560184694944976.davem@davemloft.net>
+To:     xiangxia.m.yue@gmail.com
+Cc:     gvrose8192@gmail.com, pshelar@ovn.org, netdev@vger.kernel.org,
+        dev@openvswitch.org
+Subject: Re: [PATCH net-next v5 02/10] net: openvswitch: convert mask list
+ in mask array
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1571472524-73832-3-git-send-email-xiangxia.m.yue@gmail.com>
+References: <1571472524-73832-1-git-send-email-xiangxia.m.yue@gmail.com>
+        <1571472524-73832-3-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 30 Oct 2019 14:18:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set NETIF_F_HIGHDMA together with the NETIF_F_IP_CSUM flag insted of
-letting the second assignment overwrite it.  Probably doesn't matter
-in practice as none of the systems a IOC3 is usually found in has
-highmem to start with.
+From: xiangxia.m.yue@gmail.com
+Date: Sat, 19 Oct 2019 16:08:36 +0800
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- drivers/net/ethernet/sgi/ioc3-eth.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> @@ -611,13 +683,8 @@ struct sw_flow *ovs_flow_tbl_lookup_ufid(struct flow_table *tbl,
+>  
+>  int ovs_flow_tbl_num_masks(const struct flow_table *table)
+>  {
+> -	struct sw_flow_mask *mask;
+> -	int num = 0;
+> -
+> -	list_for_each_entry(mask, &table->mask_list, list)
+> -		num++;
+> -
+> -	return num;
+> +	struct mask_array *ma = rcu_dereference_ovsl(table->mask_array);
+> +	return ma->count;
+>  }
 
-diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
-index dc2e22652b55..1af68826810a 100644
---- a/drivers/net/ethernet/sgi/ioc3-eth.c
-+++ b/drivers/net/ethernet/sgi/ioc3-eth.c
-@@ -1192,8 +1192,6 @@ static int ioc3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto out_disable;
- 	}
- 
--	dev->features |= NETIF_F_HIGHDMA;
--
- 	err = pci_request_regions(pdev, "ioc3");
- 	if (err)
- 		goto out_free;
-@@ -1274,7 +1272,7 @@ static int ioc3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	dev->netdev_ops		= &ioc3_netdev_ops;
- 	dev->ethtool_ops	= &ioc3_ethtool_ops;
- 	dev->hw_features	= NETIF_F_IP_CSUM | NETIF_F_RXCSUM;
--	dev->features		= NETIF_F_IP_CSUM;
-+	dev->features		= NETIF_F_IP_CSUM | NETIF_F_HIGHDMA;
- 
- 	sw_physid1 = ioc3_mdio_read(dev, ip->mii.phy_id, MII_PHYSID1);
- 	sw_physid2 = ioc3_mdio_read(dev, ip->mii.phy_id, MII_PHYSID2);
--- 
-2.20.1
-
+Please put an empty line between the variable declarations and the start of the
+code in this function.
