@@ -2,183 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A18BEA3F2
-	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 20:17:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 713F7EA3F9
+	for <lists+netdev@lfdr.de>; Wed, 30 Oct 2019 20:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726812AbfJ3TRj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 15:17:39 -0400
-Received: from mail-eopbgr20076.outbound.protection.outlook.com ([40.107.2.76]:46756
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726530AbfJ3TRi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 30 Oct 2019 15:17:38 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dDI3IH9RBLlnPOQNSIkiEw2C00bvmRZYByL387qo7O47MTX5ujNGGfAJufOD9my40IilKMonUf0+tKTvKGrCfTEh3+Surmnj7W8KpEn9aXCugDw75Cc3vj6c8RFecYuNLskAqVCiToP0HHItimzY5M9GyhSjxi4zp7y+g8ERGUuO+PScIMV+4/COEw8bIK/Abz1ji8G+azeiH9+3ZY56Ph6CZ+ZFMz0mz31YLxC2qKQAMUXN4uWbMboUvZDOsMgrFVDRDlKhiSuW9u7xGu7M7oyaccW0DmLLUjew8bQJdqDloHz5jYQiJWBT8c6oh1fdqeHr4OvS5w+lyImurvLkrw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cgmXPTzgM0DWUIPmo6jRs/kZTohE+JmCR0SBw5nbglQ=;
- b=VcBmyc7/P1ET+dyh5Q+8Z1u3Dy9vdC0FRleiCmCtGW8NgTZUqX/jkPQB2KDsb+DthNTY4dGE6CZGn8vyVAMS/zc/rI/VZn5lEiAnqVUVx4+TdHeJfCGcJhoV6HI/QkYEhtLdLET43MESHYt1V6Gg4n7mS0WAl6++VTmhrWP9P2K49eqLT0VVD0olbA+yHmTCkvTVQUBd6QpUkpnyfFZx6DlJfjOIfeKikGy9Q4Rc0t461s7+7SgX6vsg1JfnLgBcSqkQaWPrUlNNWr+CA2g1aHR3lpX/waH6xBBg2fOs2DJD/eWVgKFlXnpUsOP2xl3MZE97Ds9J6oZuNNqdFPzOIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cgmXPTzgM0DWUIPmo6jRs/kZTohE+JmCR0SBw5nbglQ=;
- b=TNr83A/hcRfs3EwES8AEEL+s0OUrry17pQ/fl8vswNI5nFyGEJkKvU/AcTYXQS+tvuAxUi33Pl1oXgBu1tkK8zjzGvT6LmfNaBVV3O2G/37HpLAkm7jsLPaHUXvatmIkvIi5E0BMCzYk6NfAd7/5qIWPBdfC8vNxjK4qVxeIvVM=
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com (10.171.189.29) by
- AM4PR05MB3412.eurprd05.prod.outlook.com (10.171.188.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.17; Wed, 30 Oct 2019 19:17:32 +0000
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc]) by AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc%4]) with mapi id 15.20.2408.016; Wed, 30 Oct 2019
- 19:17:32 +0000
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        Ariel Levkovich <lariel@mellanox.com>
-Subject: [PATCH 2/3] ip: Present the VF VLAN tagging mode
-Thread-Topic: [PATCH 2/3] ip: Present the VF VLAN tagging mode
-Thread-Index: AQHVj1atGKLK/HH3t0eZWB1MYBrmoA==
-Date:   Wed, 30 Oct 2019 19:17:32 +0000
-Message-ID: <1572463033-26368-3-git-send-email-lariel@mellanox.com>
-References: <1572463033-26368-1-git-send-email-lariel@mellanox.com>
-In-Reply-To: <1572463033-26368-1-git-send-email-lariel@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [94.188.199.18]
-x-mailer: git-send-email 1.8.3.1
-x-clientproxiedby: AM0PR02CA0072.eurprd02.prod.outlook.com
- (2603:10a6:208:d2::49) To AM4PR05MB3313.eurprd05.prod.outlook.com
- (2603:10a6:205:9::29)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lariel@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a0d917fd-6c8e-41a9-4893-08d75d6dd011
-x-ms-traffictypediagnostic: AM4PR05MB3412:|AM4PR05MB3412:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3412F4BD2E1C5396D8142828BA600@AM4PR05MB3412.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2150;
-x-forefront-prvs: 02065A9E77
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(136003)(396003)(376002)(39860400002)(189003)(199004)(476003)(486006)(66946007)(66446008)(14444005)(66476007)(2616005)(6116002)(11346002)(3846002)(2906002)(71190400001)(66556008)(71200400001)(446003)(5660300002)(4720700003)(64756008)(256004)(8676002)(66066001)(86362001)(2501003)(81156014)(8936002)(478600001)(76176011)(102836004)(6486002)(26005)(50226002)(6506007)(386003)(6436002)(52116002)(7736002)(5640700003)(186003)(1730700003)(81166006)(305945005)(25786009)(54906003)(6916009)(316002)(14454004)(4326008)(107886003)(99286004)(2351001)(6512007)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3412;H:AM4PR05MB3313.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: l23SoR09IHt+yB+a/H5D3vF9IxZ49Ff/otDAfE3nyxH5rR/I2KCgK3DAf75Eba3KXHqKAdDkptemCOjVptCloyb0tEH4wN7XQ7QcM34WKNvZXkjoxvmk73GikDJjhGHeDIwszJAE/0xNYmX1Mm2pjcnO1z3261UDo82K8grC4/VMBEiqOCzGQp1GtlRu4C2ne+Kt+DgQiKahn7vc2LCVyvzx3TEvGwnHWO9s64fkyOpcXBzrx2LRFGSC97iT8L5/CQ3SqN6xrFkzZZsS1Ejtz7cOh5enkKVE0UV1RiYX1DtwO5Sodpvo5IiyyFdfPOeOUENsE5qUvyCi2NOrsTFCfgccpd+z2CiiY6GNZmeN0cRk+fbMOPEai2l1N+3f9IlWaRROVq6DNJ6fQOGtfalbatzytWejbOMlRE43h0g0IxXpSqVukJWF43tI1vU6NIeZ
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1726488AbfJ3TWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 15:22:09 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:40869 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726304AbfJ3TWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 15:22:08 -0400
+Received: by mail-io1-f69.google.com with SMTP id 125so2643532iou.7
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 12:22:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=khoGcAG7R6/Th/Ql7oDqglP9PTs7MZlRnfGjkI25LVM=;
+        b=NHJhrT1BYYM8f+H8c+/IMSemX2wuZYv50wJ0tHL9nI1tVGTQeYt/FVGVePhDKMRLX7
+         vKMR6sJK4HYz+NYt8LU84pqlYQuQ+fQNeSlsI9bCEq5MBLYcF40LVYZHZNYTMhpzmmR4
+         ILroitamc96amAQe2MyY5JomzLiWtFvXeoU9Vg0eLa4uRPVxfrSYQvVQrs8MceYSiNSE
+         0W2gidQdjQTtGVFipqrhRfXAQovMwtNDCP8ktACn0+9Fum3xo6RM+jqLeeNeYG0JzZpe
+         ajeaLhgOAJCn/6lvvx31RxaTkWCpE3z2RJJqXxuvMNfubtuYFCxactFU2v+jxEJ6++hA
+         bJrQ==
+X-Gm-Message-State: APjAAAX0mKEvdQxzfBixuZTAtkuATryRGeNvQd6gyeN1gUZv4G9AgAjH
+        wOre/TKPcrJEnrgP2hx+zEL0HztfT4FmUvkqpKFhyvRZplfT
+X-Google-Smtp-Source: APXvYqz0jpZtYd1ylVPYuYGc+K+FpHCDQZ2CiqF98OVVfySYUsaC8liAfwZ5bVayIukFm/18+nLkIlbzusYaB3vapIrCF9sZ2TOJ
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0d917fd-6c8e-41a9-4893-08d75d6dd011
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2019 19:17:32.1305
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ujXk57dRZBmXbBmxgxznZAI4VFVHaodOARKxQRNtRHy8JcwrtHsJTP+/wO5R2kJ2Voeffd09ZI87jaP9FhzBlQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3412
+X-Received: by 2002:a5d:9059:: with SMTP id v25mr1343320ioq.58.1572463327820;
+ Wed, 30 Oct 2019 12:22:07 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 12:22:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000013c4c1059625a655@google.com>
+Subject: KMSAN: uninit-value in cdc_ncm_set_dgram_size
+From:   syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, oliver@neukum.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The change prints the VLAN tagging mode per VF on
-link query.
+Hello,
 
-The possible modes are:
-1) VGT - Virtual Guest tagging mode.
-2) VST - Virtual Switch tagging mode.
-3) Trunk - Guest tagging mode with specific allowed VLAN access list.
+syzbot found the following crash on:
 
-For the full VLAN ids list in Trunk mode, it is required to
-query the specific VF.
+HEAD commit:    96c6c319 net: kasan: kmsan: support CONFIG_GENERIC_CSUM on..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=11f103bce00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9e324dfe9c7b0360
+dashboard link: https://syzkaller.appspot.com/bug?extid=0631d878823ce2411636
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10dd9774e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13651a24e00000
 
-Signed-off-by: Ariel Levkovich <lariel@mellanox.com>
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+0631d878823ce2411636@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in cdc_ncm_set_dgram_size+0x6ba/0xbc0  
+drivers/net/usb/cdc_ncm.c:587
+CPU: 0 PID: 11865 Comm: kworker/0:3 Not tainted 5.4.0-rc5+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: usb_hub_wq hub_event
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x128/0x220 mm/kmsan/kmsan_report.c:108
+  __msan_warning+0x73/0xe0 mm/kmsan/kmsan_instr.c:245
+  cdc_ncm_set_dgram_size+0x6ba/0xbc0 drivers/net/usb/cdc_ncm.c:587
+  cdc_ncm_setup drivers/net/usb/cdc_ncm.c:673 [inline]
+  cdc_ncm_bind_common+0x2b54/0x3c50 drivers/net/usb/cdc_ncm.c:928
+  cdc_ncm_bind+0x2de/0x330 drivers/net/usb/cdc_ncm.c:1042
+  usbnet_probe+0x10d3/0x39d0 drivers/net/usb/usbnet.c:1730
+  usb_probe_interface+0xd19/0x1310 drivers/usb/core/driver.c:361
+  really_probe+0xd91/0x1f90 drivers/base/dd.c:552
+  driver_probe_device+0x1ba/0x510 drivers/base/dd.c:721
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:828
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:430
+  __device_attach+0x489/0x750 drivers/base/dd.c:894
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:941
+  bus_probe_device+0x131/0x390 drivers/base/bus.c:490
+  device_add+0x25b5/0x2df0 drivers/base/core.c:2202
+  usb_set_configuration+0x309f/0x3710 drivers/usb/core/message.c:2027
+  generic_probe+0xe7/0x280 drivers/usb/core/generic.c:210
+  usb_probe_device+0x146/0x200 drivers/usb/core/driver.c:266
+  really_probe+0xd91/0x1f90 drivers/base/dd.c:552
+  driver_probe_device+0x1ba/0x510 drivers/base/dd.c:721
+  __device_attach_driver+0x5b8/0x790 drivers/base/dd.c:828
+  bus_for_each_drv+0x28e/0x3b0 drivers/base/bus.c:430
+  __device_attach+0x489/0x750 drivers/base/dd.c:894
+  device_initial_probe+0x4a/0x60 drivers/base/dd.c:941
+  bus_probe_device+0x131/0x390 drivers/base/bus.c:490
+  device_add+0x25b5/0x2df0 drivers/base/core.c:2202
+  usb_new_device+0x23e5/0x2fb0 drivers/usb/core/hub.c:2536
+  hub_port_connect drivers/usb/core/hub.c:5098 [inline]
+  hub_port_connect_change drivers/usb/core/hub.c:5213 [inline]
+  port_event drivers/usb/core/hub.c:5359 [inline]
+  hub_event+0x581d/0x72f0 drivers/usb/core/hub.c:5441
+  process_one_work+0x1572/0x1ef0 kernel/workqueue.c:2269
+  process_scheduled_works kernel/workqueue.c:2331 [inline]
+  worker_thread+0x189c/0x2460 kernel/workqueue.c:2417
+  kthread+0x4b5/0x4f0 kernel/kthread.c:256
+  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+
+Local variable description: ----max_datagram_size@cdc_ncm_set_dgram_size
+Variable was created at:
+  cdc_ncm_set_dgram_size+0xf5/0xbc0 drivers/net/usb/cdc_ncm.c:564
+  cdc_ncm_set_dgram_size+0xf5/0xbc0 drivers/net/usb/cdc_ncm.c:564
+=====================================================
+
+
 ---
- include/uapi/linux/if_link.h | 14 ++++++++++++++
- ip/ipaddress.c               | 21 ++++++++++++++++++++-
- 2 files changed, 34 insertions(+), 1 deletion(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index d39017b..6304add 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -697,6 +697,7 @@ enum {
- 	IFLA_VF_IB_PORT_GUID,	/* VF Infiniband port GUID */
- 	IFLA_VF_VLAN_LIST,	/* nested list of vlans, option for QinQ */
- 	IFLA_VF_BROADCAST,	/* VF broadcast */
-+	IFLA_VF_VLAN_MODE,	/* vlan tagging mode */
- 	__IFLA_VF_MAX,
- };
-=20
-@@ -711,6 +712,19 @@ struct ifla_vf_broadcast {
- 	__u8 broadcast[32];
- };
-=20
-+enum {
-+	IFLA_VF_VLAN_MODE_UNSPEC,
-+	IFLA_VF_VLAN_MODE_VGT,
-+	IFLA_VF_VLAN_MODE_VST,
-+	IFLA_VF_VLAN_MODE_TRUNK,
-+	__IFLA_VF_VLAN_MODE_MAX,
-+};
-+
-+struct ifla_vf_vlan_mode {
-+	__u32 vf;
-+	__u32 mode; /* The VLAN tagging mode */
-+};
-+
- struct ifla_vf_vlan {
- 	__u32 vf;
- 	__u32 vlan; /* 0 - 4095, 0 disables VLAN filter */
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 0521fdc..a66ca02 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -357,7 +357,6 @@ static void print_vfinfo(FILE *fp, struct ifinfomsg *if=
-i, struct rtattr *vfinfo)
- 	struct ifla_vf_broadcast *vf_broadcast;
- 	struct ifla_vf_tx_rate *vf_tx_rate;
- 	struct rtattr *vf[IFLA_VF_MAX + 1] =3D {};
--
- 	SPRINT_BUF(b1);
-=20
- 	if (vfinfo->rta_type !=3D IFLA_VF_INFO) {
-@@ -404,6 +403,26 @@ static void print_vfinfo(FILE *fp, struct ifinfomsg *i=
-fi, struct rtattr *vfinfo)
- 					       b1, sizeof(b1)));
- 	}
-=20
-+	if (vf[IFLA_VF_VLAN_MODE]) {
-+		struct ifla_vf_vlan_mode *vlan_mode =3D RTA_DATA(vf[IFLA_VF_VLAN_MODE]);
-+
-+		if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_TRUNK)
-+			print_string(PRINT_ANY,
-+				     "vlan-mode",
-+				      ", vlan-mode %s",
-+				      "trunk");
-+		else if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_VST)
-+			print_string(PRINT_ANY,
-+				     "vlan-mode",
-+				     ", vlan_mode %s",
-+				     "vst");
-+		else if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_VGT)
-+			print_string(PRINT_ANY,
-+				     "vlan-mode",
-+				     ", vlan-mode %s",
-+				     "vgt");
-+	}
-+
- 	if (vf[IFLA_VF_VLAN_LIST]) {
- 		struct rtattr *i, *vfvlanlist =3D vf[IFLA_VF_VLAN_LIST];
- 		int rem =3D RTA_PAYLOAD(vfvlanlist);
---=20
-1.8.3.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
