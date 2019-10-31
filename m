@@ -2,133 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB7DCEB878
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 21:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F150EB881
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 21:41:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729768AbfJaUj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 16:39:27 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:44986 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727477AbfJaUj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 16:39:27 -0400
-Received: by mail-lj1-f194.google.com with SMTP id g3so1952296ljl.11;
-        Thu, 31 Oct 2019 13:39:25 -0700 (PDT)
+        id S1729774AbfJaUlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 16:41:53 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:33659 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727477AbfJaUlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 16:41:52 -0400
+Received: by mail-il1-f196.google.com with SMTP id s6so6708021iln.0
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 13:41:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FC/oQ8+7Q+YoCj6capL5FnDUkmWCjdIppXqxhU/gz4w=;
-        b=GyTjR8lbJWtROpfgXjW2aoT12j8XIUUFWkMkroQeN2iYdl60KmxalHo7CrS55g8n/o
-         dSFczYuOAyz4KFP3brocXM6pwuvt9FQfA95/VKdX9NALpJrGUUTmN6QxDhZ/2GvD/w/6
-         EiYXs7ymBW5w81mc0w6Npl1kvIVvio1UK0AWsM0jabub78A9KcrUyovg01SSJ/YxNpK9
-         6SrxnaSGD99Or4XuOWGEloCs/gudzbVd1EY//8gQvQqmA1cW4Vl7qiOGHFCwGu8lBvLK
-         7gorVO/FHBCx4oAzlIh1cPzTYIBJbM0qtzqRchjQ4G52x2kqonFSVfhZR9aEyMbxM490
-         6gxg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=mKI0y2oFiFckExZRdMUfYw+OEUayJVMbJHlBqNKBhj8=;
+        b=gox9+Jk+QENDuJyoSp9cXgM8i9qRcGudQMqWuFwpk4QQewpvy/lHTgjevRLMjNzoK+
+         4kHQoQuLACrK5iIv0ID/2s1EJAvILRRHbVH8FqiVrfOpY18d6l8xaTzvNylmPZYc4dT3
+         Y9qjs9fsK38/xlFJL5wQKVbFDsby/3zONa7+B2zC+wSVURr6ieWdROK0ySy6P+5J5aS9
+         maknEVFDBARHC+b4ZVWh86fj8t/jO98+kSy9CwNU4deR0xAR7XszmEZf1IwpuH4o2Rpi
+         tC+R87TUZeFAuDe11RMvetHsrjpGmW/F5qGo6VXXuFCqmCYM66Zr93Tlmpl2xFNQ5GgD
+         m2fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FC/oQ8+7Q+YoCj6capL5FnDUkmWCjdIppXqxhU/gz4w=;
-        b=PE/eIO/OkzTrWcOjUP0hN9Jqrvyi6QUQYd6731p01Zx7jqPp2SIelZh4iDk5eqtcbE
-         w7ctaFwrkXzMtHnnN115q+R72d9I+WnV+gWLs/R7bK+1F5qcJ96uHQoO7MnqYKJMhtFT
-         bi65Xan8d1eOfH/SKnZkE77UcRAbwYL6+8mjPxUTQWy6pXNWKIhZtXm4XEiljhswEUDl
-         CG+a7yBTbHh5cbStW77klA1dqq96ED8SonJokoIFlXqctAY1JDYW7Ivp1JdYm6CRLqLB
-         F6gQ1oJEIF02FhTUNXsVlHQMfVs2Yy48fd49gfiQE2Bx+0h7cn23OuBdNlXg2gCt/6x/
-         mekQ==
-X-Gm-Message-State: APjAAAX62lAVdbEExx5V3o4SBD+yVpULG4kKIyR4fDR35mm0c3PU1wEz
-        Tp6d0d38QyDHtEJYjgE/X/x77GkQvp9R39IYFxk=
-X-Google-Smtp-Source: APXvYqyDOxEhlm4EzHtn7io1ccsmsFqZe1IDyF49XKogIxqPbwdtgRthABt5t2eiIzSrdLu5C3khYoiQ9MMkw2sASE4=
-X-Received: by 2002:a2e:2e10:: with SMTP id u16mr1765161lju.51.1572554364478;
- Thu, 31 Oct 2019 13:39:24 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mKI0y2oFiFckExZRdMUfYw+OEUayJVMbJHlBqNKBhj8=;
+        b=uYPPeapMCrYGkvQiOJlNq5PC/oiYz17MEvhZ+Jt5tWM/fZko9Jhyx/LfJB4+YVioe3
+         kDnD1ukBeLQAmAexEqTpdHZ3bEpCogk6yDjbNMh37V8/3GbR7GmLH0+t80veX+SGKQ29
+         +kFhcYQ4Neh8pXGzMB6zv3FDklUIDKiRPByX9J/0ZY+pJ+oa+7vwtMBwa+CwcF1Bv82P
+         DR/tBI0hILyg8wxoSKWfEcT8EBX9H4yujnDElEDuso/DZhvTGqY2hYQ/QQjK775wovqN
+         Q4vakKJf0B/NMa+JnU2+7RF/Ls37tfsC7/OB3794vqgg4mJnCazLfVx/rAvO2SyLY01z
+         fS1Q==
+X-Gm-Message-State: APjAAAU2NPPg7+ZQor3/EEzqsNzdry7/BMyYZGuQUt+JRk228pAbdg9d
+        K6EI7uGTY3KJY/btuxJCFShHqvoH
+X-Google-Smtp-Source: APXvYqy4chlkh+D4jOuv2zoN9sj1j6SCqrsrXM27XklbOtj4V0h3NJvzP+XQwI9exxiE2EHq00S5wA==
+X-Received: by 2002:a92:a308:: with SMTP id a8mr7950597ili.65.1572554511390;
+        Thu, 31 Oct 2019 13:41:51 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:e0f1:25db:d02a:8fc2])
+        by smtp.googlemail.com with ESMTPSA id e72sm415479iof.63.2019.10.31.13.41.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Oct 2019 13:41:50 -0700 (PDT)
+Subject: Re: [Possible regression?] ip route deletion behavior change
+To:     Hendrik Donner <hd@os-cillation.de>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+References: <603d815f-f6db-3967-c0df-cbf084a1cbcd@os-cillation.de>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <9384f54f-67a0-f2dc-68f8-3216717ee63e@gmail.com>
+Date:   Thu, 31 Oct 2019 14:41:49 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.0
 MIME-Version: 1.0
-References: <CAJ+HfNimRqftmKASOdceXFJmgbLvXnNBZATTnfA9LMF2amGzzA@mail.gmail.com>
- <CAADnVQJRe4Pm-Rxx9zobn8YRHh9i+xQp7HX4gidqq9Mse7PJ5g@mail.gmail.com>
- <87lft1ngtn.fsf@toke.dk> <CAADnVQLrg6f_zjvNfiEVfdjcx9+DW_RFjVGetavvMNo=VXAR+g@mail.gmail.com>
- <87imo5ng7w.fsf@toke.dk> <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
- <87d0ednf0t.fsf@toke.dk> <CAADnVQ+V4OMjJqSdE_OQ1Vr99kqTF=ZB3UUMKiCSg=3=c+exqg@mail.gmail.com>
- <20191031174208.GC2794@krava> <CAADnVQJ=cEeFdYFGnfu6hLyTABWf2==e_1LEhBup5Phe6Jg5hw@mail.gmail.com>
- <20191031191815.GD2794@krava>
-In-Reply-To: <20191031191815.GD2794@krava>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 31 Oct 2019 13:39:12 -0700
-Message-ID: <CAADnVQJdAZS9AHx_B3SZTcWRdigZZsK1ccsYZK0qUsd1yZQqbw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without need_wakeup
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <603d815f-f6db-3967-c0df-cbf084a1cbcd@os-cillation.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 12:18 PM Jiri Olsa <jolsa@redhat.com> wrote:
-> >
-> > yes. older vmlinux and newer installed libbpf.so
-> > or any version of libbpf.a that is statically linked into apps
-> > is something that libbpf code has to support.
-> > The server can be rebooted into older than libbpf kernel and
-> > into newer than libbpf kernel. libbpf has to recognize all these
-> > combinations and work appropriately.
-> > That's what backward and forward compatibility is.
-> > That's what makes libbpf so difficult to test, develop and code review.
-> > What that particular server has in /usr/include is irrelevant.
->
-> sure, anyway we can't compile following:
->
->         tredaell@aldebaran ~ $ echo "#include <bpf/xsk.h>" | gcc -x c -
->         In file included from <stdin>:1:
->         /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__needs=
-_wakeup=E2=80=99:
->         /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_WAKEU=
-P=E2=80=99 undeclared (first use in this function)
->            82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
->         ...
->
->         XDP_RING_NEED_WAKEUP is defined in kernel v5.4-rc1 (77cd0d7b3f257=
-fd0e3096b4fdcff1a7d38e99e10).
->         XSK_UNALIGNED_BUF_ADDR_MASK and XSK_UNALIGNED_BUF_OFFSET_SHIFT ar=
-e defined in kernel v5.4-rc1 (c05cd3645814724bdeb32a2b4d953b12bdea5f8c).
->
-> with:
->   kernel-headers-5.3.6-300.fc31.x86_64
->   libbpf-0.0.5-1.fc31.x86_64
->
-> if you're saying this is not supported, I guess we could be postponing
-> libbpf rpm releases until we have the related fedora kernel released
+On 10/31/19 9:44 AM, Hendrik Donner wrote:
+> Hello,
+> 
+> analyzing a network issue on our embedded system product i found a change in behavior 
+> regarding the removal of routing table entries when an IP address is removed.
+> 
+> On older kernel releases before commit 5a56a0b3a45dd0cc5b2f7bec6afd053a474ed9f5
+> (simplified example):
+> 
+> Routing table:
+> 
+> # ip r
+> default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 1024
+> 10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
+> 10.0.2.2 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 1024
+> 10.20.0.0/14 via 10.0.2.2 dev enp0s3 src 10.20.40.100
+> 
+> The last route was manually added with ip r add.
+> 
+> Removing the IP 10.20.40.100 from enp0s3 also removes the last route:
+> 
+> # ip r
+> default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 1024
+> 10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
+> 10.0.2.2 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 1024
+> 
+> After the mentioned commit - so since v4.10 - the route will no longer be removed. At 
+> least for my team that's a surprising change in behavior because our system relies on
+> the old behavior.
+> 
+> Reverting the commit restores the old behavior.
+> 
+> I'm aware that our use case is a bit odd, but according to the commit message commit 
+> 5a56a0b3a45dd0cc5b2f7bec6afd053a474ed9f5 was meant to fix VRF related behavior while
+> having the described (maybe unintended?) user visible side effect for non-VRF usage.
+> 
 
-why? github/libbpf is the source of truth for building packages
-and afaik it builds fine.
+devices not associated with a VRF table are implicitly tied to the
+default == main table.
 
-> or how about inluding uapi headers in libbpf-devel.. but that might
-> actualy cause more confusion
+Can you test this change:
 
-Libraries (libbpf or any other) should not install headers that
-typically go into /usr/include/
-if_xdp.h case is not unique.
-We'll surely add another #define, enum, etc to uapi/linux/bpf.h tomorrow.
-And we will not copy paste these constants and types into tools/lib/bpf/.
-In kernel tree libbpf development is using kernel tree headers.
-No problem there for libbpf developers.
-Packages are built out of github/libbpf that has a copy of uapi headers
-necessary to create packages.
-No problem there for package builders either.
-But libbpf package is not going to install those uapi headers.
-libbpf package installs only libbpf own headers (like libbpf.h)
-The users that want to build against the latest libbpf package need
-to install corresponding uapi headers package.
-I don't think such dependency is specified in rpm scripts.
-May be it is something to fix? Or may be not.
-Some folks might not want to update all of /usr/include to bring libbpf-dev=
-el.
-Then it would be their responsibility to get fresh /usr/include headers.
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index 0913a090b2bf..f1888c683426 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -1814,8 +1814,8 @@ int fib_sync_down_addr(struct net_device *dev,
+__be32 local)
+        int ret = 0;
+        unsigned int hash = fib_laddr_hashfn(local);
+        struct hlist_head *head = &fib_info_laddrhash[hash];
++       int tb_id = l3mdev_fib_table(dev) ? : RT_TABLE_MAIN;
+        struct net *net = dev_net(dev);
+-       int tb_id = l3mdev_fib_table(dev);
+        struct fib_info *fi;
+
+        if (!fib_info_laddrhash || local == 0)
+
+[ As DaveM noted, you should cc maintainers and author(s) of suspected
+regression patches ]
