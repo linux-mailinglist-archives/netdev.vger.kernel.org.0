@@ -2,502 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2356EB814
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 20:42:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FBA0EB81C
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 20:47:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727502AbfJaTm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 15:42:57 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42284 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726983AbfJaTm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 15:42:57 -0400
-Received: by mail-wr1-f68.google.com with SMTP id a15so7555243wrf.9
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 12:42:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=F/VZBuvm1yZlxjphDbeG95J5RVZosbCGVxvoKhYJcE4=;
-        b=Hjuv4Q1WqO8ADxPC7Ui24ha8AnZOlfFOtVMvEZoSz9M5vxqH1wRhoVJCPBLV5gL3ZZ
-         uniVkDO5qg6sq6kRpFqdxKktxWa4MlvonOFuAzLVPz5JuGhPET43WqXwWsXo4+RSRPrW
-         jnT8AmibYnHzgOTExWH0XC3J7sqr+AO5kgwtr0dOGICtJb0r17USSvoqKY2LE1/DuN6t
-         w8ft2CcaKIlL9eCl9eAy1qZgjl0t4s7Hseugsi5VXAQLRpf/6SHDD7j65vacJIA5YACw
-         q4K4fbQzWBta+f/WSfpNw2g05Uyg24d2pyul2BwAsI26/vnFDWxTZU3Y/WSIRXWYya85
-         JeWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=F/VZBuvm1yZlxjphDbeG95J5RVZosbCGVxvoKhYJcE4=;
-        b=SPti+uncwph1Ys58Gg15YIELOawmG8FDtEMxGCs/6Wy/ABtlz1FUk7a1az9ZvbUbAp
-         l4wNVup+cgMlvKr+9ELLs00/8Wo21V9VJpUOBapaylRwLC63qE3oIckwPCAkUYpQ0FJz
-         1L6Hljndz7T8sGKUAlTLWIOdNy8WYN95SyQI4+o7+DTkwl4RNZ41BkUU44qaxE0SbrW3
-         1S7cUg2WUJfX+wasE+2CgYxFrh7onZA4cNOuBiRnrpE/3eo1foeIWHmR2u6nPAQ7DTMa
-         QyJjUHGZy72N3PI2iws8SICxlz53ml6fO5PMvx41V6QIsKvM/dppYC3YjZnTr4coLaNy
-         Z/lg==
-X-Gm-Message-State: APjAAAXw18UDxoQf44N7cAxYGTQ5zRc+ZrnhzPKpzoBr7tWQw9F3cbyp
-        a+B63jolqpYkG2ul8IBstCOQdsED
-X-Google-Smtp-Source: APXvYqwCRxIE6wFB7h7kTftHgl2OLzmgdOTp+Mz5OrtgyWTfpvUgjPZ3e20HqDuO0cepTZ6tGmmtEA==
-X-Received: by 2002:adf:f08d:: with SMTP id n13mr6881319wro.324.1572550973265;
-        Thu, 31 Oct 2019 12:42:53 -0700 (PDT)
-Received: from mail.hipco.ch ([185.243.164.39])
-        by smtp.gmail.com with ESMTPSA id z15sm5447165wrr.19.2019.10.31.12.42.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 12:42:52 -0700 (PDT)
-X-Virus-Scanned: HIPCO Annihilation Daemon
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (HIPCO Message Framework v1091)
-Subject: Re: Gentoo Linux 5.x - Tigon3
-From:   Rudolf Spring <rudolf.spring@gmail.com>
-In-Reply-To: <CAMet4B6csj+6umj+h7mdPfz+rnLrOFYe6RBhVb+-ykiAwjxJUg@mail.gmail.com>
-Date:   Thu, 31 Oct 2019 19:42:49 +0000
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Netdev <netdev@vger.kernel.org>
+        id S1729660AbfJaTra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 15:47:30 -0400
+Received: from mail-eopbgr150089.outbound.protection.outlook.com ([40.107.15.89]:11479
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727667AbfJaTra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 15:47:30 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lDP4TU6KSXmr/y9Hee5dTYXMVQqGSuoAm2QJyjlPqQYzS7kA3cQkO1DHJa6kmEOpGtGyvoRGvMcf3Yyi0Rp0X1nEI6jBVWGmEJYNvtm63jNLAG9HEcbc4fW2f7Ml+gM5tQf+k3p3T+BRUR2j4MwJJQh01aEBQgbXO8dhDH69GMsdW1jFqbUCcP3+byw1LnHRQZZVAa5snXDC3Y+JWrWCTsQv3A5MwSk33xqz2YhpZGN1KEcBjJYCkkLGlimsGqinBmiLznzu8vL1C+tXEfPeBAg3yjsnYDIfnmNTEDNCWb+/cfvBkvNBQMInjSO2cBJuDaLr/GI/3M6f6rK3QghAkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UHIjYuuBexgDVyvISJdcwr14xKzM/MsaA3GTqjGTqUs=;
+ b=Oj8rcLTKVoIF+5wYwUwP0lQueR2LCHYjwDubvXUiRvihBWi76mpB6pw2ym4FjxM0LYloXLDL1V0BWrygi5T6+OQLzcE0PC++euxDeI6TzI/RXeJAPWi+qlsQIH722tMwEjtbGxCB1UaqhmIyls+e1QEgcPfIJR7diod2Vs2aJm6kigIGVujd+cp8yTc4NdBQXBbv+J+pnV6Ct3hV3cTtc5UwUka5A30zLI3L0jemfgtXMd6qz3gUysOiK1apvuWneisOXEoxssvDSUYvWEe+KqV4IqXJPVw36DSAFkebl+icslLY21vENb2znzzYThTNMlhioxQqjNxuD7hIqC4YpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UHIjYuuBexgDVyvISJdcwr14xKzM/MsaA3GTqjGTqUs=;
+ b=cifrKvfrTN4noMwOZdgN3evjeH7/t3ugI532xrg+pMDuIq3b4ztVGAFlaBaSQq6ytr4ct4xsS3P51euuh9DpcUPF3Mvk9TQen3V4bgOxaNToiMCljtsXxnx6f2Epp9xV0zTjMkzxA9qqf0pF4IH4431w6A/4l5WNXF5xzpeHoNU=
+Received: from HE1PR05MB3323.eurprd05.prod.outlook.com (10.170.245.27) by
+ HE1PR05MB3324.eurprd05.prod.outlook.com (10.170.242.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.24; Thu, 31 Oct 2019 19:47:26 +0000
+Received: from HE1PR05MB3323.eurprd05.prod.outlook.com
+ ([fe80::e56e:f134:8521:8385]) by HE1PR05MB3323.eurprd05.prod.outlook.com
+ ([fe80::e56e:f134:8521:8385%6]) with mapi id 15.20.2387.027; Thu, 31 Oct 2019
+ 19:47:26 +0000
+From:   Ariel Levkovich <lariel@mellanox.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "sbrivio@redhat.com" <sbrivio@redhat.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        Ariel Levkovich <lariel@mellanox.com>
+Subject: [PATCH net-next v2 0/3] VGT+ support
+Thread-Topic: [PATCH net-next v2 0/3] VGT+ support
+Thread-Index: AQHVkCQFGdJo5Spx4U2AGUa6mmGmtA==
+Date:   Thu, 31 Oct 2019 19:47:25 +0000
+Message-ID: <1572551213-9022-1-git-send-email-lariel@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [94.188.199.18]
+x-mailer: git-send-email 1.8.3.1
+x-clientproxiedby: AM3PR04CA0148.eurprd04.prod.outlook.com (2603:10a6:207::32)
+ To HE1PR05MB3323.eurprd05.prod.outlook.com (2603:10a6:7:31::27)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=lariel@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e3a8e308-d217-475f-7902-08d75e3b2764
+x-ms-traffictypediagnostic: HE1PR05MB3324:|HE1PR05MB3324:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <HE1PR05MB3324AE23951652C68FFA9372BA630@HE1PR05MB3324.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 02070414A1
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(136003)(376002)(346002)(396003)(366004)(189003)(199004)(486006)(107886003)(8936002)(5660300002)(6506007)(86362001)(99286004)(2501003)(386003)(6916009)(25786009)(102836004)(50226002)(4326008)(478600001)(1730700003)(36756003)(2351001)(81166006)(81156014)(476003)(8676002)(2616005)(3846002)(14454004)(52116002)(66946007)(6116002)(6486002)(186003)(305945005)(71190400001)(66446008)(66556008)(66476007)(7736002)(6512007)(256004)(6436002)(14444005)(66066001)(64756008)(4720700003)(316002)(26005)(2906002)(54906003)(71200400001)(5640700003);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3324;H:HE1PR05MB3323.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RK2aV/L3XvwDCzTWpugGg2FxmpZh/mJ6IEmcTVwT6qz5PAk9Nro2VMBFHxssm9BT0PBfhY/WmAogT/0Gm5agePTWE6Or55RmiqsPt4+amQFUg/QANtoXWKJFE5LNJleeey+mnRA7A3VqdZJ1gfbZlcTZ0MPC33nnJdsscxR4kzPhszmWBkAc8fUEWqUA+9tDdmaYtq/SQqbBsRDNM6BiWx39BDUCMmP4rZYhffUxO+EW+Zs2IxZiLdShYvmMix3ZsQxXfLZmTfpcS0zZ3fNIFP+r3hBf9rv0cwCF2Sl8jTowge3dd8uiI20w0JZDOqmtC7o3CvsDVpPt6kVYAPcq6O+OwULb+xsFYTTKrJnd1O2Mf6nmL2JFZemtqdlnc04m3Se37vbi4sNrlbxzS7Nir5bsr9R/YjdMbcLOKvgdr0/DuqMazmUJE38nJECX6DCm
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <7C0AE73E-DB62-45D1-B358-3CC47D0EB6B0@gmail.com>
-References: <1923F6C8-A3CC-4904-B2E7-176BDB52AF1B@gmail.com>
- <CACKFLikbp+sTxFBNEnUYFK2oAqeYm58uULE=AXfCp2Afg3x4ew@mail.gmail.com>
- <A1527477-EC6E-4B64-880F-B014E8CFCB9D@gmail.com>
- <CAMet4B7vi6yYu2HZd1Pj7rhtxme8FmT4wbXTjQOnQEqJp0Z_3w@mail.gmail.com>
- <5AC684B1-79CA-41EB-9553-FFBFD7284085@gmail.com>
- <CACE64B8-91DE-4F25-B2F7-2C86526986FD@gmail.com>
- <CAMet4B7npXtDd4U7HOKFN74hwpcAYmyq_LH3N_jtcyxtm43JNg@mail.gmail.com>
- <CAMet4B6csj+6umj+h7mdPfz+rnLrOFYe6RBhVb+-ykiAwjxJUg@mail.gmail.com>
-To:     Siva Reddy Kallam <siva.kallam@broadcom.com>
-X-Mailer: HIPCO Mail (2.1091)
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3a8e308-d217-475f-7902-08d75e3b2764
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2019 19:47:25.8988
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jjXGJ4rD9speS18zVcvATVz5md6WM1ITeeTc5yEeb/Wb5t7CdhfwjmK2rMwvYXOgftCScQY7buwRcI3ArHwCwg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3324
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I=E2=80=99m using it in bridged mode with wlan adapters and hostapd. The =
-problem only happens if I access over eth0 not over wlan0 or wlan1. STP =
-is not the problem. Same config with 4.19 has no problems only after =
-5.0.
+The following series introduces VGT+ support for SRIOV vf
+devices.
 
-driver: tg3
-version: 3.137
-firmware-version: 57766a-v1.13
-expansion-rom-version:=20
-bus-info: 0000:01:00.0
-supports-statistics: yes
-supports-test: yes
-supports-eeprom-access: yes
-supports-register-dump: yes
-supports-priv-flags: no
+VGT+ is an extention of the VGT (Virtual Guest Tagging)
+where the guest is in charge of vlan tagging the packets
+only with VGT+ the admin can limit the allowed vlan ids
+the guest can use to a specific vlan trunk list.
 
-> On 31 Oct 2019, at 11:49, Siva Reddy Kallam <siva.kallam@broadcom.com> =
-wrote:
->=20
-> Tried reproducing local with 5.4.0-rc3 kernel and I couldn't observe =
-the issue.
-> I used the internet for almost 15-20 mins and no MAC errors observed.
-> Can you please provide ethtool -i output? I will use the same f/w
-> version and try.
->=20
-> On Fri, Oct 18, 2019 at 12:21 PM Siva Reddy Kallam
-> <siva.kallam@broadcom.com> wrote:
->>=20
->> On Thu, Oct 17, 2019 at 11:03 PM Rudolf Spring =
-<rudolf.spring@gmail.com> wrote:
->>>=20
->>> Can you reproduce the error in the lab ? Same behaviour with Kernel =
-5.3.6.
->>>=20
->> Yes. We are trying to reproduce in our local lab.  We will update =
-once
->> we have reproduction.
->>>=20
->>> eth0: flags=3D4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9000
->>>        ether a8:20:66:28:e6:95  txqueuelen 1000  (Ethernet)
->>>        RX packets 13844854  bytes 2298858755 (2.1 GiB)
->>>        RX errors 0  dropped 2  overruns 0  frame 0
->>>        TX packets 14831625  bytes 75684684566 (70.4 GiB)
->>>        TX errors 158  dropped 0 overruns 0  carrier 0  collisions 0
->>>        device interrupt 16
->>>=20
->>>     tx_octets: 75686159197
->>>     tx_collisions: 0
->>>     tx_xon_sent: 0
->>>     tx_xoff_sent: 0
->>>     tx_flow_control: 0
->>>     tx_mac_errors: 158
->>>     tx_single_collisions: 0
->>>     tx_mult_collisions: 0
->>>     tx_deferred: 0
->>>     tx_excessive_collisions: 0
->>>     tx_late_collisions: 0
->>>     tx_collide_2times: 0
->>>     tx_collide_3times: 0
->>>     tx_collide_4times: 0
->>>     tx_collide_5times: 0
->>>     tx_collide_6times: 0
->>>     tx_collide_7times: 0
->>>     tx_collide_8times: 0
->>>     tx_collide_9times: 0
->>>     tx_collide_10times: 0
->>>     tx_collide_11times: 0
->>>     tx_collide_12times: 0
->>>     tx_collide_13times: 0
->>>     tx_collide_14times: 0
->>>     tx_collide_15times: 0
->>>     tx_ucast_packets: 14400082
->>>     tx_mcast_packets: 435104
->>>     tx_bcast_packets: 1542
->>>     tx_carrier_sense_errors: 0
->>>     tx_discards: 0
->>>     tx_errors: 0
->>>=20
->>>=20
->>>> On 4 Oct 2019, at 14:53, Rudolf Spring <rudolf.spring@gmail.com> =
-wrote:
->>>>=20
->>>> With Kernel 5.3.2. Interesting all are tx_mac_errors.
->>>>=20
->>>> ifconfig  eth0
->>>> eth0: flags=3D4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9000
->>>>       ether a8:20:66:28:e6:95  txqueuelen 1000  (Ethernet)
->>>>       RX packets 1649204  bytes 775261068 (739.3 MiB)
->>>>       RX errors 0  dropped 0  overruns 0  frame 0
->>>>       TX packets 1144621  bytes 1241414276 (1.1 GiB)
->>>>       TX errors 369  dropped 0 overruns 0  carrier 0  collisions 0
->>>>       device interrupt 16
->>>>=20
->>>> ethtool -S eth0
->>>> NIC statistics:
->>>>    rx_octets: 752756285
->>>>    rx_fragments: 0
->>>>    rx_ucast_packets: 1132211
->>>>    rx_mcast_packets: 128115
->>>>    rx_bcast_packets: 372162
->>>>    rx_fcs_errors: 0
->>>>    rx_align_errors: 0
->>>>    rx_xon_pause_rcvd: 0
->>>>    rx_xoff_pause_rcvd: 0
->>>>    rx_mac_ctrl_rcvd: 0
->>>>    rx_xoff_entered: 0
->>>>    rx_frame_too_long_errors: 0
->>>>    rx_jabbers: 0
->>>>    rx_undersize_packets: 0
->>>>    rx_in_length_errors: 0
->>>>    rx_out_length_errors: 0
->>>>    rx_64_or_less_octet_packets: 0
->>>>    rx_65_to_127_octet_packets: 0
->>>>    rx_128_to_255_octet_packets: 0
->>>>    rx_256_to_511_octet_packets: 0
->>>>    rx_512_to_1023_octet_packets: 0
->>>>    rx_1024_to_1522_octet_packets: 0
->>>>    rx_1523_to_2047_octet_packets: 0
->>>>    rx_2048_to_4095_octet_packets: 0
->>>>    rx_4096_to_8191_octet_packets: 0
->>>>    rx_8192_to_9022_octet_packets: 0
->>>>    tx_octets: 1236703101
->>>>    tx_collisions: 0
->>>>    tx_xon_sent: 0
->>>>    tx_xoff_sent: 0
->>>>    tx_flow_control: 0
->>>>    tx_mac_errors: 369
->>>>    tx_single_collisions: 0
->>>>    tx_mult_collisions: 0
->>>>    tx_deferred: 0
->>>>    tx_excessive_collisions: 0
->>>>    tx_late_collisions: 0
->>>>    tx_collide_2times: 0
->>>>    tx_collide_3times: 0
->>>>    tx_collide_4times: 0
->>>>    tx_collide_5times: 0
->>>>    tx_collide_6times: 0
->>>>    tx_collide_7times: 0
->>>>    tx_collide_8times: 0
->>>>    tx_collide_9times: 0
->>>>    tx_collide_10times: 0
->>>>    tx_collide_11times: 0
->>>>    tx_collide_12times: 0
->>>>    tx_collide_13times: 0
->>>>    tx_collide_14times: 0
->>>>    tx_collide_15times: 0
->>>>    tx_ucast_packets: 986854
->>>>    tx_mcast_packets: 146951
->>>>    tx_bcast_packets: 1117
->>>>    tx_carrier_sense_errors: 0
->>>>    tx_discards: 0
->>>>    tx_errors: 0
->>>>    dma_writeq_full: 0
->>>>    dma_write_prioq_full: 0
->>>>    rxbds_empty: 0
->>>>    rx_discards: 0
->>>>    rx_errors: 0
->>>>    rx_threshold_hit: 0
->>>>    dma_readq_full: 0
->>>>    dma_read_prioq_full: 0
->>>>    tx_comp_queue_full: 0
->>>>    ring_set_send_prod_index: 0
->>>>    ring_status_update: 0
->>>>    nic_irqs: 0
->>>>    nic_avoided_irqs: 0
->>>>    nic_tx_threshold_hit: 0
->>>>    mbuf_lwm_thresh_hit: 0
->>>>=20
->>>>> On 4 Oct 2019, at 12:52, Siva Reddy Kallam =
-<siva.kallam@broadcom.com> wrote:
->>>>>=20
->>>>>=20
->>>>>=20
->>>>> On Wed, Oct 2, 2019 at 10:05 PM Rudolf Spring =
-<rudolf.spring@gmail.com> wrote:
->>>>> The output of dmesg and ethtool is identical between 4.19.72 and =
-5.3.2. Any suggestions ?
->>>>> Can you please provide the output of "ethtool -S eth0" command?
->>>>> In the mean time, I will review the register dump and also try to =
-reproduce in our lab.
->>>>> 0000:01:00.0: enabling device (0000 -> 0002)
->>>>> [    1.140738] tg3 0000:01:00.0 eth0: Tigon3 [partno(BCM957766a) =
-rev 57766001] (PCI Express) MAC address a8:20:66:28:e6:95
->>>>> [    1.140741] tg3 0000:01:00.0 eth0: attached PHY is 57765 =
-(10/100/1000Base-T Ethernet) (WireSpeed[1], EEE[1])
->>>>> [    1.140743] tg3 0000:01:00.0 eth0: RXcsums[1] LinkChgREG[0] =
-MIirq[0] ASF[0] TSOcap[1]
->>>>> [    1.140744] tg3 0000:01:00.0 eth0: dma_rwctrl[00000001] =
-dma_mask[64-bit]
->>>>> [   10.290239] tg3 0000:01:00.0 eth0: Link is up at 1000 Mbps, =
-full duplex
->>>>> [   10.290241] tg3 0000:01:00.0 eth0: Flow control is on for TX =
-and on for RX
->>>>> [   10.290242] tg3 0000:01:00.0 eth0: EEE is enabled
->>>>>=20
->>>>> ethtool eth0
->>>>> Settings for eth0:
->>>>>       Supported ports: [ TP ]
->>>>>       Supported link modes:   10baseT/Half 10baseT/Full
->>>>>                               100baseT/Half 100baseT/Full
->>>>>                               1000baseT/Half 1000baseT/Full
->>>>>       Supported pause frame use: No
->>>>>       Supports auto-negotiation: Yes
->>>>>       Supported FEC modes: Not reported
->>>>>       Advertised link modes:  10baseT/Half 10baseT/Full
->>>>>                               100baseT/Half 100baseT/Full
->>>>>                               1000baseT/Half 1000baseT/Full
->>>>>       Advertised pause frame use: Symmetric
->>>>>       Advertised auto-negotiation: Yes
->>>>>       Advertised FEC modes: Not reported
->>>>>       Link partner advertised link modes:  10baseT/Half =
-10baseT/Full
->>>>>                                            100baseT/Half =
-100baseT/Full
->>>>>                                            1000baseT/Full
->>>>>       Link partner advertised pause frame use: Symmetric
->>>>>       Link partner advertised auto-negotiation: Yes
->>>>>       Link partner advertised FEC modes: Not reported
->>>>>       Speed: 1000Mb/s
->>>>>       Duplex: Full
->>>>>       Port: Twisted Pair
->>>>>       PHYAD: 1
->>>>>       Transceiver: internal
->>>>>       Auto-negotiation: on
->>>>>       MDI-X: off
->>>>>       Supports Wake-on: g
->>>>>       Wake-on: g
->>>>>       Current message level: 0x000000ff (255)
->>>>>                              drv probe link timer ifdown ifup =
-rx_err tx_err
->>>>>       Link detected: yes
->>>>>=20
->>>>> ethtool -a eth0
->>>>> Pause parameters for eth0:
->>>>> Autonegotiate:  on
->>>>> RX:             on
->>>>> TX:             on
->>>>> RX negotiated:  on
->>>>> TX negotiated:  on
->>>>>=20
->>>>> ethtool -g eth0
->>>>> Ring parameters for eth0:
->>>>> Pre-set maximums:
->>>>> RX:             511
->>>>> RX Mini:        0
->>>>> RX Jumbo:       255
->>>>> TX:             511
->>>>> Current hardware settings:
->>>>> RX:             200
->>>>> RX Mini:        0
->>>>> RX Jumbo:       100
->>>>> TX:             511
->>>>>=20
->>>>> ethtool -c eth0
->>>>> Coalesce parameters for eth0:
->>>>> Adaptive RX: off  TX: off
->>>>> stats-block-usecs: 0
->>>>> sample-interval: 0
->>>>> pkt-rate-low: 0
->>>>> pkt-rate-high: 0
->>>>>=20
->>>>> rx-usecs: 20
->>>>> rx-frames: 5
->>>>> rx-usecs-irq: 0
->>>>> rx-frames-irq: 5
->>>>>=20
->>>>> tx-usecs: 72
->>>>> tx-frames: 53
->>>>> tx-usecs-irq: 0
->>>>> tx-frames-irq: 5
->>>>>=20
->>>>> rx-usecs-low: 0
->>>>> rx-frame-low: 0
->>>>> tx-usecs-low: 0
->>>>> tx-frame-low: 0
->>>>>=20
->>>>> rx-usecs-high: 0
->>>>> rx-frame-high: 0
->>>>> tx-usecs-high: 0
->>>>> tx-frame-high: 0
->>>>>=20
->>>>> ethtool -k eth0
->>>>> Features for eth0:
->>>>> rx-checksumming: on
->>>>> tx-checksumming: on
->>>>>       tx-checksum-ipv4: on
->>>>>       tx-checksum-ip-generic: off [fixed]
->>>>>       tx-checksum-ipv6: on
->>>>>       tx-checksum-fcoe-crc: off [fixed]
->>>>>       tx-checksum-sctp: off [fixed]
->>>>> scatter-gather: on
->>>>>       tx-scatter-gather: on
->>>>>       tx-scatter-gather-fraglist: off [fixed]
->>>>> tcp-segmentation-offload: on
->>>>>       tx-tcp-segmentation: on
->>>>>       tx-tcp-ecn-segmentation: on
->>>>>       tx-tcp-mangleid-segmentation: off
->>>>>       tx-tcp6-segmentation: on
->>>>> udp-fragmentation-offload: off
->>>>> generic-segmentation-offload: on
->>>>> generic-receive-offload: on
->>>>> large-receive-offload: off [fixed]
->>>>> rx-vlan-offload: on [fixed]
->>>>> tx-vlan-offload: on [fixed]
->>>>> ntuple-filters: off [fixed]
->>>>> receive-hashing: off [fixed]
->>>>> highdma: on
->>>>> rx-vlan-filter: off [fixed]
->>>>> vlan-challenged: off [fixed]
->>>>> tx-lockless: off [fixed]
->>>>> netns-local: off [fixed]
->>>>> tx-gso-robust: off [fixed]
->>>>> tx-fcoe-segmentation: off [fixed]
->>>>> tx-gre-segmentation: off [fixed]
->>>>> tx-gre-csum-segmentation: off [fixed]
->>>>> tx-ipxip4-segmentation: off [fixed]
->>>>> tx-ipxip6-segmentation: off [fixed]
->>>>> tx-udp_tnl-segmentation: off [fixed]
->>>>> tx-udp_tnl-csum-segmentation: off [fixed]
->>>>> tx-gso-partial: off [fixed]
->>>>> tx-sctp-segmentation: off [fixed]
->>>>> tx-esp-segmentation: off [fixed]
->>>>> tx-udp-segmentation: off [fixed]
->>>>> fcoe-mtu: off [fixed]
->>>>> tx-nocache-copy: off
->>>>> loopback: off [fixed]
->>>>> rx-fcs: off [fixed]
->>>>> rx-all: off [fixed]
->>>>> tx-vlan-stag-hw-insert: off [fixed]
->>>>> rx-vlan-stag-hw-parse: off [fixed]
->>>>> rx-vlan-stag-filter: off [fixed]
->>>>> l2-fwd-offload: off [fixed]
->>>>> hw-tc-offload: off [fixed]
->>>>> esp-hw-offload: off [fixed]
->>>>> esp-tx-csum-hw-offload: off [fixed]
->>>>> rx-udp_tunnel-port-offload: off [fixed]
->>>>> tls-hw-tx-offload: off [fixed]
->>>>> tls-hw-rx-offload: off [fixed]
->>>>> rx-gro-hw: off [fixed]
->>>>> tls-hw-record: off [fixed]
->>>>>=20
->>>>> ethtool -n eth0
->>>>> 4 RX rings available
->>>>> rxclass: Cannot get RX class rule count: Operation not supported
->>>>> RX classification rule retrieval failed
->>>>>=20
->>>>> ethtool -t eth0
->>>>> The test result is PASS
->>>>> The test extra info:
->>>>> nvram test        (online)       0
->>>>> link test         (online)       0
->>>>> register test     (offline)      0
->>>>> memory test       (offline)      0
->>>>> mac loopback test (offline)      0
->>>>> phy loopback test (offline)      0
->>>>> ext loopback test (offline)      0
->>>>> interrupt test    (offline)      0
->>>>>=20
->>>>> ethtool -T eth0
->>>>> Time stamping parameters for eth0:
->>>>> Capabilities:
->>>>>       software-transmit     (SOF_TIMESTAMPING_TX_SOFTWARE)
->>>>>       software-receive      (SOF_TIMESTAMPING_RX_SOFTWARE)
->>>>>       software-system-clock (SOF_TIMESTAMPING_SOFTWARE)
->>>>> PTP Hardware Clock: none
->>>>> Hardware Transmit Timestamp Modes:
->>>>>       off                   (HWTSTAMP_TX_OFF)
->>>>>       on                    (HWTSTAMP_TX_ON)
->>>>> Hardware Receive Filter Modes:
->>>>>       none                  (HWTSTAMP_FILTER_NONE)
->>>>>       ptpv1-l4-event        (HWTSTAMP_FILTER_PTP_V1_L4_EVENT)
->>>>>       ptpv2-l4-event        (HWTSTAMP_FILTER_PTP_V2_L4_EVENT)
->>>>>       ptpv2-l2-event        (HWTSTAMP_FILTER_PTP_V2_L2_EVENT)
->>>>>=20
->>>>> ethtool -l eth0
->>>>> Channel parameters for eth0:
->>>>> Pre-set maximums:
->>>>> RX:             4
->>>>> TX:             1
->>>>> Other:          0
->>>>> Combined:       0
->>>>> Current hardware settings:
->>>>> RX:             4
->>>>> TX:             1
->>>>> Other:          0
->>>>> Combined:       0
->>>>>=20
->>>>> ethtool --show-eee eth0
->>>>> EEE Settings for eth0:
->>>>>       EEE status: enabled - active
->>>>>       Tx LPI: 2047 (us)
->>>>>       Supported EEE link modes:  100baseT/Full
->>>>>                                  1000baseT/Full
->>>>>       Advertised EEE link modes:  100baseT/Full
->>>>>                                   1000baseT/Full
->>>>>       Link partner advertised EEE link modes:  100baseT/Full
->>>>>                                                1000baseT/Full
->>>>>=20
->>>>>> These are all the tg3 changes between 4.19 and 5.0:
->>>>>>=20
->>>>>> 750afb08ca71 cross-tree: phase out dma_zalloc_coherent()
->>>>>> cddaf02bcb73 tg3: optionally use eth_platform_get_mac_address() =
-to get
->>>>>> mac address
->>>>>> 3c1bcc8614db net: ethernet: Convert phydev advertize and =
-supported
->>>>>> from u32 to link mode
->>>>>> 6fe42e228dc2 tg3: extend PTP gettime function to read system =
-clock
->>>>>> 310fc0513ea9 tg3: Fix fall-through annotations
->>>>>> 22b7d29926b5 net: ethernet: Add helper to determine if pause
->>>>>> configuration is supported
->>>>>> 70814e819c11 net: ethernet: Add helper for set_pauseparam for =
-Asym Pause
->>>>>> af8d9bb2f2f4 net: ethernet: Add helper for MACs which support =
-asym pause
->>>>>> 04b7d41d8046 net: ethernet: Fix up drivers masking pause support
->>>>>> 58056c1e1b0e net: ethernet: Use phy_set_max_speed() to limit =
-advertised speed
->>>>>>=20
->>>>>> Most of the changes are related to PHY settings.  I suggest that =
-you
->>>>>> check the link settings, including speed, pause, asym pause, etc
->>>>>> between the working kernel and the non-working kernel to see if =
-there
->>>>>> are differences in the settings.
->>>>>=20
->>>>=20
->>>=20
+The patches introduce the API for admin users to set and
+query these vlan trunk lists on the vfs using netlink
+commands.
+
+changes from v1 to v2:
+- Fixed indentation of RTEXT_FILTER_SKIP_STATS.
+- Changed vf_ext param to bool.
+- Check if VF num exceeds the opened VFs range and return without
+adding the vfinfo.
+
+Ariel Levkovich (3):
+  net: Support querying specific VF properties
+  net: Add SRIOV VGT+ support
+  net/mlx5: Add SRIOV VGT+ support
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  30 ++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 600 ++++++++++++++++-=
+----
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  27 +-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   8 +-
+ include/linux/if_link.h                            |   3 +
+ include/linux/netdevice.h                          |  12 +
+ include/uapi/linux/if_link.h                       |  35 ++
+ include/uapi/linux/rtnetlink.h                     |   3 +-
+ net/core/rtnetlink.c                               | 173 ++++--
+ 9 files changed, 717 insertions(+), 174 deletions(-)
+
+--=20
+1.8.3.1
 
