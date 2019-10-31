@@ -2,103 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 393ABEB846
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 21:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC870EB847
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 21:13:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729721AbfJaUMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 16:12:18 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:39826 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726741AbfJaUMS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 16:12:18 -0400
-Received: by mail-qt1-f196.google.com with SMTP id t8so10257534qtc.6;
-        Thu, 31 Oct 2019 13:12:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TOrQ7p/Ach8XhH3X0o1czbRwLqqDeVKyqWWNz0yiniw=;
-        b=u5Ir3i7XwgUWHQakHPAg7OSyAnncurxagXjQYRJNB5Bz/OnG6DxOQxYgVkz0/e97K2
-         YCmTP2Yr+LlxhW1iQD9eS8PRToH+Rmze39XExl5vUtE0GCYBjYpxRZsFHq3c2SvOs7RF
-         3TfE11ynzDRPaVry9/XVq0o69vfrG5LwXl62oTmexeSY1J64JTLJlP6yZw2t24+r0VV8
-         fQiD+udwJ8FiEE0yW+qHDPBLlXAoq3Y22tlRAq40kv9hIDpHeDWgBld3q+2mbh8cWDcH
-         y7LPpdwb3xpGK8VOfB6kEvLWkM9SdLzLanrXgs/1x6s3fLLj63ZtvDnGHsfn8o7EFN18
-         e6vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TOrQ7p/Ach8XhH3X0o1czbRwLqqDeVKyqWWNz0yiniw=;
-        b=P9YceeAY66VSKuG3miAL5bovFrzv2wqZ+LMS3cg2FWLUN23Kx1qvRRrwFcbBCpGymo
-         ibeUfBknN4H3g5fApS+TrBK4fdt6KVl6Ym6IDffoqT749eSO9GPPorqap2WvILVlhrJA
-         rEKyTj8/pcnjmgji+7S9qKVWieILqXGnUSX+0S8lhyTh3vetA4Drg8YQi6Khf728WcdS
-         GWzP/O5bhGlt0kx4gA2Wi86l7slVIpgjxZelG84y2NT2DTTRcalHZQ5J5GvaWMltSfs2
-         aDkAbyyyZVdZXyxp8xbOdnoI70amrq1Ml5oJQz+hkYELTDOfND/PsmKqvmbk3ejlTmqW
-         7TGQ==
-X-Gm-Message-State: APjAAAUWGr/1Ietxy7OCYilBgyvkBRah7YBWOJa7gIa19qMuRa8CypQ/
-        bNpJ9a4LgPw9xX6m5PLZdwAwGP8nRVqyZTTAQQY=
-X-Google-Smtp-Source: APXvYqwUbLxRSprlO8zTvGYboDGaSb472nBPxyFRV86ljkBgVEKKDkwJaf4GDTJkTea4V2HfLpC3c77jNPvzz+dScbA=
-X-Received: by 2002:a0c:e982:: with SMTP id z2mr6630820qvn.196.1572552736888;
- Thu, 31 Oct 2019 13:12:16 -0700 (PDT)
+        id S1729725AbfJaUNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 16:13:12 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:36380 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726741AbfJaUNM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 16:13:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572552790;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Bmrr9J44Hc2sIUrtk+1QLooktya8ZditAG9mjiHvs2E=;
+        b=B01hHszZh8NaDyiyyJK1CRKkKrOPycpb8HQPgSUynK6wi1kZQr/a6w+cvPxzFg6Dlrfzm3
+        DhJZk1o8B3UhOqVE/Asztpm3LXLwzSsHSlFAvzFYOghLzzg/hpwF724x0nfVr41DhKtddq
+        80cGqe1s2oShY1tFV4BrGJrm2CGHoIA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-41-9sWlrh9vOyGs9lE3Tf-Crg-1; Thu, 31 Oct 2019 16:13:07 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0F8F8017E0;
+        Thu, 31 Oct 2019 20:13:06 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 25E8A19C7F;
+        Thu, 31 Oct 2019 20:13:01 +0000 (UTC)
+Date:   Thu, 31 Oct 2019 21:13:00 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Charles McLachlan <cmclachlan@solarflare.com>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-net-drivers@solarflare.com>, brouer@redhat.com,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next v4 6/6] sfc: add XDP counters to ethtool stats
+Message-ID: <20191031211300.7e5c1e7c@carbon>
+In-Reply-To: <1d36bf21-f9d0-c464-1886-ef4ac1ed7557@solarflare.com>
+References: <c0294a54-35d3-2001-a2b9-dd405d2b3501@solarflare.com>
+        <1d36bf21-f9d0-c464-1886-ef4ac1ed7557@solarflare.com>
 MIME-Version: 1.0
-References: <cover.1572483054.git.daniel@iogearbox.net> <59ffcedeed70cdae86fbd803b87cc581a82577d7.1572483054.git.daniel@iogearbox.net>
-In-Reply-To: <59ffcedeed70cdae86fbd803b87cc581a82577d7.1572483054.git.daniel@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 31 Oct 2019 13:12:06 -0700
-Message-ID: <CAEf4BzZ=pBcoUA7jxS7MiO8dYT4s-JGR1HG++DmbmqoKYM5qWw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/8] uaccess: Add strict non-pagefault
- kernel-space read function
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: 9sWlrh9vOyGs9lE3Tf-Crg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 6:00 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Add two new probe_kernel_read_strict() and strncpy_from_unsafe_strict()
-> helpers which by default alias to the __probe_kernel_read() and the
-> __strncpy_from_unsafe(), respectively, but can be overridden by archs
-> which have non-overlapping address ranges for kernel space and user
-> space in order to bail out with -EFAULT when attempting to probe user
-> memory including non-canonical user access addresses [0].
->
-> The idea is that these helpers are complementary to the probe_user_read()
-> and strncpy_from_unsafe_user() which probe user-only memory. Both added
-> helpers here do the same, but for kernel-only addresses.
->
-> Both set of helpers are going to be used for BPF tracing. They also
-> explicitly avoid throwing the splat for non-canonical user addresses from
-> 00c42373d397 ("x86-64: add warning for non-canonical user access address
-> dereferences").
->
-> For compat, the current probe_kernel_read() and strncpy_from_unsafe() are
-> left as-is.
->
->   [0] Documentation/x86/x86_64/mm.txt
->
->       4-level page tables: 0x0000800000000000 - 0xffff7fffffffffff
->       5-level page tables: 0x0100000000000000 - 0xfeffffffffffffff
->
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Masami Hiramatsu <mhiramat@kernel.org>
-> Cc: x86@kernel.org
-> ---
+On Thu, 31 Oct 2019 10:24:23 +0000
+Charles McLachlan <cmclachlan@solarflare.com> wrote:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Count XDP packet drops, error drops, transmissions and redirects and
+> expose these counters via the ethtool stats command.
+>=20
+> Signed-off-by: Charles McLachlan <cmclachlan@solarflare.com>
 
->  arch/x86/mm/Makefile    |  2 +-
->  arch/x86/mm/maccess.c   | 38 ++++++++++++++++++++++++++++++++++++++
->  include/linux/uaccess.h |  4 ++++
->  mm/maccess.c            | 25 ++++++++++++++++++++++++-
->  4 files changed, 67 insertions(+), 2 deletions(-)
->  create mode 100644 arch/x86/mm/maccess.c
->
+I'm going to ACK this even-though I don't like these driver specific
+counters.  Given we have failed to standardize this, I really cannot
+complain.  Hopefully we will get this standardized later
 
-[...]
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+Left code below, if Ahern want to complain ;-)
+
+>  drivers/net/ethernet/sfc/ethtool.c    | 25 +++++++++++++++++++++++++
+>  drivers/net/ethernet/sfc/net_driver.h |  8 ++++++++
+>  drivers/net/ethernet/sfc/rx.c         |  9 +++++++++
+>  3 files changed, 42 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sf=
+c/ethtool.c
+> index 86b965875540..8db593fb9699 100644
+> --- a/drivers/net/ethernet/sfc/ethtool.c
+> +++ b/drivers/net/ethernet/sfc/ethtool.c
+> @@ -83,6 +83,10 @@ static const struct efx_sw_stat_desc efx_sw_stat_desc[=
+] =3D {
+>  =09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_frm_trunc),
+>  =09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_events),
+>  =09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_merge_packets),
+> +=09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_drops),
+> +=09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_bad_drops),
+> +=09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_tx),
+> +=09EFX_ETHTOOL_UINT_CHANNEL_STAT(rx_xdp_redirect),
+>  };
+> =20
+>  #define EFX_ETHTOOL_SW_STAT_COUNT ARRAY_SIZE(efx_sw_stat_desc)
+> @@ -399,6 +403,19 @@ static size_t efx_describe_per_queue_stats(struct ef=
+x_nic *efx, u8 *strings)
+>  =09=09=09}
+>  =09=09}
+>  =09}
+> +=09if (efx->xdp_tx_queue_count && efx->xdp_tx_queues) {
+> +=09=09unsigned short xdp;
+> +
+> +=09=09for (xdp =3D 0; xdp < efx->xdp_tx_queue_count; xdp++) {
+> +=09=09=09n_stats++;
+> +=09=09=09if (strings) {
+> +=09=09=09=09snprintf(strings, ETH_GSTRING_LEN,
+> +=09=09=09=09=09 "tx-xdp-cpu-%hu.tx_packets", xdp);
+> +=09=09=09=09strings +=3D ETH_GSTRING_LEN;
+> +=09=09=09}
+> +=09=09}
+> +=09}
+> +
+>  =09return n_stats;
+>  }
+> =20
+> @@ -509,6 +526,14 @@ static void efx_ethtool_get_stats(struct net_device =
+*net_dev,
+>  =09=09=09data++;
+>  =09=09}
+>  =09}
+> +=09if (efx->xdp_tx_queue_count && efx->xdp_tx_queues) {
+> +=09=09int xdp;
+> +
+> +=09=09for (xdp =3D 0; xdp < efx->xdp_tx_queue_count; xdp++) {
+> +=09=09=09data[0] =3D efx->xdp_tx_queues[xdp]->tx_packets;
+> +=09=09=09data++;
+> +=09=09}
+> +=09}
+> =20
+>  =09efx_ptp_update_stats(efx, data);
+>  }
+> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet=
+/sfc/net_driver.h
+> index 505ddc060e64..04e49eac7327 100644
+> --- a/drivers/net/ethernet/sfc/net_driver.h
+> +++ b/drivers/net/ethernet/sfc/net_driver.h
+> @@ -453,6 +453,10 @@ enum efx_sync_events_state {
+>   *=09lack of descriptors
+>   * @n_rx_merge_events: Number of RX merged completion events
+>   * @n_rx_merge_packets: Number of RX packets completed by merged events
+> + * @n_rx_xdp_drops: Count of RX packets intentionally dropped due to XDP
+> + * @n_rx_xdp_bad_drops: Count of RX packets dropped due to XDP errors
+> + * @n_rx_xdp_tx: Count of RX packets retransmitted due to XDP
+> + * @n_rx_xdp_redirect: Count of RX packets redirected to a different NIC=
+ by XDP
+>   * @rx_pkt_n_frags: Number of fragments in next packet to be delivered b=
+y
+>   *=09__efx_rx_packet(), or zero if there is none
+>   * @rx_pkt_index: Ring index of first buffer for next packet to be deliv=
+ered
+> @@ -506,6 +510,10 @@ struct efx_channel {
+>  =09unsigned int n_rx_nodesc_trunc;
+>  =09unsigned int n_rx_merge_events;
+>  =09unsigned int n_rx_merge_packets;
+> +=09unsigned int n_rx_xdp_drops;
+> +=09unsigned int n_rx_xdp_bad_drops;
+> +=09unsigned int n_rx_xdp_tx;
+> +=09unsigned int n_rx_xdp_redirect;
+> =20
+>  =09unsigned int rx_pkt_n_frags;
+>  =09unsigned int rx_pkt_index;
+> diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.=
+c
+> index 91f6d5b9ceac..a7d9841105d8 100644
+> --- a/drivers/net/ethernet/sfc/rx.c
+> +++ b/drivers/net/ethernet/sfc/rx.c
+> @@ -677,6 +677,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct ef=
+x_channel *channel,
+>  =09=09=09netif_err(efx, rx_err, efx->net_dev,
+>  =09=09=09=09  "XDP is not possible with multiple receive fragments (%d)\=
+n",
+>  =09=09=09=09  channel->rx_pkt_n_frags);
+> +=09=09channel->n_rx_xdp_bad_drops++;
+>  =09=09return false;
+>  =09}
+> =20
+> @@ -722,6 +723,9 @@ static bool efx_do_xdp(struct efx_nic *efx, struct ef=
+x_channel *channel,
+>  =09=09=09if (net_ratelimit())
+>  =09=09=09=09netif_err(efx, rx_err, efx->net_dev,
+>  =09=09=09=09=09  "XDP TX failed (%d)\n", err);
+> +=09=09=09channel->n_rx_xdp_bad_drops++;
+> +=09=09} else {
+> +=09=09=09channel->n_rx_xdp_tx++;
+>  =09=09}
+>  =09=09break;
+> =20
+> @@ -732,12 +736,16 @@ static bool efx_do_xdp(struct efx_nic *efx, struct =
+efx_channel *channel,
+>  =09=09=09if (net_ratelimit())
+>  =09=09=09=09netif_err(efx, rx_err, efx->net_dev,
+>  =09=09=09=09=09  "XDP redirect failed (%d)\n", err);
+> +=09=09=09channel->n_rx_xdp_bad_drops++;
+> +=09=09} else {
+> +=09=09=09channel->n_rx_xdp_redirect++;
+>  =09=09}
+>  =09=09break;
+> =20
+>  =09default:
+>  =09=09bpf_warn_invalid_xdp_action(xdp_act);
+>  =09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
+> +=09=09channel->n_rx_xdp_bad_drops++;
+>  =09=09break;
+> =20
+>  =09case XDP_ABORTED:
+> @@ -745,6 +753,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct ef=
+x_channel *channel,
+>  =09=09/* Fall through */
+>  =09case XDP_DROP:
+>  =09=09efx_free_rx_buffers(rx_queue, rx_buf, 1);
+> +=09=09channel->n_rx_xdp_drops++;
+>  =09=09break;
+>  =09}
+> =20
+
+
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
