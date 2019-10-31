@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E91E3EA91E
+	by mail.lfdr.de (Postfix) with ESMTP id 139ADEA91C
 	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 03:10:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726917AbfJaCJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 22:09:53 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:33595 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726876AbfJaCJo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 22:09:44 -0400
-Received: by mail-qt1-f196.google.com with SMTP id y39so6419453qty.0;
-        Wed, 30 Oct 2019 19:09:42 -0700 (PDT)
+        id S1726892AbfJaCJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 22:09:46 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:47004 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726877AbfJaCJp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 22:09:45 -0400
+Received: by mail-qk1-f194.google.com with SMTP id e66so5188058qkf.13;
+        Wed, 30 Oct 2019 19:09:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YI44zesxZRhYNZfnCnbeDYU2hmCekT4dtXSOSwje0n0=;
-        b=mZaA7iSbfheBiMmDBzz/dAyHv090K3ORpbbJUqXUxFIQMaDA9ziRVeihCsffN5uN2c
-         yHUa215WqubXjXjyjNbPrF+jxLelqU9S9iGT3b0OQ0eKAJBuBVEyC9nR/pdhZGC2BpAq
-         VZVLe8j2gQIDwCLkXnIu+jNBlAjjixTcBgGbzOlLgKH3KMejTEBn3LHIsiYW38lKuxJ1
-         HoX/pJSQ761SavJjmWXAbIQKxmCo7zoKVsGc3v4nhVJZTG0zGDuYdzWqrcpuBh3DbhAk
-         PULQS/pRu7mehEetSBCLczuLQItfQ+z7U5N3sI0CEZEwj6OaXuyhy13H4dDOXsihcljT
-         K4XQ==
+        bh=MCaeEL/78MnjFFwuHJ0AYNxPqsK2pIIoZSumh2mRdY8=;
+        b=pzQcnJ/Xh2T0A3D9AJizp8dc8rBAwm9kBW/jWELzn7TQ+ijlpc7rJIVDGV8iGTyCM6
+         DDgGzI8++Pdmbl15KcLpciH+dQznaIfhAqy2G1BEbE/PawE0PT128x2XLrIB+M+0Ce4O
+         sPetXiQ33gWMgFQ5PW59KMxtSCF9uk+3i2lAHLvxB4hDAEbpZWPB5Gvue2LgZAJUedsq
+         z9WB0M3G2Sowi2ylAvlgRyhRRGvXFWfhvHGP8hJeudKCqxiJeh0OoUFjPafuwPP0wz2J
+         QLQ+BgbP2b8yRCM4J5ZP9d58sMfFqOkxjyS3C/vQT8hZEA0v+o09pvFb+MWWxehs8nEY
+         YV/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YI44zesxZRhYNZfnCnbeDYU2hmCekT4dtXSOSwje0n0=;
-        b=t97dP2gAMpLZLWImrMxiHuFnLdItc/Zssa12Er0yUaSuWLdPZFpXNiOgkLGSPB7pKp
-         aoMHZUvWiB6NAWRnTUxynvTIdeA0YOMsmdlEFJ8lFUvdwaya7sFIJbwO2XEvMFQt3IeI
-         cS7qk0WHqtz4NF8mCDOZeb1fNLML6VVcHrSruMhCXaZs8UTAKD7WBIqdfVQFpL0xbyZy
-         Fe6yZwze57r3UcIRXJNg/W5XPN3SbfLQoKYs7XJpUNyY97yG2jFNZj0qOH8p3Qg181vi
-         NZXGUrVcdtwxz2dRHZjLHgLD49B9O/hykbwC1GGYPd2SvYM2MF5ShlNs0jCJqNTmq5RZ
-         TyHw==
-X-Gm-Message-State: APjAAAWFMjv46eiMsuoOyDF84dZhSMaEkJnQ1H10k/8oZ3gJape4JRBL
-        x5MF/bYe8eg0G/OBtXS8ayDs2Gw7
-X-Google-Smtp-Source: APXvYqw8gxd7DwHvMaFfMJLEzKmpohmsN8WHtnuXn7LWZ+JTs953Y/Q+Qbdyw6Hkw142LshV7gg4Dw==
-X-Received: by 2002:ac8:2430:: with SMTP id c45mr3298643qtc.328.1572487782440;
-        Wed, 30 Oct 2019 19:09:42 -0700 (PDT)
+        bh=MCaeEL/78MnjFFwuHJ0AYNxPqsK2pIIoZSumh2mRdY8=;
+        b=unhL2sW27EhPCreDcY3irYqj0IEhtMPhtKVakoaJ8GKqyOZibEcWTUJ0pmRteN69be
+         bzFlCFBgxYHP6E6cyXjpk2prrVE2lSWjFaL7QN98AgSoZ5iafq2AsSUVWVIuBdVT8YF8
+         7s1O1LU9/mPZ7F6AJSEcJYadI5D1cGUyIcEgeXFucz55gFSVpHXOEWfFA0DnnRSvnXPO
+         63pDXxjrdHi82snMqiODkY9k6w+aYhmfGmzXcaz33v7pZcPEA6s0zvyOOxrnHLSzW7GZ
+         taPoIqWNQh8HOdslnHMRKO9t4qfL+82h58YBUfOAK967591gCeUq9Cjy/a5PME85+b5Y
+         ZiEw==
+X-Gm-Message-State: APjAAAUtxb+8EbUIjIcm7uHqzb45TfjkXZAgAAIl65o/j95jEo1Luz7i
+        T/wuXaYGNs6QpTXoKwiYW3iecOJ9
+X-Google-Smtp-Source: APXvYqzlJ+bsfAeTLe7GONP10dKvBoz4JLulDtj9Uzceme12BMx1CFBTy3fR8nBfdkL2KrSkJvYNPQ==
+X-Received: by 2002:a37:4dd1:: with SMTP id a200mr3051041qkb.419.1572487783999;
+        Wed, 30 Oct 2019 19:09:43 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id q204sm1328006qke.39.2019.10.30.19.09.41
+        by smtp.gmail.com with ESMTPSA id c17sm305597qkg.135.2019.10.30.19.09.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Oct 2019 19:09:41 -0700 (PDT)
+        Wed, 30 Oct 2019 19:09:43 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 6/7] net: dsa: remove limitation of switch index value
-Date:   Wed, 30 Oct 2019 22:09:18 -0400
-Message-Id: <20191031020919.139872-7-vivien.didelot@gmail.com>
+Subject: [PATCH net-next v2 7/7] net: dsa: tag_8021q: clarify index limitation
+Date:   Wed, 30 Oct 2019 22:09:19 -0400
+Message-Id: <20191031020919.139872-8-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191031020919.139872-1-vivien.didelot@gmail.com>
 References: <20191031020919.139872-1-vivien.didelot@gmail.com>
@@ -63,28 +63,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because there is no static array describing the links between switches
-anymore, we have no reason to force a limitation of the index value
-set by the device tree.
+Now that there's no restriction from the DSA core side regarding
+the switch IDs and port numbers, only tag_8021q which is currently
+reserving 3 bits for the switch ID and 4 bits for the port number, has
+limitation for these values. Update their descriptions to reflect that.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- net/dsa/dsa2.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/dsa/tag_8021q.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 371f15042dad..ff2fa3950c62 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -711,8 +711,6 @@ static int dsa_switch_parse_member_of(struct dsa_switch *ds,
- 		return sz;
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index bf91fc55fc44..bc5cb91bf052 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -31,15 +31,14 @@
+  *	Must be transmitted as zero and ignored on receive.
+  *
+  * SWITCH_ID - VID[8:6]:
+- *	Index of switch within DSA tree. Must be between 0 and
+- *	DSA_MAX_SWITCHES - 1.
++ *	Index of switch within DSA tree. Must be between 0 and 7.
+  *
+  * RSV - VID[5:4]:
+  *	To be used for further expansion of PORT or for other purposes.
+  *	Must be transmitted as zero and ignored on receive.
+  *
+  * PORT - VID[3:0]:
+- *	Index of switch port. Must be between 0 and DSA_MAX_PORTS - 1.
++ *	Index of switch port. Must be between 0 and 15.
+  */
  
- 	ds->index = m[1];
--	if (ds->index >= DSA_MAX_SWITCHES)
--		return -EINVAL;
- 
- 	ds->dst = dsa_tree_touch(m[0]);
- 	if (!ds->dst)
+ #define DSA_8021Q_DIR_SHIFT		10
 -- 
 2.23.0
 
