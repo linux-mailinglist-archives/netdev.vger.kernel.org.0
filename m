@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A0CFEAEC3
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5007EAEC8
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:23:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbfJaLXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 07:23:08 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5668 "EHLO huawei.com"
+        id S1726916AbfJaLXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 07:23:20 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5665 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726710AbfJaLXD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726709AbfJaLXD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 31 Oct 2019 07:23:03 -0400
 Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 243ED166494BE8CB9A62;
+        by Forcepoint Email with ESMTP id 16AA468BBBAE43112AB3;
         Thu, 31 Oct 2019 19:22:57 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 31 Oct 2019 19:22:48 +0800
+ 14.3.439.0; Thu, 31 Oct 2019 19:22:49 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
-        Guojia Liao <liaoguojia@huawei.com>,
-        "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 3/9] net: hns3: cleanup some magic numbers
-Date:   Thu, 31 Oct 2019 19:23:18 +0800
-Message-ID: <1572521004-36126-4-git-send-email-tanhuazhong@huawei.com>
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net-next 4/9] net: hns3: cleanup some coding style issues
+Date:   Thu, 31 Oct 2019 19:23:19 +0800
+Message-ID: <1572521004-36126-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
 References: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,243 +39,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-To make the code more readable, this patch replaces
-some magic numbers with macro or sizeof operation.
-
-Also uses macro lower_32_bits and upper_32_bits to
-get bits 0-31 and 32-63 of a number, instead of
-using type conversion and '>>' operation.
+To unify code style and make code simpler, this patch modifies
+some code, deletes unnecessary blank lines and {}, changes
+location of code, and so on.
 
 No functional change.
 
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h | 29 ++++++++++++++++------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  9 +++----
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  1 -
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |  3 ++-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  8 +++---
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  4 ++-
- 6 files changed, 34 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h                |  1 -
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h            |  4 ++--
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c     |  5 ++---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h     |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  4 ++--
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 11 ++++++-----
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  1 -
+ 7 files changed, 13 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index e480236..23478ee 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -130,7 +130,6 @@ enum hnae3_module_type {
+ 	HNAE3_MODULE_TYPE_CR		= 0x04,
+ 	HNAE3_MODULE_TYPE_KR		= 0x05,
+ 	HNAE3_MODULE_TYPE_TP		= 0x06,
+-
+ };
+ 
+ enum hnae3_fec_mode {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index 0725dc5..345633f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -186,7 +186,7 @@ enum hns3_nic_state {
+ #define HNS3_TXD_MSS_S				0
+ #define HNS3_TXD_MSS_M				(0x3fff << HNS3_TXD_MSS_S)
+ 
+-#define HNS3_TX_LAST_SIZE_M                    0xffff
++#define HNS3_TX_LAST_SIZE_M			0xffff
+ 
+ #define HNS3_VECTOR_TX_IRQ			BIT_ULL(0)
+ #define HNS3_VECTOR_RX_IRQ			BIT_ULL(1)
+@@ -313,7 +313,7 @@ struct hns3_desc_cb {
+ 
+ 	u16 reuse_flag;
+ 
+-       /* desc type, used by the ring user to mark the type of the priv data */
++	/* desc type, used by the ring user to mark the type of the priv data */
+ 	u16 type;
+ };
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
+index ecf58cf..c331146 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
+@@ -314,11 +314,10 @@ int hclge_cmd_send(struct hclge_hw *hw, struct hclge_desc *desc, int num)
+ 		} while (timeout < hw->cmq.tx_timeout);
+ 	}
+ 
+-	if (!complete) {
++	if (!complete)
+ 		retval = -EBADE;
+-	} else {
++	else
+ 		retval = hclge_cmd_check_retval(hw, desc, num, ntc);
+-	}
+ 
+ 	/* Clean the command send queue */
+ 	handle = hclge_cmd_csq_clean(hw);
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-index 919911f..a4633d2 100644
+index a4633d2..af96e79 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
-@@ -8,6 +8,7 @@
- #include <linux/etherdevice.h>
+@@ -261,6 +261,7 @@ enum hclge_opcode_type {
  
- #define HCLGE_CMDQ_TX_TIMEOUT		30000
-+#define HCLGE_DESC_DATA_LEN		6
- 
- struct hclge_dev;
- struct hclge_desc {
-@@ -19,7 +20,7 @@ struct hclge_desc {
- 	__le16 flag;
- 	__le16 retval;
- 	__le16 rsv;
--	__le32 data[6];
-+	__le32 data[HCLGE_DESC_DATA_LEN];
- };
- 
- struct hclge_cmq_ring {
-@@ -429,8 +430,10 @@ struct hclge_rx_pkt_buf_cmd {
- #define HCLGE_PF_MAC_NUM_MASK	0x3
- #define HCLGE_PF_STATE_MAIN	BIT(HCLGE_PF_STATE_MAIN_B)
- #define HCLGE_PF_STATE_DONE	BIT(HCLGE_PF_STATE_DONE_B)
-+#define HCLGE_VF_RST_STATUS_CMD	4
+ 	/* NCL config command */
+ 	HCLGE_OPC_QUERY_NCL_CONFIG	= 0x7011,
 +
- struct hclge_func_status_cmd {
--	__le32  vf_rst_state[4];
-+	__le32  vf_rst_state[HCLGE_VF_RST_STATUS_CMD];
- 	u8 pf_state;
- 	u8 mac_id;
- 	u8 rsv1;
-@@ -486,10 +489,12 @@ struct hclge_pf_res_cmd {
- #define HCLGE_CFG_UMV_TBL_SPACE_S	16
- #define HCLGE_CFG_UMV_TBL_SPACE_M	GENMASK(31, 16)
+ 	/* M7 stats command */
+ 	HCLGE_OPC_M7_STATS_BD		= 0x7012,
+ 	HCLGE_OPC_M7_STATS_INFO		= 0x7013,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index 122ad92..e65c8cf 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -145,7 +145,7 @@ static void hclge_dbg_dump_reg_common(struct hclge_dev *hdev,
+ 		return;
+ 	}
  
-+#define HCLGE_CFG_CMD_CNT		4
-+
- struct hclge_cfg_param_cmd {
- 	__le32 offset;
- 	__le32 rsv;
--	__le32 param[4];
-+	__le32 param[HCLGE_CFG_CMD_CNT];
- };
+-	buf_len	 = sizeof(struct hclge_desc) * bd_num;
++	buf_len	= sizeof(struct hclge_desc) * bd_num;
+ 	desc_src = kzalloc(buf_len, GFP_KERNEL);
+ 	if (!desc_src) {
+ 		dev_err(&hdev->pdev->dev, "call kzalloc failed\n");
+@@ -153,7 +153,7 @@ static void hclge_dbg_dump_reg_common(struct hclge_dev *hdev,
+ 	}
  
- #define HCLGE_MAC_MODE		0x0
-@@ -758,20 +763,27 @@ struct hclge_vlan_filter_ctrl_cmd {
- 	u8 rsv2[19];
- };
- 
-+#define HCLGE_VLAN_ID_OFFSET_STEP	160
-+#define HCLGE_VLAN_BYTE_SIZE		8
-+#define	HCLGE_VLAN_OFFSET_BITMAP \
-+	(HCLGE_VLAN_ID_OFFSET_STEP / HCLGE_VLAN_BYTE_SIZE)
-+
- struct hclge_vlan_filter_pf_cfg_cmd {
- 	u8 vlan_offset;
- 	u8 vlan_cfg;
- 	u8 rsv[2];
--	u8 vlan_offset_bitmap[20];
-+	u8 vlan_offset_bitmap[HCLGE_VLAN_OFFSET_BITMAP];
- };
- 
-+#define HCLGE_MAX_VF_BYTES  16
-+
- struct hclge_vlan_filter_vf_cfg_cmd {
- 	__le16 vlan_id;
- 	u8  resp_code;
- 	u8  rsv;
- 	u8  vlan_cfg;
- 	u8  rsv1[3];
--	u8  vf_bitmap[16];
-+	u8  vf_bitmap[HCLGE_MAX_VF_BYTES];
- };
- 
- #define HCLGE_SWITCH_ANTI_SPOOF_B	0U
-@@ -806,6 +818,7 @@ enum hclge_mac_vlan_cfg_sel {
- #define HCLGE_CFG_NIC_ROCE_SEL_B	4
- #define HCLGE_ACCEPT_TAG2_B		5
- #define HCLGE_ACCEPT_UNTAG2_B		6
-+#define HCLGE_VF_NUM_PER_BYTE		8
- 
- struct hclge_vport_vtag_tx_cfg_cmd {
- 	u8 vport_vlan_cfg;
-@@ -813,7 +826,7 @@ struct hclge_vport_vtag_tx_cfg_cmd {
- 	u8 rsv1[2];
- 	__le16 def_vlan_tag1;
- 	__le16 def_vlan_tag2;
--	u8 vf_bitmap[8];
-+	u8 vf_bitmap[HCLGE_VF_NUM_PER_BYTE];
- 	u8 rsv2[8];
- };
- 
-@@ -825,7 +838,7 @@ struct hclge_vport_vtag_rx_cfg_cmd {
- 	u8 vport_vlan_cfg;
- 	u8 vf_offset;
- 	u8 rsv1[6];
--	u8 vf_bitmap[8];
-+	u8 vf_bitmap[HCLGE_VF_NUM_PER_BYTE];
- 	u8 rsv2[8];
- };
- 
-@@ -864,7 +877,7 @@ struct hclge_mac_ethertype_idx_rd_cmd {
- 	u8	flags;
- 	u8	resp_code;
- 	__le16  vlan_tag;
--	u8      mac_addr[6];
-+	u8      mac_addr[ETH_ALEN];
- 	__le16  index;
- 	__le16	ethter_type;
- 	__le16  egress_port;
+ 	desc = desc_src;
+-	ret  = hclge_dbg_cmd_send(hdev, desc, index, bd_num, reg_msg->cmd);
++	ret = hclge_dbg_cmd_send(hdev, desc, index, bd_num, reg_msg->cmd);
+ 	if (ret) {
+ 		kfree(desc_src);
+ 		return;
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 19667c9..dbdc245 100644
+index dbdc245..69ab86a 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -7744,8 +7744,6 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
- 				    bool is_kill, u16 vlan,
- 				    __be16 proto)
- {
--#define HCLGE_MAX_VF_BYTES  16
--
- 	struct hclge_vport *vport = &hdev->vport[vfid];
- 	struct hclge_vlan_filter_vf_cfg_cmd *req0;
- 	struct hclge_vlan_filter_vf_cfg_cmd *req1;
-@@ -7845,9 +7843,10 @@ static int hclge_set_port_vlan_filter(struct hclge_dev *hdev, __be16 proto,
+@@ -2777,7 +2777,7 @@ static void hclge_update_port_capability(struct hclge_mac *mac)
+ 	else if (mac->media_type == HNAE3_MEDIA_TYPE_COPPER)
+ 		mac->module_type = HNAE3_MODULE_TYPE_TP;
  
- 	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_VLAN_FILTER_PF_CFG, false);
- 
--	vlan_offset_160 = vlan_id / 160;
--	vlan_offset_byte = (vlan_id % 160) / 8;
--	vlan_offset_byte_val = 1 << (vlan_id % 8);
-+	vlan_offset_160 = vlan_id / HCLGE_VLAN_ID_OFFSET_STEP;
-+	vlan_offset_byte = (vlan_id % HCLGE_VLAN_ID_OFFSET_STEP) /
-+			   HCLGE_VLAN_BYTE_SIZE;
-+	vlan_offset_byte_val = 1 << (vlan_id % HCLGE_VLAN_BYTE_SIZE);
- 
- 	req = (struct hclge_vlan_filter_pf_cfg_cmd *)desc.data;
- 	req->vlan_offset = vlan_offset_160;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 4386788..599f76a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -141,7 +141,6 @@
- 
- /* Factor used to calculate offset and bitmap of VF num */
- #define HCLGE_VF_NUM_PER_CMD           64
--#define HCLGE_VF_NUM_PER_BYTE          8
- 
- enum HLCGE_PORT_TYPE {
- 	HOST_PORT,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 97463e11..088fc7c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -590,7 +590,8 @@ static int hclge_get_queue_id_in_pf(struct hclge_vport *vport,
- 	qid_in_pf = hclge_covert_handle_qid_global(&vport->nic, queue_id);
- 	memcpy(resp_data, &qid_in_pf, sizeof(qid_in_pf));
- 
--	return hclge_gen_resp_to_vf(vport, mbx_req, 0, resp_data, 2);
-+	return hclge_gen_resp_to_vf(vport, mbx_req, 0, resp_data,
-+				    sizeof(resp_data));
- }
- 
- static int hclge_get_rss_key(struct hclge_vport *vport,
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-index d5d1cc5..d261b5a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-@@ -92,9 +92,9 @@ static void hclgevf_cmd_config_regs(struct hclgevf_cmq_ring *ring)
- 	u32 reg_val;
- 
- 	if (ring->flag == HCLGEVF_TYPE_CSQ) {
--		reg_val = (u32)ring->desc_dma_addr;
-+		reg_val = lower_32_bits(ring->desc_dma_addr);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_BASEADDR_L_REG, reg_val);
--		reg_val = (u32)((ring->desc_dma_addr >> 31) >> 1);
-+		reg_val = upper_32_bits(ring->desc_dma_addr);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_BASEADDR_H_REG, reg_val);
- 
- 		reg_val = hclgevf_read_dev(hw, HCLGEVF_NIC_CSQ_DEPTH_REG);
-@@ -105,9 +105,9 @@ static void hclgevf_cmd_config_regs(struct hclgevf_cmq_ring *ring)
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_HEAD_REG, 0);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CSQ_TAIL_REG, 0);
+-	if (mac->support_autoneg == true) {
++	if (mac->support_autoneg) {
+ 		linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, mac->supported);
+ 		linkmode_copy(mac->advertising, mac->supported);
  	} else {
--		reg_val = (u32)ring->desc_dma_addr;
-+		reg_val = lower_32_bits(ring->desc_dma_addr);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_BASEADDR_L_REG, reg_val);
--		reg_val = (u32)((ring->desc_dma_addr >> 31) >> 1);
-+		reg_val = upper_32_bits(ring->desc_dma_addr);
- 		hclgevf_write_dev(hw, HCLGEVF_NIC_CRQ_BASEADDR_H_REG, reg_val);
+@@ -3855,12 +3855,13 @@ static void hclge_reset_event(struct pci_dev *pdev, struct hnae3_handle *handle)
+ 				  HCLGE_RESET_INTERVAL))) {
+ 		mod_timer(&hdev->reset_timer, jiffies + HCLGE_RESET_INTERVAL);
+ 		return;
+-	} else if (hdev->default_reset_request)
++	} else if (hdev->default_reset_request) {
+ 		hdev->reset_level =
+ 			hclge_get_reset_level(ae_dev,
+ 					      &hdev->default_reset_request);
+-	else if (time_after(jiffies, (hdev->last_reset_time + 4 * 5 * HZ)))
++	} else if (time_after(jiffies, (hdev->last_reset_time + 4 * 5 * HZ))) {
+ 		hdev->reset_level = HNAE3_FUNC_RESET;
++	}
  
- 		reg_val = (ring->desc_num >> HCLGEVF_NIC_CMQ_DESC_NUM_S);
+ 	dev_info(&hdev->pdev->dev, "received reset event, reset type is %d\n",
+ 		 hdev->reset_level);
+@@ -3985,6 +3986,7 @@ static void hclge_service_task(struct work_struct *work)
+ 	hclge_update_link_status(hdev);
+ 	hclge_update_vport_alive(hdev);
+ 	hclge_sync_vlan_filter(hdev);
++
+ 	if (hdev->fd_arfs_expire_timer >= HCLGE_FD_ARFS_EXPIRE_TIMER_INTERVAL) {
+ 		hclge_rfs_filter_expire(hdev);
+ 		hdev->fd_arfs_expire_timer = 0;
+@@ -7409,7 +7411,7 @@ void hclge_rm_vport_mac_table(struct hclge_vport *vport, const u8 *mac_addr,
+ 	mc_flag = is_write_tbl && mac_type == HCLGE_MAC_ADDR_MC;
+ 
+ 	list_for_each_entry_safe(mac_cfg, tmp, list, node) {
+-		if (strncmp(mac_cfg->mac_addr, mac_addr, ETH_ALEN) == 0) {
++		if (ether_addr_equal(mac_cfg->mac_addr, mac_addr)) {
+ 			if (uc_flag && mac_cfg->hd_tbl_status)
+ 				hclge_rm_uc_addr_common(vport, mac_addr);
+ 
+@@ -9093,7 +9095,6 @@ static int hclge_init_client_instance(struct hnae3_client *client,
+ 
+ 		switch (client->type) {
+ 		case HNAE3_CLIENT_KNIC:
+-
+ 			hdev->nic_client = client;
+ 			vport->nic.client = client;
+ 			ret = hclge_init_nic_client_instance(ae_dev, vport);
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index c38eba8..2f3f63b 100644
+index 2f3f63b..9506d7d 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1813,6 +1813,8 @@ static void hclgevf_service_timer(struct timer_list *t)
+@@ -2170,7 +2170,6 @@ static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
+ 		ret = hclgevf_set_rss_input_tuple(hdev, rss_cfg);
+ 		if (ret)
+ 			return ret;
+-
+ 	}
  
- static void hclgevf_reset_service_task(struct work_struct *work)
- {
-+#define	HCLGEVF_MAX_RESET_ATTEMPTS_CNT	3
-+
- 	struct hclgevf_dev *hdev =
- 		container_of(work, struct hclgevf_dev, rst_service_task);
- 	int ret;
-@@ -1865,7 +1867,7 @@ static void hclgevf_reset_service_task(struct work_struct *work)
- 		 * We cannot do much for 2. but to check first we can try reset
- 		 * our PCIe + stack and see if it alleviates the problem.
- 		 */
--		if (hdev->reset_attempts > 3) {
-+		if (hdev->reset_attempts > HCLGEVF_MAX_RESET_ATTEMPTS_CNT) {
- 			/* prepare for full reset of stack + pcie interface */
- 			set_bit(HNAE3_VF_FULL_RESET, &hdev->reset_pending);
- 
+ 	/* Initialize RSS indirect table */
 -- 
 2.7.4
 
