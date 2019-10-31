@@ -2,120 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B178BEAF0A
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:37:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3DEEAF20
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:48:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbfJaLhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 07:37:19 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:56448 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726810AbfJaLhO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 07:37:14 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1AB671A0509;
-        Thu, 31 Oct 2019 12:37:13 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 0E0181A01F8;
-        Thu, 31 Oct 2019 12:37:13 +0100 (CET)
-Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id BB6AF205E9;
-        Thu, 31 Oct 2019 12:37:12 +0100 (CET)
-From:   Madalin Bucur <madalin.bucur@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     roy.pledge@nxp.com, jakub.kicinski@netronome.com,
-        Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [net-next 13/13] dpaa_eth: register a device link for the qman portal used
-Date:   Thu, 31 Oct 2019 13:36:59 +0200
-Message-Id: <1572521819-10458-14-git-send-email-madalin.bucur@nxp.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1572521819-10458-1-git-send-email-madalin.bucur@nxp.com>
+        id S1726602AbfJaLsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 07:48:08 -0400
+Received: from smtprelay0102.hostedemail.com ([216.40.44.102]:41040 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726540AbfJaLsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 07:48:08 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id F17C6838434C;
+        Thu, 31 Oct 2019 11:48:06 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:355:379:599:966:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2559:2562:2828:2902:3138:3139:3140:3141:3142:3352:3622:3865:3867:3870:3874:4250:4321:4385:5007:6119:8660:10004:10400:10848:11026:11232:11657:11658:11914:12043:12296:12297:12438:12740:12760:12895:13069:13148:13230:13311:13357:13439:14659:14721:21080:21627:21795:21939:30051:30054:30091,0,RBL:47.151.135.224:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: rose10_46b8522c0bd5a
+X-Filterd-Recvd-Size: 1802
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf16.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 31 Oct 2019 11:48:05 +0000 (UTC)
+Message-ID: <78c289a25faaa5dab2975f050199c93142718ab6.camel@perches.com>
+Subject: Re: [net-next 10/13] dpaa_eth: remove netdev_err() for user errors
+From:   Joe Perches <joe@perches.com>
+To:     madalin.bucur@nxp.com, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     roy.pledge@nxp.com, jakub.kicinski@netronome.com
+Date:   Thu, 31 Oct 2019 04:47:57 -0700
+In-Reply-To: <1572521819-10458-11-git-send-email-madalin.bucur@nxp.com>
 References: <1572521819-10458-1-git-send-email-madalin.bucur@nxp.com>
-Content-Type: text/plain; charset="us-ascii"
-Reply-to: madalin.bucur@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+         <1572521819-10458-11-git-send-email-madalin.bucur@nxp.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before this change, unbinding the QMan portals did not trigger a
-corresponding unbinding of the dpaa_eth making use of it; the first
-QMan portal related operation issued afterwards crashed the kernel.
-The device link ensures the dpaa_eth dependency upon the qman portal
-used is honoured at the QMan portal removal.
+On Thu, 2019-10-31 at 13:36 +0200, Madalin Bucur wrote:
+> User reports that an application making an (incorrect) call to
+> restart AN on a fixed link DPAA interface triggers an error in
+> the kernel log while the returned EINVAL should be enough.
+[]
+> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+[]
+> @@ -81,7 +81,6 @@ static int dpaa_get_link_ksettings(struct net_device *net_dev,
+>  				   struct ethtool_link_ksettings *cmd)
+>  {
+>  	if (!net_dev->phydev) {
+> -		netdev_dbg(net_dev, "phy device not initialized\n");
+>  		return 0;
+>  	}
 
-Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 5 +++--
- drivers/soc/fsl/qbman/qman.c                   | 6 ------
- include/soc/fsl/qman.h                         | 7 -------
- 3 files changed, 3 insertions(+), 15 deletions(-)
+ideally the now excess braces would be removed too.
+ 
+> @@ -96,7 +95,6 @@ static int dpaa_set_link_ksettings(struct net_device *net_dev,
+>  	int err;
+>  
+>  	if (!net_dev->phydev) {
+> -		netdev_err(net_dev, "phy device not initialized\n");
+>  		return -ENODEV;
+>  	}
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 9e6080aaf77a..18d3ec0f96d9 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -750,7 +750,7 @@ static void dpaa_release_channel(void)
- 	qman_release_pool(rx_pool_channel);
- }
- 
--static void dpaa_eth_add_channel(u16 channel)
-+static void dpaa_eth_add_channel(u16 channel, struct device *dev)
- {
- 	u32 pool = QM_SDQCR_CHANNELS_POOL_CONV(channel);
- 	const cpumask_t *cpus = qman_affine_cpus();
-@@ -760,6 +760,7 @@ static void dpaa_eth_add_channel(u16 channel)
- 	for_each_cpu_and(cpu, cpus, cpu_online_mask) {
- 		portal = qman_get_affine_portal(cpu);
- 		qman_p_static_dequeue_add(portal, pool);
-+		qman_start_using_portal(portal, dev);
- 	}
- }
- 
-@@ -2873,7 +2874,7 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 	/* Walk the CPUs with affine portals
- 	 * and add this pool channel to each's dequeue mask.
- 	 */
--	dpaa_eth_add_channel(priv->channel);
-+	dpaa_eth_add_channel(priv->channel, &pdev->dev);
- 
- 	dpaa_fq_setup(priv, &dpaa_fq_cbs, priv->mac_dev->port[TX]);
- 
-diff --git a/drivers/soc/fsl/qbman/qman.c b/drivers/soc/fsl/qbman/qman.c
-index bc75a5882b9e..1e164e03410a 100644
---- a/drivers/soc/fsl/qbman/qman.c
-+++ b/drivers/soc/fsl/qbman/qman.c
-@@ -1756,12 +1756,6 @@ int qman_start_using_portal(struct qman_portal *p, struct device *dev)
- }
- EXPORT_SYMBOL(qman_start_using_portal);
- 
--void qman_stop_using_portal(struct qman_portal *p, struct device *dev)
--{
--	device_link_remove(dev, p->config->dev);
--}
--EXPORT_SYMBOL(qman_stop_using_portal);
--
- int qman_p_poll_dqrr(struct qman_portal *p, unsigned int limit)
- {
- 	return __poll_portal_fast(p, limit);
-diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
-index c499c5cfa7c9..cfe00e08e85b 100644
---- a/include/soc/fsl/qman.h
-+++ b/include/soc/fsl/qman.h
-@@ -926,13 +926,6 @@ struct qman_portal *qman_get_affine_portal(int cpu);
- int qman_start_using_portal(struct qman_portal *p, struct device *dev);
- 
- /**
-- * qman_stop_using_portal - deregister a device link for the portal user
-- * @p: the portal that will no longer be in use
-- * @dev: the device that uses the portal
-- */
--void qman_stop_using_portal(struct qman_portal *p, struct device *dev);
--
--/**
-  * qman_p_poll_dqrr - process DQRR (fast-path) entries
-  * @limit: the maximum number of DQRR entries to process
-  *
--- 
-2.1.0
+etc...
+
 
