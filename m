@@ -2,200 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E037EB33A
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:53:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E8EEB365
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 16:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728306AbfJaOwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 10:52:43 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29484 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728302AbfJaOwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 10:52:43 -0400
+        id S1727779AbfJaPHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 11:07:37 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47674 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726642AbfJaPHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 11:07:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572533561;
+        s=mimecast20190719; t=1572534455;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Br/pVIeopOexMRdit1UgpyI3J2jmcX3ZsQH9LphgRUs=;
-        b=hZSo4Aip6eA6hXdU/Pv7HPY3Qek5HaNYJ7oXI1ayaouqPRbEqsjBNbDsXXnXd3/OxZvVkB
-        RsOaYnFUGH6koU+EEPPZDwzg6PE+Fac0m/RjhDPwoBQVh0XlYCZBuPX0Idbsl6WaZmZRHW
-        hS5Fzkmd6EFTbxP4yE2zJjIHcv0mvek=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-413-EAMUJj77NGW3N1zO_9RULA-1; Thu, 31 Oct 2019 10:52:37 -0400
-Received: by mail-lf1-f71.google.com with SMTP id p4so1459245lfo.10
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 07:52:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=Mv0pgq6n/5fDFiIucejQhqR+ae//0GDCi/KlF2QfeEY=;
-        b=aGEQtf+AmNV3GCglkbKtW3ZYPMMo8uDXEk1FGk3OOp2bBxnt4hV0ooyNtk9af1GT9c
-         H3vTKz27uXEQOiqlZJEOI1hsx2pCdz3LqZ4pqQUJfg8HrCo+vN5w9VlT5HRjBruXfUUH
-         x1ypJlpC9E7gDr/P4VAMzS5nDEig/YE6mWzJ8TC6+reo7UjczDZFsAOYR4xcuIqL5p5p
-         s4NmSXT6fWOPEPfzIpyU4CoBd9mOmeaAg5LMVPhNuFBhk9Qr92/ZNGNgBLxxXSSWYXjm
-         oRyhzj0QorrEBoaiSHmIXkhOZoW5kN3I7/QSaNj7INm+d5eRUkBPg9xM8PaDmPILe9b2
-         Vn3w==
-X-Gm-Message-State: APjAAAVrlBqO2q6bdMIFp2Ddpqrz0e0hWOWqa0eto3kB/sl2TOwwImkd
-        tGvLRP3WZH5TvMRVUHYqY8Z7SD2+fOJ1KUBhYbalLHckvr3i1N961Lyxow+wleRvtr9cju6KHni
-        1JJYGmOAN8cgqF90E
-X-Received: by 2002:a2e:3514:: with SMTP id z20mr4348533ljz.84.1572533556379;
-        Thu, 31 Oct 2019 07:52:36 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwozLeK1OulL35EZ+FygdO+ykmIkeqzGoXA1isTbaOGYie2IPmnWzcNoUS8Vkha1W7BxCKrZA==
-X-Received: by 2002:a2e:3514:: with SMTP id z20mr4348516ljz.84.1572533556118;
-        Thu, 31 Oct 2019 07:52:36 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id f14sm1225293ljn.105.2019.10.31.07.52.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 07:52:35 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B49761818B5; Thu, 31 Oct 2019 15:52:34 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without need_wakeup
-In-Reply-To: <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
-References: <1571995035-21889-1-git-send-email-magnus.karlsson@intel.com> <87tv7qpdbt.fsf@toke.dk> <CAJ8uoz3BPA41wmT8-Jhhs=kJ=GbsAswSvx2pEmuWJDvh+b+_yw@mail.gmail.com> <CAJ+HfNimRqftmKASOdceXFJmgbLvXnNBZATTnfA9LMF2amGzzA@mail.gmail.com> <CAADnVQJRe4Pm-Rxx9zobn8YRHh9i+xQp7HX4gidqq9Mse7PJ5g@mail.gmail.com> <87lft1ngtn.fsf@toke.dk> <CAADnVQLrg6f_zjvNfiEVfdjcx9+DW_RFjVGetavvMNo=VXAR+g@mail.gmail.com> <87imo5ng7w.fsf@toke.dk> <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 31 Oct 2019 15:52:34 +0100
-Message-ID: <87d0ednf0t.fsf@toke.dk>
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+X+barDmBU6tY5JVRo13usriPISCS+dspcgm1jynFsU=;
+        b=OJWM1qKzgG7hphI6rN3+AEOVqVQFxZcV0Nzq35ptxXifM2KrK9zi/PwV3PlXmlkpHbKhfO
+        /y4d02+oCVqwHl5tI3Hhs/UYo6PP4M9S2xIxewQ9E5B53uDXe5gudFlj1pPwqg/8xhnpdp
+        8GIgX1hKM9+3GJEGRTKCNBEWI7QyB60=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-209-Qw84FZfkMEC4TRhwYzDT9g-1; Thu, 31 Oct 2019 11:07:31 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 798EE1800D6B;
+        Thu, 31 Oct 2019 15:07:30 +0000 (UTC)
+Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.239])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EF74600CD;
+        Thu, 31 Oct 2019 15:07:29 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] ip-route: fix json formatting for multipath routing
+Date:   Thu, 31 Oct 2019 16:09:30 +0100
+Message-Id: <99a4a6ffec5d9e7b508863873bf2097bfbb79ec6.1572534380.git.aclaudi@redhat.com>
 MIME-Version: 1.0
-X-MC-Unique: EAMUJj77NGW3N1zO_9RULA-1
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: Qw84FZfkMEC4TRhwYzDT9g-1
 X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+json output for multipath routing is broken due to some non-jsonified
+print in print_rta_multipath(). To reproduce the issue:
 
-> On Thu, Oct 31, 2019 at 7:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>
->> > On Thu, Oct 31, 2019 at 7:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
->> >>
->> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->> >>
->> >> > On Thu, Oct 31, 2019 at 1:03 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@=
-gmail.com> wrote:
->> >> >>
->> >> >> On Thu, 31 Oct 2019 at 08:17, Magnus Karlsson <magnus.karlsson@gma=
-il.com> wrote:
->> >> >> >
->> >> >> > On Wed, Oct 30, 2019 at 2:36 PM Toke H=C3=B8iland-J=C3=B8rgensen=
- <toke@redhat.com> wrote:
->> >> >> > >
->> >> >> > > Magnus Karlsson <magnus.karlsson@intel.com> writes:
->> >> >> > >
->> >> >> > > > When the need_wakeup flag was added to AF_XDP, the format of=
- the
->> >> >> > > > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to =
-the
->> >> >> > > > kernel to take care of compatibility issues arrising from ru=
-nning
->> >> >> > > > applications using any of the two formats. However, libbpf w=
-as
->> >> >> > > > not extended to take care of the case when the application/l=
-ibbpf
->> >> >> > > > uses the new format but the kernel only supports the old
->> >> >> > > > format. This patch adds support in libbpf for parsing the ol=
-d
->> >> >> > > > format, before the need_wakeup flag was added, and emulating=
- a
->> >> >> > > > set of static need_wakeup flags that will always work for th=
-e
->> >> >> > > > application.
->> >> >> > >
->> >> >> > > Hi Magnus
->> >> >> > >
->> >> >> > > While you're looking at backwards compatibility issues with xs=
-k: libbpf
->> >> >> > > currently fails to compile on a system that has old kernel hea=
-ders
->> >> >> > > installed (this is with kernel-headers 5.3):
->> >> >> > >
->> >> >> > > $ echo "#include <bpf/xsk.h>" | gcc -x c -
->> >> >> > > In file included from <stdin>:1:
->> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__ne=
-eds_wakeup=E2=80=99:
->> >> >> > > /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_WA=
-KEUP=E2=80=99 undeclared (first use in this function)
->> >> >> > >    82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
->> >> >> > >       |                     ^~~~~~~~~~~~~~~~~~~~
->> >> >> > > /usr/include/bpf/xsk.h:82:21: note: each undeclared identifier=
- is reported only once for each function it appears in
->> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract=
-_addr=E2=80=99:
->> >> >> > > /usr/include/bpf/xsk.h:173:16: error: =E2=80=98XSK_UNALIGNED_B=
-UF_ADDR_MASK=E2=80=99 undeclared (first use in this function)
->> >> >> > >   173 |  return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
->> >> >> > >       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
->> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract=
-_offset=E2=80=99:
->> >> >> > > /usr/include/bpf/xsk.h:178:17: error: =E2=80=98XSK_UNALIGNED_B=
-UF_OFFSET_SHIFT=E2=80=99 undeclared (first use in this function)
->> >> >> > >   178 |  return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
->> >> >> > >       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> >> >> > >
->> >> >> > >
->> >> >> > >
->> >> >> > > How would you prefer to handle this? A patch like the one belo=
-w will fix
->> >> >> > > the compile errors, but I'm not sure it makes sense semantical=
-ly?
->> >> >> >
->> >> >> > Thanks Toke for finding this. Of course it should be possible to
->> >> >> > compile this on an older kernel, but without getting any of the =
-newer
->> >> >> > functionality that is not present in that older kernel.
->> >> >>
->> >> >> Is the plan to support source compatibility for the headers only, =
-or
->> >> >> the whole the libbpf itself? Is the usecase here, that you've buil=
-t
->> >> >> libbpf.so with system headers X, and then would like to use the
->> >> >> library on a system with older system headers X~10? XDP sockets? B=
-TF?
->> >> >
->> >> > libbpf has to be backward and forward compatible.
->> >> > Once compiled it has to run on older and newer kernels.
->> >> > Conditional compilation is not an option obviously.
->> >>
->> >> So what do we do, then? Redefine the constants in libbpf/xsh.h if
->> >> they're not in the kernel header file?
->> >
->> > why? How and whom it will help?
->> > To libbpf.rpm creating person or to end user?
->>
->> Anyone who tries to compile a new libbpf against an older kernel. You're
->> saying yourself that "libbpf has to be backward and forward compatible".
->> Surely that extends to compile time as well as runtime?
->
-> how old that older kernel?
-> Does it have up-to-date bpf.h in /usr/include ?
-> Also consider that running kernel is often not the same
-> thing as installed in /usr/include
-> vmlinux and /usr/include are different packages.
+$ ip route add default \
+  nexthop via 192.168.1.1 weight 1 \
+  nexthop via 192.168.2.1 weight 1
+$ ip -j route | jq
+parse error: Invalid numeric literal at line 1, column 58
 
-In this case, it's a constant introduced in the kernel in the current
-(5.4) cycle; so currently, you can't compile libbpf with
-kernel-headers-5.3. And we're discussing how to handle this in a
-backwards compatible way in libbpf...
+Fix this opening a "multipath" json array that can contain multiple
+route objects, and using print_*() instead of fprintf().
 
--Toke
+This is the output for the above commands applying this patch:
+
+[
+  {
+    "dst": "default",
+    "flags": [],
+    "multipath": [
+      {
+        "gateway": "192.168.1.1",
+        "dev": "wlp61s0",
+        "weight": 1,
+        "flags": [
+          "linkdown"
+        ]
+      },
+      {
+        "gateway": "192.168.2.1",
+        "dev": "ens1u1",
+        "weight": 1,
+        "flags": []
+      }
+    ]
+  }
+]
+
+Fixes: f48e14880a0e5 ("iproute: refactor multipath print")
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+Reported-by: Patrick Hagara <phagara@redhat.com>
+---
+ ip/iproute.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
+
+diff --git a/ip/iproute.c b/ip/iproute.c
+index a453385113cb9..4c268c72c5bd6 100644
+--- a/ip/iproute.c
++++ b/ip/iproute.c
+@@ -649,12 +649,16 @@ static void print_rta_multipath(FILE *fp, const struc=
+t rtmsg *r,
+ =09int len =3D RTA_PAYLOAD(rta);
+ =09int first =3D 1;
+=20
++=09open_json_array(PRINT_JSON, "multipath");
++
+ =09while (len >=3D sizeof(*nh)) {
+ =09=09struct rtattr *tb[RTA_MAX + 1];
+=20
+ =09=09if (nh->rtnh_len > len)
+ =09=09=09break;
+=20
++=09=09open_json_object(NULL);
++
+ =09=09if (!is_json_context()) {
+ =09=09=09if ((r->rtm_flags & RTM_F_CLONED) &&
+ =09=09=09    r->rtm_type =3D=3D RTN_MULTICAST) {
+@@ -689,22 +693,29 @@ static void print_rta_multipath(FILE *fp, const struc=
+t rtmsg *r,
+=20
+ =09=09if ((r->rtm_flags & RTM_F_CLONED) &&
+ =09=09    r->rtm_type =3D=3D RTN_MULTICAST) {
+-=09=09=09fprintf(fp, "%s", ll_index_to_name(nh->rtnh_ifindex));
++=09=09=09print_string(PRINT_ANY, "dev", "%s",
++=09=09=09=09     ll_index_to_name(nh->rtnh_ifindex));
+ =09=09=09if (nh->rtnh_hops !=3D 1)
+-=09=09=09=09fprintf(fp, "(ttl>%d)", nh->rtnh_hops);
+-=09=09=09fprintf(fp, " ");
++=09=09=09=09print_uint(PRINT_ANY, "ttl", "(ttl>%d)",
++=09=09=09=09=09   nh->rtnh_hops);
++=09=09=09print_string(PRINT_FP, NULL, " ", NULL);
+ =09=09} else {
+-=09=09=09fprintf(fp, "dev %s ", ll_index_to_name(nh->rtnh_ifindex));
++=09=09=09print_string(PRINT_ANY, "dev", "dev %s ",
++=09=09=09=09     ll_index_to_name(nh->rtnh_ifindex));
+ =09=09=09if (r->rtm_family !=3D AF_MPLS)
+-=09=09=09=09fprintf(fp, "weight %d ",
+-=09=09=09=09=09nh->rtnh_hops+1);
++=09=09=09=09print_uint(PRINT_ANY, "weight", "weight %d ",
++=09=09=09=09=09   nh->rtnh_hops + 1);
+ =09=09}
+=20
+ =09=09print_rt_flags(fp, nh->rtnh_flags);
+=20
+ =09=09len -=3D NLMSG_ALIGN(nh->rtnh_len);
+ =09=09nh =3D RTNH_NEXT(nh);
++
++=09=09close_json_object();
+ =09}
++
++=09close_json_array(PRINT_JSON, "multipath");
+ }
+=20
+ int print_route(struct nlmsghdr *n, void *arg)
+--=20
+2.21.0
 
