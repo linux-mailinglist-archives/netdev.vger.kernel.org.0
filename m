@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F9D9EAEC6
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:23:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35254EAEC0
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726779AbfJaLXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 07:23:02 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5661 "EHLO huawei.com"
+        id S1726877AbfJaLXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 07:23:10 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5669 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726540AbfJaLXC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 07:23:02 -0400
+        id S1726711AbfJaLXI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 07:23:08 -0400
 Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id F15F7668FCB8FCBEF37E;
-        Thu, 31 Oct 2019 19:22:56 +0800 (CST)
+        by Forcepoint Email with ESMTP id 2B38BBA11EC3B279E4BD;
+        Thu, 31 Oct 2019 19:22:57 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
  14.3.439.0; Thu, 31 Oct 2019 19:22:50 +0800
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
         Guojia Liao <liaoguojia@huawei.com>,
         "Huazhong Tan" <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 8/9] net: hns3: cleanup some print format warning
-Date:   Thu, 31 Oct 2019 19:23:23 +0800
-Message-ID: <1572521004-36126-9-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 9/9] net: hns3: cleanup byte order issues when printed
+Date:   Thu, 31 Oct 2019 19:23:24 +0800
+Message-ID: <1572521004-36126-10-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
 References: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,787 +41,407 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Guojia Liao <liaoguojia@huawei.com>
 
-Using '%d' for printing type unsigned int or '%u' for
-type int would cause static tools to give false warnings,
-so this patch cleanups this warning by using the suitable
-format specifier of the type of variable.
-
-BTW, modifies the type of some variables and macro to
-synchronize with their usage.
+Though the hip08 and the IMP(Intelligent Management Processor)
+have the same byte order right now, it is better to convert
+__be or __le variable into the CPU's byte order before print.
 
 Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |  2 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c | 30 ++++-----
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 20 +++---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 12 ++--
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |  2 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c |  2 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c |  2 +-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 78 +++++++++++-----------
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c | 12 ++--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c    |  2 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |  4 +-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  2 +-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 16 ++---
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c   | 18 ++---
- 14 files changed, 101 insertions(+), 101 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  39 ++++----
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |   4 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 100 ++++++++++++---------
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |   2 +-
+ 4 files changed, 83 insertions(+), 62 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-index cb45c7d..1b03139 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
-@@ -72,7 +72,7 @@ enum hclge_mbx_vlan_cfg_subcode {
- };
- 
- #define HCLGE_MBX_MAX_MSG_SIZE	16
--#define HCLGE_MBX_MAX_RESP_DATA_SIZE	8
-+#define HCLGE_MBX_MAX_RESP_DATA_SIZE	8U
- #define HCLGE_MBX_RING_MAP_BASIC_MSG_NUM	3
- #define HCLGE_MBX_RING_NODE_VARIABLE_NUM	3
- 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-index fe5bc6f..466a6e3 100644
+index 466a6e3..6b328a2 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
-@@ -57,68 +57,68 @@ static int hns3_dbg_queue_info(struct hnae3_handle *h,
- 					   HNS3_RING_RX_RING_BASEADDR_H_REG);
- 		base_add_l = readl_relaxed(ring->tqp->io_base +
- 					   HNS3_RING_RX_RING_BASEADDR_L_REG);
--		dev_info(&h->pdev->dev, "RX(%d) BASE ADD: 0x%08x%08x\n", i,
-+		dev_info(&h->pdev->dev, "RX(%u) BASE ADD: 0x%08x%08x\n", i,
- 			 base_add_h, base_add_l);
+@@ -190,21 +190,24 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
+ 	addr = le64_to_cpu(tx_desc->addr);
+ 	dev_info(dev, "TX Queue Num: %u, BD Index: %u\n", q_num, tx_index);
+ 	dev_info(dev, "(TX)addr: %pad\n", &addr);
+-	dev_info(dev, "(TX)vlan_tag: %u\n", tx_desc->tx.vlan_tag);
+-	dev_info(dev, "(TX)send_size: %u\n", tx_desc->tx.send_size);
++	dev_info(dev, "(TX)vlan_tag: %u\n", le16_to_cpu(tx_desc->tx.vlan_tag));
++	dev_info(dev, "(TX)send_size: %u\n",
++		 le16_to_cpu(tx_desc->tx.send_size));
+ 	dev_info(dev, "(TX)vlan_tso: %u\n", tx_desc->tx.type_cs_vlan_tso);
+ 	dev_info(dev, "(TX)l2_len: %u\n", tx_desc->tx.l2_len);
+ 	dev_info(dev, "(TX)l3_len: %u\n", tx_desc->tx.l3_len);
+ 	dev_info(dev, "(TX)l4_len: %u\n", tx_desc->tx.l4_len);
+-	dev_info(dev, "(TX)vlan_tag: %u\n", tx_desc->tx.outer_vlan_tag);
+-	dev_info(dev, "(TX)tv: %u\n", tx_desc->tx.tv);
++	dev_info(dev, "(TX)vlan_tag: %u\n",
++		 le16_to_cpu(tx_desc->tx.outer_vlan_tag));
++	dev_info(dev, "(TX)tv: %u\n", le16_to_cpu(tx_desc->tx.tv));
+ 	dev_info(dev, "(TX)vlan_msec: %u\n", tx_desc->tx.ol_type_vlan_msec);
+ 	dev_info(dev, "(TX)ol2_len: %u\n", tx_desc->tx.ol2_len);
+ 	dev_info(dev, "(TX)ol3_len: %u\n", tx_desc->tx.ol3_len);
+ 	dev_info(dev, "(TX)ol4_len: %u\n", tx_desc->tx.ol4_len);
+-	dev_info(dev, "(TX)paylen: %u\n", tx_desc->tx.paylen);
+-	dev_info(dev, "(TX)vld_ra_ri: %u\n", tx_desc->tx.bdtp_fe_sc_vld_ra_ri);
+-	dev_info(dev, "(TX)mss: %u\n", tx_desc->tx.mss);
++	dev_info(dev, "(TX)paylen: %u\n", le32_to_cpu(tx_desc->tx.paylen));
++	dev_info(dev, "(TX)vld_ra_ri: %u\n",
++		 le16_to_cpu(tx_desc->tx.bdtp_fe_sc_vld_ra_ri));
++	dev_info(dev, "(TX)mss: %u\n", le16_to_cpu(tx_desc->tx.mss));
  
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_RX_RING_BD_NUM_REG);
--		dev_info(&h->pdev->dev, "RX(%d) RING BD NUM: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "RX(%u) RING BD NUM: %u\n", i, value);
+ 	ring  = &priv->ring[q_num + h->kinfo.num_tqps];
+ 	value = readl_relaxed(ring->tqp->io_base + HNS3_RING_RX_RING_TAIL_REG);
+@@ -214,15 +217,19 @@ static int hns3_dbg_bd_info(struct hnae3_handle *h, const char *cmd_buf)
+ 	addr = le64_to_cpu(rx_desc->addr);
+ 	dev_info(dev, "RX Queue Num: %u, BD Index: %u\n", q_num, rx_index);
+ 	dev_info(dev, "(RX)addr: %pad\n", &addr);
+-	dev_info(dev, "(RX)l234_info: %u\n", rx_desc->rx.l234_info);
+-	dev_info(dev, "(RX)pkt_len: %u\n", rx_desc->rx.pkt_len);
+-	dev_info(dev, "(RX)size: %u\n", rx_desc->rx.size);
+-	dev_info(dev, "(RX)rss_hash: %u\n", rx_desc->rx.rss_hash);
+-	dev_info(dev, "(RX)fd_id: %u\n", rx_desc->rx.fd_id);
+-	dev_info(dev, "(RX)vlan_tag: %u\n", rx_desc->rx.vlan_tag);
+-	dev_info(dev, "(RX)o_dm_vlan_id_fb: %u\n", rx_desc->rx.o_dm_vlan_id_fb);
+-	dev_info(dev, "(RX)ot_vlan_tag: %u\n", rx_desc->rx.ot_vlan_tag);
+-	dev_info(dev, "(RX)bd_base_info: %u\n", rx_desc->rx.bd_base_info);
++	dev_info(dev, "(RX)l234_info: %u\n",
++		 le32_to_cpu(rx_desc->rx.l234_info));
++	dev_info(dev, "(RX)pkt_len: %u\n", le16_to_cpu(rx_desc->rx.pkt_len));
++	dev_info(dev, "(RX)size: %u\n", le16_to_cpu(rx_desc->rx.size));
++	dev_info(dev, "(RX)rss_hash: %u\n", le32_to_cpu(rx_desc->rx.rss_hash));
++	dev_info(dev, "(RX)fd_id: %u\n", le16_to_cpu(rx_desc->rx.fd_id));
++	dev_info(dev, "(RX)vlan_tag: %u\n", le16_to_cpu(rx_desc->rx.vlan_tag));
++	dev_info(dev, "(RX)o_dm_vlan_id_fb: %u\n",
++		 le16_to_cpu(rx_desc->rx.o_dm_vlan_id_fb));
++	dev_info(dev, "(RX)ot_vlan_tag: %u\n",
++		 le16_to_cpu(rx_desc->rx.ot_vlan_tag));
++	dev_info(dev, "(RX)bd_base_info: %u\n",
++		 le32_to_cpu(rx_desc->rx.bd_base_info));
  
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_RX_RING_BD_LEN_REG);
--		dev_info(&h->pdev->dev, "RX(%d) RING BD LEN: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "RX(%u) RING BD LEN: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_RX_RING_TAIL_REG);
--		dev_info(&h->pdev->dev, "RX(%d) RING TAIL: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "RX(%u) RING TAIL: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_RX_RING_HEAD_REG);
--		dev_info(&h->pdev->dev, "RX(%d) RING HEAD: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "RX(%u) RING HEAD: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_RX_RING_FBDNUM_REG);
--		dev_info(&h->pdev->dev, "RX(%d) RING FBDNUM: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "RX(%u) RING FBDNUM: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_RX_RING_PKTNUM_RECORD_REG);
--		dev_info(&h->pdev->dev, "RX(%d) RING PKTNUM: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "RX(%u) RING PKTNUM: %u\n", i, value);
- 
- 		ring = &priv->ring[i];
- 		base_add_h = readl_relaxed(ring->tqp->io_base +
- 					   HNS3_RING_TX_RING_BASEADDR_H_REG);
- 		base_add_l = readl_relaxed(ring->tqp->io_base +
- 					   HNS3_RING_TX_RING_BASEADDR_L_REG);
--		dev_info(&h->pdev->dev, "TX(%d) BASE ADD: 0x%08x%08x\n", i,
-+		dev_info(&h->pdev->dev, "TX(%u) BASE ADD: 0x%08x%08x\n", i,
- 			 base_add_h, base_add_l);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_BD_NUM_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING BD NUM: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "TX(%u) RING BD NUM: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_TC_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING TC: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "TX(%u) RING TC: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_TAIL_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING TAIL: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "TX(%u) RING TAIL: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_HEAD_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING HEAD: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "TX(%u) RING HEAD: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_FBDNUM_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING FBDNUM: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "TX(%u) RING FBDNUM: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_OFFSET_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING OFFSET: %u\n", i, value);
-+		dev_info(&h->pdev->dev, "TX(%u) RING OFFSET: %u\n", i, value);
- 
- 		value = readl_relaxed(ring->tqp->io_base +
- 				      HNS3_RING_TX_RING_PKTNUM_RECORD_REG);
--		dev_info(&h->pdev->dev, "TX(%d) RING PKTNUM: %u\n\n", i,
-+		dev_info(&h->pdev->dev, "TX(%u) RING PKTNUM: %u\n\n", i,
- 			 value);
- 	}
- 
+ 	return 0;
+ }
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 82ed9c4..d5a121a 100644
+index d5a121a..ba05368 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2002,7 +2002,7 @@ bool hns3_is_phys_func(struct pci_dev *pdev)
- 	case HNAE3_DEV_ID_100G_RDMA_DCB_PFC_VF:
- 		return false;
- 	default:
--		dev_warn(&pdev->dev, "un-recognized pci device-id %d",
-+		dev_warn(&pdev->dev, "un-recognized pci device-id %u",
- 			 dev_id);
+@@ -1710,8 +1710,8 @@ static int hns3_ndo_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
+ 	int ret = -EIO;
+ 
+ 	netif_dbg(h, drv, netdev,
+-		  "set vf vlan: vf=%d, vlan=%u, qos=%u, vlan_proto=%u\n",
+-		  vf, vlan, qos, vlan_proto);
++		  "set vf vlan: vf=%d, vlan=%u, qos=%u, vlan_proto=0x%x\n",
++		  vf, vlan, qos, ntohs(vlan_proto));
+ 
+ 	if (h->ae_algo->ops->set_vf_vlan_filter)
+ 		ret = h->ae_algo->ops->set_vf_vlan_filter(h, vf, vlan,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index e65c8cf..112df34 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -169,7 +169,7 @@ static void hclge_dbg_dump_reg_common(struct hclge_dev *hdev,
+ 		if (dfx_message->flag)
+ 			dev_info(&hdev->pdev->dev, "%s: 0x%x\n",
+ 				 dfx_message->message,
+-				 desc->data[i % entries_per_desc]);
++				 le32_to_cpu(desc->data[i % entries_per_desc]));
+ 
+ 		dfx_message++;
  	}
+@@ -237,44 +237,48 @@ static void hclge_dbg_dump_dcb(struct hclge_dev *hdev, const char *cmd_buf)
+ 	if (ret)
+ 		return;
  
-@@ -3939,14 +3939,14 @@ static void hns3_info_show(struct hns3_nic_priv *priv)
- 	struct hnae3_knic_private_info *kinfo = &priv->ae_handle->kinfo;
+-	dev_info(dev, "sch_nq_cnt: 0x%x\n", desc[0].data[1]);
++	dev_info(dev, "sch_nq_cnt: 0x%x\n", le32_to_cpu(desc[0].data[1]));
  
- 	dev_info(priv->dev, "MAC address: %pM\n", priv->netdev->dev_addr);
--	dev_info(priv->dev, "Task queue pairs numbers: %d\n", kinfo->num_tqps);
--	dev_info(priv->dev, "RSS size: %d\n", kinfo->rss_size);
--	dev_info(priv->dev, "Allocated RSS size: %d\n", kinfo->req_rss_size);
--	dev_info(priv->dev, "RX buffer length: %d\n", kinfo->rx_buf_len);
--	dev_info(priv->dev, "Desc num per TX queue: %d\n", kinfo->num_tx_desc);
--	dev_info(priv->dev, "Desc num per RX queue: %d\n", kinfo->num_rx_desc);
--	dev_info(priv->dev, "Total number of enabled TCs: %d\n", kinfo->num_tc);
--	dev_info(priv->dev, "Max mtu size: %d\n", priv->netdev->max_mtu);
-+	dev_info(priv->dev, "Task queue pairs numbers: %u\n", kinfo->num_tqps);
-+	dev_info(priv->dev, "RSS size: %u\n", kinfo->rss_size);
-+	dev_info(priv->dev, "Allocated RSS size: %u\n", kinfo->req_rss_size);
-+	dev_info(priv->dev, "RX buffer length: %u\n", kinfo->rx_buf_len);
-+	dev_info(priv->dev, "Desc num per TX queue: %u\n", kinfo->num_tx_desc);
-+	dev_info(priv->dev, "Desc num per RX queue: %u\n", kinfo->num_rx_desc);
-+	dev_info(priv->dev, "Total number of enabled TCs: %u\n", kinfo->num_tc);
-+	dev_info(priv->dev, "Max mtu size: %u\n", priv->netdev->max_mtu);
+ 	ret = hclge_dbg_cmd_send(hdev, desc, nq_id, 1, HCLGE_OPC_SCH_RQ_CNT);
+ 	if (ret)
+ 		return;
+ 
+-	dev_info(dev, "sch_rq_cnt: 0x%x\n", desc[0].data[1]);
++	dev_info(dev, "sch_rq_cnt: 0x%x\n", le32_to_cpu(desc[0].data[1]));
+ 
+ 	ret = hclge_dbg_cmd_send(hdev, desc, 0, 2, HCLGE_OPC_TM_INTERNAL_STS);
+ 	if (ret)
+ 		return;
+ 
+-	dev_info(dev, "pri_bp: 0x%x\n", desc[0].data[1]);
+-	dev_info(dev, "fifo_dfx_info: 0x%x\n", desc[0].data[2]);
+-	dev_info(dev, "sch_roce_fifo_afull_gap: 0x%x\n", desc[0].data[3]);
+-	dev_info(dev, "tx_private_waterline: 0x%x\n", desc[0].data[4]);
+-	dev_info(dev, "tm_bypass_en: 0x%x\n", desc[0].data[5]);
+-	dev_info(dev, "SSU_TM_BYPASS_EN: 0x%x\n", desc[1].data[0]);
+-	dev_info(dev, "SSU_RESERVE_CFG: 0x%x\n", desc[1].data[1]);
++	dev_info(dev, "pri_bp: 0x%x\n", le32_to_cpu(desc[0].data[1]));
++	dev_info(dev, "fifo_dfx_info: 0x%x\n", le32_to_cpu(desc[0].data[2]));
++	dev_info(dev, "sch_roce_fifo_afull_gap: 0x%x\n",
++		 le32_to_cpu(desc[0].data[3]));
++	dev_info(dev, "tx_private_waterline: 0x%x\n",
++		 le32_to_cpu(desc[0].data[4]));
++	dev_info(dev, "tm_bypass_en: 0x%x\n", le32_to_cpu(desc[0].data[5]));
++	dev_info(dev, "SSU_TM_BYPASS_EN: 0x%x\n", le32_to_cpu(desc[1].data[0]));
++	dev_info(dev, "SSU_RESERVE_CFG: 0x%x\n", le32_to_cpu(desc[1].data[1]));
+ 
+ 	ret = hclge_dbg_cmd_send(hdev, desc, port_id, 1,
+ 				 HCLGE_OPC_TM_INTERNAL_CNT);
+ 	if (ret)
+ 		return;
+ 
+-	dev_info(dev, "SCH_NIC_NUM: 0x%x\n", desc[0].data[1]);
+-	dev_info(dev, "SCH_ROCE_NUM: 0x%x\n", desc[0].data[2]);
++	dev_info(dev, "SCH_NIC_NUM: 0x%x\n", le32_to_cpu(desc[0].data[1]));
++	dev_info(dev, "SCH_ROCE_NUM: 0x%x\n", le32_to_cpu(desc[0].data[2]));
+ 
+ 	ret = hclge_dbg_cmd_send(hdev, desc, port_id, 1,
+ 				 HCLGE_OPC_TM_INTERNAL_STS_1);
+ 	if (ret)
+ 		return;
+ 
+-	dev_info(dev, "TC_MAP_SEL: 0x%x\n", desc[0].data[1]);
+-	dev_info(dev, "IGU_PFC_PRI_EN: 0x%x\n", desc[0].data[2]);
+-	dev_info(dev, "MAC_PFC_PRI_EN: 0x%x\n", desc[0].data[3]);
+-	dev_info(dev, "IGU_PRI_MAP_TC_CFG: 0x%x\n", desc[0].data[4]);
+-	dev_info(dev, "IGU_TX_PRI_MAP_TC_CFG: 0x%x\n", desc[0].data[5]);
++	dev_info(dev, "TC_MAP_SEL: 0x%x\n", le32_to_cpu(desc[0].data[1]));
++	dev_info(dev, "IGU_PFC_PRI_EN: 0x%x\n", le32_to_cpu(desc[0].data[2]));
++	dev_info(dev, "MAC_PFC_PRI_EN: 0x%x\n", le32_to_cpu(desc[0].data[3]));
++	dev_info(dev, "IGU_PRI_MAP_TC_CFG: 0x%x\n",
++		 le32_to_cpu(desc[0].data[4]));
++	dev_info(dev, "IGU_TX_PRI_MAP_TC_CFG: 0x%x\n",
++		 le32_to_cpu(desc[0].data[5]));
  }
  
- static int hns3_client_init(struct hnae3_handle *handle)
-@@ -4566,7 +4566,7 @@ int hns3_set_channels(struct net_device *netdev,
- 	if (new_tqp_num > hns3_get_max_available_channels(h) ||
- 	    new_tqp_num < 1) {
- 		dev_err(&netdev->dev,
--			"Change tqps fail, the tqp range is from 1 to %d",
-+			"Change tqps fail, the tqp range is from 1 to %u",
- 			hns3_get_max_available_channels(h));
- 		return -EINVAL;
- 	}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 50b07b9..b104d3c 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -985,7 +985,7 @@ static int hns3_set_ringparam(struct net_device *ndev,
- 	}
+ static void hclge_dbg_dump_reg_cmd(struct hclge_dev *hdev, const char *cmd_buf)
+@@ -364,7 +368,7 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
+ 	pg_shap_cfg_cmd = (struct hclge_pg_shapping_cmd *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "PG_C pg_id: %u\n", pg_shap_cfg_cmd->pg_id);
+ 	dev_info(&hdev->pdev->dev, "PG_C pg_shapping: 0x%x\n",
+-		 pg_shap_cfg_cmd->pg_shapping_para);
++		 le32_to_cpu(pg_shap_cfg_cmd->pg_shapping_para));
  
- 	netdev_info(ndev,
--		    "Changing Tx/Rx ring depth from %d/%d to %d/%d\n",
-+		    "Changing Tx/Rx ring depth from %u/%u to %u/%u\n",
- 		    old_tx_desc_num, old_rx_desc_num,
- 		    new_tx_desc_num, new_rx_desc_num);
+ 	cmd = HCLGE_OPC_TM_PG_P_SHAPPING;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -375,7 +379,7 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
+ 	pg_shap_cfg_cmd = (struct hclge_pg_shapping_cmd *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "PG_P pg_id: %u\n", pg_shap_cfg_cmd->pg_id);
+ 	dev_info(&hdev->pdev->dev, "PG_P pg_shapping: 0x%x\n",
+-		 pg_shap_cfg_cmd->pg_shapping_para);
++		 le32_to_cpu(pg_shap_cfg_cmd->pg_shapping_para));
  
-@@ -1097,7 +1097,7 @@ static int hns3_get_coalesce_per_queue(struct net_device *netdev, u32 queue,
+ 	cmd = HCLGE_OPC_TM_PORT_SHAPPING;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -385,7 +389,7 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
  
- 	if (queue >= queue_num) {
- 		netdev_err(netdev,
--			   "Invalid queue value %d! Queue max id=%d\n",
-+			   "Invalid queue value %u! Queue max id=%u\n",
- 			   queue, queue_num - 1);
- 		return -EINVAL;
- 	}
-@@ -1147,14 +1147,14 @@ static int hns3_check_gl_coalesce_para(struct net_device *netdev,
- 	rx_gl = hns3_gl_round_down(cmd->rx_coalesce_usecs);
- 	if (rx_gl != cmd->rx_coalesce_usecs) {
- 		netdev_info(netdev,
--			    "rx_usecs(%d) rounded down to %d, because it must be multiple of 2.\n",
-+			    "rx_usecs(%u) rounded down to %u, because it must be multiple of 2.\n",
- 			    cmd->rx_coalesce_usecs, rx_gl);
- 	}
+ 	port_shap_cfg_cmd = (struct hclge_port_shapping_cmd *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "PORT port_shapping: 0x%x\n",
+-		 port_shap_cfg_cmd->port_shapping_para);
++		 le32_to_cpu(port_shap_cfg_cmd->port_shapping_para));
  
- 	tx_gl = hns3_gl_round_down(cmd->tx_coalesce_usecs);
- 	if (tx_gl != cmd->tx_coalesce_usecs) {
- 		netdev_info(netdev,
--			    "tx_usecs(%d) rounded down to %d, because it must be multiple of 2.\n",
-+			    "tx_usecs(%u) rounded down to %u, because it must be multiple of 2.\n",
- 			    cmd->tx_coalesce_usecs, tx_gl);
- 	}
+ 	cmd = HCLGE_OPC_TM_PG_SCH_MODE_CFG;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -393,7 +397,8 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
+ 	if (ret)
+ 		goto err_tm_pg_cmd_send;
  
-@@ -1182,7 +1182,7 @@ static int hns3_check_rl_coalesce_para(struct net_device *netdev,
- 	rl = hns3_rl_round_down(cmd->rx_coalesce_usecs_high);
- 	if (rl != cmd->rx_coalesce_usecs_high) {
- 		netdev_info(netdev,
--			    "usecs_high(%d) rounded down to %d, because it must be multiple of 4.\n",
-+			    "usecs_high(%u) rounded down to %u, because it must be multiple of 4.\n",
- 			    cmd->rx_coalesce_usecs_high, rl);
- 	}
+-	dev_info(&hdev->pdev->dev, "PG_SCH pg_id: %u\n", desc.data[0]);
++	dev_info(&hdev->pdev->dev, "PG_SCH pg_id: %u\n",
++		 le32_to_cpu(desc.data[0]));
  
-@@ -1211,7 +1211,7 @@ static int hns3_check_coalesce_para(struct net_device *netdev,
- 	if (cmd->use_adaptive_tx_coalesce == 1 ||
- 	    cmd->use_adaptive_rx_coalesce == 1) {
- 		netdev_info(netdev,
--			    "adaptive-tx=%d and adaptive-rx=%d, tx_usecs or rx_usecs will changed dynamically.\n",
-+			    "adaptive-tx=%u and adaptive-rx=%u, tx_usecs or rx_usecs will changed dynamically.\n",
- 			    cmd->use_adaptive_tx_coalesce,
- 			    cmd->use_adaptive_rx_coalesce);
- 	}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-index c331146..940ead3 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c
-@@ -145,7 +145,7 @@ static int hclge_cmd_csq_clean(struct hclge_hw *hw)
- 	rmb(); /* Make sure head is ready before touch any data */
+ 	cmd = HCLGE_OPC_TM_PRI_SCH_MODE_CFG;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -401,7 +406,8 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
+ 	if (ret)
+ 		goto err_tm_pg_cmd_send;
  
- 	if (!is_valid_csq_clean_head(csq, head)) {
--		dev_warn(&hdev->pdev->dev, "wrong cmd head (%d, %d-%d)\n", head,
-+		dev_warn(&hdev->pdev->dev, "wrong cmd head (%u, %d-%d)\n", head,
- 			 csq->next_to_use, csq->next_to_clean);
- 		dev_warn(&hdev->pdev->dev,
- 			 "Disabling any further commands to IMP firmware\n");
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-index c063301..49ad848 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c
-@@ -87,7 +87,7 @@ static int hclge_dcb_common_validate(struct hclge_dev *hdev, u8 num_tc,
- 	for (i = 0; i < HNAE3_MAX_USER_PRIO; i++) {
- 		if (prio_tc[i] >= num_tc) {
- 			dev_err(&hdev->pdev->dev,
--				"prio_tc[%u] checking failed, %u >= num_tc(%u)\n",
-+				"prio_tc[%d] checking failed, %u >= num_tc(%u)\n",
- 				i, prio_tc[i], num_tc);
- 			return -EINVAL;
- 		}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index 87dece0..dc66b4e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -1747,7 +1747,7 @@ static void hclge_handle_over_8bd_err(struct hclge_dev *hdev,
+-	dev_info(&hdev->pdev->dev, "PRI_SCH pri_id: %u\n", desc.data[0]);
++	dev_info(&hdev->pdev->dev, "PRI_SCH pri_id: %u\n",
++		 le32_to_cpu(desc.data[0]));
  
- 	if (vf_id) {
- 		if (vf_id >= hdev->num_alloc_vport) {
--			dev_err(dev, "invalid vf id(%d)\n", vf_id);
-+			dev_err(dev, "invalid vf id(%u)\n", vf_id);
- 			return;
- 		}
+ 	cmd = HCLGE_OPC_TM_QS_SCH_MODE_CFG;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -409,7 +415,8 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
+ 	if (ret)
+ 		goto err_tm_pg_cmd_send;
+ 
+-	dev_info(&hdev->pdev->dev, "QS_SCH qs_id: %u\n", desc.data[0]);
++	dev_info(&hdev->pdev->dev, "QS_SCH qs_id: %u\n",
++		 le32_to_cpu(desc.data[0]));
+ 
+ 	if (!hnae3_dev_dcb_supported(hdev)) {
+ 		dev_info(&hdev->pdev->dev,
+@@ -429,7 +436,7 @@ static void hclge_dbg_dump_tm_pg(struct hclge_dev *hdev)
+ 	dev_info(&hdev->pdev->dev, "BP_TO_QSET qs_group_id: 0x%x\n",
+ 		 bp_to_qs_map_cmd->qs_group_id);
+ 	dev_info(&hdev->pdev->dev, "BP_TO_QSET qs_bit_map: 0x%x\n",
+-		 bp_to_qs_map_cmd->qs_bit_map);
++		 le32_to_cpu(bp_to_qs_map_cmd->qs_bit_map));
+ 	return;
+ 
+ err_tm_pg_cmd_send:
+@@ -471,7 +478,7 @@ static void hclge_dbg_dump_tm(struct hclge_dev *hdev)
+ 
+ 	qs_to_pri_map = (struct hclge_qs_to_pri_link_cmd *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "QS_TO_PRI qs_id: %u\n",
+-		 qs_to_pri_map->qs_id);
++		 le16_to_cpu(qs_to_pri_map->qs_id));
+ 	dev_info(&hdev->pdev->dev, "QS_TO_PRI priority: %u\n",
+ 		 qs_to_pri_map->priority);
+ 	dev_info(&hdev->pdev->dev, "QS_TO_PRI link_vld: %u\n",
+@@ -484,9 +491,10 @@ static void hclge_dbg_dump_tm(struct hclge_dev *hdev)
+ 		goto err_tm_cmd_send;
+ 
+ 	nq_to_qs_map = (struct hclge_nq_to_qs_link_cmd *)desc.data;
+-	dev_info(&hdev->pdev->dev, "NQ_TO_QS nq_id: %u\n", nq_to_qs_map->nq_id);
++	dev_info(&hdev->pdev->dev, "NQ_TO_QS nq_id: %u\n",
++		 le16_to_cpu(nq_to_qs_map->nq_id));
+ 	dev_info(&hdev->pdev->dev, "NQ_TO_QS qset_id: 0x%x\n",
+-		 nq_to_qs_map->qset_id);
++		 le16_to_cpu(nq_to_qs_map->qset_id));
+ 
+ 	cmd = HCLGE_OPC_TM_PG_WEIGHT;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -505,7 +513,8 @@ static void hclge_dbg_dump_tm(struct hclge_dev *hdev)
+ 		goto err_tm_cmd_send;
+ 
+ 	qs_weight = (struct hclge_qs_weight_cmd *)desc.data;
+-	dev_info(&hdev->pdev->dev, "QS qs_id: %u\n", qs_weight->qs_id);
++	dev_info(&hdev->pdev->dev, "QS qs_id: %u\n",
++		 le16_to_cpu(qs_weight->qs_id));
+ 	dev_info(&hdev->pdev->dev, "QS dwrr: %u\n", qs_weight->dwrr);
+ 
+ 	cmd = HCLGE_OPC_TM_PRI_WEIGHT;
+@@ -527,7 +536,7 @@ static void hclge_dbg_dump_tm(struct hclge_dev *hdev)
+ 	shap_cfg_cmd = (struct hclge_pri_shapping_cmd *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "PRI_C pri_id: %u\n", shap_cfg_cmd->pri_id);
+ 	dev_info(&hdev->pdev->dev, "PRI_C pri_shapping: 0x%x\n",
+-		 shap_cfg_cmd->pri_shapping_para);
++		 le32_to_cpu(shap_cfg_cmd->pri_shapping_para));
+ 
+ 	cmd = HCLGE_OPC_TM_PRI_P_SHAPPING;
+ 	hclge_cmd_setup_basic_desc(&desc, cmd, true);
+@@ -538,7 +547,7 @@ static void hclge_dbg_dump_tm(struct hclge_dev *hdev)
+ 	shap_cfg_cmd = (struct hclge_pri_shapping_cmd *)desc.data;
+ 	dev_info(&hdev->pdev->dev, "PRI_P pri_id: %u\n", shap_cfg_cmd->pri_id);
+ 	dev_info(&hdev->pdev->dev, "PRI_P pri_shapping: 0x%x\n",
+-		 shap_cfg_cmd->pri_shapping_para);
++		 le32_to_cpu(shap_cfg_cmd->pri_shapping_para));
+ 
+ 	hclge_dbg_dump_tm_pg(hdev);
+ 
+@@ -658,7 +667,7 @@ static void hclge_dbg_dump_qos_pause_cfg(struct hclge_dev *hdev)
+ 	dev_info(&hdev->pdev->dev, "pause_trans_gap: 0x%x\n",
+ 		 pause_param->pause_trans_gap);
+ 	dev_info(&hdev->pdev->dev, "pause_trans_time: 0x%x\n",
+-		 pause_param->pause_trans_time);
++		 le16_to_cpu(pause_param->pause_trans_time));
+ }
+ 
+ static void hclge_dbg_dump_qos_pri_map(struct hclge_dev *hdev)
+@@ -712,7 +721,7 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	tx_buf_cmd = (struct hclge_tx_buff_alloc_cmd *)desc[0].data;
+ 	for (i = 0; i < HCLGE_MAX_TC_NUM; i++)
+ 		dev_info(&hdev->pdev->dev, "tx_packet_buf_tc_%d: 0x%x\n", i,
+-			 tx_buf_cmd->tx_pkt_buff[i]);
++			 le16_to_cpu(tx_buf_cmd->tx_pkt_buff[i]));
+ 
+ 	cmd = HCLGE_OPC_RX_PRIV_BUFF_ALLOC;
+ 	hclge_cmd_setup_basic_desc(desc, cmd, true);
+@@ -724,10 +733,10 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	rx_buf_cmd = (struct hclge_rx_priv_buff_cmd *)desc[0].data;
+ 	for (i = 0; i < HCLGE_MAX_TC_NUM; i++)
+ 		dev_info(&hdev->pdev->dev, "rx_packet_buf_tc_%d: 0x%x\n", i,
+-			 rx_buf_cmd->buf_num[i]);
++			 le16_to_cpu(rx_buf_cmd->buf_num[i]));
+ 
+ 	dev_info(&hdev->pdev->dev, "rx_share_buf: 0x%x\n",
+-		 rx_buf_cmd->shared_buf);
++		 le16_to_cpu(rx_buf_cmd->shared_buf));
+ 
+ 	cmd = HCLGE_OPC_RX_COM_WL_ALLOC;
+ 	hclge_cmd_setup_basic_desc(desc, cmd, true);
+@@ -738,7 +747,8 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	rx_com_wl = (struct hclge_rx_com_wl *)desc[0].data;
+ 	dev_info(&hdev->pdev->dev, "\n");
+ 	dev_info(&hdev->pdev->dev, "rx_com_wl: high: 0x%x, low: 0x%x\n",
+-		 rx_com_wl->com_wl.high, rx_com_wl->com_wl.low);
++		 le16_to_cpu(rx_com_wl->com_wl.high),
++		 le16_to_cpu(rx_com_wl->com_wl.low));
+ 
+ 	cmd = HCLGE_OPC_RX_GBL_PKT_CNT;
+ 	hclge_cmd_setup_basic_desc(desc, cmd, true);
+@@ -749,7 +759,8 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	rx_packet_cnt = (struct hclge_rx_com_wl *)desc[0].data;
+ 	dev_info(&hdev->pdev->dev,
+ 		 "rx_global_packet_cnt: high: 0x%x, low: 0x%x\n",
+-		 rx_packet_cnt->com_wl.high, rx_packet_cnt->com_wl.low);
++		 le16_to_cpu(rx_packet_cnt->com_wl.high),
++		 le16_to_cpu(rx_packet_cnt->com_wl.low));
+ 	dev_info(&hdev->pdev->dev, "\n");
+ 
+ 	if (!hnae3_dev_dcb_supported(hdev)) {
+@@ -769,14 +780,16 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
+ 		dev_info(&hdev->pdev->dev,
+ 			 "rx_priv_wl_tc_%d: high: 0x%x, low: 0x%x\n", i,
+-			 rx_priv_wl->tc_wl[i].high, rx_priv_wl->tc_wl[i].low);
++			 le16_to_cpu(rx_priv_wl->tc_wl[i].high),
++			 le16_to_cpu(rx_priv_wl->tc_wl[i].low));
+ 
+ 	rx_priv_wl = (struct hclge_rx_priv_wl_buf *)desc[1].data;
+ 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
+ 		dev_info(&hdev->pdev->dev,
+ 			 "rx_priv_wl_tc_%d: high: 0x%x, low: 0x%x\n",
+ 			 i + HCLGE_TC_NUM_ONE_DESC,
+-			 rx_priv_wl->tc_wl[i].high, rx_priv_wl->tc_wl[i].low);
++			 le16_to_cpu(rx_priv_wl->tc_wl[i].high),
++			 le16_to_cpu(rx_priv_wl->tc_wl[i].low));
+ 
+ 	cmd = HCLGE_OPC_RX_COM_THRD_ALLOC;
+ 	hclge_cmd_setup_basic_desc(&desc[0], cmd, true);
+@@ -791,16 +804,16 @@ static void hclge_dbg_dump_qos_buf_cfg(struct hclge_dev *hdev)
+ 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
+ 		dev_info(&hdev->pdev->dev,
+ 			 "rx_com_thrd_tc_%d: high: 0x%x, low: 0x%x\n", i,
+-			 rx_com_thrd->com_thrd[i].high,
+-			 rx_com_thrd->com_thrd[i].low);
++			 le16_to_cpu(rx_com_thrd->com_thrd[i].high),
++			 le16_to_cpu(rx_com_thrd->com_thrd[i].low));
+ 
+ 	rx_com_thrd = (struct hclge_rx_com_thrd *)desc[1].data;
+ 	for (i = 0; i < HCLGE_TC_NUM_ONE_DESC; i++)
+ 		dev_info(&hdev->pdev->dev,
+ 			 "rx_com_thrd_tc_%d: high: 0x%x, low: 0x%x\n",
+ 			 i + HCLGE_TC_NUM_ONE_DESC,
+-			 rx_com_thrd->com_thrd[i].high,
+-			 rx_com_thrd->com_thrd[i].low);
++			 le16_to_cpu(rx_com_thrd->com_thrd[i].high),
++			 le16_to_cpu(rx_com_thrd->com_thrd[i].low));
+ 	return;
+ 
+ err_qos_cmd_send:
+@@ -845,7 +858,8 @@ static void hclge_dbg_dump_mng_table(struct hclge_dev *hdev)
+ 		memset(printf_buf, 0, HCLGE_DBG_BUF_LEN);
+ 		snprintf(printf_buf, HCLGE_DBG_BUF_LEN,
+ 			 "%02u   |%02x:%02x:%02x:%02x:%02x:%02x|",
+-			 req0->index, req0->mac_addr[0], req0->mac_addr[1],
++			 le16_to_cpu(req0->index),
++			 req0->mac_addr[0], req0->mac_addr[1],
+ 			 req0->mac_addr[2], req0->mac_addr[3],
+ 			 req0->mac_addr[4], req0->mac_addr[5]);
  
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index e578029..babec3b 100644
+index babec3b..4f8f068 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1398,7 +1398,7 @@ static int hclge_configure(struct hclge_dev *hdev)
+@@ -5740,7 +5740,7 @@ static int hclge_del_fd_entry(struct hnae3_handle *handle,
  
- 	if ((hdev->tc_max > HNAE3_MAX_TC) ||
- 	    (hdev->tc_max < 1)) {
--		dev_warn(&hdev->pdev->dev, "TC num = %d.\n",
-+		dev_warn(&hdev->pdev->dev, "TC num = %u.\n",
- 			 hdev->tc_max);
- 		hdev->tc_max = 1;
- 	}
-@@ -1658,7 +1658,7 @@ static int hclge_alloc_vport(struct hclge_dev *hdev)
- 	num_vport = hdev->num_vmdq_vport + hdev->num_req_vfs + 1;
- 
- 	if (hdev->num_tqps < num_vport) {
--		dev_err(&hdev->pdev->dev, "tqps(%d) is less than vports(%d)",
-+		dev_err(&hdev->pdev->dev, "tqps(%u) is less than vports(%d)",
- 			hdev->num_tqps, num_vport);
- 		return -EINVAL;
- 	}
-@@ -2345,7 +2345,7 @@ static int hclge_init_msi(struct hclge_dev *hdev)
- 	}
- 	if (vectors < hdev->num_msi)
- 		dev_warn(&hdev->pdev->dev,
--			 "requested %d MSI/MSI-X, but allocated %d MSI/MSI-X\n",
-+			 "requested %u MSI/MSI-X, but allocated %d MSI/MSI-X\n",
- 			 hdev->num_msi, vectors);
- 
- 	hdev->num_msi = vectors;
-@@ -3280,7 +3280,7 @@ static int hclge_reset_wait(struct hclge_dev *hdev)
- 
- 		if (!test_bit(HNAE3_FLR_DONE, &hdev->flr_state)) {
- 			dev_err(&hdev->pdev->dev,
--				"flr wait timeout: %d\n", cnt);
-+				"flr wait timeout: %u\n", cnt);
- 			return -EBUSY;
- 		}
- 
-@@ -3330,7 +3330,7 @@ static int hclge_set_all_vf_rst(struct hclge_dev *hdev, bool reset)
- 		ret = hclge_set_vf_rst(hdev, vport->vport_id, reset);
- 		if (ret) {
- 			dev_err(&hdev->pdev->dev,
--				"set vf(%d) rst failed %d!\n",
-+				"set vf(%u) rst failed %d!\n",
- 				vport->vport_id, ret);
- 			return ret;
- 		}
-@@ -3345,7 +3345,7 @@ static int hclge_set_all_vf_rst(struct hclge_dev *hdev, bool reset)
- 		ret = hclge_inform_reset_assert_to_vf(vport);
- 		if (ret)
- 			dev_warn(&hdev->pdev->dev,
--				 "inform reset to vf(%d) failed %d!\n",
-+				 "inform reset to vf(%u) failed %d!\n",
- 				 vport->vport_id, ret);
- 	}
- 
-@@ -3658,7 +3658,7 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
- 		hdev->rst_stats.reset_fail_cnt++;
- 		set_bit(hdev->reset_type, &hdev->reset_pending);
- 		dev_info(&hdev->pdev->dev,
--			 "re-schedule reset task(%d)\n",
-+			 "re-schedule reset task(%u)\n",
- 			 hdev->rst_stats.reset_fail_cnt);
- 		return true;
- 	}
-@@ -4493,7 +4493,7 @@ int hclge_rss_init_hw(struct hclge_dev *hdev)
- 	 */
- 	if (rss_size > HCLGE_RSS_TC_SIZE_7 || rss_size == 0) {
+ 	if (!hclge_fd_rule_exist(hdev, fs->location)) {
  		dev_err(&hdev->pdev->dev,
--			"Configure rss tc size failed, invalid TC_SIZE = %d\n",
-+			"Configure rss tc size failed, invalid TC_SIZE = %u\n",
- 			rss_size);
- 		return -EINVAL;
- 	}
-@@ -4843,7 +4843,7 @@ static int hclge_init_fd_config(struct hclge_dev *hdev)
- 		break;
- 	default:
- 		dev_err(&hdev->pdev->dev,
--			"Unsupported flow director mode %d\n",
-+			"Unsupported flow director mode %u\n",
- 			hdev->fd_cfg.fd_mode);
- 		return -EOPNOTSUPP;
- 	}
-@@ -5173,7 +5173,7 @@ static int hclge_config_key(struct hclge_dev *hdev, u8 stage,
- 				   true);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
--			"fd key_y config fail, loc=%d, ret=%d\n",
-+			"fd key_y config fail, loc=%u, ret=%d\n",
- 			rule->queue_id, ret);
- 		return ret;
- 	}
-@@ -5182,7 +5182,7 @@ static int hclge_config_key(struct hclge_dev *hdev, u8 stage,
- 				   true);
- 	if (ret)
- 		dev_err(&hdev->pdev->dev,
--			"fd key_x config fail, loc=%d, ret=%d\n",
-+			"fd key_x config fail, loc=%u, ret=%d\n",
- 			rule->queue_id, ret);
- 	return ret;
- }
-@@ -5431,7 +5431,7 @@ static int hclge_fd_update_rule_list(struct hclge_dev *hdev,
- 		}
- 	} else if (!is_add) {
- 		dev_err(&hdev->pdev->dev,
--			"delete fail, rule %d is inexistent\n",
-+			"delete fail, rule %u is inexistent\n",
- 			location);
- 		return -EINVAL;
- 	}
-@@ -5671,7 +5671,7 @@ static int hclge_add_fd_entry(struct hnae3_handle *handle,
- 
- 		if (vf > hdev->num_req_vfs) {
- 			dev_err(&hdev->pdev->dev,
--				"Error: vf id (%d) > max vf num (%d)\n",
-+				"Error: vf id (%u) > max vf num (%u)\n",
- 				vf, hdev->num_req_vfs);
- 			return -EINVAL;
- 		}
-@@ -5681,7 +5681,7 @@ static int hclge_add_fd_entry(struct hnae3_handle *handle,
- 
- 		if (ring >= tqps) {
- 			dev_err(&hdev->pdev->dev,
--				"Error: queue id (%d) > max tqp num (%d)\n",
-+				"Error: queue id (%u) > max tqp num (%u)\n",
- 				ring, tqps - 1);
- 			return -EINVAL;
- 		}
-@@ -5817,7 +5817,7 @@ static int hclge_restore_fd_entries(struct hnae3_handle *handle)
- 
- 		if (ret) {
- 			dev_warn(&hdev->pdev->dev,
--				 "Restore rule %d failed, remove it\n",
-+				 "Restore rule %u failed, remove it\n",
- 				 rule->location);
- 			clear_bit(rule->location, hdev->fd_bmap);
- 			hlist_del(&rule->rule_node);
-@@ -6810,7 +6810,7 @@ static int hclge_get_mac_vlan_cmd_status(struct hclge_vport *vport,
- 
- 	if (cmdq_resp) {
- 		dev_err(&hdev->pdev->dev,
--			"cmdq execute failed for get_mac_vlan_cmd_status,status=%d.\n",
-+			"cmdq execute failed for get_mac_vlan_cmd_status,status=%u.\n",
- 			cmdq_resp);
- 		return -EIO;
- 	}
-@@ -7062,7 +7062,7 @@ static int hclge_init_umv_space(struct hclge_dev *hdev)
- 
- 	if (allocated_size < hdev->wanted_umv_size)
- 		dev_warn(&hdev->pdev->dev,
--			 "Alloc umv space failed, want %d, get %d\n",
-+			 "Alloc umv space failed, want %u, get %u\n",
- 			 hdev->wanted_umv_size, allocated_size);
- 
- 	mutex_init(&hdev->umv_mutex);
-@@ -7230,7 +7230,7 @@ int hclge_add_uc_addr_common(struct hclge_vport *vport,
- 
- 	/* check if we just hit the duplicate */
- 	if (!ret) {
--		dev_warn(&hdev->pdev->dev, "VF %d mac(%pM) exists\n",
-+		dev_warn(&hdev->pdev->dev, "VF %u mac(%pM) exists\n",
- 			 vport->vport_id, addr);
- 		return 0;
- 	}
-@@ -7483,7 +7483,7 @@ static int hclge_get_mac_ethertype_cmd_status(struct hclge_dev *hdev,
- 
- 	if (cmdq_resp) {
- 		dev_err(&hdev->pdev->dev,
--			"cmdq execute failed for get_mac_ethertype_cmd_status, status=%d.\n",
-+			"cmdq execute failed for get_mac_ethertype_cmd_status, status=%u.\n",
- 			cmdq_resp);
- 		return -EIO;
- 	}
-@@ -7505,7 +7505,7 @@ static int hclge_get_mac_ethertype_cmd_status(struct hclge_dev *hdev,
- 		break;
- 	default:
- 		dev_err(&hdev->pdev->dev,
--			"add mac ethertype failed for undefined, code=%d.\n",
-+			"add mac ethertype failed for undefined, code=%u.\n",
- 			resp_code);
- 		return_status = -EIO;
- 	}
-@@ -7810,7 +7810,7 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
- 		}
- 
- 		dev_err(&hdev->pdev->dev,
--			"Add vf vlan filter fail, ret =%d.\n",
-+			"Add vf vlan filter fail, ret =%u.\n",
- 			req0->resp_code);
- 	} else {
- #define HCLGE_VF_VLAN_DEL_NO_FOUND	1
-@@ -7826,7 +7826,7 @@ static int hclge_set_vf_vlan_common(struct hclge_dev *hdev, u16 vfid,
- 			return 0;
- 
- 		dev_err(&hdev->pdev->dev,
--			"Kill vf vlan filter fail, ret =%d.\n",
-+			"Kill vf vlan filter fail, ret =%u.\n",
- 			req0->resp_code);
+-			"Delete fail, rule %d is inexistent\n", fs->location);
++			"Delete fail, rule %u is inexistent\n", fs->location);
+ 		return -ENOENT;
  	}
  
-@@ -7876,7 +7876,7 @@ static int hclge_set_vlan_filter_hw(struct hclge_dev *hdev, __be16 proto,
- 				       proto);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
--			"Set %d vport vlan filter config fail, ret =%d.\n",
-+			"Set %u vport vlan filter config fail, ret =%d.\n",
- 			vport_id, ret);
- 		return ret;
- 	}
-@@ -7888,7 +7888,7 @@ static int hclge_set_vlan_filter_hw(struct hclge_dev *hdev, __be16 proto,
- 
- 	if (!is_kill && test_and_set_bit(vport_id, hdev->vlan_table[vlan_id])) {
- 		dev_err(&hdev->pdev->dev,
--			"Add port vlan failed, vport %d is already in vlan %d\n",
-+			"Add port vlan failed, vport %u is already in vlan %u\n",
- 			vport_id, vlan_id);
- 		return -EINVAL;
- 	}
-@@ -7896,7 +7896,7 @@ static int hclge_set_vlan_filter_hw(struct hclge_dev *hdev, __be16 proto,
- 	if (is_kill &&
- 	    !test_and_clear_bit(vport_id, hdev->vlan_table[vlan_id])) {
- 		dev_err(&hdev->pdev->dev,
--			"Delete port vlan failed, vport %d is not in vlan %d\n",
-+			"Delete port vlan failed, vport %u is not in vlan %u\n",
- 			vport_id, vlan_id);
- 		return -EINVAL;
- 	}
-@@ -8968,16 +8968,16 @@ static void hclge_info_show(struct hclge_dev *hdev)
- 
- 	dev_info(dev, "PF info begin:\n");
- 
--	dev_info(dev, "Task queue pairs numbers: %d\n", hdev->num_tqps);
--	dev_info(dev, "Desc num per TX queue: %d\n", hdev->num_tx_desc);
--	dev_info(dev, "Desc num per RX queue: %d\n", hdev->num_rx_desc);
--	dev_info(dev, "Numbers of vports: %d\n", hdev->num_alloc_vport);
--	dev_info(dev, "Numbers of vmdp vports: %d\n", hdev->num_vmdq_vport);
--	dev_info(dev, "Numbers of VF for this PF: %d\n", hdev->num_req_vfs);
--	dev_info(dev, "HW tc map: %d\n", hdev->hw_tc_map);
--	dev_info(dev, "Total buffer size for TX/RX: %d\n", hdev->pkt_buf_size);
--	dev_info(dev, "TX buffer size for each TC: %d\n", hdev->tx_buf_size);
--	dev_info(dev, "DV buffer size for each TC: %d\n", hdev->dv_buf_size);
-+	dev_info(dev, "Task queue pairs numbers: %u\n", hdev->num_tqps);
-+	dev_info(dev, "Desc num per TX queue: %u\n", hdev->num_tx_desc);
-+	dev_info(dev, "Desc num per RX queue: %u\n", hdev->num_rx_desc);
-+	dev_info(dev, "Numbers of vports: %u\n", hdev->num_alloc_vport);
-+	dev_info(dev, "Numbers of vmdp vports: %u\n", hdev->num_vmdq_vport);
-+	dev_info(dev, "Numbers of VF for this PF: %u\n", hdev->num_req_vfs);
-+	dev_info(dev, "HW tc map: 0x%x\n", hdev->hw_tc_map);
-+	dev_info(dev, "Total buffer size for TX/RX: %u\n", hdev->pkt_buf_size);
-+	dev_info(dev, "TX buffer size for each TC: %u\n", hdev->tx_buf_size);
-+	dev_info(dev, "DV buffer size for each TC: %u\n", hdev->dv_buf_size);
- 	dev_info(dev, "This is %s PF\n",
- 		 hdev->flag & HCLGE_FLAG_MAIN ? "main" : "not main");
- 	dev_info(dev, "DCB %s\n",
-@@ -9293,7 +9293,7 @@ static void hclge_clear_resetting_state(struct hclge_dev *hdev)
- 		ret = hclge_set_vf_rst(hdev, vport->vport_id, false);
- 		if (ret)
- 			dev_warn(&hdev->pdev->dev,
--				 "clear vf(%d) rst failed %d!\n",
-+				 "clear vf(%u) rst failed %d!\n",
- 				 vport->vport_id, ret);
- 	}
- }
-@@ -9914,8 +9914,8 @@ static int hclge_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
- 	u16 tc_offset[HCLGE_MAX_TC_NUM] = {0};
- 	struct hclge_dev *hdev = vport->back;
- 	u16 tc_size[HCLGE_MAX_TC_NUM] = {0};
--	int cur_rss_size = kinfo->rss_size;
--	int cur_tqps = kinfo->num_tqps;
-+	u16 cur_rss_size = kinfo->rss_size;
-+	u16 cur_tqps = kinfo->num_tqps;
- 	u16 tc_valid[HCLGE_MAX_TC_NUM];
- 	u16 roundup_size;
- 	u32 *rss_indir;
-@@ -9969,7 +9969,7 @@ static int hclge_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
- out:
- 	if (!ret)
- 		dev_info(&hdev->pdev->dev,
--			 "Channels changed, rss_size from %d to %d, tqps from %d to %d",
-+			 "Channels changed, rss_size from %u to %u, tqps from %u to %u",
- 			 cur_rss_size, kinfo->rss_size,
- 			 cur_tqps, kinfo->rss_size * kinfo->num_tc);
- 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-index 088fc7c..0b433eb 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c
-@@ -26,7 +26,7 @@ static int hclge_gen_resp_to_vf(struct hclge_vport *vport,
- 
- 	if (resp_data_len > HCLGE_MBX_MAX_RESP_DATA_SIZE) {
- 		dev_err(&hdev->pdev->dev,
--			"PF fail to gen resp to VF len %d exceeds max len %d\n",
-+			"PF fail to gen resp to VF len %u exceeds max len %u\n",
- 			resp_data_len,
- 			HCLGE_MBX_MAX_RESP_DATA_SIZE);
- 		/* If resp_data_len is too long, set the value to max length
-@@ -285,7 +285,7 @@ static int hclge_set_vf_uc_mac_addr(struct hclge_vport *vport,
- 						 false, HCLGE_MAC_ADDR_UC);
- 	} else {
- 		dev_err(&hdev->pdev->dev,
--			"failed to set unicast mac addr, unknown subcode %d\n",
-+			"failed to set unicast mac addr, unknown subcode %u\n",
- 			mbx_req->msg[1]);
- 		return -EIO;
- 	}
-@@ -319,7 +319,7 @@ static int hclge_set_vf_mc_mac_addr(struct hclge_vport *vport,
- 						 false, HCLGE_MAC_ADDR_MC);
- 	} else {
- 		dev_err(&hdev->pdev->dev,
--			"failed to set mcast mac addr, unknown subcode %d\n",
-+			"failed to set mcast mac addr, unknown subcode %u\n",
- 			mbx_req->msg[1]);
- 		return -EIO;
- 	}
-@@ -555,7 +555,7 @@ static void hclge_reset_vf(struct hclge_vport *vport,
- 	struct hclge_dev *hdev = vport->back;
- 	int ret;
- 
--	dev_warn(&hdev->pdev->dev, "PF received VF reset request from VF %d!",
-+	dev_warn(&hdev->pdev->dev, "PF received VF reset request from VF %u!",
- 		 vport->vport_id);
- 
- 	ret = hclge_func_reset_cmd(hdev, vport->vport_id);
-@@ -681,7 +681,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 		flag = le16_to_cpu(crq->desc[crq->next_to_use].flag);
- 		if (unlikely(!hnae3_get_bit(flag, HCLGE_CMDQ_RX_OUTVLD_B))) {
- 			dev_warn(&hdev->pdev->dev,
--				 "dropped invalid mailbox message, code = %d\n",
-+				 "dropped invalid mailbox message, code = %u\n",
- 				 req->msg[0]);
- 
- 			/* dropping/not processing this invalid message */
-@@ -828,7 +828,7 @@ void hclge_mbx_handler(struct hclge_dev *hdev)
- 			break;
- 		default:
- 			dev_err(&hdev->pdev->dev,
--				"un-supported mailbox message, code = %d\n",
-+				"un-supported mailbox message, code = %u\n",
- 				req->msg[0]);
- 			break;
- 		}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c
-index dc4dfd4..696c5ae 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c
-@@ -134,7 +134,7 @@ int hclge_mac_mdio_config(struct hclge_dev *hdev)
- 			 "no phy device is connected to mdio bus\n");
- 		return 0;
- 	} else if (hdev->hw.mac.phy_addr >= PHY_MAX_ADDR) {
--		dev_err(&hdev->pdev->dev, "phy_addr(%d) is too large.\n",
-+		dev_err(&hdev->pdev->dev, "phy_addr(%u) is too large.\n",
- 			hdev->hw.mac.phy_addr);
- 		return -EINVAL;
- 	}
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index b3c30e5..fbc39a2 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -544,7 +544,7 @@ int hclge_tm_qs_shaper_cfg(struct hclge_vport *vport, int max_tx_rate)
- 		ret = hclge_cmd_send(&hdev->hw, &desc, 1);
- 		if (ret) {
- 			dev_err(&hdev->pdev->dev,
--				"vf%d, qs%u failed to set tx_rate:%d, ret=%d\n",
-+				"vf%u, qs%u failed to set tx_rate:%d, ret=%d\n",
- 				vport->vport_id, shap_cfg_cmd->qs_id,
- 				max_tx_rate, ret);
- 			return ret;
-@@ -575,7 +575,7 @@ static void hclge_tm_vport_tc_info_update(struct hclge_vport *vport)
- 	/* Set to user value, no larger than max_rss_size. */
- 	if (kinfo->req_rss_size != kinfo->rss_size && kinfo->req_rss_size &&
- 	    kinfo->req_rss_size <= max_rss_size) {
--		dev_info(&hdev->pdev->dev, "rss changes from %d to %d\n",
-+		dev_info(&hdev->pdev->dev, "rss changes from %u to %u\n",
- 			 kinfo->rss_size, kinfo->req_rss_size);
- 		kinfo->rss_size = kinfo->req_rss_size;
- 	} else if (kinfo->rss_size > max_rss_size ||
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-index d261b5a..af2245e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c
-@@ -50,7 +50,7 @@ static int hclgevf_cmd_csq_clean(struct hclgevf_hw *hw)
- 	rmb(); /* Make sure head is ready before touch any data */
- 
- 	if (!hclgevf_is_valid_csq_clean_head(csq, head)) {
--		dev_warn(&hdev->pdev->dev, "wrong cmd head (%d, %d-%d)\n", head,
-+		dev_warn(&hdev->pdev->dev, "wrong cmd head (%u, %d-%d)\n", head,
- 			 csq->next_to_use, csq->next_to_clean);
- 		dev_warn(&hdev->pdev->dev,
- 			 "Disabling any further commands to IMP firmware\n");
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 9506d7d..25d78a5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1581,7 +1581,7 @@ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
- 	/* recover handshake status with IMP when reset fail */
- 	hclgevf_reset_handshake(hdev, true);
- 	hdev->rst_stats.rst_fail_cnt++;
--	dev_err(&hdev->pdev->dev, "failed to reset VF(%d)\n",
-+	dev_err(&hdev->pdev->dev, "failed to reset VF(%u)\n",
- 		hdev->rst_stats.rst_fail_cnt);
- 
- 	if (hdev->rst_stats.rst_fail_cnt < HCLGEVF_RESET_MAX_FAIL_CNT)
-@@ -2338,7 +2338,7 @@ static int hclgevf_init_msi(struct hclgevf_dev *hdev)
- 	}
- 	if (vectors < hdev->num_msi)
- 		dev_warn(&hdev->pdev->dev,
--			 "requested %d MSI/MSI-X, but allocated %d MSI/MSI-X\n",
-+			 "requested %u MSI/MSI-X, but allocated %d MSI/MSI-X\n",
- 			 hdev->num_msi, vectors);
- 
- 	hdev->num_msi = vectors;
-@@ -2414,12 +2414,12 @@ static void hclgevf_info_show(struct hclgevf_dev *hdev)
- 
- 	dev_info(dev, "VF info begin:\n");
- 
--	dev_info(dev, "Task queue pairs numbers: %d\n", hdev->num_tqps);
--	dev_info(dev, "Desc num per TX queue: %d\n", hdev->num_tx_desc);
--	dev_info(dev, "Desc num per RX queue: %d\n", hdev->num_rx_desc);
--	dev_info(dev, "Numbers of vports: %d\n", hdev->num_alloc_vport);
--	dev_info(dev, "HW tc map: %d\n", hdev->hw_tc_map);
--	dev_info(dev, "PF media type of this VF: %d\n",
-+	dev_info(dev, "Task queue pairs numbers: %u\n", hdev->num_tqps);
-+	dev_info(dev, "Desc num per TX queue: %u\n", hdev->num_tx_desc);
-+	dev_info(dev, "Desc num per RX queue: %u\n", hdev->num_rx_desc);
-+	dev_info(dev, "Numbers of vports: %u\n", hdev->num_alloc_vport);
-+	dev_info(dev, "HW tc map: 0x%x\n", hdev->hw_tc_map);
-+	dev_info(dev, "PF media type of this VF: %u\n",
- 		 hdev->hw.mac.media_type);
- 
- 	dev_info(dev, "VF info end.\n");
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-index 72bacf8..7cbd715 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c
-@@ -33,7 +33,7 @@ static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
- 
- 	if (resp_len > HCLGE_MBX_MAX_RESP_DATA_SIZE) {
- 		dev_err(&hdev->pdev->dev,
--			"VF mbx response len(=%d) exceeds maximum(=%d)\n",
-+			"VF mbx response len(=%u) exceeds maximum(=%u)\n",
- 			resp_len,
- 			HCLGE_MBX_MAX_RESP_DATA_SIZE);
- 		return -EINVAL;
-@@ -49,7 +49,7 @@ static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
- 
- 	if (i >= HCLGEVF_MAX_TRY_TIMES) {
- 		dev_err(&hdev->pdev->dev,
--			"VF could not get mbx(%d,%d) resp(=%d) from PF in %d tries\n",
-+			"VF could not get mbx(%u,%u) resp(=%d) from PF in %d tries\n",
- 			code0, code1, hdev->mbx_resp.received_resp, i);
- 		return -EIO;
- 	}
-@@ -68,10 +68,10 @@ static int hclgevf_get_mbx_resp(struct hclgevf_dev *hdev, u16 code0, u16 code1,
- 
- 	if (!(r_code0 == code0 && r_code1 == code1 && !mbx_resp->resp_status)) {
- 		dev_err(&hdev->pdev->dev,
--			"VF could not match resp code(code0=%d,code1=%d), %d\n",
-+			"VF could not match resp code(code0=%u,code1=%u), %d\n",
- 			code0, code1, mbx_resp->resp_status);
- 		dev_err(&hdev->pdev->dev,
--			"VF could not match resp r_code(r_code0=%d,r_code1=%d)\n",
-+			"VF could not match resp r_code(r_code0=%u,r_code1=%u)\n",
- 			r_code0, r_code1);
- 		return -EIO;
- 	}
-@@ -168,7 +168,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 		flag = le16_to_cpu(crq->desc[crq->next_to_use].flag);
- 		if (unlikely(!hnae3_get_bit(flag, HCLGEVF_CMDQ_RX_OUTVLD_B))) {
- 			dev_warn(&hdev->pdev->dev,
--				 "dropped invalid mailbox message, code = %d\n",
-+				 "dropped invalid mailbox message, code = %u\n",
- 				 req->msg[0]);
- 
- 			/* dropping/not processing this invalid message */
-@@ -187,7 +187,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 		case HCLGE_MBX_PF_VF_RESP:
- 			if (resp->received_resp)
- 				dev_warn(&hdev->pdev->dev,
--					 "VF mbx resp flag not clear(%d)\n",
-+					 "VF mbx resp flag not clear(%u)\n",
- 					 req->msg[1]);
- 			resp->received_resp = true;
- 
-@@ -219,7 +219,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 			if (atomic_read(&hdev->arq.count) >=
- 			    HCLGE_MBX_MAX_ARQ_MSG_NUM) {
- 				dev_warn(&hdev->pdev->dev,
--					 "Async Q full, dropping msg(%d)\n",
-+					 "Async Q full, dropping msg(%u)\n",
- 					 req->msg[1]);
- 				break;
- 			}
-@@ -236,7 +236,7 @@ void hclgevf_mbx_handler(struct hclgevf_dev *hdev)
- 			break;
- 		default:
- 			dev_err(&hdev->pdev->dev,
--				"VF received unsupported(%d) mbx msg from PF\n",
-+				"VF received unsupported(%u) mbx msg from PF\n",
- 				req->msg[0]);
- 			break;
- 		}
-@@ -327,7 +327,7 @@ void hclgevf_mbx_async_handler(struct hclgevf_dev *hdev)
- 			break;
- 		default:
- 			dev_err(&hdev->pdev->dev,
--				"fetched unsupported(%d) message from arq\n",
-+				"fetched unsupported(%u) message from arq\n",
- 				msg_q[0]);
- 			break;
- 		}
 -- 
 2.7.4
 
