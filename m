@@ -2,224 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D439DEB6F3
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 19:31:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6965EB709
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 19:36:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729312AbfJaSbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 14:31:12 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:44956 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729197AbfJaSbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 14:31:11 -0400
-Received: by mail-ot1-f67.google.com with SMTP id n48so6232351ota.11
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 11:31:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ho/4YEZoRvORePbPCV0egD5l/FJ8zmCku5TAd5/mPRU=;
-        b=dtVUVHVdyINxxDxTIBzwOnQrrZijYVA9jJcLmoBXcfQLnPySuiYy7Pk46A5/n4c2wr
-         EtX26WRlrw3qzO6O2NSnIr4lasc0Mu9FzUY1P6oqW8qxRt4mMrIz9kRzAJGccWaVF1VJ
-         zfpipmpvJ59l3zYW69zV2ls5ehSKrO+1BSXSdyg1reZp8Q8FRiH5P+UojNAyI39f4cnz
-         f7d/tCwfDEqYaILhhj2crdeKfD6UEqjI+WKg4+7U45w/egO3EyzgJsqa2ukE7HokEWSS
-         ZXO5nySMNnEwVqupJL33GdATbHuqViUNzuZmga3ZtUvPnUvLjm+4dpwkd2zRTUodKxoc
-         Yckg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ho/4YEZoRvORePbPCV0egD5l/FJ8zmCku5TAd5/mPRU=;
-        b=oRAGR459O6NpUegoGnILcAE8KL03kt+KjEf5KLOGzvVyp6ukQ1al4EHc+SL5T/AyEL
-         a/PlsEse2BSzrvt15+iZIdBA7aPgvbXV22/d+C659JHtXanQWATIlwLkg7eOYtceTAff
-         l9S1qX3ITz4NNKs8hMNyNdg2j9Nuj9iY/K8qTnkjzL4ppGxQCnKRoRf73GocHDX7Peig
-         yHAmeiTmevkXpdbrPyaxlrNJHu0l3kmUa5YuIdxsjdxZTNw3a2sd5SUpYCDfInbckWVU
-         1/K3z3mmjVwa6zD8yxRqsuaXGEOMfNnaUBMVy31jgli1jepuS9/EdhrqvdnnehWbx7fY
-         zqEA==
-X-Gm-Message-State: APjAAAWfe6Eo5E8dIasiqmTF07qaXtQqQAd3WXqduHe8/5S2LlYa1dXv
-        AutGmcMdJGl0gpeiNLZ0anD+uwVhHYg2BBOSIj9xSA==
-X-Google-Smtp-Source: APXvYqxJUOawO0Q+AWAaEtfXX8l2s4fXPAWXSxF0AxqtmryydLWJl7LR/JSYbjdz58woMGbOcibjm5P4bwzD/KTKZGI=
-X-Received: by 2002:a9d:3675:: with SMTP id w108mr5765750otb.81.1572546668583;
- Thu, 31 Oct 2019 11:31:08 -0700 (PDT)
+        id S1729344AbfJaSfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 14:35:51 -0400
+Received: from mga12.intel.com ([192.55.52.136]:38691 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729027AbfJaSfu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 14:35:50 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 11:35:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,252,1569308400"; 
+   d="scan'208";a="230963750"
+Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
+  by fmsmga002.fm.intel.com with ESMTP; 31 Oct 2019 11:35:49 -0700
+Date:   Thu, 31 Oct 2019 11:35:49 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+Subject: Re: [PATCH 02/19] mm/gup: factor out duplicate code from four
+ routines
+Message-ID: <20191031183549.GC14771@iweiny-DESK2.sc.intel.com>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-3-jhubbard@nvidia.com>
 MIME-Version: 1.0
-References: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
- <20191024205027.GF3622521@devbig004.ftw2.facebook.com> <CALvZod6=B-gMJJxhMRt6k5eRwB-3zdgJR5419orTq8-+36wbMQ@mail.gmail.com>
- <11f688a6-0288-0ec4-f925-7b8f16ec011b@gmail.com>
-In-Reply-To: <11f688a6-0288-0ec4-f925-7b8f16ec011b@gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Thu, 31 Oct 2019 11:30:57 -0700
-Message-ID: <CALvZod6Sw-2Wh0KEBiMgGZ1c+2nFW0ueL_4TM4d=Z0JcbvSXrw@mail.gmail.com>
-Subject: Re: [PATCH v2] net: fix sk_page_frag() recursion from memory reclaim
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Tejun Heo <tj@kernel.org>, Michal Hocko <mhocko@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Kernel Team <kernel-team@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Josef Bacik <josef@toxicpanda.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>, Mel Gorman <mgorman@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191030224930.3990755-3-jhubbard@nvidia.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 10:47 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 10/31/19 10:35 AM, Shakeel Butt wrote:
-> > +Michal Hocko
-> >
-> > On Thu, Oct 24, 2019 at 1:50 PM Tejun Heo <tj@kernel.org> wrote:
-> >>
-> >> sk_page_frag() optimizes skb_frag allocations by using per-task
-> >> skb_frag cache when it knows it's the only user.  The condition is
-> >> determined by seeing whether the socket allocation mask allows
-> >> blocking - if the allocation may block, it obviously owns the task's
-> >> context and ergo exclusively owns current->task_frag.
-> >>
-> >> Unfortunately, this misses recursion through memory reclaim path.
-> >> Please take a look at the following backtrace.
-> >>
-> >>  [2] RIP: 0010:tcp_sendmsg_locked+0xccf/0xe10
-> >>      ...
-> >>      tcp_sendmsg+0x27/0x40
-> >>      sock_sendmsg+0x30/0x40
-> >>      sock_xmit.isra.24+0xa1/0x170 [nbd]
-> >>      nbd_send_cmd+0x1d2/0x690 [nbd]
-> >>      nbd_queue_rq+0x1b5/0x3b0 [nbd]
-> >>      __blk_mq_try_issue_directly+0x108/0x1b0
-> >>      blk_mq_request_issue_directly+0xbd/0xe0
-> >>      blk_mq_try_issue_list_directly+0x41/0xb0
-> >>      blk_mq_sched_insert_requests+0xa2/0xe0
-> >>      blk_mq_flush_plug_list+0x205/0x2a0
-> >>      blk_flush_plug_list+0xc3/0xf0
-> >>  [1] blk_finish_plug+0x21/0x2e
-> >>      _xfs_buf_ioapply+0x313/0x460
-> >>      __xfs_buf_submit+0x67/0x220
-> >>      xfs_buf_read_map+0x113/0x1a0
-> >>      xfs_trans_read_buf_map+0xbf/0x330
-> >>      xfs_btree_read_buf_block.constprop.42+0x95/0xd0
-> >>      xfs_btree_lookup_get_block+0x95/0x170
-> >>      xfs_btree_lookup+0xcc/0x470
-> >>      xfs_bmap_del_extent_real+0x254/0x9a0
-> >>      __xfs_bunmapi+0x45c/0xab0
-> >>      xfs_bunmapi+0x15/0x30
-> >>      xfs_itruncate_extents_flags+0xca/0x250
-> >>      xfs_free_eofblocks+0x181/0x1e0
-> >>      xfs_fs_destroy_inode+0xa8/0x1b0
-> >>      destroy_inode+0x38/0x70
-> >>      dispose_list+0x35/0x50
-> >>      prune_icache_sb+0x52/0x70
-> >>      super_cache_scan+0x120/0x1a0
-> >>      do_shrink_slab+0x120/0x290
-> >>      shrink_slab+0x216/0x2b0
-> >>      shrink_node+0x1b6/0x4a0
-> >>      do_try_to_free_pages+0xc6/0x370
-> >>      try_to_free_mem_cgroup_pages+0xe3/0x1e0
-> >>      try_charge+0x29e/0x790
-> >>      mem_cgroup_charge_skmem+0x6a/0x100
-> >>      __sk_mem_raise_allocated+0x18e/0x390
-> >>      __sk_mem_schedule+0x2a/0x40
-> >>  [0] tcp_sendmsg_locked+0x8eb/0xe10
-> >>      tcp_sendmsg+0x27/0x40
-> >>      sock_sendmsg+0x30/0x40
-> >>      ___sys_sendmsg+0x26d/0x2b0
-> >>      __sys_sendmsg+0x57/0xa0
-> >>      do_syscall_64+0x42/0x100
-> >>      entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >>
-> >> In [0], tcp_send_msg_locked() was using current->page_frag when it
-> >> called sk_wmem_schedule().  It already calculated how many bytes can
-> >> be fit into current->page_frag.  Due to memory pressure,
-> >> sk_wmem_schedule() called into memory reclaim path which called into
-> >> xfs and then IO issue path.  Because the filesystem in question is
-> >> backed by nbd, the control goes back into the tcp layer - back into
-> >> tcp_sendmsg_locked().
-> >>
-> >> nbd sets sk_allocation to (GFP_NOIO | __GFP_MEMALLOC) which makes
-> >> sense - it's in the process of freeing memory and wants to be able to,
-> >> e.g., drop clean pages to make forward progress.  However, this
-> >> confused sk_page_frag() called from [2].  Because it only tests
-> >> whether the allocation allows blocking which it does, it now thinks
-> >> current->page_frag can be used again although it already was being
-> >> used in [0].
-> >>
-> >> After [2] used current->page_frag, the offset would be increased by
-> >> the used amount.  When the control returns to [0],
-> >> current->page_frag's offset is increased and the previously calculated
-> >> number of bytes now may overrun the end of allocated memory leading to
-> >> silent memory corruptions.
-> >>
-> >> Fix it by adding gfpflags_normal_context() which tests sleepable &&
-> >> !reclaim and use it to determine whether to use current->task_frag.
-> >>
-> >> v2: Eric didn't like gfp flags being tested twice.  Introduce a new
-> >>     helper gfpflags_normal_context() and combine the two tests.
-> >>
-> >> Signed-off-by: Tejun Heo <tj@kernel.org>
-> >> Cc: Josef Bacik <josef@toxicpanda.com>
-> >> Cc: Eric Dumazet <eric.dumazet@gmail.com>
-> >> Cc: stable@vger.kernel.org
-> >> ---
-> >>  include/linux/gfp.h |   23 +++++++++++++++++++++++
-> >>  include/net/sock.h  |   11 ++++++++---
-> >>  2 files changed, 31 insertions(+), 3 deletions(-)
-> >>
-> >> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-> >> index fb07b503dc45..61f2f6ff9467 100644
-> >> --- a/include/linux/gfp.h
-> >> +++ b/include/linux/gfp.h
-> >> @@ -325,6 +325,29 @@ static inline bool gfpflags_allow_blocking(const gfp_t gfp_flags)
-> >>         return !!(gfp_flags & __GFP_DIRECT_RECLAIM);
-> >>  }
-> >>
-> >> +/**
-> >> + * gfpflags_normal_context - is gfp_flags a normal sleepable context?
-> >> + * @gfp_flags: gfp_flags to test
-> >> + *
-> >> + * Test whether @gfp_flags indicates that the allocation is from the
-> >> + * %current context and allowed to sleep.
-> >> + *
-> >> + * An allocation being allowed to block doesn't mean it owns the %current
-> >> + * context.  When direct reclaim path tries to allocate memory, the
-> >> + * allocation context is nested inside whatever %current was doing at the
-> >> + * time of the original allocation.  The nested allocation may be allowed
-> >> + * to block but modifying anything %current owns can corrupt the outer
-> >> + * context's expectations.
-> >> + *
-> >> + * %true result from this function indicates that the allocation context
-> >> + * can sleep and use anything that's associated with %current.
-> >> + */
-> >> +static inline bool gfpflags_normal_context(const gfp_t gfp_flags)
-> >> +{
-> >> +       return (gfp_flags & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC)) ==
-> >> +               __GFP_DIRECT_RECLAIM;
-> >
-> > I think we should be checking PF_MEMALLOC here instead. Something like:
-> >
-> > return gfpflags_allow_blocking(gfp_flags) && !(current->flags & PF_MEMALLOC);
-> >
-> > In my limited understanding, __GFP_MEMALLOC gives access to reserve
-> > but we have overloaded PF_MEMALLOC to also define the reclaim context.
-> > There are PF_MEMALLOC users which does not use __GFP_MEMALLOC like
-> > iscsi_sw_tcp_pdu_xmit() which can call sock_sendmsg().
->
-> Why would this layer not set sk->sk_allocation to GFP_ATOMIC ?
->
-> And it also might call sk_set_memalloc() too.
->
-> Please double check scsi layer, I am pretty sure it did well at some point.
->
+On Wed, Oct 30, 2019 at 03:49:13PM -0700, John Hubbard wrote:
+> There are four locations in gup.c that have a fair amount of code
+> duplication. This means that changing one requires making the same
+> changes in four places, not to mention reading the same code four
+> times, and wondering if there are subtle differences.
+> 
+> Factor out the common code into static functions, thus reducing the
+> overall line count and the code's complexity.
+> 
+> Also, take the opportunity to slightly improve the efficiency of the
+> error cases, by doing a mass subtraction of the refcount, surrounded
+> by get_page()/put_page().
+> 
+> Also, further simplify (slightly), by waiting until the the successful
+> end of each routine, to increment *nr.
 
-Yes, you are right, quoted the wrong example. SCSI is indeed setting
-sk->sk_allocation to GFP_ATOMIC and sk_set_memalloc() in
-iscsi_sw_tcp_conn_bind().
+Overall it seems like a pretty good clean up.  It did take a bit of review but
+I _think_ it is correct.  A couple of comments below.
 
-Basically what I wanted to say that MM treats PF_MEMALLOC as the
-reclaim context while __GFP_MEMALLOC just tells to give access to the
-reserves. As gfpflags_allow_blocking() can be used beyond net
-subsystem, my only concern is its potential usage under PF_MEMALLOC
-context but without __GFP_MEMALLOC.
+> 
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  mm/gup.c | 113 ++++++++++++++++++++++---------------------------------
+>  1 file changed, 46 insertions(+), 67 deletions(-)
+> 
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 85caf76b3012..8fb0d9cdfaf5 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -1969,6 +1969,35 @@ static int __gup_device_huge_pud(pud_t pud, pud_t *pudp, unsigned long addr,
+>  }
+>  #endif
+>  
+> +static int __record_subpages(struct page *page, unsigned long addr,
+> +			     unsigned long end, struct page **pages, int nr)
+> +{
+> +	int nr_recorded_pages = 0;
+> +
+> +	do {
+> +		pages[nr] = page;
+> +		nr++;
+> +		page++;
+> +		nr_recorded_pages++;
+> +	} while (addr += PAGE_SIZE, addr != end);
+> +	return nr_recorded_pages;
+> +}
+> +
+> +static void __remove_refs_from_head(struct page *page, int refs)
+> +{
+> +	/* Do a get_page() first, in case refs == page->_refcount */
+> +	get_page(page);
+> +	page_ref_sub(page, refs);
+> +	put_page(page);
+> +}
+
+I wonder if this is better implemented as "put_compound_head()"?  To match the
+try_get_compound_head() call below?
+
+> +
+> +static int __huge_pt_done(struct page *head, int nr_recorded_pages, int *nr)
+> +{
+> +	*nr += nr_recorded_pages;
+> +	SetPageReferenced(head);
+> +	return 1;
+
+When will this return anything but 1?
+
+Ira
+
+> +}
+> +
+>  #ifdef CONFIG_ARCH_HAS_HUGEPD
+>  static unsigned long hugepte_addr_end(unsigned long addr, unsigned long end,
+>  				      unsigned long sz)
+> @@ -1998,34 +2027,19 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
+>  	/* hugepages are never "special" */
+>  	VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
+>  
+> -	refs = 0;
+>  	head = pte_page(pte);
+> -
+>  	page = head + ((addr & (sz-1)) >> PAGE_SHIFT);
+> -	do {
+> -		VM_BUG_ON(compound_head(page) != head);
+> -		pages[*nr] = page;
+> -		(*nr)++;
+> -		page++;
+> -		refs++;
+> -	} while (addr += PAGE_SIZE, addr != end);
+> +	refs = __record_subpages(page, addr, end, pages, *nr);
+>  
+>  	head = try_get_compound_head(head, refs);
+> -	if (!head) {
+> -		*nr -= refs;
+> +	if (!head)
+>  		return 0;
+> -	}
+>  
+>  	if (unlikely(pte_val(pte) != pte_val(*ptep))) {
+> -		/* Could be optimized better */
+> -		*nr -= refs;
+> -		while (refs--)
+> -			put_page(head);
+> +		__remove_refs_from_head(head, refs);
+>  		return 0;
+>  	}
+> -
+> -	SetPageReferenced(head);
+> -	return 1;
+> +	return __huge_pt_done(head, refs, nr);
+>  }
+>  
+>  static int gup_huge_pd(hugepd_t hugepd, unsigned long addr,
+> @@ -2071,30 +2085,18 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+>  					     pages, nr);
+>  	}
+>  
+> -	refs = 0;
+>  	page = pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+> -	do {
+> -		pages[*nr] = page;
+> -		(*nr)++;
+> -		page++;
+> -		refs++;
+> -	} while (addr += PAGE_SIZE, addr != end);
+> +	refs = __record_subpages(page, addr, end, pages, *nr);
+>  
+>  	head = try_get_compound_head(pmd_page(orig), refs);
+> -	if (!head) {
+> -		*nr -= refs;
+> +	if (!head)
+>  		return 0;
+> -	}
+>  
+>  	if (unlikely(pmd_val(orig) != pmd_val(*pmdp))) {
+> -		*nr -= refs;
+> -		while (refs--)
+> -			put_page(head);
+> +		__remove_refs_from_head(head, refs);
+>  		return 0;
+>  	}
+> -
+> -	SetPageReferenced(head);
+> -	return 1;
+> +	return __huge_pt_done(head, refs, nr);
+>  }
+>  
+>  static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+> @@ -2114,30 +2116,18 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+>  					     pages, nr);
+>  	}
+>  
+> -	refs = 0;
+>  	page = pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+> -	do {
+> -		pages[*nr] = page;
+> -		(*nr)++;
+> -		page++;
+> -		refs++;
+> -	} while (addr += PAGE_SIZE, addr != end);
+> +	refs = __record_subpages(page, addr, end, pages, *nr);
+>  
+>  	head = try_get_compound_head(pud_page(orig), refs);
+> -	if (!head) {
+> -		*nr -= refs;
+> +	if (!head)
+>  		return 0;
+> -	}
+>  
+>  	if (unlikely(pud_val(orig) != pud_val(*pudp))) {
+> -		*nr -= refs;
+> -		while (refs--)
+> -			put_page(head);
+> +		__remove_refs_from_head(head, refs);
+>  		return 0;
+>  	}
+> -
+> -	SetPageReferenced(head);
+> -	return 1;
+> +	return __huge_pt_done(head, refs, nr);
+>  }
+>  
+>  static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
+> @@ -2151,30 +2141,19 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
+>  		return 0;
+>  
+>  	BUILD_BUG_ON(pgd_devmap(orig));
+> -	refs = 0;
+> +
+>  	page = pgd_page(orig) + ((addr & ~PGDIR_MASK) >> PAGE_SHIFT);
+> -	do {
+> -		pages[*nr] = page;
+> -		(*nr)++;
+> -		page++;
+> -		refs++;
+> -	} while (addr += PAGE_SIZE, addr != end);
+> +	refs = __record_subpages(page, addr, end, pages, *nr);
+>  
+>  	head = try_get_compound_head(pgd_page(orig), refs);
+> -	if (!head) {
+> -		*nr -= refs;
+> +	if (!head)
+>  		return 0;
+> -	}
+>  
+>  	if (unlikely(pgd_val(orig) != pgd_val(*pgdp))) {
+> -		*nr -= refs;
+> -		while (refs--)
+> -			put_page(head);
+> +		__remove_refs_from_head(head, refs);
+>  		return 0;
+>  	}
+> -
+> -	SetPageReferenced(head);
+> -	return 1;
+> +	return __huge_pt_done(head, refs, nr);
+>  }
+>  
+>  static int gup_pmd_range(pud_t pud, unsigned long addr, unsigned long end,
+> -- 
+> 2.23.0
+> 
+> 
