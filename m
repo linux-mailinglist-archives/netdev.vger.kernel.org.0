@@ -2,100 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DBA7EBA32
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:10:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D77EBA34
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728646AbfJaXKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 19:10:34 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37243 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728397AbfJaXKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 19:10:34 -0400
-Received: by mail-wm1-f68.google.com with SMTP id q130so7503793wme.2
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 16:10:33 -0700 (PDT)
+        id S1728659AbfJaXNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 19:13:21 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:43192 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728656AbfJaXNV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 19:13:21 -0400
+Received: by mail-lf1-f65.google.com with SMTP id j5so5952879lfh.10
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 16:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=Jz2FLqjJAioflIo85CllAOTjCXG79fY9fhoVf+iXI0Q=;
-        b=aN5IST9fMPCPb+C4ZCYlQO1qdYbxc38N1/c901HaNjegjiP/nH1qzolD8/K2rWgQ1J
-         U2xq2LPCNvWvPvAY05z1Uyzk7BOpe2cxjE3nIzrfURassGYM9SC+UL6/sZeCXLjRS1nQ
-         zSPThbuN6fKI02U7RWNDAZOkZC2h/K/5hJOEmYAhWYEausdZpKbwCbnx6Q+jGbTuarFA
-         DyL06jgu8HfEPgmGRzBd77rkO5B7NEjczaOOwmPzoonsjFiBluBv5IlCeLSIT5ob1dxs
-         Np0RZ9imRwFTtdcsmobM8HrgZi0JtGhIE03cHjuX61m0AyeAuvyIEHBDdD0AWsvgc5De
-         zDow==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bcEx7b2yw90vM4bTQIavKv9TtXtDv7rCZ0KqJRWMUbc=;
+        b=iZLH/YmX/ewsZDUgMEBqBTEQAIihsVuLZ43LU9u+2SD8Y9IGAdcRZwX16DaKzfvgsl
+         nKcvb58r82Ps2hlDPpWnUZtXN7RTBfXAUOHM+w2a1TFWrEg1j38QmWKldO5D6+0h3ZJy
+         JmX+eHgX8XKS1wnuZpUEpBDHEwBpV0VNTw2hYBGPmTcaqJ+sYHm2IjgCBhctmUr9S/Qy
+         auZGaWBjchNfQ+XmJlXzcLAlTXHacFmoD1eWp0hxlvI9S2PteODygxN31JphJ7qxiwZy
+         nFXhzfEcvbXb8Ru9tR4e4Vu1r4fiy7JWz5K4aBd/QcQJ86mVKtR2lX3eZcXPJ34769hs
+         y/fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=Jz2FLqjJAioflIo85CllAOTjCXG79fY9fhoVf+iXI0Q=;
-        b=GtXUHk/RIkPSrlWFRPWh6c1Aau6hu6Z5tPKAwEEWnhXvhSX1amjaRLBSf+Mo3KTSvk
-         yXjtjhcTs4aWlXEFlk6/+Pakim4t2Vc5DdwB6L6aluk5IkmBLofgZBPKlm1ExHoFeAMT
-         +me9eae5dzgZQz5i8UJOCOuvArrhfAo9jG7fWurFzlg9B6NGFXi9uxc8grYc2L4PfFl4
-         drHP9G2+JJQTDwkI/1FC7rl/iKB4L2p3V3CVPmxBI/aegpT6dlfZ9LOgsXaYNPkgwtDU
-         YQAERvo1MhXegXgvS2Ez1lp/kvDT1awVv3XRY+nuipzo/vb044M2xP9OcP57P2V/ul/D
-         kaJw==
-X-Gm-Message-State: APjAAAV90BpG6cbZw6gg+ehNUAH7Sm0Z+Nc77pQbwQkfqWOieU+nqZzM
-        OY1j1ytUfuFieYs5itCUyAmsaf5E
-X-Google-Smtp-Source: APXvYqxzreiZEgNhIUaJv0knFSqofq4OvDERreCUVpPXv5j9UmQMZp4NklQsid1kS5uOGjN+BbKeEQ==
-X-Received: by 2002:a1c:411:: with SMTP id 17mr6949002wme.122.1572563432153;
-        Thu, 31 Oct 2019 16:10:32 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f17:6e00:4c1e:b491:a372:58c6? (p200300EA8F176E004C1EB491A37258C6.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:4c1e:b491:a372:58c6])
-        by smtp.googlemail.com with ESMTPSA id 11sm4982456wmg.36.2019.10.31.16.10.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Oct 2019 16:10:31 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: fix wrong PHY ID issue with RTL8168dp
-Message-ID: <651a11c7-005b-3b62-61a2-496e91048b9d@gmail.com>
-Date:   Fri, 1 Nov 2019 00:10:21 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bcEx7b2yw90vM4bTQIavKv9TtXtDv7rCZ0KqJRWMUbc=;
+        b=egFmLJwOUd0c9TLAdD8a+azQXW92wo8ArmFdb8M080d7oDJio3D3h4xpsw7xEda9oP
+         vsNEqpGHaflVk9igY+FXCGy/BWq1vz0jGVgLdQjjHTvMrUe5lX1qgJi4iisMbMH0Lbvk
+         RT3iGzF6UpWFArGq3w9x5gKsBXCzOxVERP/s2YopB2ayLmo/5wNNDOtWc8CSNoGxfcHe
+         hhavevSUX9M6Bcr+qSJYPG61gyTRG5yQDBinsbx6iQDuu7WAs4A1qmCcnjKhPQmAgcsA
+         1DEUV1VbZrLJYIZB9IB2JxE+f6fGZS4site38qiYUWwaMZJPxgfIEG8ymFwPhM88YxV3
+         S1Uw==
+X-Gm-Message-State: APjAAAV61H0DmqB1MlHRSkjn51t6rqE9S+EMkbqjaA41wj3qkZeMOtEQ
+        a+D4HN37Uhzmx5sQ7n5gq7+UfH4ldefskkOo4hKR8DSBCJG7Mw==
+X-Google-Smtp-Source: APXvYqyssxVuuIu3obBX3XYx26/8U1f2xbFUBeCy6yB7GyUre459k1iFhr0eDOqzDaRblM7M2ZYDRb8PWgmnhm2yPSk=
+X-Received: by 2002:a19:ca13:: with SMTP id a19mr5143648lfg.133.1572563599806;
+ Thu, 31 Oct 2019 16:13:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20191021000824.531-1-linus.walleij@linaro.org>
+ <20191021000824.531-8-linus.walleij@linaro.org> <5c3a0c832defddf8d1ddbf51dba255c73004bcb6.camel@perches.com>
+In-Reply-To: <5c3a0c832defddf8d1ddbf51dba255c73004bcb6.camel@perches.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 1 Nov 2019 00:13:08 +0100
+Message-ID: <CACRpkdbp_dSLTs-ZcRqckbez_3G7a1CtZSu+dJrTSdtVz=JXJg@mail.gmail.com>
+Subject: Re: [PATCH 07/10] net: ehernet: ixp4xx: Use devm_alloc_etherdev()
+To:     Joe Perches <joe@perches.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As reported in [0] at least one RTL8168dp version has problems
-establishing a link. This chip version has an integrated RTL8211b PHY,
-however the chip seems to report a wrong PHY ID, resulting in a wrong
-PHY driver (for Generic Realtek PHY) being loaded.
-Work around this issue by adding a hook to r8168dp_2_mdio_read()
-for returning the correct PHY ID.
+On Sun, Oct 27, 2019 at 12:24 AM Joe Perches <joe@perches.com> wrote:
+> On Mon, 2019-10-21 at 02:08 +0200, Linus Walleij wrote:
 
-[0] https://bbs.archlinux.org/viewtopic.php?id=246508
+> > diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/eth=
+ernet/xscale/ixp4xx_eth.c
+>
+> Maybe it's better to avoid changing this driver.
+> Is this device still sold?  It's 15+ years old.
 
-Fixes: 242cd9b5866a ("r8169: use phy_resume/phy_suspend")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
-On kernel 4.19 the patch will not apply because source file
-was renamed later from r8169.c to r8169_main.c.
-Changing name of file to be patched should be sufficient.
----
- drivers/net/ethernet/realtek/r8169_main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+I am converting the whole platform to device tree so I need to
+change this and many other drivers.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index dfd92f61e..0704f8bd1 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -1023,6 +1023,10 @@ static int r8168dp_2_mdio_read(struct rtl8169_private *tp, int reg)
- {
- 	int value;
- 
-+	/* Work around issue with chip reporting wrong PHY ID */
-+	if (reg == MII_PHYSID2)
-+		return 0xc912;
-+
- 	r8168dp_2_mdio_start(tp);
- 
- 	value = r8169_mdio_read(tp, reg);
--- 
-2.23.0
+The rationale has been explained elsewhere but here it is for your
+convenience:
 
+A major reason why IXP4xx silicon is still produced and deployed is
+the operating conditions. If you look at for example the Gateworks
+Cambria GW2358-4 network processor you notice the strictly
+military operating conditions:
+
+Temperature: -40=C2=B0C to +85=C2=B0C
+Humidity (non-condensing): 20% to 90%
+MTBF (mean time before failure): 60 Years at 55=C2=B0C
+
+We have good reasons to believe that these are used in critical
+systems that are not consumer products and do not adhere to
+consumer product life cycle expectations. Think more like this:
+https://www.c4isrnet.com/air/2019/10/17/the-us-nuclear-forces-dr-strangelov=
+e-era-messaging-system-finally-got-rid-of-its-floppy-disks/
+
+Yours,
+Linus Walleij
