@@ -2,155 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42E8EEB365
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 16:07:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 440C2EB37C
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 16:09:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbfJaPHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 11:07:37 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:47674 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726642AbfJaPHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 11:07:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572534455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+X+barDmBU6tY5JVRo13usriPISCS+dspcgm1jynFsU=;
-        b=OJWM1qKzgG7hphI6rN3+AEOVqVQFxZcV0Nzq35ptxXifM2KrK9zi/PwV3PlXmlkpHbKhfO
-        /y4d02+oCVqwHl5tI3Hhs/UYo6PP4M9S2xIxewQ9E5B53uDXe5gudFlj1pPwqg/8xhnpdp
-        8GIgX1hKM9+3GJEGRTKCNBEWI7QyB60=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-209-Qw84FZfkMEC4TRhwYzDT9g-1; Thu, 31 Oct 2019 11:07:31 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 798EE1800D6B;
-        Thu, 31 Oct 2019 15:07:30 +0000 (UTC)
-Received: from renaissance-vector.mxp.redhat.com (unknown [10.32.181.239])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EF74600CD;
-        Thu, 31 Oct 2019 15:07:29 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] ip-route: fix json formatting for multipath routing
-Date:   Thu, 31 Oct 2019 16:09:30 +0100
-Message-Id: <99a4a6ffec5d9e7b508863873bf2097bfbb79ec6.1572534380.git.aclaudi@redhat.com>
+        id S1728309AbfJaPJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 11:09:50 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:49132 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726540AbfJaPJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 11:09:50 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9VF4KvB013590;
+        Thu, 31 Oct 2019 15:09:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=g5FDpzysK/Tdx/b7QD8MBg2VCo9YaQaUV9WG6V5S8AI=;
+ b=MpyuFAMnzUaYVhcRpFe7vw9AaYuDjDIvwr7gin4v6BM3aw3Z056PzWpSICE4TW8xjfSk
+ 5oRW3sS5x40ZqCTTFmB5iQWaCiE+PnYyDoUk8Oq0XFxg1RPH1MxT35cMSUaKgOvjUaUR
+ uYhcllghOb/ajNsDpNaIpHCtq07iWd+9mi549EG9ojx0G36Fvu5IzYA6kMmqpf0QBMCr
+ fb1hF8RwKyGTyYKJFy+4Mo5anZ2smscfE0Akr9mV9ukcwdOVak+phEIJry1HmUzzStnT
+ m5eo0RW160tXurEFc30OL79JSCgbjyusOGQK5/pxeAtSBkHrlieab1wm/iBQ3pD8pWIc ng== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2vxwhfm0g1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 31 Oct 2019 15:09:42 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9VEx2r4109170;
+        Thu, 31 Oct 2019 15:09:41 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2vykw1gj09-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 31 Oct 2019 15:09:41 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x9VF92YY145957;
+        Thu, 31 Oct 2019 15:09:41 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2vykw1ghyx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 31 Oct 2019 15:09:41 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x9VF9eqa000316;
+        Thu, 31 Oct 2019 15:09:41 GMT
+Received: from [10.172.157.165] (/10.172.157.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 31 Oct 2019 08:09:40 -0700
+Subject: Re: [PATCH net-next] rds: Cancel pending connections on connection
+ request
+To:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Cc:     davem@davemloft.net, haakon.bugge@oracle.com
+References: <1572528956-8504-1-git-send-email-dag.moxnes@oracle.com>
+From:   Dag Moxnes <dag.moxnes@oracle.com>
+Message-ID: <51893d36-492b-b345-b8c4-93110c4de7f8@oracle.com>
+Date:   Thu, 31 Oct 2019 16:09:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: Qw84FZfkMEC4TRhwYzDT9g-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1572528956-8504-1-git-send-email-dag.moxnes@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9426 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910310154
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-json output for multipath routing is broken due to some non-jsonified
-print in print_rta_multipath(). To reproduce the issue:
+This one should be for net instead of net-next.
+Also it is not correct.
+I will send a new patch for net.
 
-$ ip route add default \
-  nexthop via 192.168.1.1 weight 1 \
-  nexthop via 192.168.2.1 weight 1
-$ ip -j route | jq
-parse error: Invalid numeric literal at line 1, column 58
+-Dag
 
-Fix this opening a "multipath" json array that can contain multiple
-route objects, and using print_*() instead of fprintf().
-
-This is the output for the above commands applying this patch:
-
-[
-  {
-    "dst": "default",
-    "flags": [],
-    "multipath": [
-      {
-        "gateway": "192.168.1.1",
-        "dev": "wlp61s0",
-        "weight": 1,
-        "flags": [
-          "linkdown"
-        ]
-      },
-      {
-        "gateway": "192.168.2.1",
-        "dev": "ens1u1",
-        "weight": 1,
-        "flags": []
-      }
-    ]
-  }
-]
-
-Fixes: f48e14880a0e5 ("iproute: refactor multipath print")
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-Reported-by: Patrick Hagara <phagara@redhat.com>
----
- ip/iproute.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
-
-diff --git a/ip/iproute.c b/ip/iproute.c
-index a453385113cb9..4c268c72c5bd6 100644
---- a/ip/iproute.c
-+++ b/ip/iproute.c
-@@ -649,12 +649,16 @@ static void print_rta_multipath(FILE *fp, const struc=
-t rtmsg *r,
- =09int len =3D RTA_PAYLOAD(rta);
- =09int first =3D 1;
-=20
-+=09open_json_array(PRINT_JSON, "multipath");
-+
- =09while (len >=3D sizeof(*nh)) {
- =09=09struct rtattr *tb[RTA_MAX + 1];
-=20
- =09=09if (nh->rtnh_len > len)
- =09=09=09break;
-=20
-+=09=09open_json_object(NULL);
-+
- =09=09if (!is_json_context()) {
- =09=09=09if ((r->rtm_flags & RTM_F_CLONED) &&
- =09=09=09    r->rtm_type =3D=3D RTN_MULTICAST) {
-@@ -689,22 +693,29 @@ static void print_rta_multipath(FILE *fp, const struc=
-t rtmsg *r,
-=20
- =09=09if ((r->rtm_flags & RTM_F_CLONED) &&
- =09=09    r->rtm_type =3D=3D RTN_MULTICAST) {
--=09=09=09fprintf(fp, "%s", ll_index_to_name(nh->rtnh_ifindex));
-+=09=09=09print_string(PRINT_ANY, "dev", "%s",
-+=09=09=09=09     ll_index_to_name(nh->rtnh_ifindex));
- =09=09=09if (nh->rtnh_hops !=3D 1)
--=09=09=09=09fprintf(fp, "(ttl>%d)", nh->rtnh_hops);
--=09=09=09fprintf(fp, " ");
-+=09=09=09=09print_uint(PRINT_ANY, "ttl", "(ttl>%d)",
-+=09=09=09=09=09   nh->rtnh_hops);
-+=09=09=09print_string(PRINT_FP, NULL, " ", NULL);
- =09=09} else {
--=09=09=09fprintf(fp, "dev %s ", ll_index_to_name(nh->rtnh_ifindex));
-+=09=09=09print_string(PRINT_ANY, "dev", "dev %s ",
-+=09=09=09=09     ll_index_to_name(nh->rtnh_ifindex));
- =09=09=09if (r->rtm_family !=3D AF_MPLS)
--=09=09=09=09fprintf(fp, "weight %d ",
--=09=09=09=09=09nh->rtnh_hops+1);
-+=09=09=09=09print_uint(PRINT_ANY, "weight", "weight %d ",
-+=09=09=09=09=09   nh->rtnh_hops + 1);
- =09=09}
-=20
- =09=09print_rt_flags(fp, nh->rtnh_flags);
-=20
- =09=09len -=3D NLMSG_ALIGN(nh->rtnh_len);
- =09=09nh =3D RTNH_NEXT(nh);
-+
-+=09=09close_json_object();
- =09}
-+
-+=09close_json_array(PRINT_JSON, "multipath");
- }
-=20
- int print_route(struct nlmsghdr *n, void *arg)
---=20
-2.21.0
+On 10/31/19 2:35 PM, Dag Moxnes wrote:
+> RDS connections can enter the RDS_CONN_CONNECTING state in two ways:
+> 1. It can be started using the connection workqueue (this can happen
+> both on queue_reconnect and upon send if the workqueue is not up)
+> 2. It can enter the RDS_CONN_CONNECTING state due to an incoming
+> connection request
+>
+> In case RDS connections enter RDS_CONN_CONNECTION state due to an incoming
+> connection request, the connection workqueue might already be scheduled. In
+> this case the connection workqueue needs to be cancelled.
+>
+> Signed-off-by: Dag Moxnes <dag.moxnes@oracle.com>
+> ---
+>   net/rds/ib_cm.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+>
+> diff --git a/net/rds/ib_cm.c b/net/rds/ib_cm.c
+> index 6b345c858d..1fdd76f70d 100644
+> --- a/net/rds/ib_cm.c
+> +++ b/net/rds/ib_cm.c
+> @@ -880,6 +880,12 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
+>   			rds_ib_stats_inc(s_ib_connect_raced);
+>   		}
+>   		goto out;
+> +	} else {
+> +		/* Cancel any pending reconnect */
+> +		struct rds_conn_path *cp = &conn->c_path[0];
+> +
+> +		cancel_delayed_work_sync(&cp->cp_conn_w);
+> +		rds_clear_reconnect_pending_work_bit(cp);
+>   	}
+>   
+>   	ic = conn->c_transport_data;
 
