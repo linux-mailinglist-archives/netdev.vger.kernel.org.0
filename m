@@ -2,127 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19EDCEB970
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:01:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A287EB987
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:06:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387418AbfJaWBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 18:01:14 -0400
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:14553 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728345AbfJaWBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 18:01:13 -0400
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dbb59aa0000>; Thu, 31 Oct 2019 15:01:14 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Thu, 31 Oct 2019 15:01:08 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Thu, 31 Oct 2019 15:01:08 -0700
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 31 Oct
- 2019 22:01:07 +0000
-Subject: Re: [PATCH 02/19] mm/gup: factor out duplicate code from four
- routines
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-References: <20191030224930.3990755-1-jhubbard@nvidia.com>
- <20191030224930.3990755-3-jhubbard@nvidia.com>
- <20191031183549.GC14771@iweiny-DESK2.sc.intel.com>
- <75b557f7-24b2-740c-2640-2f914d131600@nvidia.com>
- <20191031210954.GE14771@iweiny-DESK2.sc.intel.com>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <5cb84804-be12-82e8-11d8-7e593fd05619@nvidia.com>
-Date:   Thu, 31 Oct 2019 15:01:07 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20191031210954.GE14771@iweiny-DESK2.sc.intel.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+        id S1729033AbfJaWGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 18:06:04 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:40903 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726602AbfJaWGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 18:06:04 -0400
+Received: by mail-io1-f65.google.com with SMTP id p6so8579814iod.7;
+        Thu, 31 Oct 2019 15:06:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=RKEinqk42UyOE6M8C/b4n2r2NlzHU/iV7Cn151mHQJw=;
+        b=Sq25bnqI53cZdR8HO9h2zHya98OBleb4hCe2ZLyWWzVHTpOXtN0EbZJcyFyKcQyT3Y
+         Aj+M4H/BXClb2Ua7QCdzUNP3ZhX8lJOMuaNrnHYyQLMRaPEj/kJDvOtzkzXxN9EyfuK2
+         BkOiHtQ9LvLpj45Tuzr7C0bT7HGcI2vTp/cw45RZazcG2qycppaamP0KKHPvrkwegZ8p
+         xeYK62NPOQbIY/sGJAJiisMCGEfTym0TKaiv/2OFTEA98HA+RiYLUMShlWgYMFwJ2VYr
+         HA/LJkXmkaipfU2QV7LfN+qtMJfRTPjmRUM1QJ+Q0DCqbWU6URHCCd7Bs2+uA+pqP5rL
+         yZLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=RKEinqk42UyOE6M8C/b4n2r2NlzHU/iV7Cn151mHQJw=;
+        b=uG1ri8laFbgskBbXFYZStmtGpBZQm/AT5bR1epoJhGqPhwDzDB2yKAtcW9F8tn+S9C
+         LySW60HyrbNV5DK3P21Gopm0vOA7B1h+CNqRIUhLss1Z9nX9fzmS9j+LD5bRHyMjIb3Y
+         ZHmTwIEBiz/UFf6rCe6qOGVai8T3qxf0834LBqUCON6TtSJNYf4i3Y0qeXEFzwG6sJD7
+         8D+ZYl5zqvajlxsWLFr9BizTHewzbibvIMKPtQlJgPsVzucVRj/pjolqGfoPizRxF7/7
+         9giZ9mPixjAatKqAYfXzCtrm6dW/qsjYhbPAydnRvbQYmohDTFQfRTcbBWG0yvIHafj3
+         i7rg==
+X-Gm-Message-State: APjAAAUClHFYAU3/wORDkjL7ibtX4ZEItUQMzF9D0MOnJf3ODHH2M1Ug
+        281Hco3KqL7DhF+l/219gUw=
+X-Google-Smtp-Source: APXvYqwIp/iCUJkbjbsSkx0Fyoi9Wp8XSjBFT9yB+ZDD8cFptQiUxAdg7h7Ad9QUCO10wxRrlA/maw==
+X-Received: by 2002:a6b:ee18:: with SMTP id i24mr7236274ioh.163.1572559563222;
+        Thu, 31 Oct 2019 15:06:03 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r1sm732020ilq.7.2019.10.31.15.06.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Oct 2019 15:06:02 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 15:05:53 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
+        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
+        Eric Biggers <ebiggers@kernel.org>,
+        herbert@gondor.apana.org.au, glider@google.com,
+        linux-crypto@vger.kernel.org
+Message-ID: <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191030160542.30295-1-jakub.kicinski@netronome.com>
+References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
+Subject: RE: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572559274; bh=St3Rf/REgq/1do28NhYtGJF/+ie61nX3HJRKUe+Kv+8=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=ikqeCXUqsTwoQB5CbB+62UgGOxuiKLZDrBsuVMEaD9IjjDxXb09OkVp8xOPRF5wct
-         ee5DhXFx3ncNZEuTcZeSOQivxIJokuWUNeY+2vtv3ZOkk1HWJjkj1h2EH0AXlwb+WX
-         k+12VWYeIpYnIAMc/9Jx/3qdPSGK+huRjsgTXXwezXTbb/FzDozYDlQdAsy+QX8f3z
-         guPaB2LcynNr/sr3xHEr7wV68E214NkgY5BRukBI2Kt+YqGU/HP5jxWqLsbWsS/eGt
-         xEDw4hf53LcGHOIM9YJEHjAqS/wG8o7OePI2ydIId+OliMRlMyINElUiwkTZonGlbb
-         If9KlbJQJnB+Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/19 2:09 PM, Ira Weiny wrote:
-> On Thu, Oct 31, 2019 at 11:43:37AM -0700, John Hubbard wrote:
->> On 10/31/19 11:35 AM, Ira Weiny wrote:
->>> On Wed, Oct 30, 2019 at 03:49:13PM -0700, John Hubbard wrote:
->> ...
->>>> +
->>>> +static int __huge_pt_done(struct page *head, int nr_recorded_pages, int *nr)
->>>> +{
->>>> +	*nr += nr_recorded_pages;
->>>> +	SetPageReferenced(head);
->>>> +	return 1;
->>>
->>> When will this return anything but 1?
->>>
->>
->> Never, but it saves a line at all four call sites, by having it return like that.
->>
->> I could see how maybe people would prefer to just have it be a void function,
->> and return 1 directly at the call sites. Since this was a lower line count I
->> thought maybe it would be slightly better, but it's hard to say really.
+Jakub Kicinski wrote:
+> sk_msg_trim() tries to only update curr pointer if it falls into
+> the trimmed region. The logic, however, does not take into the
+> account pointer wrapping that sk_msg_iter_var_prev() does.
+> This means that when the message was trimmed completely, the new
+> curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
+> neither smaller than any other value, nor would it actually be
+> correct.
 > 
-> It is a NIT perhaps but I feel like the signature of a function should stand on
-> it's own.  What this does is mix the meaning of this function with those
-> calling it.  Which IMO is not good style.
+> Special case the trimming to 0 length a little bit.
 > 
-> We can see what others say.
+> This bug caused the TLS code to not copy all of the message, if
+> zero copy filled in fewer sg entries than memcopy would need.
 > 
+> Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
+> 
+> Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
+> Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
+> Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> ---
+> Daniel, John, does this look okay?
 
-Sure. I'll plan on changing it to a void return type, then, unless someone else
-pipes up.
+Thanks for the second ping!
+
+> 
+> CC: Eric Biggers <ebiggers@kernel.org>
+> CC: herbert@gondor.apana.org.au
+> CC: glider@google.com
+> CC: linux-crypto@vger.kernel.org
+> 
+>  net/core/skmsg.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index cf390e0aa73d..c42c145216b1 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -276,7 +276,10 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
+>  	 * However trimed data that has not yet been used in a copy op
+>  	 * does not require an update.
+>  	 */
+> -	if (msg->sg.curr >= i) {
+> +	if (!msg->sg.size) {
+> +		msg->sg.curr = 0;
+> +		msg->sg.copybreak = 0;
+> +	} else if (msg->sg.curr >= i) {
+>  		msg->sg.curr = i;
+>  		msg->sg.copybreak = msg->sg.data[i].length;
+>  	}
+> -- 
 
 
-thanks,
+Its actually not sufficient. We can't directly do comparisons against curr
+like this. msg->sg is a ring buffer so we have to be careful for these
+types of comparisons.
 
-John Hubbard
-NVIDIA
+Examples hopefully help explian. Consider the case with a ring layout on
+entering sk_msg_trim,
+
+   0 1 2                              N = MAX_MSG_FRAGS
+  |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+       ^       ^         ^
+       curr    end       start
+
+Start trimming from end
+
+   0 1 2                              N = MAX_MSG_FRAGS
+  |X|X|X|...|X|X|_|...|_|_|i|X|....|X|X|
+       ^       ^         ^
+       curr    end       start
+
+We trim backwards through ring with sk_msg_iter_var_prev(). And its
+possible to end with the result of above where 'i' is greater than curr
+and greater than start leaving scatterlist elements so size != 0.
+
+    i > curr && i > start && sg.size != 0
+
+but we wont catch it with this condition
+
+    if (msg->sg.curr >= i)
+
+So we won't reset curr and copybreak so we have a potential issue now
+where curr is pointing at data that has been trimmed.
+
+I'll put together a fix but the correct thing to do here is a proper
+ring greater than op which is not what we have there. Although, your patch
+is also really a good one to have because reseting curr = 0 and
+copybreak = 0 when possible keeps the ring from being fragmented which
+avoids chaining when we push scatterlists down to crypto layer. So for
+your patch,
+
+Acked-By: John Fastabend <john.fastabend@gmail.com>
+
+If it should go to net or net-next I think is probably up for debate
+
+Nice catch!!! Can you send me the reproducer?
+
+Thanks,
+John
+
+
+
+
