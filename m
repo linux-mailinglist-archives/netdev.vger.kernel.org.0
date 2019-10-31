@@ -2,120 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EEDAEB332
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:52:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E037EB33A
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:53:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728281AbfJaOwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 10:52:14 -0400
-Received: from mail-eopbgr10041.outbound.protection.outlook.com ([40.107.1.41]:40846
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728227AbfJaOwO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 10:52:14 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TK0Qwq1uVONjub0LxcXnS9LutOJ6pmNCPAiXCcRYPNVmklVNvDAtCEMEYt0QuQ0WQ9ei4ktT93qg5hLq1ibO+PUgmPSA59qEiW6yIIJwpVGf8t+pR4Nrjpv6IBlDT/TrVEKyFlDLEDeuZs9qPFm2lLxW/IAsina7kZngZo9dOTzHdVrycAJd1dSFkD7BoPYwmoGbeCjCaqb6DpSDqXUfsOoZ4E9yBF+Ox7YK8p9ZF7Ulcr4iUFLwGuHpssTbTaGhngjOOTSVgt00p+rHBz3PQkKTK06JlT68ZJsJXwKTQyGclV+Yk7ivFl5OBK5sGrtkFQNi5zZ7ZkHfZeu/vGgIRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JJSvDEk3ImGrNciSLrSTfUMPSqHSidO0NHUB0ZbinFw=;
- b=QxGZOFSiDgONVLoqyIMnLgA0TWmA/7BQlsnyHRqAdCA2OoVUDgOvsDbP+chsej9sG/YL2etZe8fze7OToqkBktKxQKQpMNjQcMROjZfHtcPAvjhkWmQai4QmPKIQIpWPEJBYjU99qE94h3udSwO40bMEucwKa2VZu/lMklRAXD99tcMad3ccaGQInDpN4QpzVmIoV/8x2kL8QnWnB4ky7KPlKcmgy/5BskBKFQt6HJ5SLJ4ywfaYKKrKgBoy3yYY/RNqhJfa5CVxeLcH5RsRGjxxluunULMgdvmPr6UBrHj4otlzX1vNvBoSivxk0pwELq1yDg8LjcIpVg7J4JZIWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JJSvDEk3ImGrNciSLrSTfUMPSqHSidO0NHUB0ZbinFw=;
- b=CAXJwQz+5Nsx2cpAgWzS7KPgLPkMBf0h4JGcRERkUdnAAVgtU5X3263R27yy9UIYVt60PkXitZcMkM9MKrM35bLO/u/G3BYKGgORNkYeo3zIrrFB2JqDfRuyYv8sqv75r3e2Db2nieI6PsQQBsrRiM9jFO37xA4p9KntU40qgLA=
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.43.208) by
- DBBPR05MB6556.eurprd05.prod.outlook.com (20.179.41.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.20; Thu, 31 Oct 2019 14:52:09 +0000
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::8c61:2788:89:69ce]) by DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::8c61:2788:89:69ce%5]) with mapi id 15.20.2408.018; Thu, 31 Oct 2019
- 14:52:09 +0000
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     Yuval Shaia <yuval.shaia@oracle.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dotanb@dev.mellanox.co.il" <dotanb@dev.mellanox.co.il>,
-        Eli Cohen <eli@mellanox.com>,
-        Vladimir Sokolovsky <vlad@mellanox.com>
-Subject: Re: [PATCH] mlx4_core: fix wrong comment about the reason of subtract
- one from the max_cqes
-Thread-Topic: [PATCH] mlx4_core: fix wrong comment about the reason of
- subtract one from the max_cqes
-Thread-Index: AQHVj7/MLr7HVp7cQUKjB+F0Jw6ouKd01gQA
-Date:   Thu, 31 Oct 2019 14:52:09 +0000
-Message-ID: <6c0f87dd-bb63-cf0e-66c1-ed01b2a42382@mellanox.com>
-References: <20191031074931.20715-1-yuval.shaia@oracle.com>
-In-Reply-To: <20191031074931.20715-1-yuval.shaia@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM0PR04CA0001.eurprd04.prod.outlook.com
- (2603:10a6:208:122::14) To DBBPR05MB6283.eurprd05.prod.outlook.com
- (2603:10a6:10:cf::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=tariqt@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a2cbd38e-2e02-4a64-c722-08d75e11e7eb
-x-ms-traffictypediagnostic: DBBPR05MB6556:|DBBPR05MB6556:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DBBPR05MB655692B51CCC2DC8FAEE5AF7AE630@DBBPR05MB6556.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:240;
-x-forefront-prvs: 02070414A1
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(136003)(366004)(396003)(39860400002)(199004)(189003)(66446008)(476003)(386003)(71190400001)(2201001)(446003)(11346002)(6116002)(3846002)(6246003)(5660300002)(6506007)(53546011)(71200400001)(110136005)(2906002)(486006)(66556008)(66476007)(66946007)(6436002)(14444005)(6636002)(256004)(64756008)(186003)(52116002)(229853002)(6486002)(6512007)(25786009)(36756003)(8936002)(8676002)(14454004)(81166006)(81156014)(102836004)(7736002)(99286004)(31686004)(31696002)(66066001)(478600001)(26005)(76176011)(316002)(2616005)(2501003)(305945005)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6556;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k0AUfv2iUuZodcNI6i8K0sR5ZRaJqkIXoZIaDCCEkyfkOJ1aoAPdVRt7v5TpHZhA3G/IiHZEmCJqCPj8i4esL8cjz3mBo0fYDKuchgCXQBap0Eogy2vMOMaxIb2i1sX8EvI0zH2adNPuneVW27HkO6TQrvDgYn9BiR7aaxi2sEBsb/QZ1i2+3SoWPG3kyse7k7CBYn70WVrPZsja9oNVGUPRaxVCze0tXojqVf3ZGfhbHxCecsATqXNLMESHdmofVLaLvoZ/3UthARaGj0/DFVDyoP7eax/4ogVObCUK+VJcYqvUyEwT6tcZZOE/UzAjU4ew3LGhNCGi7Df7qJGA1kAUqzapIBAtKOOTHRqDtkYhhprnn2U2yjVVSFQu9UEs3QgrfaT9TI/CBRqLUZlw4XKtJlhBzl80yJ5RYDZnxTvLYuRe0ExTMy3WdO8N4oJC
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8B2741D21624A844A28DDCE6E5668819@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1728306AbfJaOwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 10:52:43 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:29484 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728302AbfJaOwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 10:52:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572533561;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Br/pVIeopOexMRdit1UgpyI3J2jmcX3ZsQH9LphgRUs=;
+        b=hZSo4Aip6eA6hXdU/Pv7HPY3Qek5HaNYJ7oXI1ayaouqPRbEqsjBNbDsXXnXd3/OxZvVkB
+        RsOaYnFUGH6koU+EEPPZDwzg6PE+Fac0m/RjhDPwoBQVh0XlYCZBuPX0Idbsl6WaZmZRHW
+        hS5Fzkmd6EFTbxP4yE2zJjIHcv0mvek=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-413-EAMUJj77NGW3N1zO_9RULA-1; Thu, 31 Oct 2019 10:52:37 -0400
+Received: by mail-lf1-f71.google.com with SMTP id p4so1459245lfo.10
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 07:52:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Mv0pgq6n/5fDFiIucejQhqR+ae//0GDCi/KlF2QfeEY=;
+        b=aGEQtf+AmNV3GCglkbKtW3ZYPMMo8uDXEk1FGk3OOp2bBxnt4hV0ooyNtk9af1GT9c
+         H3vTKz27uXEQOiqlZJEOI1hsx2pCdz3LqZ4pqQUJfg8HrCo+vN5w9VlT5HRjBruXfUUH
+         x1ypJlpC9E7gDr/P4VAMzS5nDEig/YE6mWzJ8TC6+reo7UjczDZFsAOYR4xcuIqL5p5p
+         s4NmSXT6fWOPEPfzIpyU4CoBd9mOmeaAg5LMVPhNuFBhk9Qr92/ZNGNgBLxxXSSWYXjm
+         oRyhzj0QorrEBoaiSHmIXkhOZoW5kN3I7/QSaNj7INm+d5eRUkBPg9xM8PaDmPILe9b2
+         Vn3w==
+X-Gm-Message-State: APjAAAVrlBqO2q6bdMIFp2Ddpqrz0e0hWOWqa0eto3kB/sl2TOwwImkd
+        tGvLRP3WZH5TvMRVUHYqY8Z7SD2+fOJ1KUBhYbalLHckvr3i1N961Lyxow+wleRvtr9cju6KHni
+        1JJYGmOAN8cgqF90E
+X-Received: by 2002:a2e:3514:: with SMTP id z20mr4348533ljz.84.1572533556379;
+        Thu, 31 Oct 2019 07:52:36 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwozLeK1OulL35EZ+FygdO+ykmIkeqzGoXA1isTbaOGYie2IPmnWzcNoUS8Vkha1W7BxCKrZA==
+X-Received: by 2002:a2e:3514:: with SMTP id z20mr4348516ljz.84.1572533556118;
+        Thu, 31 Oct 2019 07:52:36 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id f14sm1225293ljn.105.2019.10.31.07.52.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Oct 2019 07:52:35 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B49761818B5; Thu, 31 Oct 2019 15:52:34 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without need_wakeup
+In-Reply-To: <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
+References: <1571995035-21889-1-git-send-email-magnus.karlsson@intel.com> <87tv7qpdbt.fsf@toke.dk> <CAJ8uoz3BPA41wmT8-Jhhs=kJ=GbsAswSvx2pEmuWJDvh+b+_yw@mail.gmail.com> <CAJ+HfNimRqftmKASOdceXFJmgbLvXnNBZATTnfA9LMF2amGzzA@mail.gmail.com> <CAADnVQJRe4Pm-Rxx9zobn8YRHh9i+xQp7HX4gidqq9Mse7PJ5g@mail.gmail.com> <87lft1ngtn.fsf@toke.dk> <CAADnVQLrg6f_zjvNfiEVfdjcx9+DW_RFjVGetavvMNo=VXAR+g@mail.gmail.com> <87imo5ng7w.fsf@toke.dk> <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 31 Oct 2019 15:52:34 +0100
+Message-ID: <87d0ednf0t.fsf@toke.dk>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2cbd38e-2e02-4a64-c722-08d75e11e7eb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2019 14:52:09.7086
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yzaDc399VWIl6QBxkcPMdh0svZMB+/sUbkdiY7JNa2W0frk8tlQuyvfnwnjABm8y3ZlwsfTiMQpdsCoqh7rCPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6556
+X-MC-Unique: EAMUJj77NGW3N1zO_9RULA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDEwLzMxLzIwMTkgOTo0OSBBTSwgWXV2YWwgU2hhaWEgd3JvdGU6DQo+IEZyb206IERv
-dGFuIEJhcmFrIDxkb3RhbmJAZGV2Lm1lbGxhbm94LmNvLmlsPg0KPiANCj4gU2lnbmVkLW9mZi1i
-eTogRG90YW4gQmFyYWsgPGRvdGFuYkBkZXYubWVsbGFub3guY28uaWw+DQo+IFNpZ25lZC1vZmYt
-Ynk6IEVsaSBDb2hlbiA8ZWxpQG1lbGxhbm94LmNvLmlsPg0KPiBTaWduZWQtb2ZmLWJ5OiBWbGFk
-aW1pciBTb2tvbG92c2t5IDx2bGFkQG1lbGxhbm94LmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogWXV2
-YWwgU2hhaWEgPHl1dmFsLnNoYWlhQG9yYWNsZS5jb20+DQo+IC0tLQ0KPiAgIGRyaXZlcnMvbmV0
-L2V0aGVybmV0L21lbGxhbm94L21seDQvbWFpbi5jIHwgMyArLS0NCj4gICAxIGZpbGUgY2hhbmdl
-ZCwgMSBpbnNlcnRpb24oKyksIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NC9tYWluLmMgYi9kcml2ZXJzL25ldC9ldGhl
-cm5ldC9tZWxsYW5veC9tbHg0L21haW4uYw0KPiBpbmRleCBmY2U5YjNhMjQzNDcuLmRjZjZiNDYy
-OGM1OCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NC9t
-YWluLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NC9tYWluLmMN
-Cj4gQEAgLTUxNCw4ICs1MTQsNyBAQCBzdGF0aWMgaW50IG1seDRfZGV2X2NhcChzdHJ1Y3QgbWx4
-NF9kZXYgKmRldiwgc3RydWN0IG1seDRfZGV2X2NhcCAqZGV2X2NhcCkNCj4gICAJZGV2LT5jYXBz
-Lm1heF9ycV9kZXNjX3N6ICAgICA9IGRldl9jYXAtPm1heF9ycV9kZXNjX3N6Ow0KPiAgIAkvKg0K
-PiAgIAkgKiBTdWJ0cmFjdCAxIGZyb20gdGhlIGxpbWl0IGJlY2F1c2Ugd2UgbmVlZCB0byBhbGxv
-Y2F0ZSBhDQo+IC0JICogc3BhcmUgQ1FFIHNvIHRoZSBIQ0EgSFcgY2FuIHRlbGwgdGhlIGRpZmZl
-cmVuY2UgYmV0d2VlbiBhbg0KPiAtCSAqIGVtcHR5IENRIGFuZCBhIGZ1bGwgQ1EuDQo+ICsJICog
-c3BhcmUgQ1FFIHRvIGVuYWJsZSByZXNpemluZyB0aGUgQ1ENCj4gICAJICovDQoNClBsZWFzZSB1
-c2UgYSBkb3QgYXQgRU9MLg0KDQpUaGlzIGlzIG5vdCBjbGVhciBlbm91Z2gsIGVzcGVjaWFsbHkg
-d2l0aG91dCBhIGNvbW1pdCBtZXNzYWdlLg0KDQo+ICAgCWRldi0+Y2Fwcy5tYXhfY3FlcwkgICAg
-ID0gZGV2X2NhcC0+bWF4X2NxX3N6IC0gMTsNCj4gICAJZGV2LT5jYXBzLnJlc2VydmVkX2Nxcwkg
-ICAgID0gZGV2X2NhcC0+cmVzZXJ2ZWRfY3FzOw0KPiANCg==
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+
+> On Thu, Oct 31, 2019 at 7:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>
+>> > On Thu, Oct 31, 2019 at 7:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> >>
+>> >> > On Thu, Oct 31, 2019 at 1:03 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@=
+gmail.com> wrote:
+>> >> >>
+>> >> >> On Thu, 31 Oct 2019 at 08:17, Magnus Karlsson <magnus.karlsson@gma=
+il.com> wrote:
+>> >> >> >
+>> >> >> > On Wed, Oct 30, 2019 at 2:36 PM Toke H=C3=B8iland-J=C3=B8rgensen=
+ <toke@redhat.com> wrote:
+>> >> >> > >
+>> >> >> > > Magnus Karlsson <magnus.karlsson@intel.com> writes:
+>> >> >> > >
+>> >> >> > > > When the need_wakeup flag was added to AF_XDP, the format of=
+ the
+>> >> >> > > > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to =
+the
+>> >> >> > > > kernel to take care of compatibility issues arrising from ru=
+nning
+>> >> >> > > > applications using any of the two formats. However, libbpf w=
+as
+>> >> >> > > > not extended to take care of the case when the application/l=
+ibbpf
+>> >> >> > > > uses the new format but the kernel only supports the old
+>> >> >> > > > format. This patch adds support in libbpf for parsing the ol=
+d
+>> >> >> > > > format, before the need_wakeup flag was added, and emulating=
+ a
+>> >> >> > > > set of static need_wakeup flags that will always work for th=
+e
+>> >> >> > > > application.
+>> >> >> > >
+>> >> >> > > Hi Magnus
+>> >> >> > >
+>> >> >> > > While you're looking at backwards compatibility issues with xs=
+k: libbpf
+>> >> >> > > currently fails to compile on a system that has old kernel hea=
+ders
+>> >> >> > > installed (this is with kernel-headers 5.3):
+>> >> >> > >
+>> >> >> > > $ echo "#include <bpf/xsk.h>" | gcc -x c -
+>> >> >> > > In file included from <stdin>:1:
+>> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__ne=
+eds_wakeup=E2=80=99:
+>> >> >> > > /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_WA=
+KEUP=E2=80=99 undeclared (first use in this function)
+>> >> >> > >    82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
+>> >> >> > >       |                     ^~~~~~~~~~~~~~~~~~~~
+>> >> >> > > /usr/include/bpf/xsk.h:82:21: note: each undeclared identifier=
+ is reported only once for each function it appears in
+>> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract=
+_addr=E2=80=99:
+>> >> >> > > /usr/include/bpf/xsk.h:173:16: error: =E2=80=98XSK_UNALIGNED_B=
+UF_ADDR_MASK=E2=80=99 undeclared (first use in this function)
+>> >> >> > >   173 |  return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
+>> >> >> > >       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract=
+_offset=E2=80=99:
+>> >> >> > > /usr/include/bpf/xsk.h:178:17: error: =E2=80=98XSK_UNALIGNED_B=
+UF_OFFSET_SHIFT=E2=80=99 undeclared (first use in this function)
+>> >> >> > >   178 |  return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
+>> >> >> > >       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> >> >> > >
+>> >> >> > >
+>> >> >> > >
+>> >> >> > > How would you prefer to handle this? A patch like the one belo=
+w will fix
+>> >> >> > > the compile errors, but I'm not sure it makes sense semantical=
+ly?
+>> >> >> >
+>> >> >> > Thanks Toke for finding this. Of course it should be possible to
+>> >> >> > compile this on an older kernel, but without getting any of the =
+newer
+>> >> >> > functionality that is not present in that older kernel.
+>> >> >>
+>> >> >> Is the plan to support source compatibility for the headers only, =
+or
+>> >> >> the whole the libbpf itself? Is the usecase here, that you've buil=
+t
+>> >> >> libbpf.so with system headers X, and then would like to use the
+>> >> >> library on a system with older system headers X~10? XDP sockets? B=
+TF?
+>> >> >
+>> >> > libbpf has to be backward and forward compatible.
+>> >> > Once compiled it has to run on older and newer kernels.
+>> >> > Conditional compilation is not an option obviously.
+>> >>
+>> >> So what do we do, then? Redefine the constants in libbpf/xsh.h if
+>> >> they're not in the kernel header file?
+>> >
+>> > why? How and whom it will help?
+>> > To libbpf.rpm creating person or to end user?
+>>
+>> Anyone who tries to compile a new libbpf against an older kernel. You're
+>> saying yourself that "libbpf has to be backward and forward compatible".
+>> Surely that extends to compile time as well as runtime?
+>
+> how old that older kernel?
+> Does it have up-to-date bpf.h in /usr/include ?
+> Also consider that running kernel is often not the same
+> thing as installed in /usr/include
+> vmlinux and /usr/include are different packages.
+
+In this case, it's a constant introduced in the kernel in the current
+(5.4) cycle; so currently, you can't compile libbpf with
+kernel-headers-5.3. And we're discussing how to handle this in a
+backwards compatible way in libbpf...
+
+-Toke
+
