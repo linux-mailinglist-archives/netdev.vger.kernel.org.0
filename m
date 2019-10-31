@@ -2,75 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9370EB96A
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 22:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19EDCEB970
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:01:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbfJaV6m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 17:58:42 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:42289 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729018AbfJaV6m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 17:58:42 -0400
-Received: by mail-oi1-f195.google.com with SMTP id i185so6555814oif.9
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 14:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wc3vWa+fr8h3dOHTN3KOywapXOUo1DYubM0ogmupdTc=;
-        b=gAMhuQvc1z/gAuET0C/E368mt0CeA4xYak+vj63Bbj8zPwrJ2E/VUDJ+Ykk3Mgsx70
-         MWUudwOpeymuS5iJGXj5MElOVv3OBRUwKBnV9xtVMNufZSsZdlibasbw9Qy1f32ia6sw
-         2u+K+jw776TdP0IquCoaZVmp9C9EIMbEkhCcRy+s61d7CWzSYx2RAJfBTvX+hWOlShZV
-         T6xLSzXsOERnToCTpiekhJBfz7pmCUPeyO1d4VuIR2kJT9xyFk6Mkwt2OzcQ4M4+r4Ix
-         andAyqWbVYIJm/wtZbx6FKX7pl8/l3G4vwfZGRIbg7yQEhxKND4b1np9xPAjgginFWwx
-         eddg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wc3vWa+fr8h3dOHTN3KOywapXOUo1DYubM0ogmupdTc=;
-        b=R7xeq80UN3XbtPG6jSJ0NqhO30NguO7ksqYpXZwNE37rZqOaFnMmq9bkYSkavC/5oa
-         IkgKav/aSzeCca29wvyXQSYJs7OscuiOFrAoAQcmtm4F1ZVowZT4se5EVrPF8MFT4LQ0
-         x+dW3dsBUHVfmUmrVDtuKz6ExQfno/Be8EKVSEsf7ngHntkTSi6MY1wAlDI4ihT/Gobk
-         CxyL5xJOS83rB7ZMmf9dc1eJoTi8JBemqg4PbrpBWpyr4jGjT/7q9JYR3+RJPmUtRyXS
-         sQPt98g9rih//OqcNeTIwXH+OMzW7NG5ChkqmvDpvrfZ7cJr1d+F8hNfsSS4dFCEI5PE
-         Iypg==
-X-Gm-Message-State: APjAAAVc6Mqqlh5/RIkX9LTWtIrduAJ0mr2mUgfi/lkyly6ZSgMowOYb
-        ECGgLWxhmxRboLBQPzD9lxrK7nqIGqHPc8t/KLeOjaZr
-X-Google-Smtp-Source: APXvYqwtFVOGgIivIGoPekibrWFtyvHDMpPwKfUVALRtpMOardUilQ7AErP226y8Lj6/k7w/1221VVuqrqbEZalu16k=
-X-Received: by 2002:aca:ec51:: with SMTP id k78mr1765529oih.0.1572559120913;
- Thu, 31 Oct 2019 14:58:40 -0700 (PDT)
+        id S2387418AbfJaWBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 18:01:14 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:14553 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728345AbfJaWBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 18:01:13 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dbb59aa0000>; Thu, 31 Oct 2019 15:01:14 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Thu, 31 Oct 2019 15:01:08 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Thu, 31 Oct 2019 15:01:08 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 31 Oct
+ 2019 22:01:07 +0000
+Subject: Re: [PATCH 02/19] mm/gup: factor out duplicate code from four
+ routines
+To:     Ira Weiny <ira.weiny@intel.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-3-jhubbard@nvidia.com>
+ <20191031183549.GC14771@iweiny-DESK2.sc.intel.com>
+ <75b557f7-24b2-740c-2640-2f914d131600@nvidia.com>
+ <20191031210954.GE14771@iweiny-DESK2.sc.intel.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <5cb84804-be12-82e8-11d8-7e593fd05619@nvidia.com>
+Date:   Thu, 31 Oct 2019 15:01:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20191030220032.199832-1-yangchun@google.com> <20191031.141609.111804442534478009.davem@davemloft.net>
-In-Reply-To: <20191031.141609.111804442534478009.davem@davemloft.net>
-From:   Yangchun Fu <yangchun@google.com>
-Date:   Thu, 31 Oct 2019 14:58:27 -0700
-Message-ID: <CAOPXMbmPbJxk1K7wwfVQNA1q5s8Kr1TB2Qk1oPSUsE6EsAWM_A@mail.gmail.com>
-Subject: Re: [PATCH net v2] gve: Fixes DMA synchronization.
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Simon Horman <simon.horman@netronome.com>,
-        Catherine Sullivan <csully@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191031210954.GE14771@iweiny-DESK2.sc.intel.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1572559274; bh=St3Rf/REgq/1do28NhYtGJF/+ie61nX3HJRKUe+Kv+8=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=ikqeCXUqsTwoQB5CbB+62UgGOxuiKLZDrBsuVMEaD9IjjDxXb09OkVp8xOPRF5wct
+         ee5DhXFx3ncNZEuTcZeSOQivxIJokuWUNeY+2vtv3ZOkk1HWJjkj1h2EH0AXlwb+WX
+         k+12VWYeIpYnIAMc/9Jx/3qdPSGK+huRjsgTXXwezXTbb/FzDozYDlQdAsy+QX8f3z
+         guPaB2LcynNr/sr3xHEr7wV68E214NkgY5BRukBI2Kt+YqGU/HP5jxWqLsbWsS/eGt
+         xEDw4hf53LcGHOIM9YJEHjAqS/wG8o7OePI2ydIId+OliMRlMyINElUiwkTZonGlbb
+         If9KlbJQJnB+Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 2:16 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Yangchun Fu <yangchun@google.com>
-> Date: Wed, 30 Oct 2019 15:00:32 -0700
->
-> > -static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
-> > +static void gve_dma_sync_for_device(struct device *dev, dma_addr_t *page_buses,
-> > +                                 u64 iov_offset, u64 iov_len)
-> > +{
-> > +     u64 addr;
-> > +     dma_addr_t dma;
->
-> Please place local variables in reverse christmas tree ordering (longest to
-> shortest line) here.
->
-> Thank you.
+On 10/31/19 2:09 PM, Ira Weiny wrote:
+> On Thu, Oct 31, 2019 at 11:43:37AM -0700, John Hubbard wrote:
+>> On 10/31/19 11:35 AM, Ira Weiny wrote:
+>>> On Wed, Oct 30, 2019 at 03:49:13PM -0700, John Hubbard wrote:
+>> ...
+>>>> +
+>>>> +static int __huge_pt_done(struct page *head, int nr_recorded_pages, int *nr)
+>>>> +{
+>>>> +	*nr += nr_recorded_pages;
+>>>> +	SetPageReferenced(head);
+>>>> +	return 1;
+>>>
+>>> When will this return anything but 1?
+>>>
+>>
+>> Never, but it saves a line at all four call sites, by having it return like that.
+>>
+>> I could see how maybe people would prefer to just have it be a void function,
+>> and return 1 directly at the call sites. Since this was a lower line count I
+>> thought maybe it would be slightly better, but it's hard to say really.
+> 
+> It is a NIT perhaps but I feel like the signature of a function should stand on
+> it's own.  What this does is mix the meaning of this function with those
+> calling it.  Which IMO is not good style.
+> 
+> We can see what others say.
+> 
 
-Sure I will send the v3 patch with this.
+Sure. I'll plan on changing it to a void return type, then, unless someone else
+pipes up.
+
+
+thanks,
+
+John Hubbard
+NVIDIA
