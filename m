@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AEB41EB2EB
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:38:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 289B6EB2EC
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:38:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbfJaOiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 10:38:19 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:54976 "EHLO inva020.nxp.com"
+        id S1728312AbfJaOiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 10:38:20 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:55004 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728292AbfJaOiS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 10:38:18 -0400
+        id S1728274AbfJaOiU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 10:38:20 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id BCC7E1A0217;
-        Thu, 31 Oct 2019 15:38:16 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D31EA1A054D;
+        Thu, 31 Oct 2019 15:38:17 +0100 (CET)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B02D01A0209;
-        Thu, 31 Oct 2019 15:38:16 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C60AE1A0209;
+        Thu, 31 Oct 2019 15:38:17 +0100 (CET)
 Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 6B6B1205E9;
-        Thu, 31 Oct 2019 15:38:16 +0100 (CET)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 88D42205E9;
+        Thu, 31 Oct 2019 15:38:17 +0100 (CET)
 From:   Madalin Bucur <madalin.bucur@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     roy.pledge@nxp.com, jakub.kicinski@netronome.com, joe@perches.com,
         Madalin Bucur <madalin.bucur@nxp.com>
-Subject: [net-next v2 11/13] dpaa_eth: extend delays in ndo_stop
-Date:   Thu, 31 Oct 2019 16:37:57 +0200
-Message-Id: <1572532679-472-12-git-send-email-madalin.bucur@nxp.com>
+Subject: [net-next v2 12/13] soc: fsl: qbman: allow registering a device link for the portal user
+Date:   Thu, 31 Oct 2019 16:37:58 +0200
+Message-Id: <1572532679-472-13-git-send-email-madalin.bucur@nxp.com>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1572532679-472-1-git-send-email-madalin.bucur@nxp.com>
 References: <1572532679-472-1-git-send-email-madalin.bucur@nxp.com>
@@ -38,37 +38,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure all the frames that are in flight have time to be processed
-before the interface is completely brought down. Add a missing delay
-for the Rx path.
+Introduce the API required to make sure that the devices that use
+the QMan portal are unbound when the portal is unbound.
 
 Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/soc/fsl/qbman/qman.c | 13 +++++++++++++
+ include/soc/fsl/qman.h       | 18 ++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index ee22ed3207b4..9e6080aaf77a 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -266,7 +266,7 @@ static int dpaa_stop(struct net_device *net_dev)
- 	/* Allow the Fman (Tx) port to process in-flight frames before we
- 	 * try switching it off.
- 	 */
--	usleep_range(5000, 10000);
-+	msleep(200);
- 
- 	err = mac_dev->stop(mac_dev);
- 	if (err < 0)
-@@ -283,6 +283,8 @@ static int dpaa_stop(struct net_device *net_dev)
- 		phy_disconnect(net_dev->phydev);
- 	net_dev->phydev = NULL;
- 
-+	msleep(200);
-+
- 	return err;
+diff --git a/drivers/soc/fsl/qbman/qman.c b/drivers/soc/fsl/qbman/qman.c
+index bf68d86d80ee..bc75a5882b9e 100644
+--- a/drivers/soc/fsl/qbman/qman.c
++++ b/drivers/soc/fsl/qbman/qman.c
+@@ -1749,6 +1749,19 @@ struct qman_portal *qman_get_affine_portal(int cpu)
  }
+ EXPORT_SYMBOL(qman_get_affine_portal);
  
++int qman_start_using_portal(struct qman_portal *p, struct device *dev)
++{
++	return (!device_link_add(dev, p->config->dev,
++				 DL_FLAG_AUTOREMOVE_CONSUMER)) ? -EINVAL : 0;
++}
++EXPORT_SYMBOL(qman_start_using_portal);
++
++void qman_stop_using_portal(struct qman_portal *p, struct device *dev)
++{
++	device_link_remove(dev, p->config->dev);
++}
++EXPORT_SYMBOL(qman_stop_using_portal);
++
+ int qman_p_poll_dqrr(struct qman_portal *p, unsigned int limit)
+ {
+ 	return __poll_portal_fast(p, limit);
+diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
+index aa31c05a103a..c499c5cfa7c9 100644
+--- a/include/soc/fsl/qman.h
++++ b/include/soc/fsl/qman.h
+@@ -32,6 +32,7 @@
+ #define __FSL_QMAN_H
+ 
+ #include <linux/bitops.h>
++#include <linux/device.h>
+ 
+ /* Hardware constants */
+ #define QM_CHANNEL_SWPORTAL0 0
+@@ -915,6 +916,23 @@ u16 qman_affine_channel(int cpu);
+ struct qman_portal *qman_get_affine_portal(int cpu);
+ 
+ /**
++ * qman_start_using_portal - register a device link for the portal user
++ * @p: the portal that will be in use
++ * @dev: the device that will use the portal
++ *
++ * Makes sure that the devices that use the portal are unbound when the
++ * portal is unbound
++ */
++int qman_start_using_portal(struct qman_portal *p, struct device *dev);
++
++/**
++ * qman_stop_using_portal - deregister a device link for the portal user
++ * @p: the portal that will no longer be in use
++ * @dev: the device that uses the portal
++ */
++void qman_stop_using_portal(struct qman_portal *p, struct device *dev);
++
++/**
+  * qman_p_poll_dqrr - process DQRR (fast-path) entries
+  * @limit: the maximum number of DQRR entries to process
+  *
 -- 
 2.1.0
 
