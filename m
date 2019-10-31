@@ -2,181 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1539EAAE8
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 08:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0CA4EAB13
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 08:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726607AbfJaHRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 03:17:24 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37484 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726479AbfJaHRX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 03:17:23 -0400
-Received: by mail-ot1-f66.google.com with SMTP id 53so4510722otv.4;
-        Thu, 31 Oct 2019 00:17:22 -0700 (PDT)
+        id S1726858AbfJaHmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 03:42:22 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:37361 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726747AbfJaHmV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 03:42:21 -0400
+Received: by mail-lf1-f68.google.com with SMTP id b20so3785891lfp.4;
+        Thu, 31 Oct 2019 00:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ozIcHNKQPT34dQ3NZXK+RxDfQHDIKDpKM/sQ109e9Z8=;
-        b=aInMRLO2Sp0fQvkSt1Ml71wOsd8wlGs3KN6WOVA9lIPKUJNPr+PZA+BQFbo3XEIMIC
-         dIQv6M2qMeRUkrqYAii3WFRjRFYcrtYE+ikqja9m/tN5MoWkLMncyzX4id1cTaUNdaOl
-         P8EHk/5BdSD3J3jo1Mh3YCqmOF8iFm1+qckER5b6dvN02tomPj2FbTGguh7p0xpeVK6M
-         1u8Rmpdya9vLEtivObvIZNEnK7WVW0QGame6SRB0c1z0X8AkPkqiYeCkNGcP0Sl1p1Sz
-         V6qD8ufbhnuqnYgVsqt/9rA2XKxopiBPuYEAVgPtmiKiAWGwFnOssL54Yn9Fy78YB+/9
-         ExZg==
+         :cc;
+        bh=A9hJv4nqid7JxIZHhixcSeeagf7GXYfXIFUT0XG91wk=;
+        b=VfgwRQClq8a/k41mHyTkzsSHpIhqf5bvkBLRIoAnAokMIKNaS+9qRU8bi46hjRpIn3
+         cOLiLiZvh2a0fOvMU1vL2wS7+ljNaz0kCPvZx/VQARhYtLl7Arv1MSi1c/AAioCyDKRf
+         T3zw5n/Zmo+khkyzLPtAqVVrWT7AscFds8h2vGM8q5ZdFsrrJFBNRf0qAl4kToErvDlC
+         nakx5rqZY5eAC2IgtL+n5IYgVWUEZwdE+P0R4pKguK6Fr81u5r/aFwgHOefDvktYyhAm
+         Dcm6rFLBXP9h7KBKzv3BHgWs1inJDHw8fXdAwWcbDPjSlddd+UyQgLtufTo0miY1LepG
+         Z6xg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ozIcHNKQPT34dQ3NZXK+RxDfQHDIKDpKM/sQ109e9Z8=;
-        b=tf1VZtwOTgnpLwuNiKWrJCfTCzkSTKAVB7OnQqMGA1TAL/hsvbDmO04u0C9vivLCtQ
-         bBPlQ1s0c5l4q1jjGfZvp9E1acHthwfrmY3ptECzV1Hi81scCH2eC+Kgkh/EIFz/TBWh
-         /h7SMA1Fi/gSl2pHq8Tkusyx1FItIg0SziOa7nu2aX3i2RSX4CBcLvrHDdh94eC4krqP
-         86j/WObIX/XMK1TwDhDJv7WTkq/x0K9ZAgqGAfVrSuw+jT5bN7sKRkNqn086EKBmsT5I
-         80ws6TKkKiQi9KD77GF3VcBD9xJ9ofbkKk27jbyh8lBgv7NYGgYWIA0M8WR2ddhcC5s5
-         I/2A==
-X-Gm-Message-State: APjAAAUQ2XYMSlJs9LHv8K8YckpKfcpMWsuJ5lF8GI8wYEsvFLDEvLvE
-        kT+bngkjpwgvqdqfuHIPlYg2YXpmoJprk1GZqZg=
-X-Google-Smtp-Source: APXvYqy1k6uuFBQQoVwPp7kEZkwZEHOmwq3hKgDJNuEFzArfJ+i2JORRk1UTZ5eB4UcgD14PzwGhEGuiDvs3eKUoHPA=
-X-Received: by 2002:a9d:286:: with SMTP id 6mr3352540otl.192.1572506242264;
- Thu, 31 Oct 2019 00:17:22 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=A9hJv4nqid7JxIZHhixcSeeagf7GXYfXIFUT0XG91wk=;
+        b=LPBX4ewxZEJ3svP6Vh1JVVo0FSE7DJv4W1eUe0c6Nhmo26xkBBYkyPK7aJt9W0QFTN
+         SS2So34jouZcOau9Unl2JVVzJLhyX1pniOjegkBf278dfdXsoktit2XV0T8sQsFp19y4
+         gks5+oI+VmrDlvhBY76JEKgdSraGh6tfQF6h/3/CtrbeePX0TkuwlgijeV/ZWIQaOtha
+         JaZIw5H5hB1nx72PVyLdqphWD/rPFNDHUyF/IoDc0sI1Uhxdr+SMcIu/L01/SpsBXY7g
+         rUr0rF9wtkCBbaOuWyGf0M1VO/QlFlGezPCYsYbL8rzmxs9O/1Zjdxr1/55eqiZjr0HK
+         g+Hg==
+X-Gm-Message-State: APjAAAVYPtYHksLqk+sLuE72h8BO6jAZ7AWvuKv6a0GtGq+OH+OFKJ4d
+        ae6ZJUA8hzd5Pgpy4eBWl5FuYdD53lcnd0yRQw4=
+X-Google-Smtp-Source: APXvYqzPtzaP+14gi8Hkuo8pVwf2y/AhuX9DfzXZm4tRMGcgj4F2h8t2RuFhCXvtnHzdpNSZpxpw2fUHWZim2v2tOuQ=
+X-Received: by 2002:a19:2356:: with SMTP id j83mr2237665lfj.103.1572507738370;
+ Thu, 31 Oct 2019 00:42:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <1571995035-21889-1-git-send-email-magnus.karlsson@intel.com> <87tv7qpdbt.fsf@toke.dk>
-In-Reply-To: <87tv7qpdbt.fsf@toke.dk>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 31 Oct 2019 08:17:11 +0100
-Message-ID: <CAJ8uoz3BPA41wmT8-Jhhs=kJ=GbsAswSvx2pEmuWJDvh+b+_yw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without need_wakeup
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
-        John Fastabend <john.fastabend@gmail.com>
+References: <20190927051320.GA1767635@kroah.com> <2B0E3F215D1AB84DA946C8BEE234CCC97B2B1A28@ORSMSX101.amr.corp.intel.com>
+ <20191023174448.GP23952@ziepe.ca> <2B0E3F215D1AB84DA946C8BEE234CCC97B2E0C84@ORSMSX101.amr.corp.intel.com>
+ <20191023180108.GQ23952@ziepe.ca> <20191024185659.GE260560@kroah.com>
+ <20191024191037.GC23952@ziepe.ca> <2B0E3F215D1AB84DA946C8BEE234CCC97B2E1D29@ORSMSX101.amr.corp.intel.com>
+ <20191025013048.GB265361@kroah.com> <2B0E3F215D1AB84DA946C8BEE234CCC97B2E2FE6@ORSMSX101.amr.corp.intel.com>
+ <20191026185338.GA804892@kroah.com>
+In-Reply-To: <20191026185338.GA804892@kroah.com>
+From:   Tomas Winkler <tomasw@gmail.com>
+Date:   Thu, 31 Oct 2019 08:42:06 +0100
+Message-ID: <CA+i0qc4pcxT6L9G-RGL6VYGDTYXZ4PSyw=sDgq8_+=jbs1E83A@mail.gmail.com>
+Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
+ provide RDMA
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     "Ertman, David M" <david.m.ertman@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 2:36 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+> > >
+> > > On Thu, Oct 24, 2019 at 10:25:36PM +0000, Ertman, David M wrote:
+> > > > The direct access of the platform bus was unacceptable, and the MFD
+> > > > sub-system was suggested by Greg as the solution.  The MFD sub-system
+> > > > uses the platform bus in the background as a base to perform its
+> > > > functions, since it is a purely software construct that is handy and
+> > > > fulfills its needs.  The question then is:  If the MFD sub- system is
+> > > > using the platform bus for all of its background functionality, is the platform
+> > > bus really only for platform devices?
+> > >
+> > > Yes, how many times do I have to keep saying this?
+> > >
+> > > The platform bus should ONLY be used for devices that are actually platform
+> > > devices and can not be discovered any other way and are not on any other type
+> > > of bus.
+> > >
+> > > If you try to add platform devices for a PCI device, I am going to continue to
+> > > complain.  I keep saying this and am getting tired.
+> > >
+> > > Now yes, MFD does do "fun" things here, and that should probably be fixed up
+> > > one of these days.  But I still don't see why a real bus would not work for you.
+> > >
+> > > greg "platform devices are dead, long live the platform device" k-h
+> >
+> > > -----Original Message-----
+> > > From: gregkh@linuxfoundation.org [mailto:gregkh@linuxfoundation.org]
+> > > Sent: Thursday, October 24, 2019 6:31 PM
+> > > To: Ertman, David M <david.m.ertman@intel.com>
+> > > Cc: Jason Gunthorpe <jgg@ziepe.ca>; Nguyen, Anthony L
+> > > <anthony.l.nguyen@intel.com>; Kirsher, Jeffrey T
+> > > <jeffrey.t.kirsher@intel.com>; netdev@vger.kernel.org; linux-
+> > > rdma@vger.kernel.org; dledford@redhat.com; Ismail, Mustafa
+> > > <mustafa.ismail@intel.com>; Patil, Kiran <kiran.patil@intel.com>;
+> > > lee.jones@linaro.org
+> > > Subject: Re: [RFC 01/20] ice: Initialize and register multi-function device to
+> > > provide RDMA
+> > >
+> > > On Thu, Oct 24, 2019 at 10:25:36PM +0000, Ertman, David M wrote:
+> > > > The direct access of the platform bus was unacceptable, and the MFD
+> > > > sub-system was suggested by Greg as the solution.  The MFD sub-system
+> > > > uses the platform bus in the background as a base to perform its
+> > > > functions, since it is a purely software construct that is handy and
+> > > > fulfills its needs.  The question then is:  If the MFD sub- system is
+> > > > using the platform bus for all of its background functionality, is the platform
+> > > bus really only for platform devices?
+> > >
+> > > Yes, how many times do I have to keep saying this?
+> > >
+> > > The platform bus should ONLY be used for devices that are actually platform
+> > > devices and can not be discovered any other way and are not on any other type
+> > > of bus.
+> > >
+> > > If you try to add platform devices for a PCI device, I am going to continue to
+> > > complain.  I keep saying this and am getting tired.
+> > >
+> > > Now yes, MFD does do "fun" things here, and that should probably be fixed up
+> > > one of these days.  But I still don't see why a real bus would not work for you.
+> > >
+> > > greg "platform devices are dead, long live the platform device" k-h
+> >
+> > I'm sorry, the last thing I want to do is to annoy you! I just need to
+> > figure out where to go from here.  Please, don't take anything I say as
+> > argumentative.
+> >
+> > I don't understand what you mean by "a real bus".  The irdma driver does
+> > not have access to any physical bus.  It utilizes resources provided by
+> > the PCI LAN drivers, but to receive those resources it needs a mechanism
+> > to "hook up" with the PCI drivers.  The only way it has to locate them
+> > is to register a driver function with a software based bus of some kind
+> > and have the bus match it up to a compatible entity to achieve that hook up.
+> >
+> > The PCI LAN driver has a function that controls the PCI hardware, and then
+> > we want to present an entity for the RDMA driver to connect to.
+> >
+> > To move forward, we are thinking of the following design proposal:
+> >
+> > We could add a new module to the kernel named generic_bus.ko.  This would
+> > create a new generic software bus and a set of APIs that would allow for
+> > adding and removing simple generic virtual devices and drivers, not as
+> > a MFD cell or a platform device. The power management events would also
+> > be handled by the generic_bus infrastructure (suspend, resume, shutdown).
+> > We would use this for matching up by having the irdma driver register
+> > with this generic bus and hook to virtual devices that were added from
+> > different PCI LAN drivers.
+> >
+> > Pros:
+> > 1) This would avoid us attaching anything to the platform bus
+> > 2) Avoid having each PCI LAN driver creating its own software bus
+> > 3) Provide a common matching ground for generic devices and drivers that
+> > eliminates problems caused by load order (all dependent on generic_bus.ko)
+> > 4) Usable by any other entity that wants a lightweight matching system
+> > or information exchange mechanism
+> >
+> > Cons:
+> > 1) Duplicates part of the platform bus functionality
+> > 2) Adds a new software bus to the kernel architecture
+> >
+> > Is this path forward acceptable?
 >
-> Magnus Karlsson <magnus.karlsson@intel.com> writes:
+> Yes, that is much better.  But how about calling it a "virtual bus"?
+> It's not really virtualization, but we already have virtual devices
+> today when you look in sysfs for devices that are created that are not
+> associated with any specific bus.  So this could take those over quite
+> nicely!  Look at how /sys/devices/virtual/ works for specifics, you
+> could create a new virtual bus of a specific "name" and then add devices
+> to that bus directly.
 >
-> > When the need_wakeup flag was added to AF_XDP, the format of the
-> > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to the
-> > kernel to take care of compatibility issues arrising from running
-> > applications using any of the two formats. However, libbpf was
-> > not extended to take care of the case when the application/libbpf
-> > uses the new format but the kernel only supports the old
-> > format. This patch adds support in libbpf for parsing the old
-> > format, before the need_wakeup flag was added, and emulating a
-> > set of static need_wakeup flags that will always work for the
-> > application.
->
-> Hi Magnus
->
-> While you're looking at backwards compatibility issues with xsk: libbpf
-> currently fails to compile on a system that has old kernel headers
-> installed (this is with kernel-headers 5.3):
->
-> $ echo "#include <bpf/xsk.h>" | gcc -x c -
-> In file included from <stdin>:1:
-> /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__needs_wakeup=
-=E2=80=99:
-> /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_WAKEUP=E2=80=
-=99 undeclared (first use in this function)
->    82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
->       |                     ^~~~~~~~~~~~~~~~~~~~
-> /usr/include/bpf/xsk.h:82:21: note: each undeclared identifier is reporte=
-d only once for each function it appears in
-> /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract_addr=E2=80=
-=99:
-> /usr/include/bpf/xsk.h:173:16: error: =E2=80=98XSK_UNALIGNED_BUF_ADDR_MAS=
-K=E2=80=99 undeclared (first use in this function)
->   173 |  return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
->       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract_offset=E2=
-=80=99:
-> /usr/include/bpf/xsk.h:178:17: error: =E2=80=98XSK_UNALIGNED_BUF_OFFSET_S=
-HIFT=E2=80=99 undeclared (first use in this function)
->   178 |  return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
->       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
->
->
-> How would you prefer to handle this? A patch like the one below will fix
-> the compile errors, but I'm not sure it makes sense semantically?
-
-Thanks Toke for finding this. Of course it should be possible to
-compile this on an older kernel, but without getting any of the newer
-functionality that is not present in that older kernel. My preference
-is if we just remove these functions completely if you compile it with
-a kernel that does not have support for it. For the need_wakeup
-feature, we cannot provide semantics that make sense in the function
-above. If we return 0, Tx will break. If we return 1, Rx will become
-really slow. And we cannot detect /without an ugly hack) if it is the
-fill queue or the Tx queue that was provided to the function. So what
-do you think of just removing these functions if the kernel does not
-have the corresponding defines in its kernel header? The user should
-not use them in that case.
-
-We should also think about the case when someone takes the new libbpf
-source, compiles it with an older kernel then runs the binary on the
-newer kernel. It will for sure happen :-). We should add some code in
-the xsk_socket__create call that checks so that users do not try to
-use a bind flag that did not exist on the system libbpf was compiled
-for. In that case, we should return an error. We need the same code
-that we have in the kernel for checking against illegal flags to be
-present in the xsk part of libbpf.
-
-/Magnus
-
-> -Toke
->
-> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
-> index 584f6820a639..954d66e85208 100644
-> --- a/tools/lib/bpf/xsk.h
-> +++ b/tools/lib/bpf/xsk.h
-> @@ -79,7 +79,11 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons *rx,=
- __u32 idx)
->
->  static inline int xsk_ring_prod__needs_wakeup(const struct xsk_ring_prod=
- *r)
->  {
-> +#ifdef XDP_RING_NEED_WAKEUP
->         return *r->flags & XDP_RING_NEED_WAKEUP;
-> +#else
-> +       return 0;
-> +#endif
->  }
->
->  static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
-> @@ -170,12 +174,20 @@ static inline void *xsk_umem__get_data(void *umem_a=
-rea, __u64 addr)
->
->  static inline __u64 xsk_umem__extract_addr(__u64 addr)
->  {
-> +#ifdef XSK_UNALIGNED_BUF_ADDR_MASK
->         return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
-> +#else
-> +       return addr;
-> +#endif
->  }
->
->  static inline __u64 xsk_umem__extract_offset(__u64 addr)
->  {
-> +#ifdef XSK_UNALIGNED_BUF_OFFSET_SHIFT
->         return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
-> +#else
-> +       return 0;
-> +#endif
->  }
->
->  static inline __u64 xsk_umem__add_offset_to_addr(__u64 addr)
->
+> thanks,
+If I'm not mistaken,  currently the virtual devices do not have a parent and
+may not  have a bus so there is no enumeration and hence binding to a driver.
+This is not a case here, as the parent is the PCI device, and we need
+to bind to a driver.
+Code-wise the platform bus contains all the functionality needed by
+such virtual bus, for example helpers for the adding of resources that
+are inherited
+from its parent PCI device,
+ MMIO and IRQ,  the issue is just the name of the bus and associated sysfs?
+In that case the  platform bus will be a special case of the virtual bus?
+Thanks
+Tomas
