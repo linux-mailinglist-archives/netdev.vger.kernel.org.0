@@ -2,178 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E170EB313
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:45:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25095EB321
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:51:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728056AbfJaOoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 10:44:20 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34558 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727841AbfJaOoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 10:44:20 -0400
-Received: by mail-lf1-f67.google.com with SMTP id f5so4902693lfp.1;
-        Thu, 31 Oct 2019 07:44:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GXiVKs8iJm4XXoeUcaASIXeWhThC2LRLVfLLVwcdlq4=;
-        b=V2P+QVeu1itlDHHvjWQyXIPHFrdjXS83cITS7KVs1pEVYe1L5XwrYM1G0TP8XTSZuW
-         F/1d26T+2D65F/KLNp7eDMWoXaEYTBzO/ktujy6WXgOmlVBtPZGYjXtTwk89xtYoOPpH
-         RnJKPVA09PX4vXDQRGDstvXqvf10BdaiZe0TK+tJ+aGNNGmbs5HMiLJh7pl9/tgxR/8+
-         5heTbSu0OWLvm6KOWvUBJGTWgWAzXNLTgPsFKYqrcKyZKFey+oCwOEUWMoe1hHFjCjwB
-         HkQePqGjZsnw0w1eBagnfxpr5AASYJXL5KT/enjpm3Z7nxYYJWMNFKrImJp8AcQWCdu1
-         OJ1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GXiVKs8iJm4XXoeUcaASIXeWhThC2LRLVfLLVwcdlq4=;
-        b=MlhRPjXG3ml1tn40QsGEtrQc98eh84pBz35dGV0jTI8ugmc+9eqvM2EkiizOF0JMfH
-         jWVpf3ab0SXlvD4GrXfoO9Uv6v8WyOgrEoiQI8g7eOKz4NWOdy5mONaejEnKyUAR9dbo
-         XXfWRYkpodEuD+csIVLmMfsmQBOePZxTtiSU3N7cph1Tmm/CmYPvU+w9LqwdXeIdpIX+
-         o/HhM3r3K7LIYt1U1Bn/YoVHZpKKHtDzrE/QuGxmI8zXxiy3ulg0KKrZyzh7Wmzhmh5b
-         hEWGNrd1fvg5rP1fll1c7tlS9PHgGb4GzxoSVAqQqf4e5sICRVazmFT9HLaXRhiwO0ja
-         ytSw==
-X-Gm-Message-State: APjAAAXPrsFfI08tlN7kWhj0ipXuc/9ACcNbCQdmM9Vr/dTQHLHAs24z
-        KP23jUjdE22Wfc+M5xP3DEzISePE1t0RIbItGyI=
-X-Google-Smtp-Source: APXvYqxmg1U6i2mrZxz+NMeb+trPA6IA2c8sI4Ia4SPO7hDWRHxRjy/ut+aK7o53KLgyaDha3OXVlSa1L4bmZvfatOo=
-X-Received: by 2002:a19:800a:: with SMTP id b10mr3864301lfd.15.1572533057261;
- Thu, 31 Oct 2019 07:44:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <1571995035-21889-1-git-send-email-magnus.karlsson@intel.com>
- <87tv7qpdbt.fsf@toke.dk> <CAJ8uoz3BPA41wmT8-Jhhs=kJ=GbsAswSvx2pEmuWJDvh+b+_yw@mail.gmail.com>
- <CAJ+HfNimRqftmKASOdceXFJmgbLvXnNBZATTnfA9LMF2amGzzA@mail.gmail.com>
- <CAADnVQJRe4Pm-Rxx9zobn8YRHh9i+xQp7HX4gidqq9Mse7PJ5g@mail.gmail.com>
- <87lft1ngtn.fsf@toke.dk> <CAADnVQLrg6f_zjvNfiEVfdjcx9+DW_RFjVGetavvMNo=VXAR+g@mail.gmail.com>
- <87imo5ng7w.fsf@toke.dk>
-In-Reply-To: <87imo5ng7w.fsf@toke.dk>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 31 Oct 2019 07:44:04 -0700
-Message-ID: <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without need_wakeup
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
-        John Fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728029AbfJaOuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 10:50:16 -0400
+Received: from mail-eopbgr20075.outbound.protection.outlook.com ([40.107.2.75]:13703
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727841AbfJaOuQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 10:50:16 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aaOtaH4Yh7Smv1jZ3sQ0xLwp0QB4opJ3oKW+U/hQnnQBQDA52KojPJ3bcnj6WhI0Nc3wXoDNX8ymMWKJ/GB0MMIENyV2CaQ8I2hplWl//Fo3nAVvCY7XywwwGHvbPkbuvyfcp3Cn17BehbWjpngjRpA7kH3NiVgoxt1AtCsUbCIECBATlN/0q8R2ZkPNpne3a4tkkrYI5+XeX34nnSYlvOKyah3WRR1MukblctUbhXWaAnbCKTuZDbvOVOxYY5318CrD4ZP8s1PruVCknPoNuX8ZmQt6Gt8mZiMO0AqdU25UXxxusNgTa2vuKtvONP/4DAggCS76h80pO5CExY+5hQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jCzdv03QLD88HBwhD46h1EV0cNa8FJmNESc2zP7AHKU=;
+ b=KcadlvcHE6Lth255QFn4/v5ecwomPyVpiU2w/fxW5xgIbz261hhS6VRmXRr3lDM8t6FDZGsJF+gsB1Aee70oJeduKzSfhu6Dko6PDkMPcrkG6ZYJJkRfTmP4b4Et0SsC0PU9PFaVMd96nTk8nApkgWRZjZESzBCF7SOhdnSQth05kIALPWSUsRm72kKGHrZFeLh4b5y1hFBMLLcCOViU5DiGxkPWmBAvIgN3xmV87cjVAJ2kZKOA2XpA3sqe7FWvAo+eUTm/fwxHGMeHkI80K3s39odPC9Js5u+yqfLYojIiWfpenrrTKgb2uLPQWdZ7uujTErjvrUHkpKf9pA8soA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jCzdv03QLD88HBwhD46h1EV0cNa8FJmNESc2zP7AHKU=;
+ b=LSJE1PgWWu1Wj5KoJuKRUMkDYg1RoMcekYW0KfFneR3chtVPh8Kko4KLVPUQOZKpn48ibWls8SVQ7/7B8KmfTCdyh1oISB7B6GrOwpIHaymn+/bDM7rJz+DEvU9J32ebsLLk3LsmW+2eqP3e3hH4sa/IVzlzODD7kaYgQqWgJMI=
+Received: from AM4PR05MB3313.eurprd05.prod.outlook.com (10.171.189.29) by
+ AM4PR05MB3172.eurprd05.prod.outlook.com (10.171.186.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.24; Thu, 31 Oct 2019 14:50:12 +0000
+Received: from AM4PR05MB3313.eurprd05.prod.outlook.com
+ ([fe80::59bd:e9d7:eaab:b2cc]) by AM4PR05MB3313.eurprd05.prod.outlook.com
+ ([fe80::59bd:e9d7:eaab:b2cc%4]) with mapi id 15.20.2408.016; Thu, 31 Oct 2019
+ 14:50:12 +0000
+From:   Ariel Levkovich <lariel@mellanox.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: RE: [PATCH 2/3] ip: Present the VF VLAN tagging mode
+Thread-Topic: [PATCH 2/3] ip: Present the VF VLAN tagging mode
+Thread-Index: AQHVj3ne4Xs9tw3n4EafaZDxGLzvaqd009jw
+Date:   Thu, 31 Oct 2019 14:50:12 +0000
+Message-ID: <AM4PR05MB33135476A7BB5BB7CC7D91F2BA630@AM4PR05MB3313.eurprd05.prod.outlook.com>
+References: <1572463033-26368-1-git-send-email-lariel@mellanox.com>
+        <1572463033-26368-3-git-send-email-lariel@mellanox.com>
+ <20191030162920.3ec8549d@hermes.lan>
+In-Reply-To: <20191030162920.3ec8549d@hermes.lan>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=lariel@mellanox.com; 
+x-originating-ip: [4.78.163.159]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 12414954-e69b-4e8f-9a05-08d75e11a1fb
+x-ms-traffictypediagnostic: AM4PR05MB3172:|AM4PR05MB3172:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM4PR05MB317222A90187030137A2DF03BA630@AM4PR05MB3172.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1186;
+x-forefront-prvs: 02070414A1
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(346002)(376002)(39860400002)(396003)(199004)(189003)(81156014)(6116002)(33656002)(7736002)(3846002)(305945005)(81166006)(8676002)(74316002)(2906002)(446003)(8936002)(11346002)(66066001)(476003)(478600001)(25786009)(486006)(5660300002)(66476007)(107886003)(316002)(55016002)(66556008)(64756008)(66946007)(54906003)(6246003)(52536014)(6506007)(6436002)(66446008)(186003)(71200400001)(99286004)(229853002)(9686003)(14454004)(102836004)(76116006)(6916009)(4326008)(26005)(7696005)(256004)(71190400001)(86362001)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3172;H:AM4PR05MB3313.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: vUXvE62USVfcwhpHmG3EGabAZaod0s5qhYHiurGUffCZyQc9Jec0R+SIxlQIHry5lGdsHyouqo13YW4sxyUfoT9sPr1GllSKDeYOsFEON92SZie96paLHhNZwek0+3IrZ3/NDZJuRcg/zd0yQSGMyOxMhUXnQ1LTSpJP6xcA6VqFB6WKuVd3nsX2solEwmkZoX/KjzoCsDPg5Xw1oh1frHj+kG5yEDWhTS0iN5YMIqchkXBJEUyCNZSDNjyRURNBbSEvB1sBWwdLoaFTGVeWqmrE6XRIkaBCRhTqbKNjjAvuJY0hHgQ2GB+H11ClkKHbigR5LA6uXZFvPcTGkLarQjZHRSUuvdyXLSjvqJ+9r+WZw4Zk4LeRZmzon3yof3WUtaTHp04u9mVUhZu6Ir5WjVEpHMgx5CpFTNDAoLe37Is6d6KJNOCtP1GARjMS4JCb
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12414954-e69b-4e8f-9a05-08d75e11a1fb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2019 14:50:12.0310
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lYVlVC3k125d9sTaQnF46kO8yu+qOVZXl8gMaGCVTQzlFmjUf4fTyh0/XqkdUYT1cDo6YpWvSS3K0Z9lRVcyMQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3172
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 7:26 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
->
-> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->
-> > On Thu, Oct 31, 2019 at 7:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@=
-redhat.com> wrote:
-> >>
-> >> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
-> >>
-> >> > On Thu, Oct 31, 2019 at 1:03 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@g=
-mail.com> wrote:
-> >> >>
-> >> >> On Thu, 31 Oct 2019 at 08:17, Magnus Karlsson <magnus.karlsson@gmai=
-l.com> wrote:
-> >> >> >
-> >> >> > On Wed, Oct 30, 2019 at 2:36 PM Toke H=C3=B8iland-J=C3=B8rgensen =
-<toke@redhat.com> wrote:
-> >> >> > >
-> >> >> > > Magnus Karlsson <magnus.karlsson@intel.com> writes:
-> >> >> > >
-> >> >> > > > When the need_wakeup flag was added to AF_XDP, the format of =
-the
-> >> >> > > > XDP_MMAP_OFFSETS getsockopt was extended. Code was added to t=
-he
-> >> >> > > > kernel to take care of compatibility issues arrising from run=
-ning
-> >> >> > > > applications using any of the two formats. However, libbpf wa=
-s
-> >> >> > > > not extended to take care of the case when the application/li=
-bbpf
-> >> >> > > > uses the new format but the kernel only supports the old
-> >> >> > > > format. This patch adds support in libbpf for parsing the old
-> >> >> > > > format, before the need_wakeup flag was added, and emulating =
-a
-> >> >> > > > set of static need_wakeup flags that will always work for the
-> >> >> > > > application.
-> >> >> > >
-> >> >> > > Hi Magnus
-> >> >> > >
-> >> >> > > While you're looking at backwards compatibility issues with xsk=
-: libbpf
-> >> >> > > currently fails to compile on a system that has old kernel head=
-ers
-> >> >> > > installed (this is with kernel-headers 5.3):
-> >> >> > >
-> >> >> > > $ echo "#include <bpf/xsk.h>" | gcc -x c -
-> >> >> > > In file included from <stdin>:1:
-> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__nee=
-ds_wakeup=E2=80=99:
-> >> >> > > /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_WAK=
-EUP=E2=80=99 undeclared (first use in this function)
-> >> >> > >    82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
-> >> >> > >       |                     ^~~~~~~~~~~~~~~~~~~~
-> >> >> > > /usr/include/bpf/xsk.h:82:21: note: each undeclared identifier =
-is reported only once for each function it appears in
-> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract_=
-addr=E2=80=99:
-> >> >> > > /usr/include/bpf/xsk.h:173:16: error: =E2=80=98XSK_UNALIGNED_BU=
-F_ADDR_MASK=E2=80=99 undeclared (first use in this function)
-> >> >> > >   173 |  return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
-> >> >> > >       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >> >> > > /usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract_=
-offset=E2=80=99:
-> >> >> > > /usr/include/bpf/xsk.h:178:17: error: =E2=80=98XSK_UNALIGNED_BU=
-F_OFFSET_SHIFT=E2=80=99 undeclared (first use in this function)
-> >> >> > >   178 |  return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
-> >> >> > >       |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >> >> > >
-> >> >> > >
-> >> >> > >
-> >> >> > > How would you prefer to handle this? A patch like the one below=
- will fix
-> >> >> > > the compile errors, but I'm not sure it makes sense semanticall=
-y?
-> >> >> >
-> >> >> > Thanks Toke for finding this. Of course it should be possible to
-> >> >> > compile this on an older kernel, but without getting any of the n=
-ewer
-> >> >> > functionality that is not present in that older kernel.
-> >> >>
-> >> >> Is the plan to support source compatibility for the headers only, o=
-r
-> >> >> the whole the libbpf itself? Is the usecase here, that you've built
-> >> >> libbpf.so with system headers X, and then would like to use the
-> >> >> library on a system with older system headers X~10? XDP sockets? BT=
-F?
-> >> >
-> >> > libbpf has to be backward and forward compatible.
-> >> > Once compiled it has to run on older and newer kernels.
-> >> > Conditional compilation is not an option obviously.
-> >>
-> >> So what do we do, then? Redefine the constants in libbpf/xsh.h if
-> >> they're not in the kernel header file?
-> >
-> > why? How and whom it will help?
-> > To libbpf.rpm creating person or to end user?
->
-> Anyone who tries to compile a new libbpf against an older kernel. You're
-> saying yourself that "libbpf has to be backward and forward compatible".
-> Surely that extends to compile time as well as runtime?
-
-how old that older kernel?
-Does it have up-to-date bpf.h in /usr/include ?
-Also consider that running kernel is often not the same
-thing as installed in /usr/include
-vmlinux and /usr/include are different packages.
+On Wed, 30 Oct 2019 19:29:32 +0000
+Stephen Hemminger <stephen@networkplumber.org> wrote
+> On Wed, 30 Oct 2019 19:17:32 +0000
+> Ariel Levkovich <lariel@mellanox.com> wrote:
+>=20
+> > +		if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_TRUNK)
+> > +			print_string(PRINT_ANY,
+> > +				     "vlan-mode",
+> > +				      ", vlan-mode %s",
+> > +				      "trunk");
+> > +		else if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_VST)
+> > +			print_string(PRINT_ANY,
+> > +				     "vlan-mode",
+> > +				     ", vlan_mode %s",
+> > +				     "vst");
+> > +		else if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_VGT)
+> > +			print_string(PRINT_ANY,
+> > +				     "vlan-mode",
+> > +				     ", vlan-mode %s",
+> > +				     "vgt");
+>=20
+> This seems like you want something like:
+>=20
+> 		print_string(PRINT_ANY, "vlan-mode", ", vlan-mode %s",
+> 				vlan_mode_str(vlan_mode->mode);
+>=20
+> and why the comma in the output? the convention for ip commands is that
+> the output format is equivalent to the command line.
+Thanks for your review Stephen.
+I'll fix the if/else to the suggested line.
+I see the comma is used when presenting other VF attributes as well like li=
+nk-state, spoof, trust.
+So what is the right convention here?
