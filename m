@@ -2,82 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72F66EAB16
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 08:43:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4F5EAB1A
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 08:50:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbfJaHnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 03:43:14 -0400
-Received: from smtp10.smtpout.orange.fr ([80.12.242.132]:22948 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726698AbfJaHnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 03:43:14 -0400
-Received: from localhost.localdomain ([93.23.12.90])
-        by mwinf5d87 with ME
-        id L7j9210091waAWt037j9B8; Thu, 31 Oct 2019 08:43:12 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 31 Oct 2019 08:43:12 +0100
-X-ME-IP: 93.23.12.90
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, mareklindner@neomailbox.ch,
-        sw@simonwunderlich.de, a@unstable.cc, sven@narfation.org
-Cc:     b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] batman-adv: Simplify 'batadv_v_ogm_aggr_list_free()'
-Date:   Thu, 31 Oct 2019 08:42:55 +0100
-Message-Id: <20191031074255.3234-1-christophe.jaillet@wanadoo.fr>
+        id S1726827AbfJaHuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 03:50:00 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:52590 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbfJaHuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 03:50:00 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9V7nS7S005955;
+        Thu, 31 Oct 2019 07:49:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2019-08-05; bh=Yiz8xWkE59Ebiz6cJJL8S+Rlio/Ca1vv1Vy9Fuvwwro=;
+ b=hfW3zcOsNbxz5+cnsfR9GVzh6Mcu7RV2zU/WFjtHSBXyvAU+B56+H2fsJTuE7gP6B9n4
+ s07jKEiOZhs5KhFzeUF3p95wdpfTqberQoamQVQbSZhk+by/53pwOcIbQPdvn3CG9DKi
+ 4vJg3DnpPmzkIcQxa1ruWOPSwpXB4o6RyfZTO9O9D3tzsaLgAmmRb8FKmoHoC8IE8rKf
+ X/9HYpoZXDa4AwQ2SU7tlC+uN/mEJypt+d7LhLm4C/1sbfBvFki/DKRbEooSNjgStrLg
+ vYpDXmNSQCZYtSNg5gVPJmnz5UnmhdgBSGqIZ+VCOXi9SPhCUZZWSS1UUFBd5NiLLzaL cw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2vxwhfsc4w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 31 Oct 2019 07:49:45 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9V7nAHw070013;
+        Thu, 31 Oct 2019 07:49:44 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 2vysbtp756-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 31 Oct 2019 07:49:44 +0000
+Received: from abhmp0021.oracle.com (abhmp0021.oracle.com [141.146.116.27])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x9V7nhAO023978;
+        Thu, 31 Oct 2019 07:49:43 GMT
+Received: from host5.lan (/77.138.183.59)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 31 Oct 2019 00:49:43 -0700
+From:   Yuval Shaia <yuval.shaia@oracle.com>
+To:     tariqt@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, dotanb@dev.mellanox.co.il,
+        eli@mellanox.co.il, vlad@mellanox.com
+Cc:     Yuval Shaia <yuval.shaia@oracle.com>
+Subject: [PATCH] mlx4_core: fix wrong comment about the reason of subtract one from the max_cqes
+Date:   Thu, 31 Oct 2019 09:49:31 +0200
+Message-Id: <20191031074931.20715-1-yuval.shaia@oracle.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9426 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=882
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1910310078
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9426 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=969 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1910310078
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use 'skb_queue_purge()' instead of re-implementing it.
+From: Dotan Barak <dotanb@dev.mellanox.co.il>
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Dotan Barak <dotanb@dev.mellanox.co.il>
+Signed-off-by: Eli Cohen <eli@mellanox.co.il>
+Signed-off-by: Vladimir Sokolovsky <vlad@mellanox.com>
+Signed-off-by: Yuval Shaia <yuval.shaia@oracle.com>
 ---
-BTW, I don't really see the need of 'aggr_list_lock'. I think that the code
-could be refactored to drop 'aggr_list_lock' and use the already existing
-'aggr_list.lock'.
-This would require to use the lock-free __skb_... variants when working on
-'aggr_list'.
+ drivers/net/ethernet/mellanox/mlx4/main.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-As far as I understand, the use of 'aggr_list' and 'aggr_list_lock' is
-limited to bat_v_ogm.c'. So the impact would be limited.
-This would avoid a useless locking that never fails, so the performance
-gain should be really limited.
-
-So, I'm not sure this would be more readable and/or future proof, so
-I just note it here to open the discussion.
-
-If interested, I have a (compiled tested only) patch that implements this
-change.
----
- net/batman-adv/bat_v_ogm.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/net/batman-adv/bat_v_ogm.c b/net/batman-adv/bat_v_ogm.c
-index dc4f7430cb5a..b841c83d9c3b 100644
---- a/net/batman-adv/bat_v_ogm.c
-+++ b/net/batman-adv/bat_v_ogm.c
-@@ -177,13 +177,9 @@ static bool batadv_v_ogm_queue_left(struct sk_buff *skb,
-  */
- static void batadv_v_ogm_aggr_list_free(struct batadv_hard_iface *hard_iface)
- {
--	struct sk_buff *skb;
--
- 	lockdep_assert_held(&hard_iface->bat_v.aggr_list_lock);
- 
--	while ((skb = skb_dequeue(&hard_iface->bat_v.aggr_list)))
--		kfree_skb(skb);
--
-+	skb_queue_purge(&hard_iface->bat_v.aggr_list);
- 	hard_iface->bat_v.aggr_len = 0;
- }
- 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+index fce9b3a24347..dcf6b4628c58 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/main.c
++++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+@@ -514,8 +514,7 @@ static int mlx4_dev_cap(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap)
+ 	dev->caps.max_rq_desc_sz     = dev_cap->max_rq_desc_sz;
+ 	/*
+ 	 * Subtract 1 from the limit because we need to allocate a
+-	 * spare CQE so the HCA HW can tell the difference between an
+-	 * empty CQ and a full CQ.
++	 * spare CQE to enable resizing the CQ
+ 	 */
+ 	dev->caps.max_cqes	     = dev_cap->max_cq_sz - 1;
+ 	dev->caps.reserved_cqs	     = dev_cap->reserved_cqs;
 -- 
 2.20.1
 
