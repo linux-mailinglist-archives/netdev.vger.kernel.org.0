@@ -2,141 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E2EDEB6DD
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 19:23:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D439DEB6F3
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 19:31:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729252AbfJaSXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 14:23:51 -0400
-Received: from smtprelay0208.hostedemail.com ([216.40.44.208]:42022 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726602AbfJaSXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 14:23:50 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 0AF5A8384360;
-        Thu, 31 Oct 2019 18:23:49 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::,RULES_HIT:41:355:379:541:800:960:966:973:988:989:1260:1311:1314:1345:1437:1515:1534:1544:1711:1730:1747:1777:1792:1801:2196:2199:2393:2559:2562:3138:3139:3140:3141:3142:3354:3865:3866:3867:3868:3870:3872:4321:4385:4605:5007:6261:7996:10004:11026:11232:11473:11657:11658:11914:12043:12050:12297:12438:12555:12679:12895:12986:13894:14096:14181:14394:14721:21080:21451:21627:21740:21810:30054:30055,0,RBL:47.151.135.224:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:26,LUA_SUMMARY:none
-X-HE-Tag: plane01_21290db56310d
-X-Filterd-Recvd-Size: 4792
-Received: from joe-laptop.perches.com (unknown [47.151.135.224])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 31 Oct 2019 18:23:47 +0000 (UTC)
-From:   Joe Perches <joe@perches.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jaroslav Kysela <perex@perex.cz>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: [PATCH] hp100: Move 100BaseVG AnyLAN driver to staging
-Date:   Thu, 31 Oct 2019 11:23:37 -0700
-Message-Id: <4024b52c917975cebde58afc094eed1a107622c2.1572545956.git.joe@perches.com>
-X-Mailer: git-send-email 2.24.0.rc2
+        id S1729312AbfJaSbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 14:31:12 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:44956 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729197AbfJaSbL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 14:31:11 -0400
+Received: by mail-ot1-f67.google.com with SMTP id n48so6232351ota.11
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 11:31:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ho/4YEZoRvORePbPCV0egD5l/FJ8zmCku5TAd5/mPRU=;
+        b=dtVUVHVdyINxxDxTIBzwOnQrrZijYVA9jJcLmoBXcfQLnPySuiYy7Pk46A5/n4c2wr
+         EtX26WRlrw3qzO6O2NSnIr4lasc0Mu9FzUY1P6oqW8qxRt4mMrIz9kRzAJGccWaVF1VJ
+         zfpipmpvJ59l3zYW69zV2ls5ehSKrO+1BSXSdyg1reZp8Q8FRiH5P+UojNAyI39f4cnz
+         f7d/tCwfDEqYaILhhj2crdeKfD6UEqjI+WKg4+7U45w/egO3EyzgJsqa2ukE7HokEWSS
+         ZXO5nySMNnEwVqupJL33GdATbHuqViUNzuZmga3ZtUvPnUvLjm+4dpwkd2zRTUodKxoc
+         Yckg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ho/4YEZoRvORePbPCV0egD5l/FJ8zmCku5TAd5/mPRU=;
+        b=oRAGR459O6NpUegoGnILcAE8KL03kt+KjEf5KLOGzvVyp6ukQ1al4EHc+SL5T/AyEL
+         a/PlsEse2BSzrvt15+iZIdBA7aPgvbXV22/d+C659JHtXanQWATIlwLkg7eOYtceTAff
+         l9S1qX3ITz4NNKs8hMNyNdg2j9Nuj9iY/K8qTnkjzL4ppGxQCnKRoRf73GocHDX7Peig
+         yHAmeiTmevkXpdbrPyaxlrNJHu0l3kmUa5YuIdxsjdxZTNw3a2sd5SUpYCDfInbckWVU
+         1/K3z3mmjVwa6zD8yxRqsuaXGEOMfNnaUBMVy31jgli1jepuS9/EdhrqvdnnehWbx7fY
+         zqEA==
+X-Gm-Message-State: APjAAAWfe6Eo5E8dIasiqmTF07qaXtQqQAd3WXqduHe8/5S2LlYa1dXv
+        AutGmcMdJGl0gpeiNLZ0anD+uwVhHYg2BBOSIj9xSA==
+X-Google-Smtp-Source: APXvYqxJUOawO0Q+AWAaEtfXX8l2s4fXPAWXSxF0AxqtmryydLWJl7LR/JSYbjdz58woMGbOcibjm5P4bwzD/KTKZGI=
+X-Received: by 2002:a9d:3675:: with SMTP id w108mr5765750otb.81.1572546668583;
+ Thu, 31 Oct 2019 11:31:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
+ <20191024205027.GF3622521@devbig004.ftw2.facebook.com> <CALvZod6=B-gMJJxhMRt6k5eRwB-3zdgJR5419orTq8-+36wbMQ@mail.gmail.com>
+ <11f688a6-0288-0ec4-f925-7b8f16ec011b@gmail.com>
+In-Reply-To: <11f688a6-0288-0ec4-f925-7b8f16ec011b@gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Thu, 31 Oct 2019 11:30:57 -0700
+Message-ID: <CALvZod6Sw-2Wh0KEBiMgGZ1c+2nFW0ueL_4TM4d=Z0JcbvSXrw@mail.gmail.com>
+Subject: Re: [PATCH v2] net: fix sk_page_frag() recursion from memory reclaim
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Tejun Heo <tj@kernel.org>, Michal Hocko <mhocko@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Kernel Team <kernel-team@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>, Mel Gorman <mgorman@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-100BaseVG AnyLAN hasn't been useful since 1996 or so and even then
-didn't sell many devices.  It's unlikely any are still in use.
+On Thu, Oct 31, 2019 at 10:47 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 10/31/19 10:35 AM, Shakeel Butt wrote:
+> > +Michal Hocko
+> >
+> > On Thu, Oct 24, 2019 at 1:50 PM Tejun Heo <tj@kernel.org> wrote:
+> >>
+> >> sk_page_frag() optimizes skb_frag allocations by using per-task
+> >> skb_frag cache when it knows it's the only user.  The condition is
+> >> determined by seeing whether the socket allocation mask allows
+> >> blocking - if the allocation may block, it obviously owns the task's
+> >> context and ergo exclusively owns current->task_frag.
+> >>
+> >> Unfortunately, this misses recursion through memory reclaim path.
+> >> Please take a look at the following backtrace.
+> >>
+> >>  [2] RIP: 0010:tcp_sendmsg_locked+0xccf/0xe10
+> >>      ...
+> >>      tcp_sendmsg+0x27/0x40
+> >>      sock_sendmsg+0x30/0x40
+> >>      sock_xmit.isra.24+0xa1/0x170 [nbd]
+> >>      nbd_send_cmd+0x1d2/0x690 [nbd]
+> >>      nbd_queue_rq+0x1b5/0x3b0 [nbd]
+> >>      __blk_mq_try_issue_directly+0x108/0x1b0
+> >>      blk_mq_request_issue_directly+0xbd/0xe0
+> >>      blk_mq_try_issue_list_directly+0x41/0xb0
+> >>      blk_mq_sched_insert_requests+0xa2/0xe0
+> >>      blk_mq_flush_plug_list+0x205/0x2a0
+> >>      blk_flush_plug_list+0xc3/0xf0
+> >>  [1] blk_finish_plug+0x21/0x2e
+> >>      _xfs_buf_ioapply+0x313/0x460
+> >>      __xfs_buf_submit+0x67/0x220
+> >>      xfs_buf_read_map+0x113/0x1a0
+> >>      xfs_trans_read_buf_map+0xbf/0x330
+> >>      xfs_btree_read_buf_block.constprop.42+0x95/0xd0
+> >>      xfs_btree_lookup_get_block+0x95/0x170
+> >>      xfs_btree_lookup+0xcc/0x470
+> >>      xfs_bmap_del_extent_real+0x254/0x9a0
+> >>      __xfs_bunmapi+0x45c/0xab0
+> >>      xfs_bunmapi+0x15/0x30
+> >>      xfs_itruncate_extents_flags+0xca/0x250
+> >>      xfs_free_eofblocks+0x181/0x1e0
+> >>      xfs_fs_destroy_inode+0xa8/0x1b0
+> >>      destroy_inode+0x38/0x70
+> >>      dispose_list+0x35/0x50
+> >>      prune_icache_sb+0x52/0x70
+> >>      super_cache_scan+0x120/0x1a0
+> >>      do_shrink_slab+0x120/0x290
+> >>      shrink_slab+0x216/0x2b0
+> >>      shrink_node+0x1b6/0x4a0
+> >>      do_try_to_free_pages+0xc6/0x370
+> >>      try_to_free_mem_cgroup_pages+0xe3/0x1e0
+> >>      try_charge+0x29e/0x790
+> >>      mem_cgroup_charge_skmem+0x6a/0x100
+> >>      __sk_mem_raise_allocated+0x18e/0x390
+> >>      __sk_mem_schedule+0x2a/0x40
+> >>  [0] tcp_sendmsg_locked+0x8eb/0xe10
+> >>      tcp_sendmsg+0x27/0x40
+> >>      sock_sendmsg+0x30/0x40
+> >>      ___sys_sendmsg+0x26d/0x2b0
+> >>      __sys_sendmsg+0x57/0xa0
+> >>      do_syscall_64+0x42/0x100
+> >>      entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> >>
+> >> In [0], tcp_send_msg_locked() was using current->page_frag when it
+> >> called sk_wmem_schedule().  It already calculated how many bytes can
+> >> be fit into current->page_frag.  Due to memory pressure,
+> >> sk_wmem_schedule() called into memory reclaim path which called into
+> >> xfs and then IO issue path.  Because the filesystem in question is
+> >> backed by nbd, the control goes back into the tcp layer - back into
+> >> tcp_sendmsg_locked().
+> >>
+> >> nbd sets sk_allocation to (GFP_NOIO | __GFP_MEMALLOC) which makes
+> >> sense - it's in the process of freeing memory and wants to be able to,
+> >> e.g., drop clean pages to make forward progress.  However, this
+> >> confused sk_page_frag() called from [2].  Because it only tests
+> >> whether the allocation allows blocking which it does, it now thinks
+> >> current->page_frag can be used again although it already was being
+> >> used in [0].
+> >>
+> >> After [2] used current->page_frag, the offset would be increased by
+> >> the used amount.  When the control returns to [0],
+> >> current->page_frag's offset is increased and the previously calculated
+> >> number of bytes now may overrun the end of allocated memory leading to
+> >> silent memory corruptions.
+> >>
+> >> Fix it by adding gfpflags_normal_context() which tests sleepable &&
+> >> !reclaim and use it to determine whether to use current->task_frag.
+> >>
+> >> v2: Eric didn't like gfp flags being tested twice.  Introduce a new
+> >>     helper gfpflags_normal_context() and combine the two tests.
+> >>
+> >> Signed-off-by: Tejun Heo <tj@kernel.org>
+> >> Cc: Josef Bacik <josef@toxicpanda.com>
+> >> Cc: Eric Dumazet <eric.dumazet@gmail.com>
+> >> Cc: stable@vger.kernel.org
+> >> ---
+> >>  include/linux/gfp.h |   23 +++++++++++++++++++++++
+> >>  include/net/sock.h  |   11 ++++++++---
+> >>  2 files changed, 31 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> >> index fb07b503dc45..61f2f6ff9467 100644
+> >> --- a/include/linux/gfp.h
+> >> +++ b/include/linux/gfp.h
+> >> @@ -325,6 +325,29 @@ static inline bool gfpflags_allow_blocking(const gfp_t gfp_flags)
+> >>         return !!(gfp_flags & __GFP_DIRECT_RECLAIM);
+> >>  }
+> >>
+> >> +/**
+> >> + * gfpflags_normal_context - is gfp_flags a normal sleepable context?
+> >> + * @gfp_flags: gfp_flags to test
+> >> + *
+> >> + * Test whether @gfp_flags indicates that the allocation is from the
+> >> + * %current context and allowed to sleep.
+> >> + *
+> >> + * An allocation being allowed to block doesn't mean it owns the %current
+> >> + * context.  When direct reclaim path tries to allocate memory, the
+> >> + * allocation context is nested inside whatever %current was doing at the
+> >> + * time of the original allocation.  The nested allocation may be allowed
+> >> + * to block but modifying anything %current owns can corrupt the outer
+> >> + * context's expectations.
+> >> + *
+> >> + * %true result from this function indicates that the allocation context
+> >> + * can sleep and use anything that's associated with %current.
+> >> + */
+> >> +static inline bool gfpflags_normal_context(const gfp_t gfp_flags)
+> >> +{
+> >> +       return (gfp_flags & (__GFP_DIRECT_RECLAIM | __GFP_MEMALLOC)) ==
+> >> +               __GFP_DIRECT_RECLAIM;
+> >
+> > I think we should be checking PF_MEMALLOC here instead. Something like:
+> >
+> > return gfpflags_allow_blocking(gfp_flags) && !(current->flags & PF_MEMALLOC);
+> >
+> > In my limited understanding, __GFP_MEMALLOC gives access to reserve
+> > but we have overloaded PF_MEMALLOC to also define the reclaim context.
+> > There are PF_MEMALLOC users which does not use __GFP_MEMALLOC like
+> > iscsi_sw_tcp_pdu_xmit() which can call sock_sendmsg().
+>
+> Why would this layer not set sk->sk_allocation to GFP_ATOMIC ?
+>
+> And it also might call sk_set_memalloc() too.
+>
+> Please double check scsi layer, I am pretty sure it did well at some point.
+>
 
-Move the driver to staging with the intent of removing it altogether
-one day.
+Yes, you are right, quoted the wrong example. SCSI is indeed setting
+sk->sk_allocation to GFP_ATOMIC and sk_set_memalloc() in
+iscsi_sw_tcp_conn_bind().
 
-Signed-off-by: Joe Perches <joe@perches.com>
----
- MAINTAINERS                                   | 4 ++--
- drivers/net/ethernet/Kconfig                  | 1 -
- drivers/net/ethernet/Makefile                 | 1 -
- drivers/staging/Kconfig                       | 2 ++
- drivers/staging/Makefile                      | 1 +
- drivers/{net/ethernet => staging}/hp/Kconfig  | 0
- drivers/{net/ethernet => staging}/hp/Makefile | 0
- drivers/{net/ethernet => staging}/hp/hp100.c  | 0
- drivers/{net/ethernet => staging}/hp/hp100.h  | 0
- 9 files changed, 5 insertions(+), 4 deletions(-)
- rename drivers/{net/ethernet => staging}/hp/Kconfig (100%)
- rename drivers/{net/ethernet => staging}/hp/Makefile (100%)
- rename drivers/{net/ethernet => staging}/hp/hp100.c (100%)
- rename drivers/{net/ethernet => staging}/hp/hp100.h (100%)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c6c34d..bea725 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7444,8 +7444,8 @@ F:	drivers/platform/x86/tc1100-wmi.c
- 
- HP100:	Driver for HP 10/100 Mbit/s Voice Grade Network Adapter Series
- M:	Jaroslav Kysela <perex@perex.cz>
--S:	Maintained
--F:	drivers/net/ethernet/hp/hp100.*
-+S:	Obsolete
-+F:	drivers/staging/hp/hp100.*
- 
- HPET:	High Precision Event Timers driver
- M:	Clemens Ladisch <clemens@ladisch.de>
-diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
-index e8e9c16..4ded81 100644
---- a/drivers/net/ethernet/Kconfig
-+++ b/drivers/net/ethernet/Kconfig
-@@ -78,7 +78,6 @@ source "drivers/net/ethernet/freescale/Kconfig"
- source "drivers/net/ethernet/fujitsu/Kconfig"
- source "drivers/net/ethernet/google/Kconfig"
- source "drivers/net/ethernet/hisilicon/Kconfig"
--source "drivers/net/ethernet/hp/Kconfig"
- source "drivers/net/ethernet/huawei/Kconfig"
- source "drivers/net/ethernet/i825xx/Kconfig"
- source "drivers/net/ethernet/ibm/Kconfig"
-diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
-index 05abeb..f8f38d 100644
---- a/drivers/net/ethernet/Makefile
-+++ b/drivers/net/ethernet/Makefile
-@@ -41,7 +41,6 @@ obj-$(CONFIG_NET_VENDOR_FREESCALE) += freescale/
- obj-$(CONFIG_NET_VENDOR_FUJITSU) += fujitsu/
- obj-$(CONFIG_NET_VENDOR_GOOGLE) += google/
- obj-$(CONFIG_NET_VENDOR_HISILICON) += hisilicon/
--obj-$(CONFIG_NET_VENDOR_HP) += hp/
- obj-$(CONFIG_NET_VENDOR_HUAWEI) += huawei/
- obj-$(CONFIG_NET_VENDOR_IBM) += ibm/
- obj-$(CONFIG_NET_VENDOR_INTEL) += intel/
-diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
-index 6f1fa4..333308 100644
---- a/drivers/staging/Kconfig
-+++ b/drivers/staging/Kconfig
-@@ -125,4 +125,6 @@ source "drivers/staging/exfat/Kconfig"
- 
- source "drivers/staging/qlge/Kconfig"
- 
-+source "drivers/staging/hp/Kconfig"
-+
- endif # STAGING
-diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index a90f9b3..e4943c 100644
---- a/drivers/staging/Makefile
-+++ b/drivers/staging/Makefile
-@@ -53,3 +53,4 @@ obj-$(CONFIG_UWB)		+= uwb/
- obj-$(CONFIG_USB_WUSB)		+= wusbcore/
- obj-$(CONFIG_EXFAT_FS)		+= exfat/
- obj-$(CONFIG_QLGE)		+= qlge/
-+obj-$(CONFIG_NET_VENDOR_HP)	+= hp/
-diff --git a/drivers/net/ethernet/hp/Kconfig b/drivers/staging/hp/Kconfig
-similarity index 100%
-rename from drivers/net/ethernet/hp/Kconfig
-rename to drivers/staging/hp/Kconfig
-diff --git a/drivers/net/ethernet/hp/Makefile b/drivers/staging/hp/Makefile
-similarity index 100%
-rename from drivers/net/ethernet/hp/Makefile
-rename to drivers/staging/hp/Makefile
-diff --git a/drivers/net/ethernet/hp/hp100.c b/drivers/staging/hp/hp100.c
-similarity index 100%
-rename from drivers/net/ethernet/hp/hp100.c
-rename to drivers/staging/hp/hp100.c
-diff --git a/drivers/net/ethernet/hp/hp100.h b/drivers/staging/hp/hp100.h
-similarity index 100%
-rename from drivers/net/ethernet/hp/hp100.h
-rename to drivers/staging/hp/hp100.h
--- 
-2.24.0.rc2
-
+Basically what I wanted to say that MM treats PF_MEMALLOC as the
+reclaim context while __GFP_MEMALLOC just tells to give access to the
+reserves. As gfpflags_allow_blocking() can be used beyond net
+subsystem, my only concern is its potential usage under PF_MEMALLOC
+context but without __GFP_MEMALLOC.
