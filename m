@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79CDAEAB5E
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 09:10:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DEDEAB6D
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 09:15:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726911AbfJaIKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 04:10:54 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:44058 "EHLO
+        id S1726982AbfJaIPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 04:15:41 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:46352 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726747AbfJaIKy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 04:10:54 -0400
+        with ESMTP id S1726774AbfJaIPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 04:15:40 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id DC67960927; Thu, 31 Oct 2019 08:10:53 +0000 (UTC)
+        id EBB8C60540; Thu, 31 Oct 2019 08:15:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572509453;
-        bh=R9a6NR3iic6qgOQYqHn6WkolVQpxamcIauDJvCJETFM=;
+        s=default; t=1572509739;
+        bh=sp/YuXqKxRq6BSEULbjzuuxJCs1WunIjmlNVKfVpHes=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=Lcngf0gf9g3rjV5XH2/y+eg2nBUMtriTRHTdUi0IEW2fxOtvjoK1KhMRP3xbmixrN
-         4incWqzdPw/KQwlXqWWzSIo+r7VQxG72neifdM7Y58mq3Da5O0PdE6QfyN86OG/zDs
-         extaDTNJWtFf244PX0Ji6c30bNRCBPyEnyufweNo=
+        b=Ijtel4EshkgBpjFvlxbBWbrsq99aKVFA9ocGJUpdzSAELVKxJ18sE7KH4Q+7aV/1b
+         M1jK+pCdu/Mj7APEE21LMra4oiJ43nL0fqIMKb/k/1ubyb3muaMokN7m4GzQalxkwU
+         D+pp5Sp1Y4jvQQeFWQTJ2u69BQADe37ENL9utD/U=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,52 +30,50 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8314360540;
-        Thu, 31 Oct 2019 08:10:51 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id BEB8860540;
+        Thu, 31 Oct 2019 08:15:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572509453;
-        bh=R9a6NR3iic6qgOQYqHn6WkolVQpxamcIauDJvCJETFM=;
+        s=default; t=1572509739;
+        bh=sp/YuXqKxRq6BSEULbjzuuxJCs1WunIjmlNVKfVpHes=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=hRQQ+qSITwh1W+k4EdLFooP54FHyVM7qCdTNe4WZ7Oc7vo9YyyI5QSM8y7m49/wQX
-         F17nPZ7P9oJl7D8iMCtMpKITmrDzAcAVuqiozxBcck85Hz5YxVAdn5UV1WGVdUfLvv
-         IAhyNuMYVf8S5U9qJgl9m4JKUxAHg5bygNZzF2qk=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8314360540
+        b=KFKcnpd4XBYxIcUmwPGE6RZ1tg+eZBxF6Dtqgwrmo7hQePpVg+sIndWrFmx6Zdq4l
+         2dt/+9m/mJS53yskmVY1pk84HKYXeINz9KW8cRDwflQkvx9vuepmLpWnTKukZlau7R
+         BMjCc4KC6cpdfXyCZaP7KxuVAIZcJ9MJ3PMfY+o0=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BEB8860540
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mt7601u: use DEFINE_DEBUGFS_ATTRIBUTE to define debugfs
- fops
+Subject: Re: [PATCH] ath10k: remove unneeded semicolon
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1572422924-58878-1-git-send-email-zhongjiang@huawei.com>
-References: <1572422924-58878-1-git-send-email-zhongjiang@huawei.com>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <kubakici@wp.pl>, <davem@davemloft.net>, <matthias.bgg@gmail.com>,
+In-Reply-To: <20191025091041.34056-1-yuehaibing@huawei.com>
+References: <20191025091041.34056-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <davem@davemloft.net>, <ath10k@lists.infradead.org>,
         <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <zhongjiang@huawei.com>
+        <linux-kernel@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191031081053.DC67960927@smtp.codeaurora.org>
-Date:   Thu, 31 Oct 2019 08:10:53 +0000 (UTC)
+Message-Id: <20191031081539.EBB8C60540@smtp.codeaurora.org>
+Date:   Thu, 31 Oct 2019 08:15:39 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhong jiang <zhongjiang@huawei.com> wrote:
+YueHaibing <yuehaibing@huawei.com> wrote:
 
-> It is more clear to use DEFINE_DEBUGFS_ATTRIBUTE to define debugfs file
-> operation rather than DEFINE_SIMPLE_ATTRIBUTE.
+> remove unneeded semicolon.
 > 
-> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
-> Acked-by: Jakub Kicinski <kubakici@wp.pl>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Patch applied to wireless-drivers-next.git, thanks.
+Patch applied to ath-next branch of ath.git, thanks.
 
-086ddf860650 mt7601u: use DEFINE_DEBUGFS_ATTRIBUTE to define debugfs fops
+0dc269314a25 ath10k: remove unneeded semicolon
 
 -- 
-https://patchwork.kernel.org/patch/11219173/
+https://patchwork.kernel.org/patch/11211787/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
