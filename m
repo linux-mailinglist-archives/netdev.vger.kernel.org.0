@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44485EACBC
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 10:43:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5F6AEACBE
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 10:43:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727312AbfJaJnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 05:43:02 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:43717 "EHLO
+        id S1727334AbfJaJnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 05:43:04 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:49449 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727308AbfJaJnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 05:43:01 -0400
+        by vger.kernel.org with ESMTP id S1727308AbfJaJnD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 05:43:03 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id CA93F21FBC;
-        Thu, 31 Oct 2019 05:43:00 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 91BC421FB5;
+        Thu, 31 Oct 2019 05:43:02 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 31 Oct 2019 05:43:00 -0400
+  by compute3.internal (MEProxy); Thu, 31 Oct 2019 05:43:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=F0JjFYDaMIhE+96IXBrF5BNy3hQORan7qxgBZ6sftj4=; b=B+GTwnaD
-        i4lG3f8LHWPlZNy1VHrbkA/hvdx1zpA6zbiAhIf2SMnIL1Fs8GgWDo9xuFNtVflF
-        n0g41dkl7Aevpk/wbKYeP8fMQkYTlDGbpRto4EeTQUa+Rh73vRUxRevLffRPOZMp
-        y6M/RADW08BMb7CGRtC+VJXSgF36+FhygES/YBqdnyFYVrq2MmOKKhBEKCNzoBA4
-        gDr3X3mRHrob2t4JgPgqFV2yQRbEE6VGjlhyiRN3ovb2gQvFGdykpKVjaBi4IpQP
-        3BRY0Fh0471I9KzcsDg863PhXWc6R/XvwS0pLOkjY0Am49h5r3su4B37LOlC7e50
-        9vYFSm+u11vnJw==
-X-ME-Sender: <xms:pKy6XWrUrQ1gOmI5qiHGWWL923H9wgyMbbezZy9sfUG84FKchrRAfw>
+        fm1; bh=yP6hAFlBf6S3kDoOkhJKkE66Brjph8rbAGKxcvOCDas=; b=YECAChbc
+        PAzdKgDRdN+OyEsssXztB6zCRSnJqiDszpyJxETShi5bkvvYAEvw0BO/g9xTHXry
+        oljkZzoSQ88tpkybu2t9tg5NccrkjD5saZ/ybhaGydGXJlgfKkfhvcpXDAsaruE5
+        qOmvQF/pNkgoLAClwH0Iq9jrRbwogzkLhUjGHxsVNmcGpescyP8UadxYk/kPYCjY
+        MMKSiRCCVgAoazpZwV3H1/nWvpl/B/r9EU4YRWBl6vDjiqPN1oorvmCwvP+WVUKN
+        kCeio1cm4jlrBluZPAo+Ho68EizCdeZbUU4H+e/K5nlIPpSWEJT9Kb1QWukiG9ks
+        YQIameHI0ZD8TA==
+X-ME-Sender: <xms:pqy6XcTa8J9AUav2nbv8ZJGspayxdgbeJp6K1P4pPTodA5-GaLaC9w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddthedgtdehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddthedgtdehucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpedutd
-X-ME-Proxy: <xmx:pKy6XY6it17U2j8R10xlw5_366OQo03lF8kMr-KCFEbXFECrvG4fog>
-    <xmx:pKy6XWO3zhAnyWgoW4PMS3RKtKEGfFDDEd97p7iiAST1kzlE8w3_Zg>
-    <xmx:pKy6XaMQCtkzWZNPXW68FBOPLF6S83eFlcUP6KtoTOjjuk87L_FkPg>
-    <xmx:pKy6XX5SgxTRBybr31ttC7n6paku6bL9VcjFKZINAbzWBsGWKQe-_A>
+X-ME-Proxy: <xmx:pqy6XeAy7sNRLY5JkkuQYJ8OZXucqga7OGApMXZPynhbew-cMSUFpw>
+    <xmx:pqy6XU3WS1b3KJHznD6CZSAKiEkDqgrJ86h9xNI_tyJY6PJ3xJ3TIA>
+    <xmx:pqy6XUV2zkT5YO60WSR9ifFd88UNnXLpMKfsqT0rfp93HCkKLeIhmA>
+    <xmx:pqy6XaikqY3nHM5Uf3AaDrStmzf-mbdwvoSXgNB5VeuRMW-VGCrVoA>
 Received: from localhost.localdomain (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E10CA80064;
-        Thu, 31 Oct 2019 05:42:58 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id C33E28006A;
+        Thu, 31 Oct 2019 05:43:00 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 11/16] mlxsw: spectrum: Introduce resource for getting offset of 4 lanes split port
-Date:   Thu, 31 Oct 2019 11:42:16 +0200
-Message-Id: <20191031094221.17526-12-idosch@idosch.org>
+Subject: [PATCH net-next 12/16] mlxsw: spectrum: Remember split base local port and use it in unsplit
+Date:   Thu, 31 Oct 2019 11:42:17 +0200
+Message-Id: <20191031094221.17526-13-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191031094221.17526-1-idosch@idosch.org>
 References: <20191031094221.17526-1-idosch@idosch.org>
@@ -61,50 +61,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-In Spectrum-3 the modules have 8 lanes, so split by count 2 results in
-two split ports each of 4 lanes. Add a resource that can be used to
-obtain local port offset in that case.
+Don't compute the original base local port during unsplit, rather
+remember it in mlxsw_sp_port structure during split port creation.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Shalom Toledo <shalomt@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/resources.h | 2 ++
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c  | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 16 +++++++---------
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h |  1 +
+ 2 files changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/resources.h b/drivers/net/ethernet/mellanox/mlxsw/resources.h
-index 85f919fe851b..6534184cb942 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/resources.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/resources.h
-@@ -26,6 +26,7 @@ enum mlxsw_res_id {
- 	MLXSW_RES_ID_MAX_LAG_MEMBERS,
- 	MLXSW_RES_ID_LOCAL_PORTS_IN_1X,
- 	MLXSW_RES_ID_LOCAL_PORTS_IN_2X,
-+	MLXSW_RES_ID_LOCAL_PORTS_IN_4X,
- 	MLXSW_RES_ID_GUARANTEED_SHARED_BUFFER,
- 	MLXSW_RES_ID_CELL_SIZE,
- 	MLXSW_RES_ID_MAX_HEADROOM_SIZE,
-@@ -82,6 +83,7 @@ static u16 mlxsw_res_ids[] = {
- 	[MLXSW_RES_ID_MAX_LAG_MEMBERS] = 0x2521,
- 	[MLXSW_RES_ID_LOCAL_PORTS_IN_1X] = 0x2610,
- 	[MLXSW_RES_ID_LOCAL_PORTS_IN_2X] = 0x2611,
-+	[MLXSW_RES_ID_LOCAL_PORTS_IN_4X] = 0x2612,
- 	[MLXSW_RES_ID_GUARANTEED_SHARED_BUFFER] = 0x2805,	/* Bytes */
- 	[MLXSW_RES_ID_CELL_SIZE] = 0x2803,	/* Bytes */
- 	[MLXSW_RES_ID_MAX_HEADROOM_SIZE] = 0x2811,	/* Bytes */
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 39ea408deec1..d336e54d7a76 100644
+index d336e54d7a76..db05118adc44 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4165,6 +4165,8 @@ static int mlxsw_sp_local_ports_offset(struct mlxsw_core *mlxsw_core,
- 		local_ports_in_x_res_id = MLXSW_RES_ID_LOCAL_PORTS_IN_1X;
- 	else if (split_width == 2)
- 		local_ports_in_x_res_id = MLXSW_RES_ID_LOCAL_PORTS_IN_2X;
-+	else if (split_width == 4)
-+		local_ports_in_x_res_id = MLXSW_RES_ID_LOCAL_PORTS_IN_4X;
- 	else
- 		return -EINVAL;
+@@ -3692,10 +3692,11 @@ static int mlxsw_sp_port_tc_mc_mode_set(struct mlxsw_sp_port *mlxsw_sp_port,
+ }
  
+ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+-				bool split,
++				u8 split_base_local_port,
+ 				struct mlxsw_sp_port_mapping *port_mapping)
+ {
+ 	struct mlxsw_sp_port_vlan *mlxsw_sp_port_vlan;
++	bool split = !!split_base_local_port;
+ 	struct mlxsw_sp_port *mlxsw_sp_port;
+ 	struct net_device *dev;
+ 	int err;
+@@ -3724,6 +3725,7 @@ static int mlxsw_sp_port_create(struct mlxsw_sp *mlxsw_sp, u8 local_port,
+ 	mlxsw_sp_port->local_port = local_port;
+ 	mlxsw_sp_port->pvid = MLXSW_SP_DEFAULT_VID;
+ 	mlxsw_sp_port->split = split;
++	mlxsw_sp_port->split_base_local_port = split_base_local_port;
+ 	mlxsw_sp_port->mapping = *port_mapping;
+ 	mlxsw_sp_port->link.autoneg = 1;
+ 	INIT_LIST_HEAD(&mlxsw_sp_port->vlans_list);
+@@ -4038,7 +4040,7 @@ static int mlxsw_sp_ports_create(struct mlxsw_sp *mlxsw_sp)
+ 		port_mapping = mlxsw_sp->port_mapping[i];
+ 		if (!port_mapping)
+ 			continue;
+-		err = mlxsw_sp_port_create(mlxsw_sp, i, false, port_mapping);
++		err = mlxsw_sp_port_create(mlxsw_sp, i, 0, port_mapping);
+ 		if (err)
+ 			goto err_port_create;
+ 	}
+@@ -4118,7 +4120,7 @@ mlxsw_sp_port_split_create(struct mlxsw_sp *mlxsw_sp, u8 base_port,
+ 	split_port_mapping.width /= count;
+ 	for (i = 0; i < count; i++) {
+ 		err = mlxsw_sp_port_create(mlxsw_sp, base_port + i * offset,
+-					   true, &split_port_mapping);
++					   base_port, &split_port_mapping);
+ 		if (err)
+ 			goto err_port_create;
+ 		split_port_mapping.lane += split_port_mapping.width;
+@@ -4150,7 +4152,7 @@ static void mlxsw_sp_port_unsplit_create(struct mlxsw_sp *mlxsw_sp,
+ 		port_mapping = mlxsw_sp->port_mapping[local_port];
+ 		if (!port_mapping)
+ 			continue;
+-		mlxsw_sp_port_create(mlxsw_sp, local_port, false, port_mapping);
++		mlxsw_sp_port_create(mlxsw_sp, local_port, 0, port_mapping);
+ 	}
+ }
+ 
+@@ -4312,11 +4314,7 @@ static int mlxsw_sp_port_unsplit(struct mlxsw_core *mlxsw_core, u8 local_port,
+ 		return -EINVAL;
+ 	}
+ 
+-	base_port = mlxsw_sp_cluster_base_port_get(local_port, max_width);
+-
+-	/* Determine which ports to remove. */
+-	if (count == 2 && local_port >= base_port + 2)
+-		base_port = base_port + 2;
++	base_port = mlxsw_sp_port->split_base_local_port;
+ 
+ 	for (i = 0; i < count; i++)
+ 		if (mlxsw_sp_port_created(mlxsw_sp, base_port + i * offset))
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 3a823911a9d9..ec6c9756791d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -293,6 +293,7 @@ struct mlxsw_sp_port {
+ 		u16 egr_types;
+ 		struct mlxsw_sp_ptp_port_stats stats;
+ 	} ptp;
++	u8 split_base_local_port;
+ };
+ 
+ struct mlxsw_sp_port_type_speed_ops {
 -- 
 2.21.0
 
