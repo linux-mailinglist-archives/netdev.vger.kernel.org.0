@@ -2,87 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF317EAB33
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 08:57:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 383BFEAB3A
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 09:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726905AbfJaH5s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 03:57:48 -0400
-Received: from mga06.intel.com ([134.134.136.31]:64655 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726769AbfJaH5r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 03:57:47 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 00:57:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,250,1569308400"; 
-   d="scan'208";a="206036015"
-Received: from lingshan-mobl5.ccr.corp.intel.com (HELO [10.238.129.48]) ([10.238.129.48])
-  by FMSMGA003.fm.intel.com with ESMTP; 31 Oct 2019 00:57:39 -0700
-Subject: Re: [PATCH V6 6/6] docs: sample driver to demonstrate how to
- implement virtio-mdev framework
-To:     Christoph Hellwig <hch@infradead.org>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, idos@mellanox.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191030064444.21166-1-jasowang@redhat.com>
- <20191030064444.21166-7-jasowang@redhat.com>
- <20191030212312.GA4251@infradead.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-Message-ID: <1592d723-a580-8614-3fb4-88560a06cdc1@intel.com>
-Date:   Thu, 31 Oct 2019 15:57:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S1726963AbfJaIA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 04:00:28 -0400
+Received: from dvalin.narfation.org ([213.160.73.56]:53626 "EHLO
+        dvalin.narfation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726698AbfJaIA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 04:00:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1572508825;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ia3172o3/jD2ekntHB/GkBV4C7wIggs5s/Ni/QTMMRI=;
+        b=IRBmdR7dNASrVBhBhvK6MA6irw6Nb6bC//pd3DoPAsobpxxI2+oWjxkqoytud7ilnB3P5m
+        r7HjTJ367tS1+ezqogDhtfm7ecD5rHhbpqpvmrTxHCS/CCb2Vvs2DzwKmneMZNeEm9S0/7
+        x4VDfO47VaWNDVgW1zcJWeB82zRhyi8=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     davem@davemloft.net, mareklindner@neomailbox.ch,
+        sw@simonwunderlich.de, a@unstable.cc,
+        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] batman-adv: Simplify 'batadv_v_ogm_aggr_list_free()'
+Date:   Thu, 31 Oct 2019 09:00:21 +0100
+Message-ID: <3535726.AjB5hMM71F@sven-edge>
+In-Reply-To: <20191031074255.3234-1-christophe.jaillet@wanadoo.fr>
+References: <20191031074255.3234-1-christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-In-Reply-To: <20191030212312.GA4251@infradead.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: multipart/signed; boundary="nextPart6722122.X2YU2N7q37"; micalg="pgp-sha512"; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--nextPart6722122.X2YU2N7q37
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On 10/31/2019 5:23 AM, Christoph Hellwig wrote:
-> On Wed, Oct 30, 2019 at 02:44:44PM +0800, Jason Wang wrote:
->> This sample driver creates mdev device that simulate virtio net device
->> over virtio mdev transport. The device is implemented through vringh
->> and workqueue. A device specific dma ops is to make sure HVA is used
->> directly as the IOVA. This should be sufficient for kernel virtio
->> driver to work.
->>
->> Only 'virtio' type is supported right now. I plan to add 'vhost' type
->> on top which requires some virtual IOMMU implemented in this sample
->> driver.
-> Can we please submit a real driver for it?  A more or less useless
-> sample driver doesn't really qualify for our normal kernel requirements
-> that infrastructure should have a real user.
+On Thursday, 31 October 2019 08:42:55 CET Christophe JAILLET wrote:
+> Use 'skb_queue_purge()' instead of re-implementing it.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Hello Christoph,
+Consider this patch applied. I just have to leave now and thus I will only 
+apply after my return.
 
-I am working on a real hardware driver for it, it's called IFC, I have 
-posted RFC V1 and will post RFC V2 soon.
+> ---
+> BTW, I don't really see the need of 'aggr_list_lock'. I think that the code
+> could be refactored to drop 'aggr_list_lock' and use the already existing
+> 'aggr_list.lock'.
+> This would require to use the lock-free __skb_... variants when working on
+> 'aggr_list'.
+>
+> As far as I understand, the use of 'aggr_list' and 'aggr_list_lock' is
+> limited to bat_v_ogm.c'. So the impact would be limited.
+> This would avoid a useless locking that never fails, so the performance
+> gain should be really limited.
+> 
+> So, I'm not sure this would be more readable and/or future proof, so
+> I just note it here to open the discussion.
+> 
+> If interested, I have a (compiled tested only) patch that implements this
+> change.
 
-Thanks,
-BR
-Zhu Lingshan
+Yes, please send it over.
+
+Kind regards,
+	Sven
+
+--nextPart6722122.X2YU2N7q37
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAl26lJUACgkQXYcKB8Em
+e0YLkg//SFeu7zgzY5RZPY5HcftrEK1rjC2M7A8sCfKGM1M8vzzTA3tloEHUCNxD
+EbJLxaVmG24RWkBL6vthM2PT1lvjHRFUphtpYa5z1uyXJFEoO2YRp8hDgIOw+/+1
+OckzUOWC0Lq5OokHISYtWp673ZBLSNmshZY5eAZLec7p42UE3xnrWr7OOTGs6yTQ
+nwb734FvWvmi44PUs5DGPaW7gpUYXFY9EWyAbpJD7uuifshVIaY7ql5LAfF2VL71
+6hJ4rYPGtFN6wxMuh8QehYwiWG+Ze95uYl4oS05YdhsXGNuhFjN5Q2iOU4R4WBFD
+g+ztkU7BitUMoaZz3ICi1T31QFUFzy5OPmUo97bX7BId9aTtVMwPvW06aJU/dBZc
+pXI9vps1QPoGfTzNn+N12S5GB8ZFYJ+3ycaQjqb69uE3c8EsHVa42qoSiieaqsln
+TiYMCK67jcB+cOYR/zbsw6YRr+ZTWxPJMN9ZVEFxswbHl1H677oTBpuC0eyTil/L
+qscb04MIE0r11DJA1S4oWnidM+9zn7bGG7tVzMNsKCgvUaXkTWewahJR0ynTI/6j
+XfbztcvAlMswIcb6Mk4f5LtARZ+l3BlXll/+WMzxLSZwwWU7yAwp0QxQJwXyKafV
+PEps/jYve9O423rfIIwanNJIWi2Ab1sprc5Ka/iSmciz6hswmNk=
+=3utl
+-----END PGP SIGNATURE-----
+
+--nextPart6722122.X2YU2N7q37--
+
+
+
