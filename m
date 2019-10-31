@@ -2,114 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A260AEB479
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:11:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0547EEB48E
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:19:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728428AbfJaQL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 12:11:27 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:36260 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726540AbfJaQL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:11:26 -0400
-Received: by mail-io1-f65.google.com with SMTP id s3so3525907ioe.3
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 09:11:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sTBeRq4v+wjTfSf5oAMbUHSeAjg9jKJILxni8kDjY8o=;
-        b=RUbg8glQsnlJqmc0Ypj2/+E5fBFR/19VQBYFvizHrHaL4eCCgm3Ph9tj8P5Za5gEi0
-         3cfRm4kvrZJYh5V3AmBbdkllqnoA2zAnuzr4mEos9R5R4vuHYA2PUsdiwygbroBdEPXY
-         5F9D6Vsml8XG3McGFMzbXMc99+oVmBe2291an4P+HrJEG1EV8jcJ1C/Mf3XWxLHnv/ue
-         97gMvzj4Yrbefl/pYs4D4cK4PKOIduVfB1fHJhROMtUk2bUpLbr+T1uPncksHd1Z0g8w
-         gW9p7B/Tl1IDYOtntOZVvhA4ymcWDo1x3Id5xqYATjkIpfRcaEdCJh/o+d7N9Umg9CCh
-         Ladg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sTBeRq4v+wjTfSf5oAMbUHSeAjg9jKJILxni8kDjY8o=;
-        b=GmUDs23b0iqgRGdoljACJxDcrgoSN8oQxwWdtYDCq2+jT+DYaCjkuBFMFIfA4KEsAW
-         crkMtJJeJVp9UYheZa4xaJt6VMs0auDShmBDczgEZB49wpBhUFF+pUSRV5S53BRkYbHN
-         WRa1lfWNTzEVBMPXXBqld9c9pf9aaiVERoH/mo24RDhTUxOWmPk4XeUAiIUsYfzBshyP
-         US5mbyU7yK3w8JfWfqe+o9ZoAKKVyqgGdD9kjt8fq8Oguu86uS4Ex/EdqMSyAhDzqr/a
-         rtKNNxnxK0VxO0FRNX3WmjokJZxeWixNz9MxtNt0fmITD7rtFr3sWU7+Ampzdshg/Ij2
-         2RUA==
-X-Gm-Message-State: APjAAAX5EG8yzWRPkrKaiuZ7yEy0ppfH2xoLEmn5kA/S7sV7yDitwK9R
-        0eAUfHv04gyWCacZgiQwNew=
-X-Google-Smtp-Source: APXvYqyl2l+v1cRK7ASnMwnjLuOSG7h6RLLd+GIWdRJZkL7BmAJRd0zkqmBBj636sz96iSej9x9UZg==
-X-Received: by 2002:a5e:d502:: with SMTP id e2mr6092276iom.224.1572538285890;
-        Thu, 31 Oct 2019 09:11:25 -0700 (PDT)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:e0f1:25db:d02a:8fc2])
-        by smtp.googlemail.com with ESMTPSA id h24sm399215ioh.0.2019.10.31.09.11.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Oct 2019 09:11:25 -0700 (PDT)
-Subject: Re: [PATCH iproute2] ip-route: fix json formatting for multipath
- routing
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <99a4a6ffec5d9e7b508863873bf2097bfbb79ec6.1572534380.git.aclaudi@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f15a41a2-f861-550c-0f0b-5fc0b40db899@gmail.com>
-Date:   Thu, 31 Oct 2019 10:11:23 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.0
+        id S1728538AbfJaQTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 12:19:42 -0400
+Received: from plaes.org ([188.166.43.21]:34782 "EHLO plaes.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726540AbfJaQTm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 12:19:42 -0400
+Received: from plaes.org (localhost [127.0.0.1])
+        by plaes.org (Postfix) with ESMTPSA id 787DD404A6;
+        Thu, 31 Oct 2019 16:19:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=plaes.org; s=mail;
+        t=1572538780; bh=l3zqhRz3MXLgYaz06UXpXX6TG/GU0lHnMs/TZoipX9U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kEHlxeI2zoUtKesfSGjg7a9zvFz3uSKIu0SDDHQ1A0o4a5aMsvuE3I1OBBAeiSyX6
+         W38qXq6D0uFrZZl43zEXLzt2FSwrTwRpd5hAoxwrSXrxAvmp5qoLcaBiI/VN+cDqz6
+         DvnVDYAfsnHEV8PI7Yk+zMGHSsRuziEsnjLCswe7jm1mSeV6LyZc1jta1cdCqSs57B
+         u6rCp+QaSOPHuDEm97Ecdvv5Ps7+6NElCMH529NLdaOCh4VhDvxgHxifGwGR5iFzL1
+         NTgGFZr8XImHZXwUzyaS/iMnoWZorG9Gu4z9KsthNCdHlnDaKY8Ya7topq8FHapmMO
+         0v9nk1767LP7g==
+Date:   Thu, 31 Oct 2019 16:19:39 +0000
+From:   Priit Laes <plaes@plaes.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     linux-sunxi@googlegroups.com, wens@csie.org,
+        netdev@vger.kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com
+Subject: Re: sun7i-dwmac: link detection failure with 1000Mbit parters
+Message-ID: <20191031161939.GA12834@plaes.org>
+References: <20191030202117.GA29022@plaes.org>
+ <20191031130422.GJ10555@lunn.ch>
+ <20191031131404.GK10555@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <99a4a6ffec5d9e7b508863873bf2097bfbb79ec6.1572534380.git.aclaudi@redhat.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191031131404.GK10555@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/19 9:09 AM, Andrea Claudi wrote:
-> json output for multipath routing is broken due to some non-jsonified
-> print in print_rta_multipath(). To reproduce the issue:
+On Thu, Oct 31, 2019 at 02:14:04PM +0100, Andrew Lunn wrote:
+> On Thu, Oct 31, 2019 at 02:04:22PM +0100, Andrew Lunn wrote:
+> > On Wed, Oct 30, 2019 at 08:21:17PM +0000, Priit Laes wrote:
+> > > Heya!
+> > > 
+> > > I have noticed that with sun7i-dwmac driver (OLinuxino Lime2 eMMC), link
+> > > detection fails consistently with certain 1000Mbit partners (for example Huawei
+> > > B525s-23a 4g modem ethernet outputs and RTL8153-based USB3.0 ethernet dongle),
+> > > but the same hardware works properly with certain other link partners (100Mbit GL AR150
+> > > for example).
+> > 
+> > Hi Pritt
+> > 
+> > What PHY is used? And what happens if you use the specific PHY driver,
+> > not the generic PHY driver?
 > 
-> $ ip route add default \
->   nexthop via 192.168.1.1 weight 1 \
->   nexthop via 192.168.2.1 weight 1
-> $ ip -j route | jq
-> parse error: Invalid numeric literal at line 1, column 58
+> Schematics of the board are here:
 > 
-> Fix this opening a "multipath" json array that can contain multiple
-> route objects, and using print_*() instead of fprintf().
+> https://github.com/OLIMEX/OLINUXINO/blob/master/HARDWARE/A20-OLinuXino-LIME2/1.%20Latest%20hardware%20revision/A20-OLinuXino-Lime2_Rev_K2_COLOR.pdf
 > 
-> This is the output for the above commands applying this patch:
+> So it has a KSZ9031. The micrel driver supports that device. And there
+> is a patch which might be relevant:
 > 
-> [
->   {
->     "dst": "default",
->     "flags": [],
->     "multipath": [
->       {
->         "gateway": "192.168.1.1",
->         "dev": "wlp61s0",
->         "weight": 1,
->         "flags": [
->           "linkdown"
->         ]
->       },
->       {
->         "gateway": "192.168.2.1",
->         "dev": "ens1u1",
->         "weight": 1,
->         "flags": []
->       }
->     ]
->   }
-> ]
-> 
-> Fixes: f48e14880a0e5 ("iproute: refactor multipath print")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
-> Reported-by: Patrick Hagara <phagara@redhat.com>
-> ---
->  ip/iproute.c | 23 +++++++++++++++++------
->  1 file changed, 17 insertions(+), 6 deletions(-)
-> 
+> commit 3aed3e2a143c9619f4c8d0a3b8fe74d7d3d79c93
+> Author: Antoine Tenart <antoine.tenart@bootlin.com>
+...
+> Please test using the Micrel PHY driver and see if that solves your
+> problem.
 
-This is fixed -next by 4ecefff3cf25 ("ip: fix ip route show json output
-for multipath nexthops"). Stephen can cherry pick it for master
+Thanks, CONFIG_MICREL_PHY=y helped!
+
+> 
+> 	Andrew
