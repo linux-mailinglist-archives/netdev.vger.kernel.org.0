@@ -2,122 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDCFEBAA0
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:38:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F3EEEBAAB
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728829AbfJaXi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 19:38:27 -0400
-Received: from mga17.intel.com ([192.55.52.151]:57516 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727969AbfJaXi0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 19:38:26 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 16:38:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,253,1569308400"; 
-   d="scan'208";a="400685375"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by fmsmga005.fm.intel.com with ESMTP; 31 Oct 2019 16:38:25 -0700
-Date:   Thu, 31 Oct 2019 16:38:25 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 13/19] media/v4l2-core: pin_longterm_pages (FOLL_PIN) and
- put_user_page() conversion
-Message-ID: <20191031233824.GL14771@iweiny-DESK2.sc.intel.com>
-References: <20191030224930.3990755-1-jhubbard@nvidia.com>
- <20191030224930.3990755-14-jhubbard@nvidia.com>
+        id S1727382AbfJaXlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 19:41:06 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34261 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726602AbfJaXlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 19:41:06 -0400
+Received: by mail-lf1-f67.google.com with SMTP id f5so6003296lfp.1
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 16:41:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=HEoCd10b9lDmcs+TFGvmYwkuCCGoaE6ezTSO1/NuH5g=;
+        b=ADXSHuKW+sHCQcOao+H15YCRO0mv/dnade0rGVim/0+TGLqEhsx3j3I99Ko1E1hpRX
+         gsLxy5do9JfoDTgW8clO2izkUrFY9i3dhyBtJobIhTuH1B+/QjwS2my3NQWi6S0sLYyH
+         RiaRrbMtz9bG7Ec2+CxB88IsX+mVboWj0a20Mw6U0a2U/poIw5r7qd9SW5Ac0FykJw7i
+         HA7B58NqQbNL4Wm2AcZH6ECA+9DBnhPUd+NKFaQ0PjJK7eSAW8pCDcrHl667j2/PXlQY
+         M+PrRO/0BBOCp94If/jUdgUNus9rBgB0GIWPGVn1d7Ou02ifeVX81esZTroE8IZLMXYO
+         2CRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=HEoCd10b9lDmcs+TFGvmYwkuCCGoaE6ezTSO1/NuH5g=;
+        b=VZPfi70IWqI0uBAQPNBuftFayRKVZbnJ4pxkqy3L2jpEMz9viLEdz+7IeV8z9Z/UwO
+         2F4nL0wggowrlR7FO4IPHShuZo8BvDUVGE6+FU2S++YO5h++SpaAtFaxHAFP6uxSpcpV
+         jbT2zVrSQFVvkm+a9GpTiCEKCnjpEVoZRGg/Lf4W7HGJbVxWquaeaB2AmLFjaf/hO0x7
+         7zamznq5nH0jP53UkFm4yYLHrUIZ5q/VNWQESQyCzF0MJAcq8d9ER7mUq/FcSsPJcuzj
+         c09QyuPFsBFMYq0bH7R/yI9NwtZC+rJ7eKkwZA3RHJ/UU3C1gcwECIDUJeqHYfPiMHRm
+         Hk7Q==
+X-Gm-Message-State: APjAAAWnLn5/GXUbOzMxw+su9NZgHGPtfDMTuhNaCCpWAppa/J9bQQIR
+        oZrfInTRSaG9c8iLQfQkeJajBg==
+X-Google-Smtp-Source: APXvYqxeaurvKLeFijgNVGy2z586uMKzfGXH7JLQuLXVw3Mv5Yh6C7YNDi55mmapLYmj19NK5FlHrA==
+X-Received: by 2002:a19:ad4a:: with SMTP id s10mr5135864lfd.159.1572565264555;
+        Thu, 31 Oct 2019 16:41:04 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id r12sm4623803lfp.63.2019.10.31.16.41.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Oct 2019 16:41:04 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 16:40:57 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, rong.a.chen@intel.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch net-next] selftests: bpf: don't try to read files
+ without read permission
+Message-ID: <20191031164057.6c1b486a@cakuba.netronome.com>
+In-Reply-To: <20191031163535.2737f250@cakuba.netronome.com>
+References: <20191015100057.19199-1-jiri@resnulli.us>
+        <20191031163535.2737f250@cakuba.netronome.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191030224930.3990755-14-jhubbard@nvidia.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 03:49:24PM -0700, John Hubbard wrote:
-> 1. Change v4l2 from get_user_pages(FOLL_LONGTERM), to
-> pin_longterm_pages(), which sets both FOLL_LONGTERM and FOLL_PIN.
+On Thu, 31 Oct 2019 16:35:35 -0700, Jakub Kicinski wrote:
+> On Tue, 15 Oct 2019 12:00:56 +0200, Jiri Pirko wrote:
+> > From: Jiri Pirko <jiri@mellanox.com>
+> > 
+> > Recently couple of files that are write only were added to netdevsim
+> > debugfs. Don't read these files and avoid error.
+> > 
+> > Reported-by: kernel test robot <rong.a.chen@intel.com>
+> > Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> > ---
+> >  tools/testing/selftests/bpf/test_offload.py | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
+> > index 15a666329a34..c44c650bde3a 100755
+> > --- a/tools/testing/selftests/bpf/test_offload.py
+> > +++ b/tools/testing/selftests/bpf/test_offload.py
+> > @@ -312,7 +312,7 @@ class DebugfsDir:
+> >              if f == "ports":
+> >                  continue
+> >              p = os.path.join(path, f)
+> > -            if os.path.isfile(p):
+> > +            if os.path.isfile(p) and os.access(p, os.R_OK):  
 > 
-> 2. Because all FOLL_PIN-acquired pages must be released via
-> put_user_page(), also convert the put_page() call over to
-> put_user_pages_dirty_lock().
-> 
+> Have you tested this? Looks like python always returns True here when
+> run as root, and this script requires root (and checks for it).
 
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Yeah, you definitely haven't tested this. Even if it worked we'd fall
+into the else condition and say:
 
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  drivers/media/v4l2-core/videobuf-dma-sg.c | 13 +++++--------
->  1 file changed, 5 insertions(+), 8 deletions(-)
+Exception: /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/take_snapshot is neither file nor directory
+
+> Also the fix is needed in net, not sure why you sent it to net-next.
 > 
-> diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2-core/videobuf-dma-sg.c
-> index 28262190c3ab..9b9c5b37bf59 100644
-> --- a/drivers/media/v4l2-core/videobuf-dma-sg.c
-> +++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
-> @@ -183,12 +183,12 @@ static int videobuf_dma_init_user_locked(struct videobuf_dmabuf *dma,
->  	dprintk(1, "init user [0x%lx+0x%lx => %d pages]\n",
->  		data, size, dma->nr_pages);
->  
-> -	err = get_user_pages(data & PAGE_MASK, dma->nr_pages,
-> -			     flags | FOLL_LONGTERM, dma->pages, NULL);
-> +	err = pin_longterm_pages(data & PAGE_MASK, dma->nr_pages,
-> +				 flags, dma->pages, NULL);
->  
->  	if (err != dma->nr_pages) {
->  		dma->nr_pages = (err >= 0) ? err : 0;
-> -		dprintk(1, "get_user_pages: err=%d [%d]\n", err,
-> +		dprintk(1, "pin_longterm_pages: err=%d [%d]\n", err,
->  			dma->nr_pages);
->  		return err < 0 ? err : -EINVAL;
->  	}
-> @@ -349,11 +349,8 @@ int videobuf_dma_free(struct videobuf_dmabuf *dma)
->  	BUG_ON(dma->sglen);
->  
->  	if (dma->pages) {
-> -		for (i = 0; i < dma->nr_pages; i++) {
-> -			if (dma->direction == DMA_FROM_DEVICE)
-> -				set_page_dirty_lock(dma->pages[i]);
-> -			put_page(dma->pages[i]);
-> -		}
-> +		put_user_pages_dirty_lock(dma->pages, dma->nr_pages,
-> +					  dma->direction == DMA_FROM_DEVICE);
->  		kfree(dma->pages);
->  		dma->pages = NULL;
->  	}
-> -- 
-> 2.23.0
-> 
+> >                  _, out = cmd('cat %s/%s' % (path, f))
+> >                  dfs[f] = out.strip()
+> >              elif os.path.isdir(p):  
+
