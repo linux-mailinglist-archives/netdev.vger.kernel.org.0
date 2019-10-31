@@ -2,91 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84AE9EACC2
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 10:43:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EECF8EACD6
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 10:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727374AbfJaJnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 05:43:10 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41427 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727365AbfJaJnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 05:43:08 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4EF97210D8;
-        Thu, 31 Oct 2019 05:43:08 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 31 Oct 2019 05:43:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=nU2vucza2VT4r2IXnM2tTsSwi6g6eMNcz73I495QPi4=; b=Is0xekAD
-        33B/AXJjsgFkYlsYfbNDDpwChz/MBbq0boJYLzynlXPXW35JLkiQWQzTWjDB1tWv
-        JockmsSSEhQ1DW0EGg/ZZQXPcvit5ZzUpwt6ekbXSCdnndXmBCpAfQeDQ2xBVhr/
-        ZtcEYAh80ZKpTbRyVkH+Om3+3U8LCF74j2Gyl7ZdD0EyOEs77wELdEWpktsMmdGi
-        qsAERH0GGO+SVXx93aoLCmh/xIvGjZg5VmllVVEUXWrtQF2Zr5xZrklp285URwwI
-        I7PLSqIA/TZ2Fbsz1+0f+sVM0jyKlQnje9+RdRaqaGhwvi+ctylFUKgMvyHQbwUX
-        pdA2kNtzzR5kbw==
-X-ME-Sender: <xms:rKy6XdgMeH0od7DUTWth078JGKkRQu8B__Nz4xwxphtChz0iXOA4FA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddthedgtdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeduge
-X-ME-Proxy: <xmx:rKy6Xd3y-CvnFBG-yQNv9Ig3O-W-oPqAf5kwUNLJq-lDxo_VJ51pkQ>
-    <xmx:rKy6XYcvP7VZvgrqqBEXdhmU2Yj2fHD9B3vc3nx09TIH2LhfRXx-Dg>
-    <xmx:rKy6XbzDvAUYOdmG5Xy39hGGqczYpFK-LInkfr7hfKGwde6oDON9WQ>
-    <xmx:rKy6XUvOiIJLQYrMMOj-cqxy7sK1e-Iez8q--S26PICRYqP2TFL_0w>
-Received: from localhost.localdomain (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BD3B980061;
-        Thu, 31 Oct 2019 05:43:06 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 16/16] mlxsw: spectrum: Generalize split count check
-Date:   Thu, 31 Oct 2019 11:42:21 +0200
-Message-Id: <20191031094221.17526-17-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191031094221.17526-1-idosch@idosch.org>
-References: <20191031094221.17526-1-idosch@idosch.org>
+        id S1727219AbfJaJtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 05:49:03 -0400
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:34600 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbfJaJtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 05:49:03 -0400
+Received: from [192.168.42.210] ([93.23.12.90])
+        by mwinf5d66 with ME
+        id L9ox2100X1waAWt039oxcA; Thu, 31 Oct 2019 10:49:01 +0100
+X-ME-Helo: [192.168.42.210]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 31 Oct 2019 10:49:01 +0100
+X-ME-IP: 93.23.12.90
+Subject: Re: [PATCH] vsock: Simplify '__vsock_release()'
+To:     Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
+        davem@davemloft.net, sunilmut@microsoft.com, willemb@google.com,
+        sgarzare@redhat.com, stefanha@redhat.com, ytht.net@gmail.com,
+        arnd@arndb.de, tglx@linutronix.de, decui@microsoft.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <20191031064741.4567-1-christophe.jaillet@wanadoo.fr>
+ <c7a0b6b0-96cd-1fd3-3d98-94a3692bda38@cogentembedded.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <1b33ca33-a02b-1923-cbee-814e520b9700@wanadoo.fr>
+Date:   Thu, 31 Oct 2019 10:48:53 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <c7a0b6b0-96cd-1fd3-3d98-94a3692bda38@cogentembedded.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Le 31/10/2019 à 10:36, Sergei Shtylyov a écrit :
+> Hello!
+>
+> On 31.10.2019 9:47, Christophe JAILLET wrote:
+>
+>> Use '__skb_queue_purge()' instead of re-implementing it.
+>
+>    In don't see that double underscore below...
+This is a typo in the commit message.
 
-Make the check generic for any possible value, not only 2 and 4.
+There is no need for __ because skb_dequeue was used.
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-Reviewed-by: Shalom Toledo <shalomt@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Could you fix it directly in the commit message (preferred solution for 
+me) or should I send a V2?
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 3ce48d0df37f..ea4cc2aa99e0 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4215,9 +4215,9 @@ static int mlxsw_sp_port_split(struct mlxsw_core *mlxsw_core, u8 local_port,
- 		return -EINVAL;
- 	}
- 
--	if (count != 2 && count != 4) {
--		netdev_err(mlxsw_sp_port->dev, "Port can only be split into 2 or 4 ports\n");
--		NL_SET_ERR_MSG_MOD(extack, "Port can only be split into 2 or 4 ports");
-+	if (count == 1 || !is_power_of_2(count) || count > max_width) {
-+		netdev_err(mlxsw_sp_port->dev, "Invalid split count\n");
-+		NL_SET_ERR_MSG_MOD(extack, "Invalid split count");
- 		return -EINVAL;
- 	}
- 
--- 
-2.21.0
+CJ
+
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>>   net/vmw_vsock/af_vsock.c | 4 +---
+>>   1 file changed, 1 insertion(+), 3 deletions(-)
+>>
+>> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>> index 2ab43b2bba31..2983dc92ca63 100644
+>> --- a/net/vmw_vsock/af_vsock.c
+>> +++ b/net/vmw_vsock/af_vsock.c
+> [...]
+>> @@ -662,8 +661,7 @@ static void __vsock_release(struct sock *sk, int 
+>> level)
+>>           sock_orphan(sk);
+>>           sk->sk_shutdown = SHUTDOWN_MASK;
+>>   -        while ((skb = skb_dequeue(&sk->sk_receive_queue)))
+>> -            kfree_skb(skb);
+>> +        skb_queue_purge(&sk->sk_receive_queue);
+>>             /* Clean up any sockets that never were accepted. */
+>>           while ((pending = vsock_dequeue_accept(sk)) != NULL) {
+>
+> MBR, Sergei
+>
 
