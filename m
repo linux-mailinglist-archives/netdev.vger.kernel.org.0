@@ -2,211 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2325EEB48F
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DEA0EB495
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:23:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728474AbfJaQUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 12:20:46 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:41383 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726540AbfJaQUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:20:46 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id D7924222C6;
-        Thu, 31 Oct 2019 12:20:44 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 31 Oct 2019 12:20:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=kXim0tzDynGfq5Azi
-        GdJbKgHZ2qUN9uA18EB/ypU/98=; b=UaRZGDXF8JtQb2OHwrcvT5WZJk2RRHUEg
-        17hq+hFdZGl5xciWKZRuzYSzlcw45rbFfyKPJOcDtIzKZc//KYmmlqXT5A7Hg2dM
-        JIASw6jFpwRrUG47Gn48VqbEualq/tq6dgvqcWwnjNQH0t9yClgdxbnU1H1g+rCq
-        gJsphA1Z7r4NGhldy6lOkWddwlxsTL/AxxGlapmtjTDWBXeGvLQYIrd1fKcrqdqd
-        cInijfaCtHCSqefQw7HqTNntxlfjE1ME1Ofip2n1/LumZbOOZp05T3IzNk8O4s2a
-        OZ4CJsG/C/VPU+1E+z0WQ/SxBfAQeXejkAt0SFzdoGnJFRrCMQcYA==
-X-ME-Sender: <xms:2wm7XUSCAeEFX7zc4X2TUggV63W7SxQaXIPYqgM2DATe1Yet2Mtx1w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddthedgkeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuffhomhgrihhnpehfvgguohhrrghprhhojhgvtghtrdhorhhgpdhgih
-    hthhhusgdrtghomhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhep
-    mhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrh
-    fuihiivgeptd
-X-ME-Proxy: <xmx:2wm7XZqpMoqEbcI4tpnO4zVzDLkUGPwShwfbbWjoOkRe_VMrjiCyqg>
-    <xmx:2wm7XQr9_w7bih5al458KjFZ3ZgmFcUPPzfHl_NwN-AVxssxFIkH-A>
-    <xmx:2wm7XeEGZI5l6iTqiuEZDYlUNkEUK48cpesEKZKLkYKr3f5Eg376rw>
-    <xmx:3Am7Xd6PAZa3vuFe2NOqII5Ne0Xp1BRW85CsDj0FuAnof0dzShvbUw>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 001DE306005F;
-        Thu, 31 Oct 2019 12:20:41 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        jiri@mellanox.com, sfr@canb.auug.org.au, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] netdevsim: Fix use-after-free during device dismantle
-Date:   Thu, 31 Oct 2019 18:20:30 +0200
-Message-Id: <20191031162030.31158-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
+        id S1728542AbfJaQXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 12:23:02 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:45050 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726540AbfJaQXC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:23:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572538981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RZGD6Pca66p5OqKCfFHPRMb7vejTA2ViSdqHSiuuHfA=;
+        b=PX1zT8HVmnAUEwpQcrXSeip2qCJaIzVkjGWOLJiMeeW8iAN9SP5j+DK5BDpjRxLYqindwv
+        Nxp3Cq2IZ1YMiZxEwqPfuaS6w20lyp3hFQ/ChU23yhnuNnMCFKakivfIgVy3rn2nS0t1lO
+        m5g54PY0951qvwKsr09fM2KGAvOhT34=
+Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
+ [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-17-mJYShhaRNny9ElEeptZi6g-1; Thu, 31 Oct 2019 12:22:58 -0400
+Received: by mail-lf1-f70.google.com with SMTP id c27so1551822lfj.19
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 09:22:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eAv0yHRWBIPIgHHe1zlsuAAt21y47eMoEjAinE7MfyI=;
+        b=AvBQhItA8FI/4IwfUJ2tleLJkf3HUegyhZQOm27E6KYQlOI8hKkKLNR4zXoD5s/ZBM
+         OPUAeNL+hQ9hf7dc9xmCyWXsOrh386S7ieNlOp5zx8XVP9ggfr74BMdfG9JgN31h0jfv
+         L+svl3W2ZCJM3ircYSUFqkEVfomTi3EpsbcbQVw7Sr5EZsMotXd8IzfbXNDj8U6POk8L
+         zVT2Ty6J3RsYcjy0xNDWaXUc9FaeuUISjONMg29padMVDf/WsRW1q7lppw7e5nRLJdVG
+         DtBJ/50hxyZ1XaF5Qb6aHGcbudzef5Luh3/MVqeJreJ08dyk/E5P2aLxG2eTT+12JumP
+         G0Hg==
+X-Gm-Message-State: APjAAAXe6OrV16zUcuVrQ2i5rDtTBbMFszl4Yx3qz5SB6WkFhG6cXajQ
+        eY5I4sX+HmFXJL4lIks8ivsGRIieu4ujwVoQIFWervl4ZeFyO2nY33ShqaoXvu0TjNPpnbUVvo1
+        2VNVxQZf/W2HxpEm4CzKtvk8rpyw+uib0
+X-Received: by 2002:ac2:5195:: with SMTP id u21mr4119352lfi.97.1572538977467;
+        Thu, 31 Oct 2019 09:22:57 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxL300SMULllKwH7VWvDdiKCap6Fv+tAFO8sNUl58YhcqKjt43ZyLnKC2evCebrRPLnKKAh/6MyHQYa2nywefI=
+X-Received: by 2002:ac2:5195:: with SMTP id u21mr4119340lfi.97.1572538977273;
+ Thu, 31 Oct 2019 09:22:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191029135053.10055-1-mcroce@redhat.com> <20191029135053.10055-5-mcroce@redhat.com>
+ <5be14e4e-807f-486d-d11a-3113901e72fe@cumulusnetworks.com>
+ <576a4a96-861b-6a86-b059-6621a22d191c@gmail.com> <CAGnkfhzEgaH1-YNWw1_HzB5FOhZHjKewLD9NP+rnTP21Htxnjw@mail.gmail.com>
+ <43abab53-1425-0bff-9f79-50bd47567605@gmail.com> <CAGnkfhyaXzMx608jZqqjdywv6BZst97QSmGe++aSc=-xOQSWzg@mail.gmail.com>
+In-Reply-To: <CAGnkfhyaXzMx608jZqqjdywv6BZst97QSmGe++aSc=-xOQSWzg@mail.gmail.com>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Thu, 31 Oct 2019 17:22:21 +0100
+Message-ID: <CAGnkfhxvOdZgS90PittFgAtYnPzfQNVFsxsTpadzBcr1-mnD=Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 4/4] bonding: balance ICMP echoes in layer3+4 mode
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Paul Blakey <paulb@mellanox.com>,
+        LKML <linux-kernel@vger.kernel.org>
+X-MC-Unique: mJYShhaRNny9ElEeptZi6g-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Wed, Oct 30, 2019 at 12:19 AM Matteo Croce <mcroce@redhat.com> wrote:
+>
+> On Wed, Oct 30, 2019 at 12:14 AM Eric Dumazet <eric.dumazet@gmail.com> wr=
+ote:
+> >
+> >
+> >
+> > On 10/29/19 4:03 PM, Matteo Croce wrote:
+> >
+> > > Hi Eric,
+> > >
+> > > this would work for locally generated echoes, but what about forwarde=
+d packets?
+> > > The point behind my changeset is to provide consistent results within
+> > > a session by using the same path for request and response,
+> > > but avoid all sessions flowing to the same path.
+> > > This should resemble what happens with TCP and UDP: different
+> > > connections, different port, probably a different path. And by doing
+> > > this in the flow dissector, other applications could benefit it.
+> >
+> > In principle it is fine, but I was not sure of overall impact of your c=
+hange
+> > on performance for 99.9% of packets that are not ICMP :)
+> >
+>
+> Good point. I didn't measure it (I will) but all the code additions
+> are under some if (proto =3D=3D ICMP) or similar.
+> My guess is that performance shouldn't change for non ICMP traffic,
+> but I'm curious to test it.
+>
 
-Commit da58f90f11f5 ("netdevsim: Add devlink-trap support") added
-delayed work to netdevsim that periodically iterates over the registered
-netdevsim ports and reports various packet traps via devlink.
+Indeed if there is some impact it's way below the measurement uncertainty.
+I've bonded two veth pairs and added a tc drop to the peers, then
+started mausezahn to generate UDP traffic.
+Traffic is measured on the veth peers:
 
-While the delayed work takes the 'port_list_lock' mutex to protect
-against concurrent addition / deletion of ports, during device creation
-/ dismantle ports are added / deleted without this lock, which can
-result in a use-after-free [1].
+Stock 5.4-rc5:
 
-Fix this by making sure that the ports list is always modified under the
-lock.
+rx: 261.5 Mbps 605.4 Kpps
+rx: 261.2 Mbps 604.6 Kpps
+rx: 261.6 Mbps 605.5 Kpps
 
-[1]
-[   59.205543] ==================================================================
-[   59.207748] BUG: KASAN: use-after-free in nsim_dev_trap_report_work+0xa67/0xad0
-[   59.210247] Read of size 8 at addr ffff8883cbdd3398 by task kworker/3:1/38
-[   59.212584]
-[   59.213148] CPU: 3 PID: 38 Comm: kworker/3:1 Not tainted 5.4.0-rc3-custom-16119-ge6abb5f0261e #2013
-[   59.215896] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20180724_192412-buildhw-07.phx2.fedoraproject.org-1.fc29 04/01/2014
-[   59.218384] Workqueue: events nsim_dev_trap_report_work
-[   59.219428] Call Trace:
-[   59.219924]  dump_stack+0xa9/0x10e
-[   59.220623]  print_address_description.constprop.4+0x21/0x340
-[   59.221976]  ? vprintk_func+0x66/0x240
-[   59.222752]  __kasan_report.cold.8+0x78/0x91
-[   59.223602]  ? nsim_dev_trap_report_work+0xa67/0xad0
-[   59.224603]  kasan_report+0xe/0x20
-[   59.225296]  nsim_dev_trap_report_work+0xa67/0xad0
-[   59.226435]  ? rcu_read_lock_sched_held+0xaf/0xe0
-[   59.227512]  ? trace_event_raw_event_rcu_quiescent_state_report+0x360/0x360
-[   59.228851]  process_one_work+0x98f/0x1760
-[   59.229684]  ? pwq_dec_nr_in_flight+0x330/0x330
-[   59.230656]  worker_thread+0x91/0xc40
-[   59.231587]  ? process_one_work+0x1760/0x1760
-[   59.232451]  kthread+0x34a/0x410
-[   59.233104]  ? __kthread_queue_delayed_work+0x240/0x240
-[   59.234141]  ret_from_fork+0x3a/0x50
-[   59.234982]
-[   59.235371] Allocated by task 187:
-[   59.236189]  save_stack+0x19/0x80
-[   59.236853]  __kasan_kmalloc.constprop.5+0xc1/0xd0
-[   59.237822]  kmem_cache_alloc_trace+0x14c/0x380
-[   59.238769]  __nsim_dev_port_add+0xaf/0x5c0
-[   59.239627]  nsim_dev_probe+0x4fc/0x1140
-[   59.240550]  really_probe+0x264/0xc00
-[   59.241418]  driver_probe_device+0x208/0x2e0
-[   59.242255]  __device_attach_driver+0x215/0x2d0
-[   59.243150]  bus_for_each_drv+0x154/0x1d0
-[   59.243944]  __device_attach+0x1ba/0x2b0
-[   59.244923]  bus_probe_device+0x1dd/0x290
-[   59.245805]  device_add+0xbac/0x1550
-[   59.246528]  new_device_store+0x1f4/0x400
-[   59.247306]  bus_attr_store+0x7b/0xa0
-[   59.248047]  sysfs_kf_write+0x10f/0x170
-[   59.248941]  kernfs_fop_write+0x283/0x430
-[   59.249843]  __vfs_write+0x81/0x100
-[   59.250546]  vfs_write+0x1ce/0x510
-[   59.251190]  ksys_write+0x104/0x200
-[   59.251873]  do_syscall_64+0xa4/0x4e0
-[   59.252642]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   59.253837]
-[   59.254203] Freed by task 187:
-[   59.254811]  save_stack+0x19/0x80
-[   59.255463]  __kasan_slab_free+0x125/0x170
-[   59.256265]  kfree+0x100/0x440
-[   59.256870]  nsim_dev_remove+0x98/0x100
-[   59.257651]  nsim_bus_remove+0x16/0x20
-[   59.258382]  device_release_driver_internal+0x20b/0x4d0
-[   59.259588]  bus_remove_device+0x2e9/0x5a0
-[   59.260551]  device_del+0x410/0xad0
-[   59.263777]  device_unregister+0x26/0xc0
-[   59.264616]  nsim_bus_dev_del+0x16/0x60
-[   59.265381]  del_device_store+0x2d6/0x3c0
-[   59.266295]  bus_attr_store+0x7b/0xa0
-[   59.267192]  sysfs_kf_write+0x10f/0x170
-[   59.267960]  kernfs_fop_write+0x283/0x430
-[   59.268800]  __vfs_write+0x81/0x100
-[   59.269551]  vfs_write+0x1ce/0x510
-[   59.270252]  ksys_write+0x104/0x200
-[   59.270910]  do_syscall_64+0xa4/0x4e0
-[   59.271680]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   59.272812]
-[   59.273211] The buggy address belongs to the object at ffff8883cbdd3200
-[   59.273211]  which belongs to the cache kmalloc-512 of size 512
-[   59.275838] The buggy address is located 408 bytes inside of
-[   59.275838]  512-byte region [ffff8883cbdd3200, ffff8883cbdd3400)
-[   59.278151] The buggy address belongs to the page:
-[   59.279215] page:ffffea000f2f7400 refcount:1 mapcount:0 mapping:ffff8883ecc0ce00 index:0x0 compound_mapcount: 0
-[   59.281449] flags: 0x200000000010200(slab|head)
-[   59.282356] raw: 0200000000010200 ffffea000f2f3a08 ffffea000f2fd608 ffff8883ecc0ce00
-[   59.283949] raw: 0000000000000000 0000000000150015 00000001ffffffff 0000000000000000
-[   59.285608] page dumped because: kasan: bad access detected
-[   59.286981]
-[   59.287337] Memory state around the buggy address:
-[   59.288310]  ffff8883cbdd3280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   59.289763]  ffff8883cbdd3300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   59.291452] >ffff8883cbdd3380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   59.292945]                             ^
-[   59.293815]  ffff8883cbdd3400: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   59.295220]  ffff8883cbdd3480: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   59.296872] ==================================================================
+patched:
 
-Fixes: da58f90f11f5 ("netdevsim: Add devlink-trap support")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com
----
-David, Stephen, this is going to conflict when you merge net into
-net-next. Should be resolved like this:
-https://github.com/idosch/linux/commit/a5ef0bd24450947570340a2b5caa9e01edc0612e
----
- drivers/net/netdevsim/dev.c | 5 +++++
- 1 file changed, 5 insertions(+)
+rx: 261.4 Mbps 605.1 Kpps
+rx: 261.1 Mbps 604.4 Kpps
+rx: 260.3 Mbps 602.5 Kpps
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 56576d4f34a5..54ca6681ba31 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -806,9 +806,11 @@ static void nsim_dev_port_del_all(struct nsim_dev *nsim_dev)
- {
- 	struct nsim_dev_port *nsim_dev_port, *tmp;
- 
-+	mutex_lock(&nsim_dev->port_list_lock);
- 	list_for_each_entry_safe(nsim_dev_port, tmp,
- 				 &nsim_dev->port_list, list)
- 		__nsim_dev_port_del(nsim_dev_port);
-+	mutex_unlock(&nsim_dev->port_list_lock);
- }
- 
- int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
-@@ -822,14 +824,17 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 		return PTR_ERR(nsim_dev);
- 	dev_set_drvdata(&nsim_bus_dev->dev, nsim_dev);
- 
-+	mutex_lock(&nsim_dev->port_list_lock);
- 	for (i = 0; i < nsim_bus_dev->port_count; i++) {
- 		err = __nsim_dev_port_add(nsim_dev, i);
- 		if (err)
- 			goto err_port_del_all;
- 	}
-+	mutex_unlock(&nsim_dev->port_list_lock);
- 	return 0;
- 
- err_port_del_all:
-+	mutex_unlock(&nsim_dev->port_list_lock);
- 	nsim_dev_port_del_all(nsim_dev);
- 	nsim_dev_destroy(nsim_dev);
- 	return err;
--- 
-2.21.0
+perf top shows no significatn change in bond* and skb_flow* functions
+
+Regards,
+--=20
+Matteo Croce
+per aspera ad upstream
 
