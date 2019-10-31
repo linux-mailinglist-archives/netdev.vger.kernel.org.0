@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D4F7EAE28
+	by mail.lfdr.de (Postfix) with ESMTP id C5B2DEAE29
 	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:01:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727471AbfJaLBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 07:01:05 -0400
-Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:59344 "EHLO
+        id S1727500AbfJaLBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 07:01:06 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:59424 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727151AbfJaLBD (ORCPT
+        by vger.kernel.org with ESMTP id S1727346AbfJaLBD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 07:01:03 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id A7428C08B3;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id A3C9FC08B2;
         Thu, 31 Oct 2019 11:01:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1572519662; bh=YDnL8bpwK/tRJL9FcP1ml8xixy+yOmNErBznAAvEsXE=;
+        t=1572519662; bh=ntn5h+EtiIr26cxuzm1ZrBPes0SSBYvLTZygjleUGzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=ZVpASdIcb0OYgCvj4Jb0YMsy7mpfK6fWYwhIwgCijFhsDCNrVI0Y+lPejRbydOh0x
-         Qjstn+OR1SuMJRa81MVppQH9zlp9LjfLqV/dizl3GK5giakYr5v+6TRUNUkg/Psqkh
-         ygy31CYlNZvjoclqfvK0PI0I92C+rBt4fQCi43n54sGn/WjRbVXTzND3oXaaQCMl8j
-         ta5jw+Iw4NtSOnxcphxUuCEngW6qiagsp4mGelzM0KpfvDeZpamMJHMnijYaolepp0
-         wurJ0DsGPT5rrtFr1I0bKIVMtORptdnOgmRchJwz+GWs71AmwiIHL3SPPMNR/tmu0j
-         wvHZLtEHSYIlg==
+        b=DKM3PU3osEKlPg/G6gOJfS+aTyS2/t/N8kW6/jCSb1PquRB22I5cHaY8TgiaGjLOU
+         tn1Ge6ZgjB3oUMJlWeV97ZOOSAnBjJa5J1+MbtFkDnbf1RD/yoFuc/mm1Go8flCqj2
+         IxGQ7VnhG9MlaY3XyNjCDSpQOK38MZEX2ZQeb2krvD3gpUYS3WQ0WNfQRukNV0umdk
+         z7aHziG0TqsLa6wwcc07wYmPDRs/7k+46f42+6CDy8B+uEJNnrU+4SLEtvRpeWTc8P
+         eAez1tH7mCcZGz0++rIXYjIEdQzNKUHsEiUCYowE0bzn9KGRmy7gWkHvDzkN6DiVx8
+         gy8EvXR3VQ4Lg==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 5E65AA007E;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 65F90A0083;
         Thu, 31 Oct 2019 11:01:00 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 08/10] net: stmmac: xgmac: Disable Flow Control when 1 or more queues are in AV
-Date:   Thu, 31 Oct 2019 12:00:46 +0100
-Message-Id: <efeb1da2bc93722b9cce10c355bb540135cb7327.1572519070.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net v2 09/10] net: stmmac: xgmac: Disable MMC interrupts by default
+Date:   Thu, 31 Oct 2019 12:00:47 +0100
+Message-Id: <a2d61459a7818d16a7b2d04dc2cee1913fcab7c5.1572519070.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1572519070.git.Jose.Abreu@synopsys.com>
 References: <cover.1572519070.git.Jose.Abreu@synopsys.com>
@@ -53,10 +53,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When in AVB mode we need to disable flow control to prevent MAC from
-pausing in TX side.
+MMC interrupts were being enabled, which is not what we want because it
+will lead to a storm of interrupts that are not handled at all. Fix it
+by disabling all MMC interrupts for XGMAC.
 
-Fixes: ec6ea8e3eee9 ("net: stmmac: Add CBS support in XGMAC2")
+Fixes: b6cdf09f51c2 ("net: stmmac: xgmac: Implement MMC counters")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
@@ -70,29 +71,33 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/mmc_core.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 7bd1447f9f47..f148cb2061d8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -473,6 +473,7 @@ static void dwxgmac2_enable_tso(void __iomem *ioaddr, bool en, u32 chan)
- static void dwxgmac2_qmode(void __iomem *ioaddr, u32 channel, u8 qmode)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/mmc_core.c b/drivers/net/ethernet/stmicro/stmmac/mmc_core.c
+index a223584f5f9a..252cf48c5816 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/mmc_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/mmc_core.c
+@@ -176,6 +176,7 @@
+ #define MMC_XGMAC_RX_PKT_SMD_ERR	0x22c
+ #define MMC_XGMAC_RX_PKT_ASSEMBLY_OK	0x230
+ #define MMC_XGMAC_RX_FPE_FRAG		0x234
++#define MMC_XGMAC_RX_IPC_INTR_MASK	0x25c
+ 
+ static void dwmac_mmc_ctrl(void __iomem *mmcaddr, unsigned int mode)
  {
- 	u32 value = readl(ioaddr + XGMAC_MTL_TXQ_OPMODE(channel));
-+	u32 flow = readl(ioaddr + XGMAC_RX_FLOW_CTRL);
+@@ -333,8 +334,9 @@ static void dwxgmac_mmc_ctrl(void __iomem *mmcaddr, unsigned int mode)
  
- 	value &= ~XGMAC_TXQEN;
- 	if (qmode != MTL_QUEUE_AVB) {
-@@ -480,6 +481,7 @@ static void dwxgmac2_qmode(void __iomem *ioaddr, u32 channel, u8 qmode)
- 		writel(0, ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(channel));
- 	} else {
- 		value |= 0x1 << XGMAC_TXQEN_SHIFT;
-+		writel(flow & (~XGMAC_RFE), ioaddr + XGMAC_RX_FLOW_CTRL);
- 	}
+ static void dwxgmac_mmc_intr_all_mask(void __iomem *mmcaddr)
+ {
+-	writel(MMC_DEFAULT_MASK, mmcaddr + MMC_RX_INTR_MASK);
+-	writel(MMC_DEFAULT_MASK, mmcaddr + MMC_TX_INTR_MASK);
++	writel(0x0, mmcaddr + MMC_RX_INTR_MASK);
++	writel(0x0, mmcaddr + MMC_TX_INTR_MASK);
++	writel(MMC_DEFAULT_MASK, mmcaddr + MMC_XGMAC_RX_IPC_INTR_MASK);
+ }
  
- 	writel(value, ioaddr +  XGMAC_MTL_TXQ_OPMODE(channel));
+ static void dwxgmac_read_mmc_reg(void __iomem *addr, u32 reg, u32 *dest)
 -- 
 2.7.4
 
