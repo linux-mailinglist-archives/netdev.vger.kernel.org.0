@@ -2,87 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 007E9EBA42
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:15:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA16EBA49
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:18:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728807AbfJaXPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 19:15:48 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:44799 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728792AbfJaXPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 19:15:48 -0400
-Received: by mail-lj1-f193.google.com with SMTP id g3so2280268ljl.11;
-        Thu, 31 Oct 2019 16:15:47 -0700 (PDT)
+        id S1727382AbfJaXSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 19:18:00 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:33296 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbfJaXSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 19:18:00 -0400
+Received: by mail-lf1-f68.google.com with SMTP id y127so5970473lfc.0
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 16:17:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=f3a8A0/l2UF+i77uTlp/YCUbm9HqgKFeZi6vGFlnxfM=;
-        b=SmBEn84o1TKsmt3gjErkbu0+qg+GHgrFHTr8ShQcBYjQAmltbXb9lIJUHMEbFbVaAR
-         ZO8NeEMPxeDYFekTj/565Kl5lpfB1ngPMvBkTzWL/QX7fa02stoHqk7EIFLWOyvwdKdk
-         i5sTTpEXXvzGgDYYCbx2yhf0FVNxXtzWTkPMq77MxYqtQY7+IJ6lbsrHfJrZ/X0/ph+j
-         JPXbOo9eo9jJfR0uFURUzTqqsKTW9FcOEAeWL1hFGFz9IeDQAtLniP/6ImLTu30e6LJ0
-         9BeXsmxojGRPbj4MAlqBFngmwBm7t5QBqYF00mZMqkS0Rns3vadjPH4/4yh04ilcws+Z
-         8I6A==
+        bh=NibWiHSAeXAM/Iwxngz50i61VNw/YqR3wLT5Y7DYmYg=;
+        b=phSv4YvHNt9TamGa3qCiffTMt3zSeOmece1Bbt9+j6yUNxkmaaSQZcjVUzjiDxOuZi
+         yZaRbFiGpfL+0LSP3kKHT49SI1gGJQ2pboux+N32KJsuoJJr6vE3vbyoxyYLUDK7DQKv
+         JJopHw6VX2AJIlZHciamu53J+X7BfsVtdgHPFSKdU1AIF7KhFB+8GsmzqrE2UAyb+kGW
+         NvRFpVc05ZAov7YBa0cbjARtvHNX/yAUrP9GNNXOEDU8jl2NN2Ay5sPQd+VqtVyvW0yF
+         KkbYjfCrz4/+FU3j0cvvCL5rC+fEtq92rOhdZAzKY60PUpAhIzJ0/gTaycKoN2pmjUn/
+         3SGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=f3a8A0/l2UF+i77uTlp/YCUbm9HqgKFeZi6vGFlnxfM=;
-        b=YSCGaYM5T6cphWIartg8bpMB7Rbrfb22iCzZmGnbbSvGCQL5j3EmAQ8EnqPGScrDWi
-         EqqEdXsrso/MEqBfG37pCwkPRplYvw9s95mdKDX+1YB9LkZ1gph8b/KCjnPNQt5KV059
-         hWuh/MYJLqu0H5NG5mpycUyDJGnb2dxI/3pFa6SZ2s3XK8YRfQzXxxY204BvobXjzRyH
-         gybyXafS8trFx/RshtLbV8uR9Wb94RwwfcxKkwUieftPBIGWpsdnHk9ptJC1WBp2yZNJ
-         GUahxUAz/EYYBkWZdN6zRny+R6DSWwCnm4JysGKpJ2UmkqGP/BmDq7HI34/t7i3JHUwF
-         CTgw==
-X-Gm-Message-State: APjAAAWClDE5soHuJJSHC81XTUtH6uxZnRanyug13Rwvv53BVxDz1Uvd
-        Vd9/TlvT1LXySWVnGZifGiOdZV7PLVi5aHj4pS0=
-X-Google-Smtp-Source: APXvYqzm3NVAIKfvcCxCCPzBMZ+2ono4/z0daXiPapSXvjCWzDnY+jy8fxfoO7CLNJiQrCdtHG1T7cQTF+EnO7Rpnak=
-X-Received: by 2002:a2e:9799:: with SMTP id y25mr6107877lji.228.1572563746550;
- Thu, 31 Oct 2019 16:15:46 -0700 (PDT)
+        bh=NibWiHSAeXAM/Iwxngz50i61VNw/YqR3wLT5Y7DYmYg=;
+        b=HnlG25JIYEy0KrmvfZIsnQ/KXB0Yis/evu2L+j30ZERMkLZkYj4mhfk4V6/lo2X9og
+         TqJhvudUaDem57lRm5xfiSoLeNCHpXu3/e76TVsbXWTcziRn7ZRt9jMRJ5u95MmElG/A
+         vK6TxTw98VdpDHQOaDC2C2+w3ZFHQ6joQ0+qPZPnW/Ye6+AqiCEzLTrpuq/+F9mS9z5j
+         VUE7F0TqKfErkzTUhgSYt0YfkkB9qqvzMu1vpQtWBcKF8jxXnY68+8UzpABunEze8E5u
+         1Jr2tgn3yClbxq0ZxALcNDkbZ1w7gf7aEigOQClI8NVUYkGwYD0TeAH2fdqM9DRdbMUx
+         C+/w==
+X-Gm-Message-State: APjAAAUc15jtvldmZQgZD7b3uSXpor+M5u5BuFiCiok4NccCsHJqpRMt
+        v4QNIGR5D0u42QYuE4VLcpKimIo/mJ6z4/4PVOIuAw==
+X-Google-Smtp-Source: APXvYqyz1aXvDdXWGyKsynhgjuqUPKoM/QcpCEEobAYYLmtrEVyrfmcy3LRQOdv7WCb1jNZd4ekRJ4MHzJWJHqbTAL8=
+X-Received: by 2002:a19:651b:: with SMTP id z27mr5130005lfb.117.1572563878197;
+ Thu, 31 Oct 2019 16:17:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAJ+HfNigHWVk2b+UJPhdCWCTcW=Eh=yfRNHg4=Fr1mv98Pq=cA@mail.gmail.com>
- <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
-In-Reply-To: <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 31 Oct 2019 16:15:34 -0700
-Message-ID: <CAADnVQLJ95j5jfh5jFApjs4bYzOxuPcrMgH9jbdGGvOWQEPRyQ@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
- sockets to receive packets directly from a queue
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "Herbert, Tom" <tom.herbert@intel.com>
+References: <20191021000824.531-1-linus.walleij@linaro.org>
+ <20191021000824.531-10-linus.walleij@linaro.org> <CAK8P3a1qbJC+nFZD0ZKDqWE6ORbEEZbO_Y+MZBS--ym_VQ6fXQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a1qbJC+nFZD0ZKDqWE6ORbEEZbO_Y+MZBS--ym_VQ6fXQ@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 1 Nov 2019 00:17:46 +0100
+Message-ID: <CACRpkdYTL44zkP-2kSLvWkGunL8sRT_XXVRj2LgLd6GKc=Z0zg@mail.gmail.com>
+Subject: Re: [PATCH 09/10] net: ethernet: ixp4xx: Get port ID from base address
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Networking <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 3:38 PM Samudrala, Sridhar
-<sridhar.samudrala@intel.com> wrote:
+On Mon, Oct 21, 2019 at 12:30 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> On Mon, Oct 21, 2019 at 2:10 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+> >
+> > The port->id was picked from the platform device .id field,
+> > but this is not supposed to be used for passing around
+> > random numbers in hardware. Identify the port ID number
+> > from the base address instead.
+> >
+> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 >
-> Alexei, Jakub
+> I'm not sure this is better, as now the driver hardcodes the physical
+> address, and the port->id value is still the same as the pdev->id
+> value that all boards still pass.
 >
-> Do you think it will be possible to avoid this overhead when mitigations are turned ON?
+> Is this just meant to avoid setting the port id explicitly in DT?
 
-yes
+Yes, because the DT bindings people would not like us to encode
+that in DT, as it is a Linuxism.
 
-> The other part of the overhead is going through the redirect path.
->
-> Can i assume that your silence as an indication that you are now okay with optional bypass
-> flag as long as it doesn't effect the normal XDP datapath. If so, i will respin and submit
-> the patches against the latest bpf-next
+To DT these are just three networking engines (NPEs) that the
+OS can choose to use however it likes.
 
-I'm still against it.
-Looks like the only motivation for it is extra overhead due to retpolines.
-imo it's not a good reason to introduce a bunch of extra code helping
-single kernel feature.
-We will have proper solution for indirect calls.
+That they behave differently and that the driver has to cope
+with that is due to different firmware being loaded into the
+different NPE:s. DT doesn't care about that.
+
+I will mention it in the commit message.
+
+Yours,
+Linus Walleij
