@@ -2,101 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC9EEB14E
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 14:36:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7DA7EB193
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 14:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727381AbfJaNgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 09:36:13 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:35154 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726728AbfJaNgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 09:36:12 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9VDYCwY137785;
-        Thu, 31 Oct 2019 13:36:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2019-08-05;
- bh=IxCYNjjZ1IvULQfBfGORGMeo74pUAoobKaMQUOAnRYk=;
- b=msPxw321i7nZR6v5Ouw+0czDdze8cAwLCV07gl/uUZGxJOizphgnbwkckFjzcCA/owpz
- WVSPKVtW3H2cmgLJfL+fcN3TH6jyipFmxn1i9rhdQGQR+RTimbl7sF2qExWz9cpJFrDq
- Y3qukuSP6N3L6QGmJvrm+ugAgcoxRyV4D7U0T7LuW0etgYQCo4pvCYqx9YjuBvQR3Y4D
- yTev8IB19XGlOcvM1JdB4/A5Gdz9cLYnqxy4rXzF+Gsi1kJFxe+fxzhLIJDrZTjHH4Wr
- SbbJUDGyVI/isEU/Gap3nxHm7E6g8t/F7w5FO2bpmyTczN8dERYZMWGVOkkoG2WyZpOi MA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2130.oracle.com with ESMTP id 2vxwhfu9at-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Oct 2019 13:36:06 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x9VDY6r9190805;
-        Thu, 31 Oct 2019 13:36:05 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 2vysbu8tw2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 31 Oct 2019 13:36:05 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x9VDYFNX191691;
-        Thu, 31 Oct 2019 13:36:05 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2vysbu8tv5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 31 Oct 2019 13:36:05 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x9VDa3ut009379;
-        Thu, 31 Oct 2019 13:36:03 GMT
-Received: from dm-oel.no.oracle.com (/10.172.157.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 31 Oct 2019 06:36:03 -0700
-From:   Dag Moxnes <dag.moxnes@oracle.com>
-To:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Cc:     davem@davemloft.net, dag.moxnes@oracle.com, haakon.bugge@oracle.com
-Subject: [PATCH net-next] rds: Cancel pending connections on connection request
-Date:   Thu, 31 Oct 2019 14:35:56 +0100
-Message-Id: <1572528956-8504-1-git-send-email-dag.moxnes@oracle.com>
-X-Mailer: git-send-email 1.7.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9426 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
- definitions=main-1910310141
+        id S1727758AbfJaNui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 09:50:38 -0400
+Received: from mailout2.hostsharing.net ([83.223.78.233]:56595 "EHLO
+        mailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727592AbfJaNui (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 09:50:38 -0400
+X-Greylist: delayed 544 seconds by postgrey-1.27 at vger.kernel.org; Thu, 31 Oct 2019 09:50:37 EDT
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by mailout2.hostsharing.net (Postfix) with ESMTPS id 652F110189A6F;
+        Thu, 31 Oct 2019 14:41:32 +0100 (CET)
+Received: from localhost (pd95be530.dip0.t-ipconnect.de [217.91.229.48])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 1DEEE613C8DC;
+        Thu, 31 Oct 2019 14:41:32 +0100 (CET)
+X-Mailbox-Line: From de461181e53bcec9a75a9630d0d998d555dc8bf5 Mon Sep 17 00:00:00 2001
+Message-Id: <cover.1572528496.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Thu, 31 Oct 2019 14:41:00 +0100
+Subject: [PATCH nf-next,RFC 0/5] Netfilter egress hook
+To:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RDS connections can enter the RDS_CONN_CONNECTING state in two ways:
-1. It can be started using the connection workqueue (this can happen
-both on queue_reconnect and upon send if the workqueue is not up)
-2. It can enter the RDS_CONN_CONNECTING state due to an incoming
-connection request
+Introduce a netfilter egress hook to complement the existing ingress hook.
 
-In case RDS connections enter RDS_CONN_CONNECTION state due to an incoming
-connection request, the connection workqueue might already be scheduled. In
-this case the connection workqueue needs to be cancelled.
+User space support for nft is submitted in a separate patch.
 
-Signed-off-by: Dag Moxnes <dag.moxnes@oracle.com>
----
- net/rds/ib_cm.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+The need for this arose because I had to filter egress packets which do
+not match a specific ethertype.  The most common solution appears to be
+to enslave the interface to a bridge and use ebtables, but that's
+cumbersome to configure and comes with a (small) performance penalty.
+An alternative approach is tc, but that doesn't afford equivalent
+matching options as netfilter.  A bit of googling reveals that more
+people have expressed a desire for egress filtering in the past:
 
-diff --git a/net/rds/ib_cm.c b/net/rds/ib_cm.c
-index 6b345c858d..1fdd76f70d 100644
---- a/net/rds/ib_cm.c
-+++ b/net/rds/ib_cm.c
-@@ -880,6 +880,12 @@ int rds_ib_cm_handle_connect(struct rdma_cm_id *cm_id,
- 			rds_ib_stats_inc(s_ib_connect_raced);
- 		}
- 		goto out;
-+	} else {
-+		/* Cancel any pending reconnect */
-+		struct rds_conn_path *cp = &conn->c_path[0];
-+
-+		cancel_delayed_work_sync(&cp->cp_conn_w);
-+		rds_clear_reconnect_pending_work_bit(cp);
- 	}
- 
- 	ic = conn->c_transport_data;
+https://www.spinics.net/lists/netfilter/msg50038.html
+https://unix.stackexchange.com/questions/512371
+
+I am first performing traffic control with sch_handle_egress() before
+performing filtering with nf_egress().  That order is identical to
+ingress processing.  I'm wondering whether an inverse order would be
+more logical or more beneficial.  Among other things it would allow
+marking packets with netfilter on egress before performing traffic
+control based on that mark.  Thoughts?
+
+Lukas Wunner (5):
+  netfilter: Clean up unnecessary #ifdef
+  netfilter: Document ingress hook
+  netfilter: Rename ingress hook include file
+  netfilter: Generalize ingress hook
+  netfilter: Introduce egress hook
+
+ include/linux/netdevice.h         |   5 ++
+ include/linux/netfilter_ingress.h |  58 -----------------
+ include/linux/netfilter_netdev.h  | 102 ++++++++++++++++++++++++++++++
+ include/uapi/linux/netfilter.h    |   1 +
+ net/core/dev.c                    |  31 ++++++---
+ net/netfilter/Kconfig             |   8 +++
+ net/netfilter/core.c              |  24 +++++--
+ net/netfilter/nft_chain_filter.c  |   4 +-
+ 8 files changed, 161 insertions(+), 72 deletions(-)
+ delete mode 100644 include/linux/netfilter_ingress.h
+ create mode 100644 include/linux/netfilter_netdev.h
+
 -- 
-2.20.1
+2.23.0
 
