@@ -2,122 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D9A4EB71A
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 19:37:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D119EB71F
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 19:37:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729377AbfJaShA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 14:37:00 -0400
-Received: from mga14.intel.com ([192.55.52.115]:53184 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729027AbfJaSg7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 14:36:59 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 11:36:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,252,1569308400"; 
-   d="scan'208";a="212547050"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by orsmga002.jf.intel.com with ESMTP; 31 Oct 2019 11:36:56 -0700
-Date:   Thu, 31 Oct 2019 11:36:56 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 03/19] goldish_pipe: rename local pin_user_pages() routine
-Message-ID: <20191031183656.GD14771@iweiny-DESK2.sc.intel.com>
-References: <20191030224930.3990755-1-jhubbard@nvidia.com>
- <20191030224930.3990755-4-jhubbard@nvidia.com>
+        id S1729387AbfJaShN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 14:37:13 -0400
+Received: from smtprelay0104.hostedemail.com ([216.40.44.104]:43004 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729027AbfJaShN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 14:37:13 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 79B23180F68D6;
+        Thu, 31 Oct 2019 18:37:11 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:355:379:599:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:2895:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3874:4184:4321:5007:6119:7901:7903:8603:10004:10400:11026:11232:11658:11914:12296:12297:12438:12555:12740:12760:12895:13149:13161:13229:13230:13439:14096:14097:14180:14659:14721:21060:21080:21324:21433:21451:21627:21972:30054:30070:30091,0,RBL:47.151.135.224:@perches.com:.lbl8.mailshell.net-62.8.0.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: paper43_4680f56fc043
+X-Filterd-Recvd-Size: 3282
+Received: from XPS-9350.home (unknown [47.151.135.224])
+        (Authenticated sender: joe@perches.com)
+        by omf15.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 31 Oct 2019 18:37:10 +0000 (UTC)
+Message-ID: <8e21b79c1adf5c3c4fb94c11fbe30371c4e96943.camel@perches.com>
+Subject: Re: [PATCH net-next 0/7] net: bridge: convert fdbs to use bitops
+From:   Joe Perches <joe@perches.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org
+Date:   Thu, 31 Oct 2019 11:37:01 -0700
+In-Reply-To: <20191029114559.28653-1-nikolay@cumulusnetworks.com>
+References: <20191029114559.28653-1-nikolay@cumulusnetworks.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191030224930.3990755-4-jhubbard@nvidia.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 03:49:14PM -0700, John Hubbard wrote:
-> 1. Avoid naming conflicts: rename local static function from
-> "pin_user_pages()" to "pin_goldfish_pages()".
+On Tue, 2019-10-29 at 13:45 +0200, Nikolay Aleksandrov wrote:
+> Hi,
+> We'd like to have a well-defined behaviour when changing fdb flags. The
+> problem is that we've added new fields which are changed from all
+> contexts without any locking. We are aware of the bit test/change races
+> and these are fine (we can remove them later), but it is considered
+> undefined behaviour to change bitfields from multiple threads and also
+> on some architectures that can result in unexpected results,
+> specifically when all fields between the changed ones are also
+> bitfields. The conversion to bitops shows the intent clearly and
+> makes them use functions with well-defined behaviour in such cases.
+> There is no overhead for the fast-path, the bit changing functions are
+> used only in special cases when learning and in the slow path.
+> In addition this conversion allows us to simplify fdb flag handling and
+> avoid bugs for future bits (e.g. a forgetting to clear the new bit when
+> allocating a new fdb). All bridge selftests passed, also tried all of the
+> converted bits manually in a VM.
 > 
-> An upcoming patch will introduce a global pin_user_pages()
-> function.
+> Thanks,
+>  Nik
 > 
+> Nikolay Aleksandrov (7):
+>   net: bridge: fdb: convert is_local to bitops
+>   net: bridge: fdb: convert is_static to bitops
+>   net: bridge: fdb: convert is_sticky to bitops
+>   net: bridge: fdb: convert added_by_user to bitops
+>   net: bridge: fdb: convert added_by_external_learn to use bitops
+>   net: bridge: fdb: convert offloaded to use bitops
+>   net: bridge: fdb: set flags directly in fdb_create
 
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Wouldn't it be simpler to change all these bitfields to bool?
 
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->  drivers/platform/goldfish/goldfish_pipe.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/goldfish/goldfish_pipe.c
-> index cef0133aa47a..7ed2a21a0bac 100644
-> --- a/drivers/platform/goldfish/goldfish_pipe.c
-> +++ b/drivers/platform/goldfish/goldfish_pipe.c
-> @@ -257,12 +257,12 @@ static int goldfish_pipe_error_convert(int status)
->  	}
->  }
->  
-> -static int pin_user_pages(unsigned long first_page,
-> -			  unsigned long last_page,
-> -			  unsigned int last_page_size,
-> -			  int is_write,
-> -			  struct page *pages[MAX_BUFFERS_PER_COMMAND],
-> -			  unsigned int *iter_last_page_size)
-> +static int pin_goldfish_pages(unsigned long first_page,
-> +			      unsigned long last_page,
-> +			      unsigned int last_page_size,
-> +			      int is_write,
-> +			      struct page *pages[MAX_BUFFERS_PER_COMMAND],
-> +			      unsigned int *iter_last_page_size)
->  {
->  	int ret;
->  	int requested_pages = ((last_page - first_page) >> PAGE_SHIFT) + 1;
-> @@ -354,9 +354,9 @@ static int transfer_max_buffers(struct goldfish_pipe *pipe,
->  	if (mutex_lock_interruptible(&pipe->lock))
->  		return -ERESTARTSYS;
->  
-> -	pages_count = pin_user_pages(first_page, last_page,
-> -				     last_page_size, is_write,
-> -				     pipe->pages, &iter_last_page_size);
-> +	pages_count = pin_goldfish_pages(first_page, last_page,
-> +					 last_page_size, is_write,
-> +					 pipe->pages, &iter_last_page_size);
->  	if (pages_count < 0) {
->  		mutex_unlock(&pipe->lock);
->  		return pages_count;
-> -- 
-> 2.23.0
-> 
-> 
+The next member is ____cachline_aligned_in_smp so it's not
+like the struct size matters or likely even changes.
+
+---
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index ce2ab1..46d2f10 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -183,12 +183,12 @@ struct net_bridge_fdb_entry {
+ 
+ 	struct net_bridge_fdb_key	key;
+ 	struct hlist_node		fdb_node;
+-	unsigned char			is_local:1,
+-					is_static:1,
+-					is_sticky:1,
+-					added_by_user:1,
+-					added_by_external_learn:1,
+-					offloaded:1;
++	bool				is_local;
++	bool				is_static;
++	bool				is_sticky;
++	bool				added_by_user;
++	bool				added_by_external_learn;
++	bool				offloaded;
+ 
+ 	/* write-heavy members should not affect lookups */
+ 	unsigned long			updated ____cacheline_aligned_in_smp;
+
+
