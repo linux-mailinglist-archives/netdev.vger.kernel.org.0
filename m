@@ -2,119 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DBEAEADEE
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 11:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01E2FEAE07
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 11:58:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727316AbfJaKz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 06:55:56 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43312 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726864AbfJaKz4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 06:55:56 -0400
-Received: from 38.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.38] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iQ87H-0005tq-71; Thu, 31 Oct 2019 11:55:47 +0100
-Date:   Thu, 31 Oct 2019 11:55:46 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Daniel Borkmann <borkmann@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Sage <eric@sage.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Subject: Re: Compile build issues with samples/bpf/ again
-Message-ID: <20191031105546.GA24528@pc-63.home>
-References: <20191030114313.75b3a886@carbon>
- <CAJ+HfNhSsnFXFG1ZHYCxSmYjdv0bWWszToJzmH1KFn7G5CBavQ@mail.gmail.com>
- <20191030120551.68f8b67b@carbon>
- <d7d91ac5-a579-2ada-f96d-4239b8dc11b6@iogearbox.net>
- <20191030153340.GE27327@kernel.org>
+        id S1727312AbfJaK6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 06:58:21 -0400
+Received: from forward101o.mail.yandex.net ([37.140.190.181]:51347 "EHLO
+        forward101o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726897AbfJaK6V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 06:58:21 -0400
+Received: from mxback27j.mail.yandex.net (mxback27j.mail.yandex.net [IPv6:2a02:6b8:0:1619::227])
+        by forward101o.mail.yandex.net (Yandex) with ESMTP id CEB973C01509;
+        Thu, 31 Oct 2019 13:58:15 +0300 (MSK)
+Received: from iva6-6f4302ae52e5.qloud-c.yandex.net (iva6-6f4302ae52e5.qloud-c.yandex.net [2a02:6b8:c0c:9a82:0:640:6f43:2ae])
+        by mxback27j.mail.yandex.net (nwsmtp/Yandex) with ESMTP id MqTxeuNTtt-wEaiEtox;
+        Thu, 31 Oct 2019 13:58:15 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; s=mail; t=1572519495;
+        bh=CnUEsomcZToujM6zlvvqh/M/VDXtZjPQrvhlDicaFhA=;
+        h=In-Reply-To:From:To:Subject:Cc:Date:References:Message-ID;
+        b=I6y0jQZyDWddPsb6XQzTUD9AGwNj+wzirysDdK6n3vAKco0tvXiWJXopQFW6Hul2i
+         mW3dDcFOxIOpv3/qQonhhobhPY9809zVHbCFJkYa8zuWuLcRz+phBikZ6JcovA3iv4
+         p92mVe+TLRskv3vPizha5J+XQWdjNhWgSw2CViMo=
+Authentication-Results: mxback27j.mail.yandex.net; dkim=pass header.i=@flygoat.com
+Received: by iva6-6f4302ae52e5.qloud-c.yandex.net (nwsmtp/Yandex) with ESMTPSA id apLSeE0B5F-vTVigpuo;
+        Thu, 31 Oct 2019 13:58:13 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+Subject: Re: [PATCH 4/5] dt-bindings: net: document loongson.pci-gmac
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     linux-mips@vger.kernel.org, davem@davemloft.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, axboe@kernel.dk,
+        peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, bhelgaas@google.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-pci@vger.kernel.org
+References: <20191030135347.3636-1-jiaxun.yang@flygoat.com>
+ <20191030135347.3636-5-jiaxun.yang@flygoat.com>
+ <20191031083509.GA30739@netronome.com>
+From:   Jiaxun Yang <jiaxun.yang@flygoat.com>
+Message-ID: <a93eedb9-8863-3802-a563-fe4955d846c3@flygoat.com>
+Date:   Thu, 31 Oct 2019 18:57:16 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20191031083509.GA30739@netronome.com>
+Content-Type: text/plain; charset=gbk; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191030153340.GE27327@kernel.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25619/Thu Oct 31 09:55:29 2019)
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 12:33:40PM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Wed, Oct 30, 2019 at 04:07:32PM +0100, Daniel Borkmann escreveu:
-> > On 10/30/19 12:05 PM, Jesper Dangaard Brouer wrote:
-> > > On Wed, 30 Oct 2019 11:53:21 +0100
-> > > Björn Töpel <bjorn.topel@gmail.com> wrote:
-> > > > On Wed, 30 Oct 2019 at 11:43, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> > [...]
-> > > > > It is annoy to experience that simply building kernel tree samples/bpf/
-> > > > > is broken as often as it is.  Right now, build is broken in both DaveM
-> > > > > net.git and bpf.git.  ACME have some build fixes queued from Björn
-> > > > > Töpel. But even with those fixes, build (for samples/bpf/task_fd_query_user.c)
-> > > > > are still broken, as reported by Eric Sage (15 Oct), which I have a fix for.
-> > > > 
-> > > > Hmm, something else than commit e55190f26f92 ("samples/bpf: Fix build
-> > > > for task_fd_query_user.c")?
-> > > 
-> > > I see, you already fixed this... and it is in the bpf.git tree.
-> > > 
-> > > Then we only need your other fixes from ACME's tree.  I just cloned a
-> > > fresh version of git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-> > > to check that 'make M=samples/bpf' still fails.
-> > 
-> > Correct, the two fixes from Bjorn which made the test_attr__* optional were
-> > taken by Arnaldo given the main change was under tools/perf/perf-sys.h. If
-> > you cherry pick these ...
-> > 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=06f84d1989b7e58d56fa2e448664585749d41221
-> > https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/commit/?id=fce9501aec6bdda45ef3a5e365a5e0de7de7fe2d
-> > 
-> > ... into bpf tree, then all builds fine. When Arnaldo took them, my assumption
-> > was that these fixes would have been routed by him to Linus' tree, and upon
-> > resync we pull them automatically into bpf tree again.
-> > 
-> > Look like didn't happen yet at this point, Arnaldo?
-> 
-> Yes, it will go to Linus, I was just unsure when was that it should go,
-> i.e. next or in the current window, so I've queued it up to next.
-> 
-> [acme@quaco perf]$ git tag --contains 06f84d1989b7e58d56fa2e448664585749d41221
-> perf-core-for-mingo-5.5-20191011
-> perf-core-for-mingo-5.5-20191021
-> [acme@quaco perf]$
-> 
-> So its in tip, but queued for 5.5, while I think you guys expect this to
-> fast track into 5.4, right? If so, please get that queued up or tell me
-> if you prefer for me to do it.
 
-Personally, I don't think it is super critical, but I tend to agree with
-Jesper that samples code should compile before final release is out the
-door. I can cherry-pick both from tip into bpf tree, no problem. The commit
-will end up twice in git history, but we've done this in very rare occasions
-in the past to get dependencies into bpf.
+ÔÚ 2019/10/31 ÏÂÎç4:35, Simon Horman Ð´µÀ:
+> Hi Jiaxun,
+>
+> thanks for your patch.
+>
+> On Wed, Oct 30, 2019 at 09:53:46PM +0800, Jiaxun Yang wrote:
+>> This binding will provide extra information for PCI enabled
+>> device.
+>>
+>> Signed-off-by: Jiaxun Yang <jiaxun.yang@flygoat.com>
+> Please verify the bindings using dtbs_check as described in
+> Documentation/devicetree/writing-schema.rst
+>
+>> ---
+>>   .../net/wireless/loongson,pci-gmac.yaml       | 71 +++++++++++++++++++
+>>   1 file changed, 71 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml b/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
+>> new file mode 100644
+>> index 000000000000..5f764bd46735
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/wireless/loongson,pci-gmac.yaml
+>> @@ -0,0 +1,71 @@
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/net/allwinner,sun7i-a20-gmac.yaml#
+> The id does not match the filename of the schema.
+>
+> i.e. the above should be:
+>
+> 	$id: http://devicetree.org/schemas/net/wireless/loongson,pci-gmac.yaml#
+>
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Loongson PCI GMAC Device Tree Bindings
+>> +
+>> +allOf:
+>> +  - $ref: "snps,dwmac.yaml#"
+> snps,dwmac.yaml# is in the parent directory relative to loongson,pci-gmac.yaml.
+> So I think the above needs to be:
+>
+> 	$ref: "../snps,dwmac.yaml#"
+>
+>> +
+>> +maintainers:
+>> +  - Jiaxun Yang <jiaxun.yang@flygoat.com>
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: loongson,pci-gmac
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    minItems: 1
+>> +    maxItems: 3
+>> +    items:
+>> +      - description: Combined signal for various interrupt events
+>> +      - description: The interrupt to manage the remote wake-up packet detection
+>> +      - description: The interrupt that occurs when Rx exits the LPI state
+>> +
+>> +  interrupt-names:
+>> +    minItems: 1
+>> +    maxItems: 3
+>> +    items:
+>> +      - const: macirq
+>> +      - const: eth_wake_irq
+>> +      - const: eth_lpi
+>> +
+>> +  clocks:
+>> +    items:
+>> +      - description: GMAC main clock
+>> +
+>> +  clock-names:
+>> +    items:
+>> +      - const: stmmaceth
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - interrupts
+>> +  - interrupt-names
+>> +  - clocks
+>> +  - clock-names
+>> +  - phy-mode
+>> +
+>> +examples:
+>> +  - |
+>> +    gmac: ethernet@ {
+> I would have expected a bus address here, f.e.:
+>
+> 	gmac: ethernet@0x00001800
+>
+>> +        compatible = "loongson,pci-irq";
+>> +        reg = <0x00001800 0 0 0 0>;
+> I think there is one to many cell in the above, perhaps it should be.
+>
+> 	reg = <0x00001800 0 0 0>;
+>
+> Also, I would expect the registers to be wider than 0, i.e. no registers.
 
-> I agree with Jesper that when one changes something in common code, then
-> one does have to test all tools/ that may use that common code, but in
-> this specific case the breakage happened because tools/perf/ code was
-> used outside tools/perf/ which I completely didn't expect to happen,
-> whatever that is in tools/perf/perf-sys.h better go to tools/include or
-> tools/arch or some other common area, agreed?
+Hi Simon,
 
-Some of the BPF samples code seems to be using sys_perf_event_open(), for
-other BPF bits under tools/ this seems not the case.
+Thanks for your suggestions above, will fix in v1.
 
-Thanks,
-Daniel
+Here, the reg domain is a standard 5-cell representing a PCI device,
+
+See: Documentation/devicetree/bindings/pci/pci.txt and IEEE Std 
+1275-1994,<https://github.com/torvalds/linux/blob/master/Documentation/devicetree/bindings/pci/pci.txt>
+
+Should I add some description?
+
+Jiaxun
+
