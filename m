@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F16EB8A2
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 21:59:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44030EB8A6
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 22:02:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729819AbfJaU75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 16:59:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52970 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727742AbfJaU75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 16:59:57 -0400
-Received: from 38.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.38] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iQHXu-0002uN-Fj; Thu, 31 Oct 2019 21:59:54 +0100
-Date:   Thu, 31 Oct 2019 21:59:53 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
-Cc:     netdev@vger.kernel.org, ast@kernel.org,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, jakub.kicinski@netronome.com, toke@redhat.com
-Subject: Re: [PATCH bpf] bpf: change size to u64 for
- bpf_map_{area_alloc,charge_init}()
-Message-ID: <20191031205953.GB24528@pc-63.home>
-References: <20191029154307.23053-1-bjorn.topel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191029154307.23053-1-bjorn.topel@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25619/Thu Oct 31 09:55:29 2019)
+        id S1729818AbfJaVCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 17:02:14 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:60942 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727742AbfJaVCO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 17:02:14 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9D2B114FF95DF;
+        Thu, 31 Oct 2019 14:02:13 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 14:02:13 -0700 (PDT)
+Message-Id: <20191031.140213.1989291310066375753.davem@davemloft.net>
+To:     edumazet@google.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        ncardwell@google.com, ycheng@google.com, w@1wt.eu, ycao009@ucr.edu
+Subject: Re: [PATCH net] net: increase SOMAXCONN to 4096
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191030163620.140387-1-edumazet@google.com>
+References: <20191030163620.140387-1-edumazet@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 31 Oct 2019 14:02:13 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 04:43:07PM +0100, Björn Töpel wrote:
-> From: Björn Töpel <bjorn.topel@intel.com>
-> 
-> The functions bpf_map_area_alloc() and bpf_map_charge_init() prior
-> this commit passed the size parameter as size_t. In this commit this
-> is changed to u64.
-> 
-> All users of these functions avoid size_t overflows on 32-bit systems,
-> by explicitly using u64 when calculating the allocation size and
-> memory charge cost. However, since the result was narrowed by the
-> size_t when passing size and cost to the functions, the overflow
-> handling was in vain.
-> 
-> Instead of changing all call sites to size_t and handle overflow at
-> the call site, the parameter is changed to u64 and checked in the
-> functions above.
-> 
-> Fixes: d407bd25a204 ("bpf: don't trigger OOM killer under pressure with map alloc")
-> Fixes: c85d69135a91 ("bpf: move memory size checks to bpf_map_charge_init()")
-> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 30 Oct 2019 09:36:20 -0700
 
-Applied, thanks!
+> SOMAXCONN is /proc/sys/net/core/somaxconn default value.
+> 
+> It has been defined as 128 more than 20 years ago.
+> 
+> Since it caps the listen() backlog values, the very small value has
+> caused numerous problems over the years, and many people had
+> to raise it on their hosts after beeing hit by problems.
+> 
+> Google has been using 1024 for at least 15 years, and we increased
+> this to 4096 after TCP listener rework has been completed, more than
+> 4 years ago. We got no complain of this change breaking any
+> legacy application.
+> 
+> Many applications indeed setup a TCP listener with listen(fd, -1);
+> meaning they let the system select the backlog.
+> 
+> Raising SOMAXCONN lowers chance of the port being unavailable under
+> even small SYNFLOOD attack, and reduces possibilities of side channel
+> vulnerabilities.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+
+Applied.
