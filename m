@@ -2,60 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE00EB7F3
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 20:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B75DEB80D
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 20:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729615AbfJaT2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 15:28:07 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:42876 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729347AbfJaT2H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 15:28:07 -0400
-Received: by mail-lj1-f194.google.com with SMTP id a21so7842343ljh.9
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 12:28:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TnCbq2000sgK9KKfW0a0I1LlWJLVNeCp1tHN1Di2rZ0=;
-        b=K4WeBKfV4LVJUx9dWAsJXRPNV5GU2cS/3jB7ikEIQNTer3zdMFt55qG5Dv3SG0otQ2
-         XgYvoxht5SxklhFM/+jjbxfv/50HS2Oa/WQ2lBh/qeNEIvyWWQnT3obeCZUsEaSTCLwp
-         8BvACCPR4tHb1dtnWdgF7RweVv2ZNg7HD4Jl0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TnCbq2000sgK9KKfW0a0I1LlWJLVNeCp1tHN1Di2rZ0=;
-        b=m/9ynt6a3TAxhLu9Na7Vs8rc/PJIqOj0R6JL84Stp5T1fVukl5N6LpNiLUUtrhXMX0
-         MgfJqm7sLX+RIUDKCljyg6Iksod/oxNKyDzTPyf66a7HlmnWZFidtSIiScblm0EVWSD1
-         Sv+QwBMfySsxbzj9xQ4lsYsV/JqX4Pt0jXV2l5Sx0iJGVxiOdwnwXe04OoiiFNA97uju
-         BJsA84+Apkg4UkMKJO4vX2cGU1qPjSJrhk0m9Hw+H39wOPiaZ68YXB91yUXAQIe5ylqE
-         809j3bXsZUur6788gUDv4Ej6VOPx56NWPw5KIehtEDBa6aF2dpvqCNrhJoZcZ/SI8osO
-         TdSQ==
-X-Gm-Message-State: APjAAAXGEQ/tkZA8TXvufzh0mM6WdFkvQyTy8lnB1qDJHTPqqJQPlcYz
-        5aOom0sI0CxzGyHqeJHPSBoo+g==
-X-Google-Smtp-Source: APXvYqyUQ5kzEbBRvsqE0Zym867THLLJuL57Z2vzRG+u5rwex/Ypu4aDDFy0rYIsQ+5wxV2eJatiFw==
-X-Received: by 2002:a2e:b5a2:: with SMTP id f2mr5300902ljn.108.1572550083554;
-        Thu, 31 Oct 2019 12:28:03 -0700 (PDT)
-Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id d27sm2432810lfb.3.2019.10.31.12.28.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 31 Oct 2019 12:28:02 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/7] net: bridge: convert fdbs to use bitops
-To:     Joe Perches <joe@perches.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org
-References: <20191029114559.28653-1-nikolay@cumulusnetworks.com>
- <8e21b79c1adf5c3c4fb94c11fbe30371c4e96943.camel@perches.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <14ab24ad-e730-989a-db61-9cd377104a7a@cumulusnetworks.com>
-Date:   Thu, 31 Oct 2019 21:28:01 +0200
+        id S1729626AbfJaTkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 15:40:19 -0400
+Received: from mail1.perex.cz ([77.48.224.245]:59586 "EHLO mail1.perex.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727382AbfJaTkT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 15:40:19 -0400
+X-Greylist: delayed 506 seconds by postgrey-1.27 at vger.kernel.org; Thu, 31 Oct 2019 15:40:17 EDT
+Received: from mail1.perex.cz (localhost [127.0.0.1])
+        by smtp1.perex.cz (Perex's E-mail Delivery System) with ESMTP id 6FAA0A003F;
+        Thu, 31 Oct 2019 20:31:49 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.perex.cz 6FAA0A003F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=perex.cz; s=default;
+        t=1572550309; bh=e7FOMXFcnMMpy8m/IR2ThaAKpnMK1j6Jiw3vhVsS7l4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=VlE80nabt963GZrSP5Qtjes5VtzKFkDZ+sKse3vg1zq5VPrK5pv+84+ZiFHBO0zSl
+         aTXyOs5kzWOdJ7eBA1cMW2UkOyF/8Nm2npY5p1CfWdwtUg+3IEaWLgcVEwgv0mB8hN
+         HbpJ+NtAo2obtEc12CRq7rTQvtlbhF4xJs5/+gJk=
+Received: from p50.perex-int.cz (unknown [192.168.100.94])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: perex)
+        by mail1.perex.cz (Perex's E-mail Delivery System) with ESMTPSA;
+        Thu, 31 Oct 2019 20:31:43 +0100 (CET)
+Subject: Re: [PATCH] hp100: Move 100BaseVG AnyLAN driver to staging
+To:     Joe Perches <joe@perches.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org
+References: <4024b52c917975cebde58afc094eed1a107622c2.1572545956.git.joe@perches.com>
+From:   Jaroslav Kysela <perex@perex.cz>
+Message-ID: <8b3f9530-a94c-8d6d-9a3d-4d5d3d1f97ae@perex.cz>
+Date:   Thu, 31 Oct 2019 20:31:43 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.1.1
 MIME-Version: 1.0
-In-Reply-To: <8e21b79c1adf5c3c4fb94c11fbe30371c4e96943.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <4024b52c917975cebde58afc094eed1a107622c2.1572545956.git.joe@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,75 +50,111 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/10/2019 20:37, Joe Perches wrote:
-> On Tue, 2019-10-29 at 13:45 +0200, Nikolay Aleksandrov wrote:
->> Hi,
->> We'd like to have a well-defined behaviour when changing fdb flags. The
->> problem is that we've added new fields which are changed from all
->> contexts without any locking. We are aware of the bit test/change races
->> and these are fine (we can remove them later), but it is considered
->> undefined behaviour to change bitfields from multiple threads and also
->> on some architectures that can result in unexpected results,
->> specifically when all fields between the changed ones are also
->> bitfields. The conversion to bitops shows the intent clearly and
->> makes them use functions with well-defined behaviour in such cases.
->> There is no overhead for the fast-path, the bit changing functions are
->> used only in special cases when learning and in the slow path.
->> In addition this conversion allows us to simplify fdb flag handling and
->> avoid bugs for future bits (e.g. a forgetting to clear the new bit when
->> allocating a new fdb). All bridge selftests passed, also tried all of the
->> converted bits manually in a VM.
->>
->> Thanks,
->>  Nik
->>
->> Nikolay Aleksandrov (7):
->>   net: bridge: fdb: convert is_local to bitops
->>   net: bridge: fdb: convert is_static to bitops
->>   net: bridge: fdb: convert is_sticky to bitops
->>   net: bridge: fdb: convert added_by_user to bitops
->>   net: bridge: fdb: convert added_by_external_learn to use bitops
->>   net: bridge: fdb: convert offloaded to use bitops
->>   net: bridge: fdb: set flags directly in fdb_create
+Dne 31. 10. 19 v 19:23 Joe Perches napsal(a):
+> 100BaseVG AnyLAN hasn't been useful since 1996 or so and even then
+> didn't sell many devices.  It's unlikely any are still in use.
 > 
-> Wouldn't it be simpler to change all these bitfields to bool?
+> Move the driver to staging with the intent of removing it altogether
+> one day.
 > 
-> The next member is ____cachline_aligned_in_smp so it's not
-> like the struct size matters or likely even changes.
-> 
+> Signed-off-by: Joe Perches <joe@perches.com>
 
-I guess it's just preference now, I'd prefer having 1 field which is well
-packed and can contain more bits (and more are to come) instead of bunch
-of bool or u8 fields which is a waste of space. We can set them together, it's more
-compact and also the atomic bitops make it clear that these can change
-without any locking. We're about to add new bits to these and it's nice
-to have a clear understanding and well-defined API for them. Specifically
-the test_and_set/clear_bit() can simplify code considerably.
+Acked-by: Jaroslav Kysela <perex@perex.cz>
+
 
 > ---
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index ce2ab1..46d2f10 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -183,12 +183,12 @@ struct net_bridge_fdb_entry {
->  
->  	struct net_bridge_fdb_key	key;
->  	struct hlist_node		fdb_node;
-> -	unsigned char			is_local:1,
-> -					is_static:1,
-> -					is_sticky:1,
-> -					added_by_user:1,
-> -					added_by_external_learn:1,
-> -					offloaded:1;
-> +	bool				is_local;
-> +	bool				is_static;
-> +	bool				is_sticky;
-> +	bool				added_by_user;
-> +	bool				added_by_external_learn;
-> +	bool				offloaded;
->  
->  	/* write-heavy members should not affect lookups */
->  	unsigned long			updated ____cacheline_aligned_in_smp;
+>   MAINTAINERS                                   | 4 ++--
+>   drivers/net/ethernet/Kconfig                  | 1 -
+>   drivers/net/ethernet/Makefile                 | 1 -
+>   drivers/staging/Kconfig                       | 2 ++
+>   drivers/staging/Makefile                      | 1 +
+>   drivers/{net/ethernet => staging}/hp/Kconfig  | 0
+>   drivers/{net/ethernet => staging}/hp/Makefile | 0
+>   drivers/{net/ethernet => staging}/hp/hp100.c  | 0
+>   drivers/{net/ethernet => staging}/hp/hp100.h  | 0
+>   9 files changed, 5 insertions(+), 4 deletions(-)
+>   rename drivers/{net/ethernet => staging}/hp/Kconfig (100%)
+>   rename drivers/{net/ethernet => staging}/hp/Makefile (100%)
+>   rename drivers/{net/ethernet => staging}/hp/hp100.c (100%)
+>   rename drivers/{net/ethernet => staging}/hp/hp100.h (100%)
 > 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index c6c34d..bea725 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -7444,8 +7444,8 @@ F:	drivers/platform/x86/tc1100-wmi.c
+>   
+>   HP100:	Driver for HP 10/100 Mbit/s Voice Grade Network Adapter Series
+>   M:	Jaroslav Kysela <perex@perex.cz>
+> -S:	Maintained
+> -F:	drivers/net/ethernet/hp/hp100.*
+> +S:	Obsolete
+> +F:	drivers/staging/hp/hp100.*
+>   
+>   HPET:	High Precision Event Timers driver
+>   M:	Clemens Ladisch <clemens@ladisch.de>
+> diff --git a/drivers/net/ethernet/Kconfig b/drivers/net/ethernet/Kconfig
+> index e8e9c16..4ded81 100644
+> --- a/drivers/net/ethernet/Kconfig
+> +++ b/drivers/net/ethernet/Kconfig
+> @@ -78,7 +78,6 @@ source "drivers/net/ethernet/freescale/Kconfig"
+>   source "drivers/net/ethernet/fujitsu/Kconfig"
+>   source "drivers/net/ethernet/google/Kconfig"
+>   source "drivers/net/ethernet/hisilicon/Kconfig"
+> -source "drivers/net/ethernet/hp/Kconfig"
+>   source "drivers/net/ethernet/huawei/Kconfig"
+>   source "drivers/net/ethernet/i825xx/Kconfig"
+>   source "drivers/net/ethernet/ibm/Kconfig"
+> diff --git a/drivers/net/ethernet/Makefile b/drivers/net/ethernet/Makefile
+> index 05abeb..f8f38d 100644
+> --- a/drivers/net/ethernet/Makefile
+> +++ b/drivers/net/ethernet/Makefile
+> @@ -41,7 +41,6 @@ obj-$(CONFIG_NET_VENDOR_FREESCALE) += freescale/
+>   obj-$(CONFIG_NET_VENDOR_FUJITSU) += fujitsu/
+>   obj-$(CONFIG_NET_VENDOR_GOOGLE) += google/
+>   obj-$(CONFIG_NET_VENDOR_HISILICON) += hisilicon/
+> -obj-$(CONFIG_NET_VENDOR_HP) += hp/
+>   obj-$(CONFIG_NET_VENDOR_HUAWEI) += huawei/
+>   obj-$(CONFIG_NET_VENDOR_IBM) += ibm/
+>   obj-$(CONFIG_NET_VENDOR_INTEL) += intel/
+> diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+> index 6f1fa4..333308 100644
+> --- a/drivers/staging/Kconfig
+> +++ b/drivers/staging/Kconfig
+> @@ -125,4 +125,6 @@ source "drivers/staging/exfat/Kconfig"
+>   
+>   source "drivers/staging/qlge/Kconfig"
+>   
+> +source "drivers/staging/hp/Kconfig"
+> +
+>   endif # STAGING
+> diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+> index a90f9b3..e4943c 100644
+> --- a/drivers/staging/Makefile
+> +++ b/drivers/staging/Makefile
+> @@ -53,3 +53,4 @@ obj-$(CONFIG_UWB)		+= uwb/
+>   obj-$(CONFIG_USB_WUSB)		+= wusbcore/
+>   obj-$(CONFIG_EXFAT_FS)		+= exfat/
+>   obj-$(CONFIG_QLGE)		+= qlge/
+> +obj-$(CONFIG_NET_VENDOR_HP)	+= hp/
+> diff --git a/drivers/net/ethernet/hp/Kconfig b/drivers/staging/hp/Kconfig
+> similarity index 100%
+> rename from drivers/net/ethernet/hp/Kconfig
+> rename to drivers/staging/hp/Kconfig
+> diff --git a/drivers/net/ethernet/hp/Makefile b/drivers/staging/hp/Makefile
+> similarity index 100%
+> rename from drivers/net/ethernet/hp/Makefile
+> rename to drivers/staging/hp/Makefile
+> diff --git a/drivers/net/ethernet/hp/hp100.c b/drivers/staging/hp/hp100.c
+> similarity index 100%
+> rename from drivers/net/ethernet/hp/hp100.c
+> rename to drivers/staging/hp/hp100.c
+> diff --git a/drivers/net/ethernet/hp/hp100.h b/drivers/staging/hp/hp100.h
+> similarity index 100%
+> rename from drivers/net/ethernet/hp/hp100.h
+> rename to drivers/staging/hp/hp100.h
 > 
 
+-- 
+Jaroslav Kysela <perex@perex.cz>
+Linux Sound Maintainer; ALSA Project; Red Hat, Inc.
