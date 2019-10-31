@@ -2,127 +2,223 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29926EB593
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A041DEB5AB
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:59:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728662AbfJaQ64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 12:58:56 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39673 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728597AbfJaQ64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:58:56 -0400
-Received: by mail-pf1-f196.google.com with SMTP id x28so1544271pfo.6
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 09:58:54 -0700 (PDT)
+        id S1728881AbfJaQ7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 12:59:45 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:39955 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728858AbfJaQ7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:59:44 -0400
+Received: by mail-vs1-f65.google.com with SMTP id v10so4546959vsc.7
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 09:59:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=f05iF9G/ns17rw6cWJfFu0PgDfLMjLHyebXYR1Ckmlg=;
-        b=DkSoRXJw1W+71GwuFvu0kD3++jlSponfDd7ClMOLNsxEwkHMn0jd8JKBqtihFBP0Fj
-         8FvYmMSpvVEb3/+tgTiUHEvX8Cx8Dcc+PLviBuzmNqfs/2u5FSBWMhBF4qljZSF4wzuM
-         lpx16wijqYPNnd285Yh/IqVKFoASglncCZBa0gp5eG2eExIbOFojDjadlR4v8wBcsX3Y
-         8hzm0Y+ffSUK/lmDtNGVxc2IPU/QNSpC8Jhmdhmps0mM9FQL/bcD6qTh26G61dhuQnBj
-         Q3jsEJWUhKP7+xgpo2g+0QDg6dB5Z7SfmK87pFAXgOxBXPXr4Mra0jLePTQv+gHOyD/+
-         rf9A==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rBXjy64QhAJngU1bLCgW8NmRIabhTqAJ4rYpSUJH/vA=;
+        b=MFPuR6yrPRTAmL9shB7f7ccQmfeaxlzOoX57mPiTDTNTInAdnhDq1qiWaZtEhzbSLI
+         aLEv7aV9AfTmYN2RGLov44yiuhk/5h8r4Z03gT3ZXWcaMGCrA2GoczDlv5IVrmoOhv4t
+         WcfOOehtYLlEpYEn0voLWT83cdteFabhYfsqZC54x6OQXZwgDcqZkFmA5SMMHwjWTNSG
+         sYg9VpHJwIznNow79XZhVdyqPv493SMXP9sXVX7fApFQoibaYXQZ08TdkHafK52H7w9Y
+         fikkLMrmkfpckOrp6DlZiXfmWE8rD0t0Bw6Jbyw+t93JF2MRH6PaH9+QYnvO5UucNtMy
+         ON5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=f05iF9G/ns17rw6cWJfFu0PgDfLMjLHyebXYR1Ckmlg=;
-        b=JDCb4DKWQ6WmK1olFBKg+b1sV/X88ZjfBl2qduAqpM2+NnvYKyVZ61tJ7EPPf/ONbt
-         l0BffFvGWURiNeHBnzu1bOctuamuihvNuNNYNVSZuTD3mGGFYgFX5q6/udtnysd4Ctm0
-         VTkEYdeQMWB6w6iOrWzv5qlJPE0cl5YSSg+iL8lDTuU5fU+7Sw2MPguZXeexjhDwRWcs
-         nVAX7vbG0+A9bLbN57rGVxNTZaxgCmWSlPopMO6btZsXSE8z5ouA4y2/V5OWouEil/Yg
-         vWJJBKqi+4JW+/ci5M3lf1ErCMEWYYEQIDqME6z0una6AFeUp+d3OIgdBYQpr5i/LaOV
-         kkZg==
-X-Gm-Message-State: APjAAAWeC46D+Fy5/DOUu4TPfwxHXGIx8TnQw8djsO2C32535vOIerT0
-        xxR81EzXnT0SGm9xL6zSwiYHVkDv
-X-Google-Smtp-Source: APXvYqwFrU1yqpKXXBPuvye6oNxNqBJVeGKNV+dW703NTSZb4ccjtQbJslh1Up020KD8f+yf0tL92A==
-X-Received: by 2002:a63:3603:: with SMTP id d3mr8094466pga.208.1572541133575;
-        Thu, 31 Oct 2019 09:58:53 -0700 (PDT)
-Received: from localhost.localdomain ([2001:470:b:9c3:9e5c:8eff:fe4f:f2d0])
-        by smtp.gmail.com with ESMTPSA id h9sm4349964pfn.167.2019.10.31.09.58.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Oct 2019 09:58:52 -0700 (PDT)
-Subject: [next-queue/net-next PATCH] e1000e: Use netdev_info instead of
- pr_info for link messages
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     joe@perches.com, jeffrey.t.kirsher@intel.com, davem@davemloft.net
-Cc:     zdai@linux.vnet.ibm.com, nhorman@redhat.com,
-        netdev@vger.kernel.org, smorumu1@in.ibm.com,
-        intel-wired-lan@lists.osuosl.org, aaron.f.brown@intel.com,
-        sassmann@redhat.com
-Date:   Thu, 31 Oct 2019 09:58:51 -0700
-Message-ID: <20191031165537.24154.48242.stgit@localhost.localdomain>
-In-Reply-To: <cf197ef61703cbaa64ac522cf5d191b4b74f64d6.camel@linux.intel.com>
-References: <cf197ef61703cbaa64ac522cf5d191b4b74f64d6.camel@linux.intel.com>
-User-Agent: StGit/0.17.1-dirty
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rBXjy64QhAJngU1bLCgW8NmRIabhTqAJ4rYpSUJH/vA=;
+        b=c1FO04ysxfISu4DFf6IpLBd9BF6a6d0/HRNo6dUl3gLU9SUmQdPU7V3oJRo3KXvj+K
+         S/I65dEoyqfVhQCc5jI7mXyWfu11H+n8IFmvXxGQebSGPfApYedW1fQM4DatfGueVpQz
+         k0XUvBbllpgZmekVEtCQmfD/185udi4ENC0D7ddzvCqgYJHsQTBrQ6pvtmXY2n2eW9m3
+         3PXNCvE/wZR3pQ5FX26ZdOyscBlCGqX7VaUU5ySw950TPLvbsKHejlGClkPRqYwf9c91
+         jFW2A529TJbNLKIMjE2a0oPTMMAxAAi/AthdImrk7twk+SG/ifVIIfqETb/sCnB6lUxp
+         mOWw==
+X-Gm-Message-State: APjAAAUIuZRFoMzoG6zyOn4Cu5j5IWSKMg4ULSBam/DYhCrbgr8Jz/dh
+        6/6aQEk+JcMJC9TfIaTm904+QtO4iIhMLVkCEWwHBA==
+X-Google-Smtp-Source: APXvYqxUDYzIwZUL5FbFN+ofBpA8OFEwiksm7t/nLo1J8VkpA/QJoge6ynXgiOcDbF0m20N6ahz2Rokt9mlDmh48qB4=
+X-Received: by 2002:a67:fb5a:: with SMTP id e26mr3354691vsr.200.1572541182099;
+ Thu, 31 Oct 2019 09:59:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+References: <cover.1571510481.git.hns@goldelico.com> <bec9d76e6da03d734649b9bdf76e9d575c57631a.1571510481.git.hns@goldelico.com>
+ <CAPDyKFrMQ3fBaeeAYVJfUdL8m=PDRU9Xt_9oGw6D1XOY68qDuQ@mail.gmail.com> <D9A82904-35BE-41F2-A308-9A49606428B1@goldelico.com>
+In-Reply-To: <D9A82904-35BE-41F2-A308-9A49606428B1@goldelico.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 31 Oct 2019 17:59:05 +0100
+Message-ID: <CAPDyKFrbOH=ROv_JefSQsEnmGqN6oFVfbhpqscOK=KUqJgzarw@mail.gmail.com>
+Subject: Re: [PATCH v2 03/11] DTS: ARM: pandora-common: define wl1251 as child
+ node of mmc3
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     =?UTF-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        David Sterba <dsterba@suse.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-omap <linux-omap@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>, kernel@pyra-handheld.com,
+        "# 4.0+" <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+On Wed, 30 Oct 2019 at 18:25, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+>
+>
+> > Am 30.10.2019 um 17:44 schrieb Ulf Hansson <ulf.hansson@linaro.org>:
+> >
+> > On Sat, 19 Oct 2019 at 20:42, H. Nikolaus Schaller <hns@goldelico.com> wrote:
+> >>
+> >> Since v4.7 the dma initialization requires that there is a
+> >> device tree property for "rx" and "tx" channels which is
+> >> not provided by the pdata-quirks initialization.
+> >>
+> >> By conversion of the mmc3 setup to device tree this will
+> >> finally allows to remove the OpenPandora wlan specific omap3
+> >> data-quirks.
+> >>
+> >> Fixes: 81eef6ca9201 ("mmc: omap_hsmmc: Use dma_request_chan() for requesting DMA channel")
+> >>
+> >> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> >> Cc: <stable@vger.kernel.org> # 4.7.0
+> >> ---
+> >> arch/arm/boot/dts/omap3-pandora-common.dtsi | 37 +++++++++++++++++++--
+> >> 1 file changed, 35 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/arch/arm/boot/dts/omap3-pandora-common.dtsi b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+> >> index ec5891718ae6..c595b3eb314d 100644
+> >> --- a/arch/arm/boot/dts/omap3-pandora-common.dtsi
+> >> +++ b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+> >> @@ -226,6 +226,18 @@
+> >>                gpio = <&gpio6 4 GPIO_ACTIVE_HIGH>;     /* GPIO_164 */
+> >>        };
+> >>
+> >> +       /* wl1251 wifi+bt module */
+> >> +       wlan_en: fixed-regulator-wg7210_en {
+> >> +               compatible = "regulator-fixed";
+> >> +               regulator-name = "vwlan";
+> >> +               regulator-min-microvolt = <1800000>;
+> >> +               regulator-max-microvolt = <1800000>;
+> >
+> > I doubt these are correct.
+> >
+> > I guess this should be in the range of 2.7V-3.6V.
+>
+> Well, it is a gpio which enables some LDO inside the
+> wifi chip. We do not really know the voltage it produces
+> and it does not matter. The gpio voltage is 1.8V.
+>
+> Basically we use a fixed-regulator to "translate" a
+> regulator into a control gpio because the mmc interface
+> wants to see a vmmc-supply.
 
-Replace the pr_info calls with netdev_info in all cases related to the
-netdevice link state.
+The vmmc supply represent the core power to the SDIO card (or
+SD/(e)MMC). Depending on what voltage range the vmmc supply supports,
+the so called OCR mask is created by the mmc core. The mask is then
+used to let the core negotiate the voltage level with the SDIO card,
+during the card initialization. This is not to confuse with the I/O
+voltage level, which is a different regulator.
 
-As a result of this patch the link messages will change as shown below.
-Before:
-e1000e: ens3 NIC Link is Down
-e1000e: ens3 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+Anyway, according to the TI WiLink series specifications, it looks
+like vmmc should be a regulator supporting 3-3.3V (in many schematics
+it's called VBAT).
 
-After:
-e1000e 0000:00:03.0 ens3: NIC Link is Down
-e1000e 0000:00:03.0 ens3: NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx
+Furthermore I decided to dig into various DTS files that specifies the
+vmmc regulator, of course for mmc nodes having a subnode specifying an
+SDIO card for a TI WiLink. In most cases a 1.8V fixed GPIO regulator
+is used. This looks wrong to me. The fixed GPIO regulator isn't really
+the one that should model vmmc.
 
-Suggested-by: Joe Perches <joe@perches.com>
-Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
----
+The proper solution, would rather be to use separate regulator for
+vmmc and instead use a so called mmc-pwrseq node to manage the GPIO.
 
-Since Joe hasn't gotten back to me on if he wanted to do the patch or if
-he wanted me to do it I just went ahead and did it. This should address the
-concerns he had about the message formatting in "e1000e: Use rtnl_lock to
-prevent race".
+To conclude from my side, as we have lots of DTS that are wrong, I
+don't really care if we add another one in the way you suggest above.
+But feel free to look into the mmc-pwrseq option.
 
- drivers/net/ethernet/intel/e1000e/netdev.c |    9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+>
+> >
+> >> +               startup-delay-us = <50000>;
+> >> +               regulator-always-on;
+> >
+> > Always on?
+>
+> Oops. Yes, that is something to check!
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index ef8ca0c134b0..a1aa48168855 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -4720,7 +4720,7 @@ int e1000e_close(struct net_device *netdev)
- 		e1000_free_irq(adapter);
- 
- 		/* Link status message must follow this format */
--		pr_info("%s NIC Link is Down\n", netdev->name);
-+		netdev_info(netdev, "NIC Link is Down\n");
- 	}
- 
- 	napi_disable(&adapter->napi);
-@@ -5070,8 +5070,9 @@ static void e1000_print_link_info(struct e1000_adapter *adapter)
- 	u32 ctrl = er32(CTRL);
- 
- 	/* Link status message must follow this format for user tools */
--	pr_info("%s NIC Link is Up %d Mbps %s Duplex, Flow Control: %s\n",
--		adapter->netdev->name, adapter->link_speed,
-+	netdev_info(adapter->netdev,
-+		"NIC Link is Up %d Mbps %s Duplex, Flow Control: %s\n",
-+		adapter->link_speed,
- 		adapter->link_duplex == FULL_DUPLEX ? "Full" : "Half",
- 		(ctrl & E1000_CTRL_TFCE) && (ctrl & E1000_CTRL_RFCE) ? "Rx/Tx" :
- 		(ctrl & E1000_CTRL_RFCE) ? "Rx" :
-@@ -5304,7 +5305,7 @@ static void e1000_watchdog_task(struct work_struct *work)
- 			adapter->link_speed = 0;
- 			adapter->link_duplex = 0;
- 			/* Link status message must follow this format */
--			pr_info("%s NIC Link is Down\n", adapter->netdev->name);
-+			netdev_info(netdev, "NIC Link is Down\n");
- 			netif_carrier_off(netdev);
- 			netif_stop_queue(netdev);
- 			if (!test_bit(__E1000_DOWN, &adapter->state))
+As it's a GPIO regulator, for sure it's not always on.
 
+>
+> >
+> >> +               enable-active-high;
+> >> +               gpio = <&gpio1 23 GPIO_ACTIVE_HIGH>;
+> >> +       };
+> >> +
+> >>        /* wg7210 (wifi+bt module) 32k clock buffer */
+> >>        wg7210_32k: fixed-regulator-wg7210_32k {
+> >>                compatible = "regulator-fixed";
+> >> @@ -522,9 +534,30 @@
+> >>        /*wp-gpios = <&gpio4 31 GPIO_ACTIVE_HIGH>;*/    /* GPIO_127 */
+> >> };
+> >>
+> >> -/* mmc3 is probed using pdata-quirks to pass wl1251 card data */
+> >> &mmc3 {
+> >> -       status = "disabled";
+> >> +       vmmc-supply = <&wlan_en>;
+> >> +
+> >> +       bus-width = <4>;
+> >> +       non-removable;
+> >> +       ti,non-removable;
+> >> +       cap-power-off-card;
+> >> +
+> >> +       pinctrl-names = "default";
+> >> +       pinctrl-0 = <&mmc3_pins>;
+> >> +
+> >> +       #address-cells = <1>;
+> >> +       #size-cells = <0>;
+> >> +
+> >> +       wlan: wl1251@1 {
+> >> +               compatible = "ti,wl1251";
+> >> +
+> >> +               reg = <1>;
+> >> +
+> >> +               interrupt-parent = <&gpio1>;
+> >> +               interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;  /* GPIO_21 */
+> >> +
+> >> +               ti,wl1251-has-eeprom;
+> >> +       };
+> >> };
+> >>
+> >> /* bluetooth*/
+> >> --
+> >> 2.19.1
+> >>
+>
+> BR and thanks,
+> Nikolaus
+>
+
+Kind regards
+Uffe
