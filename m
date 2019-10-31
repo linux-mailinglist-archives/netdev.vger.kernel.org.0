@@ -2,117 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E91BEA84C
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 01:38:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14417EA85B
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 01:48:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbfJaAib (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 20:38:31 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38422 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726713AbfJaAia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 20:38:30 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c13so2943256pfp.5
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 17:38:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Yas4+3NlvGk+Xt7qf9y46uaOC/IF4lYn1OXpj44u6Cc=;
-        b=Jsjdzjk5+wj3SoIZPjGUM0QV/qDuEmueC+X8oMs09lba1SKq8sCRx0TlSSVhRr+WZ6
-         q6IrqPt+DJFmdckn+kELO+90RuXvSg/KTMaXcTF25suwxKel9Gb1A2gdJj23/OmheSYh
-         CM1V82LLPx3v/cj7EAcMHAHEHatLxVamG2yYTbtBED5Ob5Cao5oRMNTybtjU0toEOgA2
-         8FdXMoi+dLv7Ohd7NlGBC9mLrEJb0gRvx5vRWgsa0WTATo5aqA/utEWH6KkJWiBRJEK5
-         z2CPdRGk5qWdC+sRkoYe+mTpkG0oDFK4jQLzOeApjwIHhsCsD6BWeEZlyqpUo6qtl9sd
-         h1bA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Yas4+3NlvGk+Xt7qf9y46uaOC/IF4lYn1OXpj44u6Cc=;
-        b=M3nClZg6FupaU+fhNs2bYvggBNvcAY76vcFPMqkI1t43BJpfF39ngQxM6QHQ5WyEyR
-         3WehaA32SDjYVp7Iqw56lsXC57H7Qfd4I+STMDtvT0ssoj0rS6WCT5JSs6AHyJbs6i3o
-         iW/UW/k5jpI8DHBaOTo2I9PCdNrfEgDtPZ/RDSR02RSmjmIjYc+GcYPnY9+vUQnAzJVc
-         t04zZ6dawl3Ej8KdYhFjBy1ewNtHvrYhz8dZOAEp+2lmsRLKIpsxDR2PhmFYWXCRnXLU
-         VYrZ7+n+gqp71y7SorKcLJ6FZ9ZjwyUYxkmJJoUmY00FhHyo+eWL1jVg7/Mxm/WtcYHx
-         dpvA==
-X-Gm-Message-State: APjAAAWxaP3gFBFLoMqGxxv3TeIxKyvF9ADEvziBjKGTB6qE/88qUrlV
-        oou1WxPLOAmiSwg3yTHYBi0=
-X-Google-Smtp-Source: APXvYqwdKKuzP1gRfA81S7eRyxzuOjKq1rhO6mFUfRTXXvSxd1QluTT/7zy5flCZeUJcdEp1AA3RRw==
-X-Received: by 2002:a17:90a:326b:: with SMTP id k98mr2835324pjb.50.1572482309982;
-        Wed, 30 Oct 2019 17:38:29 -0700 (PDT)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id m68sm1091285pfb.122.2019.10.30.17.38.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Oct 2019 17:38:29 -0700 (PDT)
-Subject: Re: Crash when receiving FIN-ACK in TCP_FIN_WAIT1 state
-To:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Neal Cardwell <ncardwell@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <68ad6fb82c0edfb788c7ce1a3bdc851b@codeaurora.org>
- <CADVnQynFeJCpv4irANd8O63ck0ewUq66EDSHHRKdv-zieGZ+UA@mail.gmail.com>
- <f7a0507ce733dd722b1320622dfd1caa@codeaurora.org>
- <CADVnQy=SDgiFH57MUv5kNHSjD2Vsk+a-UD0yXQKGNGY-XLw5cw@mail.gmail.com>
- <2279a8988c3f37771dda5593b350d014@codeaurora.org>
- <CADVnQykjfjPNv6F1EtWWvBT0dZFgf1QPDdhNaCX3j3bFCkViwA@mail.gmail.com>
- <f9ae970c12616f61c6152ebe34019e2b@codeaurora.org>
- <CADVnQymqKpMh3iRfrdiAYjb+2ejKswk8vaZCY6EW4-3ppDnv_w@mail.gmail.com>
- <81ace6052228e12629f73724236ade63@codeaurora.org>
- <CADVnQymDSZb=K8R1Gv=RYDLawW9Ju1tuskkk8LZG4fm3yxyq3w@mail.gmail.com>
- <74827a046961422207515b1bb354101d@codeaurora.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <8d24cb15-7c55-523f-b783-49f18913d03f@gmail.com>
-Date:   Wed, 30 Oct 2019 17:38:28 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <74827a046961422207515b1bb354101d@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1726687AbfJaAr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 30 Oct 2019 20:47:59 -0400
+Received: from mx.aristanetworks.com ([162.210.129.12]:32679 "EHLO
+        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbfJaAr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 20:47:59 -0400
+X-Greylist: delayed 468 seconds by postgrey-1.27 at vger.kernel.org; Wed, 30 Oct 2019 20:47:58 EDT
+Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [172.25.230.4])
+        by smtp.aristanetworks.com (Postfix) with ESMTP id 743811E742;
+        Wed, 30 Oct 2019 17:40:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1572482408;
+        bh=wvYATPXpbdAfec5ZE14yws3K3Pmbmy2wNIuA+undweQ=;
+        h=Date:To:Subject:Cc:From:From;
+        b=UtisTx6qoNX8/oN+NHaz49UUTB420gxe+bcpU7yLzXapux/BQNElih1KrCawPooiY
+         683YYoQRtmCgdWQL2MOFtQ3h00NxoX+bOZO+JrBgyvMEC3h4gXfw7N907XxtzzKbVC
+         ZwcXhDiE6LV9RJsS2L7XorhtxxhmA0A+GRiPB/IVTvoaAgPFrAwRRwfT6XaH3oJDnG
+         yoOyly5A3kUxjCVzA/nJnw+CUyi+UpoGETxlFys76yg38LpyBd2f7dELreNc4jHvXY
+         JJDhpVYuHcV7aMzPqIMWfR5ustvhB2rhxLkGs4ywUuOQVpgGgV+oD+8uK22St1EDRb
+         RRVQN/384MARQ==
+Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
+        id 2FC7695C0964; Wed, 30 Oct 2019 17:40:02 -0700 (PDT)
+Date:   Wed, 30 Oct 2019 17:40:02 -0700
+To:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next] net: icmp6: provide input address for
+ traceroute6
+Cc:     fruggeri@arista.com
+User-Agent: Heirloom mailx 12.5 7/5/10
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-Id: <20191031004004.2FC7695C0964@us180.sjc.aristanetworks.com>
+From:   fruggeri@arista.com (Francesco Ruggeri)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+traceroute6 output can be confusing, in that it shows the address
+that a router would use to reach the sender, rather than the address
+the packet used to reach the router.
+Consider this case:
 
+        ------------------------ N2
+         |                    |
+       ------              ------  N3  ----
+       | R1 |              | R2 |------|H2|
+       ------              ------      ----
+         |                    |
+        ------------------------ N1
+                  |
+                 ----
+                 |H1|
+                 ----
 
-On 10/30/19 11:27 AM, Subash Abhinov Kasiviswanathan wrote:
->> Thanks. Do you mind sharing what your patch looked like, so we can
->> understand precisely what was changed?
->>
->> Also, are you able to share what the workload looked like that tickled
->> this issue? (web client? file server?...)
-> 
-> Sure. This was seen only on our regression racks and the workload there
-> is a combination of FTP, browsing and other apps.
-> 
-> diff --git a/include/linux/tcp.h b/include/linux/tcp.h
-> index 4374196..9af7497 100644
-> --- a/include/linux/tcp.h
-> +++ b/include/linux/tcp.h
-> @@ -232,7 +232,8 @@ struct tcp_sock {
->                 fastopen_connect:1, /* FASTOPEN_CONNECT sockopt */
->                 fastopen_no_cookie:1, /* Allow send/recv SYN+data without a cookie */
->                 is_sack_reneg:1,    /* in recovery from loss with SACK reneg? */
-> -               unused:2;
-> +               unused:1,
-> +               wqp_called:1;
->         u8      nonagle     : 4,/* Disable Nagle algorithm?             */
->                 thin_lto    : 1,/* Use linear timeouts for thin streams */
->                 recvmsg_inq : 1,/* Indicate # of bytes in queue upon recvmsg */
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 1a1fcb3..0c29bdd 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -2534,6 +2534,9 @@ void tcp_write_queue_purge(struct sock *sk)
->         INIT_LIST_HEAD(&tcp_sk(sk)->tsorted_sent_queue);
->         sk_mem_reclaim(sk);
->         tcp_clear_all_retrans_hints(tcp_sk(sk));
-> +       tcp_sk(sk)->highest_sack = NULL;
-> +       tcp_sk(sk)->sacked_out = 0;
-> +       tcp_sk(sk)->wqp_called = 1;
+where H1's default route is through R1, and R1's default route is
+through R2 over N2.
+traceroute6 from H1 to H2 shows R2's address on N1 rather than on N2.
 
-What is this wqp_called exactly ?
+The script below can be used to reproduce this scenario.
 
+traceroute6 output without this patch:
+
+traceroute to 2000:103::4 (2000:103::4), 30 hops max, 80 byte packets
+ 1  2000:101::1 (2000:101::1)  0.036 ms  0.008 ms  0.006 ms
+ 2  2000:101::2 (2000:101::2)  0.011 ms  0.008 ms  0.007 ms
+ 3  2000:103::4 (2000:103::4)  0.013 ms  0.010 ms  0.009 ms
+
+traceroute6 output with this patch:
+
+traceroute to 2000:103::4 (2000:103::4), 30 hops max, 80 byte packets
+ 1  2000:101::1 (2000:101::1)  0.056 ms  0.019 ms  0.006 ms
+ 2  2000:102::2 (2000:102::2)  0.013 ms  0.008 ms  0.008 ms
+ 3  2000:103::4 (2000:103::4)  0.013 ms  0.009 ms  0.009 ms
+
+#!/bin/bash
+#
+#        ------------------------ N2
+#         |                    |
+#       ------              ------  N3  ----
+#       | R1 |              | R2 |------|H2|
+#       ------              ------      ----
+#         |                    |
+#        ------------------------ N1
+#                  |
+#                 ----
+#                 |H1|
+#                 ----
+#
+# N1: 2000:101::/64
+# N2: 2000:102::/64
+# N3: 2000:103::/64
+#
+# R1's host part of address: 1
+# R2's host part of address: 2
+# H1's host part of address: 3
+# H2's host part of address: 4
+#
+# For example:
+# the IPv6 address of R1's interface on N2 is 2000:102::1/64
+#
+# Nets are implemented by macvlan interfaces (bridge mode) over
+# dummy interfaces.
+#
+
+# Create net namespaces
+ip netns add host1
+ip netns add host2
+ip netns add rtr1
+ip netns add rtr2
+
+# Create nets
+ip link add net1 type dummy; ip link set net1 up
+ip link add net2 type dummy; ip link set net2 up
+ip link add net3 type dummy; ip link set net3 up
+
+# Add interfaces to net1, move them to their nemaspaces
+ip link add link net1 dev host1net1 type macvlan mode bridge
+ip link set host1net1 netns host1
+ip link add link net1 dev rtr1net1 type macvlan mode bridge
+ip link set rtr1net1 netns rtr1
+ip link add link net1 dev rtr2net1 type macvlan mode bridge
+ip link set rtr2net1 netns rtr2
+
+# Add interfaces to net2, move them to their nemaspaces
+ip link add link net2 dev rtr1net2 type macvlan mode bridge
+ip link set rtr1net2 netns rtr1
+ip link add link net2 dev rtr2net2 type macvlan mode bridge
+ip link set rtr2net2 netns rtr2
+
+# Add interfaces to net3, move them to their nemaspaces
+ip link add link net3 dev rtr2net3 type macvlan mode bridge
+ip link set rtr2net3 netns rtr2
+ip link add link net3 dev host2net3 type macvlan mode bridge
+ip link set host2net3 netns host2
+
+# Configure interfaces and routes in host1
+ip netns exec host1 ip link set lo up
+ip netns exec host1 ip link set host1net1 up
+ip netns exec host1 ip -6 addr add 2000:101::3/64 dev host1net1
+ip netns exec host1 ip -6 route add default via 2000:101::1
+
+# Configure interfaces and routes in rtr1
+ip netns exec rtr1 ip link set lo up
+ip netns exec rtr1 ip link set rtr1net1 up
+ip netns exec rtr1 ip -6 addr add 2000:101::1/64 dev rtr1net1
+ip netns exec rtr1 ip link set rtr1net2 up
+ip netns exec rtr1 ip -6 addr add 2000:102::1/64 dev rtr1net2
+ip netns exec rtr1 ip -6 route add default via 2000:102::2
+ip netns exec rtr1 sysctl net.ipv6.conf.all.forwarding=1
+
+# Configure interfaces and routes in rtr2
+ip netns exec rtr2 ip link set lo up
+ip netns exec rtr2 ip link set rtr2net1 up
+ip netns exec rtr2 ip -6 addr add 2000:101::2/64 dev rtr2net1
+ip netns exec rtr2 ip link set rtr2net2 up
+ip netns exec rtr2 ip -6 addr add 2000:102::2/64 dev rtr2net2
+ip netns exec rtr2 ip link set rtr2net3 up
+ip netns exec rtr2 ip -6 addr add 2000:103::2/64 dev rtr2net3
+ip netns exec rtr2 sysctl net.ipv6.conf.all.forwarding=1
+
+# Configure interfaces and routes in host2
+ip netns exec host2 ip link set lo up
+ip netns exec host2 ip link set host2net3 up
+ip netns exec host2 ip -6 addr add 2000:103::4/64 dev host2net3
+ip netns exec host2 ip -6 route add default via 2000:103::2
+
+# Ping host2 from host1
+ip netns exec host1 ping6 -c5 2000:103::4
+
+# Traceroute host2 from host1
+ip netns exec host1 traceroute6 2000:103::4
+
+# Delete nets
+ip link del net3
+ip link del net2
+ip link del net1
+
+# Delete namespaces
+ip netns del rtr2
+ip netns del rtr1
+ip netns del host2
+ip netns del host1
+
+Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+Original-patch-by: Honggang Xu <hxu@arista.com>
+
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index 62c997201970..ef408a5090a2 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -516,13 +516,29 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 
+ 	mip6_addr_swap(skb);
+ 
++	sk = icmpv6_xmit_lock(net);
++	if (!sk)
++		goto out_bh_enable;
++
+ 	memset(&fl6, 0, sizeof(fl6));
+ 	fl6.flowi6_proto = IPPROTO_ICMPV6;
+ 	fl6.daddr = hdr->saddr;
+ 	if (force_saddr)
+ 		saddr = force_saddr;
+-	if (saddr)
++	if (saddr) {
+ 		fl6.saddr = *saddr;
++	} else {
++		/* select a more meaningful saddr from input if */
++		struct net_device *in_netdev;
++
++		in_netdev = dev_get_by_index(net, IP6CB(skb)->iif);
++		if (in_netdev) {
++			ipv6_dev_get_saddr(net, in_netdev, &fl6.daddr,
++					   inet6_sk(sk)->srcprefs,
++					   &fl6.saddr);
++			dev_put(in_netdev);
++		}
++	}
+ 	fl6.flowi6_mark = mark;
+ 	fl6.flowi6_oif = iif;
+ 	fl6.fl6_icmp_type = type;
+@@ -531,10 +547,6 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 	fl6.mp_hash = rt6_multipath_hash(net, &fl6, skb, NULL);
+ 	security_skb_classify_flow(skb, flowi6_to_flowi(&fl6));
+ 
+-	sk = icmpv6_xmit_lock(net);
+-	if (!sk)
+-		goto out_bh_enable;
+-
+ 	sk->sk_mark = mark;
+ 	np = inet6_sk(sk);
+ 
