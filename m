@@ -2,120 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25095EB321
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:51:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02CD6EB325
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 15:51:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728029AbfJaOuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 10:50:16 -0400
-Received: from mail-eopbgr20075.outbound.protection.outlook.com ([40.107.2.75]:13703
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727841AbfJaOuQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 10:50:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aaOtaH4Yh7Smv1jZ3sQ0xLwp0QB4opJ3oKW+U/hQnnQBQDA52KojPJ3bcnj6WhI0Nc3wXoDNX8ymMWKJ/GB0MMIENyV2CaQ8I2hplWl//Fo3nAVvCY7XywwwGHvbPkbuvyfcp3Cn17BehbWjpngjRpA7kH3NiVgoxt1AtCsUbCIECBATlN/0q8R2ZkPNpne3a4tkkrYI5+XeX34nnSYlvOKyah3WRR1MukblctUbhXWaAnbCKTuZDbvOVOxYY5318CrD4ZP8s1PruVCknPoNuX8ZmQt6Gt8mZiMO0AqdU25UXxxusNgTa2vuKtvONP/4DAggCS76h80pO5CExY+5hQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jCzdv03QLD88HBwhD46h1EV0cNa8FJmNESc2zP7AHKU=;
- b=KcadlvcHE6Lth255QFn4/v5ecwomPyVpiU2w/fxW5xgIbz261hhS6VRmXRr3lDM8t6FDZGsJF+gsB1Aee70oJeduKzSfhu6Dko6PDkMPcrkG6ZYJJkRfTmP4b4Et0SsC0PU9PFaVMd96nTk8nApkgWRZjZESzBCF7SOhdnSQth05kIALPWSUsRm72kKGHrZFeLh4b5y1hFBMLLcCOViU5DiGxkPWmBAvIgN3xmV87cjVAJ2kZKOA2XpA3sqe7FWvAo+eUTm/fwxHGMeHkI80K3s39odPC9Js5u+yqfLYojIiWfpenrrTKgb2uLPQWdZ7uujTErjvrUHkpKf9pA8soA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jCzdv03QLD88HBwhD46h1EV0cNa8FJmNESc2zP7AHKU=;
- b=LSJE1PgWWu1Wj5KoJuKRUMkDYg1RoMcekYW0KfFneR3chtVPh8Kko4KLVPUQOZKpn48ibWls8SVQ7/7B8KmfTCdyh1oISB7B6GrOwpIHaymn+/bDM7rJz+DEvU9J32ebsLLk3LsmW+2eqP3e3hH4sa/IVzlzODD7kaYgQqWgJMI=
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com (10.171.189.29) by
- AM4PR05MB3172.eurprd05.prod.outlook.com (10.171.186.25) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.24; Thu, 31 Oct 2019 14:50:12 +0000
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc]) by AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc%4]) with mapi id 15.20.2408.016; Thu, 31 Oct 2019
- 14:50:12 +0000
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: RE: [PATCH 2/3] ip: Present the VF VLAN tagging mode
-Thread-Topic: [PATCH 2/3] ip: Present the VF VLAN tagging mode
-Thread-Index: AQHVj3ne4Xs9tw3n4EafaZDxGLzvaqd009jw
-Date:   Thu, 31 Oct 2019 14:50:12 +0000
-Message-ID: <AM4PR05MB33135476A7BB5BB7CC7D91F2BA630@AM4PR05MB3313.eurprd05.prod.outlook.com>
-References: <1572463033-26368-1-git-send-email-lariel@mellanox.com>
-        <1572463033-26368-3-git-send-email-lariel@mellanox.com>
- <20191030162920.3ec8549d@hermes.lan>
-In-Reply-To: <20191030162920.3ec8549d@hermes.lan>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lariel@mellanox.com; 
-x-originating-ip: [4.78.163.159]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 12414954-e69b-4e8f-9a05-08d75e11a1fb
-x-ms-traffictypediagnostic: AM4PR05MB3172:|AM4PR05MB3172:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB317222A90187030137A2DF03BA630@AM4PR05MB3172.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1186;
-x-forefront-prvs: 02070414A1
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(346002)(376002)(39860400002)(396003)(199004)(189003)(81156014)(6116002)(33656002)(7736002)(3846002)(305945005)(81166006)(8676002)(74316002)(2906002)(446003)(8936002)(11346002)(66066001)(476003)(478600001)(25786009)(486006)(5660300002)(66476007)(107886003)(316002)(55016002)(66556008)(64756008)(66946007)(54906003)(6246003)(52536014)(6506007)(6436002)(66446008)(186003)(71200400001)(99286004)(229853002)(9686003)(14454004)(102836004)(76116006)(6916009)(4326008)(26005)(7696005)(256004)(71190400001)(86362001)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3172;H:AM4PR05MB3313.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: vUXvE62USVfcwhpHmG3EGabAZaod0s5qhYHiurGUffCZyQc9Jec0R+SIxlQIHry5lGdsHyouqo13YW4sxyUfoT9sPr1GllSKDeYOsFEON92SZie96paLHhNZwek0+3IrZ3/NDZJuRcg/zd0yQSGMyOxMhUXnQ1LTSpJP6xcA6VqFB6WKuVd3nsX2solEwmkZoX/KjzoCsDPg5Xw1oh1frHj+kG5yEDWhTS0iN5YMIqchkXBJEUyCNZSDNjyRURNBbSEvB1sBWwdLoaFTGVeWqmrE6XRIkaBCRhTqbKNjjAvuJY0hHgQ2GB+H11ClkKHbigR5LA6uXZFvPcTGkLarQjZHRSUuvdyXLSjvqJ+9r+WZw4Zk4LeRZmzon3yof3WUtaTHp04u9mVUhZu6Ir5WjVEpHMgx5CpFTNDAoLe37Is6d6KJNOCtP1GARjMS4JCb
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728216AbfJaOvU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 10:51:20 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:38045 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728153AbfJaOvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 10:51:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572533478;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3K6sCYQs8K5ApEcQ+TEBEBei1xOeMj1fQR7m/w4Dyos=;
+        b=B25v9SZyX4U5a0z5MJs9apakt9rJXAJChTOMBkXUT+RtHVC1l4/Lr4nwU2ibghlc60leeE
+        3NdVXd93sRBBfrSqvy3s3ddTQQVleWVxzQ50cSwz5xZP8vmzayMJXBhNv7OVPcEX2R5COU
+        a4xJCRweDYWiy2CWsD0Yi9VMU2rZt9E=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-230-piStzJfuPfqkyHSzRDB-TQ-1; Thu, 31 Oct 2019 10:51:14 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 13D9E1800D6B;
+        Thu, 31 Oct 2019 14:51:13 +0000 (UTC)
+Received: from x2.localnet (ovpn-117-13.phx2.redhat.com [10.3.117.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4B3E160878;
+        Thu, 31 Oct 2019 14:50:58 +0000 (UTC)
+From:   Steve Grubb <sgrubb@redhat.com>
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
+        Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
+Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid outside init_user_ns
+Date:   Thu, 31 Oct 2019 10:50:57 -0400
+Message-ID: <3677995.NTHC7m0fHc@x2>
+Organization: Red Hat
+In-Reply-To: <20191030220320.tnwkaj5gbzchcn7j@madcap2.tricolour.ca>
+References: <cover.1568834524.git.rgb@redhat.com> <CAHC9VhRDoX9du4XbCnBtBzsNPMGOsb-TKM1CC+sCL7HP=FuTRQ@mail.gmail.com> <20191030220320.tnwkaj5gbzchcn7j@madcap2.tricolour.ca>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12414954-e69b-4e8f-9a05-08d75e11a1fb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2019 14:50:12.0310
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lYVlVC3k125d9sTaQnF46kO8yu+qOVZXl8gMaGCVTQzlFmjUf4fTyh0/XqkdUYT1cDo6YpWvSS3K0Z9lRVcyMQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3172
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: piStzJfuPfqkyHSzRDB-TQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 7Bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 30 Oct 2019 19:29:32 +0000
-Stephen Hemminger <stephen@networkplumber.org> wrote
-> On Wed, 30 Oct 2019 19:17:32 +0000
-> Ariel Levkovich <lariel@mellanox.com> wrote:
->=20
-> > +		if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_TRUNK)
-> > +			print_string(PRINT_ANY,
-> > +				     "vlan-mode",
-> > +				      ", vlan-mode %s",
-> > +				      "trunk");
-> > +		else if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_VST)
-> > +			print_string(PRINT_ANY,
-> > +				     "vlan-mode",
-> > +				     ", vlan_mode %s",
-> > +				     "vst");
-> > +		else if (vlan_mode->mode =3D=3D IFLA_VF_VLAN_MODE_VGT)
-> > +			print_string(PRINT_ANY,
-> > +				     "vlan-mode",
-> > +				     ", vlan-mode %s",
-> > +				     "vgt");
->=20
-> This seems like you want something like:
->=20
-> 		print_string(PRINT_ANY, "vlan-mode", ", vlan-mode %s",
-> 				vlan_mode_str(vlan_mode->mode);
->=20
-> and why the comma in the output? the convention for ip commands is that
-> the output format is equivalent to the command line.
-Thanks for your review Stephen.
-I'll fix the if/else to the suggested line.
-I see the comma is used when presenting other VF attributes as well like li=
-nk-state, spoof, trust.
-So what is the right convention here?
+Hello,
+
+TLDR;  I see a lot of benefit to switching away from procfs for setting auid & 
+sessionid.
+
+On Wednesday, October 30, 2019 6:03:20 PM EDT Richard Guy Briggs wrote:
+> > Also, for the record, removing the audit loginuid from procfs is not
+> > something to take lightly, if at all; like it or not, it's part of the
+> > kernel API.
+
+It can also be used by tools to iterate processes related to one user or 
+session. I use this in my Intrusion Prevention System which will land in 
+audit user space at some point in the future.
+
+
+> Oh, I'm quite aware of how important this change is and it was discussed
+> with Steve Grubb who saw the concern and value of considering such a
+> disruptive change.
+
+Actually, I advocated for syscall. I think the gist of Eric's idea was that /
+proc is the intersection of many nasty problems. By relying on it, you can't 
+simplify the API to reduce the complexity. Almost no program actually needs 
+access to /proc. ps does. But almost everything else is happy without it. For 
+example, when you setup chroot jails, you may have to add /dev/random or /
+dev/null, but almost never /proc. What does force you to add /proc is any 
+entry point daemon like sshd because it needs to set the loginuid. If we 
+switch away from /proc, then sshd or crond will no longer /require/ procfs to 
+be available which again simplifies the system design.
+
+
+> Removing proc support for auid/ses would be a
+> long-term deprecation if accepted.
+
+It might need to just be turned into readonly for a while. But then again, 
+perhaps auid and session should be part of /proc/<pid>/status? Maybe this can 
+be done independently and ahead of the container work so there is a migration 
+path for things that read auid or session. TBH, maybe this should have been 
+done from the beginning.
+
+-Steve
+
+
+
