@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E7CCAEAB4F
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 09:07:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03E33EAB56
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 09:08:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726922AbfJaIHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 04:07:51 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:42824 "EHLO
+        id S1727089AbfJaIIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 04:08:37 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:43322 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbfJaIHv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 04:07:51 -0400
+        with ESMTP id S1726747AbfJaIIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 04:08:37 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 38A6B609CA; Thu, 31 Oct 2019 08:07:50 +0000 (UTC)
+        id 81CE360A19; Thu, 31 Oct 2019 08:08:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572509270;
-        bh=tecBCzRev0wId8FRA31CVuEhKSpiMtEzf7LYR2PrivA=;
+        s=default; t=1572509316;
+        bh=MDrT9v0ThT/J4lxmhoR8Yct7jp86wfCet8Yba/5pTNU=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=GK6kx2SHv8lW4sShv24hmEqjrZWflLcUBPukwIvrgM4euUyzZ5IxT4Fa2e6Icdv7l
-         1QdpLkEk9wssuZ1S2puZcoJ0CGROLFpne+M8JIOLSiyYPeRZJkfmhDGTxyDQ20+7Q9
-         evvzhpEO6uSKagA7iaVypoRFF64BLDZI/S1qXMzM=
+        b=Sw1TFbmu1+9dI8oq2DvllKhbdQIOBAbZ4rTJ/Cw2HKbTvMviCNBPOGQGrG+jpySzy
+         gp+UrH0aBLg830amk4zPn8FVFlDIbGXdavfjCWufmsTPN0yvIlCy2ZzD6oXN5Y0G8D
+         ff85bq61SpNtSucAEo4rYirlFbuMfzILlTdzfvmw=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,35 +30,35 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D6A54609CA;
-        Thu, 31 Oct 2019 08:07:46 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 698D260540;
+        Thu, 31 Oct 2019 08:08:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572509269;
-        bh=tecBCzRev0wId8FRA31CVuEhKSpiMtEzf7LYR2PrivA=;
+        s=default; t=1572509316;
+        bh=MDrT9v0ThT/J4lxmhoR8Yct7jp86wfCet8Yba/5pTNU=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=MhspxZ3NdajuTh7idtQvFjVoF+7V+ZqmvfCc8vkBhh/w+UzmPU6Xr1H3MZCXxHtro
-         nTA1FBkaJ6XvO/L1Xa4TZQlrH7gT7xvTXiOqAEOBq7FJxhbhAfldF5obGTdEsRYtim
-         ttP6HhLEJTKFvqdoc9k/zxoGSay+D/TIvhDzchKs=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D6A54609CA
+        b=ospIRJ24M0damMZFiGDO/HkVNg8r5rCi8glrv06VuJBORoY2mDgxn2wdmEuzinH2M
+         ZrlHAHUBPDLSS5oFydkD6RtI+FpCReiG6Z41G6rYe3grFKPMIdXCvSJm2l/mLTeKa+
+         1JRy5OLpVZCUwykRo6szRYonYvHlKlDcXCmm7/3Y=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 698D260540
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] b43: main: Fix use true/false for bool type
+Subject: Re: [PATCH] b43: dma: Fix use true/false for bool type variable
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191028190204.GA27248@saurav>
-References: <20191028190204.GA27248@saurav>
+In-Reply-To: <20191028191259.GA27369@saurav>
+References: <20191028191259.GA27369@saurav>
 To:     Saurav Girepunje <saurav.girepunje@gmail.com>
-Cc:     davem@davemloft.net, swinslow@gmail.com, will@kernel.org,
-        opensource@jilayne.com, saurav.girepunje@gmail.com,
-        baijiaju1990@gmail.com, tglx@linutronix.de,
+Cc:     davem@davemloft.net, tglx@linutronix.de,
+        saurav.girepunje@gmail.com, allison@lohutok.net,
+        swinslow@gmail.com, mcgrof@kernel.org,
         linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         saurav.girepunje@hotmail.com
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191031080750.38A6B609CA@smtp.codeaurora.org>
-Date:   Thu, 31 Oct 2019 08:07:50 +0000 (UTC)
+Message-Id: <20191031080836.81CE360A19@smtp.codeaurora.org>
+Date:   Thu, 31 Oct 2019 08:08:36 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -66,16 +66,16 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Saurav Girepunje <saurav.girepunje@gmail.com> wrote:
 
-> use true/false on bool type variable assignment.
+> use true/false for bool type variables assignment.
 > 
 > Signed-off-by: Saurav Girepunje <saurav.girepunje@gmail.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-6db774c17250 b43: main: Fix use true/false for bool type
+a9160bb35ad9 b43: dma: Fix use true/false for bool type variable
 
 -- 
-https://patchwork.kernel.org/patch/11216303/
+https://patchwork.kernel.org/patch/11216307/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
