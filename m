@@ -2,109 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BCC4EB1B1
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 14:56:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5109CEB1B7
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 14:58:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727648AbfJaN4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 09:56:55 -0400
-Received: from mout.gmx.net ([212.227.17.21]:44913 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727567AbfJaN4y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 09:56:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1572530198;
-        bh=1eB0tnDg7p9fMqbMwcIbZVE0spFXCYkJlm2XDYJ3n80=;
-        h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
-        b=ELxzZmQ2/TsgBp/PTYqQvfCTM2Jw2DEei8tPXmtx1zYt21F6fjnLhsb6cJ9PMcIxy
-         Jw5Ki+pTsz0hiXs72xbWW+uG9odWfdnCHwke0O4zmo+eLvFxdL/RZyQyUjO4cY4Akr
-         CyLnz2D2edw3XDtvD2D3h7zQFGzj00uxB95Q6+I4=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.162] ([37.4.249.112]) by mail.gmx.com (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N5G9t-1i0uxf1qbd-011Bxd; Thu, 31
- Oct 2019 14:56:38 +0100
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Larry Finger <Larry.Finger@lwfinger.net>
-From:   Stefan Wahren <wahrenst@gmx.net>
-Subject: rtlwifi: Memory leak in rtl92c_set_fw_rsvdpagepkt()
-Cc:     colin.king@canonical.com, kvalo@codeaurora.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Message-ID: <989debc9-8602-0ce3-71a7-2bf783b2c22b@gmx.net>
-Date:   Thu, 31 Oct 2019 14:56:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1727697AbfJaN6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 09:58:23 -0400
+Received: from mail-eopbgr150040.outbound.protection.outlook.com ([40.107.15.40]:33454
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727567AbfJaN6X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 09:58:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HVHC09jt6/PbQwRA+4gG3kt//MHcuqETIhBON6WvW5aBTWhpRFOzOEHLsUvUUhjojS8fD60Gn+sr3B3tNsbdY35YBN8TQ6ZEU3o77asAGnQQOwfaENOP1ZhcinTnN4m7sY+d9EpCSIJZRiPpvw3nx7pMOecg3S0a/xnCWzHUf+HeZf94oLPqPqIKUs1RAHiZFhJhzCWZzAjq9KzRnrlr5haj9Kmss5pbXeBuCdXORuAV1jiNnUJmFJ2cboVWXdFzAK5aHaJ+rMWVHEuTiLXMy+isw/0Onaqv6GawjEyEiEWwhs+PixhS8P52PtH2qetT7WvaZCQVvFsWgrLQDHVeSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYDYTQWSb44NQ88eNFVsUs9pq/ivf6AC0qFG2oDl+8U=;
+ b=A7lgGVuD8kDWxoZOZIHqYL1j3vq3r3faKaXzpnI41XZVDwFZC7fBeQFAVRBM07ZSbaI33GF1pR1HRuyZG6cDY5Dq9Jeud2bmbo2EpnSvquSFLQu5Ny2ZzIKqKD5MgNHqLHs2ufhQQV9PjtfpE22cWWZWiC+JudE1X7LDG/ib1bVyy8v1Rc0JIhlknLFhFwWz++W6O33y3CZOATBUY6efgEATNJrN3SOFmHLydhIxgpQdKmx31rgwCFSNkoBOvQEhH8FgRdmCg/hc6dH4eDIIhvUyTj+Ce11cDOKXcouPlVREjYeJ2c3GcBWSSAFifi1fRyj0pkXE7o/m++MilNTPoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AYDYTQWSb44NQ88eNFVsUs9pq/ivf6AC0qFG2oDl+8U=;
+ b=sgDmREQjNS0sicB/Yz4KKaJG9S1rTsnBLrifYnrL3bys/tXAW3ELkK+ID2BfVJvt+F2aI7ucCz/iX2ip7N3mjUkBhHzY8RMdwiYhGAgqx1M/Prz7V6H3VsY/Rgrr1U5hq+pv9wBqDVCp3+VXBrEPYcUpNm4ZXdvGtLZtaLbaWi4=
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.21) by
+ VI1PR04MB5359.eurprd04.prod.outlook.com (20.178.120.84) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.22; Thu, 31 Oct 2019 13:58:18 +0000
+Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::75ab:67b7:f87b:dfd4]) by VI1PR04MB5567.eurprd04.prod.outlook.com
+ ([fe80::75ab:67b7:f87b:dfd4%6]) with mapi id 15.20.2387.027; Thu, 31 Oct 2019
+ 13:58:18 +0000
+From:   Madalin Bucur <madalin.bucur@nxp.com>
+To:     Joe Perches <joe@perches.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Roy Pledge <roy.pledge@nxp.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+Subject: RE: [net-next 10/13] dpaa_eth: remove netdev_err() for user errors
+Thread-Topic: [net-next 10/13] dpaa_eth: remove netdev_err() for user errors
+Thread-Index: AQHVj9+JMEfAPVN9j0OMYib1I/XpVad0olSAgAAkSlA=
+Date:   Thu, 31 Oct 2019 13:58:18 +0000
+Message-ID: <VI1PR04MB5567583F09439DC9545D0AB1EC630@VI1PR04MB5567.eurprd04.prod.outlook.com>
+References: <1572521819-10458-1-git-send-email-madalin.bucur@nxp.com>
+         <1572521819-10458-11-git-send-email-madalin.bucur@nxp.com>
+ <78c289a25faaa5dab2975f050199c93142718ab6.camel@perches.com>
+In-Reply-To: <78c289a25faaa5dab2975f050199c93142718ab6.camel@perches.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Provags-ID: V03:K1:3nPeYzINqeklWw6e+6B8MzpTZEm7wf9QcxoNYa1V+LSGpYtgaex
- OttoTDReZFvDq6P+xKHsVGA7f9OTPOUTwUNhBG4nBDR5VBhuyNENXjKGdhlgBwjlANDEwgG
- GiyxW8vT3BWz/ZnyNoKGUWgKcRwVIjuqvQIRHwRvTS857UbwlhaihgHUvo0wGKh7KqL8gWh
- Z4i86mJhvkYU/CjXveZlA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SRxjHm0ZT8I=:z8ds7SBU6lnbw4loGVvPRc
- l/UZYIdQxv0UQh33TU/9+LV58OUW2HihrY62nptYFAnpdQ6tBLxeMByTLjUSi4oRjL/57AxyG
- 25pK89Fns4BoGXRthb8OONKah9G7c/WvM7rqH+1TjO9BfdlOcixRZFeOlrtSEdqRonU+KhR8I
- rrUUrPJXoRJ++iK3ExxASPsGyXtVwWQ1KMU1evEj5Q5uVnX7MAjzWmRMIBow+VbgH6c+QIvYa
- SaQ5Ypt5y9gNEYwwR98BBa5wqZ+KQ+iwXJSUjsinn39UHg/USxAiJqtcR+OH/L+zNqY0QCdb/
- Si0Bkj3OLcAkS3qyfx+MVO8TamPfl6FU+XN/PyUbMp1J6t5Cm8N5lueTYp4t8+kK/trucuPlT
- lvvo64IjRlfsnxZ3oPDSsCm76ti4YTp+h+N92ozCQ5ASkBoZNFHk0js4ppEbfF5b5cK2ic/5D
- nbf29OgysPjPpC1yRhezk/7xgOPeWPPbx6LV9DycQs7QneNsKgK4KlAhCTIMDrQCZ9psTa+bT
- S7Nk4DwVRDhKZwewie6wmML60w4hcC0jAotoGUCHhTNxENZ8QzrhEg1EU6O38n7pNkFFF/C0L
- MDI8Qx1mysxyBwdgJq3RUhJq/ZW7uq/Hu7TmYLleVLeiFZRlnjpjrYm5VSv8CAPTEuGZnyNOt
- wWPtr1tIVTf9sWfXNHzYqnSRN8jEFpKo4s0fS7OcODXo+OaxSNIIvMWiic3Bsa8/1CwaHKbI1
- c2mVnrD6Ht37kWArv1p432IkyuMuqUtJeTojleeQI7C4wkw8zB0AXc6ftVPhMPWrHKc0sp6Mr
- PzM9WIQoU0n+wvW+4/zxq6kbhe7/eCBo/g1O4zmXS0eYjKbDIpylhJMk6NPB732Xll09thTtB
- 7FkMCJSmxOavLX4nedgOxhMQ29vC+z4NUofh3klSDJ2YIe7wHnAzsCYpYf5ku81JtBw+XgicB
- +oBi3HYU7SOKVu75c1bl3aUdlfF+FhN8O3aPwy+BZAeb0ALdx0OmXTiJFqzWlgSLpYUTmAv8k
- P4o9zuP5koVoGwMbthO1agFTWZVUf7Jc2aKQzHqLgWcP1VL9OCskdp7pxv6NK6qrA3dDhys2F
- O+tE6prePK7r9i6YdOyTfqEV+5PzlKnGs00AxvtoE9xtGNQbeAuytPjOoYXBg/UDAp23jH05z
- lcBhyO6+5i1pAEiH+8ksWB7NszeER/gnYxNGLqPuKoXIVf2fq2l5XnrRHKvWqW/28G+kjcCyu
- 0ZE7sFUUNSbJ4POsJQ2waRuuTysx4M8uNd9gpP8VzQzvtDgqbcdBq2r3n1tQ=
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=madalin.bucur@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e7a4a6f9-7d57-47a8-d8bc-08d75e0a6235
+x-ms-traffictypediagnostic: VI1PR04MB5359:|VI1PR04MB5359:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB5359CF198349C2798402A390EC630@VI1PR04MB5359.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 02070414A1
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(366004)(346002)(39860400002)(136003)(189003)(199004)(13464003)(476003)(6436002)(33656002)(86362001)(64756008)(110136005)(81166006)(53546011)(6116002)(54906003)(3846002)(2906002)(6506007)(11346002)(2501003)(25786009)(446003)(305945005)(229853002)(26005)(6246003)(102836004)(8676002)(186003)(44832011)(55016002)(4001150100001)(81156014)(486006)(9686003)(76116006)(8936002)(14454004)(4326008)(7736002)(66946007)(99286004)(66446008)(66476007)(316002)(66066001)(66556008)(74316002)(7696005)(71190400001)(478600001)(52536014)(71200400001)(2201001)(5660300002)(256004)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB5359;H:VI1PR04MB5567.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6m+h0mW8UAiR3HKfc442dUjP1XevmPWpRYVXAXS7GCyEwuhsP9C1V2iNmOs0bdLySJDvUFdQyC+oYFzccFrTRk1ifqVxLE8OSrQ1YZCxqbIx9Sch42ho5bvhoCP/DS1bmZjwNE/bgVApd4V4am+879ofQCOJxDlq1dz+VXQlEodzL64m8DwVKKI231C360lWRz1glml6Pp7g84Odmybdq206gNVYSL0MrfZ1QuJzSHIzGb5VtZLo6+l1ejyE+WcPvpAlXguQsCn8tWgAP+g2FAL0lJsJDwYZOAx8tRNt9OVOw9WdqQisgpQullJMS2QrMS3o92vMMI+d8UtLOAvn73mMJH/S3Y7RKhRDml2xauoJFn+dIYVKozn8weIlFA6Ipd25eifJKzom65lLh6CKXhqP3GfDJaV0fNTD2anO9tMyiUuBO/qZkEPS62dU+Yjm
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e7a4a6f9-7d57-47a8-d8bc-08d75e0a6235
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Oct 2019 13:58:18.5635
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7zgyBT6INjwYXLinKpgyq7ytS35l48CAYyENaigy35b98QxpB2bKLEd5LpfvmZfXF+QvcX+WflkGhfpkq1S73g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5359
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> -----Original Message-----
+> From: Joe Perches <joe@perches.com>
+> Sent: Thursday, October 31, 2019 1:48 PM
+> To: Madalin Bucur <madalin.bucur@nxp.com>; davem@davemloft.net;
+> netdev@vger.kernel.org
+> Cc: Roy Pledge <roy.pledge@nxp.com>; jakub.kicinski@netronome.com
+> Subject: Re: [net-next 10/13] dpaa_eth: remove netdev_err() for user
+> errors
+>=20
+> On Thu, 2019-10-31 at 13:36 +0200, Madalin Bucur wrote:
+> > User reports that an application making an (incorrect) call to
+> > restart AN on a fixed link DPAA interface triggers an error in
+> > the kernel log while the returned EINVAL should be enough.
+> []
+> > diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+> b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
+> []
+> > @@ -81,7 +81,6 @@ static int dpaa_get_link_ksettings(struct net_device
+> *net_dev,
+> >  				   struct ethtool_link_ksettings *cmd)
+> >  {
+> >  	if (!net_dev->phydev) {
+> > -		netdev_dbg(net_dev, "phy device not initialized\n");
+> >  		return 0;
+> >  	}
+>=20
+> ideally the now excess braces would be removed too.
 
-i tested the EDIMAX EW-7612 on Raspberry Pi 3B+ with Linux 5.4-rc5
-(multi_v7_defconfig + rtlwifi + kmemleak) and noticed a single memory
-leak during probe:
-
-unreferenced object 0xec13ee40 (size 176):
-=C2=A0 comm "kworker/u8:1", pid 36, jiffies 4294939321 (age 5580.790s)
-=C2=A0 hex dump (first 32 bytes):
-=C2=A0=C2=A0=C2=A0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00=C2=A0 .=
-...............
-=C2=A0=C2=A0=C2=A0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00=C2=A0 .=
-...............
-=C2=A0 backtrace:
-=C2=A0=C2=A0=C2=A0 [<fc1bbb3e>] __netdev_alloc_skb+0x9c/0x164
-=C2=A0=C2=A0=C2=A0 [<863dfa6e>] rtl92c_set_fw_rsvdpagepkt+0x254/0x340 [rtl=
-8192c_common]
-=C2=A0=C2=A0=C2=A0 [<9572be0d>] rtl92cu_set_hw_reg+0xf48/0xfa4 [rtl8192cu]
-=C2=A0=C2=A0=C2=A0 [<116df4d8>] rtl_op_bss_info_changed+0x234/0x96c [rtlwi=
-fi]
-=C2=A0=C2=A0=C2=A0 [<8933575f>] ieee80211_bss_info_change_notify+0xb8/0x26=
-4 [mac80211]
-=C2=A0=C2=A0=C2=A0 [<d4061e86>] ieee80211_assoc_success+0x934/0x1798 [mac8=
-0211]
-=C2=A0=C2=A0=C2=A0 [<e55adb56>] ieee80211_rx_mgmt_assoc_resp+0x174/0x314 [=
-mac80211]
-=C2=A0=C2=A0=C2=A0 [<5974629e>] ieee80211_sta_rx_queued_mgmt+0x3f4/0x7f0 [=
-mac80211]
-=C2=A0=C2=A0=C2=A0 [<d91091c6>] ieee80211_iface_work+0x208/0x318 [mac80211=
-]
-=C2=A0=C2=A0=C2=A0 [<ac5fcae4>] process_one_work+0x22c/0x564
-=C2=A0=C2=A0=C2=A0 [<f5e6d3b6>] worker_thread+0x44/0x5d8
-=C2=A0=C2=A0=C2=A0 [<82c7b073>] kthread+0x150/0x154
-=C2=A0=C2=A0=C2=A0 [<b43e1b7d>] ret_from_fork+0x14/0x2c
-=C2=A0=C2=A0=C2=A0 [<794dff30>] 0x0
-
-It looks like the allocated skd is never freed.
-
-Would be nice to get this fixed.
-
-Regards
-Stefan
+You're right, I'll send a v2
+=20
+> > @@ -96,7 +95,6 @@ static int dpaa_set_link_ksettings(struct net_device
+> *net_dev,
+> >  	int err;
+> >
+> >  	if (!net_dev->phydev) {
+> > -		netdev_err(net_dev, "phy device not initialized\n");
+> >  		return -ENODEV;
+> >  	}
+>=20
+> etc...
+>=20
 
