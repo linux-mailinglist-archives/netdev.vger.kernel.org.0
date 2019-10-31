@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C348EAED3
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:23:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66CEBEAEC7
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 12:23:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbfJaLW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 07:22:59 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5663 "EHLO huawei.com"
+        id S1726800AbfJaLXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 07:23:03 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5666 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726403AbfJaLW7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 07:22:59 -0400
+        id S1726552AbfJaLXC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 07:23:02 -0400
 Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 07DF3BF0279C04143074;
+        by Forcepoint Email with ESMTP id 0C2A028BB33B0E13450E;
         Thu, 31 Oct 2019 19:22:57 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
@@ -23,10 +23,12 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 0/9] net: hns3: add some optimizations ane cleanups
-Date:   Thu, 31 Oct 2019 19:23:15 +0800
-Message-ID: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 1/9] net: hns3: dump some debug information when reset fail
+Date:   Thu, 31 Oct 2019 19:23:16 +0800
+Message-ID: <1572521004-36126-2-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
+References: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.69.192.56]
@@ -36,67 +38,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds some code optimizations and cleanups for
-the HNS3 ethernet driver.
+When reset fails, there is some information that will help for
+finding out why does reset fail. and removes an unused
+core_rst_cnt field in struct hclge_rst_stats.
 
-[patch 1/9] dumps some debug information when reset fail.
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  5 ++--
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    |  3 +++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |  2 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 29 ++++++++++++++++++++++
+ 4 files changed, 35 insertions(+), 4 deletions(-)
 
-[patch 2/9] dumps some struct netdev_queue information when
-TX timeout.
-
-[patch 3/9] cleanups some magic numbers.
-
-[patch 4/9] cleanups some coding style issue.
-
-[patch 5/9] fixes a compiler warning.
-
-[patch 6/9] optimizes some local variable initialization.
-
-[patch 7/9] modifies some comments.
-
-[patch 8/9] cleanups some print format warnings.
-
-[patch 9/9] cleanups byte order issue.
-
-Guangbin Huang (3):
-  net: hns3: cleanup some coding style issues
-  net: hns3: optimize local variable initialization
-  net: hns3: add or modify some comments
-
-Guojia Liao (4):
-  net: hns3: cleanup some magic numbers
-  net: hns3: cleanup a format-truncation warning
-  net: hns3: cleanup some print format warning
-  net: hns3: cleanup byte order issues when printed
-
-Huazhong Tan (1):
-  net: hns3: dump some debug information when reset fail
-
-Yunsheng Lin (1):
-  net: hns3: add struct netdev_queue debug info for TX timeout
-
- drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |   4 +-
- drivers/net/ethernet/hisilicon/hns3/hnae3.c        |   2 +-
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |   4 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c |  69 +++++++------
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  29 +++---
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |   4 +-
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  12 +--
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.c |   7 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h |  30 ++++--
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_dcb.c |   2 +-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 109 ++++++++++++---------
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c |   2 +-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 109 +++++++++++----------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   3 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |  15 +--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_mdio.c    |   2 +-
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |   4 +-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_cmd.c   |  10 +-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  50 ++++++++--
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_mbx.c   |  18 ++--
- 20 files changed, 278 insertions(+), 207 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index 0ccc8e7..122ad92 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -929,7 +929,7 @@ static void hclge_dbg_fd_tcam(struct hclge_dev *hdev)
+ 	}
+ }
+ 
+-static void hclge_dbg_dump_rst_info(struct hclge_dev *hdev)
++void hclge_dbg_dump_rst_info(struct hclge_dev *hdev)
+ {
+ 	dev_info(&hdev->pdev->dev, "PF reset count: %u\n",
+ 		 hdev->rst_stats.pf_rst_cnt);
+@@ -945,8 +945,6 @@ static void hclge_dbg_dump_rst_info(struct hclge_dev *hdev)
+ 		 hdev->rst_stats.hw_reset_done_cnt);
+ 	dev_info(&hdev->pdev->dev, "reset count: %u\n",
+ 		 hdev->rst_stats.reset_cnt);
+-	dev_info(&hdev->pdev->dev, "reset count: %u\n",
+-		 hdev->rst_stats.reset_cnt);
+ 	dev_info(&hdev->pdev->dev, "reset fail count: %u\n",
+ 		 hdev->rst_stats.reset_fail_cnt);
+ 	dev_info(&hdev->pdev->dev, "vector0 interrupt enable status: 0x%x\n",
+@@ -961,6 +959,7 @@ static void hclge_dbg_dump_rst_info(struct hclge_dev *hdev)
+ 		 hclge_read_dev(&hdev->hw, HCLGE_NIC_CSQ_DEPTH_REG));
+ 	dev_info(&hdev->pdev->dev, "function reset status: 0x%x\n",
+ 		 hclge_read_dev(&hdev->hw, HCLGE_FUN_RST_ING));
++	dev_info(&hdev->pdev->dev, "hdev state: 0x%lx\n", hdev->state);
+ }
+ 
+ static void hclge_dbg_get_m7_stats_info(struct hclge_dev *hdev)
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index bf6bca2..19667c9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -3669,6 +3669,9 @@ static bool hclge_reset_err_handle(struct hclge_dev *hdev)
+ 	hclge_reset_handshake(hdev, true);
+ 
+ 	dev_err(&hdev->pdev->dev, "Reset fail!\n");
++
++	hclge_dbg_dump_rst_info(hdev);
++
+ 	return false;
+ }
+ 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 9e59f0e..4386788 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -656,7 +656,6 @@ struct hclge_rst_stats {
+ 	u32 hw_reset_done_cnt;	/* the number of HW reset has completed */
+ 	u32 pf_rst_cnt;		/* the number of PF reset */
+ 	u32 flr_rst_cnt;	/* the number of FLR */
+-	u32 core_rst_cnt;	/* the number of CORE reset */
+ 	u32 global_rst_cnt;	/* the number of GLOBAL */
+ 	u32 imp_rst_cnt;	/* the number of IMP reset */
+ 	u32 reset_cnt;		/* the number of reset */
+@@ -1005,4 +1004,5 @@ int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev,
+ void hclge_report_hw_error(struct hclge_dev *hdev,
+ 			   enum hnae3_hw_error_type type);
+ void hclge_inform_vf_promisc_info(struct hclge_vport *vport);
++void hclge_dbg_dump_rst_info(struct hclge_dev *hdev);
+ #endif
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 408e386..c38eba8 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -1549,6 +1549,33 @@ static int hclgevf_reset_prepare_wait(struct hclgevf_dev *hdev)
+ 	return ret;
+ }
+ 
++static void hclgevf_dump_rst_info(struct hclgevf_dev *hdev)
++{
++	dev_info(&hdev->pdev->dev, "VF function reset count: %u\n",
++		 hdev->rst_stats.vf_func_rst_cnt);
++	dev_info(&hdev->pdev->dev, "FLR reset count: %u\n",
++		 hdev->rst_stats.flr_rst_cnt);
++	dev_info(&hdev->pdev->dev, "VF reset count: %u\n",
++		 hdev->rst_stats.vf_rst_cnt);
++	dev_info(&hdev->pdev->dev, "reset done count: %u\n",
++		 hdev->rst_stats.rst_done_cnt);
++	dev_info(&hdev->pdev->dev, "HW reset done count: %u\n",
++		 hdev->rst_stats.hw_rst_done_cnt);
++	dev_info(&hdev->pdev->dev, "reset count: %u\n",
++		 hdev->rst_stats.rst_cnt);
++	dev_info(&hdev->pdev->dev, "reset fail count: %u\n",
++		 hdev->rst_stats.rst_fail_cnt);
++	dev_info(&hdev->pdev->dev, "vector0 interrupt enable status: 0x%x\n",
++		 hclgevf_read_dev(&hdev->hw, HCLGEVF_MISC_VECTOR_REG_BASE));
++	dev_info(&hdev->pdev->dev, "vector0 interrupt status: 0x%x\n",
++		 hclgevf_read_dev(&hdev->hw, HCLGEVF_VECTOR0_CMDQ_STAT_REG));
++	dev_info(&hdev->pdev->dev, "handshake status: 0x%x\n",
++		 hclgevf_read_dev(&hdev->hw, HCLGEVF_CMDQ_TX_DEPTH_REG));
++	dev_info(&hdev->pdev->dev, "function reset status: 0x%x\n",
++		 hclgevf_read_dev(&hdev->hw, HCLGEVF_RST_ING));
++	dev_info(&hdev->pdev->dev, "hdev state: 0x%lx\n", hdev->state);
++}
++
+ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
+ {
+ 	/* recover handshake status with IMP when reset fail */
+@@ -1563,6 +1590,8 @@ static void hclgevf_reset_err_handle(struct hclgevf_dev *hdev)
+ 	if (hclgevf_is_reset_pending(hdev)) {
+ 		set_bit(HCLGEVF_RESET_PENDING, &hdev->reset_state);
+ 		hclgevf_reset_task_schedule(hdev);
++	} else {
++		hclgevf_dump_rst_info(hdev);
+ 	}
+ }
+ 
 -- 
 2.7.4
 
