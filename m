@@ -2,82 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D00B9EB9BE
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:38:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDD9EB9C4
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:40:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727610AbfJaWin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 18:38:43 -0400
-Received: from mga02.intel.com ([134.134.136.20]:41483 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726506AbfJaWin (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 31 Oct 2019 18:38:43 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 15:38:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,253,1569308400"; 
-   d="scan'208";a="194483061"
-Received: from unknown (HELO [10.241.228.161]) ([10.241.228.161])
-  by orsmga008.jf.intel.com with ESMTP; 31 Oct 2019 15:38:42 -0700
-To:     bjorn.topel@gmail.com
-Cc:     alexei.starovoitov@gmail.com, bjorn.topel@intel.com,
-        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        jakub.kicinski@netronome.com, maciej.fijalkowski@intel.com,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        sridhar.samudrala@intel.com, toke@redhat.com, tom.herbert@intel.com
-References: <CAJ+HfNigHWVk2b+UJPhdCWCTcW=Eh=yfRNHg4=Fr1mv98Pq=cA@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
- sockets to receive packets directly from a queue
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
-Date:   Thu, 31 Oct 2019 15:38:42 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729403AbfJaWkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 18:40:04 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41146 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbfJaWkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 18:40:04 -0400
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iQJ6m-0003Q3-5I; Thu, 31 Oct 2019 23:40:00 +0100
+Received: from [178.197.249.38] (helo=pc-63.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iQJ6l-0004Nw-QI; Thu, 31 Oct 2019 23:39:59 +0100
+Subject: Re: [PATCH nf-next,RFC 5/5] netfilter: Introduce egress hook
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>
+References: <cover.1572528496.git.lukas@wunner.de>
+ <de461181e53bcec9a75a9630d0d998d555dc8bf5.1572528497.git.lukas@wunner.de>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <d5876ef3-bcee-e0b2-273e-e0405fe17b79@iogearbox.net>
+Date:   Thu, 31 Oct 2019 23:39:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNigHWVk2b+UJPhdCWCTcW=Eh=yfRNHg4=Fr1mv98Pq=cA@mail.gmail.com>
+In-Reply-To: <de461181e53bcec9a75a9630d0d998d555dc8bf5.1572528497.git.lukas@wunner.de>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25619/Thu Oct 31 09:55:29 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/31/19 2:41 PM, Lukas Wunner wrote:
+> Commit e687ad60af09 ("netfilter: add netfilter ingress hook after
+> handle_ing() under unique static key") introduced the ability to
+> classify packets on ingress.
+> 
+> Allow the same on egress.
+> 
+> The need for this arose because I had to filter egress packets which do
+> not match a specific ethertype.  The most common solution appears to be
 
-[...]
-> >
-> > With mitigations ON
-> > -------------------
-> > Samples: 6K of event 'cycles', 4000 Hz, Event count (approx.): 5646512726
-> > bpf_prog_3c8251c7e0fef8db  bpf_prog_3c8251c7e0fef8db [Percent: local period]
-> >   45.05      push   %rbp
-> >    0.02      mov    %rsp,%rbp
-> >    0.03      sub    $0x8,%rsp
-> >   22.09      push   %rbx
+This seems like a /very/ weak justification for something that sits in
+critical fastpath. NAK.
 
-> [...]
-> >
-> > Do you see any issues with this data? With mitigations ON push %rbp and push %rbx overhead seems to
-> > be pretty high.
+> to enslave the interface to a bridge and use ebtables, but that's
+> cumbersome to configure and comes with a (small) performance penalty.
+> An alternative approach is tc, but that doesn't afford equivalent
+> matching options as netfilter.
+Hmm, have you tried tc BPF on the egress hook (via sch_cls_act -> cls_bpf)?
 
-> That's sample skid from the retpoline thunk when entring the XDP
-> program. Pretty expensive push otherwise! :-)
+> people have expressed a desire for egress filtering in the past:
+> 
+> https://www.spinics.net/lists/netfilter/msg50038.html
 
-> Another thought; Disclaimer: I'm no spectrev2 expert, and probably not
-> getting the mitigations well enough. So this is me trying to swim at
-> the deep end! Would it be possible to avoid the retpoline when
-> entering the XDP program. At least for some XDP program that can be
-> proved "safe"? If so, PeterZ's upcoming static_call could be used from
-> the driver side.
+Adding another hook to catch misconfigurations of NAT in postrouting ...?
 
-Alexei, Jakub
+> https://unix.stackexchange.com/questions/512371
 
-Do you think it will be possible to avoid this overhead when mitigations are turned ON?
-The other part of the overhead is going through the redirect path.
+This talks about filtering / limiting ARP packets which can be done today
+easily with existing means, including writing ARP responders sitting on tc
+ingress/egress hook.
 
-Can i assume that your silence as an indication that you are now okay with optional bypass
-flag as long as it doesn't effect the normal XDP datapath. If so, i will respin and submit
-the patches against the latest bpf-next
-
--Sridhar
+> An egress hook therefore seems like an obvious addition.
+> 
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
