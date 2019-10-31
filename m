@@ -2,132 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16B2BEB4AF
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78811EB4B2
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 17:26:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728542AbfJaQZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 12:25:26 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:51093 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727580AbfJaQZ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:25:26 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 1273E535E;
-        Thu, 31 Oct 2019 12:25:25 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 31 Oct 2019 12:25:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=ciET5zZMdB4pJ11vI5qomBxM/l1ZE8whGPY1gejeE
-        yw=; b=TPONw2RiqaN2UrYRFCm7Q85XKvLhUHvEAH4GbwOg/fvnYpPEG5j4bl8Wu
-        kExovKf9j8oakVFZhLGGyKyt0CFrOYOBNLWW5+jNdAYVDr8uP3lsHNLbyJEsx0w8
-        XFFCVSyBWfjZiMVFID8QHNPjOfe2yUUi7Xg+2mJR4sJ9BOWjJpq8swcIz/kTgC6C
-        9JJIHPAtro/Czu8eIX7/7U3AVuO+dyK9ALVGeFDi87ex0dwa0xcw6YKZXcTp5pHZ
-        3YOO1TV/KhzQKjh4BH+46nzDmMOKRdfSJKnt9FAGdk+pw3gJHrjzLq5qDvDCE+se
-        +96SbHFmZt3dJmcstRu+E1SlB1A6A==
-X-ME-Sender: <xms:8wq7XWpIp8yaMmk8m9Kq4YWct9qxVo6sevNgjhx86CIdwZRZBFw6mw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddthedgkeehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    goufhushhpvggtthffohhmrghinhculdegledmnecujfgurhepfffhvffukfhfgggtugfg
-    jggfsehtkeertddtreejnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughosh
-    gthhesihguohhstghhrdhorhhgqeenucffohhmrghinheprghpphhsphhothdrtghomhdp
-    ohiilhgrsghsrdhorhhgnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrg
-    hmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushht
-    vghrufhiiigvpedt
-X-ME-Proxy: <xmx:8wq7XbVhgcuL2d7K_MEWHpfiIs8bvJ4V84gLLBShIWLpPn7DO17cbw>
-    <xmx:8wq7XVYGh27KL7b8iDlQo7LI_8ghh5nGgTYtBUH49A7AfBBxe1ycDQ>
-    <xmx:8wq7XWgUfOEnbotj3mKJtoQxfx6FRdxVIGLdZxs6gNVUpRZ9YTQN4A>
-    <xmx:9Qq7XSt1obTxpWjWfWNVNBGg84LrIvjCIMSRaSaUEpCRYLkM6PY_Pw>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4478880060;
-        Thu, 31 Oct 2019 12:25:23 -0400 (EDT)
-Date:   Thu, 31 Oct 2019 18:25:21 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     syzbot <syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>
-Subject: Re: general protection fault in process_one_work
-Message-ID: <20191031162521.GA31303@splinter>
-References: <0000000000001c46d5059608892f@google.com>
- <CACT4Y+b7nkRO_Q6X3sTWbGU5Y6bGuZPmKzoPL2uoFpA4KCP2hw@mail.gmail.com>
- <20191029084517.GA24289@splinter>
- <20191029165404.GA10996@splinter>
+        id S1728550AbfJaQ0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 12:26:43 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:49045 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726540AbfJaQ0n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 12:26:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572539202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=R8quF5CgnZt6wbPqgLcGQgSnxQKKPC1DUKjHyzV1ux8=;
+        b=i4SSEBYHo82yWvrvuU9ykvrf/EgbgawWJmTNPWYYjAJDcXqrDKBqP1xXSOBvqqu2SjKNd+
+        lSb8qvqPNd9GRxeyGD/XCzejM9yRJ20hBk3cP0ZcNyPZGHLkphIDU1cqEr4gRFEpZ1aPw9
+        7bVYG98kILfy7bxsvw2nbpxiSTJXDd0=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-328-Yh7SRomNOlWB32ecykCPdg-1; Thu, 31 Oct 2019 12:26:40 -0400
+Received: by mail-ed1-f71.google.com with SMTP id r26so4502679edy.13
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 09:26:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R8quF5CgnZt6wbPqgLcGQgSnxQKKPC1DUKjHyzV1ux8=;
+        b=HxkcJ+Lgk5lt9nXfQeuVY7jC5upKl7pb1xRJj4T8OqqpYoTVepP8/G5uXv5UJc2PHI
+         fdPBpnzvHRKgRd8WprEJKLq2OPRs7tZcNIUJC55lIOLmW9GQQmms9djw/sb5il1Dwh9f
+         xg43CfhD9zNMlXTxuSwq8GWYqaQiz/NGKttnIi7PbBEZVILUmZteuCUQMyKug+C8NCK4
+         CQzKgl5jzj1XWhhh7rcUfRjq5Fm+azJTUB+u5BwBGk2BIR1bAkrRUubhRGV0uyNSQvu3
+         nxMyCOTj45EutFtMa4PzhFoTeM+kcL8EB7gzxRUr9dsaJrL2a4T6mrnqriv/zAxCBjhS
+         Zg+g==
+X-Gm-Message-State: APjAAAU/4Etxhp+KTllrB1PMGoCz5CR2qsfKprXn39tDYJawj6y8zXXD
+        PmTbuSAa7msqxB2JIWyRAwKjikdQO8nBMkryPoia75h9SfukXfy82Ac8z2BsFVPQqYQNwRW9jl+
+        v+M1KRVOqjGP5tGwH+CmwETd/1Th6ca7r
+X-Received: by 2002:a50:ef0d:: with SMTP id m13mr7033968eds.210.1572539199504;
+        Thu, 31 Oct 2019 09:26:39 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqz89+0R2RBhj3DgJe5wWAZoiBFRWTIlF8AIgKAG4cKt19uEa5B1vzZMWusrHffp44bjwMBXd4xAovF0tWSatAU=
+X-Received: by 2002:a50:ef0d:: with SMTP id m13mr7033951eds.210.1572539199325;
+ Thu, 31 Oct 2019 09:26:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191029165404.GA10996@splinter>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <99a4a6ffec5d9e7b508863873bf2097bfbb79ec6.1572534380.git.aclaudi@redhat.com>
+ <f15a41a2-f861-550c-0f0b-5fc0b40db899@gmail.com>
+In-Reply-To: <f15a41a2-f861-550c-0f0b-5fc0b40db899@gmail.com>
+From:   Andrea Claudi <aclaudi@redhat.com>
+Date:   Thu, 31 Oct 2019 17:28:43 +0100
+Message-ID: <CAPpH65ziPuhSHwXdvfsMHf=Fddp8hj_nvum48w_01hD_+UBfAg@mail.gmail.com>
+Subject: Re: [PATCH iproute2] ip-route: fix json formatting for multipath routing
+To:     David Ahern <dsahern@gmail.com>
+Cc:     linux-netdev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+X-MC-Unique: Yh7SRomNOlWB32ecykCPdg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 29, 2019 at 06:54:07PM +0200, Ido Schimmel wrote:
-> On Tue, Oct 29, 2019 at 10:45:19AM +0200, Ido Schimmel wrote:
-> > On Tue, Oct 29, 2019 at 09:43:27AM +0100, Dmitry Vyukov wrote:
-> > > On Tue, Oct 29, 2019 at 9:38 AM syzbot
-> > > <syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com> wrote:
-> > > >
-> > > > Hello,
-> > > >
-> > > > syzbot found the following crash on:
-> > > >
-> > > > HEAD commit:    38207291 bpf: Prepare btf_ctx_access for non raw_tp use case
-> > > > git tree:       bpf-next
-> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=14173c0f600000
-> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=41648156aa09be10
-> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=9ed8f68ab30761f3678e
-> > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> > > >
-> > > > Unfortunately, I don't have any reproducer for this crash yet.
-> > > >
-> > > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> > > > Reported-by: syzbot+9ed8f68ab30761f3678e@syzkaller.appspotmail.com
-> > > 
-> > > +Jiří Pírko, this seems to be related to netdevsim.
-> > 
-> > Will check it.
-> 
-> Didn't have a lot of time today, but I think the issue is a race
-> condition (note that syzbot only triggered it twice so far).
-> 
-> Upon reload nsim_dev_port_del_all() is called and starts deleting ports
-> from the ports list without holding the ports list mutex. It is possible
-> that during this time nsim_dev_trap_report_work() is executing from a
-> workqueue and accessing freed memory despite holding the ports list
-> mutex.
-> 
-> I'll try to reproduce and send a fix later this week.
+On Thu, Oct 31, 2019 at 5:11 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 10/31/19 9:09 AM, Andrea Claudi wrote:
+> > json output for multipath routing is broken due to some non-jsonified
+> > print in print_rta_multipath(). To reproduce the issue:
+> >
+> > $ ip route add default \
+> >   nexthop via 192.168.1.1 weight 1 \
+> >   nexthop via 192.168.2.1 weight 1
+> > $ ip -j route | jq
+> > parse error: Invalid numeric literal at line 1, column 58
+> >
+> > Fix this opening a "multipath" json array that can contain multiple
+> > route objects, and using print_*() instead of fprintf().
+> >
+> > This is the output for the above commands applying this patch:
+> >
+> > [
+> >   {
+> >     "dst": "default",
+> >     "flags": [],
+> >     "multipath": [
+> >       {
+> >         "gateway": "192.168.1.1",
+> >         "dev": "wlp61s0",
+> >         "weight": 1,
+> >         "flags": [
+> >           "linkdown"
+> >         ]
+> >       },
+> >       {
+> >         "gateway": "192.168.2.1",
+> >         "dev": "ens1u1",
+> >         "weight": 1,
+> >         "flags": []
+> >       }
+> >     ]
+> >   }
+> > ]
+> >
+> > Fixes: f48e14880a0e5 ("iproute: refactor multipath print")
+> > Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> > Reported-by: Patrick Hagara <phagara@redhat.com>
+> > ---
+> >  ip/iproute.c | 23 +++++++++++++++++------
+> >  1 file changed, 17 insertions(+), 6 deletions(-)
+> >
+>
+> This is fixed -next by 4ecefff3cf25 ("ip: fix ip route show json output
+> for multipath nexthops"). Stephen can cherry pick it for master
 
-Sent a fix:
-https://patchwork.ozlabs.org/patch/1187587/
+Oops, I overlooked that. Thanks David for pointing this out, please
+ignore this and sorry for the noise.
 
-It was quite difficult to reproduce, so I used the below patch to
-increase the time window in which the race could occur. Then it became
-trivial to trigger :)
-
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 54ca6681ba31..d12abd84c218 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -457,6 +457,7 @@ static void nsim_dev_trap_report_work(struct work_struct *work)
-         */
-        mutex_lock(&nsim_dev->port_list_lock);
-        list_for_each_entry(nsim_dev_port, &nsim_dev->port_list, list) {
-+               msleep(100);
-                if (!netif_running(nsim_dev_port->ns->netdev))
-                        continue;
