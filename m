@@ -2,184 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2FBEB989
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:09:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD07EB998
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 23:17:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbfJaWJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 18:09:04 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35229 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726602AbfJaWJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 18:09:03 -0400
-Received: by mail-io1-f65.google.com with SMTP id h9so8625345ioh.2;
-        Thu, 31 Oct 2019 15:09:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=mbRrgdCkRs3i0AkiyxJvSQPMkJTt31Zs7sXQoEh7498=;
-        b=anxfJk8ZQhhTgxKNDPuLmYwvFonXRXB7hCPc9VIezYrkDjTuAVlSqBovGaT5qVCrHN
-         z4nQF9OoDziyty0hwUnszWgswvPcfDcBgfP8MfHiRxer5eC3tuQTf1QR3A4v/ipikix9
-         4XZ6/SAt6Hi3Z+l2keDEuKzyjMZez+2Wt3PegkOx/kqtq6TYho1zeJx1xd41wIrc6wty
-         XHBnKJuY/hoL5uKLvxJPSkSBb4b5vb1DPaxbsNB8MBkvWj244XqahKXsoBGAsxC5xsSR
-         iNfk0b9qKNYzF5B5A7arVTchl7SzhenG0re8GbiiWVcVTfs4rLYjGlB2gR6muq8xLPd4
-         4f2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=mbRrgdCkRs3i0AkiyxJvSQPMkJTt31Zs7sXQoEh7498=;
-        b=RZ0SXTR4ZH+WKUzCh/sJqV8YhJY6OE04C9KfXKLRt9ebd266707LyB40Fst5bUvlRp
-         6yUcv5dgfRLV3T8wwkAAyezYsVp1wMMHDkQGRfhaAEltstPLoT3YFcUzDStPVHnN2Kfr
-         XerRDzHuBxbPpZMsZitYi5xFqqc/NdJk/fuTflQ3ZoDRSTrFxIEn+uMxtGRmWnYAPe0P
-         iW6zpbBBe0/+KoreeAocy7IrugH/XJlokoH6lgl6xKTuZ3QzUfhZx4L1xmMxR7+hKbbp
-         kL54NfMuaTI2u+p5bSCO/I5hNEB1MQdSuCSLN+WBqpg4VKYk/BFGk6SCtk10PajYyc/2
-         3Qcw==
-X-Gm-Message-State: APjAAAVGLuOEoh6CPxurzZi08bhE3e8cSDPgY8L5X6hLMWaegzRhQo1a
-        UjffEo0dVGidQAzmiOgJXf8=
-X-Google-Smtp-Source: APXvYqyfrXhuikhrhTO92P5/Ox0y2vtLbViA67QmKsrXbdBMpkhCOhDg/P1YLS93hYIwmZyDo06/sQ==
-X-Received: by 2002:a5d:8910:: with SMTP id b16mr7099079ion.157.1572559742508;
-        Thu, 31 Oct 2019 15:09:02 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id g8sm739674ilc.60.2019.10.31.15.09.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 15:09:01 -0700 (PDT)
-Date:   Thu, 31 Oct 2019 15:08:54 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        borisp@mellanox.com, aviadye@mellanox.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
-        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
-        Eric Biggers <ebiggers@kernel.org>,
-        herbert@gondor.apana.org.au, glider@google.com,
-        linux-crypto@vger.kernel.org
-Message-ID: <5dbb5b7665d9c_58842b00644685b8fe@john-XPS-13-9370.notmuch>
-In-Reply-To: <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
-References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
- <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
-Subject: RE: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S2387418AbfJaWRW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 18:17:22 -0400
+Received: from mga06.intel.com ([134.134.136.31]:61771 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729086AbfJaWRV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 18:17:21 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 15:17:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,253,1569308400"; 
+   d="scan'208";a="199662494"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga007.fm.intel.com with ESMTP; 31 Oct 2019 15:17:20 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net 0/7][pull request] Intel Wired LAN Driver Updates 2019-10-31
+Date:   Thu, 31 Oct 2019 15:17:12 -0700
+Message-Id: <20191031221719.14028-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-John Fastabend wrote:
-> Jakub Kicinski wrote:
-> > sk_msg_trim() tries to only update curr pointer if it falls into
-> > the trimmed region. The logic, however, does not take into the
-> > account pointer wrapping that sk_msg_iter_var_prev() does.
-> > This means that when the message was trimmed completely, the new
-> > curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
-> > neither smaller than any other value, nor would it actually be
-> > correct.
-> > 
-> > Special case the trimming to 0 length a little bit.
-> > 
-> > This bug caused the TLS code to not copy all of the message, if
-> > zero copy filled in fewer sg entries than memcopy would need.
-> > 
-> > Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
-> > 
-> > Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
-> > Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
-> > Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
-> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > ---
-> > Daniel, John, does this look okay?
-> 
-> Thanks for the second ping!
-> 
-> > 
-> > CC: Eric Biggers <ebiggers@kernel.org>
-> > CC: herbert@gondor.apana.org.au
-> > CC: glider@google.com
-> > CC: linux-crypto@vger.kernel.org
-> > 
-> >  net/core/skmsg.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> > index cf390e0aa73d..c42c145216b1 100644
-> > --- a/net/core/skmsg.c
-> > +++ b/net/core/skmsg.c
-> > @@ -276,7 +276,10 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
-> >  	 * However trimed data that has not yet been used in a copy op
-> >  	 * does not require an update.
-> >  	 */
-> > -	if (msg->sg.curr >= i) {
-> > +	if (!msg->sg.size) {
-> > +		msg->sg.curr = 0;
-> > +		msg->sg.copybreak = 0;
-> > +	} else if (msg->sg.curr >= i) {
-> >  		msg->sg.curr = i;
-> >  		msg->sg.copybreak = msg->sg.data[i].length;
-> >  	}
-> > -- 
-> 
-> 
-> Its actually not sufficient. We can't directly do comparisons against curr
-> like this. msg->sg is a ring buffer so we have to be careful for these
-> types of comparisons.
-> 
-> Examples hopefully help explian. Consider the case with a ring layout on
-> entering sk_msg_trim,
+This series contains updates to e1000, igb, igc, ixgbe, i40e and driver
+documentation.
 
-Perhaps worth adding this case is only possible AFAIK with BPF manipulating
-the ring to buffer/release data.
+Lyude Paul fixes an issue where a fatal read error occurs when the
+device is unplugged from the machine.  So change the read error into a
+warn while the device is still present.
 
-> 
->    0 1 2                              N = MAX_MSG_FRAGS
->   |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
->        ^       ^         ^
->        curr    end       start
-> 
-> Start trimming from end
-> 
->    0 1 2                              N = MAX_MSG_FRAGS
->   |X|X|X|...|X|X|_|...|_|_|i|X|....|X|X|
->        ^       ^         ^
->        curr    end       start
-> 
-> We trim backwards through ring with sk_msg_iter_var_prev(). And its
-> possible to end with the result of above where 'i' is greater than curr
-> and greater than start leaving scatterlist elements so size != 0.
-> 
->     i > curr && i > start && sg.size != 0
-> 
-> but we wont catch it with this condition
-> 
->     if (msg->sg.curr >= i)
-> 
-> So we won't reset curr and copybreak so we have a potential issue now
-> where curr is pointing at data that has been trimmed.
-> 
-> I'll put together a fix but the correct thing to do here is a proper
-> ring greater than op which is not what we have there. Although, your patch
-> is also really a good one to have because reseting curr = 0 and
-> copybreak = 0 when possible keeps the ring from being fragmented which
-> avoids chaining when we push scatterlists down to crypto layer. So for
-> your patch,
-> 
-> Acked-By: John Fastabend <john.fastabend@gmail.com>
-> 
-> If it should go to net or net-next I think is probably up for debate
-> 
-> Nice catch!!! Can you send me the reproducer?
-> 
-> Thanks,
-> John
-> 
-> 
-> 
-> 
+Manfred Rudigier found that the i350 device was not apart of the "Media
+Auto Sense" feature, yet the device supports it.  So add the missing
+i350 device to the check and fix an issue where the media auto sense
+would flip/flop when no cable was connected to the port causing spurious
+kernel log messages.
 
+I fixed an issue where the fix to resolve receive buffer starvation was
+applied in more than one place in the driver, one being the incorrect
+location in the i40e driver.
+
+Wenwen Wang fixes a potential memory leak in e1000 where allocated
+memory is not properly cleaned up in one of the error paths.
+
+Jonathan Neuschäfer cleans up the driver documentation to be consistent
+and remove the footnote reference, since the footnote no longer exists in
+the documentation.
+
+Igor Pylypiv cleans up a duplicate clearing of a bit, no need to clear
+it twice.
+
+The following are changes since commit 6d6f0383b697f004c65823c2b64240912f18515d:
+  netdevsim: Fix use-after-free during device dismantle
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 1GbE
+
+Igor Pylypiv (1):
+  ixgbe: Remove duplicate clear_bit() call
+
+Jeff Kirsher (1):
+  i40e: Fix receive buffer starvation for AF_XDP
+
+Jonathan Neuschäfer (1):
+  Documentation: networking: device drivers: Remove stray asterisks
+
+Lyude Paul (1):
+  igb/igc: Don't warn on fatal read failures when the device is removed
+
+Manfred Rudigier (2):
+  igb: Enable media autosense for the i350.
+  igb: Fix constant media auto sense switching when no cable is
+    connected
+
+Wenwen Wang (1):
+  e1000: fix memory leaks
+
+ .../networking/device_drivers/intel/e100.rst       | 14 +++++++-------
+ .../networking/device_drivers/intel/e1000.rst      | 12 ++++++------
+ .../networking/device_drivers/intel/e1000e.rst     | 14 +++++++-------
+ .../networking/device_drivers/intel/fm10k.rst      | 10 +++++-----
+ .../networking/device_drivers/intel/i40e.rst       |  8 ++++----
+ .../networking/device_drivers/intel/iavf.rst       |  8 ++++----
+ .../networking/device_drivers/intel/ice.rst        |  6 +++---
+ .../networking/device_drivers/intel/igb.rst        | 12 ++++++------
+ .../networking/device_drivers/intel/igbvf.rst      |  6 +++---
+ .../networking/device_drivers/intel/ixgbe.rst      | 10 +++++-----
+ .../networking/device_drivers/intel/ixgbevf.rst    |  6 +++---
+ .../networking/device_drivers/pensando/ionic.rst   |  6 +++---
+ drivers/net/ethernet/intel/e1000/e1000_ethtool.c   |  7 +++----
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |  5 -----
+ drivers/net/ethernet/intel/igb/e1000_82575.c       |  2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c          |  8 +++++---
+ drivers/net/ethernet/intel/igc/igc_main.c          |  3 ++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  1 -
+ 18 files changed, 67 insertions(+), 71 deletions(-)
+
+-- 
+2.21.0
 
