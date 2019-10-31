@@ -2,112 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E661EB8B5
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 22:06:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90FB8EB8BD
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 22:10:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbfJaVGW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 17:06:22 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45681 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726680AbfJaVGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 17:06:21 -0400
-Received: by mail-wr1-f68.google.com with SMTP id q13so7767523wrs.12
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 14:06:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=4HiFERmNRlTiCbF4MMXBAfmbI2j/fTvLAvgI3NA0Ar0=;
-        b=EEfE8ltTbMQixi5o0wAwLpY5knR/zoEvECz1xg9JcuL159chJH+Ba4EiMBQWDmx0E/
-         7dVQRhZaYMU9qJWnY8my/PvmtNrxpesG/Ab4Uzc30gxQYxnOYI8DDDJvnMuS/SATqI8x
-         xJp5+HCINPwQws3VsAuBr++cDtFrq0n/w5N1o/TSZWCfPue64/5gQa6HyMnLFXI3+YGR
-         f0fKuxqaK0Lq8LuFv/yzyTVb9H6liJIj++rpn+JhVMppL34Mx5+9lmK5cTDXH//EeknF
-         1XgluBhBxc7Yc3Ps5GiDxZLv0GWlewH7eBbR66pF72ciEh3wViSmSRs+mib8R5XcDCBz
-         Ad0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4HiFERmNRlTiCbF4MMXBAfmbI2j/fTvLAvgI3NA0Ar0=;
-        b=CtQptDqlPbQPNFahr4T9DUc7QBhKVm4ESr1yAteeS0lS1m5jmPH+zk11OxhnmwE03X
-         J9+vOwP5li/ZAhvIKIFzJQdVkwHXJik8cYAzv0SViYbO5+y3L1CXxzXGd5Oo+p677nUO
-         XJZAzZu4a6Bhqk2WrLO/4QrEDJtmbMctdHR2y+dTzpIcJd60mYN6gn6lSWYk/ToCa5op
-         AsfVL+vuZA/s0NiY5sx018fxxEbABQsm5TRRyi9DEmRd6Aav/xoiaqxcJ0a0hKbxHCSC
-         pvg+M0UKLkdhJZfFvwasNliRLYH4zDJrBlt+k71cSevR8zYshL/D7xq2aID1Smf1UcpE
-         olkg==
-X-Gm-Message-State: APjAAAW2sD7wY5nUcEvlNFxN1S3+bm9puXpv3c6BrFK10iLtOX/57epS
-        vzw+UGYDy3At0ZjLcacbBcyWvZSO
-X-Google-Smtp-Source: APXvYqx0l+a349GQgq+IAiXGZ+Krr/yIAtOSyNnK8/aUwwJNQbHY+gS+hxHAcDTaCO8Gr0nX8fFX/Q==
-X-Received: by 2002:adf:f4c9:: with SMTP id h9mr3138693wrp.354.1572555979337;
-        Thu, 31 Oct 2019 14:06:19 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f17:6e00:fca0:78ee:80d0:6a3d? (p200300EA8F176E00FCA078EE80D06A3D.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:fca0:78ee:80d0:6a3d])
-        by smtp.googlemail.com with ESMTPSA id b3sm4674944wma.13.2019.10.31.14.06.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Oct 2019 14:06:18 -0700 (PDT)
-Subject: Re: Fwd: Bad permanent address 00:10:00:80:00:10 using r8168 module
- on some cards
-To:     Luc Novales <luc.novales@enac.fr>, netdev@vger.kernel.org
-References: <8e3ad60e-227a-a941-74b4-d4d19c2aa7a5@enac.fr>
- <3f9dad41-818e-4637-ab59-87f69b5c9212@enac.fr>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <220be845-230b-8c49-c748-e507eb4c36f5@gmail.com>
-Date:   Thu, 31 Oct 2019 22:06:11 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729881AbfJaVJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 17:09:59 -0400
+Received: from mga01.intel.com ([192.55.52.88]:43170 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727957AbfJaVJ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 17:09:58 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 31 Oct 2019 14:09:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,253,1569308400"; 
+   d="scan'208";a="375376881"
+Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
+  by orsmga005.jf.intel.com with ESMTP; 31 Oct 2019 14:09:55 -0700
+Date:   Thu, 31 Oct 2019 14:09:55 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+Subject: Re: [PATCH 02/19] mm/gup: factor out duplicate code from four
+ routines
+Message-ID: <20191031210954.GE14771@iweiny-DESK2.sc.intel.com>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-3-jhubbard@nvidia.com>
+ <20191031183549.GC14771@iweiny-DESK2.sc.intel.com>
+ <75b557f7-24b2-740c-2640-2f914d131600@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <3f9dad41-818e-4637-ab59-87f69b5c9212@enac.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <75b557f7-24b2-740c-2640-2f914d131600@nvidia.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31.10.2019 14:04, Luc Novales wrote:
-> Hi,
+On Thu, Oct 31, 2019 at 11:43:37AM -0700, John Hubbard wrote:
+> On 10/31/19 11:35 AM, Ira Weiny wrote:
+> > On Wed, Oct 30, 2019 at 03:49:13PM -0700, John Hubbard wrote:
+> ...
+> >> +
+> >> +static void __remove_refs_from_head(struct page *page, int refs)
+> >> +{
+> >> +	/* Do a get_page() first, in case refs == page->_refcount */
+> >> +	get_page(page);
+> >> +	page_ref_sub(page, refs);
+> >> +	put_page(page);
+> >> +}
+> > 
+> > I wonder if this is better implemented as "put_compound_head()"?  To match the
+> > try_get_compound_head() call below?
 > 
-> I have no answer from realtek, could you help me for debugging and determine if problem is hardware or software and howto solve it ?
+> Hi Ira,
 > 
-> In complement, howto get more information about module parameters ?
+> Good idea, I'll rename it to that.
 > 
-> Best regards
+> > 
+> >> +
+> >> +static int __huge_pt_done(struct page *head, int nr_recorded_pages, int *nr)
+> >> +{
+> >> +	*nr += nr_recorded_pages;
+> >> +	SetPageReferenced(head);
+> >> +	return 1;
+> > 
+> > When will this return anything but 1?
+> > 
 > 
-> Luc Novales.
+> Never, but it saves a line at all four call sites, by having it return like that.
 > 
-> 
-> -------- Message transféré --------
-> Sujet :     Bad permanent address 00:10:00:80:00:10 using r8168 module on some cards
-> Date :     Tue, 29 Oct 2019 11:28:09 +0100
-> De :     Luc Novales <luc.novales@enac.fr>
-> Pour :     nicfae@realtek.com
-> 
-> 
-> 
-> Hi,
-> 
-> I am Luc Novales from ENAC in France.
-> 
-> We have some problems using tp-link PCI express network adapter (model : TG-3468(UN) ver:3.0, P/N:0152502214) under Debian Linux.
-> 
-> We uses this adapters on about 50 training computers.
-> 
-> Using r8168 compiled kernel driver, randomly and for unknown reasons bad address 00:10:00:80:00:10 is chosen at boot on some cards, causing some hardware address conflict on the network.
-> 
-[...]
-Regarding the vendor driver r8168: You have the source code. That's all support you can get.
+> I could see how maybe people would prefer to just have it be a void function,
+> and return 1 directly at the call sites. Since this was a lower line count I
+> thought maybe it would be slightly better, but it's hard to say really.
+
+It is a NIT perhaps but I feel like the signature of a function should stand on
+it's own.  What this does is mix the meaning of this function with those
+calling it.  Which IMO is not good style.
+
+We can see what others say.
+
+Ira
 
 > 
+> thanks,
 > 
-> For information, we can't use stock kernel driver r8169 because card fails in a state which it doesn't auto-negotiate and doesn't establish any link with the switch (standby power must be remove to unlock the adapter).
+> John Hubbard
+> NVIDIA
 > 
-A full dmesg output would be helpful, and please try also with a recent kernel.
-The described failure refers to the cards with the MAC address issue, or to all cards?
-
-> Best regards
-> 
-> Luc Novales.
-> 
-> 
-Heiner
