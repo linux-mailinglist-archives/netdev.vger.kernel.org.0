@@ -2,101 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F71BEA9BE
-	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 04:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D74FEAA06
+	for <lists+netdev@lfdr.de>; Thu, 31 Oct 2019 06:08:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbfJaDqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 30 Oct 2019 23:46:39 -0400
-Received: from mail-il1-f193.google.com ([209.85.166.193]:34210 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726414AbfJaDqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 30 Oct 2019 23:46:39 -0400
-Received: by mail-il1-f193.google.com with SMTP id a13so4144493ilp.1
-        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 20:46:38 -0700 (PDT)
+        id S1726415AbfJaFIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 01:08:11 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37685 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726321AbfJaFIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 01:08:11 -0400
+Received: by mail-pg1-f194.google.com with SMTP id p1so3163515pgi.4
+        for <netdev@vger.kernel.org>; Wed, 30 Oct 2019 22:08:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bECn23kNz46LjNQHGu0hpk5jfVhF0dRpyW/5v3CVsyg=;
-        b=wG7bh3YKBbbpsPsu1TBTEJ0B1VSe9w74sARZ/+NgdqK3hiGWGdfBVi9MDEVZxwYBdx
-         eFbcdRJOgci7GYU6Jm8xzipzBKJoPy5AZavO3SH4JrzGZBXaznvrSEhgqVMNESKAdLdY
-         f7ZCxZheabPasJ7aDHtrmzi5elQlKXTdewvlmBrWAyrb6DkMNIJPpAwn+ZWVoWJnAog5
-         Uo3nnXQgItGuwP4vOuqCj/pqQAb2g5dz3GHohbi6B1BfyVlHHSo0qEA6WLbnKXNJjxL8
-         QP6mQ4AP9xo7wzd/xb4I2KBHzx/OrSGf6eRckHlP2AjC6DM5BKLbmJzO3XhMUH/rYa98
-         jNkQ==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=LMPJsMbMXx3g6Ek2mwQgPW2pV3gdEwLdsElLZeHVL8Y=;
+        b=R2RPaUmA/hbE7gsbQzyt/1EoJa6A5eVljeLe2dLydzFo77hQfaFjqnZmA7tf2QKxwX
+         H6qGBuYvXjU5mToiOvio3Y8JgwQAoC0shXsx/4/gUkSXy9aME0QOz8PxAmJqLlNttWr1
+         PiscatSmxyOGBenAxqfUMCxZEQD2i0h5BodZs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bECn23kNz46LjNQHGu0hpk5jfVhF0dRpyW/5v3CVsyg=;
-        b=uN3SSCKJxBsOvi2yLv9kGOwbqAs37CyXyeklXYzoY7aKV54JWLnkW2jIJeEpCti/Vn
-         Ev1UJORI+fzqFaXPQzMnynFLVkWKA5B1uyTxegSRmSi4Kv0ENjsI8xNQx8x2nKpTraSZ
-         OHMqZxulNetUBMZr1k/QHhZflxJjpUue571ZFC1ngCeP+etHhGbUGGts4NBvtFiM4rc6
-         eYLqii7zHqQe6xofwC5PEP+JTEkF9cwI3S9aeRFbyUAzKyNHQdoMnLcJ/frN1aNwjEgx
-         RRqtFOdfhYWEde5dl2skz6sQV4hWq3ub0BO5FGVg42+MRG9IXcT7jgHtlDq6h1tUrf17
-         zoOw==
-X-Gm-Message-State: APjAAAVmE0wQwFlfoYyPoVR4j/FW1kBlUyIQPj4EPSqF5yFE2pXRlle9
-        YIeg2LGAGmHs9HnpD+a5hfUB8L6FTZeMP8YfHqprjA==
-X-Google-Smtp-Source: APXvYqxwZaghkI56w1HTWeNSbLHo2RZ5MPTuYhoViPlao4bSOANi36FZZ4kDmuN5kfinPbzlIJqHkJqsNIlNfLYeHWU=
-X-Received: by 2002:a05:6e02:689:: with SMTP id o9mr4055734ils.168.1572493597547;
- Wed, 30 Oct 2019 20:46:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20191030163620.140387-1-edumazet@google.com> <20191031033632.GE29986@1wt.eu>
-In-Reply-To: <20191031033632.GE29986@1wt.eu>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 30 Oct 2019 20:46:26 -0700
-Message-ID: <CANn89i+8FOTfq328Tv4YvhcTEn9fte6Wm4YizqubcRz=0gyiwQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: increase SOMAXCONN to 4096
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>, Yue Cao <ycao009@ucr.edu>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LMPJsMbMXx3g6Ek2mwQgPW2pV3gdEwLdsElLZeHVL8Y=;
+        b=RhOT7B9uXcfhFGb1RRSeZ3cRjP78P0JiSrYeBKEE2aO2Z2aH1mmELsWgM4JxBcziUo
+         yRGA4HHhlvQrPbhO1nzEVfR4rZCeSg+nxfqHW1My2JVHlPCTPZ/JDhCLKR7+NcqR5BxW
+         qlN1juQMOV9V1E5ZKoqdqZKmCT/YBp16N09dnHA71UommnqCjjGYKaPnFHZbydiLGYi7
+         /xQWpvNx7ufVsFDMgklr7xgcUR9TxNo0AWX/DIwAoPvE2AN8BpsiaOBGvdykZsKc2eY9
+         GqU9zNWSfTiQ/28aQQz++cUCd6Q2ny3iG1+6i+3s9U9k0VsRaEgB9GtbpzrEWQR+54H+
+         ihOA==
+X-Gm-Message-State: APjAAAVN3kAwaXUsL5S+roDp/YSZUeeS9kxionCCD6aWhBh6tj4VIu4n
+        vC/WG0oGqDckZ36GVjbdPs8CEIvXRgs=
+X-Google-Smtp-Source: APXvYqwnbRSrBNGl8zbzGtoucW79w6nRJVkvwPI7LULdsmRAhefl9oWOQnaYYaguh99PsLjxpamtAQ==
+X-Received: by 2002:a63:4556:: with SMTP id u22mr3852063pgk.2.1572498490550;
+        Wed, 30 Oct 2019 22:08:10 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a8sm1690899pff.5.2019.10.30.22.08.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 30 Oct 2019 22:08:10 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/7] bnxt_en: Updates for net-next.
+Date:   Thu, 31 Oct 2019 01:07:44 -0400
+Message-Id: <1572498471-31550-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 8:36 PM Willy Tarreau <w@1wt.eu> wrote:
->
-> On Wed, Oct 30, 2019 at 09:36:20AM -0700, Eric Dumazet wrote:
-> > SOMAXCONN is /proc/sys/net/core/somaxconn default value.
-> >
-> > It has been defined as 128 more than 20 years ago.
-> >
-> > Since it caps the listen() backlog values, the very small value has
-> > caused numerous problems over the years, and many people had
-> > to raise it on their hosts after beeing hit by problems.
-> >
-> > Google has been using 1024 for at least 15 years, and we increased
-> > this to 4096 after TCP listener rework has been completed, more than
-> > 4 years ago. We got no complain of this change breaking any
-> > legacy application.
-> >
-> > Many applications indeed setup a TCP listener with listen(fd, -1);
-> > meaning they let the system select the backlog.
-> >
-> > Raising SOMAXCONN lowers chance of the port being unavailable under
-> > even small SYNFLOOD attack, and reduces possibilities of side channel
-> > vulnerabilities.
->
-> Just a quick question, I remember that when somaxconn is greater than
-> tcp_max_syn_backlog, SYN cookies are never emitted, but I think it
-> recently changed and there's no such constraint anymore. Do you
-> confirm it's no more needed, or should we also increase this latter
-> one accordingly ?
->
+This patch series adds TC Flower tunnel decap and rewrite actions in
+the first 4 patches.  The next 3 patches integrates the recently
+added error recovery with the RDMA driver by calling the proper
+hooks to stop and start.
 
-There is no relationship like that.
+v2: Fix pointer alignment issue in patch #1.
 
-The only place somaxconn is use is in __sys_listen() to cap the
-user-provided backlog.
+Pavan Chebbi (1):
+  bnxt_en: Call bnxt_ulp_stop()/bnxt_ulp_start() during suspend/resume.
 
-somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
-if ((unsigned int)backlog > somaxconn)
-       backlog = somaxconn;
+Somnath Kotur (2):
+  bnxt: Avoid logging an unnecessary message when a flow can't be
+    offloaded
+  bnxt_en: Add support for NAT(L3/L4 rewrite)
 
-There is a second place in fastopen_queue_tune() but this is not
-relevant for this discussion.
+Sriharsha Basavapatna (1):
+  bnxt_en: flow_offload: offload tunnel decap rules via indirect
+    callbacks
+
+Vasundhara Volam (2):
+  bnxt_en: Improve bnxt_ulp_stop()/bnxt_ulp_start() call sequence.
+  bnxt_en: Call bnxt_ulp_stop()/bnxt_ulp_start() during error recovery.
+
+Venkat Duvvuru (1):
+  bnxt_en: Add support for L2 rewrite
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  45 +--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  12 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  | 416 +++++++++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h  |  20 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c |  10 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |   3 +-
+ 6 files changed, 483 insertions(+), 23 deletions(-)
+
+-- 
+2.5.1
+
