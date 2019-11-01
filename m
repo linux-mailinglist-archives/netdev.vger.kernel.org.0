@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44E13EBB69
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 01:22:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7551BEBB6B
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 01:23:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728259AbfKAAWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 20:22:01 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:32837 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727502AbfKAAWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 20:22:01 -0400
-Received: by mail-lf1-f68.google.com with SMTP id y127so6048705lfc.0
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 17:21:58 -0700 (PDT)
+        id S1728397AbfKAAXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 20:23:41 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:38807 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727491AbfKAAXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 20:23:41 -0400
+Received: by mail-lj1-f193.google.com with SMTP id y23so8117358ljc.5
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 17:23:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=EV2fbUKu73gEX5+CIj3b5YkYQITcbwccDU3gSlwZNAU=;
-        b=itp86BjsasKlqgiwsIms8Ib6Hdl0ma48ViJ4vhEXxoXhlR6DRi1aTylRXntCcq9Ws4
-         8soRV0LTFl27mtSTVh1OYImgL1OR0o6hh+wqfTKN6K/wnltUPIHuRvLnWggtt1es++sO
-         sQbWaBtzpGw6lfZ+wTdmIICENwt86tFCLpvVW5g7tjFbmpRSqa+gmhMWbfD8lHqVvGtw
-         fXanExQxG6sW7ICqVeakTqeT8w7jJIPxBIxKPdnbOBHPSRKkqG+Cm8m7R3HI3mG1AKno
-         /WgPaSnGskagXLeWHhVFZSBFk0rIAFurvKXMDoDsEW0aV9epr/fBqJwH4sqcr/NfPgPl
-         FCHA==
+        bh=sL4GAHx0bYj95x00UNMaknbt113gLy6i5IBydur3AjE=;
+        b=CB+0kqHpx6vn07m1hau5q0NiGMPU79nKRHSIDnTXfYSixe2Rcf6/F1XUqvBR6ET45s
+         8HscjNLIycf/T0cenKdNYc+e+IOZy7DSG6kzGlJWgM/kR1u89YCnnWVr7EhcJy1AAZzo
+         kd/vqVz20j96bYdcXWQv+rX7ueqILaqEfbo9zk5jSr7l5+jiT4xDd7B3NKNenCUPNcyc
+         KRWDv319wUEy81z47CNJhZNzrwp/TNcpxQcEPtGwNdC1mORKdXtetooXEDbTTrqdl5Cf
+         grX8f6kvlJ59/idaPO23IIDARvCZziZ8RwfFQXWsNsoXSTgCBUMq9He/uhZGECxae/uE
+         nVDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=EV2fbUKu73gEX5+CIj3b5YkYQITcbwccDU3gSlwZNAU=;
-        b=ocDqcI9JwvXZhFDzuGD5Pjtz7ACexLif10r6E073dswY/7J10tWvHBL1AGNrso3BJy
-         pFDiBDoiuID4KdZPsE18Rxt8RkcIF/S+VuHONGzhXM15z8DhSOU/PgT1qE9j+uWmoa6A
-         HIBWbnRCuB2u4uQnwpPuDcNzgMIHRgV+yYftD9sS0VjIpqBfb98dFSJUUHWcYau8jifT
-         BzzXfW5Wri2GQ2zZa0ZrhqmNVnzABprDIo94IBYGYhnM0GRcdlq2jcuNJkMZr3GPmiQQ
-         JmkUgAmwKT1bzHk8Lj5y0GCrXGypr8vr9YShY9I3cUQJmlZ4Oq6miPF+h31BhaALCdB5
-         soGw==
-X-Gm-Message-State: APjAAAVk1uZYaiLdlxPrhSgWWZRoXtzjOi3UdG0c96IvZlAqqEUVuJUs
-        Vh5X+HbjxBR576gRzDhvziZzpw==
-X-Google-Smtp-Source: APXvYqwdOpLsUGthqHH2HozLFklWyWYEyoWpdzJcVOkKt3ba3wg8Z1Oo9UPDW0MZ+NNaTICdOe91/g==
-X-Received: by 2002:ac2:5109:: with SMTP id q9mr5383215lfb.145.1572567717894;
-        Thu, 31 Oct 2019 17:21:57 -0700 (PDT)
+        bh=sL4GAHx0bYj95x00UNMaknbt113gLy6i5IBydur3AjE=;
+        b=ReMZ/uZrEnetoOjhOL2eXMNRCFu8H9imXWPz2IKc4C/11UDzztgGhGQJ7SLqOpsCV3
+         E+3lqhMOZGB3K5BKSzCcP4TdmxEvqH/WXHWbgPH49oPiSPpMHBepZ+WSNFJtDASMg/D5
+         gZMxSaIItbm0l2FEe0yYVZ9zObGA8I614fGbzXvILLbNICmj5/t7j0mHCtG9Os8s8UgV
+         cYNg3mbnNPL1YOifxEDH9vBsgQ8rbMxfoFK0EvuGnZ5Tzwh58QvR/jjKcu8I4VkYvkTL
+         fg4uUOuu1RvX6JroTec+4D7ux42wBKfNH9iS9T3ikMVf298X/kfdkRnZ9XSwnfUM8ifo
+         av6w==
+X-Gm-Message-State: APjAAAWNtnzsi1fYCa3zALFqQ94JfmdwDpF3YXUpBd0uqCgVDT2Gib00
+        AgoGAYHET3C7H21j/slw/3oOnw==
+X-Google-Smtp-Source: APXvYqwa44wIl0o4bL/wQhZSlq8K85XkTZ81HeSjxF1wxV1C4qzfXQrThWvqZ9/+BjzHUnFzwZMyeQ==
+X-Received: by 2002:a2e:8555:: with SMTP id u21mr6087959ljj.252.1572567819474;
+        Thu, 31 Oct 2019 17:23:39 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 141sm1899971ljj.37.2019.10.31.17.21.54
+        by smtp.gmail.com with ESMTPSA id d28sm2068900lfn.33.2019.10.31.17.23.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 17:21:57 -0700 (PDT)
-Date:   Thu, 31 Oct 2019 17:21:48 -0700
+        Thu, 31 Oct 2019 17:23:39 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 17:23:30 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Cc:     bjorn.topel@gmail.com, alexei.starovoitov@gmail.com,
-        bjorn.topel@intel.com, bpf@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org, toke@redhat.com,
-        tom.herbert@intel.com, David Miller <davem@davemloft.net>
-Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
- sockets to receive packets directly from a queue
-Message-ID: <20191031172148.0290b11f@cakuba.netronome.com>
-In-Reply-To: <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
-References: <CAJ+HfNigHWVk2b+UJPhdCWCTcW=Eh=yfRNHg4=Fr1mv98Pq=cA@mail.gmail.com>
-        <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
+To:     Ariel Levkovich <lariel@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "sbrivio@redhat.com" <sbrivio@redhat.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>
+Subject: Re: [PATCH net-next v2 0/3] VGT+ support
+Message-ID: <20191031172330.58c8631a@cakuba.netronome.com>
+In-Reply-To: <1572551213-9022-1-git-send-email-lariel@mellanox.com>
+References: <1572551213-9022-1-git-send-email-lariel@mellanox.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -67,27 +68,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 31 Oct 2019 15:38:42 -0700, Samudrala, Sridhar wrote:
-> Do you think it will be possible to avoid this overhead when mitigations are turned ON?
-> The other part of the overhead is going through the redirect path.
+On Thu, 31 Oct 2019 19:47:25 +0000, Ariel Levkovich wrote:
+> The following series introduces VGT+ support for SRIOV vf
+> devices.
+> 
+> VGT+ is an extention of the VGT (Virtual Guest Tagging)
+> where the guest is in charge of vlan tagging the packets
+> only with VGT+ the admin can limit the allowed vlan ids
+> the guest can use to a specific vlan trunk list.
+> 
+> The patches introduce the API for admin users to set and
+> query these vlan trunk lists on the vfs using netlink
+> commands.
+> 
+> changes from v1 to v2:
+> - Fixed indentation of RTEXT_FILTER_SKIP_STATS.
+> - Changed vf_ext param to bool.
+> - Check if VF num exceeds the opened VFs range and return without
+> adding the vfinfo.
 
-Yes, you should help Maciej with the XDP bulking.
-
-> Can i assume that your silence as an indication that you are now okay with optional bypass
-> flag as long as it doesn't effect the normal XDP datapath. If so, i will respin and submit
-> the patches against the latest bpf-next
-
-This logic baffles me. I absolutely hate when people repost patches
-after I nack them without even as much as mentioning my objections in
-the cover letter.
-
-My concern was that we want the applications to encode fast path logic
-in BPF and load that into the kernel. So your patch works fundamentally
-against that goal:
-
-I worry that with the volume of patches that get posted each day
-objections of a measly contributor like myself will get forgotten 
-if I don't reply to each posting, yet replying each time makes me look
-bullish or whatnot (apart from being an utter waste of time).
-
-Ugh.
+If you repost something without addressing feedback you received you
+_have_ _to_ describe what that feedback was and why it was ignored in 
+the cover letter of the new posting, please and thank you.
