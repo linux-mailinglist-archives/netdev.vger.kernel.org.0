@@ -2,90 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D908BEBEDE
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 09:08:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 606ECEBF39
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 09:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730226AbfKAIIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 04:08:45 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:56598 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730034AbfKAIIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 04:08:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572595723;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nMCDLKHK9p0Avwq2KQRi+OzRMAXn28q4vC8O9lcUbxU=;
-        b=DkhRARDVKYCZY9ph/+HXiMZALXendSSUdIqBdWErKiLQ9aFcIU7XYWdgX6tGASig+3NEo8
-        /eM8orthen8T3nBQ4mWkRrynY6cnM6YLTh+xQHIgJoOMW+jAfIY2L40AF4hL3/7oNZgI1X
-        wU/KZM/WYNOhChtekD2UsmWHPhCIW/I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-417-H9JeXlaaNb2a06NT9mVs0A-1; Fri, 01 Nov 2019 04:08:40 -0400
-X-MC-Unique: H9JeXlaaNb2a06NT9mVs0A-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 81CF4800D49;
-        Fri,  1 Nov 2019 08:08:38 +0000 (UTC)
-Received: from localhost (ovpn-116-219.ams2.redhat.com [10.36.116.219])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DAE3260BEC;
-        Fri,  1 Nov 2019 08:08:37 +0000 (UTC)
-Date:   Fri, 1 Nov 2019 09:08:36 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     davem@davemloft.net, sunilmut@microsoft.com, willemb@google.com,
-        sgarzare@redhat.com, ytht.net@gmail.com, arnd@arndb.de,
-        tglx@linutronix.de, decui@microsoft.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] vsock: Simplify '__vsock_release()'
-Message-ID: <20191101080836.GA4888@stefanha-x1.localdomain>
-References: <20191031064741.4567-1-christophe.jaillet@wanadoo.fr>
+        id S1730288AbfKAIbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 04:31:19 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37943 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730178AbfKAIbT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 04:31:19 -0400
+Received: by mail-qt1-f196.google.com with SMTP id t26so12013876qtr.5;
+        Fri, 01 Nov 2019 01:31:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=85jQntHdwZ7NNoYlz56MOfQOzIghN40YqD7QNYQWWc4=;
+        b=VvyCwvchngcy0PF0WwTySW0FVAFhNhJxQpObQMO5sQ10JGVb11b0R11dXLrBzyQ2dg
+         o/kbmF5BP4v0G7szLGvIPPyU+HqpM+ZgWxhEiZE53lt84usmVAOcCOVRag3a8c/q4zck
+         5ApD5f8vv+L1d1KWXXgghZNziF3dZoYkmk1XJM9acAr5BdCWXhRdHVxaYR4v5gLfhRKM
+         3KChd7uVcN8wVHW2pqbLQstV1NX2wJaX0OrMec517zbHPkWrFRDz7ar0vaSycO4ktwuC
+         0pjjLEvy1i1VVcNnc5GQZYvOAznSmnZQqz2K6HqsWWRgjJJiAW+jO62l4tq4pqbN1EOR
+         c0gw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=85jQntHdwZ7NNoYlz56MOfQOzIghN40YqD7QNYQWWc4=;
+        b=SJxgNh6wH+rKEO4cmXI1FivIA4tLTPAV+HXIacHctXroDBbyITQMchZc8HDBGwd3Vd
+         txAvmwCBg0gIZqWqHkkn7iGFKI6P8z2Vg2dwrXxvlXzwgWdzXDFq7IW+ewQgpHM9B1xb
+         YZXFNdCswzGkO2H0c8+ybgMOOKxVN5bo/av0Pqcf8aiuSzuQmOELNC8FW+X4VIfdZezx
+         YGb9hhKVNoDKiMe4UybYR8S16jsENM1hCYg9knbyLmaWtHanPbKEqR/z0jNMbDjlFYzg
+         eP8G8tDpR3Q9o295I9R2tqcIHmNHkHl6G/NSux/ebNU56SbfxPAe1K+1M7bGT1ziyEg5
+         ytRg==
+X-Gm-Message-State: APjAAAVtXtUL+xkQ+kwMt/vQHFb+uIrRgJSzXsd+/3wfg/la+++F95Nl
+        rtaovTZruG8AOO3zesRSYa8STSCJUh3HiZMoRcU=
+X-Google-Smtp-Source: APXvYqxzDU+h/SfDg79vd3rLdR4QtF8B9kHraWvhIyhED7fObjAwFkn9w4OexVWLM/swqb7/2GtiROBCO1mFey7MWo8=
+X-Received: by 2002:a0c:94fb:: with SMTP id k56mr9011768qvk.127.1572597076393;
+ Fri, 01 Nov 2019 01:31:16 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20191031064741.4567-1-christophe.jaillet@wanadoo.fr>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Mimecast-Spam-Score: 0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="tKW2IUtsqtDRztdT"
-Content-Disposition: inline
+References: <20191031084749.14626-1-bjorn.topel@gmail.com> <20191031084749.14626-3-bjorn.topel@gmail.com>
+ <20191031234804.GA20080@pc-63.home>
+In-Reply-To: <20191031234804.GA20080@pc-63.home>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 1 Nov 2019 09:31:04 +0100
+Message-ID: <CAJ+HfNgAggmm0ti09O8MeyZ+qwWpug-_kHRZQFaMROUC5B3LDQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/3] bpf: implement map_gen_lookup() callback
+ for XSKMAP
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---tKW2IUtsqtDRztdT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Fri, 1 Nov 2019 at 00:48, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On Thu, Oct 31, 2019 at 09:47:48AM +0100, Bj=C3=B6rn T=C3=B6pel wrote:
+> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+[...]
+> > +static u32 xsk_map_gen_lookup(struct bpf_map *map, struct bpf_insn *in=
+sn_buf)
+> > +{
+> > +     const int ret =3D BPF_REG_0, mp =3D BPF_REG_1, index =3D BPF_REG_=
+2;
+> > +     struct bpf_insn *insn =3D insn_buf;
+> > +
+> > +     *insn++ =3D BPF_LDX_MEM(BPF_W, ret, index, 0);
+> > +     *insn++ =3D BPF_JMP_IMM(BPF_JGE, ret, map->max_entries, 5);
+> > +     *insn++ =3D BPF_ALU64_IMM(BPF_LSH, ret, ilog2(sizeof(struct xsk_s=
+ock *)));
+> > +     *insn++ =3D BPF_ALU64_IMM(BPF_ADD, mp, offsetof(struct xsk_map, x=
+sk_map));
+> > +     *insn++ =3D BPF_ALU64_REG(BPF_ADD, ret, mp);
+> > +     *insn++ =3D BPF_LDX_MEM(BPF_DW, ret, ret, 0);
+>
+> Your map slots are always exactly sizeof(struct xdp_sock *), right? Would=
+n't
+> this BPF_DW crash on 32 bit?
+>
+> Meaning, it would have to be BPF_LDX_MEM(BPF_SIZEOF(struct xsk_sock *), .=
+..)?
+>
 
-On Thu, Oct 31, 2019 at 07:47:41AM +0100, Christophe JAILLET wrote:
-> Use '__skb_queue_purge()' instead of re-implementing it.
->=20
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->  net/vmw_vsock/af_vsock.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
+Indeed. Thanks for finding this. I'll do a respin.
 
-Modulo the comment about double-underscore:
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
---tKW2IUtsqtDRztdT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl276AIACgkQnKSrs4Gr
-c8hfmgf+INURpFV1u1GE48Cf2ihsC6QhHVe3MTzVVV3eQztp78fDvWBPuRqFZP7U
-HjbZNkqJ92U4xAhO9Z+biLTYUKeLb1IIueXXUgZsrELr3zfdAL9fybIGln7c42Nx
-yJvwDFHAbgT1fFlnoaYE22ZUeALajF/AiBdIjwoqWmRYN2iYDHjzZzncuoaEVjuN
-RueUQUVdjdCLcIbAaLf460N2ksM511vXRJ8BjTSkQL6154steJgibuT2PwluMNhp
-FKEIavD0NT/tjZRuS7IkmXl+ZTENDEPuUeRaRsxk9KXhG1/MlcyHGVhgdDvk5irL
-BG3X708iLUI2gdg+CkotgwzgFMiT4A==
-=C+k4
------END PGP SIGNATURE-----
-
---tKW2IUtsqtDRztdT--
-
+Bj=C3=B6rn
