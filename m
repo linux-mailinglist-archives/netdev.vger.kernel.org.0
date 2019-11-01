@@ -2,109 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F13C5EBC3B
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 04:07:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AACD7EBC42
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 04:11:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729641AbfKADHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 23:07:22 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39889 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729620AbfKADHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 23:07:22 -0400
-Received: by mail-lj1-f196.google.com with SMTP id y3so8790209ljj.6
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 20:07:20 -0700 (PDT)
+        id S1729592AbfKADL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 23:11:29 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:42873 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727332AbfKADL2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 23:11:28 -0400
+Received: by mail-io1-f66.google.com with SMTP id k1so9396669iom.9
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 20:11:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=J4NA7oWY+NLSOvKPXrREnqcSOAU6R7dAF4VLdVakC2o=;
-        b=XrJ13TfkR85FgMuyoy9bMlave+PcqP0pALQ3R2KWa7Dhl45W9kehk0miafOuxdnhb7
-         T1hhu1O42gKDfYU6wIUrIG1yY1DQxanX/KlWolucpMOsN6Txi/feBILgW7iOZIMCDze1
-         /OXY97va9hOjp0dOUKE9xlCUqRhXBWT7vSOBs1E9pSF30DB5g68kQ/qDFWNjRXIKDG5A
-         f4QvYfzbaQP4bTwUvYMXnQiY0Ao3H0QS2416Ehf2pBbVkSjh/fvKvrrShjRl8RWyeutd
-         6oR6iHVfru9s+7TqrDNt7SZar9V8ODhokqQVlZ89mzCcuKJMsTWhs3zygddRHFiCnxP6
-         34DQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=mefi6RY7aL3E+ALKnM/5oy8n8uJyUxFhdCAVjiSfMRE=;
+        b=Kx2LTo7WDAiaxpY20vSDhzyvd+BX0ClGOFo/SxzcPdkONyFErtz+mU6FsW9qKKSbNN
+         vuKI9KRn9ejbUDK1esIt7S87tnygMVHYiRK6xztKgipe68qLHo2IdiTdDfF9z+WTjVDO
+         0tRnLo+kpF6bI6kSNAz4S2QUR55nSHgRiZug5aSc8Iut0mn63rAi/ZrvN4ULBbdh07TQ
+         +qym4Qfs5nDSkSSN46tfQadWd7hsVKycWwuH2bo3BwBiQItMTyul4Dp5UqD5TYIzOmEb
+         hSRoMwawLEot72Y4x6tQkTMzfQ7CJXeGI9xkWA4GfuRyUlosBJENuNTxOMfiRxzC9fOz
+         S3ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=J4NA7oWY+NLSOvKPXrREnqcSOAU6R7dAF4VLdVakC2o=;
-        b=DTGCzwz4Jx6DSK2cbvEYw0VcYa6vBy3XRwPkqTsCym1ZJoQwMpjZ+0TxzpUvuqBdwc
-         dYqyaz47jbmxPZ7hDJOfaQyc9D+c3Z7XPSACGidszgkMfHdAc8U2BPxDHQ2/vI2gNFuG
-         6FZeqRP4EyND56NG5kcWpSPs9zx0HluseJB07G19MhHVUsRBzw2lu5w2mCjlXl0Q7jww
-         mROoyD1dYL8+wWaHV4E4sakSZNJvrrtaAKK9+xd0gktobvPhjcur9IO3+oAvI0VF9uvh
-         DsGkeAVbBOjF9BxLweO2rCHrUfgITPNCwIBLwMmL/tTzC0sAYZp7CkCDk76BKG366GpU
-         /jEg==
-X-Gm-Message-State: APjAAAU5zbnHHlLZN35JkmKwJJuJQq79MQlcd6LZLv2z+ywPSOCwa8TC
-        RBih+p/QfRXfe5vZj6PExz21FUA3eH0=
-X-Google-Smtp-Source: APXvYqy5YFoAiLvCKyldR9WPvpzDJxG1Li08x1Rf/8cIU2I/vo9WLH2bO4PB27a6LjLgPyQk+6Dfrw==
-X-Received: by 2002:a2e:9759:: with SMTP id f25mr6352737ljj.173.1572577639912;
-        Thu, 31 Oct 2019 20:07:19 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v6sm3926282ljd.15.2019.10.31.20.07.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 31 Oct 2019 20:07:19 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Subject: [PATCH net 3/3] net: fix installing orphaned programs
-Date:   Thu, 31 Oct 2019 20:07:00 -0700
-Message-Id: <20191101030700.13080-4-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191101030700.13080-1-jakub.kicinski@netronome.com>
-References: <20191101030700.13080-1-jakub.kicinski@netronome.com>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mefi6RY7aL3E+ALKnM/5oy8n8uJyUxFhdCAVjiSfMRE=;
+        b=aMm1dWrfJm3CGHEmkAGL7ENeZPbS+L7VcGZE5LIeCl+qBvSuNNVFYqDbisoKWtmA/M
+         lJpK0BICabxGUmV9eUQW5ALJ5zd2ngfU5OmioKII/ylTlmD38xHgvQ9kUsEaFJOfY5MG
+         kdv6yI32KbHNwgOVybav4id7TSJRFPiSAAMHFaIsuAsNXSMcBqSnLFrDYT2xKoTHFMHP
+         dXcCEwOrcDa94GpZ4xJfGhdTYyqyS0+NkF+etHYf+IrbSCiDpAahb99sHN7zoZwpWj16
+         VQ/7G6ak9YzJf4c2Nzc7CRRRNiM3hW0nFbwXAvabnT7G80GcOokOVXAVT+oB1tsl/T8Y
+         Vl9g==
+X-Gm-Message-State: APjAAAXF8pVhy7ADV2yS7otgX+0Iuksk5CkYrkU1xhjKfjQyoOk/81/Y
+        ikIwn0euNiVCGA8Ek4jvf30tglHu
+X-Google-Smtp-Source: APXvYqwsHEBNWifRvzHwdZWoiS6NvCYuNpNIloarP1UJF3bfL0v0N0ZBilH4nj0mCPOuwOnzCrEqzw==
+X-Received: by 2002:a05:6638:392:: with SMTP id y18mr3883353jap.98.1572577887599;
+        Thu, 31 Oct 2019 20:11:27 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:e0f1:25db:d02a:8fc2])
+        by smtp.googlemail.com with ESMTPSA id q3sm814249ill.0.2019.10.31.20.11.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 31 Oct 2019 20:11:26 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: icmp: use input address in traceroute
+To:     Francesco Ruggeri <fruggeri@arista.com>, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+References: <20191101004414.2B2F995C102D@us180.sjc.aristanetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2706bf00-c156-a71e-01f8-be64de0dd32f@gmail.com>
+Date:   Thu, 31 Oct 2019 21:11:24 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191101004414.2B2F995C102D@us180.sjc.aristanetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When netdevice with offloaded BPF programs is destroyed
-the programs are orphaned and removed from the program
-IDA - their IDs get released (the programs may remain
-accessible via existing open file descriptors and pinned
-files). After IDs are released they are set to 0.
+On 10/31/19 6:44 PM, Francesco Ruggeri wrote:
+> Even with icmp_errors_use_inbound_ifaddr set, traceroute returns the
+> primary address of the interface the packet was received on, even if
+> the path goes through a secondary address. In the example:
+> 
+>                     1.0.3.1/24
+>  ---- 1.0.1.3/24    1.0.1.1/24 ---- 1.0.2.1/24    1.0.2.4/24 ----
+>  |H1|--------------------------|R1|--------------------------|H2|
+>  ----            N1            ----            N2            ----
+> 
+> where 1.0.3.1/24 is R1's primary address on N1, traceroute from
+> H1 to H2 returns:
+> 
+> traceroute to 1.0.2.4 (1.0.2.4), 30 hops max, 60 byte packets
+>  1  1.0.3.1 (1.0.3.1)  0.018 ms  0.006 ms  0.006 ms
+>  2  1.0.2.4 (1.0.2.4)  0.021 ms  0.007 ms  0.007 ms
+> 
+> After applying this patch, it returns:
+> 
+> traceroute to 1.0.2.4 (1.0.2.4), 30 hops max, 60 byte packets
+>  1  1.0.1.1 (1.0.1.1)  0.033 ms  0.007 ms  0.006 ms
+>  2  1.0.2.4 (1.0.2.4)  0.011 ms  0.007 ms  0.007 ms
+> 
+> Original-patch-by: Bill Fenner <fenner@arista.com>
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+> 
+> ---
+>  net/ipv4/icmp.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+> index 4298aae74e0e..a72fbdf1fb85 100644
+> --- a/net/ipv4/icmp.c
+> +++ b/net/ipv4/icmp.c
+> @@ -682,7 +682,8 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+>  			dev = dev_get_by_index_rcu(net, inet_iif(skb_in));
+>  
+>  		if (dev)
+> -			saddr = inet_select_addr(dev, 0, RT_SCOPE_LINK);
+> +			saddr = inet_select_addr(dev, iph->saddr,
+> +						 RT_SCOPE_LINK);
+>  		else
+>  			saddr = 0;
+>  		rcu_read_unlock();
+> 
 
-This confuses dev_change_xdp_fd() because it compares
-the __dev_xdp_query() result where 0 means no program
-with prog->aux->id where 0 means orphaned.
+Change looks good to me, so for that
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
-dev_change_xdp_fd() would have incorrectly returned success
-even though it had not installed the program.
+In this case and your ipv6 patch you have a set of commands to show this
+problem and verify the fix. Please submit both in a test script under
+tools/testing/selftests/net/. Also, veth pairs is a better way to
+connect namespaces than macvlan on a dummy device. See any of the fib*
+tests in that directory. Those all serve as good templates for a
+traceroute test script.
 
-Since drivers already catch this case via bpf_offload_dev_match()
-let them handle this case. The error message drivers produce in
-this case ("program loaded for a different device") is in fact
-correct as the orphaned program must had to be loaded for a
-different device.
-
-Fixes: c14a9f633d9e ("net: Don't call XDP_SETUP_PROG when nothing is changed")
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
-CC: Maxim Mikityanskiy <maximmi@mellanox.com>
-
- net/core/dev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 96afd464284a..99ac84ff398f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -8421,7 +8421,8 @@ int dev_change_xdp_fd(struct net_device *dev, struct netlink_ext_ack *extack,
- 			return -EINVAL;
- 		}
- 
--		if (prog->aux->id == prog_id) {
-+		/* prog->aux->id may be 0 for orphaned device-bound progs */
-+		if (prog->aux->id && prog->aux->id == prog_id) {
- 			bpf_prog_put(prog);
- 			return 0;
- 		}
--- 
-2.23.0
 
