@@ -2,113 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75615EBB90
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 02:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40CC7EBB95
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 02:03:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728828AbfKABCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 21:02:41 -0400
-Received: from mail105.syd.optusnet.com.au ([211.29.132.249]:48008 "EHLO
-        mail105.syd.optusnet.com.au" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727455AbfKABCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 21:02:41 -0400
-Received: from dimstar.local.net (n122-110-44-45.sun2.vic.optusnet.com.au [122.110.44.45])
-        by mail105.syd.optusnet.com.au (Postfix) with SMTP id 771593A2BCE
-        for <netdev@vger.kernel.org>; Fri,  1 Nov 2019 12:02:25 +1100 (AEDT)
-Received: (qmail 23327 invoked by uid 501); 1 Nov 2019 01:02:25 -0000
-Date:   Fri, 1 Nov 2019 12:02:25 +1100
-From:   Duncan Roe <duncan_roe@optusnet.com.au>
-To:     Steve Grubb <sgrubb@redhat.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>,
-        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
-        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
-        mpatel@redhat.com
-Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid
- outside init_user_ns
-Message-ID: <20191101010225.GC18955@dimstar.local.net>
-Mail-Followup-To: Steve Grubb <sgrubb@redhat.com>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        omosnace@redhat.com, dhowells@redhat.com, simo@redhat.com,
-        Eric Paris <eparis@parisplace.org>, Serge Hallyn <serge@hallyn.com>,
-        ebiederm@xmission.com, nhorman@tuxdriver.com,
-        Dan Walsh <dwalsh@redhat.com>, mpatel@redhat.com
-References: <cover.1568834524.git.rgb@redhat.com>
- <CAHC9VhRDoX9du4XbCnBtBzsNPMGOsb-TKM1CC+sCL7HP=FuTRQ@mail.gmail.com>
- <20191030220320.tnwkaj5gbzchcn7j@madcap2.tricolour.ca>
- <3677995.NTHC7m0fHc@x2>
+        id S1728496AbfKABDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 21:03:41 -0400
+Received: from www62.your-server.de ([213.133.104.62]:34162 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbfKABDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 21:03:41 -0400
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iQLLj-0007Mf-Bd; Fri, 01 Nov 2019 02:03:35 +0100
+Received: from [178.197.249.38] (helo=pc-63.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iQLLi-0005lR-Te; Fri, 01 Nov 2019 02:03:35 +0100
+Subject: Re: [PATCH v2 bpf-next 1/2] bpf: replace prog_raw_tp+btf_id with
+ prog_tracing
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+References: <20191030223212.953010-1-ast@kernel.org>
+ <20191030223212.953010-2-ast@kernel.org>
+ <5ef95166-dace-28be-8274-a9343900025e@iogearbox.net>
+ <20191031233642.xnqlz6qjfwzlmilt@ast-mbp.dhcp.thefacebook.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <afe594ea-de2c-e796-8ae6-7c721ecfb6dd@iogearbox.net>
+Date:   Fri, 1 Nov 2019 02:03:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3677995.NTHC7m0fHc@x2>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.2 cv=G6BsK5s5 c=1 sm=1 tr=0
-        a=4DzML1vCOQ6Odsy8BUtSXQ==:117 a=4DzML1vCOQ6Odsy8BUtSXQ==:17
-        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=MeAgGD-zjQ4A:10
-        a=wokOCyRbhw6_iYDWPRUA:9 a=CjuIK1q_8ugA:10
+In-Reply-To: <20191031233642.xnqlz6qjfwzlmilt@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25619/Thu Oct 31 09:55:29 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 10:50:57AM -0400, Steve Grubb wrote:
-> Hello,
->
-> TLDR;  I see a lot of benefit to switching away from procfs for setting auid &
-> sessionid.
->
-> On Wednesday, October 30, 2019 6:03:20 PM EDT Richard Guy Briggs wrote:
-> > > Also, for the record, removing the audit loginuid from procfs is not
-> > > something to take lightly, if at all; like it or not, it's part of the
-> > > kernel API.
->
-> It can also be used by tools to iterate processes related to one user or
-> session. I use this in my Intrusion Prevention System which will land in
-> audit user space at some point in the future.
->
->
-> > Oh, I'm quite aware of how important this change is and it was discussed
-> > with Steve Grubb who saw the concern and value of considering such a
-> > disruptive change.
->
-> Actually, I advocated for syscall. I think the gist of Eric's idea was that /
-> proc is the intersection of many nasty problems. By relying on it, you can't
-> simplify the API to reduce the complexity. Almost no program actually needs
-                                             ^^^^^^ ^^ ^^^^^^^ ^^^^^^^^ ^^^^^
-> access to /proc. ps does. But almost everything else is happy without it. For
-> ^^^^^^ ^^ ^^^^^^ ^^ ^^^^^
+On 11/1/19 12:36 AM, Alexei Starovoitov wrote:
+> On Fri, Nov 01, 2019 at 12:20:13AM +0100, Daniel Borkmann wrote:
+>> On 10/30/19 11:32 PM, Alexei Starovoitov wrote:
+>>> The bpf program type raw_tp together with 'expected_attach_type'
+>>> was the most appropriate api to indicate BTF-enabled raw_tp programs.
+>>> But during development it became apparent that 'expected_attach_type'
+>>> cannot be used and new 'attach_btf_id' field had to be introduced.
+>>> Which means that the information is duplicated in two fields where
+>>> one of them is ignored.
+>>> Clean it up by introducing new program type where both
+>>> 'expected_attach_type' and 'attach_btf_id' fields have
+>>> specific meaning.
+>>
+>> Hm, just for my understanding, the expected_attach_type is unused for
+>> tracing so far. Are you aware of anyone (bcc / bpftrace / etc) leaving
+>> uninitialized garbage in there?
+> 
+> I'm not aware, but the risk is there. Better safe than sorry.
+> If we need to revert in the future that would be massive.
+> I'm already worried about new CHECK_ATTR check in raw_tp_open.
+> Equally unlikely user space breakage, but that one is easy to revert
+> whereas what you're proposing would mean revert everything.
 
-Eh?? *top* needs /proc/ps, as do most of the programs in package procps-ng.
-Then there's lsof, pgrep (which doesn't fail but can't find anything) and even
-lilo (for Slackware ;)
+Hmm, yeah, it's unfortunate that expected_attach_type is not enforced as
+0. We sort of implicitly do for older kernels where expected_attach_type
+is not known to it, but there is still non-zero risk given there seems
+plenty of stuff in the wild on BPF tracing and not all might rely on libbpf.
+Perhaps we should probably enforce it for all new program types, so we can
+reuse it in future.
 
-> example, when you setup chroot jails, you may have to add /dev/random or /
-> dev/null, but almost never /proc. What does force you to add /proc is any
-> entry point daemon like sshd because it needs to set the loginuid. If we
-> switch away from /proc, then sshd or crond will no longer /require/ procfs to
-> be available which again simplifies the system design.
->
->
-> > Removing proc support for auid/ses would be a
-> > long-term deprecation if accepted.
->
-> It might need to just be turned into readonly for a while. But then again,
-> perhaps auid and session should be part of /proc/<pid>/status? Maybe this can
-> be done independently and ahead of the container work so there is a migration
-> path for things that read auid or session. TBH, maybe this should have been
-> done from the beginning.
->
-> -Steve
->
-Cheers ... Duncan.
+>> Just seems confusing that we have all
+>> the different tracing prog types and now adding yet another one as
+>> BPF_RPOG_TYPE_TRACING which will act as umbrella one and again have
+>> different attach types some of which probably resemble existing tracing
+>> prog types again (kprobes / kretprobes for example). Sounds like this
+>> new type would implicitly deprecate all the existing types (sort of as
+>> we're replacing them with new sub-types)?
+> 
+> All existing once are still supported and may grow its own helpers and what not.
+> Having new prog type makes things grow independently much easier.
+> I was thinking to call it BPF_PROG_TYPE_BTF_ENABLED or BPF_PROG_TYPE_GENERIC,
+> since I suspect upcoming lsm and others will fit right in,
+> but I think it's cleaner to define categories of bpf programs now
+> instead of specific purpose types like we had in the past before BTF.
+
+Yes, otherwise we likely would have BPF_PROG_TYPE_GENERIC as last one and
+would keep defining sub-types. ;)
+
+>> True that k[ret]probe expects pt_regs whereas BTF enabled program context
+>> will be the same as raw_tp as well, but couldn't this logic be hidden in
+>> the kernel e.g. via attach_btf_id as well since this is an opt-in? Could
+>> the fentry/fexit be described through attach_btf_id as well?
+> 
+> That's what I tried first, but the code grows too ugly.
+> Also for attaching fentry/fexit I'm adding new bpf_trace_open command
+> similar to bpf_raw_tp_open, since existing kprobe attach style doesn't
+> work at all. imo the code is much cleaner now.
+
+Ok, fair enough that the fentry/fexit approach doesn't have too much in common
+after all with plain kprobes. Applied then, thanks!
