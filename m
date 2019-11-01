@@ -2,111 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78937EBD4B
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 06:41:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3282FEBE01
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 07:36:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729828AbfKAFko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 01:40:44 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:46850 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729801AbfKAFko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 01:40:44 -0400
-Received: by mail-pf1-f196.google.com with SMTP id 193so4972243pfc.13
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 22:40:44 -0700 (PDT)
+        id S1726921AbfKAGgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 02:36:09 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43021 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725280AbfKAGgJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 02:36:09 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n1so8668170wra.10
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 23:36:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=87LDioEh9QArbtKje2Ha+R3GcGCadSMWQHWuBYLzjuI=;
-        b=EWImVPA87TD2kh6PA559dlNc+n4rQqoHwyEpsEAWLcv5GBJZG6m5C6ugqPSn+4jVS7
-         wlgTmQIF2i5QkMRaxTYWAZ44so4xHKaU9s0gLO7c48BCOT9UFR5U9tC+F2+oEm0yqILh
-         YvfTaygs0sSX6ocutJPJcbV5MbGqVkr9yS7+c=
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=sTsFPxq/pFRaCDUGOe6EaSDY4YEd+sF1TFTYdLuGqv8=;
+        b=phIHR9+BMDI2dmrMMiMdOfsQufBWg1UDBua/gtnkjskYfIsemwPfYEzb9gDmR/mt0q
+         G9mwgGYBWMfTSa8vRyz32NKE41CHwN5/kZZHbWOyPwwxiS5tTIsvPMEjzp3X4ToP1A+I
+         Fu6h+W+AIe3fD57DJrjTIUEMFsRp5VyFkaw0nxM7azgGoEpAQ4YW60YZhULFyTS9mwQQ
+         Ak9qbPg4rqRJkI8QgUrsQN8W8Z0DJiQ7BqJF4qn8WUe37U790jrU9I43hI5pZMXWwg6v
+         G/gGtq1vkzoIZuEShioffaa5ghf2YHivLycRdE4rtH+wUrYXrP0AFHKPajGaYlBoa4CZ
+         0BnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=87LDioEh9QArbtKje2Ha+R3GcGCadSMWQHWuBYLzjuI=;
-        b=Zg/jd9QmjcqcLGmtTzS/Ik9EnvCV5zykXvCnhPXoI2A/HGAop/7yKF28GnBH0ALDLU
-         06JMiE8Q4nXqVJzd6ndrFS4aCiy0+HKBh7C5lnstXGh2XWt2LTXEcoKlKjrIqf39jTuh
-         5smX3Sy6y2ZLSZ8nHi6k6oG9CXB4bD4Qs7vdttC01gN5v/h41PXg7+hZuWTnwPkbG9XK
-         111YcMJamuiciEgzNhliwxCbzat7sAFrhkMY1fRoLtT9Y/sNQLfDS5MqjN+Ma2mFg7Ut
-         6GRtcO0yr2p8WcO2TVn/z8ZCNg+6LGGMeISANmE6RTxZLxjq8I7Kg0uY91o0DCyBbAer
-         LAPw==
-X-Gm-Message-State: APjAAAWRaAckCGFZw4D+i7rSyTlepegrQE15cjhyXusWePXLkykpLEHG
-        SsUNBKlBksOEkAlCYf5AnRLW+w==
-X-Google-Smtp-Source: APXvYqzmEFT6XObk/Pkzshp1rgxcYK0KGZjMpS1zkQ0VFL6rDsk3N+SH1c2LjWcJS3JUYdRAMO5HHA==
-X-Received: by 2002:a63:2057:: with SMTP id r23mr11730719pgm.274.1572586843673;
-        Thu, 31 Oct 2019 22:40:43 -0700 (PDT)
-Received: from ikjn-p920.tpe.corp.google.com ([2401:fa00:1:10:254e:2b40:ef8:ee17])
-        by smtp.gmail.com with ESMTPSA id 16sm7460747pgd.0.2019.10.31.22.40.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sTsFPxq/pFRaCDUGOe6EaSDY4YEd+sF1TFTYdLuGqv8=;
+        b=oTj7/I8ptu+WhwJvsaBEJopAMLergr+lOYyHHzoD3RWxsd+V4HIV4fRJ4CQohAk+yp
+         WaPvJJPkUUs8k5HWyE6QixUYTgT05YCCrK9Bb94tWN31cxPnik4POD01W6WHJ/Yt71m2
+         /z1Vo00nHbKMCU/5kW1XXW1hks00ZorQ6Us1fePjtdkW2N9zLu/umdLSOexf32X9h61L
+         TDC93998770dn33CPYfyANJ1LX9m7lEmXT6fYBZRxcHxUMQS2cZJP078fnxM5CW1ZFyD
+         dzbeahKpI9oo3bSKbzhWpco3KHt+Q8QeO7pTM/pwINs2FiU0+FZWi4ei5Dr+7pxZ0Al8
+         RPNQ==
+X-Gm-Message-State: APjAAAXbNectnEArQ8P/lR6ZA6HiCaNVXp3flXUUU6BtnHS9JX5QXxtO
+        0b+3paf44m0GmVYjmGsNaPAzBg==
+X-Google-Smtp-Source: APXvYqw8Wwchqeniuh3KoDykbJbaMs0xktXpxYXyjnVchFsMzc2tNVJqTf0l892HG1Yh3P7mJ6gy0Q==
+X-Received: by 2002:adf:f989:: with SMTP id f9mr9100485wrr.163.1572590166880;
+        Thu, 31 Oct 2019 23:36:06 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id j15sm5167285wrt.78.2019.10.31.23.36.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 22:40:43 -0700 (PDT)
-From:   Ikjoon Jang <ikjn@chromium.org>
-To:     ath10k@lists.infradead.org
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ikjoon Jang <ikjn@chromium.org>
-Subject: [PATCH] ath10k: disable cpuidle during downloading firmware.
-Date:   Fri,  1 Nov 2019 13:40:35 +0800
-Message-Id: <20191101054035.42101-1-ikjn@chromium.org>
-X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+        Thu, 31 Oct 2019 23:36:06 -0700 (PDT)
+Date:   Fri, 1 Nov 2019 07:36:04 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, shuah@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, rong.a.chen@intel.com,
+        mlxsw@mellanox.com
+Subject: Re: [patch net-next] selftests: bpf: don't try to read files without
+ read permission
+Message-ID: <20191101063604.GB3209@nanopsycho.orion>
+References: <20191015100057.19199-1-jiri@resnulli.us>
+ <20191031163535.2737f250@cakuba.netronome.com>
+ <20191031164057.6c1b486a@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191031164057.6c1b486a@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Downloading ath10k firmware needs a large number of IOs and
-cpuidle's miss predictions make it worse. In the worst case,
-resume time can be three times longer than the average on sdio.
+Fri, Nov 01, 2019 at 12:40:57AM CET, jakub.kicinski@netronome.com wrote:
+>On Thu, 31 Oct 2019 16:35:35 -0700, Jakub Kicinski wrote:
+>> On Tue, 15 Oct 2019 12:00:56 +0200, Jiri Pirko wrote:
+>> > From: Jiri Pirko <jiri@mellanox.com>
+>> > 
+>> > Recently couple of files that are write only were added to netdevsim
+>> > debugfs. Don't read these files and avoid error.
+>> > 
+>> > Reported-by: kernel test robot <rong.a.chen@intel.com>
+>> > Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+>> > ---
+>> >  tools/testing/selftests/bpf/test_offload.py | 2 +-
+>> >  1 file changed, 1 insertion(+), 1 deletion(-)
+>> > 
+>> > diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
+>> > index 15a666329a34..c44c650bde3a 100755
+>> > --- a/tools/testing/selftests/bpf/test_offload.py
+>> > +++ b/tools/testing/selftests/bpf/test_offload.py
+>> > @@ -312,7 +312,7 @@ class DebugfsDir:
+>> >              if f == "ports":
+>> >                  continue
+>> >              p = os.path.join(path, f)
+>> > -            if os.path.isfile(p):
+>> > +            if os.path.isfile(p) and os.access(p, os.R_OK):  
+>> 
+>> Have you tested this? Looks like python always returns True here when
+>> run as root, and this script requires root (and checks for it).
+>
+>Yeah, you definitely haven't tested this. Even if it worked we'd fall
+>into the else condition and say:
 
-This patch disables cpuidle during firmware downloading by
-applying PM_QOS_CPU_DMA_LATENCY in ath10k_download_fw().
+Sure I tested. It worked. Odd.
 
-Signed-off-by: Ikjoon Jang <ikjn@chromium.org>
----
- drivers/net/wireless/ath/ath10k/core.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 36c62d66c19e..4f76ba5d78a9 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -11,6 +11,7 @@
- #include <linux/property.h>
- #include <linux/dmi.h>
- #include <linux/ctype.h>
-+#include <linux/pm_qos.h>
- #include <asm/byteorder.h>
- 
- #include "core.h"
-@@ -1027,6 +1028,7 @@ static int ath10k_download_fw(struct ath10k *ar)
- 	u32 address, data_len;
- 	const void *data;
- 	int ret;
-+	struct pm_qos_request latency_qos;
- 
- 	address = ar->hw_params.patch_load_addr;
- 
-@@ -1060,8 +1062,14 @@ static int ath10k_download_fw(struct ath10k *ar)
- 			    ret);
- 	}
- 
--	return ath10k_bmi_fast_download(ar, address,
--					data, data_len);
-+	memset(&latency_qos, 0, sizeof(latency_qos));
-+	pm_qos_add_request(&latency_qos, PM_QOS_CPU_DMA_LATENCY, 0);
-+
-+	ret = ath10k_bmi_fast_download(ar, address, data, data_len);
-+
-+	pm_qos_remove_request(&latency_qos);
-+
-+	return ret;
- }
- 
- void ath10k_core_free_board_files(struct ath10k *ar)
--- 
-2.24.0.rc1.363.gb1bccd3e3d-goog
-
+>
+>Exception: /sys/kernel/debug/netdevsim/netdevsim0//ports/0/dev/take_snapshot is neither file nor directory
+>
+>> Also the fix is needed in net, not sure why you sent it to net-next.
+>> 
+>> >                  _, out = cmd('cat %s/%s' % (path, f))
+>> >                  dfs[f] = out.strip()
+>> >              elif os.path.isdir(p):  
+>
