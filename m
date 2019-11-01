@@ -2,74 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 353E2EC856
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 19:16:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1794AEC881
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 19:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726995AbfKASQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 14:16:06 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52743 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbfKASQG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 14:16:06 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c17so2816448wmk.2
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 11:16:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=sxZpbgKRxXNWGi7JPE5PJWysYsru4FyBDVNdoORRq6s=;
-        b=vttfE+yHueTydpOmGzXppeugfpRtDd2BWsq3YaVtIJ2Z0/Tokkp5mPQ7DMvO06zg5S
-         Tk4b1yFEhm2Wc5Z0iMzxyARZGJFr0ZwreXVX7yJsX52sKOP4mKT6zJqPUuEj3q72e/qN
-         zdgumdE0Dm8GOejq+pRy0oH9hv0NvzIaN9Eql4dQdJh7MFWEPiST+yyb3rh84kZdjAzy
-         Lbl9fdSGQ+heCbTnoNhbbjIn3AxlP6cIHb2UG61hvDkl/mO7rICswVRgJzGZWHiMFVe/
-         FDfcz4U8pQrhGgrUiPI0OQJkH0yZ1KDSH5NSgbbe7oXPcIDEf2eGdTGHV/3anZOfyOB2
-         v5Ag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sxZpbgKRxXNWGi7JPE5PJWysYsru4FyBDVNdoORRq6s=;
-        b=mPSmGt4yYd4pBteJN7xRGHbY3v9c6GHHpcFepJBrwgg01RQZTqpNqWBV4LXh/vOLbc
-         1V2cPV3nsACX80+YXk6uV7XGxflVsNl0G6GYrmatGT3txVc2YIcODFC4Lnf22XyyUEka
-         F22Y8C5PeI8PPDNlRZhDByz+MO51sHBmiar8a/pJtex75qLJu6EB/a0ul2i1jjBFshLB
-         vMU5d1WDx4k4AxtBYXrzdQSMfltp4V+X2+VrubojNnaXDwhOH6RBubUUic3Lf/FM4UCu
-         a0mm2lwhFFS2ki/uNJmgLDnXPz4p483rL+97kXktGQ579Vfe0XD2dyO469MHyg3t0AOn
-         T0bw==
-X-Gm-Message-State: APjAAAVBRUxPu+fqppyBFehk7Ya6VSYkltFq+IyG5AdpdmfDafV9J0wg
-        ToIwun67mErz700p9UsEZzqnhg==
-X-Google-Smtp-Source: APXvYqxissnymQlTIZHuchg7pdEDwKYW3/LTmbLmpkQZw7CfA6kNNHUqMixo6wErYI+CKsI4eGbAYw==
-X-Received: by 2002:a1c:a791:: with SMTP id q139mr11147563wme.155.1572632162588;
-        Fri, 01 Nov 2019 11:16:02 -0700 (PDT)
-Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id w13sm10336198wrm.8.2019.11.01.11.16.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 11:16:02 -0700 (PDT)
-Date:   Fri, 1 Nov 2019 19:16:01 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     vincent.cheng.xh@renesas.com
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com, richardcochran@gmail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: ptp: Add device tree binding for IDT
- ClockMatrix based PTP clock
-Message-ID: <20191101181600.GD5859@netronome.com>
-References: <1572578407-32532-1-git-send-email-vincent.cheng.xh@renesas.com>
+        id S1727434AbfKASbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 14:31:12 -0400
+Received: from mga11.intel.com ([192.55.52.93]:48099 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727222AbfKASbM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Nov 2019 14:31:12 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Nov 2019 11:31:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,256,1569308400"; 
+   d="scan'208";a="194755221"
+Received: from unknown (HELO [10.241.228.226]) ([10.241.228.226])
+  by orsmga008.jf.intel.com with ESMTP; 01 Nov 2019 11:31:11 -0700
+Subject: Re: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
+ sockets to receive packets directly from a queue
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     bjorn.topel@gmail.com, alexei.starovoitov@gmail.com,
+        bjorn.topel@intel.com, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org, toke@redhat.com,
+        tom.herbert@intel.com, David Miller <davem@davemloft.net>
+References: <CAJ+HfNigHWVk2b+UJPhdCWCTcW=Eh=yfRNHg4=Fr1mv98Pq=cA@mail.gmail.com>
+ <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
+ <20191031172148.0290b11f@cakuba.netronome.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <8481fe0a-fa7b-c689-1e51-1a3253176509@intel.com>
+Date:   Fri, 1 Nov 2019 11:31:11 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1572578407-32532-1-git-send-email-vincent.cheng.xh@renesas.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191031172148.0290b11f@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 31, 2019 at 11:20:06PM -0400, vincent.cheng.xh@renesas.com wrote:
-> From: Vincent Cheng <vincent.cheng.xh@renesas.com>
+On 10/31/2019 5:21 PM, Jakub Kicinski wrote:
+> On Thu, 31 Oct 2019 15:38:42 -0700, Samudrala, Sridhar wrote:
+>> Do you think it will be possible to avoid this overhead when mitigations are turned ON?
+>> The other part of the overhead is going through the redirect path.
 > 
-> Add device tree binding doc for the IDT ClockMatrix PTP clock.
+> Yes, you should help Maciej with the XDP bulking.
 > 
-> Signed-off-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+>> Can i assume that your silence as an indication that you are now okay with optional bypass
+>> flag as long as it doesn't effect the normal XDP datapath. If so, i will respin and submit
+>> the patches against the latest bpf-next
+> 
+> This logic baffles me. I absolutely hate when people repost patches
+> after I nack them without even as much as mentioning my objections in
+> the cover letter.
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+Sorry if you got the impression that i didn't take your feedback. I CCed you
+and also included the kernel rxdrop data that you requested in the original
+series.
 
+> 
+> My concern was that we want the applications to encode fast path logic
+> in BPF and load that into the kernel. So your patch works fundamentally
+> against that goal:
+
+So looks like you are saying that the fundamental requirement is that all AF_XDP
+packets need to go via a BPF program.
+
+The reason i proposed direct receive is because of the overhead we are seeing
+with going via BPF program for apps that want to receive all the packets on a
+specific queue.
+
+I agree that there is work going on to reduce this overhead with bulking and avoiding
+the retpoline.
+We can revisit after these optimizations get in and then see if it is still useful
+to provide a direct receive option.
+
+-Sridhar
