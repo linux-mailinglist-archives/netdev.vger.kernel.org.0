@@ -2,105 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFBBDEC506
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 15:49:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EAB5EC514
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 15:52:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727326AbfKAOtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 10:49:45 -0400
-Received: from mail-il1-f194.google.com ([209.85.166.194]:43216 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727466AbfKAOto (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 10:49:44 -0400
-Received: by mail-il1-f194.google.com with SMTP id j2so6766274ilc.10
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 07:49:44 -0700 (PDT)
+        id S1727527AbfKAOwE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 10:52:04 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:47086 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727313AbfKAOwE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 10:52:04 -0400
+Received: by mail-io1-f66.google.com with SMTP id c6so11133117ioo.13;
+        Fri, 01 Nov 2019 07:52:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OvG/qWeSbh1TxLgtmArlVNDYsoALFmkQsSm7UaGBE/U=;
-        b=I8fTjuu/6Ne32KB3TzlkLHNc34FVVQHy/sTVoKvVYeIrGIs/zEWpPkdT4X2FTYZjfJ
-         UM4GFAou96icNjK1AVI5vEOtitRVjbXgZfqaanuntVF/vhTirkZT/9E+CWJUq7E2TQj0
-         StXEuMWcR5zlKYK8R7EGKhYIJ+Gb4ciY1IEMBuLWPRJg6NDyeWhuiAg3JUaKBbPDkQbL
-         sElozNdk4t7DFMJr/2GTc4DXhCqAVsopLQpS5jb3DWebvxakkqFHF/FpNq1kpaMflaeM
-         i/d5Nr3Kf7lOCXzSXk2CZXk0I+pfGJSDm0die6SS7xUqTydNbrFVI18tKwuFsQOAi/MB
-         kf9g==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=UhjQGqJBUwWxhPrUXNTvf2v3g/fE4UlgFpuSM1dMpPg=;
+        b=MYL7s4l9S/pFcKmrbKFH6KCGTlJruf307g9JET4uDu8iG+6VjjwC4P9AD/lpcoz+vM
+         Q3vBVd614+9ESFoAEQiqnIgx4lFNLgdSKP4xhaByjsFGW/r87bNrStNg51bvetib8Us6
+         4xcC2PNx87SK1WT8/9C0EYMQ9IlQQcavqSK6CM34X7ZzJJubLqUOEE1/sYeP78vmyQNL
+         nQ80Eu6oIukDdVA5zU3lBvi+oq3p9G9ZiTaUN3oP2dT/a14t5S87upcebl14X6w39sMa
+         VuGn3R3DS7qu7aqJkbz6HcciKCXZ6uAge39qOmcdARoq4d6AX/a7asbNlWyW3BfOq6Uk
+         Kamg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OvG/qWeSbh1TxLgtmArlVNDYsoALFmkQsSm7UaGBE/U=;
-        b=ZuLNM/cpKSFp25XCWsFTXsuyq/yVgeEiFCLGt4QDQgqeSnNeqxT7xUf21bSX7AXHky
-         QOYObaRpYeUlkOcbZW0n4HUJS4ZdvNmsrzRjUwPOQwyjoY2n9ztgjZzasOnIFDXnERhJ
-         7eD3DkW7iOT4W/Neq9DVHM74TGLkywAfpa6mI2S9MoaxxDSeDPjfPABJ8oAJf7JTg+5u
-         Ct1Yb+D8nyCHGSSLE5IZvZsvTQ7w4V73n3AIUdMherPIkiLP9DUy4nRe46zv0U+XNlh5
-         CaK8PU9QAKmXc5hFl/pycvSPUHrOyRAzBwa0TiC/TC37C7DPRvqxBdMV5Z/N3OeMHOps
-         cWTw==
-X-Gm-Message-State: APjAAAWbq/yj64bNcmR/OHuOowhmcM4Ol8MwNYZNmlFgZXBXJ8BZL++A
-        42QTmZ+f/voXQM1ZuytMfRf/lA==
-X-Google-Smtp-Source: APXvYqxr+bs1ScRWYKeCxmeXCSlj6Q4Lr6KXKYyS2zYjKblHkVBUMc7IPKJ+YzvkERiHaP9xr0/5Lg==
-X-Received: by 2002:a92:5d8f:: with SMTP id e15mr13331860ilg.173.1572619783709;
-        Fri, 01 Nov 2019 07:49:43 -0700 (PDT)
-Received: from [192.168.1.159] ([65.144.74.34])
-        by smtp.gmail.com with ESMTPSA id f73sm1107827ild.59.2019.11.01.07.49.40
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 01 Nov 2019 07:49:42 -0700 (PDT)
-Subject: Re: [PATCH 10/19] fs/io_uring: set FOLL_PIN via pin_user_pages()
-To:     John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=UhjQGqJBUwWxhPrUXNTvf2v3g/fE4UlgFpuSM1dMpPg=;
+        b=EAzFfwez850GTeXVLi6CFPFW0BkVHypiJnessRpF9Gnh1gCIFN4sVw10gkkPwUdEGA
+         hUcIqyvTAM1I2fx/5sXqxUUvw9oI/KhEqVf6By9vsPJr8e6K5ApqqlkT2MOXu5afGq52
+         Lpoz+XQYp1GTm3FZiuz7QaLEHM+9scXuaRkpNhCNUeaWLwQOxMcDm8FWMxxiXFYxaGo1
+         rNWNjdWL3VsVuBSxF7vc7041LuB9AIN+SgTOwmcHK9qfs63g4mR+EnHQ4YJruUEOwJP6
+         cuv+Q59NzgUzcEOpkGKLj/JX30oxdWVcR1Eb7ow5rkNhPEkEf9EWlQ6a8L+R5nc2kZXK
+         zmdQ==
+X-Gm-Message-State: APjAAAUc0rYtonmsKyCayOY1bcOyw1eFZee4MLVE6GjpWDU1qKdOSQzF
+        aYJzxuWPnsS1YhSi2qgJMfBJvHxYGM4=
+X-Google-Smtp-Source: APXvYqzn1q5mBnTje1ZFAmqsT9s9Ay9ZoxZUN1yXijlT6xreLf9ETZyojCsuInUlHPZAzuPJccxubQ==
+X-Received: by 2002:a6b:3b57:: with SMTP id i84mr4683693ioa.85.1572619922865;
+        Fri, 01 Nov 2019 07:52:02 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id v28sm1108280ill.74.2019.11.01.07.52.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Nov 2019 07:52:02 -0700 (PDT)
+Date:   Fri, 01 Nov 2019 07:51:54 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-References: <20191030224930.3990755-1-jhubbard@nvidia.com>
- <20191030224930.3990755-11-jhubbard@nvidia.com>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <979ba2a3-ee04-fb12-204d-1b68c7b6e141@kernel.dk>
-Date:   Fri, 1 Nov 2019 08:49:39 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20191030224930.3990755-11-jhubbard@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
+        John Fastabend <john.fastabend@gmail.com>
+Message-ID: <5dbc468adbc4c_e4e2b12b10265b88@john-XPS-13-9370.notmuch>
+In-Reply-To: <87tv7olzwd.fsf@toke.dk>
+References: <CAJ+HfNimRqftmKASOdceXFJmgbLvXnNBZATTnfA9LMF2amGzzA@mail.gmail.com>
+ <CAADnVQJRe4Pm-Rxx9zobn8YRHh9i+xQp7HX4gidqq9Mse7PJ5g@mail.gmail.com>
+ <87lft1ngtn.fsf@toke.dk>
+ <CAADnVQLrg6f_zjvNfiEVfdjcx9+DW_RFjVGetavvMNo=VXAR+g@mail.gmail.com>
+ <87imo5ng7w.fsf@toke.dk>
+ <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
+ <87d0ednf0t.fsf@toke.dk>
+ <CAADnVQ+V4OMjJqSdE_OQ1Vr99kqTF=ZB3UUMKiCSg=3=c+exqg@mail.gmail.com>
+ <20191031174208.GC2794@krava>
+ <CAADnVQJ=cEeFdYFGnfu6hLyTABWf2==e_1LEhBup5Phe6Jg5hw@mail.gmail.com>
+ <20191031191815.GD2794@krava>
+ <CAADnVQJdAZS9AHx_B3SZTcWRdigZZsK1ccsYZK0qUsd1yZQqbw@mail.gmail.com>
+ <87tv7olzwd.fsf@toke.dk>
+Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without
+ need_wakeup
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/30/19 4:49 PM, John Hubbard wrote:
-> Convert fs/io_uring to use the new pin_user_pages() call, which sets
-> FOLL_PIN. Setting FOLL_PIN is now required for code that requires
-> tracking of pinned pages, and therefore for any code that calls
-> put_user_page().
+Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+> =
 
-Reviewed-by: Jens Axboe <axboe@kernel.dk>
+> > On Thu, Oct 31, 2019 at 12:18 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> >> >
+> >> > yes. older vmlinux and newer installed libbpf.so
+> >> > or any version of libbpf.a that is statically linked into apps
+> >> > is something that libbpf code has to support.
+> >> > The server can be rebooted into older than libbpf kernel and
+> >> > into newer than libbpf kernel. libbpf has to recognize all these
+> >> > combinations and work appropriately.
+> >> > That's what backward and forward compatibility is.
+> >> > That's what makes libbpf so difficult to test, develop and code re=
+view.
+> >> > What that particular server has in /usr/include is irrelevant.
+> >>
+> >> sure, anyway we can't compile following:
+> >>
+> >>         tredaell@aldebaran ~ $ echo "#include <bpf/xsk.h>" | gcc -x =
+c -
+> >>         In file included from <stdin>:1:
+> >>         /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__=
+needs_wakeup=E2=80=99:
+> >>         /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_=
+WAKEUP=E2=80=99 undeclared (first use in this function)
+> >>            82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
+> >>         ...
+> >>
+> >>         XDP_RING_NEED_WAKEUP is defined in kernel v5.4-rc1 (77cd0d7b=
+3f257fd0e3096b4fdcff1a7d38e99e10).
+> >>         XSK_UNALIGNED_BUF_ADDR_MASK and XSK_UNALIGNED_BUF_OFFSET_SHI=
+FT are defined in kernel v5.4-rc1 (c05cd3645814724bdeb32a2b4d953b12bdea5f=
+8c).
+> >>
+> >> with:
+> >>   kernel-headers-5.3.6-300.fc31.x86_64
+> >>   libbpf-0.0.5-1.fc31.x86_64
+> >>
+> >> if you're saying this is not supported, I guess we could be postponi=
+ng
+> >> libbpf rpm releases until we have the related fedora kernel released=
 
--- 
-Jens Axboe
+> >
+> > why? github/libbpf is the source of truth for building packages
+> > and afaik it builds fine.
+> >
+> >> or how about inluding uapi headers in libbpf-devel.. but that might
+> >> actualy cause more confusion
+> >
+> > Libraries (libbpf or any other) should not install headers that
+> > typically go into /usr/include/
+> > if_xdp.h case is not unique.
+> > We'll surely add another #define, enum, etc to uapi/linux/bpf.h tomor=
+row.
+> > And we will not copy paste these constants and types into tools/lib/b=
+pf/.
+> > In kernel tree libbpf development is using kernel tree headers.
+> > No problem there for libbpf developers.
+> > Packages are built out of github/libbpf that has a copy of uapi heade=
+rs
+> > necessary to create packages.
+> > No problem there for package builders either.
+> > But libbpf package is not going to install those uapi headers.
+> > libbpf package installs only libbpf own headers (like libbpf.h)
+> > The users that want to build against the latest libbpf package need
+> > to install corresponding uapi headers package.
+> > I don't think such dependency is specified in rpm scripts.
+> > May be it is something to fix? Or may be not.
+> > Some folks might not want to update all of /usr/include to bring libb=
+pf-devel.
+> > Then it would be their responsibility to get fresh /usr/include heade=
+rs.
+> =
 
+> We can certainly tie libbpf to the kernel version. The obvious way to d=
+o
+> that is to just ship the version of libbpf that's in the kernel tree of=
+
+> whatever kernel version the distro ships. But how will we handle
+> bugfixes, then? You've explicitly stated that libbpf gets no bugfixes
+> outside of bpf-next...
+> =
+
+> -Toke
+
+We use libbpf and build for a wide variety of kernels so I don't think we=
+
+want to make libbpf kernel version specific. I always want the latest lib=
+bpf
+features even when building on older kernels. I generally use the bpf-nex=
+t
+version though so maybe I'm not the target user.
+
+.John
