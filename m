@@ -2,57 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CF2CEC369
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 14:02:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EB59EC36A
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 14:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727069AbfKANCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 09:02:31 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:32816 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726832AbfKANCb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 09:02:31 -0400
-Received: by mail-lj1-f195.google.com with SMTP id t5so10210910ljk.0
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 06:02:30 -0700 (PDT)
+        id S1727071AbfKANCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 09:02:34 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:42641 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726832AbfKANCe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 09:02:34 -0400
+Received: by mail-lf1-f67.google.com with SMTP id z12so7175164lfj.9
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 06:02:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0egjBdQJtYXLIHxjxzAbtG2G5qRpm+4VtSyDYXCM0wE=;
-        b=sT2Jl/yznKqH7pkHjf0QU00oT3ksvH0he2PM/SJVUBigYuatmwmm3PYbPqoTOWhOva
-         w3DXLbfqdSe2r+5f8NcHc/YuiyV/cwpUwtjwVvWb2NTXwRum1DOXqZVb8sLaoFnuOWpc
-         StDNWN2R0HNjHlbYuKy8FDUUHSvR/jQsuNNb6+xpFrpylB6si20CflcUpeXuyd0lSthB
-         KZtHhkfbavuapFU/B8frxSua7pZGqj0gx8ewx33fhvk2hbliZ0x5XME4k9ar/O2ArP+g
-         4cstE27dWBTLPCJ9H0i1gfO9H9rHA/0wA6tQ0p7pirM7hK494P4dzhkYatDHnlzNHR+B
-         chrA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qWrGmW+JKfE+kYfM3N9oChJLu02yWLmRgyqdy1iXI+Y=;
+        b=zPuFRVJFf0nZV1hHZgd/tJ25N032iYOUBU/EDromfHD8lfw/iOGoTgArGujay2ZHph
+         08ejTwvWXxXD3Kt1EOpeBQ1mzpV1sX5gid7mDVtgIcvQLBMIOzNvz1+/GX8tk3hTxf6e
+         0xfQbjMhmHrhQOMkxbMCEZKna8lAHv5EwZwai3tToi4N/IR8op+iQWJtmZ/dswzQfkEo
+         F+0yR/Hlay4H4JrRLk/tDUkUirVAV0a9TBuvTh1t9VAsGoSmSnKMOHiK90/l9chuoc3y
+         KBHSHtRUjaIT8jFhQr6iNrSWW+zFh8URcHNqItgR3m20fl33FhxvXOv+xZB2F+FoIHYh
+         a+oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0egjBdQJtYXLIHxjxzAbtG2G5qRpm+4VtSyDYXCM0wE=;
-        b=iB1ay84o9to+mZP9kBYwAxtS9P8pDgcy7ISzJtVKsuQ2fHQD+GY/h3UpBmogIHHyF5
-         kh3kExPKNm/3KjW4CBKZAF5A4wXpJC9aGeisqZqHIVVfBToyu64aSP2YP4wowoZWNWQz
-         uJvcadnPQBvubAHdn1HqWz11J6W2wXEhmR333++RvcdAsrvWT8uOdq/uPa/xQzCjyHBD
-         S80b3gSi/gOwzVzSvHxwrvlwKaRo+0Xevv0yNRhw13IEkxIxCHLu3fl98EFfLMxP2sGl
-         ig7dhp3hH7ZWJsImRXIDcTiUHMWqQHsNxHh9ohw8OV/oq2WMGXhwsL3+vh2bqFSancTq
-         0aDQ==
-X-Gm-Message-State: APjAAAV3ezGIbsJYoHseuxbp5WIngPZNASy4LiHv7fZ+ZKGsmfRpTUP1
-        2gus+0/5+2QyPypHn5UfVUHQbYohrnDDFg==
-X-Google-Smtp-Source: APXvYqylQ+gOHwXrmXYbZqHzDdvAn6StOLP895JkcJwSWjl2/lDpGvn0vbLJUarXVOFegS8IryaW4w==
-X-Received: by 2002:a2e:9157:: with SMTP id q23mr3168880ljg.79.1572613348986;
-        Fri, 01 Nov 2019 06:02:28 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qWrGmW+JKfE+kYfM3N9oChJLu02yWLmRgyqdy1iXI+Y=;
+        b=akatH+obobldXIllxK4826yb7VyyyfIvRIEcT2X0c8ftecGqUcndJQnW1OC1l5/d52
+         szYPKXiEAVIwdzyeBFW2RcWz0WXSkcyoRg1bkEQb072q18cfj8LhjuHesyHXAZBixdc1
+         fq8Uoh35DWUBCx8xzB4tquCghXtdJTveMtkGbhS12ByonNrEy3pWAd+5i59oghuwiPbB
+         KijXIa8VP0p1XU8v4sPAfjhYbvQwldJvPios4nSR2qnLN37HWca8r2AS2+asRjlFzDMP
+         JrjZV+dB8frxpbm5boWcl8Tzec/6gstA5N8Bgf3ohK3wW649FkCT1YTc2B+jXeXtV00u
+         67BA==
+X-Gm-Message-State: APjAAAXUpiPxvYc87P/wu7sb/r5potuYt3g0Cv2+/klXN8GRI5UxMzzN
+        oQNFfFPJBJn1JbF7NOqwY2Ml9x31g58uRQ==
+X-Google-Smtp-Source: APXvYqyx9xCsIqhZGzBB+hiusl/KzyGGof21JXoBcuFzjOGWBuiLu94lAfVtAluBBvQMsdqp/JPCqA==
+X-Received: by 2002:a19:da1a:: with SMTP id r26mr1536302lfg.60.1572613351412;
+        Fri, 01 Nov 2019 06:02:31 -0700 (PDT)
 Received: from localhost.bredbandsbolaget (c-79c8225c.014-348-6c756e10.bbcust.telenor.se. [92.34.200.121])
-        by smtp.gmail.com with ESMTPSA id c3sm2516749lfi.32.2019.11.01.06.02.27
+        by smtp.gmail.com with ESMTPSA id c3sm2516749lfi.32.2019.11.01.06.02.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 06:02:27 -0700 (PDT)
+        Fri, 01 Nov 2019 06:02:30 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next 00/10 v2] IXP4xx networking cleanups
-Date:   Fri,  1 Nov 2019 14:02:14 +0100
-Message-Id: <20191101130224.7964-1-linus.walleij@linaro.org>
+Subject: [PATCH net-next 01/10 v2] wan: ixp4xx_hss: fix compile-testing on 64-bit
+Date:   Fri,  1 Nov 2019 14:02:15 +0100
+Message-Id: <20191101130224.7964-2-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20191101130224.7964-1-linus.walleij@linaro.org>
+References: <20191101130224.7964-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -60,65 +62,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a patch series which jams together Arnds and mine
-cleanups for the IXP4xx networking.
+From: Arnd Bergmann <arnd@arndb.de>
 
-I also have patches for device tree support but that
-requires more elaborate work, this series is some of
-mine and some of Arnds patches that is a good foundation
-for his multiplatform work and my device tree work.
+Change the driver to use portable integer types to avoid
+warnings during compile testing:
 
-These are for application to the networking tree so
-that can be taken in one separate sweep.
+drivers/net/wan/ixp4xx_hss.c:863:21: error: cast to 'u32 *' (aka 'unsigned int *') from smaller integer type 'int' [-Werror,-Wint-to-pointer-cast]
+        memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
+                           ^
+drivers/net/wan/ixp4xx_hss.c:979:12: error: incompatible pointer types passing 'u32 *' (aka 'unsigned int *') to parameter of type 'dma_addr_t *' (aka 'unsigned long long *') [-Werror,-Wincompatible-pointer-types]
+                                              &port->desc_tab_phys)))
+                                              ^~~~~~~~~~~~~~~~~~~~
+include/linux/dmapool.h:27:20: note: passing argument to parameter 'handle' here
+                     dma_addr_t *handle);
+                                 ^
 
-I have tested the patches for a bit using zeroday builds
-and some boots on misc IXP4xx devices and haven't run
-into any major problems. We might find some new stuff
-as a result from the new compiler coverage.
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Just resending with the rest
+---
+ drivers/net/wan/ixp4xx_hss.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I had to depromote enabling compiler coverage at one
-point in this v2 set because it depended on other patches
-making the code more generic.
-
-Arnd Bergmann (4):
-  wan: ixp4xx_hss: fix compile-testing on 64-bit
-  wan: ixp4xx_hss: prepare compile testing
-  ptp: ixp46x: move adjacent to ethernet driver
-  ixp4xx_eth: move platform_data definition
-
-Linus Walleij (6):
-  net: ethernet: ixp4xx: Standard module init
-  net: ethernet: ixp4xx: Use distinct local variable
-  net: ehernet: ixp4xx: Use netdev_* messages
-  ARM/net: ixp4xx: Pass ethernet physical base as resource
-  net: ethernet: ixp4xx: Get port ID from base address
-  net: ethernet: ixp4xx: Use parent dev for DMA pool
-
- arch/arm/mach-ixp4xx/fsg-setup.c              |  20 ++
- arch/arm/mach-ixp4xx/goramo_mlr.c             |  24 ++
- arch/arm/mach-ixp4xx/include/mach/platform.h  |  22 +-
- arch/arm/mach-ixp4xx/ixdp425-setup.c          |  20 ++
- arch/arm/mach-ixp4xx/nas100d-setup.c          |  10 +
- arch/arm/mach-ixp4xx/nslu2-setup.c            |  10 +
- arch/arm/mach-ixp4xx/omixp-setup.c            |  20 ++
- arch/arm/mach-ixp4xx/vulcan-setup.c           |  20 ++
- drivers/net/ethernet/xscale/Kconfig           |  14 ++
- drivers/net/ethernet/xscale/Makefile          |   3 +-
- .../net/ethernet/xscale}/ixp46x_ts.h          |   0
- drivers/net/ethernet/xscale/ixp4xx_eth.c      | 225 +++++++++---------
- .../{ptp => net/ethernet/xscale}/ptp_ixp46x.c |   3 +-
- drivers/net/wan/Kconfig                       |   3 +-
- drivers/net/wan/ixp4xx_hss.c                  |  39 +--
- drivers/ptp/Kconfig                           |  14 --
- drivers/ptp/Makefile                          |   1 -
- include/linux/platform_data/eth_ixp4xx.h      |  19 ++
- include/linux/platform_data/wan_ixp4xx_hss.h  |  17 ++
- 19 files changed, 313 insertions(+), 171 deletions(-)
- rename {arch/arm/mach-ixp4xx/include/mach => drivers/net/ethernet/xscale}/ixp46x_ts.h (100%)
- rename drivers/{ptp => net/ethernet/xscale}/ptp_ixp46x.c (99%)
- create mode 100644 include/linux/platform_data/eth_ixp4xx.h
- create mode 100644 include/linux/platform_data/wan_ixp4xx_hss.h
-
+diff --git a/drivers/net/wan/ixp4xx_hss.c b/drivers/net/wan/ixp4xx_hss.c
+index ea6ee6a608ce..e7619cec978a 100644
+--- a/drivers/net/wan/ixp4xx_hss.c
++++ b/drivers/net/wan/ixp4xx_hss.c
+@@ -258,7 +258,7 @@ struct port {
+ 	struct hss_plat_info *plat;
+ 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
+ 	struct desc *desc_tab;	/* coherent */
+-	u32 desc_tab_phys;
++	dma_addr_t desc_tab_phys;
+ 	unsigned int id;
+ 	unsigned int clock_type, clock_rate, loopback;
+ 	unsigned int initialized, carrier;
+@@ -858,7 +858,7 @@ static int hss_hdlc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		dev->stats.tx_dropped++;
+ 		return NETDEV_TX_OK;
+ 	}
+-	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
++	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
+ 	dev_kfree_skb(skb);
+ #endif
+ 
 -- 
 2.21.0
 
