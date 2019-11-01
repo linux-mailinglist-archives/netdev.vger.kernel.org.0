@@ -2,134 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E60F2EC787
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 18:29:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60F58EC78F
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 18:32:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729088AbfKAR3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 13:29:36 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:39064 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727207AbfKAR3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 13:29:36 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1HTROJ100272;
-        Fri, 1 Nov 2019 12:29:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1572629367;
-        bh=P2wSfPHYsgTnR6hxVYkmXWydswdHT0FNUtJtvtjwMEI=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=vFc9+b10D8of8QGjeW6z4Mwgo9Zim7qfUWRuSkfMCfY6d3pQ1rFTpVMDge5rd+O+s
-         mNy4xcbDdHBBen87MdZPNA/H9VKq0ifRO/DNGI+mRgi3BdL5aq9XVsoDw+a4g5t+4h
-         vb8MyrXb2pSq2yyyHlkzuOrFqdgDww4t/cSMPngM=
-Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA1HTRer019560
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 1 Nov 2019 12:29:27 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE114.ent.ti.com
- (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
- 2019 12:29:13 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Fri, 1 Nov 2019 12:29:13 -0500
-Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1HTN5m046902;
-        Fri, 1 Nov 2019 12:29:24 -0500
-Subject: Re: [PATCH v5 net-next 05/12] dt-bindings: net: ti: add new cpsw
- switch driver bindings
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-References: <20191024100914.16840-1-grygorii.strashko@ti.com>
- <20191024100914.16840-6-grygorii.strashko@ti.com>
- <20191029022305.GK15259@lunn.ch>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <0f79794b-ca33-fc00-645a-9cd37aa6fdd4@ti.com>
-Date:   Fri, 1 Nov 2019 19:29:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20191029022305.GK15259@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1727667AbfKARc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 13:32:26 -0400
+Received: from mail-pl1-f201.google.com ([209.85.214.201]:47446 "EHLO
+        mail-pl1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726554AbfKARc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 13:32:26 -0400
+Received: by mail-pl1-f201.google.com with SMTP id v2so6705423plp.14
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 10:32:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=cgHsIsZTiO9GnwGhVEh0RrWTGDsayFQMUrZq6bTYQQY=;
+        b=ffENwlONkouDhmd8wui0i06NWtACahX7TCvzA4E2PGz/gnSyWfV6EESg3YQ+rVgZx+
+         fplDRmhKKmaOgVkwkzmLc3cVqfjV/vBxv0HFUVohMWJr/kK5MT1YgBiQYneMoynvqPLn
+         QHp20NRV25tNoXcojjFxEgGqpIjuPBpY4k36xNfKj/LII2MOOZPWbgnM1sNjb11rR8iQ
+         aD66k7gKTc9/w3y1uXBE/tYWCE0+MRLSA6WCzhEtwxGsgrb7nI2Ge1QMefIXVJfsUlJQ
+         9lQbeAlkRvMyCDgRX8uORBTRDQEiuDjYnAUXy7hvCVVOCQ/auw2Sn6Sxw2RsVSSsoxy8
+         52ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=cgHsIsZTiO9GnwGhVEh0RrWTGDsayFQMUrZq6bTYQQY=;
+        b=rshCzKTwJzbcaev/9lsPbpAIwQqv5sqmm/LNrcz+zBhztoAJz6t0T/lNis30IGl2Pm
+         6DsEj09bfPOKDV8ob32yyXNXRo5BdpTf4Iqt+3moOjLr2wayFNEUngKnPn/mqEYelWuc
+         pRIUlTNJK52F7B3hfaLOTx05uf60FoaR1SI1S87GgM5uAROfbOyR2grdGVYGl+yeWPfT
+         /vgew6V32BCC2D8GPABXePwfLFDJOmzZYRMl+ESRY1Cs14QvE7AQxI20znPyroM07INB
+         K2opz7CxIhVTM64sVBMISpy41s/lCU35osA59hnsISvM3lX3u1HaN5iq88lfnfWIK1AG
+         5Fjg==
+X-Gm-Message-State: APjAAAW5ntQIlIqSQ46XI11LfZdbcIFY5wJzY/QTPD0zWC8iJDvv13tO
+        FcgKJbbWh3NcWQbd7MSGm5spXJMnas9VMg==
+X-Google-Smtp-Source: APXvYqzMsmoGuEiuD7mDxkNhAFqsJ9UZodlPKTUpb8a+xmdrn3EhtT1qqj5LP4LNK1thZsfKAm0l7AxEOtkU8Q==
+X-Received: by 2002:a65:6201:: with SMTP id d1mr14346802pgv.182.1572629543599;
+ Fri, 01 Nov 2019 10:32:23 -0700 (PDT)
+Date:   Fri,  1 Nov 2019 10:32:19 -0700
+Message-Id: <20191101173219.18631-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+Subject: [PATCH net] inet: stop leaking jiffies on the wire
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Thiemo Nagel <tnagel@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hi Andrew,
+Historically linux tried to stick to RFC 791, 1122, 2003
+for IPv4 ID field generation.
 
-On 29/10/2019 04:23, Andrew Lunn wrote:
->> +TI SoC Ethernet Switch Controller Device Tree Bindings (new)
->> +------------------------------------------------------
->> +
->> +The 3-port switch gigabit ethernet subsystem provides ethernet packet
->> +communication and can be configured as an ethernet switch.
-> 
-> Hi Grygorii
-> 
-> Maybe referring it to a 3-port switch will cause confusion, since in
-> this use case, it only has 2 ports, and you only list two ports in the
-> device tree.
+RFC 6864 made clear that no matter how hard we try,
+we can not ensure unicity of IP ID within maximum
+lifetime for all datagrams with a given source
+address/destination address/protocol tuple.
 
-Yeah. This is how it's defined in TRM - Port 0 (CPU port) is the same as external Port from
-CPSW switch core point of view.
+Linux uses a per socket inet generator (inet_id), initialized
+at connection startup with a XOR of 'jiffies' and other
+fields that appear clear on the wire.
 
-> 
->> It provides the
->> +gigabit media independent interface (GMII),reduced gigabit media
->> +independent interface (RGMII), reduced media independent interface (RMII),
+Thiemo Nagel pointed that this strategy is a privacy
+concern as this provides 16 bits of entropy to fingerprint
+devices.
 
-[...]
+Let's switch to a random starting point, this is just as
+good as far as RFC 6864 is concerned and does not leak
+anything critical.
 
->> +
->> +&mac_sw {
->> +	pinctrl-names = "default", "sleep";
->> +	status = "okay";
->> +};
->> +
->> +&cpsw_port1 {
->> +	phy-handle = <&ethphy0_sw>;
->> +	phy-mode = "rgmii";
->> +	ti,dual_emac_pvid = <1>;
->> +};
->> +
->> +&cpsw_port2 {
->> +	phy-handle = <&ethphy1_sw>;
->> +	phy-mode = "rgmii";
->> +	ti,dual_emac_pvid = <2>;
->> +};
->> +
->> +&davinci_mdio_sw {
->> +	ethphy0_sw: ethernet-phy@0 {
->> +		reg = <0>;
->> +	};
->> +
->> +	ethphy1_sw: ethernet-phy@1 {
->> +		reg = <1>;
->> +	};
->> +};
-> 
-> In an example, it is unusual to split things up like this. I
-> understand that parts of this will be in the dtsi file, and parts in
-> the .dts file, but examples generally keep it all as one. And when you
-> re-write this in YAML so it can be used to validated real DTs, you
-> will have to combine it.
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Thiemo Nagel <tnagel@google.com>
+---
+ drivers/crypto/chelsio/chtls/chtls_cm.c | 2 +-
+ net/dccp/ipv4.c                         | 2 +-
+ net/ipv4/datagram.c                     | 2 +-
+ net/ipv4/tcp_ipv4.c                     | 4 ++--
+ net/sctp/socket.c                       | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
-Thank you. I'll update.
-
+diff --git a/drivers/crypto/chelsio/chtls/chtls_cm.c b/drivers/crypto/chelsio/chtls/chtls_cm.c
+index 774d991d7cca49011016d41c00914ad84059ccb8..aca75237bbcf83eb1d440bcdf1e4d3b702cff0a1 100644
+--- a/drivers/crypto/chelsio/chtls/chtls_cm.c
++++ b/drivers/crypto/chelsio/chtls/chtls_cm.c
+@@ -1297,7 +1297,7 @@ static void make_established(struct sock *sk, u32 snd_isn, unsigned int opt)
+ 	tp->write_seq = snd_isn;
+ 	tp->snd_nxt = snd_isn;
+ 	tp->snd_una = snd_isn;
+-	inet_sk(sk)->inet_id = tp->write_seq ^ jiffies;
++	inet_sk(sk)->inet_id = prandom_u32();
+ 	assign_rxopt(sk, opt);
+ 
+ 	if (tp->rcv_wnd > (RCV_BUFSIZ_M << 10))
+diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+index d9b4200ed12df8ecc7ff7de26827207c5a290e37..0d8f782c25ccc031e5322beccb0242ee42b032b9 100644
+--- a/net/dccp/ipv4.c
++++ b/net/dccp/ipv4.c
+@@ -117,7 +117,7 @@ int dccp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 						    inet->inet_daddr,
+ 						    inet->inet_sport,
+ 						    inet->inet_dport);
+-	inet->inet_id = dp->dccps_iss ^ jiffies;
++	inet->inet_id = prandom_u32();
+ 
+ 	err = dccp_connect(sk);
+ 	rt = NULL;
+diff --git a/net/ipv4/datagram.c b/net/ipv4/datagram.c
+index 9a0fe0c2fa02c9707e6fc8c02529a48e84f7d680..4a8550c49202db13b17d5cf4ed1e44dd8852c212 100644
+--- a/net/ipv4/datagram.c
++++ b/net/ipv4/datagram.c
+@@ -73,7 +73,7 @@ int __ip4_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len
+ 	reuseport_has_conns(sk, true);
+ 	sk->sk_state = TCP_ESTABLISHED;
+ 	sk_set_txhash(sk);
+-	inet->inet_id = jiffies;
++	inet->inet_id = prandom_u32();
+ 
+ 	sk_dst_set(sk, &rt->dst);
+ 	err = 0;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 6be568334848c7841a4a09126937f71f60420103..7512c04f72103da9c25d25dfd91a7d39443d0f3e 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -303,7 +303,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+ 						 inet->inet_daddr);
+ 	}
+ 
+-	inet->inet_id = tp->write_seq ^ jiffies;
++	inet->inet_id = prandom_u32();
+ 
+ 	if (tcp_fastopen_defer_connect(sk, &err))
+ 		return err;
+@@ -1450,7 +1450,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 	inet_csk(newsk)->icsk_ext_hdr_len = 0;
+ 	if (inet_opt)
+ 		inet_csk(newsk)->icsk_ext_hdr_len = inet_opt->opt.optlen;
+-	newinet->inet_id = newtp->write_seq ^ jiffies;
++	newinet->inet_id = prandom_u32();
+ 
+ 	if (!dst) {
+ 		dst = inet_csk_route_child_sock(sk, newsk, req);
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index ca81e06df1651f16ab332cd9fc880c21b89a5c6d..ffd3262b7a41eac2e3d825c3f0665066f376ea3c 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -9306,7 +9306,7 @@ void sctp_copy_sock(struct sock *newsk, struct sock *sk,
+ 	newinet->inet_rcv_saddr = inet->inet_rcv_saddr;
+ 	newinet->inet_dport = htons(asoc->peer.port);
+ 	newinet->pmtudisc = inet->pmtudisc;
+-	newinet->inet_id = asoc->next_tsn ^ jiffies;
++	newinet->inet_id = prandom_u32();
+ 
+ 	newinet->uc_ttl = inet->uc_ttl;
+ 	newinet->mc_loop = 1;
 -- 
-Best regards,
-grygorii
+2.24.0.rc1.363.gb1bccd3e3d-goog
+
