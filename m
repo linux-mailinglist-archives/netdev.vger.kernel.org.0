@@ -2,162 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 817E4EC8D7
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 20:05:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60207EC91B
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 20:34:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727551AbfKATFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 15:05:50 -0400
-Received: from mail-qt1-f177.google.com ([209.85.160.177]:36170 "EHLO
-        mail-qt1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727372AbfKATFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 15:05:49 -0400
-Received: by mail-qt1-f177.google.com with SMTP id y10so7469189qto.3
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 12:05:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=MwTfV999XGO593pktoRPOUJzu5Lxw3LUqz7Rw4v0H/I=;
-        b=oZPqeG5WQOKlXKKrid4FJhBL1cGqa2hUr3IcwqlKfh3+3uNebmcLpa6uh0g833Bjxd
-         KoTYTHpqEq6ZGUiaQdeY4ajgR/DAu6+hVF3FjnJCKxw5AmHLrtg4A+jkG0j0WV5+9MhP
-         xU3SsBGYFBqIjfsuv/lwFHt3PAte2P6txAy/iLjDLNWbNpWl1OEJ8/EMmE+aPXoSDR94
-         OPQzA+DkMDn42VVO0SBt4SJ2lrg0HIkegl7RQMzDK1NHcU00d4lSTCeELzHeIYiGJH6e
-         thSHbP1s8TSHsK+P1GLiZmOAA4xdJaIwyVp1JEf4iM9w6kJUBIcNxXbJ7quxBIYPOMtm
-         lxkg==
+        id S1727890AbfKATeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 15:34:06 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56964 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727325AbfKATeE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Nov 2019 15:34:04 -0400
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 52F82811BF
+        for <netdev@vger.kernel.org>; Fri,  1 Nov 2019 19:34:04 +0000 (UTC)
+Received: by mail-wr1-f72.google.com with SMTP id f16so5733371wrr.16
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 12:34:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=MwTfV999XGO593pktoRPOUJzu5Lxw3LUqz7Rw4v0H/I=;
-        b=r6Nkz4CwkuevCzqVuoe/xuv5OOAEicnVXSpEvJp2nk7v0nBuK7Lf+OzVjr20ihQsFi
-         giXwxqCC4bOB+eMrDqgvjEJPZP8V8Wi/Jf8IiLalZUY8PgRL2q+yLp1pav3kDzSMq912
-         r3LK7dsViSeTnLWfs8TinUF/KG+AVmWUGdqmHKRAKgSRYpWJbasDh0Rt7hU93A/stqgA
-         XuJt8Ks5txKtSXRCUIhwG61whVN5UkbiCRva7iUA8Fu6zL+beZigoveux8jxhi2GB6wb
-         KLpvgXPxkmFasWhXFK7iGnz/SzQ2p8ZzvNYm+PlIqXrsuLgYDNcsvr+7KFdosQS+Ypnp
-         vr4A==
-X-Gm-Message-State: APjAAAUzoe32VCGO4KGFOAwKQv3k8k61Aj+gnvBShzxAFeBu6RO3QMKO
-        aRF9ibb1UKu6TQnz26PfNwWbiA==
-X-Google-Smtp-Source: APXvYqy1dsa7HwUFhtTe5EVl1lhi95r92t3VcVQxyH+nBTudz8js+wAhGJCJNgSF/Pgr+bbqo/32cQ==
-X-Received: by 2002:ac8:7559:: with SMTP id b25mr150917qtr.79.1572635147393;
-        Fri, 01 Nov 2019 12:05:47 -0700 (PDT)
-Received: from mojatatu.com (69-196-152-194.dsl.teksavvy.com. [69.196.152.194])
-        by smtp.gmail.com with ESMTPSA id b54sm6047951qta.38.2019.11.01.12.05.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 01 Nov 2019 12:05:46 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next 1/1] tc-testing: added tests with cookie for conntrack TC action
-Date:   Fri,  1 Nov 2019 15:05:40 -0400
-Message-Id: <1572635140-23099-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=DDu4dZguSc1AuhYOU131Dph2BpOLdkpSLt78cfUXrP4=;
+        b=RKsusEW1Cdc4lWrZ/TuOYbhqmODulHVsMJdkm62xW+7Ig/uY70ztHYpkDjoUEkNMlm
+         t8RpdpZWfxFlP/lS56n2O12MRBUmqT9vCCMINzkHVAWs9cBRpM28RKeEdRk1xiJxhXyj
+         S/3UQZMJng91F0E97s+yCJcduDlsoIjRxo4a93/uhBvcNmQnS2hpIVFIP4eEDJlXSnMF
+         IPHVClBhHY+w8NTC8bVn/1Ya+vf5dS8pFk8VkesJuJ+4EN9VW84Go4IURFW5xIoG0eDJ
+         SfQ2M0mSz+AYaDimuZBwKo4/n8aqdn1K5EKP/5MOluHwRK6zF0TCrr2L4PFgHYVfqVwA
+         i4rg==
+X-Gm-Message-State: APjAAAVusR06/tkLei4MASLE2KRYhWbhr+SIrNmG/h0mKncjJMv7rHEM
+        Sr8IAxPyrZVNJihN7GdwI8GB/yFnS8kSfTnSL4owjxZ8W07Fc3U3wdJfjMnd4MJ9ALTObUrXmPn
+        buETPMIgIn5lkP7mr
+X-Received: by 2002:a1c:3dc4:: with SMTP id k187mr11325443wma.167.1572636841903;
+        Fri, 01 Nov 2019 12:34:01 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqz0xUERtPHGhyf71lfOGgMY82PECMv5XY2AKvQnIIKeMbgOF3SlGefp223udCXQMXep6c44yw==
+X-Received: by 2002:a1c:3dc4:: with SMTP id k187mr11325432wma.167.1572636841676;
+        Fri, 01 Nov 2019 12:34:01 -0700 (PDT)
+Received: from redhat.com (94.222.26.109.rev.sfr.net. [109.26.222.94])
+        by smtp.gmail.com with ESMTPSA id 65sm12393239wrs.9.2019.11.01.12.33.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Nov 2019 12:34:00 -0700 (PDT)
+Date:   Fri, 1 Nov 2019 15:33:57 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, jasowang@redhat.com, mst@redhat.com,
+        sgarzare@redhat.com, yong.liu@intel.com
+Subject: [PULL RESEND] virtio: fixes
+Message-ID: <20191028042900-1-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- .../selftests/tc-testing/tc-tests/actions/ct.json  | 72 ++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+Could not figure out whether I sent this pull request or not. Sorry about
+the noise if I did.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json b/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
-index 79e9bd3d0764..4202e95e27b9 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/actions/ct.json
-@@ -24,6 +24,30 @@
-         ]
-     },
-     {
-+        "id": "e38c",
-+        "name": "Add simple ct action with cookie",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct index 42 cookie deadbeef",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct zone 0 pipe.*index 42 ref.*cookie deadbeef",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-         "id": "9f20",
-         "name": "Add ct clear action",
-         "category": [
-@@ -48,6 +72,30 @@
-         ]
-     },
-     {
-+        "id": "0bc1",
-+        "name": "Add ct clear action with cookie of max length",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct clear index 42 cookie aa11bb22cc33dd44ee55ff66aa11b1b2",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct clear pipe.*index 42 ref.*cookie aa11bb22cc33dd44ee55ff66aa11b1b2",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-         "id": "5bea",
-         "name": "Try ct with zone",
-         "category": [
-@@ -312,6 +360,30 @@
-         ]
-     },
-     {
-+        "id": "2faa",
-+        "name": "Try ct with mark + mask and cookie",
-+        "category": [
-+            "actions",
-+            "ct"
-+        ],
-+        "setup": [
-+            [
-+                "$TC actions flush action ct",
-+                0,
-+                1,
-+                255
-+            ]
-+        ],
-+        "cmdUnderTest": "$TC actions add action ct mark 0x42/0xf0 index 42 cookie aa11bb22cc33dd44ee55ff66aa11b1b2",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC actions list action ct",
-+        "matchPattern": "action order [0-9]*: ct mark 66/0xf0 zone 0 pipe.*index 42 ref.*cookie aa11bb22cc33dd44ee55ff66aa11b1b2",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC actions flush action ct"
-+        ]
-+    },
-+    {
-         "id": "3991",
-         "name": "Add simple ct action with no_percpu flag",
-         "category": [
--- 
-2.7.4
+The following changes since commit 7d194c2100ad2a6dded545887d02754948ca5241:
 
+  Linux 5.4-rc4 (2019-10-20 15:56:22 -0400)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+
+for you to fetch changes up to b3683dee840274e9997d958b9d82e5de95950f0b:
+
+  vringh: fix copy direction of vringh_iov_push_kern() (2019-10-28 04:25:04 -0400)
+
+----------------------------------------------------------------
+virtio: fixes
+
+Some minor fixes
+
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+
+----------------------------------------------------------------
+Jason Wang (1):
+      vringh: fix copy direction of vringh_iov_push_kern()
+
+Marvin Liu (1):
+      virtio_ring: fix stalls for packed rings
+
+Stefano Garzarella (1):
+      vsock/virtio: remove unused 'work' field from 'struct virtio_vsock_pkt'
+
+ drivers/vhost/vringh.c       | 8 +++++++-
+ drivers/virtio/virtio_ring.c | 7 +++----
+ include/linux/virtio_vsock.h | 1 -
+ 3 files changed, 10 insertions(+), 6 deletions(-)
