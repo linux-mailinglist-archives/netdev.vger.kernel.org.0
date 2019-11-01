@@ -2,122 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51B18EC9CC
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E46ECA03
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:57:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbfKAUqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 16:46:19 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:49190 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbfKAUqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:46:18 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1KkAFO125498;
-        Fri, 1 Nov 2019 15:46:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1572641170;
-        bh=zybgR7hDF/o4db+iKiuX3H8IVivapUrRQjOn5yGa7K8=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=otXhBIFK/UWifwkl7A3yKL1MaKFpvk1+SsSgCvQpHNfBhk8PnSMnhQEnZNzwgOFyF
-         xLYwYNBDB1UhUieFQKE+yzeXoGf3ni5chqRp2+k6XsXPq59N6FQUMQoMF5E2tEFnAD
-         WQ1xdXTH59r03zrOb+IUWXr1nwV4Puyqp3+QY3do=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1KkAJG041314;
-        Fri, 1 Nov 2019 15:46:10 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
- 2019 15:45:56 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Fri, 1 Nov 2019 15:45:56 -0500
-Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1Kk6n3017157;
-        Fri, 1 Nov 2019 15:46:07 -0500
-Subject: Re: [PATCH v5 net-next 06/12] net: ethernet: ti: introduce cpsw
- switchdev based driver part 1 - dual-emac
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>,
+        id S1727751AbfKAU5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 16:57:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46004 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726396AbfKAU5k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Nov 2019 16:57:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=n5rRT0a1iTfLvFxrf02dbZh2qtFNVDbMMIEOedlKQOY=; b=1qxvtNWXGZsqvIRCmMwL+v+dJ2
+        LKqEzTc7yUs5IBgejnC0WfxUbKEDRdFgp3zBCivnKiNoXbzATeRwkDtGPEoJunrrOh6NoE9md7IGH
+        ikFVWEhVGs/IZrpQ4qTuBm+kuZX9vh2nLcNP2JqYtg3mXGofbiiEonc4sPT9HbF+4Kq8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iQdz7-0000M4-Od; Fri, 01 Nov 2019 21:57:29 +0100
+Date:   Fri, 1 Nov 2019 21:57:29 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     netdev@vger.kernel.org,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         "David S . Miller" <davem@davemloft.net>,
         Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
         Jiri Pirko <jiri@resnulli.us>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, Murali Karicheri <m-karicheri2@ti.com>,
         Ivan Vecera <ivecera@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 06/12] net: ethernet: ti: introduce cpsw
+ switchdev based driver part 1 - dual-emac
+Message-ID: <20191101205729.GE31534@lunn.ch>
 References: <20191024100914.16840-1-grygorii.strashko@ti.com>
  <20191024100914.16840-7-grygorii.strashko@ti.com>
- <20191029122422.GL15259@lunn.ch>
- <d87c72e1-cb91-04a2-c881-0d8eec4671e2@ti.com>
- <20191101203913.GD31534@lunn.ch>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <8f3eb934-7dcd-b43a-de96-6a864ef67c92@ti.com>
-Date:   Fri, 1 Nov 2019 22:46:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ <20191029123230.GM15259@lunn.ch>
+ <24b1623d-48df-328a-eda7-4195e9df2b22@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20191101203913.GD31534@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <24b1623d-48df-328a-eda7-4195e9df2b22@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 01, 2019 at 10:34:57PM +0200, Grygorii Strashko wrote:
+> 
+> 
+> On 29/10/2019 14:32, Andrew Lunn wrote:
+> > > +static int cpsw_probe(struct platform_device *pdev)
+> > > +{
+> > > +	const struct soc_device_attribute *soc;
+> > > +	struct device *dev = &pdev->dev;
+> > > +	struct resource *ss_res;
+> > > +	struct cpsw_common *cpsw;
+> > > +	struct gpio_descs *mode;
+> > > +	void __iomem *ss_regs;
+> > > +	int ret = 0, ch;
+> > > +	struct clk *clk;
+> > > +	int irq;
+> > > +
+> > 
+> > ...
+> > 
+> > > +
+> > > +	/* setup netdevs */
+> > > +	ret = cpsw_create_ports(cpsw);
+> > > +	if (ret)
+> > > +		goto clean_unregister_netdev;
+> > 
+> > At this point, the slave ports go live. If the kernel is configured
+> > with NFS root etc, it will start using the interfaces.
+> > 
+> > +
+> > > +	/* Grab RX and TX IRQs. Note that we also have RX_THRESHOLD and
+> > > +	 * MISC IRQs which are always kept disabled with this driver so
+> > > +	 * we will not request them.
+> > > +	 *
+> > > +	 * If anyone wants to implement support for those, make sure to
+> > > +	 * first request and append them to irqs_table array.
+> > > +	 */
+> > > +
+> > > +	ret = devm_request_irq(dev, cpsw->irqs_table[0], cpsw_rx_interrupt,
+> > > +			       0, dev_name(dev), cpsw);
+> > > +	if (ret < 0) {
+> > > +		dev_err(dev, "error attaching irq (%d)\n", ret);
+> > > +		goto clean_unregister_netdev;
+> > > +	}
+> > > +
+> > > +	ret = devm_request_irq(dev, cpsw->irqs_table[1], cpsw_tx_interrupt,
+> > > +			       0, dev_name(dev), cpsw);
+> > > +	if (ret < 0) {
+> > > +		dev_err(dev, "error attaching irq (%d)\n", ret);
+> > > +		goto clean_unregister_netdev;
+> > > +	}
+> > 
+> > Are there any race conditions if the network starts using the devices
+> > before interrupts are requested? To be safe, maybe this should be done
+> > before the slaves are created?
+> 
+> Usually during boot - there is no parallel probing (as opposite to modules loading by
+> udev, for example). Also, there is barrier init call deferred_probe_initcall() to ensure all
+> drivers probed before going to mount rootfs.
+> 
+> So, i do not think this could cause any issue - max few packets will be delayed
+> until kernel will switch back here, but the chances that ndo_open will be finished before probe ->0.
 
+I helped track down a crash recently, along these lines. ndo_open()
+was getting called before the probe function finished, when kernel ip
+address auto config was in action. This is not to do with parallel
+probing, i think there is something in register_netdev() which is
+triggered each time an interface is added to do the ip
+configuration. And the first thing that does is open the interface.
 
-On 01/11/2019 22:39, Andrew Lunn wrote:
->>>> +static const struct devlink_ops cpsw_devlink_ops;
->>>
->>> It would be nice to avoid this forward declaration.
->>
->> It's not declaration, it's definition of devlink_ops without any standard callbacks implemented.
-> 
-> Ho Grygorii
-> 
-> Ah, yes.
-> 
-> How about
-> 
-> = {
->    };
-> 
-> to make it clearer?
-
-NP
-
-> 
->>>> +static const struct devlink_param cpsw_devlink_params[] = {
->>>> +	DEVLINK_PARAM_DRIVER(CPSW_DL_PARAM_ALE_BYPASS,
->>>> +			     "ale_bypass", DEVLINK_PARAM_TYPE_BOOL,
->>>> +			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
->>>> +			     cpsw_dl_ale_ctrl_get, cpsw_dl_ale_ctrl_set, NULL),
->>>> +};
->>>
->>> Is this documented?
->>
->> In patch 9. But I'll update it and add standard devlink parameter definition, like:
->>
->> ale_bypass	[DEVICE, DRIVER-SPECIFIC]
->> 		Allows to enable ALE_CONTROL(4).BYPASS mode for debug purposes
->> 		Type: bool
->> 		Configuration mode: runtime
-> 
-> And please you the standard file naming and location,
-> Documentation/networking/devlink-params-foo.txt
-Ok. I will.
-But I'd like to clarify:
-- drivers documentation placed in ./Documentation/networking/device_drivers/ti/
-so could you confirm pls, that you want me to add devlink-params documentation in separate file
-and palace it in ./Documentation/networking/ folder directly?
-   
-
--- 
-Best regards,
-grygorii
+	  Andrew
