@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 742DCEBCE3
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 05:44:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31A9CEBCEC
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 05:54:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729278AbfKAEoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 00:44:54 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:40586 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbfKAEoy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 00:44:54 -0400
-Received: by mail-io1-f65.google.com with SMTP id p6so9608579iod.7;
-        Thu, 31 Oct 2019 21:44:53 -0700 (PDT)
+        id S1729561AbfKAEyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 00:54:50 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33657 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729274AbfKAEyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 00:54:50 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c184so6208662pfb.0
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 21:54:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=ubGzTc2JG05dFdpzm6lVpJCYav7w/qkdP80BNzZY03k=;
-        b=gk3ZHjoJf1z+K4VsnOZFokkuXhW/2QaZaq9Zvnn8HsuiCMqAsW/mCrKmrjW9w3b3hH
-         HnLhlvle++/7o7L+KKX1ewCB0KGSpE2TLtQCw23XymM0NkW1CsKkUsMW1w8Qv4ucWMfM
-         gZlw3DXAhrUX1bhUK0MU3uMBSwN0ZciHwCcVKS4+lde0lyqyhV8ukBzA9R/HfVRi5uGY
-         sID+E64yuHj3Yp0QQs78dqY4BPUwQk/RbAbQjPL+vTHHPm3h6ZaZWugsadNhcygvfZpA
-         v1zaw0+IOGQzj/m/H/8HqGjPVoNwAey0ARVmXXxlrV3B0JPMS8mmlp6V/YCx1DAEAM+M
-         BjHA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=8tPWK5BYgsuL9zha6OCfDPYnrci37qEo2bbOP/w1G5Q=;
+        b=seTDmiNrqiUFMt4vzI8kNkW8iW6IXp4/atKoYhwPQSoD4SpW4iDH7n/phuuwaqmUg/
+         eF6bQAxxZQ7PVJF8qsKSUY8lYIn4Wv7bOP1PmKXF9CtgJ5KRYGc7f8it4cEqvGjJwImo
+         wqRXiwbPz23eV76ZXCPTH0LsW+hwi3juz7To7zhtN5BNbx1gHbm3SpEVNfxFl2cZ+wC5
+         r2qws2hDTXG2HUIYcEMWXRL5YvLqQE7NEogbyFaqlMOiHA+ANJKHcoWhkauS0oFlA6OD
+         ZjP2IiyhcpWymlvM+8uuks6gAefKltNDUs76/uo+lsOu91+TQFBn3C5+0o2itr2dwXwq
+         CqXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=ubGzTc2JG05dFdpzm6lVpJCYav7w/qkdP80BNzZY03k=;
-        b=c+vt8j9zfAD1xI9czqW41ox2kNjXDZG1BBnEw0LKoHMEulLn3lZw8j0WVE5IBNCAbR
-         gnfyfgfxrnz6PS10bZTGqj+5oz80YJ4ws8yTMCYd6WP3VT1/uOrNICuhYJ7NE8DoA10L
-         3g9Gx7Mj3kZzUNJtNMAgkIAjF6e88Ircn/Er+QVcWsSDt7cgtKiCAgUOjcFWl2hymuHt
-         YpUya88XNYMkFYF2HCwm3p72zoWpPPTifF0e7BhOjmqJkyz/qaxnZkcULoO6Z/jYZlX6
-         iZUq2D+abSa438mN0szyMWX9k9sUBI0R+4tFsr6gqxvXvW2TthDYJZEZsYvL/XhPmbgM
-         xtLQ==
-X-Gm-Message-State: APjAAAVMDBBP5aTv/hDQMdeLhdDrKmeBvLgLJ3nLW2NWnYD6sQ3Dnf6/
-        TOWeDGPNf+ZCIIczrpEQz0U=
-X-Google-Smtp-Source: APXvYqwwuvTQsLYY/pcCaKne9GscqUv6sNojhMmD3jUNRjVRQ7mQmGKejn+M2iwVgtMtqi5u9VGZZw==
-X-Received: by 2002:a6b:5503:: with SMTP id j3mr8519170iob.151.1572583493189;
-        Thu, 31 Oct 2019 21:44:53 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id c5sm574819ioc.26.2019.10.31.21.44.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=8tPWK5BYgsuL9zha6OCfDPYnrci37qEo2bbOP/w1G5Q=;
+        b=FmGk9Uyov6o+Me95B9xwkh1lq2RtnxYqjk+KGMdP8bfrV68kYy8aUVbGMwA03sKs7a
+         sr3g1yDzlgDmMoMAoNx3lgk1PcOXtOv3Za0fuJeCPw2S/HK1ffkJaU6WfVSkpwSkvT/J
+         XpZWg+EGm8N2dEv57xSeSqF2RkGk6muWmzMcbeKoZ6KVpUhuuiz2ebLMTwpolZxCcIJ0
+         dbFHkKaF3Xq4z6HxTIBe5O1fMlSuj364S4TzB1Q0xjk+p+CkzLTKW9td9SAXXuixwDqK
+         fB+LSVEqKK+FU95xW5UYzLwm+Lynqpjkuc1RFDPfr6lb46aS2kjAgt7oBRHNKgZTR5qK
+         SVBA==
+X-Gm-Message-State: APjAAAXC/0xHeD5JZhIHioE+5wlVPFkJCEb1GP5lxC3R/T8FwFUTviYq
+        u11l+RxU9+nf0miCc0xurOusKw==
+X-Google-Smtp-Source: APXvYqzxZYnEkqVpNUYPkOkE6SqlqUJp+ABefXAxX16P0ANDk/fLjwFTDUi/wu3EtDkNzXswS9II0A==
+X-Received: by 2002:a62:76c6:: with SMTP id r189mr11322014pfc.48.1572584089179;
+        Thu, 31 Oct 2019 21:54:49 -0700 (PDT)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::4])
+        by smtp.gmail.com with ESMTPSA id e198sm5178943pfh.83.2019.10.31.21.54.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 21:44:52 -0700 (PDT)
-Date:   Thu, 31 Oct 2019 21:44:45 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>
+        Thu, 31 Oct 2019 21:54:48 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 21:54:44 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         oss-drivers@netronome.com, borisp@mellanox.com,
         aviadye@mellanox.com, daniel@iogearbox.net,
@@ -56,215 +55,227 @@ Cc:     davem@davemloft.net, netdev@vger.kernel.org,
         Eric Biggers <ebiggers@kernel.org>,
         herbert@gondor.apana.org.au, glider@google.com,
         linux-crypto@vger.kernel.org
-Message-ID: <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191031152444.773c183b@cakuba.netronome.com>
-References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
- <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
- <20191031152444.773c183b@cakuba.netronome.com>
 Subject: Re: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+Message-ID: <20191031215444.68a12dfe@cakuba.netronome.com>
+In-Reply-To: <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
+References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
+        <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
+        <20191031152444.773c183b@cakuba.netronome.com>
+        <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Thu, 31 Oct 2019 15:05:53 -0700, John Fastabend wrote:
-> > Jakub Kicinski wrote:
-> > > sk_msg_trim() tries to only update curr pointer if it falls into
-> > > the trimmed region. The logic, however, does not take into the
-> > > account pointer wrapping that sk_msg_iter_var_prev() does.
-> > > This means that when the message was trimmed completely, the new
-> > > curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
-> > > neither smaller than any other value, nor would it actually be
-> > > correct.
+On Thu, 31 Oct 2019 21:44:45 -0700, John Fastabend wrote:
+> Jakub Kicinski wrote:
+> > On Thu, 31 Oct 2019 15:05:53 -0700, John Fastabend wrote:  
+> > > Jakub Kicinski wrote:  
+> > > > sk_msg_trim() tries to only update curr pointer if it falls into
+> > > > the trimmed region. The logic, however, does not take into the
+> > > > account pointer wrapping that sk_msg_iter_var_prev() does.
+> > > > This means that when the message was trimmed completely, the new
+> > > > curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
+> > > > neither smaller than any other value, nor would it actually be
+> > > > correct.
+> > > > 
+> > > > Special case the trimming to 0 length a little bit.
+> > > > 
+> > > > This bug caused the TLS code to not copy all of the message, if
+> > > > zero copy filled in fewer sg entries than memcopy would need.
+> > > > 
+> > > > Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
+> > > > 
+> > > > Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
+> > > > Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
+> > > > Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
+> > > > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > > > ---
+> > > > Daniel, John, does this look okay?    
 > > > 
-> > > Special case the trimming to 0 length a little bit.
-> > > 
-> > > This bug caused the TLS code to not copy all of the message, if
-> > > zero copy filled in fewer sg entries than memcopy would need.
-> > > 
-> > > Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
-> > > 
-> > > Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
-> > > Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
-> > > Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
-> > > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > > ---
-> > > Daniel, John, does this look okay?  
+> > > Thanks for the second ping!  
 > > 
-> > Thanks for the second ping!
+> > No problem, I was worried the patch got categorized as TLS and therefore
+> > lower prio ;)  
 > 
-> No problem, I was worried the patch got categorized as TLS and therefore
-> lower prio ;)
-
-Nope close to the top of the list here.
-
+> Nope close to the top of the list here.
 > 
-> > > CC: Eric Biggers <ebiggers@kernel.org>
-> > > CC: herbert@gondor.apana.org.au
-> > > CC: glider@google.com
-> > > CC: linux-crypto@vger.kernel.org
-> > > 
-> > >  net/core/skmsg.c | 5 ++++-
-> > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> > > index cf390e0aa73d..c42c145216b1 100644
-> > > --- a/net/core/skmsg.c
-> > > +++ b/net/core/skmsg.c
-> > > @@ -276,7 +276,10 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
-> > >  	 * However trimed data that has not yet been used in a copy op
-> > >  	 * does not require an update.
-> > >  	 */
-> > > -	if (msg->sg.curr >= i) {
-> > > +	if (!msg->sg.size) {
-> > > +		msg->sg.curr = 0;
-> > > +		msg->sg.copybreak = 0;
-> > > +	} else if (msg->sg.curr >= i) {
-> > >  		msg->sg.curr = i;
-> > >  		msg->sg.copybreak = msg->sg.data[i].length;
-> > >  	}
-> > > --   
+> >   
+>  [...]  
+>  [...]  
 > > 
+> > I see, that makes sense and explains some of the complexity!
 > > 
-> > Its actually not sufficient. We can't directly do comparisons against curr
-> > like this. msg->sg is a ring buffer so we have to be careful for these
-> > types of comparisons.
-> > 
-> > Examples hopefully help explian. Consider the case with a ring layout on
-> > entering sk_msg_trim,
-> > 
-> >    0 1 2                              N = MAX_MSG_FRAGS
-> >   |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >        ^       ^         ^
-> >        curr    end       start
-> > 
-> > Start trimming from end
-> > 
-> >    0 1 2                              N = MAX_MSG_FRAGS
-> >   |X|X|X|...|X|X|_|...|_|_|i|X|....|X|X|
-> >        ^       ^         ^
-> >        curr    end       start
-> > 
-> > We trim backwards through ring with sk_msg_iter_var_prev(). And its
-> > possible to end with the result of above where 'i' is greater than curr
-> > and greater than start leaving scatterlist elements so size != 0.
-> > 
-> >     i > curr && i > start && sg.size != 0
-> > 
-> > but we wont catch it with this condition
-> > 
-> >     if (msg->sg.curr >= i)
-> > 
-> > So we won't reset curr and copybreak so we have a potential issue now
-> > where curr is pointing at data that has been trimmed.
+> > Perhaps the simplest way to go would be to adjust the curr as we go
+> > then? The comparison logic could get a little hairy. So like this:  
 > 
-> I see, that makes sense and explains some of the complexity!
+> I don't think the comparison is too bad. Working it out live here. First
+> do a bit of case analysis, We have 3 pointers so there are 3!=6 possible
+> arrangements (permutations),
 > 
-> Perhaps the simplest way to go would be to adjust the curr as we go
-> then? The comparison logic could get a little hairy. So like this:
+>  1. S,C,E  6. S,E,C
+>  5. C,S,E  2. C,E,S
+>  3. E,S,C  4. E,C,S
+> 
+> 
+> Case 1: Normal case start < curr < end
+>  
+>     0 1 2                              N = MAX_MSG_FRAGS
+>     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+>         ^       ^         ^
+>         start   curr      end
+> 
+>   if (start < end && i < curr)
+>      curr = i;
+>         
+>  
+> Case 2: curr < end < start (in absolute index terms)
+> 
+>     0 1 2                              N = MAX_MSG_FRAGS
+>     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+>         ^       ^         ^
+>         curr    end       start
+> 
+>    if (end < start && (i < curr || i > start))
+>         curr = i
+> 
+> 
+> Case 3: end < start < curr
+> 
+>     0 1 2                              N = MAX_MSG_FRAGS
+>     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+>                 ^         ^          ^
+>                 end       start      curr
+> 
+> 
+>    if (end < start && (i < curr)
+>        curr = i;
+> 
+> 
+> Case 4: end < curr < start
+> 
+>     0 1 2                              N = MAX_MSG_FRAGS
+>     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+>                 ^         ^          ^
+>                 end       curr       start 
+> 
+> (nonsense curr would be invalid here it must be between the start and end)
+> 
+> Case 5: curr < start < end
+> 
+>     0 1 2                              N = MAX_MSG_FRAGS
+>     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+>                 ^         ^          ^
+>                 curr      start      end 
+> 
+> (nonsense curr would be invalid here it must be between the start and end)
+> 
+> Case 6: start < end < curr 
+> 
+>     0 1 2                              N = MAX_MSG_FRAGS
+>     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+>                 ^         ^          ^
+>                 start     end        curr 
+> 
+> (nonsense curr would be invalid here it must be between the start and end)
+> 
+> So I think the following would suffice,
+> 
+> 
+>   if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
+>      msg->sg.curr = i;
+>      msg->sg.copybreak = msg->sg.data[i].length;
+>   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
+>      msg->sg.curr = i;
+>      msg->sg.copybreak = msg->sg.data[i].length;
+>   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr) {
+>      curr = i;
+>      msg->sg.copybreak = msg->sg.data[i].length;
+>   }
+> 
+> Finally fold the last two cases into one so we get
+> 
+>   if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
+>      msg->sg.curr = i;
+>      msg->sg.copybreak = msg->sg.data[i].length;
+>   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
+>      msg->sg.curr = i;
+>      msg->sg.copybreak = msg->sg.data[i].length;
+> 
+> So not so bad. Put that in a helper in sk_msg.h and use it in trim. I can check
+> logic in the AM and draft a patch but I think that should be correct. Also will
+> need to audit to see if there are other cases this happens. In general I tried
+> to always use i == msg->sg.{start|end|curr} to avoid this.
 
-I don't think the comparison is too bad. Working it out live here. First
-do a bit of case analysis, We have 3 pointers so there are 3!=6 possible
-arrangements (permutations),
+I will look in depth tomorrow as well, the full/empty cases are a
+little tricky to fold into general logic.
 
- 1. S,C,E  6. S,E,C
- 5. C,S,E  2. C,E,S
- 3. E,S,C  4. E,C,S
+I came up with this before I got distracted Halloweening :)
 
-
-Case 1: Normal case start < curr < end
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index e4b3fb4bb77c..ce7055259877 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -139,6 +139,11 @@ static inline void sk_msg_apply_bytes(struct sk_psock *psock, u32 bytes)
+ 	}
+ }
  
-    0 1 2                              N = MAX_MSG_FRAGS
-    |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-        ^       ^         ^
-        start   curr      end
-
-  if (start < end && i < curr)
-     curr = i;
-        
++static inline u32 sk_msg_iter_dist(u32 start, u32 end)
++{
++	return end >= start ? end - start : end + (MAX_MSG_FRAGS - start);
++}
++
+ #define sk_msg_iter_var_prev(var)			\
+ 	do {						\
+ 		if (var == 0)				\
+@@ -198,9 +203,7 @@ static inline u32 sk_msg_elem_used(const struct sk_msg *msg)
+ 	if (sk_msg_full(msg))
+ 		return MAX_MSG_FRAGS;
  
-Case 2: curr < end < start (in absolute index terms)
-
-    0 1 2                              N = MAX_MSG_FRAGS
-    |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-        ^       ^         ^
-        curr    end       start
-
-   if (end < start && (i < curr || i > start))
-        curr = i
-
-
-Case 3: end < start < curr
-
-    0 1 2                              N = MAX_MSG_FRAGS
-    |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-                ^         ^          ^
-                end       start      curr
-
-
-   if (end < start && (i < curr)
-       curr = i;
-
-
-Case 4: end < curr < start
-
-    0 1 2                              N = MAX_MSG_FRAGS
-    |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-                ^         ^          ^
-                end       curr       start 
-
-(nonsense curr would be invalid here it must be between the start and end)
-
-Case 5: curr < start < end
-
-    0 1 2                              N = MAX_MSG_FRAGS
-    |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-                ^         ^          ^
-                curr      start      end 
-
-(nonsense curr would be invalid here it must be between the start and end)
-
-Case 6: start < end < curr 
-
-    0 1 2                              N = MAX_MSG_FRAGS
-    |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-                ^         ^          ^
-                start     end        curr 
-
-(nonsense curr would be invalid here it must be between the start and end)
-
-So I think the following would suffice,
-
-
-  if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
-     msg->sg.curr = i;
-     msg->sg.copybreak = msg->sg.data[i].length;
-  } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
-     msg->sg.curr = i;
-     msg->sg.copybreak = msg->sg.data[i].length;
-  } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr) {
-     curr = i;
-     msg->sg.copybreak = msg->sg.data[i].length;
-  }
-
-Finally fold the last two cases into one so we get
-
-  if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
-     msg->sg.curr = i;
-     msg->sg.copybreak = msg->sg.data[i].length;
-  } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
-     msg->sg.curr = i;
-     msg->sg.copybreak = msg->sg.data[i].length;
-
-So not so bad. Put that in a helper in sk_msg.h and use it in trim. I can check
-logic in the AM and draft a patch but I think that should be correct. Also will
-need to audit to see if there are other cases this happens. In general I tried
-to always use i == msg->sg.{start|end|curr} to avoid this.
-
-Hopefully it wasn't too verbose above but figured it couldn't hurt.
-.John
+-	return msg->sg.end >= msg->sg.start ?
+-		msg->sg.end - msg->sg.start :
+-		msg->sg.end + (MAX_MSG_FRAGS - msg->sg.start);
++	return sk_msg_iter_dist(msg->sg.start, msg->sg.end);
+ }
+ 
+ static inline struct scatterlist *sk_msg_elem(struct sk_msg *msg, int which)
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index cf390e0aa73d..f6b4a70bafa9 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -270,18 +270,26 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
+ 
+ 	msg->sg.data[i].length -= trim;
+ 	sk_mem_uncharge(sk, trim);
++	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
++		msg->sg.copybreak = msg->sg.data[i].length;
+ out:
++	sk_msg_iter_var_next(i);
++	msg->sg.end = i;
++
+ 	/* If we trim data before curr pointer update copybreak and current
+ 	 * so that any future copy operations start at new copy location.
+ 	 * However trimed data that has not yet been used in a copy op
+ 	 * does not require an update.
+ 	 */
+-	if (msg->sg.curr >= i) {
++	if (!msg->sg.size) {
++		msg->sg.curr = 0;
++		msg->sg.copybreak = 0;
++	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >
++		   sk_msg_iter_dist(msg->sg.end, msg->sg.curr)) {
++		sk_msg_iter_var_prev(i);
+ 		msg->sg.curr = i;
+ 		msg->sg.copybreak = msg->sg.data[i].length;
+ 	}
+-	sk_msg_iter_var_next(i);
+-	msg->sg.end = i;
+ }
+ EXPORT_SYMBOL_GPL(sk_msg_trim);
+ 
+-- 
+2.23.0
