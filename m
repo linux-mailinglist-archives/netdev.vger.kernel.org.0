@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CC7EBB95
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 02:03:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0749FEBB9F
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 02:18:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728496AbfKABDl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 21:03:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:34162 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726772AbfKABDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 21:03:41 -0400
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iQLLj-0007Mf-Bd; Fri, 01 Nov 2019 02:03:35 +0100
-Received: from [178.197.249.38] (helo=pc-63.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iQLLi-0005lR-Te; Fri, 01 Nov 2019 02:03:35 +0100
-Subject: Re: [PATCH v2 bpf-next 1/2] bpf: replace prog_raw_tp+btf_id with
- prog_tracing
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-References: <20191030223212.953010-1-ast@kernel.org>
- <20191030223212.953010-2-ast@kernel.org>
- <5ef95166-dace-28be-8274-a9343900025e@iogearbox.net>
- <20191031233642.xnqlz6qjfwzlmilt@ast-mbp.dhcp.thefacebook.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <afe594ea-de2c-e796-8ae6-7c721ecfb6dd@iogearbox.net>
-Date:   Fri, 1 Nov 2019 02:03:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1728828AbfKABRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 21:17:52 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5675 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726772AbfKABRw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 21:17:52 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 72B76F7F7557A3374BC9;
+        Fri,  1 Nov 2019 09:17:49 +0800 (CST)
+Received: from [127.0.0.1] (10.74.149.191) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Fri, 1 Nov 2019
+ 09:17:40 +0800
+Subject: Re: [PATCH net-next 8/9] net: hns3: cleanup some print format warning
+To:     Joe Perches <joe@perches.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <jakub.kicinski@netronome.com>,
+        Guojia Liao <liaoguojia@huawei.com>
+References: <1572521004-36126-1-git-send-email-tanhuazhong@huawei.com>
+ <1572521004-36126-9-git-send-email-tanhuazhong@huawei.com>
+ <4541e77d257685c649f5f994e673a409a3634f50.camel@perches.com>
+From:   tanhuazhong <tanhuazhong@huawei.com>
+Message-ID: <ce0c5f5f-08b7-7e38-b156-954a8398abfa@huawei.com>
+Date:   Fri, 1 Nov 2019 09:17:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.5.2
 MIME-Version: 1.0
-In-Reply-To: <20191031233642.xnqlz6qjfwzlmilt@ast-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <4541e77d257685c649f5f994e673a409a3634f50.camel@perches.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25619/Thu Oct 31 09:55:29 2019)
+X-Originating-IP: [10.74.149.191]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/19 12:36 AM, Alexei Starovoitov wrote:
-> On Fri, Nov 01, 2019 at 12:20:13AM +0100, Daniel Borkmann wrote:
->> On 10/30/19 11:32 PM, Alexei Starovoitov wrote:
->>> The bpf program type raw_tp together with 'expected_attach_type'
->>> was the most appropriate api to indicate BTF-enabled raw_tp programs.
->>> But during development it became apparent that 'expected_attach_type'
->>> cannot be used and new 'attach_btf_id' field had to be introduced.
->>> Which means that the information is duplicated in two fields where
->>> one of them is ignored.
->>> Clean it up by introducing new program type where both
->>> 'expected_attach_type' and 'attach_btf_id' fields have
->>> specific meaning.
+
+
+On 2019/10/31 19:53, Joe Perches wrote:
+> On Thu, 2019-10-31 at 19:23 +0800, Huazhong Tan wrote:
+>> From: Guojia Liao <liaoguojia@huawei.com>
 >>
->> Hm, just for my understanding, the expected_attach_type is unused for
->> tracing so far. Are you aware of anyone (bcc / bpftrace / etc) leaving
->> uninitialized garbage in there?
+>> Using '%d' for printing type unsigned int or '%u' for
+>> type int would cause static tools to give false warnings,
+>> so this patch cleanups this warning by using the suitable
+>> format specifier of the type of variable.
+>>
+>> BTW, modifies the type of some variables and macro to
+>> synchronize with their usage.
 > 
-> I'm not aware, but the risk is there. Better safe than sorry.
-> If we need to revert in the future that would be massive.
-> I'm already worried about new CHECK_ATTR check in raw_tp_open.
-> Equally unlikely user space breakage, but that one is easy to revert
-> whereas what you're proposing would mean revert everything.
+> What tool is this?
 
-Hmm, yeah, it's unfortunate that expected_attach_type is not enforced as
-0. We sort of implicitly do for older kernels where expected_attach_type
-is not known to it, but there is still non-zero risk given there seems
-plenty of stuff in the wild on BPF tracing and not all might rely on libbpf.
-Perhaps we should probably enforce it for all new program types, so we can
-reuse it in future.
+Sorry, it is my mistake, as confirmed, this patch is
+advised by internal code review.
 
->> Just seems confusing that we have all
->> the different tracing prog types and now adding yet another one as
->> BPF_RPOG_TYPE_TRACING which will act as umbrella one and again have
->> different attach types some of which probably resemble existing tracing
->> prog types again (kprobes / kretprobes for example). Sounds like this
->> new type would implicitly deprecate all the existing types (sort of as
->> we're replacing them with new sub-types)?
 > 
-> All existing once are still supported and may grow its own helpers and what not.
-> Having new prog type makes things grow independently much easier.
-> I was thinking to call it BPF_PROG_TYPE_BTF_ENABLED or BPF_PROG_TYPE_GENERIC,
-> since I suspect upcoming lsm and others will fit right in,
-> but I think it's cleaner to define categories of bpf programs now
-> instead of specific purpose types like we had in the past before BTF.
-
-Yes, otherwise we likely would have BPF_PROG_TYPE_GENERIC as last one and
-would keep defining sub-types. ;)
-
->> True that k[ret]probe expects pt_regs whereas BTF enabled program context
->> will be the same as raw_tp as well, but couldn't this logic be hidden in
->> the kernel e.g. via attach_btf_id as well since this is an opt-in? Could
->> the fentry/fexit be described through attach_btf_id as well?
+> I think this static warning is excessive as macro
+> defines with a small positive number are common
 > 
-> That's what I tried first, but the code grows too ugly.
-> Also for attaching fentry/fexit I'm adding new bpf_trace_open command
-> similar to bpf_raw_tp_open, since existing kprobe attach style doesn't
-> work at all. imo the code is much cleaner now.
 
-Ok, fair enough that the fentry/fexit approach doesn't have too much in common
-after all with plain kprobes. Applied then, thanks!
+yes, it seems ok.
+The reason we do this modification is that
+printing resp_data_len with '%u' and printing
+HCLGE_MBX_MAX_RESP_DATA_SIZE with '%d' seems a little odd.
+
+  	if (resp_data_len > HCLGE_MBX_MAX_RESP_DATA_SIZE) {
+  		dev_err(&hdev->pdev->dev,
+-			"PF fail to gen resp to VF len %d exceeds max len %d\n",
++			"PF fail to gen resp to VF len %u exceeds max len %u\n",
+  			resp_data_len,
+  			HCLGE_MBX_MAX_RESP_DATA_SIZE);
+
+Thanks for your suggestion.
+
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h b/drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h
+> []
+>> @@ -72,7 +72,7 @@ enum hclge_mbx_vlan_cfg_subcode {
+>>   };
+>>   
+>>   #define HCLGE_MBX_MAX_MSG_SIZE	16
+>> -#define HCLGE_MBX_MAX_RESP_DATA_SIZE	8
+>> +#define HCLGE_MBX_MAX_RESP_DATA_SIZE	8U
+>>   #define HCLGE_MBX_RING_MAP_BASIC_MSG_NUM	3
+>>   #define HCLGE_MBX_RING_NODE_VARIABLE_NUM	3
+> 
+> like this one
+> 
+>> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3_debugfs.c
+> []
+>> @@ -57,68 +57,68 @@ static int hns3_dbg_queue_info(struct hnae3_handle *h,
+>>   					   HNS3_RING_RX_RING_BASEADDR_H_REG);
+>>   		base_add_l = readl_relaxed(ring->tqp->io_base +
+>>   					   HNS3_RING_RX_RING_BASEADDR_L_REG);
+>> -		dev_info(&h->pdev->dev, "RX(%d) BASE ADD: 0x%08x%08x\n", i,
+>> +		dev_info(&h->pdev->dev, "RX(%u) BASE ADD: 0x%08x%08x\n", i,
+> 
+> so using %d is correct enough.
+> 
+> 
+> 
+> .
+> 
+
