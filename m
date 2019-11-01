@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6081EC8BE
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 19:59:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEC47EC8C2
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 19:59:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727621AbfKAS7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 14:59:23 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:4304 "EHLO
+        id S1727640AbfKAS7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 14:59:25 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8288 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727498AbfKAS7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 14:59:22 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA1IupRL016929
-        for <netdev@vger.kernel.org>; Fri, 1 Nov 2019 11:59:21 -0700
+        by vger.kernel.org with ESMTP id S1727608AbfKAS7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 14:59:24 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA1Iwb2j022765
+        for <netdev@vger.kernel.org>; Fri, 1 Nov 2019 11:59:22 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=yK2cmWYJ1CdCYpODyR/wBov+QPYl43w3BfpV+4stoUU=;
- b=XSxIOkA8olOwF6W/QIiVALK19zYzhd8PSY/55DsXJ/VHJifKCPHmSkfoewyZ9oTk7Hxa
- s5DmWLg6TWxkOUUjw6lnBS5wgTdaHcj+6EhwFcRKWZ6rawG0ZJ7QbphsDf3ZtCRvjkk2
- cf9B6eOGFt9rd3zcgjx3ChyBi7NCnc9hRzM= 
+ content-type; s=facebook; bh=UB1rxwpdE+WYA4DyIKDsUxR7fWX4yXxC4yNVcYWaQW0=;
+ b=GYwY/V+X8xhm2MbuS/OKn8FTl0xQrZoiulrjDMGMxHbAOWl8SyF/MmxPvc5JkXIbAT1P
+ HsO2xhguRy3JucWqXwnqeOLoPa6SLOr287jGwmCULGhkLpX6NUM71uGEAa0fcNPO8oxW
+ XvqQ6fbZUBB3oAoje3ES8cRbeTUFJi1N0w8= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w01c4yams-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2w0t6s02np-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 11:59:20 -0700
-Received: from 2401:db00:30:6007:face:0:1:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 11:59:22 -0700
+Received: from 2401:db00:30:600c:face:0:1f:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 1 Nov 2019 11:59:18 -0700
+ 15.1.1713.5; Fri, 1 Nov 2019 11:59:20 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id AE6A12EC1A58; Fri,  1 Nov 2019 11:59:16 -0700 (PDT)
+        id E2B8A2EC1A58; Fri,  1 Nov 2019 11:59:18 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 1/5] selftests/bpf: remove too strict field offset relo test cases
-Date:   Fri, 1 Nov 2019 11:59:07 -0700
-Message-ID: <20191101185912.594925-2-andriin@fb.com>
+Subject: [PATCH bpf-next 2/5] libbpf: add support for relocatable bitfields
+Date:   Fri, 1 Nov 2019 11:59:08 -0700
+Message-ID: <20191101185912.594925-3-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191101185912.594925-1-andriin@fb.com>
 References: <20191101185912.594925-1-andriin@fb.com>
@@ -49,10 +49,10 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-11-01_07:2019-11-01,2019-11-01 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- impostorscore=0 adultscore=0 suspectscore=8 phishscore=0 spamscore=0
- mlxscore=0 priorityscore=1501 mlxlogscore=768 bulkscore=0
- lowpriorityscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 spamscore=0
+ mlxlogscore=999 clxscore=1015 malwarescore=0 impostorscore=0
+ priorityscore=1501 suspectscore=8 mlxscore=0 phishscore=0
+ lowpriorityscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-1908290000 definitions=main-1911010172
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -60,191 +60,458 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As libbpf is going to gain support for more field relocations, including field
-size, some restrictions about exact size match are going to be lifted. Remove
-test cases that explicitly test such failures.
+Add support for the new field relocation kinds, necessary to support
+relocatable bitfield reads. Provide BPF_CORE_READ_BITFIELD macro, abstracting
+necessary code to ensure relocatable bitfield extraction into u64.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- ...__core_reloc_arrays___err_wrong_val_type.c |  3 +
- ..._core_reloc_arrays___err_wrong_val_type1.c |  3 -
- ..._core_reloc_arrays___err_wrong_val_type2.c |  3 -
- .../btf__core_reloc_ints___err_bitfield.c     |  3 -
- .../btf__core_reloc_ints___err_wrong_sz_16.c  |  3 -
- .../btf__core_reloc_ints___err_wrong_sz_32.c  |  3 -
- .../btf__core_reloc_ints___err_wrong_sz_64.c  |  3 -
- .../btf__core_reloc_ints___err_wrong_sz_8.c   |  3 -
- .../selftests/bpf/progs/core_reloc_types.h    | 70 +------------------
- 9 files changed, 4 insertions(+), 90 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
- delete mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
+ tools/lib/bpf/bpf_core_read.h   |  40 ++++++
+ tools/lib/bpf/libbpf.c          | 211 +++++++++++++++++++++++---------
+ tools/lib/bpf/libbpf_internal.h |   4 +
+ 3 files changed, 195 insertions(+), 60 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type.c
-new file mode 100644
-index 000000000000..f5a7c832d0f2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_arrays___err_wrong_val_type x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
-deleted file mode 100644
-index 795a5b729176..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_arrays___err_wrong_val_type1 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
-deleted file mode 100644
-index 3af74b837c4d..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_arrays___err_wrong_val_type2 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
-deleted file mode 100644
-index 50369e8320a0..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_ints___err_bitfield x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
-deleted file mode 100644
-index 823bac13d641..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_ints___err_wrong_sz_16 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
-deleted file mode 100644
-index b44f3be18535..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_ints___err_wrong_sz_32 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
-deleted file mode 100644
-index 9a3dd2099c0f..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_ints___err_wrong_sz_64 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
-deleted file mode 100644
-index 9f11ef5f6e88..000000000000
---- a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
-+++ /dev/null
-@@ -1,3 +0,0 @@
--#include "core_reloc_types.h"
--
--void f(struct core_reloc_ints___err_wrong_sz_8 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index f5939d9d5c61..3fe54f6f82cf 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -386,14 +386,7 @@ struct core_reloc_arrays___err_non_array {
- 	struct core_reloc_arrays_substruct d[1][2];
- };
- 
--struct core_reloc_arrays___err_wrong_val_type1 {
--	char a[5]; /* char instead of int */
--	char b[2][3][4];
--	struct core_reloc_arrays_substruct c[3];
--	struct core_reloc_arrays_substruct d[1][2];
--};
--
--struct core_reloc_arrays___err_wrong_val_type2 {
-+struct core_reloc_arrays___err_wrong_val_type {
- 	int a[5];
- 	char b[2][3][4];
- 	int c[3]; /* value is not a struct */
-@@ -589,67 +582,6 @@ struct core_reloc_ints___bool {
- 	int64_t		s64_field;
- };
- 
--struct core_reloc_ints___err_bitfield {
--	uint8_t		u8_field;
--	int8_t		s8_field;
--	uint16_t	u16_field;
--	int16_t		s16_field;
--	uint32_t	u32_field: 32; /* bitfields are not supported */
--	int32_t		s32_field;
--	uint64_t	u64_field;
--	int64_t		s64_field;
--};
--
--struct core_reloc_ints___err_wrong_sz_8 {
--	uint16_t	u8_field; /* not 8-bit anymore */
--	int16_t		s8_field; /* not 8-bit anymore */
--
--	uint16_t	u16_field;
--	int16_t		s16_field;
--	uint32_t	u32_field;
--	int32_t		s32_field;
--	uint64_t	u64_field;
--	int64_t		s64_field;
--};
--
--struct core_reloc_ints___err_wrong_sz_16 {
--	uint8_t		u8_field;
--	int8_t		s8_field;
--
--	uint32_t	u16_field; /* not 16-bit anymore */
--	int32_t		s16_field; /* not 16-bit anymore */
--
--	uint32_t	u32_field;
--	int32_t		s32_field;
--	uint64_t	u64_field;
--	int64_t		s64_field;
--};
--
--struct core_reloc_ints___err_wrong_sz_32 {
--	uint8_t		u8_field;
--	int8_t		s8_field;
--	uint16_t	u16_field;
--	int16_t		s16_field;
--
--	uint64_t	u32_field; /* not 32-bit anymore */
--	int64_t		s32_field; /* not 32-bit anymore */
--
--	uint64_t	u64_field;
--	int64_t		s64_field;
--};
--
--struct core_reloc_ints___err_wrong_sz_64 {
--	uint8_t		u8_field;
--	int8_t		s8_field;
--	uint16_t	u16_field;
--	int16_t		s16_field;
--	uint32_t	u32_field;
--	int32_t		s32_field;
--
--	uint32_t	u64_field; /* not 64-bit anymore */
--	int32_t		s64_field; /* not 64-bit anymore */
--};
--
- /*
-  * MISC
+diff --git a/tools/lib/bpf/bpf_core_read.h b/tools/lib/bpf/bpf_core_read.h
+index a273df3784f4..ebc3e8fcb874 100644
+--- a/tools/lib/bpf/bpf_core_read.h
++++ b/tools/lib/bpf/bpf_core_read.h
+@@ -12,9 +12,49 @@
   */
+ enum bpf_field_info_kind {
+ 	BPF_FIELD_BYTE_OFFSET = 0,	/* field byte offset */
++	BPF_FIELD_BYTE_SIZE = 1,
+ 	BPF_FIELD_EXISTS = 2,		/* field existence in target kernel */
++	BPF_FIELD_SIGNED = 3,
++	BPF_FIELD_LSHIFT_U64 = 4,
++	BPF_FIELD_RSHIFT_U64 = 5,
+ };
+ 
++#define __CORE_RELO(src, field, info)					      \
++	__builtin_preserve_field_info((src)->field, BPF_FIELD_##info)
++
++#if __BYTE_ORDER == __LITTLE_ENDIAN
++#define __CORE_BITFIELD_READ(dst, src, fld)				      \
++	bpf_probe_read((void *)dst,					      \
++		       __CORE_RELO(src, fld, BYTE_SIZE),		      \
++		       (const void *)src + __CORE_RELO(src, fld, BYTE_OFFSET))
++#else
++/* semantics of LSHIFT_64 assumes loading values into low-ordered bytes, so
++ * for big-endian we need to adjust destination pointer accordingly, based on
++ * field byte size
++ */
++#define __CORE_BITFIELD_READ(dst, src, fld)				      \
++	bpf_probe_read((void *)dst + (8 - __CORE_RELO(src, fld, BYTE_SIZE)),  \
++		       __CORE_RELO(src, fld, BYTE_SIZE),		      \
++		       (const void *)src + __CORE_RELO(src, fld, BYTE_OFFSET))
++#endif
++
++#define BPF_CORE_READ_BITFIELD(src, field, res) ({			      \
++	unsigned long long val;						      \
++									      \
++	*res = 0;							      \
++	val = __CORE_BITFIELD_READ(res, src, field);			      \
++	if (!val) {							      \
++		*res <<= __CORE_RELO(src, field, LSHIFT_U64);		      \
++		val = __CORE_RELO(src, field, RSHIFT_U64);		      \
++		if (__CORE_RELO(src, field, SIGNED))			      \
++			*res = ((long long)*res) >> val;		      \
++		else							      \
++			*res = ((unsigned long long)*res) >> val;	      \
++		val = 0;						      \
++	}								      \
++	val;								      \
++})
++
+ /*
+  * Convenience macro to check that field actually exists in target kernel's.
+  * Returns:
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index c80f316f1320..f1a01ed93c4a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -2335,8 +2335,8 @@ struct bpf_core_spec {
+ 	int raw_spec[BPF_CORE_SPEC_MAX_LEN];
+ 	/* raw spec length */
+ 	int raw_len;
+-	/* field byte offset represented by spec */
+-	__u32 offset;
++	/* field bit offset represented by spec */
++	__u32 bit_offset;
+ };
+ 
+ static bool str_is_empty(const char *s)
+@@ -2347,8 +2347,8 @@ static bool str_is_empty(const char *s)
+ /*
+  * Turn bpf_field_reloc into a low- and high-level spec representation,
+  * validating correctness along the way, as well as calculating resulting
+- * field offset (in bytes), specified by accessor string. Low-level spec
+- * captures every single level of nestedness, including traversing anonymous
++ * field bit offset, specified by accessor string. Low-level spec captures
++ * every single level of nestedness, including traversing anonymous
+  * struct/union members. High-level one only captures semantically meaningful
+  * "turning points": named fields and array indicies.
+  * E.g., for this case:
+@@ -2420,7 +2420,7 @@ static int bpf_core_spec_parse(const struct btf *btf,
+ 	sz = btf__resolve_size(btf, id);
+ 	if (sz < 0)
+ 		return sz;
+-	spec->offset = access_idx * sz;
++	spec->bit_offset = access_idx * sz * 8;
+ 
+ 	for (i = 1; i < spec->raw_len; i++) {
+ 		t = skip_mods_and_typedefs(btf, id, &id);
+@@ -2431,17 +2431,13 @@ static int bpf_core_spec_parse(const struct btf *btf,
+ 
+ 		if (btf_is_composite(t)) {
+ 			const struct btf_member *m;
+-			__u32 offset;
++			__u32 bit_offset;
+ 
+ 			if (access_idx >= btf_vlen(t))
+ 				return -EINVAL;
+-			if (btf_member_bitfield_size(t, access_idx))
+-				return -EINVAL;
+ 
+-			offset = btf_member_bit_offset(t, access_idx);
+-			if (offset % 8)
+-				return -EINVAL;
+-			spec->offset += offset / 8;
++			bit_offset = btf_member_bit_offset(t, access_idx);
++			spec->bit_offset += bit_offset;
+ 
+ 			m = btf_members(t) + access_idx;
+ 			if (m->name_off) {
+@@ -2470,7 +2466,7 @@ static int bpf_core_spec_parse(const struct btf *btf,
+ 			sz = btf__resolve_size(btf, id);
+ 			if (sz < 0)
+ 				return sz;
+-			spec->offset += access_idx * sz;
++			spec->bit_offset += access_idx * sz * 8;
+ 		} else {
+ 			pr_warn("relo for [%u] %s (at idx %d) captures type [%d] of unexpected kind %d\n",
+ 				type_id, spec_str, i, id, btf_kind(t));
+@@ -2571,12 +2567,12 @@ static struct ids_vec *bpf_core_find_cands(const struct btf *local_btf,
+ }
+ 
+ /* Check two types for compatibility, skipping const/volatile/restrict and
+- * typedefs, to ensure we are relocating offset to the compatible entities:
++ * typedefs, to ensure we are relocating compatible entities:
+  *   - any two STRUCTs/UNIONs are compatible and can be mixed;
+  *   - any two FWDs are compatible;
+  *   - any two PTRs are always compatible;
+  *   - for ENUMs, check sizes, names are ignored;
+- *   - for INT, size and bitness should match, signedness is ignored;
++ *   - for INT, size and signedness are ignored;
+  *   - for ARRAY, dimensionality is ignored, element types are checked for
+  *     compatibility recursively;
+  *   - everything else shouldn't be ever a target of relocation.
+@@ -2608,10 +2604,11 @@ static int bpf_core_fields_are_compat(const struct btf *local_btf,
+ 	case BTF_KIND_ENUM:
+ 		return local_type->size == targ_type->size;
+ 	case BTF_KIND_INT:
++		/* just reject deprecated bitfield-like integers; all other
++		 * integers are by default compatible between each other
++		 */
+ 		return btf_int_offset(local_type) == 0 &&
+-		       btf_int_offset(targ_type) == 0 &&
+-		       local_type->size == targ_type->size &&
+-		       btf_int_bits(local_type) == btf_int_bits(targ_type);
++		       btf_int_offset(targ_type) == 0;
+ 	case BTF_KIND_ARRAY:
+ 		local_id = btf_array(local_type)->type;
+ 		targ_id = btf_array(targ_type)->type;
+@@ -2627,7 +2624,7 @@ static int bpf_core_fields_are_compat(const struct btf *local_btf,
+  * Given single high-level named field accessor in local type, find
+  * corresponding high-level accessor for a target type. Along the way,
+  * maintain low-level spec for target as well. Also keep updating target
+- * offset.
++ * bit offset.
+  *
+  * Searching is performed through recursive exhaustive enumeration of all
+  * fields of a struct/union. If there are any anonymous (embedded)
+@@ -2666,21 +2663,16 @@ static int bpf_core_match_member(const struct btf *local_btf,
+ 	n = btf_vlen(targ_type);
+ 	m = btf_members(targ_type);
+ 	for (i = 0; i < n; i++, m++) {
+-		__u32 offset;
++		__u32 bit_offset;
+ 
+-		/* bitfield relocations not supported */
+-		if (btf_member_bitfield_size(targ_type, i))
+-			continue;
+-		offset = btf_member_bit_offset(targ_type, i);
+-		if (offset % 8)
+-			continue;
++		bit_offset = btf_member_bit_offset(targ_type, i);
+ 
+ 		/* too deep struct/union/array nesting */
+ 		if (spec->raw_len == BPF_CORE_SPEC_MAX_LEN)
+ 			return -E2BIG;
+ 
+ 		/* speculate this member will be the good one */
+-		spec->offset += offset / 8;
++		spec->bit_offset += bit_offset;
+ 		spec->raw_spec[spec->raw_len++] = i;
+ 
+ 		targ_name = btf__name_by_offset(targ_btf, m->name_off);
+@@ -2709,7 +2701,7 @@ static int bpf_core_match_member(const struct btf *local_btf,
+ 			return found;
+ 		}
+ 		/* member turned out not to be what we looked for */
+-		spec->offset -= offset / 8;
++		spec->bit_offset -= bit_offset;
+ 		spec->raw_len--;
+ 	}
+ 
+@@ -2718,7 +2710,7 @@ static int bpf_core_match_member(const struct btf *local_btf,
+ 
+ /*
+  * Try to match local spec to a target type and, if successful, produce full
+- * target spec (high-level, low-level + offset).
++ * target spec (high-level, low-level + bit offset).
+  */
+ static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
+ 			       const struct btf *targ_btf, __u32 targ_id,
+@@ -2781,13 +2773,110 @@ static int bpf_core_spec_match(struct bpf_core_spec *local_spec,
+ 			sz = btf__resolve_size(targ_btf, targ_id);
+ 			if (sz < 0)
+ 				return sz;
+-			targ_spec->offset += local_acc->idx * sz;
++			targ_spec->bit_offset += local_acc->idx * sz * 8;
+ 		}
+ 	}
+ 
+ 	return 1;
+ }
+ 
++static int bpf_core_calc_field_relo(const struct bpf_program *prog,
++				    const struct bpf_field_reloc *relo,
++				    const struct bpf_core_spec *spec,
++				    __u32 *val, bool *validate)
++{
++	const struct bpf_core_accessor *acc = &spec->spec[spec->len - 1];
++	const struct btf_type *t = btf__type_by_id(spec->btf, acc->type_id);
++	__u32 byte_off, byte_sz, bit_off, bit_sz;
++	const struct btf_member *m;
++	const struct btf_type *mt;
++	bool bitfield;
++
++	/* a[n] accessor needs special handling */
++	if (!acc->name) {
++		if (relo->kind != BPF_FIELD_BYTE_OFFSET) {
++			pr_warn("prog '%s': relo %d at insn #%d can't be applied to array access'\n",
++				bpf_program__title(prog, false),
++				relo->kind, relo->insn_off / 8);
++			return -EINVAL;
++		}
++		*val = spec->bit_offset / 8;
++		if (validate)
++			*validate = true;
++		return 0;
++	}
++
++	m = btf_members(t) + acc->idx;
++	mt = skip_mods_and_typedefs(spec->btf, m->type, NULL);
++	bit_off = spec->bit_offset;
++	bit_sz = btf_member_bitfield_size(t, acc->idx);
++
++	bitfield = bit_sz > 0;
++	if (bitfield) {
++		byte_sz = mt->size;
++		byte_off = bit_off / 8 / byte_sz * byte_sz;
++		/* figure out smallest int size necessary for bitfield load */
++		while (bit_off + bit_sz - byte_off * 8 > byte_sz * 8) {
++			if (byte_sz >= 8) {
++				/* bitfield can't be read with 64-bit read */
++				pr_warn("prog '%s': relo %d at insn #%d can't be satisfied for bitfield\n",
++					bpf_program__title(prog, false),
++					relo->kind, relo->insn_off / 8);
++				return -E2BIG;
++			}
++			byte_sz *= 2;
++			byte_off = bit_off / 8 / byte_sz * byte_sz;
++		}
++	} else {
++		byte_sz = mt->size;
++		byte_off = spec->bit_offset / 8;
++		bit_sz = byte_sz * 8;
++	}
++
++	/* for bitfields, all the relocatable aspects are ambiguous and we
++	 * might disagree with compiler, so turn off validation of expected
++	 * value, except for signedness
++	 */
++	if (validate)
++		*validate = !bitfield;
++
++	switch (relo->kind) {
++	case BPF_FIELD_BYTE_OFFSET:
++		*val = byte_off;
++		break;
++	case BPF_FIELD_BYTE_SIZE:
++		*val = byte_sz;
++		break;
++	case BPF_FIELD_SIGNED:
++		/* enums will be assumed unsigned */
++		*val = btf_is_enum(mt) ||
++		       (btf_int_encoding(mt) & BTF_INT_SIGNED);
++		if (validate)
++			*validate = true; /* signedness is never ambiguous */
++		break;
++	case BPF_FIELD_LSHIFT_U64:
++#if __BYTE_ORDER == __LITTLE_ENDIAN
++		*val = 64 - (bit_off + bit_sz - byte_off  * 8);
++#else
++		*val = (8 - byte_sz) * 8 + (bit_off - byte_off * 8);
++#endif
++		break;
++	case BPF_FIELD_RSHIFT_U64:
++		*val = 64 - bit_sz;
++		if (validate)
++			*validate = true; /* right shift is never ambiguous */
++		break;
++	case BPF_FIELD_EXISTS:
++	default:
++		pr_warn("prog '%s': unknown relo %d at insn #%d\n",
++			bpf_program__title(prog, false),
++			relo->kind, relo->insn_off / 8);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ /*
+  * Patch relocatable BPF instruction.
+  *
+@@ -2807,36 +2896,31 @@ static int bpf_core_reloc_insn(struct bpf_program *prog,
+ 			       const struct bpf_core_spec *local_spec,
+ 			       const struct bpf_core_spec *targ_spec)
+ {
++	bool failed = false, validate = true;
+ 	__u32 orig_val, new_val;
+ 	struct bpf_insn *insn;
+-	int insn_idx;
++	int insn_idx, err;
+ 	__u8 class;
+ 
+ 	if (relo->insn_off % sizeof(struct bpf_insn))
+ 		return -EINVAL;
+ 	insn_idx = relo->insn_off / sizeof(struct bpf_insn);
+ 
+-	switch (relo->kind) {
+-	case BPF_FIELD_BYTE_OFFSET:
+-		orig_val = local_spec->offset;
+-		if (targ_spec) {
+-			new_val = targ_spec->offset;
+-		} else {
+-			pr_warn("prog '%s': patching insn #%d w/ failed reloc, imm %d -> %d\n",
+-				bpf_program__title(prog, false), insn_idx,
+-				orig_val, -1);
+-			new_val = (__u32)-1;
+-		}
+-		break;
+-	case BPF_FIELD_EXISTS:
++	if (relo->kind == BPF_FIELD_EXISTS) {
+ 		orig_val = 1; /* can't generate EXISTS relo w/o local field */
+ 		new_val = targ_spec ? 1 : 0;
+-		break;
+-	default:
+-		pr_warn("prog '%s': unknown relo %d at insn #%d'\n",
+-			bpf_program__title(prog, false),
+-			relo->kind, insn_idx);
+-		return -EINVAL;
++	} else if (!targ_spec) {
++		failed = true;
++		new_val = (__u32)-1;
++	} else {
++		err = bpf_core_calc_field_relo(prog, relo, local_spec,
++					       &orig_val, &validate);
++		if (err)
++			return err;
++		err = bpf_core_calc_field_relo(prog, relo, targ_spec,
++					       &new_val, NULL);
++		if (err)
++			return err;
+ 	}
+ 
+ 	insn = &prog->insns[insn_idx];
+@@ -2845,12 +2929,17 @@ static int bpf_core_reloc_insn(struct bpf_program *prog,
+ 	if (class == BPF_ALU || class == BPF_ALU64) {
+ 		if (BPF_SRC(insn->code) != BPF_K)
+ 			return -EINVAL;
+-		if (insn->imm != orig_val)
++		if (!failed && validate && insn->imm != orig_val) {
++			pr_warn("prog '%s': unexpected insn #%d value: got %u, exp %u -> %u\n",
++				bpf_program__title(prog, false), insn_idx,
++				insn->imm, orig_val, new_val);
+ 			return -EINVAL;
++		}
++		orig_val = insn->imm;
+ 		insn->imm = new_val;
+-		pr_debug("prog '%s': patched insn #%d (ALU/ALU64) imm %d -> %d\n",
+-			 bpf_program__title(prog, false),
+-			 insn_idx, orig_val, new_val);
++		pr_debug("prog '%s': patched insn #%d (ALU/ALU64)%s imm %u -> %u\n",
++			 bpf_program__title(prog, false), insn_idx,
++			 failed ? " w/ failed reloc" : "", orig_val, new_val);
+ 	} else {
+ 		pr_warn("prog '%s': trying to relocate unrecognized insn #%d, code:%x, src:%x, dst:%x, off:%x, imm:%x\n",
+ 			bpf_program__title(prog, false),
+@@ -2968,7 +3057,8 @@ static void bpf_core_dump_spec(int level, const struct bpf_core_spec *spec)
+ 		libbpf_print(level, "%d%s", spec->raw_spec[i],
+ 			     i == spec->raw_len - 1 ? " => " : ":");
+ 
+-	libbpf_print(level, "%u @ &x", spec->offset);
++	libbpf_print(level, "%u.%u @ &x",
++		     spec->bit_offset / 8, spec->bit_offset % 8);
+ 
+ 	for (i = 0; i < spec->len; i++) {
+ 		if (spec->spec[i].name)
+@@ -3082,7 +3172,8 @@ static int bpf_core_reloc_field(struct bpf_program *prog,
+ 		return -EINVAL;
+ 	}
+ 
+-	pr_debug("prog '%s': relo #%d: spec is ", prog_name, relo_idx);
++	pr_debug("prog '%s': relo #%d: kind %d, spec is ", prog_name, relo_idx,
++		 relo->kind);
+ 	bpf_core_dump_spec(LIBBPF_DEBUG, &local_spec);
+ 	libbpf_print(LIBBPF_DEBUG, "\n");
+ 
+@@ -3122,13 +3213,13 @@ static int bpf_core_reloc_field(struct bpf_program *prog,
+ 
+ 		if (j == 0) {
+ 			targ_spec = cand_spec;
+-		} else if (cand_spec.offset != targ_spec.offset) {
++		} else if (cand_spec.bit_offset != targ_spec.bit_offset) {
+ 			/* if there are many candidates, they should all
+-			 * resolve to the same offset
++			 * resolve to the same bit offset
+ 			 */
+ 			pr_warn("prog '%s': relo #%d: offset ambiguity: %u != %u\n",
+-				prog_name, relo_idx, cand_spec.offset,
+-				targ_spec.offset);
++				prog_name, relo_idx, cand_spec.bit_offset,
++				targ_spec.bit_offset);
+ 			return -EINVAL;
+ 		}
+ 
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index bd6f48ea407b..97ac17a64a58 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -158,7 +158,11 @@ struct bpf_line_info_min {
+  */
+ enum bpf_field_info_kind {
+ 	BPF_FIELD_BYTE_OFFSET = 0,	/* field byte offset */
++	BPF_FIELD_BYTE_SIZE = 1,
+ 	BPF_FIELD_EXISTS = 2,		/* field existence in target kernel */
++	BPF_FIELD_SIGNED = 3,
++	BPF_FIELD_LSHIFT_U64 = 4,
++	BPF_FIELD_RSHIFT_U64 = 5,
+ };
+ 
+ /* The minimum bpf_field_reloc checked by the loader
 -- 
 2.17.1
 
