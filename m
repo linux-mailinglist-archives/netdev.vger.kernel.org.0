@@ -2,119 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5452CEC101
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 11:07:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20620EC16E
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 11:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729415AbfKAKHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 06:07:38 -0400
-Received: from dispatchb-us1.ppe-hosted.com ([148.163.129.53]:48886 "EHLO
-        dispatchb-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729037AbfKAKHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 06:07:37 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us2.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E6DE370006C;
-        Fri,  1 Nov 2019 10:07:35 +0000 (UTC)
-Received: from [10.17.20.62] (10.17.20.62) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 1 Nov 2019
- 10:07:32 +0000
-Subject: Re: [PATCH net-next v4 0/6] sfc: Add XDP support
-To:     David Ahern <dsahern@gmail.com>,
-        Charles McLachlan <cmclachlan@solarflare.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-net-drivers@solarflare.com>, <brouer@redhat.com>
-References: <c0294a54-35d3-2001-a2b9-dd405d2b3501@solarflare.com>
- <b971b219-5aab-722d-72b7-545a7c2b609e@gmail.com>
-From:   Martin Habets <mhabets@solarflare.com>
-Message-ID: <e3f1c071-3609-d6e7-81d6-9ee73f9f4f6a@solarflare.com>
-Date:   Fri, 1 Nov 2019 10:07:30 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.0
+        id S1729789AbfKAK6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 06:58:03 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:36308 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727437AbfKAK6D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 06:58:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=p5xtTztut9m7IGI6grqmZxTPCocjD5jUv95zsKCT0yg=; b=ICI/5hcyPtqJqKIMtvE5cYagm
+        f/dqg4nlUyDkSdfSGCAfQpgiwKloQUtI6oinbnAzbq0ZWxyob9u4/9Ko0NObHWCQ1MZW3EMHalRyt
+        OKspb+Rc6NENSRu2HoszqM8K6BS1iEIprFzG5GZQ37n2TMr5EhBIkPpUYmRsdMTyc6b1Ho6dMvdzc
+        gMdBmC2w1oceLopybJxY4s0zhF2294jXFU3jTgLyqL1c0t4w8eaAZAR1tNnvjkxZOjog9XFIBNP7c
+        ElbokDsJbbrpb1v61rEM/rz7nmfoBdVOWukBs7OGVW19heDE1kPL21f5XgajMyojbKu57sRTQ+F/J
+        dJp03TV5A==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:50240)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iQUcq-0004NE-4J; Fri, 01 Nov 2019 10:57:52 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iQUcj-0007Tm-Gr; Fri, 01 Nov 2019 10:57:45 +0000
+Date:   Fri, 1 Nov 2019 10:57:45 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Priit Laes <plaes@plaes.org>
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        "linux-sunxi@googlegroups.com" <linux-sunxi@googlegroups.com>,
+        "wens@csie.org" <wens@csie.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>
+Subject: Re: sun7i-dwmac: link detection failure with 1000Mbit parters
+Message-ID: <20191101105745.GJ25745@shell.armlinux.org.uk>
+References: <20191030202117.GA29022@plaes.org>
+ <BN8PR12MB32660687285D2C76E7CF2FF6D3630@BN8PR12MB3266.namprd12.prod.outlook.com>
+ <20191031103841.GI25745@shell.armlinux.org.uk>
+ <20191101094920.GB12834@plaes.org>
 MIME-Version: 1.0
-In-Reply-To: <b971b219-5aab-722d-72b7-545a7c2b609e@gmail.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.62]
-X-ClientProxiedBy: ukex01.SolarFlarecom.com (10.17.10.4) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25014.003
-X-TM-AS-Result: No-10.134600-8.000000-10
-X-TMASE-MatchedRID: eVEkOcJu0F7mLzc6AOD8DfHkpkyUphL9TkUH66TwzU50FoS1aixTNeey
-        WMLRVf2LTPkqidFNTAX5YdzxGod4dQGhobW1O/ZCqjZ865FPtpoApu/OILCbuJGhAvBSa2i/7P0
-        f4RQxQyUcF4JhFYmAij9HdKO/hTEuqftxS3LnjvV08zy97KsgJl8Rp2iseaxy5DJ1FS+XdBMh9u
-        bLG9wIkJY+kEk03nhZqcwVjSNTEBuNgUMaLItOxf3HILfxLV/9Y9JlLwL1dg1TaPOXTIbBNvWIr
-        nzPJMLjFHHvrZOHeTOL9bagsxDRhZ/7sfLzEF819VjtTc1fwmB+CWCcHScOE60Mkw1qz/bKngIg
-        pj8eDcC063Wh9WVqgnlZfqMjiglX1GcRAJRT6PP3FLeZXNZS4KBkcgGnJ4WmNsk9WPw4IH9rK9e
-        XwOV8NluFc1vTDX1CCpsKt3bthbt+3BndfXUhXQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--10.134600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25014.003
-X-MDID: 1572602856-1rEvLr4QoPav
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191101094920.GB12834@plaes.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/10/2019 22:18, David Ahern wrote:
-> On 10/31/19 4:21 AM, Charles McLachlan wrote:
->> Supply the XDP callbacks in netdevice ops that enable lower level processing
->> of XDP frames.
->>
->> Changes in v4:
->> - Handle the failure to send some frames in efx_xdp_tx_buffers() properly.
->>
->> Changes in v3:
->> - Fix a BUG_ON when trying to allocate piobufs to xdp queues.
->> - Add a missed trace_xdp_exception.
->>
->> Changes in v2:
->> - Use of xdp_return_frame_rx_napi() in tx.c
->> - Addition of xdp_rxq_info_valid and xdp_rxq_info_failed to track when
->>   xdp_rxq_info failures occur.
->> - Renaming of rc to err and more use of unlikely().
->> - Cut some duplicated code and fix an array overrun.
->> - Actually increment n_rx_xdp_tx when packets are transmitted.
->>
+On Fri, Nov 01, 2019 at 09:49:20AM +0000, Priit Laes wrote:
+> On Thu, Oct 31, 2019 at 10:38:41AM +0000, Russell King - ARM Linux admin wrote:
+> >   mii-diag -v eth0
+> > 
+> > would be useful to see for the case where the link has failed, without
+> > replugging the ethernet cable.
 > 
-> Something is up with this version versus v2. I am seeing a huge
-> performance drop with my L2 forwarding program - something I was not
-> seeing with v2 and I do not see with the experimental version of XDP in
-> the out of tree sfc driver.
-> 
-> Without XDP:
-> 
-> $ netperf -H 10.39.16.7 -l 30 -t TCP_STREAM
-> MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to
-> 10.39.16.7 () port 0 AF_INET : demo
-> Recv   Send    Send
-> Socket Socket  Message  Elapsed
-> Size   Size    Size     Time     Throughput
-> bytes  bytes   bytes    secs.    10^6bits/sec
-> 
->  87380  16384  16384    30.00    9386.73
-> 
-> 
-> With XDP
-> 
-> $ netperf -H 10.39.16.7 -l 30 -t TCP_STREAM
-> MIGRATED TCP STREAM TEST from 0.0.0.0 (0.0.0.0) port 0 AF_INET to
-> 10.39.16.7 () port 0 AF_INET : demo
-> Recv   Send    Send
-> Socket Socket  Message  Elapsed
-> Size   Size    Size     Time     Throughput
-> bytes  bytes   bytes    secs.    10^6bits/sec
-> 
->  87380  16384  16384    30.01     384.11
-> 
-> 
-> Prior versions was showing throughput of at least 4000 (depends on the
-> test and VM setup).
+> mii-diag seems to be quite an useful tool, but unfortunately has not been
+> packaged anymore on newer distro releases like Debian stable and latest
+> Ubuntu LTS.
 
-Thanks for testing this. And a good thing we have counters for this.
-Are the rx_xdp_drops or rx_xdp_bad_drops non-zero/increasing?
+which is unfortunate because it's the best tool for debugging PHY
+related problems.  mii-tool doesn't dump registers, and dumping the
+PHY registers is extremely useful.
 
-Martin
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
