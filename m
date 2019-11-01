@@ -2,66 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 694FCEC98A
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:25:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E67EC9A6
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:32:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727597AbfKAUZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 16:25:41 -0400
-Received: from mga02.intel.com ([134.134.136.20]:47883 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726477AbfKAUZk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Nov 2019 16:25:40 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Nov 2019 13:25:40 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,256,1569308400"; 
-   d="scan'208";a="375669954"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga005.jf.intel.com with ESMTP; 01 Nov 2019 13:25:40 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Igor Pylypiv <igor.pylypiv@gmail.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net v2 7/7] ixgbe: Remove duplicate clear_bit() call
-Date:   Fri,  1 Nov 2019 13:25:38 -0700
-Message-Id: <20191101202538.665-8-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191101202538.665-1-jeffrey.t.kirsher@intel.com>
-References: <20191101202538.665-1-jeffrey.t.kirsher@intel.com>
+        id S1727665AbfKAUcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 16:32:48 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41435 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726913AbfKAUcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:32:47 -0400
+Received: by mail-qt1-f194.google.com with SMTP id o3so14626635qtj.8
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 13:32:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=okI+WKXZnivApTS1Oqi6dD5Ms0rFCprYxF1H61WduWk=;
+        b=f7orMWZVKXvZohfNhfH5dicN+vFp+YUIVDlLvpaAMVZ7h8ecWefrFvtJZN0ZDow/W9
+         YkCCZe4G299RZaxDbjEQiMVkjIpWIhYI8YnOEmlZ3gsdJvwb6Z5EyiSyU+U0sdD3OxRD
+         SzZ/z/yHmTleGDsqSwaFraId3RNjzfjblyZv/B+/IjE67rN4SSkSkjEzDiWAOHve7Sd/
+         zQjph+h8Bqh7oskDXu+wJv4l5Mb6C1aAQRhj1uYTz1egGk5npOq/uegK2A4YhjUTOBL1
+         qMUZ6aTPq5v6OfToB2RwzdOTKPj1nPIdZyiRLgn2zCXfaGeaCs0A4Aqng86kc9ZzptOc
+         TFxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=okI+WKXZnivApTS1Oqi6dD5Ms0rFCprYxF1H61WduWk=;
+        b=CIFxd2x1UMSlgbY7LUBVSaFNJ/6UISyAIf+n9mEXggHQHs7iBDj0PZ92tpPdbc7rLC
+         apNs22q9rrvua61y8OyeWrg3XJX+HCzBF8jvxnR0MigFqLujxfdH0525FSmMuKYEdyEe
+         ZTjc4Qlptoc2SEC3mj8+SD/3Nm9r28a74wgL81Hdd++7IEvu/VgfgqtSX5NieR7LwgyT
+         M0tH+tT+bOqXnlvB8d7yyxZdgZznm5wOGs0uogpEszxEMk98TPcYRd3UN5vpbx3tKDIK
+         aRfjpwVOiMVLWlH1H0fEotdKltM9xhw69Ix51g2u/jbf0u29FinoURxX3XnueHKWZllX
+         wHWw==
+X-Gm-Message-State: APjAAAVtUvjnPK22IRiCYRrGYlIUlZiWpRDF+mfTn4iWsNWDB4WzERoW
+        H5WLSHL4MceOLWQwLoizfx5DS0hQikkEe0BkcLE=
+X-Google-Smtp-Source: APXvYqzHEQTnfAn6B3IwrtlyuqSor8Qh5mCEmuxsMvcul8nl6vWAYSXyNs5URypQVJb35SAyKHrrDFgPB2DSmnU/rjI=
+X-Received: by 2002:ac8:5491:: with SMTP id h17mr1316984qtq.292.1572640366818;
+ Fri, 01 Nov 2019 13:32:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a0c:8aca:0:0:0:0:0 with HTTP; Fri, 1 Nov 2019 13:32:46 -0700 (PDT)
+Reply-To: eddywilliam0002@gmail.com
+From:   eddy william <kagnalex@gmail.com>
+Date:   Fri, 1 Nov 2019 21:32:46 +0100
+Message-ID: <CACemp=7hXLmmLs1mQbj8DorUuSccQQChCR5xQNC5NjMfdrQXMg@mail.gmail.com>
+Subject: hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Igor Pylypiv <igor.pylypiv@gmail.com>
+Hallo
 
-__IXGBE_RX_BUILD_SKB_ENABLED bit is already cleared.
+Mein Name ist Eddy William. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte
+Ihnen anbieten
+die n=C3=A4chsten Verwandten zu meinem Klienten. Sie erben die Summe von
+($8,5 Millionen US-Dollar)
+Dollar, die mein Kunde vor seinem Tod in der Bank gelassen hat.
 
-Signed-off-by: Igor Pylypiv <igor.pylypiv@gmail.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 1 -
- 1 file changed, 1 deletion(-)
+Mein Mandant ist ein Staatsb=C3=BCrger Ihres Landes, der mit seiner Frau
+bei einem Autounfall ums Leben gekommen ist
+und nur Sohn. Ich werde mit 50% des Gesamtfonds berechtigt sein, w=C3=A4hre=
+nd 50%
+sein f=C3=BCr dich.
+Bitte kontaktieren Sie meine private E-Mail hier f=C3=BCr weitere
+Informationen: eddywilliam0002gmail.com
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 1ce2397306b9..91b3780ddb04 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -4310,7 +4310,6 @@ static void ixgbe_set_rx_buffer_len(struct ixgbe_adapter *adapter)
- 		if (test_bit(__IXGBE_RX_FCOE, &rx_ring->state))
- 			set_bit(__IXGBE_RX_3K_BUFFER, &rx_ring->state);
- 
--		clear_bit(__IXGBE_RX_BUILD_SKB_ENABLED, &rx_ring->state);
- 		if (adapter->flags2 & IXGBE_FLAG2_RX_LEGACY)
- 			continue;
- 
--- 
-2.21.0
+Vielen Dank im Voraus,
+Mr. Eddy William,
 
+
+
+Hello
+
+My name is Eddy William I am a lawyer by profession. I wish to offer you
+the next of kin to my client. You will inherit the sum of ($8.5 Million)
+dollars my client left in the bank before his death.
+
+My client is a citizen of your country who died in auto crash with his wife
+and only son. I will be entitled with 50% of the total fund while 50% will
+be for you.
+Please contact my private email here for more details:eddywilliam0002gmail.=
+com
+
+Many thanks in advance,
+Mr.Eddy William,
