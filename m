@@ -2,151 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E26EC58E
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 16:21:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9365EC598
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 16:28:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728632AbfKAPVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 11:21:40 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:35569 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727812AbfKAPVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 11:21:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572621698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WDYGxxA/KgrYN0QEUL49MfltlmEWA16vt4MxjEs1+6E=;
-        b=goHoTJaOCoRTNdFL6iXr3cfsLekQ3KwbEFacVVQVFALg+5wk60Za7kRF6e968L9J6tJaJv
-        SP21hY07pe1zS2HbQdi3ZK2nfKNDpXKLFEtX1XNOEGNSv+udxKDg5zM2mKHWK0BSGqLZQj
-        p3TCSkpljaG9CUZ64T957uFGvV/OW9U=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-253-i5RvBvQWOlyITqFctoslYg-1; Fri, 01 Nov 2019 11:21:33 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E4EE31005500;
-        Fri,  1 Nov 2019 15:21:31 +0000 (UTC)
-Received: from madcap2.tricolour.ca (ovpn-112-19.phx2.redhat.com [10.3.112.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 82BD619C58;
-        Fri,  1 Nov 2019 15:21:21 +0000 (UTC)
-Date:   Fri, 1 Nov 2019 11:21:18 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Steve Grubb <sgrubb@redhat.com>
-Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Subject: Re: [PATCH ghak90 V7 20/21] audit: add capcontid to set contid
- outside init_user_ns
-Message-ID: <20191101152118.mi2svoringtrdskv@madcap2.tricolour.ca>
-References: <cover.1568834524.git.rgb@redhat.com>
- <3677995.NTHC7m0fHc@x2>
- <20191101150927.c5sf3n5ezfg2eano@madcap2.tricolour.ca>
- <1592218.lpl3eoh2c6@x2>
+        id S1727798AbfKAP2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 11:28:12 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:43897 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727308AbfKAP2M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 11:28:12 -0400
+Received: by mail-io1-f68.google.com with SMTP id c11so11265602iom.10
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 08:28:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QCPLD3i3+dRuyoblXDbOm+/SSyE/ZZuWhvLohOhKZiY=;
+        b=a1j3ovMvt99wt5sJDUpBjw6KtzzMg09dxPsrnoO6/XU9CNU1Bl3SDCvBqte9sJ824G
+         PI+phHaG9NvmNNSX4QWwXsEcC6ynhTjSRzFndGbfHHQuMHKm2bI0l+qhuuoEqpW1asLD
+         6mFothMchjUQ7EEShaxPYgLaoRQ9uCzPPPliagAW/BA+tGjVci3ySgD41br2zCDu1+qf
+         awU3qhdWa+Pc5Enpz9VX1svTrf3IcrKD9Pa7PsqqlwE59TtBdKZybHv7beZldJT7OYne
+         nPmCRhqfCsEQIZLExpegFVCrpN0S1dxmWf/4cIDgnpHAb//LbYjCvpUKLd0b/4AePSlW
+         AvOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QCPLD3i3+dRuyoblXDbOm+/SSyE/ZZuWhvLohOhKZiY=;
+        b=Vu+GeO8CAmos54zL3xTt3c1GSeMH4tw1RgyDsWBfeQG1MIeQIOFOlOAloSRzoeZkUE
+         G6TUH5tdbn8tJq+P79GQ/CXuD+P1WCs6dvAVQbyjzqqONQr+cI0gA8RYKeU1LUst1Bsw
+         Aq8PJdJupFIlNQ7rjyng5DnfMECelxWixvLOrK2hsgQnoLwHDEgNygpR7bZmYyjpIcSU
+         ++0/zT587i/GOETK/GbcKoXAbuCRVVje3o/CmrDtCCgbREPk+zduYR1hV8cfpVIuVGMk
+         3wL2es0h3JxZPKyxhH9PfBbfRAWu7JMveOZS9enDkWXuDRGipm5HlIhH42aBYudE6D67
+         pyGQ==
+X-Gm-Message-State: APjAAAXEZCptAxc8tNmnTfjKdiGMahmf8hBUJIeVWZsYL69dB65SOQlE
+        z3efN6PmH8kUgm2ESpdekXdtVSVKBqSZFg2CnxJi6g==
+X-Google-Smtp-Source: APXvYqxiN5Ltvl0rtIAcARA4yCzaQEXwGrr+ML5g7jPnQq7E0EBPSVk4VH3SvlnNp7hlPsi8c5wLs+LDBqZJg6DzxKc=
+X-Received: by 2002:a5d:8905:: with SMTP id b5mr10630650ion.187.1572622089456;
+ Fri, 01 Nov 2019 08:28:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1592218.lpl3eoh2c6@x2>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: i5RvBvQWOlyITqFctoslYg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+References: <1572548904-3975-1-git-send-email-john.hurley@netronome.com>
+ <vbfeeyrycmo.fsf@mellanox.com> <CAK+XE==iPdOq65FK1_MvTr7x6=dRQDYe7kASLDEkux+D5zUh+g@mail.gmail.com>
+ <vbfd0eby6qv.fsf@mellanox.com>
+In-Reply-To: <vbfd0eby6qv.fsf@mellanox.com>
+From:   John Hurley <john.hurley@netronome.com>
+Date:   Fri, 1 Nov 2019 15:27:58 +0000
+Message-ID: <CAK+XE=kV9xodyQj0URF+9zN=fO4hf=B7VzHwewNtVLVquC4udQ@mail.gmail.com>
+Subject: Re: [RFC net-next v2 1/1] net: sched: prevent duplicate flower rules
+ from tcf_proto destroy race
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "simon.horman@netronome.com" <simon.horman@netronome.com>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "louis.peens@netronome.com" <louis.peens@netronome.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-11-01 11:13, Steve Grubb wrote:
-> On Friday, November 1, 2019 11:09:27 AM EDT Richard Guy Briggs wrote:
-> > On 2019-10-31 10:50, Steve Grubb wrote:
-> > > Hello,
-> > >=20
-> > > TLDR;  I see a lot of benefit to switching away from procfs for setti=
-ng
-> > > auid & sessionid.
-> > >=20
-> > > On Wednesday, October 30, 2019 6:03:20 PM EDT Richard Guy Briggs wrot=
-e:
-> > > > > Also, for the record, removing the audit loginuid from procfs is =
-not
-> > > > > something to take lightly, if at all; like it or not, it's part o=
-f
-> > > > > the
-> > > > > kernel API.
-> > >=20
-> > > It can also be used by tools to iterate processes related to one user=
- or
-> > > session. I use this in my Intrusion Prevention System which will land=
- in
-> > > audit user space at some point in the future.
-> > >=20
-> > > > Oh, I'm quite aware of how important this change is and it was
-> > > > discussed
-> > > > with Steve Grubb who saw the concern and value of considering such =
-a
-> > > > disruptive change.
-> > >=20
-> > > Actually, I advocated for syscall. I think the gist of Eric's idea wa=
-s
-> > > that / proc is the intersection of many nasty problems. By relying on
-> > > it, you can't simplify the API to reduce the complexity. Almost no
-> > > program actually needs access to /proc. ps does. But almost everythin=
-g
-> > > else is happy without it. For example, when you setup chroot jails, y=
-ou
-> > > may have to add /dev/random or / dev/null, but almost never /proc. Wh=
-at
-> > > does force you to add /proc is any entry point daemon like sshd becau=
-se
-> > > it needs to set the loginuid. If we switch away from /proc, then sshd=
- or
-> > > crond will no longer /require/ procfs to be available which again
-> > > simplifies the system design.
-> > >=20
-> > > > Removing proc support for auid/ses would be a
-> > > > long-term deprecation if accepted.
-> > >=20
-> > > It might need to just be turned into readonly for a while. But then
-> > > again,
-> > > perhaps auid and session should be part of /proc/<pid>/status? Maybe =
-this
-> > > can be done independently and ahead of the container work so there is=
- a
-> > > migration path for things that read auid or session. TBH, maybe this
-> > > should have been done from the beginning.
-> >=20
-> > How about making loginuid/contid/capcontid writable only via netlink bu=
-t
-> > still provide the /proc interface for reading?  Deprecation of proc can
-> > be left as a decision for later.  This way sshd/crond/getty don't need
-> > /proc, but the info is still there for tools that want to read it.
->=20
-> This also sounds good to me. But I still think loginuid and audit session=
-id=20
-> should get written in /proc/<pid>/status so that all process information =
-is=20
-> consolidated in one place.
+On Fri, Nov 1, 2019 at 3:08 PM Vlad Buslov <vladbu@mellanox.com> wrote:
+>
+>
+> On Fri 01 Nov 2019 at 16:54, John Hurley <john.hurley@netronome.com> wrote:
+> > On Fri, Nov 1, 2019 at 1:01 PM Vlad Buslov <vladbu@mellanox.com> wrote:
+> >>
+> >>
+> >> On Thu 31 Oct 2019 at 21:08, John Hurley <john.hurley@netronome.com> wrote:
+> >> > When a new filter is added to cls_api, the function
+> >> > tcf_chain_tp_insert_unique() looks up the protocol/priority/chain to
+> >> > determine if the tcf_proto is duplicated in the chain's hashtable. It then
+> >> > creates a new entry or continues with an existing one. In cls_flower, this
+> >> > allows the function fl_ht_insert_unque to determine if a filter is a
+> >> > duplicate and reject appropriately, meaning that the duplicate will not be
+> >> > passed to drivers via the offload hooks. However, when a tcf_proto is
+> >> > destroyed it is removed from its chain before a hardware remove hook is
+> >> > hit. This can lead to a race whereby the driver has not received the
+> >> > remove message but duplicate flows can be accepted. This, in turn, can
+> >> > lead to the offload driver receiving incorrect duplicate flows and out of
+> >> > order add/delete messages.
+> >> >
+> >> > Prevent duplicates by utilising an approach suggested by Vlad Buslov. A
+> >> > hash table per block stores each unique chain/protocol/prio being
+> >> > destroyed. This entry is only removed when the full destroy (and hardware
+> >> > offload) has completed. If a new flow is being added with the same
+> >> > identiers as a tc_proto being detroyed, then the add request is replayed
+> >> > until the destroy is complete.
+> >> >
+> >> > v1->v2:
+> >> > - put tcf_proto into block->proto_destroy_ht rather than creating new key
+> >> >   (Vlad Buslov)
+> >> > - add error log for cases when hash entry fails. Previously it failed
+> >> >   silently with no indication. (Vlad Buslov)
+> >> >
+> >> > Fixes: 8b64678e0af8 ("net: sched: refactor tp insert/delete for concurrent execution")
+> >> > Signed-off-by: John Hurley <john.hurley@netronome.com>
+> >> > Reviewed-by: Simon Horman <simon.horman@netronome.com>
+> >> > Reported-by: Louis Peens <louis.peens@netronome.com>
+> >> > ---
+> >>
+> >> Hi John,
+> >>
+> >> Patch looks good! However, I think we can simplify it even more and
+> >> remove duplication of data in tcf_proto (hashtable key contains copy of
+> >> data that is already available in the struct itself) and remove all
+> >> dynamic memory allocations. I have refactored your patch accordingly
+> >> (attached). WDYT?
+> >>
+> >
+> > Hi Vlad,
+> > Thanks for the review/modifications.
+> > The changes look good to me but I can fire it through our test setup to be sure.
+> >
+> > The only thing I'm a bit concerned about here is the size of the
+> > static allocation.
+> > We are now defining quite a large hash table per block (65536 buckets).
+> > It's hard to know exactly how many elements will be in this at the one time.
+> > With flushes of large chains it may well become quite full, but I'd
+> > expect that it will be empty a majority of the time.
+> > Resizable hash seems a bit more appropriate here.
+> > Do you have any opinions on this?
+> >
+> > John
+>
+> Yeah, I agree that 65536 buckets is quite an overkill for this. I think
+> cls API assumes that there is not too many tp instances because they are
+> attached to chain through regular linked list and each lookup is a
+> linear search. With this I assume that proto_destroy_ht size can be
+> safely reduced to 256 buckets, if not less. Resizable table is an
+> option, but that also sounds like an overkill to me since linear search
+> over list of chains attached to block or over list of tp's attached to
+> chain will be the main bottleneck, if user creates hundreds of thousands
+> of proto instances.
+>
 
-I don't have a problem adding auid/sessionid to /proc/<pid>/status with
-other related information, but it is disruptive to deprecate the
-existing interface which could be a seperate step.
+Yes, it's a valid point about the tp/chain lookup being the bottleneck
+in cases of high usage.
+Let's reduce the buckets to say 128 and avoid the need for rhash.
+Thanks
 
-> -Steve
 
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+> >
+> >> [...]
+> >>
