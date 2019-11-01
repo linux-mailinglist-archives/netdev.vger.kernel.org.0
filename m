@@ -2,87 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BABDEC6EB
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 17:38:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C560EC707
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 17:45:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729004AbfKAQiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 12:38:09 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39759 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727426AbfKAQiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 12:38:08 -0400
-Received: by mail-pl1-f194.google.com with SMTP id t12so4604894plo.6
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 09:38:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SEALwoa0cbjZR0oI/QLqztxlaX1462n1PkXryuYeKGI=;
-        b=vtE09raxwX6dhPqCzznS8lvOXFFqUNtSM4jXdeDJScXI32SpgmtLzO/eLE377KKy76
-         QqZcKx7Wzuw6Tvi1+lzvgbFDSIT6ns01/uPv8V4nXyKhzePI2zgBOGxeMpWOPKCuEkZZ
-         HCyqMjSr6hjq7MVSPFGKfWumyq1YbdEJJ7WHoTMRQ504IevQhWzdUp0Dseq6ntj4QC6y
-         /TplTeaKGdsrhJv3tJrnunL4Sqg/dHmgtsD++mZ7R3g43e4xUC3EVZHB4t6O+KXdUUYK
-         fFyJ1vLV4jh9ovj3OQv7K9zQzAJDXAbXqIYewBDhPyn2MZvZ7S1jePjyU0DRYvrebNf3
-         6uFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SEALwoa0cbjZR0oI/QLqztxlaX1462n1PkXryuYeKGI=;
-        b=ZnG+2E/36XqoHGeI/jIB3EXiFT1dFQrtnuOm5yqY+vOgv3OPhQLQ/cJ0yq9u4SwbO7
-         iH3mifs+6Byd9wQYpE5oGS6ZkCFsnxp2lLhiW22k81R/KCPrGYrU90dNaoy74oaKQw4B
-         Oszo7E8QzrvQrMs/xIiz9yVqGqYZQboYvtw+QpAP7Un6msMrXkO5KFd8wBIbR1kG28pP
-         mM9tAfXemZT1YdL0EIjExCDTw8Hk7HVG/GcyiO4VWU/RcAbwIYVzaoMgl4UPULh4IQ+Y
-         2347nALXKcdHVi2OqInrcSjDDYCtVz9fKXoVeIMCmyK2cDSlWDfxr+eShdoKMkX3+NUk
-         18Yg==
-X-Gm-Message-State: APjAAAX+4OkN/XQtq6Z9qaAS0I6WI2e1wkO2jvecyic+Dn7axMPkohaD
-        NecfHpXEaqvNNEePkI3CGw4FWQ==
-X-Google-Smtp-Source: APXvYqy9wxOd4kT/rXlsgIs8LGm/ughW/kr8TmoAHb1rnX6HWAh5lzmk8F0+m8RNJiFFBi3kQcsohA==
-X-Received: by 2002:a17:902:ba8f:: with SMTP id k15mr13314068pls.93.1572626286575;
-        Fri, 01 Nov 2019 09:38:06 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q1sm1955401pgr.92.2019.11.01.09.38.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 09:38:06 -0700 (PDT)
-Date:   Fri, 1 Nov 2019 09:38:03 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     =?UTF-8?B?TWljaGHFgiDFgXlzemN6ZWs=?= <michal.lyszczek@bofc.pl>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH v2 iproute2] libnetlink.c, ss.c: properly handle fread()
- errors
-Message-ID: <20191101093803.4c10c04a@hermes.lan>
-In-Reply-To: <20191029111311.7000-1-michal.lyszczek@bofc.pl>
-References: <20191028212128.1b8c5054@hermes.lan>
-        <20191029111311.7000-1-michal.lyszczek@bofc.pl>
+        id S1728797AbfKAQpQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 12:45:16 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:34242 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727148AbfKAQpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 12:45:16 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1GjBsr085616;
+        Fri, 1 Nov 2019 11:45:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1572626711;
+        bh=aLazdWHqwMmzhyqcTwdhpTY3yMjMZynbrNye1KKLlZs=;
+        h=From:To:CC:Subject:Date;
+        b=yeMa8rukT2H837Z9cSK/bSEAsvhyPlTrTzIZLUB9vE9WqcIQ9hyaox5er0rWkjixe
+         Nj8yUgxwBZ7zfv+RxkHZRwWMGC+snIcnV9zNmpztvzqcuMjuYPze5YnF720sTozaKp
+         8FB9TuoVBN2oatqEUNgDCJ9nujIehH0Lb0VBb4io=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA1GjBBL067059
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 1 Nov 2019 11:45:11 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
+ 2019 11:44:57 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Fri, 1 Nov 2019 11:44:57 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1GjAos082902;
+        Fri, 1 Nov 2019 11:45:10 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH] dt-bindings: net: davinci-mdio: convert bindings to json-schema
+Date:   Fri, 1 Nov 2019 18:45:02 +0200
+Message-ID: <20191101164502.19089-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 29 Oct 2019 12:13:11 +0100
-Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl> wrote:
+Now that we have the DT validation in place, let's convert the device tree
+bindings for the TI SoC Davinci/OMAP/Keystone2 MDIO Controllerr over to a
+YAML schemas.
 
-> fread(3) returns size_t data type which is unsigned, thus check
-> `if (fread(...) < 0)' is always false. To check if fread(3) has
-> failed, user should check error indicator with ferror(3).
->=20
-> This commit also changes read logic a little bit by being less
-> forgiving for errors. Previous logic was checking if fread(3)
-> read *at least* required ammount of data, now code checks if
-> fread(3) read *exactly* expected ammount of data. This makes
-> sense because code parses very specific binary file, and reading
-> even 1 less/more byte than expected, will later corrupt data anyway.
->=20
-> Signed-off-by: Micha=C5=82 =C5=81yszczek <michal.lyszczek@bofc.pl>
->=20
-> ---
-> v1 -> v2: fread(3) can also return error on truncated reads and
->             not only on 0bytes read (suggested by Stephen Hemminger)
->=20
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+---
+changes since rfc:
+ - removed old bindings
+ - bus_freq defined as "required" for davinci_mdio
+rfc: https://lkml.org/lkml/2019/10/24/300
 
-Thanks, applied.
+ .../devicetree/bindings/net/davinci-mdio.txt  | 36 ----------
+ .../bindings/net/ti,davinci-mdio.yaml         | 71 +++++++++++++++++++
+ 2 files changed, 71 insertions(+), 36 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/davinci-mdio.txt
+ create mode 100644 Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
 
-Isn't error handling messy.
+diff --git a/Documentation/devicetree/bindings/net/davinci-mdio.txt b/Documentation/devicetree/bindings/net/davinci-mdio.txt
+deleted file mode 100644
+index e6527de80f10..000000000000
+--- a/Documentation/devicetree/bindings/net/davinci-mdio.txt
++++ /dev/null
+@@ -1,36 +0,0 @@
+-TI SoC Davinci/Keystone2 MDIO Controller Device Tree Bindings
+----------------------------------------------------
+-
+-Required properties:
+-- compatible		: Should be "ti,davinci_mdio"
+-			  and "ti,keystone_mdio" for Keystone 2 SoCs
+-			  and "ti,cpsw-mdio" for am335x, am472x, am57xx/dra7, dm814x SoCs
+-			  and "ti,am4372-mdio" for am472x SoC
+-- reg			: physical base address and size of the davinci mdio
+-			  registers map
+-- bus_freq		: Mdio Bus frequency
+-
+-Optional properties:
+-- ti,hwmods		: Must be "davinci_mdio"
+-
+-Note: "ti,hwmods" field is used to fetch the base address and irq
+-resources from TI, omap hwmod data base during device registration.
+-Future plan is to migrate hwmod data base contents into device tree
+-blob so that, all the required data will be used from device tree dts
+-file.
+-
+-Examples:
+-
+-	mdio: davinci_mdio@4a101000 {
+-		compatible = "ti,davinci_mdio";
+-		reg = <0x4A101000 0x1000>;
+-		bus_freq = <1000000>;
+-	};
+-
+-(or)
+-
+-	mdio: davinci_mdio@4a101000 {
+-		compatible = "ti,davinci_mdio";
+-		ti,hwmods = "davinci_mdio";
+-		bus_freq = <1000000>;
+-	};
+diff --git a/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+new file mode 100644
+index 000000000000..242ac4935a4b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/ti,davinci-mdio.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/ti,davinci-mdio.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: TI SoC Davinci/Keystone2 MDIO Controller
++
++maintainers:
++  - Grygorii Strashko <grygorii.strashko@ti.com>
++
++description:
++  TI SoC Davinci/Keystone2 MDIO Controller
++
++allOf:
++  - $ref: "mdio.yaml#"
++
++properties:
++  compatible:
++    oneOf:
++       - const: ti,davinci_mdio
++       - items:
++         - const: ti,keystone_mdio
++         - const: ti,davinci_mdio
++       - items:
++         - const: ti,cpsw-mdio
++         - const: ti,davinci_mdio
++       - items:
++         - const: ti,am4372-mdio
++         - const: ti,cpsw-mdio
++         - const: ti,davinci_mdio
++
++  reg:
++    maxItems: 1
++
++  bus_freq:
++      maximum: 2500000
++      description:
++        MDIO Bus frequency
++
++  ti,hwmods:
++    description: TI hwmod name
++    deprecated: true
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/string-array
++      - items:
++          const: davinci_mdio
++
++if:
++  properties:
++    compatible:
++      contains:
++        const: ti,davinci_mdio
++  required:
++    - bus_freq
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++
++examples:
++  - |
++    davinci_mdio: mdio@4a101000 {
++         compatible = "ti,davinci_mdio";
++         #address-cells = <1>;
++         #size-cells = <0>;
++         reg = <0x4a101000 0x1000>;
++         bus_freq = <1000000>;
++    };
+-- 
+2.17.1
+
