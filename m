@@ -2,136 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B0DEC9BB
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE6A8EC9BF
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:41:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727874AbfKAUlN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 16:41:13 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:60726 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbfKAUlN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:41:13 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1Kf5FQ034212;
-        Fri, 1 Nov 2019 15:41:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1572640865;
-        bh=DWoyQIOP+Dnx87nS7EMk/Arh6FOoKdD8LFrByX5asjs=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=xdEUx+8PL+9YMPjp+pAT/YAwoCmNEMHbA4A3u3JtkTjVaqGLItvTuSZCbqAYvPQcM
-         n3AI+LRPFLedEtgonI1mVPsaOTsBaV+y9rSVm/3rpxLhLBzrWHNXExGHyei/871aeq
-         b2vF/o4snZc5g/B/v+rnLR+B6EJXs0CHCTxEPI3I=
-Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA1Kf4rG014068
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 1 Nov 2019 15:41:05 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
- 2019 15:40:51 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Fri, 1 Nov 2019 15:40:51 -0500
-Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1Kf1GF114953;
-        Fri, 1 Nov 2019 15:41:02 -0500
-Subject: Re: [PATCH v5 net-next 05/12] dt-bindings: net: ti: add new cpsw
- switch driver bindings
-To:     Florian Fainelli <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jiri Pirko <jiri@resnulli.us>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-References: <20191024100914.16840-1-grygorii.strashko@ti.com>
- <20191024100914.16840-6-grygorii.strashko@ti.com>
- <caf68306-46ce-f97d-b45a-0fc1cd5323f7@gmail.com>
- <6e64b70e-604a-b8c6-12ce-7977ffa4ed5a@ti.com>
- <5c286f76-d108-5d78-dd8f-19e1baf64396@gmail.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <b81b6502-0e2b-d786-ae71-b40b0a1fab79@ti.com>
-Date:   Fri, 1 Nov 2019 22:40:59 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727926AbfKAUli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 16:41:38 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:36638 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726477AbfKAUli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:41:38 -0400
+Received: by mail-lf1-f67.google.com with SMTP id a6so4726582lfo.3;
+        Fri, 01 Nov 2019 13:41:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=KN4Jdtp9LUapC9U+M7QUkcIF7BvznNwkZ3XCYterB2M=;
+        b=ZBm4KvWO5GSv0xZ+bwoi/rFzx9sA+RUjwql+qHoWDoQXeX9Fs8JmzpRL/FRLvsBaZ1
+         yumoEfD512+PXAFQNtkpbX8iZtEiAGbZFeAYxHJE9tvGxSLuSBUW67LN5Zl5tKWTs5H/
+         zuEkgTa+GAe5y7IxeDfoct7EveB8fum3VG9chLcLMHJ0+O/Nv0/N+Ub+IuD3TM/sKGJ7
+         3Z0qMlt1EcF2pXC5T8v2YURrwnsCngBWdkZvn7y1uMMpltsN0J+aaU0J78HoWYOhsYOm
+         Mbr+iJ3U9o+I7NJe/16zBjHgojX7Wiu0dk8XHCFKffaA+6bjody3eI+0jnGEVLM4CVpe
+         YLGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=KN4Jdtp9LUapC9U+M7QUkcIF7BvznNwkZ3XCYterB2M=;
+        b=RmsmjNHsv1Sr4IRAEj434vV3SkA7DThvvh/0z/9/r2QJ2qjiw/+w6VRZguonjP0fz8
+         /fRSFnxKcMuOGfO50Hbcfzmr4jieAq72nNcsgDtSx1Le4UyukKaGOC5OBke6XrshUsa7
+         3z/hRRgXemZwYC6fuzHJJ7pwZH8cdUOvC4sO+eXFPWCp/IXhfjYQLeHQMmyzgZnfJAOY
+         MPO6rXYFBMRfTrZq+HQffpl+KeDxxfyCzs1GW8pVinoN0ZVMkVRab1fBHJygolLf1NO2
+         WeNib9DcIlHpmbr6I0dFbKTQZeik1MAkaQRVBO2VShcliFkgKAl9RkdU4vhY4GZlrLaa
+         cVPA==
+X-Gm-Message-State: APjAAAV4NPRmOR8PXWTRTqN/LRYj9xCvuEb11M+yMo8CseYDYnBJa4sF
+        qKw0jDhFPF5Xqpyn8QYmbm9C7j7QibeWolU0/iY=
+X-Google-Smtp-Source: APXvYqyIYo5QWsf8JxGf8lW+UP37uYwWzet4QW/bTEtiR5QXnpPDQ14lc9CqYXWbdNtJEMqSUOSPmSmyYNxoi2PFjTo=
+X-Received: by 2002:a19:7511:: with SMTP id y17mr8743962lfe.19.1572640895611;
+ Fri, 01 Nov 2019 13:41:35 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <5c286f76-d108-5d78-dd8f-19e1baf64396@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <87lft1ngtn.fsf@toke.dk> <CAADnVQLrg6f_zjvNfiEVfdjcx9+DW_RFjVGetavvMNo=VXAR+g@mail.gmail.com>
+ <87imo5ng7w.fsf@toke.dk> <CAADnVQLJ2JTsbxd2am6XY0EiocMgM29JqFVRnZ9PBcwqd7-dAQ@mail.gmail.com>
+ <87d0ednf0t.fsf@toke.dk> <CAADnVQ+V4OMjJqSdE_OQ1Vr99kqTF=ZB3UUMKiCSg=3=c+exqg@mail.gmail.com>
+ <20191031174208.GC2794@krava> <CAADnVQJ=cEeFdYFGnfu6hLyTABWf2==e_1LEhBup5Phe6Jg5hw@mail.gmail.com>
+ <20191031191815.GD2794@krava> <CAADnVQJdAZS9AHx_B3SZTcWRdigZZsK1ccsYZK0qUsd1yZQqbw@mail.gmail.com>
+ <20191101072707.GE2794@krava> <CAADnVQJnTuADcPizsD+hFx4Rvot0nqiX83M+ku4Nu_qLh2_vyg@mail.gmail.com>
+ <87bltvmlsr.fsf@toke.dk>
+In-Reply-To: <87bltvmlsr.fsf@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 1 Nov 2019 13:41:23 -0700
+Message-ID: <CAADnVQJJcx8NszLBMSN0wiR43UEgGki38u0etnWvpMVG=8+ngg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] libbpf: fix compatibility for kernels without need_wakeup
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, degeneloy@gmail.com,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 1, 2019 at 12:36 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
+>
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>
+> > On Fri, Nov 1, 2019 at 12:27 AM Jiri Olsa <jolsa@redhat.com> wrote:
+> >>
+> >> On Thu, Oct 31, 2019 at 01:39:12PM -0700, Alexei Starovoitov wrote:
+> >> > On Thu, Oct 31, 2019 at 12:18 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> >> > > >
+> >> > > > yes. older vmlinux and newer installed libbpf.so
+> >> > > > or any version of libbpf.a that is statically linked into apps
+> >> > > > is something that libbpf code has to support.
+> >> > > > The server can be rebooted into older than libbpf kernel and
+> >> > > > into newer than libbpf kernel. libbpf has to recognize all these
+> >> > > > combinations and work appropriately.
+> >> > > > That's what backward and forward compatibility is.
+> >> > > > That's what makes libbpf so difficult to test, develop and code =
+review.
+> >> > > > What that particular server has in /usr/include is irrelevant.
+> >> > >
+> >> > > sure, anyway we can't compile following:
+> >> > >
+> >> > >         tredaell@aldebaran ~ $ echo "#include <bpf/xsk.h>" | gcc -=
+x c -
+> >> > >         In file included from <stdin>:1:
+> >> > >         /usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod=
+__needs_wakeup=E2=80=99:
+> >> > >         /usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEE=
+D_WAKEUP=E2=80=99 undeclared (first use in this function)
+> >> > >            82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
+> >> > >         ...
+> >> > >
+> >> > >         XDP_RING_NEED_WAKEUP is defined in kernel v5.4-rc1 (77cd0d=
+7b3f257fd0e3096b4fdcff1a7d38e99e10).
+> >> > >         XSK_UNALIGNED_BUF_ADDR_MASK and XSK_UNALIGNED_BUF_OFFSET_S=
+HIFT are defined in kernel v5.4-rc1 (c05cd3645814724bdeb32a2b4d953b12bdea5f=
+8c).
+> >> > >
+> >> > > with:
+> >> > >   kernel-headers-5.3.6-300.fc31.x86_64
+> >> > >   libbpf-0.0.5-1.fc31.x86_64
+> >> > >
+> >> > > if you're saying this is not supported, I guess we could be postpo=
+ning
+> >> > > libbpf rpm releases until we have the related fedora kernel releas=
+ed
+> >> >
+> >> > why? github/libbpf is the source of truth for building packages
+> >> > and afaik it builds fine.
+> >>
+> >> because we will get issues like above if there's no kernel
+> >> avilable that we could compile libbpf against
+> >
+> > what is the issue again?
+> > bpf-next builds fine. github/libbpf builds fine.
+> > If distro is doing something else it's distro's mistake.
+>
+> With that you're saying that distros should always keep their kernel
+> headers and libbpf version in sync. Which is fine in itself; they can
+> certainly do that.
 
+No. I'm not suggesting that.
+distro is free to package whatever /usr/include headers.
+kernel version is often !=3D /usr/include headers
 
-On 01/11/2019 19:36, Florian Fainelli wrote:
-> On 11/1/19 10:25 AM, Grygorii Strashko wrote:
->> Hi Florian,
->>
->> On 25/10/2019 20:47, Florian Fainelli wrote:
->>> On 10/24/19 3:09 AM, Grygorii Strashko wrote:
->>>> Add bindings for the new TI CPSW switch driver. Comparing to the legacy
->>>> bindings (net/cpsw.txt):
->>>> - ports definition follows DSA bindings (net/dsa/dsa.txt) and ports
->>>> can be
->>>> marked as "disabled" if not physically wired.
->>>> - all deprecated properties dropped;
->>>> - all legacy propertiies dropped which represent constant HW
->>>> cpapbilities
->>>> (cpdma_channels, ale_entries, bd_ram_size, mac_control, slaves,
->>>> active_slave)
->>>> - TI CPTS DT properties are reused as is, but grouped in "cpts" sub-node
->>>> - TI Davinci MDIO DT bindings are reused as is, because Davinci MDIO is
->>>> reused.
->>>>
->>>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
->>>> ---
->>>
->>> [snip]
->>>> +- mdio : CPSW MDIO bus block description
->>>> +    - bus_freq : MDIO Bus frequency
->>>
->>> clock-frequency is a more typical property to describe the bus clock's
->>> frequency, that is what i2c and spi do.
->>
->> The MDIO is re-used here unchanged (including bindings).
->> i think, I could try to add standard optional property "bus-frequency"
->> to MDIO bindings
->> as separate series, and deprecate "bus_freq".
-> 
-> What is wrong with 'clock-frequency'?
-> 
-> Documentation/devicetree/bindings/i2c/i2c.txt:
-> 
-> - clock-frequency
->          frequency of bus clock in Hz.
-> 
-> Documentation/devicetree/bindings/net/brcm,unimac-mdio.txt:
-> 
-> - clock-frequency: the MDIO bus clock that must be output by the MDIO bus
->    hardware, if absent, the default hardware values are used
-> 
-> Maybe this is a bit of a misnomer as it is usually considered a
-> replacement for the lack of a proper "clocks" property with a clock
-> provider, but we can flip the coin around any way we want, it looks
-> almost the same.
-> 
+> The only concern with this is that without a flow of bugfixes into the
+> 'bpf' tree (and stable), users may end up with buggy versions of libbpf.
+> Which is in no one's interest. So how do we avoid that?
 
-I can do clock-frequency, but I like more bus-frequency (personally)
-due to more understandable meaning, and because in "Devicetree Specification v0.2"
-clock-frequency is defined as more related to clocks.
-
-Any way I hope you agree that it should be part separate discussion?
-
-
--- 
-Best regards,
-grygorii
+As I explained earlier. There is no 'bpf' tree for libbpf. It always
+moves forward.
