@@ -2,141 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 125C3EC73E
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 18:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EB31EC750
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 18:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728759AbfKARKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 13:10:02 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:41645 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728016AbfKARKC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 13:10:02 -0400
-Received: by mail-pg1-f201.google.com with SMTP id t6so3558744pgf.8
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 10:10:01 -0700 (PDT)
+        id S1728477AbfKARMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 13:12:09 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46713 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727334AbfKARMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 13:12:08 -0400
+Received: by mail-qt1-f195.google.com with SMTP id u22so13735311qtq.13;
+        Fri, 01 Nov 2019 10:12:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=y86ShJc0lHY7mGjuegghOpKGlFnX8a1lnfR2jsV9nVk=;
-        b=ecMqqHPfCAgFBm+cfNQQ+XYbaCWMZfUQZjfciiWwlPmWgiiVtZ1TrsiWxtjr3aWQ2Y
-         uSniQmyE4jNRmI5AVkMqknqDx08U2j498jh3vCChGG+H2GpMzVzlJO1Z25HoVSMrKeL4
-         nxzAFjLRVwF+UF3B9ogvEsxTmxUhbpeShPp74i+9WRwICdcFvyOe//KqHtHZewEoHITA
-         +LhlDDwg+y1aDSzLBuTg85eTn+m5P9uuk9UOK8CeEE/mQyfUTa+wMqSnr4oIkDN10v+5
-         fap62Ugx9nbtBxmB2Pgue0wDe/IEfhe5DZZmcMZBCvY1S2wINV73F/SnBgrHURf0zn2c
-         jgWA==
+        d=gmail.com; s=20161025;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=qBMruKDrI3Y48/s7yeyyJd+W3JxGzLZElVujOhMNo6A=;
+        b=buxhYq1vZ0N+QH31OeIiVHzsQreNFrkDUAPUKeSLEcMP9R5h/LvZ1GURfJMH6xcb6Z
+         V5dGQaCQILTWG6m52g+zvaEydQ2z0/OK0hdjk0KBPGP0c67PH+VKIGPmX3fL/+MtWb0v
+         lahLDwyXElV9I+fckICB1sfR8tGhxiqfPRuz91j1pjQkiWmMfR9Ez30H+C38wajeAYo9
+         D9BLnuH/AGvfpzKkvvxs/jTUlQCkawfQuCciXnX3esNMzwPZw3e4ge6xsD1SKR41h8Fl
+         KI9Xng7klJdU8WLnbmfY3Ra8exeWOMjLW3ZlMymad0COZ7Prkmre6Zcrj7xZtmQPaCyv
+         RgXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=y86ShJc0lHY7mGjuegghOpKGlFnX8a1lnfR2jsV9nVk=;
-        b=jczQ99SKUuabRaOcxOtsJIyQ7YQGJj478sjxWWQ23EcKovZB3xf+hEwotQQeJUtxp2
-         KRNCT/PWPPUeJ0vvIWs1C53p3HUF3h0xVJwhtZ2LxuzL4A1tIC3uRN4IBonxNQU2gB3k
-         KxWKRUDZypCCTIEpJENQ/4cvGERuNU0WHGBHFS8bgCy5YWqMMymrKgATdxf+MPYH/0uo
-         sakWYO9BmTYUY1pIZFw6GQVIZ+oOx/Vij2lKG8H3D39dgP2nSHrO/91JnjZ7p5BrU4RZ
-         ySS+aznfbbsMjULPVnk9WLPV+T5OBEMKs6mKFvDEW8FkC+Rzs/stFiHiDjrAifMEi745
-         /Ybw==
-X-Gm-Message-State: APjAAAV2RdYRJDU8gOKxJT+uIxulxy/oeGfC4zGz1aa3cVBNf8Kmvr7C
-        kc1rjlIwhhLH0tef6oWzaoTe80yCPGnl9s68WTl8FjxPMbx5aGUgAqVct5U4QI3mQEfwuAigo3L
-        uS7tDrUD3bgC9hBQ+wd3YP9+yoQHYEWzbXD0Qe2Nkkw8Zzt2CPJLt65Rr6KwFx87qwK8=
-X-Google-Smtp-Source: APXvYqz6U+XaPeeL8dkxvKXi77Nutnk8jwWBxruR7e+PCqXulr8Nf9Cdx07siNWi3DiQu1iyq4cd8lFm0psZMw==
-X-Received: by 2002:a63:f246:: with SMTP id d6mr14556772pgk.368.1572628201039;
- Fri, 01 Nov 2019 10:10:01 -0700 (PDT)
-Date:   Fri,  1 Nov 2019 10:09:56 -0700
-Message-Id: <20191101170956.261330-1-yangchun@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH net v3] gve: Fixes DMA synchronization.
-From:   Yangchun Fu <yangchun@google.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, simon.horman@netronome.com,
-        Yangchun Fu <yangchun@google.com>,
-        Catherine Sullivan <csully@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=qBMruKDrI3Y48/s7yeyyJd+W3JxGzLZElVujOhMNo6A=;
+        b=HpyJ6muEP2grZLMfShhsXpIfvEcW0i9JMm7V18oIThhSRgDmcWPMJ/xHEiqf5g7anl
+         +13eSzGNkDVnr2JVwGhhEvRqETLLxNUfdireyxTU67PWcTHXocyat4HAXnrNia6bYwMX
+         3n1voJXECn7RgcNgXN+SN8yNdX6dBXDYcz8yk4GnjZKzGRPSAysjFDb68YrTN4kygT08
+         eCpebAM7gw0PPxqwNeNAJu2+rqF8zILco/HCYkcYGkixQtNZkEbSNz42CJ38UHZbEPdw
+         8OlKgSEe4PlvCqaPMnHg47/cHoRx5uBjTTEbV2a1YM4GsTKX9V24lw6TBNFbsLG/EOxj
+         vpdQ==
+X-Gm-Message-State: APjAAAUfUgjCV2BhMnsKMS/owrC0hio5ZE350q+P2O9MPnpvVF4KLyct
+        cy10azkqrVd9ZMwTAdMNsPE=
+X-Google-Smtp-Source: APXvYqyS8BC/NScTWDb66O2vz8siZmUL33ffFo8nCRgGbLvydjciCv+urAANR6Qa803PY7ZD0TFJ/g==
+X-Received: by 2002:ac8:51d4:: with SMTP id d20mr334345qtn.239.1572628327191;
+        Fri, 01 Nov 2019 10:12:07 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::ad6a])
+        by smtp.gmail.com with ESMTPSA id o201sm3585630qka.17.2019.11.01.10.12.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 01 Nov 2019 10:12:06 -0700 (PDT)
+Date:   Fri, 1 Nov 2019 10:12:02 -0700
+From:   Tejun Heo <tj@kernel.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Kernel Team <kernel-team@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josef Bacik <josef@toxicpanda.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Linux MM <linux-mm@kvack.org>, Mel Gorman <mgorman@suse.de>
+Subject: Re: [PATCH v2] net: fix sk_page_frag() recursion from memory reclaim
+Message-ID: <20191101171202.GP3622521@devbig004.ftw2.facebook.com>
+References: <20191019170141.GQ18794@devbig004.ftw2.facebook.com>
+ <20191024205027.GF3622521@devbig004.ftw2.facebook.com>
+ <CALvZod6=B-gMJJxhMRt6k5eRwB-3zdgJR5419orTq8-+36wbMQ@mail.gmail.com>
+ <20191031162049.27e54d9412214aea79acd2ea@linux-foundation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191031162049.27e54d9412214aea79acd2ea@linux-foundation.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Synces the DMA buffer properly in order for CPU and device to see
-the most up-to-data data.
+Hello,
 
-Signed-off-by: Yangchun Fu <yangchun@google.com>
-Reviewed-by: Catherine Sullivan <csully@google.com>
----
-Changes in v3:
-	- Places local variables in reverse christmas tree ordering.
+On Thu, Oct 31, 2019 at 04:20:49PM -0700, Andrew Morton wrote:
+> > > In [0], tcp_send_msg_locked() was using current->page_frag when it
+> 
+> "tcp_sendmsg_locked" and "current->task_frag".  Stuff like this makes
+> review harder :(
 
- drivers/net/ethernet/google/gve/gve_rx.c |  2 ++
- drivers/net/ethernet/google/gve/gve_tx.c | 24 ++++++++++++++++++++++--
- 2 files changed, 24 insertions(+), 2 deletions(-)
+lol, sorry about that.
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 59564ac99d2a..edec61dfc868 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -289,6 +289,8 @@ static bool gve_rx(struct gve_rx_ring *rx, struct gve_rx_desc *rx_desc,
- 
- 	len = be16_to_cpu(rx_desc->len) - GVE_RX_PAD;
- 	page_info = &rx->data.page_info[idx];
-+	dma_sync_single_for_cpu(&priv->pdev->dev, rx->data.qpl->page_buses[idx],
-+				PAGE_SIZE, DMA_FROM_DEVICE);
- 
- 	/* gvnic can only receive into registered segments. If the buffer
- 	 * can't be recycled, our only choice is to copy the data out of
-diff --git a/drivers/net/ethernet/google/gve/gve_tx.c b/drivers/net/ethernet/google/gve/gve_tx.c
-index 778b87b5a06c..0a9a7ee2a866 100644
---- a/drivers/net/ethernet/google/gve/gve_tx.c
-+++ b/drivers/net/ethernet/google/gve/gve_tx.c
-@@ -390,7 +390,21 @@ static void gve_tx_fill_seg_desc(union gve_tx_desc *seg_desc,
- 	seg_desc->seg.seg_addr = cpu_to_be64(addr);
- }
- 
--static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
-+static void gve_dma_sync_for_device(struct device *dev, dma_addr_t *page_buses,
-+				    u64 iov_offset, u64 iov_len)
-+{
-+	dma_addr_t dma;
-+	u64 addr;
-+
-+	for (addr = iov_offset; addr < iov_offset + iov_len;
-+	     addr += PAGE_SIZE) {
-+		dma = page_buses[addr / PAGE_SIZE];
-+		dma_sync_single_for_device(dev, dma, PAGE_SIZE, DMA_TO_DEVICE);
-+	}
-+}
-+
-+static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb,
-+			  struct device *dev)
- {
- 	int pad_bytes, hlen, hdr_nfrags, payload_nfrags, l4_hdr_offset;
- 	union gve_tx_desc *pkt_desc, *seg_desc;
-@@ -432,6 +446,9 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
- 	skb_copy_bits(skb, 0,
- 		      tx->tx_fifo.base + info->iov[hdr_nfrags - 1].iov_offset,
- 		      hlen);
-+	gve_dma_sync_for_device(dev, tx->tx_fifo.qpl->page_buses,
-+				info->iov[hdr_nfrags - 1].iov_offset,
-+				info->iov[hdr_nfrags - 1].iov_len);
- 	copy_offset = hlen;
- 
- 	for (i = payload_iov; i < payload_nfrags + payload_iov; i++) {
-@@ -445,6 +462,9 @@ static int gve_tx_add_skb(struct gve_tx_ring *tx, struct sk_buff *skb)
- 		skb_copy_bits(skb, copy_offset,
- 			      tx->tx_fifo.base + info->iov[i].iov_offset,
- 			      info->iov[i].iov_len);
-+		gve_dma_sync_for_device(dev, tx->tx_fifo.qpl->page_buses,
-+					info->iov[i].iov_offset,
-+					info->iov[i].iov_len);
- 		copy_offset += info->iov[i].iov_len;
- 	}
- 
-@@ -473,7 +493,7 @@ netdev_tx_t gve_tx(struct sk_buff *skb, struct net_device *dev)
- 		gve_tx_put_doorbell(priv, tx->q_resources, tx->req);
- 		return NETDEV_TX_BUSY;
- 	}
--	nsegs = gve_tx_add_skb(tx, skb);
-+	nsegs = gve_tx_add_skb(tx, skb, &priv->pdev->dev);
- 
- 	netdev_tx_sent_queue(tx->netdev_txq, skb->len);
- 	skb_tx_timestamp(skb);
+> > > Fix it by adding gfpflags_normal_context() which tests sleepable &&
+> > > !reclaim and use it to determine whether to use current->task_frag.
+> > >
+> 
+> Dumb-but-obvious question.  Rather than putzing with allocation modes,
+> is it not feasible to change the net layer to copy the current value of
+> current->task_frag into a local then restore its value when it has
+> finished being used?
+
+It's being used as an allocation cache, so doing so would lead to the
+same area getting allocated for two packets at the same time instead
+overrunning the end of the cache.
+
+Thanks.
+
 -- 
-2.24.0.rc1.363.gb1bccd3e3d-goog
-
+tejun
