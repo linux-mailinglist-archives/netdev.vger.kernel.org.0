@@ -2,60 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8CFDEC2EE
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 13:43:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDBA9EC31C
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 13:46:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730855AbfKAMnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 08:43:05 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:35773 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730837AbfKAMnB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 08:43:01 -0400
-Received: by mail-lf1-f66.google.com with SMTP id y6so7148105lfj.2
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 05:42:59 -0700 (PDT)
+        id S1727170AbfKAMqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 08:46:47 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:32929 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726771AbfKAMqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 08:46:47 -0400
+Received: by mail-lj1-f193.google.com with SMTP id t5so10162635ljk.0
+        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 05:46:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gyqRKyTXLr3cbd727hzyVbLDXzQNlutZJPmZlRbflNM=;
-        b=aJggUxwL9FLbxqyLFcy7mPAsdu7B5NE3B0CcDXY5Xq3/1jU1wpEbTBIRlA5TdkovvK
-         YrBP1OnWco5wWah9kA7xb6Uul3pCywE5VSldtrcZOf0D9aO5FvHxB4ekLfnZtOcOgaQa
-         KXg1qmuWEC/xejE1gjB3RPnrIhT61rNL3oNHA=
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jSTLEPaxXRk5sSmG9oSsPXFVdXLQlUfBUPDhCvkx5go=;
+        b=RlJIncS5V/VeZ8tPU8EEBpDu0ecPVdk1TB589EL92OS3o6Lj/2CpEeDsKsB6b618GV
+         8L3X3n1laq2hQ/uB/NIkih6WDZyT5owW4NktaFEqJOQeK6yQN3cufbWoZnaHcSDpgim7
+         sLB18ckMTXbKNu2euww+eB/lnbRZu4oTB+QR8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gyqRKyTXLr3cbd727hzyVbLDXzQNlutZJPmZlRbflNM=;
-        b=ZPHlKJJ0uoF5XTuzVF3/k2biWJSTpm3gYw2MjOMEvyrc8gs0kEVWXI9Exbtc498DUF
-         fU1C9doH4psa39LNGSKSQBabCFHKx3RfgK+cmL6qkAf6zrr5sGQY68te9fPwBWA+v3HK
-         otAnvnjCk7Ms7W1/y3gi25enic1ufxJx7ThSfDw4wu6hhkwchzAe+jsuBAjQQxp7uNAD
-         1GYy4EkPMS17mB8TJuiINkMEMRoiRTSuKVI9Nnh0MNO+JoAxiXe/WaFcFQ1abpQv3I0c
-         +R4/2b16YuT/tT1rDLkwPCKnqprJ5Sw7S78VICtl7pXHIzOXbKfrY2bJiZECXNbs0HiA
-         dwCQ==
-X-Gm-Message-State: APjAAAWDWTJZgbgwLw1BqMz8q1bAnsX3MfZ1cAYELza3qJw9T3wDUGIn
-        2fR1TbkUdvdiM3cBS64HHVH6Pw==
-X-Google-Smtp-Source: APXvYqy4fEEOS681BI9of8caQte+TOAv9T+4kQxBaUmvtiH4cO+gztE83kQOLok3stailVX2gSWAwA==
-X-Received: by 2002:ac2:420a:: with SMTP id y10mr7037550lfh.65.1572612177646;
-        Fri, 01 Nov 2019 05:42:57 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id o26sm2458540lfi.57.2019.11.01.05.42.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jSTLEPaxXRk5sSmG9oSsPXFVdXLQlUfBUPDhCvkx5go=;
+        b=tbrdI43p2WyRmmtNOVP2aEezUmjRHJ382ySHfHm/h1uKUjWhEoE6ks19yjfmWinePt
+         Hy57nRYfPxPlUOmk8wQc8ySIKV7Kz+PGlRwba9xSxqc75faeicStdT9mdAO1JIUfKca0
+         pS3jBpmYJf8GJbdlfldHo3kAeIvU97Sx8sHLsGeCet/dW92FsWPefP8fKdu87syaVnaZ
+         WFHamTS2fLvNPiOMH29i0mhd1UugL+HSzU3GaAFFhcfGUVb5BI53WZrI+444y5tHS8Ai
+         dkeP4ewNCozlssboStc5r8F63f6llNu83IUPuv/KYv6SLRQ5ub+7pTewAS5E5mgCB0MZ
+         WxBQ==
+X-Gm-Message-State: APjAAAUTLPaVWRQQhGXBR/DXa4t58YrkRGqq3BvDDFpFfZYsmO1YmWil
+        KpJN+PmZOIKzcg4nQORMrF+qxMBsFos=
+X-Google-Smtp-Source: APXvYqxE/rdihjXmi5LCYrM2menfTABueMAuRtPKQ209emxoC+iX2FZZzoleq8tRAVMciQR9j1ZvPA==
+X-Received: by 2002:a2e:7a02:: with SMTP id v2mr3015462ljc.224.1572612405283;
+        Fri, 01 Nov 2019 05:46:45 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id t4sm2297909lji.40.2019.11.01.05.46.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 05:42:57 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Li Yang <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Scott Wood <oss@buserror.net>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        netdev@vger.kernel.org
-Subject: [PATCH v3 35/36] net/wan: make FSL_UCC_HDLC explicitly depend on PPC32
-Date:   Fri,  1 Nov 2019 13:42:09 +0100
-Message-Id: <20191101124210.14510-36-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191101124210.14510-1-linux@rasmusvillemoes.dk>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-1-linux@rasmusvillemoes.dk>
+        Fri, 01 Nov 2019 05:46:44 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     roopa@cumulusnetworks.com, bridge@lists.linux-foundation.org,
+        davem@davemloft.net,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v2 0/3] net: bridge: minor followup optimizations
+Date:   Fri,  1 Nov 2019 14:46:36 +0200
+Message-Id: <20191101124639.32140-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,29 +57,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, FSL_UCC_HDLC depends on QUICC_ENGINE, which in turn depends
-on PPC32. As preparation for removing the latter and thus allowing the
-core QE code to be built for other architectures, make FSL_UCC_HDLC
-explicitly depend on PPC32.
+Hi,
+After the converted flags to bitops we can take advantage of the flags
+assignment and remove one test and three atomic bitops from the learning
+paths (patch 01 and patch 02), patch 03 restores the unlikely() when taking
+over HW learned entries.
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/net/wan/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v2: a clean export of the latest set version
 
-diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
-index dd1a147f2971..78785d790bcc 100644
---- a/drivers/net/wan/Kconfig
-+++ b/drivers/net/wan/Kconfig
-@@ -270,7 +270,7 @@ config FARSYNC
- config FSL_UCC_HDLC
- 	tristate "Freescale QUICC Engine HDLC support"
- 	depends on HDLC
--	depends on QUICC_ENGINE
-+	depends on QUICC_ENGINE && PPC32
- 	help
- 	  Driver for Freescale QUICC Engine HDLC controller. The driver
- 	  supports HDLC in NMSI and TDM mode.
+Thanks,
+ Nik
+
+
+Nikolay Aleksandrov (3):
+  net: bridge: fdb: br_fdb_update can take flags directly
+  net: bridge: fdb: avoid two atomic bitops in
+    br_fdb_external_learn_add()
+  net: bridge: fdb: restore unlikely() when taking over externally added
+    entries
+
+ include/trace/events/bridge.h | 12 ++++++------
+ net/bridge/br_fdb.c           | 30 +++++++++++++++---------------
+ net/bridge/br_input.c         |  4 ++--
+ net/bridge/br_private.h       |  2 +-
+ 4 files changed, 24 insertions(+), 24 deletions(-)
+
 -- 
-2.23.0
+2.21.0
 
