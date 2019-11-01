@@ -2,119 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD321EBB42
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 00:53:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44E13EBB69
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 01:22:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728259AbfJaXxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 19:53:42 -0400
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:7006 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727003AbfJaXxl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 19:53:41 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dbb74090000>; Thu, 31 Oct 2019 16:53:46 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 31 Oct 2019 16:53:40 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 31 Oct 2019 16:53:40 -0700
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 31 Oct
- 2019 23:53:39 +0000
-Subject: Re: [PATCH 19/19] Documentation/vm: add pin_user_pages.rst
-To:     Ira Weiny <ira.weiny@intel.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191030224930.3990755-1-jhubbard@nvidia.com>
- <20191030224930.3990755-20-jhubbard@nvidia.com>
- <20191031234922.GM14771@iweiny-DESK2.sc.intel.com>
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <85de5845-d403-dc31-4f3b-f006c4a7b2a2@nvidia.com>
-Date:   Thu, 31 Oct 2019 16:53:39 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728259AbfKAAWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 20:22:01 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:32837 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727502AbfKAAWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 20:22:01 -0400
+Received: by mail-lf1-f68.google.com with SMTP id y127so6048705lfc.0
+        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 17:21:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=EV2fbUKu73gEX5+CIj3b5YkYQITcbwccDU3gSlwZNAU=;
+        b=itp86BjsasKlqgiwsIms8Ib6Hdl0ma48ViJ4vhEXxoXhlR6DRi1aTylRXntCcq9Ws4
+         8soRV0LTFl27mtSTVh1OYImgL1OR0o6hh+wqfTKN6K/wnltUPIHuRvLnWggtt1es++sO
+         sQbWaBtzpGw6lfZ+wTdmIICENwt86tFCLpvVW5g7tjFbmpRSqa+gmhMWbfD8lHqVvGtw
+         fXanExQxG6sW7ICqVeakTqeT8w7jJIPxBIxKPdnbOBHPSRKkqG+Cm8m7R3HI3mG1AKno
+         /WgPaSnGskagXLeWHhVFZSBFk0rIAFurvKXMDoDsEW0aV9epr/fBqJwH4sqcr/NfPgPl
+         FCHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=EV2fbUKu73gEX5+CIj3b5YkYQITcbwccDU3gSlwZNAU=;
+        b=ocDqcI9JwvXZhFDzuGD5Pjtz7ACexLif10r6E073dswY/7J10tWvHBL1AGNrso3BJy
+         pFDiBDoiuID4KdZPsE18Rxt8RkcIF/S+VuHONGzhXM15z8DhSOU/PgT1qE9j+uWmoa6A
+         HIBWbnRCuB2u4uQnwpPuDcNzgMIHRgV+yYftD9sS0VjIpqBfb98dFSJUUHWcYau8jifT
+         BzzXfW5Wri2GQ2zZa0ZrhqmNVnzABprDIo94IBYGYhnM0GRcdlq2jcuNJkMZr3GPmiQQ
+         JmkUgAmwKT1bzHk8Lj5y0GCrXGypr8vr9YShY9I3cUQJmlZ4Oq6miPF+h31BhaALCdB5
+         soGw==
+X-Gm-Message-State: APjAAAVk1uZYaiLdlxPrhSgWWZRoXtzjOi3UdG0c96IvZlAqqEUVuJUs
+        Vh5X+HbjxBR576gRzDhvziZzpw==
+X-Google-Smtp-Source: APXvYqwdOpLsUGthqHH2HozLFklWyWYEyoWpdzJcVOkKt3ba3wg8Z1Oo9UPDW0MZ+NNaTICdOe91/g==
+X-Received: by 2002:ac2:5109:: with SMTP id q9mr5383215lfb.145.1572567717894;
+        Thu, 31 Oct 2019 17:21:57 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 141sm1899971ljj.37.2019.10.31.17.21.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Oct 2019 17:21:57 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 17:21:48 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     bjorn.topel@gmail.com, alexei.starovoitov@gmail.com,
+        bjorn.topel@intel.com, bpf@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org, toke@redhat.com,
+        tom.herbert@intel.com, David Miller <davem@davemloft.net>
+Subject: Re: [Intel-wired-lan] FW: [PATCH bpf-next 2/4] xsk: allow AF_XDP
+ sockets to receive packets directly from a queue
+Message-ID: <20191031172148.0290b11f@cakuba.netronome.com>
+In-Reply-To: <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
+References: <CAJ+HfNigHWVk2b+UJPhdCWCTcW=Eh=yfRNHg4=Fr1mv98Pq=cA@mail.gmail.com>
+        <2e27b8d9-4615-cd8d-93de-2adb75d8effa@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <20191031234922.GM14771@iweiny-DESK2.sc.intel.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572566026; bh=vjWEFq7fNfPLFBVwJSkbaC93kNFVP4oSS83LfHWMvq4=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
-         User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=huUn94OR5NVpnI/NdJ3vTkz0Aags6KkZKFci9Fz5nHWE/pFd85Cktt11D1CQUWnOi
-         UTPR4qv0QPFgv/ONDQLcPNmALzbnAKqxnplv+MLSg0Lt5g7PakxG9E1PUBNwTzA4dg
-         k5IpEf3tN9qoIDtETnu//UzIRidkW3Ptv7qB5nHQktouL6xNQxT4kKgi3v8i+IvKdv
-         ffAJkGbaVSplOPwrv6cDHUyGv5RC9JGCEhmv/YdTyy6OAb8LAtR2JiVi7nJzrIOI/o
-         Ji4iiKunwQFUjG8sIvZShB4w9wwsMfCPKf36InyfzANf6JSqnPhJXe3qBOy7AOjUTp
-         IqJ2SDnd3CyHg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/19 4:49 PM, Ira Weiny wrote:
-> On Wed, Oct 30, 2019 at 03:49:30PM -0700, John Hubbard wrote:
->> Document the new pin_user_pages() and related calls
->> and behavior.
->>
->> Thanks to Jan Kara and Vlastimil Babka for explaining the 4 cases
->> in this documentation. (I've reworded it and expanded on it slightly.)
-> 
-> As I said before I think this may be better in a previous patch where you
-> reference it.
+On Thu, 31 Oct 2019 15:38:42 -0700, Samudrala, Sridhar wrote:
+> Do you think it will be possible to avoid this overhead when mitigations are turned ON?
+> The other part of the overhead is going through the redirect path.
 
-Yes, I'll merge this in with patch #5 ("mm/gup: introduce pin_user_pages*()
-and FOLL_PIN").
+Yes, you should help Maciej with the XDP bulking.
 
-...
->> +TODO: There is also a special case when the pages are DAX pages: in addition to
->> +the above flags, the caller needs something like a layout lease on the
->> +associated file. This is yet to be implemented. When it is implemented, it's
->> +expected that the lease will be a prerequisite to setting FOLL_LONGTERM.
-> 
-> For now we probably want to leave this note out until we figure out how this is
-> going to work.  Best to say something like:
-> 
-> Some pages, such as DAX pages, can't be pinned with longterm pins and will
-> fail.
-> 
+> Can i assume that your silence as an indication that you are now okay with optional bypass
+> flag as long as it doesn't effect the normal XDP datapath. If so, i will respin and submit
+> the patches against the latest bpf-next
 
-OK, that is better, I'll use that instead of the "TODO".
+This logic baffles me. I absolutely hate when people repost patches
+after I nack them without even as much as mentioning my objections in
+the cover letter.
 
+My concern was that we want the applications to encode fast path logic
+in BPF and load that into the kernel. So your patch works fundamentally
+against that goal:
 
-thanks,
+I worry that with the volume of patches that get posted each day
+objections of a measly contributor like myself will get forgotten 
+if I don't reply to each posting, yet replying each time makes me look
+bullish or whatnot (apart from being an utter waste of time).
 
-John Hubbard
-NVIDIA
+Ugh.
