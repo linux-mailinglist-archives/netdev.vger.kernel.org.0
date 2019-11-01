@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3AC1EC28A
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 13:17:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6779EC28C
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 13:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728836AbfKAMRU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 08:17:20 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:51854 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726925AbfKAMRT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 08:17:19 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA1CBNsM001722;
-        Fri, 1 Nov 2019 05:17:16 -0700
+        id S1730550AbfKAMRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 08:17:24 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:51436 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726925AbfKAMRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 08:17:24 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA1CA8Jh019225;
+        Fri, 1 Nov 2019 05:17:20 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=pfpt0818;
- bh=oUOYg005Ddg9IlWO2U6H9/e+2Y+rX5wxOPYb/ykxuNE=;
- b=JTY35BdM6gnkqdGVxWbSXCyaj0LEUSDiWF4saCt3qwXKNz28rPTQ8bFLUrX6DaqIXnFn
- b9AmbmkrfMZotttypAocjsA1AtCUQiG+Nv4Gqy/vSOSIoGwjV5KJDAk7Zkp2wI+eEeeQ
- ytRqZ5OOyKZ3TLHBGR1mPB9lglJW4nO8QxoRZ0zDU5xJ/jP194GtOGj2mOGSJt/W828f
- 3Znf0oUq6rGEgV5V/czxEH46D6kWAbkBGmo9R9JNWYJttEja+M8mPWqHEzni4YUtAA12
- CYXLF2+Tdmh+ULwU6X1ZJoxQh0QixRrKXImLa8Fub0Acpi7buC4SFcFPpwTL78588T1K 7A== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2vxwjmbtk9-1
+ bh=IVL6fKCBHuUpTlTfL9TPW/6/jqpwJUsNULJabCDXTiY=;
+ b=gXaOHjzzfoMRq/hvzUyYdEkG4Fr05utJRlXR1RMAL4J6vCeagxIc2p5gZ5hfURZahiW+
+ acsrfNdKrY3dO4lm8/BO79DY+k//YDgbtJBEosNA2U3xkKu5FGocbDmAtjY/2qbt8iWA
+ mvMNtRGf8LPLnvXVMFJd9oFTVlcSOsuDrAKyhrfPTwfd2DBSbmnTCr44Pvl+HT9m5d53
+ Pq0/GxkowV90TgfMBVfdNM+10SvlXiizLygIo6L1AQ6fOl10gXEjlOJmYowwXmrn8nrb
+ LI98psbLXPkFjzcFO+DOPj8+YuCzhI+Z6KZzqdWGs3NOAnmvzCYpRTQ3S6H075t7uyxL YA== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2vyxhy4qan-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 01 Nov 2019 05:17:16 -0700
-Received: from SC-EXCH02.marvell.com (10.93.176.82) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 1 Nov
- 2019 05:17:15 -0700
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com (104.47.40.54) by
- SC-EXCH02.marvell.com (10.93.176.82) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Fri, 1 Nov 2019 05:17:14 -0700
+        Fri, 01 Nov 2019 05:17:20 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Fri, 1 Nov
+ 2019 05:17:18 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.56) by
+ SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Fri, 1 Nov 2019 05:17:18 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=frpyKv82Pstd5IsAoO+aQgfX5p7bR0vDsma7FRFM/iw2wucRR13Q0P0DwhXkjZ3PzHh0jYWGPGgdlIVAMkv3yNSJm2PIpXrkYDeDkWGZawYFHLEcSOfRkU84YuItQngBT8tCOt+je7FP4f0mjrhnwAi/+vrks6CAzRD5kuXjCj8xefBIfW8PK6VU4cs8x6MC8Llldf46YMmPNrA9Mbml8Kj7wlofLb60XxzQFpU4PvYci+GVrtK5knUzHrSx/gBjgoKpUjZ3LPQdrjg0zeDeljcpnWWE3j7h1DTQdxrNMYBxzyUwiOtfG8gj4+pwTRrYVW13/+CpgJMUpWMjJ32YzA==
+ b=YQVU37WxWOfkU2mq2Xwj351bBUo8uqtp4wsFa10pGewFQ2ObIXMZIIgpf2yNzR0fLrPsVcSvBPVJzNxl1f3STBp5+hKA1FxuGnglNnK7hj3xJJIqPXZkUWU7CCIq0eBK2p11dQyNMG4f2hONt0CPMMS2A4PevBFlE9wMMe6t1HeUJ3jS3CChE+jjgpCfe6TCwrrD8NeNWxRWL2+28twdMqgmLlIJwQRWEgqAu/090kc3DjNGsUVNJ/6vUlsGFZ1YTR/9h9xKjqGMNUBqcxmz/KQJM+t29PcCjoO/30Mdj7iwWjMSw1sbPl+V+3sRestXfYfk9wJDgt7si9WlBiaU8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oUOYg005Ddg9IlWO2U6H9/e+2Y+rX5wxOPYb/ykxuNE=;
- b=i6Cn7NAJOlYmwSNEFJRn8jHntscXx6c3V2X3Hg5JYcVoVLMKj+yj3GU+0tbKwllxnPrhTebtdiblZg5X4t0DnTVbDe0/bj47xmrGWizifLV0QMGIXfSYSrwk24oMPyAhP2VobBb1eIFAI6NczYV+ypA5Xb5Twfbn32Gxdy7jRDWf9Z8rSFS4i3p0ofONIjcNZl6VZbtrSZgnZOHv5CERVXe3E23ymK77W5suGJgZxFYVrzhw2zX6Y1KWxm94veWbUzR6gL5BNimSwLjHuFcBzqI88QWDaL13zRHPgHV0bx6feXw3ntdle8gd6m2jR9el0yhnv2/FsgXQfkehM7AqQA==
+ bh=IVL6fKCBHuUpTlTfL9TPW/6/jqpwJUsNULJabCDXTiY=;
+ b=KChLaVl+5szNAv5OO9Lapfb5nByjMQBIVCNuucr1ofRFPwLTxSmuWOt7zKJSN2SgRzZSdVoYbXft66OV9GdRB8nAtLv6XmVRtdvhLXgTZxaqVEwB/zDot8mTYchYDzG3Kno63e2cs6sZ/xi9I6h3xd+DDimSimT2gWgSwKczB35+IyYhoYkdDDuDsPaCjMJFqufPMvgGHtDKEJYRL9TE+7rQB6XaOfdo9QeB3aG2/afi5tW24M3WUTjOZfeIDYoCBioizt7Cp8uy71p/o9GveoUeF+shCbtbi4YKIrpMbw+CxqYZibiUas1qtbmUFnMq/JJXFIQK9WCM+ZWLAVUioA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oUOYg005Ddg9IlWO2U6H9/e+2Y+rX5wxOPYb/ykxuNE=;
- b=HQ18nO6vSD9ADSx+/DWnREkia2nXnBpd3/g/WRvH6DfBuxZgq+b5aCX/jd0Xtj/ArvpSL3jy2BS3ct+z8ECaOKeJcMp+KFwgNBu1g+8ZssXTeS0IvNlUbY/wxq1I5B5ZCu7CF/uAy17pTJiXOr1QQvJUroxsqA2YpaDZ9J1avOg=
+ bh=IVL6fKCBHuUpTlTfL9TPW/6/jqpwJUsNULJabCDXTiY=;
+ b=dHGcavqG8gns2unO/qTslserFGbBTk+9r19CE7W/2ooTWkWm62QRuuJMY6ci73Rofj6qx0imMkBcEjYZcxa6aAtxxCP5YXytji6S8ZWdZV/VF9uAV7WELgUletX83ZPcKLjZG0DPd040ktsrqbQ5+Yf1gNqCz7gOVvTTObB35DI=
 Received: from BL0PR18MB2275.namprd18.prod.outlook.com (52.132.30.141) by
  BL0PR18MB2306.namprd18.prod.outlook.com (52.132.30.153) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.24; Fri, 1 Nov 2019 12:17:14 +0000
+ 15.20.2387.24; Fri, 1 Nov 2019 12:17:15 +0000
 Received: from BL0PR18MB2275.namprd18.prod.outlook.com
  ([fe80::4152:b5a9:45c2:a981]) by BL0PR18MB2275.namprd18.prod.outlook.com
  ([fe80::4152:b5a9:45c2:a981%3]) with mapi id 15.20.2387.028; Fri, 1 Nov 2019
- 12:17:14 +0000
+ 12:17:15 +0000
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Igor Russkikh <irusskikh@marvell.com>,
         Nikita Danilov <ndanilov@marvell.com>
-Subject: [PATCH net-next 01/12] net: atlantic: update firmware interface
-Thread-Topic: [PATCH net-next 01/12] net: atlantic: update firmware interface
-Thread-Index: AQHVkK5LGMUVINKkLUOJ5wF+3NQ+rA==
-Date:   Fri, 1 Nov 2019 12:17:13 +0000
-Message-ID: <efefdfef3fd63e8327807aaee6dd63ef7999c2b2.1572610156.git.irusskikh@marvell.com>
+Subject: [PATCH net-next 02/12] net: atlantic: implement wake_phy feature
+Thread-Topic: [PATCH net-next 02/12] net: atlantic: implement wake_phy feature
+Thread-Index: AQHVkK5M2pG5TEZPCEGt8s5WgWReiw==
+Date:   Fri, 1 Nov 2019 12:17:15 +0000
+Message-ID: <a3558daf4e62b490376d7f4fa22d1854bac57724.1572610156.git.irusskikh@marvell.com>
 References: <cover.1572610156.git.irusskikh@marvell.com>
 In-Reply-To: <cover.1572610156.git.irusskikh@marvell.com>
 Accept-Language: en-US
@@ -79,28 +79,28 @@ x-mailer: git-send-email 2.17.1
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: aa35e433-9ba8-4ac5-76f9-08d75ec56d96
+x-ms-office365-filtering-correlation-id: 2ddd16c9-a8f5-4eff-e679-08d75ec56e61
 x-ms-traffictypediagnostic: BL0PR18MB2306:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BL0PR18MB2306371CD83BDF2474CF7C55B7620@BL0PR18MB2306.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:352;
+x-microsoft-antispam-prvs: <BL0PR18MB2306936CBF854532EB33D62FB7620@BL0PR18MB2306.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7;
 x-forefront-prvs: 020877E0CB
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(376002)(346002)(39860400002)(366004)(199004)(189003)(81156014)(186003)(25786009)(102836004)(14444005)(52116002)(6916009)(256004)(76176011)(6506007)(66066001)(36756003)(386003)(66556008)(66476007)(2351001)(66446008)(486006)(26005)(64756008)(476003)(66946007)(2501003)(478600001)(99286004)(3846002)(11346002)(5660300002)(71200400001)(107886003)(71190400001)(50226002)(2906002)(8936002)(86362001)(118296001)(2616005)(81166006)(316002)(446003)(6486002)(54906003)(7736002)(6116002)(14454004)(305945005)(15650500001)(6512007)(8676002)(6436002)(5640700003)(1730700003)(4326008)(357404004);DIR:OUT;SFP:1101;SCL:1;SRVR:BL0PR18MB2306;H:BL0PR18MB2275.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(376002)(346002)(39860400002)(366004)(199004)(189003)(81156014)(186003)(25786009)(102836004)(14444005)(52116002)(6916009)(256004)(76176011)(6506007)(66066001)(36756003)(386003)(66556008)(66476007)(2351001)(66446008)(486006)(26005)(64756008)(476003)(66946007)(2501003)(478600001)(30864003)(99286004)(3846002)(11346002)(5660300002)(71200400001)(107886003)(71190400001)(50226002)(2906002)(8936002)(86362001)(118296001)(2616005)(81166006)(316002)(446003)(6486002)(54906003)(7736002)(6116002)(14454004)(305945005)(6512007)(8676002)(6436002)(5640700003)(1730700003)(4326008)(309714004);DIR:OUT;SFP:1101;SCL:1;SRVR:BL0PR18MB2306;H:BL0PR18MB2275.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: marvell.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: EnKXiiygE10ok9OkZibYKmBo5G7FfBmEhCvhVIvV/CirBsC/Qvfz0gn16Rc/IfnfcSyZnEP0gDsiM6RGAbKlkb1jEigtQSswUC/ZqfGEde9WI3KB2EvXcn87unh91vrf3toso6wSA2ocFnmsmg9RgFurdcCEjZOQhOP6zm35b1Vn52jVtTIK4vdIrQCj1AWfE/wuLOsmJ9YG3YSvo35nhVHmWmK3lA3UONEihIs7A2jNFmdE0lMBVtlhWMkVmjIJjvybpuPflwYBkYRsBJ3nTyQ/zKwoa/H4SPv0On4y+PBGDTH0MW+tJVkXaHVBKyIhPxOqmiOJA/EpUIOOMS1OmfJjncrVf0AXKVBkOMM4zfE32MVhRnJquB0FhYMUWihG0PjMwYMvylb3sukrXmkACxWZPRdkwwIzvQpH8Y5IU5W7M/VAp4en73H+/cx5haed
+x-microsoft-antispam-message-info: SFQnBXtlgWAT6kEmQCEpYjS4eV9OAa5hgmlSOlp5FRRZ3cGWM5zylg32R1bEpj7YG+HZsWR0vz2gWvD9Ng4ep3pjsqXGR1pStkdgMHhjfZL3NpjrnIU0vhvdyuR5UAL94X89Fcrk1r4h2YGDFUi1pXDjcC9AE2Rk+SLc2gc5YMgMhLhj2Gw/j6WVR1ru4ipsRnLelBSS/Ixjrnx9QwpCdQrvhoTOWYNCRJMSq34DOzcYSvYjZr2cO2+cEzGuyIMmxj1jDE8hgCG/vlOnUvkCDlSOWb7j55GBOXULPbnnsEv8RltztSIpN1p8VUIRzgtorbbcpK29OBl6eS6zy/lSdfTL2BU4wZOeZe4u8bjdaWeBfVYsb7puDajH6d9FCU8uVKawS3Ce443awEMsgMztQEL5uH+n4+V/We3PtkNSe6WFcVuKPhwxwjdBE3Q9NbPt
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa35e433-9ba8-4ac5-76f9-08d75ec56d96
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2019 12:17:13.8718
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ddd16c9-a8f5-4eff-e679-08d75ec56e61
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2019 12:17:15.2351
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: LQ1zaFvw+YONKFOsBDDVabOojrcH2V/3SVrrnqE95hqNAEjVFcSYOQt8K4QN5zbIUtGJJV5SWK4lLunK8K8iVg==
+X-MS-Exchange-CrossTenant-userprincipalname: IvR3hW2q+BUxPhTazP9nhE3eVyW7MUzjERZlWldzCpd4WW3U+ACWZ5DVRWgrjKMskW9A2Pcl5XfUD4LsNHdhTQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR18MB2306
 X-OriginatorOrg: marvell.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
@@ -112,319 +112,383 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikita Danilov <ndanilov@marvell.com>
 
-Here we improve FW interface structures layout
-and prepare these for the wake phy feature implementation.
+Wake on PHY allows to configure device to wakeup host
+as soon as PHY link status is changed to active.
 
 Signed-off-by: Nikita Danilov <ndanilov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |  18 +-
- .../aquantia/atlantic/hw_atl/hw_atl_utils.h   | 173 ++++++------------
- 2 files changed, 72 insertions(+), 119 deletions(-)
+ .../net/ethernet/aquantia/atlantic/aq_cfg.h   |   3 +
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |  18 ++-
+ .../net/ethernet/aquantia/atlantic/aq_main.c  |   4 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |  34 +++---
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |   6 +-
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |   7 +-
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 111 ++++++------------
+ 7 files changed, 73 insertions(+), 110 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b=
-/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-index 6fc5640065bd..6c7caff9a96b 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
-@@ -858,22 +858,26 @@ static int aq_fw1x_set_wol(struct aq_hw_s *self, bool=
- wol_enabled, u8 *mac)
- 	memset(prpc, 0, sizeof(*prpc));
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h b/drivers/net/=
+ethernet/aquantia/atlantic/aq_cfg.h
+index 8c633caf79d2..d02b0d79f68a 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
+@@ -78,6 +78,9 @@
 =20
- 	if (wol_enabled) {
--		rpc_size =3D sizeof(prpc->msg_id) + sizeof(prpc->msg_wol);
-+		rpc_size =3D offsetof(struct hw_atl_utils_fw_rpc, msg_wol_add) +
-+			   sizeof(prpc->msg_wol_add);
+ #define AQ_CFG_FC_MODE AQ_NIC_FC_FULL
+=20
++/* Default WOL modes used on initialization */
++#define AQ_CFG_WOL_MODES WAKE_MAGIC
 +
+ #define AQ_CFG_SPEED_MSK  0xFFFFU	/* 0xFFFFU=3D=3Dauto_neg */
 =20
- 		prpc->msg_id =3D HAL_ATLANTIC_UTILS_FW_MSG_WOL_ADD;
--		prpc->msg_wol.priority =3D
-+		prpc->msg_wol_add.priority =3D
- 				HAL_ATLANTIC_UTILS_FW_MSG_WOL_PRIOR;
--		prpc->msg_wol.pattern_id =3D
-+		prpc->msg_wol_add.pattern_id =3D
- 				HAL_ATLANTIC_UTILS_FW_MSG_WOL_PATTERN;
--		prpc->msg_wol.wol_packet_type =3D
-+		prpc->msg_wol_add.packet_type =3D
- 				HAL_ATLANTIC_UTILS_FW_MSG_WOL_MAG_PKT;
+ #define AQ_CFG_IS_AUTONEG_DEF       1U
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/=
+net/ethernet/aquantia/atlantic/aq_ethtool.c
+index 1ae8aabcc41a..3c55cf13cf14 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+@@ -356,11 +356,8 @@ static void aq_ethtool_get_wol(struct net_device *ndev=
+,
+ 	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
+ 	struct aq_nic_cfg_s *cfg =3D aq_nic_get_cfg(aq_nic);
 =20
--		ether_addr_copy((u8 *)&prpc->msg_wol.wol_pattern, mac);
-+		ether_addr_copy((u8 *)&prpc->msg_wol_add.magic_packet_pattern,
-+				mac);
- 	} else {
--		rpc_size =3D sizeof(prpc->msg_id) + sizeof(prpc->msg_del_id);
-+		rpc_size =3D sizeof(prpc->msg_wol_remove) +
-+			   offsetof(struct hw_atl_utils_fw_rpc, msg_wol_remove);
+-	wol->supported =3D WAKE_MAGIC;
+-	wol->wolopts =3D 0;
+-
+-	if (cfg->wol)
+-		wol->wolopts |=3D WAKE_MAGIC;
++	wol->supported =3D AQ_NIC_WOL_MODES;
++	wol->wolopts =3D cfg->wol;
+ }
 =20
- 		prpc->msg_id =3D HAL_ATLANTIC_UTILS_FW_MSG_WOL_DEL;
--		prpc->msg_wol.pattern_id =3D
-+		prpc->msg_wol_add.pattern_id =3D
- 				HAL_ATLANTIC_UTILS_FW_MSG_WOL_PATTERN;
+ static int aq_ethtool_set_wol(struct net_device *ndev,
+@@ -371,11 +368,12 @@ static int aq_ethtool_set_wol(struct net_device *ndev=
+,
+ 	struct aq_nic_cfg_s *cfg =3D aq_nic_get_cfg(aq_nic);
+ 	int err =3D 0;
+=20
+-	if (wol->wolopts & WAKE_MAGIC)
+-		cfg->wol |=3D AQ_NIC_WOL_ENABLED;
+-	else
+-		cfg->wol &=3D ~AQ_NIC_WOL_ENABLED;
+-	err =3D device_set_wakeup_enable(&pdev->dev, wol->wolopts);
++	if (wol->wolopts & ~AQ_NIC_WOL_MODES)
++		return -EOPNOTSUPP;
++
++	cfg->wol =3D wol->wolopts;
++
++	err =3D device_set_wakeup_enable(&pdev->dev, !!cfg->wol);
+=20
+ 	return err;
+ }
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_main.c b/drivers/net=
+/ethernet/aquantia/atlantic/aq_main.c
+index a26d4a69efad..2c1096561614 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_main.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_main.c
+@@ -74,7 +74,7 @@ static int aq_ndev_open(struct net_device *ndev)
+=20
+ err_exit:
+ 	if (err < 0)
+-		aq_nic_deinit(aq_nic);
++		aq_nic_deinit(aq_nic, true);
+ 	return err;
+ }
+=20
+@@ -86,7 +86,7 @@ static int aq_ndev_close(struct net_device *ndev)
+ 	err =3D aq_nic_stop(aq_nic);
+ 	if (err < 0)
+ 		goto err_exit;
+-	aq_nic_deinit(aq_nic);
++	aq_nic_deinit(aq_nic, true);
+=20
+ err_exit:
+ 	return err;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/=
+ethernet/aquantia/atlantic/aq_nic.c
+index 433adc099e44..75faf288a2fc 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -79,6 +79,7 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
+ 	cfg->num_rss_queues =3D AQ_CFG_NUM_RSS_QUEUES_DEF;
+ 	cfg->aq_rss.base_cpu_number =3D AQ_CFG_RSS_BASE_CPU_NUM_DEF;
+ 	cfg->flow_control =3D AQ_CFG_FC_MODE;
++	cfg->wol =3D AQ_CFG_WOL_MODES;
+=20
+ 	cfg->mtu =3D AQ_CFG_MTU_DEF;
+ 	cfg->link_speed_msk =3D AQ_CFG_SPEED_MSK;
+@@ -1000,7 +1001,20 @@ int aq_nic_stop(struct aq_nic_s *self)
+ 	return self->aq_hw_ops->hw_stop(self->aq_hw);
+ }
+=20
+-void aq_nic_deinit(struct aq_nic_s *self)
++void aq_nic_set_power(struct aq_nic_s *self)
++{
++	if (self->power_state !=3D AQ_HW_POWER_STATE_D0 ||
++	    self->aq_hw->aq_nic_cfg->wol)
++		if (likely(self->aq_fw_ops->set_power)) {
++			mutex_lock(&self->fwreq_mutex);
++			self->aq_fw_ops->set_power(self->aq_hw,
++						   self->power_state,
++						   self->ndev->dev_addr);
++			mutex_unlock(&self->fwreq_mutex);
++		}
++}
++
++void aq_nic_deinit(struct aq_nic_s *self, bool link_down)
+ {
+ 	struct aq_vec_s *aq_vec =3D NULL;
+ 	unsigned int i =3D 0U;
+@@ -1017,23 +1031,12 @@ void aq_nic_deinit(struct aq_nic_s *self)
+ 	aq_ptp_ring_free(self);
+ 	aq_ptp_free(self);
+=20
+-	if (likely(self->aq_fw_ops->deinit)) {
++	if (likely(self->aq_fw_ops->deinit) && link_down) {
+ 		mutex_lock(&self->fwreq_mutex);
+ 		self->aq_fw_ops->deinit(self->aq_hw);
+ 		mutex_unlock(&self->fwreq_mutex);
  	}
 =20
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h b=
-/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-index ee11b107f0a5..c6708f0d5d3e 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.h
-@@ -70,104 +70,41 @@ struct __packed hw_atl_stats_s {
- 	u32 dpc;
- };
-=20
--union __packed ip_addr {
--	struct {
--		u8 addr[16];
--	} v6;
--	struct {
--		u8 padding[12];
--		u8 addr[4];
--	} v4;
--};
+-	if (self->power_state !=3D AQ_HW_POWER_STATE_D0 ||
+-	    self->aq_hw->aq_nic_cfg->wol)
+-		if (likely(self->aq_fw_ops->set_power)) {
+-			mutex_lock(&self->fwreq_mutex);
+-			self->aq_fw_ops->set_power(self->aq_hw,
+-						   self->power_state,
+-						   self->ndev->dev_addr);
+-			mutex_unlock(&self->fwreq_mutex);
+-		}
 -
--struct __packed hw_atl_utils_fw_rpc {
--	u32 msg_id;
 -
-+struct __packed drv_msg_enable_wakeup {
- 	union {
--		struct {
--			u32 pong;
--		} msg_ping;
-+		u32 pattern_mask;
+ err_exit:;
+ }
 =20
- 		struct {
--			u8 mac_addr[6];
--			u32 ip_addr_cnt;
-+			u32 reason_arp_v4_pkt : 1;
-+			u32 reason_ipv4_ping_pkt : 1;
-+			u32 reason_ipv6_ns_pkt : 1;
-+			u32 reason_ipv6_ping_pkt : 1;
-+			u32 reason_link_up : 1;
-+			u32 reason_link_down : 1;
-+			u32 reason_maximum : 1;
-+		};
-+	};
+@@ -1072,7 +1075,7 @@ int aq_nic_change_pm_state(struct aq_nic_s *self, pm_=
+message_t *pm_msg)
+ 		if (err < 0)
+ 			goto err_exit;
 =20
--			struct {
--				union ip_addr addr;
--				union ip_addr mask;
--			} ip[1];
--		} msg_arp;
-+	union {
-+		u32 offload_mask;
-+	};
-+};
+-		aq_nic_deinit(self);
++		aq_nic_deinit(self, !self->aq_hw->aq_nic_cfg->wol);
+ 	} else {
+ 		err =3D aq_nic_init(self);
+ 		if (err < 0)
+@@ -1108,7 +1111,8 @@ void aq_nic_shutdown(struct aq_nic_s *self)
+ 		if (err < 0)
+ 			goto err_exit;
+ 	}
+-	aq_nic_deinit(self);
++	aq_nic_deinit(self, !self->aq_hw->aq_nic_cfg->wol);
++	aq_nic_set_power(self);
 =20
--		struct {
--			u32 len;
--			u8 packet[1514U];
--		} msg_inject;
-+struct __packed magic_packet_pattern_s {
-+	u8 mac_addr[ETH_ALEN];
-+};
+ err_exit:
+ 	rtnl_unlock();
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/=
+ethernet/aquantia/atlantic/aq_nic.h
+index c2513b79b9e9..8c23ad4ddf38 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+@@ -60,7 +60,8 @@ struct aq_nic_cfg_s {
+ #define AQ_NIC_FLAG_ERR_UNPLUG  0x40000000U
+ #define AQ_NIC_FLAG_ERR_HW      0x80000000U
 =20
--		struct {
--			u32 priority;
--			u32 wol_packet_type;
--			u32 pattern_id;
--			u32 next_wol_pattern_offset;
+-#define AQ_NIC_WOL_ENABLED	BIT(0)
++#define AQ_NIC_WOL_MODES        (WAKE_MAGIC |\
++				 WAKE_PHY)
+=20
+ #define AQ_NIC_TCVEC2RING(_NIC_, _TC_, _VEC_) \
+ 	((_TC_) * AQ_CFG_TCS_MAX + (_VEC_))
+@@ -141,7 +142,8 @@ int aq_nic_get_regs(struct aq_nic_s *self, struct ethto=
+ol_regs *regs, void *p);
+ int aq_nic_get_regs_count(struct aq_nic_s *self);
+ void aq_nic_get_stats(struct aq_nic_s *self, u64 *data);
+ int aq_nic_stop(struct aq_nic_s *self);
+-void aq_nic_deinit(struct aq_nic_s *self);
++void aq_nic_deinit(struct aq_nic_s *self, bool link_down);
++void aq_nic_set_power(struct aq_nic_s *self);
+ void aq_nic_free_hot_resources(struct aq_nic_s *self);
+ void aq_nic_free_vectors(struct aq_nic_s *self);
+ int aq_nic_set_mtu(struct aq_nic_s *self, int new_mtu);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b=
+/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+index 6c7caff9a96b..fd2c6be4e22e 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+@@ -845,7 +845,8 @@ int hw_atl_utils_get_fw_version(struct aq_hw_s *self, u=
+32 *fw_version)
+ 	return 0;
+ }
+=20
+-static int aq_fw1x_set_wol(struct aq_hw_s *self, bool wol_enabled, u8 *mac=
+)
++static int aq_fw1x_set_wake_magic(struct aq_hw_s *self, bool wol_enabled,
++				  u8 *mac)
+ {
+ 	struct hw_atl_utils_fw_rpc *prpc =3D NULL;
+ 	unsigned int rpc_size =3D 0U;
+@@ -894,8 +895,8 @@ static int aq_fw1x_set_power(struct aq_hw_s *self, unsi=
+gned int power_state,
+ 	unsigned int rpc_size =3D 0U;
+ 	int err =3D 0;
+=20
+-	if (self->aq_nic_cfg->wol & AQ_NIC_WOL_ENABLED) {
+-		err =3D aq_fw1x_set_wol(self, 1, mac);
++	if (self->aq_nic_cfg->wol & WAKE_MAGIC) {
++		err =3D aq_fw1x_set_wake_magic(self, 1, mac);
+=20
+ 		if (err < 0)
+ 			goto err_exit;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2=
+x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+index f649ac949d06..9b89622fa5d4 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+@@ -34,6 +34,7 @@
+ #define HW_ATL_FW2X_CAP_SLEEP_PROXY      BIT(CAPS_HI_SLEEP_PROXY)
+ #define HW_ATL_FW2X_CAP_WOL              BIT(CAPS_HI_WOL)
+=20
++#define HW_ATL_FW2X_CTRL_WAKE_ON_LINK     BIT(CTRL_WAKE_ON_LINK)
+ #define HW_ATL_FW2X_CTRL_SLEEP_PROXY      BIT(CTRL_SLEEP_PROXY)
+ #define HW_ATL_FW2X_CTRL_WOL              BIT(CTRL_WOL)
+ #define HW_ATL_FW2X_CTRL_LINK_DROP        BIT(CTRL_LINK_DROP)
+@@ -345,87 +346,46 @@ static int aq_fw2x_get_phy_temp(struct aq_hw_s *self,=
+ int *temp)
+ 	return 0;
+ }
+=20
+-static int aq_fw2x_set_sleep_proxy(struct aq_hw_s *self, u8 *mac)
++static int aq_fw2x_set_wol(struct aq_hw_s *self, u8 *mac)
+ {
+ 	struct hw_atl_utils_fw_rpc *rpc =3D NULL;
+-	struct offload_info *cfg =3D NULL;
+-	unsigned int rpc_size =3D 0U;
+-	u32 mpi_opts;
++	struct offload_info *info =3D NULL;
++	u32 wol_bits =3D 0;
++	u32 rpc_size;
+ 	int err =3D 0;
+ 	u32 val;
+=20
+-	rpc_size =3D sizeof(rpc->msg_id) + sizeof(*cfg);
 -
--			union {
--				struct {
--					u32 flags;
--					u8 ipv4_source_address[4];
--					u8 ipv4_dest_address[4];
--					u16 tcp_source_port_number;
--					u16 tcp_dest_port_number;
--				} ipv4_tcp_syn_parameters;
+-	err =3D hw_atl_utils_fw_rpc_wait(self, &rpc);
+-	if (err < 0)
+-		goto err_exit;
 -
--				struct {
--					u32 flags;
--					u8 ipv6_source_address[16];
--					u8 ipv6_dest_address[16];
--					u16 tcp_source_port_number;
--					u16 tcp_dest_port_number;
--				} ipv6_tcp_syn_parameters;
+-	memset(rpc, 0, rpc_size);
+-	cfg =3D (struct offload_info *)(&rpc->msg_id + 1);
 -
--				struct {
--					u32 flags;
--				} eapol_request_id_message_parameters;
+-	memcpy(cfg->mac_addr, mac, ETH_ALEN);
+-	cfg->len =3D sizeof(*cfg);
 -
--				struct {
--					u32 flags;
--					u32 mask_offset;
--					u32 mask_size;
--					u32 pattern_offset;
--					u32 pattern_size;
--				} wol_bit_map_pattern;
+-	/* Clear bit 0x36C.23 and 0x36C.22 */
+-	mpi_opts =3D aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
+-	mpi_opts &=3D ~HW_ATL_FW2X_CTRL_SLEEP_PROXY;
+-	mpi_opts &=3D ~HW_ATL_FW2X_CTRL_LINK_DROP;
 -
--				struct {
--					u8 mac_addr[ETH_ALEN];
--				} wol_magic_packet_patter;
--			} wol_pattern;
--		} msg_wol;
-+struct __packed drv_msg_wol_add {
-+	u32 priority;
-+	u32 packet_type;
-+	u32 pattern_id;
-+	u32 next_pattern_offset;
-=20
--		struct {
--			union {
--				u32 pattern_mask;
+-	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_opts);
 -
--				struct {
--					u32 reason_arp_v4_pkt : 1;
--					u32 reason_ipv4_ping_pkt : 1;
--					u32 reason_ipv6_ns_pkt : 1;
--					u32 reason_ipv6_ping_pkt : 1;
--					u32 reason_link_up : 1;
--					u32 reason_link_down : 1;
--					u32 reason_maximum : 1;
--				};
--			};
+-	err =3D hw_atl_utils_fw_rpc_call(self, rpc_size);
+-	if (err < 0)
+-		goto err_exit;
 -
--			union {
--				u32 offload_mask;
--			};
--		} msg_enable_wakeup;
-+	struct magic_packet_pattern_s magic_packet_pattern;
-+};
-=20
--		struct {
--			u32 id;
--		} msg_del_id;
--	};
-+struct __packed drv_msg_wol_remove {
-+	u32 id;
- };
-=20
- struct __packed hw_atl_utils_mbox_header {
-@@ -189,6 +126,13 @@ struct __packed hw_aq_ptp_offset {
- 	u16 egress_10000;
- };
-=20
-+struct __packed hw_atl_cable_diag {
-+	u8 fault;
-+	u8 distance;
-+	u8 far_distance;
-+	u8 reserved;
-+};
-+
- enum gpio_pin_function {
- 	GPIO_PIN_FUNCTION_NC,
- 	GPIO_PIN_FUNCTION_VAUX_ENABLE,
-@@ -210,7 +154,7 @@ struct __packed hw_aq_info {
- 	u16 phy_temperature;
- 	u8 cable_len;
- 	u8 reserved1;
--	u32 cable_diag_data[4];
-+	struct hw_atl_cable_diag cable_diag_data[4];
- 	struct hw_aq_ptp_offset ptp_offset;
- 	u8 reserved2[12];
- 	u32 caps_lo;
-@@ -236,25 +180,22 @@ struct __packed hw_atl_utils_mbox {
- 	struct hw_aq_info info;
- };
-=20
--/* fw2x */
--typedef u32	fw_offset_t;
+-	/* Set bit 0x36C.23 */
+-	mpi_opts |=3D HW_ATL_FW2X_CTRL_SLEEP_PROXY;
+-	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_opts);
 -
- struct __packed offload_ip_info {
- 	u8 v4_local_addr_count;
- 	u8 v4_addr_count;
- 	u8 v6_local_addr_count;
- 	u8 v6_addr_count;
--	fw_offset_t v4_addr;
--	fw_offset_t v4_prefix;
--	fw_offset_t v6_addr;
--	fw_offset_t v6_prefix;
-+	u32 v4_addr;
-+	u32 v4_prefix;
-+	u32 v6_addr;
-+	u32 v6_prefix;
- };
+-	err =3D readx_poll_timeout_atomic(aq_fw2x_state2_get,
+-					self, val,
+-					val & HW_ATL_FW2X_CTRL_SLEEP_PROXY,
+-					1U, 100000U);
+-
+-err_exit:
+-	return err;
+-}
+-
+-static int aq_fw2x_set_wol_params(struct aq_hw_s *self, u8 *mac)
+-{
+-	struct hw_atl_utils_fw_rpc *rpc =3D NULL;
+-	struct fw2x_msg_wol *msg =3D NULL;
+-	u32 mpi_opts;
+-	int err =3D 0;
+-	u32 val;
+-
+-	err =3D hw_atl_utils_fw_rpc_wait(self, &rpc);
+-	if (err < 0)
+-		goto err_exit;
+-
+-	msg =3D (struct fw2x_msg_wol *)rpc;
+-
+-	memset(msg, 0, sizeof(*msg));
++	if (self->aq_nic_cfg->wol & WAKE_PHY) {
++		aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR,
++				HW_ATL_FW2X_CTRL_LINK_DROP);
++		readx_poll_timeout_atomic(aq_fw2x_state2_get, self, val,
++					  (val &
++					   HW_ATL_FW2X_CTRL_LINK_DROP) !=3D 0,
++					  1000, 100000);
++		wol_bits |=3D HW_ATL_FW2X_CTRL_WAKE_ON_LINK;
++	}
 =20
- struct __packed offload_port_info {
- 	u16 udp_port_count;
- 	u16 tcp_port_count;
--	fw_offset_t udp_port;
--	fw_offset_t tcp_port;
-+	u32 udp_port;
-+	u32 tcp_port;
- };
+-	msg->msg_id =3D HAL_ATLANTIC_UTILS_FW2X_MSG_WOL;
+-	msg->magic_packet_enabled =3D true;
+-	memcpy(msg->hw_addr, mac, ETH_ALEN);
++	if (self->aq_nic_cfg->wol & WAKE_MAGIC) {
++		wol_bits |=3D HW_ATL_FW2X_CTRL_SLEEP_PROXY |
++			    HW_ATL_FW2X_CTRL_WOL;
 =20
- struct __packed offload_ka_info {
-@@ -262,15 +203,15 @@ struct __packed offload_ka_info {
- 	u16 v6_ka_count;
- 	u32 retry_count;
- 	u32 retry_interval;
--	fw_offset_t v4_ka;
--	fw_offset_t v6_ka;
-+	u32 v4_ka;
-+	u32 v6_ka;
- };
+-	mpi_opts =3D aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
+-	mpi_opts &=3D ~(HW_ATL_FW2X_CTRL_SLEEP_PROXY | HW_ATL_FW2X_CTRL_WOL);
++		err =3D hw_atl_utils_fw_rpc_wait(self, &rpc);
++		if (err < 0)
++			goto err_exit;
 =20
- struct __packed offload_rr_info {
- 	u32 rr_count;
- 	u32 rr_buf_len;
--	fw_offset_t rr_id_x;
--	fw_offset_t rr_buf;
-+	u32 rr_id_x;
-+	u32 rr_buf;
- };
+-	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_opts);
++		rpc_size =3D sizeof(*info) +
++			   offsetof(struct hw_atl_utils_fw_rpc, fw2x_offloads);
++		memset(rpc, 0, rpc_size);
++		info =3D &rpc->fw2x_offloads;
++		memcpy(info->mac_addr, mac, ETH_ALEN);
++		info->len =3D sizeof(*info);
 =20
- struct __packed offload_info {
-@@ -287,6 +228,19 @@ struct __packed offload_info {
- 	u8 buf[0];
- };
+-	err =3D hw_atl_utils_fw_rpc_call(self, sizeof(*msg));
+-	if (err < 0)
+-		goto err_exit;
++		err =3D hw_atl_utils_fw_rpc_call(self, rpc_size);
++		if (err < 0)
++			goto err_exit;
++	}
 =20
-+struct __packed hw_atl_utils_fw_rpc {
-+	u32 msg_id;
-+
-+	union {
-+		/* fw1x structures */
-+		struct drv_msg_wol_add msg_wol_add;
-+		struct drv_msg_wol_remove msg_wol_remove;
-+		struct drv_msg_enable_wakeup msg_enable_wakeup;
-+		/* fw2x structures */
-+		struct offload_info fw2x_offloads;
-+	};
-+};
-+
- /* Mailbox FW Request interface */
- struct __packed hw_fw_request_ptp_gpio_ctrl {
- 	u32 index;
-@@ -326,6 +280,9 @@ struct __packed hw_fw_request_iface {
- enum hw_atl_rx_action_with_traffic {
- 	HW_ATL_RX_DISCARD,
- 	HW_ATL_RX_HOST,
-+	HW_ATL_RX_MNGMNT,
-+	HW_ATL_RX_HOST_AND_MNGMNT,
-+	HW_ATL_RX_WOL
- };
+-	/* Set bit 0x36C.24 */
+-	mpi_opts |=3D HW_ATL_FW2X_CTRL_WOL;
+-	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_opts);
+-
+-	err =3D readx_poll_timeout_atomic(aq_fw2x_state2_get,
+-					self, val, val & HW_ATL_FW2X_CTRL_WOL,
+-					1U, 10000U);
++	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, wol_bits);
 =20
- struct aq_rx_filter_vlan {
-@@ -407,20 +364,12 @@ enum hal_atl_utils_fw_state_e {
- #define HAL_ATLANTIC_RATE_100M       BIT(5)
- #define HAL_ATLANTIC_RATE_INVALID    BIT(6)
+ err_exit:
+ 	return err;
+@@ -436,14 +396,9 @@ static int aq_fw2x_set_power(struct aq_hw_s *self, uns=
+igned int power_state,
+ {
+ 	int err =3D 0;
 =20
--#define HAL_ATLANTIC_UTILS_FW_MSG_PING          0x1U
--#define HAL_ATLANTIC_UTILS_FW_MSG_ARP           0x2U
--#define HAL_ATLANTIC_UTILS_FW_MSG_INJECT        0x3U
- #define HAL_ATLANTIC_UTILS_FW_MSG_WOL_ADD       0x4U
- #define HAL_ATLANTIC_UTILS_FW_MSG_WOL_PRIOR     0x10000000U
- #define HAL_ATLANTIC_UTILS_FW_MSG_WOL_PATTERN   0x1U
- #define HAL_ATLANTIC_UTILS_FW_MSG_WOL_MAG_PKT   0x2U
- #define HAL_ATLANTIC_UTILS_FW_MSG_WOL_DEL       0x5U
- #define HAL_ATLANTIC_UTILS_FW_MSG_ENABLE_WAKEUP 0x6U
--#define HAL_ATLANTIC_UTILS_FW_MSG_MSM_PFC       0x7U
--#define HAL_ATLANTIC_UTILS_FW_MSG_PROVISIONING  0x8U
--#define HAL_ATLANTIC_UTILS_FW_MSG_OFFLOAD_ADD   0x9U
--#define HAL_ATLANTIC_UTILS_FW_MSG_OFFLOAD_DEL   0xAU
--#define HAL_ATLANTIC_UTILS_FW_MSG_CABLE_DIAG    0xDU
+-	if (self->aq_nic_cfg->wol & AQ_NIC_WOL_ENABLED) {
+-		err =3D aq_fw2x_set_sleep_proxy(self, mac);
+-		if (err < 0)
+-			goto err_exit;
+-		err =3D aq_fw2x_set_wol_params(self, mac);
+-	}
++	if (self->aq_nic_cfg->wol)
++		err =3D aq_fw2x_set_wol(self, mac);
 =20
- enum hw_atl_fw2x_rate {
- 	FW2X_RATE_100M    =3D 0x20,
+-err_exit:
+ 	return err;
+ }
+=20
 --=20
 2.17.1
 
