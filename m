@@ -2,70 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 998ECEC3F8
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 14:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56956EC40B
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 14:51:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfKANpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 09:45:04 -0400
-Received: from mail-wr1-f50.google.com ([209.85.221.50]:36774 "EHLO
-        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727297AbfKANpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 09:45:03 -0400
-Received: by mail-wr1-f50.google.com with SMTP id w18so9738620wrt.3
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 06:45:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dcM+hZJgHuMWPr9eUUiXCshJPPn9/4d6JINM/NEG7JA=;
-        b=sspuLcn5IkI2o8z8LU6RmB5h+5hXqfhUXVmkUT05czJkUtsVKDfRbEbUvlL/sFoaF+
-         /lQesnahNrTfU0inGN8tKaiXYk9Pl11Iu1nGhdlHMl3+YvKxmmMOdDWiC2nTYHpRzdA0
-         EE5ToHJz3KcC7Av+XftNU7pQ+lPU1eNP1zzO5MWiEJ5Rb2UdgHSjEB+5ZaWYV5iCDxWD
-         ZUtgSICxAgnXTNRYH41r2rAByRIOzQX6hAnnphkEFCOWmJHECkkcSVxS4kBHnpDYVJ22
-         teEachdno/y4dsajxbOtKgwHFsLCHxI2ZCys1O+povwd6Pr4lgtrQyEO3d0nM4F3/V4v
-         sSgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dcM+hZJgHuMWPr9eUUiXCshJPPn9/4d6JINM/NEG7JA=;
-        b=jXt9UoaGyVJS8rvR7OdpACLZal1euzSUx1uIKNhsiyFv2+cfB1l7j8mbLDbdJttaVT
-         wOPWR0YW0XNuq/Sf07oClRf03Ldg+TylGNdCDLZdIz8+EF/E0XItyu0+7pQggLWqMt5/
-         TJ/9Kf4Uc8HtbFGvcOlbfifkppIDN9LfeIqZOKsKVHkG6IYZEKTveFwKpua4bpatfd6G
-         aRX2UYKI/FKR+uicSPdUuLylkDbYrzsGyyRk6t8JERJMvy+GAW54a8HMDdJdLAbV79cW
-         ZQHuuV01KlH/6RaJrgEoXta6Rt16BU/s3Bx+SFmZpwmvYoZKPKV6PLINHSTa+/AfEd6L
-         TUZQ==
-X-Gm-Message-State: APjAAAXzCsDJVdk10X66RygmKzb/iCBw0v0E4aGIVU8woGi4c0AU/n24
-        vDg6yFHvxTwtEKHajnEFkUe6pg==
-X-Google-Smtp-Source: APXvYqwNa7hiw3fnsUuEvNLdsGN6pp59JJojpN4MasMayYWbV5bUNevmAckRi6pejkJZJxxnEUqkXw==
-X-Received: by 2002:adf:fec7:: with SMTP id q7mr11071979wrs.267.1572615900359;
-        Fri, 01 Nov 2019 06:45:00 -0700 (PDT)
-Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
-        by smtp.gmail.com with ESMTPSA id j22sm10213673wrd.41.2019.11.01.06.44.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 06:44:59 -0700 (PDT)
-Date:   Fri, 1 Nov 2019 14:44:57 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     kvalo@codeaurora.org, stas.yakovlev@gmail.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 0/3] wireless: remove unneeded variable and return 0
-Message-ID: <20191101134456.GA5859@netronome.com>
-References: <1572611621-13280-1-git-send-email-zhongjiang@huawei.com>
+        id S1727590AbfKANuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 09:50:54 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:44646 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726622AbfKANuy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Nov 2019 09:50:54 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 8417EDCDBFA1A1135DD7;
+        Fri,  1 Nov 2019 21:50:47 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Fri, 1 Nov 2019
+ 21:50:40 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
+        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
+        <wright.feng@cypress.com>, <kvalo@codeaurora.org>,
+        <davem@davemloft.net>, <yuehaibing@huawei.com>,
+        <christophe.jaillet@wanadoo.fr>
+CC:     <linux-wireless@vger.kernel.org>,
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        <brcm80211-dev-list@cypress.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] brcmsmac: remove set but not used variables
+Date:   Fri, 1 Nov 2019 21:50:35 +0800
+Message-ID: <20191101135035.11612-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1572611621-13280-1-git-send-email-zhongjiang@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 01, 2019 at 08:33:38PM +0800, zhong jiang wrote:
-> The issue is detected with help of coccinelle.
-> 
-> v1 -> v2:
->    libipw_qos_convert_ac_to_parameters() make it void.
+drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:841:7: warning: variable free_pdu set but not used [-Wunused-but-set-variable]
+drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:842:30: warning: variable tx_rts_count set but not used [-Wunused-but-set-variable]
+drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:842:6: warning: variable tx_rts set but not used [-Wunused-but-set-variable]
+drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:843:7: warning: variable totlen set but not used [-Wunused-but-set-variable]
 
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
+They are never used, so can be removed.
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
+index 6bb34a12..ff39773 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c
+@@ -838,9 +838,8 @@ brcms_c_dotxstatus(struct brcms_c_info *wlc, struct tx_status *txs)
+ 	struct dma_pub *dma = NULL;
+ 	struct d11txh *txh = NULL;
+ 	struct scb *scb = NULL;
+-	bool free_pdu;
+-	int tx_rts, tx_frame_count, tx_rts_count;
+-	uint totlen, supr_status;
++	int tx_frame_count;
++	uint supr_status;
+ 	bool lastframe;
+ 	struct ieee80211_hdr *h;
+ 	u16 mcl;
+@@ -917,11 +916,8 @@ brcms_c_dotxstatus(struct brcms_c_info *wlc, struct tx_status *txs)
+ 			     CHSPEC_CHANNEL(wlc->default_bss->chanspec));
+ 	}
+ 
+-	tx_rts = le16_to_cpu(txh->MacTxControlLow) & TXC_SENDRTS;
+ 	tx_frame_count =
+ 	    (txs->status & TX_STATUS_FRM_RTX_MASK) >> TX_STATUS_FRM_RTX_SHIFT;
+-	tx_rts_count =
+-	    (txs->status & TX_STATUS_RTS_RTX_MASK) >> TX_STATUS_RTS_RTX_SHIFT;
+ 
+ 	lastframe = !ieee80211_has_morefrags(h->frame_control);
+ 
+@@ -989,9 +985,6 @@ brcms_c_dotxstatus(struct brcms_c_info *wlc, struct tx_status *txs)
+ 			tx_info->flags |= IEEE80211_TX_STAT_ACK;
+ 	}
+ 
+-	totlen = p->len;
+-	free_pdu = true;
+-
+ 	if (lastframe) {
+ 		/* remove PLCP & Broadcom tx descriptor header */
+ 		skb_pull(p, D11_PHY_HDR_LEN);
+-- 
+2.7.4
+
+
