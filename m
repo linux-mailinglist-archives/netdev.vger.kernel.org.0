@@ -2,108 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 979C8EC523
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 15:55:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 978F1EC53C
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 16:01:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727714AbfKAOzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 10:55:38 -0400
-Received: from mail-eopbgr10067.outbound.protection.outlook.com ([40.107.1.67]:12866
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727334AbfKAOzh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 1 Nov 2019 10:55:37 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k29hxXWXATXJfevysRj6WwU6aUmr4JLBd1nAHioSmpeAmS0EiJc9drnoLUfqndXiJ9IwDqlg/98lptwCTzfbYVkspAP2Fbd1ZFaBc0Jp9/gWVK/S/JWl1zSob+faDBRYs7HaJxINWzLVkaYZpU3fWtDE+oOxA+AShKfY8BgL9HQ8jSXMdu8UAvzW6mzyOE6HslKy/4wwGeBK74+iSG6ymF+Mm8dZngF2jyaWlL49bL9F64frh9Tx8zOf9Vz2EeA1hXgoifHygOsxPmEdPRVSmOtY9HvBzpwEjtVpceaZtnLZH8u7/roh1qY6hPjSSJcAkV7s+9kyY/GkcJmeheI5cQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WljdqIIFgAXxSLqQ1wUSOFkfvG/TYMu2I9TEWFfPf10=;
- b=TnTefNkfXDC3/WYfRX2M4IJ2jtcjodGDGqJPbLtxIIaUCfemDIQbQGFh0SMsUew5ujGmsc1bVqDc4NnutoqzUEGTZit9x8O3O0IXXZeUfTPQIop4fZ0IYsPvSNCmMz/VFXlX+ZFSDMvrRjB4PN2Drnv7BKAATu3GfbpnIVcESTYSauPkpJTfjaX/i3MjkJl0+iAlYEeG+Hnfew1pEWmgmx7JVa1rsvhRSlDD3BNHANA6xmW8uaAu0dEPKnTjUmeR73KvlPt/qWH3pKTbbIlSgJE7Ttzzj0etsCOwfh5XV6lrgz0WNWd8JkQRWkDSFW11Kd8OkJ3NcekCcBgLbF3nMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WljdqIIFgAXxSLqQ1wUSOFkfvG/TYMu2I9TEWFfPf10=;
- b=qd6Ly/17mACxZWV/U1s84YOLftgrbAbwsEFSVNYriJz5vhbL6xe8284xHe+iPvYVv5I0srX1uGPcbdbhhKYKHhSxfmYvjzBF74ks7DilsH9hF1BI+SaBhofW77iMYGrVzc9dzybUR74T/68PpvpXVkf+4jg0D76fessgXVTiQzk=
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com (10.171.189.29) by
- AM4PR05MB3329.eurprd05.prod.outlook.com (10.171.189.33) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2387.20; Fri, 1 Nov 2019 14:55:32 +0000
-Received: from AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc]) by AM4PR05MB3313.eurprd05.prod.outlook.com
- ([fe80::59bd:e9d7:eaab:b2cc%4]) with mapi id 15.20.2408.024; Fri, 1 Nov 2019
- 14:55:32 +0000
-From:   Ariel Levkovich <lariel@mellanox.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "sbrivio@redhat.com" <sbrivio@redhat.com>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>
-Subject: Re: [PATCH net-next v2 0/3] VGT+ support
-Thread-Topic: [PATCH net-next v2 0/3] VGT+ support
-Thread-Index: AQHVkCQFGdJo5Spx4U2AGUa6mmGmtKd1M/EA///bpACAAE2sAIABC0aA
-Date:   Fri, 1 Nov 2019 14:55:32 +0000
-Message-ID: <5ff9d99c-cf23-853d-06cd-80a3ed042b5b@mellanox.com>
-References: <1572551213-9022-1-git-send-email-lariel@mellanox.com>
- <20191031.133102.2235634960268789909.davem@davemloft.net>
- <74DE7158-E844-4CCD-9827-D0A5C59F8B32@mellanox.com>
- <20191031.155854.590623922622551708.davem@davemloft.net>
-In-Reply-To: <20191031.155854.590623922622551708.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=lariel@mellanox.com; 
-x-originating-ip: [2604:2000:1342:488:c00e:ff58:82bb:ebf]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ff8e2ccf-26c0-4f13-5325-08d75edb8b7c
-x-ms-traffictypediagnostic: AM4PR05MB3329:|AM4PR05MB3329:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB33297B6C2A31E5144993A79EBA620@AM4PR05MB3329.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 020877E0CB
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(346002)(396003)(366004)(199004)(189003)(8936002)(31686004)(4326008)(54906003)(6916009)(316002)(256004)(478600001)(71190400001)(6512007)(71200400001)(76176011)(25786009)(186003)(6116002)(14454004)(6486002)(99286004)(5660300002)(6506007)(53546011)(102836004)(6436002)(6246003)(305945005)(2616005)(476003)(81156014)(36756003)(446003)(76116006)(64756008)(66476007)(66556008)(91956017)(81166006)(2906002)(8676002)(31696002)(86362001)(486006)(66946007)(4744005)(11346002)(7736002)(46003)(229853002)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3329;H:AM4PR05MB3313.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8Z6PZckyj9eunt+YVlq32sIvjyIcEv84YXGYzi4A6cQ7we0kjurYEJ989q1jk6VDl81Z73Qg25hIoKZZkOGoEHN3enXyusBGdxhU0XNMtkOWx4fKAETQKagypmDZanaBkIIwDOQILeOquRsx3yix3nsGprPXXnF5LoxvSIAxl/Vw6dYWJHLKjOMAM9r+jXcnRa61IysaKr6c52uQ3WU/axWvqonMq+p1oQLSuIKMQV05XgQXGpQrNZg3jDypMZ7DMuqn6MJBbVBHiv8pCdPtitCwC8S39hqwW5GstFisdK7OgvY+sAO2NkYzYuaEWJxSX5ASghlVKb444N/IKBskC9wfYExCneBgghho8rM4fs4HRj6RdX05nBRYC/1HVekSevoQlxm39M2eqivCaYNB0ZFxtjo6oT6T/WPepdooneT0dXBGc957FtAeWS54l3nw
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <55D95BF944C46E4F8CA43E1A98883B65@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff8e2ccf-26c0-4f13-5325-08d75edb8b7c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Nov 2019 14:55:32.6394
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: B3puI0ONSZIK54Ilqjbkx8AV+91rgOOJLBiG0vAOCc5DhfOeMtVkRh/VocS9qgIoMBuwtsm8Yknxl3XgZm0brA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3329
+        id S1727936AbfKAPBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 11:01:10 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:39043 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727465AbfKAPBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 11:01:10 -0400
+Received: by mail-io1-f68.google.com with SMTP id 18so11198997ion.6;
+        Fri, 01 Nov 2019 08:01:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=TBAFKynpg7YBPsA6wf6JWHl/9/CPJW3b1igBgFWJV2E=;
+        b=CBAVAwRe+WlT8H2FMtR7fWk5vsApB4R4Fwt0pkWz3jVBgDoAf7xIc4hFgWE9co51D1
+         agHmBjbRRhQPERx3eNNhu8u7zrAfz93g8DrsNjDpY1GHf3Q9wX9b3iMRdA21d+/rjp46
+         ShqjSRP0m8Nzp+YWNSoIaUQY7lDLge+zEDTJGu7AEJlo6HDf9IvBowg3yTniJoAy9ue6
+         pAZUNfsVJzeCKVgKq73jsLXDDmWdN/3uM7IpSDC/Ip9lNuaAkhiilSzheW/js4+d7CGo
+         DviEnYL7gSsf8xHlCt1okZSOpRuoHaSkwGHH/w8i7n961lQL+jdO2z7MDru+NagL+zex
+         NxmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=TBAFKynpg7YBPsA6wf6JWHl/9/CPJW3b1igBgFWJV2E=;
+        b=MmSvCcCimzVT3OgD8P8vE0HPVGWuXBelas9lhW4oDLdLEGAiMG20RcOFvCXeW2tHDI
+         vNtF/ZqONSvDzWId2AGM5yGn8xEiVyCSHKr2tK7wy7whEBTuRSUDfK+oZo6h2j2e1suO
+         7S8+hqfcfsy9nQpczzIfehZc4ZZH8qZgDaXNc09c7i4KS+xLC+7+Uyhhoa2HJPP/6BRH
+         0D3x3vt74Z8BjLfo473mh6upvF2vlfGBNj3m9Yq3qa07ntVCnDb+t80NT4va4wE648/H
+         eIwd0XTO6Rcow9xn6h8ze86donhLQokU3reGSrdrjqUrMiAbDV30/wAZX8AtrbjTO/SB
+         pT8g==
+X-Gm-Message-State: APjAAAVCjrOVxqQha5aNEpQGZq4FWhlEvhmQlH6ZTCxOcWQh+vpuyTMk
+        Sg+n6iMlyF/6LRcLGqQGc1k=
+X-Google-Smtp-Source: APXvYqw5b6n7kBK48avlOUPepxYum5V6LVTDvUo0W+/APYB9WcQFPgKaXXVEJB2yVmTNKJqUeTAhRQ==
+X-Received: by 2002:a5d:8598:: with SMTP id f24mr9994753ioj.60.1572620468986;
+        Fri, 01 Nov 2019 08:01:08 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id m18sm735605iol.49.2019.11.01.08.01.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Nov 2019 08:01:08 -0700 (PDT)
+Date:   Fri, 01 Nov 2019 08:01:00 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, borisp@mellanox.com,
+        aviadye@mellanox.com, daniel@iogearbox.net,
+        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
+        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
+        Eric Biggers <ebiggers@kernel.org>,
+        herbert@gondor.apana.org.au, glider@google.com,
+        linux-crypto@vger.kernel.org
+Message-ID: <5dbc48ac3a8cc_e4e2b12b10265b8a1@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191031215444.68a12dfe@cakuba.netronome.com>
+References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
+ <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
+ <20191031152444.773c183b@cakuba.netronome.com>
+ <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
+ <20191031215444.68a12dfe@cakuba.netronome.com>
+Subject: Re: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTAvMzEvMTkgNjo1OCBQTSwgIkRhdmlkIE1pbGxlciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+
-IHdyb3RlOg0KPiBGcm9tOiBBcmllbCBMZXZrb3ZpY2ggPGxhcmllbEBtZWxsYW5veC5jb20+DQo+
-IERhdGU6IFRodSwgMzEgT2N0IDIwMTkgMjI6MjA6NTUgKzAwMDANCj4NCj4+DQo+PiDvu79PbiAx
-MC8zMS8xOSwgNDozMSBQTSwgIkRhdmlkIE1pbGxlciIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+IHdy
-b3RlOg0KPj4NCj4+ICAgICAgDQo+Pj4gICAgIFRoZSBwcmV2aW91cyBwb3N0ZWQgdmVyc2lvbiB3
-YXMgYWxzbyB2Miwgd2hhdCBhcmUgeW91IGRvaW5nPw0KPj4gSSByZXN0YXJ0ZWQgdGhpcyBzZXJp
-ZXMgc2luY2UgbXkgZmlyc3Qgc3VibWlzc2lvbiBoYWQgYSBtaXN0YWtlIGluIHRoZSBzdWJqZWN0
-IHByZWZpeC4NCj4+IFRoaXMgaXMgdGhlIDJuZCB2ZXJzaW9uIG9mIHRoYXQgbmV3IHN1Ym1pc3Np
-b24gd2hpbGUgcHJldmlvdXMgaGFzIGEgZGlmZmVyZW50IHN1YmplY3QNCj4+IGFuZCBjYW4gYmUg
-aWdub3JlZC4NCj4gQWx3YXlzIGluY3JlbWVudCB0aGUgdmVyc2lvbiBudW1iZXIgd2hlbiB5b3Ug
-cG9zdCBhIHBhdGNoIHNlcmllcyBhbmV3Lg0KPg0KPiBPdGhlcndpc2UgaXQgaXMgYW1iaWd1b3Vz
-IHRvIG1lIHdoaWNoIG9uZSBpcyB0aGUgbGF0ZXN0Lg0KDQoNClVuZGVyc3Rvb2QuIFdpbGwgbWFr
-ZSBzdXJlIG9mIHRoYXQuDQoNCg0K
+Jakub Kicinski wrote:
+> On Thu, 31 Oct 2019 21:44:45 -0700, John Fastabend wrote:
+> > Jakub Kicinski wrote:
+> > > On Thu, 31 Oct 2019 15:05:53 -0700, John Fastabend wrote:  
+> > > > Jakub Kicinski wrote:  
+> > > > > sk_msg_trim() tries to only update curr pointer if it falls into
+> > > > > the trimmed region. The logic, however, does not take into the
+> > > > > account pointer wrapping that sk_msg_iter_var_prev() does.
+> > > > > This means that when the message was trimmed completely, the new
+> > > > > curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
+> > > > > neither smaller than any other value, nor would it actually be
+> > > > > correct.
+> > > > > 
+> > > > > Special case the trimming to 0 length a little bit.
+> > > > > 
+> > > > > This bug caused the TLS code to not copy all of the message, if
+> > > > > zero copy filled in fewer sg entries than memcopy would need.
+> > > > > 
+> > > > > Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
+> > > > > 
+> > > > > Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
+> > > > > Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
+> > > > > Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
+> > > > > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > > > > ---
+> > > > > Daniel, John, does this look okay?    
+> > > > 
+> > > > Thanks for the second ping!  
+> > > 
+> > > No problem, I was worried the patch got categorized as TLS and therefore
+> > > lower prio ;)  
+> > 
+> > Nope close to the top of the list here.
+> > 
+> > >   
+> >  [...]  
+> >  [...]  
+> > > 
+> > > I see, that makes sense and explains some of the complexity!
+> > > 
+> > > Perhaps the simplest way to go would be to adjust the curr as we go
+> > > then? The comparison logic could get a little hairy. So like this:  
+> > 
+> > I don't think the comparison is too bad. Working it out live here. First
+> > do a bit of case analysis, We have 3 pointers so there are 3!=6 possible
+> > arrangements (permutations),
+> > 
+> >  1. S,C,E  6. S,E,C
+> >  5. C,S,E  2. C,E,S
+> >  3. E,S,C  4. E,C,S
+> > 
+> > 
+> > Case 1: Normal case start < curr < end
+> >  
+> >     0 1 2                              N = MAX_MSG_FRAGS
+> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+> >         ^       ^         ^
+> >         start   curr      end
+> > 
+> >   if (start < end && i < curr)
+> >      curr = i;
+> >         
+> >  
+> > Case 2: curr < end < start (in absolute index terms)
+> > 
+> >     0 1 2                              N = MAX_MSG_FRAGS
+> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+> >         ^       ^         ^
+> >         curr    end       start
+> > 
+> >    if (end < start && (i < curr || i > start))
+> >         curr = i
+> > 
+> > 
+> > Case 3: end < start < curr
+> > 
+> >     0 1 2                              N = MAX_MSG_FRAGS
+> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+> >                 ^         ^          ^
+> >                 end       start      curr
+> > 
+> > 
+> >    if (end < start && (i < curr)
+> >        curr = i;
+> > 
+> > 
+> > Case 4: end < curr < start
+> > 
+> >     0 1 2                              N = MAX_MSG_FRAGS
+> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+> >                 ^         ^          ^
+> >                 end       curr       start 
+> > 
+> > (nonsense curr would be invalid here it must be between the start and end)
+> > 
+> > Case 5: curr < start < end
+> > 
+> >     0 1 2                              N = MAX_MSG_FRAGS
+> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+> >                 ^         ^          ^
+> >                 curr      start      end 
+> > 
+> > (nonsense curr would be invalid here it must be between the start and end)
+> > 
+> > Case 6: start < end < curr 
+> > 
+> >     0 1 2                              N = MAX_MSG_FRAGS
+> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
+> >                 ^         ^          ^
+> >                 start     end        curr 
+> > 
+> > (nonsense curr would be invalid here it must be between the start and end)
+> > 
+> > So I think the following would suffice,
+> > 
+> > 
+> >   if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
+> >      msg->sg.curr = i;
+> >      msg->sg.copybreak = msg->sg.data[i].length;
+> >   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
+> >      msg->sg.curr = i;
+> >      msg->sg.copybreak = msg->sg.data[i].length;
+> >   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr) {
+> >      curr = i;
+> >      msg->sg.copybreak = msg->sg.data[i].length;
+> >   }
+> > 
+> > Finally fold the last two cases into one so we get
+> > 
+> >   if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
+> >      msg->sg.curr = i;
+> >      msg->sg.copybreak = msg->sg.data[i].length;
+> >   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
+> >      msg->sg.curr = i;
+> >      msg->sg.copybreak = msg->sg.data[i].length;
+> > 
+> > So not so bad. Put that in a helper in sk_msg.h and use it in trim. I can check
+> > logic in the AM and draft a patch but I think that should be correct. Also will
+> > need to audit to see if there are other cases this happens. In general I tried
+> > to always use i == msg->sg.{start|end|curr} to avoid this.
+> 
+> I will look in depth tomorrow as well, the full/empty cases are a
+> little tricky to fold into general logic.
+> 
+> I came up with this before I got distracted Halloweening :)
+
+Same here. Looking at the two cases from above.
+
+   if (msg->sg.start < msg->sg.end &&
+       i < msg->sg.curr) {  // i <= msg->sg.curr
+      msg->sg.curr = i;
+      msg->sg.copybreak = msg->sg.data[i].length;
+   }
+
+If we happen to trim the entire msg so size=0 then i==start
+which should mean i < msg->sg.curr unless msg->sg.curr = msg->sg.start
+so we should just use <=. In the second case.
+
+   else if (msg->sg.end < msg->sg.start &&
+           (i < msg->sg.curr || i > msg->sg.start)) { // i <= msg->sg.curr
+      msg->sg.curr = i;
+      msg->sg.copybreak = msg->sg.data[i].length;
+   }
+ 
+If we trim the entire message here i == sg.start again. And same
+thing use <= and we should catch case sg.tart = sg.curr.
+
+In the full case we didn't trim anything so we shouldn't do any
+manipulating of curr or copybreak.
+
+> 
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index e4b3fb4bb77c..ce7055259877 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -139,6 +139,11 @@ static inline void sk_msg_apply_bytes(struct sk_psock *psock, u32 bytes)
+>  	}
+>  }
+>  
+> +static inline u32 sk_msg_iter_dist(u32 start, u32 end)
+> +{
+> +	return end >= start ? end - start : end + (MAX_MSG_FRAGS - start);
+> +}
+> +
+>  #define sk_msg_iter_var_prev(var)			\
+>  	do {						\
+>  		if (var == 0)				\
+> @@ -198,9 +203,7 @@ static inline u32 sk_msg_elem_used(const struct sk_msg *msg)
+>  	if (sk_msg_full(msg))
+>  		return MAX_MSG_FRAGS;
+>  
+> -	return msg->sg.end >= msg->sg.start ?
+> -		msg->sg.end - msg->sg.start :
+> -		msg->sg.end + (MAX_MSG_FRAGS - msg->sg.start);
+> +	return sk_msg_iter_dist(msg->sg.start, msg->sg.end);
+>  }
+>  
+>  static inline struct scatterlist *sk_msg_elem(struct sk_msg *msg, int which)
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index cf390e0aa73d..f6b4a70bafa9 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -270,18 +270,26 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
+>  
+>  	msg->sg.data[i].length -= trim;
+>  	sk_mem_uncharge(sk, trim);
+> +	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
+> +		msg->sg.copybreak = msg->sg.data[i].length;
+>  out:
+> +	sk_msg_iter_var_next(i);
+> +	msg->sg.end = i;
+> +
+>  	/* If we trim data before curr pointer update copybreak and current
+>  	 * so that any future copy operations start at new copy location.
+>  	 * However trimed data that has not yet been used in a copy op
+>  	 * does not require an update.
+>  	 */
+> -	if (msg->sg.curr >= i) {
+> +	if (!msg->sg.size) {
+
+I do think its a bit nicer if we don't special case the size = 0 case. If
+we get here and i != start then we would have extra bytes in the sg
+items between the items (i, end) and nonzero size. If i == start then the
+we sg.size = 0. I don't think there are any other cases.
+
+> +		msg->sg.curr = 0;
+> +		msg->sg.copybreak = 0;
+> +	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >
+> +		   sk_msg_iter_dist(msg->sg.end, msg->sg.curr)) {
+> +		sk_msg_iter_var_prev(i);
+
+I suspect with small update to dist logic the special case could also
+be dropped here. But I have a preference for my example above at the
+moment. Just getting coffee now so will think on it though.
+
+FWIW I've not compiled my example.
+
+>  		msg->sg.curr = i;
+>  		msg->sg.copybreak = msg->sg.data[i].length;
+>  	}
+> -	sk_msg_iter_var_next(i);
+> -	msg->sg.end = i;
+>  }
+>  EXPORT_SYMBOL_GPL(sk_msg_trim);
+>  
+> -- 
+> 2.23.0
+
+
