@@ -2,323 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 978F1EC53C
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 16:01:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE53FEC53E
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 16:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727936AbfKAPBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 11:01:10 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:39043 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727465AbfKAPBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 11:01:10 -0400
-Received: by mail-io1-f68.google.com with SMTP id 18so11198997ion.6;
-        Fri, 01 Nov 2019 08:01:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=TBAFKynpg7YBPsA6wf6JWHl/9/CPJW3b1igBgFWJV2E=;
-        b=CBAVAwRe+WlT8H2FMtR7fWk5vsApB4R4Fwt0pkWz3jVBgDoAf7xIc4hFgWE9co51D1
-         agHmBjbRRhQPERx3eNNhu8u7zrAfz93g8DrsNjDpY1GHf3Q9wX9b3iMRdA21d+/rjp46
-         ShqjSRP0m8Nzp+YWNSoIaUQY7lDLge+zEDTJGu7AEJlo6HDf9IvBowg3yTniJoAy9ue6
-         pAZUNfsVJzeCKVgKq73jsLXDDmWdN/3uM7IpSDC/Ip9lNuaAkhiilSzheW/js4+d7CGo
-         DviEnYL7gSsf8xHlCt1okZSOpRuoHaSkwGHH/w8i7n961lQL+jdO2z7MDru+NagL+zex
-         NxmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=TBAFKynpg7YBPsA6wf6JWHl/9/CPJW3b1igBgFWJV2E=;
-        b=MmSvCcCimzVT3OgD8P8vE0HPVGWuXBelas9lhW4oDLdLEGAiMG20RcOFvCXeW2tHDI
-         vNtF/ZqONSvDzWId2AGM5yGn8xEiVyCSHKr2tK7wy7whEBTuRSUDfK+oZo6h2j2e1suO
-         7S8+hqfcfsy9nQpczzIfehZc4ZZH8qZgDaXNc09c7i4KS+xLC+7+Uyhhoa2HJPP/6BRH
-         0D3x3vt74Z8BjLfo473mh6upvF2vlfGBNj3m9Yq3qa07ntVCnDb+t80NT4va4wE648/H
-         eIwd0XTO6Rcow9xn6h8ze86donhLQokU3reGSrdrjqUrMiAbDV30/wAZX8AtrbjTO/SB
-         pT8g==
-X-Gm-Message-State: APjAAAVCjrOVxqQha5aNEpQGZq4FWhlEvhmQlH6ZTCxOcWQh+vpuyTMk
-        Sg+n6iMlyF/6LRcLGqQGc1k=
-X-Google-Smtp-Source: APXvYqw5b6n7kBK48avlOUPepxYum5V6LVTDvUo0W+/APYB9WcQFPgKaXXVEJB2yVmTNKJqUeTAhRQ==
-X-Received: by 2002:a5d:8598:: with SMTP id f24mr9994753ioj.60.1572620468986;
-        Fri, 01 Nov 2019 08:01:08 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id m18sm735605iol.49.2019.11.01.08.01.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 08:01:08 -0700 (PDT)
-Date:   Fri, 01 Nov 2019 08:01:00 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, borisp@mellanox.com,
-        aviadye@mellanox.com, daniel@iogearbox.net,
-        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
-        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
-        Eric Biggers <ebiggers@kernel.org>,
-        herbert@gondor.apana.org.au, glider@google.com,
-        linux-crypto@vger.kernel.org
-Message-ID: <5dbc48ac3a8cc_e4e2b12b10265b8a1@john-XPS-13-9370.notmuch>
-In-Reply-To: <20191031215444.68a12dfe@cakuba.netronome.com>
-References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
- <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
- <20191031152444.773c183b@cakuba.netronome.com>
- <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
- <20191031215444.68a12dfe@cakuba.netronome.com>
-Subject: Re: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1727984AbfKAPBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 11:01:17 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:47912 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727465AbfKAPBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 11:01:17 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 2D76860A96; Fri,  1 Nov 2019 15:01:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1572620476;
+        bh=Qs7if4hclkBg3s6p7V3S3H32XfO7ZKfvxRkH9xWkjM4=;
+        h=From:Subject:To:Cc:Date:From;
+        b=WRPUIOjF53DlsFsb6G9t6bTY0OtCVuu7Ob5vcmIxkWsBGIBctqPnGQ5cg1zL5Ll/E
+         MPTmAFhyCGJVNrsTZHM4IrTpqe0Ry7YsTKHHM8GzoVUukuElLxYtX+D8eIhFNSIjaO
+         qel2vt6oUH1JhlcCInYrpVVHyW0Awn48FyKi/ha0=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9D4106092F;
+        Fri,  1 Nov 2019 15:01:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1572620475;
+        bh=Qs7if4hclkBg3s6p7V3S3H32XfO7ZKfvxRkH9xWkjM4=;
+        h=From:Subject:To:Cc:From;
+        b=kwFbv3YPUq0brwHK7B0II217OGNJjC7DoGzvDHWBHYPUYJ46SJYdMZE3fUw2i+rjj
+         Oaprp8LbbVb6oLFrEmwdN+FSzhYJ2Cxsn9ihOvQqduwi4EMBOo6NDI7Es1sySYiKHp
+         0lZBzXKgtgbJqhAY1tIgNdn/TfDAUsFSrA9cUgvQ=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9D4106092F
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
+From:   Kalle Valo <kvalo@codeaurora.org>
+Subject: pull-request: wireless-drivers-2019-11-01
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Message-Id: <20191101150116.2D76860A96@smtp.codeaurora.org>
+Date:   Fri,  1 Nov 2019 15:01:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Thu, 31 Oct 2019 21:44:45 -0700, John Fastabend wrote:
-> > Jakub Kicinski wrote:
-> > > On Thu, 31 Oct 2019 15:05:53 -0700, John Fastabend wrote:  
-> > > > Jakub Kicinski wrote:  
-> > > > > sk_msg_trim() tries to only update curr pointer if it falls into
-> > > > > the trimmed region. The logic, however, does not take into the
-> > > > > account pointer wrapping that sk_msg_iter_var_prev() does.
-> > > > > This means that when the message was trimmed completely, the new
-> > > > > curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
-> > > > > neither smaller than any other value, nor would it actually be
-> > > > > correct.
-> > > > > 
-> > > > > Special case the trimming to 0 length a little bit.
-> > > > > 
-> > > > > This bug caused the TLS code to not copy all of the message, if
-> > > > > zero copy filled in fewer sg entries than memcopy would need.
-> > > > > 
-> > > > > Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
-> > > > > 
-> > > > > Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
-> > > > > Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
-> > > > > Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
-> > > > > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > > > > ---
-> > > > > Daniel, John, does this look okay?    
-> > > > 
-> > > > Thanks for the second ping!  
-> > > 
-> > > No problem, I was worried the patch got categorized as TLS and therefore
-> > > lower prio ;)  
-> > 
-> > Nope close to the top of the list here.
-> > 
-> > >   
-> >  [...]  
-> >  [...]  
-> > > 
-> > > I see, that makes sense and explains some of the complexity!
-> > > 
-> > > Perhaps the simplest way to go would be to adjust the curr as we go
-> > > then? The comparison logic could get a little hairy. So like this:  
-> > 
-> > I don't think the comparison is too bad. Working it out live here. First
-> > do a bit of case analysis, We have 3 pointers so there are 3!=6 possible
-> > arrangements (permutations),
-> > 
-> >  1. S,C,E  6. S,E,C
-> >  5. C,S,E  2. C,E,S
-> >  3. E,S,C  4. E,C,S
-> > 
-> > 
-> > Case 1: Normal case start < curr < end
-> >  
-> >     0 1 2                              N = MAX_MSG_FRAGS
-> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >         ^       ^         ^
-> >         start   curr      end
-> > 
-> >   if (start < end && i < curr)
-> >      curr = i;
-> >         
-> >  
-> > Case 2: curr < end < start (in absolute index terms)
-> > 
-> >     0 1 2                              N = MAX_MSG_FRAGS
-> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >         ^       ^         ^
-> >         curr    end       start
-> > 
-> >    if (end < start && (i < curr || i > start))
-> >         curr = i
-> > 
-> > 
-> > Case 3: end < start < curr
-> > 
-> >     0 1 2                              N = MAX_MSG_FRAGS
-> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >                 ^         ^          ^
-> >                 end       start      curr
-> > 
-> > 
-> >    if (end < start && (i < curr)
-> >        curr = i;
-> > 
-> > 
-> > Case 4: end < curr < start
-> > 
-> >     0 1 2                              N = MAX_MSG_FRAGS
-> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >                 ^         ^          ^
-> >                 end       curr       start 
-> > 
-> > (nonsense curr would be invalid here it must be between the start and end)
-> > 
-> > Case 5: curr < start < end
-> > 
-> >     0 1 2                              N = MAX_MSG_FRAGS
-> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >                 ^         ^          ^
-> >                 curr      start      end 
-> > 
-> > (nonsense curr would be invalid here it must be between the start and end)
-> > 
-> > Case 6: start < end < curr 
-> > 
-> >     0 1 2                              N = MAX_MSG_FRAGS
-> >     |_|_|_|...|_|_|_|...|_|_|_|_|....|_|_|
-> >                 ^         ^          ^
-> >                 start     end        curr 
-> > 
-> > (nonsense curr would be invalid here it must be between the start and end)
-> > 
-> > So I think the following would suffice,
-> > 
-> > 
-> >   if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
-> >      msg->sg.curr = i;
-> >      msg->sg.copybreak = msg->sg.data[i].length;
-> >   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
-> >      msg->sg.curr = i;
-> >      msg->sg.copybreak = msg->sg.data[i].length;
-> >   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr) {
-> >      curr = i;
-> >      msg->sg.copybreak = msg->sg.data[i].length;
-> >   }
-> > 
-> > Finally fold the last two cases into one so we get
-> > 
-> >   if (msg->sg.start < msg->sg.end && i < msg->sg.curr) {
-> >      msg->sg.curr = i;
-> >      msg->sg.copybreak = msg->sg.data[i].length;
-> >   } else if (msg->sg.end < msg->sg.start && (i < msg->sg.curr || i > msg->sg.start))
-> >      msg->sg.curr = i;
-> >      msg->sg.copybreak = msg->sg.data[i].length;
-> > 
-> > So not so bad. Put that in a helper in sk_msg.h and use it in trim. I can check
-> > logic in the AM and draft a patch but I think that should be correct. Also will
-> > need to audit to see if there are other cases this happens. In general I tried
-> > to always use i == msg->sg.{start|end|curr} to avoid this.
-> 
-> I will look in depth tomorrow as well, the full/empty cases are a
-> little tricky to fold into general logic.
-> 
-> I came up with this before I got distracted Halloweening :)
+Hi,
 
-Same here. Looking at the two cases from above.
+here's a pull request to net tree, more info below. Please let me know if there
+are any problems.
 
-   if (msg->sg.start < msg->sg.end &&
-       i < msg->sg.curr) {  // i <= msg->sg.curr
-      msg->sg.curr = i;
-      msg->sg.copybreak = msg->sg.data[i].length;
-   }
+Kalle
 
-If we happen to trim the entire msg so size=0 then i==start
-which should mean i < msg->sg.curr unless msg->sg.curr = msg->sg.start
-so we should just use <=. In the second case.
+The following changes since commit d79749f7716d9dc32fa2d5075f6ec29aac63c76d:
 
-   else if (msg->sg.end < msg->sg.start &&
-           (i < msg->sg.curr || i > msg->sg.start)) { // i <= msg->sg.curr
-      msg->sg.curr = i;
-      msg->sg.copybreak = msg->sg.data[i].length;
-   }
- 
-If we trim the entire message here i == sg.start again. And same
-thing use <= and we should catch case sg.tart = sg.curr.
+  ath10k: fix latency issue for QCA988x (2019-10-14 11:43:36 +0300)
 
-In the full case we didn't trim anything so we shouldn't do any
-manipulating of curr or copybreak.
+are available in the git repository at:
 
-> 
-> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-> index e4b3fb4bb77c..ce7055259877 100644
-> --- a/include/linux/skmsg.h
-> +++ b/include/linux/skmsg.h
-> @@ -139,6 +139,11 @@ static inline void sk_msg_apply_bytes(struct sk_psock *psock, u32 bytes)
->  	}
->  }
->  
-> +static inline u32 sk_msg_iter_dist(u32 start, u32 end)
-> +{
-> +	return end >= start ? end - start : end + (MAX_MSG_FRAGS - start);
-> +}
-> +
->  #define sk_msg_iter_var_prev(var)			\
->  	do {						\
->  		if (var == 0)				\
-> @@ -198,9 +203,7 @@ static inline u32 sk_msg_elem_used(const struct sk_msg *msg)
->  	if (sk_msg_full(msg))
->  		return MAX_MSG_FRAGS;
->  
-> -	return msg->sg.end >= msg->sg.start ?
-> -		msg->sg.end - msg->sg.start :
-> -		msg->sg.end + (MAX_MSG_FRAGS - msg->sg.start);
-> +	return sk_msg_iter_dist(msg->sg.start, msg->sg.end);
->  }
->  
->  static inline struct scatterlist *sk_msg_elem(struct sk_msg *msg, int which)
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index cf390e0aa73d..f6b4a70bafa9 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -270,18 +270,26 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
->  
->  	msg->sg.data[i].length -= trim;
->  	sk_mem_uncharge(sk, trim);
-> +	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
-> +		msg->sg.copybreak = msg->sg.data[i].length;
->  out:
-> +	sk_msg_iter_var_next(i);
-> +	msg->sg.end = i;
-> +
->  	/* If we trim data before curr pointer update copybreak and current
->  	 * so that any future copy operations start at new copy location.
->  	 * However trimed data that has not yet been used in a copy op
->  	 * does not require an update.
->  	 */
-> -	if (msg->sg.curr >= i) {
-> +	if (!msg->sg.size) {
+  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2019-11-01
 
-I do think its a bit nicer if we don't special case the size = 0 case. If
-we get here and i != start then we would have extra bytes in the sg
-items between the items (i, end) and nonzero size. If i == start then the
-we sg.size = 0. I don't think there are any other cases.
+for you to fetch changes up to 3d206e6899a07fe853f703f7e68f84b48b919129:
 
-> +		msg->sg.curr = 0;
-> +		msg->sg.copybreak = 0;
-> +	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >
-> +		   sk_msg_iter_dist(msg->sg.end, msg->sg.curr)) {
-> +		sk_msg_iter_var_prev(i);
+  iwlwifi: fw api: support new API for scan config cmd (2019-10-30 17:00:26 +0200)
 
-I suspect with small update to dist logic the special case could also
-be dropped here. But I have a preference for my example above at the
-moment. Just getting coffee now so will think on it though.
+----------------------------------------------------------------
+wireless-drivers fixes for 5.4
 
-FWIW I've not compiled my example.
+Third set of fixes for 5.4. Most of them are for iwlwifi but important
+fixes also for rtlwifi and mt76, the overflow fix for rtlwifi being
+most important.
 
->  		msg->sg.curr = i;
->  		msg->sg.copybreak = msg->sg.data[i].length;
->  	}
-> -	sk_msg_iter_var_next(i);
-> -	msg->sg.end = i;
->  }
->  EXPORT_SYMBOL_GPL(sk_msg_trim);
->  
-> -- 
-> 2.23.0
+iwlwifi
 
+* fix merge damage on earlier patch
 
+* various fixes to device id handling
+
+* fix scan config command handling which caused firmware asserts
+
+rtlwifi
+
+* fix overflow on P2P IE handling
+
+* don't deliver too small frames to mac80211
+
+mt76
+
+* disable PCIE_ASPM
+
+* fix buffer DMA unmap on certain cases
+
+----------------------------------------------------------------
+Ayala Beker (1):
+      iwlwifi: fw api: support new API for scan config cmd
+
+Johannes Berg (1):
+      iwlwifi: mvm: handle iwl_mvm_tvqm_enable_txq() error return
+
+Larry Finger (1):
+      rtlwifi: rtl_pci: Fix problem of too small skb->len
+
+Laura Abbott (1):
+      rtlwifi: Fix potential overflow on P2P code
+
+Lorenzo Bianconi (2):
+      mt76: mt76x2e: disable pcie_aspm by default
+      mt76: dma: fix buffer unmap with non-linear skbs
+
+Luca Coelho (5):
+      iwlwifi: pcie: fix merge damage on making QnJ exclusive
+      iwlwifi: pcie: fix PCI ID 0x2720 configs that should be soc
+      iwlwifi: pcie: fix all 9460 entries for qnj
+      iwlwifi: pcie: add workaround for power gating in integrated 22000
+      iwlwifi: pcie: 0x2720 is qu and 0x30DC is not
+
+ drivers/net/wireless/intel/iwlwifi/fw/api/scan.h   |  22 +++-
+ drivers/net/wireless/intel/iwlwifi/fw/file.h       |   3 +
+ drivers/net/wireless/intel/iwlwifi/iwl-csr.h       |   1 +
+ drivers/net/wireless/intel/iwlwifi/iwl-prph.h      |   5 +
+ drivers/net/wireless/intel/iwlwifi/mvm/mvm.h       |   6 +
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c      |  40 ++++--
+ drivers/net/wireless/intel/iwlwifi/mvm/sta.c       | 140 ++++++++++++---------
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c      | 131 ++++++++++---------
+ .../net/wireless/intel/iwlwifi/pcie/trans-gen2.c   |  25 ++++
+ drivers/net/wireless/mediatek/mt76/Makefile        |   2 +
+ drivers/net/wireless/mediatek/mt76/dma.c           |   6 +-
+ drivers/net/wireless/mediatek/mt76/mt76.h          |   6 +-
+ drivers/net/wireless/mediatek/mt76/mt76x2/pci.c    |   2 +
+ drivers/net/wireless/mediatek/mt76/pci.c           |  46 +++++++
+ drivers/net/wireless/realtek/rtlwifi/pci.c         |   3 +-
+ drivers/net/wireless/realtek/rtlwifi/ps.c          |   6 +
+ 16 files changed, 305 insertions(+), 139 deletions(-)
+ create mode 100644 drivers/net/wireless/mediatek/mt76/pci.c
