@@ -2,91 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4E67EC9A6
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:32:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7B4EC9B0
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbfKAUcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 16:32:48 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41435 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726913AbfKAUcr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:32:47 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o3so14626635qtj.8
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 13:32:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=okI+WKXZnivApTS1Oqi6dD5Ms0rFCprYxF1H61WduWk=;
-        b=f7orMWZVKXvZohfNhfH5dicN+vFp+YUIVDlLvpaAMVZ7h8ecWefrFvtJZN0ZDow/W9
-         YkCCZe4G299RZaxDbjEQiMVkjIpWIhYI8YnOEmlZ3gsdJvwb6Z5EyiSyU+U0sdD3OxRD
-         SzZ/z/yHmTleGDsqSwaFraId3RNjzfjblyZv/B+/IjE67rN4SSkSkjEzDiWAOHve7Sd/
-         zQjph+h8Bqh7oskDXu+wJv4l5Mb6C1aAQRhj1uYTz1egGk5npOq/uegK2A4YhjUTOBL1
-         qMUZ6aTPq5v6OfToB2RwzdOTKPj1nPIdZyiRLgn2zCXfaGeaCs0A4Aqng86kc9ZzptOc
-         TFxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=okI+WKXZnivApTS1Oqi6dD5Ms0rFCprYxF1H61WduWk=;
-        b=CIFxd2x1UMSlgbY7LUBVSaFNJ/6UISyAIf+n9mEXggHQHs7iBDj0PZ92tpPdbc7rLC
-         apNs22q9rrvua61y8OyeWrg3XJX+HCzBF8jvxnR0MigFqLujxfdH0525FSmMuKYEdyEe
-         ZTjc4Qlptoc2SEC3mj8+SD/3Nm9r28a74wgL81Hdd++7IEvu/VgfgqtSX5NieR7LwgyT
-         M0tH+tT+bOqXnlvB8d7yyxZdgZznm5wOGs0uogpEszxEMk98TPcYRd3UN5vpbx3tKDIK
-         aRfjpwVOiMVLWlH1H0fEotdKltM9xhw69Ix51g2u/jbf0u29FinoURxX3XnueHKWZllX
-         wHWw==
-X-Gm-Message-State: APjAAAVtUvjnPK22IRiCYRrGYlIUlZiWpRDF+mfTn4iWsNWDB4WzERoW
-        H5WLSHL4MceOLWQwLoizfx5DS0hQikkEe0BkcLE=
-X-Google-Smtp-Source: APXvYqzHEQTnfAn6B3IwrtlyuqSor8Qh5mCEmuxsMvcul8nl6vWAYSXyNs5URypQVJb35SAyKHrrDFgPB2DSmnU/rjI=
-X-Received: by 2002:ac8:5491:: with SMTP id h17mr1316984qtq.292.1572640366818;
- Fri, 01 Nov 2019 13:32:46 -0700 (PDT)
+        id S1727874AbfKAUfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 16:35:16 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:60230 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726709AbfKAUfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:35:16 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1KZ74i032411;
+        Fri, 1 Nov 2019 15:35:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1572640507;
+        bh=p+dfw3N+D1l1+xg4adawidJ2KJs+uoZqMzJER8QjWMw=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=syh5xEUH/Q+eMM74SOHx9Spca5PozuY0lLj2Ec25f6OIfNp9ZrEbOizjjA+3pjL15
+         6tWF1rgOf63z0Bl/3E++z+QNiPsj0Zc5HxuGpKQDolfdUeJYHEPZpzafZB3RRV7jHl
+         7Rg+PRbQiFqeVtiQmkPTH/iMjo7WCMAW5GLCT+zE=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA1KZ6Zs124477
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 1 Nov 2019 15:35:07 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
+ 2019 15:34:53 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Fri, 1 Nov 2019 15:35:06 -0500
+Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1KZ3jC119024;
+        Fri, 1 Nov 2019 15:35:04 -0500
+Subject: Re: [PATCH v5 net-next 06/12] net: ethernet: ti: introduce cpsw
+ switchdev based driver part 1 - dual-emac
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+References: <20191024100914.16840-1-grygorii.strashko@ti.com>
+ <20191024100914.16840-7-grygorii.strashko@ti.com>
+ <20191029123230.GM15259@lunn.ch>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <24b1623d-48df-328a-eda7-4195e9df2b22@ti.com>
+Date:   Fri, 1 Nov 2019 22:34:57 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Received: by 2002:a0c:8aca:0:0:0:0:0 with HTTP; Fri, 1 Nov 2019 13:32:46 -0700 (PDT)
-Reply-To: eddywilliam0002@gmail.com
-From:   eddy william <kagnalex@gmail.com>
-Date:   Fri, 1 Nov 2019 21:32:46 +0100
-Message-ID: <CACemp=7hXLmmLs1mQbj8DorUuSccQQChCR5xQNC5NjMfdrQXMg@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20191029123230.GM15259@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo
-
-Mein Name ist Eddy William. Ich bin von Beruf Rechtsanwalt. Ich m=C3=B6chte
-Ihnen anbieten
-die n=C3=A4chsten Verwandten zu meinem Klienten. Sie erben die Summe von
-($8,5 Millionen US-Dollar)
-Dollar, die mein Kunde vor seinem Tod in der Bank gelassen hat.
-
-Mein Mandant ist ein Staatsb=C3=BCrger Ihres Landes, der mit seiner Frau
-bei einem Autounfall ums Leben gekommen ist
-und nur Sohn. Ich werde mit 50% des Gesamtfonds berechtigt sein, w=C3=A4hre=
-nd 50%
-sein f=C3=BCr dich.
-Bitte kontaktieren Sie meine private E-Mail hier f=C3=BCr weitere
-Informationen: eddywilliam0002gmail.com
-
-Vielen Dank im Voraus,
-Mr. Eddy William,
 
 
+On 29/10/2019 14:32, Andrew Lunn wrote:
+>> +static int cpsw_probe(struct platform_device *pdev)
+>> +{
+>> +	const struct soc_device_attribute *soc;
+>> +	struct device *dev = &pdev->dev;
+>> +	struct resource *ss_res;
+>> +	struct cpsw_common *cpsw;
+>> +	struct gpio_descs *mode;
+>> +	void __iomem *ss_regs;
+>> +	int ret = 0, ch;
+>> +	struct clk *clk;
+>> +	int irq;
+>> +
+> 
+> ...
+> 
+>> +
+>> +	/* setup netdevs */
+>> +	ret = cpsw_create_ports(cpsw);
+>> +	if (ret)
+>> +		goto clean_unregister_netdev;
+> 
+> At this point, the slave ports go live. If the kernel is configured
+> with NFS root etc, it will start using the interfaces.
+> 
+> +
+>> +	/* Grab RX and TX IRQs. Note that we also have RX_THRESHOLD and
+>> +	 * MISC IRQs which are always kept disabled with this driver so
+>> +	 * we will not request them.
+>> +	 *
+>> +	 * If anyone wants to implement support for those, make sure to
+>> +	 * first request and append them to irqs_table array.
+>> +	 */
+>> +
+>> +	ret = devm_request_irq(dev, cpsw->irqs_table[0], cpsw_rx_interrupt,
+>> +			       0, dev_name(dev), cpsw);
+>> +	if (ret < 0) {
+>> +		dev_err(dev, "error attaching irq (%d)\n", ret);
+>> +		goto clean_unregister_netdev;
+>> +	}
+>> +
+>> +	ret = devm_request_irq(dev, cpsw->irqs_table[1], cpsw_tx_interrupt,
+>> +			       0, dev_name(dev), cpsw);
+>> +	if (ret < 0) {
+>> +		dev_err(dev, "error attaching irq (%d)\n", ret);
+>> +		goto clean_unregister_netdev;
+>> +	}
+> 
+> Are there any race conditions if the network starts using the devices
+> before interrupts are requested? To be safe, maybe this should be done
+> before the slaves are created?
 
-Hello
+Usually during boot - there is no parallel probing (as opposite to modules loading by
+udev, for example). Also, there is barrier init call deferred_probe_initcall() to ensure all
+drivers probed before going to mount rootfs.
 
-My name is Eddy William I am a lawyer by profession. I wish to offer you
-the next of kin to my client. You will inherit the sum of ($8.5 Million)
-dollars my client left in the bank before his death.
+So, i do not think this could cause any issue - max few packets will be delayed
+until kernel will switch back here, but the chances that ndo_open will be finished before probe ->0.
 
-My client is a citizen of your country who died in auto crash with his wife
-and only son. I will be entitled with 50% of the total fund while 50% will
-be for you.
-Please contact my private email here for more details:eddywilliam0002gmail.=
-com
-
-Many thanks in advance,
-Mr.Eddy William,
+-- 
+Best regards,
+grygorii
