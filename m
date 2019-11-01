@@ -2,146 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E59EC978
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:16:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 733D0EC991
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 21:25:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727673AbfKAUQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 16:16:48 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:41122 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbfKAUQs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 16:16:48 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1KGdvH007674;
-        Fri, 1 Nov 2019 15:16:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1572639399;
-        bh=XckIMX9TOLpRUdwAePmoGCJdYT+5toAsS7w8nr/Ee6g=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=KR7VIPH0NTgTtD80kS210fYpguS9kMl4YdKPGmpZbtSTuuhRX2+XlvkcwHp+D+ix3
-         XODUzzhmCjJUQ+xaiMe9D2M0m13QBd8GqNq21rOee59yOBZVyzbSJECZgT9FokhvQk
-         z93jEJIge/VQlVzsVtrT5h2rNa+ES67pz0TZSScA=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA1KGdwk109200
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 1 Nov 2019 15:16:39 -0500
-Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
- 2019 15:16:25 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Fri, 1 Nov 2019 15:16:25 -0500
-Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1KGZS0093218;
-        Fri, 1 Nov 2019 15:16:36 -0500
-Subject: Re: [PATCH v5 net-next 06/12] net: ethernet: ti: introduce cpsw
- switchdev based driver part 1 - dual-emac
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <netdev@vger.kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
-References: <20191024100914.16840-1-grygorii.strashko@ti.com>
- <20191024100914.16840-7-grygorii.strashko@ti.com>
- <20191029122422.GL15259@lunn.ch>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <d87c72e1-cb91-04a2-c881-0d8eec4671e2@ti.com>
-Date:   Fri, 1 Nov 2019 22:16:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727966AbfKAUZs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 16:25:48 -0400
+Received: from mga02.intel.com ([134.134.136.20]:47883 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726701AbfKAUZl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 1 Nov 2019 16:25:41 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 01 Nov 2019 13:25:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,256,1569308400"; 
+   d="scan'208";a="375669933"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga005.jf.intel.com with ESMTP; 01 Nov 2019 13:25:40 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net v2 0/7][pull request] Intel Wired LAN Driver Updates 2019-11-01
+Date:   Fri,  1 Nov 2019 13:25:31 -0700
+Message-Id: <20191101202538.665-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20191029122422.GL15259@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+This series contains updates to e1000, igb, igc, ixgbe, i40e and driver
+documentation.
 
-On 29/10/2019 14:24, Andrew Lunn wrote:
->>   config TI_CPTS
->>   	bool "TI Common Platform Time Sync (CPTS) Support"
->> -	depends on TI_CPSW || TI_KEYSTONE_NETCP || COMPILE_TEST
->> +	depends on TI_CPSW || TI_KEYSTONE_NETCP || COMPILE_TEST || TI_CPSW_SWITCHDEV
-> 
-> nit picking, but COMPILE_TEST is generally last on the line.
-> 
->> +/**
->> + * cpsw_set_mc - adds multicast entry to the table if it's not added or deletes
->> + * if it's not deleted
->> + * @ndev: device to sync
->> + * @addr: address to be added or deleted
->> + * @vid: vlan id, if vid < 0 set/unset address for real device
->> + * @add: add address if the flag is set or remove otherwise
->> + */
->> +static int cpsw_set_mc(struct net_device *ndev, const u8 *addr,
->> +		       int vid, int add)
->> +{
->> +	struct cpsw_priv *priv = netdev_priv(ndev);
->> +	struct cpsw_common *cpsw = priv->cpsw;
->> +	int slave_no = cpsw_slave_index(cpsw, priv);
->> +	int mask, flags, ret;
-> 
-> David will complain about reverse Christmas tree. You need to move
-> some of the assignments into the body of the function. This problems
-> happens a few times in the code.
-> 
->> +static int cpsw_set_pauseparam(struct net_device *ndev,
->> +			       struct ethtool_pauseparam *pause)
->> +{
->> +	struct cpsw_common *cpsw = ndev_to_cpsw(ndev);
->> +	struct cpsw_priv *priv = netdev_priv(ndev);
->> +
->> +	priv->rx_pause = pause->rx_pause ? true : false;
->> +	priv->tx_pause = pause->tx_pause ? true : false;
->> +
->> +	return phy_restart_aneg(cpsw->slaves[priv->emac_port - 1].phy);
->> +}
-> 
-> You should look at the value of pause.autoneg.
+Lyude Paul fixes an issue where a fatal read error occurs when the
+device is unplugged from the machine.  So change the read error into a
+warn while the device is still present.
 
-I'll use phy_validate_pause() and phy_set_asym_pause() here,
-and fix other comments.
+Manfred Rudigier found that the i350 device was not apart of the "Media
+Auto Sense" feature, yet the device supports it.  So add the missing
+i350 device to the check and fix an issue where the media auto sense
+would flip/flop when no cable was connected to the port causing spurious
+kernel log messages.
 
-> 
->> +static const struct devlink_ops cpsw_devlink_ops;
-> 
-> It would be nice to avoid this forward declaration.
+I fixed an issue where the fix to resolve receive buffer starvation was
+applied in more than one place in the driver, one being the incorrect
+location in the i40e driver.
 
-It's not declaration, it's definition of devlink_ops without any standard callbacks implemented.
+Wenwen Wang fixes a potential memory leak in e1000 where allocated
+memory is not properly cleaned up in one of the error paths.
 
-> 
->> +static const struct devlink_param cpsw_devlink_params[] = {
->> +	DEVLINK_PARAM_DRIVER(CPSW_DL_PARAM_ALE_BYPASS,
->> +			     "ale_bypass", DEVLINK_PARAM_TYPE_BOOL,
->> +			     BIT(DEVLINK_PARAM_CMODE_RUNTIME),
->> +			     cpsw_dl_ale_ctrl_get, cpsw_dl_ale_ctrl_set, NULL),
->> +};
-> 
-> Is this documented?
+Jonathan Neuschäfer cleans up the driver documentation to be consistent
+and remove the footnote reference, since the footnote no longer exists in
+the documentation.
 
-In patch 9. But I'll update it and add standard devlink parameter definition, like:
+Igor Pylypiv cleans up a duplicate clearing of a bit, no need to clear
+it twice.
 
-ale_bypass	[DEVICE, DRIVER-SPECIFIC]
-		Allows to enable ALE_CONTROL(4).BYPASS mode for debug purposes
-		Type: bool
-		Configuration mode: runtime
+v2: Fixed alignment issue in patch 3 of the series based on community
+    feedback.
 
-Thank you for review.
+The following are changes since commit 6d6f0383b697f004c65823c2b64240912f18515d:
+  netdevsim: Fix use-after-free during device dismantle
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/net-queue 1GbE
+
+Igor Pylypiv (1):
+  ixgbe: Remove duplicate clear_bit() call
+
+Jeff Kirsher (1):
+  i40e: Fix receive buffer starvation for AF_XDP
+
+Jonathan Neuschäfer (1):
+  Documentation: networking: device drivers: Remove stray asterisks
+
+Lyude Paul (1):
+  igb/igc: Don't warn on fatal read failures when the device is removed
+
+Manfred Rudigier (2):
+  igb: Enable media autosense for the i350.
+  igb: Fix constant media auto sense switching when no cable is
+    connected
+
+Wenwen Wang (1):
+  e1000: fix memory leaks
+
+ .../networking/device_drivers/intel/e100.rst       | 14 +++++++-------
+ .../networking/device_drivers/intel/e1000.rst      | 12 ++++++------
+ .../networking/device_drivers/intel/e1000e.rst     | 14 +++++++-------
+ .../networking/device_drivers/intel/fm10k.rst      | 10 +++++-----
+ .../networking/device_drivers/intel/i40e.rst       |  8 ++++----
+ .../networking/device_drivers/intel/iavf.rst       |  8 ++++----
+ .../networking/device_drivers/intel/ice.rst        |  6 +++---
+ .../networking/device_drivers/intel/igb.rst        | 12 ++++++------
+ .../networking/device_drivers/intel/igbvf.rst      |  6 +++---
+ .../networking/device_drivers/intel/ixgbe.rst      | 10 +++++-----
+ .../networking/device_drivers/intel/ixgbevf.rst    |  6 +++---
+ .../networking/device_drivers/pensando/ionic.rst   |  6 +++---
+ drivers/net/ethernet/intel/e1000/e1000_ethtool.c   |  7 +++----
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |  5 -----
+ drivers/net/ethernet/intel/igb/e1000_82575.c       |  2 +-
+ drivers/net/ethernet/intel/igb/igb_main.c          |  8 +++++---
+ drivers/net/ethernet/intel/igc/igc_main.c          |  3 ++-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |  1 -
+ 18 files changed, 67 insertions(+), 71 deletions(-)
 
 -- 
-Best regards,
-grygorii
+2.21.0
+
