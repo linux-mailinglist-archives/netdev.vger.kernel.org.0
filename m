@@ -2,97 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A2EEBBC1
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 02:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17058EBBC6
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 02:42:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727920AbfKABlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 31 Oct 2019 21:41:24 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:43433 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726540AbfKABlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 31 Oct 2019 21:41:24 -0400
-Received: by mail-lf1-f68.google.com with SMTP id j5so6132756lfh.10
-        for <netdev@vger.kernel.org>; Thu, 31 Oct 2019 18:41:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=28+bcFJYoJEnQTy+zZ2g/vNa2JUR4mv8q+aNelx1izA=;
-        b=Jd2djWZT0/u9l71/nxHOhW6qzkErlZkrin+bZLqV3+OsC8RriKIjYuGozQ+JhrbIBQ
-         5/rAIZj8rgfTibqqZqScbKPFHbDio8rlFW2unpbbP6alNS/OelFfDdfgcbv4W96eGqii
-         mEMM4WD9kuC6HtgLZENWb5Gst1X7S5NyDcBiz9z19ViMlqFv+rjz60aogjfG9Cn9KKWH
-         YIkdDQWLGljElQS8614e5jdFWxdafuL3Kcms7UV/38Ar9lW3vzsiSb5eHGYp1d1MDMOF
-         Ay4XKe/SbDfuhOAOgwxkecc5ikctTSdOLIlDy/lqrk1J/MR2KYwMZN5iCJN+m3L+LOPe
-         bOvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=28+bcFJYoJEnQTy+zZ2g/vNa2JUR4mv8q+aNelx1izA=;
-        b=aJml4r3+G6w7+nxR8IcZVCCrW4mw77Mkpn6zZTydj/qbEZ1WA8QGgoXU6RxHAo4OTp
-         6/R4SyAThxV61tObgPjjNzw1dgxjOq7zdRtM0VTU/VCXauzlgwCo/M7/boCy+Y6/ZVfr
-         cPOTRshwNqHm4DX0a0EGdMQ7dGoSJnRSv1fd0T2M2Nf0bMNjmkR694BZJ3Fk9zMfLThG
-         evgBlydiL/H5FX17rtVcUJB1ZGhe176ODtwp36pcMhFTWIIK06PirMyUlNr0diLe4LUI
-         FljVCQDSGLPBB9lQSLIlVvpMf9WbdPIc7JZEjMMQgrve1cQw2hQwCgtpYVovbfM7v+rA
-         lv5Q==
-X-Gm-Message-State: APjAAAWu8qkTOa3xcDHr88zHDlXxwwVko/gr7mm9CIvTSKX/JsKeqYaL
-        ZpgzJGptduocLwL1301ACKfMoA==
-X-Google-Smtp-Source: APXvYqy4K6BL9EY7AWIU4qqZykE10/6Du6BufIygn+JxjoCmJ6DC6uivddDrUirdI2OofJux0ZTYpQ==
-X-Received: by 2002:ac2:46d7:: with SMTP id p23mr5484232lfo.104.1572572480575;
-        Thu, 31 Oct 2019 18:41:20 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id v21sm1916783lfe.68.2019.10.31.18.41.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Oct 2019 18:41:20 -0700 (PDT)
-Date:   Thu, 31 Oct 2019 18:41:11 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, borisp@mellanox.com,
-        aviadye@mellanox.com, daniel@iogearbox.net,
-        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
-        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
-        Eric Biggers <ebiggers@kernel.org>,
-        herbert@gondor.apana.org.au, glider@google.com,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
-Message-ID: <20191031184111.535232f5@cakuba.netronome.com>
-In-Reply-To: <20191031152444.773c183b@cakuba.netronome.com>
-References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
-        <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
-        <20191031152444.773c183b@cakuba.netronome.com>
-Organization: Netronome Systems, Ltd.
+        id S1728737AbfKABmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 31 Oct 2019 21:42:43 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5241 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728655AbfKABmn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 31 Oct 2019 21:42:43 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 1CDD27EBC0844FDF46F5;
+        Fri,  1 Nov 2019 09:42:41 +0800 (CST)
+Received: from [127.0.0.1] (10.133.219.218) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Fri, 1 Nov 2019
+ 09:42:35 +0800
+Message-ID: <5DBB8D8A.5030607@huawei.com>
+Date:   Fri, 1 Nov 2019 09:42:34 +0800
+From:   zhong jiang <zhongjiang@huawei.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20120428 Thunderbird/12.0.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+To:     Simon Horman <simon.horman@netronome.com>
+CC:     <kvalo@codeaurora.org>, <stas.yakovlev@gmail.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH 1/3] ipw2x00: Remove redundant variable "rc"
+References: <1572529580-26594-1-git-send-email-zhongjiang@huawei.com> <1572529580-26594-2-git-send-email-zhongjiang@huawei.com> <20191031204449.GC30739@netronome.com>
+In-Reply-To: <20191031204449.GC30739@netronome.com>
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.219.218]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 31 Oct 2019 15:24:44 -0700, Jakub Kicinski wrote:
-> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> index cf390e0aa73d..c2b0f9cb589c 100644
-> --- a/net/core/skmsg.c
-> +++ b/net/core/skmsg.c
-> @@ -261,25 +261,29 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
->         msg->sg.size = len;
->         while (msg->sg.data[i].length &&
->                trim >= msg->sg.data[i].length) {
-> +               bool move_curr = msg->sg.curr == i;
-> +
->                 trim -= msg->sg.data[i].length;
->                 sk_msg_free_elem(sk, msg, i, true);
->                 sk_msg_iter_var_prev(i);
-> +               if (move_curr) {
-> +                       msg->sg.curr = i;
-> +                       msg->sg.copybreak = msg->sg.data[i].length;
-> +               }
->                 if (!trim)
->                         goto out;
->         }
+On 2019/11/1 4:44, Simon Horman wrote:
+> On Thu, Oct 31, 2019 at 09:46:18PM +0800, zhong jiang wrote:
+>> local variable "rc" is not used. hence it is safe to remove and
+>> just return 0.
+>>
+>> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
+> It appears that there is only one caller of
+> libipw_qos_convert_ac_to_parameters() and that it ignores the return value
+> (which, as you point out is always 0). 
+>
+> Perhaps it would be cleaner if the return type of
+> libipw_qos_convert_ac_to_parameters() was void.
+will do in V2,  Thanks
+>> ---
+>>  drivers/net/wireless/intel/ipw2x00/libipw_rx.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/intel/ipw2x00/libipw_rx.c b/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
+>> index 34cfd81..df0f37e4 100644
+>> --- a/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
+>> +++ b/drivers/net/wireless/intel/ipw2x00/libipw_rx.c
+>> @@ -1005,7 +1005,6 @@ static int libipw_qos_convert_ac_to_parameters(struct
+>>  						  libipw_qos_parameters
+>>  						  *qos_param)
+>>  {
+>> -	int rc = 0;
+>>  	int i;
+>>  	struct libipw_qos_ac_parameter *ac_params;
+>>  	u32 txop;
+>> @@ -1030,7 +1029,8 @@ static int libipw_qos_convert_ac_to_parameters(struct
+>>  		txop = le16_to_cpu(ac_params->tx_op_limit) * 32;
+>>  		qos_param->tx_op_limit[i] = cpu_to_le16(txop);
+>>  	}
+>> -	return rc;
+>> +
+>> +	return 0;
+>>  }
+>>  
+>>  /*
+>> -- 
+>> 1.7.12.4
+>>
+> .
+>
 
-Thinking about this in between builds that is clearly nonsensical,
-sorry. But I'd feel a little better if we merged a full fix instead of
-just fixing the simple case for now :( Maybe I can produce a working
-patch based on your description..
+
