@@ -2,204 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DA9AEC76F
-	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 18:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18C3DEC77C
+	for <lists+netdev@lfdr.de>; Fri,  1 Nov 2019 18:26:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728566AbfKARWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 13:22:52 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:37812 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726866AbfKARWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 13:22:52 -0400
-Received: by mail-lf1-f66.google.com with SMTP id b20so7760109lfp.4
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 10:22:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=vdJS5wHCvpSQMFm2jdDQ61c5eY7rBNbjJW+8uyG0GRg=;
-        b=OYhrNrhuXsL/quLsVKXrps3cBpJHq+KilIJjfscIIvLeZFpDBdSoX5Q5sPW6eptPNi
-         i+9NTi0uzAsUEkZpX166hI0jqCIMfUC1/Dethrk7AQ4MffqSak83kdWTTcyrvjA23iLf
-         VHfL8XeJ2hsrhaKJfEQDlO5doohJw1DsFhJwSgSSs1/H3Mp7e0ORiq8fT8zQBT6jBvOL
-         ZLP2Rk3odmj1W6ChZQ8tPGvlT7D7ouKOMjBygRdn+r/7EJVGBofXm4i/np/bNknJA+Ph
-         nj4G7+4aUuYtW6CtSVVT/O2NcowP9Ar4uo8F24ar5BTxuWkeviBzEzcmiqXyUqZScnTl
-         tK2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=vdJS5wHCvpSQMFm2jdDQ61c5eY7rBNbjJW+8uyG0GRg=;
-        b=gb/xKMgRvSXYFW8uFT8cL4IrrV62g2/qR7eAH3OsciblY1kU/FC6H6/F9/kqlMYrxT
-         3tt01JIEZfDrOTqKFdLy6k7tm/E5I7GFZuP4SC6w+8s3VwbVvE7fpR8/0K+ta1/OO3/W
-         IilPcTbmnp6slS4nSm8HcPyfegp8ODx8f7tGqXI9KqRGE/J/T89P7Qqhr7sEk8i2zldR
-         uSyo0HqkW4F79iBLwgSTqiNftD3DKEznwjT5VmAigP22NGTQFE56KaedrXB3ar2XMOzZ
-         W3i7LyBmmvz3qAqHnr7AeQEpBYrjQHyvkQBh3RWEcqJH+pssi0ntyyfhFg5yzWCgXqil
-         +JzA==
-X-Gm-Message-State: APjAAAUlmUCSeyeIapJjVWtE4K312VKkB7BrusmVZg/e97Tz1LMa/TY8
-        nHyXZLz1lutyR8fcrmDjsSVzLQ==
-X-Google-Smtp-Source: APXvYqyPGR3nzGdy0gDqD745mihco1NVGyz6RWNzVa7kM90t6EZUC/folZiIrXBnSvpxYJBU95/uHQ==
-X-Received: by 2002:a19:5e53:: with SMTP id z19mr7553066lfi.111.1572628969408;
-        Fri, 01 Nov 2019 10:22:49 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q15sm2780830lfb.84.2019.11.01.10.22.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Nov 2019 10:22:49 -0700 (PDT)
-Date:   Fri, 1 Nov 2019 10:22:38 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, borisp@mellanox.com,
-        aviadye@mellanox.com, daniel@iogearbox.net,
-        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
-        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
-        Eric Biggers <ebiggers@kernel.org>,
-        herbert@gondor.apana.org.au, glider@google.com,
-        linux-crypto@vger.kernel.org
-Subject: Re: [oss-drivers] Re: [PATCH net] net/tls: fix sk_msg trim on
- fallback to copy mode
-Message-ID: <20191101102238.7f56cb84@cakuba.netronome.com>
-In-Reply-To: <5dbc48ac3a8cc_e4e2b12b10265b8a1@john-XPS-13-9370.notmuch>
-References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
-        <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
-        <20191031152444.773c183b@cakuba.netronome.com>
-        <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
-        <20191031215444.68a12dfe@cakuba.netronome.com>
-        <5dbc48ac3a8cc_e4e2b12b10265b8a1@john-XPS-13-9370.notmuch>
-Organization: Netronome Systems, Ltd.
+        id S1728853AbfKAR0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 13:26:08 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:53630 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726825AbfKAR0I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 13:26:08 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA1HPxMa058744;
+        Fri, 1 Nov 2019 12:25:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1572629159;
+        bh=nGisqRyPLExUF9ZP0CfxjlJzvTcpgSdEj80aORcRt60=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=gvgtnr/SmfDEFFWJM5ThItG/EWdgsfJ9XPxWHXVE+DgvEC40f2ruaBfyDRhKcCROz
+         WwitdSlD8kEtbVIMlpZE2Mgfv+z1rMis4S6J93iytONFRg8DX4+kjbGArJgO7u2akq
+         ibh7LuHkHWudBWFvpVS00AY1J/0u1MXtDF7gkSxQ=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA1HPxat112615
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 1 Nov 2019 12:25:59 -0500
+Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Fri, 1 Nov
+ 2019 12:25:45 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Fri, 1 Nov 2019 12:25:45 -0500
+Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA1HPtGJ040578;
+        Fri, 1 Nov 2019 12:25:56 -0500
+Subject: Re: [PATCH v5 net-next 05/12] dt-bindings: net: ti: add new cpsw
+ switch driver bindings
+To:     Florian Fainelli <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jiri Pirko <jiri@resnulli.us>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>
+References: <20191024100914.16840-1-grygorii.strashko@ti.com>
+ <20191024100914.16840-6-grygorii.strashko@ti.com>
+ <caf68306-46ce-f97d-b45a-0fc1cd5323f7@gmail.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <6e64b70e-604a-b8c6-12ce-7977ffa4ed5a@ti.com>
+Date:   Fri, 1 Nov 2019 19:25:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <caf68306-46ce-f97d-b45a-0fc1cd5323f7@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 01 Nov 2019 08:01:00 -0700, John Fastabend wrote:
-> Jakub Kicinski wrote:
-> > I will look in depth tomorrow as well, the full/empty cases are a
-> > little tricky to fold into general logic.
-> > 
-> > I came up with this before I got distracted Halloweening :)  
+Hi Florian,
+
+On 25/10/2019 20:47, Florian Fainelli wrote:
+> On 10/24/19 3:09 AM, Grygorii Strashko wrote:
+>> Add bindings for the new TI CPSW switch driver. Comparing to the legacy
+>> bindings (net/cpsw.txt):
+>> - ports definition follows DSA bindings (net/dsa/dsa.txt) and ports can be
+>> marked as "disabled" if not physically wired.
+>> - all deprecated properties dropped;
+>> - all legacy propertiies dropped which represent constant HW cpapbilities
+>> (cpdma_channels, ale_entries, bd_ram_size, mac_control, slaves,
+>> active_slave)
+>> - TI CPTS DT properties are reused as is, but grouped in "cpts" sub-node
+>> - TI Davinci MDIO DT bindings are reused as is, because Davinci MDIO is
+>> reused.
+>>
+>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>> ---
 > 
-> Same here. Looking at the two cases from above.
+> [snip]
+>> +- mdio : CPSW MDIO bus block description
+>> +	- bus_freq : MDIO Bus frequency
 > 
->    if (msg->sg.start < msg->sg.end &&
->        i < msg->sg.curr) {  // i <= msg->sg.curr
->       msg->sg.curr = i;
->       msg->sg.copybreak = msg->sg.data[i].length;
->    }
+> clock-frequency is a more typical property to describe the bus clock's
+> frequency, that is what i2c and spi do.
+
+The MDIO is re-used here unchanged (including bindings).
+i think, I could try to add standard optional property "bus-frequency" to MDIO bindings
+as separate series, and deprecate "bus_freq".
+
 > 
-> If we happen to trim the entire msg so size=0 then i==start
-> which should mean i < msg->sg.curr unless msg->sg.curr = msg->sg.start
-> so we should just use <=. In the second case.
+>> +	See bindings/net/mdio.txt and davinci-mdio.txt
+>> +
+>> +- cpts : The Common Platform Time Sync (CPTS) module description
+>> +	- clocks : should contain the CPTS reference clock
+>> +	- clock-names : should be "cpts"
+>> +	See bindings/clock/clock-bindings.txt
+>> +
+>> +	Optional properties - all ports:
+>> +	- cpts_clock_mult : Numerator to convert input clock ticks into ns
+>> +	- cpts_clock_shift : Denominator to convert input clock ticks into ns
+>> +			  Mult and shift will be calculated basing on CPTS
+>> +			  rftclk frequency if both cpts_clock_shift and
+>> +			  cpts_clock_mult properties are not provided.
 > 
->    else if (msg->sg.end < msg->sg.start &&
->            (i < msg->sg.curr || i > msg->sg.start)) { // i <= msg->sg.curr
->       msg->sg.curr = i;
->       msg->sg.copybreak = msg->sg.data[i].length;
->    }
->  
-> If we trim the entire message here i == sg.start again. And same
-> thing use <= and we should catch case sg.tart = sg.curr.
-> 
-> In the full case we didn't trim anything so we shouldn't do any
-> manipulating of curr or copybreak.
+> Why would those two be needed that would be modeled in the Linux Common
+> Clock Framework?
 
-Hm, don't we need to potentially move the copybreak back a little?
-That's why I added this:
+The CPTS is re-used here unchanged (including bindings).
 
-if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
-	msg->sg.copybreak = msg->sg.data[i].length;
+This is very specific tuning options for PHC clock (cyclecounter) which intended to be used
+in very rare cases with some ref frequencies when automatic calculation is not working properly.
 
-To make sure that if we trimmed "a little bit" of the last SG but
-didn't actually consume it the copybreak doesn't point after the length.
-But perhaps that's not needed since sk_msg_memcopy_from_iter() special
-cases the copybreak > length, anyway?
 
-> > diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-> > index e4b3fb4bb77c..ce7055259877 100644
-> > --- a/include/linux/skmsg.h
-> > +++ b/include/linux/skmsg.h
-> > @@ -139,6 +139,11 @@ static inline void sk_msg_apply_bytes(struct sk_psock *psock, u32 bytes)
-> >  	}
-> >  }
-> >  
-> > +static inline u32 sk_msg_iter_dist(u32 start, u32 end)
-> > +{
-> > +	return end >= start ? end - start : end + (MAX_MSG_FRAGS - start);
-> > +}
-> > +
-> >  #define sk_msg_iter_var_prev(var)			\
-> >  	do {						\
-> >  		if (var == 0)				\
-> > @@ -198,9 +203,7 @@ static inline u32 sk_msg_elem_used(const struct sk_msg *msg)
-> >  	if (sk_msg_full(msg))
-> >  		return MAX_MSG_FRAGS;
-> >  
-> > -	return msg->sg.end >= msg->sg.start ?
-> > -		msg->sg.end - msg->sg.start :
-> > -		msg->sg.end + (MAX_MSG_FRAGS - msg->sg.start);
-> > +	return sk_msg_iter_dist(msg->sg.start, msg->sg.end);
-> >  }
-> >  
-> >  static inline struct scatterlist *sk_msg_elem(struct sk_msg *msg, int which)
-> > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-> > index cf390e0aa73d..f6b4a70bafa9 100644
-> > --- a/net/core/skmsg.c
-> > +++ b/net/core/skmsg.c
-> > @@ -270,18 +270,26 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
-> >  
-> >  	msg->sg.data[i].length -= trim;
-> >  	sk_mem_uncharge(sk, trim);
-> > +	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
-> > +		msg->sg.copybreak = msg->sg.data[i].length;
-> >  out:
-> > +	sk_msg_iter_var_next(i);
-> > +	msg->sg.end = i;
-> > +
-> >  	/* If we trim data before curr pointer update copybreak and current
-> >  	 * so that any future copy operations start at new copy location.
-> >  	 * However trimed data that has not yet been used in a copy op
-> >  	 * does not require an update.
-> >  	 */
-> > -	if (msg->sg.curr >= i) {
-> > +	if (!msg->sg.size) {  
-> 
-> I do think its a bit nicer if we don't special case the size = 0 case. If
-> we get here and i != start then we would have extra bytes in the sg
-> items between the items (i, end) and nonzero size. If i == start then the
-> we sg.size = 0. I don't think there are any other cases.
 
-On an empty message i ended up before start, so we'd have to take the
-wrapping into account, no? I couldn't come up with a way to handle
-that, and the full case cleanly :S Perhaps there are some constraints
-on the geometry that simplify it.
-
-> > +		msg->sg.curr = 0;
-
-Ugh, this should say msg->sg.start, not 0.
-
-> > +		msg->sg.copybreak = 0;
-> > +	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >
-> > +		   sk_msg_iter_dist(msg->sg.end, msg->sg.curr)) {
-> > +		sk_msg_iter_var_prev(i);  
-> 
-> I suspect with small update to dist logic the special case could also
-> be dropped here. But I have a preference for my example above at the
-> moment. Just getting coffee now so will think on it though.
-
-Oka, I like the dist thing, I thought that's where you were going in
-your first email :)
-
-I need to do some more admin, and then I'll probably write a unit test
-for this code (use space version).. So we can test either patch with it.
-
-> FWIW I've not compiled my example.
-> 
-> >  		msg->sg.curr = i;
-> >  		msg->sg.copybreak = msg->sg.data[i].length;
-> >  	}
-> > -	sk_msg_iter_var_next(i);
-> > -	msg->sg.end = i;
-> >  }
-> >  EXPORT_SYMBOL_GPL(sk_msg_trim);
+-- 
+Best regards,
+grygorii
