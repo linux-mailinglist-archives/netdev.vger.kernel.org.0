@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D490BECD15
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 05:19:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4B5BECD24
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 05:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726014AbfKBEN2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Nov 2019 00:13:28 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44031 "EHLO
+        id S1726430AbfKBE4v convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Nov 2019 00:56:51 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:44375 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725268AbfKBEN2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 00:13:28 -0400
+        with ESMTP id S1726080AbfKBE4u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 00:56:50 -0400
 Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
         by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.86_2)
         (envelope-from <jay.vosburgh@canonical.com>)
-        id 1iQkmu-00067U-RZ; Sat, 02 Nov 2019 04:13:21 +0000
+        id 1iQlSt-00086E-QO; Sat, 02 Nov 2019 04:56:44 +0000
 Received: by famine.localdomain (Postfix, from userid 1000)
-        id 0FA7A6032A; Fri,  1 Nov 2019 21:13:19 -0700 (PDT)
+        id 34E0E6032A; Fri,  1 Nov 2019 21:56:42 -0700 (PDT)
 Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 0763FA9BF8;
-        Fri,  1 Nov 2019 21:13:19 -0700 (PDT)
+        by famine.localdomain (Postfix) with ESMTP id 2C37FA9BF8;
+        Fri,  1 Nov 2019 21:56:42 -0700 (PDT)
 From:   Jay Vosburgh <jay.vosburgh@canonical.com>
 To:     netdev@vger.kernel.org
 Cc:     Aleksei Zakharov <zakharov.a.g@yandex.ru>,
@@ -29,21 +29,18 @@ Cc:     Aleksei Zakharov <zakharov.a.g@yandex.ru>,
         "David Miller" <davem@davemloft.net>,
         Veaceslav Falico <vfalico@gmail.com>,
         Andy Gospodarek <andy@greyhouse.net>
+Subject: [PATCH v2 net] bonding: fix state transition issue in link monitoring
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <675.1572667998.1@famine>
+Content-ID: <2067.1572670602.1@famine>
 Content-Transfer-Encoding: 8BIT
-Date:   Fri, 01 Nov 2019 21:13:19 -0700
-Message-ID: <676.1572667999@famine>
+Date:   Fri, 01 Nov 2019 21:56:42 -0700
+Message-ID: <2068.1572670602@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
-
-Fcc: canonical-drivel
-Subject: [PATCH net] bonding: fix state transition issue in link monitoring
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
--------
 
 	 Since de77ecd4ef02 ("bonding: improve link-status update in
 mii-monitoring"), the bonding driver has utilized two separate variables
@@ -74,6 +71,8 @@ Fixes: de77ecd4ef02 ("bonding: improve link-status update in mii-monitoring")
 Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 
 ---
+
+v2: hopefully with less mail header damage
 
 	Note that the additional variable link_new_state is added at
 f307668bfcb7, but the functional change occurs at de77ecd4ef02.
