@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F59CED079
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 21:00:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BCBEED07C
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 21:08:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbfKBUAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 16:00:13 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55408 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726523AbfKBUAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 16:00:13 -0400
-Received: by mail-wm1-f67.google.com with SMTP id m17so3443477wmi.5
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 13:00:10 -0700 (PDT)
+        id S1726689AbfKBUID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 16:08:03 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35856 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726523AbfKBUIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 16:08:02 -0400
+Received: by mail-wm1-f66.google.com with SMTP id c22so12218668wmd.1
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 13:08:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FjpuzYbB0PJQZQx21Bw2lLridKDJLwIZnN9+47A2G2Y=;
-        b=Rj/ABw862P/xEJSLyz+Y+VINWUZl3yLeeVcsymbWgGqvzBn+D8GFhalE8CeszdaaQg
-         J82+6t5ZUpbWZUtM3kAjYHhcmWoB+FiVXhHFdAgUPEBTGPyJ5K3Prh+fl4zCwFT58VPh
-         q3TvAk03wswR4ZvbLF1sVgO4vSD5r2TBAmanBmrfrB+eL7j4w5s5rpwZ6Z5zLv0J8R+z
-         D6/HW0xaKTd23mqcfa0aIZiSuUVsXnkKNJqmHmBan5KEcFhcV1VyBhLRQ7moMzCWFvN5
-         dI2Ejn53bm/1lSOHGLv2zi/WCehqT1qJ8uw5b5bGD7ojeI7KD/UngN05Aj87g87uaYNQ
-         Abxw==
+        bh=rD2GO//uNM6f6fHwOF+vVUXCWQljjK6YePsHKgplkms=;
+        b=SrRuCYOCBC79irXNubEbDTPgrM+91W65BqwWXocSY2ahUl4bxj3gXQR6hhYIFWKn+w
+         lIzZItMo5Dn9opG9NNTP14kPisjebGdjrqAhwK8ZuXj98KYpH6kjoFKZs6Ke1gANqs7S
+         558hL3DfTUUHf2GU8Bhg5h4YmYkhXcP6i6ky56TdB3/WSnQoWvajreADsowIaFJy2g6i
+         cRtd3+EaoBehu8FFdKFdm5Ffvy1njTclj4U3hOpK/Bbe9R5+9hHnYbgxE2uobIjIaLT5
+         XYj9sRfR6SpfmQnWOQQGO9Zj1Y9OF9bIZuFbwuUzQO7GkPNT1fqgki4qCXKXiRNb9dPO
+         UPtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=FjpuzYbB0PJQZQx21Bw2lLridKDJLwIZnN9+47A2G2Y=;
-        b=I+rxNdJ9yFOuebH1INHJkr4o+c2W0abTynuIiFOl+PwcheoZPoVuE6Aajq3Jp5ZKao
-         gj70QynOGUOpomneI9R8VOD1ta1Mql+A/zA+tWHPL5y93UDHAF9NlYc1Cnkz4w/jRdVe
-         r2ot4CfqSukD7PyJtvxoqKAnvHucylgfBcplX1mUq/zIiG8SEXhMOfCzdCVBAencm+tC
-         mXRmJw0ubj6WIT9TJMbyAcUM0ybhUknbKwaeJxxYLBEaf82e3x6A+7N8y5Sb4l+4x61g
-         SrF3sN/PnkWYlkwObAPhFf3mEkAhtRelAw9MHjhepkgNdTp1gUCfAlYBhFP3ar9BpRAS
-         2b1Q==
-X-Gm-Message-State: APjAAAWKUYbTn+zxXAYYlsmFXq3MMNPz7ALUlrfn1jtNQZzIfQpBS0ts
-        fKYldwpFMog45ypW7xAMoU8=
-X-Google-Smtp-Source: APXvYqzS3XjiM75nc0Kp37/cKIX6mOd7oQ52ieA6qemIkrPv98mrT4XG2rdm9fJlA8m0L3etgSQO1A==
-X-Received: by 2002:a7b:cb03:: with SMTP id u3mr16036578wmj.126.1572724810150;
-        Sat, 02 Nov 2019 13:00:10 -0700 (PDT)
+        bh=rD2GO//uNM6f6fHwOF+vVUXCWQljjK6YePsHKgplkms=;
+        b=NYxSUlpvkFfyXE1PV+T4eJ+bqL5l1qEN2XmKCm/IX/BcIWOjdNr2MjWpyKZ+ZE4o8M
+         Tvg98biDf0RVX7p9eL797nTj9CuoNnss9ZJDs/S2hUKEy3Zcy/SiJERSQ6wqBVka1w7K
+         XvULadXj/bBiiaBOMpGOhemc56S5iuSGfBiMwUPh7vpJHZyW2jSBYullPdkcplPxrgVB
+         O2K3QUZeyZSx6mYOkAX+K8gGkcesHseO6TAr+3Pb0oBbGN9BZ/QEJDfU4czOfbyQEVSH
+         LuEbaNlq0HaJcXaQ3PS0+YWidtWoFitbfC1btGp828fIpnrD/OxmsBOxAzaMwgfdMM0b
+         P6WA==
+X-Gm-Message-State: APjAAAXxCKY7YDVnONLwqahOuydpMPAsMUzlSs4MEo83KxtOyqsm1ZFA
+        yRGc4g/huXU0E+nnEdAfq6Q=
+X-Google-Smtp-Source: APXvYqwhWugMAnHGPNvckwgkrH3lBypoPMEO5SWCEr4XHJDzSLSqUgXEGtJyg8Jb1ve6NOC3WCvqSA==
+X-Received: by 2002:a1c:2706:: with SMTP id n6mr17199657wmn.154.1572724962415;
+        Sat, 02 Nov 2019 13:02:42 -0700 (PDT)
 Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id q14sm16092120wre.27.2019.11.02.13.00.07
+        by smtp.gmail.com with ESMTPSA id 36sm25412466wrj.42.2019.11.02.13.02.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Nov 2019 13:00:09 -0700 (PDT)
-Subject: Re: [PATCH RFC V2 5/6] net: bcmgenet: Add RGMII_RXID and RGMII_ID
- support
+        Sat, 02 Nov 2019 13:02:41 -0700 (PDT)
+Subject: Re: [PATCH RFC V2 6/6] ARM: dts: bcm2711-rpi-4: Enable GENET support
 To:     Stefan Wahren <wahrenst@gmx.net>,
         Matthias Brugger <matthias.bgg@kernel.org>,
         Matthias Brugger <mbrugger@suse.com>,
@@ -58,7 +57,7 @@ Cc:     Eric Anholt <eric@anholt.net>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org
 References: <1572702093-18261-1-git-send-email-wahrenst@gmx.net>
- <1572702093-18261-6-git-send-email-wahrenst@gmx.net>
+ <1572702093-18261-7-git-send-email-wahrenst@gmx.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,15 +113,15 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <b1b998af-c28f-f037-647d-63c4fb52fe95@gmail.com>
-Date:   Sat, 2 Nov 2019 13:00:05 -0700
+Message-ID: <69e7a48f-4a31-32af-9c04-889a44e19f96@gmail.com>
+Date:   Sat, 2 Nov 2019 13:02:38 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <1572702093-18261-6-git-send-email-wahrenst@gmx.net>
+In-Reply-To: <1572702093-18261-7-git-send-email-wahrenst@gmx.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -131,12 +130,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/2/2019 6:41 AM, Stefan Wahren wrote:
-> This adds the missing support for the PHY modes RGMII_RXID and
-> RGMII_ID. This is necessary for the Raspberry Pi 4.
+> This enables the Gigabit Ethernet support on the Raspberry Pi 4.
+> The defined PHY mode is equivalent to the default register settings
+> in the downstream tree.
+> 
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+> ---
+>  arch/arm/boot/dts/bcm2711-rpi-4-b.dts | 23 +++++++++++++++++++++++
+>  arch/arm/boot/dts/bcm2711.dtsi        | 19 +++++++++++++++++++
+>  2 files changed, 42 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+> index cccc1cc..904efe1 100644
+> --- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+> +++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
+> @@ -19,6 +19,10 @@
+>  		reg = <0 0 0>;
+>  	};
+> 
+> +	aliases {
+> +		ethernet0 = &genet;
+> +	};
+> +
+>  	leds {
+>  		act {
+>  			gpios = <&gpio 42 GPIO_ACTIVE_HIGH>;
+> @@ -97,6 +101,25 @@
+>  	status = "okay";
+>  };
+> 
+> +&genet {
+> +	phy-handle = <&phy1>;
+> +	phy-mode = "rgmii-rxid";
+> +	status = "okay";
+> +
+> +	mdio@e14 {
+> +		compatible = "brcm,genet-mdio-v5";
+> +		reg = <0xe14 0x8>;
+> +		reg-names = "mdio";
+> +		#address-cells = <0x0>;
+> +		#size-cells = <0x1>;
 
-Are both used? Your next patch only uses "rgmii-rxid". Can you remind me
-of the GTXC and RXC skew setting the PHY you are using comes up with?
-And this was tested with Broadcom PHY (drivers/net/phy/broadcom.c)
-driver or with the Generic PHY driver?
+The MDIO controller is always present, therefore its node definition
+would be better placed in bcm2711.dtsi. Other than that:
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
