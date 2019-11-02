@@ -2,261 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4B5BECD24
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 05:56:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80EC9ECD42
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 06:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbfKBE4v convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Nov 2019 00:56:51 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:44375 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbfKBE4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 00:56:50 -0400
-Received: from c-67-160-6-8.hsd1.wa.comcast.net ([67.160.6.8] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1iQlSt-00086E-QO; Sat, 02 Nov 2019 04:56:44 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 34E0E6032A; Fri,  1 Nov 2019 21:56:42 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 2C37FA9BF8;
-        Fri,  1 Nov 2019 21:56:42 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     netdev@vger.kernel.org
-Cc:     Aleksei Zakharov <zakharov.a.g@yandex.ru>,
-        Sha Zhang <zhangsha.zhang@huawei.com>,
-        Mahesh Bandewar <maheshb@google.com>,
-        "David Miller" <davem@davemloft.net>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: [PATCH v2 net] bonding: fix state transition issue in link monitoring
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1725820AbfKBFIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 01:08:11 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45252 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbfKBFIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 01:08:11 -0400
+Received: by mail-qt1-f195.google.com with SMTP id x21so15807519qto.12;
+        Fri, 01 Nov 2019 22:08:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CArxfq9JiPlQkcRrbvVOMl9cqlwVD7wA50QdqFjV2ck=;
+        b=tnqBkGiG780NOuBwyM9RQUFVr6D55Tu1maXU98yB/MnOzcuGC3PvwZTa8NvIs+9LuJ
+         337FsFvBEdCc8+dGL9SVei46ZttE2bim+ncaUUkui3+wnbvgrOpeMJUMz3qkfGGganby
+         kRO0K/LLETk1Q88kGou2GIw85WNEWL5dmOy7KY1DuB243VhAQKgj+JN6c9rcigce/yJT
+         TQPS7tDQDqa6vKSIFpELUMWH4UvUPM3TCwcmIzdl/5gkqWN86U6hkY6lJoKIT5LbE0tU
+         etsOtIdeM2FQ6OhuAV/M3pwTDpWkYggYRBU0KZO34SIX6IXUQsNuwSesIRATOg9Rg1Bt
+         EIeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CArxfq9JiPlQkcRrbvVOMl9cqlwVD7wA50QdqFjV2ck=;
+        b=oF1rh6beqekjf4ZHLDnpQzr5MgLE11NrNUQpmGcK41Rft99yRuWx7uz7LmndU/Cyd+
+         Ib0e9Mk2L2sM4xrbnyqtxEO2JHsiA2h7k4eU3A5mqBXTo1tZS7/tC5tbPkDYyJKiAF/M
+         oGI5r1zB5EO9IzrYrbI1pnti6af1ukoQ1aMFH/0ty749hwamXVaIi3qHPq+ailydnm+k
+         zeKu66BF7liruBdThtlA8NbxELpITg6iHzXeZ5UzbAOEIYH8GgpeZs6rnC6Equ6EXicb
+         jv5EuSWVqCFpxWZCaNKpGDwwoATnLS43W9e0qnRMLYEfXTZwVWbrupfMOj2ModDdLgAi
+         1UyA==
+X-Gm-Message-State: APjAAAW3gSebtcIbtA0A7o4yHVHtp5Qgqy2zKTgB11Cfqyb16YjHYVNF
+        9kJZkWZm+bqc6FIVNzXV8uJ8pjRen9NkmipOh+Q=
+X-Google-Smtp-Source: APXvYqyRAjec4VONtAs6OQzOBIipEh5P4ryYwblHuUu2FSJr4M/AFSQ83tPUUMMmg9hpERE7Z+jncPoHAIFXuKLK4BQ=
+X-Received: by 2002:ac8:4890:: with SMTP id i16mr3197520qtq.141.1572671289898;
+ Fri, 01 Nov 2019 22:08:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2067.1572670602.1@famine>
-Content-Transfer-Encoding: 8BIT
-Date:   Fri, 01 Nov 2019 21:56:42 -0700
-Message-ID: <2068.1572670602@famine>
+References: <157260197645.335202.2393286837980792460.stgit@toke.dk> <157260198209.335202.12139424443191715742.stgit@toke.dk>
+In-Reply-To: <157260198209.335202.12139424443191715742.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 1 Nov 2019 22:07:58 -0700
+Message-ID: <CAEf4BzYWgnek1QYyQm4U0qakP=Si0vEJ2bLKHeJhambyX7EnCQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 5/5] selftests: Add tests for automatic map pinning
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	 Since de77ecd4ef02 ("bonding: improve link-status update in
-mii-monitoring"), the bonding driver has utilized two separate variables
-to indicate the next link state a particular slave should transition to.
-Each is used to communicate to a different portion of the link state
-change commit logic; one to the bond_miimon_commit function itself, and
-another to the state transition logic.
+On Fri, Nov 1, 2019 at 2:53 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> This adds a new BPF selftest to exercise the new automatic map pinning
+> code.
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-	Unfortunately, the two variables can become unsynchronized,
-resulting in incorrect link state transitions within bonding.  This can
-cause slaves to become stuck in an incorrect link state until a
-subsequent carrier state transition.
+I don't believe I acked this patch before, must have been added by
+mistake. But either way thanks for improving tests and testing a good
+variety of scenarios, I appreciate the work. Please fix bpf_object
+leak below and keep my Acked-by :)
 
-	The issue occurs when a special case in bond_slave_netdev_event
-sets slave->link directly to BOND_LINK_FAIL.  On the next pass through
-bond_miimon_inspect after the slave goes carrier up, the BOND_LINK_FAIL
-case will set the proposed next state (link_new_state) to BOND_LINK_UP,
-but the new_link to BOND_LINK_DOWN.  The setting of the final link state
-from new_link comes after that from link_new_state, and so the slave
-will end up incorrectly in _DOWN state.
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/testing/selftests/bpf/prog_tests/pinning.c   |  208 ++++++++++++++=
+++++++
+>  tools/testing/selftests/bpf/progs/test_pinning.c   |   31 +++
+>  .../selftests/bpf/progs/test_pinning_invalid.c     |   16 ++
+>  3 files changed, 255 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/pinning.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning_invali=
+d.c
+>
 
-	Resolve this by combining the two variables into one.
+[...]
 
-Reported-by: Aleksei Zakharov <zakharov.a.g@yandex.ru>
-Reported-by: Sha Zhang <zhangsha.zhang@huawei.com>
-Cc: Mahesh Bandewar <maheshb@google.com>
-Fixes: de77ecd4ef02 ("bonding: improve link-status update in mii-monitoring")
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> +       /* should fail because of map parameter mismatch */
+> +       err =3D bpf_object__load(obj);
+> +       if (CHECK(err !=3D -EINVAL, "param mismatch load", "err %d errno =
+%d\n", err, errno))
+> +               goto out;
+> +
 
----
+You need to close obj here, before overwriting it below?
 
-v2: hopefully with less mail header damage
+> +       /* test auto-pinning at custom path with open opt */
+> +       obj =3D bpf_object__open_file(file, &opts);
+> +       if (CHECK_FAIL(libbpf_get_error(obj))) {
+> +               obj =3D NULL;
+> +               goto out;
+> +       }
 
-	Note that the additional variable link_new_state is added at
-f307668bfcb7, but the functional change occurs at de77ecd4ef02.
-
- drivers/net/bonding/bond_main.c | 44 ++++++++++++++++++++---------------------
- include/net/bonding.h           |  3 +--
- 2 files changed, 23 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 3e496e746cc6..3e8ba26fcae6 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2131,8 +2131,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 	ignore_updelay = !rcu_dereference(bond->curr_active_slave);
- 
- 	bond_for_each_slave_rcu(bond, slave, iter) {
--		slave->new_link = BOND_LINK_NOCHANGE;
--		slave->link_new_state = slave->link;
-+		bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 
- 		link_state = bond_check_dev_link(bond, slave->dev, 0);
- 
-@@ -2166,7 +2165,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 			}
- 
- 			if (slave->delay <= 0) {
--				slave->new_link = BOND_LINK_DOWN;
-+				bond_propose_link_state(slave, BOND_LINK_DOWN);
- 				commit++;
- 				continue;
- 			}
-@@ -2203,7 +2202,7 @@ static int bond_miimon_inspect(struct bonding *bond)
- 				slave->delay = 0;
- 
- 			if (slave->delay <= 0) {
--				slave->new_link = BOND_LINK_UP;
-+				bond_propose_link_state(slave, BOND_LINK_UP);
- 				commit++;
- 				ignore_updelay = false;
- 				continue;
-@@ -2241,7 +2240,7 @@ static void bond_miimon_commit(struct bonding *bond)
- 	struct slave *slave, *primary;
- 
- 	bond_for_each_slave(bond, slave, iter) {
--		switch (slave->new_link) {
-+		switch (slave->link_new_state) {
- 		case BOND_LINK_NOCHANGE:
- 			/* For 802.3ad mode, check current slave speed and
- 			 * duplex again in case its port was disabled after
-@@ -2313,8 +2312,8 @@ static void bond_miimon_commit(struct bonding *bond)
- 
- 		default:
- 			slave_err(bond->dev, slave->dev, "invalid new link %d on slave\n",
--				  slave->new_link);
--			slave->new_link = BOND_LINK_NOCHANGE;
-+				  slave->link_new_state);
-+			bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 
- 			continue;
- 		}
-@@ -2722,13 +2721,13 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 	bond_for_each_slave_rcu(bond, slave, iter) {
- 		unsigned long trans_start = dev_trans_start(slave->dev);
- 
--		slave->new_link = BOND_LINK_NOCHANGE;
-+		bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 
- 		if (slave->link != BOND_LINK_UP) {
- 			if (bond_time_in_interval(bond, trans_start, 1) &&
- 			    bond_time_in_interval(bond, slave->last_rx, 1)) {
- 
--				slave->new_link = BOND_LINK_UP;
-+				bond_propose_link_state(slave, BOND_LINK_UP);
- 				slave_state_changed = 1;
- 
- 				/* primary_slave has no meaning in round-robin
-@@ -2753,7 +2752,7 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 			if (!bond_time_in_interval(bond, trans_start, 2) ||
- 			    !bond_time_in_interval(bond, slave->last_rx, 2)) {
- 
--				slave->new_link = BOND_LINK_DOWN;
-+				bond_propose_link_state(slave, BOND_LINK_DOWN);
- 				slave_state_changed = 1;
- 
- 				if (slave->link_failure_count < UINT_MAX)
-@@ -2784,8 +2783,8 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- 			goto re_arm;
- 
- 		bond_for_each_slave(bond, slave, iter) {
--			if (slave->new_link != BOND_LINK_NOCHANGE)
--				slave->link = slave->new_link;
-+			if (slave->link_new_state != BOND_LINK_NOCHANGE)
-+				slave->link = slave->link_new_state;
- 		}
- 
- 		if (slave_state_changed) {
-@@ -2808,9 +2807,9 @@ static void bond_loadbalance_arp_mon(struct bonding *bond)
- }
- 
- /* Called to inspect slaves for active-backup mode ARP monitor link state
-- * changes.  Sets new_link in slaves to specify what action should take
-- * place for the slave.  Returns 0 if no changes are found, >0 if changes
-- * to link states must be committed.
-+ * changes.  Sets proposed link state in slaves to specify what action
-+ * should take place for the slave.  Returns 0 if no changes are found, >0
-+ * if changes to link states must be committed.
-  *
-  * Called with rcu_read_lock held.
-  */
-@@ -2822,12 +2821,12 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 	int commit = 0;
- 
- 	bond_for_each_slave_rcu(bond, slave, iter) {
--		slave->new_link = BOND_LINK_NOCHANGE;
-+		bond_propose_link_state(slave, BOND_LINK_NOCHANGE);
- 		last_rx = slave_last_rx(bond, slave);
- 
- 		if (slave->link != BOND_LINK_UP) {
- 			if (bond_time_in_interval(bond, last_rx, 1)) {
--				slave->new_link = BOND_LINK_UP;
-+				bond_propose_link_state(slave, BOND_LINK_UP);
- 				commit++;
- 			}
- 			continue;
-@@ -2855,7 +2854,7 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 		if (!bond_is_active_slave(slave) &&
- 		    !rcu_access_pointer(bond->current_arp_slave) &&
- 		    !bond_time_in_interval(bond, last_rx, 3)) {
--			slave->new_link = BOND_LINK_DOWN;
-+			bond_propose_link_state(slave, BOND_LINK_DOWN);
- 			commit++;
- 		}
- 
-@@ -2868,7 +2867,7 @@ static int bond_ab_arp_inspect(struct bonding *bond)
- 		if (bond_is_active_slave(slave) &&
- 		    (!bond_time_in_interval(bond, trans_start, 2) ||
- 		     !bond_time_in_interval(bond, last_rx, 2))) {
--			slave->new_link = BOND_LINK_DOWN;
-+			bond_propose_link_state(slave, BOND_LINK_DOWN);
- 			commit++;
- 		}
- 	}
-@@ -2888,7 +2887,7 @@ static void bond_ab_arp_commit(struct bonding *bond)
- 	struct slave *slave;
- 
- 	bond_for_each_slave(bond, slave, iter) {
--		switch (slave->new_link) {
-+		switch (slave->link_new_state) {
- 		case BOND_LINK_NOCHANGE:
- 			continue;
- 
-@@ -2938,8 +2937,9 @@ static void bond_ab_arp_commit(struct bonding *bond)
- 			continue;
- 
- 		default:
--			slave_err(bond->dev, slave->dev, "impossible: new_link %d on slave\n",
--				  slave->new_link);
-+			slave_err(bond->dev, slave->dev,
-+				  "impossible: link_new_state %d on slave\n",
-+				  slave->link_new_state);
- 			continue;
- 		}
- 
-diff --git a/include/net/bonding.h b/include/net/bonding.h
-index f7fe45689142..d416af72404b 100644
---- a/include/net/bonding.h
-+++ b/include/net/bonding.h
-@@ -159,7 +159,6 @@ struct slave {
- 	unsigned long target_last_arp_rx[BOND_MAX_ARP_TARGETS];
- 	s8     link;		/* one of BOND_LINK_XXXX */
- 	s8     link_new_state;	/* one of BOND_LINK_XXXX */
--	s8     new_link;
- 	u8     backup:1,   /* indicates backup slave. Value corresponds with
- 			      BOND_STATE_ACTIVE and BOND_STATE_BACKUP */
- 	       inactive:1, /* indicates inactive slave */
-@@ -549,7 +548,7 @@ static inline void bond_propose_link_state(struct slave *slave, int state)
- 
- static inline void bond_commit_link_state(struct slave *slave, bool notify)
- {
--	if (slave->link == slave->link_new_state)
-+	if (slave->link_new_state == BOND_LINK_NOCHANGE)
- 		return;
- 
- 	slave->link = slave->link_new_state;
--- 
-2.7.4
-
+[...]
