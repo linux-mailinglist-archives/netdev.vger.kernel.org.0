@@ -2,260 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3022ED0BD
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 23:00:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B00ED0CA
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 23:08:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727287AbfKBWAs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Nov 2019 18:00:48 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:25030 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727258AbfKBWAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 18:00:46 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA2LwKtb020813
-        for <netdev@vger.kernel.org>; Sat, 2 Nov 2019 15:00:46 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w16wk24sr-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 15:00:46 -0700
-Received: from 2401:db00:2050:5102:face:0:3b:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Sat, 2 Nov 2019 15:00:40 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 1CF79760F5C; Sat,  2 Nov 2019 15:00:40 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <peterz@infradead.org>,
-        <rostedt@goodmis.org>, <x86@kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 7/7] selftests/bpf: Add test for BPF trampoline
-Date:   Sat, 2 Nov 2019 15:00:25 -0700
-Message-ID: <20191102220025.2475981-8-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191102220025.2475981-1-ast@kernel.org>
-References: <20191102220025.2475981-1-ast@kernel.org>
+        id S1726861AbfKBWIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 18:08:31 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:43991 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726675AbfKBWIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 18:08:31 -0400
+Received: by mail-qt1-f196.google.com with SMTP id c26so18071795qtj.10
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 15:08:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=googlenew;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ReWOzS/L1ng/k4/EsPr93pQFZeEIdR8roThMByBKu1Q=;
+        b=eo/aq7B+qomkTPDGIjpnvNJnC6/OGOcikdHnaR0C8i7FQdW0E6CE7BZwx6j7bG/2M1
+         3FSXf+xfSi6X+hRrgnwv23ido0wOYJrVUALtgo3I/1DHVCB/2aj25B3F3aiza1CFVtRc
+         F2KdMKi0TaRaWXAccLy/LSI7TGmAj/DcDoz7OUnQYX4Vvt//zp/48nj2/hPO64WPhaL3
+         DQj+LWZAM0apGjkDUlN81cKxmiHBTxwUXxAfshhkQ5BcO58ZnMA3Ur7HmW5mbdUc7e07
+         iFSRhRmIrPTnzzbq7cHBUo16p22wHEW5tnqOwWu6kH9kEEA6QXm0+k3vJt7ZfJpuZfzT
+         okHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ReWOzS/L1ng/k4/EsPr93pQFZeEIdR8roThMByBKu1Q=;
+        b=uMDw7dCdUVGnc0tAraKLEZYy3LXHjHW/wx4bcJ2HUnqygBhpniIlQLCxOludrExO6b
+         jQg4rW/u0izXKcQtN8sBNhJEpQ1YwPj1wetngx06+ilQO20k50ajxNEI2L3QlRbVs2LT
+         qkAHyetuB4DydRpIZPJcpDlsiXy+6eAtmE2gzn4osCMKk2iCwUSHTam1F0vUvL/XQ/6F
+         mxJBKceZD/36YX8/P+32MLn1dNNtFv6+ihePqxwG30Frfch7IG+q/ZYm74hFaxNLTU0c
+         LCy5z0gBW18Y72ylbc+DILSnxgISDSLICYqi0q9i9EmWJEuYGRwModqSubhcIfscSkTq
+         mIlA==
+X-Gm-Message-State: APjAAAUil9rufHf0FlpVHxaPdO06QO7Fb5rmD93syCjmUPICrdagoFyX
+        9fbZYaNUUgMYAozmxZSFUooZrmfYI+auytUzsqsZDg==
+X-Google-Smtp-Source: APXvYqwb8AH1vU4yDa669yQgSzVbSjaByFk0GcjQC9Z8rhbeanHl/ISlAr5AqZ37OFFF0Np7DAjuih2eAvA+KpHzQAw=
+X-Received: by 2002:ac8:109:: with SMTP id e9mr6470687qtg.233.1572732510445;
+ Sat, 02 Nov 2019 15:08:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-11-02_13:2019-11-01,2019-11-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0 mlxscore=0
- bulkscore=0 clxscore=1034 malwarescore=0 mlxlogscore=999
- priorityscore=1501 impostorscore=0 phishscore=0 suspectscore=1
- lowpriorityscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1908290000 definitions=main-1911020218
-X-FB-Internal: deliver
+References: <20191101233408.BC15495C0902@us180.sjc.aristanetworks.com>
+ <0a03def6-3ea0-090f-048f-877700836df2@gmail.com> <CA+HUmGgDrY9A7kz7268ycAOhExA3Y1h-QhBS6xwbWYxpUODDWw@mail.gmail.com>
+ <690336d7-0478-e555-a49b-143091e6e818@gmail.com> <CA+HUmGgKakVpS8UsKWUwm9QdCf+T2Pi1wNS-Kr7NE+TQ8ABGaQ@mail.gmail.com>
+ <06dd5c8e-7eeb-a00f-e437-11897fe01ad1@gmail.com> <CA+HUmGjra-=GeRApvYRgX6iQZPG73xWyfXqR-_fxjKS0WcmYrQ@mail.gmail.com>
+In-Reply-To: <CA+HUmGjra-=GeRApvYRgX6iQZPG73xWyfXqR-_fxjKS0WcmYrQ@mail.gmail.com>
+From:   Francesco Ruggeri <fruggeri@arista.com>
+Date:   Sat, 2 Nov 2019 15:08:19 -0700
+Message-ID: <CA+HUmGhYzSE-ruiOfQa9UCKcMuN361asxwCD=Nmdjar9jC0bTA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] selftest: net: add icmp reply address test
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, shuah@kernel.org,
+        netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add sanity test for BPF trampoline that checks kernel functions
-with up to 6 arguments of different sizes.
+> > > I apologize in advance  for being slow ...
+> > > I have 3 namespaces that have to share the same LAN, I am not trying
+> > > 1-1 connections among those namespaces.
+> > >
+> >
+> > How would you cable this if it were an actual network with physical nodes?
+> > - bridge on R1 (since it is the gw for H1), with connections to R2 and
+> > H1 into the bridge
+> > - second connection between R1 and R2
+> > - connection between R2 and H2
+> >
+> > For the simulation, network namespaces represent physical nodes, veth
+> > pairs act like a cable between the nodes / namespaces and the bridge
+> > makes the LAN.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- tools/lib/bpf/bpf_helpers.h                   | 13 +++
- .../selftests/bpf/prog_tests/fentry_test.c    | 65 ++++++++++++++
- .../testing/selftests/bpf/progs/fentry_test.c | 90 +++++++++++++++++++
- 3 files changed, 168 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/fentry_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/fentry_test.c
+Thanks, I see what you mean now.
+I was assuming a different physical model, with all the namespaces on the LAN
+connected to a hub (simulated by the dummy device). For simulation purposes this
+model seem simpler: there are N interfaces instead of N pairs, and one does not
+have to deal with the bridge end of the pairs.
+Why is the model you described preferable?
 
-diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
-index 0c7d28292898..c63ab1add126 100644
---- a/tools/lib/bpf/bpf_helpers.h
-+++ b/tools/lib/bpf/bpf_helpers.h
-@@ -44,4 +44,17 @@ enum libbpf_pin_type {
- 	LIBBPF_PIN_BY_NAME,
- };
- 
-+/* The following types should be used by BPF_PROG_TYPE_TRACING program to
-+ * access kernel function arguments. BPF trampoline and raw tracepoints
-+ * typecast arguments to 'unsigned long long'.
-+ */
-+typedef int __attribute__((aligned(8))) ks32;
-+typedef char __attribute__((aligned(8))) ks8;
-+typedef short __attribute__((aligned(8))) ks16;
-+typedef long long __attribute__((aligned(8))) ks64;
-+typedef unsigned int __attribute__((aligned(8))) ku32;
-+typedef unsigned char __attribute__((aligned(8))) ku8;
-+typedef unsigned short __attribute__((aligned(8))) ku16;
-+typedef unsigned long long __attribute__((aligned(8))) ku64;
-+
- #endif
-diff --git a/tools/testing/selftests/bpf/prog_tests/fentry_test.c b/tools/testing/selftests/bpf/prog_tests/fentry_test.c
-new file mode 100644
-index 000000000000..c24c5f739df6
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/fentry_test.c
-@@ -0,0 +1,65 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Facebook */
-+#include <test_progs.h>
-+
-+void test_fentry_test(void)
-+{
-+	struct bpf_prog_load_attr attr = {
-+		.file = "./fentry_test.o",
-+	};
-+
-+	char prog_name[] = "fentry/bpf_fentry_testX";
-+	struct bpf_object *obj = NULL, *pkt_obj;
-+	int err, pkt_fd, kfree_skb_fd, i;
-+	struct bpf_link *link[6] = {};
-+	struct bpf_program *prog[6];
-+	__u32 duration, retval;
-+	struct bpf_map *data_map;
-+	bool passed = false;
-+	const int zero = 0;
-+	u64 result[6];
-+
-+	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &pkt_obj, &pkt_fd);
-+	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
-+		return;
-+	err = bpf_prog_load_xattr(&attr, &obj, &kfree_skb_fd);
-+	if (CHECK(err, "prog_load fail", "err %d errno %d\n", err, errno))
-+		goto close_prog;
-+
-+	for (i = 0; i < 6; i++) {
-+		prog_name[sizeof(prog_name) - 2] = '1' + i;
-+		prog[i] = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK(!prog[i], "find_prog", "prog %s not found\n", prog_name))
-+			goto close_prog;
-+		link[i] = bpf_program__attach_trace(prog[i]);
-+	}
-+	data_map = bpf_object__find_map_by_name(obj, "fentry_t.bss");
-+	if (CHECK(!data_map, "find_data_map", "data map not found\n"))
-+		goto close_prog;
-+
-+	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
-+				NULL, NULL, &retval, &duration);
-+	CHECK(err || retval, "ipv6",
-+	      "err %d errno %d retval %d duration %d\n",
-+	      err, errno, retval, duration);
-+
-+	err = bpf_map_lookup_elem(bpf_map__fd(data_map), &zero, &result);
-+	if (CHECK(err, "get_result",
-+		  "failed to get output data: %d\n", err))
-+		goto close_prog;
-+
-+	for (i = 0; i < 6; i++)
-+		if (CHECK(result[i] != 1, "result", "bpf_fentry_test%d failed err %ld\n",
-+			  i + 1, result[i]))
-+			goto close_prog;
-+
-+	passed = true;
-+	CHECK_FAIL(!passed);
-+close_prog:
-+	for (i = 0; i < 6; i++)
-+		if (!IS_ERR_OR_NULL(link[i]))
-+			bpf_link__destroy(link[i]);
-+	bpf_object__close(obj);
-+	bpf_object__close(pkt_obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/fentry_test.c b/tools/testing/selftests/bpf/progs/fentry_test.c
-new file mode 100644
-index 000000000000..545788bf8d50
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/fentry_test.c
-@@ -0,0 +1,90 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Facebook */
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct test1 {
-+	ks32 a;
-+};
-+static volatile __u64 test1_result;
-+SEC("fentry/bpf_fentry_test1")
-+int test1(struct test1 *ctx)
-+{
-+	test1_result = ctx->a == 1;
-+	return 0;
-+}
-+
-+struct test2 {
-+	ks32 a;
-+	ku64 b;
-+};
-+static volatile __u64 test2_result;
-+SEC("fentry/bpf_fentry_test2")
-+int test2(struct test2 *ctx)
-+{
-+	test2_result = ctx->a == 2 && ctx->b == 3;
-+	return 0;
-+}
-+
-+struct test3 {
-+	ks8 a;
-+	ks32 b;
-+	ku64 c;
-+};
-+static volatile __u64 test3_result;
-+SEC("fentry/bpf_fentry_test3")
-+int test3(struct test3 *ctx)
-+{
-+	test3_result = ctx->a == 4 && ctx->b == 5 && ctx->c == 6;
-+	return 0;
-+}
-+
-+struct test4 {
-+	void *a;
-+	ks8 b;
-+	ks32 c;
-+	ku64 d;
-+};
-+static volatile __u64 test4_result;
-+SEC("fentry/bpf_fentry_test4")
-+int test4(struct test4 *ctx)
-+{
-+	test4_result = ctx->a == (void *)7 && ctx->b == 8 && ctx->c == 9 &&
-+		ctx->d == 10;
-+	return 0;
-+}
-+
-+struct test5 {
-+	ku64 a;
-+	void *b;
-+	ks16 c;
-+	ks32 d;
-+	ku64 e;
-+};
-+static volatile __u64 test5_result;
-+SEC("fentry/bpf_fentry_test5")
-+int test5(struct test5 *ctx)
-+{
-+	test5_result = ctx->a == 11 && ctx->b == (void *)12 && ctx->c == 13 &&
-+		ctx->d == 14 && ctx->e == 15;
-+	return 0;
-+}
-+
-+struct test6 {
-+	ku64 a;
-+	void *b;
-+	ks16 c;
-+	ks32 d;
-+	void *e;
-+	ks64 f;
-+};
-+static volatile __u64 test6_result;
-+SEC("fentry/bpf_fentry_test6")
-+int test6(struct test6 *ctx)
-+{
-+	test6_result = ctx->a == 16 && ctx->b == (void *)17 && ctx->c == 18 &&
-+		ctx->d == 19 && ctx->e == (void *)20 && ctx->f == 21;
-+	return 0;
-+}
--- 
-2.23.0
-
+Thanks,
+Francesco
