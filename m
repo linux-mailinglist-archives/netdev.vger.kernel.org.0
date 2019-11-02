@@ -2,84 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED79ED030
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 19:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C1BED056
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:09:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727051AbfKBSIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 14:08:50 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:38358 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727008AbfKBSIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 14:08:50 -0400
-Received: by mail-qt1-f196.google.com with SMTP id t26so17607792qtr.5
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 11:08:50 -0700 (PDT)
+        id S1726757AbfKBTJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 15:09:22 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41637 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726396AbfKBTJW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:09:22 -0400
+Received: by mail-qt1-f194.google.com with SMTP id o3so17733235qtj.8;
+        Sat, 02 Nov 2019 12:09:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=54ZgFXF79PsoBqwHLd+KFR7DMz/ndkohyJiwLmJud40=;
-        b=GLYtsoiOB1E5GP1hzNEsiemcBBuT/Te/w3K3mEwnsNZ34/nCZ/Vfc/dMqaQWtWSlnm
-         7Ku0tAgU+n9tXRAdZEM5ud3CEIiD19LW296iQIyNojXuBGA1+n1w5RruUznh9aD8c58M
-         BeNrC/xt/jx9K0z0sxlwyLKwtztaGyZ57fwzjEzZyi3+NvEmmgkNWCimuET9kzPdPpsS
-         DnDlyPNeBWmn2NWMrDHCzswWhHMGcaaWQ3/ynYxXD6zlXkjCcf7NzxemTurqYZ4u+61R
-         u8RrD5FZUXfTCkxG8aF+uPVv/KN7Iq0OwCzDtGMg2PQtLbiOeznaxdlFL2MMJzBuItOq
-         LeIg==
+         :cc:content-transfer-encoding;
+        bh=ik7pnpm5nkHdWTpbP2HcYzUbAmJ4gt8ds7mxPNBfj2g=;
+        b=huRz+3kc+635yRg2VBPj+9xx97HIER9/dZeWt105UIBW7k7QLyDb1RowXiEKBIHAot
+         QW88eWqFLa5gODmyr1c2VXSB57Ql0wW6d3zViGeCS/UDEQrMJJoeEk6UNiqOQ3GlpvUd
+         cIgAj17PjPm+q0pXOp8BSgeZSHOq6v99m5nWiJwpmd5s1UPDeM1OP1M3/hHQXsn8DwBy
+         ooLzNgefrok4teg++hIazp/xMN8/D9tpqmknH5OegWBu+IWMSF8YGAeD6mryF/r6mbdV
+         E5zmMEdr6inSseQdl0OmlNwoE+LGcv/SjlGwJ4haxkDeIbhqUuQawfsFCglwm1yhv14r
+         a7MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=54ZgFXF79PsoBqwHLd+KFR7DMz/ndkohyJiwLmJud40=;
-        b=ZY2vyP0W9m5s9uQlG0nWtA6iLWe68ATEJnW+7ROBK89269E3Y08TIeEYRsxXHvNCvN
-         5Cni/OV6ClJHHMo0rjqaNgzWq3wIXSyRuR/8qD2C7NRe8Izmoxn5dPpoPOtq7S8VOFTt
-         c00+2MKdYYbJI/D/w00kb2N4gp384nr6eb5pshqO1HJ395tZ6uG46nYm2+cJZVTaVw/D
-         YpYOyocOk62T1QTQpEJPv9rLIBNMNI4jtYQJXw0fC8kZPn/Fd4MWw4TnEssinlGxOJAI
-         M+1K5Yfjf3yQmVeoZOCDXXjU1fZUIiM2PdQ6XvvK2NAzwRwkjbjBx7nRcWEnk71s3AdY
-         1wMA==
-X-Gm-Message-State: APjAAAW/MgUJUM3qooQ+7PkC+tfFRW4M9Asc060o5mJciFitt7V0Yzx1
-        jpo3IPVSXAPD8y1AxC+0/XL3VVxlnkPsZ/zKwREgpw==
-X-Google-Smtp-Source: APXvYqzM88wsrd+s7vbMPtZBeUcDqswwe/5goYFlqOnnWZnnSOoISL3dBDRySiuDcwDuIgR3C/z9R2Crgkq5xiPBMGc=
-X-Received: by 2002:ad4:540c:: with SMTP id f12mr8277391qvt.3.1572718129718;
- Sat, 02 Nov 2019 11:08:49 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ik7pnpm5nkHdWTpbP2HcYzUbAmJ4gt8ds7mxPNBfj2g=;
+        b=A2cJbo+6Xz7FPKtND0SvTJPrwTQc/OiMKAZnNCmV9lC/mLdbti3bcYu7sP4/Q1k8GA
+         60/C6vKpJ4br5KDIiQaKBtPrTS/T4yVFY3zhfIxVpuamTvW9ZdJhJ/h0hUUkcP6hhrGB
+         YEBeQOkG0vBRu7UWQUQMpM6W2/iZJl7CbKrA/gsUqxbwVHzzaS8yVmPL6CzV2+DuEcp4
+         9VKslCaZ9EW4qfBfuDENut8lVTrli3ezBDMeMXi4tGg//wHTXMenQhpD026fe2wC9sOi
+         mMGjHd+ZP18/DjnT52vortb3NEbhDsdXLZezoDrjcimy24M7Roc36lrfSZ31h92YheGB
+         34pw==
+X-Gm-Message-State: APjAAAVSzc2UgtDUvIHmf14Z2Il5zPXXYRm3Dci2KwabQoqELIhJxvWE
+        Po2FL8hZ3F9hRayA6EvPY4c718qO2eY1eSf3PFwXfg==
+X-Google-Smtp-Source: APXvYqyYGUJ/RTFf4o9GIINA8q/Yufla00xUzacAT2wrIS/vsetiFVDmbmq0lreUl4hHsYBDojYWcWr2/ZxDN8XWwSg=
+X-Received: by 2002:a05:6214:90f:: with SMTP id dj15mr14236665qvb.224.1572721761089;
+ Sat, 02 Nov 2019 12:09:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191101233408.BC15495C0902@us180.sjc.aristanetworks.com>
- <0a03def6-3ea0-090f-048f-877700836df2@gmail.com> <CA+HUmGgDrY9A7kz7268ycAOhExA3Y1h-QhBS6xwbWYxpUODDWw@mail.gmail.com>
- <690336d7-0478-e555-a49b-143091e6e818@gmail.com> <CA+HUmGgKakVpS8UsKWUwm9QdCf+T2Pi1wNS-Kr7NE+TQ8ABGaQ@mail.gmail.com>
- <06dd5c8e-7eeb-a00f-e437-11897fe01ad1@gmail.com>
-In-Reply-To: <06dd5c8e-7eeb-a00f-e437-11897fe01ad1@gmail.com>
-From:   Francesco Ruggeri <fruggeri@arista.com>
-Date:   Sat, 2 Nov 2019 11:08:38 -0700
-Message-ID: <CA+HUmGjra-=GeRApvYRgX6iQZPG73xWyfXqR-_fxjKS0WcmYrQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] selftest: net: add icmp reply address test
-To:     David Ahern <dsahern@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, shuah@kernel.org,
-        netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org
+References: <157269297658.394725.10672376245672095901.stgit@toke.dk>
+In-Reply-To: <157269297658.394725.10672376245672095901.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 2 Nov 2019 12:09:09 -0700
+Message-ID: <CAEf4BzYXhoaiH5x9YZ99ABUMngsjBVRAYJBm+oMbnAHnpn-18g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 0/5] libbpf: Support automatic pinning of maps
+ using 'pinning' BTF attribute
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 2, 2019 at 10:38 AM David Ahern <dsahern@gmail.com> wrote:
+On Sat, Nov 2, 2019 at 4:09 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
 >
-> On 11/2/19 10:09 AM, Francesco Ruggeri wrote:
-> > On Sat, Nov 2, 2019 at 8:11 AM David Ahern <dsahern@gmail.com> wrote:
-> >> On 11/2/19 9:08 AM, Francesco Ruggeri wrote:
-> >>> I am only using macvlans for N1 in the ipv6 test, where there are 3 nodes.
-> >>> How do I use veths for that?
-> >>
-> >> checkout the connect_ns function. It uses veth to connect ns1 to ns2.
-> >
-> > I apologize in advance  for being slow ...
-> > I have 3 namespaces that have to share the same LAN, I am not trying
-> > 1-1 connections among those namespaces.
-> >
+> This series adds support to libbpf for reading 'pinning' settings from BT=
+F-based
+> map definitions. It introduces a new open option which can set the pinnin=
+g path;
+> if no path is set, /sys/fs/bpf is used as the default. Callers can custom=
+ise the
+> pinning between open and load by setting the pin path per map, and still =
+get the
+> automatic reuse feature.
 >
-> How would you cable this if it were an actual network with physical nodes?
-> - bridge on R1 (since it is the gw for H1), with connections to R2 and
-> H1 into the bridge
-> - second connection between R1 and R2
-> - connection between R2 and H2
+> The semantics of the pinning is similar to the iproute2 "PIN_GLOBAL" sett=
+ing,
+> and the eventual goal is to move the iproute2 implementation to be based =
+on
+> libbpf and the functions introduced in this series.
 >
-> For the simulation, network namespaces represent physical nodes, veth
-> pairs act like a cable between the nodes / namespaces and the bridge
-> makes the LAN.
+> Changelog:
+>
+> v6:
+>   - Fix leak of struct bpf_object in selftest
+>   - Make struct bpf_map arg const in bpf_map__is_pinned() and bpf_map__ge=
+t_pin_path()
+>
+> v5:
+>   - Don't pin maps with pinning set, but with a value of LIBBPF_PIN_NONE
+>   - Add a few more selftests:
+>     - Should not pin map with pinning set, but value LIBBPF_PIN_NONE
+>     - Should fail to load a map with an invalid pinning value
+>     - Should fail to re-use maps with parameter mismatch
+>   - Alphabetise libbpf.map
+>   - Whitespace and typo fixes
+>
+> v4:
+>   - Don't check key_type_id and value_type_id when checking for map reuse
+>     compatibility.
+>   - Move building of map->pin_path into init_user_btf_map()
+>   - Get rid of 'pinning' attribute in struct bpf_map
+>   - Make sure we also create parent directory on auto-pin (new patch 3).
+>   - Abort the selftest on error instead of attempting to continue.
+>   - Support unpinning all pinned maps with bpf_object__unpin_maps(obj, NU=
+LL)
+>   - Support pinning at map->pin_path with bpf_object__pin_maps(obj, NULL)
+>   - Make re-pinning a map at the same path a noop
+>   - Rename the open option to pin_root_path
+>   - Add a bunch more self-tests for pin_maps(NULL) and unpin_maps(NULL)
+>   - Fix a couple of smaller nits
+>
+> v3:
+>   - Drop bpf_object__pin_maps_opts() and just use an open option to custo=
+mise
+>     the pin path; also don't touch bpf_object__{un,}pin_maps()
+>   - Integrate pinning and reuse into bpf_object__create_maps() instead of=
+ having
+>     multiple loops though the map structure
+>   - Make errors in map reuse and pinning fatal to the load procedure
+>   - Add selftest to exercise pinning feature
+>   - Rebase series to latest bpf-next
+>
+> v2:
+>   - Drop patch that adds mounting of bpffs
+>   - Only support a single value of the pinning attribute
+>   - Add patch to fixup error handling in reuse_fd()
+>   - Implement the full automatic pinning and map reuse logic on load
+>
+> ---
+>
+> Toke H=C3=B8iland-J=C3=B8rgensen (5):
+>       libbpf: Fix error handling in bpf_map__reuse_fd()
+>       libbpf: Store map pin path and status in struct bpf_map
+>       libbpf: Move directory creation into _pin() functions
+>       libbpf: Add auto-pinning of maps when loading BPF objects
+>       selftests: Add tests for automatic map pinning
+>
+>
+
+For the series:
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  tools/lib/bpf/bpf_helpers.h                        |    6
+>  tools/lib/bpf/libbpf.c                             |  385 ++++++++++++++=
+++----
+>  tools/lib/bpf/libbpf.h                             |   21 +
+>  tools/lib/bpf/libbpf.map                           |    3
+>  tools/testing/selftests/bpf/prog_tests/pinning.c   |  210 +++++++++++
+>  tools/testing/selftests/bpf/progs/test_pinning.c   |   31 ++
+>  .../selftests/bpf/progs/test_pinning_invalid.c     |   16 +
+>  7 files changed, 591 insertions(+), 81 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/pinning.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning_invali=
+d.c
+>
