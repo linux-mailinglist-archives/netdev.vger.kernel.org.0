@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDAAECE97
+	by mail.lfdr.de (Postfix) with ESMTP id 8A167ECE98
 	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 13:14:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbfKBMOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 08:14:23 -0400
+        id S1726923AbfKBMO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 08:14:28 -0400
 Received: from mga09.intel.com ([134.134.136.24]:42775 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726229AbfKBMOW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726163AbfKBMOW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 2 Nov 2019 08:14:22 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,18 @@ Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Nov 2019 05:14:20 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,259,1569308400"; 
-   d="scan'208";a="204132341"
+   d="scan'208";a="204132343"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga003.jf.intel.com with ESMTP; 02 Nov 2019 05:14:20 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Alexander Duyck <alexander.h.duyck@linux.intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 2/7] fm10k: add support for ndo_get_vf_stats operation
-Date:   Sat,  2 Nov 2019 05:14:12 -0700
-Message-Id: <20191102121417.15421-3-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 3/7] ixgbe: Make use of cpumask_local_spread to improve RSS locality
+Date:   Sat,  2 Nov 2019 05:14:13 -0700
+Message-Id: <20191102121417.15421-4-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191102121417.15421-1-jeffrey.t.kirsher@intel.com>
 References: <20191102121417.15421-1-jeffrey.t.kirsher@intel.com>
@@ -39,144 +39,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 
-Support capturing and reporting statistics for all of the VFs associated
-with a given PF device via the ndo_get_vf_stats callback.
+This patch is meant to address locality issues present in the ixgbe driver
+when it is loaded on a system supporting multiple NUMA nodes and more CPUs
+then the device can map in a 1:1 fashion. Instead of just arbitrarily
+mapping itself to CPUs 0-62 it would make much more sense to map itself to
+the local CPUs first, and then map itself to any remaining CPUs that might
+be used.
 
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+The first effect of this is that queue 0 should always be allocated on the
+local CPU/NUMA node. This is important as it is the default destination if
+a packet doesn't match any existing flow director filter or RSS rule and as
+such having it local should help to reduce QPI cross-talk in the event of
+an unrecognized traffic type.
+
+In addition this should increase the likelihood of the RSS queues being
+allocated and used on CPUs local to the device while the ATR/Flow Director
+queues would be able to route traffic directly to the CPU that is likely to
+be processing it.
+
+Signed-off-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/fm10k/fm10k.h      |  3 ++
- drivers/net/ethernet/intel/fm10k/fm10k_iov.c  | 48 +++++++++++++++++++
- .../net/ethernet/intel/fm10k/fm10k_netdev.c   |  1 +
- drivers/net/ethernet/intel/fm10k/fm10k_pci.c  |  3 ++
- drivers/net/ethernet/intel/fm10k/fm10k_type.h |  1 +
- 5 files changed, 56 insertions(+)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k.h b/drivers/net/ethernet/intel/fm10k/fm10k.h
-index b14441944b4b..f306084ca12c 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k.h
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k.h
-@@ -534,6 +534,7 @@ void fm10k_iov_suspend(struct pci_dev *pdev);
- int fm10k_iov_resume(struct pci_dev *pdev);
- void fm10k_iov_disable(struct pci_dev *pdev);
- int fm10k_iov_configure(struct pci_dev *pdev, int num_vfs);
-+void fm10k_iov_update_stats(struct fm10k_intfc *interface);
- s32 fm10k_iov_update_pvid(struct fm10k_intfc *interface, u16 glort, u16 pvid);
- int fm10k_ndo_set_vf_mac(struct net_device *netdev, int vf_idx, u8 *mac);
- int fm10k_ndo_set_vf_vlan(struct net_device *netdev,
-@@ -542,6 +543,8 @@ int fm10k_ndo_set_vf_bw(struct net_device *netdev, int vf_idx,
- 			int __always_unused min_rate, int max_rate);
- int fm10k_ndo_get_vf_config(struct net_device *netdev,
- 			    int vf_idx, struct ifla_vf_info *ivi);
-+int fm10k_ndo_get_vf_stats(struct net_device *netdev,
-+			   int vf_idx, struct ifla_vf_stats *stats);
- 
- /* DebugFS */
- #ifdef CONFIG_DEBUG_FS
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_iov.c b/drivers/net/ethernet/intel/fm10k/fm10k_iov.c
-index afe1fafd2447..8c50a128df29 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_iov.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_iov.c
-@@ -520,6 +520,27 @@ int fm10k_iov_configure(struct pci_dev *pdev, int num_vfs)
- 	return num_vfs;
- }
- 
-+/**
-+ * fm10k_iov_update_stats - Update stats for all VFs
-+ * @interface: device private structure
-+ *
-+ * Updates the VF statistics for all enabled VFs. Expects to be called by
-+ * fm10k_update_stats and assumes that locking via the __FM10K_UPDATING_STATS
-+ * bit is already handled.
-+ */
-+void fm10k_iov_update_stats(struct fm10k_intfc *interface)
-+{
-+	struct fm10k_iov_data *iov_data = interface->iov_data;
-+	struct fm10k_hw *hw = &interface->hw;
-+	int i;
-+
-+	if (!iov_data)
-+		return;
-+
-+	for (i = 0; i < iov_data->num_vfs; i++)
-+		hw->iov.ops.update_stats(hw, iov_data->vf_info[i].stats, i);
-+}
-+
- static inline void fm10k_reset_vf_info(struct fm10k_intfc *interface,
- 				       struct fm10k_vf_info *vf_info)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+index cc3196ae5aea..fd9f5d41b594 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_lib.c
+@@ -832,9 +832,9 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 				int xdp_count, int xdp_idx,
+ 				int rxr_count, int rxr_idx)
  {
-@@ -650,3 +671,30 @@ int fm10k_ndo_get_vf_config(struct net_device *netdev,
++	int node = dev_to_node(&adapter->pdev->dev);
+ 	struct ixgbe_q_vector *q_vector;
+ 	struct ixgbe_ring *ring;
+-	int node = NUMA_NO_NODE;
+ 	int cpu = -1;
+ 	int ring_count;
+ 	u8 tcs = adapter->hw_tcs;
+@@ -845,10 +845,8 @@ static int ixgbe_alloc_q_vector(struct ixgbe_adapter *adapter,
+ 	if ((tcs <= 1) && !(adapter->flags & IXGBE_FLAG_SRIOV_ENABLED)) {
+ 		u16 rss_i = adapter->ring_feature[RING_F_RSS].indices;
+ 		if (rss_i > 1 && adapter->atr_sample_rate) {
+-			if (cpu_online(v_idx)) {
+-				cpu = v_idx;
+-				node = cpu_to_node(cpu);
+-			}
++			cpu = cpumask_local_spread(v_idx, node);
++			node = cpu_to_node(cpu);
+ 		}
+ 	}
  
- 	return 0;
- }
-+
-+int fm10k_ndo_get_vf_stats(struct net_device *netdev,
-+			   int vf_idx, struct ifla_vf_stats *stats)
-+{
-+	struct fm10k_intfc *interface = netdev_priv(netdev);
-+	struct fm10k_iov_data *iov_data = interface->iov_data;
-+	struct fm10k_hw *hw = &interface->hw;
-+	struct fm10k_hw_stats_q *hw_stats;
-+	u32 idx, qpp;
-+
-+	/* verify SR-IOV is active and that vf idx is valid */
-+	if (!iov_data || vf_idx >= iov_data->num_vfs)
-+		return -EINVAL;
-+
-+	qpp = fm10k_queues_per_pool(hw);
-+	hw_stats = iov_data->vf_info[vf_idx].stats;
-+
-+	for (idx = 0; idx < qpp; idx++) {
-+		stats->rx_packets += hw_stats[idx].rx_packets.count;
-+		stats->tx_packets += hw_stats[idx].tx_packets.count;
-+		stats->rx_bytes += hw_stats[idx].rx_bytes.count;
-+		stats->tx_bytes += hw_stats[idx].tx_bytes.count;
-+		stats->rx_dropped += hw_stats[idx].rx_drops.count;
-+	}
-+
-+	return 0;
-+}
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c b/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c
-index 09f7a246e134..68baee04dc58 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_netdev.c
-@@ -1643,6 +1643,7 @@ static const struct net_device_ops fm10k_netdev_ops = {
- 	.ndo_set_vf_vlan	= fm10k_ndo_set_vf_vlan,
- 	.ndo_set_vf_rate	= fm10k_ndo_set_vf_bw,
- 	.ndo_get_vf_config	= fm10k_ndo_get_vf_config,
-+	.ndo_get_vf_stats	= fm10k_ndo_get_vf_stats,
- 	.ndo_udp_tunnel_add	= fm10k_udp_tunnel_add,
- 	.ndo_udp_tunnel_del	= fm10k_udp_tunnel_del,
- 	.ndo_dfwd_add_station	= fm10k_dfwd_add_station,
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-index bb236fa44048..d122d0087191 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_pci.c
-@@ -630,6 +630,9 @@ void fm10k_update_stats(struct fm10k_intfc *interface)
- 	net_stats->rx_errors = rx_errors;
- 	net_stats->rx_dropped = interface->stats.nodesc_drop.count;
- 
-+	/* Update VF statistics */
-+	fm10k_iov_update_stats(interface);
-+
- 	clear_bit(__FM10K_UPDATING_STATS, interface->state);
- }
- 
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_type.h b/drivers/net/ethernet/intel/fm10k/fm10k_type.h
-index 15ac1c7885bc..63968c5d7c5d 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_type.h
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_type.h
-@@ -581,6 +581,7 @@ struct fm10k_vf_info {
- 	 * at the same offset as the mailbox
- 	 */
- 	struct fm10k_mbx_info	mbx;		/* PF side of VF mailbox */
-+	struct fm10k_hw_stats_q	stats[FM10K_MAX_QUEUES_POOL];
- 	int			rate;		/* Tx BW cap as defined by OS */
- 	u16			glort;		/* resource tag for this VF */
- 	u16			sw_vid;		/* Switch API assigned VLAN */
 -- 
 2.21.0
 
