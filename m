@@ -2,179 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BCBEED07C
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 21:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF68BED081
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 21:08:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbfKBUID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 16:08:03 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35856 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726523AbfKBUIC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 16:08:02 -0400
-Received: by mail-wm1-f66.google.com with SMTP id c22so12218668wmd.1
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 13:08:00 -0700 (PDT)
+        id S1727008AbfKBUIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 16:08:55 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:45067 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726523AbfKBUIz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 16:08:55 -0400
+Received: by mail-pg1-f194.google.com with SMTP id r1so8588628pgj.12;
+        Sat, 02 Nov 2019 13:08:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rD2GO//uNM6f6fHwOF+vVUXCWQljjK6YePsHKgplkms=;
-        b=SrRuCYOCBC79irXNubEbDTPgrM+91W65BqwWXocSY2ahUl4bxj3gXQR6hhYIFWKn+w
-         lIzZItMo5Dn9opG9NNTP14kPisjebGdjrqAhwK8ZuXj98KYpH6kjoFKZs6Ke1gANqs7S
-         558hL3DfTUUHf2GU8Bhg5h4YmYkhXcP6i6ky56TdB3/WSnQoWvajreADsowIaFJy2g6i
-         cRtd3+EaoBehu8FFdKFdm5Ffvy1njTclj4U3hOpK/Bbe9R5+9hHnYbgxE2uobIjIaLT5
-         XYj9sRfR6SpfmQnWOQQGO9Zj1Y9OF9bIZuFbwuUzQO7GkPNT1fqgki4qCXKXiRNb9dPO
-         UPtw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zXYT/ZeHsCXMOP8AZMsrYS79rL9tXXrExzyfPs19B/o=;
+        b=h7IvU709Edudo+yyjBuJBbYljj67d8fFRjiKkFYe1tcSdWoViubaKuTLw+idC3ecKQ
+         U7inLhioU6kn0mJS1MFqHAo0uEhpnJKWNzsEan+w3ifT5Rfr9mtUbGiQi3mMaDomeGYN
+         4Oq/9QKx0GfHPem10oPvJxFidW5I4tgc37UAjU7LWTO905PBu2nMOHbHpLp9/3bvUtE0
+         7iv3v61UB4O/Qvza8RecM8qZI6ILBqq7Er6rbCn5bSqUj/WJb0BXkg3OrMSQHQd+12X3
+         Jk6RsEMXBLd8Uo4XpP4mBR18giZWRs+Vo+UbRR+LmjUEolb8IPPQWKW2MMkWDbjngF+y
+         9dJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=rD2GO//uNM6f6fHwOF+vVUXCWQljjK6YePsHKgplkms=;
-        b=NYxSUlpvkFfyXE1PV+T4eJ+bqL5l1qEN2XmKCm/IX/BcIWOjdNr2MjWpyKZ+ZE4o8M
-         Tvg98biDf0RVX7p9eL797nTj9CuoNnss9ZJDs/S2hUKEy3Zcy/SiJERSQ6wqBVka1w7K
-         XvULadXj/bBiiaBOMpGOhemc56S5iuSGfBiMwUPh7vpJHZyW2jSBYullPdkcplPxrgVB
-         O2K3QUZeyZSx6mYOkAX+K8gGkcesHseO6TAr+3Pb0oBbGN9BZ/QEJDfU4czOfbyQEVSH
-         LuEbaNlq0HaJcXaQ3PS0+YWidtWoFitbfC1btGp828fIpnrD/OxmsBOxAzaMwgfdMM0b
-         P6WA==
-X-Gm-Message-State: APjAAAXxCKY7YDVnONLwqahOuydpMPAsMUzlSs4MEo83KxtOyqsm1ZFA
-        yRGc4g/huXU0E+nnEdAfq6Q=
-X-Google-Smtp-Source: APXvYqwhWugMAnHGPNvckwgkrH3lBypoPMEO5SWCEr4XHJDzSLSqUgXEGtJyg8Jb1ve6NOC3WCvqSA==
-X-Received: by 2002:a1c:2706:: with SMTP id n6mr17199657wmn.154.1572724962415;
-        Sat, 02 Nov 2019 13:02:42 -0700 (PDT)
-Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 36sm25412466wrj.42.2019.11.02.13.02.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Nov 2019 13:02:41 -0700 (PDT)
-Subject: Re: [PATCH RFC V2 6/6] ARM: dts: bcm2711-rpi-4: Enable GENET support
-To:     Stefan Wahren <wahrenst@gmx.net>,
-        Matthias Brugger <matthias.bgg@kernel.org>,
-        Matthias Brugger <mbrugger@suse.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Eric Anholt <eric@anholt.net>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org
-References: <1572702093-18261-1-git-send-email-wahrenst@gmx.net>
- <1572702093-18261-7-git-send-email-wahrenst@gmx.net>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <69e7a48f-4a31-32af-9c04-889a44e19f96@gmail.com>
-Date:   Sat, 2 Nov 2019 13:02:38 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zXYT/ZeHsCXMOP8AZMsrYS79rL9tXXrExzyfPs19B/o=;
+        b=C6p7dsT67PBDA+ivnHI7hvNt79Q8izfHKYXFBHtosXFvyV1BdO9RSGA/0wVGzVY/or
+         mgzWFs/1EW2N7gfs4XJzJqsP+oQhbHa2wVEgrXvjk194U5F4liTOlkx0X7uZxzl+8M5n
+         VP0FrDypThr9Yy8ZExG9rZ0gAPq+jutGtk//DZHMsWfB9U7KBeHRM4apmex8hiFjxgB3
+         nazjD1y/4ERj8f5vo7kfmQUtakV7lnWzXmaMErBpZgC1ER4Vltq/KWjAxsajMHlIkf3w
+         ZxV/uT2BaA4ZN+S+oa14SMVHgZ6Pw6dZznqRaOJPYy5t4kI5jmuBFjTv+a+EATrAat42
+         yhIQ==
+X-Gm-Message-State: APjAAAXGQFbcDD9BAE6VO9QKG1Tmq9+ibKN961iBCVZCnPe+I6RyZmQF
+        NIvxOs1wpQnykV9E76gBHwo=
+X-Google-Smtp-Source: APXvYqzky6bIyPy8AJunDvpI4UPDIRRI8D8sEIBrqhtW6ZSz22wzKSj8yzav+NjNlNycgOmTSubxtQ==
+X-Received: by 2002:a65:4489:: with SMTP id l9mr2358594pgq.106.1572725334359;
+        Sat, 02 Nov 2019 13:08:54 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::f3bc])
+        by smtp.gmail.com with ESMTPSA id s69sm231025pgs.65.2019.11.02.13.08.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 02 Nov 2019 13:08:53 -0700 (PDT)
+Date:   Sat, 2 Nov 2019 13:08:52 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
+        andrii.nakryiko@gmail.com, john.fastabend@gmail.com
+Subject: Re: [PATCH bpf-next v3 0/8] Fix BPF probe memory helpers
+Message-ID: <20191102200850.cyf3ql5ao43p7vmz@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1572649915.git.daniel@iogearbox.net>
 MIME-Version: 1.0
-In-Reply-To: <1572702093-18261-7-git-send-email-wahrenst@gmx.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1572649915.git.daniel@iogearbox.net>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 11/2/2019 6:41 AM, Stefan Wahren wrote:
-> This enables the Gigabit Ethernet support on the Raspberry Pi 4.
-> The defined PHY mode is equivalent to the default register settings
-> in the downstream tree.
+On Sat, Nov 02, 2019 at 12:17:55AM +0100, Daniel Borkmann wrote:
+> This set adds probe_read_{user,kernel}(), probe_read_str_{user,kernel}()
+> helpers, fixes probe_write_user() helper and selftests. For details please
+> see individual patches.
 > 
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-> ---
->  arch/arm/boot/dts/bcm2711-rpi-4-b.dts | 23 +++++++++++++++++++++++
->  arch/arm/boot/dts/bcm2711.dtsi        | 19 +++++++++++++++++++
->  2 files changed, 42 insertions(+)
+> Thanks!
 > 
-> diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-> index cccc1cc..904efe1 100644
-> --- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-> +++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-> @@ -19,6 +19,10 @@
->  		reg = <0 0 0>;
->  	};
-> 
-> +	aliases {
-> +		ethernet0 = &genet;
-> +	};
-> +
->  	leds {
->  		act {
->  			gpios = <&gpio 42 GPIO_ACTIVE_HIGH>;
-> @@ -97,6 +101,25 @@
->  	status = "okay";
->  };
-> 
-> +&genet {
-> +	phy-handle = <&phy1>;
-> +	phy-mode = "rgmii-rxid";
-> +	status = "okay";
-> +
-> +	mdio@e14 {
-> +		compatible = "brcm,genet-mdio-v5";
-> +		reg = <0xe14 0x8>;
-> +		reg-names = "mdio";
-> +		#address-cells = <0x0>;
-> +		#size-cells = <0x1>;
+> v2 -> v3:
+>   - noticed two more things that are fixed in here:
+>    - bpf uapi helper description used 'int size' for *_str helpers, now u32
+>    - we need TASK_SIZE_MAX + guard page on x86-64 in patch 2 otherwise
+>      we'll trigger the 00c42373d397 warn as well, so full range covered now
 
-The MDIO controller is always present, therefore its node definition
-would be better placed in bcm2711.dtsi. Other than that:
+Applied and I wish I could say: "queued up for -stable".
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+The warning added by
+commit 00c42373d397 ("x86-64: add warning for non-canonical user access address dereferences")
+dumps the stack trace that looks like kernel panic.  It was reported numerous
+times by scared users and crash detection tools. Until now bpf tracing
+programs couldn't be fixed to avoid that warning. This patch set is a big step
+forward solving user vs kernel access issue. User space tool 'bpftrace'
+provisioned language feature 'kaddr' and 'uaddr' in anticipation of the
+bpf_probe_read_user() helper.
+Thank you Daniel for implementing this fix.
