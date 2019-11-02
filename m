@@ -2,43 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C711BECC1F
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 01:03:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 520AFECC21
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 01:06:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727297AbfKBAD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 20:03:26 -0400
-Received: from www62.your-server.de ([213.133.104.62]:58740 "EHLO
+        id S1727025AbfKBAGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 20:06:11 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59478 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726230AbfKBAD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 20:03:26 -0400
+        with ESMTP id S1726023AbfKBAGL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 20:06:11 -0400
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1iQgt0-0003l2-1v; Sat, 02 Nov 2019 01:03:22 +0100
+        id 1iQgvU-0003xU-Ra; Sat, 02 Nov 2019 01:05:56 +0100
 Received: from [178.197.249.38] (helo=pc-63.home)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89)
         (envelope-from <daniel@iogearbox.net>)
-        id 1iQgsz-0003Cl-Pu; Sat, 02 Nov 2019 01:03:21 +0100
-Subject: Re: [PATCH bpf-next v5 0/3] xsk: XSKMAP performance improvements
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org, ast@kernel.org,
-        jakub.kicinski@netronome.com
-Cc:     bpf@vger.kernel.org, magnus.karlsson@gmail.com,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        jonathan.lemon@gmail.com, toke@redhat.com
-References: <20191101110346.15004-1-bjorn.topel@gmail.com>
+        id 1iQgvU-000Mxc-Gu; Sat, 02 Nov 2019 01:05:56 +0100
+Subject: Re: [PATCH net] powerpc/bpf: fix tail call implementation
+To:     Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Sandipan Das <sandipan@linux.ibm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>
+References: <20191101033444.143741-1-edumazet@google.com>
 From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <e01f2a9a-7a1b-c6f2-c504-265059fecfc5@iogearbox.net>
-Date:   Sat, 2 Nov 2019 01:03:21 +0100
+Message-ID: <91aba3b7-ab80-f748-dfac-9933ff095139@iogearbox.net>
+Date:   Sat, 2 Nov 2019 01:05:55 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20191101110346.15004-1-bjorn.topel@gmail.com>
+In-Reply-To: <20191101033444.143741-1-edumazet@google.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Authenticated-Sender: daniel@iogearbox.net
 X-Virus-Scanned: Clear (ClamAV 0.101.4/25620/Fri Nov  1 10:04:15 2019)
 Sender: netdev-owner@vger.kernel.org
@@ -46,50 +53,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/1/19 12:03 PM, Björn Töpel wrote:
-> This set consists of three patches from Maciej and myself which are
-> optimizing the XSKMAP lookups.  In the first patch, the sockets are
-> moved to be stored at the tail of the struct xsk_map. The second
-> patch, Maciej implements map_gen_lookup() for XSKMAP. The third patch,
-> introduced in this revision, moves various XSKMAP functions, to permit
-> the compiler to do more aggressive inlining.
+On 11/1/19 4:34 AM, Eric Dumazet wrote:
+> We have seen many crashes on powerpc hosts while loading bpf programs.
 > 
-> Based on the XDP program from tools/lib/bpf/xsk.c where
-> bpf_map_lookup_elem() is explicitly called, this work yields a 5%
-> improvement for xdpsock's rxdrop scenario. The last patch yields 2%
-> improvement.
+> The problem here is that bpf_int_jit_compile() does a first pass
+> to compute the program length.
 > 
-> Jonathan's Acked-by: for patch 1 and 2 was carried on. Note that the
-> overflow checks are done in the bpf_map_area_alloc() and
-> bpf_map_charge_init() functions, which was fixed in commit
-> ff1c08e1f74b ("bpf: Change size to u64 for bpf_map_{area_alloc,
-> charge_init}()").
+> Then it allocates memory to store the generated program and
+> calls bpf_jit_build_body() a second time (and a third time
+> later)
 > 
-> Cheers,
-> Björn and Maciej
+> What I have observed is that the second bpf_jit_build_body()
+> could end up using few more words than expected.
 > 
-> [1] https://patchwork.ozlabs.org/patch/1186170/
+> If bpf_jit_binary_alloc() put the space for the program
+> at the end of the allocated page, we then write on
+> a non mapped memory.
 > 
-> v1->v2: * Change size/cost to size_t and use {struct, array}_size
->            where appropriate. (Jakub)
-> v2->v3: * Proper commit message for patch 2.
-> v3->v4: * Change size_t to u64 to handle 32-bit overflows. (Jakub)
->          * Introduced patch 3.
-> v4->v5: * Use BPF_SIZEOF size, instead of BPF_DW, for correct
->            pointer-sized loads. (Daniel)
+> It appears that bpf_jit_emit_tail_call() calls
+> bpf_jit_emit_common_epilogue() while ctx->seen might not
+> be stable.
 > 
-> Björn Töpel (2):
->    xsk: store struct xdp_sock as a flexible array member of the XSKMAP
->    xsk: restructure/inline XSKMAP lookup/redirect/flush
+> Only after the second pass we can be sure ctx->seen wont be changed.
 > 
-> Maciej Fijalkowski (1):
->    bpf: implement map_gen_lookup() callback for XSKMAP
+> Trying to avoid a second pass seems quite complex and probably
+> not worth it.
 > 
->   include/linux/bpf.h    |  25 ---------
->   include/net/xdp_sock.h |  51 ++++++++++++++-----
->   kernel/bpf/xskmap.c    | 112 +++++++++++++----------------------------
->   net/xdp/xsk.c          |  33 +++++++++++-
->   4 files changed, 106 insertions(+), 115 deletions(-)
-> 
+> Fixes: ce0761419faef ("powerpc/bpf: Implement support for tail calls")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+> Cc: Sandipan Das <sandipan@linux.ibm.com>
+> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> Cc: Paul Mackerras <paulus@samba.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: netdev@vger.kernel.org
+> Cc: bpf@vger.kernel.org
 
-Looks good, applied, thanks!
+Applied, thanks!
