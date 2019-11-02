@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6428ECCD4
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 02:27:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A12CECCF6
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 03:57:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbfKBB1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 21:27:15 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43516 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726892AbfKBB1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 21:27:15 -0400
-Received: from 38.249.197.178.dynamic.dsl-lte-bonding.lssmb00p-msn.res.cust.swisscom.ch ([178.197.249.38] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iQiC2-0003PL-RR; Sat, 02 Nov 2019 02:27:06 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     jakub.kicinski@netronome.com, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf 2019-11-02
-Date:   Sat,  2 Nov 2019 02:27:06 +0100
-Message-Id: <20191102012706.31533-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1727975AbfKBC5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 22:57:45 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45488 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727067AbfKBC5p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 22:57:45 -0400
+Received: by mail-pf1-f196.google.com with SMTP id z4so2219342pfn.12;
+        Fri, 01 Nov 2019 19:57:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=n2h/6gw/JXQvSnG6kqsCmbuh4pHjwKVhPunR1jD3PYo=;
+        b=k/lAPfaXO1Z/m7JispyJ0Mi720wSeEGtZWo2EG7jbQ7DBr7kQ0ewnkVgn+W1KS6SVi
+         ah5c1RZtP5SQovQ9b6E0LBXVon3Xp4kN73haxEZQaeFk/tvq5cdOJDWwXaz6J3ZGbuOd
+         22RKmtHVvqdIbGiqHRCVn0K6bsXENhR49sNtN+VJxZJvgatxwc4t+0uxIlYd0qfN6Mx3
+         Mv/8dg8sfZwRr+6C1TuvsX+8/wmTlD3wi29N7f4Kd2BPcGiso0eg7/g95TSa1eM3+Z97
+         IHr1bHsnR9raSb8aJsedM9v46cKGSc/NwOeF45Luqr/Uo1VXjKWnyN/I7xp7F94fz5O4
+         9TNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=n2h/6gw/JXQvSnG6kqsCmbuh4pHjwKVhPunR1jD3PYo=;
+        b=r7PiQyYq4f5SrHl7ad4Gbg5Lndoj3/FTECDdXB2+RP15tfpprkR/CqNyiWGuJRwHvC
+         H277PpRn7axbIQ1cTCcdUnhA4SBeYWCh71FdOGWQc8www1spzktLOO6z8XHxAWa0G5JA
+         z/QKjFS9SB8ki4e8P4NMxqLRWbqtQFcUHq3H0rLFgro3nz6p/FYEvSvQD8yvH8j8+enx
+         I/QExxa5e6kAXexjr/JDWv2lQxperq1GQ0NQuRS7fcFUKMMu2gslsjSZd4pijP9+S7fz
+         5k1cNkpO6OBpPkOmZSalzeaPSKcy8SBkwhlJe5V8J/UJCxFvSs3cug4cQ3uJr8cGXz6G
+         0eYg==
+X-Gm-Message-State: APjAAAXDv27Kq4h0WhJzYbtoLv24oVNKHGtyWBXWK4Lx4JEcVnlRhhzd
+        bLnXJvJudn9bawYKa08iyQ7wONii
+X-Google-Smtp-Source: APXvYqwPkVI4cApDiM5uPUR23Hj6kbJM6kTPVWlhb0LBkdhVDSHEs6qzMeVX23pTV8oJ8FuEB7sYLg==
+X-Received: by 2002:a17:90a:2623:: with SMTP id l32mr20309858pje.70.1572663464484;
+        Fri, 01 Nov 2019 19:57:44 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id m68sm7995310pfb.122.2019.11.01.19.57.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Nov 2019 19:57:43 -0700 (PDT)
+Subject: Re: [PATCH 1/5] net: phy: at803x: fix Kconfig description
+To:     Michael Walle <michael@walle.cc>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org
+References: <20191102011351.6467-1-michael@walle.cc>
+ <20191102011351.6467-2-michael@walle.cc>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <11e4c62b-6f63-5450-8335-1713040a9f13@gmail.com>
+Date:   Fri, 1 Nov 2019 19:57:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25620/Fri Nov  1 10:04:15 2019)
+In-Reply-To: <20191102011351.6467-2-michael@walle.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
 
-The following pull-request contains BPF updates for your *net* tree.
 
-We've added 6 non-merge commits during the last 6 day(s) which contain
-a total of 8 files changed, 35 insertions(+), 9 deletions(-).
+On 11/1/2019 6:13 PM, Michael Walle wrote:
+> The name of the PHY is actually AR803x not AT803x. Additionally, add the
+> name of the vendor and mention the AR8031 support.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-The main changes are:
-
-1) Fix ppc BPF JIT's tail call implementation by performing a second pass
-   to gather a stable JIT context before opcode emission, from Eric Dumazet.
-
-2) Fix build of BPF samples sys_perf_event_open() usage to compiled out
-   unavailable test_attr__{enabled,open} checks. Also fix potential overflows
-   in bpf_map_{area_alloc,charge_init} on 32 bit archs, from Björn Töpel.
-
-3) Fix narrow loads of bpf_sysctl context fields with offset > 0 on big endian
-   archs like s390x and also improve the test coverage, from Ilya Leoshkevich.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Alexei Starovoitov, Andrey Ignatov, Andrii Nakryiko, Jakub Kicinski, KP 
-Singh, Song Liu
-
-----------------------------------------------------------------
-
-The following changes since commit fc11078dd3514c65eabce166b8431a56d8a667cb:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf (2019-10-27 12:13:16 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 7de086909365cd60a5619a45af3f4152516fd75c:
-
-  powerpc/bpf: Fix tail call implementation (2019-11-02 00:32:26 +0100)
-
-----------------------------------------------------------------
-Björn Töpel (3):
-      perf tools: Make usage of test_attr__* optional for perf-sys.h
-      samples/bpf: fix build by setting HAVE_ATTR_TEST to zero
-      bpf: Change size to u64 for bpf_map_{area_alloc, charge_init}()
-
-Daniel Borkmann (1):
-      bpf, doc: Add Andrii as official reviewer to BPF subsystem
-
-Eric Dumazet (1):
-      powerpc/bpf: Fix tail call implementation
-
-Ilya Leoshkevich (1):
-      bpf: Allow narrow loads of bpf_sysctl fields with offset > 0
-
- MAINTAINERS                               |  1 +
- arch/powerpc/net/bpf_jit_comp64.c         | 13 +++++++++++++
- include/linux/bpf.h                       |  4 ++--
- kernel/bpf/cgroup.c                       |  4 ++--
- kernel/bpf/syscall.c                      |  7 +++++--
- samples/bpf/Makefile                      |  1 +
- tools/perf/perf-sys.h                     |  6 ++++--
- tools/testing/selftests/bpf/test_sysctl.c |  8 +++++++-
- 8 files changed, 35 insertions(+), 9 deletions(-)
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
