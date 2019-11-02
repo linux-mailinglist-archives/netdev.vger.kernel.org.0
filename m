@@ -2,55 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40206ECDD4
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 10:00:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FA44ECE2C
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 11:57:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727922AbfKBJA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 05:00:28 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:40480 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726999AbfKBJA2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 2 Nov 2019 05:00:28 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 677F7A0B1EA4340F04BC;
-        Sat,  2 Nov 2019 17:00:26 +0800 (CST)
-Received: from [127.0.0.1] (10.133.219.218) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Sat, 2 Nov 2019
- 17:00:25 +0800
-Message-ID: <5DBD45A8.3000701@huawei.com>
-Date:   Sat, 2 Nov 2019 17:00:24 +0800
-From:   zhong jiang <zhongjiang@huawei.com>
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20120428 Thunderbird/12.0.1
+        id S1726650AbfKBK5B convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 2 Nov 2019 06:57:01 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52942 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726617AbfKBK5A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 2 Nov 2019 06:57:00 -0400
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7171086663
+        for <netdev@vger.kernel.org>; Sat,  2 Nov 2019 10:57:00 +0000 (UTC)
+Received: by mail-lf1-f69.google.com with SMTP id t144so2381592lff.14
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 03:57:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=1KqhehDOr4MW0YjZuVPaDPIwy6O6KgqpOuXWoiBx+bA=;
+        b=FAXOShalIxceHuX+ayPmUd060sQ3c3ge8I0ZigwAfoZOB4+CebkF8sqrMaxjmQvJaG
+         wV4sGfqtxAfOc2wETmrmJ5TwoSflloASVUszfSHSGISpsy6ygvDCX1xbSeev3ojBHeP0
+         GUzv/ffQsbedCu0Q7s64F7zHeU7qVH3O+1r5u//pgHknBHOvfy4RQ5U2D0dtTjz24hFy
+         P72H/qmonbVOxw2vRFgHIldyLQGNUnSi4zk3r5nYw9Q45ZZTzD6uQul3+yiEEghJeMU7
+         dF48eTzhoPH2fkfXn6jiBWW/k07F4h85m9KRzy/QuGalCPugv6Nc/LfBhauSgq2i1YE/
+         xGig==
+X-Gm-Message-State: APjAAAUKfKShGUEd6qlJPl2RHH+lT/wbzd5NlKtcjeX92IZXFZgqkPAb
+        SHBrD52zrf4jraKRIA4E/0NqJtOeqsPl9VVGyO2SLocYQxpJCR6YN6WJbivwaV06YTr5STnYyis
+        +Rm3rjbYxEe864n/j
+X-Received: by 2002:a2e:9814:: with SMTP id a20mr11860102ljj.37.1572692218991;
+        Sat, 02 Nov 2019 03:56:58 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxdfa4ifDpWQEsMtioDqqC/7vZmOnsyaSwdtuRhKrbd43sKBBLnga5b5PHRwltOvrH8ZJ37hQ==
+X-Received: by 2002:a2e:9814:: with SMTP id a20mr11860091ljj.37.1572692218803;
+        Sat, 02 Nov 2019 03:56:58 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id r19sm3500667lfi.13.2019.11.02.03.56.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 02 Nov 2019 03:56:58 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9A63F1818B5; Sat,  2 Nov 2019 11:56:56 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v5 5/5] selftests: Add tests for automatic map pinning
+In-Reply-To: <CAEf4BzYWgnek1QYyQm4U0qakP=Si0vEJ2bLKHeJhambyX7EnCQ@mail.gmail.com>
+References: <157260197645.335202.2393286837980792460.stgit@toke.dk> <157260198209.335202.12139424443191715742.stgit@toke.dk> <CAEf4BzYWgnek1QYyQm4U0qakP=Si0vEJ2bLKHeJhambyX7EnCQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Sat, 02 Nov 2019 11:56:56 +0100
+Message-ID: <875zk2mtqf.fsf@toke.dk>
 MIME-Version: 1.0
-To:     Simon Horman <simon.horman@netronome.com>
-CC:     <kvalo@codeaurora.org>, <stas.yakovlev@gmail.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 0/3] wireless: remove unneeded variable and return
- 0
-References: <1572611621-13280-1-git-send-email-zhongjiang@huawei.com> <20191101134456.GA5859@netronome.com>
-In-Reply-To: <20191101134456.GA5859@netronome.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.133.219.218]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/11/1 21:44, Simon Horman wrote:
-> On Fri, Nov 01, 2019 at 08:33:38PM +0800, zhong jiang wrote:
->> The issue is detected with help of coccinelle.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+
+> On Fri, Nov 1, 2019 at 2:53 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
 >>
->> v1 -> v2:
->>    libipw_qos_convert_ac_to_parameters() make it void.
-> Reviewed-by: Simon Horman <simon.horman@netronome.com>
-I am sorry for that.  [PATCH 3/3] is not correct.  its local variable will be used by
-fappend.  hence just remove the patch in v3.
-
-Thanks,
-zhong jiang
-> .
+>> From: Toke Høiland-Jørgensen <toke@redhat.com>
+>>
+>> This adds a new BPF selftest to exercise the new automatic map pinning
+>> code.
+>>
+>> Acked-by: Andrii Nakryiko <andriin@fb.com>
 >
+> I don't believe I acked this patch before, must have been added by
+> mistake.
 
+No you didn't, sorry about that; I was adding in your ACKs to the other
+patches and must have added this one as well by mistake.
 
+> But either way thanks for improving tests and testing a good variety
+> of scenarios, I appreciate the work. Please fix bpf_object leak below
+> and keep my Acked-by :)
+
+Will do, thanks!
+
+-Toke
