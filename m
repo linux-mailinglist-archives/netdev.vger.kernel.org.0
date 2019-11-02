@@ -2,162 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DEC1ED066
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:35:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE72ED06D
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:37:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727197AbfKBTe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 15:34:59 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:38065 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726634AbfKBTe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:34:59 -0400
-Received: by mail-wm1-f65.google.com with SMTP id z19so8015042wmk.3
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 12:34:57 -0700 (PDT)
+        id S1727225AbfKBThw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 15:37:52 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:40804 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726762AbfKBThv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:37:51 -0400
+Received: by mail-lf1-f68.google.com with SMTP id f4so9476970lfk.7;
+        Sat, 02 Nov 2019 12:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:references:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=WLDZnkNch35rzg1d+1R+WfXdW5pqxZdV5yyeRP+ZRtE=;
-        b=ZISsDfxUMG7oe1ufNTKEa+Hsy4SU5lnYNUl+LQwWxZvA77njCaZYRzEDYEgZbtuMlw
-         HO8TrSNxRElqfOtA2miTGoXLsdYLIOTXgtD3B4cgRbhj2nJCY2jot1OQBEf/3d5Gs9Bn
-         uvVyoqBdZpxYez21nOf8RBjytpvq4kfXp176gEPbkveQWWkgSJP1JXtI7+I99cdCXQ67
-         w5i80/PQSvyiViMY298+OmK/DFBdPp9/sxWQAWjGtMimepPyaVhmK2OT/hycVsTJZahO
-         j1FP0VyP8LeHS+sTzSFmD9k07KyrOWgKeaaORcYIiKtmIFeE0raW7Exyd2bFWvYAhXHL
-         eWCg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=PI1pz1Mj8qVxeQOjA2I9QCG36K5gXfimkl2vr/rf+nM=;
+        b=V09FG3XScxezECesi4NRouuEYT0f+ckqz56GbiFjULHcc56/2CJ6xnZsRILR5H6ovD
+         p+tac9HHf1qJA17cKf2SxX+PzR6Dxuz3mcLIO46JUjoTEJEii/BQJh0Uh6CNumqLS+dR
+         9Q1mhtW6tl942vsvdbp/F1hyhkk14l5cLkGVf7ejs1PCL7nPtxLxkDx1UHGG0jY3a9Vu
+         bytG7EhYN4D0CnznPOXSqtWSAGa/bDThCMi/8ucqzcO4b1V5KJFvEIcTBnNyfiLbxV0n
+         uD+RGq/KJj3el4nSZcFJk/3uPCWnqLASldCeXmcwF6/Nh6ZKPN90FcURk782u42pBYTC
+         7RRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:references:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=WLDZnkNch35rzg1d+1R+WfXdW5pqxZdV5yyeRP+ZRtE=;
-        b=kIsQxwc6sRp6jzXVXnvVsoS2JGG7j31rSDy5JxphkMxQJ+oW6T9gLETl7pA3wAadRJ
-         hd/ex7TGZtE2O+yLueLWn6EZqXhTn9P4O/HGHyZQdTeICuxUZq+8IomYUc4tQC5l2PLE
-         J7Uqhcl+a+9iPMSvzMK9erU37MYPuJ7CwUZ1Fl6++iK4HfJ1UXsZFrl2PHAqXM2fR1Di
-         iKquLS9aMR+tTPmrBe2XJij7OYy+/A0F45lxbPW/kmVdSqzHGVIfpg7pPjuMwwrld/91
-         xJXKvr3/j8ag2djvTEKEy31TxawJvXEyrPCtOz4yDEmcrKkjd8BnjWoFdx/DixdFOym+
-         yBQA==
-X-Gm-Message-State: APjAAAV1BT2VD0xz0PNbBiBbUUEmqyJ/4xjYLvVPyRMm2PL8FCZL16XW
-        3JTpsiZlFceOA6u+nZTKzAI=
-X-Google-Smtp-Source: APXvYqxJ/c1BidoAblA6fJg1WaB6hPp9D45poKcaXu63+G/T3P3+RTT4zCttoWYPXzSoUwKEKiu/tA==
-X-Received: by 2002:a1c:2d49:: with SMTP id t70mr16119202wmt.131.1572723296781;
-        Sat, 02 Nov 2019 12:34:56 -0700 (PDT)
-Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d16sm13098113wmb.27.2019.11.02.12.34.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Nov 2019 12:34:56 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH RFC V2 2/6] net: bcmgenet: Avoid touching non-existent
- interrupt
-To:     Stefan Wahren <wahrenst@gmx.net>,
-        Matthias Brugger <matthias.bgg@kernel.org>,
-        Matthias Brugger <mbrugger@suse.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Eric Anholt <eric@anholt.net>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org
-References: <1572702093-18261-1-git-send-email-wahrenst@gmx.net>
- <1572702093-18261-3-git-send-email-wahrenst@gmx.net>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <4c88389b-7aad-7a87-8443-3a368690edd7@gmail.com>
-Date:   Sat, 2 Nov 2019 12:34:52 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=PI1pz1Mj8qVxeQOjA2I9QCG36K5gXfimkl2vr/rf+nM=;
+        b=Ps0K08jNQ7nm9Yxgl0FFJvrV/vZs2Kj3EE1rvznjqyj5p1Wd2UZ6H9r3CySizREQlI
+         POJMNn6Ls2RV8TX/aI9Rt8tLoZh4XkpUPHZz3jQKfuqySgGsVuhaMCMA4MJy1ZePFhKQ
+         qSgDypxxaHQrW414xBePXZ1ZJWLR7GJcDbN1AXad0orsCjnW3doE//g2vFgcdpxtF7Hv
+         Ta55BdVRp/QCY9cd8jidCvo9t/SaI2WV8NUHZsXzDUaeDCx8OUCEK5nyg5duXJjFdmX2
+         LgTSncZ6XTFpgwVxWOsSHAr7EjwCh6X32iUgM4nHDZlQem3gb8RYsvcC0tCWR34C1MW0
+         ngGA==
+X-Gm-Message-State: APjAAAWmEG3hxoIFKyc9OEXxeFy6POJ1VxEI6i0ikfr0FKKlvCLHCy26
+        xE1g7HsORe3sknXt3+9+XFU2dXb8B4uEXeIHorU=
+X-Google-Smtp-Source: APXvYqzyN+fZcRaQ+4DmXwiB0/IffT2uGiu2YHKUFW2S16+3dtUmqqEBHI1UQFGvU0l9JaBegwIFRL4503Rh0SgxNKc=
+X-Received: by 2002:a19:7511:: with SMTP id y17mr11948597lfe.19.1572723469300;
+ Sat, 02 Nov 2019 12:37:49 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1572702093-18261-3-git-send-email-wahrenst@gmx.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <157269297658.394725.10672376245672095901.stgit@toke.dk> <CAEf4BzYXhoaiH5x9YZ99ABUMngsjBVRAYJBm+oMbnAHnpn-18g@mail.gmail.com>
+In-Reply-To: <CAEf4BzYXhoaiH5x9YZ99ABUMngsjBVRAYJBm+oMbnAHnpn-18g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 2 Nov 2019 12:37:37 -0700
+Message-ID: <CAADnVQKcG8a39Ai-h2vbWieZiMNLUVE6L_meUv7NeJPCMw2Eig@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 0/5] libbpf: Support automatic pinning of maps
+ using 'pinning' BTF attribute
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/2/2019 6:41 AM, Stefan Wahren wrote:
-> As platform_get_irq() now prints an error when the interrupt does not
-> exist, we are getting a confusing error message in case the optional
-> WOL IRQ is not defined:
-> 
->   bcmgenet fd58000.ethernet: IRQ index 2 not found
-> 
-> Fix this by using the platform_irq_count() helper to avoid touching a
-> non-existent interrupt.
-> 
-> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> ---
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index 105b3be..ac554a6 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3473,7 +3473,8 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  		err = priv->irq1;
->  		goto err;
->  	}
-> -	priv->wol_irq = platform_get_irq(pdev, 2);
-> +	if (platform_irq_count(pdev) > 2)
-> +		priv->wol_irq = platform_get_irq(pdev, 2);
+On Sat, Nov 2, 2019 at 12:09 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Sat, Nov 2, 2019 at 4:09 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+> >
+> > This series adds support to libbpf for reading 'pinning' settings from =
+BTF-based
+> > map definitions. It introduces a new open option which can set the pinn=
+ing path;
+> > if no path is set, /sys/fs/bpf is used as the default. Callers can cust=
+omise the
+> > pinning between open and load by setting the pin path per map, and stil=
+l get the
+> > automatic reuse feature.
+> >
+> > The semantics of the pinning is similar to the iproute2 "PIN_GLOBAL" se=
+tting,
+> > and the eventual goal is to move the iproute2 implementation to be base=
+d on
+> > libbpf and the functions introduced in this series.
+> >
+> > Changelog:
+> >
+> > v6:
+> >   - Fix leak of struct bpf_object in selftest
+> >   - Make struct bpf_map arg const in bpf_map__is_pinned() and bpf_map__=
+get_pin_path()
+> >
+> > v5:
+> >   - Don't pin maps with pinning set, but with a value of LIBBPF_PIN_NON=
+E
+> >   - Add a few more selftests:
+> >     - Should not pin map with pinning set, but value LIBBPF_PIN_NONE
+> >     - Should fail to load a map with an invalid pinning value
+> >     - Should fail to re-use maps with parameter mismatch
+> >   - Alphabetise libbpf.map
+> >   - Whitespace and typo fixes
+> >
+> > v4:
+> >   - Don't check key_type_id and value_type_id when checking for map reu=
+se
+> >     compatibility.
+> >   - Move building of map->pin_path into init_user_btf_map()
+> >   - Get rid of 'pinning' attribute in struct bpf_map
+> >   - Make sure we also create parent directory on auto-pin (new patch 3)=
+.
+> >   - Abort the selftest on error instead of attempting to continue.
+> >   - Support unpinning all pinned maps with bpf_object__unpin_maps(obj, =
+NULL)
+> >   - Support pinning at map->pin_path with bpf_object__pin_maps(obj, NUL=
+L)
+> >   - Make re-pinning a map at the same path a noop
+> >   - Rename the open option to pin_root_path
+> >   - Add a bunch more self-tests for pin_maps(NULL) and unpin_maps(NULL)
+> >   - Fix a couple of smaller nits
+> >
+> > v3:
+> >   - Drop bpf_object__pin_maps_opts() and just use an open option to cus=
+tomise
+> >     the pin path; also don't touch bpf_object__{un,}pin_maps()
+> >   - Integrate pinning and reuse into bpf_object__create_maps() instead =
+of having
+> >     multiple loops though the map structure
+> >   - Make errors in map reuse and pinning fatal to the load procedure
+> >   - Add selftest to exercise pinning feature
+> >   - Rebase series to latest bpf-next
+> >
+> > v2:
+> >   - Drop patch that adds mounting of bpffs
+> >   - Only support a single value of the pinning attribute
+> >   - Add patch to fixup error handling in reuse_fd()
+> >   - Implement the full automatic pinning and map reuse logic on load
+> >
+> > ---
+> >
+> > Toke H=C3=B8iland-J=C3=B8rgensen (5):
+> >       libbpf: Fix error handling in bpf_map__reuse_fd()
+> >       libbpf: Store map pin path and status in struct bpf_map
+> >       libbpf: Move directory creation into _pin() functions
+> >       libbpf: Add auto-pinning of maps when loading BPF objects
+> >       selftests: Add tests for automatic map pinning
+> >
+> >
+>
+> For the series:
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-Or you could use platform_get_irq_optional() for the WoL IRQ line?
--- 
-Florian
-
-
+Applied. Thanks!
