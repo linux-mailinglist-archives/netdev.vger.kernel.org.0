@@ -2,289 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB498ECF1B
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 15:18:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0347FECF29
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 15:34:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbfKBOSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 10:18:06 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50475 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726406AbfKBOSG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 10:18:06 -0400
-Received: by mail-wm1-f68.google.com with SMTP id 11so12232570wmk.0
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 07:18:04 -0700 (PDT)
+        id S1726574AbfKBOeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 10:34:18 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:37741 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726430AbfKBOeR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 10:34:17 -0400
+Received: by mail-il1-f195.google.com with SMTP id s5so828478iln.4;
+        Sat, 02 Nov 2019 07:34:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=zqKBaDl1EGEE1jW1tGspQn8HkQ5igeW2JC90PO14wCY=;
-        b=Lc+5uZdn26vRFqnN9p1/EYl4WZVBVOtcg3jDxDRpaqiTz4B+7j5Zv0Wac+KdW/Jg8E
-         GrJFg9oObaFDqu8ZEU4EicXw702Vu1+UcoJ6EXySk6FXD5guaYO1IvARlfcs72ppfgMs
-         BxJzLZW1lIJ/k7+RUiaR7g2o2Qa2JA1fsXB74AeMQKApH5CmKsDjS1Cz/KLivuU/CJ6M
-         luk1ZLKhXK5/RRNr3+gznakKF2twDThszadM7HX/ygmId4Dgv8jWoMUnbx+FmfoMQhAv
-         oLDWjNElBuf/E5tkObrNXQVmih/ZBc22bWMlDAA8jc06gCPSL8OaJWdAV9vVxvVGuFLp
-         1ryQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=QqxgrxraiNr6QGsrgDTomSVloF/MS9ElgqG76PnzehY=;
+        b=r/mfm+mWDrzuVQG/CuFZG/XSqiDA5eaAoi0rvCSicKpZKr+P8To1mRqKRETXj66KQi
+         gDpYv7MSZ8Reh8XoMdkjefThjk3J3nrRfpgKF29ldlv7RSEkFIph7k4J8iRGOxxPa6qE
+         +QZS9GIXyxOYhbUyaw3OeD/7FQngsn26IjEGyIvPr38wY1yCvgXYaY5+U77oS1GRH5SO
+         5GDys2nCsvJ3mfcAslrHRsYnC3HJgTAhALWY6PilAdgebYsA164BhOE6ahNoLBh+HTBw
+         kSjrMlUF0ZSivAU2YlI2y8UDZyQ4sft+M2rjAOQvYc5SbZ7VfIv9HKv2GR3iPswX9aLF
+         6sLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zqKBaDl1EGEE1jW1tGspQn8HkQ5igeW2JC90PO14wCY=;
-        b=Xe+Ls2OleejxqlYHxv7ZnsuRjbax24haDqXPmJAa3DJFSEiIj+YzWS27jGnj7ICwBm
-         Ts8ntVQj3Wua6k9hLPZD5mkZPyza2EEQTDpiUY8fgZyhadBPwOinhtmeCbGEjvDdEn84
-         vKHZWRlUCcCynf9y1wrtczo3UPSMZWl1yP13c5EQywi5bZ8JpeI7yKt1uHnmdwxETlz6
-         mDunrbhq7oiyeHjQX7nI3xuc4r+BqxG2adVYtg5CabyIwB2uKsPclmp1otqzzS8kJ3WZ
-         0ANuvbULWBGMflcIT/4YSdu74OFGsdwb/GGFN7D6Zxg8ALM6YDWpInB6itLBcyRfwgVK
-         VbEg==
-X-Gm-Message-State: APjAAAVdq9b9ZklmBXhKaQRQClnGgkREzNRl3sudCoN15/PWmG6hUc3N
-        IOq0MTYDAw/qD8bhslF5mz4kiLcf36ahBeu/HStbuqzD4fI8Fzvkbwjmht30cm6sZ0SKngT0ycT
-        y1gdR+t72qCyXWFQopyTUibr/Vbr/+UnWEZwMLekaJhLkQByt6aKvwnL/ULeJzUq52V4A4Doa9Q
-        ==
-X-Google-Smtp-Source: APXvYqw5A8Q2evtjl/GHc7UFTf+iNy1CiwqEQ1WY0o6773yLvDOsKNfRrB2SocfMZcoDeOFtl9IPYA==
-X-Received: by 2002:a1c:2d4b:: with SMTP id t72mr16277497wmt.112.1572704283484;
-        Sat, 02 Nov 2019 07:18:03 -0700 (PDT)
-Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
-        by smtp.gmail.com with ESMTPSA id 16sm12998062wmf.0.2019.11.02.07.18.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 02 Nov 2019 07:18:02 -0700 (PDT)
-From:   John Hurley <john.hurley@netronome.com>
-To:     netdev@vger.kernel.org
-Cc:     vladbu@mellanox.com, jiri@mellanox.com, simon.horman@netronome.com,
-        jakub.kicinski@netronome.com, louis.peens@netronome.com,
-        oss-drivers@netronome.com, John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net 1/1] net: sched: prevent duplicate flower rules from tcf_proto destroy race
-Date:   Sat,  2 Nov 2019 14:17:47 +0000
-Message-Id: <1572704267-29705-1-git-send-email-john.hurley@netronome.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QqxgrxraiNr6QGsrgDTomSVloF/MS9ElgqG76PnzehY=;
+        b=dCNAShXw7jsljrsirDcDm4ug8b1bPYImgU/TUV3H4Bs1KB4gYujhG/CjNB2I8A+T1M
+         61nbzrFIxbl7dfWD5eWGRm+ltwCd9UgXqxl2hrCFqHrSf81pP0EXWD8K781S7yhx+idw
+         +9Sq9IeBzKvBG28ZirW8/W7hNy6X9TiLTvvGKheoqQJEgrbWz5Wq1+1Gq/mAWW61mTRQ
+         44EEiD6ljVSg6ckCnhwfgpqm1mUdMgvNxbWF0u+NJ5ct3AlSPAqdPuTAijP3CpBm3ObM
+         zmK6yfy/+g1EZIO9ZMuijlzJfaTQ4f4fuk5/Weg74mpnivjllaH/wMrwxPyLvVyMWhsw
+         +VIg==
+X-Gm-Message-State: APjAAAUrUWVsp+95wDqGGqD07joubu94mf4YdiTQJhhG778SBiQ+AUGy
+        BqkjM/lUBH5+xCetTPJb7pcugzAr
+X-Google-Smtp-Source: APXvYqwNH5hBBbCUltn6ko4oDbi192evu5qEPmqOOiFdwrpxkIMxdwMqCuAQRy1jhUdykTFas6m5nw==
+X-Received: by 2002:a92:1642:: with SMTP id r63mr19452726ill.83.1572705256328;
+        Sat, 02 Nov 2019 07:34:16 -0700 (PDT)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:d194:3543:ed5:37ec])
+        by smtp.googlemail.com with ESMTPSA id e13sm98378iom.50.2019.11.02.07.34.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Nov 2019 07:34:15 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] selftest: net: add icmp reply address test
+To:     Francesco Ruggeri <fruggeri@arista.com>, davem@davemloft.net,
+        shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <20191101233408.BC15495C0902@us180.sjc.aristanetworks.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0a03def6-3ea0-090f-048f-877700836df2@gmail.com>
+Date:   Sat, 2 Nov 2019 08:34:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.1
+MIME-Version: 1.0
+In-Reply-To: <20191101233408.BC15495C0902@us180.sjc.aristanetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a new filter is added to cls_api, the function
-tcf_chain_tp_insert_unique() looks up the protocol/priority/chain to
-determine if the tcf_proto is duplicated in the chain's hashtable. It then
-creates a new entry or continues with an existing one. In cls_flower, this
-allows the function fl_ht_insert_unque to determine if a filter is a
-duplicate and reject appropriately, meaning that the duplicate will not be
-passed to drivers via the offload hooks. However, when a tcf_proto is
-destroyed it is removed from its chain before a hardware remove hook is
-hit. This can lead to a race whereby the driver has not received the
-remove message but duplicate flows can be accepted. This, in turn, can
-lead to the offload driver receiving incorrect duplicate flows and out of
-order add/delete messages.
+On 11/1/19 5:34 PM, Francesco Ruggeri wrote:
+> Verify that in this scenario
+> 
+>                    1.0.3.1/24
+> ---- 1.0.1.3/24    1.0.1.1/24 ---- 1.0.2.1/24    1.0.2.4/24 ----
+> |H1|--------------------------|R1|--------------------------|H2|
+> ----            N1            ----            N2            ----
+> 
+> where 1.0.3.1/24 and 1.0.1.1/24 are respectively R1's primary and
+> secondary address on N1, traceroute from H1 to H2 show 1.0.1.1
+> 
+> Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
+> ---
+>  tools/testing/selftests/net/Makefile          |   2 +-
+>  .../testing/selftests/net/icmp_reply_addr.sh  | 106 ++++++++++++++++++
+>  2 files changed, 107 insertions(+), 1 deletion(-)
+>  create mode 100755 tools/testing/selftests/net/icmp_reply_addr.sh
+> 
 
-Prevent duplicates by utilising an approach suggested by Vlad Buslov. A
-hash table per block stores each unique chain/protocol/prio being
-destroyed. This entry is only removed when the full destroy (and hardware
-offload) has completed. If a new flow is being added with the same
-identiers as a tc_proto being detroyed, then the add request is replayed
-until the destroy is complete.
+Hi:
 
-Fixes: 8b64678e0af8 ("net: sched: refactor tp insert/delete for concurrent execution")
-Signed-off-by: John Hurley <john.hurley@netronome.com>
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-Reported-by: Louis Peens <louis.peens@netronome.com>
----
- include/net/sch_generic.h |  4 +++
- net/sched/cls_api.c       | 83 ++++++++++++++++++++++++++++++++++++++++++++---
- 2 files changed, 83 insertions(+), 4 deletions(-)
+It would be better to combine both of these into a single test script;
+the topology and setup are very similar and the scripts share a lot of
+common code.
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index a8b0a9a..6a7ee96 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -15,6 +15,7 @@
- #include <linux/mutex.h>
- #include <linux/rwsem.h>
- #include <linux/atomic.h>
-+#include <linux/hashtable.h>
- #include <net/gen_stats.h>
- #include <net/rtnetlink.h>
- #include <net/flow_offload.h>
-@@ -362,6 +363,7 @@ struct tcf_proto {
- 	bool			deleting;
- 	refcount_t		refcnt;
- 	struct rcu_head		rcu;
-+	struct hlist_node	destroy_ht_node;
- };
- 
- struct qdisc_skb_cb {
-@@ -414,6 +416,8 @@ struct tcf_block {
- 		struct list_head filter_chain_list;
- 	} chain0;
- 	struct rcu_head rcu;
-+	DECLARE_HASHTABLE(proto_destroy_ht, 7);
-+	struct mutex proto_destroy_lock; /* Lock for proto_destroy hashtable. */
- };
- 
- #ifdef CONFIG_PROVE_LOCKING
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 8717c0b..20d60b8 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -21,6 +21,7 @@
- #include <linux/slab.h>
- #include <linux/idr.h>
- #include <linux/rhashtable.h>
-+#include <linux/jhash.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -47,6 +48,62 @@ static LIST_HEAD(tcf_proto_base);
- /* Protects list of registered TC modules. It is pure SMP lock. */
- static DEFINE_RWLOCK(cls_mod_lock);
- 
-+static u32 destroy_obj_hashfn(const struct tcf_proto *tp)
-+{
-+	return jhash_3words(tp->chain->index, tp->prio,
-+			    (__force __u32)tp->protocol, 0);
-+}
-+
-+static void tcf_proto_signal_destroying(struct tcf_chain *chain,
-+					struct tcf_proto *tp)
-+{
-+	struct tcf_block *block = chain->block;
-+
-+	mutex_lock(&block->proto_destroy_lock);
-+	hash_add_rcu(block->proto_destroy_ht, &tp->destroy_ht_node,
-+		     destroy_obj_hashfn(tp));
-+	mutex_unlock(&block->proto_destroy_lock);
-+}
-+
-+static bool tcf_proto_cmp(const struct tcf_proto *tp1,
-+			  const struct tcf_proto *tp2)
-+{
-+	return tp1->chain->index == tp2->chain->index &&
-+	       tp1->prio == tp2->prio &&
-+	       tp1->protocol == tp2->protocol;
-+}
-+
-+static bool tcf_proto_exists_destroying(struct tcf_chain *chain,
-+					struct tcf_proto *tp)
-+{
-+	u32 hash = destroy_obj_hashfn(tp);
-+	struct tcf_proto *iter;
-+	bool found = false;
-+
-+	rcu_read_lock();
-+	hash_for_each_possible_rcu(chain->block->proto_destroy_ht, iter,
-+				   destroy_ht_node, hash) {
-+		if (tcf_proto_cmp(tp, iter)) {
-+			found = true;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+	return found;
-+}
-+
-+static void
-+tcf_proto_signal_destroyed(struct tcf_chain *chain, struct tcf_proto *tp)
-+{
-+	struct tcf_block *block = chain->block;
-+
-+	mutex_lock(&block->proto_destroy_lock);
-+	if (hash_hashed(&tp->destroy_ht_node))
-+		hash_del_rcu(&tp->destroy_ht_node);
-+	mutex_unlock(&block->proto_destroy_lock);
-+}
-+
- /* Find classifier type by string name */
- 
- static const struct tcf_proto_ops *__tcf_proto_lookup_ops(const char *kind)
-@@ -234,9 +291,11 @@ static void tcf_proto_get(struct tcf_proto *tp)
- static void tcf_chain_put(struct tcf_chain *chain);
- 
- static void tcf_proto_destroy(struct tcf_proto *tp, bool rtnl_held,
--			      struct netlink_ext_ack *extack)
-+			      bool sig_destroy, struct netlink_ext_ack *extack)
- {
- 	tp->ops->destroy(tp, rtnl_held, extack);
-+	if (sig_destroy)
-+		tcf_proto_signal_destroyed(tp->chain, tp);
- 	tcf_chain_put(tp->chain);
- 	module_put(tp->ops->owner);
- 	kfree_rcu(tp, rcu);
-@@ -246,7 +305,7 @@ static void tcf_proto_put(struct tcf_proto *tp, bool rtnl_held,
- 			  struct netlink_ext_ack *extack)
- {
- 	if (refcount_dec_and_test(&tp->refcnt))
--		tcf_proto_destroy(tp, rtnl_held, extack);
-+		tcf_proto_destroy(tp, rtnl_held, true, extack);
- }
- 
- static int walker_check_empty(struct tcf_proto *tp, void *fh,
-@@ -370,6 +429,7 @@ static bool tcf_chain_detach(struct tcf_chain *chain)
- static void tcf_block_destroy(struct tcf_block *block)
- {
- 	mutex_destroy(&block->lock);
-+	mutex_destroy(&block->proto_destroy_lock);
- 	kfree_rcu(block, rcu);
- }
- 
-@@ -545,6 +605,12 @@ static void tcf_chain_flush(struct tcf_chain *chain, bool rtnl_held)
- 
- 	mutex_lock(&chain->filter_chain_lock);
- 	tp = tcf_chain_dereference(chain->filter_chain, chain);
-+	while (tp) {
-+		tp_next = rcu_dereference_protected(tp->next, 1);
-+		tcf_proto_signal_destroying(chain, tp);
-+		tp = tp_next;
-+	}
-+	tp = tcf_chain_dereference(chain->filter_chain, chain);
- 	RCU_INIT_POINTER(chain->filter_chain, NULL);
- 	tcf_chain0_head_change(chain, NULL);
- 	chain->flushing = true;
-@@ -844,6 +910,7 @@ static struct tcf_block *tcf_block_create(struct net *net, struct Qdisc *q,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 	mutex_init(&block->lock);
-+	mutex_init(&block->proto_destroy_lock);
- 	init_rwsem(&block->cb_lock);
- 	flow_block_init(&block->flow_block);
- 	INIT_LIST_HEAD(&block->chain_list);
-@@ -1621,6 +1688,12 @@ static struct tcf_proto *tcf_chain_tp_insert_unique(struct tcf_chain *chain,
- 
- 	mutex_lock(&chain->filter_chain_lock);
- 
-+	if (tcf_proto_exists_destroying(chain, tp_new)) {
-+		mutex_unlock(&chain->filter_chain_lock);
-+		tcf_proto_destroy(tp_new, rtnl_held, false, NULL);
-+		return ERR_PTR(-EAGAIN);
-+	}
-+
- 	tp = tcf_chain_tp_find(chain, &chain_info,
- 			       protocol, prio, false);
- 	if (!tp)
-@@ -1628,10 +1701,10 @@ static struct tcf_proto *tcf_chain_tp_insert_unique(struct tcf_chain *chain,
- 	mutex_unlock(&chain->filter_chain_lock);
- 
- 	if (tp) {
--		tcf_proto_destroy(tp_new, rtnl_held, NULL);
-+		tcf_proto_destroy(tp_new, rtnl_held, false, NULL);
- 		tp_new = tp;
- 	} else if (err) {
--		tcf_proto_destroy(tp_new, rtnl_held, NULL);
-+		tcf_proto_destroy(tp_new, rtnl_held, false, NULL);
- 		tp_new = ERR_PTR(err);
- 	}
- 
-@@ -1669,6 +1742,7 @@ static void tcf_chain_tp_delete_empty(struct tcf_chain *chain,
- 		return;
- 	}
- 
-+	tcf_proto_signal_destroying(chain, tp);
- 	next = tcf_chain_dereference(chain_info.next, chain);
- 	if (tp == chain->filter_chain)
- 		tcf_chain0_head_change(chain, next);
-@@ -2188,6 +2262,7 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
- 		err = -EINVAL;
- 		goto errout_locked;
- 	} else if (t->tcm_handle == 0) {
-+		tcf_proto_signal_destroying(chain, tp);
- 		tcf_chain_tp_remove(chain, &chain_info, tp);
- 		mutex_unlock(&chain->filter_chain_lock);
- 
--- 
-2.7.4
+The script can be a generic traceroute.sh and then contain 2 tests:
+1. IPv4 - verify reply address test,
+2. IPv6 - verify reply address test.
+
+Making 1 script with multiple tests allows other tests to be added in
+the future with less overhead. This is how other tests under net are done.
+
+Also, you still have these using macvlan devices. The intent is to use
+network namespaces to mimic nodes in a network. As such veth pairs are a
+better option for this intent.
+
+There are 2 scripts under net (l2tp.sh and fcnal-test.sh) that contain
+functions -- create_ns and connect_ns  -- that really reduce the
+overhead of creating tests like this. Actually you could copy l2tp.sh to
+traceroute.sh and quickly update it for these tests.
 
