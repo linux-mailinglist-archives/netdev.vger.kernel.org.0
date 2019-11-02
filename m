@@ -2,83 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10737ECC0A
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 00:51:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C711BECC1F
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 01:03:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727778AbfKAXvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 1 Nov 2019 19:51:15 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35665 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbfKAXvP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 19:51:15 -0400
-Received: by mail-pf1-f195.google.com with SMTP id d13so8076580pfq.2
-        for <netdev@vger.kernel.org>; Fri, 01 Nov 2019 16:51:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BsKjEtMnmq6by4TFwLAU6qxNqp5eTX4GxFJxZD0moV8=;
-        b=pScjkFVoiPme60pJx4mAVUsWuiaMXy04oWejEcmTT+awgA/fBHFC5lkkgorUZsomz3
-         JocFxGNppmJmlO3kZq4oAZoVIx4uENe61YJgJ2vA5z4qcb7hvYpI/mw25Huq/N4IJCdl
-         ugmoNMCvsm2BI+AZRsFrLn6lQhRP2t3IFLg64/Op+AT64nQHjkZUnroawseFKSSnQK+o
-         +6jqvyzphvDRjzWYbgVOG3AKHurDCAdgdCEueFvTAaNG7BHLN6cP5f1lXPBtMgvZMpZw
-         ClKoJS1Yr1XoLTrIiOMampDz8Za+kvmJ6tMtSDIxi+j/m347JYMthvSmNKpv5J7/krao
-         iaPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BsKjEtMnmq6by4TFwLAU6qxNqp5eTX4GxFJxZD0moV8=;
-        b=FsDXMknck04JsBflUd2Y/WrtBrZZ7poHK2kMuBDSjAv2bDNDO/8Jwey+mugdizka6q
-         ZGVdwmRbkTeBxM3FYXTBEu7ITx0T5rpOOWGWC50ddR3vyDnX0uDPkPjNKtxXuc+fuGvo
-         irxp49DImIHkE429pP5jeeT/+GqnVnnc0FKmQqTwETSSz4nCWYB/g8FrsE84srVz3KGs
-         Ov03l72GnoEjlopyCQxo210ron07c27fYiimwYRVbKamt8rdiV9K1AkuxCei1JzIeqdK
-         boaIX1dXYRxSH0loqulO985wtL7PvL6YXUMlAA5Y5Ft7uFziCkO+EAJ5iig7F550+aeJ
-         j2hQ==
-X-Gm-Message-State: APjAAAXVaYaibd285oO6ayQoU39TReMcuLQhyjCY/RSspw485Lgjg4Bc
-        hlev7HbJzCUIwLEjcEck+ecXqQVeWPmWS0ZUo1JEDKMx
-X-Google-Smtp-Source: APXvYqwrYu1fLTJn/jVyHfEq2Et/ilBE20+tijXhnt8IQcLGGfQal+KWaexdrYayNiZ0JXv4ir+PiALins+ZSDNDyEM=
-X-Received: by 2002:a17:90a:326b:: with SMTP id k98mr18656029pjb.50.1572652274835;
- Fri, 01 Nov 2019 16:51:14 -0700 (PDT)
+        id S1727297AbfKBAD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 1 Nov 2019 20:03:26 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58740 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726230AbfKBAD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 1 Nov 2019 20:03:26 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iQgt0-0003l2-1v; Sat, 02 Nov 2019 01:03:22 +0100
+Received: from [178.197.249.38] (helo=pc-63.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iQgsz-0003Cl-Pu; Sat, 02 Nov 2019 01:03:21 +0100
+Subject: Re: [PATCH bpf-next v5 0/3] xsk: XSKMAP performance improvements
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org, ast@kernel.org,
+        jakub.kicinski@netronome.com
+Cc:     bpf@vger.kernel.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        jonathan.lemon@gmail.com, toke@redhat.com
+References: <20191101110346.15004-1-bjorn.topel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <e01f2a9a-7a1b-c6f2-c504-265059fecfc5@iogearbox.net>
+Date:   Sat, 2 Nov 2019 01:03:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20191101221605.32210-1-xiyou.wangcong@gmail.com>
- <CANn89iKS6fas9O74U5w1wb+8DN==fXRKQ8nzq0tkT_VOXRtYBQ@mail.gmail.com>
- <CAM_iQpUGAaV9hsP4Z7YoHD6rQuJDSP_WNk_-d97Uxyed2SsgrA@mail.gmail.com> <CANn89iLhmbhaJDhPtThh2Nt8BMp1tnAZjBwwMdsk0V=SmkMJmQ@mail.gmail.com>
-In-Reply-To: <CANn89iLhmbhaJDhPtThh2Nt8BMp1tnAZjBwwMdsk0V=SmkMJmQ@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 1 Nov 2019 16:51:03 -0700
-Message-ID: <CAM_iQpUs-qjs_X4iCGENb89hXNjnxK1-Bb+KWUzgYcmuqeGbPw@mail.gmail.com>
-Subject: Re: [RFC Patch] tcp: make icsk_retransmit_timer pinned
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191101110346.15004-1-bjorn.topel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25620/Fri Nov  1 10:04:15 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 1, 2019 at 4:44 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Fri, Nov 1, 2019 at 3:43 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> > So let's make the sysctl timer_migration disabled by default? It is
-> > always how we want to trade off CPU power saving with latency.
->
-> At least timer_migration sysctl deserves a proper documentation.
-> I do not see any.
->
-> And maybe automatically disable it for hosts with more than 64
-> possible cpus would make sense,
-> but that  is only a suggestion. I won't fight this battle.
->
-> (All sysctls can be set by admins, we do not need to change the default)
+On 11/1/19 12:03 PM, Björn Töpel wrote:
+> This set consists of three patches from Maciej and myself which are
+> optimizing the XSKMAP lookups.  In the first patch, the sockets are
+> moved to be stored at the tail of the struct xsk_map. The second
+> patch, Maciej implements map_gen_lookup() for XSKMAP. The third patch,
+> introduced in this revision, moves various XSKMAP functions, to permit
+> the compiler to do more aggressive inlining.
+> 
+> Based on the XDP program from tools/lib/bpf/xsk.c where
+> bpf_map_lookup_elem() is explicitly called, this work yields a 5%
+> improvement for xdpsock's rxdrop scenario. The last patch yields 2%
+> improvement.
+> 
+> Jonathan's Acked-by: for patch 1 and 2 was carried on. Note that the
+> overflow checks are done in the bpf_map_area_alloc() and
+> bpf_map_charge_init() functions, which was fixed in commit
+> ff1c08e1f74b ("bpf: Change size to u64 for bpf_map_{area_alloc,
+> charge_init}()").
+> 
+> Cheers,
+> Björn and Maciej
+> 
+> [1] https://patchwork.ozlabs.org/patch/1186170/
+> 
+> v1->v2: * Change size/cost to size_t and use {struct, array}_size
+>            where appropriate. (Jakub)
+> v2->v3: * Proper commit message for patch 2.
+> v3->v4: * Change size_t to u64 to handle 32-bit overflows. (Jakub)
+>          * Introduced patch 3.
+> v4->v5: * Use BPF_SIZEOF size, instead of BPF_DW, for correct
+>            pointer-sized loads. (Daniel)
+> 
+> Björn Töpel (2):
+>    xsk: store struct xdp_sock as a flexible array member of the XSKMAP
+>    xsk: restructure/inline XSKMAP lookup/redirect/flush
+> 
+> Maciej Fijalkowski (1):
+>    bpf: implement map_gen_lookup() callback for XSKMAP
+> 
+>   include/linux/bpf.h    |  25 ---------
+>   include/net/xdp_sock.h |  51 ++++++++++++++-----
+>   kernel/bpf/xskmap.c    | 112 +++++++++++++----------------------------
+>   net/xdp/xsk.c          |  33 +++++++++++-
+>   4 files changed, 106 insertions(+), 115 deletions(-)
+> 
 
-Make people rely on the default value, as obviously not everyone
-is able to revise all of the sysctl's.
-
-Anyway, I read it as the patch makes TCP retransmit timer pinned
-not interesting, therefore let's discard it. We can at least carry it
-by ourselves, so not a big deal.
-
-Thanks!
+Looks good, applied, thanks!
