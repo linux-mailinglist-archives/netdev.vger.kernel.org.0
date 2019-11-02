@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74C6FECD7D
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 06:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F36EECD82
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 06:49:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbfKBFhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 01:37:12 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:42215 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbfKBFhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 01:37:11 -0400
-Received: by mail-qt1-f195.google.com with SMTP id t20so252167qtn.9;
-        Fri, 01 Nov 2019 22:37:10 -0700 (PDT)
+        id S1726989AbfKBFtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 01:49:03 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35936 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbfKBFtC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 01:49:02 -0400
+Received: by mail-qk1-f194.google.com with SMTP id d13so12797501qko.3;
+        Fri, 01 Nov 2019 22:49:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=OG9hLEuv7GQ3E61qmEbOBxWkLP8bIBhb+RsbTM9GkBs=;
-        b=R7wf+otcIYqnK1xw5C0XkOBzy2gt2HF/+dnnzWyv9OnU3TZZfdbzAoNKkmPCH1pPEk
-         DMZfb+uoSmrFEjGvq/4roEV08iTE4sVyc9MOchHohSvXUc6CFPZ1lcQGfCR5gbJiqEoS
-         Dr40tRMhMX9ZCB/iFvPeq2nKS8ydZbUSdQkoBpPy/LffwyZ2LQohlvKlCjoGCQhXMEJF
-         bVPgee2ieQqp9c98SwO8Pwqxqdcb70UodkBKPKpw6j7Ay6rNgxn5a+Xq86iVzimMAF83
-         FmYt7f7SKKOZBr/+XDnDKRrFixiaJbXXzyjoeLBC970U60VuGNEzrKN9SJOHIcmaQDYH
-         vOEw==
+        bh=9dgnU1S8Ate0n740VRCjAMnGysukD1lI/J/yhx09fKk=;
+        b=Pm+pkUWkxfIpG6tjT6Iu1XVcs2u0WihelpEjZiAI25WQIe8A42wFJX4FP5seuSmQoL
+         8jKvqiMQpqMJjUqQ3eujuXbrWdVDUFMWVFAGBjCw8P0PEYh6pObYyG0Wn9BIRlidlLhi
+         BSLy0rUn5t/jFBzWBYqIl4iV3U9aat/kXTlYOOmHEjzfJfMiAhq3X9rL5M1oSlffky2A
+         S9Gi9+eoX35vFzWrM0dwbkCOtAVTUGHbuI9eDS2mWbLd8UD08rHkH4KtHsRghb2clV/9
+         mTi7FLMnM0nH4TuS1JqzCUw2zXmBKx3VeHbEkz8R7ekF246Gp9H58WWIMmvVqeHABql2
+         nCIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=OG9hLEuv7GQ3E61qmEbOBxWkLP8bIBhb+RsbTM9GkBs=;
-        b=PzV2C6o65CjMR+7A46bH4Bc3y8G8Y+4y/IdLllxjfCjE7AwdqIGd7QmeEFsR7YC4b/
-         R6pbW9YpTbPBqMDneT2NI43Xc0H7Ms8Y9O/1xkUTNOrbuKabhW+rPbJ3i+4NNK5LhnjS
-         pLi2MMVltZiCQOX/wYx0nYrnjfP6ve1oY+R+Jth40ZTsAlbGpuZqGWvBOKtJJCmPavkn
-         S7M78lrjB+CGbvli7XYBspKdI2w7FWaDnwNMbEHu+sXDCJFw71+Lf74LB5UuNn+ckdUW
-         /biQ0X+yiexIezQ/7uOFkaCXxrObrsAJuNws/nrzWl+Mr6Wr1ucQ+U6TNUx8+s/OoP5I
-         RMUA==
-X-Gm-Message-State: APjAAAV4kbJ2y2eUtzdtgeZFLbYdIjRmAonKoeg+ep3TmDg/ReGnpoaD
-        WRg9xAj2lnrIl3Zti7G15VKfBpZSMgOZTFApKAU=
-X-Google-Smtp-Source: APXvYqy8pJDXvtd6JSPpyihNnGzEGlxXBGh6C1u+QnBfIq6BSUB5+MC74djL5sEuhvL46XWUomOMmUQdeiIMxayoIWY=
-X-Received: by 2002:ac8:29c8:: with SMTP id 8mr3304286qtt.117.1572673030267;
- Fri, 01 Nov 2019 22:37:10 -0700 (PDT)
+        bh=9dgnU1S8Ate0n740VRCjAMnGysukD1lI/J/yhx09fKk=;
+        b=LoMl0tBn+ckjwbFEGCuQOCD/kf+MqV3/BpwcigdruzbyG4tm6xbym0UNPrUZ0r6NI5
+         vJKQOXS/I17b76P9OnrFAOJYXYu+2FxYyg8IY4pYwUP19nDStRnNDmq40uKHEsk5R+Lu
+         N4QlUuXnNExXAHKocjqA3RlaPnUjmIRW4faKdG6DHBOc+CXLTlrrGmTq7itN3GV6dMCM
+         vUr95bch9sRbUdbd0HGfuLMQiR8FGUk3RY5hAXJ5VJ+si6jKuAQWxHROytlJZAoScnnu
+         6By1ii/2tYowxKTQkVTY/v13PEc1476I4UBqVAzn8iAwUrX9WD6havnuTL4KpP8bOz5v
+         lMvA==
+X-Gm-Message-State: APjAAAXPmpOdJ2iyzTNzbjtopJ+ZIcPKytKCxEoCuLVIVFh5fXlyTlDe
+        m1mQwqVFQKBPjrSwuGjbfwB5/c5BVh/ascDBZVI=
+X-Google-Smtp-Source: APXvYqzA9SABwuYndBKdE8xecCEqfhthvgs/utvap5TuzkCLbhzJqKkfiQEYednAy7ASBa11Wdm9FCXokmIuqD7dsbk=
+X-Received: by 2002:a37:7486:: with SMTP id p128mr3433337qkc.437.1572673740061;
+ Fri, 01 Nov 2019 22:49:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191101125707.10043-1-ethercflow@gmail.com>
-In-Reply-To: <20191101125707.10043-1-ethercflow@gmail.com>
+References: <20191101130817.11744-1-ethercflow@gmail.com>
+In-Reply-To: <20191101130817.11744-1-ethercflow@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 1 Nov 2019 22:36:59 -0700
-Message-ID: <CAEf4BzZhNCbASJ+ze4ECddoWLZwr5a=HL7BZ1Zgg+Re=4cyNzw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5] bpf: add new helper get_file_path for mapping
- a file descriptor to a pathname
+Date:   Fri, 1 Nov 2019 22:48:49 -0700
+Message-ID: <CAEf4Bzand8qSxqmryyxMNg3FNL-pgokJ4taRrtGq07rdbEjsbA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] selftests/bpf: test for bpf_get_file_path()
+ from raw tracepoint
 To:     Wenbo Zhang <ethercflow@gmail.com>
 Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -58,130 +58,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 1, 2019 at 5:57 AM Wenbo Zhang <ethercflow@gmail.com> wrote:
+On Fri, Nov 1, 2019 at 6:08 AM Wenbo Zhang <ethercflow@gmail.com> wrote:
 >
-> When people want to identify which file system files are being opened,
-> read, and written to, they can use this helper with file descriptor as
-> input to achieve this goal. Other pseudo filesystems are also supported.
->
-> This requirement is mainly discussed here:
->
->   https://github.com/iovisor/bcc/issues/237
->
-> v4->v5: addressed Andrii and Daniel's feedback
-> - rename bpf_fd2path to bpf_get_file_path to be consistent with other
-> helper's names
-> - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
-> - remove fdput from fdget_raw's error path
-> - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
-> into the buffer or an error code if the path was too long
-> - modify the normal path's return value to return copied string lengh
-> including NUL
-> - update this helper description's Return bits.
->
-> v3->v4: addressed Daniel's feedback
-> - fix missing fdput()
-> - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
-> - move fd2path's test code to another patch
-> - add comment to explain why use fdget_raw instead of fdget
->
-> v2->v3: addressed Yonghong's feedback
-> - remove unnecessary LOCKDOWN_BPF_READ
-> - refactor error handling section for enhanced readability
-> - provide a test case in tools/testing/selftests/bpf
->
-> v1->v2: addressed Daniel's feedback
-> - fix backward compatibility
-> - add this helper description
-> - fix signed-off name
+> trace fstat events by raw tracepoint sys_enter:newfstat, and handle events
+> only produced by fd2path_loadgen, the fd2path_loadgen call fstat on several
+> different types of files to test bpf_get_file_path's feature.
 > ---
 
-See nit below, but I'm fine with the current state as well.
+Unless there is a real reason for all this complexity (in which case,
+please spell it out in commit or comments), I think this could be so
+much simpler.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+- you don't have to use perf_buffer to pass data back, just use global data;
+- you can add a filter for PID to only capture data triggered by test
+process and avoid the noise;
+- why all those set_affinity dances? Is it just because you used
+existing perf_buffer test which did that to specifically test
+perf_buffer delivering data across every CPU core? Seems like your
+test doesn't care about that...
+- do we really need a separate binary generating hundreds of syscalls?
+It's hard to synchronize with test and it seems much simpler to just
+trigger necessary syscalls synchronously from the test itself, no?
 
->  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
->   * function eBPF program intends to call
-> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index f50bf19f7a05..fc9f577e65f5 100644
-> --- a/kernel/trace/bpf_trace.c
-> +++ b/kernel/trace/bpf_trace.c
-> @@ -683,6 +683,53 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
->         .arg1_type      = ARG_ANYTHING,
->  };
+I have a bunch of more minutia nits, but most of them will go away if
+you simplify your testing approach anyway, so I'll postpone them till
+then.
+
+>  tools/testing/selftests/bpf/Makefile          |   8 +-
+>  tools/testing/selftests/bpf/fd2path_loadgen.c |  75 ++++++++++
+>  .../selftests/bpf/prog_tests/get_file_path.c  | 130 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_get_file_path.c  |  58 ++++++++
+>  4 files changed, 269 insertions(+), 2 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/fd2path_loadgen.c
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_path.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_path.c
 >
-> +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
-> +{
-> +       struct fd f;
-> +       char *p;
-> +       int ret = -EBADF;
-> +
-> +       /* Use fdget_raw instead of fdget to support O_PATH, and
-> +        * fdget_raw doesn't have any sleepable code, so it's ok
-> +        * to be here.
-> +        */
-> +       f = fdget_raw(fd);
-> +       if (!f.file)
-> +               goto error;
-> +
-> +       /* d_path doesn't have any sleepable code, so it's ok to
-> +        * be here. But it uses the current macro to get fs_struct
-> +        * (current->fs). So this helper shouldn't be called in
-> +        * interrupt context.
-> +        */
-> +       p = d_path(&f.file->f_path, dst, size);
-> +       if (IS_ERR(p)) {
-> +               ret = PTR_ERR(p);
-> +               fdput(f);
-> +               goto error;
-> +       }
-> +
-> +       ret = strlen(p);
-> +       memmove(dst, p, ret);
-> +       dst[ret++] = '\0';
-> +       fdput(f);
-> +       goto end;
-> +
-> +error:
-> +       memset(dst, '0', size);
-> +end:
-> +       return ret;
-
-nit: I'd avoid unnecessary goto end (and end label itself) by having
-two explicit returns:
-
-    return 0;
-error:
-    memset(...);
-    return ret;
-
-> +}
-> +
-> +static const struct bpf_func_proto bpf_get_file_path_proto = {
-> +       .func       = bpf_get_file_path,
-> +       .gpl_only   = true,
-> +       .ret_type   = RET_INTEGER,
-> +       .arg1_type  = ARG_PTR_TO_UNINIT_MEM,
-> +       .arg2_type  = ARG_CONST_SIZE,
-> +       .arg3_type  = ARG_ANYTHING,
-> +};
-> +
->  static const struct bpf_func_proto *
->  tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  {
-> @@ -735,6 +782,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
->  #endif
->         case BPF_FUNC_send_signal:
->                 return &bpf_send_signal_proto;
-> +       case BPF_FUNC_get_file_path:
-> +               return &bpf_get_file_path_proto;
-
-This seems like a rather useful helper not just in tracing context. So
-if maintainers are ok with that, maybe you can follow up with patch
-that adds it in more BPF program types.
-
->         default:
->                 return NULL;
->         }
 
 [...]
