@@ -2,131 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD9CECD44
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 06:10:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C6FECD7D
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 06:37:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbfKBFKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 01:10:35 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:44452 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbfKBFKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 01:10:34 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o11so10805233qtr.11;
-        Fri, 01 Nov 2019 22:10:34 -0700 (PDT)
+        id S1726437AbfKBFhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 01:37:12 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:42215 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbfKBFhL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 01:37:11 -0400
+Received: by mail-qt1-f195.google.com with SMTP id t20so252167qtn.9;
+        Fri, 01 Nov 2019 22:37:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=3fs59JoV9dztN2Zx9Rs9aliWG79+dEFB6uEUZs8cPwE=;
-        b=orvWCgHKIBefdumADNVdq83mtqTuRdADQpotwcK3Ls6MH3p6CC+oINbAiuF3BdFXaf
-         J7Z+qwNyiHija05xTxPe+rwM4FbIM5x4ykN2kuqHDWXFYUN12QAhwlXiG+SJ7McU5QT7
-         jyLxW8QVPKZWXnMBpPLvMy5qDV3pwCYhnkAY/Ag5Lun6YHbbhPE9bwTrk0v8gdMl3a2K
-         I7bGcNxQXB+UzB0y+nbIVAWSlJkRTuWDQjP9H9LDJp9JlJOJv7qE60EmdbIXjpjyw6D9
-         EJWKWqbg3MumdGwA0Lqw/BbVKMYHQJmakpdW3tkl+9cUhv+7f2mDjKwljpELI+wWRWBh
-         +9wA==
+         :cc;
+        bh=OG9hLEuv7GQ3E61qmEbOBxWkLP8bIBhb+RsbTM9GkBs=;
+        b=R7wf+otcIYqnK1xw5C0XkOBzy2gt2HF/+dnnzWyv9OnU3TZZfdbzAoNKkmPCH1pPEk
+         DMZfb+uoSmrFEjGvq/4roEV08iTE4sVyc9MOchHohSvXUc6CFPZ1lcQGfCR5gbJiqEoS
+         Dr40tRMhMX9ZCB/iFvPeq2nKS8ydZbUSdQkoBpPy/LffwyZ2LQohlvKlCjoGCQhXMEJF
+         bVPgee2ieQqp9c98SwO8Pwqxqdcb70UodkBKPKpw6j7Ay6rNgxn5a+Xq86iVzimMAF83
+         FmYt7f7SKKOZBr/+XDnDKRrFixiaJbXXzyjoeLBC970U60VuGNEzrKN9SJOHIcmaQDYH
+         vOEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3fs59JoV9dztN2Zx9Rs9aliWG79+dEFB6uEUZs8cPwE=;
-        b=jg5ixoFQZcKwCLurdrFU+pr6yMor0sv12SE0/PDolOXkg9fpstx1sQj9wl1w/b8M/d
-         eV5dga3ht5rAruiOMbRbzOY4niKidwyeoL9povijGhmMRQhTizkOMyFcYMPyQwB/9EJ1
-         5aWzqbDCNteNpr0E4pIdFkFL7rJRZZarGjjI1CkydBgBOOf9JU6VoQ3hYfWeu+wfducE
-         5U1AIkt3OluRRsqMswKe4czGBuLQoS3KlajBiQat4FxGTTqBHUy/pkt8Rc/SkJzUUSwq
-         Jy+tLEhIm88pAeWxZLkRwca8tg5R2JjmUeL7ffAq1uD2fBcWeU4btDYhMUtisX+5kpu/
-         rxVw==
-X-Gm-Message-State: APjAAAVf8af6Bvk7MGLdbiDlN0g1S9sSIscvqL+LSEM9S4k/+Sg6DVK1
-        debw0Hjaxk4LEQleN12JEjGp1ssHL2s6zYZ8G7w=
-X-Google-Smtp-Source: APXvYqxNEPssjx/kTASd1BoeZM349poAPvD5tG9EUJwVYTZm7H/A5UwxMS6u9I5XJ62V2Es2m1K8+xbTyhEpQ8D5cGU=
-X-Received: by 2002:ad4:4e4a:: with SMTP id eb10mr13225336qvb.228.1572671433650;
- Fri, 01 Nov 2019 22:10:33 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=OG9hLEuv7GQ3E61qmEbOBxWkLP8bIBhb+RsbTM9GkBs=;
+        b=PzV2C6o65CjMR+7A46bH4Bc3y8G8Y+4y/IdLllxjfCjE7AwdqIGd7QmeEFsR7YC4b/
+         R6pbW9YpTbPBqMDneT2NI43Xc0H7Ms8Y9O/1xkUTNOrbuKabhW+rPbJ3i+4NNK5LhnjS
+         pLi2MMVltZiCQOX/wYx0nYrnjfP6ve1oY+R+Jth40ZTsAlbGpuZqGWvBOKtJJCmPavkn
+         S7M78lrjB+CGbvli7XYBspKdI2w7FWaDnwNMbEHu+sXDCJFw71+Lf74LB5UuNn+ckdUW
+         /biQ0X+yiexIezQ/7uOFkaCXxrObrsAJuNws/nrzWl+Mr6Wr1ucQ+U6TNUx8+s/OoP5I
+         RMUA==
+X-Gm-Message-State: APjAAAV4kbJ2y2eUtzdtgeZFLbYdIjRmAonKoeg+ep3TmDg/ReGnpoaD
+        WRg9xAj2lnrIl3Zti7G15VKfBpZSMgOZTFApKAU=
+X-Google-Smtp-Source: APXvYqy8pJDXvtd6JSPpyihNnGzEGlxXBGh6C1u+QnBfIq6BSUB5+MC74djL5sEuhvL46XWUomOMmUQdeiIMxayoIWY=
+X-Received: by 2002:ac8:29c8:: with SMTP id 8mr3304286qtt.117.1572673030267;
+ Fri, 01 Nov 2019 22:37:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <157260197645.335202.2393286837980792460.stgit@toke.dk> <157260197871.335202.12855636074438881848.stgit@toke.dk>
-In-Reply-To: <157260197871.335202.12855636074438881848.stgit@toke.dk>
+References: <20191101125707.10043-1-ethercflow@gmail.com>
+In-Reply-To: <20191101125707.10043-1-ethercflow@gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 1 Nov 2019 22:10:22 -0700
-Message-ID: <CAEf4BzZMO7j1LsESEetTJCRpw4HDZ994C5RigFU+uQ1tgQa_PQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/5] libbpf: Store map pin path and status in
- struct bpf_map
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Date:   Fri, 1 Nov 2019 22:36:59 -0700
+Message-ID: <CAEf4BzZhNCbASJ+ze4ECddoWLZwr5a=HL7BZ1Zgg+Re=4cyNzw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5] bpf: add new helper get_file_path for mapping
+ a file descriptor to a pathname
+To:     Wenbo Zhang <ethercflow@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 1, 2019 at 2:53 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
+On Fri, Nov 1, 2019 at 5:57 AM Wenbo Zhang <ethercflow@gmail.com> wrote:
 >
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> When people want to identify which file system files are being opened,
+> read, and written to, they can use this helper with file descriptor as
+> input to achieve this goal. Other pseudo filesystems are also supported.
 >
-> Support storing and setting a pin path in struct bpf_map, which can be us=
-ed
-> for automatic pinning. Also store the pin status so we can avoid attempts
-> to re-pin a map that has already been pinned (or reused from a previous
-> pinning).
+> This requirement is mainly discussed here:
 >
-> The behaviour of bpf_object__{un,}pin_maps() is changed so that if it is
-> called with a NULL path argument (which was previously illegal), it will
-> (un)pin only those maps that have a pin_path set.
+>   https://github.com/iovisor/bcc/issues/237
 >
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> v4->v5: addressed Andrii and Daniel's feedback
+> - rename bpf_fd2path to bpf_get_file_path to be consistent with other
+> helper's names
+> - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
+> - remove fdput from fdget_raw's error path
+> - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
+> into the buffer or an error code if the path was too long
+> - modify the normal path's return value to return copied string lengh
+> including NUL
+> - update this helper description's Return bits.
+>
+> v3->v4: addressed Daniel's feedback
+> - fix missing fdput()
+> - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
+> - move fd2path's test code to another patch
+> - add comment to explain why use fdget_raw instead of fdget
+>
+> v2->v3: addressed Yonghong's feedback
+> - remove unnecessary LOCKDOWN_BPF_READ
+> - refactor error handling section for enhanced readability
+> - provide a test case in tools/testing/selftests/bpf
+>
+> v1->v2: addressed Daniel's feedback
+> - fix backward compatibility
+> - add this helper description
+> - fix signed-off name
 > ---
->  tools/lib/bpf/libbpf.c   |  164 +++++++++++++++++++++++++++++++++++-----=
-------
->  tools/lib/bpf/libbpf.h   |    8 ++
->  tools/lib/bpf/libbpf.map |    3 +
->  3 files changed, 134 insertions(+), 41 deletions(-)
+
+See nit below, but I'm fine with the current state as well.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index f50bf19f7a05..fc9f577e65f5 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -683,6 +683,53 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
+>         .arg1_type      = ARG_ANYTHING,
+>  };
 >
+> +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
+> +{
+> +       struct fd f;
+> +       char *p;
+> +       int ret = -EBADF;
+> +
+> +       /* Use fdget_raw instead of fdget to support O_PATH, and
+> +        * fdget_raw doesn't have any sleepable code, so it's ok
+> +        * to be here.
+> +        */
+> +       f = fdget_raw(fd);
+> +       if (!f.file)
+> +               goto error;
+> +
+> +       /* d_path doesn't have any sleepable code, so it's ok to
+> +        * be here. But it uses the current macro to get fs_struct
+> +        * (current->fs). So this helper shouldn't be called in
+> +        * interrupt context.
+> +        */
+> +       p = d_path(&f.file->f_path, dst, size);
+> +       if (IS_ERR(p)) {
+> +               ret = PTR_ERR(p);
+> +               fdput(f);
+> +               goto error;
+> +       }
+> +
+> +       ret = strlen(p);
+> +       memmove(dst, p, ret);
+> +       dst[ret++] = '\0';
+> +       fdput(f);
+> +       goto end;
+> +
+> +error:
+> +       memset(dst, '0', size);
+> +end:
+> +       return ret;
+
+nit: I'd avoid unnecessary goto end (and end label itself) by having
+two explicit returns:
+
+    return 0;
+error:
+    memset(...);
+    return ret;
+
+> +}
+> +
+> +static const struct bpf_func_proto bpf_get_file_path_proto = {
+> +       .func       = bpf_get_file_path,
+> +       .gpl_only   = true,
+> +       .ret_type   = RET_INTEGER,
+> +       .arg1_type  = ARG_PTR_TO_UNINIT_MEM,
+> +       .arg2_type  = ARG_CONST_SIZE,
+> +       .arg3_type  = ARG_ANYTHING,
+> +};
+> +
+>  static const struct bpf_func_proto *
+>  tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  {
+> @@ -735,6 +782,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>  #endif
+>         case BPF_FUNC_send_signal:
+>                 return &bpf_send_signal_proto;
+> +       case BPF_FUNC_get_file_path:
+> +               return &bpf_get_file_path_proto;
+
+This seems like a rather useful helper not just in tracing context. So
+if maintainers are ok with that, maybe you can follow up with patch
+that adds it in more BPF program types.
+
+>         default:
+>                 return NULL;
+>         }
 
 [...]
-
->  LIBBPF_API int bpf_object__pin_maps(struct bpf_object *obj, const char *=
-path);
->  LIBBPF_API int bpf_object__unpin_maps(struct bpf_object *obj,
->                                       const char *path);
-> @@ -385,6 +390,9 @@ LIBBPF_API int bpf_map__resize(struct bpf_map *map, _=
-_u32 max_entries);
->  LIBBPF_API bool bpf_map__is_offload_neutral(const struct bpf_map *map);
->  LIBBPF_API bool bpf_map__is_internal(const struct bpf_map *map);
->  LIBBPF_API void bpf_map__set_ifindex(struct bpf_map *map, __u32 ifindex)=
-;
-> +LIBBPF_API int bpf_map__set_pin_path(struct bpf_map *map, const char *pa=
-th);
-> +LIBBPF_API const char *bpf_map__get_pin_path(struct bpf_map *map);
-> +LIBBPF_API bool bpf_map__is_pinned(struct bpf_map *map);
-
-
-Didn't notice this before and wasn't going to force another version
-just for this, but given you'll be fixing last patch anyways...
-bpf_map__is_pinned and bpf_map__get_pin_path are read-only "getters",
-so it would be appropriate for them to accept "const struct bpf_map *"
-instead.
-
->  LIBBPF_API int bpf_map__pin(struct bpf_map *map, const char *path);
->  LIBBPF_API int bpf_map__unpin(struct bpf_map *map, const char *path);
->
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index d1473ea4d7a5..1681a9ce109f 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -193,6 +193,9 @@ LIBBPF_0.0.5 {
->
->  LIBBPF_0.0.6 {
->         global:
-> +               bpf_map__get_pin_path;
-> +               bpf_map__is_pinned;
-> +               bpf_map__set_pin_path;
->                 bpf_object__open_file;
->                 bpf_object__open_mem;
->                 bpf_program__get_expected_attach_type;
->
