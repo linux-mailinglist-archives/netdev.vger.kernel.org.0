@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A99EED065
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DEC1ED066
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbfKBTey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 15:34:54 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54778 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbfKBTex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:34:53 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c12so8129286wml.4
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 12:34:52 -0700 (PDT)
+        id S1727197AbfKBTe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 15:34:59 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38065 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726634AbfKBTe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:34:59 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z19so8015042wmk.3
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 12:34:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:subject:to:cc:references:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XrAM25vpWZD5MTWL7vyE3YXP4ScFEtr0870Eoi4wxso=;
-        b=SyFCUiJ63BrzjubzWkv9d+F3cDrNjv9Oxe5yTcZG4TgXdHM68u0QB3NZpH5qCkChiC
-         Mpn4Sdstcgkg7xgmh8cXd2UgqY6XSJ3IQ35/REpExZg8mY6s/vzf8jiuXD4OiVd9MlqQ
-         1JpYoxQMiaZmEthuHS8tmLDMWI1z4QWRhHIMLHg3liOjkCI5OtcQNN35OVrY9zew6onA
-         1Cve0bkiyu9PIlXC3xrZIesUaRuSg5jB03fOMW8lHGkHWX7xEAonOGKPSQ4OT45xggW5
-         udU4rnK0fnv9fjLzVFtPKtUwkR2QAZf8xU/h2Ca5MKz6SLJ6E4tHr5U62dAhKGOMlhP2
-         GLXQ==
+        bh=WLDZnkNch35rzg1d+1R+WfXdW5pqxZdV5yyeRP+ZRtE=;
+        b=ZISsDfxUMG7oe1ufNTKEa+Hsy4SU5lnYNUl+LQwWxZvA77njCaZYRzEDYEgZbtuMlw
+         HO8TrSNxRElqfOtA2miTGoXLsdYLIOTXgtD3B4cgRbhj2nJCY2jot1OQBEf/3d5Gs9Bn
+         uvVyoqBdZpxYez21nOf8RBjytpvq4kfXp176gEPbkveQWWkgSJP1JXtI7+I99cdCXQ67
+         w5i80/PQSvyiViMY298+OmK/DFBdPp9/sxWQAWjGtMimepPyaVhmK2OT/hycVsTJZahO
+         j1FP0VyP8LeHS+sTzSFmD9k07KyrOWgKeaaORcYIiKtmIFeE0raW7Exyd2bFWvYAhXHL
+         eWCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:subject:to:cc:references:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=XrAM25vpWZD5MTWL7vyE3YXP4ScFEtr0870Eoi4wxso=;
-        b=DfWuiZFQKd+hr3jbeYpfp4cV2XMIxqHqS7tNXf+sY5+/ACQ0HzgAGMK333zMcInant
-         6wJWrRNfZtmFVP7vBT/wbbBh4QHkfOhJV07QlPr9GNuLPkq79PpFC9IH+tqQMkJ+R+XB
-         GqxcoikHlwm6laC6f3srlD6jVbCeeTCN3Lw9YKYMEBCamfGI1xWOWHn6fXZb89LUQFpl
-         W0Xrs/uSWhu4i7c6ot4KmPTQVRrdhZyo9AgkrqVQvE42nqiTLL5kfk/Z00FE5OSLOmMe
-         J+Jvb41kwnf3wZd1Q2qv3UC/XuIvPsRDFuLIbPHVExSc1zItMCYQw6z9uMnndkqVj8bJ
-         W/1w==
-X-Gm-Message-State: APjAAAWOwwfiijhNNwvMIFOLCwFaOZPiRI+kGyxrQLy9Mv6OhnZls/jQ
-        9vF6S2t41SPQ4kjRwDs5Ec8=
-X-Google-Smtp-Source: APXvYqxKUFgr6ValYFAzYN6/aTyEwKVGGONbq0glLWx8r8nDNSPSdVCQz4qVXCtd1f8wW5EzqpD6oA==
-X-Received: by 2002:a7b:cd04:: with SMTP id f4mr11287498wmj.91.1572723291468;
-        Sat, 02 Nov 2019 12:34:51 -0700 (PDT)
+        bh=WLDZnkNch35rzg1d+1R+WfXdW5pqxZdV5yyeRP+ZRtE=;
+        b=kIsQxwc6sRp6jzXVXnvVsoS2JGG7j31rSDy5JxphkMxQJ+oW6T9gLETl7pA3wAadRJ
+         hd/ex7TGZtE2O+yLueLWn6EZqXhTn9P4O/HGHyZQdTeICuxUZq+8IomYUc4tQC5l2PLE
+         J7Uqhcl+a+9iPMSvzMK9erU37MYPuJ7CwUZ1Fl6++iK4HfJ1UXsZFrl2PHAqXM2fR1Di
+         iKquLS9aMR+tTPmrBe2XJij7OYy+/A0F45lxbPW/kmVdSqzHGVIfpg7pPjuMwwrld/91
+         xJXKvr3/j8ag2djvTEKEy31TxawJvXEyrPCtOz4yDEmcrKkjd8BnjWoFdx/DixdFOym+
+         yBQA==
+X-Gm-Message-State: APjAAAV1BT2VD0xz0PNbBiBbUUEmqyJ/4xjYLvVPyRMm2PL8FCZL16XW
+        3JTpsiZlFceOA6u+nZTKzAI=
+X-Google-Smtp-Source: APXvYqxJ/c1BidoAblA6fJg1WaB6hPp9D45poKcaXu63+G/T3P3+RTT4zCttoWYPXzSoUwKEKiu/tA==
+X-Received: by 2002:a1c:2d49:: with SMTP id t70mr16119202wmt.131.1572723296781;
+        Sat, 02 Nov 2019 12:34:56 -0700 (PDT)
 Received: from [10.230.29.119] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t185sm17703784wmf.45.2019.11.02.12.34.47
+        by smtp.gmail.com with ESMTPSA id d16sm13098113wmb.27.2019.11.02.12.34.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 02 Nov 2019 12:34:49 -0700 (PDT)
+        Sat, 02 Nov 2019 12:34:56 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH RFC V2 3/6] net: bcmgenet: use optional max DMA burst size
- property
+Subject: Re: [PATCH RFC V2 2/6] net: bcmgenet: Avoid touching non-existent
+ interrupt
 To:     Stefan Wahren <wahrenst@gmx.net>,
         Matthias Brugger <matthias.bgg@kernel.org>,
         Matthias Brugger <mbrugger@suse.com>,
@@ -59,7 +59,7 @@ Cc:     Eric Anholt <eric@anholt.net>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org
 References: <1572702093-18261-1-git-send-email-wahrenst@gmx.net>
- <1572702093-18261-4-git-send-email-wahrenst@gmx.net>
+ <1572702093-18261-3-git-send-email-wahrenst@gmx.net>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
  xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
@@ -114,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <e1182432-19d8-6c9d-fd41-bb4d739b579a@gmail.com>
-Date:   Sat, 2 Nov 2019 12:34:45 -0700
+Message-ID: <4c88389b-7aad-7a87-8443-3a368690edd7@gmail.com>
+Date:   Sat, 2 Nov 2019 12:34:52 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <1572702093-18261-4-git-send-email-wahrenst@gmx.net>
+In-Reply-To: <1572702093-18261-3-git-send-email-wahrenst@gmx.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,44 +129,34 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 11/2/2019 6:41 AM, Stefan Wahren wrote:
-> From: Matthias Brugger <mbrugger@suse.com>
+> As platform_get_irq() now prints an error when the interrupt does not
+> exist, we are getting a confusing error message in case the optional
+> WOL IRQ is not defined:
 > 
-> Depending on the HW, the maximal usable DMA burst size can vary.
-> If not set accordingly a timeout in the transmit queue happens and no
-> package can be sent. Read to optional max-burst-sz property, if not
-> present, fallback to the standard value.
+>   bcmgenet fd58000.ethernet: IRQ index 2 not found
 > 
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-
-Missing your Signed-off-by here since you are carrying this patch from
-Matthias.
-
+> Fix this by using the platform_irq_count() helper to avoid touching a
+> non-existent interrupt.
+> 
+> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 > ---
+>  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index 105b3be..ac554a6 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -3473,7 +3473,8 @@ static int bcmgenet_probe(struct platform_device *pdev)
+>  		err = priv->irq1;
+>  		goto err;
+>  	}
+> -	priv->wol_irq = platform_get_irq(pdev, 2);
+> +	if (platform_irq_count(pdev) > 2)
+> +		priv->wol_irq = platform_get_irq(pdev, 2);
 
-[snip]
-
-> +	if (dn) {
-> +		of_property_read_u32(dn, "dma-burst-sz",
-> +				     &priv->dma_max_burst_length);
-> +	} else {
-> +		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
-> +	}
-
-I would maintain the previous position provided on Matthias' patch
-series, which is the integration of the GENETv5 hardware block in 2711
-is done in a way that is different enough (due to the SCB/AXI bridge)
-that a separate compatibility string would be in order. Once you that
-defined that "brcm,bcm2711-genet-v5" compatibility string defined, you
-can derive the DMA burst size off of it.
-
-If adding a compatibility string is not practical because of the
-downstream DTBs, then can we at least fix this patch in two ways:
-
-- define the property in the binding document
-- spell out the property in full names: max-dma-burst-size so as to
-reflect what it does
-
-Thanks!
+Or you could use platform_get_irq_optional() for the WoL IRQ line?
 -- 
 Florian
 
