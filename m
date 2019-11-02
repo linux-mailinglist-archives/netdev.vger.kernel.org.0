@@ -2,160 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07C1BED056
-	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:09:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A99EED065
+	for <lists+netdev@lfdr.de>; Sat,  2 Nov 2019 20:34:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726757AbfKBTJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 15:09:22 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41637 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726396AbfKBTJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:09:22 -0400
-Received: by mail-qt1-f194.google.com with SMTP id o3so17733235qtj.8;
-        Sat, 02 Nov 2019 12:09:21 -0700 (PDT)
+        id S1727176AbfKBTey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 15:34:54 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54778 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726771AbfKBTex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 15:34:53 -0400
+Received: by mail-wm1-f68.google.com with SMTP id c12so8129286wml.4
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 12:34:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ik7pnpm5nkHdWTpbP2HcYzUbAmJ4gt8ds7mxPNBfj2g=;
-        b=huRz+3kc+635yRg2VBPj+9xx97HIER9/dZeWt105UIBW7k7QLyDb1RowXiEKBIHAot
-         QW88eWqFLa5gODmyr1c2VXSB57Ql0wW6d3zViGeCS/UDEQrMJJoeEk6UNiqOQ3GlpvUd
-         cIgAj17PjPm+q0pXOp8BSgeZSHOq6v99m5nWiJwpmd5s1UPDeM1OP1M3/hHQXsn8DwBy
-         ooLzNgefrok4teg++hIazp/xMN8/D9tpqmknH5OegWBu+IWMSF8YGAeD6mryF/r6mbdV
-         E5zmMEdr6inSseQdl0OmlNwoE+LGcv/SjlGwJ4haxkDeIbhqUuQawfsFCglwm1yhv14r
-         a7MA==
+        h=from:subject:to:cc:references:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XrAM25vpWZD5MTWL7vyE3YXP4ScFEtr0870Eoi4wxso=;
+        b=SyFCUiJ63BrzjubzWkv9d+F3cDrNjv9Oxe5yTcZG4TgXdHM68u0QB3NZpH5qCkChiC
+         Mpn4Sdstcgkg7xgmh8cXd2UgqY6XSJ3IQ35/REpExZg8mY6s/vzf8jiuXD4OiVd9MlqQ
+         1JpYoxQMiaZmEthuHS8tmLDMWI1z4QWRhHIMLHg3liOjkCI5OtcQNN35OVrY9zew6onA
+         1Cve0bkiyu9PIlXC3xrZIesUaRuSg5jB03fOMW8lHGkHWX7xEAonOGKPSQ4OT45xggW5
+         udU4rnK0fnv9fjLzVFtPKtUwkR2QAZf8xU/h2Ca5MKz6SLJ6E4tHr5U62dAhKGOMlhP2
+         GLXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ik7pnpm5nkHdWTpbP2HcYzUbAmJ4gt8ds7mxPNBfj2g=;
-        b=A2cJbo+6Xz7FPKtND0SvTJPrwTQc/OiMKAZnNCmV9lC/mLdbti3bcYu7sP4/Q1k8GA
-         60/C6vKpJ4br5KDIiQaKBtPrTS/T4yVFY3zhfIxVpuamTvW9ZdJhJ/h0hUUkcP6hhrGB
-         YEBeQOkG0vBRu7UWQUQMpM6W2/iZJl7CbKrA/gsUqxbwVHzzaS8yVmPL6CzV2+DuEcp4
-         9VKslCaZ9EW4qfBfuDENut8lVTrli3ezBDMeMXi4tGg//wHTXMenQhpD026fe2wC9sOi
-         mMGjHd+ZP18/DjnT52vortb3NEbhDsdXLZezoDrjcimy24M7Roc36lrfSZ31h92YheGB
-         34pw==
-X-Gm-Message-State: APjAAAVSzc2UgtDUvIHmf14Z2Il5zPXXYRm3Dci2KwabQoqELIhJxvWE
-        Po2FL8hZ3F9hRayA6EvPY4c718qO2eY1eSf3PFwXfg==
-X-Google-Smtp-Source: APXvYqyYGUJ/RTFf4o9GIINA8q/Yufla00xUzacAT2wrIS/vsetiFVDmbmq0lreUl4hHsYBDojYWcWr2/ZxDN8XWwSg=
-X-Received: by 2002:a05:6214:90f:: with SMTP id dj15mr14236665qvb.224.1572721761089;
- Sat, 02 Nov 2019 12:09:21 -0700 (PDT)
+        h=x-gm-message-state:from:subject:to:cc:references:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=XrAM25vpWZD5MTWL7vyE3YXP4ScFEtr0870Eoi4wxso=;
+        b=DfWuiZFQKd+hr3jbeYpfp4cV2XMIxqHqS7tNXf+sY5+/ACQ0HzgAGMK333zMcInant
+         6wJWrRNfZtmFVP7vBT/wbbBh4QHkfOhJV07QlPr9GNuLPkq79PpFC9IH+tqQMkJ+R+XB
+         GqxcoikHlwm6laC6f3srlD6jVbCeeTCN3Lw9YKYMEBCamfGI1xWOWHn6fXZb89LUQFpl
+         W0Xrs/uSWhu4i7c6ot4KmPTQVRrdhZyo9AgkrqVQvE42nqiTLL5kfk/Z00FE5OSLOmMe
+         J+Jvb41kwnf3wZd1Q2qv3UC/XuIvPsRDFuLIbPHVExSc1zItMCYQw6z9uMnndkqVj8bJ
+         W/1w==
+X-Gm-Message-State: APjAAAWOwwfiijhNNwvMIFOLCwFaOZPiRI+kGyxrQLy9Mv6OhnZls/jQ
+        9vF6S2t41SPQ4kjRwDs5Ec8=
+X-Google-Smtp-Source: APXvYqxKUFgr6ValYFAzYN6/aTyEwKVGGONbq0glLWx8r8nDNSPSdVCQz4qVXCtd1f8wW5EzqpD6oA==
+X-Received: by 2002:a7b:cd04:: with SMTP id f4mr11287498wmj.91.1572723291468;
+        Sat, 02 Nov 2019 12:34:51 -0700 (PDT)
+Received: from [10.230.29.119] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id t185sm17703784wmf.45.2019.11.02.12.34.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 02 Nov 2019 12:34:49 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH RFC V2 3/6] net: bcmgenet: use optional max DMA burst size
+ property
+To:     Stefan Wahren <wahrenst@gmx.net>,
+        Matthias Brugger <matthias.bgg@kernel.org>,
+        Matthias Brugger <mbrugger@suse.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Eric Anholt <eric@anholt.net>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org
+References: <1572702093-18261-1-git-send-email-wahrenst@gmx.net>
+ <1572702093-18261-4-git-send-email-wahrenst@gmx.net>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <e1182432-19d8-6c9d-fd41-bb4d739b579a@gmail.com>
+Date:   Sat, 2 Nov 2019 12:34:45 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-References: <157269297658.394725.10672376245672095901.stgit@toke.dk>
-In-Reply-To: <157269297658.394725.10672376245672095901.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 2 Nov 2019 12:09:09 -0700
-Message-ID: <CAEf4BzYXhoaiH5x9YZ99ABUMngsjBVRAYJBm+oMbnAHnpn-18g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 0/5] libbpf: Support automatic pinning of maps
- using 'pinning' BTF attribute
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1572702093-18261-4-git-send-email-wahrenst@gmx.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 2, 2019 at 4:09 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> This series adds support to libbpf for reading 'pinning' settings from BT=
-F-based
-> map definitions. It introduces a new open option which can set the pinnin=
-g path;
-> if no path is set, /sys/fs/bpf is used as the default. Callers can custom=
-ise the
-> pinning between open and load by setting the pin path per map, and still =
-get the
-> automatic reuse feature.
->
-> The semantics of the pinning is similar to the iproute2 "PIN_GLOBAL" sett=
-ing,
-> and the eventual goal is to move the iproute2 implementation to be based =
-on
-> libbpf and the functions introduced in this series.
->
-> Changelog:
->
-> v6:
->   - Fix leak of struct bpf_object in selftest
->   - Make struct bpf_map arg const in bpf_map__is_pinned() and bpf_map__ge=
-t_pin_path()
->
-> v5:
->   - Don't pin maps with pinning set, but with a value of LIBBPF_PIN_NONE
->   - Add a few more selftests:
->     - Should not pin map with pinning set, but value LIBBPF_PIN_NONE
->     - Should fail to load a map with an invalid pinning value
->     - Should fail to re-use maps with parameter mismatch
->   - Alphabetise libbpf.map
->   - Whitespace and typo fixes
->
-> v4:
->   - Don't check key_type_id and value_type_id when checking for map reuse
->     compatibility.
->   - Move building of map->pin_path into init_user_btf_map()
->   - Get rid of 'pinning' attribute in struct bpf_map
->   - Make sure we also create parent directory on auto-pin (new patch 3).
->   - Abort the selftest on error instead of attempting to continue.
->   - Support unpinning all pinned maps with bpf_object__unpin_maps(obj, NU=
-LL)
->   - Support pinning at map->pin_path with bpf_object__pin_maps(obj, NULL)
->   - Make re-pinning a map at the same path a noop
->   - Rename the open option to pin_root_path
->   - Add a bunch more self-tests for pin_maps(NULL) and unpin_maps(NULL)
->   - Fix a couple of smaller nits
->
-> v3:
->   - Drop bpf_object__pin_maps_opts() and just use an open option to custo=
-mise
->     the pin path; also don't touch bpf_object__{un,}pin_maps()
->   - Integrate pinning and reuse into bpf_object__create_maps() instead of=
- having
->     multiple loops though the map structure
->   - Make errors in map reuse and pinning fatal to the load procedure
->   - Add selftest to exercise pinning feature
->   - Rebase series to latest bpf-next
->
-> v2:
->   - Drop patch that adds mounting of bpffs
->   - Only support a single value of the pinning attribute
->   - Add patch to fixup error handling in reuse_fd()
->   - Implement the full automatic pinning and map reuse logic on load
->
+On 11/2/2019 6:41 AM, Stefan Wahren wrote:
+> From: Matthias Brugger <mbrugger@suse.com>
+> 
+> Depending on the HW, the maximal usable DMA burst size can vary.
+> If not set accordingly a timeout in the transmit queue happens and no
+> package can be sent. Read to optional max-burst-sz property, if not
+> present, fallback to the standard value.
+> 
+> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
+
+Missing your Signed-off-by here since you are carrying this patch from
+Matthias.
+
 > ---
->
-> Toke H=C3=B8iland-J=C3=B8rgensen (5):
->       libbpf: Fix error handling in bpf_map__reuse_fd()
->       libbpf: Store map pin path and status in struct bpf_map
->       libbpf: Move directory creation into _pin() functions
->       libbpf: Add auto-pinning of maps when loading BPF objects
->       selftests: Add tests for automatic map pinning
->
->
 
-For the series:
+[snip]
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+> +	if (dn) {
+> +		of_property_read_u32(dn, "dma-burst-sz",
+> +				     &priv->dma_max_burst_length);
+> +	} else {
+> +		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
+> +	}
 
->  tools/lib/bpf/bpf_helpers.h                        |    6
->  tools/lib/bpf/libbpf.c                             |  385 ++++++++++++++=
-++----
->  tools/lib/bpf/libbpf.h                             |   21 +
->  tools/lib/bpf/libbpf.map                           |    3
->  tools/testing/selftests/bpf/prog_tests/pinning.c   |  210 +++++++++++
->  tools/testing/selftests/bpf/progs/test_pinning.c   |   31 ++
->  .../selftests/bpf/progs/test_pinning_invalid.c     |   16 +
->  7 files changed, 591 insertions(+), 81 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/pinning.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_pinning_invali=
-d.c
->
+I would maintain the previous position provided on Matthias' patch
+series, which is the integration of the GENETv5 hardware block in 2711
+is done in a way that is different enough (due to the SCB/AXI bridge)
+that a separate compatibility string would be in order. Once you that
+defined that "brcm,bcm2711-genet-v5" compatibility string defined, you
+can derive the DMA burst size off of it.
+
+If adding a compatibility string is not practical because of the
+downstream DTBs, then can we at least fix this patch in two ways:
+
+- define the property in the binding document
+- spell out the property in full names: max-dma-burst-size so as to
+reflect what it does
+
+Thanks!
+-- 
+Florian
+
+
