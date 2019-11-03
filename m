@@ -2,91 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B3FED194
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 04:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B42C5ED19A
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 04:54:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbfKCDRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 2 Nov 2019 23:17:47 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35690 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727366AbfKCDRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 23:17:47 -0400
-Received: by mail-wm1-f65.google.com with SMTP id 8so5628611wmo.0;
-        Sat, 02 Nov 2019 20:17:46 -0700 (PDT)
+        id S1727488AbfKCDxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 2 Nov 2019 23:53:54 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:35035 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727389AbfKCDxy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 2 Nov 2019 23:53:54 -0400
+Received: by mail-qt1-f196.google.com with SMTP id r22so8639118qtt.2;
+        Sat, 02 Nov 2019 20:53:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=pxIGu3u5xJbOz4wi1IVD6IMKrp2EyQWpsAtO+pdvP2g=;
-        b=PbeFQcRHCdG34JCzSRtBVCTb7HOzB+UI66b74r3Q6uVOJJmgO8kZtdu3MgubpuL8aX
-         /Uq0CzdrpQCkbRHF4W96g0pdBMPS5+JZInSnNbYhSPbL7misLSo93OSo9RWkn+LsF2Yz
-         JuuYBpbcT8DEbq63qoyGlphTTqfSxulQad66mmfOEhEbIcCcvFcjGaa8icZFT2IZUMba
-         gXF8aJ9Rfm1uJqpZJswCnTbU7ikRXpV2pEsSd2BvbG19IzQD+YDZW5RGjxqok1xWBrw8
-         Tl8WdMtubogJX3tE5jtfOS+uz+dRTcbxxClmutLJl0erjNRNeRH+8QSw0cmPVPYEN99g
-         kB1g==
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=wOg1PtFWo6IuY/J6e5WFjVi85apyAhEHv0iLtW+bwFo=;
+        b=CFqU6jq+P0UI+cv5IHF/a/9cZZ3yMEv3k1uupJ9pV9YxxCPEcXfx17VZrG9M3Ug+HT
+         QWTj+U2Q0FWEs9wNROaslzazsmJE5AylnnO4gsCEi6bXcUygsgU+PLygddN+QLvDWUsm
+         GeW/9Kslm8141admwFcmpXjbAZABkQScgKqjeBxSsxE8166TAmFvBC6bBZtp4H01TSyl
+         RlPAh1hcRReAsuXsW1MsicZWe+OQut5KuJVxnNujmuZn6qSb3VSiG9kAoccy/5ExVReo
+         uZRXmlTLZlRV0xBuvG/TeudJg/8wUIGOzmbC5PJ+018cYrIBE32fvi1LBy65jLEnz6/T
+         Pclg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=pxIGu3u5xJbOz4wi1IVD6IMKrp2EyQWpsAtO+pdvP2g=;
-        b=HjM9yqFyAZvexq1kAqA255Jh4O6Lm0JEei1K3rKSvRVrN/+Em1Fjsg+6PhSsrWEeuN
-         sFEtCTB+nBsBj1GaNXmwHjLzkpeB6jHgbIhujjZkQu3R7M9tmxVFXKgrHqhuK71X4sfV
-         3kOxiPqB+9vXf4GINXjFzPxmfn/0mHyFVetUzI+8mT2TqYTlQ/HkItll/1IeFU7WvilP
-         HYWzdHDzwrcrACy7xCnmajhGf04SD086F2HyBBrGVDmynm6AkCq0/J7RufbO0Qtiaf/E
-         B2CBYH8RDHCZsoIusukVYWgr4/n5WzJv/Hp+ibUWGRzG8He/8Gu0RJ6PFibAfU3eJMC7
-         ZPaw==
-X-Gm-Message-State: APjAAAX/ys+kxoTOnED3n5ArgXyJHGpJRNo0EhfecF0dWPbI0qwBpbfW
-        5z2YlV6AV5wbBqT4pmQHpxGCtO7J
-X-Google-Smtp-Source: APXvYqxtljDCXaHSrD9EnZ1CDXDcKud1jCmDEiHU6ZjIh4z5h7GoLR25TE/G96ad2eGyntYoHm4Gqw==
-X-Received: by 2002:a1c:f302:: with SMTP id q2mr17848091wmq.142.1572751065271;
-        Sat, 02 Nov 2019 20:17:45 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p15sm13149147wrs.94.2019.11.02.20.17.43
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=wOg1PtFWo6IuY/J6e5WFjVi85apyAhEHv0iLtW+bwFo=;
+        b=sr+t8WADk2fU65wYolaDyETkjLw1ckG5bTqfbwHBY8HNIvQo9WIRskEEakS2hxlB+Q
+         304HnZqtFbFY192I8OOMb541tsEi9DAQ+SzXM25m0gK7nBjjBDXpOT7pIAORkWO7TbkY
+         ZZsa2Vrp3ILoxeNWBureezHXWeQ/djxZ3CYKYrlH/ccc02VcJGvEaF728iGOcrEgUVtk
+         w56wBBMf9NtyvSg7jVm2NZe09xlVVm+84/r+UoR/xnVoa/IpgLaNxB0P0L70RmLanKui
+         l/p58WBl4f6SBUNqkxkHqGuEChoK3VJITG9LD8oIWOe7S9yLcp465O5WoLIyeNtQhsQ8
+         9/SA==
+X-Gm-Message-State: APjAAAWEQl5MJ6A7D+igSlI/5LxMN+yK4lMVhAS5Y9PWJNRdCTozeAdL
+        mDnrc8c6CcClImp5YlWOqve+Rj+K
+X-Google-Smtp-Source: APXvYqz4tLR5aUuIH0GTzsUXFr7TSUJawGe446heeTCl8EBtsE0BtW4rvrfz222pTXSfBGnl1WRKbg==
+X-Received: by 2002:ac8:28e3:: with SMTP id j32mr6623627qtj.212.1572753233114;
+        Sat, 02 Nov 2019 20:53:53 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id e18sm1811995qto.32.2019.11.02.20.53.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Nov 2019 20:17:44 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     rmk+kernel@armlinux.org.uk, hkallweit1@gmail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Sat, 02 Nov 2019 20:53:52 -0700 (PDT)
+Date:   Sat, 2 Nov 2019 23:53:50 -0400
+Message-ID: <20191102235350.GB417753@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, rmk+kernel@armlinux.org.uk,
+        hkallweit1@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: dsa: bcm_sf2: Fix driver removal
-Date:   Sat,  2 Nov 2019 20:17:39 -0700
-Message-Id: <20191103031739.27157-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: Fix use after free in
+ dsa_switch_remove()
+In-Reply-To: <20191103031326.26873-1-f.fainelli@gmail.com>
+References: <20191103031326.26873-1-f.fainelli@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the DSA core doing the call to dsa_port_disable() we do not need to
-do that within the driver itself. This could cause an use after free
-since past dsa_unregister_switch() we should not be accessing any
-dsa_switch internal structures.
+On Sat,  2 Nov 2019 20:13:26 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> The order in which the ports are deleted from the list and freed and the
+> call to dsa_tree_remove_switch() is done is reversed, which leads to an
 
-Fixes: 0394a63acfe2 ("net: dsa: enable and disable all ports")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/net/dsa/bcm_sf2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+s/dsa_tree_remove_switch/dsa_switch_remove/
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index a4a46f8df352..79748ca30c33 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -1212,10 +1212,10 @@ static int bcm_sf2_sw_remove(struct platform_device *pdev)
- 	struct bcm_sf2_priv *priv = platform_get_drvdata(pdev);
- 
- 	priv->wol_ports_mask = 0;
-+	/* Disable interrupts */
-+	bcm_sf2_intr_disable(priv);
- 	dsa_unregister_switch(priv->dev->ds);
- 	bcm_sf2_cfp_exit(priv->dev->ds);
--	/* Disable all ports and interrupts */
--	bcm_sf2_sw_suspend(priv->dev->ds);
- 	bcm_sf2_mdio_unregister(priv);
- 
- 	return 0;
--- 
-2.17.1
+> use after free condition. Reverse the two: first tear down the ports and
+> switch from the fabric, then free the ports associated with that switch
+> fabric.
+> 
+> Fixes: 05f294a85235 ("net: dsa: allocate ports on touch")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
+Thanks for reporting and fixing this!
+
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
