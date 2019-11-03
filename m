@@ -2,75 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A23B7ED246
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 07:11:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01CD4ED251
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 07:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726522AbfKCGL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 01:11:26 -0500
-Received: from smtp01.smtpout.orange.fr ([80.12.242.123]:45314 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbfKCGLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 01:11:25 -0500
-Received: from localhost.localdomain ([93.23.13.15])
-        by mwinf5d36 with ME
-        id MJBK2100J0KV3P903JBLU9; Sun, 03 Nov 2019 07:11:22 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 03 Nov 2019 07:11:22 +0100
-X-ME-IP: 93.23.13.15
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     davem@davemloft.net, stefanha@redhat.com, ytht.net@gmail.com,
-        sunilmut@microsoft.com, willemb@google.com, arnd@arndb.de,
-        tglx@linutronix.de, decui@microsoft.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Stefano Garzarella <sgarzare@redhat.com>
-Subject: [PATCH v2] vsock: Simplify '__vsock_release()'
-Date:   Sun,  3 Nov 2019 07:11:11 +0100
-Message-Id: <20191103061111.22003-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.20.1
+        id S1726558AbfKCGrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 01:47:17 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:41595 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfKCGrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 01:47:16 -0500
+X-Originating-IP: 209.85.217.46
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 9F5321BF203
+        for <netdev@vger.kernel.org>; Sun,  3 Nov 2019 06:47:14 +0000 (UTC)
+Received: by mail-vs1-f46.google.com with SMTP id b16so2848491vso.10
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 23:47:14 -0700 (PDT)
+X-Gm-Message-State: APjAAAUajM0rgxwioJdvH7Sqii9HS0BaelgMtCO24Y7oPQ30n/rzNg/C
+        r9ooIDCndlcsW0whAMNwLD81keOoSNo9AteVpLM=
+X-Google-Smtp-Source: APXvYqwTEniSy0kKE6RcARSy9LRqldD9uXH5PWcNd1KdRAuGwEDfLszHHmC5d/i8O+SL4/Zcr9R2y7QCjnu8k2lXIJQ=
+X-Received: by 2002:a05:6102:2436:: with SMTP id l22mr9491830vsi.93.1572763632867;
+ Sat, 02 Nov 2019 23:47:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1572618234-6904-1-git-send-email-xiangxia.m.yue@gmail.com> <1572618234-6904-2-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1572618234-6904-2-git-send-email-xiangxia.m.yue@gmail.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Sat, 2 Nov 2019 23:47:01 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_CSmYfGA9Gp7ttLFc5B3EGuegYFr9b_5pO_W=Aog5+DiQ@mail.gmail.com>
+Message-ID: <CAOrHB_CSmYfGA9Gp7ttLFc5B3EGuegYFr9b_5pO_W=Aog5+DiQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 01/10] net: openvswitch: add flow-mask cache
+ for performance
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Greg Rose <gvrose8192@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use 'skb_queue_purge()' instead of re-implementing it.
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
----
-V2: fix a typo in the commit message
-    Add R-b tags
----
- net/vmw_vsock/af_vsock.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 2ab43b2bba31..2983dc92ca63 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -641,7 +641,6 @@ EXPORT_SYMBOL_GPL(__vsock_create);
- static void __vsock_release(struct sock *sk, int level)
- {
- 	if (sk) {
--		struct sk_buff *skb;
- 		struct sock *pending;
- 		struct vsock_sock *vsk;
- 
-@@ -662,8 +661,7 @@ static void __vsock_release(struct sock *sk, int level)
- 		sock_orphan(sk);
- 		sk->sk_shutdown = SHUTDOWN_MASK;
- 
--		while ((skb = skb_dequeue(&sk->sk_receive_queue)))
--			kfree_skb(skb);
-+		skb_queue_purge(&sk->sk_receive_queue);
- 
- 		/* Clean up any sockets that never were accepted. */
- 		while ((pending = vsock_dequeue_accept(sk)) != NULL) {
--- 
-2.20.1
-
+On Fri, Nov 1, 2019 at 7:24 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> The idea of this optimization comes from a patch which
+> is committed in 2014, openvswitch community. The author
+> is Pravin B Shelar. In order to get high performance, I
+> implement it again. Later patches will use it.
+>
+> Pravin B Shelar, says:
+> | On every packet OVS needs to lookup flow-table with every
+> | mask until it finds a match. The packet flow-key is first
+> | masked with mask in the list and then the masked key is
+> | looked up in flow-table. Therefore number of masks can
+> | affect packet processing performance.
+>
+> Link: https://github.com/openvswitch/ovs/commit/5604935e4e1cbc16611d2d97f50b717aa31e8ec5
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Tested-by: Greg Rose <gvrose8192@gmail.com>
+> Acked-by: William Tu <u9012063@gmail.com>
+> ---
+Signed-off-by: Pravin B Shelar <pshelar@ovn.org>
