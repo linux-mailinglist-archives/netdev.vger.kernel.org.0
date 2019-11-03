@@ -2,144 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C686ED2C8
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 10:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA6AED2DF
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 11:35:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727425AbfKCJ5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 04:57:41 -0500
-Received: from mail-ua1-f65.google.com ([209.85.222.65]:35869 "EHLO
-        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726998AbfKCJ5k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 04:57:40 -0500
-Received: by mail-ua1-f65.google.com with SMTP id z9so368376uan.3;
-        Sun, 03 Nov 2019 01:57:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=g+QlAwAK6bQlh/cWTEgPR/8pCDAU7kFbrkVp1jUM3t0=;
-        b=Q3BZfEUAItgE8ZRK+nJxI8uENSpOYRJkKIl99+p3hcpNFrqEHYZ9fVqhbTdPJK0AzV
-         k18ksCgA+1QfIl61kkcVNTerV3124ggtCXt8raYzj7lDnmZ6WpB4niwxLDyqJ8ZpdUq/
-         Zsg8OH6gpbnu0XElv0vgr/s6dsxmEGGIwZHdQOgyr/4B5jBQWzJUo2oJ4X2HRdiBNsRQ
-         DAKiwn0aPqOypkizD89IyS7Nlfo77ON/4fNoyOTVIMQGLSC2qtePSIcz4DV9/xK0dzSl
-         YOVu2OZIQKMSOk/t268mk6LpvR5YQmqMPzkszGIHKuxZWZfmPLTRCEraKl25IzpjGwLG
-         dLaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=g+QlAwAK6bQlh/cWTEgPR/8pCDAU7kFbrkVp1jUM3t0=;
-        b=Nz4QKpK94LTFuajn59RmBEzi2hHNPECdzfrPcEMP3om8E3cCZpJ6hJ8fAgQesrbh3V
-         YCZxSIeXsw4CJLVyWJ7Ag8cEi1VEQClAqx4urGWcSBleiUQ7MlLG4tKUYuON1t7lF9L1
-         hR0FseBudwItY7bweOhmYJrCQOTuLq+QIOlJxUlCpbCyUQGqh6/t7vEq849O4b+R9Wka
-         ESvV5Ui0y9cbVtHAGXhhoSRknjIZ0/aya5hZ0LHU9gOqaLQT/ua1a89LJJaYh0R5KrcO
-         wembbgq50qF/1sMHYRjNLVvFOo1jtKVed82VqNnWIkSoZ8Nz7HDn0aDxZk4IVMsuotc6
-         lRhg==
-X-Gm-Message-State: APjAAAW1C0DoTJPjFrHE3cqq7fjRhZe/LA+vWdq569IvUyNzFkDf6Wiz
-        qpRPsB1IsUoO5GXktfo6nrN++DlEpNei9qeCX/g=
-X-Google-Smtp-Source: APXvYqzU3u1QLkj1XmpAAdPd8RTPJBt4PWMxt3Enh23yjQG8/a8lMNSfNqYNAGaNFGGQmCTYgCKJWR8Wr43r1r4U4L8=
-X-Received: by 2002:ab0:d8c:: with SMTP id i12mr9885832uak.57.1572775059623;
- Sun, 03 Nov 2019 01:57:39 -0800 (PST)
-MIME-Version: 1.0
-References: <20191101130817.11744-1-ethercflow@gmail.com> <CAEf4Bzand8qSxqmryyxMNg3FNL-pgokJ4taRrtGq07rdbEjsbA@mail.gmail.com>
-In-Reply-To: <CAEf4Bzand8qSxqmryyxMNg3FNL-pgokJ4taRrtGq07rdbEjsbA@mail.gmail.com>
-From:   Wenbo Zhang <ethercflow@gmail.com>
-Date:   Sun, 3 Nov 2019 17:57:36 +0800
-Message-ID: <CABtjQmZugRi4d-UfNtyqUir9FpgjmVWQUi3W2E=MoLi-JV91wQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] selftests/bpf: test for bpf_get_file_path()
- from raw tracepoint
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1727634AbfKCKfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 05:35:08 -0500
+Received: from mx2.suse.de ([195.135.220.15]:56864 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726408AbfKCKfG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Nov 2019 05:35:06 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 3CAFAB13E;
+        Sun,  3 Nov 2019 10:35:04 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Ralf Baechle <ralf@linux-mips.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>
+Subject: [net v2 1/4] net: sgi: ioc3-eth: don't abuse dma_direct_* calls
+Date:   Sun,  3 Nov 2019 11:34:30 +0100
+Message-Id: <20191103103433.26826-1-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.16.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Unless there is a real reason for all this complexity (in which case,
-> please spell it out in commit or comments), I think this could be so
-> much simpler.
+From: Christoph Hellwig <hch@lst.de>
 
-Yes, it could be so much simpler than this implement.
+dma_direct_ is a low-level API that must never be used by drivers
+directly.  Switch to use the proper DMA API instead.
 
-> - you don't have to use perf_buffer to pass data back, just use global da=
-ta;
-> - you can add a filter for PID to only capture data triggered by test
-> process and avoid the noise;
+Change in v2:
+- ensure that tx ring is 16kB aligned
 
-Yes, I'll use map instead of perf buffer to communicate.
+Fixes: ed870f6a7aa2 ("net: sgi: ioc3-eth: use dma-direct for dma allocations")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-> - why all those set_affinity dances? Is it just because you used
-> existing perf_buffer test which did that to specifically test
-> perf_buffer delivering data across every CPU core? Seems like your
-> test doesn't care about that...
+---
+ drivers/net/ethernet/sgi/ioc3-eth.c | 33 +++++++++++++++++----------------
+ 1 file changed, 17 insertions(+), 16 deletions(-)
 
-I used fd2path_loadgen to get hundreds of syscalls between multi usleep, wh=
-ich
-may cause it's sched to different cores, but as you say, this test
-doesn't care about
-that... I'll remove them with perf buffer.
+diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/sgi/ioc3-eth.c
+index deb636d653f3..4879dedf1f60 100644
+--- a/drivers/net/ethernet/sgi/ioc3-eth.c
++++ b/drivers/net/ethernet/sgi/ioc3-eth.c
+@@ -48,7 +48,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/skbuff.h>
+-#include <linux/dma-direct.h>
++#include <linux/dma-mapping.h>
+ 
+ #include <net/ip.h>
+ 
+@@ -89,6 +89,7 @@ struct ioc3_private {
+ 	struct device *dma_dev;
+ 	u32 *ssram;
+ 	unsigned long *rxr;		/* pointer to receiver ring */
++	void *tx_ring;
+ 	struct ioc3_etxd *txr;
+ 	dma_addr_t rxr_dma;
+ 	dma_addr_t txr_dma;
+@@ -1242,8 +1243,8 @@ static int ioc3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	ioc3_stop(ip);
+ 
+ 	/* Allocate rx ring.  4kb = 512 entries, must be 4kb aligned */
+-	ip->rxr = dma_direct_alloc_pages(ip->dma_dev, RX_RING_SIZE,
+-					 &ip->rxr_dma, GFP_ATOMIC, 0);
++	ip->rxr = dma_alloc_coherent(ip->dma_dev, RX_RING_SIZE, &ip->rxr_dma,
++				     GFP_ATOMIC);
+ 	if (!ip->rxr) {
+ 		pr_err("ioc3-eth: rx ring allocation failed\n");
+ 		err = -ENOMEM;
+@@ -1251,14 +1252,16 @@ static int ioc3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	}
+ 
+ 	/* Allocate tx rings.  16kb = 128 bufs, must be 16kb aligned  */
+-	ip->txr = dma_direct_alloc_pages(ip->dma_dev, TX_RING_SIZE,
+-					 &ip->txr_dma,
+-					 GFP_KERNEL | __GFP_ZERO, 0);
+-	if (!ip->txr) {
++	ip->tx_ring = dma_alloc_coherent(ip->dma_dev, TX_RING_SIZE + SZ_16K - 1,
++					 &ip->txr_dma, GFP_KERNEL | __GFP_ZERO);
++	if (!ip->tx_ring) {
+ 		pr_err("ioc3-eth: tx ring allocation failed\n");
+ 		err = -ENOMEM;
+ 		goto out_stop;
+ 	}
++	/* Align TX ring */
++	ip->txr = PTR_ALIGN(ip->tx_ring, SZ_16K);
++	ip->txr_dma = ALIGN(ip->txr_dma, SZ_16K);
+ 
+ 	ioc3_init(dev);
+ 
+@@ -1313,11 +1316,11 @@ static int ioc3_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ out_stop:
+ 	del_timer_sync(&ip->ioc3_timer);
+ 	if (ip->rxr)
+-		dma_direct_free_pages(ip->dma_dev, RX_RING_SIZE, ip->rxr,
+-				      ip->rxr_dma, 0);
+-	if (ip->txr)
+-		dma_direct_free_pages(ip->dma_dev, TX_RING_SIZE, ip->txr,
+-				      ip->txr_dma, 0);
++		dma_free_coherent(ip->dma_dev, RX_RING_SIZE, ip->rxr,
++				  ip->rxr_dma);
++	if (ip->tx_ring)
++		dma_free_coherent(ip->dma_dev, TX_RING_SIZE, ip->tx_ring,
++				  ip->txr_dma);
+ out_res:
+ 	pci_release_regions(pdev);
+ out_free:
+@@ -1335,10 +1338,8 @@ static void ioc3_remove_one(struct pci_dev *pdev)
+ 	struct net_device *dev = pci_get_drvdata(pdev);
+ 	struct ioc3_private *ip = netdev_priv(dev);
+ 
+-	dma_direct_free_pages(ip->dma_dev, RX_RING_SIZE, ip->rxr,
+-			      ip->rxr_dma, 0);
+-	dma_direct_free_pages(ip->dma_dev, TX_RING_SIZE, ip->txr,
+-			      ip->txr_dma, 0);
++	dma_free_coherent(ip->dma_dev, RX_RING_SIZE, ip->rxr, ip->rxr_dma);
++	dma_free_coherent(ip->dma_dev, TX_RING_SIZE, ip->tx_ring, ip->txr_dma);
+ 
+ 	unregister_netdev(dev);
+ 	del_timer_sync(&ip->ioc3_timer);
+-- 
+2.16.4
 
-> - do we really need a separate binary generating hundreds of syscalls?
-> It's hard to synchronize with test and it seems much simpler to just
-> trigger necessary syscalls synchronously from the test itself, no?
-
-This is my fault, necessary syscalls synchronously from the test
-itself is enough.
-
-> I have a bunch of more minutia nits, but most of them will go away if
-> you simplify your testing approach anyway, so I'll postpone them till
-> then.
-
-Thanks a lot. I'll modify a simplified version then recommitted.
-
-Andrii Nakryiko <andrii.nakryiko@gmail.com> =E4=BA=8E2019=E5=B9=B411=E6=9C=
-=882=E6=97=A5=E5=91=A8=E5=85=AD =E4=B8=8B=E5=8D=881:49=E5=86=99=E9=81=93=EF=
-=BC=9A
-
->
-> On Fri, Nov 1, 2019 at 6:08 AM Wenbo Zhang <ethercflow@gmail.com> wrote:
-> >
-> > trace fstat events by raw tracepoint sys_enter:newfstat, and handle eve=
-nts
-> > only produced by fd2path_loadgen, the fd2path_loadgen call fstat on sev=
-eral
-> > different types of files to test bpf_get_file_path's feature.
-> > ---
->
-> Unless there is a real reason for all this complexity (in which case,
-> please spell it out in commit or comments), I think this could be so
-> much simpler.
->
-> - you don't have to use perf_buffer to pass data back, just use global da=
-ta;
-> - you can add a filter for PID to only capture data triggered by test
-> process and avoid the noise;
-> - why all those set_affinity dances? Is it just because you used
-> existing perf_buffer test which did that to specifically test
-> perf_buffer delivering data across every CPU core? Seems like your
-> test doesn't care about that...
-> - do we really need a separate binary generating hundreds of syscalls?
-> It's hard to synchronize with test and it seems much simpler to just
-> trigger necessary syscalls synchronously from the test itself, no?
->
-> I have a bunch of more minutia nits, but most of them will go away if
-> you simplify your testing approach anyway, so I'll postpone them till
-> then.
->
-> >  tools/testing/selftests/bpf/Makefile          |   8 +-
-> >  tools/testing/selftests/bpf/fd2path_loadgen.c |  75 ++++++++++
-> >  .../selftests/bpf/prog_tests/get_file_path.c  | 130 ++++++++++++++++++
-> >  .../selftests/bpf/progs/test_get_file_path.c  |  58 ++++++++
-> >  4 files changed, 269 insertions(+), 2 deletions(-)
-> >  create mode 100644 tools/testing/selftests/bpf/fd2path_loadgen.c
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_pat=
-h.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_pat=
-h.c
-> >
->
-> [...]
