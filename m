@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0672FED258
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 07:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 349FEED259
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 07:48:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727533AbfKCGr5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 01:47:57 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:43445 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbfKCGr5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 01:47:57 -0500
-X-Originating-IP: 209.85.221.179
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
+        id S1727544AbfKCGsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 01:48:02 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:55355 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfKCGsC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 01:48:02 -0500
+X-Originating-IP: 209.85.217.54
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
         (Authenticated sender: pshelar@ovn.org)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id EA6DE1BF203
-        for <netdev@vger.kernel.org>; Sun,  3 Nov 2019 06:47:55 +0000 (UTC)
-Received: by mail-vk1-f179.google.com with SMTP id j84so3102936vkj.6
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 23:47:55 -0700 (PDT)
-X-Gm-Message-State: APjAAAX2Fg5u1b4/Fa1flPuRvv0oxqWlp1zHQhxGgc0keyNIq1clxYx5
-        HKX979JiFm2ZNM38sLJIOvmNfgVoYUC/v54harc=
-X-Google-Smtp-Source: APXvYqzcD0yTHnI8IhZhH7HReC4FN+y68qDLJ/D90iIOf/xK8WrCsUnH9a63w/ZRFV7Kedp/quC/wBs4hTOMyVKe40U=
-X-Received: by 2002:a1f:d401:: with SMTP id l1mr8880444vkg.27.1572763674724;
- Sat, 02 Nov 2019 23:47:54 -0700 (PDT)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id C9FACE0004
+        for <netdev@vger.kernel.org>; Sun,  3 Nov 2019 06:48:00 +0000 (UTC)
+Received: by mail-vs1-f54.google.com with SMTP id k1so9048330vsm.0
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 23:48:00 -0700 (PDT)
+X-Gm-Message-State: APjAAAUJl1ddbr+DEUr4QSf5zZp3gNKMFV3h3KVIi/ACs8KawhR2BBAc
+        PZHp9pt8sUkY46SakQ7TpJ88fMsRMYQXQTn0G/k=
+X-Google-Smtp-Source: APXvYqxCf6CJ+Hywsp7KjmlFO6VZUY/kCoDNp29RlUCo55VbWFwsrtVqLhiJTITmJMuBe6KXJTERusdtBCsQF8IosD0=
+X-Received: by 2002:a67:2804:: with SMTP id o4mr9989084vso.47.1572763679749;
+ Sat, 02 Nov 2019 23:47:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <1572618234-6904-1-git-send-email-xiangxia.m.yue@gmail.com> <1572618234-6904-9-git-send-email-xiangxia.m.yue@gmail.com>
-In-Reply-To: <1572618234-6904-9-git-send-email-xiangxia.m.yue@gmail.com>
+References: <1572618234-6904-1-git-send-email-xiangxia.m.yue@gmail.com> <1572618234-6904-10-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1572618234-6904-10-git-send-email-xiangxia.m.yue@gmail.com>
 From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Sat, 2 Nov 2019 23:47:43 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_AkMjpJ_Oc79uXtVnE-4qiEZpsaNO5mkg_im+PqFO81FQ@mail.gmail.com>
-Message-ID: <CAOrHB_AkMjpJ_Oc79uXtVnE-4qiEZpsaNO5mkg_im+PqFO81FQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 08/10] net: openvswitch: fix possible memleak
- on destroy flow-table
+Date:   Sat, 2 Nov 2019 23:47:48 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_DrR9RqER_t_xCehFUQZZmyit02Qf2NorN3c7Pb8m5fMQ@mail.gmail.com>
+Message-ID: <CAOrHB_DrR9RqER_t_xCehFUQZZmyit02Qf2NorN3c7Pb8m5fMQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 09/10] net: openvswitch: don't unlock mutex
+ when changing the user_features fails
 To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
 Cc:     Greg Rose <gvrose8192@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>
+        ovs dev <dev@openvswitch.org>, Paul Blakey <paulb@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -47,10 +47,14 @@ On Fri, Nov 1, 2019 at 7:24 AM <xiangxia.m.yue@gmail.com> wrote:
 >
 > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 >
-> When we destroy the flow tables which may contain the flow_mask,
-> so release the flow mask struct.
+> Unlocking of a not locked mutex is not allowed.
+> Other kernel thread may be in critical section while
+> we unlock it because of setting user_feature fail.
 >
+> Fixes: 95a7233c4 ("net: openvswitch: Set OvS recirc_id from tc chain index")
+> Cc: Paul Blakey <paulb@mellanox.com>
 > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > Tested-by: Greg Rose <gvrose8192@gmail.com>
+> Acked-by: William Tu <u9012063@gmail.com>
 > ---
 Acked-by: Pravin B Shelar <pshelar@ovn.org>
