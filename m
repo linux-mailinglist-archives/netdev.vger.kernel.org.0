@@ -2,36 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DC6ED254
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 07:47:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D58E0ED255
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 07:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727490AbfKCGre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 01:47:34 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:34993 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726379AbfKCGre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 01:47:34 -0500
-X-Originating-IP: 209.85.221.176
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
+        id S1727501AbfKCGrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 01:47:40 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:39173 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726379AbfKCGrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 01:47:40 -0500
+Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com [209.85.217.42])
         (Authenticated sender: pshelar@ovn.org)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 762EF240005
-        for <netdev@vger.kernel.org>; Sun,  3 Nov 2019 06:47:32 +0000 (UTC)
-Received: by mail-vk1-f176.google.com with SMTP id t184so54235vka.1
-        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 23:47:32 -0700 (PDT)
-X-Gm-Message-State: APjAAAXKAPVX3DeCGC/MNuqPZIR+opx+1mfrJfkluBWE2+YmZNpPAnSl
-        Ldkl1aGmmJE/S7wE08bByW6gsIydHVr3hw7gQAc=
-X-Google-Smtp-Source: APXvYqz74dF2g18eWEpiPUz4844jZf+iaf4fSA69g1QIHXdtEwK1FKktNjpluErUEe802AItRZUklrxilIy55FIjp8M=
-X-Received: by 2002:a1f:5ed0:: with SMTP id s199mr8339124vkb.17.1572763651061;
- Sat, 02 Nov 2019 23:47:31 -0700 (PDT)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id A3253100004
+        for <netdev@vger.kernel.org>; Sun,  3 Nov 2019 06:47:38 +0000 (UTC)
+Received: by mail-vs1-f42.google.com with SMTP id y129so9005982vsc.6
+        for <netdev@vger.kernel.org>; Sat, 02 Nov 2019 23:47:38 -0700 (PDT)
+X-Gm-Message-State: APjAAAUm63da4Rhv2PcF/19S6wNR+ujjbzfVtRisVFE7G2MSFsk4ETw7
+        JtxEt8m0bewTIBTA70XJx+E48LVtse1dUSFAf8o=
+X-Google-Smtp-Source: APXvYqyl0jhd+5VwhJxGXX+Sykx62cFvqBOjUO5WKJ6Fz85/kS4FopLvIbE6/mk0ADhaCPtDTdynt+XBMLZp37RLwmw=
+X-Received: by 2002:a67:5d47:: with SMTP id r68mr4466950vsb.103.1572763657501;
+ Sat, 02 Nov 2019 23:47:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <1572618234-6904-1-git-send-email-xiangxia.m.yue@gmail.com> <1572618234-6904-5-git-send-email-xiangxia.m.yue@gmail.com>
-In-Reply-To: <1572618234-6904-5-git-send-email-xiangxia.m.yue@gmail.com>
+References: <1572618234-6904-1-git-send-email-xiangxia.m.yue@gmail.com> <1572618234-6904-7-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1572618234-6904-7-git-send-email-xiangxia.m.yue@gmail.com>
 From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Sat, 2 Nov 2019 23:47:20 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_APMOVTooR0JEXDLZSFM31rFyY+pOzq6oq-2x1rSshjFA@mail.gmail.com>
-Message-ID: <CAOrHB_APMOVTooR0JEXDLZSFM31rFyY+pOzq6oq-2x1rSshjFA@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 04/10] net: openvswitch: optimize flow mask
- cache hash collision
+Date:   Sat, 2 Nov 2019 23:47:26 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_CtsNjx2b6Oaj345AHSWGGNrGfuPZL6J_uCivGsvHNKQQ@mail.gmail.com>
+Message-ID: <CAOrHB_CtsNjx2b6Oaj345AHSWGGNrGfuPZL6J_uCivGsvHNKQQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v6 06/10] net: openvswitch: simplify the flow_hash
 To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
 Cc:     Greg Rose <gvrose8192@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -47,14 +45,10 @@ On Fri, Nov 1, 2019 at 7:24 AM <xiangxia.m.yue@gmail.com> wrote:
 >
 > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 >
-> Port the codes to linux upstream and with little changes.
+> Simplify the code and remove the unnecessary BUILD_BUG_ON.
 >
-> Pravin B Shelar, says:
-> | In case hash collision on mask cache, OVS does extra flow
-> | lookup. Following patch avoid it.
->
-> Link: https://github.com/openvswitch/ovs/commit/0e6efbe2712da03522532dc5e84806a96f6a0dd1
 > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 > Tested-by: Greg Rose <gvrose8192@gmail.com>
+> Acked-by: William Tu <u9012063@gmail.com>
 > ---
-Signed-off-by: Pravin B Shelar <pshelar@ovn.org>
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
