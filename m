@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CCADED432
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 19:41:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46ABAED435
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 19:45:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728004AbfKCSlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 13:41:11 -0500
-Received: from mail-lj1-f170.google.com ([209.85.208.170]:45618 "EHLO
-        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727930AbfKCSlL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 13:41:11 -0500
-Received: by mail-lj1-f170.google.com with SMTP id n21so1577127ljg.12
-        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 10:41:08 -0800 (PST)
+        id S1728012AbfKCSpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 13:45:30 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:36294 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727520AbfKCSpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 13:45:30 -0500
+Received: by mail-lf1-f67.google.com with SMTP id a6so7191616lfo.3
+        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 10:45:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:organization:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=AeLf7+pAe1vvcFU5kbeUWFUhzvyDncncA1kLNAYfilw=;
-        b=yhlkEo8XRbIzWVnZ1sY51cdqWpxNU/mnal07vUufL9zyAcu+iLxysAy8uDKrcbM1ym
-         g3YJC3sR6G0NBGy+M5MD3VKWpvNRbiw0CMVSd888w+VCYj/pR5piSn5Ye5RSNcbVnQdN
-         nkv/vNIIt109kS3+4WR9U9Rvroc/0JIuxqdArBuSU+INo7O1cDFrd6iWFGNcAnSObAIm
-         /lVLHSxkuCIdXRGm06LQy+cGOgExrLg7A7ZVNkaW6J1a/ti0W5LRa0LsWP51R++yQKZ1
-         BECTNfyl2IBS68Fm5LpsM42Ppj9oGb9IjbZtgjufkf/QkOTCK7MaxnZRwiiwmcbTL54s
-         wRiQ==
+        bh=eOdq8Hu6igUnwgJC6ijMcGO8XX2Wgr8N1NgWmkUqIi0=;
+        b=sp5TpDxPjH4w1V6jLSm2h6J1pDcSftgxeyJArv/dQoGUI3R1XfxH5953TesJkyK5Ve
+         xdWI5IlFQSJhV3QUwWUqpGA5MIpqYV2bF2zi/KAMmPQuWp6oFkwY+esINYEiIwGftzaf
+         /yQd3ZisQiPyiU6tTDT7y/5zMthKbJk4yRbkTVaxNkMKrz0rvIY0xEIIT8/ELrG05F6L
+         lHn08RFrtS92Vs4B7u3lwxSDl9dBJsCCdM718U55+QI8TjyYFSpiO4SO5qrDiVfxikYt
+         qAQI94eyUIeNWtGmfphM4CyjMzXwyDtDqSvowudi4fdhTYU5MyKj+adEcbgssPCnF3At
+         lZzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:organization
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=AeLf7+pAe1vvcFU5kbeUWFUhzvyDncncA1kLNAYfilw=;
-        b=s3ymN2JBRmCpeWtyT+LHISfxpn1ceV9cE28NsIofKCuIIiP4y3iq5lVw4DQjzYSCsn
-         fg3VU3vSClKH+jIIDimvGic8qaCeYwp5HMVSO+47SMhf3fXTubH3eOBMPRkeZ7VXkuI/
-         F3M+Bm/Zn36zhB/YLEdcS6Kk3BrJGJHM4RZ794geFVNWcx0jpnD2wKA3bMEnSSrtWqeP
-         Y9D8uQlLa0EWqnTBecfZC1tb+bc8acRYUATcYz2/3r8XEpiMfR3eXrWppWW29ioL2wnQ
-         OFeFBWw7aXP0p2cWvSHcnBZ1RptLugr5fjjKtQW5bJva4AV/bAAh2q7LxYC1v5svEyGT
-         h9Iw==
-X-Gm-Message-State: APjAAAUhfbqrZPiygJPS3ih+j5ef8ERYtnLdHTXbkhtEawpxehvyUKxE
-        8C3DmH9kN63LVypoLN0HyW+LB8jlK3H8/Q==
-X-Google-Smtp-Source: APXvYqwVEdztkyW3Md2Zu7fMEpscBqr/wGvRZO3D/UBXplU7SA8fdDtWVQOAbM+BG47zlPErNWxtPw==
-X-Received: by 2002:a2e:a409:: with SMTP id p9mr16202253ljn.186.1572806467623;
-        Sun, 03 Nov 2019 10:41:07 -0800 (PST)
+        bh=eOdq8Hu6igUnwgJC6ijMcGO8XX2Wgr8N1NgWmkUqIi0=;
+        b=bf0w+dFtAuVPwuatuOkC+BEWI4g9t2vQADhc2LwKRyGYnNwKlsriFbc5mMkl6pRnps
+         jUG/TmYSCz3wZcrRjqWkQYyhxU1fMdU32zQKywC/WAjQZ706j0NWw6rIXzhWmwGCamDB
+         digOGPdQBJo7gOdjpneIMGkGc/Q7+HWRqWBxcwrSobpOwzDXzbYWStbUglJUoqaj4ehn
+         reznP8odhOYUd0Jn3sA66wdYssyg+F5dNEPTgLYqFQ73YOdB1jZjMWUPL0P6FQPCJ+mU
+         8cESC/EcQz5P8/dwLp6sJIJOlVw/Egd+PDQai/r/ptM3rVO7qhYEtnokXBEhzEP8UenN
+         5jyw==
+X-Gm-Message-State: APjAAAWDOabTCeFBzjLPdFGyhaBCtPc+B5NyHLgJ6SxF+uPX4WlNaM3x
+        mOcc3aKowDbD0KnuevWxtR+xHT66lgKAKg==
+X-Google-Smtp-Source: APXvYqydZXTIg7xJ23CQfiPJxmqJfmJseGcyxSumUlwv5YUDi6l1hRLoQlzFBxBvvoURhE6KrYUFCw==
+X-Received: by 2002:ac2:44d5:: with SMTP id d21mr7788722lfm.66.1572806726889;
+        Sun, 03 Nov 2019 10:45:26 -0800 (PST)
 Received: from wasted.cogentembedded.com ([2a00:1fa0:47a:43f6:66fd:82d0:1ef5:f513])
-        by smtp.gmail.com with ESMTPSA id r12sm10286481lfp.63.2019.11.03.10.41.06
+        by smtp.gmail.com with ESMTPSA id d16sm6152522ljh.74.2019.11.03.10.45.25
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 03 Nov 2019 10:41:06 -0800 (PST)
-Subject: Re: [net v2 3/4] net: sgi: ioc3-eth: simplify setting the DMA mask
+        Sun, 03 Nov 2019 10:45:26 -0800 (PST)
+Subject: Re: [net v2 4/4] net: sgi: ioc3-eth: fix setting NETIF_F_HIGHDMA
 To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
         Ralf Baechle <ralf@linux-mips.org>,
         "David S. Miller" <davem@davemloft.net>,
@@ -54,15 +54,15 @@ To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
         linux-kernel@vger.kernel.org
 Cc:     Christoph Hellwig <hch@lst.de>
 References: <20191103103433.26826-1-tbogendoerfer@suse.de>
- <20191103103433.26826-3-tbogendoerfer@suse.de>
+ <20191103103433.26826-4-tbogendoerfer@suse.de>
 From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
 Organization: Cogent Embedded
-Message-ID: <da797418-e056-a4bc-52f7-c329e36a879b@cogentembedded.com>
-Date:   Sun, 3 Nov 2019 21:41:00 +0300
+Message-ID: <fdff4eb0-06e0-28e0-2398-2c0bdc3079a1@cogentembedded.com>
+Date:   Sun, 3 Nov 2019 21:45:24 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
  Thunderbird/52.2.1
 MIME-Version: 1.0
-In-Reply-To: <20191103103433.26826-3-tbogendoerfer@suse.de>
+In-Reply-To: <20191103103433.26826-4-tbogendoerfer@suse.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-MW
 Content-Transfer-Encoding: 7bit
@@ -71,18 +71,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
 On 11/03/2019 01:34 PM, Thomas Bogendoerfer wrote:
 
 > From: Christoph Hellwig <hch@lst.de>
 > 
-> There is no need to fall back to a lower mask these days, the DMA mask
-> just communictes the hardware supported features.
+> Set NETIF_F_HIGHDMA together with the NETIF_F_IP_CSUM flag insted of
 
-   Communicates. :-)
+   Instead. :-)
 
+> letting the second assignment overwrite it.  Probably doesn't matter
+> in practice as none of the systems a IOC3 is usually found in has
+
+   s/a/an/ (before IOC3).
+
+> highmem to start with.
+> 
 > Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+   Your sign-off is also needed, even if you just post the other's
+patches.
+
 [...]
 
 MBR, Sergei
