@@ -2,123 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C03ED32D
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 12:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0623AED349
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 13:05:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727782AbfKCLlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 06:41:16 -0500
-Received: from mail-eopbgr60074.outbound.protection.outlook.com ([40.107.6.74]:42051
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727764AbfKCLlP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Nov 2019 06:41:15 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MFd1QuiMhQ511DgFhoPGQQUVJQ+s//BtF8Jc6Ar7V+W+qrYhGNqGZWstQ6W8GQq/Tmxgsg1Owkn1a0TOIhuYglP1ZgAGc3kX6TPGLXQfIoWftyZ1Xp29xCaTqIAJ3kR2VaXMR5XbDzLQI6pFcL9lvgAlqL5QVqw63b4cOFxoxPsZwj6Kc+eRalUYxHMCtf+ennKNw+oTEvcoR4tl/IXm5ErHCvjlnuWO/vVDNalYN3IZdzVoloVli4Tu2FJXVdDTZVIrhFGk8Zn6x2KWwXH6wB1X3alvZ/oAyddXm5FkHgSZWx1l9VvITaSvW0MCK95A/Qv3fB2+YQfpQWmDkufooQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BpKiiAyzpaxIbKajWgtYRd9AXiMlwt2LIyYhDGdUn8s=;
- b=TpfFMPfKl+tsg1YXhC1RxLbeQVWv36FqHaRxne5BDXS9t9HS0mxqq6du5ZQEZ6LKwmlpXWzjVVwGWKG/em1fSaSkrj3pBgOggJDkj0dK569SA9Dn0AqWtVEqh/1/Hs7gjtB2cjXSfOnd1x9XBHEgV6uS6F3K9YOt8JOrh6CG3QVnHa3e0opPPzDPAaAmwfhhDNJMgQkpT+EmP2KI7sStRRkCEej824b/AtG+WSySoe1WzFyWCO4J3cTE+7lJkSDPHsAdzTmClZeIbPE2ktQj4UFbljT/pXxjHn0+fzord2jJ3hAr4riORQ/+UMQwpQzvPq9VOHVOU3InMSz/jZkZyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BpKiiAyzpaxIbKajWgtYRd9AXiMlwt2LIyYhDGdUn8s=;
- b=Su4dndGZEVgS3dCV2DSxuJwjSKDJNyse/zXOdQNZvvCErhodYyploxjLigqVS4OsoBu7ckhxv27xnKM91bMrwF6x8pTomQ8ed9pMg9ggs0ZUUCll0NzVsSZr197A61iVfE/69MKuPzYqn49US7VD4DDAqgpzBFPhR4cpyPvCCrk=
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com (20.179.43.208) by
- DBBPR05MB6411.eurprd05.prod.outlook.com (20.179.44.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Sun, 3 Nov 2019 11:41:11 +0000
-Received: from DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::8c61:2788:89:69ce]) by DBBPR05MB6283.eurprd05.prod.outlook.com
- ([fe80::8c61:2788:89:69ce%5]) with mapi id 15.20.2408.024; Sun, 3 Nov 2019
- 11:41:11 +0000
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     Yuval Shaia <yuval.shaia@oracle.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dotanb@dev.mellanox.co.il" <dotanb@dev.mellanox.co.il>,
-        Eli Cohen <eli@mellanox.com>,
-        Vladimir Sokolovsky <vlad@mellanox.com>
-Subject: Re: [PATCH v1] mlx4_core: fix wrong comment about the reason of
- subtract one from the max_cqes
-Thread-Topic: [PATCH v1] mlx4_core: fix wrong comment about the reason of
- subtract one from the max_cqes
-Thread-Index: AQHVkibAevwNukxCdke/TB6p1qOIhKd5UtuA
-Date:   Sun, 3 Nov 2019 11:41:11 +0000
-Message-ID: <68efcf5b-0c05-a626-d164-bf8bcbb60642@mellanox.com>
-References: <20191103091135.1891-1-yuval.shaia@oracle.com>
-In-Reply-To: <20191103091135.1891-1-yuval.shaia@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM4PR0202CA0004.eurprd02.prod.outlook.com
- (2603:10a6:200:89::14) To DBBPR05MB6283.eurprd05.prod.outlook.com
- (2603:10a6:10:cf::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=tariqt@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 1eb09617-bf0b-46c2-d4ee-08d76052b9c1
-x-ms-traffictypediagnostic: DBBPR05MB6411:|DBBPR05MB6411:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DBBPR05MB6411641154E01E468EADB99FAE7C0@DBBPR05MB6411.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:513;
-x-forefront-prvs: 0210479ED8
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(346002)(366004)(136003)(396003)(189003)(199004)(6636002)(2201001)(14444005)(2906002)(256004)(6116002)(3846002)(478600001)(305945005)(31696002)(25786009)(71190400001)(31686004)(2501003)(86362001)(7736002)(14454004)(11346002)(446003)(2616005)(476003)(486006)(6246003)(66476007)(64756008)(6436002)(66556008)(66446008)(71200400001)(76176011)(6512007)(52116002)(66946007)(8936002)(81166006)(186003)(8676002)(81156014)(6506007)(53546011)(66066001)(229853002)(110136005)(26005)(386003)(99286004)(316002)(102836004)(36756003)(5660300002)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:DBBPR05MB6411;H:DBBPR05MB6283.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zwfW0evr39ff87h6AzastmWQT3iNw1CZbb++IWlejFFicKELRswPr572BXoFMDNpBk4RnAtt/3kIfcYJ+Ab7aRVV2jf/kv3y73KHH2XvT3F3QbJsz/xpDzc5tJQQXTk904GkcwSw6z2aIa6GHiBN95eJVya0DGHempmxxlOyPqzDwQ3yw6wTWClwAeehmGd1NCeXy+QPlPQKBlAYCeH7gXLxmzzO8R+BasTFaQBLcwGRdjLujMJ8SY8m5CSpb/XLD9Jkkj5oCQhl8NPAcigkPm01I0hAO+aCJMOtjKpCP9zZIbTabi1A7XuVL6ZdjcqaGXUbD1sHK+x5FVwH2yqjueboXHFHa3aQX/FrvW4KU6Rrjm41P5311JLYaKq9nQ8bCAKKn6EUhgO84IL+02LdHT07e1reJ3gcFk1C4hvr3ZsP+nZqqrOlGM9DuxyxZjDZ
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E01A47EE5E9E034F82C1AC4EF5AFB7B7@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727648AbfKCMF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 07:05:28 -0500
+Received: from mout.web.de ([212.227.17.12]:52995 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726998AbfKCMF2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 3 Nov 2019 07:05:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1572782704;
+        bh=lqIIHx6HsCVvJIt0JzRk1dYquXktYUstmsYeoHN+jEA=;
+        h=X-UI-Sender-Class:To:Cc:From:Subject:Date;
+        b=TLpJcvFb3yD++6l5IwhECosGwS357xWF6DtizaY7I1yiGE4fe//gAIfVRw7U5t5C8
+         KLT5d9BvSzcHHyww+UH6qbEW+f4W24tJL5lCfojr+yvL1p9HW9mnwOMTL6AOzmo3jP
+         3QsiOND8n/ucXTMKoCf0r6oKRl9JHhOqLiqCwU50=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([2.243.72.216]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LrJse-1hxNV602n6-0136St; Sun, 03
+ Nov 2019 13:05:04 +0100
+To:     netdev@vger.kernel.org, Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        =?UTF-8?Q?Lars_P=c3=b6schel?= <poeschel@lemonage.de>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org,
+        Michael Thalmeier <michael.thalmeier@hale.at>,
+        Samuel Ortiz <sameo@linux.intel.com>
+From:   Markus Elfring <Markus.Elfring@web.de>
+Subject: =?UTF-8?Q?=5bPATCH=5d_NFC=3a_pn533=3a_Delete_unnecessary_assignment?=
+ =?UTF-8?B?IGZvciB0aGUgZmllbGQg4oCcb3duZXLigJ0=?=
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
+ +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
+ mpVJgXGKkNJ1ey+QOXouzlErVvE2fRh+KXXN1Q7fSmTJlAW9XJYHS3BDHb0uRpymRSX3O+E2
+ lA87C7R8qAigPDZi6Z7UmwIA83ZMKXQ5stA0lhPyYgQcM7fh7V4ZYhnR0I5/qkUoxKpqaYLp
+ YHBczVP+Zx/zHOM0KQphOMbU7X3c1pmMruoe6ti9uZzqZSLsF+NKXFEPBS665tQr66HJvZvY
+ GMDlntZFAZ6xQvCC1r3MGoxEC1tuEa24vPCC9RZ9wk2sY5Csbva0WwYv3WKRZZBv8eIhGMxs
+ rcpeGShRFyZ/0BYO53wZAPV1pEhGLLxd8eLN/nEWjJE0ejakPC1H/mt5F+yQBJAzz9JzbToU
+ 5jKLu0SugNI18MspJut8AiA1M44CIWrNHXvWsQ+nnBKHDHHYZu7MoXlOmB32ndsfPthR3GSv
+ jN7YD4Ad724H8fhRijmC1+RpuSce7w2JLj5cYj4MlccmNb8YUxsE8brY2WkXQYS8Ivse39MX
+ BE66MQN0r5DQ6oqgoJ4gHIVBUv/ZwgcmUNS5gQkNCFA0dWXznQARAQABtCZNYXJrdXMgRWxm
+ cmluZyA8TWFya3VzLkVsZnJpbmdAd2ViLmRlPokCVAQTAQgAPhYhBHDP0hzibeXjwQ/ITuU9
+ Figxg9azBQJYNvsQAhsjBQkJZgGABQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEOU9Figx
+ g9azcyMP/iVihZkZ4VyH3/wlV3nRiXvSreqg+pGPI3c8J6DjP9zvz7QHN35zWM++1yNek7Ar
+ OVXwuKBo18ASlYzZPTFJZwQQdkZSV+atwIzG3US50ZZ4p7VyUuDuQQVVqFlaf6qZOkwHSnk+
+ CeGxlDz1POSHY17VbJG2CzPuqMfgBtqIU1dODFLpFq4oIAwEOG6fxRa59qbsTLXxyw+PzRaR
+ LIjVOit28raM83Efk07JKow8URb4u1n7k9RGAcnsM5/WMLRbDYjWTx0lJ2WO9zYwPgRykhn2
+ sOyJVXk9xVESGTwEPbTtfHM+4x0n0gC6GzfTMvwvZ9G6xoM0S4/+lgbaaa9t5tT/PrsvJiob
+ kfqDrPbmSwr2G5mHnSM9M7B+w8odjmQFOwAjfcxoVIHxC4Cl/GAAKsX3KNKTspCHR0Yag78w
+ i8duH/eEd4tB8twcqCi3aCgWoIrhjNS0myusmuA89kAWFFW5z26qNCOefovCx8drdMXQfMYv
+ g5lRk821ZCNBosfRUvcMXoY6lTwHLIDrEfkJQtjxfdTlWQdwr0mM5ye7vd83AManSQwutgpI
+ q+wE8CNY2VN9xAlE7OhcmWXlnAw3MJLW863SXdGlnkA3N+U4BoKQSIToGuXARQ14IMNvfeKX
+ NphLPpUUnUNdfxAHu/S3tPTc/E/oePbHo794dnEm57LuuQINBFg2+xABEADZg/T+4o5qj4cw
+ nd0G5pFy7ACxk28mSrLuva9tyzqPgRZ2bdPiwNXJUvBg1es2u81urekeUvGvnERB/TKekp25
+ 4wU3I2lEhIXj5NVdLc6eU5czZQs4YEZbu1U5iqhhZmKhlLrhLlZv2whLOXRlLwi4jAzXIZAu
+ 76mT813jbczl2dwxFxcT8XRzk9+dwzNTdOg75683uinMgskiiul+dzd6sumdOhRZR7YBT+xC
+ wzfykOgBKnzfFscMwKR0iuHNB+VdEnZw80XGZi4N1ku81DHxmo2HG3icg7CwO1ih2jx8ik0r
+ riIyMhJrTXgR1hF6kQnX7p2mXe6K0s8tQFK0ZZmYpZuGYYsV05OvU8yqrRVL/GYvy4Xgplm3
+ DuMuC7/A9/BfmxZVEPAS1gW6QQ8vSO4zf60zREKoSNYeiv+tURM2KOEj8tCMZN3k3sNASfoG
+ fMvTvOjT0yzMbJsI1jwLwy5uA2JVdSLoWzBD8awZ2X/eCU9YDZeGuWmxzIHvkuMj8FfX8cK/
+ 2m437UA877eqmcgiEy/3B7XeHUipOL83gjfq4ETzVmxVswkVvZvR6j2blQVr+MhCZPq83Ota
+ xNB7QptPxJuNRZ49gtT6uQkyGI+2daXqkj/Mot5tKxNKtM1Vbr/3b+AEMA7qLz7QjhgGJcie
+ qp4b0gELjY1Oe9dBAXMiDwARAQABiQI8BBgBCAAmFiEEcM/SHOJt5ePBD8hO5T0WKDGD1rMF
+ Alg2+xACGwwFCQlmAYAACgkQ5T0WKDGD1rOYSw/+P6fYSZjTJDAl9XNfXRjRRyJSfaw6N1pA
+ Ahuu0MIa3djFRuFCrAHUaaFZf5V2iW5xhGnrhDwE1Ksf7tlstSne/G0a+Ef7vhUyeTn6U/0m
+ +/BrsCsBUXhqeNuraGUtaleatQijXfuemUwgB+mE3B0SobE601XLo6MYIhPh8MG32MKO5kOY
+ hB5jzyor7WoN3ETVNQoGgMzPVWIRElwpcXr+yGoTLAOpG7nkAUBBj9n9TPpSdt/npfok9ZfL
+ /Q+ranrxb2Cy4tvOPxeVfR58XveX85ICrW9VHPVq9sJf/a24bMm6+qEg1V/G7u/AM3fM8U2m
+ tdrTqOrfxklZ7beppGKzC1/WLrcr072vrdiN0icyOHQlfWmaPv0pUnW3AwtiMYngT96BevfA
+ qlwaymjPTvH+cTXScnbydfOQW8220JQwykUe+sHRZfAF5TS2YCkQvsyf7vIpSqo/ttDk4+xc
+ Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
+ x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
+ pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
+Message-ID: <44ef4be8-682e-0f1c-3927-c3d4db33442f@web.de>
+Date:   Sun, 3 Nov 2019 13:04:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1eb09617-bf0b-46c2-d4ee-08d76052b9c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2019 11:41:11.7716
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Pgz3chKat92oMAxIvDj1EPoz+UltVITbmLd9Y/Ms+DTpVgm+RkH2sS0JB1tYT34oB2AN4xIgxh1tZypKuRGDaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR05MB6411
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:xuFv58h3DbXbm5GMFkAkCReKh4EeMXgexgjy20nURaIbMW6epOn
+ QEHh0zi0NkE+0nV/0qf20RwhCEXYfmKlbUYtadnx0GP1+IB6diWHdIyZ4u4r85wax2b6+7K
+ XpbAGEBothPic7b2eoi2m/CEM4U0SIE7in+/KPfODKzi1CcWlRaC9XmaipwORicSlHNhUoL
+ jtWFAJ9t+tRjJbNwAGpBA==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:P+mWF51qy28=:hsEXRq1Js4X+dlLcBuIW29
+ +A++7M7vNwBAKh0XWLbrHJgHny4YWo69xJRzgjNbMqCqvnPfPtiQME7Qxh07iSZxjTQ90siVD
+ zYkV33D4IAluZBx221HZuzWMwkxpwLINFg4BIvvp8bj+qSiqij+k5HWeDArFk5TbFrepiju1F
+ KGmcW4cMFSZvpE9IbfFvaRzsf8BrE8Zui79UNqTWWetiuurtEH2g4M4sha8I60ozKIN3AKkF5
+ qwNECUzHuYN6u1Bao6/WfvqbLenp0tVffk5LYH+Yq47Timsq6gTtCgi36fFqTOVivr3bGUWay
+ aFnG0H3wqe4yOYhe1TcZ+fRT+8iGREuxpn1BwpdjGhaSQebDj3xtnEMeIZo7ylnZJ4MYMXVCM
+ L9aors7lTYbIB6wIwboBB9qPGFk68YvFuCs/IiW7woRUgvr5U50IfRQfkFewbZH41FN2liBuT
+ Ek8bYnFcbiwAVRmv7JlQF7jwowDoAQ6xs1vy4ooa8FBYQX/yuBR/c+OA76Uro+7At7RdwL9yD
+ bcqXhfKaw9/KVgH0QxaXiqsCOq9K9pu9RoB++9jR91JD3u+i2vB5gTNJBhF3Kt008Zt37QVe+
+ 1nehEyTo5YzJpoJrp9m4l70l+A6gaIXHDa/abi/tZS2aR8R0qJo9rCBNIMkXLKUv8wTuedhVt
+ nkXSbv0bOK38w4HI+y6AiBm0BMqQSR5c6QRTINdCZ+H4HvxYib2+g0l0eOhF0gVjNWDC8rgD2
+ WzsDSAve/vnd67s/b5Af2RPvpqE3i8Bm0qMxbD7HtWquifbFoFSK5UxRM3b/d6lCXqnjP3Fr6
+ Of1HIFvRkmTbx6WfXOKcRXHUSSey4n1zVHLq7yWgp4/I0vFpVkbC/IF83SXuNIEhPkbA91JQD
+ HCPM4Tc/WnS9WTaH9ktDhfg3KVyLa90NJ9dqSEhLwdVAEIIUZtIxmkt59OZSim4OMyOu1EhiK
+ q05RInGmqAyBuLJHJc1Ty+j6151Wq7GigK+1i/TRdKfjwzrIr0o2TEfH+eCKYbrES+NSy9uRP
+ tAfZOv7mP8JpXkT+pYttcW6aEDr2mxeBX0Hqz1/lipaLm/vPDn/uF+z/PiV4dw/ukTLrCnnyZ
+ PDGCEZ4q0xXFTB4FUIoLfpNjgECu6FigaWiM+nAeTTE7wPoRCUbJqVoyrK9463tSjLLVIezv7
+ H1DJQyNwkGU+t7BE4GKygQxyzy7vZB4ukqIbEt1NuM952K0hTPxz3wllbFiB2xhuZ3C4tVRKn
+ /1AAZS+Z5kBCJM92oHZL5C65Wx8lTd3BxDimA+EcckEkAcpNcL23h0+AWq+g=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDExLzMvMjAxOSAxMToxMSBBTSwgWXV2YWwgU2hhaWEgd3JvdGU6DQo+IEZyb206IERv
-dGFuIEJhcmFrIDxkb3RhbmJAZGV2Lm1lbGxhbm94LmNvLmlsPg0KPiANCj4gVGhlIHJlYXNvbiBm
-b3IgdGhlIHByZS1hbGxvY2F0aW9uIG9mIG9uZSBDUUUgaXMgdG8gZW5hYmxlIHJlc2l6aW5nIG9m
-DQo+IHRoZSBDUS4NCj4gRml4IGNvbW1lbnQgYWNjb3JkaW5nbHkuDQo+IA0KPiBTaWduZWQtb2Zm
-LWJ5OiBEb3RhbiBCYXJhayA8ZG90YW5iQGRldi5tZWxsYW5veC5jby5pbD4NCj4gU2lnbmVkLW9m
-Zi1ieTogRWxpIENvaGVuIDxlbGlAbWVsbGFub3guY28uaWw+DQo+IFNpZ25lZC1vZmYtYnk6IFZs
-YWRpbWlyIFNva29sb3Zza3kgPHZsYWRAbWVsbGFub3guY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBZ
-dXZhbCBTaGFpYSA8eXV2YWwuc2hhaWFAb3JhY2xlLmNvbT4NCj4gLS0tDQo+IHYwIC0+IHYxOg0K
-PiAJKiBBZGQgLiBhdCBFT0wNCj4gCSogQWRkIGNvbW1pdCBtZXNzYWdlDQo+IC0tLQ0KPiAgIGRy
-aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDQvbWFpbi5jIHwgMyArLS0NCj4gICAxIGZp
-bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NC9tYWluLmMgYi9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg0L21haW4uYw0KPiBpbmRleCBmY2U5YjNhMjQzNDcu
-LjY5YmI2YmIwNmU3NiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFu
-b3gvbWx4NC9tYWluLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4
-NC9tYWluLmMNCj4gQEAgLTUxNCw4ICs1MTQsNyBAQCBzdGF0aWMgaW50IG1seDRfZGV2X2NhcChz
-dHJ1Y3QgbWx4NF9kZXYgKmRldiwgc3RydWN0IG1seDRfZGV2X2NhcCAqZGV2X2NhcCkNCj4gICAJ
-ZGV2LT5jYXBzLm1heF9ycV9kZXNjX3N6ICAgICA9IGRldl9jYXAtPm1heF9ycV9kZXNjX3N6Ow0K
-PiAgIAkvKg0KPiAgIAkgKiBTdWJ0cmFjdCAxIGZyb20gdGhlIGxpbWl0IGJlY2F1c2Ugd2UgbmVl
-ZCB0byBhbGxvY2F0ZSBhDQo+IC0JICogc3BhcmUgQ1FFIHNvIHRoZSBIQ0EgSFcgY2FuIHRlbGwg
-dGhlIGRpZmZlcmVuY2UgYmV0d2VlbiBhbg0KPiAtCSAqIGVtcHR5IENRIGFuZCBhIGZ1bGwgQ1Eu
-DQo+ICsJICogc3BhcmUgQ1FFIHRvIGVuYWJsZSByZXNpemluZyB0aGUgQ1EuDQo+ICAgCSAqLw0K
-PiAgIAlkZXYtPmNhcHMubWF4X2NxZXMJICAgICA9IGRldl9jYXAtPm1heF9jcV9zeiAtIDE7DQo+
-ICAgCWRldi0+Y2Fwcy5yZXNlcnZlZF9jcXMJICAgICA9IGRldl9jYXAtPnJlc2VydmVkX2NxczsN
-Cj4gDQoNClJldmlld2VkLWJ5OiBUYXJpcSBUb3VrYW4gPHRhcmlxdEBtZWxsYW5veC5jb20+DQoN
-ClRoYW5rcy4NCg==
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Sun, 3 Nov 2019 12:50:19 +0100
+
+The field =E2=80=9Cowner=E2=80=9D is set by the core.
+Thus delete an unneeded initialisation.
+
+Generated by: scripts/coccinelle/api/platform_no_drv_owner.cocci
+
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/nfc/pn533/i2c.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/nfc/pn533/i2c.c b/drivers/nfc/pn533/i2c.c
+index 7507176cca0a..0207e66cee21 100644
+=2D-- a/drivers/nfc/pn533/i2c.c
++++ b/drivers/nfc/pn533/i2c.c
+@@ -274,7 +274,6 @@ MODULE_DEVICE_TABLE(i2c, pn533_i2c_id_table);
+ static struct i2c_driver pn533_i2c_driver =3D {
+ 	.driver =3D {
+ 		   .name =3D PN533_I2C_DRIVER_NAME,
+-		   .owner =3D THIS_MODULE,
+ 		   .of_match_table =3D of_match_ptr(of_pn533_i2c_match),
+ 		  },
+ 	.probe =3D pn533_i2c_probe,
+=2D-
+2.23.0
+
