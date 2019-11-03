@@ -2,125 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C273ED2C3
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 10:48:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C686ED2C8
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 10:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727513AbfKCJsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 04:48:45 -0500
-Received: from mout.gmx.net ([212.227.17.20]:49945 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726546AbfKCJsp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 3 Nov 2019 04:48:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1572774500;
-        bh=N2kuRaL/NF7eaENHQ2C+jDHjdPCKjWSQuPIkJH8g0pI=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=Q2LlccFTCc8rL0GBfgZNe9A0tsXwG98A45djoICyEGqjYkhqOm/3zKgqakud0cGA4
-         v/FKU9L7M9GbZlJWKd1dFqjGyYoC5x07EqtkZ1SPfPQ4uNIWY+nGCkieEeOjMAraW5
-         xnqUoW+Ygn0g2uXdDb9SKCo4b9S2b+ThdE/5yZsc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.162] ([37.4.249.112]) by mail.gmx.com (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MEm27-1iBW6S3N87-00GEz5; Sun, 03
- Nov 2019 10:48:19 +0100
-Subject: Re: [PATCH RFC V2 3/6] net: bcmgenet: use optional max DMA burst size
- property
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Brugger <matthias.bgg@kernel.org>,
-        Matthias Brugger <mbrugger@suse.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
-        Eric Anholt <eric@anholt.net>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        linux-arm-kernel@lists.infradead.org
-References: <1572702093-18261-1-git-send-email-wahrenst@gmx.net>
- <1572702093-18261-4-git-send-email-wahrenst@gmx.net>
- <e1182432-19d8-6c9d-fd41-bb4d739b579a@gmail.com>
-From:   Stefan Wahren <wahrenst@gmx.net>
-Message-ID: <b2066bc6-2191-5b9d-ff59-2ba4a95bfa03@gmx.net>
-Date:   Sun, 3 Nov 2019 10:48:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727425AbfKCJ5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 04:57:41 -0500
+Received: from mail-ua1-f65.google.com ([209.85.222.65]:35869 "EHLO
+        mail-ua1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726998AbfKCJ5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 04:57:40 -0500
+Received: by mail-ua1-f65.google.com with SMTP id z9so368376uan.3;
+        Sun, 03 Nov 2019 01:57:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=g+QlAwAK6bQlh/cWTEgPR/8pCDAU7kFbrkVp1jUM3t0=;
+        b=Q3BZfEUAItgE8ZRK+nJxI8uENSpOYRJkKIl99+p3hcpNFrqEHYZ9fVqhbTdPJK0AzV
+         k18ksCgA+1QfIl61kkcVNTerV3124ggtCXt8raYzj7lDnmZ6WpB4niwxLDyqJ8ZpdUq/
+         Zsg8OH6gpbnu0XElv0vgr/s6dsxmEGGIwZHdQOgyr/4B5jBQWzJUo2oJ4X2HRdiBNsRQ
+         DAKiwn0aPqOypkizD89IyS7Nlfo77ON/4fNoyOTVIMQGLSC2qtePSIcz4DV9/xK0dzSl
+         YOVu2OZIQKMSOk/t268mk6LpvR5YQmqMPzkszGIHKuxZWZfmPLTRCEraKl25IzpjGwLG
+         dLaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=g+QlAwAK6bQlh/cWTEgPR/8pCDAU7kFbrkVp1jUM3t0=;
+        b=Nz4QKpK94LTFuajn59RmBEzi2hHNPECdzfrPcEMP3om8E3cCZpJ6hJ8fAgQesrbh3V
+         YCZxSIeXsw4CJLVyWJ7Ag8cEi1VEQClAqx4urGWcSBleiUQ7MlLG4tKUYuON1t7lF9L1
+         hR0FseBudwItY7bweOhmYJrCQOTuLq+QIOlJxUlCpbCyUQGqh6/t7vEq849O4b+R9Wka
+         ESvV5Ui0y9cbVtHAGXhhoSRknjIZ0/aya5hZ0LHU9gOqaLQT/ua1a89LJJaYh0R5KrcO
+         wembbgq50qF/1sMHYRjNLVvFOo1jtKVed82VqNnWIkSoZ8Nz7HDn0aDxZk4IVMsuotc6
+         lRhg==
+X-Gm-Message-State: APjAAAW1C0DoTJPjFrHE3cqq7fjRhZe/LA+vWdq569IvUyNzFkDf6Wiz
+        qpRPsB1IsUoO5GXktfo6nrN++DlEpNei9qeCX/g=
+X-Google-Smtp-Source: APXvYqzU3u1QLkj1XmpAAdPd8RTPJBt4PWMxt3Enh23yjQG8/a8lMNSfNqYNAGaNFGGQmCTYgCKJWR8Wr43r1r4U4L8=
+X-Received: by 2002:ab0:d8c:: with SMTP id i12mr9885832uak.57.1572775059623;
+ Sun, 03 Nov 2019 01:57:39 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <e1182432-19d8-6c9d-fd41-bb4d739b579a@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:TjbITlT8S+N4og2qQ/L3geR8VbQ2YegWvTpFryWOffB3y8H+u80
- XLSmbluUbx8OVBwiaWmxpvvlM7wsb2uLvD555bD2uNrumhZi/Km8E01QePV4vlhawwvvi4d
- blhtsDCxHJZhwbGSp6MorGuS40UOzwJwf+U+UlllsOS2EutMSb+q9/izOCTvAo2SuH5T97B
- gqlKvZmOU9Lbwkqc9OMLg==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vWSAY7d1Vro=:zlEbxOb1E1Pibo+wZSmzpV
- s2Q8zNIc0w6kFiQmPNbea5t7ZzjjZ5gu6CnKjJzT6usef1WJYworSJ54eRD0xcNDcZx9uaAkE
- Z0SqiKIgnk0F/wSyxgbVOpgZdz/mRtnKYNqirMbnif2ut1B2jtJcfSmgRWBWBMjZrEJofGz68
- Ps2S94xnpAsuqY+3LwWGesl8XXUJ6umFuLdeDlZZtwH6N65hYmXUV2J1yaJVyP6XghqU7WhiD
- xPfyyKFGqD7NE85rpgjaND1xR74W+OmU5bCTD3aRTW3TpzjIgpUYpnn/M+87FNbki2Ayv2T5k
- nazuloDFRCjO1CYFSLf15r5qDUAdeMP4iIuXvO60qzIOvybpwwboU4VJL6diJpYmSyPYNvLcJ
- 8zTDJaT7F6Q7vaOsEVZR9fonQJQmPvXIw5+xw13HB7e009mmC1eJCn8VZDtIsqpRH0pqrkF+T
- 4X6exuiEQNTN64cYUUo+sXvntnPAp1lShFvrqde+bSvW9zQroUqrD3lbvRvP/NX+kXu06pMXH
- zplhx3X/fTgJN+CfN7m4bvZW5KspwsbM1IqVhQORe8BtXTFcK+vfx4Ae6JA5l80uBTYz6QnOJ
- eE9GbinWwy8JJobsr2k4Aq6w9FX0HwGhNVlghT/JmlwwMiq3dVs7tKpECrv4u40L1k0cVmsFM
- 9f/frQFeNkh6C47vhVwZr2grGejjuiPIRC3u4E3HExvuq4NRFoS/kZKHsJtGAYsEH3G7Z9M04
- m+B24TQomgVTyV1iPgYk12mxuVRDegQUu945XUyZLP8RxeZfQRs8yV3NmwqWa3eRQJl5T1RBo
- IsAB1v5CRrgiGrdafnwDyXDWnn4Nw/hwBA3VZ82lAbn9K4j3AQnjl0pkcEPbUPHfzIB9Ajxty
- o6aGm/1IUHMxB75JO8LE0OXeppBB66DBh+K1zLpGFPnf7oXohZTT+StzCR5B1WjfH86CvV4yg
- /rxNSKLY5pXbpkRYXGSjWssAn0UmdgyJicTd0qg/qqS7rc/y20q5qIm2j0LbYarOG2UlOFgUO
- uIud4bHb8XHvUhGt0s5TGc2PzWiE7XL04vIb6WSCY9yzi/XwhDqtI+SiHEOUSaB4oelDJWW5l
- NqE/ErlKex4zJ8Z8rlc6VMd4mgUROL4QR3q9rERE14XUOFrc/Nchwg/yu1njAUqLkiyzwFD4o
- a/r1qgdaMbv06t8E38azNMNwAUva4Jx1hk1Jkvzoxn0b4EnYXaZyBSn2QZjM6TEwClZM/filY
- JycQpcPl3ahxhb5JeHh1hqVHro0yASWcRqkWCkp7tba170VUyu4sKMKo1Tys=
+References: <20191101130817.11744-1-ethercflow@gmail.com> <CAEf4Bzand8qSxqmryyxMNg3FNL-pgokJ4taRrtGq07rdbEjsbA@mail.gmail.com>
+In-Reply-To: <CAEf4Bzand8qSxqmryyxMNg3FNL-pgokJ4taRrtGq07rdbEjsbA@mail.gmail.com>
+From:   Wenbo Zhang <ethercflow@gmail.com>
+Date:   Sun, 3 Nov 2019 17:57:36 +0800
+Message-ID: <CABtjQmZugRi4d-UfNtyqUir9FpgjmVWQUi3W2E=MoLi-JV91wQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] selftests/bpf: test for bpf_get_file_path()
+ from raw tracepoint
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+> Unless there is a real reason for all this complexity (in which case,
+> please spell it out in commit or comments), I think this could be so
+> much simpler.
 
-Am 02.11.19 um 20:34 schrieb Florian Fainelli:
-> On 11/2/2019 6:41 AM, Stefan Wahren wrote:
->> From: Matthias Brugger <mbrugger@suse.com>
->>
->> Depending on the HW, the maximal usable DMA burst size can vary.
->> If not set accordingly a timeout in the transmit queue happens and no
->> package can be sent. Read to optional max-burst-sz property, if not
->> present, fallback to the standard value.
->>
->> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-> Missing your Signed-off-by here since you are carrying this patch from
-> Matthias.
-oops
->
->> ---
-> [snip]
->
->> +	if (dn) {
->> +		of_property_read_u32(dn, "dma-burst-sz",
->> +				     &priv->dma_max_burst_length);
->> +	} else {
->> +		priv->dma_max_burst_length = DMA_MAX_BURST_LENGTH;
->> +	}
-> I would maintain the previous position provided on Matthias' patch
-> series, which is the integration of the GENETv5 hardware block in 2711
-> is done in a way that is different enough (due to the SCB/AXI bridge)
-> that a separate compatibility string would be in order. Once you that
-> defined that "brcm,bcm2711-genet-v5" compatibility string defined, you
-> can derive the DMA burst size off of it.
-this is what i meant with didn't address all your comments. I'm fine
-with your suggestion, but too lazy to integrate it in this patch series.
-I assumed Matthias already take care of it.
-> If adding a compatibility string is not practical because of the
-> downstream DTBs, then can we at least fix this patch in two ways:
->
-> - define the property in the binding document
-> - spell out the property in full names: max-dma-burst-size so as to
-> reflect what it does
+Yes, it could be so much simpler than this implement.
 
-In case of incompatibilities with the downstream DTB, i will take care
-of it in the downstream tree like last time.
+> - you don't have to use perf_buffer to pass data back, just use global da=
+ta;
+> - you can add a filter for PID to only capture data triggered by test
+> process and avoid the noise;
 
-Regards
-Stefan
+Yes, I'll use map instead of perf buffer to communicate.
+
+> - why all those set_affinity dances? Is it just because you used
+> existing perf_buffer test which did that to specifically test
+> perf_buffer delivering data across every CPU core? Seems like your
+> test doesn't care about that...
+
+I used fd2path_loadgen to get hundreds of syscalls between multi usleep, wh=
+ich
+may cause it's sched to different cores, but as you say, this test
+doesn't care about
+that... I'll remove them with perf buffer.
+
+> - do we really need a separate binary generating hundreds of syscalls?
+> It's hard to synchronize with test and it seems much simpler to just
+> trigger necessary syscalls synchronously from the test itself, no?
+
+This is my fault, necessary syscalls synchronously from the test
+itself is enough.
+
+> I have a bunch of more minutia nits, but most of them will go away if
+> you simplify your testing approach anyway, so I'll postpone them till
+> then.
+
+Thanks a lot. I'll modify a simplified version then recommitted.
+
+Andrii Nakryiko <andrii.nakryiko@gmail.com> =E4=BA=8E2019=E5=B9=B411=E6=9C=
+=882=E6=97=A5=E5=91=A8=E5=85=AD =E4=B8=8B=E5=8D=881:49=E5=86=99=E9=81=93=EF=
+=BC=9A
 
 >
-> Thanks!
+> On Fri, Nov 1, 2019 at 6:08 AM Wenbo Zhang <ethercflow@gmail.com> wrote:
+> >
+> > trace fstat events by raw tracepoint sys_enter:newfstat, and handle eve=
+nts
+> > only produced by fd2path_loadgen, the fd2path_loadgen call fstat on sev=
+eral
+> > different types of files to test bpf_get_file_path's feature.
+> > ---
+>
+> Unless there is a real reason for all this complexity (in which case,
+> please spell it out in commit or comments), I think this could be so
+> much simpler.
+>
+> - you don't have to use perf_buffer to pass data back, just use global da=
+ta;
+> - you can add a filter for PID to only capture data triggered by test
+> process and avoid the noise;
+> - why all those set_affinity dances? Is it just because you used
+> existing perf_buffer test which did that to specifically test
+> perf_buffer delivering data across every CPU core? Seems like your
+> test doesn't care about that...
+> - do we really need a separate binary generating hundreds of syscalls?
+> It's hard to synchronize with test and it seems much simpler to just
+> trigger necessary syscalls synchronously from the test itself, no?
+>
+> I have a bunch of more minutia nits, but most of them will go away if
+> you simplify your testing approach anyway, so I'll postpone them till
+> then.
+>
+> >  tools/testing/selftests/bpf/Makefile          |   8 +-
+> >  tools/testing/selftests/bpf/fd2path_loadgen.c |  75 ++++++++++
+> >  .../selftests/bpf/prog_tests/get_file_path.c  | 130 ++++++++++++++++++
+> >  .../selftests/bpf/progs/test_get_file_path.c  |  58 ++++++++
+> >  4 files changed, 269 insertions(+), 2 deletions(-)
+> >  create mode 100644 tools/testing/selftests/bpf/fd2path_loadgen.c
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_pat=
+h.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_pat=
+h.c
+> >
+>
+> [...]
