@@ -2,30 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C9F8ED538
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 22:18:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81443ED57A
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 22:20:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728776AbfKCVSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 16:18:55 -0500
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:17587 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728564AbfKCVS0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 16:18:26 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dbf441c0000>; Sun, 03 Nov 2019 13:18:20 -0800
+        id S1728489AbfKCVSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 16:18:23 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:6751 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728239AbfKCVSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 16:18:17 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dbf441d0000>; Sun, 03 Nov 2019 13:18:22 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Sun, 03 Nov 2019 13:18:15 -0800
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Sun, 03 Nov 2019 13:18:16 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Sun, 03 Nov 2019 13:18:15 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 3 Nov
+        by hqpgpgate102.nvidia.com on Sun, 03 Nov 2019 13:18:16 -0800
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 3 Nov
+ 2019 21:18:15 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 3 Nov
  2019 21:18:14 +0000
-Received: from hqnvemgw01.nvidia.com (172.20.150.20) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+Received: from hqnvemgw01.nvidia.com (172.20.150.20) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
  Transport; Sun, 3 Nov 2019 21:18:14 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by hqnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5dbf44160001>; Sun, 03 Nov 2019 13:18:14 -0800
+        id <B5dbf44160002>; Sun, 03 Nov 2019 13:18:14 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -43,12 +46,11 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         Jonathan Corbet <corbet@lwn.net>,
         =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Michal Hocko <mhocko@suse.com>,
         Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
+        "Paul Mackerras" <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
         Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
         <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
         <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
@@ -56,220 +58,156 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [PATCH v2 00/18] mm/gup: track dma-pinned pages: FOLL_PIN, FOLL_LONGTERM
-Date:   Sun, 3 Nov 2019 13:17:55 -0800
-Message-ID: <20191103211813.213227-1-jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCH v2 01/18] mm/gup: pass flags arg to __gup_device_* functions
+Date:   Sun, 3 Nov 2019 13:17:56 -0800
+Message-ID: <20191103211813.213227-2-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191103211813.213227-1-jhubbard@nvidia.com>
+References: <20191103211813.213227-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572815900; bh=GBV3ojpDDK4OBFB22u5Rnbzd8rZTGnaPAeFzYUht8Sk=;
+        t=1572815902; bh=HdyyT2HHYT+Tbem5UekR/x2u517mEiU0cIzjorn54wk=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-         MIME-Version:X-NVConfidentiality:Content-Type:
-         Content-Transfer-Encoding;
-        b=QFdybeXkgDaSikqJK8ut4Q3VaoLQPZvaXrOil25JjZA2drY+qH3mlg/JBBJj9CUkO
-         FnWKh3HSWK12fVcCDfgZO3gj/PnKbOvnlx3cF6Te3oPgt64K0ScQSZlilcWgNVErRp
-         sBQIZRfXIN70b0dwEGF4SAgE3WxBXUjfhgUu/ST459bfzdU7/J3Tc57sm0hCck2WzM
-         Bl+CFxB3+DoOCzmMTNIsqpCr4cDD8LlzCDt9L0jqubkzo4mR4fOaGh5xqUeGuMOfU2
-         OjOwLPsBvhDoaFgYYO+pfhwHgHAniOj+t7ll1ShzRTew8tOKK1v2qpbIc7QX9UbfSG
-         iajQXzs4Buv0A==
+         In-Reply-To:References:MIME-Version:X-NVConfidentiality:
+         Content-Transfer-Encoding:Content-Type;
+        b=qPhYOOZQeYvmkZ37VnkaK5PuejNVuQRAi79V4WuaqXjLdXz81YACYPx73LwQH1719
+         Akz+DeaYoOSNUxhLrTOwwznoAZMdBM2JIY90lE+LD1VcAqoXjhrpsPEoBUsiJliiDi
+         r4j4etq+VjC74IuW2pM55MINVwmirCvmxvsKTMtzePKaH5MzbETSQIVMx1lAwYTenf
+         9SUucpyx8HMuay3cIyB3/apjVB4ONfewe5nx3ideL37FwNHkRFF/HfgHMxbcgmgeWR
+         R0DufhaWMVVzG/qkTMxcJdhlOAjVZkGBCBmil80WFbQnNsR8ZZsq3pzYRoKN6MI6JY
+         9zneZB2sdHgxg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+A subsequent patch requires access to gup flags, so
+pass the flags argument through to the __gup_device_*
+functions.
 
-Changes since v1:
+Also placate checkpatch.pl by shortening a nearby line.
 
-* Changed the function signature of __huge_pt_done() from int to void.
-* Renamed __remove_refs_from_head() to put_compound_head().
-* Improved the comment documentation in mm.h and gup.c
-* Merged Documentation/vm/pin_user_pages.rst into the "introduce
-  FOLL_PIN" patch.
-* Fixed Documentation/vm/pin_user_pages.rst:
-     * Fixed up a TODO about DAX.
-     * 31, not 32 bits total are available for counting
-* Deleted some stale comments from the commit description of the
-  VFIO patch.
-* Added Reviewed-by tags from Ira Weiny and Jens Axboe, and Acked-by
-  from Bj=C3=B6rn T=C3=B6pel.
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+---
+ mm/gup.c | 28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Original cover letter (edited to fix up the patch description numbers)
-
-This applies cleanly to linux-next and mmotm, and also to linux.git if
-linux-next's commit 20cac10710c9 ("mm/gup_benchmark: fix MAP_HUGETLB
-case") is first applied there.
-
-This provides tracking of dma-pinned pages. This is a prerequisite to
-solving the larger problem of proper interactions between file-backed
-pages, and [R]DMA activities, as discussed in [1], [2], [3], and in
-a remarkable number of email threads since about 2017. :)
-
-A new internal gup flag, FOLL_PIN is introduced, and thoroughly
-documented in the last patch's Documentation/vm/pin_user_pages.rst.
-
-I believe that this will provide a good starting point for doing the
-layout lease work that Ira Weiny has been working on. That's because
-these new wrapper functions provide a clean, constrained, systematically
-named set of functionality that, again, is required in order to even
-know if a page is "dma-pinned".
-
-In contrast to earlier approaches, the page tracking can be
-incrementally applied to the kernel call sites that, until now, have
-been simply calling get_user_pages() ("gup"). In other words, opt-in by
-changing from this:
-
-    get_user_pages() (sets FOLL_GET)
-    put_page()
-
-to this:
-    pin_user_pages() (sets FOLL_PIN)
-    put_user_page()
-
-Because there are interdependencies with FOLL_LONGTERM, a similar
-conversion as for FOLL_PIN, was applied. The change was from this:
-
-    get_user_pages(FOLL_LONGTERM) (also sets FOLL_GET)
-    put_page()
-
-to this:
-    pin_longterm_pages() (sets FOLL_PIN | FOLL_LONGTERM)
-    put_user_page()
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Patch summary:
-
-* Patches 1-4: refactoring and preparatory cleanup, independent fixes
-    (Patch 4: V4L2-core bug fix (can be separately applied))
-
-* Patch 5: introduce pin_user_pages(), FOLL_PIN, but no functional
-           changes yet
-* Patches 6-11: Convert existing put_user_page() callers, to use the
-                new pin*()
-* Patch 12: Activate tracking of FOLL_PIN pages.
-* Patches 13-15: convert FOLL_LONGTERM callers
-* Patches: 16-17: gup_benchmark and run_vmtests support
-* Patch 18: enforce FOLL_LONGTERM as a gup-internal (only) flag
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Testing:
-
-* I've done some overall kernel testing (LTP, and a few other goodies),
-  and some directed testing to exercise some of the changes. And as you
-  can see, gup_benchmark is enhanced to exercise this. Basically, I've been
-  able to runtime test the core get_user_pages() and pin_user_pages() and
-  related routines, but not so much on several of the call sites--but those
-  are generally just a couple of lines changed, each.
-
-  Not much of the kernel is actually using this, which on one hand
-  reduces risk quite a lot. But on the other hand, testing coverage
-  is low. So I'd love it if, in particular, the Infiniband and PowerPC
-  folks could do a smoke test of this series for me.
-
-  Also, my runtime testing for the call sites so far is very weak:
-
-    * io_uring: Some directed tests from liburing exercise this, and they p=
-ass.
-    * process_vm_access.c: A small directed test passes.
-    * gup_benchmark: the enhanced version hits the new gup.c code, and pass=
-es.
-    * infiniband (still only have crude "IB pingpong" working, on a
-                  good day: it's not exercising my conversions at runtime..=
-.)
-    * VFIO: compiles (I'm vowing to set up a run time test soon, but it's
-                      not ready just yet)
-    * powerpc: it compiles...
-    * drm/via: compiles...
-    * goldfish: compiles...
-    * net/xdp: compiles...
-    * media/v4l2: compiles...
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Next:
-
-* Get the block/bio_vec sites converted to use pin_user_pages().
-
-* Work with Ira and Dave Chinner to weave this together with the
-  layout lease stuff.
-
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-[1] Some slow progress on get_user_pages() (Apr 2, 2019): https://lwn.net/A=
-rticles/784574/
-[2] DMA and get_user_pages() (LPC: Dec 12, 2018): https://lwn.net/Articles/=
-774411/
-[3] The trouble with get_user_pages() (Apr 30, 2018): https://lwn.net/Artic=
-les/753027/
-
-John Hubbard (18):
-  mm/gup: pass flags arg to __gup_device_* functions
-  mm/gup: factor out duplicate code from four routines
-  goldish_pipe: rename local pin_user_pages() routine
-  media/v4l2-core: set pages dirty upon releasing DMA buffers
-  mm/gup: introduce pin_user_pages*() and FOLL_PIN
-  goldish_pipe: convert to pin_user_pages() and put_user_page()
-  infiniband: set FOLL_PIN, FOLL_LONGTERM via pin_longterm_pages*()
-  mm/process_vm_access: set FOLL_PIN via pin_user_pages_remote()
-  drm/via: set FOLL_PIN via pin_user_pages_fast()
-  fs/io_uring: set FOLL_PIN via pin_user_pages()
-  net/xdp: set FOLL_PIN via pin_user_pages()
-  mm/gup: track FOLL_PIN pages
-  media/v4l2-core: pin_longterm_pages (FOLL_PIN) and put_user_page()
-    conversion
-  vfio, mm: pin_longterm_pages (FOLL_PIN) and put_user_page() conversion
-  powerpc: book3s64: convert to pin_longterm_pages() and put_user_page()
-  mm/gup_benchmark: support pin_user_pages() and related calls
-  selftests/vm: run_vmtests: invoke gup_benchmark with basic FOLL_PIN
-    coverage
-  mm/gup: remove support for gup(FOLL_LONGTERM)
-
- Documentation/vm/index.rst                  |   1 +
- Documentation/vm/pin_user_pages.rst         | 212 +++++++
- arch/powerpc/mm/book3s64/iommu_api.c        |  15 +-
- drivers/gpu/drm/via/via_dmablit.c           |   2 +-
- drivers/infiniband/core/umem.c              |   5 +-
- drivers/infiniband/core/umem_odp.c          |  10 +-
- drivers/infiniband/hw/hfi1/user_pages.c     |   4 +-
- drivers/infiniband/hw/mthca/mthca_memfree.c |   3 +-
- drivers/infiniband/hw/qib/qib_user_pages.c  |   8 +-
- drivers/infiniband/hw/qib/qib_user_sdma.c   |   2 +-
- drivers/infiniband/hw/usnic/usnic_uiom.c    |   9 +-
- drivers/infiniband/sw/siw/siw_mem.c         |   5 +-
- drivers/media/v4l2-core/videobuf-dma-sg.c   |  10 +-
- drivers/platform/goldfish/goldfish_pipe.c   |  35 +-
- drivers/vfio/vfio_iommu_type1.c             |  15 +-
- fs/io_uring.c                               |   5 +-
- include/linux/mm.h                          | 142 ++++-
- include/linux/mmzone.h                      |   2 +
- include/linux/page_ref.h                    |  10 +
- mm/gup.c                                    | 594 ++++++++++++++++----
- mm/gup_benchmark.c                          |  81 ++-
- mm/huge_memory.c                            |  32 +-
- mm/hugetlb.c                                |  28 +-
- mm/memremap.c                               |   4 +-
- mm/process_vm_access.c                      |  28 +-
- mm/vmstat.c                                 |   2 +
- net/xdp/xdp_umem.c                          |   4 +-
- tools/testing/selftests/vm/gup_benchmark.c  |  28 +-
- tools/testing/selftests/vm/run_vmtests      |  22 +
- 29 files changed, 1054 insertions(+), 264 deletions(-)
- create mode 100644 Documentation/vm/pin_user_pages.rst
-
+diff --git a/mm/gup.c b/mm/gup.c
+index 8f236a335ae9..85caf76b3012 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -1890,7 +1890,8 @@ static int gup_pte_range(pmd_t pmd, unsigned long add=
+r, unsigned long end,
+=20
+ #if defined(CONFIG_ARCH_HAS_PTE_DEVMAP) && defined(CONFIG_TRANSPARENT_HUGE=
+PAGE)
+ static int __gup_device_huge(unsigned long pfn, unsigned long addr,
+-		unsigned long end, struct page **pages, int *nr)
++			     unsigned long end, unsigned int flags,
++			     struct page **pages, int *nr)
+ {
+ 	int nr_start =3D *nr;
+ 	struct dev_pagemap *pgmap =3D NULL;
+@@ -1916,13 +1917,14 @@ static int __gup_device_huge(unsigned long pfn, uns=
+igned long addr,
+ }
+=20
+ static int __gup_device_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long ad=
+dr,
+-		unsigned long end, struct page **pages, int *nr)
++				 unsigned long end, unsigned int flags,
++				 struct page **pages, int *nr)
+ {
+ 	unsigned long fault_pfn;
+ 	int nr_start =3D *nr;
+=20
+ 	fault_pfn =3D pmd_pfn(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+-	if (!__gup_device_huge(fault_pfn, addr, end, pages, nr))
++	if (!__gup_device_huge(fault_pfn, addr, end, flags, pages, nr))
+ 		return 0;
+=20
+ 	if (unlikely(pmd_val(orig) !=3D pmd_val(*pmdp))) {
+@@ -1933,13 +1935,14 @@ static int __gup_device_huge_pmd(pmd_t orig, pmd_t =
+*pmdp, unsigned long addr,
+ }
+=20
+ static int __gup_device_huge_pud(pud_t orig, pud_t *pudp, unsigned long ad=
+dr,
+-		unsigned long end, struct page **pages, int *nr)
++				 unsigned long end, unsigned int flags,
++				 struct page **pages, int *nr)
+ {
+ 	unsigned long fault_pfn;
+ 	int nr_start =3D *nr;
+=20
+ 	fault_pfn =3D pud_pfn(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+-	if (!__gup_device_huge(fault_pfn, addr, end, pages, nr))
++	if (!__gup_device_huge(fault_pfn, addr, end, flags, pages, nr))
+ 		return 0;
+=20
+ 	if (unlikely(pud_val(orig) !=3D pud_val(*pudp))) {
+@@ -1950,14 +1953,16 @@ static int __gup_device_huge_pud(pud_t orig, pud_t =
+*pudp, unsigned long addr,
+ }
+ #else
+ static int __gup_device_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long ad=
+dr,
+-		unsigned long end, struct page **pages, int *nr)
++				 unsigned long end, unsigned int flags,
++				 struct page **pages, int *nr)
+ {
+ 	BUILD_BUG();
+ 	return 0;
+ }
+=20
+ static int __gup_device_huge_pud(pud_t pud, pud_t *pudp, unsigned long add=
+r,
+-		unsigned long end, struct page **pages, int *nr)
++				 unsigned long end, unsigned int flags,
++				 struct page **pages, int *nr)
+ {
+ 	BUILD_BUG();
+ 	return 0;
+@@ -2062,7 +2067,8 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsi=
+gned long addr,
+ 	if (pmd_devmap(orig)) {
+ 		if (unlikely(flags & FOLL_LONGTERM))
+ 			return 0;
+-		return __gup_device_huge_pmd(orig, pmdp, addr, end, pages, nr);
++		return __gup_device_huge_pmd(orig, pmdp, addr, end, flags,
++					     pages, nr);
+ 	}
+=20
+ 	refs =3D 0;
+@@ -2092,7 +2098,8 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsi=
+gned long addr,
+ }
+=20
+ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+-		unsigned long end, unsigned int flags, struct page **pages, int *nr)
++			unsigned long end, unsigned int flags,
++			struct page **pages, int *nr)
+ {
+ 	struct page *head, *page;
+ 	int refs;
+@@ -2103,7 +2110,8 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsi=
+gned long addr,
+ 	if (pud_devmap(orig)) {
+ 		if (unlikely(flags & FOLL_LONGTERM))
+ 			return 0;
+-		return __gup_device_huge_pud(orig, pudp, addr, end, pages, nr);
++		return __gup_device_huge_pud(orig, pudp, addr, end, flags,
++					     pages, nr);
+ 	}
+=20
+ 	refs =3D 0;
 --=20
 2.23.0
 
