@@ -2,73 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AC05ED27A
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 09:10:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C94A4ED294
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 09:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727493AbfKCIED (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 03:04:03 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:40890 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726408AbfKCIED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 03:04:03 -0500
-Received: by mail-io1-f71.google.com with SMTP id 125so10924365iou.7
-        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 01:04:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=zseyQcg9WNy0u+ZF8nDZWMDUBvH4F12JJ+AwXYNDi7k=;
-        b=GO0xFw+PJwhaUoS6Cd15TArcyo/RUjyYSJ0pQZYyT5/e8DqI6A7T1ArKAFFhb533Vq
-         CTR+rQlh9tjbJPzwAQszsZ01/Xk/OJM0Yp1Q3CjE4iJ8ckKlbs/iBUV9WY1GFCH0HOLs
-         Lnh5fqhHYlnP5vC8bR118+Rln7FYpkYiBW9RFTDCDrsfrb4P4ew3gu3BlcbcRNRVbrrB
-         hxFl3eGifFqi2m0umvUlxiRi3efFuDwpNj0rSKo8gkmsLKN3a5EIACTDG3x1d3bfXpf2
-         tVv6sj33qDmIxZuj+3TVDv6VwKb6taxzTRmhCeVDeBef4xeCvt+2fLbG218lTUKM3DPj
-         6MFQ==
-X-Gm-Message-State: APjAAAXOQ6sYc9OJugu1WKGF7Dp8u7VdKDnBLHCmWGy2ZuqrapJqwGch
-        9nOl5xuxxQh1Efekld2c1nWJwxCuyX7nP7x9LugP2ovdTwXk
-X-Google-Smtp-Source: APXvYqxhpKGHhcgtYbw7xsqihd/PM8MbI+nKemnT0QhuOdgsKosxm+PpEDNBXQGgcoZ/5EDuT2djHH4Mdf+3AZesnhq9ApTQpTn+
+        id S1727156AbfKCIg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 03:36:28 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:36969 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726408AbfKCIg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 03:36:28 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 76A9E20E72;
+        Sun,  3 Nov 2019 03:36:26 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sun, 03 Nov 2019 03:36:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=N2ZyJwDhwVbwTPws0
+        lTq1bmo32FmD7n4KRd0dOyqUwQ=; b=B6Qj2/CAhLwgAj0O6wmH0ollxJlCrHMv4
+        o4VD9lb4BIoY5sWpY70l/2KA13zyrmkE4bS+puyCmmhGEg/vNFGNMlTr2xqjfqDr
+        yPXLvcSjppZ6KGPzj9lxBiqlFXEL8uRdmeUzrOS7/nGNbpT1NMtFjnOVbAU8inRh
+        90EEhqbAagMGSwhRWOvvgbYu6/D9muP29QtIXsBI52LgZcdItj8yCc8YfGho9YX5
+        myI/9T1/SfV6vpUjAIoHhA3l/Y+7x2vYn3PNpJESDaCwIGasVSHdGHEqwxiBigxO
+        FDh8qMHiLVqvytwj0erw30TLwL9911GwkzI69HjBEcHejp3Vkc2aA==
+X-ME-Sender: <xms:ipG-XWFN-_K6Zr8o870F3yZeL2UR7u2-aYSTi6RDI7lf3lmCycLUeQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddutddgkeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:ipG-XUskwFYstnREVxKVE8KmqP30uUp3psMuGvS7e9NWHPPwW1XAdA>
+    <xmx:ipG-XVwDfbnR0JdggkYKDWS8t-KNU2lySuN6_W8xXUcLsLsV89iKlQ>
+    <xmx:ipG-XaoYcn0Nb-jGP98Upm2DkhHWlSXyf1YaG42G2l4mF85ENaX_-Q>
+    <xmx:ipG-XUwjweiGnnrBmJ22jFeXuF6aYBN6gasPJ_3UKWS9tW-ZyberQg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 01558306005C;
+        Sun,  3 Nov 2019 03:36:24 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/6] mlxsw: Add extended ACK for EMADs
+Date:   Sun,  3 Nov 2019 10:35:48 +0200
+Message-Id: <20191103083554.6317-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:99d1:: with SMTP id t78mr21495252ilk.122.1572768240955;
- Sun, 03 Nov 2019 01:04:00 -0700 (PDT)
-Date:   Sun, 03 Nov 2019 01:04:00 -0700
-In-Reply-To: <000000000000595be405966c3231@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000050f87c05966ca43a@google.com>
-Subject: Re: general protection fault in j1939_priv_get_by_ndev_locked
-From:   syzbot <syzbot+feff46f1778030d14234@syzkaller.appspotmail.com>
-To:     bst@pengutronix.de, davem@davemloft.net,
-        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
-        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
-        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+From: Ido Schimmel <idosch@mellanox.com>
 
-commit 9d71dd0c70099914fcd063135da3c580865e924c
-Author: The j1939 authors <linux-can@vger.kernel.org>
-Date:   Mon Oct 8 09:48:36 2018 +0000
+Ethernet Management Datagrams (EMADs) are Ethernet packets sent between
+the driver and device's firmware. They are used to pass various
+configurations to the device, but also to get events (e.g., port up)
+from it. After the Ethernet header, these packets are built in a TLV
+format.
 
-     can: add support of SAE J1939 protocol
+Up until now, whenever the driver issued an erroneous register access it
+only got an error code indicating a bad parameter was used. This patch
+set from Shalom adds a new TLV (string TLV) that can be used by the
+firmware to encode a 128 character string describing the error. The new
+TLV is allocated by the driver and set to zeros. In case of error, the
+driver will check the length of the string in the response and print it
+to the kernel log.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11267914e00000
-start commit:   7de08690 powerpc/bpf: Fix tail call implementation
-git tree:       bpf
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=13267914e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15267914e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2cc209e226c8fbbd
-dashboard link: https://syzkaller.appspot.com/bug?extid=feff46f1778030d14234
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1726e97ce00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1678e4ece00000
+Example output:
 
-Reported-by: syzbot+feff46f1778030d14234@syzkaller.appspotmail.com
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+mlxsw_spectrum 0000:03:00.0: EMAD reg access failed (tid=a9719f9700001306,reg_id=8018(rauhtd),type=query,status=7(bad parameter))
+mlxsw_spectrum 0000:03:00.0: Firmware error (tid=a9719f9700001306,emad_err_string=inside er_rauhtd_write_query(), num_rec=32 is over the maximum number of records supported)
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Patch #1 parses the offsets of the different TLVs in incoming EMADs and
+stores them in the skb's control block. This makes it easier to later
+add new TLVs.
+
+Patches #2-#3 remove deprecated TLVs and add string TLV definition.
+
+Patches #4-#6 gradually add support for the new string TLV.
+
+Shalom Toledo (6):
+  mlxsw: core: Parse TLVs' offsets of incoming EMADs
+  mlxsw: emad: Remove deprecated EMAD TLVs
+  mlxsw: core: Add EMAD string TLV
+  mlxsw: core: Add support for EMAD string TLV parsing
+  mlxsw: core: Add support for using EMAD string TLV
+  mlxsw: spectrum: Enable EMAD string TLV
+
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 154 ++++++++++++++++--
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/emad.h    |   7 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   2 +
+ 4 files changed, 147 insertions(+), 18 deletions(-)
+
+-- 
+2.21.0
+
