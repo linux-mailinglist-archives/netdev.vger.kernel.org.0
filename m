@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46ABAED435
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 19:45:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39F8FED43D
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 19:53:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728012AbfKCSpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 13:45:30 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:36294 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727520AbfKCSpa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 13:45:30 -0500
-Received: by mail-lf1-f67.google.com with SMTP id a6so7191616lfo.3
-        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 10:45:27 -0800 (PST)
+        id S1727930AbfKCSxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 13:53:53 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41596 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727322AbfKCSxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 13:53:53 -0500
+Received: by mail-pg1-f194.google.com with SMTP id l3so9799936pgr.8
+        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 10:53:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eOdq8Hu6igUnwgJC6ijMcGO8XX2Wgr8N1NgWmkUqIi0=;
-        b=sp5TpDxPjH4w1V6jLSm2h6J1pDcSftgxeyJArv/dQoGUI3R1XfxH5953TesJkyK5Ve
-         xdWI5IlFQSJhV3QUwWUqpGA5MIpqYV2bF2zi/KAMmPQuWp6oFkwY+esINYEiIwGftzaf
-         /yQd3ZisQiPyiU6tTDT7y/5zMthKbJk4yRbkTVaxNkMKrz0rvIY0xEIIT8/ELrG05F6L
-         lHn08RFrtS92Vs4B7u3lwxSDl9dBJsCCdM718U55+QI8TjyYFSpiO4SO5qrDiVfxikYt
-         qAQI94eyUIeNWtGmfphM4CyjMzXwyDtDqSvowudi4fdhTYU5MyKj+adEcbgssPCnF3At
-         lZzQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=XyGGVrbv4a6h6K5gbmaJQQgfer/cT+wv7vCkdoFz5lQ=;
+        b=h3uc3ugGgnq64NpQSAxf1YHlLMm7ZGYqBHO2H/FfH2c72DlCBqJ6cwsvRHpB0DDwy/
+         kYGCsrhFiHjpg0kb5zuyUUS+mjYnzpc80pEHAXgfHmKOe3rb//0kZqSSWyITJsXIk+ts
+         vIaATRDzH6GFtD3GglqokZmtDmm8RZ8oXSLdKnjB9TK0ymfk/GnFZMgHqX/I5bc86shi
+         UERZQKyw/wriAOZ1rJjhweJPlpxmI3FBaNaUnPF3uZ2CY4uoZzi7oaOBh2/hTpwh6TQ6
+         bMzAbFdl1cdIt/HvLa9/qNZMwoKIc1nFpIGrk7M8axkPDtngGT2R7DNlUgd7p/UYp2c/
+         UtRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=eOdq8Hu6igUnwgJC6ijMcGO8XX2Wgr8N1NgWmkUqIi0=;
-        b=bf0w+dFtAuVPwuatuOkC+BEWI4g9t2vQADhc2LwKRyGYnNwKlsriFbc5mMkl6pRnps
-         jUG/TmYSCz3wZcrRjqWkQYyhxU1fMdU32zQKywC/WAjQZ706j0NWw6rIXzhWmwGCamDB
-         digOGPdQBJo7gOdjpneIMGkGc/Q7+HWRqWBxcwrSobpOwzDXzbYWStbUglJUoqaj4ehn
-         reznP8odhOYUd0Jn3sA66wdYssyg+F5dNEPTgLYqFQ73YOdB1jZjMWUPL0P6FQPCJ+mU
-         8cESC/EcQz5P8/dwLp6sJIJOlVw/Egd+PDQai/r/ptM3rVO7qhYEtnokXBEhzEP8UenN
-         5jyw==
-X-Gm-Message-State: APjAAAWDOabTCeFBzjLPdFGyhaBCtPc+B5NyHLgJ6SxF+uPX4WlNaM3x
-        mOcc3aKowDbD0KnuevWxtR+xHT66lgKAKg==
-X-Google-Smtp-Source: APXvYqydZXTIg7xJ23CQfiPJxmqJfmJseGcyxSumUlwv5YUDi6l1hRLoQlzFBxBvvoURhE6KrYUFCw==
-X-Received: by 2002:ac2:44d5:: with SMTP id d21mr7788722lfm.66.1572806726889;
-        Sun, 03 Nov 2019 10:45:26 -0800 (PST)
-Received: from wasted.cogentembedded.com ([2a00:1fa0:47a:43f6:66fd:82d0:1ef5:f513])
-        by smtp.gmail.com with ESMTPSA id d16sm6152522ljh.74.2019.11.03.10.45.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 03 Nov 2019 10:45:26 -0800 (PST)
-Subject: Re: [net v2 4/4] net: sgi: ioc3-eth: fix setting NETIF_F_HIGHDMA
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-mips@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>
-References: <20191103103433.26826-1-tbogendoerfer@suse.de>
- <20191103103433.26826-4-tbogendoerfer@suse.de>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <fdff4eb0-06e0-28e0-2398-2c0bdc3079a1@cogentembedded.com>
-Date:   Sun, 3 Nov 2019 21:45:24 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=XyGGVrbv4a6h6K5gbmaJQQgfer/cT+wv7vCkdoFz5lQ=;
+        b=IX0ISapHa8xJnUIf8DN8SLK6/aKg7XgF4OUEEQc4Ky+XP8VPj5UonrjHwXFdMafL/l
+         zf/XEKFkYfka9t8qLT3hadsBaRZ5NsfCZfahax12wbG45TTV/ADlfwlf6E60+AaFfrht
+         InyEVFAS58xGGJN8nnBWY2+8Kzl+PGzHpvJAZGHhLLp2+xaO/5DcR6a/ZRB0x5zI37T3
+         qNPURvxGxWlsjqQWnEti43v1bQWMyGw3b6dW3wB3mk8yfEk0UNikNFp4V05s3MWPHlc3
+         Ny58GQB+THsk+v4l6RLaIaqZ1eW33rJyy2B1c9VxmDta7/KXlN2tKaXq9RKtFOCufjQz
+         boWA==
+X-Gm-Message-State: APjAAAVCBnfVZIioSDgqQ0TcVCUr+9f2PpFwf4BEGppW8fzVaNfHW3ky
+        LC1fkMt3mukLmsLxcM5byTI=
+X-Google-Smtp-Source: APXvYqxS6vbR4DzV0yKCq+gutaNSZBIlk16NeGiZ4ujxKAF+6efSmiG4HS/wg+0LzVVPV8mHBu7xAA==
+X-Received: by 2002:a17:90a:1a56:: with SMTP id 22mr30858671pjl.100.1572807232515;
+        Sun, 03 Nov 2019 10:53:52 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id b17sm14771697pfr.17.2019.11.03.10.53.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Nov 2019 10:53:51 -0800 (PST)
+Subject: Re: ping6 packets high probability loss occurs by the default
+ firewalld rule(rpfilter invert) with low traffic generated by iperf
+To:     hujunwei <hujunwei4@huawei.com>, dsahern@gmail.com,
+        davem@davemloft.net, kafai@fb.com, weiwan@google.com
+Cc:     netdev@vger.kernel.org, wangxiaogang3@huawei.com,
+        xuhanbing@huawei.com
+References: <96ac86f8-eb74-f3fc-ab23-5a97603fac82@huawei.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8f66b92f-5068-f9a5-0d28-0db075c3c07e@gmail.com>
+Date:   Sun, 3 Nov 2019 10:53:50 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191103103433.26826-4-tbogendoerfer@suse.de>
+In-Reply-To: <96ac86f8-eb74-f3fc-ab23-5a97603fac82@huawei.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/03/2019 01:34 PM, Thomas Bogendoerfer wrote:
 
-> From: Christoph Hellwig <hch@lst.de>
+
+On 11/3/19 1:32 AM, hujunwei wrote:
 > 
-> Set NETIF_F_HIGHDMA together with the NETIF_F_IP_CSUM flag insted of
-
-   Instead. :-)
-
-> letting the second assignment overwrite it.  Probably doesn't matter
-> in practice as none of the systems a IOC3 is usually found in has
-
-   s/a/an/ (before IOC3).
-
-> highmem to start with.
+> Afer debugging, I find that packet drop because system can't alloc ipv6 dst. when dst->pcpuc_entries exceed gc_thresh in dst_alloc() which called by rpfilter_lookup_reverse6().
+> When I increase gc_thresh, packets loss decreased, but I think it is unreasonable to lose packets by default firewalld rule with low traffic.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-   Your sign-off is also needed, even if you just post the other's
-patches.
 
-[...]
+By how much have you increased gc_thresh ?
 
-MBR, Sergei
+I wonder if you are not hit by RCU being unable to drain its queue fast enough.
+
+Could you try backporting :
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cfcdef5e30469f3f2d6786ad35fc3fdef2a3833f
+
+But the default gc_thresh of 1024 might be too small for this patch
+to make any difference, since (1024 >> 7) is 8 
+
+
+
