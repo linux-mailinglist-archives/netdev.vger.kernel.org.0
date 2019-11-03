@@ -2,101 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAA62ED466
-	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 20:42:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7718BED474
+	for <lists+netdev@lfdr.de>; Sun,  3 Nov 2019 20:53:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728100AbfKCTmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 14:42:11 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:37543 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728073AbfKCTmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 14:42:11 -0500
-Received: by mail-io1-f69.google.com with SMTP id u13so5096194iob.4
-        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 11:42:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=awQhjle+FaLC9uUjFXzhNsJ221l57a1RcSqWPFMPa5s=;
-        b=LsOgY/Q64bwofnmQE+xels4Avz7YPSVhnXCtMJmOSFfdtVytqedJgNFk15Y8jPw2ea
-         2pN/ILbbd6USZJY429CVVTQHVolikEWILuZLLJYmL+13ljLEo3eRc3VwYVFRIvXrfIY9
-         CMXxPBjGScH7zNJAArOTFBMv7o4dzPVajGy4uAWSZEHx7ZvaOsC3kH9wmN8Q07j9CjNV
-         dD/rWQu9eWojLgusYpxIr+wvKq3aTix1K4K1W4eP3WUQQRU38x+sELuGpDtS7I2GZYu+
-         kF6sJjxM5ThFYB9mfV3Ft5LS37eEYzVYNr1KTYJRjOqpXE6KStGVnaj47M+BUP8PeQ4u
-         26Yw==
-X-Gm-Message-State: APjAAAX9jVIyKOQ27qi33UFfmeu7ldxSBsIaFPQUIqDvFl0eeF4Zthqu
-        T3VeFCJ1P58ornRdbs3CTr6rpk56WSMHP22V2tSPgC0HBjVk
-X-Google-Smtp-Source: APXvYqxryy7TADqCTPAy7/I6C1Oi4J/Pvvl+29fRoQrDj0BQ0G2e8rUupbdtQigNWgrMFm2zryoD/seFOm/rFy8t9pn+Z3OpQTHr
+        id S1728173AbfKCTxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 14:53:45 -0500
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:9104 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727343AbfKCTxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 14:53:44 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dbf30480000>; Sun, 03 Nov 2019 11:53:45 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Sun, 03 Nov 2019 11:53:38 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Sun, 03 Nov 2019 11:53:38 -0800
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 3 Nov
+ 2019 19:53:37 +0000
+Subject: Re: [PATCH 19/19] Documentation/vm: add pin_user_pages.rst
+To:     Andrew Morton <akpm@linux-foundation.org>
+CC:     Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-20-jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <58d3ef87-85ef-a69d-5cf7-1719ff356048@nvidia.com>
+Date:   Sun, 3 Nov 2019 11:53:37 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a92:8459:: with SMTP id l86mr25301931ild.236.1572810130173;
- Sun, 03 Nov 2019 11:42:10 -0800 (PST)
-Date:   Sun, 03 Nov 2019 11:42:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001bb91805967665d9@google.com>
-Subject: memory leak in smc_create
-From:   syzbot <syzbot+4b73ad6fc767e576e275@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kgraul@linux.ibm.com,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        ubraun@linux.ibm.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20191030224930.3990755-20-jhubbard@nvidia.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1572810825; bh=rTG1L9aHJoAtL42CYzuRVvyOXz7jlR1h5ExQz/00LXg=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=hz45cfuI6ZB24IXq0tlVG+4gOOw0rO1aR3a1v+mNE3URSP536c/QI/nw4iVi4Q3Fg
+         ZvhfjRg3c8U4Zeed5IN0S8La0/yhKPqXLcaka8zujsYCnTFzskkYWmX6ZMKm85uc53
+         903Xo+ojBBu648JazllTkreHad3wmqcM3sQfIPNK3XPWIubatS+4uPpiaSake+maws
+         O3mb+7lTk0b/qWmINewSdXIPlnBwUrlkcxoUQTGi1jJWPWnSrL74fzVKeEWjMvAjbH
+         5wXYgJG8qyFZYCSM/zx8jBY5FMvGDHZIQbt9J9oHql6kjp+O+lMMcuF1F8/mAcyFV4
+         Yo4Vz3wx3lQSQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 10/30/19 3:49 PM, John Hubbard wrote:
+...
+> +* struct page may not be increased in size for this, and all fields are already
+> +  used.
+> +
+> +* Given the above, we can overload the page->_refcount field by using, sort of,
+> +  the upper bits in that field for a dma-pinned count. "Sort of", means that,
+> +  rather than dividing page->_refcount into bit fields, we simple add a medium-
+> +  large value (GUP_PIN_COUNTING_BIAS, initially chosen to be 1024: 10 bits) to
+> +  page->_refcount. This provides fuzzy behavior: if a page has get_page() called
+> +  on it 1024 times, then it will appear to have a single dma-pinned count.
+> +  And again, that's acceptable.
+> +
+> +This also leads to limitations: there are only 32-10==22 bits available for a
+> +counter that increments 10 bits at a time.
+> +
 
-syzbot found the following crash on:
+The above claim is just a "bit" too optimistic, by one bit: page->_refcount, being 
+an atomic_t which uses a signed int (and we use the sign bit to check for overflow),
+only has 31 total bits available for actual counting, not 32.
 
-HEAD commit:    9d234505 Merge tag 'hwmon-for-v5.4-rc6' of git://git.kerne..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=10c4e4ece00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9bbb8fba7651600b
-dashboard link: https://syzkaller.appspot.com/bug?extid=4b73ad6fc767e576e275
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16f6dc68e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=124c8934e00000
+I'll adjust the documentation in v2, to account for this.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4b73ad6fc767e576e275@syzkaller.appspotmail.com
+thanks,
 
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff888121495640 (size 1376):
-   comm "syz-executor038", pid 6906, jiffies 4294945610 (age 13.070s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     2b 00 07 40 00 00 00 00 00 00 00 00 00 00 00 00  +..@............
-   backtrace:
-     [<00000000930d5c59>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000930d5c59>] slab_post_alloc_hook mm/slab.h:586 [inline]
-     [<00000000930d5c59>] slab_alloc mm/slab.c:3319 [inline]
-     [<00000000930d5c59>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
-     [<00000000249c491d>] sk_prot_alloc+0x41/0x170 net/core/sock.c:1599
-     [<0000000035a03310>] sk_alloc+0x35/0x2f0 net/core/sock.c:1659
-     [<00000000e79e3c49>] smc_sock_alloc+0x4a/0x1a0 net/smc/af_smc.c:222
-     [<0000000079a84e95>] smc_create+0x6b/0x160 net/smc/af_smc.c:1979
-     [<00000000607f3b4e>] __sock_create+0x164/0x250 net/socket.c:1418
-     [<00000000fbb3e501>] sock_create net/socket.c:1469 [inline]
-     [<00000000fbb3e501>] __sys_socket+0x69/0x110 net/socket.c:1511
-     [<00000000d697ec9a>] __do_sys_socket net/socket.c:1520 [inline]
-     [<00000000d697ec9a>] __se_sys_socket net/socket.c:1518 [inline]
-     [<00000000d697ec9a>] __x64_sys_socket+0x1e/0x30 net/socket.c:1518
-     [<00000000dcb4ba7a>] do_syscall_64+0x73/0x1f0  
-arch/x86/entry/common.c:290
-     [<000000009386b4f0>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+John Hubbard
+NVIDIA
 
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
