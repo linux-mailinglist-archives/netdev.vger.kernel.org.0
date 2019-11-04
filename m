@@ -2,541 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA91AEE7B3
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 19:53:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5514EE7C4
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 19:57:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728898AbfKDSw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 13:52:58 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27157 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728602AbfKDSw6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 13:52:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572893575;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vhvFv/gKEXA1cmin4yO0xx1/Gf0U1DoUV0cjNAwwQns=;
-        b=AwPUH1Gw9pb2VEuimGsZm+pjX1CrtX1/7Ed6HwMaKy/ZPUFZ0zSVYAO0Z54UIpDwl8H69t
-        gWhD+1ZLensUPVPHSFxB9TOGSe88J7eC6ZI4L0LyPYTrr9ONpXlB7K7kmlv9RccXfesO2B
-        tzG2CoqH/FEbnYvo+xskH7FTRFMnj4E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-106-BYegrK4JPIWXqhL6bCqv8A-1; Mon, 04 Nov 2019 13:52:51 -0500
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0F2011800D53;
-        Mon,  4 Nov 2019 18:52:47 +0000 (UTC)
-Received: from redhat.com (unknown [10.20.6.178])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1977960878;
-        Mon,  4 Nov 2019 18:52:40 +0000 (UTC)
-Date:   Mon, 4 Nov 2019 13:52:38 -0500
-From:   Jerome Glisse <jglisse@redhat.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 12/18] mm/gup: track FOLL_PIN pages
-Message-ID: <20191104185238.GG5134@redhat.com>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-13-jhubbard@nvidia.com>
-MIME-Version: 1.0
-In-Reply-To: <20191103211813.213227-13-jhubbard@nvidia.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: BYegrK4JPIWXqhL6bCqv8A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+        id S1728965AbfKDS5D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 13:57:03 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:45454 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728332AbfKDS5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 13:57:03 -0500
+Received: by mail-io1-f68.google.com with SMTP id s17so19665179iol.12;
+        Mon, 04 Nov 2019 10:57:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=/RXxzsDCwFc2TTsbPua2KtLfYTWrGGbLVo64vuwyBlU=;
+        b=K8gH5v/kMEfQ/OObUPAW4PfwFg2NW0em5bBrMBG9ivbIiZokgmsXyEoq/8dU+gAyqB
+         PB6p7lP3qYpgYZcEGcb35wzAILjDKwrOmzyMLw+1kzt6ydcfKFySYJ13Xpt90wb5JE5z
+         JojoyxWzMVTdhmSgChNpg4soP8bgT/axMePKetOKOr6qGnaiS1bvQnQUR5/191WW8T0Z
+         Hj4eRw5/WJNZ2FiE31IskGkbTt/EoqITRDJ5+RAFpnPHsh5zlgqnSs9m6HR6bfvqGVSZ
+         ue4VQiLtZEi+EqVqroCpJEbdN+gK4x7y7rtzaIe81Y6nllTA9B/d4FObYptwTjaRZWyW
+         vq6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=/RXxzsDCwFc2TTsbPua2KtLfYTWrGGbLVo64vuwyBlU=;
+        b=cAnsEoPxI2rakKM6XY6H3YBeqYiOs49pK3dYHrvXqQp/swLbo3AS52EQU04c03seXh
+         H1dXoFDYAncJfmUcQnp4Xd3K+TQ4V4wLXWNl30JJ2tb1W8Wog1EO20IZxsdcNBjZnHp+
+         2sjev7MJKzSThEc6hwCcUVJftdUI4xEGj2vj9+SCiqzAL8vck+0AP2iWrEUQb8kImvIM
+         jkXoKjQW9f9gROQZRK2o7kpmeN0jkXfLL3BGNQysFs6DlA4DDxv9MLVJqWTHN2qyVpF6
+         VsxSgjn6J6b6vsSmqHESrPcTMkrXijxt7SJuVuoDIm82GkdmFFkCn/AHDFw5rSqtsEcx
+         SZEQ==
+X-Gm-Message-State: APjAAAUiTtM4fBq4hB2uxFmDqdgoJlvRVKuKiwadguo+ouLYXvaKsqnC
+        Zid0E8LGRvNRVCEFRmGfRi8=
+X-Google-Smtp-Source: APXvYqwoy5U8cO28Lj1t3HLIhNU0rrk+uwQ8pASQAsYSybFxecKs/ZkfCI3YszftuseFRp+RoWQNZQ==
+X-Received: by 2002:a6b:b486:: with SMTP id d128mr3266268iof.47.1572893822088;
+        Mon, 04 Nov 2019 10:57:02 -0800 (PST)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id u21sm2580890ila.41.2019.11.04.10.56.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 10:57:01 -0800 (PST)
+Date:   Mon, 04 Nov 2019 10:56:52 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, borisp@mellanox.com,
+        aviadye@mellanox.com, daniel@iogearbox.net,
+        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
+        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
+        Eric Biggers <ebiggers@kernel.org>,
+        herbert@gondor.apana.org.au, glider@google.com,
+        linux-crypto@vger.kernel.org
+Message-ID: <5dc074744c05c_47f72aeaf1bf65c456@john-XPS-13-9370.notmuch>
+In-Reply-To: <20191101125139.77eb57aa@cakuba.netronome.com>
+References: <20191030160542.30295-1-jakub.kicinski@netronome.com>
+ <5dbb5ac1c208d_4c722b0ec06125c0cc@john-XPS-13-9370.notmuch>
+ <20191031152444.773c183b@cakuba.netronome.com>
+ <5dbbb83d61d0c_46342ae580f765bc78@john-XPS-13-9370.notmuch>
+ <20191031215444.68a12dfe@cakuba.netronome.com>
+ <5dbc48ac3a8cc_e4e2b12b10265b8a1@john-XPS-13-9370.notmuch>
+ <20191101102238.7f56cb84@cakuba.netronome.com>
+ <20191101125139.77eb57aa@cakuba.netronome.com>
+Subject: Re: [oss-drivers] Re: [PATCH net] net/tls: fix sk_msg trim on
+ fallback to copy mode
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 03, 2019 at 01:18:07PM -0800, John Hubbard wrote:
-> Add tracking of pages that were pinned via FOLL_PIN.
->=20
-> As mentioned in the FOLL_PIN documentation, callers who effectively set
-> FOLL_PIN are required to ultimately free such pages via put_user_page().
-> The effect is similar to FOLL_GET, and may be thought of as "FOLL_GET
-> for DIO and/or RDMA use".
->=20
-> Pages that have been pinned via FOLL_PIN are identifiable via a
-> new function call:
->=20
->    bool page_dma_pinned(struct page *page);
->=20
-> What to do in response to encountering such a page, is left to later
-> patchsets. There is discussion about this in [1].
->=20
-> This also changes a BUG_ON(), to a WARN_ON(), in follow_page_mask().
->=20
-> This also has a couple of trivial, non-functional change fixes to
-> try_get_compound_head(). That function got moved to the top of the
-> file.
-
-Maybe split that as a separate trivial patch.
-
->=20
-> This includes the following fix from Ira Weiny:
->=20
-> DAX requires detection of a page crossing to a ref count of 1.  Fix this
-> for GUP pages by introducing put_devmap_managed_user_page() which
-> accounts for GUP_PIN_COUNTING_BIAS now used by GUP.
-
-Please do the put_devmap_managed_page() changes in a separate
-patch, it would be a lot easier to follow, also on that front
-see comments below.
-
->=20
-> [1] https://lwn.net/Articles/784574/ "Some slow progress on
-> get_user_pages()"
->=20
-> Suggested-by: Jan Kara <jack@suse.cz>
-> Suggested-by: J=E9r=F4me Glisse <jglisse@redhat.com>
-> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+Jakub Kicinski wrote:
+> On Fri, 1 Nov 2019 10:22:38 -0700, Jakub Kicinski wrote:
+> > > > +		msg->sg.copybreak = 0;
+> > > > +	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >
+> > > > +		   sk_msg_iter_dist(msg->sg.end, msg->sg.curr)) {
+> > > > +		sk_msg_iter_var_prev(i);    
+> > > 
+> > > I suspect with small update to dist logic the special case could also
+> > > be dropped here. But I have a preference for my example above at the
+> > > moment. Just getting coffee now so will think on it though.  
+> > 
+> > Oka, I like the dist thing, I thought that's where you were going in
+> > your first email :)
+> > 
+> > I need to do some more admin, and then I'll probably write a unit test
+> > for this code (use space version).. So we can test either patch with it.
+> 
+> Attaching my "unit test", you should be able to just replace
+> sk_msg_trim() with yours and re-run. That said my understanding of the
+> expected geometry of the buffer may not be correct :)
+> 
+> The patch I posted yesterday, with the small adjustment to set curr to
+> start on empty message passes that test, here it is again:
+> 
+> ----->8-----
+> 
+> From 953df5bc0992e31a2c7863ea8b8e490ba7a07356 Mon Sep 17 00:00:00 2001
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date: Tue, 29 Oct 2019 20:20:49 -0700
+> Subject: [PATCH net] net/tls: fix sk_msg trim on fallback to copy mode
+> 
+> sk_msg_trim() tries to only update curr pointer if it falls into
+> the trimmed region. The logic, however, does not take into the
+> account pointer wrapping that sk_msg_iter_var_prev() does nor
+> (as John points out) the fact that msg->sg is a ring buffer.
+> 
+> This means that when the message was trimmed completely, the new
+> curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
+> neither smaller than any other value, nor would it actually be
+> correct.
+> 
+> Special case the trimming to 0 length a little bit and rework
+> the comparison between curr and end to take into account wrapping.
+> 
+> This bug caused the TLS code to not copy all of the message, if
+> zero copy filled in fewer sg entries than memcopy would need.
+> 
+> Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
+> 
+> v2:
+>  - take into account that msg->sg is a ring buffer (John).
+> 
+> Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
+> Suggested-by: John Fastabend <john.fastabend@gmail.com>
+> Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
+> Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 > ---
->  include/linux/mm.h       |  80 +++++++++++----
->  include/linux/mmzone.h   |   2 +
->  include/linux/page_ref.h |  10 ++
->  mm/gup.c                 | 213 +++++++++++++++++++++++++++++++--------
->  mm/huge_memory.c         |  32 +++++-
->  mm/hugetlb.c             |  28 ++++-
->  mm/memremap.c            |   4 +-
->  mm/vmstat.c              |   2 +
->  8 files changed, 300 insertions(+), 71 deletions(-)
->=20
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index cdfb6fedb271..03b3600843b7 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -972,9 +972,10 @@ static inline bool is_zone_device_page(const struct =
-page *page)
->  #endif
-> =20
->  #ifdef CONFIG_DEV_PAGEMAP_OPS
-> -void __put_devmap_managed_page(struct page *page);
-> +void __put_devmap_managed_page(struct page *page, int count);
->  DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
-> -static inline bool put_devmap_managed_page(struct page *page)
-> +
-> +static inline bool page_is_devmap_managed(struct page *page)
->  {
->  =09if (!static_branch_unlikely(&devmap_managed_key))
->  =09=09return false;
-> @@ -983,7 +984,6 @@ static inline bool put_devmap_managed_page(struct pag=
-e *page)
->  =09switch (page->pgmap->type) {
->  =09case MEMORY_DEVICE_PRIVATE:
->  =09case MEMORY_DEVICE_FS_DAX:
-> -=09=09__put_devmap_managed_page(page);
->  =09=09return true;
->  =09default:
->  =09=09break;
-> @@ -991,6 +991,19 @@ static inline bool put_devmap_managed_page(struct pa=
-ge *page)
->  =09return false;
+>  include/linux/skmsg.h |  9 ++++++---
+>  net/core/skmsg.c      | 20 +++++++++++++++-----
+>  2 files changed, 21 insertions(+), 8 deletions(-)
+> 
+> diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+> index e4b3fb4bb77c..ce7055259877 100644
+> --- a/include/linux/skmsg.h
+> +++ b/include/linux/skmsg.h
+> @@ -139,6 +139,11 @@ static inline void sk_msg_apply_bytes(struct sk_psock *psock, u32 bytes)
+>  	}
 >  }
-> =20
-> +static inline bool put_devmap_managed_page(struct page *page)
+>  
+> +static inline u32 sk_msg_iter_dist(u32 start, u32 end)
 > +{
-> +=09bool is_devmap =3D page_is_devmap_managed(page);
-> +
-> +=09if (is_devmap) {
-> +=09=09int count =3D page_ref_dec_return(page);
-> +
-> +=09=09__put_devmap_managed_page(page, count);
-> +=09}
-> +
-> +=09return is_devmap;
-> +}
-
-I think the __put_devmap_managed_page() should be rename
-to free_devmap_managed_page() and that the count !=3D 1
-case move to this inline function ie:
-
-static inline bool put_devmap_managed_page(struct page *page)
-{
-=09bool is_devmap =3D page_is_devmap_managed(page);
-
-=09if (is_devmap) {
-=09=09int count =3D page_ref_dec_return(page);
-
-=09=09/*
-=09=09 * If refcount is 1 then page is freed and refcount is stable as nobo=
-dy
-=09=09 * holds a reference on the page.
-=09=09 */
-=09=09if (count =3D=3D 1)
-=09=09=09free_devmap_managed_page(page, count);
-=09=09else if (!count)
-=09=09=09__put_page(page);
-=09}
-
-=09return is_devmap;
-}
-
-
-> +
->  #else /* CONFIG_DEV_PAGEMAP_OPS */
->  static inline bool put_devmap_managed_page(struct page *page)
->  {
-> @@ -1038,6 +1051,8 @@ static inline __must_check bool try_get_page(struct=
- page *page)
->  =09return true;
->  }
-> =20
-> +__must_check bool user_page_ref_inc(struct page *page);
-> +
-
-What about having it as an inline here as it is pretty small.
-
-
->  static inline void put_page(struct page *page)
->  {
->  =09page =3D compound_head(page);
-> @@ -1055,31 +1070,56 @@ static inline void put_page(struct page *page)
->  =09=09__put_page(page);
->  }
-> =20
-> -/**
-> - * put_user_page() - release a gup-pinned page
-> - * @page:            pointer to page to be released
-> +/*
-> + * GUP_PIN_COUNTING_BIAS, and the associated functions that use it, over=
-load
-> + * the page's refcount so that two separate items are tracked: the origi=
-nal page
-> + * reference count, and also a new count of how many get_user_pages() ca=
-lls were
-> + * made against the page. ("gup-pinned" is another term for the latter).
-> + *
-> + * With this scheme, get_user_pages() becomes special: such pages are ma=
-rked
-> + * as distinct from normal pages. As such, the new put_user_page() call =
-(and
-> + * its variants) must be used in order to release gup-pinned pages.
-> + *
-> + * Choice of value:
->   *
-> - * Pages that were pinned via get_user_pages*() must be released via
-> - * either put_user_page(), or one of the put_user_pages*() routines
-> - * below. This is so that eventually, pages that are pinned via
-> - * get_user_pages*() can be separately tracked and uniquely handled. In
-> - * particular, interactions with RDMA and filesystems need special
-> - * handling.
-> + * By making GUP_PIN_COUNTING_BIAS a power of two, debugging of page ref=
-erence
-> + * counts with respect to get_user_pages() and put_user_page() becomes s=
-impler,
-> + * due to the fact that adding an even power of two to the page refcount=
- has
-> + * the effect of using only the upper N bits, for the code that counts u=
-p using
-> + * the bias value. This means that the lower bits are left for the exclu=
-sive
-> + * use of the original code that increments and decrements by one (or at=
- least,
-> + * by much smaller values than the bias value).
->   *
-> - * put_user_page() and put_page() are not interchangeable, despite this =
-early
-> - * implementation that makes them look the same. put_user_page() calls m=
-ust
-> - * be perfectly matched up with get_user_page() calls.
-> + * Of course, once the lower bits overflow into the upper bits (and this=
- is
-> + * OK, because subtraction recovers the original values), then visual in=
-spection
-> + * no longer suffices to directly view the separate counts. However, for=
- normal
-> + * applications that don't have huge page reference counts, this won't b=
-e an
-> + * issue.
-> + *
-> + * Locking: the lockless algorithm described in page_cache_get_speculati=
-ve()
-> + * and page_cache_gup_pin_speculative() provides safe operation for
-> + * get_user_pages and page_mkclean and other calls that race to set up p=
-age
-> + * table entries.
->   */
-> -static inline void put_user_page(struct page *page)
-> -{
-> -=09put_page(page);
-> -}
-> +#define GUP_PIN_COUNTING_BIAS (1UL << 10)
-> =20
-> +void put_user_page(struct page *page);
->  void put_user_pages_dirty_lock(struct page **pages, unsigned long npages=
-,
->  =09=09=09       bool make_dirty);
-> -
->  void put_user_pages(struct page **pages, unsigned long npages);
-> =20
-> +/**
-> + * page_dma_pinned() - report if a page is pinned by a call to pin_user_=
-pages*()
-> + * or pin_longterm_pages*()
-> + * @page:=09pointer to page to be queried.
-> + * @Return:=09True, if it is likely that the page has been "dma-pinned".
-> + *=09=09False, if the page is definitely not dma-pinned.
-> + */
-
-Maybe add a small comment about wrap around :)
-
-> +static inline bool page_dma_pinned(struct page *page)
-> +{
-> +=09return (page_ref_count(compound_head(page))) >=3D GUP_PIN_COUNTING_BI=
-AS;
+> +	return end >= start ? end - start : end + (MAX_MSG_FRAGS - start);
 > +}
 > +
->  #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
->  #define SECTION_IN_PAGE_FLAGS
->  #endif
-
-[...]
-
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 1aea48427879..c9727e65fad3 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-
-[...]
-
-> @@ -1930,12 +2028,20 @@ static int __gup_device_huge(unsigned long pfn, u=
-nsigned long addr,
-> =20
->  =09=09pgmap =3D get_dev_pagemap(pfn, pgmap);
->  =09=09if (unlikely(!pgmap)) {
-> -=09=09=09undo_dev_pagemap(nr, nr_start, pages);
-> +=09=09=09undo_dev_pagemap(nr, nr_start, flags, pages);
->  =09=09=09return 0;
->  =09=09}
->  =09=09SetPageReferenced(page);
->  =09=09pages[*nr] =3D page;
-> -=09=09get_page(page);
-> +
-> +=09=09if (flags & FOLL_PIN) {
-> +=09=09=09if (unlikely(!user_page_ref_inc(page))) {
-> +=09=09=09=09undo_dev_pagemap(nr, nr_start, flags, pages);
-> +=09=09=09=09return 0;
-> +=09=09=09}
-
-Maybe add a comment about a case that should never happens ie
-user_page_ref_inc() fails after the second iteration of the
-loop as it would be broken and a bug to call undo_dev_pagemap()
-after the first iteration of that loop.
-
-Also i believe that this should never happens as if first
-iteration succeed than __page_cache_add_speculative() will
-succeed for all the iterations.
-
-Note that the pgmap case above follows that too ie the call to
-get_dev_pagemap() can only fail on first iteration of the loop,
-well i assume you can never have a huge device page that span
-different pgmap ie different devices (which is a reasonable
-assumption). So maybe this code needs fixing ie :
-
-=09=09pgmap =3D get_dev_pagemap(pfn, pgmap);
-=09=09if (unlikely(!pgmap))
-=09=09=09return 0;
-
-
-> +=09=09} else
-> +=09=09=09get_page(page);
-> +
->  =09=09(*nr)++;
->  =09=09pfn++;
->  =09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-
-[...]
-
-> @@ -2409,7 +2540,7 @@ static int internal_get_user_pages_fast(unsigned lo=
-ng start, int nr_pages,
->  =09unsigned long addr, len, end;
->  =09int nr =3D 0, ret =3D 0;
-> =20
-> -=09if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM)))
-> +=09if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM | FOLL_PIN)=
-))
-
-Maybe add a comments to explain, something like:
-
-/*
- * The only flags allowed here are: FOLL_WRITE, FOLL_LONGTERM, FOLL_PIN
- *
- * Note that get_user_pages_fast() imply FOLL_GET flag by default but
- * callers can over-ride this default to pin case by setting FOLL_PIN.
- */
-
->  =09=09return -EINVAL;
-> =20
->  =09start =3D untagged_addr(start) & PAGE_MASK;
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index 13cc93785006..66bf4c8b88f1 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-
-[...]
-
-> @@ -968,7 +973,12 @@ struct page *follow_devmap_pmd(struct vm_area_struct=
- *vma, unsigned long addr,
->  =09if (!*pgmap)
->  =09=09return ERR_PTR(-EFAULT);
->  =09page =3D pfn_to_page(pfn);
-> -=09get_page(page);
-> +
-> +=09if (flags & FOLL_GET)
-> +=09=09get_page(page);
-> +=09else if (flags & FOLL_PIN)
-> +=09=09if (unlikely(!user_page_ref_inc(page)))
-> +=09=09=09page =3D ERR_PTR(-ENOMEM);
-
-While i agree that user_page_ref_inc() (ie page_cache_add_speculative())
-should never fails here as we are holding the pmd lock and thus no one
-can unmap the pmd and free the page it points to. I believe you should
-return -EFAULT like for the pgmap and not -ENOMEM as the pgmap should
-not fail either for the same reason. Thus it would be better to have
-consistent error. Maybe also add a comments explaining that it should
-not fail here.
-
-> =20
->  =09return page;
+>  #define sk_msg_iter_var_prev(var)			\
+>  	do {						\
+>  		if (var == 0)				\
+> @@ -198,9 +203,7 @@ static inline u32 sk_msg_elem_used(const struct sk_msg *msg)
+>  	if (sk_msg_full(msg))
+>  		return MAX_MSG_FRAGS;
+>  
+> -	return msg->sg.end >= msg->sg.start ?
+> -		msg->sg.end - msg->sg.start :
+> -		msg->sg.end + (MAX_MSG_FRAGS - msg->sg.start);
+> +	return sk_msg_iter_dist(msg->sg.start, msg->sg.end);
 >  }
 
-[...]
+I think its nice to pull this into a helper so I'm ok with also using the
+dist below, except for one comment below.
 
-> @@ -1100,7 +1115,7 @@ struct page *follow_devmap_pud(struct vm_area_struc=
-t *vma, unsigned long addr,
->  =09 * device mapped pages can only be returned if the
->  =09 * caller will manage the page reference count.
->  =09 */
-> -=09if (!(flags & FOLL_GET))
-> +=09if (!(flags & (FOLL_GET | FOLL_PIN)))
->  =09=09return ERR_PTR(-EEXIST);
-
-Maybe add a comment that FOLL_GET or FOLL_PIN must be set.
-
->  =09pfn +=3D (addr & ~PUD_MASK) >> PAGE_SHIFT;
-> @@ -1108,7 +1123,12 @@ struct page *follow_devmap_pud(struct vm_area_stru=
-ct *vma, unsigned long addr,
->  =09if (!*pgmap)
->  =09=09return ERR_PTR(-EFAULT);
->  =09page =3D pfn_to_page(pfn);
-> -=09get_page(page);
-> +
-> +=09if (flags & FOLL_GET)
-> +=09=09get_page(page);
-> +=09else if (flags & FOLL_PIN)
-> +=09=09if (unlikely(!user_page_ref_inc(page)))
-> +=09=09=09page =3D ERR_PTR(-ENOMEM);
-
-Same as for follow_devmap_pmd() see above.
-
-> =20
->  =09return page;
->  }
-> @@ -1522,8 +1542,12 @@ struct page *follow_trans_huge_pmd(struct vm_area_=
-struct *vma,
->  skip_mlock:
->  =09page +=3D (addr & ~HPAGE_PMD_MASK) >> PAGE_SHIFT;
->  =09VM_BUG_ON_PAGE(!PageCompound(page) && !is_zone_device_page(page), pag=
-e);
-> +
->  =09if (flags & FOLL_GET)
->  =09=09get_page(page);
-> +=09else if (flags & FOLL_PIN)
-> +=09=09if (unlikely(!user_page_ref_inc(page)))
-> +=09=09=09page =3D NULL;
-
-This should not fail either as we are holding the pmd lock maybe add
-a comment. Dunno if we want a WARN() or something to catch this
-degenerate case, or dump the page.
-
-> =20
+>  
+>  static inline struct scatterlist *sk_msg_elem(struct sk_msg *msg, int which)
+> diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+> index cf390e0aa73d..f87fde3a846c 100644
+> --- a/net/core/skmsg.c
+> +++ b/net/core/skmsg.c
+> @@ -270,18 +270,28 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
+>  
+>  	msg->sg.data[i].length -= trim;
+>  	sk_mem_uncharge(sk, trim);
+> +	/* Adjust copybreak if it falls into the trimmed part of last buf */
+> +	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
+> +		msg->sg.copybreak = msg->sg.data[i].length;
 >  out:
->  =09return page;
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index b45a95363a84..da335b1cd798 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -4462,7 +4462,17 @@ long follow_hugetlb_page(struct mm_struct *mm, str=
-uct vm_area_struct *vma,
->  same_page:
->  =09=09if (pages) {
->  =09=09=09pages[i] =3D mem_map_offset(page, pfn_offset);
-> -=09=09=09get_page(pages[i]);
+> -	/* If we trim data before curr pointer update copybreak and current
+> -	 * so that any future copy operations start at new copy location.
+> +	sk_msg_iter_var_next(i);
+> +	msg->sg.end = i;
 > +
-> +=09=09=09if (flags & FOLL_GET)
-> +=09=09=09=09get_page(pages[i]);
-> +=09=09=09else if (flags & FOLL_PIN)
-> +=09=09=09=09if (unlikely(!user_page_ref_inc(pages[i]))) {
-> +=09=09=09=09=09spin_unlock(ptl);
-> +=09=09=09=09=09remainder =3D 0;
-> +=09=09=09=09=09err =3D -ENOMEM;
-> +=09=09=09=09=09WARN_ON_ONCE(1);
-> +=09=09=09=09=09break;
-> +=09=09=09=09}
->  =09=09}
+> +	/* If we trim data a full sg elem before curr pointer update
+> +	 * copybreak and current so that any future copy operations
+> +	 * start at new copy location.
+>  	 * However trimed data that has not yet been used in a copy op
+>  	 * does not require an update.
+>  	 */
+> -	if (msg->sg.curr >= i) {
+> +	if (!msg->sg.size) {
+> +		msg->sg.curr = msg->sg.start;
+> +		msg->sg.copybreak = 0;
+> +	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >
+> +		   sk_msg_iter_dist(msg->sg.end, msg->sg.curr)) {
 
-user_page_ref_inc() should not fail here either because we hold the
-ptl, so the WAR_ON_ONCE() is right but maybe add a comment.
+I'm not seeing how this can work. Taking simple case with start < end
+so normal geometry without wrapping. Let,
 
-> =20
->  =09=09if (vmas)
+ start = 1
+ curr  = 3
+ end   = 4
 
-[...]
+We could trim an index to get,
 
-> @@ -5034,8 +5050,14 @@ follow_huge_pmd(struct mm_struct *mm, unsigned lon=
-g address,
->  =09pte =3D huge_ptep_get((pte_t *)pmd);
->  =09if (pte_present(pte)) {
->  =09=09page =3D pmd_page(*pmd) + ((address & ~PMD_MASK) >> PAGE_SHIFT);
-> +
->  =09=09if (flags & FOLL_GET)
->  =09=09=09get_page(page);
-> +=09=09else if (flags & FOLL_PIN)
-> +=09=09=09if (unlikely(!user_page_ref_inc(page))) {
-> +=09=09=09=09page =3D NULL;
-> +=09=09=09=09goto out;
-> +=09=09=09}
+ start = 1
+  curr = 3
+     i = 3
+   end = 4
 
-This should not fail either (again holding pmd lock), dunno if we want
-a warn or something to catch this degenerate case.
+Then after out: label this would push end up one,
 
->  =09} else {
->  =09=09if (is_hugetlb_entry_migration(pte)) {
->  =09=09=09spin_unlock(ptl);
+ start = 1
+  curr = 3
+     i = 3
+   end = 4
 
-[...]
+But dist(start,curr) = 2 and dist(end, curr) = 1 and we would set curr
+to '3' but clear the copybreak? I think a better comparison would be,
+
+  if (sk_msg_iter_dist(msg->sg.start, i) <
+      sk_msg_iter_dist(msg->sg.start, msg->sg.curr)
+
+To check if 'i' walked past curr so we can reset curr/copybreak?
+
+> +		sk_msg_iter_var_prev(i);
+>  		msg->sg.curr = i;
+>  		msg->sg.copybreak = msg->sg.data[i].length;
+>  	}
+> -	sk_msg_iter_var_next(i);
+> -	msg->sg.end = i;
+>  }
+>  EXPORT_SYMBOL_GPL(sk_msg_trim);
+>  
+> -- 
+> 2.23.0
+> 
+
 
