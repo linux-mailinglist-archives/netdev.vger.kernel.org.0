@@ -2,74 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58A47EE48B
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 17:21:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 253F0EE4A2
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 17:27:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728999AbfKDQVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 11:21:02 -0500
-Received: from smtp.codeaurora.org ([198.145.29.96]:33844 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727989AbfKDQVC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 11:21:02 -0500
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id AE8A160300; Mon,  4 Nov 2019 16:21:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572884461;
-        bh=mAwYNNw6CkSSmB+D5DesrCl5qikS8Btrviv8uSniBiw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=RYthr5rFb1fViuvMm/4B9R0j0qAFTI/Ut4fOf3sk9TFqrTh263EL/tbRbS0e4zT1T
-         oLnn6dQ3+4J/S/fugiA4dLMERpyiO/Fqkmny8lQAbV0sd0o/ulJe+V49c4qweCMeJl
-         1AVQSxZHxoFy0jlmtmNoOhV67R456+Uhux62E9tY=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 174A660300;
-        Mon,  4 Nov 2019 16:20:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1572884460;
-        bh=mAwYNNw6CkSSmB+D5DesrCl5qikS8Btrviv8uSniBiw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=mtvTztmhvQZDJ1BHqKrPMUgw+OjXuX6xk4VIr7zrnutzmGDoFdptWnhqJJOfrZtCH
-         i/AQrLFUzysUqWLzlMn/VX2gxu1YdC7fGc9Z0sAFPfjeGFHvf0I0NW7DCcfbp6Idsh
-         aKzEpRYvE2LqrtHY3u4A47W/fWHYzGedB4kcdNbY=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 174A660300
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     zhong jiang <zhongjiang@huawei.com>
-Cc:     <stas.yakovlev@gmail.com>, <simon.horman@netronome.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 0/2] wireless: remove unneeded variable and return 0
-References: <1572684922-61805-1-git-send-email-zhongjiang@huawei.com>
-Date:   Mon, 04 Nov 2019 18:20:56 +0200
-In-Reply-To: <1572684922-61805-1-git-send-email-zhongjiang@huawei.com> (zhong
-        jiang's message of "Sat, 2 Nov 2019 16:55:20 +0800")
-Message-ID: <87a79b7guv.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729304AbfKDQ1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 11:27:44 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34351 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727838AbfKDQ1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 11:27:44 -0500
+Received: by mail-pf1-f196.google.com with SMTP id n13so806353pff.1
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 08:27:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=rPUO42a0S3qiVkdlSdNuhnVHyjN6QIDCxl8B4rNZLgI=;
+        b=n0+318lLHy8i3t10068qRgumZVCJ+swc3np2Z43/peuQwAxnvNugpJnAYOcW7nC0sc
+         VzIXMzyQqMVHXffiSObiGlkq59eyq2/+rypf74KGiQKxg+aW7eOTTDdN8yJk3v82HJuL
+         F6Kr/S5vaTpoEfcbNhVFGca8SGgEw3ucZpCsshDbNPButxatb27tT0XrDcVWEO1GIAi6
+         dya3TMadvhLEyKMbXyxs7XTqdfuWaMDnMf4gi/S+eHQqw4h1iDjscAjmUPevnTyey87x
+         a1l+BgewG+3exelrG9QSNlbV3ZeVZ/Y8A6CPUBKmJwDe4MS2Vz7Ff9KbfmVxe3hQ+KVg
+         3XVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=rPUO42a0S3qiVkdlSdNuhnVHyjN6QIDCxl8B4rNZLgI=;
+        b=pmVp2/3CGSSejFfQygGhlrCjzBZCVEewIc8POTaoXmvvlWw216m1TDP8nvK3Ul7Wt7
+         Uf/G9TrBB3IM3SZELUC8o4Xgs92q3deB2x38/dQC6doi7v4scXJryWGtz8KrP1RFNqLP
+         oYkZgvrl0tHWWWPq03LBjzdmya8a+6iw5RejuHqrgg98+EWD/jNG1YnOAJSCo5TOr5mu
+         iEjPcejdMnLZ2967EsSG70CbHRO0RaHS5OQg5xVdHBw59lXCJfrEouHcGVrkkNvilOCV
+         G0ELC40MURh5MHp0VTpZU0ggV8REK+i2hWOFVmisDazB0YzOUXAGpR1XT6MdwoviAY0T
+         6l+A==
+X-Gm-Message-State: APjAAAVSoTK1ohBoDLF2pb9gS1MlQ9c511xJEbiaFEd0aT22zpw7zkac
+        tPZ0fFLhPivwZZGpZkkuyuzgcw==
+X-Google-Smtp-Source: APXvYqy6WYrXJYVzaoAEhFLP5e4SmtsVe0ylIbUCsgVmixU7NDvUkX9HJTB4HenAVIsBhnMSyjoAGQ==
+X-Received: by 2002:a63:1b44:: with SMTP id b4mr31452890pgm.421.1572884861939;
+        Mon, 04 Nov 2019 08:27:41 -0800 (PST)
+Received: from cakuba.netronome.com ([2601:646:8e00:e18::4])
+        by smtp.gmail.com with ESMTPSA id o12sm15989330pgl.86.2019.11.04.08.27.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 08:27:41 -0800 (PST)
+Date:   Mon, 4 Nov 2019 08:27:21 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: [PATCH net-next] bpf: re-fix skip write only files in debugfs
+Message-ID: <20191104082721.2c4304e8@cakuba.netronome.com>
+In-Reply-To: <94ba2eebd8d6c48ca6da8626c9fa37f186d15f92.1572876157.git.daniel@iogearbox.net>
+References: <94ba2eebd8d6c48ca6da8626c9fa37f186d15f92.1572876157.git.daniel@iogearbox.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-zhong jiang <zhongjiang@huawei.com> writes:
+On Mon,  4 Nov 2019 15:27:02 +0100, Daniel Borkmann wrote:
+> Commit 5bc60de50dfe ("selftests: bpf: Don't try to read files without
+> read permission") got reverted as the fix was not working as expected
+> and real fix came in via 8101e069418d ("selftests: bpf: Skip write
+> only files in debugfs"). When bpf-next got merged into net-next, the
+> test_offload.py had a small conflict. Fix the resolution in ae8a76fb8b5d
+> iby not reintroducing 5bc60de50dfe again.
+> 
+> Fixes: ae8a76fb8b5d ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next")
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Cc: Alexei Starovoitov <ast@kernel.org>
 
-> The issue is detected with help of coccinelle.
->
-> v2 -> v3:
->     Remove [PATCH 3/3] of series. Because fappend will use the
->     local variable.  
+Ayayay :(
 
-You really need to test your patches. If you submit patches without
-build testing I'm not going to take such patches.
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>  [
+>    Hey Jakub, please take a look at the below merge fix ... still trying
+>    to figure out why the netdev doesn't appear on my test node when I
+>    wanted to run the test script, but seems independent of the fix.
+> 
+>    [...]
+>    [ 1901.270493] netdevsim: probe of netdevsim4 failed with error -17
+>    [...]
+> 
+>    # ./test_offload.py
+>    Test destruction of generic XDP...
+>    Traceback (most recent call last):
+>     File "./test_offload.py", line 800, in <module>
+>      simdev = NetdevSimDev()
+>     File "./test_offload.py", line 355, in __init__
+>      self.wait_for_netdevs(port_count)
+>     File "./test_offload.py", line 390, in wait_for_netdevs
+>      raise Exception("netdevices did not appear within timeout")
+>    Exception: netdevices did not appear within timeout
+>  ]
+> 
+>  tools/testing/selftests/bpf/test_offload.py | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/test_offload.py b/tools/testing/selftests/bpf/test_offload.py
+> index fc8a4319c1b2..1afa22c88e42 100755
+> --- a/tools/testing/selftests/bpf/test_offload.py
+> +++ b/tools/testing/selftests/bpf/test_offload.py
+> @@ -314,7 +314,10 @@ def bpftool_prog_load(sample, file_name, maps=[], prog_type="xdp", dev=None,
+>                  continue
+>  
+>              p = os.path.join(path, f)
+> -            if os.path.isfile(p) and os.access(p, os.R_OK):
+> +            if not os.stat(p).st_mode & stat.S_IRUSR:
+> +                continue
+> +
+> +            if os.path.isfile(p):
+>                  _, out = cmd('cat %s/%s' % (path, f))
+>                  dfs[f] = out.strip()
+>              elif os.path.isdir(p):
