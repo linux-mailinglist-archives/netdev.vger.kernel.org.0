@@ -2,88 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DAC3EEAB2
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 22:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94FBDEEABA
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 22:05:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbfKDVBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 16:01:39 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:40351 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726417AbfKDVBi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Nov 2019 16:01:38 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 476QFq6vnYz9sP4;
-        Tue,  5 Nov 2019 08:01:35 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1572901296;
-        bh=brx9ehP4FCaic0vmXRQ06+f8+KlGVKbOLJleBD7faYg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=psHy4bvAIm0FYQ07rJGiqy1/GKaW7Jc7m/+Ps7bMISdZboZcqWaaZxXT5O8ItoHPo
-         uXxJQbhfWv57ZgSCUkMEpVlTlt4BzLlMU9oh8wsvGsfDwJhp1EsGULZTk3gOx8jAmO
-         G1PSOkhFbEH1JpAeQehlLbheSh1nW+P/e7FCei3aNQvAaOAQsCBDGJG3Rz6AovRHza
-         a7VfWtyRpYU0QUBRdXezsOaDv/iURklYX+oKX4VYsnOaplrUS+c8uo3/umaElpD4wY
-         QaJ7A/mjfMOMhtEn4LnQaZflB+3PkQswzGCwMHoOi9LlS6AIGyL8WpD2oqripVWdYQ
-         4q0VK5XAjWoEQ==
-Date:   Tue, 5 Nov 2019 08:01:34 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: linux-next: Fixes tag needs some work in the net-next tree
-Message-ID: <20191105080134.33aab6a1@canb.auug.org.au>
+        id S1729194AbfKDVFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 16:05:05 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41445 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728709AbfKDVFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 16:05:05 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 440F420D0F;
+        Mon,  4 Nov 2019 16:05:04 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Mon, 04 Nov 2019 16:05:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=sJhf3D
+        xJCnHRGR1xQB2dO9jmz/hUafbD7SrQODTBM4M=; b=laJI95ZtmQkp5c6kjEmcV7
+        H1uUI8JvcMZ195ieYlKvPoQKbUOZEB3UhEL1DLKN2FtHpGHC38g50HCmUUmFxLxY
+        8oOptoAIFbqEtp0VXsbK6RNcOccLwPDOaEB7LSAc/1V5zgZ2yXDnj7jm8sJoYAKR
+        FbB/v/irNeIKz5EkRs4F4gveWLaSkdwXKDu4dpIXesGZK6aDK7ozNhRi1E8ltLVH
+        S6xTpBUjxcC1PzzuQ+Mi7aTj/0EsJTxKEa3ma5Pot9KwHYCxoot/78zM9ML1sDuW
+        009ReffuaQmZUcmc7j53kpHxotAbcTHnGdNB16A26o/gCI0crUZ+zZtI/H5gC/ww
+        ==
+X-ME-Sender: <xms:f5LAXcls6BPDD90vx43Ycf2nS72whF8pHbxA2QOLkNAZmZ4egrMt4g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddufedgudeghecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepje
+    ejrddufeekrddvgeelrddvtdelnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgt
+    hhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:f5LAXSm3BpMCpTctYqPh9osGJ3glQK6T6lGNk37095PPtyW_vvMP4A>
+    <xmx:f5LAXSIsCN0QQWouN7YmgUumPjWyqeRO8rfb1v_8nQk8-a3SaNqgww>
+    <xmx:f5LAXWz6Wwoh_CcvanvNidAVFQAJbMqeqkcc1i97nk2Dh-_YoVjQ4w>
+    <xmx:gJLAXZqe3KZ8iSYNfjth0R0pdaXU_jnmxDRglYZgozmWeA9iI5OYAA>
+Received: from localhost (unknown [77.138.249.209])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C91D83060069;
+        Mon,  4 Nov 2019 16:05:02 -0500 (EST)
+Date:   Mon, 4 Nov 2019 23:04:50 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        shalomt@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 0/6] mlxsw: Add extended ACK for EMADs
+Message-ID: <20191104210450.GA10713@splinter>
+References: <20191103083554.6317-1-idosch@idosch.org>
+ <20191104123954.538d4574@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/avb18f9WLh=P4yYwbKJ6AmW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191104123954.538d4574@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/avb18f9WLh=P4yYwbKJ6AmW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Mon, Nov 04, 2019 at 12:39:54PM -0800, Jakub Kicinski wrote:
+> On Sun,  3 Nov 2019 10:35:48 +0200, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@mellanox.com>
+> > 
+> > Ethernet Management Datagrams (EMADs) are Ethernet packets sent between
+> > the driver and device's firmware. They are used to pass various
+> > configurations to the device, but also to get events (e.g., port up)
+> > from it. After the Ethernet header, these packets are built in a TLV
+> > format.
+> > 
+> > Up until now, whenever the driver issued an erroneous register access it
+> > only got an error code indicating a bad parameter was used. This patch
+> > set from Shalom adds a new TLV (string TLV) that can be used by the
+> > firmware to encode a 128 character string describing the error. The new
+> > TLV is allocated by the driver and set to zeros. In case of error, the
+> > driver will check the length of the string in the response and print it
+> > to the kernel log.
+> > 
+> > Example output:
+> > 
+> > mlxsw_spectrum 0000:03:00.0: EMAD reg access failed (tid=a9719f9700001306,reg_id=8018(rauhtd),type=query,status=7(bad parameter))
+> > mlxsw_spectrum 0000:03:00.0: Firmware error (tid=a9719f9700001306,emad_err_string=inside er_rauhtd_write_query(), num_rec=32 is over the maximum number of records supported)
+> 
+> Personally I'm not a big fan of passing unstructured data between user
+> and firmware. Not having access to the errors makes it harder to create
+> common interfaces by inspecting driver code.
 
-Hi all,
+I don't understand the problem. If we get an error from firmware today,
+we have no clue what the actual problem is. With this we can actually
+understand what went wrong. How is it different from kernel passing a
+string ("unstructured data") to user space in response to an erroneous
+netlink request? Obviously it's much better than an "-EINVAL".
 
-In commit
+Also, in case it was not clear, this is a read-only interface and only
+from firmware to kernel. No hidden knobs or something fishy like that.
 
-  4c76bf696a60 ("net: openvswitch: don't unlock mutex when changing the use=
-r_features fails")
+> Is there any precedent in the tree for printing FW errors into the logs
+> like this?
 
-Fixes tag
-
-  Fixes: 95a7233c4 ("net: openvswitch: Set OvS recirc_id from tc chain inde=
-x")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/avb18f9WLh=P4yYwbKJ6AmW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3Aka4ACgkQAVBC80lX
-0Gxh1Qf/VPbOCMjnC53qoYQ/sjCHnkCid+CZjpDd658pC5jjnnGjFsG/80tAu20F
-Vq9Pn1wsh0bnb6Ws1W3AP52VYsTlPmsdUqD/OySA/FgqUCGS5wj4BT1F4HFlDmGT
-nqiiPsoK7YJ5GwFry+GX8CgfmN4agQ6UQUIz4NQ5x1XEO0y6xPj43tM4VyjRLJHy
-HAWn1XAfLBhUYl0KKIZYt22eIR1KNchx4bsD473fem11wQ7Wus/9Aqf6s+3oD+oW
-2IbDhTh1U8opcUDoVBtVOEYDug/YvNRUgFgdiWUG8MschX/1wCXbXGBJg6Fh/FM/
-wU1vtxVibJK+HyN3nepEfuQu7uQsdA==
-=YSCu
------END PGP SIGNATURE-----
-
---Sig_/avb18f9WLh=P4yYwbKJ6AmW--
+The mlx5 driver prints a unique number for each firmware error. We tried
+to do the same in switch firmware, but it lacked the infrastructure so
+we decided on this solution instead. It achieves the same goal, but in a
+different way.
