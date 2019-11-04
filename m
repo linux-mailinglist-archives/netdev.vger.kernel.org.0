@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 405F3EE9F7
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 21:41:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C9AEEA15
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 21:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729688AbfKDUkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 15:40:51 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:2725 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728519AbfKDUku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 15:40:50 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc08cd80000>; Mon, 04 Nov 2019 12:40:56 -0800
+        id S1729515AbfKDUsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 15:48:18 -0500
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:7854 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726417AbfKDUsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 15:48:17 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dc08e930000>; Mon, 04 Nov 2019 12:48:19 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 04 Nov 2019 12:40:49 -0800
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Mon, 04 Nov 2019 12:48:14 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 04 Nov 2019 12:40:49 -0800
+        by hqpgpgate102.nvidia.com on Mon, 04 Nov 2019 12:48:14 -0800
 Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 4 Nov
- 2019 20:40:48 +0000
-Subject: Re: [PATCH v2 05/18] mm/gup: introduce pin_user_pages*() and FOLL_PIN
+ 2019 20:48:13 +0000
+Subject: Re: [PATCH v2 07/18] infiniband: set FOLL_PIN, FOLL_LONGTERM via
+ pin_longterm_pages*()
 To:     Jason Gunthorpe <jgg@ziepe.ca>
-CC:     Jerome Glisse <jglisse@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+CC:     Andrew Morton <akpm@linux-foundation.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
         Alex Williamson <alex.williamson@redhat.com>,
         Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -37,6 +37,7 @@ CC:     Jerome Glisse <jglisse@redhat.com>,
         "David S . Miller" <davem@davemloft.net>,
         Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
         Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
@@ -52,22 +53,16 @@ CC:     Jerome Glisse <jglisse@redhat.com>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
 References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-6-jhubbard@nvidia.com>
- <20191104173325.GD5134@redhat.com>
- <be9de35c-57e9-75c3-2e86-eae50904bbdf@nvidia.com>
- <20191104191811.GI5134@redhat.com>
- <e9656d47-b4a1-da8a-e8cc-ebcfb8cc06d6@nvidia.com>
- <20191104195248.GA7731@redhat.com>
- <25ec4bc0-caaa-2a01-2ae7-2d79663a40e1@nvidia.com>
- <20191104203117.GE30938@ziepe.ca>
-From:   John Hubbard <jhubbard@nvidia.com>
+ <20191103211813.213227-8-jhubbard@nvidia.com>
+ <20191104203346.GF30938@ziepe.ca>
 X-Nvconfidentiality: public
-Message-ID: <1c428985-6ede-ef75-62bd-26ccf99f6d38@nvidia.com>
-Date:   Mon, 4 Nov 2019 12:40:48 -0800
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <578c1760-7221-4961-9f7d-c07c22e5c259@nvidia.com>
+Date:   Mon, 4 Nov 2019 12:48:13 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191104203117.GE30938@ziepe.ca>
+In-Reply-To: <20191104203346.GF30938@ziepe.ca>
 X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
@@ -75,47 +70,50 @@ Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572900056; bh=DgUGakiDqU+H/jvLHI+F9dgZlEqXtDj8YZcQ5jdUUnc=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+        t=1572900499; bh=/CIgIUDm2203i17lURbkYa+rDusoBTvPAWSv4QBC930=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
          Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
          X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
          Content-Transfer-Encoding;
-        b=NHQ1Q0iautz1x5eS1rpVt2XzAK+GdsKg4fHxuWzyx4M7tJpV+1UB6d5ZpY+LJM8ME
-         TR31xYhwAxi1K+5UUf+wF2rdwAdcBiJd7g9PZ9zQdxs0smNT0eXx/EK23GNTVWWsim
-         vmxoebMT8yRD8emjw4hl+mywMz6dGLzA9qU4y5rdocqaRh8e0dGYAC8/oxGzxQkYvT
-         MWkQm/cvgwbgyxMEdYQt09KoKCaZDdAw2q8ktAtZsrow9mFYWcec570DR/POlaG1aB
-         FjnA7v+FO5AVWFmkxPStSbC6bck0U4AV8Oy7tJVJh18dLUfTlW6x2kgIg6rLYkBdDJ
-         g//zR0Vfe3smA==
+        b=Yhst2fvnnBPG5D1itfKb9hWxMLjbVqSUWfqLvh0Fn/i71mLFE3e5+ptkQVEJi3MDe
+         qvaT1Tf+d7ek6vNTBSdtBp5CUQEtAg8UWqTgqXAGToNZygsVb5ro7FYsz0ILbTU2vU
+         CHYuf1412PLOn7MH7eTBhi57kffHLHkpA6icq7phiDnf8zBahThiB3Ps2f/yPxHzSq
+         q07AwvC3mSpeq/SRv5bYDV+8pVUTKGMpYVp0AVV6TI0S7zM3JQt7/R+ADu5r+VHpiq
+         Z5GWG1l9M6HD/AHMOed3MzO4wKmITLxC/eG+US5I7mvuRcIYO8agMI/4/XmcSLU9xl
+         +RKSvRaoFFIeg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/4/19 12:31 PM, Jason Gunthorpe wrote:
-> On Mon, Nov 04, 2019 at 12:09:05PM -0800, John Hubbard wrote:
+On 11/4/19 12:33 PM, Jason Gunthorpe wrote:
+...
+>> diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.c
+>> index 24244a2f68cc..c5a78d3e674b 100644
+>> +++ b/drivers/infiniband/core/umem.c
+>> @@ -272,11 +272,10 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, unsigned long addr,
+>>  
+>>  	while (npages) {
+>>  		down_read(&mm->mmap_sem);
+>> -		ret = get_user_pages(cur_base,
+>> +		ret = pin_longterm_pages(cur_base,
+>>  				     min_t(unsigned long, npages,
+>>  					   PAGE_SIZE / sizeof (struct page *)),
+>> -				     gup_flags | FOLL_LONGTERM,
+>> -				     page_list, NULL);
+>> +				     gup_flags, page_list, NULL);
 > 
->> Note for Jason: the (a) or (b) items are talking about the vfio case, which is
->> one of the two call sites that now use pin_longterm_pages_remote(), and the
->> other one is infiniband:
->>
->> drivers/infiniband/core/umem_odp.c:646:         npages = pin_longterm_pages_remote(owning_process, owning_mm,
-> 
-> This is a mistake, it is not a longterm pin and does not need FOLL_PIN
-> semantics
-
-OK! So it really just wants to be get_user_pages_remote() / put_page()? I'll
-change it back to that.
-
-> 
->> Jason should weigh in on how he wants this to go, with respect to branching
->> and merging, since it sounds like that will conflict with the hmm branch 
-> 
-> I think since you don't need to change this site things should be
-> fine?
+> FWIW, this one should be converted to fast as well, I think we finally
+> got rid of all the blockers for that?
 > 
 
-Right. 
+I'm not aware of any blockers on the gup.c end, anyway. The only broken thing we
+have there is "gup remote + FOLL_LONGTERM". But we can do "gup fast + LONGTERM". 
 
+Unless I'm really missing something, in which case several other call sites
+would need changes.
+
+I'll change it to pin_longterm_pages_fast().
 
 thanks,
 
