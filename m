@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 604C7EE1E3
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 15:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 388B5EE1BE
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 15:00:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728287AbfKDOIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 09:08:09 -0500
-Received: from smtprelay0214.hostedemail.com ([216.40.44.214]:47015 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727766AbfKDOIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 09:08:09 -0500
-X-Greylist: delayed 538 seconds by postgrey-1.27 at vger.kernel.org; Mon, 04 Nov 2019 09:08:08 EST
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave07.hostedemail.com (Postfix) with ESMTP id 631D018026108;
-        Mon,  4 Nov 2019 13:59:11 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id A5FAF18223251;
-        Mon,  4 Nov 2019 13:59:09 +0000 (UTC)
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,rostedt@goodmis.org,:::::::::::::::::::::::::::::::::::::::,RULES_HIT:41:69:355:379:541:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2693:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:4605:5007:6261:6742:7576:7875:8603:8957:10004:10400:10848:10967:11026:11232:11658:11914:12043:12296:12297:12438:12683:12740:12760:12895:13439:14096:14097:14181:14659:14721:21080:21451:21627:30054:30064:30080:30090:30091,0,RBL:146.247.46.6:@goodmis.org:.lbl8.mailshell.net-62.8.41.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
-X-HE-Tag: pot84_899e0f45ebd55
-X-Filterd-Recvd-Size: 3574
-Received: from grimm.local.home (unknown [146.247.46.6])
-        (Authenticated sender: rostedt@goodmis.org)
-        by omf08.hostedemail.com (Postfix) with ESMTPA;
-        Mon,  4 Nov 2019 13:59:05 +0000 (UTC)
-Date:   Mon, 4 Nov 2019 08:59:01 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Li Zefan <lizefan@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Song Liu <liu.song.a23@gmail.com>, cgroups@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-block@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] kernfs: Convert to u64 id
-Message-ID: <20191104085901.06035a26@grimm.local.home>
-In-Reply-To: <20191104084520.398584-2-namhyung@kernel.org>
-References: <20191104084520.398584-1-namhyung@kernel.org>
-        <20191104084520.398584-2-namhyung@kernel.org>
-X-Mailer: Claws Mail 3.17.4git49 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1728807AbfKDOAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 09:00:11 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43046 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727891AbfKDOAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 09:00:11 -0500
+Received: by mail-qt1-f194.google.com with SMTP id l24so5726630qtp.10
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 06:00:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G6Qz4EI18RwklMMJFIiU5fzMp4LfQdCJYG91bSVFyxw=;
+        b=LunTGoqIbMs61RsEWGkC0deOxg0pXj68cvddX9HPKkPj/bXm34FykMFLMfzwpc/Oee
+         EyCERLH45Jm+GedOoRWbQ1FEovC5qGUlPxg1NWK3D2g7CeT5W8MQO7G4t867IldyiLxF
+         PjVG/1WWrFUi5cImrKhyIkF6N/BQ26lHbCjdISr76hU/5pRRKhU71tUC/VI8C3xvqQgK
+         OIG2x8paJTKMRU6H5NMOi0nsHUlgirryM4//qlqq9R2VA/4D7Ba9nieg4n3w5Z+NX0Co
+         HwW0G+bOzYDtM+XPFWMlLo6mYQHXk+m4ASFYIBRRJU1ipJdsCjQXYRrYlsau/thrTbFM
+         Il0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G6Qz4EI18RwklMMJFIiU5fzMp4LfQdCJYG91bSVFyxw=;
+        b=LtFZM3D6YF4UFLYvsQ0yqSknCkMNrVp+xMwOjlywXPfdn/W8nczDIxgYunRujknMhf
+         BHFm7KgdPVodW8oInXANGxDAi4qCh2uevYrUtd6DUX23bRCTLmKabrUgYmmthMAHlya1
+         JCC70xWYWe1i6c29qEPkoXSQWTzDFcXnt0qkDRUvNxYGsJo7jnFDDpoA9vVj5DRvnt6x
+         c/YJHidH7R0by7doKiKobSCkvtkN8d208C8+qZAfMX6I9pMrzYVdjqkdhG1nWpgD1dK4
+         3P5ikg/ugMCgUDYTrAKhTLxDwJOqa8335BO05A17DkB9PDKFLhx8M09gAgygZvhtnBGb
+         008w==
+X-Gm-Message-State: APjAAAXdG0EWx5FkYsxAguStJ34aYrk38l+e4BbtZcLVyzOs0xHf7ZzF
+        GDHqdn0j5O2vNkDDChXChTmyKMxniFBqBq85g9k=
+X-Google-Smtp-Source: APXvYqz2nN+fnAadDYhij2AQ/KsHrWMqTofFlVL9peGMRRYN9l65mwFPIk1Ot2IuAmrqTCphBwaUdJg9w7UqTBjBS0Y=
+X-Received: by 2002:ad4:5891:: with SMTP id dz17mr22260198qvb.160.1572876010190;
+ Mon, 04 Nov 2019 06:00:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1572618234-6904-1-git-send-email-xiangxia.m.yue@gmail.com>
+ <1572618234-6904-6-git-send-email-xiangxia.m.yue@gmail.com> <CAOrHB_CkZJ+w3LvUyzUZRgnFa1JnkkKY85XsjEMvXD4geAzW4g@mail.gmail.com>
+In-Reply-To: <CAOrHB_CkZJ+w3LvUyzUZRgnFa1JnkkKY85XsjEMvXD4geAzW4g@mail.gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Mon, 4 Nov 2019 05:59:27 -0800
+Message-ID: <CALDO+SYq2FGK5i=LDxKx8GYAEF=juMRNSXe0URb+rvGog1FYTw@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net-next v6 05/10] net: openvswitch: optimize
+ flow-mask looking up
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        ovs dev <dev@openvswitch.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  4 Nov 2019 17:45:19 +0900
-Namhyung Kim <namhyung@kernel.org> wrote:
+On Sat, Nov 2, 2019 at 11:50 PM Pravin Shelar <pshelar@ovn.org> wrote:
+>
+> On Fri, Nov 1, 2019 at 7:24 AM <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > The full looking up on flow table traverses all mask array.
+> > If mask-array is too large, the number of invalid flow-mask
+> > increase, performance will be drop.
+> >
+> > One bad case, for example: M means flow-mask is valid and NULL
+> > of flow-mask means deleted.
+> >
+> > +-------------------------------------------+
+> > | M | NULL | ...                  | NULL | M|
+> > +-------------------------------------------+
+> >
+> > In that case, without this patch, openvswitch will traverses all
+> > mask array, because there will be one flow-mask in the tail. This
+> > patch changes the way of flow-mask inserting and deleting, and the
+> > mask array will be keep as below: there is not a NULL hole. In the
+> > fast path, we can "break" "for" (not "continue") in flow_lookup
+> > when we get a NULL flow-mask.
+> >
+> >          "break"
+> >             v
+> > +-------------------------------------------+
+> > | M | M |  NULL |...           | NULL | NULL|
+> > +-------------------------------------------+
+> >
+> > This patch don't optimize slow or control path, still using ma->max
+> > to traverse. Slow path:
+> > * tbl_mask_array_realloc
+> > * ovs_flow_tbl_lookup_exact
+> > * flow_mask_find
+> >
+> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > Tested-by: Greg Rose <gvrose8192@gmail.com>
+> > ---
+> Acked-by: Pravin B Shelar <pshelar@ovn.org>
 
-> From: Tejun Heo <tj@kernel.org>
-> 
-> The kernfs_id was an union type sharing a 64bit id with 32bit ino +
-> gen.  But it resulted in using 32bit inode even on 64bit systems.
-> Also dealing with an union is annoying especially if you just want to
-> use a single id.
-> 
-> Thus let's get rid of the kernfs_node_id type and use u64 directly.
-> The upper 32bit is used for gen and lower is for ino on 32bit systems.
-> The kernfs_id_ino() and kernfs_id_gen() helpers will take care of the
-> bit handling depends on the system word size.
-> 
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: Song Liu <songliubraving@fb.com>
-> Cc: Yonghong Song <yhs@fb.com>
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: linux-block@vger.kernel.org
-> Cc: bpf@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Tejun Heo <tj@kernel.org>
-> [namhyung: fix build error in bpf_get_current_cgroup_id()]
-> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
-> ---
->  fs/kernfs/dir.c                  | 36 ++++++++-----
->  fs/kernfs/file.c                 |  4 +-
->  fs/kernfs/inode.c                |  4 +-
->  fs/kernfs/kernfs-internal.h      |  2 -
->  fs/kernfs/mount.c                | 92 +++++++++++++++++++-------------
->  include/linux/cgroup.h           | 17 +++---
->  include/linux/exportfs.h         |  5 ++
->  include/linux/kernfs.h           | 47 +++++++++-------
+Nack to this patch.
 
->  include/trace/events/writeback.h | 92 ++++++++++++++++----------------
+It makes the mask cache invalid when moving the flow mask
+to fill another hole.
+And the penalty for miss the mask cache is larger than the
+benefit of this patch (avoiding the NULL flow-mask).
 
-I only looked at the above file, and didn't see anything bad about it.
-
-Acked-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-
--- Steve
-
-
->  kernel/bpf/helpers.c             |  2 +-
->  kernel/cgroup/cgroup.c           |  5 +-
->  kernel/trace/blktrace.c          | 66 +++++++++++------------
->  net/core/filter.c                |  4 +-
->  13 files changed, 207 insertions(+), 169 deletions(-)
-
+William
