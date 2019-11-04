@@ -2,125 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5B23EEA25
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 21:48:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28041EEA2A
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 21:49:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729592AbfKDUso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 15:48:44 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:37271 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729248AbfKDUso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 15:48:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572900523;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mn5RsMcwjgSz4Uc3SsLk9u7OdhxITCoqvev72K3k0/w=;
-        b=hQ9+wUclM/gzvrwXlA0dBmvh/ki8tPcPI4NMrzUSwOoLjc6TTXi4ppLn6A8JYvsmhSCT/q
-        9xJ9ZYZR1XsNeEJ6PbCbPyMze2ZLL00duT3IgVl7S51Ld6Zf0Dtf0e8LS6qh+AhfwtBiPB
-        MvLGtYW2tZJFAys78ar8r6R6dU8re+M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-261-XtiEJ6MJOtixJceTBvorsw-1; Mon, 04 Nov 2019 15:48:39 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 279BB1800DFD;
-        Mon,  4 Nov 2019 20:48:35 +0000 (UTC)
-Received: from redhat.com (unknown [10.20.6.178])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AEACB5C3F8;
-        Mon,  4 Nov 2019 20:48:29 +0000 (UTC)
-Date:   Mon, 4 Nov 2019 15:48:28 -0500
-From:   Jerome Glisse <jglisse@redhat.com>
-To:     David Rientjes <rientjes@google.com>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 05/18] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-Message-ID: <20191104204828.GC7731@redhat.com>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-6-jhubbard@nvidia.com>
- <alpine.DEB.2.21.1911041231520.74801@chino.kir.corp.google.com>
+        id S1729610AbfKDUsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 15:48:51 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:48570 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728409AbfKDUsu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 15:48:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Dm/daXGKUfuSGufUx97lHEf/IH6mKhkovXtMS30mfv0=; b=n3PdGG8JjqXvLTh/xmNzSdP59a
+        CLj/hTen+meSxA4ETOBr1FCUOyMIqYvF6GauDtw1HKyQ1aT7w8xkRE68oLJKKPj4AxEEo7qE2tRTU
+        gV4G1PIPfWV4IOXsDy2W/Wn7ieXCR5/nFm4nVSHS75pSzfpdvoZsF09WS3ujessVjl78=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iRjHL-0006F5-2W; Mon, 04 Nov 2019 21:48:47 +0100
+Date:   Mon, 4 Nov 2019 21:48:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, vivien.didelot@gmail.com,
+        davem@davemloft.net, Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: Re: [PATCH net-next 2/2] net: dsa: bcm_sf2: Add support for optional
+ reset controller line
+Message-ID: <20191104204847.GB17620@lunn.ch>
+References: <20191104184203.2106-1-f.fainelli@gmail.com>
+ <20191104184203.2106-3-f.fainelli@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.1911041231520.74801@chino.kir.corp.google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: XtiEJ6MJOtixJceTBvorsw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20191104184203.2106-3-f.fainelli@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 04, 2019 at 12:33:09PM -0800, David Rientjes wrote:
->=20
->=20
-> On Sun, 3 Nov 2019, John Hubbard wrote:
->=20
-> > Introduce pin_user_pages*() variations of get_user_pages*() calls,
-> > and also pin_longterm_pages*() variations.
-> >=20
-> > These variants all set FOLL_PIN, which is also introduced, and
-> > thoroughly documented.
-> >=20
-> > The pin_longterm*() variants also set FOLL_LONGTERM, in addition
-> > to FOLL_PIN:
-> >=20
-> >     pin_user_pages()
-> >     pin_user_pages_remote()
-> >     pin_user_pages_fast()
-> >=20
-> >     pin_longterm_pages()
-> >     pin_longterm_pages_remote()
-> >     pin_longterm_pages_fast()
-> >=20
-> > All pages that are pinned via the above calls, must be unpinned via
-> > put_user_page().
-> >=20
->=20
-> Hi John,
->=20
-> I'm curious what consideration is given to what pageblock migrate types=
-=20
-> that FOLL_PIN and FOLL_LONGTERM pages originate from, assuming that=20
-> longterm would want to originate from MIGRATE_UNMOVABLE pageblocks for th=
-e=20
-> purposes of anti-fragmentation?
+> @@ -350,6 +350,18 @@ static int bcm_sf2_sw_rst(struct bcm_sf2_priv *priv)
+>  {
+>  	unsigned int timeout = 1000;
+>  	u32 reg;
+> +	int ret;
+> +
+> +	/* The watchdog reset does not work on 7278, we need to hit the
+> +	 * "external" reset line through the reset controller.
+> +	 */
+> +	if (priv->type == BCM7278_DEVICE_ID && !IS_ERR(priv->rcdev)) {
+> +		ret = reset_control_assert(priv->rcdev);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return reset_control_deassert(priv->rcdev);
 
-We do not control page block, GUP can happens on _any_ page that is
-map inside a process (anonymous private vma or regular file back one).
+Hi Florian
 
-Cheers,
-J=E9r=F4me
+Here you do it conditional on priv->type
 
+> @@ -1223,6 +1240,8 @@ static int bcm_sf2_sw_remove(struct platform_device *pdev)
+>  	/* Disable all ports and interrupts */
+>  	bcm_sf2_sw_suspend(priv->dev->ds);
+>  	bcm_sf2_mdio_unregister(priv);
+> +	if (!IS_ERR(priv->rcdev))
+> +		reset_control_assert(priv->rcdev);
+
+And here it is unconditional. Seem a bit inconsistent. If it is in DT,
+why not use it?
+
+    Andrew
