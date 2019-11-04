@@ -2,173 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9BFCEF13A
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 00:37:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C056CEF154
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 00:44:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729595AbfKDXhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 18:37:20 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:37175 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728987AbfKDXhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 18:37:20 -0500
-Received: by mail-lf1-f68.google.com with SMTP id b20so13605518lfp.4
-        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 15:37:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dDKnEK6D3MYm3xL73zW7rQdCF5qjKsfHm3AZtTTw4bg=;
-        b=u/t0bbe/skdemY0GbflsG9l4rwp0A9xX0DZ0L6E9EQF3yXXj1mG0NNKTvMUPAjxQZp
-         41NhrbtMMI9OXKIf3XyvapX9DrG142mP8lsw9ikxk9PhscZN6Qsr4ZEUHVTAz607rbAt
-         JMBWk9JJgW46XKbTXYdWYIb3m4QyEsTNbjv7tBljpzwH/Vno2sdbL9lqGOE3mDaeUu6M
-         eHn3O22JRtkmF+eCAqX/KmZmGJyeVvmRVWooj4i8gIcYTRITG9kv2f3fx3QBfGdb7sMq
-         LlxpSri94AIsvT4TPIsuODcQLVLsv6p8SpdJd2aodaYSTAnSyNz815v65R/f6McZCjhf
-         v5/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dDKnEK6D3MYm3xL73zW7rQdCF5qjKsfHm3AZtTTw4bg=;
-        b=FaonstL4XM8OpYowC4iYob5RLl6wZdZqPqW87yW+RAM5Vole60dXKlZz9Ev9cl7i8H
-         fKwzXqd2nUhd7+7hNQBsPh/F1qa/bB0LrB6bHcpeH4T7X2ET0DWHURqKt7JwE0d4Oz1U
-         SlEWJR34uP5WrzGb2wkWJYFgloWidwUoI/fwwFz6484ZWnU+DZHNNaolXVOSKdY0DqVo
-         VWHWenQGrfjbv4nn36AzbYidY66CMXem8zJrcGpDdZyy4cHB2qHeCS3zwqVbbg0CN/Ls
-         5I4JCKqRYJbu40/dMBq66agZR+QySjZoPmr+2EnOxAhQ608DlzxPRZJAsx9xyhmoxUVo
-         xW3A==
-X-Gm-Message-State: APjAAAW2wUv6Q1EwCczbAusXRkiiuqMlRm7Ga3OcGbWIm4pxSq2o6Ggx
-        DQGqc138Ots+N+/CbfF3rJztMg==
-X-Google-Smtp-Source: APXvYqxoTsiFWokDpZx+PktmMgqEh1BxGNLbbvr5aCEHz+pND5MXSkjVdKZTVL0t9neTPfhSqsvtOA==
-X-Received: by 2002:a19:c354:: with SMTP id t81mr4477022lff.179.1572910637599;
-        Mon, 04 Nov 2019 15:37:17 -0800 (PST)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g26sm7483132lfh.1.2019.11.04.15.37.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 Nov 2019 15:37:16 -0800 (PST)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        borisp@mellanox.com, aviadye@mellanox.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com,
-        syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com,
-        Eric Biggers <ebiggers@kernel.org>,
-        herbert@gondor.apana.org.au, glider@google.com,
-        linux-crypto@vger.kernel.org
-Subject: [PATCH net v2] net/tls: fix sk_msg trim on fallback to copy mode
-Date:   Mon,  4 Nov 2019 15:36:57 -0800
-Message-Id: <20191104233657.21054-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.23.0
+        id S2387394AbfKDXoB convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 4 Nov 2019 18:44:01 -0500
+Received: from mga11.intel.com ([192.55.52.93]:24720 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729688AbfKDXoB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 18:44:01 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Nov 2019 15:44:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,268,1569308400"; 
+   d="scan'208";a="213701601"
+Received: from orsmsx101.amr.corp.intel.com ([10.22.225.128])
+  by orsmga002.jf.intel.com with ESMTP; 04 Nov 2019 15:44:00 -0800
+Received: from orsmsx159.amr.corp.intel.com (10.22.240.24) by
+ ORSMSX101.amr.corp.intel.com (10.22.225.128) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 4 Nov 2019 15:44:00 -0800
+Received: from orsmsx113.amr.corp.intel.com ([169.254.9.28]) by
+ ORSMSX159.amr.corp.intel.com ([169.254.11.61]) with mapi id 14.03.0439.000;
+ Mon, 4 Nov 2019 15:44:00 -0800
+From:   "Creeley, Brett" <brett.creeley@intel.com>
+To:     Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     Arkady Gilinsky <arcadyg@gmail.com>
+Subject: RE: [PATCH net] i40e/iavf: Fix msg interface between VF and PF
+Thread-Topic: [PATCH net] i40e/iavf: Fix msg interface between VF and PF
+Thread-Index: AQHVktE9LXQEe1tn8E2yMWCX6YmauKd7neLQ
+Date:   Mon, 4 Nov 2019 23:43:59 +0000
+Message-ID: <3508A0C5D531054DBDD98909F6FA64FA11B3936D@ORSMSX113.amr.corp.intel.com>
+References: <1572845537.13810.225.camel@harmonicinc.com>
+In-Reply-To: <1572845537.13810.225.camel@harmonicinc.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODdmYzMzOTMtMTRlYy00ZGI5LWE0MTQtZjVkMmViMDNlODk2IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiREdKTUNPTFczbVUrTUcyZ09cL2JWSGJGNkM1ejcrWkhrOU9NdjV0RndQalhTcllEUndydmNtMGRNRXhwVUsyU2wifQ==
+x-originating-ip: [10.22.254.140]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk_msg_trim() tries to only update curr pointer if it falls into
-the trimmed region. The logic, however, does not take into the
-account pointer wrapping that sk_msg_iter_var_prev() does nor
-(as John points out) the fact that msg->sg is a ring buffer.
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On Behalf Of Arkady Gilinsky
+> Sent: Sunday, November 3, 2019 9:32 PM
+> To: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
+> Cc: Arkady Gilinsky <arcadyg@gmail.com>
+> Subject: [PATCH net] i40e/iavf: Fix msg interface between VF and PF
+> 
+> From af5ab2aaa51882bb7111b026882fe217ed81c15b Mon Sep 17 00:00:00 2001
+> From: Arkady Gilinsky <arkady.gilinsky@harmonicinc
+> .com>
+> Date: Sun, 3 Nov 2019 20:37:21 +0200
+> Subject: [PATCH net] i40e/iavf: Fix msg interface between VF and PF
+> 
+>  * The original issue was that iavf driver passing TX/RX queues
+>    as bitmap in iavf_disable_queues and the i40e driver
+>    interprets this message as an absolute number in
+>    i40e_vc_disable_queues_msg, so the validation in the
+>    latter function always fail.
 
-This means that when the message was trimmed completely, the new
-curr pointer would have the value of MAX_MSG_FRAGS - 1, which is
-neither smaller than any other value, nor would it actually be
-correct.
+The VIRTCHNL interface expects the tx_queues and rx_queues to be sent as
+a bitmap so this should/can not be changed.
 
-Special case the trimming to 0 length a little bit and rework
-the comparison between curr and end to take into account wrapping.
+I think something like the following would be better becase the change is
+completely contained inside the i40e driver and it should completely
+address the issue you are seeing. Of course, this would have to be
+in both the enable and disable queue flow. Also, with this change it might
+be best to check and make sure the sizeof(vqs->[r|t]x_queues) equal
+sizeof(u32) in case those members ever change from u32 to u64, which
+will cause this check to always fail.
 
-This bug caused the TLS code to not copy all of the message, if
-zero copy filled in fewer sg entries than memcopy would need.
+static bool i40e_vc_verify_vqs_bitmaps(struct virtchnl_queue_select *vqs)
+{
+	/* this will catch any changes made to the virtchnl_queue_select bitmap */
+	if (sizeof(vqs->rx_queues) != sizeof(u32) ||
+	     sizeof(vqs->tx_queues) != sizeof(u32))
+		return false;
 
-Big thanks to Alexander Potapenko for the non-KMSAN reproducer.
+	if ((vqs->rx_queues == 0 && vqs->tx_queues == 0) ||
+	      hweight32(vqs->rx_queues) > I40E_MAX_VF_QUEUES ||
+	      hweight32(vqs->tx_queues) > I40E_MAX_VF_QUEUES)
+		return false;
 
-v2:
- - take into account that msg->sg is a ring buffer (John).
+	return true;
+}
 
-Link: https://lore.kernel.org/netdev/20191030160542.30295-1-jakub.kicinski@netronome.com/ (v1)
+if (i40e_vc_verify_vqs_bitmaps(vqs)) {
+	aq_ret  = I40E_ERR_PARAM;
+	goto error_param;
+}
 
-Fixes: d829e9c4112b ("tls: convert to generic sk_msg interface")
-Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
-Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
-Co-developed-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
-CC: Eric Biggers <ebiggers@kernel.org>
-CC: herbert@gondor.apana.org.au
-CC: glider@google.com
-CC: linux-crypto@vger.kernel.org
----
- include/linux/skmsg.h |  9 ++++++---
- net/core/skmsg.c      | 20 +++++++++++++++-----
- 2 files changed, 21 insertions(+), 8 deletions(-)
-
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index e4b3fb4bb77c..ce7055259877 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -139,6 +139,11 @@ static inline void sk_msg_apply_bytes(struct sk_psock *psock, u32 bytes)
- 	}
- }
- 
-+static inline u32 sk_msg_iter_dist(u32 start, u32 end)
-+{
-+	return end >= start ? end - start : end + (MAX_MSG_FRAGS - start);
-+}
-+
- #define sk_msg_iter_var_prev(var)			\
- 	do {						\
- 		if (var == 0)				\
-@@ -198,9 +203,7 @@ static inline u32 sk_msg_elem_used(const struct sk_msg *msg)
- 	if (sk_msg_full(msg))
- 		return MAX_MSG_FRAGS;
- 
--	return msg->sg.end >= msg->sg.start ?
--		msg->sg.end - msg->sg.start :
--		msg->sg.end + (MAX_MSG_FRAGS - msg->sg.start);
-+	return sk_msg_iter_dist(msg->sg.start, msg->sg.end);
- }
- 
- static inline struct scatterlist *sk_msg_elem(struct sk_msg *msg, int which)
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index cf390e0aa73d..ad31e4e53d0a 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -270,18 +270,28 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
- 
- 	msg->sg.data[i].length -= trim;
- 	sk_mem_uncharge(sk, trim);
-+	/* Adjust copybreak if it falls into the trimmed part of last buf */
-+	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
-+		msg->sg.copybreak = msg->sg.data[i].length;
- out:
--	/* If we trim data before curr pointer update copybreak and current
--	 * so that any future copy operations start at new copy location.
-+	sk_msg_iter_var_next(i);
-+	msg->sg.end = i;
-+
-+	/* If we trim data a full sg elem before curr pointer update
-+	 * copybreak and current so that any future copy operations
-+	 * start at new copy location.
- 	 * However trimed data that has not yet been used in a copy op
- 	 * does not require an update.
- 	 */
--	if (msg->sg.curr >= i) {
-+	if (!msg->sg.size) {
-+		msg->sg.curr = msg->sg.start;
-+		msg->sg.copybreak = 0;
-+	} else if (sk_msg_iter_dist(msg->sg.start, msg->sg.curr) >=
-+		   sk_msg_iter_dist(msg->sg.start, msg->sg.end)) {
-+		sk_msg_iter_var_prev(i);
- 		msg->sg.curr = i;
- 		msg->sg.copybreak = msg->sg.data[i].length;
- 	}
--	sk_msg_iter_var_next(i);
--	msg->sg.end = i;
- }
- EXPORT_SYMBOL_GPL(sk_msg_trim);
- 
--- 
-2.23.0
+>    This commit reorganize the msg interface between i40e and iavf
+>    between the iavf_disable_queues and i40e_vc_disable_queues_msg
+>    functions (also for iavf_enable_queues and i40e_vc_enable_queues_msg).
+>    Now both drivers operate with number of queues instead of
+>    bitmap. Also the commit introduces range check in
+>    i40e_vc_enable_queues_msg function.
+> 
+> Signed-off-by: Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 23 ++++++++++++++++------
+>  drivers/net/ethernet/intel/iavf/iavf_virtchnl.c    |  6 ++++--
+>  2 files changed, 21 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+> index 3d2440838822..c650eb91982a 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+> @@ -2352,13 +2352,22 @@ static int i40e_vc_enable_queues_msg(struct i40e_vf *vf, u8 *msg)
+>  		goto error_param;
+>  	}
+> 
+> -	/* Use the queue bit map sent by the VF */
+> -	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx], vqs->rx_queues,
+> +	if ((vqs->rx_queues == 0 && vqs->tx_queues == 0) ||
+> +	    vqs->rx_queues > I40E_MAX_VF_QUEUES ||
+> +	    vqs->tx_queues > I40E_MAX_VF_QUEUES) {
+> +		aq_ret = I40E_ERR_PARAM;
+> +		goto error_param;
+> +	}
+> +
+> +	/* Build the queue bit map from value sent by the VF */
+> +	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx],
+> +				  BIT(vqs->rx_queues) - 1,
+>  				  true)) {
+>  		aq_ret = I40E_ERR_TIMEOUT;
+>  		goto error_param;
+>  	}
+> -	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx], vqs->tx_queues,
+> +	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx],
+> +				  BIT(vqs->tx_queues) - 1,
+>  				  true)) {
+>  		aq_ret = I40E_ERR_TIMEOUT;
+>  		goto error_param;
+> @@ -2416,13 +2425,15 @@ static int i40e_vc_disable_queues_msg(struct i40e_vf *vf, u8 *msg)
+>  		goto error_param;
+>  	}
+> 
+> -	/* Use the queue bit map sent by the VF */
+> -	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx], vqs->tx_queues,
+> +	/* Build the queue bit map from value sent by the VF */
+> +	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx],
+> +				  BIT(vqs->tx_queues) - 1,
+>  				  false)) {
+>  		aq_ret = I40E_ERR_TIMEOUT;
+>  		goto error_param;
+>  	}
+> -	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx], vqs->rx_queues,
+> +	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx],
+> +				  BIT(vqs->rx_queues) - 1,
+>  				  false)) {
+>  		aq_ret = I40E_ERR_TIMEOUT;
+>  		goto error_param;
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+> index c46770eba320..271f144bf05b 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+> @@ -308,7 +308,8 @@ void iavf_enable_queues(struct iavf_adapter *adapter)
+>  	}
+>  	adapter->current_op = VIRTCHNL_OP_ENABLE_QUEUES;
+>  	vqs.vsi_id = adapter->vsi_res->vsi_id;
+> -	vqs.tx_queues = BIT(adapter->num_active_queues) - 1;
+> +	/* Send the queues number to PF */
+> +	vqs.tx_queues = adapter->num_active_queues;
+>  	vqs.rx_queues = vqs.tx_queues;
+>  	adapter->aq_required &= ~IAVF_FLAG_AQ_ENABLE_QUEUES;
+>  	iavf_send_pf_msg(adapter, VIRTCHNL_OP_ENABLE_QUEUES,
+> @@ -333,7 +334,8 @@ void iavf_disable_queues(struct iavf_adapter *adapter)
+>  	}
+>  	adapter->current_op = VIRTCHNL_OP_DISABLE_QUEUES;
+>  	vqs.vsi_id = adapter->vsi_res->vsi_id;
+> -	vqs.tx_queues = BIT(adapter->num_active_queues) - 1;
+> +	/* Send the queues number to PF */
+> +	vqs.tx_queues = adapter->num_active_queues;
+>  	vqs.rx_queues = vqs.tx_queues;
+>  	adapter->aq_required &= ~IAVF_FLAG_AQ_DISABLE_QUEUES;
+>  	iavf_send_pf_msg(adapter, VIRTCHNL_OP_DISABLE_QUEUES,
+> --
+> 2.11.0
 
