@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B66D4EE523
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 17:51:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37307EE530
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 17:52:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728898AbfKDQvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 11:51:37 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:31169 "EHLO
+        id S1729312AbfKDQwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 11:52:42 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:38805 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728510AbfKDQvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 11:51:36 -0500
+        with ESMTP id S1729006AbfKDQwh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 11:52:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572886294;
+        s=mimecast20190719; t=1572886356;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=TXrEUfVJUcd1erXFQw9FjfdFZzoYFLyJ24kgJsiz4yg=;
-        b=FA5pznYbTukMnXNxUYEsr2a+sllUt2kUWtAghROFSu5I3R1caZebkFMC7bhvO3LvtAkDE/
-        Q+vG1DDObqg4RQRmF1Ui4k8QwslEzxZl3u5pAyodA4YKKyO29NUXIZJsgk++a/ZANOwxAf
-        057fbnJH43/COtEdZ8dXVklRKI09/xQ=
+        bh=6ta56jBRT26o2oAigonInJcC04rruT/2d6fabGOKHyw=;
+        b=WSLa2wKrL8g5aDyoDf02O4k+crqcoTXsQ2EKqq2n6FzaTjqceXHOvCayOCIR1bb5K9cevY
+        4X65fFvcBOCVsRohJoclItex595rU3tYdNhZDQ5rVUFYp7EKSwdA9oE4gxRYhiG3A8fEqR
+        fFQB7XsZgwY/SgZNM9uNmH3+34EtSUE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-308-zE3MYcgnMCiZjQzFEos_IQ-1; Mon, 04 Nov 2019 11:51:30 -0500
+ us-mta-285-9yNyzIkfPeqtWSV5Ovvavg-1; Mon, 04 Nov 2019 11:52:32 -0500
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5AF6E8017DD;
-        Mon,  4 Nov 2019 16:51:26 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8FC0C800C73;
+        Mon,  4 Nov 2019 16:52:28 +0000 (UTC)
 Received: from redhat.com (unknown [10.20.6.178])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3E86D5C1B2;
-        Mon,  4 Nov 2019 16:51:20 +0000 (UTC)
-Date:   Mon, 4 Nov 2019 11:51:18 -0500
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3A10B5C1B2;
+        Mon,  4 Nov 2019 16:52:23 +0000 (UTC)
+Date:   Mon, 4 Nov 2019 11:52:21 -0500
 From:   Jerome Glisse <jglisse@redhat.com>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -62,19 +62,17 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-Subject: Re: [PATCH v2 02/18] mm/gup: factor out duplicate code from four
- routines
-Message-ID: <20191104165118.GB5134@redhat.com>
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 03/18] goldish_pipe: rename local pin_user_pages()
+ routine
+Message-ID: <20191104165221.GC5134@redhat.com>
 References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-3-jhubbard@nvidia.com>
+ <20191103211813.213227-4-jhubbard@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20191103211813.213227-3-jhubbard@nvidia.com>
+In-Reply-To: <20191103211813.213227-4-jhubbard@nvidia.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: zE3MYcgnMCiZjQzFEos_IQ-1
+X-MC-Unique: 9yNyzIkfPeqtWSV5Ovvavg-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -84,222 +82,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 03, 2019 at 01:17:57PM -0800, John Hubbard wrote:
-> There are four locations in gup.c that have a fair amount of code
-> duplication. This means that changing one requires making the same
-> changes in four places, not to mention reading the same code four
-> times, and wondering if there are subtle differences.
+On Sun, Nov 03, 2019 at 01:17:58PM -0800, John Hubbard wrote:
+> 1. Avoid naming conflicts: rename local static function from
+> "pin_user_pages()" to "pin_goldfish_pages()".
 >=20
-> Factor out the common code into static functions, thus reducing the
-> overall line count and the code's complexity.
+> An upcoming patch will introduce a global pin_user_pages()
+> function.
 >=20
-> Also, take the opportunity to slightly improve the efficiency of the
-> error cases, by doing a mass subtraction of the refcount, surrounded
-> by get_page()/put_page().
->=20
-> Also, further simplify (slightly), by waiting until the the successful
-> end of each routine, to increment *nr.
->=20
-> Cc: Ira Weiny <ira.weiny@intel.com>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-
-Good cleanup.
 
 Reviewed-by: J=E9r=F4me Glisse <jglisse@redhat.com>
 
 > ---
->  mm/gup.c | 104 ++++++++++++++++++++++++-------------------------------
->  1 file changed, 45 insertions(+), 59 deletions(-)
+>  drivers/platform/goldfish/goldfish_pipe.c | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 >=20
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 85caf76b3012..199da99e8ffc 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -1969,6 +1969,34 @@ static int __gup_device_huge_pud(pud_t pud, pud_t =
-*pudp, unsigned long addr,
->  }
->  #endif
-> =20
-> +static int __record_subpages(struct page *page, unsigned long addr,
-> +=09=09=09     unsigned long end, struct page **pages, int nr)
-> +{
-> +=09int nr_recorded_pages =3D 0;
-> +
-> +=09do {
-> +=09=09pages[nr] =3D page;
-> +=09=09nr++;
-> +=09=09page++;
-> +=09=09nr_recorded_pages++;
-> +=09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-> +=09return nr_recorded_pages;
-> +}
-> +
-> +static void put_compound_head(struct page *page, int refs)
-> +{
-> +=09/* Do a get_page() first, in case refs =3D=3D page->_refcount */
-> +=09get_page(page);
-> +=09page_ref_sub(page, refs);
-> +=09put_page(page);
-> +}
-> +
-> +static void __huge_pt_done(struct page *head, int nr_recorded_pages, int=
- *nr)
-> +{
-> +=09*nr +=3D nr_recorded_pages;
-> +=09SetPageReferenced(head);
-> +}
-> +
->  #ifdef CONFIG_ARCH_HAS_HUGEPD
->  static unsigned long hugepte_addr_end(unsigned long addr, unsigned long =
-end,
->  =09=09=09=09      unsigned long sz)
-> @@ -1998,33 +2026,20 @@ static int gup_hugepte(pte_t *ptep, unsigned long=
- sz, unsigned long addr,
->  =09/* hugepages are never "special" */
->  =09VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
-> =20
-> -=09refs =3D 0;
->  =09head =3D pte_page(pte);
-> -
->  =09page =3D head + ((addr & (sz-1)) >> PAGE_SHIFT);
-> -=09do {
-> -=09=09VM_BUG_ON(compound_head(page) !=3D head);
-> -=09=09pages[*nr] =3D page;
-> -=09=09(*nr)++;
-> -=09=09page++;
-> -=09=09refs++;
-> -=09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-> +=09refs =3D __record_subpages(page, addr, end, pages, *nr);
-> =20
->  =09head =3D try_get_compound_head(head, refs);
-> -=09if (!head) {
-> -=09=09*nr -=3D refs;
-> +=09if (!head)
->  =09=09return 0;
-> -=09}
-> =20
->  =09if (unlikely(pte_val(pte) !=3D pte_val(*ptep))) {
-> -=09=09/* Could be optimized better */
-> -=09=09*nr -=3D refs;
-> -=09=09while (refs--)
-> -=09=09=09put_page(head);
-> +=09=09put_compound_head(head, refs);
->  =09=09return 0;
+> diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform=
+/goldfish/goldfish_pipe.c
+> index cef0133aa47a..7ed2a21a0bac 100644
+> --- a/drivers/platform/goldfish/goldfish_pipe.c
+> +++ b/drivers/platform/goldfish/goldfish_pipe.c
+> @@ -257,12 +257,12 @@ static int goldfish_pipe_error_convert(int status)
 >  =09}
-> =20
-> -=09SetPageReferenced(head);
-> +=09__huge_pt_done(head, refs, nr);
->  =09return 1;
 >  }
 > =20
-> @@ -2071,29 +2086,19 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, =
-unsigned long addr,
->  =09=09=09=09=09     pages, nr);
->  =09}
+> -static int pin_user_pages(unsigned long first_page,
+> -=09=09=09  unsigned long last_page,
+> -=09=09=09  unsigned int last_page_size,
+> -=09=09=09  int is_write,
+> -=09=09=09  struct page *pages[MAX_BUFFERS_PER_COMMAND],
+> -=09=09=09  unsigned int *iter_last_page_size)
+> +static int pin_goldfish_pages(unsigned long first_page,
+> +=09=09=09      unsigned long last_page,
+> +=09=09=09      unsigned int last_page_size,
+> +=09=09=09      int is_write,
+> +=09=09=09      struct page *pages[MAX_BUFFERS_PER_COMMAND],
+> +=09=09=09      unsigned int *iter_last_page_size)
+>  {
+>  =09int ret;
+>  =09int requested_pages =3D ((last_page - first_page) >> PAGE_SHIFT) + 1;
+> @@ -354,9 +354,9 @@ static int transfer_max_buffers(struct goldfish_pipe =
+*pipe,
+>  =09if (mutex_lock_interruptible(&pipe->lock))
+>  =09=09return -ERESTARTSYS;
 > =20
-> -=09refs =3D 0;
->  =09page =3D pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
-> -=09do {
-> -=09=09pages[*nr] =3D page;
-> -=09=09(*nr)++;
-> -=09=09page++;
-> -=09=09refs++;
-> -=09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-> +=09refs =3D __record_subpages(page, addr, end, pages, *nr);
-> =20
->  =09head =3D try_get_compound_head(pmd_page(orig), refs);
-> -=09if (!head) {
-> -=09=09*nr -=3D refs;
-> +=09if (!head)
->  =09=09return 0;
-> -=09}
-> =20
->  =09if (unlikely(pmd_val(orig) !=3D pmd_val(*pmdp))) {
-> -=09=09*nr -=3D refs;
-> -=09=09while (refs--)
-> -=09=09=09put_page(head);
-> +=09=09put_compound_head(head, refs);
->  =09=09return 0;
->  =09}
-> =20
-> -=09SetPageReferenced(head);
-> +=09__huge_pt_done(head, refs, nr);
->  =09return 1;
->  }
-> =20
-> @@ -2114,29 +2119,19 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, =
-unsigned long addr,
->  =09=09=09=09=09     pages, nr);
->  =09}
-> =20
-> -=09refs =3D 0;
->  =09page =3D pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
-> -=09do {
-> -=09=09pages[*nr] =3D page;
-> -=09=09(*nr)++;
-> -=09=09page++;
-> -=09=09refs++;
-> -=09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-> +=09refs =3D __record_subpages(page, addr, end, pages, *nr);
-> =20
->  =09head =3D try_get_compound_head(pud_page(orig), refs);
-> -=09if (!head) {
-> -=09=09*nr -=3D refs;
-> +=09if (!head)
->  =09=09return 0;
-> -=09}
-> =20
->  =09if (unlikely(pud_val(orig) !=3D pud_val(*pudp))) {
-> -=09=09*nr -=3D refs;
-> -=09=09while (refs--)
-> -=09=09=09put_page(head);
-> +=09=09put_compound_head(head, refs);
->  =09=09return 0;
->  =09}
-> =20
-> -=09SetPageReferenced(head);
-> +=09__huge_pt_done(head, refs, nr);
->  =09return 1;
->  }
-> =20
-> @@ -2151,29 +2146,20 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, =
-unsigned long addr,
->  =09=09return 0;
-> =20
->  =09BUILD_BUG_ON(pgd_devmap(orig));
-> -=09refs =3D 0;
-> +
->  =09page =3D pgd_page(orig) + ((addr & ~PGDIR_MASK) >> PAGE_SHIFT);
-> -=09do {
-> -=09=09pages[*nr] =3D page;
-> -=09=09(*nr)++;
-> -=09=09page++;
-> -=09=09refs++;
-> -=09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-> +=09refs =3D __record_subpages(page, addr, end, pages, *nr);
-> =20
->  =09head =3D try_get_compound_head(pgd_page(orig), refs);
-> -=09if (!head) {
-> -=09=09*nr -=3D refs;
-> +=09if (!head)
->  =09=09return 0;
-> -=09}
-> =20
->  =09if (unlikely(pgd_val(orig) !=3D pgd_val(*pgdp))) {
-> -=09=09*nr -=3D refs;
-> -=09=09while (refs--)
-> -=09=09=09put_page(head);
-> +=09=09put_compound_head(head, refs);
->  =09=09return 0;
->  =09}
-> =20
-> -=09SetPageReferenced(head);
-> +=09__huge_pt_done(head, refs, nr);
->  =09return 1;
->  }
-> =20
+> -=09pages_count =3D pin_user_pages(first_page, last_page,
+> -=09=09=09=09     last_page_size, is_write,
+> -=09=09=09=09     pipe->pages, &iter_last_page_size);
+> +=09pages_count =3D pin_goldfish_pages(first_page, last_page,
+> +=09=09=09=09=09 last_page_size, is_write,
+> +=09=09=09=09=09 pipe->pages, &iter_last_page_size);
+>  =09if (pages_count < 0) {
+>  =09=09mutex_unlock(&pipe->lock);
+>  =09=09return pages_count;
 > --=20
 > 2.23.0
 >=20
