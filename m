@@ -2,85 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A924BEDF6C
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 12:59:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0348EEDFE2
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 13:20:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728377AbfKDL7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 06:59:07 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:29639 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727838AbfKDL7H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 06:59:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1572868746; x=1604404746;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=rjVP3LL18mK9Hsw2nDp1wiarQRljfWax3caBurTMu7o=;
-  b=EwGHyVpP43tCsh/omObJHP1fHI+bdxNU+w5LWInqvFZZuFlfDeQuzixB
-   4TRhXOcMt7aLyFPHI4kYx08mZPj61Ius2Q+dNvKKdv5hHctZnD/E7bvp4
-   nm8iRtJayM8GahsQ28ax/T9bkEEPpGfv9oGwk1rIeljXMTpLxsCCihkE2
-   E=;
-IronPort-SDR: auWPcOqgmSecrcAFcdbm0YguRYEfPSnXlXQIAobYTHDFzYo5fsHsqnGqE8ivwk214VoETW/Ygd
- TaK6ld2j0U5g==
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2c-87a10be6.us-west-2.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 04 Nov 2019 11:59:05 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2c-87a10be6.us-west-2.amazon.com (Postfix) with ESMTPS id C5778A1DD5;
-        Mon,  4 Nov 2019 11:59:04 +0000 (UTC)
-Received: from EX13d09UWC001.ant.amazon.com (10.43.162.60) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 4 Nov 2019 11:59:03 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13d09UWC001.ant.amazon.com (10.43.162.60) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 4 Nov 2019 11:59:02 +0000
-Received: from HFA15-G63729NC.hfa16.amazon.com (10.218.52.87) by
- mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP Server id
- 15.0.1367.3 via Frontend Transport; Mon, 4 Nov 2019 11:58:59 +0000
-From:   <akiyano@amazon.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>
-Subject: [PATCH V1 net 2/2] net: ena: fix too long default tx interrupt moderation interval
-Date:   Mon, 4 Nov 2019 13:58:48 +0200
-Message-ID: <1572868728-5211-3-git-send-email-akiyano@amazon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1572868728-5211-1-git-send-email-akiyano@amazon.com>
-References: <1572868728-5211-1-git-send-email-akiyano@amazon.com>
+        id S1728377AbfKDMUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 07:20:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47618 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727430AbfKDMUR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 07:20:17 -0500
+Received: from localhost (unknown [89.205.135.36])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BC8432053B;
+        Mon,  4 Nov 2019 12:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572870016;
+        bh=q+5CsE1R6eI+gms5EsuP+pT+In6Ccjn15PiekdN1X3w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tck1HNmfadKcdco76MQiYsj1JnAksj3ANetsIpltNpINg+G5q2mzdd3IqdvBRp84F
+         E3TBLS50w9Nwra2GEQqlUhwhjW/miSJmo+v0Ee5VDTT1mdryav6ax9d3DQovhPE3zy
+         1ZNc9UmyDmQ29N2ChbncKf7RzXxcTaYNnpmdqndc=
+Date:   Mon, 4 Nov 2019 13:20:09 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jack Ping CHNG <jack.ping.chng@intel.com>
+Cc:     devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        andriy.shevchenko@intel.com, mallikarjunax.reddy@linux.intel.com,
+        cheol.yong.kim@intel.com
+Subject: Re: [PATCH v1] staging: intel-dpa: gswip: Introduce Gigabit Ethernet
+ Switch (GSWIP) device driver
+Message-ID: <20191104122009.GA2126921@kroah.com>
+References: <03832ecb6a34876ef26a24910816f22694c0e325.1572863013.git.jack.ping.chng@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <03832ecb6a34876ef26a24910816f22694c0e325.1572863013.git.jack.ping.chng@intel.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+On Mon, Nov 04, 2019 at 07:22:20PM +0800, Jack Ping CHNG wrote:
+> This driver enables the Intel's LGM SoC GSWIP block.
+> GSWIP is a core module tailored for L2/L3/L4+ data plane and QoS functions.
+> It allows CPUs and other accelerators connected to the SoC datapath
+> to enqueue and dequeue packets through DMAs.
+> Most configuration values are stored in tables such as
+> Parsing and Classification Engine tables, Buffer Manager tables and
+> Pseudo MAC tables.
 
-Current default non-adaptive tx interrupt moderation interval is 196 us.
-This commit sets it to 0, which is much more sensible as a default value.
-It can be modified using ethtool -C.
+Why is this being submitted to staging?  What is wrong with the "real"
+part of the kernel for this?
 
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
----
- drivers/net/ethernet/amazon/ena/ena_com.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Your TODO file is really vague, and doesn't give anyone any real things
+to work on with you, which is odd.
 
-diff --git a/drivers/net/ethernet/amazon/ena/ena_com.h b/drivers/net/ethernet/amazon/ena/ena_com.h
-index 7c941eba0bc9..164c45c04867 100644
---- a/drivers/net/ethernet/amazon/ena/ena_com.h
-+++ b/drivers/net/ethernet/amazon/ena/ena_com.h
-@@ -72,7 +72,7 @@
- /*****************************************************************************/
- /* ENA adaptive interrupt moderation settings */
- 
--#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		196
-+#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		0
- #define ENA_INTR_INITIAL_RX_INTERVAL_USECS		0
- #define ENA_DEFAULT_INTR_DELAY_RESOLUTION		1
- 
--- 
-2.17.1
+> Signed-off-by: Jack Ping CHNG <jack.ping.chng@intel.com>
+> Signed-off-by: Amireddy Mallikarjuna reddy <mallikarjunax.reddy@linux.intel.com>
 
+There is a group of people within Intel that you have to get code
+reviewed by before you can send it to me.  Please go by that process and
+not try to circumvent it by dumping it on staging without that review.
+It is there for good reasons.
+
+greg k-h
