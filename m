@@ -2,66 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37EB9ED81F
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 04:44:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB608ED82A
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 05:08:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727419AbfKDDoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 3 Nov 2019 22:44:10 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:41324 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727322AbfKDDoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 22:44:10 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8193315043D46;
-        Sun,  3 Nov 2019 19:44:09 -0800 (PST)
-Date:   Sun, 03 Nov 2019 19:44:09 -0800 (PST)
-Message-Id: <20191103.194409.422094551811274424.davem@davemloft.net>
-To:     andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, dan.carpenter@oracle.com
-Subject: Re: [PATCH v2 net-next] net: of_get_phy_mode: Change API to solve
- int/unit warnings
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191103.192601.443764119268490765.davem@davemloft.net>
-References: <20191101220756.2626-1-andrew@lunn.ch>
-        <20191103.192601.443764119268490765.davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 03 Nov 2019 19:44:09 -0800 (PST)
+        id S1727332AbfKDEIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 3 Nov 2019 23:08:48 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:33364 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726502AbfKDEIs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 3 Nov 2019 23:08:48 -0500
+Received: by mail-io1-f65.google.com with SMTP id j13so455355ioe.0
+        for <netdev@vger.kernel.org>; Sun, 03 Nov 2019 20:08:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=U3Jq0cPpa37kS5SCPB4HRrCUGeuwedOoeHGu1W8fB74=;
+        b=p0JMmGjQ3+hh1+SvW1HSZbcIz8skSu6CofnZjzjOKwy4CmkYHz/Dd5PRaL2r771XG2
+         NFrKFgVDN0M0dr31QmP3NChCnN3rMNqJZtueDB4Ge6NhXNYBNdZvplTRdFgckV+LQ/8L
+         zPTsZUflnh2WOkuMpzDRoXytIRvANUjpb0bG++xEo/Z56uLLWr77c9MfpddLEtkNzSTU
+         qpwB7zau72/KSHyIiRs+fXBX+BAMMjgqpfqi6hZNZMAoDs8B17d4WwNCtnUHvafcou9F
+         Gc83t9Oi2CFCLHFE+UPk18UGckdBE/gOzc5xeM6iNpcB2k5/U7rcyW6R9zujc1O9h78y
+         9fPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=U3Jq0cPpa37kS5SCPB4HRrCUGeuwedOoeHGu1W8fB74=;
+        b=QdlxA69LI5dzrebnYCrRlCrp1dcDClKrcnwbbWEXpYicNuoIWARwU9XJpvSSXa9ZeP
+         W/YWPWyuZbb2FFn6TiKRg1ur3rjqbXG0B97J3znDztGFXTQZGYtoerSiUaVpkPqP6N9M
+         FVf/9QHIwOJ25ehGWdTKgHv7N9JZuHMgwrGUV8cOGguaKl1RQ3RY7GnYrTHyTE57RYO8
+         lOhKkyoRhRsGy9R7U2nZPGwBZ8KAvs2/uoJXK/jwAoay+FQao4dres4IkutLhe/MukGC
+         ZBtl2PdBxHF4KbSoZURn7WLghvNSRwLatuIcziM/ddfrocwGg9c5ns31/rXsLLXiMzTE
+         UkSg==
+X-Gm-Message-State: APjAAAVfHZPIaUDuQJhFfwdYaJS5tX1p8739qt50KUxLsQpyb0kaozuF
+        LEV63EGMXoKJxKXGckiSUOvEbPg6Mh+RkWSHN2I=
+X-Google-Smtp-Source: APXvYqzGgo5YAYtDDK5ZyKf2rxWWByCUZZFf3YXGuK7/r//81Kk5wHsjnJn6G3/Top3Sle3Fhw9bKiE5YsLChZqpDKo=
+X-Received: by 2002:a6b:c98e:: with SMTP id z136mr20017166iof.15.1572840527061;
+ Sun, 03 Nov 2019 20:08:47 -0800 (PST)
+MIME-Version: 1.0
+Received: by 2002:ac0:8ad9:0:0:0:0:0 with HTTP; Sun, 3 Nov 2019 20:08:46 -0800 (PST)
+Reply-To: sgt.hester33@gmail.com
+From:   Ann Hester <0813103kalu@gmail.com>
+Date:   Mon, 4 Nov 2019 04:08:46 +0000
+Message-ID: <CAMtpwBEuzGyGEhaspRqV_45ezW10cnYAOOHDJttyr0nrg5mDWg@mail.gmail.com>
+Subject: Greetings
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KRGF0ZTogU3VuLCAwMyBO
-b3YgMjAxOSAxOToyNjowMSAtMDgwMCAoUFNUKQ0KDQo+IEFwcGxpZWQsIHRoYW5rcyBBbmRyZXcu
-DQoNCkkgdHJpZWQgdG8gZml4IHNvbWUgb2YgdGhlIGFsbG1vZGNvbmZpZyBidWlsZCBmYWxsb3V0
-IGJ1dCBpdCBqdXN0IGtlcHQNCnBpbGluZyB1cC4gIENhbiB5b3UgZml4IHRoaXMgYW5kIHJlc3Vi
-bWl0PyAgVGhhbmtzLg0KDQpkcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYTIvZHBh
-YTItbWFjLmM6IEluIGZ1bmN0aW9uIKFkcGFhMl9tYWNfZ2V0X2lmX21vZGWiOg0KZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEyL2RwYWEyLW1hYy5jOjQ5OjEyOiBlcnJvcjogdG9v
-IGZldyBhcmd1bWVudHMgdG8gZnVuY3Rpb24goW9mX2dldF9waHlfbW9kZaINCiAgaWZfbW9kZSA9
-IG9mX2dldF9waHlfbW9kZShub2RlKTsNCiAgICAgICAgICAgIF5+fn5+fn5+fn5+fn5+fg0KZHJp
-dmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtc3RpLmM6IEluIGZ1bmN0aW9u
-IKFzdGlfZHdtYWNfcGFyc2VfZGF0YaI6DQpkcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0
-bW1hYy9kd21hYy1zdGkuYzoyNzQ6MTY6IHdhcm5pbmc6IHRvbyBtYW55IGFyZ3VtZW50cyBmb3Ig
-Zm9ybWF0IFstV2Zvcm1hdC1leHRyYS1hcmdzXQ0KICAgZGV2X2VycihkZXYsICJDYW4ndCBnZXQg
-cGh5LW1vZGVcbiIsIGVycik7DQogICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fn5+
-fg0KSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC4vaW5jbHVkZS9saW51eC9wbGF0Zm9ybV9kZXZpY2Uu
-aDoxMywNCiAgICAgICAgICAgICAgICAgZnJvbSAuL2luY2x1ZGUvbGludXgvc3RtbWFjLmg6MTUs
-DQogICAgICAgICAgICAgICAgIGZyb20gZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1t
-YWMvZHdtYWMtc3VueGkuYzoxMDoNCmRyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFj
-L2R3bWFjLXN1bnhpLmM6IEluIGZ1bmN0aW9uIKFzdW43aV9nbWFjX3Byb2JlojoNCmRyaXZlcnMv
-bmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLXN1bnhpLmM6MTIzOjE2OiB3YXJuaW5n
-OiB0b28gbWFueSBhcmd1bWVudHMgZm9yIGZvcm1hdCBbLVdmb3JtYXQtZXh0cmEtYXJnc10NCiAg
-IGRldl9lcnIoZGV2LCAiQ2FuJ3QgZ2V0IHBoeS1tb2RlXG4iLCByZXQpOw0KICAgICAgICAgICAg
-ICAgIF5+fn5+fn5+fn5+fn5+fn5+fn5+fn4NCi4vaW5jbHVkZS9saW51eC9kZXZpY2UuaDoxNjU4
-OjIyOiBub3RlOiBpbiBkZWZpbml0aW9uIG9mIG1hY3JvIKFkZXZfZm10og0KICNkZWZpbmUgZGV2
-X2ZtdChmbXQpIGZtdA0KICAgICAgICAgICAgICAgICAgICAgIF5+fg0KZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtc3VueGkuYzoxMjM6Mzogbm90ZTogaW4gZXhwYW5z
-aW9uIG9mIG1hY3JvIKFkZXZfZXJyog0KICAgZGV2X2VycihkZXYsICJDYW4ndCBnZXQgcGh5LW1v
-ZGVcbiIsIHJldCk7DQogICBefn5+fn5+DQo=
+How are you? my name is Ann Hester, please reply me.
