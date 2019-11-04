@@ -2,93 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DD51EE6E6
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 19:06:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8652EE6F8
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 19:11:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728971AbfKDSGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 13:06:25 -0500
-Received: from mout.gmx.net ([212.227.15.19]:56523 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728012AbfKDSGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Nov 2019 13:06:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1572890760;
-        bh=i/YVkRXw1W5UTTmqjVB4l15sajoU6ZqsE7IG48uUlI0=;
-        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=No5ZiOcmUg9BEwYx9x8oiEFNqyBFm9TBXUP0/dK52Fo0dJgffnQrVEaj8op2OfdG9
-         AFhfyNz2rj7NcW0dbwGtPRf75Qircu9uSi3hyinCh1EwFYrj4PPnf/hUNQjErw7HtW
-         jOfIMpwyer2meTEmPK+5XpUfZXpCx6M/B6HB7qAs=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.1.164] ([37.4.249.112]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MSKyI-1iKyf227UO-00Sb5o; Mon, 04
- Nov 2019 19:06:00 +0100
-Subject: Re: [PATCH] net: usb: lan78xx: Disable interrupts before calling
- generic_handle_irq()
-To:     Daniel Wagner <dwagner@suse.de>, netdev@vger.kernel.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Marc Zyngier <maz@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Jisheng Zhang <Jisheng.Zhang@synaptics.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        David Miller <davem@davemloft.net>
-References: <20191025080413.22665-1-dwagner@suse.de>
- <20191104085703.diajpzpxo6dchuhs@beryllium.lan>
-From:   Stefan Wahren <wahrenst@gmx.net>
-Message-ID: <793b1cfa-dc45-c01c-ef0f-72db6df3ecd1@gmx.net>
-Date:   Mon, 4 Nov 2019 19:05:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729332AbfKDSLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 13:11:02 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46055 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728321AbfKDSLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 13:11:02 -0500
+Received: by mail-wr1-f67.google.com with SMTP id q13so18221487wrs.12
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 10:10:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=sender:date:from:to:cc:subject:message-id:mail-followup-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=j2dTn7Wj7MGJZeGgFXPtBogE4qg0BoOVrIkL6wJedbU=;
+        b=RPIdhIouR3j/Ac7neKFnGVsgwJtt56byt4O2813ik4ObcxN+6tPIIPEpIvd4bHdCQy
+         xfCULaOlOfNgr9pPNLunatyY1TT5oMd7MopfAimYN7Fzif9xA431/mZ6rvrz1NeweKf9
+         nhCRlvw6Mqd6dfgcS8I0AQ1BearSl/gQZ3yck=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=j2dTn7Wj7MGJZeGgFXPtBogE4qg0BoOVrIkL6wJedbU=;
+        b=qDfse7sB7kSMN2Owvvv0aJPuVbe+4eSE0Yn409AqRFZwp3Wgm2GXqIRCsIjP5kSJJy
+         a6Ahf//HWlK8BmcHpjoY0EH+JicENfYD0K1UvKZSTGENtKweqc+salZ1YJSsS+xaG4Tx
+         7nPPdZCAV+pzDxiP7wcEKUETyHuhFSXuRbmXLwzikVvKIl+tbWcce7cMZ8+YuqKUU/KV
+         yP13fLuHlN82Zev0igGrT0ckUEfzbk3S48oOSKGo2GPZHJ3nrNrX4up4HfmWLS15rJNz
+         6bhnaUFsA+t7WNgQ6Na6onsj8zRPDiRxU/OCf35afDyIdHD2HP+OIQqaYp4DjZeCarmD
+         XcJg==
+X-Gm-Message-State: APjAAAVfkwKrQRd6aKUlIvF13bgi991rXMKC/on2kERrHDAq4QgoEB2B
+        smoh1lUr/79g6+fVy4LbyspKlQ==
+X-Google-Smtp-Source: APXvYqwKkCPGo7mLK0jIbZGuRHh4x9upKlx8LPQBL5XTz+fwA202HVPHUNfjQCRnXVzy4o6JxOqyww==
+X-Received: by 2002:a5d:448a:: with SMTP id j10mr25997024wrq.79.1572891058912;
+        Mon, 04 Nov 2019 10:10:58 -0800 (PST)
+Received: from phenom.ffwll.local (212-51-149-96.fiber7.init7.net. [212.51.149.96])
+        by smtp.gmail.com with ESMTPSA id f13sm17508153wrq.96.2019.11.04.10.10.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 10:10:57 -0800 (PST)
+Date:   Mon, 4 Nov 2019 19:10:55 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 09/19] drm/via: set FOLL_PIN via pin_user_pages_fast()
+Message-ID: <20191104181055.GP10326@phenom.ffwll.local>
+Mail-Followup-To: Ira Weiny <ira.weiny@intel.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>, David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-10-jhubbard@nvidia.com>
+ <20191031233628.GI14771@iweiny-DESK2.sc.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20191104085703.diajpzpxo6dchuhs@beryllium.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Provags-ID: V03:K1:+2FOEEptqMf+RzO7I8AY6R0vpsaB7v7bFwPTF71L/23k22IwCw8
- JYzhXR2mv4+1F9xloVqtO6TxHLtLWwDofr60ce0pyYbvQGD91CoH01M0w398CU0s5zkm0UA
- HV8sM98GCy2yCQXLsDLVeClndDPTCxEXiIatoBnzHTKMAX7hkLg6EE1gT7o/OmCIFnByawW
- BwLi3SOFN1N1onxX7AsRQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:aRrNqB+ccsI=:fwsVjTKA065NF6oEatWVFt
- LLQaPUpcoN3YYYhJvGCnARQ34rkirIrhihqUq4x7nwFYcySgj3fAHmECpw3sHq+asJTHoGVT5
- RXIEZLQKwKMQmhGVoBJ3jqrxpXSpgL8zejKUzO+Y8v1gPl1z+hwNLPxmwP/1CBE1au5vRAmKJ
- JLl+cCYQ0Jl7PORbzEO6bTv8yyDD33HynvhGug9yKotPgA/74ibojqbx4NeHMRBJuRKKg+m7x
- f87GtfbBEsjam3dw/banZkdIzgFWpURSC8Ve8jCJ84+XdmSz+eYo3hSY1NzIJNpLiUB4LbsMB
- fsjv4ocbiNK8ww72fAJGWPsZYjPUMepdykMWywXTNCu3nm+e03KeF45gu8SPq31GUzbQgU0V9
- +05mkx3TSHkwTq7deg/OZ2INSfOxm1lXDZARVjNd79kB4gDMHnO+BRdn8Vr3GDmvwJ0wvUAw6
- zItAOi2Csonx6WlcI8CC2cNmOOalm9OMuPTqE+m8QbXLMhHBWut/TE1B/YSBSK2Q/zudEajwB
- uQxDHsxTpZMFDjMGTP4yqgHm7mAkiWrt1C9LHUvDyscD24lWTLakAiXuPebf0J4xsuECPW5iV
- 7aM/V+ZRqB1WLhrpJYmg7oFJJLza9ezeX6hPnQoL669A6QZGiKzTUqgDhTh+Lx+Duj/ovNd6c
- nortiecFni0Lf7CA/y8wG/xoyZ+bluCsSiHIR+a3CuDW/RXb5IRNqQcFsRhL4ae4mhLIyjG54
- dfyyu6WQneFQNyVUYOIbvvh714Gt0UZfOUozq/cobvd2SDFdLG/edUQoqupKOXQS4vBPSXRbK
- LDFGjatAuC1FwYyNLXUHSuyz1vU6N4rmiGJRU4bafAIhUbQCFD0xBLRbJAeT0XqbDlvwzJLXZ
- 2c+xMccDQ4UXXoDzY+afRjZEasP5d1xi9tNQFj+qL3je0b8FwCIHtJwsPQ02SmEXlEdU0LflQ
- Eezn/RVaz08l491qXhBEJhOGZ+GyuBnoWLq8Y2O37GtiipAy8k7CRTplBGPuE7VPtAxTxcTbf
- oq547618PQXIc3PvdgeSUDGwcStDMsc3fhEC6/KEkVRT7OiR8OOgT86FM8kK4PkTMOq1rr2up
- UvjP3lHjIRBVdYDY6Wmk1du5vW3H8p9CZrC0P0OAaq/MJ1h4K4vfQLgOFKyRhtPa+Ag5t4Vu0
- z+TyoCu2Bm7Pq0q4uu6Acl+p1nKtUls2ZXzpL/Czu1PmsPWwKqTYuiTVNydW57IVKjiJ4b/O4
- w5DYfRboVkDmnJ+pxrcflIGXohbvQzy7TsikLs67/iUMHlq5K6+L1LZ0+cs0=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191031233628.GI14771@iweiny-DESK2.sc.intel.com>
+X-Operating-System: Linux phenom 5.2.0-3-amd64 
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Daniel,
+On Thu, Oct 31, 2019 at 04:36:28PM -0700, Ira Weiny wrote:
+> On Wed, Oct 30, 2019 at 03:49:20PM -0700, John Hubbard wrote:
+> > Convert drm/via to use the new pin_user_pages_fast() call, which sets
+> > FOLL_PIN. Setting FOLL_PIN is now required for code that requires
+> > tracking of pinned pages, and therefore for any code that calls
+> > put_user_page().
+> > 
+> 
+> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 
-Am 04.11.19 um 09:57 schrieb Daniel Wagner:
-> On Fri, Oct 25, 2019 at 10:04:13AM +0200, Daniel Wagner wrote:
->> This patch just fixes the warning. There are still problems left (the
->> unstable NFS report from me) but I suggest to look at this
->> separately. The initial patch to revert all the irqdomain code might
->> just hide the problem. At this point I don't know what's going on so I
->> rather go baby steps. The revert is still possible if nothing else
->> works.
-> I replaced my power supply with the official RPi one and the NFS
-> timeouts problems are gone. Also a long test session with different
-> network loads didn't show any problems. I feel so stupid...
-did you never saw a warning about under voltage from the Raspberry Pi
-hwmon driver?
->
-> Thanks,
-> Daniel
->
+No one's touching the via driver anymore, so feel free to merge this
+through whatever tree suits best (aka I'll drop this on the floor and
+forget about it now).
+
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+
+> 
+> > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> > ---
+> >  drivers/gpu/drm/via/via_dmablit.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/gpu/drm/via/via_dmablit.c b/drivers/gpu/drm/via/via_dmablit.c
+> > index 3db000aacd26..37c5e572993a 100644
+> > --- a/drivers/gpu/drm/via/via_dmablit.c
+> > +++ b/drivers/gpu/drm/via/via_dmablit.c
+> > @@ -239,7 +239,7 @@ via_lock_all_dma_pages(drm_via_sg_info_t *vsg,  drm_via_dmablit_t *xfer)
+> >  	vsg->pages = vzalloc(array_size(sizeof(struct page *), vsg->num_pages));
+> >  	if (NULL == vsg->pages)
+> >  		return -ENOMEM;
+> > -	ret = get_user_pages_fast((unsigned long)xfer->mem_addr,
+> > +	ret = pin_user_pages_fast((unsigned long)xfer->mem_addr,
+> >  			vsg->num_pages,
+> >  			vsg->direction == DMA_FROM_DEVICE ? FOLL_WRITE : 0,
+> >  			vsg->pages);
+> > -- 
+> > 2.23.0
+> > 
+
+-- 
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
