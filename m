@@ -2,147 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B859EE749
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 19:22:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FEB6EE759
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 19:25:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729603AbfKDSW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 13:22:26 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:16082 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728321AbfKDSWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 13:22:25 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc06c670000>; Mon, 04 Nov 2019 10:22:31 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 04 Nov 2019 10:22:24 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 04 Nov 2019 10:22:24 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 4 Nov
- 2019 18:22:23 +0000
-Subject: Re: [PATCH v2 09/18] drm/via: set FOLL_PIN via pin_user_pages_fast()
-To:     Jerome Glisse <jglisse@redhat.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-10-jhubbard@nvidia.com>
- <20191104174445.GF5134@redhat.com>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <880dbf76-ba9d-2555-27e4-a656c7cd3296@nvidia.com>
-Date:   Mon, 4 Nov 2019 10:22:23 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729314AbfKDSZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 13:25:38 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44226 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728322AbfKDSZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 13:25:38 -0500
+Received: by mail-qk1-f195.google.com with SMTP id m16so18221814qki.11
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 10:25:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=xN2bjej83o+NcrGfsofqGbZrcyjGlirBRXIUYnkZvyk=;
+        b=dmiUF3tu36dKuA41bV62iUTur25oOazOYwBeKqTWoGLLJm+Ziajf0ZvAUOCxRAR1V8
+         hnPSZUuAaZ70xgx8JFviZNQ0t8LsizwZWKZcv7H95vQB4hDAt8v8W5EBQTer7nMJDWhx
+         WqBZRBL1cZxivchDOCFwH/gY40/xQeP+WSFoKaO6yu1vasx2IXUvGWeDedeXxSeJ265Q
+         wgeKA3U9h8AiX8v/SO19oH1I5dVhjlSMnpbj9Qa18XO5V7QkaBX+4z9xdYeAhGhVPMMs
+         LESUmp5i6O2M5twBu1Epk1T5Si1Fn4+FmB7iC+HS5kMmCzoTrH/Sn2MNdfwambw0QNSt
+         YVfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=xN2bjej83o+NcrGfsofqGbZrcyjGlirBRXIUYnkZvyk=;
+        b=Q0fWIkXIJP1GOJbZ8XQGnuMaVsct7evhLxA6Yc4woZfdbacr/x1z1Kz2Qq/MDf4PCm
+         NhdkiUxGDPpur3r4UNA+Da1m2O/OC8nRyyOSzkx/kguELiBQCNROKALApMELL70w8+jk
+         DhRGZ3sKVAhaaDfo+1aebfzCdqT+og+IqLwkU4y+dQ0itjJSce+fWdf6f6pZixNk2Cuz
+         F+wXkMyM3Ah/V/4324R8ky5hscR1oVmcdXd1BQpfhWLRknN4aZGwlyfADl46xgVo5Ry6
+         ZcC+K3ly5yxlSvtTqNHHIcygWYQXib24gBQCA6OicScfwAhwoj9R0vAjgk3mq504ZgaT
+         XG0A==
+X-Gm-Message-State: APjAAAWlDCqvFG2XhN40c2mmz1BvzoXEowDX/eq04zhwal/cjolVrIJ3
+        os9lUh5c0A24BRuF90FhEaU=
+X-Google-Smtp-Source: APXvYqxBSiw0snHU2aDGGJmlK/4UB9s79B1wRl37A5YtXdjUJbASpEYeQ+Lq2yoFiV7L/5VggzO3GA==
+X-Received: by 2002:a37:a95:: with SMTP id 143mr22809234qkk.382.1572891937164;
+        Mon, 04 Nov 2019 10:25:37 -0800 (PST)
+Received: from [192.168.1.104] ([74.197.19.145])
+        by smtp.gmail.com with ESMTPSA id n56sm10960737qtb.73.2019.11.04.10.25.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Nov 2019 10:25:36 -0800 (PST)
+Subject: Re: Followup: Kernel memory leak on 4.11+ & 5.3.x with IPsec
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     netdev@vger.kernel.org, gregkh@linuxfoundation.org
+References: <CAMnf+Pg4BLVKAGsr9iuF1uH-GMOiyb8OW0nKQSEKmjJvXj+t1g@mail.gmail.com>
+ <20191101075335.GG14361@gauss3.secunet.de>
+From:   JD <jdtxs00@gmail.com>
+Message-ID: <f5d26eeb-02b5-20f4-14f5-e56721c97eb8@gmail.com>
+Date:   Mon, 4 Nov 2019 12:25:37 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <20191104174445.GF5134@redhat.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <20191101075335.GG14361@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572891751; bh=6jW45wKOFDFKBEg0lZ7bTretxwwJVIL7ATzyqCLqcEs=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=q+cPcxTzijEgiG71VTi3ghLiE7GfTQ4coAPAv62hXRzzfbJrqL72vvQzW31t6ElHl
-         a14GEr0QvEJ+EgWUGUZvr/G/dg/DO160GJKTWSZ2RJb00ZyoxmozrYK/r7pBI/oTMl
-         Ler5Xg8wJ+ZN2h3kBmHfP9Sw6IyvnOUkYQcpRlRzW+raDfRYi607iZ0w1mGtWLJDUd
-         OeC58odM3LRQFDuOqtEG4EL4fTJQzFx4oBwJjsq4w851X4PvmAFvjIH2kPLRjgrU0s
-         pJjSO5ccYyyba2k6piwVKSCGegs79Mk1YqTR+mkcxWQJ+CLl9VNfnFD05lp5bT2fCz
-         LMXjtLCzRFCYw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/4/19 9:44 AM, Jerome Glisse wrote:
-> On Sun, Nov 03, 2019 at 01:18:04PM -0800, John Hubbard wrote:
->> Convert drm/via to use the new pin_user_pages_fast() call, which sets
->> FOLL_PIN. Setting FOLL_PIN is now required for code that requires
->> tracking of pinned pages, and therefore for any code that calls
->> put_user_page().
+On 11/1/2019 2:53 AM, Steffen Klassert wrote:
+> On Wed, Oct 30, 2019 at 02:30:27PM -0500, JD wrote:
+>> Here are some clear steps to reproduce:
+>> - On your preferred OS, install an IPsec daemon/software
+>> (strongswan/openswan/whatever)
+>> - Setup a IKEv2 conn in tunnel mode. Use a RFC1918 private range for
+>> your client IP pool. e.g: 10.2.0.0/16
+>> - Enable IP forwarding (net.ipv4.ip_forward = 1)
+>> - MASQUERADE the 10.2.0.0/16 range using iptables, e.g: "-A
+>> POSTROUTING -s 10.2.0.0/16 -o eth0 -j MASQUERADE"
+>> - Connect some IKEv2 clients (any device, any platform, doesn't
+>> matter) and pass traffic through the tunnel.
+>> ^^ It speeds up the leak if you have multiple tunnels passing traffic
+>> at the same time.
 >>
->> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
->> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
->=20
-> Please be more explicit that via_dmablit.c is already using put_user_page=
-()
-> as i am expecting that any conversion to pin_user_pages*() must be pair w=
-ith
-> a put_user_page(). I find above commit message bit unclear from that POV.
->=20
-
-OK. This one, and the fs/io_uring (patch 9) and net/xdp (patch 10) were all
-cases that had put_user_page() pre-existing. I will add something like the=
-=20
-following to each commit description, for v3:
-
-In partial anticipation of this work, the drm/via driver was already=20
-calling put_user_page() instead of put_page(). Therefore, in order to
-convert from the get_user_pages()/put_page() model, to the
-pin_user_pages()/put_user_page() model, the only change required
-is to change get_user_pages() to pin_user_pages().
-
-thanks,
-
-John Hubbard
-NVIDIA
-
-> Reviewed-by: J=E9r=F4me Glisse <jglisse@redhat.com>
->=20
->=20
->> ---
->>  drivers/gpu/drm/via/via_dmablit.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> - Observe memory is lost over time and never recovered. Doesn't matter
+>> if you restart the daemon, bring down the tunnels, or even unload
+>> xfrm/ipsec modules. The memory goes into the void. Only way to reclaim
+>> is by restarting completely.
 >>
->> diff --git a/drivers/gpu/drm/via/via_dmablit.c b/drivers/gpu/drm/via/via=
-_dmablit.c
->> index 3db000aacd26..37c5e572993a 100644
->> --- a/drivers/gpu/drm/via/via_dmablit.c
->> +++ b/drivers/gpu/drm/via/via_dmablit.c
->> @@ -239,7 +239,7 @@ via_lock_all_dma_pages(drm_via_sg_info_t *vsg,  drm_=
-via_dmablit_t *xfer)
->>  	vsg->pages =3D vzalloc(array_size(sizeof(struct page *), vsg->num_page=
-s));
->>  	if (NULL =3D=3D vsg->pages)
->>  		return -ENOMEM;
->> -	ret =3D get_user_pages_fast((unsigned long)xfer->mem_addr,
->> +	ret =3D pin_user_pages_fast((unsigned long)xfer->mem_addr,
->>  			vsg->num_pages,
->>  			vsg->direction =3D=3D DMA_FROM_DEVICE ? FOLL_WRITE : 0,
->>  			vsg->pages);
->> --=20
->> 2.23.0
->>
->=20
->=20
+>> Please let me know if anything further is needed to diagnose/debug
+>> this problem. We're stuck with the 4.9 kernel because all newer
+>> kernels leak memory. Any help or advice is appreciated.
+> Looks like we forget to free the page that we use for
+> skb page fragments when deleting the xfrm_state.
+>
+> Can you please try the patch below? I don't have access
+> to my test environment today, so this patch is untested.
+> I'll try to do some tests on Monday.
+>
+>
+> diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+> index c6f3c4a1bd99..f3423562d933 100644
+> --- a/net/xfrm/xfrm_state.c
+> +++ b/net/xfrm/xfrm_state.c
+> @@ -495,6 +495,8 @@ static void ___xfrm_state_destroy(struct xfrm_state *x)
+>   		x->type->destructor(x);
+>   		xfrm_put_type(x->type);
+>   	}
+> +	if (x->xfrag.page)
+> +		put_page(x->xfrag.page);
+>   	xfrm_dev_state_free(x);
+>   	security_xfrm_state_free(x);
+>   	xfrm_state_free(x);
+
+Hello Steffen,
+
+I left the stress test running over the weekend and everything still 
+looks great. Your patch definitely resolves the leak.
+
+Everything kernel 4.11 and above will need this fix afaik. CC'ed Greg 
+KH. Will need backporting to 4.14/4.19.
+
+Thanks again for your help and let me know if anything further is needed 
+from me.
+
