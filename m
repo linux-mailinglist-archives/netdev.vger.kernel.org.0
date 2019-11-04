@@ -2,475 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFABEF0C1
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 23:49:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2222EF0D6
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 23:57:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729982AbfKDWtW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 17:49:22 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:13146 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729122AbfKDWtV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 17:49:21 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc0aaf60000>; Mon, 04 Nov 2019 14:49:26 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Mon, 04 Nov 2019 14:49:19 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Mon, 04 Nov 2019 14:49:19 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 4 Nov
- 2019 22:49:18 +0000
-Subject: Re: [PATCH v2 12/18] mm/gup: track FOLL_PIN pages
-To:     Jerome Glisse <jglisse@redhat.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-13-jhubbard@nvidia.com>
- <20191104185238.GG5134@redhat.com>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <7821cf87-75a8-45e2-cf28-f85b62192416@nvidia.com>
-Date:   Mon, 4 Nov 2019 14:49:18 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729928AbfKDW5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 17:57:07 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45258 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729122AbfKDW5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 17:57:07 -0500
+Received: by mail-ed1-f66.google.com with SMTP id b5so3677503eds.12;
+        Mon, 04 Nov 2019 14:57:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RiAR56LvYehlVbvWCkbqbSQuYGYsIk95j6fMdrpV1nc=;
+        b=AIS2YTrgGVneqWdDn+fH1eTxEwwxRNtUIU3pG1STWPZwY2NZnp6ohxnHJyDqiSoL0J
+         VGQ/tstwtD/Tw1o/b/M2X4PA70uR3ZBi1YlxfN+HQHBKw+u/e2eOa813nOr2ndmD8ttx
+         /F7+sp1hgJpUvYA4lvwWjuiyT11qzQ8IXIYPWee6dlPtsEyrRaG1Z3OpNERetXSvdluc
+         4vhCCIGQRwDO9GjtlYJ1/TuDjDlK9qg3v5VzcJpRgKvZs1JXlZpQQlV36Ov4vHUdikk/
+         ifNhwexViRNvn69RZatQhYcg2EYxwkQuuHZY2FjoWARY4AVKxlN9l/+UfCzCncgakHDY
+         7S5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RiAR56LvYehlVbvWCkbqbSQuYGYsIk95j6fMdrpV1nc=;
+        b=Cs+Le4Pr19zxY7Inxpr8B+9Fa2lbuVk6pakhl8WcvI5onuDVFh2xK1Cpr91sEYGT7B
+         vCtup79J2SXwnX5OaIuGm8HN7YJ8FqB4SGcofeYcllgH4N6rPzRjspy4F+pVRbY5c2Kg
+         VaA6krL1W6Peg0MySyRhIS0J7nF4Ye0IkKkKLB6lluYkvxOouj024huKQY/dwGqIt9os
+         Uk5gGOqbL/DinUGscMKUnTAF2vxXASfB8DW352ANeTLIDggTLEIl/Nk1B3L6VTQmxDeo
+         IGvIEU4KEi4I/YjUC0MOWMKzlE0qirXW+LB52ImMorlatGmC1cFjreO25tsn+h1HTcjg
+         Emcw==
+X-Gm-Message-State: APjAAAX7CjKPoEQ3EpBZrIE50zCQA5SordtBvCXZe60po/VixtdA2vXs
+        TEMuHEiFX+blsECfHyLLnq+EY33lvAGbmHpojRk=
+X-Google-Smtp-Source: APXvYqx2CnK3SgwLJ4BQMckOxgGLFIjdGb7UqylaacXOSV0qbaW5N8hbK/HSX+Ul1XtOVKh/7kG+2NTPWWh/fCNxYKo=
+X-Received: by 2002:a17:906:1d19:: with SMTP id n25mr5343130ejh.151.1572908222565;
+ Mon, 04 Nov 2019 14:57:02 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191104185238.GG5134@redhat.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572907766; bh=FuJBjY/6EN7ZD74pvhEnFnmub+fGmDUQkCP0kT0KICU=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=FcJ6pYEqgdsOBIC1qVrc85UBs1dRxi/GQUXYp9dezlTyMHw/CSA0Is2qC57yISAy4
-         6AMaLgxKlgWAr5NM6ndqYHzumM6X8COBXcVUW+/TbhFuYaY+Tsi+OfKm3N8L/B1SvC
-         MCOjQmCNtC8acaFJmVHn5tJe4LdrVk8aNaCHptUsq77bmrRzdZGabFU6hCo1OybX2w
-         R2ANEuB4R6RAmlhsyliFdh2gK+0s0y/6lhLLIwhC83jKdyyuegxiqrP4OnS/awC8KH
-         8rfI+7HfLbMNNN4LhFOjO5NtjSqyVko5eLMgbZyEVFvA5q9akXVjmFK5Jgn/qqJnYh
-         HRdMrbDpqrO/w==
+References: <20191101232828.17023-1-ivan.khoronzhuk@linaro.org> <87tv7juymy.fsf@linux.intel.com>
+In-Reply-To: <87tv7juymy.fsf@linux.intel.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 5 Nov 2019 00:56:51 +0200
+Message-ID: <CA+h21hpruAy1=yuBS1_YDOZ6t-g0=Xky_AJjBfPGhNMq0tOT2Q@mail.gmail.com>
+Subject: Re: [PATCH net] taprio: fix panic while hw offload sched list swap
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/4/19 10:52 AM, Jerome Glisse wrote:
-> On Sun, Nov 03, 2019 at 01:18:07PM -0800, John Hubbard wrote:
->> Add tracking of pages that were pinned via FOLL_PIN.
->>
->> As mentioned in the FOLL_PIN documentation, callers who effectively set
->> FOLL_PIN are required to ultimately free such pages via put_user_page().
->> The effect is similar to FOLL_GET, and may be thought of as "FOLL_GET
->> for DIO and/or RDMA use".
->>
->> Pages that have been pinned via FOLL_PIN are identifiable via a
->> new function call:
->>
->>    bool page_dma_pinned(struct page *page);
->>
->> What to do in response to encountering such a page, is left to later
->> patchsets. There is discussion about this in [1].
->>
->> This also changes a BUG_ON(), to a WARN_ON(), in follow_page_mask().
->>
->> This also has a couple of trivial, non-functional change fixes to
->> try_get_compound_head(). That function got moved to the top of the
->> file.
-> 
-> Maybe split that as a separate trivial patch.
+On Mon, 4 Nov 2019 at 23:19, Vinicius Costa Gomes
+<vinicius.gomes@intel.com> wrote:
+>
+> Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> writes:
+>
+> > Don't swap oper and admin schedules too early, it's not correct and
+> > causes crash.
+> >
+> > Steps to reproduce:
+> >
+> > 1)
+> > tc qdisc replace dev eth0 parent root handle 100 taprio \
+> >     num_tc 3 \
+> >     map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+> >     queues 1@0 1@1 1@2 \
+> >     base-time $SOME_BASE_TIME \
+> >     sched-entry S 01 80000 \
+> >     sched-entry S 02 15000 \
+> >     sched-entry S 04 40000 \
+> >     flags 2
+> >
+> > 2)
+> > tc qdisc replace dev eth0 parent root handle 100 taprio \
+> >     base-time $SOME_BASE_TIME \
+> >     sched-entry S 01 90000 \
+> >     sched-entry S 02 20000 \
+> >     sched-entry S 04 40000 \
+> >     flags 2
+> >
+> > 3)
+> > tc qdisc replace dev eth0 parent root handle 100 taprio \
+> >     base-time $SOME_BASE_TIME \
+> >     sched-entry S 01 150000 \
+> >     sched-entry S 02 200000 \
+> >     sched-entry S 04 40000 \
+> >     flags 2
+> >
+> > Do 2 3 2 .. steps  more times if not happens and observe:
+> >
+> > [  305.832319] Unable to handle kernel write to read-only memory at
+> > virtual address ffff0000087ce7f0
+> > [  305.910887] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
+> > [  305.919306] Hardware name: Texas Instruments AM654 Base Board (DT)
+> >
+> > [...]
+> >
+> > [  306.017119] x1 : ffff800848031d88 x0 : ffff800848031d80
+> > [  306.022422] Call trace:
+> > [  306.024866]  taprio_free_sched_cb+0x4c/0x98
+> > [  306.029040]  rcu_process_callbacks+0x25c/0x410
+> > [  306.033476]  __do_softirq+0x10c/0x208
+> > [  306.037132]  irq_exit+0xb8/0xc8
+> > [  306.040267]  __handle_domain_irq+0x64/0xb8
+> > [  306.044352]  gic_handle_irq+0x7c/0x178
+> > [  306.048092]  el1_irq+0xb0/0x128
+> > [  306.051227]  arch_cpu_idle+0x10/0x18
+> > [  306.054795]  do_idle+0x120/0x138
+> > [  306.058015]  cpu_startup_entry+0x20/0x28
+> > [  306.061931]  rest_init+0xcc/0xd8
+> > [  306.065154]  start_kernel+0x3bc/0x3e4
+> > [  306.068810] Code: f2fbd5b7 f2fbd5b6 d503201f f9400422 (f9000662)
+> > [  306.074900] ---[ end trace 96c8e2284a9d9d6e ]---
+> > [  306.079507] Kernel panic - not syncing: Fatal exception in interrupt
+> > [  306.085847] SMP: stopping secondary CPUs
+> > [  306.089765] Kernel Offset: disabled
+> >
+> > Try to explain one of the possible crash cases:
+> >
+> > The "real" admin list is assigned when admin_sched is set to
+> > new_admin, it happens after "swap", that assigns to oper_sched NULL.
+> > Thus if call qdisc show it can crash.
+> >
+> > Farther, next second time, when sched list is updated, the admin_sched
+> > is not NULL and becomes the oper_sched, previous oper_sched was NULL so
+> > just skipped. But then admin_sched is assigned new_admin, but schedules
+> > to free previous assigned admin_sched (that already became oper_sched).
+> >
+> > Farther, next third time, when sched list is updated,
+> > while one more swap, oper_sched is not null, but it was happy to be
+> > freed already (while prev. admin update), so while try to free
+> > oper_sched the kernel panic happens at taprio_free_sched_cb().
+> >
+> > So, move the "swap emulation" where it should be according to function
+> > comment from code.
+> >
+> > Fixes: 9c66d15646760e ("taprio: Add support for hardware offloading")
+> > Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> > ---
+>
+> As it solves a crash, and I have no problems with this fix:
+>
+> Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>
+> But reading the code, I got the feeling that upstream "swap emulation"
+> part of the code is not working as it should, perhaps it was lost during
+> upstreaming of the patch? Vladimir, can you confirm that this works for
+> you? (yeah, this can be solved later)
+>
+>
+> Cheers,
+> --
+> Vinicius
+>
 
+Hi Ivan, Vinicius,
 
-Will do.
+I haven't actually used the "replace" functionality. I found it
+strange that subsequent "replace" commands can't have the same syntax
+as the first one, so it's kind of difficult to integrate them in a
+script. And given the fact that I don't actually have a use case for
+"replace", I left this where it is (apparently causing this race when
+offloading a config and q->oper_sched is not NULL).
 
+Actually there was yet another issue introduced by my patch, which I
+discovered with lockdep after it got merged. I never managed to figure
+out what it was saying, but it looks like your fix addresses that as
+well, for some reason:
 
-> 
->>
->> This includes the following fix from Ira Weiny:
->>
->> DAX requires detection of a page crossing to a ref count of 1.  Fix this
->> for GUP pages by introducing put_devmap_managed_user_page() which
->> accounts for GUP_PIN_COUNTING_BIAS now used by GUP.
-> 
-> Please do the put_devmap_managed_page() changes in a separate
-> patch, it would be a lot easier to follow, also on that front
-> see comments below.
+[94787.464015] =====================================================
+[94787.470076] WARNING: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected
+[94787.476654] 5.4.0-rc1-00457-g19cf0a771e53 #300 Not tainted
+[94787.482106] -----------------------------------------------------
+[94787.488165] tc/2575 [HC0[0]:SC0[2]:HE0:SE0] is trying to acquire:
+[94787.494224] da592db0 (&(&q->current_entry_lock)->rlock){+.+.}, at:
+taprio_change+0xddc/0xf04
+[94787.502633]
+[94787.502633] and this task is already holding:
+[94787.508431] da592c88 (&(&sch->q.lock)->rlock){+.-.}, at:
+taprio_change+0xa94/0xf04
+[94787.515965] which would create a new lock dependency:
+[94787.520985]  (&(&sch->q.lock)->rlock){+.-.} ->
+(&(&q->current_entry_lock)->rlock){+.+.}
+[94787.528952]
+[94787.528952] but this new dependency connects a SOFTIRQ-irq-safe lock:
+[94787.536823]  (&(&sch->q.lock)->rlock){+.-.}
+[94787.536828]
+[94787.536828] ... which became SOFTIRQ-irq-safe at:
+[94787.547129]   _raw_spin_lock+0x44/0x54
+[94787.550858]   sch_direct_xmit+0x274/0x2ac
+[94787.554847]   __dev_queue_xmit+0xc7c/0xfcc
+[94787.558920]   br_dev_queue_push_xmit+0x84/0x1ac
+[94787.563426]   br_forward_finish+0x21c/0x230
+[94787.567583]   __br_forward+0x2fc/0x30c
+[94787.571312]   br_dev_xmit+0x358/0x648
+[94787.574953]   dev_hard_start_xmit+0xf4/0x3b0
+[94787.579198]   __dev_queue_xmit+0xe38/0xfcc
+[94787.583274]   arp_solicit+0x1a0/0x504
+[94787.586916]   neigh_probe+0x54/0x7c
+[94787.590385]   neigh_timer_handler+0x9c/0x3a4
+[94787.594631]   call_timer_fn+0xd4/0x3bc
+[94787.598357]   run_timer_softirq+0x24c/0x6a8
+[94787.602517]   __do_softirq+0x114/0x54c
+[94787.606244]   irq_exit+0x168/0x178
+[94787.609627]   __handle_domain_irq+0x60/0xb4
+[94787.613788]   gic_handle_irq+0x58/0x9c
+[94787.617515]   __irq_svc+0x70/0x98
+[94787.620811]   arch_cpu_idle+0x24/0x3c
+[94787.624451]   arch_cpu_idle+0x24/0x3c
+[94787.628093]   do_idle+0x1c4/0x2b0
+[94787.631388]   cpu_startup_entry+0x18/0x1c
+[94787.635373]   0x8030278c
+[94787.637888]
+[94787.637888] to a SOFTIRQ-irq-unsafe lock:
+[94787.643339]  (&(&q->current_entry_lock)->rlock){+.+.}
+[94787.643345]
+[94787.643345] ... which became SOFTIRQ-irq-unsafe at:
+[94787.654675] ...
+[94787.654680]   _raw_spin_lock+0x44/0x54
+[94787.660140]   taprio_offload_config_changed+0x14/0x100
+[94787.665248]   taprio_change+0xa78/0xf04
+[94787.669063]   qdisc_create+0x1f0/0x53c
+[94787.672790]   tc_modify_qdisc+0x1b0/0x834
+[94787.676777]   rtnetlink_rcv_msg+0x1a4/0x510
+[94787.680937]   netlink_rcv_skb+0xe0/0x114
+[94787.684837]   netlink_unicast+0x17c/0x1f8
+[94787.688822]   netlink_sendmsg+0x2c4/0x370
+[94787.692809]   ___sys_sendmsg+0x22c/0x24c
+[94787.696709]   __sys_sendmsg+0x50/0x8c
+[94787.700349]   ret_fast_syscall+0x0/0x28
+[94787.704161]   0xbeb4e208
+[94787.706675]
+[94787.706675] other info that might help us debug this:
+[94787.706675]
+[94787.714634]  Possible interrupt unsafe locking scenario:
+[94787.714634]
+[94787.721382]        CPU0                    CPU1
+[94787.725884]        ----                    ----
+[94787.730384]   lock(&(&q->current_entry_lock)->rlock);
+[94787.735406]                                local_irq_disable();
+[94787.741290]                                lock(&(&sch->q.lock)->rlock);
+[94787.747954]
+lock(&(&q->current_entry_lock)->rlock);
+[94787.755481]   <Interrupt>
+[94787.758082]     lock(&(&sch->q.lock)->rlock);
+[94787.762412]
+[94787.762412]  *** DEADLOCK ***
+[94787.762412]
+[94787.768297] 2 locks held by tc/2575:
+[94787.771848]  #0: c21b18ec (rtnl_mutex){+.+.}, at:
+rtnetlink_rcv_msg+0x174/0x510
+[94787.779127]  #1: da592c88 (&(&sch->q.lock)->rlock){+.-.}, at:
+taprio_change+0xa94/0xf04
+[94787.787095]
+[94787.787095] the dependencies between SOFTIRQ-irq-safe lock and the
+holding lock:
+[94787.795939] -> (&(&sch->q.lock)->rlock){+.-.} {
+[94787.800447]    HARDIRQ-ON-W at:
+[94787.803572]                     _raw_spin_lock_bh+0x40/0x50
+[94787.809114]                     dev_deactivate_queue.constprop.13+0x4c/0xd8
+[94787.816038]                     dev_deactivate_many+0x5c/0x3d8
+[94787.821838]                     dev_deactivate+0x3c/0x64
+[94787.827121]                     linkwatch_do_dev+0x4c/0x80
+[94787.832577]                     __linkwatch_run_queue+0x198/0x1e0
+[94787.838637]                     linkwatch_event+0x2c/0x34
+[94787.844008]                     process_one_work+0x300/0x7f4
+[94787.849636]                     worker_thread+0x58/0x5a0
+[94787.854919]                     kthread+0x12c/0x160
+[94787.859769]                     ret_from_fork+0x14/0x20
+[94787.864963]                     0x0
+[94787.868427]    IN-SOFTIRQ-W at:
+[94787.871550]                     _raw_spin_lock+0x44/0x54
+[94787.876833]                     sch_direct_xmit+0x274/0x2ac
+[94787.882377]                     __dev_queue_xmit+0xc7c/0xfcc
+[94787.888005]                     br_dev_queue_push_xmit+0x84/0x1ac
+[94787.894065]                     br_forward_finish+0x21c/0x230
+[94787.899778]                     __br_forward+0x2fc/0x30c
+[94787.905063]                     br_dev_xmit+0x358/0x648
+[94787.910259]                     dev_hard_start_xmit+0xf4/0x3b0
+[94787.916060]                     __dev_queue_xmit+0xe38/0xfcc
+[94787.921689]                     arp_solicit+0x1a0/0x504
+[94787.926887]                     neigh_probe+0x54/0x7c
+[94787.931911]                     neigh_timer_handler+0x9c/0x3a4
+[94787.937711]                     call_timer_fn+0xd4/0x3bc
+[94787.942993]                     run_timer_softirq+0x24c/0x6a8
+[94787.948708]                     __do_softirq+0x114/0x54c
+[94787.953989]                     irq_exit+0x168/0x178
+[94787.958927]                     __handle_domain_irq+0x60/0xb4
+[94787.964642]                     gic_handle_irq+0x58/0x9c
+[94787.969924]                     __irq_svc+0x70/0x98
+[94787.974775]                     arch_cpu_idle+0x24/0x3c
+[94787.979970]                     arch_cpu_idle+0x24/0x3c
+[94787.985167]                     do_idle+0x1c4/0x2b0
+[94787.990017]                     cpu_startup_entry+0x18/0x1c
+[94787.995556]                     0x8030278c
+[94787.999626]    INITIAL USE at:
+[94788.002664]                    _raw_spin_lock_bh+0x40/0x50
+[94788.008120]                    dev_deactivate_queue.constprop.13+0x4c/0xd8
+[94788.014958]                    dev_deactivate_many+0x5c/0x3d8
+[94788.020671]                    dev_deactivate+0x3c/0x64
+[94788.025868]                    linkwatch_do_dev+0x4c/0x80
+[94788.031237]                    __linkwatch_run_queue+0x198/0x1e0
+[94788.037210]                    linkwatch_event+0x2c/0x34
+[94788.042493]                    process_one_work+0x300/0x7f4
+[94788.048035]                    worker_thread+0x58/0x5a0
+[94788.053231]                    kthread+0x12c/0x160
+[94788.057996]                    ret_from_fork+0x14/0x20
+[94788.063104]                    0x0
+[94788.066482]  }
+[94788.068138]  ... key      at: [<c2862598>] __key.72250+0x0/0x8
+[94788.073937]  ... acquired at:
+[94788.076885]    taprio_change+0xddc/0xf04
+[94788.080785]    qdisc_create+0x1f0/0x53c
+[94788.084599]    tc_modify_qdisc+0x1b0/0x834
+[94788.088671]    rtnetlink_rcv_msg+0x1a4/0x510
+[94788.092917]    netlink_rcv_skb+0xe0/0x114
+[94788.096904]    netlink_unicast+0x17c/0x1f8
+[94788.100976]    netlink_sendmsg+0x2c4/0x370
+[94788.105048]    ___sys_sendmsg+0x22c/0x24c
+[94788.109034]    __sys_sendmsg+0x50/0x8c
+[94788.112761]    ret_fast_syscall+0x0/0x28
+[94788.116658]    0xbeb4e208
+[94788.119259]
+[94788.120736]
+[94788.120736] the dependencies between the lock to be acquired
+[94788.120739]  and SOFTIRQ-irq-unsafe lock:
+[94788.131825] -> (&(&q->current_entry_lock)->rlock){+.+.} {
+[94788.137196]    HARDIRQ-ON-W at:
+[94788.140320]                     _raw_spin_lock+0x44/0x54
+[94788.145602]                     taprio_offload_config_changed+0x14/0x100
+[94788.152267]                     taprio_change+0xa78/0xf04
+[94788.157636]                     qdisc_create+0x1f0/0x53c
+[94788.162919]                     tc_modify_qdisc+0x1b0/0x834
+[94788.168460]                     rtnetlink_rcv_msg+0x1a4/0x510
+[94788.174175]                     netlink_rcv_skb+0xe0/0x114
+[94788.179631]                     netlink_unicast+0x17c/0x1f8
+[94788.185173]                     netlink_sendmsg+0x2c4/0x370
+[94788.190714]                     ___sys_sendmsg+0x22c/0x24c
+[94788.196170]                     __sys_sendmsg+0x50/0x8c
+[94788.201365]                     ret_fast_syscall+0x0/0x28
+[94788.206731]                     0xbeb4e208
+[94788.210801]    SOFTIRQ-ON-W at:
+[94788.213924]                     _raw_spin_lock+0x44/0x54
+[94788.219206]                     taprio_offload_config_changed+0x14/0x100
+[94788.225871]                     taprio_change+0xa78/0xf04
+[94788.231239]                     qdisc_create+0x1f0/0x53c
+[94788.236523]                     tc_modify_qdisc+0x1b0/0x834
+[94788.242064]                     rtnetlink_rcv_msg+0x1a4/0x510
+[94788.247779]                     netlink_rcv_skb+0xe0/0x114
+[94788.253234]                     netlink_unicast+0x17c/0x1f8
+[94788.258776]                     netlink_sendmsg+0x2c4/0x370
+[94788.264317]                     ___sys_sendmsg+0x22c/0x24c
+[94788.269773]                     __sys_sendmsg+0x50/0x8c
+[94788.274968]                     ret_fast_syscall+0x0/0x28
+[94788.280336]                     0xbeb4e208
+[94788.284405]    INITIAL USE at:
+[94788.287442]                    _raw_spin_lock+0x44/0x54
+[94788.292638]                    taprio_offload_config_changed+0x14/0x100
+[94788.299216]                    taprio_change+0xa78/0xf04
+[94788.304497]                    qdisc_create+0x1f0/0x53c
+[94788.309694]                    tc_modify_qdisc+0x1b0/0x834
+[94788.315149]                    rtnetlink_rcv_msg+0x1a4/0x510
+[94788.320777]                    netlink_rcv_skb+0xe0/0x114
+[94788.326146]                    netlink_unicast+0x17c/0x1f8
+[94788.331602]                    netlink_sendmsg+0x2c4/0x370
+[94788.337057]                    ___sys_sendmsg+0x22c/0x24c
+[94788.342426]                    __sys_sendmsg+0x50/0x8c
+[94788.347535]                    ret_fast_syscall+0x0/0x28
+[94788.352815]                    0xbeb4e208
+[94788.356799]  }
+[94788.358453]  ... key      at: [<c28626b4>] __key.70731+0x0/0x8
+[94788.364251]  ... acquired at:
+[94788.367199]    taprio_change+0xddc/0xf04
+[94788.371099]    qdisc_create+0x1f0/0x53c
+[94788.374913]    tc_modify_qdisc+0x1b0/0x834
+[94788.378985]    rtnetlink_rcv_msg+0x1a4/0x510
+[94788.383231]    netlink_rcv_skb+0xe0/0x114
+[94788.387217]    netlink_unicast+0x17c/0x1f8
+[94788.391290]    netlink_sendmsg+0x2c4/0x370
+[94788.395362]    ___sys_sendmsg+0x22c/0x24c
+[94788.399348]    __sys_sendmsg+0x50/0x8c
+[94788.403074]    ret_fast_syscall+0x0/0x28
+[94788.406972]    0xbeb4e208
+[94788.409572]
+[94788.411049]
+[94788.411049] stack backtrace:
+[94788.415384] CPU: 1 PID: 2575 Comm: tc Not tainted
+5.4.0-rc1-00457-g19cf0a771e53 #300
+[94788.423083] Hardware name: Freescale LS1021A
+[94788.427338] [<c03142ec>] (unwind_backtrace) from [<c030e034>]
+(show_stack+0x10/0x14)
+[94788.435045] [<c030e034>] (show_stack) from [<c11b561c>]
+(dump_stack+0xcc/0xf8)
+[94788.442233] [<c11b561c>] (dump_stack) from [<c03b5fd0>]
+(__lock_acquire+0x1d90/0x2398)
+[94788.450111] [<c03b5fd0>] (__lock_acquire) from [<c03b6ec8>]
+(lock_acquire+0xe0/0x22c)
+[94788.457903] [<c03b6ec8>] (lock_acquire) from [<c11d9200>]
+(_raw_spin_lock_irqsave+0x54/0x68)
+[94788.466298] [<c11d9200>] (_raw_spin_lock_irqsave) from [<c0fdd894>]
+(taprio_change+0xddc/0xf04)
+[94788.474956] [<c0fdd894>] (taprio_change) from [<c0fc1698>]
+(qdisc_create+0x1f0/0x53c)
+[94788.482749] [<c0fc1698>] (qdisc_create) from [<c0fc1b94>]
+(tc_modify_qdisc+0x1b0/0x834)
+[94788.490714] [<c0fc1b94>] (tc_modify_qdisc) from [<c0f73c48>]
+(rtnetlink_rcv_msg+0x1a4/0x510)
+[94788.499112] [<c0f73c48>] (rtnetlink_rcv_msg) from [<c0ff13a8>]
+(netlink_rcv_skb+0xe0/0x114)
+[94788.507422] [<c0ff13a8>] (netlink_rcv_skb) from [<c0ff0bec>]
+(netlink_unicast+0x17c/0x1f8)
+[94788.515647] [<c0ff0bec>] (netlink_unicast) from [<c0ff0f2c>]
+(netlink_sendmsg+0x2c4/0x370)
+[94788.523872] [<c0ff0f2c>] (netlink_sendmsg) from [<c0f2da7c>]
+(___sys_sendmsg+0x22c/0x24c)
+[94788.532010] [<c0f2da7c>] (___sys_sendmsg) from [<c0f2ee90>]
+(__sys_sendmsg+0x50/0x8c)
+[94788.539802] [<c0f2ee90>] (__sys_sendmsg) from [<c0301000>]
+(ret_fast_syscall+0x0/0x28)
+[94788.547676] Exception stack(0xe9db3fa8 to 0xe9db3ff0)
+[94788.552701] 3fa0:                   b6f4d8c8 00000114 00000003
+beb4e260 00000000 00000000
+[94788.560837] 3fc0: b6f4d8c8 00000114 004eb02c 00000128 5da59019
+00000000 0000002d 00522c98
+[94788.568971] 3fe0: 00000070 beb4e208 004fa950 b6dbee64
 
+But anyway, yes it makes sense to call taprio_offload_config_changed
+only after rcu_assign_pointer(q->admin_sched, new_admin), and that is
+part of the reason why I found it difficult to add a mechanism for
+drivers to notify back on offload activation time that doesn't trigger
+any races in taprio.
 
-Oh! OK. It makes sense when you say it out loud. :)
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
 
-
-...
->> +static inline bool put_devmap_managed_page(struct page *page)
->> +{
->> +	bool is_devmap = page_is_devmap_managed(page);
->> +
->> +	if (is_devmap) {
->> +		int count = page_ref_dec_return(page);
->> +
->> +		__put_devmap_managed_page(page, count);
->> +	}
->> +
->> +	return is_devmap;
->> +}
-> 
-> I think the __put_devmap_managed_page() should be rename
-> to free_devmap_managed_page() and that the count != 1
-> case move to this inline function ie:
-> 
-> static inline bool put_devmap_managed_page(struct page *page)
-> {
-> 	bool is_devmap = page_is_devmap_managed(page);
-> 
-> 	if (is_devmap) {
-> 		int count = page_ref_dec_return(page);
-> 
-> 		/*
-> 		 * If refcount is 1 then page is freed and refcount is stable as nobody
-> 		 * holds a reference on the page.
-> 		 */
-> 		if (count == 1)
-> 			free_devmap_managed_page(page, count);
-> 		else if (!count)
-> 			__put_page(page);
-> 	}
-> 
-> 	return is_devmap;
-> }
-> 
-
-Thanks, that does look cleaner and easier to read.
-
-> 
->> +
->>  #else /* CONFIG_DEV_PAGEMAP_OPS */
->>  static inline bool put_devmap_managed_page(struct page *page)
->>  {
->> @@ -1038,6 +1051,8 @@ static inline __must_check bool try_get_page(struct page *page)
->>  	return true;
->>  }
->>  
->> +__must_check bool user_page_ref_inc(struct page *page);
->> +
-> 
-> What about having it as an inline here as it is pretty small.
-
-
-You mean move it to a static inline function in mm.h? It's worse than it 
-looks, though: *everything* that it calls is also a static function, local
-to gup.c. So I'd have to expose both try_get_compound_head() and
-__update_proc_vmstat(). And that also means calling mod_node_page_state() from
-mm.h, and it goes south right about there. :)
-
-
-...  
->> +/**
->> + * page_dma_pinned() - report if a page is pinned by a call to pin_user_pages*()
->> + * or pin_longterm_pages*()
->> + * @page:	pointer to page to be queried.
->> + * @Return:	True, if it is likely that the page has been "dma-pinned".
->> + *		False, if the page is definitely not dma-pinned.
->> + */
-> 
-> Maybe add a small comment about wrap around :)
-
-
-I don't *think* the count can wrap around, due to the checks in user_page_ref_inc().
-
-But it's true that the documentation is a little light here...What did you have 
-in mind?
-
-
-> [...]
-> 
->> @@ -1930,12 +2028,20 @@ static int __gup_device_huge(unsigned long pfn, unsigned long addr,
->>  
->>  		pgmap = get_dev_pagemap(pfn, pgmap);
->>  		if (unlikely(!pgmap)) {
->> -			undo_dev_pagemap(nr, nr_start, pages);
->> +			undo_dev_pagemap(nr, nr_start, flags, pages);
->>  			return 0;
->>  		}
->>  		SetPageReferenced(page);
->>  		pages[*nr] = page;
->> -		get_page(page);
->> +
->> +		if (flags & FOLL_PIN) {
->> +			if (unlikely(!user_page_ref_inc(page))) {
->> +				undo_dev_pagemap(nr, nr_start, flags, pages);
->> +				return 0;
->> +			}
-> 
-> Maybe add a comment about a case that should never happens ie
-> user_page_ref_inc() fails after the second iteration of the
-> loop as it would be broken and a bug to call undo_dev_pagemap()
-> after the first iteration of that loop.
-> 
-> Also i believe that this should never happens as if first
-> iteration succeed than __page_cache_add_speculative() will
-> succeed for all the iterations.
-> 
-> Note that the pgmap case above follows that too ie the call to
-> get_dev_pagemap() can only fail on first iteration of the loop,
-> well i assume you can never have a huge device page that span
-> different pgmap ie different devices (which is a reasonable
-> assumption). So maybe this code needs fixing ie :
-> 
-> 		pgmap = get_dev_pagemap(pfn, pgmap);
-> 		if (unlikely(!pgmap))
-> 			return 0;
-> 
-> 
-
-OK, yes that does make sense. And I think a comment is adequate,
-no need to check for bugs during every tail page iteration. So how 
-about this, as a preliminary patch:
-
-diff --git a/mm/gup.c b/mm/gup.c
-index 8f236a335ae9..a4a81e125832 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -1892,17 +1892,18 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
- static int __gup_device_huge(unsigned long pfn, unsigned long addr,
-                unsigned long end, struct page **pages, int *nr)
- {
--       int nr_start = *nr;
--       struct dev_pagemap *pgmap = NULL;
-+       /*
-+        * Huge pages should never cross dev_pagemap boundaries. Therefore, use
-+        * this same pgmap for the entire huge page.
-+        */
-+       struct dev_pagemap *pgmap = get_dev_pagemap(pfn, NULL);
-+
-+       if (unlikely(!pgmap))
-+               return 0;
- 
-        do {
-                struct page *page = pfn_to_page(pfn);
- 
--               pgmap = get_dev_pagemap(pfn, pgmap);
--               if (unlikely(!pgmap)) {
--                       undo_dev_pagemap(nr, nr_start, pages);
--                       return 0;
--               }
-                SetPageReferenced(page);
-                pages[*nr] = page;
-                get_page(page);
-
-
-
-
->> +		} else
->> +			get_page(page);
->> +
->>  		(*nr)++;
->>  		pfn++;
->>  	} while (addr += PAGE_SIZE, addr != end);
-> 
-> [...]
-> 
->> @@ -2409,7 +2540,7 @@ static int internal_get_user_pages_fast(unsigned long start, int nr_pages,
->>  	unsigned long addr, len, end;
->>  	int nr = 0, ret = 0;
->>  
->> -	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM)))
->> +	if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM | FOLL_PIN)))
-> 
-> Maybe add a comments to explain, something like:
-> 
-> /*
->  * The only flags allowed here are: FOLL_WRITE, FOLL_LONGTERM, FOLL_PIN
->  *
->  * Note that get_user_pages_fast() imply FOLL_GET flag by default but
->  * callers can over-ride this default to pin case by setting FOLL_PIN.
->  */
-
-Good idea. Here's the draft now:
-
-/*
- * The only flags allowed here are: FOLL_WRITE, FOLL_LONGTERM, FOLL_PIN.
- *
- * Note that get_user_pages_fast() implies FOLL_GET flag by default, but
- * callers can override this default by setting FOLL_PIN instead of
- * FOLL_GET.
- */
-if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM | FOLL_PIN)))
-        return -EINVAL;
-
-> 
->>  		return -EINVAL;
->>  
->>  	start = untagged_addr(start) & PAGE_MASK;
->> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
->> index 13cc93785006..66bf4c8b88f1 100644
->> --- a/mm/huge_memory.c
->> +++ b/mm/huge_memory.c
-> 
-> [...]
-> 
->> @@ -968,7 +973,12 @@ struct page *follow_devmap_pmd(struct vm_area_struct *vma, unsigned long addr,
->>  	if (!*pgmap)
->>  		return ERR_PTR(-EFAULT);
->>  	page = pfn_to_page(pfn);
->> -	get_page(page);
->> +
->> +	if (flags & FOLL_GET)
->> +		get_page(page);
->> +	else if (flags & FOLL_PIN)
->> +		if (unlikely(!user_page_ref_inc(page)))
->> +			page = ERR_PTR(-ENOMEM);
-> 
-> While i agree that user_page_ref_inc() (ie page_cache_add_speculative())
-> should never fails here as we are holding the pmd lock and thus no one
-> can unmap the pmd and free the page it points to. I believe you should
-> return -EFAULT like for the pgmap and not -ENOMEM as the pgmap should
-> not fail either for the same reason. Thus it would be better to have
-> consistent error. Maybe also add a comments explaining that it should
-> not fail here.
-> 
-
-OK. I'll take a pass through and fix up the remaining points about these
-sorts of cases below, as well, in v3. Those all make sense.
-
->>  
->>  	return page;
->>  }
-> 
-> [...]
-> 
->> @@ -1100,7 +1115,7 @@ struct page *follow_devmap_pud(struct vm_area_struct *vma, unsigned long addr,
->>  	 * device mapped pages can only be returned if the
->>  	 * caller will manage the page reference count.
->>  	 */
->> -	if (!(flags & FOLL_GET))
->> +	if (!(flags & (FOLL_GET | FOLL_PIN)))
->>  		return ERR_PTR(-EEXIST);
-> 
-> Maybe add a comment that FOLL_GET or FOLL_PIN must be set.
-> 
->>  	pfn += (addr & ~PUD_MASK) >> PAGE_SHIFT;
->> @@ -1108,7 +1123,12 @@ struct page *follow_devmap_pud(struct vm_area_struct *vma, unsigned long addr,
->>  	if (!*pgmap)
->>  		return ERR_PTR(-EFAULT);
->>  	page = pfn_to_page(pfn);
->> -	get_page(page);
->> +
->> +	if (flags & FOLL_GET)
->> +		get_page(page);
->> +	else if (flags & FOLL_PIN)
->> +		if (unlikely(!user_page_ref_inc(page)))
->> +			page = ERR_PTR(-ENOMEM);
-> 
-> Same as for follow_devmap_pmd() see above.
-> 
->>  
->>  	return page;
->>  }
->> @@ -1522,8 +1542,12 @@ struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
->>  skip_mlock:
->>  	page += (addr & ~HPAGE_PMD_MASK) >> PAGE_SHIFT;
->>  	VM_BUG_ON_PAGE(!PageCompound(page) && !is_zone_device_page(page), page);
->> +
->>  	if (flags & FOLL_GET)
->>  		get_page(page);
->> +	else if (flags & FOLL_PIN)
->> +		if (unlikely(!user_page_ref_inc(page)))
->> +			page = NULL;
-> 
-> This should not fail either as we are holding the pmd lock maybe add
-> a comment. Dunno if we want a WARN() or something to catch this
-> degenerate case, or dump the page.
-> 
->>  
->>  out:
->>  	return page;
->> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
->> index b45a95363a84..da335b1cd798 100644
->> --- a/mm/hugetlb.c
->> +++ b/mm/hugetlb.c
->> @@ -4462,7 +4462,17 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
->>  same_page:
->>  		if (pages) {
->>  			pages[i] = mem_map_offset(page, pfn_offset);
->> -			get_page(pages[i]);
->> +
->> +			if (flags & FOLL_GET)
->> +				get_page(pages[i]);
->> +			else if (flags & FOLL_PIN)
->> +				if (unlikely(!user_page_ref_inc(pages[i]))) {
->> +					spin_unlock(ptl);
->> +					remainder = 0;
->> +					err = -ENOMEM;
->> +					WARN_ON_ONCE(1);
->> +					break;
->> +				}
->>  		}
-> 
-> user_page_ref_inc() should not fail here either because we hold the
-> ptl, so the WAR_ON_ONCE() is right but maybe add a comment.
-> 
->>  
->>  		if (vmas)
-> 
-> [...]
-> 
->> @@ -5034,8 +5050,14 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
->>  	pte = huge_ptep_get((pte_t *)pmd);
->>  	if (pte_present(pte)) {
->>  		page = pmd_page(*pmd) + ((address & ~PMD_MASK) >> PAGE_SHIFT);
->> +
->>  		if (flags & FOLL_GET)
->>  			get_page(page);
->> +		else if (flags & FOLL_PIN)
->> +			if (unlikely(!user_page_ref_inc(page))) {
->> +				page = NULL;
->> +				goto out;
->> +			}
-> 
-> This should not fail either (again holding pmd lock), dunno if we want
-> a warn or something to catch this degenerate case.
-> 
->>  	} else {
->>  		if (is_hugetlb_entry_migration(pte)) {
->>  			spin_unlock(ptl);
-> 
-> [...]
-> 
-> 
-
-Those are all good points, working on them now.
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+Thanks,
+-Vladimir
