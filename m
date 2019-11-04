@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA244EE290
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 15:32:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02823EE2D9
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 15:49:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728497AbfKDOcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 09:32:10 -0500
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:63246 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727838AbfKDOcK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 09:32:10 -0500
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA4ER8QN006158;
-        Mon, 4 Nov 2019 15:31:51 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=CMrndWG+ZiADLifRh/ny34DDuov8Fnz6puAWI7fXAts=;
- b=d62Wn1Tn8/n1Q+HCfMMOW1vPAEGj8o1xlvb4fjMyFue9RYFMh4zaBqkSSHgCOvih+rXS
- FN3sIzNOZVUjSDkTC5NFCiXPx5tm4FmBsuVMG6KIqXb0H5Wm+OZ0Mshalnjb+oTRj5WI
- x5l6Tq8GpnK/rkUlAuY7Q2x5Pq96SqzJhvfx5KIwGazhzn59g0qDv2iAhBJa1+gq7r3a
- BkuC6k/hB5v9IYxRD2kwWaDkg63LLeV551lPij11CSE0uvGeUG126bUJMIodwdEj7GQq
- D0tBCrZ7BuYZNg4t2TamaEHCbUDx8sf+HQHD1sqh1votSZzfkl+/W70YHtp3MuY1XFLQ Ng== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2w1054hx1p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Nov 2019 15:31:51 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7161E100034;
-        Mon,  4 Nov 2019 15:31:50 +0100 (CET)
-Received: from Webmail-eu.st.com (Safex1hubcas23.st.com [10.75.90.46])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 603772D3776;
-        Mon,  4 Nov 2019 15:31:50 +0100 (CET)
-Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by SAFEX1HUBCAS23.st.com
- (10.75.90.46) with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 4 Nov 2019
- 15:31:50 +0100
-Received: from localhost (10.201.22.222) by Webmail-ga.st.com (10.75.90.48)
- with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 4 Nov 2019 15:31:49
- +0100
-From:   Christophe Roullier <christophe.roullier@st.com>
-To:     <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <peppe.cavallaro@st.com>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <christophe.roullier@st.com>, <andrew@lunn.ch>
-Subject: [PATCH  1/1] ARM: dts: stm32: Fix CAN RAM mapping on stm32mp157c
-Date:   Mon, 4 Nov 2019 15:31:45 +0100
-Message-ID: <20191104143145.7053-1-christophe.roullier@st.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728686AbfKDOtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 09:49:15 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37233 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727796AbfKDOtP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 09:49:15 -0500
+Received: by mail-qk1-f194.google.com with SMTP id e187so5105355qkf.4;
+        Mon, 04 Nov 2019 06:49:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Yg35CIgMCDjht+ZPU7pxGiVxYKNbmDF87GWEVQqBk4g=;
+        b=EeRWCft8TXJWTU/w0UoFt0p+unRSYZR/wh8VxMzC4je4nmw3swP8V2nZuWpcQ4CF6q
+         RYxxjGsIzl+JI7qoTeneH3FYzSpbe0/uRRyrS43MkSOhZ6Th4O9QXGMKKh31MCfGDcxq
+         fkxVIdbclEoDHtEhIUhCO/xoG46dXebq6u12F/0fUEbQRVHd944YP/rp47HkvFOAQ2ei
+         za1uXKE74aK6Fi98SE0CgFuJBncNRnttzAhEMmQ6PA5GVWZLkyQk65M8+44GcT1ND3Yl
+         ctOLE3aKV8FGgeai9E3a+3qFYhKq9Q42ddAuqY+JIA8MA1Hu34pcbbb9ik2XrgEYCrZo
+         R2FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Yg35CIgMCDjht+ZPU7pxGiVxYKNbmDF87GWEVQqBk4g=;
+        b=ZTm3lLrZG8Pj1E7Sl+KRCQWOYxCxufR/DcthmxJAntyagC8NAQDArB5Bh2PDwKh+mZ
+         Bfo9slr7S4o49AvqeEDzeQzzHAg3AKW0dGugj6XoFAVvwhAo1yfv9+MCIxus/aUkt+wB
+         4/bQMK1EIdbJqVRdPfYjY3WlvX/brXR/I9fFXwS0N9mzz3/UntKlAIAtmgLeopXlv8zG
+         TDG02WjBirZSRWFop8sW5gyzfDAdCODSMC8YJh7sakDnqtonVvcAzPfXtXvXhay4rxsK
+         A0v8/Cun1ME79VoeUqkUqJVolji66dDBrQFQGaTNAYWRVDTGDX8VvZKyiKQOOU3/rPoC
+         OvwA==
+X-Gm-Message-State: APjAAAVICNOHOb7uxy2oG1ctObUe85YyoC1HoutsvDAcpIAjMLmYYAXg
+        1PI+dIh0gs7qHgg9U1hWoRBPYtreCkDDtQ==
+X-Google-Smtp-Source: APXvYqyIN2+D81NcwxppEZcFi3I9pVfC97qSGyKleagUeGT9LV4bx6w2VWrHO+YvU8qi5LJAI0J7CA==
+X-Received: by 2002:ae9:e851:: with SMTP id a78mr17447837qkg.312.1572878953090;
+        Mon, 04 Nov 2019 06:49:13 -0800 (PST)
+Received: from localhost.localdomain ([168.181.48.201])
+        by smtp.gmail.com with ESMTPSA id l50sm4114604qtc.7.2019.11.04.06.49.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 06:49:12 -0800 (PST)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id BC2ECC16E7; Mon,  4 Nov 2019 11:49:09 -0300 (-03)
+Date:   Mon, 4 Nov 2019 11:49:09 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Wei Zhao <wallyzhao@gmail.com>
+Cc:     kernel test robot <rong.a.chen@intel.com>, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, wally.zhao@nokia-sbell.com,
+        lkp@lists.01.org
+Subject: Re: [sctp] 327fecdaf3: BUG:kernel_NULL_pointer_dereference,address
+Message-ID: <20191104144909.GA15842@localhost.localdomain>
+References: <1572451637-14085-1-git-send-email-wallyzhao@gmail.com>
+ <20191104084635.GM29418@shao2-debian>
+ <20191104132508.GA53856@localhost.localdomain>
+ <CAFRmqq6vNg5sBYp7voT4SoVR+i+L8fDqUUZOF68cRdcKkQcZmw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.201.22.222]
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-11-04_08:2019-11-04,2019-11-04 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFRmqq6vNg5sBYp7voT4SoVR+i+L8fDqUUZOF68cRdcKkQcZmw@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split the 10Kbytes CAN message RAM to be able to use simultaneously
-FDCAN1 and FDCAN2 instances.
-First 5Kbytes are allocated to FDCAN1 and last 5Kbytes are used for
-FDCAN2. To do so, set the offset to 0x1400 in mram-cfg for FDCAN2.
+On Mon, Nov 04, 2019 at 10:14:00PM +0800, Wei Zhao wrote:
+> On 11/4/19, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
+> > On Mon, Nov 04, 2019 at 04:46:35PM +0800, kernel test robot wrote:
+> >> [   35.312661] BUG: kernel NULL pointer dereference, address:
+> >> 00000000000005d8
+> >> [   35.316225] #PF: supervisor read access in kernel mode
+> >> [   35.319178] #PF: error_code(0x0000) - not-present page
+> >> [   35.322078] PGD 800000021b569067 P4D 800000021b569067 PUD 21b688067 PMD
+> >> 0
+> >> [   35.325629] Oops: 0000 [#1] SMP PTI
+> >> [   35.327965] CPU: 0 PID: 3148 Comm: trinity-c5 Not tainted
+> >> 5.4.0-rc3-01107-g327fecdaf39ab #12
+> >> [   35.332863] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> >> 1.10.2-1 04/01/2014
+> >> [   35.337932] RIP: 0010:sctp_packet_transmit+0x767/0x822
+> >
+> > Right, as asoc can be NULL by then. (per the check on it a few lines
+> > before the change here).
+> 
+> Yes, apologize for missing the NULL check (Actually I realized some
+> further check is need to correctly identify the first in flight
+> packet, as outstanding_bytes has already been increased by this first
+> in flight packet itself before getting into sctp_packet_transmit).
+> 
+> Anyway, I think I do not need further action, as the patch is anyway
+> not going to be merged, the 0day robot picks up the patch from the
+> mail list directly instead of git repo, right?
 
-Fixes: d44d6e021301 ("ARM: dts: stm32: change CAN RAM mapping on stm32mp157c")
-Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
----
- arch/arm/boot/dts/stm32mp157c.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+That's my understanding as well. I double checked and the patch wasn't
+applied by Dave, so we're good.
 
-diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-index 9b11654a0a39..f98e0370c0bc 100644
---- a/arch/arm/boot/dts/stm32mp157c.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-@@ -932,7 +932,7 @@
- 			interrupt-names = "int0", "int1";
- 			clocks = <&rcc CK_HSE>, <&rcc FDCAN_K>;
- 			clock-names = "hclk", "cclk";
--			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
-+			bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
- 			status = "disabled";
- 		};
- 
-@@ -945,7 +945,7 @@
- 			interrupt-names = "int0", "int1";
- 			clocks = <&rcc CK_HSE>, <&rcc FDCAN_K>;
- 			clock-names = "hclk", "cclk";
--			bosch,mram-cfg = <0x0 0 0 32 0 0 2 2>;
-+			bosch,mram-cfg = <0x1400 0 0 32 0 0 2 2>;
- 			status = "disabled";
- 		};
- 
--- 
-2.17.1
-
+Thanks,
+Marcelo
