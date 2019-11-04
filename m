@@ -2,148 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA8AEE904
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 20:56:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16CABEE92D
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 21:09:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728556AbfKDT4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 14:56:22 -0500
-Received: from inca-roads.misterjones.org ([213.251.177.50]:45632 "EHLO
-        inca-roads.misterjones.org" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728322AbfKDT4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 14:56:22 -0500
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78] helo=why.lan)
-        by cheepnis.misterjones.org with esmtpsa (TLSv1.2:DHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.80)
-        (envelope-from <maz@kernel.org>)
-        id 1iRiSa-0002Sc-78; Mon, 04 Nov 2019 20:56:20 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lipeng <lipeng321@huawei.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH] net: hns: Ensure that interface teardown cannot race with TX interrupt
-Date:   Mon,  4 Nov 2019 19:56:04 +0000
-Message-Id: <20191104195604.17109-1-maz@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        id S1729530AbfKDUJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 15:09:10 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:3877 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728332AbfKDUJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 15:09:09 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dc085690000>; Mon, 04 Nov 2019 12:09:14 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 04 Nov 2019 12:09:07 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 04 Nov 2019 12:09:07 -0800
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 4 Nov
+ 2019 20:09:05 +0000
+Subject: Re: [PATCH v2 05/18] mm/gup: introduce pin_user_pages*() and FOLL_PIN
+To:     Jerome Glisse <jglisse@redhat.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20191103211813.213227-1-jhubbard@nvidia.com>
+ <20191103211813.213227-6-jhubbard@nvidia.com>
+ <20191104173325.GD5134@redhat.com>
+ <be9de35c-57e9-75c3-2e86-eae50904bbdf@nvidia.com>
+ <20191104191811.GI5134@redhat.com>
+ <e9656d47-b4a1-da8a-e8cc-ebcfb8cc06d6@nvidia.com>
+ <20191104195248.GA7731@redhat.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <25ec4bc0-caaa-2a01-2ae7-2d79663a40e1@nvidia.com>
+Date:   Mon, 4 Nov 2019 12:09:05 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: netdev@vger.kernel.org, lipeng321@huawei.com, yisen.zhuang@huawei.com, salil.mehta@huawei.com, davem@davemloft.net
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on cheepnis.misterjones.org); SAEximRunCond expanded to false
+In-Reply-To: <20191104195248.GA7731@redhat.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="windows-1252"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1572898154; bh=AZ3ymuIlfRc3w4rthQkiIY3Jv3VQvtZMfCQrByMbt/I=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=a1s4cFm/krClFLPv0/gGIzoAubroBwrxV++jio7G263hv7Kqd894mJLgyr0Kykvfu
+         E22eZRsWgS82IfVuknmQjT6loOqA9gwu9uWFSuwxGjrMpxiVLz3gspis/scqyrUM8C
+         V6nOQNjxdOZQpCSi9tZuwj/NT7Qad5kYkY0U2dz2agukymc6b2UDmCgdrtVLwMy+f3
+         QtSOoNDJwHdTVrVqqJcnOKhTpEZCUMCLI/PJyjZAopcsX3CoJLmMWVSKvLvEBN88aE
+         +2SZRTKEAYlSxIg6b9bcQPtRuIkgnhRasSHve+6EqdhZWTSQoe8j4euTWFVlDE/iaG
+         Y8A3JNrgij6ag==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On a lockdep-enabled kernel, bringing down a HNS interface results
-in a loud splat. It turns out that  the per-ring spinlock is taken
-both in the TX interrupt path, and when bringing down the interface.
+Jason, a question for you at the bottom.
 
-Lockdep sums it up with:
+On 11/4/19 11:52 AM, Jerome Glisse wrote:
+...
+>> CASE 3: ODP
+>> -----------
+>> RDMA hardware with page faulting support. Here, a well-written driver doesn't
+> 
+> CASE3: Hardware with page fault support
+> ---------------------------------------
+> 
+> Here, a well-written ....
+> 
 
-[32099.424453]        CPU0
-[32099.426885]        ----
-[32099.429318]   lock(&(&ring->lock)->rlock);
-[32099.433402]   <Interrupt>
-[32099.436008]     lock(&(&ring->lock)->rlock);
-[32099.440264]
-[32099.440264]  *** DEADLOCK ***
+Ah, OK. So just drop the first sentence, yes.
 
-To solve this, turn the NETIF_TX_{LOCK,UNLOCK} macros from standard
-spin_[un]lock to their irqsave/irqrestore version.
+...
+>>>>>> +	 */
+>>>>>> +	gup_flags |= FOLL_REMOTE | FOLL_PIN;
+>>>>>
+>>>>> Wouldn't it be better to not add pin_longterm_pages_remote() until
+>>>>> it can be properly implemented ?
+>>>>>
+>>>>
+>>>> Well, the problem is that I need each call site that requires FOLL_PIN
+>>>> to use a proper wrapper. It's the FOLL_PIN that is the focus here, because
+>>>> there is a hard, bright rule, which is: if and only if a caller sets
+>>>> FOLL_PIN, then the dma-page tracking happens, and put_user_page() must
+>>>> be called.
+>>>>
+>>>> So this leaves me with only two reasonable choices:
+>>>>
+>>>> a) Convert the call site as above: pin_longterm_pages_remote(), which sets
+>>>> FOLL_PIN (the key point!), and leaves the FOLL_LONGTERM situation exactly
+>>>> as it has been so far. When the FOLL_LONGTERM situation is fixed, the call
+>>>> site *might* not need any changes to adopt the working gup.c code.
+>>>>
+>>>> b) Convert the call site to pin_user_pages_remote(), which also sets
+>>>> FOLL_PIN, and also leaves the FOLL_LONGTERM situation exactly as before.
+>>>> There would also be a comment at the call site, to the effect of, "this
+>>>> is the wrong call to make: it really requires FOLL_LONGTERM behavior".
+>>>>
+>>>> When the FOLL_LONGTERM situation is fixed, the call site will need to be
+>>>> changed to pin_longterm_pages_remote().
+>>>>
+>>>> So you can probably see why I picked (a).
+>>>
+>>> But right now nobody has FOLL_LONGTERM and FOLL_REMOTE. So you should
+>>> never have the need for pin_longterm_pages_remote(). My fear is that
+>>> longterm has implication and it would be better to not drop this implication
+>>> by adding a wrapper that does not do what the name says.
+>>>
+>>> So do not introduce pin_longterm_pages_remote() until its first user
+>>> happens. This is option c)
+>>>
+>>
+>> Almost forgot, though: there is already another user: Infiniband:
+>>
+>> drivers/infiniband/core/umem_odp.c:646:         npages = pin_longterm_pages_remote(owning_process, owning_mm,
+> 
+> odp do not need that, i thought the HMM convertion was already upstream
+> but seems not, in any case odp do not need the longterm case it only
+> so best is to revert that user to gup_fast or something until it get
+> converted to HMM.
+> 
 
-Fixes: f2aaed557ecff ("net: hns: Replace netif_tx_lock to ring spin lock")
-Cc: lipeng <lipeng321@huawei.com>
-Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
-Cc: Salil Mehta <salil.mehta@huawei.com>
-Cc: David S. Miller <davem@davemloft.net>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- drivers/net/ethernet/hisilicon/hns/hns_enet.c | 22 ++++++++++---------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+Note for Jason: the (a) or (b) items are talking about the vfio case, which is
+one of the two call sites that now use pin_longterm_pages_remote(), and the
+other one is infiniband:
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-index a48396dd4ebb..9fbe4e1e6853 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-@@ -945,11 +945,11 @@ static int is_valid_clean_head(struct hnae_ring *ring, int h)
- 
- /* netif_tx_lock will turn down the performance, set only when necessary */
- #ifdef CONFIG_NET_POLL_CONTROLLER
--#define NETIF_TX_LOCK(ring) spin_lock(&(ring)->lock)
--#define NETIF_TX_UNLOCK(ring) spin_unlock(&(ring)->lock)
-+#define NETIF_TX_LOCK(ring, flags) spin_lock_irqsave(&(ring)->lock, flags)
-+#define NETIF_TX_UNLOCK(ring, flags) spin_unlock_irqrestore(&(ring)->lock, flags)
- #else
--#define NETIF_TX_LOCK(ring)
--#define NETIF_TX_UNLOCK(ring)
-+#define NETIF_TX_LOCK(ring, flags)
-+#define NETIF_TX_UNLOCK(ring, flags)
- #endif
- 
- /* reclaim all desc in one budget
-@@ -962,16 +962,17 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
- 	struct net_device *ndev = ring_data->napi.dev;
- 	struct netdev_queue *dev_queue;
- 	struct hns_nic_priv *priv = netdev_priv(ndev);
-+	unsigned long flags;
- 	int head;
- 	int bytes, pkts;
- 
--	NETIF_TX_LOCK(ring);
-+	NETIF_TX_LOCK(ring, flags);
- 
- 	head = readl_relaxed(ring->io_base + RCB_REG_HEAD);
- 	rmb(); /* make sure head is ready before touch any data */
- 
- 	if (is_ring_empty(ring) || head == ring->next_to_clean) {
--		NETIF_TX_UNLOCK(ring);
-+		NETIF_TX_UNLOCK(ring, flags);
- 		return 0; /* no data to poll */
- 	}
- 
-@@ -979,7 +980,7 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
- 		netdev_err(ndev, "wrong head (%d, %d-%d)\n", head,
- 			   ring->next_to_use, ring->next_to_clean);
- 		ring->stats.io_err_cnt++;
--		NETIF_TX_UNLOCK(ring);
-+		NETIF_TX_UNLOCK(ring, flags);
- 		return -EIO;
- 	}
- 
-@@ -994,7 +995,7 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
- 	ring->stats.tx_pkts += pkts;
- 	ring->stats.tx_bytes += bytes;
- 
--	NETIF_TX_UNLOCK(ring);
-+	NETIF_TX_UNLOCK(ring, flags);
- 
- 	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
- 	netdev_tx_completed_queue(dev_queue, pkts, bytes);
-@@ -1052,10 +1053,11 @@ static void hns_nic_tx_clr_all_bufs(struct hns_nic_ring_data *ring_data)
- 	struct hnae_ring *ring = ring_data->ring;
- 	struct net_device *ndev = ring_data->napi.dev;
- 	struct netdev_queue *dev_queue;
-+	unsigned long flags;
- 	int head;
- 	int bytes, pkts;
- 
--	NETIF_TX_LOCK(ring);
-+	NETIF_TX_LOCK(ring, flags);
- 
- 	head = ring->next_to_use; /* ntu :soft setted ring position*/
- 	bytes = 0;
-@@ -1063,7 +1065,7 @@ static void hns_nic_tx_clr_all_bufs(struct hns_nic_ring_data *ring_data)
- 	while (head != ring->next_to_clean)
- 		hns_nic_reclaim_one_desc(ring, &bytes, &pkts);
- 
--	NETIF_TX_UNLOCK(ring);
-+	NETIF_TX_UNLOCK(ring, flags);
- 
- 	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
- 	netdev_tx_reset_queue(dev_queue);
--- 
-2.20.1
+drivers/infiniband/core/umem_odp.c:646:         npages = pin_longterm_pages_remote(owning_process, owning_mm,
+drivers/vfio/vfio_iommu_type1.c:353:            ret = pin_longterm_pages_remote(NULL, mm, vaddr, 1,
 
+
+Jerome, Jason: I really don't want to revert the put_page() to put_user_page() 
+conversions that are already throughout the IB driver--pointless churn, right?
+I'd rather either delete them in Jason's tree, or go with what I have here
+while waiting for the deletion.
+
+Maybe we should just settle on (a) or (b), so that the IB driver ends up with
+the wrapper functions? In fact, if it's getting deleted, then I'd prefer leaving
+it at (a), since that's simple...
+
+Jason should weigh in on how he wants this to go, with respect to branching
+and merging, since it sounds like that will conflict with the hmm branch 
+(ha, I'm overdue in reviewing his mmu notifier series, that's what I get for
+being late).
+
+thanks,
+
+John Hubbard
+NVIDIA
