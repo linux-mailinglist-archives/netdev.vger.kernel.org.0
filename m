@@ -2,58 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7448EE11D
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 14:29:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E029BEE148
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 14:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727998AbfKDN3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 08:29:16 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:47948 "EHLO vps0.lunn.ch"
+        id S1728647AbfKDNdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 08:33:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727236AbfKDN3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Nov 2019 08:29:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=9Gp/NL2eqrz4dZTYKIyJt3+G0Admp4hdFnQ7Fk2dmTM=; b=LPjPliLvex0zTOMDvFoEY0Gvkv
-        YZsfKjzGxFDu1X/mYlnN1XOmZDbxgE6PE+X3oQDt55b6uu9lW5qwii45CAj0s+g6zfwjCTQMi8W+f
-        ItwJ5NY6SXnTmJuECTsCKybG0Oc0fBRIbNtlDjSXweTwwmKCinrXR9/Du53xNJEgYjvo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iRcPy-0004Of-0m; Mon, 04 Nov 2019 14:29:14 +0100
-Date:   Mon, 4 Nov 2019 14:29:14 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, dan.carpenter@oracle.com
-Subject: Re: [PATCH v2 net-next] net: of_get_phy_mode: Change API to solve
- int/unit warnings
-Message-ID: <20191104132914.GA16834@lunn.ch>
-References: <20191101220756.2626-1-andrew@lunn.ch>
- <20191103.192601.443764119268490765.davem@davemloft.net>
- <20191103.194409.422094551811274424.davem@davemloft.net>
+        id S1727663AbfKDNdE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 08:33:04 -0500
+Received: from localhost (unknown [62.119.166.9])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DB3D620B7C;
+        Mon,  4 Nov 2019 13:33:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1572874383;
+        bh=/TUvH7WxdRqK1Hx+G/N8sjyhZKgnOcbOcjnSABQLZ48=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nNL4JsMh3/13d1kVojFuK8PITKHicXPSZepCYJIov3yDNR0t6/l89VDK6LDc83vlE
+         Bq70otCffMI3EYgo/PHMfNm0eZMYz/IHlRdDKQ+IYBdqyYCOqyTGy+xtkwn5B2OAhY
+         iKMuiqQ3PM4Kxna5rsGyxji4xCzGLZY5KCI/jDS4=
+Date:   Mon, 4 Nov 2019 14:32:58 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        linux- stable <stable@vger.kernel.org>, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, lkft-triage@lists.linaro.org,
+        "David S. Miller" <davem@davemloft.net>,
+        open list <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: stable-rc 4.14 : net/ipv6/addrconf.c:6593:22: error:
+ 'blackhole_netdev' undeclared
+Message-ID: <20191104133258.GA2130866@kroah.com>
+References: <CA+G9fYsnRVisD=ZvuoM2FViRkXDcm_n0hZ1cceUSM=XtqJRHgQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191103.194409.422094551811274424.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CA+G9fYsnRVisD=ZvuoM2FViRkXDcm_n0hZ1cceUSM=XtqJRHgQ@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 03, 2019 at 07:44:09PM -0800, David Miller wrote:
-> From: David Miller <davem@davemloft.net>
-> Date: Sun, 03 Nov 2019 19:26:01 -0800 (PST)
+On Mon, Nov 04, 2019 at 06:44:39PM +0530, Naresh Kamboju wrote:
+> stable-rc 4.14 for architectures arm64, arm, x86_64 and i386 builds
+> failed due to below error,
 > 
-> > Applied, thanks Andrew.
+> net/ipv6/addrconf.c: In function 'addrconf_init':
+> net/ipv6/addrconf.c:6593:22: error: 'blackhole_netdev' undeclared
+> (first use in this function); did you mean 'alloc_netdev'?
+>   bdev = ipv6_add_dev(blackhole_netdev);
+>                       ^~~~~~~~~~~~~~~~
+>                       alloc_netdev
+> net/ipv6/addrconf.c:6593:22: note: each undeclared identifier is
+> reported only once for each function it appears in
+> net/ipv6/addrconf.c: In function 'addrconf_cleanup':
+> net/ipv6/addrconf.c:6667:18: error: 'blackhole_netdev' undeclared
+> (first use in this function); did you mean 'alloc_netdev'?
+>   addrconf_ifdown(blackhole_netdev, 2);
+>                   ^~~~~~~~~~~~~~~~
+>                   alloc_netdev
 > 
-> I tried to fix some of the allmodconfig build fallout but it just kept
-> piling up.  Can you fix this and resubmit?  Thanks.
+> Build link,
+> https://ci.linaro.org/view/lkft/job/openembedded-lkft-linux-stable-rc-4.14/DISTRO=lkft,MACHINE=intel-corei7-64,label=docker-lkft/632/consoleText
+> 
 
-Hi David
-
-Please try v3 i posted last night, fixing what 0-day found.
-
-       Andrew
+Ick, my fault, will go fix this, sorry about that.
