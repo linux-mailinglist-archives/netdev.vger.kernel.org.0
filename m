@@ -2,139 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6E6EEEAF0
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 22:19:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 924D0EEAFD
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 22:22:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729399AbfKDVTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 16:19:12 -0500
-Received: from mga14.intel.com ([192.55.52.115]:62737 "EHLO mga14.intel.com"
+        id S1729122AbfKDVWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 16:22:47 -0500
+Received: from canardo.mork.no ([148.122.252.1]:37859 "EHLO canardo.mork.no"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728377AbfKDVTM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Nov 2019 16:19:12 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Nov 2019 13:19:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,268,1569308400"; 
-   d="scan'208";a="403110404"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.82])
-  by fmsmga006.fm.intel.com with ESMTP; 04 Nov 2019 13:19:11 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>, davem@davemloft.net
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net] taprio: fix panic while hw offload sched list swap
-In-Reply-To: <20191101232828.17023-1-ivan.khoronzhuk@linaro.org>
-References: <20191101232828.17023-1-ivan.khoronzhuk@linaro.org>
-Date:   Mon, 04 Nov 2019 13:20:37 -0800
-Message-ID: <87tv7juymy.fsf@linux.intel.com>
+        id S1728377AbfKDVWr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 16:22:47 -0500
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id xA4LMV2u006902
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 4 Nov 2019 22:22:34 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1572902556; bh=48oj23vht5x5+7JKYCCyMc5bdK+KmMf3l3mvdQ60FJQ=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=nsp4z2A0Ol0ZPMNtpvgXHP/QHASiVnZT0tLNU9H0xfszOUbrCOyeBClHdJHWz1/im
+         cy+MsmDRoekwPAsBW7OmzgqJ5K3fR6gi8KlZdBmLOf+ECqQ4CcehiszZpfY7TXfyQC
+         6umMwZjJVfImOgRcPXXfNRL2AoBoKQHDnJ8+5heQ=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
+        (envelope-from <bjorn@mork.no>)
+        id 1iRjnx-0003Uh-Se; Mon, 04 Nov 2019 22:22:29 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, glider@google.com,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, oliver@neukum.org,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: KMSAN: uninit-value in cdc_ncm_set_dgram_size
+Organization: m
+References: <00000000000013c4c1059625a655@google.com>
+Date:   Mon, 04 Nov 2019 22:22:29 +0100
+In-Reply-To: <00000000000013c4c1059625a655@google.com> (syzbot's message of
+        "Wed, 30 Oct 2019 12:22:07 -0700")
+Message-ID: <87ftj32v6y.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.101.4 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> writes:
+syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com> writes:
 
-> Don't swap oper and admin schedules too early, it's not correct and
-> causes crash.
+> syzbot found the following crash on:
 >
-> Steps to reproduce:
+> HEAD commit:    96c6c319 net: kasan: kmsan: support CONFIG_GENERIC_CSUM o=
+n..
+> git tree:       https://github.com/google/kmsan.git master
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D11f103bce00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D9e324dfe9c7b0=
+360
+> dashboard link: https://syzkaller.appspot.com/bug?extid=3D0631d878823ce24=
+11636
+> compiler:       clang version 9.0.0 (/home/glider/llvm/clang
+> 80fee25776c2fb61e74c1ecb1a523375c2500b69)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=3D10dd9774e00=
+000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=3D13651a24e00000
 >
-> 1)
-> tc qdisc replace dev eth0 parent root handle 100 taprio \
->     num_tc 3 \
->     map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
->     queues 1@0 1@1 1@2 \
->     base-time $SOME_BASE_TIME \
->     sched-entry S 01 80000 \
->     sched-entry S 02 15000 \
->     sched-entry S 04 40000 \
->     flags 2
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+0631d878823ce2411636@syzkaller.appspotmail.com
 >
-> 2)
-> tc qdisc replace dev eth0 parent root handle 100 taprio \
->     base-time $SOME_BASE_TIME \
->     sched-entry S 01 90000 \
->     sched-entry S 02 20000 \
->     sched-entry S 04 40000 \
->     flags 2
->
-> 3)
-> tc qdisc replace dev eth0 parent root handle 100 taprio \
->     base-time $SOME_BASE_TIME \
->     sched-entry S 01 150000 \
->     sched-entry S 02 200000 \
->     sched-entry S 04 40000 \
->     flags 2
->
-> Do 2 3 2 .. steps  more times if not happens and observe:
->
-> [  305.832319] Unable to handle kernel write to read-only memory at
-> virtual address ffff0000087ce7f0
-> [  305.910887] CPU: 0 PID: 0 Comm: swapper/0 Not tainted
-> [  305.919306] Hardware name: Texas Instruments AM654 Base Board (DT)
->
-> [...]
->
-> [  306.017119] x1 : ffff800848031d88 x0 : ffff800848031d80
-> [  306.022422] Call trace:
-> [  306.024866]  taprio_free_sched_cb+0x4c/0x98
-> [  306.029040]  rcu_process_callbacks+0x25c/0x410
-> [  306.033476]  __do_softirq+0x10c/0x208
-> [  306.037132]  irq_exit+0xb8/0xc8
-> [  306.040267]  __handle_domain_irq+0x64/0xb8
-> [  306.044352]  gic_handle_irq+0x7c/0x178
-> [  306.048092]  el1_irq+0xb0/0x128
-> [  306.051227]  arch_cpu_idle+0x10/0x18
-> [  306.054795]  do_idle+0x120/0x138
-> [  306.058015]  cpu_startup_entry+0x20/0x28
-> [  306.061931]  rest_init+0xcc/0xd8
-> [  306.065154]  start_kernel+0x3bc/0x3e4
-> [  306.068810] Code: f2fbd5b7 f2fbd5b6 d503201f f9400422 (f9000662)
-> [  306.074900] ---[ end trace 96c8e2284a9d9d6e ]---
-> [  306.079507] Kernel panic - not syncing: Fatal exception in interrupt
-> [  306.085847] SMP: stopping secondary CPUs
-> [  306.089765] Kernel Offset: disabled
->
-> Try to explain one of the possible crash cases:
->
-> The "real" admin list is assigned when admin_sched is set to
-> new_admin, it happens after "swap", that assigns to oper_sched NULL.
-> Thus if call qdisc show it can crash.
->
-> Farther, next second time, when sched list is updated, the admin_sched
-> is not NULL and becomes the oper_sched, previous oper_sched was NULL so
-> just skipped. But then admin_sched is assigned new_admin, but schedules
-> to free previous assigned admin_sched (that already became oper_sched).
->
-> Farther, next third time, when sched list is updated,
-> while one more swap, oper_sched is not null, but it was happy to be
-> freed already (while prev. admin update), so while try to free
-> oper_sched the kernel panic happens at taprio_free_sched_cb().
->
-> So, move the "swap emulation" where it should be according to function
-> comment from code.
->
-> Fixes: 9c66d15646760e ("taprio: Add support for hardware offloading")
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
+> BUG: KMSAN: uninit-value in cdc_ncm_set_dgram_size+0x6ba/0xbc0
+> drivers/net/usb/cdc_ncm.c:587
+> CPU: 0 PID: 11865 Comm: kworker/0:3 Not tainted 5.4.0-rc5+ #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine,
+> BIOS Google 01/01/2011
+> Workqueue: usb_hub_wq hub_event
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+>  kmsan_report+0x128/0x220 mm/kmsan/kmsan_report.c:108
+>  __msan_warning+0x73/0xe0 mm/kmsan/kmsan_instr.c:245
+>  cdc_ncm_set_dgram_size+0x6ba/0xbc0 drivers/net/usb/cdc_ncm.c:587
 
-As it solves a crash, and I have no problems with this fix:
+..
+> Variable was created at:
+>  cdc_ncm_set_dgram_size+0xf5/0xbc0 drivers/net/usb/cdc_ncm.c:564
+>  cdc_ncm_set_dgram_size+0xf5/0xbc0 drivers/net/usb/cdc_ncm.c:564
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D
 
-Acked-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+This looks like a false positive to me. max_datagram_size is two bytes
+declared as
 
-But reading the code, I got the feeling that upstream "swap emulation"
-part of the code is not working as it should, perhaps it was lost during
-upstreaming of the patch? Vladimir, can you confirm that this works for
-you? (yeah, this can be solved later)
+	__le16 max_datagram_size;
+
+and the code leading up to the access on drivers/net/usb/cdc_ncm.c:587
+is:
+
+	/* read current mtu value from device */
+	err =3D usbnet_read_cmd(dev, USB_CDC_GET_MAX_DATAGRAM_SIZE,
+			      USB_TYPE_CLASS | USB_DIR_IN | USB_RECIP_INTERFACE,
+			      0, iface_no, &max_datagram_size, 2);
+	if (err < 0) {
+		dev_dbg(&dev->intf->dev, "GET_MAX_DATAGRAM_SIZE failed\n");
+		goto out;
+	}
+
+	if (le16_to_cpu(max_datagram_size) =3D=3D ctx->max_datagram_size)
 
 
-Cheers,
---
-Vinicius
 
+AFAICS, there is no way max_datagram_size can be uninitialized here.
+usbnet_read_cmd() either read 2 bytes into it or returned an error,
+causing the access to be skipped.  Or am I missing something?
+
+I tried to read the syzbot manual to figure out how to tell this to the
+bot, but couldn't find that either.  Not my day today it seems ;-)
+
+Please let me know what to do about this.
+
+
+Bj=C3=B8rn
