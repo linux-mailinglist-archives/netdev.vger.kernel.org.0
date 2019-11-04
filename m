@@ -2,86 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B23DBEE108
-	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 14:26:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7448EE11D
+	for <lists+netdev@lfdr.de>; Mon,  4 Nov 2019 14:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729216AbfKDNZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 08:25:56 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:51510 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728793AbfKDNZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 08:25:55 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA4DNHxI017943;
-        Mon, 4 Nov 2019 14:25:41 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=STMicroelectronics;
- bh=PasrWJUoa3UFwSs+GtbCxK+KUm1QgPk+g2vbUrQXP80=;
- b=escz3tFhfHuDlSHLH2Vm0iOtu9babUaVvcVFdMTFvSmhQlLsajW6VF4hBtssOkyKQ8WO
- 5PcAQqWLH/QTPmsu7fMBK5vIVYBijUl9LMzi5WVjIsm9FJaoSro1Y+C0N2Sahcb8ZJrt
- RrYuJaioEiRAN9AkoXXywIsNb3RTcnQTb3fVqDbntrXrJLPCpP1P2v9mN3E0QmhxnNbr
- xkH/qpZhEO8sxmheY1Y24kcz0wZf/YLngg8Xl5TdjYeL3fZt3H5Cpyyrp3sEgciB3Cos
- P9H+zjJn/6FpOsNH+BXmMcRH6gY8YftxNsdvfYpoZ9PoWtVrM02nKZmI/keTxqRHR/M6 ow== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2w11jn1v9p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Nov 2019 14:25:41 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 051D510002A;
-        Mon,  4 Nov 2019 14:25:41 +0100 (CET)
-Received: from Webmail-eu.st.com (Safex1hubcas24.st.com [10.75.90.94])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id EA9672BFC79;
-        Mon,  4 Nov 2019 14:25:40 +0100 (CET)
-Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by Safex1hubcas24.st.com
- (10.75.90.94) with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 4 Nov 2019
- 14:25:40 +0100
-Received: from localhost (10.201.22.222) by Webmail-ga.st.com (10.75.90.48)
- with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 4 Nov 2019 14:25:40
- +0100
-From:   Christophe Roullier <christophe.roullier@st.com>
-To:     <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <peppe.cavallaro@st.com>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <christophe.roullier@st.com>, <andrew@lunn.ch>
-Subject: [PATCH net-next 4/4] ARM: dts: stm32: Enable gating of the MAC TX clock during TX low-power mode on stm32mp157c
-Date:   Mon, 4 Nov 2019 14:25:33 +0100
-Message-ID: <20191104132533.5153-5-christophe.roullier@st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191104132533.5153-1-christophe.roullier@st.com>
-References: <20191104132533.5153-1-christophe.roullier@st.com>
+        id S1727998AbfKDN3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 08:29:16 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47948 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727236AbfKDN3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 08:29:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=9Gp/NL2eqrz4dZTYKIyJt3+G0Admp4hdFnQ7Fk2dmTM=; b=LPjPliLvex0zTOMDvFoEY0Gvkv
+        YZsfKjzGxFDu1X/mYlnN1XOmZDbxgE6PE+X3oQDt55b6uu9lW5qwii45CAj0s+g6zfwjCTQMi8W+f
+        ItwJ5NY6SXnTmJuECTsCKybG0Oc0fBRIbNtlDjSXweTwwmKCinrXR9/Du53xNJEgYjvo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iRcPy-0004Of-0m; Mon, 04 Nov 2019 14:29:14 +0100
+Date:   Mon, 4 Nov 2019 14:29:14 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, dan.carpenter@oracle.com
+Subject: Re: [PATCH v2 net-next] net: of_get_phy_mode: Change API to solve
+ int/unit warnings
+Message-ID: <20191104132914.GA16834@lunn.ch>
+References: <20191101220756.2626-1-andrew@lunn.ch>
+ <20191103.192601.443764119268490765.davem@davemloft.net>
+ <20191103.194409.422094551811274424.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.201.22.222]
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-11-04_08:2019-11-04,2019-11-04 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191103.194409.422094551811274424.davem@davemloft.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When there is no activity on ethernet phy link, the ETH_GTX_CLK is cut
+On Sun, Nov 03, 2019 at 07:44:09PM -0800, David Miller wrote:
+> From: David Miller <davem@davemloft.net>
+> Date: Sun, 03 Nov 2019 19:26:01 -0800 (PST)
+> 
+> > Applied, thanks Andrew.
+> 
+> I tried to fix some of the allmodconfig build fallout but it just kept
+> piling up.  Can you fix this and resubmit?  Thanks.
 
-Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
----
- arch/arm/boot/dts/stm32mp157c.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+Hi David
 
-diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-index f13c2348d130..8df2986dd452 100644
---- a/arch/arm/boot/dts/stm32mp157c.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-@@ -1334,6 +1334,7 @@
- 			st,syscon = <&syscfg 0x4>;
- 			snps,mixed-burst;
- 			snps,pbl = <2>;
-+			snps,en-tx-lpi-clockgating;
- 			snps,axi-config = <&stmmac_axi_config_0>;
- 			snps,tso;
- 			status = "disabled";
--- 
-2.17.1
+Please try v3 i posted last night, fixing what 0-day found.
 
+       Andrew
