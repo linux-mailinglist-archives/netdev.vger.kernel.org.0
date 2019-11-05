@@ -2,121 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB953F018E
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30002F01AF
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:40:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389836AbfKEPfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 10:35:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45910 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389359AbfKEPfX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 10:35:23 -0500
-Received: from localhost (unknown [62.119.166.9])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 73B4B2087E;
-        Tue,  5 Nov 2019 15:35:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572968122;
-        bh=Cbfu3/n7gIxvq4upIXJWRu4k+r0dK46FEC6wlFd+xTQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uDGbHOJtbbPko/WrESWxDR7Kk2ZYDJyp8QDmRxfcw7JYrte92PPXyiRCURS9oOoAs
-         UD2slh/B6oZatxV50V538Z2qOi1YsHIjESlcOSY5or2DIPEXmiRy04irh/RLAnykpF
-         PuGMJ27rcsBKo+4amwx4pUlKieFQMdbBYfQUXnGE=
-Date:   Tue, 5 Nov 2019 16:35:16 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: KMSAN: uninit-value in cdc_ncm_set_dgram_size
-Message-ID: <20191105153516.GA2617867@kroah.com>
-References: <00000000000013c4c1059625a655@google.com>
- <87ftj32v6y.fsf@miraculix.mork.no>
- <1572952516.2921.6.camel@suse.com>
- <875zjy33z2.fsf@miraculix.mork.no>
- <CAG_fn=XXGX5U9oJ2bJDHCwVcp8M+rGDvFDTt4kWFiyWoqL8vAA@mail.gmail.com>
+        id S2389836AbfKEPkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 10:40:32 -0500
+Received: from smtprelay0160.hostedemail.com ([216.40.44.160]:51043 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389507AbfKEPkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 10:40:32 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 7EE5E182CF669;
+        Tue,  5 Nov 2019 15:40:30 +0000 (UTC)
+X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
+X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,rostedt@goodmis.org,:::::::::::::::::::::,RULES_HIT:41:355:379:541:599:800:960:966:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2194:2196:2198:2199:2200:2201:2393:2553:2559:2562:2693:2739:2895:2914:2987:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4250:4385:5007:6119:6120:6261:7514:7875:7901:7903:8778:10010:10400:10848:10967:11026:11232:11658:11914:12043:12050:12296:12297:12438:12663:12740:12760:12895:13161:13229:13439:13972:14096:14097:14181:14659:14721:21080:21324:21433:21627:21740:21789:21939:30054:30070:30083:30090:30091,0,RBL:146.247.46.6:@goodmis.org:.lbl8.mailshell.net-62.14.41.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:1:0,LFtime:25,LUA_SUMMARY:none
+X-HE-Tag: mom97_3e4e71219012e
+X-Filterd-Recvd-Size: 3221
+Received: from grimm.local.home (unknown [146.247.46.6])
+        (Authenticated sender: rostedt@goodmis.org)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Tue,  5 Nov 2019 15:40:27 +0000 (UTC)
+Date:   Tue, 5 Nov 2019 10:40:24 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, peterz@infradead.org, x86@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH bpf-next 0/7] Introduce BPF trampoline
+Message-ID: <20191105104024.4e99a630@grimm.local.home>
+In-Reply-To: <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
+References: <20191102220025.2475981-1-ast@kernel.org>
+        <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
+X-Mailer: Claws Mail 3.17.4git49 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAG_fn=XXGX5U9oJ2bJDHCwVcp8M+rGDvFDTt4kWFiyWoqL8vAA@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 02:55:09PM +0100, Alexander Potapenko wrote:
-> + Greg K-H
-> On Tue, Nov 5, 2019 at 1:25 PM Bjørn Mork <bjorn@mork.no> wrote:
-> >
-> > Oliver Neukum <oneukum@suse.com> writes:
-> > > Am Montag, den 04.11.2019, 22:22 +0100 schrieb Bjørn Mork:
-> > >> This looks like a false positive to me. max_datagram_size is two bytes
-> > >> declared as
-> > >>
-> > >>         __le16 max_datagram_size;
-> > >>
-> > >> and the code leading up to the access on drivers/net/usb/cdc_ncm.c:587
-> > >> is:
-> > >>
-> > >>         /* read current mtu value from device */
-> > >>         err = usbnet_read_cmd(dev, USB_CDC_GET_MAX_DATAGRAM_SIZE,
-> > >>                               USB_TYPE_CLASS | USB_DIR_IN | USB_RECIP_INTERFACE,
-> > >>                               0, iface_no, &max_datagram_size, 2);
-> > >
-> > > At this point err can be 1.
-> > >
-> > >>         if (err < 0) {
-> > >>                 dev_dbg(&dev->intf->dev, "GET_MAX_DATAGRAM_SIZE failed\n");
-> > >>                 goto out;
-> > >>         }
-> > >>
-> > >>         if (le16_to_cpu(max_datagram_size) == ctx->max_datagram_size)
-> > >>
-> > >>
-> > >>
-> > >> AFAICS, there is no way max_datagram_size can be uninitialized here.
-> > >> usbnet_read_cmd() either read 2 bytes into it or returned an error,
-> > >
-> > > No. usbnet_read_cmd() will return the number of bytes transfered up
-> > > to the number requested or an error.
-> >
-> > Ah, OK. So that could be fixed with e.g.
-> >
-> >   if (err < 2)
-> >        goto out;
-> It'd better be (err < sizeof(max_datagram_size)), and probably in the
-> call to usbnet_read_cmd() as well.
-> >
-> > Or would it be better to add a strict length checking variant of this
-> > API?  There are probably lots of similar cases where we expect a
-> > multibyte value and a short read is (or should be) considered an error.
-> > I can't imagine any situation where we want a 2, 4, 6 or 8 byte value
-> > and expect a flexible length returned.
-> This is really a widespread problem on syzbot: a lot of USB devices
-> use similar code calling usb_control_msg() to read from the device and
-> not checking that the buffer is fully initialized.
-> 
-> Greg, do you know how often usb_control_msg() is expected to read less
-> than |size| bytes? Is it viable to make it return an error if this
-> happens?
-> Almost nobody is using this function correctly (i.e. checking that it
-> has read the whole buffer before accessing it).
+On Tue, 5 Nov 2019 06:31:56 -0800
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 
-It could return less than size if the endpoint size isn't the same as
-the message.  I think.  It's been a long time since I've read the USB
-spec in that area, but usually if the size is "short" then status should
-also be set saying something went wrong, right?  Ah wait, you are
-playing the "malicious device" card, I think we always just need to
-check the thing :(
+> Steven,
+> look slike your branch hasn't been updated in 13 days.
+> Are you still planning to fix the bugs and send it in for the merge window?
+> I cannot afford to wait a full release, since I have my own follow for
+> XDP/networking based on this and other folks are building their stuff on top of
+> BPF trampoline too. So I'm thinking for v2 I will switch to using text_poke()
+> and add appropriate guard checks, so it will be safe out of the box without
+> ftrace dependency. If register_ftrace_direct() indeed comes in soon I'll
+> switch to that and will make bpf trampoline to co-operate with ftrace.
+> text_poke approach will make it such that what ever comes first to trace the
+> fentry (either bpf trampoline or ftrace) will grab the nop and the other system
+> will not be able to attach. That's safe and correct, but certainly not nice
+> long term. So the fix will be needed. The key point that switching to text_poke
+> will remove the register_ftrace_direct() dependency, unblock bpf developers and
+> will give you time to land your stuff at your pace.
 
-sorry,
+Alexei,
 
-greg k-h
+I am still working on it, and if it seems stable enough I will submit
+it for this merge window, but there's no guarantees. It's ready when
+it's ready. I gave 5 talks last week (4 in Lyon, and one is Sofia,
+Bulgaria), thus I did not have time to work on it then. I'm currently
+in the Sofia office, and I got a version working that seems to be
+stable. But I still have to break it up into a patch series, and run it
+through more stress tests.
+
+If you have to wait you may need to wait. The Linux kernel isn't
+something that is suppose to put in temporary hacks, just to satisfy
+someone's deadline. Feel free to fork the kernel if you need to. That's
+what everyone else does.
+
+The RT patch has been out of tree specifically because we never pushed
+in the hacks to make it work. We could have landed RT in the tree years
+ago, but we *never* pushed in something that wasn't ready. I suggest
+the BPF folks follow suit.
+
+-- Steve
