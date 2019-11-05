@@ -2,94 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 531F3EF678
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 08:35:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 779FAEF692
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 08:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387832AbfKEHfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 02:35:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43052 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387484AbfKEHfD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 02:35:03 -0500
-Received: from localhost (host6-102.lan-isdn.imaginet.fr [195.68.6.102])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E04EF217F4;
-        Tue,  5 Nov 2019 07:35:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572939302;
-        bh=K1BKpJQLMtnH3+V92uee7SW/Z+pmSQfrcqeTyN7QlB0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eghPibRXlsACFFKrYkascPxzVND7Aiuqaf9uVBhvkHW5YFgjXLIJw1fi5B+JqEn2J
-         9Ap1s3dpd6jwGSXdExj1GfwpDBNlhsNN9V3qwx+NLM+UsQ+aRJnfooJHREyAUXMm3j
-         G39z1/GxCJimZ8wNJuv9uuLJ6rRp5bamdOGU6ExY=
-Date:   Tue, 5 Nov 2019 08:34:59 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Sasha Levin <sashal@kernel.org>, lkft-triage@lists.linaro.org,
-        Dan Rue <dan.rue@linaro.org>, LTP List <ltp@lists.linux.it>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jan Stancek <jstancek@redhat.com>,
-        Basil Eljuse <Basil.Eljuse@arm.com>, chrubis <chrubis@suse.cz>,
-        mmarhefk@redhat.com, Netdev <netdev@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>
-Subject: Re: stable-rc-5.3.9-rc1: regressions detected - remove_proc_entry:
- removing non-empty directory 'net/dev_snmp6', leaking at least 'lo'
-Message-ID: <20191105073459.GB2588562@kroah.com>
-References: <CA+G9fYsWTFQZTHXUDPToaepnKGBoh61SsA_8SHcYgYZXN_L+mg@mail.gmail.com>
- <CA+G9fYu+6A3pYQGs2rydYtHNSCf1t9+OTRqrZeCbpc2ARLx2zA@mail.gmail.com>
+        id S2387804AbfKEHqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 02:46:54 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:58747 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387482AbfKEHqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 02:46:54 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 44F9221F3C;
+        Tue,  5 Nov 2019 02:46:53 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 05 Nov 2019 02:46:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=zI52HG
+        wmHmVQDk2QPsF/mE4A8BuLMVUXTDQb7bAD0Cw=; b=KiMNbqtiyUy0c2cA2YzlNA
+        iJc9QYrfADhA7tV6mjzKA7qxQA/dqwbT59MVDm35coqUr1+lNtwpkXO6Y6x8dxty
+        7E1E+30/u5tw+mjvfXVfVmHg0S6zIcww6bOilQL0oLEKf24IkOfdq5vIXjnQxSjL
+        Zi7DoECpcz4s9aqOh3ptgofL8YyBz9EpZROhEPWLdohUuQARrtrtY9p/+JBDp7dd
+        /bXGze6C3Yjx1R+lyffwvvQvrJ7N0Y0UOBkxN9PIun/EIUFhh4fP4z2YTqkMkv3N
+        oEQo29MuoNqDBWp6RR2pSRjBKXYx+xrb118dt5qlpXtIJsGeqjbhCf2uAXZqmpsQ
+        ==
+X-ME-Sender: <xms:7CjBXchSFhkLiUiSGQbFnKHF3JuBSQzqKerWctBg-Qg3BBH3BB3Hxw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddugedguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepud
+    elfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgt
+    hhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:7CjBXev8knPxkjPuYt3owdJTE4iql7H3mw3tLI9GDGOsQO2uJ8kUhQ>
+    <xmx:7CjBXbCx7fKEJBAzugg2-Ev9ntnpytx5rUdOGH1Wf8uC94nzltjZNQ>
+    <xmx:7CjBXRXlUA_nDzYEYljfEnptqg5eGyytLwPT7YubuEl30mrQ054AlA>
+    <xmx:7SjBXUBfoucLrcVFJgcobGB70d79kg_zw4VLnJ9L7-cAaledF23puw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 46F838005A;
+        Tue,  5 Nov 2019 02:46:52 -0500 (EST)
+Date:   Tue, 5 Nov 2019 09:46:50 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        shalomt@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 0/6] mlxsw: Add extended ACK for EMADs
+Message-ID: <20191105074650.GA14631@splinter>
+References: <20191103083554.6317-1-idosch@idosch.org>
+ <20191104123954.538d4574@cakuba.netronome.com>
+ <20191104210450.GA10713@splinter>
+ <20191104144419.46e304a9@cakuba.netronome.com>
+ <20191104232036.GA12725@splinter>
+ <20191104153342.36891db7@cakuba.netronome.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+G9fYu+6A3pYQGs2rydYtHNSCf1t9+OTRqrZeCbpc2ARLx2zA@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191104153342.36891db7@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 09:44:39AM +0530, Naresh Kamboju wrote:
-> Hi Sasha and Greg,
+On Mon, Nov 04, 2019 at 03:33:42PM -0800, Jakub Kicinski wrote:
+> On Tue, 5 Nov 2019 01:20:36 +0200, Ido Schimmel wrote:
+> > On Mon, Nov 04, 2019 at 02:44:19PM -0800, Jakub Kicinski wrote:
+> > > On Mon, 4 Nov 2019 23:04:50 +0200, Ido Schimmel wrote:  
+> > > > I don't understand the problem. If we get an error from firmware today,
+> > > > we have no clue what the actual problem is. With this we can actually
+> > > > understand what went wrong. How is it different from kernel passing a
+> > > > string ("unstructured data") to user space in response to an erroneous
+> > > > netlink request? Obviously it's much better than an "-EINVAL".  
+> > > 
+> > > The difference is obviously that I can look at the code in the kernel
+> > > and understand it. FW code is a black box. Kernel should abstract its
+> > > black boxiness away.  
+> > 
+> > But FW code is still code and it needs to be able to report errors in a
+> > way that will aid us in debugging when problems occur. I want meaningful
+> > errors from applications regardless if I can read their code or not.
 > 
-> On Mon, 4 Nov 2019 at 20:59, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
-> >
-> > Linux stable rc 5.3 branch running LTP reported following test failures.
-> > While investigating these failures I have found this kernel warning
-> > from boot console.
-> > Please find detailed LTP output log in the bottom of this email.
-> >
-> > List of regression test cases:
-> >   ltp-containers-tests:
-> >     * netns_breakns_ip_ipv6_ioctl
-> >     * netns_breakns_ip_ipv6_netlink
-> >     * netns_breakns_ns_exec_ipv6_ioctl
-> >     * netns_breakns_ns_exec_ipv6_netlink
-> >     * netns_comm_ip_ipv6_ioctl
-> >     * netns_comm_ip_ipv6_netlink
-> >     * netns_comm_ns_exec_ipv6_ioctl
-> >     * netns_comm_ns_exec_ipv6_netlink
-> 
-> These reported failures got fixed on latest stable-rc 5.3.y after
-> dropping a patch [1].
+> And the usual way accessing FW logs is through ethtool dumps.
 
-What is the subject of the patch?
+I assume you're referring to set_dump() / get_dump_flag() /
+get_dump_data() callbacks?
 
-> The kernel warning is also gone now.
-> 
-> metadata:
->   git branch: linux-5.3.y
->   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
->   git commit: 75c9913bbf6e9e64cb669236571e6af45cddfd68
-
-The -rc tree is rebased all the time, can I get a "real" subject line to
-get a chance to figure out what you are trying to refer to here?
-
-> ref:
-> [PATCH AUTOSEL 5.3 12/33] blackhole_netdev: fix syzkaller reported issue
-> [1] https://lkml.org/lkml/2019/10/25/794
-
-lore.kernel.org is much more reliable :)
-
-thanks,
-
-greg k-h
+In our case it's not really a dump. These are errors that are reported
+inline to the driver for a specific erroneous operation. We currently
+can't retrieve them from firmware later on. Using ethtool means that we
+need to store these errors in the driver and then push them to user
+space upon get operation. Seems like a stretch to me. Especially when
+we're already reporting the error code today and this set merely
+augments it with more data to make the error more specific.
