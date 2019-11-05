@@ -2,369 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7658FEF16A
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 00:49:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F6ECEF1AF
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 01:11:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387426AbfKDXtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 18:49:40 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:51309 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729921AbfKDXtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 18:49:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572911378;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ls7Zx2AkPrMXy+LPLj5cuy1SX8JbSG4GMzPShaYe1yw=;
-        b=IfL7MkPxB5zySA4vbb0QuMZy55v/zvaTiCX93aqMVcli8IDb/YZcsYaBLOCP7wWMujkRzf
-        8sA/scHwe1+PbSRCdhJLnQpOQhPaZdnG7HBDxjBnicb7qaM1vlIZX+/P5gpceiGKOi/E2x
-        4s8SrZfgAaTUPA5+CIq0y+fn/ckofvo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-397-aDWO2QFVNLO1s54amWQi-Q-1; Mon, 04 Nov 2019 18:49:35 -0500
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F0E0D107ACC2;
-        Mon,  4 Nov 2019 23:49:30 +0000 (UTC)
-Received: from redhat.com (unknown [10.20.6.178])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D177919C4F;
-        Mon,  4 Nov 2019 23:49:21 +0000 (UTC)
-Date:   Mon, 4 Nov 2019 18:49:20 -0500
-From:   Jerome Glisse <jglisse@redhat.com>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 12/18] mm/gup: track FOLL_PIN pages
-Message-ID: <20191104234920.GA18515@redhat.com>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-13-jhubbard@nvidia.com>
- <20191104185238.GG5134@redhat.com>
- <7821cf87-75a8-45e2-cf28-f85b62192416@nvidia.com>
+        id S1729934AbfKEALN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 19:11:13 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:45112 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729863AbfKEALN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 19:11:13 -0500
+Received: by mail-pf1-f194.google.com with SMTP id z4so7728351pfn.12
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 16:11:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=axtens.net; s=google;
+        h=from:to:subject:in-reply-to:references:date:message-id:mime-version;
+        bh=FGYA88uNEcJykVhSbccThExUs6NC0aEqf9Phs6SxNGQ=;
+        b=KxV5hg3uuWFy9/TeH0EB9sUH0UQScp4XvNf0z6bH5R0jj966X8txVGWIx1r+XkvnHI
+         Gf/wnT+Lfonrb+BCY0O3G7pQwI5XdpRaPNTm3Vv/LPaQgnDRY5auUAuVwMAhYHpfadG6
+         4VQXwYNdBCkZIPI5Nmru9FsKLJEK4JM/wfLgo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=FGYA88uNEcJykVhSbccThExUs6NC0aEqf9Phs6SxNGQ=;
+        b=gRhT6IdkF4ptKFQCo+hMm3pvtr8y0+5WY2M51rLuVqDUuSpYPG7Cb4KEFzqwgMaPSe
+         qzjLOchNwY2rBshqGV8QE46QrDbSasm/mw7q8QdNGduDqlJYhhQ2YdVzYEXfFGTSl7jN
+         Kgtq1zLT/PauB3gPG6b2Bszy3Nu6VLXNjFPtFgy+GfGa4l/mw0/eE5EnTW8IhaVZy85r
+         ZlXHLFSCc5yuvbKYb5LNRT8mlOPLgIsUJzzGctVCGVVe+L4f0vXG5HsZ3kD22KMVKao4
+         j056owO70mnIWtgEXx1Y+B/fMxlOiOWmt7kD/nwXTTrYuAZtiwcdJwSb1so7nSJ6WvW3
+         Z4Qw==
+X-Gm-Message-State: APjAAAWthNNFv5nM8XgREAdO8JNLoUck03eHzbsGruNFo7oltynib9tt
+        nkLwiS1Qd1LxP9+P/zREIUZ71g==
+X-Google-Smtp-Source: APXvYqwgwTBHQ4nLYIQKzDc7soViw5YJoY1O6ZPozN476TqWg47nkbsQx4t8+JWLNzqGXl4mNPi7hg==
+X-Received: by 2002:a62:be0c:: with SMTP id l12mr23045117pff.256.1572912672397;
+        Mon, 04 Nov 2019 16:11:12 -0800 (PST)
+Received: from localhost (2001-44b8-1113-6700-40d3-eca3-e70b-6bc4.static.ipv6.internode.on.net. [2001:44b8:1113:6700:40d3:eca3:e70b:6bc4])
+        by smtp.gmail.com with ESMTPSA id d9sm16781675pgc.80.2019.11.04.16.11.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 16:11:11 -0800 (PST)
+From:   Daniel Axtens <dja@axtens.net>
+To:     Ramana Reddy <gtvrreddy@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, inux-kernel@vger.kernel.org,
+        torvalds@linux-foundation.org
+Subject: Re: gso packet is failing with af_packet socket with packet_vnet_hdr
+In-Reply-To: <CAL2CrsOE1Td1NTSava-0O4wJ0kr+i4FA_cRwNcPH9Nt9dTmnVQ@mail.gmail.com>
+References: <CAL2CrsOE1Td1NTSava-0O4wJ0kr+i4FA_cRwNcPH9Nt9dTmnVQ@mail.gmail.com>
+Date:   Tue, 05 Nov 2019 11:11:07 +1100
+Message-ID: <87wocfkwro.fsf@dja-thinkpad.axtens.net>
 MIME-Version: 1.0
-In-Reply-To: <7821cf87-75a8-45e2-cf28-f85b62192416@nvidia.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: aDWO2QFVNLO1s54amWQi-Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 04, 2019 at 02:49:18PM -0800, John Hubbard wrote:
-> On 11/4/19 10:52 AM, Jerome Glisse wrote:
-> > On Sun, Nov 03, 2019 at 01:18:07PM -0800, John Hubbard wrote:
-> >> Add tracking of pages that were pinned via FOLL_PIN.
-> >>
-> >> As mentioned in the FOLL_PIN documentation, callers who effectively se=
-t
-> >> FOLL_PIN are required to ultimately free such pages via put_user_page(=
-).
-> >> The effect is similar to FOLL_GET, and may be thought of as "FOLL_GET
-> >> for DIO and/or RDMA use".
-> >>
-> >> Pages that have been pinned via FOLL_PIN are identifiable via a
-> >> new function call:
-> >>
-> >>    bool page_dma_pinned(struct page *page);
-> >>
-> >> What to do in response to encountering such a page, is left to later
-> >> patchsets. There is discussion about this in [1].
-> >>
-> >> This also changes a BUG_ON(), to a WARN_ON(), in follow_page_mask().
-> >>
-> >> This also has a couple of trivial, non-functional change fixes to
-> >> try_get_compound_head(). That function got moved to the top of the
-> >> file.
-> >=20
-> > Maybe split that as a separate trivial patch.
->=20
->=20
-> Will do.
->=20
->=20
-> >=20
-> >>
-> >> This includes the following fix from Ira Weiny:
-> >>
-> >> DAX requires detection of a page crossing to a ref count of 1.  Fix th=
-is
-> >> for GUP pages by introducing put_devmap_managed_user_page() which
-> >> accounts for GUP_PIN_COUNTING_BIAS now used by GUP.
-> >=20
-> > Please do the put_devmap_managed_page() changes in a separate
-> > patch, it would be a lot easier to follow, also on that front
-> > see comments below.
->=20
->=20
-> Oh! OK. It makes sense when you say it out loud. :)
->=20
->=20
-> ...
-> >> +static inline bool put_devmap_managed_page(struct page *page)
-> >> +{
-> >> +=09bool is_devmap =3D page_is_devmap_managed(page);
-> >> +
-> >> +=09if (is_devmap) {
-> >> +=09=09int count =3D page_ref_dec_return(page);
-> >> +
-> >> +=09=09__put_devmap_managed_page(page, count);
-> >> +=09}
-> >> +
-> >> +=09return is_devmap;
-> >> +}
-> >=20
-> > I think the __put_devmap_managed_page() should be rename
-> > to free_devmap_managed_page() and that the count !=3D 1
-> > case move to this inline function ie:
-> >=20
-> > static inline bool put_devmap_managed_page(struct page *page)
-> > {
-> > =09bool is_devmap =3D page_is_devmap_managed(page);
-> >=20
-> > =09if (is_devmap) {
-> > =09=09int count =3D page_ref_dec_return(page);
-> >=20
-> > =09=09/*
-> > =09=09 * If refcount is 1 then page is freed and refcount is stable as =
-nobody
-> > =09=09 * holds a reference on the page.
-> > =09=09 */
-> > =09=09if (count =3D=3D 1)
-> > =09=09=09free_devmap_managed_page(page, count);
-> > =09=09else if (!count)
-> > =09=09=09__put_page(page);
-> > =09}
-> >=20
-> > =09return is_devmap;
-> > }
-> >=20
->=20
-> Thanks, that does look cleaner and easier to read.
->=20
-> >=20
-> >> +
-> >>  #else /* CONFIG_DEV_PAGEMAP_OPS */
-> >>  static inline bool put_devmap_managed_page(struct page *page)
-> >>  {
-> >> @@ -1038,6 +1051,8 @@ static inline __must_check bool try_get_page(str=
-uct page *page)
-> >>  =09return true;
-> >>  }
-> >> =20
-> >> +__must_check bool user_page_ref_inc(struct page *page);
-> >> +
-> >=20
-> > What about having it as an inline here as it is pretty small.
->=20
->=20
-> You mean move it to a static inline function in mm.h? It's worse than it=
-=20
-> looks, though: *everything* that it calls is also a static function, loca=
-l
-> to gup.c. So I'd have to expose both try_get_compound_head() and
-> __update_proc_vmstat(). And that also means calling mod_node_page_state()=
- from
-> mm.h, and it goes south right about there. :)
+Hi Ramana,
 
-Ok fair enough
+> Some more info:
+> [root@xx ~]# uname -r
+> 3.10.0-1062.4.1.el7.x86_64
+> [root@xx ~]# cat /etc/redhat-release
+> Red Hat Enterprise Linux Server release 7.7 (Maipo)
 
-> ... =20
-> >> +/**
-> >> + * page_dma_pinned() - report if a page is pinned by a call to pin_us=
-er_pages*()
-> >> + * or pin_longterm_pages*()
-> >> + * @page:=09pointer to page to be queried.
-> >> + * @Return:=09True, if it is likely that the page has been "dma-pinne=
-d".
-> >> + *=09=09False, if the page is definitely not dma-pinned.
-> >> + */
-> >=20
-> > Maybe add a small comment about wrap around :)
->=20
->=20
-> I don't *think* the count can wrap around, due to the checks in user_page=
-_ref_inc().
->=20
-> But it's true that the documentation is a little light here...What did yo=
-u have=20
-> in mind?
+Are you able to reproduce your issue with an upstream kernel? If you
+have a problem with a vendor kernel - especially one based on a kernel
+that old - you will need to talk to your vendor. If you can reproduce it
+on an upstream kernel, then I might be able to help.
 
-About false positive case (and how unlikely they are) and that wrap
-around is properly handle. Maybe just a pointer to the documentation
-so that people know they can go look there for details. I know my
-brain tend to forget where to look for things so i like to be constantly
-reminded hey the doc is Documentations/foobar :)
+Regards,
+Daniel
 
-> > [...]
-> >=20
-> >> @@ -1930,12 +2028,20 @@ static int __gup_device_huge(unsigned long pfn=
-, unsigned long addr,
-> >> =20
-> >>  =09=09pgmap =3D get_dev_pagemap(pfn, pgmap);
-> >>  =09=09if (unlikely(!pgmap)) {
-> >> -=09=09=09undo_dev_pagemap(nr, nr_start, pages);
-> >> +=09=09=09undo_dev_pagemap(nr, nr_start, flags, pages);
-> >>  =09=09=09return 0;
-> >>  =09=09}
-> >>  =09=09SetPageReferenced(page);
-> >>  =09=09pages[*nr] =3D page;
-> >> -=09=09get_page(page);
-> >> +
-> >> +=09=09if (flags & FOLL_PIN) {
-> >> +=09=09=09if (unlikely(!user_page_ref_inc(page))) {
-> >> +=09=09=09=09undo_dev_pagemap(nr, nr_start, flags, pages);
-> >> +=09=09=09=09return 0;
-> >> +=09=09=09}
-> >=20
-> > Maybe add a comment about a case that should never happens ie
-> > user_page_ref_inc() fails after the second iteration of the
-> > loop as it would be broken and a bug to call undo_dev_pagemap()
-> > after the first iteration of that loop.
-> >=20
-> > Also i believe that this should never happens as if first
-> > iteration succeed than __page_cache_add_speculative() will
-> > succeed for all the iterations.
-> >=20
-> > Note that the pgmap case above follows that too ie the call to
-> > get_dev_pagemap() can only fail on first iteration of the loop,
-> > well i assume you can never have a huge device page that span
-> > different pgmap ie different devices (which is a reasonable
-> > assumption). So maybe this code needs fixing ie :
-> >=20
-> > =09=09pgmap =3D get_dev_pagemap(pfn, pgmap);
-> > =09=09if (unlikely(!pgmap))
-> > =09=09=09return 0;
-> >=20
-> >=20
->=20
-> OK, yes that does make sense. And I think a comment is adequate,
-> no need to check for bugs during every tail page iteration. So how=20
-> about this, as a preliminary patch:
 
-Actualy i thought about it and i think that there is pgmap
-per section and thus maybe one device can have multiple pgmap
-and that would be an issue for page bigger than section size
-(ie bigger than 128MB iirc). I will go double check that, but
-maybe Dan can chime in.
-
-In any case my comment above is correct for the page ref
-increment, if the first one succeed than others will too
-or otherwise it means someone is doing too many put_page()/
-put_user_page() which is _bad_ :)
-
->=20
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 8f236a335ae9..a4a81e125832 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -1892,17 +1892,18 @@ static int gup_pte_range(pmd_t pmd, unsigned long=
- addr, unsigned long end,
->  static int __gup_device_huge(unsigned long pfn, unsigned long addr,
->                 unsigned long end, struct page **pages, int *nr)
->  {
-> -       int nr_start =3D *nr;
-> -       struct dev_pagemap *pgmap =3D NULL;
-> +       /*
-> +        * Huge pages should never cross dev_pagemap boundaries. Therefor=
-e, use
-> +        * this same pgmap for the entire huge page.
-> +        */
-> +       struct dev_pagemap *pgmap =3D get_dev_pagemap(pfn, NULL);
-> +
-> +       if (unlikely(!pgmap))
-> +               return 0;
-> =20
->         do {
->                 struct page *page =3D pfn_to_page(pfn);
-> =20
-> -               pgmap =3D get_dev_pagemap(pfn, pgmap);
-> -               if (unlikely(!pgmap)) {
-> -                       undo_dev_pagemap(nr, nr_start, pages);
-> -                       return 0;
-> -               }
->                 SetPageReferenced(page);
->                 pages[*nr] =3D page;
->                 get_page(page);
->=20
->=20
->=20
->=20
-> >> +=09=09} else
-> >> +=09=09=09get_page(page);
-> >> +
-> >>  =09=09(*nr)++;
-> >>  =09=09pfn++;
-> >>  =09} while (addr +=3D PAGE_SIZE, addr !=3D end);
-> >=20
-> > [...]
-> >=20
-> >> @@ -2409,7 +2540,7 @@ static int internal_get_user_pages_fast(unsigned=
- long start, int nr_pages,
-> >>  =09unsigned long addr, len, end;
-> >>  =09int nr =3D 0, ret =3D 0;
-> >> =20
-> >> -=09if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM)))
-> >> +=09if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM | FOLL_P=
-IN)))
-> >=20
-> > Maybe add a comments to explain, something like:
-> >=20
-> > /*
-> >  * The only flags allowed here are: FOLL_WRITE, FOLL_LONGTERM, FOLL_PIN
-> >  *
-> >  * Note that get_user_pages_fast() imply FOLL_GET flag by default but
-> >  * callers can over-ride this default to pin case by setting FOLL_PIN.
-> >  */
->=20
-> Good idea. Here's the draft now:
->=20
-> /*
->  * The only flags allowed here are: FOLL_WRITE, FOLL_LONGTERM, FOLL_PIN.
->  *
->  * Note that get_user_pages_fast() implies FOLL_GET flag by default, but
->  * callers can override this default by setting FOLL_PIN instead of
->  * FOLL_GET.
->  */
-> if (WARN_ON_ONCE(gup_flags & ~(FOLL_WRITE | FOLL_LONGTERM | FOLL_PIN)))
->         return -EINVAL;
-
-Looks good to me.
-
-...
-
-Cheers,
-J=E9r=F4me
-
+> [root@xx]# ovs-vsctl --version
+> ovs-vsctl (Open vSwitch) 2.9.0
+> DB Schema 7.15.1
+>
+> And dump_stack output with af_packet:
+> [ 4833.637460]  <IRQ>  [<ffffffff81979612>] dump_stack+0x19/0x1b
+> [ 4833.637474]  [<ffffffff8197c3ca>] ip_fragment.constprop.55+0xc3/0x141
+> [ 4833.637481]  [<ffffffff8189dd84>] ip_finish_output+0x314/0x350
+> [ 4833.637484]  [<ffffffff8189eb83>] ip_output+0xb3/0x130
+> [ 4833.637490]  [<ffffffff8189da70>] ? ip_do_fragment+0x910/0x910
+> [ 4833.637493]  [<ffffffff8189cac9>] ip_local_out_sk+0xf9/0x180
+> [ 4833.637497]  [<ffffffff818e6f6c>] iptunnel_xmit+0x18c/0x220
+> [ 4833.637505]  [<ffffffffc073b2e7>] udp_tunnel_xmit_skb+0x117/0x130
+> [udp_tunnel]
+> [ 4833.637538]  [<ffffffffc074585a>] vxlan_xmit_one+0xb6a/0xb70 [vxlan]
+> [ 4833.637545]  [<ffffffff8129dad9>] ? vprintk_default+0x29/0x40
+> [ 4833.637551]  [<ffffffffc074765e>] vxlan_xmit+0xc9e/0xef0 [vxlan]
+> [ 4833.637555]  [<ffffffff818356e7>] ? kfree_skbmem+0x37/0x90
+> [ 4833.637559]  [<ffffffff81836c24>] ? consume_skb+0x34/0x90
+> [ 4833.637564]  [<ffffffff819547bc>] ? packet_rcv+0x4c/0x3e0
+> [ 4833.637570]  [<ffffffff8184d346>] dev_hard_start_xmit+0x246/0x3b0
+> [ 4833.637574]  [<ffffffff81850339>] __dev_queue_xmit+0x519/0x650
+> [ 4833.637580]  [<ffffffff812d9df0>] ? try_to_wake_up+0x190/0x390
+> [ 4833.637585]  [<ffffffff81850480>] dev_queue_xmit+0x10/0x20
+> [ 4833.637592]  [<ffffffffc0724316>] ovs_vport_send+0xa6/0x180 [openvswitch]
+> [ 4833.637599]  [<ffffffffc07150fe>] do_output+0x4e/0xd0 [openvswitch]
+> [ 4833.637604]  [<ffffffffc0716699>] do_execute_actions+0xa29/0xa40
+> [openvswitch]
+> [ 4833.637610]  [<ffffffff812d24d2>] ? __wake_up_common+0x82/0x120
+> [ 4833.637615]  [<ffffffffc0716aac>] ovs_execute_actions+0x4c/0x140
+> [openvswitch]
+> [ 4833.637621]  [<ffffffffc071a824>] ovs_dp_process_packet+0x84/0x120
+> [openvswitch]
+> [ 4833.637627]  [<ffffffffc0725404>] ? ovs_ct_update_key+0xc4/0x150
+> [openvswitch]
+> [ 4833.637633]  [<ffffffffc0724213>] ovs_vport_receive+0x73/0xd0
+> [openvswitch]
+> [ 4833.637638]  [<ffffffff812d666f>] ? ttwu_do_activate+0x6f/0x80
+> [ 4833.637642]  [<ffffffff812d9df0>] ? try_to_wake_up+0x190/0x390
+> [ 4833.637646]  [<ffffffff812da0c2>] ? default_wake_function+0x12/0x20
+> [ 4833.637651]  [<ffffffff812c61eb>] ? autoremove_wake_function+0x2b/0x40
+> [ 4833.637657]  [<ffffffff812d24d2>] ? __wake_up_common+0x82/0x120
+> [ 4833.637661]  [<ffffffff812e3ae9>] ? update_cfs_shares+0xa9/0xf0
+> [ 4833.637665]  [<ffffffff812e3696>] ? update_curr+0x86/0x1e0
+> [ 4833.637669]  [<ffffffff812dee88>] ? __enqueue_entity+0x78/0x80
+> [ 4833.637677]  [<ffffffffc0724cbe>] netdev_frame_hook+0xde/0x180
+> [openvswitch]
+> [ 4833.637682]  [<ffffffff8184d6aa>] __netif_receive_skb_core+0x1fa/0xa10
+> [ 4833.637688]  [<ffffffffc0724be0>] ? vport_netdev_free+0x30/0x30
+> [openvswitch]
+> [ 4833.637692]  [<ffffffff812d6539>] ? ttwu_do_wakeup+0x19/0xe0
+> [ 4833.637697]  [<ffffffff8184ded8>] __netif_receive_skb+0x18/0x60
+> [ 4833.637703]  [<ffffffff8184ee9e>] process_backlog+0xae/0x180
+> [ 4833.637707]  [<ffffffff8184e57f>] net_rx_action+0x26f/0x390
+> [ 4833.637713]  [<ffffffff812a41e5>] __do_softirq+0xf5/0x280
+> [ 4833.637719]  [<ffffffff8199042c>] call_softirq+0x1c/0x30
+> [ 4833.637723]  <EOI>  [<ffffffff8122f675>] do_softirq+0x65/0xa0
+> [ 4833.637730]  [<ffffffff812a363b>] __local_bh_enable_ip+0x9b/0xb0
+> [ 4833.637735]  [<ffffffff812a3667>] local_bh_enable+0x17/0x20
+> [ 4833.637741]  [<ffffffff81850065>] __dev_queue_xmit+0x245/0x650
+> [ 4833.637746]  [<ffffffff81972e28>] ? printk+0x60/0x77
+> [ 4833.637752]  [<ffffffff81850480>] dev_queue_xmit+0x10/0x20
+> [ 4833.637757]  [<ffffffff81957a75>] packet_sendmsg+0xf65/0x1210
+> [ 4833.637761]  [<ffffffff813d7524>] ? shmem_fault+0x84/0x1f0
+> [ 4833.637768]  [<ffffffff8182d3a6>] sock_sendmsg+0xb6/0xf0
+> [ 4833.637772]  [<ffffffff812e3696>] ? update_curr+0x86/0x1e0
+> [ 4833.637777]  [<ffffffff812e3ae9>] ? update_cfs_shares+0xa9/0xf0
+> [ 4833.637781]  [<ffffffff8122b621>] ? __switch_to+0x151/0x580
+> [ 4833.637786]  [<ffffffff8182dad1>] SYSC_sendto+0x121/0x1c0
+> [ 4833.637793]  [<ffffffff812c8d10>] ? hrtimer_get_res+0x50/0x50
+> [ 4833.637797]  [<ffffffff8197e54b>] ? do_nanosleep+0x5b/0x100
+> [ 4833.637802]  [<ffffffff8182f5ee>] SyS_sendto+0xe/0x10
+> [ 4833.637806]  [<ffffffff8198cede>] system_call_fastpath+0x25/0x2a
+>
+> Looking forward to your reply.
+>
+> Regards,
+> Ramana
