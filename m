@@ -2,62 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E83ACEF986
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 10:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E337EF9B3
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 10:40:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730798AbfKEJfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 04:35:37 -0500
-Received: from simonwunderlich.de ([79.140.42.25]:35612 "EHLO
-        simonwunderlich.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730769AbfKEJfh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 04:35:37 -0500
-Received: from kero.packetmixer.de (p200300C5970F5D00F0ACF07C9CF9C7D8.dip0.t-ipconnect.de [IPv6:2003:c5:970f:5d00:f0ac:f07c:9cf9:c7d8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by simonwunderlich.de (Postfix) with ESMTPSA id 6B48E6205F;
-        Tue,  5 Nov 2019 10:35:35 +0100 (CET)
-From:   Simon Wunderlich <sw@simonwunderlich.de>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 5/5] batman-adv: Drop lockdep.h include for soft-interface.c
-Date:   Tue,  5 Nov 2019 10:35:31 +0100
-Message-Id: <20191105093531.11398-6-sw@simonwunderlich.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191105093531.11398-1-sw@simonwunderlich.de>
-References: <20191105093531.11398-1-sw@simonwunderlich.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730935AbfKEJjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 04:39:51 -0500
+Received: from mga02.intel.com ([134.134.136.20]:24242 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730630AbfKEJjv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Nov 2019 04:39:51 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Nov 2019 01:39:50 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,270,1569308400"; 
+   d="scan'208";a="200323047"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
+  by fmsmga008.fm.intel.com with ESMTP; 05 Nov 2019 01:39:47 -0800
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH 0/2] Intel IFC VF driver for VDPA
+Date:   Tue,  5 Nov 2019 17:37:38 +0800
+Message-Id: <1572946660-26265-1-git-send-email-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+Hi all:
+  This series intends to introduce Intel IFC VF NIC driver for Vhost
+Data Plane Acceleration(VDPA).
+  
+Here comes two main parts, one is ifcvf_base layer, which handles
+hardware operations. The other is ifcvf_main layer handles VF
+initialization, configuration and removal, which depends on
+and complys to:
+virtio_mdev https://lkml.org/lkml/2019/10/30/62 
+vhost_mdev https://lkml.org/lkml/2019/10/31/440
 
-The commit ab92d68fc22f ("net: core: add generic lockdep keys") removed
-all lockdep functionality from soft-interface.c but didn't remove the
-include for this functionality.
+This patchset passed netperf tests.
 
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
----
- net/batman-adv/soft-interface.c | 1 -
- 1 file changed, 1 deletion(-)
+This is RFC V2, plese help review.
 
-diff --git a/net/batman-adv/soft-interface.c b/net/batman-adv/soft-interface.c
-index 697f2da12487..832e156c519e 100644
---- a/net/batman-adv/soft-interface.c
-+++ b/net/batman-adv/soft-interface.c
-@@ -22,7 +22,6 @@
- #include <linux/kernel.h>
- #include <linux/kref.h>
- #include <linux/list.h>
--#include <linux/lockdep.h>
- #include <linux/netdevice.h>
- #include <linux/netlink.h>
- #include <linux/percpu.h>
+Changes from V1:
+using le32_to_cpu() to convert PCI capabilities.
+some set /get  operations will sync with the hardware, eg get_status
+and get_generation.
+remove feature bit VHOST_F_LOG_ALL, add VIRTIO_F_ORDERED_PLATFORM
+add get/set_config functions.
+split mdev type group into mdev_type_group_virtio and mdev_type_group_vhost
+add ifcvf_mdev_get_mdev_features()
+coding stype changes.
+
+Zhu Lingshan (2):
+  IFC hardware operation layer
+  IFC VDPA layer
+
+ drivers/vhost/ifcvf/ifcvf_base.c | 344 ++++++++++++++++++++++
+ drivers/vhost/ifcvf/ifcvf_base.h | 132 +++++++++
+ drivers/vhost/ifcvf/ifcvf_main.c | 605 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1081 insertions(+)
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.c
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.h
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
+
 -- 
-2.20.1
+1.8.3.1
 
