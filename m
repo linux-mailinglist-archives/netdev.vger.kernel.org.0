@@ -2,72 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C6FFF02A6
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:27:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA11BF02AA
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390201AbfKEQ1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:27:04 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:48711 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390193AbfKEQ1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:27:03 -0500
-Received: by mail-il1-f199.google.com with SMTP id j68so19061427ili.15
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 08:27:01 -0800 (PST)
+        id S2390163AbfKEQ2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:28:05 -0500
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:38542 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389760AbfKEQ2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:28:05 -0500
+Received: by mail-pl1-f194.google.com with SMTP id w8so9703232plq.5;
+        Tue, 05 Nov 2019 08:28:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=B2IFqWxwKFOtDSg8bQpR44pQOxg7g5OY8D9rmjCxQ2Q=;
+        b=PCxnlTVXd7J7Lirh4zxddJLFB2elYNVL6D8z+Z+glZ2zG4vGB5rZAax5cjhnVc7vOV
+         mRjCFcocm8gC8GBuFG3UZjkF3tcqq1No+VaEaviwWA5O36quHAWalwi9n41qeqLD4YvM
+         zH1rVYNJi4NmWzx8keNFwCzNGBuXHlPdC1eKoHlhPSQWpunXDy1muJaoUOhYJsSwA/rA
+         +jTsqfzJ7P9nLnwcB7FwpLGIOiMtB4a499YzmYNH83w1BUm/kEM2fiYMTZAL/Lq0pE5g
+         /vb5iC0KDEJ+c2IGHTYLWnpC6KmonLGmiW7BwgvA4AlbaJOSqyWZtpMIOiUryiOz2JAa
+         dS8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=xk1NyHbooEy4YsKg2M7xCtDevKehR0j6/pRBBy2vjNw=;
-        b=QChczz0pe3Zytdkv6qj9rKewKQrNA+DI4YCH+K5XZ7TV8Y9AgMr1PbAVFK5V351tLM
-         ScADxVIF4xWHYHjlQ/hLrfNJnIvQPXP0L7iiEVscOI5t4s9EYO9i2u4nbE8hhIF2XSJc
-         vRmZ+cDiOxw2y/LIlRtmupk9V8mAQLjju4x+mX/NVrC+zJpxa2sLTIfshUopU06lMVly
-         uqK0bMyM8WxsQDK1DlsE/sludoszETVXnW2iivnJ6UgxQb4mePRwX/1ktHC8aiDKDTF6
-         OLYtXKl3p9CJiJq1UE8mIC2c9Uis6emhsCpzyqRnRU9+Sk0vdrVYGxI3DxASdsJZLyQZ
-         tfkQ==
-X-Gm-Message-State: APjAAAU464MVFJAzvTVl2PoFqPNDRK/NAKt4n1AaMHKcKrpgRcnnszN6
-        AOf5/FpjnqBC7YcKNQkK6ybn3C/7oZcGJFPY8LhugzgH3+7b
-X-Google-Smtp-Source: APXvYqw3IqVWZQAVPDbpkfRF7hE8RcQNgey/R6Pf8G7Cgo3IYNCKrAbGg2rE8MnLaYC40eT3Z15gtUy8nMeNqMMOMFCOhtwdKjkd
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=B2IFqWxwKFOtDSg8bQpR44pQOxg7g5OY8D9rmjCxQ2Q=;
+        b=Aqn48I4Uxxb05DEjrQzvHpt6kTogE5C2HWoTQFzRLaNb5k/Y0AMTPFqlxcXHDgExwK
+         Hhr08P/Xsiv/B4K0TjOr2FPKo8W566gpSLdzQnT7H7DmxrWka7Zh2hNogetb0fbLvtMV
+         FelRkDqpuWdniptQGVs5BlmeuyEStWtIqVaN/2+YAifLXfEEFVQDP90uGTcuyqCg8kMS
+         y3OQ7/NuKEUe7vPoELWz/zlKeJX+IFLEv1HQ+dspM8doRYv1CQlnoiEYjUZPRJPjOLBE
+         7DviTuN+RLHt4SZsWfxtzqevXQzWJ3lier92tOSfS2jpr0ZBC4KDX7tx5ZlgTha0oeJt
+         yAaA==
+X-Gm-Message-State: APjAAAX1Lt4/1lBT4G7RHbugrGHQUp/7bF2bJusv238gPb2KcDD+CQbv
+        bn8yJWeNXcb6pCrOxCJFQBI=
+X-Google-Smtp-Source: APXvYqxCb+54Vf7gn4Uag6RqfPgUJtq5JH3Zsz8R5xHTjxE53G0u8/P4xR467Aj8DUs8y2A4lgLOvQ==
+X-Received: by 2002:a17:902:f:: with SMTP id 15mr34802330pla.324.1572971284566;
+        Tue, 05 Nov 2019 08:28:04 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
+        by smtp.gmail.com with ESMTPSA id f2sm17780441pfg.48.2019.11.05.08.28.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Nov 2019 08:28:03 -0800 (PST)
+Date:   Tue, 5 Nov 2019 08:28:02 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, peterz@infradead.org, x86@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH bpf-next 0/7] Introduce BPF trampoline
+Message-ID: <20191105162801.sffoqe2yedrrplnn@ast-mbp.dhcp.thefacebook.com>
+References: <20191102220025.2475981-1-ast@kernel.org>
+ <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
+ <20191105104024.4e99a630@grimm.local.home>
+ <20191105154709.utmzm6qvtlux4hww@ast-mbp.dhcp.thefacebook.com>
+ <20191105110028.7775192f@grimm.local.home>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9954:: with SMTP id v20mr4300127ios.188.1572971221308;
- Tue, 05 Nov 2019 08:27:01 -0800 (PST)
-Date:   Tue, 05 Nov 2019 08:27:01 -0800
-In-Reply-To: <000000000000a367e3059691c6b4@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e36a0405969be68c@google.com>
-Subject: Re: general protection fault in j1939_sk_bind
-From:   syzbot <syzbot+4857323ec1bb236f6a45@syzkaller.appspotmail.com>
-To:     bst@pengutronix.de, davem@davemloft.net,
-        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
-        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
-        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191105110028.7775192f@grimm.local.home>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Tue, Nov 05, 2019 at 11:00:28AM -0500, Steven Rostedt wrote:
+> On Tue, 5 Nov 2019 07:47:11 -0800
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> 
+> > > If you have to wait you may need to wait. The Linux kernel isn't
+> > > something that is suppose to put in temporary hacks, just to satisfy
+> > > someone's deadline.  
+> > 
+> > Ok. I will switch to text_poke and will make it hack free.
+> > ftrace mechanisms are being replaced by text_poke anyway.
+> 
+> I see that Facebook now owns Linux.
 
-commit 9d71dd0c70099914fcd063135da3c580865e924c
-Author: The j1939 authors <linux-can@vger.kernel.org>
-Date:   Mon Oct 8 09:48:36 2018 +0000
+huh?
 
-     can: add support of SAE J1939 protocol
+> Peter's text poke patches most likely not be ready for the next
+> merge window either. Don't you require them?
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16267168e00000
-start commit:   a99d8080 Linux 5.4-rc6
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=15267168e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=11267168e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
-dashboard link: https://syzkaller.appspot.com/bug?extid=4857323ec1bb236f6a45
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=110a8b8ae00000
+nope.
+But I strongly support them. ftrace->text_poke + static_call + nop2
+are all great improvements.
+I'd really like to see them landing in this merge window.
 
-Reported-by: syzbot+4857323ec1bb236f6a45@syzkaller.appspotmail.com
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> The database of function nops are part of the ftrace mechanisms which
+> are not part of text poke, and there's strong accounting associated to
+> them which allows the user to see how their kernel is modified. 
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+I guess the part that wasn't obvious from commit log of bpf trampoline patches
+is that they don't care about nops and ftrace recording of nops. bpf trampoline
+will work even if there are no nops in front of the function. It will work when
+CONFIG_HAVE_FENTRY is off.
+
