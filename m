@@ -2,77 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6198EFD9A
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 13:48:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81AD5EFDA4
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 13:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388513AbfKEMsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 07:48:42 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:55926 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2388431AbfKEMsm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 07:48:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572958121;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2jEVDWNch/xYgmO6OEN+wbzCxr5VY9dJ1NypSvMkGAk=;
-        b=fIAuv1cZUYOU/aNVkKh8EXpfk+GSqlboDP48carROMHXPMM1a1oigzixbWC3ZnqIFQEhX/
-        MLHeicy97aHCSFNOHj59HZDVBGKJ0/E4y3VscVJFQa5AFpLdQGTBVKFb81nOYpjfIwG3pG
-        dHXSF40eASgF4jtBteb4KL65tMqa5/0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-327-MXpRGnxXNxOf2pXTLPnBXA-1; Tue, 05 Nov 2019 07:48:38 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8EC151005500;
-        Tue,  5 Nov 2019 12:48:36 +0000 (UTC)
-Received: from [10.72.12.252] (ovpn-12-252.pek2.redhat.com [10.72.12.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 069201001B00;
-        Tue,  5 Nov 2019 12:48:04 +0000 (UTC)
-Subject: Re: [PATCH 1/2] IFC hardware operation layer
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Cc:     alex.williamson@redhat.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com
-References: <1572946660-26265-1-git-send-email-lingshan.zhu@intel.com>
- <1572946660-26265-2-git-send-email-lingshan.zhu@intel.com>
- <20191105074309-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <9506db6b-ae68-271d-5e13-411715811131@redhat.com>
-Date:   Tue, 5 Nov 2019 20:47:55 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2388770AbfKEMvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 07:51:02 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:43159 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388468AbfKEMvB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 07:51:01 -0500
+Received: by mail-il1-f199.google.com with SMTP id d11so18474586ild.10
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 04:51:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=/lWajsW87pe+jU9auqaIDGr38Nf06GOlbpdLBf+DWPk=;
+        b=lxflS/ZJyB33J6DPPUsD0sl0I6Xhg2wF2SVcLAIqNYdU3VOYYELnRavP4UTastUpvc
+         ambjgXXW0korgzw8Q6tDeXXHg56y2Iq4uG8PaZ1MTfUofHkmqlTjhroNX7aFcDtSNZkd
+         3j7b9zHhZ+/5SYt/FgXX63zu58cCQCBj8cNWdJg+JzjUhZ2BIDxk01suoDgXVeW3pheO
+         /GC9LAOmM1ZCt1tDWeSkLzwiVa1SGaXBt2qKag/JAiuLzWYYf+UemK67jb5J7bppp4bN
+         8FkYamSbEaNFzhdAmKkQmue5OPbVWdGgmBvp4EqWLLCrM7CevCkhddztRy7Qa2PJN+9q
+         ETSA==
+X-Gm-Message-State: APjAAAW7mNQcqC9DGrqRPVV8JuKDAyL+AxVc5H6nsV8WKVsPou4s9OdK
+        1bVUV+2a1kIk/acsZTFXaCphhfxmcdp9Y7roxocAHxP0y3Gx
+X-Google-Smtp-Source: APXvYqzaWIg1tdrmzLbrJ+5MbJ3oMtwvvbO3F0xFNyd06idM/Zc7zKv0xAb30Rx4+qrlCabNIqwresbUOQGkA4+PyMw3U30e2QZG
 MIME-Version: 1.0
-In-Reply-To: <20191105074309-mutt-send-email-mst@kernel.org>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: MXpRGnxXNxOf2pXTLPnBXA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+X-Received: by 2002:a5d:9856:: with SMTP id p22mr15367560ios.29.1572958261043;
+ Tue, 05 Nov 2019 04:51:01 -0800 (PST)
+Date:   Tue, 05 Nov 2019 04:51:01 -0800
+In-Reply-To: <1572952316.2921.3.camel@suse.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000065678d059698e26c@google.com>
+Subject: Re: KMSAN: uninit-value in cdc_ncm_set_dgram_size
+From:   syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, glider@google.com,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, oneukum@suse.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 2019/11/5 =E4=B8=8B=E5=8D=888:45, Michael S. Tsirkin wrote:
->> +
->> +#define IFC_SUPPORTED_FEATURES \
->> +=09=09((1ULL << VIRTIO_NET_F_MAC)=09=09=09| \
->> +=09=09 (1ULL << VIRTIO_F_ANY_LAYOUT)=09=09=09| \
->> +=09=09 (1ULL << VIRTIO_F_VERSION_1)=09=09=09| \
->> +=09=09 (1ULL << VIRTIO_F_ORDER_PLATFORM)=09=09=09| \
-> ACCESS_PLATFORM must be enabled for sure?
->
->
+syzbot has tested the proposed patch and the reproducer did not trigger  
+crash:
 
-I think so, consider vhost-mdev can filter it out right now.
+Reported-and-tested-by:  
+syzbot+0631d878823ce2411636@syzkaller.appspotmail.com
 
-Thanks
+Tested on:
 
+commit:         96c6c319 net: kasan: kmsan: support CONFIG_GENERIC_CSUM on..
+git tree:       https://github.com/google/kmsan.git
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9e324dfe9c7b0360
+dashboard link: https://syzkaller.appspot.com/bug?extid=0631d878823ce2411636
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=16b798dce00000
+
+Note: testing is done by a robot and is best-effort only.
