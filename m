@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23135F091D
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 956C2F091E
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387441AbfKEWML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:12:11 -0500
-Received: from mail-ua1-f73.google.com ([209.85.222.73]:36507 "EHLO
-        mail-ua1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387420AbfKEWML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:11 -0500
-Received: by mail-ua1-f73.google.com with SMTP id r39so3809601uad.3
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:10 -0800 (PST)
+        id S2387428AbfKEWMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:12:14 -0500
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:37371 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387415AbfKEWMO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:14 -0500
+Received: by mail-pl1-f202.google.com with SMTP id w17so3991711plp.4
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=YXST7hsRVZiDazVQTk6ijZIwRK9FaWUze+2G5yzqFGY=;
-        b=CX7rI35gCFMCcRlIt7cl6pL+n2SC/c0Ahn4Laj1/imJxbzoB1VvE3tz64YylQRYYda
-         WaOPSYjirvb6d6fTnOaxbnK9uVqGGQcGpV3C+l8DUJ9Ll4vJCwj8uMugjqy8CWB7luSM
-         NWAiYlBqGAVP45krHNo2HhyTaEqZW5bxdfU2/pOxiwIOCxGdl/BzSKJsn1sGA9Ytv9WF
-         qrFCbYCU5tXjBqwscbyGJXVn7FQkRm2/wP2z1YMAahzI4GQqSTLougAzLv5FsbiNhxWa
-         YVxJWhXXe5+OLPhUet2WrHxo8dCks5L/5Ghor0vyFZEocUnbEZC5Pw5FQhNbEWnxMwzR
-         p9pQ==
+        bh=5JLvuQG2HDKse3nDGDT0RL3IC8kYVEcT0YOkbYM48RY=;
+        b=ZVyp/FVVkzi0O1dUotTacYPF4siLsT2WGrRB1kkloZ3uLf4q0z8UpJ4XaWx/KA3bW7
+         OOdt7JWPLyY7mHo8laqXfWR3yf4upMXZuv2v4xPKC4y+0LCRkfv+6NINjbNS6s7xclTc
+         npJZX6zriIBZ86zYmXB4BFOvWsl9uAw6X/suiuJGAdTuVc9ZXy9AROGGAldby5LyeXWE
+         iEzTkxPmCm2a7ogAh1G7q4vva52n3UlJvlkFKEgcQriie2riAOUk9eVdW+HXOT3Bu+MO
+         93UiPUfwHRDjIzdpu6RBlYhZijVtQoEqmpTSg7Zf1ZeiOIoeq7+NVy3rPJl7014kLzKs
+         H0Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=YXST7hsRVZiDazVQTk6ijZIwRK9FaWUze+2G5yzqFGY=;
-        b=rSpgBiRh0HzbYqU4nuCrGik7NsNm5wlVxXOfsb8r0q2+uLQQBt6IQlA7o/hRIEyv1V
-         YuPuXMcuT4YaHm9fi6tF22ljaMx+CFGbYJadyy+s5HFtuJzC4iS2seg8SEAAu+rsHEE5
-         2cVlB50ssTKgbZJEgTK6zf5SfLG1JspPD5PckTlWW2pVD1a7rSrlS0ab1tq2I9vmCLdG
-         jKR2OPLswLC+lr+OHxh4COxBnyg1q/0IIW4dRx5SmHqtxpWhgmfCpzd9O46AxpIflNDZ
-         8rSo6I3EY6lDjI0OSAuxs7WAVOB468YbnpU3emLiCX53j5igzwrf57ZicPi81FwR4aal
-         2hbw==
-X-Gm-Message-State: APjAAAXX8CR2r2bEAydt//pRPHSXNn8Fa37Vy64Adj5lsjezj5/VfNG4
-        ublp8ozaz672WM2dLHLubnLm32UJZ8LfDA==
-X-Google-Smtp-Source: APXvYqyjCBecbsXFKvfI0tbJtkFsdMJHZNHvh5eqLelmg2/ARRA0S++DNKE4viZ/yRoMLZQX3E6JWL4IKD5f0w==
-X-Received: by 2002:a9f:23ea:: with SMTP id 97mr14803922uao.141.1572991929866;
- Tue, 05 Nov 2019 14:12:09 -0800 (PST)
-Date:   Tue,  5 Nov 2019 14:11:50 -0800
+        bh=5JLvuQG2HDKse3nDGDT0RL3IC8kYVEcT0YOkbYM48RY=;
+        b=qwp3cj9EQK0mzADQ0/+8F4QN8YvP5juu+K8RWVCnynITTRIn6959fkwyUeq6fz7Mvy
+         1o9pdKje4MLYe7W4xfSbIxUj5X7dbxPeQuI7oOacPp2eEVncLmmYV+qKwAK2FY+05X1P
+         v3O8iXzL2jjWEihZvgz1gQJEc9ODqbWRNqQofYXvJ8NsYp+sxzEPzXlSUkOBdYq7m8C9
+         Tycw3b3hD9N0Ego23oiwef3azjvFNK3bnYZ0DRCqys606q/VSJ9kON8uvvLi1pMUForF
+         RrFNFGtswfjg2WeqOBnSBR6WSKSgDfYGxhO/x6TTw6qv/KFP/BU1ntAaZP50tna/aHz1
+         bsHA==
+X-Gm-Message-State: APjAAAWtW3AcQffOGrOMA+qQ7CrgXT2EC4yEIls+D1+S5BvnSDKdB7I2
+        x3tKrfy3/NMTLs2b7fi1hwh/0A2tr+Y1jA==
+X-Google-Smtp-Source: APXvYqw5IJ81fvwOc/5a2cJuTcok8B3DLWZG7Qt7m2RPRYzssTEMnkacYQ7W0kmK5n3yepcyCZekh7vLxxBbZw==
+X-Received: by 2002:a65:614a:: with SMTP id o10mr22023130pgv.219.1572991932999;
+ Tue, 05 Nov 2019 14:12:12 -0800 (PST)
+Date:   Tue,  5 Nov 2019 14:11:51 -0800
 In-Reply-To: <20191105221154.232754-1-edumazet@google.com>
-Message-Id: <20191105221154.232754-3-edumazet@google.com>
+Message-Id: <20191105221154.232754-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191105221154.232754-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH net-next 2/6] inet_diag: use jiffies_delta_to_msecs()
+Subject: [PATCH net-next 3/6] net: avoid potential false sharing in neighbor
+ related code
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -58,67 +59,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use jiffies_delta_to_msecs() to avoid reporting 'infinite'
-timeouts and to cleanup code.
+There are common instances of the following construct :
+
+	if (n->confirmed != now)
+		n->confirmed = now;
+
+A C compiler could legally remove the conditional.
+
+Use READ_ONCE()/WRITE_ONCE() to avoid this problem.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/inet_diag.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ include/net/arp.h   |  4 ++--
+ include/net/ndisc.h |  8 ++++----
+ include/net/sock.h  | 12 ++++++------
+ 3 files changed, 12 insertions(+), 12 deletions(-)
 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 7dc79b973e6edcc64e668e14c71c732ca1187e8f..af154977904c0c249e77e425990a09c62cca4251 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -226,17 +226,17 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
- 		r->idiag_timer = 1;
- 		r->idiag_retrans = icsk->icsk_retransmits;
- 		r->idiag_expires =
--			jiffies_to_msecs(icsk->icsk_timeout - jiffies);
-+			jiffies_delta_to_msecs(icsk->icsk_timeout - jiffies);
- 	} else if (icsk->icsk_pending == ICSK_TIME_PROBE0) {
- 		r->idiag_timer = 4;
- 		r->idiag_retrans = icsk->icsk_probes_out;
- 		r->idiag_expires =
--			jiffies_to_msecs(icsk->icsk_timeout - jiffies);
-+			jiffies_delta_to_msecs(icsk->icsk_timeout - jiffies);
- 	} else if (timer_pending(&sk->sk_timer)) {
- 		r->idiag_timer = 2;
- 		r->idiag_retrans = icsk->icsk_probes_out;
- 		r->idiag_expires =
--			jiffies_to_msecs(sk->sk_timer.expires - jiffies);
-+			jiffies_delta_to_msecs(sk->sk_timer.expires - jiffies);
- 	} else {
- 		r->idiag_timer = 0;
- 		r->idiag_expires = 0;
-@@ -342,16 +342,13 @@ static int inet_twsk_diag_fill(struct sock *sk,
- 	r = nlmsg_data(nlh);
- 	BUG_ON(tw->tw_state != TCP_TIME_WAIT);
+diff --git a/include/net/arp.h b/include/net/arp.h
+index c8f580a0e6b1f5c0853cda1605336fa8eb90917c..4950191f6b2bf424519c7ecf3483336739fea143 100644
+--- a/include/net/arp.h
++++ b/include/net/arp.h
+@@ -57,8 +57,8 @@ static inline void __ipv4_confirm_neigh(struct net_device *dev, u32 key)
+ 		unsigned long now = jiffies;
  
--	tmo = tw->tw_timer.expires - jiffies;
--	if (tmo < 0)
--		tmo = 0;
--
- 	inet_diag_msg_common_fill(r, sk);
- 	r->idiag_retrans      = 0;
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
+ 	}
+ 	rcu_read_unlock_bh();
+ }
+diff --git a/include/net/ndisc.h b/include/net/ndisc.h
+index b2f715ca056726d75033083d1bccee693cea9672..b5ebeb3b0de0e9de3fa495148ab19830d9767e89 100644
+--- a/include/net/ndisc.h
++++ b/include/net/ndisc.h
+@@ -414,8 +414,8 @@ static inline void __ipv6_confirm_neigh(struct net_device *dev,
+ 		unsigned long now = jiffies;
  
- 	r->idiag_state	      = tw->tw_substate;
- 	r->idiag_timer	      = 3;
--	r->idiag_expires      = jiffies_to_msecs(tmo);
-+	tmo = tw->tw_timer.expires - jiffies;
-+	r->idiag_expires      = jiffies_delta_to_msecs(tmo);
- 	r->idiag_rqueue	      = 0;
- 	r->idiag_wqueue	      = 0;
- 	r->idiag_uid	      = 0;
-@@ -385,7 +382,7 @@ static int inet_req_diag_fill(struct sock *sk, struct sk_buff *skb,
- 		     offsetof(struct sock, sk_cookie));
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
+ 	}
+ 	rcu_read_unlock_bh();
+ }
+@@ -431,8 +431,8 @@ static inline void __ipv6_confirm_neigh_stub(struct net_device *dev,
+ 		unsigned long now = jiffies;
  
- 	tmo = inet_reqsk(sk)->rsk_timer.expires - jiffies;
--	r->idiag_expires = (tmo >= 0) ? jiffies_to_msecs(tmo) : 0;
-+	r->idiag_expires = jiffies_delta_to_msecs(tmo);
- 	r->idiag_rqueue	= 0;
- 	r->idiag_wqueue	= 0;
- 	r->idiag_uid	= 0;
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
+ 	}
+ 	rcu_read_unlock_bh();
+ }
+diff --git a/include/net/sock.h b/include/net/sock.h
+index ac6042d0af328a7f6e18f8882d2ee0679a0e59c5..f2f853439b6576925e39f6db010964762e39ccf2 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1939,8 +1939,8 @@ struct dst_entry *sk_dst_check(struct sock *sk, u32 cookie);
+ 
+ static inline void sk_dst_confirm(struct sock *sk)
+ {
+-	if (!sk->sk_dst_pending_confirm)
+-		sk->sk_dst_pending_confirm = 1;
++	if (!READ_ONCE(sk->sk_dst_pending_confirm))
++		WRITE_ONCE(sk->sk_dst_pending_confirm, 1);
+ }
+ 
+ static inline void sock_confirm_neigh(struct sk_buff *skb, struct neighbour *n)
+@@ -1950,10 +1950,10 @@ static inline void sock_confirm_neigh(struct sk_buff *skb, struct neighbour *n)
+ 		unsigned long now = jiffies;
+ 
+ 		/* avoid dirtying neighbour */
+-		if (n->confirmed != now)
+-			n->confirmed = now;
+-		if (sk && sk->sk_dst_pending_confirm)
+-			sk->sk_dst_pending_confirm = 0;
++		if (READ_ONCE(n->confirmed) != now)
++			WRITE_ONCE(n->confirmed, now);
++		if (sk && READ_ONCE(sk->sk_dst_pending_confirm))
++			WRITE_ONCE(sk->sk_dst_pending_confirm, 0);
+ 	}
+ }
+ 
 -- 
 2.24.0.rc1.363.gb1bccd3e3d-goog
 
