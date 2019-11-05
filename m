@@ -2,28 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A9F3F02EE
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E87F02E5
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:33:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390503AbfKEQdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:33:06 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:41231 "EHLO
+        id S2390492AbfKEQdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:33:00 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:50217 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390443AbfKEQcv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:32:51 -0500
+        with ESMTP id S2390446AbfKEQcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:32:52 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iS1lA-0002Hp-Ur; Tue, 05 Nov 2019 17:32:48 +0100
+        id 1iS1lB-0002Hp-8R; Tue, 05 Nov 2019 17:32:49 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 30/33] can: j1939: transport: j1939_session_fresh_new(): make sure EOMA is send with the total message size set
-Date:   Tue,  5 Nov 2019 17:32:12 +0100
-Message-Id: <20191105163215.30194-31-mkl@pengutronix.de>
+Subject: [PATCH 31/33] can: j1939: transport: j1939_xtp_rx_eoma_one(): Add sanity check for correct total message size
+Date:   Tue,  5 Nov 2019 17:32:13 +0100
+Message-Id: <20191105163215.30194-32-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.0.rc1
 In-Reply-To: <20191105163215.30194-1-mkl@pengutronix.de>
 References: <20191105163215.30194-1-mkl@pengutronix.de>
@@ -40,31 +39,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-We were sending malformed EOMA messageswith total message size set to 0.
+We were sending malformed EOMA with total message size set to 0. This
+issue has been fixed in the previous patch.
 
-This patch fixes the bug.
+In this patch a sanity check is added to the RX path and a error message
+is displayed.
 
-Reported-by: https://github.com/linux-can/can-utils/issues/159
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Acked-by: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/j1939/transport.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/can/j1939/transport.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index fe000ea757ea..06183d6f4fb7 100644
+index 06183d6f4fb7..e5f1a56994c6 100644
 --- a/net/can/j1939/transport.c
 +++ b/net/can/j1939/transport.c
-@@ -1432,7 +1432,7 @@ j1939_session *j1939_session_fresh_new(struct j1939_priv *priv,
- 	skcb = j1939_skb_to_cb(skb);
- 	memcpy(skcb, rel_skcb, sizeof(*skcb));
+@@ -1273,9 +1273,27 @@ j1939_xtp_rx_abort(struct j1939_priv *priv, struct sk_buff *skb,
+ static void
+ j1939_xtp_rx_eoma_one(struct j1939_session *session, struct sk_buff *skb)
+ {
++	struct j1939_sk_buff_cb *skcb = j1939_skb_to_cb(skb);
++	const u8 *dat;
++	int len;
++
+ 	if (j1939_xtp_rx_cmd_bad_pgn(session, skb))
+ 		return;
  
--	session = j1939_session_new(priv, skb, skb->len);
-+	session = j1939_session_new(priv, skb, size);
- 	if (!session) {
- 		kfree_skb(skb);
- 		return NULL;
++	dat = skb->data;
++
++	if (skcb->addr.type == J1939_ETP)
++		len = j1939_etp_ctl_to_size(dat);
++	else
++		len = j1939_tp_ctl_to_size(dat);
++
++	if (session->total_message_size != len) {
++		netdev_warn_once(session->priv->ndev,
++				 "%s: 0x%p: Incorrect size. Expected: %i; got: %i.\n",
++				 __func__, session, session->total_message_size,
++				 len);
++	}
++
+ 	netdev_dbg(session->priv->ndev, "%s: 0x%p\n", __func__, session);
+ 
+ 	session->pkt.tx_acked = session->pkt.total;
 -- 
 2.24.0.rc1
 
