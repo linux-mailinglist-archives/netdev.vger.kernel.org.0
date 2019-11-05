@@ -2,202 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A07EF1EE
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 01:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A6FEF222
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 01:40:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387758AbfKEA0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 19:26:22 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:44029 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387484AbfKEA0W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 19:26:22 -0500
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 04 Nov 2019 16:26:21 -0800
-IronPort-SDR: o7SLOGd+HqI5OHB/6L9DJZXEPFpb96cCNJBQHWAapbOHc1aCdDDHbTxoFSZOqMweJy1R4ERW/0
- bwjeiuwsHPT9AGcI/NSfqfRpWf863U6NU=
-Received: from stranche-lnx.qualcomm.com ([129.46.14.77])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP; 04 Nov 2019 16:26:20 -0800
-Received: by stranche-lnx.qualcomm.com (Postfix, from userid 383980)
-        id 660854697; Mon,  4 Nov 2019 17:26:20 -0700 (MST)
-From:   Sean Tranchetti <stranche@codeaurora.org>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Sean Tranchetti <stranche@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Subject: [PATCH net-next v2] net: Fail explicit bind to local reserved ports
-Date:   Mon,  4 Nov 2019 17:25:41 -0700
-Message-Id: <1572913541-28236-1-git-send-email-stranche@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
+        id S1730004AbfKEAkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 19:40:21 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40033 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729583AbfKEAkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 19:40:20 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 15so12743176pgt.7;
+        Mon, 04 Nov 2019 16:40:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=inB9EM0qj9TflFqd/USrdNr/Cfvzl+WeDzdgBg8jJwo=;
+        b=c9ZT7Nq+CXAIguw8HsUHriwOs1Phmzcggj3q/5QtD0XNx/3/zenegZYxhxIrDPsFEi
+         vP6iltu6bWCTOzTA2lSgYRCFgymX/HIBroF2T7C5h4jagZEeIJclvsyU6cqqlnAiEx+3
+         zSFUChBFp4NgUxL/+Mzgrugr/5hvJELiraPwmnKIsyFXoEUUnSeAsRqAVS+V5ej994YH
+         8iGcoei/BE/U1IbQh7HBxH+cnL/Y4cc7WbLoF2ZxGj/q7OLSkoUaJqn7QBy5GpY/CS1H
+         7idH6jB4FMJp8E/FOMcQcEFWi+4qmHnm1xXOefl8GP4gkoiXIAjefR+nVE4ZIkYXuuVm
+         Y2Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=inB9EM0qj9TflFqd/USrdNr/Cfvzl+WeDzdgBg8jJwo=;
+        b=ddIeogbgcDr4HYNsDzMoHi7iV5R3m6Vakk6iQ1LCam98icnPBQCrVMO/h2YiZE02N9
+         IAWa0apA6byeVWR9Ye7UWDubuQx1YAIBfqAUJDVthCdxQlUT8BR/5M2okNkt0zCjRGgj
+         /eOoGe7pbN490wIlOdhPiJZXszOTgYqgFkrALCx6lIrIE4QcNuJ73MwVnhIPajLhsoaw
+         j5RoIt1TKD4v1gCKHHa6DR20UtYRCrgRtlWc9adnFdGn4K4bcgea5FV0njPbmrMPqDFU
+         z1Rv3WUsdxkZlX5kXa264vvx5YTYgrUDIFBSRdSSfHvMcBhEnPqNBIgbhaykCmlCZqL5
+         of/Q==
+X-Gm-Message-State: APjAAAVpSD1qxUB4gtmQrv5Ns0GdduibKnKQnYHah14QsxUeF6WZVYF2
+        VhGex1pbbLZPENPAk7xQEsY=
+X-Google-Smtp-Source: APXvYqxUUQcbtiHqD6ANcbPsK37Rw0Z9ZRkEqjxaejr/Ov0N52U6sQyc+/gskamWYYuOTMPm6grf0w==
+X-Received: by 2002:a63:b047:: with SMTP id z7mr33162539pgo.224.1572914419555;
+        Mon, 04 Nov 2019 16:40:19 -0800 (PST)
+Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
+        by smtp.gmail.com with ESMTPSA id d5sm22714815pfa.180.2019.11.04.16.40.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 16:40:18 -0800 (PST)
+Date:   Mon, 4 Nov 2019 16:40:16 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v2 0/3] net: phy: switch to using fwnode_gpiod_get_index
+Message-ID: <20191105004016.GT57214@dtor-ws>
+References: <20191014174022.94605-1-dmitry.torokhov@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191014174022.94605-1-dmitry.torokhov@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reserved ports may have some special use cases which are not suitable for
-use by general userspace applications. Currently, ports specified in
-ip_local_reserved_ports will not be returned only in case of automatic port
-assignment.
+Hi Linus,
 
-In some cases, it maybe required to prevent the host from assigning the
-ports even in case of explicit binds. Consider the case of a transparent
-proxy where packets are being redirected. In case a socket matches this
-connection, packets from this application would be incorrectly sent to one
-of the endpoints.
+On Mon, Oct 14, 2019 at 10:40:19AM -0700, Dmitry Torokhov wrote:
+> This series switches phy drivers form using fwnode_get_named_gpiod() and
+> gpiod_get_from_of_node() that are scheduled to be removed in favor
+> of fwnode_gpiod_get_index() that behaves more like standard
+> gpiod_get_index() and will potentially handle secondary software
+> nodes in cases we need to augment platform firmware.
+> 
+> Linus, as David would prefer not to pull in the immutable branch but
+> rather route the patches through the tree that has the new API, could
+> you please take them with his ACKs?
 
-Add a boolean sysctl flag 'reserved_port_bind'. Default value is 1 which
-preserves the existing behavior. Setting the value to 0 will prevent
-userspace applications from binding to these ports even when they are
-explicitly requested.
+Gentle ping on the series...
 
-Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
-Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
----
- Documentation/networking/ip-sysctl.txt |  5 +++++
- include/net/ip.h                       | 11 +++++++++++
- include/net/netns/ipv4.h               |  2 ++
- net/ipv4/af_inet.c                     |  3 +++
- net/ipv4/inet_connection_sock.c        |  4 ++++
- net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
- net/ipv4/udp.c                         |  4 ++++
- net/sctp/socket.c                      |  6 ++++++
- 8 files changed, 42 insertions(+)
+> 
+> Thanks!
+> 
+> v2:
+>         - rebased on top of Linus' W devel branch
+>         - added David's ACKs
+> 
+> Dmitry Torokhov (3):
+>   net: phylink: switch to using fwnode_gpiod_get_index()
+>   net: phy: fixed_phy: fix use-after-free when checking link GPIO
+>   net: phy: fixed_phy: switch to using fwnode_gpiod_get_index
+> 
+>  drivers/net/phy/fixed_phy.c | 11 ++++-------
+>  drivers/net/phy/phylink.c   |  4 ++--
+>  2 files changed, 6 insertions(+), 9 deletions(-)
+> 
+> -- 
+> 2.23.0.700.g56cf767bdb-goog
+> 
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 8d4ad1d..20ed5e5 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -948,6 +948,11 @@ ip_unprivileged_port_start - INTEGER
- 
- 	Default: 1024
- 
-+reserved_port_bind - BOOLEAN
-+	If set, allows explicit bind request to applications requesting any
-+	port within the range of ip_local_reserved_ports.
-+	Default: 1
-+
- ip_nonlocal_bind - BOOLEAN
- 	If set, allows processes to bind() to non-local IP addresses,
- 	which can be quite useful - but may break some applications.
-diff --git a/include/net/ip.h b/include/net/ip.h
-index a2c61c3..d6d3a2b 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -346,6 +346,12 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
- 	return test_bit(port, net->ipv4.sysctl_local_reserved_ports);
- }
- 
-+static inline int inet_is_unbindable_port(struct net *net, int port)
-+{
-+	return inet_is_local_reserved_port(net, port) &&
-+	       !net->ipv4.sysctl_reserved_port_bind;
-+}
-+
- static inline bool sysctl_dev_name_is_allowed(const char *name)
- {
- 	return strcmp(name, "default") != 0  && strcmp(name, "all") != 0;
-@@ -362,6 +368,11 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
- 	return 0;
- }
- 
-+static inline int inet_is_unbindable_port(struct net *net, int port)
-+{
-+	return 0;
-+}
-+
- static inline int inet_prot_sock(struct net *net)
- {
- 	return PROT_SOCK;
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index c0c0791..466fc7e 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -115,6 +115,8 @@ struct netns_ipv4 {
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	int sysctl_tcp_l3mdev_accept;
- #endif
-+	int sysctl_reserved_port_bind;
-+
- 	int sysctl_tcp_mtu_probing;
- 	int sysctl_tcp_mtu_probe_floor;
- 	int sysctl_tcp_base_mss;
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 70f92aa..e1ad45d 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1814,6 +1814,9 @@ static __net_init int inet_init_net(struct net *net)
- 	net->ipv4.ip_local_ports.range[0] =  32768;
- 	net->ipv4.ip_local_ports.range[1] =  60999;
- 
-+	/* Allow explicit binding to reserved ports */
-+	net->ipv4.sysctl_reserved_port_bind = 1;
-+
- 	seqlock_init(&net->ipv4.ping_group_range.lock);
- 	/*
- 	 * Sane defaults - nobody may create ping sockets.
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index eb30fc1..0c330dc 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -307,6 +307,10 @@ int inet_csk_get_port(struct sock *sk, unsigned short snum)
- 	head = &hinfo->bhash[inet_bhashfn(net, port,
- 					  hinfo->bhash_size)];
- 	spin_lock_bh(&head->lock);
-+
-+	if (inet_is_unbindable_port(net, port))
-+		goto fail_unlock;
-+
- 	inet_bind_bucket_for_each(tb, &head->chain)
- 		if (net_eq(ib_net(tb), net) && tb->l3mdev == l3mdev &&
- 		    tb->port == port)
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 59ded25..f9317ba 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -742,6 +742,13 @@ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
- 		.proc_handler	= proc_do_large_bitmap,
- 	},
- 	{
-+		.procname	= "reserved_port_bind",
-+		.data		= &init_net.ipv4.sysctl_reserved_port_bind,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
-+	{
- 		.procname	= "ip_no_pmtu_disc",
- 		.data		= &init_net.ipv4.sysctl_ip_no_pmtu_disc,
- 		.maxlen		= sizeof(int),
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 1d58ce8..d71cb8a 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -274,6 +274,10 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
- 	} else {
- 		hslot = udp_hashslot(udptable, net, snum);
- 		spin_lock_bh(&hslot->lock);
-+
-+		if (inet_is_unbindable_port(net, snum))
-+			goto fail_unlock;
-+
- 		if (hslot->count > 10) {
- 			int exist;
- 			unsigned int slot2 = udp_sk(sk)->udp_portaddr_hash ^ snum;
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index ffd3262..7a653ad 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -8210,6 +8210,12 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
- 		 */
- 		head = &sctp_port_hashtable[sctp_phashfn(sock_net(sk), snum)];
- 		spin_lock(&head->lock);
-+
-+		if (inet_is_unbindable_port(sock_net(sk), snum)) {
-+			ret = 1;
-+			goto fail_unlock;
-+		}
-+
- 		sctp_for_each_hentry(pp, &head->chain) {
- 			if ((pp->port == snum) && net_eq(pp->net, sock_net(sk)))
- 				goto pp_found;
 -- 
-1.9.1
-
+Dmitry
