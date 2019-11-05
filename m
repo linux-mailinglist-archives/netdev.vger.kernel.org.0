@@ -2,160 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48662F0362
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:51:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1348F0369
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:51:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390226AbfKEQu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:50:57 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:22254 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728399AbfKEQu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:50:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572972655;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DEq/4N6z16D+kibBkGDa/kA9t8KJGrCRdBUQy6uE194=;
-        b=aCP80+BpFVXW9q2bKK9XWMdMd4FPzGixMyzL3PJTFsHfjG8BjohepaqUWrP6C9w0BJDSML
-        RMhlsHdaXhsf6Anm5JpmpvdJJEQUPrSbB9hW5Kdor3ZMN9yGa6dvnkbzWH1iWI6vwRQbG6
-        MHVZ9/q1GZy+k5i8yLyPQ4E6LfUw0xc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-333-Dv4NBosnMKiU07dNahgicg-1; Tue, 05 Nov 2019 11:50:51 -0500
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 99D18800C73;
-        Tue,  5 Nov 2019 16:50:47 +0000 (UTC)
-Received: from gondolin (unknown [10.36.118.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D2771608AC;
-        Tue,  5 Nov 2019 16:50:27 +0000 (UTC)
-Date:   Tue, 5 Nov 2019 17:50:25 +0100
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V8 3/6] mdev: introduce device specific ops
-Message-ID: <20191105175025.1a620844.cohuck@redhat.com>
-In-Reply-To: <20191105093240.5135-4-jasowang@redhat.com>
-References: <20191105093240.5135-1-jasowang@redhat.com>
-        <20191105093240.5135-4-jasowang@redhat.com>
-Organization: Red Hat GmbH
+        id S2390262AbfKEQvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:51:14 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:32780 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728399AbfKEQvN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:51:13 -0500
+Received: by mail-io1-f65.google.com with SMTP id j13so6972355ioe.0
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 08:51:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wU1CtI99CKpZkbpTgydrsHWGzBA4dT3HJGgZFnX/mKw=;
+        b=CLEEeoSmzEtgDkIQ618MylNXnt0zXAvFQT3IWIZ2BNMb3b0BvH/l1W+6jxzUyVs/I4
+         Aap7k4++8/mFG4ZrjHvy4vBXgV8uTmbrJjbQtnbm1vWqdSTN4QkRu+CCQ7AJYky4p172
+         UCa5uzWv1CCUXpQJucUCXHs0fewRqANDxkdMz92j77asnr5lGZg4jn7wzx5e7xB/VtUM
+         kRpF1aWtz77FNSdWMFhg6UfpS72dM/FzklBheHcxHcqbokJcpdWY7784U1oMdX7UqhVm
+         flPFfLu+YsaQ0FQZsme+jjeJ6qrKWaY7LtYAy6DHJS9ylr06TyrxlzQ9vHwRImH7g8fV
+         Grgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wU1CtI99CKpZkbpTgydrsHWGzBA4dT3HJGgZFnX/mKw=;
+        b=TquiMc0g6J2pckYWSZDhNQwF7C3TYRYlVMW0fVq0FrzHv/390GxtZUfLart0ghoAdW
+         QATj/haHkCA7OPbuwJyHg5essp/+yGZdLGqkY9DA2N2BUsR4+G8vx1xaIntFG8wtkJ0E
+         2qgXs1PEdMAvMcIdvWmQIfh6ensUviZ3HdDLj+Y0n63DhWwSRj2eyZ6sJB/srMJoO00H
+         gZkG6BEoULycAeLxfSX01HCogZQJm4Ufc2vBncsuJoan17UCHanpUHOtrwh9OSsMQQMH
+         ucv1W7ZP1sYn9+QzFVkXBwMSO6k3yjgIP1XkAsza71qJQKUkmalbv6STsoq3+1a9MRFo
+         s4aA==
+X-Gm-Message-State: APjAAAUIYlwU0cDce/oyZI1/WMuHz61LoQG7PpoUyRVz81LxQQUawhKH
+        o4/jKrTlHqRMl3hoOUhuMqglu9UiIEpyWoIrTtks1A==
+X-Google-Smtp-Source: APXvYqxYkGc0MC8s7KXAu4OmmAZT3HUSZ/W8pwr4nDz+xvpkGISx8NsIQl6P1oqF6Giw+PIuIOBLRZNccFAUnXcfE34=
+X-Received: by 2002:a5e:8e02:: with SMTP id a2mr3673663ion.269.1572972672175;
+ Tue, 05 Nov 2019 08:51:12 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: Dv4NBosnMKiU07dNahgicg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20191105053843.181176-1-edumazet@google.com> <CABeXuvqRoAYKn6vg7t7O6nA4BCEHjkMwYp9EvVGEEkFV_EonsA@mail.gmail.com>
+In-Reply-To: <CABeXuvqRoAYKn6vg7t7O6nA4BCEHjkMwYp9EvVGEEkFV_EonsA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 5 Nov 2019 08:50:55 -0800
+Message-ID: <CANn89i+dqWytEiB+CTsF2drNN3Jg7DY7rbhjTDiiVDWizY3jCQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: prevent load/store tearing on sk->sk_stamp
+To:     Deepa Dinamani <deepa.kernel@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 Nov 2019 17:32:37 +0800
-Jason Wang <jasowang@redhat.com> wrote:
+On Tue, Nov 5, 2019 at 8:25 AM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
 
-> Currently, except for the create and remove, the rest of
-> mdev_parent_ops is designed for vfio-mdev driver only and may not help
-> for kernel mdev driver. With the help of class id, this patch
-> introduces device specific callbacks inside mdev_device
-> structure. This allows different set of callback to be used by
-> vfio-mdev and virtio-mdev.
->=20
-> Reviewed-by: Parav Pandit <parav@mellanox.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  .../driver-api/vfio-mediated-device.rst       | 35 +++++++++----
->  MAINTAINERS                                   |  1 +
->  drivers/gpu/drm/i915/gvt/kvmgt.c              | 18 ++++---
->  drivers/s390/cio/vfio_ccw_ops.c               | 18 ++++---
->  drivers/s390/crypto/vfio_ap_ops.c             | 14 +++--
->  drivers/vfio/mdev/mdev_core.c                 | 24 ++++++++-
->  drivers/vfio/mdev/mdev_private.h              |  5 ++
->  drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
->  include/linux/mdev.h                          | 43 ++++-----------
->  include/linux/mdev_vfio_ops.h                 | 52 +++++++++++++++++++
->  samples/vfio-mdev/mbochs.c                    | 20 ++++---
->  samples/vfio-mdev/mdpy.c                      | 20 ++++---
->  samples/vfio-mdev/mtty.c                      | 18 ++++---
->  13 files changed, 206 insertions(+), 99 deletions(-)
->  create mode 100644 include/linux/mdev_vfio_ops.h
->=20
+> I do not see any harm with this. Does it cause performance degradation?
+>
 
-(...)
+It does not change compiler output, at least for common GCC versions.
 
-> @@ -172,10 +163,34 @@ that a driver should use to unregister itself with =
-the mdev core driver::
-> =20
->  =09extern void mdev_unregister_device(struct device *dev);
-> =20
-> -It is also required to specify the class_id in create() callback through=
-::
-> +As multiple types of mediated devices may be supported, class id needs
-> +to be specified in the create callback(). This could be done
+It would change things if a hypothetical caller would do for example :
 
-The brackets should probably go behind 'create'?
+ktime_t res;
 
-> +explicitly for the device that does not use on mdev bus for its
+res = sock_read_timestamp(sk);
+res = sock_read_timestamp(sk);
 
-"for devices that do not use the mdev bus" ?
+Since without  the READ_ONCE(), compiler could remove the first instance.
 
-But why wouldn't they? I feel like I've missed some discussion here :/
-
-> +operation through:
-> =20
->  =09int mdev_set_class(struct mdev_device *mdev, u16 id);
-> =20
-> +For the device that uses on the mdev bus for its operation, the class
-
-"For devices that use the mdev bus..."
-
-But same comment as above.
-
-> +should provide helper function to set class id and device specific
-> +ops. E.g for vfio-mdev devices, the function to be called is::
-> +
-> +=09int mdev_set_vfio_ops(struct mdev_device *mdev,
-> +                              const struct mdev_vfio_device_ops *vfio_op=
-s);
-> +
-> +The class id (set by this function to MDEV_CLASS_ID_VFIO) is used to
-> +match a device with an mdev driver via its id table. The device
-> +specific callbacks (specified in *vfio_ops) are obtainable via
-> +mdev_get_vfio_ops() (for use by the mdev bus driver). A vfio-mdev
-> +device (class id MDEV_CLASS_ID_VFIO) uses the following
-> +device-specific ops:
-> +
-> +* open: open callback of vfio mediated device
-> +* close: close callback of vfio mediated device
-> +* ioctl: ioctl callback of vfio mediated device
-> +* read : read emulation callback
-> +* write: write emulation callback
-> +* mmap: mmap emulation callback
-> +
->  Mediated Device Management Interface Through sysfs
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D
-
-Otherwise, looks good.
-
+> Acked-by: Deepa Dinamani <deepa.kernel@gmail.com>
+>
+> -Deepa
