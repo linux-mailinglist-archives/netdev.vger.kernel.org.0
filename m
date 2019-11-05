@@ -2,101 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC51F0579
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 19:56:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D803F058B
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:00:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390840AbfKES4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 13:56:04 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:46796 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390651AbfKES4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 13:56:04 -0500
-Received: by mail-il1-f195.google.com with SMTP id m16so19167735iln.13;
-        Tue, 05 Nov 2019 10:56:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=Q4QMP1XKSjtkVM9T6Z5fSOGqwrDB5TCfhLz+dELwQ+M=;
-        b=ECg4WObD2x2JVp7Q91KmRUxmu26g5kseXwPnkE4USkqv5SUYIjOtTfYRO1rGdmH+XX
-         6rwKUe2tZe0eobzgVNVKhHztwi0zXxE/nrHcEPWinEyLwNPGPGCJznGUIxsRItZ4tL4f
-         r/GZps/9xCOznJoYQ7W1UlR45+8NrtZvpSxboQ4ZRIWXq9CRmdIgGouhUlsDo1Jb5DS5
-         XuH7/zrwE/CFoW9//Wd6q+dfuE42/iPjU0vfzm/OySXDxLmFMKKCSCIL+IEJOZIHBmgs
-         PuffsEZZAmswbvqCpLUq5TU+2rxfXRqH9e8aCt9xViO3AELEqO+XlHKLdYINhvOGrQrf
-         UbIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=Q4QMP1XKSjtkVM9T6Z5fSOGqwrDB5TCfhLz+dELwQ+M=;
-        b=GF2joOmxA+uODKhQ8SGBA+NNw6iSqq/JSFWinLajp8zwKG1ie6E3SQoKaRUMzUJipV
-         +jYticGYld0WNcbHCONU+f5QYvJCEy89eHIPT2T5K4LoViW3/EZTy68UXtLF9Noe/w8n
-         E8uBIAueTT6ZqnVFHDG8/LmPuLOC41gGWr51j22VboYCcjkYsn51/y7O7L0xqe2BhjL2
-         RiEegsmxsAg4AuXnQ0Fm0xg6r765V1g7BZ33QvHB45LqPiR2EnfV9hPTG7UBHkHA/P8e
-         10/ocMiljKJrD92uQ3nZpo6DfgIoYF9o4Vn8zL59cC0VMGfQc2H22uaEiCKrbUGSoN5Z
-         Os3Q==
-X-Gm-Message-State: APjAAAVbC9YuUl+O5hE4GTIlCpqsFLQR6w1nv+ye/NYMbC6o7/9zN3fk
-        JOi2M0hZx2CO390y1lzGzsdmpiji8h+2sK3fVKdiJA==
-X-Google-Smtp-Source: APXvYqwQF6NW94QxUEE3/jn49LPRcb14vjzeddmSTd9hwdvv8wms+Aj2diAx+RQ622y8YYEClNbbgdw/dGTgJUhfEwM=
-X-Received: by 2002:a92:7e18:: with SMTP id z24mr15707410ilc.276.1572980162440;
- Tue, 05 Nov 2019 10:56:02 -0800 (PST)
-MIME-Version: 1.0
-References: <CAHCN7xJiJKBgkiRm-MF9NpgQqfV4=zSVRShc5Sb5Lya2TAxU0g@mail.gmail.com>
-In-Reply-To: <CAHCN7xJiJKBgkiRm-MF9NpgQqfV4=zSVRShc5Sb5Lya2TAxU0g@mail.gmail.com>
-From:   Adam Ford <aford173@gmail.com>
-Date:   Tue, 5 Nov 2019 12:55:51 -0600
-Message-ID: <CAHCN7xK0Y7=Wr9Kq02CWCbQjWVOocU02LLEB=QsVB22yNNoQPw@mail.gmail.com>
-Subject: Re: Long Delay on startup of wl18xx Wireless chip
-To:     Linux-OMAP <linux-omap@vger.kernel.org>, kvalo@codeaurora.org,
+        id S2390821AbfKETAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:00:12 -0500
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:13342 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390404AbfKETAL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:00:11 -0500
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dc1c6bc0000>; Tue, 05 Nov 2019 11:00:12 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Tue, 05 Nov 2019 11:00:07 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Tue, 05 Nov 2019 11:00:07 -0800
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Nov
+ 2019 19:00:07 +0000
+Subject: Re: [PATCH v2 05/18] mm/gup: introduce pin_user_pages*() and FOLL_PIN
+To:     Mike Rapoport <rppt@kernel.org>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
         "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
+References: <20191103211813.213227-1-jhubbard@nvidia.com>
+ <20191103211813.213227-6-jhubbard@nvidia.com>
+ <20191105131032.GG25005@rapoport-lnx>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <9ac948a4-59bf-2427-2007-e460aad2848a@nvidia.com>
+Date:   Tue, 5 Nov 2019 11:00:06 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20191105131032.GG25005@rapoport-lnx>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1572980412; bh=ojXJL7Jf2vtMqYP0b7gLz2fp+ItJt4NPdkhylbujo04=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=BS0Skgz5RbNv7FRT3SjRhdwpwr0ecQ8AOgMazMsduNtoC93TjDB3sb+UV4BVm8kS1
+         e2YIxx2R9GvEAZtEOkrlW3cAbcdFl/wyRSANMj//120w5PZgTkX7MC1O13jzRSXm0k
+         KFRmKs+Z0OYFmlbRMapMiylU4RVjtXOt6K/rgWvnwLDQgPciqV1nCOSRX3qgMUJrsh
+         MPxa2/es4pKZhwzhaTFebsG3i4fLxzYnNXRQBChEYKYp2xONV3pwMnS3x1UJtQUm9p
+         dbWIIJyjFTTd1aKcwIBzPf2GKUh34tHy3QJ9j5720Clm3FqPmta2g3ZZa8fKcxJoAO
+         rGK6L5pnX3YOQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 5, 2019 at 12:25 PM Adam Ford <aford173@gmail.com> wrote:
->
-> I am seeing a really long delay at startup of the wl18xx using the 5.4 ke=
-rnel.
->
+On 11/5/19 5:10 AM, Mike Rapoport wrote:
+...
+>> ---
+>>  Documentation/vm/index.rst          |   1 +
+>>  Documentation/vm/pin_user_pages.rst | 212 ++++++++++++++++++++++
+> 
+> I think it belongs to Documentation/core-api.
 
-Sorry I had to resend.  I forgot to do plaintext.  Google switched
-settings on me and neglected to inform me.
+Done:
+
+diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/index.rst
+index ab0eae1c153a..413f7d7c8642 100644
+--- a/Documentation/core-api/index.rst
++++ b/Documentation/core-api/index.rst
+@@ -31,6 +31,7 @@ Core utilities
+    generic-radix-tree
+    memory-allocation
+    mm-api
++   pin_user_pages
+    gfp_mask-from-fs-io
+    timekeeping
+    boot-time-mm
 
 
-> [    7.895551] wl18xx_driver wl18xx.2.auto: Direct firmware load for ti-c=
-onnectivity/wl18xx-conf.bin failed with error -2
-> [    7.906416] wl18xx_driver wl18xx.2.auto: Falling back to sysfs fallbac=
-k for: ti-connectivity/wl18xx-conf.bin
->
-> At this point in the sequence, I can login to Linux, but the WL18xx is un=
-available.
->
-> [   35.032382] vwl1837: disabling
-> [   69.594874] wlcore: ERROR could not get configuration binary ti-connec=
-tivity/wl18xx-conf.bin: -11
-> [   69.604013] wlcore: WARNING falling back to default config
-> [   70.174821] wlcore: wl18xx HW: 183x or 180x, PG 2.2 (ROM 0x11)
-> [   70.189003] wlcore: WARNING Detected unconfigured mac address in nvs, =
-derive from fuse instead.
-> [   70.197851] wlcore: WARNING This default nvs file can be removed from =
-the file system
-> [   70.218816] wlcore: loaded
->
-> It is now at this point when the wl18xx is available.
->
-> I have the wl18xx and wlcore setup as a module so it should load after th=
-e filesystem is mounted.  I am not using a wl18xx-conf.bin, but I never nee=
-ded to use this before.
->
-> It seems to me unreasonable to wait 60+ seconds after everything is mount=
-ed for the wireless chip to become available.  Before I attempt to bisect t=
-his, I was hoping someone might have seen this.  I am also trying to avoid =
-duplicating someone else's efforts.
->
-> I know the 4.19 doesn't behave like this.
->
-> adam
+...
+>> diff --git a/Documentation/vm/pin_user_pages.rst b/Documentation/vm/pin_user_pages.rst
+>> new file mode 100644
+>> index 000000000000..3910f49ca98c
+>> --- /dev/null
+>> +++ b/Documentation/vm/pin_user_pages.rst
+>> @@ -0,0 +1,212 @@
+>> +.. SPDX-License-Identifier: GPL-2.0
+>> +
+>> +====================================================
+>> +pin_user_pages() and related calls
+>> +====================================================
+> 
+> I know this is too much to ask, but having pin_user_pages() a part of more
+> general GUP description would be really great :)
+> 
+
+Yes, definitely. But until I saw the reaction to the pin_user_pages() API
+family, I didn't want to write too much--it could have all been tossed out
+in favor of a whole different API. But now that we've had some initial
+reviews, I'm much more confident in being able to write about the larger 
+API set.
+
+So yes, I'll put that on my pending list.
+
+
+...
+>> +This document describes the following functions: ::
+>> +
+>> + pin_user_pages
+>> + pin_user_pages_fast
+>> + pin_user_pages_remote
+>> +
+>> + pin_longterm_pages
+>> + pin_longterm_pages_fast
+>> + pin_longterm_pages_remote
+>> +
+>> +Basic description of FOLL_PIN
+>> +=============================
+>> +
+>> +A new flag for get_user_pages ("gup") has been added: FOLL_PIN. FOLL_PIN has
+> 
+> Consider reading this after, say, half a year ;-)
+> 
+
+OK, OK. I knew when I wrote that that it was not going to stay new forever, but
+somehow failed to write the right thing anyway. :) 
+
+Here's a revised set of paragraphs:
+
+Basic description of FOLL_PIN
+=============================
+
+FOLL_PIN and FOLL_LONGTERM are flags that can be passed to the get_user_pages*()
+("gup") family of functions. FOLL_PIN has significant interactions and
+interdependencies with FOLL_LONGTERM, so both are covered here.
+
+Both FOLL_PIN and FOLL_LONGTERM are internal to gup, meaning that neither
+FOLL_PIN nor FOLL_LONGTERM should not appear at the gup call sites. This allows
+the associated wrapper functions  (pin_user_pages() and others) to set the
+correct combination of these flags, and to check for problems as well.
+
+
+thanks,
+
+John Hubbard
+NVIDIA
