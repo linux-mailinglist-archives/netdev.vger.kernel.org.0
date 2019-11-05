@@ -2,85 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30002F01AF
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:40:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6822F01B3
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:41:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389836AbfKEPkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 10:40:32 -0500
-Received: from smtprelay0160.hostedemail.com ([216.40.44.160]:51043 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389507AbfKEPkc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 10:40:32 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 7EE5E182CF669;
-        Tue,  5 Nov 2019 15:40:30 +0000 (UTC)
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,rostedt@goodmis.org,:::::::::::::::::::::,RULES_HIT:41:355:379:541:599:800:960:966:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2194:2196:2198:2199:2200:2201:2393:2553:2559:2562:2693:2739:2895:2914:2987:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4250:4385:5007:6119:6120:6261:7514:7875:7901:7903:8778:10010:10400:10848:10967:11026:11232:11658:11914:12043:12050:12296:12297:12438:12663:12740:12760:12895:13161:13229:13439:13972:14096:14097:14181:14659:14721:21080:21324:21433:21627:21740:21789:21939:30054:30070:30083:30090:30091,0,RBL:146.247.46.6:@goodmis.org:.lbl8.mailshell.net-62.14.41.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:1:0,LFtime:25,LUA_SUMMARY:none
-X-HE-Tag: mom97_3e4e71219012e
-X-Filterd-Recvd-Size: 3221
-Received: from grimm.local.home (unknown [146.247.46.6])
-        (Authenticated sender: rostedt@goodmis.org)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Tue,  5 Nov 2019 15:40:27 +0000 (UTC)
-Date:   Tue, 5 Nov 2019 10:40:24 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
-        daniel@iogearbox.net, peterz@infradead.org, x86@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH bpf-next 0/7] Introduce BPF trampoline
-Message-ID: <20191105104024.4e99a630@grimm.local.home>
-In-Reply-To: <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
-References: <20191102220025.2475981-1-ast@kernel.org>
-        <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
-X-Mailer: Claws Mail 3.17.4git49 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2389930AbfKEPlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 10:41:17 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37777 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389507AbfKEPlR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 10:41:17 -0500
+Received: by mail-wr1-f68.google.com with SMTP id t1so16008501wrv.4
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 07:41:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3ozAKIPnjiYc9fpO5f1nk/BdjyvPtZaOVmyYPtZzq5c=;
+        b=KKuqECKtOsEoiZzDv0lUZSgk74+1eyjHrFgAQfyyzI1wNA34tP+9M4eeNHLzNrZjyM
+         ruLOtV/QCxUnvUY5T1Cna+crOAcgQJoyE5kax33oAMdCkhhBsfYvpdbTbakCZFdAeQQl
+         +vpw+X6aenWO/a3rKJPft4c/XV9fACSYzx01EGdcqrOhzpW8LVfGJFB9Xkc72/IhwRcD
+         iDJN8vNTbWfGbpZZbnlacGQLNGTJ9Sh7T6OHCxAR6ZRakZTox3EF5Eb/yj1y3p/7q7fB
+         qDMkRv+sGSg7/dbvTzBZQl0UQttZFX6aUdnZtZJIBC5hhy5KyKlWYOLZJVW4tlnJJOpN
+         +EVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=3ozAKIPnjiYc9fpO5f1nk/BdjyvPtZaOVmyYPtZzq5c=;
+        b=nUxrxzWFAAwQPWXK0uuOaZOwF1AMiKYKrPwbKC2u4GDa5/Q9ijF0O8n9NkqzR71q7E
+         FNnMtQB1xldK6Aof17Z1ij707pmjqTnWWegiU450KKccXwA5/99OKlcqK46njQJmHmLq
+         /iMW1vhFvzOZbJJEwSO6lcrBuaIYlcd5OVMEEa7MNN4+96GtFzI5LWkCw6INyq2BOgM1
+         YUdk3DshnRGjUAMPsBoba6vwjWP2Aygt0sApvOIPnlKfx0fadYnJQij4Qajs2NayzbxH
+         ytqkCiNyG8PAK2k3UHh0BC7T/MlOJvIBhczIFgA7fLhQI3XKWyd4/6zjqCW3G8tFbqyS
+         oD8w==
+X-Gm-Message-State: APjAAAWh0BuEjnrzppaTVAg2PSQQbIUv4lahd2t4G5ZRG4uDpd2cM/3Z
+        xK8cX7euI0UXVi4JwuvEC6Ldrg==
+X-Google-Smtp-Source: APXvYqzpY54XPKPv0DpY4HfQOyFhFG+kQvDUvviA9Wor2nmD4Qla22g3Fv4tKgk/jU/oUiOGfjxXow==
+X-Received: by 2002:a5d:6b04:: with SMTP id v4mr12056106wrw.219.1572968475516;
+        Tue, 05 Nov 2019 07:41:15 -0800 (PST)
+Received: from ?IPv6:2a01:e35:8b63:dc30:f096:9925:304a:fd2a? ([2a01:e35:8b63:dc30:f096:9925:304a:fd2a])
+        by smtp.gmail.com with ESMTPSA id a6sm13961098wmj.1.2019.11.05.07.41.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Nov 2019 07:41:14 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH 1/5] rtnetlink: allow RTM_SETLINK to reference other
+ namespaces
+To:     Jonas Bonn <jonas@norrbonn.se>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <20191105081112.16656-1-jonas@norrbonn.se>
+ <20191105081112.16656-2-jonas@norrbonn.se>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <4c57e4b2-13d2-63e0-c513-62cd786497eb@6wind.com>
+Date:   Tue, 5 Nov 2019 16:41:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20191105081112.16656-2-jonas@norrbonn.se>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 5 Nov 2019 06:31:56 -0800
-Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-
-> Steven,
-> look slike your branch hasn't been updated in 13 days.
-> Are you still planning to fix the bugs and send it in for the merge window?
-> I cannot afford to wait a full release, since I have my own follow for
-> XDP/networking based on this and other folks are building their stuff on top of
-> BPF trampoline too. So I'm thinking for v2 I will switch to using text_poke()
-> and add appropriate guard checks, so it will be safe out of the box without
-> ftrace dependency. If register_ftrace_direct() indeed comes in soon I'll
-> switch to that and will make bpf trampoline to co-operate with ftrace.
-> text_poke approach will make it such that what ever comes first to trace the
-> fentry (either bpf trampoline or ftrace) will grab the nop and the other system
-> will not be able to attach. That's safe and correct, but certainly not nice
-> long term. So the fix will be needed. The key point that switching to text_poke
-> will remove the register_ftrace_direct() dependency, unblock bpf developers and
-> will give you time to land your stuff at your pace.
-
-Alexei,
-
-I am still working on it, and if it seems stable enough I will submit
-it for this merge window, but there's no guarantees. It's ready when
-it's ready. I gave 5 talks last week (4 in Lyon, and one is Sofia,
-Bulgaria), thus I did not have time to work on it then. I'm currently
-in the Sofia office, and I got a version working that seems to be
-stable. But I still have to break it up into a patch series, and run it
-through more stress tests.
-
-If you have to wait you may need to wait. The Linux kernel isn't
-something that is suppose to put in temporary hacks, just to satisfy
-someone's deadline. Feel free to fork the kernel if you need to. That's
-what everyone else does.
-
-The RT patch has been out of tree specifically because we never pushed
-in the hacks to make it work. We could have landed RT in the tree years
-ago, but we *never* pushed in something that wasn't ready. I suggest
-the BPF folks follow suit.
-
--- Steve
+Le 05/11/2019 à 09:11, Jonas Bonn a écrit :
+> Netlink currently has partial support for acting on interfaces outside
+> the current namespace.  This patch extends RTM_SETLINK with this
+> functionality.
+> 
+> The current implementation has an unfortunate semantic ambiguity in the
+> IFLA_TARGET_NETNSID attribute.  For setting the interface namespace, one
+> may pass the IFLA_TARGET_NETNSID attribute with the namespace to move the
+> interface to.  This conflicts with the meaning of this attribute for all
+> other methods where IFLA_TARGET_NETNSID identifies the namespace in
+> which to search for the interface to act upon:  the pair (namespace,
+> ifindex) is generally given by (IFLA_TARGET_NETNSID, ifi->ifi_index).
+> 
+> In order to change the namespace of an interface outside the current
+> namespace, we would need to specify both an IFLA_TARGET_NETNSID
+> attribute and a namespace to move to using IFLA_NET_NS_[PID|FD].  This is
+> currently now allowed as only one of these three flags may be specified.
+> 
+> This patch loosens the restrictions a bit but tries to maintain
+> compatibility with the previous behaviour:
+> i)  IFLA_TARGET_NETNSID may be passed together with one of
+> IFLA_NET_NS_[PID|FD]
+> ii)  IFLA_TARGET_NETNSID is primarily defined to be the namespace in
+> which to find the interface to act upon
+> iii)  In order to maintain backwards compatibility, if the device is not
+> found in the specified namespace, we also look for it in the current
+> namespace
+> iv)  If only IFLA_TARGET_NETNSID is given, the device is still moved to
+> that namespace, as before; and, as before, IFLA_NET_NS_[PID|FD] take
+> precedence as namespace selectors
+> 
+> Ideally, IFLA_TARGET_NETNSID would only ever have been used to select the
+> namespace of the device to act upon.  A separate flag, IFLA_NET_NS_ID
+> would have been made available for changing namespaces
+> 
+> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
