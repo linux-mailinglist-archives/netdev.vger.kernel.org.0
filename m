@@ -2,91 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F9B3EF52C
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:52:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC2EEF52F
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:53:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387590AbfKEFwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 00:52:19 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27808 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2387555AbfKEFwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:52:19 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA55ntw7019368;
-        Mon, 4 Nov 2019 21:52:18 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=B+YBJKRobkP64FQ3wLgYyLHx6PCD6lwAQwijF76xh1o=;
- b=aOsr0ehgDrmavqxlbGvmfKuzyIlJyhdI64FN8v7ftlTMP+d3osrVOYj8EHSL9QCkAzu6
- 6AlMu/vvRFJ3FFdlfo0Z93xME4JsJJR/d9WkWm7xqKaelgeVP1N3VNAdLLZ6qE0TUlnB
- 16M/pFoHccUt6b7rTQbFCedjEP+AKWr4aWWJd1+vKaPD4/RsV6rulozm6IRBFUHS9EYs
- BMffmYt3LwEJuciqlxnANQuiNXAZ1v9SDotbCoofWwYkbkmWnq0TcmBcB+svQjpSh4eE
- /wNsMPDDTRQumum6uelJ4un3f62EF5M4ckTTntZgMdZ8PpnWVm5lwyzXfQ6/KvT1AsZV Xg== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2w17n91er1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 04 Nov 2019 21:52:18 -0800
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Mon, 4 Nov
- 2019 21:52:17 -0800
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
- Transport; Mon, 4 Nov 2019 21:52:17 -0800
-Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id 0161A3F703F;
-        Mon,  4 Nov 2019 21:52:16 -0800 (PST)
-Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id xA55qGEm030066;
-        Mon, 4 Nov 2019 21:52:16 -0800
-Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id xA55qGZU030065;
-        Mon, 4 Nov 2019 21:52:16 -0800
-From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <manishc@marvell.com>,
-        <mrangankar@marvell.com>, <mkalderon@marvell.com>,
-        <aelior@marvell.com>
-Subject: [PATCH net-next 4/4] cnic: Set fp_hsi_ver as part of CLIENT_SETUP ramrod
-Date:   Mon, 4 Nov 2019 21:51:12 -0800
-Message-ID: <20191105055112.30005-5-skalluru@marvell.com>
-X-Mailer: git-send-email 2.12.0
-In-Reply-To: <20191105055112.30005-1-skalluru@marvell.com>
-References: <20191105055112.30005-1-skalluru@marvell.com>
+        id S2387615AbfKEFxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 00:53:23 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:34153 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387555AbfKEFxX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Nov 2019 00:53:23 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 476f3G5hh9z9sP6;
+        Tue,  5 Nov 2019 16:53:14 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1572933197;
+        bh=f9hNs4jQjbohnId4YFBy7pOqvHYnA2ugkM9qvTsebHQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=GPVY7jb6FGsf8JZrV/ipYnnxNIEM7HBPaIwCw45kae9w/Q5iODqTnvsiQLpC6Ofxx
+         dJ8WhYQlGLrEh7Wg1la0Fa5ej7Aie3yacltVFawILzMPhAQ4l/l1zkbS3N7GqjrdPK
+         PT7Rk2RjsfqTmbj40SXrSWFyJMeR3T8uz0FtPzEK6KqLaQO4CnvpZzIwqpQGOsTO/B
+         +YIbyw4HV2eRbHTkPCBrHpYQa7AvSb0lDaUcYKegGQDCNIN0gIuaCs99Nd4qlKZesa
+         PFB1H7dxLkCQFg7EPMEPusINTTyM1zINwuw0WkWXn30KfnOzDlpo3TRS4vT3av90oy
+         /69Nc8RSKtaug==
+Date:   Tue, 5 Nov 2019 16:53:13 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>, David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Joe Perches <joe@perches.com>,
+        =?UTF-8?B?SsOpcsO0?= =?UTF-8?B?bWU=?= Pouiller 
+        <jerome.pouiller@silabs.com>
+Subject: linux-next: manual merge of the staging tree with the
+ staging.current and net-next trees
+Message-ID: <20191105165313.59a5cc11@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-11-05_01:2019-11-04,2019-11-05 signatures=0
+Content-Type: multipart/signed; boundary="Sig_/f83taoECjBr4uwFqhb6tiJk";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Manish Rangankar <mrangankar@marvell.com>
+--Sig_/f83taoECjBr4uwFqhb6tiJk
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The new FW has added extra validation for HSI version to
-make FW backward compatible with older VF drivers. Hence
-set fp_hsi_ver to Fast Path HSI version of the FW in use.
+Hi all,
 
-Signed-off-by: Manish Rangankar <mrangankar@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Manish Chopra <manishc@marvell.com>
----
- drivers/net/ethernet/broadcom/cnic.c | 2 ++
- 1 file changed, 2 insertions(+)
+Today's linux-next merge of the staging tree got conflicts in:
 
-diff --git a/drivers/net/ethernet/broadcom/cnic.c b/drivers/net/ethernet/broadcom/cnic.c
-index 155599d..61ab7d2 100644
---- a/drivers/net/ethernet/broadcom/cnic.c
-+++ b/drivers/net/ethernet/broadcom/cnic.c
-@@ -5208,6 +5208,8 @@ static void cnic_init_rings(struct cnic_dev *dev)
- 		cnic_init_bnx2x_tx_ring(dev, data);
- 		cnic_init_bnx2x_rx_ring(dev, data);
- 
-+		data->general.fp_hsi_ver =  ETH_FP_HSI_VERSION;
-+
- 		l5_data.phy_address.lo = udev->l2_buf_map & 0xffffffff;
- 		l5_data.phy_address.hi = (u64) udev->l2_buf_map >> 32;
- 
--- 
-1.8.3.1
+  drivers/staging/Kconfig
+  drivers/staging/Makefile
 
+between commits:
+
+  df4028658f9d ("staging: Add VirtualBox guest shared folder (vboxsf) suppo=
+rt")
+  52340b82cf1a ("hp100: Move 100BaseVG AnyLAN driver to staging")
+
+from the staging.current and net-next trees and commit:
+
+  a7a91ca5a23d ("staging: wfx: add infrastructure for new driver")
+
+from the staging tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/staging/Kconfig
+index be74f91500b3,a490141a0e88..000000000000
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@@ -125,8 -125,6 +125,10 @@@ source "drivers/staging/exfat/Kconfig
+ =20
+  source "drivers/staging/qlge/Kconfig"
+ =20
+ +source "drivers/staging/vboxsf/Kconfig"
+ +
+ +source "drivers/staging/hp/Kconfig"
+ +
++ source "drivers/staging/wfx/Kconfig"
++=20
+  endif # STAGING
+diff --cc drivers/staging/Makefile
+index b8bd05091453,4cb548a0ff87..000000000000
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@@ -53,5 -53,4 +53,6 @@@ obj-$(CONFIG_UWB)		+=3D uwb
+  obj-$(CONFIG_USB_WUSB)		+=3D wusbcore/
+  obj-$(CONFIG_EXFAT_FS)		+=3D exfat/
+  obj-$(CONFIG_QLGE)		+=3D qlge/
+ +obj-$(CONFIG_VBOXSF_FS)		+=3D vboxsf/
+ +obj-$(CONFIG_NET_VENDOR_HP)	+=3D hp/
++ obj-$(CONFIG_WFX)		+=3D wfx/
+
+--Sig_/f83taoECjBr4uwFqhb6tiJk
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3BDkoACgkQAVBC80lX
+0GxBIwf+JkgmrQnEKVPJu7rwU8CbLhidBcV458j3OQGqiRJJw+TuaCAb0ygF9dX6
+0oRTOf9YvxFQBitjGkn7rqsMyGyy2p6Q4n4/9/fQU8BwjKfwdQJw13//VypkLj/I
+55D2Zwb+hwfmYOhFVioNHX4RsB9qpMK1uDG63oaz5IEHG/n9+prfwRy3raKa6ONX
+y/LqUs2LSURHj2y8r0fqh4O4nn+MuMvwQ9X8Z3/CRZgXrZQYGzPja7S3VTJEgkn/
+LCXjY0hoTSsutrkGwy4q5t7mZMpWIE49NX/1L5BMpctt6dn3vQpXl6t6wwLBVzKd
+4XWDm6zCf8G/zerbC1As51AEFG1h6w==
+=g9pO
+-----END PGP SIGNATURE-----
+
+--Sig_/f83taoECjBr4uwFqhb6tiJk--
