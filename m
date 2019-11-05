@@ -2,63 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A347F093C
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D5EF0944
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:24:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730281AbfKEWW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:22:56 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:33699 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729680AbfKEWW4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:22:56 -0500
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 2301F22EE9;
-        Tue,  5 Nov 2019 23:22:51 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
-        s=mail2016061301; t=1572992574;
-        bh=iEKAkEOL4I/JxiQlzznezKZAeBZue8KQu78rEOeHMGU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ImHkZ+GkUqN+pUqwIxRgqEe1m4REsvEkv/41OqkvggLsU3KEQB+oHCnXXolwfF5M/
-         6S5pMdMb3OgN8hrvakCGpcZTKtuQz4KPpavjPKMgDp5YAnk2DFlulL6SHnw8pxtrPk
-         SmV5u66A4L9RU5621OC4qv+p5LzhbF5h0nvubIRc=
+        id S1730141AbfKEWYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:24:51 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:41976 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729895AbfKEWYv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:24:51 -0500
+Received: by mail-lj1-f195.google.com with SMTP id m9so23702148ljh.8
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:24:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uEoXCcW50URE76YSN+2HHLXlNpxyEkZl6KQ83ZpmBAo=;
+        b=rtlXhrK5I+KvNrBniPnTlGQiLGb51Z/oF6rvtHzH1g/Ccw6oPcqCZTGDbZSn6bhDuh
+         e4pPhUtkOowU5chfv3dc++zv8Ubukw+mm+/3qYVYZpxxKaOgLCWr3hZ/YEvNHKpY+Ndt
+         nbK24btLdXQzG7NMXOEQ8miZ8+JGODqUiTuqnAUc3DntzVJ1e4n6CN9VJiP41nmGfMDL
+         y0zJezUGE8w4ljj/N9Fn+UUbYiajlhq3D4WJ7k0E85byetRRv3YgqrWr6/uJUZpZRb7s
+         RVbVDtbZOtMALIdpRKGdaJBpLZQliVVzxxUpcLrrr5SRYaGZ/Ae9M2w7pSd+zW5UAmud
+         QGpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uEoXCcW50URE76YSN+2HHLXlNpxyEkZl6KQ83ZpmBAo=;
+        b=pL/SRFchwAU27TyFiFVdymKodqns46ARPXvKi/M0Nwmd6J6qPbVD1NUNhx7Qu7mc9S
+         zaHQ78VACfQAprpo+kCXSvVKgR55YZGciOhlSClul5Ac8jykhhhQRVcgze1MUxCU6qLT
+         JBimA6UHMGGq0zsi9tzyNewp28CPdYpDUEjgdxYsNoY+Ag3zfpXlmhBkcZOq1muzHo3l
+         5yjWG7hn+Exc2I8cVXLk7ncsPoTWnWfPNT2t46Aj6fCBxrhbFR0N2yjh8bojSJlm9vr7
+         kBD5/VqPfhvCt/i/Lq4TceNp14jnnCsm46v3BLUMLHelPrWigXGteceMB26+g0MOpZlf
+         3P3g==
+X-Gm-Message-State: APjAAAWl35eDZp6/Jpe7RfynBTFgLckLwJDXaFZupqHQXAsGviub90Et
+        PhvlehaFKynEU3QGB5tYpQ9ALg==
+X-Google-Smtp-Source: APXvYqzhUx828zEyf5r4JRjmZoxXiSdV5PGx6Tb5wtoj1m7J5IjafH9Bf6nKeJtA9l17OUcVtJg3ZA==
+X-Received: by 2002:a2e:b5d0:: with SMTP id g16mr25094261ljn.88.1572992689642;
+        Tue, 05 Nov 2019 14:24:49 -0800 (PST)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s25sm4020139lji.81.2019.11.05.14.24.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Nov 2019 14:24:48 -0800 (PST)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH net 0/3] net/tls: add a TX lock
+Date:   Tue,  5 Nov 2019 14:24:33 -0800
+Message-Id: <20191105222436.27359-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 05 Nov 2019 23:22:51 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        lgirdwood@gmail.com, broonie@kernel.org, simon.horman@netronome.com
-Subject: Re: [PATCH 0/5] net: phy: at803x device tree binding
-In-Reply-To: <20191105.140616.1174888253359674234.davem@davemloft.net>
-References: <20191102011351.6467-1-michael@walle.cc>
- <20191105.140616.1174888253359674234.davem@davemloft.net>
-Message-ID: <0265fc6d0d0eb64f578959a8883295bd@walle.cc>
-X-Sender: michael@walle.cc
-User-Agent: Roundcube Webmail/1.2.3
-X-Virus-Scanned: clamav-milter 0.101.4 at web
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2019-11-05 23:06, schrieb David Miller:
-> From: Michael Walle <michael@walle.cc>
-> Date: Sat,  2 Nov 2019 02:13:46 +0100
-> 
->> Adds a device tree binding to configure the clock and the RGMII 
->> voltage.
-> 
-> This does not apply cleanly to net-next, please respin.
+Hi!
 
-That is actually just fine, because there is a bug in the AR8035 
-handling. I'll fix that and rebase it on your net-next.
+Some time ago Pooja and Mallesham started reporting crashes with
+an async accelerator. After trying to poke the existing logic into
+shape I came to the conclusion that it can't be trusted, and to
+preserve our sanity we should just add a lock around the TX side.
 
-Thanks,
--michael
+First patch removes the sk_write_pending checks from the write
+space callbacks. Those don't seem to have a logical justification.
+
+Patch 2 adds the TX lock and patch 3 associated test (which should
+hang with current net).
+
+Mallesham reports that even with these fixes applied the async
+accelerator workload still occasionally hangs waiting for socket
+memory. I suspect that's strictly related to the way async crypto
+is integrated in TLS, so I think we should get these into net or
+net-next and move from there.
+
+Jakub Kicinski (3):
+  net/tls: don't pay attention to sk_write_pending when pushing partial
+    records
+  net/tls: add a TX lock
+  selftests/tls: add test for concurrent recv and send
+
+ include/net/tls.h                 |   5 ++
+ net/tls/tls_device.c              |  10 ++-
+ net/tls/tls_main.c                |   2 +
+ net/tls/tls_sw.c                  |  30 +++------
+ tools/testing/selftests/net/tls.c | 108 ++++++++++++++++++++++++++++++
+ 5 files changed, 134 insertions(+), 21 deletions(-)
+
+-- 
+2.23.0
+
