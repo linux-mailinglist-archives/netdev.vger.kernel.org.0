@@ -2,124 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D32F9EF78C
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 09:54:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02453EF797
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 09:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730512AbfKEIxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 03:53:48 -0500
-Received: from bilbo.ozlabs.org ([203.11.71.1]:57387 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727925AbfKEIxs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 03:53:48 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 476k3W4vLmz9sNx;
-        Tue,  5 Nov 2019 19:53:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1572944025;
-        bh=Byc9rQnfxiA5JnnLv+Dzgtshi/MUHIx44On/TB7/lGU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=RJ7fkk+B2k36Rn88ome+EKeioWpuXpXoXGP/VZKDWVsFYBI0arBINM5anITqy4Cih
-         pWOoC5CF48D59m8D+H0gF42doAFDbq30FDX+m8kHMMf0xZjsUn6dvdtO6afBfJfqFr
-         BstWSMfU4nA8mT+b28ZNwxg4NmHKhZoi4Lx/0+6tx3R3yWgoXsJ+bbf3gAbTuMqbjj
-         SSuKlJZSftcWkiB/FwVMXyihoq9f5hUeCDLTBtba+VP9MiPkO98LYFW/Wp1ie7ohlG
-         GVNGkbM/ieWB+e0zBCFSfQfnohsmtLckhbXVj2xrL63odkRhJ4L98xMo8MgKCWUBBH
-         KOKomtUXomgcA==
-Date:   Tue, 5 Nov 2019 19:53:41 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20191105195341.666c4a3a@canb.auug.org.au>
+        id S1730599AbfKEI4P convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Nov 2019 03:56:15 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:38547 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729765AbfKEI4P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 03:56:15 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID xA58tnut001916, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id xA58tnut001916
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Tue, 5 Nov 2019 16:55:50 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Tue, 5 Nov
+ 2019 16:55:49 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "oliver@neukum.org" <oliver@neukum.org>
+CC:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] r8152: Add macpassthru support for ThinkPad Thunderbolt 3 Dock Gen 2
+Thread-Topic: [PATCH v2] r8152: Add macpassthru support for ThinkPad
+ Thunderbolt 3 Dock Gen 2
+Thread-Index: AQHVk7E2UAb+vVEL20O/iFfFubpdn6d8PDnA
+Date:   Tue, 5 Nov 2019 08:55:49 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18F4E9E@RTITMBSVM03.realtek.com.tw>
+References: <20191105081526.4206-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20191105081526.4206-1-kai.heng.feng@canonical.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/arx3n.gxM6WsfhNW37scjjC";
- protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/arx3n.gxM6WsfhNW37scjjC
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Kai-Heng Feng [mailto:kai.heng.feng@canonical.com]
+> Sent: Tuesday, November 05, 2019 4:15 PM
+> To: davem@davemloft.net; oliver@neukum.org
+[...]
+> +	if (test_bit(LENOVO_MACPASSTHRU, &tp->flags)) {
+> +		bypass_test = true;
+> +		mac_obj_name = "\\MACA";
+> +		mac_obj_type = ACPI_TYPE_STRING;
+> +		mac_strlen = 0x16;
+>  	} else {
+> -		/* test for RTL8153-BND and RTL8153-BD */
+> -		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
+> -		if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
+> -			netif_dbg(tp, probe, tp->netdev,
+> -				  "Invalid variant for MAC pass through\n");
+> -			return -ENODEV;
+> +		bypass_test = false;
+> +		mac_obj_name = "\\_SB.AMAC";
+> +		mac_obj_type = ACPI_TYPE_BUFFER;
+> +		mac_strlen = 0x17;
+> +	}
+> +
+> +	if (!bypass_test) {
 
-Hi all,
+Maybe you could combine this with the "else" above.
+Then, the variable "bypass_test" could be removed.
+And the declaration of "ocp_data" could be moved after the "else".
 
-After merging the net-next tree, today's linux-next build (powepc
-ppc44x_defconfig) failed like this:
+> +		/* test for -AD variant of RTL8153 */
+> +		ocp_data = ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);
+> +		if ((ocp_data & AD_MASK) == 0x1000) {
+> +			/* test for MAC address pass-through bit */
+> +			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, EFUSE);
+> +			if ((ocp_data & PASS_THRU_MASK) != 1) {
+> +				netif_dbg(tp, probe, tp->netdev,
+> +						"No efuse for RTL8153-AD MAC pass
+> through\n");
+> +				return -ENODEV;
+> +			}
+> +		} else {
+> +			/* test for RTL8153-BND and RTL8153-BD */
+> +			ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
+> +			if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK)
+> == 0) {
+> +				netif_dbg(tp, probe, tp->netdev,
+> +						"Invalid variant for MAC pass through\n");
+> +				return -ENODEV;
+> +			}
+>  		}
+>  	}
+> 
+>  	/* returns _AUXMAC_#AABBCCDDEEFF# */
+> -	status = acpi_evaluate_object(NULL, "\\_SB.AMAC", NULL, &buffer);
+> +	status = acpi_evaluate_object(NULL, mac_obj_name, NULL, &buffer);
+>  	obj = (union acpi_object *)buffer.pointer;
+>  	if (!ACPI_SUCCESS(status))
+>  		return -ENODEV;
+> -	if (obj->type != ACPI_TYPE_BUFFER || obj->string.length != 0x17) {
+> +	if (obj->type != mac_obj_type || obj->string.length != mac_strlen) {
+>  		netif_warn(tp, probe, tp->netdev,
+>  			   "Invalid buffer for pass-thru MAC addr: (%d, %d)\n",
+>  			   obj->type, obj->string.length);
+>  		goto amacout;
+>  	}
+> +
+>  	if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) != 0 ||
+>  	    strncmp(obj->string.pointer + 0x15, "#", 1) != 0) {
+>  		netif_warn(tp, probe, tp->netdev,
+> @@ -6629,6 +6649,10 @@ static int rtl8152_probe(struct usb_interface *intf,
+>  		netdev->hw_features &= ~NETIF_F_RXCSUM;
+>  	}
+> 
+> +	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO &&
+> +	    le16_to_cpu(udev->descriptor.idProduct) == 0x3082)
+> +		set_bit(LENOVO_MACPASSTHRU, &tp->flags);
+> +
+>  	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial
+> &&
+>  	    (!strcmp(udev->serial, "000001000000") ||
+>  	     !strcmp(udev->serial, "000002000000"))) {
+> @@ -6755,6 +6779,7 @@ static const struct usb_device_id rtl8152_table[] = {
+>  	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f)},
+>  	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062)},
+>  	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069)},
+> +	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3082)},
+>  	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205)},
+>  	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c)},
+>  	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214)},
+> --
+> 2.17.1
 
 
-Caused by commit
+Best Regards,
+Hayes
 
-  0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warning=
-s")
 
-I applied the following patch, but there is probably a nicer and more
-complete way to fix this.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 5 Nov 2019 19:49:55 +1100
-Subject: [PATCH] fix up for "net: of_get_phy_mode: Change API to solve int/=
-unit warnings"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/net/ethernet/ibm/emac/core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ibm/emac/core.c b/drivers/net/ethernet/ib=
-m/emac/core.c
-index 2e40425d8a34..8cb682754bd4 100644
---- a/drivers/net/ethernet/ibm/emac/core.c
-+++ b/drivers/net/ethernet/ibm/emac/core.c
-@@ -2850,6 +2850,7 @@ static int emac_init_config(struct emac_instance *dev)
- 	struct device_node *np =3D dev->ofdev->dev.of_node;
- 	const void *p;
- 	int err;
-+	phy_interface_t phy_mode;
-=20
- 	/* Read config from device-tree */
- 	if (emac_read_uint_prop(np, "mal-device", &dev->mal_ph, 1))
-@@ -2898,9 +2899,11 @@ static int emac_init_config(struct emac_instance *de=
-v)
- 		dev->mal_burst_size =3D 256;
-=20
- 	/* PHY mode needs some decoding */
--	err =3D of_get_phy_mode(np, &dev->phy_mode);
-+	err =3D of_get_phy_mode(np, &phy_mode);
- 	if (err)
- 		dev->phy_mode =3D PHY_INTERFACE_MODE_NA;
-+	else
-+		dev->phy_mode =3D phy_mode;
-=20
- 	/* Check EMAC version */
- 	if (of_device_is_compatible(np, "ibm,emac4sync")) {
---=20
-2.23.0
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/arx3n.gxM6WsfhNW37scjjC
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3BOJUACgkQAVBC80lX
-0GyfZwf9GxFOkkmcb9/xlaKblh/NNTDQMT28dfOWwerEFAh5jjTEuU47fEBuZk+3
-WPo3BjPptw+ZPLGKCX2wdXoVFERlbRZvVA8Wy7iaVBXNB2TaalnAPkSi7yhnJ5BF
-agyzMTQd1jTiWC7me4LqPH0IYmgJWcfCvPRa61VXIAdENgqxeRGh4NSm2IYTkw0V
-Gch7CW0S6yu63A4lZjJHO37bgpWF3v2n5xfzvsghISD+mgARjP6VJHSBuYTrXhdZ
-57/qZiQ/A4A6B1fte2/OZVTVepBhi+xq5tYat57Z1YJWQxCllzf0Ifo05Nd0k61o
-lJsfExepi0/YHkX1E/5XeVR+LbgzWQ==
-=hNXb
------END PGP SIGNATURE-----
-
---Sig_/arx3n.gxM6WsfhNW37scjjC--
