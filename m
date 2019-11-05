@@ -2,72 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94368EFC9D
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 12:45:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CED58EFCA5
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 12:48:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730959AbfKELpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 06:45:04 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:43438 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730896AbfKELpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 06:45:03 -0500
-Received: by mail-il1-f197.google.com with SMTP id d11so18322925ild.10
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 03:45:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=QCC2Zuft5IrSbuyDgMXl4CHaLN5HBJGcl6ykToE6Ed8=;
-        b=XCTT6G+RJ3+Kw9Qv4tTHh3/FQIIkehbaqMBb45064X6aBxzZpAfB3iS8B+esWYNFcm
-         e6Hj6Pocw4DhV2VIJSze7SgMx7DrJ9E0Ui9zHNWmUHNmA35wb37qK2lCpbTzyWnC3Hvk
-         eEAMz1F5V+bweDS4/5yav3O8SeOyNoCSSiIRk9kQtXJGkWsNJreKQ2YSXtZAdSfOd/S0
-         5vNvkHYmUd2J0pThKOw1nugHEVn3M8cm/hOyKZuNBEVEne0XWM5FM2GcKXXo6rUh9imn
-         UCq9MkVjwl17eH0lPJ+Gdt2gdxf8NPs4QGJowmSV/0eyh43XCFnA7rmxVP4BYh17BoV6
-         Ssqg==
-X-Gm-Message-State: APjAAAX2HKLbu1mde/aZSbhx5QeGbRDTbp4iRqzGrI7avzjv8dvVZW6O
-        9LG+jvpVyi/sFwBormkYQCV6M2ZYvCFm1CCtYKXp4R8Gnj0m
-X-Google-Smtp-Source: APXvYqxODW9NHJW/4EGLldbad5zqA1/v64aLeXSjpLD0OrWyJ+niu+pzFgfeGWWvRMHqE1vxcY6Q2oZjQUQLXqzmYw875vDSNqU9
+        id S2387962AbfKELs2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Nov 2019 06:48:28 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:46054 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730627AbfKELs1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 06:48:27 -0500
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID xA5Bm5ku025506, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id xA5Bm5ku025506
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Tue, 5 Nov 2019 19:48:05 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Tue, 5 Nov
+ 2019 19:48:05 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "oliver@neukum.org" <oliver@neukum.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] r8152: Add macpassthru support for ThinkPad Thunderbolt 3 Dock Gen 2
+Thread-Topic: [PATCH v2] r8152: Add macpassthru support for ThinkPad
+ Thunderbolt 3 Dock Gen 2
+Thread-Index: AQHVk7E2UAb+vVEL20O/iFfFubpdn6d8PDnA//+rqgCAAIxWcA==
+Date:   Tue, 5 Nov 2019 11:48:04 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18F4F92@RTITMBSVM03.realtek.com.tw>
+References: <20191105081526.4206-1-kai.heng.feng@canonical.com>
+ <0835B3720019904CB8F7AA43166CEEB2F18F4E9E@RTITMBSVM03.realtek.com.tw>
+ <193EF03A-1EF7-4604-BF3A-61201A78D724@canonical.com>
+In-Reply-To: <193EF03A-1EF7-4604-BF3A-61201A78D724@canonical.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-X-Received: by 2002:a92:d981:: with SMTP id r1mr15781326iln.64.1572954300760;
- Tue, 05 Nov 2019 03:45:00 -0800 (PST)
-Date:   Tue, 05 Nov 2019 03:45:00 -0800
-In-Reply-To: <000000000000de1eec059692c021@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000058481f059697f6e7@google.com>
-Subject: Re: KASAN: use-after-free Write in j1939_sock_pending_del
-From:   syzbot <syzbot+07bb74aeafc88ba7d5b4@syzkaller.appspotmail.com>
-To:     bst@pengutronix.de, davem@davemloft.net,
-        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
-        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
-        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+Kai-Heng Feng [mailto:kai.heng.feng@canonical.com]
+> Sent: Tuesday, November 05, 2019 7:18 PM
+[...]
+> >> 	} else {
+> >> -		/* test for RTL8153-BND and RTL8153-BD */
+> >> -		ocp_data = ocp_read_byte(tp, MCU_TYPE_USB, USB_MISC_1);
+> >> -		if ((ocp_data & BND_MASK) == 0 && (ocp_data & BD_MASK) == 0) {
+> >> -			netif_dbg(tp, probe, tp->netdev,
+> >> -				  "Invalid variant for MAC pass through\n");
+> >> -			return -ENODEV;
+> >> +		bypass_test = false;
+> >> +		mac_obj_name = "\\_SB.AMAC";
+> >> +		mac_obj_type = ACPI_TYPE_BUFFER;
+> >> +		mac_strlen = 0x17;
+> >> +	}
+> >> +
+> >> +	if (!bypass_test) {
+> >
+> > Maybe you could combine this with the "else" above.
+> > Then, the variable "bypass_test" could be removed.
+> 
+> Ok, will do in V3.
+> 
+> > And the declaration of "ocp_data" could be moved after the "else".
+> 
+> Isn't putting declarations at the top of the function the preferred way?
 
-commit 9d71dd0c70099914fcd063135da3c580865e924c
-Author: The j1939 authors <linux-can@vger.kernel.org>
-Date:   Mon Oct 8 09:48:36 2018 +0000
+I mean the ocp_data wouldn't be used out of the else,
+so you could move the declaration to the inside of the else.
 
-     can: add support of SAE J1939 protocol
+However, I don't think you have to send another patch for this.
+Thanks.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11150314e00000
-start commit:   a99d8080 Linux 5.4-rc6
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=13150314e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15150314e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
-dashboard link: https://syzkaller.appspot.com/bug?extid=07bb74aeafc88ba7d5b4
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16fd7044e00000
+Best Regards,
+Hayes
 
-Reported-by: syzbot+07bb74aeafc88ba7d5b4@syzkaller.appspotmail.com
-Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+
