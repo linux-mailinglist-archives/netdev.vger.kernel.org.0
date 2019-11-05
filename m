@@ -2,178 +2,389 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D803F058B
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:00:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3AFEF05A0
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:07:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390821AbfKETAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:00:12 -0500
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:13342 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390404AbfKETAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:00:11 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc1c6bc0000>; Tue, 05 Nov 2019 11:00:12 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Tue, 05 Nov 2019 11:00:07 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Tue, 05 Nov 2019 11:00:07 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Nov
- 2019 19:00:07 +0000
-Subject: Re: [PATCH v2 05/18] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-To:     Mike Rapoport <rppt@kernel.org>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-6-jhubbard@nvidia.com>
- <20191105131032.GG25005@rapoport-lnx>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <9ac948a4-59bf-2427-2007-e460aad2848a@nvidia.com>
-Date:   Tue, 5 Nov 2019 11:00:06 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2390800AbfKETH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:07:26 -0500
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:41903 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390526AbfKETH0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:07:26 -0500
+Received: by mail-qk1-f196.google.com with SMTP id m125so22162393qkd.8;
+        Tue, 05 Nov 2019 11:07:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sbdI0Cb2ickUY3rLWAl81DZ9ddzQhH77WugLRbFz7g0=;
+        b=B6OBFwIDAhHRhuKHlGWF3vy0byaOkaPBgq+3ki26lN13/Zhlv8gGJwHPFcESwiFEms
+         2R5mLBgWnXqt9bjLZqwU94KtiU/MGUKzOQ31ZPc1JsGAuFdnPDl6NCQLUqnAxTTo5NvO
+         DKwXgJ6VHuiljPuxIgEY4odop3Lvm2DkJBVAQyqWESDKZZ2ElVSkymFEZjYMwOK+Fimf
+         2p0E30mAHLWrvHd4O30CXFHy9HXvb9PuAX5fgpjeHjMbOSZ28d16gd/W0DPX1KEjeYp+
+         1a4YMqv4BI1PFgslYhix6dHRSKT+jsZ9y5MjOxieExfI/kuv9lO5zgoov7TudO/oVTCB
+         iOUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sbdI0Cb2ickUY3rLWAl81DZ9ddzQhH77WugLRbFz7g0=;
+        b=Mte470MOwVD2TeZ3hMGwoRmJSaW0Sd/sCr5ARm2lz/kOKeccebyEOUmztbSKURG2PA
+         W2xjFVV9eFoq6j2RPfHhhUjXA3xxsIfb7NhfluR3NFPDONy4XaRXurqEA6uVNXcZgmbA
+         gHpNZf6BFNtdWDQ6btezItxfoSwU4T62yc6s2ApnaGCiKIZxdJqMslfNoSfuLm0BL4Vx
+         1ac3nuYj/eTrtWSNPblsjbjPVoCPxh+RNFknTdKsPkh9vW0PD69mdzOiae8PU2F3y/Bg
+         6EFPsi5kMQAcbf828zdI1T0S8dJeT8II8sFYlkvuk4g5xiVjnOrCG0opwo3deR2K/A4t
+         A+aw==
+X-Gm-Message-State: APjAAAUmWdRNuKRXZNQBh6OdV8n+15FUtnhrpsUbMrgV2fVO0aUu5gBl
+        f3Gv5xcbQRPGQ26Mj75FpkPMdEVOWp+RXepZmt8=
+X-Google-Smtp-Source: APXvYqzmwVnkCd9zkwhkjdvMbVyQchyO1qgXPyiABgc1g7keUBW78XTGHTv4iJdQxR5bXGgZ0qSfY4cVOqAllceK+5c=
+X-Received: by 2002:a37:9a8a:: with SMTP id c132mr9596411qke.92.1572980844382;
+ Tue, 05 Nov 2019 11:07:24 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191105131032.GG25005@rapoport-lnx>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572980412; bh=ojXJL7Jf2vtMqYP0b7gLz2fp+ItJt4NPdkhylbujo04=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=BS0Skgz5RbNv7FRT3SjRhdwpwr0ecQ8AOgMazMsduNtoC93TjDB3sb+UV4BVm8kS1
-         e2YIxx2R9GvEAZtEOkrlW3cAbcdFl/wyRSANMj//120w5PZgTkX7MC1O13jzRSXm0k
-         KFRmKs+Z0OYFmlbRMapMiylU4RVjtXOt6K/rgWvnwLDQgPciqV1nCOSRX3qgMUJrsh
-         MPxa2/es4pKZhwzhaTFebsG3i4fLxzYnNXRQBChEYKYp2xONV3pwMnS3x1UJtQUm9p
-         dbWIIJyjFTTd1aKcwIBzPf2GKUh34tHy3QJ9j5720Clm3FqPmta2g3ZZa8fKcxJoAO
-         rGK6L5pnX3YOQ==
+References: <20191105041223.5622-1-ethercflow@gmail.com>
+In-Reply-To: <20191105041223.5622-1-ethercflow@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 5 Nov 2019 11:07:13 -0800
+Message-ID: <CAEf4Bzbbmfwd1m4F6iz_P2o5qGShd2orTF_vJBK_d-aSUXqkqw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] selftests/bpf: test for bpf_get_file_path()
+ from raw tracepoint
+To:     Wenbo Zhang <ethercflow@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/19 5:10 AM, Mike Rapoport wrote:
-...
->> ---
->>  Documentation/vm/index.rst          |   1 +
->>  Documentation/vm/pin_user_pages.rst | 212 ++++++++++++++++++++++
-> 
-> I think it belongs to Documentation/core-api.
+On Mon, Nov 4, 2019 at 8:15 PM Wenbo Zhang <ethercflow@gmail.com> wrote:
+>
+> trace fstat events by raw tracepoint sys_enter:newfstat, and handle events
+> only produced by test_file_get_path, which call fstat on several different
+> types of files to test bpf_get_file_path's feature.
+>
+> v2->v3: addressed Andrii's feedback
+> - use global data instead of perf_buffer to simplified code
+>
+> v1->v2: addressed Daniel's feedback
+> - rename bpf_fd2path to bpf_get_file_path to be consistent with other
+> helper's names
+>
+> Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
+> ---
+>  .../selftests/bpf/prog_tests/get_file_path.c  | 171 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_get_file_path.c  |  71 ++++++++
+>  2 files changed, 242 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/get_file_path.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_get_file_path.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/get_file_path.c b/tools/testing/selftests/bpf/prog_tests/get_file_path.c
+> new file mode 100644
+> index 000000000000..26126e55c1f0
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/get_file_path.c
+> @@ -0,0 +1,171 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#define _GNU_SOURCE
+> +#include <test_progs.h>
+> +#include <alloca.h>
+> +#include <sys/stat.h>
+> +
+> +#ifndef MAX_PATH_LENGTH
+> +#define MAX_PATH_LENGTH                128
+> +#endif
+> +
+> +#ifndef TASK_COMM_LEN
+> +#define TASK_COMM_LEN          16
+> +#endif
 
-Done:
+Do you really need these ifndefs? Either include headers that have
+TASK_COMM_LEN, or don't and just define them directly?
 
-diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/index.rst
-index ab0eae1c153a..413f7d7c8642 100644
---- a/Documentation/core-api/index.rst
-+++ b/Documentation/core-api/index.rst
-@@ -31,6 +31,7 @@ Core utilities
-    generic-radix-tree
-    memory-allocation
-    mm-api
-+   pin_user_pages
-    gfp_mask-from-fs-io
-    timekeeping
-    boot-time-mm
+> +
+> +struct get_path_trace_t {
+> +       unsigned long fd;
+> +       char path[MAX_PATH_LENGTH];
+> +};
+> +
+> +enum FS_TYPE {
+> +       PIPE_0,
+> +       PIPE_1,
+> +       SOCK,
+> +       PROC,
+> +       DEV,
+> +       LOCAL,
+> +       INDICATOR,
+> +       MAX_FDS
+> +};
+> +
+> +struct path_info {
+> +       int fd;
+> +       char name[MAX_PATH_LENGTH];
+> +};
+> +
+> +static struct path_info path_infos[MAX_FDS];
+> +static int path_info_index;
+> +static int hits;
+> +
+> +static inline int set_pathname(pid_t pid, int fd)
+> +{
+> +       char buf[MAX_PATH_LENGTH] = {'0'};
+
+This is not a zero byte, it's a character "0", was this intentional?
+
+> +
+> +       snprintf(buf, MAX_PATH_LENGTH, "/proc/%d/fd/%d", pid, fd);
+> +       path_infos[path_info_index].fd = fd;
+
+you can just pass path_info_index directly, there is absolutely no
+need for global counter for this...
+
+> +       return readlink(buf, path_infos[path_info_index++].name,
+> +                       MAX_PATH_LENGTH);
+> +}
+> +
+> +static inline int compare_pathname(struct get_path_trace_t *data)
+> +{
+> +       for (int i = 0; i < MAX_FDS; i++) {
+> +               if (path_infos[i].fd == data->fd) {
+> +                       hits++;
+> +                       return strncmp(path_infos[i].name, data->path,
+> +                                       MAX_PATH_LENGTH);
+> +               }
+> +       }
+> +       return 0;
+> +}
+> +
+> +static int trigger_fstat_events(void)
+> +{
+> +       int *fds = alloca(sizeof(int) * MAX_FDS);
+
+why do you need alloca()? Doesn't int fds[MAX_FDS] work? But honestly,
+you needs fds just to have a loop to close all FDs. You can just as
+well have a set of directl close(pipefd); close(sockfd); and so on,
+with same amount of code, but more simplicity.
+
+> +       int *pipefd = fds;
+> +       int *sockfd = fds + SOCK;
+> +       int *procfd = fds + PROC;
+> +       int *devfd = fds + DEV;
+> +       int *localfd = fds + LOCAL;
+> +       int *indicatorfd = fds + INDICATOR;
+> +       pid_t pid = getpid();
+> +
+> +       /* unmountable pseudo-filesystems */
+> +       if (pipe(pipefd) < 0 || set_pathname(pid, *pipefd++) < 0 ||
+> +               set_pathname(pid, *pipefd) < 0)
+> +               return -1;
+> +
+> +       /* unmountable pseudo-filesystems */
+> +       *sockfd = socket(AF_INET, SOCK_STREAM, 0);
+> +       if (*sockfd < 0 || set_pathname(pid, *sockfd) < 0)
+> +               return -1;
+> +
+> +       /* mountable pseudo-filesystems */
+> +       *procfd = open("/proc/self/comm", O_RDONLY);
+> +       if (*procfd < 0 || set_pathname(pid, *procfd) < 0)
+> +               return -1;
+> +
+> +       *devfd = open("/dev/urandom", O_RDONLY);
+> +       if (*devfd < 0 || set_pathname(pid, *devfd) < 0)
+> +               return -1;
+> +
+> +       *localfd = open("/tmp/fd2path_loadgen.txt", O_CREAT|O_RDONLY);
+> +       if (*localfd < 0 || set_pathname(pid, *localfd) < 0)
+> +               return -1;
+> +
+> +       *indicatorfd = open("/tmp/", O_PATH);
+> +       if (*indicatorfd < 0 || set_pathname(pid, *indicatorfd) < 0)
+> +               return -1;
+
+on error, you are not closing any file descriptor
+
+> +
+> +       for (int i = 0; i < MAX_FDS; i++)
+> +               close(fds[i]);
+> +
+> +       remove("/tmp/fd2path_loadgen.txt");
+> +       return 0;
+> +}
+> +
+> +void test_get_file_path(void)
+> +{
+> +       const char *prog_name = "raw_tracepoint/sys_enter:newfstat";
+> +       const char *file = "./test_get_file_path.o";
+> +       int pidfilter_map_fd, pathdata_map_fd;
+> +       __u32 key, previous_key, duration = 0;
+> +       struct get_path_trace_t val = {};
+> +       struct bpf_program *prog = NULL;
+> +       struct bpf_object *obj = NULL;
+> +       struct bpf_link *link = NULL;
+> +       __u32 pid = getpid();
+> +       int err, prog_fd;
+> +
+> +       err = bpf_prog_load(file, BPF_PROG_TYPE_RAW_TRACEPOINT, &obj, &prog_fd);
+> +       if (CHECK(err, "prog_load", "err %d errno %d\n", err, errno))
+> +               return;
+> +
+> +       prog = bpf_object__find_program_by_title(obj, prog_name);
+> +       if (CHECK(!prog, "find_prog", "prog %s not found\n", prog_name))
+> +               goto out_close;
+> +
+> +       link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
+> +       if (CHECK(IS_ERR(link), "attach_tp", "err %ld\n", PTR_ERR(link)))
+> +               goto out_close;
+> +
+> +       pidfilter_map_fd = bpf_find_map(__func__, obj, "pidfilter_map");
+> +       if (CHECK(pidfilter_map_fd < 0, "bpf_find_map pidfilter_map",
+> +                 "err: %s\n", strerror(errno)))
+> +               goto out_detach;
+> +
+> +       err = bpf_map_update_elem(pidfilter_map_fd, &key, &pid, 0);
+> +       if (CHECK(err, "pidfilter_map update_elem", "err: %s\n",
+> +                         strerror(errno)))
+> +               goto out_detach;
+> +
+> +       err = trigger_fstat_events();
+> +       if (CHECK(err, "trigger_fstat_events", "open fd failed: %s\n",
+> +                         strerror(errno)))
+> +               goto out_detach;
+> +
+> +       pathdata_map_fd = bpf_find_map(__func__, obj, "pathdata_map");
+> +       if (CHECK_FAIL(pathdata_map_fd < 0))
+> +               goto out_detach;
+> +
+> +       do {
+> +               err = bpf_map_lookup_elem(pathdata_map_fd, &key, &val);
+> +               if (CHECK(err, "lookup_elem from pathdata_map",
+> +                                 "err %s\n", strerror(errno)))
+> +                       goto out_detach;
+> +
+> +               CHECK(compare_pathname(&val) != 0,
+> +                         "get_file_path", "failed to get path: %lu->%s\n",
+> +                         val.fd, val.path);
+
+Given you control the order of open()'s, you should know the order of
+captured paths, so there is no need to find it or do hits++ logic.
+Just check it positionally. See also below about global data usage.
+
+> +
+> +               previous_key = key;
+> +       } while (bpf_map_get_next_key(pathdata_map_fd,
+> +                                       &previous_key, &key) == 0);
+> +
+> +       CHECK(hits != MAX_FDS, "Lost event?", "%d != %d\n", hits, MAX_FDS);
+> +
+> +out_detach:
+> +       bpf_link__destroy(link);
+> +out_close:
+> +       bpf_object__close(obj);
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/test_get_file_path.c b/tools/testing/selftests/bpf/progs/test_get_file_path.c
+> new file mode 100644
+> index 000000000000..10ec9a70c81c
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/progs/test_get_file_path.c
+> @@ -0,0 +1,71 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#include <linux/bpf.h>
+> +#include <linux/ptrace.h>
+> +#include <linux/sched.h>
+> +#include <stdbool.h>
+> +#include <string.h>
+> +#include "bpf_helpers.h"
+> +
+> +#ifndef MAX_PATH_LENGTH
+> +#define MAX_PATH_LENGTH                128
+> +#endif
+> +
+> +#ifndef MAX_EVENT_NUM
+> +#define MAX_EVENT_NUM          32
+> +#endif
+> +
+> +struct path_trace_t {
+> +       unsigned long fd;
+> +       char path[MAX_PATH_LENGTH];
+> +};
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, MAX_EVENT_NUM);
+> +       __type(key, __u32);
+> +       __type(value, struct path_trace_t);
+> +} pathdata_map SEC(".maps");
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, 1);
+> +       __type(key, __u32);
+> +       __type(value, __u32);
+> +} pidfilter_map SEC(".maps");
+> +
+> +struct {
+> +       __uint(type, BPF_MAP_TYPE_ARRAY);
+> +       __uint(max_entries, 1);
+> +       __type(key, __u32);
+> +       __type(value, __u32);
+> +} index_map SEC(".maps");
+
+This is not global variables, it's just maps. What I had in mind (and
+what would still simplify even userspace part of tests, IMO) is
+something like this:
 
 
-...
->> diff --git a/Documentation/vm/pin_user_pages.rst b/Documentation/vm/pin_user_pages.rst
->> new file mode 100644
->> index 000000000000..3910f49ca98c
->> --- /dev/null
->> +++ b/Documentation/vm/pin_user_pages.rst
->> @@ -0,0 +1,212 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +====================================================
->> +pin_user_pages() and related calls
->> +====================================================
-> 
-> I know this is too much to ask, but having pin_user_pages() a part of more
-> general GUP description would be really great :)
-> 
+struct file_path_test_data {
+    pid_t pid;
+    int cnt;
+    unsigned long fds[MAX_EVENT_NUM];
+    char paths[MAX_EVENT_NUM][MAX_PATH_LENGTH];
+} data;
 
-Yes, definitely. But until I saw the reaction to the pin_user_pages() API
-family, I didn't want to write too much--it could have all been tossed out
-in favor of a whole different API. But now that we've had some initial
-reviews, I'm much more confident in being able to write about the larger 
-API set.
+> +
+> +SEC("raw_tracepoint/sys_enter:newfstat")
+> +int bpf_prog(struct bpf_raw_tracepoint_args *ctx)
+> +{
+> +       struct path_trace_t *data;
+> +       struct pt_regs *regs;
+> +       __u32 key = 0, *i, *pidfilter, pid;
+> +
+> +       pidfilter = bpf_map_lookup_elem(&pidfilter_map, &key);
+> +       if (!pidfilter || *pidfilter == 0)
+> +               return 0;
+> +       i = bpf_map_lookup_elem(&index_map, &key);
+> +       if (!i || *i == MAX_EVENT_NUM)
+> +               return 0;
+> +       pid = bpf_get_current_pid_tgid() >> 32;
+> +       if (pid != *pidfilter)
+> +               return 0;
+> +       data = bpf_map_lookup_elem(&pathdata_map, i);
+> +       if (!data)
+> +               return 0;
 
-So yes, I'll put that on my pending list.
+here, you'll do:
 
+if (pid != data.pid) return 0;
+data.cnt++;
+if (data.cnt > MAX_EVENT_NUM) return 0; /* check overflow in userspace */
 
-...
->> +This document describes the following functions: ::
->> +
->> + pin_user_pages
->> + pin_user_pages_fast
->> + pin_user_pages_remote
->> +
->> + pin_longterm_pages
->> + pin_longterm_pages_fast
->> + pin_longterm_pages_remote
->> +
->> +Basic description of FOLL_PIN
->> +=============================
->> +
->> +A new flag for get_user_pages ("gup") has been added: FOLL_PIN. FOLL_PIN has
-> 
-> Consider reading this after, say, half a year ;-)
-> 
-
-OK, OK. I knew when I wrote that that it was not going to stay new forever, but
-somehow failed to write the right thing anyway. :) 
-
-Here's a revised set of paragraphs:
-
-Basic description of FOLL_PIN
-=============================
-
-FOLL_PIN and FOLL_LONGTERM are flags that can be passed to the get_user_pages*()
-("gup") family of functions. FOLL_PIN has significant interactions and
-interdependencies with FOLL_LONGTERM, so both are covered here.
-
-Both FOLL_PIN and FOLL_LONGTERM are internal to gup, meaning that neither
-FOLL_PIN nor FOLL_LONGTERM should not appear at the gup call sites. This allows
-the associated wrapper functions  (pin_user_pages() and others) to set the
-correct combination of these flags, and to check for problems as well.
+data.fds[data.cnt - 1] = /* read fd */
+bpf_get_file_path(data.paths[data.cnt - 1], ...)
 
 
-thanks,
+> +
+> +       regs = (struct pt_regs *)ctx->args[0];
+> +       bpf_probe_read(&data->fd, sizeof(data->fd), &regs->rdi);
 
-John Hubbard
-NVIDIA
+This is x86_64-specific, use one of PT_REGS_* macro from bpf_tracing.h header.
+
+> +       bpf_get_file_path(data->path, MAX_PATH_LENGTH, data->fd);
+> +       *i += 1;
+> +
+> +       return 0;
+> +}
+> +
+> +char _license[] SEC("license") = "GPL";
+> --
+> 2.17.1
+>
