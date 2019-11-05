@@ -2,207 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73B9AF0921
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 741EEF0933
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:20:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387479AbfKEWMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:12:24 -0500
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:47728 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387415AbfKEWMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:24 -0500
-Received: by mail-pf1-f202.google.com with SMTP id w16so6071858pfq.14
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=JMnJA3N4RtEau52ssc0bshQBnbnMvhNoRnzVTjsTYoE=;
-        b=oEJO0/pjL6nukc6s5mO1YRxmc8xm/Bd3JUg60H/FVxokHBsC70MbNNaqChYiRrl6Yd
-         AkXHUZE38VQesukZwt7EnhoJJ9eFCNZAlzd0UiOGA9oTSrN4hgA3537L6JuB61t9GX6P
-         iFlfdF81A8M7+NnAKt9iQdGzLE0y0X0EpwYN8hVVvastSRSx3M+xTIudgMGLRqxpssRy
-         I2yb7+sQ7kxVT0WRqNFs9Hb7kuI9Iez7BSkhlCi4txr3wgp0FrBGQSC32kKC2Ae2zm7Y
-         odS7xtp0A+/EGdlcNK7riX5tUFewXDSS9946u9zFA/JzdApTYrUa1yMj+gUnS4y1j01p
-         hkMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=JMnJA3N4RtEau52ssc0bshQBnbnMvhNoRnzVTjsTYoE=;
-        b=RTs/QMdMsPmOOzd5umwru+SWekCS/0uoOI4jhaC2iMgjDl9ia7zHn791PH0D/u2sV6
-         xqbaEAmKmFD/euMdJbzCfnu9Y5KrUHNZFm4uQ1tQhgiHIxs2F7MM1Yi80JjqETW1XPob
-         RSQ/XPVmqLL8GKATvmiRi9pUc3+EvxC3oEBy1rIS16P2dQ1fgNtJvt9ioHC9Rp+XsLNF
-         sa1d/9DuxQAmLuruNWP0MPGFQwN+6UYoqs9deHMa7PFdg6Z2Td9cqmtRPZOFokbONpi2
-         A9U/NpbiTmQEIHUH2m1eiJ9FKBBI2T2Pqi36wLYGJTHpUW8YLaZ1Xr+ose2qD70BfpAI
-         n8PA==
-X-Gm-Message-State: APjAAAXpXmXGRD8BUp3bjEQgZgfTDMHQnZ4vGNgToIL9PvgRhNPWCpsN
-        zyg3pIJaQp0htMLhjJs/aOErVbdMI67AFA==
-X-Google-Smtp-Source: APXvYqxrBHrA1sNsDzwVTxMSAgLMQNpOepAqz7C//jx3Z30qeq1t5w2jFjRkeROhH23fozj9Kc5EvlJq5bPT1Q==
-X-Received: by 2002:a63:151:: with SMTP id 78mr36031523pgb.95.1572991943378;
- Tue, 05 Nov 2019 14:12:23 -0800 (PST)
-Date:   Tue,  5 Nov 2019 14:11:54 -0800
-In-Reply-To: <20191105221154.232754-1-edumazet@google.com>
-Message-Id: <20191105221154.232754-7-edumazet@google.com>
-Mime-Version: 1.0
-References: <20191105221154.232754-1-edumazet@google.com>
-X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH net-next 6/6] net: annotate lockless accesses to sk->sk_max_ack_backlog
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730348AbfKEWUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:20:06 -0500
+Received: from smtp-sh2.infomaniak.ch ([128.65.195.6]:36375 "EHLO
+        smtp-sh2.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730364AbfKEWUG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:20:06 -0500
+Received: from smtp7.infomaniak.ch (smtp7.infomaniak.ch [83.166.132.30])
+        by smtp-sh2.infomaniak.ch (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id xA5MJ23o058900
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 5 Nov 2019 23:19:03 +0100
+Received: from ns3096276.ip-94-23-54.eu (ns3096276.ip-94-23-54.eu [94.23.54.103])
+        (authenticated bits=0)
+        by smtp7.infomaniak.ch (8.14.5/8.14.5) with ESMTP id xA5MIuNt039378
+        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=NO);
+        Tue, 5 Nov 2019 23:18:56 +0100
+Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        Florent Revest <revest@chromium.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        KP Singh <kpsingh@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
+        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
+References: <20191104172146.30797-1-mic@digikod.net>
+ <20191104172146.30797-5-mic@digikod.net>
+ <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
+ <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
+ <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Openpgp: preference=signencrypt
+Message-ID: <38309064-89c2-8e01-b619-4459e0d58311@digikod.net>
+Date:   Tue, 5 Nov 2019 23:18:55 +0100
+User-Agent: 
+MIME-Version: 1.0
+In-Reply-To: <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=iso-8859-15
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Antivirus: Dr.Web (R) for Unix mail servers drweb plugin ver.6.0.2.8
+X-Antivirus-Code: 0x100000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk->sk_max_ack_backlog can be read without any lock being held
-at least in TCP/DCCP cases.
 
-We need to use READ_ONCE()/WRITE_ONCE() to avoid load/store tearing
-and/or potential KCSAN warnings.
+On 05/11/2019 20:34, Alexei Starovoitov wrote:
+> On Tue, Nov 05, 2019 at 07:01:41PM +0100, Mickaël Salaün wrote:
+>>
+>> On 05/11/2019 18:18, Alexei Starovoitov wrote:
+>>> On Mon, Nov 04, 2019 at 06:21:43PM +0100, Mickaël Salaün wrote:
+>>>> Add a first Landlock hook that can be used to enforce a security policy
+>>>> or to audit some process activities.  For a sandboxing use-case, it is
+>>>> needed to inform the kernel if a task can legitimately debug another.
+>>>> ptrace(2) can also be used by an attacker to impersonate another task
+>>>> and remain undetected while performing malicious activities.
+>>>>
+>>>> Using ptrace(2) and related features on a target process can lead to a
+>>>> privilege escalation.  A sandboxed task must then be able to tell the
+>>>> kernel if another task is more privileged, via ptrace_may_access().
+>>>>
+>>>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+>>> ...
+>>>> +static int check_ptrace(struct landlock_domain *domain,
+>>>> +		struct task_struct *tracer, struct task_struct *tracee)
+>>>> +{
+>>>> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
+>>>> +		.prog_ctx = {
+>>>> +			.tracer = (uintptr_t)tracer,
+>>>> +			.tracee = (uintptr_t)tracee,
+>>>> +		},
+>>>> +	};
+>>>
+>>> So you're passing two kernel pointers obfuscated as u64 into bpf program
+>>> yet claiming that the end goal is to make landlock unprivileged?!
+>>> The most basic security hole in the tool that is aiming to provide security.
+>>
+>> How could you used these pointers without dedicated BPF helpers? This
+>> context items are typed as PTR_TO_TASK and can't be used without a
+>> dedicated helper able to deal with ARG_PTR_TO_TASK. Moreover, pointer
+>> arithmetic is explicitly forbidden (and I added tests for that). Did I
+>> miss something?
+> 
+> It's a pointer leak.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/net/sock.h              | 2 +-
- net/dccp/proto.c                | 2 +-
- net/ipv4/af_inet.c              | 2 +-
- net/ipv4/inet_connection_sock.c | 2 +-
- net/ipv4/tcp.c                  | 2 +-
- net/ipv4/tcp_diag.c             | 2 +-
- net/sched/em_meta.c             | 2 +-
- net/sctp/diag.c                 | 2 +-
- net/sctp/socket.c               | 4 ++--
- 9 files changed, 10 insertions(+), 10 deletions(-)
+The lifetimes of the pointers are scoped by the two LSM hooks that
+expose them. The LSM framework guarantee that they are safe to use in
+this context.
 
-diff --git a/include/net/sock.h b/include/net/sock.h
-index a126784aa7d9b6f59c8937c8c94d5bd7843988a4..d4d3ef5ba0490366e1e25884a5edf54186c940d8 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -869,7 +869,7 @@ static inline void sk_acceptq_added(struct sock *sk)
- 
- static inline bool sk_acceptq_is_full(const struct sock *sk)
- {
--	return READ_ONCE(sk->sk_ack_backlog) > sk->sk_max_ack_backlog;
-+	return READ_ONCE(sk->sk_ack_backlog) > READ_ONCE(sk->sk_max_ack_backlog);
- }
- 
- /*
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 5bad08dc431611d5387c8d3c1858ee2c43cb9b68..a52e8ba1ced046b178fa069b1e0d690c537c6bc0 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -944,7 +944,7 @@ int inet_dccp_listen(struct socket *sock, int backlog)
- 	if (!((1 << old_state) & (DCCPF_CLOSED | DCCPF_LISTEN)))
- 		goto out;
- 
--	sk->sk_max_ack_backlog = backlog;
-+	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
- 	/* Really, if the socket is already in listen state
- 	 * we can only allow the backlog to be adjusted.
- 	 */
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 70f92aaca4110b3ecd691949203f28978597e9c9..53de8e00990e276448df1c60e47620be3b58f517 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -208,7 +208,7 @@ int inet_listen(struct socket *sock, int backlog)
- 	if (!((1 << old_state) & (TCPF_CLOSE | TCPF_LISTEN)))
- 		goto out;
- 
--	sk->sk_max_ack_backlog = backlog;
-+	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
- 	/* Really, if the socket is already in listen state
- 	 * we can only allow the backlog to be adjusted.
- 	 */
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index eb30fc1770def741950215f59a4e3ab0f91c6293..e4c6e8b4049063f5239a5e99a185016ad3bb5790 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -716,7 +716,7 @@ static void reqsk_timer_handler(struct timer_list *t)
- 	 * ones are about to clog our table.
- 	 */
- 	qlen = reqsk_queue_len(queue);
--	if ((qlen << 1) > max(8U, sk_listener->sk_max_ack_backlog)) {
-+	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
- 		int young = reqsk_queue_len_young(queue) << 1;
- 
- 		while (thresh > 2) {
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 68375f7ffdce1fbbb4cf443660703c98b61fd9e3..fb1666440e1064a9ab2f2993b23fdb744e82f5c5 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3226,7 +3226,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- 		 * tcpi_sacked  -> max backlog
- 		 */
- 		info->tcpi_unacked = READ_ONCE(sk->sk_ack_backlog);
--		info->tcpi_sacked = sk->sk_max_ack_backlog;
-+		info->tcpi_sacked = READ_ONCE(sk->sk_max_ack_backlog);
- 		return;
- 	}
- 
-diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
-index edfbab54c46f4cac1b0a7960718d0b6308978957..0d08f9e2d8d0322fcdd3a465a3a9712b36605954 100644
---- a/net/ipv4/tcp_diag.c
-+++ b/net/ipv4/tcp_diag.c
-@@ -22,7 +22,7 @@ static void tcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
- 
- 	if (inet_sk_state_load(sk) == TCP_LISTEN) {
- 		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
--		r->idiag_wqueue = sk->sk_max_ack_backlog;
-+		r->idiag_wqueue = READ_ONCE(sk->sk_max_ack_backlog);
- 	} else if (sk->sk_type == SOCK_STREAM) {
- 		const struct tcp_sock *tp = tcp_sk(sk);
- 
-diff --git a/net/sched/em_meta.c b/net/sched/em_meta.c
-index ebb6e2430861d23a42431e4143f229395d9321c5..d99966a55c84fa0f5142ed72faeceb9baab86f5e 100644
---- a/net/sched/em_meta.c
-+++ b/net/sched/em_meta.c
-@@ -532,7 +532,7 @@ META_COLLECTOR(int_sk_max_ack_bl)
- 		*err = -1;
- 		return;
- 	}
--	dst->value = sk->sk_max_ack_backlog;
-+	dst->value = READ_ONCE(sk->sk_max_ack_backlog);
- }
- 
- META_COLLECTOR(int_sk_prio)
-diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index f873f15407de4e7d9a246d41e07602f33da8064d..8a15146faaebdcb869233a08318e4fb5a1e1129b 100644
---- a/net/sctp/diag.c
-+++ b/net/sctp/diag.c
-@@ -426,7 +426,7 @@ static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
- 		r->idiag_wqueue = infox->asoc->sndbuf_used;
- 	} else {
- 		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
--		r->idiag_wqueue = sk->sk_max_ack_backlog;
-+		r->idiag_wqueue = READ_ONCE(sk->sk_max_ack_backlog);
- 	}
- 	if (infox->sctpinfo)
- 		sctp_get_sctp_info(sk, infox->asoc, infox->sctpinfo);
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index ffd3262b7a41eac2e3d825c3f0665066f376ea3c..53abb97e0061c14fd4a9c3090a4a5cbe0af9c5a9 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -8376,7 +8376,7 @@ static int sctp_listen_start(struct sock *sk, int backlog)
- 		}
- 	}
- 
--	sk->sk_max_ack_backlog = backlog;
-+	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
- 	return sctp_hash_endpoint(ep);
- }
- 
-@@ -8430,7 +8430,7 @@ int sctp_inet_listen(struct socket *sock, int backlog)
- 
- 	/* If we are already listening, just update the backlog */
- 	if (sctp_sstate(sk, LISTENING))
--		sk->sk_max_ack_backlog = backlog;
-+		WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
- 	else {
- 		err = sctp_listen_start(sk, backlog);
- 		if (err)
--- 
-2.24.0.rc1.363.gb1bccd3e3d-goog
+> 
+>>
+>>>
+>>> I think the only way bpf-based LSM can land is both landlock and KRSI
+>>> developers work together on a design that solves all use cases.
+>>
+>> As I said in a previous cover letter [1], that would be great. I think
+>> that the current Landlock bases (almost everything from this series
+>> except the seccomp interface) should meet both needs, but I would like
+>> to have the point of view of the KRSI developers.
+>>
+>> [1] https://lore.kernel.org/lkml/20191029171505.6650-1-mic@digikod.net/
+>>
+>>> BPF is capable
+>>> to be a superset of all existing LSMs whereas landlock and KRSI propsals today
+>>> are custom solutions to specific security concerns. BPF subsystem was extended
+>>> with custom things in the past. In networking we have lwt, skb, tc, xdp, sk
+>>> program types with a lot of overlapping functionality. We couldn't figure out
+>>> how to generalize them into single 'networking' program. Now we can and we
+>>> should. Accepting two partially overlapping bpf-based LSMs would be repeating
+>>> the same mistake again.
+>>
+>> I'll let the LSM maintainers comment on whether BPF could be a superset
+>> of all LSM, but given the complexity of an access-control system, I have
+>> some doubts though. Anyway, we need to start somewhere and then iterate.
+>> This patch series is a first step.
+> 
+> I would like KRSI folks to speak up. So far I don't see any sharing happening
+> between landlock and KRSI. You're claiming this set is a first step. They're
+> claiming the same about their patches. I'd like to set a patchset that was
+> jointly developed.
 
+With all due respect, Landlock got much more feedback than KRSI and I
+think this thirteenth Landlock patch series is more mature than the
+first KRSI RFC. I'm open to concrete suggestions and I'm willing to
+collaborate with the KRSI folks if they want to. However, I'm OK if they
+don't want to use Landlock as a common ground, and I don't think it
+should be a blocker for any of the projects.
+
+Perfect is the enemy of good. ;)
