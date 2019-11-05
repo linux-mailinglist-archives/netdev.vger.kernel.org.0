@@ -2,77 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D745EFC6C
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 12:31:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10C4EEFC69
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 12:31:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730903AbfKELbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 06:31:19 -0500
-Received: from mx2.suse.de ([195.135.220.15]:36390 "EHLO mx1.suse.de"
+        id S1730877AbfKELbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 06:31:06 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:39578 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730645AbfKELbS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 06:31:18 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 7519BB249;
-        Tue,  5 Nov 2019 11:31:16 +0000 (UTC)
-Message-ID: <1572952516.2921.6.camel@suse.com>
-Subject: Re: KMSAN: uninit-value in cdc_ncm_set_dgram_size
-From:   Oliver Neukum <oneukum@suse.com>
-To:     =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, glider@google.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Date:   Tue, 05 Nov 2019 12:15:16 +0100
-In-Reply-To: <87ftj32v6y.fsf@miraculix.mork.no>
-References: <00000000000013c4c1059625a655@google.com>
-         <87ftj32v6y.fsf@miraculix.mork.no>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.26.6 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730757AbfKELbF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Nov 2019 06:31:05 -0500
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 08A5AD5513D0C2584768;
+        Tue,  5 Nov 2019 19:31:00 +0800 (CST)
+Received: from [127.0.0.1] (10.177.251.225) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Tue, 5 Nov 2019
+ 19:30:52 +0800
+To:     <dougmill@linux.ibm.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "hushiyuan@huawei.com" <hushiyuan@huawei.com>,
+        "linfeilong@huawei.com" <linfeilong@huawei.com>
+From:   Yunfeng Ye <yeyunfeng@huawei.com>
+Subject: [PATCH] ehea: replace with page_shift() in ehea_is_hugepage()
+Message-ID: <f581efc8-5d92-fed7-27b5-d5c5e9bce8ee@huawei.com>
+Date:   Tue, 5 Nov 2019 19:30:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.251.225]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Montag, den 04.11.2019, 22:22 +0100 schrieb Bjørn Mork:
-> This looks like a false positive to me. max_datagram_size is two bytes
-> declared as
-> 
->         __le16 max_datagram_size;
-> 
-> and the code leading up to the access on drivers/net/usb/cdc_ncm.c:587
-> is:
-> 
->         /* read current mtu value from device */
->         err = usbnet_read_cmd(dev, USB_CDC_GET_MAX_DATAGRAM_SIZE,
->                               USB_TYPE_CLASS | USB_DIR_IN | USB_RECIP_INTERFACE,
->                               0, iface_no, &max_datagram_size, 2);
+The function page_shift() is supported after the commit 94ad9338109f
+("mm: introduce page_shift()").
 
-At this point err can be 1.
+So replace with page_shift() in ehea_is_hugepage() for readability.
 
->         if (err < 0) {
->                 dev_dbg(&dev->intf->dev, "GET_MAX_DATAGRAM_SIZE failed\n");
->                 goto out;
->         }
-> 
->         if (le16_to_cpu(max_datagram_size) == ctx->max_datagram_size)
-> 
-> 
-> 
-> AFAICS, there is no way max_datagram_size can be uninitialized here.
-> usbnet_read_cmd() either read 2 bytes into it or returned an error,
+Signed-off-by: Yunfeng Ye <yeyunfeng@huawei.com>
+---
+ drivers/net/ethernet/ibm/ehea/ehea_qmr.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-No. usbnet_read_cmd() will return the number of bytes transfered up
-to the number requested or an error.
+diff --git a/drivers/net/ethernet/ibm/ehea/ehea_qmr.c b/drivers/net/ethernet/ibm/ehea/ehea_qmr.c
+index 6e70658d50c4..db45373ea31c 100644
+--- a/drivers/net/ethernet/ibm/ehea/ehea_qmr.c
++++ b/drivers/net/ethernet/ibm/ehea/ehea_qmr.c
+@@ -670,13 +670,10 @@ int ehea_rem_sect_bmap(unsigned long pfn, unsigned long nr_pages)
 
-> causing the access to be skipped.  Or am I missing something?
+ static int ehea_is_hugepage(unsigned long pfn)
+ {
+-	int page_order;
+-
+ 	if (pfn & EHEA_HUGEPAGE_PFN_MASK)
+ 		return 0;
 
-Yes. You can get half the MTU. We have a similar class of bugs
-with MAC addresses.
+-	page_order = compound_order(pfn_to_page(pfn));
+-	if (page_order + PAGE_SHIFT != EHEA_HUGEPAGESHIFT)
++	if (page_shift(pfn_to_page(pfn)) != EHEA_HUGEPAGESHIFT)
+ 		return 0;
 
-	Regards
-		Oliver
-
+ 	return 1;
+-- 
+2.7.4
 
