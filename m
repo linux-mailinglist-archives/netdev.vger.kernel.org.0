@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D02A9F01BE
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93D67F01D1
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389982AbfKEPnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 10:43:23 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:32811 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731025AbfKEPnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 10:43:23 -0500
-Received: by mail-wm1-f66.google.com with SMTP id 6so187432wmf.0
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 07:43:20 -0800 (PST)
+        id S2389764AbfKEPrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 10:47:14 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42834 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389399AbfKEPrO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 10:47:14 -0500
+Received: by mail-pg1-f193.google.com with SMTP id s23so11122697pgo.9;
+        Tue, 05 Nov 2019 07:47:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ws7Hi7hEPlrtiokvvL54ucIv+PnQC8Xef+cIaeLnl+Y=;
-        b=LMu9XN7uvY5qrZDnV8kRjWDJ537EgUXUoDl579SrxOZJaFeLE96BI6nl4KBh2eDSZO
-         nhAY+G32tR/D9wPOVWENEBxcPbtmLLiM0v4Lig3OHLZsp5loSG0l1mOIeYgVnzMoTTyA
-         9cY32QkuSX7sYyWCH9yhBl3RDeL7YBwlga7ZelJGJqLvI0cg0xc4/GNPkU5kmil8oqym
-         9UbQmpACO1EGBkDCphF4+eE+Hrut7ktbSaWtM3ZOJdChZfnJFOfjJiHC/h7nBFB4OvRl
-         j5Ns+zeLWcS8Xr5NUCO6WXh5b87zqda3+t0Aau69yevRzynlpd46D5b41KSP9P0P0dOa
-         6zOQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=c+SKUavQ/UUT2pvxlsKyWAGVl/eUZ1sFiKjSUHD7OWM=;
+        b=tTDRl7p0Eya+1H2H5SbkUKoE0XWcF71PfZ2sZ81JCKF8hcpj0PvtpfgwEJcIb5A2rt
+         BXkKQOC7EIvE95H3Mu0hYRN7voHY1q2g27U4GPdQrAXqrB4p+fTgYAUwADrl9ahl2ezb
+         uYUmbvCNGf+qzWbO0cY7zqcuZXjuj47chwEXtkGy7UiRP3LBtr3I/Cn7DG30F8dCY2CZ
+         czRjJ2C9Ff2HJ1umguLQgkoDaCIFmlMuKv7uVAIAsFDo834KqRNURk45Uzrh2gC0rw5x
+         dyRVpMEGAXd8YfKUZQjhd15wIffmcUPD5l4pU7AByoUIlN3U+1Si/u4MZeh/WpIxZHEv
+         J/hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Ws7Hi7hEPlrtiokvvL54ucIv+PnQC8Xef+cIaeLnl+Y=;
-        b=AOvc/JxubBRyvAxc8c3rUyQtLsrS89XJzx3jjoT05+7Zi9HT7EAjJem7EMGogUfDAg
-         ta7uk8scoLnTImBDxLcxAkofNtT9WsqCFc6WnPRo4DN/5QI2jRk3VEEHnhAUHhM6YvG/
-         BG8/febNDrNeCB/+uZnVZJQAK7vEgHv4HfWW1stZxK3UKMq5T3wwZWgNWa8yihNNjRf1
-         CvFDQ7uxn7sCDtDd9rosO7S6odV/gSoCs6PB7LTS+BxF0GjvZenn9jZKStXXPVUsICxg
-         JyiB9mZ16otxZFbyKkyl43hGpX0MmYHWfWVe/CNSF9w2LZvJhUDTJQxz8HbcUN93Tce5
-         IdcA==
-X-Gm-Message-State: APjAAAWNW+g7yV2do1ZNnual7TVxiTtCUVuqusU9b4TTBOpMVR9vdwS9
-        OTkr6ljct1H2nv4WYitBsNpYnp9QWBs=
-X-Google-Smtp-Source: APXvYqwPrOKJKAkYFi5aRMX3c4L/ngOPawbJ7a9faj+zYf8ZzV9Ec/nDj5KLBClvVV5TxxkBo4YuuQ==
-X-Received: by 2002:a1c:2e8f:: with SMTP id u137mr4888123wmu.105.1572968599564;
-        Tue, 05 Nov 2019 07:43:19 -0800 (PST)
-Received: from ?IPv6:2a01:e35:8b63:dc30:f096:9925:304a:fd2a? ([2a01:e35:8b63:dc30:f096:9925:304a:fd2a])
-        by smtp.gmail.com with ESMTPSA id b3sm13269134wmj.44.2019.11.05.07.43.18
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=c+SKUavQ/UUT2pvxlsKyWAGVl/eUZ1sFiKjSUHD7OWM=;
+        b=HtbKsCKvaF1fncW57rWbhN40tgYBEpyjfL4gKkHa0vIwbankC9dXD3dr6dwhWYsTIZ
+         7pg1ZDuzBTp43X+evTWNS3UM6Z64qex5ZPiXun7IM8sg88bBkZ7BHgLFnH1437LFbiyk
+         qJYQdLPTSzxQA/wYkLPjMi4KiyxGB7oLzR+V3P/uZpbxmawEvrP4YWiREPoqXBHof2lw
+         xEDYOUsKX0pxl+6kcXT/D3QTMszwajfQCRopy9qDK+iAixCuP7decGQGhgMos6UQ1dmd
+         xHxDS0X/T3+yYoY8Ou8IRhSfh4LkMwImB3xNAMRtbfnvdcPkP6zLUvIjHMPq4OqlqqHS
+         4lbQ==
+X-Gm-Message-State: APjAAAVXs308D9cYz5afrF3ws1SYm5HDAa11Q/TUQW8OPt12bLZ4Y+s0
+        TJSS00iuj7mobbatirVECNM=
+X-Google-Smtp-Source: APXvYqzd9skRKsgAN0zqoHd1Us8MuQbRfbt9bE2FPxQNkUxx8ibqeUOlV7InWx/0LqGJSDW2uB40kg==
+X-Received: by 2002:a17:90a:d351:: with SMTP id i17mr7515469pjx.36.1572968833804;
+        Tue, 05 Nov 2019 07:47:13 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
+        by smtp.gmail.com with ESMTPSA id b17sm22620435pfr.17.2019.11.05.07.47.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 07:43:18 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH 3/5] rtnetlink: allow RTM_NEWLINK to act upon interfaces
- in arbitrary namespaces
-To:     Jonas Bonn <jonas@norrbonn.se>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net
-References: <20191105081112.16656-1-jonas@norrbonn.se>
- <20191105081112.16656-4-jonas@norrbonn.se>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <f479405c-9372-68fb-762e-519f3bfdd333@6wind.com>
-Date:   Tue, 5 Nov 2019 16:43:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Tue, 05 Nov 2019 07:47:13 -0800 (PST)
+Date:   Tue, 5 Nov 2019 07:47:11 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, peterz@infradead.org, x86@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH bpf-next 0/7] Introduce BPF trampoline
+Message-ID: <20191105154709.utmzm6qvtlux4hww@ast-mbp.dhcp.thefacebook.com>
+References: <20191102220025.2475981-1-ast@kernel.org>
+ <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
+ <20191105104024.4e99a630@grimm.local.home>
 MIME-Version: 1.0
-In-Reply-To: <20191105081112.16656-4-jonas@norrbonn.se>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191105104024.4e99a630@grimm.local.home>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 05/11/2019 à 09:11, Jonas Bonn a écrit :
-> RTM_NEWLINK can be used mostly interchangeably with RTM_SETLINK for
-> modifying device configuration.  As such, this method requires the same
-> logic as RTM_SETLINK for finding the device to act on.
+On Tue, Nov 05, 2019 at 10:40:24AM -0500, Steven Rostedt wrote:
+> On Tue, 5 Nov 2019 06:31:56 -0800
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
 > 
-> With this patch, the IFLA_TARGET_NETNSID selects the namespace in which
-> to search for the interface to act upon.  This allows, for example, to
-> set the namespace of an interface outside the current namespace by
-> selecting it with the (IFLA_TARGET_NETNSID,ifi->ifi_index) pair and
-> specifying the namespace with one of IFLA_NET_NS_[PID|FD].
+> > Steven,
+> > look slike your branch hasn't been updated in 13 days.
+> > Are you still planning to fix the bugs and send it in for the merge window?
+> > I cannot afford to wait a full release, since I have my own follow for
+> > XDP/networking based on this and other folks are building their stuff on top of
+> > BPF trampoline too. So I'm thinking for v2 I will switch to using text_poke()
+> > and add appropriate guard checks, so it will be safe out of the box without
+> > ftrace dependency. If register_ftrace_direct() indeed comes in soon I'll
+> > switch to that and will make bpf trampoline to co-operate with ftrace.
+> > text_poke approach will make it such that what ever comes first to trace the
+> > fentry (either bpf trampoline or ftrace) will grab the nop and the other system
+> > will not be able to attach. That's safe and correct, but certainly not nice
+> > long term. So the fix will be needed. The key point that switching to text_poke
+> > will remove the register_ftrace_direct() dependency, unblock bpf developers and
+> > will give you time to land your stuff at your pace.
 > 
-> Since rtnl_newlink branches off into do_setlink, we need to provide the
-> same backwards compatibility check as we do for RTM_SETLINK:  if the
-> device is not found in the namespace given by IFLA_TARGET_NETNSID then
-> we search for it in the current namespace.  If found there, it's
-> namespace will be changed, as before.
+> Alexei,
 > 
-> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> I am still working on it, and if it seems stable enough I will submit
+> it for this merge window, but there's no guarantees. It's ready when
+> it's ready. I gave 5 talks last week (4 in Lyon, and one is Sofia,
+> Bulgaria), thus I did not have time to work on it then. I'm currently
+> in the Sofia office, and I got a version working that seems to be
+> stable. But I still have to break it up into a patch series, and run it
+> through more stress tests.
+> 
+> If you have to wait you may need to wait. The Linux kernel isn't
+> something that is suppose to put in temporary hacks, just to satisfy
+> someone's deadline.
+
+Ok. I will switch to text_poke and will make it hack free.
+ftrace mechanisms are being replaced by text_poke anyway.
+
