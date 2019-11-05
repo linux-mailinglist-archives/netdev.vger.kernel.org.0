@@ -2,663 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57C73EF9B8
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 10:40:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58E20EFA01
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 10:49:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730995AbfKEJj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 04:39:58 -0500
-Received: from mga02.intel.com ([134.134.136.20]:24242 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730856AbfKEJj5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 04:39:57 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Nov 2019 01:39:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,270,1569308400"; 
-   d="scan'208";a="200323066"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
-  by fmsmga008.fm.intel.com with ESMTP; 05 Nov 2019 01:39:54 -0800
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [PATCH 2/2] IFC VDPA layer
-Date:   Tue,  5 Nov 2019 17:37:40 +0800
-Message-Id: <1572946660-26265-3-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1572946660-26265-1-git-send-email-lingshan.zhu@intel.com>
-References: <1572946660-26265-1-git-send-email-lingshan.zhu@intel.com>
+        id S2388159AbfKEJto (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 04:49:44 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:53342 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730731AbfKEJtn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 04:49:43 -0500
+Received: by mail-wm1-f66.google.com with SMTP id x4so8927984wmi.3
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 01:49:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=sender:date:from:to:cc:subject:message-id:mail-followup-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=oRi35sDRRYSuldGaopElz5IjGs2HKuOAcqpcVoq2wdY=;
+        b=KE3dP9KvcLUq0hJbOhSYMXJr4Z1Cuc2Vc3sYtj3A588K1AxiPBhNRv2jLPVvg3HpiB
+         asO9jGRsCrrAGrGXQuynbnaqIOtPdku/48txDbkC3jyEv0zbAYA99l9MmTsEF4lXmu4c
+         UlGTi/e9P81uVhAoSbMh6OU7HFW5tO869wbeU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=oRi35sDRRYSuldGaopElz5IjGs2HKuOAcqpcVoq2wdY=;
+        b=mWoF75vloNtoaOZNQwP1k19UBvYxmsHnMCWlEQ07X517UhqdJwa9Ei9xcnlpg5/Gj5
+         uWv9Ry92DBzr2j3kuOGDT459WsKL8dUdedj0SnOyZt6FAJ4psCL6dezSdZrRdvbzmSz6
+         SEr7mHl+4v2jdAjiAqWZIZL1ayUK7UZpbexM+M8MYiB0y5BPiqixvh8FGAh6gDWh1PbQ
+         0E5unKCwnwKHqtaiXVvdQ/EEPgGRq2rzv8XgMvtGO14zGJmcojWpNYB5iXc5IU1bOEax
+         XASPMg7wcDVy5fd+ctV0L5trqhXUVJWD/QPSggMgEjhaejIS0Gdc/B8b5hExwVOW5X0c
+         YH0w==
+X-Gm-Message-State: APjAAAXo17F7Y8BbmJwDU4EL+2MpgxY97wjR/wDdsapHDn3K7daBl0yP
+        Kn3mp6yRjPBSpNp0beuFjOTwHw==
+X-Google-Smtp-Source: APXvYqy+m+ZJ5zxOn/Dji3l65qB+TEfMmH5EiR/oP/iFPjGmYGokusjpTK+YoOlM7MNeuKLe8vHIRQ==
+X-Received: by 2002:a7b:c925:: with SMTP id h5mr3591415wml.115.1572947379914;
+        Tue, 05 Nov 2019 01:49:39 -0800 (PST)
+Received: from phenom.ffwll.local (212-51-149-96.fiber7.init7.net. [212.51.149.96])
+        by smtp.gmail.com with ESMTPSA id j19sm25704277wre.0.2019.11.05.01.49.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2019 01:49:39 -0800 (PST)
+Date:   Tue, 5 Nov 2019 10:49:36 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 09/19] drm/via: set FOLL_PIN via pin_user_pages_fast()
+Message-ID: <20191105094936.GZ10326@phenom.ffwll.local>
+Mail-Followup-To: John Hubbard <jhubbard@nvidia.com>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>, David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>, Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+References: <20191030224930.3990755-1-jhubbard@nvidia.com>
+ <20191030224930.3990755-10-jhubbard@nvidia.com>
+ <20191031233628.GI14771@iweiny-DESK2.sc.intel.com>
+ <20191104181055.GP10326@phenom.ffwll.local>
+ <48d22c77-c313-59ff-4847-bc9a9813b8a7@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <48d22c77-c313-59ff-4847-bc9a9813b8a7@nvidia.com>
+X-Operating-System: Linux phenom 5.2.0-3-amd64 
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduced IFC operations for vdpa, which complys to
-virtio_mdev and vhost_mdev interfaces, handles IFC VF
-initialization, configuration and removal.
+On Mon, Nov 04, 2019 at 11:20:38AM -0800, John Hubbard wrote:
+> On 11/4/19 10:10 AM, Daniel Vetter wrote:
+> > On Thu, Oct 31, 2019 at 04:36:28PM -0700, Ira Weiny wrote:
+> >> On Wed, Oct 30, 2019 at 03:49:20PM -0700, John Hubbard wrote:
+> >>> Convert drm/via to use the new pin_user_pages_fast() call, which sets
+> >>> FOLL_PIN. Setting FOLL_PIN is now required for code that requires
+> >>> tracking of pinned pages, and therefore for any code that calls
+> >>> put_user_page().
+> >>>
+> >>
+> >> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
+> > 
+> > No one's touching the via driver anymore, so feel free to merge this
+> > through whatever tree suits best (aka I'll drop this on the floor and
+> > forget about it now).
+> > 
+> > Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+> > 
+> 
+> OK, great. Yes, in fact, I'm hoping Andrew can just push the whole series
+> in through the mm tree, because that would allow it to be done in one 
+> shot, in 5.5
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vhost/ifcvf/ifcvf_main.c | 605 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 605 insertions(+)
- create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
-
-diff --git a/drivers/vhost/ifcvf/ifcvf_main.c b/drivers/vhost/ifcvf/ifcvf_main.c
-new file mode 100644
-index 0000000..7165457
---- /dev/null
-+++ b/drivers/vhost/ifcvf/ifcvf_main.c
-@@ -0,0 +1,605 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2019 Intel Corporation.
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/mdev.h>
-+#include <linux/pci.h>
-+#include <linux/sysfs.h>
-+#include "ifcvf_base.h"
-+
-+#define VERSION_STRING	"0.1"
-+#define DRIVER_AUTHOR	"Intel Corporation"
-+#define IFCVF_DRIVER_NAME	"ifcvf"
-+
-+static struct ifcvf_hw *mdev_to_vf(struct mdev_device *mdev)
-+{
-+	struct ifcvf_asapter *adapter = mdev_get_drvdata(mdev);
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+
-+	return vf;
-+}
-+
-+static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
-+{
-+	struct vring_info *vring = arg;
-+
-+	if (vring->cb.callback)
-+		return vring->cb.callback(vring->cb.private);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static u64 ifcvf_mdev_get_features(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return ifcvf_get_features(vf);
-+}
-+
-+static int ifcvf_mdev_set_features(struct mdev_device *mdev, u64 features)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->req_features = features;
-+
-+	return 0;
-+}
-+
-+static u64 ifcvf_mdev_get_vq_state(struct mdev_device *mdev, u16 qid)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+	u16 last_avail_idx;
-+
-+	last_avail_idx = *(u16 *)(vf->lm_cfg + IFCVF_LM_RING_STATE_OFFSET +
-+			 (qid / 2) * IFCVF_LM_CFG_SIZE + (qid % 2) * 4);
-+
-+	return last_avail_idx;
-+}
-+
-+static int ifcvf_mdev_set_vq_state(struct mdev_device *mdev, u16 qid, u64 num)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[qid].last_avail_idx = num;
-+
-+	return 0;
-+}
-+
-+static int ifcvf_mdev_set_vq_address(struct mdev_device *mdev, u16 idx,
-+				     u64 desc_area, u64 driver_area,
-+				     u64 device_area)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[idx].desc = desc_area;
-+	vf->vring[idx].avail = driver_area;
-+	vf->vring[idx].used = device_area;
-+
-+	return 0;
-+}
-+
-+static void ifcvf_mdev_set_vq_num(struct mdev_device *mdev, u16 qid, u32 num)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[qid].size = num;
-+}
-+
-+static void ifcvf_mdev_set_vq_ready(struct mdev_device *mdev,
-+				    u16 qid, bool ready)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[qid].ready = ready;
-+}
-+
-+static bool ifcvf_mdev_get_vq_ready(struct mdev_device *mdev, u16 qid)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return vf->vring[qid].ready;
-+}
-+
-+static void ifcvf_mdev_set_vq_cb(struct mdev_device *mdev, u16 idx,
-+				 struct virtio_mdev_callback *cb)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[idx].cb = *cb;
-+}
-+
-+static void ifcvf_mdev_kick_vq(struct mdev_device *mdev, u16 idx)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	ifcvf_notify_queue(vf, idx);
-+}
-+
-+static u8 ifcvf_mdev_get_status(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return ifcvf_get_status(vf);
-+}
-+
-+static u32 ifcvf_mdev_get_generation(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return ioread8(&vf->common_cfg->config_generation);
-+}
-+
-+static u32 ifcvf_mdev_get_device_id(struct mdev_device *mdev)
-+{
-+	return VIRTIO_ID_NET;
-+}
-+
-+static u32 ifcvf_mdev_get_vendor_id(struct mdev_device *mdev)
-+{
-+	return IFCVF_VENDOR_ID;
-+}
-+
-+static u16 ifcvf_mdev_get_vq_align(struct mdev_device *mdev)
-+{
-+	return IFCVF_QUEUE_ALIGNMENT;
-+}
-+
-+static u64 ifcvf_mdev_get_mdev_features(struct mdev_device *mdev)
-+{
-+	return VIRTIO_MDEV_F_VERSION_1;
-+}
-+
-+static int ifcvf_start_datapath(void *private)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(private);
-+	struct ifcvf_adapter *ifcvf;
-+	int i, ret = 0;
-+
-+	ifcvf = container_of(vf, struct ifcvf_adapter, vf);
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		if (!vf->vring[i].ready) {
-+			IFC_ERR(ifcvf->dev,
-+				"Failed to start datapath, vring %d not ready.\n", i);
-+			return -EINVAL;
-+		}
-+
-+		if (!vf->vring[i].size) {
-+			IFC_ERR(ifcvf->dev,
-+				"Failed to start datapath, vring %d size is zero.\n", i);
-+			return -EINVAL;
-+		}
-+
-+		if (!vf->vring[i].desc || !vf->vring[i].avail ||
-+			!vf->vring[i].used) {
-+			IFC_ERR(ifcvf->dev,
-+				"Failed to start datapath, "
-+				"invaild value for vring %d desc,"
-+				"avail_idx or usex_idx.\n", i);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	vf->nr_vring = i;
-+	ret = ifcvf_start_hw(vf);
-+
-+	return ret;
-+}
-+
-+static int ifcvf_stop_datapath(void *private)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(private);
-+	int i;
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUES; i++)
-+		vf->vring[i].cb.callback = NULL;
-+
-+	ifcvf_stop_hw(vf);
-+
-+	return 0;
-+}
-+
-+static void ifcvf_reset_vring(struct ifcvf_adapter *adapter)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+	struct virtio_pci_common_cfg *cfg;
-+	u8 *lm_cfg;
-+	int i;
-+
-+	cfg = vf->common_cfg;
-+	lm_cfg = vf->lm_cfg;
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		vf->vring[i].last_used_idx = 0;
-+		vf->vring[i].last_avail_idx = 0;
-+		vf->vring[i].desc = 0;
-+		vf->vring[i].avail = 0;
-+		vf->vring[i].used = 0;
-+		vf->vring[i].ready = 0;
-+		vf->vring->cb.callback = NULL;
-+		vf->vring->cb.private = NULL;
-+
-+	}
-+
-+	ifcvf_reset(vf);
-+}
-+
-+static void ifcvf_mdev_set_status(struct mdev_device *mdev, u8 status)
-+{
-+	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+	int ret = 0;
-+
-+	if (status == 0) {
-+		ifcvf_stop_datapath(adapter);
-+		ifcvf_reset_vring(adapter);
-+		return;
-+	}
-+
-+	if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-+		ret = ifcvf_start_datapath(adapter);
-+
-+		if (ret)
-+			IFC_ERR(adapter->dev, "Failed to set mdev status %u.\n",
-+				status);
-+	}
-+
-+	ifcvf_set_status(vf, status);
-+}
-+
-+static u16 ifcvf_mdev_get_vq_num_max(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return vf->vring[0].size;
-+}
-+static void ifcvf_mdev_get_config(struct mdev_device *mdev, unsigned int offset,
-+			     void *buf, unsigned int len)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	WARN_ON(offset + len > sizeof(struct ifcvf_net_config));
-+	ifcvf_read_net_config(vf, offset, buf, len);
-+}
-+
-+static void ifcvf_mdev_set_config(struct mdev_device *mdev, unsigned int offset,
-+			     const void *buf, unsigned int len)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	WARN_ON(offset + len > sizeof(struct ifcvf_net_config));
-+	ifcvf_write_net_config(vf, offset, buf, len);
-+}
-+
-+static struct virtio_mdev_device_ops ifc_mdev_ops = {
-+	.get_features  = ifcvf_mdev_get_features,
-+	.set_features  = ifcvf_mdev_set_features,
-+	.get_status    = ifcvf_mdev_get_status,
-+	.set_status    = ifcvf_mdev_set_status,
-+	.get_vq_num_max = ifcvf_mdev_get_vq_num_max,
-+	.get_vq_state   = ifcvf_mdev_get_vq_state,
-+	.set_vq_state   = ifcvf_mdev_set_vq_state,
-+	.set_vq_cb      = ifcvf_mdev_set_vq_cb,
-+	.set_vq_ready   = ifcvf_mdev_set_vq_ready,
-+	.get_vq_ready	= ifcvf_mdev_get_vq_ready,
-+	.set_vq_num     = ifcvf_mdev_set_vq_num,
-+	.set_vq_address = ifcvf_mdev_set_vq_address,
-+	.kick_vq        = ifcvf_mdev_kick_vq,
-+	.get_generation	= ifcvf_mdev_get_generation,
-+	.get_device_id	= ifcvf_mdev_get_device_id,
-+	.get_vendor_id	= ifcvf_mdev_get_vendor_id,
-+	.get_vq_align	= ifcvf_mdev_get_vq_align,
-+	.get_config	= ifcvf_mdev_get_config,
-+	.set_config	= ifcvf_mdev_set_config,
-+	.get_mdev_features = ifcvf_mdev_get_mdev_features,
-+};
-+
-+static int ifcvf_init_msix(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = to_pci_dev(adapter->dev);
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int vector, i, ret, irq;
-+
-+	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
-+				    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
-+	if (ret < 0) {
-+		IFC_ERR(adapter->dev, "Failed to alloc irq vectors.\n");
-+		return ret;
-+	}
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		vector = i + IFCVF_MSI_QUEUE_OFF;
-+		irq = pci_irq_vector(pdev, vector);
-+		ret = request_irq(irq, ifcvf_intr_handler, 0,
-+				pci_name(pdev), &vf->vring[i]);
-+		if (ret) {
-+			IFC_ERR(adapter->dev,
-+				"Failed to request irq for vq %d.\n", i);
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void ifcvf_destroy_adapter(struct ifcvf_adapter *adapter)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+	struct pci_dev *pdev = to_pci_dev(adapter->dev);
-+	int i, vector, irq;
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		vector = i + IFCVF_MSI_QUEUE_OFF;
-+		irq = pci_irq_vector(pdev, vector);
-+		free_irq(irq, &vf->vring[i]);
-+	}
-+}
-+
-+static ssize_t name_show(struct kobject *kobj, struct device *dev, char *buf)
-+{
-+	const char *name = "vhost accelerator (virtio ring compatible)";
-+
-+	return sprintf(buf, "%s\n", name);
-+}
-+MDEV_TYPE_ATTR_RO(name);
-+
-+static ssize_t device_api_show(struct kobject *kobj, struct device *dev,
-+			       char *buf)
-+{
-+	return sprintf(buf, "%s\n", VIRTIO_MDEV_DEVICE_API_STRING);
-+}
-+MDEV_TYPE_ATTR_RO(device_api);
-+
-+static ssize_t available_instances_show(struct kobject *kobj,
-+					struct device *dev, char *buf)
-+{
-+	struct pci_dev *pdev;
-+	struct ifcvf_adapter *adapter;
-+
-+	pdev = to_pci_dev(dev);
-+	adapter = pci_get_drvdata(pdev);
-+
-+	return sprintf(buf, "%d\n", adapter->mdev_count);
-+}
-+
-+MDEV_TYPE_ATTR_RO(available_instances);
-+
-+static ssize_t type_show(struct kobject *kobj,
-+			struct device *dev, char *buf)
-+{
-+	return sprintf(buf, "%s\n", "net");
-+}
-+
-+MDEV_TYPE_ATTR_RO(type);
-+
-+
-+static struct attribute *mdev_types_attrs[] = {
-+	&mdev_type_attr_name.attr,
-+	&mdev_type_attr_device_api.attr,
-+	&mdev_type_attr_available_instances.attr,
-+	&mdev_type_attr_type.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group mdev_type_group_virtio = {
-+	.name  = "virtio_mdev",
-+	.attrs = mdev_types_attrs,
-+};
-+
-+static struct attribute_group mdev_type_group_vhost = {
-+	.name  = "vhost_mdev",
-+	.attrs = mdev_types_attrs,
-+};
-+
-+static struct attribute_group *mdev_type_groups[] = {
-+	&mdev_type_group_virtio,
-+	&mdev_type_group_vhost,
-+	NULL,
-+};
-+
-+const struct attribute_group *mdev_dev_groups[] = {
-+	NULL,
-+};
-+
-+static int ifcvf_mdev_create(struct kobject *kobj, struct mdev_device *mdev)
-+{
-+	struct device *dev = mdev_parent_dev(mdev);
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
-+	int ret = 0;
-+
-+	mutex_lock(&adapter->mdev_lock);
-+
-+	if (adapter->mdev_count < IFCVF_MDEV_LIMIT) {
-+		IFC_ERR(&pdev->dev,
-+			"Can not create mdev, reached limitation %d.\n",
-+			IFCVF_MDEV_LIMIT);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (!strcmp(kobj->name, "ifcvf-virtio_mdev"))
-+		mdev_set_virtio_ops(mdev, &ifc_mdev_ops);
-+
-+	if (!strcmp(kobj->name, "ifcvf-vhost_mdev"))
-+		mdev_set_vhost_ops(mdev, &ifc_mdev_ops);
-+
-+	mdev_set_drvdata(mdev, adapter);
-+	mdev_set_iommu_device(mdev_dev(mdev), dev);
-+	adapter->mdev_count--;
-+
-+out:
-+	mutex_unlock(&adapter->mdev_lock);
-+	return ret;
-+}
-+
-+static int ifcvf_mdev_remove(struct mdev_device *mdev)
-+{
-+	struct device *dev = mdev_parent_dev(mdev);
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
-+
-+	mutex_lock(&adapter->mdev_lock);
-+	adapter->mdev_count++;
-+	mutex_unlock(&adapter->mdev_lock);
-+
-+	return 0;
-+}
-+
-+static struct mdev_parent_ops ifcvf_mdev_fops = {
-+	.owner			= THIS_MODULE,
-+	.supported_type_groups	= mdev_type_groups,
-+	.mdev_attr_groups	= mdev_dev_groups,
-+	.create			= ifcvf_mdev_create,
-+	.remove			= ifcvf_mdev_remove,
-+};
-+
-+static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct ifcvf_adapter *adapter;
-+	struct ifcvf_hw *vf;
-+	int ret, i;
-+
-+	adapter = kzalloc(sizeof(struct ifcvf_adapter), GFP_KERNEL);
-+
-+	if (adapter == NULL) {
-+		ret = -ENOMEM;
-+		goto fail;
-+	}
-+
-+	mutex_init(&adapter->mdev_lock);
-+	adapter->mdev_count = IFCVF_MDEV_LIMIT;
-+	adapter->dev = dev;
-+	pci_set_drvdata(pdev, adapter);
-+	ret = pci_enable_device(pdev);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev, "Failed to enable device.\n");
-+		goto free_adapter;
-+	}
-+
-+	ret = pci_request_regions(pdev, IFCVF_DRIVER_NAME);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev, "Failed to request MMIO region.\n");
-+		goto disable_device;
-+	}
-+
-+	pci_set_master(pdev);
-+	ret = ifcvf_init_msix(adapter);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev, "Failed to initialize MSIX.\n");
-+		goto free_msix;
-+	}
-+
-+	vf = &adapter->vf;
-+	
-+	for (i = 0; i < IFCVF_PCI_MAX_RESOURCE; i++) {
-+		vf->mem_resource[i].phys_addr = pci_resource_start(pdev, i);
-+		vf->mem_resource[i].len = pci_resource_len(pdev, i);
-+		if (!vf->mem_resource[i].len) {
-+			vf->mem_resource[i].addr = NULL;
-+			continue;
-+		}
-+
-+		vf->mem_resource[i].addr = pci_iomap_range(pdev, i, 0,
-+				vf->mem_resource[i].len);
-+		if (!vf->mem_resource[i].addr) {
-+			IFC_ERR(adapter->dev, "Failed to map IO resource %d\n",
-+				i);
-+			ret = -1;
-+			goto free_msix;
-+		}
-+	}
-+
-+	if (ifcvf_init_hw(vf, pdev) < 0) {
-+		ret = -1;
-+		goto destroy_adapter;
-+	}
-+
-+	ret = mdev_register_device(dev, &ifcvf_mdev_fops);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev,  "Failed to register mdev device\n");
-+		goto destroy_adapter;
-+	}
-+
-+	return 0;
-+
-+destroy_adapter:
-+	ifcvf_destroy_adapter(adapter);
-+free_msix:
-+	pci_free_irq_vectors(pdev);
-+	pci_release_regions(pdev);
-+disable_device:
-+	pci_disable_device(pdev);
-+free_adapter:
-+	kfree(adapter);
-+fail:
-+	return ret;
-+}
-+
-+static void ifcvf_remove(struct pci_dev *pdev)
-+{
-+	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
-+	struct device *dev = &pdev->dev;
-+	struct ifcvf_hw *vf;
-+	int i;
-+
-+	mdev_unregister_device(dev);
-+
-+	vf = &adapter->vf;
-+	for (i = 0; i < IFCVF_PCI_MAX_RESOURCE; i++) {
-+		if (vf->mem_resource[i].addr) {
-+			pci_iounmap(pdev, vf->mem_resource[i].addr);
-+			vf->mem_resource[i].addr = NULL;
-+		}
-+	}
-+
-+	ifcvf_destroy_adapter(adapter);
-+	pci_free_irq_vectors(pdev);
-+	pci_release_regions(pdev);
-+	pci_disable_device(pdev);
-+	kfree(adapter);
-+}
-+
-+static struct pci_device_id ifcvf_pci_ids[] = {
-+	{ PCI_DEVICE_SUB(IFCVF_VENDOR_ID,
-+			IFCVF_DEVICE_ID,
-+			IFCVF_SUBSYS_VENDOR_ID,
-+			IFCVF_SUBSYS_DEVICE_ID) },
-+	{ 0 },
-+};
-+MODULE_DEVICE_TABLE(pci, ifcvf_pci_ids);
-+
-+static struct pci_driver ifcvf_driver = {
-+	.name     = IFCVF_DRIVER_NAME,
-+	.id_table = ifcvf_pci_ids,
-+	.probe    = ifcvf_probe,
-+	.remove   = ifcvf_remove,
-+};
-+
-+static int __init ifcvf_init_module(void)
-+{
-+	int ret;
-+
-+	ret = pci_register_driver(&ifcvf_driver);
-+	return ret;
-+}
-+
-+static void __exit ifcvf_exit_module(void)
-+{
-+	pci_unregister_driver(&ifcvf_driver);
-+}
-+
-+module_init(ifcvf_init_module);
-+module_exit(ifcvf_exit_module);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_VERSION(VERSION_STRING);
-+MODULE_AUTHOR(DRIVER_AUTHOR);
+btw is there more? We should have a bunch more userptr stuff in various
+drivers, so was really surprised that drm/via is the only thing in your
+series.
+-Daniel
 -- 
-1.8.3.1
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
