@@ -2,139 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79F51EF7A8
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 10:00:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3740AEF864
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 10:16:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730569AbfKEJAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 04:00:43 -0500
-Received: from mx2.suse.de ([195.135.220.15]:54890 "EHLO mx1.suse.de"
+        id S1730598AbfKEJQ2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 5 Nov 2019 04:16:28 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:38146 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727925AbfKEJAn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 04:00:43 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 92FF0B24C;
-        Tue,  5 Nov 2019 09:00:40 +0000 (UTC)
-Subject: Re: Double free of struct sk_buff reported by SLAB_CONSISTENCY_CHECKS
- with init_on_free
-To:     Thibaut Sautereau <thibaut.sautereau@clip-os.org>,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Potapenko <glider@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, clipos@ssi.gouv.fr
-References: <20191104170303.GA50361@gandi.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <23c73a23-8fd9-c462-902b-eec2a0c04d36@suse.cz>
-Date:   Tue, 5 Nov 2019 10:00:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
-MIME-Version: 1.0
-In-Reply-To: <20191104170303.GA50361@gandi.net>
-Content-Type: text/plain; charset=utf-8
+        id S1730528AbfKEJQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Nov 2019 04:16:28 -0500
+Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.56])
+        by Forcepoint Email with ESMTP id 49131ACF9C5DF6974266;
+        Tue,  5 Nov 2019 17:16:24 +0800 (CST)
+Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
+ DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 5 Nov 2019 17:16:23 +0800
+Received: from lhreml703-chm.china.huawei.com (10.201.108.52) by
+ dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 5 Nov 2019 17:16:21 +0800
+Received: from lhreml703-chm.china.huawei.com ([10.201.68.198]) by
+ lhreml703-chm.china.huawei.com ([10.201.68.198]) with mapi id 15.01.1713.004;
+ Tue, 5 Nov 2019 09:16:18 +0000
+From:   Salil Mehta <salil.mehta@huawei.com>
+To:     Marc Zyngier <maz@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "lipeng (Y)" <lipeng321@huawei.com>,
+        "Zhuangyuzeng (Yisen)" <yisen.zhuang@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: RE: [PATCH] net: hns: Ensure that interface teardown cannot race with
+ TX interrupt
+Thread-Topic: [PATCH] net: hns: Ensure that interface teardown cannot race
+ with TX interrupt
+Thread-Index: AQHVk0n0bjLQxPyNVEeIvNGhOalq6ad8Sp0Q
+Date:   Tue, 5 Nov 2019 09:16:18 +0000
+Message-ID: <164986f3ea2c4a21ab58f27b3c25190f@huawei.com>
+References: <20191104195604.17109-1-maz@kernel.org>
+In-Reply-To: <20191104195604.17109-1-maz@kernel.org>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.202.226.45]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/4/19 6:03 PM, Thibaut Sautereau wrote:
-> The BUG only happens when using `slub_debug=F` on the command-line (to
-> enable SLAB_CONSISTENCY_CHECKS), otherwise the double free is not
-> reported and the system keeps running.
+Hi Marc,
+Thanks for the catch & the patch. As such Looks good to me. For the sanity check,
+I will try to reproduce the problem again and test it once with your patch.
 
-You could change slub_debug parameter to:
-slub_debug=FU,skbuff_head_cache
 
-That will also print out who previously allocated and freed the double
-freed object. And limit all the tracking just to the affected cache.
+Best Regards
+Salil
 
-> The code path is:
-> 	net_rx_action
-> 	  __kfree_skb_flush
-> 		kmem_cache_free_bulk()  # skbuff_head_cache
-> 		  slab_free()
-> 			do_slab_free()
-> 			  __slab_free()
-> 				free_debug_processing()
-> 				  free_consistency_check()
-> 					object_err()    # "Object already free"
-> 					  print_trailer()
-> 						print_tracking()    # !(s->flags & SLAB_STORE_USER) => return;
-> 						print_page_info()   # "INFO: Slab ..."
-> 						pr_err("INFO: Object ...", ..., get_freepointer(s, p))
-> 						  get_freepointer()
-> 						    freelist_dereference() # NULL pointer dereference
+
+> From: Marc Zyngier [mailto:maz@kernel.org]
+> Sent: Monday, November 4, 2019 7:56 PM
+> To: netdev@vger.kernel.org
+> Cc: lipeng (Y) <lipeng321@huawei.com>; Zhuangyuzeng (Yisen)
+> <yisen.zhuang@huawei.com>; Salil Mehta <salil.mehta@huawei.com>; David S .
+> Miller <davem@davemloft.net>
+> Subject: [PATCH] net: hns: Ensure that interface teardown cannot race with TX
+> interrupt
 > 
-> Enabling KASAN shows less info because the NULL pointer dereference then
-> apparently happens before reaching free_debug_processing().
+> On a lockdep-enabled kernel, bringing down a HNS interface results
+> in a loud splat. It turns out that  the per-ring spinlock is taken
+> both in the TX interrupt path, and when bringing down the interface.
 > 
-> Bisection points to the following commit: 1b7e816fc80e ("mm: slub: Fix
-> slab walking for init_on_free"), and indeed the BUG is not triggered
-> when init_on_free is disabled.
+> Lockdep sums it up with:
+> 
+> [32099.424453]        CPU0
+> [32099.426885]        ----
+> [32099.429318]   lock(&(&ring->lock)->rlock);
+> [32099.433402]   <Interrupt>
+> [32099.436008]     lock(&(&ring->lock)->rlock);
+> [32099.440264]
+> [32099.440264]  *** DEADLOCK ***
+> 
+> To solve this, turn the NETIF_TX_{LOCK,UNLOCK} macros from standard
+> spin_[un]lock to their irqsave/irqrestore version.
+> 
+> Fixes: f2aaed557ecff ("net: hns: Replace netif_tx_lock to ring spin lock")
+> Cc: lipeng <lipeng321@huawei.com>
+> Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+> Cc: Salil Mehta <salil.mehta@huawei.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> ---
+>  drivers/net/ethernet/hisilicon/hns/hns_enet.c | 22 ++++++++++---------
+>  1 file changed, 12 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+> b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+> index a48396dd4ebb..9fbe4e1e6853 100644
+> --- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+> +++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+> @@ -945,11 +945,11 @@ static int is_valid_clean_head(struct hnae_ring *ring,
+> int h)
+> 
+>  /* netif_tx_lock will turn down the performance, set only when necessary */
+>  #ifdef CONFIG_NET_POLL_CONTROLLER
+> -#define NETIF_TX_LOCK(ring) spin_lock(&(ring)->lock)
+> -#define NETIF_TX_UNLOCK(ring) spin_unlock(&(ring)->lock)
+> +#define NETIF_TX_LOCK(ring, flags) spin_lock_irqsave(&(ring)->lock, flags)
+> +#define NETIF_TX_UNLOCK(ring, flags) spin_unlock_irqrestore(&(ring)->lock,
+> flags)
+>  #else
+> -#define NETIF_TX_LOCK(ring)
+> -#define NETIF_TX_UNLOCK(ring)
+> +#define NETIF_TX_LOCK(ring, flags)
+> +#define NETIF_TX_UNLOCK(ring, flags)
+>  #endif
+> 
+>  /* reclaim all desc in one budget
+> @@ -962,16 +962,17 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data
+> *ring_data,
+>  	struct net_device *ndev = ring_data->napi.dev;
+>  	struct netdev_queue *dev_queue;
+>  	struct hns_nic_priv *priv = netdev_priv(ndev);
+> +	unsigned long flags;
+>  	int head;
+>  	int bytes, pkts;
+> 
+> -	NETIF_TX_LOCK(ring);
+> +	NETIF_TX_LOCK(ring, flags);
+> 
+>  	head = readl_relaxed(ring->io_base + RCB_REG_HEAD);
+>  	rmb(); /* make sure head is ready before touch any data */
+> 
+>  	if (is_ring_empty(ring) || head == ring->next_to_clean) {
+> -		NETIF_TX_UNLOCK(ring);
+> +		NETIF_TX_UNLOCK(ring, flags);
+>  		return 0; /* no data to poll */
+>  	}
+> 
+> @@ -979,7 +980,7 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data
+> *ring_data,
+>  		netdev_err(ndev, "wrong head (%d, %d-%d)\n", head,
+>  			   ring->next_to_use, ring->next_to_clean);
+>  		ring->stats.io_err_cnt++;
+> -		NETIF_TX_UNLOCK(ring);
+> +		NETIF_TX_UNLOCK(ring, flags);
+>  		return -EIO;
+>  	}
+> 
+> @@ -994,7 +995,7 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data
+> *ring_data,
+>  	ring->stats.tx_pkts += pkts;
+>  	ring->stats.tx_bytes += bytes;
+> 
+> -	NETIF_TX_UNLOCK(ring);
+> +	NETIF_TX_UNLOCK(ring, flags);
+> 
+>  	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
+>  	netdev_tx_completed_queue(dev_queue, pkts, bytes);
+> @@ -1052,10 +1053,11 @@ static void hns_nic_tx_clr_all_bufs(struct
+> hns_nic_ring_data *ring_data)
+>  	struct hnae_ring *ring = ring_data->ring;
+>  	struct net_device *ndev = ring_data->napi.dev;
+>  	struct netdev_queue *dev_queue;
+> +	unsigned long flags;
+>  	int head;
+>  	int bytes, pkts;
+> 
+> -	NETIF_TX_LOCK(ring);
+> +	NETIF_TX_LOCK(ring, flags);
+> 
+>  	head = ring->next_to_use; /* ntu :soft setted ring position*/
+>  	bytes = 0;
+> @@ -1063,7 +1065,7 @@ static void hns_nic_tx_clr_all_bufs(struct
+> hns_nic_ring_data *ring_data)
+>  	while (head != ring->next_to_clean)
+>  		hns_nic_reclaim_one_desc(ring, &bytes, &pkts);
+> 
+> -	NETIF_TX_UNLOCK(ring);
+> +	NETIF_TX_UNLOCK(ring, flags);
+> 
+>  	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
+>  	netdev_tx_reset_queue(dev_queue);
+> --
+> 2.20.1
 
-That could be either buggy SLUB code, or the commit somehow exposed a
-real bug in skbuff users.
