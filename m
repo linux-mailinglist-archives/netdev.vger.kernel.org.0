@@ -2,212 +2,658 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8861EF066A
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:55:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F4EF0676
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729607AbfKETzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:55:24 -0500
-Received: from sonic313-15.consmr.mail.ne1.yahoo.com ([66.163.185.38]:37689
-        "EHLO sonic313-15.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729579AbfKETzX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:55:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1572983721; bh=d9L0VmPL6ALHaSammxHQMCwSd1ZmOK0RbRK+tf+z8FQ=; h=Subject:To:Cc:References:From:Date:In-Reply-To:From:Subject; b=H03KZzN/+bLe1zPdsfK8AFewMwl2a9WZwfFhivgszz+MukYWXM9Bnqfe8lyFBCNo02WrVli+VWcHNSrti5vTbY/jotdwj8opEQnb6Y8uAYI75b5tNbrMbXCLQaTJBPHkyzrb6VlV5Pt/6Onb+cvDOMJX5ikUCXBxuj74d3gmKpjRluqxIK20Rmx/7VtlZMqpyc7lb/yrzvMoyaIPqnOwSPREuQlYc55/Cghlk0MNooC15J7+cb+N6S3SxENScdv0BuY9LcMzmKKtLLqU0idpUfu9wTvhpo0zxJnIUKh+vcQM4LCORu5UM/+dBl2FBMn+lSBkiz4c9KAoDYdh1HbEuA==
-X-YMail-OSG: EYiygnkVM1kbNPk0Yu.7vFvBJtEOXVpRrhcACoGas71uPCjpfxHhkAf_IHGekE0
- j7BhR0ymB9kpUJhJd0Ul4SMy7veFiHEAWTe9KWMchCjsJlgc3HJkt8fTVy3KQqFEIcaLKCCp.91e
- dZfK_SPPNVPJh9L5CuHryGEzqpEY0Xiv6yX78h1tPqGylKrGaC7UkSAFE7uPaCxi.QpCOCX5inXs
- xzrVGpXeg.OKf_q9g8xRp64tv4sB5Smik1Q5uKIZJUHN7EvWjTiLitHvBM5ElpbUKgJIWfgiPQsT
- yQ13Ojg7aBRZ2YC5yNjAFMD65P7KQMgGNpVxS0gtgmcMS_hBFrnB29_1X8aQGDcZezqXPAdUWBu2
- _05KL8wsKEddFHTU6oAp.wO1bB_DLCnj1j3E1zGrvrSDJ_Zp0AgDHTr5P2Iu737Q36HAE0gkRiDD
- xIw3PLb1WJFM2NCVLnTtVBeT45tyIjgKXxdiwvM6ukbBgAsF0DhBNn3UMFLc2zOhPK8rppM2oZ5C
- fA3T9Px5dg8MDvyKXTEnD8HH2hu2YKdV7jImbrDklxcTlWuIMFewflJSxByYd30arfkn2QVSknJn
- D_tkngy9hi72vKUt8NP95OQZodxEZbL0HsvgkPC0UP1p8yMEOhklppj7XQ0APHNo7bPm9cu.a8y_
- uZVqOCm2BaQ7KZZPZvyWdWfAs3SNKmqJoopvdsSKJ.0bNebYmKRLPGDDDsCXZvfX8CAY34CDkso2
- To01qNAVEW0suEoQhhTKz6rj_FQwp5aW8.VRhfMxQLOZsAeTBXIMpu1lObJzHHWxODmon3XpGp38
- AcKgCy4ZCpR_Ny7OQmeXYLmpk0qcaQI_vVRYswhCJPaUUjPdCLgPV4aMxkekS9ediAsJ8oyoK248
- 0dPDceNJywBKAgzqot5XVRiZNnO7ImjfURyYhyVbVmeQqhTEKCQwGH1VEUdqSbB087MOigc7AywA
- TeKGcsHjNVhuyq.SI1KkY4hFpas2yCISA2sxbJwekUvrI9Ga3vrPVuQ2wkyzC0djLAOXqSGGrV9j
- 4bNgNRYs8io4PR1Ad42oZ4TL16SJf6a6Pl37P2xWf_Oe0TMGYPjUany9ElCW7KxiDyDmpys5ONcG
- hxSZW6_kxSYapJnjDCxE_zKNv5bRgb4NECJDOCpSLEOSgePGXWNjI3DfRmhJvxjLsIQFn4SFZvyK
- cQkJiFf1P6cMVLc3jGugnQlwe7iKvzwKZDlJdqw1D.6n1bj._LzFr.Z7N..s3y4kwxKzgXHvK2dj
- aTr.s8dEIGG70epPQyqVvVllOSgFNQnTqtBXBprHtaTA4pPkQge..mN_1ejctPWr_MOGKsQfH2uK
- Ex__eeW7JE91Ab_QRIWFyMSvqJp8xPstTtmUolL69WNYAoJsP9bnC.YcQTAVKlfuxa.iuLVJmEeP
- lXfOyjo2w34bsRw.T_Cfrbh829_mXJkqFMZn0
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Tue, 5 Nov 2019 19:55:21 +0000
-Received: by smtp422.mail.ne1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID ea7233fffc1d793da98fdfec1a3806b8;
-          Tue, 05 Nov 2019 19:55:18 +0000 (UTC)
-Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        Florent Revest <revest@chromium.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
-        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        casey@schaufler-ca.com
-References: <20191104172146.30797-1-mic@digikod.net>
- <20191104172146.30797-5-mic@digikod.net>
- <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
- <c5c6b433-7e6a-c8f8-f063-e704c3df4cc6@schaufler-ca.com>
- <20191105193130.qam2eafnmgvrvjwk@ast-mbp.dhcp.thefacebook.com>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=casey@schaufler-ca.com; keydata=
- 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
- abzjfg==
-Message-ID: <637736ef-c48e-ac3b-3eef-8a6a095a96f1@schaufler-ca.com>
-Date:   Tue, 5 Nov 2019 11:55:17 -0800
+        id S1729399AbfKET4C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:56:02 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46056 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726141AbfKET4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:56:02 -0500
+Received: by mail-wr1-f65.google.com with SMTP id q13so22955366wrs.12;
+        Tue, 05 Nov 2019 11:55:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X/gMF/2zlTejiK4UYZnnJsL1JyINY21JO8c70VS3Wa8=;
+        b=e75VXnqlPE4bhwYLBjFetFa+dg5D7DNpnt0/JlJaiDl/p6A8T+W5mLUGnIzyTpGm89
+         hAqwgPBjHjYAbOGh1Eg0x6n1RHHPisz7GR8liYZElY/syulxU8bQ/VKFNkJLHtZwWZzZ
+         dvZPvG62MHfTomzxabAv7E5LiQwp7Zz54/Rker1eS7tcprEjPeNxs+wk2fJodcIsjN6m
+         XRPts3SKf6h4vXmfs3k+qnmmQU0+9LJYIaKDO2lzPRLpccaoPCTZZ2YFF3S4EF4WOYqh
+         LEdMJSosEGu6MuAf+2ZZfW69RcKC/OeQ2ibbisXsKrhi9R9HTHzZrAJYPFeVAZhqUJzg
+         qXtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=X/gMF/2zlTejiK4UYZnnJsL1JyINY21JO8c70VS3Wa8=;
+        b=KUdtgHuSKuLw6XmtSu2vVPbxtTaGDoufqam+7DYMbJhRh3Ntltblr+oMayEuXkw0Fg
+         kE6DE14ZKh9IMHX5NIcFo2B0KjJ5YkCLI6nwEovKUZtz0hg9uW9VLfiyyoJs/W0DHxzg
+         q3+2zeYj2yDqCaC5bzBOwKasuxCNT60nbLbfWTh9/4GmzWeBAtkGc/wX4lqzo/4bd6vn
+         lFBXqVxxFDASjTo01MENXxXkOLcO5INv9Y+tbmbM2+PQdWKuxrYmWKLhB/tjwjqKaHKU
+         qX7fsB9fnBLYhUUdrZKNMHcH4vapef62Tt3h6m5/H0l4/uiwQs6Qxhe1/obZIrcarv/T
+         G3gQ==
+X-Gm-Message-State: APjAAAWs762Ljn25vVxwiKrt3rNvPqGHtb07ALxWJ2gaYSTn1gDMHBum
+        RNMwDT1HHfhGjlUVO+u69a57Jxnd
+X-Google-Smtp-Source: APXvYqx6Tn/pV+kn7ci31jXXOeTW6MCT1lJdk7DsrzsCUwrwr0ekYv4Aa+fQtK4J6rOFGzAX09ySSQ==
+X-Received: by 2002:adf:e889:: with SMTP id d9mr576632wrm.266.1572983756506;
+        Tue, 05 Nov 2019 11:55:56 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f17:6e00:e905:33d7:3b10:e04b? (p200300EA8F176E00E90533D73B10E04B.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:e905:33d7:3b10:e04b])
+        by smtp.googlemail.com with ESMTPSA id k125sm515575wmf.2.2019.11.05.11.55.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Nov 2019 11:55:55 -0800 (PST)
+Subject: Re: [PATCH 2/2] net: phy: dp83869: Add TI dp83869 phy
+To:     Dan Murphy <dmurphy@ti.com>, andrew@lunn.ch, f.fainelli@gmail.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20191105181826.25114-1-dmurphy@ti.com>
+ <20191105181826.25114-2-dmurphy@ti.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <68b9c003-4fb3-b854-695a-fa1c6e08f518@gmail.com>
+Date:   Tue, 5 Nov 2019 20:55:47 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191105193130.qam2eafnmgvrvjwk@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191105181826.25114-2-dmurphy@ti.com>
 Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
 Content-Language: en-US
-X-Mailer: WebService/1.1.14638 hermes Apache-HttpAsyncClient/4.1.4 (Java/1.8.0_181)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/2019 11:31 AM, Alexei Starovoitov wrote:
-> On Tue, Nov 05, 2019 at 09:55:42AM -0800, Casey Schaufler wrote:
->> On 11/5/2019 9:18 AM, Alexei Starovoitov wrote:
->>> On Mon, Nov 04, 2019 at 06:21:43PM +0100, Micka=C3=ABl Sala=C3=BCn wr=
-ote:
->>>> Add a first Landlock hook that can be used to enforce a security pol=
-icy
->>>> or to audit some process activities.  For a sandboxing use-case, it =
-is
->>>> needed to inform the kernel if a task can legitimately debug another=
-=2E
->>>> ptrace(2) can also be used by an attacker to impersonate another tas=
-k
->>>> and remain undetected while performing malicious activities.
->>>>
->>>> Using ptrace(2) and related features on a target process can lead to=
- a
->>>> privilege escalation.  A sandboxed task must then be able to tell th=
-e
->>>> kernel if another task is more privileged, via ptrace_may_access().
->>>>
->>>> Signed-off-by: Micka=C3=ABl Sala=C3=BCn <mic@digikod.net>
->>> ...
->>>> +static int check_ptrace(struct landlock_domain *domain,
->>>> +		struct task_struct *tracer, struct task_struct *tracee)
->>>> +{
->>>> +	struct landlock_hook_ctx_ptrace ctx_ptrace =3D {
->>>> +		.prog_ctx =3D {
->>>> +			.tracer =3D (uintptr_t)tracer,
->>>> +			.tracee =3D (uintptr_t)tracee,
->>>> +		},
->>>> +	};
->>> So you're passing two kernel pointers obfuscated as u64 into bpf prog=
-ram
->>> yet claiming that the end goal is to make landlock unprivileged?!
->>> The most basic security hole in the tool that is aiming to provide se=
-curity.
->>>
->>> I think the only way bpf-based LSM can land is both landlock and KRSI=
+On 05.11.2019 19:18, Dan Murphy wrote:
+> Add support for the TI DP83869 Gigabit ethernet phy
+> device.
+> 
+> The DP83869 is a robust, low power, fully featured
+> Physical Layer transceiver with integrated PMD
+> sublayers to support 10BASE-T, 100BASE-TX and
+> 1000BASE-T Ethernet protocols.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> ---
+>  drivers/net/phy/Kconfig              |   6 +
+>  drivers/net/phy/Makefile             |   1 +
+>  drivers/net/phy/dp83869.c            | 439 +++++++++++++++++++++++++++
+>  include/dt-bindings/net/ti-dp83869.h |  43 +++
+>  4 files changed, 489 insertions(+)
+>  create mode 100644 drivers/net/phy/dp83869.c
+>  create mode 100644 include/dt-bindings/net/ti-dp83869.h
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index fe602648b99f..4f8db1bb72a8 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -364,6 +364,12 @@ config DP83867_PHY
+>  	---help---
+>  	  Currently supports the DP83867 PHY.
+>  
+> +config DP83869_PHY
+> +	tristate "Texas Instruments DP83869 Gigabit PHY"
+> +	---help---
+> +	  Currently supports the DP83869 PHY.  This PHY supports copper and
+> +	  fiber connections.
+> +
+>  config FIXED_PHY
+>  	tristate "MDIO Bus/PHY emulation with fixed speed/link PHYs"
+>  	depends on PHYLIB
+> diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
+> index a03437e091f3..b433ec3bf9a6 100644
+> --- a/drivers/net/phy/Makefile
+> +++ b/drivers/net/phy/Makefile
+> @@ -70,6 +70,7 @@ obj-$(CONFIG_DP83822_PHY)	+= dp83822.o
+>  obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
+>  obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
+>  obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
+> +obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
+>  obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
+>  obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
+>  obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
+> diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+> new file mode 100644
+> index 000000000000..eecc9b3129ca
+> --- /dev/null
+> +++ b/drivers/net/phy/dp83869.c
+> @@ -0,0 +1,439 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Driver for the Texas Instruments DP83869 PHY
+> + * Copyright (C) 2019 Texas Instruments Inc.
+> + */
+> +
+> +#include <linux/ethtool.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mii.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/phy.h>
+> +#include <linux/delay.h>
+> +
+> +#include <dt-bindings/net/ti-dp83869.h>
+> +
+> +#define DP83869_PHY_ID		0x2000a0f1
+> +#define DP83869_DEVADDR		0x1f
+> +
+> +#define MII_DP83869_CFG1	0x09
 
->>> developers work together on a design that solves all use cases. BPF i=
-s capable
->>> to be a superset of all existing LSMs
->> I can't agree with this. Nope. There are many security models
->> for which BPF introduces excessive complexity. You don't need
->> or want the generality of a general purpose programming language
->> to implement Smack or TOMOYO. Or a simple Bell & LaPadula for
->> that matter. SELinux? I can't imagine anyone trying to do that
->> in eBPF, although I'm willing to be surprised. Being able to
->> enforce a policy isn't the only criteria for an LSM.=20
-> what are the other criteria?
+Is this different from standard register MII_CTRL1000 ?
 
-They include, but are not limited to, performance impact
-and the ability to be analyzed. The interactions with other
-subsystems meeting the requirements thereof is always a concern.
+> +#define MII_DP83869_PHYCTRL	0x10
+> +#define MII_DP83869_MICR	0x12
+> +#define MII_DP83869_ISR		0x13
+> +#define DP83869_CTRL		0x1f
+> +#define DP83869_CFG4		0x1e
+> +
+> +/* Extended Registers */
+> +#define DP83869_GEN_CFG3        0x0031
+> +#define DP83869_RGMIICTL	0x0032
+> +#define DP83869_STRAP_STS1	0x006e
+> +#define DP83869_RGMIIDCTL	0x0086
+> +#define DP83869_IO_MUX_CFG	0x0170
+> +#define DP83869_OP_MODE		0x01df
+> +#define DP83869_FX_CTRL		0x0c00
+> +
+> +#define DP83869_SW_RESET	BIT(15)
+> +#define DP83869_SW_RESTART	BIT(14)
+> +
+> +/* MICR Interrupt bits */
+> +#define MII_DP83869_MICR_AN_ERR_INT_EN		BIT(15)
+> +#define MII_DP83869_MICR_SPEED_CHNG_INT_EN	BIT(14)
+> +#define MII_DP83869_MICR_DUP_MODE_CHNG_INT_EN	BIT(13)
+> +#define MII_DP83869_MICR_PAGE_RXD_INT_EN	BIT(12)
+> +#define MII_DP83869_MICR_AUTONEG_COMP_INT_EN	BIT(11)
+> +#define MII_DP83869_MICR_LINK_STS_CHNG_INT_EN	BIT(10)
+> +#define MII_DP83869_MICR_FALSE_CARRIER_INT_EN	BIT(8)
+> +#define MII_DP83869_MICR_SLEEP_MODE_CHNG_INT_EN	BIT(4)
+> +#define MII_DP83869_MICR_WOL_INT_EN		BIT(3)
+> +#define MII_DP83869_MICR_XGMII_ERR_INT_EN	BIT(2)
+> +#define MII_DP83869_MICR_POL_CHNG_INT_EN	BIT(1)
+> +#define MII_DP83869_MICR_JABBER_INT_EN		BIT(0)
+> +
+> +#define MII_DP83869_BMCR_DEFAULT	(BMCR_ANENABLE | \
+> +					 BMCR_FULLDPLX | \
+> +					 BMCR_SPEED1000)
+> +
+> +/* This is the same bit mask as the BMCR so re-use the BMCR default */
+> +#define DP83869_FX_CTRL_DEFAULT	MII_DP83869_BMCR_DEFAULT
+> +
+> +/* CFG1 bits */
+> +#define DP83869_1000BT_HALF_DUP		BIT(8)
+> +#define DP83869_1000BT_FULL_DUP		BIT(9)
 
+This seems to duplicate ADVERTISE_1000FULL et al
 
->
->> It's got
->> to perform well and integrate with the rest of the system.=20
-> what do you mean by that?
+> +#define DP83869_MAN_CFG_MASTER_SLAVE	BIT(10)
+> +
+Is this really different from standard bits CTL1000_AS_MASTER
+and CTL1000_ENABLE_MASTER ?
 
-It has to be fast, or the networking people are
-going to have fits. You can't require the addition
-of a pointer into the skb because it'll get rejected
-out of hand. You can't completely refactor the vfs locking
-to accommodate you needs.
+> +#define DP83869_CFG1_DEFAULT	(DP83869_1000BT_HALF_DUP | \
+> +				 DP83869_1000BT_HALF_DUP | \
+> +				 DP83869_MAN_CFG_MASTER_SLAVE)
+> +
+> +/* RGMIICTL bits */
+> +#define DP83869_RGMII_TX_CLK_DELAY_EN		BIT(1)
+> +#define DP83869_RGMII_RX_CLK_DELAY_EN		BIT(0)
+> +
+> +/* STRAP_STS1 bits */
+> +#define DP83869_STRAP_STS1_RESERVED		BIT(11)
+> +
+> +/* PHY CTRL bits */
+> +/* PHYCTRL bits */
+> +#define DP83869_RX_FIFO_SHIFT	12
+> +#define DP83869_TX_FIFO_SHIFT	14
+> +
+> +/* PHY_CTRL lower bytes 0x48 are declared as reserved */
+> +#define DP83869_PHY_CTRL_DEFAULT	0x48
+> +#define DP83869_PHYCR_FIFO_DEPTH_MASK	GENMASK(15, 12)
+> +#define DP83869_PHYCR_RESERVED_MASK	BIT(11)
+> +
+> +/* RGMIIDCTL bits */
+> +#define DP83869_RGMII_TX_CLK_DELAY_SHIFT	4
+> +
+> +/* IO_MUX_CFG bits */
+> +#define DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL	0x1f
+> +
+> +#define DP83869_IO_MUX_CFG_IO_IMPEDANCE_MAX	0x0
+> +#define DP83869_IO_MUX_CFG_IO_IMPEDANCE_MIN	0x1f
+> +#define DP83869_IO_MUX_CFG_CLK_O_SEL_MASK	(0x1f << 8)
+> +#define DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT	8
+> +
+> +/* CFG3 bits */
+> +#define DP83869_CFG3_PORT_MIRROR_EN              BIT(0)
+> +
+> +/* OP MODE */
+> +#define DP83869_OP_MODE_MII			BIT(5)
+> +#define DP83869_SGMII_RGMII_BRIDGE		BIT(6)
+> +
+> +enum {
+> +	DP83869_PORT_MIRROING_KEEP,
+> +	DP83869_PORT_MIRROING_EN,
+> +	DP83869_PORT_MIRROING_DIS,
 
->
->> I see many issues with a BPF <-> vfs interface.
-> There is no such interface today. What do you have in mind?
+MIRRORING misses an R
 
-You can't implement SELinux or Smack using BPF without a way
-to manipulate inode data.
+> +};
+> +
+> +struct dp83869_private {
+> +	int tx_fifo_depth;
+> +	int rx_fifo_depth;
+> +	int io_impedance;
+> +	int port_mirroring;
+> +	bool rxctrl_strap_quirk;
+> +	int clk_output_sel;
+> +	int mode;
+> +};
+> +
+> +static int op_mode;
+> +
+> +module_param(op_mode, int, 0644);
+> +MODULE_PARM_DESC(op_mode, "The operational mode of the PHY");
+> +
 
->
->> the mechanisms needed for the concerns of the day. Ideally,
->> we should be able to drop mechanisms when we decide that they
->> no longer add value.
-> Exactly. bpf-based lsm must not add to kernel abi.
+A module parameter isn't the preferred option here.
+You could have more than one such PHY in different configurations.
+Other drivers like the Marvell one use the interface mode to
+check for the desired mode. Or you could read it from DT.
 
-Huh? I have no idea where that came from.
+> +static int dp83869_ack_interrupt(struct phy_device *phydev)
+> +{
+> +	int err = phy_read(phydev, MII_DP83869_ISR);
+> +
+> +	if (err < 0)
+> +		return err;
+> +
+> +	return 0;
+> +}
+> +
+> +static int dp83869_config_intr(struct phy_device *phydev)
+> +{
+> +	int micr_status;
+> +
+> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+> +		micr_status = phy_read(phydev, MII_DP83869_MICR);
+> +		if (micr_status < 0)
+> +			return micr_status;
+> +
+> +		micr_status |=
+> +			(MII_DP83869_MICR_AN_ERR_INT_EN |
+> +			MII_DP83869_MICR_SPEED_CHNG_INT_EN |
+> +			MII_DP83869_MICR_AUTONEG_COMP_INT_EN |
+> +			MII_DP83869_MICR_LINK_STS_CHNG_INT_EN |
+> +			MII_DP83869_MICR_DUP_MODE_CHNG_INT_EN |
+> +			MII_DP83869_MICR_SLEEP_MODE_CHNG_INT_EN);
+> +
+> +		return phy_write(phydev, MII_DP83869_MICR, micr_status);
+> +	}
+> +
+> +	micr_status = 0x0;
 
+This isn't really needed here, you can use 0 directly.
+
+> +	return phy_write(phydev, MII_DP83869_MICR, micr_status);
+> +}
+> +
+> +static int dp83869_config_port_mirroring(struct phy_device *phydev)
+> +{
+> +	struct dp83869_private *dp83869 =
+> +		(struct dp83869_private *)phydev->priv;
+> +
+The cast isn't needed.
+
+> +	if (dp83869->port_mirroring == DP83869_PORT_MIRROING_EN)
+> +		phy_set_bits_mmd(phydev, DP83869_DEVADDR, DP83869_GEN_CFG3,
+> +				 DP83869_CFG3_PORT_MIRROR_EN);
+> +	else
+> +		phy_clear_bits_mmd(phydev, DP83869_DEVADDR, DP83869_GEN_CFG3,
+> +				   DP83869_CFG3_PORT_MIRROR_EN);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_OF_MDIO
+> +static int dp83869_of_init(struct phy_device *phydev)
+> +{
+> +	struct dp83869_private *dp83869 = phydev->priv;
+> +	struct device *dev = &phydev->mdio.dev;
+> +	struct device_node *of_node = dev->of_node;
+> +	int ret;
+> +
+> +	if (!of_node)
+> +		return -ENODEV;
+> +
+> +	dp83869->io_impedance = -EINVAL;
+> +
+> +	/* Optional configuration */
+> +	ret = of_property_read_u32(of_node, "ti,clk-output-sel",
+> +				   &dp83869->clk_output_sel);
+> +	if (ret || dp83869->clk_output_sel > DP83869_CLK_O_SEL_REF_CLK)
+> +		dp83869->clk_output_sel = DP83869_CLK_O_SEL_REF_CLK;
+> +
+> +	ret = of_property_read_u32(of_node, "ti,op-mode", &dp83869->mode);
+> +	if (ret == 0) {
+> +		if (dp83869->mode < DP83869_RGMII_COPPER_ETHERNET ||
+> +		    dp83869->mode > DP83869_SGMII_COPPER_ETHERNET)
+> +			return -EINVAL;
+> +	}
+> +
+> +	op_mode = dp83869->mode;
+> +
+> +	if (of_property_read_bool(of_node, "ti,max-output-impedance"))
+> +		dp83869->io_impedance = DP83869_IO_MUX_CFG_IO_IMPEDANCE_MAX;
+> +	else if (of_property_read_bool(of_node, "ti,min-output-impedance"))
+> +		dp83869->io_impedance = DP83869_IO_MUX_CFG_IO_IMPEDANCE_MIN;
+> +
+> +	if (of_property_read_bool(of_node, "enet-phy-lane-swap"))
+> +		dp83869->port_mirroring = DP83869_PORT_MIRROING_EN;
+> +	else
+> +		dp83869->port_mirroring = DP83869_PORT_MIRROING_DIS;
+> +
+> +	if (of_property_read_u32(of_node, "rx-fifo-depth",
+> +				 &dp83869->rx_fifo_depth))
+> +		dp83869->rx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
+> +
+> +	if (of_property_read_u32(of_node, "tx-fifo-depth",
+> +				 &dp83869->tx_fifo_depth))
+> +		dp83869->tx_fifo_depth = DP83869_PHYCR_FIFO_DEPTH_4_B_NIB;
+> +
+> +	return 0;
+> +}
+> +#else
+> +static int dp83869_of_init(struct phy_device *phydev)
+> +{
+> +	return 0;
+> +}
+> +#endif /* CONFIG_OF_MDIO */
+> +
+> +static int dp83869_configure_rgmii(struct phy_device *phydev,
+> +				   struct dp83869_private *dp83869)
+> +{
+> +	int ret, val;
+> +
+> +	if (phy_interface_is_rgmii(phydev)) {
+> +		val = phy_read(phydev, MII_DP83869_PHYCTRL);
+> +		if (val < 0)
+> +			return val;
+> +		val &= ~DP83869_PHYCR_FIFO_DEPTH_MASK;
+> +		val |= (dp83869->tx_fifo_depth << DP83869_TX_FIFO_SHIFT);
+> +		val |= (dp83869->rx_fifo_depth << DP83869_RX_FIFO_SHIFT);
+> +
+> +		ret = phy_write(phydev, MII_DP83869_PHYCTRL, val);
+> +		if (ret)
+> +			return ret;
+> +		val = phy_read(phydev, MII_DP83869_PHYCTRL);
+
+Why do you read back the register?
+
+> +	}
+> +
+> +	if (dp83869->io_impedance >= 0)
+> +		phy_modify_mmd(phydev, DP83869_DEVADDR,
+> +			       DP83869_IO_MUX_CFG,
+> +			       DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL,
+> +			       dp83869->io_impedance &
+> +			       DP83869_IO_MUX_CFG_IO_IMPEDANCE_CTRL);
+> +
+> +	return ret;
+> +}
+> +
+> +static int dp83869_configure_mode(struct phy_device *phydev,
+> +				  struct dp83869_private *dp83869)
+> +{
+> +	int phy_ctrl_val;
+> +	int ret;
+> +
+> +	if (op_mode < DP83869_RGMII_COPPER_ETHERNET ||
+> +	    op_mode > DP83869_SGMII_COPPER_ETHERNET)
+> +		return -EINVAL;
+> +
+> +	if (dp83869->mode != op_mode)
+> +		dp83869->mode = op_mode;
+> +
+> +	/* Below init sequence for each operational mode is defined in
+> +	 * section 9.4.8 of the datasheet.
+> +	 */
+> +	ret = phy_write_mmd(phydev, DP83869_DEVADDR, DP83869_OP_MODE,
+> +			    dp83869->mode);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = phy_write(phydev, MII_BMCR, MII_DP83869_BMCR_DEFAULT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	phy_ctrl_val = (dp83869->rx_fifo_depth << DP83869_RX_FIFO_SHIFT |
+> +			dp83869->tx_fifo_depth << DP83869_TX_FIFO_SHIFT |
+> +			DP83869_PHY_CTRL_DEFAULT);
+> +
+> +	switch (dp83869->mode) {
+> +	case DP83869_RGMII_COPPER_ETHERNET:
+> +		ret = phy_write(phydev, MII_DP83869_PHYCTRL,
+> +				phy_ctrl_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = phy_write(phydev, MII_DP83869_CFG1, DP83869_CFG1_DEFAULT);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = dp83869_configure_rgmii(phydev, dp83869);
+> +		if (ret)
+> +			return ret;
+> +		break;
+> +	case DP83869_RGMII_SGMII_BRIDGE:
+> +		phy_modify_mmd(phydev, DP83869_DEVADDR, DP83869_OP_MODE,
+> +			       DP83869_SGMII_RGMII_BRIDGE,
+> +			       DP83869_SGMII_RGMII_BRIDGE);
+> +
+> +		ret = phy_write_mmd(phydev, DP83869_DEVADDR,
+> +				    DP83869_FX_CTRL, DP83869_FX_CTRL_DEFAULT);
+> +		if (ret)
+> +			return ret;
+> +
+> +		break;
+> +	case DP83869_1000M_MEDIA_CONVERT:
+> +		ret = phy_write(phydev, MII_DP83869_PHYCTRL,
+> +				phy_ctrl_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = phy_write_mmd(phydev, DP83869_DEVADDR,
+> +				    DP83869_FX_CTRL, DP83869_FX_CTRL_DEFAULT);
+> +		if (ret)
+> +			return ret;
+> +		break;
+> +	case DP83869_100M_MEDIA_CONVERT:
+> +		ret = phy_write(phydev, MII_DP83869_PHYCTRL,
+> +				phy_ctrl_val);
+> +		if (ret)
+> +			return ret;
+> +		break;
+> +	case DP83869_SGMII_COPPER_ETHERNET:
+> +		ret = phy_write(phydev, MII_DP83869_PHYCTRL,
+> +				phy_ctrl_val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = phy_write(phydev, MII_DP83869_CFG1, DP83869_CFG1_DEFAULT);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = phy_write_mmd(phydev, DP83869_DEVADDR,
+> +				    DP83869_FX_CTRL, DP83869_FX_CTRL_DEFAULT);
+> +		if (ret)
+> +			return ret;
+> +
+> +		break;
+> +	case DP83869_RGMII_1000_BASE:
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	};
+> +
+> +	return 0;
+> +}
+> +
+> +static int dp83869_config_init(struct phy_device *phydev)
+> +{
+> +	struct dp83869_private *dp83869;
+> +	int ret, val;
+> +
+> +	if (!phydev->priv) {
+> +		dp83869 = devm_kzalloc(&phydev->mdio.dev, sizeof(*dp83869),
+> +				       GFP_KERNEL);
+
+This belongs into the probe callback.
+
+> +		if (!dp83869)
+> +			return -ENOMEM;
+> +
+> +		phydev->priv = dp83869;
+> +		ret = dp83869_of_init(phydev);
+> +		if (ret)
+> +			return ret;
+> +	} else {
+> +		dp83869 = (struct dp83869_private *)phydev->priv;
+> +	}
+> +
+> +	ret = dp83869_configure_mode(phydev, dp83869);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Enable Interrupt output INT_OE in CFG4 register */
+> +	if (phy_interrupt_is_valid(phydev)) {
+> +		val = phy_read(phydev, DP83869_CFG4);
+> +		val |= BIT(7);
+
+Better add a constant for this bit.
+
+> +		phy_write(phydev, DP83869_CFG4, val);
+> +	}
+> +
+> +	if (dp83869->port_mirroring != DP83869_PORT_MIRROING_KEEP)
+> +		dp83869_config_port_mirroring(phydev);
+> +
+> +	/* Clock output selection if muxing property is set */
+> +	if (dp83869->clk_output_sel != DP83869_CLK_O_SEL_REF_CLK)
+> +		phy_modify_mmd(phydev, DP83869_DEVADDR, DP83869_IO_MUX_CFG,
+> +			       DP83869_IO_MUX_CFG_CLK_O_SEL_MASK,
+> +			       dp83869->clk_output_sel <<
+> +			       DP83869_IO_MUX_CFG_CLK_O_SEL_SHIFT);
+> +
+> +	return 0;
+> +}
+> +
+> +static int dp83869_phy_reset(struct phy_device *phydev)
+> +{
+> +	int err;
+> +
+> +	err = phy_write(phydev, DP83869_CTRL, DP83869_SW_RESET);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	usleep_range(10, 20);
+> +
+> +	return dp83869_config_init(phydev);
+
+If you really need to re-configure the PHY here then it's
+questionnable whether this is still a "soft" reset.
+
+> +}
+> +
+> +static struct phy_driver dp83869_driver[] = {
+> +	{
+> +		.phy_id		= DP83869_PHY_ID,
+> +		.phy_id_mask	= 0xfffffff0,
+
+You can use PHY_ID_MATCH_MODEL here.
+
+> +		.name		= "TI DP83869",
+> +		.features = PHY_GBIT_FIBRE_FEATURES,
+
+The use of features is deprecated. Check whether feature
+autoprobing works properly for this PHY, else implement the
+get_features callback.
+
+> +
+> +		.config_init	= dp83869_config_init,
+> +		.soft_reset	= dp83869_phy_reset,
+> +
+> +		/* IRQ related */
+> +		.ack_interrupt	= dp83869_ack_interrupt,
+> +		.config_intr	= dp83869_config_intr,
+> +
+> +		.suspend	= genphy_suspend,
+> +		.resume		= genphy_resume,
+> +	},
+> +};
+> +module_phy_driver(dp83869_driver);
+> +
+> +static struct mdio_device_id __maybe_unused dp83869_tbl[] = {
+> +	{ DP83869_PHY_ID, 0xfffffff0 },
+
+You can use PHY_ID_MATCH_MODEL here.
+
+> +	{ }
+> +};
+> +
+> +MODULE_DEVICE_TABLE(mdio, dp83869_tbl);
+> +
+> +MODULE_DESCRIPTION("Texas Instruments DP83869 PHY driver");
+> +MODULE_AUTHOR("Dan Murphy <dmurphy@ti.com");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/dt-bindings/net/ti-dp83869.h b/include/dt-bindings/net/ti-dp83869.h
+> new file mode 100644
+> index 000000000000..863074be52c7
+> --- /dev/null
+> +++ b/include/dt-bindings/net/ti-dp83869.h
+> @@ -0,0 +1,43 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Device Tree constants for the Texas Instruments DP83869 PHY
+> + *
+> + * Author: Dan Murphy <dmurphy@ti.com>
+> + *
+> + * Copyright:   (C) 2019 Texas Instruments, Inc.
+> + */
+> +
+> +#ifndef _DT_BINDINGS_TI_DP83869_H
+> +#define _DT_BINDINGS_TI_DP83869_H
+> +
+> +/* PHY CTRL bits */
+> +#define DP83869_PHYCR_FIFO_DEPTH_3_B_NIB	0x00
+> +#define DP83869_PHYCR_FIFO_DEPTH_4_B_NIB	0x01
+> +#define DP83869_PHYCR_FIFO_DEPTH_6_B_NIB	0x02
+> +#define DP83869_PHYCR_FIFO_DEPTH_8_B_NIB	0x03
+> +
+> +/* IO_MUX_CFG - Clock output selection */
+> +#define DP83869_CLK_O_SEL_CHN_A_RCLK		0x0
+> +#define DP83869_CLK_O_SEL_CHN_B_RCLK		0x1
+> +#define DP83869_CLK_O_SEL_CHN_C_RCLK		0x2
+> +#define DP83869_CLK_O_SEL_CHN_D_RCLK		0x3
+> +#define DP83869_CLK_O_SEL_CHN_A_RCLK_DIV5	0x4
+> +#define DP83869_CLK_O_SEL_CHN_B_RCLK_DIV5	0x5
+> +#define DP83869_CLK_O_SEL_CHN_C_RCLK_DIV5	0x6
+> +#define DP83869_CLK_O_SEL_CHN_D_RCLK_DIV5	0x7
+> +#define DP83869_CLK_O_SEL_CHN_A_TCLK		0x8
+> +#define DP83869_CLK_O_SEL_CHN_B_TCLK		0x9
+> +#define DP83869_CLK_O_SEL_CHN_C_TCLK		0xa
+> +#define DP83869_CLK_O_SEL_CHN_D_TCLK		0xb
+> +#define DP83869_CLK_O_SEL_REF_CLK		0xc
+> +
+> +#define DP83869_RGMII_COPPER_ETHERNET		0x00
+> +#define DP83869_RGMII_1000_BASE			0x01
+> +#define DP83869_RGMII_100_BASE			0x02
+> +#define DP83869_RGMII_SGMII_BRIDGE		0x03
+> +#define DP83869_1000M_MEDIA_CONVERT		0x04
+> +#define DP83869_100M_MEDIA_CONVERT		0x05
+> +#define DP83869_SGMII_COPPER_ETHERNET		0x06
+> +
+> +#endif
+> +
+> 
 
