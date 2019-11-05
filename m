@@ -2,75 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C818F04E2
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 19:18:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D495F04EB
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 19:19:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390703AbfKESSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 13:18:24 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:50674 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390520AbfKESSX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 13:18:23 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F313F200256;
-        Tue,  5 Nov 2019 19:18:21 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E5D492001FC;
-        Tue,  5 Nov 2019 19:18:21 +0100 (CET)
-Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id B1A45205ED;
-        Tue,  5 Nov 2019 19:18:21 +0100 (CET)
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net-next] gianfar: Maximize Rx buffer size
-Date:   Tue,  5 Nov 2019 20:18:21 +0200
-Message-Id: <1572977901-31431-1-git-send-email-claudiu.manoil@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2390685AbfKESTd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 13:19:33 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:51708 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390233AbfKESTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 13:19:32 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA5IJPP1114769;
+        Tue, 5 Nov 2019 12:19:25 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1572977965;
+        bh=PiZyUujy+SgYthoNgklnlF7ATFYTXAxEvu3VLNm0Dl4=;
+        h=From:To:CC:Subject:Date;
+        b=OGC1Hi5Bz9T3D01WhhBl3G8Jyj2ECnt96cMSUActjR026sqQUx2T3vaLpy26WBZUL
+         x/OQ9YNKUN4uoK3673or4qQmwWo4RjLf+/PqsleqWq+YPwSAKtDd//r0nnk09Mu6n/
+         YN6/WgfqkppADMJQrD68PLlET/9MxRBV0IzVG9HU=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xA5IJPxg037931
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 5 Nov 2019 12:19:25 -0600
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 5 Nov
+ 2019 12:19:25 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Tue, 5 Nov 2019 12:19:10 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA5IJP4s061468;
+        Tue, 5 Nov 2019 12:19:25 -0600
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <andrew@lunn.ch>, <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>, Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH 1/2] dt-bindings: net: dp83869: Add TI dp83869 phy
+Date:   Tue, 5 Nov 2019 12:18:25 -0600
+Message-ID: <20191105181826.25114-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.22.0.214.g8dca754b1e
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Until now the size of a Rx buffer was artificially limited
-to 1536B (which happens to be the default, after reset, hardware
-value for a Rx buffer). This approach however leaves unused
-memory space for Rx packets, since the driver uses a paged
-allocation scheme that reserves half a page for each Rx skb.
-There's also the inconvenience that frames around 1536 bytes
-can get scattered if the limit is slightly exceeded. This limit
-can be exceeded even for standard MTU of 1500B traffic, for common
-cases like stacked VLANs, or DSA tags.
-To address these issues, let's just compute the buffer size
-starting from the upper limit of 2KB (half a page) and
-subtract the skb overhead and alignment restrictions.
+Add dt bindings for the TI dp83869 Gigabit ethernet phy
+device.
 
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Signed-off-by: Dan Murphy <dmurphy@ti.com>
+CC: Rob Herring <robh+dt@kernel.org>
 ---
- drivers/net/ethernet/freescale/gianfar.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/net/ti,dp83869.yaml   | 84 +++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,dp83869.yaml
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
-index f472a6d..432c6a8 100644
---- a/drivers/net/ethernet/freescale/gianfar.h
-+++ b/drivers/net/ethernet/freescale/gianfar.h
-@@ -90,11 +90,11 @@ extern const char gfar_driver_version[];
- #define DEFAULT_RX_LFC_THR  16
- #define DEFAULT_LFC_PTVVAL  4
- 
--/* prevent fragmenation by HW in DSA environments */
--#define GFAR_RXB_SIZE roundup(1536 + 8, 64)
--#define GFAR_SKBFRAG_SIZE (RXBUF_ALIGNMENT + GFAR_RXB_SIZE \
--			  + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
- #define GFAR_RXB_TRUESIZE 2048
-+#define GFAR_SKBFRAG_OVR (RXBUF_ALIGNMENT \
-+			  + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
-+#define GFAR_RXB_SIZE rounddown(GFAR_RXB_TRUESIZE - GFAR_SKBFRAG_OVR, 64)
-+#define GFAR_SKBFRAG_SIZE (GFAR_RXB_SIZE + GFAR_SKBFRAG_OVR)
- 
- #define TX_RING_MOD_MASK(size) (size-1)
- #define RX_RING_MOD_MASK(size) (size-1)
+diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+new file mode 100644
+index 000000000000..6fe3e451da8a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+@@ -0,0 +1,84 @@
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (C) 2019 Texas Instruments Incorporated
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/ti,dp83869.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: TI DP83869 ethernet PHY
++
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++
++maintainers:
++  - Dan Murphy <dmurphy@ti.com>
++
++description: |
++  The DP83869HM device is a robust, fully-featured Gigabit (PHY) transceiver
++  with integrated PMD sublayers that supports 10BASE-Te, 100BASE-TX and
++  1000BASE-T Ethernet protocols. The DP83869 also supports 1000BASE-X and
++  100BASE-FX Fiber protocols.
++  This device interfaces to the MAC layer through Reduced GMII (RGMII) and
++  SGMII The DP83869HM supports Media Conversion in Managed mode. In this mode,
++  the DP83869HM can run 1000BASE-X-to-1000BASE-T and 100BASE-FX-to-100BASE-TX
++  conversions.  The DP83869HM can also support Bridge Conversion from RGMII to
++  SGMII and SGMII to RGMII.
++
++  Specifications about the charger can be found at:
++    http://www.ti.com/lit/ds/symlink/dp83869hm.pdf
++
++properties:
++  reg:
++    maxItems: 1
++
++  ti,min-output-impedance:
++    type: boolean
++    description: |
++       MAC Interface Impedance control to set the programmable output impedance
++       to a minimum value (35 ohms).
++
++  ti,max-output-impedance:
++    type: boolean
++    description: |
++       MAC Interface Impedance control to set the programmable output impedance
++       to a maximum value (70 ohms).
++
++  tx-fifo-depth:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description: |
++       Transmitt FIFO depth see dt-bindings/net/ti-dp83869.h for values
++
++  rx-fifo-depth:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description: |
++       Receive FIFO depth see dt-bindings/net/ti-dp83869.h for values
++
++  ti,clk-output-sel:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description: |
++       Muxing option for CLK_OUT pin see dt-bindings/net/ti-dp83869.h for values.
++
++  ti,op-mode:
++    $ref: /schemas/types.yaml#definitions/uint32
++    description: |
++       Operational mode for the PHY.  If this is not set then the operational
++       mode is set by the straps. see dt-bindings/net/ti-dp83869.h for values
++
++required:
++  - reg
++
++examples:
++  - |
++    #include <dt-bindings/net/ti-dp83869.h>
++    mdio0 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      ethphy0: ethernet-phy@0 {
++        reg = <0>;
++        tx-fifo-depth = <DP83869_PHYCR_FIFO_DEPTH_4_B_NIB>;
++        rx-fifo-depth = <DP83869_PHYCR_FIFO_DEPTH_4_B_NIB>;
++        ti,op-mode = <DP83869_RGMII_COPPER_ETHERNET>;
++        ti,max-output-impedance = "true";
++        ti,clk-output-sel = <DP83869_CLK_O_SEL_CHN_A_RCLK>;
++      };
++    };
 -- 
-2.7.4
+2.22.0.214.g8dca754b1e
 
