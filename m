@@ -2,135 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AC44EF475
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 05:22:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 612C1EF46B
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 05:19:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730433AbfKEEWM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 23:22:12 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:38651 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730316AbfKEEWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 23:22:11 -0500
-Received: by mail-io1-f72.google.com with SMTP id h26so401889ioe.5
-        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 20:22:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=X9lW8ii3GGZ4Cig/UC9Hwb9iVEyqtiyLpsfWPVzv+AU=;
-        b=BVkiAOHV15lQolEEMF2zITHkDxARh6s0PvaVJE5tqgU8IDMqU5poTLLrpvoe3Gi+ks
-         zQ8G940SZ1qldurjM7JJ+cHRECB3uYtJfl2MXLWOo4C5BNeZ8+Rp8dt3Ff1uXLUee9Ea
-         hDEiiXTObDcosVuyu6LeW3IwVuFo2fgDbz59UPOegfAVKuHyCZtoWsom+zJFezt4J30p
-         a36WOTXYW457bdbt5b2C3E4MQIac59ghn71ac8DzJ/B0ic1hCHgYWNohZmvyGIpMgVz4
-         WruNvGzrzGZtG7LuFwc3xQ5VI9ujGSaCMgOFcK/eYZRAldMXLu8aK+VGZuxYzI5uNy/m
-         BHcw==
-X-Gm-Message-State: APjAAAVgA4uDIPHzWU6EimrhWHmQFHcQFTxBF/gbTVfDE7yVyc93pTL6
-        ea2g0LjAwm0VQHl0lWOjc7vJZH0bpBS/A7BWMVITDLXKw1kQ
-X-Google-Smtp-Source: APXvYqxN5W1l5tyGdgaW+GmFjSDeL5UI9n+R9bdebBqjvYKj96bA0+NJN7OVDS7UtkpUkfqSJduFphaddA7Pm10TgnhgvBEJvIy3
-MIME-Version: 1.0
-X-Received: by 2002:a6b:38c5:: with SMTP id f188mr26602776ioa.235.1572927730568;
- Mon, 04 Nov 2019 20:22:10 -0800 (PST)
-Date:   Mon, 04 Nov 2019 20:22:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a367e3059691c6b4@google.com>
-Subject: general protection fault in j1939_sk_bind
-From:   syzbot <syzbot+4857323ec1bb236f6a45@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
-        robin@protonic.nl, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1730095AbfKEETF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 23:19:05 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:34060 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729711AbfKEETF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 23:19:05 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xA54InT3067243;
+        Tue, 5 Nov 2019 04:18:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : subject :
+ date : message-id; s=corp-2019-08-05;
+ bh=hcAq50x7GyS8NS7+myX6Bp6qr1nWHvv3C4o2RcESjH0=;
+ b=sluc59YNKEFHdi3/FbPdjHjXl56nFAS581c5iQeaElokgvxiVnWEiY4K+rYivzBSemxP
+ 6QlQSYy/X7Kknuz7OyiBl699BLzuIv8dLjvtE84n4oMtd5mXUnHi5E2KugIrx0Nh35qn
+ r/vCz2KaW4RHfr+3BrAhZYbYtPBgyjPiLJernuusXUmOsWZFr3E1rP9oCHmc4CUQ6TmG
+ Ycqy0oNjnwxGwodeFh1qtLwkPYZfnbzOkbyJaPWCKytanZKdGbCd1HUvydnIupHf7vxl
+ iVyPugE5zxLfvbq3ah33SLJgVaMEBuVreB6X447j4X4SQqZ51VJSgikfcNNcfeRrBWN/ zg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 2w11rpufuu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 05 Nov 2019 04:18:54 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xA54DUrn087547;
+        Tue, 5 Nov 2019 04:16:54 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 2w3160hkaq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 05 Nov 2019 04:16:53 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xA54GqGB031043;
+        Tue, 5 Nov 2019 04:16:53 GMT
+Received: from shipfan.cn.oracle.com (/10.113.210.105)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 04 Nov 2019 20:16:52 -0800
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+To:     rain.1986.08.12@gmail.com, yanjun.zhu@oracle.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        jakub.kicinski@netronome.com
+Subject: [PATCHv4 1/1] net: forcedeth: add xmit_more support
+Date:   Mon,  4 Nov 2019 23:26:41 -0500
+Message-Id: <1572928001-6915-1-git-send-email-yanjun.zhu@oracle.com>
+X-Mailer: git-send-email 2.7.4
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9431 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1911050031
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9431 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1911050032
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+This change adds support for xmit_more based on the igb commit 6f19e12f6230
+("igb: flush when in xmit_more mode and under descriptor pressure") and
+commit 6b16f9ee89b8 ("net: move skb->xmit_more hint to softnet data") that
+were made to igb to support this feature. The function netif_xmit_stopped
+is called to check whether transmit queue on device is currently unable to
+send to determine whether we must write the tail because we can add no
+further buffers.
 
-syzbot found the following crash on:
+When normal packets and/or xmit_more packets fill up tx_desc, it is
+necessary to trigger NIC tx reg.
 
-HEAD commit:    a99d8080 Linux 5.4-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a6b844e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
-dashboard link: https://syzkaller.appspot.com/bug?extid=4857323ec1bb236f6a45
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=110a8b8ae00000
+Following the advice from David Miller and Jakub Kicinski, after the
+xmit_more feature is added, the following scenario will occur.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4857323ec1bb236f6a45@syzkaller.appspotmail.com
+         |
+   xmit_more packets
+         |
+   DMA_MAPPING
+         |
+   DMA_MAPPING error check
+         |
+   xmit_more packets already in HW xmit queue
+         |
 
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 8341 Comm: syz-executor.0 Not tainted 5.4.0-rc6 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:__lock_acquire+0x86/0x1be0 kernel/locking/lockdep.c:3828
-Code: 8a 04 30 84 c0 0f 85 66 12 00 00 83 3d 92 24 66 07 00 0f 84 91 12 00  
-00 83 3d 35 a6 34 07 00 74 34 48 8b 44 24 10 48 c1 e8 03 <80> 3c 30 00 74  
-14 48 8b 7c 24 10 e8 fa 13 54 00 48 be 00 00 00 00
-RSP: 0018:ffff88809865fb80 EFLAGS: 00010006
-RAX: 0000000000000218 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 00000000000010c0
-RBP: ffff88809865fcd8 R08: 0000000000000001 R09: 0000000000000000
-R10: fffffbfff117cc5d R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: ffff888098654700
-FS:  00007f68f3c1c700(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000075c000 CR3: 00000000a96a2000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  lock_acquire+0x158/0x250 kernel/locking/lockdep.c:4487
-  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
-  _raw_spin_lock_bh+0x34/0x50 kernel/locking/spinlock.c:175
-  spin_lock_bh include/linux/spinlock.h:343 [inline]
-  j1939_jsk_del net/can/j1939/socket.c:90 [inline]
-  j1939_sk_bind+0x387/0xac0 net/can/j1939/socket.c:421
-  __sys_bind+0x2c2/0x3a0 net/socket.c:1647
-  __do_sys_bind net/socket.c:1658 [inline]
-  __se_sys_bind net/socket.c:1656 [inline]
-  __x64_sys_bind+0x7a/0x90 net/socket.c:1656
-  do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45a219
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f68f3c1bc78 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a219
-RDX: 0000000000000018 RSI: 0000000020000000 RDI: 0000000000000003
-RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f68f3c1c6d4
-R13: 00000000004c057e R14: 00000000004d2c50 R15: 00000000ffffffff
-Modules linked in:
----[ end trace bc0dd162dace32c7 ]---
-RIP: 0010:__lock_acquire+0x86/0x1be0 kernel/locking/lockdep.c:3828
-Code: 8a 04 30 84 c0 0f 85 66 12 00 00 83 3d 92 24 66 07 00 0f 84 91 12 00  
-00 83 3d 35 a6 34 07 00 74 34 48 8b 44 24 10 48 c1 e8 03 <80> 3c 30 00 74  
-14 48 8b 7c 24 10 e8 fa 13 54 00 48 be 00 00 00 00
-RSP: 0018:ffff88809865fb80 EFLAGS: 00010006
-RAX: 0000000000000218 RBX: 0000000000000001 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 00000000000010c0
-RBP: ffff88809865fcd8 R08: 0000000000000001 R09: 0000000000000000
-R10: fffffbfff117cc5d R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: ffff888098654700
-FS:  00007f68f3c1c700(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000075c000 CR3: 00000000a96a2000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+In the above scenario, if DMA_MAPPING error occurrs, the xmit_more packets
+already in HW xmit queue will also be dropped. This is different from the
+behavior before xmit_more feature. So it is necessary to trigger NIC HW tx
+reg in the above scenario.
 
+To the non-xmit_more packets, the above scenario will not occur.
 
+Tested:
+  - pktgen (xmit_more packets) SMP x86_64 ->
+    Test command:
+    ./pktgen_sample03_burst_single_flow.sh ... -b 8 -n 1000000
+    Test results:
+    Params:
+    ...
+    burst: 8
+    ...
+    Result: OK: 12194004(c12188996+d5007) usec, 1000001 (1500byte,0frags)
+    82007pps 984Mb/sec (984084000bps) errors: 0
+
+  - iperf (normal packets) SMP x86_64 ->
+    Test command:
+    Server: iperf -s
+    Client: iperf -c serverip
+    Result:
+    TCP window size: 85.0 KByte (default)
+    ------------------------------------------------------------
+    [ ID] Interval       Transfer     Bandwidth
+    [  3]  0.0-10.0 sec  1.10 GBytes   942 Mbits/sec
+
+CC: Joe Jin <joe.jin@oracle.com>
+CC: JUNXIAO_BI <junxiao.bi@oracle.com>
+Reported-and-tested-by: Nan san <nan.1986san@gmail.com>
+Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+V3->V4: fix DMA mapping errors handler with xmit_more feature.
+V2->V3: fix typo errors.
+V1->V2: use the lower case label.
+---
+ drivers/net/ethernet/nvidia/forcedeth.c | 67 ++++++++++++++++++++++++++++-----
+ 1 file changed, 57 insertions(+), 10 deletions(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index 05d2b47..0d21ddd 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -2225,6 +2225,7 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct nv_skb_map *prev_tx_ctx;
+ 	struct nv_skb_map *tmp_tx_ctx = NULL, *start_tx_ctx = NULL;
+ 	unsigned long flags;
++	netdev_tx_t ret = NETDEV_TX_OK;
+ 
+ 	/* add fragments to entries count */
+ 	for (i = 0; i < fragments; i++) {
+@@ -2240,7 +2241,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		netif_stop_queue(dev);
+ 		np->tx_stop = 1;
+ 		spin_unlock_irqrestore(&np->lock, flags);
+-		return NETDEV_TX_BUSY;
++
++		/* When normal packets and/or xmit_more packets fill up
++		 * tx_desc, it is necessary to trigger NIC tx reg.
++		 */
++		ret = NETDEV_TX_BUSY;
++		goto txkick;
+ 	}
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+@@ -2259,7 +2265,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			u64_stats_update_begin(&np->swstats_tx_syncp);
+ 			nv_txrx_stats_inc(stat_tx_dropped);
+ 			u64_stats_update_end(&np->swstats_tx_syncp);
+-			return NETDEV_TX_OK;
++
++			writel(NVREG_TXRXCTL_KICK | np->txrxctl_bits,
++			       get_hwbase(dev) + NvRegTxRxControl);
++			ret = NETDEV_TX_OK;
++
++			goto dma_error;
+ 		}
+ 		np->put_tx_ctx->dma_len = bcnt;
+ 		np->put_tx_ctx->dma_single = 1;
+@@ -2305,7 +2316,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 				u64_stats_update_begin(&np->swstats_tx_syncp);
+ 				nv_txrx_stats_inc(stat_tx_dropped);
+ 				u64_stats_update_end(&np->swstats_tx_syncp);
+-				return NETDEV_TX_OK;
++
++				writel(NVREG_TXRXCTL_KICK | np->txrxctl_bits,
++				       get_hwbase(dev) + NvRegTxRxControl);
++				ret = NETDEV_TX_OK;
++
++				goto dma_error;
+ 			}
+ 
+ 			np->put_tx_ctx->dma_len = bcnt;
+@@ -2357,8 +2373,15 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+-	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
+-	return NETDEV_TX_OK;
++txkick:
++	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
++		u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
++
++		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
++	}
++
++dma_error:
++	return ret;
+ }
+ 
+ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+@@ -2381,6 +2404,7 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 	struct nv_skb_map *start_tx_ctx = NULL;
+ 	struct nv_skb_map *tmp_tx_ctx = NULL;
+ 	unsigned long flags;
++	netdev_tx_t ret = NETDEV_TX_OK;
+ 
+ 	/* add fragments to entries count */
+ 	for (i = 0; i < fragments; i++) {
+@@ -2396,7 +2420,13 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 		netif_stop_queue(dev);
+ 		np->tx_stop = 1;
+ 		spin_unlock_irqrestore(&np->lock, flags);
+-		return NETDEV_TX_BUSY;
++
++		/* When normal packets and/or xmit_more packets fill up
++		 * tx_desc, it is necessary to trigger NIC tx reg.
++		 */
++		ret = NETDEV_TX_BUSY;
++
++		goto txkick;
+ 	}
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+@@ -2416,7 +2446,12 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 			u64_stats_update_begin(&np->swstats_tx_syncp);
+ 			nv_txrx_stats_inc(stat_tx_dropped);
+ 			u64_stats_update_end(&np->swstats_tx_syncp);
+-			return NETDEV_TX_OK;
++
++			writel(NVREG_TXRXCTL_KICK | np->txrxctl_bits,
++			       get_hwbase(dev) + NvRegTxRxControl);
++			ret = NETDEV_TX_OK;
++
++			goto dma_error;
+ 		}
+ 		np->put_tx_ctx->dma_len = bcnt;
+ 		np->put_tx_ctx->dma_single = 1;
+@@ -2463,7 +2498,12 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 				u64_stats_update_begin(&np->swstats_tx_syncp);
+ 				nv_txrx_stats_inc(stat_tx_dropped);
+ 				u64_stats_update_end(&np->swstats_tx_syncp);
+-				return NETDEV_TX_OK;
++
++				writel(NVREG_TXRXCTL_KICK | np->txrxctl_bits,
++				       get_hwbase(dev) + NvRegTxRxControl);
++				ret = NETDEV_TX_OK;
++
++				goto dma_error;
+ 			}
+ 			np->put_tx_ctx->dma_len = bcnt;
+ 			np->put_tx_ctx->dma_single = 0;
+@@ -2542,8 +2582,15 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
+ 
+ 	spin_unlock_irqrestore(&np->lock, flags);
+ 
+-	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
+-	return NETDEV_TX_OK;
++txkick:
++	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
++		u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
++
++		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
++	}
++
++dma_error:
++	return ret;
+ }
+ 
+ static inline void nv_tx_flip_ownership(struct net_device *dev)
+-- 
+2.7.4
+
