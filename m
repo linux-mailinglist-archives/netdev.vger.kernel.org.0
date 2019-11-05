@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 541B1F0946
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:25:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72DE5F0947
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:25:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730370AbfKEWY7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:24:59 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:46432 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729895AbfKEWY7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:24:59 -0500
-Received: by mail-lj1-f195.google.com with SMTP id e9so10434394ljp.13
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:24:57 -0800 (PST)
+        id S2387415AbfKEWZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:25:02 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37947 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387398AbfKEWZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:25:02 -0500
+Received: by mail-lj1-f193.google.com with SMTP id v8so8089091ljh.5
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:25:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZS1jFax+2UxUSONAINTJJT6NSOgXpazCzY0vS224Ozc=;
-        b=Y6Th/8E+ihePmfNlm2fXFFQwpWO2aN7ltlRfoSVk0FVCuXRTpUyXEL7MezU1BSTZsL
-         PFkoHgP0Gf8ypgF6vmEwTa4b2lacdizfmhnC8T2g7krrobumZvLPL/9RJ2G+vcjG9Hmw
-         reqBi4yWPwf/oJAnf/Zv9JTJXdBoY0baUd0EG0hXQWA7HvGmLRohzlJRtNessMpyq8Lm
-         AHtpsBiOCk/ymQCdv0DCm84Uxk1CMdend8BElx4tGxTkPV+26KFVm5xkCoZEI+yA+iSc
-         XAhCZJDfnzdWW0eDyzC3tnhnEMsBHzPhSXNtRDCw3izz1yk0eI+dDBf6y9YufKCSnkUv
-         jECA==
+        bh=9adK9sQDwPx67mGpucGakQVejsiUwv5Zy9ukMwfSOcs=;
+        b=MQCUHXpor6Jhb9Pjb6A3TabsfP45DFOkfV22odIpDSYXeLKSwKrf7JDM1rtVlhta9O
+         QyMkUK/ud45nA/pCCD/9EsQggZV0TNg+9w4fHhE53OMlGxNr//yqKEYZ8dxrWLiD9s87
+         dr8hc8HTGdl2shVau/9lO9JJ5VNaxNftkXXms0TuVMXr+DGdBiVy5dQbvyKxKhCRnYbs
+         eyQbwCb34z2z3MZlbh56JnK5xXDSZ7zlwtIovlwOeV5+FYPt4pTSRtAY0zy6T84DqyDK
+         fBtYTj1PgC4KH0E7HE3k7aAb9KR8qZvqAvWKk9Ow+fyiclLjKhSGFuZcGWS7tdM2Ck3J
+         x/Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZS1jFax+2UxUSONAINTJJT6NSOgXpazCzY0vS224Ozc=;
-        b=jhzBwqCAwLyWjIWlL55qlfrBfBRum+Dym95l6cIeIJAUHa+TQFvZfo6vezPJQ7zmxl
-         qfO7OpmNwe88zA7iq7e1d6HC+wuQHFwTaymsrUycCiaDqGofN8igYUpEzs2qLVMiZXV7
-         c6O12cSbNh5uVXVGNFM60Wcu6XouDkU7CG+XUnsDlJzM85RDvCWcE9P56K2q0e+8IfhQ
-         2MIASuyWPuEG4CR0YnvS3P0sYAhDvAIl/997reUiP0aAPvLQWzzQszBsTutQl9moI8UM
-         Bm3RAyCeDyco34atItUZs5mGKducThCugMFqE8lFtRSbhHOljBKMnjk5v90ZmJc3F4aX
-         O2iw==
-X-Gm-Message-State: APjAAAV32AknKOf+Tds5Xa/H/uT1BMcmxrdeodMPgW+kTFr4oTnua8Ux
-        1/KRovnJbmWmPQW0mm23XmFFnQ==
-X-Google-Smtp-Source: APXvYqxc0MPo7+gu36M8ftZEqf1FcWsYEU/9K7jRunhrcCXdbwlwq27RPMMaMLwiCjBmkYJXowILYg==
-X-Received: by 2002:a2e:900e:: with SMTP id h14mr16768218ljg.27.1572992696371;
-        Tue, 05 Nov 2019 14:24:56 -0800 (PST)
+        bh=9adK9sQDwPx67mGpucGakQVejsiUwv5Zy9ukMwfSOcs=;
+        b=t7bI9LgTHt8gLDh+sc4aRC1li0s2FLB9TTaMcfv0ZFE//dDJlg68NWPRSOn30DCaBs
+         gX+SRQA4r2ie1U3luGAPwAbTNzujrPyCH65Fl0kw6KjmPkFZKTWbQp05Hxio7XHjLkCR
+         wfsacdSJh8K5xmbb31Q2M/xJwk4blTfWyuueH9ufO7j7faTu8UheHZhTCkhpLKvgjjsl
+         eGGznnNmPuYcB21X+m3Bq3xn44SKVNob55SSo56czoxiiwQkoelsDIkusaSAEp5W45K5
+         9ZHvNC7ZYd3vni/VXtaZVIhomRb4wAGXgCVJNhgPdBUAilaIry6AnaEXC9HmswkzTnTF
+         wuGw==
+X-Gm-Message-State: APjAAAUMoT0f3GIzClfVMOdKFsfYDekmcynlsmEgNhSDoZ4eVptauix4
+        SdhhT3HSoMOVY2zPSO3H0D1lDQ==
+X-Google-Smtp-Source: APXvYqzrxpCERcVS0ntlPuTrGS9DuGt0MTcq0xcHda3+ZiPbdCz6/rVIlPk6pFxOZ3jg1gNXQAkwvg==
+X-Received: by 2002:a05:651c:1b0:: with SMTP id c16mr24055499ljn.192.1572992699587;
+        Tue, 05 Nov 2019 14:24:59 -0800 (PST)
 Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s25sm4020139lji.81.2019.11.05.14.24.53
+        by smtp.gmail.com with ESMTPSA id s25sm4020139lji.81.2019.11.05.14.24.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 14:24:55 -0800 (PST)
+        Tue, 05 Nov 2019 14:24:58 -0800 (PST)
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
         borisp@mellanox.com, aviadye@mellanox.com,
         john.fastabend@gmail.com, daniel@iogearbox.net,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Mallesham Jatharakonda <mallesh537@gmail.com>,
-        Pooja Trivedi <poojatrivedi@gmail.com>,
         Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net 2/3] net/tls: add a TX lock
-Date:   Tue,  5 Nov 2019 14:24:35 -0800
-Message-Id: <20191105222436.27359-3-jakub.kicinski@netronome.com>
+Subject: [PATCH net 3/3] selftests/tls: add test for concurrent recv and send
+Date:   Tue,  5 Nov 2019 14:24:36 -0800
+Message-Id: <20191105222436.27359-4-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191105222436.27359-1-jakub.kicinski@netronome.com>
 References: <20191105222436.27359-1-jakub.kicinski@netronome.com>
@@ -66,209 +64,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TLS TX needs to release and re-acquire the socket lock if send buffer
-fills up.
+Add a test which spawns 16 threads and performs concurrent
+send and recv calls on the same socket.
 
-TLS SW TX path currently depends on only allowing one thread to enter
-the function by the abuse of sk_write_pending. If another writer is
-already waiting for memory no new ones are allowed in.
-
-This has two problems:
- - writers don't wake other threads up when they leave the kernel;
-   meaning that this scheme works for single extra thread (second
-   application thread or delayed work) because memory becoming
-   available will send a wake up request, but as Mallesham and
-   Pooja report with larger number of threads it leads to threads
-   being put to sleep indefinitely;
- - the delayed work does not get _scheduled_ but it may _run_ when
-   other writers are present leading to crashes as writers don't
-   expect state to change under their feet (same records get pushed
-   and freed multiple times); it's hard to reliably bail from the
-   work, however, because the mere presence of a writer does not
-   guarantee that the writer will push pending records before exiting.
-
-Ensuring wakeups always happen will make the code basically open
-code a mutex. Just use a mutex.
-
-The TLS HW TX path does not have any locking (not even the
-sk_write_pending hack), yet it uses a per-socket sg_tx_data
-array to push records.
-
-Fixes: a42055e8d2c3 ("net/tls: Add support for async encryption of records for performance")
-Reported-by: Mallesham  Jatharakonda <mallesh537@gmail.com>
-Reported-by: Pooja Trivedi <poojatrivedi@gmail.com>
 Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 ---
- include/net/tls.h    |  5 +++++
- net/tls/tls_device.c |  6 ++++++
- net/tls/tls_main.c   |  2 ++
- net/tls/tls_sw.c     | 21 +++++++--------------
- 4 files changed, 20 insertions(+), 14 deletions(-)
+ tools/testing/selftests/net/tls.c | 108 ++++++++++++++++++++++++++++++
+ 1 file changed, 108 insertions(+)
 
-diff --git a/include/net/tls.h b/include/net/tls.h
-index c664e6dba0d1..794e297483ea 100644
---- a/include/net/tls.h
-+++ b/include/net/tls.h
-@@ -40,6 +40,7 @@
- #include <linux/socket.h>
- #include <linux/tcp.h>
- #include <linux/skmsg.h>
-+#include <linux/mutex.h>
- #include <linux/netdevice.h>
- #include <linux/rcupdate.h>
+diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
+index 4c285b6e1db8..1c8f194d6556 100644
+--- a/tools/testing/selftests/net/tls.c
++++ b/tools/testing/selftests/net/tls.c
+@@ -898,6 +898,114 @@ TEST_F(tls, nonblocking)
+ 	}
+ }
  
-@@ -269,6 +270,10 @@ struct tls_context {
- 
- 	bool in_tcp_sendpages;
- 	bool pending_open_record_frags;
++static void
++test_mutliproc(struct __test_metadata *_metadata, struct _test_data_tls *self,
++	       bool sendpg, unsigned int n_readers, unsigned int n_writers)
++{
++	const unsigned int n_children = n_readers + n_writers;
++	const size_t data = 6 * 1000 * 1000;
++	const size_t file_sz = data / 100;
++	size_t read_bias, write_bias;
++	int i, fd, child_id;
++	char buf[file_sz];
++	pid_t pid;
 +
-+	struct mutex tx_lock; /* protects partially_sent_* fields and
-+			       * per-type TX fields
-+			       */
- 	unsigned long flags;
- 
- 	/* cache cold stuff */
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 5a3715ddc592..683d00837693 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -523,8 +523,10 @@ static int tls_push_data(struct sock *sk,
- int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
++	/* Only allow multiples for simplicity */
++	ASSERT_EQ(!(n_readers % n_writers) || !(n_writers % n_readers), true);
++	read_bias = n_writers / n_readers ?: 1;
++	write_bias = n_readers / n_writers ?: 1;
++
++	/* prep a file to send */
++	fd = open("/tmp/", O_TMPFILE | O_RDWR, 0600);
++	ASSERT_GE(fd, 0);
++
++	memset(buf, 0xac, file_sz);
++	ASSERT_EQ(write(fd, buf, file_sz), file_sz);
++
++	/* spawn children */
++	for (child_id = 0; child_id < n_children; child_id++) {
++		pid = fork();
++		ASSERT_NE(pid, -1);
++		if (!pid)
++			break;
++	}
++
++	/* parent waits for all children */
++	if (pid) {
++		for (i = 0; i < n_children; i++) {
++			int status;
++
++			wait(&status);
++			EXPECT_EQ(status, 0);
++		}
++
++		return;
++	}
++
++	/* Split threads for reading and writing */
++	if (child_id < n_readers) {
++		size_t left = data * read_bias;
++		char rb[8001];
++
++		while (left) {
++			int res;
++
++			res = recv(self->cfd, rb,
++				   left > sizeof(rb) ? sizeof(rb) : left, 0);
++
++			EXPECT_GE(res, 0);
++			left -= res;
++		}
++	} else {
++		size_t left = data * write_bias;
++
++		while (left) {
++			int res;
++
++			ASSERT_EQ(lseek(fd, 0, SEEK_SET), 0);
++			if (sendpg)
++				res = sendfile(self->fd, fd, NULL,
++					       left > file_sz ? file_sz : left);
++			else
++				res = send(self->fd, buf,
++					   left > file_sz ? file_sz : left, 0);
++
++			EXPECT_GE(res, 0);
++			left -= res;
++		}
++	}
++}
++
++TEST_F(tls, mutliproc_even)
++{
++	test_mutliproc(_metadata, self, false, 6, 6);
++}
++
++TEST_F(tls, mutliproc_readers)
++{
++	test_mutliproc(_metadata, self, false, 4, 12);
++}
++
++TEST_F(tls, mutliproc_writers)
++{
++	test_mutliproc(_metadata, self, false, 10, 2);
++}
++
++TEST_F(tls, mutliproc_sendpage_even)
++{
++	test_mutliproc(_metadata, self, true, 6, 6);
++}
++
++TEST_F(tls, mutliproc_sendpage_readers)
++{
++	test_mutliproc(_metadata, self, true, 4, 12);
++}
++
++TEST_F(tls, mutliproc_sendpage_writers)
++{
++	test_mutliproc(_metadata, self, true, 10, 2);
++}
++
+ TEST_F(tls, control_msg)
  {
- 	unsigned char record_type = TLS_RECORD_TYPE_DATA;
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	int rc;
- 
-+	mutex_lock(&tls_ctx->tx_lock);
- 	lock_sock(sk);
- 
- 	if (unlikely(msg->msg_controllen)) {
-@@ -538,12 +540,14 @@ int tls_device_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 
- out:
- 	release_sock(sk);
-+	mutex_unlock(&tls_ctx->tx_lock);
- 	return rc;
- }
- 
- int tls_device_sendpage(struct sock *sk, struct page *page,
- 			int offset, size_t size, int flags)
- {
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct iov_iter	msg_iter;
- 	char *kaddr = kmap(page);
- 	struct kvec iov;
-@@ -552,6 +556,7 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
- 	if (flags & MSG_SENDPAGE_NOTLAST)
- 		flags |= MSG_MORE;
- 
-+	mutex_lock(&tls_ctx->tx_lock);
- 	lock_sock(sk);
- 
- 	if (flags & MSG_OOB) {
-@@ -568,6 +573,7 @@ int tls_device_sendpage(struct sock *sk, struct page *page,
- 
- out:
- 	release_sock(sk);
-+	mutex_unlock(&tls_ctx->tx_lock);
- 	return rc;
- }
- 
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index ac88877dcade..0775ae40fcfb 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -267,6 +267,7 @@ void tls_ctx_free(struct sock *sk, struct tls_context *ctx)
- 
- 	memzero_explicit(&ctx->crypto_send, sizeof(ctx->crypto_send));
- 	memzero_explicit(&ctx->crypto_recv, sizeof(ctx->crypto_recv));
-+	mutex_destroy(&ctx->tx_lock);
- 
- 	if (sk)
- 		kfree_rcu(ctx, rcu);
-@@ -612,6 +613,7 @@ static struct tls_context *create_ctx(struct sock *sk)
- 	if (!ctx)
- 		return NULL;
- 
-+	mutex_init(&ctx->tx_lock);
- 	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
- 	ctx->sk_proto = sk->sk_prot;
- 	return ctx;
-diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-index e155b792df0b..446f23c1f3ce 100644
---- a/net/tls/tls_sw.c
-+++ b/net/tls/tls_sw.c
-@@ -897,15 +897,9 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	if (msg->msg_flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL))
- 		return -ENOTSUPP;
- 
-+	mutex_lock(&tls_ctx->tx_lock);
- 	lock_sock(sk);
- 
--	/* Wait till there is any pending write on socket */
--	if (unlikely(sk->sk_write_pending)) {
--		ret = wait_on_pending_writer(sk, &timeo);
--		if (unlikely(ret))
--			goto send_end;
--	}
--
- 	if (unlikely(msg->msg_controllen)) {
- 		ret = tls_proccess_cmsg(sk, msg, &record_type);
- 		if (ret) {
-@@ -1091,6 +1085,7 @@ int tls_sw_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 	ret = sk_stream_error(sk, msg->msg_flags, ret);
- 
- 	release_sock(sk);
-+	mutex_unlock(&tls_ctx->tx_lock);
- 	return copied ? copied : ret;
- }
- 
-@@ -1114,13 +1109,6 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- 	eor = !(flags & (MSG_MORE | MSG_SENDPAGE_NOTLAST));
- 	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
- 
--	/* Wait till there is any pending write on socket */
--	if (unlikely(sk->sk_write_pending)) {
--		ret = wait_on_pending_writer(sk, &timeo);
--		if (unlikely(ret))
--			goto sendpage_end;
--	}
--
- 	/* Call the sk_stream functions to manage the sndbuf mem. */
- 	while (size > 0) {
- 		size_t copy, required_size;
-@@ -1219,15 +1207,18 @@ static int tls_sw_do_sendpage(struct sock *sk, struct page *page,
- int tls_sw_sendpage(struct sock *sk, struct page *page,
- 		    int offset, size_t size, int flags)
- {
-+	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	int ret;
- 
- 	if (flags & ~(MSG_MORE | MSG_DONTWAIT | MSG_NOSIGNAL |
- 		      MSG_SENDPAGE_NOTLAST | MSG_SENDPAGE_NOPOLICY))
- 		return -ENOTSUPP;
- 
-+	mutex_lock(&tls_ctx->tx_lock);
- 	lock_sock(sk);
- 	ret = tls_sw_do_sendpage(sk, page, offset, size, flags);
- 	release_sock(sk);
-+	mutex_unlock(&tls_ctx->tx_lock);
- 	return ret;
- }
- 
-@@ -2170,9 +2161,11 @@ static void tx_work_handler(struct work_struct *work)
- 
- 	if (!test_and_clear_bit(BIT_TX_SCHEDULED, &ctx->tx_bitmask))
- 		return;
-+	mutex_lock(&tls_ctx->tx_lock);
- 	lock_sock(sk);
- 	tls_tx_records(sk, -1);
- 	release_sock(sk);
-+	mutex_unlock(&tls_ctx->tx_lock);
- }
- 
- void tls_sw_write_space(struct sock *sk, struct tls_context *ctx)
+ 	if (self->notls)
 -- 
 2.23.0
 
