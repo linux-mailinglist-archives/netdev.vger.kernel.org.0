@@ -2,241 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7959DF05FA
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:27:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 458CFF0603
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:31:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390840AbfKET11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:27:27 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45006 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389691AbfKET10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:27:26 -0500
-Received: by mail-wr1-f68.google.com with SMTP id f2so13937764wrs.11;
-        Tue, 05 Nov 2019 11:27:24 -0800 (PST)
+        id S2390911AbfKETbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:31:36 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:38959 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389691AbfKETbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:31:36 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 29so3745019pgm.6;
+        Tue, 05 Nov 2019 11:31:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TS0c8t0Yec7dovuIxvCrYz0hDgxjTYo80RG1uxbH9jo=;
-        b=TuhfALu8qHdPVfM/crTLQttYEzAY5DdTVlthRHAizm6yvtXYTk5ZuMMBbAefWI/VJR
-         /uGBKS9VgtfQzUTTxtQhlcgoEm2nKttCnffF9FR7dvM+TTT9yPePuNeeKfO1hWqpVnQG
-         8REqGL//m7sfKeZrkGp+wH+v4hfdk2yu9ASxswVnOMmJKzq6vAaNnfp+bcpRk4OsXrkh
-         5+QuryBd61xYrGPqtRZk7+RfuvN+e72gZ0fzyaTxMD7/fTbhmjwawbgrlkUJlPYKM6s5
-         jlX0ChFNK+4YAaHvVt58HymhXqe2KJTvDe503f0phQmQGL6X7xjCi5watu6S4winEW9Y
-         Wx/Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=1SeagsDbeuKXlh/lZkZD0AtJ+ZGsb8zVUjbHRp2z3fk=;
+        b=bG3YzgHY/KABC6APZVuTRck1R3V3hiIEonbR4Y6UPz+3BbG8+IUrTEUBpY9wx4cLKU
+         WvBehL3A5X9T9a4/MuQkX6lGV1mUzk/M1UAZwNbbvjcCQ+BAEHcUN6NxOb/AwuB1eYuz
+         JPwltdrZJbOOFMZWqocUM75vGTaHdfq2YeKxFcLsY4+IV1t4WxTicEXPXg6gA0lJCgMN
+         Zg0UeDb9sdgfp0s4VwhDafzWQE6UI3QTlWWZUYuLxLv77dGWb2ON8usVq7+K6cnMAi6j
+         f+7cChq65Br+qn9tL8e9tjke7GwNCdD/2L5f6mlggr82Vb0pkvSgaoprE3BxmhoXkHxq
+         IZQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=TS0c8t0Yec7dovuIxvCrYz0hDgxjTYo80RG1uxbH9jo=;
-        b=oqUaAooZhn8PGRTLkoazel5UoFFPb/4Uu/SCQZBJj0pSci2SN4i7NClo9zXtR1UnLt
-         uxrXup/P8zFPXuDLkp9B+W7HWUpmoN406w/vtSTpJPav1BxqE6+wWxzHhOQLbzyuMCQq
-         CPDOUuSs8P40IayEwBRqU/FruR21x4roZpcTjTvQ3z0Zr2dzN2his0wG/AWY+rZwox+p
-         uTDdaBE/sGOz6XDk9zNg729PdbUsrsLlQsZqZeZ/q4hHPzYWLAJWn33F3m1BLOQWK/D9
-         fdOfdUQG4pPNNGDkSQyWcKsW9CZ7I5QPyIpi0dqfxhShhf1dSsIkNH9DdQMV4Nb+fHYy
-         5LGg==
-X-Gm-Message-State: APjAAAVcb7H6wz6j4fKNJoRFF00zGzsa+aFZeLExgC8JvziYhxzeup09
-        frB0YDsnPVcUBFxXWf5Df8SsjefL
-X-Google-Smtp-Source: APXvYqw8HTvoLrx+lVGKATwxgFLRblHBKIrN4Q6MuXFiAeR+BBujK5DQMb0B3qJ1mQqlLuXzvdeDXQ==
-X-Received: by 2002:adf:90d0:: with SMTP id i74mr27688138wri.298.1572982043144;
-        Tue, 05 Nov 2019 11:27:23 -0800 (PST)
-Received: from [10.67.51.137] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e15sm21151469wrx.58.2019.11.05.11.27.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=1SeagsDbeuKXlh/lZkZD0AtJ+ZGsb8zVUjbHRp2z3fk=;
+        b=FR1ZrTDeY6AoCbENusD3Mor8vm8PZ1NOrZ3Uk58uA3kXmd/pW1mq9DeBd2l882LIYR
+         vVhJrnKSIKgVO302EyC34GKUtcbnTU3Xb63of2l9fRqGqc03QeKleRHwCJRRCes1Ztzq
+         L6H1FRLQKFkwmAO1Xuvv1yJ0MbCrqROZr4mAW4qbUJzU7O371MJokZw6f9G55KMvK4tb
+         +wlE+wgpKK6CvTmlrTRZ/PNEHdHAvVBeNXe1ej9/bAfUc3ZXpQo0FCLLGd5YCY22w3pL
+         pyFIjUrrk8HwfD6mHok+YfsIN/1SpFZl+n3/IMY4mCQ510j7Nk+bb7D75XXmQnrr2/KS
+         IFdg==
+X-Gm-Message-State: APjAAAUvgQymxkGXgBKFKCfwmOvCznkwdw3ykEErW1uYRDwEjOSwjD/C
+        wd0VROX/N6z2yPvJYvSzo1U=
+X-Google-Smtp-Source: APXvYqy/IJZanoWg94nn+q8E66Sh0NTLVCbwR9j2nk1uXc92V5rp3fg98PT8TE2KB5Ylf7r6SRzC+w==
+X-Received: by 2002:a17:90a:6283:: with SMTP id d3mr895052pjj.27.1572982295051;
+        Tue, 05 Nov 2019 11:31:35 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
+        by smtp.gmail.com with ESMTPSA id 21sm22270996pfa.170.2019.11.05.11.31.33
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 11:27:22 -0800 (PST)
-Subject: Re: [PATCH net 1/3] net: bcmgenet: use RGMII loopback for MAC reset
-To:     Scott Branden <scott.branden@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1572980846-37707-1-git-send-email-opendmb@gmail.com>
- <1572980846-37707-2-git-send-email-opendmb@gmail.com>
- <8c5c8028-a897-bf70-95ba-a1ffc8b68264@broadcom.com>
-From:   Doug Berger <opendmb@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
- 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 YVs=
-Message-ID: <5f68345e-c58d-3d99-189b-b4be39c4b899@gmail.com>
-Date:   Tue, 5 Nov 2019 11:27:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Tue, 05 Nov 2019 11:31:34 -0800 (PST)
+Date:   Tue, 5 Nov 2019 11:31:32 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Casey Schaufler <casey@schaufler-ca.com>
+Cc:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        Florent Revest <revest@chromium.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        KP Singh <kpsingh@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
+        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
+Message-ID: <20191105193130.qam2eafnmgvrvjwk@ast-mbp.dhcp.thefacebook.com>
+References: <20191104172146.30797-1-mic@digikod.net>
+ <20191104172146.30797-5-mic@digikod.net>
+ <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
+ <c5c6b433-7e6a-c8f8-f063-e704c3df4cc6@schaufler-ca.com>
 MIME-Version: 1.0
-In-Reply-To: <8c5c8028-a897-bf70-95ba-a1ffc8b68264@broadcom.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <c5c6b433-7e6a-c8f8-f063-e704c3df4cc6@schaufler-ca.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/19 11:14 AM, Scott Branden wrote:
-> Hi Doug,
+On Tue, Nov 05, 2019 at 09:55:42AM -0800, Casey Schaufler wrote:
+> On 11/5/2019 9:18 AM, Alexei Starovoitov wrote:
+> > On Mon, Nov 04, 2019 at 06:21:43PM +0100, Micka�l Sala�n wrote:
+> >> Add a first Landlock hook that can be used to enforce a security policy
+> >> or to audit some process activities.  For a sandboxing use-case, it is
+> >> needed to inform the kernel if a task can legitimately debug another.
+> >> ptrace(2) can also be used by an attacker to impersonate another task
+> >> and remain undetected while performing malicious activities.
+> >>
+> >> Using ptrace(2) and related features on a target process can lead to a
+> >> privilege escalation.  A sandboxed task must then be able to tell the
+> >> kernel if another task is more privileged, via ptrace_may_access().
+> >>
+> >> Signed-off-by: Micka�l Sala�n <mic@digikod.net>
+> > ...
+> >> +static int check_ptrace(struct landlock_domain *domain,
+> >> +		struct task_struct *tracer, struct task_struct *tracee)
+> >> +{
+> >> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
+> >> +		.prog_ctx = {
+> >> +			.tracer = (uintptr_t)tracer,
+> >> +			.tracee = (uintptr_t)tracee,
+> >> +		},
+> >> +	};
+> > So you're passing two kernel pointers obfuscated as u64 into bpf program
+> > yet claiming that the end goal is to make landlock unprivileged?!
+> > The most basic security hole in the tool that is aiming to provide security.
+> >
+> > I think the only way bpf-based LSM can land is both landlock and KRSI
+> > developers work together on a design that solves all use cases. BPF is capable
+> > to be a superset of all existing LSMs
 > 
-> On 2019-11-05 11:07 a.m., Doug Berger wrote:
->> As noted in commit 28c2d1a7a0bf ("net: bcmgenet: enable loopback
->> during UniMAC sw_reset") the UniMAC must be clocked while sw_reset
->> is asserted for its state machines to reset cleanly.
->>
->> The transmit and receive clocks used by the UniMAC are derived from
->> the signals used on its PHY interface. The bcmgenet MAC can be
->> configured to work with different PHY interfaces including MII,
->> GMII, RGMII, and Reverse MII on internal and external interfaces.
->> Unfortunately for the UniMAC, when configured for MII the Tx clock
->> is always driven from the PHY which places it outside of the direct
->> control of the MAC.
->>
->> The earlier commit enabled a local loopback mode within the UniMAC
->> so that the receive clock would be derived from the transmit clock
->> which addressed the observed issue with an external GPHY disabling
->> it's Rx clock. However, when a Tx clock is not available this
->> loopback is insufficient.
->>
->> This commit implements a workaround that leverages the fact that
->> the MAC can reliably generate all of its necessary clocking by
->> enterring the external GPHY RGMII interface mode with the UniMAC in
->> local loopback during the sw_reset interval. Unfortunately, this
->> has the undesirable side efect of the RGMII GTXCLK signal being
->> driven during the same window.
->>
->> In most configurations this is a benign side effect as the signal
->> is either not routed to a pin or is already expected to drive the
->> pin. The one exception is when an external MII PHY is expected to
->> drive the same pin with its TX_CLK output creating output driver
->> contention.
->>
->> This commit exploits the IEEE 802.3 clause 22 standard defined
->> isolate mode to force an external MII PHY to present a high
->> impedance on its TX_CLK output during the window to prevent any
->> contention at the pin.
->>
->> The MII interface is used internally with the 40nm internal EPHY
->> which agressively disables its clocks for power savings leading to
->> incomplete resets of the UniMAC and many instabilities observed
->> over the years. The workaround of this commit is expected to put
->> an end to those problems.
->>
->> Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
->> Signed-off-by: Doug Berger <opendmb@gmail.com>
->> ---
->>   drivers/net/ethernet/broadcom/genet/bcmgenet.c |  2 --
->>   drivers/net/ethernet/broadcom/genet/bcmmii.c   | 33
->> ++++++++++++++++++++++++++
->>   2 files changed, 33 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->> b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->> index 0f138280315a..a1776ed8d7a1 100644
->> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
->> @@ -1996,8 +1996,6 @@ static void reset_umac(struct bcmgenet_priv *priv)
->>         /* issue soft reset with (rg)mii loopback to ensure a stable
->> rxclk */
->>       bcmgenet_umac_writel(priv, CMD_SW_RESET | CMD_LCL_LOOP_EN,
->> UMAC_CMD);
->> -    udelay(2);
->> -    bcmgenet_umac_writel(priv, 0, UMAC_CMD);
->>   }
->>     static void bcmgenet_intr_disable(struct bcmgenet_priv *priv)
->> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> b/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> index 17bb8d60a157..fcd181ae3a7d 100644
->> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
->> @@ -221,8 +221,38 @@ int bcmgenet_mii_config(struct net_device *dev,
->> bool init)
->>       const char *phy_name = NULL;
->>       u32 id_mode_dis = 0;
->>       u32 port_ctrl;
->> +    int bmcr = -1;
->> +    int ret;
->>       u32 reg;
->>   +    /* MAC clocking workaround during reset of umac state machines */
->> +    reg = bcmgenet_umac_readl(priv, UMAC_CMD);
->> +    if (reg & CMD_SW_RESET) {
->> +        /* An MII PHY must be isolated to prevent TXC contention */
->> +        if (priv->phy_interface == PHY_INTERFACE_MODE_MII) {
->> +            ret = phy_read(phydev, MII_BMCR);
->> +            if (ret >= 0) {
->> +                bmcr = ret;
->> +                ret = phy_write(phydev, MII_BMCR,
->> +                        bmcr | BMCR_ISOLATE);
->> +            }
->> +            if (ret) {
->> +                netdev_err(dev, "failed to isolate PHY\n");
->> +                return ret;
->> +            }
->> +        }
->> +        /* Switch MAC clocking to RGMII generated clock */
->> +        bcmgenet_sys_writel(priv, PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
->> +        /* Ensure 5 clks with Rx disabled
->> +         * followed by 5 clks with Reset asserted
->> +         */
->> +        udelay(4);
-> How do these magic delays work, they are different values?
-> In one case you have a udelay(4) to ensure rx disabled for 5 clks.
-> Yet below you have a udelay(2) to ensure 4 more clocks?
-The delays are based on 2.5MHz clock cycles (the clock used for 10Mbps).
-5 clocks is 2us.
+> I can't agree with this. Nope. There are many security models
+> for which BPF introduces excessive complexity. You don't need
+> or want the generality of a general purpose programming language
+> to implement Smack or TOMOYO. Or a simple Bell & LaPadula for
+> that matter. SELinux? I can't imagine anyone trying to do that
+> in eBPF, although I'm willing to be surprised. Being able to
+> enforce a policy isn't the only criteria for an LSM. 
 
-The udelay(4) is for 10 clocks: rx is disabled for 5 and then 5 more
-clocks with reset held. The requirement is poorly specified and this is
-a conservative interpretation.
+what are the other criteria?
 
-The udelay(2) allows at least 5 more clocks without reset before rx can
-be enabled.
+> It's got
+> to perform well and integrate with the rest of the system. 
 
->> +        reg &= ~(CMD_SW_RESET | CMD_LCL_LOOP_EN);
->> +        bcmgenet_umac_writel(priv, reg, UMAC_CMD);
->> +        /* Ensure 5 more clocks before Rx is enabled */
->> +        udelay(2);
->> +    }
->> +
->>       priv->ext_phy = !priv->internal_phy &&
->>               (priv->phy_interface != PHY_INTERFACE_MODE_MOCA);
->>   @@ -254,6 +284,9 @@ int bcmgenet_mii_config(struct net_device *dev,
->> bool init)
->>           phy_set_max_speed(phydev, SPEED_100);
->>           bcmgenet_sys_writel(priv,
->>                       PORT_MODE_EXT_EPHY, SYS_PORT_CTRL);
->> +        /* Restore the MII PHY after isolation */
->> +        if (bmcr >= 0)
->> +            phy_write(phydev, MII_BMCR, bmcr);
->>           break;
->>         case PHY_INTERFACE_MODE_REVMII:
-> 
+what do you mean by that?
 
-Regards,
-    Doug
+> I see many issues with a BPF <-> vfs interface.
+
+There is no such interface today. What do you have in mind?
+
+> the mechanisms needed for the concerns of the day. Ideally,
+> we should be able to drop mechanisms when we decide that they
+> no longer add value.
+
+Exactly. bpf-based lsm must not add to kernel abi.
+
