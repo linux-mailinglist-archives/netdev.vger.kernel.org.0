@@ -2,157 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE98F009F
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:02:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60513F00A4
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:04:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389721AbfKEPC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 10:02:28 -0500
-Received: from mx2.suse.de ([195.135.220.15]:42850 "EHLO mx1.suse.de"
+        id S1731061AbfKEPEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 10:04:02 -0500
+Received: from mail-eopbgr10082.outbound.protection.outlook.com ([40.107.1.82]:56816
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388842AbfKEPC2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 10:02:28 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 0EC2EB1FE;
-        Tue,  5 Nov 2019 15:02:25 +0000 (UTC)
-Subject: Re: Double free of struct sk_buff reported by SLAB_CONSISTENCY_CHECKS
- with init_on_free
-To:     Thibaut Sautereau <thibaut.sautereau@clip-os.org>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Potapenko <glider@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>, clipos@ssi.gouv.fr
-References: <20191104170303.GA50361@gandi.net>
- <23c73a23-8fd9-c462-902b-eec2a0c04d36@suse.cz>
- <20191105143253.GB1006@gandi.net>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Autocrypt: addr=vbabka@suse.cz; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <4fae11bc-9822-ea10-36e0-68a6fc3995bc@suse.cz>
-Date:   Tue, 5 Nov 2019 16:02:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
-MIME-Version: 1.0
-In-Reply-To: <20191105143253.GB1006@gandi.net>
-Content-Type: text/plain; charset=utf-8
+        id S1730833AbfKEPEC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Nov 2019 10:04:02 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gM6vvAlUZhsC00N0WcnqD1UyAMNZ5l2spNzzzIt7yobsNya//OUo95QzJNFRgPG2K5JzVvBhiP8ka+8I5zX4WtFHL/flkpgN+N69HRCphhgQaBjx6LcDBPetufR/lrwHZfNn4bNFgKLFIRQ4tvdGF+Iap5AVORPDFzAgF4WwczmXnpK9dy41oJ3NHW91jE3jFrYUAjty9cWAJUV5tgJeCtlU+0yhXjoaBK2FBzJhRuXSguAr0NoIkSCXRJI/yIJ33Un1BfqcqR/j4f20QT+lirtBZbk7dYUFCRlqLBJ+TBZHeqk0Sa+gUF7xjAeWkNvG9CUUqFog1E2TW8Myb/+/PA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W+YWA3/kHyGd2mPI0OSUXxwQ58Syr/JjXV4TOEeIqrc=;
+ b=fbbeyr0r77n8oCZqD6uan3/FuU2mJSpuGqkPEtk0Fni6DtzNnrlLWmc9gvAJibR5E1vpNf3j3DKy3plB31QpMb4haASJrP7ShMxn+N7TkAKPC7TWrgudaEPE7y9fPI56yHOlo7h1sy57oosyHlpoHxRENGHkb7P/9zeAOIxvuzWZI+6TfwZ6DNNiv7/PRAv9W04AO6SmUHp3oi/BxdcNzv4GQyf1LYG6fH/fAGb9t9vyj7GDBgAh9XbJvoT5FkOmQqzFywUGvdKz1GYTJFKt6F+Cf587ER8UDQlpxdROMelRKvQyZjFHmeen9CO+s8seUO20qkhZqb/98AUPHkGAkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W+YWA3/kHyGd2mPI0OSUXxwQ58Syr/JjXV4TOEeIqrc=;
+ b=ZJ9hZZqOnGCUabwcT2Bxea7Fqi1F7+GMH6st2ZQrseKxoeW34uoN4yUEFhi2ws0ZdMK1grFGAkHL/AqROwj97XYXifh9x/FFp9qAeHD3yr+KOQvilfP29E635pb/Hsra/wWWwSSUK3blpPeBtmTyWuo7CW5aTiRtFrqPcnIdTvw=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB5217.eurprd05.prod.outlook.com (20.178.19.32) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2408.24; Tue, 5 Nov 2019 15:03:55 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Tue, 5 Nov 2019
+ 15:03:55 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Colin King <colin.king@canonical.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH][next] net/mlx5: fix spelling mistake "metdata" ->
+ "metadata"
+Thread-Topic: [PATCH][next] net/mlx5: fix spelling mistake "metdata" ->
+ "metadata"
+Thread-Index: AQHVk+ju1UlJpWLIEk+xlXrsXBtltqd8rIFg
+Date:   Tue, 5 Nov 2019 15:03:55 +0000
+Message-ID: <AM0PR05MB4866F3706C26D06AD22BD975D17E0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191105145416.60451-1-colin.king@canonical.com>
+In-Reply-To: <20191105145416.60451-1-colin.king@canonical.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:7198:5d2b:7ff1:d0d4]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0d593f1b-f8db-4e13-572a-08d7620160eb
+x-ms-traffictypediagnostic: AM0PR05MB5217:|AM0PR05MB5217:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB5217C6BC9E01DD09018692F1D17E0@AM0PR05MB5217.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2657;
+x-forefront-prvs: 0212BDE3BE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(346002)(136003)(376002)(13464003)(199004)(189003)(8676002)(81166006)(6506007)(11346002)(110136005)(76176011)(14454004)(486006)(2906002)(8936002)(6246003)(52536014)(5660300002)(71200400001)(81156014)(7696005)(66446008)(14444005)(6436002)(6116002)(54906003)(55016002)(25786009)(2501003)(316002)(74316002)(476003)(305945005)(33656002)(229853002)(9686003)(46003)(4326008)(86362001)(99286004)(478600001)(2201001)(53546011)(186003)(102836004)(66946007)(76116006)(64756008)(66476007)(7736002)(446003)(256004)(71190400001)(66556008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5217;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OnRPUJHh3Hmhhgf/uOQYR9Gs4LaEpAYHWcJzJVnKJXs44LNMd/l09XVsjckeseCl/yxXATUc6FWOOCDC1ceYEk+kTejsbZNPqKfQbT5svcVd9NQQ3IOxzzEMASxCPkNQPV/EXWk4LIplclPldb7PN4+6zO/6s8KqAy4H5Hbq2kPl3bITMdnouqZEbzhbP8vJ9pzOYuIany9zcZFvZbI5dfL8jpUI8CwtWczUa1B9k5UNtNWbt9Evos61Hkew0NHQuxj1AibH6X0kb78td/f6u3vgX66aihyT+l7X7Kz+miffmr/wrkPjFM5wXS/hrLP+ynnbsy/nxQiW5AG3NwfowhuF1hB89WEPfUvTioC6Pac9d0zOLiazNsDI9cWVeJsncWNODsQYy03TQEhW+w8Vsc6AhtE3obyauJ8u4LyTONQRpWOVD7BPgIiyHzydx432
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d593f1b-f8db-4e13-572a-08d7620160eb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 15:03:55.5980
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rvFNXhR6DXcASXG3Sr/awsKg4wunsBhpV3MgJePywunI4tYpUoZqRyAiZljVyzYAolrgXJt60WLj/6N68gPM3Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5217
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/5/19 3:32 PM, Thibaut Sautereau wrote:
-> On Tue, Nov 05, 2019 at 10:00:39AM +0100, Vlastimil Babka wrote:
->> On 11/4/19 6:03 PM, Thibaut Sautereau wrote:
->>> The BUG only happens when using `slub_debug=F` on the command-line (to
->>> enable SLAB_CONSISTENCY_CHECKS), otherwise the double free is not
->>> reported and the system keeps running.
->>
->> You could change slub_debug parameter to:
->> slub_debug=FU,skbuff_head_cache
->>
->> That will also print out who previously allocated and freed the double
->> freed object. And limit all the tracking just to the affected cache.
-> 
-> Thanks, I did not know about that.
-> 
-> However, as kind of expected, I get a BUG due to a NULL pointer
-> dereference in print_track():
-
-Ah, I didn't read properly your initial mail, that there's a null
-pointer deference during the consistency check.
-
-...
-
->>>
->>> Bisection points to the following commit: 1b7e816fc80e ("mm: slub: Fix
->>> slab walking for init_on_free"), and indeed the BUG is not triggered
->>> when init_on_free is disabled.
->>
->> That could be either buggy SLUB code, or the commit somehow exposed a
->> real bug in skbuff users.
-> 
-> Right. At first I thought about some incompatibility between
-> init_on_free and SLAB_CONSISTENCY_CHECKS, but in that case why would it
-> only happen with skbuff_head_cache?
-
-That's curious, yeah.
-
-> On the other hand, if it's a bug in
-> skbuff users, why is the on_freelist() check in free_consistency_check()
-> not detecting anything when init_on_free is disabled? 
-
-I vaguely suspect the code in the commit 1b7e816fc80e you bisected,
-where in slab_free_freelist_hook() in the first iteration, we have void
-*p = NULL; and set_freepointer(s, object, p); will thus write NULL into
-the freelist. Is is the NULL we are crashing on? The code seems to
-assume that the freelist is rewritten later in the function, but that
-part is only active with some CONFIG_ option(s), none of which might be
-enabled in your case?
-But I don't really understand what exactly this function is supposed to
-do. Laura, does my theory make sense?
-
-Thanks,
-Vlastimil
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbGludXgta2VybmVsLW93
+bmVyQHZnZXIua2VybmVsLm9yZyA8bGludXgta2VybmVsLQ0KPiBvd25lckB2Z2VyLmtlcm5lbC5v
+cmc+IE9uIEJlaGFsZiBPZiBDb2xpbiBLaW5nDQo+IFNlbnQ6IFR1ZXNkYXksIE5vdmVtYmVyIDUs
+IDIwMTkgODo1NCBBTQ0KPiBUbzogU2FlZWQgTWFoYW1lZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+
+OyBMZW9uIFJvbWFub3Zza3kNCj4gPGxlb25Aa2VybmVsLm9yZz47IERhdmlkIFMgLiBNaWxsZXIg
+PGRhdmVtQGRhdmVtbG9mdC5uZXQ+Ow0KPiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1y
+ZG1hQHZnZXIua2VybmVsLm9yZw0KPiBDYzoga2VybmVsLWphbml0b3JzQHZnZXIua2VybmVsLm9y
+ZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBbUEFUQ0hdW25leHRd
+IG5ldC9tbHg1OiBmaXggc3BlbGxpbmcgbWlzdGFrZSAibWV0ZGF0YSIgLT4NCj4gIm1ldGFkYXRh
+Ig0KPiANCj4gRnJvbTogQ29saW4gSWFuIEtpbmcgPGNvbGluLmtpbmdAY2Fub25pY2FsLmNvbT4N
+Cj4gDQo+IFRoZXJlIGlzIGEgc3BlbGxpbmcgbWlzdGFrZSBpbiBhIGVzd193YXJuIHdhcm5pbmcg
+bWVzc2FnZS4gRml4IGl0Lg0KPiANCj4gU2lnbmVkLW9mZi1ieTogQ29saW4gSWFuIEtpbmcgPGNv
+bGluLmtpbmdAY2Fub25pY2FsLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9t
+ZWxsYW5veC9tbHg1L2NvcmUvZXN3aXRjaF9vZmZsb2Fkcy5jIHwgMiArLQ0KPiAgMSBmaWxlIGNo
+YW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vzd2l0Y2hfb2ZmbG9hZHMu
+Yw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29m
+ZmxvYWRzLmMNCj4gaW5kZXggYmQ5ZmQ1OWQ4MjMzLi4xYzNmZGVlODc1ODggMTAwNjQ0DQo+IC0t
+LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lc3dpdGNoX29mZmxv
+YWRzLmMNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2Vz
+d2l0Y2hfb2ZmbG9hZHMuYw0KPiBAQCAtMTg3Nyw3ICsxODc3LDcgQEAgc3RhdGljIGludA0KPiBl
+c3dfdnBvcnRfY3JlYXRlX2luZ3Jlc3NfYWNsX2dyb3VwKHN0cnVjdCBtbHg1X2Vzd2l0Y2ggKmVz
+dywNCj4gIAlpZiAoSVNfRVJSKGcpKSB7DQo+ICAJCXJldCA9IFBUUl9FUlIoZyk7DQo+ICAJCWVz
+d193YXJuKGVzdy0+ZGV2LA0KPiAtCQkJICJGYWlsZWQgdG8gY3JlYXRlIHZwb3J0WyVkXSBpbmdy
+ZXNzIG1ldGRhdGEgZ3JvdXAsDQo+IGVyciglZClcbiIsDQo+ICsJCQkgIkZhaWxlZCB0byBjcmVh
+dGUgdnBvcnRbJWRdIGluZ3Jlc3MgbWV0YWRhdGEgZ3JvdXAsDQo+IGVyciglZClcbiIsDQo+ICAJ
+CQkgdnBvcnQtPnZwb3J0LCByZXQpOw0KPiAgCQlnb3RvIGdycF9lcnI7DQo+ICAJfQ0KPiAtLQ0K
+PiAyLjIwLjENClJldmlld2VkLWJ5OiBQYXJhdiBQYW5kaXQgPHBhcmF2QG1lbGxhbm94LmNvbT4N
+Cg0K
