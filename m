@@ -2,125 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D791EF03F5
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 18:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A286F03FF
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 18:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390449AbfKERSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 12:18:30 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35700 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389659AbfKERSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 12:18:30 -0500
-Received: by mail-pf1-f195.google.com with SMTP id d13so16042938pfq.2;
-        Tue, 05 Nov 2019 09:18:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=acyehhZ1kInQCOam4ex9rg1irdVyYdAedYo4L8HuhBE=;
-        b=XX5HI5fdLsOtra8e6FRnylQV3POlGoUKjN0QnYgWdYOJbhoq4GfEwzEeXeNk2KlNeR
-         cVlbwQ56h482SqsmeiyycLjPl/5cQaqbvnnxnAM834DFR1QuK+5nydBQhFrpZjok32Gs
-         AR+xXuUBvANEvmAOUphy2n4Zx7YW461y5VxLfF/EtosJl8SnhT+Zr/CsDH5S4y/MHx2S
-         ZjxeqFC22NsB4jP94cfp65T/GYZYybPc8LC7uxKNS7jlfkNEFav/I592UcGT0BwJ8FfK
-         uA6ngmKqqv2JvvgOcXk+TtukS5gONMHHX01ywSEFKn0OVOWk9FKzUUGoSgwBXWeGoNNH
-         I2XQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=acyehhZ1kInQCOam4ex9rg1irdVyYdAedYo4L8HuhBE=;
-        b=n133OZv6dcpjgoC+09kN1c0SCJkvabFSbSJOqZjn8L1Q3J/RjzxpoXyu1DMYKj8ywp
-         Dyvu04jiaRifsR97ZAOkSpfmqDCtk0/9OilwLXAmNJqsRT45YgjBAmnejZ9iskEYNhi4
-         wOula1OaXbBl+pLlQZbVJK/vGoKDX7Tiw9CVF+QA27iIF0mRFGUmDVv3iRrkwZL94pkR
-         kF91hIki6FjkBwKvDGsTRIt4RqNheoilqUHEVSjjyDhcaxxKBbJiKdGYnDj9i6sH2m8b
-         AF000BTNXDVevPGw5upOZ6hUJ3QpEEdbrkxx4OdSUzUpQJzHRYcwiaphVHp6FqsqVY58
-         FT5A==
-X-Gm-Message-State: APjAAAUndn/FGRd3vu/HAW2/xpK2R2PQLRFIXKuPdO60Ye8gXd74bOpT
-        YQ5ZiqqO1bswpANoWSQvII8=
-X-Google-Smtp-Source: APXvYqxfGfRVQ8tyN+3W2wPHBfjDO9cnkSVobGLtqqzKW+U2w79oK6iebqGh0WK8FAFAk8uwenlUKg==
-X-Received: by 2002:a17:90a:2326:: with SMTP id f35mr126860pje.134.1572974309032;
-        Tue, 05 Nov 2019 09:18:29 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
-        by smtp.gmail.com with ESMTPSA id a66sm9765299pfb.166.2019.11.05.09.18.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 09:18:27 -0800 (PST)
-Date:   Tue, 5 Nov 2019 09:18:26 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        Florent Revest <revest@chromium.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mickael.salaun@ssi.gouv.fr>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
-        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
-Message-ID: <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
-References: <20191104172146.30797-1-mic@digikod.net>
- <20191104172146.30797-5-mic@digikod.net>
+        id S2390248AbfKERTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 12:19:22 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:43104 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388177AbfKERTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 12:19:22 -0500
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 21E6213C358;
+        Tue,  5 Nov 2019 09:19:21 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 21E6213C358
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1572974361;
+        bh=V8NJR7727iNB0uRPImQP0tHz/e9UqOWH40a21R0azV8=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=anxDgG5kmOBLuJloing6yzi9LbtxzXQYpDKK0XrP67AxTrj8ubzPeNlR5tTNMDzCt
+         IbBaU/HYUSFPP3eKE2wSsVTXmNApL4ZDVf0DIHueRsoC+4Efvw6ZkGHWOn/nlULJ9Q
+         r/LKJCq93/fqCY303ZOPuUAfHSdCLRcw7RWN7+xE=
+Subject: Re: [PATCH net-next] ath10k: fix RX of frames with broken FCS in
+ monitor mode
+To:     =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>,
+        ath10k@lists.infradead.org
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Linus_L=c3=bcssing?= <ll@simonwunderlich.de>
+References: <20191105164932.11799-1-linus.luessing@c0d3.blue>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <927cea69-7afc-5c35-df8d-9813392e8928@candelatech.com>
+Date:   Tue, 5 Nov 2019 09:19:20 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20191105164932.11799-1-linus.luessing@c0d3.blue>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191104172146.30797-5-mic@digikod.net>
-User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 04, 2019 at 06:21:43PM +0100, Mickaël Salaün wrote:
-> Add a first Landlock hook that can be used to enforce a security policy
-> or to audit some process activities.  For a sandboxing use-case, it is
-> needed to inform the kernel if a task can legitimately debug another.
-> ptrace(2) can also be used by an attacker to impersonate another task
-> and remain undetected while performing malicious activities.
+On 11/5/19 8:49 AM, Linus LÃ¼ssing wrote:
+> From: Linus LÃ¼ssing <ll@simonwunderlich.de>
 > 
-> Using ptrace(2) and related features on a target process can lead to a
-> privilege escalation.  A sandboxed task must then be able to tell the
-> kernel if another task is more privileged, via ptrace_may_access().
+> So far, frames were forwarded regardless of the FCS correctness leading
+> to userspace applications listening on the monitor mode interface to
+> receive potentially broken frames, even with the "fcsfail" flag unset.
 > 
-> Signed-off-by: Mickaël Salaün <mic@digikod.net>
-...
-> +static int check_ptrace(struct landlock_domain *domain,
-> +		struct task_struct *tracer, struct task_struct *tracee)
-> +{
-> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
-> +		.prog_ctx = {
-> +			.tracer = (uintptr_t)tracer,
-> +			.tracee = (uintptr_t)tracee,
-> +		},
-> +	};
+> By default, with the "fcsfail" flag of a monitor mode interface
+> unset, frames with FCS errors should be dropped. With this patch, the
+> fcsfail flag is taken into account correctly.
+> 
+> Cc: Simon Wunderlich <sw@simonwunderlich.de>
+> Signed-off-by: Linus LÃ¼ssing <ll@simonwunderlich.de>
+> ---
+> This was tested on an Open Mesh A41 device, featuring a QCA4019. And
+> with this firmware:
+> 
+> https://www.candelatech.com/downloads/ath10k-4019-10-4b/firmware-5-ct-full-community-12.bin-lede.011
+> 
+> But from looking at the code it seems that the vanilla ath10k has the
+> same issue, therefore submitting it here.
+> 
+> Changelog RFC->v1:
+> 
+> * removed "ar->monitor" check
+> * added a debug counter
 
-So you're passing two kernel pointers obfuscated as u64 into bpf program
-yet claiming that the end goal is to make landlock unprivileged?!
-The most basic security hole in the tool that is aiming to provide security.
+Thanks for adding the counter.  Since it us u32, I doubt you need the spin lock
+below?
 
-I think the only way bpf-based LSM can land is both landlock and KRSI
-developers work together on a design that solves all use cases. BPF is capable
-to be a superset of all existing LSMs whereas landlock and KRSI propsals today
-are custom solutions to specific security concerns. BPF subsystem was extended
-with custom things in the past. In networking we have lwt, skb, tc, xdp, sk
-program types with a lot of overlapping functionality. We couldn't figure out
-how to generalize them into single 'networking' program. Now we can and we
-should. Accepting two partially overlapping bpf-based LSMs would be repeating
-the same mistake again.
+--Ben
+
+> +	if (!(ar->filter_flags & FIF_FCSFAIL) &&
+> +	    status->flag & RX_FLAG_FAILED_FCS_CRC) {
+> +		spin_lock_bh(&ar->data_lock);
+> +		ar->stats.rx_crc_err_drop++;
+> +		spin_unlock_bh(&ar->data_lock);
+> +
+> +		dev_kfree_skb_any(skb);
+> +		return;
+> +	}
+> +
+>   	ath10k_dbg(ar, ATH10K_DBG_DATA,
+>   		   "rx skb %pK len %u peer %pM %s %s sn %u %s%s%s%s%s%s %srate_idx %u vht_nss %u freq %u band %u flag 0x%x fcs-err %i mic-err %i amsdu-more %i\n",
+>   		   skb,
+> 
+
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
 
