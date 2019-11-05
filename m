@@ -2,131 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB89F063B
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7428AF064B
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:51:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbfKETtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:49:03 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39057 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfKETtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:49:03 -0500
-Received: by mail-wm1-f68.google.com with SMTP id t26so663573wmi.4
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 11:49:01 -0800 (PST)
+        id S1726446AbfKETvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:51:48 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44439 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbfKETvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:51:47 -0500
+Received: by mail-qk1-f195.google.com with SMTP id m16so21995810qki.11;
+        Tue, 05 Nov 2019 11:51:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=UxXl5CJZIoFnMZL6/cL403hkZBabWwNFlZGMcKNv9CI=;
-        b=DfYf1tIrKNQZt5fdgVqLgqi9HccpFBFoGh8ZAIkWq7pZT4qlZBAGSwp0X/aWi9iSvF
-         jdNUkLVEFALgwFaBiECrIdp8xyCC63qPPxyOhzLyGFAprniDgrisk5yOz3hXvx6aw7+2
-         mznBwKqa7nyBfAp3+8t/VOThwm5XgrDCzgLRk=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OJMmTu/o7IxYfO7udzJCeswUDWPqRc2N4ga4xPOFpjw=;
+        b=TrzyKGJrK+mYAuaddUVlJ9e6CCtsGICv9mKMPmSeGd7A/eGecgduOlZt/WnKa0YNAh
+         6S/mj+bpAHOUCgTc3i5/WmoUIPF0kRfWSQ7789TQwb+CuHrE0jdCChDSK1v6GuYxbrKu
+         vK2pH1eMUfITATG9R5KGc8NHqhwEc9n6xrGD1xo9XFV6OXm40ro44fXPzYS6TZ9xnArh
+         gzg3HHwwtei251BU4+hoejL5y/LgUpKSpBrdj39I9y8YkEHbWOiBKVd38FVHY7o05i08
+         bCazQ//y2gK2JwiKDNhZ1B7AiMg4HQP6oA3hA9cT6ZPN5+ATEFhGYkGc12CfN0SeWz56
+         kU2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=UxXl5CJZIoFnMZL6/cL403hkZBabWwNFlZGMcKNv9CI=;
-        b=kZDEmOsiBxTUWlmMD7HUq2bKIlOIdzroUdT9jSjjR4pEVaIj0JGBs7ibxRXq9uUWsU
-         I5oPu7frfIgXvW999knWgZKK3w+0JH50zOJpsjuKnQrLeXvHGmDGHwwVCjOhaLsdp3Yx
-         wUBuT0tWb5VConWpC/+hBb+MN5eDQuVXBp6qI2SEXW6KTBWmJxKeGrHzDtvXeUBAZXV0
-         2V3Yo7MgqDo9Te4AsiKjhkfVzZeZpbWDzvDLj5hUcgJ0fos1Q4c85sVQcNHTXcyToGT+
-         SjEcnrYznq1+vRb0fZfa4CpnQaiSwpcl9lJkdRWSW3JARZyXG048fyAqc3ytiWbBOlu3
-         KNsQ==
-X-Gm-Message-State: APjAAAUw6ho6PAu8TTD16510R8UbGfgfA8aZcJWznvvBRlgZBiWlJeZz
-        BEyl5rs+J93lHV+TvIq0OEx1dvsWTylCZEpj
-X-Google-Smtp-Source: APXvYqyqM7nhSS0Pe5eOQG7YdtR1lL/CgciM3J4IhJLEhAxoOj9knLvPotj89JcFNr2D5TiCrkX38Q==
-X-Received: by 2002:a1c:ed0e:: with SMTP id l14mr580961wmh.74.1572983341018;
-        Tue, 05 Nov 2019 11:49:01 -0800 (PST)
-Received: from [10.136.13.65] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id j22sm30194509wrd.41.2019.11.05.11.48.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 11:49:00 -0800 (PST)
-Subject: Re: [PATCH net 1/3] net: bcmgenet: use RGMII loopback for MAC reset
-To:     Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1572980846-37707-1-git-send-email-opendmb@gmail.com>
- <1572980846-37707-2-git-send-email-opendmb@gmail.com>
- <8c5c8028-a897-bf70-95ba-a1ffc8b68264@broadcom.com>
- <5f68345e-c58d-3d99-189b-b4be39c4b899@gmail.com>
-From:   Scott Branden <scott.branden@broadcom.com>
-Message-ID: <6bc48252-952c-008d-f43d-b8093c021ba8@broadcom.com>
-Date:   Tue, 5 Nov 2019 11:48:56 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OJMmTu/o7IxYfO7udzJCeswUDWPqRc2N4ga4xPOFpjw=;
+        b=LsM4WIdwvInn75+A2TAVYMAHBUA2k/Jx+pBbYegIh+UOKQhI6PCIBsBKcW7+awOt7U
+         3MHuz36mbp2KCG/rxqryb7CBXlWGclZUc5M0y41lr03l2bnSsH6HsM2/WaSusAdB7H15
+         qlqWfbEOGMyPhYSmGiqrAwVIsOkMpEZklFY1eda5gWqQzhQ52qbKY5zIjOO+SjpyzWm7
+         0iTAzG7n1s0NGOoVKRsGSsfF1uK9FbcP6X7mrHmuSe46X6z0q3qVvqoCsvF0yHzuFth1
+         lSGxsVlFbxj3UPk7J8Na1z3tIg1ySj0ugD3lWDZgMUKlZou1Gf/inIDPGufKdYtdoG7w
+         p80Q==
+X-Gm-Message-State: APjAAAXmlHlM4dVjEorJF3avEMUZuhaM5ieUwY0netVzhqhJTRCeaaIx
+        AEvYZKt/rLCIbMIuWENuYxad7Re+a5zSVWxR89o=
+X-Google-Smtp-Source: APXvYqyjzDMZGI5InHSlK5B8kmiQUntDEfugQeFWcjZFyp4cRsbeBWUAnAXlxLTO8LGDiufEu1MpmPcwoFr8puRHme4=
+X-Received: by 2002:a37:b3c4:: with SMTP id c187mr2821262qkf.36.1572983506016;
+ Tue, 05 Nov 2019 11:51:46 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <5f68345e-c58d-3d99-189b-b4be39c4b899@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20191102220025.2475981-1-ast@kernel.org> <20191102220025.2475981-4-ast@kernel.org>
+In-Reply-To: <20191102220025.2475981-4-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 5 Nov 2019 11:51:34 -0800
+Message-ID: <CAEf4BzanGJGy7CtxG5we1w6f00arbZ+csjNc9yTNtXBM26_9Vg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/7] bpf: Introduce BPF trampoline
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2019-11-05 11:27 a.m., Doug Berger wrote:
-> On 11/5/19 11:14 AM, Scott Branden wrote:
->> Hi Doug,
->>
->> On 2019-11-05 11:07 a.m., Doug Berger wrote:
->>> As noted in commit 28c2d1a7a0bf ("net: bcmgenet: enable loopback
->>> during UniMAC sw_reset") the UniMAC must be clocked while sw_reset
->>> is asserted for its state machines to reset cleanly.
->>>
->>> The transmit and receive clocks used by the UniMAC are derived from
->>> the signals used on its PHY interface. The bcmgenet MAC can be
->>> configured to work with different PHY interfaces including MII,
->>> GMII, RGMII, and Reverse MII on internal and external interfaces.
->>> Unfortunately for the UniMAC, when configured for MII the Tx clock
->>> is always driven from the PHY which places it outside of the direct
->>> control of the MAC.
--- SNIP
->>> +        /* Switch MAC clocking to RGMII generated clock */
->>> +        bcmgenet_sys_writel(priv, PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
->>> +        /* Ensure 5 clks with Rx disabled
->>> +         * followed by 5 clks with Reset asserted
->>> +         */
->>> +        udelay(4);
->> How do these magic delays work, they are different values?
->> In one case you have a udelay(4) to ensure rx disabled for 5 clks.
->> Yet below you have a udelay(2) to ensure 4 more clocks?
-> The delays are based on 2.5MHz clock cycles (the clock used for 10Mbps).
-> 5 clocks is 2us.
+On Sat, Nov 2, 2019 at 3:01 PM Alexei Starovoitov <ast@kernel.org> wrote:
 >
-> The udelay(4) is for 10 clocks: rx is disabled for 5 and then 5 more
-> clocks with reset held. The requirement is poorly specified and this is
-> a conservative interpretation.
+> Introduce BPF trampoline concept to allow kernel code to call into BPF programs
+> with practically zero overhead.  The trampoline generation logic is
+> architecture dependent.  It's converting native calling convention into BPF
+> calling convention.  BPF ISA is 64-bit (even on 32-bit architectures). The
+> registers R1 to R5 are used to pass arguments into BPF functions. The main BPF
+> program accepts only single argument "ctx" in R1. Whereas CPU native calling
+> convention is different. x86-64 is passing first 6 arguments in registers
+> and the rest on the stack. x86-32 is passing first 3 arguments in registers.
+> sparc64 is passing first 6 in registers. And so on.
 >
-> The udelay(2) allows at least 5 more clocks without reset before rx can
-> be enabled.
+> The trampolines between BPF and kernel already exist.  BPF_CALL_x macros in
+> include/linux/filter.h statically compile trampolines from BPF into kernel
+> helpers. They convert up to five u64 arguments into kernel C pointers and
+> integers. On 64-bit architectures this BPF_to_kernel trampolines are nops. On
+> 32-bit architecture they're meaningful.
 >
-Thanks, the part I was missing was "2.5MHz clock cycles (the clock used 
-for 10Mbps)".
-If that was added to the comment it would help those unfamiliar with in 
-understanding.
->>> +        reg &= ~(CMD_SW_RESET | CMD_LCL_LOOP_EN);
->>> +        bcmgenet_umac_writel(priv, reg, UMAC_CMD);
->>> +        /* Ensure 5 more clocks before Rx is enabled */
->>> +        udelay(2);
->>> +    }
->>> +
->>>        priv->ext_phy = !priv->internal_phy &&
->>>                (priv->phy_interface != PHY_INTERFACE_MODE_MOCA);
->>>    @@ -254,6 +284,9 @@ int bcmgenet_mii_config(struct net_device *dev,
->>> bool init)
->>>            phy_set_max_speed(phydev, SPEED_100);
->>>            bcmgenet_sys_writel(priv,
->>>                        PORT_MODE_EXT_EPHY, SYS_PORT_CTRL);
->>> +        /* Restore the MII PHY after isolation */
->>> +        if (bmcr >= 0)
->>> +            phy_write(phydev, MII_BMCR, bmcr);
->>>            break;
->>>          case PHY_INTERFACE_MODE_REVMII:
-> Regards,
->      Doug
+> The opposite job kernel_to_BPF trampolines is done by CAST_TO_U64 macros and
+> __bpf_trace_##call() shim functions in include/trace/bpf_probe.h. They convert
+> kernel function arguments into array of u64s that BPF program consumes via
+> R1=ctx pointer.
+>
+> This patch set is doing the same job as __bpf_trace_##call() static
+> trampolines, but dynamically for any kernel function. There are ~22k global
+> kernel functions that are attachable via ftrace. The function arguments and
+> types are described in BTF.  The job of btf_distill_kernel_func() function is
+> to extract useful information from BTF into "function model" that architecture
+> dependent trampoline generators will use to generate assembly code to cast
+> kernel function arguments into array of u64s.  For example the kernel function
+> eth_type_trans has two pointers. They will be casted to u64 and stored into
+> stack of generated trampoline. The pointer to that stack space will be passed
+> into BPF program in R1. On x86-64 such generated trampoline will consume 16
+> bytes of stack and two stores of %rdi and %rsi into stack. The verifier will
+> make sure that only two u64 are accessed read-only by BPF program. The verifier
+> will also recognize the precise type of the pointers being accessed and will
+> not allow typecasting of the pointer to a different type within BPF program.
+>
+> The tracing use case in the datacenter demonstrated that certain key kernel
+> functions have (like tcp_retransmit_skb) have 2 or more kprobes that are always
+> active.  Other functions have both kprobe and kretprobe.  So it is essential to
+> keep both kernel code and BPF programs executing at maximum speed. Hence
+> generated BPF trampoline is re-generated every time new program is attached or
+> detached to maintain maximum performance.
+>
+> To avoid the high cost of retpoline the attached BPF programs are called
+> directly. __bpf_prog_enter/exit() are used to support per-program execution
+> stats.  In the future this logic will be optimized further by adding support
+> for bpf_stats_enabled_key inside generated assembly code. Introduction of
+> preemptible and sleepable BPF programs will completely remove the need to call
+> to __bpf_prog_enter/exit().
+>
+> Detach of a BPF program from the trampoline should not fail. To avoid memory
+> allocation in detach path the half of the page is used as a reserve and flipped
+> after each attach/detach. 2k bytes is enough to call 40+ BPF programs directly
+> which is enough for BPF tracing use cases. This limit can be increased in the
+> future.
+>
+> BPF_TRACE_FENTRY programs have access to raw kernel function arguments while
+> BPF_TRACE_FEXIT programs have access to kernel return value as well. Often
+> kprobe BPF program remembers function arguments in a map while kretprobe
+> fetches arguments from a map and analyzes them together with return value.
+> BPF_TRACE_FEXIT accelerates this typical use case.
+>
+> Recursion prevention for kprobe BPF programs is done via per-cpu
+> bpf_prog_active counter. In practice that turned out to be a mistake. It
+> caused programs to randomly skip execution. The tracing tools missed results
+> they were looking for. Hence BPF trampoline doesn't provide builtin recursion
+> prevention. It's a job of BPF program itself and will be addressed in the
+> follow up patches.
+>
+> BPF trampoline is intended to be used beyond tracing and fentry/fexit use cases
+> in the future. For example to remove retpoline cost from XDP programs.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
+Acked-by: Andrii Nakryiko <andriin@fb.com>
