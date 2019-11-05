@@ -2,150 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC6A6EF573
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 07:16:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1FD8EF57F
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 07:25:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730433AbfKEGQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 01:16:38 -0500
-Received: from mail-eopbgr30085.outbound.protection.outlook.com ([40.107.3.85]:30982
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725991AbfKEGQh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 01:16:37 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BQnqEDD2hO4G7ak1vHFGCwccUYPn91nUNN4fwfxA5asGyW20zUwA2vfhqEkZKMJnjKst/soojz4f9pw4zFka5w0e4DB7i1eMu/yI5hJjU94s0BP91dB08UJ5QaHDr5DOd1OlBes7L/A8s6ZV8NHALwqxt2E2MLNOKU3JzpXxJT9ScoVerp9rNEV73q4kN0agUHd78TLLrJPpaihdvdkkxzvw2PT84LmZXOyYCvQV/FR5KBCdNuMvu9TO6BQfV7iL787ll1DwpDOsQaW+NjmDoCZClcOWxblyddy0AIXZOb2ONmIzOIvew/I04wnRzqaBHZC/VH0nnTLWQNKsX+8L+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bMVO+Cd6k3yhKH1S+W/isoRL/fnXdfRwl2bnVGNbqvg=;
- b=cPtY43sWRtKLvMao7p5i98BDL+Mah4tc7JAz/YzBmKd7RHaYISRl+6pogoOffE2DZ9eHpfcmAswWvuGReEy0g8Nom8xlBoh+PTo0CrBEata4Ri2d3s6CdA+eaeWDRn5YNwjco3PMi1IKTdswFpPvvdZ9dEu7n6ipp3rqeRyQolVoppxTOm1Zdd/7COloyhjO/TvvhklApuOVl734Qia7M5tZbBl6ROyOLWDVFkGs7jhnrENR+6fYfBUMQ9B6tNpjc7RhF9LurGcZiWIYj7k5xLLKWZ33Uf1dhBCr841qA75Fmxqg3w9MMHDxS07xM0rpWgEeR643d8S/DtZpZSaBYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bMVO+Cd6k3yhKH1S+W/isoRL/fnXdfRwl2bnVGNbqvg=;
- b=FHdeK8l5wdkwupuRQdOlateqRvfb5ZhD4AvRZEugyiiO04lNP75pLZ0pyiw5OpJSUYp2WBfc2id4uB7aCB5dv9EjhdDDtm2shqo5fMIiBjrZbpD5Xi//RryOoUplcOEb2dAlkm25X97iTqMff2lUXeSQZNYuywUNHVpBpllno6Q=
-Received: from VE1PR04MB6768.eurprd04.prod.outlook.com (10.255.118.26) by
- VE1PR04MB6751.eurprd04.prod.outlook.com (20.179.235.216) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Tue, 5 Nov 2019 06:16:32 +0000
-Received: from VE1PR04MB6768.eurprd04.prod.outlook.com
- ([fe80::50aa:3111:47b1:82d4]) by VE1PR04MB6768.eurprd04.prod.outlook.com
- ([fe80::50aa:3111:47b1:82d4%4]) with mapi id 15.20.2408.024; Tue, 5 Nov 2019
- 06:16:32 +0000
-From:   Qiang Zhao <qiang.zhao@nxp.com>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Leo Li <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>
-CC:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Scott Wood <oss@buserror.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v3 35/36] net/wan: make FSL_UCC_HDLC explicitly depend on
- PPC32
-Thread-Topic: [PATCH v3 35/36] net/wan: make FSL_UCC_HDLC explicitly depend on
- PPC32
-Thread-Index: AQHVkLHl/ovt4Kon106Gz+Xx9ElXg6d2gb8AgABlGYCAA84fAIABZ7FQ
-Date:   Tue, 5 Nov 2019 06:16:32 +0000
-Message-ID: <VE1PR04MB67686E14A4E0D33C77B43EA6917E0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-36-linux@rasmusvillemoes.dk>
- <4e2ac670-2bf4-fb47-2130-c0120bcf0111@c-s.fr>
- <VE1PR04MB6687D4620E32176BDC120DBA8F620@VE1PR04MB6687.eurprd04.prod.outlook.com>
- <24ea27b6-adea-cc74-f480-b68de163f531@rasmusvillemoes.dk>
-In-Reply-To: <24ea27b6-adea-cc74-f480-b68de163f531@rasmusvillemoes.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiang.zhao@nxp.com; 
-x-originating-ip: [119.31.174.73]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ded1ab11-2eb0-42eb-b9b1-08d761b7b401
-x-ms-traffictypediagnostic: VE1PR04MB6751:|VE1PR04MB6751:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6751B988F165ACCE8390AE09917E0@VE1PR04MB6751.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2512;
-x-forefront-prvs: 0212BDE3BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(136003)(39860400002)(376002)(366004)(189003)(199004)(13464003)(33656002)(14454004)(66574012)(64756008)(66446008)(66946007)(6436002)(76116006)(7736002)(2906002)(5660300002)(52536014)(478600001)(66066001)(74316002)(305945005)(25786009)(54906003)(110136005)(81166006)(86362001)(316002)(186003)(8676002)(81156014)(3846002)(11346002)(486006)(6116002)(8936002)(446003)(7696005)(76176011)(102836004)(476003)(6506007)(99286004)(55016002)(9686003)(4326008)(229853002)(44832011)(71200400001)(71190400001)(256004)(66476007)(66556008)(14444005)(53546011)(26005)(6246003);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6751;H:VE1PR04MB6768.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 68Ji0u1jwaoMKBF4RrQtEiHgZZmXR1Lv6Io5HbTGeqXxoRpO2qNuBVHB0y6eTjdYmmselWcMjiHUJoamGGft8IKwVf1qdgIEcg930bKis8ySMjfGoh3xgkho2uiwAMPJiD4ik55FMUmMfMcSQ9rdk2GNfQPJNIKSWtLy7B+tAwYPCse4gRbOBv/gJTPqRdZcWLq8MFB+5ClyhLVj1VBAvAFNX0mkD4zK5gFKWeCJu918paR5WfnMezQm6SuCGbYBxJeqeRvszh0mH72BprugK5lneJ05I0Qp8YiEK/+W2DREhIKWrPw5ve/Ap2sHAcaVkYoHz21oav/ryB/Hc88werWTbK466LPfWjN5L630dw6MyTgHa8wmkqYVzosqrHol99HKzjCeJqjbMkFMwprAZq7OkFjPVB+9uu+8RnheJIk7i3+7gOfUC0UDV3A/5Tjn
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1730475AbfKEGZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 01:25:11 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:39047 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725806AbfKEGZL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 01:25:11 -0500
+Received: by mail-il1-f198.google.com with SMTP id o11so17762042ilc.6
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 22:25:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=IBlyAYACIA7xm3viz/NYxSDaXtjW7mwDUDpsIoQAQhI=;
+        b=soxNR4M5vjhw9yB8dXGxAQ5a7Wz7yu+ezQHDRwZKzjV6wMeMkYdITxT6l1Zimk8uXg
+         oHV9JAgfuEuXKb0RbrAU47pvHvRy7zB9Uw297JfhNlIlbD53CVOPdwRhizWG0tLOV4BZ
+         FFAnGoysjlYC+orR5pw9uiPpM1o8hs9/DwIUxnTWbftR04R443MSe1IyOj+r8Z6rSk7E
+         kMCmzBVsld1dcytfZuI7wqVweId9JgeaEAEWmhd7JD8TyKjlUVSiwPUxi18qTgpBBqJN
+         UBQc6D1VbJo0m9+qQpZL4ExfxMdWh4R9HBkbrxWDpXWQPl3MY1IlGLO8c3qma/4o1+fC
+         i40g==
+X-Gm-Message-State: APjAAAWTV8R8LPjjkt3IqAYajBM3Ty8mf1dGm7Q4S0SAkx4zUwCwrCy3
+        TeDg9xrISkbZuFeIHgtVGZjdnbC8B3LRtH5DT9bcs0SAICoF
+X-Google-Smtp-Source: APXvYqzlpBs7RxlTZE94pfGgFen4FYZATSKq7DaQo4hJlscB3914F6dOAOhQZdT3VTyCvtaBtaXD07MXl5+O29eXFtnOURovUIyC
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ded1ab11-2eb0-42eb-b9b1-08d761b7b401
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 06:16:32.1956
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MEFOJautTtDWN7qpwRxeKzmP5P8LQMuypYlnL6C1FY1uJp4sK8Ts2fUnhNdQbCFJQBUoDLmVUXTD9qTuG9qjiQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6751
+X-Received: by 2002:a5d:8b14:: with SMTP id k20mr2719434ion.22.1572935108053;
+ Mon, 04 Nov 2019 22:25:08 -0800 (PST)
+Date:   Mon, 04 Nov 2019 22:25:08 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005ed7710596937e86@google.com>
+Subject: KASAN: use-after-free Read in j1939_xtp_rx_abort_one
+From:   syzbot <syzbot+db4869ba599c0de9b13e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDEvMTEvMjAxOSAyMzozMSwgUmFzbXVzIFZpbGxlbW9lcyB3cm90ZSA6DQoNCg0KPiAtLS0t
-LU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBSYXNtdXMgVmlsbGVtb2VzIDxsaW51eEBy
-YXNtdXN2aWxsZW1vZXMuZGs+DQo+IFNlbnQ6IDIwMTnlubQxMeaciDTml6UgMTY6MzgNCj4gVG86
-IExlbyBMaSA8bGVveWFuZy5saUBueHAuY29tPjsgQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3Bo
-ZS5sZXJveUBjLXMuZnI+Ow0KPiBRaWFuZyBaaGFvIDxxaWFuZy56aGFvQG54cC5jb20+DQo+IENj
-OiBsaW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZzsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5p
-bmZyYWRlYWQub3JnOw0KPiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBTY290dCBXb29k
-IDxvc3NAYnVzZXJyb3IubmV0PjsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0
-OiBSZTogW1BBVENIIHYzIDM1LzM2XSBuZXQvd2FuOiBtYWtlIEZTTF9VQ0NfSERMQyBleHBsaWNp
-dGx5IGRlcGVuZA0KPiBvbiBQUEMzMg0KPiANCj4gT24gMDEvMTEvMjAxOSAyMy4zMSwgTGVvIExp
-IHdyb3RlOg0KPiA+DQo+ID4NCj4gPj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPj4g
-RnJvbTogQ2hyaXN0b3BoZSBMZXJveSA8Y2hyaXN0b3BoZS5sZXJveUBjLXMuZnI+DQo+ID4+IFNl
-bnQ6IEZyaWRheSwgTm92ZW1iZXIgMSwgMjAxOSAxMTozMCBBTQ0KPiA+PiBUbzogUmFzbXVzIFZp
-bGxlbW9lcyA8bGludXhAcmFzbXVzdmlsbGVtb2VzLmRrPjsgUWlhbmcgWmhhbw0KPiA+PiA8cWlh
-bmcuemhhb0BueHAuY29tPjsgTGVvIExpIDxsZW95YW5nLmxpQG54cC5jb20+DQo+ID4+IENjOiBs
-aW51eHBwYy1kZXZAbGlzdHMub3psYWJzLm9yZzsNCj4gPj4gbGludXgtYXJtLWtlcm5lbEBsaXN0
-cy5pbmZyYWRlYWQub3JnOw0KPiA+PiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBTY290
-dCBXb29kIDxvc3NAYnVzZXJyb3IubmV0PjsNCj4gPj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0K
-PiA+PiBTdWJqZWN0OiBSZTogW1BBVENIIHYzIDM1LzM2XSBuZXQvd2FuOiBtYWtlIEZTTF9VQ0Nf
-SERMQyBleHBsaWNpdGx5DQo+ID4+IGRlcGVuZCBvbiBQUEMzMg0KPiA+Pg0KPiA+Pg0KPiA+Pg0K
-PiA+PiBMZSAwMS8xMS8yMDE5IMOgIDEzOjQyLCBSYXNtdXMgVmlsbGVtb2VzIGEgw6ljcml0wqA6
-DQo+ID4+PiBDdXJyZW50bHksIEZTTF9VQ0NfSERMQyBkZXBlbmRzIG9uIFFVSUNDX0VOR0lORSwg
-d2hpY2ggaW4gdHVybg0KPiA+PiBkZXBlbmRzDQo+ID4+PiBvbiBQUEMzMi4gQXMgcHJlcGFyYXRp
-b24gZm9yIHJlbW92aW5nIHRoZSBsYXR0ZXIgYW5kIHRodXMgYWxsb3dpbmcNCj4gPj4+IHRoZSBj
-b3JlIFFFIGNvZGUgdG8gYmUgYnVpbHQgZm9yIG90aGVyIGFyY2hpdGVjdHVyZXMsIG1ha2UNCj4g
-Pj4+IEZTTF9VQ0NfSERMQyBleHBsaWNpdGx5IGRlcGVuZCBvbiBQUEMzMi4NCj4gPj4NCj4gPj4g
-SXMgdGhhdCByZWFsbHkgcG93ZXJwYyBzcGVjaWZpYyA/IENhbid0IHRoZSBBUk0gUUUgcGVyZm9y
-bSBIRExDIG9uIFVDQyA/DQo+IA0KPiBJIHRoaW5rIHRoZSBkcml2ZXIgd291bGQgYnVpbGQgb24g
-QVJNLiBXaGV0aGVyIGl0IHdvcmtzIEkgZG9uJ3Qga25vdy4gSSBrbm93IGl0DQo+IGRvZXMgbm90
-IGJ1aWxkIG9uIDY0IGJpdCBob3N0cyAoc2VlIGtidWlsZCByZXBvcnQgZm9yIHYyLDIzLzIzKS4N
-Cj4gDQo+ID4gTm8uICBBY3R1YWxseSB0aGUgSERMQyBhbmQgVERNIGFyZSB0aGUgbWFqb3IgcmVh
-c29uIHRvIGludGVncmF0ZSBhIFFFIG9uDQo+IHRoZSBBUk0gYmFzZWQgTGF5ZXJzY2FwZSBTb0Nz
-Lg0KPiANCj4gW2NpdGF0aW9uIG5lZWRlZF0uDQo+IA0KPiA+IFNpbmNlIFJhc211cyBkb2Vzbid0
-IGhhdmUgdGhlIGhhcmR3YXJlIHRvIHRlc3QgdGhpcyBmZWF0dXJlIFFpYW5nIFpoYW8NCj4gcHJv
-YmFibHkgY2FuIGhlbHAgdmVyaWZ5IHRoZSBmdW5jdGlvbmFsaXR5IG9mIFRETSBhbmQgd2UgY2Fu
-IGRyb3AgdGhpcyBwYXRjaC4NCj4gDQo+IE5vLCB0aGlzIHBhdGNoIGNhbm5vdCBiZSBkcm9wcGVk
-LiBQbGVhc2Ugc2VlIHRoZSBrYnVpbGQgY29tcGxhaW50cyBmb3INCj4gdjIsMjMvMjMgYWJvdXQg
-dXNlIG9mIElTX0VSUl9WQUxVRSBvbiBub3Qtc2l6ZW9mKGxvbmcpIGVudGl0aWVzLiBJIHNlZSBr
-YnVpbGQNCj4gaGFzIGNvbXBsYWluZWQgYWJvdXQgdGhlIHNhbWUgdGhpbmcgZm9yIHYzIHNpbmNl
-IGFwcGFyZW50bHkgdGhlIHNhbWUgdGhpbmcNCj4gYXBwZWFycyBpbiB1Y2Nfc2xvdy5jLiBTbyBJ
-J2xsIGZpeCB0aGF0Lg0KPiANCj4gTW9yZW92ZXIsIGFzIHlvdSBzYXkgYW5kIGtub3csIEkgZG8g
-bm90IGhhdmUgdGhlIGhhcmR3YXJlIHRvIHRlc3QgaXQsIHNvIEknbQ0KPiBub3QgZ29pbmcgdG8g
-ZXZlbiBhdHRlbXB0IHRvIGZpeCB1cCBmc2xfdWNjX2hkbGMuYy4gSWYgUWlhbmcgWmhhbyBvciBz
-b21lYm9keQ0KPiBlbHNlIGNhbiB2ZXJpZnkgdGhhdCBpdCB3b3JrcyBqdXN0IGZpbmUgb24gQVJN
-IGFuZCBmaXhlcyB0aGUgYWxsbW9kY29uZmlnDQo+IHByb2JsZW0ocyksIGhlL3NoZSBpcyBtb3Jl
-IHRoYW4gd2VsY29tZSB0byBzaWduIG9mZiBvbiBhIHBhdGNoIHRoYXQgcmVtb3Zlcw0KPiB0aGUg
-Q09ORklHX1BQQzMyIGRlcGVuZGVuY3kgb3IgcmVwbGFjZXMgaXQgd2l0aCBzb21ldGhpbmcgZWxz
-ZS4NCj4gDQoNCkkgdGVzdGVkIHlvdXIgdjMgcGF0Y2hlcyBvbiBsczEwNDNhcmRiIHdoaWNoIGlz
-IGFybTY0IGZvciBmc2xfdWNjX2hkbGMsIGl0IGNhbiB3b3JrLA0KT25seSBpdCB3aWxsIHB1dCBh
-IGNvbXBpbGUgd2FybmluZywgSSBhbHNvIG1hZGUgYSBwYXRjaCB0byBmaXggaXQuDQpJIGNhbiBz
-ZW5kIGEgcGF0Y2ggdG8gcmVtb3ZlIFBQQzMyIGRlcGVuZGVuY3kgd2hlbiBJIHNlbmQgbXkgcGF0
-Y2ggdG8gc3VwcG9ydCBBUk02NC4NCk9yIEkgYWRkIG15IHBhdGNoIGluIHlvdXIgcGF0Y2hzZXQu
-DQoNCkJlc3QgUmVnYXJkcw0KUWlhbmcgWmhhbw0K
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    a99d8080 Linux 5.4-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14ed25cce00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
+dashboard link: https://syzkaller.appspot.com/bug?extid=db4869ba599c0de9b13e
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+db4869ba599c0de9b13e@syzkaller.appspotmail.com
+
+vcan0: j1939_xtp_rx_abort_one: 0x00000000704d9bae: 0x00000: (3) A timeout  
+occurred and this is the connection abort to close the session.
+vcan0: j1939_xtp_rx_abort_one: 0x000000002231a129: 0x00000: (3) A timeout  
+occurred and this is the connection abort to close the session.
+==================================================================
+BUG: KASAN: use-after-free in __lock_acquire+0x96/0x1be0  
+kernel/locking/lockdep.c:3828
+Read of size 8 at addr ffff88808feb5080 by task ksoftirqd/1/16
+
+CPU: 1 PID: 16 Comm: ksoftirqd/1 Not tainted 5.4.0-rc6 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+  print_address_description+0x75/0x5c0 mm/kasan/report.c:374
+  __kasan_report+0x14b/0x1c0 mm/kasan/report.c:506
+  kasan_report+0x26/0x50 mm/kasan/common.c:634
+  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
+  __lock_acquire+0x96/0x1be0 kernel/locking/lockdep.c:3828
+  lock_acquire+0x158/0x250 kernel/locking/lockdep.c:4487
+  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+  _raw_spin_lock_bh+0x34/0x50 kernel/locking/spinlock.c:175
+  spin_lock_bh include/linux/spinlock.h:343 [inline]
+  j1939_session_list_lock net/can/j1939/transport.c:238 [inline]
+  j1939_session_get_by_addr net/can/j1939/transport.c:530 [inline]
+  j1939_xtp_rx_abort_one+0x89/0x3f0 net/can/j1939/transport.c:1242
+  j1939_xtp_rx_abort net/can/j1939/transport.c:1270 [inline]
+  j1939_tp_cmd_recv net/can/j1939/transport.c:1943 [inline]
+  j1939_tp_recv+0x731/0xb80 net/can/j1939/transport.c:1973
+  j1939_can_recv+0x424/0x650 net/can/j1939/main.c:100
+  deliver net/can/af_can.c:568 [inline]
+  can_rcv_filter+0x3c0/0x8b0 net/can/af_can.c:602
+  can_receive+0x2ac/0x3b0 net/can/af_can.c:659
+  can_rcv+0xe4/0x220 net/can/af_can.c:685
+  __netif_receive_skb_one_core net/core/dev.c:4929 [inline]
+  __netif_receive_skb+0x136/0x370 net/core/dev.c:5043
+  process_backlog+0x4d8/0x930 net/core/dev.c:5874
+  napi_poll net/core/dev.c:6311 [inline]
+  net_rx_action+0x5ef/0x10d0 net/core/dev.c:6379
+  __do_softirq+0x333/0x7c4 arch/x86/include/asm/paravirt.h:766
+  run_ksoftirqd+0x64/0xf0 kernel/softirq.c:603
+  smpboot_thread_fn+0x5b3/0x9a0 kernel/smpboot.c:165
+  kthread+0x332/0x350 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+Allocated by task 9951:
+  save_stack mm/kasan/common.c:69 [inline]
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc+0x11c/0x1b0 mm/kasan/common.c:510
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
+  kmem_cache_alloc_trace+0x221/0x2f0 mm/slab.c:3550
+  kmalloc include/linux/slab.h:556 [inline]
+  kzalloc include/linux/slab.h:690 [inline]
+  j1939_priv_create net/can/j1939/main.c:122 [inline]
+  j1939_netdev_start+0x177/0x730 net/can/j1939/main.c:251
+  j1939_sk_bind+0x2c0/0xac0 net/can/j1939/socket.c:438
+  __sys_bind+0x2c2/0x3a0 net/socket.c:1647
+  __do_sys_bind net/socket.c:1658 [inline]
+  __se_sys_bind net/socket.c:1656 [inline]
+  __x64_sys_bind+0x7a/0x90 net/socket.c:1656
+  do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 16:
+  save_stack mm/kasan/common.c:69 [inline]
+  set_track mm/kasan/common.c:77 [inline]
+  kasan_set_free_info mm/kasan/common.c:332 [inline]
+  __kasan_slab_free+0x12a/0x1e0 mm/kasan/common.c:471
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x115/0x200 mm/slab.c:3756
+  __j1939_priv_release net/can/j1939/main.c:154 [inline]
+  kref_put include/linux/kref.h:65 [inline]
+  j1939_priv_put+0x86/0xa0 net/can/j1939/main.c:159
+  j1939_session_destroy net/can/j1939/transport.c:271 [inline]
+  __j1939_session_release net/can/j1939/transport.c:280 [inline]
+  kref_put include/linux/kref.h:65 [inline]
+  j1939_session_put+0xfe/0x150 net/can/j1939/transport.c:285
+  j1939_xtp_rx_abort_one+0xd3/0x3f0 net/can/j1939/transport.c:1261
+  j1939_xtp_rx_abort net/can/j1939/transport.c:1269 [inline]
+  j1939_tp_cmd_recv net/can/j1939/transport.c:1943 [inline]
+  j1939_tp_recv+0x719/0xb80 net/can/j1939/transport.c:1973
+  j1939_can_recv+0x424/0x650 net/can/j1939/main.c:100
+  deliver net/can/af_can.c:568 [inline]
+  can_rcv_filter+0x3c0/0x8b0 net/can/af_can.c:602
+  can_receive+0x2ac/0x3b0 net/can/af_can.c:659
+  can_rcv+0xe4/0x220 net/can/af_can.c:685
+  __netif_receive_skb_one_core net/core/dev.c:4929 [inline]
+  __netif_receive_skb+0x136/0x370 net/core/dev.c:5043
+  process_backlog+0x4d8/0x930 net/core/dev.c:5874
+  napi_poll net/core/dev.c:6311 [inline]
+  net_rx_action+0x5ef/0x10d0 net/core/dev.c:6379
+  __do_softirq+0x333/0x7c4 arch/x86/include/asm/paravirt.h:766
+
+The buggy address belongs to the object at ffff88808feb4000
+  which belongs to the cache kmalloc-8k of size 8192
+The buggy address is located 4224 bytes inside of
+  8192-byte region [ffff88808feb4000, ffff88808feb6000)
+The buggy address belongs to the page:
+page:ffffea00023fad00 refcount:1 mapcount:0 mapping:ffff8880aa4021c0  
+index:0x0 compound_mapcount: 0
+flags: 0x1fffc0000010200(slab|head)
+raw: 01fffc0000010200 ffffea00024cc108 ffffea0002781e08 ffff8880aa4021c0
+raw: 0000000000000000 ffff88808feb4000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88808feb4f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88808feb5000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88808feb5080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                    ^
+  ffff88808feb5100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88808feb5180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
