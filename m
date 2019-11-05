@@ -2,95 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC6DEF01DF
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 16:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD234F020D
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390014AbfKEPtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 10:49:36 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36909 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389506AbfKEPtf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 10:49:35 -0500
-Received: by mail-wr1-f68.google.com with SMTP id t1so16045192wrv.4
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 07:49:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Omqe6S/pyFxJI7C1o2eETHJWbUrn/qTQRRvTn+QMfyg=;
-        b=RzkorrMjvOIWN4UkPK8Y7Znou9DRHdIJJdzqduj9U84TzYPrjarP5nbfB2T3swqAB5
-         9Y4y4+jLERhtnMbGydLfoIP7oKOq9Lbt+z/x4iM2zB/1jh9RKh+7UAwC3b6hkptTaK2S
-         0N1gWFkaqSOVwEhcdWVR2NnZua3pPeXC2ao/eiRZ/Pq28qVBUTUMoUtBEcfx9mturcua
-         W57o+fVlOrvvBoaR5/BlNfZfePVlIW5lUUKkURAkP8b1muUDkgcEssXTw3OJn1YCI4v3
-         BKm7gm6qrGLbL5bqO/X0FxUAnuf16r3yC+mPOMIyLxnFewmNSlIiA2LRv/rwARn2Ij9o
-         Jhhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Omqe6S/pyFxJI7C1o2eETHJWbUrn/qTQRRvTn+QMfyg=;
-        b=byhn/UPqiKR5ArX8ZL8rgmDR1lKVRyWi7OR5wq3Z3GCCfoZJHZwuLRVmDEZYYtUyqq
-         qJSDw474YoPRN555Odqr+onsmmiYvNl7BkuQbHjhRB3zHYKracDtLYxfrXq4ifXywO1K
-         WfrRsGqcoLN2Np3m9DWir1pLnpS/C2pDU0kpKg++uPNDimidabpHfpR1ydD7sDnqHdHV
-         Twvy/Dp28q7I7DsyyrGgSCpEuSgcmrkBeBfZjSRczXTQWOGeploCY97NRaMA9SliFspW
-         ZFpDBqEuyGfo0lgWNRFRvPU6Eyh3enJY32F7U9ZoTL18zzII4YYc7ZlTFvIgY6twR7ss
-         7fjg==
-X-Gm-Message-State: APjAAAXC5DhqxQp0kBaY7MlN9GYBPAmAS4ExQJLOWCHYhrmZA/76hPoJ
-        ip3RBoS57fFA3cCFWS1dqcIoPp7JZjA=
-X-Google-Smtp-Source: APXvYqwfdUO6eajK1OfvTLlh5zvD1jlHgPwHU9A53yqddwlElP4rSVoRkaamvkSt3D41UleMCuvALA==
-X-Received: by 2002:a5d:5444:: with SMTP id w4mr26585867wrv.164.1572968973724;
-        Tue, 05 Nov 2019 07:49:33 -0800 (PST)
-Received: from ?IPv6:2a01:e35:8b63:dc30:f096:9925:304a:fd2a? ([2a01:e35:8b63:dc30:f096:9925:304a:fd2a])
-        by smtp.gmail.com with ESMTPSA id g184sm26057395wma.8.2019.11.05.07.49.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 07:49:33 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH 5/5] net: namespace: allow setting NSIDs outside current
- namespace
-To:     Jonas Bonn <jonas@norrbonn.se>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net
-References: <20191105081112.16656-1-jonas@norrbonn.se>
- <20191105081112.16656-6-jonas@norrbonn.se>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <739c409a-bfbf-99c0-9624-38264d52087a@6wind.com>
-Date:   Tue, 5 Nov 2019 16:49:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2390042AbfKEQAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:00:36 -0500
+Received: from smtprelay0162.hostedemail.com ([216.40.44.162]:41752 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389760AbfKEQAg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:00:36 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 1B49218224D6E;
+        Tue,  5 Nov 2019 16:00:35 +0000 (UTC)
+X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
+X-Spam-Summary: 30,2,0,,d41d8cd98f00b204,rostedt@goodmis.org,:::::::::::::::::::::,RULES_HIT:41:355:379:541:599:800:960:966:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2196:2199:2393:2553:2559:2562:2693:2914:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:4385:5007:6119:6120:6261:7514:7875:7901:7903:10010:10400:10967:11232:11658:11914:12043:12296:12297:12663:12740:12760:12895:13069:13161:13229:13311:13357:13439:14096:14097:14181:14659:14721:21080:21324:21433:21450:21451:21627:21740:21795:30012:30051:30054:30066:30090:30091,0,RBL:146.247.46.6:@goodmis.org:.lbl8.mailshell.net-62.8.41.100 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:2:0,LFtime:37,LUA_SUMMARY:none
+X-HE-Tag: pail42_5c0b34e3fa954
+X-Filterd-Recvd-Size: 2506
+Received: from grimm.local.home (unknown [146.247.46.6])
+        (Authenticated sender: rostedt@goodmis.org)
+        by omf02.hostedemail.com (Postfix) with ESMTPA;
+        Tue,  5 Nov 2019 16:00:32 +0000 (UTC)
+Date:   Tue, 5 Nov 2019 11:00:28 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
+        daniel@iogearbox.net, peterz@infradead.org, x86@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH bpf-next 0/7] Introduce BPF trampoline
+Message-ID: <20191105110028.7775192f@grimm.local.home>
+In-Reply-To: <20191105154709.utmzm6qvtlux4hww@ast-mbp.dhcp.thefacebook.com>
+References: <20191102220025.2475981-1-ast@kernel.org>
+        <20191105143154.umojkotnvcx4yeuq@ast-mbp.dhcp.thefacebook.com>
+        <20191105104024.4e99a630@grimm.local.home>
+        <20191105154709.utmzm6qvtlux4hww@ast-mbp.dhcp.thefacebook.com>
+X-Mailer: Claws Mail 3.17.4git49 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20191105081112.16656-6-jonas@norrbonn.se>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 05/11/2019 à 09:11, Jonas Bonn a écrit :
-> Currently it is only possible to move an interface to a new namespace if
-> the destination namespace has an ID in the interface's current namespace.
-> If the interface already resides outside of the current namespace, then
-> we may need to assign the destination namespace an ID in the interface's
-> namespace in order to effect the move.
+On Tue, 5 Nov 2019 07:47:11 -0800
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+
+> > If you have to wait you may need to wait. The Linux kernel isn't
+> > something that is suppose to put in temporary hacks, just to satisfy
+> > someone's deadline.  
 > 
-> This patch allows namespace ID's to be created outside of the current
-> namespace.  With this, the following is possible:
-> 
-> i)    Our namespace is 'A'.
-> ii)   The interface resides in namespace 'B'
-> iii)  We can assign an ID for NS 'A' in NS 'B'
-> iv)   We can then move the interface into our own namespace.
-> 
-> and
-> 
-> i)   Our namespace is 'A'; namespaces 'B' and 'C' also exist
-> ii)  We can assign an ID for namespace 'C' in namespace 'B'
-> iii) We can then create a VETH interface directly in namespace 'B' with
-> the other end in 'C', all without ever leaving namespace 'A'
-> 
-> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Ok. I will switch to text_poke and will make it hack free.
+> ftrace mechanisms are being replaced by text_poke anyway.
+
+I see that Facebook now owns Linux.
+
+Peter's text poke patches most likely not be ready for the next
+merge window either. Don't you require them?
+
+The database of function nops are part of the ftrace mechanisms which
+are not part of text poke, and there's strong accounting associated to
+them which allows the user to see how their kernel is modified. This is
+why I was against the live kernel patching modifying the function code
+directly, because the user loses out on visibility into how their
+kernel is being modified. Any "replacement" would require the same
+transparency into the modification of the kernel.
+
+I see how you work. You pressure someone into jumping to do your all
+mighty work, and if they don't jump as you would like them too, you
+work to circumvent them and try to make them irrelevant.
+
+I'm sure the rest of the community will enjoy working with you too.
+
+-- Steve
