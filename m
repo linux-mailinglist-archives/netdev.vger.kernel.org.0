@@ -2,426 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B77AAF05C8
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:18:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB5CBF05DF
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:24:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390800AbfKETSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:18:16 -0500
-Received: from mx.aristanetworks.com ([162.210.129.12]:24289 "EHLO
-        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389724AbfKETSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:18:16 -0500
-Received: from us180.sjc.aristanetworks.com (us180.sjc.aristanetworks.com [172.25.230.4])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id BBC711E742;
-        Tue,  5 Nov 2019 11:18:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1572981494;
-        bh=CJP4L7MI6TCjlgeFYJ/KGXplRCIXkyxur551/TKYSNY=;
-        h=Date:To:Subject:From:From;
-        b=YrSybkHafpt4phNG3at6GmOjNPH8QcfNoVDHkxIelYA7YAmzxP9ha18axbkLL7wk2
-         hzQrPCa88j2y5LI8lecmq5mgHNhM3iDNMJyPDOcvkOLVy29KBlghk42gCUThYjfgA+
-         fRzbflMvfiRjoawqyG1xUXYhwiPiFbjpgr7oEmcFajdlOQkG9Y5muzE1Bx8vlVGqB4
-         0LhP7ecLc31yxr2lf+nUVvZaogW460yEbEeDhT1IXmBrthfsTTE2/j8dx5SR3nLMKZ
-         O3XhBbep8W672h85wuF4jQw1Yz8qTDi4R6+SfURUQh0bvZOQXLLFD67weo9MJPxtAm
-         Zp2os43DjPvxA==
-Received: by us180.sjc.aristanetworks.com (Postfix, from userid 10189)
-        id 2788F95C0C16; Tue,  5 Nov 2019 11:18:13 -0800 (PST)
-Date:   Tue, 05 Nov 2019 11:18:13 -0800
-To:     dsahern@gmail.com, davem@davemloft.net, shuah@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        fruggeri@arista.com
-Subject: [PATCH net-next] selftest: net: add some traceroute tests
-User-Agent: Heirloom mailx 12.5 7/5/10
+        id S2390819AbfKETYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:24:30 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:36741 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390445AbfKETYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:24:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1572981865;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=cyEeja1O/3HJ7qE8/eP52LA1r1YFJ2AT82sSlB3RwDQ=;
+        b=BLYVpH1X1u+Bh0du9niozUJ29UmdH/v5/P/UUhyEuNDQg531nrFlMr5ZC/jT9klPY3
+        /OgtszLKykmflBaH/YLF7hjgMcF4B4y6+mhTYVzc7Jg5syYf7NVzqwLxq3nL/OgWT5P1
+        h6aenWK/9y7R9aCFkVgX1drFwhXUhatZ/XHgB6bCQrI4DYLymkJiQ1UjewleDezpgPiF
+        Ev8YAl8qgXgkiXVtKIFYfqst3Jsgv2U3C3oMaYlQfbbpD/QcCYkvZ4MwLleKtCWyBKOk
+        P7ZgSPkLH6M+Y+tAPxKHiLHtHvlKpXOWUmeJgSCRcpwL+b0pjH0b2ns0732Kw/65qnCU
+        9QVw==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj5Qpw97WFDlaZXA4Ef/k="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+        by smtp.strato.de (RZmta 44.29.0 DYNA|AUTH)
+        with ESMTPSA id L09db3vA5JOFUrW
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Tue, 5 Nov 2019 20:24:15 +0100 (CET)
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-Id: <20191105191814.2788F95C0C16@us180.sjc.aristanetworks.com>
-From:   fruggeri@arista.com (Francesco Ruggeri)
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: Long Delay on startup of wl18xx Wireless chip
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <CAHCN7xK0Y7=Wr9Kq02CWCbQjWVOocU02LLEB=QsVB22yNNoQPw@mail.gmail.com>
+Date:   Tue, 5 Nov 2019 20:24:15 +0100
+Cc:     Linux-OMAP <linux-omap@vger.kernel.org>, kvalo@codeaurora.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <6D542255-6306-4982-9393-DCCC6D1961BB@goldelico.com>
+References: <CAHCN7xJiJKBgkiRm-MF9NpgQqfV4=zSVRShc5Sb5Lya2TAxU0g@mail.gmail.com> <CAHCN7xK0Y7=Wr9Kq02CWCbQjWVOocU02LLEB=QsVB22yNNoQPw@mail.gmail.com>
+To:     Adam Ford <aford173@gmail.com>
+X-Mailer: Apple Mail (2.3124)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added the following traceroute tests.
+Hi Adam,
 
-IPV6:
-Verify that in this scenario
+> Am 05.11.2019 um 19:55 schrieb Adam Ford <aford173@gmail.com>:
+>=20
+> On Tue, Nov 5, 2019 at 12:25 PM Adam Ford <aford173@gmail.com> wrote:
+>>=20
+>> I am seeing a really long delay at startup of the wl18xx using the =
+5.4 kernel.
+>>=20
+>=20
+> Sorry I had to resend.  I forgot to do plaintext.  Google switched
+> settings on me and neglected to inform me.
+>=20
+>=20
+>> [    7.895551] wl18xx_driver wl18xx.2.auto: Direct firmware load for =
+ti-connectivity/wl18xx-conf.bin failed with error -2
+>> [    7.906416] wl18xx_driver wl18xx.2.auto: Falling back to sysfs =
+fallback for: ti-connectivity/wl18xx-conf.bin
+>>=20
+>> At this point in the sequence, I can login to Linux, but the WL18xx =
+is unavailable.
+>>=20
+>> [   35.032382] vwl1837: disabling
+>> [   69.594874] wlcore: ERROR could not get configuration binary =
+ti-connectivity/wl18xx-conf.bin: -11
+>> [   69.604013] wlcore: WARNING falling back to default config
+>> [   70.174821] wlcore: wl18xx HW: 183x or 180x, PG 2.2 (ROM 0x11)
+>> [   70.189003] wlcore: WARNING Detected unconfigured mac address in =
+nvs, derive from fuse instead.
+>> [   70.197851] wlcore: WARNING This default nvs file can be removed =
+from the file system
+>> [   70.218816] wlcore: loaded
+>>=20
+>> It is now at this point when the wl18xx is available.
+>>=20
+>> I have the wl18xx and wlcore setup as a module so it should load =
+after the filesystem is mounted.  I am not using a wl18xx-conf.bin, but =
+I never needed to use this before.
+>>=20
+>> It seems to me unreasonable to wait 60+ seconds after everything is =
+mounted for the wireless chip to become available.  Before I attempt to =
+bisect this, I was hoping someone might have seen this.  I am also =
+trying to avoid duplicating someone else's efforts.
+>>=20
+>> I know the 4.19 doesn't behave like this.
 
-       ------------------------ N2
-        |                    |
-      ------              ------  N3  ----
-      | R1 |              | R2 |------|H2|
-      ------              ------      ----
-        |                    |
-       ------------------------ N1
-                 |
-                ----
-                |H1|
-                ----
+I have with v5.4-rc6 on omap5 + wl1835
 
-where H1's default route goes through R1 and R1's default route goes
-through R2 over N2, traceroute6 from H1 to H2 reports R2's address
-on N2 and not N1.
+root@letux:~# dmesg|fgrep wlcore
+[   10.268847] wl18xx_driver wl18xx.0.auto: Direct firmware load for =
+ti-connectivity/wl18xx-conf.bin failed with error -2
+[   10.291610] wlcore: ERROR could not get configuration binary =
+ti-connectivity/wl18xx-conf.bin: -2
+[   10.303839] wlcore: WARNING falling back to default config
+[   10.700055] wlcore: wl18xx HW: 183x or 180x, PG 2.2 (ROM 0x11)
+[   10.703469] wlcore: WARNING Detected unconfigured mac address in nvs, =
+derive from fuse instead.
+[   10.703478] wlcore: WARNING This default nvs file can be removed from =
+the file system
+[   12.738721] wlcore: loaded
+[   13.978498] wlcore: PHY firmware version: Rev 8.2.0.0.237
+[   14.073765] wlcore: firmware booted (Rev 8.9.0.0.70)
+[   14.096806] wlcore: down
+[   14.589917] wlcore: PHY firmware version: Rev 8.2.0.0.237
+[   14.693183] wlcore: firmware booted (Rev 8.9.0.0.70)
+root@letux:~#=20
 
-IPV4:
-Verify that traceroute from H1 to H2 shows 1.0.1.1 in this scenario
+Hope this helps.
 
-                   1.0.3.1/24
----- 1.0.1.3/24    1.0.1.1/24 ---- 1.0.2.1/24    1.0.2.4/24 ----
-|H1|--------------------------|R1|--------------------------|H2|
-----            N1            ----            N2            ----
-
-where net.ipv4.icmp_errors_use_inbound_ifaddr is set on R1 and
-1.0.3.1/24 and 1.0.1.1/24 are respectively R1's primary and secondary
-address on N1.
-
-Signed-off-by: Francesco Ruggeri <fruggeri@arista.com>
----
- tools/testing/selftests/net/Makefile      |   2 +-
- tools/testing/selftests/net/traceroute.sh | 322 ++++++++++++++++++++++
- 2 files changed, 323 insertions(+), 1 deletion(-)
- create mode 100755 tools/testing/selftests/net/traceroute.sh
-
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 0bd6b23c97ef..a8e04d665b69 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -10,7 +10,7 @@ TEST_PROGS += fib_tests.sh fib-onlink-tests.sh pmtu.sh udpgso.sh ip_defrag.sh
- TEST_PROGS += udpgso_bench.sh fib_rule_tests.sh msg_zerocopy.sh psock_snd.sh
- TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_any.sh
- TEST_PROGS += test_vxlan_fdb_changelink.sh so_txtime.sh ipv6_flowlabel.sh
--TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh l2tp.sh
-+TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh l2tp.sh traceroute.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/traceroute.sh b/tools/testing/selftests/net/traceroute.sh
-new file mode 100755
-index 000000000000..51a2838dc77e
---- /dev/null
-+++ b/tools/testing/selftests/net/traceroute.sh
-@@ -0,0 +1,322 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Run traceroute/traceroute6 tests
-+#
-+
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+
-+################################################################################
-+#
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+run_cmd()
-+{
-+	local ns
-+	local cmd
-+	local out
-+	local rc
-+
-+	ns="$1"
-+	shift
-+	cmd="$*"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "    COMMAND: $cmd\n"
-+	fi
-+
-+	out=$(eval ip netns exec ${ns} ${cmd} 2>&1)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
-+		echo "    $out"
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
-+}
-+
-+################################################################################
-+# create namespaces and interconnects
-+
-+create_ns()
-+{
-+	local ns=$1
-+	local addr=$2
-+	local addr6=$3
-+
-+	[ -z "${addr}" ] && addr="-"
-+	[ -z "${addr6}" ] && addr6="-"
-+
-+	ip netns add ${ns}
-+
-+	ip netns exec ${ns} ip link set lo up
-+	if [ "${addr}" != "-" ]; then
-+		ip netns exec ${ns} ip addr add dev lo ${addr}
-+	fi
-+	if [ "${addr6}" != "-" ]; then
-+		ip netns exec ${ns} ip -6 addr add dev lo ${addr6}
-+	fi
-+
-+	ip netns exec ${ns} ip ro add unreachable default metric 8192
-+	ip netns exec ${ns} ip -6 ro add unreachable default metric 8192
-+
-+	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.accept_dad=0
-+}
-+
-+# create veth pair to connect namespaces and apply addresses.
-+connect_ns()
-+{
-+	local ns1=$1
-+	local ns1_dev=$2
-+	local ns1_addr=$3
-+	local ns1_addr6=$4
-+	local ns2=$5
-+	local ns2_dev=$6
-+	local ns2_addr=$7
-+	local ns2_addr6=$8
-+
-+	ip netns exec ${ns1} ip li add ${ns1_dev} type veth peer name tmp
-+	ip netns exec ${ns1} ip li set ${ns1_dev} up
-+	ip netns exec ${ns1} ip li set tmp netns ${ns2} name ${ns2_dev}
-+	ip netns exec ${ns2} ip li set ${ns2_dev} up
-+
-+	if [ "${ns1_addr}" != "-" ]; then
-+		ip netns exec ${ns1} ip addr add dev ${ns1_dev} ${ns1_addr}
-+	fi
-+
-+	if [ "${ns2_addr}" != "-" ]; then
-+		ip netns exec ${ns2} ip addr add dev ${ns2_dev} ${ns2_addr}
-+	fi
-+
-+	if [ "${ns1_addr6}" != "-" ]; then
-+		ip netns exec ${ns1} ip addr add dev ${ns1_dev} ${ns1_addr6}
-+	fi
-+
-+	if [ "${ns2_addr6}" != "-" ]; then
-+		ip netns exec ${ns2} ip addr add dev ${ns2_dev} ${ns2_addr6}
-+	fi
-+}
-+
-+################################################################################
-+# traceroute6 test
-+#
-+# Verify that in this scenario
-+#
-+#        ------------------------ N2
-+#         |                    |
-+#       ------              ------  N3  ----
-+#       | R1 |              | R2 |------|H2|
-+#       ------              ------      ----
-+#         |                    |
-+#        ------------------------ N1
-+#                  |
-+#                 ----
-+#                 |H1|
-+#                 ----
-+#
-+# where H1's default route goes through R1 and R1's default route goes
-+# through R2 over N2, traceroute6 from H1 to H2 reports R2's address
-+# on N2 and not N1.
-+#
-+# Addresses are assigned as follows:
-+#
-+# N1: 2000:101::/64
-+# N2: 2000:102::/64
-+# N3: 2000:103::/64
-+#
-+# R1's host part of address: 1
-+# R2's host part of address: 2
-+# H1's host part of address: 3
-+# H2's host part of address: 4
-+#
-+# For example:
-+# the IPv6 address of R1's interface on N2 is 2000:102::1/64
-+
-+cleanup_traceroute6()
-+{
-+	local ns
-+
-+	for ns in host-1 host-2 router-1 router-2
-+	do
-+		ip netns del ${ns} 2>/dev/null
-+	done
-+}
-+
-+setup_traceroute6()
-+{
-+	brdev=br0
-+
-+	# start clean
-+	cleanup_traceroute6
-+
-+	set -e
-+	create_ns host-1
-+	create_ns host-2
-+	create_ns router-1
-+	create_ns router-2
-+
-+	# Setup N3
-+	connect_ns router-2 eth3 - 2000:103::2/64 host-2 eth3 - 2000:103::4/64
-+	ip netns exec host-2 ip route add default via 2000:103::2
-+
-+	# Setup N2
-+	connect_ns router-1 eth2 - 2000:102::1/64 router-2 eth2 - 2000:102::2/64
-+	ip netns exec router-1 ip route add default via 2000:102::2
-+
-+	# Setup N1. host-1 and router-1 connect to a bridge in router-2.
-+	ip netns exec router-2 ip link add name ${brdev} type bridge
-+	ip netns exec router-2 ip link set ${brdev} up
-+	ip netns exec router-2 ip addr add 2000:101::2/64 dev ${brdev}
-+
-+	connect_ns host-1 eth0 - 2000:101::3/63 router-2 eth0 - -
-+	ip netns exec router-2 ip link set dev eth0 master ${brdev}
-+	ip netns exec host-1 ip route add default via 2000:101::1
-+
-+	connect_ns router-1 eth1 - 2000:101::1 router-2 eth1 - -
-+	ip netns exec router-2 ip link set dev eth1 master ${brdev}
-+
-+	# Prime the network
-+	ip netns exec host-1 ping6 -c5 2000:103::4 >/dev/null 2>&1
-+
-+	set +e
-+}
-+
-+run_traceroute6()
-+{
-+	if [ ! -x "$(command -v traceroute6)" ]; then
-+		echo "SKIP: Could not run IPV6 test without traceroute6"
-+		return
-+	fi
-+
-+	setup_traceroute6
-+
-+	# traceroute6 host-2 from host-1 (expects 2000:102::2)
-+	run_cmd host-1 "traceroute6 2000:103::4 | grep -q 2000:102::2"
-+	log_test $? 0 "IPV6 traceroute"
-+
-+	cleanup_traceroute6
-+}
-+
-+################################################################################
-+# traceroute test
-+#
-+# Verify that traceroute from H1 to H2 shows 1.0.1.1 in this scenario
-+#
-+#                    1.0.3.1/24
-+# ---- 1.0.1.3/24    1.0.1.1/24 ---- 1.0.2.1/24    1.0.2.4/24 ----
-+# |H1|--------------------------|R1|--------------------------|H2|
-+# ----            N1            ----            N2            ----
-+#
-+# where net.ipv4.icmp_errors_use_inbound_ifaddr is set on R1 and
-+# 1.0.3.1/24 and 1.0.1.1/24 are respectively R1's primary and secondary
-+# address on N1.
-+#
-+
-+cleanup_traceroute()
-+{
-+	local ns
-+
-+	for ns in host-1 host-2 router
-+	do
-+		ip netns del ${ns} 2>/dev/null
-+	done
-+}
-+
-+setup_traceroute()
-+{
-+	# start clean
-+	cleanup_traceroute
-+
-+	set -e
-+	create_ns host-1
-+	create_ns host-2
-+	create_ns router
-+
-+	connect_ns host-1 eth0 1.0.1.3/24 - \
-+	           router eth1 1.0.3.1/24 -
-+	ip netns exec host-1 ip route add default via 1.0.1.1
-+
-+	ip netns exec router ip addr add 1.0.1.1/24 dev eth1
-+	ip netns exec router sysctl -qw \
-+				net.ipv4.icmp_errors_use_inbound_ifaddr=1
-+
-+	connect_ns host-2 eth0 1.0.2.4/24 - \
-+	           router eth2 1.0.2.1/24 -
-+	ip netns exec host-2 ip route add default via 1.0.2.1
-+
-+	# Prime the network
-+	ip netns exec host-1 ping -c5 1.0.2.4 >/dev/null 2>&1
-+
-+	set +e
-+}
-+
-+run_traceroute()
-+{
-+	if [ ! -x "$(command -v traceroute)" ]; then
-+		echo "SKIP: Could not run IPV4 test without traceroute"
-+		return
-+	fi
-+
-+	setup_traceroute
-+
-+	# traceroute host-2 from host-1 (expects 1.0.1.1). Takes a while.
-+	run_cmd host-1 "traceroute 1.0.2.4 | grep -q 1.0.1.1"
-+	log_test $? 0 "IPV4 traceroute"
-+
-+	cleanup_traceroute
-+}
-+
-+################################################################################
-+# Run tests
-+
-+run_tests()
-+{
-+	run_traceroute6
-+	run_traceroute
-+}
-+
-+################################################################################
-+# main
-+
-+declare -i nfail=0
-+declare -i nsuccess=0
-+
-+while getopts :pv o
-+do
-+	case $o in
-+		p) PAUSE_ON_FAIL=yes;;
-+		v) VERBOSE=$(($VERBOSE + 1));;
-+		*) exit 1;;
-+	esac
-+done
-+
-+run_tests
-+
-+printf "\nTests passed: %3d\n" ${nsuccess}
-+printf "Tests failed: %3d\n"   ${nfail}
--- 
-2.19.1
+BR,
+Nikolaus
 
