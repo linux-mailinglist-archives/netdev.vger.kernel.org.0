@@ -2,97 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5CCEF51B
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:49:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2F5EF528
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:52:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbfKEFtt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 00:49:49 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43005 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbfKEFtt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:49:49 -0500
-Received: by mail-pg1-f194.google.com with SMTP id s23so9836902pgo.9
-        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 21:49:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=vxEtMtEhb2gWEXlTPJA6ddjm9H4tsBmVdOrNaw1VCQM=;
-        b=n8LAdQu9EgxXy1mj0XqGpxjs1lEp3q0Ir14BTXRqzzVQEPpzd2ixxvEB1gSCY+NBOu
-         9sk5EYnF4VPqPBL1L+5wTSif3jdIXDTWvSECsS2s8WwMNRK8XTb3xSUQamkLheBZjywQ
-         pGJiFyZGOYFIglCuNMo1l5flWX9TQvB+QHlH5FIhYhmhyvfYYJ9PRpJHFa0OztkiCCuj
-         KCXc56ajukZ3HNA09xkA1tFheqAAVWiYf/3cKjXUSUevDwlaVujo7xyMzJm10M5Cliin
-         Yq4mkO1LJr0DF8wyqtFNdSqfACXxp3tHp/SGU7kbIw/fWCN2Q1Q8HiOGPkC3xHL3r3xD
-         +O2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=vxEtMtEhb2gWEXlTPJA6ddjm9H4tsBmVdOrNaw1VCQM=;
-        b=B/0nAKbzwVCCDSfkPlkeCT4jUR4eXquAS66EHxk7a4fXWDIKDQAKuMDH6jBfHTiwn7
-         qKIC+Xvft0WwPguGTBTRYioUh9rIDvZChyZxsbkW7NxPZlftnzru7DXO80VU/U+Haprr
-         em3JtSIllJ+D3pYaGkfVTbaGdFaxndfo8w+NcXKQcFeTonJ7TjXR2tJP2dLXRZhFfCUm
-         oo5laKH3Fpf9O6M3pMog3NOEt3DFflvUIZ02W+ZRXdxqmr6NvNtCBAr7uEsUZEXCNt6E
-         UJLdAa9wkZBgNzUwFUaljK8VPIxWWaDgCo5D2A6Tov206DNetlr7NOTWfkOsJKFkLOao
-         psUQ==
-X-Gm-Message-State: APjAAAXvRHWGSl3aVFwfWO82TJ7we9QBeu1c11rKKl/wqzlA4CzQP3Ws
-        ItfT09hNxFTebUHYLOVVhRhndA==
-X-Google-Smtp-Source: APXvYqws3dyCZENwQMQrkhbmerylekwKAR0pZF0bkZcnqwhtOVsryWw2kALaHyobPflsSHPHraAWhw==
-X-Received: by 2002:a17:90a:ca0e:: with SMTP id x14mr4084583pjt.95.1572932988303;
-        Mon, 04 Nov 2019 21:49:48 -0800 (PST)
-Received: from cakuba.netronome.com ([2601:646:8e00:e18::4])
-        by smtp.gmail.com with ESMTPSA id m34sm17155181pgb.26.2019.11.04.21.49.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Nov 2019 21:49:48 -0800 (PST)
-Date:   Mon, 4 Nov 2019 21:49:43 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net-next] bpf: re-fix skip write only files in debugfs
-Message-ID: <20191104214943.6c4339d9@cakuba.netronome.com>
-In-Reply-To: <20191104184550.73e839f8@cakuba.netronome.com>
-References: <94ba2eebd8d6c48ca6da8626c9fa37f186d15f92.1572876157.git.daniel@iogearbox.net>
-        <20191104184550.73e839f8@cakuba.netronome.com>
-Organization: Netronome Systems, Ltd.
+        id S2387521AbfKEFwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 00:52:08 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:12170 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2387504AbfKEFwI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:52:08 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA55noBY019326;
+        Mon, 4 Nov 2019 21:52:05 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=MY2juLgBtQDsrhQsqWV4sNEHaFkAlP1jBUA99PoRXIM=;
+ b=HLi7XBPruPQN6OOuox/7aNxiEZjkOG1pBMHqr0tQQJzBhhjJ/AcpA7LFoZ1yoBaRb10P
+ thJALrDMscf+c8t5Bk9erL2tGOP+N52bYz5COt583K4ypDut8x9tZBNy5e2yuTi8sTEk
+ LiZ5RPS+jaJtLT+iPRUkaDlrJ44rNOM84qRV1xvp9quW416P/uFJmYPJKTHPqzqkLGjl
+ mZq34hXiZqvZlDO2W/ZuTDwX189XjI5CLGeZ3pw6r8VanNdjXvsSM44pQEHTlTAAzD1I
+ 1eh9gxM/XeliLH3C0WodlPWd6JjXPLxYR5j9ftSed3MwJVgUHm4eWHKnJDc40Eo+NLiA mA== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2w17n91eq7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 04 Nov 2019 21:52:05 -0800
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Mon, 4 Nov
+ 2019 21:52:04 -0800
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Mon, 4 Nov 2019 21:52:04 -0800
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 3B0BC3F7043;
+        Mon,  4 Nov 2019 21:52:04 -0800 (PST)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id xA55q4To030050;
+        Mon, 4 Nov 2019 21:52:04 -0800
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id xA55q3Cg030049;
+        Mon, 4 Nov 2019 21:52:03 -0800
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <manishc@marvell.com>,
+        <mrangankar@marvell.com>, <mkalderon@marvell.com>,
+        <aelior@marvell.com>
+Subject: [PATCH net-next 0/4] bnx2x/cnic: Enable Multi-Cos.
+Date:   Mon, 4 Nov 2019 21:51:08 -0800
+Message-ID: <20191105055112.30005-1-skalluru@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-11-05_01:2019-11-04,2019-11-05 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 4 Nov 2019 18:45:50 -0800, Jakub Kicinski wrote:
-> On Mon,  4 Nov 2019 15:27:02 +0100, Daniel Borkmann wrote:
-> >  [
-> >    Hey Jakub, please take a look at the below merge fix ... still trying
-> >    to figure out why the netdev doesn't appear on my test node when I
-> >    wanted to run the test script, but seems independent of the fix.
-> > 
-> >    [...]
-> >    [ 1901.270493] netdevsim: probe of netdevsim4 failed with error -17
-> >    [...]
-> > 
-> >    # ./test_offload.py
-> >    Test destruction of generic XDP...
-> >    Traceback (most recent call last):
-> >     File "./test_offload.py", line 800, in <module>
-> >      simdev = NetdevSimDev()
-> >     File "./test_offload.py", line 355, in __init__
-> >      self.wait_for_netdevs(port_count)
-> >     File "./test_offload.py", line 390, in wait_for_netdevs
-> >      raise Exception("netdevices did not appear within timeout")
-> >    Exception: netdevices did not appear within timeout
-> >  ]  
-> 
-> I got this fixed, looks like the merged also added back some duplicated
-> code, surreptitiously.
-> 
-> I'm still debugging another issue with the devlink.sh test which looks
-> broken.
+The patch series enables Multi-cos feature in the driver. This require
+the use of new firmware 7.13.15.0.
+Patch (1) adds driver changes to use new FW.
+Patches (2) - (3) enables multi-cos functionality in bnx2x driver.
+Patch (4) adds cnic driver change as required by new FW.
 
-Looks like the resource tests didn't unwind the state and when health
-tests were added they revealed the brokenness. A couple patches to
-iproute2 are required to fix that, I'll send all the patches tomorrow.
+Manish Chopra (1):
+  bnx2x: Fix PF-VF communication over multi-cos queues.
+
+Manish Rangankar (1):
+  cnic: Set fp_hsi_ver as part of CLIENT_SETUP ramrod
+
+Sudarsana Reddy Kalluru (2):
+  bnx2x: Utilize FW 7.13.15.0.
+  bnx2x: Enable Multi-Cos feature.
+
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c    |   3 +-
+ .../net/ethernet/broadcom/bnx2x/bnx2x_fw_defs.h    | 132 ++++++++++-----------
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_hsi.h    |   2 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_sriov.c  |  16 ++-
+ drivers/net/ethernet/broadcom/cnic.c               |   2 +
+ 5 files changed, 82 insertions(+), 73 deletions(-)
+
+-- 
+1.8.3.1
+
