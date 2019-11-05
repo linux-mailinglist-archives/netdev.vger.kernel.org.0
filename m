@@ -2,159 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0746F0613
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB89F063B
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403759AbfKETev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:34:51 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:33476 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390873AbfKETev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:34:51 -0500
-Received: by mail-pl1-f195.google.com with SMTP id ay6so3028225plb.0;
-        Tue, 05 Nov 2019 11:34:50 -0800 (PST)
+        id S1726751AbfKETtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:49:03 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39057 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbfKETtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:49:03 -0500
+Received: by mail-wm1-f68.google.com with SMTP id t26so663573wmi.4
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 11:49:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=1N/htqrARk7XFY047OGh+oThXywZUGM5Z5FnUPMGMqg=;
-        b=mAp2B7C92CaYNdyezgOABPgYdozzzrKQCwyFgzPU45P0lrmWE65Wa74/IxcIEM0gse
-         +plntHXcLv2PxlSQKLvNi0xe3bycX/S12xUcEGas8UJUEHmGcagNCeAD81YQjWpMjA0Y
-         D5SGZ+NTpst0N9XnSXlaIcC2EledyufG7jq5oeDkseOWdZg1HqGSS2I0P9b5V2P8wb8i
-         Kme5OMLEAGw4pfsV9VxXE4knLtXuRVMAr8EA3gGiRKtOnQeE7gfQ+XFh1YL+3MfkDoig
-         8TV3iAOxt2ScqHNqgu3AkxoAYRn3LamYtvhgzp0bMtWdOPEZEk349NM8yV9mgFeF7UyQ
-         Az2A==
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=UxXl5CJZIoFnMZL6/cL403hkZBabWwNFlZGMcKNv9CI=;
+        b=DfYf1tIrKNQZt5fdgVqLgqi9HccpFBFoGh8ZAIkWq7pZT4qlZBAGSwp0X/aWi9iSvF
+         jdNUkLVEFALgwFaBiECrIdp8xyCC63qPPxyOhzLyGFAprniDgrisk5yOz3hXvx6aw7+2
+         mznBwKqa7nyBfAp3+8t/VOThwm5XgrDCzgLRk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=1N/htqrARk7XFY047OGh+oThXywZUGM5Z5FnUPMGMqg=;
-        b=Tb6VoASHRs7ifmYbjNKGQX1+sER3QhB/wLym0LUc+xsA0L1RMP00vYJkERHWZt3vkp
-         9/6enICEFakCJluvCMViVg11e07BwZFdZ/sMK4F1HXafykKrjlTyRA0le3s6knkH4ZJA
-         cMo2ZgPSlwFmGM4Y3NVMd9oYD7R5NealQicvq6ZV5U5H+ha31HlioWhXQda5cbbfSzXG
-         WIh78Co590WxKKJY8aTcFa6cCcD42YlvLVuUPeCcy8OMDiPFNWXi0q2h94t9beWUnmQl
-         RS4rwqDwXD7qinHzEylZ33qjBAUd8310XMDIAayAGNvqjNMQJpVgFNBMyfSdsdnQ287Z
-         uivA==
-X-Gm-Message-State: APjAAAUscY9FK96HW7PlUbstR6m7mzsqABrUKqKFeV/wqGSBUgX32zQY
-        Q0cAIwT3sFPHphSds3PnMFw=
-X-Google-Smtp-Source: APXvYqxzogIVELW0ABnjq8MFoi/lLyCMWmiDef4qJvDicutDSIOJZuxZL1k8H+rEui8zMJT0shvHwA==
-X-Received: by 2002:a17:902:362:: with SMTP id 89mr34042123pld.71.1572982489721;
-        Tue, 05 Nov 2019 11:34:49 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
-        by smtp.gmail.com with ESMTPSA id n23sm18928061pff.137.2019.11.05.11.34.47
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=UxXl5CJZIoFnMZL6/cL403hkZBabWwNFlZGMcKNv9CI=;
+        b=kZDEmOsiBxTUWlmMD7HUq2bKIlOIdzroUdT9jSjjR4pEVaIj0JGBs7ibxRXq9uUWsU
+         I5oPu7frfIgXvW999knWgZKK3w+0JH50zOJpsjuKnQrLeXvHGmDGHwwVCjOhaLsdp3Yx
+         wUBuT0tWb5VConWpC/+hBb+MN5eDQuVXBp6qI2SEXW6KTBWmJxKeGrHzDtvXeUBAZXV0
+         2V3Yo7MgqDo9Te4AsiKjhkfVzZeZpbWDzvDLj5hUcgJ0fos1Q4c85sVQcNHTXcyToGT+
+         SjEcnrYznq1+vRb0fZfa4CpnQaiSwpcl9lJkdRWSW3JARZyXG048fyAqc3ytiWbBOlu3
+         KNsQ==
+X-Gm-Message-State: APjAAAUw6ho6PAu8TTD16510R8UbGfgfA8aZcJWznvvBRlgZBiWlJeZz
+        BEyl5rs+J93lHV+TvIq0OEx1dvsWTylCZEpj
+X-Google-Smtp-Source: APXvYqyqM7nhSS0Pe5eOQG7YdtR1lL/CgciM3J4IhJLEhAxoOj9knLvPotj89JcFNr2D5TiCrkX38Q==
+X-Received: by 2002:a1c:ed0e:: with SMTP id l14mr580961wmh.74.1572983341018;
+        Tue, 05 Nov 2019 11:49:01 -0800 (PST)
+Received: from [10.136.13.65] ([192.19.228.250])
+        by smtp.gmail.com with ESMTPSA id j22sm30194509wrd.41.2019.11.05.11.48.58
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 11:34:48 -0800 (PST)
-Date:   Tue, 5 Nov 2019 11:34:47 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        Florent Revest <revest@chromium.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mickael.salaun@ssi.gouv.fr>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
-        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
-Message-ID: <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
-References: <20191104172146.30797-1-mic@digikod.net>
- <20191104172146.30797-5-mic@digikod.net>
- <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
- <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
+        Tue, 05 Nov 2019 11:49:00 -0800 (PST)
+Subject: Re: [PATCH net 1/3] net: bcmgenet: use RGMII loopback for MAC reset
+To:     Doug Berger <opendmb@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1572980846-37707-1-git-send-email-opendmb@gmail.com>
+ <1572980846-37707-2-git-send-email-opendmb@gmail.com>
+ <8c5c8028-a897-bf70-95ba-a1ffc8b68264@broadcom.com>
+ <5f68345e-c58d-3d99-189b-b4be39c4b899@gmail.com>
+From:   Scott Branden <scott.branden@broadcom.com>
+Message-ID: <6bc48252-952c-008d-f43d-b8093c021ba8@broadcom.com>
+Date:   Tue, 5 Nov 2019 11:48:56 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <5f68345e-c58d-3d99-189b-b4be39c4b899@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
-User-Agent: NeoMutt/20180223
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 07:01:41PM +0100, Micka�l Sala�n wrote:
-> 
-> On 05/11/2019 18:18, Alexei Starovoitov wrote:
-> > On Mon, Nov 04, 2019 at 06:21:43PM +0100, Micka�l Sala�n wrote:
-> >> Add a first Landlock hook that can be used to enforce a security policy
-> >> or to audit some process activities.  For a sandboxing use-case, it is
-> >> needed to inform the kernel if a task can legitimately debug another.
-> >> ptrace(2) can also be used by an attacker to impersonate another task
-> >> and remain undetected while performing malicious activities.
-> >>
-> >> Using ptrace(2) and related features on a target process can lead to a
-> >> privilege escalation.  A sandboxed task must then be able to tell the
-> >> kernel if another task is more privileged, via ptrace_may_access().
-> >>
-> >> Signed-off-by: Micka�l Sala�n <mic@digikod.net>
-> > ...
-> >> +static int check_ptrace(struct landlock_domain *domain,
-> >> +		struct task_struct *tracer, struct task_struct *tracee)
-> >> +{
-> >> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
-> >> +		.prog_ctx = {
-> >> +			.tracer = (uintptr_t)tracer,
-> >> +			.tracee = (uintptr_t)tracee,
-> >> +		},
-> >> +	};
-> > 
-> > So you're passing two kernel pointers obfuscated as u64 into bpf program
-> > yet claiming that the end goal is to make landlock unprivileged?!
-> > The most basic security hole in the tool that is aiming to provide security.
-> 
-> How could you used these pointers without dedicated BPF helpers? This
-> context items are typed as PTR_TO_TASK and can't be used without a
-> dedicated helper able to deal with ARG_PTR_TO_TASK. Moreover, pointer
-> arithmetic is explicitly forbidden (and I added tests for that). Did I
-> miss something?
 
-It's a pointer leak.
 
-> 
-> > 
-> > I think the only way bpf-based LSM can land is both landlock and KRSI
-> > developers work together on a design that solves all use cases.
-> 
-> As I said in a previous cover letter [1], that would be great. I think
-> that the current Landlock bases (almost everything from this series
-> except the seccomp interface) should meet both needs, but I would like
-> to have the point of view of the KRSI developers.
-> 
-> [1] https://lore.kernel.org/lkml/20191029171505.6650-1-mic@digikod.net/
-> 
-> > BPF is capable
-> > to be a superset of all existing LSMs whereas landlock and KRSI propsals today
-> > are custom solutions to specific security concerns. BPF subsystem was extended
-> > with custom things in the past. In networking we have lwt, skb, tc, xdp, sk
-> > program types with a lot of overlapping functionality. We couldn't figure out
-> > how to generalize them into single 'networking' program. Now we can and we
-> > should. Accepting two partially overlapping bpf-based LSMs would be repeating
-> > the same mistake again.
-> 
-> I'll let the LSM maintainers comment on whether BPF could be a superset
-> of all LSM, but given the complexity of an access-control system, I have
-> some doubts though. Anyway, we need to start somewhere and then iterate.
-> This patch series is a first step.
-
-I would like KRSI folks to speak up. So far I don't see any sharing happening
-between landlock and KRSI. You're claiming this set is a first step. They're
-claiming the same about their patches. I'd like to set a patchset that was
-jointly developed.
+On 2019-11-05 11:27 a.m., Doug Berger wrote:
+> On 11/5/19 11:14 AM, Scott Branden wrote:
+>> Hi Doug,
+>>
+>> On 2019-11-05 11:07 a.m., Doug Berger wrote:
+>>> As noted in commit 28c2d1a7a0bf ("net: bcmgenet: enable loopback
+>>> during UniMAC sw_reset") the UniMAC must be clocked while sw_reset
+>>> is asserted for its state machines to reset cleanly.
+>>>
+>>> The transmit and receive clocks used by the UniMAC are derived from
+>>> the signals used on its PHY interface. The bcmgenet MAC can be
+>>> configured to work with different PHY interfaces including MII,
+>>> GMII, RGMII, and Reverse MII on internal and external interfaces.
+>>> Unfortunately for the UniMAC, when configured for MII the Tx clock
+>>> is always driven from the PHY which places it outside of the direct
+>>> control of the MAC.
+-- SNIP
+>>> +        /* Switch MAC clocking to RGMII generated clock */
+>>> +        bcmgenet_sys_writel(priv, PORT_MODE_EXT_GPHY, SYS_PORT_CTRL);
+>>> +        /* Ensure 5 clks with Rx disabled
+>>> +         * followed by 5 clks with Reset asserted
+>>> +         */
+>>> +        udelay(4);
+>> How do these magic delays work, they are different values?
+>> In one case you have a udelay(4) to ensure rx disabled for 5 clks.
+>> Yet below you have a udelay(2) to ensure 4 more clocks?
+> The delays are based on 2.5MHz clock cycles (the clock used for 10Mbps).
+> 5 clocks is 2us.
+>
+> The udelay(4) is for 10 clocks: rx is disabled for 5 and then 5 more
+> clocks with reset held. The requirement is poorly specified and this is
+> a conservative interpretation.
+>
+> The udelay(2) allows at least 5 more clocks without reset before rx can
+> be enabled.
+>
+Thanks, the part I was missing was "2.5MHz clock cycles (the clock used 
+for 10Mbps)".
+If that was added to the comment it would help those unfamiliar with in 
+understanding.
+>>> +        reg &= ~(CMD_SW_RESET | CMD_LCL_LOOP_EN);
+>>> +        bcmgenet_umac_writel(priv, reg, UMAC_CMD);
+>>> +        /* Ensure 5 more clocks before Rx is enabled */
+>>> +        udelay(2);
+>>> +    }
+>>> +
+>>>        priv->ext_phy = !priv->internal_phy &&
+>>>                (priv->phy_interface != PHY_INTERFACE_MODE_MOCA);
+>>>    @@ -254,6 +284,9 @@ int bcmgenet_mii_config(struct net_device *dev,
+>>> bool init)
+>>>            phy_set_max_speed(phydev, SPEED_100);
+>>>            bcmgenet_sys_writel(priv,
+>>>                        PORT_MODE_EXT_EPHY, SYS_PORT_CTRL);
+>>> +        /* Restore the MII PHY after isolation */
+>>> +        if (bmcr >= 0)
+>>> +            phy_write(phydev, MII_BMCR, bmcr);
+>>>            break;
+>>>          case PHY_INTERFACE_MODE_REVMII:
+> Regards,
+>      Doug
 
