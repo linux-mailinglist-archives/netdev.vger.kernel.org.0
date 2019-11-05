@@ -2,118 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7234CF06DB
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 21:27:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E404DF0735
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 21:48:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729614AbfKEU1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 15:27:09 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:38624 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbfKEU1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 15:27:08 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xA5KR3PS044132;
-        Tue, 5 Nov 2019 14:27:03 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1572985623;
-        bh=rH++WuDv1lCZdrYpSV5zZgXdIrmKRKCOWMSQ05fJaa0=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=mfb7v3irh0V2NdkRfzSTMotUrRzDnyf1PFuqYYcfWwhKBWlv3azHECg345t3tjeSw
-         K+83V5aP8HldxiAqv66x7CWLD79S2DSgQ8JtMIr3a9vxRO+PBxNJV9TnUR03rT5WCH
-         u451rFB9MZOvSCpQiDT11pC5zt3tiOadEq4/OQxs=
-Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA5KR3sY128666;
-        Tue, 5 Nov 2019 14:27:03 -0600
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 5 Nov
- 2019 14:26:47 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 5 Nov 2019 14:26:47 -0600
-Received: from [10.250.33.226] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id xA5KR1xJ066971;
-        Tue, 5 Nov 2019 14:27:02 -0600
-Subject: Re: [PATCH 2/2] net: phy: dp83869: Add TI dp83869 phy
-To:     Heiner Kallweit <hkallweit1@gmail.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20191105181826.25114-1-dmurphy@ti.com>
- <20191105181826.25114-2-dmurphy@ti.com>
- <68b9c003-4fb3-b854-695a-fa1c6e08f518@gmail.com>
- <4ffebfad-87d2-0e19-5b54-7e550c540d03@ti.com>
- <1f64ae30-bbf3-525a-4fab-556924b18122@gmail.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <3c4696b4-32ac-8529-ef97-1a2ae6bbfa32@ti.com>
-Date:   Tue, 5 Nov 2019 14:26:09 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729399AbfKEUsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 15:48:42 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:37087 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727401AbfKEUsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 15:48:41 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7801221E5B;
+        Tue,  5 Nov 2019 15:48:38 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Tue, 05 Nov 2019 15:48:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=PP9n3Q
+        k64hHnb1/w3YKYTzY0eAucah16Foqb0fE2mTE=; b=BBDBDNPwMpEOguD6j8jxkZ
+        3rWlYfuR+22mIU4f6EebtCs9t036j71RJcWKlwZ8XsQ5d4yPp++c9UoX1qxdV1cY
+        DY2+hqhfMtr4TQJL7sQ7i3XfbS/N434bL0snj4J+hZvAzjKc4XHXKkaN1BBregx1
+        H/hL4s3Zh7F+BrdKOTdwYzaT5s+uOKG+LDE8whuFuA2TABEaOHcAeam+MwqamJtx
+        HW0MgQc3OfqPo2o6TpkXUzMIj3SuP8bzh91yc7n7X0wPwo1Ea6tMXKdKex/ioOGu
+        cTh9vTM1OMYNtakHdt1uz2r8zWCd5ZO/waxhR67yk+FhsLjHLrSfdcdr6LSUgSoA
+        ==
+X-ME-Sender: <xms:JuDBXZTjoBD5sn5xRUroehdldZSb_evZGtDdiMOjUscdIc4vEGLfzw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudduhedgudegvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepje
+    ejrddufeekrddvgeelrddvtdelnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgt
+    hhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:JuDBXdXrUTMi5YVQWsjFLbGIrThN_UVGlRWNrQucsA6Onc6PiW9D2g>
+    <xmx:JuDBXbbVPms47XkzRFsSYULyx_u0Cj8aPgb1PjsIJIXvwTaX_tDr9g>
+    <xmx:JuDBXT24y6LX0sYJWibSCzVIMPCe-y-vI617WN89GoJMJ_0pihmdnA>
+    <xmx:JuDBXQO50p-LRvHaO8SFfuE-XU1GF8Bbv9799VwX3PDUaWbq1FxKAQ>
+Received: from localhost (unknown [77.138.249.209])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8E90A306005B;
+        Tue,  5 Nov 2019 15:48:37 -0500 (EST)
+Date:   Tue, 5 Nov 2019 22:48:26 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        shalomt@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 0/6] mlxsw: Add extended ACK for EMADs
+Message-ID: <20191105204826.GA15513@splinter>
+References: <20191103083554.6317-1-idosch@idosch.org>
+ <20191104123954.538d4574@cakuba.netronome.com>
+ <20191104210450.GA10713@splinter>
+ <20191104144419.46e304a9@cakuba.netronome.com>
+ <20191104232036.GA12725@splinter>
+ <20191104153342.36891db7@cakuba.netronome.com>
+ <20191105074650.GA14631@splinter>
+ <20191105095448.1fbc25a5@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <1f64ae30-bbf3-525a-4fab-556924b18122@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191105095448.1fbc25a5@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heiner
+On Tue, Nov 05, 2019 at 09:54:48AM -0800, Jakub Kicinski wrote:
+> On Tue, 5 Nov 2019 09:46:50 +0200, Ido Schimmel wrote:
+> > On Mon, Nov 04, 2019 at 03:33:42PM -0800, Jakub Kicinski wrote:
+> > > On Tue, 5 Nov 2019 01:20:36 +0200, Ido Schimmel wrote:  
+> > > > On Mon, Nov 04, 2019 at 02:44:19PM -0800, Jakub Kicinski wrote:  
+> > > > > On Mon, 4 Nov 2019 23:04:50 +0200, Ido Schimmel wrote:    
+> > > > > > I don't understand the problem. If we get an error from firmware today,
+> > > > > > we have no clue what the actual problem is. With this we can actually
+> > > > > > understand what went wrong. How is it different from kernel passing a
+> > > > > > string ("unstructured data") to user space in response to an erroneous
+> > > > > > netlink request? Obviously it's much better than an "-EINVAL".    
+> > > > > 
+> > > > > The difference is obviously that I can look at the code in the kernel
+> > > > > and understand it. FW code is a black box. Kernel should abstract its
+> > > > > black boxiness away.    
+> > > > 
+> > > > But FW code is still code and it needs to be able to report errors in a
+> > > > way that will aid us in debugging when problems occur. I want meaningful
+> > > > errors from applications regardless if I can read their code or not.  
+> > > 
+> > > And the usual way accessing FW logs is through ethtool dumps.  
+> > 
+> > I assume you're referring to set_dump() / get_dump_flag() /
+> > get_dump_data() callbacks?
+> > 
+> > In our case it's not really a dump. These are errors that are reported
+> > inline to the driver for a specific erroneous operation. We currently
+> > can't retrieve them from firmware later on. Using ethtool means that we
+> > need to store these errors in the driver and then push them to user
+> > space upon get operation. Seems like a stretch to me. Especially when
+> > we're already reporting the error code today and this set merely
+> > augments it with more data to make the error more specific.
+> 
+> Hm, the firmware has no log that it keeps? Surely FW runs a lot of
+> periodic jobs etc which may encounter some error conditions, how do 
+> you deal with those?
 
-On 11/5/19 2:20 PM, Heiner Kallweit wrote:
-> On 05.11.2019 21:02, Dan Murphy wrote:
->> Heiner
->>
->> On 11/5/19 1:55 PM, Heiner Kallweit wrote:
->>> On 05.11.2019 19:18, Dan Murphy wrote:
->>>> Add support for the TI DP83869 Gigabit ethernet phy
->>>> device.
->>>>
->>>> The DP83869 is a robust, low power, fully featured
->>>> Physical Layer transceiver with integrated PMD
->>>> sublayers to support 10BASE-T, 100BASE-TX and
->>>> 1000BASE-T Ethernet protocols.
->>>>
->>>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->>>> ---
->>>>    drivers/net/phy/Kconfig              |   6 +
->>>>    drivers/net/phy/Makefile             |   1 +
->>>>    drivers/net/phy/dp83869.c            | 439 +++++++++++++++++++++++++++
->>>>    include/dt-bindings/net/ti-dp83869.h |  43 +++
->>>>    4 files changed, 489 insertions(+)
->>>>    create mode 100644 drivers/net/phy/dp83869.c
->>>>    create mode 100644 include/dt-bindings/net/ti-dp83869.h
-> [...]
->
->>>> +static int op_mode;
->>>> +
->>>> +module_param(op_mode, int, 0644);
->>>> +MODULE_PARM_DESC(op_mode, "The operational mode of the PHY");
->>>> +
->>> A module parameter isn't the preferred option here.
->>> You could have more than one such PHY in different configurations.
->>> Other drivers like the Marvell one use the interface mode to
->>> check for the desired mode. Or you could read it from DT.
->>>
->> We do read the initial mode from the DT but there was a request to be able to change the mode during runtime.
-> Maybe we need to understand the use case better to be able to advise.
-> Will this be needed in production? Or was it requested as debug feature?
-> There's the option to set PHY registers from userspace, e.g. with phytool.
-> This could be used for reconfiguring the PHY.
+There are intrusive out-of-tree modules that can get this information.
+It's currently not possible to retrieve this information from the
+driver. We try to move away from such methods, but it can't happen
+overnight. This set and the work done in the firmware team to add this
+new TLV is one step towards that goal.
 
-This was a customer request that they be able to modify the op_mode from 
-user space.
+> Bottom line is I don't like when data from FW is just blindly passed
+> to user space.
 
-This was all I was given for a requirement.  The customers use case was 
-proprietary.
+The same information will be passed to user space regardless if you use
+ethtool / devlink / printk.
 
-Dan
+> Printing to the logs is perhaps the smallest of this sort of
+> infractions but nonetheless if there is no precedent for doing this
+> today I'd consider not opening this box.
 
+The mlx5 driver prints a 32-bit number that represents a unique error
+code from firmware. As a user it tells you nothing, but internally
+engineers can correlate it to a specific error.
 
-> Heiner
->
->
->
-> [...]
+I think it would be unfortunate to give up on this set due to personal
+preferences alone. Just last week it proved its usefulness twice when I
+tried to utilize a new firmware API and got it wrong.
