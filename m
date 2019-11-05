@@ -2,96 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7EDEF6D6
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 09:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 030FCEF6EC
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 09:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388099AbfKEIGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 03:06:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53610 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387994AbfKEIGS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 03:06:18 -0500
-Received: from localhost (host6-102.lan-isdn.imaginet.fr [195.68.6.102])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 47597214D8;
-        Tue,  5 Nov 2019 08:06:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1572941177;
-        bh=r8CPAD2ukH3TuZMyKg8muNUfDNqz5bGb2awi7lR72D0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GU7cnJiQWPcE3woPx8W0TGQ78hO6fwTGm/8YE13mbxJv5cMRSmhGkeC75QPju9uQs
-         g5golJoltqhWflG1G0lHkQHSg3MLB3fGGRNYuM0Tx0guwjPcpW0gEZnZTWujnJvMwH
-         VA54j2rFzYc8Ib9RlHqJK4o05frCP8bc9cwCTThM=
-Date:   Tue, 5 Nov 2019 09:06:14 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Sasha Levin <sashal@kernel.org>, lkft-triage@lists.linaro.org,
-        Dan Rue <dan.rue@linaro.org>, LTP List <ltp@lists.linux.it>,
-        open list <linux-kernel@vger.kernel.org>,
-        Jan Stancek <jstancek@redhat.com>,
-        Basil Eljuse <Basil.Eljuse@arm.com>, chrubis <chrubis@suse.cz>,
-        mmarhefk@redhat.com, Netdev <netdev@vger.kernel.org>,
-        linux- stable <stable@vger.kernel.org>, maheshb@google.com,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: stable-rc-5.3.9-rc1: regressions detected - remove_proc_entry:
- removing non-empty directory 'net/dev_snmp6', leaking at least 'lo'
-Message-ID: <20191105080614.GB2611856@kroah.com>
-References: <CA+G9fYsWTFQZTHXUDPToaepnKGBoh61SsA_8SHcYgYZXN_L+mg@mail.gmail.com>
- <CA+G9fYu+6A3pYQGs2rydYtHNSCf1t9+OTRqrZeCbpc2ARLx2zA@mail.gmail.com>
- <20191105073459.GB2588562@kroah.com>
- <CA+G9fYvau-CY8eeXM=atzQBjYbmUPg78MXu_GNjCyKDkW_CcVQ@mail.gmail.com>
+        id S2388125AbfKEILU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 03:11:20 -0500
+Received: from mail-lf1-f47.google.com ([209.85.167.47]:46470 "EHLO
+        mail-lf1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388021AbfKEILU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 03:11:20 -0500
+Received: by mail-lf1-f47.google.com with SMTP id 19so9211253lft.13
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 00:11:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6xSFE4g0gY9czO8TwiEEGqsWaa81e8Ul+cCq6vuH+IA=;
+        b=wlQlXCYO+/9EbApNjgMhjYp9wpSy75ZPuYAWB8VKQKBX7ARXR1OVtM58CSWg0CoQU5
+         zxlf1du+2ubetE4QzVTTqJ7rA/hEW3tfRgbKNqUUphn7sxwvWKN+FW0yjcoW/ci4YsmL
+         y3c7LU5tFYjt4UjzxyjTIJ+W2aWft+eBoQDUHYtlLeT1RppLXPiK/61eaI1IglOOh/IN
+         KJefgymntKFYJZbccwXqXePOjo9Rh1XXv11BDb9QKGDMTFeaG/cbIjVnh3A7O152LqcG
+         Abgha4kFeUQPqGC9aT6lKJyAw82Op9hjBwJbHV4D51QkLnjJLpyCFPykLSAfGupH7fZT
+         v5ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6xSFE4g0gY9czO8TwiEEGqsWaa81e8Ul+cCq6vuH+IA=;
+        b=AUOC5nyzKcMIJ/ZmJpCcx02XK+KfATVviXay8X1a3BWrJ5d+6t2nkOcjW8vr6wqGsB
+         iIrilYxgjSIs3X5vYNLiiGJfePxPuJxjN4Fnu7mla2135p1mk4rUl0P+55EoKhgQjwRv
+         +Wy4wYD9B/qZ2rTc2zCDdQ0fX3zNbnAjOmMiu1n8b4Gd3Y0S977RcFCND6nSQ+xTlCs/
+         85tjFU9lEUM6bw4ko/TCLEkLdRM1A6mQEQiL54eF4eBKjzDYlPOlaCaCwRJiJEzCOwcQ
+         6EGypaAHbxq68HeeYFavm5FQiiwuu57MwxXr8tp2bXn2+adBLqdsS1esGKN2Tsf/1Gpp
+         MSMQ==
+X-Gm-Message-State: APjAAAVc8xlhB+ss2ri7giNszgKsnddYgrSJ70F7hMOOFGtwSWEboQa5
+        3YX1Y4qUD3dGD43Z2X6kVeewyw==
+X-Google-Smtp-Source: APXvYqy0cgx16CNi5YxZgqZqXkti4pby1AXyKJj0oZxklimaDslnxqWQgKMKxBaqMNz/fUaPppPd2Q==
+X-Received: by 2002:a19:6a03:: with SMTP id u3mr17885682lfu.190.1572941478028;
+        Tue, 05 Nov 2019 00:11:18 -0800 (PST)
+Received: from mimer.lulea.netrounds.lan ([195.22.87.57])
+        by smtp.gmail.com with ESMTPSA id m7sm7275986lfp.22.2019.11.05.00.11.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2019 00:11:17 -0800 (PST)
+From:   Jonas Bonn <jonas@norrbonn.se>
+To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, Jonas Bonn <jonas@norrbonn.se>
+Subject: [PATCH 0/5] Add namespace awareness to Netlink methods
+Date:   Tue,  5 Nov 2019 09:11:07 +0100
+Message-Id: <20191105081112.16656-1-jonas@norrbonn.se>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYvau-CY8eeXM=atzQBjYbmUPg78MXu_GNjCyKDkW_CcVQ@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 01:28:01PM +0530, Naresh Kamboju wrote:
-> On Tue, 5 Nov 2019 at 13:05, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > > > Linux stable rc 5.3 branch running LTP reported following test failures.
-> > > > While investigating these failures I have found this kernel warning
-> > > > from boot console.
-> > > > Please find detailed LTP output log in the bottom of this email.
-> > > >
-> > > > List of regression test cases:
-> > > >   ltp-containers-tests:
-> > > >     * netns_breakns_ip_ipv6_ioctl
-> <trim>
-> > > >     * netns_comm_ns_exec_ipv6_netlink
-> > >
-> > > These reported failures got fixed on latest stable-rc 5.3.y after
-> > > dropping a patch [1].
-> >
-> > What is the subject of the patch?
-> 
-> blackhole_netdev: fix syzkaller reported issue
-> upstream commit b0818f80c8c1bc215bba276bd61c216014fab23b
+Currently, Netlink has partial support for acting outside of the current
+namespace.  It appears that the intention was to extend this to all the
+methods eventually, but it hasn't been done to date.
 
-That commit is not in any stable queue or tree at the moment, are you
-sure this is still an issue?
+With this series RTM_SETLINK, RTM_NEWLINK, RTM_NEWADDR, and RTM_NEWNSID
+are extended to respect the selection of the namespace to work in.
 
-> > > The kernel warning is also gone now.
-> > >
-> > > metadata:
-> > >   git branch: linux-5.3.y
-> > >   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-> > >   git commit: 75c9913bbf6e9e64cb669236571e6af45cddfd68
-> >
-> > The -rc tree is rebased all the time, can I get a "real" subject line to
-> > get a chance to figure out what you are trying to refer to here?
-> 
-> Linux 5.3.9-rc1 is good candidate on branch linux-5.3.y and
-> linux-stable-rc tree.
+/Jonas
 
-I can not parse this, what do you mean?
+Jonas Bonn (5):
+  rtnetlink: allow RTM_SETLINK to reference other namespaces
+  rtnetlink: skip namespace change if already effect
+  rtnetlink: allow RTM_NEWLINK to act upon interfaces in arbitrary
+    namespaces
+  net: ipv4: allow setting address on interface outside current
+    namespace
+  net: namespace: allow setting NSIDs outside current namespace
 
-thanks,
+ net/core/net_namespace.c | 19 ++++++++++
+ net/core/rtnetlink.c     | 79 ++++++++++++++++++++++++++++++++++------
+ net/ipv4/devinet.c       | 56 ++++++++++++++++++++--------
+ 3 files changed, 127 insertions(+), 27 deletions(-)
 
-greg k-h
+-- 
+2.20.1
+
