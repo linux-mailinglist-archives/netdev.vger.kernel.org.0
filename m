@@ -2,152 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 741EEF0933
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:20:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C981F0930
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:19:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730348AbfKEWUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:20:06 -0500
-Received: from smtp-sh2.infomaniak.ch ([128.65.195.6]:36375 "EHLO
-        smtp-sh2.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730364AbfKEWUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:20:06 -0500
-Received: from smtp7.infomaniak.ch (smtp7.infomaniak.ch [83.166.132.30])
-        by smtp-sh2.infomaniak.ch (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id xA5MJ23o058900
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 5 Nov 2019 23:19:03 +0100
-Received: from ns3096276.ip-94-23-54.eu (ns3096276.ip-94-23-54.eu [94.23.54.103])
-        (authenticated bits=0)
-        by smtp7.infomaniak.ch (8.14.5/8.14.5) with ESMTP id xA5MIuNt039378
-        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=NO);
-        Tue, 5 Nov 2019 23:18:56 +0100
-Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        Florent Revest <revest@chromium.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
-        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-References: <20191104172146.30797-1-mic@digikod.net>
- <20191104172146.30797-5-mic@digikod.net>
- <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
- <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
- <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Openpgp: preference=signencrypt
-Message-ID: <38309064-89c2-8e01-b619-4459e0d58311@digikod.net>
-Date:   Tue, 5 Nov 2019 23:18:55 +0100
-User-Agent: 
+        id S1730083AbfKEWT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:19:56 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:43284 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729680AbfKEWTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:19:55 -0500
+Received: by mail-pf1-f194.google.com with SMTP id 3so17061760pfb.10;
+        Tue, 05 Nov 2019 14:19:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=DsHJmEIIIrm5llKfHfWNBac2bUAsjqDaDwcQrvpscP8=;
+        b=CWs+xcgb2JUlniBdlpnaP7v822kSJG9v78gS6hXRgCduqHZMPJmIOOGpztM8xLuAQ4
+         59inn80bDUNJqhMpVys9sNTkU4TqmCSZ7VpmfWp2vxIBiYdAjqLVoD+4UmgMmMpbsAI0
+         qs6YnxbQe4DaSWY10VfMykz+MuptTJFhNs+rS96Pwa5Z+BVyQZd2CjIwtVGgCMLffEPB
+         1XPIMjjX/A9RFx6UT++j+xILeZYx9yBkEmdR3NMkbMbN48HrXuTxqDUuHjaym0Aia4h7
+         zWojO7jvFGACc+rIpelsKxVyKYoyKyHu2FC0TPVep5ZH1PTMvvPxIU81gnOs58aJ0Opl
+         MwCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=DsHJmEIIIrm5llKfHfWNBac2bUAsjqDaDwcQrvpscP8=;
+        b=do/rWKTvISy3gCveek18NKHKljeWeKmPrHkwk7lVxkSa7XsqfuCgcHLRLIRULWFzx7
+         mN+fRLLNy86dvl8KbNo11sHq6L6eNyLOKUGefGKeTT//eXeJk24CjD+/nmy65YUdL15R
+         7H74aa6HSfRp0Y3oo9p/xLOfZS1NqqKC/2KvVxY7hjVI82Bols8bY3lraOTkuECT5Djd
+         i0dZyotLLslP73e8tSpNoqpxm4TdLltRXwCW3wSQf8x//+lDuhedeREIhI1s+z2dp4Qx
+         iZqX4UkquRlFVuLRQNG/FIH1aft57pcni5P15z6/rFhkqAk9MrAnV/GPXWZxYRBoAjOu
+         2FjQ==
+X-Gm-Message-State: APjAAAWOVvb1Uh1r9SXuSYu6Lh+mbJVxpS2ixhWfzJuX4ZCpoPH5w3IA
+        D0R8DU5L24cYI7Ft6mfzSJI=
+X-Google-Smtp-Source: APXvYqx2Y5oP75Rj+JnSZXin+UXox17qajmTaFRiZnSmNKGVCyyoNBucADWiUWt+qoeJxrzvzWledw==
+X-Received: by 2002:a63:a452:: with SMTP id c18mr38904159pgp.188.1572992394515;
+        Tue, 05 Nov 2019 14:19:54 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
+        by smtp.gmail.com with ESMTPSA id z14sm20498794pfq.66.2019.11.05.14.19.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 05 Nov 2019 14:19:53 -0800 (PST)
+Date:   Tue, 5 Nov 2019 14:19:52 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Wenbo Zhang <ethercflow@gmail.com>
+Cc:     bpf@vger.kernel.org, yhs@fb.com, daniel@iogearbox.net,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v7] bpf: add new helper get_file_path for
+ mapping a file descriptor to a pathname
+Message-ID: <20191105221951.lxlitdtl7frkyrmk@ast-mbp.dhcp.thefacebook.com>
+References: <20191103075417.36443-1-ethercflow@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=iso-8859-15
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Antivirus: Dr.Web (R) for Unix mail servers drweb plugin ver.6.0.2.8
-X-Antivirus-Code: 0x100000
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191103075417.36443-1-ethercflow@gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 05/11/2019 20:34, Alexei Starovoitov wrote:
-> On Tue, Nov 05, 2019 at 07:01:41PM +0100, Mickaël Salaün wrote:
->>
->> On 05/11/2019 18:18, Alexei Starovoitov wrote:
->>> On Mon, Nov 04, 2019 at 06:21:43PM +0100, Mickaël Salaün wrote:
->>>> Add a first Landlock hook that can be used to enforce a security policy
->>>> or to audit some process activities.  For a sandboxing use-case, it is
->>>> needed to inform the kernel if a task can legitimately debug another.
->>>> ptrace(2) can also be used by an attacker to impersonate another task
->>>> and remain undetected while performing malicious activities.
->>>>
->>>> Using ptrace(2) and related features on a target process can lead to a
->>>> privilege escalation.  A sandboxed task must then be able to tell the
->>>> kernel if another task is more privileged, via ptrace_may_access().
->>>>
->>>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
->>> ...
->>>> +static int check_ptrace(struct landlock_domain *domain,
->>>> +		struct task_struct *tracer, struct task_struct *tracee)
->>>> +{
->>>> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
->>>> +		.prog_ctx = {
->>>> +			.tracer = (uintptr_t)tracer,
->>>> +			.tracee = (uintptr_t)tracee,
->>>> +		},
->>>> +	};
->>>
->>> So you're passing two kernel pointers obfuscated as u64 into bpf program
->>> yet claiming that the end goal is to make landlock unprivileged?!
->>> The most basic security hole in the tool that is aiming to provide security.
->>
->> How could you used these pointers without dedicated BPF helpers? This
->> context items are typed as PTR_TO_TASK and can't be used without a
->> dedicated helper able to deal with ARG_PTR_TO_TASK. Moreover, pointer
->> arithmetic is explicitly forbidden (and I added tests for that). Did I
->> miss something?
+On Sun, Nov 03, 2019 at 02:54:17AM -0500, Wenbo Zhang wrote:
+> When people want to identify which file system files are being opened,
+> read, and written to, they can use this helper with file descriptor as
+> input to achieve this goal. Other pseudo filesystems are also supported.
 > 
-> It's a pointer leak.
-
-The lifetimes of the pointers are scoped by the two LSM hooks that
-expose them. The LSM framework guarantee that they are safe to use in
-this context.
-
+> This requirement is mainly discussed here:
 > 
->>
->>>
->>> I think the only way bpf-based LSM can land is both landlock and KRSI
->>> developers work together on a design that solves all use cases.
->>
->> As I said in a previous cover letter [1], that would be great. I think
->> that the current Landlock bases (almost everything from this series
->> except the seccomp interface) should meet both needs, but I would like
->> to have the point of view of the KRSI developers.
->>
->> [1] https://lore.kernel.org/lkml/20191029171505.6650-1-mic@digikod.net/
->>
->>> BPF is capable
->>> to be a superset of all existing LSMs whereas landlock and KRSI propsals today
->>> are custom solutions to specific security concerns. BPF subsystem was extended
->>> with custom things in the past. In networking we have lwt, skb, tc, xdp, sk
->>> program types with a lot of overlapping functionality. We couldn't figure out
->>> how to generalize them into single 'networking' program. Now we can and we
->>> should. Accepting two partially overlapping bpf-based LSMs would be repeating
->>> the same mistake again.
->>
->> I'll let the LSM maintainers comment on whether BPF could be a superset
->> of all LSM, but given the complexity of an access-control system, I have
->> some doubts though. Anyway, we need to start somewhere and then iterate.
->> This patch series is a first step.
+>   https://github.com/iovisor/bcc/issues/237
 > 
-> I would like KRSI folks to speak up. So far I don't see any sharing happening
-> between landlock and KRSI. You're claiming this set is a first step. They're
-> claiming the same about their patches. I'd like to set a patchset that was
-> jointly developed.
+> v6->v7:
+> - fix missing signed-off-by line
+> 
+> v5->v6: addressed Andrii's feedback
+> - avoid unnecessary goto end by having two explicit returns
+> 
+> v4->v5: addressed Andrii and Daniel's feedback
+> - rename bpf_fd2path to bpf_get_file_path to be consistent with other
+> helper's names
+> - when fdget_raw fails, set ret to -EBADF instead of -EINVAL
+> - remove fdput from fdget_raw's error path
+> - use IS_ERR instead of IS_ERR_OR_NULL as d_path ether returns a pointer
+> into the buffer or an error code if the path was too long
+> - modify the normal path's return value to return copied string length
+> including NUL
+> - update this helper description's Return bits.
+> 
+> v3->v4: addressed Daniel's feedback
+> - fix missing fdput()
+> - move fd2path from kernel/bpf/trace.c to kernel/trace/bpf_trace.c
+> - move fd2path's test code to another patch
+> - add comment to explain why use fdget_raw instead of fdget
+> 
+> v2->v3: addressed Yonghong's feedback
+> - remove unnecessary LOCKDOWN_BPF_READ
+> - refactor error handling section for enhanced readability
+> - provide a test case in tools/testing/selftests/bpf
+> 
+> v1->v2: addressed Daniel's feedback
+> - fix backward compatibility
+> - add this helper description
+> - fix signed-off name
+> 
+> Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
+> ---
+>  include/uapi/linux/bpf.h       | 15 ++++++++++-
+>  kernel/trace/bpf_trace.c       | 48 ++++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h | 15 ++++++++++-
+>  3 files changed, 76 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index a6bf19dabaab..d618a914c6fe 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2777,6 +2777,18 @@ union bpf_attr {
+>   * 		restricted to raw_tracepoint bpf programs.
+>   * 	Return
+>   * 		0 on success, or a negative error in case of failure.
+> + *
+> + * int bpf_get_file_path(char *path, u32 size, int fd)
+> + *	Description
+> + *		Get **file** atrribute from the current task by *fd*, then call
+> + *		**d_path** to get it's absolute path and copy it as string into
+> + *		*path* of *size*. The **path** also support pseudo filesystems
+> + *		(whether or not it can be mounted). The *size* must be strictly
+> + *		positive. On success, the helper makes sure that the *path* is
+> + *		NUL-terminated. On failure, it is filled with zeroes.
+> + *	Return
+> + *		On success, returns the length of the copied string INCLUDING
+> + *		the trailing NUL, or a negative error in case of failure.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)		\
+>  	FN(unspec),			\
+> @@ -2890,7 +2902,8 @@ union bpf_attr {
+>  	FN(sk_storage_delete),		\
+>  	FN(send_signal),		\
+>  	FN(tcp_gen_syncookie),		\
+> -	FN(skb_output),
+> +	FN(skb_output),			\
+> +	FN(get_file_path),
+>  
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index f50bf19f7a05..41be1c5989af 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -683,6 +683,52 @@ static const struct bpf_func_proto bpf_send_signal_proto = {
+>  	.arg1_type	= ARG_ANYTHING,
+>  };
+>  
+> +BPF_CALL_3(bpf_get_file_path, char *, dst, u32, size, int, fd)
+> +{
+> +	struct fd f;
+> +	char *p;
+> +	int ret = -EBADF;
+> +
+> +	/* Use fdget_raw instead of fdget to support O_PATH, and
+> +	 * fdget_raw doesn't have any sleepable code, so it's ok
+> +	 * to be here.
+> +	 */
+> +	f = fdget_raw(fd);
+> +	if (!f.file)
+> +		goto error;
+> +
+> +	/* d_path doesn't have any sleepable code, so it's ok to
+> +	 * be here. But it uses the current macro to get fs_struct
+> +	 * (current->fs). So this helper shouldn't be called in
+> +	 * interrupt context.
+> +	 */
+> +	p = d_path(&f.file->f_path, dst, size);
+> +	if (IS_ERR(p)) {
+> +		ret = PTR_ERR(p);
+> +		fdput(f);
+> +		goto error;
+> +	}
 
-With all due respect, Landlock got much more feedback than KRSI and I
-think this thirteenth Landlock patch series is more mature than the
-first KRSI RFC. I'm open to concrete suggestions and I'm willing to
-collaborate with the KRSI folks if they want to. However, I'm OK if they
-don't want to use Landlock as a common ground, and I don't think it
-should be a blocker for any of the projects.
+This is definitely very useful helper that bpf tracing community has
+been asking for long time, but I have few concerns with implementation:
+- fdget_raw is only used inside fs/, so it doesn't look right to skip the layers.
+- accessing current->fs is not always correct, so the code should somehow
+  check that it's ok to do so, but I'm not sure if (in_irq()) would be enough.
+- some implementations of d_dname do sleep.  For example: dmabuffs_dname.
+  Though it seems to me that it's a bug in that particular FS. But I'd like
+  to hear clear yes from VFS experts that fdget_raw() + d_path() is ok
+  from preempt_disabled section.
 
-Perfect is the enemy of good. ;)
+The other alternative is to wait for sleepable and preemptible BPF programs to
+appear. Which is probably a month or so away. Then all these issues will
+disappear.
+
