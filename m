@@ -2,253 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DF8EFAB8
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 11:17:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 485A1EFACC
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 11:19:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388299AbfKEKRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 05:17:35 -0500
-Received: from mail-eopbgr130058.outbound.protection.outlook.com ([40.107.13.58]:9803
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388124AbfKEKRf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 05:17:35 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gKPnlwQghKwifFJK9nNzxBbYPXkbH3K8Khrhe/VY2vIOGtNW8VCHCJpWtMrBIc/sgn9orUkQA3lXkucczlKOxePXeUUgdISL33k+aGiYEd6/gnEkFohvFrcSRubG/6aWbBjY25FwkK4waildekdAqtIoVO+BSJJdA/iHLPFAm4A0atyY+cqPfgtBAjP3PvuVEnhiMbSmpdWFEr1ngmld/yESz++rynPSU0SXSFyPCXaKH+Kgq+n/bQvnIauH9DtYurYOUgMgeZH7xZ/+IaFEY2v9ucW2FwWttHjyXpsHp63dFBuGcDy3yZQ7RU71d1S0pb9vjaIezmj0TqI16PNwKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5CL6RtK86RJ8t2SW/HAJppVCGWmiNAzitta8Y45yq10=;
- b=Mxlr8Ob0458HXrh0E1AoMfJsh53zgZWyYM84ung6Z5vyHRrgLzMsn4Agp43zHmD9KPoMT5nOG8b/YuYHVv3u4Jsu+Isp6T/LAGwdzu3lNwPdIQoNhxYZWnTRZ32VoQf8+JtdCwf9h0J9Y6xYLpVzCNXnnifqDrCvvNrjX2RKXGGe9JsQR/VT5bf2nc6Dyh+O2gMMsumeeGlOpcBpcZI0NtkUI13d2bopLV8RDKB9TzH8Ck9iAp0/JngFuhFoBAslLjhw6rSVtFApeVrCmYy++a20KvNv6sc8Zi5JBJi6BbcTb2MBdmkrxZJOj15tk4/UGV3CBcv1pSz2tyWEGFkvCg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5CL6RtK86RJ8t2SW/HAJppVCGWmiNAzitta8Y45yq10=;
- b=lVX+datN/fYuZ4s+z8sBBcPgn3pMtHCVLh1s7maelfHx8t/7tBBaNZNVjllqdNGb1fPVr8ZCiXIEz258LMlwWsK4TjmK3d10in0agJjM42HewVzwM2qOkeKBWBc9/xWGlXa0p4sdEes8LiumTcpiQHJ8okitAFRyASbZMhfLDoA=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB6077.eurprd05.prod.outlook.com (20.178.126.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Tue, 5 Nov 2019 10:17:30 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3580:5d45:7d19:99f5]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::3580:5d45:7d19:99f5%7]) with mapi id 15.20.2408.024; Tue, 5 Nov 2019
- 10:17:30 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Roopa Prabhu <roopa@cumulusnetworks.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>, netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH iproute2 net-next v2] tc: implement support for action
- flags
-Thread-Topic: [PATCH iproute2 net-next v2] tc: implement support for action
- flags
-Thread-Index: AQHVjy1BeXUyBu84t0S1Y0G5hW0U2ad7QVWAgAEkwQA=
-Date:   Tue, 5 Nov 2019 10:17:30 +0000
-Message-ID: <vbf36f2y6dl.fsf@mellanox.com>
-References: <20191030140907.18561-1-vladbu@mellanox.com>
- <20191030142040.19404-1-vladbu@mellanox.com>
- <CAJieiUiemsOJ6YkerOCA5XwduRLDEKZeHgXNpy0K3S9fXcm=tQ@mail.gmail.com>
-In-Reply-To: <CAJieiUiemsOJ6YkerOCA5XwduRLDEKZeHgXNpy0K3S9fXcm=tQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0220.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:b::16) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 28409b74-20ee-476b-1700-08d761d95d65
-x-ms-traffictypediagnostic: VI1PR05MB6077:|VI1PR05MB6077:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB6077809BAF1360827BA75AF3AD7E0@VI1PR05MB6077.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:586;
-x-forefront-prvs: 0212BDE3BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(396003)(346002)(376002)(366004)(199004)(189003)(66556008)(54906003)(25786009)(478600001)(66476007)(7736002)(86362001)(66446008)(64756008)(6486002)(14454004)(6506007)(386003)(53546011)(102836004)(26005)(81156014)(81166006)(8676002)(8936002)(76176011)(52116002)(486006)(6512007)(66066001)(2616005)(11346002)(476003)(186003)(36756003)(446003)(229853002)(316002)(107886003)(6436002)(305945005)(6916009)(99286004)(6246003)(6116002)(3846002)(14444005)(4326008)(5660300002)(2906002)(256004)(71190400001)(66946007)(71200400001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6077;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bCHZc4+GBJBNw0jLceVyEzp+8aNEAp+oPgBtg0dB6ODL1PkIfOoVNLQU4p0ZLQWz53yQO1ot3sUkPQS4pzLs0uNCnU9stMVJKtFF3qyKxSBz9UCJTX2ohWMc4Ka4plFV3Amlp6/PwFYZxLyBkOtNe9qi6byJInbHeKRqmgGpZndlkb8/mqqz1WQGRMpFMniKHEV9RSjA9zRZngZsuDmBuU3XBYCixBg8yA66Pk/lU0lHIl08n+rP5QmYHVvsaWlbMyojx+Ey6YgR7oj1gumD82kfhB6wdqiL7vLVsjaqb34LMDBpLUauRDTjmoZaukmIUtcGmPTlDQjuG23LUBN4EY8xsjiOQadAxTRn7fGsraj1ZN+pxqcYIOD1E6ZsbJXQNoVYxWCmGwmoUChp/5cyl0eoFmMmc8SFHpZivxgC89NlIVBI9OVmdM6w3HCsBlWp
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2388551AbfKEKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 05:19:22 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46454 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388283AbfKEKTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 05:19:22 -0500
+Received: by mail-wr1-f65.google.com with SMTP id b3so14883238wrs.13
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 02:19:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Vg9FJPss8oQNDihBdCZVUS9OPM3FEf7k8iX3IaB/rMk=;
+        b=RcHtpXj3xta/TON458H7sjcflesgxh5ZIlGgF/w8cfKM3Tk++oQ+UbZoc9IbQXIzNP
+         lZfX6mIUUKkgE4D47Exwy+dGakSiN0zHvJYFfxPtZ9uY0UBy7SkGiDKKyKO1VicjgGe2
+         lHaKhpBd+dQXxgTS0O8qp8jxGhIuK897UuPkUay4dMSF3M1M5+2/j6DUaE5x4kwSlV2k
+         FZPFnDT9ipt72eBrh88K+/boQvPA+ScTe+0DiBMVtpbdc48zbwDqyVtemGY50IG8Zq1f
+         y1G/01WqP974kRwLTd2zh6RvthXOlf2ebuB+RJP6MnPNd7yWKGkgarAUEMiTvDTWzIKv
+         1siw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Vg9FJPss8oQNDihBdCZVUS9OPM3FEf7k8iX3IaB/rMk=;
+        b=Nggyh5uGO/F9/Wo4NlpEcxDzSexWl9MtMgl/fjv5pC38G+FYMaSSOfGzi+Vr2KNRTV
+         G4cFClwhWRLCz4tJjBS3bWCSEXgIrBteeLm7n9WZGwi831Eqegrd/1X1mK35QpHb3rd2
+         Rt8sHk5WNe2+bNegpunvVraGN3oFGSJ1UyRccJtx16kdZJ3WfMMwMA7+X/DawngfbF7N
+         EAithSbM3rHxWzyA776PVMxQ4+KDUfZp5GUIG88AvzQz+gM3aX8C4kwwcHT+98y5n+GT
+         gHtQhAUtoCNsLUvU9XZBLeS47XxPTTMLJj8ojViRZhODt1rk3PULYDYyxx8OtVoe54QZ
+         cUrg==
+X-Gm-Message-State: APjAAAURrnNMNLrLImgHfjOVR/8VxzocSxCRbYeX6vqZy7YH97fSNs3X
+        XgOTCRhOwyAkX6wK79ORCAOJzHz8wkGjY3kCYJgZqw==
+X-Google-Smtp-Source: APXvYqwc5X4e8SULXzuHD/iDw6JHvrLWDIMOYR8u3xD+xd7yygIt7ZnRIEQDjl27KzoMY9DuDrlrVwgs2+8GyXTUg0U=
+X-Received: by 2002:a5d:4ecd:: with SMTP id s13mr28633229wrv.216.1572949159760;
+ Tue, 05 Nov 2019 02:19:19 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28409b74-20ee-476b-1700-08d761d95d65
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 10:17:30.0747
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1ANflZXShn7RE1xxVHFl6mo9MKR0tSgDXxbIThitBGDu2DSjo4LOj6Mu+7iU7VAg+FGOKT4Ft9aaouNMOSxTpQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6077
+References: <20191104170303.GA50361@gandi.net> <719eebd3-259d-8beb-025a-f2d17c632711@gmail.com>
+ <20191105080554.GA1006@gandi.net>
+In-Reply-To: <20191105080554.GA1006@gandi.net>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Tue, 5 Nov 2019 11:19:08 +0100
+Message-ID: <CAG_fn=V1rriybnSB3WSS-yqWEAuAdo89MG1SWPkvneizX61TVA@mail.gmail.com>
+Subject: Re: Double free of struct sk_buff reported by SLAB_CONSISTENCY_CHECKS
+ with init_on_free
+To:     Thibaut Sautereau <thibaut.sautereau@clip-os.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Laura Abbott <labbott@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>, clipos@ssi.gouv.fr
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Mon 04 Nov 2019 at 18:49, Roopa Prabhu <roopa@cumulusnetworks.com> wrote=
-:
-> On Wed, Oct 30, 2019 at 7:20 AM Vlad Buslov <vladbu@mellanox.com> wrote:
->>
->> Implement setting and printing of action flags with single available fla=
-g
->> value "no_percpu" that translates to kernel UAPI TCA_ACT_FLAGS value
->> TCA_ACT_FLAGS_NO_PERCPU_STATS. Update man page with information regardin=
-g
->> usage of action flags.
->>
->> Example usage:
->>
->>  # tc actions add action gact drop no_percpu
->>  # sudo tc actions list action gact
->>  total acts 1
->>
->>         action order 0: gact action drop
->>          random type none pass val 0
->>          index 1 ref 1 bind 0
->>         no_percpu
+On Tue, Nov 5, 2019 at 9:06 AM Thibaut Sautereau
+<thibaut.sautereau@clip-os.org> wrote:
 >
-> would be nice to just call it no_percpu_stats to match the flag name ?.
-> Current choice of word leaves room for possible conflict with other
-> percpu flags in the future..
-
-I didn't find any other places in action code that uses percpu allocator
-directly and decided to name it "no_percpu" since it seems to me that
-iproute2 developers prefer brevity when naming such things (notice "val"
-and "ref" in example output).
-
+> On Mon, Nov 04, 2019 at 09:33:18AM -0800, Eric Dumazet wrote:
+> >
+> >
+> > On 11/4/19 9:03 AM, Thibaut Sautereau wrote:
+> > >
+> > > We first encountered this issue under huge network traffic (system im=
+age
+> > > download), and I was able to reproduce by simply sending a big packet
+> > > with `ping -s 65507 <ip>`, which crashes the kernel every single time=
+.
+> > >
+> >
+> > Since you have a repro, could you start a bisection ?
 >
+> From my previous email:
 >
->>
->> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
->> ---
->>
->> Notes:
->>     Changes V1 -> V2:
->>
->>     - Rework the change to use action API TCA_ACT_FLAGS instead of
->>       per-action flags implementation.
->>
->>  include/uapi/linux/pkt_cls.h |  5 +++++
->>  man/man8/tc-actions.8        | 14 ++++++++++++++
->>  tc/m_action.c                | 19 +++++++++++++++++++
->>  3 files changed, 38 insertions(+)
->>
->> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
->> index a6aa466fac9e..c6ad22f76ede 100644
->> --- a/include/uapi/linux/pkt_cls.h
->> +++ b/include/uapi/linux/pkt_cls.h
->> @@ -16,9 +16,14 @@ enum {
->>         TCA_ACT_STATS,
->>         TCA_ACT_PAD,
->>         TCA_ACT_COOKIE,
->> +       TCA_ACT_FLAGS,
->>         __TCA_ACT_MAX
->>  };
->>
->> +#define TCA_ACT_FLAGS_NO_PERCPU_STATS 1 /* Don't use percpu allocator f=
-or
->> +                                        * actions stats.
->> +                                        */
->> +
->>  #define TCA_ACT_MAX __TCA_ACT_MAX
->>  #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
->>  #define TCA_ACT_MAX_PRIO 32
->> diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
->> index f46166e3f685..bee59f7247fa 100644
->> --- a/man/man8/tc-actions.8
->> +++ b/man/man8/tc-actions.8
->> @@ -47,6 +47,8 @@ actions \- independently defined actions in tc
->>  ] [
->>  .I COOKIESPEC
->>  ] [
->> +.I FLAGS
->> +] [
->>  .I CONTROL
->>  ]
->>
->> @@ -71,6 +73,10 @@ ACTNAME
->>  :=3D
->>  .BI cookie " COOKIE"
->>
->> +.I FLAGS
->> +:=3D
->> +.I no_percpu
->> +
->>  .I ACTDETAIL
->>  :=3D
->>  .I ACTNAME ACTPARAMS
->> @@ -186,6 +192,14 @@ As such, it can be used as a correlating value for =
-maintaining user state.
->>  The value to be stored is completely arbitrary and does not require a s=
-pecific
->>  format. It is stored inside the action structure itself.
->>
->> +.TP
->> +.I FLAGS
->> +Action-specific flags. Currently, the only supported flag is
->> +.I no_percpu
->> +which indicates that action is expected to have minimal software data-p=
-ath
->> +traffic and doesn't need to allocate stat counters with percpu allocato=
-r.
->> +This option is intended to be used by hardware-offloaded actions.
->> +
->>  .TP
->>  .BI since " MSTIME"
->>  When dumping large number of actions, a millisecond time-filter can be
->> diff --git a/tc/m_action.c b/tc/m_action.c
->> index 36c744bbe374..4da810c8c0aa 100644
->> --- a/tc/m_action.c
->> +++ b/tc/m_action.c
->> @@ -250,6 +250,16 @@ done0:
->>                                 addattr_l(n, MAX_MSG, TCA_ACT_COOKIE,
->>                                           &act_ck, act_ck_len);
->>
->> +                       if (*argv && strcmp(*argv, "no_percpu") =3D=3D 0=
-) {
->> +                               struct nla_bitfield32 flags =3D
->> +                                       { TCA_ACT_FLAGS_NO_PERCPU_STATS,
->> +                                         TCA_ACT_FLAGS_NO_PERCPU_STATS =
-};
->> +
->> +                               addattr_l(n, MAX_MSG, TCA_ACT_FLAGS, &fl=
-ags,
->> +                                         sizeof(struct nla_bitfield32))=
-;
->> +                               NEXT_ARG_FWD();
->> +                       }
->> +
->>                         addattr_nest_end(n, tail);
->>                         ok++;
->>                 }
->> @@ -318,6 +328,15 @@ static int tc_print_one_action(FILE *f, struct rtat=
-tr *arg)
->>                                            strsz, b1, sizeof(b1)));
->>                 print_string(PRINT_FP, NULL, "%s", _SL_);
->>         }
->> +       if (tb[TCA_ACT_FLAGS]) {
->> +               struct nla_bitfield32 *flags =3D RTA_DATA(tb[TCA_ACT_FLA=
-GS]);
->> +
->> +               if (flags->selector & TCA_ACT_FLAGS_NO_PERCPU_STATS)
->> +                       print_bool(PRINT_ANY, "no_percpu", "\tno_percpu"=
-,
->> +                                  flags->value &
->> +                                  TCA_ACT_FLAGS_NO_PERCPU_STATS);
->> +               print_string(PRINT_FP, NULL, "%s", _SL_);
->> +       }
->>
->>         return 0;
->>  }
->> --
->> 2.21.0
->>
+>         "Bisection points to the following commit: 1b7e816fc80e ("mm: slu=
+b:
+>         Fix slab walking for init_on_free"), and indeed the BUG is not
+>         triggered when init_on_free is disabled."
+>
+> Or are you meaning something else?
+Could you please give more specific reproduction steps?
+I've checked out v5.3.8 from
+git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git, ran
+`make defconfig` and added CONFIG_SLUB_DEBUG_ON=3Dy.
+Then I've built the kernel, ran it on QEMU with slub_debug=3DF and
+init_on_free=3D1, SSHed into the machine and executed `ping -s 65507
+127.0.0.1`
+This however didn't trigger any crashes.
+Am I missing something?
+> --
+> Thibaut Sautereau
+> CLIP OS developer
+
+
+
+--=20
+Alexander Potapenko
+Software Engineer
+
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
