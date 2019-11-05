@@ -2,129 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D75C1F035C
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:46:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F303F037D
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:55:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390354AbfKEQqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:46:38 -0500
-Received: from mail-eopbgr140053.outbound.protection.outlook.com ([40.107.14.53]:62639
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2390333AbfKEQqi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 11:46:38 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i9B+MNY9seoQXLzF750P2dDVSQHuLxe46Of8ZLJylclR262czemywdgWwW2+qoFr5nCoUWaL9ypKQxq9Yb4VNTcEFshCFUwIxVBq57uvSl1lS2yqKEE5ge9UYm8syTePgpguPfeEmXbxUxhshu2q7aUYzp0oGre+/8FlJxbs0MWVVGGrdPb7KCOA5IAxPXP/UqhE5rlNH6XQ0htPm6eY6COwB1anbf0FvZFLEtpLMnSvGtW5ZyqbW2l72HUB90gJ32/xlXXBLWv5Oc/9dPMx3tkAPbRm2ELjOkrLdFs5fAjU2Tc60kCGBir+6hs7q5J5njz7YHBL2l3Q/26Uq/DwRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K8Uo1kEDw2LDUUHbDRPE6MoHeDFMmsA5HlSTjnTzjis=;
- b=Udr5vzA+UL1AGDsF2etgIYe/4ovaPbXoSOZnJQtyWzp8CIbFZW62gbLEZw2aoXFFROZAhoiSLwn+Q3P2/P+/Uw03SH2VCP1HXYi4W/+9La5jACisYD/O4XGqJ04WkjBdyaMOhW6P4z+n80iJFkXaVvVrPDeyAxp6G5Mz+UvnogaDdu7JEpi5SYETa92FDIMK6CG13EBDKc1lQeJ0J9Xmp6f7Fqs7t8UcaOH9wrWp1Gs1SNEwMrlcMkkSIFcy88cjZJGjhXWrDadia8c/NrHOJJau65NKk8pGJFBmoqV9spvIeuAQLDW9o2ZrKJCYxdngStIxior9X45B8w1ZILY9sg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K8Uo1kEDw2LDUUHbDRPE6MoHeDFMmsA5HlSTjnTzjis=;
- b=Yc3RBX++1UaiJT0Iqwob8tIQH0gr8GG6KMmjvnNTys5Z0oIKNfSfdqnD0/nAr8YKfT0zPzrIyYMzT37oZF/ue2tTnF8nSJaYcAjOy6rJgQF0gtousKIF119imjRGW98S0ouDmIo/sZnqLXO+Bw/s0/aaIoFcWt0G0T7xkGV1mOk=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
- VI1PR0402MB3741.eurprd04.prod.outlook.com (52.134.12.14) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Tue, 5 Nov 2019 16:46:30 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::5dd6:297c:51e5:2b52]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::5dd6:297c:51e5:2b52%7]) with mapi id 15.20.2408.024; Tue, 5 Nov 2019
- 16:46:30 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Chuhong Yuan <hslester96@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] [PATCH] net: fec: add missed clk_disable_unprepare in
- remove
-Thread-Topic: [EXT] [PATCH] net: fec: add missed clk_disable_unprepare in
- remove
-Thread-Index: AQHVkyeLajpiMEtWy0a0Faj4h+gvxqd7yAhwgADukoCAABOSYA==
-Date:   Tue, 5 Nov 2019 16:46:30 +0000
-Message-ID: <VI1PR0402MB36008CCD634F6E320EED733EFF7E0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <20191104155000.8993-1-hslester96@gmail.com>
- <VI1PR0402MB36006B7BEAA7F4BCB9278598FF7E0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <CANhBUQ26kCOGJvQn2Hg9HTyZPZi5ZOcOhAsfBCUvJhU-TSM_7w@mail.gmail.com>
-In-Reply-To: <CANhBUQ26kCOGJvQn2Hg9HTyZPZi5ZOcOhAsfBCUvJhU-TSM_7w@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [119.31.174.68]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5f996fd2-1e5f-46a0-1645-08d7620fb590
-x-ms-traffictypediagnostic: VI1PR0402MB3741:
-x-microsoft-antispam-prvs: <VI1PR0402MB3741C9F8DEB3AEFFCDD08A47FF7E0@VI1PR0402MB3741.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-forefront-prvs: 0212BDE3BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(346002)(396003)(366004)(376002)(199004)(189003)(81156014)(4326008)(186003)(71190400001)(8936002)(6916009)(486006)(446003)(6506007)(52536014)(5660300002)(74316002)(53546011)(55016002)(102836004)(76176011)(7736002)(86362001)(305945005)(33656002)(6436002)(81166006)(7696005)(8676002)(229853002)(25786009)(66446008)(66476007)(99286004)(66946007)(71200400001)(6116002)(76116006)(64756008)(66556008)(11346002)(2906002)(3846002)(9686003)(6246003)(478600001)(26005)(54906003)(316002)(14444005)(476003)(1411001)(256004)(66066001)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3741;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TPxlpT9vF2Oqk+Hy+DwH9YajtBZa0C49UVBYEvq1Kg71NZYDWxM0Jj82NtwECR2+vLlM9sW17fwXjx50kCGDhBKbdetLuCCj6MZgaerbYsRQKqAACS4AWdhBc+x1vY/M7yl0w1hqZi9l5yJFKM1tw5+T7gIHE8sY0O1nJAmW31FG3i/8AkSiiE+HVGiT9EZ2N6n+7EJHrTuBSUfGlCZZP00pFRO5MGBVFZgWdudboTnHGKnaAzaS+xWkefzoq7ajkngHLfnCxDuNJcIU6LuzUjVG7IfRXqZYxuAUX3r00E3fECMfuyYQYTuuCJNq5ayDG1+dlLcqfjC27XcS6AoWFaVXxci3OJDay9jcZEVsfZhf5/T6TkzMZA5BbcrWogl6qJ9VQJZqyMueSOg/FOCwxz8SFYAxZmSO0ry0XTvyL5B8dry6AP5E0ImSxdDloyT6
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2390399AbfKEQzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:55:15 -0500
+Received: from mail.aperture-lab.de ([138.201.29.205]:57106 "EHLO
+        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390060AbfKEQzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:55:15 -0500
+X-Greylist: delayed 307 seconds by postgrey-1.27 at vger.kernel.org; Tue, 05 Nov 2019 11:55:14 EST
+From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue; s=2018;
+        t=1572972606;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=A4o+TvT+3DU2TuZZZ5Ukyqq2OA7OUrD/LYDeu136xXo=;
+        b=eKaM8U5anTeSSbpbTfQEDsinYFx/8JXx6rrdvuxtR33xfv34H1McpU2Iwpo94Ei+126A8k
+        29w3ftw7jTj4FJwskOhlMV1Zp03RS+V++a4Mui8gAhhEb9LO8ovQoNv8g/82g036QGF4Az
+        ShI3CiJYa+M3ECi5fYdQf5pDH9ymPyn1nTmW+MQ0QtjP30vWFFBF59c6E3GVlsxv6HTN7L
+        Zlm/LxHkvZFQPqJadbLcTUc7URlB++HU/AXmZx4pezgnrJYLegJG8orlBQ3cjT9nqFoZdS
+        dt5YEzAQe87d1oGQ7tfiGnumm99LM3O3hondz8WEB8NJhgW2QDjxhojEprqQBw==
+To:     ath10k@lists.infradead.org
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ben Greear <greearb@candelatech.com>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
+Subject: [PATCH net-next] ath10k: fix RX of frames with broken FCS in monitor mode
+Date:   Tue,  5 Nov 2019 17:49:32 +0100
+Message-Id: <20191105164932.11799-1-linus.luessing@c0d3.blue>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f996fd2-1e5f-46a0-1645-08d7620fb590
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 16:46:30.5695
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: n3h+O8wJILkPJxhxx5B/fgssVucFFwHGDtVX6Qk6juS+w1EvhDvzMfAk7WsiBG6kxv4KeKwENmuGsNC8nCZtwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3741
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue;
+        s=2018; t=1572972606;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=A4o+TvT+3DU2TuZZZ5Ukyqq2OA7OUrD/LYDeu136xXo=;
+        b=auYd3bMkXFMp2tggRSB3WRF+GpXQmASYI8pWe/jIXmf3bEcxf3hI9StYZsZZUo1s8VaG7X
+        WvZ54nJJdXz/5Ewd94d9WU6RykrBkLACXE2m3fxyh/1ofJO8qyvjprMpcbeHzj2SLgqV9M
+        gr0FQa5orGMeMDcRXp4Vkp6dyUqbvRx+5qruQW1wgFTp6v3LP0kV4QB32oyGnYMbdN+lDx
+        HGy1YD6TTtRFMom80NKpPtmu1oraEKZR46Zv/uktMPvcXY+o6omAa6jpvXI0LWS2HVWC1s
+        c4Xd3ApQ2RJp171Vae9iRLNTQUHARIxVdOd6YPoGmiV1A50A4/XoeZXTJ3dJ/g==
+ARC-Seal: i=1; s=2018; d=c0d3.blue; t=1572972606; a=rsa-sha256; cv=none;
+        b=Qv6YtoEdX4ewk6c7mjveFfqd8SPLQ/pcDdgTLLQMxlaED05U4f0kbgHUwWWraP9psScsOV
+        roaGaQ+zFVzlBtJucdQXGBjARGzHED5HdnaJPOjo7Y312D/Xa0Ua0o4pUr4LwQz5NdnIat
+        2aSEhx2MiuANhK5np95uLiVzw2XK4bseBYjuNNjX6IR7NaiTO0AFDYlTevck60z48FuWxb
+        4kM4c3WjdjHoKm2BW8TitacGo6H9CxnTgG1g++6j9iy73r0UoODtQ9usQ/0zXdsPcHNJHD
+        ouF7nomAi3O9LDwqWSNlCwKOeb2JkEPrWFDL3F+MQERU0uCf3cM77zdW5b0sKw==
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
+Authentication-Results: ORIGINATING;
+        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQ2h1aG9uZyBZdWFuIDxoc2xlc3Rlcjk2QGdtYWlsLmNvbT4gU2VudDogVHVlc2RheSwg
-Tm92ZW1iZXIgNSwgMjAxOSAxMTozNCBQTQ0KPiBPbiBUdWUsIE5vdiA1LCAyMDE5IGF0IDk6MjYg
-QU0gQW5keSBEdWFuIDxmdWdhbmcuZHVhbkBueHAuY29tPiB3cm90ZToNCj4gPg0KPiA+IEZyb206
-IENodWhvbmcgWXVhbiA8aHNsZXN0ZXI5NkBnbWFpbC5jb20+IFNlbnQ6IE1vbmRheSwgTm92ZW1i
-ZXIgNCwNCj4gPiAyMDE5IDExOjUwIFBNDQo+ID4gPiBUaGlzIGRyaXZlciBmb3JnZXRzIHRvIGRp
-c2FibGUgYW5kIHVucHJlcGFyZSBjbGtzIHdoZW4gcmVtb3ZlLg0KPiA+ID4gQWRkIGNhbGxzIHRv
-IGNsa19kaXNhYmxlX3VucHJlcGFyZSB0byBmaXggaXQuDQo+ID4gPg0KPiA+ID4gU2lnbmVkLW9m
-Zi1ieTogQ2h1aG9uZyBZdWFuIDxoc2xlc3Rlcjk2QGdtYWlsLmNvbT4NCj4gPg0KPiA+IElmIHJ1
-bnRpbWUgaXMgZW5hYmxlZCwgdGhlIHBhdGNoIHdpbGwgaW50cm9kdWNlIGNsb2NrIGNvdW50IG1p
-cy1tYXRjaC4NCj4gPiBQcm9iZS0+DQo+ID4gICAgIEVuYWJsZSBjbGtfaXBnLCBjbGtfYWhiIGNs
-b2Nrcw0KPiA+ICAgICAuLi4NCj4gPiAgICAgSW4gdGhlIGVuZCwgcnVudGltZSBhdXRvIHN1c3Bl
-bmQgY2FsbGJhY2sgZGlzYWJsZSBjbGtfaXBnLCBjbGtfYWhiDQo+IGNsb2Nrcy4NCj4gPg0KPiA+
-IFlvdSBzaG91bGQgY2hlY2sgQ09ORklHX1BNIGlzIGVuYWJsZWQgb3Igbm90IGluIHlvdXIgcGxh
-dGZvcm0sIGlmIG5vdCwNCj4gPiBpdCBjYW4gZGlzYWJsZSB0aGVzZSB0d28gY2xvY2tzIGJ5IGNo
-ZWNraW5nIENPTkZJR19QTS4NCj4gPg0KPiANCj4gVGhhbmtzIGZvciB5b3VyIGhpbnQhDQo+IEJ1
-dCBJIGFtIHN0aWxsIG5vdCB2ZXJ5IGNsZWFyIGFib3V0IHRoZSBtZWNoYW5pc20uDQo+IEluIG15
-IG9waW5pb24sIGl0IG1lYW5zIHRoYXQgaWYgQ09ORklHX1BNIGlzIGRpc2FibGVkLCBydW50aW1l
-X3N1c3BlbmQgd2lsbA0KPiBiZSBjYWxsZWQgYXV0b21hdGljYWxseSB0byBkaXNhYmxlIGNsa3Mu
-DQpDT05GSUdfUE0gaXMgZW5hYmxlZCwgcnVudGltZSBwbSB3b3Jrcy4gT3RoZXJ3aXNlLCBpdCBk
-b2Vzbid0IHdvcmssIHRoZW4gaXQNClJlcXVpcmVzIC5yZW1vdmUoKSB0byBkaXNhYmxlIHRoZSBj
-bGtzLg0KDQpBbmR5DQo+IFRoZXJlZm9yZSwgI2lmZGVmIENPTkZJR19QTSBjaGVjayBzaG91bGQg
-YmUgYWRkZWQgYmVmb3JlIGRpc2FibGluZyBjbGtzIGluDQo+IHJlbW92ZS4NCj4gSSBhbSBub3Qg
-c3VyZSB3aGV0aGVyIHRoaXMgdW5kZXJzdGFuZGluZyBpcyByaWdodCBvciBub3Q/DQo+IA0KPiBS
-ZWdhcmRzLA0KPiBDaHVob25nDQo+IA0KPiA+IFJlZ2FyZHMsDQo+ID4gQW5keQ0KPiA+ID4gLS0t
-DQo+ID4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMgfCAyICsr
-DQo+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKQ0KPiA+ID4NCj4gPiA+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiA+
-ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiA+ID4gaW5k
-ZXggMjJjMDFiMjI0YmFhLi5hOWMzODZiNjM1ODEgMTAwNjQ0DQo+ID4gPiAtLS0gYS9kcml2ZXJz
-L25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPiA+ID4gKysrIGIvZHJpdmVycy9u
-ZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZlY19tYWluLmMNCj4gPiA+IEBAIC0zNjQ1LDYgKzM2NDUs
-OCBAQCBmZWNfZHJ2X3JlbW92ZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiA+ID4g
-ICAgICAgICAgICAgICAgIHJlZ3VsYXRvcl9kaXNhYmxlKGZlcC0+cmVnX3BoeSk7DQo+ID4gPiAg
-ICAgICAgIHBtX3J1bnRpbWVfcHV0KCZwZGV2LT5kZXYpOw0KPiA+ID4gICAgICAgICBwbV9ydW50
-aW1lX2Rpc2FibGUoJnBkZXYtPmRldik7DQo+ID4gPiArICAgICAgIGNsa19kaXNhYmxlX3VucHJl
-cGFyZShmZXAtPmNsa19haGIpOw0KPiA+ID4gKyAgICAgICBjbGtfZGlzYWJsZV91bnByZXBhcmUo
-ZmVwLT5jbGtfaXBnKTsNCj4gPiA+ICAgICAgICAgaWYgKG9mX3BoeV9pc19maXhlZF9saW5rKG5w
-KSkNCj4gPiA+ICAgICAgICAgICAgICAgICBvZl9waHlfZGVyZWdpc3Rlcl9maXhlZF9saW5rKG5w
-KTsNCj4gPiA+ICAgICAgICAgb2Zfbm9kZV9wdXQoZmVwLT5waHlfbm9kZSk7DQo+ID4gPiAtLQ0K
-PiA+ID4gMi4yMy4wDQo+ID4NCg==
+From: Linus Lüssing <ll@simonwunderlich.de>
+
+So far, frames were forwarded regardless of the FCS correctness leading
+to userspace applications listening on the monitor mode interface to
+receive potentially broken frames, even with the "fcsfail" flag unset.
+
+By default, with the "fcsfail" flag of a monitor mode interface
+unset, frames with FCS errors should be dropped. With this patch, the
+fcsfail flag is taken into account correctly.
+
+Cc: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
+---
+This was tested on an Open Mesh A41 device, featuring a QCA4019. And
+with this firmware:
+
+https://www.candelatech.com/downloads/ath10k-4019-10-4b/firmware-5-ct-full-community-12.bin-lede.011
+
+But from looking at the code it seems that the vanilla ath10k has the
+same issue, therefore submitting it here.
+
+Changelog RFC->v1:
+
+* removed "ar->monitor" check
+* added a debug counter
+
+---
+ drivers/net/wireless/ath/ath10k/core.h   |  1 +
+ drivers/net/wireless/ath/ath10k/debug.c  |  2 ++
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 10 ++++++++++
+ 3 files changed, 13 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index 4d7db07db6ba..787065a9eb3f 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -1171,6 +1171,7 @@ struct ath10k {
+ 
+ 	struct {
+ 		/* protected by data_lock */
++		u32 rx_crc_err_drop;
+ 		u32 fw_crash_counter;
+ 		u32 fw_warm_reset_counter;
+ 		u32 fw_cold_reset_counter;
+diff --git a/drivers/net/wireless/ath/ath10k/debug.c b/drivers/net/wireless/ath/ath10k/debug.c
+index bd2b5628f850..5e4cd2966e6f 100644
+--- a/drivers/net/wireless/ath/ath10k/debug.c
++++ b/drivers/net/wireless/ath/ath10k/debug.c
+@@ -1094,6 +1094,7 @@ static const char ath10k_gstrings_stats[][ETH_GSTRING_LEN] = {
+ 	"d_rts_good",
+ 	"d_tx_power", /* in .5 dbM I think */
+ 	"d_rx_crc_err", /* fcs_bad */
++	"d_rx_crc_err_drop", /* frame with FCS error, dropped late in kernel */
+ 	"d_no_beacon",
+ 	"d_tx_mpdus_queued",
+ 	"d_tx_msdu_queued",
+@@ -1193,6 +1194,7 @@ void ath10k_debug_get_et_stats(struct ieee80211_hw *hw,
+ 	data[i++] = pdev_stats->rts_good;
+ 	data[i++] = pdev_stats->chan_tx_power;
+ 	data[i++] = pdev_stats->fcs_bad;
++	data[i++] = ar->stats.rx_crc_err_drop;
+ 	data[i++] = pdev_stats->no_beacons;
+ 	data[i++] = pdev_stats->mpdu_enqued;
+ 	data[i++] = pdev_stats->msdu_enqued;
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index 53f1095de8ff..149728588e80 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -1285,6 +1285,16 @@ static void ath10k_process_rx(struct ath10k *ar, struct sk_buff *skb)
+ 
+ 	status = IEEE80211_SKB_RXCB(skb);
+ 
++	if (!(ar->filter_flags & FIF_FCSFAIL) &&
++	    status->flag & RX_FLAG_FAILED_FCS_CRC) {
++		spin_lock_bh(&ar->data_lock);
++		ar->stats.rx_crc_err_drop++;
++		spin_unlock_bh(&ar->data_lock);
++
++		dev_kfree_skb_any(skb);
++		return;
++	}
++
+ 	ath10k_dbg(ar, ATH10K_DBG_DATA,
+ 		   "rx skb %pK len %u peer %pM %s %s sn %u %s%s%s%s%s%s %srate_idx %u vht_nss %u freq %u band %u flag 0x%x fcs-err %i mic-err %i amsdu-more %i\n",
+ 		   skb,
+-- 
+2.24.0.rc2
+
