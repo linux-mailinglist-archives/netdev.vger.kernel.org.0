@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D52B8F091F
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27210F0920
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387458AbfKEWMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:12:17 -0500
-Received: from mail-yw1-f74.google.com ([209.85.161.74]:35611 "EHLO
-        mail-yw1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387415AbfKEWMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:17 -0500
-Received: by mail-yw1-f74.google.com with SMTP id g69so17583231ywb.2
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:16 -0800 (PST)
+        id S2387468AbfKEWMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:12:20 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:50388 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387415AbfKEWMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:20 -0500
+Received: by mail-pf1-f202.google.com with SMTP id e13so10637102pff.17
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=jhTVqolNLLwjm3T47MwJ7GosIGWKqH1awqsG6fVX47g=;
-        b=UfleGaIEpQe3mP6r5e7sDyU6LlixK+qtB5BB2przYmel8xbAwPVVgtzYiRHZjE4ZY6
-         Vxjc+1L/MsiOHoLFqwXiFNoVh+4jNMFDY1UZc0/hZO1LPN9mEBozu3nZkrCPiCL17imp
-         twaBXf8vnHEYhhhVyVQHC9lQd7qIxcOu3QzdanrpabL6eWHWykP/zYJ1TCDOx9KQ+9d5
-         /M7PkEcOX1L7oPLuRnUQ6xVxMrXw7S1ye29FF/gXSy1eswoWAZ5yXjPIAqQPNATJkgB1
-         iaqSiD27tKuszVoJUplpL/EqtY4GuMY27i2rqivcQgiWG2HR48jApKNh4NqrEZZl24vi
-         LZvw==
+        bh=NEfkqij4dWS0saI85Xl3b8QbPrN/yb01cBZ/t3LVeq8=;
+        b=pvk+hN7LmFKbCP2K2yX2ihv/yRlUJ2RfprBvwHTyn4N9YGPuP6w9Y6uhDayssykhXR
+         WVIJ9znfc8FvZdHQ7qyJ4QDRl5Np6HoSufWhRxg16HX3TrIrYCWaR1/v1N6JdFkSceXo
+         Nbjp6TeTFjV5FIvDLGrqab6TLjrW3Q9uH2bNvia6l3dv9SfU39uspZPMa6l1kY8KAk8V
+         DVKD2Jh+HijUXq/wFjZ/kqCZgKk3ZHE5q/Ywmuvmfumsg4kKHlLGhJqO3ZooMBTj09Ms
+         yyQ/V0awTFPJCV/K/O8nWveHZrzJvRR8BrS1rzh2Kf1pHizcBrHbu9yJFIfydEZHNHz/
+         DaLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=jhTVqolNLLwjm3T47MwJ7GosIGWKqH1awqsG6fVX47g=;
-        b=hQCi4rCmRMTIziPpoLAkIoaGWB2+noBCH9ynAHNguOWD5TmfFg2ii1q0WQode33h48
-         p1rTda12ciUEerHCEDl0GvWugvBDpVrqIZaoxHT1toxtWfx9q6dytqeMu+lkVC0n6Pre
-         5vG+3z36eoHARQTZqBYulywA/RdesbFetdcnFTvaq83D2p+YVvnPIr2FuqukkOtX+oEq
-         jTtA1yYQ5FxjpHrzIZJm45gul2B5G7v8oj8eHR0mhxbBTpp6g2RPbd9lhIzLT+Vs126v
-         QkFINp+qbB6BxZ3TIgOzivAtD2uBKxvYCEMaP/uOndu9yFqsMcvGWZmXQ6JfnogxnbbO
-         V/1Q==
-X-Gm-Message-State: APjAAAXZlDnyJIaLBsJenZsAB5TIrI7s2+N1n7rWiRf667NTW29E8qfD
-        yYBkc3yEcN9OtA1aGmUA29diRpeQ9qANeA==
-X-Google-Smtp-Source: APXvYqwOinM+c8Y4jX1VBL0fh6D0TjjfQrHmg/a+/desZMbpAezCa9owvsYcVu+2zwwRXBXXDOjy+uBWxf8sHw==
-X-Received: by 2002:a0d:cb90:: with SMTP id n138mr26922062ywd.245.1572991935994;
- Tue, 05 Nov 2019 14:12:15 -0800 (PST)
-Date:   Tue,  5 Nov 2019 14:11:52 -0800
+        bh=NEfkqij4dWS0saI85Xl3b8QbPrN/yb01cBZ/t3LVeq8=;
+        b=BA5NXWiPVIMHFUcDmYigbM6XSLqg2cbLs/SNr6jCKmnM1/rR19SjFs71ofiBnfw9sd
+         1TWg3ZNKtRqNaemMlM+yirwGYV44RTfPX+vi+jS5NKL/yKHg+kbZM/6tKNSsN9Jh18sQ
+         3EuWBAsnERNCeANbHpZmI4HJxgeKIQuLvrRU39/CmDIa8aJ3yKHVmpvnxYbB2lCOmcZX
+         LqGd6FBz5nkBhWANG/aN60XNcIzY3OClcWYbgUGsJnIYRIn61lQ5z6Q88V/wl/CmrhSR
+         O3zT8cNG0YYYfz6ryrH3z/AMPniqZTlNAdLrtglBNCoZaMt5VKirWsGlL0de8QsrtpI9
+         I9sQ==
+X-Gm-Message-State: APjAAAWXlbuJnXLe/8XT401KzGAPboiOWVXB9HcjpELvt8NS7eARgpFC
+        vmxeDbx/uo2jrlocXUPbqj6yyDTCR2Esaw==
+X-Google-Smtp-Source: APXvYqzQ//EgQZ7XKeEuDj8OtzkojnObeRvcdEWuu4K9eSFRjK3p+pTKM0DWPt4ieBFlUx3FhrZ8S7vE01KsEQ==
+X-Received: by 2002:a63:1812:: with SMTP id y18mr35553123pgl.302.1572991938955;
+ Tue, 05 Nov 2019 14:12:18 -0800 (PST)
+Date:   Tue,  5 Nov 2019 14:11:53 -0800
 In-Reply-To: <20191105221154.232754-1-edumazet@google.com>
-Message-Id: <20191105221154.232754-5-edumazet@google.com>
+Message-Id: <20191105221154.232754-6-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191105221154.232754-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH net-next 4/6] net: use helpers to change sk_ack_backlog
+Subject: [PATCH net-next 5/6] net: annotate lockless accesses to sk->sk_ack_backlog
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -58,284 +58,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Writers are holding a lock, but many readers do not.
-
-Following patch will add appropriate barriers in
-sk_acceptq_removed() and sk_acceptq_added().
+sk->sk_ack_backlog can be read without any lock being held.
+We need to use READ_ONCE()/WRITE_ONCE() to avoid load/store tearing
+and/or potential KCSAN warnings.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/atm/signaling.c                     | 2 +-
- net/atm/svc.c                           | 2 +-
- net/ax25/af_ax25.c                      | 2 +-
- net/ax25/ax25_in.c                      | 2 +-
- net/bluetooth/af_bluetooth.c            | 4 ++--
- net/decnet/af_decnet.c                  | 2 +-
- net/decnet/dn_nsp_in.c                  | 2 +-
- net/llc/af_llc.c                        | 2 +-
- net/rose/af_rose.c                      | 4 ++--
- net/sctp/associola.c                    | 4 ++--
- net/sctp/endpointola.c                  | 2 +-
- net/vmw_vsock/af_vsock.c                | 4 ++--
- net/vmw_vsock/hyperv_transport.c        | 2 +-
- net/vmw_vsock/virtio_transport_common.c | 2 +-
- net/vmw_vsock/vmci_transport.c          | 2 +-
- net/x25/af_x25.c                        | 4 ++--
- 16 files changed, 21 insertions(+), 21 deletions(-)
+ include/net/sock.h  | 6 +++---
+ net/ipv4/tcp.c      | 2 +-
+ net/ipv4/tcp_diag.c | 2 +-
+ net/ipv4/tcp_ipv4.c | 2 +-
+ net/ipv6/tcp_ipv6.c | 2 +-
+ net/sched/em_meta.c | 2 +-
+ net/sctp/diag.c     | 2 +-
+ 7 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/net/atm/signaling.c b/net/atm/signaling.c
-index 6c11cdf4dd4ce4737dd38bcceccc43dfd272c338..fbd0c5e7b299993bd3a4ae4a6c5f543cb30c5091 100644
---- a/net/atm/signaling.c
-+++ b/net/atm/signaling.c
-@@ -109,7 +109,7 @@ static int sigd_send(struct atm_vcc *vcc, struct sk_buff *skb)
- 			dev_kfree_skb(skb);
- 			goto as_indicate_complete;
- 		}
--		sk->sk_ack_backlog++;
-+		sk_acceptq_added(sk);
- 		skb_queue_tail(&sk->sk_receive_queue, skb);
- 		pr_debug("waking sk_sleep(sk) 0x%p\n", sk_sleep(sk));
- 		sk->sk_state_change(sk);
-diff --git a/net/atm/svc.c b/net/atm/svc.c
-index 908cbb8654f532548b20f166492a2e02de6324d6..ba144d035e3d41e8ba8115b9b4aa54762fca0d01 100644
---- a/net/atm/svc.c
-+++ b/net/atm/svc.c
-@@ -381,7 +381,7 @@ static int svc_accept(struct socket *sock, struct socket *newsock, int flags,
- 				    msg->pvc.sap_addr.vpi,
- 				    msg->pvc.sap_addr.vci);
- 		dev_kfree_skb(skb);
--		sk->sk_ack_backlog--;
-+		sk_acceptq_removed(sk);
- 		if (error) {
- 			sigd_enq2(NULL, as_reject, old_vcc, NULL, NULL,
- 				  &old_vcc->qos, error);
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index bb222b882b6776481a17c9a4cc9ed6d97150c986..324306d6fde02cb67e13073986bde1c4ed7eae5f 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -1384,7 +1384,7 @@ static int ax25_accept(struct socket *sock, struct socket *newsock, int flags,
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f2f853439b6576925e39f6db010964762e39ccf2..a126784aa7d9b6f59c8937c8c94d5bd7843988a4 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -859,17 +859,17 @@ static inline gfp_t sk_gfp_mask(const struct sock *sk, gfp_t gfp_mask)
  
- 	/* Now attach up the new socket */
- 	kfree_skb(skb);
+ static inline void sk_acceptq_removed(struct sock *sk)
+ {
 -	sk->sk_ack_backlog--;
-+	sk_acceptq_removed(sk);
- 	newsock->state = SS_CONNECTED;
- 
- out:
-diff --git a/net/ax25/ax25_in.c b/net/ax25/ax25_in.c
-index dcdbaeeb2358a45d18ca0987ae5969b8f9a76cad..cd6afe895db9910fb7f8f1abad9016307c660850 100644
---- a/net/ax25/ax25_in.c
-+++ b/net/ax25/ax25_in.c
-@@ -356,7 +356,7 @@ static int ax25_rcv(struct sk_buff *skb, struct net_device *dev,
- 
- 		make->sk_state = TCP_ESTABLISHED;
- 
--		sk->sk_ack_backlog++;
-+		sk_acceptq_added(sk);
- 		bh_unlock_sock(sk);
- 	} else {
- 		if (!mine)
-diff --git a/net/bluetooth/af_bluetooth.c b/net/bluetooth/af_bluetooth.c
-index 5f508c50649d0abc317ed83cc0768f6b7a64de96..3fd124927d4d176864004aecdd206407a1f6b836 100644
---- a/net/bluetooth/af_bluetooth.c
-+++ b/net/bluetooth/af_bluetooth.c
-@@ -173,7 +173,7 @@ void bt_accept_enqueue(struct sock *parent, struct sock *sk, bool bh)
- 	else
- 		release_sock(sk);
- 
--	parent->sk_ack_backlog++;
-+	sk_acceptq_added(parent);
++	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog - 1);
  }
- EXPORT_SYMBOL(bt_accept_enqueue);
  
-@@ -185,7 +185,7 @@ void bt_accept_unlink(struct sock *sk)
- 	BT_DBG("sk %p state %d", sk, sk->sk_state);
- 
- 	list_del_init(&bt_sk(sk)->accept_q);
--	bt_sk(sk)->parent->sk_ack_backlog--;
-+	sk_acceptq_removed(bt_sk(sk)->parent);
- 	bt_sk(sk)->parent = NULL;
- 	sock_put(sk);
+ static inline void sk_acceptq_added(struct sock *sk)
+ {
+-	sk->sk_ack_backlog++;
++	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog + 1);
  }
-diff --git a/net/decnet/af_decnet.c b/net/decnet/af_decnet.c
-index 3349ea81f9016fb785ec888fadf86faa4d859ed7..e19a92a62e142611f78d942ba22d2b1908430660 100644
---- a/net/decnet/af_decnet.c
-+++ b/net/decnet/af_decnet.c
-@@ -1091,7 +1091,7 @@ static int dn_accept(struct socket *sock, struct socket *newsock, int flags,
- 	}
  
- 	cb = DN_SKB_CB(skb);
--	sk->sk_ack_backlog--;
-+	sk_acceptq_removed(sk);
- 	newsk = dn_alloc_sock(sock_net(sk), newsock, sk->sk_allocation, kern);
- 	if (newsk == NULL) {
- 		release_sock(sk);
-diff --git a/net/decnet/dn_nsp_in.c b/net/decnet/dn_nsp_in.c
-index e4161e0c86aa1190bdba483f857922ef12ce0bb6..c68503a180259467505bd1346995ea1bc00df755 100644
---- a/net/decnet/dn_nsp_in.c
-+++ b/net/decnet/dn_nsp_in.c
-@@ -328,7 +328,7 @@ static void dn_nsp_conn_init(struct sock *sk, struct sk_buff *skb)
+ static inline bool sk_acceptq_is_full(const struct sock *sk)
+ {
+-	return sk->sk_ack_backlog > sk->sk_max_ack_backlog;
++	return READ_ONCE(sk->sk_ack_backlog) > sk->sk_max_ack_backlog;
+ }
+ 
+ /*
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 1dd25189d83f2c7404336f8378be23c4beaa7ed7..68375f7ffdce1fbbb4cf443660703c98b61fd9e3 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3225,7 +3225,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
+ 		 * tcpi_unacked -> Number of children ready for accept()
+ 		 * tcpi_sacked  -> max backlog
+ 		 */
+-		info->tcpi_unacked = sk->sk_ack_backlog;
++		info->tcpi_unacked = READ_ONCE(sk->sk_ack_backlog);
+ 		info->tcpi_sacked = sk->sk_max_ack_backlog;
  		return;
  	}
+diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
+index 549506162ddeca22f6dd87dfe1c5c13cea6e2b69..edfbab54c46f4cac1b0a7960718d0b6308978957 100644
+--- a/net/ipv4/tcp_diag.c
++++ b/net/ipv4/tcp_diag.c
+@@ -21,7 +21,7 @@ static void tcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
+ 	struct tcp_info *info = _info;
  
--	sk->sk_ack_backlog++;
-+	sk_acceptq_added(sk);
- 	skb_queue_tail(&sk->sk_receive_queue, skb);
- 	sk->sk_state_change(sk);
- }
-diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
-index c74f44dfaa22a5020880ea218c6607ace8fd5e22..50d2c9749db36da84f0e84c254771ee5e6c9cef9 100644
---- a/net/llc/af_llc.c
-+++ b/net/llc/af_llc.c
-@@ -705,7 +705,7 @@ static int llc_ui_accept(struct socket *sock, struct socket *newsock, int flags,
+ 	if (inet_sk_state_load(sk) == TCP_LISTEN) {
+-		r->idiag_rqueue = sk->sk_ack_backlog;
++		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
+ 		r->idiag_wqueue = sk->sk_max_ack_backlog;
+ 	} else if (sk->sk_type == SOCK_STREAM) {
+ 		const struct tcp_sock *tp = tcp_sk(sk);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 899e100a68e6ab8fcf7b2c4d2a9d179745a782b5..92282f98dc82290bfaf53acc050182e4cc3be1eb 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2451,7 +2451,7 @@ static void get_tcp4_sock(struct sock *sk, struct seq_file *f, int i)
  
- 	/* put original socket back into a clean listen state. */
- 	sk->sk_state = TCP_LISTEN;
--	sk->sk_ack_backlog--;
-+	sk_acceptq_removed(sk);
- 	dprintk("%s: ok success on %02X, client on %02X\n", __func__,
- 		llc_sk(sk)->addr.sllc_sap, newllc->daddr.lsap);
- frees:
-diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-index 6a0df7c8a939e4976aa2815127885e127dd864fc..46b8ff24020d7bb6788e985686bef12b4fbc83d0 100644
---- a/net/rose/af_rose.c
-+++ b/net/rose/af_rose.c
-@@ -906,7 +906,7 @@ static int rose_accept(struct socket *sock, struct socket *newsock, int flags,
- 	/* Now attach up the new socket */
- 	skb->sk = NULL;
- 	kfree_skb(skb);
--	sk->sk_ack_backlog--;
-+	sk_acceptq_removed(sk);
+ 	state = inet_sk_state_load(sk);
+ 	if (state == TCP_LISTEN)
+-		rx_queue = sk->sk_ack_backlog;
++		rx_queue = READ_ONCE(sk->sk_ack_backlog);
+ 	else
+ 		/* Because we don't lock the socket,
+ 		 * we might find a transient negative value.
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 4804b6dc5e6519a457e631bc1438a14f85477567..81f51335e326fad57d3e0e1ce23926b276e95e92 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1891,7 +1891,7 @@ static void get_tcp6_sock(struct seq_file *seq, struct sock *sp, int i)
  
- out_release:
- 	release_sock(sk);
-@@ -1011,7 +1011,7 @@ int rose_rx_call_request(struct sk_buff *skb, struct net_device *dev, struct ros
- 	make_rose->va        = 0;
- 	make_rose->vr        = 0;
- 	make_rose->vl        = 0;
--	sk->sk_ack_backlog++;
-+	sk_acceptq_added(sk);
- 
- 	rose_insert_socket(make);
- 
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index 1ba893b85dad79786ec3fd55c2870072c6c4efa9..1b9809ad772528b3596efc9ae96780dbc70f7cc2 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -324,7 +324,7 @@ void sctp_association_free(struct sctp_association *asoc)
- 		 * socket.
- 		 */
- 		if (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING))
--			sk->sk_ack_backlog--;
-+			sk_acceptq_removed(sk);
+ 	state = inet_sk_state_load(sp);
+ 	if (state == TCP_LISTEN)
+-		rx_queue = sp->sk_ack_backlog;
++		rx_queue = READ_ONCE(sp->sk_ack_backlog);
+ 	else
+ 		/* Because we don't lock the socket,
+ 		 * we might find a transient negative value.
+diff --git a/net/sched/em_meta.c b/net/sched/em_meta.c
+index 3177dcb173161629a801278db38fabeb6fcdbdd9..ebb6e2430861d23a42431e4143f229395d9321c5 100644
+--- a/net/sched/em_meta.c
++++ b/net/sched/em_meta.c
+@@ -521,7 +521,7 @@ META_COLLECTOR(int_sk_ack_bl)
+ 		*err = -1;
+ 		return;
  	}
- 
- 	/* Mark as dead, so other users can know this structure is
-@@ -1073,7 +1073,7 @@ void sctp_assoc_migrate(struct sctp_association *assoc, struct sock *newsk)
- 
- 	/* Decrement the backlog value for a TCP-style socket. */
- 	if (sctp_style(oldsk, TCP))
--		oldsk->sk_ack_backlog--;
-+		sk_acceptq_removed(oldsk);
- 
- 	/* Release references to the old endpoint and the sock.  */
- 	sctp_endpoint_put(assoc->ep);
-diff --git a/net/sctp/endpointola.c b/net/sctp/endpointola.c
-index ea53049d1db663e63def7f5e7e22e788c7456d22..9d05b2e7bce24cad0633efd54ca7223b0426de9a 100644
---- a/net/sctp/endpointola.c
-+++ b/net/sctp/endpointola.c
-@@ -164,7 +164,7 @@ void sctp_endpoint_add_asoc(struct sctp_endpoint *ep,
- 
- 	/* Increment the backlog value for a TCP-style listening socket. */
- 	if (sctp_style(sk, TCP) && sctp_sstate(sk, LISTENING))
--		sk->sk_ack_backlog++;
-+		sk_acceptq_added(sk);
+-	dst->value = sk->sk_ack_backlog;
++	dst->value = READ_ONCE(sk->sk_ack_backlog);
  }
  
- /* Free the endpoint structure.  Delay cleanup until
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 582a3e4dfce295fa67100468335bc8dbf8dc1095..e4da879161b74366dfccfec296f3f68a3626f35c 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -439,7 +439,7 @@ static void vsock_pending_work(struct work_struct *work)
- 	if (vsock_is_pending(sk)) {
- 		vsock_remove_pending(listener, sk);
- 
--		listener->sk_ack_backlog--;
-+		sk_acceptq_removed(listener);
- 	} else if (!vsk->rejected) {
- 		/* We are not on the pending list and accept() did not reject
- 		 * us, so we must have been accepted by our user process.  We
-@@ -1301,7 +1301,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
- 		err = -listener->sk_err;
- 
- 	if (connected) {
--		listener->sk_ack_backlog--;
-+		sk_acceptq_removed(listener);
- 
- 		lock_sock_nested(connected, SINGLE_DEPTH_NESTING);
- 		vconnected = vsock_sk(connected);
-diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-index bef8772116ec82dc43df0120b3eb6987d111b858..7fa09c5e4625ca801ef3812d8c8cc836f38b08e9 100644
---- a/net/vmw_vsock/hyperv_transport.c
-+++ b/net/vmw_vsock/hyperv_transport.c
-@@ -428,7 +428,7 @@ static void hvs_open_connection(struct vmbus_channel *chan)
- 
- 	if (conn_from_host) {
- 		new->sk_state = TCP_ESTABLISHED;
--		sk->sk_ack_backlog++;
-+		sk_acceptq_added(sk);
- 
- 		hvs_addr_init(&vnew->local_addr, if_type);
- 		hvs_remote_addr_init(&vnew->remote_addr, &vnew->local_addr);
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index d02c9b41a768e6a9a968e1b685a8ed2f390212e6..193f959e51efee2fb9ae8d8ed0a7c8d3f894a58d 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -1066,7 +1066,7 @@ virtio_transport_recv_listen(struct sock *sk, struct virtio_vsock_pkt *pkt)
- 		return -ENOMEM;
+ META_COLLECTOR(int_sk_max_ack_bl)
+diff --git a/net/sctp/diag.c b/net/sctp/diag.c
+index 0851166b917597b08becf9bf9d5873287b375828..f873f15407de4e7d9a246d41e07602f33da8064d 100644
+--- a/net/sctp/diag.c
++++ b/net/sctp/diag.c
+@@ -425,7 +425,7 @@ static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
+ 		r->idiag_rqueue = atomic_read(&infox->asoc->rmem_alloc);
+ 		r->idiag_wqueue = infox->asoc->sndbuf_used;
+ 	} else {
+-		r->idiag_rqueue = sk->sk_ack_backlog;
++		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
+ 		r->idiag_wqueue = sk->sk_max_ack_backlog;
  	}
- 
--	sk->sk_ack_backlog++;
-+	sk_acceptq_added(sk);
- 
- 	lock_sock_nested(child, SINGLE_DEPTH_NESTING);
- 
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.c
-index 8c9c4ed90fa707b93208742a808253b81f67f489..6ba98a1efe2e08de7a99e92f3ee6a9a39e3f9086 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -1098,7 +1098,7 @@ static int vmci_transport_recv_listen(struct sock *sk,
- 	}
- 
- 	vsock_add_pending(sk, pending);
--	sk->sk_ack_backlog++;
-+	sk_acceptq_added(sk);
- 
- 	pending->sk_state = TCP_SYN_SENT;
- 	vmci_trans(vpending)->produce_size =
-diff --git a/net/x25/af_x25.c b/net/x25/af_x25.c
-index 6aee9f5e8e7155461eac93074ba975bac3af08c7..c34f7d0776046f2c15b668b66f020be8008ea731 100644
---- a/net/x25/af_x25.c
-+++ b/net/x25/af_x25.c
-@@ -891,7 +891,7 @@ static int x25_accept(struct socket *sock, struct socket *newsock, int flags,
- 	/* Now attach up the new socket */
- 	skb->sk = NULL;
- 	kfree_skb(skb);
--	sk->sk_ack_backlog--;
-+	sk_acceptq_removed(sk);
- 	newsock->state = SS_CONNECTED;
- 	rc = 0;
- out2:
-@@ -1062,7 +1062,7 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
- 	skb_copy_from_linear_data(skb, makex25->calluserdata.cuddata, skb->len);
- 	makex25->calluserdata.cudlength = skb->len;
- 
--	sk->sk_ack_backlog++;
-+	sk_acceptq_added(sk);
- 
- 	x25_insert_socket(make);
- 
+ 	if (infox->sctpinfo)
 -- 
 2.24.0.rc1.363.gb1bccd3e3d-goog
 
