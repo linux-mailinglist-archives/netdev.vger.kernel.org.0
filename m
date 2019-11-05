@@ -2,207 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21F0EEF508
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:32:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40D9FEF50C
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:36:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbfKEFcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 00:32:12 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:55059 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfKEFcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:32:11 -0500
-Received: by mail-io1-f72.google.com with SMTP id i15so14788992ion.21
-        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 21:32:09 -0800 (PST)
+        id S1726368AbfKEFgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 00:36:38 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40014 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725800AbfKEFgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:36:38 -0500
+Received: by mail-pf1-f196.google.com with SMTP id r4so14286680pfl.7
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 21:36:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=LQdiNaQy8651RwgfBxyjR2YwVV2LURf+7/wnX0os4R4=;
+        b=nMZz6CXx+F8qCY19Bcv/XeAAIhpcHqJz8QY8L+c9yfam/F3iIYkqo3Flg+N6M1xvxW
+         0/hzsF3eI+kMnyBVM8i7KMBAyKA0egRkifk2rbeXcAGppd55qBo4qP/QtWcDF1cJ7IS+
+         c6S92WD/7o09il//YIxZWein7n7pxZ6nnIpkHzgfQwWkfbqP3ptvZGY7d0B3kd8uPa9k
+         axCS3PlEhUakd6rO0a8nb1RUOVe63CApvTdskxV7i0quBLpM+S8Q2VJv8YiPuK3s+zHd
+         rgCqhzClhbiRnwJOKMkWoxP5/a6MdK+Rtoa+pAYS8olHmsWS+MO5/BYEKLEOvRQ5Kkwh
+         4tXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=rOD589s+behik/fM/S/zlRKK0lDbx/9FlPGrpt7I8kQ=;
-        b=blxeHa3XJ9iejt6+26bqVxyM10sOyZnSNMNxiXhSFSKWbSD9C0JbXMYV5ImMSUGkxz
-         +L4x/eJathJcpZUjohFo5I0DQwhyqgoB9VEY/y49Puly3CiM8cpQZijSPjbSKft3KkLN
-         IEUSPzVzmk72VFm1vjbrXP4xGxqKlswNNtW8c0hXpOUJIwwjpDU5i8WHqfpPIum21FK+
-         5c06HX0gw8o3qRSeQO3/jfjhvPL+yW66X+g+MNMeu1jBYFrWI63jPJqkM7LdSkqPaKeQ
-         DkEFFNBzivyXDN+sSyWFWvC1j/Lv6TD3Z7vOX64uXeZXml3faDzNLWQQXP3KNnOTkFoZ
-         gXEA==
-X-Gm-Message-State: APjAAAXK1cLUid76q0fpKy4wffDNhlRpnJH7Q6eM9PaSyODY9O0vcBHu
-        2La2A8b46o8Sil7G7H0taAl2VyCOZ07/a2GNNf79EcyGLI3m
-X-Google-Smtp-Source: APXvYqwgHZtMNRpbmvXw5Mt2nq6mL4W4z3czLET8VXiU3mQjQeYAkRRBZ0HR/7PdfdjzHdHW1jR8bg+JsAfTfZq3C83qnFlREJyy
+        h=x-gm-message-state:date:from:to:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LQdiNaQy8651RwgfBxyjR2YwVV2LURf+7/wnX0os4R4=;
+        b=Vw4ero4nZUmMDRE2kA1CtNu501qCxi9AStSW2hViRoH9o3eSUKdU3Pw1z3HZltx8iV
+         ucvhkiLWPUbcAZ5g8p4IWY0dOV+u/OHfd8+6GGVvPc+lGWW++ngdSvEF8EP6zqitfX4l
+         hP1Z7n40rITKr58DMSu7KSNr2o9ECVEdiWQKPZuLsLpYr76yfh6NGvpKIGpWV5LQdbLf
+         H6zbY5MVu2/9CxZgZoPzAz9XRnUCxws5woxtPgeIAkZAt1VtlN1Lr/cCvJdE2XbALMID
+         y/vyKjHXaKS+j4YLORHwomma8sBTCSRt+pCfy0bJc0NmSfeprHxZ8bwubLNYF7QQ1aPB
+         Fl7A==
+X-Gm-Message-State: APjAAAX0jzyAqYiA+nEpBlnIDP49gC5N10dLKwc5eSowLmm0TqZN9qB/
+        uofhhcwHKnkU0pQ0F3wTdw/x43ZqeT8zpA==
+X-Google-Smtp-Source: APXvYqw0MWFfH7RjIo0dCoEACK5cIR7RKkl9sipBvs7xrMpSnVGawJLTPQyt25Z/+YmQfTYVrqmcCg==
+X-Received: by 2002:a17:90a:3390:: with SMTP id n16mr3846711pjb.53.1572932196931;
+        Mon, 04 Nov 2019 21:36:36 -0800 (PST)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id a25sm1827502pff.50.2019.11.04.21.36.36
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 21:36:36 -0800 (PST)
+Date:   Mon, 4 Nov 2019 21:36:28 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Re: [Bug 205427] New: Qdisc running seqcount may cause performance
+ issues
+Message-ID: <20191104213628.1e9c38cb@hermes.lan>
+In-Reply-To: <bug-205427-100@https.bugzilla.kernel.org/>
+References: <bug-205427-100@https.bugzilla.kernel.org/>
 MIME-Version: 1.0
-X-Received: by 2002:a92:8408:: with SMTP id l8mr33356179ild.107.1572931928723;
- Mon, 04 Nov 2019 21:32:08 -0800 (PST)
-Date:   Mon, 04 Nov 2019 21:32:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000de1eec059692c021@google.com>
-Subject: KASAN: use-after-free Write in j1939_sock_pending_del
-From:   syzbot <syzbot+07bb74aeafc88ba7d5b4@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
-        robin@protonic.nl, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following crash on:
-
-HEAD commit:    a99d8080 Linux 5.4-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=169c59b2e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
-dashboard link: https://syzkaller.appspot.com/bug?extid=07bb74aeafc88ba7d5b4
-compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
-80fee25776c2fb61e74c1ecb1a523375c2500b69)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16fd7044e00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+07bb74aeafc88ba7d5b4@syzkaller.appspotmail.com
-
-vcan0: j1939_xtp_rx_abort_one: 0x00000000b4d8b78c: 0x00000: (2) System  
-resources were needed for another task so this connection managed session  
-was terminated.
-vcan0: j1939_xtp_rx_abort_one: 0x00000000dadb7e22: 0x00000: (2) System  
-resources were needed for another task so this connection managed session  
-was terminated.
-==================================================================
-BUG: KASAN: use-after-free in atomic_sub_return  
-include/asm-generic/atomic-instrumented.h:159 [inline]
-BUG: KASAN: use-after-free in atomic_dec_return  
-include/linux/atomic-fallback.h:455 [inline]
-BUG: KASAN: use-after-free in j1939_sock_pending_del+0x20/0x70  
-net/can/j1939/socket.c:73
-Write of size 4 at addr ffff8880a4a2e4c0 by task ksoftirqd/1/16
-
-CPU: 1 PID: 16 Comm: ksoftirqd/1 Not tainted 5.4.0-rc6 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
-  print_address_description+0x75/0x5c0 mm/kasan/report.c:374
-  __kasan_report+0x14b/0x1c0 mm/kasan/report.c:506
-  kasan_report+0x26/0x50 mm/kasan/common.c:634
-  check_memory_region_inline mm/kasan/generic.c:182 [inline]
-  check_memory_region+0x2cf/0x2e0 mm/kasan/generic.c:192
-  __kasan_check_write+0x14/0x20 mm/kasan/common.c:98
-  atomic_sub_return include/asm-generic/atomic-instrumented.h:159 [inline]
-  atomic_dec_return include/linux/atomic-fallback.h:455 [inline]
-  j1939_sock_pending_del+0x20/0x70 net/can/j1939/socket.c:73
-  __j1939_session_drop net/can/j1939/transport.c:257 [inline]
-  j1939_session_destroy net/can/j1939/transport.c:270 [inline]
-  __j1939_session_release net/can/j1939/transport.c:280 [inline]
-  kref_put include/linux/kref.h:65 [inline]
-  j1939_session_put+0xd2/0x150 net/can/j1939/transport.c:285
-  j1939_xtp_rx_abort_one+0xd3/0x3f0 net/can/j1939/transport.c:1261
-  j1939_xtp_rx_abort net/can/j1939/transport.c:1269 [inline]
-  j1939_tp_cmd_recv net/can/j1939/transport.c:1940 [inline]
-  j1939_tp_recv+0x633/0xb80 net/can/j1939/transport.c:1973
-  j1939_can_recv+0x424/0x650 net/can/j1939/main.c:100
-  deliver net/can/af_can.c:568 [inline]
-  can_rcv_filter+0x3c0/0x8b0 net/can/af_can.c:602
-  can_receive+0x2ac/0x3b0 net/can/af_can.c:659
-  can_rcv+0xe4/0x220 net/can/af_can.c:685
-  __netif_receive_skb_one_core net/core/dev.c:4929 [inline]
-  __netif_receive_skb+0x136/0x370 net/core/dev.c:5043
-  process_backlog+0x4d8/0x930 net/core/dev.c:5874
-  napi_poll net/core/dev.c:6311 [inline]
-  net_rx_action+0x5ef/0x10d0 net/core/dev.c:6379
-  __do_softirq+0x333/0x7c4 arch/x86/include/asm/paravirt.h:766
-  run_ksoftirqd+0x64/0xf0 kernel/softirq.c:603
-  smpboot_thread_fn+0x5b3/0x9a0 kernel/smpboot.c:165
-  kthread+0x332/0x350 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-
-Allocated by task 8435:
-  save_stack mm/kasan/common.c:69 [inline]
-  set_track mm/kasan/common.c:77 [inline]
-  __kasan_kmalloc+0x11c/0x1b0 mm/kasan/common.c:510
-  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
-  __do_kmalloc mm/slab.c:3655 [inline]
-  __kmalloc+0x254/0x340 mm/slab.c:3664
-  kmalloc include/linux/slab.h:561 [inline]
-  sk_prot_alloc+0xb0/0x290 net/core/sock.c:1605
-  sk_alloc+0x38/0x950 net/core/sock.c:1659
-  can_create+0x1de/0x480 net/can/af_can.c:157
-  __sock_create+0x5cc/0x910 net/socket.c:1418
-  sock_create net/socket.c:1469 [inline]
-  __sys_socket+0xe7/0x2e0 net/socket.c:1511
-  __do_sys_socket net/socket.c:1520 [inline]
-  __se_sys_socket net/socket.c:1518 [inline]
-  __x64_sys_socket+0x7a/0x90 net/socket.c:1518
-  do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-
-Freed by task 16:
-  save_stack mm/kasan/common.c:69 [inline]
-  set_track mm/kasan/common.c:77 [inline]
-  kasan_set_free_info mm/kasan/common.c:332 [inline]
-  __kasan_slab_free+0x12a/0x1e0 mm/kasan/common.c:471
-  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
-  __cache_free mm/slab.c:3425 [inline]
-  kfree+0x115/0x200 mm/slab.c:3756
-  sk_prot_free net/core/sock.c:1642 [inline]
-  __sk_destruct+0x523/0x620 net/core/sock.c:1726
-  sk_destruct net/core/sock.c:1741 [inline]
-  __sk_free+0x35d/0x430 net/core/sock.c:1752
-  sock_wfree+0x106/0x140 net/core/sock.c:1968
-  skb_release_head_state+0x100/0x210 net/core/skbuff.c:652
-  skb_release_all net/core/skbuff.c:663 [inline]
-  __kfree_skb+0x25/0x170 net/core/skbuff.c:679
-  kfree_skb net/core/skbuff.c:697 [inline]
-  skb_queue_purge+0x1a6/0x260 net/core/skbuff.c:3078
-  j1939_session_destroy net/can/j1939/transport.c:269 [inline]
-  __j1939_session_release net/can/j1939/transport.c:280 [inline]
-  kref_put include/linux/kref.h:65 [inline]
-  j1939_session_put+0x7f/0x150 net/can/j1939/transport.c:285
-  j1939_xtp_rx_abort_one+0xd3/0x3f0 net/can/j1939/transport.c:1261
-  j1939_xtp_rx_abort net/can/j1939/transport.c:1269 [inline]
-  j1939_tp_cmd_recv net/can/j1939/transport.c:1940 [inline]
-  j1939_tp_recv+0x633/0xb80 net/can/j1939/transport.c:1973
-  j1939_can_recv+0x424/0x650 net/can/j1939/main.c:100
-  deliver net/can/af_can.c:568 [inline]
-  can_rcv_filter+0x3c0/0x8b0 net/can/af_can.c:602
-  can_receive+0x2ac/0x3b0 net/can/af_can.c:659
-  can_rcv+0xe4/0x220 net/can/af_can.c:685
-  __netif_receive_skb_one_core net/core/dev.c:4929 [inline]
-  __netif_receive_skb+0x136/0x370 net/core/dev.c:5043
-  process_backlog+0x4d8/0x930 net/core/dev.c:5874
-  napi_poll net/core/dev.c:6311 [inline]
-  net_rx_action+0x5ef/0x10d0 net/core/dev.c:6379
-  __do_softirq+0x333/0x7c4 arch/x86/include/asm/paravirt.h:766
-
-The buggy address belongs to the object at ffff8880a4a2e000
-  which belongs to the cache kmalloc-2k of size 2048
-The buggy address is located 1216 bytes inside of
-  2048-byte region [ffff8880a4a2e000, ffff8880a4a2e800)
-The buggy address belongs to the page:
-page:ffffea0002928b80 refcount:1 mapcount:0 mapping:ffff8880aa400e00  
-index:0x0
-flags: 0x1fffc0000000200(slab)
-raw: 01fffc0000000200 ffffea0002a48588 ffffea0002443f48 ffff8880aa400e00
-raw: 0000000000000000 ffff8880a4a2e000 0000000100000001 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
-  ffff8880a4a2e380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8880a4a2e400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> ffff8880a4a2e480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                            ^
-  ffff8880a4a2e500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-  ffff8880a4a2e580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-==================================================================
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+On Tue, 05 Nov 2019 05:27:57 +0000
+bugzilla-daemon@bugzilla.kernel.org wrote:
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+> https://bugzilla.kernel.org/show_bug.cgi?id=205427
+> 
+>             Bug ID: 205427
+>            Summary: Qdisc running seqcount may cause performance issues
+>            Product: Networking
+>            Version: 2.5
+>     Kernel Version: 4.9
+>           Hardware: All
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: normal
+>           Priority: P1
+>          Component: IPV4
+>           Assignee: stephen@networkplumber.org
+>           Reporter: yellowriver2010@hotmail.com
+>         Regression: No
+> 
+> [ 1261.949409] NMI watchdog: BUG: soft lockup - CPU#80 stuck for 23s!
+> [tc:12076]
+> [ 1261.956565] Modules linked in: kpatch_D871570(O) kpatch(OE) intel_rapl
+> iosf_mbi x86_pkg_temp_thermal intel_powerclamp coretemp kvm_intel kvm irqbypass
+> crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel lrw glue_helper
+> ablk_helper cryptd iTCO_wdt iTCO_vendor_support pcspkr iohub_sriov(O) mei_me
+> ioatdma i2c_i801 lpc_ich ipmi_si mei dca shpchp mfd_core i2c_smbus wmi
+> ipmi_msghandler acpi_power_meter acpi_pad ip_tables ext4 jbd2 mbcache
+> virtio_net virtio_blk i2c_algo_bit drm_kms_helper crc32c_intel syscopyarea
+> sysfillrect sysimgblt fb_sys_fops ttm ahci virtio_pci drm virtio_ring(E)
+> libahci virtio libata nvme nvme_core i2c_core
+> [ 1262.014116] CPU: 80 PID: 12076 Comm: tc Tainted: G           OE K
+> 4.9.151-015.ali3000.alios7.x86_64 #1
+> [ 1262.023437] Hardware name: Alibaba Alibaba Cloud ECS/Alibaba Cloud ECS, BIOS
+> 3.23.34 02/14/2019
+> [ 1262.032154] task: ffff887f48dc8000 task.stack: ffffc90037128000
+> [ 1262.038091] RIP: 0010:[<ffffffff8160fbee>]  [<ffffffff8160fbee>]
+> __gnet_stats_copy_basic+0x8e/0x90
+> [ 1262.047093] RSP: 0018:ffffc9003712b930  EFLAGS: 00000202
+> [ 1262.052418] RAX: 000000000011845b RBX: ffffc9003712b9a0 RCX:
+> ffff887f4e39b2b0
+> [ 1262.059569] RDX: 0000000000000000 RSI: ffffc9003712b93c RDI:
+> ffff887f4e3950bc
+> [ 1262.066871] RBP: ffffc9003712b968 R08: 0000000000000004 R09:
+> ffff887f5252bf7c
+> [ 1262.074166] R10: ffff887f58718100 R11: 0000000000000008 R12:
+> 0000000000000000
+> [ 1262.081465] R13: ffff887f5252bf4c R14: ffff887f4e39b200 R15:
+> ffff887f4e39b2b0
+> [ 1262.088765] FS:  00007f0a974cd740(0000) GS:ffff887f7f000000(0000)
+> knlGS:0000000000000000
+> [ 1262.097157] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 1262.103067] CR2: 00000000006474c0 CR3: 0000007f50006000 CR4:
+> 00000000007606f0
+> [ 1262.110368] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+> 0000000000000000
+> [ 1262.117665] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+> 0000000000000400
+> [ 1262.124962] PKRU: 55555554
+> [ 1262.127822] Stack:
+> [ 1262.129985]  ffffffff8160fce8 0000000000000009 0000000000000000
+> ffffffff8160ff24
+> [ 1262.137779]  ffff887f58718100 d0e0e5e734dba31b ffff887f58718100
+> ffffc9003712ba30
+> [ 1262.145574]  ffffffff8164d383 0000000000000009 0000000000000000
+> 0000000000000000
+> [ 1262.153363] Call Trace:
+> [ 1262.155968]  [<ffffffff8160fce8>] ? gnet_stats_copy_basic+0x38/0xe0
+> [ 1262.162397]  [<ffffffff8160ff24>] ? gnet_stats_start_copy_compat+0x94/0x100
+> [ 1262.169527]  [<ffffffff8164d383>] tc_fill_qdisc+0x283/0x400
+> [ 1262.175258]  [<ffffffff8164d635>] tc_dump_qdisc_root+0x135/0x1a0
+> [ 1262.181430]  [<ffffffff8164d744>] tc_dump_qdisc+0xa4/0x150
+> [ 1262.187077]  [<ffffffff81654eb1>] netlink_dump+0x231/0x2c0
+> [ 1262.192721]  [<ffffffff81655d68>] __netlink_dump_start+0x168/0x1a0
+> [ 1262.199067]  [<ffffffff8164d6a0>] ? tc_dump_qdisc_root+0x1a0/0x1a0
+> [ 1262.205413]  [<ffffffff81634093>] rtnetlink_rcv_msg+0x1c3/0x230
+> [ 1262.211494]  [<ffffffff8164d6a0>] ? tc_dump_qdisc_root+0x1a0/0x1a0
+> [ 1262.217835]  [<ffffffff81633ed0>] ? rtnl_newlink+0x860/0x860
+> [ 1262.223651]  [<ffffffff81657b64>] netlink_rcv_skb+0xa4/0xc0
+> [ 1262.229387]  [<ffffffff8162e785>] rtnetlink_rcv+0x15/0x20
+> [ 1262.234942]  [<ffffffff8165754c>] netlink_unicast+0x18c/0x220
+> [ 1262.240844]  [<ffffffff8165793b>] netlink_sendmsg+0x35b/0x3b0
+> [ 1262.246758]  [<ffffffff815fca58>] sock_sendmsg+0x38/0x50
+> [ 1262.252233]  [<ffffffff815fd4ad>] ___sys_sendmsg+0x29d/0x2b0
+> [ 1262.258060]  [<ffffffff811ed21f>] ? do_wp_page+0x39f/0x850
+> [ 1262.263708]  [<ffffffff811f04ea>] ? handle_mm_fault+0x6da/0xd50
+> [ 1262.269791]  [<ffffffff815fde04>] __sys_sendmsg+0x54/0x90
+> [ 1262.275359]  [<ffffffff815fde52>] SyS_sendmsg+0x12/0x20
+> [ 1262.280744]  [<ffffffff81003c04>] do_syscall_64+0x74/0x180
+> [ 1262.286387]  [<ffffffff81741c8e>] entry_SYSCALL_64_after_swapgs+0x58/0xc6
+> [ 1262.293337] Code: 85 ff 74 18 8b 07 a8 01 75 1f 48 8b 11 48 89 16 8b 51 08
+> 89 56 08 39 07 75 ea f3 c3 48 8b 01 48 89 06 8b 41 08 89 46 08 c3 f3 90 <eb> d7
+> 0f 1f 44 00 00 55 48 89 e5 41 55 41 54 53 8b 47 1c 48 89 
+> [ 1262.314295] Kernel panic - not syncing: softlockup: hung tasks
+> [ 1262.320291] CPU: 80 PID: 12076 Comm: tc Tainted: G           OELK
+> 4.9.151-015.ali3000.alios7.x86_64 #1
+> [ 1262.329904] Hardware name: Alibaba Alibaba Cloud ECS/Alibaba Cloud ECS, BIOS
+> 3.23.34 02/14/2019
+> [ 1262.338904]  ffff887f7f003e50 ffffffff8139f342 0000000000000000
+> ffffffff81a4f7f1
+> [ 1262.346674]  ffff887f7f003ed8 ffffffff811b2245 ffffc90000000008
+> ffff887f7f003ee8
+> [ 1262.354456]  ffff887f7f003e80 d0e0e5e734dba31b ffff887f7f003ea7
+> 0000000000000000
+> [ 1262.362249] Call Trace:
+> [ 1262.364846]  <IRQ> 
+> [ 1262.366785]  [<ffffffff8139f342>] dump_stack+0x63/0x81
+> [ 1262.372095]  [<ffffffff811b2245>] panic+0xf8/0x244
+> [ 1262.377049]  [<ffffffff81158296>] watchdog_timer_fn+0x226/0x230
+> [ 1262.383126]  [<ffffffff81158070>] ? watchdog_park_threads+0x70/0x70
+> [ 1262.389555]  [<ffffffff811085e3>] __hrtimer_run_queues+0xf3/0x270
+> [ 1262.395807]  [<ffffffff81108d8a>] hrtimer_interrupt+0x9a/0x180
+> [ 1262.401796]  [<ffffffff810580f8>] local_apic_timer_interrupt+0x38/0x60
+> [ 1262.408491]  [<ffffffff81745405>] smp_apic_timer_interrupt+0x45/0x60
+> [ 1262.415006]  [<ffffffff81743b90>] apic_timer_interrupt+0xa0/0xb0
+> [ 1262.421177]  <EOI> 
+> [ 1262.423118]  [<ffffffff8160fbee>] ? __gnet_stats_copy_basic+0x8e/0x90
+> [ 1262.429871]  [<ffffffff8160fce8>] ? gnet_stats_copy_basic+0x38/0xe0
+> [ 1262.436301]  [<ffffffff8160ff24>] ? gnet_stats_start_copy_compat+0x94/0x100
+> [ 1262.443428]  [<ffffffff8164d383>] tc_fill_qdisc+0x283/0x400
+> [ 1262.449164]  [<ffffffff8164d635>] tc_dump_qdisc_root+0x135/0x1a0
+> [ 1262.455329]  [<ffffffff8164d744>] tc_dump_qdisc+0xa4/0x150
+> [ 1262.460978]  [<ffffffff81654eb1>] netlink_dump+0x231/0x2c0
+> [ 1262.466620]  [<ffffffff81655d68>] __netlink_dump_start+0x168/0x1a0
+> [ 1262.472965]  [<ffffffff8164d6a0>] ? tc_dump_qdisc_root+0x1a0/0x1a0
+> [ 1262.479311]  [<ffffffff81634093>] rtnetlink_rcv_msg+0x1c3/0x230
+> [ 1262.485394]  [<ffffffff8164d6a0>] ? tc_dump_qdisc_root+0x1a0/0x1a0
+> [ 1262.491737]  [<ffffffff81633ed0>] ? rtnl_newlink+0x860/0x860
+> [ 1262.497560]  [<ffffffff81657b64>] netlink_rcv_skb+0xa4/0xc0
+> [ 1262.503295]  [<ffffffff8162e785>] rtnetlink_rcv+0x15/0x20
+> [ 1262.508854]  [<ffffffff8165754c>] netlink_unicast+0x18c/0x220
+> [ 1262.514760]  [<ffffffff8165793b>] netlink_sendmsg+0x35b/0x3b0
+> [ 1262.520666]  [<ffffffff815fca58>] sock_sendmsg+0x38/0x50
+> [ 1262.526140]  [<ffffffff815fd4ad>] ___sys_sendmsg+0x29d/0x2b0
+> [ 1262.531960]  [<ffffffff811ed21f>] ? do_wp_page+0x39f/0x850
+> [ 1262.537607]  [<ffffffff811f04ea>] ? handle_mm_fault+0x6da/0xd50
+> [ 1262.543691]  [<ffffffff815fde04>] __sys_sendmsg+0x54/0x90
+> [ 1262.549360]  [<ffffffff815fde52>] SyS_sendmsg+0x12/0x20
+> [ 1262.554750]  [<ffffffff81003c04>] do_syscall_64+0x74/0x180
+> [ 1262.560402]  [<ffffffff81741c8e>] entry_SYSCALL_64_after_swapgs+0x58/0xc6
+> 
+> 
+> CPU 80                                                                  CPU 1
+> execute : tc qd show dev bond0                                 netperf
+> 
+> rtnetlink_rcv (acquired rtnl_mutex)
+> ...
+> ...                                                            __dev_xmit_skb
+> __gnet_stats_copy_basic       
+> 
+> 
+> 
+> 
+> If netperf on CPU 1 runs for a long time, the tc program may repeatedly acquire
+> seqcount for a long time, resulting in softlockup. At this time, the tc program
+> holds the large lock of rtnl_mutex, which also affects other programs in the
+> system.
+> 
+
