@@ -2,87 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF1CF0248
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:07:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBB8CF02A1
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390150AbfKEQHd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:07:33 -0500
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:43574 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390059AbfKEQHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:07:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1572970052;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Aa7iRy6FRwmbshhu8lLwnGgjDhVFpAS/o0VXITjg6sQ=;
-        b=NLsR6jd8/zLSL+COro00ZwgcVR6bPzZv4ABq9GdWfuRjVPXXAezFkWCEy1rX5KCFWBiHEt
-        RJVKqVyHp1ZnAs+G58pYzKHTI39/EuRPdVHBD3nDrs0Ov1x5bDew2Kw2MIYmIyKDFUwbkO
-        d8xpUbVlSE94nEWCcZQEb9mf2Ig8lqM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-372-xxav4DNQOUm0VqJwTE4V1w-1; Tue, 05 Nov 2019 11:07:29 -0500
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1422E107ACC3;
-        Tue,  5 Nov 2019 16:07:25 +0000 (UTC)
-Received: from gondolin (unknown [10.36.118.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C2F601FA;
-        Tue,  5 Nov 2019 16:07:04 +0000 (UTC)
-Date:   Tue, 5 Nov 2019 17:06:59 +0100
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V8 2/6] modpost: add support for mdev class id
-Message-ID: <20191105170659.766b84b0.cohuck@redhat.com>
-In-Reply-To: <20191105093240.5135-3-jasowang@redhat.com>
-References: <20191105093240.5135-1-jasowang@redhat.com>
-        <20191105093240.5135-3-jasowang@redhat.com>
-Organization: Red Hat GmbH
+        id S2390163AbfKEQZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:25:38 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:38606 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390104AbfKEQZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:25:38 -0500
+Received: by mail-io1-f68.google.com with SMTP id u8so23291888iom.5
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 08:25:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SQBtLoiyX30CmNNlPo8+fKnPMZWx9HZgWJxlaU6V+H0=;
+        b=YHBd0MfbIpvUwtJJxv88JmgWV6Rj78i4e3crBWO/zG1OCHJNeuiTJV6bhKPyNMHAH5
+         rZZX+FdeuGDAvbViD/pj+H3IR9z7cP/ynX0ZCJwwtkex6Kc7uXmP0rCDTWe93o2ERZjF
+         Ro1AlulFIZOyIEBkDrYOyhKhTvT1/PBWVSFkYTJ5LkcPVjXGSMW079t3bK66Qox34SrR
+         xRGoTPXggCqKNaD8s7l93pELYjvZAaPBOwMo2f8pt1z0DnWRHxYinPB5KhCDxY6nrUY4
+         Yfku7AGD9wQ/TK4J5vCldiIedbqEyoiAfmhcgLACZxf0zBl4XwTHGy0ALiGwhqF9XdH3
+         3T1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SQBtLoiyX30CmNNlPo8+fKnPMZWx9HZgWJxlaU6V+H0=;
+        b=YGrZLYq/CbET2BWwC0+vZ5dmRKKVpwFCkJyDkJWknyeyq6RInwfQFNjx/8si732Bsk
+         TdEjArhwJxuPO32fVK303T8qgz4em2hZOCtC4lLq7jzLtgL5xAV4YvYBF3/+FAqd2Ef+
+         b5QO7wek1LisKdLjumUrYDaYnstz46GmQQd5YiVj45VWUvv8GPjhwbRRjBwu0YQwzU6R
+         B0muHU4xUDOv0mDYBWVQ9mfapTmJcX+AAS9JZcE4Z6d8tiEND4M5GcGT5JQyMcMBhWMM
+         w8PkIaI1aQhh3IZm6VyDzTaQembE5Xzcb4teNaIj1oAVPxgmoARFKl8NIeoFBT2S7G2n
+         adtw==
+X-Gm-Message-State: APjAAAUWqMNJ9uhKeSX+lHAwK3mpVhKCEuv3dCusteolxoIYtXkKINCk
+        JqYKNmUUKzbtdb9JeelumNaC36kUis+R/4Vr5NA=
+X-Google-Smtp-Source: APXvYqxAPZogSWlhhMsc1D/HOFBxCyop4mS1Fk69iyzGgk3f53Q0iQqh/xhWOYupAgoaG5SNQlpJB6oWrfylKwjJVRU=
+X-Received: by 2002:a02:3f10:: with SMTP id d16mr3109258jaa.139.1572971135616;
+ Tue, 05 Nov 2019 08:25:35 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: xxav4DNQOUm0VqJwTE4V1w-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <20191105053843.181176-1-edumazet@google.com>
+In-Reply-To: <20191105053843.181176-1-edumazet@google.com>
+From:   Deepa Dinamani <deepa.kernel@gmail.com>
+Date:   Tue, 5 Nov 2019 08:25:24 -0800
+Message-ID: <CABeXuvqRoAYKn6vg7t7O6nA4BCEHjkMwYp9EvVGEEkFV_EonsA@mail.gmail.com>
+Subject: Re: [PATCH net] net: prevent load/store tearing on sk->sk_stamp
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  5 Nov 2019 17:32:36 +0800
-Jason Wang <jasowang@redhat.com> wrote:
-
-> Add support to parse mdev class id table.
->=20
-> Reviewed-by: Parav Pandit <parav@mellanox.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+On Mon, Nov 4, 2019 at 9:38 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Add a couple of READ_ONCE() and WRITE_ONCE() to prevent
+> load-tearing and store-tearing in sock_read_timestamp()
+> and sock_write_timestamp()
+>
+> This might prevent another KCSAN report.
+>
+> Fixes: 3a0ed3e96197 ("sock: Make sock->sk_stamp thread-safe")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Deepa Dinamani <deepa.kernel@gmail.com>
 > ---
->  drivers/vfio/mdev/vfio_mdev.c     |  2 ++
->  scripts/mod/devicetable-offsets.c |  3 +++
->  scripts/mod/file2alias.c          | 11 +++++++++++
->  3 files changed, 16 insertions(+)
+>  include/net/sock.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/net/sock.h b/include/net/sock.h
+> index 8f9adcfac41bea7e46062851a25c042261323679..718e62fbe869db3ee7e8994bd1bfd559ab9c61c7 100644
+> --- a/include/net/sock.h
+> +++ b/include/net/sock.h
+> @@ -2342,7 +2342,7 @@ static inline ktime_t sock_read_timestamp(struct sock *sk)
+>
+>         return kt;
+>  #else
+> -       return sk->sk_stamp;
+> +       return READ_ONCE(sk->sk_stamp);
+>  #endif
+>  }
+>
+> @@ -2353,7 +2353,7 @@ static inline void sock_write_timestamp(struct sock *sk, ktime_t kt)
+>         sk->sk_stamp = kt;
+>         write_sequnlock(&sk->sk_stamp_seq);
+>  #else
+> -       sk->sk_stamp = kt;
+> +       WRITE_ONCE(sk->sk_stamp, kt);
+>  #endif
+>  }
+>
+> --
+> 2.24.0.rc1.363.gb1bccd3e3d-goog
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+I do not see any harm with this. Does it cause performance degradation?
 
+Acked-by: Deepa Dinamani <deepa.kernel@gmail.com>
+
+-Deepa
