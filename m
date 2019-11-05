@@ -2,104 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB8CF02A1
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:25:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C6FFF02A6
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:27:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390163AbfKEQZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:25:38 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:38606 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390104AbfKEQZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:25:38 -0500
-Received: by mail-io1-f68.google.com with SMTP id u8so23291888iom.5
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 08:25:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SQBtLoiyX30CmNNlPo8+fKnPMZWx9HZgWJxlaU6V+H0=;
-        b=YHBd0MfbIpvUwtJJxv88JmgWV6Rj78i4e3crBWO/zG1OCHJNeuiTJV6bhKPyNMHAH5
-         rZZX+FdeuGDAvbViD/pj+H3IR9z7cP/ynX0ZCJwwtkex6Kc7uXmP0rCDTWe93o2ERZjF
-         Ro1AlulFIZOyIEBkDrYOyhKhTvT1/PBWVSFkYTJ5LkcPVjXGSMW079t3bK66Qox34SrR
-         xRGoTPXggCqKNaD8s7l93pELYjvZAaPBOwMo2f8pt1z0DnWRHxYinPB5KhCDxY6nrUY4
-         Yfku7AGD9wQ/TK4J5vCldiIedbqEyoiAfmhcgLACZxf0zBl4XwTHGy0ALiGwhqF9XdH3
-         3T1w==
+        id S2390201AbfKEQ1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:27:04 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:48711 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390193AbfKEQ1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:27:03 -0500
+Received: by mail-il1-f199.google.com with SMTP id j68so19061427ili.15
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 08:27:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SQBtLoiyX30CmNNlPo8+fKnPMZWx9HZgWJxlaU6V+H0=;
-        b=YGrZLYq/CbET2BWwC0+vZ5dmRKKVpwFCkJyDkJWknyeyq6RInwfQFNjx/8si732Bsk
-         TdEjArhwJxuPO32fVK303T8qgz4em2hZOCtC4lLq7jzLtgL5xAV4YvYBF3/+FAqd2Ef+
-         b5QO7wek1LisKdLjumUrYDaYnstz46GmQQd5YiVj45VWUvv8GPjhwbRRjBwu0YQwzU6R
-         B0muHU4xUDOv0mDYBWVQ9mfapTmJcX+AAS9JZcE4Z6d8tiEND4M5GcGT5JQyMcMBhWMM
-         w8PkIaI1aQhh3IZm6VyDzTaQembE5Xzcb4teNaIj1oAVPxgmoARFKl8NIeoFBT2S7G2n
-         adtw==
-X-Gm-Message-State: APjAAAUWqMNJ9uhKeSX+lHAwK3mpVhKCEuv3dCusteolxoIYtXkKINCk
-        JqYKNmUUKzbtdb9JeelumNaC36kUis+R/4Vr5NA=
-X-Google-Smtp-Source: APXvYqxAPZogSWlhhMsc1D/HOFBxCyop4mS1Fk69iyzGgk3f53Q0iQqh/xhWOYupAgoaG5SNQlpJB6oWrfylKwjJVRU=
-X-Received: by 2002:a02:3f10:: with SMTP id d16mr3109258jaa.139.1572971135616;
- Tue, 05 Nov 2019 08:25:35 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=xk1NyHbooEy4YsKg2M7xCtDevKehR0j6/pRBBy2vjNw=;
+        b=QChczz0pe3Zytdkv6qj9rKewKQrNA+DI4YCH+K5XZ7TV8Y9AgMr1PbAVFK5V351tLM
+         ScADxVIF4xWHYHjlQ/hLrfNJnIvQPXP0L7iiEVscOI5t4s9EYO9i2u4nbE8hhIF2XSJc
+         vRmZ+cDiOxw2y/LIlRtmupk9V8mAQLjju4x+mX/NVrC+zJpxa2sLTIfshUopU06lMVly
+         uqK0bMyM8WxsQDK1DlsE/sludoszETVXnW2iivnJ6UgxQb4mePRwX/1ktHC8aiDKDTF6
+         OLYtXKl3p9CJiJq1UE8mIC2c9Uis6emhsCpzyqRnRU9+Sk0vdrVYGxI3DxASdsJZLyQZ
+         tfkQ==
+X-Gm-Message-State: APjAAAU464MVFJAzvTVl2PoFqPNDRK/NAKt4n1AaMHKcKrpgRcnnszN6
+        AOf5/FpjnqBC7YcKNQkK6ybn3C/7oZcGJFPY8LhugzgH3+7b
+X-Google-Smtp-Source: APXvYqw3IqVWZQAVPDbpkfRF7hE8RcQNgey/R6Pf8G7Cgo3IYNCKrAbGg2rE8MnLaYC40eT3Z15gtUy8nMeNqMMOMFCOhtwdKjkd
 MIME-Version: 1.0
-References: <20191105053843.181176-1-edumazet@google.com>
-In-Reply-To: <20191105053843.181176-1-edumazet@google.com>
-From:   Deepa Dinamani <deepa.kernel@gmail.com>
-Date:   Tue, 5 Nov 2019 08:25:24 -0800
-Message-ID: <CABeXuvqRoAYKn6vg7t7O6nA4BCEHjkMwYp9EvVGEEkFV_EonsA@mail.gmail.com>
-Subject: Re: [PATCH net] net: prevent load/store tearing on sk->sk_stamp
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+X-Received: by 2002:a5d:9954:: with SMTP id v20mr4300127ios.188.1572971221308;
+ Tue, 05 Nov 2019 08:27:01 -0800 (PST)
+Date:   Tue, 05 Nov 2019 08:27:01 -0800
+In-Reply-To: <000000000000a367e3059691c6b4@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e36a0405969be68c@google.com>
+Subject: Re: general protection fault in j1939_sk_bind
+From:   syzbot <syzbot+4857323ec1bb236f6a45@syzkaller.appspotmail.com>
+To:     bst@pengutronix.de, davem@davemloft.net,
+        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
+        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
+        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
+        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 4, 2019 at 9:38 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> Add a couple of READ_ONCE() and WRITE_ONCE() to prevent
-> load-tearing and store-tearing in sock_read_timestamp()
-> and sock_write_timestamp()
->
-> This might prevent another KCSAN report.
->
-> Fixes: 3a0ed3e96197 ("sock: Make sock->sk_stamp thread-safe")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Deepa Dinamani <deepa.kernel@gmail.com>
-> ---
->  include/net/sock.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 8f9adcfac41bea7e46062851a25c042261323679..718e62fbe869db3ee7e8994bd1bfd559ab9c61c7 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -2342,7 +2342,7 @@ static inline ktime_t sock_read_timestamp(struct sock *sk)
->
->         return kt;
->  #else
-> -       return sk->sk_stamp;
-> +       return READ_ONCE(sk->sk_stamp);
->  #endif
->  }
->
-> @@ -2353,7 +2353,7 @@ static inline void sock_write_timestamp(struct sock *sk, ktime_t kt)
->         sk->sk_stamp = kt;
->         write_sequnlock(&sk->sk_stamp_seq);
->  #else
-> -       sk->sk_stamp = kt;
-> +       WRITE_ONCE(sk->sk_stamp, kt);
->  #endif
->  }
->
-> --
-> 2.24.0.rc1.363.gb1bccd3e3d-goog
+syzbot has bisected this bug to:
 
-I do not see any harm with this. Does it cause performance degradation?
+commit 9d71dd0c70099914fcd063135da3c580865e924c
+Author: The j1939 authors <linux-can@vger.kernel.org>
+Date:   Mon Oct 8 09:48:36 2018 +0000
 
-Acked-by: Deepa Dinamani <deepa.kernel@gmail.com>
+     can: add support of SAE J1939 protocol
 
--Deepa
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16267168e00000
+start commit:   a99d8080 Linux 5.4-rc6
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=15267168e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11267168e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
+dashboard link: https://syzkaller.appspot.com/bug?extid=4857323ec1bb236f6a45
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=110a8b8ae00000
+
+Reported-by: syzbot+4857323ec1bb236f6a45@syzkaller.appspotmail.com
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
