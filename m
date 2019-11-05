@@ -2,280 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDF12EF4C8
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F0EEF508
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 06:32:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387412AbfKEFYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 00:24:08 -0500
-Received: from gw6018.fortimail.com ([173.243.136.18]:38114 "EHLO
-        harmonic.fortimail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfKEFYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:24:08 -0500
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (mail-bn3nam01lp2050.outbound.protection.outlook.com [104.47.33.50])
-        by harmonic.fortimail.com  with ESMTP id xA55O1IK032676-xA55O1IM032676
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=CAFAIL);
-        Mon, 4 Nov 2019 21:24:02 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fsJL4YFCSQ/JtRDcdL4NUnGKA5hw2O7iTNqwkS7jDjGWjPv0bvJCJrzWJduVoidN1w6gn9hD2HZyoB6OaBqrall1S0rpZUzFDbTy2Jx4LgYVT2MVi7qfCnk90+RkHpShvai/M5QoU+s3wbwtRR7WkS1hRjjxDDxxB9rZEAgTGdJaxMi5a+QOI4TV5w47l3imigaDiKa+ottCbEoXtfE8RjfspHO32ZyBzDkJLaXhuLmZW7iN9XjP3lo6sP9nnScFDd9KaQqW616TpAA2p/sTeqJY7sJ4pfXlXPtlRffMl9I8fdvgxWjrwUAh129PwDrRwPOQ1OIhdY9vHrl5j5gr9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G/amFIgKfQfQjGZFjKBemhYx+MGyVR/b7BbAS8fVqKI=;
- b=Sz0bp0ft1lGBLJEmBWDdKsT7STHrvllRtUDln7jvKWWXOsEQ3igemd1n24WlNa2kWAMlt8AvPk5v2gRiyvqVmGfEa9b0Fh40hVbXNWKX+eP7WoZG1pfSBrd2rE0G7IxAJ65qCGYGF5gDYj7buybG7tIookuOpg3Ph/dc0CUcnM8/rZLJNXGa9zl6UvOfT+spI706cTKurRJelzwIaUA5JYPzbMmn0B0m2TS1YmXTIDFqLjDmDxoTQRb5/0B5vIzwRgy4aGPtop6b1BBEkFF9vuoKY4xv5kOVOJ5RS7ShvK9xkP8fMU4rqXOewJPLJd63xc4HDas0+SwaJTkrIQ0mWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=harmonicinc.com; dmarc=pass action=none
- header.from=harmonicinc.com; dkim=pass header.d=harmonicinc.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=harmonicinc.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G/amFIgKfQfQjGZFjKBemhYx+MGyVR/b7BbAS8fVqKI=;
- b=B70I6v/x8ctyfcn7oKpd1dBQ3HhBocHjaaeaquQk7mnwb6TQ4umpCKasX/gdoqusTj/R7VaGBQv3yx0sm34w1D7oE+r6ZeXUSdh/VfztVVputuckKTte8puY/5l2vPbLB2Ieq5uJY45p3ra/TXctHte570o7dWO6g6i4K96+HYQ=
-Received: from MWHPR11MB1805.namprd11.prod.outlook.com (10.175.56.14) by
- MWHPR11MB1344.namprd11.prod.outlook.com (10.169.233.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Tue, 5 Nov 2019 05:24:00 +0000
-Received: from MWHPR11MB1805.namprd11.prod.outlook.com
- ([fe80::b088:a289:bed5:850c]) by MWHPR11MB1805.namprd11.prod.outlook.com
- ([fe80::b088:a289:bed5:850c%8]) with mapi id 15.20.2408.024; Tue, 5 Nov 2019
- 05:23:59 +0000
-From:   Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>
-To:     "Creeley, Brett" <brett.creeley@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     Arkady Gilinsky <arcadyg@gmail.com>
-Subject: Re: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg interface between
- VF and PF
-Thread-Topic: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg interface between
- VF and PF
-Thread-Index: AQHVktE9LXQEe1tn8E2yMWCX6YmauKd7neLQgABu5AA=
-Date:   Tue, 5 Nov 2019 05:23:59 +0000
-Message-ID: <1572931430.13810.227.camel@harmonicinc.com>
-References: <1572845537.13810.225.camel@harmonicinc.com>
-         <3508A0C5D531054DBDD98909F6FA64FA11B3936D@ORSMSX113.amr.corp.intel.com>
-In-Reply-To: <3508A0C5D531054DBDD98909F6FA64FA11B3936D@ORSMSX113.amr.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [87.69.44.145]
-x-clientproxiedby: PR0P264CA0192.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1c::36) To MWHPR11MB1805.namprd11.prod.outlook.com
- (2603:10b6:300:114::14)
-Authentication-Results: harmonic.fortimail.com;
-        dkim=pass header.i=@harmonicinc.com
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=arkady.gilinsky@harmonicinc.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: Evolution 3.22.6-1+deb9u2 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 4f39e63c-b443-4ea6-d07a-08d761b05ca1
-x-ms-traffictypediagnostic: MWHPR11MB1344:
-x-microsoft-antispam-prvs: <MWHPR11MB1344185C23E152F7F2EB683AE27E0@MWHPR11MB1344.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0212BDE3BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(136003)(366004)(396003)(376002)(39850400004)(13464003)(199004)(189003)(26005)(2501003)(6116002)(64756008)(66556008)(2201001)(86362001)(386003)(305945005)(5660300002)(7736002)(76176011)(8936002)(256004)(8676002)(14444005)(66066001)(25786009)(102836004)(476003)(66476007)(52116002)(53546011)(66446008)(6246003)(50226002)(71200400001)(71190400001)(6436002)(81166006)(478600001)(6486002)(2906002)(3846002)(6512007)(229853002)(2616005)(4326008)(6506007)(186003)(103116003)(11346002)(446003)(486006)(44832011)(81156014)(14454004)(36756003)(66946007)(110136005)(99286004)(316002)(99106002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB1344;H:MWHPR11MB1805.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: harmonicinc.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8dy2StvMheAuyrbPWDeltFt81ll206aqHUGX95qCAgLneF/1M8M+GzM0rGrUdDIj+qBnKSI97WkcMfiNqkLJpM547ig4mSrseRBbfPazLHL0k1hjm+sqC7VqREb4IZiy6qTZkCE71XmH6ABHsi17ouPenYA7jAy4SMZizTXvQlV5TXG7SIGe52T2ByinWj2Q0zoXOjVrTnk29AcOWmEFihuVG/eb0Pp4xA/8a00eTWy8ovt5HtwqjJvKQngg8ofYkyQ6o+GrzXHljZvjtB2vhCs+1zumFt6Kv2Y9fMJXuq+/ttHuEnj3l10qqtLbK3mGlzzLDOArJd3ig97QmuoANyU8LdnN5dz4+zoD5AmVw/me7T+CJlwwKQADQWLRJELmM/xSrd5Zo0viaAXNzsVJUE66HKBR4bb/Pej59OEeIFUdErjTGEmzSWfRFd2Yd5Pk
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-15"
-Content-ID: <5C758732D18D4B499DD64C09F48BA44C@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727388AbfKEFcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 00:32:12 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:55059 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfKEFcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 00:32:11 -0500
+Received: by mail-io1-f72.google.com with SMTP id i15so14788992ion.21
+        for <netdev@vger.kernel.org>; Mon, 04 Nov 2019 21:32:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=rOD589s+behik/fM/S/zlRKK0lDbx/9FlPGrpt7I8kQ=;
+        b=blxeHa3XJ9iejt6+26bqVxyM10sOyZnSNMNxiXhSFSKWbSD9C0JbXMYV5ImMSUGkxz
+         +L4x/eJathJcpZUjohFo5I0DQwhyqgoB9VEY/y49Puly3CiM8cpQZijSPjbSKft3KkLN
+         IEUSPzVzmk72VFm1vjbrXP4xGxqKlswNNtW8c0hXpOUJIwwjpDU5i8WHqfpPIum21FK+
+         5c06HX0gw8o3qRSeQO3/jfjhvPL+yW66X+g+MNMeu1jBYFrWI63jPJqkM7LdSkqPaKeQ
+         DkEFFNBzivyXDN+sSyWFWvC1j/Lv6TD3Z7vOX64uXeZXml3faDzNLWQQXP3KNnOTkFoZ
+         gXEA==
+X-Gm-Message-State: APjAAAXK1cLUid76q0fpKy4wffDNhlRpnJH7Q6eM9PaSyODY9O0vcBHu
+        2La2A8b46o8Sil7G7H0taAl2VyCOZ07/a2GNNf79EcyGLI3m
+X-Google-Smtp-Source: APXvYqwgHZtMNRpbmvXw5Mt2nq6mL4W4z3czLET8VXiU3mQjQeYAkRRBZ0HR/7PdfdjzHdHW1jR8bg+JsAfTfZq3C83qnFlREJyy
 MIME-Version: 1.0
-X-OriginatorOrg: harmonicinc.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f39e63c-b443-4ea6-d07a-08d761b05ca1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 05:23:59.7129
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 19294cf8-3352-4dde-be9e-7f47b9b6b73d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uiuhxuF66hwG6HaVG8O4uf6Oi+s+0j1jV0mxxgKeaGZ1RJ3ZU+jSE/HJD1+vISVml0PFY+IoF7URSapUCr6b/Xc6kGxm0dWFUkAB5DoVC/M=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1344
-X-FEAS-DKIM: Valid
+X-Received: by 2002:a92:8408:: with SMTP id l8mr33356179ild.107.1572931928723;
+ Mon, 04 Nov 2019 21:32:08 -0800 (PST)
+Date:   Mon, 04 Nov 2019 21:32:08 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000de1eec059692c021@google.com>
+Subject: KASAN: use-after-free Write in j1939_sock_pending_del
+From:   syzbot <syzbot+07bb74aeafc88ba7d5b4@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-11-04 at 23:43 +0000, Creeley, Brett wrote:
-> > -----Original Message-----
-> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On Be=
-half Of Arkady Gilinsky
-> > Sent: Sunday, November 3, 2019 9:32 PM
-> > To: intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org; Kirsher, =
-Jeffrey T <jeffrey.t.kirsher@intel.com>
-> > Cc: Arkady Gilinsky <arcadyg@gmail.com>
-> > Subject: [PATCH net] i40e/iavf: Fix msg interface between VF and PF
-> >=20
-> > From af5ab2aaa51882bb7111b026882fe217ed81c15b Mon Sep 17 00:00:00 2001
-> > From: Arkady Gilinsky <arkady.gilinsky@harmonicinc
-> > .com>
-> > Date: Sun, 3 Nov 2019 20:37:21 +0200
-> > Subject: [PATCH net] i40e/iavf: Fix msg interface between VF and PF
-> >=20
-> > =A0* The original issue was that iavf driver passing TX/RX queues
-> > =A0=A0=A0as bitmap in iavf_disable_queues and the i40e driver
-> > =A0=A0=A0interprets this message as an absolute number in
-> > =A0=A0=A0i40e_vc_disable_queues_msg, so the validation in the
-> > =A0=A0=A0latter function always fail.
->=20
-> The VIRTCHNL interface expects the tx_queues and rx_queues to be sent as
-> a bitmap so this should/can not be changed.
-The fields [t|r]x_queues through whole driver code contains the number
-and not bitmap (as far as I understand), so I thought that keeping=A0
-this convention is more=A0important for better code readability,
-saving in these fields something different is very confusing, IMHO,=A0
-and potentially leads to such issues that this commit is trying to solve.
->=20
-> I think something like the following would be better becase the change is
-> completely contained inside the i40e driver and it should completely
-> address the issue you are seeing. Of course, this would have to be
-> in both the enable and disable queue flow. Also, with this change it migh=
-t
-> be best to check and make sure the sizeof(vqs->[r|t]x_queues) equal
-> sizeof(u32) in case those members ever change from u32 to u64, which
-> will cause this check to always fail.
->=20
-> static bool i40e_vc_verify_vqs_bitmaps(struct virtchnl_queue_select *vqs)
-> {
-> 	/* this will catch any changes made to the virtchnl_queue_select bitmap =
-*/
-> 	if (sizeof(vqs->rx_queues) !=3D sizeof(u32) ||
-> 	=A0=A0=A0=A0=A0sizeof(vqs->tx_queues) !=3D sizeof(u32))
-> 		return false;
-If so, then is it better to check the type of the fields in compile-time ra=
-ther than in runtime ?
-Something like this:
-BUILD_BUG_ON(sizeof(vqs->rx_queues) !=3D sizeof(u32));
-BUILD_BUG_ON(sizeof(vqs->tx_queues) !=3D sizeof(u32));
-This is not required comparison each time when function is called and made =
-code more optimized.
->=20
-> 	if ((vqs->rx_queues =3D=3D 0 && vqs->tx_queues =3D=3D 0) ||
-> 	=A0=A0=A0=A0=A0=A0hweight32(vqs->rx_queues) > I40E_MAX_VF_QUEUES ||
-> 	=A0=A0=A0=A0=A0=A0hweight32(vqs->tx_queues) > I40E_MAX_VF_QUEUES)
-> 		return false;
-Again, from optimization POV it is better to have constant changed than var=
-iable,
-since it is compile time and not run time action:
-	if ((vqs->rx_queues =3D=3D 0 && vqs->tx_queues =3D=3D 0) ||
-	=A0=A0=A0=A0=A0=A0vqs->rx_queues >=3D (BIT(I40E_MAX_VF_QUEUES)) ||
-=09
-=A0=A0=A0=A0=A0=A0vqs->tx_queues >=3D (BIT(I40E_MAX_VF_QUEUES)))
-		return false;
-> 	return true;
-> }
->=20
-> if (i40e_vc_verify_vqs_bitmaps(vqs)) {
-> 	aq_ret=A0=A0=3D I40E_ERR_PARAM;
-> 	goto error_param;
-> }
->=20
-> > =A0=A0=A0This commit reorganize the msg interface between i40e and iavf
-> > =A0=A0=A0between the iavf_disable_queues and i40e_vc_disable_queues_msg
-> > =A0=A0=A0functions (also for iavf_enable_queues and i40e_vc_enable_queu=
-es_msg).
-> > =A0=A0=A0Now both drivers operate with number of queues instead of
-> > =A0=A0=A0bitmap. Also the commit introduces range check in
-> > =A0=A0=A0i40e_vc_enable_queues_msg function.
-> >=20
-> > Signed-off-by: Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>
-> > ---
-> > =A0drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 23 ++++++++++++=
-++++------
-> > =A0drivers/net/ethernet/intel/iavf/iavf_virtchnl.c=A0=A0=A0=A0|=A0=A06 =
-++++--
-> > =A02 files changed, 21 insertions(+), 8 deletions(-)
-> >=20
-> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drive=
-rs/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-> > index 3d2440838822..c650eb91982a 100644
-> > --- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-> > +++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-> > @@ -2352,13 +2352,22 @@ static int i40e_vc_enable_queues_msg(struct i40=
-e_vf *vf, u8 *msg)
-> > =A0		goto error_param;
-> > =A0	}
-> >=20
-> > -	/* Use the queue bit map sent by the VF */
-> > -	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx], vqs->rx_queues,
-> > +	if ((vqs->rx_queues =3D=3D 0 && vqs->tx_queues =3D=3D 0) ||
-> > +	=A0=A0=A0=A0vqs->rx_queues > I40E_MAX_VF_QUEUES ||
-> > +	=A0=A0=A0=A0vqs->tx_queues > I40E_MAX_VF_QUEUES) {
-> > +		aq_ret =3D I40E_ERR_PARAM;
-> > +		goto error_param;
-> > +	}
-> > +
-> > +	/* Build the queue bit map from value sent by the VF */
-> > +	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx],
-> > +				=A0=A0BIT(vqs->rx_queues) - 1,
-> > =A0				=A0=A0true)) {
-> > =A0		aq_ret =3D I40E_ERR_TIMEOUT;
-> > =A0		goto error_param;
-> > =A0	}
-> > -	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx], vqs->tx_queues,
-> > +	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx],
-> > +				=A0=A0BIT(vqs->tx_queues) - 1,
-> > =A0				=A0=A0true)) {
-> > =A0		aq_ret =3D I40E_ERR_TIMEOUT;
-> > =A0		goto error_param;
-> > @@ -2416,13 +2425,15 @@ static int i40e_vc_disable_queues_msg(struct i4=
-0e_vf *vf, u8 *msg)
-> > =A0		goto error_param;
-> > =A0	}
-> >=20
-> > -	/* Use the queue bit map sent by the VF */
-> > -	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx], vqs->tx_queues,
-> > +	/* Build the queue bit map from value sent by the VF */
-> > +	if (i40e_ctrl_vf_tx_rings(pf->vsi[vf->lan_vsi_idx],
-> > +				=A0=A0BIT(vqs->tx_queues) - 1,
-> > =A0				=A0=A0false)) {
-> > =A0		aq_ret =3D I40E_ERR_TIMEOUT;
-> > =A0		goto error_param;
-> > =A0	}
-> > -	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx], vqs->rx_queues,
-> > +	if (i40e_ctrl_vf_rx_rings(pf->vsi[vf->lan_vsi_idx],
-> > +				=A0=A0BIT(vqs->rx_queues) - 1,
-> > =A0				=A0=A0false)) {
-> > =A0		aq_ret =3D I40E_ERR_TIMEOUT;
-> > =A0		goto error_param;
-> > diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/=
-net/ethernet/intel/iavf/iavf_virtchnl.c
-> > index c46770eba320..271f144bf05b 100644
-> > --- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-> > +++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
-> > @@ -308,7 +308,8 @@ void iavf_enable_queues(struct iavf_adapter *adapte=
-r)
-> > =A0	}
-> > =A0	adapter->current_op =3D VIRTCHNL_OP_ENABLE_QUEUES;
-> > =A0	vqs.vsi_id =3D adapter->vsi_res->vsi_id;
-> > -	vqs.tx_queues =3D BIT(adapter->num_active_queues) - 1;
-> > +	/* Send the queues number to PF */
-> > +	vqs.tx_queues =3D adapter->num_active_queues;
-> > =A0	vqs.rx_queues =3D vqs.tx_queues;
-> > =A0	adapter->aq_required &=3D ~IAVF_FLAG_AQ_ENABLE_QUEUES;
-> > =A0	iavf_send_pf_msg(adapter, VIRTCHNL_OP_ENABLE_QUEUES,
-> > @@ -333,7 +334,8 @@ void iavf_disable_queues(struct iavf_adapter *adapt=
-er)
-> > =A0	}
-> > =A0	adapter->current_op =3D VIRTCHNL_OP_DISABLE_QUEUES;
-> > =A0	vqs.vsi_id =3D adapter->vsi_res->vsi_id;
-> > -	vqs.tx_queues =3D BIT(adapter->num_active_queues) - 1;
-> > +	/* Send the queues number to PF */
-> > +	vqs.tx_queues =3D adapter->num_active_queues;
-> > =A0	vqs.rx_queues =3D vqs.tx_queues;
-> > =A0	adapter->aq_required &=3D ~IAVF_FLAG_AQ_DISABLE_QUEUES;
-> > =A0	iavf_send_pf_msg(adapter, VIRTCHNL_OP_DISABLE_QUEUES,
-> > --
-> > 2.11.0
->=20
---=20
-Best regards,
-Arkady Gilinsky
+Hello,
 
-------------------------------------------
+syzbot found the following crash on:
 
+HEAD commit:    a99d8080 Linux 5.4-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=169c59b2e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=896c87b73c6fcda6
+dashboard link: https://syzkaller.appspot.com/bug?extid=07bb74aeafc88ba7d5b4
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16fd7044e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+07bb74aeafc88ba7d5b4@syzkaller.appspotmail.com
+
+vcan0: j1939_xtp_rx_abort_one: 0x00000000b4d8b78c: 0x00000: (2) System  
+resources were needed for another task so this connection managed session  
+was terminated.
+vcan0: j1939_xtp_rx_abort_one: 0x00000000dadb7e22: 0x00000: (2) System  
+resources were needed for another task so this connection managed session  
+was terminated.
+==================================================================
+BUG: KASAN: use-after-free in atomic_sub_return  
+include/asm-generic/atomic-instrumented.h:159 [inline]
+BUG: KASAN: use-after-free in atomic_dec_return  
+include/linux/atomic-fallback.h:455 [inline]
+BUG: KASAN: use-after-free in j1939_sock_pending_del+0x20/0x70  
+net/can/j1939/socket.c:73
+Write of size 4 at addr ffff8880a4a2e4c0 by task ksoftirqd/1/16
+
+CPU: 1 PID: 16 Comm: ksoftirqd/1 Not tainted 5.4.0-rc6 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
+  print_address_description+0x75/0x5c0 mm/kasan/report.c:374
+  __kasan_report+0x14b/0x1c0 mm/kasan/report.c:506
+  kasan_report+0x26/0x50 mm/kasan/common.c:634
+  check_memory_region_inline mm/kasan/generic.c:182 [inline]
+  check_memory_region+0x2cf/0x2e0 mm/kasan/generic.c:192
+  __kasan_check_write+0x14/0x20 mm/kasan/common.c:98
+  atomic_sub_return include/asm-generic/atomic-instrumented.h:159 [inline]
+  atomic_dec_return include/linux/atomic-fallback.h:455 [inline]
+  j1939_sock_pending_del+0x20/0x70 net/can/j1939/socket.c:73
+  __j1939_session_drop net/can/j1939/transport.c:257 [inline]
+  j1939_session_destroy net/can/j1939/transport.c:270 [inline]
+  __j1939_session_release net/can/j1939/transport.c:280 [inline]
+  kref_put include/linux/kref.h:65 [inline]
+  j1939_session_put+0xd2/0x150 net/can/j1939/transport.c:285
+  j1939_xtp_rx_abort_one+0xd3/0x3f0 net/can/j1939/transport.c:1261
+  j1939_xtp_rx_abort net/can/j1939/transport.c:1269 [inline]
+  j1939_tp_cmd_recv net/can/j1939/transport.c:1940 [inline]
+  j1939_tp_recv+0x633/0xb80 net/can/j1939/transport.c:1973
+  j1939_can_recv+0x424/0x650 net/can/j1939/main.c:100
+  deliver net/can/af_can.c:568 [inline]
+  can_rcv_filter+0x3c0/0x8b0 net/can/af_can.c:602
+  can_receive+0x2ac/0x3b0 net/can/af_can.c:659
+  can_rcv+0xe4/0x220 net/can/af_can.c:685
+  __netif_receive_skb_one_core net/core/dev.c:4929 [inline]
+  __netif_receive_skb+0x136/0x370 net/core/dev.c:5043
+  process_backlog+0x4d8/0x930 net/core/dev.c:5874
+  napi_poll net/core/dev.c:6311 [inline]
+  net_rx_action+0x5ef/0x10d0 net/core/dev.c:6379
+  __do_softirq+0x333/0x7c4 arch/x86/include/asm/paravirt.h:766
+  run_ksoftirqd+0x64/0xf0 kernel/softirq.c:603
+  smpboot_thread_fn+0x5b3/0x9a0 kernel/smpboot.c:165
+  kthread+0x332/0x350 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+Allocated by task 8435:
+  save_stack mm/kasan/common.c:69 [inline]
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc+0x11c/0x1b0 mm/kasan/common.c:510
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:524
+  __do_kmalloc mm/slab.c:3655 [inline]
+  __kmalloc+0x254/0x340 mm/slab.c:3664
+  kmalloc include/linux/slab.h:561 [inline]
+  sk_prot_alloc+0xb0/0x290 net/core/sock.c:1605
+  sk_alloc+0x38/0x950 net/core/sock.c:1659
+  can_create+0x1de/0x480 net/can/af_can.c:157
+  __sock_create+0x5cc/0x910 net/socket.c:1418
+  sock_create net/socket.c:1469 [inline]
+  __sys_socket+0xe7/0x2e0 net/socket.c:1511
+  __do_sys_socket net/socket.c:1520 [inline]
+  __se_sys_socket net/socket.c:1518 [inline]
+  __x64_sys_socket+0x7a/0x90 net/socket.c:1518
+  do_syscall_64+0xf7/0x1c0 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 16:
+  save_stack mm/kasan/common.c:69 [inline]
+  set_track mm/kasan/common.c:77 [inline]
+  kasan_set_free_info mm/kasan/common.c:332 [inline]
+  __kasan_slab_free+0x12a/0x1e0 mm/kasan/common.c:471
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:480
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x115/0x200 mm/slab.c:3756
+  sk_prot_free net/core/sock.c:1642 [inline]
+  __sk_destruct+0x523/0x620 net/core/sock.c:1726
+  sk_destruct net/core/sock.c:1741 [inline]
+  __sk_free+0x35d/0x430 net/core/sock.c:1752
+  sock_wfree+0x106/0x140 net/core/sock.c:1968
+  skb_release_head_state+0x100/0x210 net/core/skbuff.c:652
+  skb_release_all net/core/skbuff.c:663 [inline]
+  __kfree_skb+0x25/0x170 net/core/skbuff.c:679
+  kfree_skb net/core/skbuff.c:697 [inline]
+  skb_queue_purge+0x1a6/0x260 net/core/skbuff.c:3078
+  j1939_session_destroy net/can/j1939/transport.c:269 [inline]
+  __j1939_session_release net/can/j1939/transport.c:280 [inline]
+  kref_put include/linux/kref.h:65 [inline]
+  j1939_session_put+0x7f/0x150 net/can/j1939/transport.c:285
+  j1939_xtp_rx_abort_one+0xd3/0x3f0 net/can/j1939/transport.c:1261
+  j1939_xtp_rx_abort net/can/j1939/transport.c:1269 [inline]
+  j1939_tp_cmd_recv net/can/j1939/transport.c:1940 [inline]
+  j1939_tp_recv+0x633/0xb80 net/can/j1939/transport.c:1973
+  j1939_can_recv+0x424/0x650 net/can/j1939/main.c:100
+  deliver net/can/af_can.c:568 [inline]
+  can_rcv_filter+0x3c0/0x8b0 net/can/af_can.c:602
+  can_receive+0x2ac/0x3b0 net/can/af_can.c:659
+  can_rcv+0xe4/0x220 net/can/af_can.c:685
+  __netif_receive_skb_one_core net/core/dev.c:4929 [inline]
+  __netif_receive_skb+0x136/0x370 net/core/dev.c:5043
+  process_backlog+0x4d8/0x930 net/core/dev.c:5874
+  napi_poll net/core/dev.c:6311 [inline]
+  net_rx_action+0x5ef/0x10d0 net/core/dev.c:6379
+  __do_softirq+0x333/0x7c4 arch/x86/include/asm/paravirt.h:766
+
+The buggy address belongs to the object at ffff8880a4a2e000
+  which belongs to the cache kmalloc-2k of size 2048
+The buggy address is located 1216 bytes inside of
+  2048-byte region [ffff8880a4a2e000, ffff8880a4a2e800)
+The buggy address belongs to the page:
+page:ffffea0002928b80 refcount:1 mapcount:0 mapping:ffff8880aa400e00  
+index:0x0
+flags: 0x1fffc0000000200(slab)
+raw: 01fffc0000000200 ffffea0002a48588 ffffea0002443f48 ffff8880aa400e00
+raw: 0000000000000000 ffff8880a4a2e000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff8880a4a2e380: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8880a4a2e400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff8880a4a2e480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                            ^
+  ffff8880a4a2e500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff8880a4a2e580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
