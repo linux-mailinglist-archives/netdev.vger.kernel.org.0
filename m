@@ -2,130 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1AB6EF721
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 09:21:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E0BEF75B
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 09:35:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387791AbfKEIVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 03:21:32 -0500
-Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:38434 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387484AbfKEIVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 03:21:32 -0500
-Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 4DDF6C08FC;
-        Tue,  5 Nov 2019 08:21:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1572942090; bh=zDK2LXlItrR+3Iquue1JBX7GBR/pzFOe8BcmTtgIYYE=;
-        h=From:To:Subject:Date:References:In-Reply-To:From;
-        b=SNuLE3ODZyxfCHYQaBx/2hOREN8AybXt783q0+XEhfl1SUgogeX4WfBzspax/15YI
-         wfZJP1ZoSAxLkAeGqEThoh2lVcp2fC7PVOXLp0pW3giz/b/NSHRLlOC44CeRURS69P
-         9m4c/Xm1LHsSssFgl5QxHhlRczq+pyN+NK6X3C+sy7UksBDgaljO72Kr41dDtxi/Nh
-         L1IcxSNhIAN7lhHsKQFWbyGIu3BhigFPdNzP/5pjUI4Rzau1MEX8bd+UIDj3dgE9ri
-         lvLE9cfjEcw29ImOi5FlKsN5SU7rafWDvywX8Yt77XF6ycBT0MphAeQ5c2ZkIeO5Jp
-         Hjamhj9C0/Lgg==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 11F68A006D;
-        Tue,  5 Nov 2019 08:21:24 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 5 Nov 2019 00:21:18 -0800
-Received: from NAM03-DM3-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Tue, 5 Nov 2019 00:21:17 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cGpFlisH02YsX4FDFYTVtI++qZhXo7hpsDfBbG2Ytjew3MzwPoVrPM1NX6Lbo8KFeqtWiw8uejCArsVaPw8cNJ2DC6MhlJv3c0oWd3tKP09wj7HiypPYMrDpJSYr8g1qeazSiMFkFMNNueJWa/1RsT+Al4PNo+IsI8hGeAPegHIh0QQMjhf+AOLFDfHkzPf7OJCTM7b/fwqhvuJQf9dwUdjS1RQWi/PYEbhNvjgiUTs7KAS2lF5nTNuHrQJrlKhMje2Invf9/5YTLMYMCnznDI4wQcthRZmWhH9wWLpQEfdKtg+RnJa0fUEC6p1oO5N3JDiPyk0+awKve9g9n57rhw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zDK2LXlItrR+3Iquue1JBX7GBR/pzFOe8BcmTtgIYYE=;
- b=Y0SPh4GdFWfytMyUxOng/2koFfPQr7kXeAGc5kk6J/8gY0QvtyMXfZv88p0UCI+fXjUhABZdS5TchDzggmXAbLs7MNgGvy5tk9H3IR9lgXhtyKPZFzzH7R4ll+L45HnkFIvzGC77qgeo8UlPHTyhJK+rJlLXW1etLkXhTgHb1bgXV7wpH5ngdDR+i/BGi2sCXD0lM5Y5kDzmsf+nPd61BeUwnDpsjrL67e6fWK9aqDLAlKerjQciDA2f5iTzebQ5biV7VRcICwJH7mEPF1O0aGMGMO+ckQQ2LaOxp/9EMTuMKcsypbWKQpUtL2l7nQpBgpoTPaWZuExQEFj3C1uM6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zDK2LXlItrR+3Iquue1JBX7GBR/pzFOe8BcmTtgIYYE=;
- b=KJpsujssN+bQThbEJSzd8TCzlizacjqKsbpHUdyzSKBBbE5Sgvua+tVogM1czwn5idFlZjEwF0UF/6F93v1uykNrTeFFSyMpbSA29/PGnrW9vOWm37/SdbxwFuDlDv8znu2gTzo76D95Vz5yuJ4jIFx+Z9X03RAnD8ajKoxLbKg=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3249.namprd12.prod.outlook.com (20.179.66.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Tue, 5 Nov 2019 08:21:16 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8%5]) with mapi id 15.20.2430.020; Tue, 5 Nov 2019
- 08:21:16 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     syzbot <syzbot+d9536adc269404a984f8@syzkaller.appspotmail.com>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        id S1730467AbfKEIfd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 03:35:33 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:42063 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725806AbfKEIfc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 03:35:32 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iRuJ8-0006FC-E0; Tue, 05 Nov 2019 09:35:22 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:9178:2522:c6a9:b2bb] (unknown [IPv6:2a03:f580:87bc:d400:9178:2522:c6a9:b2bb])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3084C474D58;
+        Tue,  5 Nov 2019 08:33:38 +0000 (UTC)
+To:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        syzbot <syzbot+d9536adc269404a984f8@syzkaller.appspotmail.com>,
         "arvid.brodin@alten.se" <arvid.brodin@alten.se>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
-        "jose.abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
         "kernel@pengutronix.de" <kernel@pengutronix.de>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux@rempel-privat.de" <linux@rempel-privat.de>,
-        "mkl@pengutronix.de" <mkl@pengutronix.de>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "robin@protonic.nl" <robin@protonic.nl>,
         "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
         "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
-Subject: RE: KASAN: use-after-free Read in j1939_session_get_by_addr
-Thread-Topic: KASAN: use-after-free Read in j1939_session_get_by_addr
-Thread-Index: AQHVk5CzJBI66yU4HEqovBXUIWZV2Kd8OFCAgAAERsA=
-Date:   Tue, 5 Nov 2019 08:21:16 +0000
-Message-ID: <BN8PR12MB3266A0CC1496ED5D532EA6D5D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
 References: <0000000000009393ba059691c6a3@google.com>
  <0000000000009427b5059694e33c@google.com>
-In-Reply-To: <0000000000009427b5059694e33c@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1621015d-6ca9-497a-0cb7-08d761c920cd
-x-ms-traffictypediagnostic: BN8PR12MB3249:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB32495C820587CD6170E12669D37E0@BN8PR12MB3249.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0212BDE3BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(39860400002)(396003)(376002)(136003)(346002)(199004)(189003)(14444005)(186003)(81156014)(71200400001)(81166006)(256004)(2501003)(476003)(6506007)(5660300002)(4744005)(52536014)(6436002)(478600001)(66446008)(66556008)(66946007)(7696005)(64756008)(66476007)(26005)(99286004)(3846002)(66066001)(6246003)(33656002)(74316002)(8676002)(2201001)(316002)(71190400001)(25786009)(7736002)(76116006)(305945005)(6116002)(486006)(76176011)(229853002)(86362001)(7416002)(11346002)(110136005)(446003)(55016002)(9686003)(2906002)(8936002)(102836004)(14454004)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3249;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Aeazp953cXzAWzWj7Sumh73E4XU2Skf0MzLstjPFYD0PHaFCjhTDiCfliJYLbLAyEmOif7w7meE+KzSTxPEt/M0OrkNxaLFqd+B0ubgbC8CaMuJGKGorKmmKxQmWraJsFBoACXuym9kRM+1vEWCCD3ZdqanfpcUjbBN+eLvdJ8ceJaMUY2equHgIZJWQBFdwBK/2sqvDbcGOGORoe3MI7cR0xfWLEpdXfvmfspfzkPeIMT17/GEUPlstEXNXoJOfvQgK6eNhsELaybLR+Otioau64n0UUA5+9eBFAWHB+Z55LP8ssf34KZCDuunJSBBrZejnVYYIalqSEBihHHtcVFq90l4Jfkiz4M1B+JbUrPcqLe28UUWMzUO9E/xgDZHXLKGIMdxeI/Amo+A0A3FsPWYIoxcpLdVQNMgDFaaXknFK6kmMSesJpuMkKjgU0FDa
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <BN8PR12MB3266A0CC1496ED5D532EA6D5D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXzuQENBFxSzJYBCAC58uHRFEjVVE3J
+ 31eyEQT6H1zSFCccTMPO/ewwAnotQWo98Bc67ecmprcnjRjSUKTbyY/eFxS21JnC4ZB0pJKx
+ MNwK6zq71wLmpseXOgjufuG3kvCgwHLGf/nkBHXmSINHvW00eFK/kJBakwHEbddq8Dr4ewmr
+ G7yr8d6A3CSn/qhOYWhIxNORK3SVo4Io7ExNX/ljbisGsgRzsWvY1JlN4sabSNEr7a8YaqTd
+ 2CfFe/5fPcQRGsfhAbH2pVGigr7JddONJPXGE7XzOrx5KTwEv19H6xNe+D/W3FwjZdO4TKIo
+ vcZveSDrFWOi4o2Te4O5OB/2zZbNWPEON8MaXi9zABEBAAGJA3IEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXFLMlgIbAgUJAeKNmgFACRArXuIRxYrqVMB0IAQZAQoAHRYhBJrx
+ JF84Dn3PPNRrhVrGIaOR5J0gBQJcUsyWAAoJEFrGIaOR5J0grw4H/itil/yryJCvzi6iuZHS
+ suSHHOiEf+UQHib1MLP96LM7FmDabjVSmJDpH4TsMu17A0HTG+bPMAdeia0+q9FWSvSHYW8D
+ wNhfkb8zojpa37qBpVpiNy7r6BKGSRSoFOv6m/iIoRJuJ041AEKao6djj/FdQF8OV1EtWKRO
+ +nE2bNuDCcwHkhHP+FHExdzhKSmnIsMjGpGwIQKN6DxlJ7fN4W7UZFIQdSO21ei+akinBo4K
+ O0uNCnVmePU1UzrwXKG2sS2f97A+sZE89vkc59NtfPHhofI3JkmYexIF6uqLA3PumTqLQ2Lu
+ bywPAC3YNphlhmBrG589p+sdtwDQlpoH9O7NeBAAg/lyGOUUIONrheii/l/zR0xxr2TDE6tq
+ 6HZWdtjWoqcaky6MSyJQIeJ20AjzdV/PxMkd8zOijRVTnlK44bcfidqFM6yuT1bvXAO6NOPy
+ pvBRnfP66L/xECnZe7s07rXpNFy72XGNZwhj89xfpK4a9E8HQcOD0mNtCJaz7TTugqBOsQx2
+ 45VPHosmhdtBQ6/gjlf2WY9FXb5RyceeSuK4lVrz9uZB+fUHBge/giOSsrqFo/9fWAZsE67k
+ 6Mkdbpc7ZQwxelcpP/giB9N+XAfBsffQ8q6kIyuFV4ILsIECCIA4nt1rYmzphv6t5J6PmlTq
+ TzW9jNzbYANoOFAGnjzNRyc9i8UiLvjhTzaKPBOkQfhStEJaZrdSWuR/7Tt2wZBBoNTsgNAw
+ A+cEu+SWCvdX7vNpsCHMiHtcEmVt5R0Tex1Ky87EfXdnGR2mDi6Iyxi3MQcHez3C61Ga3Baf
+ P8UtXR6zrrrlX22xXtpNJf4I4Z6RaLpB/avIXTFXPbJ8CUUbVD2R2mZ/jyzaTzgiABDZspbS
+ gw17QQUrKqUog0nHXuaGGA1uvreHTnyBWx5P8FP7rhtvYKhw6XdJ06ns+2SFcQv0Bv6PcSDK
+ aRXmnW+OsDthn84x1YkfGIRJEPvvmiOKQsFEiB4OUtTX2pheYmZcZc81KFfJMmE8Z9+LT6Ry
+ uSS5AQ0EXFLNDgEIAL14qAzTMCE1PwRrYJRI/RSQGAGF3HLdYvjbQd9Ozzg02K3mNCF2Phb1
+ cjsbMk/V6WMxYoZCEtCh4X2GjQG2GDDW4KC9HOa8cTmr9Vcno+f+pUle09TMzWDgtnH92WKx
+ d0FIQev1zDbxU7lk1dIqyOjjpyhmR8Put6vgunvuIjGJ/GapHL/O0yjVlpumtmow6eME2muc
+ TeJjpapPWBGcy/8VU4LM8xMeMWv8DtQML5ogyJxZ0Smt+AntIzcF9miV2SeYXA3OFiojQstF
+ vScN7owL1XiQ3UjJotCp6pUcSVgVv0SgJXbDo5Nv87M2itn68VPfTu2uBBxRYqXQovsR++kA
+ EQEAAYkCPAQYAQoAJhYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUs0OAhsMBQkB4o0iAAoJ
+ ECte4hHFiupUbioQAJ40bEJmMOF28vFcGvQrpI+lfHJGk9zSrh4F4SlJyOVWV1yWyUAINr8w
+ v1aamg2nAppZ16z4nAnGU/47tWZ4P8blLVG8x4SWzz3D7MCy1FsQBTrWGLqWldPhkBAGp2VH
+ xDOK4rLhuQWx3H5zd3kPXaIgvHI3EliWaQN+u2xmTQSJN75I/V47QsaPvkm4TVe3JlB7l1Fg
+ OmSvYx31YC+3slh89ayjPWt8hFaTLnB9NaW9bLhs3E2ESF9Dei0FRXIt3qnFV/hnETsx3X4h
+ KEnXxhSRDVeURP7V6P/z3+WIfddVKZk5ZLHi39fJpxvsg9YLSfStMJ/cJfiPXk1vKdoa+FjN
+ 7nGAZyF6NHTNhsI7aHnvZMDavmAD3lK6CY+UBGtGQA3QhrUc2cedp1V53lXwor/D/D3Wo9wY
+ iSXKOl4fFCh2Peo7qYmFUaDdyiCxvFm+YcIeMZ8wO5udzkjDtP4lWKAn4tUcdcwMOT5d0I3q
+ WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
+ lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
+ QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
+Subject: Re: KASAN: use-after-free Read in j1939_session_get_by_addr
+Message-ID: <969f940b-05ba-3fbf-79ba-95dc1cebc40d@pengutronix.de>
+Date:   Tue, 5 Nov 2019 09:33:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1621015d-6ca9-497a-0cb7-08d761c920cd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 08:21:16.2394
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: E4JL6gy0nTjFV+Dl1gF1/ClGjQeQjtr7W9L2yEmla5ugwletrqBUFkm2Wf7DgSSaUUsKq+4Qw0Ctq0EDFWyjjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3249
-X-OriginatorOrg: synopsys.com
+In-Reply-To: <BN8PR12MB3266A0CC1496ED5D532EA6D5D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="E8urJeMqxkxvn0jAIW1CNDli4LjSlEgIi"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogc3l6Ym90IDxzeXpib3QrZDk1MzZhZGMyNjk0MDRhOTg0ZjhAc3l6a2FsbGVyLmFwcHNw
-b3RtYWlsLmNvbT4NCkRhdGU6IE5vdi8wNS8yMDE5LCAwODowNTowMSAoVVRDKzAwOjAwKQ0KDQo+
-IHN5emJvdCBoYXMgYmlzZWN0ZWQgdGhpcyBidWcgdG86DQo+IA0KPiBjb21taXQgMmFmNjEwNmFl
-OTQ5NjUxZDUyOWM4YzNmMDczNGMzYTdiYWJkMGQ0Yg0KPiBBdXRob3I6IEpvc2UgQWJyZXUgPEpv
-c2UuQWJyZXVAc3lub3BzeXMuY29tPg0KPiBEYXRlOiAgIFR1ZSBKdWwgOSAwODowMzowMCAyMDE5
-ICswMDAwDQo+IA0KPiAgICAgIG5ldDogc3RtbWFjOiBJbnRyb2R1Y2luZyBzdXBwb3J0IGZvciBQ
-YWdlIFBvb2wNCg0KRnJvbSB0aGUgY29uZmlnIHByb3ZpZGVkLCBzdG1tYWMgZHJpdmVyIGlzIG5v
-dCBldmVuIGVuYWJsZWQuIENhbiB5b3UgDQpwbGVhc2UgY29uZmlybSB0aGUgYmlzZWN0aW9uIHBy
-b2Nlc3MgPw0KDQotLS0NClRoYW5rcywNCkpvc2UgTWlndWVsIEFicmV1DQo=
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--E8urJeMqxkxvn0jAIW1CNDli4LjSlEgIi
+Content-Type: multipart/mixed; boundary="qaAOKCEwENO8qPkNE1tUAKCm02QBejh9u";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Jose Abreu <Jose.Abreu@synopsys.com>,
+ syzbot <syzbot+d9536adc269404a984f8@syzkaller.appspotmail.com>,
+ "arvid.brodin@alten.se" <arvid.brodin@alten.se>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>,
+ "kernel@pengutronix.de" <kernel@pengutronix.de>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux@rempel-privat.de" <linux@rempel-privat.de>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "robin@protonic.nl" <robin@protonic.nl>,
+ "socketcan@hartkopp.net" <socketcan@hartkopp.net>,
+ "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>
+Message-ID: <969f940b-05ba-3fbf-79ba-95dc1cebc40d@pengutronix.de>
+Subject: Re: KASAN: use-after-free Read in j1939_session_get_by_addr
+References: <0000000000009393ba059691c6a3@google.com>
+ <0000000000009427b5059694e33c@google.com>
+ <BN8PR12MB3266A0CC1496ED5D532EA6D5D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
+In-Reply-To: <BN8PR12MB3266A0CC1496ED5D532EA6D5D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
+
+--qaAOKCEwENO8qPkNE1tUAKCm02QBejh9u
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+
+On 11/5/19 9:21 AM, Jose Abreu wrote:
+> From: syzbot <syzbot+d9536adc269404a984f8@syzkaller.appspotmail.com>
+> Date: Nov/05/2019, 08:05:01 (UTC+00:00)
+>=20
+>> syzbot has bisected this bug to:
+>>
+>> commit 2af6106ae949651d529c8c3f0734c3a7babd0d4b
+>> Author: Jose Abreu <Jose.Abreu@synopsys.com>
+>> Date:   Tue Jul 9 08:03:00 2019 +0000
+>>
+>>      net: stmmac: Introducing support for Page Pool
+>=20
+> From the config provided, stmmac driver is not even enabled. Can you=20
+> please confirm the bisection process ?
+
+Looks like a false positive, as j1939 (net/can/j1939/) hit mainline with
+v5.4-rc1~131^2~78^2.
+
+While the bisected commit is v5.3-rc1~140^2~13^2.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--qaAOKCEwENO8qPkNE1tUAKCm02QBejh9u--
+
+--E8urJeMqxkxvn0jAIW1CNDli4LjSlEgIi
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3BM90ACgkQWsYho5Hk
+nSClyAf/aRbtnXNxbxKfoZYB1Hxes/baBaYlNG3vMNllR0AY3Fvxq0x5+CoWS2le
+c6yaUcZjjkh51ibpWknN7mlpyYDf4dH0iP+SkdinNv5uSrJuTcJvB+D2LxcxFc4S
+oT43qKBa1u4jt3YFp9Kt7GavMbSu/JvZ9P1PVTLhyzjsQ4l7JTMsPuE6p9l4cCBc
+HVo08ihz6GVW3EbE0Z4VyNW9SdD/4Ax1NmlcP3y/NwFg3/P7msep8jtZxmzHpsbw
+/FB5ptLWi0nF263l5pZJ7R3NZyRJhIxX7UfGquIxb1NncegOdPdJYnM7iPR9iRKu
+EKAF9rTeYemswBfJt4cEXKvgospZvA==
+=CxHt
+-----END PGP SIGNATURE-----
+
+--E8urJeMqxkxvn0jAIW1CNDli4LjSlEgIi--
