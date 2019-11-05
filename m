@@ -2,196 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72DE5F0947
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:25:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B474F0975
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:28:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387415AbfKEWZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:25:02 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37947 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387398AbfKEWZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:25:02 -0500
-Received: by mail-lj1-f193.google.com with SMTP id v8so8089091ljh.5
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:25:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9adK9sQDwPx67mGpucGakQVejsiUwv5Zy9ukMwfSOcs=;
-        b=MQCUHXpor6Jhb9Pjb6A3TabsfP45DFOkfV22odIpDSYXeLKSwKrf7JDM1rtVlhta9O
-         QyMkUK/ud45nA/pCCD/9EsQggZV0TNg+9w4fHhE53OMlGxNr//yqKEYZ8dxrWLiD9s87
-         dr8hc8HTGdl2shVau/9lO9JJ5VNaxNftkXXms0TuVMXr+DGdBiVy5dQbvyKxKhCRnYbs
-         eyQbwCb34z2z3MZlbh56JnK5xXDSZ7zlwtIovlwOeV5+FYPt4pTSRtAY0zy6T84DqyDK
-         fBtYTj1PgC4KH0E7HE3k7aAb9KR8qZvqAvWKk9Ow+fyiclLjKhSGFuZcGWS7tdM2Ck3J
-         x/Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9adK9sQDwPx67mGpucGakQVejsiUwv5Zy9ukMwfSOcs=;
-        b=t7bI9LgTHt8gLDh+sc4aRC1li0s2FLB9TTaMcfv0ZFE//dDJlg68NWPRSOn30DCaBs
-         gX+SRQA4r2ie1U3luGAPwAbTNzujrPyCH65Fl0kw6KjmPkFZKTWbQp05Hxio7XHjLkCR
-         wfsacdSJh8K5xmbb31Q2M/xJwk4blTfWyuueH9ufO7j7faTu8UheHZhTCkhpLKvgjjsl
-         eGGznnNmPuYcB21X+m3Bq3xn44SKVNob55SSo56czoxiiwQkoelsDIkusaSAEp5W45K5
-         9ZHvNC7ZYd3vni/VXtaZVIhomRb4wAGXgCVJNhgPdBUAilaIry6AnaEXC9HmswkzTnTF
-         wuGw==
-X-Gm-Message-State: APjAAAUMoT0f3GIzClfVMOdKFsfYDekmcynlsmEgNhSDoZ4eVptauix4
-        SdhhT3HSoMOVY2zPSO3H0D1lDQ==
-X-Google-Smtp-Source: APXvYqzrxpCERcVS0ntlPuTrGS9DuGt0MTcq0xcHda3+ZiPbdCz6/rVIlPk6pFxOZ3jg1gNXQAkwvg==
-X-Received: by 2002:a05:651c:1b0:: with SMTP id c16mr24055499ljn.192.1572992699587;
-        Tue, 05 Nov 2019 14:24:59 -0800 (PST)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s25sm4020139lji.81.2019.11.05.14.24.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 14:24:58 -0800 (PST)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
-        borisp@mellanox.com, aviadye@mellanox.com,
-        john.fastabend@gmail.com, daniel@iogearbox.net,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>
-Subject: [PATCH net 3/3] selftests/tls: add test for concurrent recv and send
-Date:   Tue,  5 Nov 2019 14:24:36 -0800
-Message-Id: <20191105222436.27359-4-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191105222436.27359-1-jakub.kicinski@netronome.com>
-References: <20191105222436.27359-1-jakub.kicinski@netronome.com>
+        id S2387467AbfKEW2R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:28:17 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:54815 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730266AbfKEW2O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:28:14 -0500
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 06F8B22EE9;
+        Tue,  5 Nov 2019 23:28:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
+        s=mail2016061301; t=1572992890;
+        bh=hGgFuk5Nj2ZkqQgOqfvPqyJwH+mIL95XRcYip8eQf+s=;
+        h=Date:From:To:Subject:In-Reply-To:References:From;
+        b=PC96YKaeKjDhtb7Wc6uCzD+SsFg/5SwfzeJeZKg/4mDGNJQRoWh8jE9it0/Q5GxOd
+         9LxUgdOQ5F+S7IAXu2w8/N+hBfLv5M0QpsSL8yLfyF3MtAJCK+3CU5UbVe8IVUnXjT
+         F7UdBfHi4lF0ZKbjLkn6pfIrnRyq37hCZ5tJUt7o=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 05 Nov 2019 23:28:09 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 3/5] net: phy: at803x: add device tree binding
+In-Reply-To: <20191102011351.6467-4-michael@walle.cc>
+References: <20191102011351.6467-1-michael@walle.cc>
+ <20191102011351.6467-4-michael@walle.cc>
+Message-ID: <e9231afc2b4ba5cfc3cec0e0b6076e35@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.2.3
+X-Virus-Scanned: clamav-milter 0.101.4 at web
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test which spawns 16 threads and performs concurrent
-send and recv calls on the same socket.
+Am 2019-11-02 02:13, schrieb Michael Walle:
+> Add support for configuring the CLK_25M pin as well as the RGMII I/O
+> voltage by the device tree.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  drivers/net/phy/at803x.c | 283 ++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 281 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 1eb5d4fb8925..a30a2ff57068 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -13,7 +13,12 @@
+>  #include <linux/netdevice.h>
+>  #include <linux/etherdevice.h>
+>  #include <linux/of_gpio.h>
+> +#include <linux/bitfield.h>
+>  #include <linux/gpio/consumer.h>
+> +#include <linux/regulator/of_regulator.h>
+> +#include <linux/regulator/driver.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <dt-bindings/net/qca-ar803x.h>
+> 
+>  #define AT803X_SPECIFIC_STATUS			0x11
+>  #define AT803X_SS_SPEED_MASK			(3 << 14)
+> @@ -62,6 +67,42 @@
+>  #define AT803X_DEBUG_REG_5			0x05
+>  #define AT803X_DEBUG_TX_CLK_DLY_EN		BIT(8)
+> 
+> +#define AT803X_DEBUG_REG_1F			0x1F
+> +#define AT803X_DEBUG_PLL_ON			BIT(2)
+> +#define AT803X_DEBUG_RGMII_1V8			BIT(3)
+> +
+> +/* AT803x supports either the XTAL input pad, an internal PLL or the
+> + * DSP as clock reference for the clock output pad. The XTAL reference
+> + * is only used for 25 MHz output, all other frequencies need the PLL.
+> + * The DSP as a clock reference is used in synchronous ethernet
+> + * applications.
+> + *
+> + * By default the PLL is only enabled if there is a link. Otherwise
+> + * the PHY will go into low power state and disabled the PLL. You can
+> + * set the PLL_ON bit (see debug register 0x1f) to keep the PLL always
+> + * enabled.
+> + */
+> +#define AT803X_MMD7_CLK25M			0x8016
+> +#define AT803X_CLK_OUT_MASK			GENMASK(4, 2)
+> +#define AT803X_CLK_OUT_25MHZ_XTAL		0
+> +#define AT803X_CLK_OUT_25MHZ_DSP		1
+> +#define AT803X_CLK_OUT_50MHZ_PLL		2
+> +#define AT803X_CLK_OUT_50MHZ_DSP		3
+> +#define AT803X_CLK_OUT_62_5MHZ_PLL		4
+> +#define AT803X_CLK_OUT_62_5MHZ_DSP		5
+> +#define AT803X_CLK_OUT_125MHZ_PLL		6
+> +#define AT803X_CLK_OUT_125MHZ_DSP		7
+> +
+> +/* Unfortunately, the AR8035 has another mask which is incompatible
+> + * with the AR8031 PHY. Also, it only supports 25MHz and 50MHz.
+> + */
+> +#define AT8035_CLK_OUT_MASK			GENMASK(4, 3)
+> +
+> +#define AT803X_CLK_OUT_STRENGTH_MASK		GENMASK(8, 7)
+> +#define AT803X_CLK_OUT_STRENGTH_FULL		0
+> +#define AT803X_CLK_OUT_STRENGTH_HALF		1
+> +#define AT803X_CLK_OUT_STRENGTH_QUARTER		2
+> +
+>  #define ATH8030_PHY_ID 0x004dd076
+>  #define ATH8031_PHY_ID 0x004dd074
+>  #define ATH8035_PHY_ID 0x004dd072
+> @@ -73,6 +114,13 @@ MODULE_LICENSE("GPL");
+> 
+>  struct at803x_priv {
+>  	bool phy_reset:1;
+> +	int flags;
+> +#define AT803X_KEEP_PLL_ENABLED	BIT(0)	/* don't turn off internal PLL 
+> */
+> +	u16 clk_25m_reg;
+> +	u16 clk_25m_mask;
+> +	struct regulator_dev *vddio_rdev;
+> +	struct regulator_dev *vddh_rdev;
+> +	struct regulator *vddio;
+>  };
+> 
+>  struct at803x_context {
+> @@ -240,6 +288,192 @@ static int at803x_resume(struct phy_device 
+> *phydev)
+>  	return phy_modify(phydev, MII_BMCR, BMCR_PDOWN | BMCR_ISOLATE, 0);
+>  }
+> 
+> +static int at803x_rgmii_reg_set_voltage_sel(struct regulator_dev 
+> *rdev,
+> +					    unsigned int selector)
+> +{
+> +	struct phy_device *phydev = rdev_get_drvdata(rdev);
+> +
+> +	if (selector)
+> +		return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_1F,
+> +					     0, AT803X_DEBUG_RGMII_1V8);
+> +	else
+> +		return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_1F,
+> +					     AT803X_DEBUG_RGMII_1V8, 0);
+> +}
+> +
+> +static int at803x_rgmii_reg_get_voltage_sel(struct regulator_dev 
+> *rdev)
+> +{
+> +	struct phy_device *phydev = rdev_get_drvdata(rdev);
+> +	int val;
+> +
+> +	val = at803x_debug_reg_read(phydev, AT803X_DEBUG_REG_1F);
+> +	if (val < 0)
+> +		return val;
+> +
+> +	return (val & AT803X_DEBUG_RGMII_1V8) ? 1 : 0;
+> +}
+> +
+> +static struct regulator_ops vddio_regulator_ops = {
+> +	.list_voltage = regulator_list_voltage_table,
+> +	.set_voltage_sel = at803x_rgmii_reg_set_voltage_sel,
+> +	.get_voltage_sel = at803x_rgmii_reg_get_voltage_sel,
+> +};
+> +
+> +static const unsigned int vddio_voltage_table[] = {
+> +	1500000,
+> +	1800000,
+> +};
+> +
+> +static const struct regulator_desc vddio_desc = {
+> +	.name = "vddio",
+> +	.of_match = of_match_ptr("vddio-regulator"),
+> +	.n_voltages = ARRAY_SIZE(vddio_voltage_table),
+> +	.volt_table = vddio_voltage_table,
+> +	.ops = &vddio_regulator_ops,
+> +	.type = REGULATOR_VOLTAGE,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static struct regulator_ops vddh_regulator_ops = {
+> +};
+> +
+> +static const struct regulator_desc vddh_desc = {
+> +	.name = "vddh",
+> +	.of_match = of_match_ptr("vddh-regulator"),
+> +	.n_voltages = 1,
+> +	.fixed_uV = 2500000,
+> +	.ops = &vddh_regulator_ops,
+> +	.type = REGULATOR_VOLTAGE,
+> +	.owner = THIS_MODULE,
+> +};
+> +
+> +static int at8031_register_regulators(struct phy_device *phydev)
+> +{
+> +	struct at803x_priv *priv = phydev->priv;
+> +	struct device *dev = &phydev->mdio.dev;
+> +	struct regulator_config config = { };
+> +
+> +	config.dev = dev;
+> +	config.driver_data = phydev;
+> +
+> +	priv->vddio_rdev = devm_regulator_register(dev, &vddio_desc, 
+> &config);
+> +	if (IS_ERR(priv->vddio_rdev)) {
+> +		phydev_err(phydev, "failed to register VDDIO regulator\n");
+> +		return PTR_ERR(priv->vddio_rdev);
+> +	}
+> +
+> +	priv->vddh_rdev = devm_regulator_register(dev, &vddh_desc, &config);
+> +	if (IS_ERR(priv->vddh_rdev)) {
+> +		phydev_err(phydev, "failed to register VDDH regulator\n");
+> +		return PTR_ERR(priv->vddh_rdev);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static bool at803x_match_phy_id(struct phy_device *phydev, u32 phy_id)
+> +{
+> +	return (phydev->phy_id & phydev->drv->phy_id_mask)
+> +		== (phy_id & phydev->drv->phy_id_mask);
+> +}
+> +
+> +static int at803x_parse_dt(struct phy_device *phydev)
+> +{
+> +	struct device_node *node = phydev->mdio.dev.of_node;
+> +	struct at803x_priv *priv = phydev->priv;
+> +	unsigned int sel, mask;
+> +	u32 freq, strength;
+> +	int ret;
+> +
+> +	if (!IS_ENABLED(CONFIG_OF_MDIO))
+> +		return 0;
+> +
+> +	ret = of_property_read_u32(node, "qca,clk-out-frequency", &freq);
+> +	if (!ret) {
+> +		mask = AT803X_CLK_OUT_MASK;
+> +		switch (freq) {
+> +		case 25000000:
+> +			sel = AT803X_CLK_OUT_25MHZ_XTAL;
+> +			break;
+> +		case 50000000:
+> +			sel = AT803X_CLK_OUT_50MHZ_PLL;
+> +			break;
+> +		case 62500000:
+> +			sel = AT803X_CLK_OUT_62_5MHZ_PLL;
+> +			break;
+> +		case 125000000:
+> +			sel = AT803X_CLK_OUT_125MHZ_PLL;
+> +			break;
+> +		default:
+> +			phydev_err(phydev, "invalid qca,clk-out-frequency\n");
+> +			return -EINVAL;
+> +		}
+> +
+> +		/* Fixup for the AR8030/AR8035. This chip has another mask and
+> +		 * supports only 25MHz and 50MHz output.
 
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
----
- tools/testing/selftests/net/tls.c | 108 ++++++++++++++++++++++++++++++
- 1 file changed, 108 insertions(+)
+This is actually wrong. There are two different datasheets with 
+contradictory information. The AR8035 actually supports up to 125MHz, 
+just the DSP option. I'll fix that in the v2.
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 4c285b6e1db8..1c8f194d6556 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -898,6 +898,114 @@ TEST_F(tls, nonblocking)
- 	}
- }
- 
-+static void
-+test_mutliproc(struct __test_metadata *_metadata, struct _test_data_tls *self,
-+	       bool sendpg, unsigned int n_readers, unsigned int n_writers)
-+{
-+	const unsigned int n_children = n_readers + n_writers;
-+	const size_t data = 6 * 1000 * 1000;
-+	const size_t file_sz = data / 100;
-+	size_t read_bias, write_bias;
-+	int i, fd, child_id;
-+	char buf[file_sz];
-+	pid_t pid;
-+
-+	/* Only allow multiples for simplicity */
-+	ASSERT_EQ(!(n_readers % n_writers) || !(n_writers % n_readers), true);
-+	read_bias = n_writers / n_readers ?: 1;
-+	write_bias = n_readers / n_writers ?: 1;
-+
-+	/* prep a file to send */
-+	fd = open("/tmp/", O_TMPFILE | O_RDWR, 0600);
-+	ASSERT_GE(fd, 0);
-+
-+	memset(buf, 0xac, file_sz);
-+	ASSERT_EQ(write(fd, buf, file_sz), file_sz);
-+
-+	/* spawn children */
-+	for (child_id = 0; child_id < n_children; child_id++) {
-+		pid = fork();
-+		ASSERT_NE(pid, -1);
-+		if (!pid)
-+			break;
-+	}
-+
-+	/* parent waits for all children */
-+	if (pid) {
-+		for (i = 0; i < n_children; i++) {
-+			int status;
-+
-+			wait(&status);
-+			EXPECT_EQ(status, 0);
-+		}
-+
-+		return;
-+	}
-+
-+	/* Split threads for reading and writing */
-+	if (child_id < n_readers) {
-+		size_t left = data * read_bias;
-+		char rb[8001];
-+
-+		while (left) {
-+			int res;
-+
-+			res = recv(self->cfd, rb,
-+				   left > sizeof(rb) ? sizeof(rb) : left, 0);
-+
-+			EXPECT_GE(res, 0);
-+			left -= res;
-+		}
-+	} else {
-+		size_t left = data * write_bias;
-+
-+		while (left) {
-+			int res;
-+
-+			ASSERT_EQ(lseek(fd, 0, SEEK_SET), 0);
-+			if (sendpg)
-+				res = sendfile(self->fd, fd, NULL,
-+					       left > file_sz ? file_sz : left);
-+			else
-+				res = send(self->fd, buf,
-+					   left > file_sz ? file_sz : left, 0);
-+
-+			EXPECT_GE(res, 0);
-+			left -= res;
-+		}
-+	}
-+}
-+
-+TEST_F(tls, mutliproc_even)
-+{
-+	test_mutliproc(_metadata, self, false, 6, 6);
-+}
-+
-+TEST_F(tls, mutliproc_readers)
-+{
-+	test_mutliproc(_metadata, self, false, 4, 12);
-+}
-+
-+TEST_F(tls, mutliproc_writers)
-+{
-+	test_mutliproc(_metadata, self, false, 10, 2);
-+}
-+
-+TEST_F(tls, mutliproc_sendpage_even)
-+{
-+	test_mutliproc(_metadata, self, true, 6, 6);
-+}
-+
-+TEST_F(tls, mutliproc_sendpage_readers)
-+{
-+	test_mutliproc(_metadata, self, true, 4, 12);
-+}
-+
-+TEST_F(tls, mutliproc_sendpage_writers)
-+{
-+	test_mutliproc(_metadata, self, true, 10, 2);
-+}
-+
- TEST_F(tls, control_msg)
- {
- 	if (self->notls)
--- 
-2.23.0
+
+> +		 *
+> +		 * Warning:
+> +		 *   There was no datasheet for the AR8030 available so this is
+> +		 *   just a guess. But the AR8035 is listed as pin compatible
+> +		 *   to the AR8030 so there might be a good chance it works on
+> +		 *   the AR8030 too.
+> +		 */
+> +		if (at803x_match_phy_id(phydev, ATH8030_PHY_ID) ||
+> +		    at803x_match_phy_id(phydev, ATH8035_PHY_ID)) {
+> +			mask = AT8035_CLK_OUT_MASK;
+> +			if (freq > 50000000)
+> +				phydev_err(phydev,
+> +					   "invalid qca,clk-out-frequency\n");
+> +				return -EINVAL;
+> +		}
+> +
+> +		priv->clk_25m_reg |= FIELD_PREP(mask, sel);
+> +		priv->clk_25m_mask |= mask;
+
+
+-michael
+
 
