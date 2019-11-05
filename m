@@ -2,199 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 214C9EF1D6
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 01:19:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A07EF1EE
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 01:26:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387663AbfKEASi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 19:18:38 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:17961 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387415AbfKEASh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 19:18:37 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc0bfe10001>; Mon, 04 Nov 2019 16:18:41 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 04 Nov 2019 16:18:35 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 04 Nov 2019 16:18:35 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 5 Nov
- 2019 00:18:34 +0000
-Subject: Re: [PATCH v2 12/18] mm/gup: track FOLL_PIN pages
-To:     Jerome Glisse <jglisse@redhat.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-13-jhubbard@nvidia.com>
- <20191104185238.GG5134@redhat.com>
- <7821cf87-75a8-45e2-cf28-f85b62192416@nvidia.com>
- <20191104234920.GA18515@redhat.com>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <f587647d-83dc-5bde-d244-f522ec5bda60@nvidia.com>
-Date:   Mon, 4 Nov 2019 16:18:33 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20191104234920.GA18515@redhat.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1572913121; bh=it/avAzbdjbPt9c7ZhR3SugLAHDAeo7qSUQnTa8Gd0Y=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=nx62lGrPMlwQBcqF9vYxqUTNBIlMwnY3v4vXnUqcAbCO2/xdO7aUYp8qclkmts9z7
-         gtH9Ov6maSgTLFms+gOL/dE2dCoQ1xMQpdGQy9Akbo7N7NyETXXQXZTJZqjI7N8kF+
-         n3RQEPIGAaiZBh6nvWW7FoLz32nqtlJ71DClIb0EMAf4xWjkAmpFYtedbKPVLxdf/b
-         tlQKPTEISDGthKQTi64XGZlvQXC4V843TbV9Pv5FMwu9POX8T7Ox5OlQOI/t1RVVuU
-         ehgOt7zOUTQcQRd6bK+4WI3VER1yK/cV2GljR29nekSSEXFENv8o9uy5i0m+683Ub0
-         piAG/LY3Z7DNw==
+        id S2387758AbfKEA0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 19:26:22 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:44029 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387484AbfKEA0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 4 Nov 2019 19:26:22 -0500
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 04 Nov 2019 16:26:21 -0800
+IronPort-SDR: o7SLOGd+HqI5OHB/6L9DJZXEPFpb96cCNJBQHWAapbOHc1aCdDDHbTxoFSZOqMweJy1R4ERW/0
+ bwjeiuwsHPT9AGcI/NSfqfRpWf863U6NU=
+Received: from stranche-lnx.qualcomm.com ([129.46.14.77])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP; 04 Nov 2019 16:26:20 -0800
+Received: by stranche-lnx.qualcomm.com (Postfix, from userid 383980)
+        id 660854697; Mon,  4 Nov 2019 17:26:20 -0700 (MST)
+From:   Sean Tranchetti <stranche@codeaurora.org>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Sean Tranchetti <stranche@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: [PATCH net-next v2] net: Fail explicit bind to local reserved ports
+Date:   Mon,  4 Nov 2019 17:25:41 -0700
+Message-Id: <1572913541-28236-1-git-send-email-stranche@codeaurora.org>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan, there is a question for you further down:
+Reserved ports may have some special use cases which are not suitable for
+use by general userspace applications. Currently, ports specified in
+ip_local_reserved_ports will not be returned only in case of automatic port
+assignment.
 
+In some cases, it maybe required to prevent the host from assigning the
+ports even in case of explicit binds. Consider the case of a transparent
+proxy where packets are being redirected. In case a socket matches this
+connection, packets from this application would be incorrectly sent to one
+of the endpoints.
 
-On 11/4/19 3:49 PM, Jerome Glisse wrote:
-> On Mon, Nov 04, 2019 at 02:49:18PM -0800, John Hubbard wrote:
-...
->>> Maybe add a small comment about wrap around :)
->>
->>
->> I don't *think* the count can wrap around, due to the checks in user_page_ref_inc().
->>
->> But it's true that the documentation is a little light here...What did you have 
->> in mind?
-> 
-> About false positive case (and how unlikely they are) and that wrap
-> around is properly handle. Maybe just a pointer to the documentation
-> so that people know they can go look there for details. I know my
-> brain tend to forget where to look for things so i like to be constantly
-> reminded hey the doc is Documentations/foobar :)
-> 
+Add a boolean sysctl flag 'reserved_port_bind'. Default value is 1 which
+preserves the existing behavior. Setting the value to 0 will prevent
+userspace applications from binding to these ports even when they are
+explicitly requested.
 
-I see. OK, here's a version with a thoroughly overhauled comment header:
+Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
+Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+---
+ Documentation/networking/ip-sysctl.txt |  5 +++++
+ include/net/ip.h                       | 11 +++++++++++
+ include/net/netns/ipv4.h               |  2 ++
+ net/ipv4/af_inet.c                     |  3 +++
+ net/ipv4/inet_connection_sock.c        |  4 ++++
+ net/ipv4/sysctl_net_ipv4.c             |  7 +++++++
+ net/ipv4/udp.c                         |  4 ++++
+ net/sctp/socket.c                      |  6 ++++++
+ 8 files changed, 42 insertions(+)
 
-/**
- * page_dma_pinned() - report if a page is pinned for DMA.
- *
- * This function checks if a page has been pinned via a call to
- * pin_user_pages*() or pin_longterm_pages*().
- *
- * The return value is partially fuzzy: false is not fuzzy, because it means
- * "definitely not pinned for DMA", but true means "probably pinned for DMA, but
- * possibly a false positive due to having at least GUP_PIN_COUNTING_BIAS worth
- * of normal page references".
- *
- * False positives are OK, because: a) it's unlikely for a page to get that many
- * refcounts, and b) all the callers of this routine are expected to be able to
- * deal gracefully with a false positive.
- *
- * For more information, please see Documentation/vm/pin_user_pages.rst.
- *
- * @page:	pointer to page to be queried.
- * @Return:	True, if it is likely that the page has been "dma-pinned".
- *		False, if the page is definitely not dma-pinned.
- */
-static inline bool page_dma_pinned(struct page *page)
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 8d4ad1d..20ed5e5 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -948,6 +948,11 @@ ip_unprivileged_port_start - INTEGER
+ 
+ 	Default: 1024
+ 
++reserved_port_bind - BOOLEAN
++	If set, allows explicit bind request to applications requesting any
++	port within the range of ip_local_reserved_ports.
++	Default: 1
++
+ ip_nonlocal_bind - BOOLEAN
+ 	If set, allows processes to bind() to non-local IP addresses,
+ 	which can be quite useful - but may break some applications.
+diff --git a/include/net/ip.h b/include/net/ip.h
+index a2c61c3..d6d3a2b 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -346,6 +346,12 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
+ 	return test_bit(port, net->ipv4.sysctl_local_reserved_ports);
+ }
+ 
++static inline int inet_is_unbindable_port(struct net *net, int port)
++{
++	return inet_is_local_reserved_port(net, port) &&
++	       !net->ipv4.sysctl_reserved_port_bind;
++}
++
+ static inline bool sysctl_dev_name_is_allowed(const char *name)
+ {
+ 	return strcmp(name, "default") != 0  && strcmp(name, "all") != 0;
+@@ -362,6 +368,11 @@ static inline int inet_is_local_reserved_port(struct net *net, int port)
+ 	return 0;
+ }
+ 
++static inline int inet_is_unbindable_port(struct net *net, int port)
++{
++	return 0;
++}
++
+ static inline int inet_prot_sock(struct net *net)
+ {
+ 	return PROT_SOCK;
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index c0c0791..466fc7e 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -115,6 +115,8 @@ struct netns_ipv4 {
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	int sysctl_tcp_l3mdev_accept;
+ #endif
++	int sysctl_reserved_port_bind;
++
+ 	int sysctl_tcp_mtu_probing;
+ 	int sysctl_tcp_mtu_probe_floor;
+ 	int sysctl_tcp_base_mss;
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 70f92aa..e1ad45d 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1814,6 +1814,9 @@ static __net_init int inet_init_net(struct net *net)
+ 	net->ipv4.ip_local_ports.range[0] =  32768;
+ 	net->ipv4.ip_local_ports.range[1] =  60999;
+ 
++	/* Allow explicit binding to reserved ports */
++	net->ipv4.sysctl_reserved_port_bind = 1;
++
+ 	seqlock_init(&net->ipv4.ping_group_range.lock);
+ 	/*
+ 	 * Sane defaults - nobody may create ping sockets.
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index eb30fc1..0c330dc 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -307,6 +307,10 @@ int inet_csk_get_port(struct sock *sk, unsigned short snum)
+ 	head = &hinfo->bhash[inet_bhashfn(net, port,
+ 					  hinfo->bhash_size)];
+ 	spin_lock_bh(&head->lock);
++
++	if (inet_is_unbindable_port(net, port))
++		goto fail_unlock;
++
+ 	inet_bind_bucket_for_each(tb, &head->chain)
+ 		if (net_eq(ib_net(tb), net) && tb->l3mdev == l3mdev &&
+ 		    tb->port == port)
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 59ded25..f9317ba 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -742,6 +742,13 @@ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
+ 		.proc_handler	= proc_do_large_bitmap,
+ 	},
+ 	{
++		.procname	= "reserved_port_bind",
++		.data		= &init_net.ipv4.sysctl_reserved_port_bind,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
++	{
+ 		.procname	= "ip_no_pmtu_disc",
+ 		.data		= &init_net.ipv4.sysctl_ip_no_pmtu_disc,
+ 		.maxlen		= sizeof(int),
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 1d58ce8..d71cb8a 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -274,6 +274,10 @@ int udp_lib_get_port(struct sock *sk, unsigned short snum,
+ 	} else {
+ 		hslot = udp_hashslot(udptable, net, snum);
+ 		spin_lock_bh(&hslot->lock);
++
++		if (inet_is_unbindable_port(net, snum))
++			goto fail_unlock;
++
+ 		if (hslot->count > 10) {
+ 			int exist;
+ 			unsigned int slot2 = udp_sk(sk)->udp_portaddr_hash ^ snum;
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index ffd3262..7a653ad 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -8210,6 +8210,12 @@ static int sctp_get_port_local(struct sock *sk, union sctp_addr *addr)
+ 		 */
+ 		head = &sctp_port_hashtable[sctp_phashfn(sock_net(sk), snum)];
+ 		spin_lock(&head->lock);
++
++		if (inet_is_unbindable_port(sock_net(sk), snum)) {
++			ret = 1;
++			goto fail_unlock;
++		}
++
+ 		sctp_for_each_hentry(pp, &head->chain) {
+ 			if ((pp->port == snum) && net_eq(pp->net, sock_net(sk)))
+ 				goto pp_found;
+-- 
+1.9.1
 
-
->>> [...]
->>>
->>>> @@ -1930,12 +2028,20 @@ static int __gup_device_huge(unsigned long pfn, unsigned long addr,
->>>>  
->>>>  		pgmap = get_dev_pagemap(pfn, pgmap);
->>>>  		if (unlikely(!pgmap)) {
->>>> -			undo_dev_pagemap(nr, nr_start, pages);
->>>> +			undo_dev_pagemap(nr, nr_start, flags, pages);
->>>>  			return 0;
->>>>  		}
->>>>  		SetPageReferenced(page);
->>>>  		pages[*nr] = page;
->>>> -		get_page(page);
->>>> +
->>>> +		if (flags & FOLL_PIN) {
->>>> +			if (unlikely(!user_page_ref_inc(page))) {
->>>> +				undo_dev_pagemap(nr, nr_start, flags, pages);
->>>> +				return 0;
->>>> +			}
->>>
->>> Maybe add a comment about a case that should never happens ie
->>> user_page_ref_inc() fails after the second iteration of the
->>> loop as it would be broken and a bug to call undo_dev_pagemap()
->>> after the first iteration of that loop.
->>>
->>> Also i believe that this should never happens as if first
->>> iteration succeed than __page_cache_add_speculative() will
->>> succeed for all the iterations.
->>>
->>> Note that the pgmap case above follows that too ie the call to
->>> get_dev_pagemap() can only fail on first iteration of the loop,
->>> well i assume you can never have a huge device page that span
->>> different pgmap ie different devices (which is a reasonable
->>> assumption). So maybe this code needs fixing ie :
->>>
->>> 		pgmap = get_dev_pagemap(pfn, pgmap);
->>> 		if (unlikely(!pgmap))
->>> 			return 0;
->>>
->>>
->>
->> OK, yes that does make sense. And I think a comment is adequate,
->> no need to check for bugs during every tail page iteration. So how 
->> about this, as a preliminary patch:
-> 
-> Actualy i thought about it and i think that there is pgmap
-> per section and thus maybe one device can have multiple pgmap
-> and that would be an issue for page bigger than section size
-> (ie bigger than 128MB iirc). I will go double check that, but
-> maybe Dan can chime in.
-> 
-> In any case my comment above is correct for the page ref
-> increment, if the first one succeed than others will too
-> or otherwise it means someone is doing too many put_page()/
-> put_user_page() which is _bad_ :)
-> 
-
-I'll wait to hear from Dan before doing anything rash. :)
-
-
-thanks,
-
-John Hubbard
-NVIDIA
