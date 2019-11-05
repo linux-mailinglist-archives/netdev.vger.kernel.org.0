@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27210F0920
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73B9AF0921
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 23:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387468AbfKEWMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 17:12:20 -0500
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:50388 "EHLO
+        id S2387479AbfKEWMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 17:12:24 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:47728 "EHLO
         mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387415AbfKEWMU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:20 -0500
-Received: by mail-pf1-f202.google.com with SMTP id e13so10637102pff.17
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:19 -0800 (PST)
+        with ESMTP id S2387415AbfKEWMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 17:12:24 -0500
+Received: by mail-pf1-f202.google.com with SMTP id w16so6071858pfq.14
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 14:12:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=NEfkqij4dWS0saI85Xl3b8QbPrN/yb01cBZ/t3LVeq8=;
-        b=pvk+hN7LmFKbCP2K2yX2ihv/yRlUJ2RfprBvwHTyn4N9YGPuP6w9Y6uhDayssykhXR
-         WVIJ9znfc8FvZdHQ7qyJ4QDRl5Np6HoSufWhRxg16HX3TrIrYCWaR1/v1N6JdFkSceXo
-         Nbjp6TeTFjV5FIvDLGrqab6TLjrW3Q9uH2bNvia6l3dv9SfU39uspZPMa6l1kY8KAk8V
-         DVKD2Jh+HijUXq/wFjZ/kqCZgKk3ZHE5q/Ywmuvmfumsg4kKHlLGhJqO3ZooMBTj09Ms
-         yyQ/V0awTFPJCV/K/O8nWveHZrzJvRR8BrS1rzh2Kf1pHizcBrHbu9yJFIfydEZHNHz/
-         DaLA==
+        bh=JMnJA3N4RtEau52ssc0bshQBnbnMvhNoRnzVTjsTYoE=;
+        b=oEJO0/pjL6nukc6s5mO1YRxmc8xm/Bd3JUg60H/FVxokHBsC70MbNNaqChYiRrl6Yd
+         AkXHUZE38VQesukZwt7EnhoJJ9eFCNZAlzd0UiOGA9oTSrN4hgA3537L6JuB61t9GX6P
+         iFlfdF81A8M7+NnAKt9iQdGzLE0y0X0EpwYN8hVVvastSRSx3M+xTIudgMGLRqxpssRy
+         I2yb7+sQ7kxVT0WRqNFs9Hb7kuI9Iez7BSkhlCi4txr3wgp0FrBGQSC32kKC2Ae2zm7Y
+         odS7xtp0A+/EGdlcNK7riX5tUFewXDSS9946u9zFA/JzdApTYrUa1yMj+gUnS4y1j01p
+         hkMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=NEfkqij4dWS0saI85Xl3b8QbPrN/yb01cBZ/t3LVeq8=;
-        b=BA5NXWiPVIMHFUcDmYigbM6XSLqg2cbLs/SNr6jCKmnM1/rR19SjFs71ofiBnfw9sd
-         1TWg3ZNKtRqNaemMlM+yirwGYV44RTfPX+vi+jS5NKL/yKHg+kbZM/6tKNSsN9Jh18sQ
-         3EuWBAsnERNCeANbHpZmI4HJxgeKIQuLvrRU39/CmDIa8aJ3yKHVmpvnxYbB2lCOmcZX
-         LqGd6FBz5nkBhWANG/aN60XNcIzY3OClcWYbgUGsJnIYRIn61lQ5z6Q88V/wl/CmrhSR
-         O3zT8cNG0YYYfz6ryrH3z/AMPniqZTlNAdLrtglBNCoZaMt5VKirWsGlL0de8QsrtpI9
-         I9sQ==
-X-Gm-Message-State: APjAAAWXlbuJnXLe/8XT401KzGAPboiOWVXB9HcjpELvt8NS7eARgpFC
-        vmxeDbx/uo2jrlocXUPbqj6yyDTCR2Esaw==
-X-Google-Smtp-Source: APXvYqzQ//EgQZ7XKeEuDj8OtzkojnObeRvcdEWuu4K9eSFRjK3p+pTKM0DWPt4ieBFlUx3FhrZ8S7vE01KsEQ==
-X-Received: by 2002:a63:1812:: with SMTP id y18mr35553123pgl.302.1572991938955;
- Tue, 05 Nov 2019 14:12:18 -0800 (PST)
-Date:   Tue,  5 Nov 2019 14:11:53 -0800
+        bh=JMnJA3N4RtEau52ssc0bshQBnbnMvhNoRnzVTjsTYoE=;
+        b=RTs/QMdMsPmOOzd5umwru+SWekCS/0uoOI4jhaC2iMgjDl9ia7zHn791PH0D/u2sV6
+         xqbaEAmKmFD/euMdJbzCfnu9Y5KrUHNZFm4uQ1tQhgiHIxs2F7MM1Yi80JjqETW1XPob
+         RSQ/XPVmqLL8GKATvmiRi9pUc3+EvxC3oEBy1rIS16P2dQ1fgNtJvt9ioHC9Rp+XsLNF
+         sa1d/9DuxQAmLuruNWP0MPGFQwN+6UYoqs9deHMa7PFdg6Z2Td9cqmtRPZOFokbONpi2
+         A9U/NpbiTmQEIHUH2m1eiJ9FKBBI2T2Pqi36wLYGJTHpUW8YLaZ1Xr+ose2qD70BfpAI
+         n8PA==
+X-Gm-Message-State: APjAAAXpXmXGRD8BUp3bjEQgZgfTDMHQnZ4vGNgToIL9PvgRhNPWCpsN
+        zyg3pIJaQp0htMLhjJs/aOErVbdMI67AFA==
+X-Google-Smtp-Source: APXvYqxrBHrA1sNsDzwVTxMSAgLMQNpOepAqz7C//jx3Z30qeq1t5w2jFjRkeROhH23fozj9Kc5EvlJq5bPT1Q==
+X-Received: by 2002:a63:151:: with SMTP id 78mr36031523pgb.95.1572991943378;
+ Tue, 05 Nov 2019 14:12:23 -0800 (PST)
+Date:   Tue,  5 Nov 2019 14:11:54 -0800
 In-Reply-To: <20191105221154.232754-1-edumazet@google.com>
-Message-Id: <20191105221154.232754-6-edumazet@google.com>
+Message-Id: <20191105221154.232754-7-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191105221154.232754-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH net-next 5/6] net: annotate lockless accesses to sk->sk_ack_backlog
+Subject: [PATCH net-next 6/6] net: annotate lockless accesses to sk->sk_max_ack_backlog
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -58,124 +58,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk->sk_ack_backlog can be read without any lock being held.
+sk->sk_max_ack_backlog can be read without any lock being held
+at least in TCP/DCCP cases.
+
 We need to use READ_ONCE()/WRITE_ONCE() to avoid load/store tearing
 and/or potential KCSAN warnings.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/sock.h  | 6 +++---
- net/ipv4/tcp.c      | 2 +-
- net/ipv4/tcp_diag.c | 2 +-
- net/ipv4/tcp_ipv4.c | 2 +-
- net/ipv6/tcp_ipv6.c | 2 +-
- net/sched/em_meta.c | 2 +-
- net/sctp/diag.c     | 2 +-
- 7 files changed, 9 insertions(+), 9 deletions(-)
+ include/net/sock.h              | 2 +-
+ net/dccp/proto.c                | 2 +-
+ net/ipv4/af_inet.c              | 2 +-
+ net/ipv4/inet_connection_sock.c | 2 +-
+ net/ipv4/tcp.c                  | 2 +-
+ net/ipv4/tcp_diag.c             | 2 +-
+ net/sched/em_meta.c             | 2 +-
+ net/sctp/diag.c                 | 2 +-
+ net/sctp/socket.c               | 4 ++--
+ 9 files changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/include/net/sock.h b/include/net/sock.h
-index f2f853439b6576925e39f6db010964762e39ccf2..a126784aa7d9b6f59c8937c8c94d5bd7843988a4 100644
+index a126784aa7d9b6f59c8937c8c94d5bd7843988a4..d4d3ef5ba0490366e1e25884a5edf54186c940d8 100644
 --- a/include/net/sock.h
 +++ b/include/net/sock.h
-@@ -859,17 +859,17 @@ static inline gfp_t sk_gfp_mask(const struct sock *sk, gfp_t gfp_mask)
- 
- static inline void sk_acceptq_removed(struct sock *sk)
- {
--	sk->sk_ack_backlog--;
-+	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog - 1);
- }
- 
- static inline void sk_acceptq_added(struct sock *sk)
- {
--	sk->sk_ack_backlog++;
-+	WRITE_ONCE(sk->sk_ack_backlog, sk->sk_ack_backlog + 1);
- }
+@@ -869,7 +869,7 @@ static inline void sk_acceptq_added(struct sock *sk)
  
  static inline bool sk_acceptq_is_full(const struct sock *sk)
  {
--	return sk->sk_ack_backlog > sk->sk_max_ack_backlog;
-+	return READ_ONCE(sk->sk_ack_backlog) > sk->sk_max_ack_backlog;
+-	return READ_ONCE(sk->sk_ack_backlog) > sk->sk_max_ack_backlog;
++	return READ_ONCE(sk->sk_ack_backlog) > READ_ONCE(sk->sk_max_ack_backlog);
  }
  
  /*
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index 5bad08dc431611d5387c8d3c1858ee2c43cb9b68..a52e8ba1ced046b178fa069b1e0d690c537c6bc0 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -944,7 +944,7 @@ int inet_dccp_listen(struct socket *sock, int backlog)
+ 	if (!((1 << old_state) & (DCCPF_CLOSED | DCCPF_LISTEN)))
+ 		goto out;
+ 
+-	sk->sk_max_ack_backlog = backlog;
++	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
+ 	/* Really, if the socket is already in listen state
+ 	 * we can only allow the backlog to be adjusted.
+ 	 */
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 70f92aaca4110b3ecd691949203f28978597e9c9..53de8e00990e276448df1c60e47620be3b58f517 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -208,7 +208,7 @@ int inet_listen(struct socket *sock, int backlog)
+ 	if (!((1 << old_state) & (TCPF_CLOSE | TCPF_LISTEN)))
+ 		goto out;
+ 
+-	sk->sk_max_ack_backlog = backlog;
++	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
+ 	/* Really, if the socket is already in listen state
+ 	 * we can only allow the backlog to be adjusted.
+ 	 */
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index eb30fc1770def741950215f59a4e3ab0f91c6293..e4c6e8b4049063f5239a5e99a185016ad3bb5790 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -716,7 +716,7 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 	 * ones are about to clog our table.
+ 	 */
+ 	qlen = reqsk_queue_len(queue);
+-	if ((qlen << 1) > max(8U, sk_listener->sk_max_ack_backlog)) {
++	if ((qlen << 1) > max(8U, READ_ONCE(sk_listener->sk_max_ack_backlog))) {
+ 		int young = reqsk_queue_len_young(queue) << 1;
+ 
+ 		while (thresh > 2) {
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 1dd25189d83f2c7404336f8378be23c4beaa7ed7..68375f7ffdce1fbbb4cf443660703c98b61fd9e3 100644
+index 68375f7ffdce1fbbb4cf443660703c98b61fd9e3..fb1666440e1064a9ab2f2993b23fdb744e82f5c5 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -3225,7 +3225,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- 		 * tcpi_unacked -> Number of children ready for accept()
+@@ -3226,7 +3226,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
  		 * tcpi_sacked  -> max backlog
  		 */
--		info->tcpi_unacked = sk->sk_ack_backlog;
-+		info->tcpi_unacked = READ_ONCE(sk->sk_ack_backlog);
- 		info->tcpi_sacked = sk->sk_max_ack_backlog;
+ 		info->tcpi_unacked = READ_ONCE(sk->sk_ack_backlog);
+-		info->tcpi_sacked = sk->sk_max_ack_backlog;
++		info->tcpi_sacked = READ_ONCE(sk->sk_max_ack_backlog);
  		return;
  	}
+ 
 diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
-index 549506162ddeca22f6dd87dfe1c5c13cea6e2b69..edfbab54c46f4cac1b0a7960718d0b6308978957 100644
+index edfbab54c46f4cac1b0a7960718d0b6308978957..0d08f9e2d8d0322fcdd3a465a3a9712b36605954 100644
 --- a/net/ipv4/tcp_diag.c
 +++ b/net/ipv4/tcp_diag.c
-@@ -21,7 +21,7 @@ static void tcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
- 	struct tcp_info *info = _info;
+@@ -22,7 +22,7 @@ static void tcp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
  
  	if (inet_sk_state_load(sk) == TCP_LISTEN) {
--		r->idiag_rqueue = sk->sk_ack_backlog;
-+		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
- 		r->idiag_wqueue = sk->sk_max_ack_backlog;
+ 		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
+-		r->idiag_wqueue = sk->sk_max_ack_backlog;
++		r->idiag_wqueue = READ_ONCE(sk->sk_max_ack_backlog);
  	} else if (sk->sk_type == SOCK_STREAM) {
  		const struct tcp_sock *tp = tcp_sk(sk);
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 899e100a68e6ab8fcf7b2c4d2a9d179745a782b5..92282f98dc82290bfaf53acc050182e4cc3be1eb 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -2451,7 +2451,7 @@ static void get_tcp4_sock(struct sock *sk, struct seq_file *f, int i)
  
- 	state = inet_sk_state_load(sk);
- 	if (state == TCP_LISTEN)
--		rx_queue = sk->sk_ack_backlog;
-+		rx_queue = READ_ONCE(sk->sk_ack_backlog);
- 	else
- 		/* Because we don't lock the socket,
- 		 * we might find a transient negative value.
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 4804b6dc5e6519a457e631bc1438a14f85477567..81f51335e326fad57d3e0e1ce23926b276e95e92 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1891,7 +1891,7 @@ static void get_tcp6_sock(struct seq_file *seq, struct sock *sp, int i)
- 
- 	state = inet_sk_state_load(sp);
- 	if (state == TCP_LISTEN)
--		rx_queue = sp->sk_ack_backlog;
-+		rx_queue = READ_ONCE(sp->sk_ack_backlog);
- 	else
- 		/* Because we don't lock the socket,
- 		 * we might find a transient negative value.
 diff --git a/net/sched/em_meta.c b/net/sched/em_meta.c
-index 3177dcb173161629a801278db38fabeb6fcdbdd9..ebb6e2430861d23a42431e4143f229395d9321c5 100644
+index ebb6e2430861d23a42431e4143f229395d9321c5..d99966a55c84fa0f5142ed72faeceb9baab86f5e 100644
 --- a/net/sched/em_meta.c
 +++ b/net/sched/em_meta.c
-@@ -521,7 +521,7 @@ META_COLLECTOR(int_sk_ack_bl)
+@@ -532,7 +532,7 @@ META_COLLECTOR(int_sk_max_ack_bl)
  		*err = -1;
  		return;
  	}
--	dst->value = sk->sk_ack_backlog;
-+	dst->value = READ_ONCE(sk->sk_ack_backlog);
+-	dst->value = sk->sk_max_ack_backlog;
++	dst->value = READ_ONCE(sk->sk_max_ack_backlog);
  }
  
- META_COLLECTOR(int_sk_max_ack_bl)
+ META_COLLECTOR(int_sk_prio)
 diff --git a/net/sctp/diag.c b/net/sctp/diag.c
-index 0851166b917597b08becf9bf9d5873287b375828..f873f15407de4e7d9a246d41e07602f33da8064d 100644
+index f873f15407de4e7d9a246d41e07602f33da8064d..8a15146faaebdcb869233a08318e4fb5a1e1129b 100644
 --- a/net/sctp/diag.c
 +++ b/net/sctp/diag.c
-@@ -425,7 +425,7 @@ static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
- 		r->idiag_rqueue = atomic_read(&infox->asoc->rmem_alloc);
+@@ -426,7 +426,7 @@ static void sctp_diag_get_info(struct sock *sk, struct inet_diag_msg *r,
  		r->idiag_wqueue = infox->asoc->sndbuf_used;
  	} else {
--		r->idiag_rqueue = sk->sk_ack_backlog;
-+		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
- 		r->idiag_wqueue = sk->sk_max_ack_backlog;
+ 		r->idiag_rqueue = READ_ONCE(sk->sk_ack_backlog);
+-		r->idiag_wqueue = sk->sk_max_ack_backlog;
++		r->idiag_wqueue = READ_ONCE(sk->sk_max_ack_backlog);
  	}
  	if (infox->sctpinfo)
+ 		sctp_get_sctp_info(sk, infox->asoc, infox->sctpinfo);
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index ffd3262b7a41eac2e3d825c3f0665066f376ea3c..53abb97e0061c14fd4a9c3090a4a5cbe0af9c5a9 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -8376,7 +8376,7 @@ static int sctp_listen_start(struct sock *sk, int backlog)
+ 		}
+ 	}
+ 
+-	sk->sk_max_ack_backlog = backlog;
++	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
+ 	return sctp_hash_endpoint(ep);
+ }
+ 
+@@ -8430,7 +8430,7 @@ int sctp_inet_listen(struct socket *sock, int backlog)
+ 
+ 	/* If we are already listening, just update the backlog */
+ 	if (sctp_sstate(sk, LISTENING))
+-		sk->sk_max_ack_backlog = backlog;
++		WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
+ 	else {
+ 		err = sctp_listen_start(sk, backlog);
+ 		if (err)
 -- 
 2.24.0.rc1.363.gb1bccd3e3d-goog
 
