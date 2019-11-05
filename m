@@ -2,119 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 857CFEF2EA
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 02:41:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD57CEF2FA
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 02:45:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729981AbfKEBky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 4 Nov 2019 20:40:54 -0500
-Received: from mail-eopbgr00062.outbound.protection.outlook.com ([40.107.0.62]:6288
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728602AbfKEBky (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 4 Nov 2019 20:40:54 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mMqMfBmV3Up79AJMYwoVPkHsik+JJedCp9DFFAQys5d1hOOGbbqHX04Ebtq59AByY+pp6BXNfO9D+3V5S6MkTEp+q5q/sUt5B3QaeAwR+tMkQImvFX/xAoWwyNhIH6Ji4luK500kmqhUcRQKP1ZU2SFO35OlT8UwKLyQqCFFgw2/9947oMfEZXGZA+iZamvh+WFjmBUlYNF6i8Z2DDvKUPgIH1Ix+h0YaUZAXJXnAnNa2b4rXMf6BAbod5XmzDv4nef5UiyLhHa7MO1wheOOfRq3ggLYTnui1J0UtBTGpPQ85qV4zR6tDZA5+pp4Tz+X+fI/ClJn+K4ql5M3+m2UpQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CYrTLeQWd6CEQh1V720zCtNHcWVjKmnfPxEMIHn+I3o=;
- b=ZlBGIWrHz/+R7r/1ro+Vhitp+1CFqQl4Lfk6snfFyZnf05fJvA7SaSCgukrBVD7BXUnmis/uJ90yGJ1aHkHJs86Ux8J2p5DQfe1j3M+T5/rbmgSh3Cme3lLAV03hi1vLTuxfrqPPBlpO0EBWS1Cctw3TJ975b2pM1a8esXQuxNLVKm2hoK2W6JtpxvXqoNpE5MYs9tHHzGb9IWjg4EacKcZjENI1JjwLr9UN3j42gZWkqsB10E+X0xUn8kMucMk7TH4OdHgr2yUwWi+b4nHVo0Y46ecGOT8ipiqcWVkvlBP6O87aQXibp/1xBEiSBGfgVTckfaUd8JJAisW8ZAQf6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CYrTLeQWd6CEQh1V720zCtNHcWVjKmnfPxEMIHn+I3o=;
- b=cfkzhM0pqTnv0w0B8JrMKtxX1zYmZYg623ryiSPLgXUm4ON3a7b7DEdVf6Og79vwvK+wNK4nn/Is1RX6880izg54gZ0/nQ+uq2cogfhApH3/ftLLxk1/b5CxSx3ukPTcLE8Bygm4XBx04Tv+hB280zvX6zPXc/rAVVacQ6Cdmw8=
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
- VI1PR0402MB3664.eurprd04.prod.outlook.com (52.134.15.18) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Tue, 5 Nov 2019 01:40:51 +0000
-Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::5dd6:297c:51e5:2b52]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
- ([fe80::5dd6:297c:51e5:2b52%7]) with mapi id 15.20.2408.024; Tue, 5 Nov 2019
- 01:40:51 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "hslester96@gmail.com" <hslester96@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH] net: fec: add missed clk_disable_unprepare in
- remove
-Thread-Topic: [EXT] Re: [PATCH] net: fec: add missed clk_disable_unprepare in
- remove
-Thread-Index: AQHVk0caR3l97muk7USTxO6JUo1aF6d7yY3AgAABpwCAAAEUEA==
-Date:   Tue, 5 Nov 2019 01:40:51 +0000
-Message-ID: <VI1PR0402MB3600C0D0D04B7EC2692A3365FF7E0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-References: <20191104155000.8993-1-hslester96@gmail.com>
-        <20191104.113601.407489006150341765.davem@davemloft.net>
-        <VI1PR0402MB360095D673E33032706C5BEAFF7E0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <20191104.173226.388214102826562799.davem@davemloft.net>
-In-Reply-To: <20191104.173226.388214102826562799.davem@davemloft.net>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=fugang.duan@nxp.com; 
-x-originating-ip: [119.31.174.66]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 085a7af3-095e-43ba-93f2-08d7619130f5
-x-ms-traffictypediagnostic: VI1PR0402MB3664:
-x-microsoft-antispam-prvs: <VI1PR0402MB366427763AFC19B4BD64FA3AFF7E0@VI1PR0402MB3664.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2803;
-x-forefront-prvs: 0212BDE3BE
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(39860400002)(366004)(136003)(199004)(189003)(186003)(6246003)(7696005)(256004)(26005)(8936002)(4326008)(81166006)(81156014)(6506007)(25786009)(54906003)(99286004)(6116002)(2906002)(3846002)(71200400001)(71190400001)(64756008)(76116006)(66946007)(66556008)(66446008)(52536014)(5660300002)(66476007)(102836004)(55016002)(33656002)(9686003)(86362001)(14454004)(4744005)(6916009)(76176011)(7736002)(305945005)(74316002)(229853002)(476003)(316002)(486006)(478600001)(8676002)(6436002)(446003)(11346002)(66066001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB3664;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: F5JnpqS85hATwF3V05LLWtIbp63H/Od84Iz0pYeiuOR9/L5VbsaBbYMn3GqX1NSJhbZnXTLiEHVLh9lVSTU0HHQAQDQslTN6fY2qrHG5/ObkGpzhCV/oP54NzMD8ZVsqRusxfdeD+Po22cCPFKtPrnBY3HYdIf0690HG+AYFqsKmSWzIfg51frGIq8X5rp4rQhVeIr/6PsiWNe2niHeBpY1Xoof33ZJYg+ZySwUux5paH3kmVl6Mxcee6yTpK0So6v+SyUOmqdwX9HQRa3eNQJfNS/XU9xLdvdSnAXLru+Jh4CRAt/JlTdeSf5M1zybjmlZWsxqaJdLxVgHJRxv+UC40hTy412Mn1j6uCEPCB1tnSK11xdl9irFWJknIgDxuzp5/JdzUA4WeyB1Xv6WAm8EK55SFQCDNlaRiyYY0FYuC7V+5fP83nH7w1HpxR4nh
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1730367AbfKEBpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 4 Nov 2019 20:45:44 -0500
+Received: from bilbo.ozlabs.org ([203.11.71.1]:47361 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730037AbfKEBpo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 4 Nov 2019 20:45:44 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 476XYc0bVqz9sP6;
+        Tue,  5 Nov 2019 12:45:39 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1572918340;
+        bh=8XWY64SJKqZIyzn9EFs+RU2Chz3MCXPcnBcxJoBUTjk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Q6/KyacKQpBRHV8jj5Jw5hgo3C1+HrIIAJ8sDBq5IoA5utI8IFEpe470MH/rPNA11
+         TrUTSAIc36ZbxC/xq4HoHZOxfygmlC/cDCF1jlfIw+eh6Vdz/y0htXqQQeObU+YMKQ
+         F7ZzVD/JKgbaZagdNsX05ohUSMmG7h9zJsmMPhR9MsSMYVo2oCqyWUonAV71EVTK1o
+         BhL477oZuWG/whAp54Dfy9Y83WpjipUrQMl90kqsE8+g0bKtw8oqDotg3kWWteYeLr
+         jgCyHSGWzN55nbeQ+z+kqfCjnvNe7Ksw/9+EHmUGKLJfslG2M4/SR7Zk04OY0ChXiF
+         C9/aUdxdWKhxQ==
+Date:   Tue, 5 Nov 2019 12:45:39 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: linux-next: build warnings after merge of the net-next tree
+Message-ID: <20191105124539.7566b922@canb.auug.org.au>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 085a7af3-095e-43ba-93f2-08d7619130f5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Nov 2019 01:40:51.4368
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VopSrSDyDHqSRNmglZoqlRwKXLr2nmWU/x2FbT9MQ2/0ZSKAMb/k97EJ8puO++301pE1QQpHCB9ihy4qz46URw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3664
+Content-Type: multipart/signed; boundary="Sig_//jQT+NOl0NGJ4he.TSA94Wo";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Miller <davem@davemloft.net> Sent: Tuesday, November 5, 2019 9:=
-32 AM
-> From: Andy Duan <fugang.duan@nxp.com>
-> Date: Tue, 5 Nov 2019 01:27:10 +0000
->=20
-> > From: David Miller <davem@davemloft.net> Sent: Tuesday, November 5,
-> 2019 3:36 AM
-> >> From: Chuhong Yuan <hslester96@gmail.com>
-> >> Date: Mon,  4 Nov 2019 23:50:00 +0800
-> >>
-> >> > This driver forgets to disable and unprepare clks when remove.
-> >> > Add calls to clk_disable_unprepare to fix it.
-> >> >
-> >> > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> >>
-> >> Applied.
-> >
-> > David, the patch introduces clock count mismatch issue, please drop it.
->=20
-> Please send me a revert, I'm backlogged at the moment.
->=20
-> Thanks.
+--Sig_//jQT+NOl0NGJ4he.TSA94Wo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I already give comment to Chuhong Yuan,  let's wait his response.
-If he will send the fixes, let's wait his patch. If not, I will send the a
-revert these two days.
+Hi all,
 
-Regards,
-Andy =20
+After merging the net-next tree, today's linux-next build (x86_64
+allmodconfig) produced these warnings:
+
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c: In function 'bnxt_tc_parse_fl=
+ow':
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:532:8: warning: array subscrip=
+t [12, 17] is outside array bounds of 'u16[6]' {aka 'short unsigned int[6]'=
+} [-Warray-bounds]
+  532 |   if (p[i] !=3D 0)
+      |       ~^~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:293:6: note: while referencing=
+ 'eth_addr'
+  293 |  u16 eth_addr[ETH_ALEN] =3D { 0 };
+      |      ^~~~~~~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:532:8: warning: array subscrip=
+t [12, 17] is outside array bounds of 'u16[6]' {aka 'short unsigned int[6]'=
+} [-Warray-bounds]
+  532 |   if (p[i] !=3D 0)
+      |       ~^~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:288:6: note: while referencing=
+ 'eth_addr_mask'
+  288 |  u16 eth_addr_mask[ETH_ALEN] =3D { 0 };
+      |      ^~~~~~~~~~~~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:532:8: warning: array subscrip=
+t [12, 17] is outside array bounds of 'u16[6]' {aka 'short unsigned int[6]'=
+} [-Warray-bounds]
+  532 |   if (p[i] !=3D 0)
+      |       ~^~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:288:6: note: while referencing=
+ 'eth_addr_mask'
+  288 |  u16 eth_addr_mask[ETH_ALEN] =3D { 0 };
+      |      ^~~~~~~~~~~~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:544:8: warning: array subscrip=
+t [12, 17] is outside array bounds of 'u16[6]' {aka 'short unsigned int[6]'=
+} [-Warray-bounds]
+  544 |   if (p[i] !=3D 0xff)
+      |       ~^~~
+drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c:288:6: note: while referencing=
+ 'eth_addr_mask'
+  288 |  u16 eth_addr_mask[ETH_ALEN] =3D { 0 };
+      |      ^~~~~~~~~~~~~
+
+Introduced (I think) by commit
+
+  90f906243bf6 ("bnxt_en: Add support for L2 rewrite")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_//jQT+NOl0NGJ4he.TSA94Wo
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3A1EMACgkQAVBC80lX
+0Gzd4wf/TsGM+bQOSLVWyrPF2ARyzpDjjPpRR90fKowk0enDFlijABIgcj8JuZfF
+ePx0Ws5wxaSFdi5ncNfqk6kzmS9ixm1HfaBO5NgtjrU+tdOJiuJDeCsl79Za4SGR
+c3aF57AuRyhIsz4h6DpLCBsaVPWHiMDekZ4nHbwF8tc/49j8T6vwTBYy89AqcS3J
+aPXLbUzPlI8Hr1hDdwYo7ke41JG5FMZ8mS4hB2w06BJyh8BU1qPosW76ip06jwl1
+3f68tU+u1EPio5yc+HddhFAhBYhVFns5VMPih/jzWyIWpQTLMSlS4kPBCXfSJvo5
+GVDADCiGTQpz35WhmdFWDWVvKvRrDw==
+=nRKU
+-----END PGP SIGNATURE-----
+
+--Sig_//jQT+NOl0NGJ4he.TSA94Wo--
