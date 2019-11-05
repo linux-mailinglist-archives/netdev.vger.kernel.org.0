@@ -2,183 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C83C9F08C9
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 22:55:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A71D9F08CE
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 22:55:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730295AbfKEVzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 16:55:00 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43280 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729747AbfKEVy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 16:54:59 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 3so16983040pfb.10;
-        Tue, 05 Nov 2019 13:54:58 -0800 (PST)
+        id S1729906AbfKEVzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 16:55:48 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:43722 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729747AbfKEVzr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 16:55:47 -0500
+Received: by mail-lf1-f67.google.com with SMTP id j5so16314968lfh.10
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 13:55:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=dC0txNP98lkR/AeyVbw+ug7nIVFtVKRqgqF3+lbBbTI=;
-        b=pBL0Tg/aQMj3dLr3ww+uBbFPQ/NBjzfblKRr64GeVyTUyXJ2hNM31bkIAPRcSA6LPN
-         LrnKKiJFv6723CyczJwHO/wfU6ZhGm/qOV4eZWpPOKfayis2aLIKD8R8z5HJ1R98vspU
-         /2DpaGxvO50KBQWHDOPz3cgy6zNRGxJ2FC3yEyskRT4zID4R8usx83X1pI/xlFE2695t
-         gH2KHamK6i6CtNte0azxKHjj4uqRk/fO5BwmP5KuLCiyP4ztJGNhBN2gsVOv2YUzsVge
-         hOG3pWLk4lbKy8aIjAO8xXIDdp5iIhyyxzYmFMKO/oTI91RpLwN1b+JTTKkklDl9LZs3
-         GTTg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=HsX+1QFT9d8M8onYkicH56ucxJM3dc57YZusD9pWNSM=;
+        b=K0fap7thlt6D0uWvkwrIXghtBYpbDw3tv8+tyD6dZmGarvjR9+VlvoukpTmOtYR+6N
+         +HWa9Bo/+EejdxLOpSVfBnUT88UJRZaCyML7GuDQh1z4f19s3GS4F/0B2VCKNwdaHsS5
+         mCA4vBTrP9TSf4Js/e5XJCgpI2bmGQ5QpJBzOf0wBu4oyUL+ZTvtWve1dssbyt6OwIN4
+         o6K/yH8q43Rb/hkTprtxFoEQY4Rj7ujnA0m7nQPoF79yYeyW9vl0R9UYMcrbGjdTZJea
+         WRqMp6utzV+QHx4dsHgq8lkKg/r4O7jM9uAr48uRDXSyqIFuPzBKoaMcfIMvZ/2LD0Vf
+         8dtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=dC0txNP98lkR/AeyVbw+ug7nIVFtVKRqgqF3+lbBbTI=;
-        b=huqIoX63/rl5eCio1Xd3Iex3CUjvIZvU78lHapRv/uZmm4XjOUIqfC3Di5VvCXPq71
-         ekooz8uGr2kOAii0ankSwIZGT2u2kO22SwPjBlylpKKSR7THrtPdck+04PGM69Pk5tzJ
-         brFo7EBh51Pwk2ReWzlmR3GQzrFpDpHfMI1AEMXjq4LYB3+qnUWQ75NFS50dlGxS6Maa
-         C+50l3TnubKHWGgYzGBpb4q8MlFB/fo6h6/cQTZGq/olWpiku8BTzCEIaMI8Bm2Nj6Vb
-         PPLPKZmhPq2i8dvhkY7nlDKjqobvzax7Vxq4o4xT8tjVCoMiM/mAJMO89uf77w2u7XDo
-         oOWw==
-X-Gm-Message-State: APjAAAU4Hcs/eQar5deyMCYLS1d7KAx/s+iFlZjp8BdS4AGUWVTgUmLH
-        6w/PUZX/mUVKL3b5cqCrn90=
-X-Google-Smtp-Source: APXvYqwAsYjMM0oo9dyOsYCAGNmTpoguNLQCyEmqE8L3PnKhVHWPaTs03SQRTq1JEGxcUzOx5CIg6Q==
-X-Received: by 2002:a63:7805:: with SMTP id t5mr4365672pgc.284.1572990898265;
-        Tue, 05 Nov 2019 13:54:58 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
-        by smtp.gmail.com with ESMTPSA id f26sm19710527pgf.22.2019.11.05.13.54.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 13:54:57 -0800 (PST)
-Date:   Tue, 5 Nov 2019 13:54:55 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        Florent Revest <revest@chromium.org>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        KP Singh <kpsingh@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mickael.salaun@ssi.gouv.fr>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
-        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
-Message-ID: <20191105215453.szhdkrvuekwfz6le@ast-mbp.dhcp.thefacebook.com>
-References: <20191104172146.30797-1-mic@digikod.net>
- <20191104172146.30797-5-mic@digikod.net>
- <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
- <c5c6b433-7e6a-c8f8-f063-e704c3df4cc6@schaufler-ca.com>
- <20191105193130.qam2eafnmgvrvjwk@ast-mbp.dhcp.thefacebook.com>
- <637736ef-c48e-ac3b-3eef-8a6a095a96f1@schaufler-ca.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=HsX+1QFT9d8M8onYkicH56ucxJM3dc57YZusD9pWNSM=;
+        b=rSlzY1UtHBCOJQLBFrxHwp676tyEIw3xCQuwDwCZsy3I2en7KSb1ybk0gFQvs3nFRD
+         I7a3yuIqoUnFAtvhZE3ogpj4SW5a1r8b2ttBqsSJwkbbTJ0kFLu0jvKHewCITVlYnvEK
+         l50yzEDF61SlVUqUw1X2S1aWYomo34E0Up97WQhyjVOTYSniD4YxHv6eMayp1q4fvHE3
+         OiHNnH7gg1X58tRW8NA87faYP24Um5IGqLKz+TpCUGtzE5OWR5ohLJYtXgdhm+0jgI9I
+         j0DOqUMGCCo5lq7zy16sIwzup4Z3YcB1/fRTnA+y0pIEex/c+tZsfTbBir9RflQwxbCC
+         4irw==
+X-Gm-Message-State: APjAAAWGyKj451/s5t2LNS6Und9NsSYEubmWM5534EgtDDKttvDgiTvd
+        hM9p/qXi6InIfWzPDEKZ6b/lxg==
+X-Google-Smtp-Source: APXvYqyldlMJ/rsvNqv6pwwxIinu0dv8OPXRrbMOYCOvW5ht5EHdXNXtjAztNlQSJmWgSRHHDVGl5g==
+X-Received: by 2002:ac2:5df4:: with SMTP id z20mr21800930lfq.2.1572990945132;
+        Tue, 05 Nov 2019 13:55:45 -0800 (PST)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y6sm9610893lfj.75.2019.11.05.13.55.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2019 13:55:44 -0800 (PST)
+Date:   Tue, 5 Nov 2019 13:55:36 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "dsahern@gmail.com" <dsahern@gmail.com>,
+        "stephen@networkplumber.org" <stephen@networkplumber.org>,
+        "sbrivio@redhat.com" <sbrivio@redhat.com>,
+        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        Ariel Levkovich <lariel@mellanox.com>
+Subject: Re: [PATCH net-next v2 0/3] VGT+ support
+Message-ID: <20191105135536.5da90316@cakuba.netronome.com>
+In-Reply-To: <3da1761ec4a15db87800a180c521bbc7bf01a5b2.camel@mellanox.com>
+References: <1572551213-9022-1-git-send-email-lariel@mellanox.com>
+        <20191031172330.58c8631a@cakuba.netronome.com>
+        <8d7db56c-376a-d809-4a65-bfc2baf3254f@mellanox.com>
+        <6e0a2b89b4ef56daca9a154fa8b042e7f06632a4.camel@mellanox.com>
+        <20191101172102.2fc29010@cakuba.netronome.com>
+        <358c84d69f7d1dee24cf97cc0ad6fe59d5c313f5.camel@mellanox.com>
+        <78befeac-24b0-5f38-6fd6-f7e1493d673b@gmail.com>
+        <20191104183516.64ba481b@cakuba.netronome.com>
+        <3da1761ec4a15db87800a180c521bbc7bf01a5b2.camel@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <637736ef-c48e-ac3b-3eef-8a6a095a96f1@schaufler-ca.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 11:55:17AM -0800, Casey Schaufler wrote:
-> On 11/5/2019 11:31 AM, Alexei Starovoitov wrote:
-> > On Tue, Nov 05, 2019 at 09:55:42AM -0800, Casey Schaufler wrote:
-> >> On 11/5/2019 9:18 AM, Alexei Starovoitov wrote:
-> >>> On Mon, Nov 04, 2019 at 06:21:43PM +0100, Mickaël Salaün wrote:
-> >>>> Add a first Landlock hook that can be used to enforce a security policy
-> >>>> or to audit some process activities.  For a sandboxing use-case, it is
-> >>>> needed to inform the kernel if a task can legitimately debug another.
-> >>>> ptrace(2) can also be used by an attacker to impersonate another task
-> >>>> and remain undetected while performing malicious activities.
-> >>>>
-> >>>> Using ptrace(2) and related features on a target process can lead to a
-> >>>> privilege escalation.  A sandboxed task must then be able to tell the
-> >>>> kernel if another task is more privileged, via ptrace_may_access().
-> >>>>
-> >>>> Signed-off-by: Mickaël Salaün <mic@digikod.net>
-> >>> ...
-> >>>> +static int check_ptrace(struct landlock_domain *domain,
-> >>>> +		struct task_struct *tracer, struct task_struct *tracee)
-> >>>> +{
-> >>>> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
-> >>>> +		.prog_ctx = {
-> >>>> +			.tracer = (uintptr_t)tracer,
-> >>>> +			.tracee = (uintptr_t)tracee,
-> >>>> +		},
-> >>>> +	};
-> >>> So you're passing two kernel pointers obfuscated as u64 into bpf program
-> >>> yet claiming that the end goal is to make landlock unprivileged?!
-> >>> The most basic security hole in the tool that is aiming to provide security.
-> >>>
-> >>> I think the only way bpf-based LSM can land is both landlock and KRSI
-> >>> developers work together on a design that solves all use cases. BPF is capable
-> >>> to be a superset of all existing LSMs
-> >> I can't agree with this. Nope. There are many security models
-> >> for which BPF introduces excessive complexity. You don't need
-> >> or want the generality of a general purpose programming language
-> >> to implement Smack or TOMOYO. Or a simple Bell & LaPadula for
-> >> that matter. SELinux? I can't imagine anyone trying to do that
-> >> in eBPF, although I'm willing to be surprised. Being able to
-> >> enforce a policy isn't the only criteria for an LSM. 
-> > what are the other criteria?
+On Tue, 5 Nov 2019 20:10:02 +0000, Saeed Mahameed wrote:
+> > > > Now if the only remaining problem is the uAPI, we can minimize
+> > > > kernel impact or even make no kernel changes at all, only ip
+> > > > route2 and drivers, by reusing the current set_vf_vlan_ndo.    
+> > > 
+> > > And this caught my eye as well -- iproute2 does not need the
+> > > baggage either.
+> > > 
+> > > Is there any reason this continued support for legacy sriov can
+> > > not be done out of tree?  
+> > 
+> > Exactly. Moving to upstream is only valuable if it doesn't require
+> > brining all the out-of-tree baggage.  
 > 
-> They include, but are not limited to, performance impact
-> and the ability to be analyzed. 
+> this baggage is a very essential part for eth sriov, it is a missing
+> feature in both switchdev mode (bridge offloads) and legacy.
 
-Right and BPF is the only thing that exists in the kernel where the verifier
-knows precisely the number of instructions the critical path through the
-program will take. Currently we don't quantify this cost for bpf helpers, but
-it's easy to add. Can you do this for smack? Can you tell upfront the longest
-execution time for all security rules?
+AFAIK from uAPI perspective nothing is missing in switchdev mode.
 
-> It has to be fast, or the networking people are
-> going to have fits. You can't require the addition
-> of a pointer into the skb because it'll get rejected
-> out of hand. You can't completely refactor the vfs locking
-> to accommodate you needs.
-
-I'm not sure why you got such impression. I'm not proposing to refactor vfs or
-add fields to skb. Once we have equivalent to smack policy implemented in
-bpf-based lsm let's do performance benchmarking and compare actual numbers
-instead of hypothesizing about them. Which policy do you think would be
-the most representative of smack use case?
-
+> Guys, I need to know my options here and make some effort assessment.
 > 
-> >
-> >> I see many issues with a BPF <-> vfs interface.
-> > There is no such interface today. What do you have in mind?
+> 1) implement bridge offloads: months of development, years for
+> deployment and migration
+> 2) Close this gap in legacy mode: days.
 > 
-> You can't implement SELinux or Smack using BPF without a way
-> to manipulate inode data.
+> I am all IN for bridge offloads, but you have to understand why i pick
+> 2, not because it is cheaper, but because it is more realistic for my
+> current users. Saying no to this just because switchdev mode is the de
+> facto standard isn't fair and there should be an active clear
+> transition plan, with something available to work with ... not just
+> ideas.
 
-Are you talking about inode->i_security ? That's not manipulating inode data.
-It's attaching extra metadata to inode object without changing inode itself.
-BPF can do it already via hash maps. It's not as fast as direct pointer access,
-but for many use cases it's good enough. If it turns out to be a performance
-limiting factor we will accelerate it.
+I understand your perspective. It is cheaper for you.
 
-> >> the mechanisms needed for the concerns of the day. Ideally,
-> >> we should be able to drop mechanisms when we decide that they
-> >> no longer add value.
-> > Exactly. bpf-based lsm must not add to kernel abi.
-> 
-> Huh? I have no idea where that came from.
+> Your claims are valid only when we are truly ready for migration. we
+> are simply not and no one has a clear plan in the horizon, so i don't
+> get this total freeze attitude of legacy mode, 
 
-It sounds to me that some folks in the community got wrong impression that
-anything that BPF accesses is magically turning that thing into stable kernel
-ABI. That is not true. BPF progs had access _all_ kernel data pointers and
-structures for years without turning the whole kernel into stable ABI. I want
-to make sure that this part is understood. This is also a requirement for
-bpf-based LSM. It must not make LSM hooks into stable ABI.
+There will never be any L2 plan unless we say no to legacy extensions.
 
+> it should be just like ethtool we want to to replace it but we know
+> we are not there yet, so we carefully add only necessary things with
+> lots of auditing, same should go here.
+
+Worked out amazingly for ethtool, right?
