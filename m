@@ -2,89 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87ACFF08B2
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 22:50:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85D2EF08B5
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 22:50:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730043AbfKEVu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 16:50:26 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36381 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726751AbfKEVuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 16:50:24 -0500
-Received: by mail-wr1-f65.google.com with SMTP id w18so23303874wrt.3
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 13:50:23 -0800 (PST)
+        id S1730087AbfKEVud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 16:50:33 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:34373 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726751AbfKEVuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 16:50:32 -0500
+Received: by mail-qk1-f194.google.com with SMTP id 205so21356453qkk.1;
+        Tue, 05 Nov 2019 13:50:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Kj6tObPlANZy3AIT+3KSFHW/LsU1ghNrAcg+aySdJ5U=;
-        b=Z3qVc47cis60U2V8oYOc9dhHrgtCGqyp4ACES1XWTEZcXRzB6gAkQpiUxJfBe4npQM
-         KGdTZBg3ykzDgTooacAhXnBP0P0CKdpOCrGfIKjmScyCsqESSrTyuk/gsRULQfbXJAYi
-         Yn8k9ZMT1IbfgKz76jmvuBxnCPEqHF0VpFcBaVxWNykjcFjJ0bEaIGCOvOgL/Vye+DEj
-         t+VYG8omsV267aNYI3zy4tq3j/8MgEgKhx6PXAmIQVw1i0Cgw76B/YQBPUdg6eMHp4Sr
-         LDO3Cmj8nR5s/neRa/erF06HXedtkmzQuvwVOwJcc1LhIx2K/USWunePyyRt1TseAHc0
-         xk6g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H4ZJkkXh66JgD7Y8RaA75Q3ueTUt9xl1ZxQcRHfv1z8=;
+        b=Pid5aTEwjJeMy5eeifg85fPF1KGUW8ncs2WfOityerGiilw1C51PAGUszTnh7F9kMy
+         CQyK17iR2m1qVNimKB9at/w8xEVKZ2yFmVLZ3wewS2CaEsDIWseoaJzl600lbruE0dLC
+         GRMTU8kHHdyXd4GlNKEqC5vE1WkXiiaI1Cv2uNgE/Ak+PPIqYEpr4FkmGlHLTT6fZ3zB
+         SHYW0LX7mxFYX3sHxmv3tn3SA3EDA3FNrzqax+B5Qzo7tLVPx4VA3E8fy/DqovR4eJ34
+         Fj5rg9dsKs76BtcAz333QSH7pZscpj70MVlmZPv8FH+vi7aMkzyoIaRfoX5NhtNZtxB2
+         URkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Kj6tObPlANZy3AIT+3KSFHW/LsU1ghNrAcg+aySdJ5U=;
-        b=Yn028HZiXqoBFn/wyITPkrxg54yRblSLzK/OrByyfYb/IgfnvtmI3tzm25SqiK2W2q
-         9TerSxL5Y+uoPp3J8qVa4MOLSxCUbGTiarC3EOPt59HK78rOlza1wejmi0e8OSWntcKh
-         vL5Yl0UW8ukLQTLSLlc7V2dzRwWFza5buZfAkOF7oJtAe5JCJR861pjMhgKPjXXRvIsB
-         odzFU+oXX4+CClwxxcPTmbBOvodfvFEgDU/9lolZ16udLm6u/UoKFOnjaWixaW0TJEgs
-         3u3SAwp62LMjZY3P1b/4vlJ7YClokjDUATHPAHvIuNMKNs3V6VlyvtiZRY3E7uu/++Ya
-         u4AQ==
-X-Gm-Message-State: APjAAAVl2uXB2Kmda9mkgjdq+/urVQddd/8Q/Oqq/dKOy24NlkclIa/m
-        Jkeh9o2IZ8rkqLDRQYNeKKQ=
-X-Google-Smtp-Source: APXvYqwQW+E59dn9HzhaeyEei0DBYLF3roDiwy5/BMJySs97ZV3oO9WN+1qYl5gCMpmZimZbfk3lPw==
-X-Received: by 2002:adf:ebd2:: with SMTP id v18mr9499352wrn.71.1572990622525;
-        Tue, 05 Nov 2019 13:50:22 -0800 (PST)
-Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id r19sm25389732wrr.47.2019.11.05.13.50.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2019 13:50:22 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     jakub.kicinski@netronome.com, davem@davemloft.net
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com,
-        alexandre.belloni@bootlin.com, netdev@vger.kernel.org,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net 2/2] net: mscc: ocelot: fix NULL pointer on LAG slave removal
-Date:   Tue,  5 Nov 2019 23:50:14 +0200
-Message-Id: <20191105215014.12492-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191105215014.12492-1-olteanv@gmail.com>
-References: <20191105215014.12492-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H4ZJkkXh66JgD7Y8RaA75Q3ueTUt9xl1ZxQcRHfv1z8=;
+        b=B+gUZYSZJvM9eFyJxMTDUTQ8PqLdJJlGg4yot8nEfKSp1hRmxKTT1wCKxMZQqiOKpl
+         oeW8V0tpOb8UEBHOyEJWmOUw75+7BnzDfBMnY1nr79VOgclKcMQcEv3H2w4sYNHAV7X2
+         wrnzE8bC99UTNrJHDbBQwGffErInmtR+GfPQhqAuGZieRDpZJNy+9NT0/UuevdEsS2KK
+         l7sPYlVvw3+XFLC4v3uXjJx/C/rb2OIafHdMMbi1CNu+EzXmc1wZ7YzRiCxReqRMzKqO
+         PaIDdvMqwOUgDpeHon/qvehH4rDZIpkz5lmTQ8uXCO8sNWnDY1C/rLyIwixBzqJw4Zl0
+         SdGw==
+X-Gm-Message-State: APjAAAVfvBhgrfhE3CZH9SoAvBXOWw5HVBb1kzsrZzETEQpAMX5EDvtP
+        GbcARLZE7zWA7aUoKqS2xN2LLptZnAlopBqpoh0=
+X-Google-Smtp-Source: APXvYqzRwq7/iHq3U+iPF4ksumKyEoCIo92JpwqtlZPjGaZvGmv02xVRknwCJrdUVBR/OjG1PW2cHRsXSggnlRW3WTU=
+X-Received: by 2002:a37:aa8b:: with SMTP id t133mr4275429qke.449.1572990630176;
+ Tue, 05 Nov 2019 13:50:30 -0800 (PST)
+MIME-Version: 1.0
+References: <20191102220025.2475981-1-ast@kernel.org> <20191102220025.2475981-8-ast@kernel.org>
+In-Reply-To: <20191102220025.2475981-8-ast@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 5 Nov 2019 13:50:19 -0800
+Message-ID: <CAEf4BzZCHGXCAdVNm2MoxrjgXxNHqXrZgw70j=byQuo4LSNQfg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 7/7] selftests/bpf: Add test for BPF trampoline
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>, x86@kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Claudiu Manoil <claudiu.manoil@nxp.com>
+On Sat, Nov 2, 2019 at 3:04 PM Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> Add sanity test for BPF trampoline that checks kernel functions
+> with up to 6 arguments of different sizes.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  tools/lib/bpf/bpf_helpers.h                   | 13 +++
+>  .../selftests/bpf/prog_tests/fentry_test.c    | 65 ++++++++++++++
+>  .../testing/selftests/bpf/progs/fentry_test.c | 90 +++++++++++++++++++
+>  3 files changed, 168 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/fentry_test.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/fentry_test.c
+>
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index 0c7d28292898..c63ab1add126 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -44,4 +44,17 @@ enum libbpf_pin_type {
+>         LIBBPF_PIN_BY_NAME,
+>  };
+>
+> +/* The following types should be used by BPF_PROG_TYPE_TRACING program to
+> + * access kernel function arguments. BPF trampoline and raw tracepoints
+> + * typecast arguments to 'unsigned long long'.
+> + */
+> +typedef int __attribute__((aligned(8))) ks32;
+> +typedef char __attribute__((aligned(8))) ks8;
+> +typedef short __attribute__((aligned(8))) ks16;
+> +typedef long long __attribute__((aligned(8))) ks64;
+> +typedef unsigned int __attribute__((aligned(8))) ku32;
+> +typedef unsigned char __attribute__((aligned(8))) ku8;
+> +typedef unsigned short __attribute__((aligned(8))) ku16;
+> +typedef unsigned long long __attribute__((aligned(8))) ku64;
+> +
+>  #endif
 
-lag_upper_info may be NULL on slave removal.
+[...]
 
-Fixes: dc96ee3730fc ("net: mscc: ocelot: add bonding support")
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- drivers/net/ethernet/mscc/ocelot.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> +
+> +       err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS,
+> +                           &pkt_obj, &pkt_fd);
+> +       if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
+> +               return;
+> +       err = bpf_prog_load_xattr(&attr, &obj, &kfree_skb_fd);
+> +       if (CHECK(err, "prog_load fail", "err %d errno %d\n", err, errno))
+> +               goto close_prog;
+> +
+> +       for (i = 0; i < 6; i++) {
+> +               prog_name[sizeof(prog_name) - 2] = '1' + i;
+> +               prog[i] = bpf_object__find_program_by_title(obj, prog_name);
+> +               if (CHECK(!prog[i], "find_prog", "prog %s not found\n", prog_name))
+> +                       goto close_prog;
+> +               link[i] = bpf_program__attach_trace(prog[i]);
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index dbf09fcf61f1..672ea1342add 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1724,7 +1724,8 @@ static int ocelot_netdevice_event(struct notifier_block *unused,
- 		struct netdev_lag_upper_info *lag_upper_info = info->upper_info;
- 		struct netlink_ext_ack *extack;
- 
--		if (lag_upper_info->tx_type != NETDEV_LAG_TX_TYPE_HASH) {
-+		if (lag_upper_info &&
-+		    lag_upper_info->tx_type != NETDEV_LAG_TX_TYPE_HASH) {
- 			extack = netdev_notifier_info_to_extack(&info->info);
- 			NL_SET_ERR_MSG_MOD(extack, "LAG device using unsupported Tx type");
- 
--- 
-2.17.1
+CHECK() here?
 
+> +       }
+> +       data_map = bpf_object__find_map_by_name(obj, "fentry_t.bss");
+> +       if (CHECK(!data_map, "find_data_map", "data map not found\n"))
+> +               goto close_prog;
+> +
+> +       err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
+> +                               NULL, NULL, &retval, &duration);
+> +       CHECK(err || retval, "ipv6",
+> +             "err %d errno %d retval %d duration %d\n",
+> +             err, errno, retval, duration);
+> +
+> +       err = bpf_map_lookup_elem(bpf_map__fd(data_map), &zero, &result);
+> +       if (CHECK(err, "get_result",
+> +                 "failed to get output data: %d\n", err))
+> +               goto close_prog;
+> +
+> +       for (i = 0; i < 6; i++)
+> +               if (CHECK(result[i] != 1, "result", "bpf_fentry_test%d failed err %ld\n",
+> +                         i + 1, result[i]))
+> +                       goto close_prog;
+> +
+> +       passed = true;
+> +       CHECK_FAIL(!passed);
+
+passed and CHECK_FAIL are completely redundant?
+
+> +close_prog:
+> +       for (i = 0; i < 6; i++)
+> +               if (!IS_ERR_OR_NULL(link[i]))
+> +                       bpf_link__destroy(link[i]);
+> +       bpf_object__close(obj);
+> +       bpf_object__close(pkt_obj);
+> +}
+
+[...]
