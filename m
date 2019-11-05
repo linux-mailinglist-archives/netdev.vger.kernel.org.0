@@ -2,154 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F303F037D
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48662F0362
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 17:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390399AbfKEQzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 11:55:15 -0500
-Received: from mail.aperture-lab.de ([138.201.29.205]:57106 "EHLO
-        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390060AbfKEQzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:55:15 -0500
-X-Greylist: delayed 307 seconds by postgrey-1.27 at vger.kernel.org; Tue, 05 Nov 2019 11:55:14 EST
-From:   =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue; s=2018;
-        t=1572972606;
+        id S2390226AbfKEQu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 11:50:57 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:22254 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728399AbfKEQu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 11:50:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1572972655;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=A4o+TvT+3DU2TuZZZ5Ukyqq2OA7OUrD/LYDeu136xXo=;
-        b=eKaM8U5anTeSSbpbTfQEDsinYFx/8JXx6rrdvuxtR33xfv34H1McpU2Iwpo94Ei+126A8k
-        29w3ftw7jTj4FJwskOhlMV1Zp03RS+V++a4Mui8gAhhEb9LO8ovQoNv8g/82g036QGF4Az
-        ShI3CiJYa+M3ECi5fYdQf5pDH9ymPyn1nTmW+MQ0QtjP30vWFFBF59c6E3GVlsxv6HTN7L
-        Zlm/LxHkvZFQPqJadbLcTUc7URlB++HU/AXmZx4pezgnrJYLegJG8orlBQ3cjT9nqFoZdS
-        dt5YEzAQe87d1oGQ7tfiGnumm99LM3O3hondz8WEB8NJhgW2QDjxhojEprqQBw==
-To:     ath10k@lists.infradead.org
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ben Greear <greearb@candelatech.com>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <ll@simonwunderlich.de>
-Subject: [PATCH net-next] ath10k: fix RX of frames with broken FCS in monitor mode
-Date:   Tue,  5 Nov 2019 17:49:32 +0100
-Message-Id: <20191105164932.11799-1-linus.luessing@c0d3.blue>
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DEq/4N6z16D+kibBkGDa/kA9t8KJGrCRdBUQy6uE194=;
+        b=aCP80+BpFVXW9q2bKK9XWMdMd4FPzGixMyzL3PJTFsHfjG8BjohepaqUWrP6C9w0BJDSML
+        RMhlsHdaXhsf6Anm5JpmpvdJJEQUPrSbB9hW5Kdor3ZMN9yGa6dvnkbzWH1iWI6vwRQbG6
+        MHVZ9/q1GZy+k5i8yLyPQ4E6LfUw0xc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-Dv4NBosnMKiU07dNahgicg-1; Tue, 05 Nov 2019 11:50:51 -0500
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 99D18800C73;
+        Tue,  5 Nov 2019 16:50:47 +0000 (UTC)
+Received: from gondolin (unknown [10.36.118.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D2771608AC;
+        Tue,  5 Nov 2019 16:50:27 +0000 (UTC)
+Date:   Tue, 5 Nov 2019 17:50:25 +0100
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V8 3/6] mdev: introduce device specific ops
+Message-ID: <20191105175025.1a620844.cohuck@redhat.com>
+In-Reply-To: <20191105093240.5135-4-jasowang@redhat.com>
+References: <20191105093240.5135-1-jasowang@redhat.com>
+        <20191105093240.5135-4-jasowang@redhat.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue;
-        s=2018; t=1572972606;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=A4o+TvT+3DU2TuZZZ5Ukyqq2OA7OUrD/LYDeu136xXo=;
-        b=auYd3bMkXFMp2tggRSB3WRF+GpXQmASYI8pWe/jIXmf3bEcxf3hI9StYZsZZUo1s8VaG7X
-        WvZ54nJJdXz/5Ewd94d9WU6RykrBkLACXE2m3fxyh/1ofJO8qyvjprMpcbeHzj2SLgqV9M
-        gr0FQa5orGMeMDcRXp4Vkp6dyUqbvRx+5qruQW1wgFTp6v3LP0kV4QB32oyGnYMbdN+lDx
-        HGy1YD6TTtRFMom80NKpPtmu1oraEKZR46Zv/uktMPvcXY+o6omAa6jpvXI0LWS2HVWC1s
-        c4Xd3ApQ2RJp171Vae9iRLNTQUHARIxVdOd6YPoGmiV1A50A4/XoeZXTJ3dJ/g==
-ARC-Seal: i=1; s=2018; d=c0d3.blue; t=1572972606; a=rsa-sha256; cv=none;
-        b=Qv6YtoEdX4ewk6c7mjveFfqd8SPLQ/pcDdgTLLQMxlaED05U4f0kbgHUwWWraP9psScsOV
-        roaGaQ+zFVzlBtJucdQXGBjARGzHED5HdnaJPOjo7Y312D/Xa0Ua0o4pUr4LwQz5NdnIat
-        2aSEhx2MiuANhK5np95uLiVzw2XK4bseBYjuNNjX6IR7NaiTO0AFDYlTevck60z48FuWxb
-        4kM4c3WjdjHoKm2BW8TitacGo6H9CxnTgG1g++6j9iy73r0UoODtQ9usQ/0zXdsPcHNJHD
-        ouF7nomAi3O9LDwqWSNlCwKOeb2JkEPrWFDL3F+MQERU0uCf3cM77zdW5b0sKw==
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
-Authentication-Results: ORIGINATING;
-        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-MC-Unique: Dv4NBosnMKiU07dNahgicg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Linus Lüssing <ll@simonwunderlich.de>
+On Tue,  5 Nov 2019 17:32:37 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-So far, frames were forwarded regardless of the FCS correctness leading
-to userspace applications listening on the monitor mode interface to
-receive potentially broken frames, even with the "fcsfail" flag unset.
+> Currently, except for the create and remove, the rest of
+> mdev_parent_ops is designed for vfio-mdev driver only and may not help
+> for kernel mdev driver. With the help of class id, this patch
+> introduces device specific callbacks inside mdev_device
+> structure. This allows different set of callback to be used by
+> vfio-mdev and virtio-mdev.
+>=20
+> Reviewed-by: Parav Pandit <parav@mellanox.com>
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  .../driver-api/vfio-mediated-device.rst       | 35 +++++++++----
+>  MAINTAINERS                                   |  1 +
+>  drivers/gpu/drm/i915/gvt/kvmgt.c              | 18 ++++---
+>  drivers/s390/cio/vfio_ccw_ops.c               | 18 ++++---
+>  drivers/s390/crypto/vfio_ap_ops.c             | 14 +++--
+>  drivers/vfio/mdev/mdev_core.c                 | 24 ++++++++-
+>  drivers/vfio/mdev/mdev_private.h              |  5 ++
+>  drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
+>  include/linux/mdev.h                          | 43 ++++-----------
+>  include/linux/mdev_vfio_ops.h                 | 52 +++++++++++++++++++
+>  samples/vfio-mdev/mbochs.c                    | 20 ++++---
+>  samples/vfio-mdev/mdpy.c                      | 20 ++++---
+>  samples/vfio-mdev/mtty.c                      | 18 ++++---
+>  13 files changed, 206 insertions(+), 99 deletions(-)
+>  create mode 100644 include/linux/mdev_vfio_ops.h
+>=20
 
-By default, with the "fcsfail" flag of a monitor mode interface
-unset, frames with FCS errors should be dropped. With this patch, the
-fcsfail flag is taken into account correctly.
+(...)
 
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Signed-off-by: Linus Lüssing <ll@simonwunderlich.de>
----
-This was tested on an Open Mesh A41 device, featuring a QCA4019. And
-with this firmware:
+> @@ -172,10 +163,34 @@ that a driver should use to unregister itself with =
+the mdev core driver::
+> =20
+>  =09extern void mdev_unregister_device(struct device *dev);
+> =20
+> -It is also required to specify the class_id in create() callback through=
+::
+> +As multiple types of mediated devices may be supported, class id needs
+> +to be specified in the create callback(). This could be done
 
-https://www.candelatech.com/downloads/ath10k-4019-10-4b/firmware-5-ct-full-community-12.bin-lede.011
+The brackets should probably go behind 'create'?
 
-But from looking at the code it seems that the vanilla ath10k has the
-same issue, therefore submitting it here.
+> +explicitly for the device that does not use on mdev bus for its
 
-Changelog RFC->v1:
+"for devices that do not use the mdev bus" ?
 
-* removed "ar->monitor" check
-* added a debug counter
+But why wouldn't they? I feel like I've missed some discussion here :/
 
----
- drivers/net/wireless/ath/ath10k/core.h   |  1 +
- drivers/net/wireless/ath/ath10k/debug.c  |  2 ++
- drivers/net/wireless/ath/ath10k/htt_rx.c | 10 ++++++++++
- 3 files changed, 13 insertions(+)
+> +operation through:
+> =20
+>  =09int mdev_set_class(struct mdev_device *mdev, u16 id);
+> =20
+> +For the device that uses on the mdev bus for its operation, the class
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 4d7db07db6ba..787065a9eb3f 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -1171,6 +1171,7 @@ struct ath10k {
- 
- 	struct {
- 		/* protected by data_lock */
-+		u32 rx_crc_err_drop;
- 		u32 fw_crash_counter;
- 		u32 fw_warm_reset_counter;
- 		u32 fw_cold_reset_counter;
-diff --git a/drivers/net/wireless/ath/ath10k/debug.c b/drivers/net/wireless/ath/ath10k/debug.c
-index bd2b5628f850..5e4cd2966e6f 100644
---- a/drivers/net/wireless/ath/ath10k/debug.c
-+++ b/drivers/net/wireless/ath/ath10k/debug.c
-@@ -1094,6 +1094,7 @@ static const char ath10k_gstrings_stats[][ETH_GSTRING_LEN] = {
- 	"d_rts_good",
- 	"d_tx_power", /* in .5 dbM I think */
- 	"d_rx_crc_err", /* fcs_bad */
-+	"d_rx_crc_err_drop", /* frame with FCS error, dropped late in kernel */
- 	"d_no_beacon",
- 	"d_tx_mpdus_queued",
- 	"d_tx_msdu_queued",
-@@ -1193,6 +1194,7 @@ void ath10k_debug_get_et_stats(struct ieee80211_hw *hw,
- 	data[i++] = pdev_stats->rts_good;
- 	data[i++] = pdev_stats->chan_tx_power;
- 	data[i++] = pdev_stats->fcs_bad;
-+	data[i++] = ar->stats.rx_crc_err_drop;
- 	data[i++] = pdev_stats->no_beacons;
- 	data[i++] = pdev_stats->mpdu_enqued;
- 	data[i++] = pdev_stats->msdu_enqued;
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index 53f1095de8ff..149728588e80 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -1285,6 +1285,16 @@ static void ath10k_process_rx(struct ath10k *ar, struct sk_buff *skb)
- 
- 	status = IEEE80211_SKB_RXCB(skb);
- 
-+	if (!(ar->filter_flags & FIF_FCSFAIL) &&
-+	    status->flag & RX_FLAG_FAILED_FCS_CRC) {
-+		spin_lock_bh(&ar->data_lock);
-+		ar->stats.rx_crc_err_drop++;
-+		spin_unlock_bh(&ar->data_lock);
-+
-+		dev_kfree_skb_any(skb);
-+		return;
-+	}
-+
- 	ath10k_dbg(ar, ATH10K_DBG_DATA,
- 		   "rx skb %pK len %u peer %pM %s %s sn %u %s%s%s%s%s%s %srate_idx %u vht_nss %u freq %u band %u flag 0x%x fcs-err %i mic-err %i amsdu-more %i\n",
- 		   skb,
--- 
-2.24.0.rc2
+"For devices that use the mdev bus..."
+
+But same comment as above.
+
+> +should provide helper function to set class id and device specific
+> +ops. E.g for vfio-mdev devices, the function to be called is::
+> +
+> +=09int mdev_set_vfio_ops(struct mdev_device *mdev,
+> +                              const struct mdev_vfio_device_ops *vfio_op=
+s);
+> +
+> +The class id (set by this function to MDEV_CLASS_ID_VFIO) is used to
+> +match a device with an mdev driver via its id table. The device
+> +specific callbacks (specified in *vfio_ops) are obtainable via
+> +mdev_get_vfio_ops() (for use by the mdev bus driver). A vfio-mdev
+> +device (class id MDEV_CLASS_ID_VFIO) uses the following
+> +device-specific ops:
+> +
+> +* open: open callback of vfio mediated device
+> +* close: close callback of vfio mediated device
+> +* ioctl: ioctl callback of vfio mediated device
+> +* read : read emulation callback
+> +* write: write emulation callback
+> +* mmap: mmap emulation callback
+> +
+>  Mediated Device Management Interface Through sysfs
+>  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+
+Otherwise, looks good.
 
