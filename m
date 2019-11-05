@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 458CFF0603
-	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:31:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0746F0613
+	for <lists+netdev@lfdr.de>; Tue,  5 Nov 2019 20:35:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390911AbfKETbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 14:31:36 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38959 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389691AbfKETbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:31:36 -0500
-Received: by mail-pg1-f194.google.com with SMTP id 29so3745019pgm.6;
-        Tue, 05 Nov 2019 11:31:35 -0800 (PST)
+        id S2403759AbfKETev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 14:34:51 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:33476 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390873AbfKETev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 14:34:51 -0500
+Received: by mail-pl1-f195.google.com with SMTP id ay6so3028225plb.0;
+        Tue, 05 Nov 2019 11:34:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to
          :user-agent;
-        bh=1SeagsDbeuKXlh/lZkZD0AtJ+ZGsb8zVUjbHRp2z3fk=;
-        b=bG3YzgHY/KABC6APZVuTRck1R3V3hiIEonbR4Y6UPz+3BbG8+IUrTEUBpY9wx4cLKU
-         WvBehL3A5X9T9a4/MuQkX6lGV1mUzk/M1UAZwNbbvjcCQ+BAEHcUN6NxOb/AwuB1eYuz
-         JPwltdrZJbOOFMZWqocUM75vGTaHdfq2YeKxFcLsY4+IV1t4WxTicEXPXg6gA0lJCgMN
-         Zg0UeDb9sdgfp0s4VwhDafzWQE6UI3QTlWWZUYuLxLv77dGWb2ON8usVq7+K6cnMAi6j
-         f+7cChq65Br+qn9tL8e9tjke7GwNCdD/2L5f6mlggr82Vb0pkvSgaoprE3BxmhoXkHxq
-         IZQQ==
+        bh=1N/htqrARk7XFY047OGh+oThXywZUGM5Z5FnUPMGMqg=;
+        b=mAp2B7C92CaYNdyezgOABPgYdozzzrKQCwyFgzPU45P0lrmWE65Wa74/IxcIEM0gse
+         +plntHXcLv2PxlSQKLvNi0xe3bycX/S12xUcEGas8UJUEHmGcagNCeAD81YQjWpMjA0Y
+         D5SGZ+NTpst0N9XnSXlaIcC2EledyufG7jq5oeDkseOWdZg1HqGSS2I0P9b5V2P8wb8i
+         Kme5OMLEAGw4pfsV9VxXE4knLtXuRVMAr8EA3gGiRKtOnQeE7gfQ+XFh1YL+3MfkDoig
+         8TV3iAOxt2ScqHNqgu3AkxoAYRn3LamYtvhgzp0bMtWdOPEZEk349NM8yV9mgFeF7UyQ
+         Az2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to:user-agent;
-        bh=1SeagsDbeuKXlh/lZkZD0AtJ+ZGsb8zVUjbHRp2z3fk=;
-        b=FR1ZrTDeY6AoCbENusD3Mor8vm8PZ1NOrZ3Uk58uA3kXmd/pW1mq9DeBd2l882LIYR
-         vVhJrnKSIKgVO302EyC34GKUtcbnTU3Xb63of2l9fRqGqc03QeKleRHwCJRRCes1Ztzq
-         L6H1FRLQKFkwmAO1Xuvv1yJ0MbCrqROZr4mAW4qbUJzU7O371MJokZw6f9G55KMvK4tb
-         +wlE+wgpKK6CvTmlrTRZ/PNEHdHAvVBeNXe1ej9/bAfUc3ZXpQo0FCLLGd5YCY22w3pL
-         pyFIjUrrk8HwfD6mHok+YfsIN/1SpFZl+n3/IMY4mCQ510j7Nk+bb7D75XXmQnrr2/KS
-         IFdg==
-X-Gm-Message-State: APjAAAUvgQymxkGXgBKFKCfwmOvCznkwdw3ykEErW1uYRDwEjOSwjD/C
-        wd0VROX/N6z2yPvJYvSzo1U=
-X-Google-Smtp-Source: APXvYqy/IJZanoWg94nn+q8E66Sh0NTLVCbwR9j2nk1uXc92V5rp3fg98PT8TE2KB5Ylf7r6SRzC+w==
-X-Received: by 2002:a17:90a:6283:: with SMTP id d3mr895052pjj.27.1572982295051;
-        Tue, 05 Nov 2019 11:31:35 -0800 (PST)
+        bh=1N/htqrARk7XFY047OGh+oThXywZUGM5Z5FnUPMGMqg=;
+        b=Tb6VoASHRs7ifmYbjNKGQX1+sER3QhB/wLym0LUc+xsA0L1RMP00vYJkERHWZt3vkp
+         9/6enICEFakCJluvCMViVg11e07BwZFdZ/sMK4F1HXafykKrjlTyRA0le3s6knkH4ZJA
+         cMo2ZgPSlwFmGM4Y3NVMd9oYD7R5NealQicvq6ZV5U5H+ha31HlioWhXQda5cbbfSzXG
+         WIh78Co590WxKKJY8aTcFa6cCcD42YlvLVuUPeCcy8OMDiPFNWXi0q2h94t9beWUnmQl
+         RS4rwqDwXD7qinHzEylZ33qjBAUd8310XMDIAayAGNvqjNMQJpVgFNBMyfSdsdnQ287Z
+         uivA==
+X-Gm-Message-State: APjAAAUscY9FK96HW7PlUbstR6m7mzsqABrUKqKFeV/wqGSBUgX32zQY
+        Q0cAIwT3sFPHphSds3PnMFw=
+X-Google-Smtp-Source: APXvYqxzogIVELW0ABnjq8MFoi/lLyCMWmiDef4qJvDicutDSIOJZuxZL1k8H+rEui8zMJT0shvHwA==
+X-Received: by 2002:a17:902:362:: with SMTP id 89mr34042123pld.71.1572982489721;
+        Tue, 05 Nov 2019 11:34:49 -0800 (PST)
 Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:47d0])
-        by smtp.gmail.com with ESMTPSA id 21sm22270996pfa.170.2019.11.05.11.31.33
+        by smtp.gmail.com with ESMTPSA id n23sm18928061pff.137.2019.11.05.11.34.47
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 11:31:34 -0800 (PST)
-Date:   Tue, 5 Nov 2019 11:31:32 -0800
+        Tue, 05 Nov 2019 11:34:48 -0800 (PST)
+Date:   Tue, 5 Nov 2019 11:34:47 -0800
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+To:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>
+Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
         Andy Lutomirski <luto@amacapital.net>,
+        Casey Schaufler <casey@schaufler-ca.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         David Drysdale <drysdale@google.com>,
         Florent Revest <revest@chromium.org>,
@@ -73,24 +73,25 @@ Cc:     =?utf-8?Q?Micka=C3=ABl_Sala=C3=BCn?= <mic@digikod.net>,
         kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
         linux-security-module@vger.kernel.org, netdev@vger.kernel.org
 Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
-Message-ID: <20191105193130.qam2eafnmgvrvjwk@ast-mbp.dhcp.thefacebook.com>
+Message-ID: <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
 References: <20191104172146.30797-1-mic@digikod.net>
  <20191104172146.30797-5-mic@digikod.net>
  <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
- <c5c6b433-7e6a-c8f8-f063-e704c3df4cc6@schaufler-ca.com>
+ <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <c5c6b433-7e6a-c8f8-f063-e704c3df4cc6@schaufler-ca.com>
+In-Reply-To: <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
 User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 09:55:42AM -0800, Casey Schaufler wrote:
-> On 11/5/2019 9:18 AM, Alexei Starovoitov wrote:
+On Tue, Nov 05, 2019 at 07:01:41PM +0100, Mickaël Salaün wrote:
+> 
+> On 05/11/2019 18:18, Alexei Starovoitov wrote:
 > > On Mon, Nov 04, 2019 at 06:21:43PM +0100, Mickaël Salaün wrote:
 > >> Add a first Landlock hook that can be used to enforce a security policy
 > >> or to audit some process activities.  For a sandboxing use-case, it is
@@ -113,36 +114,47 @@ On Tue, Nov 05, 2019 at 09:55:42AM -0800, Casey Schaufler wrote:
 > >> +			.tracee = (uintptr_t)tracee,
 > >> +		},
 > >> +	};
+> > 
 > > So you're passing two kernel pointers obfuscated as u64 into bpf program
 > > yet claiming that the end goal is to make landlock unprivileged?!
 > > The most basic security hole in the tool that is aiming to provide security.
-> >
-> > I think the only way bpf-based LSM can land is both landlock and KRSI
-> > developers work together on a design that solves all use cases. BPF is capable
-> > to be a superset of all existing LSMs
 > 
-> I can't agree with this. Nope. There are many security models
-> for which BPF introduces excessive complexity. You don't need
-> or want the generality of a general purpose programming language
-> to implement Smack or TOMOYO. Or a simple Bell & LaPadula for
-> that matter. SELinux? I can't imagine anyone trying to do that
-> in eBPF, although I'm willing to be surprised. Being able to
-> enforce a policy isn't the only criteria for an LSM. 
+> How could you used these pointers without dedicated BPF helpers? This
+> context items are typed as PTR_TO_TASK and can't be used without a
+> dedicated helper able to deal with ARG_PTR_TO_TASK. Moreover, pointer
+> arithmetic is explicitly forbidden (and I added tests for that). Did I
+> miss something?
 
-what are the other criteria?
+It's a pointer leak.
 
-> It's got
-> to perform well and integrate with the rest of the system. 
+> 
+> > 
+> > I think the only way bpf-based LSM can land is both landlock and KRSI
+> > developers work together on a design that solves all use cases.
+> 
+> As I said in a previous cover letter [1], that would be great. I think
+> that the current Landlock bases (almost everything from this series
+> except the seccomp interface) should meet both needs, but I would like
+> to have the point of view of the KRSI developers.
+> 
+> [1] https://lore.kernel.org/lkml/20191029171505.6650-1-mic@digikod.net/
+> 
+> > BPF is capable
+> > to be a superset of all existing LSMs whereas landlock and KRSI propsals today
+> > are custom solutions to specific security concerns. BPF subsystem was extended
+> > with custom things in the past. In networking we have lwt, skb, tc, xdp, sk
+> > program types with a lot of overlapping functionality. We couldn't figure out
+> > how to generalize them into single 'networking' program. Now we can and we
+> > should. Accepting two partially overlapping bpf-based LSMs would be repeating
+> > the same mistake again.
+> 
+> I'll let the LSM maintainers comment on whether BPF could be a superset
+> of all LSM, but given the complexity of an access-control system, I have
+> some doubts though. Anyway, we need to start somewhere and then iterate.
+> This patch series is a first step.
 
-what do you mean by that?
-
-> I see many issues with a BPF <-> vfs interface.
-
-There is no such interface today. What do you have in mind?
-
-> the mechanisms needed for the concerns of the day. Ideally,
-> we should be able to drop mechanisms when we decide that they
-> no longer add value.
-
-Exactly. bpf-based lsm must not add to kernel abi.
+I would like KRSI folks to speak up. So far I don't see any sharing happening
+between landlock and KRSI. You're claiming this set is a first step. They're
+claiming the same about their patches. I'd like to set a patchset that was
+jointly developed.
 
