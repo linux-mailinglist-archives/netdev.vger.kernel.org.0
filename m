@@ -2,125 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3391EF14AC
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 12:12:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0D47F14AF
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 12:12:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728097AbfKFLMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 06:12:31 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:32960 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725890AbfKFLMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 06:12:31 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 8615A49141;
-        Wed,  6 Nov 2019 22:12:25 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mail_dkim; t=1573038745; bh=nsPVx
-        +Gy/eCt7BO6nj9LsG0kBPo04HarGc4MmuqLquQ=; b=ey7EWWcLurejZxa97zGjY
-        /YZh7D546VpAUheXMl/e+FsK43blno8xLnsQCztY5/ryqCZ2fwzgrNcjAigStvjB
-        cdRQpxa5wIk3D/z5PGZ14LniF5jXj1yM5O46tsgr8WukB0RK/hl2eHoUDRD9faga
-        c7XSYMVZsIvrQcgzQHezZ4=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id A7rQPwA9KJry; Wed,  6 Nov 2019 22:12:25 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 2DBCA4945B;
-        Wed,  6 Nov 2019 22:12:24 +1100 (AEDT)
-Received: from localhost.localdomain (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id BFE4F49141;
-        Wed,  6 Nov 2019 22:12:23 +1100 (AEDT)
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net-next] tipc: eliminate the dummy packet in link synching
-Date:   Wed,  6 Nov 2019 18:12:17 +0700
-Message-Id: <20191106111217.23178-1-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
+        id S1729896AbfKFLMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 06:12:46 -0500
+Received: from correo.us.es ([193.147.175.20]:44012 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728300AbfKFLMq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 06:12:46 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 29E8E3066AB
+        for <netdev@vger.kernel.org>; Wed,  6 Nov 2019 12:12:41 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 19663CA0F3
+        for <netdev@vger.kernel.org>; Wed,  6 Nov 2019 12:12:41 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 0E909D1905; Wed,  6 Nov 2019 12:12:41 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0C5D9B8001;
+        Wed,  6 Nov 2019 12:12:39 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 06 Nov 2019 12:12:39 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id CF28241E4803;
+        Wed,  6 Nov 2019 12:12:38 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/9] Netfilter fixes for net
+Date:   Wed,  6 Nov 2019 12:12:28 +0100
+Message-Id: <20191106111237.3183-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When preparing tunnel packets for the link failover or synchronization,
-as for the safe algorithm, we added a dummy packet on the pair link but
-never sent it out. In the case of failover, the pair link will be reset
-anyway. But for link synching, it will always result in retransmission
-of the dummy packet after that.
-We have also observed that such the retransmission at the early stage
-when a new node comes in a large cluster will take some time and hard
-to be done, leading to the repeated retransmit failures and the link is
-reset.
+Hi David,
 
-Since in commit 4929a932be33 ("tipc: optimize link synching mechanism")
-we have already built a dummy 'TUNNEL_PROTOCOL' message on the new link
-for the synchronization, there's no need for the dummy on the pair one,
-this commit will skip it when the new mechanism takes in place. In case
-nothing exists in the pair link's transmq, the link synching will just
-start and stop shortly on the peer side.
+The following patchset contains Netfilter fixes for net:
 
-The patch is backward compatible.
+1) Missing register size validation in bitwise and cmp offloads.
 
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Tested-by: Hoang Le <hoang.h.le@dektech.com.au>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- net/tipc/link.c | 29 ++++++++++++++---------------
- 1 file changed, 14 insertions(+), 15 deletions(-)
+2) Fix error code in ip_set_sockfn_get() when copy_to_user() fails,
+   from Dan Carpenter.
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index 999eab592de8..7e36b7ba61a9 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -1728,21 +1728,6 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 		return;
- 
- 	__skb_queue_head_init(&tnlq);
--	__skb_queue_head_init(&tmpxq);
--	__skb_queue_head_init(&frags);
--
--	/* At least one packet required for safe algorithm => add dummy */
--	skb = tipc_msg_create(TIPC_LOW_IMPORTANCE, TIPC_DIRECT_MSG,
--			      BASIC_H_SIZE, 0, l->addr, tipc_own_addr(l->net),
--			      0, 0, TIPC_ERR_NO_PORT);
--	if (!skb) {
--		pr_warn("%sunable to create tunnel packet\n", link_co_err);
--		return;
--	}
--	__skb_queue_tail(&tnlq, skb);
--	tipc_link_xmit(l, &tnlq, &tmpxq);
--	__skb_queue_purge(&tmpxq);
--
- 	/* Link Synching:
- 	 * From now on, send only one single ("dummy") SYNCH message
- 	 * to peer. The SYNCH message does not contain any data, just
-@@ -1768,6 +1753,20 @@ void tipc_link_tnl_prepare(struct tipc_link *l, struct tipc_link *tnl,
- 		return;
- 	}
- 
-+	__skb_queue_head_init(&tmpxq);
-+	__skb_queue_head_init(&frags);
-+	/* At least one packet required for safe algorithm => add dummy */
-+	skb = tipc_msg_create(TIPC_LOW_IMPORTANCE, TIPC_DIRECT_MSG,
-+			      BASIC_H_SIZE, 0, l->addr, tipc_own_addr(l->net),
-+			      0, 0, TIPC_ERR_NO_PORT);
-+	if (!skb) {
-+		pr_warn("%sunable to create tunnel packet\n", link_co_err);
-+		return;
-+	}
-+	__skb_queue_tail(&tnlq, skb);
-+	tipc_link_xmit(l, &tnlq, &tmpxq);
-+	__skb_queue_purge(&tmpxq);
-+
- 	/* Initialize reusable tunnel packet header */
- 	tipc_msg_init(tipc_own_addr(l->net), &tnlhdr, TUNNEL_PROTOCOL,
- 		      mtyp, INT_H_SIZE, l->addr);
--- 
-2.13.7
+3) Oneliner to copy MAC address in IPv6 hash:ip,mac sets, from
+   Stefano Brivio.
 
+4) Missing policy validation in ipset with NL_VALIDATE_STRICT,
+   from Jozsef Kadlecsik.
+
+5) Fix unaligned access to private data area of nf_tables instructions,
+   from Lukas Wunner.
+
+6) Relax check for object updates, reported as a regression by
+   Eric Garver, patch from Fernando Fernandez Mancera.
+
+7) Crash on ebtables dnat extension when used from the output path.
+   From Florian Westphal.
+
+8) Fix bogus EOPNOTSUPP when updating basechain flags.
+
+9) Fix bogus EBUSY when updating a basechain that is already offloaded.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 1204c70d9dcba31164f78ad5d8c88c42335d51f8:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2019-11-01 17:48:11 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 774e4d34dbebc9dc441535c4712794d336a9478c:
+
+  Merge branch 'master' of git://blackhole.kfki.hu/nf (2019-11-04 20:59:00 +0100)
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      netfilter: ipset: Fix an error code in ip_set_sockfn_get()
+
+Fernando Fernandez Mancera (1):
+      netfilter: nf_tables: fix unexpected EOPNOTSUPP error
+
+Florian Westphal (1):
+      bridge: ebtables: don't crash when using dnat target in output chains
+
+Jozsef Kadlecsik (1):
+      netfilter: ipset: Fix nla_policies to fully support NL_VALIDATE_STRICT
+
+Lukas Wunner (1):
+      netfilter: nf_tables: Align nft_expr private data to 64-bit
+
+Pablo Neira Ayuso (4):
+      netfilter: nf_tables_offload: check for register data length mismatches
+      netfilter: nf_tables: bogus EOPNOTSUPP on basechain update
+      netfilter: nf_tables_offload: skip EBUSY on chain update
+      Merge branch 'master' of git://blackhole.kfki.hu/nf
+
+Stefano Brivio (1):
+      netfilter: ipset: Copy the right MAC address in hash:ip,mac IPv6 sets
+
+ include/net/netfilter/nf_tables.h        |  3 +-
+ net/bridge/netfilter/ebt_dnat.c          | 19 ++++++++++---
+ net/netfilter/ipset/ip_set_core.c        | 49 +++++++++++++++++++++-----------
+ net/netfilter/ipset/ip_set_hash_ipmac.c  |  2 +-
+ net/netfilter/ipset/ip_set_hash_net.c    |  1 +
+ net/netfilter/ipset/ip_set_hash_netnet.c |  1 +
+ net/netfilter/nf_tables_api.c            |  7 ++---
+ net/netfilter/nf_tables_offload.c        |  3 +-
+ net/netfilter/nft_bitwise.c              |  5 ++--
+ net/netfilter/nft_cmp.c                  |  2 +-
+ 10 files changed, 62 insertions(+), 30 deletions(-)
