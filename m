@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0F7F215D
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 23:05:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7079FF215E
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 23:05:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727559AbfKFWFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 17:05:42 -0500
+        id S1732663AbfKFWFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 17:05:44 -0500
 Received: from mail-eopbgr20050.outbound.protection.outlook.com ([40.107.2.50]:38020
         "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726779AbfKFWFm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 17:05:42 -0500
+        id S1726957AbfKFWFo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 17:05:44 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nPYCTyxpPOWxy64cw+lDGwhY5468GE1tE/bNuef53lmV1OdbFMN64/p9l69lml63vOmBukBWLwe6CZS+gUVeDnQ3+fw68QINL1+43DHcFWqYxg4Rk15qmaCD/ZJf361B3C4l3OZ9BDp023Iz2mf718kII3W9MiAV+rxoJLGYCXtOYZMCDvLNLnMrx2OXDaKwlYI2AN9xnngyXUQvkbvF5qUo8ZyIUSptIxvOB1fcNwzLBjl24vbkMDQxa/EphDqRGn+FQWemXeQ2aClrJsZUHYijwz3u8Ot0KteTySw07oBo4WgSYq3Mq/pdYsBJwf90T4zZw/ZxGx35cltROsfijA==
+ b=nYE1tR6pDwXPPGZTpSemWQT0gzy6nHFbxzVgK4WVQFUwYMpcvvLZ8JsRLCPLcF+plhrZOwIAKb2RTKGQYkiKl5vPDxb5bYT9PbpqNrMKJ8c8NHbRyoWNfON7NIQqBT4e8nkh2XZSfU9oddJ/xQQJSU8Mmn5y9+S/FQretQROq3RsZL3beUaIYczZkvOtviBNH76FmaEcUOMMP4jwGyDQLsj0oKe5z1wnVzJji+AwFfJNqaoGavxtkMlwcMKJVxXRjhG4/z4uvOq9f67dOl8q4XJHz8K1IikQ5KB9WLXTnqiDiCHw3TjQ73GSGxjsCUs4fZJuo02W3nTcP5BaNuns0A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5PnNc7R8lIQzTPyE0H4Q10WVYBq7cPf0AR8PQDwEyGA=;
- b=HoTx18dOvt3ljzWEBjJVYLzOdraoqNWf5jnrnJH+1ZaBxlsTcBgmGBRllSowOlP4Je1ZYjSH8d9l700A3TFKdXdNX9UI0/BfNtizrIM1/CA+aXr+tqdPeHNyevVbyalViPA1OQIB28minoZWMuAwVe5jtwIAGBI0mBsp3UsZe/D4IZD7lEtd/1rJrUSzgBVAGcqB3o57hs4z805z9PBpUJ41yUMQR+38qEx2ionpcArf/vlztVUbH9xu5/cU5kt/FSvkLg/mO31TMX1vEsgwBihO+Fr8iu9S9l59DlmS5CZk83CQkmZ76vcphr54vMazXczVw3Qz09WOut6DagXigA==
+ bh=2dhU0kicfw+TYomq5Ae7jEMGQgH1qDQ7imwDlOhF1sQ=;
+ b=HPjGsqHio4wlzLUeqfit6QFxSHEwGh+Q30drKu3v7d/Z+rrKnyWQTg6sTb6c2oCPS2oxeXkQJ93VhIEO1L9/OTPFCfiojJhqfHMd1WqklUQAz8dgpisecktbCKlEEG1gsdKIQQf4doJE8NTCyHv16SdrZlL9zINELB21q0VWSGzOEYc96GsKJ8lJfuSJsVjqmH3BCUkpMsK/7iIMB+Sl/jz5btXxjASPfRxnJmOm4zKyaQDsnHPKf9oAAlEp4pp6rYMhK0gz7DXCW8LEq+jE34zsa8Eu3fqNCBj72vCQllMhXG0ToMcGLOIAH61hPPSzVwBcHVYb5BC613hixgHZJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5PnNc7R8lIQzTPyE0H4Q10WVYBq7cPf0AR8PQDwEyGA=;
- b=G8h9SE1zenRApSVgKdiMaJDy01un52L0xfiY0PilNJYJna1N0V5C3y85zkr/7v7WVlPaJ3bTOgebeHTouuzyMafMIcqSsin55iP/07QR5tDoF5Q2cI4hFGIegRhtESvV88hyPDx+3JnWJpvWs3L7GeLAPg8y1KJigWBu67EyQX8=
+ bh=2dhU0kicfw+TYomq5Ae7jEMGQgH1qDQ7imwDlOhF1sQ=;
+ b=TgWgTBZsz21gVp6kEyb5uJ5GXHHyUHTh0duG2IWyAqDZUrKYj8qYfmGD7mHE/cTzZ7u7Ahe7Rqz8Nm0kaPpa0mflvcjSaF1AdonJ9B+3/+KnzRloo6q9+OLBURwabjvWmU6+LkRMmFKVfk1vOuFWCusZCqeZGeQBOUAZZrjYzvs=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB5549.eurprd05.prod.outlook.com (20.177.203.87) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2408.24; Wed, 6 Nov 2019 22:05:38 +0000
+ 15.20.2408.24; Wed, 6 Nov 2019 22:05:40 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2408.024; Wed, 6 Nov 2019
- 22:05:38 +0000
+ 22:05:40 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Roi Dayan <roid@mellanox.com>,
+        Eli Britstein <elibr@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [pull request][net 0/4] Mellanox, mlx5 fixes 2019-11-06
-Thread-Topic: [pull request][net 0/4] Mellanox, mlx5 fixes 2019-11-06
-Thread-Index: AQHVlO5SU6K0h9cGTUCcQXXxR8u8ew==
-Date:   Wed, 6 Nov 2019 22:05:38 +0000
-Message-ID: <20191106220523.18855-1-saeedm@mellanox.com>
+Subject: [net 1/4] net/mlx5e: Fix eswitch debug print of max fdb flow
+Thread-Topic: [net 1/4] net/mlx5e: Fix eswitch debug print of max fdb flow
+Thread-Index: AQHVlO5TgTDZHPzIsUC4dsNNzkxCZw==
+Date:   Wed, 6 Nov 2019 22:05:40 +0000
+Message-ID: <20191106220523.18855-2-saeedm@mellanox.com>
+References: <20191106220523.18855-1-saeedm@mellanox.com>
+In-Reply-To: <20191106220523.18855-1-saeedm@mellanox.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -58,79 +62,64 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0c9ae00b-fa22-4a67-d4db-08d7630574b8
+x-ms-office365-filtering-correlation-id: 537e50d7-3079-4b28-70c4-08d7630575cf
 x-ms-traffictypediagnostic: VI1PR05MB5549:|VI1PR05MB5549:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5549FE70E0FC7D27315C1154BE790@VI1PR05MB5549.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:773;
+x-microsoft-antispam-prvs: <VI1PR05MB554919330599F529B7D54175BE790@VI1PR05MB5549.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1107;
 x-forefront-prvs: 02135EB356
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(366004)(376002)(346002)(199004)(189003)(66066001)(71200400001)(6512007)(6486002)(316002)(476003)(25786009)(305945005)(36756003)(14444005)(86362001)(66476007)(66556008)(52116002)(64756008)(256004)(66946007)(2616005)(4326008)(386003)(26005)(186003)(7736002)(50226002)(107886003)(478600001)(6506007)(102836004)(8936002)(1076003)(66446008)(14454004)(99286004)(81166006)(5660300002)(6916009)(486006)(8676002)(81156014)(54906003)(6436002)(6116002)(3846002)(2906002)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5549;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(366004)(376002)(346002)(199004)(189003)(66066001)(71200400001)(6512007)(6486002)(316002)(476003)(25786009)(305945005)(36756003)(14444005)(86362001)(66476007)(66556008)(52116002)(64756008)(256004)(66946007)(2616005)(11346002)(4326008)(446003)(386003)(26005)(186003)(7736002)(50226002)(107886003)(478600001)(6506007)(102836004)(8936002)(1076003)(66446008)(14454004)(99286004)(81166006)(5660300002)(6916009)(486006)(8676002)(81156014)(54906003)(6436002)(6116002)(3846002)(2906002)(76176011)(71190400001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5549;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gToxC58PozmFS6hH8Lh0rkj6G8Wd01eZdgjjERpzs1rkU4EvmA45q+5OJYO4NZakIf/0AYdP81yEdvYdszAiyqNoArVsPtJ93fQXUVoetgCIAz39tnWTirRf72ks0HCxu0CBrDLLs83rMNe6bAYNV/J74N1F3RFqF+2LIksnRiktPfrYGGcu+Z93GaaXyF7OOn35nni53LeI6t0dfdqqx8ikd+qZYUaH3wCGfbgXitYaJDogU9y0AKGH54RZEtnGzUzR2leYezitud8Uni/rJ0hVzsu89Jm+my6g7/TylwqraOeNAoz3VXhjUn/nTkpNWMy4Duh9xl7UZfTWzz5cQFkDiRQzjInusV6akDhaB/OpA+fPzrcztmu6Ybqn1v+OhW0Hg0Ea/j+b709FR4AjNBOXauUWW1nLiqbK+2fB8+7GTSejDg9ZNjEhW0d3Xb6h
+x-microsoft-antispam-message-info: zdxv0IDatJbXUU1E26rtZ/K2mvu9NnsHpkgqTsViSnfkOa4AB+wOlsDMIgZsqSQaRO3hXJR8ABbdJ0g6SfOslRTRFAviA7MmrYkPHrTigHUbijmSbdrsQgvrbAt2X5KBlm0U7o6tyNumm2m0zDjGeqdzIvLWfySv2xSZy/mTxSa0ZB2OWGotB7Z/xogtte3Uz8g6FEw4b4+6NJ3/b5oVRWEMATvBSrC8oPHpF7KeAVHUGyIjY2kf/5kX2RHQwhEY5B8c4VuloV9C20BXX8SYhJqRd/Xx4jnTGz78oJDURQQihAMngTYZEmqyCYl56ZExJ0b/N7w0Ya0Ah+5EDTlmeZDY3EwuzUyLiDB1MxnBblQtPpi8M1x6zMlIWoBDVvcOVw/P4Tw89ypl0h1MNaZcZUQ2l7TiTdGS3Fi1a1pTJhaKJtFhx9CY1etS6+Ft5g6p
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c9ae00b-fa22-4a67-d4db-08d7630574b8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 22:05:38.2369
+X-MS-Exchange-CrossTenant-Network-Message-Id: 537e50d7-3079-4b28-70c4-08d7630575cf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 22:05:40.1648
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jsDL5qrxNISU2k8DA8J4ycv8EtkINmm6lfw4bZJWSljcW2zjVrsc5LNQmyP0nozUmUR5c4wmLtaXllDFYGEcBQ==
+X-MS-Exchange-CrossTenant-userprincipalname: zdTgK+JI5JBJ2X12cH5xySz2GsS+/gxaiNJtyxJFV3zMMqFkNQERGCCO4Q0vZ/ctqrDBLgtBzA9xx+xrOc8ZvA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5549
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+From: Roi Dayan <roid@mellanox.com>
 
-This series introduces some fixes to mlx5 driver.
+The value is already the calculation so remove the log prefix.
 
-Please pull and let me know if there is any problem.
-
-No -stable this time.
-
-Thanks,
-Saeed.
-
+Fixes: e52c28024008 ("net/mlx5: E-Switch, Add chains and priorities")
+Signed-off-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Eli Britstein <elibr@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
-The following changes since commit cc59dbcc5ddda532c9da054977d2dfc8f7338735=
-:
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  Merge branch 'net-bcmgenet-restore-internal-EPHY-support' (2019-11-06 10:=
-46:22 -0800)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/d=
+rivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 369499e88fe8..9004a07e457a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1079,7 +1079,7 @@ static int esw_create_offloads_fdb_tables(struct mlx5=
+_eswitch *esw, int nvports)
+ 			    MLX5_CAP_GEN(dev, max_flow_counter_15_0);
+ 	fdb_max =3D 1 << MLX5_CAP_ESW_FLOWTABLE_FDB(dev, log_max_ft_size);
+=20
+-	esw_debug(dev, "Create offloads FDB table, min (max esw size(2^%d), max c=
+ounters(%d), groups(%d), max flow table size(2^%d))\n",
++	esw_debug(dev, "Create offloads FDB table, min (max esw size(2^%d), max c=
+ounters(%d), groups(%d), max flow table size(%d))\n",
+ 		  MLX5_CAP_ESW_FLOWTABLE_FDB(dev, log_max_ft_size),
+ 		  max_flow_counter, ESW_OFFLOADS_NUM_GROUPS,
+ 		  fdb_max);
+--=20
+2.21.0
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-f=
-ixes-2019-11-06
-
-for you to fetch changes up to 950d3af70ea89cf7ac51d734a634174013631192:
-
-  net/mlx5e: Use correct enum to determine uplink port (2019-11-06 14:03:55=
- -0800)
-
-----------------------------------------------------------------
-mlx5-fixes-2019-11-06
-
-----------------------------------------------------------------
-Alex Vesker (2):
-      net/mlx5: DR, Fix memory leak in modify action destroy
-      net/mlx5: DR, Fix memory leak during rule creation
-
-Dmytro Linkin (1):
-      net/mlx5e: Use correct enum to determine uplink port
-
-Roi Dayan (1):
-      net/mlx5e: Fix eswitch debug print of max fdb flow
-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c         | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_termtbl.c | 3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_action.c       | 1 +
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_rule.c         | 2 ++
- 4 files changed, 6 insertions(+), 2 deletions(-)
