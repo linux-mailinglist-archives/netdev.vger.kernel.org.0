@@ -2,134 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 566E7F18D7
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:38:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC5B0F18D4
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:38:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732024AbfKFOie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 09:38:34 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:33509 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728263AbfKFOid (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 09:38:33 -0500
-Received: by mail-qv1-f66.google.com with SMTP id x14so1484735qvu.0;
-        Wed, 06 Nov 2019 06:38:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=2Tb1/hKPm3+F/7SxGWBVse5bTUY23XeqNi5ZvlET660=;
-        b=Stc+piijACmbqLmfIaNMerDt+3mSvPTp9EDYb8CTHWBKS97GI4Nk1wUD0j75+zcJl7
-         0Jl0vxfC7Jxkejmi1+TsejqDm4KRg7vIzCwaWvfpBDt6NrRXs3pAbZejR9KPtaQ9T/e3
-         5rEF2FAnsCn8zYaWjdokSrCTy9SewqRXYcbqzzIdBwACJ5WQI4jLyFbleTj2OMoVTHlK
-         TVgb8mKNEBac9FQNKbqBJGPACK38k74e9toigtbANebX6amhZDU03dzzFL/5BG5biZyc
-         qPLdUSEsIlUDG+0NbzcYH1Un4ytHB1ZMuywsKbpA4X/J1oAdU1V79hMJ/q8KRU74hKJF
-         JPjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2Tb1/hKPm3+F/7SxGWBVse5bTUY23XeqNi5ZvlET660=;
-        b=IefuYTZl0FjBoLXr+THTpq4eHmntQsk+17WTlSvKPhUIMb6lXSriHhiEhZUjerTXZX
-         vVnNrVog0mn5ieZ7YgoW/EaaHLBXq5fLbkPE+3ygpUM7y9HWfZnbyUEM6u42EHlsvenm
-         PL0bsNfOkVkhHTvUcKZGcuH6pgGAnGxXIy2DTpHmqGAINBfCNJF/mqMf29+4d+/ypNQL
-         rYPqNLIRPQEBfsJaZL1RyKtHkN/bh/ex5//qVzTdZkTK7R5lDkTavDGjJypceXapZHbn
-         NbFYmGqYlCchXuH7vJzC/UCbRtvf5VZ59jVrzyc6J2nsWg+qRnEqwo9LiIQAfpT9crJX
-         75kw==
-X-Gm-Message-State: APjAAAUwVx7npPAC3NryvGE4VaMLWmD8sMOuTmP+ZdodW/WwLoBsDepx
-        aW3cf2E7VeBOg3Qn765HvTM=
-X-Google-Smtp-Source: APXvYqxwWl+80VoXg6lS9d2SqPUKiAy6KnGHMizGL4Ig6KpmeW1xxH36WWYTcNNr2MDRkyVXQhEGKw==
-X-Received: by 2002:a0c:fecc:: with SMTP id z12mr2430282qvs.189.1573051112224;
-        Wed, 06 Nov 2019 06:38:32 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id r2sm14873968qtc.28.2019.11.06.06.38.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2019 06:38:31 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id A667740B1D; Wed,  6 Nov 2019 11:38:29 -0300 (-03)
-Date:   Wed, 6 Nov 2019 11:38:29 -0300
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v5 08/10] perf tools: if pmu configuration fails free
- terms
-Message-ID: <20191106143829.GF6259@kernel.org>
-References: <20191025180827.191916-1-irogers@google.com>
- <20191030223448.12930-1-irogers@google.com>
- <20191030223448.12930-9-irogers@google.com>
- <20191106142408.GF30214@krava>
+        id S1731976AbfKFOiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 09:38:24 -0500
+Received: from mga17.intel.com ([192.55.52.151]:50000 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731929AbfKFOiY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 09:38:24 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 06:38:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,275,1569308400"; 
+   d="scan'208";a="214264460"
+Received: from dpdk-virtio-tbie-2.sh.intel.com (HELO ___) ([10.67.104.74])
+  by orsmga002.jf.intel.com with ESMTP; 06 Nov 2019 06:38:21 -0800
+Date:   Wed, 6 Nov 2019 22:39:07 +0800
+From:   Tiwei Bie <tiwei.bie@intel.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     jasowang@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        lingshan.zhu@intel.com
+Subject: Re: [PATCH v5] vhost: introduce mdev based hardware backend
+Message-ID: <20191106143907.GA10776@___>
+References: <20191105115332.11026-1-tiwei.bie@intel.com>
+ <20191106075733-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191106142408.GF30214@krava>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191106075733-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Wed, Nov 06, 2019 at 03:24:08PM +0100, Jiri Olsa escreveu:
-> On Wed, Oct 30, 2019 at 03:34:46PM -0700, Ian Rogers wrote:
-> > Avoid a memory leak when the configuration fails.
+On Wed, Nov 06, 2019 at 07:59:02AM -0500, Michael S. Tsirkin wrote:
+> On Tue, Nov 05, 2019 at 07:53:32PM +0800, Tiwei Bie wrote:
+> > This patch introduces a mdev based hardware vhost backend.
+> > This backend is built on top of the same abstraction used
+> > in virtio-mdev and provides a generic vhost interface for
+> > userspace to accelerate the virtio devices in guest.
 > > 
-> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > This backend is implemented as a mdev device driver on top
+> > of the same mdev device ops used in virtio-mdev but using
+> > a different mdev class id, and it will register the device
+> > as a VFIO device for userspace to use. Userspace can setup
+> > the IOMMU with the existing VFIO container/group APIs and
+> > then get the device fd with the device name. After getting
+> > the device fd, userspace can use vhost ioctls on top of it
+> > to setup the backend.
+> > 
+> > Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
 > 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+> So at this point, looks like the only thing missing is IFC, and then all
+> these patches can go in.
+> But as IFC is still being worked on anyway, it makes sense to
+> address the minor comments manwhile so we don't need
+> patches on top.
+> Right?
 
-Thanks, applied,
+Yeah, of course.
 
-- Arnaldo
- 
-> thanks,
-> jirka
-> 
-> > ---
-> >  tools/perf/util/parse-events.c | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-> > index 578288c94d2a..a0a80f4e7038 100644
-> > --- a/tools/perf/util/parse-events.c
-> > +++ b/tools/perf/util/parse-events.c
-> > @@ -1388,8 +1388,15 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
-> >  	if (get_config_terms(head_config, &config_terms))
-> >  		return -ENOMEM;
-> >  
-> > -	if (perf_pmu__config(pmu, &attr, head_config, parse_state->error))
-> > +	if (perf_pmu__config(pmu, &attr, head_config, parse_state->error)) {
-> > +		struct perf_evsel_config_term *pos, *tmp;
-> > +
-> > +		list_for_each_entry_safe(pos, tmp, &config_terms, list) {
-> > +			list_del_init(&pos->list);
-> > +			free(pos);
-> > +		}
-> >  		return -EINVAL;
-> > +	}
-> >  
-> >  	evsel = __add_event(list, &parse_state->idx, &attr,
-> >  			    get_config_name(head_config), pmu,
-> > -- 
-> > 2.24.0.rc1.363.gb1bccd3e3d-goog
-> > 
-
--- 
-
-- Arnaldo
+Thanks,
+Tiwei
