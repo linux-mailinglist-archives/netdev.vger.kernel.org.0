@@ -2,86 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D435EF162E
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 13:39:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 010C5F1636
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 13:42:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731600AbfKFMjf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 07:39:35 -0500
-Received: from mx2.suse.de ([195.135.220.15]:56464 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727652AbfKFMjf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 07:39:35 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 6E0A0B1DF;
-        Wed,  6 Nov 2019 12:39:33 +0000 (UTC)
-Message-ID: <1573043012.3090.24.camel@suse.com>
-Subject: Re: KMSAN: uninit-value in cdc_ncm_set_dgram_size
-From:   Oliver Neukum <oneukum@suse.com>
-To:     syzbot <syzbot+0631d878823ce2411636@syzkaller.appspotmail.com>,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Date:   Wed, 06 Nov 2019 13:23:32 +0100
-In-Reply-To: <00000000000013c4c1059625a655@google.com>
-References: <00000000000013c4c1059625a655@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.26.6 
-Mime-Version: 1.0
+        id S1729286AbfKFMmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 07:42:31 -0500
+Received: from www62.your-server.de ([213.133.104.62]:33528 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727652AbfKFMmb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 07:42:31 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iSKdh-0002NZ-9a; Wed, 06 Nov 2019 13:42:21 +0100
+Received: from [2a02:120b:c3f4:3fe0:7967:2209:7be1:fcc9] (helo=pc-11.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iSKdg-000U9x-Vw; Wed, 06 Nov 2019 13:42:21 +0100
+Subject: Re: [PATCH net-next 2/2] selftests: bpf: log direct file writes
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com
+References: <20191105212612.10737-1-jakub.kicinski@netronome.com>
+ <20191105212612.10737-3-jakub.kicinski@netronome.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <210f02e0-c5e4-3a39-6124-e0b2eb6c545d@iogearbox.net>
+Date:   Wed, 6 Nov 2019 13:42:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20191105212612.10737-3-jakub.kicinski@netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25625/Wed Nov  6 10:44:04 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Mittwoch, den 30.10.2019, 12:22 -0700 schrieb syzbot:
-> Hello,
+On 11/5/19 10:26 PM, Jakub Kicinski wrote:
+> Recent changes to netdevsim moved creating and destroying
+> devices from netlink to sysfs. The sysfs writes have been
+> implemented as direct writes, without shelling out. This
+> is faster, but leaves no trace in the logs. Add explicit
+> logs to make debugging possible.
 > 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    96c6c319 net: kasan: kmsan: support CONFIG_GENERIC_CSUM on..
-#syz test: https://github.com/google/kmsan.git 96c6c319
+> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-From 23a6624cf7d8e146c35f2eec135d6c22e24f9a2e Mon Sep 17 00:00:00 2001
-From: Oliver Neukum <oneukum@suse.com>
-Date: Tue, 5 Nov 2019 12:04:44 +0100
-Subject: [PATCH] CDC-NCM: handle incomplete transfer of MTU
+Assuming this goes directly to net-next, so:
 
-A malicious device may give half an answer when asked
-for its MTU. The driver will proceed after this with
-a garbage MTU. Anything but a complete answer must be treated
-as an error.
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
 
-V2: used sizeof as request by Alexander
-
-Reported-by: syzbot+0631d878823ce2411636@syzkaller.appspotmail.com
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
----
- drivers/net/usb/cdc_ncm.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 00cab3f43a4c..a245597a3902 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -578,8 +578,8 @@ static void cdc_ncm_set_dgram_size(struct usbnet *dev, int new_size)
- 	/* read current mtu value from device */
- 	err = usbnet_read_cmd(dev, USB_CDC_GET_MAX_DATAGRAM_SIZE,
- 			      USB_TYPE_CLASS | USB_DIR_IN | USB_RECIP_INTERFACE,
--			      0, iface_no, &max_datagram_size, 2);
--	if (err < 0) {
-+			      0, iface_no, &max_datagram_size, sizeof(max_datagram_size));
-+	if (err < sizeof(max_datagram_size)) {
- 		dev_dbg(&dev->intf->dev, "GET_MAX_DATAGRAM_SIZE failed\n");
- 		goto out;
- 	}
-@@ -590,7 +590,7 @@ static void cdc_ncm_set_dgram_size(struct usbnet *dev, int new_size)
- 	max_datagram_size = cpu_to_le16(ctx->max_datagram_size);
- 	err = usbnet_write_cmd(dev, USB_CDC_SET_MAX_DATAGRAM_SIZE,
- 			       USB_TYPE_CLASS | USB_DIR_OUT | USB_RECIP_INTERFACE,
--			       0, iface_no, &max_datagram_size, 2);
-+			       0, iface_no, &max_datagram_size, sizeof(max_datagram_size));
- 	if (err < 0)
- 		dev_dbg(&dev->intf->dev, "SET_MAX_DATAGRAM_SIZE failed\n");
- 
--- 
-2.16.4
-
+Thanks!
