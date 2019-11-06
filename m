@@ -2,136 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F755F0E74
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 06:39:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EACE7F0E7D
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 06:44:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731075AbfKFFji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 00:39:38 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35836 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730987AbfKFFjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 00:39:37 -0500
-Received: by mail-lj1-f193.google.com with SMTP id r7so15889088ljg.2
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 21:39:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nheAZEvkv4WhdWdV6TIir5cz0kQhP+59XXc12ABo7pc=;
-        b=kIYeAYrjHWg2GFGOpruAxujtdh3wbmCUraF4IyCwX5CD3O+a5H+wkCMLewdc/yD+dG
-         B5NL9ZmEAkj46hq0oQs+Sk4d9BWvkqoDm65Bg7J1Rg2asaqQw60iKiD7zRiwk1ECZNJ6
-         qBrI3T6rtNj7iwsduxGGDfY/Q38OgQfKubGAdNeGjFxQLQu/nA+GtbgxBB4ANi22Qb2c
-         lH9D0F2TAhD1kevPGtibF4qTf2OAgQo14UaMZ0PqeTX66I+tuBlnLl0UqJiHj9Amz0bA
-         MPlWCIWcwtwH3uz9zURJxVJapjR0EbBQRPE77Ef/2DfFD8YzTFeKG1nNcJelblYltZD2
-         wfqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nheAZEvkv4WhdWdV6TIir5cz0kQhP+59XXc12ABo7pc=;
-        b=Hbtv6Dz+h6X/c3WIJ5WMZUoLY6835s3VE3D5x8LuciNGqAD8qc2l6Ev1Yv9USwn5AN
-         JjymalOKrsK0A+U/Jekv/9YyATVdfmu/yycRxBWJM35yR8OifwIbjYLRkJXDmJ/I1LXM
-         PbF/uEuYwwWBwD6iRawZxvFXrrEulUmH9oFEu8ArJ3/15PRunDgSrgAW6VD9kUl8ldGT
-         uhDTgxNbj/LuhF3AlwWgL+bKoO2qawElTJ6gnMcUYI39siClm23/jfPmJzGqUeC7qTLE
-         cVgdlvsUpX9nj3SfjtcFKBiNnd17ijgOTwY699pUwg68ENi+QmoOBxKGBJgIlc8S58bm
-         ZpEQ==
-X-Gm-Message-State: APjAAAWx99qDIyJW0maBQxXhVBOpeJazFOdh2joa4wkPNgqUOcQBKtjF
-        g9dRrCVzL7fyi6ZzGAryeHfbFA==
-X-Google-Smtp-Source: APXvYqwH8nu8dAepTAIesKpvaxxiBkagLjJ0C6Ab793jliy5lUDersmIqUqtZOtwmPNecAeXH/iGbw==
-X-Received: by 2002:a2e:970e:: with SMTP id r14mr399846lji.57.1573018774960;
-        Tue, 05 Nov 2019 21:39:34 -0800 (PST)
-Received: from mimer.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id c22sm754737ljk.43.2019.11.05.21.39.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2019 21:39:34 -0800 (PST)
-From:   Jonas Bonn <jonas@norrbonn.se>
-To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, Jonas Bonn <jonas@norrbonn.se>
-Subject: [PATCH v2 5/5] net: namespace: allow setting NSIDs outside current namespace
-Date:   Wed,  6 Nov 2019 06:39:23 +0100
-Message-Id: <20191106053923.10414-6-jonas@norrbonn.se>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191106053923.10414-1-jonas@norrbonn.se>
-References: <20191106053923.10414-1-jonas@norrbonn.se>
+        id S1725913AbfKFFoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 00:44:08 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:47274 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725616AbfKFFoI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 00:44:08 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xA65hvnb146368;
+        Wed, 6 Nov 2019 05:43:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=f9gAvkzDWoVYfQQ8isHnV3yBXi8In/o6BPYPWjiwW3E=;
+ b=AB8E6iUXIWi70/Ho/F51mmM3UfCjpD5ILkcopsrMxg1YUX7Nc82Z81ytfnYwZINGX2+8
+ WgEA1rZAQJ7gkbtaUGGEcjgm5AC0CO+j166NlqqAKI9CTzWdOudM4k0Khs+xlKpolQjA
+ ckfdn0vMeifLSvnTInRoN3SMMvqLcNKY1KKKj+U0N82ceCWDHqL0WY5eRlv3Zeo2TvoG
+ QoEP6sG4xxeuOpnY1xjpYUGAz4IIID3jSaqz/8KgPP3Kp3ilvsAJOLlIzhmyAn7kZVcJ
+ 7n7qK3bQejoxPdnKBZB81BccDGk4pkWisM4CE1/9kN6OtTGIkPug0U8Kzj/RCxPF5m7s aA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 2w117u3bkx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Nov 2019 05:43:57 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xA65hlBv150036;
+        Wed, 6 Nov 2019 05:43:56 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2w35pq9mxs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Nov 2019 05:43:56 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xA65hsum000709;
+        Wed, 6 Nov 2019 05:43:55 GMT
+Received: from [10.182.71.192] (/10.182.71.192)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 06 Nov 2019 05:43:54 +0000
+Subject: Re: [PATCHv4 1/1] net: forcedeth: add xmit_more support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     rain.1986.08.12@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org
+References: <1572928001-6915-1-git-send-email-yanjun.zhu@oracle.com>
+ <20191105094841.623b498e@cakuba.netronome.com>
+ <f389d645-384f-73a5-4d15-af388520446f@oracle.com>
+ <20191105204837.63fe5b70@cakuba.netronome.com>
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <ad67f447-650d-3d09-b347-bb416bc4a246@oracle.com>
+Date:   Wed, 6 Nov 2019 13:50:23 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
+In-Reply-To: <20191105204837.63fe5b70@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9432 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1911060059
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9432 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1911060059
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently it is only possible to move an interface to a new namespace if
-the destination namespace has an ID in the interface's current namespace.
-If the interface already resides outside of the current namespace, then
-we may need to assign the destination namespace an ID in the interface's
-namespace in order to effect the move.
 
-This patch allows namespace ID's to be created outside of the current
-namespace.  With this, the following is possible:
+On 2019/11/6 12:48, Jakub Kicinski wrote:
+> On Wed, 6 Nov 2019 12:47:29 +0800, Zhu Yanjun wrote:
+>> On 2019/11/6 1:48, Jakub Kicinski wrote:
+>>> On Mon,  4 Nov 2019 23:26:41 -0500, Zhu Yanjun wrote:
+>>>> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+>>>> index 05d2b47..0d21ddd 100644
+>>>> --- a/drivers/net/ethernet/nvidia/forcedeth.c
+>>>> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
+>>>> @@ -2259,7 +2265,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>    			u64_stats_update_begin(&np->swstats_tx_syncp);
+>>>>    			nv_txrx_stats_inc(stat_tx_dropped);
+>>>>    			u64_stats_update_end(&np->swstats_tx_syncp);
+>>>> -			return NETDEV_TX_OK;
+>>>> +
+>>>> +			writel(NVREG_TXRXCTL_KICK | np->txrxctl_bits,
+>>>> +			       get_hwbase(dev) + NvRegTxRxControl);
+>>>> +			ret = NETDEV_TX_OK;
+>>>> +
+>>>> +			goto dma_error;
+>>> You could goto the middle of the txkick if statement here, instead of
+>>> duplicating the writel()?
+>> As your suggestion, the change is like this:
+>>
+>> @@ -2374,7 +2374,9 @@ static netdev_tx_t nv_start_xmit(struct sk_buff
+>> *skb, struct net_device *dev)
+>>           spin_unlock_irqrestore(&np->lock, flags);
+>>
+>>    txkick:
+>> -       if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
+>> +       if (netif_queue_stopped(dev) || !netdev_xmit_more())
+>> +dma_error:
+>> +       {
+>>                   u32 txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
+>>
+>>                   writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
+>>
+>> The opening brace on the first of the line. It conflicts with the following:
+>>
+>> Documentation/process/coding-style.rst:
+>> "
+>>     98 3) Placing Braces and Spaces
+>>     99 ----------------------------
+>>    100
+>>    101 The other issue that always comes up in C styling is the placement of
+>>    102 braces.  Unlike the indent size, there are few technical reasons to
+>>    103 choose one placement strategy over the other, but the preferred
+>> way, as
+>>    104 shown to us by the prophets Kernighan and Ritchie, is to put the
+>> opening
+>>    105 brace last on the line, and put the closing brace first, thusly:
+>> "
+>> So I prefer to the current code style.
+>>
+>> Thanks for your suggestions.
+> 	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
+> 		u32 txrxctl_kick;
+>
+> txkick:
+> 		txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
+> 		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
+> 	}
 
-i)    Our namespace is 'A'.
-ii)   The interface resides in namespace 'B'
-iii)  We can assign an ID for NS 'A' in NS 'B'
-iv)   We can then move the interface into our own namespace.
+Thanks a lot. Will send a new patch with the above changes.
 
-and
+Zhu Yanjun
 
-i)   Our namespace is 'A'; namespaces 'B' and 'C' also exist
-ii)  We can assign an ID for namespace 'C' in namespace 'B'
-iii) We can then create a VETH interface directly in namespace 'B' with
-the other end in 'C', all without ever leaving namespace 'A'
-
-Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
----
- net/core/net_namespace.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
-
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 6d3e4821b02d..0071f395098d 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -724,6 +724,7 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	struct nlattr *tb[NETNSA_MAX + 1];
- 	struct nlattr *nla;
- 	struct net *peer;
-+	struct net *target = NULL;
- 	int nsid, err;
- 
- 	err = nlmsg_parse_deprecated(nlh, sizeof(struct rtgenmsg), tb,
-@@ -752,6 +753,21 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return PTR_ERR(peer);
- 	}
- 
-+	if (tb[NETNSA_TARGET_NSID]) {
-+		int id = nla_get_s32(tb[NETNSA_TARGET_NSID]);
-+
-+		target = rtnl_get_net_ns_capable(NETLINK_CB(skb).sk, id);
-+		if (IS_ERR(target)) {
-+			NL_SET_BAD_ATTR(extack, tb[NETNSA_TARGET_NSID]);
-+			NL_SET_ERR_MSG(extack,
-+				       "Target netns reference is invalid");
-+			err = PTR_ERR(target);
-+			goto out;
-+		}
-+
-+		net = target;
-+	}
-+
- 	spin_lock_bh(&net->nsid_lock);
- 	if (__peernet2id(net, peer) >= 0) {
- 		spin_unlock_bh(&net->nsid_lock);
-@@ -773,6 +789,9 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		NL_SET_BAD_ATTR(extack, tb[NETNSA_NSID]);
- 		NL_SET_ERR_MSG(extack, "The specified nsid is already used");
- 	}
-+
-+	if (target)
-+		put_net(target);
- out:
- 	put_net(peer);
- 	return err;
--- 
-2.20.1
-
+>
