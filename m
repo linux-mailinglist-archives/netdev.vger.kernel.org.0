@@ -2,90 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84579F167C
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 14:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 113DFF16C5
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 14:12:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730733AbfKFNC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 08:02:56 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:40174 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728140AbfKFNC4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 08:02:56 -0500
-Received: by mail-pf1-f195.google.com with SMTP id r4so18814573pfl.7
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 05:02:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=+6IhpubehfBA0fyJjLMHiNK4Ws0tjewQBWjUKRYVdLw=;
-        b=BwRluK8aUtLLdcxG2z8/nph89NqKM7PzqM2Y3bEnjidQLVVaFI7ajGDX/sdwwmKU/6
-         zi0jeKGdvDiBoyBKLBrz3SduZjt2kBcwvwAQ++8bbLKR5srdaGO5NekFt6y7br6jOTuy
-         8/8hho6+P398artNk2iCDr2uBbfq0RT5YPaVioud0SI6s2EK3/8AEznU3exyxjpt0A8B
-         xW08equWTJCztCuCqsBbVFD3m8665fB3iGmlA/3KyIUH3E14OA1g5TMObTdxtOlzgIX+
-         Lsil1oBMAnR3abMl1iupai6WEWkTSCF106RumpXbhBWXA7l/g7G23UQLefdsLXipk4Zz
-         GoUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=+6IhpubehfBA0fyJjLMHiNK4Ws0tjewQBWjUKRYVdLw=;
-        b=cizO+1V7we9Dk2aANbxirKYQX7AKCR5+7wKEUSyBntpicvQaSqeYkQZoV6Ki8/vpP7
-         oUFaot3ql4tWPoEGkcUUbO1okhOt1WvM4hny/EzMVOVR/WexSw9+LI+18UfHbfpdfPEX
-         9ianr1zBsZnyWXpxF+1z/94stgcEztpRyLsCIuf8v/iW37luvxksYYMonTzlkJyMXaCo
-         J1/OHHIEPdyd8yyKn88JkO/FR3KxHxzhayWn9BvSQQ4XWnqqAFCAYOIL5sF0o/N46fsx
-         OLsXWx02PHrN4GtkigtpCAzaMPlKnXy4Hj/kbkj5aiarjShNUpXBNkQe7uBUFBvwk+km
-         ZKMg==
-X-Gm-Message-State: APjAAAXLW9hRMsxW5b8Pig/qt91cEtExzs/zcfDs6nDBEyJIO+4p8WhK
-        oILyQxYgBIg9VnJPhnMoC7M=
-X-Google-Smtp-Source: APXvYqy7x0s4utY6gJRlVq6qhvBzfoGtbX3vso05sKYlYcqFahKR1GZLIJsSgx6V1h/sWUllWbfACg==
-X-Received: by 2002:a63:1e59:: with SMTP id p25mr2687705pgm.361.1573045375871;
-        Wed, 06 Nov 2019 05:02:55 -0800 (PST)
-Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id i13sm21560pfo.39.2019.11.06.05.02.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Nov 2019 05:02:55 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     ee07b291@gmail.com, pshelar@ovn.org
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next] net: openvswitch: select vport upcall portid drectly
-Date:   Sun,  3 Nov 2019 14:59:44 +0800
-Message-Id: <1572764384-130234-1-git-send-email-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1730577AbfKFNMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 08:12:17 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:26093 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726785AbfKFNMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 08:12:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573045935;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XdTny3tr4ABNNp/+zCwTPKTknb73JdloNxApkDn3UmA=;
+        b=K490SRJWkOW5mndEW2546x8Wl0YDTcA0kSmp5RT6qlTzEnQwJ/MU/9+6kAPrfYnrxM54Lr
+        g+qmRwvOW89oX3kwmaJ5+x8D7mNI5RUYqg0C7+F2S8yQMsWZALC/EWxcpU+R+rFXybtwR7
+        kwweT1O5J+jex77DCFuWG9+GlgKWFJM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-325-zNgOzN6XN_Wyyhw7iMVyjw-1; Wed, 06 Nov 2019 08:12:12 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0B0E68017E0;
+        Wed,  6 Nov 2019 13:12:08 +0000 (UTC)
+Received: from [10.72.12.193] (ovpn-12-193.pek2.redhat.com [10.72.12.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 452135D9CD;
+        Wed,  6 Nov 2019 13:11:21 +0000 (UTC)
+Subject: Re: [PATCH V9 5/6] virtio: introduce a mdev based transport
+To:     Cornelia Huck <cohuck@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+References: <20191106070548.18980-1-jasowang@redhat.com>
+ <20191106070548.18980-6-jasowang@redhat.com>
+ <20191106120047.5bcf49c3.cohuck@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <46df7afa-7543-ce19-7ede-9041907e2730@redhat.com>
+Date:   Wed, 6 Nov 2019 21:11:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20191106120047.5bcf49c3.cohuck@redhat.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: zNgOzN6XN_Wyyhw7iMVyjw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-The commit 69c51582ff786 ("dpif-netlink: don't allocate per
-thread netlink sockets"), in Open vSwitch ovs-vswitchd, has
-changed the number of allocated sockets to just one per port
-by moving the socket array from a per handler structure to
-a per datapath one. In the kernel datapath, a vport will have
-only one socket in most case, if so select it directly in
-fast-path.
+On 2019/11/6 =E4=B8=8B=E5=8D=887:00, Cornelia Huck wrote:
+> On Wed,  6 Nov 2019 15:05:47 +0800
+> Jason Wang <jasowang@redhat.com> wrote:
+>
+>> This patch introduces a new mdev transport for virtio. This is used to
+>> use kernel virtio driver to drive the mediated device that is capable
+>> of populating virtqueue directly.
+>>
+>> A new virtio-mdev driver will be registered to the mdev bus, when a
+>> new virtio-mdev device is probed, it will register the device with
+>> mdev based config ops. This means it is a software transport between
+>> mdev driver and mdev device. The transport was implemented through
+>> device specific ops which is a part of mdev_parent_ops now.
+>>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>>   drivers/virtio/Kconfig       |  13 ++
+>>   drivers/virtio/Makefile      |   1 +
+>>   drivers/virtio/virtio_mdev.c | 406 +++++++++++++++++++++++++++++++++++
+>>   3 files changed, 420 insertions(+)
+>>   create mode 100644 drivers/virtio/virtio_mdev.c
+>>
+>> diff --git a/drivers/virtio/Kconfig b/drivers/virtio/Kconfig
+>> index 078615cf2afc..558ac607d107 100644
+>> --- a/drivers/virtio/Kconfig
+>> +++ b/drivers/virtio/Kconfig
+>> @@ -43,6 +43,19 @@ config VIRTIO_PCI_LEGACY
+>>  =20
+>>   =09  If unsure, say Y.
+>>  =20
+>> +config VIRTIO_MDEV
+>> +=09tristate "MDEV driver for virtio devices"
+>> +=09depends on VFIO_MDEV && VIRTIO
+>> +=09default n
+>> +=09help
+>> +=09  This driver provides support for virtio based paravirtual
+>> +=09  device driver over MDEV bus. This requires your environemnt
+>> +=09  has appropriate virtio mdev device implementation which may
+>> +=09  operate on the physical device that the datapath of virtio
+>> +=09  could be offloaded to hardware.
+> That sentence is a bit confusing to me... what about
+>
+> "For this to be useful, you need an appropriate virtio mdev device
+> implementation that operates on a physical device to allow the datapath
+> of virtio to be offloaded to hardware."
+>
+> ?
+>
+>> +
+>> +=09  If unsure, say M
+> Building this as a module should not hurt (but please add a trailing
+> '.' here :)
+>
+>> +
+>>   config VIRTIO_PMEM
+>>   =09tristate "Support for virtio pmem driver"
+>>   =09depends on VIRTIO
+> With the changes above,
+>
+> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+>
 
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
- net/openvswitch/vport.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Will post V10.
 
-diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
-index 3fc38d16c456..5da9392b03d6 100644
---- a/net/openvswitch/vport.c
-+++ b/net/openvswitch/vport.c
-@@ -403,8 +403,9 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport, struct sk_buff *skb)
- 
- 	ids = rcu_dereference(vport->upcall_portids);
- 
--	if (ids->n_ids == 1 && ids->ids[0] == 0)
--		return 0;
-+	/* If there is only one portid, select it in the fast-path. */
-+	if (ids->n_ids == 1)
-+		return ids->ids[0];
- 
- 	hash = skb_get_hash(skb);
- 	ids_index = hash - ids->n_ids * reciprocal_divide(hash, ids->rn_ids);
--- 
-2.23.0
+Thanks
 
