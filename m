@@ -2,144 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0561F0D3E
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC2AF0D3F
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:46:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731179AbfKFDpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 22:45:36 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40611 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbfKFDpf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:45:35 -0500
-Received: by mail-pf1-f194.google.com with SMTP id r4so17777541pfl.7;
-        Tue, 05 Nov 2019 19:45:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=frL9/aCXhfxisGdXkirBm3DhOU4DdFp7w4JgKbYTA2o=;
-        b=CvBHwinXHu/bfua35zHx2bcBsBIlL0q2uRL/t1Ql5Hl+K2nUs6bo3oebrYcgJ+oN/3
-         SstoRYoLeGTSo6hxnIP12CcYB2wpEbPyU5Qz8dT3IKP6/iKePNyYfo/Xnc44ZUY0JoBV
-         ZBzBvwAO9G/C4+IcYBDY+N9CYUL9/dvbYEyw+XlR/qZ7gUpILyFKrmFjWBctXQUMUTmX
-         yjzkGkv5fAPlVwtSIvWh22zKfqImmVklCeXZlvLQut2BLhPdlH0J9uAMWguzwAwiRw2X
-         +D35n/Tm+9fkHqzAznhwnIAsZ1fgmr4yTJ246/me975stU08xNIjX39XYp0Ykat47od6
-         ciCw==
+        id S1731121AbfKFDqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 22:46:10 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:52476 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbfKFDqK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:46:10 -0500
+Received: by mail-il1-f199.google.com with SMTP id t23so20516266ila.19
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 19:46:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=frL9/aCXhfxisGdXkirBm3DhOU4DdFp7w4JgKbYTA2o=;
-        b=hykmqFs6JfYZ7PRWjg+PY/Lmbmr50Cp0BF6tcx5RPG3tEdetHpA+8rXhYa3FiEZUfp
-         5l5PXRFfdHvxJq0o+M/CR9MIpP0dslKwdWrUMCDohIgqxYNXFKcbPZKqtHXWaIdPxh33
-         TaTcASIBxEJKzZGpc7O5gio1bYfCEL7Aj5SQDOMCe3DGP8rnqBDqvhstA0VRG6vgBzd4
-         +p+lT4wX03jS+1U81mv+8i6R6m0OLBDJKYHWS25JXQ51r/+9vdZFDQlNWjw/vWtlEyYm
-         FsmAjU6+/kC5/dLCVhlKHbYpvHAMy0EtFzPrLh9yEIjT1BhIYPrPFX/S4Zb0wTA1Qpel
-         9JXw==
-X-Gm-Message-State: APjAAAX8X+bv/io95i63U9WebLLbEJphm1R65FQ66SqQZvdt+cYa5GJX
-        thF53ma041fG4o5dI/klcuFwTFqt
-X-Google-Smtp-Source: APXvYqxWkhU2KuTr2aERcofmVNeyvknyhKioIBTEOEb8GFjZifXDHfhS9quSCGsMk+A3miHI4lABOw==
-X-Received: by 2002:a63:1d60:: with SMTP id d32mr350197pgm.37.1573011934753;
-        Tue, 05 Nov 2019 19:45:34 -0800 (PST)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id x192sm19984006pfc.109.2019.11.05.19.45.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Nov 2019 19:45:34 -0800 (PST)
-Subject: Re: [PATCH net 3/3] net: bcmgenet: reapply manual settings to the PHY
-To:     Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1572980846-37707-1-git-send-email-opendmb@gmail.com>
- <1572980846-37707-4-git-send-email-opendmb@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <990bd954-5928-f9b8-55d5-c45c3fc8b976@gmail.com>
-Date:   Tue, 5 Nov 2019 19:45:33 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=VXg4Mq0SWPKWmRdwQW93Z51ZtCZqzCSQfSajmJNia7w=;
+        b=KCTBwCBKOvIw+i01Et7Nctf30OE24dtrlKAT1uKwn6VnyjzQLb3fjMSAuQlTmNhZZS
+         2opdkAAol6V8nvDZqb7W0hEoE/wMBfsFgyc3+/KAysh8nXZoywJMO/Kmx1oT83sqwADJ
+         srwbwLDXZE211aVj9eaaMI7RydPou11X0+w4mytTUYYB/CxC3P+I5IjyIjPGVIa1ODMa
+         VA0Ce+zUq+DCSYksdwEWffFkOgmBZPWlBnp4lJ7HTIlLDlI8cubvLLjeu8DAqgNSBrdH
+         SfJn+5kgyWEC8f44vwmS5hFmG7gGVaFor8C0LB13oSey8yc+JLx/obJeMtkriZxjRSA0
+         +I8w==
+X-Gm-Message-State: APjAAAVGKE69/VKEQ+qAQOVeFos+wyS0iI6daeKeDm+Sf3V68B+RukRv
+        EiLAautoGK2qQhdPAgcfusGRJ1ANnQD5eNS9wzobnor46FX6
+X-Google-Smtp-Source: APXvYqz0exuhDAqf8OGKbULgDJ3QFG01eYS7lhaQg2N475G/AW27mI4xyzY1bu/1aPrqAouAnKS7BMCHBgn41UKC4+7ZbegNbmbR
 MIME-Version: 1.0
-In-Reply-To: <1572980846-37707-4-git-send-email-opendmb@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a5e:c31a:: with SMTP id a26mr32781557iok.0.1573011969464;
+ Tue, 05 Nov 2019 19:46:09 -0800 (PST)
+Date:   Tue, 05 Nov 2019 19:46:09 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000aae1480596a5632b@google.com>
+Subject: WARNING: refcount bug in j1939_netdev_start
+From:   syzbot <syzbot+afd421337a736d6c1ee6@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
+        robin@protonic.nl, socketcan@hartkopp.net,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
+
+syzbot found the following crash on:
+
+HEAD commit:    a99d8080 Linux 5.4-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11a7443ae00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8c5e2eca3f31f9bf
+dashboard link: https://syzkaller.appspot.com/bug?extid=afd421337a736d6c1ee6
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+afd421337a736d6c1ee6@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+refcount_t: increment on 0; use-after-free.
+WARNING: CPU: 0 PID: 27509 at lib/refcount.c:156 refcount_inc_checked  
+lib/refcount.c:156 [inline]
+WARNING: CPU: 0 PID: 27509 at lib/refcount.c:156  
+refcount_inc_checked+0x61/0x70 lib/refcount.c:154
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 27509 Comm: syz-executor.5 Not tainted 5.4.0-rc6 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  panic+0x2e3/0x75c kernel/panic.c:221
+  __warn.cold+0x2f/0x35 kernel/panic.c:582
+  report_bug+0x289/0x300 lib/bug.c:195
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
+RIP: 0010:refcount_inc_checked lib/refcount.c:156 [inline]
+RIP: 0010:refcount_inc_checked+0x61/0x70 lib/refcount.c:154
+Code: 1d ce 0c 7e 06 31 ff 89 de e8 bb a8 2e fe 84 db 75 dd e8 72 a7 2e fe  
+48 c7 c7 c0 af e6 87 c6 05 ae 0c 7e 06 01 e8 57 dc ff fd <0f> 0b eb c1 90  
+90 90 90 90 90 90 90 90 90 90 55 48 89 e5 41 57 41
+RSP: 0018:ffff88805c33fce8 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000016597 RSI: ffffffff815cc396 RDI: ffffed100b867f8f
+RBP: ffff88805c33fcf8 R08: ffff8880921ae440 R09: ffffed1015d04101
+R10: ffffed1015d04100 R11: ffff8880ae820807 R12: ffff8880604010f0
+R13: ffff88805c33fe00 R14: ffff888045255580 R15: 0000000000000118
+  kref_get include/linux/kref.h:45 [inline]
+  j1939_netdev_start+0x53/0x550 net/can/j1939/main.c:247
+  j1939_sk_bind+0x65a/0x8e0 net/can/j1939/socket.c:438
+  __sys_bind+0x239/0x290 net/socket.c:1647
+  __do_sys_bind net/socket.c:1658 [inline]
+  __se_sys_bind net/socket.c:1656 [inline]
+  __x64_sys_bind+0x73/0xb0 net/socket.c:1656
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45a219
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f2ba4d29c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a219
+RDX: 0000000000000018 RSI: 0000000020000240 RDI: 0000000000000003
+RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2ba4d2a6d4
+R13: 00000000004c057e R14: 00000000004d2c50 R15: 00000000ffffffff
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
-On 11/5/2019 11:07 AM, Doug Berger wrote:
-> The phy_init_hw() function may reset the PHY to a configuration
-> that does not match manual network settings stored in the phydev
-> structure. If the phy state machine is polled rather than event
-> driven this can create a timing hazard where the phy state machine
-> might alter the settings stored in the phydev structure from the
-> value read from the BMCR.
-> 
-> This commit follows invocations of phy_init_hw() by the bcmgenet
-> driver with invocations of the genphy_config_aneg() function to
-> ensure that the BMCR is written to match the settings held in the
-> phydev structure. This prevents the risk of manual settings being
-> accidentally altered.
-> 
-> Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
