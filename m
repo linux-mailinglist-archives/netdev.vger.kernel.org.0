@@ -2,62 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0E1F0B0D
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:30:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29BF8F0B32
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730642AbfKFAaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 19:30:12 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41479 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387405AbfKFAaL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 19:30:11 -0500
-Received: by mail-pf1-f196.google.com with SMTP id p26so17411033pfq.8
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 16:30:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wC1fV3XmJiisvf6Wmub25EKlo5Tq9rK55tShjUn1JT0=;
-        b=jfzwzkArakv+2H4BiI7PnShrmXYvKyjGhz5dkAGMEfFJ0oHIdHV+dH9FeVwkQZ/N3e
-         IjSijEYi3wNSpL6nPpXlTgw3sUkN5qGSgM14CN6r6afhxVqPjhZE+ztJb7XGJSXpzzHE
-         YLxvo2fiKlwZHtPwoxvq6eiNnYKj2pOSN6OrU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wC1fV3XmJiisvf6Wmub25EKlo5Tq9rK55tShjUn1JT0=;
-        b=aEviwyBp74SDbLj1KFHDxIjbg0jbGuGOn9c/0EyJ2zV3E1SshFbBNdnzrAbx/47VbI
-         5O3o/Fs9j2Aq4xu8Zh5ObMJOZsoYgDpxgYirPsoTK2ImT+d32OnPJZey9Bq0uRIyCyIZ
-         tpALbtz92LuCIBmYKfIh6RWLgrS+cROL4kIUsGuSCvclvhLK/YXud5OlVfLg5NlA9RL4
-         DsYWrUZArJl/G9OkQWqviIR4RNj2saHmLBrpyyAnOxPxzE2rCxn4W4EQL8D8vRwGLdbm
-         yDhAz3pCTdk+D7oTZd3S4ADGeH7nLVVpHVXq0mYq/HYoa01wCmhrflooxPOBVw9BahAx
-         IX5A==
-X-Gm-Message-State: APjAAAUMCsydJrhMFIbTXxR1n9DHf02GAp966s+D2MyjY+h8EsSQa35d
-        7OexqGkFaK3huzXeb6QtBGeEQA==
-X-Google-Smtp-Source: APXvYqx47hh5YbDuUa3YWMzpsYd8LTO0GxdEdRVR/2Z/sRZoF/LYzFRNgsN5YHICZtVdUUY1kfyW0w==
-X-Received: by 2002:a17:90a:989:: with SMTP id 9mr13112pjo.35.1573000210856;
-        Tue, 05 Nov 2019 16:30:10 -0800 (PST)
-Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id k9sm21032835pfk.72.2019.11.05.16.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2019 16:30:10 -0800 (PST)
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     linux-bluetooth@vger.kernel.org,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 4/4] dt-bindings: net: bluetooth: update broadcom-bluetooth
-Date:   Tue,  5 Nov 2019 16:29:23 -0800
-Message-Id: <20191106002923.109344-5-abhishekpandit@chromium.org>
-X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-In-Reply-To: <20191106002923.109344-1-abhishekpandit@chromium.org>
-References: <20191106002923.109344-1-abhishekpandit@chromium.org>
+        id S1730478AbfKFAqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 19:46:22 -0500
+Received: from mga01.intel.com ([192.55.52.88]:56512 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727252AbfKFAqW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 5 Nov 2019 19:46:22 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Nov 2019 16:46:21 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,271,1569308400"; 
+   d="scan'208";a="403554720"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga006.fm.intel.com with ESMTP; 05 Nov 2019 16:46:21 -0800
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2019-11-05
+Date:   Tue,  5 Nov 2019 16:46:05 -0800
+Message-Id: <20191106004620.10416-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -65,36 +35,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation for pcm-parameters.
+This series contains updates to ice driver only.
 
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Jesse implements set_eeprom functionality in ethtool by adding functions
+to enable reading of the NVM image.
 
----
+Scott adds ethtool -m support so that we can read eeprom data on SFP/OSFP
+modules.
 
- Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 4 ++++
- 1 file changed, 4 insertions(+)
+Anirudh adds support for firmware recovery mode detection.  Also updates
+the return value to properly reflect when SRIOV is not supported.
 
-diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-index c749dc297624..ae60277b5569 100644
---- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-+++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-@@ -29,6 +29,9 @@ Optional properties:
-    - "lpo": external low power 32.768 kHz clock
-  - vbat-supply: phandle to regulator supply for VBAT
-  - vddio-supply: phandle to regulator supply for VDDIO
-+ - pcm-parameters: When set, will configure PCM parameters on the device. The
-+   contents should be a 10-byte array corresponding to the pcm params (see
-+   btbcm.h for more information).
- 
- 
- Example:
-@@ -40,5 +43,6 @@ Example:
-        bluetooth {
-                compatible = "brcm,bcm43438-bt";
-                max-speed = <921600>;
-+               pcm-parameters = [1 2 0 1 1 0 0 0 0 0];
-        };
- };
+Md Fahad updates the driver to handle a change in the NVM, where the
+boot configuration section was moved to the Preserved Field Area (PFA)
+of the NVM.
+
+Paul resolves an issue when DCBx requests non-contiguous TCs, transmit
+hangs could occur, so configure a default traffic class (TC0) in these
+cases to prevent traffic hangs.  Adds a print statement to notify the
+user when unsupported modules are inserted.
+
+Bruce fixes up the driver unload code flow to ensure we do not clear the
+interrupt scheme until the reset is complete, otherwise a hardware error
+may occur.
+
+Dave updates the DCB initialization to set is_sw_lldp boolean when the
+firmware has been detected to be in an untenable state.  This will
+ensure that the firmware is in a known state.
+
+Michal saves off the PCI state and I/O BARs address after PCI bus reset
+so that after the reset, device registers can be read.  Also adds a NULL
+pointer check to prevent a potential kernel panic.
+
+Mitch resolves an issue where VF's on PF's other than 0 were not seeing
+resets by using the per-PF VF ID instead of the absolute VF ID.
+
+Krzysztof does some code cleanup to remove a unneeded wrapper and
+reduces the code complexity.
+
+Brett reduces confusion by changing the name of ice_vc_dis_vf() to
+ice_vc_reset_vf() to better describe what the function is actually
+doing.
+
+The following are changes since commit b8fed591df6bf7a86a5f55a3d67a3a1a4d0fce73:
+  Merge branch 'netvsc-RSS-related-patches'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Anirudh Venkataramanan (2):
+  ice: Add support for FW recovery mode detection
+  ice: Fix return value when SR-IOV is not supported
+
+Brett Creeley (1):
+  ice: Rename VF function ice_vc_dis_vf to match its behavior
+
+Bruce Allan (1):
+  ice: fix driver unload flow
+
+Dave Ertman (1):
+  ice: Adjust DCB INIT for SW mode
+
+Jesse Brandeburg (1):
+  ice: implement set_eeprom functionality
+
+Krzysztof Kazimierczak (1):
+  ice: Get rid of ice_cleanup_header
+
+Md Fahad Iqbal Polash (1):
+  ice: Update Boot Configuration Section read of NVM
+
+Michal Swiatkowski (2):
+  ice: save PCI state in probe
+  ice: Check for null pointer dereference when setting rings
+
+Mitch Williams (1):
+  ice: write register with correct offset
+
+Paul Greenwalt (3):
+  ice: handle DCBx non-contiguous TC request
+  ice: print unsupported module message
+  ice: print PCI link speed and width
+
+Scott W Taylor (1):
+  ice: add ethtool -m support for reading i2c eeprom modules
+
+ drivers/net/ethernet/intel/ice/ice.h          |   3 +
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  36 ++
+ drivers/net/ethernet/intel/ice/ice_common.c   | 164 +++++++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |  20 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |   6 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  | 141 +++++--
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 292 +++++++++++++-
+ .../net/ethernet/intel/ice/ice_hw_autogen.h   |   3 +
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  24 ++
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   2 +
+ drivers/net/ethernet/intel/ice/ice_main.c     | 206 +++++++++-
+ drivers/net/ethernet/intel/ice/ice_nvm.c      | 380 +++++++++++++-----
+ drivers/net/ethernet/intel/ice/ice_nvm.h      |  80 ++++
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  27 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |   3 +
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  |  22 +-
+ 16 files changed, 1202 insertions(+), 207 deletions(-)
+ create mode 100644 drivers/net/ethernet/intel/ice/ice_nvm.h
+
 -- 
-2.24.0.rc1.363.gb1bccd3e3d-goog
+2.21.0
 
