@@ -2,74 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2208F11AC
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 10:04:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4699AF1225
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 10:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728495AbfKFJEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 04:04:14 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43302 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726903AbfKFJEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 04:04:14 -0500
-Received: by mail-wr1-f68.google.com with SMTP id n1so24753869wra.10
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 01:04:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XKOHDKi98VSZNTCotACl4PvQRb1+JOOdSL1KGZqlJDg=;
-        b=UisAp0JS/HoHwnQxqaYCpbmvMOn288EtR6mVTBMsQeyeeyzVc+4Qf2VTjlTdFN+rCR
-         uKjua0JAyIr4m5NkgciYFm68mqmHeol7U210XdGX4ZlbT/qIYfmGNgq1bU7JyMc60k5N
-         S82u7rnrzLEnQ3JsKFz7DIXK0XmbB+cHNFlXTNNxXUj4/OrNXLcZv/7sew4AfJi+qF7r
-         L9pOvsIO08yNcyyixMp8GEh95/E3WSJqfc+Bm4ahSgBUIW8fdgpYEM15pGNdZ189nAfg
-         urw6U8MiYptPSnrQsRRov3y7C6+xs24gkAR7y7GWYFGx6nORPkBuBpLNIlSxLyjgRKAd
-         SiHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XKOHDKi98VSZNTCotACl4PvQRb1+JOOdSL1KGZqlJDg=;
-        b=n9myTLgXcmn78somzH6/PKOVbOLZRKFOwJRczifDSE3Ag0r/F7JWr4eb8pCkXSn2gP
-         /qqOaat8WuM2KKX8JsyXFkxze4vuc3OgDabT0rCUBUaGul9O/q5niKkqKkXZ5rj5kmzm
-         HKqRvyIqkez26QYSKxPHPLUyfjACydVFtRcNIvM/lm7hewFRx2LnXDRAd1zQ8uIV/2Wg
-         bWDbICHjQMvpcByxVwZnP+3i2XkmsvuBFngEtlZIgCE3rXw2frm+CUCFpsrIxlXoAjF6
-         o3m9sjYBCopOnmuaSxIuhgds5ZGKpunP09uKYtboIHtzWKev+6guiRpY4YCBCX6HzBUR
-         j2HA==
-X-Gm-Message-State: APjAAAUnlEbT/wkwAahragm/bFBio8FBRhTw1FdCvKeTo6IJijKYIumi
-        0rryc1blr8KZIwJ6NwdxIiYgGA==
-X-Google-Smtp-Source: APXvYqzL+HPsxkITlEMkjn3RtDBegvQGwGLDu2zAflNTtvsAbz4FlOhUsUd0Aog7x6U5gPSiouHGdA==
-X-Received: by 2002:adf:f489:: with SMTP id l9mr1459589wro.337.1573031051881;
-        Wed, 06 Nov 2019 01:04:11 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id p12sm26251003wrm.62.2019.11.06.01.04.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2019 01:04:11 -0800 (PST)
-Date:   Wed, 6 Nov 2019 10:04:10 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH net-next] selftests: devlink: undo changes at the end of
- resource_test
-Message-ID: <20191106090410.GG2112@nanopsycho>
-References: <20191105212817.11158-1-jakub.kicinski@netronome.com>
+        id S1731483AbfKFJ3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 04:29:23 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:37353 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727543AbfKFJ3X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 04:29:23 -0500
+X-Originating-IP: 90.63.246.187
+Received: from gandi.net (laubervilliers-658-1-215-187.w90-63.abo.wanadoo.fr [90.63.246.187])
+        (Authenticated sender: thibaut.sautereau@clip-os.org)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 4BAE5E0008;
+        Wed,  6 Nov 2019 09:29:19 +0000 (UTC)
+Date:   Wed, 6 Nov 2019 10:29:19 +0100
+From:   Thibaut Sautereau <thibaut.sautereau@clip-os.org>
+To:     Laura Abbott <labbott@redhat.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Potapenko <glider@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>, clipos@ssi.gouv.fr
+Subject: Re: Double free of struct sk_buff reported by
+ SLAB_CONSISTENCY_CHECKS with init_on_free
+Message-ID: <20191106092919.GD1006@gandi.net>
+References: <20191104170303.GA50361@gandi.net>
+ <23c73a23-8fd9-c462-902b-eec2a0c04d36@suse.cz>
+ <20191105143253.GB1006@gandi.net>
+ <4fae11bc-9822-ea10-36e0-68a6fc3995bc@suse.cz>
+ <af8174be-848e-5f00-d6eb-caa956e8fd71@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20191105212817.11158-1-jakub.kicinski@netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <af8174be-848e-5f00-d6eb-caa956e8fd71@redhat.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Nov 05, 2019 at 10:28:17PM CET, jakub.kicinski@netronome.com wrote:
->The netdevsim object is reused by all the tests, but the resource
->tests puts it into a broken state (failed reload in a different
->namespace). Make sure it's fixed up at the end of that test
->otherwise subsequent tests fail.
->
->Fixes: b74c37fd35a2 ("selftests: netdevsim: add tests for devlink reload with resources")
->Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+On Tue, Nov 05, 2019 at 12:01:15PM -0500, Laura Abbott wrote:
+> On 11/5/19 10:02 AM, Vlastimil Babka wrote:
+> > On 11/5/19 3:32 PM, Thibaut Sautereau wrote:
+> > > On Tue, Nov 05, 2019 at 10:00:39AM +0100, Vlastimil Babka wrote:
+> > > > On 11/4/19 6:03 PM, Thibaut Sautereau wrote:
+> > > > > The BUG only happens when using `slub_debug=F` on the command-line (to
+> > > > > enable SLAB_CONSISTENCY_CHECKS), otherwise the double free is not
+> > > > > reported and the system keeps running.
+> > > > 
+> > > > You could change slub_debug parameter to:
+> > > > slub_debug=FU,skbuff_head_cache
+> > > > 
+> > > > That will also print out who previously allocated and freed the double
+> > > > freed object. And limit all the tracking just to the affected cache.
+> > > 
+> > > Thanks, I did not know about that.
+> > > 
+> > > However, as kind of expected, I get a BUG due to a NULL pointer
+> > > dereference in print_track():
+> > 
+> > Ah, I didn't read properly your initial mail, that there's a null
+> > pointer deference during the consistency check.
+> > 
+> > ...
+> > 
+> > > > > 
+> > > > > Bisection points to the following commit: 1b7e816fc80e ("mm: slub: Fix
+> > > > > slab walking for init_on_free"), and indeed the BUG is not triggered
+> > > > > when init_on_free is disabled.
+> > > > 
+> > > > That could be either buggy SLUB code, or the commit somehow exposed a
+> > > > real bug in skbuff users.
+> > > 
+> > > Right. At first I thought about some incompatibility between
+> > > init_on_free and SLAB_CONSISTENCY_CHECKS, but in that case why would it
+> > > only happen with skbuff_head_cache?
+> > 
+> > That's curious, yeah.
+> > 
+> > > On the other hand, if it's a bug in
+> > > skbuff users, why is the on_freelist() check in free_consistency_check()
+> > > not detecting anything when init_on_free is disabled?
+> > 
+> > I vaguely suspect the code in the commit 1b7e816fc80e you bisected,
+> > where in slab_free_freelist_hook() in the first iteration, we have void
+> > *p = NULL; and set_freepointer(s, object, p); will thus write NULL into
+> > the freelist. Is is the NULL we are crashing on? The code seems to
+> > assume that the freelist is rewritten later in the function, but that
+> > part is only active with some CONFIG_ option(s), none of which might be
+> > enabled in your case?
+> > But I don't really understand what exactly this function is supposed to
+> > do. Laura, does my theory make sense?
+> > 
+> > Thanks,
+> > Vlastimil
+> > 
+> 
+> The note about getting re-written is referring to the fact that the trick
+> with the bulk free is that we build the detached freelist and then when
+> we do the cmpxchg it's getting (correctly) updated there.
 
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Thank you Laura for this clarification.
+
+> But looking at this again, I realize this function still has a more
+> fundamental problem: walking the freelist like this means we actually
+> end up reversing the list so head and tail are no longer pointing
+> to the correct blocks. I was able to reproduce the issue by writing a
+> simple kmem_cache_bulk_alloc/kmem_cache_bulk_free function. I'm
+> guessing that the test of ping with an unusual size was enough to
+> regularly trigger a non-trivial bulk alloc/free.
+> 
+> The fix I gave before fixed part of the problem but not all of it.
+> At this point we're basically duplicating the work of the loop
+> below so I think we can just combine it. Was there a reason this
+> wasn't just combined in the first place?
+
+Good catch about the freelist inversion, I was actually starting to
+wonder whether it was really intended. Anyway, I tested your patch (see
+one tiny inline comment below) and it seems to run fine for now, without
+me being able to reproduce the bug anymore.
+
+> diff --git a/mm/slub.c b/mm/slub.c
+> index dac41cf0b94a..1510b86b2e7e 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -1431,13 +1431,17 @@ static inline bool slab_free_freelist_hook(struct kmem_cache *s,
+>  	void *next = *head;
+>  	void *old_tail = *tail ? *tail : *head;
+>  	int rsize;
+> +	next = *head;
+
+`next` is already set a few lines above.
+
+> -	if (slab_want_init_on_free(s)) {
+> -		void *p = NULL;
+> +	/* Head and tail of the reconstructed freelist */
+> +	*head = NULL;
+> +	*tail = NULL;
+> -		do {
+> -			object = next;
+> -			next = get_freepointer(s, object);
+> +	do {
+> +		object = next;
+> +		next = get_freepointer(s, object);
+> +
+> +		if (slab_want_init_on_free(s)) {
+>  			/*
+>  			 * Clear the object and the metadata, but don't touch
+>  			 * the redzone.
+> @@ -1447,29 +1451,8 @@ static inline bool slab_free_freelist_hook(struct kmem_cache *s,
+>  							   : 0;
+>  			memset((char *)object + s->inuse, 0,
+>  			       s->size - s->inuse - rsize);
+> -			set_freepointer(s, object, p);
+> -			p = object;
+> -		} while (object != old_tail);
+> -	}
+> -
+> -/*
+> - * Compiler cannot detect this function can be removed if slab_free_hook()
+> - * evaluates to nothing.  Thus, catch all relevant config debug options here.
+> - */
+> -#if defined(CONFIG_LOCKDEP)	||		\
+> -	defined(CONFIG_DEBUG_KMEMLEAK) ||	\
+> -	defined(CONFIG_DEBUG_OBJECTS_FREE) ||	\
+> -	defined(CONFIG_KASAN)
+> -	next = *head;
+> -
+> -	/* Head and tail of the reconstructed freelist */
+> -	*head = NULL;
+> -	*tail = NULL;
+> -
+> -	do {
+> -		object = next;
+> -		next = get_freepointer(s, object);
+> +		}
+>  		/* If object's reuse doesn't have to be delayed */
+>  		if (!slab_free_hook(s, object)) {
+>  			/* Move object to the new freelist */
+> @@ -1484,9 +1467,6 @@ static inline bool slab_free_freelist_hook(struct kmem_cache *s,
+>  		*tail = NULL;
+>  	return *head != NULL;
+> -#else
+> -	return true;
+> -#endif
+>  }
+>  static void *setup_object(struct kmem_cache *s, struct page *page,
+> 
+
+-- 
+Thibaut Sautereau
+CLIP OS developer
