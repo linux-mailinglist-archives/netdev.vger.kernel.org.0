@@ -2,241 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CB6F2264
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 00:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C538F226D
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 00:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727656AbfKFXMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 18:12:18 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15726 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727462AbfKFXMR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 18:12:17 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA6NA1qL022490
-        for <netdev@vger.kernel.org>; Wed, 6 Nov 2019 15:12:16 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=JL++fvaC8FmfDQuaMXPMZlgTgm1EVUBKy7zpoUaWJ3U=;
- b=FEJGCX1RHmIU4/cyDR1rUN2n09cJDDp5UOJs2ULEU1YOGNyX1E4Y5DBKp/qd83absgCA
- VmHdIYgp5bSbo1yeBqd6qkdmFayXOJ0+JJ0ADVFEwuFAq/UGFtWwYMxji9Otg99rSFUW
- 9VvNYucMYZkrZTiQp7B5RMsSel9Db2ljlCk= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41uj9um7-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 15:12:16 -0800
-Received: from 2401:db00:30:600c:face:0:1f:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 6 Nov 2019 15:12:14 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id AEA2629431A0; Wed,  6 Nov 2019 15:12:13 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 2/2] bpf: Add cb access in kfree_skb test
-Date:   Wed, 6 Nov 2019 15:12:13 -0800
-Message-ID: <20191106231213.3616207-1-kafai@fb.com>
+        id S1728462AbfKFXQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 18:16:57 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45825 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727080AbfKFXQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 18:16:57 -0500
+Received: by mail-pg1-f193.google.com with SMTP id w11so144161pga.12;
+        Wed, 06 Nov 2019 15:16:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=PEEwQUwm/mtCk8pRNL9DiIeL71bqH+DtmpEDVuEb4+U=;
+        b=neaEdK/p5ar2I/xlFi4UuC6GILTW3Ks2guXTHYrzRYhhB5GJHWuYAmHteeS9QtXB38
+         vpLKCrRcrgDtne+sUmpqEZdWMZsLWa5Ssry3hRvPt+l5AUgBe8AMaGUA2siXrzL8Tt84
+         1eEY/yBnhOu6s1Y2lrffcUanSuXEiTYu3WyAp+so6Q1eXsx3jz708LQ6Mdq1uvSN8Vo7
+         JJGPN6spp11oAjv6GnrPV+rZqhqQj9G6EdHNJEhFT0mtH6Yql9JJ7SVvWG6TjRr7Umk6
+         c3P7nc+lnjR33OrTvZC29nfkOE2IsU3Xy0BVcshSmyKnj79HzS1hNJh1d56jWAFEUuZj
+         ixbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=PEEwQUwm/mtCk8pRNL9DiIeL71bqH+DtmpEDVuEb4+U=;
+        b=RtgEvvQzJx/qMUL7ErGFfiO/PdxyuxaAuUBzXCZ5IplwODu5OCiLXB0h5/OPQjT/ZF
+         uygXFgUMycmZDBBcjgY9TxY0RDtgwdiOIMSVLaLF4cbOdXQnBlLZMP5Vz3ysFIs13ckw
+         3bJkqsZ4xQl1pYfGqq1G06bkbgRRD6uVp/u7tFx3Ib7zmMgFO8ZXWQr4w5+wXDpUHOtS
+         WbundO8wIkqSYqx+5NiaXzkKLZZNk/IUhD5ypkLnIurQpynz6FHyVaxXjrPqFP9wsz4R
+         MpzLQ9fMgNM9u83liXKkkDFQd5bS4MlKeAJn8kTRY0Aq2FOG0YKpmnyDb8onOtWDp+RW
+         x1LQ==
+X-Gm-Message-State: APjAAAXLc6ZlaGD5CX85kVpYmOCkdRSZQ3by+r2lLh4QJpIYtuEmaaGz
+        5k09WM3WoKBnx2OQb9Zf8Lo=
+X-Google-Smtp-Source: APXvYqy2/Y5pxVKOfsNfYmz4miHXZKCw3E8Ru4bwJEpq+vIruTB5jjvQyXI8vZKkp+EORx5jL/IDYA==
+X-Received: by 2002:a17:90a:cd03:: with SMTP id d3mr506186pju.137.1573082214787;
+        Wed, 06 Nov 2019 15:16:54 -0800 (PST)
+Received: from aw-bldr-10.qualcomm.com (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id d139sm49075pfd.162.2019.11.06.15.16.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 15:16:54 -0800 (PST)
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: [PATCH] ath10k: Fix qmi init error handling
+Date:   Wed,  6 Nov 2019 15:16:50 -0800
+Message-Id: <20191106231650.1580-1-jeffrey.l.hugo@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191106231210.3615828-1-kafai@fb.com>
-References: <20191106231210.3615828-1-kafai@fb.com>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-06_08:2019-11-06,2019-11-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 clxscore=1015
- suspectscore=9 priorityscore=1501 spamscore=0 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 malwarescore=0 mlxscore=0 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911060223
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Access the skb->cb[] in the kfree_skb test.
+When ath10k_qmi_init() fails, the error handling does not free the irq
+resources, which causes an issue if we EPROBE_DEFER as we'll attempt to
+(re-)register irqs which are already registered.
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+Fixes: ba94c753ccb4 ("ath10k: add QMI message handshake for wcn3990 client")
+Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
 ---
- .../selftests/bpf/prog_tests/kfree_skb.c      | 54 +++++++++++++++----
- tools/testing/selftests/bpf/progs/kfree_skb.c | 25 +++++++--
- 2 files changed, 63 insertions(+), 16 deletions(-)
+ drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-index 430b50de1583..55d36856e621 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-@@ -1,15 +1,38 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index fc15a0037f0e..f2a0b7aaad3b 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -1729,7 +1729,7 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+ 	ret = ath10k_qmi_init(ar, msa_size);
+ 	if (ret) {
+ 		ath10k_warn(ar, "failed to register wlfw qmi client: %d\n", ret);
+-		goto err_core_destroy;
++		goto err_free_irq;
+ 	}
  
-+struct meta {
-+	int ifindex;
-+	__u32 cb32_0;
-+	__u8 cb8_0;
-+};
-+
-+static union {
-+	__u32 cb32[5];
-+	__u8 cb8[20];
-+} cb = {
-+	.cb32[0] = 0x81828384,
-+};
-+
- static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- {
--	int ifindex = *(int *)data, duration = 0;
--	struct ipv6_packet *pkt_v6 = data + 4;
-+	struct meta *meta = (struct meta *)data;
-+	struct ipv6_packet *pkt_v6 = data + sizeof(*meta);
-+	int duration = 0;
- 
--	if (ifindex != 1)
-+	if (CHECK(size != 72 + sizeof(*meta), "check_size", "size %u != %zu\n",
-+		  size, 72 + sizeof(*meta)))
-+		return;
-+	if (CHECK(meta->ifindex != 1, "check_meta_ifindex",
-+		  "meta->ifindex = %d\n", meta->ifindex))
- 		/* spurious kfree_skb not on loopback device */
- 		return;
--	if (CHECK(size != 76, "check_size", "size %u != 76\n", size))
-+	if (CHECK(meta->cb8_0 != cb.cb8[0], "check_cb8_0", "cb8_0 %x != %x\n",
-+		  meta->cb8_0, cb.cb8[0]))
-+		return;
-+	if (CHECK(meta->cb32_0 != cb.cb32[0], "check_cb32_0",
-+		  "cb32_0 %x != %x\n",
-+		  meta->cb32_0, cb.cb32[0]))
- 		return;
- 	if (CHECK(pkt_v6->eth.h_proto != 0xdd86, "check_eth",
- 		  "h_proto %x\n", pkt_v6->eth.h_proto))
-@@ -26,6 +49,13 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- 
- void test_kfree_skb(void)
- {
-+	struct __sk_buff skb = {};
-+	struct bpf_prog_test_run_attr tattr = {
-+		.data_in = &pkt_v6,
-+		.data_size_in = sizeof(pkt_v6),
-+		.ctx_in = &skb,
-+		.ctx_size_in = sizeof(skb),
-+	};
- 	struct bpf_prog_load_attr attr = {
- 		.file = "./kfree_skb.o",
- 	};
-@@ -36,11 +66,12 @@ void test_kfree_skb(void)
- 	struct bpf_link *link = NULL;
- 	struct bpf_map *perf_buf_map;
- 	struct bpf_program *prog;
--	__u32 duration, retval;
--	int err, pkt_fd, kfree_skb_fd;
-+	int err, kfree_skb_fd;
- 	bool passed = false;
-+	__u32 duration = 0;
- 
--	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS, &obj, &pkt_fd);
-+	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &tattr.prog_fd);
- 	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
- 		return;
- 
-@@ -66,11 +97,12 @@ void test_kfree_skb(void)
- 	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
- 		goto close_prog;
- 
--	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
--				NULL, NULL, &retval, &duration);
--	CHECK(err || retval, "ipv6",
-+	memcpy(skb.cb, &cb, sizeof(cb));
-+	err = bpf_prog_test_run_xattr(&tattr);
-+	duration = tattr.duration;
-+	CHECK(err || tattr.retval, "ipv6",
- 	      "err %d errno %d retval %d duration %d\n",
--	      err, errno, retval, duration);
-+	      err, errno, tattr.retval, duration);
- 
- 	/* read perf buffer */
- 	err = perf_buffer__poll(pb, 100);
-diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
-index 489319ea1d6a..f769fdbf6725 100644
---- a/tools/testing/selftests/bpf/progs/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
-@@ -43,6 +43,7 @@ struct sk_buff {
- 	refcount_t users;
- 	unsigned char *data;
- 	char __pkt_type_offset[0];
-+	char cb[48];
- };
- 
- /* copy arguments from
-@@ -57,28 +58,41 @@ struct trace_kfree_skb {
- 	void *location;
- };
- 
-+struct meta {
-+	int ifindex;
-+	__u32 cb32_0;
-+	__u8 cb8_0;
-+};
-+
- SEC("tp_btf/kfree_skb")
- int trace_kfree_skb(struct trace_kfree_skb *ctx)
- {
- 	struct sk_buff *skb = ctx->skb;
- 	struct net_device *dev;
--	int ifindex;
- 	struct callback_head *ptr;
- 	void *func;
- 	int users;
- 	unsigned char *data;
- 	unsigned short pkt_data;
-+	struct meta meta = {};
- 	char pkt_type;
-+	__u32 *cb32;
-+	__u8 *cb8;
- 
- 	__builtin_preserve_access_index(({
- 		users = skb->users.refs.counter;
- 		data = skb->data;
- 		dev = skb->dev;
--		ifindex = dev->ifindex;
- 		ptr = dev->ifalias->rcuhead.next;
- 		func = ptr->func;
-+		cb8 = (__u8 *)&skb->cb;
-+		cb32 = (__u32 *)&skb->cb;
- 	}));
- 
-+	meta.ifindex = _(dev->ifindex);
-+	meta.cb8_0 = cb8[8];
-+	meta.cb32_0 = cb32[2];
-+
- 	bpf_probe_read_kernel(&pkt_type, sizeof(pkt_type), _(&skb->__pkt_type_offset));
- 	pkt_type &= 7;
- 
-@@ -90,14 +104,15 @@ int trace_kfree_skb(struct trace_kfree_skb *ctx)
- 		   _(skb->len), users, pkt_type);
- 	bpf_printk("skb->queue_mapping %d\n", _(skb->queue_mapping));
- 	bpf_printk("dev->ifindex %d data %llx pkt_data %x\n",
--		   ifindex, data, pkt_data);
-+		   meta.ifindex, data, pkt_data);
-+	bpf_printk("cb8_0:%x cb32_0:%x\n", meta.cb8_0, meta.cb32_0);
- 
--	if (users != 1 || pkt_data != bpf_htons(0x86dd) || ifindex != 1)
-+	if (users != 1 || pkt_data != bpf_htons(0x86dd) || meta.ifindex != 1)
- 		/* raw tp ignores return value */
- 		return 0;
- 
- 	/* send first 72 byte of the packet to user space */
- 	bpf_skb_output(skb, &perf_buf_map, (72ull << 32) | BPF_F_CURRENT_CPU,
--		       &ifindex, sizeof(ifindex));
-+		       &meta, sizeof(meta));
- 	return 0;
- }
+ 	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc probe\n");
 -- 
 2.17.1
 
