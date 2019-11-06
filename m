@@ -2,97 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4A7BF22CF
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 00:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2747CF22DD
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 00:50:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731985AbfKFXra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 18:47:30 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43160 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbfKFXr3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 18:47:29 -0500
-Received: by mail-pf1-f194.google.com with SMTP id 3so458141pfb.10;
-        Wed, 06 Nov 2019 15:47:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=IITHycz/tKeCtcoGS9oSqQaaGm3H0ejbd50X22z8NiA=;
-        b=QBM+UW+9MI+uREWzRjPCDMTdRcJ1Qg9A1mV9chE5KjhqRQK8ZTlnzavCFuKjvmApo0
-         dLMC9dCKtbzlyt2F0etYRl9F6hMMAl2ZWhnqk+1qjKTziWxKwfA9tYuxgHLUtNXUaQFY
-         OAtGyQlApB2naKonvaurwkRT8u5RsF2+hJd6dXgnsZvq4NSYZPju1+8F+8zPDs9+pZ+J
-         S2gwQtppNc/DtmGJz6rSAq4SJ5J4LjD/1ZNAluTfXjvV++shwxekEoJIQcMKzFiTHlL7
-         BPRzlUZ8gf1gO6+TvpexhzXi4VNnhOwwrCMQwpY24IymcCjHxGV2MjWegPyqB5uBNd1g
-         xyIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IITHycz/tKeCtcoGS9oSqQaaGm3H0ejbd50X22z8NiA=;
-        b=Ke9gYUfGogLpJdxKDkjkDe8Tix2vovfNghwn58tkOhQ39XH8H81gg5EdAUcl1i/aI/
-         bOMLDCDTTEBSAjGyRfVOYPR+SfBCAaBQvrWVZ/PIQcph+ulvAxQAP1vllYkx3D+nqU4q
-         z/NpP7FfBC3HpjZ9ddFj5OmchDJl+j348GHDQJYOhetorqGqixCH/ra+vU1DnnSFOrmi
-         9jrR9UidkNrrCkQIeXWFspp15s7fc2R7dXQiaVolVXxm0z9Nw7UyNTZNeXT5lTgKZIJy
-         KQNU1kqmUPInBdovxNhC8SyNx3PUYnESY7Ta+lG/UinU8MiB79OyFQfhHgoIp1fY0RDr
-         +rdA==
-X-Gm-Message-State: APjAAAXaEO+vQu/K7QHizu35e+gP9JZY+dPnibjQNUsIPbBrNeTx0Ml0
-        +QcA5Bt+qMWR4IRN9eJDFsZ76g2d
-X-Google-Smtp-Source: APXvYqxUKtpDTnctikFB0dQsxG/rxh3cI4BqhqNcmERqcbnbqreW4bT2lTMAT4Iu/13iDxCfITTTBQ==
-X-Received: by 2002:a63:ed17:: with SMTP id d23mr620290pgi.125.1573084049060;
-        Wed, 06 Nov 2019 15:47:29 -0800 (PST)
-Received: from aw-bldr-10.qualcomm.com (i-global254.qualcomm.com. [199.106.103.254])
-        by smtp.gmail.com with ESMTPSA id y26sm104198pfo.76.2019.11.06.15.47.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2019 15:47:28 -0800 (PST)
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Subject: [PATCH] ath10k: Handle "invalid" BDFs for msm8998 devices
-Date:   Wed,  6 Nov 2019 15:47:12 -0800
-Message-Id: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1732433AbfKFXt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 18:49:58 -0500
+Received: from mga17.intel.com ([192.55.52.151]:33197 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725937AbfKFXt6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 18:49:58 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 15:49:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,276,1569308400"; 
+   d="asc'?scan'208";a="233058262"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga002.fm.intel.com with ESMTP; 06 Nov 2019 15:49:57 -0800
+Message-ID: <327bddf3762b297cc106123e5b0e090c8bf495dc.camel@intel.com>
+Subject: Re: [net-next v2 00/14][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2019-11-06
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Reply-To: jeffrey.t.kirsher@intel.com
+To:     davem@davemloft.net,
+        "jakub.kicinski" <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
+Date:   Wed, 06 Nov 2019 15:49:57 -0800
+In-Reply-To: <20191106193756.23819-1-jeffrey.t.kirsher@intel.com>
+References: <20191106193756.23819-1-jeffrey.t.kirsher@intel.com>
+Organization: Intel
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-8ekChnq11Ec272kiqvK1"
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the BDF download QMI message has the end field set to 1, it signals
-the end of the transfer, and triggers the firmware to do a CRC check.  The
-BDFs for msm8998 devices fail this check, yet the firmware is happy to
-still use the BDF.  It appears that this error is not caught by the
-downstream drive by concidence, therefore there are production devices
-in the field where this issue needs to be handled otherwise we cannot
-support wifi on them.  So, attempt to detect this scenario as best we can
-and treat it as non-fatal.
 
-Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
----
- drivers/net/wireless/ath/ath10k/qmi.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+--=-8ekChnq11Ec272kiqvK1
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-index eb618a2652db..5ff8cfc93778 100644
---- a/drivers/net/wireless/ath/ath10k/qmi.c
-+++ b/drivers/net/wireless/ath/ath10k/qmi.c
-@@ -265,10 +265,13 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
- 			goto out;
- 
- 		if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
--			ath10k_err(ar, "failed to download board data file: %d\n",
--				   resp.resp.error);
--			ret = -EINVAL;
--			goto out;
-+			if (!(req->end == 1 &&
-+			      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
-+				ath10k_err(ar, "failed to download board data file: %d\n",
-+					   resp.resp.error);
-+				ret = -EINVAL;
-+				goto out;
-+			}
- 		}
- 
- 		remaining -= req->data_len;
--- 
-2.17.1
+On Wed, 2019-11-06 at 11:37 -0800, Jeff Kirsher wrote:
+> This series contains updates to ice driver only.
+>=20
+> Jesse implements set_eeprom functionality in ethtool by adding
+> functions
+> to enable reading of the NVM image.
+>=20
+> Scott adds ethtool -m support so that we can read eeprom data on
+> SFP/OSFP
+> modules.
+>=20
+> Anirudh updates the return value to properly reflect when SRIOV is
+> not
+> supported.
+>=20
+> Md Fahad updates the driver to handle a change in the NVM, where the
+> boot configuration section was moved to the Preserved Field Area
+> (PFA)
+> of the NVM.
+>=20
+> Paul resolves an issue when DCBx requests non-contiguous TCs,
+> transmit
+> hangs could occur, so configure a default traffic class (TC0) in
+> these
+> cases to prevent traffic hangs.  Adds a print statement to notify the
+> user when unsupported modules are inserted.
+>=20
+> Bruce fixes up the driver unload code flow to ensure we do not clear
+> the
+> interrupt scheme until the reset is complete, otherwise a hardware
+> error
+> may occur.
+>=20
+> Dave updates the DCB initialization to set is_sw_lldp boolean when
+> the
+> firmware has been detected to be in an untenable state.  This will
+> ensure that the firmware is in a known state.
+>=20
+> Michal saves off the PCI state and I/O BARs address after PCI bus
+> reset
+> so that after the reset, device registers can be read.  Also adds a
+> NULL
+> pointer check to prevent a potential kernel panic.
+>=20
+> Mitch resolves an issue where VF's on PF's other than 0 were not
+> seeing
+> resets by using the per-PF VF ID instead of the absolute VF ID.
+>=20
+> Krzysztof does some code cleanup to remove a unneeded wrapper and
+> reduces the code complexity.
+>=20
+> Brett reduces confusion by changing the name of ice_vc_dis_vf() to
+> ice_vc_reset_vf() to better describe what the function is actually
+> doing.
+>=20
+> v2: dropped patch 3 "ice: Add support for FW recovery mode detection"
+>     from the origin al series, while Ani makes changes based on
+>     community feedback to implement devlink into the changes.
+
+Sorry for the thrash, I will need to generate a v3 of this series.  I
+need to drop patch 1 of the series as well, since these driver changes
+will be affected by Ani's work to implement devlink into the driver, as
+well as we found a bug with this particular patch.
+
+--=-8ekChnq11Ec272kiqvK1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl3DXCUACgkQ5W/vlVpL
+7c7h/Q/9F0RmgIBq8qoHft8LzjKBxPKZMM6yry3vd/cPRDmwdzbO/Ow5thsalvu/
++/pT6ViEaF00sZZFz+68Ym0AMLbCoG4llxBYijeJAh7L2/fvEGaMiE6XTDf9uN5D
+d7DluG31Pv5NA33fPDRA/vg892r4vjtsV9CLbIqsDWJHOrY5fA+FZiyqLyeb/BDH
+zk6dK2Yd3FxNbZpA/5rEpzHhonvcjeJQvlsMS6ufSUyuBkrmt7PC+k32NsNsAZUe
+H8TsUODD4ihIhVYDBqnfNPK1n/sRy/o50QkBYSpx6HAp1xEEeTfO3Sd3Ba48qeJq
+vPwM+1Yrtn6SGPcCgXGkKEDiSHJPFrAE1+F+3n5M8a62wVzGSVd9tmBNHozRWp5y
+JHynP1x2vwi0hyxquUOPSKkJT1q3IPZI3sUs3i83WLmMwcFRmKXzy20hhARqLK+I
+yYkGJurGzMatkPJcWhTmm/fBs7bxqDlI+74oUFx/1oc/n8JdILEfEFD4mOUIbPYs
+2PMscdsDQHN1TqKUMejvHXXINmVgHtuUNRMx+sVzqNwFkAVJag/11Tvq3rI7Awt/
+WXV+EnRcQd9+LFLmrUs8/0qO3kIkTFCBy0M5aiCYaGRFxeYRtA1T0acoQm9VAOzd
+SsiZr+YmM5TZLm231R+slVbC1Hv2apn8z7zJRmf7BNX/5ZIN4Lg=
+=8qFk
+-----END PGP SIGNATURE-----
+
+--=-8ekChnq11Ec272kiqvK1--
 
