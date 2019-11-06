@@ -2,98 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BC48F12BE
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 10:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E43AF1350
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 11:07:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728787AbfKFJuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 04:50:18 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5488 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726811AbfKFJuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 04:50:18 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xA69lGeS010096
-        for <netdev@vger.kernel.org>; Wed, 6 Nov 2019 04:50:17 -0500
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2w3tpgjsqy-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 04:50:17 -0500
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Wed, 6 Nov 2019 09:50:15 -0000
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 6 Nov 2019 09:50:13 -0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xA69oBBP18612298
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Nov 2019 09:50:11 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3775A42049;
-        Wed,  6 Nov 2019 09:50:11 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DDC254203F;
-        Wed,  6 Nov 2019 09:50:10 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Nov 2019 09:50:10 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net] net/smc: fix ethernet interface refcounting
-Date:   Wed,  6 Nov 2019 10:49:57 +0100
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-x-cbid: 19110609-0020-0000-0000-00000383051A
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19110609-0021-0000-0000-000021D93301
-Message-Id: <20191106094957.94521-1-kgraul@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-06_02:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=592 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1911060101
+        id S1730019AbfKFKHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 05:07:18 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34048 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727961AbfKFKHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 05:07:18 -0500
+Received: by mail-pf1-f194.google.com with SMTP id n13so6770595pff.1
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 02:07:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=X05zBYkPaLX+0zINsXEFrTIGhG2lc88Xq9e+QvToQFs=;
+        b=OEt1lNHNq2Y25+Ru30BQlIgL1EGLF4SVCDHXPTBUUEH8XXrzP4rFCGQIIeA4HEfSu9
+         RWld6zC55fYxRNKD4idGhvwNxieHUE/RWLmQcF3jnD/Tx3jT04Q52E9fs2zOYKPzkA9g
+         abeKK24Z/udzmQEdJYQ6ClRdjgr/ngNM2VwBg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=X05zBYkPaLX+0zINsXEFrTIGhG2lc88Xq9e+QvToQFs=;
+        b=FdhspILdtNglNCywyz/CHyBMbt/HYW8YV8C1DkyWMP8YIWJxEXx1kGvsdIm5LG0hza
+         yQ7b5KSNrw7P9Xt6DGcUmG2LLKOZF8yX+84sg1V4L88kDlYxPuxp6aqXQJdHFQUT8/am
+         aRTsFFU3gFFhDSFY00ipWv5HY0OK2kK2HMf6MuiNdTIUUvzYG3P1QP+D+S1jJqXxaM0i
+         gfzPzkmUZ/lyxEeeHft23NDKWU1nqDN3Um+NHcQAQTFJN4N33Jf2B4/lJo2pwPy7RfVC
+         9lP0lmr28n15GYmF5/ERCShS2hpeZ4TVIOMvaUfBJqEZqnqjOEPBrg3gksOY/8RiSuDm
+         +ThQ==
+X-Gm-Message-State: APjAAAVuvI1vuIr3XcFThRmnf/srpzX8u0ousghesZ21D3mRKnm90joM
+        +0TfYsxiVHuU3zdGUjmPlq7qmA==
+X-Google-Smtp-Source: APXvYqwrv7trCkuRJxdZlf4pExinvZ0+o6T0QzG7Jw/AdQ0WLySdLfsGsUbtgGqNbwJwE2iJbMk2xQ==
+X-Received: by 2002:a63:5d04:: with SMTP id r4mr1924765pgb.22.1573034836267;
+        Wed, 06 Nov 2019 02:07:16 -0800 (PST)
+Received: from chromium.org ([122.173.128.252])
+        by smtp.gmail.com with ESMTPSA id k9sm22977594pfk.72.2019.11.06.02.07.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 02:07:15 -0800 (PST)
+From:   KP Singh <kpsingh@chromium.org>
+X-Google-Original-From: KP Singh <kpsingh>
+Date:   Wed, 6 Nov 2019 15:36:55 +0530
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Drysdale <drysdale@google.com>,
+        Florent Revest <revest@chromium.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
+        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
+Message-ID: <20191106100655.GA18815@chromium.org>
+References: <20191104172146.30797-1-mic@digikod.net>
+ <20191104172146.30797-5-mic@digikod.net>
+ <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
+ <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
+ <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
+On 05-Nov 11:34, Alexei Starovoitov wrote:
+> On Tue, Nov 05, 2019 at 07:01:41PM +0100, Mickaël Salaün wrote:
+> > 
+> > On 05/11/2019 18:18, Alexei Starovoitov wrote:
+> > > On Mon, Nov 04, 2019 at 06:21:43PM +0100, Mickaël Salaün wrote:
+> > >> Add a first Landlock hook that can be used to enforce a security policy
+> > >> or to audit some process activities.  For a sandboxing use-case, it is
+> > >> needed to inform the kernel if a task can legitimately debug another.
+> > >> ptrace(2) can also be used by an attacker to impersonate another task
+> > >> and remain undetected while performing malicious activities.
+> > >>
+> > >> Using ptrace(2) and related features on a target process can lead to a
+> > >> privilege escalation.  A sandboxed task must then be able to tell the
+> > >> kernel if another task is more privileged, via ptrace_may_access().
+> > >>
+> > >> Signed-off-by: Mickaël Salaün <mic@digikod.net>
+> > > ...
+> > >> +static int check_ptrace(struct landlock_domain *domain,
+> > >> +		struct task_struct *tracer, struct task_struct *tracee)
+> > >> +{
+> > >> +	struct landlock_hook_ctx_ptrace ctx_ptrace = {
+> > >> +		.prog_ctx = {
+> > >> +			.tracer = (uintptr_t)tracer,
+> > >> +			.tracee = (uintptr_t)tracee,
+> > >> +		},
+> > >> +	};
+> > > 
+> > > So you're passing two kernel pointers obfuscated as u64 into bpf program
+> > > yet claiming that the end goal is to make landlock unprivileged?!
+> > > The most basic security hole in the tool that is aiming to provide security.
+> > 
+> > How could you used these pointers without dedicated BPF helpers? This
+> > context items are typed as PTR_TO_TASK and can't be used without a
+> > dedicated helper able to deal with ARG_PTR_TO_TASK. Moreover, pointer
+> > arithmetic is explicitly forbidden (and I added tests for that). Did I
+> > miss something?
+> 
+> It's a pointer leak.
+> 
+> > 
+> > > 
+> > > I think the only way bpf-based LSM can land is both landlock and KRSI
+> > > developers work together on a design that solves all use cases.
+> > 
+> > As I said in a previous cover letter [1], that would be great. I think
+> > that the current Landlock bases (almost everything from this series
+> > except the seccomp interface) should meet both needs, but I would like
+> > to have the point of view of the KRSI developers.
+> > 
+> > [1] https://lore.kernel.org/lkml/20191029171505.6650-1-mic@digikod.net/
+> > 
+> > > BPF is capable
+> > > to be a superset of all existing LSMs whereas landlock and KRSI propsals today
+> > > are custom solutions to specific security concerns. BPF subsystem was extended
+> > > with custom things in the past. In networking we have lwt, skb, tc, xdp, sk
+> > > program types with a lot of overlapping functionality. We couldn't figure out
+> > > how to generalize them into single 'networking' program. Now we can and we
+> > > should. Accepting two partially overlapping bpf-based LSMs would be repeating
+> > > the same mistake again.
+> > 
+> > I'll let the LSM maintainers comment on whether BPF could be a superset
+> > of all LSM, but given the complexity of an access-control system, I have
+> > some doubts though. Anyway, we need to start somewhere and then iterate.
+> > This patch series is a first step.
+> 
+> I would like KRSI folks to speak up. So far I don't see any sharing happening
+> between landlock and KRSI. You're claiming this set is a first step. They're
+> claiming the same about their patches. I'd like to set a patchset that was
+> jointly developed.
 
-If a pnet table entry is to be added mentioning a valid ethernet
-interface, but an invalid infiniband or ISM device, the dev_put()
-operation for the ethernet interface is called twice, resulting
-in a negative refcount for the ethernet interface, which disables
-removal of such a network interface.
+We are willing to collaborate with the Landlock developers and come up
+with a common approach that would work for Landlock and KRSI. I want
+to mention that this collaboration and the current Landlock approach
+of using an eBPF based LSM for unprivileged sandboxing only makes sense
+if unprivileged usage of eBPF is going to be ever allowed.
 
-This patch removes one of the dev_put() calls.
+Purely from a technical standpoint, both the current designs for
+Landlock and KRSI target separate use cases and it would not be
+possible to build "one on top of the other". We've tried to identify
+the lowest denominator ("eBPF+LSM") requirements for both Landlock
+(unprivileged sandboxing / Discretionary Access Control) and KRSI
+(flexibility and unification of privileged MAC and Audit) and
+prototyped an implementation based on the newly added / upcoming
+features in BPF.
 
-Fixes: 890a2cb4a966 ("net/smc: rework pnet table")
-Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/smc_pnet.c | 2 --
- 1 file changed, 2 deletions(-)
+We've been successfully able to prototype the use cases for KRSI
+(privileged MAC and Audit) using this "eBPF+LSM" and shared our
+approach at the Linux Security Summit [1]:
 
-diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
-index 2920b006f65c..571e6d84da3b 100644
---- a/net/smc/smc_pnet.c
-+++ b/net/smc/smc_pnet.c
-@@ -376,8 +376,6 @@ static int smc_pnet_fill_entry(struct net *net,
- 	return 0;
- 
- error:
--	if (pnetelem->ndev)
--		dev_put(pnetelem->ndev);
- 	return rc;
- }
- 
--- 
-2.17.1
+* Use the new in-kernel BTF (CO-RE eBPF programs) [2] and the ability
+  of the BPF verifier to use the BTF information for access validation
+  to provide a more generic way to attach to the various LSM hooks.
+  This potentially saves a lot of redundant work:
 
+   - Creation of new program types.
+   - Multiple types of contexts (or a single context with Unions).
+   - Changes to the verifier and creation of new BPF argument types 
+     (eg. PTR_TO_TASK)
+
+* These new BPF features also alleviate the original concerns that we
+  raised when initially proposing KRSI and designing for precise BPF
+  helpers. We have some patches coming up which incorporate these new
+  changes and will be sharing something on the mailing list after some
+  cleanup.
+
+We can use the common "eBPF+LSM" for both privileged MAC and Audit and
+unprivileged sandboxing i.e. Discretionary Access Control.
+Here's what it could look like:
+
+* Common infrastructure allows attachment to all hooks which works well
+  for privileged MAC and Audit. This could be extended to provide
+  another attachment type for unprivileged DAC, which can restrict the
+  hooks that can be attached to, and also the information that is
+  exposed to the eBPF programs which is something that Landlock could
+  build.
+
+* This attachment could use the proposed landlock domains and attach to
+  the task_struct providing the discretionary access control semantics.
+
+[1] https://static.sched.com/hosted_files/lsseu2019/a2/Kernel%20Runtime%20Security%20Instrumentation.pdf
+[2] http://vger.kernel.org/bpfconf2019_talks/bpf-core.pdf
+
+- KP Singh
+
+> 
