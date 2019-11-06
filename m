@@ -2,103 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 879ABF18AB
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E35EDF18AE
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731665AbfKFObz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 09:31:55 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38085 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbfKFObz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 09:31:55 -0500
-Received: by mail-qt1-f193.google.com with SMTP id p20so15626913qtq.5;
-        Wed, 06 Nov 2019 06:31:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=JggrbZPVaiVzXbq+DGZI87bNjE++01il9vOKZ8JWpJ0=;
-        b=mkpwWNqzhlZS6hEDUW2cRoKy8gXQaSXb0ZEvpvwsJlvIWIDp1fEO2jz3i/QDYfDnHR
-         hNsv1i5w+vZkxgzFPhzmJANIi0boBmJHSYCpJsJlu4RfzwpDddihPJTZhRxAhJqY7g36
-         gAlgjzF6ZcayNgnWh63vGga2AydTPtV+LeSmkiV2dqLtlJCqwn+QDFVhbMjmbeh2nBEi
-         1QTpyLearIkUtV+7MXe3MJRj81MWAwio55NhIBjM/XFqSTWs3GrZz1R3cghFtbBBbmgI
-         iKrlgJ4ASUseX8mLn3oxtX1hQD82MMM+Q+SwfNhJhPr9EipPfqc2e5uthJF+54AbgL5N
-         OAeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JggrbZPVaiVzXbq+DGZI87bNjE++01il9vOKZ8JWpJ0=;
-        b=OuEvwrk6YyGES3kiHjkyth04FjtS5/ORJyuxxw7v7mhF8UfrRznB50aKnzNyA50h2b
-         TcKw+ZfnSuyV+DjFwBkGcYngBaM7ndvIjP6jCZSElya488NV0mAc8R20v7HEOqsYHb4S
-         6W2wfcf7WV/Vc/Jai6SqnN5yniAbTkcsrkjMni0HMFLgDD4b6Us6Z2ThNOL5UZRdwX1G
-         wcB1TbzFoRg6VyRNs0/N9SDfaTGF4oiO6Chgw3vGoklGhx+CIZxUno8dQHblX935jUJe
-         xmGvHjn/RladI5F0JeUJczbeEySUf1MGwsTRsdyIO4nW9lZSwa98PRuMACP4pOq4/CGw
-         duGQ==
-X-Gm-Message-State: APjAAAU48/W8KpnYtWkvTh3P7BqFv0p55oKUxQNWgbj68fNGKlZKHh2U
-        2SG/OZYCZ6O2DMQ9IzVPKPU=
-X-Google-Smtp-Source: APXvYqyQlQQstY6ckpzdxTq3eqyaTVMV1RbzAKXFHZ0p2+80Z3cUQ2hw1PgqERO7Z2iHF/jYWW8cTQ==
-X-Received: by 2002:ac8:31c1:: with SMTP id i1mr2652197qte.197.1573050713934;
-        Wed, 06 Nov 2019 06:31:53 -0800 (PST)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id q3sm12827090qkf.18.2019.11.06.06.31.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2019 06:31:53 -0800 (PST)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 5EB2940B1D; Wed,  6 Nov 2019 11:31:51 -0300 (-03)
-Date:   Wed, 6 Nov 2019 11:31:51 -0300
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v5 05/10] perf tools: ensure config and str in terms are
- unique
-Message-ID: <20191106143151.GC6259@kernel.org>
-References: <20191025180827.191916-1-irogers@google.com>
- <20191030223448.12930-1-irogers@google.com>
- <20191030223448.12930-6-irogers@google.com>
- <20191106142503.GK30214@krava>
+        id S1731932AbfKFOeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 09:34:07 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:47548 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728617AbfKFOeH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 09:34:07 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 351EAB562F18804CFDE4;
+        Wed,  6 Nov 2019 22:34:02 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 6 Nov 2019 22:33:56 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Vincent Cheng <vincent.cheng.xh@renesas.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+Subject: [PATCH v2 -next] ptp: ptp_clockmatrix: Fix missing unlock on error in idtcm_probe()
+Date:   Wed, 6 Nov 2019 14:33:09 +0000
+Message-ID: <20191106143309.123196-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191106115308.112645-1-weiyongjun1@huawei.com>
+References: <20191106115308.112645-1-weiyongjun1@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191106142503.GK30214@krava>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Wed, Nov 06, 2019 at 03:25:03PM +0100, Jiri Olsa escreveu:
-> On Wed, Oct 30, 2019 at 03:34:43PM -0700, Ian Rogers wrote:
-> > Make it easier to release memory associated with parse event terms by
-> > duplicating the string for the config name and ensuring the val string
-> > is a duplicate.
-> > 
-> > Currently the parser may memory leak terms and this is addressed in a
-> > later patch.
-> > 
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+Add the missing unlock before return from function idtcm_probe()
+in the error handling case.
 
-Thanks, applied.
+Fixes: 3a6ba7dc7799 ("ptp: Add a ptp clock driver for IDT ClockMatrix.")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Reviewed-by: Vincent Cheng <vincent.cheng.xh@renesas.com>
+---
+v1 -> v2: fix prefix of subject
+---
+ drivers/ptp/ptp_clockmatrix.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-- Arnaldo
+diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
+index cf5889b7d825..a5110b7b4ece 100644
+--- a/drivers/ptp/ptp_clockmatrix.c
++++ b/drivers/ptp/ptp_clockmatrix.c
+@@ -1294,8 +1294,10 @@ static int idtcm_probe(struct i2c_client *client,
+ 
+ 	err = set_tod_write_overhead(idtcm);
+ 
+-	if (err)
++	if (err) {
++		mutex_unlock(&idtcm->reg_lock);
+ 		return err;
++	}
+ 
+ 	err = idtcm_load_firmware(idtcm, &client->dev);
+
+
+
