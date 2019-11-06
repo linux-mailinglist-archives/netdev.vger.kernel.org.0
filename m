@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34588F11A1
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 10:01:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5AE3F11A2
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 10:01:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731484AbfKFJBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 04:01:42 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35059 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726830AbfKFJBm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 04:01:42 -0500
-Received: by mail-pl1-f194.google.com with SMTP id s10so274867plp.2
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 01:01:42 -0800 (PST)
+        id S1731518AbfKFJBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 04:01:51 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37799 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726830AbfKFJBv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 04:01:51 -0500
+Received: by mail-pl1-f195.google.com with SMTP id p13so11115440pll.4
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 01:01:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=tZ8OfzzLSBuweT31YJ+Wra3rkM5/2natWbC42rc1mEw=;
-        b=epGVJEAjyi4cW51+nqkMzio1Fg/4XnJXuOok5cta2NR+2FPlAmoatROWRUFlO6bjmA
-         UFI/8MD5BoXIhg7YCex+3BA7zMrxOLCoLHcwvUQ2rnAd7UcEvXhKHk3OBi3G14WnHD9z
-         xteWhaO8rupMAN72IbB5z8Ve0R8GYkHIGyqp9bGwqfnXwDIHmoTWQ2/XR0gKBfta6Cr7
-         7AkzhtVVunki6Ps41FCwpeTWjv9v+BbQForUON2enYxyPc8ihRcVBFR50FFYxMgmaa/b
-         LDL0J8BxkuvU7SpKt9Qrjg5bbasycZCHSS5yqfqnXDWc19+hSxrNoGjZYxuaNaCHc87+
-         Jnrw==
+        bh=hm/a63JrfGhZdwBSYQ9GZlF+8YQxc0JTAlFrihL1mLs=;
+        b=Ef4OrtZ7p+FL2/R06ib7crdB8W6qFWfT5MHcCywSTGvk7CmzNn8GYkcdJLSQ2hjLmo
+         09CkqjGFsm5QErlB/w6UOkC6KZdG4n5gFGvrHaOV9XWDA0NmoqieKsooCYSDSmKFPZFa
+         iGs24kQApyQhDCoI8fRG2dn7GqWdYd8T4dOZtqso6VvJnJ4xFc50l+g1GOHGxkNIcPvw
+         ngpp1pBkgE1vTrFtBU9wwr+0WQ5bDUpEG1JI/JtB0tF0ym3RvLTrS+bWqfINiUctiUOu
+         nM2OEgwgHB81I0V+Rh7RfRL9E9AId0e1nTOmXuU5GxseAEY/OZicmRBOUdcFpqwwDG2U
+         XOrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=tZ8OfzzLSBuweT31YJ+Wra3rkM5/2natWbC42rc1mEw=;
-        b=J92dMHve5UdlmCm1zAoY6jKjSqiwKMLS+ZA41PPHj/BEuKJu0kR1Ox8RrK5GskBTvq
-         tPd8MEWQFHMxvenilMYZ9FTgyT+PbusDwkCC+ckZza+lVBUwfT/KLFBkMlhfEsXF/Bbc
-         WAwlCQH9ZRz09SbzyyiB5mdLETNJ1JHLxnNZ1AArxetuafoRNbYbN8jhL2Z/7q0bTxCw
-         ec8HT6BAY0m0AwFuuYOetEuV2msGl5tVYVmAryTSNSTv7k5ojUOqEXANPOYUUVgLUhiO
-         urh3TfCAMl1aK8OVcIOLCf3Nd66RYygWRGB6QMYjncB7WQWgBWoLdX3oLqOFYEa3wsST
-         dXiA==
-X-Gm-Message-State: APjAAAUaWDV+C2hD8S/+xCA3qa7I1B5nMOQkV93IXnUcZSFHGTibmJsf
-        0HUmGGjASgtxtW4YTBD4saJvaNRi
-X-Google-Smtp-Source: APXvYqwPbbDVgiumGLxHOl94NsR7fEFukIGHUvmHdrCjludFzlfpHA0YKbbxRqA7C/iSTWraBcW09w==
-X-Received: by 2002:a17:902:4a:: with SMTP id 68mr1486904pla.8.1573030901035;
-        Wed, 06 Nov 2019 01:01:41 -0800 (PST)
+        bh=hm/a63JrfGhZdwBSYQ9GZlF+8YQxc0JTAlFrihL1mLs=;
+        b=nRm9xOjWi7AEYLJw+NkfHKDFAHuWo4P3hU9vl8DAwtcpYR7wLLDHHKqRIj1OSqpUkP
+         r0J0bV/YLuEOFe9qgDALaMm/PyZJmsQV08eety3bSVGNZJJ5cGNmLhXD5djEyuooKQjW
+         ZRe7qwYoqsg7Rh0gyAXLQ2aKtCiumlKgaq6fBvZtE/flGU41zISD7I1Q0B6HunodQ4eK
+         dgkCcJ9QIU2PduiL8hkEQDpiav0h3LIOMmj1mHwLT6aP+ITjz7pNqLGle7XH69dCKvzh
+         DxHV8qt/SrTy6ltxSPB/I/lTGnwfMdXowPGj0HpHH7GeNv0TupsfQmu2i/+w0ORaqj+G
+         iYZw==
+X-Gm-Message-State: APjAAAWdgNVHODFIHS+FI8S4w+vYDf5XtrsL6a6ovXMPK3n0a89cUVk+
+        ene9orDe+KHJjM2RKi6i9UEhVd7c
+X-Google-Smtp-Source: APXvYqwFhPjoL6mNvrfC8BCiJYet2Xapmu8tr+mC+KwHAWNqA5Er56Ra1ptMMwA6t/ytf1QWNj7U5g==
+X-Received: by 2002:a17:902:b715:: with SMTP id d21mr1465169pls.312.1573030909458;
+        Wed, 06 Nov 2019 01:01:49 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t12sm23691737pgv.45.2019.11.06.01.01.39
+        by smtp.gmail.com with ESMTPSA id i5sm10776164pfo.52.2019.11.06.01.01.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Nov 2019 01:01:40 -0800 (PST)
+        Wed, 06 Nov 2019 01:01:48 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>
 Cc:     davem@davemloft.net, simon.horman@netronome.com,
         Jiri Benc <jbenc@redhat.com>, Thomas Graf <tgraf@suug.ch>,
         u9012063@gmail.com
-Subject: [PATCH net-next 3/5] lwtunnel: add options setting and dumping for geneve
-Date:   Wed,  6 Nov 2019 17:01:05 +0800
-Message-Id: <f5c8d0637858b8fe0e95243e4514533dbe9189cd.1573030805.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 4/5] lwtunnel: add options setting and dumping for vxlan
+Date:   Wed,  6 Nov 2019 17:01:06 +0800
+Message-Id: <c98d3ea3e591f5a0e5767bc7eabcd7035764bbb3.1573030805.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <205adb4659c05108760ef058275fd44b8a907da4.1573030805.git.lucien.xin@gmail.com>
+In-Reply-To: <f5c8d0637858b8fe0e95243e4514533dbe9189cd.1573030805.git.lucien.xin@gmail.com>
 References: <cover.1573030805.git.lucien.xin@gmail.com>
  <aeac8e3758555d75a9026ffdba985d95301552a0.1573030805.git.lucien.xin@gmail.com>
  <205adb4659c05108760ef058275fd44b8a907da4.1573030805.git.lucien.xin@gmail.com>
+ <f5c8d0637858b8fe0e95243e4514533dbe9189cd.1573030805.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1573030805.git.lucien.xin@gmail.com>
 References: <cover.1573030805.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -64,407 +65,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To add options setting and dumping, .build_state(), .fill_encap() and
-.get_encap_size() in ip_tun_lwt_ops needs to be extended:
-
-ip_tun_build_state():
-  ip_tun_parse_opts():
-    ip_tun_parse_opts_geneve()
-
-ip_tun_fill_encap_info():
-  ip_tun_fill_encap_opts():
-    ip_tun_fill_encap_opts_geneve()
-
-ip_tun_encap_nlsize()
-   ip_tun_opts_nlsize():
-     if (tun_flags & TUNNEL_GENEVE_OPT)
-
-ip_tun_parse_opts(), ip_tun_fill_encap_opts() and ip_tun_opts_nlsize()
-processes LWTUNNEL_IP_OPTS.
-
-ip_tun_parse_opts_geneve(), ip_tun_fill_encap_opts_geneve() and
-if (tun_flags & TUNNEL_GENEVE_OPT) processes LWTUNNEL_IP_OPTS_GENEVE.
+Based on the code framework built on the last patch, to
+support setting and dumping for vxlan, we only need to
+add ip_tun_parse_opts_vxlan() for .build_state and
+ip_tun_fill_encap_opts_vxlan() for .fill_encap and
+if (tun_flags & TUNNEL_VXLAN_OPT) for .get_encap_size.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/uapi/linux/lwtunnel.h |  20 ++++
- net/ipv4/ip_tunnel_core.c     | 212 ++++++++++++++++++++++++++++++++++++++----
- 2 files changed, 216 insertions(+), 16 deletions(-)
+ include/uapi/linux/lwtunnel.h |  9 ++++++
+ net/ipv4/ip_tunnel_core.c     | 67 +++++++++++++++++++++++++++++++++++++++++--
+ 2 files changed, 74 insertions(+), 2 deletions(-)
 
 diff --git a/include/uapi/linux/lwtunnel.h b/include/uapi/linux/lwtunnel.h
-index de696ca..b595ab2 100644
+index b595ab2..638b7b1 100644
 --- a/include/uapi/linux/lwtunnel.h
 +++ b/include/uapi/linux/lwtunnel.h
-@@ -27,6 +27,7 @@ enum lwtunnel_ip_t {
- 	LWTUNNEL_IP_TOS,
- 	LWTUNNEL_IP_FLAGS,
- 	LWTUNNEL_IP_PAD,
-+	LWTUNNEL_IP_OPTS,
- 	__LWTUNNEL_IP_MAX,
+@@ -51,6 +51,7 @@ enum lwtunnel_ip6_t {
+ enum {
+ 	LWTUNNEL_IP_OPTS_UNSPEC,
+ 	LWTUNNEL_IP_OPTS_GENEVE,
++	LWTUNNEL_IP_OPTS_VXLAN,
+ 	__LWTUNNEL_IP_OPTS_MAX,
  };
  
-@@ -41,12 +42,31 @@ enum lwtunnel_ip6_t {
- 	LWTUNNEL_IP6_TC,
- 	LWTUNNEL_IP6_FLAGS,
- 	LWTUNNEL_IP6_PAD,
-+	LWTUNNEL_IP6_OPTS,
- 	__LWTUNNEL_IP6_MAX,
- };
- 
- #define LWTUNNEL_IP6_MAX (__LWTUNNEL_IP6_MAX - 1)
+@@ -67,6 +68,14 @@ enum {
+ #define LWTUNNEL_IP_OPT_GENEVE_MAX (__LWTUNNEL_IP_OPT_GENEVE_MAX - 1)
  
  enum {
-+	LWTUNNEL_IP_OPTS_UNSPEC,
-+	LWTUNNEL_IP_OPTS_GENEVE,
-+	__LWTUNNEL_IP_OPTS_MAX,
++	LWTUNNEL_IP_OPT_VXLAN_UNSPEC,
++	LWTUNNEL_IP_OPT_VXLAN_GBP,
++	__LWTUNNEL_IP_OPT_VXLAN_MAX,
 +};
 +
-+#define LWTUNNEL_IP_OPTS_MAX (__LWTUNNEL_IP_OPTS_MAX - 1)
-+
-+enum {
-+	LWTUNNEL_IP_OPT_GENEVE_UNSPEC,
-+	LWTUNNEL_IP_OPT_GENEVE_CLASS,
-+	LWTUNNEL_IP_OPT_GENEVE_TYPE,
-+	LWTUNNEL_IP_OPT_GENEVE_DATA,
-+	__LWTUNNEL_IP_OPT_GENEVE_MAX,
-+};
-+
-+#define LWTUNNEL_IP_OPT_GENEVE_MAX (__LWTUNNEL_IP_OPT_GENEVE_MAX - 1)
++#define LWTUNNEL_IP_OPT_VXLAN_MAX (__LWTUNNEL_IP_OPT_VXLAN_MAX - 1)
 +
 +enum {
  	LWT_BPF_PROG_UNSPEC,
  	LWT_BPF_PROG_FD,
  	LWT_BPF_PROG_NAME,
 diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index c0b5bad..1ec9d94 100644
+index 1ec9d94..61be2e0 100644
 --- a/net/ipv4/ip_tunnel_core.c
 +++ b/net/ipv4/ip_tunnel_core.c
-@@ -34,6 +34,7 @@
- #include <net/netns/generic.h>
+@@ -35,6 +35,7 @@
  #include <net/rtnetlink.h>
  #include <net/dst_metadata.h>
-+#include <net/geneve.h>
+ #include <net/geneve.h>
++#include <net/vxlan.h>
  
  const struct ip_tunnel_encap_ops __rcu *
  		iptun_encaps[MAX_IPTUN_ENCAP_OPS] __read_mostly;
-@@ -218,24 +219,112 @@ static const struct nla_policy ip_tun_policy[LWTUNNEL_IP_MAX + 1] = {
- 	[LWTUNNEL_IP_TTL]	= { .type = NLA_U8 },
- 	[LWTUNNEL_IP_TOS]	= { .type = NLA_U8 },
- 	[LWTUNNEL_IP_FLAGS]	= { .type = NLA_U16 },
-+	[LWTUNNEL_IP_OPTS]	= { .type = NLA_NESTED },
+@@ -224,6 +225,7 @@ static const struct nla_policy ip_tun_policy[LWTUNNEL_IP_MAX + 1] = {
+ 
+ static const struct nla_policy ip_opts_policy[LWTUNNEL_IP_OPTS_MAX + 1] = {
+ 	[LWTUNNEL_IP_OPTS_GENEVE]	= { .type = NLA_NESTED },
++	[LWTUNNEL_IP_OPTS_VXLAN]	= { .type = NLA_NESTED },
  };
  
-+static const struct nla_policy ip_opts_policy[LWTUNNEL_IP_OPTS_MAX + 1] = {
-+	[LWTUNNEL_IP_OPTS_GENEVE]	= { .type = NLA_NESTED },
-+};
-+
+ static const struct nla_policy
+@@ -233,6 +235,11 @@ geneve_opt_policy[LWTUNNEL_IP_OPT_GENEVE_MAX + 1] = {
+ 	[LWTUNNEL_IP_OPT_GENEVE_DATA]	= { .type = NLA_BINARY, .len = 128 },
+ };
+ 
 +static const struct nla_policy
-+geneve_opt_policy[LWTUNNEL_IP_OPT_GENEVE_MAX + 1] = {
-+	[LWTUNNEL_IP_OPT_GENEVE_CLASS]	= { .type = NLA_U16 },
-+	[LWTUNNEL_IP_OPT_GENEVE_TYPE]	= { .type = NLA_U8 },
-+	[LWTUNNEL_IP_OPT_GENEVE_DATA]	= { .type = NLA_BINARY, .len = 128 },
++vxlan_opt_policy[LWTUNNEL_IP_OPT_VXLAN_MAX + 1] = {
++	[LWTUNNEL_IP_OPT_VXLAN_GBP]	= { .type = NLA_U32 },
 +};
 +
-+static int ip_tun_parse_opts_geneve(struct nlattr *attr,
-+				    struct ip_tunnel_info *info,
-+				    struct netlink_ext_ack *extack)
+ static int ip_tun_parse_opts_geneve(struct nlattr *attr,
+ 				    struct ip_tunnel_info *info,
+ 				    struct netlink_ext_ack *extack)
+@@ -270,6 +277,32 @@ static int ip_tun_parse_opts_geneve(struct nlattr *attr,
+ 	return sizeof(struct geneve_opt) + data_len;
+ }
+ 
++static int ip_tun_parse_opts_vxlan(struct nlattr *attr,
++				   struct ip_tunnel_info *info,
++				   struct netlink_ext_ack *extack)
 +{
-+	struct nlattr *tb[LWTUNNEL_IP_OPT_GENEVE_MAX + 1];
-+	int data_len, err;
++	struct nlattr *tb[LWTUNNEL_IP_OPT_VXLAN_MAX + 1];
++	int err;
 +
-+	err = nla_parse_nested_deprecated(tb, LWTUNNEL_IP_OPT_GENEVE_MAX,
-+					  attr, geneve_opt_policy, extack);
++	err = nla_parse_nested_deprecated(tb, LWTUNNEL_IP_OPT_VXLAN_MAX,
++					  attr, vxlan_opt_policy, extack);
 +	if (err)
 +		return err;
 +
-+	if (!tb[LWTUNNEL_IP_OPT_GENEVE_CLASS] ||
-+	    !tb[LWTUNNEL_IP_OPT_GENEVE_TYPE] ||
-+	    !tb[LWTUNNEL_IP_OPT_GENEVE_DATA])
-+		return -EINVAL;
-+
-+	attr = tb[LWTUNNEL_IP_OPT_GENEVE_DATA];
-+	data_len = nla_len(attr);
-+	if (data_len % 4)
++	if (!tb[LWTUNNEL_IP_OPT_VXLAN_GBP])
 +		return -EINVAL;
 +
 +	if (info) {
-+		struct geneve_opt *opt = ip_tunnel_info_opts(info);
++		struct vxlan_metadata *md = ip_tunnel_info_opts(info);
 +
-+		memcpy(opt->opt_data, nla_data(attr), data_len);
-+		opt->length = data_len / 4;
-+		attr = tb[LWTUNNEL_IP_OPT_GENEVE_CLASS];
-+		opt->opt_class = nla_get_be16(attr);
-+		attr = tb[LWTUNNEL_IP_OPT_GENEVE_TYPE];
-+		opt->type = nla_get_u8(attr);
-+		info->key.tun_flags |= TUNNEL_GENEVE_OPT;
++		attr = tb[LWTUNNEL_IP_OPT_VXLAN_GBP];
++		md->gbp = nla_get_u32(attr);
++		info->key.tun_flags |= TUNNEL_VXLAN_OPT;
 +	}
 +
-+	return sizeof(struct geneve_opt) + data_len;
++	return sizeof(struct vxlan_metadata);
 +}
 +
-+static int ip_tun_parse_opts(struct nlattr *attr, struct ip_tunnel_info *info,
-+			     struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[LWTUNNEL_IP_OPTS_MAX + 1];
-+	int err;
-+
-+	if (!attr)
-+		return 0;
-+
-+	err = nla_parse_nested_deprecated(tb, LWTUNNEL_IP_OPTS_MAX, attr,
-+					  ip_opts_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (tb[LWTUNNEL_IP_OPTS_GENEVE])
-+		err = ip_tun_parse_opts_geneve(tb[LWTUNNEL_IP_OPTS_GENEVE],
-+					       info, extack);
-+	else
-+		err = -EINVAL;
-+
-+	return err;
-+}
-+
-+static int ip_tun_get_optlen(struct nlattr *attr,
-+			     struct netlink_ext_ack *extack)
-+{
-+	return ip_tun_parse_opts(attr, NULL, extack);
-+}
-+
-+static int ip_tun_set_opts(struct nlattr *attr, struct ip_tunnel_info *info,
-+			   struct netlink_ext_ack *extack)
-+{
-+	return ip_tun_parse_opts(attr, info, extack);
-+}
-+
- static int ip_tun_build_state(struct nlattr *attr,
- 			      unsigned int family, const void *cfg,
- 			      struct lwtunnel_state **ts,
- 			      struct netlink_ext_ack *extack)
+ static int ip_tun_parse_opts(struct nlattr *attr, struct ip_tunnel_info *info,
+ 			     struct netlink_ext_ack *extack)
  {
--	struct ip_tunnel_info *tun_info;
--	struct lwtunnel_state *new_state;
- 	struct nlattr *tb[LWTUNNEL_IP_MAX + 1];
--	int err;
-+	struct lwtunnel_state *new_state;
-+	struct ip_tunnel_info *tun_info;
-+	int err, opt_len;
+@@ -287,6 +320,9 @@ static int ip_tun_parse_opts(struct nlattr *attr, struct ip_tunnel_info *info,
+ 	if (tb[LWTUNNEL_IP_OPTS_GENEVE])
+ 		err = ip_tun_parse_opts_geneve(tb[LWTUNNEL_IP_OPTS_GENEVE],
+ 					       info, extack);
++	else if (tb[LWTUNNEL_IP_OPTS_VXLAN])
++		err = ip_tun_parse_opts_vxlan(tb[LWTUNNEL_IP_OPTS_VXLAN],
++					      info, extack);
+ 	else
+ 		err = -EINVAL;
  
- 	err = nla_parse_nested_deprecated(tb, LWTUNNEL_IP_MAX, attr,
- 					  ip_tun_policy, extack);
- 	if (err < 0)
- 		return err;
+@@ -404,13 +440,34 @@ static int ip_tun_fill_encap_opts_geneve(struct sk_buff *skb,
+ 	return 0;
+ }
  
--	new_state = lwtunnel_state_alloc(sizeof(*tun_info));
-+	opt_len = ip_tun_get_optlen(tb[LWTUNNEL_IP_OPTS], extack);
-+	if (opt_len < 0)
-+		return opt_len;
++static int ip_tun_fill_encap_opts_vxlan(struct sk_buff *skb,
++					struct ip_tunnel_info *tun_info)
++{
++	struct vxlan_metadata *md;
++	struct nlattr *nest;
 +
-+	new_state = lwtunnel_state_alloc(sizeof(*tun_info) + opt_len);
- 	if (!new_state)
- 		return -ENOMEM;
- 
-@@ -243,6 +332,12 @@ static int ip_tun_build_state(struct nlattr *attr,
- 
- 	tun_info = lwt_tun_info(new_state);
- 
-+	err = ip_tun_set_opts(tb[LWTUNNEL_IP_OPTS], tun_info, extack);
-+	if (err < 0) {
-+		lwtstate_free(new_state);
-+		return err;
++	nest = nla_nest_start_noflag(skb, LWTUNNEL_IP_OPTS_VXLAN);
++	if (!nest)
++		return -ENOMEM;
++
++	md = ip_tunnel_info_opts(tun_info);
++	if (nla_put_u32(skb, LWTUNNEL_IP_OPT_VXLAN_GBP, md->gbp)) {
++		nla_nest_cancel(skb, nest);
++		return -ENOMEM;
 +	}
 +
- #ifdef CONFIG_DST_CACHE
- 	err = dst_cache_init(&tun_info->dst_cache, GFP_KERNEL);
++	nla_nest_end(skb, nest);
++	return 0;
++}
++
+ static int ip_tun_fill_encap_opts(struct sk_buff *skb, int type,
+ 				  struct ip_tunnel_info *tun_info)
+ {
+ 	struct nlattr *nest;
+ 	int err = 0;
+ 
+-	if (!(tun_info->key.tun_flags & TUNNEL_GENEVE_OPT))
++	if (!(tun_info->key.tun_flags &
++	      (TUNNEL_GENEVE_OPT | TUNNEL_VXLAN_OPT)))
+ 		return 0;
+ 
+ 	nest = nla_nest_start_noflag(skb, type);
+@@ -419,6 +476,8 @@ static int ip_tun_fill_encap_opts(struct sk_buff *skb, int type,
+ 
+ 	if (tun_info->key.tun_flags & TUNNEL_GENEVE_OPT)
+ 		err = ip_tun_fill_encap_opts_geneve(skb, tun_info);
++	else if (tun_info->key.tun_flags & TUNNEL_VXLAN_OPT)
++		err = ip_tun_fill_encap_opts_vxlan(skb, tun_info);
+ 
  	if (err) {
-@@ -267,10 +362,10 @@ static int ip_tun_build_state(struct nlattr *attr,
- 		tun_info->key.tos = nla_get_u8(tb[LWTUNNEL_IP_TOS]);
- 
- 	if (tb[LWTUNNEL_IP_FLAGS])
--		tun_info->key.tun_flags = nla_get_be16(tb[LWTUNNEL_IP_FLAGS]);
-+		tun_info->key.tun_flags |= nla_get_be16(tb[LWTUNNEL_IP_FLAGS]);
- 
- 	tun_info->mode = IP_TUNNEL_INFO_TX;
--	tun_info->options_len = 0;
-+	tun_info->options_len = opt_len;
- 
- 	*ts = new_state;
- 
-@@ -286,6 +381,54 @@ static void ip_tun_destroy_state(struct lwtunnel_state *lwtstate)
- #endif
- }
- 
-+static int ip_tun_fill_encap_opts_geneve(struct sk_buff *skb,
-+					 struct ip_tunnel_info *tun_info)
-+{
-+	struct geneve_opt *opt;
-+	struct nlattr *nest;
-+
-+	nest = nla_nest_start_noflag(skb, LWTUNNEL_IP_OPTS_GENEVE);
-+	if (!nest)
-+		return -ENOMEM;
-+
-+	opt = ip_tunnel_info_opts(tun_info);
-+	if (nla_put_be16(skb, LWTUNNEL_IP_OPT_GENEVE_CLASS, opt->opt_class) ||
-+	    nla_put_u8(skb, LWTUNNEL_IP_OPT_GENEVE_TYPE, opt->type) ||
-+	    nla_put(skb, LWTUNNEL_IP_OPT_GENEVE_DATA, opt->length * 4,
-+		    opt->opt_data)) {
-+		nla_nest_cancel(skb, nest);
-+		return -ENOMEM;
-+	}
-+
-+	nla_nest_end(skb, nest);
-+	return 0;
-+}
-+
-+static int ip_tun_fill_encap_opts(struct sk_buff *skb, int type,
-+				  struct ip_tunnel_info *tun_info)
-+{
-+	struct nlattr *nest;
-+	int err = 0;
-+
-+	if (!(tun_info->key.tun_flags & TUNNEL_GENEVE_OPT))
-+		return 0;
-+
-+	nest = nla_nest_start_noflag(skb, type);
-+	if (!nest)
-+		return -ENOMEM;
-+
-+	if (tun_info->key.tun_flags & TUNNEL_GENEVE_OPT)
-+		err = ip_tun_fill_encap_opts_geneve(skb, tun_info);
-+
-+	if (err) {
-+		nla_nest_cancel(skb, nest);
-+		return err;
-+	}
-+
-+	nla_nest_end(skb, nest);
-+	return 0;
-+}
-+
- static int ip_tun_fill_encap_info(struct sk_buff *skb,
- 				  struct lwtunnel_state *lwtstate)
+ 		nla_nest_cancel(skb, nest);
+@@ -451,7 +510,8 @@ static int ip_tun_opts_nlsize(struct ip_tunnel_info *info)
  {
-@@ -297,12 +440,34 @@ static int ip_tun_fill_encap_info(struct sk_buff *skb,
- 	    nla_put_in_addr(skb, LWTUNNEL_IP_SRC, tun_info->key.u.ipv4.src) ||
- 	    nla_put_u8(skb, LWTUNNEL_IP_TOS, tun_info->key.tos) ||
- 	    nla_put_u8(skb, LWTUNNEL_IP_TTL, tun_info->key.ttl) ||
--	    nla_put_be16(skb, LWTUNNEL_IP_FLAGS, tun_info->key.tun_flags))
-+	    nla_put_be16(skb, LWTUNNEL_IP_FLAGS, tun_info->key.tun_flags) ||
-+	    ip_tun_fill_encap_opts(skb, LWTUNNEL_IP_OPTS, tun_info))
- 		return -ENOMEM;
+ 	int opt_len;
  
- 	return 0;
- }
+-	if (!(info->key.tun_flags & TUNNEL_GENEVE_OPT))
++	if (!(info->key.tun_flags &
++	      (TUNNEL_GENEVE_OPT | TUNNEL_VXLAN_OPT)))
+ 		return 0;
  
-+static int ip_tun_opts_nlsize(struct ip_tunnel_info *info)
-+{
-+	int opt_len;
-+
-+	if (!(info->key.tun_flags & TUNNEL_GENEVE_OPT))
-+		return 0;
-+
-+	opt_len = nla_total_size(0);		/* LWTUNNEL_IP_OPTS */
-+	if (info->key.tun_flags & TUNNEL_GENEVE_OPT) {
-+		struct geneve_opt *opt = ip_tunnel_info_opts(info);
-+
-+		opt_len += nla_total_size(0)	/* LWTUNNEL_IP_OPTS_GENEVE */
-+			   + nla_total_size(2)	/* OPT_GENEVE_CLASS */
-+			   + nla_total_size(1)	/* OPT_GENEVE_TYPE */
-+			   + nla_total_size(opt->length * 4);
-+						/* OPT_GENEVE_DATA */
-+	}
-+
-+	return opt_len;
-+}
-+
- static int ip_tun_encap_nlsize(struct lwtunnel_state *lwtstate)
- {
- 	return nla_total_size_64bit(8)	/* LWTUNNEL_IP_ID */
-@@ -310,7 +475,9 @@ static int ip_tun_encap_nlsize(struct lwtunnel_state *lwtstate)
- 		+ nla_total_size(4)	/* LWTUNNEL_IP_SRC */
- 		+ nla_total_size(1)	/* LWTUNNEL_IP_TOS */
- 		+ nla_total_size(1)	/* LWTUNNEL_IP_TTL */
--		+ nla_total_size(2);	/* LWTUNNEL_IP_FLAGS */
-+		+ nla_total_size(2)	/* LWTUNNEL_IP_FLAGS */
-+		+ ip_tun_opts_nlsize(lwt_tun_info(lwtstate));
-+					/* LWTUNNEL_IP_OPTS */
- }
+ 	opt_len = nla_total_size(0);		/* LWTUNNEL_IP_OPTS */
+@@ -463,6 +523,9 @@ static int ip_tun_opts_nlsize(struct ip_tunnel_info *info)
+ 			   + nla_total_size(1)	/* OPT_GENEVE_TYPE */
+ 			   + nla_total_size(opt->length * 4);
+ 						/* OPT_GENEVE_DATA */
++	} else if (info->key.tun_flags & TUNNEL_VXLAN_OPT) {
++		opt_len += nla_total_size(0)	/* LWTUNNEL_IP_OPTS_VXLAN */
++			   + nla_total_size(4);	/* OPT_VXLAN_GBP */
+ 	}
  
- static int ip_tun_cmp_encap(struct lwtunnel_state *a, struct lwtunnel_state *b)
-@@ -348,17 +515,21 @@ static int ip6_tun_build_state(struct nlattr *attr,
- 			       struct lwtunnel_state **ts,
- 			       struct netlink_ext_ack *extack)
- {
--	struct ip_tunnel_info *tun_info;
--	struct lwtunnel_state *new_state;
- 	struct nlattr *tb[LWTUNNEL_IP6_MAX + 1];
--	int err;
-+	struct lwtunnel_state *new_state;
-+	struct ip_tunnel_info *tun_info;
-+	int err, opt_len;
- 
- 	err = nla_parse_nested_deprecated(tb, LWTUNNEL_IP6_MAX, attr,
- 					  ip6_tun_policy, extack);
- 	if (err < 0)
- 		return err;
- 
--	new_state = lwtunnel_state_alloc(sizeof(*tun_info));
-+	opt_len = ip_tun_get_optlen(tb[LWTUNNEL_IP6_OPTS], extack);
-+	if (opt_len < 0)
-+		return opt_len;
-+
-+	new_state = lwtunnel_state_alloc(sizeof(*tun_info) + opt_len);
- 	if (!new_state)
- 		return -ENOMEM;
- 
-@@ -366,6 +537,12 @@ static int ip6_tun_build_state(struct nlattr *attr,
- 
- 	tun_info = lwt_tun_info(new_state);
- 
-+	err = ip_tun_set_opts(tb[LWTUNNEL_IP6_OPTS], tun_info, extack);
-+	if (err < 0) {
-+		lwtstate_free(new_state);
-+		return err;
-+	}
-+
- 	if (tb[LWTUNNEL_IP6_ID])
- 		tun_info->key.tun_id = nla_get_be64(tb[LWTUNNEL_IP6_ID]);
- 
-@@ -382,10 +559,10 @@ static int ip6_tun_build_state(struct nlattr *attr,
- 		tun_info->key.tos = nla_get_u8(tb[LWTUNNEL_IP6_TC]);
- 
- 	if (tb[LWTUNNEL_IP6_FLAGS])
--		tun_info->key.tun_flags = nla_get_be16(tb[LWTUNNEL_IP6_FLAGS]);
-+		tun_info->key.tun_flags |= nla_get_be16(tb[LWTUNNEL_IP6_FLAGS]);
- 
- 	tun_info->mode = IP_TUNNEL_INFO_TX | IP_TUNNEL_INFO_IPV6;
--	tun_info->options_len = 0;
-+	tun_info->options_len = opt_len;
- 
- 	*ts = new_state;
- 
-@@ -403,7 +580,8 @@ static int ip6_tun_fill_encap_info(struct sk_buff *skb,
- 	    nla_put_in6_addr(skb, LWTUNNEL_IP6_SRC, &tun_info->key.u.ipv6.src) ||
- 	    nla_put_u8(skb, LWTUNNEL_IP6_TC, tun_info->key.tos) ||
- 	    nla_put_u8(skb, LWTUNNEL_IP6_HOPLIMIT, tun_info->key.ttl) ||
--	    nla_put_be16(skb, LWTUNNEL_IP6_FLAGS, tun_info->key.tun_flags))
-+	    nla_put_be16(skb, LWTUNNEL_IP6_FLAGS, tun_info->key.tun_flags) ||
-+	    ip_tun_fill_encap_opts(skb, LWTUNNEL_IP6_OPTS, tun_info))
- 		return -ENOMEM;
- 
- 	return 0;
-@@ -416,7 +594,9 @@ static int ip6_tun_encap_nlsize(struct lwtunnel_state *lwtstate)
- 		+ nla_total_size(16)	/* LWTUNNEL_IP6_SRC */
- 		+ nla_total_size(1)	/* LWTUNNEL_IP6_HOPLIMIT */
- 		+ nla_total_size(1)	/* LWTUNNEL_IP6_TC */
--		+ nla_total_size(2);	/* LWTUNNEL_IP6_FLAGS */
-+		+ nla_total_size(2)	/* LWTUNNEL_IP6_FLAGS */
-+		+ ip_tun_opts_nlsize(lwt_tun_info(lwtstate));
-+					/* LWTUNNEL_IP6_OPTS */
- }
- 
- static const struct lwtunnel_encap_ops ip6_tun_lwt_ops = {
+ 	return opt_len;
 -- 
 2.1.0
 
