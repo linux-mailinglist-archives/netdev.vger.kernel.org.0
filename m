@@ -2,241 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EEC5F1D16
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 19:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1A53F1D1A
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 19:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732404AbfKFSCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 13:02:19 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64102 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728191AbfKFSCS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 13:02:18 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA6Hx7F6015583
-        for <netdev@vger.kernel.org>; Wed, 6 Nov 2019 10:02:17 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=8Bbx/q0j2y0t31Iul8vO07aQOZQKM1jLAIjZkWvrUxQ=;
- b=oEkMHxUVqRqHHmMT7cXfQhygXO6gE8gYBThmoRyuBpcbt3LIPSI0g1PyuVCOQ4ANzO4+
- owVdc5WPyOEHb+JF9p+WvXdM1dz3RttGWAy5HNfpYnKc2ax6pbUES9mSYNOFwvRxUWJc
- cx/tZin21XKllOE2coo+KsyrMswTO2T+n5I= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41u2ge7k-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 10:02:17 -0800
-Received: from 2401:db00:2120:80e1:face:0:29:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 6 Nov 2019 10:02:16 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 89550294200E; Wed,  6 Nov 2019 10:02:15 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 2/2] bpf: Add cb access in kfree_skb test
-Date:   Wed, 6 Nov 2019 10:02:15 -0800
-Message-ID: <20191106180215.2175714-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191106180212.2175046-1-kafai@fb.com>
-References: <20191106180212.2175046-1-kafai@fb.com>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-06_06:2019-11-06,2019-11-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 suspectscore=9 priorityscore=1501 malwarescore=0 phishscore=0
- adultscore=0 impostorscore=0 mlxlogscore=999 mlxscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911060174
-X-FB-Internal: deliver
+        id S1732364AbfKFSEQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 13:04:16 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:47024 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727397AbfKFSEQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 13:04:16 -0500
+Received: by mail-pf1-f202.google.com with SMTP id 187so15294884pfu.13
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 10:04:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=hCigKU6xFbQBdEU04ORL4QnWVuiZ77aLf14SYjf/7t4=;
+        b=giyfoDscjVQseGHOxbaKiXJWSQCqq5LYvDjlnxRM6Tiru3QQZuM6Yfki5OOnKhn/kP
+         Lji3fx9QVIfixAj9P5Vb7+BeH/nQPO1zVGYqzFJh4AlGTkvHA5tM3n2tOuEbqXW8RqKp
+         F67edqyugrLJCgLXJgMn0GSp0l6ECCkx5HxxWPs0UaZKoK8I9tcC1DxyAKIBLbrxtlql
+         ZxTU867F278lUtqvxJ+VYRVZ0F3kzbku2IwTtlRByOefKVUJWu+a/pwlnvPS9z0v5jLK
+         XAbVa2xBL0pBpgzMvtXZWZJXh5HVzl2hvc8n45RvGNO0yO7LZZaNRRMjfX8DB8wSbqEM
+         B1hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=hCigKU6xFbQBdEU04ORL4QnWVuiZ77aLf14SYjf/7t4=;
+        b=Z6HqojHd9DNP7g/rkQoO72ypHmgsJ0+8iVFXdDSozATfk9GGHp2kFZgUPAWOLoOhs8
+         vIjvK6V4fO1G7gZPgALLDcb51W9xJsYZ5yFiKjWE/oxMojTE4FbmLullt4Et5vbNI5aU
+         4DwcZODKVB9/VDD958s9x1LpNJ+bo26l11uFwPo/HIq7grN1PwOk6xciIqttp7DiLKo2
+         ODH9KgpKIItGGZ37Ls4iq0lG1/2gxBuqxNe7lT/VGkSEOVWH4qHtUbP5IIhsULw2QX6e
+         eMI7i13kSL2PTV8aaaOvuagIEBEuiYf8cHOjdvUMzd7fv1B/COYV3lcRKU2q3BCwU5Ht
+         CM0g==
+X-Gm-Message-State: APjAAAUFh7eQlsvxrunfJLqpunSBaSM+2LTuLw2Gky1qWF0bIj1PmZzn
+        1lw0j0ECX0x6Py48RH7S+jixrWpnyEAR2Q==
+X-Google-Smtp-Source: APXvYqwFd8keDf6HOR8k5DWVM1nRkiAqVH0Yr7hWsa5nTixtBhsfORzzM3MUgY316o/zqbTrQJ4sxkbUlC8XTw==
+X-Received: by 2002:a63:a05c:: with SMTP id u28mr4579460pgn.333.1573063455208;
+ Wed, 06 Nov 2019 10:04:15 -0800 (PST)
+Date:   Wed,  6 Nov 2019 10:04:11 -0800
+Message-Id: <20191106180411.113080-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+Subject: [PATCH net-next] net: silence data-races on sk_backlog.tail
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Access the skb->cb[] in the kfree_skb test.
+sk->sk_backlog.tail might be read without holding the socket spinlock,
+we need to add proper READ_ONCE()/WRITE_ONCE() to silence the warnings.
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+KCSAN reported :
+
+BUG: KCSAN: data-race in tcp_add_backlog / tcp_recvmsg
+
+write to 0xffff8881265109f8 of 8 bytes by interrupt on cpu 1:
+ __sk_add_backlog include/net/sock.h:907 [inline]
+ sk_add_backlog include/net/sock.h:938 [inline]
+ tcp_add_backlog+0x476/0xce0 net/ipv4/tcp_ipv4.c:1759
+ tcp_v4_rcv+0x1a70/0x1bd0 net/ipv4/tcp_ipv4.c:1947
+ ip_protocol_deliver_rcu+0x4d/0x420 net/ipv4/ip_input.c:204
+ ip_local_deliver_finish+0x110/0x140 net/ipv4/ip_input.c:231
+ NF_HOOK include/linux/netfilter.h:305 [inline]
+ NF_HOOK include/linux/netfilter.h:299 [inline]
+ ip_local_deliver+0x133/0x210 net/ipv4/ip_input.c:252
+ dst_input include/net/dst.h:442 [inline]
+ ip_rcv_finish+0x121/0x160 net/ipv4/ip_input.c:413
+ NF_HOOK include/linux/netfilter.h:305 [inline]
+ NF_HOOK include/linux/netfilter.h:299 [inline]
+ ip_rcv+0x18f/0x1a0 net/ipv4/ip_input.c:523
+ __netif_receive_skb_one_core+0xa7/0xe0 net/core/dev.c:4929
+ __netif_receive_skb+0x37/0xf0 net/core/dev.c:5043
+ netif_receive_skb_internal+0x59/0x190 net/core/dev.c:5133
+ napi_skb_finish net/core/dev.c:5596 [inline]
+ napi_gro_receive+0x28f/0x330 net/core/dev.c:5629
+ receive_buf+0x284/0x30b0 drivers/net/virtio_net.c:1061
+ virtnet_receive drivers/net/virtio_net.c:1323 [inline]
+ virtnet_poll+0x436/0x7d0 drivers/net/virtio_net.c:1428
+ napi_poll net/core/dev.c:6311 [inline]
+ net_rx_action+0x3ae/0xa90 net/core/dev.c:6379
+ __do_softirq+0x115/0x33f kernel/softirq.c:292
+ invoke_softirq kernel/softirq.c:373 [inline]
+ irq_exit+0xbb/0xe0 kernel/softirq.c:413
+ exiting_irq arch/x86/include/asm/apic.h:536 [inline]
+ do_IRQ+0xa6/0x180 arch/x86/kernel/irq.c:263
+ ret_from_intr+0x0/0x19
+ native_safe_halt+0xe/0x10 arch/x86/kernel/paravirt.c:71
+ arch_cpu_idle+0x1f/0x30 arch/x86/kernel/process.c:571
+ default_idle_call+0x1e/0x40 kernel/sched/idle.c:94
+ cpuidle_idle_call kernel/sched/idle.c:154 [inline]
+ do_idle+0x1af/0x280 kernel/sched/idle.c:263
+ cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:355
+ start_secondary+0x208/0x260 arch/x86/kernel/smpboot.c:264
+ secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
+
+read to 0xffff8881265109f8 of 8 bytes by task 8057 on cpu 0:
+ tcp_recvmsg+0x46e/0x1b40 net/ipv4/tcp.c:2050
+ inet_recvmsg+0xbb/0x250 net/ipv4/af_inet.c:838
+ sock_recvmsg_nosec net/socket.c:871 [inline]
+ sock_recvmsg net/socket.c:889 [inline]
+ sock_recvmsg+0x92/0xb0 net/socket.c:885
+ sock_read_iter+0x15f/0x1e0 net/socket.c:967
+ call_read_iter include/linux/fs.h:1889 [inline]
+ new_sync_read+0x389/0x4f0 fs/read_write.c:414
+ __vfs_read+0xb1/0xc0 fs/read_write.c:427
+ vfs_read fs/read_write.c:461 [inline]
+ vfs_read+0x143/0x2c0 fs/read_write.c:446
+ ksys_read+0xd5/0x1b0 fs/read_write.c:587
+ __do_sys_read fs/read_write.c:597 [inline]
+ __se_sys_read fs/read_write.c:595 [inline]
+ __x64_sys_read+0x4c/0x60 fs/read_write.c:595
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 8057 Comm: syz-fuzzer Not tainted 5.4.0-rc6+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- .../selftests/bpf/prog_tests/kfree_skb.c      | 54 +++++++++++++++----
- tools/testing/selftests/bpf/progs/kfree_skb.c | 25 +++++++--
- 2 files changed, 63 insertions(+), 16 deletions(-)
+ drivers/crypto/chelsio/chtls/chtls_io.c | 10 +++++-----
+ include/net/sock.h                      |  4 ++--
+ net/ipv4/tcp.c                          |  2 +-
+ net/llc/af_llc.c                        |  2 +-
+ 4 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-index 430b50de1583..6e6fbfba2322 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-@@ -1,15 +1,38 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
+diff --git a/drivers/crypto/chelsio/chtls/chtls_io.c b/drivers/crypto/chelsio/chtls/chtls_io.c
+index 98bc5a4cd5e7014990f064a92777308ae98b13e4..599dec59c6cc90637dea43f269862df802ba52e8 100644
+--- a/drivers/crypto/chelsio/chtls/chtls_io.c
++++ b/drivers/crypto/chelsio/chtls/chtls_io.c
+@@ -1437,7 +1437,7 @@ static int chtls_pt_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 				      csk->wr_max_credits))
+ 			sk->sk_write_space(sk);
  
-+struct meta {
-+	int ifindex;
-+	__u32 cb32_0;
-+	__u8 cb8_0;
-+};
-+
-+union {
-+	__u32 cb32[5];
-+	__u8 cb8[20];
-+} cb = {
-+	.cb32[0] = 0x81828384,
-+};
-+
- static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- {
--	int ifindex = *(int *)data, duration = 0;
--	struct ipv6_packet *pkt_v6 = data + 4;
-+	struct meta *meta = (struct meta *)data;
-+	struct ipv6_packet *pkt_v6 = data + sizeof(*meta);
-+	int duration = 0;
+-		if (copied >= target && !sk->sk_backlog.tail)
++		if (copied >= target && !READ_ONCE(sk->sk_backlog.tail))
+ 			break;
  
--	if (ifindex != 1)
-+	if (CHECK(size != 72 + sizeof(*meta), "check_size", "size %u != %zu\n",
-+		  size, 72 + sizeof(*meta)))
-+		return;
-+	if (CHECK(meta->ifindex != 1, "check_meta_ifindex",
-+		  "meta->ifindex = %d\n", meta->ifindex))
- 		/* spurious kfree_skb not on loopback device */
- 		return;
--	if (CHECK(size != 76, "check_size", "size %u != 76\n", size))
-+	if (CHECK(meta->cb8_0 != cb.cb8[0], "check_cb8_0", "cb8_0 %x != %x\n",
-+		  meta->cb8_0, cb.cb8[0]))
-+		return;
-+	if (CHECK(meta->cb32_0 != cb.cb32[0], "check_cb32_0",
-+		  "cb32_0 %x != %x\n",
-+		  meta->cb32_0, cb.cb32[0]))
- 		return;
- 	if (CHECK(pkt_v6->eth.h_proto != 0xdd86, "check_eth",
- 		  "h_proto %x\n", pkt_v6->eth.h_proto))
-@@ -26,6 +49,13 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
+ 		if (copied) {
+@@ -1470,7 +1470,7 @@ static int chtls_pt_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 				break;
+ 			}
+ 		}
+-		if (sk->sk_backlog.tail) {
++		if (READ_ONCE(sk->sk_backlog.tail)) {
+ 			release_sock(sk);
+ 			lock_sock(sk);
+ 			chtls_cleanup_rbuf(sk, copied);
+@@ -1615,7 +1615,7 @@ static int peekmsg(struct sock *sk, struct msghdr *msg,
+ 			break;
+ 		}
  
- void test_kfree_skb(void)
- {
-+	struct __sk_buff skb = {};
-+	struct bpf_prog_test_run_attr tattr = {
-+		.data_in = &pkt_v6,
-+		.data_size_in = sizeof(pkt_v6),
-+		.ctx_in = &skb,
-+		.ctx_size_in = sizeof(skb),
-+	};
- 	struct bpf_prog_load_attr attr = {
- 		.file = "./kfree_skb.o",
- 	};
-@@ -36,11 +66,12 @@ void test_kfree_skb(void)
- 	struct bpf_link *link = NULL;
- 	struct bpf_map *perf_buf_map;
- 	struct bpf_program *prog;
--	__u32 duration, retval;
--	int err, pkt_fd, kfree_skb_fd;
-+	int err, kfree_skb_fd;
- 	bool passed = false;
-+	__u32 duration = 0;
+-		if (sk->sk_backlog.tail) {
++		if (READ_ONCE(sk->sk_backlog.tail)) {
+ 			/* Do not sleep, just process backlog. */
+ 			release_sock(sk);
+ 			lock_sock(sk);
+@@ -1743,7 +1743,7 @@ int chtls_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 				      csk->wr_max_credits))
+ 			sk->sk_write_space(sk);
  
--	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS, &obj, &pkt_fd);
-+	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &tattr.prog_fd);
- 	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
- 		return;
+-		if (copied >= target && !sk->sk_backlog.tail)
++		if (copied >= target && !READ_ONCE(sk->sk_backlog.tail))
+ 			break;
  
-@@ -66,11 +97,12 @@ void test_kfree_skb(void)
- 	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
- 		goto close_prog;
+ 		if (copied) {
+@@ -1774,7 +1774,7 @@ int chtls_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+ 			}
+ 		}
  
--	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
--				NULL, NULL, &retval, &duration);
--	CHECK(err || retval, "ipv6",
-+	memcpy(skb.cb, &cb, sizeof(cb));
-+	err = bpf_prog_test_run_xattr(&tattr);
-+	duration = tattr.duration;
-+	CHECK(err || tattr.retval, "ipv6",
- 	      "err %d errno %d retval %d duration %d\n",
--	      err, errno, retval, duration);
-+	      err, errno, tattr.retval, duration);
+-		if (sk->sk_backlog.tail) {
++		if (READ_ONCE(sk->sk_backlog.tail)) {
+ 			release_sock(sk);
+ 			lock_sock(sk);
+ 			chtls_cleanup_rbuf(sk, copied);
+diff --git a/include/net/sock.h b/include/net/sock.h
+index d4d3ef5ba0490366e1e25884a5edf54186c940d8..bd210c78dc9d00e96c35c2319662adc9bb581185 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -899,11 +899,11 @@ static inline void __sk_add_backlog(struct sock *sk, struct sk_buff *skb)
+ 	skb_dst_force(skb);
  
- 	/* read perf buffer */
- 	err = perf_buffer__poll(pb, 100);
-diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
-index 489319ea1d6a..f769fdbf6725 100644
---- a/tools/testing/selftests/bpf/progs/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
-@@ -43,6 +43,7 @@ struct sk_buff {
- 	refcount_t users;
- 	unsigned char *data;
- 	char __pkt_type_offset[0];
-+	char cb[48];
- };
+ 	if (!sk->sk_backlog.tail)
+-		sk->sk_backlog.head = skb;
++		WRITE_ONCE(sk->sk_backlog.head, skb);
+ 	else
+ 		sk->sk_backlog.tail->next = skb;
  
- /* copy arguments from
-@@ -57,28 +58,41 @@ struct trace_kfree_skb {
- 	void *location;
- };
- 
-+struct meta {
-+	int ifindex;
-+	__u32 cb32_0;
-+	__u8 cb8_0;
-+};
-+
- SEC("tp_btf/kfree_skb")
- int trace_kfree_skb(struct trace_kfree_skb *ctx)
- {
- 	struct sk_buff *skb = ctx->skb;
- 	struct net_device *dev;
--	int ifindex;
- 	struct callback_head *ptr;
- 	void *func;
- 	int users;
- 	unsigned char *data;
- 	unsigned short pkt_data;
-+	struct meta meta = {};
- 	char pkt_type;
-+	__u32 *cb32;
-+	__u8 *cb8;
- 
- 	__builtin_preserve_access_index(({
- 		users = skb->users.refs.counter;
- 		data = skb->data;
- 		dev = skb->dev;
--		ifindex = dev->ifindex;
- 		ptr = dev->ifalias->rcuhead.next;
- 		func = ptr->func;
-+		cb8 = (__u8 *)&skb->cb;
-+		cb32 = (__u32 *)&skb->cb;
- 	}));
- 
-+	meta.ifindex = _(dev->ifindex);
-+	meta.cb8_0 = cb8[8];
-+	meta.cb32_0 = cb32[2];
-+
- 	bpf_probe_read_kernel(&pkt_type, sizeof(pkt_type), _(&skb->__pkt_type_offset));
- 	pkt_type &= 7;
- 
-@@ -90,14 +104,15 @@ int trace_kfree_skb(struct trace_kfree_skb *ctx)
- 		   _(skb->len), users, pkt_type);
- 	bpf_printk("skb->queue_mapping %d\n", _(skb->queue_mapping));
- 	bpf_printk("dev->ifindex %d data %llx pkt_data %x\n",
--		   ifindex, data, pkt_data);
-+		   meta.ifindex, data, pkt_data);
-+	bpf_printk("cb8_0:%x cb32_0:%x\n", meta.cb8_0, meta.cb32_0);
- 
--	if (users != 1 || pkt_data != bpf_htons(0x86dd) || ifindex != 1)
-+	if (users != 1 || pkt_data != bpf_htons(0x86dd) || meta.ifindex != 1)
- 		/* raw tp ignores return value */
- 		return 0;
- 
- 	/* send first 72 byte of the packet to user space */
- 	bpf_skb_output(skb, &perf_buf_map, (72ull << 32) | BPF_F_CURRENT_CPU,
--		       &ifindex, sizeof(ifindex));
-+		       &meta, sizeof(meta));
- 	return 0;
+-	sk->sk_backlog.tail = skb;
++	WRITE_ONCE(sk->sk_backlog.tail, skb);
+ 	skb->next = NULL;
  }
+ 
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index fb1666440e1064a9ab2f2993b23fdb744e82f5c5..8fb4fefcfd544943e9c92870d4d0da25f3813448 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2047,7 +2047,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
+ 
+ 		/* Well, if we have backlog, try to process it now yet. */
+ 
+-		if (copied >= target && !sk->sk_backlog.tail)
++		if (copied >= target && !READ_ONCE(sk->sk_backlog.tail))
+ 			break;
+ 
+ 		if (copied) {
+diff --git a/net/llc/af_llc.c b/net/llc/af_llc.c
+index 50d2c9749db36da84f0e84c254771ee5e6c9cef9..2922d4150d88e2cf63fa75a75f0718b19a558251 100644
+--- a/net/llc/af_llc.c
++++ b/net/llc/af_llc.c
+@@ -780,7 +780,7 @@ static int llc_ui_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ 		}
+ 		/* Well, if we have backlog, try to process it now yet. */
+ 
+-		if (copied >= target && !sk->sk_backlog.tail)
++		if (copied >= target && !READ_ONCE(sk->sk_backlog.tail))
+ 			break;
+ 
+ 		if (copied) {
 -- 
-2.17.1
+2.24.0.rc1.363.gb1bccd3e3d-goog
 
