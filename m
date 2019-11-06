@@ -2,44 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2239F0C0D
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 03:33:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1A4DF0C11
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 03:34:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730756AbfKFCdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 21:33:32 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:42342 "EHLO
+        id S1730933AbfKFCeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 21:34:20 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:42352 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727252AbfKFCdc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 21:33:32 -0500
+        with ESMTP id S1727252AbfKFCeT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 21:34:19 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 875371510CDE3;
-        Tue,  5 Nov 2019 18:33:31 -0800 (PST)
-Date:   Tue, 05 Nov 2019 18:33:31 -0800 (PST)
-Message-Id: <20191105.183331.116918116313477943.davem@davemloft.net>
-To:     sw@simonwunderlich.de
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org
-Subject: Re: [PATCH 0/5] pull request for net-next: batman-adv 2019-11-05
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 85EB11510CDEE;
+        Tue,  5 Nov 2019 18:34:19 -0800 (PST)
+Date:   Tue, 05 Nov 2019 18:34:19 -0800 (PST)
+Message-Id: <20191105.183419.190417522967170590.davem@davemloft.net>
+To:     tariqt@mellanox.com
+Cc:     jakub.kicinski@netronome.com, netdev@vger.kernel.org,
+        saeedm@mellanox.com
+Subject: Re: [PATCH net V2] Documentation: TLS: Add missing counter
+ description
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191105093531.11398-1-sw@simonwunderlich.de>
-References: <20191105093531.11398-1-sw@simonwunderlich.de>
+In-Reply-To: <20191105121348.12956-1-tariqt@mellanox.com>
+References: <20191105121348.12956-1-tariqt@mellanox.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 Nov 2019 18:33:31 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 Nov 2019 18:34:19 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Simon Wunderlich <sw@simonwunderlich.de>
-Date: Tue,  5 Nov 2019 10:35:26 +0100
+From: Tariq Toukan <tariqt@mellanox.com>
+Date: Tue,  5 Nov 2019 14:13:48 +0200
 
-> here is a little cleanup pull request of batman-adv to go into net-next.
+> Add TLS TX counter description for the handshake retransmitted
+> packets that triggers the resync procedure then skip it, going
+> into the regular transmit flow.
 > 
-> Please pull or let me know of any problem!
+> Fixes: 46a3ea98074e ("net/mlx5e: kTLS, Enhance TX resync flow")
+> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 
-Pulled, thanks.
+Applied
