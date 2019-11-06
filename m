@@ -2,72 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CC6F22BE
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 00:38:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A7BF22CF
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 00:47:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732713AbfKFXiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 18:38:52 -0500
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:46369 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728065AbfKFXiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 18:38:52 -0500
-Received: by mail-yb1-f193.google.com with SMTP id g17so211247ybd.13
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 15:38:51 -0800 (PST)
+        id S1731985AbfKFXra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 18:47:30 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:43160 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725937AbfKFXr3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 18:47:29 -0500
+Received: by mail-pf1-f194.google.com with SMTP id 3so458141pfb.10;
+        Wed, 06 Nov 2019 15:47:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=NXCGiVKTXXEjzDxDKPWm4qRbQINthtPG/DF3mE8dX04=;
-        b=kxCPnkllRFkeV9ZKT0vPLK4zwrVw+ZIGPflI0u5vk0j5pV5zLWHRpkAzf35kkz/5XC
-         RIlII4oE7WfBPgvN2mVCbQYEo9K5fyHa0b87urxXjOe1LqWcNYx1mQ+M1OENSM6qPNc1
-         KKlDhCAKesadT+zSpoL5FMzs/ZDI2z/yuaG4z8Lh7st3mJDDhqDucU7bYyX8r6Tx8tTv
-         IvWbK17y0NFyGnmfQKAGivMO8CFlccpSFp0KyWcXwip0cWszVzs5oguhC41DP9kdj+vc
-         uzSbWQgVizDX0lT+3W8BRm8iLDVZd530GuZg1sYszeXs4yPAj/n7rNX/rkb6bP6sTFt1
-         SRCA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=IITHycz/tKeCtcoGS9oSqQaaGm3H0ejbd50X22z8NiA=;
+        b=QBM+UW+9MI+uREWzRjPCDMTdRcJ1Qg9A1mV9chE5KjhqRQK8ZTlnzavCFuKjvmApo0
+         dLMC9dCKtbzlyt2F0etYRl9F6hMMAl2ZWhnqk+1qjKTziWxKwfA9tYuxgHLUtNXUaQFY
+         OAtGyQlApB2naKonvaurwkRT8u5RsF2+hJd6dXgnsZvq4NSYZPju1+8F+8zPDs9+pZ+J
+         S2gwQtppNc/DtmGJz6rSAq4SJ5J4LjD/1ZNAluTfXjvV++shwxekEoJIQcMKzFiTHlL7
+         BPRzlUZ8gf1gO6+TvpexhzXi4VNnhOwwrCMQwpY24IymcCjHxGV2MjWegPyqB5uBNd1g
+         xyIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=NXCGiVKTXXEjzDxDKPWm4qRbQINthtPG/DF3mE8dX04=;
-        b=sK191rnJa3lcWkm5EwW4z5dV+1F0omyLLysy4KBS4WEHSAPKZIcR6uKgOfk3WpLzKu
-         NxQcFndt70Q3t3FmOLZsJ7qqbISRC2rS3PUebiGuXrlByu4fUWeQhMP3EAbtkegMOh51
-         o4kVJLwsPbnykNBGl4tPOkHrLt0dumzKWjGGr0peSG3nAGI/bcJryP7YkhCSrmyI+7Qv
-         g2SwXOHSYKeWgH+lr0fvITaNDcUqhjjy+elrl/6WGlvpMvQCChLzlHg0AXb9JziT8VEm
-         IF/5sqtHakxfppZferefuAAYw7kXiVtoyGuyMHbo4zjpk20I6JEtk4JRTsJgN0Uws15d
-         RAOw==
-X-Gm-Message-State: APjAAAUODjaUfwkU7xbqM2ph1AydnVxLVbrWag140Tly8jlI6DWlzhyj
-        WsLZLqUpGfTwHWWzRuj29NvhvQ==
-X-Google-Smtp-Source: APXvYqym0i0romvCrdOaz7lsINZQYcGiuzpul4r2zM7EYgZuhgx34Vaj0wOMFqNyMeyL778+8rXK9g==
-X-Received: by 2002:a25:af05:: with SMTP id a5mr633074ybh.155.1573083531576;
-        Wed, 06 Nov 2019 15:38:51 -0800 (PST)
-Received: from cakuba.netronome.com ([64.63.152.34])
-        by smtp.gmail.com with ESMTPSA id z127sm194842ywb.38.2019.11.06.15.38.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=IITHycz/tKeCtcoGS9oSqQaaGm3H0ejbd50X22z8NiA=;
+        b=Ke9gYUfGogLpJdxKDkjkDe8Tix2vovfNghwn58tkOhQ39XH8H81gg5EdAUcl1i/aI/
+         bOMLDCDTTEBSAjGyRfVOYPR+SfBCAaBQvrWVZ/PIQcph+ulvAxQAP1vllYkx3D+nqU4q
+         z/NpP7FfBC3HpjZ9ddFj5OmchDJl+j348GHDQJYOhetorqGqixCH/ra+vU1DnnSFOrmi
+         9jrR9UidkNrrCkQIeXWFspp15s7fc2R7dXQiaVolVXxm0z9Nw7UyNTZNeXT5lTgKZIJy
+         KQNU1kqmUPInBdovxNhC8SyNx3PUYnESY7Ta+lG/UinU8MiB79OyFQfhHgoIp1fY0RDr
+         +rdA==
+X-Gm-Message-State: APjAAAXaEO+vQu/K7QHizu35e+gP9JZY+dPnibjQNUsIPbBrNeTx0Ml0
+        +QcA5Bt+qMWR4IRN9eJDFsZ76g2d
+X-Google-Smtp-Source: APXvYqxUKtpDTnctikFB0dQsxG/rxh3cI4BqhqNcmERqcbnbqreW4bT2lTMAT4Iu/13iDxCfITTTBQ==
+X-Received: by 2002:a63:ed17:: with SMTP id d23mr620290pgi.125.1573084049060;
+        Wed, 06 Nov 2019 15:47:29 -0800 (PST)
+Received: from aw-bldr-10.qualcomm.com (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id y26sm104198pfo.76.2019.11.06.15.47.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Nov 2019 15:38:51 -0800 (PST)
-Date:   Wed, 6 Nov 2019 18:38:48 -0500
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jonas Bonn <jonas@norrbonn.se>
-Cc:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH v2 1/5] rtnetlink: allow RTM_SETLINK to reference other
- namespaces
-Message-ID: <20191106183848.3b914620@cakuba.netronome.com>
-In-Reply-To: <20191106053923.10414-2-jonas@norrbonn.se>
-References: <20191106053923.10414-1-jonas@norrbonn.se>
-        <20191106053923.10414-2-jonas@norrbonn.se>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 06 Nov 2019 15:47:28 -0800 (PST)
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: [PATCH] ath10k: Handle "invalid" BDFs for msm8998 devices
+Date:   Wed,  6 Nov 2019 15:47:12 -0800
+Message-Id: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  6 Nov 2019 06:39:19 +0100, Jonas Bonn wrote:
-> +	if (tb[IFLA_TARGET_NETNSID]) {
-> +		int32_t netnsid = nla_get_s32(tb[IFLA_TARGET_NETNSID]);
-> +		tgt_net = rtnl_get_net_ns_capable(NETLINK_CB(skb).sk, netnsid);
+When the BDF download QMI message has the end field set to 1, it signals
+the end of the transfer, and triggers the firmware to do a CRC check.  The
+BDFs for msm8998 devices fail this check, yet the firmware is happy to
+still use the BDF.  It appears that this error is not caught by the
+downstream drive by concidence, therefore there are production devices
+in the field where this issue needs to be handled otherwise we cannot
+support wifi on them.  So, attempt to detect this scenario as best we can
+and treat it as non-fatal.
 
-No comments on merits but you should definitely run this through
-checkpatch..
+Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+---
+ drivers/net/wireless/ath/ath10k/qmi.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
+index eb618a2652db..5ff8cfc93778 100644
+--- a/drivers/net/wireless/ath/ath10k/qmi.c
++++ b/drivers/net/wireless/ath/ath10k/qmi.c
+@@ -265,10 +265,13 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
+ 			goto out;
+ 
+ 		if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
+-			ath10k_err(ar, "failed to download board data file: %d\n",
+-				   resp.resp.error);
+-			ret = -EINVAL;
+-			goto out;
++			if (!(req->end == 1 &&
++			      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
++				ath10k_err(ar, "failed to download board data file: %d\n",
++					   resp.resp.error);
++				ret = -EINVAL;
++				goto out;
++			}
+ 		}
+ 
+ 		remaining -= req->data_len;
+-- 
+2.17.1
+
