@@ -2,91 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74E0FF10AB
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 08:56:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 506DEF10B8
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 09:01:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731275AbfKFH4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 02:56:17 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:39178 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730069AbfKFH4R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 02:56:17 -0500
-Received: by mail-lj1-f196.google.com with SMTP id p18so1598595ljc.6
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 23:56:14 -0800 (PST)
+        id S1731303AbfKFIBq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 03:01:46 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53458 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729878AbfKFIBq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 03:01:46 -0500
+Received: by mail-wm1-f65.google.com with SMTP id x4so2200694wmi.3;
+        Wed, 06 Nov 2019 00:01:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xweVifWZ/YqguIkP3wRFBeRke8fVrDKetgEyLrXZK4A=;
-        b=SRkgLFaa63C9qmcFdcf/s/KAPgAENphVcMUoM+vz9BIEzbf8c06I0Y1Hb5KXR42LXI
-         G+i3eaIvU5rZa0kOrwSOnHxSXGm7OyVoMHx/peFrsf/OMV0cjkz5laiG3DlkVHfPCESn
-         Pq9m25d73Eymy1sG4V505XAYT460OEuZk3NdY=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OmFJplJ1m4VwQ427zpEUzGG+xB7JCkAtrYHj59vzKyE=;
+        b=MrbKKbkEEpLaaU1VA3LNiZShxLjleQKizjxFb7o/RogoTWhFIPRUc8oQXlcid/bVNM
+         4vs+KOYK7Xf5q6D0wkM5qVbvZknjzUgZottXfmR5MFEA8mY2XmBlY4ZTY/GEXT4tQgGD
+         xZMblYOfLeUwcmgAh0AYFTdcMatBIMY9scFaNjjkUM2hSIGADavlKn+ob8wlhdBpTWFE
+         b6u2fPUxGn+S7Y+T9FluJIptb5NoU0PCt/U5tbNkP8kJORoGJCa5gfOx1u6OtF32xgIi
+         kcJUVmQsTwlYtYMdKaLGN1KJKArN03Zdlu1TVBOLR+b2T91a2uyIj49Iyzv0HjsN4W4a
+         XJ9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=xweVifWZ/YqguIkP3wRFBeRke8fVrDKetgEyLrXZK4A=;
-        b=hdDEeB9DI2RGUJL2g9Vic75F2cncPPCNiDKwyCpraqLOeDRJ3aKpyfyXzkzWlTs9OC
-         NVRNJ4yVu3q62HP2y6UOosEtsc57g+Pi7DI5xhJoWd1UdfQP5bA2UYsaS5+UeM4uL32g
-         z38YcvPVV8wIAq0KzJRdULb9yZ3ipb1w2H3SCO0VeYZ48vwMBoZSdAZWS20sa+2JE0f2
-         jMfj4WHsye8K4Xqv8LcQCg3iZsQMI2NtqBzome+DpzXopVfgKs6NwTjCNmlMk+/xdGFj
-         wWorc2//wgz+F8YQac2tZwxjhXVCiqZ1QDMRO9csHGWNh7rwMHtsZyfPEAz/5A6PW6+S
-         t4ZA==
-X-Gm-Message-State: APjAAAU7c85XAqFKzvG639CIHx6/453N6r0wd3h29Vw4PlvqwCnGu+R7
-        FMhWWEqp8XU549PzOJ9Mwo159oRr2r6XmQ==
-X-Google-Smtp-Source: APXvYqx0UMAxK46d8rifJbbO0Iei8z4btT+kJJezWPrwvpREfmjRSXZQf51n+CDfByMCvypaqmMFbg==
-X-Received: by 2002:a05:651c:105:: with SMTP id a5mr819866ljb.45.1573026973653;
-        Tue, 05 Nov 2019 23:56:13 -0800 (PST)
-Received: from [172.16.11.28] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id d27sm11001361lfb.3.2019.11.05.23.56.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 05 Nov 2019 23:56:12 -0800 (PST)
-Subject: Re: [PATCH v3 35/36] net/wan: make FSL_UCC_HDLC explicitly depend on
- PPC32
-To:     Qiang Zhao <qiang.zhao@nxp.com>, Leo Li <leoyang.li@nxp.com>,
-        Christophe Leroy <christophe.leroy@c-s.fr>
-Cc:     "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Scott Wood <oss@buserror.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20191018125234.21825-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-1-linux@rasmusvillemoes.dk>
- <20191101124210.14510-36-linux@rasmusvillemoes.dk>
- <4e2ac670-2bf4-fb47-2130-c0120bcf0111@c-s.fr>
- <VE1PR04MB6687D4620E32176BDC120DBA8F620@VE1PR04MB6687.eurprd04.prod.outlook.com>
- <24ea27b6-adea-cc74-f480-b68de163f531@rasmusvillemoes.dk>
- <VE1PR04MB67686E14A4E0D33C77B43EA6917E0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Message-ID: <d8bf1d7f-b4c6-ef92-9fac-a3668ff37d8d@rasmusvillemoes.dk>
-Date:   Wed, 6 Nov 2019 08:56:11 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        bh=OmFJplJ1m4VwQ427zpEUzGG+xB7JCkAtrYHj59vzKyE=;
+        b=nNQW7zFxps+qoCaaIc0dYMZchZdo19VtBkJNQWKNHjFK27xNr5Dx2Gkt7BXJ84lOX3
+         jA1Q1041VuoNLShWJqsVpzXo0ojx1q/GXkGu/cWcQOXYW9O9qCIaEkuYcfwFHa+Gl6VI
+         56TJeAP9dXQMJWSXLBLn6KWUgiLWRtEMyBOQ8uRhSPZGeP22f+n/04w1wpD+NNljP/fH
+         rVobrQBa53zmat08GNuRT/neCHaktCW8u8qlpUocXuHDr18xh6fjXGf1YVBp+6HsCaOU
+         sAXnqOCWLg3pSMnp17jFRam5dqpbuKExW1Tl12YCbGiXKdJVllYh1CqM5YkFZ+e8Jcyv
+         0Sxg==
+X-Gm-Message-State: APjAAAUV56qm7uV/YygmjQZ5cY3RUm0iqqKtrvDYxfEpCP11Y4GfgvN0
+        E2XdCNnsH4jmNlqFpob4G6I=
+X-Google-Smtp-Source: APXvYqz0qSwFylWIoX9SCHh6ZEfiYNutupEMlWdsubaKkmKhmucKMct2x7LvguGkr4ZOhw5eOEZczQ==
+X-Received: by 2002:a1c:b607:: with SMTP id g7mr1032801wmf.94.1573027304320;
+        Wed, 06 Nov 2019 00:01:44 -0800 (PST)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
+        by smtp.gmail.com with ESMTPSA id q124sm1196668wme.13.2019.11.06.00.01.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 00:01:43 -0800 (PST)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] net: fec: add a check for CONFIG_PM to avoid clock count mis-match
+Date:   Wed,  6 Nov 2019 16:01:28 +0800
+Message-Id: <20191106080128.23284-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <VE1PR04MB67686E14A4E0D33C77B43EA6917E0@VE1PR04MB6768.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/11/2019 07.16, Qiang Zhao wrote:
+If CONFIG_PM is enabled, runtime pm will work and call runtime_suspend
+automatically to disable clks.
+Therefore, remove only needs to disable clks when CONFIG_PM is disabled.
+Add this check to avoid clock count mis-match caused by double-disable.
 
-> 
-> I tested your v3 patches on ls1043ardb which is arm64 for fsl_ucc_hdlc, it can work,
-> Only it will put a compile warning, I also made a patch to fix it.
-> I can send a patch to remove PPC32 dependency when I send my patch to support ARM64.
-> Or I add my patch in your patchset.
+This patch depends on patch
+("net: fec: add missed clk_disable_unprepare in remove").
 
-Please send your patch (without whatever Kconfig hunk you needed to add)
-with a proper changelog etc. If it looks reasonable (to me, reviewers of
-the whole thing obviously also need to agree), I'll include it in my
-series and drop adding the PPC32 addition to FSL_UCC_HDLC. Otherwise
-I'll keep that and then you can later drop the PPC32 dependency.
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+---
+ drivers/net/ethernet/freescale/fec_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Rasmus
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index a9c386b63581..696550f4972f 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3645,8 +3645,10 @@ fec_drv_remove(struct platform_device *pdev)
+ 		regulator_disable(fep->reg_phy);
+ 	pm_runtime_put(&pdev->dev);
+ 	pm_runtime_disable(&pdev->dev);
++#ifndef CONFIG_PM
+ 	clk_disable_unprepare(fep->clk_ahb);
+ 	clk_disable_unprepare(fep->clk_ipg);
++#endif
+ 	if (of_phy_is_fixed_link(np))
+ 		of_phy_deregister_fixed_link(np);
+ 	of_node_put(fep->phy_node);
+-- 
+2.23.0
 
