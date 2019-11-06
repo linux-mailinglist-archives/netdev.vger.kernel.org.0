@@ -2,237 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E7EFF188B
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A69C2F1896
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:26:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731986AbfKFOZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 09:25:13 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:59843 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728383AbfKFOZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 09:25:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573050312;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h5pPZVTREMq4qu46ZNU6BI6SD31ir0ObDVVlebbDEPg=;
-        b=E0bV3rtJNWTXi2OYIudpojTI0B6e/a6gmg+KA7hT916NLOtz2nVZDMF4WYmcZWSB2zVE4P
-        uf3VN4lGEZa+mOwramwsOUQYPDFR8pAofAADBBESFIAnmfH/A93jYyo1WabuyvQ7DbCRsx
-        fivVbf1JzCevWaTQlrJMp5Ep4Svgkxs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-223-otur01r4OniW7ijTIICpDQ-1; Wed, 06 Nov 2019 09:25:10 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2D6058017E0;
-        Wed,  6 Nov 2019 14:25:08 +0000 (UTC)
-Received: from krava (unknown [10.43.17.48])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 5AD1C5C3F8;
-        Wed,  6 Nov 2019 14:25:04 +0000 (UTC)
-Date:   Wed, 6 Nov 2019 15:25:03 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Stephane Eranian <eranian@google.com>
-Subject: Re: [PATCH v5 05/10] perf tools: ensure config and str in terms are
- unique
-Message-ID: <20191106142503.GK30214@krava>
-References: <20191025180827.191916-1-irogers@google.com>
- <20191030223448.12930-1-irogers@google.com>
- <20191030223448.12930-6-irogers@google.com>
+        id S1728096AbfKFO0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 09:26:11 -0500
+Received: from userp2120.oracle.com ([156.151.31.85]:56004 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727028AbfKFO0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 09:26:11 -0500
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xA6EOR07171013;
+        Wed, 6 Nov 2019 14:25:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=7Ndo0FoaiRNkVm4ytOUV1hWgxQHQQZogflwm7+Jib/w=;
+ b=JuA+gca34A4p27QBUtog8bGD/V0gw0mmipCfLsucGGaCymrz2StHWblo5eBZkCwtQihi
+ x4lznHQBZrsHb2WKpYlSWGZA2uj69TlLMpopYenq71Obmslf8ODEG7G5+kRHBPH/9lzd
+ pzRYcS6Vl5FZJ30TvYVdu5mF59oec0BVUJYAI2WwtDgTA3IKGhpl6QIR6temZxkdJhvE
+ N0V+S2hKIOFSGOJPlWX6mpqwaxzuFpQu1Um+DHLW9tV+IHCWX33cLfs3RbZzD4TA1hLK
+ 331YQk/ONYRIuGh8kH5Cw/t7nAg5dR7/PVes9eQvyHcGOacgc+rLV1RAsMhhtI1v/BJ2 cA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2120.oracle.com with ESMTP id 2w12ereh0e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Nov 2019 14:25:53 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xA6ENQGF009280;
+        Wed, 6 Nov 2019 14:25:53 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 2w3xc2psuq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Nov 2019 14:25:53 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xA6EPpwW028944;
+        Wed, 6 Nov 2019 14:25:51 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 06 Nov 2019 06:25:51 -0800
+Date:   Wed, 6 Nov 2019 17:25:42 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Vincent Cheng <vincent.cheng.xh@renesas.com>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH -next] ptp: Fix missing unlock on error in idtcm_probe()
+Message-ID: <20191106142542.GK10409@kadam>
+References: <20191106115308.112645-1-weiyongjun1@huawei.com>
+ <20191106140228.GA28081@renesas.com>
 MIME-Version: 1.0
-In-Reply-To: <20191030223448.12930-6-irogers@google.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: otur01r4OniW7ijTIICpDQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20191106140228.GA28081@renesas.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9432 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1908290000 definitions=main-1911060142
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9432 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1908290000
+ definitions=main-1911060142
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 30, 2019 at 03:34:43PM -0700, Ian Rogers wrote:
-> Make it easier to release memory associated with parse event terms by
-> duplicating the string for the config name and ensuring the val string
-> is a duplicate.
->=20
-> Currently the parser may memory leak terms and this is addressed in a
-> later patch.
->=20
-> Signed-off-by: Ian Rogers <irogers@google.com>
+The prefix should probably be "ptp: ptp_clockmatrix: Fix missing ..." or
+something.  This is a problem when we don't set a prefix when the driver
+is first merged and then the first person to send a fix has to guess
+what the maintainers are going to want to use.
 
-Acked-by: Jiri Olsa <jolsa@kernel.org>
+The only other patch to this driver is commit 3a6ba7dc7799 ("ptp: Add a
+ptp clock driver for IDT ClockMatrix.") so it's impossible to know.
 
-thanks,
-jirka
-
-> ---
->  tools/perf/util/parse-events.c | 51 ++++++++++++++++++++++++++++------
->  tools/perf/util/parse-events.y |  4 ++-
->  2 files changed, 45 insertions(+), 10 deletions(-)
->=20
-> diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-event=
-s.c
-> index 03e54a2d8685..578288c94d2a 100644
-> --- a/tools/perf/util/parse-events.c
-> +++ b/tools/perf/util/parse-events.c
-> @@ -1412,7 +1412,6 @@ int parse_events_add_pmu(struct parse_events_state =
-*parse_state,
->  int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
->  =09=09=09       char *str, struct list_head **listp)
->  {
-> -=09struct list_head *head;
->  =09struct parse_events_term *term;
->  =09struct list_head *list;
->  =09struct perf_pmu *pmu =3D NULL;
-> @@ -1429,19 +1428,30 @@ int parse_events_multi_pmu_add(struct parse_event=
-s_state *parse_state,
-> =20
->  =09=09list_for_each_entry(alias, &pmu->aliases, list) {
->  =09=09=09if (!strcasecmp(alias->name, str)) {
-> +=09=09=09=09struct list_head *head;
-> +=09=09=09=09char *config;
-> +
->  =09=09=09=09head =3D malloc(sizeof(struct list_head));
->  =09=09=09=09if (!head)
->  =09=09=09=09=09return -1;
->  =09=09=09=09INIT_LIST_HEAD(head);
-> -=09=09=09=09if (parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_US=
-ER,
-> -=09=09=09=09=09=09=09   str, 1, false, &str, NULL) < 0)
-> +=09=09=09=09config =3D strdup(str);
-> +=09=09=09=09if (!config)
-> +=09=09=09=09=09return -1;
-> +=09=09=09=09if (parse_events_term__num(&term,
-> +=09=09=09=09=09=09   PARSE_EVENTS__TERM_TYPE_USER,
-> +=09=09=09=09=09=09   config, 1, false, &config,
-> +=09=09=09=09=09=09   NULL) < 0) {
-> +=09=09=09=09=09free(list);
-> +=09=09=09=09=09free(config);
->  =09=09=09=09=09return -1;
-> +=09=09=09=09}
->  =09=09=09=09list_add_tail(&term->list, head);
-> =20
->  =09=09=09=09if (!parse_events_add_pmu(parse_state, list,
->  =09=09=09=09=09=09=09  pmu->name, head,
->  =09=09=09=09=09=09=09  true, true)) {
-> -=09=09=09=09=09pr_debug("%s -> %s/%s/\n", str,
-> +=09=09=09=09=09pr_debug("%s -> %s/%s/\n", config,
->  =09=09=09=09=09=09 pmu->name, alias->str);
->  =09=09=09=09=09ok++;
->  =09=09=09=09}
-> @@ -1450,8 +1460,10 @@ int parse_events_multi_pmu_add(struct parse_events=
-_state *parse_state,
->  =09=09=09}
->  =09=09}
->  =09}
-> -=09if (!ok)
-> +=09if (!ok) {
-> +=09=09free(list);
->  =09=09return -1;
-> +=09}
->  =09*listp =3D list;
->  =09return 0;
->  }
-> @@ -2746,30 +2758,51 @@ int parse_events_term__sym_hw(struct parse_events=
-_term **term,
->  =09=09=09      char *config, unsigned idx)
->  {
->  =09struct event_symbol *sym;
-> +=09char *str;
->  =09struct parse_events_term temp =3D {
->  =09=09.type_val  =3D PARSE_EVENTS__TERM_TYPE_STR,
->  =09=09.type_term =3D PARSE_EVENTS__TERM_TYPE_USER,
-> -=09=09.config    =3D config ?: (char *) "event",
-> +=09=09.config    =3D config,
->  =09};
-> =20
-> +=09if (!temp.config) {
-> +=09=09temp.config =3D strdup("event");
-> +=09=09if (!temp.config)
-> +=09=09=09return -ENOMEM;
-> +=09}
->  =09BUG_ON(idx >=3D PERF_COUNT_HW_MAX);
->  =09sym =3D &event_symbols_hw[idx];
-> =20
-> -=09return new_term(term, &temp, (char *) sym->symbol, 0);
-> +=09str =3D strdup(sym->symbol);
-> +=09if (!str)
-> +=09=09return -ENOMEM;
-> +=09return new_term(term, &temp, str, 0);
->  }
-> =20
->  int parse_events_term__clone(struct parse_events_term **new,
->  =09=09=09     struct parse_events_term *term)
->  {
-> +=09char *str;
->  =09struct parse_events_term temp =3D {
->  =09=09.type_val  =3D term->type_val,
->  =09=09.type_term =3D term->type_term,
-> -=09=09.config    =3D term->config,
-> +=09=09.config    =3D NULL,
->  =09=09.err_term  =3D term->err_term,
->  =09=09.err_val   =3D term->err_val,
->  =09};
-> =20
-> -=09return new_term(new, &temp, term->val.str, term->val.num);
-> +=09if (term->config) {
-> +=09=09temp.config =3D strdup(term->config);
-> +=09=09if (!temp.config)
-> +=09=09=09return -ENOMEM;
-> +=09}
-> +=09if (term->type_val =3D=3D PARSE_EVENTS__TERM_TYPE_NUM)
-> +=09=09return new_term(new, &temp, NULL, term->val.num);
-> +
-> +=09str =3D strdup(term->val.str);
-> +=09if (!str)
-> +=09=09return -ENOMEM;
-> +=09return new_term(new, &temp, str, 0);
->  }
-> =20
->  int parse_events_copy_term_list(struct list_head *old,
-> diff --git a/tools/perf/util/parse-events.y b/tools/perf/util/parse-event=
-s.y
-> index ffa1a1b63796..545ab7cefc20 100644
-> --- a/tools/perf/util/parse-events.y
-> +++ b/tools/perf/util/parse-events.y
-> @@ -665,9 +665,11 @@ PE_NAME array '=3D' PE_VALUE
->  PE_DRV_CFG_TERM
->  {
->  =09struct parse_events_term *term;
-> +=09char *config =3D strdup($1);
-> =20
-> +=09ABORT_ON(!config);
->  =09ABORT_ON(parse_events_term__str(&term, PARSE_EVENTS__TERM_TYPE_DRV_CF=
-G,
-> -=09=09=09=09=09$1, $1, &@1, NULL));
-> +=09=09=09=09=09config, $1, &@1, NULL));
->  =09$$ =3D term;
->  }
-> =20
-> --=20
-> 2.24.0.rc1.363.gb1bccd3e3d-goog
->=20
+regards,
+dan carpenter
 
