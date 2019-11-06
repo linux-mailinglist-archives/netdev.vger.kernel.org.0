@@ -2,154 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2278F1DD8
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 19:56:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 299A5F1E2C
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 20:03:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729154AbfKFS4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 13:56:25 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5739 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727208AbfKFS4Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 13:56:25 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id B9BAA58BFBDC6172BC23;
-        Thu,  7 Nov 2019 02:56:23 +0800 (CST)
-Received: from A190218597.china.huawei.com (10.202.226.45) by
- DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 7 Nov 2019 02:56:14 +0800
-From:   Salil Mehta <salil.mehta@huawei.com>
-To:     <davem@davemloft.net>, <maz@kernel.org>
-CC:     <edumazet@google.com>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <lipeng321@huawei.com>,
-        <mehta.salil@opnsrc.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: [PATCH net] net: hns: Fix the stray netpoll locks causing deadlock in NAPI path
-Date:   Wed, 6 Nov 2019 18:54:05 +0000
-Message-ID: <20191106185405.23112-1-salil.mehta@huawei.com>
-X-Mailer: git-send-email 2.8.3
+        id S1732006AbfKFTDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 14:03:45 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:54216 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727410AbfKFTDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 14:03:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573067020;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mg3JgW1BuhTCB4NFaQyIC8Smk9WRddoCBLHgtm+TXAs=;
+        b=iMIDHSNT7gr26XTPRz3osxiVjbF/Y2oP7YkWKF+ToGNeqe8Zyhs7SWuKmWk4Z/P2CI6kBk
+        2R19so2URLyk41Zz4GLB5JEK80fJ96ICroU0OtVoI7bZtB1MKRtnb9xI2+4HfDVwLZVVN8
+        nqdRTYy/fVyMuhfskINu6i8H4f033ro=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-364-MkavMd-mPku2TkqD8XFDEg-1; Wed, 06 Nov 2019 14:03:34 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E3930477;
+        Wed,  6 Nov 2019 19:03:30 +0000 (UTC)
+Received: from x1.home (ovpn-116-138.phx2.redhat.com [10.3.116.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EA38F5C6DC;
+        Wed,  6 Nov 2019 19:03:12 +0000 (UTC)
+Date:   Wed, 6 Nov 2019 12:03:12 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V8 0/6] mdev based hardware virtio offloading support
+Message-ID: <20191106120312.77a6a318@x1.home>
+In-Reply-To: <393f2dc9-8c67-d3c9-6553-640b80c15aaf@redhat.com>
+References: <20191105093240.5135-1-jasowang@redhat.com>
+        <20191105105834.469675f0@x1.home>
+        <393f2dc9-8c67-d3c9-6553-640b80c15aaf@redhat.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.202.226.45]
-X-CFilter-Loop: Reflected
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: MkavMd-mPku2TkqD8XFDEg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes the problem of the spin locks, originally
-meant for the netpoll path of hns driver, causing deadlock in
-the normal NAPI poll path. The issue happened due presence of
-the stray leftover spin lock code related to the netpoll,
-whose support was earlier removed from the HNS[1], got activated
-due to enabling of NET_POLL_CONTROLLER switch.
+On Wed, 6 Nov 2019 11:56:46 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-Earlier background:
-The netpoll handling code originally had this bug(as identified
-by Marc Zyngier[2]) of wrong spin lock API being used which did
-not disable the interrupts and hence could cause locking issues.
-i.e. if the lock were first acquired in context to thread like
-'ip' util and this lock if ever got later acquired again in
-context to the interrupt context like TX/RX (Interrupts could
-always pre-empt the lock holding task and acquire the lock again)
-and hence could cause deadlock.
+> On 2019/11/6 =E4=B8=8A=E5=8D=881:58, Alex Williamson wrote:
+> > On Tue,  5 Nov 2019 17:32:34 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+> > =20
+> >> Hi all:
+> >>
+> >> There are hardwares that can do virtio datapath offloading while
+> >> having its own control path. This path tries to implement a mdev based
+> >> unified API to support using kernel virtio driver to drive those
+> >> devices. This is done by introducing a new mdev transport for virtio
+> >> (virtio_mdev) and register itself as a new kind of mdev driver. Then
+> >> it provides a unified way for kernel virtio driver to talk with mdev
+> >> device implementation.
+> >>
+> >> Though the series only contains kernel driver support, the goal is to
+> >> make the transport generic enough to support userspace drivers. This
+> >> means vhost-mdev[1] could be built on top as well by resuing the
+> >> transport.
+> >>
+> >> A sample driver is also implemented which simulate a virito-net
+> >> loopback ethernet device on top of vringh + workqueue. This could be
+> >> used as a reference implementation for real hardware driver.
+> >>
+> >> Also a real ICF VF driver was also posted here[2] which is a good
+> >> reference for vendors who is interested in their own virtio datapath
+> >> offloading product.
+> >>
+> >> Consider mdev framework only support VFIO device and driver right now,
+> >> this series also extend it to support other types. This is done
+> >> through introducing class id to the device and pairing it with
+> >> id_talbe claimed by the driver. On top, this seris also decouple
+> >> device specific parents ops out of the common ones.
+> >>
+> >> Pktgen test was done with virito-net + mvnet loop back device.
+> >>
+> >> Please review.
+> >>
+> >> [1] https://lkml.org/lkml/2019/10/31/440
+> >> [2] https://lkml.org/lkml/2019/10/15/1226
+> >>
+> >> Changes from V7:
+> >> - drop {set|get}_mdev_features for virtio
+> >> - typo and comment style fixes =20
+> >
+> > Seems we're nearly there, all the remaining comments are relatively
+> > superficial, though I would appreciate a v9 addressing them as well as
+> > the checkpatch warnings:
+> >
+> > https://patchwork.freedesktop.org/series/68977/ =20
+>=20
+>=20
+> Will do.
+>=20
+> Btw, do you plan to merge vhost-mdev patch on top? Or you prefer it to=20
+> go through Michael's vhost tree?
 
-Proposed Solution:
-1. If the netpoll was enabled in the HNS driver, which is not
-   right now, we could have simply used spin_[un]lock_irqsave()
-2. But as netpoll is disabled, therefore, it is best to get rid
-   of the existing locks and stray code for now. This should
-   solve the problem reported by Marc.
+I can include it if you wish.  The mdev changes are isolated enough in
+that patch that I wouldn't presume it, but clearly it would require
+less merge coordination to drop it in my tree.  Let me know.  Thanks,
 
-@Marc,
-Could you please test this patch and confirm if the problem is
-fixed at your end?
-
-Many Thanks
-
-[1] https://git.kernel.org/torvalds/c/4bd2c03be7
-[2] https://patchwork.ozlabs.org/patch/1189139/
-
-Fixes: 4bd2c03be707 ("net: hns: remove ndo_poll_controller")
-Cc: lipeng <lipeng321@huawei.com>
-Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: David S. Miller <davem@davemloft.net>
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
----
- drivers/net/ethernet/hisilicon/hns/hns_enet.c | 22 +------------------
- 1 file changed, 1 insertion(+), 21 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-index a48396dd4ebb..14ab20491fd0 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-@@ -943,15 +943,6 @@ static int is_valid_clean_head(struct hnae_ring *ring, int h)
- 	return u > c ? (h > c && h <= u) : (h > c || h <= u);
- }
- 
--/* netif_tx_lock will turn down the performance, set only when necessary */
--#ifdef CONFIG_NET_POLL_CONTROLLER
--#define NETIF_TX_LOCK(ring) spin_lock(&(ring)->lock)
--#define NETIF_TX_UNLOCK(ring) spin_unlock(&(ring)->lock)
--#else
--#define NETIF_TX_LOCK(ring)
--#define NETIF_TX_UNLOCK(ring)
--#endif
--
- /* reclaim all desc in one budget
-  * return error or number of desc left
-  */
-@@ -965,21 +956,16 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
- 	int head;
- 	int bytes, pkts;
- 
--	NETIF_TX_LOCK(ring);
--
- 	head = readl_relaxed(ring->io_base + RCB_REG_HEAD);
- 	rmb(); /* make sure head is ready before touch any data */
- 
--	if (is_ring_empty(ring) || head == ring->next_to_clean) {
--		NETIF_TX_UNLOCK(ring);
-+	if (is_ring_empty(ring) || head == ring->next_to_clean)
- 		return 0; /* no data to poll */
--	}
- 
- 	if (!is_valid_clean_head(ring, head)) {
- 		netdev_err(ndev, "wrong head (%d, %d-%d)\n", head,
- 			   ring->next_to_use, ring->next_to_clean);
- 		ring->stats.io_err_cnt++;
--		NETIF_TX_UNLOCK(ring);
- 		return -EIO;
- 	}
- 
-@@ -994,8 +980,6 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
- 	ring->stats.tx_pkts += pkts;
- 	ring->stats.tx_bytes += bytes;
- 
--	NETIF_TX_UNLOCK(ring);
--
- 	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
- 	netdev_tx_completed_queue(dev_queue, pkts, bytes);
- 
-@@ -1055,16 +1039,12 @@ static void hns_nic_tx_clr_all_bufs(struct hns_nic_ring_data *ring_data)
- 	int head;
- 	int bytes, pkts;
- 
--	NETIF_TX_LOCK(ring);
--
- 	head = ring->next_to_use; /* ntu :soft setted ring position*/
- 	bytes = 0;
- 	pkts = 0;
- 	while (head != ring->next_to_clean)
- 		hns_nic_reclaim_one_desc(ring, &bytes, &pkts);
- 
--	NETIF_TX_UNLOCK(ring);
--
- 	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
- 	netdev_tx_reset_queue(dev_queue);
- }
--- 
-2.17.1
-
+Alex
 
