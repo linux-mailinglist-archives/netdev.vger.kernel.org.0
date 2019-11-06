@@ -2,70 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63347F0B39
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:46:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FD0EF0BB4
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 02:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730712AbfKFAqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 19:46:33 -0500
-Received: from mga01.intel.com ([192.55.52.88]:56517 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730687AbfKFAq0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 5 Nov 2019 19:46:26 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Nov 2019 16:46:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,271,1569308400"; 
-   d="scan'208";a="403554776"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga006.fm.intel.com with ESMTP; 05 Nov 2019 16:46:25 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] ice: Fix return value when SR-IOV is not supported
-Date:   Tue,  5 Nov 2019 16:46:20 -0800
-Message-Id: <20191106004620.10416-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191106004620.10416-1-jeffrey.t.kirsher@intel.com>
-References: <20191106004620.10416-1-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1730553AbfKFBin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 20:38:43 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41644 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729614AbfKFBin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 20:38:43 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EBB7E150F6634;
+        Tue,  5 Nov 2019 17:38:42 -0800 (PST)
+Date:   Tue, 05 Nov 2019 17:38:38 -0800 (PST)
+Message-Id: <20191105.173838.1188775602400029485.davem@davemloft.net>
+To:     daniel@iogearbox.net
+Cc:     jakub.kicinski@netronome.com, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: pull-request: bpf 2019-11-02
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191102012706.31533-1-daniel@iogearbox.net>
+References: <20191102012706.31533-1-daniel@iogearbox.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 Nov 2019 17:38:43 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Sat,  2 Nov 2019 02:27:06 +0100
 
-When the device is not capable of supporting SR-IOV -ENODEV is being
-returned; -EOPNOTSUPP is more appropriate.
+> The following pull-request contains BPF updates for your *net* tree.
 
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 74351ddeb307..4a1cb51b50c7 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1408,7 +1408,7 @@ static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
- 
- 	if (!test_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags)) {
- 		dev_err(dev, "This device is not capable of SR-IOV\n");
--		return -ENODEV;
-+		return -EOPNOTSUPP;
- 	}
- 
- 	if (pre_existing_vfs && pre_existing_vfs != num_vfs)
--- 
-2.21.0
-
+Pulled and build testing, thanks Daniel.
