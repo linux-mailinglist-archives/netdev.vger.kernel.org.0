@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B250F1F18
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 20:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9B5F1F16
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 20:38:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732553AbfKFTiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 14:38:20 -0500
-Received: from mga04.intel.com ([192.55.52.120]:25889 "EHLO mga04.intel.com"
+        id S1732548AbfKFTiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 14:38:16 -0500
+Received: from mga04.intel.com ([192.55.52.120]:25883 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727319AbfKFTiA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732414AbfKFTiA (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 6 Nov 2019 14:38:00 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,18 @@ Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 11:38:00 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,275,1569308400"; 
-   d="scan'208";a="402473277"
+   d="scan'208";a="402473283"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga005.fm.intel.com with ESMTP; 06 Nov 2019 11:37:59 -0800
+  by fmsmga005.fm.intel.com with ESMTP; 06 Nov 2019 11:38:00 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Michal Swiatkowski <michal.swiatkowski@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 06/14] ice: Adjust DCB INIT for SW mode
-Date:   Wed,  6 Nov 2019 11:37:48 -0800
-Message-Id: <20191106193756.23819-7-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v2 07/14] ice: save PCI state in probe
+Date:   Wed,  6 Nov 2019 11:37:49 -0800
+Message-Id: <20191106193756.23819-8-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191106193756.23819-1-jeffrey.t.kirsher@intel.com>
 References: <20191106193756.23819-1-jeffrey.t.kirsher@intel.com>
@@ -39,48 +39,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dave Ertman <david.m.ertman@intel.com>
+From: Michal Swiatkowski <michal.swiatkowski@intel.com>
 
-Adjust ice_init_dcb to set the is_sw_lldp boolean
-in the case where the FW has been detected to be
-in an untenable state such that the driver
-should forcibly make sure it is off.
+Save state to correct recovery memory and I/O BARs address
+after PCI bus reset. Without this after reset kernel can't
+read device registers.
 
-This will ensure that the FW is in a known state.
-
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_dcb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb.c b/drivers/net/ethernet/intel/ice/ice_dcb.c
-index dd7efff121bd..713e8a892e14 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb.c
-@@ -965,9 +965,9 @@ enum ice_status ice_init_dcb(struct ice_hw *hw, bool enable_mib_change)
- 	    pi->dcbx_status == ICE_DCBX_STATUS_NOT_STARTED) {
- 		/* Get current DCBX configuration */
- 		ret = ice_get_dcb_cfg(pi);
--		pi->is_sw_lldp = (hw->adminq.sq_last_status == ICE_AQ_RC_EPERM);
- 		if (ret)
- 			return ret;
-+		pi->is_sw_lldp = false;
- 	} else if (pi->dcbx_status == ICE_DCBX_STATUS_DIS) {
- 		return ICE_ERR_NOT_READY;
- 	}
-@@ -975,8 +975,8 @@ enum ice_status ice_init_dcb(struct ice_hw *hw, bool enable_mib_change)
- 	/* Configure the LLDP MIB change event */
- 	if (enable_mib_change) {
- 		ret = ice_aq_cfg_lldp_mib_change(hw, true, NULL);
--		if (!ret)
--			pi->is_sw_lldp = false;
-+		if (ret)
-+			pi->is_sw_lldp = true;
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index f29f5753f977..76c5324268c5 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3152,6 +3152,8 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
  
- 	return ret;
+ 	hw = &pf->hw;
+ 	hw->hw_addr = pcim_iomap_table(pdev)[ICE_BAR0];
++	pci_save_state(pdev);
++
+ 	hw->back = pf;
+ 	hw->vendor_id = pdev->vendor;
+ 	hw->device_id = pdev->device;
 -- 
 2.21.0
 
