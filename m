@@ -2,77 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F34E1F1C27
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA4CBF1C18
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:07:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729096AbfKFRKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 12:10:30 -0500
-Received: from rcdn-iport-3.cisco.com ([173.37.86.74]:23347 "EHLO
-        rcdn-iport-3.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbfKFRKa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 12:10:30 -0500
-X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 Nov 2019 12:10:29 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1144; q=dns/txt; s=iport;
-  t=1573060229; x=1574269829;
-  h=from:to:cc:subject:date:message-id;
-  bh=i+ZmhryTW5i1S1guIxB3vbaClOwmez7utMMxBN4AE2o=;
-  b=JympPcQF2YQcfGcRysvGk+/WYtSwWhi6y0EK6CnYaDdmugPqrtvuRo5J
-   RLFHq3tE+/7QkhH4XQBXICYLQOV299ZKe7BGHtXWNFd4vyACp9qq88aI8
-   1Vu1YX1uyRiSI2stJgs44KmR8w89sZ6S8dc5O50xTcsDfldg14+3Y1bWq
-   w=;
-X-IronPort-AV: E=Sophos;i="5.68,275,1569283200"; 
-   d="scan'208";a="646579448"
-Received: from alln-core-5.cisco.com ([173.36.13.138])
-  by rcdn-iport-3.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 06 Nov 2019 17:03:24 +0000
-Received: from zorba.cisco.com ([10.154.200.26])
-        by alln-core-5.cisco.com (8.15.2/8.15.2) with ESMTP id xA6H3Nch010301;
-        Wed, 6 Nov 2019 17:03:23 GMT
-From:   Daniel Walker <danielwa@cisco.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Sathish Jarugumalli <sjarugum@cisco.com>,
-        xe-linux-external@cisco.com, Daniel Walker <dwalker@fifo99.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: net: gianfar: Shortest frame drops at Ethernet port
-Date:   Wed,  6 Nov 2019 09:03:20 -0800
-Message-Id: <20191106170320.27662-1-danielwa@cisco.com>
-X-Mailer: git-send-email 2.17.1
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 10.154.200.26, [10.154.200.26]
-X-Outbound-Node: alln-core-5.cisco.com
+        id S1732211AbfKFRHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 12:07:05 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:57854 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728466AbfKFRHE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 12:07:04 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A9BD4200A13;
+        Wed,  6 Nov 2019 18:07:02 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 9A43B20096F;
+        Wed,  6 Nov 2019 18:07:02 +0100 (CET)
+Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 52F4B205EB;
+        Wed,  6 Nov 2019 18:07:02 +0100 (CET)
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, dan.carpenter@oracle.com,
+        Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH] dpaa2-eth: fix an always true condition in dpaa2_mac_get_if_mode
+Date:   Wed,  6 Nov 2019 19:06:50 +0200
+Message-Id: <1573060010-24260-1-git-send-email-ioana.ciornei@nxp.com>
+X-Mailer: git-send-email 1.9.1
+Reply-to: ioana.ciornei@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NXP has provided the patch for packet drops  at ethernet port
-Frames shorter than 60bytes are getting dropped at ethernetport
-need to add padding for the shorter range frames to be transmit
-the function "eth_skb_pad(skb" provides padding (and CRC) for
-packets under 60 bytes
+Convert the phy_mode() function to return the if_mode through an
+argument, similar to the new form of of_get_phy_mode().
+This will help with handling errors in a common manner and also will fix
+an always true condition.
 
-Signed-off-by: Sathish Jarugumalli <sjarugum@cisco.com>
-Cc: xe-linux-external@cisco.com
-Signed-off-by: Daniel Walker <dwalker@fifo99.com>
+Fixes: 0c65b2b90d13 ("net: of_get_phy_mode: Change API to solve int/unit warnings")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- drivers/net/ethernet/freescale/gianfar.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index 51ad86417cb1..047960b1c76e 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -1823,6 +1823,9 @@ static netdev_tx_t gfar_start_xmit(struct sk_buff *skb, struct net_device *dev)
- 	if (unlikely(do_tstamp))
- 		fcb_len = GMAC_FCB_LEN + GMAC_TXPAL_LEN;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index b713739f4804..d322123ed373 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -7,14 +7,19 @@
+ #define phylink_to_dpaa2_mac(config) \
+ 	container_of((config), struct dpaa2_mac, phylink_config)
  
-+	if (eth_skb_pad(skb))
-+		return NETDEV_TX_OK;
+-static phy_interface_t phy_mode(enum dpmac_eth_if eth_if)
++static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
+ {
++	*if_mode = PHY_INTERFACE_MODE_NA;
 +
- 	/* make space for additional header when fcb is needed */
- 	if (fcb_len && unlikely(skb_headroom(skb) < fcb_len)) {
- 		struct sk_buff *skb_new;
+ 	switch (eth_if) {
+ 	case DPMAC_ETH_IF_RGMII:
+-		return PHY_INTERFACE_MODE_RGMII;
++		*if_mode = PHY_INTERFACE_MODE_RGMII;
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
++
++	return 0;
+ }
+ 
+ /* Caller must call of_node_put on the returned value */
+@@ -51,11 +56,11 @@ static int dpaa2_mac_get_if_mode(struct device_node *node,
+ 	if (!err)
+ 		return if_mode;
+ 
+-	if_mode = phy_mode(attr.eth_if);
+-	if (if_mode >= 0)
++	err = phy_mode(attr.eth_if, &if_mode);
++	if (!err)
+ 		return if_mode;
+ 
+-	return -ENODEV;
++	return err;
+ }
+ 
+ static bool dpaa2_mac_phy_mode_mismatch(struct dpaa2_mac *mac,
 -- 
-2.17.1
+1.9.1
 
