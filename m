@@ -2,74 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27A05F21D2
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 23:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DF1F221F
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 23:50:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732849AbfKFWhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 17:37:01 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:54219 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732666AbfKFWg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 17:36:59 -0500
-Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id EF59A23E4D;
-        Wed,  6 Nov 2019 23:36:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
-        s=mail2016061301; t=1573079818;
-        bh=Y+C2JFik0SuaDLpIqi9+CLYF43yMTrkGy5sCVB6l4Og=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PmCk1vAne199FyMkya45OUNfY6OEKMuPSfXsxcOnI3K2HGWhsmo4aDDpQKETYzpHx
-         +lukrRcHw3K3RIuDbCLUpbhFNvbw+f+oszUERR6EJvqfKJudZ+sNy3MbIlZ1VYRu2T
-         Gw0uAXVBX4tdrusC+KxMx12y6iRPILvngIyIBoW4=
-From:   Michael Walle <michael@walle.cc>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>, David Miller <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 6/6] net: phy: at803x: remove config_init for AR9331
-Date:   Wed,  6 Nov 2019 23:36:17 +0100
-Message-Id: <20191106223617.1655-7-michael@walle.cc>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191106223617.1655-1-michael@walle.cc>
-References: <20191106223617.1655-1-michael@walle.cc>
+        id S1727684AbfKFWui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 17:50:38 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:51038 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726004AbfKFWuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 17:50:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
+        Subject:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=S+NDVwxnw7pUxx3P5o8f+I/8HtJJXwHD+rPflie4cnM=; b=pMQRdpKIQCx3SN9Vl5hh63a0q
+        NN9hM0Rdx0FKjbRc5iGGjxbdKBzcS60ZVcKZX3pcxvoMr4KualdndEDr47JlzlgcGEmw70yQfewI1
+        T7bj38nguBRwOjJHbfR5kz1aDqZ015cYLHqHBgeIMUOqld6zyuIA3N5V6zdW6x9UObSW4us0x+Qz4
+        kUgZP3BVbKCZ2SoXTdv7WaUdAelz4i/YSG84yCv78On6N1pDStA1x/uK/u+lwrYTKCzIhLfi3J9bi
+        +8mALHWxYMUbvB1tFVeq03G484MQcFQavQi2yCJuwxOzS9J58eV4AgmbpLY2iffnv5aR7Yu8gdBt7
+        g9cvCQqnA==;
+Received: from [2601:1c0:6280:3f0::4ba1]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iSU8G-0006ML-Gr; Wed, 06 Nov 2019 22:50:32 +0000
+Subject: Re: [PATCH V9 6/6] docs: sample driver to demonstrate how to
+ implement virtio-mdev framework
+To:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+References: <20191106070548.18980-1-jasowang@redhat.com>
+ <20191106070548.18980-7-jasowang@redhat.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <88efad07-70aa-3879-31e7-ace4d2ad63a1@infradead.org>
+Date:   Wed, 6 Nov 2019 14:50:30 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.101.4 at web
-X-Virus-Status: Clean
+In-Reply-To: <20191106070548.18980-7-jasowang@redhat.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-According to its datasheet, the internal PHY doesn't have debug
-registers nor MMDs. Since config_init() only configures delays and
-clocks and so on in these registers it won't be needed on this PHY.
-Remove it.
+On 11/5/19 11:05 PM, Jason Wang wrote:
+> diff --git a/samples/Kconfig b/samples/Kconfig
+> index c8dacb4dda80..13a2443e18e0 100644
+> --- a/samples/Kconfig
+> +++ b/samples/Kconfig
+> @@ -131,6 +131,16 @@ config SAMPLE_VFIO_MDEV_MDPY
+>  	  mediated device.  It is a simple framebuffer and supports
+>  	  the region display interface (VFIO_GFX_PLANE_TYPE_REGION).
+>  
+> +config SAMPLE_VIRTIO_MDEV_NET
+> +	tristate "Build VIRTIO net example mediated device sample code -- loadable modules only"
+> +	depends on VIRTIO_MDEV && VHOST_RING && m
+> +	help
+> +	  Build a networking sample device for use as a virtio
+> +	  mediated device. The device coopreates with virtio-mdev bus
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/net/phy/at803x.c | 2 --
- 1 file changed, 2 deletions(-)
+typo here:
+	                              cooperates
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 4434d501cd4f..aee62610bade 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -755,8 +755,6 @@ static struct phy_driver at803x_driver[] = {
- 	/* ATHEROS AR9331 */
- 	PHY_ID_MATCH_EXACT(ATH9331_PHY_ID),
- 	.name			= "Qualcomm Atheros AR9331 built-in PHY",
--	.probe			= at803x_probe,
--	.config_init		= at803x_config_init,
- 	.suspend		= at803x_suspend,
- 	.resume			= at803x_resume,
- 	/* PHY_BASIC_FEATURES */
+> +	  driver to present an virtio ethernet driver for
+> +	  kernel. It simply loopbacks all packets from its TX
+> +	  virtqueue to its RX virtqueue.
+> +
+>  config SAMPLE_VFIO_MDEV_MDPY_FB
+>  	tristate "Build VFIO mdpy example guest fbdev driver -- loadable module only"
+>  	depends on FB && m
+
+ciao.
 -- 
-2.20.1
+~Randy
 
