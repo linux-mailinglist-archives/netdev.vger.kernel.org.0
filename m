@@ -2,172 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24F3DF196D
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:03:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F75F1A09
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:32:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732066AbfKFPDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 10:03:36 -0500
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:43190 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731959AbfKFPDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 10:03:13 -0500
-Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 50588C0F54;
-        Wed,  6 Nov 2019 15:03:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1573052592; bh=orkA0OJGVviH22JL3eQ4nAhgpmWxuQSkZ3UgLXnjgm0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=bIYJgrEhHrAHDP8W8EOKXHDUEzWGAV9bnUFIYw2M8abdWkMiwibuCwgM8pBfGPxQ7
-         c3GCuceKCwc7LkqaHSzue0qOB+CcdFlGQeCFFURgQGEnv+OLfASjx6wrVKYjdIeCnF
-         NPFt8AuTAxxNMtYYMt2yBGL4ICrcGhLjRAwdEoFMZIhyCSpVxWUwe5O3QeNU98aIVg
-         yCXebNikdqOP8o4jS25TGUn7MCWlwjKT+LZuiOK+ZijQSiFHz0YUO6Arz3C5AnK3nK
-         EuvOAYw2YiuAXnUMZVNaWqOmLAAJzWsDp59BaeqQuoIjWvj79rvEWpoRGZd0fLPt9B
-         sX6xx9aoLo+xg==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 0E724A0089;
-        Wed,  6 Nov 2019 15:03:11 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 11/11] net: stmmac: Fix the TX IOC in xmit path
-Date:   Wed,  6 Nov 2019 16:03:05 +0100
-Message-Id: <b8d2676910857e8cede306c3fb140bd8fccf9ad3.1573052379.git.Jose.Abreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1573052378.git.Jose.Abreu@synopsys.com>
-References: <cover.1573052378.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1573052378.git.Jose.Abreu@synopsys.com>
-References: <cover.1573052378.git.Jose.Abreu@synopsys.com>
+        id S1727935AbfKFPcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 10:32:05 -0500
+Received: from mail-eopbgr20126.outbound.protection.outlook.com ([40.107.2.126]:44006
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726926AbfKFPcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 10:32:05 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iibKXDcZeXz4qmrVqM3eeExQ+bev9YKT2NjAUuCV9YdhlHqc+EaUIhNOoIoYrYf85C6UrH2GaVWB7bBn6iv5Z8bfCtkpDBw1drX/EaFwgNDkOyPFnaofdT5KrP5CqGywmVfEZ+py4zkmtbDPnAbYzh6Iz6GVYiBzeGuXhQ/aDieVXhliZxBpWvZPib+yN/l2Mut4OE/OIOMj6UISilUizjXsbJKo6SpxQ5/ZWHhDdjzQHv6PXYiPU5eEgx8XTE0mWzfJXkvIb6hMtO4FGH9PpXf1CiaKgVt1UFLsoR4lObgCl8TDU2KwFObIkSjwnxlKWOjqW2j5rTW6hjGNKUBTqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EUxUPpnZurWogiaQOaPlWG3QUlcqfEe+ea1w7Zv1lQs=;
+ b=BbpALXKtFcgxuVGCC8PQupZI8luokLwMa+6GhDOHVzcNICN/8sGsUJIszmVGmy/yyy2bXVwsohf+Y8nLpSd3Dr8ma6sLwbbgDI2E7RuQOH3jsSGcVqW8Lri5brw5YSuaWv6HHFr49rZzWnKJKUpE+FlRLzsT4U9JQ22PJEVSAkFdVo1pqTPeYJ5vnWRywUN3banf5EXgaEDE3M0vERaBwMr3zPtpdncHYCwJLtwplGTR/LYLw7eLy27LJMfDcLYVN19hxSx6OcLKhptr+L0z0Imz09M8xPrRP+mvv370iM8nfboYFfHzKZyjFAsIPCfEru2PdQ1c7bQ8iw0CTNW0Cw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
+ dkim=pass header.d=nokia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
+ s=selector1-nokia-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EUxUPpnZurWogiaQOaPlWG3QUlcqfEe+ea1w7Zv1lQs=;
+ b=ISgZLQ3VVp25eLmdjKZdpW3epWyLQCQ1PrsAB3009yhvvgZG31TXRj6/r6tWKClRxtqwVVJy/FCA5EvfUcZHDenIvfgJvGst6J7oBP+FXZF2XLQ7vyyNpzUQqFhuKEDaz81K6fw4Kw47PevjFlgsjc74iS4w6Yk2raWji64mVz0=
+Received: from VI1PR07MB5040.eurprd07.prod.outlook.com (20.177.203.20) by
+ VI1PR07MB4031.eurprd07.prod.outlook.com (52.134.23.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.16; Wed, 6 Nov 2019 15:32:01 +0000
+Received: from VI1PR07MB5040.eurprd07.prod.outlook.com
+ ([fe80::ec3b:5048:b5f7:2826]) by VI1PR07MB5040.eurprd07.prod.outlook.com
+ ([fe80::ec3b:5048:b5f7:2826%5]) with mapi id 15.20.2430.020; Wed, 6 Nov 2019
+ 15:32:01 +0000
+From:   "Sverdlin, Alexander (Nokia - DE/Ulm)" <alexander.sverdlin@nokia.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "Sverdlin, Alexander (Nokia - DE/Ulm)" <alexander.sverdlin@nokia.com>,
+        "David S . Miller " <davem@davemloft.net>
+Subject: [PATCH] net: ethernet: octeon_mgmt: Account for second possible VLAN
+ header
+Thread-Topic: [PATCH] net: ethernet: octeon_mgmt: Account for second possible
+ VLAN header
+Thread-Index: AQHVlLdVEVn31S00D0CIbK0C4jwKfg==
+Date:   Wed, 6 Nov 2019 15:32:01 +0000
+Message-ID: <20191106153125.118789-1-alexander.sverdlin@nokia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [131.228.32.181]
+x-mailer: git-send-email 2.23.0
+x-clientproxiedby: HE1P192CA0024.EURP192.PROD.OUTLOOK.COM (2603:10a6:3:fe::34)
+ To VI1PR07MB5040.eurprd07.prod.outlook.com (2603:10a6:803:9c::20)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=alexander.sverdlin@nokia.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: f3f194e0-4bb6-4586-6f5a-08d762ce780e
+x-ms-traffictypediagnostic: VI1PR07MB4031:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR07MB403147B5CB1BE91DBB46B35088790@VI1PR07MB4031.eurprd07.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2150;
+x-forefront-prvs: 02135EB356
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(366004)(39860400002)(136003)(376002)(346002)(396003)(189003)(199004)(1730700003)(66066001)(50226002)(5640700003)(8936002)(99286004)(256004)(102836004)(52116002)(6916009)(14454004)(14444005)(478600001)(71190400001)(15650500001)(6506007)(26005)(81156014)(7736002)(305945005)(8676002)(81166006)(386003)(86362001)(316002)(2351001)(186003)(6486002)(6116002)(5660300002)(3846002)(66476007)(66946007)(66556008)(6512007)(4744005)(2616005)(71200400001)(66446008)(64756008)(2501003)(486006)(25786009)(36756003)(1076003)(2906002)(6436002)(4326008)(476003)(54906003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR07MB4031;H:VI1PR07MB5040.eurprd07.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nokia.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1+6Ajk8L6DOpyuhEQ7cOgCilZoH03JtIaiZohH/0D6JKX4Ass8JBL1KrBokooiEivkU1hiUEhoZHuZNjsVxakPAecxEhhrUpukzlNh7V0r5LQUPoPDe7hfM6tufJH/LEBqvUAOp9BQ+k9rxQ3o962N38hBx/7nnvQ5S79OvFgrKBrBEGljU8D7GBre37t268gM9jcLmxiFEcTF7YtIGjDI6d2/FgnFw999VhOn3BIBh5COQML7/B/5K/1mHYiENmGS/6YPQVJbPzRG4N6qtoQpQAPf5UTFqEaf/Vrj2A7f0V5WE9W1uwyQa09+5ID67iXTrSQbSqbVfCJAGeV0uUS9UWs5SOsJA8zHf5TTkHRnX5xSOqdWHmVsgYEvogTQAsQRiQic2coPx8+i1DYTp2ykGg8OgnUkbdEQZAXldm+XTNiyzDkCYab5ndUlcq994K
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nokia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3f194e0-4bb6-4586-6f5a-08d762ce780e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 15:32:01.5740
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5d471751-9675-428d-917b-70f44f9630b0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QcMOgszfR9vJS4woNWN1Cn/h95VPIZvATdtAyXDdDt7ba8kCymtCVzZ4e4ysrrt4eppghBHfFa3WBV01MM1KCwiJx/cXFXIXwAA3qXxhw1U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR07MB4031
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IOC bit must be only set in the last descriptor. Move the logic up a
-little bit to make sure it's set in the correct descriptor.
+From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
 
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+Octeon's input ring-buffer entry has 14 bits-wide size field, so to account
+for second possible VLAN header max_mtu must be further reduced.
 
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
 ---
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 64 ++++++++++++-----------
- 1 file changed, 34 insertions(+), 30 deletions(-)
+ drivers/net/ethernet/cavium/octeon/octeon_mgmt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index b0a16d7c6e3d..f826365c979d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3024,6 +3024,19 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
- 	/* Only the last descriptor gets to point to the skb. */
- 	tx_q->tx_skbuff[tx_q->cur_tx] = skb;
- 
-+	/* Manage tx mitigation */
-+	tx_q->tx_count_frames += nfrags + 1;
-+	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
-+	    !((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+	      priv->hwts_tx_en)) {
-+		stmmac_tx_timer_arm(priv, queue);
-+	} else {
-+		desc = &tx_q->dma_tx[tx_q->cur_tx];
-+		tx_q->tx_count_frames = 0;
-+		stmmac_set_tx_ic(priv, desc);
-+		priv->xstats.tx_set_ic_bit++;
-+	}
-+
- 	/* We've used all descriptors we need for this skb, however,
- 	 * advance cur_tx so that it references a fresh descriptor.
- 	 * ndo_start_xmit will fill this descriptor the next time it's
-@@ -3041,19 +3054,6 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
- 	priv->xstats.tx_tso_frames++;
- 	priv->xstats.tx_tso_nfrags += nfrags;
- 
--	/* Manage tx mitigation */
--	tx_q->tx_count_frames += nfrags + 1;
--	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
--	    !(priv->synopsys_id >= DWMAC_CORE_4_00 &&
--	    (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
--	    priv->hwts_tx_en)) {
--		stmmac_tx_timer_arm(priv, queue);
--	} else {
--		tx_q->tx_count_frames = 0;
--		stmmac_set_tx_ic(priv, desc);
--		priv->xstats.tx_set_ic_bit++;
--	}
--
- 	if (priv->sarc_type)
- 		stmmac_set_desc_sarc(priv, first, priv->sarc_type);
- 
-@@ -3225,6 +3225,27 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
- 	/* Only the last descriptor gets to point to the skb. */
- 	tx_q->tx_skbuff[entry] = skb;
- 
-+	/* According to the coalesce parameter the IC bit for the latest
-+	 * segment is reset and the timer re-started to clean the tx status.
-+	 * This approach takes care about the fragments: desc is the first
-+	 * element in case of no SG.
-+	 */
-+	tx_q->tx_count_frames += nfrags + 1;
-+	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
-+	    !((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-+	      priv->hwts_tx_en)) {
-+		stmmac_tx_timer_arm(priv, queue);
-+	} else {
-+		if (likely(priv->extend_desc))
-+			desc = &tx_q->dma_etx[entry].basic;
-+		else
-+			desc = &tx_q->dma_tx[entry];
-+
-+		tx_q->tx_count_frames = 0;
-+		stmmac_set_tx_ic(priv, desc);
-+		priv->xstats.tx_set_ic_bit++;
-+	}
-+
- 	/* We've used all descriptors we need for this skb, however,
- 	 * advance cur_tx so that it references a fresh descriptor.
- 	 * ndo_start_xmit will fill this descriptor the next time it's
-@@ -3260,23 +3281,6 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	dev->stats.tx_bytes += skb->len;
- 
--	/* According to the coalesce parameter the IC bit for the latest
--	 * segment is reset and the timer re-started to clean the tx status.
--	 * This approach takes care about the fragments: desc is the first
--	 * element in case of no SG.
--	 */
--	tx_q->tx_count_frames += nfrags + 1;
--	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
--	    !(priv->synopsys_id >= DWMAC_CORE_4_00 &&
--	    (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
--	    priv->hwts_tx_en)) {
--		stmmac_tx_timer_arm(priv, queue);
--	} else {
--		tx_q->tx_count_frames = 0;
--		stmmac_set_tx_ic(priv, desc);
--		priv->xstats.tx_set_ic_bit++;
--	}
--
- 	if (priv->sarc_type)
- 		stmmac_set_desc_sarc(priv, first, priv->sarc_type);
- 
--- 
-2.7.4
+diff --git a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c b/drivers/net=
+/ethernet/cavium/octeon/octeon_mgmt.c
+index 0e5de88..cdd7e5d 100644
+--- a/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
++++ b/drivers/net/ethernet/cavium/octeon/octeon_mgmt.c
+@@ -1499,7 +1499,7 @@ static int octeon_mgmt_probe(struct platform_device *=
+pdev)
+ 	netdev->ethtool_ops =3D &octeon_mgmt_ethtool_ops;
+=20
+ 	netdev->min_mtu =3D 64 - OCTEON_MGMT_RX_HEADROOM;
+-	netdev->max_mtu =3D 16383 - OCTEON_MGMT_RX_HEADROOM;
++	netdev->max_mtu =3D 16383 - OCTEON_MGMT_RX_HEADROOM - VLAN_HLEN;
+=20
+ 	mac =3D of_get_mac_address(pdev->dev.of_node);
+=20
+--=20
+2.4.6
 
