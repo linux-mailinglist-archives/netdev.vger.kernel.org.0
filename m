@@ -2,88 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7A26F1CF8
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEF89F1D12
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 19:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732475AbfKFR4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 12:56:52 -0500
-Received: from smtp.codeaurora.org ([198.145.29.96]:35934 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729435AbfKFR4w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 12:56:52 -0500
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id E537660134; Wed,  6 Nov 2019 17:56:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1573063010;
-        bh=nQ+P7pXx778DX1/XphSgc5IhHKuslBvN8ajv5VvEmxU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=FNbKbf+hcv2URueWbVdvZ0S25w8iTl82Q6TiJ8Yk0Mpix9jlzrDpVNtlNuT80Qf7M
-         RvyuBy/NgDx5nE9F8DPudiaeV9c1/8iwLVE2nlXod0TDdDlFknITylabKkgIJjaYaw
-         ZTMQO1Gr2ikGmFCboS2JZYjl0XIMiSAlHhKElqMg=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id AB0C8601D4;
-        Wed,  6 Nov 2019 17:56:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1573063010;
-        bh=nQ+P7pXx778DX1/XphSgc5IhHKuslBvN8ajv5VvEmxU=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=VKc9x2sQgEtMEFTKscLB6q8EVrIiHCkAaiUiJ/yxXSNjPJgZmsRMbQUahC+xu3ehg
-         D9ZMEAEGyxcxW5CTmN5+HwgoMeBQnKgAd6PyJB8LiVqt7A+FYUK7PapoxUwXUOocRi
-         60oQXgkxN0SZPdh+xLMywBe841nkAEOCDeleqOnA=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AB0C8601D4
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728746AbfKFSCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 13:02:16 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:42704 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728191AbfKFSCP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 13:02:15 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA6I06fG026193
+        for <netdev@vger.kernel.org>; Wed, 6 Nov 2019 10:02:15 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=PvqFEXNBoHkmIi1zRu3NcMaSANd1HCAy11FibpsN+EU=;
+ b=V9qwnnW8h3I6qI03PiX3sjzIulUgjAsvMAs2O84cfjSuNndXNBLF0ZuZ0/2OtoASfkHv
+ ymscPcDCFE+qeNArcoKgoVsS3uygyyneMD15oJm997ZTeDZ1kIdu4ipCNuBqeI4UmcyI
+ KUA8EKL3bsj6QbtEJELfdOBNCxC3/yTHTE4= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2w41un0dvx-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 10:02:15 -0800
+Received: from 2401:db00:30:600c:face:0:39:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 6 Nov 2019 10:02:13 -0800
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 118A6294200E; Wed,  6 Nov 2019 10:02:12 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/2] bpf: Add array support to btf_struct_access
+Date:   Wed, 6 Nov 2019 10:02:12 -0800
+Message-ID: <20191106180212.2175046-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: rtl8225se: remove some unused const variables
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191102074603.38516-1-yuehaibing@huawei.com>
-References: <20191102074603.38516-1-yuehaibing@huawei.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <davem@davemloft.net>, <allison@lohutok.net>,
-        <gregkh@linuxfoundation.org>, <kstewart@linuxfoundation.org>,
-        <info@metux.net>, <tglx@linutronix.de>, <yuehaibing@huawei.com>,
-        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191106175650.E537660134@smtp.codeaurora.org>
-Date:   Wed,  6 Nov 2019 17:56:50 +0000 (UTC)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-06_06:2019-11-06,2019-11-06 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0 bulkscore=0
+ mlxscore=0 spamscore=0 suspectscore=8 impostorscore=0 mlxlogscore=680
+ lowpriorityscore=0 clxscore=1015 malwarescore=0 priorityscore=1501
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911060175
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YueHaibing <yuehaibing@huawei.com> wrote:
+This series adds array support to btf_struct_access().
+Please see individual patch for details.
 
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:83:17: warning: 'rtl8225sez2_tx_power_cck' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:79:17: warning: 'rtl8225sez2_tx_power_cck_A' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:75:17: warning: 'rtl8225sez2_tx_power_cck_B' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:71:17: warning: 'rtl8225sez2_tx_power_cck_ch14' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:62:17: warning: 'rtl8225se_tx_power_ofdm' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:53:17: warning: 'rtl8225se_tx_power_cck_ch14' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:44:17: warning: 'rtl8225se_tx_power_cck' defined but not used [-Wunused-const-variable=]
-> drivers/net/wireless//realtek/rtl818x/rtl8180/rtl8225se.c:40:17: warning: 'rtl8225se_tx_gain_cck_ofdm' defined but not used [-Wunused-const-variable=]
-> 
-> They are never used, so can be removed.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Martin KaFai Lau (2):
+  bpf: Add array support to btf_struct_access
+  bpf: Add cb access in kfree_skb test
 
-Patch applied to wireless-drivers-next.git, thanks.
-
-a3a03716196f rtlwifi: rtl8225se: remove some unused const variables
+ kernel/bpf/btf.c                              | 187 +++++++++++++++---
+ .../selftests/bpf/prog_tests/kfree_skb.c      |  54 +++--
+ tools/testing/selftests/bpf/progs/kfree_skb.c |  25 ++-
+ 3 files changed, 220 insertions(+), 46 deletions(-)
 
 -- 
-https://patchwork.kernel.org/patch/11224057/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.17.1
 
