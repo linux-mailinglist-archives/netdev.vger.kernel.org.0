@@ -2,67 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19A4EF2013
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 21:49:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1B8F201C
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 21:51:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732231AbfKFUtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 15:49:16 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33563 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727351AbfKFUtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 15:49:16 -0500
-Received: by mail-pg1-f196.google.com with SMTP id h27so1010179pgn.0;
-        Wed, 06 Nov 2019 12:49:15 -0800 (PST)
+        id S1732242AbfKFUvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 15:51:41 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:44851 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727587AbfKFUvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 15:51:41 -0500
+Received: by mail-wr1-f68.google.com with SMTP id f2so76339wrs.11
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 12:51:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=8wP7W7VhRKRhnObCodIzliyafUDrJwYnPDy/mCCnQxM=;
-        b=QfPv8XYX/pGPv9G9yjRbcsVUqkLDp8CQ1dUXN0tkbuFE4kz5VdnJ0YakBPNyzCp31O
-         NVunSHZkmtTbTII5lArccXo9TYTJq7u0zVsTxdjli/t39pMyycKVsPYPZfCGSfFs8Ymh
-         DYud5/SgSnUW4+Pzvs4NHDiD+RzdW3X8l1UD2fSxIlf+Ut+nAp4nsQl0sv9gQvX/e94r
-         DCNq44uARSL+16uNtsX7lbSy7tByfbqvoqfTgVvaE87fpmF5QRqOxZC5O61mgd2aoR3S
-         bbIm2V4QVRrv/TDjLfQ300FPRkVLlkrow1KhSKoKsM9Hz/sVcBPHtYXd2naOjDvyh+xI
-         wJpQ==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=YAOxfH3S6OCSID0zy3/R6cBnW7pwH4KQmZSHdTtmaU0=;
+        b=ED5G2/pBSjUg9exh/jBN3S4z+/k/k4+nD7jWuLpUVFM/31pwiTS/a4fwgTNiJDxhhC
+         Wz3b5XEb2EyQXwjvk6gOqckceN0+cY3KnLM49l6rfUG14indMu1X44155NmoTYgIOBBN
+         9by/+mJ5lZS9hvwVFvSwL/+N26t7//el4uB6t6DxJndgNRk0GktpEcfj9ntQ6FVYImOP
+         rsVG1YjVVhawD78IyUkifr6u+MvmNBQ30zWt1e4ej18/gS5RmDJ1LEz7NiuUL0HdEC95
+         IJldROmtRnEeX9E1SLA/NrlmAyDew2Fqx83ve2qsqrRJCx001f4dg9ENfdDqS9ptKQDm
+         z16g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=8wP7W7VhRKRhnObCodIzliyafUDrJwYnPDy/mCCnQxM=;
-        b=eaX/6bpCrY88aL2pD9B7fwMJuXxntTQRGlSbqzKG7woC3RYXkpR+2Q3qPBkv2vFCJy
-         CbiKftgjH9BWE79ZsAnl72OnD8sEHRaKKvcpg9PWqy7qy/aEot1Bs9mnfaABO3npj4Vt
-         5U68mzaoKON362Pltvf/gf8hsxqeahUdlSe2HX34wAaUNavE8FYi9E0Xb4yfAuQsZB7O
-         QKQwNPIVL5yd5UM/9Ej2IW4Qfn0JF7ksuRv6onig8rmBcmiDGSSOZJKKv0aqMc+bNqdV
-         xvPq/UVwqShd2uA3UejOGERMJ8sUiNe9gkuA90BNf6x1fjDxgLTpyFuzvXtwUY1Ep8vZ
-         YrsA==
-X-Gm-Message-State: APjAAAVJqrR1YbICtDaN2Dchr5edCmKUqaH2FCvr156rtJLVSYz8pXF3
-        vIaRdL3IsHtOCROefviQow==
-X-Google-Smtp-Source: APXvYqz70Ek9/AUiWYKz7ykWOcnNBanfcQv/E3r+kyzdSJawus2+OO0JbenuV5DGszEdbGYfJ8N7JA==
-X-Received: by 2002:aa7:934a:: with SMTP id 10mr5672308pfn.150.1573073355348;
-        Wed, 06 Nov 2019 12:49:15 -0800 (PST)
-Received: from localhost.localdomain ([216.52.21.4])
-        by smtp.gmail.com with ESMTPSA id r13sm7191895pgh.37.2019.11.06.12.49.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 06 Nov 2019 12:49:14 -0800 (PST)
-From:   Praveen Chaudhary <praveen5582@gmail.com>
-X-Google-Original-From: Praveen Chaudhary <pchaudhary@linkedin.com>
-To:     pablo@netfilter.org
-Cc:     astracner@linkedin.com, davem@davemloft.net, fw@strlen.de,
-        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        praveen5582@gmail.com, zxu@linkedin.com
-Subject: RE: [netfilter]: Fix skb->csum calculation when netfilter manipulation for NF_NAT_MANIP_SRC\DST is done on IPV6 packet.
-Date:   Wed,  6 Nov 2019 12:48:58 -0800
-Message-Id: <1573073338-2078-1-git-send-email-pchaudhary@linkedin.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <20191106093347.inrzhrlrle6g6naf@salvia>
-References: <20191106093347.inrzhrlrle6g6naf@salvia>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=YAOxfH3S6OCSID0zy3/R6cBnW7pwH4KQmZSHdTtmaU0=;
+        b=FSOmw4QC7g9s/jnXz4OC8CSR6pjns4xX8vyWAtMaZC42i0EHFCXp7kNpaqkgd7KkOn
+         HCb5AgVpyXfKCwltOMSEBmErDlh7jZgmh/aglAiBhSP8/5wMiT7w+h+gwOAjXEMzOg9N
+         b0MgGSzz5EZpENbtPJr9OqsoIdlEVnqcWAxnWQv1vyo7sc1UDNpettCA3jl2/vu4As0j
+         8OGyf/5fmIfaiAAxHsGRg+DkMWabSCgZ0AFSR5ve+NBiAVJ0SO+XOah/BDWo9J+oTOmY
+         BhIPguhnLi+eefpJwIPDwAz2hLQVV+WXWMS2bxAta/uS5y6bCpNMH/oaQZv58aeRG5mz
+         EIpA==
+X-Gm-Message-State: APjAAAUanuVdBEJ0DesF3D7U0OsXRt7j5S+fc0mT1Q6ZxCTaGObTI3Lr
+        4Yt0YS4pTnqEf8stgRuuT94U8Wfi
+X-Google-Smtp-Source: APXvYqzd7UU5f2PPQCuO+aSeZ/PhyP2mWnzgFw4RZky+KCnSkVIAi2q3g1M7wsjINyxkLBXtM91H9g==
+X-Received: by 2002:adf:dc81:: with SMTP id r1mr4978954wrj.84.1573073498676;
+        Wed, 06 Nov 2019 12:51:38 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f17:6e00:25aa:f905:14e6:6be2? (p200300EA8F176E0025AAF90514E66BE2.dip0.t-ipconnect.de. [2003:ea:8f17:6e00:25aa:f905:14e6:6be2])
+        by smtp.googlemail.com with ESMTPSA id 76sm4545030wma.0.2019.11.06.12.51.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Nov 2019 12:51:38 -0800 (PST)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] r8169: fix page read in r8168g_mdio_read
+Message-ID: <6a72148a-5ad3-6835-cfbf-974d871498e3@gmail.com>
+Date:   Wed, 6 Nov 2019 21:51:31 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks Pablo for review,
-Sure, I will update a.) patch subject, b.) description and c.) the full document of function.
+Functions like phy_modify_paged() read the current page, on Realtek
+PHY's this means reading the value of register 0x1f. Add special
+handling for reading this register, similar to what we do already
+in r8168g_mdio_write(). Currently we read a random value that by
+chance seems to be 0 always.
 
-I feel, the bug was exposed with e6afc8ace6dd5cef5e812f26c72579da8806f5ac i.e with introduction of udp_csum_pull_header function.
+Fixes: a2928d28643e ("r8169: use paged versions of phylib MDIO access functions")
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 0704f8bd1..8a7b22301 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -910,6 +910,9 @@ static void r8168g_mdio_write(struct rtl8169_private *tp, int reg, int value)
+ 
+ static int r8168g_mdio_read(struct rtl8169_private *tp, int reg)
+ {
++	if (reg == 0x1f)
++		return tp->ocp_base == OCP_STD_PHY_BASE ? 0 : tp->ocp_base >> 4;
++
+ 	if (tp->ocp_base != OCP_STD_PHY_BASE)
+ 		reg -= 0x10;
+ 
+-- 
+2.24.0
 
