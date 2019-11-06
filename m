@@ -2,154 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C39C0F214C
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 23:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D22F2151
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 23:04:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbfKFWCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 17:02:45 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15608 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726779AbfKFWCo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 17:02:44 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA6LjSgn011768;
-        Wed, 6 Nov 2019 14:02:31 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=0YFG6AOg/TS4vejaHjb6iCQ8DvoDNp9uR9hBbadjwlM=;
- b=StUJ9vvxq0eLO7yN9Eu5ATl7AD2n39jaYi0MT9MYOwN8Yj2Cff6QHMsjnh+Tm3QazNoW
- Ebu5yzRcv1Vp2ln/oYR/xrP4pox61LR32Yew/N4kx8Qg+uYgs3pP/KIVfeXfTfdPFUEa
- xu9A7hgqx6tbzCaT4GmyhlnQWd3gI77FG+4= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41uj9jkn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 06 Nov 2019 14:02:31 -0800
-Received: from prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 6 Nov 2019 14:02:30 -0800
-Received: from prn-hub01.TheFacebook.com (2620:10d:c081:35::125) by
- prn-mbx07.TheFacebook.com (2620:10d:c081:6::21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 6 Nov 2019 14:02:30 -0800
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 6 Nov 2019 14:02:29 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VJFCNpkdhbNH5rWkBU1gxoCES9aBwG5DETq4IQVZxuad9I2a0PQwK7oKu9aTJvsGGF3Oo1822Oi84fzh+6z9Q/LRl4aF+b65X4VXBvmgzfO15oVWxVjZlikf8FPZmZuEhG4qeszrmV3wtt02l9KKTcIrb46SO0Coge7ePRH/7iLMrRfCw3Adm4XR8icWnJSLXOwdLb8VuwN80V3lh/TG/pypB5pMr+iM3PTZeww736vwJwileu7qywpgmMLQb7nTxcnlJ5Nmt0F9LbiAXDkzuzmyrfRE6VvEwm8qliiFgosnQpF1A/eEG8rP1tna7eDnSstMNCYMdvAsLCCGhX6oMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0YFG6AOg/TS4vejaHjb6iCQ8DvoDNp9uR9hBbadjwlM=;
- b=BpRYGJz8xA3QuCEi2xnDQCtImJR/dgFGmo9PU/3blxwAi5IaSdF0hu+M4dL+/TfK7/NglrGJ3oLHYDffZf+gGUeYDVuSEx27zbnKjgwmwPOYojXkbiLi1/pFQMY37DNBLf9kjc1kOGTqffQd9i50pBsyV+aP6fC39gRwCSV8szmwfplYI3GHLGyFUF3ke/fZyiJ7klmziNtOh/iu/tNYhPX3UD5BGYZe2jZwt2O86mW7Wt+gW7wJdjCXyvsq8wiq2+aMzjKEyUhg5kl+YuF8idaCQJ0J5b7dwNjxT4MoJYRqvoHFkZyS39sp81g8rITbmHBsaapWiBnupaluBzDJ6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0YFG6AOg/TS4vejaHjb6iCQ8DvoDNp9uR9hBbadjwlM=;
- b=c6oJEgFzGtnm1mXuMA0Cg3NU6x7z9zn6xthFStDwzWjMSaB8rRTg469Dk4IrPUlHB/H+Pal7VPs8jMMrl3iL+xHZT+iY+st6st098lqDfZYrywanMB29q02c+gHbmg+CFJmTj//8rnh+1WWJcDx/OP7U1CtYCn++yGWlJriV9c8=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.60.27) by
- BYAPR15MB2454.namprd15.prod.outlook.com (52.135.196.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Wed, 6 Nov 2019 22:02:29 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::b92c:ebd2:58dc:6b8d]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::b92c:ebd2:58dc:6b8d%5]) with mapi id 15.20.2408.025; Wed, 6 Nov 2019
- 22:02:29 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next] libbpf: simplify BPF_CORE_READ_BITFIELD_PROBED
- usage
-Thread-Topic: [PATCH bpf-next] libbpf: simplify BPF_CORE_READ_BITFIELD_PROBED
- usage
-Thread-Index: AQHVlN7mdqeCPuu5akK2gbR1A6tGyad+pcwAgAALEgCAAAEjAA==
-Date:   Wed, 6 Nov 2019 22:02:28 +0000
-Message-ID: <be6d2eea-6026-ab1f-2200-443a35d66762@fb.com>
-References: <20191106201500.2582438-1-andriin@fb.com>
- <bdc51aac-6d39-13a6-f50e-8fca3d329b4b@fb.com>
- <CAADnVQ+EHbJ950L93Wa4ZxJDQ_PvPwv-re9+95GighudmN3iDQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+EHbJ950L93Wa4ZxJDQ_PvPwv-re9+95GighudmN3iDQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR04CA0202.namprd04.prod.outlook.com
- (2603:10b6:104:5::32) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:112::27)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:5052]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4dd6e2e5-6793-4b48-62ec-08d7630503e7
-x-ms-traffictypediagnostic: BYAPR15MB2454:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB245432BFBD366CE84BAFB7A0D3790@BYAPR15MB2454.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 02135EB356
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(136003)(346002)(376002)(366004)(39860400002)(199004)(189003)(86362001)(2906002)(6486002)(6916009)(76176011)(52116002)(46003)(6116002)(6246003)(36756003)(4326008)(99286004)(6512007)(14454004)(71190400001)(316002)(6436002)(31696002)(229853002)(54906003)(71200400001)(478600001)(66476007)(66446008)(64756008)(66556008)(66946007)(186003)(25786009)(8676002)(5660300002)(102836004)(256004)(386003)(53546011)(305945005)(7736002)(6506007)(81166006)(8936002)(476003)(81156014)(2616005)(446003)(486006)(31686004)(11346002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2454;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GMjp3Lc+xGe55R7I9O6jMxrL/VYP1Og9xJ8dXD+KxDhEsnyVxypKFP1c6RgFvBOkXOqmNgSFLPchP+/dbhkGDfZG/sig8p53gtfjvU1G4ovgwwVklnfDgZxz4GrLioi0D//m2pYGbSFOaizq42TU1aFfaGqa8Xe4XLIgNpqJRHIaKnvFWtBNkD6EsX0rdYGf3ZZ46DSL3V4zSmu1VqUMpn5yraBI/OgZzrOLpzLm30ctFaY+k0++8tdFiYiH/B0pvmoishfUw3a+1/NBnZ0kmX3EUYtuWpMW1wyRwxrT1OlUw3Rw9wMy8g8Yyfnz9BvZ5I7GKluF/2b6G8sdLW6nRvqFBf9+gPkgG6KGTyRDaQ2++qo0aMy8mKiW6Vi1BwbzzoZSQVLjPEJLCNhzClokVyWey+EN9/8ihygspTma03Ykw4YLww8miJz9TGP/VLeA
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0019C35617A96946BB49D2B1540A8FDF@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1732615AbfKFWEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 17:04:12 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52553 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726957AbfKFWEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 17:04:11 -0500
+Received: by mail-wm1-f66.google.com with SMTP id c17so5854212wmk.2;
+        Wed, 06 Nov 2019 14:04:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6r8I0SCpSbo6ngTh6F9dpz6iIrvn5396OXePTnNw2U8=;
+        b=h9fFXGfhomwsrDhIOPlDTH9/XZNGxhz0qH64mPq2HdxKiW+ySowOe8rBfq/r3/Rcb1
+         Ep6ozet54YeOvC9w4iZxIgXZIQVl3yNw/LSMRDaPpW/nLocNKuRCSL2+hLMWvAHPkwHJ
+         BGih7Jj9wc2zeknUzfCLNwBI0jfMnzbomsz2MrLY53Idlye719FyMGPZchdeIxJCQQcp
+         uHnWr/s2NTDxuif8+uqR++6vBEFK6kIq6Khbh3RhnmbMk6NnQXwvr0jf9M4msqza8cuk
+         5ByxgtrHj5Dovio4lWjryoIrXCQSHxT9jSTp20o3FAZQ7ti/jX9vr98SKhmke9oFYXV6
+         Mdmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=6r8I0SCpSbo6ngTh6F9dpz6iIrvn5396OXePTnNw2U8=;
+        b=hhs32uvq4AZeTiL4irV2cjtwEK9nQjDUOIFFnIBJlIdu3Ts0MXh2xBjpFkLjRjWtfd
+         7GK+Hixagh0rqM0Ls3IXI3KugMj9XfO+xEZYNdXKF3eo+nrBHTzQtVfnLd/HSPFwGEf9
+         K8U5TFTbBi+0U8J7kNqwThjjcXb5VeKw0uf6Rn9r+Fq19SG9Y6dcpdIeEWUKQ7x6TWc/
+         4pHO9O1kofjioeP2Pzr+ZZhhwLNK4GAL1mjhYoQvvowuqEGGxQ7DlyM3M+WGurtYObgw
+         HLAu5s36w7t/HJQpiWPaYh8BwU69wZJdCeq5dOuADmRP46oNdEULxJaFlv5MxtHTpB/J
+         EEUw==
+X-Gm-Message-State: APjAAAWbCFvdSAHimBTPAPYji2CM2p3h/u6dZActAzpeLYTtUteMFToq
+        2qWYulOY2ZccBh/sFQXHW1A=
+X-Google-Smtp-Source: APXvYqwqZSYx00vA5vA5YuZhAaxFTgiX+RTj4W8pTe+SVTWIv7moEx0LZFAY7DH06jt1HBx1FrPN7Q==
+X-Received: by 2002:a05:600c:295:: with SMTP id 21mr4400198wmk.43.1573077847737;
+        Wed, 06 Nov 2019 14:04:07 -0800 (PST)
+Received: from localhost.localdomain (dynamic-2a00-1028-9192-7022-5e51-4fff-feaa-03a7.ipv6.broadband.iol.cz. [2a00:1028:9192:7022:5e51:4fff:feaa:3a7])
+        by smtp.gmail.com with ESMTPSA id b3sm3958842wma.13.2019.11.06.14.04.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 14:04:07 -0800 (PST)
+From:   Jaroslav Beran <jara.beran@gmail.com>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jaroslav Beran <jara.beran@gmail.com>
+Subject: [PATCH] can: return error from can_send() in BUS-OFF state
+Date:   Wed,  6 Nov 2019 23:03:02 +0100
+Message-Id: <20191106220302.27698-1-jara.beran@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4dd6e2e5-6793-4b48-62ec-08d7630503e7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 22:02:28.9975
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: AsgHqfc2/mLWdMUXowv4ceIQ3yxKiNKFcO8Yg0U9CMhMVHtixggzxufi9o9b9yD3
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2454
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-06_07:2019-11-06,2019-11-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 clxscore=1015
- suspectscore=0 priorityscore=1501 spamscore=0 mlxlogscore=999
- lowpriorityscore=0 phishscore=0 malwarescore=0 mlxscore=0 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911060211
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDExLzYvMTkgMTo1OCBQTSwgQWxleGVpIFN0YXJvdm9pdG92IHdyb3RlOg0KPiBPbiBX
-ZWQsIE5vdiA2LCAyMDE5IGF0IDE6MjEgUE0gWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4gd3Jv
-dGU6DQo+Pg0KPj4NCj4+DQo+PiBPbiAxMS82LzE5IDEyOjE1IFBNLCBBbmRyaWkgTmFrcnlpa28g
-d3JvdGU6DQo+Pj4gU3RyZWFtbGluZSBCUEZfQ09SRV9SRUFEX0JJVEZJRUxEX1BST0JFRCBpbnRl
-cmZhY2UgdG8gZm9sbG93DQo+Pj4gQlBGX0NPUkVfUkVBRF9CSVRGSUVMRCAoZGlyZWN0KSBhbmQg
-QlBGX0NPUkVfUkVBRCwgaW4gZ2VuZXJhbCwgaS5lLiwganVzdA0KPj4+IHJldHVybiByZWFkIHJl
-c3VsdCBvciAwLCBpZiB1bmRlcmx5aW5nIGJwZl9wcm9iZV9yZWFkKCkgZmFpbGVkLg0KPj4+DQo+
-Pj4gSW4gcHJhY3RpY2UsIHJlYWwgYXBwbGljYXRpb25zIHJhcmVseSBjaGVjayBicGZfcHJvYmVf
-cmVhZCgpIHJlc3VsdCwgYmVjYXVzZQ0KPj4+IGl0IGhhcyB0byBhbHdheXMgd29yayBvciBvdGhl
-cndpc2UgaXQncyBhIGJ1Zy4gU28gcHJvcGFnYXRpbmcgaW50ZXJuYWwNCj4+PiBicGZfcHJvYmVf
-cmVhZCgpIGVycm9yIGZyb20gdGhpcyBtYWNybyBodXJ0cyB1c2FiaWxpdHkgd2l0aG91dCBwcm92
-aWRpbmcgcmVhbA0KPj4+IGJlbmVmaXRzIGluIHByYWN0aWNlLiBUaGlzIHBhdGNoIGZpeGVzIHRo
-ZSBpc3N1ZSBhbmQgc2ltcGxpZmllcyB1c2FnZSwNCj4+PiBub3RpY2VhYmxlIGV2ZW4gaW4gc2Vs
-ZnRlc3QgaXRzZWxmLg0KPj4NCj4+IEFncmVlZC4gVGhpcyB3aWxsIGJlIGNvbnNpc3RlbnQgd2l0
-aCBkaXJlY3QgcmVhZCB3aGVyZQ0KPj4gcmV0dXJuaW5nIHZhbHVlIHdpbGwgYmUgMCBpZiBhbnkg
-ZmF1bHQgaGFwcGVucy4NCj4+DQo+PiBJbiByZWFsbHkgcmFyZSBjYXNlcywgaWYgdXNlciB3YW50
-IHRvIGRpc3Rpbmd1aXNoIGdvb2QgdmFsdWUgMCBmcm9tDQo+PiBicGZfcHJvYmVfcmVhZCgpIHJl
-dHVybmluZyBlcnJvciwgYWxsIGJ1aWxkaW5nIG1hY3JvcyBhcmUgaW4gdGhlIGhlYWRlcg0KPj4g
-ZmlsZSwgdXNlciBjYW4gaGF2ZSBhIGN1c3RvbSBzb2x1dGlvbi4gQnV0IGxldCB1cyBoYXZlIEFQ
-SSB3b3JrDQo+PiBmb3IgY29tbW9uIHVzZSBjYXNlIHdpdGggZ29vZCB1c2FiaWxpdHkuDQo+Pg0K
-Pj4+DQo+Pj4gQ2M6IFlvbmdob25nIFNvbmcgPHloc0BmYi5jb20+DQo+Pj4gU2lnbmVkLW9mZi1i
-eTogQW5kcmlpIE5ha3J5aWtvIDxhbmRyaWluQGZiLmNvbT4NCj4+DQo+PiBBY2tlZC1ieTogWW9u
-Z2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCj4gDQo+IEFwcGxpZWQuIFRoYW5rcw0KPiANCj4gWW9u
-Z2hvbmcsIHBsZWFzZSB0cmltIHlvdXIgcmVwbGllcy4NCg0KU29ycnksIGZvcmdvdCB0byBkby4g
-V2lsbCByZW1lbWJlciBuZXh0IHRpbWUuDQo=
+When a CAN node reaches BUS-OFF state, its netdev state
+is set to __LINK_STATE_NOCARRIER and qdisc ->enqueue() starts
+dropping frames and returning NET_XMIT_CN that is turned to 0
+by net_xmit_errno(). So can_send() returns success to a sender
+even if his frame is lost.
+
+As this behavior is inappropriate for a node in BUS-OFF state,
+this patch adds a check for no-carrier condition and returns
+-ENETUNREACH in such case.
+
+Signed-off-by: Jaroslav Beran <jara.beran@gmail.com>
+---
+ net/can/af_can.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index 5518a7d9eed9..68c56241733b 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -189,6 +189,7 @@ static int can_create(struct net *net, struct socket *sock, int protocol,
+  * Return:
+  *  0 on success
+  *  -ENETDOWN when the selected interface is down
++ *  -ENETUNREACH when the node is in BUS-OFF state
+  *  -ENOBUFS on full driver queue (see net_xmit_errno())
+  *  -ENOMEM when local loopback failed at calling skb_clone()
+  *  -EPERM when trying to send on a non-CAN interface
+@@ -233,6 +234,11 @@ int can_send(struct sk_buff *skb, int loop)
+ 		goto inval_skb;
+ 	}
+ 
++	if (unlikely(!netif_carrier_ok(skb->dev))) {
++		err = -ENETUNREACH;
++		goto inval_skb;
++	}
++
+ 	skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 
+ 	skb_reset_mac_header(skb);
+-- 
+2.23.0
+
