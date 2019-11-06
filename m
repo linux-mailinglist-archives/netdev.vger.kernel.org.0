@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 782DEF197B
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:04:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA3A0F1964
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:03:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732159AbfKFPEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 10:04:05 -0500
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:43066 "EHLO
+        id S1731999AbfKFPDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 10:03:14 -0500
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:43082 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731913AbfKFPDM (ORCPT
+        by vger.kernel.org with ESMTP id S1731943AbfKFPDM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 10:03:12 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id EACE8C0F4B;
-        Wed,  6 Nov 2019 15:03:11 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 0BD37C0F4C;
+        Wed,  6 Nov 2019 15:03:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1573052592; bh=lSRQ99cSkNF5cr5WxPR/Dx/0LMZ4CIS9zons/16DEj8=;
+        t=1573052592; bh=/tE+oQIQA2jqvpF/cTAJUXNupu7zNSj0ZPechBJ4a80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=Pw/P8DdssfrTW3yDFcoXSMSgTx5+bn4QCogK5YhSBJazfIS/dYqu7ydVb+0g+ar1V
-         v4BP1bkXd0MeACdt8e6KRZt/VC4V/4lTeMiQSSsnmTRQnbZZR3g0TUXbXCeK8do3HC
-         9Ksmsok+8xTucUCB7+90Ca3kxSbz1EN8yIOaalYQjuo3RaF2OBLm+U/8AeeTpz0A7O
-         eIy7g6LP4QQqyIsW8A9s8sSORSQaTWlQeU4OaogImXfaxs4yGPV0Fc93a9w7P/hwnq
-         1okPm/to7hcmIpbx7EwP06iLRhcBn8GdDydOfsUkuy8TiicOqH90vv72YT5jBiU2m3
-         xJsyeyOpaBDdg==
+        b=Hr+1PAtLSqexo2ssdltOXhZE5pwsCZsv1gLLmikMcjaUFfrwvjBoqAqfkSIroAHUF
+         xIikutERC8i4ysVxt+mIRlnLLuz83SmeCfcN35VhFwAFVq3Bgix8kVIn7NxpUS8RT6
+         Ykv1c7I0nVu6MovpI61/gVf/taiCl59Xoh0OdAlkxWeLHAt9Sv34GewsTxKyVRallf
+         PaMtpQD7OUwHWMR9FxbwAthr4vdwJ0zhl8c5mS/QATBSove2gtDNzxz1eCF1+vx928
+         pDZ3I1k81Nub6GHpC66bu5Y6LDjAR78If5+YFfcUTRxmQo8dmMJ85uUSJKh7YlnkAt
+         URW+fg++oGOFg==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id A2F9CA006C;
+        by mailhost.synopsys.com (Postfix) with ESMTP id B6D3FA0070;
         Wed,  6 Nov 2019 15:03:10 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 04/11] net: stmmac: xgmac: Only get SPH header len if available
-Date:   Wed,  6 Nov 2019 16:02:58 +0100
-Message-Id: <58ba72cfcc373c2f98a6a89da3da12a4fc9f7b3b.1573052379.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net 05/11] net: stmmac: xgmac: Fix TSA selection
+Date:   Wed,  6 Nov 2019 16:02:59 +0100
+Message-Id: <c1342c865938cc087d5c9400bbe11b71cd6c0062.1573052379.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1573052378.git.Jose.Abreu@synopsys.com>
 References: <cover.1573052378.git.Jose.Abreu@synopsys.com>
@@ -53,10 +53,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split Header length is only available when L34T == 0. Fix this by
-correctly checking if L34T is zero before trying to get Header length.
+When we change between Transmission Scheduling Algorithms, we need to
+clear previous values so that the new chosen algorithm is correctly
+selected.
 
-Fixes: 67afd6d1cfdf ("net: stmmac: Add Split Header support and enable it in XGMAC cores")
+Fixes: ec6ea8e3eee9 ("net: stmmac: Add CBS support in XGMAC2")
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
 ---
@@ -70,23 +71,21 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
-index ae48154f933c..bd5838ce1e8a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
-@@ -288,7 +288,8 @@ static int dwxgmac2_get_rx_hash(struct dma_desc *p, u32 *hash,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index 01075a955c66..070bd7d1ae4c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -224,6 +224,7 @@ static void dwxgmac2_config_cbs(struct mac_device_info *hw,
+ 	writel(low_credit, ioaddr + XGMAC_MTL_TCx_LOCREDIT(queue));
  
- static int dwxgmac2_get_rx_header_len(struct dma_desc *p, unsigned int *len)
- {
--	*len = le32_to_cpu(p->des2) & XGMAC_RDES2_HL;
-+	if (le32_to_cpu(p->des3) & XGMAC_RDES3_L34T)
-+		*len = le32_to_cpu(p->des2) & XGMAC_RDES2_HL;
- 	return 0;
+ 	value = readl(ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(queue));
++	value &= ~XGMAC_TSA;
+ 	value |= XGMAC_CC | XGMAC_CBS;
+ 	writel(value, ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(queue));
  }
- 
 -- 
 2.7.4
 
