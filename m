@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E317AF0B06
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0E1F0B0D
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:30:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730486AbfKFA34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 19:29:56 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:43916 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727252AbfKFA34 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 19:29:56 -0500
-Received: by mail-pg1-f195.google.com with SMTP id l24so15842430pgh.10
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 16:29:54 -0800 (PST)
+        id S1730642AbfKFAaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 19:30:12 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41479 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387405AbfKFAaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 19:30:11 -0500
+Received: by mail-pf1-f196.google.com with SMTP id p26so17411033pfq.8
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 16:30:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mQn/hdpJtUBU4JXLBcANmsUsqxv2qw1rKwGzmCMjZAo=;
-        b=jVQXC8BeCX0FWiJOeHNFnoeR6xuVmIEDLWUFVGMVeNOeMPLue9DiXC0Y5jsqZffeEq
-         K+uA83vP0MSdkAlNO3OEvMar2FnfGklHxXcwEjSfGc1TkskmgkKWO0AcZ99Hm2bidAVJ
-         Z5YgmVJ1CoPXXGmspjNqyaK63qbOVauqjo39Y=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wC1fV3XmJiisvf6Wmub25EKlo5Tq9rK55tShjUn1JT0=;
+        b=jfzwzkArakv+2H4BiI7PnShrmXYvKyjGhz5dkAGMEfFJ0oHIdHV+dH9FeVwkQZ/N3e
+         IjSijEYi3wNSpL6nPpXlTgw3sUkN5qGSgM14CN6r6afhxVqPjhZE+ztJb7XGJSXpzzHE
+         YLxvo2fiKlwZHtPwoxvq6eiNnYKj2pOSN6OrU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mQn/hdpJtUBU4JXLBcANmsUsqxv2qw1rKwGzmCMjZAo=;
-        b=AoyAswQ89Lfysfh97dbxfPJFMroj3t4wKJiXTPvIJPv4WOMKYcc5rSrVb08OljdVTk
-         8PhVFAHnDbdXenuZqiO72FK1oqupRslviB0ISu6WJaHiyLzsFVO7eRLI0TIywHZ7Zq8j
-         MgpSG+JVIi03jLNJKLbdc+dpm5yk3UBtZcJwBXWgDdtB1wR/6+f/2GkpjmFEn0NXzLFa
-         kW3hTw9MgaOYV8G0/dlLPo0BmBOO5hOn4r6d4TDx9jjH0SwdJovkBVPOGS7Yo0PpGu3v
-         g3gvD3An5p2Ksptt6FUmdzxP+6FeU5mhKgMKgBVatdPhd0Fye9k11N6gnxiTzSdaq880
-         vCiw==
-X-Gm-Message-State: APjAAAX569vLwjtl4+GfPsmaPVIQSA1Nm5wIz0PnWvuwM5pbENcfAfOZ
-        nsgzLfhCQJs/8TZBLBlOWEW5Pg==
-X-Google-Smtp-Source: APXvYqz2rCG/lEPlEh0vSeU192FAuw+9LsfJpkmg1K9UcojLZZPcV3opoR4zPGAyq7kqAjnbGyRGMQ==
-X-Received: by 2002:a65:4c8b:: with SMTP id m11mr40815673pgt.25.1573000193870;
-        Tue, 05 Nov 2019 16:29:53 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wC1fV3XmJiisvf6Wmub25EKlo5Tq9rK55tShjUn1JT0=;
+        b=aEviwyBp74SDbLj1KFHDxIjbg0jbGuGOn9c/0EyJ2zV3E1SshFbBNdnzrAbx/47VbI
+         5O3o/Fs9j2Aq4xu8Zh5ObMJOZsoYgDpxgYirPsoTK2ImT+d32OnPJZey9Bq0uRIyCyIZ
+         tpALbtz92LuCIBmYKfIh6RWLgrS+cROL4kIUsGuSCvclvhLK/YXud5OlVfLg5NlA9RL4
+         DsYWrUZArJl/G9OkQWqviIR4RNj2saHmLBrpyyAnOxPxzE2rCxn4W4EQL8D8vRwGLdbm
+         yDhAz3pCTdk+D7oTZd3S4ADGeH7nLVVpHVXq0mYq/HYoa01wCmhrflooxPOBVw9BahAx
+         IX5A==
+X-Gm-Message-State: APjAAAUMCsydJrhMFIbTXxR1n9DHf02GAp966s+D2MyjY+h8EsSQa35d
+        7OexqGkFaK3huzXeb6QtBGeEQA==
+X-Google-Smtp-Source: APXvYqx47hh5YbDuUa3YWMzpsYd8LTO0GxdEdRVR/2Z/sRZoF/LYzFRNgsN5YHICZtVdUUY1kfyW0w==
+X-Received: by 2002:a17:90a:989:: with SMTP id 9mr13112pjo.35.1573000210856;
+        Tue, 05 Nov 2019 16:30:10 -0800 (PST)
 Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
-        by smtp.gmail.com with ESMTPSA id k9sm21032835pfk.72.2019.11.05.16.29.53
+        by smtp.gmail.com with ESMTPSA id k9sm21032835pfk.72.2019.11.05.16.30.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2019 16:29:53 -0800 (PST)
+        Tue, 05 Nov 2019 16:30:10 -0800 (PST)
 From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 To:     Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>
@@ -52,10 +52,12 @@ Cc:     linux-bluetooth@vger.kernel.org,
         Ondrej Jirman <megous@megous.com>,
         Mark Rutland <mark.rutland@arm.com>,
         Chen-Yu Tsai <wens@csie.org>
-Subject: [PATCH 0/4] Bluetooth: hci_bcm: Additional changes for BCM4354 support
-Date:   Tue,  5 Nov 2019 16:29:19 -0800
-Message-Id: <20191106002923.109344-1-abhishekpandit@chromium.org>
+Subject: [PATCH 4/4] dt-bindings: net: bluetooth: update broadcom-bluetooth
+Date:   Tue,  5 Nov 2019 16:29:23 -0800
+Message-Id: <20191106002923.109344-5-abhishekpandit@chromium.org>
 X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+In-Reply-To: <20191106002923.109344-1-abhishekpandit@chromium.org>
+References: <20191106002923.109344-1-abhishekpandit@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,37 +65,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add documentation for pcm-parameters.
 
-While adding support for the BCM4354, I discovered a few more things
-that weren't working as they should have.
+Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
 
-First, we disallow serdev from setting the baudrate on BCM4354. Serdev
-sets the oper_speed first before calling hu->setup() in
-hci_uart_setup(). On the BCM4354, this results in bcm_setup() failing
-when the hci reset times out.
+---
 
-Next, we add support for setting the PCM parameters, which consists of
-a pair of vendor specific opcodes to set the pcm parameters. The
-documentation for these params are available in the brcm_patchram_plus
-package (i.e. https://github.com/balena-os/brcm_patchram_plus). This is
-necessary for PCM to work properly.
+ Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-All changes were tested with rk3288-veyron-minnie.dts.
-
-
-
-Abhishek Pandit-Subedi (4):
-  Bluetooth: hci_bcm: Disallow set_baudrate for BCM4354
-  Bluetooth: btbcm: Support pcm configuration
-  Bluetooth: hci_bcm: Support pcm params in dts
-  dt-bindings: net: bluetooth: update broadcom-bluetooth
-
- .../bindings/net/broadcom-bluetooth.txt       |  4 ++
- drivers/bluetooth/btbcm.c                     | 27 ++++++++++
- drivers/bluetooth/btbcm.h                     | 12 +++++
- drivers/bluetooth/hci_bcm.c                   | 52 ++++++++++++++++++-
- 4 files changed, 94 insertions(+), 1 deletion(-)
-
+diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+index c749dc297624..ae60277b5569 100644
+--- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
++++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+@@ -29,6 +29,9 @@ Optional properties:
+    - "lpo": external low power 32.768 kHz clock
+  - vbat-supply: phandle to regulator supply for VBAT
+  - vddio-supply: phandle to regulator supply for VDDIO
++ - pcm-parameters: When set, will configure PCM parameters on the device. The
++   contents should be a 10-byte array corresponding to the pcm params (see
++   btbcm.h for more information).
+ 
+ 
+ Example:
+@@ -40,5 +43,6 @@ Example:
+        bluetooth {
+                compatible = "brcm,bcm43438-bt";
+                max-speed = <921600>;
++               pcm-parameters = [1 2 0 1 1 0 0 0 0 0];
+        };
+ };
 -- 
 2.24.0.rc1.363.gb1bccd3e3d-goog
 
