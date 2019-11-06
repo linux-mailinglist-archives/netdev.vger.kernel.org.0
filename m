@@ -2,64 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56F22F1578
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 12:54:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B11E3F15C9
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 13:06:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729437AbfKFLyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 06:54:10 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6159 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725856AbfKFLyK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 06:54:10 -0500
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 7029CFB742F7A1F8A370;
-        Wed,  6 Nov 2019 19:54:00 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 6 Nov 2019 19:53:54 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Vincent Cheng <vincent.cheng.xh@renesas.com>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-Subject: [PATCH -next] ptp: Fix missing unlock on error in idtcm_probe()
-Date:   Wed, 6 Nov 2019 11:53:08 +0000
-Message-ID: <20191106115308.112645-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        id S1731302AbfKFMGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 07:06:33 -0500
+Received: from mail-m974.mail.163.com ([123.126.97.4]:40188 "EHLO
+        mail-m974.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727391AbfKFMGd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 07:06:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=Vr1zZkluBVeJrHuU4L
+        oH+uAdM8J2JP009UinrAaYrkk=; b=IH/zE42XaquMymAOrs1ebHEYcAmTE4V0td
+        2QaFDYohsYAVraIkL8Ij8gboyNEepR1Cu4kbQbB/DZRVP1bM4JOGSthfiGh5Rmi2
+        zXrtu+rkZzk0KTgx2HVUHjBazoaJNKAzcFZWgScOV62qvPy6BULZ106ClyoT15I8
+        iN/7Cg1lg=
+Received: from localhost.localdomain (unknown [202.112.113.212])
+        by smtp4 (Coremail) with SMTP id HNxpCgDXHMQft8Jdb7mVBQ--.101S3;
+        Wed, 06 Nov 2019 20:05:54 +0800 (CST)
+From:   Pan Bian <bianpan2016@163.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Steve Winslow <swinslow@gmail.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Young Xiao <92siuyang@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pan Bian <bianpan2016@163.com>
+Subject: [PATCH] netlink: fix double drop dev reference
+Date:   Wed,  6 Nov 2019 20:05:43 +0800
+Message-Id: <1573041943-9316-1-git-send-email-bianpan2016@163.com>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: HNxpCgDXHMQft8Jdb7mVBQ--.101S3
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKw17Zr1xuF4kXr1ktFy3XFb_yoW3KFgEy3
+        4rtr4UWrs8X393JanFkw4UAF9Ivw12qr4xAF4SkrWxZay5Xan8uw4kZ39xAry7uw43AFW7
+        X3WkJrW8t347XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU1bTmJUUUUU==
+X-Originating-IP: [202.112.113.212]
+X-CM-SenderInfo: held01tdqsiiqw6rljoofrz/1tbiVAJlclUMK-Z-5gAAsc
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the missing unlock before return from function idtcm_probe()
-in the error handling case.
+The function nfc_put_device(dev) is called twice to drop the reference
+to dev when there is no associated local llcp. Remove one of them to fix
+the bug.
 
-Fixes: 3a6ba7dc7799 ("ptp: Add a ptp clock driver for IDT ClockMatrix.")
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Pan Bian <bianpan2016@163.com>
 ---
- drivers/ptp/ptp_clockmatrix.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/nfc/netlink.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/ptp/ptp_clockmatrix.c b/drivers/ptp/ptp_clockmatrix.c
-index cf5889b7d825..a5110b7b4ece 100644
---- a/drivers/ptp/ptp_clockmatrix.c
-+++ b/drivers/ptp/ptp_clockmatrix.c
-@@ -1294,8 +1294,10 @@ static int idtcm_probe(struct i2c_client *client,
+diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+index 17e6ca62f1be..afde0d763039 100644
+--- a/net/nfc/netlink.c
++++ b/net/nfc/netlink.c
+@@ -1099,7 +1099,6 @@ static int nfc_genl_llc_set_params(struct sk_buff *skb, struct genl_info *info)
  
- 	err = set_tod_write_overhead(idtcm);
+ 	local = nfc_llcp_find_local(dev);
+ 	if (!local) {
+-		nfc_put_device(dev);
+ 		rc = -ENODEV;
+ 		goto exit;
+ 	}
+@@ -1159,7 +1158,6 @@ static int nfc_genl_llc_sdreq(struct sk_buff *skb, struct genl_info *info)
  
--	if (err)
-+	if (err) {
-+		mutex_unlock(&idtcm->reg_lock);
- 		return err;
-+	}
- 
- 	err = idtcm_load_firmware(idtcm, &client->dev);
-
-
+ 	local = nfc_llcp_find_local(dev);
+ 	if (!local) {
+-		nfc_put_device(dev);
+ 		rc = -ENODEV;
+ 		goto exit;
+ 	}
+-- 
+2.7.4
 
