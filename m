@@ -2,136 +2,246 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8A7EF1733
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 14:34:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBDD1F174A
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 14:37:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727034AbfKFNeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 08:34:03 -0500
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:39936 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726673AbfKFNeC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 08:34:02 -0500
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1731780AbfKFNhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 08:37:32 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:40125 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731744AbfKFNhc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 08:37:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573047450;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/s0k4qOLB5UOKCj30GSBInNIxwTgiYyppdT2vH2+WjY=;
+        b=gmpRpEJEe9WA8/VON8MCK3hKz35Iv88V5XwL2X4ogTWY9PKGGgE5dRWpjOwtcQejTaiHmG
+        jIe1FgCdRVEhM5fg/rwgocs69V3jBdE1SHZqB261Gpy7zmx2CKVIiVg4ayJcfs1jjWSRXD
+        dCHGEPs8KN7gu/6r2Joqe4338xu30uM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-343-L9tT79FEPFObmEa3AfYP2Q-1; Wed, 06 Nov 2019 08:37:27 -0500
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 55949C0E5B;
-        Wed,  6 Nov 2019 13:34:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1573047242; bh=M5SrBaBf6d/nnv/X1qihvp0yS1o/70WIt2VtLCY6HSA=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=aMM+khj16tqEQg2y0VjktgAwxkU1RXb34nOvBrTGppQybtdAC6S9NSah9FUTFVXzO
-         HWR/LSyb801iBq1IJPLnAxy6yKL8YZG70NnC8see4TIKM9rDGLg1ZsrEhvrc0gh14+
-         ygwwtllZp7lCsH6E3NRHaVEIvKgFwIQiNlrQwgsaatUB/d0IlvgNwCYA11wCU6iRrS
-         GavzcywWpwSzzYWq5v6ityb+sT9dJ1YTUTH+hgUf0NZVAVTzaJIzdCjgfpsVs79bdy
-         FOUw60NkldgzGbJj4S+qdHxtBH3kS1QVLWg0+PciFt02hYs0pFr6XhxMSn0C9/exIY
-         yUzQcsXQLgHIA==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id 0156BA0085;
-        Wed,  6 Nov 2019 13:33:56 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Wed, 6 Nov 2019 05:33:11 -0800
-Received: from NAM04-CO1-obe.outbound.protection.outlook.com (10.13.134.195)
- by mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Wed, 6 Nov 2019 05:33:10 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UR2Z6qKHKcD8gOdJQLXMBPGESWvRvu/7zcZkGAonA33Y7wJylJmDdmbbEbU0bYCMKm74OqLRwDaAYjuV7hw/V8nI6Qh92+x8vpKoiycLYT5rvROJ3+KAQIvPi11jGkN2w0lVNNjxyD953c7UXo7hBB8vxIX4VHSO8vML7vlhYyl4+b7bout8DCtFLzWKzISEusCpaBKcKzzKr7PWSB3Jtq6VWNpjFq1w95zjHXkxwL49xWZ+jsA+UISi5aH15gGoJvv64JmI7uEEcHAiNWpSexE/X0ElpPRmjo9AkdT7PUV7adRzQ1JHNL1qJePAKre5rjoxHeCm1DoUFX4abChMQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M5SrBaBf6d/nnv/X1qihvp0yS1o/70WIt2VtLCY6HSA=;
- b=I71t4d5WAU1jXImxQtIa9YgiPTQ2oARi1lGJDiCYO7h6rEgXXkgwB7E1SHtloEhQqnrEfAwc5ZruDveD3n7/RpOYgmyuyGS17jptfCYGB15dQ6SoUjEN+qYdFxtv6ATR4RYJ6kN7t+LZ62bgrbUtr7tBSMTNMinmp6X7tFneNGp8gU+kpFeHKwbC+HJoFK+2eVSviMbxmtn5i7c383tS8oNEBGtUHqlHdDenvsxWb+5TJRhNW7+hOqiqtHM38W8kXzSbkNEn9r1msPnsN/rJWNxMpdnXw79ibrTyZYJHgAaobCXrPkkSZLit2bvKxJ8zOizPquD24UhalqkkkhrzNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M5SrBaBf6d/nnv/X1qihvp0yS1o/70WIt2VtLCY6HSA=;
- b=M0QdMkqUBdq4LX7JglmUhnDy0ND/822dMlDOzplTFBUUlpT52c+4PouG0dic6KFyruXLgiYWrHoH9eHAhTUjQ/gvHmsSRaHye5yPyj4l89bOy8LCwwp2k2/9AIUpnfQhyN2JzZ/HUoKJV9cttXEuMJ8IJuXS/zkXdAh++2slRyM=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (20.179.67.145) by
- BN8PR12MB3426.namprd12.prod.outlook.com (20.178.212.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Wed, 6 Nov 2019 13:33:05 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::f060:9d3a:d971:e9a8%5]) with mapi id 15.20.2430.020; Wed, 6 Nov 2019
- 13:33:05 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Josh Hunt <johunt@akamai.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joao Pinto <Joao.Pinto@synopsys.com>
-Subject: RE: USO / UFO status ?
-Thread-Topic: USO / UFO status ?
-Thread-Index: AdWPLBeus8XJlFS/Sue5aUntLc/tSwALvOGAAANGMQAAGxmwMAEF6g7QACWcOHA=
-Date:   Wed, 6 Nov 2019 13:33:05 +0000
-Message-ID: <BN8PR12MB326692330C58F90DDB9916A0D3790@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <BN8PR12MB326699DDA44E0EABB5C422E4D3600@BN8PR12MB3266.namprd12.prod.outlook.com>
- <CA+FuTSdVsTgcpB9=CEb=O369qUR58d-zEz5vmv+9nR+-DJFM6Q@mail.gmail.com>
- <99c9e80e-7e97-8490-fb43-b159fe6e8d7b@akamai.com>
- <BN8PR12MB3266E16EB6BAD0A3A1938426D3630@BN8PR12MB3266.namprd12.prod.outlook.com>
- <BN8PR12MB326627EECB503FD44760CF05D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
-In-Reply-To: <BN8PR12MB326627EECB503FD44760CF05D37E0@BN8PR12MB3266.namprd12.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [83.174.63.141]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cd814e40-c091-4f91-f501-08d762bddad5
-x-ms-traffictypediagnostic: BN8PR12MB3426:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN8PR12MB34264B968393E89E2B42E134D3790@BN8PR12MB3426.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:386;
-x-forefront-prvs: 02135EB356
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(346002)(376002)(366004)(396003)(189003)(199004)(11346002)(446003)(486006)(5660300002)(476003)(25786009)(52536014)(8936002)(8676002)(256004)(81166006)(81156014)(2906002)(71200400001)(71190400001)(6116002)(3846002)(33656002)(4326008)(110136005)(54906003)(229853002)(102836004)(316002)(14454004)(6436002)(66066001)(7696005)(76176011)(9686003)(99286004)(55016002)(6246003)(6506007)(107886003)(478600001)(66946007)(76116006)(186003)(66446008)(7736002)(305945005)(64756008)(74316002)(26005)(86362001)(66476007)(66556008);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3426;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZkIYbx+XQ8hwtYywhUQ18pi1dEhVlRcfljPmi1zehZ72lZhf61uYtOz/rcWfevf47DPyCX7XNVWHzaMHGFUJ30iSZC/XMTI9RT4JGQ7pToJEP7U2dRZakiJtBMNTxu912t23F951mgU/h0NOOVGC1EeDWfzVJqZjOqMRM547hgSZcFxnR5dh4oChBoUKpNbBIyZ8wUp8Jc6riPOziM4dDrlrO70UAA7Mc6aXhDrcbTxO/bO+m97/8Gnb3oUe1hMu5LaFdeizuKBjzc/atM0/8fjQrRa4xodeR/K9+OIG3p+ELunhWKKyEbQP7hHt6F2TA/7qVqYCOOM+WKKu2hmoeIhXpiv64FiBwBla6E0bUFltA6OSHQRxiYA/UgcJag3lNLies2k616B6oo5Gcv51SNPocku07jRdqFlihxM3fdbjktB3f3Q00KwtZoOi56SE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 24B2C8017E0;
+        Wed,  6 Nov 2019 13:37:23 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-193.pek2.redhat.com [10.72.12.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2235A27067;
+        Wed,  6 Nov 2019 13:35:45 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com, Jason Wang <jasowang@redhat.com>
+Subject: [PATCH V10 0/6] mdev based hardware virtio offloading support
+Date:   Wed,  6 Nov 2019 21:35:25 +0800
+Message-Id: <20191106133531.693-1-jasowang@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd814e40-c091-4f91-f501-08d762bddad5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 13:33:05.4781
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8jdrBsLDkMBL5FV07MtYK4ImPjyExVWthXcLl46HXHgW7sbsopF1Z0wDPynncQRCbeDCuy/xjLQ3UUioEtdw3Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3426
-X-OriginatorOrg: synopsys.com
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: L9tT79FEPFObmEa3AfYP2Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSm9zZSBBYnJldSA8am9hYnJldUBzeW5vcHN5cy5jb20+DQpEYXRlOiBOb3YvMDUvMjAx
-OSwgMTU6MjQ6NTQgKFVUQyswMDowMCkNCg0KPiBGcm9tOiBKb3NlIEFicmV1IDxqb2FicmV1QHN5
-bm9wc3lzLmNvbT4NCj4gRGF0ZTogT2N0LzMxLzIwMTksIDEwOjIwOjM3IChVVEMrMDA6MDApDQo+
-IA0KPiA+IFdlbGwsIEknbSBtb3JlIGludGVyZXN0ZWQgaW4gaW1wbGVtZW50aW5nIGl0IGluIHN0
-bW1hYy4gSSBoYXZlIHNvbWUgSFcgDQo+ID4gdGhhdCBzdXBwb3J0cyBVU08gYW5kIFVGTy4NCj4g
-DQo+IEhpIEpvc2gsDQo+IA0KPiBVc2luZyB5b3VyIHNjcmlwdCB0aGVzZSBhcmUgdGhlIHJlc3Vs
-dHMgSSBnZXQ6DQoNCkFuZCBub3csIHdpdGggZnVsbCBiZW5jaG1hcms6DQoNClVEUCBHU08gT246
-DQokcGt0X3NpemUJa0IvcyhzYXIpCU1CL3MJQ2FsbHMvcyBNc2cvcyBDUFUJTUIyQ1BVDQo9PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQox
-NDcyCQkxMTQ3ODYuMzUJMTA4CTc3NjgwCTc3NjgwCTQyLjYzCTIuNTMNCjI5NDQJCTEwODA1NS4x
-MQkxMDMJMzcwNzUJMzcwNzUJMjMuMwk0LjQyDQo1ODg4CQkxMTE4MjAuMjUJMTA4CTE5MzA5CTE5
-MzA5CTEwLjY4CTEwLjExDQoxMTc3NgkJMTEzODMyLjA4CTExMAk5ODY0CTk4NjQJNi4xCTE4LjAz
-DQoyMzU1MgkJMTE0MzMwLjczCTExMQk0OTYyCTQ5NjIJMy4wNQkzNi4zOQ0KNDcxMDQJCTExNDc1
-My42MAkxMTEJMjQ5MwkyNDkzCTIuMzEJNDguMDUNCjYxODI0CQkxMTQ1NTguMzEJMTExCTE4OTYJ
-MTg5NgkxLjY4CTY2LjA3DQoNClVEUCBHU08gT2ZmOg0KJHBrdF9zaXplCWtCL3Moc2FyKQlNQi9z
-CUNhbGxzL3MgTXNnL3MgQ1BVCU1CMkNQVQ0KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KMTQ3MgkJMTE0NDE1LjAxCTEwOAk3NzM4Ngk3
-NzM4Ngk0MC4yMQkyLjY4DQoyOTQ0CQkxMTUyMzAuMzcJMTA4CTM4OTY0CTM4OTY0CTIzLjg0CTQu
-NTMNCjU4ODgJCTEwOTc2NS4zMQkxMDMJMTg1NzkJMTg1NzkJMTYuMTQJNi4zOA0KMTE3NzYJCTEx
-MDg3OC4wOQkxMDQJOTM2OQk5MzY5CTguNjQJMTIuMDMNCjIzNTUyCQkxMDkxOTQuNzcJMTAzCTQ2
-MTMJNDYxMwk0CTI1Ljc1DQo0NzEwNAkJMTA4NTk3LjEzCTEwMgkyMjk0CTIyOTQJMi4xMQk0OC4z
-NA0KNjE4MjQJCTEwOTE0MS41NAkxMDMJMTc1NgkxNzU2CTEuNTMJNjcuMzINCg0KLS0tDQpUaGFu
-a3MsDQpKb3NlIE1pZ3VlbCBBYnJldQ0K
+Hi all:
+
+There are hardwares that can do virtio datapath offloading while
+having its own control path. This path tries to implement a mdev based
+unified API to support using kernel virtio driver to drive those
+devices. This is done by introducing a new mdev transport for virtio
+(virtio_mdev) and register itself as a new kind of mdev driver. Then
+it provides a unified way for kernel virtio driver to talk with mdev
+device implementation.
+
+Though the series only contains kernel driver support, the goal is to
+make the transport generic enough to support userspace drivers. This
+means vhost-mdev[1] could be built on top as well by resuing the
+transport.
+
+A sample driver is also implemented which simulate a virito-net
+loopback ethernet device on top of vringh + workqueue. This could be
+used as a reference implementation for real hardware driver.
+
+Also a real IFC VF driver was also posted here[2] which is a good
+reference for vendors who is interested in their own virtio datapath
+offloading product.
+
+Consider mdev framework only support VFIO device and driver right now,
+this series also extend it to support other types. This is done
+through introducing class id to the device and pairing it with
+id_talbe claimed by the driver. On top, this seris also decouple
+device specific ops out of the common ones for implementing class
+specific operations over mdev bus.
+
+Pktgen test was done with virito-net + mvnet loop back device.
+
+Please review.
+
+[1] https://lkml.org/lkml/2019/11/5/424
+[2] https://lkml.org/lkml/2019/11/5/227
+
+Changes from V9:
+- Tweak the help text for virito-mdev kconfig
+
+Changes from V8:
+- try silent checkpatch, some are still there becuase they were inherited
+  from virtio_config_ops which needs to be resolved in an independent serie=
+s
+- tweak on the comment and doc
+- remove VIRTIO_MDEV_F_VERSION_1 completely
+- rename CONFIG_VIRTIO_MDEV_DEVICE to CONFIG_VIRTIO_MDEV
+
+Changes from V7:
+- drop {set|get}_mdev_features for virtio
+- typo and comment style fixes
+
+Changes from V6:
+- rename ops files and compile guard
+
+Changes from V5:
+- use dev_warn() instead of WARN(1) when class id is not set
+- validate id_table before trying to do matching between device and
+  driver
+- add wildcard for modpost script
+- use unique name for id_table
+- move get_mdev_features() to be the first member of virtio_device_ops
+  and more comments for it
+- typo fixes for the comments above virtio_mdev_ops
+
+Changes from V4:
+- keep mdev_set_class() for the device that doesn't use device ops
+- use union for device ops pointer in mdev_device
+- introduce class specific helper for getting is device ops
+- use WARN_ON instead of BUG_ON in mdev_set_virtio_ops
+- explain details of get_mdev_features() and get_vendor_id()
+- distinguish the optional virito device ops from mandatory ones and
+  make get_generation() optional
+- rename vfio_mdev.h to vfio_mdev_ops.h, rename virito_mdev.h to
+  virtio_mdev_ops.h
+- don't abuse version fileds in virtio_mdev structure, use features
+  instead
+- fix warning during device remove
+- style & docs tweaks and typo fixes
+
+Changes from V3:
+- document that class id (device ops) must be specified in create()
+- add WARN() when trying to set class_id when it has already set
+- add WARN() when class_id is not specified in create() and correctly
+  return an error in this case
+- correct the prototype of mdev_set_class() in the doc
+- add documention of mdev_set_class()
+- remove the unnecessary "class_id_fail" label when class id is not
+  specified in create()
+- convert id_table in vfio_mdev to const
+- move mdev_set_class and its friends after mdev_uuid()
+- suqash the patch of bus uevent into patch of introducing class id
+- tweak the words in the docs per Cornelia suggestion
+- tie class_id and device ops through class specific initialization
+  routine like mdev_set_vfio_ops()
+- typos fixes in the docs of virtio-mdev callbacks
+- document the usage of virtqueues in struct virtio_mdev_device
+- remove the useless vqs array in struct virtio_mdev_device
+- rename MDEV_ID_XXX to MDEV_CLASS_ID_XXX
+
+Changes from V2:
+- fail when class_id is not specified
+- drop the vringh patch
+- match the doc to the code
+- tweak the commit log
+- move device_ops from parent to mdev device
+- remove the unused MDEV_ID_VHOST
+
+Changes from V1:
+- move virtio_mdev.c to drivers/virtio
+- store class_id in mdev_device instead of mdev_parent
+- store device_ops in mdev_device instead of mdev_parent
+- reorder the patch, vringh fix comes first
+- really silent compiling warnings
+- really switch to use u16 for class_id
+- uevent and modpost support for mdev class_id
+- vraious tweaks per comments from Parav
+
+Changes from RFC-V2:
+- silent compile warnings on some specific configuration
+- use u16 instead u8 for class id
+- reseve MDEV_ID_VHOST for future vhost-mdev work
+- introduce "virtio" type for mvnet and make "vhost" type for future
+  work
+- add entries in MAINTAINER
+- tweak and typos fixes in commit log
+
+Changes from RFC-V1:
+- rename device id to class id
+- add docs for class id and device specific ops (device_ops)
+- split device_ops into seperate headers
+- drop the mdev_set_dma_ops()
+- use device_ops to implement the transport API, then it's not a part
+  of UAPI any more
+- use GFP_ATOMIC in mvnet sample device and other tweaks
+- set_vring_base/get_vring_base support for mvnet device
+
+Jason Wang (6):
+  mdev: class id support
+  modpost: add support for mdev class id
+  mdev: introduce device specific ops
+  mdev: introduce virtio device and its device ops
+  virtio: introduce a mdev based transport
+  docs: sample driver to demonstrate how to implement virtio-mdev
+    framework
+
+ .../driver-api/vfio-mediated-device.rst       |  38 +-
+ MAINTAINERS                                   |   3 +
+ drivers/gpu/drm/i915/gvt/kvmgt.c              |  17 +-
+ drivers/s390/cio/vfio_ccw_ops.c               |  17 +-
+ drivers/s390/crypto/vfio_ap_ops.c             |  13 +-
+ drivers/vfio/mdev/mdev_core.c                 |  60 ++
+ drivers/vfio/mdev/mdev_driver.c               |  25 +
+ drivers/vfio/mdev/mdev_private.h              |   8 +
+ drivers/vfio/mdev/vfio_mdev.c                 |  45 +-
+ drivers/virtio/Kconfig                        |  13 +
+ drivers/virtio/Makefile                       |   1 +
+ drivers/virtio/virtio_mdev.c                  | 406 +++++++++++
+ include/linux/mdev.h                          |  57 +-
+ include/linux/mdev_vfio_ops.h                 |  52 ++
+ include/linux/mdev_virtio_ops.h               | 147 ++++
+ include/linux/mod_devicetable.h               |   8 +
+ samples/Kconfig                               |  10 +
+ samples/vfio-mdev/Makefile                    |   1 +
+ samples/vfio-mdev/mbochs.c                    |  19 +-
+ samples/vfio-mdev/mdpy.c                      |  19 +-
+ samples/vfio-mdev/mtty.c                      |  17 +-
+ samples/vfio-mdev/mvnet.c                     | 686 ++++++++++++++++++
+ scripts/mod/devicetable-offsets.c             |   3 +
+ scripts/mod/file2alias.c                      |  11 +
+ 24 files changed, 1585 insertions(+), 91 deletions(-)
+ create mode 100644 drivers/virtio/virtio_mdev.c
+ create mode 100644 include/linux/mdev_vfio_ops.h
+ create mode 100644 include/linux/mdev_virtio_ops.h
+ create mode 100644 samples/vfio-mdev/mvnet.c
+
+--=20
+2.19.1
+
