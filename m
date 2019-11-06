@@ -2,108 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A1BF17DB
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:02:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07457F17EB
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 15:07:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731884AbfKFOCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 09:02:47 -0500
-Received: from mail-eopbgr1410110.outbound.protection.outlook.com ([40.107.141.110]:21152
-        "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726926AbfKFOCr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 09:02:47 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PgjqYiRJ3D/Hr5YHr/V2u846JHqPrCEwqguE5EZBwDln0aNM8HR41ch32RF953kF9sreVBa3dv2CpDVKYyCAuSZ0j2QgXd+Q957r6/H3Lq1oet14CCgOaYPOn58Gao3OZVI92pAM1jh7z4OIQ+10UCIfbFcfDzVhUYxlPRYnBHUxWUTre/oS7BZSt89FdsbnfqoGSgdR+jnceSPshU1CT5XeRhQ09jCBYRtNFdqK9uvwHjKOpmS/CbbonKn0Tyz6Mgz/NR1avLiaE3Pb46wVuT4c7AlYG1m5PBZY8b99E8sSoivqcetIwYhcL5ksMFI4mYwcrs+Lb3OaEzH4t/gyAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lWeW3xOfLnJ9yvqVy4z9Pz2dveNCi9QWpys9+zyOh9g=;
- b=NsTDb01bLtsgP+yP3g4/wdfrsJQ5E0ntI44uZk+mpZvzLoufMmul3DKdqLFXeExWVTUECJylauEoarRB0FBSBJuzpdU1M4VfTOWw6VDCge3BaUH5QYb6WJljzBDSkzSDC3X5KyhFWXkLhv0Qhy5T/KAFVWhwSrC90oV6YtXCokNhDDXmAy73UbiRy83CQiygs8YTHUMbPSmNkapMVJz/Le9onYua+nCdtxbCStHIh+pFmJAwTmHI6/9ak9ojoLVhOiNqXEqwJsAGJIRMxJw8pYGw+XFtmc2VYAkLCke3R/HkiC1cwaY4fIiS8rkjmAGxKOj1qF+fKQUauZDRvDLkgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lWeW3xOfLnJ9yvqVy4z9Pz2dveNCi9QWpys9+zyOh9g=;
- b=rmkp8tmL5etJfpYGt5mXEOfSLqcsPFygHdkb5aAuZnhkoK4p2tiQegxN79KP7ZhmQR0sBPmuvp8DVPw/76UM7wgQj2GmugHw7MMlZfNSzrdGZ485UZNLc+pSEh4l8jC301/hErzrqLczOIAXGSNropCnxQlLLag+DKN2nsj8C1M=
-Received: from OSAPR01MB3025.jpnprd01.prod.outlook.com (52.134.248.22) by
- OSAPR01MB2290.jpnprd01.prod.outlook.com (52.134.235.141) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.20; Wed, 6 Nov 2019 14:02:43 +0000
-Received: from OSAPR01MB3025.jpnprd01.prod.outlook.com
- ([fe80::fcbd:8130:e86:e239]) by OSAPR01MB3025.jpnprd01.prod.outlook.com
- ([fe80::fcbd:8130:e86:e239%6]) with mapi id 15.20.2408.025; Wed, 6 Nov 2019
- 14:02:43 +0000
-From:   Vincent Cheng <vincent.cheng.xh@renesas.com>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH -next] ptp: Fix missing unlock on error in idtcm_probe()
-Thread-Topic: [PATCH -next] ptp: Fix missing unlock on error in idtcm_probe()
-Thread-Index: AQHVlJjiCPlqzOaK1EuJpaAhEMieVad+LHYA
-Date:   Wed, 6 Nov 2019 14:02:43 +0000
-Message-ID: <20191106140228.GA28081@renesas.com>
-References: <20191106115308.112645-1-weiyongjun1@huawei.com>
-In-Reply-To: <20191106115308.112645-1-weiyongjun1@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [173.195.53.163]
-x-clientproxiedby: BYAPR05CA0106.namprd05.prod.outlook.com
- (2603:10b6:a03:e0::47) To OSAPR01MB3025.jpnprd01.prod.outlook.com
- (2603:1096:604:2::22)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vincent.cheng.xh@renesas.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 2ed47e56-aa7b-47bf-f022-08d762c1fe30
-x-ms-traffictypediagnostic: OSAPR01MB2290:
-x-microsoft-antispam-prvs: <OSAPR01MB22907A8E826E97A93056EE41D2790@OSAPR01MB2290.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-forefront-prvs: 02135EB356
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(366004)(346002)(376002)(39850400004)(199004)(189003)(14454004)(1076003)(36756003)(11346002)(66946007)(86362001)(446003)(6246003)(66556008)(6512007)(476003)(256004)(14444005)(4326008)(316002)(66446008)(64756008)(66476007)(5660300002)(6916009)(26005)(229853002)(305945005)(102836004)(76176011)(186003)(386003)(4744005)(6506007)(8936002)(54906003)(2616005)(486006)(71190400001)(99286004)(71200400001)(7736002)(478600001)(6116002)(3846002)(33656002)(81166006)(81156014)(2906002)(66066001)(8676002)(6436002)(25786009)(52116002)(6486002);DIR:OUT;SFP:1102;SCL:1;SRVR:OSAPR01MB2290;H:OSAPR01MB3025.jpnprd01.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: renesas.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OrpOrwCnCDUProZu9L/b9YnSdN5zIz2txbLFCX5Z7xNzeE7c4TLclEFwrAG9lLts9N5v6wsy6Du3wNgqGr8sE+lRf9f9kgLVofjl7TNFXCig7mk7y7B2dQVMOkTUiollpj9hKJil+sFOKgH/hEnx2/UygOfsxrcEXb7e9k5/GbMcsWaAHzldVds0YXTkFSBWaJMRZHKBq/WtzfBW1GdSX6qK5TDpSAM+jSNJ1B3g+LDOGIb7C87VMta2lcMfBcfZANbwD1nGGQotdo82qX8sRPkgDmLwKh1a9g9kRHiWvYDiYy/kZfQb9TH0akJyyR/ECFAZH5BYY2b66YPEaUKuJ/XBUsT0qouRI7bZY2lhjd0L9t5Bbu8sCqDJCmdc06al9n97BhRhewFTlWpbMpxbzmGIvW5DIgRApgnZWkjj3Ln9rEEdsKGZq1I6SFcm2uYL
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A13F2DF847C3B14E99E91DCE89CE208E@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1731807AbfKFOHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 09:07:06 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:34882 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727237AbfKFOHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 09:07:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573049225;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kQUJhTS5ZQPa+H7gyw31F1k30QCMAlnrwuTj8cTiw28=;
+        b=gLaTYVUn6kD9WkF0dMmEDGdz2CosD2e3eoxCQT5zEMq07ip7LyRlWM20eaBadufyP328N2
+        W+CZZttraCUlln0w3VsMbZ2ohh1e5oIt4TXccsdeMuKQXdPAFxEhMOfdouXMz2Nkya5ZJd
+        wH1/fHMAhFu6KxbOZy2rOzypHwj4R+o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-37-HIuIU22MPBuvr-Q7-vH7Vw-1; Wed, 06 Nov 2019 09:06:59 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 257561005500;
+        Wed,  6 Nov 2019 14:06:57 +0000 (UTC)
+Received: from krava (unknown [10.43.17.48])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 513F25DA76;
+        Wed,  6 Nov 2019 14:06:51 +0000 (UTC)
+Date:   Wed, 6 Nov 2019 15:06:50 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH v5 01/10] perf tools: add parse events handle error
+Message-ID: <20191106140650.GE30214@krava>
+References: <20191025180827.191916-1-irogers@google.com>
+ <20191030223448.12930-1-irogers@google.com>
+ <20191030223448.12930-2-irogers@google.com>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ed47e56-aa7b-47bf-f022-08d762c1fe30
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 14:02:43.1203
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Isgd1Lw2RpTChhGx4N/lhyQ25DHTJvq1pOZN5PUTQgtLodBGGgD/ugMbBJZYNqCcfpd7EpIQ68fnWj8ZYvaUXJCIr3Ct053R2IiZIK1QaA8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2290
+In-Reply-To: <20191030223448.12930-2-irogers@google.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: HIuIU22MPBuvr-Q7-vH7Vw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCBOb3YgMDYsIDIwMTkgYXQgMDY6NTM6MDhBTSBFU1QsIFdlaSBZb25nanVuIHdyb3Rl
-Og0KPkFkZCB0aGUgbWlzc2luZyB1bmxvY2sgYmVmb3JlIHJldHVybiBmcm9tIGZ1bmN0aW9uIGlk
-dGNtX3Byb2JlKCkNCj5pbiB0aGUgZXJyb3IgaGFuZGxpbmcgY2FzZS4NCj4NCj5GaXhlczogM2E2
-YmE3ZGM3Nzk5ICgicHRwOiBBZGQgYSBwdHAgY2xvY2sgZHJpdmVyIGZvciBJRFQgQ2xvY2tNYXRy
-aXguIikNCj5TaWduZWQtb2ZmLWJ5OiBXZWkgWW9uZ2p1biA8d2VpeW9uZ2p1bjFAaHVhd2VpLmNv
-bT4NCj4tLS0NCj4gZHJpdmVycy9wdHAvcHRwX2Nsb2NrbWF0cml4LmMgfCA0ICsrKy0NCj4gMSBm
-aWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPg0KPmRpZmYgLS1n
-aXQgYS9kcml2ZXJzL3B0cC9wdHBfY2xvY2ttYXRyaXguYyBiL2RyaXZlcnMvcHRwL3B0cF9jbG9j
-a21hdHJpeC5jDQo+aW5kZXggY2Y1ODg5YjdkODI1Li5hNTExMGI3YjRlY2UgMTAwNjQ0DQo+LS0t
-IGEvZHJpdmVycy9wdHAvcHRwX2Nsb2NrbWF0cml4LmMNCj4rKysgYi9kcml2ZXJzL3B0cC9wdHBf
-Y2xvY2ttYXRyaXguYw0KPkBAIC0xMjk0LDggKzEyOTQsMTAgQEAgc3RhdGljIGludCBpZHRjbV9w
-cm9iZShzdHJ1Y3QgaTJjX2NsaWVudCAqY2xpZW50LA0KPiANCj4gCWVyciA9IHNldF90b2Rfd3Jp
-dGVfb3ZlcmhlYWQoaWR0Y20pOw0KPiANCj4tCWlmIChlcnIpDQo+KwlpZiAoZXJyKSB7DQo+KwkJ
-bXV0ZXhfdW5sb2NrKCZpZHRjbS0+cmVnX2xvY2spOw0KPiAJCXJldHVybiBlcnI7DQo+Kwl9DQo+
-IA0KPiAJZXJyID0gaWR0Y21fbG9hZF9maXJtd2FyZShpZHRjbSwgJmNsaWVudC0+ZGV2KTsNCj4N
-Cg0KWWVzLCBnb29kIGNhdGNoLiAgVGhhbmsteW91IGZvciB0aGUgZml4Lg0KDQpSZXZpZXdlZC1i
-eTogVmluY2VudCBDaGVuZyAgPHZpbmNlbnQuY2hlbmcueGhAcmVuZXNhcy5jb20+DQo=
+On Wed, Oct 30, 2019 at 03:34:39PM -0700, Ian Rogers wrote:
+> Parse event error handling may overwrite one error string with another
+> creating memory leaks. Introduce a helper routine that warns about
+> multiple error messages as well as avoiding the memory leak.
+>=20
+> A reproduction of this problem can be seen with:
+>   perf stat -e c/c/
+> After this change this produces:
+> WARNING: multiple event parsing errors
+> event syntax error: 'c/c/'
+>                        \___ unknown term
+>=20
+> valid terms: event,filter_rem,filter_opc0,edge,filter_isoc,filter_tid,fil=
+ter_loc,filter_nc,inv,umask,filter_opc1,tid_en,thresh,filter_all_op,filter_=
+not_nm,filter_state,filter_nm,config,config1,config2,name,period,percore
+> Run 'perf list' for a list of valid events
+>=20
+>  Usage: perf stat [<options>] [<command>]
+>=20
+>     -e, --event <event>   event selector. use 'perf list' to list availab=
+le events
+>=20
+> Signed-off-by: Ian Rogers <irogers@google.com>
+
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+
+thanks,
+jirka
+
