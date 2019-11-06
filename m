@@ -2,122 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6801F0ADD
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:06:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E317AF0B06
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 01:30:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729595AbfKFAGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 19:06:55 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5078 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728410AbfKFAGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 19:06:55 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xA606k0o003293;
-        Tue, 5 Nov 2019 19:06:46 -0500
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w3hxp21s3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 Nov 2019 19:06:46 -0500
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xA606dXa018665;
-        Wed, 6 Nov 2019 00:06:40 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma05wdc.us.ibm.com with ESMTP id 2w11e72g20-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Nov 2019 00:06:40 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xA606c5w47251768
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Nov 2019 00:06:38 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B7EB5BE056;
-        Wed,  6 Nov 2019 00:06:38 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D9F41BE053;
-        Wed,  6 Nov 2019 00:06:37 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.85.144.27])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Nov 2019 00:06:37 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     linuxppc-dev@ozlabs.org
-Cc:     netdev@vger.kernel.org, nathanl@linux.ibm.com,
-        tyreld@linux.ibm.com, msuchanek@suse.com,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [RFC PATCH] powerpc/pseries/mobility: notify network peers after migration
-Date:   Tue,  5 Nov 2019 18:06:34 -0600
-Message-Id: <1572998794-9392-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-05_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1911050195
+        id S1730486AbfKFA34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 19:29:56 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43916 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727252AbfKFA34 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 19:29:56 -0500
+Received: by mail-pg1-f195.google.com with SMTP id l24so15842430pgh.10
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 16:29:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mQn/hdpJtUBU4JXLBcANmsUsqxv2qw1rKwGzmCMjZAo=;
+        b=jVQXC8BeCX0FWiJOeHNFnoeR6xuVmIEDLWUFVGMVeNOeMPLue9DiXC0Y5jsqZffeEq
+         K+uA83vP0MSdkAlNO3OEvMar2FnfGklHxXcwEjSfGc1TkskmgkKWO0AcZ99Hm2bidAVJ
+         Z5YgmVJ1CoPXXGmspjNqyaK63qbOVauqjo39Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mQn/hdpJtUBU4JXLBcANmsUsqxv2qw1rKwGzmCMjZAo=;
+        b=AoyAswQ89Lfysfh97dbxfPJFMroj3t4wKJiXTPvIJPv4WOMKYcc5rSrVb08OljdVTk
+         8PhVFAHnDbdXenuZqiO72FK1oqupRslviB0ISu6WJaHiyLzsFVO7eRLI0TIywHZ7Zq8j
+         MgpSG+JVIi03jLNJKLbdc+dpm5yk3UBtZcJwBXWgDdtB1wR/6+f/2GkpjmFEn0NXzLFa
+         kW3hTw9MgaOYV8G0/dlLPo0BmBOO5hOn4r6d4TDx9jjH0SwdJovkBVPOGS7Yo0PpGu3v
+         g3gvD3An5p2Ksptt6FUmdzxP+6FeU5mhKgMKgBVatdPhd0Fye9k11N6gnxiTzSdaq880
+         vCiw==
+X-Gm-Message-State: APjAAAX569vLwjtl4+GfPsmaPVIQSA1Nm5wIz0PnWvuwM5pbENcfAfOZ
+        nsgzLfhCQJs/8TZBLBlOWEW5Pg==
+X-Google-Smtp-Source: APXvYqz2rCG/lEPlEh0vSeU192FAuw+9LsfJpkmg1K9UcojLZZPcV3opoR4zPGAyq7kqAjnbGyRGMQ==
+X-Received: by 2002:a65:4c8b:: with SMTP id m11mr40815673pgt.25.1573000193870;
+        Tue, 05 Nov 2019 16:29:53 -0800 (PST)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
+        by smtp.gmail.com with ESMTPSA id k9sm21032835pfk.72.2019.11.05.16.29.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2019 16:29:53 -0800 (PST)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>
+Cc:     linux-bluetooth@vger.kernel.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Subject: [PATCH 0/4] Bluetooth: hci_bcm: Additional changes for BCM4354 support
+Date:   Tue,  5 Nov 2019 16:29:19 -0800
+Message-Id: <20191106002923.109344-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After a migration, it is necessary to send a gratuitous ARP
-from all running interfaces so that the rest of the network
-is aware of its new location. However, some supported network
-devices are unaware that they have been migrated. To avoid network
-interruptions and other unwanted behavior, force a GARP on all
-valid, running interfaces as part of the post_mobility_fixup
-routine.
 
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
----
- arch/powerpc/platforms/pseries/mobility.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+While adding support for the BCM4354, I discovered a few more things
+that weren't working as they should have.
 
-diff --git a/arch/powerpc/platforms/pseries/mobility.c b/arch/powerpc/platforms/pseries/mobility.c
-index b571285f6c14..c1abc14cf2bb 100644
---- a/arch/powerpc/platforms/pseries/mobility.c
-+++ b/arch/powerpc/platforms/pseries/mobility.c
-@@ -17,6 +17,9 @@
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/stringify.h>
-+#include <linux/netdevice.h>
-+#include <linux/rtnetlink.h>
-+#include <net/net_namespace.h>
- 
- #include <asm/machdep.h>
- #include <asm/rtas.h>
-@@ -331,6 +334,8 @@ void post_mobility_fixup(void)
- {
- 	int rc;
- 	int activate_fw_token;
-+	struct net_device *netdev;
-+	struct net *net;
- 
- 	activate_fw_token = rtas_token("ibm,activate-firmware");
- 	if (activate_fw_token == RTAS_UNKNOWN_SERVICE) {
-@@ -371,6 +376,21 @@ void post_mobility_fixup(void)
- 	/* Possibly switch to a new RFI flush type */
- 	pseries_setup_rfi_flush();
- 
-+	/* need to force a gratuitous ARP on running interfaces */
-+	rtnl_lock();
-+	for_each_net(net) {
-+		for_each_netdev(net, netdev) {
-+			if (netif_device_present(netdev) &&
-+			    netif_running(netdev) &&
-+			    !(netdev->flags & (IFF_NOARP | IFF_LOOPBACK)))
-+				call_netdevice_notifiers(NETDEV_NOTIFY_PEERS,
-+							 netdev);
-+				call_netdevice_notifiers(NETDEV_RESEND_IGMP,
-+							 netdev);
-+		}
-+	}
-+	rtnl_unlock();
-+
- 	return;
- }
- 
+First, we disallow serdev from setting the baudrate on BCM4354. Serdev
+sets the oper_speed first before calling hu->setup() in
+hci_uart_setup(). On the BCM4354, this results in bcm_setup() failing
+when the hci reset times out.
+
+Next, we add support for setting the PCM parameters, which consists of
+a pair of vendor specific opcodes to set the pcm parameters. The
+documentation for these params are available in the brcm_patchram_plus
+package (i.e. https://github.com/balena-os/brcm_patchram_plus). This is
+necessary for PCM to work properly.
+
+All changes were tested with rk3288-veyron-minnie.dts.
+
+
+
+Abhishek Pandit-Subedi (4):
+  Bluetooth: hci_bcm: Disallow set_baudrate for BCM4354
+  Bluetooth: btbcm: Support pcm configuration
+  Bluetooth: hci_bcm: Support pcm params in dts
+  dt-bindings: net: bluetooth: update broadcom-bluetooth
+
+ .../bindings/net/broadcom-bluetooth.txt       |  4 ++
+ drivers/bluetooth/btbcm.c                     | 27 ++++++++++
+ drivers/bluetooth/btbcm.h                     | 12 +++++
+ drivers/bluetooth/hci_bcm.c                   | 52 ++++++++++++++++++-
+ 4 files changed, 94 insertions(+), 1 deletion(-)
+
 -- 
-2.12.3
+2.24.0.rc1.363.gb1bccd3e3d-goog
 
