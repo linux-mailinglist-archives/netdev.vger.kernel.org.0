@@ -2,71 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 428C4F0BB7
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 02:40:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3761AF0BC0
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 02:46:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730747AbfKFBkx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 20:40:53 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:41686 "EHLO
+        id S1730797AbfKFBqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 20:46:48 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41766 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730553AbfKFBkw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 20:40:52 -0500
+        with ESMTP id S1730764AbfKFBqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 20:46:47 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 36673150F9C6C;
-        Tue,  5 Nov 2019 17:40:52 -0800 (PST)
-Date:   Tue, 05 Nov 2019 17:40:51 -0800 (PST)
-Message-Id: <20191105.174051.2132646390435868066.davem@davemloft.net>
-To:     jay.vosburgh@canonical.com
-Cc:     netdev@vger.kernel.org, zakharov.a.g@yandex.ru,
-        zhangsha.zhang@huawei.com, maheshb@google.com, vfalico@gmail.com,
-        andy@greyhouse.net
-Subject: Re: [PATCH v2 net] bonding: fix state transition issue in link
- monitoring
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id F168A150BD0EC;
+        Tue,  5 Nov 2019 17:46:46 -0800 (PST)
+Date:   Tue, 05 Nov 2019 17:46:46 -0800 (PST)
+Message-Id: <20191105.174646.876955038047137615.davem@davemloft.net>
+To:     nishadkamdar@gmail.com
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        gregkh@linuxfoundation.org, joe@perches.com,
+        u.kleine-koenig@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: hns3: Use the correct style for SPDX License
+ Identifier
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <2068.1572670602@famine>
-References: <2068.1572670602@famine>
+In-Reply-To: <20191102114436.GA4375@nishad>
+References: <20191102114436.GA4375@nishad>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 Nov 2019 17:40:52 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 05 Nov 2019 17:46:47 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jay Vosburgh <jay.vosburgh@canonical.com>
-Date: Fri, 01 Nov 2019 21:56:42 -0700
+From: Nishad Kamdar <nishadkamdar@gmail.com>
+Date: Sat, 2 Nov 2019 17:14:42 +0530
 
-> 	 Since de77ecd4ef02 ("bonding: improve link-status update in
-> mii-monitoring"), the bonding driver has utilized two separate variables
-> to indicate the next link state a particular slave should transition to.
-> Each is used to communicate to a different portion of the link state
-> change commit logic; one to the bond_miimon_commit function itself, and
-> another to the state transition logic.
+> This patch corrects the SPDX License Identifier style in
+> header files related to Hisilicon network devices. For C header files
+> Documentation/process/license-rules.rst mandates C-like comments
+> (opposed to C source files where C++ style should be used)
 > 
-> 	Unfortunately, the two variables can become unsynchronized,
-> resulting in incorrect link state transitions within bonding.  This can
-> cause slaves to become stuck in an incorrect link state until a
-> subsequent carrier state transition.
+> Changes made by using a script provided by Joe Perches here:
+> https://lkml.org/lkml/2019/2/7/46.
 > 
-> 	The issue occurs when a special case in bond_slave_netdev_event
-> sets slave->link directly to BOND_LINK_FAIL.  On the next pass through
-> bond_miimon_inspect after the slave goes carrier up, the BOND_LINK_FAIL
-> case will set the proposed next state (link_new_state) to BOND_LINK_UP,
-> but the new_link to BOND_LINK_DOWN.  The setting of the final link state
-> from new_link comes after that from link_new_state, and so the slave
-> will end up incorrectly in _DOWN state.
-> 
-> 	Resolve this by combining the two variables into one.
-> 
-> Reported-by: Aleksei Zakharov <zakharov.a.g@yandex.ru>
-> Reported-by: Sha Zhang <zhangsha.zhang@huawei.com>
-> Cc: Mahesh Bandewar <maheshb@google.com>
-> Fixes: de77ecd4ef02 ("bonding: improve link-status update in mii-monitoring")
-> Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> Suggested-by: Joe Perches <joe@perches.com>
+> Signed-off-by: Nishad Kamdar <nishadkamdar@gmail.com>
 
-Applied and queued up for -stable, thanks.
+Applied.
