@@ -2,91 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E93D9F1CBA
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:46:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C987CF1CD7
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:53:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729400AbfKFRqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 12:46:10 -0500
-Received: from rcdn-iport-3.cisco.com ([173.37.86.74]:40575 "EHLO
-        rcdn-iport-3.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728539AbfKFRqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 12:46:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1489; q=dns/txt; s=iport;
-  t=1573062369; x=1574271969;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=9LWdUWFwz+0nguJkEnlwOwG8B5lAe20QbOKg7mn/Puw=;
-  b=HsxudzhpllSSNe7+0sDmvsEGE/LLaIuYC7p9+Qbx5hKn6vomfRwiBz6R
-   FWQubN9poyG8iyY8Ptxw1HuPiE4TsQw07notF+O4m+a9tgrAxW3p0NwNk
-   AwPvYPBJRcEds8teFdOybqQcGJsNlCKTDEBc8CIYt8iY80f0qimMAMlPv
-   4=;
-X-IronPort-AV: E=Sophos;i="5.68,275,1569283200"; 
-   d="scan'208";a="646600509"
-Received: from alln-core-10.cisco.com ([173.36.13.132])
-  by rcdn-iport-3.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 06 Nov 2019 17:46:08 +0000
-Received: from zorba ([10.154.200.26])
-        by alln-core-10.cisco.com (8.15.2/8.15.2) with ESMTPS id xA6Hk55r004590
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 6 Nov 2019 17:46:07 GMT
-Date:   Wed, 6 Nov 2019 09:46:02 -0800
-From:   Daniel Walker <danielwa@cisco.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>
-Cc:     Sathish Jarugumalli <sjarugum@cisco.com>,
-        "xe-linux-external@cisco.com" <xe-linux-external@cisco.com>,
-        Daniel Walker <dwalker@fifo99.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] drivers: net: gianfar: Shortest frame drops at Ethernet
- port
-Message-ID: <20191106174602.GV18744@zorba>
-References: <20191106170320.27662-1-danielwa@cisco.com>
- <VI1PR04MB4880B060847C1CD175B998DF96790@VI1PR04MB4880.eurprd04.prod.outlook.com>
+        id S1732268AbfKFRxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 12:53:06 -0500
+Received: from smtp.codeaurora.org ([198.145.29.96]:33636 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfKFRxG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 12:53:06 -0500
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 9444760A50; Wed,  6 Nov 2019 17:53:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1573062784;
+        bh=FBAsM4UfKbF/1hIsSiGDVdA7NGJpS4niuM43oKzw4ro=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=H0i959ZT7rH3cLBqeSKBNY46+MGS5vFlWMiLHtDbuXT2q2dxl/NvR9G1S4aXsKs0T
+         Tb1hhMW9OnAjN7S16ZS0GB/qttw/5N+ElZQ/E/RisRpnJTxFIk/eQME2EvUDNmh/bi
+         BgHzUadts1k7nkzbyo6ZOG4p8iJDct6loIvuZq18=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 6869C6087D;
+        Wed,  6 Nov 2019 17:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1573062783;
+        bh=FBAsM4UfKbF/1hIsSiGDVdA7NGJpS4niuM43oKzw4ro=;
+        h=Subject:From:In-Reply-To:References:To:Cc:From;
+        b=UxGOxDobUkVusZ6wyY2xLGZrU0IDCcbaBAdCQqzmKH23lnk/a/s2N+pvxpnxKHEc/
+         0Z9ZhJjoZaYb47Sx2zAci364IRCxZXb5a+34qGnroxjlXciZfOBhytnqutOsBu/AxM
+         5ThkCUOJZYqwH/nbTwlgxDUHjoMAI35tGbLSsNwM=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6869C6087D
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR04MB4880B060847C1CD175B998DF96790@VI1PR04MB4880.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 10.154.200.26, [10.154.200.26]
-X-Outbound-Node: alln-core-10.cisco.com
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v3 1/2] ipw2x00: Remove redundant variable "rc"
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <1572684922-61805-2-git-send-email-zhongjiang@huawei.com>
+References: <1572684922-61805-2-git-send-email-zhongjiang@huawei.com>
+To:     zhong jiang <zhongjiang@huawei.com>
+Cc:     <stas.yakovlev@gmail.com>, <simon.horman@netronome.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <zhongjiang@huawei.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20191106175304.9444760A50@smtp.codeaurora.org>
+Date:   Wed,  6 Nov 2019 17:53:04 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 06, 2019 at 05:38:06PM +0000, Claudiu Manoil wrote:
-> >-----Original Message-----
-> >From: Daniel Walker <danielwa@cisco.com>
-> >Sent: Wednesday, November 6, 2019 7:03 PM
-> >To: Claudiu Manoil <claudiu.manoil@nxp.com>
-> >Cc: Sathish Jarugumalli <sjarugum@cisco.com>; xe-linux-external@cisco.com;
-> >Daniel Walker <dwalker@fifo99.com>; David S. Miller
-> ><davem@davemloft.net>; netdev@vger.kernel.org; linux-
-> >kernel@vger.kernel.org
-> >Subject: [PATCH] drivers: net: gianfar: Shortest frame drops at Ethernet port
-> >
-> >NXP has provided the patch for packet drops  at ethernet port
-> >Frames shorter than 60bytes are getting dropped at ethernetport
-> >need to add padding for the shorter range frames to be transmit
-> >the function "eth_skb_pad(skb" provides padding (and CRC) for
-> >packets under 60 bytes
-> >
-> >Signed-off-by: Sathish Jarugumalli <sjarugum@cisco.com>
-> >Cc: xe-linux-external@cisco.com
-> >Signed-off-by: Daniel Walker <dwalker@fifo99.com>
+zhong jiang <zhongjiang@huawei.com> wrote:
+
+> local variable "rc" is not used. It is safe to remove and
+> There is only one caller of libipw_qos_convert_ac_to_parameters().
+> hence make it void
 > 
-> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-> 
-> Normally padding is done by the hardware, and it works at least on my
-> test cases and boards.
-> But cisco seems to have hit a case where h/w padding gets
-> unexpectedly disabled (concurrency issue writing the config register?).
-> This patch should go as a workaround, until root cause found.
+> Signed-off-by: zhong jiang <zhongjiang@huawei.com>
 
+2 patches applied to wireless-drivers-next.git, thanks.
 
-Where would this hardware setup normally happen? Does it happen in the
-bootloader or inside the kernel someplace ?
+e310813279b7 ipw2x00: Remove redundant variable "rc"
+ea7ad5f12ca2 iwlegacy: Remove redundant variable "ret"
 
-Daniel
+-- 
+https://patchwork.kernel.org/patch/11224069/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
