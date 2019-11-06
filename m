@@ -2,61 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A70A4F1A3F
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:42:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A773DF1A7E
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:55:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732098AbfKFPmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 10:42:35 -0500
-Received: from www.os-cillation.de ([87.106.250.87]:55906 "EHLO
-        www.os-cillation.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727028AbfKFPme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 10:42:34 -0500
-Received: by www.os-cillation.de (Postfix, from userid 1030)
-        id 2AC807FD; Wed,  6 Nov 2019 16:42:35 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        s17988253.onlinehome-server.info
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.5 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from core2019.osc.gmbh (p578a635d.dip0.t-ipconnect.de [87.138.99.93])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by www.os-cillation.de (Postfix) with ESMTPSA id 65084772;
-        Wed,  6 Nov 2019 16:42:31 +0100 (CET)
-Received: from [192.168.3.92] (hd2019.osc.gmbh [192.168.3.92])
-        by core2019.osc.gmbh (Postfix) with ESMTPA id 447948E00E0;
-        Wed,  6 Nov 2019 16:42:29 +0100 (CET)
-Subject: Re: [Possible regression?] ip route deletion behavior change
-To:     David Miller <davem@davemloft.net>
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, David Ahern <dsa@cumulusnetworks.com>,
-        Shrijeet Mukherjee <shm@cumulusnetworks.com>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-References: <603d815f-f6db-3967-c0df-cbf084a1cbcd@os-cillation.de>
- <20191031.121651.2154293729808989384.davem@davemloft.net>
-From:   Hendrik Donner <hd@os-cillation.de>
-Openpgp: preference=signencrypt
-Message-ID: <7973ab5b-6354-7a60-5cad-ecc708f566a3@os-cillation.de>
-Date:   Wed, 6 Nov 2019 16:42:29 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1731923AbfKFPzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 10:55:44 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5738 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726926AbfKFPzn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 10:55:43 -0500
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id F2D87CAD2C235EAEBD2D;
+        Wed,  6 Nov 2019 23:55:41 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.439.0; Wed, 6 Nov 2019 23:55:35 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "Robert Hancock" <hancock@sedsystems.ca>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net-next] net: axienet: Fix error return code in axienet_probe()
+Date:   Wed, 6 Nov 2019 15:54:49 +0000
+Message-ID: <20191106155449.107672-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20191031.121651.2154293729808989384.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/19 8:16 PM, David Miller wrote:
-> 
-> Why haven't you CC:'d the author of the change you think caused the
-> problem, nor the VRF maintainer?
-> 
-> Please do that and resend your report.
-> 
+In the DMA memory resource get failed case, the error is not
+set and 0 will be returned. Fix it by reove redundant check
+since devm_ioremap_resource() will handle it.
 
-My bad, i might have overly relied on the output of get_maintainer.pl for
-the code in question. I will add the relevant people to the discussion.
+Fixes: 28ef9ebdb64c ("net: axienet: make use of axistream-connected attribute optional")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 867726d696e2..8f32db6d2c45 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1788,10 +1788,6 @@ static int axienet_probe(struct platform_device *pdev)
+ 		/* Check for these resources directly on the Ethernet node. */
+ 		struct resource *res = platform_get_resource(pdev,
+ 							     IORESOURCE_MEM, 1);
+-		if (!res) {
+-			dev_err(&pdev->dev, "unable to get DMA memory resource\n");
+-			goto free_netdev;
+-		}
+ 		lp->dma_regs = devm_ioremap_resource(&pdev->dev, res);
+ 		lp->rx_irq = platform_get_irq(pdev, 1);
+ 		lp->tx_irq = platform_get_irq(pdev, 0);
+
+
+
