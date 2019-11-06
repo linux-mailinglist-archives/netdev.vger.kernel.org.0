@@ -2,125 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BC2AF0D3F
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:46:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BD5DF0D4F
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:50:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731121AbfKFDqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 22:46:10 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:52476 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbfKFDqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:46:10 -0500
-Received: by mail-il1-f199.google.com with SMTP id t23so20516266ila.19
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 19:46:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=VXg4Mq0SWPKWmRdwQW93Z51ZtCZqzCSQfSajmJNia7w=;
-        b=KCTBwCBKOvIw+i01Et7Nctf30OE24dtrlKAT1uKwn6VnyjzQLb3fjMSAuQlTmNhZZS
-         2opdkAAol6V8nvDZqb7W0hEoE/wMBfsFgyc3+/KAysh8nXZoywJMO/Kmx1oT83sqwADJ
-         srwbwLDXZE211aVj9eaaMI7RydPou11X0+w4mytTUYYB/CxC3P+I5IjyIjPGVIa1ODMa
-         VA0Ce+zUq+DCSYksdwEWffFkOgmBZPWlBnp4lJ7HTIlLDlI8cubvLLjeu8DAqgNSBrdH
-         SfJn+5kgyWEC8f44vwmS5hFmG7gGVaFor8C0LB13oSey8yc+JLx/obJeMtkriZxjRSA0
-         +I8w==
-X-Gm-Message-State: APjAAAVGKE69/VKEQ+qAQOVeFos+wyS0iI6daeKeDm+Sf3V68B+RukRv
-        EiLAautoGK2qQhdPAgcfusGRJ1ANnQD5eNS9wzobnor46FX6
-X-Google-Smtp-Source: APXvYqz0exuhDAqf8OGKbULgDJ3QFG01eYS7lhaQg2N475G/AW27mI4xyzY1bu/1aPrqAouAnKS7BMCHBgn41UKC4+7ZbegNbmbR
+        id S1731133AbfKFDuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 22:50:04 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:35008 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725768AbfKFDuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:50:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573012202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=a+TaoYnSx8JQIw9cwMdJxIlkL0BV7vW8cxJKGh2NCEs=;
+        b=Z/WMg4stfS5MAoW4W7rXmV9QknQfIkHI6Zrfm0LouZJZiODOczQhhnX90e6qXPURTlXDpW
+        H9gW92g1Tmdo2O0mi7wFixWU7S+3h0u6a/uj+dDxtXjp8160naMb1LfMqezYEGrvlzjPqK
+        uCXO9MFp+EYnfE3MFRGvzZu6IrDWvw0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-408-LCO48t2kOHqlYcbL8wcx_w-1; Tue, 05 Nov 2019 22:50:00 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CFF47107ACC3;
+        Wed,  6 Nov 2019 03:49:55 +0000 (UTC)
+Received: from [10.72.12.193] (ovpn-12-193.pek2.redhat.com [10.72.12.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3371C600C4;
+        Wed,  6 Nov 2019 03:48:33 +0000 (UTC)
+Subject: Re: [PATCH V8 3/6] mdev: introduce device specific ops
+To:     Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+References: <20191105093240.5135-1-jasowang@redhat.com>
+ <20191105093240.5135-4-jasowang@redhat.com>
+ <20191105175025.1a620844.cohuck@redhat.com> <20191105104418.1735d800@x1.home>
+ <20191105192851.40548978.cohuck@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <42afbc46-ac7d-b4d7-9b4a-343b1400d2a8@redhat.com>
+Date:   Wed, 6 Nov 2019 11:48:25 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c31a:: with SMTP id a26mr32781557iok.0.1573011969464;
- Tue, 05 Nov 2019 19:46:09 -0800 (PST)
-Date:   Tue, 05 Nov 2019 19:46:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000aae1480596a5632b@google.com>
-Subject: WARNING: refcount bug in j1939_netdev_start
-From:   syzbot <syzbot+afd421337a736d6c1ee6@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@rempel-privat.de, mkl@pengutronix.de, netdev@vger.kernel.org,
-        robin@protonic.nl, socketcan@hartkopp.net,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20191105192851.40548978.cohuck@redhat.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: LCO48t2kOHqlYcbL8wcx_w-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-syzbot found the following crash on:
+On 2019/11/6 =E4=B8=8A=E5=8D=882:28, Cornelia Huck wrote:
+> On Tue, 5 Nov 2019 10:44:18 -0700
+> Alex Williamson <alex.williamson@redhat.com> wrote:
+>
+>> On Tue, 5 Nov 2019 17:50:25 +0100
+>> Cornelia Huck <cohuck@redhat.com> wrote:
+>>
+>>> On Tue,  5 Nov 2019 17:32:37 +0800
+>>> Jason Wang <jasowang@redhat.com> wrote:
+>>>   =20
+>>>> Currently, except for the create and remove, the rest of
+>>>> mdev_parent_ops is designed for vfio-mdev driver only and may not help
+>>>> for kernel mdev driver. With the help of class id, this patch
+>>>> introduces device specific callbacks inside mdev_device
+>>>> structure. This allows different set of callback to be used by
+>>>> vfio-mdev and virtio-mdev.
+>>>>
+>>>> Reviewed-by: Parav Pandit <parav@mellanox.com>
+>>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>>> ---
+>>>>   .../driver-api/vfio-mediated-device.rst       | 35 +++++++++----
+>>>>   MAINTAINERS                                   |  1 +
+>>>>   drivers/gpu/drm/i915/gvt/kvmgt.c              | 18 ++++---
+>>>>   drivers/s390/cio/vfio_ccw_ops.c               | 18 ++++---
+>>>>   drivers/s390/crypto/vfio_ap_ops.c             | 14 +++--
+>>>>   drivers/vfio/mdev/mdev_core.c                 | 24 ++++++++-
+>>>>   drivers/vfio/mdev/mdev_private.h              |  5 ++
+>>>>   drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
+>>>>   include/linux/mdev.h                          | 43 ++++-----------
+>>>>   include/linux/mdev_vfio_ops.h                 | 52 +++++++++++++++++=
+++
+>>>>   samples/vfio-mdev/mbochs.c                    | 20 ++++---
+>>>>   samples/vfio-mdev/mdpy.c                      | 20 ++++---
+>>>>   samples/vfio-mdev/mtty.c                      | 18 ++++---
+>>>>   13 files changed, 206 insertions(+), 99 deletions(-)
+>>>>   create mode 100644 include/linux/mdev_vfio_ops.h
+>>>>     =20
+>>> (...)
+>>>   =20
+>>>> @@ -172,10 +163,34 @@ that a driver should use to unregister itself wi=
+th the mdev core driver::
+>>>>  =20
+>>>>   =09extern void mdev_unregister_device(struct device *dev);
+>>>>  =20
+>>>> -It is also required to specify the class_id in create() callback thro=
+ugh::
+>>>> +As multiple types of mediated devices may be supported, class id need=
+s
+>>>> +to be specified in the create callback(). This could be done
+>>> The brackets should probably go behind 'create'?
+>>>   =20
+>>>> +explicitly for the device that does not use on mdev bus for its
+>>> "for devices that do not use the mdev bus" ?
+>>>
+>>> But why wouldn't they? I feel like I've missed some discussion here :/
+>> The device ops provide a route through mdev-core for known callbacks,
+>> which is primarily useful when we have 1:N relation between mdev bus
+>> driver and vendor drivers.  The obvious example here is vfio-mdev,
+>> where we have GVT-g, vfio-ap, vfio-ccw, NVIDIA GRID, and various sample
+>> drivers all advertising vfio-mdev support via their class id.  However,
+>> if we have a tightly coupled vendor driver and mdev bus driver, as the
+>> mlx5 support that Parav is developing, the claim is that they prefer
+>> not to expose any device ops and intend to interact directly with the
+>> mdev device.  At least that's my understanding.  Thanks,
+>>
+>> Alex
+> Ah, ok.
+>
+> So maybe use the phrasing "devices that interact with the mdev device
+> directly" vs "devices that use device-specific ops" instead?
+>
+> Not a strong critique, though.
 
-HEAD commit:    a99d8080 Linux 5.4-rc6
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=11a7443ae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8c5e2eca3f31f9bf
-dashboard link: https://syzkaller.appspot.com/bug?extid=afd421337a736d6c1ee6
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-Unfortunately, I don't have any reproducer for this crash yet.
+Will use what you suggest here.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+afd421337a736d6c1ee6@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-refcount_t: increment on 0; use-after-free.
-WARNING: CPU: 0 PID: 27509 at lib/refcount.c:156 refcount_inc_checked  
-lib/refcount.c:156 [inline]
-WARNING: CPU: 0 PID: 27509 at lib/refcount.c:156  
-refcount_inc_checked+0x61/0x70 lib/refcount.c:154
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 27509 Comm: syz-executor.5 Not tainted 5.4.0-rc6 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2e3/0x75c kernel/panic.c:221
-  __warn.cold+0x2f/0x35 kernel/panic.c:582
-  report_bug+0x289/0x300 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
-RIP: 0010:refcount_inc_checked lib/refcount.c:156 [inline]
-RIP: 0010:refcount_inc_checked+0x61/0x70 lib/refcount.c:154
-Code: 1d ce 0c 7e 06 31 ff 89 de e8 bb a8 2e fe 84 db 75 dd e8 72 a7 2e fe  
-48 c7 c7 c0 af e6 87 c6 05 ae 0c 7e 06 01 e8 57 dc ff fd <0f> 0b eb c1 90  
-90 90 90 90 90 90 90 90 90 90 55 48 89 e5 41 57 41
-RSP: 0018:ffff88805c33fce8 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000016597 RSI: ffffffff815cc396 RDI: ffffed100b867f8f
-RBP: ffff88805c33fcf8 R08: ffff8880921ae440 R09: ffffed1015d04101
-R10: ffffed1015d04100 R11: ffff8880ae820807 R12: ffff8880604010f0
-R13: ffff88805c33fe00 R14: ffff888045255580 R15: 0000000000000118
-  kref_get include/linux/kref.h:45 [inline]
-  j1939_netdev_start+0x53/0x550 net/can/j1939/main.c:247
-  j1939_sk_bind+0x65a/0x8e0 net/can/j1939/socket.c:438
-  __sys_bind+0x239/0x290 net/socket.c:1647
-  __do_sys_bind net/socket.c:1658 [inline]
-  __se_sys_bind net/socket.c:1656 [inline]
-  __x64_sys_bind+0x73/0xb0 net/socket.c:1656
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45a219
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f2ba4d29c78 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 000000000045a219
-RDX: 0000000000000018 RSI: 0000000020000240 RDI: 0000000000000003
-RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f2ba4d2a6d4
-R13: 00000000004c057e R14: 00000000004d2c50 R15: 00000000ffffffff
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+Thanks
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+>>>> +operation through:
+>>>>  =20
+>>>>   =09int mdev_set_class(struct mdev_device *mdev, u16 id);
+>>>>  =20
+>>>> +For the device that uses on the mdev bus for its operation, the
+>>>> class
+>>> "For devices that use the mdev bus..."
+>>>
+>>> But same comment as above.
+>>>   =20
+>>>> +should provide helper function to set class id and device
+>>>> specific +ops. E.g for vfio-mdev devices, the function to be
+>>>> called is:: +
+>>>> +=09int mdev_set_vfio_ops(struct mdev_device *mdev,
+>>>> +                              const struct mdev_vfio_device_ops
+>>>> *vfio_ops); +
+>>>> +The class id (set by this function to MDEV_CLASS_ID_VFIO) is
+>>>> used to +match a device with an mdev driver via its id table. The
+>>>> device +specific callbacks (specified in *vfio_ops) are
+>>>> obtainable via +mdev_get_vfio_ops() (for use by the mdev bus
+>>>> driver). A vfio-mdev +device (class id MDEV_CLASS_ID_VFIO) uses
+>>>> the following +device-specific ops:
+>>>> +
+>>>> +* open: open callback of vfio mediated device
+>>>> +* close: close callback of vfio mediated device
+>>>> +* ioctl: ioctl callback of vfio mediated device
+>>>> +* read : read emulation callback
+>>>> +* write: write emulation callback
+>>>> +* mmap: mmap emulation callback
+>>>> +
+>>>>   Mediated Device Management Interface Through sysfs
+>>>>   =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D
+>>> Otherwise, looks good.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
