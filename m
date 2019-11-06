@@ -2,44 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9353F1A88
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:57:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23CEEF1AA1
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 16:59:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732167AbfKFP5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 10:57:01 -0500
-Received: from www.os-cillation.de ([87.106.250.87]:56348 "EHLO
-        www.os-cillation.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727312AbfKFP5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 10:57:00 -0500
-Received: by www.os-cillation.de (Postfix, from userid 1030)
-        id 0CB2E7FD; Wed,  6 Nov 2019 16:57:01 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        s17988253.onlinehome-server.info
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.5 tests=ALL_TRUSTED,BAYES_00,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from core2019.osc.gmbh (p578a635d.dip0.t-ipconnect.de [87.138.99.93])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by www.os-cillation.de (Postfix) with ESMTPSA id 0E86B772;
-        Wed,  6 Nov 2019 16:57:00 +0100 (CET)
-Received: from [192.168.3.92] (hd2019.osc.gmbh [192.168.3.92])
-        by core2019.osc.gmbh (Postfix) with ESMTPA id C64198E00E0;
-        Wed,  6 Nov 2019 16:56:57 +0100 (CET)
+        id S1731937AbfKFP7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 10:59:50 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:44724 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726926AbfKFP7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 10:59:49 -0500
+Received: by mail-io1-f65.google.com with SMTP id w12so27540523iol.11
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 07:59:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dgOxOCbGhXasIM0i1a0YtlkRSPnSVkf2XN3Y3IugUnI=;
+        b=DocDu3sL1LEkd+NJJu1qa8/sa3z082G/Xi2Rg5SAv+xPe4Pl15363eGEygNejevD6y
+         PEJPVvTT76lp/JaeFhZTbAcCfylvEADS9GV0S4BiATsCnt0w9MwwqfM5MkYwOwTnM6uL
+         9BSssncpItACrRgQc1DcOom2ioJZsYwWZMu46Z6ziASMKXjiWmtwSZAt13GI5pwHyVfz
+         YUVuWQ5OIIqgkFzsUGkqtZDnG7EVcuudjsbq+FeZEtNQSWOKZzS9zkgZCj55XcMSAOoX
+         zrBZKn5evV25P5fZQ0xmsCTMJv86kKLpFO6Q/GC8sK/8Ek+JQKybyeDhRokIs9mTzM6+
+         Y1aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dgOxOCbGhXasIM0i1a0YtlkRSPnSVkf2XN3Y3IugUnI=;
+        b=EuP2bFTECVtL9BYo3KY1wSsHItq5VCzX99M8pVGSLXMiVRRsbHMZ/STKBA6bmW1s+F
+         gv1SQ9JMXkcrgZvyDt3e1ujJCxDdKSccNCRLr6UJSWrHsGINawdCcyfZGowQZgogbHHj
+         54DsBqhPz2wcRSuYtm1OjbPTBdStdzOfAEdCVfC2NxbL/7HtlrseopcJqJbPtbp9Ohrx
+         QjbVf7t7O2d/3UNm0TiBKYfGeomvjv3JEPOCmPIAnSUdncpgUCduf4rrj5NLmzIqHOaL
+         EuG/Ine4DiMql0OH5wIqUKzoWt7aLL65xH9REEgWMAI1SB1s+/5B/lTDgMKxNHsv/tz8
+         m1/g==
+X-Gm-Message-State: APjAAAVa/dbG0f30hMD0aC6h+s7PlC2xm31W8MgDFz/mVdWD8rqqZ8EY
+        FKd41GVVI/MjYaRYu2PAYEfFQnG1
+X-Google-Smtp-Source: APXvYqxaib40NDzfJzrc0zaYjImX7MC0H9CV/9VHiBuc6qLqYBbLuMOFUIX+MGqhoj/v0t5qPHVlrA==
+X-Received: by 2002:a02:840a:: with SMTP id k10mr5710244jah.26.1573055989138;
+        Wed, 06 Nov 2019 07:59:49 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:ec38:6775:b8e6:ab09])
+        by smtp.googlemail.com with ESMTPSA id y1sm1496177iob.42.2019.11.06.07.59.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 06 Nov 2019 07:59:48 -0800 (PST)
 Subject: Re: [Possible regression?] ip route deletion behavior change
-To:     David Ahern <dsahern@gmail.com>,
+To:     Hendrik Donner <hd@os-cillation.de>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
 References: <603d815f-f6db-3967-c0df-cbf084a1cbcd@os-cillation.de>
  <9384f54f-67a0-f2dc-68f8-3216717ee63e@gmail.com>
-From:   Hendrik Donner <hd@os-cillation.de>
-Openpgp: preference=signencrypt
-Cc:     Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>
-Message-ID: <b7d44dcf-6382-a668-1a6a-4385f77fb0f5@os-cillation.de>
-Date:   Wed, 6 Nov 2019 16:56:57 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ <b7d44dcf-6382-a668-1a6a-4385f77fb0f5@os-cillation.de>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <458df7c4-7be0-cc2e-cc9b-828fac22a841@gmail.com>
+Date:   Wed, 6 Nov 2019 08:59:47 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <9384f54f-67a0-f2dc-68f8-3216717ee63e@gmail.com>
+In-Reply-To: <b7d44dcf-6382-a668-1a6a-4385f77fb0f5@os-cillation.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -48,72 +67,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/31/19 9:41 PM, David Ahern wrote:
-> On 10/31/19 9:44 AM, Hendrik Donner wrote:
->> Hello,
+On 11/6/19 8:56 AM, Hendrik Donner wrote:
+>> devices not associated with a VRF table are implicitly tied to the
+>> default == main table.
 >>
->> analyzing a network issue on our embedded system product i found a change in behavior 
->> regarding the removal of routing table entries when an IP address is removed.
+>> Can you test this change:
 >>
->> On older kernel releases before commit 5a56a0b3a45dd0cc5b2f7bec6afd053a474ed9f5
->> (simplified example):
+>> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+>> index 0913a090b2bf..f1888c683426 100644
+>> --- a/net/ipv4/fib_semantics.c
+>> +++ b/net/ipv4/fib_semantics.c
+>> @@ -1814,8 +1814,8 @@ int fib_sync_down_addr(struct net_device *dev,
+>> __be32 local)
+>>         int ret = 0;
+>>         unsigned int hash = fib_laddr_hashfn(local);
+>>         struct hlist_head *head = &fib_info_laddrhash[hash];
+>> +       int tb_id = l3mdev_fib_table(dev) ? : RT_TABLE_MAIN;
+>>         struct net *net = dev_net(dev);
+>> -       int tb_id = l3mdev_fib_table(dev);
+>>         struct fib_info *fi;
 >>
->> Routing table:
+>>         if (!fib_info_laddrhash || local == 0)
 >>
->> # ip r
->> default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 1024
->> 10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
->> 10.0.2.2 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 1024
->> 10.20.0.0/14 via 10.0.2.2 dev enp0s3 src 10.20.40.100
->>
->> The last route was manually added with ip r add.
->>
->> Removing the IP 10.20.40.100 from enp0s3 also removes the last route:
->>
->> # ip r
->> default via 10.0.2.2 dev enp0s3 proto dhcp src 10.0.2.15 metric 1024
->> 10.0.2.0/24 dev enp0s3 proto kernel scope link src 10.0.2.15
->> 10.0.2.2 dev enp0s3 proto dhcp scope link src 10.0.2.15 metric 1024
->>
->> After the mentioned commit - so since v4.10 - the route will no longer be removed. At 
->> least for my team that's a surprising change in behavior because our system relies on
->> the old behavior.
->>
->> Reverting the commit restores the old behavior.
->>
->> I'm aware that our use case is a bit odd, but according to the commit message commit 
->> 5a56a0b3a45dd0cc5b2f7bec6afd053a474ed9f5 was meant to fix VRF related behavior while
->> having the described (maybe unintended?) user visible side effect for non-VRF usage.
+>> [ As DaveM noted, you should cc maintainers and author(s) of suspected
+>> regression patches ]
 >>
 > 
-> devices not associated with a VRF table are implicitly tied to the
-> default == main table.
+> I've tested your patch and it restores the expected behavior.
+
+ok, I will send a formal patch.
+
 > 
-> Can you test this change:
+> + Mark Tomlinson so he can have a look at it too.
 > 
-> diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> index 0913a090b2bf..f1888c683426 100644
-> --- a/net/ipv4/fib_semantics.c
-> +++ b/net/ipv4/fib_semantics.c
-> @@ -1814,8 +1814,8 @@ int fib_sync_down_addr(struct net_device *dev,
-> __be32 local)
->         int ret = 0;
->         unsigned int hash = fib_laddr_hashfn(local);
->         struct hlist_head *head = &fib_info_laddrhash[hash];
-> +       int tb_id = l3mdev_fib_table(dev) ? : RT_TABLE_MAIN;
->         struct net *net = dev_net(dev);
-> -       int tb_id = l3mdev_fib_table(dev);
->         struct fib_info *fi;
-> 
->         if (!fib_info_laddrhash || local == 0)
-> 
-> [ As DaveM noted, you should cc maintainers and author(s) of suspected
-> regression patches ]
+> And my mail server can't deliver to Shrijeet Mukherjee <shm@cumulusnetworks.com>.
+> Is that email address correct?
 > 
 
-I've tested your patch and it restores the expected behavior.
+Maintainers file in top of tree has the correct address:
 
-+ Mark Tomlinson so he can have a look at it too.
+$ grep Shrijeet MAINTAINERS
+M:	Shrijeet Mukherjee <shrijeet@gmail.com>
 
-And my mail server can't deliver to Shrijeet Mukherjee <shm@cumulusnetworks.com>.
-Is that email address correct?
