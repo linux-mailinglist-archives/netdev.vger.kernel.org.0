@@ -2,102 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0F14F110C
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 09:29:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3252CF1171
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 09:51:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731434AbfKFI3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 03:29:23 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:40743 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729881AbfKFI3X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 03:29:23 -0500
-Received: by mail-ed1-f66.google.com with SMTP id p59so18578387edp.7;
-        Wed, 06 Nov 2019 00:29:22 -0800 (PST)
+        id S1727642AbfKFIvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 03:51:40 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40975 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726755AbfKFIvk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 03:51:40 -0500
+Received: by mail-wr1-f68.google.com with SMTP id p4so24683741wrm.8
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 00:51:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qtpUEILOEaUCVfXdaJ71r8lA3F3BG6Ju5XNHryG150Q=;
-        b=WLeOSuWD368qfl5KCFcaGk7RN1KvVMq3NkhXwU+yB/udBXKobup3ROz5chDKNj0vU2
-         AuX3P/vbgO925avVpyVWenjo7MjUZllDWgkj1OETAQjuPbp/MkMIFHfglEhG/ri59q+p
-         Y23GdBk8Rkha6xT0fz0LJhtECu08JKxfb+HWzEYkxQbLw3t0W3kb+vfoKBuHMFlUkR9P
-         hbjhdjDhaAGGqzJkJDXtcVkgRv3Pyc33GQGrQFvYk/3Ssst0tbmas7CEMUFtV81tdKFJ
-         g2hZbeXvw6sUZADqJrPD8jEAyDnYd50+4W8AmpyX6vYio/qDoVb3AKv67sUbpepfIOOG
-         PGZQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=tMI+uyADeuaQY+vhqwW6B68TWxqNPN066tTFYjJHa5A=;
+        b=rcStTffRbGoQt3vf9nRzkdGpIHs+hHfr9wH3N7X3c4lVDlN29Q4QsyKdGUZgSoQTgK
+         h3IIhECXsCp7mfInQyEnCT9l8d7H/RGLvifjYjNb6+2FrN/963DBvt6zVNORLJCogz6n
+         gmgMT72MjgcbXlNtUE3hbOSsmJ9uBlY9mWPtVyLt0qxJVwP/K3arRbeBg9V2ukyO20vh
+         2sr6ynNEmvrK4DlXv+p/GxkXC7BpWATS6pYyWt6bqZtPW9zOnS9S2qadPMx3Z5attA7f
+         jD9Vy7X8GDRN8/gkrKfIO91B/vgTixpjH3pOX450RIUSmOymp7QhpAK0ZjBFdg7VpSMu
+         jjEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qtpUEILOEaUCVfXdaJ71r8lA3F3BG6Ju5XNHryG150Q=;
-        b=mhtVZK18gz7p8LwXBG4icF5u3sLDYseaWSm3RI81GZ/DYlIVJx0hLygLA2dtP0QaBW
-         viXbeFRHdyLBYueMu34p4oSr2Re284kz4nPm7yuFUcm7RgQdy87vHg+pv9gYvJf1OWw8
-         4/3Hm9gNfiJTpuN0LUMrRn98JVP8HMDmL0bCZEqJR5r5rX/1thH7amPMGq/6w/RtNZc3
-         QJUDaumxaTGqQqFepnlerP0rVqJonYlivM5jg5OGCnhniFQk1afbyHcT8I94Ds2+ExvO
-         yz9dwIEaLPnclrESOeUJm8BDDO73+so6pE9ZbR5bDuqzdKOjGjmTYk4T81UVmQelfH3N
-         iJuw==
-X-Gm-Message-State: APjAAAWK8IOrSFaqi3GhZfKVH5y8unz4Vn5aNzILrby5FYnxKPWvRK0H
-        t8ub4AoIqf+uYqS9vQDX0htItsistoOYcYYxXA8=
-X-Google-Smtp-Source: APXvYqywQGZeix5+hyJFd179p4wCPYJqsd1zl+Oy2ya+e0sEg5kPmrlpmtXOALPZmXk7kRVsin2h9Cj6z6+8t6bhIUQ=
-X-Received: by 2002:aa7:d4d8:: with SMTP id t24mr1330124edr.40.1573028961733;
- Wed, 06 Nov 2019 00:29:21 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=tMI+uyADeuaQY+vhqwW6B68TWxqNPN066tTFYjJHa5A=;
+        b=lQYfXwxUZrPVlW2gaYAq8lO7cQaOPmpQTlQ8MJRNvEbov0nSRAThPibNI/zHiy9nqx
+         uyg6JMr6GXH1m5pXa+mW2etGdbYCSy+n7/H/Wd73mvqjlbhiVFgTrZPmPbtJ9u2AbqJw
+         hsB4dIQ1BZUy3K7fFDdrbx33jiFXi5HD3IzFW6QUuyQTAn6np7N+sP5pr554QqvDbonB
+         17NeG4pG6pX1vmE1PSerTz34KUAWV6A9ufiHY1W93v+GsWvPGYP1vWEcfM1sHaG4z1Sx
+         jdDyyWQUn3Hf6U/N2qLHhrZqDS3RZuxcEfu1RdkCqaBkCTVMM61XSL6AewdQ+TrBzr5B
+         SG0w==
+X-Gm-Message-State: APjAAAUu6scrrMiidV9zUetv8GFbwVGw8G2xMSzIEqG2HiKk1DgX/ZGe
+        3bLfnrEV2EqmAWn9/VpD6ume4g==
+X-Google-Smtp-Source: APXvYqxEeMHPVVTMfbfjil4o4rO6SAibC/pqHWnNnnbAwXjGIAuF1h+tZnI8PW4iduk7gHXXUhU6Qw==
+X-Received: by 2002:adf:ee10:: with SMTP id y16mr1474849wrn.67.1573030298251;
+        Wed, 06 Nov 2019 00:51:38 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id a11sm2040016wmh.40.2019.11.06.00.51.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 00:51:37 -0800 (PST)
+Date:   Wed, 6 Nov 2019 09:51:37 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     dsahern@gmail.com, stephen@networkplumber.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
+Subject: Re: [PATCH iproute2-next 1/3] devlink: fix referencing namespace by
+ PID
+Message-ID: <20191106085137.GC2112@nanopsycho>
+References: <20191105211707.10300-1-jakub.kicinski@netronome.com>
+ <20191105211707.10300-2-jakub.kicinski@netronome.com>
 MIME-Version: 1.0
-References: <20191106080128.23284-1-hslester96@gmail.com> <VI1PR0402MB3600F14956A82EF8D7B53CC4FF790@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-In-Reply-To: <VI1PR0402MB3600F14956A82EF8D7B53CC4FF790@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-From:   Chuhong Yuan <hslester96@gmail.com>
-Date:   Wed, 6 Nov 2019 16:29:10 +0800
-Message-ID: <CANhBUQ1wZU92K=XTRCNU5HhOzZ761+S83zyjqOdZKpyQVuXrCw@mail.gmail.com>
-Subject: Re: [EXT] [PATCH] net: fec: add a check for CONFIG_PM to avoid clock
- count mis-match
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191105211707.10300-2-jakub.kicinski@netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 6, 2019 at 4:13 PM Andy Duan <fugang.duan@nxp.com> wrote:
+Tue, Nov 05, 2019 at 10:17:05PM CET, jakub.kicinski@netronome.com wrote:
+>netns parameter for devlink reload is supposed to take PID
+>as well as string name. However, the PID parsing has two
+>bugs:
+> - the opts->netns member is unsigned so the < 0
+>   condition is always false;
+> - the parameter list is not rewinded after parsing as
+>   a name, so parsing as a pid uses the wrong argument.
 >
-> From: Chuhong Yuan <hslester96@gmail.com> Sent: Wednesday, November 6, 2019 4:01 PM
-> > If CONFIG_PM is enabled, runtime pm will work and call runtime_suspend
-> > automatically to disable clks.
-> > Therefore, remove only needs to disable clks when CONFIG_PM is disabled.
-> > Add this check to avoid clock count mis-match caused by double-disable.
-> >
-> > This patch depends on patch
-> > ("net: fec: add missed clk_disable_unprepare in remove").
-> >
-> Please add Fixes tag here.
->
+>Fixes: 08e8e1ca3e05 ("devlink: extend reload command to add support for network namespace change")
+>Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-The previous patch has not been merged to linux, so I do not know
-which commit ID
-should be used.
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-> Andy
-> > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> > ---
-> >  drivers/net/ethernet/freescale/fec_main.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> > b/drivers/net/ethernet/freescale/fec_main.c
-> > index a9c386b63581..696550f4972f 100644
-> > --- a/drivers/net/ethernet/freescale/fec_main.c
-> > +++ b/drivers/net/ethernet/freescale/fec_main.c
-> > @@ -3645,8 +3645,10 @@ fec_drv_remove(struct platform_device *pdev)
-> >                 regulator_disable(fep->reg_phy);
-> >         pm_runtime_put(&pdev->dev);
-> >         pm_runtime_disable(&pdev->dev);
-> > +#ifndef CONFIG_PM
-> >         clk_disable_unprepare(fep->clk_ahb);
-> >         clk_disable_unprepare(fep->clk_ipg);
-> > +#endif
-> >         if (of_phy_is_fixed_link(np))
-> >                 of_phy_deregister_fixed_link(np);
-> >         of_node_put(fep->phy_node);
-> > --
-> > 2.23.0
->
+Thanks for fixing this.
