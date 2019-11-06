@@ -2,178 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F7BAF206A
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 22:09:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F16F5F2080
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 22:13:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727351AbfKFVJs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 16:09:48 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:53300 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726680AbfKFVJs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 16:09:48 -0500
-Received: by mail-wm1-f68.google.com with SMTP id x4so5625581wmi.3
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 13:09:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6TkQEOGgyDtl/9UY+iQbYaFYNbpJumWgk4MkzTQpQM0=;
-        b=OO6x0cw2J/vzIlegqg8K4qMrzlKdpE7nEmnMDMnj8uHmskpvqth3SwzeVnexb0dMi4
-         LGo8KLNDykVygoOiOMAFeaTOKv/rMlog9sb6Fu/9nGc/quojD/etrfAhjn+8MOOhGchu
-         1vq7XYrEAxcXofDG1FDyEDH8G4KkAFtLDuWKEjb7N1VmIfiDOimsjwePX2AN48lCWK/n
-         vv9QlrVIWdym4DYMZY1hh66n8N9hxl8gWSp2XXkBo5pKnGxzx7aRvzcG5Kc2uJRq18ze
-         VvIyy5GHg9waCGy9XTFRXrAfRMZLQu4hYS7T9cLLteTkkeuGhMVt+KWndT+SMfRlXOhX
-         X4mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6TkQEOGgyDtl/9UY+iQbYaFYNbpJumWgk4MkzTQpQM0=;
-        b=dPXDp3U4sQIp7rk1lJ3EuqU8ZZFR6cwh0QK4cnx6rFFOAyu7JOQTc7PVuPdi6iMzD/
-         V+/5KgGNU/jG13idMqhqeVTGxsXbZuo6wPJ5zW1kIjIGQniONAy1+nk2zvAk7rD3Mme+
-         3oauxQrkDRZsChIUnm+y7Q2r5qJ9zlUqbPPB7+SNz/EaN2PAYVKqEfQRhLOKfFsG5yAC
-         d5Gbw11Buw9vaLQ0B11cySP4WCoxxyhw45ZOndmqV8XEx/ZDVzoHRD+/yvzGykCBrZx/
-         MImPwTVbGWoGCWsDxQtbi8JDXFfYroLAZP56lc33aAIXWsnJh2amwDzhxFxXSGyvMfJV
-         hIkQ==
-X-Gm-Message-State: APjAAAVk+loCfaKm87aQ1aJFfeg7gY4vni9GwRwmgo6Z633mAGli99/j
-        KEnwoIB32MVF3oipF6yEwtwb+sqbV9TG1Q3wztDv1g==
-X-Google-Smtp-Source: APXvYqwQf654JSjsMnzWyx3LFrOTPywxv4PSw8LRJ2IEA1DF2jt4gZtR3T9ybU7gA/PF8pyuHySEr2XuXAYjGrctUo0=
-X-Received: by 2002:a1c:6641:: with SMTP id a62mr4301276wmc.54.1573074584571;
- Wed, 06 Nov 2019 13:09:44 -0800 (PST)
+        id S1732564AbfKFVNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 16:13:47 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:22157 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726949AbfKFVNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 16:13:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573074824;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QHAakULJ6ctlC4Fo+B5oEGN78VlGbOoTFxrZX89s2Vg=;
+        b=H04+1xWtnvUvyVv5yNNYVoZdqKjA0b0IdS+AVJx77XyFtR0EUWiwRxZlOFvyGSn2BxGRx4
+        z+ugiC8GSeTis767YTGkbMYOdza0SLIKpAKLcJdKcpZGIvRoQFu0j+PQ0qfJZIN1EXu0Q5
+        TsrrGGlUUyzq52Fsc4kL7bUsDfzsV7w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-134-eZpJXGxRPUGlxMVqCCmNYQ-1; Wed, 06 Nov 2019 16:13:40 -0500
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B8E69107ACC3;
+        Wed,  6 Nov 2019 21:13:34 +0000 (UTC)
+Received: from x1.home (ovpn-116-138.phx2.redhat.com [10.3.116.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B04A61001938;
+        Wed,  6 Nov 2019 21:13:18 +0000 (UTC)
+Date:   Wed, 6 Nov 2019 14:13:18 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        tiwei.bie@intel.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, cohuck@redhat.com,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+Subject: Re: [PATCH V8 0/6] mdev based hardware virtio offloading support
+Message-ID: <20191106141318.150f3b9b@x1.home>
+In-Reply-To: <20191106142449-mutt-send-email-mst@kernel.org>
+References: <20191105093240.5135-1-jasowang@redhat.com>
+        <20191105105834.469675f0@x1.home>
+        <393f2dc9-8c67-d3c9-6553-640b80c15aaf@redhat.com>
+        <20191106120312.77a6a318@x1.home>
+        <20191106142449-mutt-send-email-mst@kernel.org>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <20191106205933.149697-1-edumazet@google.com>
-In-Reply-To: <20191106205933.149697-1-edumazet@google.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Wed, 6 Nov 2019 16:09:08 -0500
-Message-ID: <CACSApvbKatE5-zxD3WWThxMo3Gt+mR5kwCmPFZUSgwX0P9c==g@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: fix data-race in tcp_recvmsg()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: eZpJXGxRPUGlxMVqCCmNYQ-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 6, 2019 at 3:59 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> Reading tp->recvmsg_inq after socket lock is released
-> raises a KCSAN warning [1]
->
-> Replace has_tss & has_cmsg by cmsg_flags and make
-> sure to not read tp->recvmsg_inq a second time.
->
-> [1]
-> BUG: KCSAN: data-race in tcp_chrono_stop / tcp_recvmsg
->
-> write to 0xffff888126adef24 of 2 bytes by interrupt on cpu 0:
->  tcp_chrono_set net/ipv4/tcp_output.c:2309 [inline]
->  tcp_chrono_stop+0x14c/0x280 net/ipv4/tcp_output.c:2338
->  tcp_clean_rtx_queue net/ipv4/tcp_input.c:3165 [inline]
->  tcp_ack+0x274f/0x3170 net/ipv4/tcp_input.c:3688
->  tcp_rcv_established+0x37e/0xf50 net/ipv4/tcp_input.c:5696
->  tcp_v4_do_rcv+0x381/0x4e0 net/ipv4/tcp_ipv4.c:1561
->  tcp_v4_rcv+0x19dc/0x1bb0 net/ipv4/tcp_ipv4.c:1942
->  ip_protocol_deliver_rcu+0x4d/0x420 net/ipv4/ip_input.c:204
->  ip_local_deliver_finish+0x110/0x140 net/ipv4/ip_input.c:231
->  NF_HOOK include/linux/netfilter.h:305 [inline]
->  NF_HOOK include/linux/netfilter.h:299 [inline]
->  ip_local_deliver+0x133/0x210 net/ipv4/ip_input.c:252
->  dst_input include/net/dst.h:442 [inline]
->  ip_rcv_finish+0x121/0x160 net/ipv4/ip_input.c:413
->  NF_HOOK include/linux/netfilter.h:305 [inline]
->  NF_HOOK include/linux/netfilter.h:299 [inline]
->  ip_rcv+0x18f/0x1a0 net/ipv4/ip_input.c:523
->  __netif_receive_skb_one_core+0xa7/0xe0 net/core/dev.c:5010
->  __netif_receive_skb+0x37/0xf0 net/core/dev.c:5124
->  netif_receive_skb_internal+0x59/0x190 net/core/dev.c:5214
->  napi_skb_finish net/core/dev.c:5677 [inline]
->  napi_gro_receive+0x28f/0x330 net/core/dev.c:5710
->
-> read to 0xffff888126adef25 of 1 bytes by task 7275 on cpu 1:
->  tcp_recvmsg+0x77b/0x1a30 net/ipv4/tcp.c:2187
->  inet_recvmsg+0xbb/0x250 net/ipv4/af_inet.c:838
->  sock_recvmsg_nosec net/socket.c:871 [inline]
->  sock_recvmsg net/socket.c:889 [inline]
->  sock_recvmsg+0x92/0xb0 net/socket.c:885
->  sock_read_iter+0x15f/0x1e0 net/socket.c:967
->  call_read_iter include/linux/fs.h:1889 [inline]
->  new_sync_read+0x389/0x4f0 fs/read_write.c:414
->  __vfs_read+0xb1/0xc0 fs/read_write.c:427
->  vfs_read fs/read_write.c:461 [inline]
->  vfs_read+0x143/0x2c0 fs/read_write.c:446
->  ksys_read+0xd5/0x1b0 fs/read_write.c:587
->  __do_sys_read fs/read_write.c:597 [inline]
->  __se_sys_read fs/read_write.c:595 [inline]
->  __x64_sys_read+0x4c/0x60 fs/read_write.c:595
->  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> Reported by Kernel Concurrency Sanitizer on:
-> CPU: 1 PID: 7275 Comm: sshd Not tainted 5.4.0-rc3+ #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->
-> Fixes: b75eba76d3d7 ("tcp: send in-queue bytes in cmsg upon read")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+On Wed, 6 Nov 2019 14:25:23 -0500
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
 
-Thank you for the fix, Eric!
+> On Wed, Nov 06, 2019 at 12:03:12PM -0700, Alex Williamson wrote:
+> > On Wed, 6 Nov 2019 11:56:46 +0800
+> > Jason Wang <jasowang@redhat.com> wrote:
+> >  =20
+> > > On 2019/11/6 =E4=B8=8A=E5=8D=881:58, Alex Williamson wrote: =20
+> > > > On Tue,  5 Nov 2019 17:32:34 +0800
+> > > > Jason Wang <jasowang@redhat.com> wrote:
+> > > >   =20
+> > > >> Hi all:
+> > > >>
+> > > >> There are hardwares that can do virtio datapath offloading while
+> > > >> having its own control path. This path tries to implement a mdev b=
+ased
+> > > >> unified API to support using kernel virtio driver to drive those
+> > > >> devices. This is done by introducing a new mdev transport for virt=
+io
+> > > >> (virtio_mdev) and register itself as a new kind of mdev driver. Th=
+en
+> > > >> it provides a unified way for kernel virtio driver to talk with md=
+ev
+> > > >> device implementation.
+> > > >>
+> > > >> Though the series only contains kernel driver support, the goal is=
+ to
+> > > >> make the transport generic enough to support userspace drivers. Th=
+is
+> > > >> means vhost-mdev[1] could be built on top as well by resuing the
+> > > >> transport.
+> > > >>
+> > > >> A sample driver is also implemented which simulate a virito-net
+> > > >> loopback ethernet device on top of vringh + workqueue. This could =
+be
+> > > >> used as a reference implementation for real hardware driver.
+> > > >>
+> > > >> Also a real ICF VF driver was also posted here[2] which is a good
+> > > >> reference for vendors who is interested in their own virtio datapa=
+th
+> > > >> offloading product.
+> > > >>
+> > > >> Consider mdev framework only support VFIO device and driver right =
+now,
+> > > >> this series also extend it to support other types. This is done
+> > > >> through introducing class id to the device and pairing it with
+> > > >> id_talbe claimed by the driver. On top, this seris also decouple
+> > > >> device specific parents ops out of the common ones.
+> > > >>
+> > > >> Pktgen test was done with virito-net + mvnet loop back device.
+> > > >>
+> > > >> Please review.
+> > > >>
+> > > >> [1] https://lkml.org/lkml/2019/10/31/440
+> > > >> [2] https://lkml.org/lkml/2019/10/15/1226
+> > > >>
+> > > >> Changes from V7:
+> > > >> - drop {set|get}_mdev_features for virtio
+> > > >> - typo and comment style fixes   =20
+> > > >
+> > > > Seems we're nearly there, all the remaining comments are relatively
+> > > > superficial, though I would appreciate a v9 addressing them as well=
+ as
+> > > > the checkpatch warnings:
+> > > >
+> > > > https://patchwork.freedesktop.org/series/68977/   =20
+> > >=20
+> > >=20
+> > > Will do.
+> > >=20
+> > > Btw, do you plan to merge vhost-mdev patch on top? Or you prefer it t=
+o=20
+> > > go through Michael's vhost tree? =20
+> >=20
+> > I can include it if you wish.  The mdev changes are isolated enough in
+> > that patch that I wouldn't presume it, but clearly it would require
+> > less merge coordination to drop it in my tree.  Let me know.  Thanks,
+> >=20
+> > Alex =20
+>=20
+> I'm fine with merging through your tree. If you do, feel free to
+> include
+>=20
+> Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-> ---
->  net/ipv4/tcp.c | 14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index 8fb4fefcfd544943e9c92870d4d0da25f3813448..9b48aec29aca6317adf7e96c8d058c859b1309c6 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1958,8 +1958,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
->         struct sk_buff *skb, *last;
->         u32 urg_hole = 0;
->         struct scm_timestamping_internal tss;
-> -       bool has_tss = false;
-> -       bool has_cmsg;
-> +       int cmsg_flags;
->
->         if (unlikely(flags & MSG_ERRQUEUE))
->                 return inet_recv_error(sk, msg, len, addr_len);
-> @@ -1974,7 +1973,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
->         if (sk->sk_state == TCP_LISTEN)
->                 goto out;
->
-> -       has_cmsg = tp->recvmsg_inq;
-> +       cmsg_flags = tp->recvmsg_inq ? 1 : 0;
->         timeo = sock_rcvtimeo(sk, nonblock);
->
->         /* Urgent data needs to be handled specially. */
-> @@ -2157,8 +2156,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
->
->                 if (TCP_SKB_CB(skb)->has_rxtstamp) {
->                         tcp_update_recv_tstamps(skb, &tss);
-> -                       has_tss = true;
-> -                       has_cmsg = true;
-> +                       cmsg_flags |= 2;
->                 }
->                 if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
->                         goto found_fin_ok;
-> @@ -2183,10 +2181,10 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
->
->         release_sock(sk);
->
-> -       if (has_cmsg) {
-> -               if (has_tss)
-> +       if (cmsg_flags) {
-> +               if (cmsg_flags & 2)
->                         tcp_recv_timestamp(msg, sk, &tss);
-> -               if (tp->recvmsg_inq) {
-> +               if (cmsg_flags & 1) {
->                         inq = tcp_inq_hint(sk);
->                         put_cmsg(msg, SOL_TCP, TCP_CM_INQ, sizeof(inq), &inq);
->                 }
-> --
-> 2.24.0.rc1.363.gb1bccd3e3d-goog
->
+AFAICT, it looks like we're expecting at least one more version of
+Tiwei's patch after V5, so it'd probably be best to provide the ack and
+go-ahead on that next version so there's no confusion.  Thanks,
+
+Alex
+
