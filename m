@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F89CF0D3C
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:45:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0561F0D3E
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:45:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731163AbfKFDpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 22:45:24 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:42641 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbfKFDpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:45:24 -0500
-Received: by mail-pl1-f196.google.com with SMTP id j12so8820666plt.9;
-        Tue, 05 Nov 2019 19:45:23 -0800 (PST)
+        id S1731179AbfKFDpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 22:45:36 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40611 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbfKFDpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:45:35 -0500
+Received: by mail-pf1-f194.google.com with SMTP id r4so17777541pfl.7;
+        Tue, 05 Nov 2019 19:45:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Wr+zYhfYzA7mGOPtRPLWlQlGjLfvYbvbg/KSZjCwOCE=;
-        b=h/Rccrc6YUvl17R4e3FYnLuHB165U4zPAZwhOUtwhLSuZUOgfAKaifglGZ+RR0pZc3
-         Ef/rWiRefTM9bB6uo4qsgo6ob8VGWVAxlLgz+ruKH3HEMzqowNw7PediXfK350YXZb/j
-         ujq0Lr6b2eV4Pi6zoaO0TgEaQCZ1s1UZTEJNIhwbOM6WIaaVs3wtl+ihDJOdcuGyuluR
-         eDyL9kDFoUxjdklYGjrjkyXDlQbQAIqC8eIqd/rgv2uwX5B6i78r2ZjmRpFqXG58tNl6
-         7utfkBfp8Ka/Aku371a1ZPbQ08HQdSmC+mbtfpX3mtleqSNfp4rZzLwDqmHL6KOK7mxd
-         iTcg==
+        bh=frL9/aCXhfxisGdXkirBm3DhOU4DdFp7w4JgKbYTA2o=;
+        b=CvBHwinXHu/bfua35zHx2bcBsBIlL0q2uRL/t1Ql5Hl+K2nUs6bo3oebrYcgJ+oN/3
+         SstoRYoLeGTSo6hxnIP12CcYB2wpEbPyU5Qz8dT3IKP6/iKePNyYfo/Xnc44ZUY0JoBV
+         ZBzBvwAO9G/C4+IcYBDY+N9CYUL9/dvbYEyw+XlR/qZ7gUpILyFKrmFjWBctXQUMUTmX
+         yjzkGkv5fAPlVwtSIvWh22zKfqImmVklCeXZlvLQut2BLhPdlH0J9uAMWguzwAwiRw2X
+         +D35n/Tm+9fkHqzAznhwnIAsZ1fgmr4yTJ246/me975stU08xNIjX39XYp0Ykat47od6
+         ciCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=Wr+zYhfYzA7mGOPtRPLWlQlGjLfvYbvbg/KSZjCwOCE=;
-        b=Ya2jVJKgSBYRy15aQzAPXCwEWr2IktXUyFgMN2WuDvzpN6ZNAWXgn/G0kDjAtBuu+b
-         nAjzlHtxlH1D+MfVTpdbPxJ8aWlgcTa+bbGkiI4Xv7Tl2NwANYzKFN/j9kBn4e2pA8ZK
-         YP2vbfPsQ3o4uvgtQ8ZLyLkr/UkPDOHoejDEpcQUFGnAlEJE1Loh91Tsa0vX1kcRH2IE
-         i2S6a6Wg+YDyTOUeIq1F8JpajodnLY2ONQDV1tMf/vjnegLzuhnkanlg2MMBMTQSThso
-         jN75fwvAMgXgu88spS0Jd5LwJSoR1boUgWJ4o4q06U55LcueZi68k1n08dRg6Gn3VFiW
-         WWoQ==
-X-Gm-Message-State: APjAAAUrGtZ71Wt4a7UxpoUdI6gEVbNd3366rw94gq4K1HQFyFfDbSA8
-        XQtXj5pjrtNjRp4KHCr1lF/7ai4f
-X-Google-Smtp-Source: APXvYqwbacPpZgSGy8Dgwx6QgPE9f8/eN+vJtaz1Hl+Gk9VY912migH+pcPmP6sCQ+s1UvlxOhhwDA==
-X-Received: by 2002:a17:902:7d96:: with SMTP id a22mr298390plm.318.1573011923060;
-        Tue, 05 Nov 2019 19:45:23 -0800 (PST)
+        bh=frL9/aCXhfxisGdXkirBm3DhOU4DdFp7w4JgKbYTA2o=;
+        b=hykmqFs6JfYZ7PRWjg+PY/Lmbmr50Cp0BF6tcx5RPG3tEdetHpA+8rXhYa3FiEZUfp
+         5l5PXRFfdHvxJq0o+M/CR9MIpP0dslKwdWrUMCDohIgqxYNXFKcbPZKqtHXWaIdPxh33
+         TaTcASIBxEJKzZGpc7O5gio1bYfCEL7Aj5SQDOMCe3DGP8rnqBDqvhstA0VRG6vgBzd4
+         +p+lT4wX03jS+1U81mv+8i6R6m0OLBDJKYHWS25JXQ51r/+9vdZFDQlNWjw/vWtlEyYm
+         FsmAjU6+/kC5/dLCVhlKHbYpvHAMy0EtFzPrLh9yEIjT1BhIYPrPFX/S4Zb0wTA1Qpel
+         9JXw==
+X-Gm-Message-State: APjAAAX8X+bv/io95i63U9WebLLbEJphm1R65FQ66SqQZvdt+cYa5GJX
+        thF53ma041fG4o5dI/klcuFwTFqt
+X-Google-Smtp-Source: APXvYqxWkhU2KuTr2aERcofmVNeyvknyhKioIBTEOEb8GFjZifXDHfhS9quSCGsMk+A3miHI4lABOw==
+X-Received: by 2002:a63:1d60:: with SMTP id d32mr350197pgm.37.1573011934753;
+        Tue, 05 Nov 2019 19:45:34 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id m13sm19086768pga.70.2019.11.05.19.45.22
+        by smtp.gmail.com with ESMTPSA id x192sm19984006pfc.109.2019.11.05.19.45.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Nov 2019 19:45:22 -0800 (PST)
-Subject: Re: [PATCH net 2/3] Revert "net: bcmgenet: soft reset 40nm EPHYs
- before MAC init"
+        Tue, 05 Nov 2019 19:45:34 -0800 (PST)
+Subject: Re: [PATCH net 3/3] net: bcmgenet: reapply manual settings to the PHY
 To:     Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1572980846-37707-1-git-send-email-opendmb@gmail.com>
- <1572980846-37707-3-git-send-email-opendmb@gmail.com>
+ <1572980846-37707-4-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <ce7a7c07-dffa-5717-206e-8d6da97b2861@gmail.com>
-Date:   Tue, 5 Nov 2019 19:45:21 -0800
+Message-ID: <990bd954-5928-f9b8-55d5-c45c3fc8b976@gmail.com>
+Date:   Tue, 5 Nov 2019 19:45:33 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <1572980846-37707-3-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1572980846-37707-4-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -125,20 +124,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/5/2019 11:07 AM, Doug Berger wrote:
-> This reverts commit 1f515486275a08a17a2c806b844cca18f7de5b34.
+> The phy_init_hw() function may reset the PHY to a configuration
+> that does not match manual network settings stored in the phydev
+> structure. If the phy state machine is polled rather than event
+> driven this can create a timing hazard where the phy state machine
+> might alter the settings stored in the phydev structure from the
+> value read from the BMCR.
 > 
-> This commit improved the chances of the umac resetting cleanly by
-> ensuring that the PHY was restored to its normal operation prior
-> to resetting the umac. However, there were still cases when the
-> PHY might not be driving a Tx clock to the umac during this window
-> (e.g. when the PHY detects no link).
+> This commit follows invocations of phy_init_hw() by the bcmgenet
+> driver with invocations of the genphy_config_aneg() function to
+> ensure that the BMCR is written to match the settings held in the
+> phydev structure. This prevents the risk of manual settings being
+> accidentally altered.
 > 
-> The previous commit now ensures that the unimac receives clocks
-> from the MAC during its reset window so this commit is no longer
-> needed. This commit also has an unintended negative impact on the
-> MDIO performance of the UniMAC MDIO interface because it is used
-> before the MDIO interrupts are reenabled, so it should be removed.
-> 
+> Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
