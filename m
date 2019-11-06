@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9BADF0D3A
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:45:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F89CF0D3C
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731146AbfKFDpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 22:45:05 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38390 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbfKFDpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:45:05 -0500
-Received: by mail-pg1-f194.google.com with SMTP id 15so2991595pgh.5;
-        Tue, 05 Nov 2019 19:45:04 -0800 (PST)
+        id S1731163AbfKFDpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 22:45:24 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:42641 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbfKFDpY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:45:24 -0500
+Received: by mail-pl1-f196.google.com with SMTP id j12so8820666plt.9;
+        Tue, 05 Nov 2019 19:45:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eTJxWGmxXHQZNoU67ljvZZeYsILX2XTxqIAFEGA842U=;
-        b=jewRIwdze25l1AJ4f8aY7cwGDtoLu7odREBcP34/532zNpxCFiFJdVteiq6mYXSxR5
-         XaDBYIC4MCc/PiyYGJdO4+1IW0lLXe8a4amtJMgj/NkmS/hOZskbXaDRywESLNzc0BbT
-         ocIvV2p9xqXP8SEo/a+qN+YDr9kGrhuvcbk7DFfySpj9yw3+7hxXTj3Wb9K4khTjgy4k
-         drvPAp7iSOszutKttfmRFXz+YrTv4KI7GNM26UPmxl6qQ8PwiEjobxZRu84y51EbA/y4
-         e62w50+xG7Gu6mG+C8ushY5lrTNR5clUa9bohFaLN7S8fCqAJetSwBghGIbj4l7i/cdq
-         uhZA==
+        bh=Wr+zYhfYzA7mGOPtRPLWlQlGjLfvYbvbg/KSZjCwOCE=;
+        b=h/Rccrc6YUvl17R4e3FYnLuHB165U4zPAZwhOUtwhLSuZUOgfAKaifglGZ+RR0pZc3
+         Ef/rWiRefTM9bB6uo4qsgo6ob8VGWVAxlLgz+ruKH3HEMzqowNw7PediXfK350YXZb/j
+         ujq0Lr6b2eV4Pi6zoaO0TgEaQCZ1s1UZTEJNIhwbOM6WIaaVs3wtl+ihDJOdcuGyuluR
+         eDyL9kDFoUxjdklYGjrjkyXDlQbQAIqC8eIqd/rgv2uwX5B6i78r2ZjmRpFqXG58tNl6
+         7utfkBfp8Ka/Aku371a1ZPbQ08HQdSmC+mbtfpX3mtleqSNfp4rZzLwDqmHL6KOK7mxd
+         iTcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=eTJxWGmxXHQZNoU67ljvZZeYsILX2XTxqIAFEGA842U=;
-        b=EJIG9XgiTBkXEu5c9YwSt0wTrsaQnVVxTSez3hp4qAq47nwq60mS4o9IJR7QRWKNUS
-         L7CdX4aYWsEvB2T8UMNOb9MBYlTAuBf2NvNzOOij/RU4kwzdBN+LvyfeX9HCZByM1Eh1
-         OgCCrIUf6l81sbQpgJ6FzWO644EK9b2P5fKCO2UnpEa7K8K4vhEzl/erKnf26R4h0y3f
-         nGmrRVTP0/xXB77ZE3TMGg8VGrj7XTv+2/MRFldYKmV6WA28/qnYulk3f2sBw8LvFuKJ
-         CLJvnnn6JRIoELGQGqve7kEpjQkhleLmr7PgMXusllC7SwZiGb2yAkj1PdktJcYjsTSB
-         Gogg==
-X-Gm-Message-State: APjAAAVqLig8fhCLE7Hq/5GEg0Y3tKKf+Jv9RkqYMPSRg1h5VpDGRMTZ
-        BxD7oKjkF0/4nn/xgiCikasDtR5E
-X-Google-Smtp-Source: APXvYqwavCu4CVJIn/lNsGWVSfDP0zao5qDRGuiR0JGszOCs+4xqAENycoOjtcWeiqZCucZXRJJCVQ==
-X-Received: by 2002:aa7:8e8d:: with SMTP id a13mr543872pfr.241.1573011903819;
-        Tue, 05 Nov 2019 19:45:03 -0800 (PST)
+        bh=Wr+zYhfYzA7mGOPtRPLWlQlGjLfvYbvbg/KSZjCwOCE=;
+        b=Ya2jVJKgSBYRy15aQzAPXCwEWr2IktXUyFgMN2WuDvzpN6ZNAWXgn/G0kDjAtBuu+b
+         nAjzlHtxlH1D+MfVTpdbPxJ8aWlgcTa+bbGkiI4Xv7Tl2NwANYzKFN/j9kBn4e2pA8ZK
+         YP2vbfPsQ3o4uvgtQ8ZLyLkr/UkPDOHoejDEpcQUFGnAlEJE1Loh91Tsa0vX1kcRH2IE
+         i2S6a6Wg+YDyTOUeIq1F8JpajodnLY2ONQDV1tMf/vjnegLzuhnkanlg2MMBMTQSThso
+         jN75fwvAMgXgu88spS0Jd5LwJSoR1boUgWJ4o4q06U55LcueZi68k1n08dRg6Gn3VFiW
+         WWoQ==
+X-Gm-Message-State: APjAAAUrGtZ71Wt4a7UxpoUdI6gEVbNd3366rw94gq4K1HQFyFfDbSA8
+        XQtXj5pjrtNjRp4KHCr1lF/7ai4f
+X-Google-Smtp-Source: APXvYqwbacPpZgSGy8Dgwx6QgPE9f8/eN+vJtaz1Hl+Gk9VY912migH+pcPmP6sCQ+s1UvlxOhhwDA==
+X-Received: by 2002:a17:902:7d96:: with SMTP id a22mr298390plm.318.1573011923060;
+        Tue, 05 Nov 2019 19:45:23 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id l93sm921730pjb.6.2019.11.05.19.45.02
+        by smtp.gmail.com with ESMTPSA id m13sm19086768pga.70.2019.11.05.19.45.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 05 Nov 2019 19:45:03 -0800 (PST)
-Subject: Re: [PATCH net 1/3] net: bcmgenet: use RGMII loopback for MAC reset
+        Tue, 05 Nov 2019 19:45:22 -0800 (PST)
+Subject: Re: [PATCH net 2/3] Revert "net: bcmgenet: soft reset 40nm EPHYs
+ before MAC init"
 To:     Doug Berger <opendmb@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
 Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 References: <1572980846-37707-1-git-send-email-opendmb@gmail.com>
- <1572980846-37707-2-git-send-email-opendmb@gmail.com>
+ <1572980846-37707-3-git-send-email-opendmb@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <5c4f7d6e-0e2d-86bc-d407-723cd3e8e8a2@gmail.com>
-Date:   Tue, 5 Nov 2019 19:45:02 -0800
+Message-ID: <ce7a7c07-dffa-5717-206e-8d6da97b2861@gmail.com>
+Date:   Tue, 5 Nov 2019 19:45:21 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <1572980846-37707-2-git-send-email-opendmb@gmail.com>
+In-Reply-To: <1572980846-37707-3-git-send-email-opendmb@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,49 +125,20 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/5/2019 11:07 AM, Doug Berger wrote:
-> As noted in commit 28c2d1a7a0bf ("net: bcmgenet: enable loopback
-> during UniMAC sw_reset") the UniMAC must be clocked while sw_reset
-> is asserted for its state machines to reset cleanly.
+> This reverts commit 1f515486275a08a17a2c806b844cca18f7de5b34.
 > 
-> The transmit and receive clocks used by the UniMAC are derived from
-> the signals used on its PHY interface. The bcmgenet MAC can be
-> configured to work with different PHY interfaces including MII,
-> GMII, RGMII, and Reverse MII on internal and external interfaces.
-> Unfortunately for the UniMAC, when configured for MII the Tx clock
-> is always driven from the PHY which places it outside of the direct
-> control of the MAC.
+> This commit improved the chances of the umac resetting cleanly by
+> ensuring that the PHY was restored to its normal operation prior
+> to resetting the umac. However, there were still cases when the
+> PHY might not be driving a Tx clock to the umac during this window
+> (e.g. when the PHY detects no link).
 > 
-> The earlier commit enabled a local loopback mode within the UniMAC
-> so that the receive clock would be derived from the transmit clock
-> which addressed the observed issue with an external GPHY disabling
-> it's Rx clock. However, when a Tx clock is not available this
-> loopback is insufficient.
+> The previous commit now ensures that the unimac receives clocks
+> from the MAC during its reset window so this commit is no longer
+> needed. This commit also has an unintended negative impact on the
+> MDIO performance of the UniMAC MDIO interface because it is used
+> before the MDIO interrupts are reenabled, so it should be removed.
 > 
-> This commit implements a workaround that leverages the fact that
-> the MAC can reliably generate all of its necessary clocking by
-> enterring the external GPHY RGMII interface mode with the UniMAC in
-> local loopback during the sw_reset interval. Unfortunately, this
-> has the undesirable side efect of the RGMII GTXCLK signal being
-> driven during the same window.
-> 
-> In most configurations this is a benign side effect as the signal
-> is either not routed to a pin or is already expected to drive the
-> pin. The one exception is when an external MII PHY is expected to
-> drive the same pin with its TX_CLK output creating output driver
-> contention.
-> 
-> This commit exploits the IEEE 802.3 clause 22 standard defined
-> isolate mode to force an external MII PHY to present a high
-> impedance on its TX_CLK output during the window to prevent any
-> contention at the pin.
-> 
-> The MII interface is used internally with the 40nm internal EPHY
-> which agressively disables its clocks for power savings leading to
-> incomplete resets of the UniMAC and many instabilities observed
-> over the years. The workaround of this commit is expected to put
-> an end to those problems.
-> 
-> Fixes: 1c1008c793fa ("net: bcmgenet: add main driver file")
 > Signed-off-by: Doug Berger <opendmb@gmail.com>
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
