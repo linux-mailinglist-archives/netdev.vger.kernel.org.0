@@ -2,124 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B76EF0DDA
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 05:37:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BBDCF0DDC
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 05:37:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731044AbfKFEh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 23:37:27 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37485 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726368AbfKFEh1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 23:37:27 -0500
-Received: by mail-qk1-f194.google.com with SMTP id e187so10740827qkf.4
-        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 20:37:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=ZdeOG1DKUPi+B4+CRZdpA5o1uOygUil9fdO09b4Cog4=;
-        b=jrZ2pwq7+LdPfwVadkDYVOiy+kMhEB30WCEzxHbDQKtgsfPK5i/dPQE68M2dyFvFK2
-         sIJD/Jx78MQ2kPH/KJe1EwvB9ZShCVO/V279WO0Nv4XTsWiBqhWTs7UtRHg8ripRHBgr
-         3bXQi40ZTtLTyXpS6nL54UZtwUbdT03z6SqiEh9Jr+hl0s65f6pIRZ3CBrajahK0DsDA
-         xn8baZfVDOYnV0w5/D8XvSCAz1oPLyKzWLoiJltUKaXEAJj/yeNsw6O0Edb04EeplyhX
-         h9E5PGHTBHavW6U4p855SuvmwuyQCozcAWsY07dlTf1d+oIIFn2lc1lIoGNSjSR3qU4G
-         GJPA==
+        id S1731214AbfKFEh2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 23:37:28 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:45828 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729774AbfKFEh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 23:37:28 -0500
+Received: by mail-oi1-f193.google.com with SMTP id k2so19768268oij.12;
+        Tue, 05 Nov 2019 20:37:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=ZdeOG1DKUPi+B4+CRZdpA5o1uOygUil9fdO09b4Cog4=;
-        b=At7TdwS8++KQvlmOu1Aucu0QzX8V6x9tr8V9rGl+7CtonohCn4eJWf5qGDH8eis7uP
-         KOrFW3jPyWLajT/oDsZvcPjcrvTPwImeRu4WiRWRhULqbw13XIm5TAZZW3jT6smjf3NG
-         cw8fV1wpKaULUNECL6LUbkEvJkfSFn9Hf06LcHjnN3mUxGo0mk34FJY4QCXQORtCHIhI
-         pVYYoKTSNIyqNCXKRxVef5BV5+zz/u+YvjC49XgtP2pQOKKM1HiWZTSlGB5FK1wJHjGG
-         7fICexhdPcENaC3A4A4lje0TQ/6rH+/89davnzuAsieUZqssffQWnOpab1eUiCtlrgAT
-         m5dg==
-X-Gm-Message-State: APjAAAVZiYkikEamWhznMD9UPIoHnajUQQ6caYgdOZf1ZGMbVoAjHGPu
-        F3ru5bOfG5FywyGzVVP8pOU=
-X-Google-Smtp-Source: APXvYqxXVcKCdT0hmEktIyI4rRu4oHIYWGZxnuuwoGXmSK60s/Opw/bIn9d7pBzS16BV36hvzx1bzA==
-X-Received: by 2002:a05:620a:12c2:: with SMTP id e2mr410065qkl.162.1573015046550;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wBkgFIR6Kddj9nLfsLZP7ND3JlvDRFLlyjJtifLy8TY=;
+        b=qnGrByb6CU5RcV626fRGyQ8wuCA+lSHKhHTP6ye5mjEdJRGmeOb5RbXNRWOch2bBK8
+         AiZh1CNhmBzypGJBRkWm/tRUBo+9ajiNlagdsdVS+8evnbV2VlZRiVXf7d+2rLXTnSDP
+         XHBFpXSOU3GWU1cHGyUeunCUP5lTBmDk9vNj3yqafafG78DTW7RL+6xl7zHtLci7cOEL
+         0cS+BDtbeOntglXeRF91jW0znL3Q0Lx/LJoiIbe8ChU6Sgry3v6VuG552Dl60PhLVhPV
+         eXVu74dy9BypcOg3AeDubVOzKWoiNRhIsRzbY5eg8iwr3YKPpV0LyqJouqaeM5Yj1i6O
+         PqaQ==
+X-Gm-Message-State: APjAAAU7k+tYSJOHjhzteAHUwpwLfDkB/8O4mhwAaEwn01PjDQqdHwYe
+        j2tQ5M2aJ+kHZpCgYZh/Ra5TLEE=
+X-Google-Smtp-Source: APXvYqy90LJVrIuahwIy0VRpgub2GkHXZqwsDU+WNaRy7fXQpKonC/mLfrcj46KU5AazjL9lDKIFZA==
+X-Received: by 2002:a54:4484:: with SMTP id v4mr489884oiv.49.1573015046949;
         Tue, 05 Nov 2019 20:37:26 -0800 (PST)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id q34sm14495425qte.50.2019.11.05.20.37.25
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id s66sm6861328otb.65.2019.11.05.20.37.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Nov 2019 20:37:25 -0800 (PST)
-Date:   Tue, 5 Nov 2019 23:37:24 -0500
-Message-ID: <20191105233724.GD799546@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>, jiri@mellanox.com,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next 3/5] net: dsa: mv88e6xxx: global2: Expose ATU
- stats register
-In-Reply-To: <20191105233241.GB799546@t480s.localdomain>
-References: <20191105001301.27966-1-andrew@lunn.ch>
- <20191105001301.27966-4-andrew@lunn.ch>
- <20191105233241.GB799546@t480s.localdomain>
+        Tue, 05 Nov 2019 20:37:26 -0800 (PST)
+Date:   Tue, 5 Nov 2019 22:37:25 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH 2/5] dt-bindings: net: phy: Add support for AT803X
+Message-ID: <20191106043725.GA22549@bogus>
+References: <20191102011351.6467-1-michael@walle.cc>
+ <20191102011351.6467-3-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191102011351.6467-3-michael@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Tue, 5 Nov 2019 23:32:41 -0500, Vivien Didelot <vivien.didelot@gmail.com> wrote:
-> > +int mv88e6xxx_g2_atu_stats_get(struct mv88e6xxx_chip *chip)
-> > +{
-> > +	int err;
-> > +	u16 val;
-> > +
-> > +	err = mv88e6xxx_g2_read(chip, MV88E6XXX_G2_ATU_STATS, &val);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	return val & MV88E6XXX_G2_ATU_STATS_MASK;
-> > +}
+On Sat,  2 Nov 2019 02:13:48 +0100, Michael Walle wrote:
+> Document the Atheros AR803x PHY bindings.
 > 
-> I would use the logic commonly used in the mv88e6xxx driver for
-> functions that may fail, returning only an error code and taking a
-> pointer to the correct type as argument, so that we do as usual:
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  .../devicetree/bindings/net/qca,ar803x.yaml   | 111 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +
+>  include/dt-bindings/net/qca-ar803x.h          |  13 ++
+>  3 files changed, 126 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/qca,ar803x.yaml
+>  create mode 100644 include/dt-bindings/net/qca-ar803x.h
 > 
->     err = mv88e6xxx_g2_atu_stats_get(chip, &val);
->     if (err)
->         return err;
-> 
-> > +
-> >  /* Offset 0x0F: Priority Override Table */
-> >  
-> >  static int mv88e6xxx_g2_pot_write(struct mv88e6xxx_chip *chip, int pointer,
-> > diff --git a/drivers/net/dsa/mv88e6xxx/global2.h b/drivers/net/dsa/mv88e6xxx/global2.h
-> > index 42da4bca73e8..a308ca7a7da6 100644
-> > --- a/drivers/net/dsa/mv88e6xxx/global2.h
-> > +++ b/drivers/net/dsa/mv88e6xxx/global2.h
-> > @@ -113,7 +113,16 @@
-> >  #define MV88E6XXX_G2_SWITCH_MAC_DATA_MASK	0x00ff
-> >  
-> >  /* Offset 0x0E: ATU Stats Register */
-> > -#define MV88E6XXX_G2_ATU_STATS		0x0e
-> > +#define MV88E6XXX_G2_ATU_STATS				0x0e
-> > +#define MV88E6XXX_G2_ATU_STATS_BIN_0			(0x0 << 14)
-> > +#define MV88E6XXX_G2_ATU_STATS_BIN_1			(0x1 << 14)
-> > +#define MV88E6XXX_G2_ATU_STATS_BIN_2			(0x2 << 14)
-> > +#define MV88E6XXX_G2_ATU_STATS_BIN_3			(0x3 << 14)
-> > +#define MV88E6XXX_G2_ATU_STATS_MODE_ALL			(0x0 << 12)
-> > +#define MV88E6XXX_G2_ATU_STATS_MODE_ALL_DYNAMIC		(0x1 << 12)
-> > +#define MV88E6XXX_G2_ATU_STATS_MODE_FID_ALL		(0x2 << 12)
-> > +#define MV88E6XXX_G2_ATU_STATS_MODE_FID_ALL_DYNAMIC	(0x3 << 12)
-> > +#define MV88E6XXX_G2_ATU_STATS_MASK			0x0fff
-> 
-> Please use the 0x1234 format for these 16-bit registers.
 
-Oops the series has already been applied. Andrew please consider
-these comments for your future series, they always apply...
-
-Thank a lot,
-
-	Vivien
+Reviewed-by: Rob Herring <robh@kernel.org>
