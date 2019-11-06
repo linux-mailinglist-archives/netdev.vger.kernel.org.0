@@ -2,143 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57564F0D70
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 04:58:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E727EF0D9B
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 05:13:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731123AbfKFD6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 22:58:55 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57328 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730944AbfKFD6z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 22:58:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573012734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gr71+XtimEL2u6AzLjyEgsguFtJGvEEF2xUegKTV/h0=;
-        b=PYlPgvFk/IGlthBT0Uy2XvRiRiL850ZAbjAwAB+qr7+tPvvvjTbw9h0hJwgMDjAEqpbSOM
-        FKkCS4fJihkpkZzIG5xMEyekUQd6mVrM30Cuk1+A35k+XRIJe3oc2xwZzE9ld8BqRGKvP6
-        Rg329xgx1Qsg85rHtr2J+C924pOUMY8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-183-vwBxFsjROy-3Zo-U4aD9YA-1; Tue, 05 Nov 2019 22:58:44 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97EBA8017DE;
-        Wed,  6 Nov 2019 03:58:40 +0000 (UTC)
-Received: from [10.72.12.193] (ovpn-12-193.pek2.redhat.com [10.72.12.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8514210013D9;
-        Wed,  6 Nov 2019 03:57:01 +0000 (UTC)
-Subject: Re: [PATCH V8 0/6] mdev based hardware virtio offloading support
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191105093240.5135-1-jasowang@redhat.com>
- <20191105105834.469675f0@x1.home>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <393f2dc9-8c67-d3c9-6553-640b80c15aaf@redhat.com>
-Date:   Wed, 6 Nov 2019 11:56:46 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1729784AbfKFENX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 23:13:23 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:45607 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725768AbfKFENX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 23:13:23 -0500
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5AF1A20CF2;
+        Tue,  5 Nov 2019 23:13:21 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute6.internal (MEProxy); Tue, 05 Nov 2019 23:13:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=russell.cc; h=
+        message-id:subject:from:to:cc:date:in-reply-to:references
+        :content-type:mime-version:content-transfer-encoding; s=fm3; bh=
+        9fPd8NkoyeMPutvOXwvfGAl4ZrfOV/gls8KMdRI4UEk=; b=XD0hI0L86Lo6Vf/8
+        gb6X6NQc+ZajB1lZ7xA6/wvYZAF0gJ6LKNZz4CFOVDwyKI/+ErhInawo9C6r+pR/
+        Y8fGD7SGJNjS38a4QJMpOU0oUDZEIwdtuOSWFST/wAmPCVzgH4fY7iB7V2JB4exY
+        t+DSfVD9Z3iNakZ6lNqHN5vVClD3iMa57GWH+aj3ORXSq8rT+aZGS4pjaXoxBnfz
+        PZTtEvYNc+Y9c25Qb2c/8wog60mAHeNrSuHLLWp82EZV+uUin1iSU4lTpsR9o4MC
+        q9Xh4oRBtPxPjVPoUALoS3eQ6grSp4XraKTNgYbQExWRxqp+YS7F+4waU6XZhBRE
+        Zbst4Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=9fPd8NkoyeMPutvOXwvfGAl4ZrfOV/gls8KMdRI4U
+        Ek=; b=lmaNePXrO8OOlZCxY1Wlsa9tNYJKP3sJ6h41DCn1GzeqAQbzGUBccdltK
+        gpszokTyoFbOvK7LKiAjaRi8n4vWoqKLloeA/eTbqhVXHfs88KzufU1PgodQpJYm
+        /BBWJ+ZQCGUwFr2LIZIzf0ykWwgdCxTMCyftpwJzdTcFu652LiGRHN6inRsQ9WBx
+        kbGhaevsbEh4yHjR8KBLaE4r3NJJAxX3pQ4nFggZqI2LzyUYw//GgcgaJw5fuCAc
+        zrIhj4N8R/uauAc6weCw/2M5orHjcQaTVMOhBcfz3w2+VwW92yw8L57i51222CQ+
+        9pLj+0X4ZrE8ApaNc9Rc433xFJ+Aw==
+X-ME-Sender: <xms:YEjCXY9fmfe4XuJ4SnmvQxk5omqFxceO8tyaCDHHoN9qEPA5mhkIvg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudduiedgieekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    gfrhhlucfvnfffucdludehmdenucfjughrpefkuffhvfffjghftggfggfgsehtjeertddt
+    reejnecuhfhrohhmpeftuhhsshgvlhhlucevuhhrrhgvhicuoehruhhstghurhesrhhush
+    hsvghllhdrtggtqeenucfkphepuddvvddrleelrdekvddruddtnecurfgrrhgrmhepmhgr
+    ihhlfhhrohhmpehruhhstghurhesrhhushhsvghllhdrtggtnecuvehluhhsthgvrhfuih
+    iivgeptd
+X-ME-Proxy: <xmx:YEjCXb5n-yFOXWPZZ3XOf4LzVl0sT-hUjE68NRrhV1vaKCIauqOhjg>
+    <xmx:YEjCXR1eoPqnoYKEVSv9Sj-gsSn7DMNfT4dDSGFVVeNCjiBGSi7e4w>
+    <xmx:YEjCXSwmP5JQMRIrC3P0I0oHq7qbH5KZ1DoivTjwivqDdkK1ViSVPw>
+    <xmx:YUjCXZtGBV9ZdLuJV7a1_rzcEXdh2xB_9TBvSDj3SL83a4yq7jd0Kg>
+Received: from crackle.ozlabs.ibm.com (unknown [122.99.82.10])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 62F183060057;
+        Tue,  5 Nov 2019 23:13:18 -0500 (EST)
+Message-ID: <b42f1dbdba88f74149de669cb285408d640cdb79.camel@russell.cc>
+Subject: Re: [RFC PATCH] powerpc/pseries/mobility: notify network peers
+ after migration
+From:   Russell Currey <ruscur@russell.cc>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>, linuxppc-dev@ozlabs.org
+Cc:     nathanl@linux.ibm.com, netdev@vger.kernel.org, msuchanek@suse.com,
+        tyreld@linux.ibm.com
+Date:   Wed, 06 Nov 2019 15:13:15 +1100
+In-Reply-To: <1572998794-9392-1-git-send-email-tlfalcon@linux.ibm.com>
+References: <1572998794-9392-1-git-send-email-tlfalcon@linux.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1 
 MIME-Version: 1.0
-In-Reply-To: <20191105105834.469675f0@x1.home>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: vwBxFsjROy-3Zo-U4aD9YA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 2019-11-05 at 18:06 -0600, Thomas Falcon wrote:
+> After a migration, it is necessary to send a gratuitous ARP
+> from all running interfaces so that the rest of the network
+> is aware of its new location. However, some supported network
+> devices are unaware that they have been migrated. To avoid network
+> interruptions and other unwanted behavior, force a GARP on all
+> valid, running interfaces as part of the post_mobility_fixup
+> routine.
+> 
+> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-On 2019/11/6 =E4=B8=8A=E5=8D=881:58, Alex Williamson wrote:
-> On Tue,  5 Nov 2019 17:32:34 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
->
->> Hi all:
->>
->> There are hardwares that can do virtio datapath offloading while
->> having its own control path. This path tries to implement a mdev based
->> unified API to support using kernel virtio driver to drive those
->> devices. This is done by introducing a new mdev transport for virtio
->> (virtio_mdev) and register itself as a new kind of mdev driver. Then
->> it provides a unified way for kernel virtio driver to talk with mdev
->> device implementation.
->>
->> Though the series only contains kernel driver support, the goal is to
->> make the transport generic enough to support userspace drivers. This
->> means vhost-mdev[1] could be built on top as well by resuing the
->> transport.
->>
->> A sample driver is also implemented which simulate a virito-net
->> loopback ethernet device on top of vringh + workqueue. This could be
->> used as a reference implementation for real hardware driver.
->>
->> Also a real ICF VF driver was also posted here[2] which is a good
->> reference for vendors who is interested in their own virtio datapath
->> offloading product.
->>
->> Consider mdev framework only support VFIO device and driver right now,
->> this series also extend it to support other types. This is done
->> through introducing class id to the device and pairing it with
->> id_talbe claimed by the driver. On top, this seris also decouple
->> device specific parents ops out of the common ones.
->>
->> Pktgen test was done with virito-net + mvnet loop back device.
->>
->> Please review.
->>
->> [1] https://lkml.org/lkml/2019/10/31/440
->> [2] https://lkml.org/lkml/2019/10/15/1226
->>
->> Changes from V7:
->> - drop {set|get}_mdev_features for virtio
->> - typo and comment style fixes
->
-> Seems we're nearly there, all the remaining comments are relatively
-> superficial, though I would appreciate a v9 addressing them as well as
-> the checkpatch warnings:
->
-> https://patchwork.freedesktop.org/series/68977/
+Hi Thomas,
 
+> ---
+>  arch/powerpc/platforms/pseries/mobility.c | 20 ++++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+> 
+> diff --git a/arch/powerpc/platforms/pseries/mobility.c
+> b/arch/powerpc/platforms/pseries/mobility.c
+> index b571285f6c14..c1abc14cf2bb 100644
+> --- a/arch/powerpc/platforms/pseries/mobility.c
+> +++ b/arch/powerpc/platforms/pseries/mobility.c
+> @@ -17,6 +17,9 @@
+>  #include <linux/delay.h>
+>  #include <linux/slab.h>
+>  #include <linux/stringify.h>
+> +#include <linux/netdevice.h>
+> +#include <linux/rtnetlink.h>
+> +#include <net/net_namespace.h>
+>  
+>  #include <asm/machdep.h>
+>  #include <asm/rtas.h>
+> @@ -331,6 +334,8 @@ void post_mobility_fixup(void)
+>  {
+>  	int rc;
+>  	int activate_fw_token;
+> +	struct net_device *netdev;
+> +	struct net *net;
+>  
+>  	activate_fw_token = rtas_token("ibm,activate-firmware");
+>  	if (activate_fw_token == RTAS_UNKNOWN_SERVICE) {
+> @@ -371,6 +376,21 @@ void post_mobility_fixup(void)
+>  	/* Possibly switch to a new RFI flush type */
+>  	pseries_setup_rfi_flush();
+>  
+> +	/* need to force a gratuitous ARP on running interfaces */
+> +	rtnl_lock();
+> +	for_each_net(net) {
+> +		for_each_netdev(net, netdev) {
+> +			if (netif_device_present(netdev) &&
+> +			    netif_running(netdev) &&
+> +			    !(netdev->flags & (IFF_NOARP |
+> IFF_LOOPBACK)))
+> +				call_netdevice_notifiers(NETDEV_NOTIFY_
+> PEERS,
+> +							 netdev);
 
-Will do.
+Without curly braces following the "if" statment, the second line
+(below) will be executed unconditionally, which I assume with this
+indentation isn't what you want.
 
-Btw, do you plan to merge vhost-mdev patch on top? Or you prefer it to=20
-go through Michael's vhost tree?
+(reported by snowpatch)
 
-Thanks
+- Russell
 
-
->
-> Consider this a last call for reviews or acks (or naks) from affected
-> mdev vendor drivers, mdev-core sub-maintainers (Hi Kirti), virtio
-> stakeholders, etc.  Thanks,
->
-> Alex
->
+> +				call_netdevice_notifiers(NETDEV_RESEND_
+> IGMP,
+> +							 netdev);
+> +		}
+> +	}
+> +	rtnl_unlock();
+> +
+>  	return;
+>  }
+>  
 
