@@ -2,92 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2147F1B66
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 17:34:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C59FEF1B77
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 17:40:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732313AbfKFQeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 11:34:44 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:43234 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbfKFQen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 11:34:43 -0500
-Received: by mail-pl1-f196.google.com with SMTP id a18so10533242plm.10
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 08:34:42 -0800 (PST)
+        id S1732255AbfKFQk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 11:40:27 -0500
+Received: from mail-pf1-f182.google.com ([209.85.210.182]:34131 "EHLO
+        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727285AbfKFQk0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 11:40:26 -0500
+Received: by mail-pf1-f182.google.com with SMTP id n13so7609191pff.1
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 08:40:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=qK2dQSoweQbBBKHZOM7uNxvQiTxKcXN16AkZs90CTPw=;
-        b=mvPBIFDDvlPAyFSjNne+7EcmXRpvCoQf5Es9SvuLssHr4t9fBXAiCw9BPnbNx12cJ1
-         0aWh+klGwEHfzR/wLR3pEq90xwlm4LzrTLc8qiKu+ZOVjUo277f9PVJSyCSLrniUjCj4
-         UBjFNEJex/Wp+FmQYL1Q1gHH9jBN6BScTikJM238CLPoQp4cAYszOqnyUhdhZWaJIK7z
-         p5F6/6f4HbEgKlQDNpm2lXrH/CLo2yJahoMc5l154dWnP3hNnB8v//sr0mjuEbE/CIrt
-         Y0X74yphim3vp/XO1UyUQcR/BESVW/uP+bEBhIi1SVkSX29GGG14YYArT41SiZlq+EJ9
-         uldQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=2ybiXq75vGIN54w3fFPOxfHW7LzlGq0puVuBsqDOXuQ=;
+        b=Jya/GpbB4+ckzLcJ9D/MnnoqFhUYd7t8vrwfe1doA32wyeDLrZbf1upihUtBJ3UxfC
+         Iez/YhrwCdQIClsC9RP9ZT2fN9LhycWegypmzdSkrh/hNQhj6Kw7AEMPLV/va9lxpcI6
+         JIvDIZoQdXRPOt8UY3tU3omo+cbElSpwomwgz8Lnd1HlmEdojT4R+mnTfck7jzoB+tML
+         38dTvy1Rl5bdDli5iBkY6eT2zX92n9hYKVjVlD9E2LUVMMsRBYPppbHrRUhVkPszYbbh
+         WnYsSoTRDR1L64yV3CYq1BMJCUZzHr8LRz1cya6SCe0T+uemgHtxlQaerOA2pITTKhxP
+         IrKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=qK2dQSoweQbBBKHZOM7uNxvQiTxKcXN16AkZs90CTPw=;
-        b=VO+Ilpj2jaIDbU+WtFUQw5Wpz21n872yKgEYUKrJ8E2uu4gZODlQheeWG8iAdMrlR3
-         cQFsYel8obSCAEilQkmZOCHp2P1caYEk0XAS9wGpCIED0yLcuZNX4VVcfDGsQQ/dhLXX
-         SJ6w/ocMjodU08oLRBB08RYchnsIiYhGFXh7XwAgbVkCf9LQGTo8sXBphZuVRYVozDj8
-         zglR6+S6uphHzydCgE5tnZXrtNLLlstQxhKvn1fXoqBV3Sh6abo/3EAsh70jk0rY3KVM
-         8JiRzIBaDsC31/uDg02DxSfFf2s7msX4FixBvNz30rwWPAkJhvK4k1toAaZOLd6szaUa
-         AhPA==
-X-Gm-Message-State: APjAAAWJoFHlbHSwC6ncZ3VmZvVq9D3ft8TmuARXf3JJfDfOSdaiOeh+
-        FcFu1LxnLkjrxpkuQxFJ+ts=
-X-Google-Smtp-Source: APXvYqz+kua88HsIlshoFzYFIrRMGNCGedCM93HhJqGZZwDdMkeYKsJhwXOlFi7U0dhvf2gjK+HF7A==
-X-Received: by 2002:a17:902:a987:: with SMTP id bh7mr3425837plb.181.1573058082214;
-        Wed, 06 Nov 2019 08:34:42 -0800 (PST)
-Received: from local.opencloud.tech.localdomain ([1.203.173.208])
-        by smtp.gmail.com with ESMTPSA id m67sm3261390pje.32.2019.11.06.08.34.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Nov 2019 08:34:41 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     ee07b291@gmail.com, pshelar@ovn.org
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v2] net: openvswitch: select vport upcall portid directly
-Date:   Thu,  7 Nov 2019 00:34:28 +0800
-Message-Id: <1573058068-7073-1-git-send-email-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=2ybiXq75vGIN54w3fFPOxfHW7LzlGq0puVuBsqDOXuQ=;
+        b=omRNHrZYW2yCx4HwbZdCWz35vPGdGtpqSrZsvFvuLabb2NleBjfMXd2sZJ5DID8Oh8
+         hSghazRlCEo10gNxk/WdoRoZGjLBpMxdA1SM2nOjjc333XZkO1mM/Uf/YKdPeMOHNgwr
+         tlIzHXdC4NJqA/Afls518DJ12K7eBaheTXPzsIAVcq1XrQ8JOsD/rbanCT0QjB8XLLyv
+         jvt42sCN44QB6bVMPajMv27JRLVBt04nyElu/2KRXOy/dMg9rzX2OC13Y6eE6/23pOg/
+         0O+JCYwKDC3YJSPAcktQMXBdIL4fhQmCpB+UjKhspgoYx0pO7ZBtLRlHOtHodTlQfhbV
+         NSQQ==
+X-Gm-Message-State: APjAAAUb549jM+ID/D00ymYFI1rCSala8A0dlxMeYhaxznt9TW8bZH+K
+        8RSL28PaJCdtQJCyUAH0JalCUg==
+X-Google-Smtp-Source: APXvYqyJR31MMyIe6pmsC2f3PqqdzxgMFmgciKHZcENSDyh6wEl0+9ZGm8BKiBXDxOZvgwhByL1BzQ==
+X-Received: by 2002:a17:90a:1788:: with SMTP id q8mr4939271pja.139.1573058426124;
+        Wed, 06 Nov 2019 08:40:26 -0800 (PST)
+Received: from cakuba.netronome.com ([216.4.53.35])
+        by smtp.gmail.com with ESMTPSA id m68sm23005285pfb.122.2019.11.06.08.40.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 08:40:25 -0800 (PST)
+Date:   Wed, 6 Nov 2019 08:40:23 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Zhu Yanjun <yanjun.zhu@oracle.com>
+Cc:     rain.1986.08.12@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCHv5 1/1] net: forcedeth: add xmit_more support
+Message-ID: <20191106084023.1d0311a1@cakuba.netronome.com>
+In-Reply-To: <1573020071-10503-1-git-send-email-yanjun.zhu@oracle.com>
+References: <1573020071-10503-1-git-send-email-yanjun.zhu@oracle.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Wed,  6 Nov 2019 01:01:11 -0500, Zhu Yanjun wrote:
+> This change adds support for xmit_more based on the igb commit 6f19e12f6230
+> ("igb: flush when in xmit_more mode and under descriptor pressure") and
+> commit 6b16f9ee89b8 ("net: move skb->xmit_more hint to softnet data") that
+> were made to igb to support this feature. The function netif_xmit_stopped
+> is called to check whether transmit queue on device is currently unable to
+> send to determine whether we must write the tail because we can add no
+> further buffers.
 
-The commit 69c51582ff786 ("dpif-netlink: don't allocate per
-thread netlink sockets"), in Open vSwitch ovs-vswitchd, has
-changed the number of allocated sockets to just one per port
-by moving the socket array from a per handler structure to
-a per datapath one. In the kernel datapath, a vport will have
-only one socket in most case, if so select it directly in
-fast-path.
-
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
-v2: drectly -> directly in the commit title
----
- net/openvswitch/vport.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/net/openvswitch/vport.c b/net/openvswitch/vport.c
-index 3fc38d16c456..5da9392b03d6 100644
---- a/net/openvswitch/vport.c
-+++ b/net/openvswitch/vport.c
-@@ -403,8 +403,9 @@ u32 ovs_vport_find_upcall_portid(const struct vport *vport, struct sk_buff *skb)
- 
- 	ids = rcu_dereference(vport->upcall_portids);
- 
--	if (ids->n_ids == 1 && ids->ids[0] == 0)
--		return 0;
-+	/* If there is only one portid, select it in the fast-path. */
-+	if (ids->n_ids == 1)
-+		return ids->ids[0];
- 
- 	hash = skb_get_hash(skb);
- 	ids_index = hash - ids->n_ids * reciprocal_divide(hash, ids->rn_ids);
--- 
-2.23.0
-
+Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
