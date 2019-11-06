@@ -2,128 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2807F1DC8
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 19:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2278F1DD8
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 19:56:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728670AbfKFSuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 13:50:40 -0500
-Received: from mga11.intel.com ([192.55.52.93]:49591 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727208AbfKFSuj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 13:50:39 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 10:50:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,275,1569308400"; 
-   d="asc'?scan'208";a="201178857"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga007.fm.intel.com with ESMTP; 06 Nov 2019 10:50:39 -0800
-Message-ID: <7222dab4ac49346de9c652c4661b871669cd8570.camel@intel.com>
-Subject: Re: [net-next 03/15] ice: Add support for FW recovery mode detection
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     davem@davemloft.net,
-        Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Date:   Wed, 06 Nov 2019 10:50:38 -0800
-In-Reply-To: <20191105174836.4df162dd@cakuba.netronome.com>
-References: <20191106004620.10416-1-jeffrey.t.kirsher@intel.com>
-         <20191106004620.10416-4-jeffrey.t.kirsher@intel.com>
-         <20191105174836.4df162dd@cakuba.netronome.com>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-CR97ScY9CYUabEUWfkkV"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1729154AbfKFS4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 13:56:25 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5739 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727208AbfKFS4Z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 13:56:25 -0500
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id B9BAA58BFBDC6172BC23;
+        Thu,  7 Nov 2019 02:56:23 +0800 (CST)
+Received: from A190218597.china.huawei.com (10.202.226.45) by
+ DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 7 Nov 2019 02:56:14 +0800
+From:   Salil Mehta <salil.mehta@huawei.com>
+To:     <davem@davemloft.net>, <maz@kernel.org>
+CC:     <edumazet@google.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <lipeng321@huawei.com>,
+        <mehta.salil@opnsrc.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+Subject: [PATCH net] net: hns: Fix the stray netpoll locks causing deadlock in NAPI path
+Date:   Wed, 6 Nov 2019 18:54:05 +0000
+Message-ID: <20191106185405.23112-1-salil.mehta@huawei.com>
+X-Mailer: git-send-email 2.8.3
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.202.226.45]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch fixes the problem of the spin locks, originally
+meant for the netpoll path of hns driver, causing deadlock in
+the normal NAPI poll path. The issue happened due presence of
+the stray leftover spin lock code related to the netpoll,
+whose support was earlier removed from the HNS[1], got activated
+due to enabling of NET_POLL_CONTROLLER switch.
 
---=-CR97ScY9CYUabEUWfkkV
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Earlier background:
+The netpoll handling code originally had this bug(as identified
+by Marc Zyngier[2]) of wrong spin lock API being used which did
+not disable the interrupts and hence could cause locking issues.
+i.e. if the lock were first acquired in context to thread like
+'ip' util and this lock if ever got later acquired again in
+context to the interrupt context like TX/RX (Interrupts could
+always pre-empt the lock holding task and acquire the lock again)
+and hence could cause deadlock.
 
-On Tue, 2019-11-05 at 17:48 -0800, Jakub Kicinski wrote:
-> On Tue,  5 Nov 2019 16:46:08 -0800, Jeff Kirsher wrote:
-> > From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-> >=20
-> > This patch adds support for firmware recovery mode detection.
-> >=20
-> > The idea behind FW recovery mode is to recover from a bad FW state,
-> > due to corruption or misconfiguration. The FW triggers recovery
-> > mode
-> > by setting the right bits in the GL_MNG_FWSM register and issuing
-> > an EMP reset.
-> >=20
-> > The driver may or may not be loaded when recovery mode is
-> > triggered. So
-> > on module load, the driver first checks if the FW is already in
-> > recovery
-> > mode. If so, it drops into recovery mode as well, where it creates
-> > and
-> > registers a single netdev that only allows a very small set of
-> > repair/
-> > diagnostic operations (like updating the FW, checking version,
-> > etc.)
-> > through ethtool.
-> >=20
-> > If recovery mode is triggered when the driver is
-> > loaded/operational,
-> > the first indication of this in the driver is via the EMP reset
-> > event.
-> > As part of processing the reset event, the driver checks the
-> > GL_MNG_FWSM
-> > register to determine if recovery mode was triggered. If so,
-> > traffic is
-> > stopped, peers are closed and the ethtool ops are updated to allow
-> > only
-> > repair/diagnostic operations.
-> >=20
-> > Signed-off-by: Anirudh Venkataramanan <
-> > anirudh.venkataramanan@intel.com>
-> > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
->=20
-> You shouldn't need to spawn a fake netdev just to recover the device.
->=20
-> Implement devlink, you can have a devlink instance with full debug
-> info and allow users to update FW via the flash op, even if driver is
-> unable to bring up any port.
+Proposed Solution:
+1. If the netpoll was enabled in the HNS driver, which is not
+   right now, we could have simply used spin_[un]lock_irqsave()
+2. But as netpoll is disabled, therefore, it is best to get rid
+   of the existing locks and stray code for now. This should
+   solve the problem reported by Marc.
 
-I have spoken with Anirudh and he is looking to implement devlink, as
-suggested but it will not be a quick turn-around.  So I will drop this
-patch from the series while Ani works on the devlink changes.
+@Marc,
+Could you please test this patch and confirm if the problem is
+fixed at your end?
 
---=-CR97ScY9CYUabEUWfkkV
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+Many Thanks
 
------BEGIN PGP SIGNATURE-----
+[1] https://git.kernel.org/torvalds/c/4bd2c03be7
+[2] https://patchwork.ozlabs.org/patch/1189139/
 
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl3DFf4ACgkQ5W/vlVpL
-7c6s9w//a+5fk/Byitv44wMoUxgahsVfxk+EzUozcyX35O0A83kbD5PvPeMeGb3V
-C5tI8W2jZrfqhLdSLqwMdkXm5uxlzLCOMjeCeYN55f7joU6vRFwtaNuRLMSRy8nd
-iW1zFujzfNsnpwDGMuTrv7lZeXIsIXqha4nKpTGfQECII4h0KvN/6O3TxiYRprvl
-7u9tSS+pWmveSS4B+3fq15Sg6St11V3oGUVtiPOb5I/jwKoc8JsBv16U7BO2GH7M
-ta3UUguK2P0JXOwzgqfHjXK/HAvA8YIYybmcb+OwKPXHWjY/uOgtKVjJMOd7/V+k
-lTHwG06peWkGTVCeTjw/o3LOOKepatBeC+hYMfFm+VKsbfKk8Jr/lejpNLCb7Clb
-dr8qUn3Vpe39h7YdceibNYlEmQGqOyzb5HOpwkWx8ZZFX2bIjYWeropadf+Guk/H
-QjU2F6UDUaKo3AJVpBjpUZ9hACFob8usndNxrpP5IvJdTuqNB2mDv0+wKeJRVkg7
-68X6F+xm9KMuMKhUrp0XKmHU06CCsZp9YcvDSDOWY6qzS5zMzpZ4gpGucXohoo7r
-i9KM0V/SZjQaeYjFxprcQ/P6yxDapVZo9t9ZNL8snHkipEfJm2L2sqT9sjfF/KGr
-KljljOGCqtusWUrm0MSDJox3PDfFcqTLOi4q3p3gjZzTtJ/iEhM=
-=EfdO
------END PGP SIGNATURE-----
+Fixes: 4bd2c03be707 ("net: hns: remove ndo_poll_controller")
+Cc: lipeng <lipeng321@huawei.com>
+Cc: Yisen Zhuang <yisen.zhuang@huawei.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: David S. Miller <davem@davemloft.net>
+Reported-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 22 +------------------
+ 1 file changed, 1 insertion(+), 21 deletions(-)
 
---=-CR97ScY9CYUabEUWfkkV--
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index a48396dd4ebb..14ab20491fd0 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -943,15 +943,6 @@ static int is_valid_clean_head(struct hnae_ring *ring, int h)
+ 	return u > c ? (h > c && h <= u) : (h > c || h <= u);
+ }
+ 
+-/* netif_tx_lock will turn down the performance, set only when necessary */
+-#ifdef CONFIG_NET_POLL_CONTROLLER
+-#define NETIF_TX_LOCK(ring) spin_lock(&(ring)->lock)
+-#define NETIF_TX_UNLOCK(ring) spin_unlock(&(ring)->lock)
+-#else
+-#define NETIF_TX_LOCK(ring)
+-#define NETIF_TX_UNLOCK(ring)
+-#endif
+-
+ /* reclaim all desc in one budget
+  * return error or number of desc left
+  */
+@@ -965,21 +956,16 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
+ 	int head;
+ 	int bytes, pkts;
+ 
+-	NETIF_TX_LOCK(ring);
+-
+ 	head = readl_relaxed(ring->io_base + RCB_REG_HEAD);
+ 	rmb(); /* make sure head is ready before touch any data */
+ 
+-	if (is_ring_empty(ring) || head == ring->next_to_clean) {
+-		NETIF_TX_UNLOCK(ring);
++	if (is_ring_empty(ring) || head == ring->next_to_clean)
+ 		return 0; /* no data to poll */
+-	}
+ 
+ 	if (!is_valid_clean_head(ring, head)) {
+ 		netdev_err(ndev, "wrong head (%d, %d-%d)\n", head,
+ 			   ring->next_to_use, ring->next_to_clean);
+ 		ring->stats.io_err_cnt++;
+-		NETIF_TX_UNLOCK(ring);
+ 		return -EIO;
+ 	}
+ 
+@@ -994,8 +980,6 @@ static int hns_nic_tx_poll_one(struct hns_nic_ring_data *ring_data,
+ 	ring->stats.tx_pkts += pkts;
+ 	ring->stats.tx_bytes += bytes;
+ 
+-	NETIF_TX_UNLOCK(ring);
+-
+ 	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
+ 	netdev_tx_completed_queue(dev_queue, pkts, bytes);
+ 
+@@ -1055,16 +1039,12 @@ static void hns_nic_tx_clr_all_bufs(struct hns_nic_ring_data *ring_data)
+ 	int head;
+ 	int bytes, pkts;
+ 
+-	NETIF_TX_LOCK(ring);
+-
+ 	head = ring->next_to_use; /* ntu :soft setted ring position*/
+ 	bytes = 0;
+ 	pkts = 0;
+ 	while (head != ring->next_to_clean)
+ 		hns_nic_reclaim_one_desc(ring, &bytes, &pkts);
+ 
+-	NETIF_TX_UNLOCK(ring);
+-
+ 	dev_queue = netdev_get_tx_queue(ndev, ring_data->queue_index);
+ 	netdev_tx_reset_queue(dev_queue);
+ }
+-- 
+2.17.1
+
 
