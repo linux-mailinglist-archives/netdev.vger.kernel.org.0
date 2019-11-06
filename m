@@ -2,121 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47084F1C94
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:38:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C458F1C97
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 18:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729383AbfKFRiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 12:38:11 -0500
-Received: from mail-eopbgr30058.outbound.protection.outlook.com ([40.107.3.58]:54216
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727286AbfKFRiL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 12:38:11 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ff+E+omuFr3MAmn+si75ZOw3Wd7n6rj2y5aLRizcCuNisME3DGKuZryeWPZHVoBjKRzjisyb5LVimbkp6gdQM4uC+D1UK8gncTJkAUxIKRejow6WBFsPXJsDWKG3C0Tt5NyB++p2YIz0t71+vdBp718ta8QhAf0zuA2+h6es7d3x2EnEcJiI2P1cij+s/wrAMuM3C8vVPv0q/bp/Yd4ok+CAOI3ajMTL/90GXMLbmHUopFC5ZGeUcW6TsfhDlcZJkQH3J9nfE24BsuhZHGUiQ5dI8KvjO9UvgRVkZi7RE/k4rt1j0rcbIajV28/if+GvNshxtrvukPI+Fr+hStSC3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NWKIk6sPuWOxm8O+Mz0Yd82ZQa8tb6pb00wCPzLBc8g=;
- b=UOmc9YSYu6Xw+hrbVCxLPj9wslp2rWVhPG+2UDWnSyBrI9GB65ka9rbQFxA5s4RrVkOkGtKlSvPqVNBibKkG5nPTa9I46iQJcFGSdAEzJESoWLdt+2JlLGXph42yMBilTlWY7j2TdAO0AHGFjXuwrsFROQ4EX09Ubz2icCSbqM+ckqi+YGLgajhQ2dfmoCv+yGwVB+d2Wl0GlLpjd9CXcxnNX1So3xRbwZCZGu+XYiQINuGde8jX9JiJuR2ceZ4U6UxAdoLFvKOhOndA6R22zc+B0OMxi4EpyTqBt6qCcfUeIUIZc2bq0VcbcOqpTwZKyC6lVouNFjkTU+H4c8bruA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NWKIk6sPuWOxm8O+Mz0Yd82ZQa8tb6pb00wCPzLBc8g=;
- b=PxlH8rerTWEfv5903PO8EDUsLPbmkdqcBY6JQiZbxjM+KwAIfZZfe3IjTBTNeptEHp6XQ6pOnI9tQ2ydHeiRm1tBv37agDryJVfYqkWSlPtoSk+I34znX42q4fb6QPc1soqa9C8cJXHqzaysTRzwBnsJ8vBnoTAY9FOBoOr1qek=
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com (20.177.49.153) by
- VI1PR04MB4334.eurprd04.prod.outlook.com (52.134.31.23) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Wed, 6 Nov 2019 17:38:07 +0000
-Received: from VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::50c3:42e6:9aa4:8744]) by VI1PR04MB4880.eurprd04.prod.outlook.com
- ([fe80::50c3:42e6:9aa4:8744%7]) with mapi id 15.20.2387.034; Wed, 6 Nov 2019
- 17:38:06 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Daniel Walker <danielwa@cisco.com>
-CC:     Sathish Jarugumalli <sjarugum@cisco.com>,
-        "xe-linux-external@cisco.com" <xe-linux-external@cisco.com>,
-        Daniel Walker <dwalker@fifo99.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] drivers: net: gianfar: Shortest frame drops at Ethernet
- port
-Thread-Topic: [PATCH] drivers: net: gianfar: Shortest frame drops at Ethernet
- port
-Thread-Index: AQHVlMQbSvI2s56BgEOMA4u7iC3YB6d+Y0Qg
-Date:   Wed, 6 Nov 2019 17:38:06 +0000
-Message-ID: <VI1PR04MB4880B060847C1CD175B998DF96790@VI1PR04MB4880.eurprd04.prod.outlook.com>
-References: <20191106170320.27662-1-danielwa@cisco.com>
-In-Reply-To: <20191106170320.27662-1-danielwa@cisco.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=claudiu.manoil@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 28546c04-5b46-48f7-4091-08d762e0158d
-x-ms-traffictypediagnostic: VI1PR04MB4334:
-x-microsoft-antispam-prvs: <VI1PR04MB4334DBBBF4DB824981A5065196790@VI1PR04MB4334.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 02135EB356
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(366004)(376002)(346002)(136003)(13464003)(189003)(199004)(26005)(486006)(76176011)(6506007)(6916009)(256004)(476003)(14454004)(44832011)(7696005)(25786009)(305945005)(74316002)(7736002)(11346002)(186003)(66066001)(446003)(2906002)(229853002)(99286004)(6116002)(33656002)(76116006)(6436002)(66946007)(8936002)(9686003)(86362001)(102836004)(71200400001)(55016002)(316002)(71190400001)(5660300002)(52536014)(6246003)(8676002)(64756008)(66446008)(478600001)(66556008)(66476007)(81156014)(81166006)(54906003)(3846002)(14444005)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB4334;H:VI1PR04MB4880.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: edgl5b63XmHn8Xqek3BAymWZlPlCP7aodwJ+lRzxRiVbKdM//dAq97YxwCtrRqZKxxwtzdqxB8UGpuVV2zOlIDNYZE3gTB9D3qPZ851tuzegW4uTdAXPH59DLjSSpdsFRCouu6ZSU9xlehCIu/8Z3rhaqRhdPfNuqsr0EoSSo3pQXr6syoPSvw+pYttKz4SOMPgFS8mKd3Xk6j1IlhVYYn5XBTq/Fmwu94Z1Ys5atPFeGt79aqCwmN46YqQWYmeHQcK1bcB3vzQUa+64j550Z3aWS5PK++v1auybQxaFyNWq35D8KBarrv+pN/4NMMtQJYKYMTeI7ZW+q/lTeCzZExcHOuQwZooDS2dilnlmixWDmMhkiipzRHu32PnL+FRVMetCP7bt64cqwKvsNwW20nRlQ38zBu++bn/f8sb4f/4TG7nce41zehJ+CZdYwvUJ
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1732268AbfKFRiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 12:38:20 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:47046 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732176AbfKFRiU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 12:38:20 -0500
+Received: by mail-pl1-f196.google.com with SMTP id l4so6523836plt.13
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 09:38:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=t938QZuinKt/I5Kmc45CqNzpKPUF+1j9MCJO0HzPDqc=;
+        b=B2BTHV6hpODkesFyhzbAnB8/8Xh0kqOqKoO15FvUVYgQVadt1yDoGjmIn8Z8bEooYt
+         LtfBH4vtHo6Ae51h6gYod9VujsQSFf3xJ1yM9PodhzKfmT/ZAiTBK6hmvoxg2msPVilP
+         2peim3m8lJq/glNN0t2nteFtN7aX+I+0ac76QIvv3q4zUlN9GAj6z/MkvVTp6430170d
+         yr1iOu8wkWtxL4p1aEiGSeAUEeoutxnJCTWAlejFg5Jtz8wIkz/4Nj5iZqdGLREAA+Mx
+         BGpkZBf6uFgSrJzFtTZukCCNW7n/JsY7Li+OUQ43lPPvAACOKhqTcVeevw2PJbTI6vl5
+         bWhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=t938QZuinKt/I5Kmc45CqNzpKPUF+1j9MCJO0HzPDqc=;
+        b=feY66oQnvDCbX86XUB8Wa7CQjMcmOa0siXYJIPRX5J7dpeWBL+v0LOIxkiEX7y9t4I
+         OCzBmPlYRcYxaXMVY0MQvR1v3U6OQUXCvzH/q2C14m+4+CkBRFotSJVgeeNJjaqb39Q1
+         8xnMV2RV1uijR4gizX7VvPi41uAOHwNfX0fbIy3tfi8WfE3m59hMyYhJqcx0aKhSYeZ5
+         L5atkAGCGwL+Ie3JAANCOGkKBPgDUe8NO/AzQiGIEbK6FGm84M40J/cL4VOGcc1NiNQp
+         zpA+XvQtdOj+jc7WCnT01feCAlawR6+1uotQmjy9l2WNygl3DV26zbG2Y/nmMpyjEvqV
+         lNbw==
+X-Gm-Message-State: APjAAAX5qwU6zalP/1XrNb3541ropMIHHBOnmF9yrSTqtL/F5/4eI0UG
+        0nNLuzcAgrBhjHjBTMLhxRY=
+X-Google-Smtp-Source: APXvYqxSh0StOfnNVmXJwMZTTx+rroltnDqi3OeDEGRqFDDJz2MZebYEFnSAv0kpx/8uixTYUpygeA==
+X-Received: by 2002:a17:902:a410:: with SMTP id p16mr3820552plq.184.1573061897957;
+        Wed, 06 Nov 2019 09:38:17 -0800 (PST)
+Received: from gmail.com ([66.170.99.95])
+        by smtp.gmail.com with ESMTPSA id z25sm22935367pfa.88.2019.11.06.09.38.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Nov 2019 09:38:17 -0800 (PST)
+Date:   Wed, 6 Nov 2019 09:38:12 -0800
+From:   William Tu <u9012063@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>, dev@openvswitch.org,
+        i.maximets@ovn.org, Eelco Chaudron <echaudro@redhat.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: Re: [PATCH net-next] xsk: Enable shared umem support.
+Message-ID: <20191106173812.GA24861@gmail.com>
+References: <1572996938-23957-1-git-send-email-u9012063@gmail.com>
+ <CAJ8uoz1voxsk9+xnKtcvrjmObO8SbOB0BZGxgkqPdejbOmM_ZA@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28546c04-5b46-48f7-4091-08d762e0158d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2019 17:38:06.9160
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VvvvEYQ6mXltIjrvINH1WqLJPubixdFk1YzYKstrKdgkTMlouzcWSu/aGOyKSHNhSbT2Ha+fWuustaqQ3U30lg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4334
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ8uoz1voxsk9+xnKtcvrjmObO8SbOB0BZGxgkqPdejbOmM_ZA@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Daniel Walker <danielwa@cisco.com>
->Sent: Wednesday, November 6, 2019 7:03 PM
->To: Claudiu Manoil <claudiu.manoil@nxp.com>
->Cc: Sathish Jarugumalli <sjarugum@cisco.com>; xe-linux-external@cisco.com;
->Daniel Walker <dwalker@fifo99.com>; David S. Miller
-><davem@davemloft.net>; netdev@vger.kernel.org; linux-
->kernel@vger.kernel.org
->Subject: [PATCH] drivers: net: gianfar: Shortest frame drops at Ethernet p=
-ort
->
->NXP has provided the patch for packet drops  at ethernet port
->Frames shorter than 60bytes are getting dropped at ethernetport
->need to add padding for the shorter range frames to be transmit
->the function "eth_skb_pad(skb" provides padding (and CRC) for
->packets under 60 bytes
->
->Signed-off-by: Sathish Jarugumalli <sjarugum@cisco.com>
->Cc: xe-linux-external@cisco.com
->Signed-off-by: Daniel Walker <dwalker@fifo99.com>
+On Wed, Nov 06, 2019 at 05:53:09PM +0100, Magnus Karlsson wrote:
+> On Wed, Nov 6, 2019 at 12:41 AM William Tu <u9012063@gmail.com> wrote:
+> >
+> > Currently the shared umem feature is not supported in libbpf.
+> > The patch removes the refcount check in libbpf to enable use of
+> > shared umem.  Also, a umem can be shared by multiple netdevs,
+> > so remove the checking at xsk_bind.
+> 
+> Hi William,
+> 
+> I do have a five part patch set sitting on the shelf that implements
+> this as well as a sample, added documentation and support for Rx-only
+> and Tx-only sockets. Let me just rebase it, retest it then submit it
+> to the list and you can see what you think of it. It is along the
+> lines of what you are suggesting here. I am travelling at the moment,
+> so this might not happen until tomorrow.
+> 
+> Structure of the patch set that I will submit:
+> 
+> Patch 1: Adds shared umem support to libbpf
+> Patch 2: Shared umem support and example XPD program added to xdpsock sample
+> Patch 3: Adds Rx-only and Tx-only support to libbpf
+> Patch 4: Uses Rx-only sockets for rxdrop and Tx-only sockets for txpush in
+>          the xdpsock sample
+> Patch 5: Add documentation entries for these two features
+> 
+Hi Magnus,
 
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+Thank you. I will wait for your patch set.
 
-Normally padding is done by the hardware, and it works at least on my
-test cases and boards.
-But cisco seems to have hit a case where h/w padding gets
-unexpectedly disabled (concurrency issue writing the config register?).
-This patch should go as a workaround, until root cause found.
-
--Claudiu
+William
 
