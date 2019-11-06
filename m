@@ -2,171 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D04F203F
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 21:59:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDDCF205B
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 22:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729479AbfKFU7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 15:59:40 -0500
-Received: from mail-vk1-f202.google.com ([209.85.221.202]:39276 "EHLO
-        mail-vk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727351AbfKFU7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 15:59:39 -0500
-Received: by mail-vk1-f202.google.com with SMTP id l4so37176vkn.6
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 12:59:37 -0800 (PST)
+        id S1732589AbfKFVGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 16:06:38 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36589 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727794AbfKFVGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 16:06:37 -0500
+Received: by mail-wr1-f67.google.com with SMTP id r10so216894wrx.3
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 13:06:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=y6+OgBdaVazoYQ3Zsb/g9VIXHgoWIg8+1fkGYDtCvc0=;
-        b=XnFOq9nIU2FcE74t4s4Oq2Ts3sea/UCxoVpfe30f9F2FkMunV/zckC1TUpYuSKxw+z
-         XMWMKz2hkeqqDs5YdNSRBWb0YozjkzIxH6SU8QW+b13hQAHX3PpkIzbD/oObg/6BlhlF
-         OQ1s5DIxDQyHWHcAsZNzRuunt0NMSYbJNcnwFDS56CTB7fFqgL/1MBYsoK3JuOdgeuqF
-         sIPNo4NTYwhV9AJL8r6gbPYxJHIZcGd0J6rNYLUUMp+YlnESlFWwQmAIgondveE+QtLj
-         Ymo4D8QMWJFG/vyJ+I1JQ3G6bLQpmfYe1BZth7C9YcH4VKINXi97zNXruR/Mixx2PE4Q
-         teIw==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MqpzOP5xpsOGjxOWnYRkigNeIfXpG8rAI4fIo15URUY=;
+        b=P1oAt0qlmih7JMLNJhSKqQU4lqJwqZB8qwP555w60EsNIjTAikbFGpt295wdN/GMHC
+         8NJtuYhp4lKjYGcGElAfTYpezzhRHQZBn1PCpSN/Rn1y9RVvnufwU/T3U708c2NliNpQ
+         beq+Xp/PYJ+xDXJsKcOrQ5b1vyDiiac3xXV6KZ/QZrwiY8oJn4xHVkgr/FF0jQL77zgn
+         xA+mJlgIKM9WfPOxrzY9rv8QvMwPDMtyM7qj8YOh9C5tQV4Vnt9QvNCnaD5cHS2OayOZ
+         v7jyO+4MYr/h9sGGJbpy15isNJQ8bIXWngs5Rn67Tl0kNK1bQ43qlTs2/E4n3VayfnKh
+         PSdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=y6+OgBdaVazoYQ3Zsb/g9VIXHgoWIg8+1fkGYDtCvc0=;
-        b=a0UDNlh3ddRVhoHmK3pz+sE5CJtWo/aqxf+czQaDuTLRLZaNVMwj4UPxga/uHDN+RA
-         p0drkDxxBYCGRKYQbSzbzkS/vxv3Pqle9Ko/8645LZAayLPjJBFymxc11EO7whk56CeQ
-         ytsBUjGvDqBUofXp9gKMH2bPiba7UZptV9hWUch0Rc0Hwqc4gpy/uu/SQa3d+2oBlpVb
-         bruAdKyBHwXQKCq7/bajPkqpgrNNnu/c1ZmF7cliny8sU4abioRq8i+CwmrhFPv1czxs
-         ttg7JGjeRsXQlUT5RK0hdCf4+uleJL0qN5Ioh+1HFT1BacEL1KCA8iVhFRm4RgOR6Wb1
-         TYaQ==
-X-Gm-Message-State: APjAAAUoR7flKKF9+aFMXBhpo1Dv6/Rw+635U8CMP7Vh5pzS7rSpdE8b
-        wpOyZOJQn1baOlziR1HgGSAb/2rUQRlkUg==
-X-Google-Smtp-Source: APXvYqxA6zpaQyhnUOa5mxjkf8KToFV8BPO5lztJ89SZIJwNJ1FkWkbKt+TCgDTDQcXmfLINSaHyV+2qb53HLg==
-X-Received: by 2002:a67:fbd9:: with SMTP id o25mr2695759vsr.70.1573073976676;
- Wed, 06 Nov 2019 12:59:36 -0800 (PST)
-Date:   Wed,  6 Nov 2019 12:59:33 -0800
-Message-Id: <20191106205933.149697-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH net-next] tcp: fix data-race in tcp_recvmsg()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=MqpzOP5xpsOGjxOWnYRkigNeIfXpG8rAI4fIo15URUY=;
+        b=h16tOyrVIIJ93O2cHMLofFiczua1RyakaUmZuIUkqS3ZI+4wAUq3etr3FZpDe9dHje
+         LY9d5cfk7Ingc1vTE6cVSYMwKEFt3piA1az10FY+t6+/Xtg4jbWWRdEDFd9iz1N0nr7Z
+         ASLsGGZyyP9jElHpFz6zEpomduCE2pD0JlpgaByJe+jG+nHQTx6NyFNTYCr9HYkNWEgM
+         jPMZ4fg/1Jax6UPRZdShZX9a+HAfRMivuc+zgJ4rWejmQd7e3JmTPDNttgTco2nAfJ7v
+         nqnBHJert/rQfH6+Eo4n+oxm0MMo3wprTWvaKedHPpIJfXM35HacDJb4biE2E/WubVyP
+         QJGw==
+X-Gm-Message-State: APjAAAXlfykFeP+kK9QbjEqyWG2r2NkNLrrJKFtrrLx1YMZ1DUNoywPw
+        tsFQ0muC0pqogDJRRTLZ4dBPF2NwzUE=
+X-Google-Smtp-Source: APXvYqwTUSiPjuk15gUSlYdIkf+wbFPwh8bCd8IdB3llI0ntHZ/2HZKzv5VwlEvWH3wOKa09pnOmoQ==
+X-Received: by 2002:a5d:4649:: with SMTP id j9mr4710551wrs.248.1573074394971;
+        Wed, 06 Nov 2019 13:06:34 -0800 (PST)
+Received: from ?IPv6:2a01:e35:8b63:dc30:95e0:8058:2b4b:3437? ([2a01:e35:8b63:dc30:95e0:8058:2b4b:3437])
+        by smtp.gmail.com with ESMTPSA id x205sm5354939wmb.5.2019.11.06.13.06.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Nov 2019 13:06:33 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v2 4/5] net: ipv4: allow setting address on interface
+ outside current namespace
+To:     Jonas Bonn <jonas@norrbonn.se>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <20191106053923.10414-1-jonas@norrbonn.se>
+ <20191106053923.10414-5-jonas@norrbonn.se>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <1f8a0f3e-e4ac-40c9-26e6-f14498ccdbe9@6wind.com>
+Date:   Wed, 6 Nov 2019 22:06:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20191106053923.10414-5-jonas@norrbonn.se>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reading tp->recvmsg_inq after socket lock is released
-raises a KCSAN warning [1]
+Le 06/11/2019 à 06:39, Jonas Bonn a écrit :
+> This patch allows an interface outside of the current namespace to be
+> selected when setting a new IPv4 address for a device.  This uses the
+> IFA_TARGET_NETNSID attribute to select the namespace in which to search
+> for the interface to act upon.
+> 
+> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
+> ---
+[snip]
+> @@ -922,16 +917,37 @@ static int inet_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
+>  			    struct netlink_ext_ack *extack)
+>  {
+>  	struct net *net = sock_net(skb->sk);
+> +	struct net *tgt_net = NULL;
+>  	struct in_ifaddr *ifa;
+>  	struct in_ifaddr *ifa_existing;
+>  	__u32 valid_lft = INFINITY_LIFE_TIME;
+>  	__u32 prefered_lft = INFINITY_LIFE_TIME;
+> +	struct nlattr *tb[IFA_MAX+1];
+> +	int err;
+>  
+>  	ASSERT_RTNL();
+>  
+> -	ifa = rtm_to_ifaddr(net, nlh, &valid_lft, &prefered_lft, extack);
+> -	if (IS_ERR(ifa))
+> -		return PTR_ERR(ifa);
+> +	err = nlmsg_parse_deprecated(nlh, sizeof(struct ifaddrmsg), tb, IFA_MAX,
+> +				     ifa_ipv4_policy, extack);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (tb[IFA_TARGET_NETNSID]) {
+> +		int32_t netnsid = nla_get_s32(tb[IFA_TARGET_NETNSID]);
+> +
+> +		tgt_net = rtnl_get_net_ns_capable(NETLINK_CB(skb).sk, netnsid);
+> +		if (IS_ERR(net)) {
+if (IS_ERR(tgt_net)) ?
 
-Replace has_tss & has_cmsg by cmsg_flags and make
-sure to not read tp->recvmsg_inq a second time.
-
-[1]
-BUG: KCSAN: data-race in tcp_chrono_stop / tcp_recvmsg
-
-write to 0xffff888126adef24 of 2 bytes by interrupt on cpu 0:
- tcp_chrono_set net/ipv4/tcp_output.c:2309 [inline]
- tcp_chrono_stop+0x14c/0x280 net/ipv4/tcp_output.c:2338
- tcp_clean_rtx_queue net/ipv4/tcp_input.c:3165 [inline]
- tcp_ack+0x274f/0x3170 net/ipv4/tcp_input.c:3688
- tcp_rcv_established+0x37e/0xf50 net/ipv4/tcp_input.c:5696
- tcp_v4_do_rcv+0x381/0x4e0 net/ipv4/tcp_ipv4.c:1561
- tcp_v4_rcv+0x19dc/0x1bb0 net/ipv4/tcp_ipv4.c:1942
- ip_protocol_deliver_rcu+0x4d/0x420 net/ipv4/ip_input.c:204
- ip_local_deliver_finish+0x110/0x140 net/ipv4/ip_input.c:231
- NF_HOOK include/linux/netfilter.h:305 [inline]
- NF_HOOK include/linux/netfilter.h:299 [inline]
- ip_local_deliver+0x133/0x210 net/ipv4/ip_input.c:252
- dst_input include/net/dst.h:442 [inline]
- ip_rcv_finish+0x121/0x160 net/ipv4/ip_input.c:413
- NF_HOOK include/linux/netfilter.h:305 [inline]
- NF_HOOK include/linux/netfilter.h:299 [inline]
- ip_rcv+0x18f/0x1a0 net/ipv4/ip_input.c:523
- __netif_receive_skb_one_core+0xa7/0xe0 net/core/dev.c:5010
- __netif_receive_skb+0x37/0xf0 net/core/dev.c:5124
- netif_receive_skb_internal+0x59/0x190 net/core/dev.c:5214
- napi_skb_finish net/core/dev.c:5677 [inline]
- napi_gro_receive+0x28f/0x330 net/core/dev.c:5710
-
-read to 0xffff888126adef25 of 1 bytes by task 7275 on cpu 1:
- tcp_recvmsg+0x77b/0x1a30 net/ipv4/tcp.c:2187
- inet_recvmsg+0xbb/0x250 net/ipv4/af_inet.c:838
- sock_recvmsg_nosec net/socket.c:871 [inline]
- sock_recvmsg net/socket.c:889 [inline]
- sock_recvmsg+0x92/0xb0 net/socket.c:885
- sock_read_iter+0x15f/0x1e0 net/socket.c:967
- call_read_iter include/linux/fs.h:1889 [inline]
- new_sync_read+0x389/0x4f0 fs/read_write.c:414
- __vfs_read+0xb1/0xc0 fs/read_write.c:427
- vfs_read fs/read_write.c:461 [inline]
- vfs_read+0x143/0x2c0 fs/read_write.c:446
- ksys_read+0xd5/0x1b0 fs/read_write.c:587
- __do_sys_read fs/read_write.c:597 [inline]
- __se_sys_read fs/read_write.c:595 [inline]
- __x64_sys_read+0x4c/0x60 fs/read_write.c:595
- do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 7275 Comm: sshd Not tainted 5.4.0-rc3+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: b75eba76d3d7 ("tcp: send in-queue bytes in cmsg upon read")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv4/tcp.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 8fb4fefcfd544943e9c92870d4d0da25f3813448..9b48aec29aca6317adf7e96c8d058c859b1309c6 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1958,8 +1958,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
- 	struct sk_buff *skb, *last;
- 	u32 urg_hole = 0;
- 	struct scm_timestamping_internal tss;
--	bool has_tss = false;
--	bool has_cmsg;
-+	int cmsg_flags;
- 
- 	if (unlikely(flags & MSG_ERRQUEUE))
- 		return inet_recv_error(sk, msg, len, addr_len);
-@@ -1974,7 +1973,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
- 	if (sk->sk_state == TCP_LISTEN)
- 		goto out;
- 
--	has_cmsg = tp->recvmsg_inq;
-+	cmsg_flags = tp->recvmsg_inq ? 1 : 0;
- 	timeo = sock_rcvtimeo(sk, nonblock);
- 
- 	/* Urgent data needs to be handled specially. */
-@@ -2157,8 +2156,7 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
- 
- 		if (TCP_SKB_CB(skb)->has_rxtstamp) {
- 			tcp_update_recv_tstamps(skb, &tss);
--			has_tss = true;
--			has_cmsg = true;
-+			cmsg_flags |= 2;
- 		}
- 		if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_FIN)
- 			goto found_fin_ok;
-@@ -2183,10 +2181,10 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
- 
- 	release_sock(sk);
- 
--	if (has_cmsg) {
--		if (has_tss)
-+	if (cmsg_flags) {
-+		if (cmsg_flags & 2)
- 			tcp_recv_timestamp(msg, sk, &tss);
--		if (tp->recvmsg_inq) {
-+		if (cmsg_flags & 1) {
- 			inq = tcp_inq_hint(sk);
- 			put_cmsg(msg, SOL_TCP, TCP_CM_INQ, sizeof(inq), &inq);
- 		}
--- 
-2.24.0.rc1.363.gb1bccd3e3d-goog
-
+Nicolas
