@@ -2,149 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51036F0DFD
-	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 05:48:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3062F0DFE
+	for <lists+netdev@lfdr.de>; Wed,  6 Nov 2019 05:48:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731121AbfKFEsI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 5 Nov 2019 23:48:08 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:4448 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727266AbfKFEsI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 23:48:08 -0500
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xA64l0DA015295;
-        Tue, 5 Nov 2019 23:47:56 -0500
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w3hhmsd7e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 05 Nov 2019 23:47:56 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xA64ii7S032519;
-        Wed, 6 Nov 2019 04:47:54 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04wdc.us.ibm.com with ESMTP id 2w11e7ccp7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 06 Nov 2019 04:47:54 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xA64lrOa32965076
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 6 Nov 2019 04:47:53 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 667A67805F;
-        Wed,  6 Nov 2019 04:47:53 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8D44878063;
-        Wed,  6 Nov 2019 04:47:52 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.85.194.118])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  6 Nov 2019 04:47:52 +0000 (GMT)
-Subject: Re: [RFC PATCH] powerpc/pseries/mobility: notify network peers after
- migration
-To:     Russell Currey <ruscur@russell.cc>, linuxppc-dev@ozlabs.org
-Cc:     nathanl@linux.ibm.com, netdev@vger.kernel.org, msuchanek@suse.com,
-        tyreld@linux.ibm.com
-References: <1572998794-9392-1-git-send-email-tlfalcon@linux.ibm.com>
- <b42f1dbdba88f74149de669cb285408d640cdb79.camel@russell.cc>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <15e84597-7b5a-1269-f1b8-753268e90741@linux.ibm.com>
-Date:   Tue, 5 Nov 2019 22:47:51 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1731210AbfKFEsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 5 Nov 2019 23:48:41 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43155 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727266AbfKFEsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 5 Nov 2019 23:48:41 -0500
+Received: by mail-pf1-f195.google.com with SMTP id 3so17882719pfb.10
+        for <netdev@vger.kernel.org>; Tue, 05 Nov 2019 20:48:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=v42+MZ4UPr2BbMb1do1OwGpbKR7cuUfnceiZ2TOesAA=;
+        b=TUtrAaorujmhuhm1YjFYb2sU0UYhyPfM7NM0lNwVtJp/1giWr3dXvcrnXEd+4JxuxA
+         zLdSi7oLUsezTVPEGi1GnfYFmKruFbqOVLoijxHY49iSLLbyooFDs3y0a2cf9ALLiVuo
+         JnqEB5NzNkDIOqm6zjqYIFuHB4FNuuWKSQRMZRMAaojdg9v9CmIsQx9mClBxM/PGLjqO
+         uO65/xRKdfY4g2m3nBYcvIqT6fJFlMDxmrRkSDkwZwTW7e3LIJl8Moe/RoamTzNN5MU3
+         P3yfefiBPAoVgfAYLQWujOqAaYqaWNbeEunGvZGOJ96EfmQRY149licwfXF09kXTr1k3
+         9XPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=v42+MZ4UPr2BbMb1do1OwGpbKR7cuUfnceiZ2TOesAA=;
+        b=KcNWrqa37/dkv+JjdVeYIz2nwvMhltj0YUkt/hidqboW3qtlDJUfyQ1MU6m4f2Rp5y
+         Mrm/d8nZTn1SS45SGe8NUIMc7yP1tkmSzYNN/HKBbQQTiJMS/mOVBakfKGjvJ/V4XLRu
+         5D9vz7i8YBwUxHRdLMhdQafGaYoV/OjaJuS5NgHdyuf9fu5NLJVdXdkffkfGfCp0Zmn3
+         RuZxwlhdpJCei5/TvWCNHcIfIK7lzkLs8HiE1cBP2j/QLdzNFH0g81rOGpdjniSaHsx2
+         nLYqY4hwGElmIolA7OuBMC8IxuqPrgXZnpWe6iyUXgsjVD9ntjsiw7+vHXeIsE4+n+aG
+         uRsg==
+X-Gm-Message-State: APjAAAUQysDazXHjTyLJG30XOYUpAEIQjn+wIhWXrqw3Wr2+Qw+ZTtew
+        Wourlqr9vBGIeJyoodrgKdQtnA==
+X-Google-Smtp-Source: APXvYqx1ojAqJ1CtapSYBt0gnrXLNo6/lygWhMXOzTqIO7v2NYaBzgG6BMH0BV98S4+mJjAXS+c6Mg==
+X-Received: by 2002:a17:90a:19dc:: with SMTP id 28mr1160569pjj.32.1573015720402;
+        Tue, 05 Nov 2019 20:48:40 -0800 (PST)
+Received: from cakuba.netronome.com (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id x70sm26333855pfd.132.2019.11.05.20.48.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2019 20:48:40 -0800 (PST)
+Date:   Tue, 5 Nov 2019 20:48:37 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Zhu Yanjun <yanjun.zhu@oracle.com>
+Cc:     rain.1986.08.12@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCHv4 1/1] net: forcedeth: add xmit_more support
+Message-ID: <20191105204837.63fe5b70@cakuba.netronome.com>
+In-Reply-To: <f389d645-384f-73a5-4d15-af388520446f@oracle.com>
+References: <1572928001-6915-1-git-send-email-yanjun.zhu@oracle.com>
+        <20191105094841.623b498e@cakuba.netronome.com>
+        <f389d645-384f-73a5-4d15-af388520446f@oracle.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <b42f1dbdba88f74149de669cb285408d640cdb79.camel@russell.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-05_09:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1908290000 definitions=main-1911060050
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, 6 Nov 2019 12:47:29 +0800, Zhu Yanjun wrote:
+> On 2019/11/6 1:48, Jakub Kicinski wrote:
+> > On Mon,  4 Nov 2019 23:26:41 -0500, Zhu Yanjun wrote: =20
+> >> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/eth=
+ernet/nvidia/forcedeth.c
+> >> index 05d2b47..0d21ddd 100644
+> >> --- a/drivers/net/ethernet/nvidia/forcedeth.c
+> >> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
+> >> @@ -2259,7 +2265,12 @@ static netdev_tx_t nv_start_xmit(struct sk_buff=
+ *skb, struct net_device *dev)
+> >>   			u64_stats_update_begin(&np->swstats_tx_syncp);
+> >>   			nv_txrx_stats_inc(stat_tx_dropped);
+> >>   			u64_stats_update_end(&np->swstats_tx_syncp);
+> >> -			return NETDEV_TX_OK;
+> >> +
+> >> +			writel(NVREG_TXRXCTL_KICK | np->txrxctl_bits,
+> >> +			       get_hwbase(dev) + NvRegTxRxControl);
+> >> +			ret =3D NETDEV_TX_OK;
+> >> +
+> >> +			goto dma_error; =20
+> > You could goto the middle of the txkick if statement here, instead of
+> > duplicating the writel()? =20
+> As your suggestion, the change is like this:
+>=20
+> @@ -2374,7 +2374,9 @@ static netdev_tx_t nv_start_xmit(struct sk_buff=20
+> *skb, struct net_device *dev)
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irqrestore(&np->l=
+ock, flags);
+>=20
+>  =C2=A0txkick:
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (netif_queue_stopped(dev) || !ne=
+tdev_xmit_more()) {
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (netif_queue_stopped(dev) || !ne=
+tdev_xmit_more())
+> +dma_error:
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 {
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 u32 txrxctl_kick =3D NVREG_TXRXCTL_KICK | np->txrxctl_bi=
+ts;
+>=20
+>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
+>=20
+> The opening brace on the first of the line. It conflicts with the followi=
+ng:
+>=20
+> Documentation/process/coding-style.rst:
+> "
+>  =C2=A0 98 3) Placing Braces and Spaces
+>  =C2=A0 99 ----------------------------
+>  =C2=A0100
+>  =C2=A0101 The other issue that always comes up in C styling is the place=
+ment of
+>  =C2=A0102 braces.=C2=A0 Unlike the indent size, there are few technical =
+reasons to
+>  =C2=A0103 choose one placement strategy over the other, but the preferre=
+d=20
+> way, as
+>  =C2=A0104 shown to us by the prophets Kernighan and Ritchie, is to put t=
+he=20
+> opening
+>  =C2=A0105 brace last on the line, and put the closing brace first, thusl=
+y:
+> "
+> So I prefer to the current code style.
+>=20
+> Thanks for your suggestions.
 
-On 11/5/19 10:13 PM, Russell Currey wrote:
-> On Tue, 2019-11-05 at 18:06 -0600, Thomas Falcon wrote:
->> After a migration, it is necessary to send a gratuitous ARP
->> from all running interfaces so that the rest of the network
->> is aware of its new location. However, some supported network
->> devices are unaware that they have been migrated. To avoid network
->> interruptions and other unwanted behavior, force a GARP on all
->> valid, running interfaces as part of the post_mobility_fixup
->> routine.
->>
->> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-> Hi Thomas,
->
->> ---
->>   arch/powerpc/platforms/pseries/mobility.c | 20 ++++++++++++++++++++
->>   1 file changed, 20 insertions(+)
->>
->> diff --git a/arch/powerpc/platforms/pseries/mobility.c
->> b/arch/powerpc/platforms/pseries/mobility.c
->> index b571285f6c14..c1abc14cf2bb 100644
->> --- a/arch/powerpc/platforms/pseries/mobility.c
->> +++ b/arch/powerpc/platforms/pseries/mobility.c
->> @@ -17,6 +17,9 @@
->>   #include <linux/delay.h>
->>   #include <linux/slab.h>
->>   #include <linux/stringify.h>
->> +#include <linux/netdevice.h>
->> +#include <linux/rtnetlink.h>
->> +#include <net/net_namespace.h>
->>   
->>   #include <asm/machdep.h>
->>   #include <asm/rtas.h>
->> @@ -331,6 +334,8 @@ void post_mobility_fixup(void)
->>   {
->>   	int rc;
->>   	int activate_fw_token;
->> +	struct net_device *netdev;
->> +	struct net *net;
->>   
->>   	activate_fw_token = rtas_token("ibm,activate-firmware");
->>   	if (activate_fw_token == RTAS_UNKNOWN_SERVICE) {
->> @@ -371,6 +376,21 @@ void post_mobility_fixup(void)
->>   	/* Possibly switch to a new RFI flush type */
->>   	pseries_setup_rfi_flush();
->>   
->> +	/* need to force a gratuitous ARP on running interfaces */
->> +	rtnl_lock();
->> +	for_each_net(net) {
->> +		for_each_netdev(net, netdev) {
->> +			if (netif_device_present(netdev) &&
->> +			    netif_running(netdev) &&
->> +			    !(netdev->flags & (IFF_NOARP |
->> IFF_LOOPBACK)))
->> +				call_netdevice_notifiers(NETDEV_NOTIFY_
->> PEERS,
->> +							 netdev);
-> Without curly braces following the "if" statment, the second line
-> (below) will be executed unconditionally, which I assume with this
-> indentation isn't what you want.
->
-> (reported by snowpatch)
->
-> - Russell
+	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
+		u32 txrxctl_kick;
 
-Thanks for catching that! I'll fix that and send a v2 soon.
-
-Tom
-
-
->> +				call_netdevice_notifiers(NETDEV_RESEND_
->> IGMP,
->> +							 netdev);
->> +		}
->> +	}
->> +	rtnl_unlock();
->> +
->>   	return;
->>   }
->>   
+txkick:
+		txrxctl_kick =3D NVREG_TXRXCTL_KICK | np->txrxctl_bits;
+		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
+	}
