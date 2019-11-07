@@ -2,178 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD68BF2585
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 03:45:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A1EF258B
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 03:50:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732931AbfKGCpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 21:45:15 -0500
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:51825 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727665AbfKGCpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 21:45:14 -0500
-Received: by mail-pg1-f202.google.com with SMTP id w22so599022pgj.18
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 18:45:14 -0800 (PST)
+        id S1732382AbfKGCuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 21:50:14 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:43854 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727443AbfKGCuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 21:50:14 -0500
+Received: by mail-qt1-f193.google.com with SMTP id l24so738357qtp.10;
+        Wed, 06 Nov 2019 18:50:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=8eP7AtOpuvyIaEw38M0m2PJkZdPXAW0s9vv1F1nADmg=;
-        b=L/GbZn58L1+X+l1q0MQpVw89rcxYjSAG4LKnBeeTYXYfV/fxqZmx0Hzo0TDMISRMD5
-         /RxJHHk5iOZN1QyYl+NHAsvbN8qrO8eKbZgCCEkuAUwhbMrMccV3bqwEp9k4Y+IlN4XB
-         cW/OZdND3795GtKSycR1CXUPjPy982c8EBBkQReXV9K/S/sowXyRFY1hb5+adGImLJ75
-         wUMTu/wp5fcb3CCtDjhUZLEnGKO/DF2TEymJ2XZ6GSZblJsjfv8B2tfn2CCNy9PXjMLb
-         7f3RDlzGibVm9AivrB2+A4+cLFVnn/ZKEyIWg9TFbf9FVRjY7tssTdrNg2ICXYVDKfxP
-         f6ZQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9nCvA3gEV01dvB/sO3Fi4X7jcQkZ1f77jKTKksvxLZc=;
+        b=jUuAB9/rt8iADI6nv+Wo0qGjLgM/XMJRlVcIeq+hza2zj6FVDsbDKPldAPbbZbHp7q
+         b8a8CR9pbKCc5X0fQFhxoyaCEnp8ycHGM9j8ZyDumN69KUCewgaUDnY0g4QPSUJ/Fx3Z
+         mk4Hql5JR4PJX+lKFj28kcSstStNY7kpg/igsi/bxjWVRUhb9VVTpJQ7Q2u1AN2N9NEY
+         VQEs18jf//0fC18CN4iLNerND0/CpbXyX2J3ggMOuw9gCExu3tLkqlrr5I0XmzbPbwS9
+         kdZk8A+UC+Sp6DVaBlScFVykjox1/wEUM1c0hY52qOyNn5N+P1h40jHhO/cGKW74kF1q
+         41Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=8eP7AtOpuvyIaEw38M0m2PJkZdPXAW0s9vv1F1nADmg=;
-        b=XaSvwovNEeT2bMJ/uHRIIUk3jydnIv3hV3hEhAoURwEEnNh+qCTyccOM/ZvkZz22Ur
-         q0+H5E/3v038ywJlp6uB7AkZS7jw2W5CKBB1PSbTFjpWUr546a4NB25pg6sCag7E4LbJ
-         dlQ+WLMMLn9vorFVsYp0qoOOIuGJ9DidJVevAcbK2oNTxsXOt3vcWl8SXA6Yh1Q8jf7T
-         RRy82whc301Rh7W6LldBlNrCqf0f3L1U2h8NFEtM96q92Z8tRRXJwLOUA2e73hp1ZKoa
-         EqyyVRse3ufpjtioh+/dlOqp8SYpuRKIbjtXWGuxNdjoasaeF4v/MYL8jZ237QSG7Kf0
-         WB9Q==
-X-Gm-Message-State: APjAAAVDNbWS2uAPxKEqwLY50+zWeQEqqgMzdsSdsEv0LrLp/kZj9iEH
-        Nehr0ARVO8RN67v26Ss8ZhC0tqyJloCGrA==
-X-Google-Smtp-Source: APXvYqwQ7Q3UvaXO1aNT12eB+2/iEeEshQpARkl/4ed0GQIN4JX70QadoTQ9dCXGD60F19n9bAq/RNHpOo8VkA==
-X-Received: by 2002:a63:541e:: with SMTP id i30mr1521594pgb.130.1573094713326;
- Wed, 06 Nov 2019 18:45:13 -0800 (PST)
-Date:   Wed,  6 Nov 2019 18:45:09 -0800
-Message-Id: <20191107024509.87121-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-Subject: [PATCH net] ipv6: fixes rt6_probe() and fib6_nh->last_probe init
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        David Ahern <dsahern@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9nCvA3gEV01dvB/sO3Fi4X7jcQkZ1f77jKTKksvxLZc=;
+        b=dKK4JwKoaft9HuZY6ENsd48ezOtdYfzEYegSY6wfS96aCGBf2T+nWmG+f+O1LWK/gE
+         CtfkzFS6BLGZJ0x8kcgxpj3zgMP8xP5GBFL66ASM84OEDrnRxM6Nv1qybhiRNDC0YNJu
+         eEVrDyaUiJL/KUb9n5mkiSezANNRazCGLk3iH5cAGx4jPiXAW5vTc5sf1MH5s2u2CBQy
+         VDTCeTOWy4bfWD8qqR7UU9dp6qjOPdtd9wITck+tReu2dNtqlK1BVimQ5IEhd1gjrVE7
+         3eaCoxPU+owJd60U5JjZAipN9KlUWnBtDAjmclI/bRBIZZRV9Q1TCithv/9jbAC7U7nz
+         UgwQ==
+X-Gm-Message-State: APjAAAWizAMqGDibHgPCU3a/m3ituzjA6S6rC3FKiK/Fp+NomIlweBji
+        T5FP7Nhy3S/1WxLLvcey4u9QHRz6lVuINnSbdzM=
+X-Google-Smtp-Source: APXvYqwdu05cX2LqU0iWzEIyz+ns5lunqe+h4BybMqO7m7/haNsOmwiL1HRSrWMH+JvVml5EYMQyDrIYGr/IalW5n8U=
+X-Received: by 2002:aed:35e7:: with SMTP id d36mr1440795qte.59.1573095013477;
+ Wed, 06 Nov 2019 18:50:13 -0800 (PST)
+MIME-Version: 1.0
+References: <20191107014639.384014-1-kafai@fb.com> <20191107014645.384662-1-kafai@fb.com>
+In-Reply-To: <20191107014645.384662-1-kafai@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 6 Nov 2019 18:50:02 -0800
+Message-ID: <CAEf4BzY6aDYKUGv2D-xy2bQKuH6zeMGvqA5p74xjcUXKq5KDZA@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 3/3] bpf: Add cb access in kfree_skb test
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While looking at a syzbot KCSAN report [1], I found multiple
-issues in this code :
+On Wed, Nov 6, 2019 at 5:47 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> Access the skb->cb[] in the kfree_skb test.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
 
-1) fib6_nh->last_probe has an initial value of 0.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-   While probably okay on 64bit kernels, this causes an issue
-   on 32bit kernels since the time_after(jiffies, 0 + interval)
-   might be false ~24 days after boot (for HZ=1000)
+>  .../selftests/bpf/prog_tests/kfree_skb.c      | 54 +++++++++++++++----
+>  tools/testing/selftests/bpf/progs/kfree_skb.c | 25 +++++++--
+>  2 files changed, 63 insertions(+), 16 deletions(-)
+>
 
-2) The data-race found by KCSAN
-   I could use READ_ONCE() and WRITE_ONCE(), but we also can
-   take the opportunity of not piling-up too many rt6_probe_deferred()
-   works by using instead cmpxchg() so that only one cpu wins the race.
+[...]
 
-[1]
-BUG: KCSAN: data-race in find_match / find_match
+>
+> +       meta.ifindex = _(dev->ifindex);
+> +       meta.cb8_0 = cb8[8];
+> +       meta.cb32_0 = cb32[2];
 
-write to 0xffff8880bb7aabe8 of 8 bytes by interrupt on cpu 1:
- rt6_probe net/ipv6/route.c:663 [inline]
- find_match net/ipv6/route.c:757 [inline]
- find_match+0x5bd/0x790 net/ipv6/route.c:733
- __find_rr_leaf+0xe3/0x780 net/ipv6/route.c:831
- find_rr_leaf net/ipv6/route.c:852 [inline]
- rt6_select net/ipv6/route.c:896 [inline]
- fib6_table_lookup+0x383/0x650 net/ipv6/route.c:2164
- ip6_pol_route+0xee/0x5c0 net/ipv6/route.c:2200
- ip6_pol_route_output+0x48/0x60 net/ipv6/route.c:2452
- fib6_rule_lookup+0x3d6/0x470 net/ipv6/fib6_rules.c:117
- ip6_route_output_flags_noref+0x16b/0x230 net/ipv6/route.c:2484
- ip6_route_output_flags+0x50/0x1a0 net/ipv6/route.c:2497
- ip6_dst_lookup_tail+0x25d/0xc30 net/ipv6/ip6_output.c:1049
- ip6_dst_lookup_flow+0x68/0x120 net/ipv6/ip6_output.c:1150
- inet6_csk_route_socket+0x2f7/0x420 net/ipv6/inet6_connection_sock.c:106
- inet6_csk_xmit+0x91/0x1f0 net/ipv6/inet6_connection_sock.c:121
- __tcp_transmit_skb+0xe81/0x1d60 net/ipv4/tcp_output.c:1169
- tcp_transmit_skb net/ipv4/tcp_output.c:1185 [inline]
- tcp_xmit_probe_skb+0x19b/0x1d0 net/ipv4/tcp_output.c:3735
+Have you tried doing it inside __builtin_preserve_access_index region?
+Does it fail because of extra allocations against meta?
 
-read to 0xffff8880bb7aabe8 of 8 bytes by interrupt on cpu 0:
- rt6_probe net/ipv6/route.c:657 [inline]
- find_match net/ipv6/route.c:757 [inline]
- find_match+0x521/0x790 net/ipv6/route.c:733
- __find_rr_leaf+0xe3/0x780 net/ipv6/route.c:831
- find_rr_leaf net/ipv6/route.c:852 [inline]
- rt6_select net/ipv6/route.c:896 [inline]
- fib6_table_lookup+0x383/0x650 net/ipv6/route.c:2164
- ip6_pol_route+0xee/0x5c0 net/ipv6/route.c:2200
- ip6_pol_route_output+0x48/0x60 net/ipv6/route.c:2452
- fib6_rule_lookup+0x3d6/0x470 net/ipv6/fib6_rules.c:117
- ip6_route_output_flags_noref+0x16b/0x230 net/ipv6/route.c:2484
- ip6_route_output_flags+0x50/0x1a0 net/ipv6/route.c:2497
- ip6_dst_lookup_tail+0x25d/0xc30 net/ipv6/ip6_output.c:1049
- ip6_dst_lookup_flow+0x68/0x120 net/ipv6/ip6_output.c:1150
- inet6_csk_route_socket+0x2f7/0x420 net/ipv6/inet6_connection_sock.c:106
- inet6_csk_xmit+0x91/0x1f0 net/ipv6/inet6_connection_sock.c:121
- __tcp_transmit_skb+0xe81/0x1d60 net/ipv4/tcp_output.c:1169
+> +
+>         bpf_probe_read_kernel(&pkt_type, sizeof(pkt_type), _(&skb->__pkt_type_offset));
+>         pkt_type &= 7;
+>
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 18894 Comm: udevd Not tainted 5.4.0-rc3+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: cc3a86c802f0 ("ipv6: Change rt6_probe to take a fib6_nh")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: David Ahern <dsahern@gmail.com>
----
- net/ipv6/route.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
-
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index a63ff85fe14198fc23a5cbc7abcd107df5df00c8..e60bf8e7dd1aa8dafe8981ecef633e16e1a52d8d 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -621,6 +621,7 @@ static void rt6_probe(struct fib6_nh *fib6_nh)
- {
- 	struct __rt6_probe_work *work = NULL;
- 	const struct in6_addr *nh_gw;
-+	unsigned long last_probe;
- 	struct neighbour *neigh;
- 	struct net_device *dev;
- 	struct inet6_dev *idev;
-@@ -639,6 +640,7 @@ static void rt6_probe(struct fib6_nh *fib6_nh)
- 	nh_gw = &fib6_nh->fib_nh_gw6;
- 	dev = fib6_nh->fib_nh_dev;
- 	rcu_read_lock_bh();
-+	last_probe = READ_ONCE(fib6_nh->last_probe);
- 	idev = __in6_dev_get(dev);
- 	neigh = __ipv6_neigh_lookup_noref(dev, nh_gw);
- 	if (neigh) {
-@@ -654,13 +656,15 @@ static void rt6_probe(struct fib6_nh *fib6_nh)
- 				__neigh_set_probe_once(neigh);
- 		}
- 		write_unlock(&neigh->lock);
--	} else if (time_after(jiffies, fib6_nh->last_probe +
-+	} else if (time_after(jiffies, last_probe +
- 				       idev->cnf.rtr_probe_interval)) {
- 		work = kmalloc(sizeof(*work), GFP_ATOMIC);
- 	}
- 
--	if (work) {
--		fib6_nh->last_probe = jiffies;
-+	if (!work || cmpxchg(&fib6_nh->last_probe,
-+			     last_probe, jiffies) != last_probe) {
-+		kfree(work);
-+	} else {
- 		INIT_WORK(&work->work, rt6_probe_deferred);
- 		work->target = *nh_gw;
- 		dev_hold(dev);
-@@ -3383,6 +3387,9 @@ int fib6_nh_init(struct net *net, struct fib6_nh *fib6_nh,
- 	int err;
- 
- 	fib6_nh->fib_nh_family = AF_INET6;
-+#ifdef CONFIG_IPV6_ROUTER_PREF
-+	fib6_nh->last_probe = jiffies;
-+#endif
- 
- 	err = -ENODEV;
- 	if (cfg->fc_ifindex) {
--- 
-2.24.0.432.g9d3f5f5b63-goog
-
+[...]
