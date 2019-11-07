@@ -2,104 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCBC0F34F9
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:50:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E3FFF350A
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730184AbfKGQur (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:50:47 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:45818 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726810AbfKGQuq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:50:46 -0500
-Received: by mail-io1-f68.google.com with SMTP id v17so1951210iol.12
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:50:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8pJsE2kS9TsEP1oqy6OGfrcIbIwIayjG3PTseSDa1tc=;
-        b=e0d4ENHB34RA1N4Xnx2GovISvWAHMMER/vPg9FD4kEPHvV07zp2qV76FkSG/hUXQdJ
-         w0QyuICXs/LxlfiGgB4ent35VgyEY68dWH3sIJNo0txEViTQF4bEgWAJCfQTGNBLepCn
-         LRsdKDe7vkZZ3iZkZ2pDKLXJMgp8K8oWx/GLaoDdrbaIbGtlXHco8nDLoci93xKoTg3r
-         vXrGj9qFIuO68x9ZK8R3QkQc+WfRtC9izZNQ38E/4tX/VuPEa1YvK2G/qdcTYjknr9r9
-         jDeiMIwnQE5sx/nXCZ2HGJRVv5Zgf3gJP+OsvLYh+1uJkDtzoY+mWvd24pWfRghFSvHz
-         iTiQ==
+        id S2389109AbfKGQwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:52:22 -0500
+Received: from mx1.redhat.com ([209.132.183.28]:58558 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729846AbfKGQwW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 11:52:22 -0500
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com [209.85.167.71])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3E19585542
+        for <netdev@vger.kernel.org>; Thu,  7 Nov 2019 16:52:21 +0000 (UTC)
+Received: by mail-lf1-f71.google.com with SMTP id v204so618261lfa.0
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:52:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8pJsE2kS9TsEP1oqy6OGfrcIbIwIayjG3PTseSDa1tc=;
-        b=IbE2ZljgKxaMt06v/xvImHjkmNxQJy0ASNvA5KZcs/cEiYI+sLaH6YoBT0NEKdlWYb
-         tSX+/FWvATZCc9k+rInlFNDbG+dzxFzj/fBfS+8uQKykuZAWnYEjOd6t9t/oAiCmLuDs
-         0Z9ujtSjVjfMK4M4qpeJZKMoHsOvHH8BcQ3G0ohZzJ1Vuj3pXhwBTmuB17EO1+BFjuML
-         2y6ZOrNxskUQtCtADmlSphszjd6phNvesenG8sCKXQ2kRhm+ak6mEvUO5nsiX6X2jY2f
-         gSuuQq3RTsqUuWx9SBy4Ycy+Rwh+a3BV5eRAYffWAHYAPhsqWjWHB7rgkkpZRykZhGbU
-         AFfQ==
-X-Gm-Message-State: APjAAAVfTYe1rW18rd/M7fGgiyuKcq44D0KBICGXL2HDnMiVDByzna2x
-        UthIzKsBq8fJEk3j5y6ygfg=
-X-Google-Smtp-Source: APXvYqyxcwkLEi5xeo8kDrED8vgNqcGT7JyX0mPw36Shr/7SOqTik3GJPboXjbdQZ5mK7sPa1/yJgw==
-X-Received: by 2002:a02:1948:: with SMTP id b69mr5044101jab.30.1573145445948;
-        Thu, 07 Nov 2019 08:50:45 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:48b9:89c9:cd6f:19d4])
-        by smtp.googlemail.com with ESMTPSA id v28sm383587ill.74.2019.11.07.08.50.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Nov 2019 08:50:45 -0800 (PST)
-Subject: Re: [PATCH net] ipv6: fixes rt6_probe() and fib6_nh->last_probe init
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20191107024509.87121-1-edumazet@google.com>
- <094aedc7-3303-7f27-25eb-a32523faa5b7@gmail.com>
- <CANn89iJbwZ9TqC_ry2O9QCzp3SJtUcXept_SkKY=DEMTP61zwg@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <aa337d1c-28cb-6e63-6603-f9d54b51d2c9@gmail.com>
-Date:   Thu, 7 Nov 2019 09:50:44 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.1
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=0BBAmTpKYKtRa4E0s0gZNYrlDfe81XFkwTQZ3QzuVV4=;
+        b=LeXuGX3T30zDdZqgAZ8RD9sakBjQzPJAMTHIEQUFijCjRXxIqsnqxmoA117pxNpLQE
+         x2P+pwdOPFq/6arja7XW9InmFE/9+6+JFrDA08pLzEij2ZFRC3Oge7jtgan2p2gP/gfs
+         9JMNtl5IZK+vJGMg2/eePsNi9c83KgTbi7Dw6RF2n7R7hxyg//PZFFFKyA+oZS41AOsv
+         B+mVZqUCp5r3atJp/jz6MqHwvti6ra77SA05fLDGjnF6oU7BlG0q2N5Hgr4NzH+Iyxcy
+         +ORWHkUTHCqeb1DYmZ/V8OLzkEwVMU5rvQXnf4nucvOolxi5S7E8nlvpQOluqvhm7q3u
+         8iUQ==
+X-Gm-Message-State: APjAAAUIfAz4I9WMVuNt6qktiRP8RhhryrmddrdJpEdgnYqW3rvE3ONV
+        slG+LC9JBmHrcqLY8qDAm2gaCaFHqQl6QZ4ObKJ1fuDsendEiJYAtOWXZuqP26Wn6WhgqrflZ6Z
+        G39JBFt5lUPwgOmnk
+X-Received: by 2002:a05:651c:119b:: with SMTP id w27mr2911704ljo.221.1573145539758;
+        Thu, 07 Nov 2019 08:52:19 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyvh6SnIcvtmdcSrZ44czQIeqN1mbj8fe/RtNaif4GTsvB+66jflHvNikk8DxnRiiDWnRBQ2Q==
+X-Received: by 2002:a05:651c:119b:: with SMTP id w27mr2911691ljo.221.1573145539595;
+        Thu, 07 Nov 2019 08:52:19 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id a11sm1342086ljp.97.2019.11.07.08.52.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Nov 2019 08:52:19 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2714D1818B5; Thu,  7 Nov 2019 17:52:18 +0100 (CET)
+Subject: [PATCH bpf-next 0/6] libbpf: Fix pinning and error message bugs and
+ add new getters
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Thu, 07 Nov 2019 17:52:18 +0100
+Message-ID: <157314553801.693412.15522462897300280861.stgit@toke.dk>
+User-Agent: StGit/0.20
 MIME-Version: 1.0
-In-Reply-To: <CANn89iJbwZ9TqC_ry2O9QCzp3SJtUcXept_SkKY=DEMTP61zwg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/7/19 9:45 AM, Eric Dumazet wrote:
-> On Thu, Nov 7, 2019 at 8:37 AM David Ahern <dsahern@gmail.com> wrote:
->>
->> On 11/6/19 7:45 PM, Eric Dumazet wrote:
->>> While looking at a syzbot KCSAN report [1], I found multiple
->>> issues in this code :
->>>
->>> 1) fib6_nh->last_probe has an initial value of 0.
->>>
->>>    While probably okay on 64bit kernels, this causes an issue
->>>    on 32bit kernels since the time_after(jiffies, 0 + interval)
->>>    might be false ~24 days after boot (for HZ=1000)
->>>
->>> 2) The data-race found by KCSAN
->>>    I could use READ_ONCE() and WRITE_ONCE(), but we also can
->>>    take the opportunity of not piling-up too many rt6_probe_deferred()
->>>    works by using instead cmpxchg() so that only one cpu wins the race.
->>>
->>
->> ...
->>
->>> Fixes: cc3a86c802f0 ("ipv6: Change rt6_probe to take a fib6_nh")
->>
->> That commit only moves the location of last_probe, from fib6_info into
->> fib6_nh. Given that I would expect the same problem to exist with the
->> previous code. Agree? Point being should this be backported to older
->> stable releases since said commit is new to 5.2?
-> 
-> Yes, the commit adding last probe went in 4.19
-> 
-> Fixes: f547fac624be ("ipv6: rate-limit probes for neighbourless routes")
-> 
+This series fixes a few bugs in libbpf that I discovered while playing around
+with the new auto-pinning code, and writing the first utility in xdp-tools[0]:
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+- If object loading fails, libbpf does not clean up the pinnings created by the
+  auto-pinning mechanism.
+- EPERM is not propagated to the caller on program load
+- Netlink functions write error messages directly to stderr
+
+In addition, libbpf currently only has a somewhat limited getter function for
+XDP link info, which makes it impossible to discover whether an attached program
+is in SKB mode or not. So the last patch in the series adds a new getter for XDP
+link info which returns all the information returned via netlink (and which can
+be extended later).
+
+Finally, add a getter for BPF program size, which can be used by the caller to
+estimate the amount of locked memory needed to load a program.
+
+A selftest is added for the pinning change, while the other features were tested
+in the xdp-filter tool from the xdp-tools repo. The 'new-libbpf-features' branch
+contains the commits that make use of the new XDP getter and the corrected EPERM
+error code.
+
+[0] https://github.com/xdp-project/xdp-tools
+
+---
+
+Toke Høiland-Jørgensen (6):
+      libbpf: Unpin auto-pinned maps if loading fails
+      selftests/bpf: Add tests for automatic map unpinning on load failure
+      libbpf: Propagate EPERM to caller on program load
+      libbpf: Use pr_warn() when printing netlink errors
+      libbpf: Add bpf_get_link_xdp_info() function to get more XDP information
+      libbpf: Add getter for program size
+
+
+ tools/lib/bpf/libbpf.c                           |   25 +++++--
+ tools/lib/bpf/libbpf.h                           |   11 +++
+ tools/lib/bpf/libbpf.map                         |    2 +
+ tools/lib/bpf/netlink.c                          |   81 ++++++++++++++--------
+ tools/lib/bpf/nlattr.c                           |   10 +--
+ tools/testing/selftests/bpf/prog_tests/pinning.c |   20 +++++
+ tools/testing/selftests/bpf/progs/test_pinning.c |    2 -
+ 7 files changed, 109 insertions(+), 42 deletions(-)
+
