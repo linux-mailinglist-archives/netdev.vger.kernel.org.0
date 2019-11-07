@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E90E8F3B28
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:15:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18864F3B04
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:14:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727609AbfKGWOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:14:48 -0500
-Received: from mga07.intel.com ([134.134.136.100]:16686 "EHLO mga07.intel.com"
+        id S1727568AbfKGWOr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:14:47 -0500
+Received: from mga07.intel.com ([134.134.136.100]:16683 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727468AbfKGWOo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727470AbfKGWOo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 7 Nov 2019 17:14:44 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,18 @@ Received: from fmsmga002.fm.intel.com ([10.253.24.26])
   by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Nov 2019 14:14:43 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,279,1569308400"; 
-   d="scan'208";a="233420907"
+   d="scan'208";a="233420912"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Nov 2019 14:14:42 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 07 Nov 2019 14:14:43 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Akeem G Abodunrin <akeem.g.abodunrin@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 07/15] ice: Check if VF is disabled for Opcode and other operations
-Date:   Thu,  7 Nov 2019 14:14:30 -0800
-Message-Id: <20191107221438.17994-8-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 08/15] ice: Change max MSI-x vector_id check in cfg_irq_map
+Date:   Thu,  7 Nov 2019 14:14:31 -0800
+Message-Id: <20191107221438.17994-9-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
 References: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
@@ -39,150 +39,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+From: Brett Creeley <brett.creeley@intel.com>
 
-This patch adds code to check if PF or VF is disabled before honoring
-mailbox message to configure VF - If it is disabled, and opcode is for
-resetting VF, the PF driver simply tell VF that all is set. In addition,
-if reset is ongoing, and Admin intend to configure VF on the host, we can
-poll the VF enabling bit to make sure it is ready before continue - If
-after ~250 milliseconds, VF is not in active state, we can bail out with
-invalid error.
+Currently we check to make sure the vector_id passed down from iavf
+is less than or equal to pf->hw.func_caps.common_caps.num_msix_vectors.
+This is incorrect because the vector_id is always 0-based and never
+greater than or equal to the ICE_MAX_INTR_PER_VF. Fix this by checking
+to make sure the vector_id is less than the max allowed interrupts per
+VF (ICE_MAX_INTR_PER_VF).
 
-Signed-off-by: Akeem G Abodunrin <akeem.g.abodunrin@intel.com>
+Signed-off-by: Brett Creeley <brett.creeley@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 74 ++++++++++++++++---
- .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  1 +
- 2 files changed, 63 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index b4813ccc467d..639d1b2a9e19 100644
+index 639d1b2a9e19..2ac83ad3d1a6 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1151,6 +1151,25 @@ bool ice_reset_all_vfs(struct ice_pf *pf, bool is_vflr)
- 	return true;
- }
+@@ -2173,9 +2173,11 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
  
-+/**
-+ * ice_is_vf_disabled
-+ * @vf: pointer to the VF info
-+ *
-+ * Returns true if the PF or VF is disabled, false otherwise.
-+ */
-+static bool ice_is_vf_disabled(struct ice_vf *vf)
-+{
-+	struct ice_pf *pf = vf->pf;
-+
-+	/* If the PF has been disabled, there is no need resetting VF until
-+	 * PF is active again. Similarly, if the VF has been disabled, this
-+	 * means something else is resetting the VF, so we shouldn't continue.
-+	 * Otherwise, set disable VF state bit for actual reset, and continue.
-+	 */
-+	return (test_bit(__ICE_VF_DIS, pf->state) ||
-+		test_bit(ICE_VF_STATE_DIS, vf->vf_states));
-+}
-+
- /**
-  * ice_reset_vf - Reset a particular VF
-  * @vf: pointer to the VF structure
-@@ -1168,19 +1187,15 @@ static bool ice_reset_vf(struct ice_vf *vf, bool is_vflr)
- 	u32 reg;
- 	int i;
- 
--	/* If the PF has been disabled, there is no need resetting VF until
--	 * PF is active again.
--	 */
--	if (test_bit(__ICE_VF_DIS, pf->state))
--		return false;
--
--	/* If the VF has been disabled, this means something else is
--	 * resetting the VF, so we shouldn't continue. Otherwise, set
--	 * disable VF state bit for actual reset, and continue.
--	 */
--	if (test_and_set_bit(ICE_VF_STATE_DIS, vf->vf_states))
--		return false;
-+	if (ice_is_vf_disabled(vf)) {
-+		dev_dbg(&pf->pdev->dev,
-+			"VF is already disabled, there is no need for resetting it, telling VM, all is fine %d\n",
-+			 vf->vf_id);
-+		return true;
-+	}
- 
-+	/* Set VF disable bit state here, before triggering reset */
-+	set_bit(ICE_VF_STATE_DIS, vf->vf_states);
- 	ice_trigger_vf_reset(vf, is_vflr, false);
- 
- 	vsi = pf->vsi[vf->lan_vsi_idx];
-@@ -3122,6 +3137,23 @@ int ice_set_vf_spoofchk(struct net_device *netdev, int vf_id, bool ena)
- 	return ret;
- }
- 
-+/**
-+ * ice_wait_on_vf_reset
-+ * @vf: The VF being resseting
-+ *
-+ * Poll to make sure a given VF is ready after reset
-+ */
-+static void ice_wait_on_vf_reset(struct ice_vf *vf)
-+{
-+	int i;
-+
-+	for (i = 0; i < ICE_MAX_VF_RESET_WAIT; i++) {
-+		if (test_bit(ICE_VF_STATE_INIT, vf->vf_states))
-+			break;
-+		msleep(20);
-+	}
-+}
-+
- /**
-  * ice_set_vf_mac
-  * @netdev: network interface device structure
-@@ -3145,6 +3177,15 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 	}
- 
- 	vf = &pf->vf[vf_id];
-+	/* Don't set MAC on disabled VF */
-+	if (ice_is_vf_disabled(vf))
-+		return -EINVAL;
-+
-+	/* In case VF is in reset mode, wait until it is completed. Depending
-+	 * on factors like queue disabling routine, this could take ~250ms
-+	 */
-+	ice_wait_on_vf_reset(vf);
-+
- 	if (!test_bit(ICE_VF_STATE_INIT, vf->vf_states)) {
- 		netdev_err(netdev, "VF %d in reset. Try again.\n", vf_id);
- 		return -EBUSY;
-@@ -3192,6 +3233,15 @@ int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted)
- 	}
- 
- 	vf = &pf->vf[vf_id];
-+	/* Don't set Trusted Mode on disabled VF */
-+	if (ice_is_vf_disabled(vf))
-+		return -EINVAL;
-+
-+	/* In case VF is in reset mode, wait until it is completed. Depending
-+	 * on factors like queue disabling routine, this could take ~250ms
-+	 */
-+	ice_wait_on_vf_reset(vf);
-+
- 	if (!test_bit(ICE_VF_STATE_INIT, vf->vf_states)) {
- 		dev_err(&pf->pdev->dev, "VF %d in reset. Try again.\n", vf_id);
- 		return -EBUSY;
-diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-index 0d9880c8bba3..2e867ad2e81d 100644
---- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.h
-@@ -38,6 +38,7 @@
- #define ICE_MAX_POLICY_INTR_PER_VF	33
- #define ICE_MIN_INTR_PER_VF		(ICE_MIN_QS_PER_VF + 1)
- #define ICE_DFLT_INTR_PER_VF		(ICE_DFLT_QS_PER_VF + 1)
-+#define ICE_MAX_VF_RESET_WAIT		15
- 
- /* Specific VF states */
- enum ice_vf_states {
+ 		vector_id = map->vector_id;
+ 		vsi_id = map->vsi_id;
+-		/* validate msg params */
+-		if (!(vector_id < pf->hw.func_caps.common_cap
+-		    .num_msix_vectors) || !ice_vc_isvalid_vsi_id(vf, vsi_id) ||
++		/* vector_id is always 0-based for each VF, and can never be
++		 * larger than or equal to the max allowed interrupts per VF
++		 */
++		if (!(vector_id < ICE_MAX_INTR_PER_VF) ||
++		    !ice_vc_isvalid_vsi_id(vf, vsi_id) ||
+ 		    (!vector_id && (map->rxq_map || map->txq_map))) {
+ 			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
+ 			goto error_param;
 -- 
 2.21.0
 
