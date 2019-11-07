@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6359AF301B
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:42:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4435F3018
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:42:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389403AbfKGNmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:42:31 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:39681 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389186AbfKGNmK (ORCPT
+        id S2389382AbfKGNma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:42:30 -0500
+Received: from mail-il1-f199.google.com ([209.85.166.199]:52690 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389192AbfKGNmK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:42:10 -0500
-Received: by mail-io1-f70.google.com with SMTP id e17so617951ioc.6
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:42:08 -0800 (PST)
+Received: by mail-il1-f199.google.com with SMTP id t23so2625163ila.19
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:42:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
          :from:to;
-        bh=lYXHu1+8CxUYZrtgD2bXy/E8sjSme0LaouR97ajask0=;
-        b=eqXw5TeriZqIP85paW5U7dEwkpLEa7JtWt6pHNUBguwZiHOiVvIDuSMt+md//tUyz7
-         l6+GtqwWGxbRC5KeVIj8DM2fVNex9naVatGEQqfs7GBfqANxTJssJmM/Ne3PsAu72Mhx
-         JfEMqIsKZzN8tCNjfAiF85c/4sp7eL8c9klNBpS5bzXdiIuihboSqZREel40xsUAwRq4
-         7YNzpCAUiHRE52Dw1fy0hRWqeG230KDIF5piIehMwFcPwWttAwJtF2+x2OAuAG73oi62
-         VykxXNsb3AEoML1ELwQPKZja3cMPzpA55RznceVBKlTD6bXn5VeAf+RzQzO6d/nC3Gfs
-         lUCg==
-X-Gm-Message-State: APjAAAUynlf3gNBYy+GHeSJd9uMV323eu3VbdZhbme+GEshEIAvR6OeU
-        9gI6RVdIiqVwvmtYVxK7/7QAvn3X41PW1Y9QWMsDJC3g9RHz
-X-Google-Smtp-Source: APXvYqyCn5PnsReBzzn0eMeMMCw+qkOz5YAQ4Lrcbdu5KR2Dy7fnX7Bn1RK2uLQWMUldMvI5RwDNhljITPEXD6xZrL9jqRFluc7a
+        bh=Ts1/QN7SlZAv8FzCyonCkAig7h5V9G7HkY3ov7xjs3M=;
+        b=ImxfbQhYPlGbd3gborKdpKXCVyCieadK4+lS5skmazFnpZ0n0nvkVsap0wI9OITrlg
+         L3lXx9wyXXlZO+xcjHI70hAujzuOlHJqkWxRO85w3rDk0Mfqx5dUkD5VeELBE7PGTUPx
+         4znaHAs0c/N84gC+lyTTKiq1acTiv3IGv82Wi4xbusDxKiVdp6LlLxmQJuj/BQM4MS9+
+         86sVA+NtGBYnF1gNx2jnPmGrX2UAnSLjJFVgM3h6a6dfEKRnPiP8iD6VkkpGuIMwq+aE
+         dhpEnGp7b8S5PsCyWm0zas/eSVk4N3GIt8vFEq1fKNpPrx+bXGvvwxPMVc5JT0SyFsfo
+         UsSA==
+X-Gm-Message-State: APjAAAXjxgTiCsBOQjBQfwzfImfZIr6dcI1Wa1NLbOSDfLDIe/alAUdP
+        mtsbgQmTy9g1e4UnziAYyphoZzxTHJ5dPvrTkxO+lDM/ax0w
+X-Google-Smtp-Source: APXvYqz/g3akW+HYZOqq00GOcwk4TIgPuwUmUsNZ8JleeVUWjArlNV1JzK0GZVOa198jjNQXsMlAh0R+qyRRrxrnABjAL9dYZK4H
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9756:: with SMTP id c22mr3662214ioo.233.1573134128190;
- Thu, 07 Nov 2019 05:42:08 -0800 (PST)
-Date:   Thu, 07 Nov 2019 05:42:08 -0800
-In-Reply-To: <000000000000f68d660570dcddd8@google.com>
+X-Received: by 2002:a5d:9f02:: with SMTP id q2mr3553203iot.3.1573134129497;
+ Thu, 07 Nov 2019 05:42:09 -0800 (PST)
+Date:   Thu, 07 Nov 2019 05:42:09 -0800
+In-Reply-To: <00000000000006602605752ffa1a@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e51d450596c1d472@google.com>
-Subject: Re: kernel BUG at net/ipv4/ip_output.c:LINE!
-From:   syzbot <syzbot+90d5ec0c05e708f3b66d@syzkaller.appspotmail.com>
+Message-ID: <000000000000f90bb30596c1d438@google.com>
+Subject: Re: general protection fault in tcp_cleanup_ulp
+From:   syzbot <syzbot+0b3ccd4f62dac2cf3a7d@syzkaller.appspotmail.com>
 To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, dsahern@gmail.com, johannes.berg@intel.com,
+        davem@davemloft.net, edumazet@google.com, john.fastabend@gmail.com,
         kafai@fb.com, kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, posk@google.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        willemb@google.com, yhs@fb.com, yoshfuji@linux-ipv6.org
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,22 +51,21 @@ X-Mailing-List: netdev@vger.kernel.org
 
 syzbot suspects this bug was fixed by commit:
 
-commit e7c87bd6cc4ec7b0ac1ed0a88a58f8206c577488
-Author: Willem de Bruijn <willemb@google.com>
-Date:   Wed Jan 16 01:19:22 2019 +0000
+commit 5607fff303636d48b88414c6be353d9fed700af2
+Author: John Fastabend <john.fastabend@gmail.com>
+Date:   Tue Sep 18 16:01:44 2018 +0000
 
-     bpf: in __bpf_redirect_no_mac pull mac only if present
+     bpf: sockmap only allow ESTABLISHED sock state
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14175486600000
-start commit:   112cbae2 Merge branch 'linus' of git://git.kernel.org/pub/..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=152cb8ccd35b1f70
-dashboard link: https://syzkaller.appspot.com/bug?extid=90d5ec0c05e708f3b66d
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153ed6e2400000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1539038c400000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17fdc73c600000
+start commit:   28619527 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+git tree:       bpf
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8f59875069d721b6
+dashboard link: https://syzkaller.appspot.com/bug?extid=0b3ccd4f62dac2cf3a7d
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13537269400000
 
 If the result looks correct, please mark the bug fixed by replying with:
 
-#syz fix: bpf: in __bpf_redirect_no_mac pull mac only if present
+#syz fix: bpf: sockmap only allow ESTABLISHED sock state
 
 For information about bisection process see: https://goo.gl/tpsmEJ#bisection
