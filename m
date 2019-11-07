@@ -2,114 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D00BF359B
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 18:20:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C900F35A0
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 18:23:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729871AbfKGRUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 12:20:45 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61262 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727606AbfKGRUp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 12:20:45 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7HAi31015632;
-        Thu, 7 Nov 2019 09:20:29 -0800
+        id S1729864AbfKGRXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 12:23:08 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58934 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726231AbfKGRXI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 12:23:08 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7HA37O019443;
+        Thu, 7 Nov 2019 09:22:53 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : references : in-reply-to : content-type : content-id
  : content-transfer-encoding : mime-version; s=facebook;
- bh=nv1t9pyjC1Vg/rux5w0Zdq6YsFoBVA8UYeJ3lF5d1zo=;
- b=W+hviCCXikfkpzv7HFS3mgDNCoN/8khlR16VQgkKaFHQN6r55wdg862sAch71HDBP3Fr
- /oRflq4qb/yPqvdkDzD4Xr+xQVg/vODUbaB5KqaeDv5bpSxIKpqZPP0RKVJhT2H9yNpN
- Pn6rwXl2W4s9dfI17B6rKHnmabKYPF8MH/k= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41ue68wk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 09:20:29 -0800
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 7 Nov 2019 09:20:28 -0800
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 7 Nov 2019 09:20:28 -0800
+ bh=7+cdWADptjpJ4KVY2HVx1kdfTTW70ThsyBuXdXvIKPQ=;
+ b=Fva56fD8AEAmkNBn+QaAiKCyCvJzgTcBeENs62Yg+003O7YqrFGFj1cf5wAHvu/gO8yC
+ m5IhgmcR5yWi/3O7TZNvNjoidT6D1V2seH2VrDEL/TB9FhX432jt27btwMbpijKbvL2k
+ UG1cDOVXTprycyh5DmkA+ISBnfUdWB9Rvto= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2w41u0p9dr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 07 Nov 2019 09:22:52 -0800
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 7 Nov 2019 09:22:52 -0800
+Received: from ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 7 Nov 2019 09:22:52 -0800
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 7 Nov 2019 09:22:51 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i7Wci+M743fwlBRtrKcafhkj5Syg/re1o0xgXsuUWxqPUghv0eBooie7myimuUzM+uRkpNsrjCW87f02g9o9MLt/B7N62GmHpxjylQHRf+WUFArgz/cHj445WIuH43qQAhdzdxqkteCuKoXhZtA+DqAXoZDD6fOncd7utkRqv/BSktScK0hDe2fq0Gi4Wm4AzaSt91etq2swGbcNSFrcPY6CJ9G4hzJr2QZRbnAHUik6K15sjcHX3LQlLx0nZCZCETssa5aOr+04siovemlT19fmuGRg004Axr7wbuY59I9yhajqjY1j3DVkQm3nL+ELt1zVXt6eSW9jYZOBqzB7QA==
+ b=AaHTF8/IHn0NyclQgLKwubuINmmSUo3iPUcK1sqwHSKVl+UFDjEHTE+Cn/LE9bRGIrSX68jkr8m2+0LcOkcwPvS9ckpb0ekBwivQua6Tk1EGa94dEvvHsigYgFv79LO5FEvtQhrDQc87SDAXvuqfVleTmwg6mD5+uIJUb6mJvM/KIJKT7PqNr91vqab9EU9Su8zsgIcka+EPLtYRDC9wUF43uu6MulCc4OdVUDiqrCGXoAlIrv5hopvF+Nw8uWDnOBEr9T0e6VCOp/LdIJE62rJQXGKdUpHAPqBjj9brHiUtUcTxiZD+fX7F/Eh+ncsCjhW500jav0HXk6soAHMaPA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nv1t9pyjC1Vg/rux5w0Zdq6YsFoBVA8UYeJ3lF5d1zo=;
- b=c+ryh0d99HyopTdXVc8tuV172PlFLfIvL85xgvPOOEdhjWUPp68VAV4MyYDAr3DAUyfrIfRdKCPSoHOFxaM2b2Aaeb4MPVUnC7X4cmEhj90gnWnatyf77m3tAHhajtkMwF4aMIeD4+u508Ck4blohdve+qykJLf+qCwctDIPRi+MxmYRklv3MbiyQLMvaNqNuJsECNBG8bMwi7efmnZxD7TyGcrsuwpVR4phoI9WKDVmcYliL52l/Fmq0lo7n62WsBilofjWwd7Xo1XYQuSLnfj6/qeLMcWpponlrNcIvr1gix1/vuHB8ZIxJA7bxKJBgSiI1xKJVoz7xIaX0y2e8g==
+ bh=7+cdWADptjpJ4KVY2HVx1kdfTTW70ThsyBuXdXvIKPQ=;
+ b=C+v3s5+Shq9IdjnApiMon1ZtUlEVwI1z+ebegrPjquEg2tPWLa90k0IGRT3j0T5+9gQ6ppUM9JtW7iTvxtkKqauqNgwSjpdX2u0PPqp9MP7LIDm8HOrQvl+6b/pYPeY24nJLE10Vjwpv+jW4K7fjWgUrxtjKlqru/bmRzQ1VuUVIuh5C6e/jVXMwRAA+nxoCkZYeV14GibQfUw9vbefwCgtCzPRCwCzPp9U0OVdpu67ymcpF8UQaLW+Ntj1IZr/LI58RePNZPmVI8hdUVe6+wiDJAlpWUXBAjOvwQFDJHS/jCXbpCU4OqpLmrC72QfHVmYQWJyxWyAVexHL+9mWGng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nv1t9pyjC1Vg/rux5w0Zdq6YsFoBVA8UYeJ3lF5d1zo=;
- b=FVIITobTaZXGo6xp0bn1Chqec2DuTC3vEE/A+pM86XJia/7zBsy/3roGbVBypSBdJEiIhAEe4TCPF7NEKxLmkOJ3hgaMO04iuL6Iqez1QFV54IxBrF52wOnrWqdNwS+ijApG6vN3OLb3T6IMSEvSNZBtIItSQJN1Z829iGf/udY=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1808.namprd15.prod.outlook.com (10.174.96.136) with Microsoft SMTP
+ bh=7+cdWADptjpJ4KVY2HVx1kdfTTW70ThsyBuXdXvIKPQ=;
+ b=cqKxrge1YWynaKGquKHeoL2lavOntnH4Z2UyIACQ8BC5IySzH0cPbFoPbZO+cQMc9b+qArUDmAHl0iXcCBUxP5BwimiE6rKsfl49RWpbBKrKXNb0Xr+o8UcyyCZs6Cla1kuk5v/eQsnwPRzxlfZXflaYQ9fuJ29FbsiL1dXKJF8=
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com (20.179.21.76) by
+ MN2PR15MB2991.namprd15.prod.outlook.com (20.178.252.204) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Thu, 7 Nov 2019 17:20:27 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Thu, 7 Nov 2019
- 17:20:27 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+ 15.20.2408.24; Thu, 7 Nov 2019 17:22:47 +0000
+Received: from MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::ec0d:4e55:4da9:904c]) by MN2PR15MB3213.namprd15.prod.outlook.com
+ ([fe80::ec0d:4e55:4da9:904c%7]) with mapi id 15.20.2408.028; Thu, 7 Nov 2019
+ 17:22:47 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David Miller" <davem@davemloft.net>,
         Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 02/17] bpf: Add bpf_arch_text_poke() helper
-Thread-Topic: [PATCH v2 bpf-next 02/17] bpf: Add bpf_arch_text_poke() helper
-Thread-Index: AQHVlS7DiyLTZMsKz0OSS+G7WREPWKd/9O2A
-Date:   Thu, 7 Nov 2019 17:20:27 +0000
-Message-ID: <EE50EB7D-8FB0-4D37-A3F1-3439981A6141@fb.com>
-References: <20191107054644.1285697-1-ast@kernel.org>
- <20191107054644.1285697-3-ast@kernel.org>
-In-Reply-To: <20191107054644.1285697-3-ast@kernel.org>
+Subject: Re: [PATCH v3 bpf-next 2/3] bpf: Add array support to
+ btf_struct_access
+Thread-Topic: [PATCH v3 bpf-next 2/3] bpf: Add array support to
+ btf_struct_access
+Thread-Index: AQHVlRTec1YDPBeGSEq2yD+jQLjRZ6d/9cOA
+Date:   Thu, 7 Nov 2019 17:22:47 +0000
+Message-ID: <20191107172243.ptq3yqeacxjkmkbq@kafai-mbp>
+References: <20191107014639.384014-1-kafai@fb.com>
+ <20191107014643.384298-1-kafai@fb.com>
+ <CAEf4BzaQOEjbJwV9Ycb1QdBVkFRQLB_3cyw1sfXTz-iV_pt4Yw@mail.gmail.com>
+In-Reply-To: <CAEf4BzaQOEjbJwV9Ycb1QdBVkFRQLB_3cyw1sfXTz-iV_pt4Yw@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3601.0.10)
-x-originating-ip: [2620:10d:c090:200::1:11cf]
+x-clientproxiedby: MWHPR2201CA0076.namprd22.prod.outlook.com
+ (2603:10b6:301:5e::29) To MN2PR15MB3213.namprd15.prod.outlook.com
+ (2603:10b6:208:3d::12)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:f7b8]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 62ea4831-a5de-4108-f7f8-08d763a6c87e
-x-ms-traffictypediagnostic: MWHPR15MB1808:
+x-ms-office365-filtering-correlation-id: 2790a0c9-edf3-4563-6992-08d763a71b78
+x-ms-traffictypediagnostic: MN2PR15MB2991:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB180807A8633AC3D0A34597D4B3780@MWHPR15MB1808.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-microsoft-antispam-prvs: <MN2PR15MB2991C5AD69D4D6EDC1DFABEDD5780@MN2PR15MB2991.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-forefront-prvs: 0214EB3F68
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(39860400002)(346002)(396003)(136003)(189003)(199004)(8676002)(11346002)(486006)(446003)(5660300002)(46003)(476003)(6916009)(2616005)(50226002)(8936002)(81156014)(14444005)(2906002)(71200400001)(36756003)(25786009)(81166006)(71190400001)(54906003)(33656002)(229853002)(4326008)(316002)(76176011)(256004)(6436002)(86362001)(14454004)(102836004)(6506007)(6246003)(53546011)(6486002)(6116002)(478600001)(99286004)(66946007)(7736002)(76116006)(66556008)(186003)(64756008)(66476007)(305945005)(6512007)(66446008);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1808;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(366004)(346002)(376002)(396003)(136003)(39860400002)(199004)(189003)(6246003)(229853002)(5660300002)(86362001)(64756008)(53546011)(76176011)(486006)(52116002)(81166006)(81156014)(305945005)(6512007)(386003)(66946007)(7736002)(66556008)(2906002)(66446008)(33716001)(476003)(66476007)(46003)(6506007)(8936002)(11346002)(54906003)(71200400001)(316002)(14444005)(256004)(8676002)(99286004)(446003)(9686003)(102836004)(4326008)(14454004)(1076003)(71190400001)(478600001)(25786009)(6116002)(6486002)(6436002)(186003)(6916009);DIR:OUT;SFP:1102;SCL:1;SRVR:MN2PR15MB2991;H:MN2PR15MB3213.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zciUVnjolWCz+lSlMSRyaLiWfPX+ad0AgfB6AQGMgjs/9l3GtQ/WEnkXqxw0CrczNHrauaJR9+bmqgAG8pr1F4/LfsUyFwj17ZTTcSBa0dkkF/vpYMj3OcgY48e/sxFGk7RE2fft5UWwYmEl5BJjjmEix+ultiFDeqDSvgKjQYcUi8HDhrlUDOHX21FvfCBJfNCzogw05vjFKlSWKB7/1YhuC9JVYLlRj8voH/4QKMq9jJJPODYpMrqzX92qDcaK7G7Z1dQCu9j0NM+DL3rMQklNc3GM39RSSUUXyFIY9sg/sLdNTfSprwkqBDBNC7YOL1/ebuSRWH5d3zQGbO64yPFy0LFmUEKgTfILyW7q9rtLEmjnVCuUq6iJF4SAP/oGN+JKWAWwmuD6TnaKSw3/L6Ko1l3iEbHgsspuF4ME9SKu203e8+mezo+/+sLqPbV2
+x-microsoft-antispam-message-info: cdets6ydc5ofxzrUfQibOrK+fBdkdmMZYW0fdpezb4JPvxTGtWSZh0pi489N6mfNJzp8tKgcVc7TPw3XEyjx8i9EsEByOBNWUVik7g8oXpYduFVYL4+SFIs3msZA6w0W0Fs9qlScRJje0qEWtbL3kpXuedwddO4vV/BHNuTPh4J13FpmrTkSnvhWFZwB5JQGE/npH0iiRjFP14gWtybFQxFd6CMryFMu8NoYH39uULSxDdrXpsspmJMaKk8JREf6/hVmgrxVPAFqR6PblCTLzXWYYbVgAWvSlniaUGlze7qJdAw8JcQWlM/M/FZRye9I0UyBQeyNol4Ky6kR1h8jeggOEa9k9r947SbKGcn9cQIEehwzijrCLnHdezPxcffbIGPG5Z3UofdGw/bg/DWGxL7pIDPk1ifebNuqhbdSF1meixEqHymkdvWbVx6rMmZQ
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C255816B36FA1A4399AEC7F50F1D468A@namprd15.prod.outlook.com>
+Content-ID: <323B75AAAA4B674989E28DDA51B0F6E2@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62ea4831-a5de-4108-f7f8-08d763a6c87e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 17:20:27.4530
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2790a0c9-edf3-4563-6992-08d763a71b78
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 17:22:47.0697
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eln14gJzr3bdhGHoXqNm184d17nYHnxDy4CLXT++GE8r0MzrGzAZlsVMpEBUXF5HMiZMKgQnzF6zQHW2YvOhUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1808
+X-MS-Exchange-CrossTenant-userprincipalname: XVrGiyf2bZypb1+xjDzPcJAwNITLq4GuVGIF5coYzI9PgrTvcqUGSI4UlvIDI2JA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB2991
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-07_05:2019-11-07,2019-11-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- clxscore=1015 malwarescore=0 mlxlogscore=999 suspectscore=0 adultscore=0
- mlxscore=0 bulkscore=0 phishscore=0 priorityscore=1501 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ suspectscore=0 bulkscore=0 clxscore=1015 priorityscore=1501 adultscore=0
+ lowpriorityscore=0 mlxscore=0 spamscore=0 impostorscore=0 mlxlogscore=999
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1911070162
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -117,137 +126,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Nov 06, 2019 at 06:41:15PM -0800, Andrii Nakryiko wrote:
+> On Wed, Nov 6, 2019 at 5:49 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >
+> > This patch adds array support to btf_struct_access().
+> > It supports array of int, array of struct and multidimensional
+> > array.
+> >
+> > It also allows using u8[] as a scratch space.  For example,
+> > it allows access the "char cb[48]" with size larger than
+> > the array's element "char".  Another potential use case is
+> > "u64 icsk_ca_priv[]" in the tcp congestion control.
+> >
+> > btf_resolve_size() is added to resolve the size of any type.
+> > It will follow the modifier if there is any.  Please
+> > see the function comment for details.
+> >
+> > This patch also adds the "off < moff" check at the beginning
+> > of the for loop.  It is to reject cases when "off" is pointing
+> > to a "hole" in a struct.
+> >
+> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> > ---
+>=20
+> Looks good, just two small nits.
+>=20
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>=20
+> >  kernel/bpf/btf.c | 187 +++++++++++++++++++++++++++++++++++++++--------
+> >  1 file changed, 157 insertions(+), 30 deletions(-)
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 128d89601d73..5c4b6aa7b9f0 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -1036,6 +1036,82 @@ static const struct resolve_vertex *env_stack_pe=
+ak(struct btf_verifier_env *env)
+> >         return env->top_stack ? &env->stack[env->top_stack - 1] : NULL;
+> >  }
+> >
+>=20
+> [...]
+>=20
+> > -               if (off + size <=3D moff / 8)
+> > -                       /* won't find anything, field is already too fa=
+r */
+> > +               /* offset of the field in bytes */
+> > +               moff =3D btf_member_bit_offset(t, member) / 8;
+> > +               if (off + size <=3D moff)
+>=20
+> you dropped useful comment :(
+good catch. will undo.
 
+>=20
+> >                         break;
+> > +               /* In case of "off" is pointing to holes of a struct */
+> > +               if (off < moff)
+> > +                       continue;
+> >
+>=20
+> [...]
+>=20
+> > +
+> > +               mtrue_end =3D moff + msize;
+>=20
+> nit: there is no other _end, so might be just mend (in line with moff)
+I prefer to keep it.  For array, this _end is not the end of mtype.
+The intention is to distinguish it from the mtype/msize convention
+such that it is the true_end of the current struct's member.  I will
+add some comments to clarify.
 
-> On Nov 6, 2019, at 9:46 PM, Alexei Starovoitov <ast@kernel.org> wrote:
 >=20
-> Add bpf_arch_text_poke() helper that is used by BPF trampoline logic to p=
-atch
-> nops/calls in kernel text into calls into BPF trampoline and to patch
-> calls/nops inside BPF programs too.
+> > +               if (off >=3D mtrue_end)
+> >                         /* no overlap with member, keep iterating */
+> >                         continue;
+> > +
 >=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
-> arch/x86/net/bpf_jit_comp.c | 51 +++++++++++++++++++++++++++++++++++++
-> include/linux/bpf.h         |  8 ++++++
-> kernel/bpf/core.c           |  6 +++++
-> 3 files changed, 65 insertions(+)
->=20
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index 0399b1f83c23..8631d3bd637f 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -9,9 +9,11 @@
-> #include <linux/filter.h>
-> #include <linux/if_vlan.h>
-> #include <linux/bpf.h>
-> +#include <linux/memory.h>
-> #include <asm/extable.h>
-> #include <asm/set_memory.h>
-> #include <asm/nospec-branch.h>
-> +#include <asm/text-patching.h>
->=20
-> static u8 *emit_code(u8 *ptr, u32 bytes, unsigned int len)
-> {
-> @@ -487,6 +489,55 @@ static int emit_call(u8 **pprog, void *func, void *i=
-p)
-> 	return 0;
-> }
->=20
-> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
-> +		       void *old_addr, void *new_addr)
-> +{
-> +	u8 old_insn[NOP_ATOMIC5] =3D {};
-> +	u8 new_insn[NOP_ATOMIC5] =3D {};
-> +	u8 *prog;
-> +	int ret;
-> +
-> +	if (!is_kernel_text((long)ip))
-> +		/* BPF trampoline in modules is not supported */
-> +		return -EINVAL;
-> +
-> +	if (old_addr) {
-> +		prog =3D old_insn;
-> +		ret =3D emit_call(&prog, old_addr, (void *)ip);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	if (old_addr) {
-		^ should be new_addr?
-> +		prog =3D new_insn;
-> +		ret =3D emit_call(&prog, old_addr, (void *)ip);
-					^^^ and here?=20
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	ret =3D -EBUSY;
-> +	mutex_lock(&text_mutex);
-> +	switch (t) {
-> +	case BPF_MOD_NOP_TO_CALL:
-> +		if (memcmp(ip, ideal_nops, 5))
-
-Maybe use X86_CALL_SIZE instead of 5? And the five more "5" below?
-
-> +			goto out;
-> +		text_poke(ip, new_insn, 5);
-> +		break;
-> +	case BPF_MOD_CALL_TO_CALL:
-> +		if (memcmp(ip, old_insn, 5))
-> +			goto out;
-> +		text_poke(ip, new_insn, 5);
-> +		break;
-> +	case BPF_MOD_CALL_TO_NOP:
-> +		if (memcmp(ip, old_insn, 5))
-> +			goto out;
-> +		text_poke(ip, ideal_nops, 5);
-> +		break;
-> +	}
-> +	ret =3D 0;
-> +out:
-> +	mutex_unlock(&text_mutex);
-> +	return ret;
-> +}
-> +
-> static bool ex_handler_bpf(const struct exception_table_entry *x,
-> 			   struct pt_regs *regs, int trapnr,
-> 			   unsigned long error_code, unsigned long fault_addr)
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 7c7f518811a6..8b90db25348a 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1157,4 +1157,12 @@ static inline u32 bpf_xdp_sock_convert_ctx_access(=
-enum bpf_access_type type,
-> }
-> #endif /* CONFIG_INET */
->=20
-> +enum bpf_text_poke_type {
-> +	BPF_MOD_NOP_TO_CALL,
-> +	BPF_MOD_CALL_TO_CALL,
-> +	BPF_MOD_CALL_TO_NOP,
-> +};
-> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
-> +		       void *addr1, void *addr2);
-> +
-> #endif /* _LINUX_BPF_H */
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 97e37d82a1cc..856564e97943 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -2140,6 +2140,12 @@ int __weak skb_copy_bits(const struct sk_buff *skb=
-, int offset, void *to,
-> 	return -EFAULT;
-> }
->=20
-> +int __weak bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
-> +			      void *addr1, void *addr2)
-> +{
-> +	return -ENOTSUPP;
-> +}
-> +
-> DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
-> EXPORT_SYMBOL(bpf_stats_enabled_key);
->=20
-> --=20
-> 2.23.0
->=20
-
+> [...]
