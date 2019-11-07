@@ -2,71 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15DB7F3B9F
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:42:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF61F3BA1
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:42:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728051AbfKGWmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:42:10 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:49744 "EHLO
+        id S1728116AbfKGWmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:42:14 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:21914 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727987AbfKGWmI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:42:08 -0500
+        by vger.kernel.org with ESMTP id S1728055AbfKGWmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:42:11 -0500
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7MfADY003111;
-        Thu, 7 Nov 2019 14:42:06 -0800
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7MekHN002988;
+        Thu, 7 Nov 2019 14:42:11 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=pfpt0818;
- bh=00v1Q9AEbuLcvbZbM7o3GiVhQNxGw4wzGOPG/UQIgK8=;
- b=j3zmQdXmn5zRFcI7/y5Gi3Oc3f7UWo7Tr/pc2/421C9QkX+aWfHVKHoswWOHUgpAgMja
- +8ffsHirGGv5+IdJWYZrXHVcpwPSFz9jR7gohv7Ya+AKj7icbtmApVLi68UwbU94KhZ5
- BfRyhdv+Se4YiR+vtHFaVMCGR/FsGPgjcbi2AsSpq6FQt6uo1o5jyD07w+ZDjZDB6Apq
- 3IUfyauTT5ys3iQ/mk6yfmfjLNOyGyRIbwhmZX0KBkXb0caWIV3jl7emslR0Mav49aSx
- F+Mpd/6aVLS/5Zi/ZGIzssJqisXs7hDTAyrr1wKQQNmN+vUFEZhbPbASHF52QX6HCpxd dA== 
+ bh=EShDkIMAPBcG4/eQ5ogqZs+FVPcfaQkwHuuXt2w0OhI=;
+ b=A8WaU/VtlkxOatNNr7OSo/mjLQhsd3SVBli+pOUB2dH30tlYYVIPBPl7HjhIgiy/eYBM
+ s7x/1qijvXLi3zmM+PlhM6rh4j8dlvtXoYYWttYIhWFb3bThl/MeoMoy/KHXAzQsVKSJ
+ xelZELxKBG13dOGcEYT7zmWEvG29wvX6ivvskdMV2D3aODItHVoKYGxZAgLciQRVvjkw
+ ndN/E513dJZUTltKOzwqc/vysLutE6EkItVqmn87yfP5fAn4aNMYxDyLAVFyVnLzkn6B
+ LJeODKw9a24qJtGZdS7+ZVnPGT8IVs+4+6A/aYI5yHcfaxBcA5ErgINLzciynRJSxoIP Eg== 
 Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2w41uwxrff-1
+        by mx0a-0016f401.pphosted.com with ESMTP id 2w41uwxrfm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 14:42:06 -0800
+        Thu, 07 Nov 2019 14:42:10 -0800
 Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 7 Nov
- 2019 14:42:05 -0800
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (104.47.32.55) by
+ 2019 14:42:10 -0800
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (104.47.33.53) by
  SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:42:05 -0800
+ 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:42:09 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Wirh+c1VffeOtkY0r0AsAinxlm9rsskX8VcCsVMUWkrPoT0DmJ8qzih55YjWeLZnJ2TXqOL7ZqQdjy3o1qIVDLGmXUmhVWTqwPebW5xOQW8nvzDeyWpgGUtTzbm5DpzJ4obwurJ9IWsf+7Kx1s6fCj7xS4FcuDrzIRv49+mPR8YL5eGrs8DZVLSkKgm2/QwgRo2DLl5w7FdtGB/LucvkvcF32yKKfFnM9csOhH042Vq9sNeJ53JnmcFXLAic1aCflHkix4S/KHwKz7UECEunt8ppCLZzt924yoO0S/Gw2cUZ4HC2/DTA8Anx7uM/ExadYePRvdxTp5wPVa5JnlUhlg==
+ b=K6cZMQEOhpqBBf5y7kq/JYlQVjN1ZHsYcc9wBSTvjn+v/EGTKLm8kAFpRp/4ZUq7qT/QZLXD05AOhZw7k7xmJp+ZZtkvBQnye/2Js57MmVYBLODf5xVdT6Zh1HK3Fkp6VBF/+C0L505Di76dWizz7YE7rR5e/GnDkD0hvoGEjfaUT8yT1IYk7xZZYHD47cnthrAWqMAk5AIz5CkoLKl26Yy9tMxlL8bdlbWvKRzsF95C4W8Jhi3lNp0+9sb/EK+e4vzTVxzDvN8sAd1YXQegUDGIQVTeenKHX/lmAh+u0jZ68ohNUrIrOSVnm9pwehPspvhQePkaBDw41maRx3SmZg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=00v1Q9AEbuLcvbZbM7o3GiVhQNxGw4wzGOPG/UQIgK8=;
- b=mUpdooVuWyiGF5/vqiUmW9g8LjSec6g8Ctzf890DLMESRXk9QkUXo6hDTkVKShundC3qv7ugmfcshcX96HBNKP7BFZTIBfqsPLhfQYclCb4hwi3+gx7tb1HL9zZWw/EYgz0CNZJUXDV5PvCQwg0l4pw7GIUmQQK0o7q723VY47dSVQIqdufPDt5xfE0SqwsNvCQNUz9o7zQznDdKLtvoQz28rmd9wyjNuS9Hf9SdsNhD3gUc/S/2CyO8lIP4ltMXbcaonP+NPHiYZmLcveYS3r9pBIxRr3Hzw/RoDq/y0YyWp3+WWJ8qW1LZESoWcqf9w7PLGln0RogAUsIgnzx+Bg==
+ bh=EShDkIMAPBcG4/eQ5ogqZs+FVPcfaQkwHuuXt2w0OhI=;
+ b=atiRmjrZFsoHSE9PicU7W8QeYu2QXiiQO7j4B2oNaGK42xysupGl9JVSMCSUzRqVGExTgFFfsjcKHLlEqdl1gji7eYmWJ27MWPxC650M2EaCt3UnpigD536RoTOIOYSf+8eaSn5GNSdKqHXrkDaddfILtD9yTTwFCHQ6FMdpoDY62IFYGdCEsjhoYFkYXAta37uscErykNrgWGAiK6P/74/i3ZQY1x+ywLCiIUvkv0CpWwQD6PXaJ+TSnkW9sx9WMhlaraR0RAFoA2I2umNDDGAuk2dYSEUy1iBD1yZsi/OD5LtU1Sx7MKdctTxcNBFkIZAdxsVGF2qHtYXlqtCRgQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=00v1Q9AEbuLcvbZbM7o3GiVhQNxGw4wzGOPG/UQIgK8=;
- b=OicmRtoqOFpnsLsueBh/ArPFuCBj0fb5it5oTbcmMl2PEbPpvO36pGTm+8F6ob+01yzHYf2jmLbptAP3ZqndZVEhCRQ63nPMYBEkRkPfehlEHnGlZAeDr8K1ao0HQkjcSRh7h7UdsbKz+hot+6jEDQEg6R2iWNlWcKK7C6QDm4g=
+ bh=EShDkIMAPBcG4/eQ5ogqZs+FVPcfaQkwHuuXt2w0OhI=;
+ b=scW60x9nRXbU5mWYCO1P3yEJfqsdkAo0ufvX4vhdP+3mA0vOT0zoejoo+EPF6ldgrwBLwcvfUZLSJHUp51naU6sdyyIs/p/vIyR9zMc/yLcUQQna3AOhUoewNEDNe/7mmFMVm/Xl03EpgrWOsXCWoaTK6ROhrPNaN2wKR/1K6dg=
 Received: from DM5PR18MB1642.namprd18.prod.outlook.com (10.175.224.8) by
  DM5PR18MB2295.namprd18.prod.outlook.com (52.132.142.28) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Thu, 7 Nov 2019 22:42:04 +0000
+ 15.20.2430.24; Thu, 7 Nov 2019 22:42:06 +0000
 Received: from DM5PR18MB1642.namprd18.prod.outlook.com
  ([fe80::d89:706b:cda0:5c15]) by DM5PR18MB1642.namprd18.prod.outlook.com
  ([fe80::d89:706b:cda0:5c15%10]) with mapi id 15.20.2430.020; Thu, 7 Nov 2019
- 22:42:04 +0000
+ 22:42:06 +0000
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Nikita Danilov <ndanilov@marvell.com>
-Subject: [PATCH v2 net-next 10/12] net: atlantic: update flow control logic
-Thread-Topic: [PATCH v2 net-next 10/12] net: atlantic: update flow control
- logic
-Thread-Index: AQHVlbyTZMBUUn05o0CLlldpw/6tVA==
-Date:   Thu, 7 Nov 2019 22:42:04 +0000
-Message-ID: <f58e50a30c6d125f51d1d432a0274227ce23299b.1573158382.git.irusskikh@marvell.com>
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 11/12] net: atlantic: implement UDP GSO offload
+Thread-Topic: [PATCH v2 net-next 11/12] net: atlantic: implement UDP GSO
+ offload
+Thread-Index: AQHVlbyUTOddqZfT7kOvjU5QsGzgGw==
+Date:   Thu, 7 Nov 2019 22:42:06 +0000
+Message-ID: <72bfbfd354f4736f0a5fb1573543eb7fe5f7a56e.1573158382.git.irusskikh@marvell.com>
 References: <cover.1573158381.git.irusskikh@marvell.com>
 In-Reply-To: <cover.1573158381.git.irusskikh@marvell.com>
 Accept-Language: en-US
@@ -80,28 +79,28 @@ x-mailer: git-send-email 2.17.1
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 17e89702-1fe3-4807-206b-08d763d3b5ec
+x-ms-office365-filtering-correlation-id: da6c40dc-79ca-483d-bc3e-08d763d3b6d2
 x-ms-traffictypediagnostic: DM5PR18MB2295:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB229552A989BF068E2043752FB7780@DM5PR18MB2295.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:22;
+x-microsoft-antispam-prvs: <DM5PR18MB229523A88EB1E50C433AC81BB7780@DM5PR18MB2295.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:262;
 x-forefront-prvs: 0214EB3F68
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(189003)(199004)(64756008)(76176011)(7736002)(99286004)(316002)(66066001)(54906003)(2351001)(52116002)(5640700003)(2501003)(8676002)(25786009)(118296001)(8936002)(305945005)(81166006)(81156014)(1730700003)(6486002)(478600001)(71200400001)(71190400001)(6436002)(50226002)(6916009)(66476007)(6116002)(6512007)(14454004)(2616005)(476003)(256004)(486006)(186003)(3846002)(102836004)(11346002)(107886003)(36756003)(66946007)(26005)(2906002)(66446008)(86362001)(66556008)(4326008)(386003)(6506007)(5660300002)(446003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2295;H:DM5PR18MB1642.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(189003)(199004)(64756008)(76176011)(7736002)(99286004)(316002)(66066001)(54906003)(2351001)(52116002)(5640700003)(2501003)(8676002)(25786009)(118296001)(8936002)(305945005)(81166006)(81156014)(1730700003)(6486002)(478600001)(71200400001)(71190400001)(6436002)(50226002)(6916009)(66476007)(6116002)(6512007)(14454004)(2616005)(476003)(256004)(486006)(186003)(3846002)(102836004)(11346002)(107886003)(36756003)(66946007)(26005)(2906002)(66446008)(86362001)(66556008)(4326008)(386003)(6506007)(5660300002)(446003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2295;H:DM5PR18MB1642.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: marvell.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LoA/hr5DKNUrtE1qoG7QudTu+iEy+uL2MvoN20QiTzSF1WbRAulMu6MU0LPGDBmd/HRLm6EpHyrTZr++yK1n4p9eTAD71BW5Gx2+D/hlCIeLMZDEUHFXB0Txq0iKIDONEt+15Um1UtWJ1LWsQ4bFX863pMQkPQbp11/EOpcPLv0axx+scZBbanteRbBI/p1iWo5RLdyzxSl27BRrcntXtxg9eOQ+2A+QkI3mXDCVGvJ+XOADZ3cm7YmVEa/VhMdJMaKviuITeWZOOO/Unt/r+E7LuTgxZSulhTgbCBq4wCBEM8UtWzS6C9PnmI4b+thnUqkxDGByuGTQk90e3ztgCuefWMEJtJVbVfk5gShZvZuSU4Mx6wH8VSQmNwUufCkzJsjrGgbthK2EELlSsZhZdgIN37nmzke2DsSQNgZ0kIwHuzdP4TRQhNHZ8kSvIJe8
+x-microsoft-antispam-message-info: BWtpP9X3PPs7t3yNOG7/riQ5C5xK5SFzR7k52z3eun9gayhlFYqZYBS7iIcgvn8UZVnTXWocizfJRMTLrjiJLV/9ozlKAl+nOk9WABDHWgejUbRPEcZ9dRRSv7h+pzKVgaF1XeSuRO/GIsw+nhv7Gef0i73OpL+A9Ni4UvjTpBUtDKr3dNtLhfxGbeoEsz4pj8FiugSO+Gc7Le0gQrV0TzHjQZpn/RfDLH4gGgdHgjODeAyFgt7h11M1SYciZFm9XvOm5sADsQAb/LOU6vImbziOCxCWAktSYsGHZZi55n6+/Kg/pGCDfVqb0GEjzhVcz+nJm0V7JRXwACftLA6S0y6U+J39i+iOVM/CZEs/cGJE524ptqR5ePQyWotmmEZuEgQINvNNes6s2q0UqkcITABKrJiwFeMOTpc8x981BBPDipPBgy8YpzuTEJZ8VqfN
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17e89702-1fe3-4807-206b-08d763d3b5ec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:42:04.0523
+X-MS-Exchange-CrossTenant-Network-Message-Id: da6c40dc-79ca-483d-bc3e-08d763d3b6d2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:42:06.7191
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IjLeuUDjC85IfyiiqikL7meyhtK26GYiOO/u5DonmP7eCm84Ujm77G2XHdXokXJD/2QaDFHT8Th3pEJlUmYGlw==
+X-MS-Exchange-CrossTenant-userprincipalname: 7sIv9EDqXS1tE8NZehp4jWmdr8X9tv4JfKqESqbMYWzAXrSswXa1XNUfbzolKDU/HF3M82pZWokcLS10M1MEAQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB2295
 X-OriginatorOrg: marvell.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
@@ -111,294 +110,253 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikita Danilov <ndanilov@marvell.com>
+atlantic hardware does support UDP hardware segmentation offload.
+This allows user to specify one large contiguous buffer with data
+which then will be split automagically into multiple UDP packets
+of specified size.
 
-We now differentiate requested and negotiated flow control
-modes. Therefore `ethtool -A` now operates on local requested
-FC values, and regular link settings shows the negotiated FC
-settings.
+Bulk sending of large UDP streams lowers CPU usage and increases
+bandwidth.
 
-Signed-off-by: Nikita Danilov <ndanilov@marvell.com>
+We did estimations both with udpgso_bench_tx test tool and with modified
+iperf3 measurement tool (4 streams, multithread, 200b packet size)
+over AQC<->AQC 10G link. Flow control is disabled to prevent RX side
+impact on measurements.
+
+No UDP GSO:
+	iperf3 -c 10.0.1.2 -u -b0 -l 200 -P4 --multithread
+UDP GSO:
+	iperf3 -c 10.0.1.2 -u -b0 -l 12600 --udp-lso 200 -P4 --multithread
+
+Mode          CPU   iperf speed    Line speed   Packets per second
+-------------------------------------------------------------
+NO UDP GSO    350%   3.07 Gbps      3.8 Gbps     1,919,419
+SW UDP GSO    200%   5.55 Gbps      6.4 Gbps     3,286,144
+HW UDP GSO    90%    6.80 Gbps      8.4 Gbps     4,273,117
+
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_cfg.h   |  6 ---
- .../ethernet/aquantia/atlantic/aq_ethtool.c   | 10 ++--
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 19 +++++---
- .../net/ethernet/aquantia/atlantic/aq_nic.h   | 14 +++++-
+ .../device_drivers/aquantia/atlantic.txt      | 15 ++++++
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   | 52 ++++++++++---------
+ .../net/ethernet/aquantia/atlantic/aq_ring.h  |  7 +--
  .../aquantia/atlantic/hw_atl/hw_atl_a0.c      |  2 +-
- .../aquantia/atlantic/hw_atl/hw_atl_b0.c      |  2 +-
- .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 47 +++++++++++--------
- 7 files changed, 59 insertions(+), 41 deletions(-)
+ .../aquantia/atlantic/hw_atl/hw_atl_b0.c      | 11 ++--
+ 5 files changed, 55 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h b/drivers/net/=
-ethernet/aquantia/atlantic/aq_cfg.h
-index d02b0d79f68a..f0c41f7408e5 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_cfg.h
-@@ -70,12 +70,6 @@
+diff --git a/Documentation/networking/device_drivers/aquantia/atlantic.txt =
+b/Documentation/networking/device_drivers/aquantia/atlantic.txt
+index ef3d8c749d4c..d614250e37d5 100644
+--- a/Documentation/networking/device_drivers/aquantia/atlantic.txt
++++ b/Documentation/networking/device_drivers/aquantia/atlantic.txt
+@@ -325,6 +325,21 @@ Supported ethtool options
+  Example:
+  ethtool -N eth0 flow-type udp4 action 0 loc 32
 =20
- /*#define AQ_CFG_MAC_ADDR_PERMANENT {0x30, 0x0E, 0xE3, 0x12, 0x34, 0x56}*/
++ UDP GSO hardware offload
++ ---------------------------------
++ UDP GSO allows to boost UDP tx rates by offloading UDP headers allocation
++ into hardware. A special userspace socket option is required for this,
++ could be validated with /kernel/tools/testing/selftests/net/
++
++    udpgso_bench_tx -u -4 -D 10.0.1.1 -s 6300 -S 100
++
++ Will cause sending out of 100 byte sized UDP packets formed from single
++ 6300 bytes user buffer.
++
++ UDP GSO is configured by:
++
++    ethtool -K eth0 tx-udp-segmentation on
++
+  Private flags (testing)
+  ---------------------------------
 =20
--#define AQ_NIC_FC_OFF    0U
--#define AQ_NIC_FC_TX     1U
--#define AQ_NIC_FC_RX     2U
--#define AQ_NIC_FC_FULL   3U
--#define AQ_NIC_FC_AUTO   4U
--
- #define AQ_CFG_FC_MODE AQ_NIC_FC_FULL
-=20
- /* Default WOL modes used on initialization */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/=
-net/ethernet/aquantia/atlantic/aq_ethtool.c
-index 8286c77d43a5..6353a5c5ed27 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-@@ -588,7 +588,7 @@ static void aq_ethtool_get_pauseparam(struct net_device=
- *ndev,
- 				      struct ethtool_pauseparam *pause)
- {
- 	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
--	u32 fc =3D aq_nic->aq_nic_cfg.flow_control;
-+	u32 fc =3D aq_nic->aq_nic_cfg.fc.req;
-=20
- 	pause->autoneg =3D 0;
-=20
-@@ -610,14 +610,14 @@ static int aq_ethtool_set_pauseparam(struct net_devic=
-e *ndev,
- 		return -EOPNOTSUPP;
-=20
- 	if (pause->rx_pause)
--		aq_nic->aq_hw->aq_nic_cfg->flow_control |=3D AQ_NIC_FC_RX;
-+		aq_nic->aq_hw->aq_nic_cfg->fc.req |=3D AQ_NIC_FC_RX;
- 	else
--		aq_nic->aq_hw->aq_nic_cfg->flow_control &=3D ~AQ_NIC_FC_RX;
-+		aq_nic->aq_hw->aq_nic_cfg->fc.req &=3D ~AQ_NIC_FC_RX;
-=20
- 	if (pause->tx_pause)
--		aq_nic->aq_hw->aq_nic_cfg->flow_control |=3D AQ_NIC_FC_TX;
-+		aq_nic->aq_hw->aq_nic_cfg->fc.req |=3D AQ_NIC_FC_TX;
- 	else
--		aq_nic->aq_hw->aq_nic_cfg->flow_control &=3D ~AQ_NIC_FC_TX;
-+		aq_nic->aq_hw->aq_nic_cfg->fc.req &=3D ~AQ_NIC_FC_TX;
-=20
- 	mutex_lock(&aq_nic->fwreq_mutex);
- 	err =3D aq_nic->aq_fw_ops->set_flow_control(aq_nic->aq_hw);
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/=
 ethernet/aquantia/atlantic/aq_nic.c
-index d3739f21b18e..7ad8eb535d28 100644
+index 7ad8eb535d28..a17a4da7bc15 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -79,7 +79,7 @@ void aq_nic_cfg_start(struct aq_nic_s *self)
- 	cfg->is_rss =3D AQ_CFG_IS_RSS_DEF;
- 	cfg->num_rss_queues =3D AQ_CFG_NUM_RSS_QUEUES_DEF;
- 	cfg->aq_rss.base_cpu_number =3D AQ_CFG_RSS_BASE_CPU_NUM_DEF;
--	cfg->flow_control =3D AQ_CFG_FC_MODE;
-+	cfg->fc.req =3D AQ_CFG_FC_MODE;
- 	cfg->wol =3D AQ_CFG_WOL_MODES;
+@@ -309,6 +309,7 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
+ 	self->ndev->vlan_features |=3D NETIF_F_HW_CSUM | NETIF_F_RXCSUM |
+ 				     NETIF_F_RXHASH | NETIF_F_SG |
+ 				     NETIF_F_LRO | NETIF_F_TSO;
++	self->ndev->gso_partial_features =3D NETIF_F_GSO_UDP_L4;
+ 	self->ndev->priv_flags =3D aq_hw_caps->hw_priv_flags;
+ 	self->ndev->priv_flags |=3D IFF_LIVE_ADDR_CHANGE;
 =20
- 	cfg->mtu =3D AQ_CFG_MTU_DEF;
-@@ -144,6 +144,10 @@ static int aq_nic_update_link_status(struct aq_nic_s *=
-self)
- 	if (err)
- 		return err;
-=20
-+	if (self->aq_fw_ops->get_flow_control)
-+		self->aq_fw_ops->get_flow_control(self->aq_hw, &fc);
-+	self->aq_nic_cfg.fc.cur =3D fc;
+@@ -472,11 +473,18 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, st=
+ruct sk_buff *skb,
+ {
+ 	unsigned int nr_frags =3D skb_shinfo(skb)->nr_frags;
+ 	struct aq_ring_buff_s *first =3D NULL;
++	u8 ipver =3D ip_hdr(skb)->version;
+ 	struct aq_ring_buff_s *dx_buff;
+ 	bool need_context_tag =3D false;
+ 	unsigned int frag_count =3D 0U;
+ 	unsigned int ret =3D 0U;
+ 	unsigned int dx;
++	u8 l4proto =3D 0;
 +
- 	if (self->link_status.mbps !=3D self->aq_hw->aq_link_status.mbps) {
- 		netdev_info(self->ndev, "%s: link change old %d new %d\n",
- 			    AQ_CFG_DRV_NAME, self->link_status.mbps,
-@@ -161,8 +165,6 @@ static int aq_nic_update_link_status(struct aq_nic_s *s=
-elf)
- 		 * on any link event.
- 		 * We should query FW whether it negotiated FC.
- 		 */
--		if (self->aq_fw_ops->get_flow_control)
--			self->aq_fw_ops->get_flow_control(self->aq_hw, &fc);
- 		if (self->aq_hw_ops->hw_set_fc)
- 			self->aq_hw_ops->hw_set_fc(self->aq_hw, fc, 0);
++	if (ipver =3D=3D 4)
++		l4proto =3D ip_hdr(skb)->protocol;
++	else if (ipver =3D=3D 6)
++		l4proto =3D ipv6_hdr(skb)->nexthdr;
+=20
+ 	dx =3D ring->sw_tail;
+ 	dx_buff =3D &ring->buff_ring[dx];
+@@ -484,14 +492,24 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, st=
+ruct sk_buff *skb,
+=20
+ 	if (unlikely(skb_is_gso(skb))) {
+ 		dx_buff->mss =3D skb_shinfo(skb)->gso_size;
+-		dx_buff->is_gso =3D 1U;
++		if (l4proto =3D=3D IPPROTO_TCP) {
++			dx_buff->is_gso_tcp =3D 1U;
++			dx_buff->len_l4 =3D tcp_hdrlen(skb);
++		} else if (l4proto =3D=3D IPPROTO_UDP) {
++			dx_buff->is_gso_udp =3D 1U;
++			dx_buff->len_l4 =3D sizeof(struct udphdr);
++			/* UDP GSO Hardware does not replace packet length. */
++			udp_hdr(skb)->len =3D htons(dx_buff->mss +
++						  dx_buff->len_l4);
++		} else {
++			WARN_ONCE(true, "Bad GSO mode");
++			goto exit;
++		}
+ 		dx_buff->len_pkt =3D skb->len;
+ 		dx_buff->len_l2 =3D ETH_HLEN;
+-		dx_buff->len_l3 =3D ip_hdrlen(skb);
+-		dx_buff->len_l4 =3D tcp_hdrlen(skb);
++		dx_buff->len_l3 =3D skb_network_header_len(skb);
+ 		dx_buff->eop_index =3D 0xffffU;
+-		dx_buff->is_ipv6 =3D
+-			(ip_hdr(skb)->version =3D=3D 6) ? 1U : 0U;
++		dx_buff->is_ipv6 =3D (ipver =3D=3D 6);
+ 		need_context_tag =3D true;
  	}
-@@ -862,9 +864,12 @@ void aq_nic_get_link_ksettings(struct aq_nic_s *self,
- 		ethtool_link_ksettings_add_link_mode(cmd, supported,
- 						     100baseT_Full);
 =20
--	if (self->aq_nic_cfg.aq_hw_caps->flow_control)
-+	if (self->aq_nic_cfg.aq_hw_caps->flow_control) {
- 		ethtool_link_ksettings_add_link_mode(cmd, supported,
- 						     Pause);
-+		ethtool_link_ksettings_add_link_mode(cmd, supported,
-+						     Asym_Pause);
-+	}
+@@ -525,24 +543,9 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, str=
+uct sk_buff *skb,
+ 	++ret;
 =20
- 	ethtool_link_ksettings_add_link_mode(cmd, supported, Autoneg);
+ 	if (skb->ip_summed =3D=3D CHECKSUM_PARTIAL) {
+-		dx_buff->is_ip_cso =3D (htons(ETH_P_IP) =3D=3D skb->protocol) ?
+-			1U : 0U;
+-
+-		if (ip_hdr(skb)->version =3D=3D 4) {
+-			dx_buff->is_tcp_cso =3D
+-				(ip_hdr(skb)->protocol =3D=3D IPPROTO_TCP) ?
+-					1U : 0U;
+-			dx_buff->is_udp_cso =3D
+-				(ip_hdr(skb)->protocol =3D=3D IPPROTO_UDP) ?
+-					1U : 0U;
+-		} else if (ip_hdr(skb)->version =3D=3D 6) {
+-			dx_buff->is_tcp_cso =3D
+-				(ipv6_hdr(skb)->nexthdr =3D=3D NEXTHDR_TCP) ?
+-					1U : 0U;
+-			dx_buff->is_udp_cso =3D
+-				(ipv6_hdr(skb)->nexthdr =3D=3D NEXTHDR_UDP) ?
+-					1U : 0U;
+-		}
++		dx_buff->is_ip_cso =3D (htons(ETH_P_IP) =3D=3D skb->protocol);
++		dx_buff->is_tcp_cso =3D (l4proto =3D=3D IPPROTO_TCP);
++		dx_buff->is_udp_cso =3D (l4proto =3D=3D IPPROTO_UDP);
+ 	}
 =20
-@@ -898,13 +903,13 @@ void aq_nic_get_link_ksettings(struct aq_nic_s *self,
- 		ethtool_link_ksettings_add_link_mode(cmd, advertising,
- 						     100baseT_Full);
+ 	for (; nr_frags--; ++frag_count) {
+@@ -597,7 +600,8 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, stru=
+ct sk_buff *skb,
+ 	     --ret, dx =3D aq_ring_next_dx(ring, dx)) {
+ 		dx_buff =3D &ring->buff_ring[dx];
 =20
--	if (self->aq_nic_cfg.flow_control & AQ_NIC_FC_RX)
-+	if (self->aq_nic_cfg.fc.cur & AQ_NIC_FC_RX)
- 		ethtool_link_ksettings_add_link_mode(cmd, advertising,
- 						     Pause);
-=20
- 	/* Asym is when either RX or TX, but not both */
--	if (!!(self->aq_nic_cfg.flow_control & AQ_NIC_FC_TX) ^
--	    !!(self->aq_nic_cfg.flow_control & AQ_NIC_FC_RX))
-+	if (!!(self->aq_nic_cfg.fc.cur & AQ_NIC_FC_TX) ^
-+	    !!(self->aq_nic_cfg.fc.cur & AQ_NIC_FC_RX))
- 		ethtool_link_ksettings_add_link_mode(cmd, advertising,
- 						     Asym_Pause);
-=20
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/=
-ethernet/aquantia/atlantic/aq_nic.h
-index 98c3182bf1d0..a752f8bb4b08 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -20,6 +20,18 @@ struct aq_vec_s;
- struct aq_ptp_s;
- enum aq_rx_filter_type;
-=20
-+enum aq_fc_mode {
-+	AQ_NIC_FC_OFF =3D 0,
-+	AQ_NIC_FC_TX,
-+	AQ_NIC_FC_RX,
-+	AQ_NIC_FC_FULL,
-+};
-+
-+struct aq_fc_info {
-+	enum aq_fc_mode req;
-+	enum aq_fc_mode cur;
-+};
-+
- struct aq_nic_cfg_s {
- 	const struct aq_hw_caps_s *aq_hw_caps;
- 	u64 features;
-@@ -34,7 +46,7 @@ struct aq_nic_cfg_s {
- 	u32 rxpageorder;
- 	u32 num_rss_queues;
- 	u32 mtu;
--	u32 flow_control;
-+	struct aq_fc_info fc;
- 	u32 link_speed_msk;
- 	u32 wol;
- 	u8 is_vlan_rx_strip;
+-		if (!dx_buff->is_gso && !dx_buff->is_vlan && dx_buff->pa) {
++		if (!(dx_buff->is_gso_tcp || dx_buff->is_gso_udp) &&
++		    !dx_buff->is_vlan && dx_buff->pa) {
+ 			if (unlikely(dx_buff->is_sop)) {
+ 				dma_unmap_single(aq_nic_get_dev(self),
+ 						 dx_buff->pa,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h b/drivers/net=
+/ethernet/aquantia/atlantic/aq_ring.h
+index be3702a4dcc9..991e4d31b094 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.h
+@@ -65,19 +65,20 @@ struct __packed aq_ring_buff_s {
+ 	};
+ 	union {
+ 		struct {
+-			u16 len;
++			u32 len:16;
+ 			u32 is_ip_cso:1;
+ 			u32 is_udp_cso:1;
+ 			u32 is_tcp_cso:1;
+ 			u32 is_cso_err:1;
+ 			u32 is_sop:1;
+ 			u32 is_eop:1;
+-			u32 is_gso:1;
++			u32 is_gso_tcp:1;
++			u32 is_gso_udp:1;
+ 			u32 is_mapped:1;
+ 			u32 is_cleaned:1;
+ 			u32 is_error:1;
+ 			u32 is_vlan:1;
+-			u32 rsvd3:5;
++			u32 rsvd3:4;
+ 			u16 eop_index;
+ 			u16 rsvd4;
+ 		};
 diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c b/dr=
 ivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-index d2fb399f179f..03b62d7d9f1a 100644
+index 03b62d7d9f1a..9b1062b8af64 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_a0.c
-@@ -155,7 +155,7 @@ static int hw_atl_a0_hw_qos_set(struct aq_hw_s *self)
+@@ -454,7 +454,7 @@ static int hw_atl_a0_hw_ring_tx_xmit(struct aq_hw_s *se=
+lf,
 =20
- 	/* QoS Rx buf size per TC */
- 	tc =3D 0;
--	is_rx_flow_control =3D (AQ_NIC_FC_RX & self->aq_nic_cfg->flow_control);
-+	is_rx_flow_control =3D (AQ_NIC_FC_RX & self->aq_nic_cfg->fc.req);
- 	buff_size =3D HW_ATL_A0_RXBUF_MAX;
+ 		buff =3D &ring->buff_ring[ring->sw_tail];
 =20
- 	hw_atl_rpb_rx_pkt_buff_size_per_tc_set(self, buff_size, tc);
+-		if (buff->is_gso) {
++		if (buff->is_gso_tcp) {
+ 			txd->ctl |=3D (buff->len_l3 << 31) |
+ 				(buff->len_l2 << 24) |
+ 				HW_ATL_A0_TXD_CTL_CMD_TCP |
 diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/dr=
 ivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index a51826907467..57b357eadd51 100644
+index 57b357eadd51..51db38038cbc 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -168,7 +168,7 @@ static int hw_atl_b0_hw_qos_set(struct aq_hw_s *self)
- 						   (1024U / 32U) * 50U) /
- 						   100U, tc);
+@@ -43,7 +43,9 @@
+ 			NETIF_F_NTUPLE |  \
+ 			NETIF_F_HW_VLAN_CTAG_FILTER | \
+ 			NETIF_F_HW_VLAN_CTAG_RX |     \
+-			NETIF_F_HW_VLAN_CTAG_TX,      \
++			NETIF_F_HW_VLAN_CTAG_TX |     \
++			NETIF_F_GSO_UDP_L4      |     \
++			NETIF_F_GSO_PARTIAL,          \
+ 	.hw_priv_flags =3D IFF_UNICAST_FLT, \
+ 	.flow_control =3D true,		  \
+ 	.mtu =3D HW_ATL_B0_MTU_JUMBO,	  \
+@@ -533,8 +535,9 @@ static int hw_atl_b0_hw_ring_tx_xmit(struct aq_hw_s *se=
+lf,
 =20
--	hw_atl_b0_set_fc(self, self->aq_nic_cfg->flow_control, tc);
-+	hw_atl_b0_set_fc(self, self->aq_nic_cfg->fc.req, tc);
+ 		buff =3D &ring->buff_ring[ring->sw_tail];
 =20
- 	/* Init TC2 for PTP_RX */
- 	tc =3D 2;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2=
-x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-index ce3ed86d8c0e..97ebf849695f 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
-@@ -181,17 +181,26 @@ static int aq_fw2x_set_link_speed(struct aq_hw_s *sel=
-f, u32 speed)
- 	return 0;
- }
+-		if (buff->is_gso) {
+-			txd->ctl |=3D HW_ATL_B0_TXD_CTL_CMD_TCP;
++		if (buff->is_gso_tcp || buff->is_gso_udp) {
++			if (buff->is_gso_tcp)
++				txd->ctl |=3D HW_ATL_B0_TXD_CTL_CMD_TCP;
+ 			txd->ctl |=3D HW_ATL_B0_TXD_CTL_DESC_TYPE_TXC;
+ 			txd->ctl |=3D (buff->len_l3 << 31) |
+ 				    (buff->len_l2 << 24);
+@@ -554,7 +557,7 @@ static int hw_atl_b0_hw_ring_tx_xmit(struct aq_hw_s *se=
+lf,
+ 			txd->ctl |=3D buff->vlan_tx_tag << 4;
+ 			is_vlan =3D true;
+ 		}
+-		if (!buff->is_gso && !buff->is_vlan) {
++		if (!buff->is_gso_tcp && !buff->is_gso_udp && !buff->is_vlan) {
+ 			buff_pa_len =3D buff->len;
 =20
--static void aq_fw2x_set_mpi_flow_control(struct aq_hw_s *self, u32 *mpi_st=
-ate)
-+static void aq_fw2x_upd_flow_control_bits(struct aq_hw_s *self,
-+					  u32 *mpi_state, u32 fc)
- {
--	if (self->aq_nic_cfg->flow_control & AQ_NIC_FC_RX)
--		*mpi_state |=3D BIT(CAPS_HI_PAUSE);
--	else
--		*mpi_state &=3D ~BIT(CAPS_HI_PAUSE);
-+	*mpi_state &=3D ~(HW_ATL_FW2X_CTRL_PAUSE |
-+			HW_ATL_FW2X_CTRL_ASYMMETRIC_PAUSE);
-=20
--	if (self->aq_nic_cfg->flow_control & AQ_NIC_FC_TX)
--		*mpi_state |=3D BIT(CAPS_HI_ASYMMETRIC_PAUSE);
--	else
--		*mpi_state &=3D ~BIT(CAPS_HI_ASYMMETRIC_PAUSE);
-+	switch (fc) {
-+	/* There is not explicit mode of RX only pause frames,
-+	 * thus, we join this mode with FC full.
-+	 * FC full is either Rx, either Tx, or both.
-+	 */
-+	case AQ_NIC_FC_FULL:
-+	case AQ_NIC_FC_RX:
-+		*mpi_state |=3D HW_ATL_FW2X_CTRL_PAUSE |
-+			      HW_ATL_FW2X_CTRL_ASYMMETRIC_PAUSE;
-+		break;
-+	case AQ_NIC_FC_TX:
-+		*mpi_state |=3D HW_ATL_FW2X_CTRL_ASYMMETRIC_PAUSE;
-+		break;
-+	}
- }
-=20
- static void aq_fw2x_upd_eee_rate_bits(struct aq_hw_s *self, u32 *mpi_opts,
-@@ -215,7 +224,8 @@ static int aq_fw2x_set_state(struct aq_hw_s *self,
- 	case MPI_INIT:
- 		mpi_state &=3D ~BIT(CAPS_HI_LINK_DROP);
- 		aq_fw2x_upd_eee_rate_bits(self, &mpi_state, cfg->eee_speeds);
--		aq_fw2x_set_mpi_flow_control(self, &mpi_state);
-+		aq_fw2x_upd_flow_control_bits(self, &mpi_state,
-+					      self->aq_nic_cfg->fc.req);
- 		break;
- 	case MPI_DEINIT:
- 		mpi_state |=3D BIT(CAPS_HI_LINK_DROP);
-@@ -525,7 +535,8 @@ static int aq_fw2x_set_flow_control(struct aq_hw_s *sel=
-f)
- {
- 	u32 mpi_state =3D aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
-=20
--	aq_fw2x_set_mpi_flow_control(self, &mpi_state);
-+	aq_fw2x_upd_flow_control_bits(self, &mpi_state,
-+				      self->aq_nic_cfg->fc.req);
-=20
- 	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR, mpi_state);
-=20
-@@ -535,17 +546,13 @@ static int aq_fw2x_set_flow_control(struct aq_hw_s *s=
-elf)
- static u32 aq_fw2x_get_flow_control(struct aq_hw_s *self, u32 *fcmode)
- {
- 	u32 mpi_state =3D aq_fw2x_state2_get(self);
-+	*fcmode =3D 0;
-=20
- 	if (mpi_state & HW_ATL_FW2X_CAP_PAUSE)
--		if (mpi_state & HW_ATL_FW2X_CAP_ASYM_PAUSE)
--			*fcmode =3D AQ_NIC_FC_RX;
--		else
--			*fcmode =3D AQ_NIC_FC_RX | AQ_NIC_FC_TX;
--	else
--		if (mpi_state & HW_ATL_FW2X_CAP_ASYM_PAUSE)
--			*fcmode =3D AQ_NIC_FC_TX;
--		else
--			*fcmode =3D 0;
-+		*fcmode |=3D AQ_NIC_FC_RX;
-+
-+	if (mpi_state & HW_ATL_FW2X_CAP_ASYM_PAUSE)
-+		*fcmode |=3D AQ_NIC_FC_TX;
-=20
- 	return 0;
- }
+ 			txd->buf_addr =3D buff->pa;
 --=20
 2.17.1
 
