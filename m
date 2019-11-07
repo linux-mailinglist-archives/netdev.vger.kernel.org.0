@@ -2,30 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D19AF341A
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:05:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BCA9F3428
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730719AbfKGQFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:05:22 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53064 "EHLO
+        id S2388638AbfKGQIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:08:49 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53423 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730149AbfKGQFW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:05:22 -0500
+        with ESMTP id S1727401AbfKGQIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:08:49 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 18:05:14 +0200
+        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 18:08:42 +0200
 Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.9.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA7G5BGo016782;
-        Thu, 7 Nov 2019 18:05:12 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA7G8d4B007213;
+        Thu, 7 Nov 2019 18:08:39 +0200
 From:   Parav Pandit <parav@mellanox.com>
 To:     alex.williamson@redhat.com, davem@davemloft.net,
         kvm@vger.kernel.org, netdev@vger.kernel.org
 Cc:     saeedm@mellanox.com, kwankhede@nvidia.com, leon@kernel.org,
         cohuck@redhat.com, jiri@mellanox.com, linux-rdma@vger.kernel.org,
         Parav Pandit <parav@mellanox.com>
-Subject: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Date:   Thu,  7 Nov 2019 10:04:48 -0600
-Message-Id: <20191107160448.20962-1-parav@mellanox.com>
+Subject: [PATCH net-next 01/19] net/mlx5: E-switch, Move devlink port close to eswitch port
+Date:   Thu,  7 Nov 2019 10:08:16 -0600
+Message-Id: <20191107160834.21087-1-parav@mellanox.com>
 X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20191107160448.20962-1-parav@mellanox.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -33,304 +35,303 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave, Jiri, Alex,
-
-This series adds the support for mlx5 sub function devices using
-mediated device with eswitch switchdev mode.
-
-This series is currently on top of [1], but once [1] is merged to
-net-next tree, this series should be resend through usual Saeed's
-net-next tree or to netdev net-next.
-
-Mdev alias support patches are already reviewed at vfio/kvm's mailing
-list in past. Since mlx5_core driver is first user of the
-mdev alias API, those patches are part of this series to merge via
-net-next tree.
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/log/?h=net-next-mlx5
-
-Also, once Jason Wang's series [9] is merged, mlx5_core driver will be enhanced to
-use class id based matching support for mdev devices.
-
-Abstract:
----------
-
-Mellanox ConnectX device supports dynamic creation of sub function which
-are equivalent to a PCI function handled by mlx5_core and mlx5_ib drivers.
-It has few few differences to PCI function. They are described below in
-overview section.
-
-Mellanox sub function capability allows users to create several hundreds
-of networking and/or rdma devices without depending on PCI SR-IOV support.
-
-Motivation:
------------
-User wants to use multiple netdevices and rdma devices in a system
-without enabling SR-IOV, possibly more number of devices than what
-mellanox ConnectX device supports using SR-IOV.
-
-Such devices will have most if not all of the acceleration and offload
-capabilities of mlx5, while they are still light weight and don't demand
-any dedicated physical resources such as (pci function, MSIX vectors).
-
-Provision such netdevice and/or rdma device to use in bare-metal
-server or provision to a container.
-
-In future, map such sub function device to a VM once ConnectX device
-supports it. In such case, it should be able to reuse existing
-mediated device (mdev) [2] framework of kernel.
-
-Regardless of how a sub function is used, it is desired to lifecycle
-such device in unified way, such as using mdev [2].
-
-User wants to have same level of control, visibility, offloads support
-as that of current SR-IOV VFs using eswitch switchdev mode for
-Ethernet devices.
-
-Overview:
----------
-Mellanox ConnectX sub functions are exposed to user as a mediated
-device (mdev) [2] as discussed in RFC [3] and further during
-netdevconf0x13 at [4].
-
-mlx5 mediated device (mdev) enables users to create multiple netdevices
-and/or RDMA devices from single PCI function.
-
-Each mdev maps to a mlx5 sub function.
-mlx5 sub function is similar to PCI VF. However it doesn't have its own
-PCI function and MSI-X vectors.
-
-mlx5 mdevs share common PCI resources such as PCI BAR region,
-MSI-X interrupts.
-
-Each mdev has its own window in the PCI BAR region, which is
-accessible only to that mdev and applications using it.
-
-Each mlx5 sub function has its own resource namespace for RDMA resources.
-
-mdevs are supported when eswitch mode of the devlink instance
-is in switchdev mode described in devlink documentation [5].
-
-mdev is identified using a UUID defined by RFC 4122.
-
-Each created mdev has unique 12 letters alias. This alias is used to
-derive phys_port_name attribute of the corresponding representor
-netdevice. This establishes clear link between mdev device, eswitch
-port and eswitch representor netdevice.
-
-systemd udev [6] will be enhanced post this work to have predictable
-netdevice names based on the unique and predicable mdev alias of the
-mdev device.
-
-For example, an Ethernet netdevice of an mdev device having alias
-'aliasfoo123' will be persistently named as enmaliasfoo123, where:
-<en> for Ethernet
-m = mediated device bus
-<alias> = unique mdev alias
-
-Design decisions:
------------------
-1. mdev device (and bus) instead of any new subdevice bus is used
-after concluding discussion at [7]. This simplifies and eliminates the
-need of new bus, also eliminates any vendor specific bus.
-
-2. mdev device is also chosen to not create multiple tools for creating
-netdevice, rdma device, devlink port, its representor netdevice and
-representor rdma port.
-
-3. mdev device support in eswitch switchdev mode, gives rich isolation
-and reuses existing offload infrastructure of iproute2/tc.
-
-4. mdev device also enjoys existing devlink health reporting infrastructure
-uniformely for PF, VF and mdev.
-
-5. Persistent naming of mdev's netdevice scheme is discussed and concluded
-at [8] using systemwide unique, predicable mdev alias.
-
-6. Unique eswitch port phys_port_name derivation from the mdev alias usage
-is concluded at [8].
-
-User commands examples:
------------------------
-
-- Set eswitch mode as switchdev mode
-    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-
-- Create a mdev
-    Generate a UUID
-    $ UUID=$(uuidgen)
-    Create the mdev using UUID
-    $ echo $UUID > /sys/class/net/ens2f0_p0/device/mdev_supported_types/mlx5_core-local/create
-
-- Unbind a mdev from vfio_mdev driver
-    $ echo $UUID > /sys/bus/mdev/drivers/vfio_mdev/unbind
-
-- Bind a mdev to mlx5_core driver
-    $ echo $UUID > /sys/bus/mdev/drivers/mlx5_core/bind
-
-- View netdevice and (optionally) RDMA device in sysfs tree
-    $ ls -l /sys/bus/mdev/devices/$UUID/net/
-    $ ls -l /sys/bus/mdev/devices/$UUID/infiniband/
-
-- View netdevice and (optionally) RDMA device using iproute2 tools
-    $ ip link show
-    $ rdma dev show
-
-- Query maximum number of mdevs that can be created
-    $ cat /sys/class/net/ens2f0_p0/device/mdev_supported_types/mlx5_core-local/max_mdevs
-
-- Query remaining number of mdevs that can be created
-    $ cat /sys/class/net/ens2f0_p0/device/mdev_supported_types/mlx5_core-local/available_instances
-
-- Query an alias of the mdev
-    $ cat /sys/bus/mdev/devices/$UUID/alias
-
-Security model:
---------------
-This section covers security aspects of mlx5 mediated devices at
-host level and at network level.
-
-Host side:
-- At present mlx5 mdev is meant to be used only in a host.
-It is not meant to be mapped to a VM or access by userspace application
-using VFIO framework.
-Hence, mlx5_core driver doesn't implement any of the VFIO device specific
-callback routines.
-Hence, mlx5 mediated device cannot be mapped to a VM or to a userspace
-application via VFIO framework.
-
-- At present an mlx5 mdev can be accessed by an application through
-its netdevice and/or RDMA device.
-
-- mlx5 mdev does not share PCI BAR with its parent PCI function.
-
-- All mlx5 mdevs of a given parent device share a single PCI BAR.
-However each mdev device has a small dedicated window of the PCI BAR.
-Hence, one mdev device cannot access PCI BAR or any of the resources
-of another mdev device.
-
-- Each mlx5 mdev has its own dedicated event queue through which interrupt
-notifications are delivered. Hence, one mlx5 mdev cannot enable/disable
-interrupts of other mlx5 mdev. mlx5 mdev cannot enable/disable interrupts
-of the parent PCI function.
-
-Network side:
-- By default the netdevice and the rdma device of mlx5 mdev cannot send or
-receive any packets over the network or to any other mlx5 mdev.
-
-- mlx5 mdev follows devlink eswitch and vport model of PCI SR-IOV PF and VFs.
-All traffic is dropped by default in this eswitch model.
-
-- Each mlx5 mdev has one eswitch vport representor netdevice and rdma port.
-The user must do necessary configuration through such representor to enable
-mlx5 mdev to send and/or receive packets.
-
-Patchset summary:
------------------
-Patch 1 to 6 prepare mlx5 core driver to create mdev.
-
-Patch-1 Moves mlx5 devlink port close to eswitch port
-Patch-2 implements sub function vport representor handling
-Patch-3,4 Introduces mlx5 sub function lifecycle routines
-Patch-5 Extended mlx5 eswitch to enable/disable sub function vports
-Patch-6 Registers mlx5 driver with mdev subsystem for mdev lifecycle
-
-Patch-7 to 10 enhances mdev subsystem for unique alias generation
-
-Patch-7 introduces sha1 based mdev alias
-Patch-8 Ensures mdev alias is unique amlong all mdev devices
-Patch-9 Exposes mdev alias in sysfs file for systemd/udev usage
-Patch-10 Introduces mdev alias API to be used by vendor driver
-Patch-11 Improves mdev to avoid nested locking with mlx5_core driver
-and devlink subsystem
-
-Patch-12 Introduces new devlink mdev port flavour
-Patch-13 Registers devlink eswitch port for a sub function
-
-Patch-14 to 17 implements mdev driver by reusing most of the mlx5_core
-driver
-Patch-14 implements sharing IRQ between sub function and parent PCI device
-Patch-15 implements load, unload routine for sub function
-Patch-16 implements dma ops for mediated device
-Patch-17 implements mdev driver to bind to mdev device
-
-Patch-18 Adds documentation for mdev overview, example and security model
-Patch-19 extends sample mtty driver for mdev alias generation
-
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git/log/?h=net-next-mlx5
-[2] https://www.kernel.org/doc/Documentation/vfio-mediated-device.txt
-[3] https://lkml.org/lkml/2019/3/8/819
-[4] https://netdevconf.org/0x13/session.html?workshop-hardware-offload
-[5] http://man7.org/linux/man-pages/man8/devlink-dev.8.html.
-[6] https://github.com/systemd/systemd/blob/master/src/udev/udev-builtin-net_id.c
-[7] https://lkml.org/lkml/2019/3/7/696
-[8] https://lkml.org/lkml/2019/8/23/146
-[9] https://patchwork.ozlabs.org/patch/1190425
-
-
-Parav Pandit (14):
-  net/mlx5: E-switch, Move devlink port close to eswitch port
-  net/mlx5: Introduce SF life cycle APIs to allocate/free
-  vfio/mdev: Introduce sha1 based mdev alias
-  vfio/mdev: Make mdev alias unique among all mdevs
-  vfio/mdev: Expose mdev alias in sysfs tree
-  vfio/mdev: Introduce an API mdev_alias
-  vfio/mdev: Improvise mdev life cycle and parent removal scheme
-  devlink: Introduce mdev port flavour
-  net/mlx5: Register SF devlink port
-  net/mlx5: Add load/unload routines for SF driver binding
-  net/mlx5: Implement dma ops and params for mediated device
-  net/mlx5: Add mdev driver to bind to mdev devices
-  Documentation: net: mlx5: Add mdev usage documentation
-  mtty: Optionally support mtty alias
-
-Vu Pham (4):
-  net/mlx5: E-Switch, Add SF vport, vport-rep support
-  net/mlx5: Introduce SF table framework
-  net/mlx5: E-Switch, Enable/disable SF's vport during SF life cycle
-  net/mlx5: Add support for mediated devices in switchdev mode
-
-Yuval Avnery (1):
-  net/mlx5: Share irqs between SFs and parent PCI device
-
- .../driver-api/vfio-mediated-device.rst       |   9 +
- .../device_drivers/mellanox/mlx5.rst          | 122 +++++
- .../net/ethernet/mellanox/mlx5/core/Kconfig   |  11 +
- .../net/ethernet/mellanox/mlx5/core/Makefile  |   4 +
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   6 +
- drivers/net/ethernet/mellanox/mlx5/core/dev.c |  17 +
- .../net/ethernet/mellanox/mlx5/core/devlink.c |  69 +++
- .../net/ethernet/mellanox/mlx5/core/devlink.h |   8 +
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  94 +---
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |   6 +-
- .../net/ethernet/mellanox/mlx5/core/eswitch.c |  24 +-
- .../net/ethernet/mellanox/mlx5/core/eswitch.h |  85 ++++
- .../mellanox/mlx5/core/eswitch_offloads.c     | 147 +++++-
- .../net/ethernet/mellanox/mlx5/core/lib/eq.h  |   3 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    |  80 +++-
- .../ethernet/mellanox/mlx5/core/meddev/mdev.c | 212 +++++++++
- .../mellanox/mlx5/core/meddev/mdev_driver.c   |  50 +++
- .../ethernet/mellanox/mlx5/core/meddev/sf.c   | 425 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/meddev/sf.h   |  73 +++
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  54 +++
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  12 +
- .../net/ethernet/mellanox/mlx5/core/vport.c   |   4 +-
- drivers/vfio/mdev/mdev_core.c                 | 198 +++++++-
- drivers/vfio/mdev/mdev_private.h              |   8 +-
- drivers/vfio/mdev/mdev_sysfs.c                |  26 +-
- include/linux/mdev.h                          |   5 +
- include/linux/mlx5/driver.h                   |   8 +-
- include/net/devlink.h                         |   9 +
- include/uapi/linux/devlink.h                  |   5 +
- net/core/devlink.c                            |  32 ++
- samples/vfio-mdev/mtty.c                      |  13 +
- 32 files changed, 1678 insertions(+), 143 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/meddev/mdev.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/meddev/mdev_driver.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/meddev/sf.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/meddev/sf.h
-
+Currently devlink ports are tied to netdev representor.
+
+mlx5_vport structure is better container of e-switch vport
+compare to mlx5e_rep_priv.
+This enables to extend mlx5_vport easily for mdev flavour.
+
+Hence, move devlink_port from netdev representor to mlx5_vport.
+
+Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+Signed-off-by: Parav Pandit <parav@mellanox.com>
+---
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 63 +++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.h |  8 ++
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 94 +++----------------
+ .../net/ethernet/mellanox/mlx5/core/en_rep.h  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |  1 +
+ 5 files changed, 88 insertions(+), 80 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+index 381925c90d94..ce4278dfc101 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -226,3 +226,66 @@ void mlx5_devlink_unregister(struct devlink *devlink)
+ 				  ARRAY_SIZE(mlx5_devlink_params));
+ 	devlink_unregister(devlink);
+ }
++
++bool
++mlx5_devlink_port_supported(const struct mlx5_core_dev *dev,
++			    const struct mlx5_vport *vport)
++{
++	return vport->vport == MLX5_VPORT_UPLINK ||
++	       vport->vport == MLX5_VPORT_PF ||
++	       mlx5_eswitch_is_vf_vport(dev->priv.eswitch, vport->vport);
++}
++
++static unsigned int
++vport_to_devlink_port_index(const struct mlx5_core_dev *dev, u16 vport_num)
++{
++	return (MLX5_CAP_GEN(dev, vhca_id) << 16) | vport_num;
++}
++
++static void get_port_switch_id(struct mlx5_core_dev *dev,
++			       struct netdev_phys_item_id *ppid)
++{
++	u64 parent_id;
++
++	parent_id = mlx5_query_nic_system_image_guid(dev);
++	ppid->id_len = sizeof(parent_id);
++	memcpy(ppid->id, &parent_id, sizeof(parent_id));
++}
++
++int mlx5_devlink_port_register(struct mlx5_core_dev *dev,
++			       struct mlx5_vport *vport)
++{
++	struct devlink *devlink = priv_to_devlink(dev);
++	struct netdev_phys_item_id ppid = {};
++	unsigned int dl_port_index = 0;
++
++	if (!mlx5_devlink_port_supported(dev, vport))
++		return 0;
++
++	get_port_switch_id(dev, &ppid);
++	memset(&vport->dl_port, 0, sizeof(vport->dl_port));
++
++	dl_port_index = vport_to_devlink_port_index(dev, vport->vport);
++	if (vport->vport == MLX5_VPORT_UPLINK)
++		devlink_port_attrs_set(&vport->dl_port,
++				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
++				       PCI_FUNC(dev->pdev->devfn), false, 0,
++				       &ppid.id[0], ppid.id_len);
++	else if (vport->vport == MLX5_VPORT_PF)
++		devlink_port_attrs_pci_pf_set(&vport->dl_port,
++					      &ppid.id[0], ppid.id_len,
++					      dev->pdev->devfn);
++	else if (mlx5_eswitch_is_vf_vport(dev->priv.eswitch, vport->vport))
++		devlink_port_attrs_pci_vf_set(&vport->dl_port,
++					      &ppid.id[0], ppid.id_len,
++					      dev->pdev->devfn,
++					      vport->vport - 1);
++	return devlink_port_register(devlink, &vport->dl_port, dl_port_index);
++}
++
++void mlx5_devlink_port_unregister(struct mlx5_core_dev *dev,
++				  struct mlx5_vport *vport)
++{
++	if (mlx5_devlink_port_supported(dev, vport))
++		devlink_port_unregister(&vport->dl_port);
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+index d0ba03774ddf..b30ea3ca612b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+@@ -5,10 +5,18 @@
+ #define __MLX5_DEVLINK_H__
+ 
+ #include <net/devlink.h>
++#include "eswitch.h"
+ 
+ struct devlink *mlx5_devlink_alloc(void);
+ void mlx5_devlink_free(struct devlink *devlink);
+ int mlx5_devlink_register(struct devlink *devlink, struct device *dev);
+ void mlx5_devlink_unregister(struct devlink *devlink);
+ 
++bool
++mlx5_devlink_port_supported(const struct mlx5_core_dev *dev,
++			    const struct mlx5_vport *vport);
++int mlx5_devlink_port_register(struct mlx5_core_dev *dev,
++			       struct mlx5_vport *vport);
++void mlx5_devlink_port_unregister(struct mlx5_core_dev *dev,
++				  struct mlx5_vport *vport);
+ #endif /* __MLX5_DEVLINK_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 95892a3b63a1..55f2a707c703 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -392,19 +392,6 @@ static const struct ethtool_ops mlx5e_uplink_rep_ethtool_ops = {
+ 	.set_pauseparam    = mlx5e_uplink_rep_set_pauseparam,
+ };
+ 
+-static void mlx5e_rep_get_port_parent_id(struct net_device *dev,
+-					 struct netdev_phys_item_id *ppid)
+-{
+-	struct mlx5e_priv *priv;
+-	u64 parent_id;
+-
+-	priv = netdev_priv(dev);
+-
+-	parent_id = mlx5_query_nic_system_image_guid(priv->mdev);
+-	ppid->id_len = sizeof(parent_id);
+-	memcpy(ppid->id, &parent_id, sizeof(parent_id));
+-}
+-
+ static void mlx5e_sqs2vport_stop(struct mlx5_eswitch *esw,
+ 				 struct mlx5_eswitch_rep *rep)
+ {
+@@ -1356,8 +1343,11 @@ static struct devlink_port *mlx5e_get_devlink_port(struct net_device *dev)
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(dev);
+ 	struct mlx5e_rep_priv *rpriv = priv->ppriv;
++	struct mlx5_core_dev *mdev = priv->mdev;
++	struct mlx5_vport *vport;
+ 
+-	return &rpriv->dl_port;
++	vport = mlx5_eswitch_get_vport(mdev->priv.eswitch, rpriv->rep->vport);
++	return &vport->dl_port;
+ }
+ 
+ static const struct net_device_ops mlx5e_netdev_ops_rep = {
+@@ -1792,64 +1782,6 @@ static const struct mlx5e_profile mlx5e_uplink_rep_profile = {
+ 	.rq_groups		= MLX5E_NUM_RQ_GROUPS(REGULAR),
+ };
+ 
+-static bool
+-is_devlink_port_supported(const struct mlx5_core_dev *dev,
+-			  const struct mlx5e_rep_priv *rpriv)
+-{
+-	return rpriv->rep->vport == MLX5_VPORT_UPLINK ||
+-	       rpriv->rep->vport == MLX5_VPORT_PF ||
+-	       mlx5_eswitch_is_vf_vport(dev->priv.eswitch, rpriv->rep->vport);
+-}
+-
+-static unsigned int
+-vport_to_devlink_port_index(const struct mlx5_core_dev *dev, u16 vport_num)
+-{
+-	return (MLX5_CAP_GEN(dev, vhca_id) << 16) | vport_num;
+-}
+-
+-static int register_devlink_port(struct mlx5_core_dev *dev,
+-				 struct mlx5e_rep_priv *rpriv)
+-{
+-	struct devlink *devlink = priv_to_devlink(dev);
+-	struct mlx5_eswitch_rep *rep = rpriv->rep;
+-	struct netdev_phys_item_id ppid = {};
+-	unsigned int dl_port_index = 0;
+-
+-	if (!is_devlink_port_supported(dev, rpriv))
+-		return 0;
+-
+-	mlx5e_rep_get_port_parent_id(rpriv->netdev, &ppid);
+-
+-	if (rep->vport == MLX5_VPORT_UPLINK) {
+-		devlink_port_attrs_set(&rpriv->dl_port,
+-				       DEVLINK_PORT_FLAVOUR_PHYSICAL,
+-				       PCI_FUNC(dev->pdev->devfn), false, 0,
+-				       &ppid.id[0], ppid.id_len);
+-		dl_port_index = vport_to_devlink_port_index(dev, rep->vport);
+-	} else if (rep->vport == MLX5_VPORT_PF) {
+-		devlink_port_attrs_pci_pf_set(&rpriv->dl_port,
+-					      &ppid.id[0], ppid.id_len,
+-					      dev->pdev->devfn);
+-		dl_port_index = rep->vport;
+-	} else if (mlx5_eswitch_is_vf_vport(dev->priv.eswitch,
+-					    rpriv->rep->vport)) {
+-		devlink_port_attrs_pci_vf_set(&rpriv->dl_port,
+-					      &ppid.id[0], ppid.id_len,
+-					      dev->pdev->devfn,
+-					      rep->vport - 1);
+-		dl_port_index = vport_to_devlink_port_index(dev, rep->vport);
+-	}
+-
+-	return devlink_port_register(devlink, &rpriv->dl_port, dl_port_index);
+-}
+-
+-static void unregister_devlink_port(struct mlx5_core_dev *dev,
+-				    struct mlx5e_rep_priv *rpriv)
+-{
+-	if (is_devlink_port_supported(dev, rpriv))
+-		devlink_port_unregister(&rpriv->dl_port);
+-}
+-
+ /* e-Switch vport representors */
+ static int
+ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
+@@ -1857,6 +1789,7 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
+ 	const struct mlx5e_profile *profile;
+ 	struct mlx5e_rep_priv *rpriv;
+ 	struct net_device *netdev;
++	struct mlx5_vport *vport;
+ 	int nch, err;
+ 
+ 	rpriv = kzalloc(sizeof(*rpriv), GFP_KERNEL);
+@@ -1901,7 +1834,8 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
+ 		goto err_detach_netdev;
+ 	}
+ 
+-	err = register_devlink_port(dev, rpriv);
++	vport = mlx5_eswitch_get_vport(dev->priv.eswitch, rep->vport);
++	err = mlx5_devlink_port_register(dev, vport);
+ 	if (err) {
+ 		esw_warn(dev, "Failed to register devlink port %d\n",
+ 			 rep->vport);
+@@ -1915,12 +1849,12 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
+ 		goto err_devlink_cleanup;
+ 	}
+ 
+-	if (is_devlink_port_supported(dev, rpriv))
+-		devlink_port_type_eth_set(&rpriv->dl_port, netdev);
++	if (mlx5_devlink_port_supported(dev, vport))
++		devlink_port_type_eth_set(&vport->dl_port, netdev);
+ 	return 0;
+ 
+ err_devlink_cleanup:
+-	unregister_devlink_port(dev, rpriv);
++	mlx5_devlink_port_unregister(dev, vport);
+ 
+ err_neigh_cleanup:
+ 	mlx5e_rep_neigh_cleanup(rpriv);
+@@ -1946,11 +1880,13 @@ mlx5e_vport_rep_unload(struct mlx5_eswitch_rep *rep)
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+ 	struct mlx5_core_dev *dev = priv->mdev;
+ 	void *ppriv = priv->ppriv;
++	struct mlx5_vport *vport;
+ 
+-	if (is_devlink_port_supported(dev, rpriv))
+-		devlink_port_type_clear(&rpriv->dl_port);
++	vport = mlx5_eswitch_get_vport(dev->priv.eswitch, rep->vport);
++	if (mlx5_devlink_port_supported(dev, vport))
++		devlink_port_type_clear(&vport->dl_port);
+ 	unregister_netdev(netdev);
+-	unregister_devlink_port(dev, rpriv);
++	mlx5_devlink_port_unregister(dev, vport);
+ 	mlx5e_rep_neigh_cleanup(rpriv);
+ 	mlx5e_detach_netdev(priv);
+ 	if (rep->vport == MLX5_VPORT_UPLINK)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
+index 31f83c8adcc9..bc15801ebefd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
+@@ -39,6 +39,7 @@
+ #include "eswitch.h"
+ #include "en.h"
+ #include "lib/port_tun.h"
++#include "devlink.h"
+ 
+ #ifdef CONFIG_MLX5_ESWITCH
+ struct mlx5e_neigh_update_table {
+@@ -90,7 +91,6 @@ struct mlx5e_rep_priv {
+ 	struct list_head       vport_sqs_list;
+ 	struct mlx5_rep_uplink_priv uplink_priv; /* valid for uplink rep */
+ 	struct rtnl_link_stats64 prev_vf_vport_stats;
+-	struct devlink_port dl_port;
+ };
+ 
+ static inline
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index 920d8f529fb9..e27d372e1c07 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -138,6 +138,7 @@ struct mlx5_vport {
+ 
+ 	bool                    enabled;
+ 	enum mlx5_eswitch_vport_event enabled_events;
++	struct devlink_port dl_port;
+ };
+ 
+ enum offloads_fdb_flags {
 -- 
 2.19.2
 
