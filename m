@@ -2,262 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A71EF33DC
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:54:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94780F33E5
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:56:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389133AbfKGPyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 10:54:38 -0500
-Received: from mx1.redhat.com ([209.132.183.28]:52912 "EHLO mx1.redhat.com"
+        id S1729955AbfKGP4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 10:56:05 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54546 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388941AbfKGPyi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 10:54:38 -0500
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 29D1E81F18
-        for <netdev@vger.kernel.org>; Thu,  7 Nov 2019 15:54:37 +0000 (UTC)
-Received: by mail-qt1-f198.google.com with SMTP id k9so3117672qtg.2
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 07:54:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BBCrA8jI8FYav5dUH4JsIvDsqU9jbzWbW4UmAoXMTfU=;
-        b=LFssiQQwxnzYPCaZG6ypE6emHsjFHko+4gy/JPUOwr/oUWOVK3ImMbT6NL9ZRRDtp9
-         ai54Uvy1+HeEUUzmMVLScoox1pyys82Ay06jUBTuCnm09zaeKZaCoolSBJR7glpMqMnY
-         aSsVF85Fq4Ld15NOPSE8g2jzCz04rH+Jv0mpm3qvgRqOfKEUqn1n6dru1IAO/RDZh+kz
-         gpk4JCQ7MkP7jxASJemePpKHjOdVn2JjdNrd/QDbIOrCAQFGRPbEngeL4/RruWHDTTBb
-         UZY7SijyN2Po+/vNUyi9gTis6TTgmYqCYG6WtQvNFwT1II4sAAHiBVAU6aViPlobBT3V
-         UeDw==
-X-Gm-Message-State: APjAAAWNbR5tQUN99elt5mSZ3/AKqkdpa2BuYmgU1imsNJfioRaIzacz
-        Ddmq+rlpLuVQjV/KivYAQikpMg46gCMounnyjZYIG+HbkJqUalwWo3+S21AKhM3SyDU9AQWMDT4
-        E9y+ST6dq2eSjk5R2
-X-Received: by 2002:a05:620a:226:: with SMTP id u6mr3459330qkm.393.1573142076279;
-        Thu, 07 Nov 2019 07:54:36 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxSgLzGIZB2AaYtHaY2RkdEidB2NeRk+OXmCkV1uMYYneoFbHELGewocRRkI4W/JRZGPMhgWA==
-X-Received: by 2002:a05:620a:226:: with SMTP id u6mr3459254qkm.393.1573142075868;
-        Thu, 07 Nov 2019 07:54:35 -0800 (PST)
-Received: from redhat.com (bzq-79-178-12-128.red.bezeqint.net. [79.178.12.128])
-        by smtp.gmail.com with ESMTPSA id 50sm2019631qtv.88.2019.11.07.07.54.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 07:54:34 -0800 (PST)
-Date:   Thu, 7 Nov 2019 10:54:22 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org
-Subject: Re: [PATCH V11 0/6] mdev based hardware virtio offloading support
-Message-ID: <20191107105412-mutt-send-email-mst@kernel.org>
-References: <20191107151109.23261-1-jasowang@redhat.com>
+        id S1726810AbfKGP4F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 10:56:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Z9n0Z9XDmBEkEbdW4TBEHkqC9phlox06d85Xa+B+O7A=; b=udOSizcBSBi1zPX2oYk1I/Ouy7
+        biO2Ycn0hruG9pIFv5rw/cDvz1bjIE1jlkSGyyxNvJa0GHjaBSRnTa44D9tBlLvKPfLCQ1rg/WfwY
+        FZOR+pQIDjAVSOsgauqUvTczQRPtl6F2rG0PBodzxHQF1Gw3dCESeh2VyobfTUxjwt0c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iSk8h-0006sD-1H; Thu, 07 Nov 2019 16:56:03 +0100
+Date:   Thu, 7 Nov 2019 16:56:03 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Grzeschik <m.grzeschik@pengutronix.de>
+Cc:     netdev@vger.kernel.org, Tristram.Ha@microchip.com,
+        UNGLinuxDriver@microchip.com, kernel@pengutronix.de
+Subject: Re: [PATCH v1 3/4] ksz: Add Microchip KSZ8863 SMI-DSA driver
+Message-ID: <20191107155603.GH7344@lunn.ch>
+References: <20191107110030.25199-1-m.grzeschik@pengutronix.de>
+ <20191107110030.25199-4-m.grzeschik@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191107151109.23261-1-jasowang@redhat.com>
+In-Reply-To: <20191107110030.25199-4-m.grzeschik@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 07, 2019 at 11:11:03PM +0800, Jason Wang wrote:
-> Hi all:
-> 
-> There are hardwares that can do virtio datapath offloading while
-> having its own control path. This path tries to implement a mdev based
-> unified API to support using kernel virtio driver to drive those
-> devices. This is done by introducing a new mdev transport for virtio
-> (virtio_mdev) and register itself as a new kind of mdev driver. Then
-> it provides a unified way for kernel virtio driver to talk with mdev
-> device implementation.
-> 
-> Though the series only contains kernel driver support, the goal is to
-> make the transport generic enough to support userspace drivers. This
-> means vhost-mdev[1] could be built on top as well by resuing the
-> transport.
-> 
-> A sample driver is also implemented which simulate a virito-net
-> loopback ethernet device on top of vringh + workqueue. This could be
-> used as a reference implementation for real hardware driver.
-> 
-> Also a real IFC VF driver was also posted here[2] which is a good
-> reference for vendors who is interested in their own virtio datapath
-> offloading product.
-> 
-> Consider mdev framework only support VFIO device and driver right now,
-> this series also extend it to support other types. This is done
-> through introducing class id to the device and pairing it with
-> id_talbe claimed by the driver. On top, this seris also decouple
-> device specific ops out of the common ones for implementing class
-> specific operations over mdev bus.
-> 
-> Pktgen test was done with virito-net + mvnet loop back device.
-> 
-> Please review.
-> 
-> [1] https://lkml.org/lkml/2019/11/5/424
-> [2] https://lkml.org/lkml/2019/11/5/227
-> 
-> Changes from V10:
-> - rename mvnet to mvnet_loopback
-> - fix typo in the help text for sample Kconfig
+> +static const u8 stp_multicast_addr[] = {
+> +	0x01, 0x80, 0xC2, 0x00, 0x00, 0x00
+> +};
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+This probably exists already. Please go looking in include/linux and
+include/net.
 
+> +static int ksz8863_mdio_read(void *ctx, const void *reg_buf, size_t reg_len,
+> +			     void *val_buf, size_t val_len)
+> +{
+> +	struct ksz_device *dev = (struct ksz_device *)ctx;
 
-> Changes from V9:
-> - Tweak the help text for virito-mdev kconfig
-> 
-> Changes from V8:
-> - try silent checkpatch, some are still there becuase they were inherited
->   from virtio_config_ops which needs to be resolved in an independent series
-> - tweak on the comment and doc
-> - remove VIRTIO_MDEV_F_VERSION_1 completely
-> - rename CONFIG_VIRTIO_MDEV_DEVICE to CONFIG_VIRTIO_MDEV
-> 
-> Changes from V7:
-> - drop {set|get}_mdev_features for virtio
-> - typo and comment style fixes
-> 
-> Changes from V6:
-> - rename ops files and compile guard
-> 
-> Changes from V5:
-> - use dev_warn() instead of WARN(1) when class id is not set
-> - validate id_table before trying to do matching between device and
->   driver
-> - add wildcard for modpost script
-> - use unique name for id_table
-> - move get_mdev_features() to be the first member of virtio_device_ops
->   and more comments for it
-> - typo fixes for the comments above virtio_mdev_ops
-> 
-> Changes from V4:
-> - keep mdev_set_class() for the device that doesn't use device ops
-> - use union for device ops pointer in mdev_device
-> - introduce class specific helper for getting is device ops
-> - use WARN_ON instead of BUG_ON in mdev_set_virtio_ops
-> - explain details of get_mdev_features() and get_vendor_id()
-> - distinguish the optional virito device ops from mandatory ones and
->   make get_generation() optional
-> - rename vfio_mdev.h to vfio_mdev_ops.h, rename virito_mdev.h to
->   virtio_mdev_ops.h
-> - don't abuse version fileds in virtio_mdev structure, use features
->   instead
-> - fix warning during device remove
-> - style & docs tweaks and typo fixes
-> 
-> Changes from V3:
-> - document that class id (device ops) must be specified in create()
-> - add WARN() when trying to set class_id when it has already set
-> - add WARN() when class_id is not specified in create() and correctly
->   return an error in this case
-> - correct the prototype of mdev_set_class() in the doc
-> - add documention of mdev_set_class()
-> - remove the unnecessary "class_id_fail" label when class id is not
->   specified in create()
-> - convert id_table in vfio_mdev to const
-> - move mdev_set_class and its friends after mdev_uuid()
-> - suqash the patch of bus uevent into patch of introducing class id
-> - tweak the words in the docs per Cornelia suggestion
-> - tie class_id and device ops through class specific initialization
->   routine like mdev_set_vfio_ops()
-> - typos fixes in the docs of virtio-mdev callbacks
-> - document the usage of virtqueues in struct virtio_mdev_device
-> - remove the useless vqs array in struct virtio_mdev_device
-> - rename MDEV_ID_XXX to MDEV_CLASS_ID_XXX
-> 
-> Changes from V2:
-> - fail when class_id is not specified
-> - drop the vringh patch
-> - match the doc to the code
-> - tweak the commit log
-> - move device_ops from parent to mdev device
-> - remove the unused MDEV_ID_VHOST
-> 
-> Changes from V1:
-> - move virtio_mdev.c to drivers/virtio
-> - store class_id in mdev_device instead of mdev_parent
-> - store device_ops in mdev_device instead of mdev_parent
-> - reorder the patch, vringh fix comes first
-> - really silent compiling warnings
-> - really switch to use u16 for class_id
-> - uevent and modpost support for mdev class_id
-> - vraious tweaks per comments from Parav
-> 
-> Changes from RFC-V2:
-> - silent compile warnings on some specific configuration
-> - use u16 instead u8 for class id
-> - reseve MDEV_ID_VHOST for future vhost-mdev work
-> - introduce "virtio" type for mvnet and make "vhost" type for future
->   work
-> - add entries in MAINTAINER
-> - tweak and typos fixes in commit log
-> 
-> Changes from RFC-V1:
-> - rename device id to class id
-> - add docs for class id and device specific ops (device_ops)
-> - split device_ops into seperate headers
-> - drop the mdev_set_dma_ops()
-> - use device_ops to implement the transport API, then it's not a part
->   of UAPI any more
-> - use GFP_ATOMIC in mvnet sample device and other tweaks
-> - set_vring_base/get_vring_base support for mvnet device
-> 
-> Jason Wang (6):
->   mdev: class id support
->   modpost: add support for mdev class id
->   mdev: introduce device specific ops
->   mdev: introduce virtio device and its device ops
->   virtio: introduce a mdev based transport
->   docs: sample driver to demonstrate how to implement virtio-mdev
->     framework
-> 
->  .../driver-api/vfio-mediated-device.rst       |  38 +-
->  MAINTAINERS                                   |   3 +
->  drivers/gpu/drm/i915/gvt/kvmgt.c              |  17 +-
->  drivers/s390/cio/vfio_ccw_ops.c               |  17 +-
->  drivers/s390/crypto/vfio_ap_ops.c             |  13 +-
->  drivers/vfio/mdev/mdev_core.c                 |  60 ++
->  drivers/vfio/mdev/mdev_driver.c               |  25 +
->  drivers/vfio/mdev/mdev_private.h              |   8 +
->  drivers/vfio/mdev/vfio_mdev.c                 |  45 +-
->  drivers/virtio/Kconfig                        |  13 +
->  drivers/virtio/Makefile                       |   1 +
->  drivers/virtio/virtio_mdev.c                  | 406 +++++++++++
->  include/linux/mdev.h                          |  57 +-
->  include/linux/mdev_vfio_ops.h                 |  52 ++
->  include/linux/mdev_virtio_ops.h               | 147 ++++
->  include/linux/mod_devicetable.h               |   8 +
->  samples/Kconfig                               |  10 +
->  samples/vfio-mdev/Makefile                    |   1 +
->  samples/vfio-mdev/mbochs.c                    |  19 +-
->  samples/vfio-mdev/mdpy.c                      |  19 +-
->  samples/vfio-mdev/mtty.c                      |  17 +-
->  samples/vfio-mdev/mvnet_loopback.c            | 687 ++++++++++++++++++
->  scripts/mod/devicetable-offsets.c             |   3 +
->  scripts/mod/file2alias.c                      |  11 +
->  24 files changed, 1586 insertions(+), 91 deletions(-)
->  create mode 100644 drivers/virtio/virtio_mdev.c
->  create mode 100644 include/linux/mdev_vfio_ops.h
->  create mode 100644 include/linux/mdev_virtio_ops.h
->  create mode 100644 samples/vfio-mdev/mvnet_loopback.c
-> 
-> -- 
-> 2.19.1
+ctx is a void *, so you don't need the cast.
+
+> +	struct mdio_device *mdev = (struct mdio_device *)dev->priv;
+
+and priv is also probably a void *.
+
+And please fix the reverse christmas tree.
+
+Thanks
+	Andrew
