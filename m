@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F5BBF3809
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 20:07:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17D1EF380B
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 20:07:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730752AbfKGTHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 14:07:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45192 "EHLO mail.kernel.org"
+        id S1728340AbfKGTHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 14:07:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45388 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725871AbfKGTHC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 14:07:02 -0500
+        id S1727126AbfKGTHS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 14:07:18 -0500
 Received: from quaco.ghostprotocols.net (179-240-172-58.3g.claro.net.br [179.240.172.58])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 99A7F2166E;
-        Thu,  7 Nov 2019 19:06:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17C1721882;
+        Thu,  7 Nov 2019 19:07:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573153621;
-        bh=+OBs+BD+1/dGtJng4bJkIQBr5mDO5TR7qG7fJOIVaHg=;
+        s=default; t=1573153636;
+        bh=gi1Xh/UdXDgGiwcYsiEvL8yJupJo30yzb75D5GzzSMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ob5J0CsULFx2IsMbC9CAY+bXDWTa9pm/mFNip3BpqY7LOfAQMRVU7Mr5rPp0Oymfl
-         pBsEdW6hRQF2w2bsGXYuV9q1neR4W3i23rR88R9LfYj9BBEEIS1ElNDwuYTVxOwPqJ
-         SiflC5LmFnqMybESOVI3spl1CGaqF0BME7IJQMG8=
+        b=djDJxCs9d+TeNRKTXOX5XZvGqaOaRLPZeYzaj60ONhA9Ptbscma3jdfoRd4UK4x1G
+         byJFbSjL4U6niAhsh3OYs0tGJfLYnqPFamas62OsPe5MN+tfzVxjtFeeICRuPmgDB1
+         2XXcRgFihUkJYI/nwAp97MQdVug+bI3Xze3pGhwY=
 From:   Arnaldo Carvalho de Melo <acme@kernel.org>
 To:     Ingo Molnar <mingo@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>
@@ -46,9 +46,9 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Namhyung Kim <namhyung@kernel.org>,
         Yonghong Song <yhs@fb.com>, bpf@vger.kernel.org,
         clang-built-linux@googlegroups.com, netdev@vger.kernel.org,
         Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 42/63] perf parse: Ensure config and str in terms are unique
-Date:   Thu,  7 Nov 2019 15:59:50 -0300
-Message-Id: <20191107190011.23924-43-acme@kernel.org>
+Subject: [PATCH 43/63] perf parse: Add destructors for parse event terms
+Date:   Thu,  7 Nov 2019 15:59:51 -0300
+Message-Id: <20191107190011.23924-44-acme@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191107190011.23924-1-acme@kernel.org>
 References: <20191107190011.23924-1-acme@kernel.org>
@@ -61,12 +61,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ian Rogers <irogers@google.com>
 
-Make it easier to release memory associated with parse event terms by
-duplicating the string for the config name and ensuring the val string
-is a duplicate.
+If parsing fails then destructors are ran to clean the up the stack.
+Rename the head union member to make the term and evlist use cases more
+distinct, this simplifies matching the correct destructor.
 
-Currently the parser may memory leak terms and this is addressed in a
-later patch.
+Committer notes:
+
+Jiri: "Nice did not know about this.. looks like it's been in bison for some time, right?"
+
+Ian:  "Looks like it wasn't in Bison 1 but in Bison 2, we're at Bison 3 and
+       Bison 2 is > 14 years old:
+       https://web.archive.org/web/20050924004158/http://www.gnu.org/software/bison/manual/html_mono/bison.html#Destructor-Decl"
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 Acked-by: Jiri Olsa <jolsa@kernel.org>
@@ -88,144 +93,123 @@ Cc: Yonghong Song <yhs@fb.com>
 Cc: bpf@vger.kernel.org
 Cc: clang-built-linux@googlegroups.com
 Cc: netdev@vger.kernel.org
-Link: http://lore.kernel.org/lkml/20191030223448.12930-6-irogers@google.com
+Link: http://lore.kernel.org/lkml/20191030223448.12930-7-irogers@google.com
 Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 ---
- tools/perf/util/parse-events.c | 51 ++++++++++++++++++++++++++++------
- tools/perf/util/parse-events.y |  4 ++-
- 2 files changed, 45 insertions(+), 10 deletions(-)
+ tools/perf/util/parse-events.y | 69 +++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 21 deletions(-)
 
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 03e54a2d8685..578288c94d2a 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1412,7 +1412,6 @@ int parse_events_add_pmu(struct parse_events_state *parse_state,
- int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- 			       char *str, struct list_head **listp)
- {
--	struct list_head *head;
- 	struct parse_events_term *term;
- 	struct list_head *list;
- 	struct perf_pmu *pmu = NULL;
-@@ -1429,19 +1428,30 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- 
- 		list_for_each_entry(alias, &pmu->aliases, list) {
- 			if (!strcasecmp(alias->name, str)) {
-+				struct list_head *head;
-+				char *config;
-+
- 				head = malloc(sizeof(struct list_head));
- 				if (!head)
- 					return -1;
- 				INIT_LIST_HEAD(head);
--				if (parse_events_term__num(&term, PARSE_EVENTS__TERM_TYPE_USER,
--							   str, 1, false, &str, NULL) < 0)
-+				config = strdup(str);
-+				if (!config)
-+					return -1;
-+				if (parse_events_term__num(&term,
-+						   PARSE_EVENTS__TERM_TYPE_USER,
-+						   config, 1, false, &config,
-+						   NULL) < 0) {
-+					free(list);
-+					free(config);
- 					return -1;
-+				}
- 				list_add_tail(&term->list, head);
- 
- 				if (!parse_events_add_pmu(parse_state, list,
- 							  pmu->name, head,
- 							  true, true)) {
--					pr_debug("%s -> %s/%s/\n", str,
-+					pr_debug("%s -> %s/%s/\n", config,
- 						 pmu->name, alias->str);
- 					ok++;
- 				}
-@@ -1450,8 +1460,10 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- 			}
- 		}
- 	}
--	if (!ok)
-+	if (!ok) {
-+		free(list);
- 		return -1;
-+	}
- 	*listp = list;
- 	return 0;
- }
-@@ -2746,30 +2758,51 @@ int parse_events_term__sym_hw(struct parse_events_term **term,
- 			      char *config, unsigned idx)
- {
- 	struct event_symbol *sym;
-+	char *str;
- 	struct parse_events_term temp = {
- 		.type_val  = PARSE_EVENTS__TERM_TYPE_STR,
- 		.type_term = PARSE_EVENTS__TERM_TYPE_USER,
--		.config    = config ?: (char *) "event",
-+		.config    = config,
- 	};
- 
-+	if (!temp.config) {
-+		temp.config = strdup("event");
-+		if (!temp.config)
-+			return -ENOMEM;
-+	}
- 	BUG_ON(idx >= PERF_COUNT_HW_MAX);
- 	sym = &event_symbols_hw[idx];
- 
--	return new_term(term, &temp, (char *) sym->symbol, 0);
-+	str = strdup(sym->symbol);
-+	if (!str)
-+		return -ENOMEM;
-+	return new_term(term, &temp, str, 0);
- }
- 
- int parse_events_term__clone(struct parse_events_term **new,
- 			     struct parse_events_term *term)
- {
-+	char *str;
- 	struct parse_events_term temp = {
- 		.type_val  = term->type_val,
- 		.type_term = term->type_term,
--		.config    = term->config,
-+		.config    = NULL,
- 		.err_term  = term->err_term,
- 		.err_val   = term->err_val,
- 	};
- 
--	return new_term(new, &temp, term->val.str, term->val.num);
-+	if (term->config) {
-+		temp.config = strdup(term->config);
-+		if (!temp.config)
-+			return -ENOMEM;
-+	}
-+	if (term->type_val == PARSE_EVENTS__TERM_TYPE_NUM)
-+		return new_term(new, &temp, NULL, term->val.num);
-+
-+	str = strdup(term->val.str);
-+	if (!str)
-+		return -ENOMEM;
-+	return new_term(new, &temp, str, 0);
- }
- 
- int parse_events_copy_term_list(struct list_head *old,
 diff --git a/tools/perf/util/parse-events.y b/tools/perf/util/parse-events.y
-index ffa1a1b63796..545ab7cefc20 100644
+index 545ab7cefc20..035edfa8d42e 100644
 --- a/tools/perf/util/parse-events.y
 +++ b/tools/perf/util/parse-events.y
-@@ -665,9 +665,11 @@ PE_NAME array '=' PE_VALUE
- PE_DRV_CFG_TERM
- {
- 	struct parse_events_term *term;
-+	char *config = strdup($1);
- 
-+	ABORT_ON(!config);
- 	ABORT_ON(parse_events_term__str(&term, PARSE_EVENTS__TERM_TYPE_DRV_CFG,
--					$1, $1, &@1, NULL));
-+					config, $1, &@1, NULL));
- 	$$ = term;
+@@ -12,6 +12,7 @@
+ #include <stdio.h>
+ #include <linux/compiler.h>
+ #include <linux/types.h>
++#include <linux/zalloc.h>
+ #include "pmu.h"
+ #include "evsel.h"
+ #include "parse-events.h"
+@@ -37,6 +38,25 @@ static struct list_head* alloc_list()
+ 	return list;
  }
  
++static void free_list_evsel(struct list_head* list_evsel)
++{
++	struct evsel *evsel, *tmp;
++
++	list_for_each_entry_safe(evsel, tmp, list_evsel, core.node) {
++		list_del_init(&evsel->core.node);
++		perf_evsel__delete(evsel);
++	}
++	free(list_evsel);
++}
++
++static void free_term(struct parse_events_term *term)
++{
++	if (term->type_val == PARSE_EVENTS__TERM_TYPE_STR)
++		free(term->val.str);
++	zfree(&term->array.ranges);
++	free(term);
++}
++
+ static void inc_group_count(struct list_head *list,
+ 		       struct parse_events_state *parse_state)
+ {
+@@ -66,6 +86,7 @@ static void inc_group_count(struct list_head *list,
+ %type <num> PE_VALUE_SYM_TOOL
+ %type <num> PE_RAW
+ %type <num> PE_TERM
++%type <num> value_sym
+ %type <str> PE_NAME
+ %type <str> PE_BPF_OBJECT
+ %type <str> PE_BPF_SOURCE
+@@ -76,37 +97,43 @@ static void inc_group_count(struct list_head *list,
+ %type <str> PE_EVENT_NAME
+ %type <str> PE_PMU_EVENT_PRE PE_PMU_EVENT_SUF PE_KERNEL_PMU_EVENT
+ %type <str> PE_DRV_CFG_TERM
+-%type <num> value_sym
+-%type <head> event_config
+-%type <head> opt_event_config
+-%type <head> opt_pmu_config
++%destructor { free ($$); } <str>
+ %type <term> event_term
+-%type <head> event_pmu
+-%type <head> event_legacy_symbol
+-%type <head> event_legacy_cache
+-%type <head> event_legacy_mem
+-%type <head> event_legacy_tracepoint
++%destructor { free_term ($$); } <term>
++%type <list_terms> event_config
++%type <list_terms> opt_event_config
++%type <list_terms> opt_pmu_config
++%destructor { parse_events_terms__delete ($$); } <list_terms>
++%type <list_evsel> event_pmu
++%type <list_evsel> event_legacy_symbol
++%type <list_evsel> event_legacy_cache
++%type <list_evsel> event_legacy_mem
++%type <list_evsel> event_legacy_tracepoint
++%type <list_evsel> event_legacy_numeric
++%type <list_evsel> event_legacy_raw
++%type <list_evsel> event_bpf_file
++%type <list_evsel> event_def
++%type <list_evsel> event_mod
++%type <list_evsel> event_name
++%type <list_evsel> event
++%type <list_evsel> events
++%type <list_evsel> group_def
++%type <list_evsel> group
++%type <list_evsel> groups
++%destructor { free_list_evsel ($$); } <list_evsel>
+ %type <tracepoint_name> tracepoint_name
+-%type <head> event_legacy_numeric
+-%type <head> event_legacy_raw
+-%type <head> event_bpf_file
+-%type <head> event_def
+-%type <head> event_mod
+-%type <head> event_name
+-%type <head> event
+-%type <head> events
+-%type <head> group_def
+-%type <head> group
+-%type <head> groups
++%destructor { free ($$.sys); free ($$.event); } <tracepoint_name>
+ %type <array> array
+ %type <array> array_term
+ %type <array> array_terms
++%destructor { free ($$.ranges); } <array>
+ 
+ %union
+ {
+ 	char *str;
+ 	u64 num;
+-	struct list_head *head;
++	struct list_head *list_evsel;
++	struct list_head *list_terms;
+ 	struct parse_events_term *term;
+ 	struct tracepoint_name {
+ 		char *sys;
 -- 
 2.21.0
 
