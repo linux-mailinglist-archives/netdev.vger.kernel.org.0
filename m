@@ -2,172 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6AB1F2CD1
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:51:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC43F2CE7
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388130AbfKGKvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 05:51:44 -0500
-Received: from mailgw01.mediatek.com ([210.61.82.183]:40847 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727528AbfKGKvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:51:44 -0500
-X-UUID: 0a16776730d64210b5d3d295eaac7464-20191107
-X-UUID: 0a16776730d64210b5d3d295eaac7464-20191107
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
-        (envelope-from <mark-mc.lee@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 1004045333; Thu, 07 Nov 2019 18:51:38 +0800
-Received: from mtkcas09.mediatek.inc (172.21.101.178) by
- mtkmbs05n1.mediatek.inc (172.21.101.15) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 7 Nov 2019 18:51:34 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas09.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Thu, 7 Nov 2019 18:51:34 +0800
-From:   MarkLee <Mark-MC.Lee@mediatek.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rene van Dorst <opensource@vdorst.com>,
-        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        MarkLee <Mark-MC.Lee@mediatek.com>
-Subject: [PATCH net] net: ethernet: mediatek: rework GDM setup flow
-Date:   Thu, 7 Nov 2019 18:51:35 +0800
-Message-ID: <20191107105135.1403-1-Mark-MC.Lee@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        id S2387821AbfKGK5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 05:57:19 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:44047 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727528AbfKGK5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:57:18 -0500
+Received: by mail-lj1-f193.google.com with SMTP id g3so1726480ljl.11
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 02:57:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k8OJfKDxG/XoNC2pbiUD5PT0YIFy3ifLKQUf4E98DHk=;
+        b=Q/BbFhiHYDsrSiia+mXvjQj+0lqZuwANP6IRs4HUATjuvjQ/ghVdWKqetbHEXM3BM7
+         vc8kBeWdze0Pl5eOXCaHjpbA5AHKysV5ptgTYCcPkxoDecVt8jX3KJhSfHM9maLa52y2
+         BHe2n2hODSUjcN6rTYXS0oBi8z0HqJl8xGbKAWctHxNeOO4CJ5ag/FPmAgbhU3+hhsAD
+         78dyDiRLZGr+UNITZKqI0KKrda184AumB0YQTMHuUhp+j7elJsxv2lWBQ9wV1mgyvNkI
+         +y7pZlEOdyTH6DfA7WpZZN9EuvSJ3N4yiseheogzC5Jls3kgVnPgJIsHvef382nDaH3b
+         GFsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k8OJfKDxG/XoNC2pbiUD5PT0YIFy3ifLKQUf4E98DHk=;
+        b=IrEJllLk+LJYbPOkZ7mQs346TeclipHZvU/+W3TS+DmskZ3KeR4STfE33F868O9jHU
+         6CnbGxqLEyIeh/fI/8YYj4mYeYNz9YeL102Z3celtRNiCe77sXIZydVHVZxsyWwNj+Zr
+         pinQglTP86yMZjrggI0ouHVsPdXBaQF60NfoV0M7wmgozWRgkXLLoEYif9Hk9VWU50At
+         DnJfxRVir9FJE3dJs5S21EtQ4qYeesHLyKzlBBpjmAstDkVijqdTFEZJFJWmqvD42n3b
+         TRblepPPoyYm4w/2CvGc0SPMasyA8F0PFy0EFtNG//y+SAema3a8ojviKBCRI9y/bW/1
+         0N2Q==
+X-Gm-Message-State: APjAAAUyRH9qWIrh79VgwKIZjI3Fm81Yxadyg7OjKs+nTEyylwSk1ldH
+        0OI3ArKrz4WTzzZ4vM8iVjpwSg==
+X-Google-Smtp-Source: APXvYqz8WNMCpVcB8UeqGirNhbK2ngT/iK0QhJfUnWN2IxlleveUTgElFHZNJN/V0w/Ba10l53RKHA==
+X-Received: by 2002:a2e:b604:: with SMTP id r4mr1915582ljn.134.1573124233050;
+        Thu, 07 Nov 2019 02:57:13 -0800 (PST)
+Received: from localhost.localdomain ([37.46.115.8])
+        by smtp.gmail.com with ESMTPSA id x18sm768077ljc.39.2019.11.07.02.57.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Nov 2019 02:57:12 -0800 (PST)
+From:   Aleksander Morgado <aleksander@aleksander.es>
+To:     bjorn@mork.no, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Aleksander Morgado <aleksander@aleksander.es>,
+        stable <stable@vger.kernel.org>
+Subject: [PATCH] net: usb: qmi_wwan: add support for DW5821e with eSIM support
+Date:   Thu,  7 Nov 2019 11:57:01 +0100
+Message-Id: <20191107105701.1010823-1-aleksander@aleksander.es>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net: ethernet: mediatek: rework GDM setup flow
+Exactly same layout as the default DW5821e module, just a different
+vid/pid.
 
-The mt762x GDM block is mainly used to setup the HW 
-internal rx path - from GMAC port to RX DMA engine(PDMA/QDMA). 
-And the internal packet switching engine(PSE) is responsed 
-to do the data forward/drop following the GDM configuration.
+The QMI interface is exposed in USB configuration #1:
 
-This pacth target to simpfy the GDM setup flow by integrating 
-them into one single function "mtk_gdm_config".
-Besides, accroding to the mt762x HW design, it is recommended to 
-enable PSE to forward data after DMA has been started and 
-set PSE to drop all data before stopping DMA. 
+P:  Vendor=413c ProdID=81e0 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5821e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Note, mt7628 is a different IP from other mt762x, so we exclude it
-in mtk_gdm_config function.
-
-Signed-off-by: MarkLee <Mark-MC.Lee@mediatek.com>
+Signed-off-by: Aleksander Morgado <aleksander@aleksander.es>
+Cc: stable <stable@vger.kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 44 ++++++++++++++-------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  2 +
- 2 files changed, 31 insertions(+), 15 deletions(-)
+ drivers/net/usb/qmi_wwan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 703adb96429e..7220abb3e731 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -2180,6 +2180,31 @@ static int mtk_start_dma(struct mtk_eth *eth)
- 	return 0;
- }
- 
-+static void mtk_gdm_config(struct mtk_eth *eth, u32 config)
-+{
-+	int i;
-+
-+	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
-+		return;
-+
-+	for (i = 0; i < 2; i++) {
-+		u32 val = mtk_r32(eth, MTK_GDMA_FWD_CFG(i));
-+
-+		/* Always enable RX checksum */
-+		val |= MTK_GDMA_ICS_EN | MTK_GDMA_TCS_EN | MTK_GDMA_UCS_EN;
-+
-+		/* default setup the forward port to send frame to PDMA */
-+		val &= ~0xffff;
-+
-+		val |= config;
-+
-+		mtk_w32(eth, val, MTK_GDMA_FWD_CFG(i));
-+	}
-+	/*Reset and enable PSE*/
-+	mtk_w32(eth, RST_GL_PSE, MTK_RST_GL);
-+	mtk_w32(eth, 0, MTK_RST_GL);
-+}
-+
- static int mtk_open(struct net_device *dev)
- {
- 	struct mtk_mac *mac = netdev_priv(dev);
-@@ -2200,6 +2225,8 @@ static int mtk_open(struct net_device *dev)
- 		if (err)
- 			return err;
- 
-+		mtk_gdm_config(eth, MTK_GDMA_TO_PDMA);
-+
- 		napi_enable(&eth->tx_napi);
- 		napi_enable(&eth->rx_napi);
- 		mtk_tx_irq_enable(eth, MTK_TX_DONE_INT);
-@@ -2252,6 +2279,8 @@ static int mtk_stop(struct net_device *dev)
- 	if (!refcount_dec_and_test(&eth->dma_refcnt))
- 		return 0;
- 
-+	mtk_gdm_config(eth, MTK_GDMA_DROP_ALL);
-+
- 	mtk_tx_irq_disable(eth, MTK_TX_DONE_INT);
- 	mtk_rx_irq_disable(eth, MTK_RX_DONE_INT);
- 	napi_disable(&eth->tx_napi);
-@@ -2375,8 +2404,6 @@ static int mtk_hw_init(struct mtk_eth *eth)
- 	mtk_w32(eth, 0, MTK_QDMA_DELAY_INT);
- 	mtk_tx_irq_disable(eth, ~0);
- 	mtk_rx_irq_disable(eth, ~0);
--	mtk_w32(eth, RST_GL_PSE, MTK_RST_GL);
--	mtk_w32(eth, 0, MTK_RST_GL);
- 
- 	/* FE int grouping */
- 	mtk_w32(eth, MTK_TX_DONE_INT, MTK_PDMA_INT_GRP1);
-@@ -2385,19 +2412,6 @@ static int mtk_hw_init(struct mtk_eth *eth)
- 	mtk_w32(eth, MTK_RX_DONE_INT, MTK_QDMA_INT_GRP2);
- 	mtk_w32(eth, 0x21021000, MTK_FE_INT_GRP);
- 
--	for (i = 0; i < MTK_MAC_COUNT; i++) {
--		u32 val = mtk_r32(eth, MTK_GDMA_FWD_CFG(i));
--
--		/* setup the forward port to send frame to PDMA */
--		val &= ~0xffff;
--
--		/* Enable RX checksum */
--		val |= MTK_GDMA_ICS_EN | MTK_GDMA_TCS_EN | MTK_GDMA_UCS_EN;
--
--		/* setup the mac dma */
--		mtk_w32(eth, val, MTK_GDMA_FWD_CFG(i));
--	}
--
- 	return 0;
- 
- err_disable_pm:
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 76bd12cb8150..b8bcfdfc995e 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -84,6 +84,8 @@
- #define MTK_GDMA_ICS_EN		BIT(22)
- #define MTK_GDMA_TCS_EN		BIT(21)
- #define MTK_GDMA_UCS_EN		BIT(20)
-+#define MTK_GDMA_DROP_ALL	0x7777
-+#define MTK_GDMA_TO_PDMA	0x0
- 
- /* Unicast Filter MAC Address Register - Low */
- #define MTK_GDMA_MAC_ADRL(x)	(0x508 + (x * 0x1000))
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 596428ec71df..56d334b9ad45 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1362,6 +1362,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x413c, 0x81b6, 8)},	/* Dell Wireless 5811e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81b6, 10)},	/* Dell Wireless 5811e */
+ 	{QMI_FIXED_INTF(0x413c, 0x81d7, 0)},	/* Dell Wireless 5821e */
++	{QMI_FIXED_INTF(0x413c, 0x81e0, 0)},	/* Dell Wireless 5821e with eSIM support*/
+ 	{QMI_FIXED_INTF(0x03f0, 0x4e1d, 8)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+ 	{QMI_FIXED_INTF(0x03f0, 0x9d1d, 1)},	/* HP lt4120 Snapdragon X5 LTE */
+ 	{QMI_FIXED_INTF(0x22de, 0x9061, 3)},	/* WeTelecom WPD-600N */
 -- 
-2.17.1
+2.24.0
 
