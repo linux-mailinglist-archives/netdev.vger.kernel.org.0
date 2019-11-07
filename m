@@ -2,26 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81E9AF2A13
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:04:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD5AEF2A14
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733243AbfKGJEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 04:04:10 -0500
-Received: from mx2.suse.de ([195.135.220.15]:53324 "EHLO mx1.suse.de"
+        id S2387718AbfKGJEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 04:04:14 -0500
+Received: from mx2.suse.de ([195.135.220.15]:53340 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727120AbfKGJEK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 04:04:10 -0500
+        id S1727120AbfKGJEN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 04:04:13 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 85BA5AF86;
-        Thu,  7 Nov 2019 09:04:08 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id CE61EAF86;
+        Thu,  7 Nov 2019 09:04:12 +0000 (UTC)
 From:   Oliver Neukum <oneukum@suse.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Oliver Neukum <oneukum@suse.com>
-Subject: [PATCHv2] CDC-NCM: handle incomplete transfer of MTU
-Date:   Thu,  7 Nov 2019 09:48:01 +0100
-Message-Id: <20191107084802.10289-1-oneukum@suse.com>
+Subject: [PATCH] CDC-NCM: handle incomplete transfer of MTU
+Date:   Thu,  7 Nov 2019 09:48:02 +0100
+Message-Id: <20191107084802.10289-2-oneukum@suse.com>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20191107084802.10289-1-oneukum@suse.com>
+References: <20191107084802.10289-1-oneukum@suse.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
