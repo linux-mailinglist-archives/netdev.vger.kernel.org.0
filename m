@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AB4DF37A9
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 19:55:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A14FDF37A6
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 19:55:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727740AbfKGSzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727655AbfKGSzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 7 Nov 2019 13:55:11 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:53305 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726843AbfKGSzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 13:55:11 -0500
-Received: by mail-io1-f69.google.com with SMTP id w8so2611446iol.20
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 10:55:09 -0800 (PST)
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48367 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726811AbfKGSzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 13:55:10 -0500
+Received: by mail-il1-f197.google.com with SMTP id j68so3593824ili.15
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 10:55:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=CrOGoLpkQ7edTFXJaYgjIRwF9NvIsDG1DIF9OLeSRgU=;
-        b=msHOWa2HiXUFiP2teN9ttrs8v6V6D4+u1XHmTXzahddtJCrTrdumFDYRdpTIw1f9hB
-         Hjj70YHfMaC01rLAKXTgSNA4iLe2fi3rJ+Rcgo/O72w+34J/viDLLIsqw+/KYiEtkskP
-         gL4vraY91wHiUKIpdy6yW28bHOJ4Z5LpsiiQsvpTJ293ZupRDXM3KlLuSD+yCWFgKZzV
-         n64/B2FVwrISZMqHo+1943Cxem+SVPjBkwXeaskz59mGOtA+tq/Ob8H4/agZxq0+qJHg
-         RhwFB+j7OrrMb0/WZvNi3IuK5eFo1RVW4+Z94rONj3tzHHc1T3bbIpN3P4AWtPvOlEJ0
-         RApg==
-X-Gm-Message-State: APjAAAWOy2VybwSok7mforbPAgQ1wPlN84qF2QXwMbLOsLMhLLOYHnF9
-        5kl36AFBlQ9wLyZr+SOEP07SQUKPKvXRz9qdFWmuATZVoKGd
-X-Google-Smtp-Source: APXvYqy9T0uOUbjvUKq32W8sfGCq7RmnOHgddJurrEAce23apz1kVdNIWzPQYweYYrOKwQcSwgELG7ztymtwYMzR0LRR86KjnFl7
+        bh=ncLHvCMcrTLEL3uLU3CyiqGHvpiV5fStvg1s9KU5q9Y=;
+        b=J+OPgaMUwlHAD7ULYYwDwSzEoIjQRuUBThX+KmCKVXSiBfWfyDAphRSvmIBE/d84f1
+         88rZwnlFhSjzoEFIf9gWiPlcpYBUN8EmSDnI8R6DSsGtTK0JZOp3RKvC6koXBG536sOb
+         G2MND49tqWffbbdQTo7TkoXlbTZg20kyJnsNri42ayYMLxoVaEfHqpBOHn4n3otXOlYz
+         GSks3l8l5Z4Tr0nr17ePIXdDE0JCy0/CeNeikp4/EBEp2P1CKkKiCw6H/00LKc7mvzf3
+         PPHmGD5Yq8MTJV8dcj+CLNAsG8B0d2BUyKLY7jpyiyaCER1dN9+VFpgtAnhkLkItdU8D
+         fRSg==
+X-Gm-Message-State: APjAAAVVRXVctZXlGvrGwK+jE15pSNDjdonF9S7I+fK3KyRXwV1JEjPB
+        0XPbq/GprCluQJpsBFhU16HlPtUgpFIK/ldfQ8UWKtxOTHNm
+X-Google-Smtp-Source: APXvYqwu+NO9F4IWA1pOKF2v1GmJWS4zEFUZ9BuEmpGqON5v+RXmNcCbkzeCr8UHY4pYUB0TzbbUvHQuLcZkO6FyaEkG9nM10/4S
 MIME-Version: 1.0
-X-Received: by 2002:a92:3651:: with SMTP id d17mr6511423ilf.268.1573152909219;
+X-Received: by 2002:a92:ce06:: with SMTP id b6mr6266104ilo.14.1573152909795;
  Thu, 07 Nov 2019 10:55:09 -0800 (PST)
 Date:   Thu, 07 Nov 2019 10:55:09 -0800
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000054e19d0596c63465@google.com>
-Subject: KCSAN: data-race in pcpu_alloc / pcpu_free_area (2)
-From:   syzbot <syzbot+0b3bfb9cbec193033650@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net, elver@google.com,
-        fw@strlen.de, kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Message-ID: <0000000000005daaaf0596c634bc@google.com>
+Subject: KCSAN: data-race in netlink_recvmsg / netlink_recvmsg
+From:   syzbot <syzbot+6dedf50d68e5713a1f65@syzkaller.appspotmail.com>
+To:     ap420073@gmail.com, davem@davemloft.net, dsahern@gmail.com,
+        elver@google.com, herbert@gondor.apana.org.au,
+        jakub.kicinski@netronome.com, linux-kernel@vger.kernel.org,
+        lirongqing@baidu.com, netdev@vger.kernel.org,
+        penguin-kernel@I-love.SAKURA.ne.jp, ptalbert@redhat.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -49,70 +51,87 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    05f22368 x86, kcsan: Enable KCSAN for x86
+HEAD commit:    94c00660 x86, kcsan: Enable KCSAN for x86
 git tree:       https://github.com/google/ktsan.git kcsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=17f9952f600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=87d111955f40591f
-dashboard link: https://syzkaller.appspot.com/bug?extid=0b3bfb9cbec193033650
+console output: https://syzkaller.appspot.com/x/log.txt?x=14426768e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=51a7c7d2972c87e5
+dashboard link: https://syzkaller.appspot.com/bug?extid=6dedf50d68e5713a1f65
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+0b3bfb9cbec193033650@syzkaller.appspotmail.com
+Reported-by: syzbot+6dedf50d68e5713a1f65@syzkaller.appspotmail.com
 
-IPv6: ADDRCONF(NETDEV_CHANGE): veth0_to_bridge: link becomes ready
-IPv6: ADDRCONF(NETDEV_CHANGE): bridge_slave_0: link becomes ready
 ==================================================================
-BUG: KCSAN: data-race in pcpu_alloc / pcpu_free_area
+BUG: KCSAN: data-race in netlink_recvmsg / netlink_recvmsg
 
-write to 0xffffffff86046740 of 4 bytes by task 7371 on cpu 0:
-  pcpu_update_empty_pages mm/percpu.c:575 [inline]
-  pcpu_block_update_hint_free mm/percpu.c:1012 [inline]
-  pcpu_free_area+0x448/0x6a0 mm/percpu.c:1267
-  free_percpu mm/percpu.c:1975 [inline]
-  free_percpu+0x152/0x440 mm/percpu.c:1955
-  xt_percpu_counter_free+0x82/0xa0 net/netfilter/x_tables.c:1862
-  cleanup_entry+0x12a/0x160 net/ipv6/netfilter/ip6_tables.c:672
-  __do_replace+0x439/0x510 net/ipv6/netfilter/ip6_tables.c:1102
-  do_replace net/ipv6/netfilter/ip6_tables.c:1157 [inline]
-  do_ip6t_set_ctl+0x26d/0x311 net/ipv6/netfilter/ip6_tables.c:1681
-  nf_sockopt net/netfilter/nf_sockopt.c:106 [inline]
-  nf_setsockopt+0x6e/0xb0 net/netfilter/nf_sockopt.c:115
-  ipv6_setsockopt net/ipv6/ipv6_sockglue.c:949 [inline]
-  ipv6_setsockopt+0x119/0x130 net/ipv6/ipv6_sockglue.c:933
-  tcp_setsockopt net/ipv4/tcp.c:3148 [inline]
-  tcp_setsockopt+0x7c/0xc0 net/ipv4/tcp.c:3142
-  sock_common_setsockopt+0x67/0x90 net/core/sock.c:3147
-  __sys_setsockopt+0x1ce/0x370 net/socket.c:2084
-  __do_sys_setsockopt net/socket.c:2100 [inline]
-  __se_sys_setsockopt net/socket.c:2097 [inline]
-  __x64_sys_setsockopt+0x70/0x90 net/socket.c:2097
+write to 0xffff8880b588efb2 of 2 bytes by task 19788 on cpu 0:
+  skb_reset_transport_header include/linux/skbuff.h:2463 [inline]
+  netlink_recvmsg+0x196/0x910 net/netlink/af_netlink.c:1974
+  sock_recvmsg_nosec+0x5c/0x70 net/socket.c:871
+  ___sys_recvmsg+0x1a0/0x3e0 net/socket.c:2480
+  do_recvmmsg+0x19a/0x5c0 net/socket.c:2601
+  __sys_recvmmsg+0x1ef/0x200 net/socket.c:2680
+  __do_sys_recvmmsg net/socket.c:2703 [inline]
+  __se_sys_recvmmsg net/socket.c:2696 [inline]
+  __x64_sys_recvmmsg+0x89/0xb0 net/socket.c:2696
   do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
   entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-read to 0xffffffff86046740 of 4 bytes by task 44 on cpu 1:
-  pcpu_alloc+0x3b0/0xcf0 mm/percpu.c:1729
-  __alloc_percpu_gfp+0x31/0x50 mm/percpu.c:1783
-  fib_nh_common_init+0x58/0x1e0 net/ipv4/fib_semantics.c:572
-  fib6_nh_init+0x2aa/0xee0 net/ipv6/route.c:3466
-  ip6_route_info_create+0x913/0xd40 net/ipv6/route.c:3655
-  ip6_route_add+0x30/0xd0 net/ipv6/route.c:3695
-  addrconf_add_mroute+0x177/0x1a0 net/ipv6/addrconf.c:2459
-  addrconf_add_dev+0x100/0x170 net/ipv6/addrconf.c:2477
-  addrconf_dev_config+0x170/0x280 net/ipv6/addrconf.c:3351
-  addrconf_notify+0x1fa/0x1480 net/ipv6/addrconf.c:3595
-  notifier_call_chain+0xd7/0x160 kernel/notifier.c:95
-  __raw_notifier_call_chain kernel/notifier.c:396 [inline]
-  raw_notifier_call_chain+0x37/0x50 kernel/notifier.c:403
-  call_netdevice_notifiers_info+0x48/0xc0 net/core/dev.c:1749
+write to 0xffff8880b588efb2 of 2 bytes by task 19789 on cpu 1:
+  skb_reset_transport_header include/linux/skbuff.h:2463 [inline]
+  netlink_recvmsg+0x196/0x910 net/netlink/af_netlink.c:1974
+  sock_recvmsg_nosec net/socket.c:871 [inline]
+  sock_recvmsg net/socket.c:889 [inline]
+  sock_recvmsg+0x92/0xb0 net/socket.c:885
+  __sys_recvfrom+0x1ae/0x2d0 net/socket.c:2009
+  __do_sys_recvfrom net/socket.c:2027 [inline]
+  __se_sys_recvfrom net/socket.c:2023 [inline]
+  __x64_sys_recvfrom+0x89/0xb0 net/socket.c:2023
+  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
 Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 44 Comm: kworker/1:1 Not tainted 5.4.0-rc3+ #0
+CPU: 1 PID: 19789 Comm: syz-executor.0 Not tainted 5.4.0-rc6+ #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
-Workqueue: events linkwatch_event
 ==================================================================
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 19789 Comm: syz-executor.0 Not tainted 5.4.0-rc6+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0xf5/0x159 lib/dump_stack.c:113
+  panic+0x210/0x640 kernel/panic.c:221
+  kcsan_report.cold+0xc/0xe kernel/kcsan/report.c:302
+  kcsan_setup_watchpoint+0x3fe/0x410 kernel/kcsan/core.c:357
+  check_access kernel/kcsan/core.c:409 [inline]
+  __tsan_unaligned_write2+0x143/0x1f0 kernel/kcsan/core.c:528
+  skb_reset_transport_header include/linux/skbuff.h:2463 [inline]
+  netlink_recvmsg+0x196/0x910 net/netlink/af_netlink.c:1974
+  sock_recvmsg_nosec net/socket.c:871 [inline]
+  sock_recvmsg net/socket.c:889 [inline]
+  sock_recvmsg+0x92/0xb0 net/socket.c:885
+  __sys_recvfrom+0x1ae/0x2d0 net/socket.c:2009
+  __do_sys_recvfrom net/socket.c:2027 [inline]
+  __se_sys_recvfrom net/socket.c:2023 [inline]
+  __x64_sys_recvfrom+0x89/0xb0 net/socket.c:2023
+  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45a219
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f580a978c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002d
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 000000000045a219
+RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000005
+RBP: 000000000075bfc8 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f580a9796d4
+R13: 00000000004c7c59 R14: 00000000004ddd80 R15: 00000000ffffffff
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
 ---
