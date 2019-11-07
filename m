@@ -2,207 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2043DF3797
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 19:51:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF5C7F37AB
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 19:55:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728098AbfKGSvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 13:51:39 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:50733 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728019AbfKGSvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 13:51:39 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iSmsU-0005I1-NH; Thu, 07 Nov 2019 19:51:30 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:591d:c131:e96:905c] (unknown [IPv6:2a03:f580:87bc:d400:591d:c131:e96:905c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id E9A5D4778BE;
-        Thu,  7 Nov 2019 18:51:26 +0000 (UTC)
-Subject: Re: INFO: task hung in vivid_stop_generating_vid_cap
-To:     Dmitry Vyukov <dvyukov@google.com>,
-        syzbot <syzbot+06283a66a648cd073885@syzkaller.appspotmail.com>,
-        linux-can@vger.kernel.org
-Cc:     andy@greyhouse.net, David Miller <davem@davemloft.net>,
-        Hans Verkuil <hverkuil@xs4all.nl>, j.vosburgh@gmail.com,
-        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
-        Mahesh Bandewar <maheshb@google.com>, mchehab@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        vfalico@gmail.com
-References: <00000000000080601805795ada2e@google.com>
- <000000000000e626290584a983c0@google.com>
- <CACT4Y+YVNA6aYe-Ai-ZnU+EhNSNAFhjvXPT0oA+i4rCFpQThcg@mail.gmail.com>
- <CACT4Y+aVXJuaBsvwM-7UcpDzvPZG8HaFHPnHQMX1ZzE1Emd-Tg@mail.gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <d4f03b02-29c6-3479-d5a4-baae86879e13@pengutronix.de>
-Date:   Thu, 7 Nov 2019 19:51:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727463AbfKGSzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 13:55:10 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:53979 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727143AbfKGSzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 13:55:10 -0500
+Received: by mail-il1-f198.google.com with SMTP id y17so3572117ila.20
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 10:55:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ebPwios/a/BkGm6Az/riO5vBmQU4SCQIjm285Fi84Ok=;
+        b=dtgSL+Hz71AX3uPWs9XGGa8oW5ebWmk8Ww8AxfUj7oLJdyi4U8dPaaV9qMtS+WIUib
+         z1Bz9XRj9IPSsQq3gqDCXHug94mLCGD8I8Y5KXnQk1VPWwd1WxE8Coz4nJWzg1tji3lU
+         1vfx5LAIy6T9o9XGbhKX3Zl/zVc3z0VVQoB+ZD/uSKw+uTLRXj8qziMRQEnVj3xHNRIN
+         FNReaMhF028wNgLDL8IFOBr5fLqvQOLkFfYQxEktS/ZF+Ah9vUpO9RnIC6Qor8FjAasD
+         X+tiz5edMmY3rieEyghKsZDIIfZQjs1tHT4cLRgGbLI2f/CzmVtFTdlIihCHZhX286My
+         PTFQ==
+X-Gm-Message-State: APjAAAXdWj8qvekAq7+OysIMrHSuJ2Flt+x73A2MbYL73M3g76qBnAAM
+        DC2htw/SivP47KijgmpVBt7oJq/8NnlJq4rgm/PExKMBWwj7
+X-Google-Smtp-Source: APXvYqzBDOsS8mZ6Itklvqdj/v5vZqjYnnpcPTCDdNcQNyvmaEezCkV7wemNSVu35PiJ/FVLAvrE/7UlYClNkml7HmY5onoPiX9g
 MIME-Version: 1.0
-In-Reply-To: <CACT4Y+aVXJuaBsvwM-7UcpDzvPZG8HaFHPnHQMX1ZzE1Emd-Tg@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="NeIZlyowumXtqXLNOZErcBk1aZbUuvacE"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Received: by 2002:a92:3ad4:: with SMTP id i81mr6080862ilf.18.1573152909497;
+ Thu, 07 Nov 2019 10:55:09 -0800 (PST)
+Date:   Thu, 07 Nov 2019 10:55:09 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005927bf0596c634a2@google.com>
+Subject: KCSAN: data-race in sctp_assoc_migrate / sctp_hash_obj
+From:   syzbot <syzbot+e3b35fe7918ff0ee474e@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, elver@google.com,
+        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
+        vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---NeIZlyowumXtqXLNOZErcBk1aZbUuvacE
-Content-Type: multipart/mixed; boundary="4FKKqhxBizYnGAZ3YsXRzhsPWgt6jD1Xg";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Dmitry Vyukov <dvyukov@google.com>,
- syzbot <syzbot+06283a66a648cd073885@syzkaller.appspotmail.com>,
- linux-can@vger.kernel.org
-Cc: andy@greyhouse.net, David Miller <davem@davemloft.net>,
- Hans Verkuil <hverkuil@xs4all.nl>, j.vosburgh@gmail.com,
- LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
- Mahesh Bandewar <maheshb@google.com>, mchehab@kernel.org,
- netdev <netdev@vger.kernel.org>,
- syzkaller-bugs <syzkaller-bugs@googlegroups.com>, vfalico@gmail.com
-Message-ID: <d4f03b02-29c6-3479-d5a4-baae86879e13@pengutronix.de>
-Subject: Re: INFO: task hung in vivid_stop_generating_vid_cap
-References: <00000000000080601805795ada2e@google.com>
- <000000000000e626290584a983c0@google.com>
- <CACT4Y+YVNA6aYe-Ai-ZnU+EhNSNAFhjvXPT0oA+i4rCFpQThcg@mail.gmail.com>
- <CACT4Y+aVXJuaBsvwM-7UcpDzvPZG8HaFHPnHQMX1ZzE1Emd-Tg@mail.gmail.com>
-In-Reply-To: <CACT4Y+aVXJuaBsvwM-7UcpDzvPZG8HaFHPnHQMX1ZzE1Emd-Tg@mail.gmail.com>
+Hello,
 
---4FKKqhxBizYnGAZ3YsXRzhsPWgt6jD1Xg
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+syzbot found the following crash on:
 
-On 3/22/19 9:06 AM, Dmitry Vyukov wrote:
-> On Fri, Mar 22, 2019 at 9:00 AM Dmitry Vyukov <dvyukov@google.com> wrot=
-e:
->>
->> On Fri, Mar 22, 2019 at 8:08 AM syzbot
->> <syzbot+06283a66a648cd073885@syzkaller.appspotmail.com> wrote:
->>>
->>> syzbot has bisected this bug to:
->>>
->>> commit 4493b81bea24269df898339dee638d7c5cb2b2df
->>> Author: Mahesh Bandewar <maheshb@google.com>
->>> Date:   Wed Mar 8 18:55:54 2017 +0000
->>>
->>>      bonding: initialize work-queues during creation of bond
->>
->> +linux-can
->>
->> I think I will disable CONFIG_CAN before v4.12. It causes too many
->> false results for v4.12..v4.11 range. It always leads to a wrong
->> decision for first 3 steps, then no chances of correct bisection
->> anymore.
->=20
-> The same seems to show up for v4.12..v4.13:
-> all runs: crashed: INFO: trying to register non-static key in can_notif=
-ier
-> https://syzkaller.appspot.com/text?tag=3DLog&x=3D1555b12b200000
->=20
-> This was fixed by 74b7b490886852582d986a33443c2ffa50970169 right?
+HEAD commit:    05f22368 x86, kcsan: Enable KCSAN for x86
+git tree:       https://github.com/google/ktsan.git kcsan
+console output: https://syzkaller.appspot.com/x/log.txt?x=1046796ce00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=87d111955f40591f
+dashboard link: https://syzkaller.appspot.com/bug?extid=e3b35fe7918ff0ee474e
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-ACK
+Unfortunately, I don't have any reproducer for this crash yet.
 
-Marc
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+e3b35fe7918ff0ee474e@syzkaller.appspotmail.com
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+==================================================================
+BUG: KCSAN: data-race in sctp_assoc_migrate / sctp_hash_obj
+
+write to 0xffff8880b67c0020 of 8 bytes by task 18908 on cpu 1:
+  sctp_assoc_migrate+0x1a6/0x290 net/sctp/associola.c:1091
+  sctp_sock_migrate+0x8aa/0x9b0 net/sctp/socket.c:9465
+  sctp_accept+0x3c8/0x470 net/sctp/socket.c:4916
+  inet_accept+0x7f/0x360 net/ipv4/af_inet.c:734
+  __sys_accept4+0x224/0x430 net/socket.c:1754
+  __do_sys_accept net/socket.c:1795 [inline]
+  __se_sys_accept net/socket.c:1792 [inline]
+  __x64_sys_accept+0x4e/0x60 net/socket.c:1792
+  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+read to 0xffff8880b67c0020 of 8 bytes by task 12003 on cpu 0:
+  sctp_hash_obj+0x4f/0x2d0 net/sctp/input.c:894
+  rht_key_get_hash include/linux/rhashtable.h:133 [inline]
+  rht_key_hashfn include/linux/rhashtable.h:159 [inline]
+  rht_head_hashfn include/linux/rhashtable.h:174 [inline]
+  head_hashfn lib/rhashtable.c:41 [inline]
+  rhashtable_rehash_one lib/rhashtable.c:245 [inline]
+  rhashtable_rehash_chain lib/rhashtable.c:276 [inline]
+  rhashtable_rehash_table lib/rhashtable.c:316 [inline]
+  rht_deferred_worker+0x468/0xab0 lib/rhashtable.c:420
+  process_one_work+0x3d4/0x890 kernel/workqueue.c:2269
+  worker_thread+0xa0/0x800 kernel/workqueue.c:2415
+  kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
+  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 12003 Comm: kworker/0:6 Not tainted 5.4.0-rc3+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: events rht_deferred_worker
+==================================================================
 
 
---4FKKqhxBizYnGAZ3YsXRzhsPWgt6jD1Xg--
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
---NeIZlyowumXtqXLNOZErcBk1aZbUuvacE
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3EZ6oACgkQWsYho5Hk
-nSBtBAgAllvi9XlOwEQqlRCgEviA4PZ9wDRj16b0XhPl+82RiA9fXyPRHcCj2Owa
-sNnNCF+nHA3Vq/N64n9snPpWz0mXuzUO6NGCTbB3rqY+mK/U6mq+KnVJwvjHq2D6
-y9sHCDOMn1VLFlw+Ek3m95fUAi72i/6YCfVcRg2ArY35aDATtlrGTjWt0G+8YyuN
-YqyIiueOYaiIyev99lVpwExKcRwZHVK27c1WMl0o/oXXv/0ZcK/q0vbD42RyT3NJ
-5kHPKHxKOdSzbQ/xw+oLBJB+xhW4RJnKJmMIjITz6lHJ0Uep2KYarg00JjNGNtr4
-/VqJZlN4hWKyPTRBu5aI1Bef0JpmEA==
-=xA/S
------END PGP SIGNATURE-----
-
---NeIZlyowumXtqXLNOZErcBk1aZbUuvacE--
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
