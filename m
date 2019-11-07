@@ -2,56 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9525FF2EB9
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:01:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BC61F2EC9
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:03:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388925AbfKGNBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:01:48 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:54144 "EHLO vps0.lunn.ch"
+        id S2388666AbfKGNDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:03:50 -0500
+Received: from inva020.nxp.com ([92.121.34.13]:47228 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726873AbfKGNBs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 08:01:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=jHxGgHR+MvtMvpcV2DnkxEJ54Pnbf1wGrTSOTpugnMY=; b=YDWfRnjyeObkcRL2t2Zb5tPqix
-        coWfPvd0lOlCbWsQhX8ilqcW1tj8K+0ouMryJJITtHsLSZtmGWtwb+1D945wMS3RZeZsAABsvGiFf
-        4gtPsiMiybmzhYLbtlsLEgD8ZW3K/nRXnML+fAxnEDNO1rMH9hhBjhbB9pFpRHZvQkhE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iShQ0-00064k-3Q; Thu, 07 Nov 2019 14:01:44 +0100
-Date:   Thu, 7 Nov 2019 14:01:44 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] dpaa2-eth: add ethtool MAC counters
-Message-ID: <20191107130144.GC22978@lunn.ch>
-References: <1573087748-31303-1-git-send-email-ioana.ciornei@nxp.com>
- <20191107014758.GA8978@lunn.ch>
- <VI1PR0402MB280021AE88E253270FEEC02CE0780@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB280021AE88E253270FEEC02CE0780@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726810AbfKGNDu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 08:03:50 -0500
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id C66B01A01C2;
+        Thu,  7 Nov 2019 14:03:48 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id BA0E01A0164;
+        Thu,  7 Nov 2019 14:03:48 +0100 (CET)
+Received: from fsr-fed2164-101.ea.freescale.net (fsr-fed2164-101.ea.freescale.net [10.171.82.91])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 467F7205E3;
+        Thu,  7 Nov 2019 14:03:48 +0100 (CET)
+From:   Madalin Bucur <madalin.bucur@nxp.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     hkallweit1@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        Madalin Bucur <madalin.bucur@nxp.com>
+Subject: [PATCH net-next] net: phy: at803x: add missing dependency on CONFIG_REGULATOR
+Date:   Thu,  7 Nov 2019 15:03:44 +0200
+Message-Id: <1573131824-21664-1-git-send-email-madalin.bucur@nxp.com>
+X-Mailer: git-send-email 2.1.0
+Content-Type: text/plain; charset="us-ascii"
+Reply-to: madalin.bucur@nxp.com
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Anyhow, I'll add this to the list of things to improve in the fw :)
+Compilation fails on PPC targets as CONFIG_REGULATOR is not set and
+drivers/regulator/devres.c is not compiled in while functions exported
+there are used by drivers/net/phy/at803x.c. Here's the error log:
 
-Hi Ioana
+  LD      .tmp_vmlinux1
+drivers/net/phy/at803x.o: In function `at803x_rgmii_reg_set_voltage_sel':
+drivers/net/phy/at803x.c:294: undefined reference to `.rdev_get_drvdata'
+drivers/net/phy/at803x.o: In function `at803x_rgmii_reg_get_voltage_sel':
+drivers/net/phy/at803x.c:306: undefined reference to `.rdev_get_drvdata'
+drivers/net/phy/at803x.o: In function `at8031_register_regulators':
+drivers/net/phy/at803x.c:359: undefined reference to `.devm_regulator_register'
+drivers/net/phy/at803x.c:365: undefined reference to `.devm_regulator_register'
+drivers/net/phy/at803x.o:(.data.rel+0x0): undefined reference to `regulator_list_voltage_table'
+linux/Makefile:1074: recipe for target 'vmlinux' failed
+make[1]: *** [vmlinux] Error 1
 
-I also later thought about snapshotting. Often the hardware supports
-taking an atomic copy of all the statistics. You can then read back
-the copy, knowing that the values should be consistent. None get
-incremented while you read individual counters.
+Fixes: 2f664823a470 ("net: phy: at803x: add device tree binding")
+Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
+---
+ drivers/net/phy/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Something else you can consider adding to the firmware.
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 8bccadf17e60..fd6a82ce49a4 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -441,6 +441,7 @@ config NXP_TJA11XX_PHY
+ 
+ config AT803X_PHY
+ 	tristate "Qualcomm Atheros AR803X PHYs"
++	depends on REGULATOR
+ 	help
+ 	  Currently supports the AR8030, AR8031, AR8033 and AR8035 model
+ 
+-- 
+2.1.0
 
-	  Andrew
