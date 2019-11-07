@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B9C7F2F41
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 983D7F2F49
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:29:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389051AbfKGN2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:28:05 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:35462 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389014AbfKGN2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:28:04 -0500
-Received: by mail-lj1-f194.google.com with SMTP id r7so2286350ljg.2
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:28:03 -0800 (PST)
+        id S2389068AbfKGN2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:28:07 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:37048 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389040AbfKGN2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:28:06 -0500
+Received: by mail-lj1-f193.google.com with SMTP id l20so2276010lje.4
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:28:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HndIHZhi1V4klogN/yQM3Nv6M9bfr3SYUR/xFCo/TcI=;
-        b=fY3IpwIkBYFhv8/3jzUtKtmWAT1Q9ZlNH/vG/7iqg3XzSwn10wgZAaZ56Oo54gxgp0
-         Lkz0GKPQHsCobBcpfjeOpxpEO0xlWOLG+mZZBnkHLLYMkEYi9xOYRGIJkrBXEoHgagq+
-         poFqI7h5McobnJQaSVADJgjX5OJj/KMFq71oHu4h4DHWkjNi0/Nmfccy+jvxf7QAFyvS
-         DWGBF5rQe2sEVB5tRikwGR9hoVAe17oyk3VsINjW71HVYbw0NOSzgTIckd3L/BF3GjBV
-         r+IsyrCyzAsS2Ao4ev7iF+qe99YKu5UoKLrCe9SLncIbJU2/xo8px6XoddXsVRySZMCO
-         F/Vw==
+        bh=40B2Zn2Vh8quTHaXoUrYBWwbsEUJYUqvqRevZ1/Cbtg=;
+        b=yTnr9GzwAmtrT3FypoDLtM77E5ZGvMIEGEA4pDCzlAb2QCnz7SvFAf6i8/kPX6DXkA
+         v5WoApRqKL/LKbicI6Dtuq7cHcZWii1Gj6hPHQv67fUeYyaEixQKlUnB1SsP/mVU2t/R
+         hubAcvty8aPMeCwQOU0roAwhRqJX6hehAWK6ZoV04ku6O1rz6DqjozHy+TkZvbLaz9bM
+         sRTKxGNZBjqDY8wWGu9SEEHN6UCm6fTj4pSoiRjrgD6MpmOpfXduUh3NGzekVs+p+MLg
+         yg8GnJ6KJIonIE9stMp8KTpnYSGMPJOI8z0AWuIfm3SsJuVtLofsq78JGVIu3phYIKqy
+         GHiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HndIHZhi1V4klogN/yQM3Nv6M9bfr3SYUR/xFCo/TcI=;
-        b=fswDa/0OcGKB3eL+g8RPSimWL/six47LUca5teLcr4R4yW5V5uytULodlOivnQhfAJ
-         UPX9Vjs8+6k03F7AzDU0mEaLkn+mrHSs06nY67sxWnbcCTKETpV4m3vH/wEXJjCzcRhg
-         XnmnHKCjkImsZXMXxWft6WYFhegZgnnv6ZKXo/0ajazrfqsUOPpP+Mvpsn5scaQr+fmn
-         6Tm6HlaGJn0AWIXL/C+SAucXuaO3C1RwfRRpbVe6TWFGnc+vdgU67Njdorm+oVJW3wSs
-         GDhFIhdyxSCCn8a0gJOXlf1l+V4u6VT0cTOB+Cf1AO+CmeOrnDQM7rkGok0GmOeGBvRW
-         l8gw==
-X-Gm-Message-State: APjAAAUn4cvVLp9z/szp3yIDkXLGgljD31JdKlRntZgL1VdoEdRUqXZm
-        Q/9fbaEkIa2EynhC2vFKybpSOqe6MR8=
-X-Google-Smtp-Source: APXvYqwIcZxKrGTGvi5IDGwgODQQbURmwBtxesxkD+Xx2dA7gjtYFCtIPTejhpUXt25mp605s5df1g==
-X-Received: by 2002:a2e:a418:: with SMTP id p24mr2231076ljn.112.1573133282659;
-        Thu, 07 Nov 2019 05:28:02 -0800 (PST)
+        bh=40B2Zn2Vh8quTHaXoUrYBWwbsEUJYUqvqRevZ1/Cbtg=;
+        b=Q4awsqyoCiHst/z9F1Vn0pV+YXq1HP15tuWreIxgFgllpRH4YmYoyZKCz70TEYgGk4
+         rito4pYbGZYQSXxoXdOe+QnFHAzTPTV9c6eDqUAgbCbUuFHRgO1caPqsdRpgw9oQdERW
+         G9MNvg/6RVbdAoy4BAYjeIFuDfguf/yiltV+BslWOSbbI9QAEYBNhDT5jteXWM1Hqh+/
+         v2+FRshiLXobINdfq3uVyfPUGbsU07QP4wztYKFAmwxqFSFCVNfPSzMnHIV+Rxc0vNT8
+         olav38W7CcagdZ2+S1vjEB16274z07BlnIT75Rygl/+uCu49Jpx4KkHHYW55wt0k+/XX
+         y0mQ==
+X-Gm-Message-State: APjAAAUSu4w/5yvLQwiZMWhNRi7qkfVWMJUcUZSSiPvEih8SCtKaGWfD
+        KLKEiwD/mMm7MlEgNF+tUvzWLA==
+X-Google-Smtp-Source: APXvYqxptWQiJ6c22NPMOCLPEfahYPLDjhRJVXNYrDQr7bhMA6GXv0HYeEv2xfXyPfWv8U6IxF6dAw==
+X-Received: by 2002:a2e:22c1:: with SMTP id i184mr2542820lji.1.1573133283717;
+        Thu, 07 Nov 2019 05:28:03 -0800 (PST)
 Received: from mimer.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id y20sm3151507ljd.99.2019.11.07.05.28.01
+        by smtp.gmail.com with ESMTPSA id y20sm3151507ljd.99.2019.11.07.05.28.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 05:28:02 -0800 (PST)
+        Thu, 07 Nov 2019 05:28:03 -0800 (PST)
 From:   Jonas Bonn <jonas@norrbonn.se>
 To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, Jonas Bonn <jonas@norrbonn.se>
-Subject: [PATCH v3 3/6] rtnetlink: allow RTM_NEWLINK to act upon interfaces in arbitrary namespaces
-Date:   Thu,  7 Nov 2019 14:27:52 +0100
-Message-Id: <20191107132755.8517-4-jonas@norrbonn.se>
+Subject: [PATCH v3 4/6] net: ipv4: allow setting address on interface outside current namespace
+Date:   Thu,  7 Nov 2019 14:27:53 +0100
+Message-Id: <20191107132755.8517-5-jonas@norrbonn.se>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191107132755.8517-1-jonas@norrbonn.se>
 References: <20191107132755.8517-1-jonas@norrbonn.se>
@@ -61,89 +61,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTM_NEWLINK can be used mostly interchangeably with RTM_SETLINK for
-modifying device configuration.  As such, this method requires the same
-logic as RTM_SETLINK for finding the device to act on.
-
-With this patch, the IFLA_TARGET_NETNSID selects the namespace in which
-to search for the interface to act upon.  This allows, for example, to
-set the namespace of an interface outside the current namespace by
-selecting it with the (IFLA_TARGET_NETNSID,ifi->ifi_index) pair and
-specifying the namespace with one of IFLA_NET_NS_[PID|FD].
-
-Since rtnl_newlink branches off into do_setlink, we need to provide the
-same backwards compatibility check as we do for RTM_SETLINK:  if the
-device is not found in the namespace given by IFLA_TARGET_NETNSID then
-we search for it in the current namespace.  If found there, it's
-namespace will be changed, as before.
+This patch allows an interface outside of the current namespace to be
+selected when setting a new IPv4 address for a device.  This uses the
+IFA_TARGET_NETNSID attribute to select the namespace in which to search
+for the interface to act upon.
 
 Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 ---
- net/core/rtnetlink.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+ net/ipv4/devinet.c | 61 ++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 45 insertions(+), 16 deletions(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index a21e7d47135b..bcfabda3fc73 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3021,6 +3021,7 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	const struct rtnl_link_ops *m_ops = NULL;
- 	struct net_device *master_dev = NULL;
+diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
+index a4b5bd4d2c89..eecd1b0bb7d2 100644
+--- a/net/ipv4/devinet.c
++++ b/net/ipv4/devinet.c
+@@ -813,22 +813,17 @@ static void set_ifa_lifetime(struct in_ifaddr *ifa, __u32 valid_lft,
+ 		ifa->ifa_cstamp = ifa->ifa_tstamp;
+ }
+ 
+-static struct in_ifaddr *rtm_to_ifaddr(struct net *net, struct nlmsghdr *nlh,
++static struct in_ifaddr *rtm_to_ifaddr(struct nlattr *tb[],
++				       struct net *net, struct nlmsghdr *nlh,
+ 				       __u32 *pvalid_lft, __u32 *pprefered_lft,
+ 				       struct netlink_ext_ack *extack)
+ {
+-	struct nlattr *tb[IFA_MAX+1];
+ 	struct in_ifaddr *ifa;
+ 	struct ifaddrmsg *ifm;
+ 	struct net_device *dev;
+ 	struct in_device *in_dev;
+ 	int err;
+ 
+-	err = nlmsg_parse_deprecated(nlh, sizeof(*ifm), tb, IFA_MAX,
+-				     ifa_ipv4_policy, extack);
+-	if (err < 0)
+-		goto errout;
+-
+ 	ifm = nlmsg_data(nlh);
+ 	err = -EINVAL;
+ 	if (ifm->ifa_prefixlen > 32 || !tb[IFA_LOCAL])
+@@ -922,16 +917,38 @@ static int inet_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 			    struct netlink_ext_ack *extack)
+ {
  	struct net *net = sock_net(skb->sk);
 +	struct net *tgt_net = NULL;
- 	const struct rtnl_link_ops *ops;
- 	struct nlattr *tb[IFLA_MAX + 1];
- 	struct net *dest_net, *link_net;
-@@ -3049,6 +3050,15 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	else
- 		ifname[0] = '\0';
+ 	struct in_ifaddr *ifa;
+ 	struct in_ifaddr *ifa_existing;
+ 	__u32 valid_lft = INFINITY_LIFE_TIME;
+ 	__u32 prefered_lft = INFINITY_LIFE_TIME;
++	struct nlattr *tb[IFA_MAX + 1];
++	int err;
  
-+	if (tb[IFLA_TARGET_NETNSID]) {
-+		s32 netnsid = nla_get_s32(tb[IFLA_TARGET_NETNSID]);
+ 	ASSERT_RTNL();
+ 
+-	ifa = rtm_to_ifaddr(net, nlh, &valid_lft, &prefered_lft, extack);
+-	if (IS_ERR(ifa))
+-		return PTR_ERR(ifa);
++	err = nlmsg_parse_deprecated(nlh, sizeof(struct ifaddrmsg), tb, IFA_MAX,
++				     ifa_ipv4_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (tb[IFA_TARGET_NETNSID]) {
++		s32 netnsid = nla_get_s32(tb[IFA_TARGET_NETNSID]);
 +
 +		tgt_net = rtnl_get_net_ns_capable(NETLINK_CB(skb).sk, netnsid);
-+		if (IS_ERR(tgt_net))
++		if (IS_ERR(tgt_net)) {
++			NL_SET_ERR_MSG(extack,
++				"ipv4: Invalid target network namespace id");
 +			return PTR_ERR(tgt_net);
++		}
 +		net = tgt_net;
 +	}
 +
- 	ifm = nlmsg_data(nlh);
- 	if (ifm->ifi_index > 0)
- 		dev = __dev_get_by_index(net, ifm->ifi_index);
-@@ -3059,6 +3069,23 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			dev = NULL;
- 	}
- 
-+	/* A hack to preserve kernel<->userspace interface.
-+	 * It was previously allowed to pass the IFLA_TARGET_NETNSID
-+	 * attribute as a way to _set_ the network namespace.  In this
-+	 * case, the device interface was assumed to be in the  _current_
-+	 * namespace.
-+	 * If the device cannot be found in the target namespace then we
-+	 * assume that the request is to set the device in the current
-+	 * namespace and thus we attempt to find the device there.
-+	 */
-+	if (!dev && tgt_net) {
-+		net = sock_net(skb->sk);
-+		if (ifm->ifi_index > 0)
-+			dev = __dev_get_by_index(net, ifm->ifi_index);
-+		else if (tb[IFLA_IFNAME])
-+			dev = __dev_get_by_name(net, ifname);
++	ifa = rtm_to_ifaddr(tb, net, nlh, &valid_lft, &prefered_lft, extack);
++	if (IS_ERR(ifa)) {
++		err = PTR_ERR(ifa);
++		goto out;
 +	}
-+
- 	if (dev) {
- 		master_dev = netdev_master_upper_dev_get(dev);
- 		if (master_dev)
-@@ -3253,6 +3280,8 @@ static int __rtnl_newlink(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			goto out_unregister;
+ 
+ 	ifa_existing = find_matching_ifa(ifa);
+ 	if (!ifa_existing) {
+@@ -945,19 +962,24 @@ static int inet_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 			if (ret < 0) {
+ 				inet_free_ifa(ifa);
+-				return ret;
++				err = ret;
++				goto out;
+ 			}
+ 		}
+-		return __inet_insert_ifa(ifa, nlh, NETLINK_CB(skb).portid,
+-					 extack);
++		err = __inet_insert_ifa(ifa, nlh, NETLINK_CB(skb).portid,
++					extack);
++		if (err < 0)
++			goto out;
+ 	} else {
+ 		u32 new_metric = ifa->ifa_rt_priority;
+ 
+ 		inet_free_ifa(ifa);
+ 
+ 		if (nlh->nlmsg_flags & NLM_F_EXCL ||
+-		    !(nlh->nlmsg_flags & NLM_F_REPLACE))
+-			return -EEXIST;
++		    !(nlh->nlmsg_flags & NLM_F_REPLACE)) {
++			err = -EEXIST;
++			goto out;
++		}
+ 		ifa = ifa_existing;
+ 
+ 		if (ifa->ifa_rt_priority != new_metric) {
+@@ -971,7 +993,14 @@ static int inet_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 				&check_lifetime_work, 0);
+ 		rtmsg_ifa(RTM_NEWADDR, ifa, nlh, NETLINK_CB(skb).portid);
  	}
- out:
+-	return 0;
++
++	err = 0;
++
++out:
 +	if (tgt_net)
 +		put_net(tgt_net);
- 	if (link_net)
- 		put_net(link_net);
- 	put_net(dest_net);
++
++	return err;
+ }
+ 
+ /*
 -- 
 2.20.1
 
