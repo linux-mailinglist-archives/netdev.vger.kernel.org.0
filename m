@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DDC6F3659
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 18:55:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A85ECF365C
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 18:55:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389902AbfKGRzL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 12:55:11 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:43498 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730510AbfKGRzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 12:55:10 -0500
-Received: by mail-lf1-f68.google.com with SMTP id j5so2268589lfh.10;
-        Thu, 07 Nov 2019 09:55:08 -0800 (PST)
+        id S2389919AbfKGRza (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 12:55:30 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:34833 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730510AbfKGRza (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 12:55:30 -0500
+Received: by mail-lj1-f196.google.com with SMTP id r7so3290713ljg.2;
+        Thu, 07 Nov 2019 09:55:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=prR1UZMSOAIrk4Kkrqgk3cxz5XFMU7J1f+HLAmadmHc=;
-        b=k75OSHpXO01QPTNNrLLjcYsPg4Lq1iLJ5pUFGKwsVISN6U88T+jICyzwrViqzUD6SN
-         RLUj8YwJ1vaafHNz3LLrSfZc+K9Pb39jEmAshvPYYoKGwZthzMcwUJtJloCF6qj0F6pE
-         f9v2iCHusvJkCuhsLI/S1e3Pn1pFBj0uSNzCrr7XQFt88RZm51Cfq/9t2OIRtZy6aNto
-         AeEhcsN2ene/7REGpIRR17I5DzWAz55YgC4aPx+1GwaCQnhcGRnkyFXJxriQn0Mz8SiQ
-         G2NylxlyYe8lKFBGyh6EMfIh7GdpPqR/lbMxxc/g1A49ger/q5xZHN2GaSpJ3fYHMhRt
-         +ZhA==
+        bh=/5nhtXZ2avAcpZmHobzdQpLgt/NcDOLxRfXhUvIqUGs=;
+        b=NUITiYadCszrQMXfzKbwqJsfAB7EiMlhUvACmf/vVP7PgzUntqyV9t7AeVQbSEswB2
+         fcdLMnXv06twf87jXeYdbTSHuRl1FnAdRVuaLTRevBGqkslwQ6/CdCO0F4k3lTCrbcxC
+         LVXfXmwf/e1UNXdMwsopoKWpdeSRWV1FC0YefWLFAm2Qfg9FPEtdrof8pnhvASAKLJzd
+         CEo1Ri7FxSjcPpay6BNUQFWZB4+j1ynE/pz9bEQd1j9cJjfJK0763dMaU4IjSvhWB7wM
+         tZX/deBhLrEm3afOmQ/yC58NOMSfyGNsSlh9u0T8oA6nYhi+QUFopVUIO8TQ5hJir3ce
+         TCzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=prR1UZMSOAIrk4Kkrqgk3cxz5XFMU7J1f+HLAmadmHc=;
-        b=CwOb6vSvofIw6hqN6eo41agi7xHATmhhi0E1a9xqr6fDzuaVluOy2obP88/mCgUOKo
-         e48EIQ1esOwh85jP2znKZ5EokVggOXAcS3lb0t+8cj3MoXjcVPfqBEUaZHKgnAn3gtZN
-         cy+Y2xqk6XZ9s1cUbiE0SHGWCCbqChqbOBgQIWYFl8HrDbar+e8DSh5OPt4m8MSrmNv6
-         OFiPfRnq/ztWL/Tp4S0hPmcrN/rmUV2xmARchkUWrssTOPuwlgYdOTLQxrLa1kScyTIK
-         J0bsyrEVmsFM4aEp0iA04LoGYW2oqU52lKv3qYzK8b072LGxgIO017stMI5tWfgUC0tv
-         fPdA==
-X-Gm-Message-State: APjAAAUf4M8EttAZHhaqiT7ArLsXaaGRGH9L+rSDjpipDHhmCAI7HiaG
-        ZkFwo6nGX5mq4xFHR/YR4u5ef2J6ejSXso4FnbIbzP9x
-X-Google-Smtp-Source: APXvYqygRVVB9PzC/Yvc/jx8dk3X3dFH27ADz1C3x4fCebkohaUkCT0r8xkMa+S4mRPGUaKaD+a7MrbpcQ0EU4Jkjtg=
-X-Received: by 2002:ac2:5c1b:: with SMTP id r27mr3194178lfp.172.1573149308049;
- Thu, 07 Nov 2019 09:55:08 -0800 (PST)
+        bh=/5nhtXZ2avAcpZmHobzdQpLgt/NcDOLxRfXhUvIqUGs=;
+        b=A6wDcolLA7FGQ8KuDeBXmEkk5ht9sC26TkVxTbLTsACZyU4DIC2+bNpa7N4H6HnIxm
+         aV7k/OEWzOCq3MKzyxFrZYVni9SllOh9PDGrkF4fXVuyA56XRgqLvbGwKP6w71dNo4D6
+         Qz3qc4dzcGueK4nYAwlx+7lM7HK0Kpeo+DlfGM6gO1mQfzn26elqYcn6RZ/8H0fT5EBS
+         11YOrDob90XcahvTHYtIBxlj2+z2UdHFKKQovppcme9JkvLIroYdHOFpIHXiyL86sVs/
+         Qrzuk7srXpf9Phuvpw0ek5ARGZDoVSQErK/5iS/dDANpa1CSauw8uvNKrAtgGu8qpIr6
+         NcRA==
+X-Gm-Message-State: APjAAAWGrrGvVQXIYbAcQXvQv1EOfDlIbJ78lIXHSTBZf/jy7ZPUm7EM
+        jJH2/AI6xqwM+GvvuZemXzJE7A68GCrgKua7kow=
+X-Google-Smtp-Source: APXvYqwBA6+DPvibzaIBlFeMZph4+PSjxelMjq5bTm4yVglUCH9/bQ6KJMfHYhOTY+00WnLq+8YbO214UQBI99J0UYQ=
+X-Received: by 2002:a2e:6e15:: with SMTP id j21mr3369234ljc.17.1573149328066;
+ Thu, 07 Nov 2019 09:55:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20191107125224.29616-1-anders.roxell@linaro.org>
-In-Reply-To: <20191107125224.29616-1-anders.roxell@linaro.org>
+References: <20191107125224.29616-1-anders.roxell@linaro.org> <20191107125224.29616-2-anders.roxell@linaro.org>
+In-Reply-To: <20191107125224.29616-2-anders.roxell@linaro.org>
 From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 7 Nov 2019 09:54:56 -0800
-Message-ID: <CAPhsuW4B_Y+xOTaSFPWm0szn1exjucwL5KBsExWxq4tn_3NSbQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] selftests: bpf: test_lwt_ip_encap: add missing object
- file to TEST_FILES
+Date:   Thu, 7 Nov 2019 09:55:16 -0800
+Message-ID: <CAPhsuW6oL-RvTfqk6Gh5wAhfx1Br1evxEH+TkmDkSOWftirQnQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] selftests: bpf: test_tc_edt: add missing object file
+ to TEST_FILES
 To:     Anders Roxell <anders.roxell@linaro.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -65,25 +65,18 @@ X-Mailing-List: netdev@vger.kernel.org
 On Thu, Nov 7, 2019 at 4:53 AM Anders Roxell <anders.roxell@linaro.org> wrote:
 >
 > When installing kselftests to its own directory and running the
-> test_lwt_ip_encap.sh it will complain that test_lwt_ip_encap.o can't be
-> find.
+> test_tc_edt.sh it will complain that test_tc_edt.o can't be find.
 >
-> $ ./test_lwt_ip_encap.sh
-> starting egress IPv4 encap test
-> Error opening object test_lwt_ip_encap.o: No such file or directory
+> $ ./test_tc_edt.sh
+> Error opening object test_tc_edt.o: No such file or directory
 > Object hashing failed!
 > Cannot initialize ELF context!
-> Failed to parse eBPF program: Invalid argument
+> Unable to load program
 >
-> Rework to add test_lwt_ip_encap.o to TEST_FILES so the object file gets
+> Rework to add test_tc_edt.o to TEST_FILES so the object file gets
 > installed when installing kselftest.
 >
 > Fixes: 74b5a5968fe8 ("selftests/bpf: Replace test_progs and test_maps w/ general rule")
 > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-
-Please highlight that this set is on top of bpf-next tree with
-"[PATCH bpf-next 1/2]".
-
-Otherwise, looks good to me.
 
 Acked-by: Song Liu <songliubraving@fb.com>
