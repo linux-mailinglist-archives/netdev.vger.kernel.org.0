@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A03F29A4
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 09:48:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21071F29A9
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 09:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733300AbfKGIso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 03:48:44 -0500
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:40493 "EHLO
+        id S2387478AbfKGIsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 03:48:46 -0500
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:20718 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733227AbfKGIsn (ORCPT
+        by vger.kernel.org with ESMTP id S1733209AbfKGIsn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 03:48:43 -0500
 Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA78l9gw010906;
-        Thu, 7 Nov 2019 09:48:23 +0100
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA78l3w6010842;
+        Thu, 7 Nov 2019 09:48:21 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-type; s=STMicroelectronics;
- bh=CODhr+HDgZkmDdBSbE1YP8Qun5G0drMcjRcuyYv9BoA=;
- b=HW6haL2DjvwGLzh+6TRhOZw61ym0ZlUNPF/via4tp82qC9cFiuELRcgqdr7Atk0pVrQJ
- E875ZmB385QIQPU6qpfQuvXqNpPpwoUqdV92NPYcD1vAmUk5edhgWQZvhgkozO8V+urR
- EluMPGfED5+jInPSdLkiVZ0SaD+1dw3iJ2x8B4/eWkBH2rQ2fkWKl39WPVknFgJak08G
- cX4zr0BTQIgzit3znQulvp0TWgaBoPWPW1WovL3C7Q0GuTnOVTaYZ+GdWaiWsMY8ZGRC
- vMYwdprMYbMtJGwjAoZ20C0eQW0SWClTkbPW1nKFEF5y/tVAbBodLdQygZUECyPWT+Nq Qg== 
+ bh=PasrWJUoa3UFwSs+GtbCxK+KUm1QgPk+g2vbUrQXP80=;
+ b=kd6E3oTVgridwBB9jwAR3sTCaMNyVoRrVPxGut+v2corY2YUGVUk30JZlYx5d5A2Q5S0
+ 208aDh/t3n7oJavcZG9n3O8QaklwJ13E3HxCUeyQDqy6ARZhE77tfXg+shSL8D38LpxQ
+ hi1gz6rGDkpO1UVRAfLDQY+5qUlCjbt9u2Mx53N2e/US1MZLN6Dpzvyd1DXKtbFR6br3
+ +DUck8c77IU2hxC+9OtUsn/DkRpwGxRTrgjvcRta83BA6yuZA2c2vDUxF9tTzSyNmBmP
+ 2ECZZrPGkKKs/Vz5G3g2Qc8u7lpijilpeC4GSOEIpghrqbAd959ekUXN1SLbQtXPwciA Kw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2w41vduy82-1
+        by mx07-00178001.pphosted.com with ESMTP id 2w41vduy85-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 09:48:23 +0100
+        Thu, 07 Nov 2019 09:48:21 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4589610006F;
-        Thu,  7 Nov 2019 09:48:06 +0100 (CET)
-Received: from Webmail-eu.st.com (Safex1hubcas22.st.com [10.75.90.92])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3701A2AA977;
-        Thu,  7 Nov 2019 09:48:06 +0100 (CET)
-Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by Safex1hubcas22.st.com
- (10.75.90.92) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 7 Nov 2019
- 09:48:06 +0100
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3F992100071;
+        Thu,  7 Nov 2019 09:48:07 +0100 (CET)
+Received: from Webmail-eu.st.com (Safex1hubcas24.st.com [10.75.90.94])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 31B332AA977;
+        Thu,  7 Nov 2019 09:48:07 +0100 (CET)
+Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by Safex1hubcas24.st.com
+ (10.75.90.94) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 7 Nov 2019
+ 09:48:07 +0100
 Received: from localhost (10.201.22.222) by Webmail-ga.st.com (10.75.90.48)
- with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 7 Nov 2019 09:48:05
+ with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 7 Nov 2019 09:48:06
  +0100
 From:   Christophe Roullier <christophe.roullier@st.com>
 To:     <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
@@ -47,9 +47,9 @@ CC:     <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
         <christophe.roullier@st.com>, <andrew@lunn.ch>
-Subject: [PATCH V4 net-next 3/4] ARM: dts: stm32: adjust slew rate for Ethernet
-Date:   Thu, 7 Nov 2019 09:47:56 +0100
-Message-ID: <20191107084757.17910-4-christophe.roullier@st.com>
+Subject: [PATCH V4 net-next 4/4] ARM: dts: stm32: Enable gating of the MAC TX clock during TX low-power mode on stm32mp157c
+Date:   Thu, 7 Nov 2019 09:47:57 +0100
+Message-ID: <20191107084757.17910-5-christophe.roullier@st.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191107084757.17910-1-christophe.roullier@st.com>
 References: <20191107084757.17910-1-christophe.roullier@st.com>
@@ -63,38 +63,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ETH_MDIO slew-rate should be set to "0" instead of "2"
+When there is no activity on ethernet phy link, the ETH_GTX_CLK is cut
 
 Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
 ---
- arch/arm/boot/dts/stm32mp157-pinctrl.dtsi | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/stm32mp157c.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp157-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp157-pinctrl.dtsi
-index 0a3a7d66737b..9a8f0d4c9ea3 100644
---- a/arch/arm/boot/dts/stm32mp157-pinctrl.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157-pinctrl.dtsi
-@@ -217,13 +217,18 @@
- 						 <STM32_PINMUX('C', 2, AF11)>, /* ETH_RGMII_TXD2 */
- 						 <STM32_PINMUX('E', 2, AF11)>, /* ETH_RGMII_TXD3 */
- 						 <STM32_PINMUX('B', 11, AF11)>, /* ETH_RGMII_TX_CTL */
--						 <STM32_PINMUX('A', 2, AF11)>, /* ETH_MDIO */
- 						 <STM32_PINMUX('C', 1, AF11)>; /* ETH_MDC */
- 					bias-disable;
- 					drive-push-pull;
--					slew-rate = <3>;
-+					slew-rate = <2>;
- 				};
- 				pins2 {
-+					pinmux = <STM32_PINMUX('A', 2, AF11)>; /* ETH_MDIO */
-+					bias-disable;
-+					drive-push-pull;
-+					slew-rate = <0>;
-+				};
-+				pins3 {
- 					pinmux = <STM32_PINMUX('C', 4, AF11)>, /* ETH_RGMII_RXD0 */
- 						 <STM32_PINMUX('C', 5, AF11)>, /* ETH_RGMII_RXD1 */
- 						 <STM32_PINMUX('B', 0, AF11)>, /* ETH_RGMII_RXD2 */
+diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
+index f13c2348d130..8df2986dd452 100644
+--- a/arch/arm/boot/dts/stm32mp157c.dtsi
++++ b/arch/arm/boot/dts/stm32mp157c.dtsi
+@@ -1334,6 +1334,7 @@
+ 			st,syscon = <&syscfg 0x4>;
+ 			snps,mixed-burst;
+ 			snps,pbl = <2>;
++			snps,en-tx-lpi-clockgating;
+ 			snps,axi-config = <&stmmac_axi_config_0>;
+ 			snps,tso;
+ 			status = "disabled";
 -- 
 2.17.1
 
