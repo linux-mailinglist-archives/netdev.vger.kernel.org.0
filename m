@@ -2,256 +2,855 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 254B2F29FE
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:01:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FFFFF2A04
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfKGJB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 04:01:26 -0500
-Received: from mx1.redhat.com ([209.132.183.28]:58032 "EHLO mx1.redhat.com"
+        id S2387571AbfKGJC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 04:02:28 -0500
+Received: from mx1.redhat.com ([209.132.183.28]:42070 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727300AbfKGJBY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 04:01:24 -0500
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+        id S1733209AbfKGJC1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 04:02:27 -0500
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 93827C05566F
-        for <netdev@vger.kernel.org>; Thu,  7 Nov 2019 09:01:23 +0000 (UTC)
-Received: by mail-qk1-f198.google.com with SMTP id p68so1479069qkf.9
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 01:01:23 -0800 (PST)
+        by mx1.redhat.com (Postfix) with ESMTPS id E9AFA155DB
+        for <netdev@vger.kernel.org>; Thu,  7 Nov 2019 09:02:26 +0000 (UTC)
+Received: by mail-qk1-f199.google.com with SMTP id a186so1451941qkb.18
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 01:02:26 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Iuf7pY0vuoI1H2ku5bfjNilR7JIa9xxrVrj3ZMN2r0I=;
-        b=Ch+eHG4rxW73r66j03H3aj2EfBolbCfqcyveoHMgHRC0Hk//VzfajSx8nIcJKLxvpR
-         qKGpjKoSOwwxGuk4MZ7PZ+cAuKCVK547WqKAwlNvK1yYBt01f/p+EgTQ+CDEzaSJLBGY
-         iYENnfmjgo8nEo95FdL8C1TjckrrC6UaMilDfNFVnVY0Aa9VAUybWvkaAqsOlch4Uut4
-         x7wq4VBTJIE7lPjnmGkpH2XvWkhju7mtZQ2oVQ94dYpM3ra7qiQs448frxmfzwiXlo86
-         W886iSX3ECap1du0QtIODC6/kAcyAJ22wyDzsZUsTO99nSOlQFLiI/LsHv9mJiZEtls9
-         Z9Gg==
-X-Gm-Message-State: APjAAAU6wTElqwINZBetZKszyPiwv4PwFZMQrdXAlXOQRrCIqwJARY5w
-        C58L/+io9yc5nBzcA7aLfV2qQ7xxgm8TWLioO2LwPIXZC7mtC8bY92TnGxHmPV+lCqq6JZsVfQl
-        ZS2yR077Fy/hi2uSG
-X-Received: by 2002:a37:9d0:: with SMTP id 199mr1741244qkj.356.1573117282582;
-        Thu, 07 Nov 2019 01:01:22 -0800 (PST)
-X-Google-Smtp-Source: APXvYqza6VsCEEQioEycCTS7IjmrN8FqLVHpcn7603qJAchUJjGf6blUNptyX48oixjHG7mtpq7G3A==
-X-Received: by 2002:a37:9d0:: with SMTP id 199mr1741203qkj.356.1573117282207;
-        Thu, 07 Nov 2019 01:01:22 -0800 (PST)
+        bh=1mDeU8u/VqoYeoKVvQtqJh7pv1gYDN1AcBs2qPOXKLc=;
+        b=IpA4qJyg2J1RWcyfHE0tpUXCL+BI6uhF1PXL2OhvV5vY3X0FWVhCRbOzeX/sjQvxeV
+         6LYyGsyG6dbcKUtBB0k/FrKmuYrAh1xQFEAH+FGjIxc7MWgXbXNmYiQzvdubPC0cx/tK
+         5+xw+xJ4HBFTvDTLA8C303Jce4cOkIDfjDs+zSj4ii02Xsvm936nAfp2hfSORFTz+xMB
+         4xjgSKVv8ucIWSE6KYfKv9b5ZRYIzvvWV7Ht5aBbwAp/H/QEft3tiMyYHlJcooqW9hT5
+         FYRG1KvAqx7EzbxrTjUDONRIcpS4tD7PH8MHghXQllPdjjx88htY48ST99CEs81Wbidp
+         lG2Q==
+X-Gm-Message-State: APjAAAUvazRx01XPz93jyB10WVLk4GeEZaklXQCYfG+bbIalV/bzQLtI
+        egq7qjnDah0JpCHPTLOnDeGd4ARA5kXOhp4qJcEt618G4y9oqWybevzqmEmrFS8iQsG+B1vOhdu
+        c+n7rZ9pQLjcjtzuN
+X-Received: by 2002:ac8:48c5:: with SMTP id l5mr2700676qtr.110.1573117345952;
+        Thu, 07 Nov 2019 01:02:25 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwUaVFjc/DC9nlfNotH6m9JSenLZ7TLEpurPRSyVv6V8QLv5xgaseJvrdiOZSvGGFjaSRLE6Q==
+X-Received: by 2002:ac8:48c5:: with SMTP id l5mr2700645qtr.110.1573117345478;
+        Thu, 07 Nov 2019 01:02:25 -0800 (PST)
 Received: from redhat.com (bzq-79-178-12-128.red.bezeqint.net. [79.178.12.128])
-        by smtp.gmail.com with ESMTPSA id o1sm958206qtb.82.2019.11.07.01.01.12
+        by smtp.gmail.com with ESMTPSA id f23sm746781qkh.94.2019.11.07.01.02.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 01:01:21 -0800 (PST)
-Date:   Thu, 7 Nov 2019 04:01:09 -0500
+        Thu, 07 Nov 2019 01:02:24 -0800 (PST)
+Date:   Thu, 7 Nov 2019 04:02:18 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
+To:     Tiwei Bie <tiwei.bie@intel.com>
+Cc:     jasowang@redhat.com, alex.williamson@redhat.com,
+        maxime.coquelin@redhat.com, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
         cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-Subject: Re: [PATCH V9 0/6] mdev based hardware virtio offloading support
-Message-ID: <20191107040055-mutt-send-email-mst@kernel.org>
-References: <20191106070548.18980-1-jasowang@redhat.com>
+        lingshan.zhu@intel.com
+Subject: Re: [PATCH v6] vhost: introduce mdev based hardware backend
+Message-ID: <20191107040207-mutt-send-email-mst@kernel.org>
+References: <20191107073530.15291-1-tiwei.bie@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191106070548.18980-1-jasowang@redhat.com>
+In-Reply-To: <20191107073530.15291-1-tiwei.bie@intel.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 06, 2019 at 03:05:42PM +0800, Jason Wang wrote:
-> Hi all:
+On Thu, Nov 07, 2019 at 03:35:30PM +0800, Tiwei Bie wrote:
+> This patch introduces a mdev based hardware vhost backend.
+> This backend is built on top of the same abstraction used
+> in virtio-mdev and provides a generic vhost interface for
+> userspace to accelerate the virtio devices in guest.
 > 
-> There are hardwares that can do virtio datapath offloading while
-> having its own control path. This path tries to implement a mdev based
-> unified API to support using kernel virtio driver to drive those
-> devices. This is done by introducing a new mdev transport for virtio
-> (virtio_mdev) and register itself as a new kind of mdev driver. Then
-> it provides a unified way for kernel virtio driver to talk with mdev
-> device implementation.
+> This backend is implemented as a mdev device driver on top
+> of the same mdev device ops used in virtio-mdev but using
+> a different mdev class id, and it will register the device
+> as a VFIO device for userspace to use. Userspace can setup
+> the IOMMU with the existing VFIO container/group APIs and
+> then get the device fd with the device name. After getting
+> the device fd, userspace can use vhost ioctls on top of it
+> to setup the backend.
 > 
-> Though the series only contains kernel driver support, the goal is to
-> make the transport generic enough to support userspace drivers. This
-> means vhost-mdev[1] could be built on top as well by resuing the
-> transport.
-> 
-> A sample driver is also implemented which simulate a virito-net
-> loopback ethernet device on top of vringh + workqueue. This could be
-> used as a reference implementation for real hardware driver.
-> 
-> Also a real IFC VF driver was also posted here[2] which is a good
-> reference for vendors who is interested in their own virtio datapath
-> offloading product.
-> 
-> Consider mdev framework only support VFIO device and driver right now,
-> this series also extend it to support other types. This is done
-> through introducing class id to the device and pairing it with
-> id_talbe claimed by the driver. On top, this seris also decouple
-> device specific parents ops out of the common ones.
-> 
-> Pktgen test was done with virito-net + mvnet loop back device.
-> 
-> Please review.
-> 
-> [1] https://lkml.org/lkml/2019/11/5/424
-> [2] https://lkml.org/lkml/2019/11/5/227
-
-Series:
+> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
 
 Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
 
-> Changes from V8:
-> - try silent checkpatch, some are still there becuase they were inherited
->   from virtio_config_ops which needs to be resolved in an independent series
-> - tweak on the comment and doc
-> - remove VIRTIO_MDEV_F_VERSION_1 completely
-> - rename CONFIG_VIRTIO_MDEV_DEVICE to CONFIG_VIRTIO_MDEV
+> ---
+> This patch depends on below series:
+> https://lkml.org/lkml/2019/11/6/538
 > 
-> Changes from V7:
-> - drop {set|get}_mdev_features for virtio
-> - typo and comment style fixes
+> v5 -> v6:
+> - Filter out VHOST_SET_LOG_BASE/VHOST_SET_LOG_FD (Jason);
+> - Simplify len/off check (Jason);
+> - Address checkpatch warnings, some of them are ignored
+>   to keep the coding style consistent with existing ones;
 > 
-> Changes from V6:
-> - rename ops files and compile guard
+> v4 -> v5:
+> - Rebase on top of virtio-mdev series v8;
+> - Use the virtio_ops of mdev_device in vhost-mdev (Jason);
+> - Some minor improvements on commit log;
 > 
-> Changes from V5:
-> - use dev_warn() instead of WARN(1) when class id is not set
-> - validate id_table before trying to do matching between device and
->   driver
-> - add wildcard for modpost script
-> - use unique name for id_table
-> - move get_mdev_features() to be the first member of virtio_device_ops
->   and more comments for it
-> - typo fixes for the comments above virtio_mdev_ops
+> v3 -> v4:
+> - Rebase on top of virtio-mdev series v6;
+> - Some minor tweaks and improvements;
 > 
-> Changes from V4:
-> - keep mdev_set_class() for the device that doesn't use device ops
-> - use union for device ops pointer in mdev_device
-> - introduce class specific helper for getting is device ops
-> - use WARN_ON instead of BUG_ON in mdev_set_virtio_ops
-> - explain details of get_mdev_features() and get_vendor_id()
-> - distinguish the optional virito device ops from mandatory ones and
->   make get_generation() optional
-> - rename vfio_mdev.h to vfio_mdev_ops.h, rename virito_mdev.h to
->   virtio_mdev_ops.h
-> - don't abuse version fileds in virtio_mdev structure, use features
->   instead
-> - fix warning during device remove
-> - style & docs tweaks and typo fixes
+> v2 -> v3:
+> - Fix the return value (Jason);
+> - Don't cache unnecessary information in vhost-mdev (Jason);
+> - Get rid of the memset in open (Jason);
+> - Add comments for VHOST_SET_MEM_TABLE, ... (Jason);
+> - Filter out unsupported features in vhost-mdev (Jason);
+> - Add _GET_DEVICE_ID ioctl (Jason);
+> - Add _GET_CONFIG/_SET_CONFIG ioctls (Jason);
+> - Drop _GET_QUEUE_NUM ioctl (Jason);
+> - Fix the copy-paste errors in _IOW/_IOR usage;
+> - Some minor fixes and improvements;
 > 
-> Changes from V3:
-> - document that class id (device ops) must be specified in create()
-> - add WARN() when trying to set class_id when it has already set
-> - add WARN() when class_id is not specified in create() and correctly
->   return an error in this case
-> - correct the prototype of mdev_set_class() in the doc
-> - add documention of mdev_set_class()
-> - remove the unnecessary "class_id_fail" label when class id is not
->   specified in create()
-> - convert id_table in vfio_mdev to const
-> - move mdev_set_class and its friends after mdev_uuid()
-> - suqash the patch of bus uevent into patch of introducing class id
-> - tweak the words in the docs per Cornelia suggestion
-> - tie class_id and device ops through class specific initialization
->   routine like mdev_set_vfio_ops()
-> - typos fixes in the docs of virtio-mdev callbacks
-> - document the usage of virtqueues in struct virtio_mdev_device
-> - remove the useless vqs array in struct virtio_mdev_device
-> - rename MDEV_ID_XXX to MDEV_CLASS_ID_XXX
+> v1 -> v2:
+> - Replace _SET_STATE with _SET_STATUS (MST);
+> - Check status bits at each step (MST);
+> - Report the max ring size and max number of queues (MST);
+> - Add missing MODULE_DEVICE_TABLE (Jason);
+> - Only support the network backend w/o multiqueue for now;
+> - Some minor fixes and improvements;
+> - Rebase on top of virtio-mdev series v4;
 > 
-> Changes from V2:
-> - fail when class_id is not specified
-> - drop the vringh patch
-> - match the doc to the code
-> - tweak the commit log
-> - move device_ops from parent to mdev device
-> - remove the unused MDEV_ID_VHOST
+> RFC v4 -> v1:
+> - Implement vhost-mdev as a mdev device driver directly and
+>   connect it to VFIO container/group. (Jason);
+> - Pass ring addresses as GPAs/IOVAs in vhost-mdev to avoid
+>   meaningless HVA->GPA translations (Jason);
 > 
-> Changes from V1:
-> - move virtio_mdev.c to drivers/virtio
-> - store class_id in mdev_device instead of mdev_parent
-> - store device_ops in mdev_device instead of mdev_parent
-> - reorder the patch, vringh fix comes first
-> - really silent compiling warnings
-> - really switch to use u16 for class_id
-> - uevent and modpost support for mdev class_id
-> - vraious tweaks per comments from Parav
+> RFC v3 -> RFC v4:
+> - Build vhost-mdev on top of the same abstraction used by
+>   virtio-mdev (Jason);
+> - Introduce vhost fd and pass VFIO fd via SET_BACKEND ioctl (MST);
 > 
-> Changes from RFC-V2:
-> - silent compile warnings on some specific configuration
-> - use u16 instead u8 for class id
-> - reseve MDEV_ID_VHOST for future vhost-mdev work
-> - introduce "virtio" type for mvnet and make "vhost" type for future
->   work
-> - add entries in MAINTAINER
-> - tweak and typos fixes in commit log
+> RFC v2 -> RFC v3:
+> - Reuse vhost's ioctls instead of inventing a VFIO regions/irqs
+>   based vhost protocol on top of vfio-mdev (Jason);
 > 
-> Changes from RFC-V1:
-> - rename device id to class id
-> - add docs for class id and device specific ops (device_ops)
-> - split device_ops into seperate headers
-> - drop the mdev_set_dma_ops()
-> - use device_ops to implement the transport API, then it's not a part
->   of UAPI any more
-> - use GFP_ATOMIC in mvnet sample device and other tweaks
-> - set_vring_base/get_vring_base support for mvnet device
+> RFC v1 -> RFC v2:
+> - Introduce a new VFIO device type to build a vhost protocol
+>   on top of vfio-mdev;
 > 
-> Jason Wang (6):
->   mdev: class id support
->   modpost: add support for mdev class id
->   mdev: introduce device specific ops
->   mdev: introduce virtio device and its device ops
->   virtio: introduce a mdev based transport
->   docs: sample driver to demonstrate how to implement virtio-mdev
->     framework
+>  drivers/vfio/mdev/mdev_core.c    |  21 ++
+>  drivers/vhost/Kconfig            |  12 +
+>  drivers/vhost/Makefile           |   3 +
+>  drivers/vhost/mdev.c             | 556 +++++++++++++++++++++++++++++++
+>  include/linux/mdev.h             |   5 +
+>  include/uapi/linux/vhost.h       |  21 ++
+>  include/uapi/linux/vhost_types.h |   8 +
+>  7 files changed, 626 insertions(+)
+>  create mode 100644 drivers/vhost/mdev.c
 > 
->  .../driver-api/vfio-mediated-device.rst       |  38 +-
->  MAINTAINERS                                   |   3 +
->  drivers/gpu/drm/i915/gvt/kvmgt.c              |  17 +-
->  drivers/s390/cio/vfio_ccw_ops.c               |  17 +-
->  drivers/s390/crypto/vfio_ap_ops.c             |  13 +-
->  drivers/vfio/mdev/mdev_core.c                 |  60 ++
->  drivers/vfio/mdev/mdev_driver.c               |  25 +
->  drivers/vfio/mdev/mdev_private.h              |   8 +
->  drivers/vfio/mdev/vfio_mdev.c                 |  45 +-
->  drivers/virtio/Kconfig                        |  13 +
->  drivers/virtio/Makefile                       |   1 +
->  drivers/virtio/virtio_mdev.c                  | 406 +++++++++++
->  include/linux/mdev.h                          |  57 +-
->  include/linux/mdev_vfio_ops.h                 |  52 ++
->  include/linux/mdev_virtio_ops.h               | 147 ++++
->  include/linux/mod_devicetable.h               |   8 +
->  samples/Kconfig                               |  10 +
->  samples/vfio-mdev/Makefile                    |   1 +
->  samples/vfio-mdev/mbochs.c                    |  19 +-
->  samples/vfio-mdev/mdpy.c                      |  19 +-
->  samples/vfio-mdev/mtty.c                      |  17 +-
->  samples/vfio-mdev/mvnet.c                     | 686 ++++++++++++++++++
->  scripts/mod/devicetable-offsets.c             |   3 +
->  scripts/mod/file2alias.c                      |  11 +
->  24 files changed, 1585 insertions(+), 91 deletions(-)
->  create mode 100644 drivers/virtio/virtio_mdev.c
->  create mode 100644 include/linux/mdev_vfio_ops.h
->  create mode 100644 include/linux/mdev_virtio_ops.h
->  create mode 100644 samples/vfio-mdev/mvnet.c
-> 
+> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+> index c58253404ed5..d855be5afbae 100644
+> --- a/drivers/vfio/mdev/mdev_core.c
+> +++ b/drivers/vfio/mdev/mdev_core.c
+> @@ -99,6 +99,27 @@ mdev_get_virtio_ops(struct mdev_device *mdev)
+>  }
+>  EXPORT_SYMBOL(mdev_get_virtio_ops);
+>  
+> +/*
+> + * Specify the vhost device ops for the mdev device, this
+> + * must be called during create() callback for vhost mdev device.
+> + */
+> +void mdev_set_vhost_ops(struct mdev_device *mdev,
+> +			const struct mdev_virtio_device_ops *vhost_ops)
+> +{
+> +	mdev_set_class(mdev, MDEV_CLASS_ID_VHOST);
+> +	mdev->virtio_ops = vhost_ops;
+> +}
+> +EXPORT_SYMBOL(mdev_set_vhost_ops);
+> +
+> +/* Get the vhost device ops for the mdev device. */
+> +const struct mdev_virtio_device_ops *
+> +mdev_get_vhost_ops(struct mdev_device *mdev)
+> +{
+> +	WARN_ON(mdev->class_id != MDEV_CLASS_ID_VHOST);
+> +	return mdev->virtio_ops;
+> +}
+> +EXPORT_SYMBOL(mdev_get_vhost_ops);
+> +
+>  struct device *mdev_dev(struct mdev_device *mdev)
+>  {
+>  	return &mdev->dev;
+> diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
+> index 3d03ccbd1adc..062cada28f89 100644
+> --- a/drivers/vhost/Kconfig
+> +++ b/drivers/vhost/Kconfig
+> @@ -34,6 +34,18 @@ config VHOST_VSOCK
+>  	To compile this driver as a module, choose M here: the module will be called
+>  	vhost_vsock.
+>  
+> +config VHOST_MDEV
+> +	tristate "Vhost driver for Mediated devices"
+> +	depends on EVENTFD && VFIO && VFIO_MDEV
+> +	select VHOST
+> +	default n
+> +	---help---
+> +	This kernel module can be loaded in host kernel to accelerate
+> +	guest virtio devices with the mediated device based backends.
+> +
+> +	To compile this driver as a module, choose M here: the module will
+> +	be called vhost_mdev.
+> +
+>  config VHOST
+>  	tristate
+>  	---help---
+> diff --git a/drivers/vhost/Makefile b/drivers/vhost/Makefile
+> index 6c6df24f770c..ad9c0f8c6d8c 100644
+> --- a/drivers/vhost/Makefile
+> +++ b/drivers/vhost/Makefile
+> @@ -10,4 +10,7 @@ vhost_vsock-y := vsock.o
+>  
+>  obj-$(CONFIG_VHOST_RING) += vringh.o
+>  
+> +obj-$(CONFIG_VHOST_MDEV) += vhost_mdev.o
+> +vhost_mdev-y := mdev.o
+> +
+>  obj-$(CONFIG_VHOST)	+= vhost.o
+> diff --git a/drivers/vhost/mdev.c b/drivers/vhost/mdev.c
+> new file mode 100644
+> index 000000000000..96aab09969b5
+> --- /dev/null
+> +++ b/drivers/vhost/mdev.c
+> @@ -0,0 +1,556 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Vhost driver for mediated device based backends.
+> + *
+> + * Copyright (C) 2018-2019 Intel Corporation.
+> + *
+> + * Author: Tiwei Bie <tiwei.bie@intel.com>
+> + *
+> + * Thanks to Jason Wang and Michael S. Tsirkin for the valuable
+> + * comments and suggestions.  And thanks to Cunming Liang and
+> + * Zhihong Wang for all their supports.
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/mdev.h>
+> +#include <linux/mdev_virtio_ops.h>
+> +#include <linux/nospec.h>
+> +#include <linux/vfio.h>
+> +#include <linux/vhost.h>
+> +#include <linux/virtio_net.h>
+> +
+> +#include "vhost.h"
+> +
+> +enum {
+> +	VHOST_MDEV_FEATURES =
+> +		(1ULL << VIRTIO_F_NOTIFY_ON_EMPTY) |
+> +		(1ULL << VIRTIO_F_ANY_LAYOUT) |
+> +		(1ULL << VIRTIO_F_VERSION_1) |
+> +		(1ULL << VIRTIO_F_IOMMU_PLATFORM) |
+> +		(1ULL << VIRTIO_F_RING_PACKED) |
+> +		(1ULL << VIRTIO_F_ORDER_PLATFORM) |
+> +		(1ULL << VIRTIO_RING_F_INDIRECT_DESC) |
+> +		(1ULL << VIRTIO_RING_F_EVENT_IDX),
+> +
+> +	VHOST_MDEV_NET_FEATURES = VHOST_MDEV_FEATURES |
+> +		(1ULL << VIRTIO_NET_F_CSUM) |
+> +		(1ULL << VIRTIO_NET_F_GUEST_CSUM) |
+> +		(1ULL << VIRTIO_NET_F_MTU) |
+> +		(1ULL << VIRTIO_NET_F_MAC) |
+> +		(1ULL << VIRTIO_NET_F_GUEST_TSO4) |
+> +		(1ULL << VIRTIO_NET_F_GUEST_TSO6) |
+> +		(1ULL << VIRTIO_NET_F_GUEST_ECN) |
+> +		(1ULL << VIRTIO_NET_F_GUEST_UFO) |
+> +		(1ULL << VIRTIO_NET_F_HOST_TSO4) |
+> +		(1ULL << VIRTIO_NET_F_HOST_TSO6) |
+> +		(1ULL << VIRTIO_NET_F_HOST_ECN) |
+> +		(1ULL << VIRTIO_NET_F_HOST_UFO) |
+> +		(1ULL << VIRTIO_NET_F_MRG_RXBUF) |
+> +		(1ULL << VIRTIO_NET_F_STATUS) |
+> +		(1ULL << VIRTIO_NET_F_SPEED_DUPLEX),
+> +};
+> +
+> +/* Currently, only network backend w/o multiqueue is supported. */
+> +#define VHOST_MDEV_VQ_MAX	2
+> +
+> +struct vhost_mdev {
+> +	/* The lock is to protect this structure. */
+> +	struct mutex mutex;
+> +	struct vhost_dev dev;
+> +	struct vhost_virtqueue *vqs;
+> +	int nvqs;
+> +	int virtio_id;
+> +	bool opened;
+> +	struct mdev_device *mdev;
+> +};
+> +
+> +static const u64 vhost_mdev_features[] = {
+> +	[VIRTIO_ID_NET] = VHOST_MDEV_NET_FEATURES,
+> +};
+> +
+> +static void handle_vq_kick(struct vhost_work *work)
+> +{
+> +	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
+> +						  poll.work);
+> +	struct vhost_mdev *m = container_of(vq->dev, struct vhost_mdev, dev);
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(m->mdev);
+> +
+> +	ops->kick_vq(m->mdev, vq - m->vqs);
+> +}
+> +
+> +static irqreturn_t vhost_mdev_virtqueue_cb(void *private)
+> +{
+> +	struct vhost_virtqueue *vq = private;
+> +	struct eventfd_ctx *call_ctx = vq->call_ctx;
+> +
+> +	if (call_ctx)
+> +		eventfd_signal(call_ctx, 1);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static void vhost_mdev_reset(struct vhost_mdev *m)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +
+> +	ops->set_status(mdev, 0);
+> +}
+> +
+> +static long vhost_mdev_get_device_id(struct vhost_mdev *m, u8 __user *argp)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	u32 device_id;
+> +
+> +	device_id = ops->get_device_id(mdev);
+> +
+> +	if (copy_to_user(argp, &device_id, sizeof(device_id)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_get_status(struct vhost_mdev *m, u8 __user *statusp)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	u8 status;
+> +
+> +	status = ops->get_status(mdev);
+> +
+> +	if (copy_to_user(statusp, &status, sizeof(status)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_set_status(struct vhost_mdev *m, u8 __user *statusp)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	u8 status;
+> +
+> +	if (copy_from_user(&status, statusp, sizeof(status)))
+> +		return -EFAULT;
+> +
+> +	/*
+> +	 * Userspace shouldn't remove status bits unless reset the
+> +	 * status to 0.
+> +	 */
+> +	if (status != 0 && (ops->get_status(mdev) & ~status) != 0)
+> +		return -EINVAL;
+> +
+> +	ops->set_status(mdev, status);
+> +
+> +	return 0;
+> +}
+> +
+> +static int vhost_mdev_config_validate(struct vhost_mdev *m,
+> +				      struct vhost_mdev_config *c)
+> +{
+> +	long size = 0;
+> +
+> +	switch (m->virtio_id) {
+> +	case VIRTIO_ID_NET:
+> +		size = sizeof(struct virtio_net_config);
+> +		break;
+> +	}
+> +
+> +	if (c->len == 0)
+> +		return -EINVAL;
+> +
+> +	if (c->len > size - c->off)
+> +		return -E2BIG;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_get_config(struct vhost_mdev *m,
+> +				  struct vhost_mdev_config __user *c)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	struct vhost_mdev_config config;
+> +	unsigned long size = offsetof(struct vhost_mdev_config, buf);
+> +	u8 *buf;
+> +
+> +	if (copy_from_user(&config, c, size))
+> +		return -EFAULT;
+> +	if (vhost_mdev_config_validate(m, &config))
+> +		return -EINVAL;
+> +	buf = kvzalloc(config.len, GFP_KERNEL);
+> +	if (!buf)
+> +		return -ENOMEM;
+> +
+> +	ops->get_config(mdev, config.off, buf, config.len);
+> +
+> +	if (copy_to_user(c->buf, buf, config.len)) {
+> +		kvfree(buf);
+> +		return -EFAULT;
+> +	}
+> +
+> +	kvfree(buf);
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_set_config(struct vhost_mdev *m,
+> +				  struct vhost_mdev_config __user *c)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	struct vhost_mdev_config config;
+> +	unsigned long size = offsetof(struct vhost_mdev_config, buf);
+> +	u8 *buf;
+> +
+> +	if (copy_from_user(&config, c, size))
+> +		return -EFAULT;
+> +	if (vhost_mdev_config_validate(m, &config))
+> +		return -EINVAL;
+> +	buf = kvzalloc(config.len, GFP_KERNEL);
+> +	if (!buf)
+> +		return -ENOMEM;
+> +
+> +	if (copy_from_user(buf, c->buf, config.len)) {
+> +		kvfree(buf);
+> +		return -EFAULT;
+> +	}
+> +
+> +	ops->set_config(mdev, config.off, buf, config.len);
+> +
+> +	kvfree(buf);
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_get_features(struct vhost_mdev *m, u64 __user *featurep)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	u64 features;
+> +
+> +	features = ops->get_features(mdev);
+> +	features &= vhost_mdev_features[m->virtio_id];
+> +
+> +	if (copy_to_user(featurep, &features, sizeof(features)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_set_features(struct vhost_mdev *m, u64 __user *featurep)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	u64 features;
+> +
+> +	/*
+> +	 * It's not allowed to change the features after they have
+> +	 * been negotiated.
+> +	 */
+> +	if (ops->get_status(mdev) & VIRTIO_CONFIG_S_FEATURES_OK)
+> +		return -EBUSY;
+> +
+> +	if (copy_from_user(&features, featurep, sizeof(features)))
+> +		return -EFAULT;
+> +
+> +	if (features & ~vhost_mdev_features[m->virtio_id])
+> +		return -EINVAL;
+> +
+> +	if (ops->set_features(mdev, features))
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_get_vring_num(struct vhost_mdev *m, u16 __user *argp)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	u16 num;
+> +
+> +	num = ops->get_vq_num_max(mdev);
+> +
+> +	if (copy_to_user(argp, &num, sizeof(num)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+> +static long vhost_mdev_vring_ioctl(struct vhost_mdev *m, unsigned int cmd,
+> +				   void __user *argp)
+> +{
+> +	struct mdev_device *mdev = m->mdev;
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	struct virtio_mdev_callback cb;
+> +	struct vhost_virtqueue *vq;
+> +	struct vhost_vring_state s;
+> +	u8 status;
+> +	u32 idx;
+> +	long r;
+> +
+> +	r = get_user(idx, (u32 __user *)argp);
+> +	if (r < 0)
+> +		return r;
+> +	if (idx >= m->nvqs)
+> +		return -ENOBUFS;
+> +
+> +	idx = array_index_nospec(idx, m->nvqs);
+> +	vq = &m->vqs[idx];
+> +
+> +	status = ops->get_status(mdev);
+> +
+> +	/*
+> +	 * It's not allowed to detect and program vqs before
+> +	 * features negotiation or after enabling driver.
+> +	 */
+> +	if (!(status & VIRTIO_CONFIG_S_FEATURES_OK) ||
+> +	    (status & VIRTIO_CONFIG_S_DRIVER_OK))
+> +		return -EBUSY;
+> +
+> +	if (cmd == VHOST_MDEV_SET_VRING_ENABLE) {
+> +		if (copy_from_user(&s, argp, sizeof(s)))
+> +			return -EFAULT;
+> +		ops->set_vq_ready(mdev, idx, s.num);
+> +		return 0;
+> +	}
+> +
+> +	/*
+> +	 * It's not allowed to detect and program vqs with
+> +	 * vqs enabled.
+> +	 */
+> +	if (ops->get_vq_ready(mdev, idx))
+> +		return -EBUSY;
+> +
+> +	if (cmd == VHOST_GET_VRING_BASE)
+> +		vq->last_avail_idx = ops->get_vq_state(m->mdev, idx);
+> +
+> +	r = vhost_vring_ioctl(&m->dev, cmd, argp);
+> +	if (r)
+> +		return r;
+> +
+> +	switch (cmd) {
+> +	case VHOST_SET_VRING_ADDR:
+> +		/*
+> +		 * In vhost-mdev, the ring addresses set by userspace should
+> +		 * be the DMA addresses within the VFIO container/group.
+> +		 */
+> +		if (ops->set_vq_address(mdev, idx, (u64)vq->desc,
+> +					(u64)vq->avail, (u64)vq->used))
+> +			r = -EINVAL;
+> +		break;
+> +
+> +	case VHOST_SET_VRING_BASE:
+> +		if (ops->set_vq_state(mdev, idx, vq->last_avail_idx))
+> +			r = -EINVAL;
+> +		break;
+> +
+> +	case VHOST_SET_VRING_CALL:
+> +		if (vq->call_ctx) {
+> +			cb.callback = vhost_mdev_virtqueue_cb;
+> +			cb.private = vq;
+> +		} else {
+> +			cb.callback = NULL;
+> +			cb.private = NULL;
+> +		}
+> +		ops->set_vq_cb(mdev, idx, &cb);
+> +		break;
+> +
+> +	case VHOST_SET_VRING_NUM:
+> +		ops->set_vq_num(mdev, idx, vq->num);
+> +		break;
+> +	}
+> +
+> +	return r;
+> +}
+> +
+> +static int vhost_mdev_open(void *device_data)
+> +{
+> +	struct vhost_mdev *m = device_data;
+> +	struct vhost_dev *dev;
+> +	struct vhost_virtqueue **vqs;
+> +	int nvqs, i, r;
+> +
+> +	if (!try_module_get(THIS_MODULE))
+> +		return -ENODEV;
+> +
+> +	mutex_lock(&m->mutex);
+> +
+> +	if (m->opened) {
+> +		r = -EBUSY;
+> +		goto err;
+> +	}
+> +
+> +	nvqs = m->nvqs;
+> +	vhost_mdev_reset(m);
+> +
+> +	vqs = kmalloc_array(nvqs, sizeof(*vqs), GFP_KERNEL);
+> +	if (!vqs) {
+> +		r = -ENOMEM;
+> +		goto err;
+> +	}
+> +
+> +	dev = &m->dev;
+> +	for (i = 0; i < nvqs; i++) {
+> +		vqs[i] = &m->vqs[i];
+> +		vqs[i]->handle_kick = handle_vq_kick;
+> +	}
+> +	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0);
+> +	m->opened = true;
+> +	mutex_unlock(&m->mutex);
+> +
+> +	return 0;
+> +
+> +err:
+> +	mutex_unlock(&m->mutex);
+> +	module_put(THIS_MODULE);
+> +	return r;
+> +}
+> +
+> +static void vhost_mdev_release(void *device_data)
+> +{
+> +	struct vhost_mdev *m = device_data;
+> +
+> +	mutex_lock(&m->mutex);
+> +	vhost_mdev_reset(m);
+> +	vhost_dev_stop(&m->dev);
+> +	vhost_dev_cleanup(&m->dev);
+> +
+> +	kfree(m->dev.vqs);
+> +	m->opened = false;
+> +	mutex_unlock(&m->mutex);
+> +	module_put(THIS_MODULE);
+> +}
+> +
+> +static long vhost_mdev_unlocked_ioctl(void *device_data,
+> +				      unsigned int cmd, unsigned long arg)
+> +{
+> +	struct vhost_mdev *m = device_data;
+> +	void __user *argp = (void __user *)arg;
+> +	long r;
+> +
+> +	mutex_lock(&m->mutex);
+> +
+> +	switch (cmd) {
+> +	case VHOST_MDEV_GET_DEVICE_ID:
+> +		r = vhost_mdev_get_device_id(m, argp);
+> +		break;
+> +	case VHOST_MDEV_GET_STATUS:
+> +		r = vhost_mdev_get_status(m, argp);
+> +		break;
+> +	case VHOST_MDEV_SET_STATUS:
+> +		r = vhost_mdev_set_status(m, argp);
+> +		break;
+> +	case VHOST_MDEV_GET_CONFIG:
+> +		r = vhost_mdev_get_config(m, argp);
+> +		break;
+> +	case VHOST_MDEV_SET_CONFIG:
+> +		r = vhost_mdev_set_config(m, argp);
+> +		break;
+> +	case VHOST_GET_FEATURES:
+> +		r = vhost_mdev_get_features(m, argp);
+> +		break;
+> +	case VHOST_SET_FEATURES:
+> +		r = vhost_mdev_set_features(m, argp);
+> +		break;
+> +	case VHOST_MDEV_GET_VRING_NUM:
+> +		r = vhost_mdev_get_vring_num(m, argp);
+> +		break;
+> +	case VHOST_SET_LOG_BASE:
+> +	case VHOST_SET_LOG_FD:
+> +		r = -ENOTSUPP;
+> +		break;
+> +	default:
+> +		mutex_lock(&m->dev.mutex);
+> +		r = vhost_dev_ioctl(&m->dev, cmd, argp);
+> +		if (r == -ENOIOCTLCMD)
+> +			r = vhost_mdev_vring_ioctl(m, cmd, argp);
+> +		mutex_unlock(&m->dev.mutex);
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&m->mutex);
+> +	return r;
+> +}
+> +
+> +static const struct vfio_device_ops vfio_vhost_mdev_dev_ops = {
+> +	.name		= "vfio-vhost-mdev",
+> +	.open		= vhost_mdev_open,
+> +	.release	= vhost_mdev_release,
+> +	.ioctl		= vhost_mdev_unlocked_ioctl,
+> +};
+> +
+> +static int vhost_mdev_probe(struct device *dev)
+> +{
+> +	struct mdev_device *mdev = mdev_from_dev(dev);
+> +	const struct mdev_virtio_device_ops *ops = mdev_get_vhost_ops(mdev);
+> +	struct vhost_mdev *m;
+> +	int nvqs, r;
+> +
+> +	/* Currently, we only accept the network devices. */
+> +	if (ops->get_device_id(mdev) != VIRTIO_ID_NET)
+> +		return -ENOTSUPP;
+> +
+> +	m = devm_kzalloc(dev, sizeof(*m), GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+> +	if (!m)
+> +		return -ENOMEM;
+> +
+> +	nvqs = VHOST_MDEV_VQ_MAX;
+> +
+> +	m->vqs = devm_kmalloc_array(dev, nvqs, sizeof(struct vhost_virtqueue),
+> +				    GFP_KERNEL);
+> +	if (!m->vqs)
+> +		return -ENOMEM;
+> +
+> +	mutex_init(&m->mutex);
+> +
+> +	m->mdev = mdev;
+> +	m->nvqs = nvqs;
+> +	m->virtio_id = ops->get_device_id(mdev);
+> +
+> +	r = vfio_add_group_dev(dev, &vfio_vhost_mdev_dev_ops, m);
+> +	if (r) {
+> +		mutex_destroy(&m->mutex);
+> +		return r;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void vhost_mdev_remove(struct device *dev)
+> +{
+> +	struct vhost_mdev *m;
+> +
+> +	m = vfio_del_group_dev(dev);
+> +	mutex_destroy(&m->mutex);
+> +}
+> +
+> +static const struct mdev_class_id vhost_mdev_match[] = {
+> +	{ MDEV_CLASS_ID_VHOST },
+> +	{ 0 },
+> +};
+> +MODULE_DEVICE_TABLE(mdev, vhost_mdev_match);
+> +
+> +static struct mdev_driver vhost_mdev_driver = {
+> +	.name	= "vhost_mdev",
+> +	.probe	= vhost_mdev_probe,
+> +	.remove	= vhost_mdev_remove,
+> +	.id_table = vhost_mdev_match,
+> +};
+> +
+> +static int __init vhost_mdev_init(void)
+> +{
+> +	return mdev_register_driver(&vhost_mdev_driver, THIS_MODULE);
+> +}
+> +module_init(vhost_mdev_init);
+> +
+> +static void __exit vhost_mdev_exit(void)
+> +{
+> +	mdev_unregister_driver(&vhost_mdev_driver);
+> +}
+> +module_exit(vhost_mdev_exit);
+> +
+> +MODULE_VERSION("0.0.1");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Intel Corporation");
+> +MODULE_DESCRIPTION("Mediated device based accelerator for virtio");
+> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+> index f3d75a60c2b5..8af7fb9e0149 100644
+> --- a/include/linux/mdev.h
+> +++ b/include/linux/mdev.h
+> @@ -117,6 +117,10 @@ void mdev_set_virtio_ops(struct mdev_device *mdev,
+>  			 const struct mdev_virtio_device_ops *virtio_ops);
+>  const struct mdev_virtio_device_ops *
+>  mdev_get_virtio_ops(struct mdev_device *mdev);
+> +void mdev_set_vhost_ops(struct mdev_device *mdev,
+> +			const struct mdev_virtio_device_ops *vhost_ops);
+> +const struct mdev_virtio_device_ops *
+> +mdev_get_vhost_ops(struct mdev_device *mdev);
+>  
+>  extern struct bus_type mdev_bus_type;
+>  
+> @@ -133,6 +137,7 @@ struct mdev_device *mdev_from_dev(struct device *dev);
+>  enum {
+>  	MDEV_CLASS_ID_VFIO = 1,
+>  	MDEV_CLASS_ID_VIRTIO = 2,
+> +	MDEV_CLASS_ID_VHOST = 3,
+>  	/* New entries must be added here */
+>  };
+>  
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index 40d028eed645..a7e862245bb4 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -116,4 +116,25 @@
+>  #define VHOST_VSOCK_SET_GUEST_CID	_IOW(VHOST_VIRTIO, 0x60, __u64)
+>  #define VHOST_VSOCK_SET_RUNNING		_IOW(VHOST_VIRTIO, 0x61, int)
+>  
+> +/* VHOST_MDEV specific defines */
+> +
+> +/* Get the device id. The device ids follow the same definition of
+> + * the device id defined in virtio-spec. */
+> +#define VHOST_MDEV_GET_DEVICE_ID	_IOR(VHOST_VIRTIO, 0x70, __u32)
+> +/* Get and set the status. The status bits follow the same definition
+> + * of the device status defined in virtio-spec. */
+> +#define VHOST_MDEV_GET_STATUS		_IOR(VHOST_VIRTIO, 0x71, __u8)
+> +#define VHOST_MDEV_SET_STATUS		_IOW(VHOST_VIRTIO, 0x72, __u8)
+> +/* Get and set the device config. The device config follows the same
+> + * definition of the device config defined in virtio-spec. */
+> +#define VHOST_MDEV_GET_CONFIG		_IOR(VHOST_VIRTIO, 0x73, \
+> +					     struct vhost_mdev_config)
+> +#define VHOST_MDEV_SET_CONFIG		_IOW(VHOST_VIRTIO, 0x74, \
+> +					     struct vhost_mdev_config)
+> +/* Enable/disable the ring. */
+> +#define VHOST_MDEV_SET_VRING_ENABLE	_IOW(VHOST_VIRTIO, 0x75, \
+> +					     struct vhost_vring_state)
+> +/* Get the max ring size. */
+> +#define VHOST_MDEV_GET_VRING_NUM	_IOR(VHOST_VIRTIO, 0x76, __u16)
+> +
+>  #endif
+> diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
+> index c907290ff065..7b105d0b2fb9 100644
+> --- a/include/uapi/linux/vhost_types.h
+> +++ b/include/uapi/linux/vhost_types.h
+> @@ -119,6 +119,14 @@ struct vhost_scsi_target {
+>  	unsigned short reserved;
+>  };
+>  
+> +/* VHOST_MDEV specific definitions */
+> +
+> +struct vhost_mdev_config {
+> +	__u32 off;
+> +	__u32 len;
+> +	__u8 buf[0];
+> +};
+> +
+>  /* Feature bits */
+>  /* Log all write descriptors. Can be changed while device is active. */
+>  #define VHOST_F_LOG_ALL 26
 > -- 
-> 2.19.1
+> 2.23.0
