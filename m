@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52D67F255F
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 03:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11491F257F
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 03:41:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733036AbfKGC0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 21:26:51 -0500
-Received: from mga18.intel.com ([134.134.136.126]:62496 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727778AbfKGC0u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 6 Nov 2019 21:26:50 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 18:26:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,276,1569308400"; 
-   d="scan'208";a="227685256"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by fmsmga004.fm.intel.com with ESMTP; 06 Nov 2019 18:26:48 -0800
-Date:   Wed, 6 Nov 2019 18:26:48 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 07/18] infiniband: set FOLL_PIN, FOLL_LONGTERM via
- pin_longterm_pages*()
-Message-ID: <20191107022647.GC32084@iweiny-DESK2.sc.intel.com>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-8-jhubbard@nvidia.com>
- <20191104203346.GF30938@ziepe.ca>
- <578c1760-7221-4961-9f7d-c07c22e5c259@nvidia.com>
- <20191104205738.GH30938@ziepe.ca>
+        id S1728589AbfKGCl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 21:41:27 -0500
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:35418 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727665AbfKGCl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 21:41:27 -0500
+Received: by mail-qv1-f68.google.com with SMTP id y18so241975qve.2;
+        Wed, 06 Nov 2019 18:41:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hzllj5xxAbVfN1xifoht5573apNvV4Nxhrb2VrioqKY=;
+        b=D5uszVoxygitXeg82NxXE2skLgjqAuPDe8xkdzDu7e7TEXNZS9dRIdMRbQQHXpj5j3
+         AIZXg+cdt68qCBLAQgx1P+IavLEHBoi97FzNeNm4ebGxLTGFYoEhMzlxFkKJAL0aTlxH
+         2TdTA151JLPBgA1ig/pV/WXptRpd4d1GJInyAYyJLZGyYKEwn9eyLEqyB3AnMITSjcIX
+         SffxvHzacrVqD1dV2kCDupK5TvCNtZG2rg3TskGgK9fcQ/UXS5lj7K+MrvreRfP+R6KK
+         HvGzEr1KA0ZfDngNbQYQmVsjMp7+P4Bd4Xx69Hohv3Xrf6Clu80lNfMiUkdMGzK/ZXpL
+         NUxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hzllj5xxAbVfN1xifoht5573apNvV4Nxhrb2VrioqKY=;
+        b=hS7dDNEn/4/hwBy7/6FUjNeIFQ4bmIVNeKMGVTrmvv3n8rmvwFnfqQbzOPOZ/WrK/6
+         NE3Kdd4R5NpUUhPrs+xDPDYvLEBuDlTXXbuoLeWfnFCmy9kDs8OsNA3gb02GoVNn4WLa
+         6VqB1KkoRwn28SPJA3asZ2GUmM+EUjhHMw6ZQNrzvdWpwiv0UNeMVvjZPm66l2bsVdur
+         by3ePj3r1xB6aJHw8suc753q+4w8L60/hiM8HUfHpoDitAJfe0goaRXQMCvdVW4DHfSs
+         oshR6HmbC54Weo65ATJr3jsoO/m7vYs9mmjEv3hoB7awlo8vz/Tj86WHTVLo1893SS85
+         Ht1Q==
+X-Gm-Message-State: APjAAAW77nsd9pqnBHzwaa5pzX/EhwMFQlTB3uUsqKd8BgyhRRqTMq1Y
+        OWCFawF0XJpvbIizRcVBhnzhy1KldsuR8TbT5h0=
+X-Google-Smtp-Source: APXvYqylkTCgz33UPU8CyfepZLuREVN9fopjbYKH1Kie5rkGIA1Pt+S5zYRdcshCpSN0vsDH6BPyoyDrHlMIx4UdG7U=
+X-Received: by 2002:ad4:4e4a:: with SMTP id eb10mr1195269qvb.228.1573094486512;
+ Wed, 06 Nov 2019 18:41:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191104205738.GH30938@ziepe.ca>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+References: <20191107014639.384014-1-kafai@fb.com> <20191107014643.384298-1-kafai@fb.com>
+In-Reply-To: <20191107014643.384298-1-kafai@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 6 Nov 2019 18:41:15 -0800
+Message-ID: <CAEf4BzaQOEjbJwV9Ycb1QdBVkFRQLB_3cyw1sfXTz-iV_pt4Yw@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 2/3] bpf: Add array support to btf_struct_access
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 04, 2019 at 04:57:38PM -0400, Jason Gunthorpe wrote:
-> On Mon, Nov 04, 2019 at 12:48:13PM -0800, John Hubbard wrote:
-> > On 11/4/19 12:33 PM, Jason Gunthorpe wrote:
-> > ...
-> > >> diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.c
-> > >> index 24244a2f68cc..c5a78d3e674b 100644
-> > >> +++ b/drivers/infiniband/core/umem.c
-> > >> @@ -272,11 +272,10 @@ struct ib_umem *ib_umem_get(struct ib_udata *udata, unsigned long addr,
-> > >>  
-> > >>  	while (npages) {
-> > >>  		down_read(&mm->mmap_sem);
-> > >> -		ret = get_user_pages(cur_base,
-> > >> +		ret = pin_longterm_pages(cur_base,
-> > >>  				     min_t(unsigned long, npages,
-> > >>  					   PAGE_SIZE / sizeof (struct page *)),
-> > >> -				     gup_flags | FOLL_LONGTERM,
-> > >> -				     page_list, NULL);
-> > >> +				     gup_flags, page_list, NULL);
-> > > 
-> > > FWIW, this one should be converted to fast as well, I think we finally
-> > > got rid of all the blockers for that?
-> > > 
-> > 
-> > I'm not aware of any blockers on the gup.c end, anyway. The only broken thing we
-> > have there is "gup remote + FOLL_LONGTERM". But we can do "gup fast + LONGTERM". 
-> 
-> I mean the use of the mmap_sem here is finally in a way where we can
-> just delete the mmap_sem and use _fast
+On Wed, Nov 6, 2019 at 5:49 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This patch adds array support to btf_struct_access().
+> It supports array of int, array of struct and multidimensional
+> array.
+>
+> It also allows using u8[] as a scratch space.  For example,
+> it allows access the "char cb[48]" with size larger than
+> the array's element "char".  Another potential use case is
+> "u64 icsk_ca_priv[]" in the tcp congestion control.
+>
+> btf_resolve_size() is added to resolve the size of any type.
+> It will follow the modifier if there is any.  Please
+> see the function comment for details.
+>
+> This patch also adds the "off < moff" check at the beginning
+> of the for loop.  It is to reject cases when "off" is pointing
+> to a "hole" in a struct.
+>
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
 
-Yay!  I agree if we can do this we should.
+Looks good, just two small nits.
 
-Thanks,
-Ira
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
->  
-> ie, AFAIK there is no need for the mmap_sem to be held during
-> ib_umem_add_sg_table()
-> 
-> This should probably be a standalone patch however
-> 
-> Jason
+>  kernel/bpf/btf.c | 187 +++++++++++++++++++++++++++++++++++++++--------
+>  1 file changed, 157 insertions(+), 30 deletions(-)
+>
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 128d89601d73..5c4b6aa7b9f0 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -1036,6 +1036,82 @@ static const struct resolve_vertex *env_stack_peak(struct btf_verifier_env *env)
+>         return env->top_stack ? &env->stack[env->top_stack - 1] : NULL;
+>  }
+>
+
+[...]
+
+> -               if (off + size <= moff / 8)
+> -                       /* won't find anything, field is already too far */
+> +               /* offset of the field in bytes */
+> +               moff = btf_member_bit_offset(t, member) / 8;
+> +               if (off + size <= moff)
+
+you dropped useful comment :(
+
+>                         break;
+> +               /* In case of "off" is pointing to holes of a struct */
+> +               if (off < moff)
+> +                       continue;
+>
+
+[...]
+
+> +
+> +               mtrue_end = moff + msize;
+
+nit: there is no other _end, so might be just mend (in line with moff)
+
+> +               if (off >= mtrue_end)
+>                         /* no overlap with member, keep iterating */
+>                         continue;
+> +
+
+[...]
