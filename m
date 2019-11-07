@@ -2,49 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CAA86F3C5B
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 00:57:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57E63F3C5F
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 00:58:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbfKGX5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 18:57:11 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:50292 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbfKGX5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 18:57:11 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 274571537E8FB;
-        Thu,  7 Nov 2019 15:57:10 -0800 (PST)
-Date:   Thu, 07 Nov 2019 15:57:09 -0800 (PST)
-Message-Id: <20191107.155709.1716879557397915384.davem@davemloft.net>
-To:     parav@mellanox.com
-Cc:     alex.williamson@redhat.com, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, saeedm@mellanox.com, kwankhede@nvidia.com,
-        leon@kernel.org, cohuck@redhat.com, jiri@mellanox.com,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191107160448.20962-1-parav@mellanox.com>
-References: <20191107160448.20962-1-parav@mellanox.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 07 Nov 2019 15:57:10 -0800 (PST)
+        id S1727794AbfKGX6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 18:58:34 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:53867 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725906AbfKGX6e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 18:58:34 -0500
+Received: from apollo.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:6257:18ff:fec4:ca34])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5114823E23;
+        Fri,  8 Nov 2019 00:58:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc;
+        s=mail2016061301; t=1573171112;
+        bh=GTbVnP35xn/Y0nwP1JsExVBFBqddoJ9o4ht2MFIvCXc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EFn1nWBMWzQD8wXQluoJRpaHKI3W5QmMXS6MDB7D6kEHxXXRDKzyFU+1lk1ExxHkZ
+         CupqapBjs0Xi3IfNENrk0ZIYIPA7Exe30ZDr3E09M7m3T5mZOp8tGG10cxS6a8CnM/
+         8wbey6e9kT9PEUnnJAe0jdetgJz3VryGr+lmG+/0=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>, Michael Walle <michael@walle.cc>
+Subject: [PATCH] enetc: fix return value for enetc_ioctl()
+Date:   Fri,  8 Nov 2019 00:58:21 +0100
+Message-Id: <20191107235821.12767-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.101.4 at web
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@mellanox.com>
-Date: Thu,  7 Nov 2019 10:04:48 -0600
+Return -EOPNOTSUPP instead of -EINVAL if the requested ioctl is not
+implemented.
 
-> This series adds the support for mlx5 sub function devices using
-> mediated device with eswitch switchdev mode.
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/ethernet/freescale/enetc/enetc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I think at a minimum there needs to be deeper explanations in the commit log
-messages and thus I expect a respin of this series.
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+index 25af207f1962..3e8f9819f08c 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+@@ -1601,7 +1601,7 @@ int enetc_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
+ #endif
+ 
+ 	if (!ndev->phydev)
+-		return -EINVAL;
++		return -EOPNOTSUPP;
+ 	return phy_mii_ioctl(ndev->phydev, rq, cmd);
+ }
+ 
+-- 
+2.20.1
 
-Thanks.
