@@ -2,44 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF87F2322
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 01:15:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B812F2330
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 01:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727680AbfKGAPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 19:15:08 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:58202 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727296AbfKGAPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 19:15:07 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2AA2E14FE1C56;
-        Wed,  6 Nov 2019 16:15:07 -0800 (PST)
-Date:   Wed, 06 Nov 2019 16:15:04 -0800 (PST)
-Message-Id: <20191106.161504.1066221896470708005.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com
-Subject: Re: [PATCH net-next 0/6] net: various KCSAN inspired fixes
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191105221154.232754-1-edumazet@google.com>
-References: <20191105221154.232754-1-edumazet@google.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 06 Nov 2019 16:15:07 -0800 (PST)
+        id S1727669AbfKGASP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 19:18:15 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:52928 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727228AbfKGASP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 6 Nov 2019 19:18:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=IozkhT/J9M58uO1+SDJz9QLkV2w6YXY1U46TKPPM7YM=; b=hDadjPePXRNBwz1wBrrXQbmdjp
+        Q0NbT/RRJT5s273Edk5zURPPsb+V4Np7s3o68I1LwvsFO4VcU5ORHL6RP6F+0Tqi1qqiXq/KDrxdI
+        +io+kWMPvy7LNqXpUS9yXh2bJv0ICWj9d397W+Um/VH0fDuBY1jg8kLICCAh0KTP/+qk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iSVV5-0002KF-Hf; Thu, 07 Nov 2019 01:18:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next] net: dsa: mv8e6xxx: Fix stub function parameters
+Date:   Thu,  7 Nov 2019 01:18:00 +0100
+Message-Id: <20191107001800.8898-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue,  5 Nov 2019 14:11:48 -0800
+mv88e6xxx_g2_atu_stats_get() takes two parameters. Make the stub
+function also take two, otherwise we get compile errors.
 
-> This is a series of minor fixes, mostly dealing with
-> lockless accesses to socket 'sk_ack_backlog', 'sk_max_ack_backlog'
-> ane neighbour 'confirmed' fields.
+Fixes: c5f299d59261 ("net: dsa: mv88e6xxx: global1_atu: Add helper for get next")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/dsa/mv88e6xxx/global2.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Series applied, thanks Eric.
+diff --git a/drivers/net/dsa/mv88e6xxx/global2.h b/drivers/net/dsa/mv88e6xxx/global2.h
+index d80ad203d126..1f42ee656816 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2.h
++++ b/drivers/net/dsa/mv88e6xxx/global2.h
+@@ -532,7 +532,8 @@ static inline int mv88e6xxx_g2_atu_stats_set(struct mv88e6xxx_chip *chip,
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static inline int mv88e6xxx_g2_atu_stats_get(struct mv88e6xxx_chip *chip)
++static inline int mv88e6xxx_g2_atu_stats_get(struct mv88e6xxx_chip *chip,
++					     u16 *stats)
+ {
+ 	return -EOPNOTSUPP;
+ }
+-- 
+2.23.0
+
