@@ -2,137 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1EF4F2C15
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:24:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5DA2F2C3C
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733294AbfKGKY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 05:24:29 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:44007 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727707AbfKGKY2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:24:28 -0500
-Received: by mail-wr1-f66.google.com with SMTP id n1so2329758wra.10
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 02:24:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rqn3G0NsSOa4M0Ymqf5+2taMQLqxpKkT5pEHXRNdsrQ=;
-        b=npv+dqLTjcbQWekB1gyLWycZB5q3lFCsQ5v5BdIpA/bM4RHRcRQI81nl/bwdC2xjQW
-         kH9aHm/YG+BmY3o31FoYeb+pvgo/BJS/Z/y9ldOpWEx3NLYIlTwv/vkchPRbxlQGa78k
-         zj86ofp3gLcIO4ZhE5f6cGfauVwGIjtUikh0L0SlVj189piUBE7LufupSZ3at5v68dJV
-         /+Mnlex7mjCEJoqHkHB+qWBkj/oWTBPt5MBQlNFC073ntEpK6gOpD1ZVt9kQhUA9Thro
-         pCnfouZAOk71wp4QOBDO6w2AptjS+W1z/H6nAx3vKBLNq6vVn+frQns0LvSsg6PJfiZD
-         wsbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rqn3G0NsSOa4M0Ymqf5+2taMQLqxpKkT5pEHXRNdsrQ=;
-        b=GUl+lJQIBBPpnl172MU5ztP/NjUhLJ0kePEMmGO2Aq4Reaol9FT0y37tVsZJUdf20Y
-         S4w96krCKXM7hnCQP+ZPJY4xRlqFydBJGQMA+XeOX7etdQEc/2+a9oM/lQWQfd0zEPrQ
-         oN4QkeMxdsMCOMkffQjiTfCC6jB2hoBL5QpQXzkZ45CsfIOaliDbqcHnE6RCW2DSTHgd
-         sPWN4YsCnBc0Rj9/JGRBkTd9PIniSNJ3gxgcCckpsx/VAo1QL/gygmYZY9ERaTG2mg2f
-         Cdz42pOF1VuTn9+TlAL5i+CbEIoYoGx7v8gHxPIXLRny3+uc0DsKFdKSa7nAQklXVsJl
-         ViuQ==
-X-Gm-Message-State: APjAAAUwqh6VSxIno9nbhQ1YZeI70nazZngG64scBHRknVwOWwGRLIry
-        aOyWP5pFO355cN4exjJzhS5NWQ==
-X-Google-Smtp-Source: APXvYqyKQok0tV9Ga4iophkjT5yJq7KQDNK3sI9nQBDtoSrngXBBD9MFa0wruTZANEpZ+AnwwDtLuQ==
-X-Received: by 2002:adf:fe81:: with SMTP id l1mr2024119wrr.165.1573122266724;
-        Thu, 07 Nov 2019 02:24:26 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id v8sm2523076wra.79.2019.11.07.02.24.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 02:24:26 -0800 (PST)
-Date:   Thu, 7 Nov 2019 11:24:25 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "sbrivio@redhat.com" <sbrivio@redhat.com>,
-        "nikolay@cumulusnetworks.com" <nikolay@cumulusnetworks.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stephen@networkplumber.org" <stephen@networkplumber.org>,
-        Ariel Levkovich <lariel@mellanox.com>
-Subject: Re: [PATCH net-next v2 0/3] VGT+ support
-Message-ID: <20191107102425.GC2200@nanopsycho>
-References: <358c84d69f7d1dee24cf97cc0ad6fe59d5c313f5.camel@mellanox.com>
- <78befeac-24b0-5f38-6fd6-f7e1493d673b@gmail.com>
- <20191104183516.64ba481b@cakuba.netronome.com>
- <3da1761ec4a15db87800a180c521bbc7bf01a5b2.camel@mellanox.com>
- <20191105135536.5da90316@cakuba.netronome.com>
- <8c740914b7627a10e05313393442d914a42772d1.camel@mellanox.com>
- <20191105151031.1e7c6bbc@cakuba.netronome.com>
- <a4f5771089f23a5977ca14d13f7bfef67905dc0a.camel@mellanox.com>
- <20191105173841.43836ad7@cakuba.netronome.com>
- <c5bedde710b0667fd44213d8c64e65f6870a2f07.camel@mellanox.com>
+        id S2388184AbfKGKbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 05:31:25 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.169]:11902 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387786AbfKGKbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:31:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1573122680;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=BCezxGBczgwx6WnpD9WpD6BoeSXRFmawJLv4RTWC5Kk=;
+        b=bX8lrfk41i9zVWPVLPx26QwbijsnMzPO2mz0LXhDyxi4CZiytBKWShXsVwCzrPpVbP
+        khBPJhaspbcFWKRueUQ4jG2PwaUIpAEcuRCBZyUg+TdGt1LR1Z3fzQ1LHoEuxNjKG2BE
+        EvdwYDeMWC/Buz6vFEBgnTG7G1Cn9us3pqRBnD7F6KL8Hi80Iiof1oRCgVIH1+KF+qsb
+        Bn+ZZtp1ucXH5wEUqZTanMlM61kedE3hl73Y6gkkc0Dqxh/0mAuINj0iaKA2tENmJNDa
+        fXBbpmzACem4HbrpzWLU+g3mVeWabyhOCJgEKAVhhv5o/SLVzhuq6IeTc4t+LY5VSK+P
+        UFeA==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M7PR5/L9P0"
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+        by smtp.strato.de (RZmta 44.29.0 DYNA|AUTH)
+        with ESMTPSA id L09db3vA7AUkdRo
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Thu, 7 Nov 2019 11:30:46 +0100 (CET)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        David Sterba <dsterba@suse.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Cc:     linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com
+Subject: [PATCH v3 00/12] OpenPandora: make wl1251 connected to mmc3 sdio port of OpenPandora work again
+Date:   Thu,  7 Nov 2019 11:30:33 +0100
+Message-Id: <cover.1573122644.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5bedde710b0667fd44213d8c64e65f6870a2f07.camel@mellanox.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+DT:     Pandora: fixes and extensions
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 06, 2019 at 11:21:37PM CET, saeedm@mellanox.com wrote:
->On Tue, 2019-11-05 at 17:38 -0800, Jakub Kicinski wrote:
->> On Tue, 5 Nov 2019 23:48:15 +0000, Saeed Mahameed wrote:
->> > On Tue, 2019-11-05 at 15:10 -0800, Jakub Kicinski wrote:
->> > > But switchdev _is_ _here_. _Today_. From uAPI perspective it's
->> > > done,
->> > > and ready. We're missing the driver and user space parts, but no
->> > > core
->> > > and uAPI extensions. It's just L2 switching and there's quite a
->> > > few
->> > > switch drivers upstream, as I'm sure you know :/ 
->> > 
->> > I can say the same about netlink, it also was there, the missing
->> > part
->> > was the netlink ethtool connection and userspace parts .. 
->> 
->> uAPI is the part that matters. No driver implements all the APIs. 
->> I'm telling you that the API for what you're trying to configure
->> already exists, and your driver should use it. Driver's technical 
->> debt is not my concern.
->> 
->> > Just because switchdev uAPI is powerful enough to do anything it
->> > doesn't mean we are ready, you said it, user space and drivers are
->> > not
->> > ready, and frankly it is not on the road map, 
->> 
->> I bet it's not on the road map. Product marketing sees only legacy
->> SR-IOV (table stakes) and OvS offload == switchdev (value add). 
->> L2 switchdev will never be implemented with that mind set.
->> 
->> In the upstream community, however, we care about the technical
->> aspects.
->> 
->> > and we all know that it could take years before we can sit back and
->> > relax that we got our L2 switching .. 
->> 
->> Let's not be dramatic. It shouldn't take years to implement basic L2
->> switching offload.
->> 
->> > Just like what is happening now with ethtool, it been years you
->> > know..
->> 
->> Exactly my point!!! Nobody is going to lift a finger unless there is
->> a
->> loud and resounding "no".
->> 
->
->Ok then, "no" new uAPI, although i still think there should be some
->special cases to be allowed, but ... your call.
->
->In the meanwhile i will figure out something to be driver only as
 
-"something to be driver only". I'm curious what do you mean by that...
+* add a revisit note for special wl1251 handling code because it should
+  be solved more generic in mmc core - suggested by Ulf Hansson <ulf.hansson@linaro.org>
+* remove init_card callback from platform_data/hsmmc-omap.h - suggested by Ulf Hansson <ulf.hansson@linaro.org>
+* remove obstructive always-on for vwlan regulator - suggested by Ulf Hansson <ulf.hansson@linaro.org>
+* rename DT node - suggested by Rob Herring <robh@kernel.org>
+* fix ARM: dts: subject prefix - suggested by Tony Lindgren <tony@atomide.com>
+* also remove omap2_hsmmc_info and obc-y line in Makefile - suggested by Tony Lindgren <tony@atomide.com>
+
+PATCH V2 2019-10-19 20:41:47:
+* added acked-by for wl1251 patches - Kalle Valo <kvalo@codeaurora.org>
+* really removed old pdata-quirks code (not through #if 0)
+* splited out a partial revert of
+	efdfeb079cc3b ("regulator: fixed: Convert to use GPIO descriptor only")
+  because that was introduced after v4.19 and stops the removal of
+  the pdata-quirks patch from cleanly applying to v4.9, v4.14, v4.19
+  - reported by Sasha Levin <sashal@kernel.org>
+* added a new patch to remove old omap hsmmc since pdata quirks
+  were last user - suggested by Tony Lindgren <tony@atomide.com>
+
+PATCH V1 2019-10-18 22:25:39:
+Here we have a set of scattered patches to make the OpenPandora WiFi work again.
+
+v4.7 did break the pdata-quirks which made the mmc3 interface
+fail completely, because some code now assumes device tree
+based instantiation.
+
+Fixes: 81eef6ca9201 ("mmc: omap_hsmmc: Use dma_request_chan() for requesting DMA channel")
+
+v4.11 did break the sdio qirks for wl1251 which made the driver no longer
+load, although the device was found as an sdio client.
+
+Fixes: 884f38607897 ("mmc: core: move some sdio IDs out of quirks file")
+
+To solve these issues:
+* we convert mmc3 and wl1251 initialization from pdata-quirks
+  to device tree
+* we make the wl1251 driver read properties from device tree
+* we fix the mmc core vendor ids and quirks
+* we fix the wl1251 (and wl1271) driver to use only vendor ids
+  from header file instead of (potentially conflicting) local
+  definitions
 
 
->intermediate solution until we have full l2 offload, then i can ask
->every one to move to full switchdev mode with a press of a button.
->
+H. Nikolaus Schaller (12):
+  Documentation: dt: wireless: update wl1251 for sdio
+  net: wireless: ti: wl1251 add device tree support
+  ARM: dts: pandora-common: define wl1251 as child node of mmc3
+  mmc: host: omap_hsmmc: add code for special init of wl1251 to get rid
+    of pandora_wl1251_init_card
+  omap: pdata-quirks: revert pandora specific gpiod additions
+  omap: pdata-quirks: remove openpandora quirks for mmc3 and wl1251
+  omap: remove omap2_hsmmc_info in old hsmmc.[ch] and update Makefile
+  mmc: host: omap-hsmmc: remove init_card pdata callback from pdata
+  mmc: sdio: fix wl1251 vendor id
+  mmc: core: fix wl1251 sdio quirks
+  net: wireless: ti: wl1251 use new SDIO_VENDOR_ID_TI_WL1251 definition
+  net: wireless: ti: remove local VENDOR_ID and DEVICE_ID definitions
+
+ .../bindings/net/wireless/ti,wl1251.txt       |  26 +++
+ arch/arm/boot/dts/omap3-pandora-common.dtsi   |  36 +++-
+ arch/arm/mach-omap2/Makefile                  |   3 -
+ arch/arm/mach-omap2/common.h                  |   1 -
+ arch/arm/mach-omap2/hsmmc.c                   | 171 ------------------
+ arch/arm/mach-omap2/hsmmc.h                   |  32 ----
+ arch/arm/mach-omap2/pdata-quirks.c            | 105 -----------
+ drivers/mmc/core/quirks.h                     |   7 +
+ drivers/mmc/host/omap_hsmmc.c                 |  30 ++-
+ drivers/net/wireless/ti/wl1251/sdio.c         |  23 ++-
+ drivers/net/wireless/ti/wlcore/sdio.c         |   8 -
+ include/linux/mmc/sdio_ids.h                  |   2 +
+ include/linux/platform_data/hsmmc-omap.h      |   3 -
+ 13 files changed, 111 insertions(+), 336 deletions(-)
+ delete mode 100644 arch/arm/mach-omap2/hsmmc.c
+ delete mode 100644 arch/arm/mach-omap2/hsmmc.h
+
+-- 
+2.23.0
+
