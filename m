@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DB0F2B2E
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:48:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFA33F2B96
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:56:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387584AbfKGJsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 04:48:03 -0500
-Received: from mga09.intel.com ([134.134.136.24]:61842 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726866AbfKGJsD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 04:48:03 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Nov 2019 01:48:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,277,1569308400"; 
-   d="scan'208";a="201359528"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga007.fm.intel.com with ESMTP; 07 Nov 2019 01:48:02 -0800
-Received: from [10.226.38.236] (unknown [10.226.38.236])
-        by linux.intel.com (Postfix) with ESMTP id A2C09580517;
-        Thu,  7 Nov 2019 01:47:59 -0800 (PST)
-Subject: Re: [PATCH v1] staging: intel-dpa: gswip: Introduce Gigabit Ethernet
- Switch (GSWIP) device driver
-To:     Greg KH <gregkh@linuxfoundation.org>, Andrew Lunn <andrew@lunn.ch>
-References: <03832ecb6a34876ef26a24910816f22694c0e325.1572863013.git.jack.ping.chng@intel.com>
- <20191104122009.GA2126921@kroah.com> <20191104164209.GC16970@lunn.ch>
- <4D649A99D5D6C446954219080E51FB468192606D@BGSMSX103.gar.corp.intel.com>
-Cc:     davem@davemloft.net, mallikarjunax.reddy@linux.intel.com,
-        "Shevchenko, Andriy" <andriy.shevchenko@intel.com>,
-        "Kim, Cheol Yong" <cheol.yong.kim@intel.com>,
-        "Chng, Jack Ping" <jack.ping.chng@intel.com>,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-From:   "Chng, Jack Ping" <jack.ping.chng@linux.intel.com>
-Message-ID: <5e7a5410-9797-817d-87c6-61dfce9df739@linux.intel.com>
-Date:   Thu, 7 Nov 2019 17:47:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <4D649A99D5D6C446954219080E51FB468192606D@BGSMSX103.gar.corp.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+        id S2387983AbfKGJ4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 04:56:17 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50580 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727926AbfKGJ4Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 04:56:16 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 11:56:12 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.134.210.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA79uCCB016418;
+        Thu, 7 Nov 2019 11:56:12 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id xA79uCSa003933;
+        Thu, 7 Nov 2019 11:56:12 +0200
+Received: (from ayal@localhost)
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id xA79uBYs003931;
+        Thu, 7 Nov 2019 11:56:11 +0200
+From:   Aya Levin <ayal@mellanox.com>
+To:     Jiri Pirko <jiri@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>
+Subject: [PATCH net] devlink: Add method for time-stamp on reporter's dump
+Date:   Thu,  7 Nov 2019 11:55:53 +0200
+Message-Id: <1573120553-3887-1-git-send-email-ayal@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 04, 2019 at 01:20:09PM +0100, Greg KH wrote:
->> On Mon, Nov 04, 2019 at 07:22:20PM +0800, Jack Ping CHNG wrote:
->>> This driver enables the Intel's LGM SoC GSWIP block.
->>> GSWIP is a core module tailored for L2/L3/L4+ data plane and QoS functions.
->>> It allows CPUs and other accelerators connected to the SoC datapath
->>> to enqueue and dequeue packets through DMAs.
->>> Most configuration values are stored in tables such as Parsing and
->>> Classification Engine tables, Buffer Manager tables and Pseudo MAC
->>> tables.
->> Why is this being submitted to staging?  What is wrong with the "real"
->> part of the kernel for this?
->>
->> Or even, what is wrong with the current driver?
->> drivers/net/dsa/lantiq_gswip.c?
-GSWIP (a new HW IP) is part of Intel Datapath Architecture drivers 
-design for new Intel network/GW SoC (LGM).
-Currently there are few other drivers (for different HW blocks in the 
-datapath) which are still under internal code review.
-Once it is done we are planning to submit  staging folder.
-Since the development is ongoing, we thought it is best to submit GSWIP 
-first in drivers/staging/intel-dpa folder.
-In the meantime, we will prepare a more detail TODO list for intel-dpa 
-folder and a README to introduce the dpa.
->> Jack, your patch does not seem to of made it to any of the lists. So i cannot comment on it contents. If this is a switch driver, please ensure you Cc: the usual suspects for switch drivers.
->>
->>         Andrew
+When setting the dump's time-stamp, use ktime_get_real in addition to
+jiffies. This simplifies the user space implementation and bypasses
+some inconsistent behavior with translating jiffies to current time.
+The time taken is transformed into nsec, to comply with y2038 issue.
 
-Sure, I will resubmit my patch.
+Fixes: c8e1da0bf923 ("devlink: Add health report functionality")
+Signed-off-by: Aya Levin <ayal@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+---
+ include/uapi/linux/devlink.h | 1 +
+ net/core/devlink.c           | 6 ++++++
+ 2 files changed, 7 insertions(+)
 
-Best regards,
-Chng Jack Ping
+Please queue for -stable >= v5.1.
 
-
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index b558ea88b766..45501ef372a8 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -424,6 +424,7 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_NETNS_FD,			/* u32 */
+ 	DEVLINK_ATTR_NETNS_PID,			/* u32 */
+ 	DEVLINK_ATTR_NETNS_ID,			/* u32 */
++	DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,	/* u64 */
+ 
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 97e9a2246929..876fbd0f949d 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4733,6 +4733,7 @@ struct devlink_health_reporter {
+ 	bool auto_recover;
+ 	u8 health_state;
+ 	u64 dump_ts;
++	u64 dump_real_ts;
+ 	u64 error_count;
+ 	u64 recovery_count;
+ 	u64 last_recovery_ts;
+@@ -4909,6 +4910,7 @@ static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
+ 		goto dump_err;
+ 
+ 	reporter->dump_ts = jiffies;
++	reporter->dump_real_ts = ktime_get_real_ns();
+ 
+ 	return 0;
+ 
+@@ -5058,6 +5060,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
+ 			      jiffies_to_msecs(reporter->dump_ts),
+ 			      DEVLINK_ATTR_PAD))
+ 		goto reporter_nest_cancel;
++	if (reporter->dump_fmsg &&
++	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
++			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
+ 
+ 	nla_nest_end(msg, reporter_attr);
+ 	genlmsg_end(msg, hdr);
+-- 
+2.14.1
 
