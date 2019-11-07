@@ -2,98 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A60F2E87
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 13:52:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB906F2E9A
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 13:55:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388742AbfKGMwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 07:52:42 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44941 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727142AbfKGMwl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 07:52:41 -0500
-Received: by mail-lf1-f67.google.com with SMTP id v4so1490683lfd.11
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 04:52:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wx4mNjMFyM/tBCetl9PoO1sT6W5jcZPQW0WwQCBdqWI=;
-        b=HzpSICQRrj53FhQ/Vk1rFJ4Anx8mvt3pW0xbR+agtZ07z5LD0owoTGfwr36NsnMM3V
-         utkhWcjnEipIBMe18nq45WWqky0Vbq0RdmEq1+OqTCspcWQUUZqBSfs+uIhnt+pMiiYo
-         bqRO3tw9sWC3kcsfme03aUcxZwdK9IfrlGftX+vWVo9j08nluvUoiva19wHtukyTr3ON
-         Werf8wryuxHmw+L5p7RbGi78q9OxThD5tTJVN7jXiQEgFIxeVL+W4Wt/70fBkLkq8KQZ
-         9oitBemRGOxga2jRO7FAoOubAnPVc72JOJGewWgxNfJ4sj+vP+yMisuIeNv2iYe0cQK6
-         ePmg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wx4mNjMFyM/tBCetl9PoO1sT6W5jcZPQW0WwQCBdqWI=;
-        b=haXBVevn+nppUcsi9BX6LWZa6hw8V9j6SDVHBOpcWNVEiojLS5xaG9DTc4AyjX9vBK
-         jVJsAS8Rxfcd350AVT/6UOzvIXd4efjOx7giNYkGydoNzsYVVXUQ05X4mQWmV2Jj2n9J
-         bmm+jVEBHoAP0hbpZI+QXI7kmDFrf0v7ya1vkGX/94CpNFT8aM23ZK+F7sXPVuf3piTV
-         A7OQTKWwDgqTjmL00y8WS6e3LOLH25Vc24eZWmTPs3llzwDKqHUIcZbUkp7dUXIsW13c
-         3kju2JT24itsQ8a2cMGycB5iIjXhkVilA86gY0QVpLXz5dw060OJxuETJrN6XLuPs5ci
-         gLzw==
-X-Gm-Message-State: APjAAAWDTedc8o5eqfVnusr0KfrSJme2aiaWgnxU+Nv0MOXl7+oTgixB
-        EVWCPGDXKiorU/mbIZswLCtXTA==
-X-Google-Smtp-Source: APXvYqzKkkvdDA0TgR9ZO/wpF8r/cY5uQlCc0mYt6uD5YtAqvUxbVyqkEO4xkyY9UV6Lwh0vmuCStw==
-X-Received: by 2002:ac2:5deb:: with SMTP id z11mr2441628lfq.35.1573131159315;
-        Thu, 07 Nov 2019 04:52:39 -0800 (PST)
-Received: from localhost (c-413e70d5.07-21-73746f28.bbcust.telenor.se. [213.112.62.65])
-        by smtp.gmail.com with ESMTPSA id t8sm999889lfl.51.2019.11.07.04.52.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 04:52:38 -0800 (PST)
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        shuah@kernel.org, Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH 2/2] selftests: bpf: test_tc_edt: add missing object file to TEST_FILES
-Date:   Thu,  7 Nov 2019 13:52:24 +0100
-Message-Id: <20191107125224.29616-2-anders.roxell@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191107125224.29616-1-anders.roxell@linaro.org>
-References: <20191107125224.29616-1-anders.roxell@linaro.org>
+        id S2388674AbfKGMzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 07:55:51 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:54116 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388369AbfKGMzv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 07:55:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6crDeBV71tB57uG0XSgtv/iBquw2Z6TwVlRm1/HaHSY=; b=i7quXKN40BxHA/oeJKUeiIKost
+        pMt1n+9n1KV6VJri4A6Xw4jo4oKf4IM0gRKDzQgfLNnkkGZVdO90GSPC5GILLzjf46SoiwABy1MYV
+        1syUbYuMVkpqClQ+xm/6bprK9vvy3fPMUlTtcJO0OkD5epuIsgqkrPK5UcW6t9TPSEF8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iShKF-00063A-4s; Thu, 07 Nov 2019 13:55:47 +0100
+Date:   Thu, 7 Nov 2019 13:55:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Rob Herring <robh@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v2 4/6] net: phy: at803x: mention AR8033 as same as AR8031
+Message-ID: <20191107125547.GB22978@lunn.ch>
+References: <20191106223617.1655-1-michael@walle.cc>
+ <20191106223617.1655-5-michael@walle.cc>
+ <20191107020436.GD8978@lunn.ch>
+ <1DE4295A-1D25-4FAD-8DAB-45BD97E511C9@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1DE4295A-1D25-4FAD-8DAB-45BD97E511C9@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When installing kselftests to its own directory and running the
-test_tc_edt.sh it will complain that test_tc_edt.o can't be find.
+Hi Michael
 
-$ ./test_tc_edt.sh
-Error opening object test_tc_edt.o: No such file or directory
-Object hashing failed!
-Cannot initialize ELF context!
-Unable to load program
+> I tried that actually.. There is a PTP enable bit. It's default is 1
+> (according to the AR8031 datasheet). Now guess what it's value is on
+> the AR8033.. its also 1. Not enough.. I also tried to enable the
+> realtime counter. well that worked too.
 
-Rework to add test_tc_edt.o to TEST_FILES so the object file gets
-installed when installing kselftest.
+> And yes. I've double checked the package marking. It definitely was
+> an AR8033. So either I was just lucky, or maybe.. the AR8033 is just
+> a relabled AR8031 ;)
 
-Fixes: 74b5a5968fe8 ("selftests/bpf: Replace test_progs and test_maps w/ general rule")
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- tools/testing/selftests/bpf/Makefile | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+O.K, thanks for trying. We really only need to solve this mystery if
+anybody actually tries to make use of PTP.
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index cc09b5df9403..b03dc2298fea 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -38,7 +38,8 @@ TEST_GEN_PROGS += test_progs-bpf_gcc
- endif
- 
- TEST_GEN_FILES =
--TEST_FILES = test_lwt_ip_encap.o
-+TEST_FILES = test_lwt_ip_encap.o \
-+	test_tc_edt.o
- 
- # Order correspond to 'make run_tests' order
- TEST_PROGS := test_kmod.sh \
--- 
-2.20.1
-
+	Andrew
