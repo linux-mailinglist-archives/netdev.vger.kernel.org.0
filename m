@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49553F34E1
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:44:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97D8AF34E8
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:46:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389723AbfKGQno (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:43:44 -0500
-Received: from mail-io1-f66.google.com ([209.85.166.66]:44122 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730550AbfKGQnm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:43:42 -0500
-Received: by mail-io1-f66.google.com with SMTP id j20so2740166ioo.11
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:43:42 -0800 (PST)
+        id S2388911AbfKGQpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:45:45 -0500
+Received: from mail-il1-f194.google.com ([209.85.166.194]:37104 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729970AbfKGQpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:45:45 -0500
+Received: by mail-il1-f194.google.com with SMTP id s5so2418297iln.4
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:45:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=f0Y2etkGbHsNadyc2PSjZyRg4HjHUUzuvONULqffee0=;
-        b=LLyc4I3UUEWwUHUO28d0ISklBe6gPN4FDYqRW8KvIV5kmM4cY1DgvEQwVqWnedlDDj
-         bn3/rRGlmtHBNIWfo83qHlKAkjoVkV98EB8JseIK7yEIxfn69+CVEohGdP7BAVmL1atH
-         MnMzScAR8DjPvylluJrFpz8DbRR0WFEL+2pHU37Y5is5OxpXsAX5+FFHGsYDPZNpgS8J
-         MO8ThIcpwHfrpMw+v1uVX15HU5B6XJnym36ZD5Fp2E96Cynj6Rnd4GLR9oxmQ5saaj2v
-         DsamRTQYRUpe+0sNYwlWoJaC71ohNYS+3/0SxVuLogjMnsAQ0lx0wgCx8VHvmvxXVdNg
-         waZw==
+        bh=W/5ZLgZnCcBuLv8aQS/7oB1B1AkTmYUwkrjkHhQWyyk=;
+        b=gVEgN2LYJXzJPFK18DZdDkIFTErk1EYgsNnY0KYe3wXhJhlGHGvxsil7wIsTWRgw7q
+         Jn3EOrtgUILD1jVkgRhlrp/AW/7791V5d0nShKg0LZy9V6PzkctV9dymlBASL/jstGD9
+         TI0W6LBgDptYdbbrpVcugXweqsYLfcoldtuZQC2T0Tg/meizTfuLt3foMF1DCIkruz8A
+         sS3L+r3lisdVo2nMDROnglnd+QtI4oxe/6C5SRUSvF2vYN+7aBqObzldhaZBUwd34ye+
+         dqxY9Mg83CfUzqeo7qu0hoCcShggH9sQTRy9Q6HBYnGlImCEeYBtFni6bb4J7LJJI2Ki
+         af3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=f0Y2etkGbHsNadyc2PSjZyRg4HjHUUzuvONULqffee0=;
-        b=Ns4STd5n5tpaCm5cxqgJr+Qese64Vv3DscOtspvMmP/HzW7WlkGnlP4teywpFufS12
-         i30EdZm9m1wEimfJeKF48kkl9r5ub+lZRFTIRcPReWf6eOx/qVZMwUsnJw+qF6fruU9q
-         PBtDT3ig1Se6TrlHz5zXQFkf0tuw/kB7ctEROSKaSTWFlxsVhgsCLxWUQV+uWqzd7wAh
-         fojJQ7hYVA1kaBbKZh/eE7Z/Bsle1CvB64/46RlCOzvZlBm4AgUqgfuv6n34Zx7ungSD
-         0VEpmLvoU5p8XTkfCtwNV6l2K03QF7PoFsL0OdCeGHV6Lr5/coG4mi0RYOCJOF3xP641
-         34lw==
-X-Gm-Message-State: APjAAAVJY/g1vaW32FcSHHC+BJ56Bf4lMvpMNgtxXf45yZ73k+HP2dtU
-        1G4FnUgrjkRnQbbgvDZJRElsFWW2h6NjTAcJTAW2/Q==
-X-Google-Smtp-Source: APXvYqyj02P0/YFePoUN0khWdwERL8dpcBug3b9lp8RyflLx//yz4J6o1jASqIVyDz/PVMQ4co4OGrJ8COaQw3SSrSo=
-X-Received: by 2002:a5e:8e02:: with SMTP id a2mr4561824ion.269.1573145021756;
- Thu, 07 Nov 2019 08:43:41 -0800 (PST)
+        bh=W/5ZLgZnCcBuLv8aQS/7oB1B1AkTmYUwkrjkHhQWyyk=;
+        b=qgNsQb8g9/BSyr5mMmwhPpn0jAqRT3g6+Z5mPA/mhchlR9WfOC3rfdh4eblCJR4Ceh
+         E76VZDMsDuVvU70xEqk/jykxETYdEkbU1j1Mi0poCPYaNUbr+OqFIse6nVxmCKAGaBrn
+         659OfU/fIqry1UAHm9GoBxwwrAOPLjNXso8gchJVe46ku8Gx3oEkxzQd3EH48sQikXD7
+         W4lMFeX07X+vsrtTKg4/nuMFl7kNLv7Krf3Lw+809kynm33nzBiHWNFXxOv1FE89s7tp
+         bqXLROXDJcDFQBooWnuOPpDynsnfZizIj839H67kkuhmGa77TevtcqzJiZDLYDZWRnzw
+         LoSg==
+X-Gm-Message-State: APjAAAWPE3c61/vY/a9fjQzzx2xPvOKQ2z1MZA+A0XT325ZAljXW8ZbT
+        2HOsBvUJav4UUhRbdC6Upqq8l2YcS3MYOxlMMjL6HaDoqzg=
+X-Google-Smtp-Source: APXvYqzLWf08p/p/gsnC5YXkA8zlI2lScj4Weq2bZGCUiZ+v27rYv0DkyiRRHXNCOUnZpTSmB6UMkBTxRzpfGfJetIM=
+X-Received: by 2002:a92:7e0d:: with SMTP id z13mr5950327ilc.168.1573145144137;
+ Thu, 07 Nov 2019 08:45:44 -0800 (PST)
 MIME-Version: 1.0
 References: <20191107024509.87121-1-edumazet@google.com> <094aedc7-3303-7f27-25eb-a32523faa5b7@gmail.com>
 In-Reply-To: <094aedc7-3303-7f27-25eb-a32523faa5b7@gmail.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 7 Nov 2019 08:43:30 -0800
-Message-ID: <CANn89i+U05o3T8dMCyKM15QmYp43w3Uc5dHKvZ-z2WHB5zYNLQ@mail.gmail.com>
+Date:   Thu, 7 Nov 2019 08:45:32 -0800
+Message-ID: <CANn89iJbwZ9TqC_ry2O9QCzp3SJtUcXept_SkKY=DEMTP61zwg@mail.gmail.com>
 Subject: Re: [PATCH net] ipv6: fixes rt6_probe() and fib6_nh->last_probe init
 To:     David Ahern <dsahern@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
@@ -84,3 +84,9 @@ On Thu, Nov 7, 2019 at 8:37 AM David Ahern <dsahern@gmail.com> wrote:
 > fib6_nh. Given that I would expect the same problem to exist with the
 > previous code. Agree? Point being should this be backported to older
 > stable releases since said commit is new to 5.2?
+
+Yes, the commit adding last probe went in 4.19
+
+Fixes: f547fac624be ("ipv6: rate-limit probes for neighbourless routes")
+
+Thanks.
