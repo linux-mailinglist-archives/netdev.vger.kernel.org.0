@@ -2,143 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50EC6F2AF5
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:42:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DB0F2B2E
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:48:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387853AbfKGJmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 04:42:40 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51562 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726734AbfKGJmj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 04:42:39 -0500
-Received: by mail-wm1-f67.google.com with SMTP id q70so1708616wme.1
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 01:42:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=KORomhG7F/jEHIsrTrDRp4JZLHjo6vTjQ1xYtcCiJUE=;
-        b=pzDIviL7EuQe57PU6i6GVnRr9P4S7jPKX0lZYL5rurkhrGSex4TvTsvbROePkGJeVG
-         6ShGzmun6hjBTOCV+obt9WambGPBhSLy0kdPHxMEEsNnt4xLaHcQmQnkx36yiO8c/qFe
-         ziw9HLTas1qMpVqt/UQET8cVliUr7HC66reZyh8rihNNSQnS9VTNYZ+YaNnoqXFm3L5B
-         O8psIhOvai4ejrKMDfu8REnwhW40CSJX3MzqwDmHa1njdcCxni4Hwu1e02PsIzK3Q2lZ
-         z+dYjF0d2Da5CbuVag8mJYchGsGKbGYpfQBFAUVSIVoM0U3LfW6JwjgeC3h7Jwk0tmbq
-         9xGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KORomhG7F/jEHIsrTrDRp4JZLHjo6vTjQ1xYtcCiJUE=;
-        b=l9aQji+NF3jMLTiU2oxETzK8+m6a8g1nWTWCfk9QfuySGnBc90dLM5706m+5HYOM4J
-         bWxEKAhCqTC/TvERzP4oomDJ3N24VLEKhyo0HnmhSYyrEx35u9yaST+ea2ACQhux6SAY
-         Amb2WLh9ygAFxza8Lkg2eAnBFz7+gQTo/l7yOkJuzwGURkWcg7f73lyE6DXJfKkn0aHK
-         tncXXdtk5SsKKuf80x50FnkFcXlr+45/31zFXK60nPNRAiVDE6Rm4q5uNO8m97rFX5YT
-         +kwtA5lOgf+C58EXhPOUbYrQOnH5h1KRu2VGHP8fxwNRaXJ2UZcHVMLQQG4TgUIkZot8
-         KpTg==
-X-Gm-Message-State: APjAAAX22o22okW/T+mN6tDF6dbcNu7zXLvtVRbXRvWvn26ExQU+r6qJ
-        yxZA4Epk4P7QASwk+B7/5cenpw==
-X-Google-Smtp-Source: APXvYqzs4X3YabB/VM7xCHeigMT/brYub0vCiI9JW0ryzAVn6g4QL+ADvnQaqTwHWKRMF9GEO7G8+w==
-X-Received: by 2002:a05:600c:2919:: with SMTP id i25mr1882234wmd.158.1573119757824;
-        Thu, 07 Nov 2019 01:42:37 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id j63sm1953644wmj.46.2019.11.07.01.42.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 01:42:37 -0800 (PST)
-Date:   Thu, 7 Nov 2019 10:42:36 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 0/6] mlxsw: Add extended ACK for EMADs
-Message-ID: <20191107094236.GA2200@nanopsycho>
-References: <20191104210450.GA10713@splinter>
- <20191104144419.46e304a9@cakuba.netronome.com>
- <20191104232036.GA12725@splinter>
- <20191104153342.36891db7@cakuba.netronome.com>
- <20191105074650.GA14631@splinter>
- <20191105095448.1fbc25a5@cakuba.netronome.com>
- <20191105204826.GA15513@splinter>
- <20191105134858.5d0ffc14@cakuba.netronome.com>
- <20191106082039.GB2112@nanopsycho>
- <20191106092647.4de42312@cakuba.netronome.com>
+        id S2387584AbfKGJsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 04:48:03 -0500
+Received: from mga09.intel.com ([134.134.136.24]:61842 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726866AbfKGJsD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 04:48:03 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Nov 2019 01:48:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,277,1569308400"; 
+   d="scan'208";a="201359528"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga007.fm.intel.com with ESMTP; 07 Nov 2019 01:48:02 -0800
+Received: from [10.226.38.236] (unknown [10.226.38.236])
+        by linux.intel.com (Postfix) with ESMTP id A2C09580517;
+        Thu,  7 Nov 2019 01:47:59 -0800 (PST)
+Subject: Re: [PATCH v1] staging: intel-dpa: gswip: Introduce Gigabit Ethernet
+ Switch (GSWIP) device driver
+To:     Greg KH <gregkh@linuxfoundation.org>, Andrew Lunn <andrew@lunn.ch>
+References: <03832ecb6a34876ef26a24910816f22694c0e325.1572863013.git.jack.ping.chng@intel.com>
+ <20191104122009.GA2126921@kroah.com> <20191104164209.GC16970@lunn.ch>
+ <4D649A99D5D6C446954219080E51FB468192606D@BGSMSX103.gar.corp.intel.com>
+Cc:     davem@davemloft.net, mallikarjunax.reddy@linux.intel.com,
+        "Shevchenko, Andriy" <andriy.shevchenko@intel.com>,
+        "Kim, Cheol Yong" <cheol.yong.kim@intel.com>,
+        "Chng, Jack Ping" <jack.ping.chng@intel.com>,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+From:   "Chng, Jack Ping" <jack.ping.chng@linux.intel.com>
+Message-ID: <5e7a5410-9797-817d-87c6-61dfce9df739@linux.intel.com>
+Date:   Thu, 7 Nov 2019 17:47:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191106092647.4de42312@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <4D649A99D5D6C446954219080E51FB468192606D@BGSMSX103.gar.corp.intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 06, 2019 at 06:26:47PM CET, jakub.kicinski@netronome.com wrote:
->On Wed, 6 Nov 2019 09:20:39 +0100, Jiri Pirko wrote:
->> Tue, Nov 05, 2019 at 10:48:58PM CET, jakub.kicinski@netronome.com wrote:
->> >On Tue, 5 Nov 2019 22:48:26 +0200, Ido Schimmel wrote:  
->> >> On Tue, Nov 05, 2019 at 09:54:48AM -0800, Jakub Kicinski wrote:  
->> >> > Hm, the firmware has no log that it keeps? Surely FW runs a lot of
->> >> > periodic jobs etc which may encounter some error conditions, how do 
->> >> > you deal with those?    
->> >> 
->> >> There are intrusive out-of-tree modules that can get this information.
->> >> It's currently not possible to retrieve this information from the
->> >> driver. We try to move away from such methods, but it can't happen
->> >> overnight. This set and the work done in the firmware team to add this
->> >> new TLV is one step towards that goal.
->> >>   
->> >> > Bottom line is I don't like when data from FW is just blindly passed
->> >> > to user space.    
->> >> 
->> >> The same information will be passed to user space regardless if you use
->> >> ethtool / devlink / printk.  
->> >
->> >Sure, but the additional hoop to jump through makes it clear that this
->> >is discouraged and it keeps clear separation between the Linux
->> >interfaces and proprietary custom FW.. "stuff".  
->> 
->> Hmm, let me try to understand. So you basically have problem with
->> passing random FW generated data and putting it to user (via dmesg,
->> extack). However, ethtool dump is fine. Devlink health reporter is also
->> fine.
->
->Yup.
->
->> That is completely sufficient for async events/errors.
->> However in this case, we have MSG sent to fw which generates an ERROR
->> and this error is sent from FW back, as a reaction to this particular
->> message.
->
->Well, outputting to dmesg is not more synchronous than putting it in
->some other device specific facility.
+On Mon, Nov 04, 2019 at 01:20:09PM +0100, Greg KH wrote:
+>> On Mon, Nov 04, 2019 at 07:22:20PM +0800, Jack Ping CHNG wrote:
+>>> This driver enables the Intel's LGM SoC GSWIP block.
+>>> GSWIP is a core module tailored for L2/L3/L4+ data plane and QoS functions.
+>>> It allows CPUs and other accelerators connected to the SoC datapath
+>>> to enqueue and dequeue packets through DMAs.
+>>> Most configuration values are stored in tables such as Parsing and
+>>> Classification Engine tables, Buffer Manager tables and Pseudo MAC
+>>> tables.
+>> Why is this being submitted to staging?  What is wrong with the "real"
+>> part of the kernel for this?
+>>
+>> Or even, what is wrong with the current driver?
+>> drivers/net/dsa/lantiq_gswip.c?
+GSWIP (a new HW IP) is part of Intel Datapath Architecture drivers 
+design for new Intel network/GW SoC (LGM).
+Currently there are few other drivers (for different HW blocks in the 
+datapath) which are still under internal code review.
+Once it is done we are planning to submit  staging folder.
+Since the development is ongoing, we thought it is best to submit GSWIP 
+first in drivers/staging/intel-dpa folder.
+In the meantime, we will prepare a more detail TODO list for intel-dpa 
+folder and a README to introduce the dpa.
+>> Jack, your patch does not seem to of made it to any of the lists. So i cannot comment on it contents. If this is a switch driver, please ensure you Cc: the usual suspects for switch drivers.
+>>
+>>         Andrew
 
-Well, not really. In dmesg, you see not only the fw msg, you see it along
-with the tid (sequence number) and emad register name.
+Sure, I will resubmit my patch.
+
+Best regards,
+Chng Jack Ping
 
 
->
->> What do you suggest we should use in order to maintain the MSG-ERROR
->> pairing? Perhaps a separate devlink health reporter just for this?
->
->Again, to be clear - that's future work, right? Kernel logs as
->implemented here do not maintain MSG-ERROR pairing.
 
-As I described above, they actually do.
-
-
->
->> What do you think?
->
->In all honesty it's hard to tell for sure, because we don't see the FW
->and what it needs. That's kind of the point, it's a black box.
->
->I prefer the driver to mediate all the information in a meaningful way.
->If you want to report an error regarding a parameter the FW could
->communicate some identification of the field and the reason and the
->driver can control the output, for example format a string to print to
->logs?
-
-You are right, it is a blackbox. But the blackbox is sending texts about
-what is went wrong with some particular operation. And these texts are
-quite handy to figure out what is going on there. Either we ignore them,
-or we show them somehow. It is very valuable to show them.
