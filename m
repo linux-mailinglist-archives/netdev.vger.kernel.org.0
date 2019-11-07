@@ -2,80 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF922F3B27
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:15:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A419AF3B2D
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:15:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727626AbfKGWOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:14:48 -0500
-Received: from mga07.intel.com ([134.134.136.100]:16692 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727560AbfKGWOr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 17:14:47 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Nov 2019 14:14:46 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,279,1569308400"; 
-   d="scan'208";a="233420941"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Nov 2019 14:14:45 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 15/15] ice: print opcode when printing controlq errors
-Date:   Thu,  7 Nov 2019 14:14:38 -0800
-Message-Id: <20191107221438.17994-16-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
-References: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
+        id S1728363AbfKGWPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:15:43 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:43233 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726094AbfKGWPk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:15:40 -0500
+Received: by mail-lj1-f193.google.com with SMTP id y23so4003627ljh.10;
+        Thu, 07 Nov 2019 14:15:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KY7Z+sOodr+2KOHKXYf+CwTpGGVKcuoYXDhk0O6CUkg=;
+        b=gPj6oH49fNmAp7ZjJAQpCcXZM2cA09SNQfL1kwwv+1lHiZrT7/t+UsC6fhXONpDQP7
+         f4pqtiNlnthGcwNjimsuE6SSBT2brFC4QAuZZKmmqiD5B2b58txfzaLzZIIHCTrg5iqR
+         Ezduf2jw2Oh2y9+S7tzFH/w81AvIcMfoMPk7NK1hpQRYUlMeHhvU5kPc/Jxp7xZZakfE
+         g3Zz3woS+iOi9pW8s0rS0HQC0ocvYPQw0lX6O7VI94YohRBny+rFXfK1mZja+BALD4RO
+         VCG2XbISUa4O0u11LA04lvmF40KI9vhs64jv+Ry2oPmOHdvb+gR5BaknpTS+F1tDwJTq
+         IC4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KY7Z+sOodr+2KOHKXYf+CwTpGGVKcuoYXDhk0O6CUkg=;
+        b=HKkaHgd065iNtzAeLYgKjfMtxSxRsCU6bUM14XNai7kKGaxRn2lSdm0rwaHagfZpUp
+         v8nDaTIuhhqq/kezKzxYKsLTT2JsOQpZFZC9vWWnnNHfdNuuXFC4H6jY87DbsE0oUgTU
+         6ZuVTVDpYLhtsD3fxpPA8xtJee1DftYkm1WM8r2GG0vXGA/xWv5wmGFpReccJpvNGzlr
+         tamgJiyoH2X9hLUkvHMGZfxsQiQQEoKM3zCPWkEYbAZfobY+jPUrcpRdeFUEvDB+v8XY
+         Cq/Qyu6ejgBOPuOPEXbfNCxaI0g4aC5nm8zT5HGLrTA/pDiaqNk4ZZJWjhrJGqmiVzVG
+         ITHA==
+X-Gm-Message-State: APjAAAWLwf48wbnXLuhz47ViyMPD5nutE/ukCNftwbQN6E/s+N1wfOb/
+        q+ho1iwfOGi8mnIjFnZ0y/CQN7IV1s+Z0Er7Q7g=
+X-Google-Smtp-Source: APXvYqzX3v325Q+srYy0kQuWYDjoduKbKL8e1hpTu7trNVi8tzAZ30sfbCrx8N3xEky5VV9KGsMfsW5azI0CidLMvKI=
+X-Received: by 2002:a2e:970a:: with SMTP id r10mr4312559lji.142.1573164937970;
+ Thu, 07 Nov 2019 14:15:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20191107180901.4097452-1-kafai@fb.com>
+In-Reply-To: <20191107180901.4097452-1-kafai@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 7 Nov 2019 14:15:26 -0800
+Message-ID: <CAADnVQKYowv2Nynt98qBffnQca3Ro5AHyGCTP244kLP+m2sGOw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 0/2] Add array support to btf_struct_access
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+On Thu, Nov 7, 2019 at 10:09 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> This series adds array support to btf_struct_access().
+> Please see individual patch for details.
+>
+> v4:
+> - Avoid removing a useful comment from btf_struct_access()
+> - Add comments to clarify the "mtrue_end" naming and
+>   how it may not always correspond to mtype/msize/moff.
 
-To help aid in debugging, display the command opcode in debug messages
-that print an error code. This makes it easier to see what command
-failed if only ICE_DBG_AQ_MSG is enabled.
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_controlq.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
-index 947728aada46..dd946866d7b8 100644
---- a/drivers/net/ethernet/intel/ice/ice_controlq.c
-+++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
-@@ -1017,7 +1017,8 @@ ice_sq_send_cmd(struct ice_hw *hw, struct ice_ctl_q_info *cq,
- 		retval = le16_to_cpu(desc->retval);
- 		if (retval) {
- 			ice_debug(hw, ICE_DBG_AQ_MSG,
--				  "Control Send Queue command completed with error 0x%x\n",
-+				  "Control Send Queue command 0x%04X completed with error 0x%X\n",
-+				  le16_to_cpu(desc->opcode),
- 				  retval);
- 
- 			/* strip off FW internal code */
-@@ -1121,7 +1122,8 @@ ice_clean_rq_elem(struct ice_hw *hw, struct ice_ctl_q_info *cq,
- 	if (flags & ICE_AQ_FLAG_ERR) {
- 		ret_code = ICE_ERR_AQ_ERROR;
- 		ice_debug(hw, ICE_DBG_AQ_MSG,
--			  "Control Receive Queue Event received with error 0x%x\n",
-+			  "Control Receive Queue Event 0x%04X received with error 0x%X\n",
-+			  le16_to_cpu(desc->opcode),
- 			  cq->rq_last_status);
- 	}
- 	memcpy(&e->desc, desc, sizeof(e->desc));
--- 
-2.21.0
-
+Applied. Thanks
