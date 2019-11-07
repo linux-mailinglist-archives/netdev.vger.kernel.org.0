@@ -2,293 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7727DF2372
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 01:44:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 882ACF2379
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 01:46:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732780AbfKGAo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 19:44:26 -0500
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:35757 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732771AbfKGAoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 19:44:24 -0500
-Received: by mail-yw1-f66.google.com with SMTP id r131so39714ywh.2;
-        Wed, 06 Nov 2019 16:44:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hcG67Ce8h5UfdKDICfDjiYsFK/6mwAJRU+th+1S4+mo=;
-        b=pkC1CWcaW9m1YJvPeeEYTzoEBYWPHux/UKkzJtIwqRHGVP5VvM+cldmWRpLGgcpFdK
-         VQXq/GddIl/HrIjeMCoSc5XeSpbzHSC2VnoDQj0cFK97P/MHtL9LGLSjqXM+QV34By4s
-         81TZZSQFVEZtGnSiUEwhOzXgzW+7IwBZ2Ppb+01yUiwSxvXBOjD3JIt+ZxKRGDbkANPE
-         qeZE2YhYtZzULpl39TFmzbo/MtltDbjws5aiqbc7WlQQpTg6tBdVIT8NFdXC4eUG8t+O
-         kncbUFpSWZCjoauIbe2dIom2TZla3COjNlj9PV9NskyyVBl+ATVztZHITWS6nTQ96Mqs
-         QByg==
+        id S1732752AbfKGAqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 19:46:04 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:36416 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727328AbfKGAqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 19:46:03 -0500
+Received: by mail-oi1-f194.google.com with SMTP id j7so453370oib.3;
+        Wed, 06 Nov 2019 16:46:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hcG67Ce8h5UfdKDICfDjiYsFK/6mwAJRU+th+1S4+mo=;
-        b=Hxc9dX+QCuKddEUVBf123Bcvh/zM3IdHdJw1hbpuu/bjzjAZYc3rceCV3DdRuToTkb
-         yEaDnkJO8oqu3p2gs6d3WuvtOBBbL6dr/JfUTA/uuAiSzPTJOiJv7P9ynHlIrF3u+pUC
-         OEDfQ8ZyCZ2R2HvXcB3+GruxFPbORzTq2SJQBygf4g95PiwbVSQhcRaQzejWocpkzhp4
-         2sLBaB19p7b5q4KW1XzQcSQpuicr9ZMTm0/Pa54y+/525dtrq1OhLtGnh78RJ/rNeKtx
-         HkSxV4mT8odwg7P/3UHRcOK1lPcMf83Fwfza1r/vcF55czDMpZ5NnGbfDLnDmXo+pN48
-         RRzQ==
-X-Gm-Message-State: APjAAAWuJDcW4WevMIzrAsJpUq7GR8hfmqebrOKXeCYPe1bBDflvtunk
-        h38dlDedd8b+emyI8UaR5oKq/wZ4y+stZd4n6w==
-X-Google-Smtp-Source: APXvYqwcUIydJzVpWqKETG7VKd1OPWdqzMQ0D1SLuIxg/SlZ3S0gYZO5zWbivtyCnymRR1vRpijglyvr34nOVAOlGZ8=
-X-Received: by 2002:a0d:e447:: with SMTP id n68mr327247ywe.46.1573087463174;
- Wed, 06 Nov 2019 16:44:23 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+gKYU75NcpNmTXMd0sfcN/iIV3zAqEzJPBb9kI5/Kto=;
+        b=U6KFf38etIn2RzALWalyNC6tsudhVMx8CLAQDsqckEWwMHEpiGOR9MGeemjg0UOZQ1
+         zPwzfh9r8CduhWB9C6RF9jnQHxOV0gTTu1Edzr2Ae7LgpmESXrqPUTm33OPSw68TRWZe
+         3FvQiZfKKhZpzt117mcOJQwyKWel13BDd/Nk2yBUxBP9W1DiNmUI35mo9rWHpnYtG//4
+         bQ20Q4/IHMAGwhpuFdF7N9gY+1exhN6yGc3/c+mMzuyZ60xdmELNyrLOWRBVuY/NjzXS
+         Egsd0f1LFyyuYPViYtBZeUtw5WpZNs0cl7Q0kxk1y3RX1uqdVqLj1Csbwzlr2N8LCIz8
+         BUuA==
+X-Gm-Message-State: APjAAAX5DwXwiqf+1Wm064mpRhnFdA57FlOAtXlFHvzonDxzXonaimqh
+        4VNBVst4PhvyHKbJK1Pf9w==
+X-Google-Smtp-Source: APXvYqyxC5qijCgvXTCtz8C5GVHYmbX7saK5/A84LdWm0eTBTY1n3iy3Ah56R4wGDPUz5rGkF2RNeg==
+X-Received: by 2002:aca:b757:: with SMTP id h84mr750743oif.175.1573087562633;
+        Wed, 06 Nov 2019 16:46:02 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id o11sm137500oif.34.2019.11.06.16.46.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Nov 2019 16:46:02 -0800 (PST)
+Date:   Wed, 6 Nov 2019 18:46:01 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-bluetooth@vger.kernel.org, devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Subject: Re: [PATCH 4/4] dt-bindings: net: bluetooth: update
+ broadcom-bluetooth
+Message-ID: <20191107004601.GA14629@bogus>
+References: <20191106002923.109344-1-abhishekpandit@chromium.org>
+ <20191106002923.109344-5-abhishekpandit@chromium.org>
 MIME-Version: 1.0
-References: <20191105225111.4940-1-danieltimlee@gmail.com> <20191105225111.4940-3-danieltimlee@gmail.com>
- <CAEf4BzapG=xt57i2jEViydA=R2RpkS2bMB-u28-S2Kj7pxe2GA@mail.gmail.com>
-In-Reply-To: <CAEf4BzapG=xt57i2jEViydA=R2RpkS2bMB-u28-S2Kj7pxe2GA@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Thu, 7 Nov 2019 09:44:09 +0900
-Message-ID: <CAEKGpzgz4U68ast=OSMFq66OKNipMB_BN9E2_N4PEO_+s+LByQ@mail.gmail.com>
-Subject: Re: [PATCH,bpf-next 2/2] samples: bpf: update map definition to new
- syntax BTF-defined map
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191106002923.109344-5-abhishekpandit@chromium.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 6, 2019 at 11:14 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Nov 5, 2019 at 2:52 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> >
-> > Since, the new syntax of BTF-defined map has been introduced,
-> > the syntax for using maps under samples directory are mixed up.
-> > For example, some are already using the new syntax, and some are using
-> > existing syntax by calling them as 'legacy'.
-> >
-> > As stated at commit abd29c931459 ("libbpf: allow specifying map
-> > definitions using BTF"), the BTF-defined map has more compatablility
-> > with extending supported map definition features.
-> >
-> > The commit doesn't replace all of the map to new BTF-defined map,
-> > because some of the samples still use bpf_load instead of libbpf, which
-> > can't properly create BTF-defined map.
-> >
-> > This will only updates the samples which uses libbpf API for loading bpf
-> > program. (ex. bpf_prog_load_xattr)
-> >
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > ---
->
->
-> Please try to stick to __type() for key/value, where possible (all the
-> arrays, hashes, per-cpu arrays definitely work). Some of the special
-> CPUMAP, DEVMAP might not work. Not sure about TRIEs, please try.
->
+On Tue, Nov 05, 2019 at 04:29:23PM -0800, Abhishek Pandit-Subedi wrote:
+> Add documentation for pcm-parameters.
+> 
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> 
+> ---
+> 
+>  Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> index c749dc297624..ae60277b5569 100644
+> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> @@ -29,6 +29,9 @@ Optional properties:
+>     - "lpo": external low power 32.768 kHz clock
+>   - vbat-supply: phandle to regulator supply for VBAT
+>   - vddio-supply: phandle to regulator supply for VDDIO
+> + - pcm-parameters: When set, will configure PCM parameters on the device. The
+> +   contents should be a 10-byte array corresponding to the pcm params (see
+> +   btbcm.h for more information).
 
-Will apply feedback right away!
-Thanks for the review!
+Needs a vendor prefix.
 
-> >  samples/bpf/sockex1_kern.c          |  12 ++--
-> >  samples/bpf/sockex2_kern.c          |  12 ++--
-> >  samples/bpf/xdp1_kern.c             |  12 ++--
-> >  samples/bpf/xdp2_kern.c             |  12 ++--
-> >  samples/bpf/xdp_adjust_tail_kern.c  |  12 ++--
-> >  samples/bpf/xdp_fwd_kern.c          |  13 ++--
-> >  samples/bpf/xdp_redirect_cpu_kern.c | 108 ++++++++++++++--------------
-> >  samples/bpf/xdp_redirect_kern.c     |  24 +++----
-> >  samples/bpf/xdp_redirect_map_kern.c |  24 +++----
-> >  samples/bpf/xdp_router_ipv4_kern.c  |  64 ++++++++---------
-> >  samples/bpf/xdp_rxq_info_kern.c     |  36 +++++-----
-> >  samples/bpf/xdp_tx_iptunnel_kern.c  |  26 +++----
-> >  12 files changed, 177 insertions(+), 178 deletions(-)
-> >
-> > diff --git a/samples/bpf/sockex1_kern.c b/samples/bpf/sockex1_kern.c
-> > index f96943f443ab..493f102711c0 100644
-> > --- a/samples/bpf/sockex1_kern.c
-> > +++ b/samples/bpf/sockex1_kern.c
-> > @@ -5,12 +5,12 @@
-> >  #include "bpf_helpers.h"
-> >  #include "bpf_legacy.h"
-> >
-> > -struct bpf_map_def SEC("maps") my_map = {
-> > -       .type = BPF_MAP_TYPE_ARRAY,
-> > -       .key_size = sizeof(u32),
-> > -       .value_size = sizeof(long),
-> > -       .max_entries = 256,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_ARRAY);
-> > +       __uint(key_size, sizeof(u32));
-> > +       __uint(value_size, sizeof(long));
-> > +       __uint(max_entries, 256);
-> > +} my_map SEC(".maps");
-> >
-> >  SEC("socket1")
-> >  int bpf_prog1(struct __sk_buff *skb)
-> > diff --git a/samples/bpf/sockex2_kern.c b/samples/bpf/sockex2_kern.c
-> > index 5566fa7d92fa..bd756494625b 100644
-> > --- a/samples/bpf/sockex2_kern.c
-> > +++ b/samples/bpf/sockex2_kern.c
-> > @@ -190,12 +190,12 @@ struct pair {
-> >         long bytes;
-> >  };
-> >
-> > -struct bpf_map_def SEC("maps") hash_map = {
-> > -       .type = BPF_MAP_TYPE_HASH,
-> > -       .key_size = sizeof(__be32),
-> > -       .value_size = sizeof(struct pair),
-> > -       .max_entries = 1024,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_HASH);
-> > +       __uint(key_size, sizeof(__be32));
-> > +       __uint(value_size, sizeof(struct pair));
->
-> let's use __type(key, __be32) and __type(value, struct pair) here and
-> in most other places where we have maps supporting BTF
->
-> > +       __uint(max_entries, 1024);
-> > +} hash_map SEC(".maps");
-> >
-> >  SEC("socket2")
-> >  int bpf_prog2(struct __sk_buff *skb)
-> > diff --git a/samples/bpf/xdp1_kern.c b/samples/bpf/xdp1_kern.c
-> > index 219742106bfd..a0a181164087 100644
-> > --- a/samples/bpf/xdp1_kern.c
-> > +++ b/samples/bpf/xdp1_kern.c
-> > @@ -14,12 +14,12 @@
-> >  #include <linux/ipv6.h>
-> >  #include "bpf_helpers.h"
-> >
-> > -struct bpf_map_def SEC("maps") rxcnt = {
-> > -       .type = BPF_MAP_TYPE_PERCPU_ARRAY,
-> > -       .key_size = sizeof(u32),
-> > -       .value_size = sizeof(long),
-> > -       .max_entries = 256,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-> > +       __uint(key_size, sizeof(u32));
-> > +       __uint(value_size, sizeof(long));
-> > +       __uint(max_entries, 256);
-> > +} rxcnt SEC(".maps");
-> >
-> >  static int parse_ipv4(void *data, u64 nh_off, void *data_end)
-> >  {
-> > diff --git a/samples/bpf/xdp2_kern.c b/samples/bpf/xdp2_kern.c
-> > index e01288867d15..21564a95561b 100644
-> > --- a/samples/bpf/xdp2_kern.c
-> > +++ b/samples/bpf/xdp2_kern.c
-> > @@ -14,12 +14,12 @@
-> >  #include <linux/ipv6.h>
-> >  #include "bpf_helpers.h"
-> >
-> > -struct bpf_map_def SEC("maps") rxcnt = {
-> > -       .type = BPF_MAP_TYPE_PERCPU_ARRAY,
-> > -       .key_size = sizeof(u32),
-> > -       .value_size = sizeof(long),
-> > -       .max_entries = 256,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-> > +       __uint(key_size, sizeof(u32));
-> > +       __uint(value_size, sizeof(long));
-> > +       __uint(max_entries, 256);
-> > +} rxcnt SEC(".maps");
-> >
-> >  static void swap_src_dst_mac(void *data)
-> >  {
-> > diff --git a/samples/bpf/xdp_adjust_tail_kern.c b/samples/bpf/xdp_adjust_tail_kern.c
-> > index c616508befb9..6de45a4a2c3e 100644
-> > --- a/samples/bpf/xdp_adjust_tail_kern.c
-> > +++ b/samples/bpf/xdp_adjust_tail_kern.c
-> > @@ -28,12 +28,12 @@
-> >  /* volatile to prevent compiler optimizations */
-> >  static volatile __u32 max_pcktsz = MAX_PCKT_SIZE;
-> >
-> > -struct bpf_map_def SEC("maps") icmpcnt = {
-> > -       .type = BPF_MAP_TYPE_ARRAY,
-> > -       .key_size = sizeof(__u32),
-> > -       .value_size = sizeof(__u64),
-> > -       .max_entries = 1,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_ARRAY);
-> > +       __uint(key_size, sizeof(__u32));
-> > +       __uint(value_size, sizeof(__u64));
-> > +       __uint(max_entries, 1);
-> > +} icmpcnt SEC(".maps");
-> >
-> >  static __always_inline void count_icmp(void)
-> >  {
-> > diff --git a/samples/bpf/xdp_fwd_kern.c b/samples/bpf/xdp_fwd_kern.c
-> > index 701a30f258b1..d013029aeaa2 100644
-> > --- a/samples/bpf/xdp_fwd_kern.c
-> > +++ b/samples/bpf/xdp_fwd_kern.c
-> > @@ -23,13 +23,12 @@
-> >
-> >  #define IPV6_FLOWINFO_MASK              cpu_to_be32(0x0FFFFFFF)
-> >
-> > -/* For TX-traffic redirect requires net_device ifindex to be in this devmap */
-> > -struct bpf_map_def SEC("maps") xdp_tx_ports = {
-> > -       .type = BPF_MAP_TYPE_DEVMAP,
-> > -       .key_size = sizeof(int),
-> > -       .value_size = sizeof(int),
-> > -       .max_entries = 64,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_DEVMAP);
-> > +       __uint(key_size, sizeof(int));
-> > +       __uint(value_size, sizeof(int));
-> > +       __uint(max_entries, 64);
-> > +} xdp_tx_ports SEC(".maps");
->
-> DEVMAP might be special, I don't remember, so key_size/value_size
-> might be necessary
-
-As you've mentioned, DEVMAP does not work with __type.
-
->
-> >
-> >  /* from include/net/ip.h */
-> >  static __always_inline int ip_decrease_ttl(struct iphdr *iph)
-> > diff --git a/samples/bpf/xdp_redirect_cpu_kern.c b/samples/bpf/xdp_redirect_cpu_kern.c
-> > index a306d1c75622..1f472506aa54 100644
-> > --- a/samples/bpf/xdp_redirect_cpu_kern.c
-> > +++ b/samples/bpf/xdp_redirect_cpu_kern.c
-> > @@ -18,12 +18,12 @@
-> >  #define MAX_CPUS 64 /* WARNING - sync with _user.c */
-> >
-> >  /* Special map type that can XDP_REDIRECT frames to another CPU */
-> > -struct bpf_map_def SEC("maps") cpu_map = {
-> > -       .type           = BPF_MAP_TYPE_CPUMAP,
-> > -       .key_size       = sizeof(u32),
-> > -       .value_size     = sizeof(u32),
-> > -       .max_entries    = MAX_CPUS,
-> > -};
-> > +struct {
-> > +       __uint(type, BPF_MAP_TYPE_CPUMAP);
-> > +       __uint(key_size, sizeof(u32));
-> > +       __uint(value_size, sizeof(u32));
-> > +       __uint(max_entries, MAX_CPUS);
-> > +} cpu_map SEC(".maps");
-> >
->
-> same for CPUMAP, but would be nice to double-check.
->
-
-Same for the CPUMAP. Just checked.
-Seems TRIE doesn't work either. it uses __uint(key_size, 8);
-and __type(key, 8); is not acceptable.
-
-[...]
-
-Thank you for your time and effort for the review.
-
-Thanks,
-Daniel
+>  
+>  
+>  Example:
+> @@ -40,5 +43,6 @@ Example:
+>         bluetooth {
+>                 compatible = "brcm,bcm43438-bt";
+>                 max-speed = <921600>;
+> +               pcm-parameters = [1 2 0 1 1 0 0 0 0 0];
+>         };
+>  };
+> -- 
+> 2.24.0.rc1.363.gb1bccd3e3d-goog
+> 
