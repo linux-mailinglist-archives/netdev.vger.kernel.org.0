@@ -2,82 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82351F27A5
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 07:30:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3543F27E3
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 08:08:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbfKGGah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 01:30:37 -0500
-Received: from mail-m974.mail.163.com ([123.126.97.4]:55064 "EHLO
-        mail-m974.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725938AbfKGGah (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 01:30:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=v/B2ToBpKvai59daRL
-        vVEWSvI0l4Py53TzTQJCqwvY4=; b=ZyzDE7CMx/26AcilhkRkb8FnIdJj+f91rb
-        3M7lm5tp2CIoMVz/mzhBkKdupchxo6bfGb7RxmjMNZasOQ/7WnxK9USR6h41npcj
-        WsiqUbipL/DAZvskwmA4MCAbQDHiHnDUVY8sksgthZlFoqsdNcB952vNOLTaIWHo
-        IiJO7+SW0=
-Received: from localhost.localdomain (unknown [202.112.113.212])
-        by smtp4 (Coremail) with SMTP id HNxpCgD3dtviucNdteMLBg--.305S3;
-        Thu, 07 Nov 2019 14:30:03 +0800 (CST)
-From:   Pan Bian <bianpan2016@163.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Steve Winslow <swinslow@gmail.com>,
-        Young Xiao <92siuyang@gmail.com>,
-        Allison Randal <allison@lohutok.net>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pan Bian <bianpan2016@163.com>
-Subject: [PATCH v2] nfc: netlink: fix double device reference drop
-Date:   Thu,  7 Nov 2019 14:29:50 +0800
-Message-Id: <1573108190-30836-1-git-send-email-bianpan2016@163.com>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: HNxpCgD3dtviucNdteMLBg--.305S3
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKw17Zr1xuF47JF4UtF18Zrb_yoWfXFcEy3
-        4rtr4UWrn8X3s3Ja12kw4UAF9FywnFqr4xCF4SkrWxZa45Zan8uw4kZ39xAry7uw43AFWj
-        q3WkJrW8t347XjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUbEoGJUUUUU==
-X-Originating-IP: [202.112.113.212]
-X-CM-SenderInfo: held01tdqsiiqw6rljoofrz/xtbBZAtmclQHHg832AAAsW
+        id S1727164AbfKGHIg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 7 Nov 2019 02:08:36 -0500
+Received: from mail1.csc.gov.ph ([202.90.137.150]:57182 "EHLO
+        webmail1.csc.gov.ph" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726823AbfKGHIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 02:08:36 -0500
+X-Greylist: delayed 455 seconds by postgrey-1.27 at vger.kernel.org; Thu, 07 Nov 2019 02:08:35 EST
+Received: from localhost (localhost [127.0.0.1])
+        by webmail1.csc.gov.ph (Postfix) with ESMTP id 2BF8A20C63;
+        Thu,  7 Nov 2019 15:00:59 +0800 (PHT)
+X-Amavis-Modified: Mail body modified (using disclaimer) - webmail1.csc.gov.ph
+Received: from webmail1.csc.gov.ph ([127.0.0.1])
+        by localhost (webmail1.csc.gov.ph [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id Aav6YzgWXqUv; Thu,  7 Nov 2019 15:00:54 +0800 (PHT)
+Received: from webmail1.csc.gov.ph (localhost [127.0.0.1])
+        by webmail1.csc.gov.ph (Postfix) with ESMTP id C39D920C66;
+        Thu,  7 Nov 2019 15:00:53 +0800 (PHT)
+Received: from webmail1.csc.gov.ph (webmail1.csc.gov.ph [172.16.1.16])
+        by webmail1.csc.gov.ph (Postfix) with ESMTP id 6CA2D20C63;
+        Thu,  7 Nov 2019 15:00:53 +0800 (PHT)
+Date:   Thu, 7 Nov 2019 15:00:53 +0800 (PHT)
+From:   =?utf-8?Q?Fran=C3=A7ois?= Pinault <ro08@csc.gov.ph>
+Reply-To: =?utf-8?Q?Fran=C3=A7ois?= Pinault <francoispinault42@gmail.com>
+Message-ID: <1812406319.2475004.1573110053407.JavaMail.zimbra@csc.gov.ph>
+Subject: Get back to me
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [192.99.110.145]
+X-Mailer: Zimbra 8.0.7_GA_6021 (zclient/8.0.7_GA_6021)
+Thread-Topic: Get back to me
+Thread-Index: Bf6Qb/jJKMJRa/rqhNOdCt7kE6HmSQ==
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The function nfc_put_device(dev) is called twice to drop the reference
-to dev when there is no associated local llcp. Remove one of them to fix
-the bug.
 
-Signed-off-by: Pan Bian <bianpan2016@163.com>
----
-v2: change subject of the patch
----
- net/nfc/netlink.c | 2 --
- 1 file changed, 2 deletions(-)
 
-diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-index 17e6ca62f1be..afde0d763039 100644
---- a/net/nfc/netlink.c
-+++ b/net/nfc/netlink.c
-@@ -1099,7 +1099,6 @@ static int nfc_genl_llc_set_params(struct sk_buff *skb, struct genl_info *info)
- 
- 	local = nfc_llcp_find_local(dev);
- 	if (!local) {
--		nfc_put_device(dev);
- 		rc = -ENODEV;
- 		goto exit;
- 	}
-@@ -1159,7 +1158,6 @@ static int nfc_genl_llc_sdreq(struct sk_buff *skb, struct genl_info *info)
- 
- 	local = nfc_llcp_find_local(dev);
- 	if (!local) {
--		nfc_put_device(dev);
- 		rc = -ENODEV;
- 		goto exit;
- 	}
--- 
-2.7.4
+Hi, A donation was made in your favour by Mr.François Pinault. Reply
+back for further details.
 
+Thank you.
+---------------------------------------------------------------------
+Disclaimer
+
+This email message including attachments, if any, may contain
+confidential information and is only for the use of the individual
+or entity to whom it is addressed. If you have received this email
+by mistake or is not the named addressee, you are notified that
+disseminating, distributing, or copying of this communication is 
+strictly prohibited. 
+WARNING! Computer viruses can be transmitted via email. The recipient
+should check this email and any attachments for the presence of 
+viruses.  The Civil Service Commission accepts no liability for any
+damage caused by any virus transmitted by this email.
+Civil Service Commission, IBP Road, Constitution Hills,
+1126 Quezon City, Philippines  www.csc.gov.ph
