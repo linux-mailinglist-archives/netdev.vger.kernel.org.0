@@ -2,148 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9B08F3143
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 15:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC29F313C
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 15:21:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389366AbfKGOVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 09:21:47 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:48055 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731014AbfKGOVr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 09:21:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573136505;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DrmPAze8Ac5FFece7lozmX/b+JhD3npiUhbXA+xlp7o=;
-        b=F38MnjzJMtKn5UUaMAKqCJX7HmlRIV6jh4/ETG4k76uGASUAN5UMZBJHzeC4ZXcYb5t8T4
-        VUpOK6wLbteMugv+ZYidrmeCoBZz3+FB43BhJrnyr+GeogzM/tZCuudjfimrYxQDna3RFB
-        YF2MP+bBHc8nnx18FlouSISWZoAVIEs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-100-J1OMK1x0NCiU9HfU4rkiww-1; Thu, 07 Nov 2019 09:21:42 -0500
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7DEFA1005500;
-        Thu,  7 Nov 2019 14:21:38 +0000 (UTC)
-Received: from [10.72.12.21] (ovpn-12-21.pek2.redhat.com [10.72.12.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C818C608B6;
-        Thu,  7 Nov 2019 14:20:45 +0000 (UTC)
-Subject: Re: [PATCH V10 6/6] docs: sample driver to demonstrate how to
- implement virtio-mdev framework
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191106133531.693-1-jasowang@redhat.com>
- <20191106133531.693-7-jasowang@redhat.com>
- <20191107040700-mutt-send-email-mst@kernel.org>
- <bd2f7796-8d88-0eb3-b55b-3ec062b186b7@redhat.com>
- <20191107061942-mutt-send-email-mst@kernel.org>
- <d09229bc-c3e4-8d4b-c28f-565fe150ced2@redhat.com>
- <20191107080834-mutt-send-email-mst@kernel.org>
- <b2265e3a-6f86-c21a-2ebd-d0e4eea2886f@redhat.com>
- <20191107085013-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <3440c55b-bbb9-fd4d-7c06-f45860fb4bd3@redhat.com>
-Date:   Thu, 7 Nov 2019 22:20:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20191107085013-mutt-send-email-mst@kernel.org>
+        id S2389272AbfKGOVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 09:21:11 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:2504 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726924AbfKGOVI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 09:21:08 -0500
+Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.57])
+        by Forcepoint Email with ESMTP id 16F2A35A5CA297AD0A5C;
+        Thu,  7 Nov 2019 22:21:02 +0800 (CST)
+Received: from dggeme707-chm.china.huawei.com (10.1.199.103) by
+ DGGEMM402-HUB.china.huawei.com (10.3.20.210) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 7 Nov 2019 22:21:01 +0800
+Received: from lhreml703-chm.china.huawei.com (10.201.108.52) by
+ dggeme707-chm.china.huawei.com (10.1.199.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Thu, 7 Nov 2019 22:20:59 +0800
+Received: from lhreml703-chm.china.huawei.com ([10.201.68.198]) by
+ lhreml703-chm.china.huawei.com ([10.201.68.198]) with mapi id 15.01.1713.004;
+ Thu, 7 Nov 2019 14:20:57 +0000
+From:   Salil Mehta <salil.mehta@huawei.com>
+To:     Marc Zyngier <maz@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "Zhuangyuzeng (Yisen)" <yisen.zhuang@huawei.com>,
+        "lipeng (Y)" <lipeng321@huawei.com>,
+        "mehta.salil@opnsrc.net" <mehta.salil@opnsrc.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Linuxarm <linuxarm@huawei.com>
+Subject: RE: [PATCH net] net: hns: Fix the stray netpoll locks causing
+  deadlock in NAPI path
+Thread-Topic: [PATCH net] net: hns: Fix the stray netpoll locks causing
+  deadlock in NAPI path
+Thread-Index: AQHVlXV9oPVhm3923UeaSbHNAy05jqd/v/1g
+Date:   Thu, 7 Nov 2019 14:20:57 +0000
+Message-ID: <9c15e61f739045ee876ae3fbb1e49446@huawei.com>
+References: <20191106185405.23112-1-salil.mehta@huawei.com>
+ <a6f06cfc7ef91685746dfe5ab6c56401@www.loen.fr>
+In-Reply-To: <a6f06cfc7ef91685746dfe5ab6c56401@www.loen.fr>
+Accept-Language: en-US
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-MC-Unique: J1OMK1x0NCiU9HfU4rkiww-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.202.226.45]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/11/7 =E4=B8=8B=E5=8D=889:50, Michael S. Tsirkin wrote:
-> On Thu, Nov 07, 2019 at 09:32:29PM +0800, Jason Wang wrote:
->> On 2019/11/7 =E4=B8=8B=E5=8D=889:08, Michael S. Tsirkin wrote:
->>> On Thu, Nov 07, 2019 at 08:43:29PM +0800, Jason Wang wrote:
->>>> On 2019/11/7 =E4=B8=8B=E5=8D=887:21, Michael S. Tsirkin wrote:
->>>>> On Thu, Nov 07, 2019 at 06:18:45PM +0800, Jason Wang wrote:
->>>>>> On 2019/11/7 =E4=B8=8B=E5=8D=885:08, Michael S. Tsirkin wrote:
->>>>>>> On Wed, Nov 06, 2019 at 09:35:31PM +0800, Jason Wang wrote:
->>>>>>>> This sample driver creates mdev device that simulate virtio net de=
-vice
->>>>>>>> over virtio mdev transport. The device is implemented through vrin=
-gh
->>>>>>>> and workqueue. A device specific dma ops is to make sure HVA is us=
-ed
->>>>>>>> directly as the IOVA. This should be sufficient for kernel virtio
->>>>>>>> driver to work.
->>>>>>>>
->>>>>>>> Only 'virtio' type is supported right now. I plan to add 'vhost' t=
-ype
->>>>>>>> on top which requires some virtual IOMMU implemented in this sampl=
-e
->>>>>>>> driver.
->>>>>>>>
->>>>>>>> Acked-by: Cornelia Huck<cohuck@redhat.com>
->>>>>>>> Signed-off-by: Jason Wang<jasowang@redhat.com>
->>>>>>> I'd prefer it that we call this something else, e.g.
->>>>>>> mvnet-loopback. Just so people don't expect a fully
->>>>>>> functional device somehow. Can be renamed when applying?
->>>>>> Actually, I plan to extend it as another standard network interface =
-for
->>>>>> kernel. It could be either a standalone pseudo device or a stack dev=
-ice.
->>>>>> Does this sounds good to you?
->>>>>>
->>>>>> Thanks
->>>>> That's a big change in an interface so it's a good reason
->>>>> to rename the driver at that point right?
->>>>> Oherwise users of an old kernel would expect a stacked driver
->>>>> and get a loopback instead.
->>>>>
->>>>> Or did I miss something?
->>>> My understanding is that it was a sample driver in /doc. It should not=
- be
->>>> used in production environment. Otherwise we need to move it to
->>>> driver/virtio.
->>>>
->>>> But if you insist, I can post a V11.
->>>>
->>>> Thanks
->>> this can be a patch on top.
->> Then maybe it's better just extend it to work as a normal networking dev=
-ice
->> on top?
->>
->> Thanks
-> That would be a substantial change. Maybe drop 6/6 for now until
-> we have a better handle on this?
->
-
-Ok, consider the change should be small, I will post V11 where I can fix=20
-the typos spotted.
-
-Thanks
-
+SGkgTWFyYywNCg0KPiBGcm9tOiBNYXJjIFp5bmdpZXIgW21haWx0bzptYXpAa2VybmVsLm9yZ10N
+Cj4gU2VudDogVGh1cnNkYXksIE5vdmVtYmVyIDcsIDIwMTkgMjoxMyBQTQ0KPiBUbzogU2FsaWwg
+TWVodGEgPHNhbGlsLm1laHRhQGh1YXdlaS5jb20+DQo+IA0KPiBIaSBTYWxpbCwNCj4gDQo+IE9u
+IDIwMTktMTEtMDYgMjA6MDMsIFNhbGlsIE1laHRhIHdyb3RlOg0KPiA+IFRoaXMgcGF0Y2ggZml4
+ZXMgdGhlIHByb2JsZW0gb2YgdGhlIHNwaW4gbG9ja3MsIG9yaWdpbmFsbHkNCj4gPiBtZWFudCBm
+b3IgdGhlIG5ldHBvbGwgcGF0aCBvZiBobnMgZHJpdmVyLCBjYXVzaW5nIGRlYWRsb2NrIGluDQo+
+ID4gdGhlIG5vcm1hbCBOQVBJIHBvbGwgcGF0aC4gVGhlIGlzc3VlIGhhcHBlbmVkIGR1ZSBwcmVz
+ZW5jZSBvZg0KPiA+IHRoZSBzdHJheSBsZWZ0b3ZlciBzcGluIGxvY2sgY29kZSByZWxhdGVkIHRv
+IHRoZSBuZXRwb2xsLA0KPiA+IHdob3NlIHN1cHBvcnQgd2FzIGVhcmxpZXIgcmVtb3ZlZCBmcm9t
+IHRoZSBITlNbMV0sIGdvdCBhY3RpdmF0ZWQNCj4gPiBkdWUgdG8gZW5hYmxpbmcgb2YgTkVUX1BP
+TExfQ09OVFJPTExFUiBzd2l0Y2guDQo+ID4NCj4gPiBFYXJsaWVyIGJhY2tncm91bmQ6DQo+ID4g
+VGhlIG5ldHBvbGwgaGFuZGxpbmcgY29kZSBvcmlnaW5hbGx5IGhhZCB0aGlzIGJ1ZyhhcyBpZGVu
+dGlmaWVkDQo+ID4gYnkgTWFyYyBaeW5naWVyWzJdKSBvZiB3cm9uZyBzcGluIGxvY2sgQVBJIGJl
+aW5nIHVzZWQgd2hpY2ggZGlkDQo+ID4gbm90IGRpc2FibGUgdGhlIGludGVycnVwdHMgYW5kIGhl
+bmNlIGNvdWxkIGNhdXNlIGxvY2tpbmcgaXNzdWVzLg0KPiA+IGkuZS4gaWYgdGhlIGxvY2sgd2Vy
+ZSBmaXJzdCBhY3F1aXJlZCBpbiBjb250ZXh0IHRvIHRocmVhZCBsaWtlDQo+ID4gJ2lwJyB1dGls
+IGFuZCB0aGlzIGxvY2sgaWYgZXZlciBnb3QgbGF0ZXIgYWNxdWlyZWQgYWdhaW4gaW4NCj4gPiBj
+b250ZXh0IHRvIHRoZSBpbnRlcnJ1cHQgY29udGV4dCBsaWtlIFRYL1JYIChJbnRlcnJ1cHRzIGNv
+dWxkDQo+ID4gYWx3YXlzIHByZS1lbXB0IHRoZSBsb2NrIGhvbGRpbmcgdGFzayBhbmQgYWNxdWly
+ZSB0aGUgbG9jayBhZ2FpbikNCj4gPiBhbmQgaGVuY2UgY291bGQgY2F1c2UgZGVhZGxvY2suDQo+
+ID4NCj4gPiBQcm9wb3NlZCBTb2x1dGlvbjoNCj4gPiAxLiBJZiB0aGUgbmV0cG9sbCB3YXMgZW5h
+YmxlZCBpbiB0aGUgSE5TIGRyaXZlciwgd2hpY2ggaXMgbm90DQo+ID4gICAgcmlnaHQgbm93LCB3
+ZSBjb3VsZCBoYXZlIHNpbXBseSB1c2VkIHNwaW5fW3VuXWxvY2tfaXJxc2F2ZSgpDQo+ID4gMi4g
+QnV0IGFzIG5ldHBvbGwgaXMgZGlzYWJsZWQsIHRoZXJlZm9yZSwgaXQgaXMgYmVzdCB0byBnZXQg
+cmlkDQo+ID4gICAgb2YgdGhlIGV4aXN0aW5nIGxvY2tzIGFuZCBzdHJheSBjb2RlIGZvciBub3cu
+IFRoaXMgc2hvdWxkDQo+ID4gICAgc29sdmUgdGhlIHByb2JsZW0gcmVwb3J0ZWQgYnkgTWFyYy4N
+Cj4gPg0KPiA+IEBNYXJjLA0KPiA+IENvdWxkIHlvdSBwbGVhc2UgdGVzdCB0aGlzIHBhdGNoIGFu
+ZCBjb25maXJtIGlmIHRoZSBwcm9ibGVtIGlzDQo+ID4gZml4ZWQgYXQgeW91ciBlbmQ/DQo+IA0K
+PiBZZXMsIHRoaXMgZml4ZXMgaXQsIGFsdGhvdWdoIHlvdSBtYXkgd2FudCB0byBmdWxseSBnZXQg
+cmlkIG9mDQo+IHRoZSBub3cgdXNlbGVzcyBsb2NrOg0KDQoNCk9vcHMuLm1pc3NlZCB0aGVtLiBJ
+IHdpbGwgZml4IHRoZXNlIGFzIHdlbGwgYW5kIGZsb2F0IFYyIHZlcnNpb24NCm9mIHRoaXMgcGF0
+Y2guDQoNCg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2hu
+cy9obmFlLmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9oaXNpbGljb24vaG5zL2huYWUuYw0K
+PiBpbmRleCA2ZDA0NTdlYjRmYWEuLjA4MzM5Mjc4YzcyMiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2hucy9obmFlLmMNCj4gKysrIGIvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvaGlzaWxpY29uL2hucy9obmFlLmMNCj4gQEAgLTE5OSw3ICsxOTksNiBAQCBobmFl
+X2luaXRfcmluZyhzdHJ1Y3QgaG5hZV9xdWV1ZSAqcSwgc3RydWN0DQo+IGhuYWVfcmluZyAqcmlu
+ZywgaW50IGZsYWdzKQ0KPiANCj4gICAJcmluZy0+cSA9IHE7DQo+ICAgCXJpbmctPmZsYWdzID0g
+ZmxhZ3M7DQo+IC0Jc3Bpbl9sb2NrX2luaXQoJnJpbmctPmxvY2spOw0KPiAgIAlyaW5nLT5jb2Fs
+X3BhcmFtID0gcS0+aGFuZGxlLT5jb2FsX3BhcmFtOw0KPiAgIAlhc3NlcnQoIXJpbmctPmRlc2Mg
+JiYgIXJpbmctPmRlc2NfY2IgJiYgIXJpbmctPmRlc2NfZG1hX2FkZHIpOw0KPiANCj4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2hpc2lsaWNvbi9obnMvaG5hZS5oDQo+IGIvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvaGlzaWxpY29uL2hucy9obmFlLmgNCj4gaW5kZXggZTljNjdjMDZi
+ZmQyLi42YWI5NDU4MzAyZTEgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2hp
+c2lsaWNvbi9obnMvaG5hZS5oDQo+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2hpc2lsaWNv
+bi9obnMvaG5hZS5oDQo+IEBAIC0yNzQsOSArMjc0LDYgQEAgc3RydWN0IGhuYWVfcmluZyB7DQo+
+ICAgCS8qIHN0YXRpc3RpYyAqLw0KPiAgIAlzdHJ1Y3QgcmluZ19zdGF0cyBzdGF0czsNCj4gDQo+
+IC0JLyogcmluZyBsb2NrIGZvciBwb2xsIG9uZSAqLw0KPiAtCXNwaW5sb2NrX3QgbG9jazsNCj4g
+LQ0KPiAgIAlkbWFfYWRkcl90IGRlc2NfZG1hX2FkZHI7DQo+ICAgCXUzMiBidWZfc2l6ZTsgICAg
+ICAgLyogc2l6ZSBmb3IgaG5hZV9kZXNjLT5hZGRyLCBwcmVzZXQgYnkgQUUgKi8NCj4gICAJdTE2
+IGRlc2NfbnVtOyAgICAgICAvKiB0b3RhbCBudW1iZXIgb2YgZGVzYyAqLw0KPiANCj4gV2l0aCB0
+aGF0Og0KPiANCj4gQWNrZWQtYnk6IE1hcmMgWnluZ2llciA8bWF6QGtlcm5lbC5vcmc+DQo+IFRl
+c3RlZC1ieTogTWFyYyBaeW5naWVyIDxtYXpAa2VybmVsLm9yZz4NCg0KDQpNYW55IHRoYW5rcyBm
+b3IgeW91ciByZXZpZXcgYW5kIHRlc3RpbmcuDQoNCg0KQmVzdCBSZWdhcmRzDQpTYWxpbC4NCg==
