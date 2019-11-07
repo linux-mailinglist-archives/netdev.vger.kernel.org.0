@@ -2,83 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8383F3533
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:58:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99E33F3536
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:59:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729823AbfKGQ61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:58:27 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34469 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726231AbfKGQ61 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:58:27 -0500
-Received: by mail-wr1-f68.google.com with SMTP id e6so3915314wrw.1
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:58:24 -0800 (PST)
+        id S1730303AbfKGQ7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:59:21 -0500
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:33249 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726810AbfKGQ7U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:59:20 -0500
+Received: by mail-yb1-f196.google.com with SMTP id i15so1219693ybq.0
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:59:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=duuZ/GEcOj1lMi9UGA5Gk5HIPaCv9sbL2SkkSg2xRiM=;
-        b=bLyicoN/oBrGbatrICWZKI+duF29G+47XWdRzsIZkvTBjpJbLNXhVsVkC79qxqeCyE
-         GrXOueZY5k14qC8nADucD9PnD6j9rjkpap4ENKK5mkxMOGCkU5fJcS9K5xoYHoSYo6oh
-         siCDUh2VqshjlFkmMLKJd8qU5s65a2frvoj8no02l3MMbCxuh31z5bELZHAcPAAYQRmT
-         Q5GnmBH+pcf+PJs+JnOUAQWiS1jbIx8+5/DFFReyQcKPOVv+S49HXnaVOaxO+d5Ggo7x
-         WmN9owozs43xvh1kLmabjEnn4iQ/RbjrscAdxdrtbXvwIwo6USfrvrp2nvZ8RWp0EIDY
-         kwfQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OY3mL3SJty7WONSqI9Sp3mmm9hhK0YCgUyTwKH16DyM=;
+        b=NNUuOmM7CKWjGHRTbNqGdtPWTCVZ0EOBnHBVZa3Du0rkbJ7FuAdoM+5baW/0stuk3E
+         gCiivLgsL72BauezxIjWfOW69541tetppjNLpG2D95N8+F/Wn/SGBAKFTqnLiB7KU6Lx
+         CX3qq1gGt+ByA9Y561UNZy9VW7qUxNA/RFLeIB6YzUt5jxNcSAniQlhV5waLfLIYwRmI
+         CNEAmi7iXeMVT9AdY2V3t1FWvhKfmU8ccDR4oOIJ+vrikdE91d1U2H6AutP4iBv4Leoj
+         +HqRPkKjWHec2HWsuDwlAK0V8pdoaeVsGF3xzqc4YUKmwU5Ea5BiwNPzJA4399Kyj9sf
+         hYVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=duuZ/GEcOj1lMi9UGA5Gk5HIPaCv9sbL2SkkSg2xRiM=;
-        b=r0KJhPrkXdIllVzCSiiiV7+dUCu30yXf16+4l7jdPBrQG7DrEaRJa1P9u7C5UIhhG0
-         yAuMcBQUqbRF4gZozxGzXqO9dUUK9a1fhGOeBEKOy/jPTQUe4xH6J8FkvdkTI4biDPG2
-         bMU1Bt6V6xbsCPRNTngLc1lFARgpWRtLqsF//YQfpo+yMSumWGOSPqCvAzwLhrEYwRmC
-         6nbkzFPip4ie7Cex1McNeoTnKtmZjQ+musH9RmJ6xlmYjfS9yuo2cz6ZdP6N19PLqmgp
-         4DjoiYhJAx1BkLu0c/wmoW1V2kd3KM7oF5SvSrl8R2bkIX0O1XmmkCS24Y8Mt+/7zT9K
-         aedg==
-X-Gm-Message-State: APjAAAXnOS7dGVlrzwChWETqIE4LjkdqtOcUsvfaF/C4ucQiV+Mc8wyJ
-        9koyjJDEphgc9xcHV3QJjKv5t8YfDIA=
-X-Google-Smtp-Source: APXvYqxUPQt/UQq91K5FWXcV7jPBqeDBMXe8DhnwkRTqSBFfcNvvxM6M3M3acec0a/Aj7sCn1c0WrA==
-X-Received: by 2002:adf:e602:: with SMTP id p2mr4043485wrm.348.1573145903787;
-        Thu, 07 Nov 2019 08:58:23 -0800 (PST)
-Received: from ?IPv6:2a01:e35:8b63:dc30:95e0:8058:2b4b:3437? ([2a01:e35:8b63:dc30:95e0:8058:2b4b:3437])
-        by smtp.gmail.com with ESMTPSA id q5sm2251463wmc.27.2019.11.07.08.58.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 07 Nov 2019 08:58:23 -0800 (PST)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH v3 1/1] net: ipv6: allow setting address on interface
- outside current namespace
-To:     Jonas Bonn <jonas@norrbonn.se>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net
-References: <20191107132755.8517-7-jonas@norrbonn.se>
- <20191107135652.19629-1-jonas@norrbonn.se>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <fb330ba7-1b9a-3fbb-4351-813b0928dc1b@6wind.com>
-Date:   Thu, 7 Nov 2019 17:58:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OY3mL3SJty7WONSqI9Sp3mmm9hhK0YCgUyTwKH16DyM=;
+        b=Qt0j+vj6+PgrBQJ7w6tK8lO4J5kSH2BGzQxqiMsudimhLD3vJdz66TXoDZDUPSoz1x
+         R+z0kz3UMdONKQF2MAmwyrafxY4QAu0QoHlxsVUXM/p3Fv4bykchykrYkL1ICBM9sxRg
+         jVZVzv3tRcjXFZgWcikoaTB1rsSuQ4H8GuyeDfrr3Zd/QEk3DQMdXSltQmHnUAMQnyQr
+         xqgPhFnQA1o4j+rFzM9XQJ583f0qtb8puZB9rutNuPnYH0/jMCLWzgGXGJWKD2kzKKVE
+         fqaHbKLOZ5Hpxcb8LHnHNCDPhXkwkCg+3PpQegB45+IzmEejdXXEmvyaqNpzSozsarkV
+         cznA==
+X-Gm-Message-State: APjAAAXBKn3StlOELhtte9EM5BiZYsuQmMla2ohXGAemw4m5h6hYy/U2
+        pyV2V8W4yfmNioOcniP3tNrtUzjB
+X-Google-Smtp-Source: APXvYqxFut2yxH7PqpA71d3KJAxs5HebTN+eknxgBnVy7jeHXqJzJq8ZmmmZ/+5OtH3D4K3+fdkwIg==
+X-Received: by 2002:a25:490:: with SMTP id 138mr4200956ybe.360.1573145959274;
+        Thu, 07 Nov 2019 08:59:19 -0800 (PST)
+Received: from mail-yw1-f42.google.com (mail-yw1-f42.google.com. [209.85.161.42])
+        by smtp.gmail.com with ESMTPSA id f64sm871537ywd.51.2019.11.07.08.59.17
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Nov 2019 08:59:18 -0800 (PST)
+Received: by mail-yw1-f42.google.com with SMTP id d80so419340ywa.6
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:59:17 -0800 (PST)
+X-Received: by 2002:a0d:fe06:: with SMTP id o6mr1541900ywf.424.1573145957443;
+ Thu, 07 Nov 2019 08:59:17 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191107135652.19629-1-jonas@norrbonn.se>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <000000000000f68d660570dcddd8@google.com> <000000000000e51d450596c1d472@google.com>
+In-Reply-To: <000000000000e51d450596c1d472@google.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 7 Nov 2019 11:58:41 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSdz-+Hj2itAiC5uiP0X7aHP4YPG1+1k_bbE+OCBK+P0Rg@mail.gmail.com>
+Message-ID: <CA+FuTSdz-+Hj2itAiC5uiP0X7aHP4YPG1+1k_bbE+OCBK+P0Rg@mail.gmail.com>
+Subject: Re: kernel BUG at net/ipv4/ip_output.c:LINE!
+To:     syzbot <syzbot+90d5ec0c05e708f3b66d@syzkaller.appspotmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>, johannes.berg@intel.com,
+        Martin Lau <kafai@fb.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Peter Oskolkov <posk@google.com>, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        Yonghong Song <yhs@fb.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 07/11/2019 à 14:56, Jonas Bonn a écrit :
-> This patch allows an interface outside of the current namespace to be
-> selected when setting a new IPv6 address for a device.  This uses the
-> IFA_TARGET_NETNSID attribute to select the namespace in which to search
-> for the interface to act upon.
-> 
-> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-> ---
-> 
-> I messed up this patch and the cleanup code path wasn't included.  It
-> should look like this.  Sorry for the noise.
-You cannot resend just one patch, you have to resend the whole series.
+On Thu, Nov 7, 2019 at 8:42 AM syzbot
+<syzbot+90d5ec0c05e708f3b66d@syzkaller.appspotmail.com> wrote:
+>
+> syzbot suspects this bug was fixed by commit:
+>
+> commit e7c87bd6cc4ec7b0ac1ed0a88a58f8206c577488
+> Author: Willem de Bruijn <willemb@google.com>
+> Date:   Wed Jan 16 01:19:22 2019 +0000
+>
+>      bpf: in __bpf_redirect_no_mac pull mac only if present
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14175486600000
+> start commit:   112cbae2 Merge branch 'linus' of git://git.kernel.org/pub/..
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=152cb8ccd35b1f70
+> dashboard link: https://syzkaller.appspot.com/bug?extid=90d5ec0c05e708f3b66d
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153ed6e2400000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1539038c400000
+>
+> If the result looks correct, please mark the bug fixed by replying with:
+>
+> #syz fix: bpf: in __bpf_redirect_no_mac pull mac only if present
+
+#syz fix: bpf: in __bpf_redirect_no_mac pull mac only if present
