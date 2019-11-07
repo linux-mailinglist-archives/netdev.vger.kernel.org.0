@@ -2,112 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B11C7F32AB
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:17:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3EA5F32E5
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:24:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730217AbfKGPRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 10:17:24 -0500
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:40840 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729934AbfKGPRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:17:24 -0500
-Received: by mail-yw1-f65.google.com with SMTP id n82so699120ywc.7
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 07:17:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eINQGFNoBj0XJl5Ezms4ve/c5goqCblPH3ci+ZKJmhE=;
-        b=RDlXJhZvPW8W/m0PvOyo+HegHt81FppGi/9odDfIbOt99D3t3D4eBgmNzb9U0Lnopr
-         IDcoeIZiuOXDt2a3YVDQJqatmyEl+n4h0ZatJvh1hZ/Tn6QOpnxSUcJtxQ8sas60UaEN
-         V0EKVdOR/9did3BNQYhsz8QK6bGLs/GErM9X1cXXT0uLoynPqy1pBzBTlqgtR2ydbLpQ
-         6Gg/ke5vnWXu6uE2MrSXpyfkUsrp19YZSK4gJR3STrLVBIIpOdBxj5E2AgOajB/xoNx5
-         SraCklBeb1zdOhD9hW+go/Qz2rV5QLWFk8fI9lbbIuhZtZ8OgDEuaM7iPaQUsuI7VDXu
-         F6ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eINQGFNoBj0XJl5Ezms4ve/c5goqCblPH3ci+ZKJmhE=;
-        b=rycv0+94PqPiArD2rK2TL3oMd6N5kKvNPQW/Ayz9XwjPYBuy7Xh524cHmgTDCZe8g5
-         3Fw7mwdOsV0auV2AZkqZXoWO6N1gXxA9E4CMTrq4Vh0IhqQ6ewaGW2qiRFbc+viKobOv
-         TbcWKEd1rUaJyNhTwAX0qyRyzmuUW//16CNHuqjmnuP3v989jEOmzG2zOsv9zK1efVZ0
-         EIlLz1j5qB2a4saN1AD0QozzfVP2o7WbWAou2j1mB2qqF7OElSKV/veHIP7/NHRJHQaj
-         bUOsYPb/pK2KWoXUNqIm29wbWuQKd/g8x4oJcmcQ7huEfC55l9oTtUXSrhWN2hjr0hrv
-         MONQ==
-X-Gm-Message-State: APjAAAXwZPh9JNRLL+OCzsOOO9ec3P2FPHoCbxmyDikHmny+L4v2Yyd8
-        jnHOT9jX8KlUJc5TzOvCu+LfEw1A
-X-Google-Smtp-Source: APXvYqwCwKJq6FrRlxshg+6m2XI5pNQS6cskXK9HeM5rf68H54GmaE/ZBw8JXRrZ00nwTMCYDzpxYQ==
-X-Received: by 2002:a81:3d4d:: with SMTP id k74mr2704753ywa.235.1573139842280;
-        Thu, 07 Nov 2019 07:17:22 -0800 (PST)
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
-        by smtp.gmail.com with ESMTPSA id i125sm892881ywa.68.2019.11.07.07.17.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Nov 2019 07:17:21 -0800 (PST)
-Received: by mail-yb1-f179.google.com with SMTP id g38so1043098ybe.11
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 07:17:20 -0800 (PST)
-X-Received: by 2002:a25:583:: with SMTP id 125mr3500165ybf.89.1573139840266;
- Thu, 07 Nov 2019 07:17:20 -0800 (PST)
+        id S2388189AbfKGPYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 10:24:11 -0500
+Received: from mail2.candelatech.com ([208.74.158.173]:43182 "EHLO
+        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727727AbfKGPYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:24:11 -0500
+Received: from [192.168.1.47] (unknown [50.34.216.97])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id A4F4413C358;
+        Thu,  7 Nov 2019 07:24:09 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com A4F4413C358
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1573140251;
+        bh=51W91Kw2UqEb8Wlp1490MubzBtLUcquzz36+dIa/yk8=;
+        h=Subject:To:References:Cc:From:Date:In-Reply-To:From;
+        b=MLjoN28EsJ7Hcrq5iM3T9oJvb3rV4Ko1evC6v41M1C1VxFkNS9bml8tMltAtqXLBn
+         kfvP/Q95avdsMtK5oWprw9vOTXtUs1W11hsFbL8z4sgdCNWO2r0sNR14LpKng3IeRT
+         r37iAX7JwcSVkDbw9zxUGpSVfE7XdpZEhIyUWU4U=
+Subject: Re: [PATCH net-next] ath10k: fix RX of frames with broken FCS in
+ monitor mode
+To:     =?UTF-8?Q?Linus_L=c3=bcssing?= <linus.luessing@c0d3.blue>
+References: <20191105164932.11799-1-linus.luessing@c0d3.blue>
+ <927cea69-7afc-5c35-df8d-9813392e8928@candelatech.com>
+ <20191107140149.GB19482@otheros>
+Cc:     =?UTF-8?Q?Linus_L=c3=bcssing?= <ll@simonwunderlich.de>,
+        ath10k@lists.infradead.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Ben Greear <greearb@candelatech.com>
+Message-ID: <6ca7e338-d14d-49f6-f51c-600856b59767@candelatech.com>
+Date:   Thu, 7 Nov 2019 07:24:06 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101
+ Thunderbird/45.8.0
 MIME-Version: 1.0
-References: <0000000000008c6be40570d8a9d8@google.com> <000000000000f5a6620596c1d43e@google.com>
- <CA+FuTScESZAhoyDvD3uNq3SRC1=5dvnkONW53tZ0vj0tLnbF-A@mail.gmail.com>
-In-Reply-To: <CA+FuTScESZAhoyDvD3uNq3SRC1=5dvnkONW53tZ0vj0tLnbF-A@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 7 Nov 2019 10:16:44 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeRdb1xZx8HJJWtUxjsyoMPZRvUKbm+2+r_TwM5SmAXJQ@mail.gmail.com>
-Message-ID: <CA+FuTSeRdb1xZx8HJJWtUxjsyoMPZRvUKbm+2+r_TwM5SmAXJQ@mail.gmail.com>
-Subject: Re: general protection fault in propagate_entity_cfs_rq
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     syzbot <syzbot+2e37f794f31be5667a88@syzkaller.appspotmail.com>,
-        allison@lohutok.net, andy.shevchenko@gmail.com,
-        David Miller <davem@davemloft.net>, douly.fnst@cn.fujitsu.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        HPA <hpa@zytor.com>, info@metux.net,
-        Jiri Benc <jbenc@redhat.com>, jgross@suse.com,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, mingo@redhat.com,
-        Network Development <netdev@vger.kernel.org>,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        ville.syrjala@linux.intel.com, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20191107140149.GB19482@otheros>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 7, 2019 at 9:58 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Thu, Nov 7, 2019 at 8:42 AM syzbot
-> <syzbot+2e37f794f31be5667a88@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot suspects this bug was fixed by commit:
-> >
-> > commit bab2c80e5a6c855657482eac9e97f5f3eedb509a
-> > Author: Willem de Bruijn <willemb@google.com>
-> > Date:   Wed Jul 11 16:00:44 2018 +0000
-> >
-> >      nsh: set mac len based on inner packet
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170cc89c600000
-> > start commit:   6fd06660 Merge branch 'bpf-arm-jit-improvements'
-> > git tree:       bpf-next
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=a501a01deaf0fe9
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=2e37f794f31be5667a88
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1014db94400000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f81e78400000
-> >
-> > If the result looks correct, please mark the bug fixed by replying with:
-> >
-> > #syz fix: nsh: set mac len based on inner packet
->
-> #syz fix: nsh: set mac len based on inner packet
 
-The stack traces in both the bisection log and my manual run, when
-running the linked reproducer, differ from the one in the dashboard.
-Those more obviously include nsh functions. The trace in the dashboard
-does not and sees a GPF in propagate_entity_cfs_rq, which does not
-immediately appear related. That said, it is reported only once over a
-year ago, so probably still preferable to close. A new report will be
-opened if incorrect.
+
+On 11/07/2019 06:03 AM, Linus Lüssing wrote:
+> On Tue, Nov 05, 2019 at 09:19:20AM -0800, Ben Greear wrote:
+>> Thanks for adding the counter.  Since it us u32, I doubt you need the spin lock
+>> below?
+>
+> Ok, I can remove the spin-lock.
+>
+> Just for clarification though, if I recall correctly then an increment operator
+> is not guaranteed to work atomically. But you think it's unlikely
+> to race with a concurrent ++ and therefore it's fine for just a debug counter?
+> (and if it were racing, it'd just be a missed +1)
+
+I think it is fine to be off-by-one, and u32 is atomic so you would never read a really
+weird number, like you can if u64 is non-atomically being incremented.
+
+Thanks,
+Ben
+
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
