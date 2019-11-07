@@ -2,836 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03046F329F
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B11C7F32AB
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:17:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388386AbfKGPOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 10:14:35 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:33984 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726231AbfKGPOe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:14:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573139673;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I+fjq8F2z2+dQ11YdLKz+4+uqeQo1azxEeqDNmmz1pk=;
-        b=FvZrahgX8FmNzkRDgIUeghTV7JX3EalCszTDPKVX5ziVH1dYOW0vF8n3XjlCrHLcoW5iKY
-        plXBcgMAf4Z/9Wtt1sS7Ml11CfvuflWzFIDiNfYxL9MxPNEgAoJPZZAxN+ncxAfDhVz6Dh
-        SOiJfUwsCSAT0AZP47hLe/xyBT2V5KY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-374-7s86bSfPMgmzkpoQVMNIZw-1; Thu, 07 Nov 2019 10:14:30 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B77E0107ACC3;
-        Thu,  7 Nov 2019 15:14:26 +0000 (UTC)
-Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-21.pek2.redhat.com [10.72.12.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 08C5E600D1;
-        Thu,  7 Nov 2019 15:14:02 +0000 (UTC)
-From:   Jason Wang <jasowang@redhat.com>
-To:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: [PATCH V11 6/6] docs: sample driver to demonstrate how to implement virtio-mdev framework
-Date:   Thu,  7 Nov 2019 23:11:09 +0800
-Message-Id: <20191107151109.23261-7-jasowang@redhat.com>
-In-Reply-To: <20191107151109.23261-1-jasowang@redhat.com>
-References: <20191107151109.23261-1-jasowang@redhat.com>
+        id S1730217AbfKGPRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 10:17:24 -0500
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:40840 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729934AbfKGPRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:17:24 -0500
+Received: by mail-yw1-f65.google.com with SMTP id n82so699120ywc.7
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 07:17:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eINQGFNoBj0XJl5Ezms4ve/c5goqCblPH3ci+ZKJmhE=;
+        b=RDlXJhZvPW8W/m0PvOyo+HegHt81FppGi/9odDfIbOt99D3t3D4eBgmNzb9U0Lnopr
+         IDcoeIZiuOXDt2a3YVDQJqatmyEl+n4h0ZatJvh1hZ/Tn6QOpnxSUcJtxQ8sas60UaEN
+         V0EKVdOR/9did3BNQYhsz8QK6bGLs/GErM9X1cXXT0uLoynPqy1pBzBTlqgtR2ydbLpQ
+         6Gg/ke5vnWXu6uE2MrSXpyfkUsrp19YZSK4gJR3STrLVBIIpOdBxj5E2AgOajB/xoNx5
+         SraCklBeb1zdOhD9hW+go/Qz2rV5QLWFk8fI9lbbIuhZtZ8OgDEuaM7iPaQUsuI7VDXu
+         F6ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eINQGFNoBj0XJl5Ezms4ve/c5goqCblPH3ci+ZKJmhE=;
+        b=rycv0+94PqPiArD2rK2TL3oMd6N5kKvNPQW/Ayz9XwjPYBuy7Xh524cHmgTDCZe8g5
+         3Fw7mwdOsV0auV2AZkqZXoWO6N1gXxA9E4CMTrq4Vh0IhqQ6ewaGW2qiRFbc+viKobOv
+         TbcWKEd1rUaJyNhTwAX0qyRyzmuUW//16CNHuqjmnuP3v989jEOmzG2zOsv9zK1efVZ0
+         EIlLz1j5qB2a4saN1AD0QozzfVP2o7WbWAou2j1mB2qqF7OElSKV/veHIP7/NHRJHQaj
+         bUOsYPb/pK2KWoXUNqIm29wbWuQKd/g8x4oJcmcQ7huEfC55l9oTtUXSrhWN2hjr0hrv
+         MONQ==
+X-Gm-Message-State: APjAAAXwZPh9JNRLL+OCzsOOO9ec3P2FPHoCbxmyDikHmny+L4v2Yyd8
+        jnHOT9jX8KlUJc5TzOvCu+LfEw1A
+X-Google-Smtp-Source: APXvYqwCwKJq6FrRlxshg+6m2XI5pNQS6cskXK9HeM5rf68H54GmaE/ZBw8JXRrZ00nwTMCYDzpxYQ==
+X-Received: by 2002:a81:3d4d:: with SMTP id k74mr2704753ywa.235.1573139842280;
+        Thu, 07 Nov 2019 07:17:22 -0800 (PST)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id i125sm892881ywa.68.2019.11.07.07.17.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Nov 2019 07:17:21 -0800 (PST)
+Received: by mail-yb1-f179.google.com with SMTP id g38so1043098ybe.11
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 07:17:20 -0800 (PST)
+X-Received: by 2002:a25:583:: with SMTP id 125mr3500165ybf.89.1573139840266;
+ Thu, 07 Nov 2019 07:17:20 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: 7s86bSfPMgmzkpoQVMNIZw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+References: <0000000000008c6be40570d8a9d8@google.com> <000000000000f5a6620596c1d43e@google.com>
+ <CA+FuTScESZAhoyDvD3uNq3SRC1=5dvnkONW53tZ0vj0tLnbF-A@mail.gmail.com>
+In-Reply-To: <CA+FuTScESZAhoyDvD3uNq3SRC1=5dvnkONW53tZ0vj0tLnbF-A@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 7 Nov 2019 10:16:44 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSeRdb1xZx8HJJWtUxjsyoMPZRvUKbm+2+r_TwM5SmAXJQ@mail.gmail.com>
+Message-ID: <CA+FuTSeRdb1xZx8HJJWtUxjsyoMPZRvUKbm+2+r_TwM5SmAXJQ@mail.gmail.com>
+Subject: Re: general protection fault in propagate_entity_cfs_rq
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     syzbot <syzbot+2e37f794f31be5667a88@syzkaller.appspotmail.com>,
+        allison@lohutok.net, andy.shevchenko@gmail.com,
+        David Miller <davem@davemloft.net>, douly.fnst@cn.fujitsu.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        HPA <hpa@zytor.com>, info@metux.net,
+        Jiri Benc <jbenc@redhat.com>, jgross@suse.com,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, mingo@redhat.com,
+        Network Development <netdev@vger.kernel.org>,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        ville.syrjala@linux.intel.com, x86@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This sample driver creates mdev device that simulate virtio net device
-over virtio mdev transport. The device is implemented through vringh
-and workqueue. A device specific dma ops is to make sure HVA is used
-directly as the IOVA. This should be sufficient for kernel virtio
-driver to work.
+On Thu, Nov 7, 2019 at 9:58 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Thu, Nov 7, 2019 at 8:42 AM syzbot
+> <syzbot+2e37f794f31be5667a88@syzkaller.appspotmail.com> wrote:
+> >
+> > syzbot suspects this bug was fixed by commit:
+> >
+> > commit bab2c80e5a6c855657482eac9e97f5f3eedb509a
+> > Author: Willem de Bruijn <willemb@google.com>
+> > Date:   Wed Jul 11 16:00:44 2018 +0000
+> >
+> >      nsh: set mac len based on inner packet
+> >
+> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170cc89c600000
+> > start commit:   6fd06660 Merge branch 'bpf-arm-jit-improvements'
+> > git tree:       bpf-next
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=a501a01deaf0fe9
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=2e37f794f31be5667a88
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1014db94400000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f81e78400000
+> >
+> > If the result looks correct, please mark the bug fixed by replying with:
+> >
+> > #syz fix: nsh: set mac len based on inner packet
+>
+> #syz fix: nsh: set mac len based on inner packet
 
-Only 'virtio' type is supported right now. I plan to add 'vhost' type
-on top which requires some virtual IOMMU implemented in this sample
-driver.
-
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- MAINTAINERS                        |   1 +
- samples/Kconfig                    |  10 +
- samples/vfio-mdev/Makefile         |   1 +
- samples/vfio-mdev/mvnet_loopback.c | 687 +++++++++++++++++++++++++++++
- 4 files changed, 699 insertions(+)
- create mode 100644 samples/vfio-mdev/mvnet_loopback.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4997957443df..62c3eafa99b0 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17249,6 +17249,7 @@ F:=09include/uapi/linux/virtio_*.h
- F:=09drivers/crypto/virtio/
- F:=09mm/balloon_compaction.c
- F:=09include/linux/mdev_virtio_ops.h
-+F:=09samples/vfio-mdev/mvnet_loopback.c
-=20
- VIRTIO BLOCK AND SCSI DRIVERS
- M:=09"Michael S. Tsirkin" <mst@redhat.com>
-diff --git a/samples/Kconfig b/samples/Kconfig
-index c8dacb4dda80..5b347e90fd20 100644
---- a/samples/Kconfig
-+++ b/samples/Kconfig
-@@ -131,6 +131,16 @@ config SAMPLE_VFIO_MDEV_MDPY
- =09  mediated device.  It is a simple framebuffer and supports
- =09  the region display interface (VFIO_GFX_PLANE_TYPE_REGION).
-=20
-+config SAMPLE_VIRTIO_MDEV_NET_LOOPBACK
-+=09tristate "Build loopback VIRTIO net example mediated device sample code=
- -- loadable modules only"
-+=09depends on VIRTIO_MDEV && VHOST_RING && m
-+=09help
-+=09  Build a networking sample device for use as a virtio
-+=09  mediated device. The device cooperates with virtio-mdev bus
-+=09  driver to present an virtio ethernet driver for
-+=09  kernel. It simply loopbacks all packets from its TX
-+=09  virtqueue to its RX virtqueue.
-+
- config SAMPLE_VFIO_MDEV_MDPY_FB
- =09tristate "Build VFIO mdpy example guest fbdev driver -- loadable module=
- only"
- =09depends on FB && m
-diff --git a/samples/vfio-mdev/Makefile b/samples/vfio-mdev/Makefile
-index 10d179c4fdeb..817618569848 100644
---- a/samples/vfio-mdev/Makefile
-+++ b/samples/vfio-mdev/Makefile
-@@ -3,3 +3,4 @@ obj-$(CONFIG_SAMPLE_VFIO_MDEV_MTTY) +=3D mtty.o
- obj-$(CONFIG_SAMPLE_VFIO_MDEV_MDPY) +=3D mdpy.o
- obj-$(CONFIG_SAMPLE_VFIO_MDEV_MDPY_FB) +=3D mdpy-fb.o
- obj-$(CONFIG_SAMPLE_VFIO_MDEV_MBOCHS) +=3D mbochs.o
-+obj-$(CONFIG_SAMPLE_VIRTIO_MDEV_NET_LOOPBACK) +=3D mvnet_loopback.o
-diff --git a/samples/vfio-mdev/mvnet_loopback.c b/samples/vfio-mdev/mvnet_l=
-oopback.c
-new file mode 100644
-index 000000000000..e790004ddeb9
---- /dev/null
-+++ b/samples/vfio-mdev/mvnet_loopback.c
-@@ -0,0 +1,687 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Mediated virtual virtio-net device driver.
-+ *
-+ * Copyright (c) 2019, Red Hat Inc. All rights reserved.
-+ *     Author: Jason Wang <jasowang@redhat.com>
-+ *
-+ * Sample driver that creates mdev device that simulates ethernet loopback
-+ * device.
-+ *
-+ * Usage:
-+ *
-+ * # modprobe virtio_mdev
-+ * # modprobe mvnet_loopback
-+ * # cd /sys/devices/virtual/mvnet_loopback/mvnet_loopback/ \
-+ *      mdev_supported_types/mvnet_loopback-virtio
-+ * # echo "83b8f4f2-509f-382f-3c1e-e6bfe0fa1001" > ./create
-+ * # cd devices/83b8f4f2-509f-382f-3c1e-e6bfe0fa1001
-+ * # ls -d virtio0
-+ * virtio0
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/fs.h>
-+#include <linux/poll.h>
-+#include <linux/slab.h>
-+#include <linux/sched.h>
-+#include <linux/wait.h>
-+#include <linux/uuid.h>
-+#include <linux/iommu.h>
-+#include <linux/sysfs.h>
-+#include <linux/file.h>
-+#include <linux/etherdevice.h>
-+#include <linux/mdev.h>
-+#include <linux/vringh.h>
-+#include <linux/mdev_virtio_ops.h>
-+#include <uapi/linux/virtio_config.h>
-+#include <uapi/linux/virtio_net.h>
-+
-+#define VERSION_STRING  "0.1"
-+#define DRIVER_AUTHOR   "Red Hat Corporation"
-+
-+#define MVNET_CLASS_NAME "mvnet_loopback"
-+#define MVNET_NAME       "mvnet_loopback"
-+
-+/*
-+ * Global Structures
-+ */
-+
-+static struct mvnet_dev {
-+=09struct class=09*vd_class;
-+=09struct idr=09vd_idr;
-+=09struct device=09dev;
-+} mvnet_dev;
-+
-+struct mvnet_virtqueue {
-+=09struct vringh vring;
-+=09struct vringh_kiov iov;
-+=09unsigned short head;
-+=09bool ready;
-+=09u64 desc_addr;
-+=09u64 device_addr;
-+=09u64 driver_addr;
-+=09u32 num;
-+=09void *private;
-+=09irqreturn_t (*cb)(void *data);
-+};
-+
-+#define MVNET_QUEUE_ALIGN PAGE_SIZE
-+#define MVNET_QUEUE_MAX 256
-+#define MVNET_DEVICE_ID 0x1
-+#define MVNET_VENDOR_ID 0
-+
-+u64 mvnet_features =3D (1ULL << VIRTIO_F_ANY_LAYOUT) |
-+=09=09     (1ULL << VIRTIO_F_VERSION_1) |
-+=09=09     (1ULL << VIRTIO_F_IOMMU_PLATFORM);
-+
-+/* State of each mdev device */
-+struct mvnet_state {
-+=09struct mvnet_virtqueue vqs[2];
-+=09struct work_struct work;
-+=09/* spinlock to synchronize virtqueue state */
-+=09spinlock_t lock;
-+=09struct mdev_device *mdev;
-+=09struct virtio_net_config config;
-+=09void *buffer;
-+=09u32 status;
-+=09u32 generation;
-+=09u64 features;
-+=09struct list_head next;
-+};
-+
-+static struct mutex mdev_list_lock;
-+static struct list_head mdev_devices_list;
-+
-+static void mvnet_queue_ready(struct mvnet_state *mvnet, unsigned int idx)
-+{
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+=09int ret;
-+
-+=09ret =3D vringh_init_kern(&vq->vring, mvnet_features, MVNET_QUEUE_MAX,
-+=09=09=09       false, (struct vring_desc *)vq->desc_addr,
-+=09=09=09       (struct vring_avail *)vq->driver_addr,
-+=09=09=09       (struct vring_used *)vq->device_addr);
-+}
-+
-+static void mvnet_vq_reset(struct mvnet_virtqueue *vq)
-+{
-+=09vq->ready =3D 0;
-+=09vq->desc_addr =3D 0;
-+=09vq->driver_addr =3D 0;
-+=09vq->device_addr =3D 0;
-+=09vq->cb =3D NULL;
-+=09vq->private =3D NULL;
-+=09vringh_init_kern(&vq->vring, mvnet_features, MVNET_QUEUE_MAX,
-+=09=09=09 false, 0, 0, 0);
-+}
-+
-+static void mvnet_reset(struct mvnet_state *mvnet)
-+{
-+=09int i;
-+
-+=09for (i =3D 0; i < 2; i++)
-+=09=09mvnet_vq_reset(&mvnet->vqs[i]);
-+
-+=09mvnet->features =3D 0;
-+=09mvnet->status =3D 0;
-+=09++mvnet->generation;
-+}
-+
-+static void mvnet_work(struct work_struct *work)
-+{
-+=09struct mvnet_state *mvnet =3D container_of(work, struct
-+=09=09=09=09=09=09 mvnet_state, work);
-+=09struct mvnet_virtqueue *txq =3D &mvnet->vqs[1];
-+=09struct mvnet_virtqueue *rxq =3D &mvnet->vqs[0];
-+=09size_t read, write, total_write;
-+=09int err;
-+=09int pkts =3D 0;
-+
-+=09spin_lock(&mvnet->lock);
-+
-+=09if (!txq->ready || !rxq->ready)
-+=09=09goto out;
-+
-+=09while (true) {
-+=09=09total_write =3D 0;
-+=09=09err =3D vringh_getdesc_kern(&txq->vring, &txq->iov, NULL,
-+=09=09=09=09=09  &txq->head, GFP_ATOMIC);
-+=09=09if (err <=3D 0)
-+=09=09=09break;
-+
-+=09=09err =3D vringh_getdesc_kern(&rxq->vring, NULL, &rxq->iov,
-+=09=09=09=09=09  &rxq->head, GFP_ATOMIC);
-+=09=09if (err <=3D 0) {
-+=09=09=09vringh_complete_kern(&txq->vring, txq->head, 0);
-+=09=09=09break;
-+=09=09}
-+
-+=09=09while (true) {
-+=09=09=09read =3D vringh_iov_pull_kern(&txq->iov, mvnet->buffer,
-+=09=09=09=09=09=09    PAGE_SIZE);
-+=09=09=09if (read <=3D 0)
-+=09=09=09=09break;
-+
-+=09=09=09write =3D vringh_iov_push_kern(&rxq->iov, mvnet->buffer,
-+=09=09=09=09=09=09     read);
-+=09=09=09if (write <=3D 0)
-+=09=09=09=09break;
-+
-+=09=09=09total_write +=3D write;
-+=09=09}
-+
-+=09=09/* Make sure data is wrote before advancing index */
-+=09=09smp_wmb();
-+
-+=09=09vringh_complete_kern(&txq->vring, txq->head, 0);
-+=09=09vringh_complete_kern(&rxq->vring, rxq->head, total_write);
-+
-+=09=09/* Make sure used is visible before rasing the interrupt. */
-+=09=09smp_wmb();
-+
-+=09=09local_bh_disable();
-+=09=09if (txq->cb)
-+=09=09=09txq->cb(txq->private);
-+=09=09if (rxq->cb)
-+=09=09=09rxq->cb(rxq->private);
-+=09=09local_bh_enable();
-+
-+=09=09if (++pkts > 4) {
-+=09=09=09schedule_work(&mvnet->work);
-+=09=09=09goto out;
-+=09=09}
-+=09}
-+
-+out:
-+=09spin_unlock(&mvnet->lock);
-+}
-+
-+static dma_addr_t mvnet_map_page(struct device *dev, struct page *page,
-+=09=09=09=09 unsigned long offset, size_t size,
-+=09=09=09=09 enum dma_data_direction dir,
-+=09=09=09=09 unsigned long attrs)
-+{
-+=09/* Vringh can only use HVA */
-+=09return (dma_addr_t)(page_address(page) + offset);
-+}
-+
-+static void mvnet_unmap_page(struct device *dev, dma_addr_t dma_addr,
-+=09=09=09     size_t size, enum dma_data_direction dir,
-+=09=09=09     unsigned long attrs)
-+{
-+}
-+
-+static void *mvnet_alloc_coherent(struct device *dev, size_t size,
-+=09=09=09=09  dma_addr_t *dma_addr, gfp_t flag,
-+=09=09=09=09  unsigned long attrs)
-+{
-+=09void *addr =3D kmalloc(size, flag);
-+
-+=09if (!addr)
-+=09=09*dma_addr =3D DMA_MAPPING_ERROR;
-+=09else
-+=09=09*dma_addr =3D (dma_addr_t)addr;
-+
-+=09return addr;
-+}
-+
-+static void mvnet_free_coherent(struct device *dev, size_t size,
-+=09=09=09=09void *vaddr, dma_addr_t dma_addr,
-+=09=09=09=09unsigned long attrs)
-+{
-+=09kfree((void *)dma_addr);
-+}
-+
-+static const struct dma_map_ops mvnet_dma_ops =3D {
-+=09.map_page =3D mvnet_map_page,
-+=09.unmap_page =3D mvnet_unmap_page,
-+=09.alloc =3D mvnet_alloc_coherent,
-+=09.free =3D mvnet_free_coherent,
-+};
-+
-+static const struct mdev_virtio_device_ops mdev_virtio_ops;
-+
-+static int mvnet_create(struct kobject *kobj, struct mdev_device *mdev)
-+{
-+=09struct mvnet_state *mvnet;
-+=09struct virtio_net_config *config;
-+=09struct device *dev =3D mdev_dev(mdev);
-+
-+=09if (!mdev)
-+=09=09return -EINVAL;
-+
-+=09mvnet =3D kzalloc(sizeof(*mvnet), GFP_KERNEL);
-+=09if (!mvnet)
-+=09=09return -ENOMEM;
-+
-+=09mvnet->buffer =3D kmalloc(PAGE_SIZE, GFP_KERNEL);
-+=09if (!mvnet->buffer) {
-+=09=09kfree(mvnet);
-+=09=09return -ENOMEM;
-+=09}
-+
-+=09config =3D &mvnet->config;
-+=09config->mtu =3D 1500;
-+=09config->status =3D VIRTIO_NET_S_LINK_UP;
-+=09eth_random_addr(config->mac);
-+
-+=09INIT_WORK(&mvnet->work, mvnet_work);
-+
-+=09spin_lock_init(&mvnet->lock);
-+=09mvnet->mdev =3D mdev;
-+=09mdev_set_drvdata(mdev, mvnet);
-+
-+=09mutex_lock(&mdev_list_lock);
-+=09list_add(&mvnet->next, &mdev_devices_list);
-+=09mutex_unlock(&mdev_list_lock);
-+
-+=09dev->coherent_dma_mask =3D DMA_BIT_MASK(64);
-+=09set_dma_ops(dev, &mvnet_dma_ops);
-+
-+=09mdev_set_virtio_ops(mdev, &mdev_virtio_ops);
-+
-+=09return 0;
-+}
-+
-+static int mvnet_remove(struct mdev_device *mdev)
-+{
-+=09struct mvnet_state *mds, *tmp_mds;
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09int ret =3D -EINVAL;
-+
-+=09mutex_lock(&mdev_list_lock);
-+=09list_for_each_entry_safe(mds, tmp_mds, &mdev_devices_list, next) {
-+=09=09if (mvnet =3D=3D mds) {
-+=09=09=09list_del(&mvnet->next);
-+=09=09=09mdev_set_drvdata(mdev, NULL);
-+=09=09=09kfree(mvnet->buffer);
-+=09=09=09kfree(mvnet);
-+=09=09=09ret =3D 0;
-+=09=09=09break;
-+=09=09}
-+=09}
-+=09mutex_unlock(&mdev_list_lock);
-+
-+=09return ret;
-+}
-+
-+static ssize_t
-+sample_mvnet_dev_show(struct device *dev, struct device_attribute *attr,
-+=09=09      char *buf)
-+{
-+=09if (mdev_from_dev(dev))
-+=09=09return sprintf(buf, "This is MDEV %s\n", dev_name(dev));
-+
-+=09return sprintf(buf, "\n");
-+}
-+
-+static DEVICE_ATTR_RO(sample_mvnet_dev);
-+
-+static struct attribute *mvnet_dev_attrs[] =3D {
-+=09&dev_attr_sample_mvnet_dev.attr,
-+=09NULL,
-+};
-+
-+static const struct attribute_group mvnet_dev_group =3D {
-+=09.name  =3D "mvnet_dev",
-+=09.attrs =3D mvnet_dev_attrs,
-+};
-+
-+static const struct attribute_group *mvnet_dev_groups[] =3D {
-+=09&mvnet_dev_group,
-+=09NULL,
-+};
-+
-+static ssize_t
-+sample_mdev_dev_show(struct device *dev, struct device_attribute *attr,
-+=09=09     char *buf)
-+{
-+=09if (mdev_from_dev(dev))
-+=09=09return sprintf(buf, "This is MDEV %s\n", dev_name(dev));
-+
-+=09return sprintf(buf, "\n");
-+}
-+
-+static DEVICE_ATTR_RO(sample_mdev_dev);
-+
-+static struct attribute *mdev_dev_attrs[] =3D {
-+=09&dev_attr_sample_mdev_dev.attr,
-+=09NULL,
-+};
-+
-+static const struct attribute_group mdev_dev_group =3D {
-+=09.name  =3D "vendor",
-+=09.attrs =3D mdev_dev_attrs,
-+};
-+
-+static const struct attribute_group *mdev_dev_groups[] =3D {
-+=09&mdev_dev_group,
-+=09NULL,
-+};
-+
-+#define MVNET_STRING_LEN 16
-+
-+static ssize_t
-+name_show(struct kobject *kobj, struct device *dev, char *buf)
-+{
-+=09char name[MVNET_STRING_LEN];
-+=09const char *name_str =3D "virtio-net";
-+
-+=09snprintf(name, MVNET_STRING_LEN, "%s", dev_driver_string(dev));
-+=09if (!strcmp(kobj->name, name))
-+=09=09return sprintf(buf, "%s\n", name_str);
-+
-+=09return -EINVAL;
-+}
-+
-+static MDEV_TYPE_ATTR_RO(name);
-+
-+static ssize_t
-+available_instances_show(struct kobject *kobj, struct device *dev, char *b=
-uf)
-+{
-+=09return sprintf(buf, "%d\n", INT_MAX);
-+}
-+
-+static MDEV_TYPE_ATTR_RO(available_instances);
-+
-+static ssize_t device_api_show(struct kobject *kobj, struct device *dev,
-+=09=09=09       char *buf)
-+{
-+=09return sprintf(buf, "%s\n", VIRTIO_MDEV_DEVICE_API_STRING);
-+}
-+
-+static MDEV_TYPE_ATTR_RO(device_api);
-+
-+static struct attribute *mdev_types_attrs[] =3D {
-+=09&mdev_type_attr_name.attr,
-+=09&mdev_type_attr_device_api.attr,
-+=09&mdev_type_attr_available_instances.attr,
-+=09NULL,
-+};
-+
-+static struct attribute_group mdev_type_group =3D {
-+=09.name  =3D "virtio",
-+=09.attrs =3D mdev_types_attrs,
-+};
-+
-+/* TBD: "vhost" type */
-+
-+static struct attribute_group *mdev_type_groups[] =3D {
-+=09&mdev_type_group,
-+=09NULL,
-+};
-+
-+static int mvnet_set_vq_address(struct mdev_device *mdev, u16 idx,
-+=09=09=09=09u64 desc_area, u64 driver_area, u64 device_area)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+
-+=09vq->desc_addr =3D desc_area;
-+=09vq->driver_addr =3D driver_area;
-+=09vq->device_addr =3D device_area;
-+
-+=09return 0;
-+}
-+
-+static void mvnet_set_vq_num(struct mdev_device *mdev, u16 idx, u32 num)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+
-+=09vq->num =3D num;
-+}
-+
-+static void mvnet_kick_vq(struct mdev_device *mdev, u16 idx)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+
-+=09if (vq->ready)
-+=09=09schedule_work(&mvnet->work);
-+}
-+
-+static void mvnet_set_vq_cb(struct mdev_device *mdev, u16 idx,
-+=09=09=09    struct virtio_mdev_callback *cb)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+
-+=09vq->cb =3D cb->callback;
-+=09vq->private =3D cb->private;
-+}
-+
-+static void mvnet_set_vq_ready(struct mdev_device *mdev, u16 idx, bool rea=
-dy)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+
-+=09spin_lock(&mvnet->lock);
-+=09vq->ready =3D ready;
-+=09if (vq->ready)
-+=09=09mvnet_queue_ready(mvnet, idx);
-+=09spin_unlock(&mvnet->lock);
-+}
-+
-+static bool mvnet_get_vq_ready(struct mdev_device *mdev, u16 idx)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+
-+=09return vq->ready;
-+}
-+
-+static int mvnet_set_vq_state(struct mdev_device *mdev, u16 idx, u64 state=
-)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+=09struct vringh *vrh =3D &vq->vring;
-+
-+=09spin_lock(&mvnet->lock);
-+=09vrh->last_avail_idx =3D state;
-+=09spin_unlock(&mvnet->lock);
-+
-+=09return 0;
-+}
-+
-+static u64 mvnet_get_vq_state(struct mdev_device *mdev, u16 idx)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+=09struct mvnet_virtqueue *vq =3D &mvnet->vqs[idx];
-+=09struct vringh *vrh =3D &vq->vring;
-+
-+=09return vrh->last_avail_idx;
-+}
-+
-+static u16 mvnet_get_vq_align(struct mdev_device *mdev)
-+{
-+=09return MVNET_QUEUE_ALIGN;
-+}
-+
-+static u64 mvnet_get_features(struct mdev_device *mdev)
-+{
-+=09return mvnet_features;
-+}
-+
-+static int mvnet_set_features(struct mdev_device *mdev, u64 features)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+
-+=09/* DMA mapping must be done by driver */
-+=09if (!(features & (1ULL << VIRTIO_F_IOMMU_PLATFORM)))
-+=09=09return -EINVAL;
-+
-+=09mvnet->features =3D features & mvnet_features;
-+
-+=09return 0;
-+}
-+
-+static void mvnet_set_config_cb(struct mdev_device *mdev,
-+=09=09=09=09struct virtio_mdev_callback *cb)
-+{
-+=09/* We don't support config interrupt */
-+}
-+
-+static u16 mvnet_get_vq_num_max(struct mdev_device *mdev)
-+{
-+=09return MVNET_QUEUE_MAX;
-+}
-+
-+static u32 mvnet_get_device_id(struct mdev_device *mdev)
-+{
-+=09return MVNET_DEVICE_ID;
-+}
-+
-+static u32 mvnet_get_vendor_id(struct mdev_device *mdev)
-+{
-+=09return MVNET_VENDOR_ID;
-+}
-+
-+static u8 mvnet_get_status(struct mdev_device *mdev)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+
-+=09return mvnet->status;
-+}
-+
-+static void mvnet_set_status(struct mdev_device *mdev, u8 status)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+
-+=09mvnet->status =3D status;
-+
-+=09if (status =3D=3D 0) {
-+=09=09spin_lock(&mvnet->lock);
-+=09=09mvnet_reset(mvnet);
-+=09=09spin_unlock(&mvnet->lock);
-+=09}
-+}
-+
-+static void mvnet_get_config(struct mdev_device *mdev, unsigned int offset=
-,
-+=09=09=09     void *buf, unsigned int len)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+
-+=09if (offset + len < sizeof(struct virtio_net_config))
-+=09=09memcpy(buf, &mvnet->config + offset, len);
-+}
-+
-+static void mvnet_set_config(struct mdev_device *mdev, unsigned int offset=
-,
-+=09=09=09     const void *buf, unsigned int len)
-+{
-+=09/* No writable config supportted by mvnet */
-+}
-+
-+static u32 mvnet_get_generation(struct mdev_device *mdev)
-+{
-+=09struct mvnet_state *mvnet =3D mdev_get_drvdata(mdev);
-+
-+=09return mvnet->generation;
-+}
-+
-+static const struct mdev_virtio_device_ops mdev_virtio_ops =3D {
-+=09.set_vq_address         =3D mvnet_set_vq_address,
-+=09.set_vq_num             =3D mvnet_set_vq_num,
-+=09.kick_vq                =3D mvnet_kick_vq,
-+=09.set_vq_cb              =3D mvnet_set_vq_cb,
-+=09.set_vq_ready           =3D mvnet_set_vq_ready,
-+=09.get_vq_ready           =3D mvnet_get_vq_ready,
-+=09.set_vq_state           =3D mvnet_set_vq_state,
-+=09.get_vq_state           =3D mvnet_get_vq_state,
-+=09.get_vq_align           =3D mvnet_get_vq_align,
-+=09.get_features           =3D mvnet_get_features,
-+=09.set_features           =3D mvnet_set_features,
-+=09.set_config_cb          =3D mvnet_set_config_cb,
-+=09.get_vq_num_max         =3D mvnet_get_vq_num_max,
-+=09.get_device_id          =3D mvnet_get_device_id,
-+=09.get_vendor_id          =3D mvnet_get_vendor_id,
-+=09.get_status             =3D mvnet_get_status,
-+=09.set_status             =3D mvnet_set_status,
-+=09.get_config             =3D mvnet_get_config,
-+=09.set_config             =3D mvnet_set_config,
-+=09.get_generation         =3D mvnet_get_generation,
-+};
-+
-+static const struct mdev_parent_ops mdev_fops =3D {
-+=09.owner                  =3D THIS_MODULE,
-+=09.dev_attr_groups        =3D mvnet_dev_groups,
-+=09.mdev_attr_groups       =3D mdev_dev_groups,
-+=09.supported_type_groups  =3D mdev_type_groups,
-+=09.create                 =3D mvnet_create,
-+=09.remove=09=09=09=3D mvnet_remove,
-+};
-+
-+static void mvnet_device_release(struct device *dev)
-+{
-+=09dev_dbg(dev, "mvnet: released\n");
-+}
-+
-+static int __init mvnet_dev_init(void)
-+{
-+=09int ret =3D 0;
-+
-+=09pr_info("mvnet_dev: %s\n", __func__);
-+
-+=09memset(&mvnet_dev, 0, sizeof(mvnet_dev));
-+
-+=09idr_init(&mvnet_dev.vd_idr);
-+
-+=09mvnet_dev.vd_class =3D class_create(THIS_MODULE, MVNET_CLASS_NAME);
-+
-+=09if (IS_ERR(mvnet_dev.vd_class)) {
-+=09=09pr_err("Error: failed to register mvnet_dev class\n");
-+=09=09ret =3D PTR_ERR(mvnet_dev.vd_class);
-+=09=09goto failed1;
-+=09}
-+
-+=09mvnet_dev.dev.class =3D mvnet_dev.vd_class;
-+=09mvnet_dev.dev.release =3D mvnet_device_release;
-+=09dev_set_name(&mvnet_dev.dev, "%s", MVNET_NAME);
-+
-+=09ret =3D device_register(&mvnet_dev.dev);
-+=09if (ret)
-+=09=09goto failed2;
-+
-+=09ret =3D mdev_register_device(&mvnet_dev.dev, &mdev_fops);
-+=09if (ret)
-+=09=09goto failed3;
-+
-+=09mutex_init(&mdev_list_lock);
-+=09INIT_LIST_HEAD(&mdev_devices_list);
-+
-+=09goto all_done;
-+
-+failed3:
-+
-+=09device_unregister(&mvnet_dev.dev);
-+failed2:
-+=09class_destroy(mvnet_dev.vd_class);
-+
-+failed1:
-+all_done:
-+=09return ret;
-+}
-+
-+static void __exit mvnet_dev_exit(void)
-+{
-+=09mvnet_dev.dev.bus =3D NULL;
-+=09mdev_unregister_device(&mvnet_dev.dev);
-+
-+=09device_unregister(&mvnet_dev.dev);
-+=09idr_destroy(&mvnet_dev.vd_idr);
-+=09class_destroy(mvnet_dev.vd_class);
-+=09mvnet_dev.vd_class =3D NULL;
-+=09pr_info("mvnet_dev: Unloaded!\n");
-+}
-+
-+module_init(mvnet_dev_init)
-+module_exit(mvnet_dev_exit)
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_INFO(supported, "Simulate loopback ethernet device over mdev");
-+MODULE_VERSION(VERSION_STRING);
-+MODULE_AUTHOR(DRIVER_AUTHOR);
---=20
-2.19.1
-
+The stack traces in both the bisection log and my manual run, when
+running the linked reproducer, differ from the one in the dashboard.
+Those more obviously include nsh functions. The trace in the dashboard
+does not and sees a GPF in propagate_entity_cfs_rq, which does not
+immediately appear related. That said, it is reported only once over a
+year ago, so probably still preferable to close. A new report will be
+opened if incorrect.
