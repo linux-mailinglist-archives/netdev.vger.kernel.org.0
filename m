@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3F18F3039
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:43:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 286FDF303F
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:44:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389547AbfKGNng (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:43:36 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:36467 "EHLO
+        id S2388933AbfKGNmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:42:06 -0500
+Received: from mail-il1-f197.google.com ([209.85.166.197]:55644 "EHLO
         mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388983AbfKGNmH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:42:07 -0500
-Received: by mail-il1-f197.google.com with SMTP id y7so2681665ilb.3
+        with ESMTP id S1729162AbfKGNmF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:42:05 -0500
+Received: by mail-il1-f197.google.com with SMTP id n81so2604318ili.22
         for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:42:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
          :from:to;
-        bh=rGCeFvT/AQARxs+6mGwlebmAqlHglnh6rUP8Pgma5SE=;
-        b=bHCUFyBLD2gXo4dRgwDVLvGPpwI44HLpNWfIKM97jczwk7ExlIuL5X5G9cdDYHwqS3
-         yj8alKG9xbDp3rSCgRQ3ySxtWEaZlmpofn9fe7LTqWzdKK+yRJsdxCY6AlLnB/6/fXTf
-         I6mLFpjp17PVkEQ3ub9FxJPCZ1di91HgDA9PZlFExHQrY2/fKowJtv+Fsv90nKF+WE/6
-         lWIBPPahcfbKS3wj/NcqjgwMmpifvHLdZr+PtJSU0riAf4gmJ8n1hyyqYX0fkm/fbvO/
-         FxnU8aG0EPTnVxYOD/H3nxtPDI/MQ0mk4BQk12rCzKwnVd4+3eaLY9FpjiRE6+xzKori
-         /dgQ==
-X-Gm-Message-State: APjAAAVgcRpApfza8vipOWX7SSTNo4pkg2/wn9d7M7AUccxROLWntwkA
-        21rWl/FLbocVi/EsmkAJHJm4iKfvDl8h0ouE7yjT1g9QmtY6
-X-Google-Smtp-Source: APXvYqxHTBWUBJD+8E1NyDqdkz7hV5BSqgFdxPIDCKCY0BxMuoog4ra33v5nSn+Kxh1U5HB1IkGWjlzMWRyONaT5JSDK+u98616Z
+        bh=ENxD+/fIw0mYa6vyCEJ9BP1QogAHJZe3kkohsrzQFAg=;
+        b=St7Av5snWfN/VBgcBfSypNHWYBTV5dsR1tJ/F8wLjDcFzjFzLGrJ/PPs8Vw/a6kJlr
+         vapQolWFfJ87igrSggtU6wMCG13EASqOIo1C619cdVIILGvGcYiMtL6khKq4PUjqgBcz
+         rdSnyEcnzProTSokHJkU6K/DmX5ipZXQlchsqD9F5roNWq48VVeDQ35Qi95Sjv+Xz0zG
+         Vk6gzSVQzd0ZD+5JgOlZeFAFUr1XD1svex6DoEkE2AxA3FuCiYLW6QvsPKe/BXcnLcjy
+         uPFVX1rWGLAwS5zZ1kkcPISpTbl4H816PvfR33GGzcCWdieJf28vuTfTyRv2eWe521Vz
+         iT2A==
+X-Gm-Message-State: APjAAAWMqTj5NSZRP2TqmWrc1GRXqneZjC5EWcEZGjOyzb1WtvIESeds
+        uNwGeHHch1FBNajr1EpNWdDlgnzp7MwftR/2gEzs4gLIs3KK
+X-Google-Smtp-Source: APXvYqxgUiKUUpVf8mANbwuq5h5ETdkG1+2bc1EZcA3Iu8zgmeR5189VzsX5FO9eWFvmABYaiGgJH8JWUel87EI/ZKuu+fPSmejM
 MIME-Version: 1.0
-X-Received: by 2002:a5e:d917:: with SMTP id n23mr3702806iop.28.1573134124661;
- Thu, 07 Nov 2019 05:42:04 -0800 (PST)
+X-Received: by 2002:a6b:ee07:: with SMTP id i7mr3695643ioh.26.1573134125000;
+ Thu, 07 Nov 2019 05:42:05 -0800 (PST)
 Date:   Thu, 07 Nov 2019 05:42:04 -0800
-In-Reply-To: <001a113fe6d081698f0568a5dcac@google.com>
+In-Reply-To: <000000000000ee4dab0570be896c@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000af44bb0596c1d4e8@google.com>
-Subject: Re: KASAN: use-after-free Read in _decode_session4
-From:   syzbot <syzbot+a7db9083ed4017ba4423@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, herbert@gondor.apana.org.au,
-        kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, sbrivio@redhat.com, sd@queasysnail.net,
-        steffen.klassert@secunet.com, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
+Message-ID: <000000000000b4731e0596c1d418@google.com>
+Subject: Re: general protection fault in p9_conn_cancel
+From:   syzbot <syzbot+4d29d76a0da7a8c4d86c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dominique.martinet@cea.fr, ericvh@gmail.com,
+        jiangyiwen@huwei.com, linux-kernel@vger.kernel.org,
+        lucho@ionkov.net, netdev@vger.kernel.org, rminnich@sandia.gov,
+        syzkaller-bugs@googlegroups.com, tomasbortoli@gmail.com,
+        v9fs-developer@lists.sourceforge.net
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -50,22 +50,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 syzbot suspects this bug was fixed by commit:
 
-commit c6741fbed6dc0f183d26c4b6bca4517672f92e6c
-Author: Stefano Brivio <sbrivio@redhat.com>
-Date:   Thu Mar 15 16:17:11 2018 +0000
+commit 9f476d7c540cb57556d3cc7e78704e6cd5100f5f
+Author: Tomas Bortoli <tomasbortoli@gmail.com>
+Date:   Mon Jul 23 18:42:53 2018 +0000
 
-     vti6: Properly adjust vti6 MTU from MTU of lower device
+     net/9p/trans_fd.c: fix race by holding the lock
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1710f0dc600000
-start commit:   0b412605 Merge tag 'drm-fixes-for-v4.16-rc8' of git://peop..
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1150b430600000
+start commit:   30c2c32d Merge tag 'drm-fixes-2018-07-10' of git://anongit..
 git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8addcf4530d93e53
-dashboard link: https://syzkaller.appspot.com/bug?extid=a7db9083ed4017ba4423
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14bf273b800000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=117045d3800000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=25856fac4e580aa7
+dashboard link: https://syzkaller.appspot.com/bug?extid=4d29d76a0da7a8c4d86c
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10e2c5b2400000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=179415b2400000
 
 If the result looks correct, please mark the bug fixed by replying with:
 
-#syz fix: vti6: Properly adjust vti6 MTU from MTU of lower device
+#syz fix: net/9p/trans_fd.c: fix race by holding the lock
 
 For information about bisection process see: https://goo.gl/tpsmEJ#bisection
