@@ -2,96 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A26D2F2671
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 05:16:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 898F9F2676
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 05:17:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733158AbfKGEQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 23:16:26 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:55556 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1733080AbfKGEQ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 23:16:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573100185;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=k3IbSyGD4qLkNAVSZEuvxBFa8ZkDMuEWAdZpi7gSPzg=;
-        b=Do3Igs2tvwS8OTK8hbB7u4ZsqRcVAkIVIUg14UFpmEe4B+9+JqeyLJxNAC1Nw1+YzDeDlC
-        fyCofOhZlkeDIGBo0xlhAC9tu+ECYZ235RWfm3U651u2soB6+FL+y6wYAcUU9EL9+bBR/4
-        LC7dukr1sDz0p+VtiwMPTnGGZVF84UM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-341-MQBzENQcOFypmSyLPrCApQ-1; Wed, 06 Nov 2019 23:16:17 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C3470800C61;
-        Thu,  7 Nov 2019 04:16:15 +0000 (UTC)
-Received: from [10.72.12.214] (ovpn-12-214.pek2.redhat.com [10.72.12.214])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 54F865D6B7;
-        Thu,  7 Nov 2019 04:16:03 +0000 (UTC)
-Subject: Re: [PATCH v5] vhost: introduce mdev based hardware backend
-To:     Tiwei Bie <tiwei.bie@intel.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     alex.williamson@redhat.com, maxime.coquelin@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dan.daly@intel.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, lingshan.zhu@intel.com
-References: <20191105115332.11026-1-tiwei.bie@intel.com>
- <20191106075733-mutt-send-email-mst@kernel.org> <20191106143907.GA10776@___>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <def13888-c99f-5f59-647b-05a4bb2f8657@redhat.com>
-Date:   Thu, 7 Nov 2019 12:16:01 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1733107AbfKGEQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 23:16:57 -0500
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:33035 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733172AbfKGEQ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 23:16:57 -0500
+Received: by mail-vs1-f68.google.com with SMTP id c25so413551vsp.0
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 20:16:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LzF6jJl50QUKrzPAcp1BtDAHHTNuNTHTqpvlK0Y3t24=;
+        b=If1p9UVVHbMT3OMrRjX6TZFEEaZIstvxpkIGc+J3eG+t7D9eaOQd+EJ9TUQR5C/SDf
+         yj7ert6J1aSel7bNYUWjAQwAzESIRkq+ogInQv/yiqKAweakTEn811k3YMwfeOwOYKL7
+         ZGWYtHxByLb/c9z1Vi/rBi0wJgfh1LUnYhR34=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LzF6jJl50QUKrzPAcp1BtDAHHTNuNTHTqpvlK0Y3t24=;
+        b=KJMMoxJ+kHAGX+tvI16ggIZAapcK8ymS4mJt5Fa25QMzb2ma38VB/Mi4WVdHyoV5wv
+         fpZ2JIDeHqAfnshGKQl7PxrpQqo9dDSiXfjZmOY+uMZYhAbLuM+MFA4VI0ijQUghT73l
+         C5kAKwRVFkhcOw0GK515mRjipzd/hqsrLZLj7ZjJJ9i87ub4Iko5wQyzvfGKjuxEO5na
+         ZypoMXnCh7gxD/PSJo/7qC1yiKI6CjDCmyrNoxlcewmwaufTf/MECyxBUdi1AsBZZcKu
+         P664vpdSqW0Sq+T0QNsqFJqeWwdosgByOQIld/fHRfwXQRQNJgYFcVsOHJDkCx5GzHik
+         /Qwg==
+X-Gm-Message-State: APjAAAWIDWusI9k7sDwk6StLL4vtxevoZnDRkhjbbKXZKC3bTC2NRZlg
+        gqFKL6HbPUAEaI1BeRw+zGMdGfQ8dr+X5u8WcD1lfZqYp2E=
+X-Google-Smtp-Source: APXvYqyWoK9jREMyy8vyY43cMb0kasmyVW+I0hWsxZz0YGbqht5M4oAStGMyGw23UCirgUqEvwgbjD/YfpkA627rwok=
+X-Received: by 2002:a67:edce:: with SMTP id e14mr1297463vsp.182.1573100216052;
+ Wed, 06 Nov 2019 20:16:56 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191106143907.GA10776@___>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: MQBzENQcOFypmSyLPrCApQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <20191101054035.42101-1-ikjn@chromium.org> <87y2ws3lvh.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87y2ws3lvh.fsf@kamboji.qca.qualcomm.com>
+From:   Ikjoon Jang <ikjn@chromium.org>
+Date:   Thu, 7 Nov 2019 12:16:45 +0800
+Message-ID: <CAATdQgDhYWgHkujo9m1iUrhSu1Bt9A4C8eS82TD=W22_eaF80g@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: disable cpuidle during downloading firmware.
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     ath10k@lists.infradead.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/11/6 =E4=B8=8B=E5=8D=8810:39, Tiwei Bie wrote:
-> On Wed, Nov 06, 2019 at 07:59:02AM -0500, Michael S. Tsirkin wrote:
->> On Tue, Nov 05, 2019 at 07:53:32PM +0800, Tiwei Bie wrote:
->>> This patch introduces a mdev based hardware vhost backend.
->>> This backend is built on top of the same abstraction used
->>> in virtio-mdev and provides a generic vhost interface for
->>> userspace to accelerate the virtio devices in guest.
->>>
->>> This backend is implemented as a mdev device driver on top
->>> of the same mdev device ops used in virtio-mdev but using
->>> a different mdev class id, and it will register the device
->>> as a VFIO device for userspace to use. Userspace can setup
->>> the IOMMU with the existing VFIO container/group APIs and
->>> then get the device fd with the device name. After getting
->>> the device fd, userspace can use vhost ioctls on top of it
->>> to setup the backend.
->>>
->>> Signed-off-by: Tiwei Bie <tiwei.bie@intel.com>
->> So at this point, looks like the only thing missing is IFC, and then all
->> these patches can go in.
->> But as IFC is still being worked on anyway, it makes sense to
->> address the minor comments manwhile so we don't need
->> patches on top.
->> Right?
-> Yeah, of course.
+On Thu, Nov 7, 2019 at 2:23 AM Kalle Valo <kvalo@codeaurora.org> wrote:
 >
-> Thanks,
-> Tiwei
+> Ikjoon Jang <ikjn@chromium.org> writes:
+>
+> > Downloading ath10k firmware needs a large number of IOs and
+> > cpuidle's miss predictions make it worse. In the worst case,
+> > resume time can be three times longer than the average on sdio.
+> >
+> > This patch disables cpuidle during firmware downloading by
+> > applying PM_QOS_CPU_DMA_LATENCY in ath10k_download_fw().
+> >
+> > Signed-off-by: Ikjoon Jang <ikjn@chromium.org>
+>
+> On what hardware and firmware versions did you test this? I'll add that
+> to the commit log.
+>
+> https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#guidelines
 
+Thank you for sharing it.
+It's QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00029
+on ARMv8 multi cluster platform.
 
-Please send V6 and I will ack there.
-
-Thanks
-
+>
+> --
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
