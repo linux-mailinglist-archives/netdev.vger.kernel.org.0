@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C03DF3462
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:10:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBCA1F345F
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:10:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389744AbfKGQKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:10:07 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53545 "EHLO
+        id S2389567AbfKGQKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:10:03 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53581 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389485AbfKGQJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:09:13 -0500
+        with ESMTP id S2389552AbfKGQJS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:09:18 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 18:09:11 +0200
+        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 18:09:13 +0200
 Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.9.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA7G8d4J007213;
-        Thu, 7 Nov 2019 18:09:09 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA7G8d4K007213;
+        Thu, 7 Nov 2019 18:09:11 +0200
 From:   Parav Pandit <parav@mellanox.com>
 To:     alex.williamson@redhat.com, davem@davemloft.net,
         kvm@vger.kernel.org, netdev@vger.kernel.org
 Cc:     saeedm@mellanox.com, kwankhede@nvidia.com, leon@kernel.org,
         cohuck@redhat.com, jiri@mellanox.com, linux-rdma@vger.kernel.org,
         Parav Pandit <parav@mellanox.com>
-Subject: [PATCH net-next 09/19] vfio/mdev: Expose mdev alias in sysfs tree
-Date:   Thu,  7 Nov 2019 10:08:24 -0600
-Message-Id: <20191107160834.21087-9-parav@mellanox.com>
+Subject: [PATCH net-next 10/19] vfio/mdev: Introduce an API mdev_alias
+Date:   Thu,  7 Nov 2019 10:08:25 -0600
+Message-Id: <20191107160834.21087-10-parav@mellanox.com>
 X-Mailer: git-send-email 2.19.2
 In-Reply-To: <20191107160834.21087-1-parav@mellanox.com>
 References: <20191107160448.20962-1-parav@mellanox.com>
@@ -36,71 +36,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose the optional alias for an mdev device as a sysfs attribute.
-This way, userspace tools such as udev may make use of the alias, for
-example to create a netdevice name for the mdev.
+Introduce an API mdev_alias() to provide access to optionally generated
+alias.
 
-Updated documentation for optional read only sysfs attribute.
-
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
 Signed-off-by: Parav Pandit <parav@mellanox.com>
 ---
- Documentation/driver-api/vfio-mediated-device.rst |  9 +++++++++
- drivers/vfio/mdev/mdev_sysfs.c                    | 13 +++++++++++++
- 2 files changed, 22 insertions(+)
+ drivers/vfio/mdev/mdev_core.c | 12 ++++++++++++
+ include/linux/mdev.h          |  1 +
+ 2 files changed, 13 insertions(+)
 
-diff --git a/Documentation/driver-api/vfio-mediated-device.rst b/Documentation/driver-api/vfio-mediated-device.rst
-index 25eb7d5b834b..7d6d87102f64 100644
---- a/Documentation/driver-api/vfio-mediated-device.rst
-+++ b/Documentation/driver-api/vfio-mediated-device.rst
-@@ -270,6 +270,7 @@ Directories and Files Under the sysfs for Each mdev Device
-          |--- remove
-          |--- mdev_type {link to its type}
-          |--- vendor-specific-attributes [optional]
-+         |--- alias
+diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+index c8cd40366783..9eec556fbdd4 100644
+--- a/drivers/vfio/mdev/mdev_core.c
++++ b/drivers/vfio/mdev/mdev_core.c
+@@ -517,6 +517,18 @@ struct device *mdev_get_iommu_device(struct device *dev)
+ }
+ EXPORT_SYMBOL(mdev_get_iommu_device);
  
- * remove (write only)
- 
-@@ -281,6 +282,14 @@ Example::
- 
- 	# echo 1 > /sys/bus/mdev/devices/$mdev_UUID/remove
- 
-+* alias (read only, optional)
-+Whenever a parent requested to generate an alias, each mdev device of that
-+parent is assigned a unique alias by the mdev core.
-+This file shows the alias of the mdev device.
-+
-+Reading this file either returns a valid alias when assigned or returns the
-+error code -EOPNOTSUPP when unsupported.
-+
- Mediated device Hot plug
- ------------------------
- 
-diff --git a/drivers/vfio/mdev/mdev_sysfs.c b/drivers/vfio/mdev/mdev_sysfs.c
-index 43afe0e80b76..59f4e3cc5233 100644
---- a/drivers/vfio/mdev/mdev_sysfs.c
-+++ b/drivers/vfio/mdev/mdev_sysfs.c
-@@ -246,7 +246,20 @@ static ssize_t remove_store(struct device *dev, struct device_attribute *attr,
- 
- static DEVICE_ATTR_WO(remove);
- 
-+static ssize_t alias_show(struct device *device,
-+			  struct device_attribute *attr, char *buf)
++/**
++ * mdev_alias: Return alias string of a mdev device
++ * @mdev:	Pointer to the mdev device
++ * mdev_alias() returns alias string of a mdev device if alias is present,
++ * returns NULL otherwise.
++ */
++const char *mdev_alias(struct mdev_device *mdev)
 +{
-+	struct mdev_device *dev = mdev_from_dev(device);
-+
-+	if (!dev->alias)
-+		return -EOPNOTSUPP;
-+
-+	return sprintf(buf, "%s\n", dev->alias);
++	return mdev->alias;
 +}
-+static DEVICE_ATTR_RO(alias);
++EXPORT_SYMBOL(mdev_alias);
 +
- static const struct attribute *mdev_device_attrs[] = {
-+	&dev_attr_alias.attr,
- 	&dev_attr_remove.attr,
- 	NULL,
- };
+ static int __init mdev_init(void)
+ {
+ 	int ret;
+diff --git a/include/linux/mdev.h b/include/linux/mdev.h
+index 06e162361df9..2997ce157523 100644
+--- a/include/linux/mdev.h
++++ b/include/linux/mdev.h
+@@ -148,5 +148,6 @@ void mdev_unregister_driver(struct mdev_driver *drv);
+ struct device *mdev_parent_dev(struct mdev_device *mdev);
+ struct device *mdev_dev(struct mdev_device *mdev);
+ struct mdev_device *mdev_from_dev(struct device *dev);
++const char *mdev_alias(struct mdev_device *mdev);
+ 
+ #endif /* MDEV_H */
 -- 
 2.19.2
 
