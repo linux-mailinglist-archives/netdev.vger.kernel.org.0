@@ -2,47 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B4435F3018
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF33CF301A
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:42:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389382AbfKGNma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:42:30 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:52690 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389192AbfKGNmK (ORCPT
+        id S2389417AbfKGNmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:42:31 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:46462 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389179AbfKGNmK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:42:10 -0500
-Received: by mail-il1-f199.google.com with SMTP id t23so2625163ila.19
+Received: by mail-io1-f70.google.com with SMTP id r4so1849669ioo.13
         for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:42:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
          :from:to;
-        bh=Ts1/QN7SlZAv8FzCyonCkAig7h5V9G7HkY3ov7xjs3M=;
-        b=ImxfbQhYPlGbd3gborKdpKXCVyCieadK4+lS5skmazFnpZ0n0nvkVsap0wI9OITrlg
-         L3lXx9wyXXlZO+xcjHI70hAujzuOlHJqkWxRO85w3rDk0Mfqx5dUkD5VeELBE7PGTUPx
-         4znaHAs0c/N84gC+lyTTKiq1acTiv3IGv82Wi4xbusDxKiVdp6LlLxmQJuj/BQM4MS9+
-         86sVA+NtGBYnF1gNx2jnPmGrX2UAnSLjJFVgM3h6a6dfEKRnPiP8iD6VkkpGuIMwq+aE
-         dhpEnGp7b8S5PsCyWm0zas/eSVk4N3GIt8vFEq1fKNpPrx+bXGvvwxPMVc5JT0SyFsfo
-         UsSA==
-X-Gm-Message-State: APjAAAXjxgTiCsBOQjBQfwzfImfZIr6dcI1Wa1NLbOSDfLDIe/alAUdP
-        mtsbgQmTy9g1e4UnziAYyphoZzxTHJ5dPvrTkxO+lDM/ax0w
-X-Google-Smtp-Source: APXvYqz/g3akW+HYZOqq00GOcwk4TIgPuwUmUsNZ8JleeVUWjArlNV1JzK0GZVOa198jjNQXsMlAh0R+qyRRrxrnABjAL9dYZK4H
+        bh=S2wRVclg8UQWRvym++3WP5HdS90cEd2sAd4gL9TrV+I=;
+        b=Hvq8VWjFqccj2aweFTzffAi16cRGrxbm1CrfmiIAQO2aSqJxqFc/U5U2+m0G31ouP2
+         jCs3TqdsHqEcDEYKuz0oqIRRDToFUvOOJCpRq/1lV7vz4UYptJcKYWFQ1KwSl6doLYW+
+         sC2ZQ/hcQDiNR7S0/xUiT3N3Ew1+yUuWeNUmj2Sm7PlXgacHcztQUPHPaxg1sXZLWtMf
+         XqkaliCtyaUWSIssPfYFuQ+li81WBvbi+lAFpnMymmQ+oT/i+/txKcq0xrPSw+tWhpqv
+         TcYlRMzdwAqUgHpQfLc3dVZuDA+9VDA8Q3aeULK/GVudcL/YpkonmOD36FZ/8jAt1gsf
+         3bzA==
+X-Gm-Message-State: APjAAAVR+rxqal0qvNF8VQZPeCA1BmnOqwT1JcP5ygbBu5Addxjcjs3V
+        iqPmZ0hzfcrVmqPl/bTokwABROuVr4zIqXbwhnozMrVHt5J5
+X-Google-Smtp-Source: APXvYqz9Q2PgD7h70IK2LJz5tS3XrxOEo+uTlIzI6FagviYlipCps0BesCYv8Ev2NfBqsoEX1aftYzudEyLJMvtAP/9TWFBjR5Lx
 MIME-Version: 1.0
-X-Received: by 2002:a5d:9f02:: with SMTP id q2mr3553203iot.3.1573134129497;
+X-Received: by 2002:a05:6638:394:: with SMTP id y20mr4277492jap.0.1573134129274;
  Thu, 07 Nov 2019 05:42:09 -0800 (PST)
 Date:   Thu, 07 Nov 2019 05:42:09 -0800
-In-Reply-To: <00000000000006602605752ffa1a@google.com>
+In-Reply-To: <0000000000008c6be40570d8a9d8@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f90bb30596c1d438@google.com>
-Subject: Re: general protection fault in tcp_cleanup_ulp
-From:   syzbot <syzbot+0b3ccd4f62dac2cf3a7d@syzkaller.appspotmail.com>
-To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, edumazet@google.com, john.fastabend@gmail.com,
-        kafai@fb.com, kuznet@ms2.inr.ac.ru, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        yoshfuji@linux-ipv6.org
+Message-ID: <000000000000f5a6620596c1d43e@google.com>
+Subject: Re: general protection fault in propagate_entity_cfs_rq
+From:   syzbot <syzbot+2e37f794f31be5667a88@syzkaller.appspotmail.com>
+To:     allison@lohutok.net, andy.shevchenko@gmail.com,
+        davem@davemloft.net, douly.fnst@cn.fujitsu.com,
+        gregkh@linuxfoundation.org, hpa@zytor.com, info@metux.net,
+        jbenc@redhat.com, jgross@suse.com, kstewart@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, ville.syrjala@linux.intel.com,
+        willemb@google.com, x86@kernel.org
 Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -51,21 +53,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 syzbot suspects this bug was fixed by commit:
 
-commit 5607fff303636d48b88414c6be353d9fed700af2
-Author: John Fastabend <john.fastabend@gmail.com>
-Date:   Tue Sep 18 16:01:44 2018 +0000
+commit bab2c80e5a6c855657482eac9e97f5f3eedb509a
+Author: Willem de Bruijn <willemb@google.com>
+Date:   Wed Jul 11 16:00:44 2018 +0000
 
-     bpf: sockmap only allow ESTABLISHED sock state
+     nsh: set mac len based on inner packet
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17fdc73c600000
-start commit:   28619527 Merge git://git.kernel.org/pub/scm/linux/kernel/g..
-git tree:       bpf
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8f59875069d721b6
-dashboard link: https://syzkaller.appspot.com/bug?extid=0b3ccd4f62dac2cf3a7d
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13537269400000
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=170cc89c600000
+start commit:   6fd06660 Merge branch 'bpf-arm-jit-improvements'
+git tree:       bpf-next
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a501a01deaf0fe9
+dashboard link: https://syzkaller.appspot.com/bug?extid=2e37f794f31be5667a88
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1014db94400000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f81e78400000
 
 If the result looks correct, please mark the bug fixed by replying with:
 
-#syz fix: bpf: sockmap only allow ESTABLISHED sock state
+#syz fix: nsh: set mac len based on inner packet
 
 For information about bisection process see: https://goo.gl/tpsmEJ#bisection
