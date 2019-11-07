@@ -2,99 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0568AF3BC7
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:52:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D577DF3BD3
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:55:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728214AbfKGWwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:52:19 -0500
-Received: from mga01.intel.com ([192.55.52.88]:21274 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725992AbfKGWwT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 17:52:19 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Nov 2019 14:52:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,279,1569308400"; 
-   d="asc'?scan'208";a="205819558"
-Received: from karaker-mobl.amr.corp.intel.com ([10.254.95.244])
-  by orsmga003.jf.intel.com with ESMTP; 07 Nov 2019 14:52:18 -0800
-Message-ID: <6784fee2096c9bb103b8e0b8eb50cc1d9e494ad1.camel@intel.com>
-Subject: Re: [PATCH net-next 1/2] net: ethernet: intel: Demote MTU change
- prints to debug
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Timur Tabi <timur@kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        open list <linux-kernel@vger.kernel.org>
-Date:   Thu, 07 Nov 2019 14:52:17 -0800
-In-Reply-To: <20191107223537.23440-2-f.fainelli@gmail.com>
-References: <20191107223537.23440-1-f.fainelli@gmail.com>
-         <20191107223537.23440-2-f.fainelli@gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-+hEZUL/LnhJlbIkpTIaT"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1727912AbfKGWz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:55:58 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:36058 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbfKGWz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:55:58 -0500
+Received: by mail-pg1-f194.google.com with SMTP id k13so2910421pgh.3;
+        Thu, 07 Nov 2019 14:55:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=J293tw8bq2htqxRBo29h5G6Xx/f4qBI6NvHqoa3psYE=;
+        b=onzPuPpEb4E8aO0zqCLZ4jclD051dBLPrsmzw607ntcW21ojcIQKYY0Cni9RY+NNI+
+         X51FyUaLBBFYUt8iN722XMjGuaYGcIao0F8kjYbbkoykMdyPN30PdOWaEdGUmT9jYun/
+         3htdzR6o0S2qvwIkhbDtxCxK2xG4cZ9690XbFbSDWFYI2ipdk0aggCuWpEfk4IVNFPGh
+         FP0wB24/4e55yXYmDbme3IoAJQvynBijwuaF3qNyNSbz8qwj/QfUvpfWUrv8LgPIYYEr
+         qFp+NEuw6JnA8f3nKwHicdh/RBgcGGZYEaqvHa8Vuht+2d/0AF7AMa88er1x4dINz5X+
+         iVmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=J293tw8bq2htqxRBo29h5G6Xx/f4qBI6NvHqoa3psYE=;
+        b=hs3Xb4EKpDY/0JZcGSryRvf6YkaPQByC5RBqOL3RMyeSnL9RZe91BkEsy42AvrQtS7
+         SFNHLtOoqlogZ1qcYFpDSPlPRN/hyTI5OpFHzNQac/beIXcj4JbwpejuNR2gX6I4yhzF
+         /eXdcybQUsbVn1/GlBCdKLTxMGLp01nkbHTdVZepr9K+viASCgMtkj7qogZ0hoZ2Dl+5
+         PihmLQhyfBGz9ZxEBuxH2Z07pj4HT720Ap2vE5wpDc+9p4E4pXSas2B4pzVT5UyacFY/
+         5vt/I0isCgI5bZ9Lp4TlBOoV321dcKXMt3u1b3VQdVnFLwAuWVjCpm7NGu+7jeXMzpXN
+         YXyw==
+X-Gm-Message-State: APjAAAVPVZ1jj0yIInFCkqpzI0eekx4oUdXFxc9SVOnJ6J5E3Scb6sUc
+        HOxjlj6aa/RmHn8hLB8EihM=
+X-Google-Smtp-Source: APXvYqzxevMA8D1Vm3+YzZOmP/PFech/qkYka8ii1jbGmehlsxLX1cs55W6SJAqGiibiQIVxv6a8PA==
+X-Received: by 2002:a63:fc16:: with SMTP id j22mr7787321pgi.35.1573167357047;
+        Thu, 07 Nov 2019 14:55:57 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:d046])
+        by smtp.gmail.com with ESMTPSA id y24sm4666242pfr.116.2019.11.07.14.55.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 07 Nov 2019 14:55:56 -0800 (PST)
+Date:   Thu, 7 Nov 2019 14:55:54 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 03/17] bpf: Introduce BPF trampoline
+Message-ID: <20191107225553.vnnos6nblxlwx24a@ast-mbp.dhcp.thefacebook.com>
+References: <20191107054644.1285697-1-ast@kernel.org>
+ <20191107054644.1285697-4-ast@kernel.org>
+ <5967F93A-235B-447E-9B70-E7768998B718@fb.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5967F93A-235B-447E-9B70-E7768998B718@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Nov 07, 2019 at 10:37:19PM +0000, Song Liu wrote:
+> 
+> 
+> > On Nov 6, 2019, at 9:46 PM, Alexei Starovoitov <ast@kernel.org> wrote:
+> > 
+> 
+> [...]
+> 
+> > 
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> > arch/x86/net/bpf_jit_comp.c | 227 ++++++++++++++++++++++++++++++--
+> > include/linux/bpf.h         |  98 ++++++++++++++
+> > include/uapi/linux/bpf.h    |   2 +
+> > kernel/bpf/Makefile         |   1 +
+> > kernel/bpf/btf.c            |  77 ++++++++++-
+> > kernel/bpf/core.c           |   1 +
+> > kernel/bpf/syscall.c        |  53 +++++++-
+> > kernel/bpf/trampoline.c     | 252 ++++++++++++++++++++++++++++++++++++
+> > kernel/bpf/verifier.c       |  39 ++++++
+> > 9 files changed, 732 insertions(+), 18 deletions(-)
+> > create mode 100644 kernel/bpf/trampoline.c
+> > 
+> > diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> > index 8631d3bd637f..44169e8bffc0 100644
+> > --- a/arch/x86/net/bpf_jit_comp.c
+> > +++ b/arch/x86/net/bpf_jit_comp.c
+> > @@ -98,6 +98,7 @@ static int bpf_size_to_x86_bytes(int bpf_size)
+> > 
+> > /* Pick a register outside of BPF range for JIT internal work */
+> > #define AUX_REG (MAX_BPF_JIT_REG + 1)
+> > +#define X86_REG_R9 (MAX_BPF_JIT_REG + 2)
+> > 
+> > /*
+> >  * The following table maps BPF registers to x86-64 registers.
+> > @@ -123,6 +124,7 @@ static const int reg2hex[] = {
+> > 	[BPF_REG_FP] = 5, /* RBP readonly */
+> > 	[BPF_REG_AX] = 2, /* R10 temp register */
+> > 	[AUX_REG] = 3,    /* R11 temp register */
+> > +	[X86_REG_R9] = 1, /* R9 register, 6th function argument */
+> 
+> We should update the comment above this:
+> 
+>  * Also x86-64 register R9 is unused. ...
 
---=-+hEZUL/LnhJlbIkpTIaT
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+good point. fixed.
 
-On Thu, 2019-11-07 at 14:35 -0800, Florian Fainelli wrote:
-> Changing a network device MTU can be a fairly frequent operation, and
-> failure to change the MTU is reflected to user-space properly, both by
-> an appropriate message as well as by looking at whether the device's MTU
-> matches the configuration.
->=20
-> Demote the prints to debug prints by using netdev_dbg(), making all
-> Intel wired LAN drivers consistent, since they used a mixture of PCI
-> device and network device prints before.
->=20
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> > +	/* One half of the page has active running trampoline.
+> > +	 * Another half is an area for next trampoline.
+> > +	 * Make sure the trampoline generation logic doesn't overflow.
+> > +	 */
+> > +	if (WARN_ON_ONCE(prog - (u8 *)image > PAGE_SIZE / 2 - BPF_INSN_SAFETY))
+> > +		return -EFAULT;
+> 
+> Given max number of args, can we catch this error at compile time? 
 
-Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+I don't see how to do that. I was thinking about having fake __init function
+that would call it with flags that can generate the longest trampoline, but
+it's not fool proof either.
+So I've added a test for it instead. See patch 10.
 
-> ---
->  drivers/net/ethernet/intel/e1000/e1000_main.c | 4 ++--
->  drivers/net/ethernet/intel/e1000e/netdev.c    | 3 ++-
->  drivers/net/ethernet/intel/i40e/i40e_main.c   | 4 ++--
->  drivers/net/ethernet/intel/igb/igb_main.c     | 5 ++---
->  drivers/net/ethernet/intel/igbvf/netdev.c     | 4 ++--
->  drivers/net/ethernet/intel/igc/igc_main.c     | 5 ++---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 3 ++-
->  7 files changed, 14 insertions(+), 14 deletions(-)
+> > +
+> > +static int bpf_trampoline_update(struct bpf_prog *prog)
+> 
+> Seems argument "prog" is not used at all? 
 
+like one below ? ;)
 
---=-+hEZUL/LnhJlbIkpTIaT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+> > +{
+> > +	struct bpf_trampoline *tr = prog->aux->trampoline;
+> > +	void *old_image = tr->image + ((tr->selector + 1) & 1) * PAGE_SIZE/2;
+> > +	void *new_image = tr->image + (tr->selector & 1) * PAGE_SIZE/2;
+> > +	if (err)
+> > +		goto out;
+> > +	tr->selector++;
+> 
+> Shall we do selector-- for unlink?
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl3EoCEACgkQ5W/vlVpL
-7c6Hkw//RAJ6/Y27nm995XzPzodZn0WzSEYsVPgc31gxVqdbPB3ZjbKCqxAgbnth
-EA0ktXZh15OLcrONJB73WKDbPaeAGGXB+nPiGWa+6YApJ6YLh1feoqMUnB2Ah6RF
-S8o2z3vsXFhzt28Zl0OEIou6/haJLy5ZhSOo9ftaKJmAWgQXbJ8IKQX5HEx4Y4W3
-UQ/Zgcly2OgwoHHBwyYEyawhVJbl7+vOyjuk7DZUc9zWuCAOhd2whv74q6JNxS95
-1QS3IpETL/S5GJ+FRM5Ijd8FmKxp9/FyknnxWF6mirtqlDTY+jwmmuQtVoKseH/+
-RIxJ83NjX8PUtFNRXdRtW16y6OUGe1A1KGMC25u35N4ZSV63fma0d9+zIQzymKfr
-8zVP5W1eGK+4lIJq8t8vZUybYPGXF+XevodBpavPX5x89c0yqe3XKNVrjgH1/FVv
-J42nRFPijGxnDiUOz+5AgLmNrHy3zV8014fn7rTfpRoPIx+Wq+NoB3fZBZMeFfWA
-IVBa7VWe+Xfg7N8GJbAiqTdiy5OScb0bcgv3vKt2f4kWdels0Zk3EkyqybozuKN3
-QHl35P0L+p2K5wcC5LGS5jk8iQhcC61fQVar/aAOTR8uXKj9HmPScrQVf48ovA55
-lcNSdYZobNrqG2jt/HgTu2pLMzi2Hy8Hc1Ux8thywIzrPKVad/Q=
-=wWG1
------END PGP SIGNATURE-----
-
---=-+hEZUL/LnhJlbIkpTIaT--
+It's a bit flip. I think it would be more confusing with --
 
