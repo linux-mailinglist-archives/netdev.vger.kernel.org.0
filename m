@@ -2,112 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 734F7F334B
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:34:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 160B2F3361
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:35:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729948AbfKGPeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 10:34:10 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:35944 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729873AbfKGPeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:34:10 -0500
-Received: by mail-io1-f71.google.com with SMTP id d22so2142434iod.3
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 07:34:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=xXSZuLJlKOSAiQeCDNop2/Po7TAwJIhgGKQhTrYo5uc=;
-        b=SVKjbaAvliw52g7FhqUDel0UilFmSvv5IDUrcvT0/b7pfYkxmA/SJfNWayiZyK+8Ex
-         oOw6dRYpVvyO6Z3/EfNljnRQHi6b9TDc/3pQ5K4ge681Xdil+oPVdYbb2UFOf8pc9gsm
-         Ffuddp3xW/SAhMKowUxK0VYUWs26ZWEjmRaRfMT+Cmuan4ZyevGjku4vCmt7PY+Wgrbe
-         N9arvOcAKmX6NT/wEla9kEioP7yCMHageUe0WHEnkv2B7NTvyHS0BgQWaXHvg/TFcpEf
-         +Ks56TFvFWh6uO1PFZ7lBJZtkY03j1YkLTtfhbNBFDUlVwppH9rBl/hFFOFkWI+G6qpf
-         i9tQ==
-X-Gm-Message-State: APjAAAWeD/84uaeFeES531oGTmNmJInshpLkfvzBS6Z82bhvGsXttZR0
-        /hzRGJ9iswLo9x9p0yxR5CwkXKJKFtAZniOhlmp6DI6/+AvH
-X-Google-Smtp-Source: APXvYqyUy/EHdTm3OkPUEXgsq0v+2vA6a+9xeM0aG5CRFMMGKUgoUlk/A9BrfCK35av6wp5etl0ZlVVeGtJY8MGnXPyIKxZzd1JB
+        id S2389353AbfKGPfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 10:35:11 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:45384 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729954AbfKGPfK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:35:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573140909;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BzEyez2H23edMWUzeroDzzDUe6EbJTfa2zTwff9g92s=;
+        b=iytoKoHykz8YhCd5O48nU5ObA9o3jLo8P15TM0U2VcVQPg/x6e7Hr5Qa3j4gO0uSqttAOY
+        OgwLfTp0x5ODyLzDUyK9cBN58lQJI3x2Gl4CSaSsetY0I49gmlFVL4x9U2Ft2tcqirL7Kp
+        vnva7uDFSHOsVxHnhV4DEiFhMMeqIfo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-TZdOIwyWM0aw-ZFtUujj9Q-1; Thu, 07 Nov 2019 10:35:05 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 000FF477;
+        Thu,  7 Nov 2019 15:35:00 +0000 (UTC)
+Received: from gondolin (ovpn-117-222.ams2.redhat.com [10.36.117.222])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CCE1260BEC;
+        Thu,  7 Nov 2019 15:34:51 +0000 (UTC)
+Date:   Thu, 7 Nov 2019 16:34:48 +0100
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, haotian.wang@sifive.com,
+        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
+        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
+        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
+        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
+        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, eperezma@redhat.com,
+        lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com, rdunlap@infradead.org
+Subject: Re: [PATCH V11 6/6] docs: sample driver to demonstrate how to
+ implement virtio-mdev framework
+Message-ID: <20191107163448.4d20b75b.cohuck@redhat.com>
+In-Reply-To: <20191107151109.23261-7-jasowang@redhat.com>
+References: <20191107151109.23261-1-jasowang@redhat.com>
+        <20191107151109.23261-7-jasowang@redhat.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-X-Received: by 2002:a6b:700a:: with SMTP id l10mr4184214ioc.164.1573140849301;
- Thu, 07 Nov 2019 07:34:09 -0800 (PST)
-Date:   Thu, 07 Nov 2019 07:34:09 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008123610596c36579@google.com>
-Subject: WARNING in ath6kl_htc_pipe_rx_complete
-From:   syzbot <syzbot+555908813b2ea35dae9a@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, davem@davemloft.net, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: TZdOIwyWM0aw-ZFtUujj9Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu,  7 Nov 2019 23:11:09 +0800
+Jason Wang <jasowang@redhat.com> wrote:
 
-syzbot found the following crash on:
+> This sample driver creates mdev device that simulate virtio net device
+> over virtio mdev transport. The device is implemented through vringh
+> and workqueue. A device specific dma ops is to make sure HVA is used
+> directly as the IOVA. This should be sufficient for kernel virtio
+> driver to work.
+>=20
+> Only 'virtio' type is supported right now. I plan to add 'vhost' type
+> on top which requires some virtual IOMMU implemented in this sample
+> driver.
+>=20
+> Signed-off-by: Jason Wang <jasowang@redhat.com>
+> ---
+>  MAINTAINERS                        |   1 +
+>  samples/Kconfig                    |  10 +
+>  samples/vfio-mdev/Makefile         |   1 +
+>  samples/vfio-mdev/mvnet_loopback.c | 687 +++++++++++++++++++++++++++++
+>  4 files changed, 699 insertions(+)
+>  create mode 100644 samples/vfio-mdev/mvnet_loopback.c
 
-HEAD commit:    d60bbfea usb: raw: add raw-gadget interface
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=1029829ae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=79de80330003b5f7
-dashboard link: https://syzkaller.appspot.com/bug?extid=555908813b2ea35dae9a
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1388a2aae00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13aa35dce00000
+Acked-by: Cornelia Huck <cohuck@redhat.com>
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+555908813b2ea35dae9a@syzkaller.appspotmail.com
-
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 17 at drivers/net/wireless/ath/ath6kl/htc_pipe.c:963  
-ath6kl_htc_pipe_rx_complete+0xc58/0xef0  
-drivers/net/wireless/ath/ath6kl/htc_pipe.c:963
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 17 Comm: kworker/1:0 Not tainted 5.4.0-rc6+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events ath6kl_usb_io_comp_work
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0xca/0x13e lib/dump_stack.c:113
-  panic+0x2aa/0x6e1 kernel/panic.c:221
-  __warn.cold+0x2f/0x33 kernel/panic.c:582
-  report_bug+0x27b/0x2f0 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x12b/0x1e0 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:291
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
-RIP: 0010:ath6kl_htc_pipe_rx_complete+0xc58/0xef0  
-drivers/net/wireless/ath/ath6kl/htc_pipe.c:963
-Code: 45 31 ed e8 da 0f a6 02 e9 01 fb ff ff 4c 8b 74 24 70 4c 8b 6c 24 60  
-e8 f6 84 74 fe 8b 5c 24 6c e9 3b f9 ff ff e8 e8 84 74 fe <0f> 0b 48 c7 c7  
-40 53 03 86 41 bc ea ff ff ff e8 7f 83 fe ff e9 cb
-RSP: 0018:ffff8881da267c00 EFLAGS: 00010293
-RAX: ffff8881da24b000 RBX: ffff8881cf9d0ba0 RCX: 1ffffffff0c06a9e
-RDX: 0000000000000000 RSI: ffffffff82c9a178 RDI: ffff8881cf9d0c10
-RBP: dffffc0000000000 R08: ffff8881da24b000 R09: fffffbfff11ab3b5
-R10: fffffbfff11ab3b4 R11: ffffffff88d59da7 R12: ffff8881cfc18000
-R13: ffff8881d20ca280 R14: 0000000000000000 R15: 0000000000000000
-  ath6kl_usb_io_comp_work+0x11e/0x160  
-drivers/net/wireless/ath/ath6kl/usb.c:598
-  process_one_work+0x92b/0x1530 kernel/workqueue.c:2269
-  worker_thread+0x96/0xe20 kernel/workqueue.c:2415
-  kthread+0x318/0x420 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
