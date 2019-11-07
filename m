@@ -2,120 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74713F3515
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:52:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8383F3533
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:58:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389612AbfKGQwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:52:32 -0500
-Received: from mx1.redhat.com ([209.132.183.28]:47686 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389576AbfKGQw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 11:52:28 -0500
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9168E7F41F
-        for <netdev@vger.kernel.org>; Thu,  7 Nov 2019 16:52:27 +0000 (UTC)
-Received: by mail-lf1-f69.google.com with SMTP id d2so609405lfl.12
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:52:27 -0800 (PST)
+        id S1729823AbfKGQ61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:58:27 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34469 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726231AbfKGQ61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:58:27 -0500
+Received: by mail-wr1-f68.google.com with SMTP id e6so3915314wrw.1
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:58:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=duuZ/GEcOj1lMi9UGA5Gk5HIPaCv9sbL2SkkSg2xRiM=;
+        b=bLyicoN/oBrGbatrICWZKI+duF29G+47XWdRzsIZkvTBjpJbLNXhVsVkC79qxqeCyE
+         GrXOueZY5k14qC8nADucD9PnD6j9rjkpap4ENKK5mkxMOGCkU5fJcS9K5xoYHoSYo6oh
+         siCDUh2VqshjlFkmMLKJd8qU5s65a2frvoj8no02l3MMbCxuh31z5bELZHAcPAAYQRmT
+         Q5GnmBH+pcf+PJs+JnOUAQWiS1jbIx8+5/DFFReyQcKPOVv+S49HXnaVOaxO+d5Ggo7x
+         WmN9owozs43xvh1kLmabjEnn4iQ/RbjrscAdxdrtbXvwIwo6USfrvrp2nvZ8RWp0EIDY
+         kwfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=eS9AG5GhdVciImy8yLqbjNDEvN85ekU2j3TOoMU0fV4=;
-        b=iqXqEVRD3Y0xIZnFcDs4D1oFyyVCeQzhGMGCyxluKUDqvkcHUJhrPABmM3f0xcwZzZ
-         3BT4V4ramfyoTZIsndttaQ/We0zGgksLCqw8e85o/NUp+eT5iLBSOviTfHdyyXV4uBEP
-         qq3x0+5dac8k0ZW7lcW8/XVYdmN+IfaRdPJq2TcCVmFjC2zm1ocg3vsQnf+xvkG4G48C
-         RmdU/xpJl7SiJHirEmfK2MaKjRJsTbUy2JKVka5/gLHDAEIDtV9Tre3ToZKo+QTLK8Uu
-         Ngw+T2kBFysjtWX4MlgxGzqGicvjnetTZi4NYxlmPUnSidYQp7fr4FYZzYk07zFKebiX
-         9Z+w==
-X-Gm-Message-State: APjAAAUz91fIgBIspc82vE0pGa+r+wHMwA8Q8NJDv7Zy1JBsGrU1Nh0f
-        NIgyAXkTHks7SXOnJgS5MRVTUVKOtmkH1O3OtWhJTo49m9PQVZI/7zsdJ3KsJEXrKfWk/qNSd/c
-        9/fP4M1dAqBC+N1Bu
-X-Received: by 2002:a2e:b5d4:: with SMTP id g20mr3196168ljn.140.1573145546135;
-        Thu, 07 Nov 2019 08:52:26 -0800 (PST)
-X-Google-Smtp-Source: APXvYqw8cjQUoLmErsn0B9yhisNaE+K0XRTl3kMBuqPdPTNQvVlZi+wOYJQtSwzvDdf8DUCG0YhP1A==
-X-Received: by 2002:a2e:b5d4:: with SMTP id g20mr3196157ljn.140.1573145545981;
-        Thu, 07 Nov 2019 08:52:25 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id v15sm2800402lfd.36.2019.11.07.08.52.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 08:52:25 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E77B31818B6; Thu,  7 Nov 2019 17:52:24 +0100 (CET)
-Subject: [PATCH bpf-next 6/6] libbpf: Add getter for program size
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Thu, 07 Nov 2019 17:52:24 +0100
-Message-ID: <157314554482.693412.362818059218610123.stgit@toke.dk>
-In-Reply-To: <157314553801.693412.15522462897300280861.stgit@toke.dk>
-References: <157314553801.693412.15522462897300280861.stgit@toke.dk>
-User-Agent: StGit/0.20
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=duuZ/GEcOj1lMi9UGA5Gk5HIPaCv9sbL2SkkSg2xRiM=;
+        b=r0KJhPrkXdIllVzCSiiiV7+dUCu30yXf16+4l7jdPBrQG7DrEaRJa1P9u7C5UIhhG0
+         yAuMcBQUqbRF4gZozxGzXqO9dUUK9a1fhGOeBEKOy/jPTQUe4xH6J8FkvdkTI4biDPG2
+         bMU1Bt6V6xbsCPRNTngLc1lFARgpWRtLqsF//YQfpo+yMSumWGOSPqCvAzwLhrEYwRmC
+         6nbkzFPip4ie7Cex1McNeoTnKtmZjQ+musH9RmJ6xlmYjfS9yuo2cz6ZdP6N19PLqmgp
+         4DjoiYhJAx1BkLu0c/wmoW1V2kd3KM7oF5SvSrl8R2bkIX0O1XmmkCS24Y8Mt+/7zT9K
+         aedg==
+X-Gm-Message-State: APjAAAXnOS7dGVlrzwChWETqIE4LjkdqtOcUsvfaF/C4ucQiV+Mc8wyJ
+        9koyjJDEphgc9xcHV3QJjKv5t8YfDIA=
+X-Google-Smtp-Source: APXvYqxUPQt/UQq91K5FWXcV7jPBqeDBMXe8DhnwkRTqSBFfcNvvxM6M3M3acec0a/Aj7sCn1c0WrA==
+X-Received: by 2002:adf:e602:: with SMTP id p2mr4043485wrm.348.1573145903787;
+        Thu, 07 Nov 2019 08:58:23 -0800 (PST)
+Received: from ?IPv6:2a01:e35:8b63:dc30:95e0:8058:2b4b:3437? ([2a01:e35:8b63:dc30:95e0:8058:2b4b:3437])
+        by smtp.gmail.com with ESMTPSA id q5sm2251463wmc.27.2019.11.07.08.58.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 07 Nov 2019 08:58:23 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v3 1/1] net: ipv6: allow setting address on interface
+ outside current namespace
+To:     Jonas Bonn <jonas@norrbonn.se>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <20191107132755.8517-7-jonas@norrbonn.se>
+ <20191107135652.19629-1-jonas@norrbonn.se>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <fb330ba7-1b9a-3fbb-4351-813b0928dc1b@6wind.com>
+Date:   Thu, 7 Nov 2019 17:58:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20191107135652.19629-1-jonas@norrbonn.se>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
-
-This adds a new getter for the BPF program size (in bytes). This is useful
-for a caller that is trying to predict how much memory will be locked by
-loading a BPF object into the kernel.
-
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/lib/bpf/libbpf.c   |    5 +++++
- tools/lib/bpf/libbpf.h   |    1 +
- tools/lib/bpf/libbpf.map |    1 +
- 3 files changed, 7 insertions(+)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 582c0fd16697..facd5e1a3a0b 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4790,6 +4790,11 @@ int bpf_program__fd(const struct bpf_program *prog)
- 	return bpf_program__nth_fd(prog, 0);
- }
- 
-+size_t bpf_program__size(const struct bpf_program *prog)
-+{
-+	return prog->insns_cnt * sizeof(struct bpf_insn);
-+}
-+
- int bpf_program__set_prep(struct bpf_program *prog, int nr_instances,
- 			  bpf_program_prep_t prep)
- {
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index f0947cc949d2..10875dc68ec8 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -213,6 +213,7 @@ LIBBPF_API void bpf_program__set_ifindex(struct bpf_program *prog,
- 
- LIBBPF_API const char *bpf_program__title(const struct bpf_program *prog,
- 					  bool needs_copy);
-+LIBBPF_API size_t bpf_program__size(const struct bpf_program *prog);
- 
- LIBBPF_API int bpf_program__load(struct bpf_program *prog, char *license,
- 				 __u32 kern_version);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 45f229af2766..f37d949917d2 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -202,5 +202,6 @@ LIBBPF_0.0.6 {
- 		bpf_program__get_type;
- 		bpf_program__is_tracing;
- 		bpf_program__set_tracing;
-+		bpf_program__size;
- 		bpf_get_link_xdp_info;
- } LIBBPF_0.0.5;
-
+Le 07/11/2019 à 14:56, Jonas Bonn a écrit :
+> This patch allows an interface outside of the current namespace to be
+> selected when setting a new IPv6 address for a device.  This uses the
+> IFA_TARGET_NETNSID attribute to select the namespace in which to search
+> for the interface to act upon.
+> 
+> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
+> ---
+> 
+> I messed up this patch and the cleanup code path wasn't included.  It
+> should look like this.  Sorry for the noise.
+You cannot resend just one patch, you have to resend the whole series.
