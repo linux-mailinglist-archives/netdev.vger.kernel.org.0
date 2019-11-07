@@ -2,93 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73649F34B5
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4014F34D2
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730119AbfKGQhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:37:10 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:34034 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbfKGQhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:37:10 -0500
-Received: by mail-il1-f193.google.com with SMTP id p6so2396045ilp.1
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 08:37:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fbxt9+Q0Dd5QJ+emDAStoI6XfnHtpyiX9FQANUbLngw=;
-        b=VSw4UOqqNohrKM+RdptAvY/iTag4PG7I7QVHbEIEboYRok7HOF12t9F0+OhV0H9ChT
-         PhM6m1zFmB1pi0CZXprdHmMOao44IvdeTXZR3ZqMoL77kmHzoGtxG9zp8F7en5pAuSRr
-         CiOhDZogMSwR0UWnX8YkwBwQVV+a7CD6zYYfxgWOwcgJbbnevCJbecEM5EXvXEdX1iSM
-         msEq3Hf/aEvxerOXC4WYMEPA282yByMsNNqN5PUMyvEVpvegjanpRb6MTBmaZ5k2UisN
-         J3KZCazMHCa1EWW9cwp2XoaalQkiJaw6g5TVFC5KyLcr8z0l19YXownPm5sAA7YXFQj+
-         H66Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fbxt9+Q0Dd5QJ+emDAStoI6XfnHtpyiX9FQANUbLngw=;
-        b=QzcckxbkwvqUpDOIZailZVd6V3s0X4hMQj2LDoyJyeA6G3njlAWh1BCT/TYrU9Zs4i
-         NRcfKXAvVdPKqumRhCpYbGGib4TsbIG6UUeQ4Pjq2+8LCGbvFgyloMqDJRqjGhleJLW0
-         jJ2jMOd60+GeAwUNP9qr+2XiwINk17R91nXerA33+jIhbFo2TvzodgM0fl2CoxdWdw09
-         NCmE2CGG6GZ6W6Kmt5QT9QXe0ApzjovNyL6ntR5va1yN1SSs2A0FnpCmCXXzIzDlTv4J
-         8tZDfvDzIyldfM9lYO2b+WvPJKoJbu32XZt5uhrbrErPIEUNZzCp0GZEIy5Nezomgmcn
-         jDoA==
-X-Gm-Message-State: APjAAAXItxyUsUGC8rqJBYEydt/nfIlIBdOP1Nbc2RgTuTRP+7iB3F9r
-        EM5BQEc7qC9QX+QCqrvwtaU=
-X-Google-Smtp-Source: APXvYqxYSzmh6UWsNderExb+gZgiD5EqLHN/QJkUQBd6ef4x1UBQ64HbQY/2iPnTe3rUtR88+TG9/A==
-X-Received: by 2002:a92:8498:: with SMTP id y24mr5400705ilk.89.1573144629714;
-        Thu, 07 Nov 2019 08:37:09 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:48b9:89c9:cd6f:19d4])
-        by smtp.googlemail.com with ESMTPSA id b6sm196692ioc.79.2019.11.07.08.37.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Nov 2019 08:37:08 -0800 (PST)
-Subject: Re: [PATCH net] ipv6: fixes rt6_probe() and fib6_nh->last_probe init
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20191107024509.87121-1-edumazet@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <094aedc7-3303-7f27-25eb-a32523faa5b7@gmail.com>
-Date:   Thu, 7 Nov 2019 09:37:07 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.1
+        id S2389213AbfKGQnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:43:14 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:51735 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730364AbfKGQnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:43:14 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id CEA5A2104A;
+        Thu,  7 Nov 2019 11:43:12 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 07 Nov 2019 11:43:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=smduMynfOuEBqVAmi
+        IMqY6XFOBWXSX0Q529uhuUkrsc=; b=Dms6j4y7AEwulyzmXNTwz0rBYZlxKILue
+        2JuKO1YWqvtf+CTNl60/OtBZwhbV0X9MThi3dcdTrphH0pFnO02CHb5C5MNYF4GZ
+        P+yzAgZV6PmJXuvVZT9ChVVI+zpJeJ+boklvBSGghpsVfHOHaWPsl4ujdvcyIze0
+        Qf4Ec5szw6Z5PJiKp6Vv1mAmTpBt09KrDTc+WBV/oq9HCOqUSCOv8NGRHvPpF4fx
+        sWhb5RbAGHIaVpAnaO8GlhJ3Bd53wSXEK3AB9jJemJk79n/Yh4MmrOumSLG304II
+        p0hmIHjZB72pTVgDHCJTtvg7G3U4aN23xjcPrWszsJFMGDAu9W5aw==
+X-ME-Sender: <xms:oEnEXcz4KV0RGJPrBG_OICYc84hCj-ll4il7oHEaWTZibsSlb73toA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudduledgleduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:oEnEXXqtfrIthOjRvpdhPOQI2nErz-LpiPrAU5iHDpjwM_qqCNFbIg>
+    <xmx:oEnEXT59EYcKrNOqHTfjFqMpPQjrznA_nqDNSx2akmUzEsZzdU0wbg>
+    <xmx:oEnEXWfjY120m6UTXODksje9yvyhmW6ALg4pACiFbJsN396Qw0tmuQ>
+    <xmx:oEnEXX17I4jOIawNMEWLc62WigkFFOuCJTfVkZ1kJhfgT5rroMnI2Q>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2236180063;
+        Thu,  7 Nov 2019 11:43:11 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, amitc@mellanox.com,
+        dsahern@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 00/12] mlxsw: Add layer 3 devlink-trap support
+Date:   Thu,  7 Nov 2019 18:42:08 +0200
+Message-Id: <20191107164220.20526-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20191107024509.87121-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/6/19 7:45 PM, Eric Dumazet wrote:
-> While looking at a syzbot KCSAN report [1], I found multiple
-> issues in this code :
-> 
-> 1) fib6_nh->last_probe has an initial value of 0.
-> 
->    While probably okay on 64bit kernels, this causes an issue
->    on 32bit kernels since the time_after(jiffies, 0 + interval)
->    might be false ~24 days after boot (for HZ=1000)
-> 
-> 2) The data-race found by KCSAN
->    I could use READ_ONCE() and WRITE_ONCE(), but we also can
->    take the opportunity of not piling-up too many rt6_probe_deferred()
->    works by using instead cmpxchg() so that only one cpu wins the race.
-> 
+From: Ido Schimmel <idosch@mellanox.com>
 
-...
+This patch set from Amit adds support in mlxsw for layer 3 traps that
+can report drops and exceptions via devlink-trap.
 
-> Fixes: cc3a86c802f0 ("ipv6: Change rt6_probe to take a fib6_nh")
+In a similar fashion to the existing layer 2 traps, these traps can send
+packets to the CPU that were not routed as intended by the underlying
+device.
 
-That commit only moves the location of last_probe, from fib6_info into
-fib6_nh. Given that I would expect the same problem to exist with the
-previous code. Agree? Point being should this be backported to older
-stable releases since said commit is new to 5.2?
+The traps are divided between the two types detailed in devlink-trap
+documentation: drops and exceptions. Unlike drops, packets received via
+exception traps are also injected to the kernel's receive path, as they
+are required for the correct functioning of the control plane. For
+example, packets trapped due to TTL error must be injected to kernel's
+receive path for traceroute to work properly.
+
+Patch set overview:
+
+Patch #1 adds the layer 3 drop traps to devlink along with their
+documentation.
+
+Patch #2 adds support for layer 3 drop traps in mlxsw.
+
+Patches #3-#5 add selftests for layer 3 drop traps.
+
+Patch #6 adds the layer 3 exception traps to devlink along with their
+documentation.
+
+Patches #7-#9 gradually add support for layer 3 exception traps in
+mlxsw.
+
+Patches #10-#12 add selftests for layer 3 exception traps.
+
+Amit Cohen (12):
+  devlink: Add layer 3 generic packet traps
+  mlxsw: Add layer 3 devlink-trap support
+  selftests: devlink: Export functions to devlink library
+  selftests: devlink: Make devlink_trap_cleanup() more generic
+  selftests: mlxsw: Add test cases for devlink-trap layer 3 drops
+  devlink: Add layer 3 generic packet exception traps
+  mlxsw: Add new FIB entry type for reject routes
+  mlxsw: Add specific trap for packets routed via invalid nexthops
+  mlxsw: Add layer 3 devlink-trap exceptions support
+  selftests: forwarding: devlink: Add functionality for trap exceptions
+    test
+  selftests: forwarding: tc_common: Add hitting check
+  selftests: mlxsw: Add test cases for devlink-trap layer 3 exceptions
+
+ Documentation/networking/devlink-trap.rst     |  61 ++
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |   1 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   5 -
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |  61 +-
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 100 ++++
+ drivers/net/ethernet/mellanox/mlxsw/trap.h    |  15 +
+ include/net/devlink.h                         |  45 ++
+ net/core/devlink.c                            |  15 +
+ .../net/mlxsw/devlink_trap_l2_drops.sh        |  68 +--
+ .../net/mlxsw/devlink_trap_l3_drops.sh        | 563 ++++++++++++++++++
+ .../net/mlxsw/devlink_trap_l3_exceptions.sh   | 557 +++++++++++++++++
+ .../selftests/net/forwarding/devlink_lib.sh   |  55 ++
+ .../selftests/net/forwarding/tc_common.sh     |  11 +
+ 13 files changed, 1496 insertions(+), 61 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_drops.sh
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_l3_exceptions.sh
+
+-- 
+2.21.0
 
