@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B7DF3422
+	by mail.lfdr.de (Postfix) with ESMTP id D4358F3423
 	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388989AbfKGQHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:07:35 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:63910 "EHLO
+        id S2389036AbfKGQHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:07:38 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:38337 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726231AbfKGQHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:07:35 -0500
+        with ESMTP id S1726231AbfKGQHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:07:38 -0500
 Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xA7G7U2s024022;
-        Thu, 7 Nov 2019 08:07:31 -0800
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xA7G7XpV024025;
+        Thu, 7 Nov 2019 08:07:34 -0800
 From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
         dt@chelsio.com
-Subject: [PATCH net-next 3/6] cxgb4: parse and configure TC-MQPRIO offload
-Date:   Thu,  7 Nov 2019 21:29:06 +0530
-Message-Id: <cf92863c3e97c43e63dc617d1c5bad561d370b27.1573140612.git.rahul.lakkireddy@chelsio.com>
+Subject: [PATCH net-next 4/6] cxgb4: add ETHOFLD hardware queue support
+Date:   Thu,  7 Nov 2019 21:29:07 +0530
+Message-Id: <baefee56344a0fca3965a0344025e1140d7376e1.1573140612.git.rahul.lakkireddy@chelsio.com>
 X-Mailer: git-send-email 2.5.3
 In-Reply-To: <cover.1573140612.git.rahul.lakkireddy@chelsio.com>
 References: <cover.1573140612.git.rahul.lakkireddy@chelsio.com>
@@ -31,901 +31,840 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add logic for validation and configuration of TC-MQPRIO Qdisc
-offload. Also, add support to manage EOSW_TXQ, which have 1-to-1
-mapping with EOTIDs, and expose them to network stack.
-
-Move common skb validation in Tx path to a separate function and
-add minimal Tx path for ETHOFLD. Update Tx queue selection to return
-normal NIC Txq to send traffic pattern that can't go through ETHOFLD
-Tx path.
+Add support for configuring and managing ETHOFLD hardware queues.
+Keep the queue count and MSI-X allocation scheme same as NIC queues.
+ETHOFLD hardware queues are dynamically allocated/destroyed as
+TC-MQPRIO Qdisc offload is enabled/disabled on the corresponding
+interface, respectively.
 
 Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/Makefile   |   2 +-
- drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  40 ++
- .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  38 +-
- .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c  | 346 ++++++++++++++++++
- .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h  |  30 ++
- .../net/ethernet/chelsio/cxgb4/cxgb4_uld.h    |  29 ++
- drivers/net/ethernet/chelsio/cxgb4/sge.c      | 162 +++++---
- 7 files changed, 597 insertions(+), 50 deletions(-)
- create mode 100644 drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
- create mode 100644 drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
+ .../net/ethernet/chelsio/cxgb4/cudbg_entity.h |   3 +
+ .../net/ethernet/chelsio/cxgb4/cudbg_lib.c    |  21 +++
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |  20 +++
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |  53 +++++-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  72 ++++++--
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c  | 168 ++++++++++++++++++
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h  |  10 ++
+ .../net/ethernet/chelsio/cxgb4/cxgb4_uld.c    |  40 ++---
+ drivers/net/ethernet/chelsio/cxgb4/sge.c      |  95 +++++++---
+ 9 files changed, 419 insertions(+), 63 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/Makefile b/drivers/net/ethernet/chelsio/cxgb4/Makefile
-index 20390f6afbb4..49a19308073b 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/Makefile
-+++ b/drivers/net/ethernet/chelsio/cxgb4/Makefile
-@@ -8,7 +8,7 @@ obj-$(CONFIG_CHELSIO_T4) += cxgb4.o
- cxgb4-objs := cxgb4_main.o l2t.o smt.o t4_hw.o sge.o clip_tbl.o cxgb4_ethtool.o \
- 	      cxgb4_uld.o srq.o sched.o cxgb4_filter.o cxgb4_tc_u32.o \
- 	      cxgb4_ptp.o cxgb4_tc_flower.o cxgb4_cudbg.o cxgb4_mps.o \
--	      cudbg_common.o cudbg_lib.o cudbg_zlib.o
-+	      cudbg_common.o cudbg_lib.o cudbg_zlib.o cxgb4_tc_mqprio.o
- cxgb4-$(CONFIG_CHELSIO_T4_DCB) +=  cxgb4_dcb.o
- cxgb4-$(CONFIG_CHELSIO_T4_FCOE) +=  cxgb4_fcoe.o
- cxgb4-$(CONFIG_DEBUG_FS) += cxgb4_debugfs.o
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-index dbfde3fbfce4..04a81276e9c8 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
-@@ -803,6 +803,38 @@ struct sge_uld_txq_info {
- 	u16 ntxq;		/* # of egress uld queues */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
+index 69746696a929..f5be3ee1bdb4 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_entity.h
+@@ -325,6 +325,9 @@ enum cudbg_qdesc_qtype {
+ 	CUDBG_QTYPE_CRYPTO_FLQ,
+ 	CUDBG_QTYPE_TLS_RXQ,
+ 	CUDBG_QTYPE_TLS_FLQ,
++	CUDBG_QTYPE_ETHOFLD_TXQ,
++	CUDBG_QTYPE_ETHOFLD_RXQ,
++	CUDBG_QTYPE_ETHOFLD_FLQ,
+ 	CUDBG_QTYPE_MAX,
  };
  
-+enum sge_eosw_state {
-+	CXGB4_EO_STATE_CLOSED = 0, /* Not ready to accept traffic */
-+};
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+index c2e92786608b..c9d3dea4413e 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+@@ -2930,6 +2930,10 @@ void cudbg_fill_qdesc_num_and_size(const struct adapter *padap,
+ 	tot_size += CXGB4_ULD_MAX * MAX_ULD_QSETS * SGE_MAX_IQ_SIZE *
+ 		    MAX_RXQ_DESC_SIZE;
+ 
++	/* ETHOFLD TXQ, RXQ, and FLQ */
++	tot_entries += MAX_OFLD_QSETS * 3;
++	tot_size += MAX_OFLD_QSETS * MAX_TXQ_ENTRIES * MAX_TXQ_DESC_SIZE;
 +
-+struct sge_eosw_desc {
-+	struct sk_buff *skb; /* SKB to free after getting completion */
-+	dma_addr_t addr[MAX_SKB_FRAGS + 1]; /* DMA mapped addresses */
-+};
+ 	tot_size += sizeof(struct cudbg_ver_hdr) +
+ 		    sizeof(struct cudbg_qdesc_info) +
+ 		    sizeof(struct cudbg_qdesc_entry) * tot_entries;
+@@ -3087,6 +3091,23 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
+ 		}
+ 	}
+ 
++	/* ETHOFLD TXQ */
++	if (s->eohw_txq)
++		for (i = 0; i < s->eoqsets; i++)
++			QDESC_GET_TXQ(&s->eohw_txq[i].q,
++				      CUDBG_QTYPE_ETHOFLD_TXQ, out);
 +
-+struct sge_eosw_txq {
-+	spinlock_t lock; /* Per queue lock to synchronize completions */
-+	enum sge_eosw_state state; /* Current ETHOFLD State */
-+	struct sge_eosw_desc *desc; /* Descriptor ring to hold packets */
-+	u32 ndesc; /* Number of descriptors */
-+	u32 pidx; /* Current Producer Index */
-+	u32 last_pidx; /* Last successfully transmitted Producer Index */
-+	u32 cidx; /* Current Consumer Index */
-+	u32 last_cidx; /* Last successfully reclaimed Consumer Index */
-+	u32 inuse; /* Number of packets held in ring */
++	/* ETHOFLD RXQ and FLQ */
++	if (s->eohw_rxq) {
++		for (i = 0; i < s->eoqsets; i++)
++			QDESC_GET_RXQ(&s->eohw_rxq[i].rspq,
++				      CUDBG_QTYPE_ETHOFLD_RXQ, out);
 +
-+	u32 cred; /* Current available credits */
-+	u32 ncompl; /* # of completions posted */
-+	u32 last_compl; /* # of credits consumed since last completion req */
++		for (i = 0; i < s->eoqsets; i++)
++			QDESC_GET_FLQ(&s->eohw_rxq[i].fl,
++				      CUDBG_QTYPE_ETHOFLD_FLQ, out);
++	}
 +
-+	u32 eotid; /* Index into EOTID table in software */
-+	u32 hwtid; /* Hardware EOTID index */
-+
-+	u32 hwqid; /* Underlying hardware queue index */
-+	struct net_device *netdev; /* Pointer to netdevice */
-+	struct tasklet_struct qresume_tsk; /* Restarts the queue */
+ out_unlock:
+ 	mutex_unlock(&uld_mutex);
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+index 04a81276e9c8..d9d92dc0d0c5 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4.h
+@@ -835,6 +835,16 @@ struct sge_eosw_txq {
+ 	struct tasklet_struct qresume_tsk; /* Restarts the queue */
+ };
+ 
++struct sge_eohw_txq {
++	spinlock_t lock; /* Per queue lock */
++	struct sge_txq q; /* HW Txq */
++	struct adapter *adap; /* Backpointer to adapter */
++	unsigned long tso; /* # of TSO requests */
++	unsigned long tx_cso; /* # of Tx checksum offloads */
++	unsigned long vlan_ins; /* # of Tx VLAN insertions */
++	unsigned long mapping_err; /* # of I/O MMU packet mapping errors */
 +};
 +
  struct sge {
  	struct sge_eth_txq ethtxq[MAX_ETH_QSETS];
  	struct sge_eth_txq ptptxq;
-@@ -1044,6 +1076,9 @@ struct adapter {
- #if IS_ENABLED(CONFIG_THERMAL)
- 	struct ch_thermal ch_thermal;
- #endif
-+
-+	/* TC MQPRIO offload */
-+	struct cxgb4_tc_mqprio *tc_mqprio;
- };
+@@ -848,11 +858,16 @@ struct sge {
+ 	struct sge_rspq intrq ____cacheline_aligned_in_smp;
+ 	spinlock_t intrq_lock;
  
- /* Support for "sched-class" command to allow a TX Scheduling Class to be
-@@ -1895,6 +1930,9 @@ int t4_i2c_rd(struct adapter *adap, unsigned int mbox, int port,
- void free_rspq_fl(struct adapter *adap, struct sge_rspq *rq, struct sge_fl *fl);
- void free_tx_desc(struct adapter *adap, struct sge_txq *q,
- 		  unsigned int n, bool unmap);
-+void cxgb4_eosw_txq_free_desc(struct adapter *adap, struct sge_eosw_txq *txq,
-+			      u32 ndesc);
-+void cxgb4_ethofld_restart(unsigned long data);
- void free_txq(struct adapter *adap, struct sge_txq *q);
- void cxgb4_reclaim_completed_tx(struct adapter *adap,
- 				struct sge_txq *q, bool unmap);
-@@ -1955,4 +1993,6 @@ int cxgb4_update_mac_filt(struct port_info *pi, unsigned int viid,
- 			  bool persistent, u8 *smt_idx);
- int cxgb4_get_msix_idx_from_bmap(struct adapter *adap);
++	struct sge_eohw_txq *eohw_txq;
++	struct sge_ofld_rxq *eohw_rxq;
++
+ 	u16 max_ethqsets;           /* # of available Ethernet queue sets */
+ 	u16 ethqsets;               /* # of active Ethernet queue sets */
+ 	u16 ethtxq_rover;           /* Tx queue to clean up next */
+ 	u16 ofldqsets;              /* # of active ofld queue sets */
+ 	u16 nqs_per_uld;	    /* # of Rx queues per ULD */
++	u16 eoqsets;                /* # of ETHOFLD queues */
++
+ 	u16 timer_val[SGE_NTIMERS];
+ 	u8 counter_val[SGE_NCOUNTERS];
+ 	u16 dbqtimer_tick;
+@@ -1466,6 +1481,9 @@ int t4_sge_mod_ctrl_txq(struct adapter *adap, unsigned int eqid,
+ int t4_sge_alloc_uld_txq(struct adapter *adap, struct sge_uld_txq *txq,
+ 			 struct net_device *dev, unsigned int iqid,
+ 			 unsigned int uld_type);
++int t4_sge_alloc_ethofld_txq(struct adapter *adap, struct sge_eohw_txq *txq,
++			     struct net_device *dev, u32 iqid);
++void t4_sge_free_ethofld_txq(struct adapter *adap, struct sge_eohw_txq *txq);
+ irqreturn_t t4_sge_intr_msix(int irq, void *cookie);
+ int t4_sge_init(struct adapter *adap);
+ void t4_sge_start(struct adapter *adap);
+@@ -1995,4 +2013,6 @@ int cxgb4_get_msix_idx_from_bmap(struct adapter *adap);
  void cxgb4_free_msix_idx_in_bmap(struct adapter *adap, u32 msix_idx);
-+int cxgb_open(struct net_device *dev);
-+int cxgb_close(struct net_device *dev);
+ int cxgb_open(struct net_device *dev);
+ int cxgb_close(struct net_device *dev);
++void cxgb4_enable_rx(struct adapter *adap, struct sge_rspq *q);
++void cxgb4_quiesce_rx(struct sge_rspq *q);
  #endif /* __CXGB4_H__ */
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+index ae6a47dd7dc9..a13b03f771cc 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
+@@ -2658,6 +2658,7 @@ static int sge_qinfo_uld_ciq_entries(const struct adapter *adap, int uld)
+ 
+ static int sge_qinfo_show(struct seq_file *seq, void *v)
+ {
++	int eth_entries, ctrl_entries, eo_entries = 0;
+ 	int uld_rxq_entries[CXGB4_ULD_MAX] = { 0 };
+ 	int uld_ciq_entries[CXGB4_ULD_MAX] = { 0 };
+ 	int uld_txq_entries[CXGB4_TX_MAX] = { 0 };
+@@ -2665,11 +2666,12 @@ static int sge_qinfo_show(struct seq_file *seq, void *v)
+ 	const struct sge_uld_rxq_info *urxq_info;
+ 	struct adapter *adap = seq->private;
+ 	int i, n, r = (uintptr_t)v - 1;
+-	int eth_entries, ctrl_entries;
+ 	struct sge *s = &adap->sge;
+ 
+ 	eth_entries = DIV_ROUND_UP(adap->sge.ethqsets, 4);
+ 	ctrl_entries = DIV_ROUND_UP(MAX_CTRL_QUEUES, 4);
++	if (adap->sge.eohw_txq)
++		eo_entries = DIV_ROUND_UP(adap->sge.eoqsets, 4);
+ 
+ 	mutex_lock(&uld_mutex);
+ 	if (s->uld_txq_info)
+@@ -2761,6 +2763,54 @@ do { \
+ 	}
+ 
+ 	r -= eth_entries;
++	if (r < eo_entries) {
++		int base_qset = r * 4;
++		const struct sge_ofld_rxq *rx = &s->eohw_rxq[base_qset];
++		const struct sge_eohw_txq *tx = &s->eohw_txq[base_qset];
++
++		n = min(4, s->eoqsets - 4 * r);
++
++		S("QType:", "ETHOFLD");
++		S("Interface:",
++		  rx[i].rspq.netdev ? rx[i].rspq.netdev->name : "N/A");
++		T("TxQ ID:", q.cntxt_id);
++		T("TxQ size:", q.size);
++		T("TxQ inuse:", q.in_use);
++		T("TxQ CIDX:", q.cidx);
++		T("TxQ PIDX:", q.pidx);
++		R("RspQ ID:", rspq.abs_id);
++		R("RspQ size:", rspq.size);
++		R("RspQE size:", rspq.iqe_len);
++		R("RspQ CIDX:", rspq.cidx);
++		R("RspQ Gen:", rspq.gen);
++		S3("u", "Intr delay:", qtimer_val(adap, &rx[i].rspq));
++		S3("u", "Intr pktcnt:", s->counter_val[rx[i].rspq.pktcnt_idx]);
++		R("FL ID:", fl.cntxt_id);
++		S3("u", "FL size:", rx->fl.size ? rx->fl.size - 8 : 0);
++		R("FL pend:", fl.pend_cred);
++		R("FL avail:", fl.avail);
++		R("FL PIDX:", fl.pidx);
++		R("FL CIDX:", fl.cidx);
++		RL("RxPackets:", stats.pkts);
++		RL("RxImm:", stats.imm);
++		RL("RxAN", stats.an);
++		RL("RxNoMem", stats.nomem);
++		TL("TSO:", tso);
++		TL("TxCSO:", tx_cso);
++		TL("VLANins:", vlan_ins);
++		TL("TxQFull:", q.stops);
++		TL("TxQRestarts:", q.restarts);
++		TL("TxMapErr:", mapping_err);
++		RL("FLAllocErr:", fl.alloc_failed);
++		RL("FLLrgAlcErr:", fl.large_alloc_failed);
++		RL("FLMapErr:", fl.mapping_err);
++		RL("FLLow:", fl.low);
++		RL("FLStarving:", fl.starving);
++
++		goto unlock;
++	}
++
++	r -= eo_entries;
+ 	if (r < uld_txq_entries[CXGB4_TX_OFLD]) {
+ 		const struct sge_uld_txq *tx;
+ 
+@@ -3007,6 +3057,7 @@ static int sge_queue_entries(const struct adapter *adap)
+ 	mutex_unlock(&uld_mutex);
+ 
+ 	return DIV_ROUND_UP(adap->sge.ethqsets, 4) +
++	       (adap->sge.eohw_txq ? DIV_ROUND_UP(adap->sge.eoqsets, 4) : 0) +
+ 	       tot_uld_entries +
+ 	       DIV_ROUND_UP(MAX_CTRL_QUEUES, 4) + 1;
+ }
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-index d8a1bd80b293..fe3ea60843c3 100644
+index fe3ea60843c3..b5148c57e8bf 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_main.c
-@@ -65,6 +65,7 @@
- #include <linux/uaccess.h>
- #include <linux/crash_dump.h>
- #include <net/udp_tunnel.h>
-+#include <net/xfrm.h>
+@@ -880,6 +880,12 @@ static unsigned int rxq_to_chan(const struct sge *p, unsigned int qid)
+ 	return netdev2pinfo(p->ingr_map[qid]->netdev)->tx_chan;
+ }
  
- #include "cxgb4.h"
- #include "cxgb4_filter.h"
-@@ -82,6 +83,7 @@
- #include "sched.h"
- #include "cxgb4_tc_u32.h"
- #include "cxgb4_tc_flower.h"
-+#include "cxgb4_tc_mqprio.h"
- #include "cxgb4_ptp.h"
- #include "cxgb4_cudbg.h"
- 
-@@ -1117,6 +1119,18 @@ static u16 cxgb_select_queue(struct net_device *dev, struct sk_buff *skb,
- 	}
- #endif /* CONFIG_CHELSIO_T4_DCB */
- 
-+	if (dev->num_tc) {
-+		struct port_info *pi = netdev2pinfo(dev);
++void cxgb4_quiesce_rx(struct sge_rspq *q)
++{
++	if (q->handler)
++		napi_disable(&q->napi);
++}
 +
-+		/* Send unsupported traffic pattern to normal NIC queues. */
-+		txq = netdev_pick_tx(dev, skb, sb_dev);
-+		if (xfrm_offload(skb) || is_ptp_enabled(skb, dev) ||
-+		    ip_hdr(skb)->protocol != IPPROTO_TCP)
-+			txq = txq % pi->nqsets;
-+
-+		return txq;
-+	}
-+
- 	if (select_queue) {
- 		txq = (skb_rx_queue_recorded(skb)
- 			? skb_get_rx_queue(skb)
-@@ -2472,11 +2486,11 @@ static void cxgb_down(struct adapter *adapter)
  /*
-  * net_device operations
+  * Wait until all NAPI handlers are descheduled.
   */
--static int cxgb_open(struct net_device *dev)
-+int cxgb_open(struct net_device *dev)
- {
--	int err;
- 	struct port_info *pi = netdev_priv(dev);
- 	struct adapter *adapter = pi->adapter;
-+	int err;
+@@ -890,8 +896,10 @@ static void quiesce_rx(struct adapter *adap)
+ 	for (i = 0; i < adap->sge.ingr_sz; i++) {
+ 		struct sge_rspq *q = adap->sge.ingr_map[i];
  
- 	netif_carrier_off(dev);
- 
-@@ -2499,7 +2513,7 @@ static int cxgb_open(struct net_device *dev)
- 	return err;
- }
- 
--static int cxgb_close(struct net_device *dev)
-+int cxgb_close(struct net_device *dev)
- {
- 	struct port_info *pi = netdev_priv(dev);
- 	struct adapter *adapter = pi->adapter;
-@@ -3233,6 +3247,17 @@ static int cxgb_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+-		if (q && q->handler)
+-			napi_disable(&q->napi);
++		if (!q)
++			continue;
++
++		cxgb4_quiesce_rx(q);
  	}
  }
  
-+static int cxgb_setup_tc_mqprio(struct net_device *dev,
-+				struct tc_mqprio_qopt_offload *mqprio)
+@@ -913,6 +921,17 @@ static void disable_interrupts(struct adapter *adap)
+ 	}
+ }
+ 
++void cxgb4_enable_rx(struct adapter *adap, struct sge_rspq *q)
 +{
-+	struct adapter *adap = netdev2adap(dev);
++	if (q->handler)
++		napi_enable(&q->napi);
 +
-+	if (!is_ethofld(adap) || !adap->tc_mqprio)
-+		return -ENOMEM;
-+
-+	return cxgb4_setup_tc_mqprio(dev, mqprio);
++	/* 0-increment GTS to start the timer and enable interrupts */
++	t4_write_reg(adap, MYPF_REG(SGE_PF_GTS_A),
++		     SEINTARM_V(q->intr_params) |
++		     INGRESSQID_V(q->cntxt_id));
 +}
 +
- static LIST_HEAD(cxgb_block_cb_list);
+ /*
+  * Enable NAPI scheduling and interrupt generation for all Rx queues.
+  */
+@@ -925,13 +944,8 @@ static void enable_rx(struct adapter *adap)
  
- static int cxgb_setup_tc(struct net_device *dev, enum tc_setup_type type,
-@@ -3241,6 +3266,8 @@ static int cxgb_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 	struct port_info *pi = netdev2pinfo(dev);
+ 		if (!q)
+ 			continue;
+-		if (q->handler)
+-			napi_enable(&q->napi);
  
- 	switch (type) {
-+	case TC_SETUP_QDISC_MQPRIO:
-+		return cxgb_setup_tc_mqprio(dev, type_data);
- 	case TC_SETUP_BLOCK:
- 		return flow_block_cb_setup_simple(type_data,
- 						  &cxgb_block_cb_list,
-@@ -5668,6 +5695,7 @@ static void free_some_resources(struct adapter *adapter)
- 	kvfree(adapter->srq);
- 	t4_cleanup_sched(adapter);
- 	kvfree(adapter->tids.tid_tab);
-+	cxgb4_cleanup_tc_mqprio(adapter);
- 	cxgb4_cleanup_tc_flower(adapter);
- 	cxgb4_cleanup_tc_u32(adapter);
- 	kfree(adapter->sge.egr_map);
-@@ -6237,6 +6265,10 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		if (cxgb4_init_tc_flower(adapter))
- 			dev_warn(&pdev->dev,
- 				 "could not offload tc flower, continuing\n");
-+
-+		if (cxgb4_init_tc_mqprio(adapter))
-+			dev_warn(&pdev->dev,
-+				 "could not offload tc mqprio, continuing\n");
+-		/* 0-increment GTS to start the timer and enable interrupts */
+-		t4_write_reg(adap, MYPF_REG(SGE_PF_GTS_A),
+-			     SEINTARM_V(q->intr_params) |
+-			     INGRESSQID_V(q->cntxt_id));
++		cxgb4_enable_rx(adap, q);
+ 	}
+ }
+ 
+@@ -5360,6 +5374,19 @@ static int cfg_queues(struct adapter *adap)
+ 		avail_qsets -= num_ulds * s->ofldqsets;
  	}
  
- 	if (is_offload(adapter) || is_hashfilter(adapter)) {
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
-new file mode 100644
-index 000000000000..8cdf3dc1da16
---- /dev/null
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
-@@ -0,0 +1,346 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2019 Chelsio Communications.  All rights reserved. */
-+
-+#include "cxgb4.h"
-+#include "cxgb4_tc_mqprio.h"
-+
-+static int cxgb4_mqprio_validate(struct net_device *dev,
-+				 struct tc_mqprio_qopt_offload *mqprio)
-+{
-+	u64 min_rate = 0, max_rate = 0, max_link_rate;
-+	struct port_info *pi = netdev2pinfo(dev);
-+	struct adapter *adap = netdev2adap(dev);
-+	u32 qcount = 0, qoffset = 0;
-+	u32 link_ok, speed, mtu;
-+	int ret;
-+	u8 i;
-+
-+	if (!mqprio->qopt.num_tc)
-+		return 0;
-+
-+	if (mqprio->qopt.hw != TC_MQPRIO_HW_OFFLOAD_TCS) {
-+		netdev_err(dev, "Only full TC hardware offload is supported\n");
-+		return -EINVAL;
-+	} else if (mqprio->mode != TC_MQPRIO_MODE_CHANNEL) {
-+		netdev_err(dev, "Only channel mode offload is supported\n");
-+		return -EINVAL;
-+	} else if (mqprio->shaper != TC_MQPRIO_SHAPER_BW_RATE) {
-+		netdev_err(dev,	"Only bandwidth rate shaper supported\n");
-+		return -EINVAL;
-+	} else if (mqprio->qopt.num_tc > adap->params.nsched_cls) {
-+		netdev_err(dev,
-+			   "Only %u traffic classes supported by hardware\n",
-+			   adap->params.nsched_cls);
-+		return -ERANGE;
-+	}
-+
-+	ret = t4_get_link_params(pi, &link_ok, &speed, &mtu);
-+	if (ret) {
-+		netdev_err(dev, "Failed to get link speed, ret: %d\n", ret);
-+		return -EINVAL;
-+	}
-+
-+	/* Convert from Mbps to bps */
-+	max_link_rate = (u64)speed * 1000 * 1000;
-+
-+	for (i = 0; i < mqprio->qopt.num_tc; i++) {
-+		qoffset = max_t(u16, mqprio->qopt.offset[i], qoffset);
-+		qcount += mqprio->qopt.count[i];
-+
-+		/* Convert byte per second to bits per second */
-+		min_rate += (mqprio->min_rate[i] * 8);
-+		max_rate += (mqprio->max_rate[i] * 8);
-+	}
-+
-+	if (qoffset >= adap->tids.neotids || qcount > adap->tids.neotids)
-+		return -ENOMEM;
-+
-+	if (min_rate > max_link_rate || max_rate > max_link_rate) {
-+		netdev_err(dev,
-+			   "Total Min/Max (%llu/%llu) Rate > supported (%llu)\n",
-+			   min_rate, max_rate, max_link_rate);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int cxgb4_init_eosw_txq(struct net_device *dev,
-+			       struct sge_eosw_txq *eosw_txq,
-+			       u32 eotid, u32 hwqid)
-+{
-+	struct adapter *adap = netdev2adap(dev);
-+	struct sge_eosw_desc *ring;
-+
-+	memset(eosw_txq, 0, sizeof(*eosw_txq));
-+
-+	ring = kcalloc(CXGB4_EOSW_TXQ_DEFAULT_DESC_NUM,
-+		       sizeof(*ring), GFP_KERNEL);
-+	if (!ring)
-+		return -ENOMEM;
-+
-+	eosw_txq->desc = ring;
-+	eosw_txq->ndesc = CXGB4_EOSW_TXQ_DEFAULT_DESC_NUM;
-+	spin_lock_init(&eosw_txq->lock);
-+	eosw_txq->state = CXGB4_EO_STATE_CLOSED;
-+	eosw_txq->eotid = eotid;
-+	eosw_txq->hwtid = adap->tids.eotid_base + eosw_txq->eotid;
-+	eosw_txq->cred = adap->params.ofldq_wr_cred;
-+	eosw_txq->hwqid = hwqid;
-+	eosw_txq->netdev = dev;
-+	tasklet_init(&eosw_txq->qresume_tsk, cxgb4_ethofld_restart,
-+		     (unsigned long)eosw_txq);
-+	return 0;
-+}
-+
-+static void cxgb4_clean_eosw_txq(struct net_device *dev,
-+				 struct sge_eosw_txq *eosw_txq)
-+{
-+	struct adapter *adap = netdev2adap(dev);
-+
-+	cxgb4_eosw_txq_free_desc(adap, eosw_txq, eosw_txq->ndesc);
-+	eosw_txq->pidx = 0;
-+	eosw_txq->last_pidx = 0;
-+	eosw_txq->cidx = 0;
-+	eosw_txq->last_cidx = 0;
-+	eosw_txq->inuse = 0;
-+	eosw_txq->cred = adap->params.ofldq_wr_cred;
-+	eosw_txq->ncompl = 0;
-+	eosw_txq->last_compl = 0;
-+	eosw_txq->state = CXGB4_EO_STATE_CLOSED;
-+}
-+
-+static void cxgb4_free_eosw_txq(struct net_device *dev,
-+				struct sge_eosw_txq *eosw_txq)
-+{
-+	spin_lock_bh(&eosw_txq->lock);
-+	cxgb4_clean_eosw_txq(dev, eosw_txq);
-+	kfree(eosw_txq->desc);
-+	spin_unlock_bh(&eosw_txq->lock);
-+	tasklet_kill(&eosw_txq->qresume_tsk);
-+}
-+
-+static int cxgb4_mqprio_enable_offload(struct net_device *dev,
-+				       struct tc_mqprio_qopt_offload *mqprio)
-+{
-+	struct cxgb4_tc_port_mqprio *tc_port_mqprio;
-+	u32 qoffset, qcount, tot_qcount, qid, hwqid;
-+	struct port_info *pi = netdev2pinfo(dev);
-+	struct adapter *adap = netdev2adap(dev);
-+	struct sge_eosw_txq *eosw_txq;
-+	int eotid, ret;
-+	u16 i, j;
-+
-+	tc_port_mqprio = &adap->tc_mqprio->port_mqprio[pi->port_id];
-+	for (i = 0; i < mqprio->qopt.num_tc; i++) {
-+		qoffset = mqprio->qopt.offset[i];
-+		qcount = mqprio->qopt.count[i];
-+		for (j = 0; j < qcount; j++) {
-+			eotid = cxgb4_get_free_eotid(&adap->tids);
-+			if (eotid < 0) {
-+				ret = -ENOMEM;
-+				goto out_free_eotids;
-+			}
-+
-+			qid = qoffset + j;
-+			hwqid = pi->first_qset + (eotid % pi->nqsets);
-+			eosw_txq = &tc_port_mqprio->eosw_txq[qid];
-+			ret = cxgb4_init_eosw_txq(dev, eosw_txq,
-+						  eotid, hwqid);
-+			if (ret)
-+				goto out_free_eotids;
-+
-+			cxgb4_alloc_eotid(&adap->tids, eotid, eosw_txq);
-+		}
-+	}
-+
-+	memcpy(&tc_port_mqprio->mqprio, mqprio,
-+	       sizeof(struct tc_mqprio_qopt_offload));
-+
-+	/* Inform the stack about the configured tc params.
-+	 *
-+	 * Set the correct queue map. If no queue count has been
-+	 * specified, then send the traffic through default NIC
-+	 * queues; instead of ETHOFLD queues.
++	/* ETHOFLD Queues used for QoS offload should follow same
++	 * allocation scheme as normal Ethernet Queues.
 +	 */
-+	ret = netdev_set_num_tc(dev, mqprio->qopt.num_tc);
-+	if (ret)
-+		goto out_free_eotids;
-+
-+	tot_qcount = pi->nqsets;
-+	for (i = 0; i < mqprio->qopt.num_tc; i++) {
-+		qcount = mqprio->qopt.count[i];
-+		if (qcount) {
-+			qoffset = mqprio->qopt.offset[i] + pi->nqsets;
++	if (is_ethofld(adap)) {
++		if (avail_qsets < s->max_ethqsets) {
++			adap->params.ethofld = 0;
++			s->eoqsets = 0;
 +		} else {
-+			qcount = pi->nqsets;
-+			qoffset = 0;
++			s->eoqsets = s->max_ethqsets;
 +		}
-+
-+		ret = netdev_set_tc_queue(dev, i, qcount, qoffset);
-+		if (ret)
-+			goto out_reset_tc;
-+
-+		tot_qcount += mqprio->qopt.count[i];
++		avail_qsets -= s->eoqsets;
 +	}
 +
-+	ret = netif_set_real_num_tx_queues(dev, tot_qcount);
-+	if (ret)
-+		goto out_reset_tc;
+ 	for (i = 0; i < ARRAY_SIZE(s->ethrxq); i++) {
+ 		struct sge_eth_rxq *r = &s->ethrxq[i];
+ 
+@@ -5473,9 +5500,9 @@ void cxgb4_free_msix_idx_in_bmap(struct adapter *adap,
+ 
+ static int enable_msix(struct adapter *adap)
+ {
++	u32 eth_need, uld_need = 0, ethofld_need = 0;
++	u32 ethqsets = 0, ofldqsets = 0, eoqsets = 0;
+ 	u8 num_uld = 0, nchan = adap->params.nports;
+-	u32 ethqsets = 0, ofldqsets = 0;
+-	u32 eth_need, uld_need = 0;
+ 	u32 i, want, need, num_vec;
+ 	struct sge *s = &adap->sge;
+ 	struct msix_entry *entries;
+@@ -5499,6 +5526,12 @@ static int enable_msix(struct adapter *adap)
+ 		need += uld_need;
+ 	}
+ 
++	if (is_ethofld(adap)) {
++		want += s->eoqsets;
++		ethofld_need = eth_need;
++		need += ethofld_need;
++	}
 +
-+	tc_port_mqprio->state = CXGB4_MQPRIO_STATE_ACTIVE;
+ 	want += EXTRA_VECS;
+ 	need += EXTRA_VECS;
+ 
+@@ -5531,7 +5564,9 @@ static int enable_msix(struct adapter *adap)
+ 		adap->params.crypto = 0;
+ 		adap->params.ethofld = 0;
+ 		s->ofldqsets = 0;
++		s->eoqsets = 0;
+ 		uld_need = 0;
++		ethofld_need = 0;
+ 	}
+ 
+ 	num_vec = allocated;
+@@ -5543,10 +5578,12 @@ static int enable_msix(struct adapter *adap)
+ 		ethqsets = eth_need;
+ 		if (is_uld(adap))
+ 			ofldqsets = nchan;
++		if (is_ethofld(adap))
++			eoqsets = ethofld_need;
+ 
+ 		num_vec -= need;
+ 		while (num_vec) {
+-			if (num_vec < eth_need ||
++			if (num_vec < eth_need + ethofld_need ||
+ 			    ethqsets > s->max_ethqsets)
+ 				break;
+ 
+@@ -5557,6 +5594,10 @@ static int enable_msix(struct adapter *adap)
+ 
+ 				ethqsets++;
+ 				num_vec--;
++				if (ethofld_need) {
++					eoqsets++;
++					num_vec--;
++				}
+ 			}
+ 		}
+ 
+@@ -5574,6 +5615,8 @@ static int enable_msix(struct adapter *adap)
+ 		ethqsets = s->max_ethqsets;
+ 		if (is_uld(adap))
+ 			ofldqsets = s->ofldqsets;
++		if (is_ethofld(adap))
++			eoqsets = s->eoqsets;
+ 	}
+ 
+ 	if (ethqsets < s->max_ethqsets) {
+@@ -5586,6 +5629,9 @@ static int enable_msix(struct adapter *adap)
+ 		s->nqs_per_uld = s->ofldqsets;
+ 	}
+ 
++	if (is_ethofld(adap))
++		s->eoqsets = eoqsets;
++
+ 	/* map for msix */
+ 	ret = alloc_msix_info(adap, allocated);
+ 	if (ret)
+@@ -5597,8 +5643,8 @@ static int enable_msix(struct adapter *adap)
+ 	}
+ 
+ 	dev_info(adap->pdev_dev,
+-		 "%d MSI-X vectors allocated, nic %d per uld %d\n",
+-		 allocated, s->max_ethqsets, s->nqs_per_uld);
++		 "%d MSI-X vectors allocated, nic %d eoqsets %d per uld %d\n",
++		 allocated, s->max_ethqsets, s->eoqsets, s->nqs_per_uld);
+ 
+ 	kfree(entries);
+ 	return 0;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+index 8cdf3dc1da16..66503ea259e7 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c
+@@ -120,6 +120,166 @@ static void cxgb4_free_eosw_txq(struct net_device *dev,
+ 	tasklet_kill(&eosw_txq->qresume_tsk);
+ }
+ 
++static int cxgb4_mqprio_alloc_hw_resources(struct net_device *dev)
++{
++	struct port_info *pi = netdev2pinfo(dev);
++	struct adapter *adap = netdev2adap(dev);
++	struct sge_ofld_rxq *eorxq;
++	struct sge_eohw_txq *eotxq;
++	int ret, msix = 0;
++	u32 i;
++
++	/* Allocate ETHOFLD hardware queue structures if not done already */
++	if (!refcount_read(&adap->tc_mqprio->refcnt)) {
++		adap->sge.eohw_rxq = kcalloc(adap->sge.eoqsets,
++					     sizeof(struct sge_ofld_rxq),
++					     GFP_KERNEL);
++		if (!adap->sge.eohw_rxq)
++			return -ENOMEM;
++
++		adap->sge.eohw_txq = kcalloc(adap->sge.eoqsets,
++					     sizeof(struct sge_eohw_txq),
++					     GFP_KERNEL);
++		if (!adap->sge.eohw_txq) {
++			kfree(adap->sge.eohw_rxq);
++			return -ENOMEM;
++		}
++	}
++
++	if (!(adap->flags & CXGB4_USING_MSIX))
++		msix = -((int)adap->sge.intrq.abs_id + 1);
++
++	for (i = 0; i < pi->nqsets; i++) {
++		eorxq = &adap->sge.eohw_rxq[pi->first_qset + i];
++		eotxq = &adap->sge.eohw_txq[pi->first_qset + i];
++
++		/* Allocate Rxqs for receiving ETHOFLD Tx completions */
++		if (msix >= 0) {
++			msix = cxgb4_get_msix_idx_from_bmap(adap);
++			if (msix < 0)
++				goto out_free_queues;
++
++			eorxq->msix = &adap->msix_info[msix];
++			snprintf(eorxq->msix->desc,
++				 sizeof(eorxq->msix->desc),
++				 "%s-eorxq%d", dev->name, i);
++		}
++
++		init_rspq(adap, &eorxq->rspq,
++			  CXGB4_EOHW_RXQ_DEFAULT_INTR_USEC,
++			  CXGB4_EOHW_RXQ_DEFAULT_PKT_CNT,
++			  CXGB4_EOHW_RXQ_DEFAULT_DESC_NUM,
++			  CXGB4_EOHW_RXQ_DEFAULT_DESC_SIZE);
++
++		eorxq->fl.size = CXGB4_EOHW_FLQ_DEFAULT_DESC_NUM;
++
++		ret = t4_sge_alloc_rxq(adap, &eorxq->rspq, false,
++				       dev, msix, &eorxq->fl, NULL,
++				       NULL, 0);
++		if (ret)
++			goto out_free_queues;
++
++		/* Allocate ETHOFLD hardware Txqs */
++		eotxq->q.size = CXGB4_EOHW_TXQ_DEFAULT_DESC_NUM;
++		ret = t4_sge_alloc_ethofld_txq(adap, eotxq, dev,
++					       eorxq->rspq.cntxt_id);
++		if (ret)
++			goto out_free_queues;
++
++		/* Allocate IRQs, set IRQ affinity, and start Rx */
++		if (adap->flags & CXGB4_USING_MSIX) {
++			ret = request_irq(eorxq->msix->vec, t4_sge_intr_msix, 0,
++					  eorxq->msix->desc, &eorxq->rspq);
++			if (ret)
++				goto out_free_msix;
++
++			cxgb4_set_msix_aff(adap, eorxq->msix->vec,
++					   &eorxq->msix->aff_mask, i);
++		}
++
++		if (adap->flags & CXGB4_FULL_INIT_DONE)
++			cxgb4_enable_rx(adap, &eorxq->rspq);
++	}
++
++	refcount_inc(&adap->tc_mqprio->refcnt);
 +	return 0;
 +
-+out_reset_tc:
-+	netdev_reset_tc(dev);
-+	i = mqprio->qopt.num_tc;
-+
-+out_free_eotids:
++out_free_msix:
 +	while (i-- > 0) {
-+		qoffset = mqprio->qopt.offset[i];
-+		qcount = mqprio->qopt.count[i];
-+		for (j = 0; j < qcount; j++) {
-+			eosw_txq = &tc_port_mqprio->eosw_txq[qoffset + j];
-+			cxgb4_free_eotid(&adap->tids, eosw_txq->eotid);
-+			cxgb4_free_eosw_txq(dev, eosw_txq);
++		eorxq = &adap->sge.eohw_rxq[pi->first_qset + i];
++
++		if (adap->flags & CXGB4_FULL_INIT_DONE)
++			cxgb4_quiesce_rx(&eorxq->rspq);
++
++		if (adap->flags & CXGB4_USING_MSIX) {
++			cxgb4_clear_msix_aff(eorxq->msix->vec,
++					     eorxq->msix->aff_mask);
++			free_irq(eorxq->msix->vec, &eorxq->rspq);
 +		}
 +	}
++
++out_free_queues:
++	for (i = 0; i < pi->nqsets; i++) {
++		eorxq = &adap->sge.eohw_rxq[pi->first_qset + i];
++		eotxq = &adap->sge.eohw_txq[pi->first_qset + i];
++
++		if (eorxq->rspq.desc)
++			free_rspq_fl(adap, &eorxq->rspq, &eorxq->fl);
++		if (eorxq->msix)
++			cxgb4_free_msix_idx_in_bmap(adap, eorxq->msix->idx);
++		t4_sge_free_ethofld_txq(adap, eotxq);
++	}
++
++	kfree(adap->sge.eohw_txq);
++	kfree(adap->sge.eohw_rxq);
 +
 +	return ret;
 +}
 +
-+static void cxgb4_mqprio_disable_offload(struct net_device *dev)
++void cxgb4_mqprio_free_hw_resources(struct net_device *dev)
 +{
-+	struct cxgb4_tc_port_mqprio *tc_port_mqprio;
 +	struct port_info *pi = netdev2pinfo(dev);
 +	struct adapter *adap = netdev2adap(dev);
-+	struct sge_eosw_txq *eosw_txq;
-+	u32 qoffset, qcount;
-+	u16 i, j;
++	struct sge_ofld_rxq *eorxq;
++	struct sge_eohw_txq *eotxq;
++	u32 i;
 +
-+	tc_port_mqprio = &adap->tc_mqprio->port_mqprio[pi->port_id];
-+	if (tc_port_mqprio->state != CXGB4_MQPRIO_STATE_ACTIVE)
++	/* Return if no ETHOFLD structures have been allocated yet */
++	if (!refcount_read(&adap->tc_mqprio->refcnt))
 +		return;
 +
-+	netdev_reset_tc(dev);
-+	netif_set_real_num_tx_queues(dev, pi->nqsets);
++	/* Return if no hardware queues have been allocated */
++	if (!adap->sge.eohw_rxq[pi->first_qset].rspq.desc)
++		return;
 +
-+	for (i = 0; i < tc_port_mqprio->mqprio.qopt.num_tc; i++) {
-+		qoffset = tc_port_mqprio->mqprio.qopt.offset[i];
-+		qcount = tc_port_mqprio->mqprio.qopt.count[i];
-+		for (j = 0; j < qcount; j++) {
-+			eosw_txq = &tc_port_mqprio->eosw_txq[qoffset + j];
-+			cxgb4_free_eotid(&adap->tids, eosw_txq->eotid);
-+			cxgb4_free_eosw_txq(dev, eosw_txq);
++	for (i = 0; i < pi->nqsets; i++) {
++		eorxq = &adap->sge.eohw_rxq[pi->first_qset + i];
++		eotxq = &adap->sge.eohw_txq[pi->first_qset + i];
++
++		/* Device removal path will already disable NAPI
++		 * before unregistering netdevice. So, only disable
++		 * NAPI if we're not in device removal path
++		 */
++		if (!(adap->flags & CXGB4_SHUTTING_DOWN))
++			cxgb4_quiesce_rx(&eorxq->rspq);
++
++		if (adap->flags & CXGB4_USING_MSIX) {
++			cxgb4_clear_msix_aff(eorxq->msix->vec,
++					     eorxq->msix->aff_mask);
++			free_irq(eorxq->msix->vec, &eorxq->rspq);
 +		}
++
++		free_rspq_fl(adap, &eorxq->rspq, &eorxq->fl);
++		t4_sge_free_ethofld_txq(adap, eotxq);
 +	}
 +
-+	memset(&tc_port_mqprio->mqprio, 0,
-+	       sizeof(struct tc_mqprio_qopt_offload));
-+
-+	tc_port_mqprio->state = CXGB4_MQPRIO_STATE_DISABLED;
++	/* Free up ETHOFLD structures if there are no users */
++	if (refcount_dec_and_test(&adap->tc_mqprio->refcnt)) {
++		kfree(adap->sge.eohw_txq);
++		kfree(adap->sge.eohw_rxq);
++	}
 +}
 +
-+int cxgb4_setup_tc_mqprio(struct net_device *dev,
-+			  struct tc_mqprio_qopt_offload *mqprio)
+ static int cxgb4_mqprio_enable_offload(struct net_device *dev,
+ 				       struct tc_mqprio_qopt_offload *mqprio)
+ {
+@@ -131,6 +291,10 @@ static int cxgb4_mqprio_enable_offload(struct net_device *dev,
+ 	int eotid, ret;
+ 	u16 i, j;
+ 
++	ret = cxgb4_mqprio_alloc_hw_resources(dev);
++	if (ret)
++		return -ENOMEM;
++
+ 	tc_port_mqprio = &adap->tc_mqprio->port_mqprio[pi->port_id];
+ 	for (i = 0; i < mqprio->qopt.num_tc; i++) {
+ 		qoffset = mqprio->qopt.offset[i];
+@@ -206,6 +370,7 @@ static int cxgb4_mqprio_enable_offload(struct net_device *dev,
+ 		}
+ 	}
+ 
++	cxgb4_mqprio_free_hw_resources(dev);
+ 	return ret;
+ }
+ 
+@@ -235,6 +400,8 @@ static void cxgb4_mqprio_disable_offload(struct net_device *dev)
+ 		}
+ 	}
+ 
++	cxgb4_mqprio_free_hw_resources(dev);
++
+ 	memset(&tc_port_mqprio->mqprio, 0,
+ 	       sizeof(struct tc_mqprio_qopt_offload));
+ 
+@@ -310,6 +477,7 @@ int cxgb4_init_tc_mqprio(struct adapter *adap)
+ 	}
+ 
+ 	adap->tc_mqprio = tc_mqprio;
++	refcount_set(&adap->tc_mqprio->refcnt, 0);
+ 	return 0;
+ 
+ out_free_ports:
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
+index 125664b82236..6491ef91c8a9 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
+@@ -8,6 +8,15 @@
+ 
+ #define CXGB4_EOSW_TXQ_DEFAULT_DESC_NUM 128
+ 
++#define CXGB4_EOHW_TXQ_DEFAULT_DESC_NUM 1024
++
++#define CXGB4_EOHW_RXQ_DEFAULT_DESC_NUM 1024
++#define CXGB4_EOHW_RXQ_DEFAULT_DESC_SIZE 64
++#define CXGB4_EOHW_RXQ_DEFAULT_INTR_USEC 5
++#define CXGB4_EOHW_RXQ_DEFAULT_PKT_CNT 8
++
++#define CXGB4_EOHW_FLQ_DEFAULT_DESC_NUM 72
++
+ enum cxgb4_mqprio_state {
+ 	CXGB4_MQPRIO_STATE_DISABLED = 0,
+ 	CXGB4_MQPRIO_STATE_ACTIVE,
+@@ -20,6 +29,7 @@ struct cxgb4_tc_port_mqprio {
+ };
+ 
+ struct cxgb4_tc_mqprio {
++	refcount_t refcnt; /* Refcount for adapter-wide resources */
+ 	struct cxgb4_tc_port_mqprio *port_mqprio; /* Per port MQPRIO info */
+ };
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+index 3d9401354af2..cce33d279094 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.c
+@@ -366,33 +366,19 @@ free_msix_queue_irqs_uld(struct adapter *adap, unsigned int uld_type)
+ 	}
+ }
+ 
+-static void enable_rx(struct adapter *adap, struct sge_rspq *q)
+-{
+-	if (!q)
+-		return;
+-
+-	if (q->handler)
+-		napi_enable(&q->napi);
+-
+-	/* 0-increment GTS to start the timer and enable interrupts */
+-	t4_write_reg(adap, MYPF_REG(SGE_PF_GTS_A),
+-		     SEINTARM_V(q->intr_params) |
+-		     INGRESSQID_V(q->cntxt_id));
+-}
+-
+-static void quiesce_rx(struct adapter *adap, struct sge_rspq *q)
+-{
+-	if (q && q->handler)
+-		napi_disable(&q->napi);
+-}
+-
+ static void enable_rx_uld(struct adapter *adap, unsigned int uld_type)
+ {
+ 	struct sge_uld_rxq_info *rxq_info = adap->sge.uld_rxq_info[uld_type];
+ 	int idx;
+ 
+-	for_each_uldrxq(rxq_info, idx)
+-		enable_rx(adap, &rxq_info->uldrxq[idx].rspq);
++	for_each_uldrxq(rxq_info, idx) {
++		struct sge_rspq *q = &rxq_info->uldrxq[idx].rspq;
++
++		if (!q)
++			continue;
++
++		cxgb4_enable_rx(adap, q);
++	}
+ }
+ 
+ static void quiesce_rx_uld(struct adapter *adap, unsigned int uld_type)
+@@ -400,8 +386,14 @@ static void quiesce_rx_uld(struct adapter *adap, unsigned int uld_type)
+ 	struct sge_uld_rxq_info *rxq_info = adap->sge.uld_rxq_info[uld_type];
+ 	int idx;
+ 
+-	for_each_uldrxq(rxq_info, idx)
+-		quiesce_rx(adap, &rxq_info->uldrxq[idx].rspq);
++	for_each_uldrxq(rxq_info, idx) {
++		struct sge_rspq *q = &rxq_info->uldrxq[idx].rspq;
++
++		if (!q)
++			continue;
++
++		cxgb4_quiesce_rx(q);
++	}
+ }
+ 
+ static void
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index ed1418d2364f..3ea2eccde262 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -3982,30 +3982,30 @@ int t4_sge_mod_ctrl_txq(struct adapter *adap, unsigned int eqid,
+ 	return t4_set_params(adap, adap->mbox, adap->pf, 0, 1, &param, &val);
+ }
+ 
+-int t4_sge_alloc_uld_txq(struct adapter *adap, struct sge_uld_txq *txq,
+-			 struct net_device *dev, unsigned int iqid,
+-			 unsigned int uld_type)
++static int t4_sge_alloc_ofld_txq(struct adapter *adap, struct sge_txq *q,
++				 struct net_device *dev, u32 cmd, u32 iqid)
+ {
+ 	unsigned int chip_ver = CHELSIO_CHIP_VERSION(adap->params.chip);
+-	int ret, nentries;
+-	struct fw_eq_ofld_cmd c;
+-	struct sge *s = &adap->sge;
+ 	struct port_info *pi = netdev_priv(dev);
+-	int cmd = FW_EQ_OFLD_CMD;
++	struct sge *s = &adap->sge;
++	struct fw_eq_ofld_cmd c;
++	u32 fb_min, nentries;
++	int ret;
+ 
+ 	/* Add status entries */
+-	nentries = txq->q.size + s->stat_len / sizeof(struct tx_desc);
+-
+-	txq->q.desc = alloc_ring(adap->pdev_dev, txq->q.size,
+-			sizeof(struct tx_desc), sizeof(struct tx_sw_desc),
+-			&txq->q.phys_addr, &txq->q.sdesc, s->stat_len,
+-			NUMA_NO_NODE);
+-	if (!txq->q.desc)
++	nentries = q->size + s->stat_len / sizeof(struct tx_desc);
++	q->desc = alloc_ring(adap->pdev_dev, q->size, sizeof(struct tx_desc),
++			     sizeof(struct tx_sw_desc), &q->phys_addr,
++			     &q->sdesc, s->stat_len, NUMA_NO_NODE);
++	if (!q->desc)
+ 		return -ENOMEM;
+ 
++	if (chip_ver <= CHELSIO_T5)
++		fb_min = FETCHBURSTMIN_64B_X;
++	else
++		fb_min = FETCHBURSTMIN_64B_T6_X;
++
+ 	memset(&c, 0, sizeof(c));
+-	if (unlikely(uld_type == CXGB4_TX_CRYPTO))
+-		cmd = FW_EQ_CTRL_CMD;
+ 	c.op_to_vfn = htonl(FW_CMD_OP_V(cmd) | FW_CMD_REQUEST_F |
+ 			    FW_CMD_WRITE_F | FW_CMD_EXEC_F |
+ 			    FW_EQ_OFLD_CMD_PFN_V(adap->pf) |
+@@ -4017,27 +4017,42 @@ int t4_sge_alloc_uld_txq(struct adapter *adap, struct sge_uld_txq *txq,
+ 		      FW_EQ_OFLD_CMD_PCIECHN_V(pi->tx_chan) |
+ 		      FW_EQ_OFLD_CMD_FETCHRO_F | FW_EQ_OFLD_CMD_IQID_V(iqid));
+ 	c.dcaen_to_eqsize =
+-		htonl(FW_EQ_OFLD_CMD_FBMIN_V(chip_ver <= CHELSIO_T5
+-					     ? FETCHBURSTMIN_64B_X
+-					     : FETCHBURSTMIN_64B_T6_X) |
++		htonl(FW_EQ_OFLD_CMD_FBMIN_V(fb_min) |
+ 		      FW_EQ_OFLD_CMD_FBMAX_V(FETCHBURSTMAX_512B_X) |
+ 		      FW_EQ_OFLD_CMD_CIDXFTHRESH_V(CIDXFLUSHTHRESH_32_X) |
+ 		      FW_EQ_OFLD_CMD_EQSIZE_V(nentries));
+-	c.eqaddr = cpu_to_be64(txq->q.phys_addr);
++	c.eqaddr = cpu_to_be64(q->phys_addr);
+ 
+ 	ret = t4_wr_mbox(adap, adap->mbox, &c, sizeof(c), &c);
+ 	if (ret) {
+-		kfree(txq->q.sdesc);
+-		txq->q.sdesc = NULL;
++		kfree(q->sdesc);
++		q->sdesc = NULL;
+ 		dma_free_coherent(adap->pdev_dev,
+ 				  nentries * sizeof(struct tx_desc),
+-				  txq->q.desc, txq->q.phys_addr);
+-		txq->q.desc = NULL;
++				  q->desc, q->phys_addr);
++		q->desc = NULL;
+ 		return ret;
+ 	}
+ 
++	init_txq(adap, q, FW_EQ_OFLD_CMD_EQID_G(ntohl(c.eqid_pkd)));
++	return 0;
++}
++
++int t4_sge_alloc_uld_txq(struct adapter *adap, struct sge_uld_txq *txq,
++			 struct net_device *dev, unsigned int iqid,
++			 unsigned int uld_type)
 +{
-+	bool needs_bring_up = false;
++	u32 cmd = FW_EQ_OFLD_CMD;
 +	int ret;
 +
-+	ret = cxgb4_mqprio_validate(dev, mqprio);
++	if (unlikely(uld_type == CXGB4_TX_CRYPTO))
++		cmd = FW_EQ_CTRL_CMD;
++
++	ret = t4_sge_alloc_ofld_txq(adap, &txq->q, dev, cmd, iqid);
 +	if (ret)
 +		return ret;
 +
-+	/* To configure tc params, the current allocated EOTIDs must
-+	 * be freed up. However, they can't be freed up if there's
-+	 * traffic running on the interface. So, ensure interface is
-+	 * down before configuring tc params.
-+	 */
-+	if (netif_running(dev)) {
-+		cxgb_close(dev);
-+		needs_bring_up = true;
-+	}
-+
-+	cxgb4_mqprio_disable_offload(dev);
-+
-+	/* If requested for clear, then just return since resources are
-+	 * already freed up by now.
-+	 */
-+	if (!mqprio->qopt.num_tc)
-+		goto out;
-+
-+	ret = cxgb4_mqprio_enable_offload(dev, mqprio);
-+
-+out:
-+	if (needs_bring_up)
-+		cxgb_open(dev);
-+
-+	return ret;
-+}
-+
-+int cxgb4_init_tc_mqprio(struct adapter *adap)
-+{
-+	struct cxgb4_tc_port_mqprio *tc_port_mqprio, *port_mqprio;
-+	struct cxgb4_tc_mqprio *tc_mqprio;
-+	struct sge_eosw_txq *eosw_txq;
-+	int ret = 0;
-+	u8 i;
-+
-+	tc_mqprio = kzalloc(sizeof(*tc_mqprio), GFP_KERNEL);
-+	if (!tc_mqprio)
-+		return -ENOMEM;
-+
-+	tc_port_mqprio = kcalloc(adap->params.nports, sizeof(*tc_port_mqprio),
-+				 GFP_KERNEL);
-+	if (!tc_port_mqprio) {
-+		ret = -ENOMEM;
-+		goto out_free_mqprio;
-+	}
-+
-+	tc_mqprio->port_mqprio = tc_port_mqprio;
-+	for (i = 0; i < adap->params.nports; i++) {
-+		port_mqprio = &tc_mqprio->port_mqprio[i];
-+		eosw_txq = kcalloc(adap->tids.neotids, sizeof(*eosw_txq),
-+				   GFP_KERNEL);
-+		if (!eosw_txq) {
-+			ret = -ENOMEM;
-+			goto out_free_ports;
-+		}
-+		port_mqprio->eosw_txq = eosw_txq;
-+	}
-+
-+	adap->tc_mqprio = tc_mqprio;
-+	return 0;
-+
-+out_free_ports:
-+	for (i = 0; i < adap->params.nports; i++) {
-+		port_mqprio = &tc_mqprio->port_mqprio[i];
-+		kfree(port_mqprio->eosw_txq);
-+	}
-+	kfree(tc_port_mqprio);
-+
-+out_free_mqprio:
-+	kfree(tc_mqprio);
-+	return ret;
-+}
-+
-+void cxgb4_cleanup_tc_mqprio(struct adapter *adap)
-+{
-+	struct cxgb4_tc_port_mqprio *port_mqprio;
-+	u8 i;
-+
-+	if (adap->tc_mqprio) {
-+		if (adap->tc_mqprio->port_mqprio) {
-+			for (i = 0; i < adap->params.nports; i++) {
-+				struct net_device *dev = adap->port[i];
-+
-+				if (dev)
-+					cxgb4_mqprio_disable_offload(dev);
-+				port_mqprio = &adap->tc_mqprio->port_mqprio[i];
-+				kfree(port_mqprio->eosw_txq);
-+			}
-+			kfree(adap->tc_mqprio->port_mqprio);
-+		}
-+		kfree(adap->tc_mqprio);
-+	}
-+}
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
-new file mode 100644
-index 000000000000..125664b82236
---- /dev/null
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/* Copyright (C) 2019 Chelsio Communications.  All rights reserved. */
-+
-+#ifndef __CXGB4_TC_MQPRIO_H__
-+#define __CXGB4_TC_MQPRIO_H__
-+
-+#include <net/pkt_cls.h>
-+
-+#define CXGB4_EOSW_TXQ_DEFAULT_DESC_NUM 128
-+
-+enum cxgb4_mqprio_state {
-+	CXGB4_MQPRIO_STATE_DISABLED = 0,
-+	CXGB4_MQPRIO_STATE_ACTIVE,
-+};
-+
-+struct cxgb4_tc_port_mqprio {
-+	enum cxgb4_mqprio_state state; /* Current MQPRIO offload state */
-+	struct tc_mqprio_qopt_offload mqprio; /* MQPRIO offload params */
-+	struct sge_eosw_txq *eosw_txq; /* Netdev SW Tx queue array */
-+};
-+
-+struct cxgb4_tc_mqprio {
-+	struct cxgb4_tc_port_mqprio *port_mqprio; /* Per port MQPRIO info */
-+};
-+
-+int cxgb4_setup_tc_mqprio(struct net_device *dev,
-+			  struct tc_mqprio_qopt_offload *mqprio);
-+int cxgb4_init_tc_mqprio(struct adapter *adap);
-+void cxgb4_cleanup_tc_mqprio(struct adapter *adap);
-+#endif /* __CXGB4_TC_MQPRIO_H__ */
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-index b78feef23dc4..861b25d28ed6 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_uld.h
-@@ -186,6 +186,35 @@ static inline void cxgb4_insert_tid(struct tid_info *t, void *data,
- 	atomic_inc(&t->conns_in_use);
+ 	txq->q.q_type = CXGB4_TXQ_ULD;
+-	init_txq(adap, &txq->q, FW_EQ_OFLD_CMD_EQID_G(ntohl(c.eqid_pkd)));
+ 	txq->adap = adap;
+ 	skb_queue_head_init(&txq->sendq);
+ 	tasklet_init(&txq->qresume_tsk, restart_ofldq, (unsigned long)txq);
+@@ -4046,6 +4061,25 @@ int t4_sge_alloc_uld_txq(struct adapter *adap, struct sge_uld_txq *txq,
+ 	return 0;
  }
  
-+static inline struct eotid_entry *cxgb4_lookup_eotid(struct tid_info *t,
-+						     u32 eotid)
-+{
-+	return eotid < t->neotids ? &t->eotid_tab[eotid] : NULL;
-+}
-+
-+static inline int cxgb4_get_free_eotid(struct tid_info *t)
-+{
-+	int eotid;
-+
-+	eotid = find_first_zero_bit(t->eotid_bmap, t->neotids);
-+	if (eotid >= t->neotids)
-+		eotid = -1;
-+
-+	return eotid;
-+}
-+
-+static inline void cxgb4_alloc_eotid(struct tid_info *t, u32 eotid, void *data)
-+{
-+	set_bit(eotid, t->eotid_bmap);
-+	t->eotid_tab[eotid].data = data;
-+}
-+
-+static inline void cxgb4_free_eotid(struct tid_info *t, u32 eotid)
-+{
-+	clear_bit(eotid, t->eotid_bmap);
-+	t->eotid_tab[eotid].data = NULL;
-+}
-+
- int cxgb4_alloc_atid(struct tid_info *t, void *data);
- int cxgb4_alloc_stid(struct tid_info *t, int family, void *data);
- int cxgb4_alloc_sftid(struct tid_info *t, int family, void *data);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index 82d8e13fc7d2..ed1418d2364f 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -269,7 +269,6 @@ int cxgb4_map_skb(struct device *dev, const struct sk_buff *skb,
- }
- EXPORT_SYMBOL(cxgb4_map_skb);
- 
--#ifdef CONFIG_NEED_DMA_MAP_STATE
- static void unmap_skb(struct device *dev, const struct sk_buff *skb,
- 		      const dma_addr_t *addr)
- {
-@@ -284,6 +283,7 @@ static void unmap_skb(struct device *dev, const struct sk_buff *skb,
- 		dma_unmap_page(dev, *addr++, skb_frag_size(fp), DMA_TO_DEVICE);
- }
- 
-+#ifdef CONFIG_NEED_DMA_MAP_STATE
- /**
-  *	deferred_unmap_destructor - unmap a packet when it is freed
-  *	@skb: the packet
-@@ -1347,6 +1347,31 @@ int t4_sge_eth_txq_egress_update(struct adapter *adap, struct sge_eth_txq *eq,
- 	return reclaimed;
- }
- 
-+static inline int cxgb4_validate_skb(struct sk_buff *skb,
-+				     struct net_device *dev,
-+				     u32 min_pkt_len)
-+{
-+	u32 max_pkt_len;
-+
-+	/* The chip min packet length is 10 octets but some firmware
-+	 * commands have a minimum packet length requirement. So, play
-+	 * safe and reject anything shorter than @min_pkt_len.
-+	 */
-+	if (unlikely(skb->len < min_pkt_len))
-+		return -EINVAL;
-+
-+	/* Discard the packet if the length is greater than mtu */
-+	max_pkt_len = ETH_HLEN + dev->mtu;
-+
-+	if (skb_vlan_tagged(skb))
-+		max_pkt_len += VLAN_HLEN;
-+
-+	if (!skb_shinfo(skb)->gso_size && (unlikely(skb->len > max_pkt_len)))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- /**
-  *	cxgb4_eth_xmit - add a packet to an Ethernet Tx queue
-  *	@skb: the packet
-@@ -1356,41 +1381,24 @@ int t4_sge_eth_txq_egress_update(struct adapter *adap, struct sge_eth_txq *eq,
-  */
- static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
- {
--	u32 wr_mid, ctrl0, op;
--	u64 cntrl, *end, *sgl;
--	int qidx, credits;
--	unsigned int flits, ndesc;
--	struct adapter *adap;
--	struct sge_eth_txq *q;
--	const struct port_info *pi;
-+	enum cpl_tx_tnl_lso_type tnl_type = TX_TNL_TYPE_OPAQUE;
-+	bool ptp_enabled = is_ptp_enabled(skb, dev);
-+	dma_addr_t addr[MAX_SKB_FRAGS + 1];
-+	const struct skb_shared_info *ssi;
- 	struct fw_eth_tx_pkt_wr *wr;
- 	struct cpl_tx_pkt_core *cpl;
--	const struct skb_shared_info *ssi;
--	dma_addr_t addr[MAX_SKB_FRAGS + 1];
-+	int len, qidx, credits, ret;
-+	const struct port_info *pi;
-+	unsigned int flits, ndesc;
- 	bool immediate = false;
--	int len, max_pkt_len;
--	bool ptp_enabled = is_ptp_enabled(skb, dev);
-+	u32 wr_mid, ctrl0, op;
-+	u64 cntrl, *end, *sgl;
-+	struct sge_eth_txq *q;
- 	unsigned int chip_ver;
--	enum cpl_tx_tnl_lso_type tnl_type = TX_TNL_TYPE_OPAQUE;
--
--#ifdef CONFIG_CHELSIO_T4_FCOE
--	int err;
--#endif /* CONFIG_CHELSIO_T4_FCOE */
--
--	/*
--	 * The chip min packet length is 10 octets but play safe and reject
--	 * anything shorter than an Ethernet header.
--	 */
--	if (unlikely(skb->len < ETH_HLEN)) {
--out_free:	dev_kfree_skb_any(skb);
--		return NETDEV_TX_OK;
--	}
-+	struct adapter *adap;
- 
--	/* Discard the packet if the length is greater than mtu */
--	max_pkt_len = ETH_HLEN + dev->mtu;
--	if (skb_vlan_tagged(skb))
--		max_pkt_len += VLAN_HLEN;
--	if (!skb_shinfo(skb)->gso_size && (unlikely(skb->len > max_pkt_len)))
-+	ret = cxgb4_validate_skb(skb, dev, ETH_HLEN);
-+	if (ret)
- 		goto out_free;
- 
- 	pi = netdev_priv(dev);
-@@ -1421,8 +1429,8 @@ out_free:	dev_kfree_skb_any(skb);
- 	cntrl = TXPKT_L4CSUM_DIS_F | TXPKT_IPCSUM_DIS_F;
- 
- #ifdef CONFIG_CHELSIO_T4_FCOE
--	err = cxgb_fcoe_offload(skb, adap, pi, &cntrl);
--	if (unlikely(err == -ENOTSUPP)) {
-+	ret = cxgb_fcoe_offload(skb, adap, pi, &cntrl);
-+	if (unlikely(ret == -ENOTSUPP)) {
- 		if (ptp_enabled)
- 			spin_unlock(&adap->ptp_lock);
- 		goto out_free;
-@@ -1622,6 +1630,10 @@ out_free:	dev_kfree_skb_any(skb);
- 	if (ptp_enabled)
- 		spin_unlock(&adap->ptp_lock);
- 	return NETDEV_TX_OK;
-+
-+out_free:
-+	dev_kfree_skb_any(skb);
-+	return NETDEV_TX_OK;
- }
- 
- /* Constants ... */
-@@ -1710,32 +1722,25 @@ static netdev_tx_t cxgb4_vf_eth_xmit(struct sk_buff *skb,
- 	dma_addr_t addr[MAX_SKB_FRAGS + 1];
- 	const struct skb_shared_info *ssi;
- 	struct fw_eth_tx_pkt_vm_wr *wr;
--	int qidx, credits, max_pkt_len;
- 	struct cpl_tx_pkt_core *cpl;
- 	const struct port_info *pi;
- 	unsigned int flits, ndesc;
- 	struct sge_eth_txq *txq;
- 	struct adapter *adapter;
-+	int qidx, credits, ret;
-+	size_t fw_hdr_copy_len;
- 	u64 cntrl, *end;
- 	u32 wr_mid;
--	const size_t fw_hdr_copy_len = sizeof(wr->ethmacdst) +
--				       sizeof(wr->ethmacsrc) +
--				       sizeof(wr->ethtype) +
--				       sizeof(wr->vlantci);
- 
- 	/* The chip minimum packet length is 10 octets but the firmware
- 	 * command that we are using requires that we copy the Ethernet header
- 	 * (including the VLAN tag) into the header so we reject anything
- 	 * smaller than that ...
- 	 */
--	if (unlikely(skb->len < fw_hdr_copy_len))
--		goto out_free;
--
--	/* Discard the packet if the length is greater than mtu */
--	max_pkt_len = ETH_HLEN + dev->mtu;
--	if (skb_vlan_tag_present(skb))
--		max_pkt_len += VLAN_HLEN;
--	if (!skb_shinfo(skb)->gso_size && (unlikely(skb->len > max_pkt_len)))
-+	fw_hdr_copy_len = sizeof(wr->ethmacdst) + sizeof(wr->ethmacsrc) +
-+			  sizeof(wr->ethtype) + sizeof(wr->vlantci);
-+	ret = cxgb4_validate_skb(skb, dev, fw_hdr_copy_len);
-+	if (ret)
- 		goto out_free;
- 
- 	/* Figure out which TX Queue we're going to use. */
-@@ -1991,13 +1996,62 @@ static netdev_tx_t cxgb4_vf_eth_xmit(struct sk_buff *skb,
- 	return NETDEV_TX_OK;
- }
- 
-+static inline void eosw_txq_advance_index(u32 *idx, u32 n, u32 max)
-+{
-+	u32 val = *idx + n;
-+
-+	if (val >= max)
-+		val -= max;
-+
-+	*idx = val;
-+}
-+
-+void cxgb4_eosw_txq_free_desc(struct adapter *adap,
-+			      struct sge_eosw_txq *eosw_txq, u32 ndesc)
-+{
-+	struct sge_eosw_desc *d;
-+
-+	d = &eosw_txq->desc[eosw_txq->last_cidx];
-+	while (ndesc--) {
-+		if (d->skb) {
-+			if (d->addr[0]) {
-+				unmap_skb(adap->pdev_dev, d->skb, d->addr);
-+				memset(d->addr, 0, sizeof(d->addr));
-+			}
-+			dev_consume_skb_any(d->skb);
-+			d->skb = NULL;
-+		}
-+		eosw_txq_advance_index(&eosw_txq->last_cidx, 1,
-+				       eosw_txq->ndesc);
-+		d = &eosw_txq->desc[eosw_txq->last_cidx];
-+	}
-+}
-+
-+static netdev_tx_t cxgb4_ethofld_xmit(struct sk_buff *skb,
-+				      struct net_device *dev)
++int t4_sge_alloc_ethofld_txq(struct adapter *adap, struct sge_eohw_txq *txq,
++			     struct net_device *dev, u32 iqid)
 +{
 +	int ret;
 +
-+	ret = cxgb4_validate_skb(skb, dev, ETH_HLEN);
++	ret = t4_sge_alloc_ofld_txq(adap, &txq->q, dev, FW_EQ_OFLD_CMD, iqid);
 +	if (ret)
-+		goto out_free;
++		return ret;
 +
-+out_free:
-+	dev_kfree_skb_any(skb);
-+	return NETDEV_TX_OK;
++	txq->q.q_type = CXGB4_TXQ_ULD;
++	spin_lock_init(&txq->lock);
++	txq->adap = adap;
++	txq->tso = 0;
++	txq->tx_cso = 0;
++	txq->vlan_ins = 0;
++	txq->mapping_err = 0;
++	return 0;
 +}
 +
- netdev_tx_t t4_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ void free_txq(struct adapter *adap, struct sge_txq *q)
  {
- 	struct port_info *pi = netdev_priv(dev);
-+	u16 qid = skb_get_queue_mapping(skb);
- 
- 	if (unlikely(pi->eth_flags & PRIV_FLAG_PORT_TX_VM))
- 		return cxgb4_vf_eth_xmit(skb, dev);
- 
-+	if (unlikely(qid >= pi->nqsets))
-+		return cxgb4_ethofld_xmit(skb, dev);
-+
- 	return cxgb4_eth_xmit(skb, dev);
+ 	struct sge *s = &adap->sge;
+@@ -4101,6 +4135,17 @@ void t4_free_ofld_rxqs(struct adapter *adap, int n, struct sge_ofld_rxq *q)
+ 				     q->fl.size ? &q->fl : NULL);
  }
  
-@@ -3311,6 +3365,22 @@ static int napi_rx_handler(struct napi_struct *napi, int budget)
- 	return work_done;
- }
- 
-+void cxgb4_ethofld_restart(unsigned long data)
++void t4_sge_free_ethofld_txq(struct adapter *adap, struct sge_eohw_txq *txq)
 +{
-+	struct sge_eosw_txq *eosw_txq = (struct sge_eosw_txq *)data;
-+	int pktcount;
-+
-+	spin_lock(&eosw_txq->lock);
-+	pktcount = eosw_txq->cidx - eosw_txq->last_cidx;
-+	if (pktcount < 0)
-+		pktcount += eosw_txq->ndesc;
-+
-+	if (pktcount)
-+		cxgb4_eosw_txq_free_desc(netdev2adap(eosw_txq->netdev),
-+					 eosw_txq, pktcount);
-+	spin_unlock(&eosw_txq->lock);
++	if (txq->q.desc) {
++		t4_ofld_eq_free(adap, adap->mbox, adap->pf, 0,
++				txq->q.cntxt_id);
++		free_tx_desc(adap, &txq->q, txq->q.in_use, false);
++		kfree(txq->q.sdesc);
++		free_txq(adap, &txq->q);
++	}
 +}
 +
- /*
-  * The MSI-X interrupt handler for an SGE response queue.
-  */
+ /**
+  *	t4_free_sge_resources - free SGE resources
+  *	@adap: the adapter
 -- 
 2.23.0
 
