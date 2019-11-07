@@ -2,106 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C97F2F43
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:28:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2040FF2F71
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:33:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389100AbfKGN2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:28:10 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34770 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389053AbfKGN2H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:28:07 -0500
-Received: by mail-lf1-f67.google.com with SMTP id f5so1621383lfp.1
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:28:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wRJUigE76AyzxKPdwIXmFrxCAtwRa7ubQV/YC/3pAas=;
-        b=eHPgKGH9xEN9hvukhqJLmmua/oS1+CUUAE74DWq5vPa7giYMlc+U3F+6XIkpMpMJVj
-         yin0QkebMhmVmf+VmXaYUXtv1lH9PwEf7IXHiothg1gQpqQ6/sqRR6yPdH/GXhXfWHqj
-         gd+Wi3sPvg6Rg2+d+nOcd8qxtDwZC76OERewVj7MtTcFXQoKPag2+MX55GLfjLA39hQn
-         TrIW0RqReLaUcqK2gJQlX4pL+XSiUd5UWzqvpYJS/YpixQ2tjA3Nj7AJiVKNNAHmrx2F
-         2UzWWOmR2J3UfXttJ46kdPIIMd26uPHCpD1zyhsLDgwAbOg8PqTlCAUpiiR86l37VagS
-         8ojw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wRJUigE76AyzxKPdwIXmFrxCAtwRa7ubQV/YC/3pAas=;
-        b=ER03UV76NGMlwEXzWLvKddVSIWVLTlIuhr1rXdbcpCI1IaB0es+HY4fMGtbByxCJ73
-         Oq8RPnEnHGpHTgD3lArYxGiFgWP/yuYXi30LSROYt8YWwvwtJDDRdfkT+LfdQEfLzmYC
-         QaqR89nMiSkXR8uaoU4NvPl/uM9oEOzo78zSmL5gKr1TXgUDUCW/QlumQZtjcqXDHRfE
-         Mk8ayiCw1pqKrNZG8R3G8m5QseVIjw3Ir5fj5IzlpYZW2REFg1ftD2tF5gIm7P9YXsNm
-         m43RuW8M5fT7RqZ/LVWnx3ExQz7Ym0WDisHGAj43Oci9UJkgXI61cCArkvPuFW/WM78x
-         s3Bw==
-X-Gm-Message-State: APjAAAV3NGIIa8HbYO+WUJJzU8ex5PYL95L3yIiKuMhDFFSnejr0LqIA
-        3wIBl/K7wSALWtfUAyubzavsEQ==
-X-Google-Smtp-Source: APXvYqxbU3kzG4ljeyOS1yo2AT52ALE36CZwu3aUQA9YevpCoCrU7SNcyrErntjJvYRlXZD3N4YuPQ==
-X-Received: by 2002:ac2:5deb:: with SMTP id z11mr2563233lfq.35.1573133285907;
-        Thu, 07 Nov 2019 05:28:05 -0800 (PST)
-Received: from mimer.lan (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id y20sm3151507ljd.99.2019.11.07.05.28.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 05:28:05 -0800 (PST)
-From:   Jonas Bonn <jonas@norrbonn.se>
-To:     nicolas.dichtel@6wind.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, Jonas Bonn <jonas@norrbonn.se>
-Subject: [PATCH v3 6/6] net: ipv6: allow setting address on interface outside current namespace
-Date:   Thu,  7 Nov 2019 14:27:55 +0100
-Message-Id: <20191107132755.8517-7-jonas@norrbonn.se>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191107132755.8517-1-jonas@norrbonn.se>
-References: <20191107132755.8517-1-jonas@norrbonn.se>
+        id S2388542AbfKGNdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:33:11 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:52241 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728417AbfKGNdI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:33:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573133586;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wtVPfNetgN4OJ+kdxUdEeGOlhfhZVM+OtnzXrAWUlvU=;
+        b=JuKqHTEXHI2vUrDRLUkSdATj5JdKDdInnR2XJbmlW+FBegts6jggMCiQSF0xflxt1hEouh
+        zA2GWpuXUNKII8/wN7BhsRPB1UJoqM0cY44blFgyHxdAKYlk0oC+42Ywteb/v52DW0gWxd
+        YFsyF6iQs1BgaZ5ujMHpNe46wxjHm4A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-51-OCtDdWVKNrKS2VpNpFxOEw-1; Thu, 07 Nov 2019 08:33:00 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CA6831005500;
+        Thu,  7 Nov 2019 13:32:56 +0000 (UTC)
+Received: from [10.72.12.21] (ovpn-12-21.pek2.redhat.com [10.72.12.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D50B360BE0;
+        Thu,  7 Nov 2019 13:32:30 +0000 (UTC)
+Subject: Re: [PATCH V10 6/6] docs: sample driver to demonstrate how to
+ implement virtio-mdev framework
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
+        alex.williamson@redhat.com, tiwei.bie@intel.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        cohuck@redhat.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
+        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
+        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
+        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
+        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
+        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
+        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
+        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
+        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
+        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
+        stefanha@redhat.com
+References: <20191106133531.693-1-jasowang@redhat.com>
+ <20191106133531.693-7-jasowang@redhat.com>
+ <20191107040700-mutt-send-email-mst@kernel.org>
+ <bd2f7796-8d88-0eb3-b55b-3ec062b186b7@redhat.com>
+ <20191107061942-mutt-send-email-mst@kernel.org>
+ <d09229bc-c3e4-8d4b-c28f-565fe150ced2@redhat.com>
+ <20191107080834-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b2265e3a-6f86-c21a-2ebd-d0e4eea2886f@redhat.com>
+Date:   Thu, 7 Nov 2019 21:32:29 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191107080834-mutt-send-email-mst@kernel.org>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: OCtDdWVKNrKS2VpNpFxOEw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows an interface outside of the current namespace to be
-selected when setting a new IPv6 address for a device.  This uses the
-IFA_TARGET_NETNSID attribute to select the namespace in which to search
-for the interface to act upon.
 
-Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
----
- net/ipv6/addrconf.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+On 2019/11/7 =E4=B8=8B=E5=8D=889:08, Michael S. Tsirkin wrote:
+> On Thu, Nov 07, 2019 at 08:43:29PM +0800, Jason Wang wrote:
+>> On 2019/11/7 =E4=B8=8B=E5=8D=887:21, Michael S. Tsirkin wrote:
+>>> On Thu, Nov 07, 2019 at 06:18:45PM +0800, Jason Wang wrote:
+>>>> On 2019/11/7 =E4=B8=8B=E5=8D=885:08, Michael S. Tsirkin wrote:
+>>>>> On Wed, Nov 06, 2019 at 09:35:31PM +0800, Jason Wang wrote:
+>>>>>> This sample driver creates mdev device that simulate virtio net devi=
+ce
+>>>>>> over virtio mdev transport. The device is implemented through vringh
+>>>>>> and workqueue. A device specific dma ops is to make sure HVA is used
+>>>>>> directly as the IOVA. This should be sufficient for kernel virtio
+>>>>>> driver to work.
+>>>>>>
+>>>>>> Only 'virtio' type is supported right now. I plan to add 'vhost' typ=
+e
+>>>>>> on top which requires some virtual IOMMU implemented in this sample
+>>>>>> driver.
+>>>>>>
+>>>>>> Acked-by: Cornelia Huck<cohuck@redhat.com>
+>>>>>> Signed-off-by: Jason Wang<jasowang@redhat.com>
+>>>>> I'd prefer it that we call this something else, e.g.
+>>>>> mvnet-loopback. Just so people don't expect a fully
+>>>>> functional device somehow. Can be renamed when applying?
+>>>> Actually, I plan to extend it as another standard network interface fo=
+r
+>>>> kernel. It could be either a standalone pseudo device or a stack devic=
+e.
+>>>> Does this sounds good to you?
+>>>>
+>>>> Thanks
+>>> That's a big change in an interface so it's a good reason
+>>> to rename the driver at that point right?
+>>> Oherwise users of an old kernel would expect a stacked driver
+>>> and get a loopback instead.
+>>>
+>>> Or did I miss something?
+>>
+>> My understanding is that it was a sample driver in /doc. It should not b=
+e
+>> used in production environment. Otherwise we need to move it to
+>> driver/virtio.
+>>
+>> But if you insist, I can post a V11.
+>>
+>> Thanks
+> this can be a patch on top.
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 34ccef18b40e..06a49670fe62 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4721,6 +4721,7 @@ inet6_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		  struct netlink_ext_ack *extack)
- {
- 	struct net *net = sock_net(skb->sk);
-+	struct net *tgt_net;
- 	struct ifaddrmsg *ifm;
- 	struct nlattr *tb[IFA_MAX+1];
- 	struct in6_addr *peer_pfx;
-@@ -4758,6 +4759,18 @@ inet6_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		cfg.preferred_lft = ci->ifa_prefered;
- 	}
- 
-+	if (tb[IFA_TARGET_NETNSID]) {
-+		s32 netnsid = nla_get_s32(tb[IFA_TARGET_NETNSID]);
-+
-+		tgt_net = rtnl_get_net_ns_capable(NETLINK_CB(skb).sk, netnsid);
-+		if (IS_ERR(tgt_net)) {
-+			NL_SET_ERR_MSG(extack,
-+				"ipv6: Invalid target network namespace id");
-+			return PTR_ERR(tgt_net);
-+		}
-+		net = tgt_net;
-+	}
-+
- 	dev =  __dev_get_by_index(net, ifm->ifa_index);
- 	if (!dev)
- 		return -ENODEV;
--- 
-2.20.1
+
+Then maybe it's better just extend it to work as a normal networking=20
+device on top?
+
+Thanks
 
