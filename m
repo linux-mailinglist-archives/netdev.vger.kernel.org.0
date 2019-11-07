@@ -2,132 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 683B8F3A94
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 22:32:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5DB4F3B3A
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:16:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726756AbfKGVc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 16:32:26 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:20252 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725893AbfKGVcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 16:32:25 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xA7LPeCu021231;
-        Thu, 7 Nov 2019 16:31:02 -0500
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2w4sn7kks2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 16:31:01 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xA7LUo1L028094;
-        Thu, 7 Nov 2019 21:31:05 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma01wdc.us.ibm.com with ESMTP id 2w41ukc2n4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 21:31:05 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xA7LUxCK62980352
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 7 Nov 2019 21:30:59 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6DB46136059;
-        Thu,  7 Nov 2019 21:30:59 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 043F8136053;
-        Thu,  7 Nov 2019 21:30:58 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  7 Nov 2019 21:30:58 +0000 (GMT)
-Subject: Re: [RFC PATCH] powerpc/pseries/mobility: notify network peers after
- migration
-To:     Nathan Lynch <nathanl@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, tyreld@linux.ibm.com, msuchanek@suse.com,
-        linuxppc-dev@ozlabs.org
-References: <1572998794-9392-1-git-send-email-tlfalcon@linux.ibm.com>
- <87lfss7ivo.fsf@linux.ibm.com>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <83835ea7-e76b-35c1-88a8-e37dae5bb26e@linux.ibm.com>
-Date:   Thu, 7 Nov 2019 15:30:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <87lfss7ivo.fsf@linux.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-07_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1910280000 definitions=main-1911070197
+        id S1727070AbfKGWOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:14:40 -0500
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:45293 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbfKGWOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:14:39 -0500
+Received: by mail-pg1-f201.google.com with SMTP id v10so2980535pge.12
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 14:14:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=omy25HIHX5dmo9XLEd3IHF2hKxH2v3SOwm2huLFaCk0=;
+        b=Mp83Scxe/sdzwo5wo5Jjh7FQgGP5b908yU23n1+o24ddFtRsO3CfPaTZBnW9isGEAf
+         QjZyUketnuzTkeJVyfQK0CnYJFjwtKE3+3zAWQWIZoPGHqt0nzuJOM7Mbtl5z9JkYONB
+         g4vXneS0uuWiKhHcZabafO2Lz9+cWZrt7oAq8UsZOc58taqdsgR3TGhQJ/E4U7VZlkHH
+         QFNGBctK4vllT/Obpkf6fPmn+Rrs2uhgEDxc6FTbCH/p8ikg5KdRJ9QwIXKyTNSJYcKj
+         UbctAIbMu/zH3zoBgsj3uEI+ZyN5IqsTjWHMdYN1Ss0Un4ffQam0qZsDF6mI0soilsEv
+         oHmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=omy25HIHX5dmo9XLEd3IHF2hKxH2v3SOwm2huLFaCk0=;
+        b=hriIKS2z41BX/9CDUC7KGxzTS/rnTg77a8CIociUP5PGxtrwVI/TbZz37N9eXkUXIC
+         XinLIaZOVVsTQYggaurEiqE6WYfMw8dHDI/YAkMta51WR/2xH9vV6jUUytO0HluDBPtf
+         4VlJn8OQ6Vricv8sb4GsoGkK9DYlgTtfwdSgfdeOr9pxaxALw9X/7fP+dIORfyMoYcPq
+         ZGqGTosxLLGFcHMOPzWlx4sFImbqt7iUwDGVIvxFl7Hw90cOnhBA36m9XUptGPops/MN
+         Pn8XTlwBCWioqiL/n2SaHmQGLXd9dK0PVSd+oXIAVsXEWYunau/Tx/Za1u04GirRYJDN
+         4y0Q==
+X-Gm-Message-State: APjAAAUfIydwMlzKrWibHWjYPjoPGgXukdO2Pt3ch/sTI2WwDkiIvvKD
+        VBoNfQH7w41Dzg0sBY3nDQqLtWB5IXrM
+X-Google-Smtp-Source: APXvYqyrd5Cfjge5xILVt6mmEuqts4fEL98RfVNnYcg0T/W+FZno73A7rz4q/+uwquBUYqzIWPesZctI/53D
+X-Received: by 2002:a63:e241:: with SMTP id y1mr7746140pgj.427.1573164878525;
+ Thu, 07 Nov 2019 14:14:38 -0800 (PST)
+Date:   Thu,  7 Nov 2019 14:14:18 -0800
+In-Reply-To: <20191030223448.12930-1-irogers@google.com>
+Message-Id: <20191107221428.168286-1-irogers@google.com>
+Mime-Version: 1.0
+References: <20191030223448.12930-1-irogers@google.com>
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH v6 00/10] Improvements to memory usage by parse events
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The parse events parser leaks memory for certain expressions as well
+as allowing a char* to reference stack, heap or .rodata. This series
+of patches improves the hygeine and adds free-ing operations to
+reclaim memory in the parser in error and non-error situations.
 
-On 11/6/19 4:14 PM, Nathan Lynch wrote:
-> Hi Tom,
->
-> Thomas Falcon <tlfalcon@linux.ibm.com> writes:
->> After a migration, it is necessary to send a gratuitous ARP
->> from all running interfaces so that the rest of the network
->> is aware of its new location. However, some supported network
->> devices are unaware that they have been migrated. To avoid network
->> interruptions and other unwanted behavior, force a GARP on all
->> valid, running interfaces as part of the post_mobility_fixup
->> routine.
-> [...]
->
->> @@ -331,6 +334,8 @@ void post_mobility_fixup(void)
->>   {
->>   	int rc;
->>   	int activate_fw_token;
->> +	struct net_device *netdev;
->> +	struct net *net;
->>   
->>   	activate_fw_token = rtas_token("ibm,activate-firmware");
->>   	if (activate_fw_token == RTAS_UNKNOWN_SERVICE) {
->> @@ -371,6 +376,21 @@ void post_mobility_fixup(void)
->>   	/* Possibly switch to a new RFI flush type */
->>   	pseries_setup_rfi_flush();
->>   
->> +	/* need to force a gratuitous ARP on running interfaces */
->> +	rtnl_lock();
->> +	for_each_net(net) {
->> +		for_each_netdev(net, netdev) {
->> +			if (netif_device_present(netdev) &&
->> +			    netif_running(netdev) &&
->> +			    !(netdev->flags & (IFF_NOARP | IFF_LOOPBACK)))
->> +				call_netdevice_notifiers(NETDEV_NOTIFY_PEERS,
->> +							 netdev);
->> +				call_netdevice_notifiers(NETDEV_RESEND_IGMP,
->> +							 netdev);
->> +		}
->> +	}
->> +	rtnl_unlock();
->> +
-> This isn't an outright nak, but this is not nice. It illustrates the
-> need to rethink the pseries partition migration code. There is no
-> mechanism for drivers and other interested code to prepare for a
-> migration or to adjust to the destination. So post_mobility_fixup() will
-> continue to grow into a fragile collection of calls into unrelated
-> subsystems until there is a better design -- either a pseries-specific
-> notification/callback mechanism, or something based on the pm framework.
->
-> My understanding is that this is needed specifically for ibmveth and,
-> unlike ibmvnic, the platform does not provide any notification to that
-> driver that a migration has occurred, right?
+The series of patches was generated with LLVM's address sanitizer and
+libFuzzer:
+https://llvm.org/docs/LibFuzzer.html
+called on the parse_events function with randomly generated input. With
+the patches no leaks or memory corruption issues were present.
 
-Correct, the ibmveth device, unlike ibmvnic, receives no signal or 
-notification at all in the event of a partition migration, so it can not 
-handle it or send a gratuitous ARP because from the driver's perspective 
-nothing has changed.  As you've described, there is no existing notifier 
-in the kernel to inform interested parties that the system has migrated 
-or is about to migrate. Without adding the needed infrastructure to do 
-that, I'm not sure how else to fix this.
+The v6 patches address a C90 compilation issue.
 
-Tom
+The v5 patches add initial error print to the set, as requested by
+Jiri Olsa. They also fix additional 2 missed frees in the patch
+'before yyabort-ing free components' and remove a redundant new_str
+variable from the patch 'add parse events handle error' as spotted by
+Stephane Eranian.
+
+The v4 patches address review comments from Jiri Olsa, turning a long
+error message into a single warning, fixing the data type in a list
+iterator and reordering patches.
+
+The v3 patches address review comments from Jiri Olsa improving commit
+messages, handling ENOMEM errors from strdup better, and removing a
+printed warning if an invalid event is passed.
+
+The v2 patches are preferable to an earlier proposed patch:
+   perf tools: avoid reading out of scope array
+
+Ian Rogers (10):
+  perf tools: add parse events handle error
+  perf tools: move ALLOC_LIST into a function
+  perf tools: avoid a malloc for array events
+  perf tools: splice events onto evlist even on error
+  perf tools: ensure config and str in terms are unique
+  perf tools: add destructors for parse event terms
+  perf tools: before yyabort-ing free components
+  perf tools: if pmu configuration fails free terms
+  perf tools: add a deep delete for parse event terms
+  perf tools: report initial event parsing error
+
+ tools/perf/arch/powerpc/util/kvm-stat.c |   9 +-
+ tools/perf/builtin-stat.c               |   2 +
+ tools/perf/builtin-trace.c              |  16 +-
+ tools/perf/tests/parse-events.c         |   3 +-
+ tools/perf/util/metricgroup.c           |   2 +-
+ tools/perf/util/parse-events.c          | 239 +++++++++++----
+ tools/perf/util/parse-events.h          |   7 +
+ tools/perf/util/parse-events.y          | 390 +++++++++++++++++-------
+ tools/perf/util/pmu.c                   |  32 +-
+ 9 files changed, 511 insertions(+), 189 deletions(-)
+
+-- 
+2.24.0.432.g9d3f5f5b63-goog
 
