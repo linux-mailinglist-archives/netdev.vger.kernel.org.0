@@ -2,104 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5825CF25A4
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 03:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F95F25AD
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 04:00:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732847AbfKGCxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 21:53:23 -0500
-Received: from mail-qk1-f175.google.com ([209.85.222.175]:34535 "EHLO
-        mail-qk1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727924AbfKGCxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 21:53:23 -0500
-Received: by mail-qk1-f175.google.com with SMTP id 205so728257qkk.1;
-        Wed, 06 Nov 2019 18:53:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vhei/0hIV+r2EIrjJPfM8OxIAgRHb70cTFpkJHf6HEU=;
-        b=d5Kea3e9BbO/xouo+kv/mii90J6TCppluIY6iJVrtqWOvRJZcmt0ecNM3w995aSU23
-         buo9ppddUO77y+DwYeeFhoOdrvq3+DTQ9eP9jdrMQAPhane3p6yvCalH+RejUN97y44h
-         msZ3s1del1gUrb4vVVxE/PcJxFiAhbmpGpe9ZzbiwKILSHxXR729IjpiCxMnfV6ye2sR
-         jI02BG7dTCg+h5Iz54WQ5Y6IXaJaVvWZQ1Hx1nA9ax5DCYbv/nDQLFZtAQQ+nU0CTQcN
-         MquV9xJT/w06FqXfJXRbsW1T+UrY1nUQipAyytBdX1AQCQbdftkfc/ZoeMNwkOr4bj3Z
-         Lu5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vhei/0hIV+r2EIrjJPfM8OxIAgRHb70cTFpkJHf6HEU=;
-        b=NhKidkGp5zkjuzg9Z7i0esor1+EwjAlNDiit0ug1f2qYYR6uj+fq8uAMz3kzgfvm3D
-         Qo0DVlPOiXWFH3xH0zbg4SHw+j5R7MCHQeIQ2MDm2tVRp+aOBzpkFQQjYF+5OHs9DRo2
-         c4OeRTD7cppWyJQmIaAjauslLH6kLm8sV3ccpj/47zCs83mue7zN9nmSA36S2L0YaS9z
-         9r8hTwLm54yX016W1pgcB0IiW/zJoQUwV/Edbl/RKY2IXyePJyuPSLryZL72tC/x/tIn
-         z/6qMEiEvdrdJr23+ddVZK+X1TAPJ0t/jzeB7NXQlTxins4fF9WeZ113RD8nCCjcdZbK
-         7PVg==
-X-Gm-Message-State: APjAAAWZGkwH7xAbAZpUw0x9tPCc8eN5vLoLMtco89pIEp4nabuqE7jx
-        avEHm8+w2UHPxZ9kKWRytS+fzE8C8vW670ToDAUq4Q==
-X-Google-Smtp-Source: APXvYqyR7qNUzIzSaZanDJAt6/EIO+1NX5ZKS5dvyVo5VfAv89ydipBHrjVI5ojRtcXFHxqCrAUg+AwxbPq8zrkj4hQ=
-X-Received: by 2002:a05:620a:12b2:: with SMTP id x18mr651368qki.437.1573095201947;
- Wed, 06 Nov 2019 18:53:21 -0800 (PST)
+        id S1732928AbfKGDAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 22:00:49 -0500
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:49436 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727665AbfKGDAt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 22:00:49 -0500
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 8E0D7886BF
+        for <netdev@vger.kernel.org>; Thu,  7 Nov 2019 16:00:46 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1573095646;
+        bh=DCD7wvpav4EmA7ZHz05KmNhs++VD7s5ifYJIUtVXM9Y=;
+        h=From:To:Subject:Date:References:In-Reply-To;
+        b=zNtwbw8kTypM/gIDTG6hI7kEXPdhArx5CxL0ZoptjJ06vVdCQjLr37qCuVAjpiEGp
+         Nc5PvCF9/64Ems1/NlvzAcJJJ20YqYO0xNip+65326rfNkUmpxJlcFdY16Nwtdwbuj
+         ntoBAcduGoALLk1YEWTz18F5Bu4jbYBRBt9xeYVxvd/K0KZ5AfZpX48podAcQaGYcg
+         Y5oxPffMiqC+KPvkxMq4MeGYnPRvc5XhUkXvLOQdrBjiRkoUttNRhAkrVbsYKJvQk2
+         LRKvODsrSwUWKFJdY/R1b1O6+fgfHgzWL3pntE/bGN4+hYuN0pT9Fs6eC6dbyl1eOV
+         rW73imEcR4VCQ==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5dc388df0001>; Thu, 07 Nov 2019 16:00:47 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1156.6; Thu, 7 Nov 2019 16:00:46 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1156.000; Thu, 7 Nov 2019 16:00:46 +1300
+From:   Mark Tomlinson <Mark.Tomlinson@alliedtelesis.co.nz>
+To:     "hd@os-cillation.de" <hd@os-cillation.de>,
+        "dsahern@gmail.com" <dsahern@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [Possible regression?] ip route deletion behavior change
+Thread-Topic: [Possible regression?] ip route deletion behavior change
+Thread-Index: AQHVlLrRmgrekLMNEECfn2OiOKYoS6d+K7WA
+Date:   Thu, 7 Nov 2019 03:00:45 +0000
+Message-ID: <2db4c4569c61cafb1abb609609740e83d242b5f1.camel@alliedtelesis.co.nz>
+References: <603d815f-f6db-3967-c0df-cbf084a1cbcd@os-cillation.de>
+         <9384f54f-67a0-f2dc-68f8-3216717ee63e@gmail.com>
+         <b7d44dcf-6382-a668-1a6a-4385f77fb0f5@os-cillation.de>
+In-Reply-To: <b7d44dcf-6382-a668-1a6a-4385f77fb0f5@os-cillation.de>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [2001:df5:b000:23:fdf0:a6de:5c39:13cb]
+Content-Type: text/plain; charset="iso-8859-15"
+Content-ID: <43288CD186860640A666C51652F09609@atlnz.lc>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20191107005153.31541-1-danieltimlee@gmail.com> <20191107005153.31541-3-danieltimlee@gmail.com>
-In-Reply-To: <20191107005153.31541-3-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 6 Nov 2019 18:53:11 -0800
-Message-ID: <CAEf4BzZpBqPAKy1fKUQYSm3Wxez29EuBYqu_n2SayCfDt_ziUg@mail.gmail.com>
-Subject: Re: [PATCH,bpf-next v2 2/2] samples: bpf: update map definition to
- new syntax BTF-defined map
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 6, 2019 at 4:52 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> Since, the new syntax of BTF-defined map has been introduced,
-> the syntax for using maps under samples directory are mixed up.
-> For example, some are already using the new syntax, and some are using
-> existing syntax by calling them as 'legacy'.
->
-> As stated at commit abd29c931459 ("libbpf: allow specifying map
-> definitions using BTF"), the BTF-defined map has more compatablility
-> with extending supported map definition features.
->
-> The commit doesn't replace all of the map to new BTF-defined map,
-> because some of the samples still use bpf_load instead of libbpf, which
-> can't properly create BTF-defined map.
->
-> This will only updates the samples which uses libbpf API for loading bpf
-> program. (ex. bpf_prog_load_xattr)
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
-> Changes in v2:
->  - stick to __type() instead of __uint({key,value}_size) where possible
->
->  samples/bpf/sockex1_kern.c          |  12 ++--
->  samples/bpf/sockex2_kern.c          |  12 ++--
->  samples/bpf/xdp1_kern.c             |  12 ++--
->  samples/bpf/xdp2_kern.c             |  12 ++--
->  samples/bpf/xdp_adjust_tail_kern.c  |  12 ++--
->  samples/bpf/xdp_fwd_kern.c          |  13 ++--
->  samples/bpf/xdp_redirect_cpu_kern.c | 108 ++++++++++++++--------------
->  samples/bpf/xdp_redirect_kern.c     |  24 +++----
->  samples/bpf/xdp_redirect_map_kern.c |  24 +++----
->  samples/bpf/xdp_router_ipv4_kern.c  |  64 ++++++++---------
->  samples/bpf/xdp_rxq_info_kern.c     |  37 +++++-----
->  samples/bpf/xdp_tx_iptunnel_kern.c  |  26 +++----
->  12 files changed, 178 insertions(+), 178 deletions(-)
+On Wed, 2019-11-06 at 16:56 +0100, Hendrik Donner wrote:
+> On 10/31/19 9:41 PM, David Ahern wrote:
+> >=20
+> > devices not associated with a VRF table are implicitly tied to the
+> > default =3D=3D main table.
+> >=20
+> > Can you test this change:
+> >=20
+> > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+> > index 0913a090b2bf..f1888c683426 100644
+> > --- a/net/ipv4/fib_semantics.c
+> > +++ b/net/ipv4/fib_semantics.c
+> > @@ -1814,8 +1814,8 @@ int fib_sync_down_addr(struct net_device *dev,
+> > __be32 local)
+> >         int ret =3D 0;
+> >         unsigned int hash =3D fib_laddr_hashfn(local);
+> >         struct hlist_head *head =3D &fib_info_laddrhash[hash];
+> > +       int tb_id =3D l3mdev_fib_table(dev) ? : RT_TABLE_MAIN;
+> >         struct net *net =3D dev_net(dev);
+> > -       int tb_id =3D l3mdev_fib_table(dev);
+> >         struct fib_info *fi;
+> >=20
+> >         if (!fib_info_laddrhash || local =3D=3D 0)
+> >=20
+> > [ As DaveM noted, you should cc maintainers and author(s) of suspected
+> > regression patches ]
+> >=20
+>=20
+> I've tested your patch and it restores the expected behavior.
+>=20
+> + Mark Tomlinson so he can have a look at it too.
 
-Heh, 1-to-1 insertions/deletions, no excuse to use old syntax ;)
+I admit that I did not cater for the case where l3mdev_fib_table(dev)
+returned NULL. I am OK with this change.
 
-Thanks for completing conversion!
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
-[...]
