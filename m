@@ -2,70 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DBC9F3B97
+	by mail.lfdr.de (Postfix) with ESMTP id DB841F3B98
 	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:42:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbfKGWl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:41:58 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55566 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727720AbfKGWl4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:41:56 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7MekBC002982;
-        Thu, 7 Nov 2019 14:41:55 -0800
+        id S1726438AbfKGWmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:42:00 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29486 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727894AbfKGWl7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:41:59 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7MdlO4021310;
+        Thu, 7 Nov 2019 14:41:57 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=pfpt0818;
- bh=G7RRo/1YUFQoiT6BTapw+k1EXTMeb5zN2pVZMx3RRfg=;
- b=kmow0Ti4UhLBtndiyHxGyp/a6nEIdE17kmVizrjhM6dYFlrgXU2749nLvsRU9xVhnMQ5
- eoorKMZ16mR1NiBw5t329diBDKqdUFnL1Ph3GDKD006qreTVm0BpcTv0oxicfhX+K1wH
- EMqM3wbebh8YbSD/WD1Sh86CneyP0Sn9RdB1XucMaiKoI1r6/6joCwHJjcJn3WwNiO/4
- pXWwiAnK3XfhEN5QIrMjucpMG/8RDFEIx7XV9P893CrGVBcczu97Yb/cDcUq1YTeM03L
- kbeZBCrLF70Z42PcyBjyK0zxv5wxpzu13fMruB0IhTeri3a+K1DaJ5jvfCTgRu9Ipczp dQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2w41uwxrew-1
+ bh=QeqrhPl2fZ1tXQaa530n27icFsqOEBltcMHJPiOb7oo=;
+ b=m4RC4AOt3bC+yQGN1Sowd2X20hVnZ5OGQv5dNhezZbyMtKZnYPJyb/zMTzujF37zLotI
+ jCKFE8JLJMZA1GTjF0z6rY/gco+g1jrxi8TSGuSHfYJ4avtwosGjgXFS1oEhfQ9SpDgt
+ EcWuUj/C9tgX9be9TWQZulHiO/gmWf8hy8briJ1F/dAFhDkyXOghKFDp4hQhW1qwtTZm
+ aY7zgv5/srlLWbvpXNN6IFrJ2Wnxzre1NQRhFgDC/L1oRseHzC0UIDnVFnAuLCz3QN5D
+ Q2aJ0VJB9IdvOhuwITgyq6jF711KgE1WMZrzHBdq9BWQ2a6XwYVGULmwprtqnKOINd8M ug== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2w4fq6u8jb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 14:41:54 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 7 Nov
- 2019 14:41:53 -0800
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (104.47.32.56) by
- SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:41:53 -0800
+        Thu, 07 Nov 2019 14:41:57 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 7 Nov
+ 2019 14:41:55 -0800
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (104.47.32.57) by
+ SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:41:55 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fiYVIAuVxZT31Yzztrm+uA5Da2X50sTFBrZ2vwDv3uVGtKm2XxzOndi7QtrjjSNjrzGw/k7uPGYuAtQb6aoy+TmjxV6u5ECReQeJNwmneXt7BreKwZzLRV5KePfhJWUVTzTKkHe7poCC8FIFpdpNLt9zwrrAeeokcAduHNxAWiMjNwroLkI8ZxgYpSRdNlOyzr8EYafSX99QVAteaLjA5HbAeIUNypyDur31Kjnlpv6KyCfMPf14EZwZAfjj38sYyn/iPZhbxCjS315ngwYwuoDNghJOWdQdPYMHTO+X/Jdh1ELWaPlpqbbJF/oeqRZqhV4/K6SvpCHr5JSiISZjYQ==
+ b=l+KEoC6EzKi3ZtH1ZSCWkxrc/sptQ2pkej1wgWTNeFQBpf1oOaGSsGPny3WTKdxkRfdP0TmWo/yt6DZThT17pig1Y1QRoqUedWv2fr6yIv8KqOzyQpAf7VKer9UEnSQT1hmyWh7+SuLX9mTXk8T65gsRA/L3R9xAtJPqj2BjWIT5vuJVZT4R6vHMeOJ+iWBOcZWcF/oU2RMuXH13CcXkJyb/Wof4jjbl+W1/4kglu8U3zdv0aCbw8c6OiH36gc/FVghAseyWH4tDRQCYdmXOJ/cpB//1rJXVNQ7X2NGqRbplzs6S6ByzNX873gH/6GE1mOPwBM/SPeN6AjOyBWcInQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G7RRo/1YUFQoiT6BTapw+k1EXTMeb5zN2pVZMx3RRfg=;
- b=RA7zGoZyvMr2sHrYKO+aJ5xOTRMysQ3wVGftqPRZ7zEHZRA1+SgHT7c9/SYaI+nM6+Yw+XrLHIF7Nfq9RZcFfvq0TZRPbwEBExBHI5OoGNWwdTNsZjNlzQFKt7LPwkTqY3i9AgtUR4pedszbCpDDE3Fcs0EWwBDuQsAx1TyHW9QX/j+CqyHs2uYD23DjX6KEREfNFeVsLF5Li2Eg9cI7+9FaxmrLKjO74K2Sr84xq6i2qvbXSCT/NlCflTZnA9rTT43OllFd/yzfaJm0yYuV2EWV/x/sVOsoC+BUutODpjnX4YSfrtc+hQnbo0HYFwLvMTdL54QM3WOEGz9hvNmePQ==
+ bh=QeqrhPl2fZ1tXQaa530n27icFsqOEBltcMHJPiOb7oo=;
+ b=U6huMCKRuBnmXa+pje7U1pg9ohbHaOsft7OTXhOWuDzoQ3QtJG4bzj1YV4LaAHaYFop3dQ7gdGVcxQMGcRf2gjwUhXPWbe3QdeLD3v0+uILtm83m8Zwh0/GWxMpvGESAXvLwbmk7zVEtgDB1s4kxH2vDM4WpGk/PaftT3kJ8kmRGOMPU36ClLFBiZY+ID3zWwznRgxmOcH9LGL+kTVTQQpWLRMbk8Uctn8sDEjKoQuOm1wkq+UxVo895IGF5coOlFvTiKaEAHOQiLn0vjDlTrqFNQs6/D9kTNGQEjYT+q6qH+Hwmy2uWo8PWk39pwcpaSYV3MaBblcl2VE6FaqG6SQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G7RRo/1YUFQoiT6BTapw+k1EXTMeb5zN2pVZMx3RRfg=;
- b=eJZjs45yQpKMWH6g7NExJi3ZFua0eYjwJgTSvv1ZbWdKgpJPoqTVEnBTZVm0sTHab/GFfqohirjjWNT3rX4GPCJBcwZN5x6OumRoB5b3MeM8KH7VVUCoQLTsmYxq+GCfylUhBAMn70TETTOTSokCEEIjppdS/RHHUoGoCiNbzNw=
+ bh=QeqrhPl2fZ1tXQaa530n27icFsqOEBltcMHJPiOb7oo=;
+ b=ghkWkGJDrnYApsjwVSpMIpQEBJAqEqw9m+8UdNm0IJe6ke90ZKRseXS94nJKfXXr5HmkZf4d7ZNWIeXJsYOH2sTZP1wbD9sEGBAViImdItjNxOcMoukU+zgxXeD9CSDgIW5Qm7kwq9RuV0MDaHc8x+KSYqJaGIJEStvG7i2exck=
 Received: from DM5PR18MB1642.namprd18.prod.outlook.com (10.175.224.8) by
  DM5PR18MB2295.namprd18.prod.outlook.com (52.132.142.28) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Thu, 7 Nov 2019 22:41:52 +0000
+ 15.20.2430.24; Thu, 7 Nov 2019 22:41:54 +0000
 Received: from DM5PR18MB1642.namprd18.prod.outlook.com
  ([fe80::d89:706b:cda0:5c15]) by DM5PR18MB1642.namprd18.prod.outlook.com
  ([fe80::d89:706b:cda0:5c15%10]) with mapi id 15.20.2430.020; Thu, 7 Nov 2019
- 22:41:52 +0000
+ 22:41:54 +0000
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Igor Russkikh <irusskikh@marvell.com>,
         Nikita Danilov <ndanilov@marvell.com>
-Subject: [PATCH v2 net-next 03/12] net: atlantic: refactoring pm logic
-Thread-Topic: [PATCH v2 net-next 03/12] net: atlantic: refactoring pm logic
-Thread-Index: AQHVlbyMEaYHdK+MVU268MvHR4S/ww==
-Date:   Thu, 7 Nov 2019 22:41:52 +0000
-Message-ID: <2a3fd0c2ae938d549f0c8922cf10b40d570de885.1573158381.git.irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 04/12] net: atlantic: add msglevel configuration
+Thread-Topic: [PATCH v2 net-next 04/12] net: atlantic: add msglevel
+ configuration
+Thread-Index: AQHVlbyNj6wka7VuoUWrkDofh0G0Kw==
+Date:   Thu, 7 Nov 2019 22:41:54 +0000
+Message-ID: <59d4adecc9931662dcd4457dc22425d244e9bd81.1573158381.git.irusskikh@marvell.com>
 References: <cover.1573158381.git.irusskikh@marvell.com>
 In-Reply-To: <cover.1573158381.git.irusskikh@marvell.com>
 Accept-Language: en-US
@@ -79,28 +80,28 @@ x-mailer: git-send-email 2.17.1
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 18aab357-93b6-4097-6521-08d763d3af1a
+x-ms-office365-filtering-correlation-id: 0d8c2e0a-e1e7-4300-cc4b-08d763d3b00f
 x-ms-traffictypediagnostic: DM5PR18MB2295:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB2295A260761F53D91FD2C540B7780@DM5PR18MB2295.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:227;
+x-microsoft-antispam-prvs: <DM5PR18MB22953D23BD3870358B1B1AB8B7780@DM5PR18MB2295.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:98;
 x-forefront-prvs: 0214EB3F68
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(189003)(199004)(64756008)(76176011)(7736002)(99286004)(316002)(66066001)(54906003)(2351001)(52116002)(5640700003)(2501003)(8676002)(25786009)(118296001)(8936002)(305945005)(81166006)(81156014)(1730700003)(6486002)(478600001)(71200400001)(71190400001)(6436002)(50226002)(6916009)(66476007)(6116002)(6512007)(14454004)(2616005)(476003)(5024004)(256004)(486006)(186003)(3846002)(102836004)(11346002)(107886003)(36756003)(66946007)(26005)(2906002)(66446008)(86362001)(66556008)(4326008)(386003)(6506007)(5660300002)(446003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2295;H:DM5PR18MB1642.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(189003)(199004)(64756008)(76176011)(7736002)(99286004)(316002)(66066001)(54906003)(2351001)(52116002)(5640700003)(2501003)(8676002)(25786009)(118296001)(8936002)(305945005)(81166006)(81156014)(1730700003)(6486002)(478600001)(71200400001)(71190400001)(6436002)(50226002)(6916009)(66476007)(6116002)(6512007)(14454004)(2616005)(476003)(256004)(486006)(186003)(3846002)(102836004)(11346002)(107886003)(36756003)(66946007)(26005)(2906002)(66446008)(86362001)(66556008)(4326008)(386003)(6506007)(5660300002)(446003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2295;H:DM5PR18MB1642.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: marvell.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: bVzsFIVmwfbk/YgleYG/rC7dhdrXW7rrmIBZwQDMMYLqsH0ypPNbxfY2BElb/JcrbmslUnDa2g9uZKOwLgjACyHWoWkH9eVRUWyyr1wj1y+5GsvKqbc9ZJ9Cz95pjTyu0Nsnq6iKPZs2kT/1t9agrnH/UzRCfpOITLv7bzn8vD7EuamvCiCD/1oFWZxOebsSEIonOlLYWQowXOheQfG5JMdVzVAUHzQZd+Uk3xt+cXugmp1hAVe5eIgs8s2QQSN89HjWU5phAEhDPjS91tNloR3DiqzCbl1tMvemf8l9ifYk1owTTJRqHRWICbjJpdY8uGk7dFMx2t9VCz79ChwjEJ2s30RP6t9BLTbyEdnUU9r170Ihl5rWiO1A4WxiBo+eur27O5SQkb9i9PPaoFKiChyhiJUmaGDa2DfL2iGYEqgMef1EKbHzviobCNXaT7J7
+x-microsoft-antispam-message-info: W1kR4Gh5BI9wysF+SkRBz5UW/5cZ8O5K8X0fj4Wk9zIQsJbok/6fg/syDny5IZP8SFEwDUIe80yX5O1AGQvW6hVDwIGLDaJsfsksNfS7drtFZTOe5ERtoEqdGlCPEyKQoXcDBe7kcrTGmdg+oY9OxU8inq+huLtTNBGZPAkTcx9vh5pYXGypD0zEYihUuUSYqGGk6vsyCU0jzZ3ccV5o84OsvTIF+DnbpuZewY79mDydoddMdsL5Y2CENUo3mC2DVP9xOtQJVmzUpLP38sxw6UbUsv/D6Sq7/Nz9zlTK2LzaLZaktlKoZSMNDfJM1U+4mnMd8qYMi/FTmU19Yt0vW5rbKu6dofbhmKLk+E3sWxNYm4n8ovESdAge8rfx4qRnDUjJLB7Qkn88cJdY0z+j5Iabu/w7opAhpKmSiv3pufKrRhkMUkstGFFeAcP/Xydo
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18aab357-93b6-4097-6521-08d763d3af1a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:41:52.5815
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d8c2e0a-e1e7-4300-cc4b-08d763d3b00f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:41:54.1977
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1Budmpud12h8cmN08qbIxaR9lImjw0Rl3Nvp1gNmbOi8Qt2L5vPNPuaqwFyDClhAOjt+7VwTvsaGnc9diJjhNw==
+X-MS-Exchange-CrossTenant-userprincipalname: e/UxzJJ7dTFPIjsRncSz3MS8YZdosApg2tPW/kx6IeOz+2cdlBdM/OAX+LM/Vxekoph+wWzC9FKVq17C63M89A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB2295
 X-OriginatorOrg: marvell.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
@@ -112,199 +113,92 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikita Danilov <ndanilov@marvell.com>
 
-We now implement .driver.pm callbacks, these
-allows driver to work correctly in hibernate
-usecases, especially when used in conjunction with
-WOL feature.
-
-Before that driver only reacted to legacy .suspend/.resume
-callbacks, that was a limitation in some cases.
+We add ethtool msglevel configuration and change some
+printouts to use netdev_info set of functions.
 
 Signed-off-by: Nikita Danilov <ndanilov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_nic.c   | 38 --------
- .../net/ethernet/aquantia/atlantic/aq_nic.h   |  1 -
- .../ethernet/aquantia/atlantic/aq_pci_func.c  | 87 +++++++++++++++++--
- 3 files changed, 78 insertions(+), 48 deletions(-)
+ .../net/ethernet/aquantia/atlantic/aq_ethtool.c  | 16 ++++++++++++++++
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c  |  7 ++++---
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.h  |  1 +
+ 3 files changed, 21 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/=
+net/ethernet/aquantia/atlantic/aq_ethtool.c
+index 3c55cf13cf14..5be273892430 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+@@ -607,6 +607,20 @@ static int aq_set_ringparam(struct net_device *ndev,
+ 	return err;
+ }
+=20
++static u32 aq_get_msg_level(struct net_device *ndev)
++{
++	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
++
++	return aq_nic->msg_enable;
++}
++
++static void aq_set_msg_level(struct net_device *ndev, u32 data)
++{
++	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
++
++	aq_nic->msg_enable =3D data;
++}
++
+ const struct ethtool_ops aq_ethtool_ops =3D {
+ 	.get_link            =3D aq_ethtool_get_link,
+ 	.get_regs_len        =3D aq_ethtool_get_regs_len,
+@@ -628,6 +642,8 @@ const struct ethtool_ops aq_ethtool_ops =3D {
+ 	.set_rxfh            =3D aq_ethtool_set_rss,
+ 	.get_rxnfc           =3D aq_ethtool_get_rxnfc,
+ 	.set_rxnfc           =3D aq_ethtool_set_rxnfc,
++	.get_msglevel        =3D aq_get_msg_level,
++	.set_msglevel        =3D aq_set_msg_level,
+ 	.get_sset_count      =3D aq_ethtool_get_sset_count,
+ 	.get_ethtool_stats   =3D aq_ethtool_stats,
+ 	.get_link_ksettings  =3D aq_ethtool_get_link_ksettings,
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/=
 ethernet/aquantia/atlantic/aq_nic.c
-index 75faf288a2fc..d5764228cea5 100644
+index d5764228cea5..8f83e91f8146 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -1057,44 +1057,6 @@ void aq_nic_free_vectors(struct aq_nic_s *self)
- err_exit:;
- }
+@@ -144,9 +144,9 @@ static int aq_nic_update_link_status(struct aq_nic_s *s=
+elf)
+ 		return err;
 =20
--int aq_nic_change_pm_state(struct aq_nic_s *self, pm_message_t *pm_msg)
--{
--	int err =3D 0;
--
--	if (!netif_running(self->ndev)) {
--		err =3D 0;
--		goto out;
--	}
--	rtnl_lock();
--	if (pm_msg->event & PM_EVENT_SLEEP || pm_msg->event & PM_EVENT_FREEZE) {
--		self->power_state =3D AQ_HW_POWER_STATE_D3;
--		netif_device_detach(self->ndev);
--		netif_tx_stop_all_queues(self->ndev);
--
--		err =3D aq_nic_stop(self);
--		if (err < 0)
--			goto err_exit;
--
--		aq_nic_deinit(self, !self->aq_hw->aq_nic_cfg->wol);
--	} else {
--		err =3D aq_nic_init(self);
--		if (err < 0)
--			goto err_exit;
--
--		err =3D aq_nic_start(self);
--		if (err < 0)
--			goto err_exit;
--
--		netif_device_attach(self->ndev);
--		netif_tx_start_all_queues(self->ndev);
--	}
--
--err_exit:
--	rtnl_unlock();
--out:
--	return err;
--}
--
- void aq_nic_shutdown(struct aq_nic_s *self)
- {
- 	int err =3D 0;
+ 	if (self->link_status.mbps !=3D self->aq_hw->aq_link_status.mbps) {
+-		pr_info("%s: link change old %d new %d\n",
+-			AQ_CFG_DRV_NAME, self->link_status.mbps,
+-			self->aq_hw->aq_link_status.mbps);
++		netdev_info(self->ndev, "%s: link change old %d new %d\n",
++			    AQ_CFG_DRV_NAME, self->link_status.mbps,
++			    self->aq_hw->aq_link_status.mbps);
+ 		aq_nic_update_interrupt_moderation_settings(self);
+=20
+ 		if (self->aq_ptp) {
+@@ -306,6 +306,7 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
+ 	self->ndev->priv_flags =3D aq_hw_caps->hw_priv_flags;
+ 	self->ndev->priv_flags |=3D IFF_LIVE_ADDR_CHANGE;
+=20
++	self->msg_enable =3D NETIF_MSG_DRV | NETIF_MSG_LINK;
+ 	self->ndev->mtu =3D aq_nic_cfg->mtu - ETH_HLEN;
+ 	self->ndev->max_mtu =3D aq_hw_caps->mtu - ETH_FCS_LEN - ETH_HLEN;
+=20
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/=
 ethernet/aquantia/atlantic/aq_nic.h
-index 8c23ad4ddf38..ab3176dfc209 100644
+index ab3176dfc209..527273502d54 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -157,7 +157,6 @@ int aq_nic_set_link_ksettings(struct aq_nic_s *self,
- 			      const struct ethtool_link_ksettings *cmd);
- struct aq_nic_cfg_s *aq_nic_get_cfg(struct aq_nic_s *self);
- u32 aq_nic_get_fw_version(struct aq_nic_s *self);
--int aq_nic_change_pm_state(struct aq_nic_s *self, pm_message_t *pm_msg);
- int aq_nic_update_interrupt_moderation_settings(struct aq_nic_s *self);
- void aq_nic_shutdown(struct aq_nic_s *self);
- u8 aq_nic_reserve_filter(struct aq_nic_s *self, enum aq_rx_filter_type typ=
-e);
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers=
-/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index e82c96b50373..3169951fe6ab 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -347,29 +347,98 @@ static void aq_pci_shutdown(struct pci_dev *pdev)
- 	}
- }
+@@ -88,6 +88,7 @@ struct aq_hw_rx_fltrs_s {
 =20
--static int aq_pci_suspend(struct pci_dev *pdev, pm_message_t pm_msg)
-+static int aq_suspend_common(struct device *dev, bool deep)
- {
--	struct aq_nic_s *self =3D pci_get_drvdata(pdev);
-+	struct aq_nic_s *nic =3D pci_get_drvdata(to_pci_dev(dev));
-+
-+	rtnl_lock();
-+
-+	nic->power_state =3D AQ_HW_POWER_STATE_D3;
-+	netif_device_detach(nic->ndev);
-+	netif_tx_stop_all_queues(nic->ndev);
-=20
--	return aq_nic_change_pm_state(self, &pm_msg);
-+	aq_nic_stop(nic);
-+
-+	if (deep) {
-+		aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
-+		aq_nic_set_power(nic);
-+	}
-+
-+	rtnl_unlock();
-+
-+	return 0;
- }
-=20
--static int aq_pci_resume(struct pci_dev *pdev)
-+static int atl_resume_common(struct device *dev, bool deep)
- {
--	struct aq_nic_s *self =3D pci_get_drvdata(pdev);
--	pm_message_t pm_msg =3D PMSG_RESTORE;
-+	struct pci_dev *pdev =3D to_pci_dev(dev);
-+	struct aq_nic_s *nic;
-+	int ret;
-+
-+	nic =3D pci_get_drvdata(pdev);
-+
-+	rtnl_lock();
-+
-+	pci_set_power_state(pdev, PCI_D0);
-+	pci_restore_state(pdev);
-+
-+	if (deep) {
-+		ret =3D aq_nic_init(nic);
-+		if (ret)
-+			goto err_exit;
-+	}
-+
-+	ret =3D aq_nic_start(nic);
-+	if (ret)
-+		goto err_exit;
-+
-+	netif_device_attach(nic->ndev);
-+	netif_tx_start_all_queues(nic->ndev);
-=20
--	return aq_nic_change_pm_state(self, &pm_msg);
-+err_exit:
-+	rtnl_unlock();
-+
-+	return ret;
-+}
-+
-+static int aq_pm_freeze(struct device *dev)
-+{
-+	return aq_suspend_common(dev, false);
- }
-=20
-+static int aq_pm_suspend_poweroff(struct device *dev)
-+{
-+	return aq_suspend_common(dev, true);
-+}
-+
-+static int aq_pm_thaw(struct device *dev)
-+{
-+	return atl_resume_common(dev, false);
-+}
-+
-+static int aq_pm_resume_restore(struct device *dev)
-+{
-+	return atl_resume_common(dev, true);
-+}
-+
-+const struct dev_pm_ops aq_pm_ops =3D {
-+	.suspend =3D aq_pm_suspend_poweroff,
-+	.poweroff =3D aq_pm_suspend_poweroff,
-+	.freeze =3D aq_pm_freeze,
-+	.resume =3D aq_pm_resume_restore,
-+	.restore =3D aq_pm_resume_restore,
-+	.thaw =3D aq_pm_thaw,
-+};
-+
- static struct pci_driver aq_pci_ops =3D {
- 	.name =3D AQ_CFG_DRV_NAME,
- 	.id_table =3D aq_pci_tbl,
- 	.probe =3D aq_pci_probe,
- 	.remove =3D aq_pci_remove,
--	.suspend =3D aq_pci_suspend,
--	.resume =3D aq_pci_resume,
- 	.shutdown =3D aq_pci_shutdown,
-+#ifdef CONFIG_PM
-+	.driver.pm =3D &aq_pm_ops,
-+#endif
- };
-=20
- int aq_pci_func_register_driver(void)
+ struct aq_nic_s {
+ 	atomic_t flags;
++	u32 msg_enable;
+ 	struct aq_vec_s *aq_vec[AQ_CFG_VECS_MAX];
+ 	struct aq_ring_s *aq_ring_tx[AQ_CFG_VECS_MAX * AQ_CFG_TCS_MAX];
+ 	struct aq_hw_s *aq_hw;
 --=20
 2.17.1
 
