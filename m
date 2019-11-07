@@ -2,241 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD8F6F36A6
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 19:09:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6243BF36BF
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 19:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729683AbfKGSJM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 13:09:12 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54916 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725710AbfKGSJM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 13:09:12 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7I4iQS011199
-        for <netdev@vger.kernel.org>; Thu, 7 Nov 2019 10:09:11 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=JL++fvaC8FmfDQuaMXPMZlgTgm1EVUBKy7zpoUaWJ3U=;
- b=gEmoBP9x55VaGFSUxNj70BuQcj5Je8G+lah1qumcgYRIQ8Ou1YhJZa9NhPRAbSIYJ0uJ
- mKpAwkav14XYCYsKuA1e/p1p3JhllrRgSmnvPi9A0YNb3UUW8iBrDEtRGAtFibfw6+S3
- DPcgaBuvazUEzV1xRXci8uk56pL78cgPDiA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41u2phjd-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 10:09:11 -0800
-Received: from 2401:db00:2120:80d4:face:0:39:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 7 Nov 2019 10:09:09 -0800
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 4D22B294193C; Thu,  7 Nov 2019 10:09:05 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v4 bpf-next 2/2] bpf: Add cb access in kfree_skb test
-Date:   Thu, 7 Nov 2019 10:09:05 -0800
-Message-ID: <20191107180905.4097871-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191107180901.4097452-1-kafai@fb.com>
-References: <20191107180901.4097452-1-kafai@fb.com>
-X-FB-Internal: Safe
+        id S1725930AbfKGSPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 13:15:19 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42449 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725797AbfKGSPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 13:15:19 -0500
+Received: by mail-ed1-f67.google.com with SMTP id m13so2678733edv.9
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 10:15:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kBVeDR02xbQRHJHZTmTGfGitVy7r4AKyMmNPiVITj9s=;
+        b=JgDEdzln33n0vbNA95Ee0Ltavwf6vjTPDw6Is0U9Wyi0Xwapvjb0oGiv7ra/3mDxKt
+         xcFcMCpUkCsMQqykE5m9cWBCxPz2ywA8eHTA+fJXuxE9BWk6YAvaTmFilTPn2vxYq7wQ
+         Eh8NP9rKCKCpkyoSNZJETjXCTAR5/so/8EVPntyOyIcq+PqScJxdm/DxE+3Oxu/95KkH
+         rimHeWQPeogMHGB/UVL96X+n9xsKQTMYS2Nb5ZRwKM5DaUNhry+4Xja1rNi45Q9CJwXm
+         CmAfOMEaOnajPYwpt5/vsFqmPORO+o6yNnXZHKsQL3CVEJNmfhavCznDBJd9X+7Ys8W1
+         hiCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=kBVeDR02xbQRHJHZTmTGfGitVy7r4AKyMmNPiVITj9s=;
+        b=jKiocTkboDPI2bCNrhPPopUVIv06wiTwk3g8PbLuLcvmDvDI8EWOgQ+Su2aDsJTWuH
+         Gq4COt4socHCDAEEMfOa3wFeYMV5A2gYP5pYIu+aupFaZnOSxMy+pW3sJvCtgvlId91t
+         sztlEiPdtB358+tcF0r5+1CQkEHl3EWr0nIszG2PGxIyeK8igQMR53jheBA8Fo8opUQM
+         ltFZjeH03ulFQw02peNcMck1ylUSwHzdGIIh53dFsX+awmfVpqF9EEdZ1IqtZErbETZf
+         OWaZ/YIOuqcn0BwWg251athwmYUkF4sZHFL4HNF7PON2+g/KKj64aefFRHtNJc4/rpME
+         OaLA==
+X-Gm-Message-State: APjAAAVh3d42S6v7K8QBo216von8g9MsJ6xv6Dt4aIVPkohZg3NmLMT4
+        Qo4Tv8oIdJX44danZh7jo08=
+X-Google-Smtp-Source: APXvYqzd6EJQpOwWaZBkOq8wNjd+3d1fZvGxAWuinwC6yB82+s1q7WjOlVBhICT1crxXoxJT9MOVTg==
+X-Received: by 2002:a50:cb86:: with SMTP id k6mr5247249edi.270.1573150516949;
+        Thu, 07 Nov 2019 10:15:16 -0800 (PST)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id a102sm77412edf.46.2019.11.07.10.15.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 07 Nov 2019 10:15:16 -0800 (PST)
+Subject: Re: [PATCH net-next] net: phy: at803x: add missing dependency on
+ CONFIG_REGULATOR
+To:     madalin.bucur@nxp.com, davem@davemloft.net, netdev@vger.kernel.org
+Cc:     hkallweit1@gmail.com, andrew@lunn.ch
+References: <1573131824-21664-1-git-send-email-madalin.bucur@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <6a297041-2750-eba4-c172-c63c605103ee@gmail.com>
+Date:   Thu, 7 Nov 2019 10:15:04 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-07_05:2019-11-07,2019-11-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 suspectscore=9 priorityscore=1501 malwarescore=0 phishscore=0
- adultscore=0 impostorscore=0 mlxlogscore=999 mlxscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911070169
-X-FB-Internal: deliver
+In-Reply-To: <1573131824-21664-1-git-send-email-madalin.bucur@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Access the skb->cb[] in the kfree_skb test.
+On 11/7/19 5:03 AM, Madalin Bucur wrote:
+> Compilation fails on PPC targets as CONFIG_REGULATOR is not set and
+> drivers/regulator/devres.c is not compiled in while functions exported
+> there are used by drivers/net/phy/at803x.c. Here's the error log:
+> 
+>   LD      .tmp_vmlinux1
+> drivers/net/phy/at803x.o: In function `at803x_rgmii_reg_set_voltage_sel':
+> drivers/net/phy/at803x.c:294: undefined reference to `.rdev_get_drvdata'
+> drivers/net/phy/at803x.o: In function `at803x_rgmii_reg_get_voltage_sel':
+> drivers/net/phy/at803x.c:306: undefined reference to `.rdev_get_drvdata'
+> drivers/net/phy/at803x.o: In function `at8031_register_regulators':
+> drivers/net/phy/at803x.c:359: undefined reference to `.devm_regulator_register'
+> drivers/net/phy/at803x.c:365: undefined reference to `.devm_regulator_register'
+> drivers/net/phy/at803x.o:(.data.rel+0x0): undefined reference to `regulator_list_voltage_table'
+> linux/Makefile:1074: recipe for target 'vmlinux' failed
+> make[1]: *** [vmlinux] Error 1
+> 
+> Fixes: 2f664823a470 ("net: phy: at803x: add device tree binding")
+> Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- .../selftests/bpf/prog_tests/kfree_skb.c      | 54 +++++++++++++++----
- tools/testing/selftests/bpf/progs/kfree_skb.c | 25 +++++++--
- 2 files changed, 63 insertions(+), 16 deletions(-)
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-index 430b50de1583..55d36856e621 100644
---- a/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kfree_skb.c
-@@ -1,15 +1,38 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
- 
-+struct meta {
-+	int ifindex;
-+	__u32 cb32_0;
-+	__u8 cb8_0;
-+};
-+
-+static union {
-+	__u32 cb32[5];
-+	__u8 cb8[20];
-+} cb = {
-+	.cb32[0] = 0x81828384,
-+};
-+
- static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- {
--	int ifindex = *(int *)data, duration = 0;
--	struct ipv6_packet *pkt_v6 = data + 4;
-+	struct meta *meta = (struct meta *)data;
-+	struct ipv6_packet *pkt_v6 = data + sizeof(*meta);
-+	int duration = 0;
- 
--	if (ifindex != 1)
-+	if (CHECK(size != 72 + sizeof(*meta), "check_size", "size %u != %zu\n",
-+		  size, 72 + sizeof(*meta)))
-+		return;
-+	if (CHECK(meta->ifindex != 1, "check_meta_ifindex",
-+		  "meta->ifindex = %d\n", meta->ifindex))
- 		/* spurious kfree_skb not on loopback device */
- 		return;
--	if (CHECK(size != 76, "check_size", "size %u != 76\n", size))
-+	if (CHECK(meta->cb8_0 != cb.cb8[0], "check_cb8_0", "cb8_0 %x != %x\n",
-+		  meta->cb8_0, cb.cb8[0]))
-+		return;
-+	if (CHECK(meta->cb32_0 != cb.cb32[0], "check_cb32_0",
-+		  "cb32_0 %x != %x\n",
-+		  meta->cb32_0, cb.cb32[0]))
- 		return;
- 	if (CHECK(pkt_v6->eth.h_proto != 0xdd86, "check_eth",
- 		  "h_proto %x\n", pkt_v6->eth.h_proto))
-@@ -26,6 +49,13 @@ static void on_sample(void *ctx, int cpu, void *data, __u32 size)
- 
- void test_kfree_skb(void)
- {
-+	struct __sk_buff skb = {};
-+	struct bpf_prog_test_run_attr tattr = {
-+		.data_in = &pkt_v6,
-+		.data_size_in = sizeof(pkt_v6),
-+		.ctx_in = &skb,
-+		.ctx_size_in = sizeof(skb),
-+	};
- 	struct bpf_prog_load_attr attr = {
- 		.file = "./kfree_skb.o",
- 	};
-@@ -36,11 +66,12 @@ void test_kfree_skb(void)
- 	struct bpf_link *link = NULL;
- 	struct bpf_map *perf_buf_map;
- 	struct bpf_program *prog;
--	__u32 duration, retval;
--	int err, pkt_fd, kfree_skb_fd;
-+	int err, kfree_skb_fd;
- 	bool passed = false;
-+	__u32 duration = 0;
- 
--	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS, &obj, &pkt_fd);
-+	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS,
-+			    &obj, &tattr.prog_fd);
- 	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
- 		return;
- 
-@@ -66,11 +97,12 @@ void test_kfree_skb(void)
- 	if (CHECK(IS_ERR(pb), "perf_buf__new", "err %ld\n", PTR_ERR(pb)))
- 		goto close_prog;
- 
--	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
--				NULL, NULL, &retval, &duration);
--	CHECK(err || retval, "ipv6",
-+	memcpy(skb.cb, &cb, sizeof(cb));
-+	err = bpf_prog_test_run_xattr(&tattr);
-+	duration = tattr.duration;
-+	CHECK(err || tattr.retval, "ipv6",
- 	      "err %d errno %d retval %d duration %d\n",
--	      err, errno, retval, duration);
-+	      err, errno, tattr.retval, duration);
- 
- 	/* read perf buffer */
- 	err = perf_buffer__poll(pb, 100);
-diff --git a/tools/testing/selftests/bpf/progs/kfree_skb.c b/tools/testing/selftests/bpf/progs/kfree_skb.c
-index 489319ea1d6a..f769fdbf6725 100644
---- a/tools/testing/selftests/bpf/progs/kfree_skb.c
-+++ b/tools/testing/selftests/bpf/progs/kfree_skb.c
-@@ -43,6 +43,7 @@ struct sk_buff {
- 	refcount_t users;
- 	unsigned char *data;
- 	char __pkt_type_offset[0];
-+	char cb[48];
- };
- 
- /* copy arguments from
-@@ -57,28 +58,41 @@ struct trace_kfree_skb {
- 	void *location;
- };
- 
-+struct meta {
-+	int ifindex;
-+	__u32 cb32_0;
-+	__u8 cb8_0;
-+};
-+
- SEC("tp_btf/kfree_skb")
- int trace_kfree_skb(struct trace_kfree_skb *ctx)
- {
- 	struct sk_buff *skb = ctx->skb;
- 	struct net_device *dev;
--	int ifindex;
- 	struct callback_head *ptr;
- 	void *func;
- 	int users;
- 	unsigned char *data;
- 	unsigned short pkt_data;
-+	struct meta meta = {};
- 	char pkt_type;
-+	__u32 *cb32;
-+	__u8 *cb8;
- 
- 	__builtin_preserve_access_index(({
- 		users = skb->users.refs.counter;
- 		data = skb->data;
- 		dev = skb->dev;
--		ifindex = dev->ifindex;
- 		ptr = dev->ifalias->rcuhead.next;
- 		func = ptr->func;
-+		cb8 = (__u8 *)&skb->cb;
-+		cb32 = (__u32 *)&skb->cb;
- 	}));
- 
-+	meta.ifindex = _(dev->ifindex);
-+	meta.cb8_0 = cb8[8];
-+	meta.cb32_0 = cb32[2];
-+
- 	bpf_probe_read_kernel(&pkt_type, sizeof(pkt_type), _(&skb->__pkt_type_offset));
- 	pkt_type &= 7;
- 
-@@ -90,14 +104,15 @@ int trace_kfree_skb(struct trace_kfree_skb *ctx)
- 		   _(skb->len), users, pkt_type);
- 	bpf_printk("skb->queue_mapping %d\n", _(skb->queue_mapping));
- 	bpf_printk("dev->ifindex %d data %llx pkt_data %x\n",
--		   ifindex, data, pkt_data);
-+		   meta.ifindex, data, pkt_data);
-+	bpf_printk("cb8_0:%x cb32_0:%x\n", meta.cb8_0, meta.cb32_0);
- 
--	if (users != 1 || pkt_data != bpf_htons(0x86dd) || ifindex != 1)
-+	if (users != 1 || pkt_data != bpf_htons(0x86dd) || meta.ifindex != 1)
- 		/* raw tp ignores return value */
- 		return 0;
- 
- 	/* send first 72 byte of the packet to user space */
- 	bpf_skb_output(skb, &perf_buf_map, (72ull << 32) | BPF_F_CURRENT_CPU,
--		       &ifindex, sizeof(ifindex));
-+		       &meta, sizeof(meta));
- 	return 0;
- }
+Humm, I was actually wondering if we were guaranteed to have stubs
+provided, that seems to answer my question.
 -- 
-2.17.1
-
+Florian
