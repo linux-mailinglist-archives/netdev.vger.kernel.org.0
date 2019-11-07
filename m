@@ -2,98 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFA33F2B96
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 10:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DC8F2BC3
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387983AbfKGJ4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 04:56:17 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:50580 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727926AbfKGJ4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 04:56:16 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 11:56:12 +0200
-Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.134.210.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA79uCCB016418;
-        Thu, 7 Nov 2019 11:56:12 +0200
-Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
-        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id xA79uCSa003933;
-        Thu, 7 Nov 2019 11:56:12 +0200
-Received: (from ayal@localhost)
-        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id xA79uBYs003931;
-        Thu, 7 Nov 2019 11:56:11 +0200
-From:   Aya Levin <ayal@mellanox.com>
-To:     Jiri Pirko <jiri@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>
-Subject: [PATCH net] devlink: Add method for time-stamp on reporter's dump
-Date:   Thu,  7 Nov 2019 11:55:53 +0200
-Message-Id: <1573120553-3887-1-git-send-email-ayal@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
+        id S2387937AbfKGKEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 05:04:31 -0500
+Received: from ozlabs.org ([203.11.71.1]:51761 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726866AbfKGKEb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 7 Nov 2019 05:04:31 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 477zXC5CN7z9sPT;
+        Thu,  7 Nov 2019 21:04:27 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1573121067;
+        bh=1EBSfa9DppfkkXPCl8Nz5/lZJ2ZKDXtKClZzsnCBel0=;
+        h=Date:From:To:Cc:Subject:From;
+        b=il9eyF3ZKHmO9krZnxN3u5zJKo6kJlh0tPUoxZQfbKhVBZVs2lcxAHJDkdsYwmEHH
+         4+R/raaobgfhnqqMbfF53Mnu5NQGEG7PSz/ecKRzXddbhbHwRPQWR7NUXE+DUb1PWo
+         ukI5LUcubPKi1NlnSW3mFVO3T3XIdERDiU6PSPs+1fFYWQqQ/Wx01FSK9uKomCZhBi
+         LbbPItvlluMj/nCy3uquWvDtX0iIex5+d8f4Q3yqLmJ8P9yFasC90AuJmAEapa25v6
+         wOqBKmpX3uVksdAvOcouybl6xLLKqGv7+lbypHoi8izQVG/W+IQEAOxs6LvM1CC9xJ
+         Am8R+xkMwegDA==
+Date:   Thu, 7 Nov 2019 21:04:24 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Dmytro Linkin <dmitrolin@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20191107210424.230ae6f2@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/wn3yw3su=s=Kgsv5shmUZXx";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When setting the dump's time-stamp, use ktime_get_real in addition to
-jiffies. This simplifies the user space implementation and bypasses
-some inconsistent behavior with translating jiffies to current time.
-The time taken is transformed into nsec, to comply with y2038 issue.
+--Sig_/wn3yw3su=s=Kgsv5shmUZXx
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: c8e1da0bf923 ("devlink: Add health report functionality")
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de>
----
- include/uapi/linux/devlink.h | 1 +
- net/core/devlink.c           | 6 ++++++
- 2 files changed, 7 insertions(+)
+Hi all,
 
-Please queue for -stable >= v5.1.
+In commit
 
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index b558ea88b766..45501ef372a8 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -424,6 +424,7 @@ enum devlink_attr {
- 	DEVLINK_ATTR_NETNS_FD,			/* u32 */
- 	DEVLINK_ATTR_NETNS_PID,			/* u32 */
- 	DEVLINK_ATTR_NETNS_ID,			/* u32 */
-+	DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,	/* u64 */
- 
- 	/* add new attributes above here, update the policy in devlink.c */
- 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 97e9a2246929..876fbd0f949d 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4733,6 +4733,7 @@ struct devlink_health_reporter {
- 	bool auto_recover;
- 	u8 health_state;
- 	u64 dump_ts;
-+	u64 dump_real_ts;
- 	u64 error_count;
- 	u64 recovery_count;
- 	u64 last_recovery_ts;
-@@ -4909,6 +4910,7 @@ static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
- 		goto dump_err;
- 
- 	reporter->dump_ts = jiffies;
-+	reporter->dump_real_ts = ktime_get_real_ns();
- 
- 	return 0;
- 
-@@ -5058,6 +5060,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
- 			      jiffies_to_msecs(reporter->dump_ts),
- 			      DEVLINK_ATTR_PAD))
- 		goto reporter_nest_cancel;
-+	if (reporter->dump_fmsg &&
-+	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
-+			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
-+		goto reporter_nest_cancel;
- 
- 	nla_nest_end(msg, reporter_attr);
- 	genlmsg_end(msg, hdr);
--- 
-2.14.1
+  950d3af70ea8 ("net/mlx5e: Use correct enum to determine uplink port")
 
+Fixes tag
+
+  Fixes: bb204dcf39fe ("net/mlx5e: Determine source port properly for vlan =
+push action")
+
+has these problem(s):
+
+  - Target SHA1 does not exist
+
+Did you mean
+
+Fixes: d5dbcc4e87bc ("net/mlx5e: Determine source port properly for vlan pu=
+sh action")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/wn3yw3su=s=Kgsv5shmUZXx
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3D7CgACgkQAVBC80lX
+0GxCWgf8CQe3cYbo1AJV/rHv3RwGIBgGRigkhRJGn1pyUgd55ChVHTfBYc3Yd9cX
+NHBdtJ6C90gkIfAclCRyLsBt0EdsTzeu5eKnDBOt5Au4ycV4YR7N9jwqkUypA5F6
+5vTc46RqsRRZznWyRTZVO08Y2qQBN9P4h5CmMLBkTh5LRxI/5qu3d/9GSqjIu4bV
+cEAiVhaOgopqUemcW4ltVWZn22xZlPv11C4ZAuVD2/Foz+fiHOsebr0uTkjwNvVE
+GU6FuuXl5DnjeF5SzU93YK/1kXaWsbQFLJNnneRxo4iHLHA9NuKZxg9x/OPQ7tyP
+c4seM8QKdJ8IRlHURepoQToKGhETtQ==
+=Hy1d
+-----END PGP SIGNATURE-----
+
+--Sig_/wn3yw3su=s=Kgsv5shmUZXx--
