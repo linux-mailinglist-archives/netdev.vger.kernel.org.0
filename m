@@ -2,72 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1448CF2CC2
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:46:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F691F2CCB
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387707AbfKGKqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 05:46:36 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36853 "EHLO
+        id S2388074AbfKGKuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 05:50:04 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38690 "EHLO
         mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727528AbfKGKqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:46:36 -0500
-Received: by mail-wr1-f65.google.com with SMTP id r10so2470342wrx.3
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 02:46:35 -0800 (PST)
+        with ESMTP id S1727707AbfKGKuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:50:03 -0500
+Received: by mail-wr1-f65.google.com with SMTP id j15so2463848wrw.5
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 02:50:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=nDQQccSHhJfL7vRd2Ya4dHqYi0017dX75meuR3WGMbw=;
-        b=hQn7H9LLfEPPjTN6/eCjuCuPCeD81xFZrbCRQ7IhL9trUJTKKG249hx5p76gMGATSN
-         rA5REE3Ha1vGjVkLJZmNj7G0aELcGLHG5j8kaEFIkktYKmgF3rYiP3JaL4GCnqfH3TWA
-         OEBIzu0rBv7BTL4vtGVRaytaJE0r+G15X8tre/1R14c6beLUGnHEx1uRz6vG1RXMalvn
-         BzY6JuXLRGBw3EBx43dg/B6rkqDl+aQ6Vajy4WvG6gPsubgsBRBeftivTxV1QiH9jvEu
-         WV+RHj7YEn4R1qs7//Zqxhs1efBppdZpd8LsWA4nhcqnwaal+V9zTSCYn7dnBzOmBmX2
-         fL9A==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zgvLJhYOr+PdhygW9BBz/REoCc3gRB9wUu9h2ab8rY0=;
+        b=b6S3ScA29oq0IB3lT5VcphEODUY/ebfUNu4RlOFdPT7vLVJpe4J1StpBrdFnCXH9ea
+         ZKyUpfegipRPrrKjCbiePfPS9SRuCIztcM+Js1Y5i1orCnm9TbfoiZVxnaWL+mqIK4fe
+         mOMPN8EDSn9K+Mios6OgdBElTQaj18OPudlDmmlEOKLmC/tlOAaHJvDQruEwAdJhcPqP
+         eCa+HlxZ1vJ+JAB1ujaYcVUIFXG8jqPcAHaA3EgRwh/QYGHCa6U/jShrfBh6X+sV1yhR
+         cqZPF5M8k+GEXiRiZR1Tg4+udWZg0/Yg+EEx9ZdBKtgRymrs7Qymir/2WuWX49JU2QPo
+         L98A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=nDQQccSHhJfL7vRd2Ya4dHqYi0017dX75meuR3WGMbw=;
-        b=Ic0hQRMiA2KvgFA6W1dlwqvdphl+nLA6zyEWp2jovGPfZtG9fJ75JUoubq6ThBVqme
-         Mhuwxu9yxi521Pefu72sUNFB/MIexxwmIHGvDi/SBWgxJgTuKwWHF7/OnflTIREHUKnY
-         n36eDeLAb6i4WU/ZnoXZDVXODUXhL1ASlTf4mBsKlldL38qTWBspaZHu42P3OJeHlX0Z
-         fLn62QDxJzfJYcQY6l08xpX07FhoKiF8B+u15eMC3D9PX3rIM3a7q8MSnMZ0wRSdaYMe
-         F2Oz397ihzxvjO/HTzN6w5deiqDDt43Lx1NSRDBTIINlmsDcS5mxD4b+Bff6G4W5+UHt
-         MlaQ==
-X-Gm-Message-State: APjAAAUK05E+aqOEaCNQtb9xFN5UEAY+9GvPDTq8M9icENyEwFJyanPa
-        5K6StFpiiNRXvszHhVkYNCiYKg==
-X-Google-Smtp-Source: APXvYqyPqa6XTb9KKoMaHreHNMrYQp9C47IfASP6ga2dQK7Xw/sFxq4blMu2qX8HwsgcDkAMDyAHtw==
-X-Received: by 2002:adf:f452:: with SMTP id f18mr2290517wrp.264.1573123594583;
-        Thu, 07 Nov 2019 02:46:34 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id a6sm1416495wmj.1.2019.11.07.02.46.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 02:46:34 -0800 (PST)
-Date:   Thu, 7 Nov 2019 11:46:33 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Wei Yongjun <weiyongjun1@huawei.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] mlxsw: spectrum: Fix error return code in
- mlxsw_sp_port_module_info_init()
-Message-ID: <20191107104633.GD2200@nanopsycho>
-References: <20191106145231.39128-1-weiyongjun1@huawei.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zgvLJhYOr+PdhygW9BBz/REoCc3gRB9wUu9h2ab8rY0=;
+        b=BL7wvwqB0WPSFqg1wsHz4KrJiJViWjU10uGE5SIXGamOC6kuXbncWEra8X1Xi8Gns1
+         oSdS6g5zuOgrNVhXZ4c5yJxnBmLmi7reiPhCx6qJlkFkKSyNAe21/hiPp7+7XAjET9ze
+         CGvwdPkYBmd0y8MYZzyzyvHG8aWphfDa1pMINf4QYe082O8NQdMsDmmpGcmSIVtGiD6Q
+         5QUQp7tjBVBZ6a7gh0s2jar/ua1gs5etzImXdTJJSIrBdEdUSJp3YyWYzimlrTDldYnr
+         OSISpTDsnlX/u2yhfR+Op5RJe5JoX3/PrZxfMp4BDXcV568GsjqhbDoWV6PQAXb94jkf
+         3vXA==
+X-Gm-Message-State: APjAAAU9ULSBqPCFR5N7ae4vsBtTsMT1j83p9KPbAURo2PKlVx3eiWbT
+        x/FxBnh0eCojqB16zLf7wTMdAwVIq4suxQK54Yc=
+X-Google-Smtp-Source: APXvYqyjODeoIHukGiT24dwBy+QOgMsaQg1DlfniVha41VJwbw1GvLffEJExJNv9v7FQHgg6R0j3jWpPooLLiIpKr4c=
+X-Received: by 2002:adf:9dd0:: with SMTP id q16mr2151889wre.303.1573123801891;
+ Thu, 07 Nov 2019 02:50:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191106145231.39128-1-weiyongjun1@huawei.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <cover.1573030805.git.lucien.xin@gmail.com> <20191106.211459.329583246222911896.davem@davemloft.net>
+In-Reply-To: <20191106.211459.329583246222911896.davem@davemloft.net>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 7 Nov 2019 18:50:15 +0800
+Message-ID: <CADvbK_ePx7F62BR43UAFF5dmwHKJdkU6Tth06t5iirsH9_XgLg@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] lwtunnel: add ip and ip6 options setting and dumping
+To:     David Miller <davem@davemloft.net>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Jiri Benc <jbenc@redhat.com>, Thomas Graf <tgraf@suug.ch>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Nov 06, 2019 at 03:52:31PM CET, weiyongjun1@huawei.com wrote:
->Fix to return negative error code -ENOMEM from the error handling
->case instead of 0, as done elsewhere in this function.
+On Thu, Nov 7, 2019 at 1:15 PM David Miller <davem@davemloft.net> wrote:
 >
->Fixes: 4a7f970f1240 ("mlxsw: spectrum: Replace port_to_module array with array of structs")
->Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> From: Xin Long <lucien.xin@gmail.com>
+> Date: Wed,  6 Nov 2019 17:01:02 +0800
+>
+> > With this patchset, users can configure options by ip route encap
+> > for geneve, vxlan and ersapn lwtunnel, like:
+> >
+> >   # ip r a 1.1.1.0/24 encap ip id 1 geneve class 0 type 0 \
+> >     data "1212121234567890" dst 10.1.0.2 dev geneve1
+> >
+> >   # ip r a 1.1.1.0/24 encap ip id 1 vxlan gbp 456 \
+> >     dst 10.1.0.2 dev erspan1
+> >
+> >   # ip r a 1.1.1.0/24 encap ip id 1 erspan ver 1 idx 123 \
+> >     dst 10.1.0.2 dev erspan1
+> >
+> > iproute side patch is attached on the reply of this mail.
+> >
+> > Thank Simon for good advice.
+>
+> Series applied, looks good.
+>
+> Can you comment about how this code is using the deprecated nla
+> parsers for new options?
+I didn't think too much, just used what it's using in cls_flower.c and
+act_tunnel_key.c to parse GENEVE options.
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Now think about it again, nla_parse_nested() should always be used on
+new options, should I post a fix for it? since no code to access this
+from userspace yet.
