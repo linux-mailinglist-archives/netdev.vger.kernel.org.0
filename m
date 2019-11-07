@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 626D8F39A1
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 21:38:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 381BDF39A8
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 21:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726995AbfKGUiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 15:38:46 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:45036 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbfKGUip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 15:38:45 -0500
-Received: by mail-pf1-f194.google.com with SMTP id q26so3259436pfn.11
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 12:38:45 -0800 (PST)
+        id S1727023AbfKGUk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 15:40:26 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51291 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725870AbfKGUkY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 15:40:24 -0500
+Received: by mail-wm1-f66.google.com with SMTP id q70so3974508wme.1
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 12:40:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=atbXQEkEcO1HpajO+U+SyWU18BioZk9DgM4LgjPJLDE=;
-        b=mzFB2zycVG8n/Q447VPD/8axjhd/Zcv/fO5M9TlmDHqeGtlUXcE3/YuyAUz2P1uLhf
-         Oi+5KTTEU3wc03yaNbEMqiurThzOiMxIQmPjJlMpD6GYM+97+AT28SGRDw14cBXTqHo/
-         4XR9z6pjr46wiRtLf1MOeZzr5glMl4VSQVmJTPDYW9SDK2yet55Pf3hiMlFpoVqymmCS
-         x7AHCccI82mnOOiFwqxUMftIYyQ4jgQZOpKssg3bo9Czjt1JRqkbDuXnYERAwn0tmEJh
-         gdSLKxU0yAai9VMeHHPf8QUsS2zpDzgVoyUWe44TYhLYaQJlGN0V7QtN8eXYD4yAJcUo
-         dnEg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/pKH0tT7IUWPxlqReLKSDJjr+ZKqHoHFlpAU48nDsb8=;
+        b=YJruocL3WMHsSdrAyY52mp704CIZlMgZTUFDzjAsr0YlHFddlJA0cTV1nlVZRLwFHb
+         jUQfYrr/sRxB7PFJ4W08gutrX2v/Clmr3WpGEORKeKLuxqF/cVtZOoi5Mfq+Jc/5psVV
+         SSBjEKQVrwI9IptIxB6HyM5eXh9id07j8C7r8KeprTTreRrvLqAK/qRzRmIsoetJ9xKG
+         FP4C2TdMB62F4KwRRzxluS4yXYRAuFR77Xp5SAmlgh9SPA9/lrDbeT4PhAK0N9Mn4Udl
+         C4lx+IzKQiOfy+WDLgquCQEJN5AAJFuuv62ZVkLB6DnuKLCNe/wDVDtIB8hUJASWVtal
+         +1mQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=atbXQEkEcO1HpajO+U+SyWU18BioZk9DgM4LgjPJLDE=;
-        b=Q5Q+oKuR49A1rxyGJlcyJysoVBwOH2Sll9pRkam9fCyCabKIJaiK1iKOCJt44eFwzl
-         W46TQParyUub4DBfr72Ps1QqMk652aB/JH68K0VRXAtF1NAckGafvuqmIIoCz3UB72DM
-         p19XI4WO2lP9siGoov4tJIif0kfOm7iFOzBbs79NG2pExn1PiHXBTLy6UZ5hcRAot0wL
-         Flo8ShwLiedp7IOhUtVIKAlj0+3koX1tu2dbm8M/Ia+d45wBXvJmjl3AIqB8xlksvEQ+
-         s/YcAguzXMD3ZuGpRwDmMJ46mcfcbIeiQLqYG5rsl/lHyCdD1bL1lwvtcGTndKOJwzKT
-         t2UA==
-X-Gm-Message-State: APjAAAXeRH/BcFqC3k7SYj02vTC7osLplWV702DPvAY9ImNmQ1FRH7GQ
-        Ehy3b9rMGk6GOQMsj9m43jX6mA==
-X-Google-Smtp-Source: APXvYqyQS3xwwMmx8ubjVAkiyb41jzXwOXPEopHyK9U6F+fqFCyG9estARb6dABioa5y7hZBC/JQwg==
-X-Received: by 2002:a63:4506:: with SMTP id s6mr6843363pga.27.1573159124723;
-        Thu, 07 Nov 2019 12:38:44 -0800 (PST)
-Received: from cakuba.netronome.com ([65.196.126.174])
-        by smtp.gmail.com with ESMTPSA id e11sm3292613pff.104.2019.11.07.12.38.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Nov 2019 12:38:44 -0800 (PST)
-Date:   Thu, 7 Nov 2019 15:38:36 -0500
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     alex.williamson@redhat.com, davem@davemloft.net,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, saeedm@mellanox.com,
-        kwankhede@nvidia.com, leon@kernel.org, cohuck@redhat.com,
-        jiri@mellanox.com, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
-Message-ID: <20191107153836.29c09400@cakuba.netronome.com>
-In-Reply-To: <20191107160834.21087-12-parav@mellanox.com>
-References: <20191107160448.20962-1-parav@mellanox.com>
-        <20191107160834.21087-1-parav@mellanox.com>
-        <20191107160834.21087-12-parav@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/pKH0tT7IUWPxlqReLKSDJjr+ZKqHoHFlpAU48nDsb8=;
+        b=HXz8hrHNlMNWZ7uKUhGDiRR90ZJWBenm4PBout6njWwiiruH3tWfL6Crw2XHYn64PT
+         sJ1bEcDxbLT8hziAsIYv61ZBhD4cbQCRbj+J6jWqrGwb/8qNoA8bZNqMQvCPHXR6x2jT
+         igWDj1ySupC1nETWAkWLMTg1AibHGb8nqe0ojzHJU4CIcoobGGiyiqaab6n/PFfHCAfD
+         5WqthNGKMJVq20uaiQCdRSfclM9VskpHEeqqOwW9IAOPFk9B/myL89Bk9dxHQsy4OL9q
+         OvE1FVZy9Q+D8u8XzpZbgfQbC4p11kWyIMeR6NxlfGKXZ8e3uhCP+koI6LfxNhap7D27
+         UflA==
+X-Gm-Message-State: APjAAAX4Zf0kATGQVyEwmqSGZyL9P16YhqXiBTkUTRVCr7lM9vbg21Fj
+        AJjiWA7DrxTIKHG/kOmj6omovqiCxEuLa4N52jHc6w==
+X-Google-Smtp-Source: APXvYqwJSeRni4hQ3v3vC2wuYAdNlSyGM6v5AS0hn8e7JMxXC+lI4FPDSl05I/OcHMJOn0gPs4pgz+LQyi9uFGs8jEA=
+X-Received: by 2002:a1c:a9cb:: with SMTP id s194mr5148663wme.92.1573159221150;
+ Thu, 07 Nov 2019 12:40:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20191107132755.8517-1-jonas@norrbonn.se>
+In-Reply-To: <20191107132755.8517-1-jonas@norrbonn.se>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Thu, 7 Nov 2019 12:40:04 -0800
+Message-ID: <CAF2d9jjteagJGmt64mNFH-pFmGg_eM8_NNBrDtROcaVKhcNkRQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/6] Add namespace awareness to Netlink methods
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     nicolas.dichtel@6wind.com, linux-netdev <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Nov 2019 10:08:27 -0600, Parav Pandit wrote:
-> Introduce a new mdev port flavour for mdev devices.
-> PF.
-> Prepare such port's phys_port_name using unique mdev alias.
-> 
-> An example output for eswitch ports with one physical port and
-> one mdev port:
-> 
-> $ devlink port show
-> pci/0000:06:00.0/65535: type eth netdev p0 flavour physical port 0
-> pci/0000:06:00.0/32768: type eth netdev p1b0348cf880a flavour mdev alias 1b0348cf880a
+On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>
+> Changed in v3:
+> - added patch 6 for setting IPv6 address outside current namespace
+> - address checkpatch warnings
+> - address comment from Nicolas
+>
+> Changed in v2:
+> - address comment from Nicolas
+> - add accumulated ACK's
+>
+> Currently, Netlink has partial support for acting outside of the current
+> namespace.  It appears that the intention was to extend this to all the
+> methods eventually, but it hasn't been done to date.
+>
+> With this series RTM_SETLINK, RTM_NEWLINK, RTM_NEWADDR, and RTM_NEWNSID
+> are extended to respect the selection of the namespace to work in.
+>
+This is nice, is there a plan to update userspace commands using this?
 
-Surely those devices are anchored in on of the PF (or possibly VFs)
-that should be exposed here from the start.
-
-> Signed-off-by: Parav Pandit <parav@mellanox.com>
-
-> @@ -6649,6 +6678,9 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
->  		n = snprintf(name, len, "pf%uvf%u",
->  			     attrs->pci_vf.pf, attrs->pci_vf.vf);
->  		break;
-> +	case DEVLINK_PORT_FLAVOUR_MDEV:
-> +		n = snprintf(name, len, "p%s", attrs->mdev.mdev_alias);
-
-Didn't you say m$alias in the cover letter? Not p$alias?
-
-> +		break;
->  	}
->  
->  	if (n >= len)
-
+> /Jonas
+>
+> Jonas Bonn (6):
+>   rtnetlink: allow RTM_SETLINK to reference other namespaces
+>   rtnetlink: skip namespace change if already effect
+>   rtnetlink: allow RTM_NEWLINK to act upon interfaces in arbitrary
+>     namespaces
+>   net: ipv4: allow setting address on interface outside current
+>     namespace
+>   net: namespace: allow setting NSIDs outside current namespace
+>   net: ipv6: allow setting address on interface outside current
+>     namespace
+>
+>  net/core/net_namespace.c | 19 ++++++++++
+>  net/core/rtnetlink.c     | 80 ++++++++++++++++++++++++++++++++++------
+>  net/ipv4/devinet.c       | 61 ++++++++++++++++++++++--------
+>  net/ipv6/addrconf.c      | 13 +++++++
+>  4 files changed, 145 insertions(+), 28 deletions(-)
+>
+> --
+> 2.20.1
+>
