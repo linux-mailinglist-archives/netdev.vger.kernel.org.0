@@ -2,191 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B68B7F3BA2
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:42:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29345F3BC4
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:52:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728129AbfKGWmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:42:16 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55478 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727961AbfKGWmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:42:12 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7Mf9HN003108;
-        Thu, 7 Nov 2019 14:42:12 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0818;
- bh=mtBPs7eeJqZNm528OUn16Cs1CR6txqfhq9OPIa/qgv4=;
- b=rAK3hWfG+4bA7nKBoveWazLYD8o+hxeFkcA4tItZ1juuAQC1z0SQSnKZoA1LQnykvW5p
- 0nIwgeoSamT5eo5d/TEX00SZhPlMRVQ41wh9NDIA5cCBdgy04rT/otdQCC63EzDpGiMn
- 5JksuekmeXvJ7WedXqxN4ncUf/hbfw2klrmT4htNIGBZ1VPx/pLZ2WYX3ZYuQaoHw2JX
- FNvZlkrdIEsSgTCqkeaKQU1AK8E408AjDCOWicqzIeaJeFdE0NS6EGVzHhVoPsSrQalr
- SqqxuimfJrPLUOmJRQ9NDItmXQ16SBflAx6Or3eVxHQxSKGIRxNyjvWV9ItzBVQhpkZ9 SA== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2w41uwxrfp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 14:42:11 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 7 Nov
- 2019 14:42:10 -0800
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (104.47.33.53) by
- SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:42:10 -0800
+        id S1728091AbfKGWv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:51:59 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:44736 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725992AbfKGWv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:51:59 -0500
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7Moaj2031291;
+        Thu, 7 Nov 2019 14:51:44 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=AFpddRMRxBvOo3GVG9feQc/9oEjctkNTgFXNcFcaL4U=;
+ b=FdwX6jfLV9w4lmezNHgee3uke+14gKbxQ/AsxQH4kj3IyZc+pjrrJ685HHSW9soEbRC+
+ MLr2FT0KfXDokuV7gv6Z70beMhLhKRq3S2uJqkICeYHwVJ5JFIHUNoxItUg5rnoQNt9Y
+ /ox63pVW6XJ6Y0bWmQqxkWIASXraQG9FU8M= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2w41ue7xjj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 07 Nov 2019 14:51:44 -0800
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 7 Nov 2019 14:51:43 -0800
+Received: from ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 7 Nov 2019 14:51:42 -0800
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 7 Nov 2019 14:51:42 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CM/ISIC0mkEHgHmWReFbu7eCeyfNsQuWhG9H32csNF4vs0NcSXr0IYrYE4Lxhw8kMd2tW5eCETq62e4973hfvGYdS4U9ev2kXG6nrSRZY+VFOV4/KOM1Nff/LG1qtKmkmu6ot+XZICbg83ey6DL6n7tlAUpgGLwXw4E5tFHFru3/fSlyKmwyUeaL9RjLl+ZlFRnqdjoHiSDad4CMQNkvAkrk7zCuti5rrUiSxeUNS3MvLDQCeAchaWD18JGAvNM0ErqQk3hhTGLjFRSgWBqr60opaZr9dK98wIZbs/+n9PD/PvfcUOhAFZOt7xjXaNY/gjOo5xWtozBVyQZRFJZWrA==
+ b=PHaxlf+SQKfEFyAvsMYajB1Rv6FH3okIPVs5dq3zvTRG6t3Yhu0sKTY1pvhO/8JLd8qV6Y2rkFB65hKpxRPR/3qOSuvGr/de8gdK816qg5UykaMe1ynYbFCxd/eLPMkl6oSomze+tU/SOzYrYrlI5UUS3Td/sf2yUfW1iL/qel9i96B+ucmYxSnvGG/Vlh3xhQJm7Bl3kmyKB5a79h1gkQbxQN95dr/sKfst2ndubZH9CDDrndLENAE8iaJ4OoVV9Z3WiQ1eKHjZMschJRhQ6A/Jk9NY2fv5TZa4NDvda9kTJ3Ia8V1euOIbzmPaskTS8FDQDhGxVZuo5tYOqjpP1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mtBPs7eeJqZNm528OUn16Cs1CR6txqfhq9OPIa/qgv4=;
- b=P1UfGxraoDLPZYtv3o7k9cdDjanO/P1ktUVYRPebiGnC8XmM6QtoxYCCd6QmDpx/greaETCuEiWQKWNHk05hysyqZgHPd9/TEUo1NmxtWTGGph9GZ5D888+VjAeBt3k+JlgULWo8n11iTZo6sbVrbK7Vm4jUuBJKKibw1q83JOi2Aaqsbl9NBO6u7V4aALg5VxaMFUufbdMvgi+PDkc65XtY66bjH7apFNNkKs6pOpGPdDANba982kJQvLCScOYEY+ATwsyjIvJvzciXn5uov1n6Jl5xSwrudSF/Jwhn0pKgEwNF6bb19VZzLK11MUIAn7kSzkd8J+W5jvE6Z7lqCA==
+ bh=AFpddRMRxBvOo3GVG9feQc/9oEjctkNTgFXNcFcaL4U=;
+ b=bTjf3Pt2alg0Kw984MxwLuPWafKXm6sTQUcJeQ3Po9GzcWMcBzracw4GjUHIw9Bp3fL0coGA5FxgMot/M94fh8D+o82n57EKxT33188MoBzKzRv/JlIMDFM4S+8Z8TJefxRHqiOHdvTQOuwDp6xmrTsb7Ojq05XA5jdD0lpd6Fn2oudVWRWBqPNGtXXFcDRFXfJd0dkjV9lEoBg6XS36IQpr2gbIBaIEAcyXcSykLUujr+mL2Hnkn+t19gRtbvDU6lx6b9ZtWH6gkVZNNULevDHwAkol9TEiKSoGZW3Ar0Jkw8+zPpeNKsek1LjtuqX7GQqfKukDwau3SZmu/0r2bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mtBPs7eeJqZNm528OUn16Cs1CR6txqfhq9OPIa/qgv4=;
- b=PI5du7K5WUElA7dLEwd7lzODfCTjug2fhzldBH07fDa8kZyXbpC8kdDYQPtRnizGz+mR0ovxHXYtHMWFb09CHH3CaRdh6SRIHTrOAs8aSPrkbIJxUzA6F561fCCWMpPqpcECdA6pVi0n2Q1XN7N04AnXgxQKOZWtu0JG54Q3YPc=
-Received: from DM5PR18MB1642.namprd18.prod.outlook.com (10.175.224.8) by
- DM5PR18MB2295.namprd18.prod.outlook.com (52.132.142.28) with Microsoft SMTP
+ bh=AFpddRMRxBvOo3GVG9feQc/9oEjctkNTgFXNcFcaL4U=;
+ b=BxBCM5asMLBJhF9HddzQDGSdEfXIDs/5/Hvg5X9O6hG6L9UXGMdJjbt68cebVqLm6JKPuZDLcs9hXXnVTH6J7LTo2cH0+eW/ImWOXp/kR4IPY/tBKgzjpc4HeyvkULTUmUhQl0wFZsCY4t6VHGOYJ/YJ6YK9+YMXdlxVFGVmS5M=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1485.namprd15.prod.outlook.com (10.173.234.151) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Thu, 7 Nov 2019 22:42:08 +0000
-Received: from DM5PR18MB1642.namprd18.prod.outlook.com
- ([fe80::d89:706b:cda0:5c15]) by DM5PR18MB1642.namprd18.prod.outlook.com
- ([fe80::d89:706b:cda0:5c15%10]) with mapi id 15.20.2430.020; Thu, 7 Nov 2019
- 22:42:08 +0000
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH v2 net-next 12/12] net: atlantic: change email domains to
- Marvell
-Thread-Topic: [PATCH v2 net-next 12/12] net: atlantic: change email domains to
- Marvell
-Thread-Index: AQHVlbyWEtuqkwdtYE6Bo/srbNMr9A==
-Date:   Thu, 7 Nov 2019 22:42:08 +0000
-Message-ID: <34aeaf6826bdba7c5a47e27a6aee15cba661bda0.1573158382.git.irusskikh@marvell.com>
-References: <cover.1573158381.git.irusskikh@marvell.com>
-In-Reply-To: <cover.1573158381.git.irusskikh@marvell.com>
+ 15.20.2430.22; Thu, 7 Nov 2019 22:51:41 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Thu, 7 Nov 2019
+ 22:51:41 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 04/17] libbpf: Add support to attach to
+ fentry/fexit tracing progs
+Thread-Topic: [PATCH v2 bpf-next 04/17] libbpf: Add support to attach to
+ fentry/fexit tracing progs
+Thread-Index: AQHVlS7jYVIzh19QiEmCQVoPVUOiDaeAUXgA
+Date:   Thu, 7 Nov 2019 22:51:41 +0000
+Message-ID: <693CECA2-5588-43AD-9AC9-CF5AF30C4589@fb.com>
+References: <20191107054644.1285697-1-ast@kernel.org>
+ <20191107054644.1285697-5-ast@kernel.org>
+In-Reply-To: <20191107054644.1285697-5-ast@kernel.org>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR2PR09CA0011.eurprd09.prod.outlook.com
- (2603:10a6:101:16::23) To DM5PR18MB1642.namprd18.prod.outlook.com
- (2603:10b6:3:14c::8)
-x-mailer: git-send-email 2.17.1
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [95.79.108.179]
+x-mailer: Apple Mail (2.3601.0.10)
+x-originating-ip: [2620:10d:c090:200::1:11cf]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9437e3f1-1645-4eb3-5041-08d763d3b87f
-x-ms-traffictypediagnostic: DM5PR18MB2295:
+x-ms-office365-filtering-correlation-id: e0404093-58c3-4e42-acb2-08d763d50e1f
+x-ms-traffictypediagnostic: MWHPR15MB1485:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB22950136EA7BAEA8402558E6B7780@DM5PR18MB2295.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-microsoft-antispam-prvs: <MWHPR15MB14858F584249596B15EB9266B3780@MWHPR15MB1485.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1186;
 x-forefront-prvs: 0214EB3F68
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(1496009)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(189003)(199004)(64756008)(76176011)(7736002)(99286004)(316002)(66066001)(54906003)(2351001)(52116002)(5640700003)(2501003)(8676002)(25786009)(118296001)(8936002)(305945005)(81166006)(81156014)(1730700003)(6486002)(478600001)(71200400001)(71190400001)(6436002)(50226002)(6916009)(66476007)(6116002)(6306002)(6512007)(14454004)(2616005)(476003)(256004)(486006)(186003)(3846002)(102836004)(11346002)(107886003)(36756003)(66946007)(26005)(2906002)(66446008)(86362001)(66556008)(4326008)(386003)(6506007)(5660300002)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2295;H:DM5PR18MB1642.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: marvell.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(376002)(346002)(136003)(39860400002)(366004)(199004)(189003)(33656002)(229853002)(305945005)(86362001)(36756003)(8936002)(4744005)(4326008)(5660300002)(71200400001)(8676002)(76116006)(54906003)(6116002)(14454004)(66946007)(71190400001)(66556008)(66476007)(316002)(64756008)(66446008)(50226002)(81156014)(46003)(5024004)(6486002)(186003)(446003)(256004)(6436002)(99286004)(6916009)(486006)(81166006)(25786009)(6246003)(11346002)(2616005)(476003)(2906002)(6506007)(53546011)(7736002)(102836004)(6512007)(478600001)(76176011);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1485;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JVmMm/nO6hnWVEpBPnbyIO5L2Rgqr8IQ/sJ+bXh4JFexxd7xE1WJ5zTOW8npQlRxUnqoCVTH9ZsGJdgguqWezLWs5LSuNSaiEaMp12sYrDU9TzTV+w5RbA/Y6H9fTX2JDcYs9Pd6IPSAARqysqoEBTp+Q9AmLS4wpeEU4ga3S800lKQPKx33APVBS6e0W5ooJ1t3/d9cJMRMr200BJHJfO722JnDVSjwXR/U4fhE1/+bMVhnRswQ905H9N9fQejOS3BIJbEEh2rG1AHb8bazmQOBu/rok+UCCJwLa2zHRtJV1urXh+aJfBYgBWKhkhmLW91K2WGzWQ68LYqfHhzIcSpAqFTbbT0DdeQG6Uz8g2kY0FjkNSqlhBKDFGE6N0/6vAh8jMYWxu93QaEBuZwUMqJY4bWbwi9bmn5UHgFrhiMFA3URBpVjs1jnX2NuVLdt
-Content-Type: text/plain; charset="iso-8859-1"
+x-microsoft-antispam-message-info: cjwO0taubwlh6AWwegoJLUAHa+IQzoempPrOc/PFF6dS7PtdWJWvhWPshd+pIpaGh6ozYMBO4zTbLaZFwmkCr2s6Q1hRdCIee/yHf1RjAANN/qY5TrSxYvsf1bu9r/pnPRB+C5cT3oDe8q3b6GW84i9sYNLlKCbOXhDhaO2o6l9/tPeS+YzGzktaYqsnwHU6Lkx42yGxpmC91o5GibIdaAWOg3L+ckHwQBMhHYFWc5STp4s47kGLg1wufV4P8czbJR7Gsky/gXXjwcVHF2zUgd1h+o9/8mkvN80QBRwNdJopnFVxCF2I39GlLnJt3rEz9ziMdTqwU9B9b9cy5WQN7R0o4jnWWArrVaUYP8tRvVZ0Oz92Vh289tl5dT30JqQsy8fwRuDbNs2mhGwMJLxcYG5Xl7yMk8FqpBmMmlgrracTR2GxE9FVI1w7AeUE20R2
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <828F2382CCC2FB459CD720F15E6BAC72@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9437e3f1-1645-4eb3-5041-08d763d3b87f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:42:08.3513
+X-MS-Exchange-CrossTenant-Network-Message-Id: e0404093-58c3-4e42-acb2-08d763d50e1f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:51:41.0745
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /2AmKb51uyQPnhLfDhS6oIlTfOz4IeDAnEfP4+sS8RU5lM54vfiEFM5JEdrFHTCFyZTQCLU+eXqbEcTcroc9hQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB2295
-X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-userprincipalname: Fc6/uby6mE0rVLQNBEXihpJ97VDLzlqdYgLzIjOSjdj9n5bV1Xb1kE4jUHkVeUSxaEgKERZ/TVY1afv205amqw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1485
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-07_07:2019-11-07,2019-11-07 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ clxscore=1015 malwarescore=0 mlxlogscore=908 suspectscore=0 adultscore=0
+ mlxscore=0 bulkscore=0 phishscore=0 priorityscore=1501 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911070209
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aquantia is now part of Marvell, eventually we'll cease standalone
-aquantia.com domain. Thus, change the maintainers file and some other
-references to @marvell.com domain
 
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- .../networking/device_drivers/aquantia/atlantic.txt        | 6 +++---
- MAINTAINERS                                                | 4 ++--
- drivers/net/ethernet/aquantia/atlantic/Makefile            | 7 -------
- 3 files changed, 5 insertions(+), 12 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/aquantia/atlantic.txt =
-b/Documentation/networking/device_drivers/aquantia/atlantic.txt
-index d614250e37d5..47696389db1a 100644
---- a/Documentation/networking/device_drivers/aquantia/atlantic.txt
-+++ b/Documentation/networking/device_drivers/aquantia/atlantic.txt
-@@ -1,5 +1,5 @@
--aQuantia AQtion Driver for the aQuantia Multi-Gigabit PCI Express Family o=
-f
--Ethernet Adapters
-+Marvell(Aquantia) AQtion Driver for the aQuantia Multi-Gigabit PCI Express
-+Family of Ethernet Adapters
- =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D
-=20
- Contents
-@@ -466,7 +466,7 @@ Support
-=20
- If an issue is identified with the released source code on the supported
- kernel with a supported adapter, email the specific information related
--to the issue to support@aquantia.com
-+to the issue to aqn_support@marvell.com
-=20
- License
- =3D=3D=3D=3D=3D=3D=3D
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7fc074632eac..d2e5286df044 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1182,10 +1182,10 @@ S:	Maintained
- F:	drivers/media/i2c/aptina-pll.*
-=20
- AQUANTIA ETHERNET DRIVER (atlantic)
--M:	Igor Russkikh <igor.russkikh@aquantia.com>
-+M:	Igor Russkikh <irusskikh@marvell.com>
- L:	netdev@vger.kernel.org
- S:	Supported
--W:	http://www.aquantia.com
-+W:	https://www.marvell.com/
- Q:	http://patchwork.ozlabs.org/project/netdev/list/
- F:	drivers/net/ethernet/aquantia/atlantic/
- F:	Documentation/networking/device_drivers/aquantia/atlantic.txt
-diff --git a/drivers/net/ethernet/aquantia/atlantic/Makefile b/drivers/net/=
-ethernet/aquantia/atlantic/Makefile
-index 0020726db204..6e0a6e234483 100644
---- a/drivers/net/ethernet/aquantia/atlantic/Makefile
-+++ b/drivers/net/ethernet/aquantia/atlantic/Makefile
-@@ -4,15 +4,8 @@
- # aQuantia Ethernet Controller AQtion Linux Driver
- # Copyright(c) 2014-2017 aQuantia Corporation.
- #
--# Contact Information: <rdc-drv@aquantia.com>
--# aQuantia Corporation, 105 E. Tasman Dr. San Jose, CA 95134, USA
--#
- ##########################################################################=
-######
-=20
--#
--# Makefile for the AQtion(tm) Ethernet driver
--#
--
- obj-$(CONFIG_AQTION) +=3D atlantic.o
-=20
- atlantic-objs :=3D aq_main.o \
---=20
-2.17.1
+> On Nov 6, 2019, at 9:46 PM, Alexei Starovoitov <ast@kernel.org> wrote:
+>=20
+> Teach libbpf to recognize tracing programs types and attach them to
+> fentry/fexit.
+>=20
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
+Acked-by: Song Liu <songliubraving@fb.com>
+
+With nit below:
+
+> ---
+> tools/include/uapi/linux/bpf.h |  2 ++
+> tools/lib/bpf/libbpf.c         | 61 +++++++++++++++++++++++++++++-----
+> tools/lib/bpf/libbpf.h         |  5 +++
+> tools/lib/bpf/libbpf.map       |  2 ++
+> 4 files changed, 61 insertions(+), 9 deletions(-)
+>=20
+
+[...]
+
+>=20
+> /* Accessors of bpf_program */
+> struct bpf_program;
+> @@ -248,6 +251,8 @@ LIBBPF_API struct bpf_link *
+> bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
+> 				   const char *tp_name);
+>=20
+> +LIBBPF_API struct bpf_link *
+> +bpf_program__attach_trace(struct bpf_program *prog);
+> struct bpf_insn;
+
+attach_trace is not very clear. I guess we cannot call it=20
+attach_ftrace? Maybe we call it attach_fentry and attach_fexit
+(two names pointing to same function)?=20
