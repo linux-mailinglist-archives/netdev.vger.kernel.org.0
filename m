@@ -2,105 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE8EAF3375
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:36:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A2B3F336F
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 16:36:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387421AbfKGPgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 10:36:50 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47887 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727606AbfKGPgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:36:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573141008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FAhytQLph68txo2Lut8xXgNzL31NY3OX1jJJVRGMRL8=;
-        b=iNzmf3Uv9c0xAm8X2aqzbpwgTxxbBGiKLwxAK11sfWhCYD6Yfu2fCMtsWaKmDIhJLYiE6A
-        jDZ/AdJlqdWTChLXrmwlROq7luZwTiB7t6uPZ3M6wqGfWR2UNvX8HoVVfdyp14dFWubsTK
-        mWa9tuuOgTgtk4FCfLLMH6pgjlYXJj4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-296-lwzusoTTONmDNFvxeSwQlg-1; Thu, 07 Nov 2019 10:36:45 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A1925107ACC3;
-        Thu,  7 Nov 2019 15:36:41 +0000 (UTC)
-Received: from gondolin (ovpn-117-222.ams2.redhat.com [10.36.117.222])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 927595DA76;
-        Thu,  7 Nov 2019 15:36:09 +0000 (UTC)
-Date:   Thu, 7 Nov 2019 16:36:06 +0100
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        alex.williamson@redhat.com, mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, haotian.wang@sifive.com,
-        zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        farman@linux.ibm.com, pasic@linux.ibm.com, sebott@linux.ibm.com,
-        oberpar@linux.ibm.com, heiko.carstens@de.ibm.com,
-        gor@linux.ibm.com, borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org
-Subject: Re: [PATCH V11 3/6] mdev: introduce device specific ops
-Message-ID: <20191107163606.293a4f62.cohuck@redhat.com>
-In-Reply-To: <20191107151109.23261-4-jasowang@redhat.com>
-References: <20191107151109.23261-1-jasowang@redhat.com>
-        <20191107151109.23261-4-jasowang@redhat.com>
-Organization: Red Hat GmbH
+        id S1729880AbfKGPgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 10:36:24 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:38725 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727020AbfKGPgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 10:36:24 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1iSjpe-0002G3-SJ; Thu, 07 Nov 2019 16:36:22 +0100
+Received: from mgr by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <mgr@pengutronix.de>)
+        id 1iSjpe-0001bi-Av; Thu, 07 Nov 2019 16:36:22 +0100
+Date:   Thu, 7 Nov 2019 16:36:22 +0100
+From:   Michael Grzeschik <mgr@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     UNGLinuxDriver@microchip.com, kernel@pengutronix.de,
+        Tristram.Ha@microchip.com
+Subject: Re: [PATCH v1 0/4] microchip: add support for ksz88x3 driver family
+Message-ID: <20191107153622.xeuim5yj2nwfaxom@pengutronix.de>
+References: <20191107110030.25199-1-m.grzeschik@pengutronix.de>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: lwzusoTTONmDNFvxeSwQlg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="nvxtsuckxihsp2hu"
+Content-Disposition: inline
+In-Reply-To: <20191107110030.25199-1-m.grzeschik@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 16:32:59 up 122 days, 21:43, 125 users,  load average: 0.25, 0.16,
+ 0.11
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mgr@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Nov 2019 23:11:06 +0800
-Jason Wang <jasowang@redhat.com> wrote:
 
-> Currently, except for the create and remove, the rest of
-> mdev_parent_ops is designed for vfio-mdev driver only and may not help
-> for kernel mdev driver. With the help of class id, this patch
-> introduces device specific callbacks inside mdev_device
-> structure. This allows different set of callback to be used by
-> vfio-mdev and virtio-mdev.
+--nvxtsuckxihsp2hu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Nov 07, 2019 at 12:00:26PM +0100, Michael Grzeschik wrote:
+> This series adds support for the ksz88x3 driver family to the=20
+> dsa based ksz drivers. For now the ksz8863 and ksz8873 are compatible.
 >=20
-> Reviewed-by: Parav Pandit <parav@mellanox.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  .../driver-api/vfio-mediated-device.rst       | 35 +++++++++----
->  MAINTAINERS                                   |  1 +
->  drivers/gpu/drm/i915/gvt/kvmgt.c              | 18 ++++---
->  drivers/s390/cio/vfio_ccw_ops.c               | 18 ++++---
->  drivers/s390/crypto/vfio_ap_ops.c             | 14 +++--
->  drivers/vfio/mdev/mdev_core.c                 | 24 ++++++++-
->  drivers/vfio/mdev/mdev_private.h              |  5 ++
->  drivers/vfio/mdev/vfio_mdev.c                 | 37 ++++++-------
->  include/linux/mdev.h                          | 43 ++++-----------
->  include/linux/mdev_vfio_ops.h                 | 52 +++++++++++++++++++
->  samples/vfio-mdev/mbochs.c                    | 20 ++++---
->  samples/vfio-mdev/mdpy.c                      | 20 ++++---
->  samples/vfio-mdev/mtty.c                      | 18 ++++---
->  13 files changed, 206 insertions(+), 99 deletions(-)
->  create mode 100644 include/linux/mdev_vfio_ops.h
+> The driver is based on the ksz8895 RFC patch from Tristam Ha:=20
+>=20
+> https://patchwork.ozlabs.org/patch/822712/
+>=20
+> And the latest version of the ksz8863.h from Microchip:
+>=20
+> https://raw.githubusercontent.com/Microchip-Ethernet/UNG8071_old_1.10/mas=
+ter/KSZ/linux-drivers/ksz8863/linux-3.14/drivers/net/ethernet/micrel/ksz886=
+3.h
 
-You dropped my R-b :(, here it is again:
+After reviewing the code with my colleague, we found out this core is
+not very different to the already mainlined ksz8795. So it will be
+easier to port the ksz8863 specific changes into that driver.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+I will give it a try.
 
+> Michael Grzeschik (4):
+>   mdio-bitbang: add SMI0 mode support
+>   net: tag: ksz: Add KSZ8863 tag code
+>   ksz: Add Microchip KSZ8863 SMI-DSA driver
+>   dt-bindings: net: dsa: document additional Microchip KSZ8863/8873
+>     switch
+>=20
+>  .../devicetree/bindings/net/dsa/ksz.txt       |    2 +
+>  drivers/net/dsa/microchip/Kconfig             |   16 +
+>  drivers/net/dsa/microchip/Makefile            |    2 +
+>  drivers/net/dsa/microchip/ksz8863.c           | 1038 +++++++++++++++++
+>  drivers/net/dsa/microchip/ksz8863_reg.h       |  605 ++++++++++
+>  drivers/net/dsa/microchip/ksz8863_smi.c       |  166 +++
+>  drivers/net/dsa/microchip/ksz_common.h        |    1 +
+>  drivers/net/phy/mdio-bitbang.c                |   21 +
+>  include/linux/phy.h                           |    2 +
+>  include/net/dsa.h                             |    2 +
+>  net/dsa/tag_ksz.c                             |   60 +
+>  11 files changed, 1915 insertions(+)
+>  create mode 100644 drivers/net/dsa/microchip/ksz8863.c
+>  create mode 100644 drivers/net/dsa/microchip/ksz8863_reg.h
+>  create mode 100644 drivers/net/dsa/microchip/ksz8863_smi.c
+>=20
+> --=20
+> 2.24.0.rc1
+>=20
+>=20
+>=20
+
+--=20
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+--nvxtsuckxihsp2hu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEElXvEUs6VPX6mDPT8C+njFXoeLGQFAl3EOfAACgkQC+njFXoe
+LGTA9hAAySQAao0SHrVLEMd7mg5a7AwS2X7NqKLHo3uOauBbuMRPHArBIXhE2eLt
+2TqUthbOkZGrURyR1wsDQIjMRoNb0eTQIIQRO3IoKTKnrsbjj5roCMF0da25WOxm
+CkQUz7f+TZltZ2oCKnSbR/G9OMzctXLfZHDqXYOSGyArkN8WlBAAvM+eFURtvIxu
+g0KH1N5qb/iICSJsueAxHEkEQCLkwF9iod/vHzDVa31LMm8xNSBiU34IMlp6QWrg
+Wo6xMzUWGvXF9cb20QNA4yTAIOFDkBW35ZWW9n74dThNQoMl4pNZOydsFLFR3f2/
+SxA7Z3o3fb3EtPAQ4z99b8GuiU0gH9ZWypjWdZ2xsJqjsOIr3w4kaiv/QSu+pr1i
+R3E6LnsFDlbt4j9kjddrB51fpAa4yfVCeU9BMsP4vr3pja24TV8tCMlySil0asoa
+twi3lBrNgwkikBAz4uyoVAqAPhoJ3eyiYsIjs3qkb2IDM+ln9UfVUbCDYk1hiUpm
+SLHOZDa8r5dw2Hl1M0JKfZdzYeWlaS2bjmohr4Jbj0Nx+LZGgOgjbUFM3AhyVSO+
+tZ1CSzvf3omBIl2oWEIziNEM5G6n5meKh17WNmVDAdiRL1ECTCfjKKFIHSYnv8Pn
+midPRFO/rA6ifsGfLXQJxJ3FPmhUIz8qsC43n5pyJW6MzCzenn4=
+=Vkgy
+-----END PGP SIGNATURE-----
+
+--nvxtsuckxihsp2hu--
