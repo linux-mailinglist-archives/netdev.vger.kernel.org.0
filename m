@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AD08F3453
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:09:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D495F344D
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 17:09:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389751AbfKGQJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 11:09:44 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53687 "EHLO
+        id S2389702AbfKGQJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 11:09:38 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:53692 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389701AbfKGQJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:09:37 -0500
+        with ESMTP id S2389705AbfKGQJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 11:09:38 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from parav@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 18:09:32 +0200
+        with ESMTPS (AES256-SHA encrypted); 7 Nov 2019 18:09:34 +0200
 Received: from sw-mtx-036.mtx.labs.mlnx (sw-mtx-036.mtx.labs.mlnx [10.9.150.149])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA7G8d4R007213;
-        Thu, 7 Nov 2019 18:09:29 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA7G8d4S007213;
+        Thu, 7 Nov 2019 18:09:32 +0200
 From:   Parav Pandit <parav@mellanox.com>
 To:     alex.williamson@redhat.com, davem@davemloft.net,
         kvm@vger.kernel.org, netdev@vger.kernel.org
 Cc:     saeedm@mellanox.com, kwankhede@nvidia.com, leon@kernel.org,
         cohuck@redhat.com, jiri@mellanox.com, linux-rdma@vger.kernel.org,
-        Parav Pandit <parav@mellanox.com>,
-        Vu Pham <vuhuong@mellanox.com>
-Subject: [PATCH net-next 17/19] net/mlx5: Add mdev driver to bind to mdev devices
-Date:   Thu,  7 Nov 2019 10:08:32 -0600
-Message-Id: <20191107160834.21087-17-parav@mellanox.com>
+        Parav Pandit <parav@mellanox.com>
+Subject: [PATCH net-next 18/19] Documentation: net: mlx5: Add mdev usage documentation
+Date:   Thu,  7 Nov 2019 10:08:33 -0600
+Message-Id: <20191107160834.21087-18-parav@mellanox.com>
 X-Mailer: git-send-email 2.19.2
 In-Reply-To: <20191107160834.21087-1-parav@mellanox.com>
 References: <20191107160448.20962-1-parav@mellanox.com>
@@ -37,178 +36,156 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a mdev driver to probe the mdev devices.
-
-During probing mdev device,
-(a) create SF device with its resources
-(b) load mlx5_core and interface protocol drivers on it.
-
-Similar remove sequence is followed during mdev device removal.
-
-mdev device proving/removal is done by following standard kernel bus
-device model.
-Example:
-1. Bind mdev device to mlx5_core driver.
-$ echo <mdev_id> > /sys/bus/mdev/drivers/mlx5_core/bind
-
-2. Unbind mdev device from the mlx5_core driver
-$ echo <mdev_id> /sys/bus/mdev/drivers/mlx5_core/unbind
-
-Associated netdevice and rdma device life cycle is performed with
-probe() and remove() routines as part of mdev bind/unbind sequence
-similar to PCI device life cycle.
-
-Currently mlx5 core driver validates if mdev bind request is for mlx5
-device or not. However it is desired to have class id based matching
-scheme between mdev creator driver and mdev bind driver.
-Therefore, once [1] is merged to kernel,
-a new MDEV_CLASS_ID_MLX5_NET will be introduced to match against.
-
-[1] https://patchwork.kernel.org/patch/11230357/
-
 Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
 Signed-off-by: Parav Pandit <parav@mellanox.com>
-Signed-off-by: Vu Pham <vuhuong@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/Makefile  |  2 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    | 11 +++-
- .../mellanox/mlx5/core/meddev/mdev_driver.c   | 50 +++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   | 12 +++++
- 4 files changed, 73 insertions(+), 2 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/meddev/mdev_driver.c
+ .../device_drivers/mellanox/mlx5.rst          | 122 ++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 34c2c39cc0c4..cab55495014b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -77,4 +77,4 @@ mlx5_core-$(CONFIG_MLX5_SW_STEERING) += steering/dr_domain.o steering/dr_table.o
- #
- # Mdev basic
- #
--mlx5_core-$(CONFIG_MLX5_MDEV) += meddev/sf.o meddev/mdev.o
-+mlx5_core-$(CONFIG_MLX5_MDEV) += meddev/sf.o meddev/mdev.o meddev/mdev_driver.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index eb4a68a180b0..45931f516a15 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -40,6 +40,9 @@
- #include <linux/io-mapping.h>
- #include <linux/interrupt.h>
- #include <linux/delay.h>
-+#ifdef CONFIG_MLX5_MDEV
-+#include <linux/mdev.h>
-+#endif
- #include <linux/mlx5/driver.h>
- #include <linux/mlx5/cq.h>
- #include <linux/mlx5/qp.h>
-@@ -1653,7 +1656,11 @@ static int __init init(void)
- 	mlx5e_init();
- #endif
+diff --git a/Documentation/networking/device_drivers/mellanox/mlx5.rst b/Documentation/networking/device_drivers/mellanox/mlx5.rst
+index d071c6b49e1f..cbdf0a37205b 100644
+--- a/Documentation/networking/device_drivers/mellanox/mlx5.rst
++++ b/Documentation/networking/device_drivers/mellanox/mlx5.rst
+@@ -14,6 +14,7 @@ Contents
+ - `Devlink parameters`_
+ - `Devlink health reporters`_
+ - `mlx5 tracepoints`_
++- `Mediated devices`_
  
--	return 0;
-+	err = mlx5_meddev_register_driver();
-+	if (err) {
-+		pci_unregister_driver(&mlx5_core_driver);
-+		goto err_debug;
-+	}
+ Enabling the driver and kconfig options
+ ================================================
+@@ -97,6 +98,10 @@ Enabling the driver and kconfig options
  
- err_debug:
- 	mlx5_unregister_debugfs();
-@@ -1662,6 +1669,8 @@ static int __init init(void)
+ |   Provides low-level InfiniBand/RDMA and `RoCE <https://community.mellanox.com/s/article/recommended-network-configuration-examples-for-roce-deployment>`_ support.
  
- static void __exit cleanup(void)
- {
-+	mlx5_meddev_unregister_driver();
++**CONFIG_MLX5_MDEV(y/n)** (module mlx5_core.ko)
 +
- #ifdef CONFIG_MLX5_CORE_EN
- 	mlx5e_cleanup();
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/meddev/mdev_driver.c b/drivers/net/ethernet/mellanox/mlx5/core/meddev/mdev_driver.c
-new file mode 100644
-index 000000000000..61390933ff8b
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/meddev/mdev_driver.c
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2018-19 Mellanox Technologies
++|   Provides support for Sub Functions using mediated devices.
 +
-+#include <linux/module.h>
-+#include <net/devlink.h>
-+#include <linux/mdev.h>
-+
-+#include "mlx5_core.h"
-+#include "meddev/sf.h"
-+
-+static int mlx5_meddev_probe(struct device *dev)
-+{
-+	struct mdev_device *meddev = mdev_from_dev(dev);
-+	struct mlx5_core_dev *parent_coredev;
-+	struct device *parent_dev;
-+	struct mlx5_sf *sf;
-+
-+	parent_dev = mdev_parent_dev(meddev);
-+	parent_coredev = mlx5_get_core_dev(parent_dev);
-+	if (!parent_coredev)
-+		return -ENODEV;
-+
-+	sf = mdev_get_drvdata(meddev);
-+
-+	return mlx5_sf_load(sf, dev, parent_coredev);
-+}
-+
-+static void mlx5_meddev_remove(struct device *dev)
-+{
-+	struct mdev_device *meddev = mdev_from_dev(dev);
-+	struct mlx5_sf *sf = mdev_get_drvdata(meddev);
-+
-+	mlx5_sf_unload(sf);
-+}
-+
-+static struct mdev_driver mlx5_meddev_driver = {
-+	.name	= KBUILD_MODNAME,
-+	.probe	= mlx5_meddev_probe,
-+	.remove	= mlx5_meddev_remove,
-+};
-+
-+int mlx5_meddev_register_driver(void)
-+{
-+	return mdev_register_driver(&mlx5_meddev_driver, THIS_MODULE);
-+}
-+
-+void mlx5_meddev_unregister_driver(void)
-+{
-+	mdev_unregister_driver(&mlx5_meddev_driver);
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index 5af45d61ac6f..1306984a8798 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -260,6 +260,9 @@ void mlx5_meddev_cleanup(struct mlx5_eswitch *esw);
- int mlx5_meddev_register(struct mlx5_eswitch *esw);
- void mlx5_meddev_unregister(struct mlx5_eswitch *esw);
- bool mlx5_meddev_can_and_mark_cleanup(struct mlx5_eswitch *esw);
-+
-+int mlx5_meddev_register_driver(void);
-+void mlx5_meddev_unregister_driver(void);
- #else
- static inline void mlx5_meddev_init(struct mlx5_core_dev *dev)
- {
-@@ -282,6 +285,15 @@ static inline bool mlx5_meddev_can_and_mark_cleanup(struct mlx5_eswitch *esw)
- {
- 	return true;
- }
-+
-+static inline int mlx5_meddev_register_driver(void)
-+{
-+	return 0;
-+}
-+
-+static inline void mlx5_meddev_unregister_driver(void)
-+{
-+}
- #endif
  
- struct mlx5_core_dev *mlx5_get_core_dev(const struct device *dev);
+ **External options** ( Choose if the corresponding mlx5 feature is required )
+ 
+@@ -298,3 +303,120 @@ tc and eswitch offloads tracepoints:
+     $ cat /sys/kernel/debug/tracing/trace
+     ...
+     kworker/u48:7-2221  [009] ...1  1475.387435: mlx5e_rep_neigh_update: netdev: ens1f0 MAC: 24:8a:07:9a:17:9a IPv4: 1.1.1.10 IPv6: ::ffff:1.1.1.10 neigh_connected=1
++
++Mediated devices
++================
++
++Overview
++--------
++mlx5 mediated device (mdev) enables users to create multiple netdevices
++and/or RDMA devices from single PCI function.
++
++Each mdev maps to a mlx5 sub function.
++mlx5 sub function is similar to PCI VF. However it doesn't have its own
++PCI function and MSI-X vectors.
++mlx5 sub function has several less low level device capabilities
++as compare to PCI function.
++
++Each mlx5 sub function has its own resource namespace for RDMA resources.
++
++mlx5 mdevs share common PCI resources such as PCI BAR region,
++MSI-X interrupts.
++
++Each mdev has its own window in the PCI BAR region, which is
++accessible only to that mdev and applications using it.
++
++mdevs are supported when eswitch mode of the devlink instance
++is in switchdev mode described in 'http://man7.org/linux/man-pages/man8/devlink-dev.8.html'.
++
++mdev uses mediated device subsystem 'https://www.kernel.org/doc/Documentation/vfio-mediated-device.txt' of the kernel for its life cycle.
++
++mdev is identified using a UUID defined by RFC 4122.
++
++Each created mdev has unique 12 letters alias. This alias is used to
++derive phys_port_name attribute of the corresponding representor
++netdevice.
++
++User commands examples
++----------------------
++
++- Set eswitch mode as switchdev mode::
++
++    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
++
++- Create a mdev::
++
++    Generate a UUID
++    $ UUID=$(uuidgen)
++    Create the mdev using UUID
++    $ echo $UUID > /sys/class/net/ens2f0_p0/device/mdev_supported_types/mlx5_core-local/create
++
++- Unbind a mdev from vfio_mdev driver::
++
++    $ echo $UUID > /sys/bus/mdev/drivers/vfio_mdev/unbind
++
++- Bind a mdev to mlx5_core driver::
++
++    $ echo $UUID > /sys/bus/mdev/drivers/mlx5_core/bind
++
++- View netdevice and (optionally) RDMA device in sysfs tree::
++
++    $ ls -l /sys/bus/mdev/devices/$UUID/net/
++    $ ls -l /sys/bus/mdev/devices/$UUID/infiniband/
++
++- View netdevice and (optionally) RDMA device using iproute2 tools::
++
++    $ ip link show
++    $ rdma dev show
++
++- Query maximum number of mdevs that can be created::
++
++    $ cat /sys/class/net/ens2f0_p0/device/mdev_supported_types/mlx5_core-local/max_mdevs
++
++- Query remaining number of mdevs that can be created::
++
++    $ cat /sys/class/net/ens2f0_p0/device/mdev_supported_types/mlx5_core-local/available_instances
++
++- Query an alias of the mdev::
++
++    $ cat /sys/bus/mdev/devices/$UUID/alias
++
++Security model
++--------------
++This section covers security aspects of mlx5 mediated devices at
++host level and at network level.
++
++Host side:
++- At present mlx5 mdev is meant to be used only in a host.
++It is not meant to be mapped to a VM or access by userspace application
++using VFIO framework.
++Hence, mlx5_core driver doesn't implement any of the VFIO device specific
++callback routines.
++Hence, mlx5 mediated device cannot be mapped to a VM or to a userspace
++application via VFIO framework.
++
++- At present an mlx5 mdev can be accessed by an application through
++its netdevice and/or RDMA device.
++
++- mlx5 mdev does not share PCI BAR with its parent PCI function.
++
++- All mlx5 mdevs of a given parent device share a single PCI BAR.
++However each mdev device has a small dedicated window of the PCI BAR.
++Hence, one mdev device cannot access PCI BAR or any of the resources
++of another mdev device.
++
++- Each mlx5 mdev has its own dedicated event queue through which interrupt
++notifications are delivered. Hence, one mlx5 mdev cannot enable/disable
++interrupts of other mlx5 mdev. mlx5 mdev cannot enable/disable interrupts
++of the parent PCI function.
++
++Network side:
++- By default the netdevice and the rdma device of mlx5 mdev cannot send or
++receive any packets over the network or to any other mlx5 mdev.
++
++- mlx5 mdev follows devlink eswitch and vport model of PCI SR-IOV PF and VFs.
++All traffic is dropped by default in this eswitch model.
++
++- Each mlx5 mdev has one eswitch vport representor netdevice and rdma port.
++The user must do necessary configuration through such representor to enable
++mlx5 mdev to send and/or receive packets.
 -- 
 2.19.2
 
