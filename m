@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 144D4F2C62
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:32:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77F8BF2C8C
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 11:33:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388054AbfKGKbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 05:31:22 -0500
-Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.123]:18472 "EHLO
+        id S2388622AbfKGKcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 05:32:54 -0500
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.179]:36314 "EHLO
         mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733220AbfKGKbU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:31:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1573122677;
+        with ESMTP id S1727562AbfKGKbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 05:31:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1573122675;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=S2nSl3UGAn875Uc1QbY0YZubDhpoByBVDlcWZRkGXv8=;
-        b=b1hWOFw0yfqlOvjoK0wzGX/9e4PO0MDeno6aH3kn5w8Zwm9fFZNc8vBO2p7zJDylRn
-        JfsZzrr3Fj1p/HPvj9TI7bgxAkpHSZUtQBGsW6vfDlrCjMK0jsudBIc22Zgg+RPHIETh
-        EiUdf/7li9fLrRRl9BhRAMSc29KM8rJhQR1HdhF1MptPMqRJW5XtfVG789xusdlsFaKx
-        YRsUTk8XuU+ZWHazRa9x4G6zTy0rmAqjbtpREpO3A1IteIhAtQ28jPipT2JwXapQSWjr
-        /h+phIEIZtu5r7aTRGc9jd7ArJ/fCzDcKIfHGZiZ9JldMf0oxRr6O3gUr5D8QX1P5RcO
-        Lyow==
+        bh=JUFEWkDIRP0azyEcP43GRVaRk4iFbYhlL/y4F2cv+sQ=;
+        b=NaQWgx4socECQQcMeqoNVsR7xq3KLFGpjP3lt9KaWmv1KEN5FelfxJpJNSiYpHig+r
+        g6hFmtautpWJSh5dcYVoTwdaUp2spqNSLENoE1aEYOyQtnTb/jacSf/jB3pcShnxp2SI
+        Vd1zRbowhbiC7ekCwY5BUMieEFXL+mOGDl/LC/GK8ntVZAmIiYrS84TNnSUgioO87on7
+        1Ahq+9hPpXOkeQUeH9ujqbhRpBgFkYX7G+oo6X7YIJnZkF9bH6tBiFQLTHmYchwilgHa
+        uMVoCFx+iH8tWe24BR8U4sx7kh99D/u9Pex7hyvjrwV90h18LbsDtCLJdl4cl6dY2t6u
+        WpOA==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M7PR5/L9P0"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.29.0 DYNA|AUTH)
-        with ESMTPSA id L09db3vA7AUtdS3
+        with ESMTPSA id L09db3vA7AUudS4
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Thu, 7 Nov 2019 11:30:55 +0100 (CET)
+        Thu, 7 Nov 2019 11:30:56 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
         Tony Lindgren <tony@atomide.com>,
@@ -57,9 +57,9 @@ Cc:     linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
         linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, letux-kernel@openphoenux.org,
         kernel@pyra-handheld.com, stable@vger.kernel.org
-Subject: [PATCH v3 10/12] mmc: core: fix wl1251 sdio quirks
-Date:   Thu,  7 Nov 2019 11:30:43 +0100
-Message-Id: <3474d474661b7026db8b009ae3701958e8451300.1573122644.git.hns@goldelico.com>
+Subject: [PATCH v3 11/12] net: wireless: ti: wl1251 use new SDIO_VENDOR_ID_TI_WL1251 definition
+Date:   Thu,  7 Nov 2019 11:30:44 +0100
+Message-Id: <c5cbf6b891fade1afe3b70eb33823d7170233302.1573122644.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <cover.1573122644.git.hns@goldelico.com>
 References: <cover.1573122644.git.hns@goldelico.com>
@@ -70,36 +70,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-wl1251 and wl1271 have different vendor id and device id.
-So we need to handle both with sdio quirks.
+SDIO_VENDOR_ID_TI_WL1251 is now defined in mmc/sdio_ids.h separately
+from SDIO_VENDOR_ID_TI for wl1271.
 
 Fixes: 884f38607897 ("mmc: core: move some sdio IDs out of quirks file")
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 Cc: <stable@vger.kernel.org> # 4.11.0
 ---
- drivers/mmc/core/quirks.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/wireless/ti/wl1251/sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/core/quirks.h b/drivers/mmc/core/quirks.h
-index 2d2d9ea8be4f..3dba15bccce2 100644
---- a/drivers/mmc/core/quirks.h
-+++ b/drivers/mmc/core/quirks.h
-@@ -119,7 +119,14 @@ static const struct mmc_fixup mmc_ext_csd_fixups[] = {
- 	END_FIXUP
+diff --git a/drivers/net/wireless/ti/wl1251/sdio.c b/drivers/net/wireless/ti/wl1251/sdio.c
+index c54a273713ed..42b55f3a50df 100644
+--- a/drivers/net/wireless/ti/wl1251/sdio.c
++++ b/drivers/net/wireless/ti/wl1251/sdio.c
+@@ -52,7 +52,7 @@ static void wl1251_sdio_interrupt(struct sdio_func *func)
+ }
+ 
+ static const struct sdio_device_id wl1251_devices[] = {
+-	{ SDIO_DEVICE(SDIO_VENDOR_ID_TI, SDIO_DEVICE_ID_TI_WL1251) },
++	{ SDIO_DEVICE(SDIO_VENDOR_ID_TI_WL1251, SDIO_DEVICE_ID_TI_WL1251) },
+ 	{}
  };
- 
-+
- static const struct mmc_fixup sdio_fixup_methods[] = {
-+	SDIO_FIXUP(SDIO_VENDOR_ID_TI_WL1251, SDIO_DEVICE_ID_TI_WL1251,
-+		   add_quirk, MMC_QUIRK_NONSTD_FUNC_IF),
-+
-+	SDIO_FIXUP(SDIO_VENDOR_ID_TI_WL1251, SDIO_DEVICE_ID_TI_WL1251,
-+		   add_quirk, MMC_QUIRK_DISABLE_CD),
-+
- 	SDIO_FIXUP(SDIO_VENDOR_ID_TI, SDIO_DEVICE_ID_TI_WL1271,
- 		   add_quirk, MMC_QUIRK_NONSTD_FUNC_IF),
- 
+ MODULE_DEVICE_TABLE(sdio, wl1251_devices);
 -- 
 2.23.0
 
