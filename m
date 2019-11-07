@@ -2,80 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 898F9F2676
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 05:17:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CBE9F26AC
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 05:45:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733107AbfKGEQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 23:16:57 -0500
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:33035 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733172AbfKGEQ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 23:16:57 -0500
-Received: by mail-vs1-f68.google.com with SMTP id c25so413551vsp.0
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 20:16:56 -0800 (PST)
+        id S1733124AbfKGEpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 23:45:03 -0500
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:37707 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733035AbfKGEpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 23:45:03 -0500
+Received: by mail-yb1-f193.google.com with SMTP id e13so481320ybh.4;
+        Wed, 06 Nov 2019 20:45:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LzF6jJl50QUKrzPAcp1BtDAHHTNuNTHTqpvlK0Y3t24=;
-        b=If1p9UVVHbMT3OMrRjX6TZFEEaZIstvxpkIGc+J3eG+t7D9eaOQd+EJ9TUQR5C/SDf
-         yj7ert6J1aSel7bNYUWjAQwAzESIRkq+ogInQv/yiqKAweakTEn811k3YMwfeOwOYKL7
-         ZGWYtHxByLb/c9z1Vi/rBi0wJgfh1LUnYhR34=
+        bh=iJhzGnu0ImDPOaNbn03CyYLCDVtrE0HHQ6fA/Qe4tlU=;
+        b=Qa93JpTX3X1QsPLuK3o1gH4MrOWHyTW9B43I8/jzUgnbzLddAYAwP5lg4CzJcFDGST
+         NoGVo+JDzEcR4qSrCqo5G5pj1er8MN1aN5LsRJTqi2xrRuJrp2SDhFFx3xMlAt769Myh
+         50RJCw0TAFM/7vDsAuRXRIyZmbzibyCCrpYuxy/JoYnAV914gGxA7KvNo29VNsI56pV7
+         +ismONlHUjOxnj1laC1slM3UZL863xX6x0Ki8cweNeur6BsOsRHqNBmUR9YAZoTyhmxD
+         p/CIOmv+52VD9m3IlKuxJBcT5k4zzjrG9b+M+5SRO3gw4+JQSHu+0uBuC96Uj/QCsehj
+         3+7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LzF6jJl50QUKrzPAcp1BtDAHHTNuNTHTqpvlK0Y3t24=;
-        b=KJMMoxJ+kHAGX+tvI16ggIZAapcK8ymS4mJt5Fa25QMzb2ma38VB/Mi4WVdHyoV5wv
-         fpZ2JIDeHqAfnshGKQl7PxrpQqo9dDSiXfjZmOY+uMZYhAbLuM+MFA4VI0ijQUghT73l
-         C5kAKwRVFkhcOw0GK515mRjipzd/hqsrLZLj7ZjJJ9i87ub4Iko5wQyzvfGKjuxEO5na
-         ZypoMXnCh7gxD/PSJo/7qC1yiKI6CjDCmyrNoxlcewmwaufTf/MECyxBUdi1AsBZZcKu
-         P664vpdSqW0Sq+T0QNsqFJqeWwdosgByOQIld/fHRfwXQRQNJgYFcVsOHJDkCx5GzHik
-         /Qwg==
-X-Gm-Message-State: APjAAAWIDWusI9k7sDwk6StLL4vtxevoZnDRkhjbbKXZKC3bTC2NRZlg
-        gqFKL6HbPUAEaI1BeRw+zGMdGfQ8dr+X5u8WcD1lfZqYp2E=
-X-Google-Smtp-Source: APXvYqyWoK9jREMyy8vyY43cMb0kasmyVW+I0hWsxZz0YGbqht5M4oAStGMyGw23UCirgUqEvwgbjD/YfpkA627rwok=
-X-Received: by 2002:a67:edce:: with SMTP id e14mr1297463vsp.182.1573100216052;
- Wed, 06 Nov 2019 20:16:56 -0800 (PST)
+        bh=iJhzGnu0ImDPOaNbn03CyYLCDVtrE0HHQ6fA/Qe4tlU=;
+        b=TH/Ab7gbnxrzh30Kl38OhbKZJGqcjeSYnQqQal3CtTJqe2RX7sLFW8Mlcj2G9RU9bp
+         Hi43b5e7/FOTfxu4TOoaDOjg+Uwsf3p9s6FZUGh2igAf/3pt70hk/RoXKx698FQPWa8P
+         pYMgaWzK3XsxLuOFjtnCrUHjvpbf6gAMdptu9X4Hkz00rqnLgXQVmC5BhbRVocr7ckVX
+         ijKrM4l/436nNB2M63GQPndSefx+xKlST4v5eEWiKjVXq3HzI1MGTJdba0JoihWbtJ9T
+         zlqH8sKBhmTDLssqz8NV8xOHVHPGHPQtV7UtQx0w85qiURGivYrswBIo+xRWiVxvnetg
+         ySMg==
+X-Gm-Message-State: APjAAAUNPw5CpvUMh2ZcKVCM8JjLEso1y/dKYWmYg0CMWE6sWYM6FAZ6
+        5qd3AYjR4BbSSEIoQjj1kA6t3nTt4UxRj2QnpQ==
+X-Google-Smtp-Source: APXvYqx3llFeZAmPtYMN67UeE1PwxeheJx4YWooNG3jJdjHYk2tPRDW7WxUaoinbDonEYcPu9I5aERjhH+u6hPTnDlE=
+X-Received: by 2002:a25:145:: with SMTP id 66mr1559693ybb.180.1573101901916;
+ Wed, 06 Nov 2019 20:45:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20191101054035.42101-1-ikjn@chromium.org> <87y2ws3lvh.fsf@kamboji.qca.qualcomm.com>
-In-Reply-To: <87y2ws3lvh.fsf@kamboji.qca.qualcomm.com>
-From:   Ikjoon Jang <ikjn@chromium.org>
-Date:   Thu, 7 Nov 2019 12:16:45 +0800
-Message-ID: <CAATdQgDhYWgHkujo9m1iUrhSu1Bt9A4C8eS82TD=W22_eaF80g@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: disable cpuidle during downloading firmware.
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     ath10k@lists.infradead.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
+References: <20191107005153.31541-1-danieltimlee@gmail.com>
+ <20191107005153.31541-3-danieltimlee@gmail.com> <CAEf4BzZpBqPAKy1fKUQYSm3Wxez29EuBYqu_n2SayCfDt_ziUg@mail.gmail.com>
+In-Reply-To: <CAEf4BzZpBqPAKy1fKUQYSm3Wxez29EuBYqu_n2SayCfDt_ziUg@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Thu, 7 Nov 2019 13:44:48 +0900
+Message-ID: <CAEKGpzi5qz14TWm4ZSmk8zWcw_z2f9iM+dW10Tu6evJg60aa_g@mail.gmail.com>
+Subject: Re: [PATCH,bpf-next v2 2/2] samples: bpf: update map definition to
+ new syntax BTF-defined map
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 7, 2019 at 2:23 AM Kalle Valo <kvalo@codeaurora.org> wrote:
+On Thu, Nov 7, 2019 at 11:53 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Ikjoon Jang <ikjn@chromium.org> writes:
->
-> > Downloading ath10k firmware needs a large number of IOs and
-> > cpuidle's miss predictions make it worse. In the worst case,
-> > resume time can be three times longer than the average on sdio.
+> On Wed, Nov 6, 2019 at 4:52 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 > >
-> > This patch disables cpuidle during firmware downloading by
-> > applying PM_QOS_CPU_DMA_LATENCY in ath10k_download_fw().
+> > Since, the new syntax of BTF-defined map has been introduced,
+> > the syntax for using maps under samples directory are mixed up.
+> > For example, some are already using the new syntax, and some are using
+> > existing syntax by calling them as 'legacy'.
 > >
-> > Signed-off-by: Ikjoon Jang <ikjn@chromium.org>
+> > As stated at commit abd29c931459 ("libbpf: allow specifying map
+> > definitions using BTF"), the BTF-defined map has more compatablility
+> > with extending supported map definition features.
+> >
+> > The commit doesn't replace all of the map to new BTF-defined map,
+> > because some of the samples still use bpf_load instead of libbpf, which
+> > can't properly create BTF-defined map.
+> >
+> > This will only updates the samples which uses libbpf API for loading bpf
+> > program. (ex. bpf_prog_load_xattr)
+> >
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > ---
+> > Changes in v2:
+> >  - stick to __type() instead of __uint({key,value}_size) where possible
+> >
+> >  samples/bpf/sockex1_kern.c          |  12 ++--
+> >  samples/bpf/sockex2_kern.c          |  12 ++--
+> >  samples/bpf/xdp1_kern.c             |  12 ++--
+> >  samples/bpf/xdp2_kern.c             |  12 ++--
+> >  samples/bpf/xdp_adjust_tail_kern.c  |  12 ++--
+> >  samples/bpf/xdp_fwd_kern.c          |  13 ++--
+> >  samples/bpf/xdp_redirect_cpu_kern.c | 108 ++++++++++++++--------------
+> >  samples/bpf/xdp_redirect_kern.c     |  24 +++----
+> >  samples/bpf/xdp_redirect_map_kern.c |  24 +++----
+> >  samples/bpf/xdp_router_ipv4_kern.c  |  64 ++++++++---------
+> >  samples/bpf/xdp_rxq_info_kern.c     |  37 +++++-----
+> >  samples/bpf/xdp_tx_iptunnel_kern.c  |  26 +++----
+> >  12 files changed, 178 insertions(+), 178 deletions(-)
 >
-> On what hardware and firmware versions did you test this? I'll add that
-> to the commit log.
+> Heh, 1-to-1 insertions/deletions, no excuse to use old syntax ;)
 >
-> https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#guidelines
+> Thanks for completing conversion!
+>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+>
+> [...]
 
-Thank you for sharing it.
-It's QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00029
-on ARMv8 multi cluster platform.
+Thank you for your time and effort for the review.
 
->
-> --
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks,
+Daniel
