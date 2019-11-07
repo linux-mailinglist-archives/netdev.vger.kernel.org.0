@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEE2F2640
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 05:09:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC1C4F2641
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 05:10:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733166AbfKGEJj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 23:09:39 -0500
-Received: from mail-ua1-f74.google.com ([209.85.222.74]:43987 "EHLO
-        mail-ua1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733094AbfKGEJj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 23:09:39 -0500
-Received: by mail-ua1-f74.google.com with SMTP id b12so358561uan.10
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 20:09:36 -0800 (PST)
+        id S1733175AbfKGEKN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 23:10:13 -0500
+Received: from mail-qv1-f74.google.com ([209.85.219.74]:41871 "EHLO
+        mail-qv1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733170AbfKGEKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 6 Nov 2019 23:10:13 -0500
+Received: by mail-qv1-f74.google.com with SMTP id m12so68659qvv.8
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 20:10:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:message-id:mime-version:subject:from:to:cc;
-        bh=kgzvBu04LQG1dSOja/ZQ6pQBtz+Y3A6q6G8PSPj8Lh4=;
-        b=Dq+ASUM2hEUFTtNJ3EKf5VGNCrLs9hAbIsn5yK0Qy0ORAcqdFpzW3awEHVBvzp4uJ7
-         TO39gVAAE4YoShcaxCIUMEScqFJcpNwHb/A/lI9m9fpOLJMijf0bCCQrjlEfb9fl4cOx
-         OqbrXHaWJ6wrcn5qBx8y5lJu24CTNiC5f0cvmeW+/+X/53ntQvzNIteiKpxWVyus/wJS
-         KdpN0K52ePl/QiU781//WnfzfXm2I7mQWip72qUJshwr8HoNKjg/M5qiagFQKGjhQI/z
-         JlLkv4CbAh6vJzM35RstSL3Tc6GSuEn/d+4F+Ffgx6zDZUEDHHxj8q2tNJ+b5lIhVrrc
-         onEQ==
+        bh=cN/4lcAijvIZQQfWNZaiaf90DQFWhQ0mYjQsU5zLhmY=;
+        b=ArgFFJ47wmvISeAr7P8lavQZGDm2s5hVeK1GFZ3Q2FYBV916Pk34VWtz8SxMt8MBo3
+         dq8WtUXJ4qNrDiMPS4oH1sRK+SG1+YRyuXMD9kyjBVSfaGPu2Q6Wfa2oMJKE/6H9DIjL
+         XkEfqyiUt0jOtLX0zCG7I6jaZH9MfsCBfmWJ+qQqSxcu2dhUWkahK/DFo9cidXSZ7Tum
+         PKjgFz1/4beu4nw2/12zj+a75VAPZKYS8VYdMcj9LJNAt9zLuON2qr3/TytaZRYToYp5
+         kgWZc3ygy7D2ggaEmkFmSpnHd+zSQl0mAAnuE6wjK3SGdP6gkxQHTM3JjQNa5g4ACr2U
+         G0Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=kgzvBu04LQG1dSOja/ZQ6pQBtz+Y3A6q6G8PSPj8Lh4=;
-        b=gx5Q63EgCW80iRNaMW42QzDr1hG6pOML9OGv3Sf0zRkNvwOa6Gjk5Rbs1pXQo98l2L
-         pNRNRKWt7dI+vKD+ht5YOFipf/bB2sS784AUkeyKXXPg9cjT82cPNXz9RbGEwpuL52/T
-         eYzxkKRU2ugShXLgVu8aPudTb2mrI1FjRsbhNcitRAljizhGnVxQ/nzths/nFUpRm5z9
-         bolBmQxyVY4axZjsFhhpxjb+v5xH1rdqrzpdAX7386XyEOaww+QlIBayDaY99U8nNu3K
-         dOeOM5pw6omiCSMoaitSPQHsaHdcnMhRjBqJYL71U6yQ+/GF+sEgwfBXHXz6+CH4/6YV
-         d3vg==
-X-Gm-Message-State: APjAAAVCLMQarXceOQC3RoDKN4Wpz/rblCKwzRdpYcO+k+i8KZQ5vNtr
-        aa9+yW7fwEgoJMMN4LmHUekKZ6RzvKiB
-X-Google-Smtp-Source: APXvYqzQToTT9mEvMzD/T/6ywYwl8/k+utTu4ZfRo4/JP1vHdaFnz5ocEhPlbuYsdRbn0rKdQCLF9HmJPYy/
-X-Received: by 2002:a05:6122:119c:: with SMTP id x28mr1251582vkn.9.1573099775781;
- Wed, 06 Nov 2019 20:09:35 -0800 (PST)
-Date:   Wed,  6 Nov 2019 20:09:30 -0800
-Message-Id: <20191107040930.31289-1-maheshb@google.com>
+        bh=cN/4lcAijvIZQQfWNZaiaf90DQFWhQ0mYjQsU5zLhmY=;
+        b=XUu5tptIu767M945EBea5dp5P/j+k/9Q+PAEG0d3GXFMaElNCFt7YmFXIgK4gnJeyq
+         ZxvxyOGNCkJHwVC+JdVdMPb/7WHE2+m4P88nuuYl6sCyP8/R8eNkTp1PQvEShVFM8AEJ
+         E/fafE5BbgLgZu/nCsI+ZZ4+A8SOuZgAUF7966x/zXe6rmJtKx37zX+8vozA1TV1ZPAj
+         H07gGXt9Q50vrDzKjpFPTgKpS6EjnO3XdNFBRtqpcfsFX141A/ipYVfptMJphaEuPMy5
+         XPyEeMsc4liVq47btWVLKI4GPyqEEetvGBuYrtQ3u9ZXvwHKByoNTikIqxpcI5AKb06B
+         aNUQ==
+X-Gm-Message-State: APjAAAWaauj5ljmA+d51dwJHJOs0+h3I+PcH1EVQ1p+3WRz7GNjkgQlP
+        SIDUmCJAL9m6hkGjGwvE8LUat9mxosD6
+X-Google-Smtp-Source: APXvYqwu5oj2vUt85S8pQLdk8HeQYPStKWHIo9+Fb1RBf4IQeEU5DKmCOuyHuIstNKIMySV59jMdgGEJ33Oe
+X-Received: by 2002:ac8:605a:: with SMTP id k26mr1578967qtm.212.1573099811546;
+ Wed, 06 Nov 2019 20:10:11 -0800 (PST)
+Date:   Wed,  6 Nov 2019 20:10:06 -0800
+Message-Id: <20191107041006.33145-1-maheshb@google.com>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
-Subject: [PATCH v4.9-stable] net/flow_dissector: switch to siphash
+Subject: [PATCH v4.4-stable] net/flow_dissector: switch to siphash
 From:   Mahesh Bandewar <maheshb@google.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         David Miller <davem@davemloft.net>
@@ -102,20 +102,18 @@ Signed-off-by: Mahesh Bandewar <maheshb@google.com>
 ---
  include/linux/skbuff.h       |  3 ++-
  include/net/flow_dissector.h |  3 ++-
- include/net/fq.h             |  2 +-
- include/net/fq_impl.h        |  4 +--
  net/core/flow_dissector.c    | 48 +++++++++++++++---------------------
  net/sched/sch_fq_codel.c     |  6 ++---
  net/sched/sch_hhf.c          |  8 +++---
  net/sched/sch_sfb.c          | 13 +++++-----
  net/sched/sch_sfq.c          | 14 ++++++-----
- 9 files changed, 49 insertions(+), 52 deletions(-)
+ 7 files changed, 46 insertions(+), 49 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f8761774a94f..e37112ac332f 100644
+index a2f12d377d23..735ff1525f48 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -1178,7 +1178,8 @@ static inline __u32 skb_get_hash_flowi4(struct sk_buff *skb, const struct flowi4
+@@ -1073,7 +1073,8 @@ static inline __u32 skb_get_hash_flowi4(struct sk_buff *skb, const struct flowi4
  	return skb->hash;
  }
  
@@ -126,7 +124,7 @@ index f8761774a94f..e37112ac332f 100644
  static inline __u32 skb_get_hash_raw(const struct sk_buff *skb)
  {
 diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
-index d9534927d93b..1505cf7a4aaf 100644
+index 8c8548cf5888..62a462413081 100644
 --- a/include/net/flow_dissector.h
 +++ b/include/net/flow_dissector.h
 @@ -3,6 +3,7 @@
@@ -137,55 +135,20 @@ index d9534927d93b..1505cf7a4aaf 100644
  #include <uapi/linux/if_ether.h>
  
  /**
-@@ -151,7 +152,7 @@ struct flow_dissector {
+@@ -146,7 +147,7 @@ struct flow_dissector {
  struct flow_keys {
  	struct flow_dissector_key_control control;
  #define FLOW_KEYS_HASH_START_FIELD basic
 -	struct flow_dissector_key_basic basic;
 +	struct flow_dissector_key_basic basic __aligned(SIPHASH_ALIGNMENT);
  	struct flow_dissector_key_tags tags;
- 	struct flow_dissector_key_vlan vlan;
  	struct flow_dissector_key_keyid keyid;
-diff --git a/include/net/fq.h b/include/net/fq.h
-index 6d8521a30c5c..2c7687902789 100644
---- a/include/net/fq.h
-+++ b/include/net/fq.h
-@@ -70,7 +70,7 @@ struct fq {
- 	struct list_head backlogs;
- 	spinlock_t lock;
- 	u32 flows_cnt;
--	u32 perturbation;
-+	siphash_key_t	perturbation;
- 	u32 limit;
- 	u32 memory_limit;
- 	u32 memory_usage;
-diff --git a/include/net/fq_impl.h b/include/net/fq_impl.h
-index 4e6131cd3f43..45a0d9a006a0 100644
---- a/include/net/fq_impl.h
-+++ b/include/net/fq_impl.h
-@@ -105,7 +105,7 @@ static struct fq_flow *fq_flow_classify(struct fq *fq,
- 
- 	lockdep_assert_held(&fq->lock);
- 
--	hash = skb_get_hash_perturb(skb, fq->perturbation);
-+	hash = skb_get_hash_perturb(skb, &fq->perturbation);
- 	idx = reciprocal_scale(hash, fq->flows_cnt);
- 	flow = &fq->flows[idx];
- 
-@@ -252,7 +252,7 @@ static int fq_init(struct fq *fq, int flows_cnt)
- 	INIT_LIST_HEAD(&fq->backlogs);
- 	spin_lock_init(&fq->lock);
- 	fq->flows_cnt = max_t(u32, flows_cnt, 1);
--	fq->perturbation = prandom_u32();
-+	get_random_bytes(&fq->perturbation, sizeof(fq->perturbation));
- 	fq->quantum = 300;
- 	fq->limit = 8192;
- 	fq->memory_limit = 16 << 20; /* 16 MBytes */
+ 	struct flow_dissector_key_ports ports;
 diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index ab7c50026cae..26b0f70d2f1c 100644
+index 697c4212129a..496bfcb787e7 100644
 --- a/net/core/flow_dissector.c
 +++ b/net/core/flow_dissector.c
-@@ -563,45 +563,34 @@ bool __skb_flow_dissect(const struct sk_buff *skb,
+@@ -505,45 +505,34 @@ out_bad:
  }
  EXPORT_SYMBOL(__skb_flow_dissect);
  
@@ -240,7 +203,7 @@ index ab7c50026cae..26b0f70d2f1c 100644
  }
  
  __be32 flow_get_u32_src(const struct flow_keys *flow)
-@@ -667,14 +656,15 @@ static inline void __flow_hash_consistentify(struct flow_keys *keys)
+@@ -609,14 +598,15 @@ static inline void __flow_hash_consistentify(struct flow_keys *keys)
  	}
  }
  
@@ -259,7 +222,7 @@ index ab7c50026cae..26b0f70d2f1c 100644
  	if (!hash)
  		hash = 1;
  
-@@ -684,12 +674,13 @@ static inline u32 __flow_hash_from_keys(struct flow_keys *keys, u32 keyval)
+@@ -626,12 +616,13 @@ static inline u32 __flow_hash_from_keys(struct flow_keys *keys, u32 keyval)
  u32 flow_hash_from_keys(struct flow_keys *keys)
  {
  	__flow_hash_secret_init();
@@ -275,7 +238,7 @@ index ab7c50026cae..26b0f70d2f1c 100644
  {
  	skb_flow_dissect_flow_keys(skb, keys,
  				   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL);
-@@ -737,7 +728,7 @@ u32 __skb_get_hash_symmetric(struct sk_buff *skb)
+@@ -679,7 +670,7 @@ u32 __skb_get_hash_symmetric(struct sk_buff *skb)
  			   NULL, 0, 0, 0,
  			   FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL);
  
@@ -284,14 +247,13 @@ index ab7c50026cae..26b0f70d2f1c 100644
  }
  EXPORT_SYMBOL_GPL(__skb_get_hash_symmetric);
  
-@@ -757,13 +748,14 @@ void __skb_get_hash(struct sk_buff *skb)
+@@ -698,12 +689,13 @@ void __skb_get_hash(struct sk_buff *skb)
  
  	__flow_hash_secret_init();
  
--	hash = ___skb_get_hash(skb, &keys, hashrnd);
-+	hash = ___skb_get_hash(skb, &keys, &hashrnd);
- 
- 	__skb_set_sw_hash(skb, hash, flow_keys_have_l4(&keys));
+-	__skb_set_sw_hash(skb, ___skb_get_hash(skb, &keys, hashrnd),
++	__skb_set_sw_hash(skb, ___skb_get_hash(skb, &keys, &hashrnd),
+ 			  flow_keys_have_l4(&keys));
  }
  EXPORT_SYMBOL(__skb_get_hash);
  
@@ -302,19 +264,19 @@ index ab7c50026cae..26b0f70d2f1c 100644
  	struct flow_keys keys;
  
 diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index a5ea0e9b6be4..29b7465c9d8a 100644
+index d3fc8f9dd3d4..1800f7977595 100644
 --- a/net/sched/sch_fq_codel.c
 +++ b/net/sched/sch_fq_codel.c
-@@ -57,7 +57,7 @@ struct fq_codel_sched_data {
+@@ -55,7 +55,7 @@ struct fq_codel_sched_data {
  	struct fq_codel_flow *flows;	/* Flows table [flows_cnt] */
  	u32		*backlogs;	/* backlog table [flows_cnt] */
  	u32		flows_cnt;	/* number of flows */
 -	u32		perturbation;	/* hash perturbation */
 +	siphash_key_t	perturbation;	/* hash perturbation */
  	u32		quantum;	/* psched_mtu(qdisc_dev(sch)); */
- 	u32		drop_batch_size;
- 	u32		memory_limit;
-@@ -75,7 +75,7 @@ struct fq_codel_sched_data {
+ 	struct codel_params cparams;
+ 	struct codel_stats cstats;
+@@ -69,7 +69,7 @@ struct fq_codel_sched_data {
  static unsigned int fq_codel_hash(const struct fq_codel_sched_data *q,
  				  struct sk_buff *skb)
  {
@@ -323,17 +285,17 @@ index a5ea0e9b6be4..29b7465c9d8a 100644
  
  	return reciprocal_scale(hash, q->flows_cnt);
  }
-@@ -482,7 +482,7 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt)
- 	q->memory_limit = 32 << 20; /* 32 MBytes */
- 	q->drop_batch_size = 64;
+@@ -420,7 +420,7 @@ static int fq_codel_init(struct Qdisc *sch, struct nlattr *opt)
+ 	sch->limit = 10*1024;
+ 	q->flows_cnt = 1024;
  	q->quantum = psched_mtu(qdisc_dev(sch));
 -	q->perturbation = prandom_u32();
 +	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
  	INIT_LIST_HEAD(&q->new_flows);
  	INIT_LIST_HEAD(&q->old_flows);
- 	codel_params_init(&q->cparams);
+ 	codel_params_init(&q->cparams, sch);
 diff --git a/net/sched/sch_hhf.c b/net/sched/sch_hhf.c
-index fe32239253a6..1367fe94d630 100644
+index dc68dccc6b0c..40ec5b280eb6 100644
 --- a/net/sched/sch_hhf.c
 +++ b/net/sched/sch_hhf.c
 @@ -4,11 +4,11 @@
@@ -367,7 +329,7 @@ index fe32239253a6..1367fe94d630 100644
  
  	/* Check if this packet belongs to an already established HH flow. */
  	flow_pos = hash & HHF_BIT_MASK;
-@@ -593,7 +593,7 @@ static int hhf_init(struct Qdisc *sch, struct nlattr *opt)
+@@ -602,7 +602,7 @@ static int hhf_init(struct Qdisc *sch, struct nlattr *opt)
  
  	sch->limit = 1000;
  	q->quantum = psched_mtu(qdisc_dev(sch));
@@ -377,7 +339,7 @@ index fe32239253a6..1367fe94d630 100644
  	INIT_LIST_HEAD(&q->old_buckets);
  
 diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 20a350bd1b1d..bc176bd48c02 100644
+index c69611640fa5..10c0b184cdbe 100644
 --- a/net/sched/sch_sfb.c
 +++ b/net/sched/sch_sfb.c
 @@ -22,7 +22,7 @@
@@ -408,7 +370,7 @@ index 20a350bd1b1d..bc176bd48c02 100644
  }
  
  static void sfb_swap_slot(struct sfb_sched_data *q)
-@@ -314,9 +315,9 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+@@ -313,9 +314,9 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
  		/* If using external classifiers, get result and record it. */
  		if (!sfb_classify(skb, fl, &ret, &salt))
  			goto other_drop;
@@ -420,7 +382,7 @@ index 20a350bd1b1d..bc176bd48c02 100644
  	}
  
  
-@@ -352,7 +353,7 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+@@ -351,7 +352,7 @@ static int sfb_enqueue(struct sk_buff *skb, struct Qdisc *sch)
  		/* Inelastic flow */
  		if (q->double_buffering) {
  			sfbhash = skb_get_hash_perturb(skb,
@@ -430,7 +392,7 @@ index 20a350bd1b1d..bc176bd48c02 100644
  				sfbhash = 1;
  			sfb_skb_cb(skb)->hashes[slot] = sfbhash;
 diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
-index d8c2b6baaad2..a8d82cb7f073 100644
+index 8b8c084b32cd..e2e4ebc0c4c3 100644
 --- a/net/sched/sch_sfq.c
 +++ b/net/sched/sch_sfq.c
 @@ -18,7 +18,7 @@
