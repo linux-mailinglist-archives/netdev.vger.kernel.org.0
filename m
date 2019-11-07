@@ -2,350 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69BF8F3B02
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3645F3B20
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727504AbfKGWOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 17:14:45 -0500
-Received: from mga07.intel.com ([134.134.136.100]:16680 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727417AbfKGWOl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 17:14:41 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Nov 2019 14:14:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,279,1569308400"; 
-   d="scan'208";a="233420883"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga002.fm.intel.com with ESMTP; 07 Nov 2019 14:14:39 -0800
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 01/15] ice: Use ice_ena_vsi and ice_dis_vsi in DCB configuration flow
+        id S1727926AbfKGWPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 17:15:00 -0500
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:48824 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727872AbfKGWO6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:14:58 -0500
+Received: by mail-pl1-f202.google.com with SMTP id t5so2678266plz.15
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 14:14:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=GYsTOK8xYRxAzUxpL4TGFf0MCdaNxbX2unbIlv+2Rhk=;
+        b=dDOQDYZGFPLwMGpwr2hhtnIpsHI7U4swqrRNpgAChvbsTVUGuZPenhcLJdGAIc11Du
+         DVf7vUNvjhCLem50JEixRT600aTgf98lEkkLCaALXfUBeIYBf6sgHo1oSZ+2hrnRpkc6
+         EMEEi/i4dirlukS8+KCZaJqiKWTBwj4TEGn+0QA/YsNAr+POQ3RUWEiIPDxO+D8C8JZf
+         hY6QUp463dJe29T/Ae5hJYc2Pj1ESimAza8tUSUoDcSAs55MGI0ibtBwtCmud6t4P09V
+         W1TTT1MH4ITFTBziDbFKaLQIuoq92ICWKXYtDZUVdZIcSUZ7xnxYefMSp+a81J+l9ahW
+         oc0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=GYsTOK8xYRxAzUxpL4TGFf0MCdaNxbX2unbIlv+2Rhk=;
+        b=NSun83HbWXnI5BShLiUSYM4Ug8OqcyxMFLIlVRGfcm/bXWqxZT+DlgMJQmvOYoDK9C
+         hR5Cea8De8oXrkIC2iuUTtfYDnEZIDpZCQzGPy8wkwAdm9oxWqalp5t91MsYDKCDTDnV
+         i497/akJCacM/sHPevhhhSZfY3VMm+BhzQAUPmjkYpIMs6Gnfon+yYtfkeLwkvGeOZ3R
+         d/ySY8g3LzO7q8/mTawzy9mv7aq90HKhsQDGkpJmpIZZAOEiVZCWtMGjoLwNQ3IoJ0Ym
+         PnhUzmQA9jNrALiPMb5udkMyxTLmRbtGuP+MHxhV94xnk4RhxpLzFY9DDuJcvWYK/Svt
+         QLpg==
+X-Gm-Message-State: APjAAAVHIgIi3AohmXMXsPIeAQd8sB7iunXGrN4dIbFCFM+03xzIK412
+        Dizka+ZS/S2R2DRuP+zIozkB6Od3jfN1
+X-Google-Smtp-Source: APXvYqyHnBkfFWSvF0SsHBpO7tRDjCvzidF9DaLZPcJPFcMSsf6lwjqg8g/em4GcJRBz9bO384nwjQLs08WO
+X-Received: by 2002:a63:f513:: with SMTP id w19mr7443214pgh.55.1573164897568;
+ Thu, 07 Nov 2019 14:14:57 -0800 (PST)
 Date:   Thu,  7 Nov 2019 14:14:24 -0800
-Message-Id: <20191107221438.17994-2-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
-References: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191107221428.168286-1-irogers@google.com>
+Message-Id: <20191107221428.168286-7-irogers@google.com>
+Mime-Version: 1.0
+References: <20191030223448.12930-1-irogers@google.com> <20191107221428.168286-1-irogers@google.com>
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH v6 06/10] perf tools: add destructors for parse event terms
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+If parsing fails then destructors are ran to clean the up the stack.
+Rename the head union member to make the term and evlist use cases more
+distinct, this simplifies matching the correct destructor.
 
-DCB configuration flow needs to disable and enable only the PF (main)
-VSI, so use ice_ena_vsi and ice_dis_vsi. To avoid the use of ifdef to
-control the staticness of these functions, move them to ice_lib.c.
-
-Also replace the allocate and copy of old_cfg to kmemdup() in
-ice_pf_dcb_cfg().
-
-Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- drivers/net/ethernet/intel/ice/ice.h         |  4 -
- drivers/net/ethernet/intel/ice/ice_dcb_lib.c | 31 ++++++--
- drivers/net/ethernet/intel/ice/ice_lib.c     | 56 ++++++++++++++
- drivers/net/ethernet/intel/ice/ice_lib.h     |  4 +
- drivers/net/ethernet/intel/ice/ice_main.c    | 79 --------------------
- 5 files changed, 84 insertions(+), 90 deletions(-)
+ tools/perf/util/parse-events.y | 69 +++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index f552a67467aa..7da4ae9608c4 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -502,10 +502,6 @@ int ice_set_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
- int ice_get_rss(struct ice_vsi *vsi, u8 *seed, u8 *lut, u16 lut_size);
- void ice_fill_rss_lut(u8 *lut, u16 rss_table_size, u16 rss_size);
- void ice_print_link_msg(struct ice_vsi *vsi, bool isup);
--#ifdef CONFIG_DCB
--int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked);
--void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked);
--#endif /* CONFIG_DCB */
- int ice_open(struct net_device *netdev);
- int ice_stop(struct net_device *netdev);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-index 13da89e22123..baea28c712ee 100644
---- a/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_dcb_lib.c
-@@ -150,6 +150,7 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
- {
- 	struct ice_dcbx_cfg *old_cfg, *curr_cfg;
- 	struct ice_aqc_port_ets_elem buf = { 0 };
-+	struct ice_vsi *pf_vsi;
- 	int ret = 0;
- 
- 	curr_cfg = &pf->hw.port_info->local_dcbx_cfg;
-@@ -169,15 +170,23 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
- 	}
- 
- 	/* Store old config in case FW config fails */
--	old_cfg = devm_kzalloc(&pf->pdev->dev, sizeof(*old_cfg), GFP_KERNEL);
--	memcpy(old_cfg, curr_cfg, sizeof(*old_cfg));
-+	old_cfg = kmemdup(curr_cfg, sizeof(*old_cfg), GFP_KERNEL);
-+	if (!old_cfg)
-+		return -ENOMEM;
-+
-+	pf_vsi = ice_get_main_vsi(pf);
-+	if (!pf_vsi) {
-+		dev_dbg(&pf->pdev->dev, "PF VSI doesn't exist\n");
-+		ret = -EINVAL;
-+		goto free_cfg;
-+	}
- 
- 	/* avoid race conditions by holding the lock while disabling and
- 	 * re-enabling the VSI
- 	 */
- 	if (!locked)
- 		rtnl_lock();
--	ice_pf_dis_all_vsi(pf, true);
-+	ice_dis_vsi(pf_vsi, true);
- 
- 	memcpy(curr_cfg, new_cfg, sizeof(*curr_cfg));
- 	memcpy(&curr_cfg->etsrec, &curr_cfg->etscfg, sizeof(curr_cfg->etsrec));
-@@ -204,10 +213,11 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct ice_dcbx_cfg *new_cfg, bool locked)
- 	ice_pf_dcb_recfg(pf);
- 
- out:
--	ice_pf_ena_all_vsi(pf, true);
-+	ice_ena_vsi(pf_vsi, true);
- 	if (!locked)
- 		rtnl_unlock();
--	devm_kfree(&pf->pdev->dev, old_cfg);
-+free_cfg:
-+	kfree(old_cfg);
- 	return ret;
+diff --git a/tools/perf/util/parse-events.y b/tools/perf/util/parse-events.y
+index 545ab7cefc20..035edfa8d42e 100644
+--- a/tools/perf/util/parse-events.y
++++ b/tools/perf/util/parse-events.y
+@@ -12,6 +12,7 @@
+ #include <stdio.h>
+ #include <linux/compiler.h>
+ #include <linux/types.h>
++#include <linux/zalloc.h>
+ #include "pmu.h"
+ #include "evsel.h"
+ #include "parse-events.h"
+@@ -37,6 +38,25 @@ static struct list_head* alloc_list()
+ 	return list;
  }
  
-@@ -690,6 +700,7 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 	struct ice_dcbx_cfg tmp_dcbx_cfg;
- 	bool need_reconfig = false;
- 	struct ice_port_info *pi;
-+	struct ice_vsi *pf_vsi;
- 	u8 type;
- 	int ret;
- 
-@@ -761,8 +772,14 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 		clear_bit(ICE_FLAG_DCB_ENA, pf->flags);
- 	}
- 
-+	pf_vsi = ice_get_main_vsi(pf);
-+	if (!pf_vsi) {
-+		dev_dbg(&pf->pdev->dev, "PF VSI doesn't exist\n");
-+		return;
-+	}
-+
- 	rtnl_lock();
--	ice_pf_dis_all_vsi(pf, true);
-+	ice_dis_vsi(pf_vsi, true);
- 
- 	ret = ice_query_port_ets(pf->hw.port_info, &buf, sizeof(buf), NULL);
- 	if (ret) {
-@@ -774,6 +791,6 @@ ice_dcb_process_lldp_set_mib_change(struct ice_pf *pf,
- 	/* changes in configuration update VSI */
- 	ice_pf_dcb_recfg(pf);
- 
--	ice_pf_ena_all_vsi(pf, true);
-+	ice_ena_vsi(pf_vsi, true);
- 	rtnl_unlock();
- }
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-index b1e96cac5b1f..f3cfd5017e29 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-@@ -2040,6 +2040,62 @@ void ice_vsi_close(struct ice_vsi *vsi)
- 	ice_vsi_free_rx_rings(vsi);
- }
- 
-+/**
-+ * ice_ena_vsi - resume a VSI
-+ * @vsi: the VSI being resume
-+ * @locked: is the rtnl_lock already held
-+ */
-+int ice_ena_vsi(struct ice_vsi *vsi, bool locked)
++static void free_list_evsel(struct list_head* list_evsel)
 +{
-+	int err = 0;
++	struct evsel *evsel, *tmp;
 +
-+	if (!test_bit(__ICE_NEEDS_RESTART, vsi->state))
-+		return 0;
-+
-+	clear_bit(__ICE_NEEDS_RESTART, vsi->state);
-+
-+	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
-+		if (netif_running(vsi->netdev)) {
-+			if (!locked)
-+				rtnl_lock();
-+
-+			err = ice_open(vsi->netdev);
-+
-+			if (!locked)
-+				rtnl_unlock();
-+		}
++	list_for_each_entry_safe(evsel, tmp, list_evsel, core.node) {
++		list_del_init(&evsel->core.node);
++		perf_evsel__delete(evsel);
 +	}
-+
-+	return err;
++	free(list_evsel);
 +}
 +
-+/**
-+ * ice_dis_vsi - pause a VSI
-+ * @vsi: the VSI being paused
-+ * @locked: is the rtnl_lock already held
-+ */
-+void ice_dis_vsi(struct ice_vsi *vsi, bool locked)
++static void free_term(struct parse_events_term *term)
 +{
-+	if (test_bit(__ICE_DOWN, vsi->state))
-+		return;
-+
-+	set_bit(__ICE_NEEDS_RESTART, vsi->state);
-+
-+	if (vsi->type == ICE_VSI_PF && vsi->netdev) {
-+		if (netif_running(vsi->netdev)) {
-+			if (!locked)
-+				rtnl_lock();
-+
-+			ice_stop(vsi->netdev);
-+
-+			if (!locked)
-+				rtnl_unlock();
-+		} else {
-+			ice_vsi_close(vsi);
-+		}
-+	}
++	if (term->type_val == PARSE_EVENTS__TERM_TYPE_STR)
++		free(term->val.str);
++	zfree(&term->array.ranges);
++	free(term);
 +}
 +
- /**
-  * ice_free_res - free a block of resources
-  * @res: pointer to the resource
-diff --git a/drivers/net/ethernet/intel/ice/ice_lib.h b/drivers/net/ethernet/intel/ice/ice_lib.h
-index 8d5a7978e066..2c5c01b7a582 100644
---- a/drivers/net/ethernet/intel/ice/ice_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_lib.h
-@@ -62,6 +62,10 @@ int ice_vsi_release(struct ice_vsi *vsi);
- 
- void ice_vsi_close(struct ice_vsi *vsi);
- 
-+int ice_ena_vsi(struct ice_vsi *vsi, bool locked);
-+
-+void ice_dis_vsi(struct ice_vsi *vsi, bool locked);
-+
- int ice_free_res(struct ice_res_tracker *res, u16 index, u16 id);
- 
- int
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 32684fce7de6..5f3a692f28e6 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -435,43 +435,12 @@ static void ice_sync_fltr_subtask(struct ice_pf *pf)
- 		}
- }
- 
--/**
-- * ice_dis_vsi - pause a VSI
-- * @vsi: the VSI being paused
-- * @locked: is the rtnl_lock already held
-- */
--static void ice_dis_vsi(struct ice_vsi *vsi, bool locked)
--{
--	if (test_bit(__ICE_DOWN, vsi->state))
--		return;
--
--	set_bit(__ICE_NEEDS_RESTART, vsi->state);
--
--	if (vsi->type == ICE_VSI_PF && vsi->netdev) {
--		if (netif_running(vsi->netdev)) {
--			if (!locked)
--				rtnl_lock();
--
--			ice_stop(vsi->netdev);
--
--			if (!locked)
--				rtnl_unlock();
--		} else {
--			ice_vsi_close(vsi);
--		}
--	}
--}
--
- /**
-  * ice_pf_dis_all_vsi - Pause all VSIs on a PF
-  * @pf: the PF
-  * @locked: is the rtnl_lock already held
-  */
--#ifdef CONFIG_DCB
--void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked)
--#else
- static void ice_pf_dis_all_vsi(struct ice_pf *pf, bool locked)
--#endif /* CONFIG_DCB */
+ static void inc_group_count(struct list_head *list,
+ 		       struct parse_events_state *parse_state)
  {
- 	int v;
+@@ -66,6 +86,7 @@ static void inc_group_count(struct list_head *list,
+ %type <num> PE_VALUE_SYM_TOOL
+ %type <num> PE_RAW
+ %type <num> PE_TERM
++%type <num> value_sym
+ %type <str> PE_NAME
+ %type <str> PE_BPF_OBJECT
+ %type <str> PE_BPF_SOURCE
+@@ -76,37 +97,43 @@ static void inc_group_count(struct list_head *list,
+ %type <str> PE_EVENT_NAME
+ %type <str> PE_PMU_EVENT_PRE PE_PMU_EVENT_SUF PE_KERNEL_PMU_EVENT
+ %type <str> PE_DRV_CFG_TERM
+-%type <num> value_sym
+-%type <head> event_config
+-%type <head> opt_event_config
+-%type <head> opt_pmu_config
++%destructor { free ($$); } <str>
+ %type <term> event_term
+-%type <head> event_pmu
+-%type <head> event_legacy_symbol
+-%type <head> event_legacy_cache
+-%type <head> event_legacy_mem
+-%type <head> event_legacy_tracepoint
++%destructor { free_term ($$); } <term>
++%type <list_terms> event_config
++%type <list_terms> opt_event_config
++%type <list_terms> opt_pmu_config
++%destructor { parse_events_terms__delete ($$); } <list_terms>
++%type <list_evsel> event_pmu
++%type <list_evsel> event_legacy_symbol
++%type <list_evsel> event_legacy_cache
++%type <list_evsel> event_legacy_mem
++%type <list_evsel> event_legacy_tracepoint
++%type <list_evsel> event_legacy_numeric
++%type <list_evsel> event_legacy_raw
++%type <list_evsel> event_bpf_file
++%type <list_evsel> event_def
++%type <list_evsel> event_mod
++%type <list_evsel> event_name
++%type <list_evsel> event
++%type <list_evsel> events
++%type <list_evsel> group_def
++%type <list_evsel> group
++%type <list_evsel> groups
++%destructor { free_list_evsel ($$); } <list_evsel>
+ %type <tracepoint_name> tracepoint_name
+-%type <head> event_legacy_numeric
+-%type <head> event_legacy_raw
+-%type <head> event_bpf_file
+-%type <head> event_def
+-%type <head> event_mod
+-%type <head> event_name
+-%type <head> event
+-%type <head> events
+-%type <head> group_def
+-%type <head> group
+-%type <head> groups
++%destructor { free ($$.sys); free ($$.event); } <tracepoint_name>
+ %type <array> array
+ %type <array> array_term
+ %type <array> array_terms
++%destructor { free ($$.ranges); } <array>
  
-@@ -4440,54 +4409,6 @@ static void ice_vsi_release_all(struct ice_pf *pf)
- 	}
- }
- 
--/**
-- * ice_ena_vsi - resume a VSI
-- * @vsi: the VSI being resume
-- * @locked: is the rtnl_lock already held
-- */
--static int ice_ena_vsi(struct ice_vsi *vsi, bool locked)
--{
--	int err = 0;
--
--	if (!test_bit(__ICE_NEEDS_RESTART, vsi->state))
--		return 0;
--
--	clear_bit(__ICE_NEEDS_RESTART, vsi->state);
--
--	if (vsi->netdev && vsi->type == ICE_VSI_PF) {
--		if (netif_running(vsi->netdev)) {
--			if (!locked)
--				rtnl_lock();
--
--			err = ice_open(vsi->netdev);
--
--			if (!locked)
--				rtnl_unlock();
--		}
--	}
--
--	return err;
--}
--
--/**
-- * ice_pf_ena_all_vsi - Resume all VSIs on a PF
-- * @pf: the PF
-- * @locked: is the rtnl_lock already held
-- */
--#ifdef CONFIG_DCB
--int ice_pf_ena_all_vsi(struct ice_pf *pf, bool locked)
--{
--	int v;
--
--	ice_for_each_vsi(pf, v)
--		if (pf->vsi[v])
--			if (ice_ena_vsi(pf->vsi[v], locked))
--				return -EIO;
--
--	return 0;
--}
--#endif /* CONFIG_DCB */
--
- /**
-  * ice_vsi_rebuild_by_type - Rebuild VSI of a given type
-  * @pf: pointer to the PF instance
+ %union
+ {
+ 	char *str;
+ 	u64 num;
+-	struct list_head *head;
++	struct list_head *list_evsel;
++	struct list_head *list_terms;
+ 	struct parse_events_term *term;
+ 	struct tracepoint_name {
+ 		char *sys;
 -- 
-2.21.0
+2.24.0.432.g9d3f5f5b63-goog
 
