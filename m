@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C73D3F2883
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 08:56:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96D0CF289C
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 09:01:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727366AbfKGH4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 02:56:08 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:46395 "EHLO
+        id S1727423AbfKGIBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 03:01:43 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:46430 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727119AbfKGH4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 02:56:07 -0500
+        with ESMTP id S1726791AbfKGIBn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 03:01:43 -0500
 Received: from p5b06da22.dip0.t-ipconnect.de ([91.6.218.34] helo=nanos)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1iSce3-0000dt-Uf; Thu, 07 Nov 2019 08:55:56 +0100
-Date:   Thu, 7 Nov 2019 08:55:54 +0100 (CET)
+        id 1iScjQ-0000io-4h; Thu, 07 Nov 2019 09:01:28 +0100
+Date:   Thu, 7 Nov 2019 09:01:26 +0100 (CET)
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     Jianyong Wu <jianyong.wu@arm.com>
 cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
@@ -27,11 +27,10 @@ cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
         kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
         Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
         nd@arm.com
-Subject: Re: [RFC PATCH v6 4/7] time: Add mechanism to recognize clocksource
- in time_get_snapshot
-In-Reply-To: <20191024110209.21328-5-jianyong.wu@arm.com>
-Message-ID: <alpine.DEB.2.21.1911070852551.1869@nanos.tec.linutronix.de>
-References: <20191024110209.21328-1-jianyong.wu@arm.com> <20191024110209.21328-5-jianyong.wu@arm.com>
+Subject: Re: [RFC PATCH v6 5/7] psci: Add hvc call service for ptp_kvm.
+In-Reply-To: <20191024110209.21328-6-jianyong.wu@arm.com>
+Message-ID: <alpine.DEB.2.21.1911070856100.1869@nanos.tec.linutronix.de>
+References: <20191024110209.21328-1-jianyong.wu@arm.com> <20191024110209.21328-6-jianyong.wu@arm.com>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -44,32 +43,74 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, 24 Oct 2019, Jianyong Wu wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
->
-> In some scenario like return device time to ptp_kvm guest,
-> we need identify the current clocksource outside core time code.
->
-> This patch add a mechanism to recognize the current clocksource
-> by export clocksource id in time_get_snapshot.
 
-Please check Documentation/process/submitting-patches.rst and search for
-'This patch'.
+> This patch is the base of ptp_kvm for arm64.
 
-> diff --git a/include/linux/clocksource.h b/include/linux/clocksource.h
-> index b21db536fd52..ac8016b22734 100644
-> --- a/include/linux/clocksource.h
-> +++ b/include/linux/clocksource.h
-> @@ -19,6 +19,7 @@
->  #include <linux/of.h>
->  #include <asm/div64.h>
->  #include <asm/io.h>
+This patch ...
+
+> ptp_kvm modules will call hvc to get this service.
+> The service offers real time and counter cycle of host for guest.
+> 
+> Signed-off-by: Jianyong Wu <jianyong.wu@arm.com>
+> ---
+>  drivers/clocksource/arm_arch_timer.c |  2 ++
+>  include/clocksource/arm_arch_timer.h |  4 ++++
+>  include/linux/arm-smccc.h            | 12 ++++++++++++
+>  virt/kvm/arm/psci.c                  | 22 ++++++++++++++++++++++
+>  4 files changed, 40 insertions(+)
+> 
+> diff --git a/drivers/clocksource/arm_arch_timer.c b/drivers/clocksource/arm_arch_timer.c
+> index 07e57a49d1e8..e4ad38042ef6 100644
+> --- a/drivers/clocksource/arm_arch_timer.c
+> +++ b/drivers/clocksource/arm_arch_timer.c
+> @@ -29,6 +29,7 @@
+>  #include <asm/virt.h>
+>  
+>  #include <clocksource/arm_arch_timer.h>
 > +#include <linux/clocksource_ids.h>
 
-Please place that include to the other linux includes. You might notice
-that there is ordering here.
+Same ordering issue and lack of file.
+ 
+> diff --git a/include/clocksource/arm_arch_timer.h b/include/clocksource/arm_arch_timer.h
+> index 1d68d5613dae..426d749e8cf8 100644
+> --- a/include/clocksource/arm_arch_timer.h
+> +++ b/include/clocksource/arm_arch_timer.h
+> @@ -104,6 +104,10 @@ static inline bool arch_timer_evtstrm_available(void)
+>  	return false;
+>  }
+>  
+> +bool is_arm_arch_counter(void *unuse)
 
-But where is that include? It's not part of that series, so how is this
-supposed to compile?
+A global function in a header file? You might want to make this static
+inline. And while at it please s/unuse/unused/
+
+> +{
+> +	return false;
+> +}
+>  #endif
+>  #include <linux/linkage.h>
+> diff --git a/virt/kvm/arm/psci.c b/virt/kvm/arm/psci.c
+> index 0debf49bf259..339bcbafac7b 100644
+> --- a/virt/kvm/arm/psci.c
+> +++ b/virt/kvm/arm/psci.c
+> @@ -15,6 +15,7 @@
+>  #include <asm/kvm_host.h>
+>  
+>  #include <kvm/arm_psci.h>
+> +#include <linux/clocksource_ids.h>
+
+Sigh.
+  
+>  /*
+>   * This is an implementation of the Power State Coordination Interface
+> @@ -392,6 +393,8 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
+>  	u32 func_id = smccc_get_function(vcpu);
+>  	u32 val[4] = {};
+>  	u32 option;
+> +	u64 cycles;
+> +	struct system_time_snapshot systime_snapshot;
+
+Also here you might notice that the variables are not randomly ordered.
 
 Thanks,
 
