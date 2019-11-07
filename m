@@ -2,130 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4ADF3178
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 15:31:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48F77F3180
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 15:32:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389435AbfKGObR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 09:31:17 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:25640 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2389379AbfKGObR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 09:31:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573137075;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QrHdD94AcwG1Ax7bWiCTd//fNTx3IE4kMIx+0uxwiSM=;
-        b=jV1JYaW0VsH7Gd4vmhJWhnK8LnielSO2GRGYcm0fak8Qt9+rRQcqVICU3Wa7d/Foh+uvIu
-        oEGOlK96X7HQzoGjVyXsw3UtCLY6tVSNHMUf1fxHJea3WWO34FGW3zMHdApN6YuWA3mrlY
-        HbGi4sf3B7QNxsic6ZRIlXI0jAexYns=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-272-SpgoB20dMl6mpmpHXbbyGA-1; Thu, 07 Nov 2019 09:31:10 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 33BB0477;
-        Thu,  7 Nov 2019 14:31:06 +0000 (UTC)
-Received: from [10.72.12.21] (ovpn-12-21.pek2.redhat.com [10.72.12.21])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CBAAB5D6D8;
-        Thu,  7 Nov 2019 14:30:39 +0000 (UTC)
-Subject: Re: [PATCH V9 6/6] docs: sample driver to demonstrate how to
- implement virtio-mdev framework
-To:     Alex Williamson <alex.williamson@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Cc:     kvm@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, kwankhede@nvidia.com,
-        mst@redhat.com, tiwei.bie@intel.com,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        cohuck@redhat.com, maxime.coquelin@redhat.com,
-        cunming.liang@intel.com, zhihong.wang@intel.com,
-        rob.miller@broadcom.com, xiao.w.wang@intel.com,
-        haotian.wang@sifive.com, zhenyuw@linux.intel.com,
-        zhi.a.wang@intel.com, jani.nikula@linux.intel.com,
-        joonas.lahtinen@linux.intel.com, rodrigo.vivi@intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        pasic@linux.ibm.com, sebott@linux.ibm.com, oberpar@linux.ibm.com,
-        heiko.carstens@de.ibm.com, gor@linux.ibm.com,
-        borntraeger@de.ibm.com, akrowiak@linux.ibm.com,
-        freude@linux.ibm.com, lingshan.zhu@intel.com, idos@mellanox.com,
-        eperezma@redhat.com, lulu@redhat.com, parav@mellanox.com,
-        christophe.de.dinechin@gmail.com, kevin.tian@intel.com,
-        stefanha@redhat.com
-References: <20191106070548.18980-1-jasowang@redhat.com>
- <20191106070548.18980-7-jasowang@redhat.com>
- <88efad07-70aa-3879-31e7-ace4d2ad63a1@infradead.org>
- <20191106155800.0b8418ec@x1.home>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <1b26d298-0223-c5cc-9dd6-c4005139e32a@redhat.com>
-Date:   Thu, 7 Nov 2019 22:30:37 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389261AbfKGOcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 09:32:05 -0500
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:35078 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731026AbfKGOcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 09:32:05 -0500
+Received: by mail-yb1-f193.google.com with SMTP id i12so1003975ybg.2
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 06:32:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yRYqa1o2NdhEBRGJeqYIB6zt6VJ6WLQd957CNIrLVtU=;
+        b=V31+97gEuKcwS9OaNqcWuLxaf6Dk9IUdRwjbv1EpOWaTkrPxYHB2EW3c7/ri43Q6k7
+         bwFNF/T9wGxfriCODN4BuqYv6VwhvwZPWBTV4Pn0+HUEPmow694LOsl9dm08jzg4mhod
+         Lu5WoqEIQ7TCMvBtSirFujYbjNVn9mXg+n7ZwkwkNz2gJVMUk7E5ofu+1hUzGuG8liRX
+         cTx09BiykjRuupe9Q5PDg6qJXwNkBE1dU1vBm8WzSLfnmHE/Bij8LTKZTUJJAYRdDGd2
+         rbHLjCvp9ZGLmy3aZAkHGBw48R5p5w24mgg3G/2oeRwyxZGzAvUAI9fJkGYLmrWNlsea
+         E+KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yRYqa1o2NdhEBRGJeqYIB6zt6VJ6WLQd957CNIrLVtU=;
+        b=XYykSEctwR+NtPaCve0H5UmQbKPjgN7XR8ACRMliBVtfwLap8LHHXhcU2gN4TOackn
+         1Q0MO0XxR3S9w/D0koaee95TBxxjZ+HisvD2UQrG2cLmwWw7fBB1cFbJ7ujaTujP4WS2
+         N9XLnLg5EH/sZmU7xArYqrZbnz4GwmSjYIEa3PvEw6cx/bQg49Rwek8iurdFKkVAPyxI
+         56x5PXmmUpFd142XVN7Usu44zaLyUYEtFATEBfTBDcbiBJa62SbY3V1BJFuXaDKDBnip
+         1eY3xl25oGKxKqcguArFdOvR88Y35wb32nXMQXqpPW62a4YEX/pXtFpFAWadmm3LuFqp
+         buNA==
+X-Gm-Message-State: APjAAAVrPVhsPVW6xGx50kU/ngOqfDgHeQpMZoWvI7u39UTCl450OhWi
+        jPiIp2dfYwWtD9Rp4YunN1y0SMiy
+X-Google-Smtp-Source: APXvYqyhOWP5q7WxjCIFmMgrT/KjWroyTDUMyA1NLP2RnCpWepR8yoN2eexzxQiaqpaMSJOsbBzYXA==
+X-Received: by 2002:a25:d143:: with SMTP id i64mr3587469ybg.415.1573137122674;
+        Thu, 07 Nov 2019 06:32:02 -0800 (PST)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id o206sm2312392ywd.4.2019.11.07.06.32.00
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Nov 2019 06:32:01 -0800 (PST)
+Received: by mail-yb1-f171.google.com with SMTP id y18so990641ybs.7
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 06:32:00 -0800 (PST)
+X-Received: by 2002:a25:cf55:: with SMTP id f82mr3672759ybg.203.1573137120264;
+ Thu, 07 Nov 2019 06:32:00 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191106155800.0b8418ec@x1.home>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: SpgoB20dMl6mpmpHXbbyGA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+References: <0000000000008d5a360575368e31@google.com> <000000000000cd76fb0596c1d41c@google.com>
+In-Reply-To: <000000000000cd76fb0596c1d41c@google.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 7 Nov 2019 09:31:24 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfVgPM4DZcvaRjDinoyg7cA+Pj4oCO-13+7PsFGrhuC+w@mail.gmail.com>
+Message-ID: <CA+FuTSfVgPM4DZcvaRjDinoyg7cA+Pj4oCO-13+7PsFGrhuC+w@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in _decode_session6
+To:     syzbot <syzbot+e8c1d30881266e47eb33@syzkaller.appspotmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        johannes.berg@intel.com, Martin Lau <kafai@fb.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Peter Oskolkov <posk@google.com>, songliubraving@fb.com,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        Yonghong Song <yhs@fb.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2019/11/7 =E4=B8=8A=E5=8D=886:58, Alex Williamson wrote:
-> On Wed, 6 Nov 2019 14:50:30 -0800
-> Randy Dunlap <rdunlap@infradead.org> wrote:
+On Thu, Nov 7, 2019 at 8:42 AM syzbot
+<syzbot+e8c1d30881266e47eb33@syzkaller.appspotmail.com> wrote:
 >
->> On 11/5/19 11:05 PM, Jason Wang wrote:
->>> diff --git a/samples/Kconfig b/samples/Kconfig
->>> index c8dacb4dda80..13a2443e18e0 100644
->>> --- a/samples/Kconfig
->>> +++ b/samples/Kconfig
->>> @@ -131,6 +131,16 @@ config SAMPLE_VFIO_MDEV_MDPY
->>>   =09  mediated device.  It is a simple framebuffer and supports
->>>   =09  the region display interface (VFIO_GFX_PLANE_TYPE_REGION).
->>>  =20
->>> +config SAMPLE_VIRTIO_MDEV_NET
->>> +=09tristate "Build VIRTIO net example mediated device sample code -- l=
-oadable modules only"
->>> +=09depends on VIRTIO_MDEV && VHOST_RING && m
->>> +=09help
->>> +=09  Build a networking sample device for use as a virtio
->>> +=09  mediated device. The device coopreates with virtio-mdev bus
->> typo here:
->> =09                              cooperates
->>
-> I can fix this on commit relative to V10 if there are no other issues
-> raised:
+> syzbot suspects this bug was fixed by commit:
 >
-> diff --git a/samples/Kconfig b/samples/Kconfig
-> index 13a2443e18e0..b7116d97cbbe 100644
-> --- a/samples/Kconfig
-> +++ b/samples/Kconfig
-> @@ -136,7 +136,7 @@ config SAMPLE_VIRTIO_MDEV_NET
->          depends on VIRTIO_MDEV && VHOST_RING && m
->          help
->            Build a networking sample device for use as a virtio
-> -         mediated device. The device coopreates with virtio-mdev bus
-> +         mediated device. The device cooperates with virtio-mdev bus
->            driver to present an virtio ethernet driver for
->            kernel. It simply loopbacks all packets from its TX
->            virtqueue to its RX virtqueue.
+> commit e7c87bd6cc4ec7b0ac1ed0a88a58f8206c577488
+> Author: Willem de Bruijn <willemb@google.com>
+> Date:   Wed Jan 16 01:19:22 2019 +0000
 >
-> Thanks,
-> Alex
-
-
-Thanks, per Michael request, I would rename mvnet and include this fix=20
-in V11.
-
-
+>      bpf: in __bpf_redirect_no_mac pull mac only if present
 >
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1736f974600000
+> start commit:   b36fdc68 Merge tag 'gpio-v4.19-2' of git://git.kernel.org/..
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=4c7e83258d6e0156
+> dashboard link: https://syzkaller.appspot.com/bug?extid=e8c1d30881266e47eb33
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14d42021400000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d09f1e400000
+>
+> If the result looks correct, please mark the bug fixed by replying with:
+>
+> #syz fix: bpf: in __bpf_redirect_no_mac pull mac only if present
 
+#syz fix: bpf: in __bpf_redirect_no_mac pull mac only if present
+
+indeed manually reproduced at e7c87bd6cc4e~1, failed to reproduce at
+e7c87bd6cc4e. Also seems plausible given the stack trace.
