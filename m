@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB841F3B98
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:42:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F96EF3B99
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 23:42:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726438AbfKGWmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727924AbfKGWmA (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 7 Nov 2019 17:42:00 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29486 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727894AbfKGWl7 (ORCPT
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:12590 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727893AbfKGWl7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 17:41:59 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7MdlO4021310;
-        Thu, 7 Nov 2019 14:41:57 -0800
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA7MekHM002988;
+        Thu, 7 Nov 2019 14:41:58 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : references : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=pfpt0818;
- bh=QeqrhPl2fZ1tXQaa530n27icFsqOEBltcMHJPiOb7oo=;
- b=m4RC4AOt3bC+yQGN1Sowd2X20hVnZ5OGQv5dNhezZbyMtKZnYPJyb/zMTzujF37zLotI
- jCKFE8JLJMZA1GTjF0z6rY/gco+g1jrxi8TSGuSHfYJ4avtwosGjgXFS1oEhfQ9SpDgt
- EcWuUj/C9tgX9be9TWQZulHiO/gmWf8hy8briJ1F/dAFhDkyXOghKFDp4hQhW1qwtTZm
- aY7zgv5/srlLWbvpXNN6IFrJ2Wnxzre1NQRhFgDC/L1oRseHzC0UIDnVFnAuLCz3QN5D
- Q2aJ0VJB9IdvOhuwITgyq6jF711KgE1WMZrzHBdq9BWQ2a6XwYVGULmwprtqnKOINd8M ug== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2w4fq6u8jb-1
+ bh=qgIBIp5Oci3sFwu3uvL1vJj5Oauj8htBJgUg9KtVZPU=;
+ b=gvg+J7Isrnmb/ySlwkK1Wu1kzaq/j2+QoGZ2wpjfahbljFOLgYuCYeoUbmQm3zBVjU59
+ 180vnzvpuMH52Y5L2UhZeIQvVCPx7/7W4Y0YRyaIieqmCNu2s80hDsvB6KdwsIx13I5o
+ QHPLKsjzDMfochhf7n7NOYb5lbH0Cjr+ITFGMN5Wf5wCdsZcV01PokCRP4UuQaZGdlAM
+ PASnV+Af/GRQ3KGgykwI383J///LSL7Ak8QMtBTKZb+ofZUkW9NFfVuEvhAAy+PZ5Wfh
+ NsgMc6sjL8HWM2CSCIcDSTV005gr+ZQfusbuvn0FQ34JDKlQlqTsYevD/wqV6ac29k/D 5A== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2w41uwxrf0-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 07 Nov 2019 14:41:57 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 7 Nov
- 2019 14:41:55 -0800
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (104.47.32.57) by
- SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
- 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:41:55 -0800
+        Thu, 07 Nov 2019 14:41:58 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Thu, 7 Nov
+ 2019 14:41:57 -0800
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (104.47.32.50) by
+ SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Thu, 7 Nov 2019 14:41:57 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l+KEoC6EzKi3ZtH1ZSCWkxrc/sptQ2pkej1wgWTNeFQBpf1oOaGSsGPny3WTKdxkRfdP0TmWo/yt6DZThT17pig1Y1QRoqUedWv2fr6yIv8KqOzyQpAf7VKer9UEnSQT1hmyWh7+SuLX9mTXk8T65gsRA/L3R9xAtJPqj2BjWIT5vuJVZT4R6vHMeOJ+iWBOcZWcF/oU2RMuXH13CcXkJyb/Wof4jjbl+W1/4kglu8U3zdv0aCbw8c6OiH36gc/FVghAseyWH4tDRQCYdmXOJ/cpB//1rJXVNQ7X2NGqRbplzs6S6ByzNX873gH/6GE1mOPwBM/SPeN6AjOyBWcInQ==
+ b=JxWtk5Ha353bKEoFdeGbj/O+Uot2utrSb2Zya3qU41h4nIzXAFhbe+hZT++9uUz28VBDE/SsNIhZ0hfduF7Zppwoe+PYxGlEf5PGZU1kG0ZwO7SukaLd7G89YQSP7xyyfPjEDwV0aX3qd9Rmw73MjgZ2HCM3PDORNGsaLJNOmjCZyOxvV7dD9UUGOiN6jnnST9OGmYKUxXPG92LvTQ+qrFARDEMCe+Bi65dDtkioXct4AL93pxL4p5zor7cjap96sh6IMC+HHNJlR8H0tcUK0pdZCm+f81+JMabeyvfsBJ4VMRdpgiYDXqEoQcEc+OzkgyoSTvXwjqVW0SF81eE6Ig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QeqrhPl2fZ1tXQaa530n27icFsqOEBltcMHJPiOb7oo=;
- b=U6huMCKRuBnmXa+pje7U1pg9ohbHaOsft7OTXhOWuDzoQ3QtJG4bzj1YV4LaAHaYFop3dQ7gdGVcxQMGcRf2gjwUhXPWbe3QdeLD3v0+uILtm83m8Zwh0/GWxMpvGESAXvLwbmk7zVEtgDB1s4kxH2vDM4WpGk/PaftT3kJ8kmRGOMPU36ClLFBiZY+ID3zWwznRgxmOcH9LGL+kTVTQQpWLRMbk8Uctn8sDEjKoQuOm1wkq+UxVo895IGF5coOlFvTiKaEAHOQiLn0vjDlTrqFNQs6/D9kTNGQEjYT+q6qH+Hwmy2uWo8PWk39pwcpaSYV3MaBblcl2VE6FaqG6SQ==
+ bh=qgIBIp5Oci3sFwu3uvL1vJj5Oauj8htBJgUg9KtVZPU=;
+ b=ENsN42/R65+3itHwC55olVafEmxannFvCDQPnocKW74tfTmOLy5IW/IHwYTZov5DKPrw/RUqAGRhmDxq3MjPHHroeHPse4OR/jQNl/jNiHddss7P0t2OAzUwL4HbMdABIaKa2Vgegti+Zah1NtQdOkkgExDr9fUlIfFp7Mu0EzVv37Gca2mYtPhHPZ9yABaxDHb5vNM3tvj1bKVlmY6KzVksV8+vw6URyQPM6XoGgmeq1DvwOi9dlQEArD49ejbyLE6XVhHxF42SrL2p9cwtjnNVHTWw10nCgKLRxzsUPnSX0Xu9eW/IO2EBmM3L5xRuyLbnjVdJw2UEeCh8IbyFJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
  dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QeqrhPl2fZ1tXQaa530n27icFsqOEBltcMHJPiOb7oo=;
- b=ghkWkGJDrnYApsjwVSpMIpQEBJAqEqw9m+8UdNm0IJe6ke90ZKRseXS94nJKfXXr5HmkZf4d7ZNWIeXJsYOH2sTZP1wbD9sEGBAViImdItjNxOcMoukU+zgxXeD9CSDgIW5Qm7kwq9RuV0MDaHc8x+KSYqJaGIJEStvG7i2exck=
+ bh=qgIBIp5Oci3sFwu3uvL1vJj5Oauj8htBJgUg9KtVZPU=;
+ b=g5GNCTEEy4hILP99BGfIqe6XHBztTU8NsmrDtdH6fvkxbuqJmZ0ulqbLTpCjpymrIjAwcmc9tMpHjF96I38r95iveeNGMXkk94TF2JXCDfNText5ke1uUjZb7QDaN8E0irmJLCykSEXb6r9JPZMexz6x0tV9idu5BrBoHmrIg5o=
 Received: from DM5PR18MB1642.namprd18.prod.outlook.com (10.175.224.8) by
  DM5PR18MB2295.namprd18.prod.outlook.com (52.132.142.28) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Thu, 7 Nov 2019 22:41:54 +0000
+ 15.20.2430.24; Thu, 7 Nov 2019 22:41:55 +0000
 Received: from DM5PR18MB1642.namprd18.prod.outlook.com
  ([fe80::d89:706b:cda0:5c15]) by DM5PR18MB1642.namprd18.prod.outlook.com
  ([fe80::d89:706b:cda0:5c15%10]) with mapi id 15.20.2430.020; Thu, 7 Nov 2019
- 22:41:54 +0000
+ 22:41:55 +0000
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 CC:     "David S . Miller" <davem@davemloft.net>,
         Igor Russkikh <irusskikh@marvell.com>,
         Nikita Danilov <ndanilov@marvell.com>
-Subject: [PATCH v2 net-next 04/12] net: atlantic: add msglevel configuration
-Thread-Topic: [PATCH v2 net-next 04/12] net: atlantic: add msglevel
- configuration
-Thread-Index: AQHVlbyNj6wka7VuoUWrkDofh0G0Kw==
-Date:   Thu, 7 Nov 2019 22:41:54 +0000
-Message-ID: <59d4adecc9931662dcd4457dc22425d244e9bd81.1573158381.git.irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 05/12] net: atlantic: adding ethtool physical
+ identification
+Thread-Topic: [PATCH v2 net-next 05/12] net: atlantic: adding ethtool physical
+ identification
+Thread-Index: AQHVlbyO2e2uE8KoCkGlJgZoIr7C7A==
+Date:   Thu, 7 Nov 2019 22:41:55 +0000
+Message-ID: <c348dd9fd3363fbc46e6ca58f80181f82e509f08.1573158382.git.irusskikh@marvell.com>
 References: <cover.1573158381.git.irusskikh@marvell.com>
 In-Reply-To: <cover.1573158381.git.irusskikh@marvell.com>
 Accept-Language: en-US
@@ -80,28 +81,28 @@ x-mailer: git-send-email 2.17.1
 x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [95.79.108.179]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0d8c2e0a-e1e7-4300-cc4b-08d763d3b00f
+x-ms-office365-filtering-correlation-id: 8ee85861-52de-4163-3b8d-08d763d3b113
 x-ms-traffictypediagnostic: DM5PR18MB2295:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR18MB22953D23BD3870358B1B1AB8B7780@DM5PR18MB2295.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:98;
+x-microsoft-antispam-prvs: <DM5PR18MB22951448D04DFB07C6263737B7780@DM5PR18MB2295.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:78;
 x-forefront-prvs: 0214EB3F68
 x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(136003)(396003)(376002)(189003)(199004)(64756008)(76176011)(7736002)(99286004)(316002)(66066001)(54906003)(2351001)(52116002)(5640700003)(2501003)(8676002)(25786009)(118296001)(8936002)(305945005)(81166006)(81156014)(1730700003)(6486002)(478600001)(71200400001)(71190400001)(6436002)(50226002)(6916009)(66476007)(6116002)(6512007)(14454004)(2616005)(476003)(256004)(486006)(186003)(3846002)(102836004)(11346002)(107886003)(36756003)(66946007)(26005)(2906002)(66446008)(86362001)(66556008)(4326008)(386003)(6506007)(5660300002)(446003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR18MB2295;H:DM5PR18MB1642.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: marvell.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: W1kR4Gh5BI9wysF+SkRBz5UW/5cZ8O5K8X0fj4Wk9zIQsJbok/6fg/syDny5IZP8SFEwDUIe80yX5O1AGQvW6hVDwIGLDaJsfsksNfS7drtFZTOe5ERtoEqdGlCPEyKQoXcDBe7kcrTGmdg+oY9OxU8inq+huLtTNBGZPAkTcx9vh5pYXGypD0zEYihUuUSYqGGk6vsyCU0jzZ3ccV5o84OsvTIF+DnbpuZewY79mDydoddMdsL5Y2CENUo3mC2DVP9xOtQJVmzUpLP38sxw6UbUsv/D6Sq7/Nz9zlTK2LzaLZaktlKoZSMNDfJM1U+4mnMd8qYMi/FTmU19Yt0vW5rbKu6dofbhmKLk+E3sWxNYm4n8ovESdAge8rfx4qRnDUjJLB7Qkn88cJdY0z+j5Iabu/w7opAhpKmSiv3pufKrRhkMUkstGFFeAcP/Xydo
+x-microsoft-antispam-message-info: c334+NrkFLPgf5eUybfYfUN2KbsENBqK6YmGGlkHhH8270KuGDCQfGuyF9Al+Byvcrek922MMsSc2saTCX2ACBKlLj2jXzPbGuN/PNGkWCIpuWYY9MI8N64lmt6UEg8Pki8uyn+3OITJtcWacibRZVeFjr1MXXfdN8NJ8pTjWyuccETTs+ho8TS6P0nu1QdLOX4kDY5K+O5SJv6PmO12omZci4SRxaSiDuy2aDx7zrZPWBfXEDVs8kjkgCf/M06YD7RkeZQ4mxpuaOUWmriOC+R1zRhNpG1p6CZ+U9jtp5ES7R5f9+TzHSpr3iWAaIv4YtGkQVS/nd9Edic5vDWEi+t+k9IdlDzSZlk3pzMisbcvyFVEOLQHIuWj0SyF49UQ+U4ES/oxZ5rl2Ct7bc9hqmD0waoh8H9cFPA11kVUB9enVsP1X7KTiVcxJrKAwU6u
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d8c2e0a-e1e7-4300-cc4b-08d763d3b00f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:41:54.1977
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ee85861-52de-4163-3b8d-08d763d3b113
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Nov 2019 22:41:55.9080
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: e/UxzJJ7dTFPIjsRncSz3MS8YZdosApg2tPW/kx6IeOz+2cdlBdM/OAX+LM/Vxekoph+wWzC9FKVq17C63M89A==
+X-MS-Exchange-CrossTenant-userprincipalname: ynwk94efdNzTdc/b/nQV7YTDz5xiw/vHcOiRn3hAhVJ4RDKzAvA72hDSrMAeBpK32Gdzw6YPNL6QJF5ARfGCEg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR18MB2295
 X-OriginatorOrg: marvell.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
@@ -113,92 +114,150 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikita Danilov <ndanilov@marvell.com>
 
-We add ethtool msglevel configuration and change some
-printouts to use netdev_info set of functions.
+`ethtool -p eth0` will blink leds helping identify
+physical port.
 
 Signed-off-by: Nikita Danilov <ndanilov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../net/ethernet/aquantia/atlantic/aq_ethtool.c  | 16 ++++++++++++++++
- drivers/net/ethernet/aquantia/atlantic/aq_nic.c  |  7 ++++---
- drivers/net/ethernet/aquantia/atlantic/aq_nic.h  |  1 +
- 3 files changed, 21 insertions(+), 3 deletions(-)
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   | 30 +++++++++++++++++++
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |  5 ++++
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.c   |  1 +
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       | 14 +++++++++
+ 4 files changed, 50 insertions(+)
 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/=
 net/ethernet/aquantia/atlantic/aq_ethtool.c
-index 3c55cf13cf14..5be273892430 100644
+index 5be273892430..2f877fb46615 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
-@@ -607,6 +607,20 @@ static int aq_set_ringparam(struct net_device *ndev,
- 	return err;
+@@ -153,6 +153,35 @@ static void aq_ethtool_get_strings(struct net_device *=
+ndev,
+ 	}
  }
 =20
-+static u32 aq_get_msg_level(struct net_device *ndev)
++static int aq_ethtool_set_phys_id(struct net_device *ndev,
++				  enum ethtool_phys_id_state state)
 +{
 +	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
++	struct aq_hw_s *hw =3D aq_nic->aq_hw;
++	int ret =3D 0;
 +
-+	return aq_nic->msg_enable;
++	if (!aq_nic->aq_fw_ops->led_control)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&aq_nic->fwreq_mutex);
++
++	switch (state) {
++	case ETHTOOL_ID_ACTIVE:
++		ret =3D aq_nic->aq_fw_ops->led_control(hw, AQ_HW_LED_BLINK |
++				 AQ_HW_LED_BLINK << 2 | AQ_HW_LED_BLINK << 4);
++		break;
++	case ETHTOOL_ID_INACTIVE:
++		ret =3D aq_nic->aq_fw_ops->led_control(hw, AQ_HW_LED_DEFAULT);
++		break;
++	default:
++		break;
++	}
++
++	mutex_unlock(&aq_nic->fwreq_mutex);
++
++	return ret;
 +}
 +
-+static void aq_set_msg_level(struct net_device *ndev, u32 data)
-+{
-+	struct aq_nic_s *aq_nic =3D netdev_priv(ndev);
+ static int aq_ethtool_get_sset_count(struct net_device *ndev, int stringse=
+t)
+ {
+ 	int ret =3D 0;
+@@ -627,6 +656,7 @@ const struct ethtool_ops aq_ethtool_ops =3D {
+ 	.get_regs            =3D aq_ethtool_get_regs,
+ 	.get_drvinfo         =3D aq_ethtool_get_drvinfo,
+ 	.get_strings         =3D aq_ethtool_get_strings,
++	.set_phys_id         =3D aq_ethtool_set_phys_id,
+ 	.get_rxfh_indir_size =3D aq_ethtool_get_rss_indir_size,
+ 	.get_wol             =3D aq_ethtool_get_wol,
+ 	.set_wol             =3D aq_ethtool_set_wol,
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h b/drivers/net/e=
+thernet/aquantia/atlantic/aq_hw.h
+index 5246cf44ce51..c2725a58f050 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_hw.h
+@@ -119,6 +119,9 @@ struct aq_stats_s {
+=20
+ #define AQ_HW_MULTICAST_ADDRESS_MAX     32U
+=20
++#define AQ_HW_LED_BLINK    0x2U
++#define AQ_HW_LED_DEFAULT  0x0U
 +
-+	aq_nic->msg_enable =3D data;
-+}
-+
- const struct ethtool_ops aq_ethtool_ops =3D {
- 	.get_link            =3D aq_ethtool_get_link,
- 	.get_regs_len        =3D aq_ethtool_get_regs_len,
-@@ -628,6 +642,8 @@ const struct ethtool_ops aq_ethtool_ops =3D {
- 	.set_rxfh            =3D aq_ethtool_set_rss,
- 	.get_rxnfc           =3D aq_ethtool_get_rxnfc,
- 	.set_rxnfc           =3D aq_ethtool_set_rxnfc,
-+	.get_msglevel        =3D aq_get_msg_level,
-+	.set_msglevel        =3D aq_set_msg_level,
- 	.get_sset_count      =3D aq_ethtool_get_sset_count,
- 	.get_ethtool_stats   =3D aq_ethtool_stats,
- 	.get_link_ksettings  =3D aq_ethtool_get_link_ksettings,
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/=
-ethernet/aquantia/atlantic/aq_nic.c
-index d5764228cea5..8f83e91f8146 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
-@@ -144,9 +144,9 @@ static int aq_nic_update_link_status(struct aq_nic_s *s=
-elf)
- 		return err;
-=20
- 	if (self->link_status.mbps !=3D self->aq_hw->aq_link_status.mbps) {
--		pr_info("%s: link change old %d new %d\n",
--			AQ_CFG_DRV_NAME, self->link_status.mbps,
--			self->aq_hw->aq_link_status.mbps);
-+		netdev_info(self->ndev, "%s: link change old %d new %d\n",
-+			    AQ_CFG_DRV_NAME, self->link_status.mbps,
-+			    self->aq_hw->aq_link_status.mbps);
- 		aq_nic_update_interrupt_moderation_settings(self);
-=20
- 		if (self->aq_ptp) {
-@@ -306,6 +306,7 @@ void aq_nic_ndev_init(struct aq_nic_s *self)
- 	self->ndev->priv_flags =3D aq_hw_caps->hw_priv_flags;
- 	self->ndev->priv_flags |=3D IFF_LIVE_ADDR_CHANGE;
-=20
-+	self->msg_enable =3D NETIF_MSG_DRV | NETIF_MSG_LINK;
- 	self->ndev->mtu =3D aq_nic_cfg->mtu - ETH_HLEN;
- 	self->ndev->max_mtu =3D aq_hw_caps->mtu - ETH_FCS_LEN - ETH_HLEN;
-=20
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/=
-ethernet/aquantia/atlantic/aq_nic.h
-index ab3176dfc209..527273502d54 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
-@@ -88,6 +88,7 @@ struct aq_hw_rx_fltrs_s {
-=20
- struct aq_nic_s {
+ struct aq_hw_s {
  	atomic_t flags;
-+	u32 msg_enable;
- 	struct aq_vec_s *aq_vec[AQ_CFG_VECS_MAX];
- 	struct aq_ring_s *aq_ring_tx[AQ_CFG_VECS_MAX * AQ_CFG_TCS_MAX];
- 	struct aq_hw_s *aq_hw;
+ 	u8 rbl_enabled:1;
+@@ -304,6 +307,8 @@ struct aq_fw_ops {
+=20
+ 	int (*set_flow_control)(struct aq_hw_s *self);
+=20
++	int (*led_control)(struct aq_hw_s *self, u32 mode);
++
+ 	int (*set_power)(struct aq_hw_s *self, unsigned int power_state,
+ 			 u8 *mac);
+=20
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b=
+/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+index fd2c6be4e22e..fc82ede18b20 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+@@ -970,4 +970,5 @@ const struct aq_fw_ops aq_fw_1x_ops =3D {
+ 	.set_flow_control =3D NULL,
+ 	.send_fw_request =3D NULL,
+ 	.enable_ptp =3D NULL,
++	.led_control =3D NULL,
+ };
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2=
+x.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+index 9b89622fa5d4..4eab51b5b400 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils_fw2x.c
+@@ -17,6 +17,7 @@
+ #include "hw_atl_utils.h"
+ #include "hw_atl_llh.h"
+=20
++#define HW_ATL_FW2X_MPI_LED_ADDR         0x31c
+ #define HW_ATL_FW2X_MPI_RPC_ADDR         0x334
+=20
+ #define HW_ATL_FW2X_MPI_MBOX_ADDR        0x360
+@@ -51,6 +52,8 @@
+ #define HAL_ATLANTIC_WOL_FILTERS_COUNT   8
+ #define HAL_ATLANTIC_UTILS_FW2X_MSG_WOL  0x0E
+=20
++#define HW_ATL_FW_VER_LED                0x03010026U
++
+ struct __packed fw2x_msg_wol_pattern {
+ 	u8 mask[16];
+ 	u32 crc;
+@@ -450,6 +453,16 @@ static void aq_fw3x_enable_ptp(struct aq_hw_s *self, i=
+nt enable)
+ 	aq_hw_write_reg(self, HW_ATL_FW3X_EXT_CONTROL_ADDR, ptp_opts);
+ }
+=20
++static int aq_fw2x_led_control(struct aq_hw_s *self, u32 mode)
++{
++	if (self->fw_ver_actual < HW_ATL_FW_VER_LED)
++		return -EOPNOTSUPP;
++
++	aq_hw_write_reg(self, HW_ATL_FW2X_MPI_LED_ADDR, mode);
++
++	return 0;
++}
++
+ static int aq_fw2x_set_eee_rate(struct aq_hw_s *self, u32 speed)
+ {
+ 	u32 mpi_opts =3D aq_hw_read_reg(self, HW_ATL_FW2X_MPI_CONTROL2_ADDR);
+@@ -557,4 +570,5 @@ const struct aq_fw_ops aq_fw_2x_ops =3D {
+ 	.get_flow_control   =3D aq_fw2x_get_flow_control,
+ 	.send_fw_request    =3D aq_fw2x_send_fw_request,
+ 	.enable_ptp         =3D aq_fw3x_enable_ptp,
++	.led_control        =3D aq_fw2x_led_control,
+ };
 --=20
 2.17.1
 
