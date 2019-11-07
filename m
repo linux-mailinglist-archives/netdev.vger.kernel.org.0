@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60705F2391
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 01:52:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A42EFF2394
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 01:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732865AbfKGAw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 6 Nov 2019 19:52:26 -0500
-Received: from mga17.intel.com ([192.55.52.151]:37380 "EHLO mga17.intel.com"
+        id S1732871AbfKGAwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 6 Nov 2019 19:52:30 -0500
+Received: from mga04.intel.com ([192.55.52.120]:48726 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732853AbfKGAwY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732850AbfKGAwY (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 6 Nov 2019 19:52:24 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 16:52:23 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Nov 2019 16:52:23 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,276,1569308400"; 
-   d="scan'208";a="205514211"
+   d="scan'208";a="205514213"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga003.jf.intel.com with ESMTP; 06 Nov 2019 16:52:22 -0800
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Brett Creeley <brett.creeley@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v3 12/13] ice: Rename VF function ice_vc_dis_vf to match its behavior
-Date:   Wed,  6 Nov 2019 16:52:19 -0800
-Message-Id: <20191107005220.1039-13-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v3 13/13] ice: Fix return value when SR-IOV is not supported
+Date:   Wed,  6 Nov 2019 16:52:20 -0800
+Message-Id: <20191107005220.1039-14-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191107005220.1039-1-jeffrey.t.kirsher@intel.com>
 References: <20191107005220.1039-1-jeffrey.t.kirsher@intel.com>
@@ -39,66 +40,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brett Creeley <brett.creeley@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-ice_vc_dis_vf() tells iavf that it's going to perform a reset
-and then performs a software reset. This is misleading based on
-the function name because the VF does not get disabled. So fix
-this by changing the name to ice_vc_reset_vf().
+When the device is not capable of supporting SR-IOV -ENODEV is being
+returned; -EOPNOTSUPP is more appropriate.
 
-Signed-off-by: Brett Creeley <brett.creeley@intel.com>
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-index 3d8c231b0614..7ef2cc739587 100644
+index 7ef2cc739587..b4813ccc467d 100644
 --- a/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
 +++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_pf.c
-@@ -1496,12 +1496,10 @@ void ice_process_vflr_event(struct ice_pf *pf)
- }
+@@ -1408,7 +1408,7 @@ static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
  
- /**
-- * ice_vc_dis_vf - Disable a given VF via SW reset
-+ * ice_vc_reset_vf - Perform software reset on the VF after informing the AVF
-  * @vf: pointer to the VF info
-- *
-- * Disable the VF through a SW reset
-  */
--static void ice_vc_dis_vf(struct ice_vf *vf)
-+static void ice_vc_reset_vf(struct ice_vf *vf)
- {
- 	ice_vc_notify_vf_reset(vf);
- 	ice_reset_vf(vf, false);
-@@ -2541,7 +2539,7 @@ static int ice_vc_request_qs_msg(struct ice_vf *vf, u8 *msg)
- 	} else {
- 		/* request is successful, then reset VF */
- 		vf->num_req_qs = req_queues;
--		ice_vc_dis_vf(vf);
-+		ice_vc_reset_vf(vf);
- 		dev_info(&pf->pdev->dev,
- 			 "VF %d granted request of %u queues.\n",
- 			 vf->vf_id, req_queues);
-@@ -3168,7 +3166,7 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
- 		    "MAC on VF %d set to %pM. VF driver will be reinitialized\n",
- 		    vf_id, mac);
+ 	if (!test_bit(ICE_FLAG_SRIOV_CAPABLE, pf->flags)) {
+ 		dev_err(dev, "This device is not capable of SR-IOV\n");
+-		return -ENODEV;
++		return -EOPNOTSUPP;
+ 	}
  
--	ice_vc_dis_vf(vf);
-+	ice_vc_reset_vf(vf);
- 	return ret;
- }
- 
-@@ -3204,7 +3202,7 @@ int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted)
- 		return 0;
- 
- 	vf->trusted = trusted;
--	ice_vc_dis_vf(vf);
-+	ice_vc_reset_vf(vf);
- 	dev_info(&pf->pdev->dev, "VF %u is now %strusted\n",
- 		 vf_id, trusted ? "" : "un");
- 
+ 	if (pre_existing_vfs && pre_existing_vfs != num_vfs)
 -- 
 2.21.0
 
