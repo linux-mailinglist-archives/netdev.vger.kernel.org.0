@@ -2,170 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F157F28B3
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 09:07:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28467F28F2
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 09:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727686AbfKGIHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 03:07:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60672 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726791AbfKGIHV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 7 Nov 2019 03:07:21 -0500
-Received: from rapoport-lnx (nesher1.haifa.il.ibm.com [195.110.40.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14F2F2077C;
-        Thu,  7 Nov 2019 08:07:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573114040;
-        bh=Vs0vmuJFZJfCdBWbcef1JshwZZc9l+YrjwUdtsaNu3k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KypO2u9qQZOpCT97PagoJmJ05jNzzAwEOh5TQuJtaHcnw290kuyiCyRgXcpTDgoff
-         yL2r3/5Nv3OxL5iW1vDTUMldS7lvQVWUl8vBPDTErZIqUCYXU5EvD9rUB9CL4lekw9
-         M70s0IBFr/3wdhsUYXeg/j3kPNjd4MGq8LMTqoAU=
-Date:   Thu, 7 Nov 2019 10:07:07 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 05/18] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-Message-ID: <20191107080706.GB3239@rapoport-lnx>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-6-jhubbard@nvidia.com>
- <20191105131032.GG25005@rapoport-lnx>
- <9ac948a4-59bf-2427-2007-e460aad2848a@nvidia.com>
+        id S1727492AbfKGISk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 03:18:40 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:44595 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726800AbfKGISj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 03:18:39 -0500
+Received: by mail-lf1-f66.google.com with SMTP id v4so864177lfd.11;
+        Thu, 07 Nov 2019 00:18:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=jADw1Ub15ip6TZv8Btimu9F+3zScCWJmjUZMm+FL7DA=;
+        b=UQHYj64Y6csMMpoQebO1M2SaZf1u51eXHob46GR7H9RN4blGdOounDNeGtmWQB8Sax
+         +dCcwfVjA+pEmgIP3xmT2rSe7T6+T5NZbuERXGFCDUnIbx5s0F5H+Hy5HOAH37xmBBQr
+         cqFWFqvtA4TLjjfqjfXQtP4OmoP4s9Z7pexTDNE/Bl5bMHlYSZuKf695VocIQpGRs3gH
+         wmcudz2txqJHWPQicHeC86uhp+80XIt2MN8TdMx5+u+YltNezGfEe/0GivVC49jLTib0
+         g0oeUasFadoVi6q1AFUgzCipH7w7LtdHmQJzhHBMWWSwYJCPi7iieZj8IcOnu+4FnQiD
+         f5Yw==
+X-Gm-Message-State: APjAAAX6z7OKDT3m6JB/ZEeXiWkVeTUxFnOzRbzKClO6iDFSnVZ3a1VT
+        rnVyOvnEhABbdE57gAZ7NOg=
+X-Google-Smtp-Source: APXvYqyzAB1JQTvdRbAXpNyoBpPRjsDxJNFmC4MDIRKqKzrkv0XiJ0wimNnFwdnU46zYNtQyhli/Xw==
+X-Received: by 2002:ac2:4ace:: with SMTP id m14mr1456777lfp.130.1573114717581;
+        Thu, 07 Nov 2019 00:18:37 -0800 (PST)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id u2sm1100217ljg.34.2019.11.07.00.18.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Nov 2019 00:18:36 -0800 (PST)
+Received: from johan by xi.terra with local (Exim 4.92.3)
+        (envelope-from <johan@kernel.org>)
+        id 1iSd01-0002Ck-FV; Thu, 07 Nov 2019 09:18:37 +0100
+Date:   Thu, 7 Nov 2019 09:18:37 +0100
+From:   Johan Hovold <johan@kernel.org>
+To:     Pan Bian <bianpan2016@163.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Steve Winslow <swinslow@gmail.com>,
+        Young Xiao <92siuyang@gmail.com>,
+        Allison Randal <allison@lohutok.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] nfc: netlink: fix double device reference drop
+Message-ID: <20191107081837.GF11035@localhost>
+References: <1573108190-30836-1-git-send-email-bianpan2016@163.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9ac948a4-59bf-2427-2007-e460aad2848a@nvidia.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <1573108190-30836-1-git-send-email-bianpan2016@163.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 05, 2019 at 11:00:06AM -0800, John Hubbard wrote:
-> On 11/5/19 5:10 AM, Mike Rapoport wrote:
-> ...
-> >> ---
-> >>  Documentation/vm/index.rst          |   1 +
-> >>  Documentation/vm/pin_user_pages.rst | 212 ++++++++++++++++++++++
-> > 
-> > I think it belongs to Documentation/core-api.
+On Thu, Nov 07, 2019 at 02:29:50PM +0800, Pan Bian wrote:
+> The function nfc_put_device(dev) is called twice to drop the reference
+> to dev when there is no associated local llcp. Remove one of them to fix
+> the bug.
 > 
-> Done:
-> 
-> diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/index.rst
-> index ab0eae1c153a..413f7d7c8642 100644
-> --- a/Documentation/core-api/index.rst
-> +++ b/Documentation/core-api/index.rst
-> @@ -31,6 +31,7 @@ Core utilities
->     generic-radix-tree
->     memory-allocation
->     mm-api
-> +   pin_user_pages
->     gfp_mask-from-fs-io
->     timekeeping
->     boot-time-mm
+> Signed-off-by: Pan Bian <bianpan2016@163.com>
+> ---
+> v2: change subject of the patch
+> ---
+>  net/nfc/netlink.c | 2 --
+>  1 file changed, 2 deletions(-)
 
-Thanks!
- 
-> ...
-> >> diff --git a/Documentation/vm/pin_user_pages.rst b/Documentation/vm/pin_user_pages.rst
-> >> new file mode 100644
-> >> index 000000000000..3910f49ca98c
-> >> --- /dev/null
-> >> +++ b/Documentation/vm/pin_user_pages.rst
-> >> @@ -0,0 +1,212 @@
-> >> +.. SPDX-License-Identifier: GPL-2.0
-> >> +
-> >> +====================================================
-> >> +pin_user_pages() and related calls
-> >> +====================================================
-> > 
-> > I know this is too much to ask, but having pin_user_pages() a part of more
-> > general GUP description would be really great :)
-> > 
-> 
-> Yes, definitely. But until I saw the reaction to the pin_user_pages() API
-> family, I didn't want to write too much--it could have all been tossed out
-> in favor of a whole different API. But now that we've had some initial
-> reviews, I'm much more confident in being able to write about the larger 
-> API set.
-> 
-> So yes, I'll put that on my pending list.
-> 
-> 
-> ...
-> >> +This document describes the following functions: ::
-> >> +
-> >> + pin_user_pages
-> >> + pin_user_pages_fast
-> >> + pin_user_pages_remote
-> >> +
-> >> + pin_longterm_pages
-> >> + pin_longterm_pages_fast
-> >> + pin_longterm_pages_remote
-> >> +
-> >> +Basic description of FOLL_PIN
-> >> +=============================
-> >> +
-> >> +A new flag for get_user_pages ("gup") has been added: FOLL_PIN. FOLL_PIN has
-> > 
-> > Consider reading this after, say, half a year ;-)
-> > 
-> 
-> OK, OK. I knew when I wrote that that it was not going to stay new forever, but
-> somehow failed to write the right thing anyway. :) 
-> 
-> Here's a revised set of paragraphs:
-> 
-> Basic description of FOLL_PIN
-> =============================
-> 
-> FOLL_PIN and FOLL_LONGTERM are flags that can be passed to the get_user_pages*()
-> ("gup") family of functions. FOLL_PIN has significant interactions and
-> interdependencies with FOLL_LONGTERM, so both are covered here.
-> 
-> Both FOLL_PIN and FOLL_LONGTERM are internal to gup, meaning that neither
-> FOLL_PIN nor FOLL_LONGTERM should not appear at the gup call sites. This allows
-> the associated wrapper functions  (pin_user_pages() and others) to set the
-> correct combination of these flags, and to check for problems as well.
+Reviewed-by: Johan Hovold <johan@kernel.org>
 
-Great, thanks! 
- 
-> thanks,
-> 
-> John Hubbard
-> NVIDIA
+In the future, please try to track down the commits introducing the bugs
+you fix. That will help not only reviewers, but also the stable
+maintainers.
 
--- 
-Sincerely yours,
-Mike.
+In this case you could have added:
+
+Fixes: 52feb444a903 ("NFC: Extend netlink interface for LTO, RW, and MIUX parameters support")
+Fixes: d9b8d8e19b07 ("NFC: llcp: Service Name Lookup netlink interface")
+
+> diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+> index 17e6ca62f1be..afde0d763039 100644
+> --- a/net/nfc/netlink.c
+> +++ b/net/nfc/netlink.c
+> @@ -1099,7 +1099,6 @@ static int nfc_genl_llc_set_params(struct sk_buff *skb, struct genl_info *info)
+>  
+>  	local = nfc_llcp_find_local(dev);
+>  	if (!local) {
+> -		nfc_put_device(dev);
+>  		rc = -ENODEV;
+>  		goto exit;
+>  	}
+> @@ -1159,7 +1158,6 @@ static int nfc_genl_llc_sdreq(struct sk_buff *skb, struct genl_info *info)
+>  
+>  	local = nfc_llcp_find_local(dev);
+>  	if (!local) {
+> -		nfc_put_device(dev);
+>  		rc = -ENODEV;
+>  		goto exit;
+>  	}
+
+Johan
