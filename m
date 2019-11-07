@@ -2,353 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8872F38E2
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 20:43:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4792F38F6
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 20:51:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727208AbfKGTnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 14:43:15 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:2558 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725385AbfKGTnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 14:43:14 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc473970000>; Thu, 07 Nov 2019 11:42:15 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Thu, 07 Nov 2019 11:43:11 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Thu, 07 Nov 2019 11:43:11 -0800
-Received: from [10.25.75.102] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 7 Nov
- 2019 19:42:46 +0000
-Subject: Re: [PATCH V11 4/6] mdev: introduce virtio device and its device ops
-To:     Jason Wang <jasowang@redhat.com>, <kvm@vger.kernel.org>,
-        <linux-s390@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <intel-gfx@lists.freedesktop.org>,
-        <intel-gvt-dev@lists.freedesktop.org>,
-        <alex.williamson@redhat.com>, <mst@redhat.com>,
-        <tiwei.bie@intel.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <cohuck@redhat.com>,
-        <maxime.coquelin@redhat.com>, <cunming.liang@intel.com>,
-        <zhihong.wang@intel.com>, <rob.miller@broadcom.com>,
-        <xiao.w.wang@intel.com>, <haotian.wang@sifive.com>,
-        <zhenyuw@linux.intel.com>, <zhi.a.wang@intel.com>,
-        <jani.nikula@linux.intel.com>, <joonas.lahtinen@linux.intel.com>,
-        <rodrigo.vivi@intel.com>, <airlied@linux.ie>, <daniel@ffwll.ch>,
-        <farman@linux.ibm.com>, <pasic@linux.ibm.com>,
-        <sebott@linux.ibm.com>, <oberpar@linux.ibm.com>,
-        <heiko.carstens@de.ibm.com>, <gor@linux.ibm.com>,
-        <borntraeger@de.ibm.com>, <akrowiak@linux.ibm.com>,
-        <freude@linux.ibm.com>, <lingshan.zhu@intel.com>,
-        <eperezma@redhat.com>, <lulu@redhat.com>, <parav@mellanox.com>,
-        <christophe.de.dinechin@gmail.com>, <kevin.tian@intel.com>,
-        <stefanha@redhat.com>, <rdunlap@infradead.org>
-References: <20191107151109.23261-1-jasowang@redhat.com>
- <20191107151109.23261-5-jasowang@redhat.com>
-X-Nvconfidentiality: public
-From:   Kirti Wankhede <kwankhede@nvidia.com>
-Message-ID: <301e5741-6745-5884-61e7-ba82fcc49f55@nvidia.com>
-Date:   Fri, 8 Nov 2019 01:12:42 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
-MIME-Version: 1.0
-In-Reply-To: <20191107151109.23261-5-jasowang@redhat.com>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573155735; bh=DmkpPaqW07geXEtNLCi0eY3fMLBaOMVl4Y8y3i+qm0s=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=To4w6dEkS+YPzafmkTrf+L0+Y+SbOseJHVQN3aT/Qkkpzo51qpseGGMzj/u5Joux8
-         bbtHqezk+UUuMwRLoCQ17jypPhnpjL2QmFKMen8Fcq4H0nyqxUnEKVVUXEVMQAtQ6/
-         daKhhS+G5Z7e1hkk23nZlq9HrCCYFkjy6deFgw4CMhT7gYKaC4X+tX+DxdGJh9p2MD
-         MKkKYsdsGrR6xEhJRKUC/8C7IF/gxIg0RO78glHOQ4ahSgHowP3PO2f5UsdBn8t6jD
-         yyVPJH96JQNubLDSIFtJTnerQGzXXDhblM1iuWhwK+Gfy+iCx3msqhd+VVH8vbDpAO
-         ByqptBufScNsQ==
+        id S1726765AbfKGTvW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 14:51:22 -0500
+Received: from mail-ua1-f74.google.com ([209.85.222.74]:54909 "EHLO
+        mail-ua1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbfKGTvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 14:51:22 -0500
+Received: by mail-ua1-f74.google.com with SMTP id x2so1255079uaj.21
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 11:51:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=zhpyjuWZ/k1ezMkhm0UPYsDdw1y5VuMvGibPUKSdDNQ=;
+        b=fCq5CsISi+IOuuQXWPqEzzpJY1/BlB3fqc46UFe2NuwpRfzyjYQ6b5IH3RPf4aPNBf
+         FMpph1/RcexnxTW2i+uMliCB4KYfVOqIlwob/hBzTitO7hn1qyoYFmfy1HEa/+ClkRnA
+         bHespfwLjKv3Z03oGbxkQhcNVWd0hKAXWUe1h9wcAnTxDQAD6U8St9uyTuvq6XF6ORBF
+         qRibDJygiIKbktuwgWQYfDC4jAbvMLXy1kLdfVFEwnqyDcb2JK67ZI8luWQI9qgT9NSz
+         t6dkNks1BQNTAeYdAhctDiyH+RhOPkpTtwxh2SxjOR+jQIZEK5S/oSOU5ReMKSYigtoc
+         zYxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=zhpyjuWZ/k1ezMkhm0UPYsDdw1y5VuMvGibPUKSdDNQ=;
+        b=ORjA0VW167TESlOkuqCuEKJMNcnCsILCkWqdJ9fi5QSj3pmYNXdehEG2xGQbnvOZYu
+         tcaDunrAsbvi5E87GqoxzsmAPGlyy3jdF1UUZ/uc88ggxDh3KzbaOmq9db4xmB0A0N6f
+         Aq1Bn4gnFcN5jCcFL+ECxZH1MNbARjqHSqaHi9CkrlEhKFlSZEqNlZ3UAvrpZ3vPRbnq
+         WObBmX1T6VFfr3d+4PyAIuTpha86YOvSXprIMUTHjZzqsm8hEj41zNHbNcYBGgvuCI/8
+         FW5cXLgh4Q5nMIYq7lfcXetKDzI+y6HpMllp6ciAo368QG3OJ1Rd8RyZ3IDeasFol9h+
+         pvTA==
+X-Gm-Message-State: APjAAAXe9olBCwj2snEAs7iiqFnhyDn3SnA12Lu6ok6UGYCny3q1VGyc
+        KbiGRChM/ZJVO0hM8dJRYa8H/XU3Ex0Dcg==
+X-Google-Smtp-Source: APXvYqx3UcoPLpbHZ8Gu/eAo+vBlWWgIUCiMcw/93rp7KwlLSexK5DKfFjvHQfFgEZP+NmxJwJOR+BeieRiPCQ==
+X-Received: by 2002:ab0:240d:: with SMTP id f13mr3452169uan.71.1573156281611;
+ Thu, 07 Nov 2019 11:51:21 -0800 (PST)
+Date:   Thu,  7 Nov 2019 11:51:18 -0800
+Message-Id: <20191107195118.200387-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH net-next] tcp: Remove one extra ktime_get_ns() from cookie_init_timestamp
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+tcp_make_synack() already uses tcp_clock_ns(), and can pass
+the value to cookie_init_timestamp() to avoid another call
+to ktime_get_ns() helper.
 
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/net/tcp.h     | 12 +++++++++---
+ net/ipv4/syncookies.c |  4 ++--
+ net/ipv4/tcp_output.c |  2 +-
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
-On 11/7/2019 8:41 PM, Jason Wang wrote:
-> This patch implements basic support for mdev driver that supports
-> virtio transport for kernel virtio driver.
-> 
-> Reviewed-by: Cornelia Huck <cohuck@redhat.com>
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index ab4eb5eb5d0705b815e5eec3a772d4776be8653e..36f195fb576a26237e81a5890c5a2e9d9e304722 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -537,7 +537,7 @@ static inline u32 tcp_cookie_time(void)
+ u32 __cookie_v4_init_sequence(const struct iphdr *iph, const struct tcphdr *th,
+ 			      u16 *mssp);
+ __u32 cookie_v4_init_sequence(const struct sk_buff *skb, __u16 *mss);
+-u64 cookie_init_timestamp(struct request_sock *req);
++u64 cookie_init_timestamp(struct request_sock *req, u64 now);
+ bool cookie_timestamp_decode(const struct net *net,
+ 			     struct tcp_options_received *opt);
+ bool cookie_ecn_ok(const struct tcp_options_received *opt,
+@@ -757,10 +757,16 @@ static inline u32 tcp_time_stamp(const struct tcp_sock *tp)
+ 	return div_u64(tp->tcp_mstamp, USEC_PER_SEC / TCP_TS_HZ);
+ }
+ 
++/* Convert a nsec timestamp into TCP TSval timestamp (ms based currently) */
++static inline u32 tcp_ns_to_ts(u64 ns)
++{
++	return div_u64(ns, NSEC_PER_SEC / TCP_TS_HZ);
++}
++
+ /* Could use tcp_clock_us() / 1000, but this version uses a single divide */
+ static inline u32 tcp_time_stamp_raw(void)
+ {
+-	return div_u64(tcp_clock_ns(), NSEC_PER_SEC / TCP_TS_HZ);
++	return tcp_ns_to_ts(tcp_clock_ns());
+ }
+ 
+ void tcp_mstamp_refresh(struct tcp_sock *tp);
+@@ -772,7 +778,7 @@ static inline u32 tcp_stamp_us_delta(u64 t1, u64 t0)
+ 
+ static inline u32 tcp_skb_timestamp(const struct sk_buff *skb)
+ {
+-	return div_u64(skb->skb_mstamp_ns, NSEC_PER_SEC / TCP_TS_HZ);
++	return tcp_ns_to_ts(skb->skb_mstamp_ns);
+ }
+ 
+ /* provide the departure time in us unit */
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 535b69326f66aa0733d8a443f1083a997f9683f2..345b2b0ff618509bc50e244c2ab44c0bbdfbba3e 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -62,10 +62,10 @@ static u32 cookie_hash(__be32 saddr, __be32 daddr, __be16 sport, __be16 dport,
+  * Since subsequent timestamps use the normal tcp_time_stamp value, we
+  * must make sure that the resulting initial timestamp is <= tcp_time_stamp.
+  */
+-u64 cookie_init_timestamp(struct request_sock *req)
++u64 cookie_init_timestamp(struct request_sock *req, u64 now)
+ {
+ 	struct inet_request_sock *ireq;
+-	u32 ts, ts_now = tcp_time_stamp_raw();
++	u32 ts, ts_now = tcp_ns_to_ts(now);
+ 	u32 options = 0;
+ 
+ 	ireq = inet_rsk(req);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 0488607c5cd3615633af207f0bb41bea0c0176ce..be6d22b8190fa375074062032105879270af4be5 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3290,7 +3290,7 @@ struct sk_buff *tcp_make_synack(const struct sock *sk, struct dst_entry *dst,
+ 	now = tcp_clock_ns();
+ #ifdef CONFIG_SYN_COOKIES
+ 	if (unlikely(req->cookie_ts))
+-		skb->skb_mstamp_ns = cookie_init_timestamp(req);
++		skb->skb_mstamp_ns = cookie_init_timestamp(req, now);
+ 	else
+ #endif
+ 	{
+-- 
+2.24.0.432.g9d3f5f5b63-goog
 
-I'm not expert on virtio part, my ack is from mdev perspective.
-
-Reviewed-by: Kirti Wankhede <kwankhede@nvidia.com>
-
-Thanks,
-Kirti
-
-> ---
->   MAINTAINERS                      |   1 +
->   drivers/vfio/mdev/mdev_core.c    |  21 +++++
->   drivers/vfio/mdev/mdev_private.h |   2 +
->   include/linux/mdev.h             |   6 ++
->   include/linux/mdev_virtio_ops.h  | 147 +++++++++++++++++++++++++++++++
->   5 files changed, 177 insertions(+)
->   create mode 100644 include/linux/mdev_virtio_ops.h
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index f661d13344d6..4997957443df 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17248,6 +17248,7 @@ F:	include/linux/virtio*.h
->   F:	include/uapi/linux/virtio_*.h
->   F:	drivers/crypto/virtio/
->   F:	mm/balloon_compaction.c
-> +F:	include/linux/mdev_virtio_ops.h
->   
->   VIRTIO BLOCK AND SCSI DRIVERS
->   M:	"Michael S. Tsirkin" <mst@redhat.com>
-> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
-> index 4e70f19ac145..c58253404ed5 100644
-> --- a/drivers/vfio/mdev/mdev_core.c
-> +++ b/drivers/vfio/mdev/mdev_core.c
-> @@ -78,6 +78,27 @@ const struct mdev_vfio_device_ops *mdev_get_vfio_ops(struct mdev_device *mdev)
->   }
->   EXPORT_SYMBOL(mdev_get_vfio_ops);
->   
-> +/*
-> + * Specify the virtio device ops for the mdev device, this
-> + * must be called during create() callback for virtio mdev device.
-> + */
-> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> +			 const struct mdev_virtio_device_ops *virtio_ops)
-> +{
-> +	mdev_set_class(mdev, MDEV_CLASS_ID_VIRTIO);
-> +	mdev->virtio_ops = virtio_ops;
-> +}
-> +EXPORT_SYMBOL(mdev_set_virtio_ops);
-> +
-> +/* Get the virtio device ops for the mdev device. */
-> +const struct mdev_virtio_device_ops *
-> +mdev_get_virtio_ops(struct mdev_device *mdev)
-> +{
-> +	WARN_ON(mdev->class_id != MDEV_CLASS_ID_VIRTIO);
-> +	return mdev->virtio_ops;
-> +}
-> +EXPORT_SYMBOL(mdev_get_virtio_ops);
-> +
->   struct device *mdev_dev(struct mdev_device *mdev)
->   {
->   	return &mdev->dev;
-> diff --git a/drivers/vfio/mdev/mdev_private.h b/drivers/vfio/mdev/mdev_private.h
-> index 411227373625..2c74dd032409 100644
-> --- a/drivers/vfio/mdev/mdev_private.h
-> +++ b/drivers/vfio/mdev/mdev_private.h
-> @@ -11,6 +11,7 @@
->   #define MDEV_PRIVATE_H
->   
->   #include <linux/mdev_vfio_ops.h>
-> +#include <linux/mdev_virtio_ops.h>
->   
->   int  mdev_bus_register(void);
->   void mdev_bus_unregister(void);
-> @@ -38,6 +39,7 @@ struct mdev_device {
->   	u16 class_id;
->   	union {
->   		const struct mdev_vfio_device_ops *vfio_ops;
-> +		const struct mdev_virtio_device_ops *virtio_ops;
->   	};
->   };
->   
-> diff --git a/include/linux/mdev.h b/include/linux/mdev.h
-> index 9e37506d1987..f3d75a60c2b5 100644
-> --- a/include/linux/mdev.h
-> +++ b/include/linux/mdev.h
-> @@ -17,6 +17,7 @@
->   
->   struct mdev_device;
->   struct mdev_vfio_device_ops;
-> +struct mdev_virtio_device_ops;
->   
->   /*
->    * Called by the parent device driver to set the device which represents
-> @@ -112,6 +113,10 @@ void mdev_set_class(struct mdev_device *mdev, u16 id);
->   void mdev_set_vfio_ops(struct mdev_device *mdev,
->   		       const struct mdev_vfio_device_ops *vfio_ops);
->   const struct mdev_vfio_device_ops *mdev_get_vfio_ops(struct mdev_device *mdev);
-> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> +			 const struct mdev_virtio_device_ops *virtio_ops);
-> +const struct mdev_virtio_device_ops *
-> +mdev_get_virtio_ops(struct mdev_device *mdev);
->   
->   extern struct bus_type mdev_bus_type;
->   
-> @@ -127,6 +132,7 @@ struct mdev_device *mdev_from_dev(struct device *dev);
->   
->   enum {
->   	MDEV_CLASS_ID_VFIO = 1,
-> +	MDEV_CLASS_ID_VIRTIO = 2,
->   	/* New entries must be added here */
->   };
->   
-> diff --git a/include/linux/mdev_virtio_ops.h b/include/linux/mdev_virtio_ops.h
-> new file mode 100644
-> index 000000000000..8951331c6629
-> --- /dev/null
-> +++ b/include/linux/mdev_virtio_ops.h
-> @@ -0,0 +1,147 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Virtio mediated device driver
-> + *
-> + * Copyright 2019, Red Hat Corp.
-> + *     Author: Jason Wang <jasowang@redhat.com>
-> + */
-> +#ifndef MDEV_VIRTIO_OPS_H
-> +#define MDEV_VIRTIO_OPS_H
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/mdev.h>
-> +#include <uapi/linux/vhost.h>
-> +
-> +#define VIRTIO_MDEV_DEVICE_API_STRING		"virtio-mdev"
-> +
-> +struct virtio_mdev_callback {
-> +	irqreturn_t (*callback)(void *data);
-> +	void *private;
-> +};
-> +
-> +/**
-> + * struct mdev_virtio_device_ops - Structure to be registered for each
-> + * mdev device to register the device for virtio/vhost drivers.
-> + *
-> + * The callbacks are mandatory unless explicitly mentioned.
-> + *
-> + * @set_vq_address:		Set the address of virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				@desc_area: address of desc area
-> + *				@driver_area: address of driver area
-> + *				@device_area: address of device area
-> + *				Returns integer: success (0) or error (< 0)
-> + * @set_vq_num:			Set the size of virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				@num: the size of virtqueue
-> + * @kick_vq:			Kick the virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + * @set_vq_cb:			Set the interrupt callback function for
-> + *				a virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				@cb: virtio-mdev interrupt callback structure
-> + * @set_vq_ready:		Set ready status for a virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				@ready: ready (true) not ready(false)
-> + * @get_vq_ready:		Get ready status for a virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				Returns boolean: ready (true) or not (false)
-> + * @set_vq_state:		Set the state for a virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				@state: virtqueue state (last_avail_idx)
-> + *				Returns integer: success (0) or error (< 0)
-> + * @get_vq_state:		Get the state for a virtqueue
-> + *				@mdev: mediated device
-> + *				@idx: virtqueue index
-> + *				Returns virtqueue state (last_avail_idx)
-> + * @get_vq_align:		Get the virtqueue align requirement
-> + *				for the device
-> + *				@mdev: mediated device
-> + *				Returns virtqueue algin requirement
-> + * @get_features:		Get virtio features supported by the device
-> + *				@mdev: mediated device
-> + *				Returns the virtio features support by the
-> + *				device
-> + * @set_features:		Set virtio features supported by the driver
-> + *				@mdev: mediated device
-> + *				@features: feature support by the driver
-> + *				Returns integer: success (0) or error (< 0)
-> + * @set_config_cb:		Set the config interrupt callback
-> + *				@mdev: mediated device
-> + *				@cb: virtio-mdev interrupt callback structure
-> + * @get_vq_num_max:		Get the max size of virtqueue
-> + *				@mdev: mediated device
-> + *				Returns u16: max size of virtqueue
-> + * @get_device_id:		Get virtio device id
-> + *				@mdev: mediated device
-> + *				Returns u32: virtio device id
-> + * @get_vendor_id:		Get id for the vendor that provides this device
-> + *				@mdev: mediated device
-> + *				Returns u32: virtio vendor id
-> + * @get_status:			Get the device status
-> + *				@mdev: mediated device
-> + *				Returns u8: virtio device status
-> + * @set_status:			Set the device status
-> + *				@mdev: mediated device
-> + *				@status: virtio device status
-> + * @get_config:			Read from device specific configuration space
-> + *				@mdev: mediated device
-> + *				@offset: offset from the beginning of
-> + *				configuration space
-> + *				@buf: buffer used to read to
-> + *				@len: the length to read from
-> + *				configration space
-> + * @set_config:			Write to device specific configuration space
-> + *				@mdev: mediated device
-> + *				@offset: offset from the beginning of
-> + *				configuration space
-> + *				@buf: buffer used to write from
-> + *				@len: the length to write to
-> + *				configration space
-> + * @get_generation:		Get device config generaton (optional)
-> + *				@mdev: mediated device
-> + *				Returns u32: device generation
-> + */
-> +struct mdev_virtio_device_ops {
-> +	/* Virtqueue ops */
-> +	int (*set_vq_address)(struct mdev_device *mdev,
-> +			      u16 idx, u64 desc_area, u64 driver_area,
-> +			      u64 device_area);
-> +	void (*set_vq_num)(struct mdev_device *mdev, u16 idx, u32 num);
-> +	void (*kick_vq)(struct mdev_device *mdev, u16 idx);
-> +	void (*set_vq_cb)(struct mdev_device *mdev, u16 idx,
-> +			  struct virtio_mdev_callback *cb);
-> +	void (*set_vq_ready)(struct mdev_device *mdev, u16 idx, bool ready);
-> +	bool (*get_vq_ready)(struct mdev_device *mdev, u16 idx);
-> +	int (*set_vq_state)(struct mdev_device *mdev, u16 idx, u64 state);
-> +	u64 (*get_vq_state)(struct mdev_device *mdev, u16 idx);
-> +
-> +	/* Virtio device ops */
-> +	u16 (*get_vq_align)(struct mdev_device *mdev);
-> +	u64 (*get_features)(struct mdev_device *mdev);
-> +	int (*set_features)(struct mdev_device *mdev, u64 features);
-> +	void (*set_config_cb)(struct mdev_device *mdev,
-> +			      struct virtio_mdev_callback *cb);
-> +	u16 (*get_vq_num_max)(struct mdev_device *mdev);
-> +	u32 (*get_device_id)(struct mdev_device *mdev);
-> +	u32 (*get_vendor_id)(struct mdev_device *mdev);
-> +	u8 (*get_status)(struct mdev_device *mdev);
-> +	void (*set_status)(struct mdev_device *mdev, u8 status);
-> +	void (*get_config)(struct mdev_device *mdev, unsigned int offset,
-> +			   void *buf, unsigned int len);
-> +	void (*set_config)(struct mdev_device *mdev, unsigned int offset,
-> +			   const void *buf, unsigned int len);
-> +	u32 (*get_generation)(struct mdev_device *mdev);
-> +};
-> +
-> +void mdev_set_virtio_ops(struct mdev_device *mdev,
-> +			 const struct mdev_virtio_device_ops *virtio_ops);
-> +
-> +#endif
-> 
