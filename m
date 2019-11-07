@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83541F274B
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 06:47:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52398F2759
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 06:47:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726834AbfKGFrL convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 7 Nov 2019 00:47:11 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:17886 "EHLO
+        id S1726953AbfKGFrc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 7 Nov 2019 00:47:32 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62918 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726587AbfKGFrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 00:47:09 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA75dfv1027387
-        for <netdev@vger.kernel.org>; Wed, 6 Nov 2019 21:47:08 -0800
+        by vger.kernel.org with ESMTP id S1726565AbfKGFrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 00:47:32 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA75i6fp016010
+        for <netdev@vger.kernel.org>; Wed, 6 Nov 2019 21:47:31 -0800
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41u2kg88-10
+        by mx0a-00082601.pphosted.com with ESMTP id 2w41u0kgxc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 21:47:08 -0800
-Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Wed, 06 Nov 2019 21:47:31 -0800
+Received: from 2401:db00:2120:81dc:face:0:23:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 6 Nov 2019 21:47:02 -0800
+ Wed, 6 Nov 2019 21:47:05 -0800
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 9212D760BC0; Wed,  6 Nov 2019 21:47:00 -0800 (PST)
+        id 9F024760BC0; Wed,  6 Nov 2019 21:47:02 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <x86@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 08/17] selftests/bpf: Add fexit tests for BPF trampoline
-Date:   Wed, 6 Nov 2019 21:46:35 -0800
-Message-ID: <20191107054644.1285697-9-ast@kernel.org>
+Subject: [PATCH v2 bpf-next 09/17] selftests/bpf: Add combined fentry/fexit test
+Date:   Wed, 6 Nov 2019 21:46:36 -0800
+Message-ID: <20191107054644.1285697-10-ast@kernel.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191107054644.1285697-1-ast@kernel.org>
 References: <20191107054644.1285697-1-ast@kernel.org>
@@ -43,10 +43,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-06_09:2019-11-06,2019-11-06 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 suspectscore=1 priorityscore=1501 malwarescore=0 phishscore=0
- adultscore=0 impostorscore=0 mlxlogscore=886 mlxscore=0 clxscore=1015
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ suspectscore=1 bulkscore=0 clxscore=1015 priorityscore=1501 adultscore=0
+ lowpriorityscore=0 mlxscore=0 spamscore=0 impostorscore=0 mlxlogscore=858
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1911070059
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -54,62 +54,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add fexit tests for BPF trampoline that checks kernel functions
-with up to 6 arguments of different sizes and their return values.
+Add a combined fentry/fexit test.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- .../selftests/bpf/prog_tests/fexit_test.c     | 64 ++++++++++++
- .../testing/selftests/bpf/progs/fexit_test.c  | 98 +++++++++++++++++++
- 2 files changed, 162 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/fexit_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/fexit_test.c
+ .../selftests/bpf/prog_tests/fentry_fexit.c   | 90 +++++++++++++++++++
+ 1 file changed, 90 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/fexit_test.c b/tools/testing/selftests/bpf/prog_tests/fexit_test.c
+diff --git a/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c b/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
 new file mode 100644
-index 000000000000..f99013222c74
+index 000000000000..40bcff2cc274
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/fexit_test.c
-@@ -0,0 +1,64 @@
++++ b/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c
+@@ -0,0 +1,90 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright (c) 2019 Facebook */
 +#include <test_progs.h>
 +
-+void test_fexit_test(void)
++void test_fentry_fexit(void)
 +{
-+	struct bpf_prog_load_attr attr = {
++	struct bpf_prog_load_attr attr_fentry = {
++		.file = "./fentry_test.o",
++	};
++	struct bpf_prog_load_attr attr_fexit = {
 +		.file = "./fexit_test.o",
 +	};
 +
-+	char prog_name[] = "fexit/bpf_fentry_testX";
-+	struct bpf_object *obj = NULL, *pkt_obj;
++	struct bpf_object *obj_fentry = NULL, *obj_fexit = NULL, *pkt_obj;
++	struct bpf_map *data_map_fentry, *data_map_fexit;
++	char fentry_name[] = "fentry/bpf_fentry_testX";
++	char fexit_name[] = "fexit/bpf_fentry_testX";
 +	int err, pkt_fd, kfree_skb_fd, i;
-+	struct bpf_link *link[6] = {};
-+	struct bpf_program *prog[6];
++	struct bpf_link *link[12] = {};
++	struct bpf_program *prog[12];
 +	__u32 duration, retval;
-+	struct bpf_map *data_map;
 +	const int zero = 0;
-+	u64 result[6];
++	u64 result[12];
 +
 +	err = bpf_prog_load("./test_pkt_access.o", BPF_PROG_TYPE_SCHED_CLS,
 +			    &pkt_obj, &pkt_fd);
 +	if (CHECK(err, "prog_load sched cls", "err %d errno %d\n", err, errno))
 +		return;
-+	err = bpf_prog_load_xattr(&attr, &obj, &kfree_skb_fd);
++	err = bpf_prog_load_xattr(&attr_fentry, &obj_fentry, &kfree_skb_fd);
++	if (CHECK(err, "prog_load fail", "err %d errno %d\n", err, errno))
++		goto close_prog;
++	err = bpf_prog_load_xattr(&attr_fexit, &obj_fexit, &kfree_skb_fd);
 +	if (CHECK(err, "prog_load fail", "err %d errno %d\n", err, errno))
 +		goto close_prog;
 +
 +	for (i = 0; i < 6; i++) {
-+		prog_name[sizeof(prog_name) - 2] = '1' + i;
-+		prog[i] = bpf_object__find_program_by_title(obj, prog_name);
-+		if (CHECK(!prog[i], "find_prog", "prog %s not found\n", prog_name))
++		fentry_name[sizeof(fentry_name) - 2] = '1' + i;
++		prog[i] = bpf_object__find_program_by_title(obj_fentry, fentry_name);
++		if (CHECK(!prog[i], "find_prog", "prog %s not found\n", fentry_name))
 +			goto close_prog;
 +		link[i] = bpf_program__attach_trace(prog[i]);
 +		if (CHECK(IS_ERR(link[i]), "attach_trace", "failed to link\n"))
 +			goto close_prog;
 +	}
-+	data_map = bpf_object__find_map_by_name(obj, "fexit_te.bss");
-+	if (CHECK(!data_map, "find_data_map", "data map not found\n"))
++	data_map_fentry = bpf_object__find_map_by_name(obj_fentry, "fentry_t.bss");
++	if (CHECK(!data_map_fentry, "find_data_map", "data map not found\n"))
++		goto close_prog;
++
++	for (i = 6; i < 12; i++) {
++		fexit_name[sizeof(fexit_name) - 2] = '1' + i - 6;
++		prog[i] = bpf_object__find_program_by_title(obj_fexit, fexit_name);
++		if (CHECK(!prog[i], "find_prog", "prog %s not found\n", fexit_name))
++			goto close_prog;
++		link[i] = bpf_program__attach_trace(prog[i]);
++		if (CHECK(IS_ERR(link[i]), "attach_trace", "failed to link\n"))
++			goto close_prog;
++	}
++	data_map_fexit = bpf_object__find_map_by_name(obj_fexit, "fexit_te.bss");
++	if (CHECK(!data_map_fexit, "find_data_map", "data map not found\n"))
 +		goto close_prog;
 +
 +	err = bpf_prog_test_run(pkt_fd, 1, &pkt_v6, sizeof(pkt_v6),
@@ -118,126 +135,28 @@ index 000000000000..f99013222c74
 +	      "err %d errno %d retval %d duration %d\n",
 +	      err, errno, retval, duration);
 +
-+	err = bpf_map_lookup_elem(bpf_map__fd(data_map), &zero, &result);
++	err = bpf_map_lookup_elem(bpf_map__fd(data_map_fentry), &zero, &result);
 +	if (CHECK(err, "get_result",
 +		  "failed to get output data: %d\n", err))
 +		goto close_prog;
 +
-+	for (i = 0; i < 6; i++)
++	err = bpf_map_lookup_elem(bpf_map__fd(data_map_fexit), &zero, result + 6);
++	if (CHECK(err, "get_result",
++		  "failed to get output data: %d\n", err))
++		goto close_prog;
++
++	for (i = 0; i < 12; i++)
 +		if (CHECK(result[i] != 1, "result", "bpf_fentry_test%d failed err %ld\n",
-+			  i + 1, result[i]))
++			  i % 6 + 1, result[i]))
 +			goto close_prog;
 +
 +close_prog:
-+	for (i = 0; i < 6; i++)
++	for (i = 0; i < 12; i++)
 +		if (!IS_ERR_OR_NULL(link[i]))
 +			bpf_link__destroy(link[i]);
-+	bpf_object__close(obj);
++	bpf_object__close(obj_fentry);
++	bpf_object__close(obj_fexit);
 +	bpf_object__close(pkt_obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/fexit_test.c b/tools/testing/selftests/bpf/progs/fexit_test.c
-new file mode 100644
-index 000000000000..8b98b1a51784
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/fexit_test.c
-@@ -0,0 +1,98 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Facebook */
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct test1 {
-+	ks32 a;
-+	ks32 ret;
-+};
-+static volatile __u64 test1_result;
-+SEC("fexit/bpf_fentry_test1")
-+int test1(struct test1 *ctx)
-+{
-+	test1_result = ctx->a == 1 && ctx->ret == 2;
-+	return 0;
-+}
-+
-+struct test2 {
-+	ks32 a;
-+	ku64 b;
-+	ks32 ret;
-+};
-+static volatile __u64 test2_result;
-+SEC("fexit/bpf_fentry_test2")
-+int test2(struct test2 *ctx)
-+{
-+	test2_result = ctx->a == 2 && ctx->b == 3 && ctx->ret == 5;
-+	return 0;
-+}
-+
-+struct test3 {
-+	ks8 a;
-+	ks32 b;
-+	ku64 c;
-+	ks32 ret;
-+};
-+static volatile __u64 test3_result;
-+SEC("fexit/bpf_fentry_test3")
-+int test3(struct test3 *ctx)
-+{
-+	test3_result = ctx->a == 4 && ctx->b == 5 && ctx->c == 6 &&
-+		ctx->ret == 15;
-+	return 0;
-+}
-+
-+struct test4 {
-+	void *a;
-+	ks8 b;
-+	ks32 c;
-+	ku64 d;
-+	ks32 ret;
-+};
-+static volatile __u64 test4_result;
-+SEC("fexit/bpf_fentry_test4")
-+int test4(struct test4 *ctx)
-+{
-+	test4_result = ctx->a == (void *)7 && ctx->b == 8 && ctx->c == 9 &&
-+		ctx->d == 10 && ctx->ret == 34;
-+	return 0;
-+}
-+
-+struct test5 {
-+	ku64 a;
-+	void *b;
-+	ks16 c;
-+	ks32 d;
-+	ku64 e;
-+	ks32 ret;
-+};
-+static volatile __u64 test5_result;
-+SEC("fexit/bpf_fentry_test5")
-+int test5(struct test5 *ctx)
-+{
-+	test5_result = ctx->a == 11 && ctx->b == (void *)12 && ctx->c == 13 &&
-+		ctx->d == 14 && ctx->e == 15 && ctx->ret == 65;
-+	return 0;
-+}
-+
-+struct test6 {
-+	ku64 a;
-+	void *b;
-+	ks16 c;
-+	ks32 d;
-+	void *e;
-+	ks64 f;
-+	ks32 ret;
-+};
-+static volatile __u64 test6_result;
-+SEC("fexit/bpf_fentry_test6")
-+int test6(struct test6 *ctx)
-+{
-+	test6_result = ctx->a == 16 && ctx->b == (void *)17 && ctx->c == 18 &&
-+		ctx->d == 19 && ctx->e == (void *)20 && ctx->f == 21 &&
-+		ctx->ret == 111;
-+	return 0;
 +}
 -- 
 2.23.0
