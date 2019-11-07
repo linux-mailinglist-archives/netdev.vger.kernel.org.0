@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20875F3048
-	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:44:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 044F3F3046
+	for <lists+netdev@lfdr.de>; Thu,  7 Nov 2019 14:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389661AbfKGNoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 08:44:09 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:32797 "EHLO
+        id S2389632AbfKGNoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 08:44:01 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:51681 "EHLO
         mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388681AbfKGNmG (ORCPT
+        with ESMTP id S2388913AbfKGNmG (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 08:42:06 -0500
-Received: by mail-il1-f198.google.com with SMTP id z14so2675280ill.0
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:42:05 -0800 (PST)
+Received: by mail-il1-f198.google.com with SMTP id x2so2614417ilk.18
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 05:42:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
          :from:to;
-        bh=JSje/AH07oDcPbgdMNB1SmnapsrACftv+UWeFURGS+o=;
-        b=GOHjPIISdNEW7tXxOHnoVpErgBQMaD6EvUFGnBcqQcGxyCq1bT8uTefZqd/EIn15Br
-         W1Rcu0huL8K/O6ixpBGb+kAOAMQjiXZ0ts9sYwgglvScVvLpIaMTpMCTHWxfNqEKJFXT
-         hCiN6ft7iC1bLHKt1NLBUmR5Nxayw7bwUyhvNMPxhb+B492wEDV+oy9jCmzoB2rCr7Q9
-         1vHu6YJFrdh2uoH0/EHlubtcPxyF3VVomgP9l/LHWCj1I+EICajf26q1QV9RbHLNV/+i
-         nFtr4a4jY7dDYkcvXtJ4KV+ihCGIw3ogDGasFcQ1JCEVUXdXFlrXzk0ILozy266TYg84
-         /yUg==
-X-Gm-Message-State: APjAAAVh4ottJdK/vqW5Rg0NBnQZmoI8t9K91qs2nwDi63zYQisERanq
-        ebFShnz7wt4M8pUIHde1m8Z6HDKj8b74dVIfImYlky+cqw/I
-X-Google-Smtp-Source: APXvYqxG4legBrqYPkWuqZIqpTsAoWCTwM+LFBpOJApTr736BPZhw6No/JLjYsmAogQRUvC2OoKv/gRcI5B3aQxGny7hDWkav0p7
+        bh=CZJgdUC1TpRcETObVUB558+pxazKYw5Wn3n/HURXADI=;
+        b=DD975K0p5zZlqRoDntKf6DG+RSZMR9sOiZjE3kv2AxvcHoNMRqFc2KYgSE82gfFSiO
+         zCRKXVszR0dALYSydMntJN5fAHYQP5CAB+Ftlk1Gbpa0SFCGtk5tBTrCgzCLwbp+Hcwy
+         PqXNpVZhYHtxRatc3DMAMuy3OmMKyHY/bZiRwU9Bi4w+6FKnSzF8tZGq3hEsI14BFvNb
+         fYpu5/0x2Pj7tbbeSMBzrsX5oL7su9WUbup9j9RxMI9g0ZRrYUanTzS3ItAVv2rJ5WOW
+         6/zbtWoqtScdkDVtXLDV8Kn1x1VxVBKRoBlL9rlywkFRa1yhXGNgdegV6y3XHMZUikMY
+         Uk7w==
+X-Gm-Message-State: APjAAAV5R56Kek7LYMcKR/oT4lc3XYVJnmg6HjABd/DqvFRMzJZbRyP+
+        ivqfSuOhNij3C/vzJ9SPHHccquVLChndYgkR5Bs1kM+1K5pN
+X-Google-Smtp-Source: APXvYqynOcIaT2y3jyHS10UgIJT51zZMfk/18yGsgEM4vujcLU66FRilTI2odarVdOVEi2iPozlH+L82DAgMEg7NmWA/wsb0TRhw
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6f09:: with SMTP id k9mr3513083ioc.91.1573134125408;
+X-Received: by 2002:a6b:ed1a:: with SMTP id n26mr3703846iog.112.1573134125729;
  Thu, 07 Nov 2019 05:42:05 -0800 (PST)
 Date:   Thu, 07 Nov 2019 05:42:05 -0800
-In-Reply-To: <000000000000afbebb0570be9bf3@google.com>
+In-Reply-To: <0000000000002a2fdf0573107004@google.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000baac070596c1d4ae@google.com>
-Subject: Re: KASAN: use-after-free Read in p9_fd_poll
-From:   syzbot <syzbot+0442e6e2f7e1e33b1037@syzkaller.appspotmail.com>
+Message-ID: <000000000000bfa1ab0596c1d403@google.com>
+Subject: Re: BUG: corrupted list in p9_write_work
+From:   syzbot <syzbot+1788bd5d4e051da6ec08@syzkaller.appspotmail.com>
 To:     asmadeus@codewreck.org, davem@davemloft.net,
-        dominique.martinet@cea.fr, ericvh@gmail.com, jiangyiwen@huwei.com,
+        dominique.martinet@cea.fr, ericvh@gmail.com,
         linux-kernel@vger.kernel.org, lucho@ionkov.net,
         netdev@vger.kernel.org, rminnich@sandia.gov,
         syzkaller-bugs@googlegroups.com, tomasbortoli@gmail.com,
@@ -51,24 +51,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 syzbot suspects this bug was fixed by commit:
 
-commit 430ac66eb4c5b5c4eb846b78ebf65747510b30f1
+commit 728356dedeff8ef999cb436c71333ef4ac51a81c
 Author: Tomas Bortoli <tomasbortoli@gmail.com>
-Date:   Fri Jul 20 09:27:30 2018 +0000
+Date:   Tue Aug 14 17:43:42 2018 +0000
 
-     net/9p/trans_fd.c: fix race-condition by flushing workqueue before the  
-kfree()
+     9p: Add refcount to p9_req_t
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1646690c600000
-start commit:   d72e90f3 Linux 4.18-rc6
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10f2258a600000
+start commit:   050cdc6c Merge git://git.kernel.org/pub/scm/linux/kernel/g..
 git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=68af3495408deac5
-dashboard link: https://syzkaller.appspot.com/bug?extid=0442e6e2f7e1e33b1037
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1569b51c400000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16e7a978400000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=49927b422dcf0b29
+dashboard link: https://syzkaller.appspot.com/bug?extid=1788bd5d4e051da6ec08
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1196b7ba400000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1022391e400000
 
 If the result looks correct, please mark the bug fixed by replying with:
 
-#syz fix: net/9p/trans_fd.c: fix race-condition by flushing workqueue  
-before the kfree()
+#syz fix: 9p: Add refcount to p9_req_t
 
 For information about bisection process see: https://goo.gl/tpsmEJ#bisection
