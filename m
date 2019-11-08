@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A89CF4ACD
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:13:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55E6EF4AAB
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:13:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389389AbfKHMKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:10:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52320 "EHLO mail.kernel.org"
+        id S1733303AbfKHLjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:39:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52338 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733228AbfKHLjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:39:20 -0500
+        id S1733266AbfKHLjX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:39:23 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EA5A4222C6;
-        Fri,  8 Nov 2019 11:39:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BF50D20869;
+        Fri,  8 Nov 2019 11:39:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213159;
-        bh=v0Q4Snohb0rPBMGpAzHmPvwE44PlPjfHwBHTVwdU0+k=;
+        s=default; t=1573213162;
+        bh=dpSjd1hk84fWWcoabhUygmApwukG2qV9KDnFTNF0n4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R++CaginImy/LualAnumJkxXWWzrFcWFTK1hHJLpDbCc9MwHN6YbVmZO502J4Js+s
-         HAcxYhkDa5FNDN3QeaI1jb42jWOdxVJ+R3OuyBG7qg/lLyEymaDpZpZTTL4jsvrf1h
-         vNtYvTsfEk+xom9Lb3QnocR0Pf15EXIfKCo5rjM4=
+        b=e0Q1atK0JSKAM7ED9iKEbpRoPvUI+pKdiuYcPxJRf6YLAd59Gw3jr4wB/V5axgYT9
+         xLpzdD5+Q49vOdWGQLfJCXchi8iD0ij+xMzdEe4q5RaTH4fZx7se26DwO0OOBiFjiP
+         8vvjrhNRyKcQaDMKDDLwkNcYGY5CfnQn7gdNSXwA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ganapathi Bhat <gbhat@marvell.com>,
-        Vidya Dharmaraju <vidyad@marvell.com>,
-        Cathy Luo <cluo@marvell.com>,
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 066/205] mwifex: free rx_cmd skb in suspended state
-Date:   Fri,  8 Nov 2019 06:35:33 -0500
-Message-Id: <20191108113752.12502-66-sashal@kernel.org>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 067/205] brcmfmac: fix wrong strnchr usage
+Date:   Fri,  8 Nov 2019 06:35:34 -0500
+Message-Id: <20191108113752.12502-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
 References: <20191108113752.12502-1-sashal@kernel.org>
@@ -46,48 +46,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ganapathi Bhat <gbhat@marvell.com>
+From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 
-[ Upstream commit 33a164fa8a4c91408e0b7738f754cb1a7827c5f2 ]
+[ Upstream commit cb18e2e9ec71d42409a51b83546686c609780dde ]
 
-USB suspend handler will kill the presubmitted rx_cmd URB. This
-triggers a call to the corresponding URB complete handler, which
-will free the rx_cmd skb, associated with rx_cmd URB. Due to a
-possible race betwen suspend handler and main thread, depicted in
-'commit bfcacac6c84b ("mwifiex: do no submit URB in suspended
-state")', it is possible that the rx_cmd skb will fail to get
-freed. This causes a memory leak, since the resume handler will
-always allocate a new rx_cmd skb.
+strnchr takes arguments in the order of its name: string, max bytes to
+read, character to search for. Here we're passing '\n' aka 10 as the
+buffer size, and searching for sizeof(buf) aka BRCMF_DCMD_SMLEN aka
+256 (aka '\0', since it's implicitly converted to char) within those 10
+bytes.
 
-To fix this, free the rx_cmd skb in mwifiex_usb_submit_rx_urb, if
-the device is in suspended state.
+Just interchanging the last two arguments would still leave a bug,
+because if we've been successful once, there are not sizeof(buf)
+characters left after the new value of p.
 
-Signed-off-by: Vidya Dharmaraju <vidyad@marvell.com>
-Signed-off-by: Cathy Luo <cluo@marvell.com>
-Signed-off-by: Ganapathi Bhat <gbhat@marvell.com>
+Since clmver is immediately afterwards passed as a %s argument, I assume
+that it is actually a properly nul-terminated string. For that case, we
+have strreplace().
+
+Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/usb.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index 76d80fd545236..d445acc4786b7 100644
---- a/drivers/net/wireless/marvell/mwifiex/usb.c
-+++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-@@ -299,6 +299,12 @@ static int mwifiex_usb_submit_rx_urb(struct urb_context *ctx, int size)
- 	struct usb_card_rec *card = (struct usb_card_rec *)adapter->card;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index 27893af63ebc3..8510d207ee87d 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -296,9 +296,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
+ 		/* Replace all newline/linefeed characters with space
+ 		 * character
+ 		 */
+-		ptr = clmver;
+-		while ((ptr = strnchr(ptr, '\n', sizeof(buf))) != NULL)
+-			*ptr = ' ';
++		strreplace(clmver, '\n', ' ');
  
- 	if (test_bit(MWIFIEX_IS_SUSPENDED, &adapter->work_flags)) {
-+		if (card->rx_cmd_ep == ctx->ep) {
-+			mwifiex_dbg(adapter, INFO, "%s: free rx_cmd skb\n",
-+				    __func__);
-+			dev_kfree_skb_any(ctx->skb);
-+			ctx->skb = NULL;
-+		}
- 		mwifiex_dbg(adapter, ERROR,
- 			    "%s: card removed/suspended, EP %d rx_cmd URB submit skipped\n",
- 			    __func__, ctx->ep);
+ 		brcmf_dbg(INFO, "CLM version = %s\n", clmver);
+ 	}
 -- 
 2.20.1
 
