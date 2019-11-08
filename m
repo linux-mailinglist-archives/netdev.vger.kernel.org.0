@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3779F5250
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 18:11:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 369DDF5259
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 18:12:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729007AbfKHRLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 12:11:13 -0500
-Received: from muru.com ([72.249.23.125]:41074 "EHLO muru.com"
+        id S1729854AbfKHRLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 12:11:38 -0500
+Received: from muru.com ([72.249.23.125]:41100 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725970AbfKHRLM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 12:11:12 -0500
+        id S1725970AbfKHRLi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 12:11:38 -0500
 Received: from atomide.com (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id D4BDB817C;
-        Fri,  8 Nov 2019 17:11:45 +0000 (UTC)
-Date:   Fri, 8 Nov 2019 09:11:06 -0800
+        by muru.com (Postfix) with ESMTPS id 6A97381A1;
+        Fri,  8 Nov 2019 17:12:11 +0000 (UTC)
+Date:   Fri, 8 Nov 2019 09:11:32 -0800
 From:   Tony Lindgren <tony@atomide.com>
 To:     "H. Nikolaus Schaller" <hns@goldelico.com>
 Cc:     =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
@@ -40,16 +40,16 @@ Cc:     =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mmc@vger.kernel.org, linux-wireless@vger.kernel.org,
         netdev@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, stable@vger.kernel.org
-Subject: Re: [PATCH v3 06/12] omap: pdata-quirks: remove openpandora quirks
- for mmc3 and wl1251
-Message-ID: <20191108171106.GL5610@atomide.com>
+        kernel@pyra-handheld.com
+Subject: Re: [PATCH v3 07/12] omap: remove omap2_hsmmc_info in old hsmmc.[ch]
+ and update Makefile
+Message-ID: <20191108171132.GM5610@atomide.com>
 References: <cover.1573122644.git.hns@goldelico.com>
- <ff450c14eb1e13d2db6533fa06e069c5bec3a0c4.1573122644.git.hns@goldelico.com>
+ <c3e0a1392dd6d44fe8bde0161c508007f4abdd5f.1573122644.git.hns@goldelico.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ff450c14eb1e13d2db6533fa06e069c5bec3a0c4.1573122644.git.hns@goldelico.com>
+In-Reply-To: <c3e0a1392dd6d44fe8bde0161c508007f4abdd5f.1573122644.git.hns@goldelico.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -57,15 +57,10 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 * H. Nikolaus Schaller <hns@goldelico.com> [191107 10:32]:
-> With a wl1251 child node of mmc3 in the device tree decoded
-> in omap_hsmmc.c to handle special wl1251 initialization, we do
-> no longer need to instantiate the mmc3 through pdata quirks.
-> 
-> We also can remove the wlan regulator and reset/interrupt definitions
-> and do them through device tree.
-> 
-> Fixes: 81eef6ca9201 ("mmc: omap_hsmmc: Use dma_request_chan() for requesting DMA channel")
+> There is a new driver in drivers/mmc/host/omap_hsmmc.c
+> configured by CONFIG_MMC_OMAP_HS and the last user
+> was the pdata-quirks for pandora.
 
-Good to see this go away:
+Thanks for doing this:
 
 Acked-by: Tony Lindgren <tony@atomide.com>
