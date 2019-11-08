@@ -2,129 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 071ACF4488
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 11:32:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFA86F449A
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 11:35:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731612AbfKHKcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 05:32:54 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:33612 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731569AbfKHKcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 05:32:54 -0500
-Received: by mail-wm1-f66.google.com with SMTP id a17so6243738wmb.0
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 02:32:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=/1599gDqgQT4+/ACcw8+n9g4WwihJtSkWdJ83xtYrrs=;
-        b=tb4sJLDi3Exe9JAsUa23Y+q1nk0BHHKEf85IQjE8dNvtPaxihDfBjebMrPHoN/i/nR
-         re4YFq0qshzrfoskQMQ6QXs9iloB9UOmtKTi4RyZTaX1HZZYNynxRU5WmeROLB5HNUhT
-         REcqzGm6BBj0Lh7ByTWCfz3V3pSZQh7tDnSEipHlxYO+e6+jWLPN78gtUqUlXlNOfH7o
-         Q4pHpeAewlMluV03h3vVb2Nk+rVOf8Wfd7+FnAxvEoLKsbAyftjMv2Zpeb9F9/Q+wqvn
-         8dgi9Lz7CnUVVshn17/hHQgRMiNIGdcoLjpURMVK6oT0AHZt2hVJrLj7i/S3khN7AfsW
-         m5GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=/1599gDqgQT4+/ACcw8+n9g4WwihJtSkWdJ83xtYrrs=;
-        b=N65ekhqOO9hpM6XUY2s+NF983K/yQ4qkV7JvL6LHwJnMo2INK6zaSLs7HhAOAbR/E2
-         XK/EtxoUcEadXoZ1iBBatDrLiqcwZslSet8aumeE+lndrO4KXdRT00ERmYK+VCEj0Cj6
-         uPbxAvXZu/OxGCA0zv6xbjh2ieSB5FJMopYrLhbyY3C1sNfOokGzTLBrxb3YrUVKfMAa
-         p/vfhcvS3bv6MYGP3ORgS7vBnP6ogpO0uKdAMT/M23QfIA/qOZcRgDRPhnnanjUesJJe
-         aAMqeK9roWErW2RC+b6HoYcdB++uzcz4slAXzdH9V9kN/YAnJc45KK2b1BvzOc34ELZb
-         z70g==
-X-Gm-Message-State: APjAAAVbjK+Pw7JJZfOE3LrjSp+pYIIStk5+ImoQGfGr59PpwDjjCGGK
-        nWDles4TKPZ8CZRqea2XFWvPvA==
-X-Google-Smtp-Source: APXvYqxP9nvHJSdV76uw+81FjfoIdq73P2BH1K7A+UszgAXvHwfbJNXN8UNx4RKJgQCCFfnklok1PQ==
-X-Received: by 2002:a1c:6885:: with SMTP id d127mr7243732wmc.64.1573209170449;
-        Fri, 08 Nov 2019 02:32:50 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id a5sm5462412wrv.56.2019.11.08.02.32.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 02:32:50 -0800 (PST)
-Date:   Fri, 8 Nov 2019 11:32:49 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     alex.williamson@redhat.com, davem@davemloft.net,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, saeedm@mellanox.com,
-        kwankhede@nvidia.com, leon@kernel.org, cohuck@redhat.com,
-        jiri@mellanox.com, linux-rdma@vger.kernel.org,
-        Vu Pham <vuhuong@mellanox.com>
-Subject: Re: [PATCH net-next 06/19] net/mlx5: Add support for mediated
- devices in switchdev mode
-Message-ID: <20191108103249.GE6990@nanopsycho>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107160834.21087-1-parav@mellanox.com>
- <20191107160834.21087-6-parav@mellanox.com>
+        id S1730719AbfKHKfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 05:35:50 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:1675 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726180AbfKHKft (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 05:35:49 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA8ARHkc030061;
+        Fri, 8 Nov 2019 11:35:30 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=STMicroelectronics;
+ bh=C7Ytb5ccJx46yUXyoXndkBMI9CQtxWg5KpH5r3iInZ8=;
+ b=GH9uAbmNuzAIytWfQHvJoGGcaa3XfQizakPDih9XTMQcZNv9yhOju/+XEwD4dxMSI6Et
+ MYAEj0TBlE1+zZj1WX/k00K4MA/26XQLwWeyUnpBmEOdzBDBNbdypQ0BZzflaf8BJOz7
+ O/0OGDlxp3dnVm4cSnw9csIVXklDl+80lcd5vGDItgAMhtlHmLyh2z5jRgtowtpdyXYJ
+ 3FQuE9kZv35hNGwaI6s2LdO/E2srBP4ovFUwTVnJzax/VeQDlLG3rT9N5MOlbafFP+2R
+ 1TkjiJ9OaxFD89XLs3rqxWGcTNpX6T1WMPD0OeQ3PssVxWMrlpA2Ejms/k0v8F27yeLk 7g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx08-00178001.pphosted.com with ESMTP id 2w41vmu27x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 08 Nov 2019 11:35:30 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 93442100034;
+        Fri,  8 Nov 2019 11:35:26 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 7CB1F2B0FED;
+        Fri,  8 Nov 2019 11:35:26 +0100 (CET)
+Received: from lmecxl0912.lme.st.com (10.75.127.50) by SFHDAG3NODE2.st.com
+ (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Fri, 8 Nov
+ 2019 11:35:23 +0100
+Subject: Re: [PATCH V4 net-next 0/4] net: ethernet: stmmac: cleanup clock and
+ optimization
+To:     David Miller <davem@davemloft.net>, <christophe.roullier@st.com>
+CC:     <robh@kernel.org>, <joabreu@synopsys.com>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <peppe.cavallaro@st.com>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <andrew@lunn.ch>
+References: <20191107084757.17910-1-christophe.roullier@st.com>
+ <20191107.152640.1457462659040029467.davem@davemloft.net>
+From:   Alexandre Torgue <alexandre.torgue@st.com>
+Message-ID: <8c4efcce-b46f-ac94-a367-50ff5d78c8a2@st.com>
+Date:   Fri, 8 Nov 2019 11:35:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191107160834.21087-6-parav@mellanox.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191107.152640.1457462659040029467.davem@davemloft.net>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.50]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG3NODE2.st.com
+ (10.75.127.8)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-08_02:2019-11-07,2019-11-08 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Nov 07, 2019 at 05:08:21PM CET, parav@mellanox.com wrote:
->From: Vu Pham <vuhuong@mellanox.com>
+Hi David
 
-[...]
+On 11/8/19 12:26 AM, David Miller wrote:
+> From: Christophe Roullier <christophe.roullier@st.com>
+> Date: Thu, 7 Nov 2019 09:47:53 +0100
+> 
+>> Some improvements:
+>>   - manage syscfg as optional clock,
+>>   - update slew rate of ETH_MDIO pin,
+>>   - Enable gating of the MAC TX clock during TX low-power mode
+>>
+>> V4: Update with Andrew Lunn remark
+> 
+> This is mostly ARM DT updates, which tree should this go through?
+> 
+> I don't want to step on toes this time :-)
+> 
 
-	
->+static ssize_t
->+max_mdevs_show(struct kobject *kobj, struct device *dev, char *buf)
->+{
->+	struct pci_dev *pdev = to_pci_dev(dev);
->+	struct mlx5_core_dev *coredev;
->+	struct mlx5_mdev_table *table;
->+	u16 max_sfs;
->+
->+	coredev = pci_get_drvdata(pdev);
->+	table = coredev->priv.eswitch->mdev_table;
->+	max_sfs = mlx5_core_max_sfs(coredev, &table->sf_table);
->+
->+	return sprintf(buf, "%d\n", max_sfs);
->+}
->+static MDEV_TYPE_ATTR_RO(max_mdevs);
->+
->+static ssize_t
->+available_instances_show(struct kobject *kobj, struct device *dev, char *buf)
->+{
->+	struct pci_dev *pdev = to_pci_dev(dev);
->+	struct mlx5_core_dev *coredev;
->+	struct mlx5_mdev_table *table;
->+	u16 free_sfs;
->+
->+	coredev = pci_get_drvdata(pdev);
->+	table = coredev->priv.eswitch->mdev_table;
->+	free_sfs = mlx5_get_free_sfs(coredev, &table->sf_table);
->+	return sprintf(buf, "%d\n", free_sfs);
->+}
->+static MDEV_TYPE_ATTR_RO(available_instances);
+I'll take DT patches in my STM32 tree.
 
-These 2 arbitrary sysfs files are showing resource size/usage for
-the whole eswitch/asic. That is a job for "devlink resource". Please
-implement that.
-
-
->+
->+static struct attribute *mdev_dev_attrs[] = {
->+	&mdev_type_attr_max_mdevs.attr,
->+	&mdev_type_attr_available_instances.attr,
->+	NULL,
->+};
->+
->+static struct attribute_group mdev_mgmt_group = {
->+	.name  = "local",
->+	.attrs = mdev_dev_attrs,
->+};
->+
->+static struct attribute_group *mlx5_meddev_groups[] = {
->+	&mdev_mgmt_group,
->+	NULL,
->+};
-
-[...]
+Thanks
+Alex
