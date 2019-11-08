@@ -2,118 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EC9BF4F16
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 16:15:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F621F4F51
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 16:21:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbfKHPPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 10:15:38 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33494 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbfKHPPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 10:15:38 -0500
-Received: by mail-wm1-f68.google.com with SMTP id a17so6835483wmb.0
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 07:15:36 -0800 (PST)
+        id S1726970AbfKHPUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 10:20:43 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:40803 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726231AbfKHPUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 10:20:43 -0500
+Received: by mail-qk1-f194.google.com with SMTP id z16so5569426qkg.7;
+        Fri, 08 Nov 2019 07:20:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VADyXkmyEZwfz7UJm4aPW0AfoCAr6udjM9RfkA0/AnM=;
-        b=NndXX4Geris7hE8V/Ztnx+9bbxzvSDFEhdn26kChY8owv7CATc2cz9mhRKtGY4nwSL
-         Oyb43cBXpw93oZfh+ia9K8r3NlRuke95gm4KhOQMSuA3WUiKNaIUunHFUzmG7dCLmzUY
-         ccYtg9tPwXvJew37XZ9GriStnVOfCN9yoA+KaQFXB5xT2sVc3xn6tsAaK8WvV0lnxCwJ
-         4fo+I6EwSiImHP4gyJjvq0ZTmEfJG3HlksfGCE3u5tmPctQXeGCPWWi4JItZQ8rbu3MP
-         nP0m2i2YjP42HW6R3f3xJvJFYaxu4OuZjEU3ueIPhd6B5ZpDl0JZe434fpEfDpFF7VxU
-         ypOQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=b2126fd4YC8W/bbuzmb7jSc88Zo3Jrrtko50Ol11fSU=;
+        b=LChmcK/PQf51+GD0y6vAxvdjiNBz51CifKdsFPcLaEULktET3DjlnS1cNFIQghWs/w
+         d8SC0kGXh7CqM40riOQsbySu5GhJy86pCVFXdWPUlsuj49+n4rNW5f/e2st3PLsCXb/Y
+         Z9Ud12DdurRW8Cd5eVa5L9BG/QjYM0r2phSSZC8cY3ZHCyK6WuIWmETfZ2M/CIuuHUaw
+         rhD0I1DnosVKJqmVF00cgHWh6/jRceK8SqBzJrIJV8GfiSt337Pd3gja1qSdyikYMudw
+         KFT1LCX2F+ZhjzdmGvlxx0NrW8Grkxoxn8WE9IwBDjP6BHh9xNg88tXaApzOFhzVlqeA
+         puIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VADyXkmyEZwfz7UJm4aPW0AfoCAr6udjM9RfkA0/AnM=;
-        b=hFrjj+kNTYG4PXcvQJlYfECYll90z5ieRsfpa9Zc40VPTsvc4Pet/AmQZTj1FxMC56
-         Lt2V6Z6qzEULF8M5sRdY3j11FEHs5YrCK4Y8ZxkjfJy7CAyzJ09VhM/JgzpsdEAJeu12
-         NNzVlelHGI3KbKrqk48qtfcdFKvjAKyisZw97iqxJiUHn46W84KGBn5/tHaECutk/w8m
-         5opi4zQ4QpC75mTEnOWTLzR1eeMIS5W6kMGjQJ2AznCL1u6zFLMHRUvZ9bNfRKjjtfq9
-         7VMs6ezAT9EScDzv4GrAvT94O0VUa2xdVFsNXyk9tY0sFsQMkY/NTJMhqCs9k3+3ZITU
-         zGhg==
-X-Gm-Message-State: APjAAAXBPDI/VppLIHmvNMFfXKHwwYuTaivmyZ/6/xjbY9pDdmFFjcJA
-        BNA7DJocx0ncc1bDHsLEa/JM/A==
-X-Google-Smtp-Source: APXvYqzINYRoUuFX5NaF77jpHF+D0eryv4W23kT3xH8z73wcQ98F4Yz0rU59bhdkqSPWnxEUfSRslQ==
-X-Received: by 2002:a1c:39c1:: with SMTP id g184mr8682539wma.75.1573226136346;
-        Fri, 08 Nov 2019 07:15:36 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id d202sm5462271wmd.47.2019.11.08.07.15.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=b2126fd4YC8W/bbuzmb7jSc88Zo3Jrrtko50Ol11fSU=;
+        b=FhhpzKsn9+93g1R7pTejywfXqkzJXP3pT6b1hCUI2vw9YzjTsU20Hn4yaOlMF5I9vG
+         uLWvqkcAOJEqWB4oF6wCBv2gnJaAiJmPAfl/rm2pQXd3Ob70F4N2qMKbBuExfHyVr/Tl
+         oM9L3u1evt3XRhPRE1NVwo+ecNO9TZMUNe6KGJ+/Z6QhAuCxlWrCSOUdpFqRgARrB1RL
+         GAYsextCKHcjzuWtu8x2PR84pAw/csMnPWLci9ihLDkHyRkFTLv2twTyhqKt/GaJxGiB
+         rpBCz3HeNSvbtAGkl94/40o8/xtRc0LYXRKxlKXkOBs1AhZWcnG7p2jewu0DJFjnRT8k
+         MTSg==
+X-Gm-Message-State: APjAAAVlfABy9mmWnSS4/kCtqG2e7HaTyZX3R4OS8WKaI6JuzrqFgnQ3
+        e47SWRkWLlgkuFCq+i4igvGw+9VH
+X-Google-Smtp-Source: APXvYqykTm1ckHRJO089qGMaBPP7Je+PTnhJNYEq1pFpGU+91DWezpdKVUJZE4Yqy01OE1tiyBVlyg==
+X-Received: by 2002:a37:a250:: with SMTP id l77mr9458501qke.455.1573226440419;
+        Fri, 08 Nov 2019 07:20:40 -0800 (PST)
+Received: from alpha-Inspiron-5480.lan ([170.84.225.113])
+        by smtp.gmail.com with ESMTPSA id t127sm3164392qkf.43.2019.11.08.07.20.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 07:15:36 -0800 (PST)
-Date:   Fri, 8 Nov 2019 16:15:35 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next 19/19] mtty: Optionally support mtty alias
-Message-ID: <20191108151535.GL6990@nanopsycho>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107160834.21087-1-parav@mellanox.com>
- <20191107160834.21087-19-parav@mellanox.com>
- <20191108104505.GF6990@nanopsycho>
- <AM0PR05MB486674869FD72D1FCE3C7B53D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR05MB486674869FD72D1FCE3C7B53D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        Fri, 08 Nov 2019 07:20:39 -0800 (PST)
+From:   Ramon Fontes <ramonreisfontes@gmail.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Cc:     johannes@sipsolutions.net, kvalo@codeaurora.org,
+        davem@davemloft.net, Ramon Fontes <ramonreisfontes@gmail.com>
+Subject: [PATCH] mac80211_hwsim: set the maximum EIRP output power for 5GHz
+Date:   Fri,  8 Nov 2019 12:20:13 -0300
+Message-Id: <20191108152013.13418-1-ramonreisfontes@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Nov 08, 2019 at 04:08:22PM CET, parav@mellanox.com wrote:
->
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Friday, November 8, 2019 4:45 AM
->> To: Parav Pandit <parav@mellanox.com>
->> Cc: alex.williamson@redhat.com; davem@davemloft.net;
->> kvm@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
->> <saeedm@mellanox.com>; kwankhede@nvidia.com; leon@kernel.org;
->> cohuck@redhat.com; Jiri Pirko <jiri@mellanox.com>; linux-
->> rdma@vger.kernel.org
->> Subject: Re: [PATCH net-next 19/19] mtty: Optionally support mtty alias
->> 
->> Thu, Nov 07, 2019 at 05:08:34PM CET, parav@mellanox.com wrote:
->> >Provide a module parameter to set alias length to optionally generate
->> >mdev alias.
->> >
->> >Example to request mdev alias.
->> >$ modprobe mtty alias_length=12
->> >
->> >Make use of mtty_alias() API when alias_length module parameter is set.
->> >
->> >Signed-off-by: Parav Pandit <parav@mellanox.com>
->> 
->> This patch looks kind of unrelated to the rest of the set.
->> I think that you can either:
->> 1) send this patch as a separate follow-up to this patchset
->> 2) use this patch as a user and push out the mdev alias patches out of this
->> patchset to a separate one (I fear that this was discussed and declined
->> before).
->Yes, we already discussed to run mdev 5-6 patches as pre-patch before this series when reviewed on kvm mailing list.
->Alex was suggesting to package with this series as mlx5_core being the first user.
->Series will have conflict (not this patch) if Jason Wang's series [9] is merged first.
->So please let me know how shall we do it.
+ETSI has been set the maximum EIRP output power to 36 dBm (4000 mW)
+Source: https://www.etsi.org/deliver/etsi_en/302500_302599/302502/01.02.01_60/en_302502v010201p.pdf
 
-Just remove this patch from the set and push it later on individually
-(if ever).
+Signed-off-by: Ramon Fontes <ramonreisfontes@gmail.com>
+---
+ drivers/net/wireless/mac80211_hwsim.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
->[9] https://patchwork.ozlabs.org/patch/1190425
->
->
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 14f562cd7..af83791df 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -305,7 +305,7 @@ static struct net_device *hwsim_mon; /* global monitor netdev */
+ 	.band = NL80211_BAND_5GHZ, \
+ 	.center_freq = (_freq), \
+ 	.hw_value = (_freq), \
+-	.max_power = 20, \
++	.max_power = 36, \
+ }
+ 
+ static const struct ieee80211_channel hwsim_channels_2ghz[] = {
+-- 
+2.17.1
+
