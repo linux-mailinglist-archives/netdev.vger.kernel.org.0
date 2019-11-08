@@ -2,166 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28FBFF5164
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:44:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA985F516B
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:45:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727033AbfKHQo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 11:44:27 -0500
-Received: from mail-eopbgr40051.outbound.protection.outlook.com ([40.107.4.51]:23463
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726095AbfKHQo1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 11:44:27 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a84yxZBxzPtxNX9Vo2kDKM143JEW4C6pXXa7VkdwfE91rYV3dfDmC353t5iGsr5ByorCgJD+wrGXttDJSRwhELGWb3sJMUDpv3C5XJ9P0lqIUMFxpTCh1Oue85JEInP4XVUBo0blhhosYsHBO+GHJK5wQX1uP3TKQs6xU7IehRut0z5+5xAil8afljvzDVIdVefgM89Fs4PY6Fqn2fM2d3zEBMF23SBFD/ZFshEiCZw9EyjBNJTPXuTHBpo1OUrYRPhv5QEbhF5wYhsg1ATR71eEZ41NPT97XGGNE+rlFFuERMwh9u1ZNAEgWE0Yd6SMSSLBtS8u6n0MRLkhFAOaiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jSjMRTdqrq+6u2kNutGNTtHjdyHl9eHejNHj8hH/NyU=;
- b=AnX7oQ+acDZcpCzLCcyRdYAdJqRYmEXb5gRhi3tPtCvFTkRTdVjURsINi/VRogKusXdXXuobfQcpeOsO5X5lkrk9UXUvhMJKK65dN+K9GFDL0dPFkHY1PqheV3HnE8Wwtn7XjSG0a9beCfc9QCDxNiCUHNDOD5Ph2SEmEI++L4DNY2qDV+N0hMHhrPz1JjvXEXwmNlVRihhUq760Ii5q9vW2+51Joe4CRK8khc5aXJ1uk+MS4fLvCIIG0DJI3o5mIV5QfTTXdEZTWe3Dp9fEyOjh1PCzTzCLrKV8duKOcboYSo1X9xmr6ih9wILdikuP/D+E/7hIagOz4CO33zr0Gw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jSjMRTdqrq+6u2kNutGNTtHjdyHl9eHejNHj8hH/NyU=;
- b=YIFyGoOJDKkKfBhVdpvbv57rfhuQmczot087Wl+WvkQDejTItvgFv166PATxTovHVai93+1J7+3CXUL4oQfQlHEuhZXpEfIlEe8N207DKDt6SZ0Ih+2giWZ7VbSVugMrD4Sv9mJDw0dTxRCIz4aFo5E9K08Hyo+OM2nzJYGKqh4=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6049.eurprd05.prod.outlook.com (20.178.202.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.20; Fri, 8 Nov 2019 16:43:43 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 16:43:43 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
-Thread-Topic: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
-Thread-Index: AQHVlYW+5ckj7/tyDUu1ocZ3bBFvo6eAK5wAgAAEe2CAAEmKAIAAA1+ggAAOHACAAAFAIIAAe3YAgABjcxCAAA2tgIAAAeXA
-Date:   Fri, 8 Nov 2019 16:43:43 +0000
-Message-ID: <AM0PR05MB48669A9AE494CCCE8E07C367D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20191107160834.21087-1-parav@mellanox.com>
- <20191107160834.21087-12-parav@mellanox.com>
- <20191107153836.29c09400@cakuba.netronome.com>
- <AM0PR05MB4866963BE7BA1EE0831C9624D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191107201750.6ac54aed@cakuba>
- <AM0PR05MB4866BEC2A2B586AA72BAA9ABD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191107212024.61926e11@cakuba>
- <AM0PR05MB4866C0798EA5746EE23F2D2BD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108094646.GB6990@nanopsycho>
- <AM0PR05MB4866969D18877C7AAD19D236D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108163139.GQ6990@nanopsycho>
-In-Reply-To: <20191108163139.GQ6990@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [2605:6000:ec82:1c00:9dfd:71f9:eb37:f669]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 39c6e869-a1e5-4204-2f94-08d7646ad110
-x-ms-traffictypediagnostic: AM0PR05MB6049:|AM0PR05MB6049:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB6049B082AAF0D98460DAEB80D17B0@AM0PR05MB6049.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(39860400002)(376002)(136003)(396003)(13464003)(189003)(199004)(9686003)(229853002)(74316002)(102836004)(6916009)(305945005)(46003)(99286004)(446003)(476003)(33656002)(316002)(14454004)(7736002)(486006)(11346002)(76176011)(86362001)(186003)(8936002)(25786009)(256004)(7696005)(7416002)(6246003)(6116002)(478600001)(54906003)(6506007)(81156014)(81166006)(52536014)(5024004)(71200400001)(71190400001)(76116006)(4326008)(6436002)(66556008)(64756008)(66446008)(66946007)(55016002)(5660300002)(8676002)(66476007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6049;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 83ipESw0173vCNBR4DsrbQ3YODHqjirECLTbbGkMUUrtRFuADKOq4p16kiNIgkNSbsBrC2LWSSrHJpR1aMU45ls0WcU2EJDlCOIJKF8G/jmIbPQx7++yyb609lGZV7tzvIN1qmKjOuuPX6lpvAA5b/YvEXSeKRD/Neko9eXHfaURqWl4JKNntFnwsdjOMozTHAA07bMZFXTjaONUxx/YdZkiQKj8nk5iSXJrklVs9iIV2A8wv23FNAJID1DjgRqCGSJoHofia+Hvd3EPB30UBO5ESKzN56c4EZjJSBqYJnfivyShJEe+yvUhf+NmU5Fqi1KTBV3qFQxj0HdNuLwlV2I7P5fWkzHYnyv+9pOhLOPd90hm2M72BZoYn3OReAszSsTKbcLQWvI2VP57F2JanI4F9lk1Cb1G/r0g01lnwENphMoRQ1gp8AeWBfZ4Nyub
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39c6e869-a1e5-4204-2f94-08d7646ad110
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 16:43:43.1475
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JFnBOJZdceitpZaH9Q2Xld4EOAdvDrkOD8WZG6XkoYGy4zqvDeu7xGJwwY3ql2FYOPK/Lr12EQtMkTpAIq31wg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6049
+        id S1726231AbfKHQp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 11:45:29 -0500
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:37855 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbfKHQp3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 11:45:29 -0500
+Received: by mail-pf1-f202.google.com with SMTP id z21so5392571pfr.4
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 08:45:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=jrdAuLwFDZo961ObmXe7PlcHQXD8Sve71PQRliy245Q=;
+        b=T8AdHJ5PP6E3gIEPVt/6D4NxbHJPLkwjk6QBe+6832eigOsQQTwZ+ik4MuOY31f+R7
+         eKXM6sUbFPeIAQptPgX8YO1UZKFJW4YosoLP4m+YtxIY3YXlOZNq3SsF6Sti4nGciock
+         kngLy2MMqPltS9hdqZW9TpiHzULMJslWS281WNjiy1vOyuTcKnRfcpOuOZnTrCmYceOr
+         IUeLpDEI/uJDKpTOlxmuTJKAvSQwobf0FWQDNVtgR6pAlWwFm5cgkGNk9/WkobNqQSYq
+         AZ2fFNoy4SdTIX5Nhhvr23nEYtdciwsZ9IdOuBqVtUFnYgLrO4liEh3m/O21N6++ZjsP
+         dizg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=jrdAuLwFDZo961ObmXe7PlcHQXD8Sve71PQRliy245Q=;
+        b=nKnOELaxbZJ+16tw4f/v0QCPsjdH3Unavzq2cG8MlX4A/v5npri1dzl4ic+SpMG8HG
+         O8KXnOKUTUWKfsztoL9mIBVRKAadnhiOHLdOX0EFaS/ShDS5fsradEPQrT3AgH+ODNAt
+         kLzvEnQo+2k9MdRa9j5F2qkjmncoQilNgOUVC9oQfACdoS73ehvyaWLpHZ2jwTCZrzgH
+         j/ReTD/a8Y9JkQZI7AhG/f5EPFB6yPhWLLugLargAGBdnKkFwmlMEen80nS6GJQ0VSeT
+         utG+S6k5DNqONQaRw747UV/2oYes01RA9+i2E1tfVIXf+KaGTDUhF5eHko0XhYm67wVR
+         bvrg==
+X-Gm-Message-State: APjAAAVh+AkLeWWICx24U3NHWBiLeSP+wOtOSsGzuLmllWtX2+ScrBEW
+        I89giYqfy0t/X7mFYHz2FLnBW12OrTj19A==
+X-Google-Smtp-Source: APXvYqxwU/iXocnDiEhtWks7pVxIu7iL4SDx+92mWPbZQhQokY0Vuzts8KIygsQkRAUH7IS1stOsj+OY0OGRig==
+X-Received: by 2002:a63:1703:: with SMTP id x3mr13336252pgl.263.1573231527868;
+ Fri, 08 Nov 2019 08:45:27 -0800 (PST)
+Date:   Fri,  8 Nov 2019 08:45:23 -0800
+Message-Id: <20191108164523.211656-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH net-next] net/sched: annotate lockless accesses to qdisc->empty
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+KCSAN reported the following race [1]
 
+BUG: KCSAN: data-race in __dev_queue_xmit / net_tx_action
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> >> >> On Fri, 8 Nov 2019 01:44:53 +0000, Parav Pandit wrote:
-> >> >> > > I'm talking about netlink attributes. I'm not suggesting to
-> >> >> > > sprintf it all into the phys_port_name.
-> >> >> > >
-> >> >> > I didn't follow your comment. For devlink port show command
-> >> >> > output you said,
-> >> >> >
-> >> >> > "Surely those devices are anchored in on of the PF (or possibly
-> >> >> > VFs) that should be exposed here from the start."
-> >> >> > So I was trying to explain why we don't expose PF/VF detail in
-> >> >> > the port attributes which contains
-> >> >> > (a) flavour
-> >> >> > (b) netdev representor (name derived from phys_port_name)
-> >> >> > (c) mdev alias
-> >> >> >
-> >> >> > Can you please describe which netlink attribute I missed?
-> >> >>
-> >> >> Identification of the PCI device. The PCI devices are not linked
-> >> >> to devlink ports, so the sysfs hierarchy (a) is irrelevant, (b)
-> >> >> may not be visible in multi- host (or SmartNIC).
-> >> >>
-> >> >
-> >> >It's the unique mdev device alias. It is not right to attach to the P=
-CI
-> device.
-> >> >Mdev is bus in itself where devices are identified uniquely. So an
-> >> >alias
-> >> suffice that identity.
-> >>
-> >> Wait a sec. For mdev, what you say is correct. But here we talk about
-> >> devlink_port which is representing this mdev. And this devlink_port
-> >> is very similar to VF devlink_port. It is bound to specific PF (in
-> >> case of mdev it could be PF-VF).
-> >>
-> >But mdev port has unique phys_port_name in system, it incorrect to use
-> PF/VF prefix.
->=20
-> Why incorrect? It is always bound to pf/vf?
->=20
-Because mdev device already identified using its unique alias. Why does it =
-need prefix?
-Mdev core generating the alias is not aware of the prefixes applied devlink=
-. it shouldn't be.
-We want more letters towards uniqueness of the alias and filling it up with=
- such prefixes doesn't make sense.
+read to 0xffff8880ba403508 of 1 bytes by task 21814 on cpu 1:
+ __dev_xmit_skb net/core/dev.c:3389 [inline]
+ __dev_queue_xmit+0x9db/0x1b40 net/core/dev.c:3761
+ dev_queue_xmit+0x21/0x30 net/core/dev.c:3825
+ neigh_hh_output include/net/neighbour.h:500 [inline]
+ neigh_output include/net/neighbour.h:509 [inline]
+ ip6_finish_output2+0x873/0xec0 net/ipv6/ip6_output.c:116
+ __ip6_finish_output net/ipv6/ip6_output.c:142 [inline]
+ __ip6_finish_output+0x2d7/0x330 net/ipv6/ip6_output.c:127
+ ip6_finish_output+0x41/0x160 net/ipv6/ip6_output.c:152
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip6_output+0xf2/0x280 net/ipv6/ip6_output.c:175
+ dst_output include/net/dst.h:436 [inline]
+ ip6_local_out+0x74/0x90 net/ipv6/output_core.c:179
+ ip6_send_skb+0x53/0x110 net/ipv6/ip6_output.c:1795
+ udp_v6_send_skb.isra.0+0x3ec/0xa70 net/ipv6/udp.c:1173
+ udpv6_sendmsg+0x1906/0x1c20 net/ipv6/udp.c:1471
+ inet6_sendmsg+0x6d/0x90 net/ipv6/af_inet6.c:576
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0x9f/0xc0 net/socket.c:657
+ ___sys_sendmsg+0x2b7/0x5d0 net/socket.c:2311
+ __sys_sendmmsg+0x123/0x350 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x64/0x80 net/socket.c:2439
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-> >What in hypothetical case, mdev is not on top of PCI...
->=20
-> Okay, let's go hypothetical. In that case, it is going to be on top of so=
-mething
-> else, wouldn't it?
-Yes, it will be. But just because it is on top of something, doesn't mean w=
-e include the whole parent dev, its bridge, its rc hierarchy here.
-There should be a need.
-It was needed in PF/VF case due to overlapping numbers of VFs via single de=
-vlink instance. You probably missed my reply to Jakub.
-Here it is no overlap.
+write to 0xffff8880ba403508 of 1 bytes by interrupt on cpu 0:
+ qdisc_run_begin include/net/sch_generic.h:160 [inline]
+ qdisc_run include/net/pkt_sched.h:120 [inline]
+ net_tx_action+0x2b1/0x6c0 net/core/dev.c:4551
+ __do_softirq+0x115/0x33f kernel/softirq.c:292
+ do_softirq_own_stack+0x2a/0x40 arch/x86/entry/entry_64.S:1082
+ do_softirq.part.0+0x6b/0x80 kernel/softirq.c:337
+ do_softirq kernel/softirq.c:329 [inline]
+ __local_bh_enable_ip+0x76/0x80 kernel/softirq.c:189
+ local_bh_enable include/linux/bottom_half.h:32 [inline]
+ rcu_read_unlock_bh include/linux/rcupdate.h:688 [inline]
+ ip6_finish_output2+0x7bb/0xec0 net/ipv6/ip6_output.c:117
+ __ip6_finish_output net/ipv6/ip6_output.c:142 [inline]
+ __ip6_finish_output+0x2d7/0x330 net/ipv6/ip6_output.c:127
+ ip6_finish_output+0x41/0x160 net/ipv6/ip6_output.c:152
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip6_output+0xf2/0x280 net/ipv6/ip6_output.c:175
+ dst_output include/net/dst.h:436 [inline]
+ ip6_local_out+0x74/0x90 net/ipv6/output_core.c:179
+ ip6_send_skb+0x53/0x110 net/ipv6/ip6_output.c:1795
+ udp_v6_send_skb.isra.0+0x3ec/0xa70 net/ipv6/udp.c:1173
+ udpv6_sendmsg+0x1906/0x1c20 net/ipv6/udp.c:1471
+ inet6_sendmsg+0x6d/0x90 net/ipv6/af_inet6.c:576
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg+0x9f/0xc0 net/socket.c:657
+ ___sys_sendmsg+0x2b7/0x5d0 net/socket.c:2311
+ __sys_sendmmsg+0x123/0x350 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg net/socket.c:2439 [inline]
+ __x64_sys_sendmmsg+0x64/0x80 net/socket.c:2439
+ do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 21817 Comm: syz-executor.2 Not tainted 5.4.0-rc6+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: d518d2ed8640 ("net/sched: fix race between deactivation and dequeue for NOLOCK qdisc")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Davide Caratti <dcaratti@redhat.com>
+---
+ include/net/sch_generic.h | 6 +++---
+ net/core/dev.c            | 2 +-
+ net/sched/sch_generic.c   | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index a8b0a9a4c686541d175ea5b543c0ec3c9d7c9e79..d43da37737be230f1b745fdc30409c13854c5628 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -148,8 +148,8 @@ static inline bool qdisc_is_percpu_stats(const struct Qdisc *q)
+ static inline bool qdisc_is_empty(const struct Qdisc *qdisc)
+ {
+ 	if (qdisc_is_percpu_stats(qdisc))
+-		return qdisc->empty;
+-	return !qdisc->q.qlen;
++		return READ_ONCE(qdisc->empty);
++	return !READ_ONCE(qdisc->q.qlen);
+ }
+ 
+ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+@@ -157,7 +157,7 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
+ 		if (!spin_trylock(&qdisc->seqlock))
+ 			return false;
+-		qdisc->empty = false;
++		WRITE_ONCE(qdisc->empty, false);
+ 	} else if (qdisc_is_running(qdisc)) {
+ 		return false;
+ 	}
+diff --git a/net/core/dev.c b/net/core/dev.c
+index bb15800c8cb5cee148dc8adb659426f856ddd060..1c799d486623d5f144d1f7017c7b56133c06f07a 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3607,7 +3607,7 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+ 	qdisc_calculate_pkt_len(skb, q);
+ 
+ 	if (q->flags & TCQ_F_NOLOCK) {
+-		if ((q->flags & TCQ_F_CAN_BYPASS) && q->empty &&
++		if ((q->flags & TCQ_F_CAN_BYPASS) && READ_ONCE(q->empty) &&
+ 		    qdisc_run_begin(q)) {
+ 			if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED,
+ 					      &q->state))) {
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 8561e825f401e312081b6160ac8ee88405336f56..5ab696efca951313372c3dfda0c2da52e97f4975 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -652,7 +652,7 @@ static struct sk_buff *pfifo_fast_dequeue(struct Qdisc *qdisc)
+ 	if (likely(skb)) {
+ 		qdisc_update_stats_at_dequeue(qdisc, skb);
+ 	} else {
+-		qdisc->empty = true;
++		WRITE_ONCE(qdisc->empty, true);
+ 	}
+ 
+ 	return skb;
+-- 
+2.24.0.432.g9d3f5f5b63-goog
 
