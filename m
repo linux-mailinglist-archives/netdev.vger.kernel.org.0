@@ -2,96 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20FB3F5BB2
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 00:17:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1025CF5BC0
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 00:18:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbfKHXQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 18:16:58 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:43518 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726231AbfKHXQ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 18:16:58 -0500
-Received: by mail-qv1-f68.google.com with SMTP id cg2so2874186qvb.10;
-        Fri, 08 Nov 2019 15:16:57 -0800 (PST)
+        id S1729951AbfKHXSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 18:18:01 -0500
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:45718 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726349AbfKHXSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 18:18:01 -0500
+Received: by mail-pl1-f195.google.com with SMTP id y24so4833838plr.12;
+        Fri, 08 Nov 2019 15:18:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XnUYRQCprUGek7oCJJDaNl/6dWM/aS6EQrXD5UUlk0I=;
-        b=Ou4MVs2euDEVJerZE+fWK+6YaDAjeIVhXRKzP6j39xAFxYN7uk61imvMjKG/6dtkwK
-         /wmBfqlev4dLGcb/WfiK0i8z27xbFMMATYGBEa4Y1WxTTC/C80Acg/ifrAbMHVtC5L6d
-         05mLdKrNIlyY87aMQu5ZjD4Le5QZodJy5c1hYlkUvbzpMBeDHIoO1rSE1pe4bvJ3ahId
-         f2aod8zSe+HnyMwsVkHWTbmXcyenTLl8L2DWG7plgjKodqWJyldGHmmL6Z4zOjFr5kUK
-         rm/dLT4ILlK5+cuprrZCxUj+Ls8yfOvrSWiN5tHI9SjHmoGqE1jWQbader5m4RMg7DAr
-         48kA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=8LY+kAKStYocm9qGGdC5//bUkJulONkZ9dj6afcXb3I=;
+        b=KaY2TysAPkma6bWHz/86sPTgLV84bhnvW3ihpCFR4bBkC4mzc+nCBxcPeDxw+y+96K
+         Xxl8aaTyejGCALO6Egdu8s54hgL9nBX6x9oLL7GgnfQ6yKNBW5mQ8XiB48lfiFPQX8nn
+         T66Fkr3QO7/+TH4epcoK1DQIhJU2NcQqP82pmdxlcojWz86QPGHqmZIt82rtZwgWRG+S
+         8OYEMY/vwNu3yzP1J8YGgqyCrMrOlDWb8a9/tZYZETESVtY19LBuLgmbpfEmuis4/hXX
+         mFI2IkFNMbym9FUBvLjwvWqoBjdFok5rCfPaEcxYvertvAf4NjuKBP+LAoiLsj6FexZq
+         Mf8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XnUYRQCprUGek7oCJJDaNl/6dWM/aS6EQrXD5UUlk0I=;
-        b=rCH4Ux/vu8W2d9ITjv6qh3Ca7WtYBNgE3PWXYHbq6pTZFjBjxXMEHqu4voD9IX4rJo
-         thc51Y56HRm6rn/jO4NNwqkY5xZJMuJne5UQSWZUjSPKJjc/BeRPNSInPGBFCVGwqW3m
-         jdc37nANIh4G/ew/Ik/9J5plSyzDmD9m5pkvkSE4thC6OhnkbsSMfvhiNNOsVK0MJ6gv
-         qtVVtPFsyE9+1KU/khxu6TgJtjoCdqk9gwhCVO30pr3Key7cIMXsGv9c0cL+DIIe0AJq
-         N55Z5T+UyisTsbYTDtsoXtzXK8KGuPFYhFyGIrYfISU6A+H4hp5d+za1+YdlsmXsooWA
-         ptPQ==
-X-Gm-Message-State: APjAAAWqHMh8BRPK9ykRi329TXboaszEHfZ1BZoABVI7ebNMnRL5cssu
-        YaUCJlrIpwM0WuhOPYzU00AdePknQ4qFn43bvwY=
-X-Google-Smtp-Source: APXvYqxdtztCBKJmvzpITe+hgBzDt0jW4q0CdxwkIX8Zt4n0jMlKLeiHSWpvOykJNzr1NvqKrudUtE9uv/Ebv8Jt31o=
-X-Received: by 2002:ad4:4e4a:: with SMTP id eb10mr11749908qvb.228.1573255016902;
- Fri, 08 Nov 2019 15:16:56 -0800 (PST)
-MIME-Version: 1.0
-References: <157324878503.910124.12936814523952521484.stgit@toke.dk> <157324879178.910124.2574532467255490597.stgit@toke.dk>
-In-Reply-To: <157324879178.910124.2574532467255490597.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 Nov 2019 15:16:45 -0800
-Message-ID: <CAEf4BzZAfXjh+QdaRPHyNJKiW3PzL8UF38_-AridYdM7Bg54_Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 6/6] libbpf: Add getter for program size
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=8LY+kAKStYocm9qGGdC5//bUkJulONkZ9dj6afcXb3I=;
+        b=k/CVo9HSsc7KiQYLpTV/By08BGM23ZcnSZw7wCeSnyPfPxIv9P09ulWm+TYEn29MbF
+         8qP0IVtTO9vA40EsYOCXxcfvpHIVhV8rKSBNco0NclV8Vh3rSNJF71eZWxpmPdzcETRg
+         tIQ75GZ2yEmf6kcibCid9p9qK+FYRIsiDdeySPPgcOo5i/k7RjtzMEZyTXVH3Erb6hLM
+         2+Kp70j6NgCAGvz7Hud+WnK71m7ZjuAwDfJ6nkIPofOB6j8+XA7JAIbyuVWUfikJEhj7
+         dJS3N8wHfwKAwTX31zV+oEfdgqUzs0B42ID4ZjgcvuywuOjGdQR2PX07Bo96nw2Nm4bi
+         Z+hg==
+X-Gm-Message-State: APjAAAVjAuaf2xierN9mrYUS8wvTI55+q3JPhNl8SsTU90eUgMSe6OSM
+        V8sEcsCW5rTEoQyvJiPkNgE=
+X-Google-Smtp-Source: APXvYqykHzVji+GQh1+cXWeDUkOWqMPcBv6zPaBwOXLMxoDXu4yfo2gGlI/1nILC4iReCAfHqkk0HA==
+X-Received: by 2002:a17:902:8c92:: with SMTP id t18mr12975965plo.76.1573255080721;
+        Fri, 08 Nov 2019 15:18:00 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:f248])
+        by smtp.gmail.com with ESMTPSA id b200sm7263691pfb.86.2019.11.08.15.17.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 08 Nov 2019 15:17:59 -0800 (PST)
+Date:   Fri, 8 Nov 2019 15:17:58 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         David Miller <davem@davemloft.net>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH bpf-next v2 3/6] libbpf: Propagate EPERM to caller on
+ program load
+Message-ID: <20191108231757.7egzqebli6gcplfq@ast-mbp.dhcp.thefacebook.com>
+References: <157324878503.910124.12936814523952521484.stgit@toke.dk>
+ <157324878850.910124.10106029353677591175.stgit@toke.dk>
+ <CAEf4BzZxcvhZG-FHF+0iqia72q3YA0dCgsgFchibiW7dkFQm2A@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAEf4BzZxcvhZG-FHF+0iqia72q3YA0dCgsgFchibiW7dkFQm2A@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 1:33 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> This adds a new getter for the BPF program size (in bytes). This is usefu=
-l
-> for a caller that is trying to predict how much memory will be locked by
-> loading a BPF object into the kernel.
->
-> Acked-by: Song Liu <songliubraving@fb.com>
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
+On Fri, Nov 08, 2019 at 02:50:43PM -0800, Andrii Nakryiko wrote:
+> On Fri, Nov 8, 2019 at 1:33 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+> >
+> > From: Toke Høiland-Jørgensen <toke@redhat.com>
+> >
+> > When loading an eBPF program, libbpf overrides the return code for EPERM
+> > errors instead of returning it to the caller. This makes it hard to figure
+> > out what went wrong on load.
+> >
+> > In particular, EPERM is returned when the system rlimit is too low to lock
+> > the memory required for the BPF program. Previously, this was somewhat
+> > obscured because the rlimit error would be hit on map creation (which does
+> > return it correctly). However, since maps can now be reused, object load
+> > can proceed all the way to loading programs without hitting the error;
+> > propagating it even in this case makes it possible for the caller to react
+> > appropriately (and, e.g., attempt to raise the rlimit before retrying).
+> >
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> > Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c |    4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index cea61b2ec9d3..582c0fd16697 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+> > @@ -3721,7 +3721,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+> >                 free(log_buf);
+> >                 goto retry_load;
+> >         }
+> > -       ret = -LIBBPF_ERRNO__LOAD;
+> > +       ret = (errno == EPERM) ? -errno : -LIBBPF_ERRNO__LOAD;
 
-Can you add comment mentioning that this is size in bytes, not in
-number of instructions? It's certainly will be a first question anyone
-using this will ask.
+ouch. so libbpf was supressing all errnos for loading and that was a commit
+from 2015. No wonder it's hard to debug. I grepped every where I could and it
+doesn't look like anyone is using this code. There are other codes that can
+come from sys_bpf(prog_load). Not sure why such decision was made back then. I
+guess noone was really paying attention. I think we better propagate all codes.
+I don't see why EPERM should be special.
 
-I think it's good to have this, but I don't think you can really
-predict how much memory will be used. I'd expect memory used by maps
-(and not just based on element size and count, but some internal
-bookkeeping stuff) would be much bigger factor and not easy to guess.
-So beyond just stats dumping, I think this won't be that helpful.
-
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  tools/lib/bpf/libbpf.c   |    5 +++++
->  tools/lib/bpf/libbpf.h   |    1 +
->  tools/lib/bpf/libbpf.map |    1 +
->  3 files changed, 7 insertions(+)
->
-
-[...]
