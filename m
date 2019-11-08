@@ -2,137 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 700A5F3D3B
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 02:10:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D28FF3D43
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 02:16:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726320AbfKHBKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 20:10:31 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:46189 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725928AbfKHBKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 20:10:31 -0500
-Received: by mail-qk1-f195.google.com with SMTP id h15so3803270qka.13;
-        Thu, 07 Nov 2019 17:10:30 -0800 (PST)
+        id S1728116AbfKHBQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 20:16:32 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45336 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726094AbfKHBQc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 20:16:32 -0500
+Received: by mail-qk1-f193.google.com with SMTP id q70so3815866qke.12
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 17:16:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yWgT2PtMrJhC8pe46v7IsyFWFEwvv4M7Y8gpYa2TrLQ=;
-        b=e9ZnAqhgpJORDTZKaHx/0NAxfTs61vhfOz7iHP3XPMaFcHjAiGsCsKzQGqp2ZP7zAo
-         6D1jltU3ZgnUH6GwQQYB8neZfvFyS2Q4ShGCYkIQbFBhNyKhIWeoa4d0mH9YXjEu6RZd
-         OElPmYMrLH1/sX3xl6ZeQqv1AcaEX+sLCf9yS/k7TY6gOtUqvVHYFEQjfV1iHzOUDjKI
-         XR5IgTlhfus+G3ZYGFP7llbg04HtPM9M01Tx5acI4lreXI2vuPrQEGm/q2nQ7mIaDXTG
-         Od9w4H8cUEnD2XJ4E2ENfYvH0GxG6MDnz7qAiMa0Gan4UQI4NsxCyhs4vi380AxycM3X
-         bnIQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=vdt2C+geesv9gxBDPFxWmGRqSYPbEeSey1ykEQ5i0MQ=;
+        b=rvIkRJwXLTY6gD+G753640J0M69Gk/N7ZbG12ZwUG16/+FqGTcZQ9iosuqAWp35ZjJ
+         TD4LMJs5zmWuIkLQpJ06wiPyeKHVSs15AggUo+3xmsnijfhIAv6eUEPZZOZ9yNX8wRma
+         YmI7reXLlB1fX/fjOUZIGUaa3UH4Io9mYii8NHcOB6dCd1Vz7EbLGtlHVkUpEwLh8wbe
+         GlDbXAp9YUy3dhp3MQpUkjXCA2z8mMig+gkMtqVhY47NYavOfyVOduocvtLxv35RyXph
+         n0p+aUIhz8qS4YCz8eeVGOOy4/+8sj2HWiucjVHwn0t2m38CoIoujs4Fdm+3vHaTqb2O
+         VUFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yWgT2PtMrJhC8pe46v7IsyFWFEwvv4M7Y8gpYa2TrLQ=;
-        b=jDUYgWs+gyq9Tv8cDmpRocf1mfyzkvDXOj8MxvLMlH7Um96Y98nTp/Nd7hkxt8/1s8
-         2z+viGvmlHgZX/6wxeMY8ptJscDv7KnLVb29rVpQG2To55KWYt2RsJS2Zv6E8o1dh+FY
-         YnhX/OefO9hwcOL/LDTCGJ1xJE8HifVsLaHluEzr+d+dhWyyEzJzrmbVBflMRWG1K0z9
-         RTaub7oViuRYYZNPMAR7cl7MMLzyWqj+ZXknka4qv0eokQZBP/A5WqDSIdj8+qgUKHYu
-         K0yumo4+C3HW0B7MKKSnNfeKgZyRjI9JP2S0NoY+nVuFPevRyoimJBdzzMaduUjjOJnl
-         8bzg==
-X-Gm-Message-State: APjAAAUoj42pyPVbn9jm2hqAg7mNK7cKv8nEY++5hvDzjQhx3R71Yu6c
-        PEsxWI8Mavr4b6ze7z0k6V2NV/0ytNaoJHmtKBI=
-X-Google-Smtp-Source: APXvYqxzhYuzLASKZyYek9Ue6Upyl2gpWKz02Au5hT6K3K/Uk1kSOMoeTE1cWltDDqKC/XuH4swKamA+YukLmekZlp8=
-X-Received: by 2002:a37:b801:: with SMTP id i1mr6376157qkf.497.1573175430133;
- Thu, 07 Nov 2019 17:10:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20191107054644.1285697-1-ast@kernel.org> <20191107054644.1285697-4-ast@kernel.org>
- <5967F93A-235B-447E-9B70-E7768998B718@fb.com> <20191107225553.vnnos6nblxlwx24a@ast-mbp.dhcp.thefacebook.com>
- <FABEB3EB-2AC4-43F8-984B-EFD1DA621A3E@fb.com> <20191107230923.knpejhp6fbyzioxi@ast-mbp.dhcp.thefacebook.com>
- <22015BB9-7A84-4F5E-A8A5-D10CB9DA3AEE@fb.com> <20191108000941.r4umt2624o3j45p7@ast-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20191108000941.r4umt2624o3j45p7@ast-mbp.dhcp.thefacebook.com>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Thu, 7 Nov 2019 17:10:18 -0800
-Message-ID: <CAPhsuW4gYU=HJTe2ueDXhiyY__V1ZBF1ZEhCasHb5m8XgkTtww@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 03/17] bpf: Introduce BPF trampoline
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=vdt2C+geesv9gxBDPFxWmGRqSYPbEeSey1ykEQ5i0MQ=;
+        b=ReEaPlZXxinsEjzxu3uAvktJDxXQITU0L+8U7Zfkop8tMIXY2rGCqP4n8PysGlV35U
+         BQfTm8Cb6gFhQspLeTXLJGOrjNE8CUR9rXrbXiNC/wDjrgEFEPZADGs9xmKKqa/LExXW
+         SF06NdtdHn+HWXocAEq5MXpXhflhx/sGH1n94ubmKiU4GDuytDdV4AsTba48UbS2Fznh
+         n499JVpWFi+S+q/HZl8UMqHP4Fve5CPdGlgFoyi+2cDxMYHg882ivOwiF90kERdiJcV4
+         k5hi5g+PtUNFkzkidpMwJe8lW746YW9qwHARb4VFErWCZOE/FjzS3cFv4knS7PnmCGr+
+         HQ/A==
+X-Gm-Message-State: APjAAAWIsoHEEHhg3ra5UA32C6zrVS+jPUy4UWr14yAYOgLbM11SXMvv
+        aDDYbTcw8xxmVe/QVKKiXJwTKA==
+X-Google-Smtp-Source: APXvYqwgB8RB+85IE+ef9Th25yVeX8Z70RbHTez0Vh44iPGNCrj28Vv5ofUawCeZSCn27OyxpMxn9g==
+X-Received: by 2002:a05:620a:208a:: with SMTP id e10mr5847205qka.221.1573175791133;
+        Thu, 07 Nov 2019 17:16:31 -0800 (PST)
+Received: from cakuba ([65.196.126.174])
+        by smtp.gmail.com with ESMTPSA id o2sm1998400qkf.68.2019.11.07.17.16.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Nov 2019 17:16:31 -0800 (PST)
+Date:   Thu, 7 Nov 2019 20:16:27 -0500
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191107201627.68728686@cakuba>
+In-Reply-To: <AM0PR05MB4866A2B92A64DDF345DB14F5D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+        <20191107153234.0d735c1f@cakuba.netronome.com>
+        <AM0PR05MB4866A2B92A64DDF345DB14F5D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 7, 2019 at 4:10 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Nov 07, 2019 at 11:16:20PM +0000, Song Liu wrote:
-> >
-> >
-> > > On Nov 7, 2019, at 3:09 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Thu, Nov 07, 2019 at 11:07:21PM +0000, Song Liu wrote:
-> > >>
-> > >>
-> > >>>
-> > >>>
-> > >>>>> +
-> > >>>>> +static int bpf_trampoline_update(struct bpf_prog *prog)
-> > >>>>
-> > >>>> Seems argument "prog" is not used at all?
-> > >>>
-> > >>> like one below ? ;)
-> > >> e... I was really dumb... sorry..
-> > >>
-> > >> Maybe we should just pass the tr in?
-> > >
-> > > that would be imbalanced.
-> >
-> > Hmm.. what do you mean by imbalanced?
->
-> I take it back. Yeah. It can be tr.
->
-> >
-> > >
-> > >>>
-> > >>>>> +{
-> > >>>>> +       struct bpf_trampoline *tr = prog->aux->trampoline;
-> > >>>>> +       void *old_image = tr->image + ((tr->selector + 1) & 1) * PAGE_SIZE/2;
-> > >>>>> +       void *new_image = tr->image + (tr->selector & 1) * PAGE_SIZE/2;
-> > >>>>> +       if (err)
-> > >>>>> +               goto out;
-> > >>>>> +       tr->selector++;
-> > >>>>
-> > >>>> Shall we do selector-- for unlink?
-> > >>>
-> > >>> It's a bit flip. I think it would be more confusing with --
-> > >>
-> > >> Right.. Maybe should use int instead of u64 for selector?
-> > >
-> > > No, since int can overflow.
-> >
-> > I guess it is OK to overflow, no?
->
-> overflow is not ok, since transition 0->1 should use nop->call patching
-> whereas 1->2, 2->3 should use call->call.
->
-> In my initial implementation (one I didn't share with anyone) I had
-> trampoline_mutex taken inside bpf_trampoline_update(). And multiple link()
-> operation were allowed. The idea was to attach multiple progs and update
-> trampoline once. But then I realized that I cannot do that since 'unlink +
-> update' where only 'update' is taking lock will not guarantee success. Since
-> other 'link' operations can race and 'update' can potentially fail in
-> arch_prepare_bpf_trampoline() due to new things that 'link' brought in. In that
-> version (since there several fentry/fexit progs can come in at once) I used
-> separate 'selector' ticker to pick the side of the page. Once I realized the
-> issue (to guarantee that unlink+update == always success) I moved mutex all the
-> way to unlink and link and left 'selector' as-is. Just now I realized that
-> 'selector' can be removed.  fentry_cnt + fexit_cnt can be used instead. This
-> sum of counters will change 1 bit at a time. Am I right?
+On Thu, 7 Nov 2019 20:52:29 +0000, Parav Pandit wrote:
+> > On Thu,  7 Nov 2019 10:04:48 -0600, Parav Pandit wrote: =20
+> > > Mellanox sub function capability allows users to create several
+> > > hundreds of networking and/or rdma devices without depending on PCI S=
+R- =20
+> > IOV support.
+> >=20
+> > You call the new port type "sub function" but the devlink port flavour =
+is mdev.
+> >  =20
+> Sub function is the internal driver structure. The abstract entity at use=
+r and stack level is mdev.
+> Hence the port flavour is mdev.
 
-Yeah, I think fentry_cnt + fexit_cnt is cleaner.
+FWIW I agree mdev as flavour seems like the right choice.
 
-Thanks,
-Song
+> > As I'm sure you remember you nacked my patches exposing NFP's PCI sub
+> > functions which are just regions of the BAR without any mdev capability=
+. Am I
+> > in the clear to repost those now? Jiri?
+> >  =20
+> For sure I didn't nack it. :-)
+
+Well, maybe the word "nack" wasn't exactly used :)
+
+> What I remember discussing offline/mailing list is=20
+> (a) exposing mdev/sub fuctions as devlink sub ports is not so good abstra=
+ction
+> (b) user creating/deleting eswitch sub ports would be hard to fit in the =
+whole usage model
+
+Okay, so I can repost the "basic" sub functions?
+
+> > > Overview:
+> > > ---------
+> > > Mellanox ConnectX sub functions are exposed to user as a mediated
+> > > device (mdev) [2] as discussed in RFC [3] and further during
+> > > netdevconf0x13 at [4].
+> > >
+> > > mlx5 mediated device (mdev) enables users to create multiple
+> > > netdevices and/or RDMA devices from single PCI function.
+> > >
+> > > Each mdev maps to a mlx5 sub function.
+> > > mlx5 sub function is similar to PCI VF. However it doesn't have its
+> > > own PCI function and MSI-X vectors.
+> > >
+> > > mlx5 mdevs share common PCI resources such as PCI BAR region, MSI-X
+> > > interrupts.
+> > >
+> > > Each mdev has its own window in the PCI BAR region, which is
+> > > accessible only to that mdev and applications using it.
+> > >
+> > > Each mlx5 sub function has its own resource namespace for RDMA resour=
+ces.
+> > >
+> > > mdevs are supported when eswitch mode of the devlink instance is in
+> > > switchdev mode described in devlink documentation [5]. =20
+> >=20
+> > So presumably the mdevs don't spawn their own devlink instance today, b=
+ut
+> > once mapped via VIRTIO to a VM they will create one?
+> >  =20
+> mdev doesn't spawn the devlink instance today when mdev is created by use=
+r, like PCI.
+> When PCI bus driver enumerates and creates PCI device, there isn't a devl=
+ink instance for it.
+>=20
+> But, mdev's devlink instance is created when mlx5_core driver binds to th=
+e mdev device.
+> (again similar to PCI, when mlx5_core driver binds to PCI, its devlink in=
+stance is created ).
+>=20
+> I should have put the example in patch-15 which creates/deletes devlink i=
+nstance of mdev.
+> I will revise the commit log of patch-15 to include that.
+> Good point.
+
+Thanks.
+
+> > It could be useful to specify.
+> >  =20
+> Yes, its certainly useful. I missed to put the example in commit log of p=
+atch-15.
+>=20
+> > > Network side:
+> > > - By default the netdevice and the rdma device of mlx5 mdev cannot
+> > > send or receive any packets over the network or to any other mlx5 mde=
+v. =20
+> >=20
+> > Does this mean the frames don't fall back to the repr by default? =20
+> Probably I wasn't clear.
+> What I wanted to say is, that frames transmitted by mdev's netdevice and =
+rdma devices don't go to network.
+> These frames goes to representor device.
+> User must configure representor to send/receive/steer traffic to mdev.
+
+=F0=9F=91=8D
