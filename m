@@ -2,130 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FDB6F3D62
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 02:22:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A61F7F3D7F
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 02:42:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726281AbfKHBWr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 20:22:47 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45996 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725928AbfKHBWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 20:22:47 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xA81JpPm021336;
-        Thu, 7 Nov 2019 17:22:33 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=XCK3oYZU9a9nXljPtYzSfWKaEx6p0Afstu3fv9FZuvM=;
- b=FCL7wVHJxfb1SSZt/Jp40/2uVwfNTBp1q2apqodQPF9lQQq7vI7j+ZRg9aDJgz5/E3+6
- kvKNpDwXIA1IC4WrDuy2FNro5HxeP7jTBZBy2sOzUAGDaM30lOqmBgKPLT/jmq/7rnQY
- 4eB+7/wYmOAqED3s3EbTKdbqrl8PH7NhQ8Q= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 2w4ujf8w5u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 07 Nov 2019 17:22:33 -0800
-Received: from ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) by
- ash-exhub202.TheFacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 7 Nov 2019 17:22:32 -0800
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 7 Nov 2019 17:22:32 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Mge5UPST0iQFC/06Q/NQeKfmfQGZ11aVlUQQRbNgvZKiG3rhVB8rS2pp4e85YJwogtTt80f8XPQyfrHjm0YsGMK+fpsgD4ysB7dFjlM2SSsVr1P0u8b/nKTHHOmHXLmAL2WAZ/S9B6Al/IFtJ1ZlA7o3IqwShca0VYCTIauuMDVbtWluNumelbr98O/MgGhN1MPm6w2KKA/bjXN5+snMtcD+ibjyyMhgElNW4wNJBymn2jRLtT2yT574BYm4EPZ9ujaxAwn4MXHxq50LaZsuxafn125o9KkP7JcNL4nSSI80T8ai7k4LMd8PjAjq0IZ8XmPc/IhnlcvSfL7Vp3DlVw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XCK3oYZU9a9nXljPtYzSfWKaEx6p0Afstu3fv9FZuvM=;
- b=AxKrJKJKh+aYeM7Glgs2M1RhzauPz+od3BFE/XXRhCR1ITlI4W70AfLOOp6Cyl8glpxcO3LGAVX2sRFcyRdlmALersIcTIOzPGLFbpAiHYWimzbALi9o+v0nXCXHtyw8E/QG+b7lq9fjaig18hENfKxntjrmEEaHPEigaynyo7Rl/Z/LgDK2F2yxmzSjdZB+kyqqs3n4Uuigqw0J2vdLg8GcdOD9EGoXAoWLHviz0iwhQJrXg50/CJrLqCblXor7oJpswbgiRVTEZjzEWPCsVS0bcJQbOUvM9qlWkyzgG32FqYK10SkbUvPcmZlyT2BztF1TyBfj6IFq7vImeNnR+w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XCK3oYZU9a9nXljPtYzSfWKaEx6p0Afstu3fv9FZuvM=;
- b=Rh1ueD30lPDRMPtdOVZ/3Ribb4LuRahiBuBSpPRNhrphFLKYUzwbdSTYiB5kd3bPzSRtQ+cB8I7c3WkVVxUBOBVaXvJEBG1vWqnWKEJLk2cucqVW7tpxuiMAmYDKDMPhaBvJO94mSiGWAzsoymJZ2jlDFObZcGU4IWa/+s+E7bI=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1583.namprd15.prod.outlook.com (10.173.235.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.20; Fri, 8 Nov 2019 01:22:31 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 01:22:31 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v2 bpf-next 08/17] selftests/bpf: Add fexit tests for BPF
- trampoline
-Thread-Topic: [PATCH v2 bpf-next 08/17] selftests/bpf: Add fexit tests for BPF
- trampoline
-Thread-Index: AQHVlS7grtNFSdnr6kWEI01GLTHA+6eAe5oA
-Date:   Fri, 8 Nov 2019 01:22:31 +0000
-Message-ID: <56A33FC9-7553-4DC2-8BAD-D4A5BEA34806@fb.com>
-References: <20191107054644.1285697-1-ast@kernel.org>
- <20191107054644.1285697-9-ast@kernel.org>
-In-Reply-To: <20191107054644.1285697-9-ast@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3601.0.10)
-x-originating-ip: [2620:10d:c090:180::b23]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 36fe0ff0-1210-4493-bf1b-08d763ea20b2
-x-ms-traffictypediagnostic: MWHPR15MB1583:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB15833DF2F8F9BB3694731B36B37B0@MWHPR15MB1583.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(396003)(366004)(346002)(376002)(136003)(39860400002)(199004)(189003)(446003)(316002)(33656002)(54906003)(6506007)(53546011)(486006)(5660300002)(305945005)(7736002)(6512007)(76176011)(8936002)(66946007)(76116006)(71200400001)(81166006)(71190400001)(81156014)(36756003)(64756008)(66446008)(66556008)(186003)(4326008)(6246003)(6916009)(6436002)(8676002)(50226002)(2906002)(6486002)(99286004)(229853002)(86362001)(66476007)(25786009)(6116002)(256004)(478600001)(558084003)(14454004)(46003)(11346002)(102836004)(2616005)(476003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1583;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7coqfA+Z39HrMwv3VMyqfoITv4dpMy92zW5nRro0UMstBVsPXeh4T5BIAkLGfY81YylNiYVXP+n+U5fiflLyUpJed/g6tVKHr/s8qr/nSGuSuIsEQFZbIEjRCm6UHh5+yKS5amxYyu/Am8/wtJObsTc3VX+rCkOWHuDIu9STox2BDTXW1Q8wMa+e5G+iqesOAADGiejNbHnCfTdFTXK9Pjj54YGU3gWvgU3480IybkggSiBnbKkjgiUtHRARJ94tVFxRiCatMkRlzYqdfvyyaCkOzSS1FwUnE2nDxB3fivbkmq5cMdec8zn87Sqf6aFXpxNJoS94IdkbTPLSW66n6oLN+cP5CADNlVOltHFOshkw+5JB2PHG+tKZ0Mc1H3k424Weejh1UyZhOhD7QOtBU84rd0gc/AYZMBQL70hejdH3C3cxly1JfhPTHNCCFZHq
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <FAABBE1E9DA38E44BFB51BAD6C47B197@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1728568AbfKHBm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 20:42:26 -0500
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:33012 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727070AbfKHBm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 20:42:26 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id AAB354AAF9;
+        Fri,  8 Nov 2019 12:42:22 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=content-transfer-encoding:content-type:content-type
+        :mime-version:x-mailer:message-id:date:date:subject:subject:from
+        :from:received:received:received; s=mail_dkim; t=1573177342; bh=
+        IDkTtv+ILuf3FTx/DkLP+64qVDFT6Kp4xx6nQNFPRQw=; b=ZHXnezixSFoeaSAg
+        yS2xlCpLWexQdyyUYM9aiiGFopY8y88Amj9z4KatXHcgzqX8V2o1LkqWtcUlrtD6
+        /Hz9Xmnhp/FeypTJcho+XrfrWSv2DthzDOyNzj92pLMQdZQAAWYQMlzrnNFw27wt
+        brvRvFynhLdQPEAbeRFKjx8wFqo=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id vPRcPVpPBqft; Fri,  8 Nov 2019 12:42:22 +1100 (AEDT)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id 22A104AAFC;
+        Fri,  8 Nov 2019 12:42:21 +1100 (AEDT)
+Received: from localhost.localdomain (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id C3FAE4AAF9;
+        Fri,  8 Nov 2019 12:42:20 +1100 (AEDT)
+From:   Tuong Lien <tuong.t.lien@dektech.com.au>
+To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
+        ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     tipc-discussion@lists.sourceforge.net
+Subject: [net-next 0/5] TIPC encryption
+Date:   Fri,  8 Nov 2019 08:42:08 +0700
+Message-Id: <20191108014213.32219-1-tuong.t.lien@dektech.com.au>
+X-Mailer: git-send-email 2.13.7
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 36fe0ff0-1210-4493-bf1b-08d763ea20b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 01:22:31.6197
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qf0oxhPxc5UZfmRDdnVc5WCKV1QmgsxxQhv7iZ5n5X7SH36RNyVYsIPFs3eGsTrksDR1QuF79xCGxLE31nGUKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1583
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-07_07:2019-11-07,2019-11-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- suspectscore=0 impostorscore=0 spamscore=0 lowpriorityscore=0 adultscore=0
- mlxscore=0 bulkscore=0 phishscore=0 priorityscore=1501 mlxlogscore=644
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911080010
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series provides TIPC encryption feature, kernel part. There will be
+another one in the 'iproute2/tipc' for user space to set key.
 
+Tuong Lien (5):
+  tipc: add reference counter to bearer
+  tipc: enable creating a "preliminary" node
+  tipc: add new AEAD key structure for user API
+  tipc: introduce TIPC encryption & authentication
+  tipc: add support for AEAD key setting via netlink
 
-> On Nov 6, 2019, at 9:46 PM, Alexei Starovoitov <ast@kernel.org> wrote:
->=20
-> Add fexit tests for BPF trampoline that checks kernel functions
-> with up to 6 arguments of different sizes and their return values.
->=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+ include/uapi/linux/tipc.h         |   21 +
+ include/uapi/linux/tipc_netlink.h |    4 +
+ net/tipc/Kconfig                  |   12 +
+ net/tipc/Makefile                 |    1 +
+ net/tipc/bcast.c                  |    2 +-
+ net/tipc/bearer.c                 |   49 +-
+ net/tipc/bearer.h                 |    6 +-
+ net/tipc/core.c                   |   14 +
+ net/tipc/core.h                   |    8 +
+ net/tipc/crypto.c                 | 1986 +++++++++++++++++++++++++++++++=
+++++++
+ net/tipc/crypto.h                 |  167 ++++
+ net/tipc/link.c                   |   19 +-
+ net/tipc/link.h                   |    1 +
+ net/tipc/msg.c                    |   15 +-
+ net/tipc/msg.h                    |   46 +-
+ net/tipc/netlink.c                |   18 +-
+ net/tipc/node.c                   |  329 +++++-
+ net/tipc/node.h                   |   13 +
+ net/tipc/sysctl.c                 |   11 +
+ net/tipc/udp_media.c              |    1 +
+ 20 files changed, 2648 insertions(+), 75 deletions(-)
+ create mode 100644 net/tipc/crypto.c
+ create mode 100644 net/tipc/crypto.h
 
-Acked-by: Song Liu <songliubraving@fb.com>
+--=20
+2.13.7
+
