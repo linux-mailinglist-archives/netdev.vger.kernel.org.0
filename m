@@ -2,114 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39E31F3EB8
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 05:08:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE50F3EB6
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 05:08:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729823AbfKHEI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 23:08:27 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:34880 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729641AbfKHEI1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 23:08:27 -0500
-Received: by mail-lf1-f68.google.com with SMTP id y6so3351264lfj.2;
-        Thu, 07 Nov 2019 20:08:25 -0800 (PST)
+        id S1729443AbfKHEIX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 23:08:23 -0500
+Received: from mail-yb1-f201.google.com ([209.85.219.201]:44357 "EHLO
+        mail-yb1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729641AbfKHEIX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 23:08:23 -0500
+Received: by mail-yb1-f201.google.com with SMTP id 63so3894744ybv.11
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 20:08:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H78vnncv8XIX6vF849Af3zw3Wc9WfiSJimph1ZztaME=;
-        b=fpUq8lWIe4UfR2n3cwXXSXcybpuWGNUL5F+PEojPiwDOm7ATLoaAtGIQC0NMVNRRD9
-         RvN7dk8/HHC+c84rseK0iakiQZWkEu2fXAIJYO3JFqlJD25eothFvgljH4eC+gKlCsWC
-         Srq+apMsK9pxRJ4sHuWwFqBSThlULhNtuDjeSz81nkNDdBNVLct9LtqJ0KYpQ0V951E8
-         mITHN9z/onLD2dOuj9LLTcr/3m7jCAhkMyxZRNFgLtkFfxKBFqxWKJWFxxe9uwlyGl2T
-         lbF5ASoJgyLcmmlhuUnlDDyaETHxW0IOAW2sCntOQByzdWarBXugnvPF8TBJVtgOwm/i
-         qLUA==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=lm+XHYVFulxIN4eYqVUzaa8YkbE181nEoYdhPg41czI=;
+        b=nocGgv7k8Vid13U0s9Ej/4YwLTBEA6UJO7wpWxkv6dTT3BcGO/XeHpiHLWQOm4ictg
+         HBz1g8Li4qiXz5sXzJUOHr2JdDGQhSIsHcLifhStNgd3HC2PUbnNOaEYew6Mx2mLUHS+
+         rRewEZmHqn1WogQyNcMv72GY+rXUODWrrPannmB5fuoYqbsu4QTQncKgpPF6ZRsOlUfj
+         HiRca48UgOOrDgceGbfylyo1L4ggfLfgEhfsX2KyjhQTqG9XwaysI1pE7ovuYB77hp4d
+         1TiyjtqLL79YBU9b0L1SBpzALm8i+EgBz0HlAjuiEva+UUcIMk/u7pSShmxxiLAsUaCI
+         3MPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H78vnncv8XIX6vF849Af3zw3Wc9WfiSJimph1ZztaME=;
-        b=DMaf9dsOx9c3y0+MlbjMNhtxpBUEq+Jst56215cbfC7X2rCKacuqC27+94kPmQdSlE
-         sxYiPvVYxmam0oogOwmKrsMiZ6OIqtZfTFnv6zwN1F/YGBQPnh8uaCaM+DFcaW/iOk0D
-         NK7znY0n75hsDDgOtoOqH8c4cZ0Osrpv+XeTpr2EdEVMSvdAufXXZqwV2Lj8lGa5P2XL
-         2Uv07S0wnhKcgs5GESN3+nW0zup58CwVRLj/Tde7qs0qLe/HzpQod/9yTOeBDV6lWSxo
-         E1LxqqVowrVRTntVEqI5zaxUyiN0qwVYXPizc8u1l0DaC4jF5xtsKXczScL0vien8Uhq
-         vgTA==
-X-Gm-Message-State: APjAAAWmvksXgJjVMzSJLbN2T9zgHW7BVDCkz+kWsQmnIRL8W4fA98U9
-        hI+fkK7ol/szu5BdDtSoWzg0LIfLAxYkKAdMKdc=
-X-Google-Smtp-Source: APXvYqx2a2iAtPXorfRicWaTlE8tf2SqitSujGD+li9r8yhlvyyXZLLDcAqgoUqg1VSYe1On3b6sX7LeJNPG8mD7Wu4=
-X-Received: by 2002:a19:7511:: with SMTP id y17mr5014469lfe.19.1573186105008;
- Thu, 07 Nov 2019 20:08:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20191107054644.1285697-1-ast@kernel.org> <20191107054644.1285697-4-ast@kernel.org>
- <5967F93A-235B-447E-9B70-E7768998B718@fb.com> <20191107225553.vnnos6nblxlwx24a@ast-mbp.dhcp.thefacebook.com>
- <FABEB3EB-2AC4-43F8-984B-EFD1DA621A3E@fb.com> <20191107230923.knpejhp6fbyzioxi@ast-mbp.dhcp.thefacebook.com>
- <22015BB9-7A84-4F5E-A8A5-D10CB9DA3AEE@fb.com> <20191108000941.r4umt2624o3j45p7@ast-mbp.dhcp.thefacebook.com>
- <CAPhsuW4gYU=HJTe2ueDXhiyY__V1ZBF1ZEhCasHb5m8XgkTtww@mail.gmail.com>
- <CAADnVQJFNo3wcyMKkOhX-LVYpgg302-K-As9ZKkPUXxRdGN0nw@mail.gmail.com> <3000B3E1-25DE-4653-B11C-AAF61492B0FF@fb.com>
-In-Reply-To: <3000B3E1-25DE-4653-B11C-AAF61492B0FF@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 7 Nov 2019 20:08:13 -0800
-Message-ID: <CAADnVQLz9fWBm3qYWaw9n60WOHFWtzO1RXheHYj6nd+jg--TkA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 03/17] bpf: Introduce BPF trampoline
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <liu.song.a23@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=lm+XHYVFulxIN4eYqVUzaa8YkbE181nEoYdhPg41czI=;
+        b=koR3uI9tcf9/XGJb9ym/w0xVW4T0EuQAC1DJb8K1cfVcGwO+0J0URjCstxz12RFs7U
+         iJLvVwREbglwXpfPGqLzprpTbF9F/qFtu/xiHFe/PNiO8ZotkaspoztE4J6vmBos49Gd
+         bcij6CDgLq1/f0QqqDlFm9BfcWpGwNHF/Df/xWMu8fe9OwMXr6dduIWiIXxXCc/yBACv
+         6AvngUInhMCc5z0i8o7PnaMWzv/jEvWDIxFYYmcxISHTqInFYceQDTwJltOWDxRYbsTT
+         nMAkdiK5JqrM7oCNAFSGmDC061Jy1zwdzYqULy0RZ4DWBiHX1vw66XRUpJCUDyyd6TPZ
+         G6wQ==
+X-Gm-Message-State: APjAAAX10a+0taLwn/8WkQc3d1zaHFzd4jr/01Rp6qLbyZdtR/nhazNp
+        r/kTTeUTJaH7E+ObmroqKbjq1e9Fvor6NA==
+X-Google-Smtp-Source: APXvYqw37z8xuYsYnVSlgwhq0p+uk0kvj7HSa4G+vD1dlKhQeD4g/QI1TEJ/gXJcPQGOjX3MQjlSGUQ3di1a4Q==
+X-Received: by 2002:a0d:df48:: with SMTP id i69mr5443805ywe.4.1573186102229;
+ Thu, 07 Nov 2019 20:08:22 -0800 (PST)
+Date:   Thu,  7 Nov 2019 20:08:19 -0800
+Message-Id: <20191108040819.85664-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+Subject: [PATCH net] net: fix data-race in neigh_event_send()
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 7, 2019 at 8:06 PM Song Liu <songliubraving@fb.com> wrote:
->
->
->
-> > On Nov 7, 2019, at 7:11 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Thu, Nov 7, 2019 at 5:10 PM Song Liu <liu.song.a23@gmail.com> wrote:
-> >>>>>>>>> +               goto out;
-> >>>>>>>>> +       tr->selector++;
-> >>>>>>>>
-> >>>>>>>> Shall we do selector-- for unlink?
-> >>>>>>>
-> >>>>>>> It's a bit flip. I think it would be more confusing with --
-> >>>>>>
-> >>>>>> Right.. Maybe should use int instead of u64 for selector?
-> >>>>>
-> >>>>> No, since int can overflow.
-> >>>>
-> >>>> I guess it is OK to overflow, no?
-> >>>
-> >>> overflow is not ok, since transition 0->1 should use nop->call patching
-> >>> whereas 1->2, 2->3 should use call->call.
-> >>>
-> >>> In my initial implementation (one I didn't share with anyone) I had
-> >>> trampoline_mutex taken inside bpf_trampoline_update(). And multiple link()
-> >>> operation were allowed. The idea was to attach multiple progs and update
-> >>> trampoline once. But then I realized that I cannot do that since 'unlink +
-> >>> update' where only 'update' is taking lock will not guarantee success. Since
-> >>> other 'link' operations can race and 'update' can potentially fail in
-> >>> arch_prepare_bpf_trampoline() due to new things that 'link' brought in. In that
-> >>> version (since there several fentry/fexit progs can come in at once) I used
-> >>> separate 'selector' ticker to pick the side of the page. Once I realized the
-> >>> issue (to guarantee that unlink+update == always success) I moved mutex all the
-> >>> way to unlink and link and left 'selector' as-is. Just now I realized that
-> >>> 'selector' can be removed.  fentry_cnt + fexit_cnt can be used instead. This
-> >>> sum of counters will change 1 bit at a time. Am I right?
-> >>
-> >> Yeah, I think fentry_cnt + fexit_cnt is cleaner.
-> >
-> > ... and that didn't work.
-> > It's transition that matters. Either need to remember previous sum value
-> > or have separate selector. imo selector is cleaner, so I'm back to that.
->
-> Hmm.. is this because of the error handling path?
+KCSAN reported the following data-race [1]
 
-No. Because of transition 1->2 and 2->1 are the same.
+The fix will also prevent the compiler from optimizing out
+the condition.
+
+[1]
+
+BUG: KCSAN: data-race in neigh_resolve_output / neigh_resolve_output
+
+write to 0xffff8880a41dba78 of 8 bytes by interrupt on cpu 1:
+ neigh_event_send include/net/neighbour.h:443 [inline]
+ neigh_resolve_output+0x78/0x480 net/core/neighbour.c:1474
+ neigh_output include/net/neighbour.h:511 [inline]
+ ip_finish_output2+0x4af/0xe40 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:308 [inline]
+ __ip_finish_output+0x23a/0x490 net/ipv4/ip_output.c:290
+ ip_finish_output+0x41/0x160 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip_output+0xdf/0x210 net/ipv4/ip_output.c:432
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0x74/0x90 net/ipv4/ip_output.c:125
+ __ip_queue_xmit+0x3a8/0xa40 net/ipv4/ip_output.c:532
+ ip_queue_xmit+0x45/0x60 include/net/ip.h:237
+ __tcp_transmit_skb+0xe81/0x1d60 net/ipv4/tcp_output.c:1169
+ tcp_transmit_skb net/ipv4/tcp_output.c:1185 [inline]
+ __tcp_retransmit_skb+0x4bd/0x15f0 net/ipv4/tcp_output.c:2976
+ tcp_retransmit_skb+0x36/0x1a0 net/ipv4/tcp_output.c:2999
+ tcp_retransmit_timer+0x719/0x16d0 net/ipv4/tcp_timer.c:515
+ tcp_write_timer_handler+0x42d/0x510 net/ipv4/tcp_timer.c:598
+ tcp_write_timer+0xd1/0xf0 net/ipv4/tcp_timer.c:618
+
+read to 0xffff8880a41dba78 of 8 bytes by interrupt on cpu 0:
+ neigh_event_send include/net/neighbour.h:442 [inline]
+ neigh_resolve_output+0x57/0x480 net/core/neighbour.c:1474
+ neigh_output include/net/neighbour.h:511 [inline]
+ ip_finish_output2+0x4af/0xe40 net/ipv4/ip_output.c:228
+ __ip_finish_output net/ipv4/ip_output.c:308 [inline]
+ __ip_finish_output+0x23a/0x490 net/ipv4/ip_output.c:290
+ ip_finish_output+0x41/0x160 net/ipv4/ip_output.c:318
+ NF_HOOK_COND include/linux/netfilter.h:294 [inline]
+ ip_output+0xdf/0x210 net/ipv4/ip_output.c:432
+ dst_output include/net/dst.h:436 [inline]
+ ip_local_out+0x74/0x90 net/ipv4/ip_output.c:125
+ __ip_queue_xmit+0x3a8/0xa40 net/ipv4/ip_output.c:532
+ ip_queue_xmit+0x45/0x60 include/net/ip.h:237
+ __tcp_transmit_skb+0xe81/0x1d60 net/ipv4/tcp_output.c:1169
+ tcp_transmit_skb net/ipv4/tcp_output.c:1185 [inline]
+ __tcp_retransmit_skb+0x4bd/0x15f0 net/ipv4/tcp_output.c:2976
+ tcp_retransmit_skb+0x36/0x1a0 net/ipv4/tcp_output.c:2999
+ tcp_retransmit_timer+0x719/0x16d0 net/ipv4/tcp_timer.c:515
+ tcp_write_timer_handler+0x42d/0x510 net/ipv4/tcp_timer.c:598
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.4.0-rc3+ #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ include/net/neighbour.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 6a86e49181db0f47cf8188ccf92fc7bd0553a4be..6ad9ad47a9c54bfbd1772f404f4ae81bf9cc6dd3 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -439,8 +439,8 @@ static inline int neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
+ {
+ 	unsigned long now = jiffies;
+ 	
+-	if (neigh->used != now)
+-		neigh->used = now;
++	if (READ_ONCE(neigh->used) != now)
++		WRITE_ONCE(neigh->used, now);
+ 	if (!(neigh->nud_state&(NUD_CONNECTED|NUD_DELAY|NUD_PROBE)))
+ 		return __neigh_event_send(neigh, skb);
+ 	return 0;
+-- 
+2.24.0.432.g9d3f5f5b63-goog
+
