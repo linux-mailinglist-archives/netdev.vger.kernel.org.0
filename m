@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8708BF491A
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:01:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA579F490B
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:00:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390905AbfKHMAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:00:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58432 "EHLO mail.kernel.org"
+        id S2391719AbfKHMAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 07:00:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58454 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390552AbfKHLnt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:43:49 -0500
+        id S2387999AbfKHLnv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:43:51 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7777222C2;
-        Fri,  8 Nov 2019 11:43:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 42F04222C2;
+        Fri,  8 Nov 2019 11:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213428;
-        bh=kbSPGq080Nn0FUfGmRqHlogt7rWfHK73COfGgh2PqDU=;
+        s=default; t=1573213431;
+        bh=RloCVusTu2nmMd+17/acGPUt6gZueL7/1blIIxEjGAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gY4air3476OKG4j1xRwF2LOU4Aq+V/ktROHBSyt6lot1WvYgYBgFkO663eZFD3z4d
-         quHnRo4SKF6svObsadDJAFotC8ZTVCQUKsTViQtfXTJ2FUiPz6FiqCFLAwjbu5nHnr
-         SoYfVwwneSjaOxqHG1ziP7Tga6diqfWXNb4J1ct4=
+        b=yEEnwzFv7wao9AGDZse6BkcqLBuZElcBLKMWrHUj+914GgWOfRFmFaz5jeF8FExu+
+         Rue7Mrta1lpTdQrKQ9ASJ7M0XL6/plasdgrDwfsa1HbJME7/wzsnSDbLMyI2KuD2mY
+         Lqb6uqcb02zW+uf0yJWq7gsQ8NIayvTUlsYloFFs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
+Cc:     Sara Sharon <sara.sharon@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 028/103] iwlwifi: don't WARN on trying to dump dead firmware
-Date:   Fri,  8 Nov 2019 06:41:53 -0500
-Message-Id: <20191108114310.14363-28-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 029/103] iwlwifi: mvm: avoid sending too many BARs
+Date:   Fri,  8 Nov 2019 06:41:54 -0500
+Message-Id: <20191108114310.14363-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108114310.14363-1-sashal@kernel.org>
 References: <20191108114310.14363-1-sashal@kernel.org>
@@ -44,49 +44,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Sara Sharon <sara.sharon@intel.com>
 
-[ Upstream commit 84f260251ed8153e84c64eb2c5278ab18d3ddef6 ]
+[ Upstream commit 1a19c139be18ed4d6d681049cc48586fae070120 ]
 
-There's no point in warning here, the user will just get an
-error back to the debugfs file write, and warning just makes
-it seem like there's an internal consistency problem when in
-reality the user just happened to hit this at a bad time.
-Remove the warning.
+When we receive TX response, we may release a few packets
+due to a hole that was closed in the transmission window.
 
-Fixes: f45f979dc208 ("iwlwifi: mvm: disable dbg data collect when fw isn't alive")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+However, if that frame failed, we will mark all the released
+frames as failed and will send multiple BARs.
+
+This affects statistics badly, and cause unnecessary frames
+transmission.
+
+Instead, mark all the following packets as success, with the
+desired result of sending a bar for the failed frame only.
+
+Signed-off-by: Sara Sharon <sara.sharon@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-index 8390104172410..e72c0b825420c 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
-@@ -954,7 +954,7 @@ int iwl_fw_dbg_collect_desc(struct iwl_fw_runtime *fwrt,
- 	 * If the loading of the FW completed successfully, the next step is to
- 	 * get the SMEM config data. Thus, if fwrt->smem_cfg.num_lmacs is non
- 	 * zero, the FW was already loaded successully. If the state is "NO_FW"
--	 * in such a case - WARN and exit, since FW may be dead. Otherwise, we
-+	 * in such a case - exit, since FW may be dead. Otherwise, we
- 	 * can try to collect the data, since FW might just not be fully
- 	 * loaded (no "ALIVE" yet), and the debug data is accessible.
- 	 *
-@@ -962,9 +962,8 @@ int iwl_fw_dbg_collect_desc(struct iwl_fw_runtime *fwrt,
- 	 *	config. In such a case, due to HW access problems, we might
- 	 *	collect garbage.
- 	 */
--	if (WARN((fwrt->trans->state == IWL_TRANS_NO_FW) &&
--		 fwrt->smem_cfg.num_lmacs,
--		 "Can't collect dbg data when FW isn't alive\n"))
-+	if (fwrt->trans->state == IWL_TRANS_NO_FW &&
-+	    fwrt->smem_cfg.num_lmacs)
- 		return -EIO;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+index efef28012a6b9..ac1e05b93a9ad 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+@@ -1378,6 +1378,14 @@ static void iwl_mvm_rx_tx_cmd_single(struct iwl_mvm *mvm,
+ 			break;
+ 		}
  
- 	if (test_and_set_bit(IWL_FWRT_STATUS_DUMPING, &fwrt->status))
++		/*
++		 * If we are freeing multiple frames, mark all the frames
++		 * but the first one as acked, since they were acknowledged
++		 * before
++		 * */
++		if (skb_freed > 1)
++			info->flags |= IEEE80211_TX_STAT_ACK;
++
+ 		iwl_mvm_tx_status_check_trigger(mvm, status);
+ 
+ 		info->status.rates[0].count = tx_resp->failure_frame + 1;
 -- 
 2.20.1
 
