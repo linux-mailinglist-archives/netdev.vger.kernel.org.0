@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B430F4787
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD98BF4782
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:51:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391617AbfKHLrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:47:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36338 "EHLO mail.kernel.org"
+        id S2391323AbfKHLuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:50:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391588AbfKHLrk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:47:40 -0500
+        id S2391616AbfKHLrn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:47:43 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 09B57222C5;
-        Fri,  8 Nov 2019 11:47:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DE93206A3;
+        Fri,  8 Nov 2019 11:47:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213659;
-        bh=uIXzy5NaSb2l3HTFOk/ZUs1O/o+lkruU8kvNmDUkF+4=;
+        s=default; t=1573213663;
+        bh=tOHwYIJ+ZNa6Ys/BfqqTmWqfcuoUDV1G9q0KLw6kepc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GCxoZEHQOhBfNjec29KelrmEF3Yv6n5UQCtuq+ma0dbqqxS+jHQBLThjcar0oHtP3
-         dXUnjkEOX5zFSfWyUrjJD3qSzzKh2LpZR3rVYupqUpRZLRD75mzezq3DLb4uWqVSuz
-         JYeReGrkDAvtRu9xfLAvIy+yebCIn8bAMWHhhNFc=
+        b=FsnoJEo7DreMC8+xrC7yybZqp2n6c25tyUrqX5R4ZNkMx6aafscAeSy4//iBka2fc
+         BQZLSyhLfz159GRJfIzvMnGuTDT0pNKoKJnkCfcF4tDd8OqwrUyZn51emdr/SKwekg
+         kxOCLxau4EXaiWz1tf6rFGFVUhcSTLHk7lKeRr/c=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Raghuram Chary Jallipalli 
-        <raghuramchary.jallipalli@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 14/44] net: lan78xx: Bail out if lan78xx_get_endpoints fails
-Date:   Fri,  8 Nov 2019 06:46:50 -0500
-Message-Id: <20191108114721.15944-14-sashal@kernel.org>
+Cc:     Erik Stromdahl <erik.stromdahl@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 17/44] ath10k: wmi: disable softirq's while calling ieee80211_rx
+Date:   Fri,  8 Nov 2019 06:46:53 -0500
+Message-Id: <20191108114721.15944-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108114721.15944-1-sashal@kernel.org>
 References: <20191108114721.15944-1-sashal@kernel.org>
@@ -46,37 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Wahren <stefan.wahren@i2se.com>
+From: Erik Stromdahl <erik.stromdahl@gmail.com>
 
-[ Upstream commit fa8cd98c06407b5798b927cd7fd14d30f360ed02 ]
+[ Upstream commit 37f62c0d5822f631b786b29a1b1069ab714d1a28 ]
 
-We need to bail out if lan78xx_get_endpoints() fails, otherwise the
-result is overwritten.
+This is done in order not to trig the below warning in
+ieee80211_rx_napi:
 
-Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet")
-Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reviewed-by: Raghuram Chary Jallipalli <raghuramchary.jallipalli@microchip.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+WARN_ON_ONCE(softirq_count() == 0);
+
+ieee80211_rx_napi requires that softirq's are disabled during
+execution.
+
+The High latency bus drivers (SDIO and USB) sometimes call the wmi
+ep_rx_complete callback from non softirq context, resulting in a trigger
+of the above warning.
+
+Calling ieee80211_rx_ni with softirq's already disabled (e.g., from
+softirq context) should be safe as the local_bh_disable and
+local_bh_enable functions (called from ieee80211_rx_ni) are fully
+reentrant.
+
+Signed-off-by: Erik Stromdahl <erik.stromdahl@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/lan78xx.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/ath/ath10k/wmi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
-index 45a6a7cae4bfc..fc922f8122801 100644
---- a/drivers/net/usb/lan78xx.c
-+++ b/drivers/net/usb/lan78xx.c
-@@ -2246,6 +2246,11 @@ static int lan78xx_bind(struct lan78xx_net *dev, struct usb_interface *intf)
- 	int i;
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index b867875aa6e66..f7ce99f67b5c5 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -2294,7 +2294,8 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+ 		   status->freq, status->band, status->signal,
+ 		   status->rate_idx);
  
- 	ret = lan78xx_get_endpoints(dev, intf);
-+	if (ret) {
-+		netdev_warn(dev->net, "lan78xx_get_endpoints failed: %d\n",
-+			    ret);
-+		return ret;
-+	}
- 
- 	dev->data[0] = (unsigned long)kzalloc(sizeof(*pdata), GFP_KERNEL);
+-	ieee80211_rx(ar->hw, skb);
++	ieee80211_rx_ni(ar->hw, skb);
++
+ 	return 0;
+ }
  
 -- 
 2.20.1
