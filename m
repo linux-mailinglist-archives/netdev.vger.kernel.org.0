@@ -2,73 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B56C9F578E
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:06:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9DE8F54D9
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:01:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389849AbfKHTYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 14:24:10 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:54927 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732046AbfKHSxB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:53:01 -0500
-Received: by mail-il1-f198.google.com with SMTP id t67so7793787ill.21
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 10:53:01 -0800 (PST)
+        id S2387584AbfKHSzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 13:55:31 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:52671 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387476AbfKHSz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:55:29 -0500
+Received: by mail-wm1-f67.google.com with SMTP id c17so7225798wmk.2
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 10:55:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rSeEzJJFL2J46kppo+eAa64DAYEYghhg+PgDA1kJZ2g=;
+        b=FoNjF029RF5QDxb2sTGkwafqxS7YPNOhJGn3vNt7RzmZDJi4By/FaCgouK1Hs2vi2N
+         yCV/rw4mygjkOCRUrQclgCUnJd7eITqD/r/NGybiUNmuKS3gXnMLXPBo8O5CRzMrxjZp
+         9cwmybzUPhjMRGqjHvkiKogdVp5hd2XHXlEtv0w4c+Uvxac/xrFToxgkmJ9MZL0ypFrD
+         Mhy6/Upn3gfAWw5k1jvf/4uhN4QoUrK8v5vSe9MdT0X1wn3QVXSO8HxNhX7O0ij3LZ8C
+         XzB01wbuh+xKD9uidorsG/pt2KouHgAFqMRbWRmnY0WOUHIRCb2jHQxDqvnBn8xOjNXD
+         h+tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Sl9ZT+3VnhHk9C9hUuWzxJC0ZnzOKIM3/flYfXRQH6Y=;
-        b=Fd8L8bYvaLSyAtYxu4+OIKafC9cj39IHbr7wFgbigaPY4ryD7YhH2lK/KOg2Wznikn
-         j32oPS7ouTgh151tVk07GZGim2ozbwNb42aIHoUup+rpR62aPlfX+2RO56pbgQpSV+ux
-         S+Zs/qNsVahzDmXUj+sojmtGaulGGiZ0fs+TfsitnHJ522alZxUFHQpge+40jQlXt0l5
-         VlycpncREnkpYT9lHd9G8voj61+XF/jQYOTDwZGkV+AMXoIDzT+KKddXNjpj6WJIsRjF
-         JHWotuNWiprBjnUo5KXYzKiwMl0G60ZjhzHDuwcIyX6bFCzXAWZKKPa7tcBaWyZnhXSo
-         a3UA==
-X-Gm-Message-State: APjAAAV80FPyv3CcF8rJR9dUQxKpIcLvEpkY2vV6y3rudhAYTb8knnpC
-        8ymuSc1F4t81lMLCiNt6KMKSQ0GapEqYOuEsHvjqFsddURkF
-X-Google-Smtp-Source: APXvYqzQP9CYRfTlLHLsV6QBEQYBhPgI8bypq0U9hHsKzSMeEB/CVu4ed4IzOfkvt3dGwLP0hHzE142Gz/VsIc1tEwnjoCJ+zd1h
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rSeEzJJFL2J46kppo+eAa64DAYEYghhg+PgDA1kJZ2g=;
+        b=aXNfSutQgiVIkvRFe2exEbRlQb2RpTgOGNxLYR7r/Bz/u0PPkcWtr680Fl0R5JxNhc
+         E5MUcmyIgb1x9NDrVRA01obEeUxcxGWtXkAWaIb3sRBKCWXVF183QEgn4e1VdRvPombz
+         GWGjtYuL+8lyzZRSVHuyy8M0RhhktdTCmQm0iiqvDTEbCvR73lOthuP0o9ZWdBSBy4/U
+         fU3rlnY49pXIII57T76bIz+O/GosM+aeaaIdNuptTT1xTHycprIXRzcHwcozNxXZVYj5
+         5Ua/WKaCG92C+znbL/k94eh6Jp5+ZTOXT8+ptqTxS8rw8n6krNFDB0ruaAmn9MggXfps
+         P6Tg==
+X-Gm-Message-State: APjAAAUbYAEb8Dte9gUgY2enNGADPE8tU2d0oQlQ29IvobyTMn15P9Zz
+        bPVj2tjZH/V+ZvXrhHGlQti/vjlxc3d1cCl1zM629A==
+X-Google-Smtp-Source: APXvYqx1sV9NeDd9gC1bR8P1X0KmTK0PSsreI7qP6v07YzIVs7h5mC+t6A5x/F/jVQE5cG7uGCTWzfqEWNx7BCj6GtU=
+X-Received: by 2002:a05:600c:2295:: with SMTP id 21mr9059047wmf.85.1573239326290;
+ Fri, 08 Nov 2019 10:55:26 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:c4cf:: with SMTP id h15mr12593320jaj.112.1573239180629;
- Fri, 08 Nov 2019 10:53:00 -0800 (PST)
-Date:   Fri, 08 Nov 2019 10:53:00 -0800
-In-Reply-To: <0000000000005e2bf90570bbe2ab@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000821d620596da4ad0@google.com>
-Subject: Re: KASAN: use-after-free Read in ep_scan_ready_list
-From:   syzbot <syzbot+78b902c73c69102cb767@syzkaller.appspotmail.com>
-To:     asmadeus@codewreck.org, davem@davemloft.net,
-        dominique.martinet@cea.fr, ericvh@gmail.com, jiangyiwen@huwei.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tomasbortoli@gmail.com,
-        v9fs-developer@lists.sourceforge.net, viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <20191107132755.8517-1-jonas@norrbonn.se> <20191107132755.8517-2-jonas@norrbonn.se>
+ <CAF2d9jjRLZ07Qx0NJ9fi1iUpHn+qYEJ+cacKgBmeZ2FvZLObEQ@mail.gmail.com> <fff51fa7-5c42-7fa7-6208-d911b18bd91e@norrbonn.se>
+In-Reply-To: <fff51fa7-5c42-7fa7-6208-d911b18bd91e@norrbonn.se>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Fri, 8 Nov 2019 10:55:09 -0800
+Message-ID: <CAF2d9jib=Qdn9uB=kKn4CTbqvqOiGs+FGh4427=o+UySLf=BwA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/6] rtnetlink: allow RTM_SETLINK to reference other namespaces
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     nicolas.dichtel@6wind.com, linux-netdev <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+Hi Jonas, thanks for the response.
 
-commit 430ac66eb4c5b5c4eb846b78ebf65747510b30f1
-Author: Tomas Bortoli <tomasbortoli@gmail.com>
-Date:   Fri Jul 20 09:27:30 2018 +0000
+On Fri, Nov 8, 2019 at 12:20 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>
+> Hi Mahesh,
+>
+> On 07/11/2019 21:36, Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=E0=A4=
+=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) wrote:
+> > On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+> >>
+> >>
+> >> +       /* A hack to preserve kernel<->userspace interface.
+> >> +        * It was previously allowed to pass the IFLA_TARGET_NETNSID
+> >> +        * attribute as a way to _set_ the network namespace.  In this
+> >> +        * case, the device interface was assumed to be in the  _curre=
+nt_
+> >> +        * namespace.
+> >> +        * If the device cannot be found in the target namespace then =
+we
+> >> +        * assume that the request is to set the device in the current
+> >> +        * namespace and thus we attempt to find the device there.
+> >> +        */
+> > Could this bypasses the ns_capable() check? i.e. if the target is
+> > "foo" but your current ns is bar. The process may be "capable" is foo
+> > but the interface is not found in foo but present in bar and ends up
+> > modifying it (especially when you are not capable in bar)?
+>
+> I don't think so.  There was never any capable-check for the "current"
+> namespace so there's no change in that regard.
+>
+not having capable-check seems wrong as we don't want random
+not-capable processes to alter settings. However, it may be at the API
+entry level, which will provide necessary protection (haven't
+checked!). Having said that, this could be bad for the stuff that you
+are implementing since I could be in "foo" and attempting to change
+"bar". For this I must be capable in "bar" but the top-level capable
+check will by default check me in "foo" as well which is not required
+and could potentially block me from performing legal operation in
+"bar".
 
-     net/9p/trans_fd.c: fix race-condition by flushing workqueue before the  
-kfree()
+Not saying this is a problem, but without having an implementation to
+use this would be hard to try. You would most likely have a way to
+verify this, so please check it.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=167fa19ae00000
-start commit:   1e09177a Merge tag 'mips_fixes_4.18_3' of git://git.kernel..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=25856fac4e580aa7
-dashboard link: https://syzkaller.appspot.com/bug?extid=78b902c73c69102cb767
-userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=135660c8400000
+> I do think there is an issue with this hack that I can't see any
+> workaround for.  If the user specifies an interface (by name or index)
+> for another namespace that doesn't exist, there's a potential problem if
+> that name/index happens to exist in the "current" namespace.  In that
+> case, one many end up inadvertently modifying the interface in the
+> current namespace.  I don't see how to avoid that while maintaining the
+> backwards compatibility.
+>
+This could very well be the case always for single digit ifindex
+values. (We recently suffered a local scare because of something very
+similar).
 
-If the result looks correct, please mark the bug fixed by replying with:
+> My absolute preference would be to drop this compat-hack altogether.
+> iproute2 doesn't use a bare TARGET_NETNSID in this manner (for changing
+> namespaces) and I didn't find any other users by a quick search of other
+> prominent Netlink users:  systemd, network-manager, connman.  This
+> compat-hack is there for the _potential ab-user_ of the interface, not
+> for any known such.
+>
+what is forcing you keeping you keeping / implementing this hack? I
+would also prefer simple solution without creating a potential problem
+/ vulnerability (problem: potentially modifying unintended interface,
+vulnerability: potentially allow changing without proper credentials;
+both not proven but are possibilities) down the line. One possibility
+is to drop the compatibility hack and keep it as a backup if something
+breaks / someone complains.
 
-#syz fix: net/9p/trans_fd.c: fix race-condition by flushing workqueue  
-before the kfree()
+thanks,
+--mahesh..
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> >
+> >> +       if (!dev && tgt_net) {
+> >> +               net =3D sock_net(skb->sk);
+> >> +               if (ifm->ifi_index > 0)
+> >> +                       dev =3D __dev_get_by_index(net, ifm->ifi_index=
+);
+> >> +               else if (tb[IFLA_IFNAME])
+> >> +                       dev =3D __dev_get_by_name(net, ifname);
+> >> +       }
+>
+>
+> /Jonas
