@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA98BF49D2
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:06:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB8FAF499B
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:04:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391732AbfKHMEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:04:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55578 "EHLO mail.kernel.org"
+        id S2389839AbfKHLmO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:42:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55918 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389723AbfKHLl7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:41:59 -0500
+        id S2389788AbfKHLmN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:42:13 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D9B1222C4;
-        Fri,  8 Nov 2019 11:41:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8872521D7B;
+        Fri,  8 Nov 2019 11:42:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213318;
-        bh=0tFSaKQyGEqGezkRj4bPM4JS9i+QDuEA8486jI4EfWk=;
+        s=default; t=1573213332;
+        bh=FReMmvb5mhGVKmc7T3QgYVpv0ScYqZMSvTTubSLgang=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XGe9tFSJ0LVyj5tfjMsXXMWdK2jpL+t+zy56ijqnfzwv65caZwm0IEQqT+lu1K0Vb
-         hVbI12t3afhhsnJD71PCJVWd7Cba70Nbgdh8LVHlkKujpXAxhcFp4Z/0q5dS+8GBPR
-         F+ZugGTcsDnlzkGIXESMdIBERwx8OC+v+Dd4Qz+g=
+        b=mzWpkg6LnACP5D9D1IEmSd3xybTvZQDCUgMQ4uCbth5IU+P47/umtN2R6ougtyfeI
+         S++XBPf4U7HebNsNcoOoW9pvaJYTTdEJVnHSJShJDYv7ikXNS9W/IDGZdvLZxISDEQ
+         ZW1YuReiaRw0WUCJGEw8TV49PPUnsAxUu63/Mjq0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        Paul Burton <paul.burton@mips.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 162/205] net: bcmgenet: Fix speed selection for reverse MII
-Date:   Fri,  8 Nov 2019 06:37:09 -0500
-Message-Id: <20191108113752.12502-162-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-mips@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 171/205] MIPS: lantiq: Do not enable IRQs in dma open
+Date:   Fri,  8 Nov 2019 06:37:18 -0500
+Message-Id: <20191108113752.12502-171-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
 References: <20191108113752.12502-1-sashal@kernel.org>
@@ -45,41 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+From: Hauke Mehrtens <hauke@hauke-m.de>
 
-[ Upstream commit 00eb2243b933a496958f4ce1bcf59840fea8be16 ]
+[ Upstream commit cc973aecf0b0541918c5ecabe6c90d1f709b5f89 ]
 
-The phy supported speed is being used to determine if the MAC should
-be configured to 100 or 1G. The masking logic is broken. Instead, look
-at 1G supported speeds to enable 1G MAC support.
+When a DMA channel is opened the IRQ should not get activated
+automatically, this allows it to pull data out manually without the help
+of interrupts. This is needed for a workaround in the vrx200 Ethernet
+driver.
 
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+Acked-by: Paul Burton <paul.burton@mips.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmmii.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ arch/mips/lantiq/xway/dma.c        | 1 -
+ drivers/net/ethernet/lantiq_etop.c | 1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-index 0d527fa5de610..b0592fd4135b3 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-@@ -226,11 +226,10 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
- 		 * capabilities, use that knowledge to also configure the
- 		 * Reverse MII interface correctly.
- 		 */
--		if ((dev->phydev->supported & PHY_BASIC_FEATURES) ==
--				PHY_BASIC_FEATURES)
--			port_ctrl = PORT_MODE_EXT_RVMII_25;
--		else
-+		if (dev->phydev->supported & PHY_1000BT_FEATURES)
- 			port_ctrl = PORT_MODE_EXT_RVMII_50;
-+		else
-+			port_ctrl = PORT_MODE_EXT_RVMII_25;
- 		bcmgenet_sys_writel(priv, port_ctrl, SYS_PORT_CTRL);
- 		break;
- 
+diff --git a/arch/mips/lantiq/xway/dma.c b/arch/mips/lantiq/xway/dma.c
+index 664f2f7f55c1c..982859f2b2a38 100644
+--- a/arch/mips/lantiq/xway/dma.c
++++ b/arch/mips/lantiq/xway/dma.c
+@@ -106,7 +106,6 @@ ltq_dma_open(struct ltq_dma_channel *ch)
+ 	spin_lock_irqsave(&ltq_dma_lock, flag);
+ 	ltq_dma_w32(ch->nr, LTQ_DMA_CS);
+ 	ltq_dma_w32_mask(0, DMA_CHAN_ON, LTQ_DMA_CCTRL);
+-	ltq_dma_w32_mask(0, 1 << ch->nr, LTQ_DMA_IRNEN);
+ 	spin_unlock_irqrestore(&ltq_dma_lock, flag);
+ }
+ EXPORT_SYMBOL_GPL(ltq_dma_open);
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index e08301d833e2e..379db19a303c8 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -439,6 +439,7 @@ ltq_etop_open(struct net_device *dev)
+ 		if (!IS_TX(i) && (!IS_RX(i)))
+ 			continue;
+ 		ltq_dma_open(&ch->dma);
++		ltq_dma_enable_irq(&ch->dma);
+ 		napi_enable(&ch->napi);
+ 	}
+ 	phy_start(dev->phydev);
 -- 
 2.20.1
 
