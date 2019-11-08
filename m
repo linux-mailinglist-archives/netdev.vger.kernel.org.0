@@ -2,84 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB704F5B31
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 23:43:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1E7F5B43
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 23:46:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbfKHWnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 17:43:41 -0500
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:36244 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbfKHWnk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 17:43:40 -0500
-Received: by mail-qv1-f67.google.com with SMTP id f12so2861519qvu.3;
-        Fri, 08 Nov 2019 14:43:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Y18Oyt5B0ILtbblHMT7QPaKaVlkGY0dyBEO5Gq9ppU0=;
-        b=Uy27EHov/XZjUWPWYaqmkNnZeMl40gGf7qN56TNEbwDiKO+7GDj41F2rfbmTbBywg5
-         /PW6rnHQp5lKXuZBQJhSRTU2VU/vRl8kj48kHWpTzreIyz0dpnmD5IdVCGivXGOhZdtj
-         5yImIev5DubXpk/j5n1nF6CWzX5AXm5EyPAMJLkpVW4pcBjfsFxHK2W3L6AcUL2ZoDPE
-         MvPA/rl4VhMRC0uJE5373oKhSIu2UjQYKQ2GNK5uM9LehiO3YFaKYQE0LWeSR0FWK4t+
-         ehWa4ILKoqwZoQZL72YmW79KKxd8URZOj3FAjWNm5MciPTrPPBNF4zmQtxA76I6EVA4h
-         vI9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Y18Oyt5B0ILtbblHMT7QPaKaVlkGY0dyBEO5Gq9ppU0=;
-        b=ra0pwcdXDonB+A3n7McM5okQ7KPBhJktAwBoupGexQdMMZT+8LYX7ihZcKGiRl6Rsd
-         3BZ3YNv416jWtn2DoBt4oNZTIpHfHOWEkWFHn7o4jCHB8MbYHjAFxE8Xkcjg/ldUEjE3
-         POQBuPkmc4MzUu4hj2m6Sf0DbGdTm/zH9ecRe4eoE1oQlJFiZ+HZZQGPueRIf7OWJWeS
-         pjNhc7J/XIptqIhfpjjJo/pG1DpE/XNlUBQogQiWv4CZSpPDYSG4WEraVx3cmbHmKO9g
-         eIT0ryOWLgH+HxVdJDWfxZnAdgj9MHJN8ypxiFn1TfaK9gYhPfxKLWPy3wvLVIgX0g9A
-         QdJg==
-X-Gm-Message-State: APjAAAUEVjo9h8w/yMrE6Ol7LBIqeXRu4MjmohNzLo9Fy3tsedOhkRHs
-        wKeeTJWgeZDZvI8IgDu4JIhVyG7Uzbxie5QRylb40UNq
-X-Google-Smtp-Source: APXvYqyazE2morUwcCVJGqnXJpL/VMMQ/h/VrJZKHMVwJ2GltA7pC6x8l8Qp+YshIV7i7N/oIWeJ6V+tNEMZMkE+oEk=
-X-Received: by 2002:a05:6214:90f:: with SMTP id dj15mr12038002qvb.224.1573253019561;
- Fri, 08 Nov 2019 14:43:39 -0800 (PST)
+        id S1726394AbfKHWq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 17:46:29 -0500
+Received: from mga14.intel.com ([192.55.52.115]:7540 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726095AbfKHWq3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 17:46:29 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Nov 2019 14:46:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,283,1569308400"; 
+   d="asc'?scan'208";a="206139841"
+Received: from karaker-mobl.amr.corp.intel.com ([10.254.95.244])
+  by orsmga003.jf.intel.com with ESMTP; 08 Nov 2019 14:46:28 -0800
+Message-ID: <a9752e1b45b92956d91386cfa4649710c289ddde.camel@intel.com>
+Subject: Re: [PATCH net 1/2] i40e: need_wakeup flag might not be set for Tx
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     David Miller <davem@davemloft.net>, magnus.karlsson@intel.com
+Cc:     bjorn.topel@intel.com, intel-wired-lan@lists.osuosl.org,
+        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
+        netdev@vger.kernel.org
+Date:   Fri, 08 Nov 2019 14:46:27 -0800
+In-Reply-To: <20191108.141126.499156209602458565.davem@davemloft.net>
+References: <1573243090-2721-1-git-send-email-magnus.karlsson@intel.com>
+         <20191108.141126.499156209602458565.davem@davemloft.net>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+        protocol="application/pgp-signature"; boundary="=-HZsBhx/tjGi2vx7jS/97"
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
 MIME-Version: 1.0
-References: <157324878503.910124.12936814523952521484.stgit@toke.dk> <157324878734.910124.13947548477668878554.stgit@toke.dk>
-In-Reply-To: <157324878734.910124.13947548477668878554.stgit@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 8 Nov 2019 14:43:27 -0800
-Message-ID: <CAEf4BzZpOdoackvjHP3v+Xv8+6adf_Fu70sNbJEU0amc6YOvqw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/6] selftests/bpf: Add tests for automatic
- map unpinning on load failure
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 1:33 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->
-> This add tests for the different variations of automatic map unpinning on
-> load failure.
->
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+--=-HZsBhx/tjGi2vx7jS/97
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
->  tools/testing/selftests/bpf/prog_tests/pinning.c |   20 ++++++++++++++++=
-+---
->  tools/testing/selftests/bpf/progs/test_pinning.c |    2 +-
->  2 files changed, 18 insertions(+), 4 deletions(-)
->
+On Fri, 2019-11-08 at 14:11 -0800, David Miller wrote:
+> Jeff, please pick these up.
+>=20
+> Thanks.
 
-[...]
+Yep already have them queued up.  Just waiting confirmation from
+validation.  I will have a 6 patch series of fixes for you in the next day
+or two.
+
+--=-HZsBhx/tjGi2vx7jS/97
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl3F8EQACgkQ5W/vlVpL
+7c5dQxAAnEN4hhD73X3vWW+oL6DYFCX2TUZzzEnsdAr8xcJT44+jSV6fw7p7CZxE
+DowJmyFSk/pJAxZE1EqbhDNyvgDxiWE8DteAIIDIyE3YKMJq0lrl5mk6tpqupGyo
+0SBeLLIusxDNjsbUItD0NssDJnO+Otgv534ospNWl79cbUncyJ4uAVStIEl5G+hN
+aMwGikuDwNFuQEjdS09oANAL+aTak5z9RdRHEkqb82MtUJ++vcZC7qPzHsGHIYMO
+B1+UNzRLCCi3ebXBUR+VEecI3vDk+bBM1j7+JxPdBaFaSeNPwoRWzSMvwg91Q7Ga
+Z7nUna9dFDy1kS2gFVChPXXfT7xXERcu25J2b94wz6LB/imeyVou+OYv7wiY0XQl
+qVnEkd0DFYjGcCEDm1Uks66yjw5nhZpf42Kz8Gy72XX6RjtI+UuQBXVdjd2Ohouz
+jt8Agml3oidS9kdboILB0HTAUZuR/Y64eYsUfSQ5hZZi45Ui8nbO+oCQcUkK1+UI
+zu3kfx5++wKZodWX6jSZ2ecbjE+cm0oH5gm45ZIVLewnD+1GDbHfBPlhqFojUpL6
+qXUfQXC+xR83xVN26C2k0uoIvmXKlZMNCa5UNBpdv8NctpNfCDxI1vNptarzNY8o
+ThKGtE6cnu874P+9vZqwr0383xMAjez2oI9mAO+vjJrmJ9W9pyg=
+=9P3X
+-----END PGP SIGNATURE-----
+
+--=-HZsBhx/tjGi2vx7jS/97--
+
