@@ -2,96 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B2AFF50AA
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:09:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2B9F50C4
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:13:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727604AbfKHQJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 11:09:04 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:57688 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726036AbfKHQJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 11:09:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573229340;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=K93xC4W4XxB9V/XDY2JHTux4Xj+XQzupJKYWOTL6WL8=;
-        b=X5UJYgdvhYXZ/Zq9RMnaJlCsyx6puYr37fUNIrl4u34VKCdzscUuyEQ4OqGt/uumzP36+0
-        dcKMKavT7Ssiqhx2wJdc5Jd7jshmjS9I+GOexB8LBYSsSFdRb2uQFjF18PRSJNP3UFBmhU
-        Z5+1KBmPlZxEClvF+20qZ8QMmPlAu6k=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-387-ko3GzfECMG-Z6GrtGtEBvw-1; Fri, 08 Nov 2019 11:08:57 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9EDCC1005500;
-        Fri,  8 Nov 2019 16:08:55 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-117-238.ams2.redhat.com [10.36.117.238])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E69AC60BE2;
-        Fri,  8 Nov 2019 16:08:50 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Stephen Barber <smbarber@chromium.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>, kvm@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH] vsock/virtio: fix sock refcnt holding during the shutdown
-Date:   Fri,  8 Nov 2019 17:08:50 +0100
-Message-Id: <20191108160850.51278-1-sgarzare@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: ko3GzfECMG-Z6GrtGtEBvw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
+        id S1727550AbfKHQNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 11:13:02 -0500
+Received: from mail-eopbgr30057.outbound.protection.outlook.com ([40.107.3.57]:28674
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726152AbfKHQNC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 11:13:02 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PIOo5y0Ind3Ot4ESPJyRw8G202FQvLob5+wEpmntTzPiNo9fHIZhE0opJmulc4EahsDxix2Hizosyh2pLekdS+zGQH3Gg6s+8u/Ncm3SXXo8WYdkqe4a6WNJx1csAQG+BYyiBH0vlLSa9T1a+yXOcIw73thUZ7O2Xw+8nsyfIRnfV5XhUtHpbHNcQZecbSuVBnt503EKYUxbNi5cLbwWGkG8S+HFvTeXUKhZi4QCcXP9+P/Tgj/Bgm8qCF7kw3BKoqz9jUChi4AxOjvkmpoLH7aUb8Y+rcXo2qKJgWXWWt38VdMNIab03zXawd7gOCYzo8pT4fbGw7afUBUhOTg1GQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KJKJJrGN3qsn3aUFWh/XIC+wZnvynWHOXTXvtKg3sP0=;
+ b=HyaOwwSkzDbqwfkrDgLvR3O58QLK3wSDpdOp2EbHt2JSJ2Bsgsw1V/A6/NB5Tr+YcbJfCqMdm6s4CsAf6h8U5u0QYUIGce/qU9u41O3dkCKQ63Yuu3OLq7HVPLzkPrXxPNrcCAOwqRQ+b6opzzIKHVt7/1yzInd9fLe6byMAV2se/ZOepz4lUYh/IDllTa59m2mLCfTySJYDXCPgKGE0F9Vzp/WjJgeRHLifsW4AfXzyH4iYVcBwh3kL34q6cqTtgYhzDG8MCY/itnokXI+ZXdcUilutyZ/KDMEAi6pMXGMjUSbRnkkzM3vYo6NXrXmM3rw1cDgDmdJwW1IfMLS6Uw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KJKJJrGN3qsn3aUFWh/XIC+wZnvynWHOXTXvtKg3sP0=;
+ b=S19tkI5f4kbvmc2q9rW0TvbMEApQCUaBdIfZ1/q+2ZCCPCAX5nJsnuUjOgWnNYujroP5sbzY3SdXEGffGpIdmY9DFU/OvNydTSKa6zD37anUjD/CfOEaGmS6/CZaBSdyJEwOhL6VzmBpHUM6MlQBEHmQqgk27W9NpScUXL0YfbI=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6659.eurprd05.prod.outlook.com (10.186.174.142) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.20; Fri, 8 Nov 2019 16:12:56 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
+ 16:12:56 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [PATCH net-next 11/19] vfio/mdev: Improvise mdev life cycle and
+ parent removal scheme
+Thread-Topic: [PATCH net-next 11/19] vfio/mdev: Improvise mdev life cycle and
+ parent removal scheme
+Thread-Index: AQHVlYW7AxlBOSp/Fk2Dw2OAVe1EB6eBPiMAgAAzyGA=
+Date:   Fri, 8 Nov 2019 16:12:56 +0000
+Message-ID: <AM0PR05MB486664BEDB1A2238B4FE95C4D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+        <20191107160834.21087-1-parav@mellanox.com>
+        <20191107160834.21087-11-parav@mellanox.com>
+ <20191108140110.6f24916b.cohuck@redhat.com>
+In-Reply-To: <20191108140110.6f24916b.cohuck@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:9dfd:71f9:eb37:f669]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 49dfcb3d-6336-4cb8-282b-08d76466845e
+x-ms-traffictypediagnostic: AM0PR05MB6659:|AM0PR05MB6659:
+x-ms-exchange-purlcount: 1
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB665973D983F540C07F10B2EED17B0@AM0PR05MB6659.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:529;
+x-forefront-prvs: 0215D7173F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(199004)(189003)(13464003)(102836004)(2906002)(52536014)(4326008)(6916009)(6436002)(14444005)(256004)(71190400001)(71200400001)(8936002)(53546011)(99286004)(186003)(46003)(6506007)(486006)(476003)(316002)(7736002)(229853002)(81166006)(81156014)(305945005)(74316002)(446003)(11346002)(6306002)(5660300002)(9686003)(8676002)(33656002)(66556008)(66476007)(76176011)(66946007)(7696005)(76116006)(966005)(64756008)(6246003)(14454004)(86362001)(66446008)(25786009)(478600001)(54906003)(6116002)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6659;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bpjfeXmxWby2dqvVqexn2LyBiL6k6KnlmOJ+T0S9Q0Tphy+mK0YCefiDdk+QqoevIr08mzJc2wY3cLOk0TtFCoEgxoA9V4/lw3hu5d4xodQoP5+uYbOycQ5hqHTepdORnwtXW2kJRmTFgQzrNg/WB6x7YI/xggAU6N4cPFPNIzHxvuWgGSz7dSjLXybRV4Xw+tfrB+0sL2XnFmm+47jG+sleE07g69mZMmXGR94D21j/5guIs2r3ytVAMqFZVJ9NgvGOGc7vNlxkCA/DgeNexqWWc7yUi+ygyuLutX3ARm/MtleHvEqbzKvudCZS1dbaTLc6zbJZzTj+ZCldbmdQ8t8A0Xk0VbX//2K21GmLdK90r0kKP23vL9P97AiHD6wAdrGe6uKZ9S6TbpirVbGGtT7h7rqHENY/QUk/VHBqhiB9XIT4lJMTQIIL8h5vhe8BbhZNXnXh8IZLGbSE+W9oGM6qyAjXiJ0K9AhDSHm+wew=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49dfcb3d-6336-4cb8-282b-08d76466845e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 16:12:56.4860
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P3bSN9dNAYyonJm8dp1v5xBhA8Bo9XmpFd2r5lTSlplDGmyupuWCv9b8RrvYkuu/8JG38ZD7N8tzoqhIZvFGCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6659
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "42f5cda5eaf4" commit rightly set SOCK_DONE on peer shutdown,
-but there is an issue if we receive the SHUTDOWN(RDWR) while the
-virtio_transport_close_timeout() is scheduled.
-In this case, when the timeout fires, the SOCK_DONE is already
-set and the virtio_transport_close_timeout() will not call
-virtio_transport_reset() and virtio_transport_do_close().
-This causes that both sockets remain open and will never be released,
-preventing the unloading of [virtio|vhost]_transport modules.
 
-This patch fixes this issue, calling virtio_transport_reset() and
-virtio_transport_do_close() when we receive the SHUTDOWN(RDWR)
-and there is nothing left to read.
 
-Fixes: 42f5cda5eaf4 ("vsock/virtio: set SOCK_DONE on peer shutdown")
-Cc: Stephen Barber <smbarber@chromium.org>
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- net/vmw_vsock/virtio_transport_common.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+> -----Original Message-----
+> From: Cornelia Huck <cohuck@redhat.com>
+> Sent: Friday, November 8, 2019 7:01 AM
+> To: Parav Pandit <parav@mellanox.com>
+> Cc: alex.williamson@redhat.com; davem@davemloft.net;
+> kvm@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
+> <saeedm@mellanox.com>; kwankhede@nvidia.com; leon@kernel.org; Jiri
+> Pirko <jiri@mellanox.com>; linux-rdma@vger.kernel.org
+> Subject: Re: [PATCH net-next 11/19] vfio/mdev: Improvise mdev life cycle =
+and
+> parent removal scheme
+>=20
+> On Thu,  7 Nov 2019 10:08:26 -0600
+> Parav Pandit <parav@mellanox.com> wrote:
+>=20
+> I guess that should be s/Improvise/improve/ in $SUBJECT, no?
+>
+Will do.
+=20
 
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio=
-_transport_common.c
-index 481f7f8a1655..fb2060dffb0a 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -947,9 +947,11 @@ virtio_transport_recv_connected(struct sock *sk,
- =09=09if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_SHUTDOWN_SEND)
- =09=09=09vsk->peer_shutdown |=3D SEND_SHUTDOWN;
- =09=09if (vsk->peer_shutdown =3D=3D SHUTDOWN_MASK &&
--=09=09    vsock_stream_has_data(vsk) <=3D 0) {
--=09=09=09sock_set_flag(sk, SOCK_DONE);
--=09=09=09sk->sk_state =3D TCP_CLOSING;
-+=09=09    vsock_stream_has_data(vsk) <=3D 0 &&
-+=09=09    !sock_flag(sk, SOCK_DONE)) {
-+=09=09=09(void)virtio_transport_reset(vsk, NULL);
-+
-+=09=09=09virtio_transport_do_close(vsk, true);
- =09=09}
- =09=09if (le32_to_cpu(pkt->hdr.flags))
- =09=09=09sk->sk_state_change(sk);
---=20
-2.21.0
+[..]
 
+> >
+> > To summarize,
+> > mdev_remove()
+> >   read locks -> unreg_sem [ lock-A ]
+> >   [..]
+> >   devlink_unregister();
+> >     mutex lock devlink_mutex [ lock-B ]
+> >
+> > devlink eswitch->switchdev-legacy mode change.
+> >  devlink_nl_cmd_eswitch_set_doit()
+> >    mutex lock devlink_mutex [ lock-B ]
+> >    mdev_unregister_device()
+> >    write locks -> unreg_sem [ lock-A]
+>=20
+> So, this problem starts to pop up once you hook up that devlink stuff wit=
+h
+> the mdev stuff, and previous users of mdev just did not have a locking
+> scheme similar to devlink?
+>
+Correct.
+=20
+> >
+> > Hence, instead of using semaphore, such synchronization is achieved
+> > using srcu which is more flexible that eliminates nested locking.
+> >
+> > SRCU based solution is already proposed before at [2].
+> >
+> > [1] commit 5715c4dd66a3 ("vfio/mdev: Synchronize device create/remove
+> > with parent removal") [2]
+> > https://lore.kernel.org/patchwork/patch/1055254/
+>=20
+> I don't quite recall the discussion there... is this a rework of a patch =
+you
+> proposed before? Confused.
+>=20
+It was one huge patch, fixing multiple issues.
+Alex suggested to split into multiple.
+Initially for this issue I had it srcu, while redoing them to smaller patch=
+es, I guess for simplicity I moved to semaphore.
+Once I enabled all my tested after a break, I realized that fix is not enou=
+gh.
+
+> >
+> > Signed-off-by: Parav Pandit <parav@mellanox.com>
+> > ---
+> >  drivers/vfio/mdev/mdev_core.c    | 56 +++++++++++++++++++++++---------
+> >  drivers/vfio/mdev/mdev_private.h |  3 +-
+> >  2 files changed, 43 insertions(+), 16 deletions(-)
+>=20
+> (...)
+>=20
+> > @@ -207,6 +207,7 @@ int mdev_register_device(struct device *dev, const
+> struct mdev_parent_ops *ops)
+> >  		dev_warn(dev, "Failed to create compatibility class link\n");
+> >
+> >  	list_add(&parent->next, &parent_list);
+> > +	rcu_assign_pointer(parent->self, parent);
+> >  	mutex_unlock(&parent_list_lock);
+> >
+> >  	dev_info(dev, "MDEV: Registered\n"); @@ -250,14 +251,29 @@ void
+> > mdev_unregister_device(struct device *dev)
+> >  	list_del(&parent->next);
+> >  	mutex_unlock(&parent_list_lock);
+> >
+> > -	down_write(&parent->unreg_sem);
+> > +	/*
+> > +	 * Publish that this mdev parent is unregistering. So any new
+> > +	 * create/remove cannot start on this parent anymore by user.
+> > +	 */
+> > +	rcu_assign_pointer(parent->self, NULL);
+> > +
+> > +	/*
+> > +	 * Wait for any active create() or remove() mdev ops on the parent
+> > +	 * to complete.
+> > +	 */
+> > +	synchronize_srcu(&parent->unreg_srcu);
+> > +
+> > +	/*
+> > +	 * At this point it is confirmed that any pending user initiated
+> > +	 * create or remove callbacks accessing the parent are completed.
+> > +	 * It is safe to remove the parent now.
+> > +	 */
+>=20
+> So, you're putting an srcu-handled self reference there and use that as a=
+n
+> indication whether the parent is unregistering?
+>=20
+Right.
