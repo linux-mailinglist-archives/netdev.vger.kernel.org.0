@@ -2,377 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FC3FF3ECA
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 05:21:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6797FF3EF7
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 05:36:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729770AbfKHEVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 23:21:30 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40908 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726281AbfKHEV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 23:21:29 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA84KdpQ013295
-        for <netdev@vger.kernel.org>; Thu, 7 Nov 2019 20:21:28 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=DX4FDVbC1DREx0dULtYxHpsCTMRciR+qfUzim8JXLYA=;
- b=YCHLjAxtOMGPw7Ebd/nbgY7bBG5vMsmvK/hTTryaqkSuflv8XLXVZQRlm8aqUXu7hIIG
- 6rXEFyidykc3lN9LiQWPqfKcNBmTZ9aqvKN5lVYbX1ljg0q0LQlICxrLSY2W9d+Av3j+
- TgwQKaNQ6CsTAG+AzlLPyyWod3gzUlUkGlY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41ue96gw-14
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 20:21:28 -0800
-Received: from 2401:db00:2050:5102:face:0:3b:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 7 Nov 2019 20:20:51 -0800
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 84D1C2EC19DF; Thu,  7 Nov 2019 20:20:50 -0800 (PST)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 3/3] selftests/bpf: add BPF_TYPE_MAP_ARRAY mmap() tests
-Date:   Thu, 7 Nov 2019 20:20:41 -0800
-Message-ID: <20191108042041.1549144-4-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191108042041.1549144-1-andriin@fb.com>
-References: <20191108042041.1549144-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S1729743AbfKHEg5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 23:36:57 -0500
+Received: from f0-dek.dektech.com.au ([210.10.221.142]:33246 "EHLO
+        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726281AbfKHEg5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 23:36:57 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.dektech.com.au (Postfix) with ESMTP id 936ED4AB10;
+        Fri,  8 Nov 2019 15:36:52 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
+         h=content-language:x-mailer:content-transfer-encoding
+        :content-type:content-type:mime-version:message-id:date:date
+        :subject:subject:in-reply-to:references:from:from:received
+        :received:received; s=mail_dkim; t=1573187812; bh=CiG6XRYW3SlNtK
+        R525Q0q9dYaV26AhlMKV0InFADhwI=; b=neNSfr2cjz9uKM0RKyYSaah3YRgBjY
+        RqdMkLBm1Gh5UDR7gV55V+vPEo+zAX4bYZrTazOYRE8urQio8rm4oFXYN6GF6NFU
+        KR0q63/vJjJQ9iBu2SCKd2MYNSP673WJOc473EC/P9/JHFI5MW9RamYP6gVHJtox
+        ZozPKKOBrgKmQ=
+X-Virus-Scanned: amavisd-new at dektech.com.au
+Received: from mail.dektech.com.au ([127.0.0.1])
+        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id g_dY7DmBSiKG; Fri,  8 Nov 2019 15:36:52 +1100 (AEDT)
+Received: from mail.dektech.com.au (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPS id EEB4D4AB12;
+        Fri,  8 Nov 2019 15:36:51 +1100 (AEDT)
+Received: from VNLAP288VNPC (unknown [14.161.14.188])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.dektech.com.au (Postfix) with ESMTPSA id 9C1DE4AB10;
+        Fri,  8 Nov 2019 15:36:50 +1100 (AEDT)
+From:   "Tuong Lien Tong" <tuong.t.lien@dektech.com.au>
+To:     "'David Miller'" <davem@davemloft.net>
+Cc:     <jon.maloy@ericsson.com>, <maloy@donjonn.com>,
+        <ying.xue@windriver.com>, <netdev@vger.kernel.org>,
+        <tipc-discussion@lists.sourceforge.net>
+References: <20191108014213.32219-1-tuong.t.lien@dektech.com.au> <20191107.200700.707955577326790302.davem@davemloft.net>
+In-Reply-To: <20191107.200700.707955577326790302.davem@davemloft.net>
+Subject: RE: [net-next 0/5] TIPC encryption
+Date:   Fri, 8 Nov 2019 11:36:49 +0700
+Message-ID: <1a2e01d595ee$23eae790$6bc0b6b0$@dektech.com.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-07_07:2019-11-07,2019-11-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- clxscore=1015 malwarescore=0 mlxlogscore=671 suspectscore=67 adultscore=0
- mlxscore=0 bulkscore=0 phishscore=0 priorityscore=1501 impostorscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911080041
-X-FB-Internal: deliver
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHp/2WKaQBaVeetud7VXidxs8T4VQEexPnsp07koDA=
+Content-Language: en-us
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add selftests validating mmap()-ing BPF array maps: both single-element and
-multi-element ones. Also convert CO-RE relocation tests to use memory-mapped
-views of global data.
+You are right, David.
+I am going to resend the v2 series with an update for it.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/core_reloc.c     |  45 +++--
- tools/testing/selftests/bpf/prog_tests/mmap.c | 154 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/test_mmap.c |  31 ++++
- 3 files changed, 212 insertions(+), 18 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/mmap.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_mmap.c
+Thanks/Tuong
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index f94bd071536b..ec9e2fdd6b89 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <test_progs.h>
- #include "progs/core_reloc_types.h"
-+#include <sys/mman.h>
- 
- #define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
- 
-@@ -453,8 +454,15 @@ struct data {
- 	char out[256];
- };
- 
-+static size_t roundup_page(size_t sz)
-+{
-+	long page_size = sysconf(_SC_PAGE_SIZE);
-+	return (sz + page_size - 1) / page_size * page_size;
-+}
-+
- void test_core_reloc(void)
- {
-+	const size_t mmap_sz = roundup_page(sizeof(struct data));
- 	struct bpf_object_load_attr load_attr = {};
- 	struct core_reloc_test_case *test_case;
- 	const char *tp_name, *probe_name;
-@@ -463,8 +471,8 @@ void test_core_reloc(void)
- 	struct bpf_map *data_map;
- 	struct bpf_program *prog;
- 	struct bpf_object *obj;
--	const int zero = 0;
--	struct data data;
-+	struct data *data;
-+	void *mmap_data = NULL;
- 
- 	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
- 		test_case = &test_cases[i];
-@@ -476,8 +484,7 @@ void test_core_reloc(void)
- 		);
- 
- 		obj = bpf_object__open_file(test_case->bpf_obj_file, &opts);
--		if (CHECK(IS_ERR_OR_NULL(obj), "obj_open",
--			  "failed to open '%s': %ld\n",
-+		if (CHECK(IS_ERR(obj), "obj_open", "failed to open '%s': %ld\n",
- 			  test_case->bpf_obj_file, PTR_ERR(obj)))
- 			continue;
- 
-@@ -519,24 +526,22 @@ void test_core_reloc(void)
- 		if (CHECK(!data_map, "find_data_map", "data map not found\n"))
- 			goto cleanup;
- 
--		memset(&data, 0, sizeof(data));
--		memcpy(data.in, test_case->input, test_case->input_len);
--
--		err = bpf_map_update_elem(bpf_map__fd(data_map),
--					  &zero, &data, 0);
--		if (CHECK(err, "update_data_map",
--			  "failed to update .data map: %d\n", err))
-+		mmap_data = mmap(NULL, mmap_sz, PROT_READ | PROT_WRITE,
-+				 MAP_SHARED, bpf_map__fd(data_map), 0);
-+		if (CHECK(mmap_data == MAP_FAILED, "mmap",
-+			  ".bss mmap failed: %d", errno)) {
-+			mmap_data = NULL;
- 			goto cleanup;
-+		}
-+		data = mmap_data;
-+
-+		memset(mmap_data, 0, sizeof(*data));
-+		memcpy(data->in, test_case->input, test_case->input_len);
- 
- 		/* trigger test run */
- 		usleep(1);
- 
--		err = bpf_map_lookup_elem(bpf_map__fd(data_map), &zero, &data);
--		if (CHECK(err, "get_result",
--			  "failed to get output data: %d\n", err))
--			goto cleanup;
--
--		equal = memcmp(data.out, test_case->output,
-+		equal = memcmp(data->out, test_case->output,
- 			       test_case->output_len) == 0;
- 		if (CHECK(!equal, "check_result",
- 			  "input/output data don't match\n")) {
-@@ -548,12 +553,16 @@ void test_core_reloc(void)
- 			}
- 			for (j = 0; j < test_case->output_len; j++) {
- 				printf("output byte #%d: EXP 0x%02hhx GOT 0x%02hhx\n",
--				       j, test_case->output[j], data.out[j]);
-+				       j, test_case->output[j], data->out[j]);
- 			}
- 			goto cleanup;
- 		}
- 
- cleanup:
-+		if (mmap_data) {
-+			CHECK_FAIL(munmap(mmap_data, mmap_sz));
-+			mmap_data = NULL;
-+		}
- 		if (!IS_ERR_OR_NULL(link)) {
- 			bpf_link__destroy(link);
- 			link = NULL;
-diff --git a/tools/testing/selftests/bpf/prog_tests/mmap.c b/tools/testing/selftests/bpf/prog_tests/mmap.c
-new file mode 100644
-index 000000000000..8c183b310d46
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/mmap.c
-@@ -0,0 +1,154 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include <sys/mman.h>
-+
-+struct map_data {
-+	__u64 val[3];
-+};
-+
-+struct bss_data {
-+	__u64 in_val;
-+	__u64 out_val;
-+};
-+
-+static size_t roundup_page(size_t sz)
-+{
-+	long page_size = sysconf(_SC_PAGE_SIZE);
-+	return (sz + page_size - 1) / page_size * page_size;
-+}
-+
-+void test_mmap(void)
-+{
-+	const char *file = "test_mmap.o";
-+	const char *probe_name = "raw_tracepoint/sys_enter";
-+	const char *tp_name = "sys_enter";
-+	const size_t bss_sz = roundup_page(sizeof(struct bss_data));
-+	const size_t map_sz = roundup_page(sizeof(struct map_data));
-+	int err, duration = 0, i, data_map_fd;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	struct bpf_link *link = NULL;
-+	struct bpf_map *data_map, *bss_map;
-+	void *bss_mmaped = NULL, *map_mmaped = NULL, *tmp_mmaped;
-+	volatile struct bss_data *bss_data;
-+	volatile struct map_data *map_data;
-+
-+	obj = bpf_object__open_file("test_mmap.o", NULL);
-+	if (CHECK(IS_ERR(obj), "obj_open", "failed to open '%s': %ld\n",
-+		  file, PTR_ERR(obj)))
-+		return;
-+	prog = bpf_object__find_program_by_title(obj, probe_name);
-+	if (CHECK(!prog, "find_probe", "prog '%s' not found\n", probe_name))
-+		goto cleanup;
-+	err = bpf_object__load(obj);
-+	if (CHECK(err, "obj_load", "failed to load prog '%s': %d\n",
-+		  probe_name, err))
-+		goto cleanup;
-+
-+	bss_map = bpf_object__find_map_by_name(obj, "test_mma.bss");
-+	if (CHECK(!bss_map, "find_bss_map", ".bss map not found\n"))
-+		goto cleanup;
-+	data_map = bpf_object__find_map_by_name(obj, "data_map");
-+	if (CHECK(!data_map, "find_data_map", "data_map map not found\n"))
-+		goto cleanup;
-+	data_map_fd = bpf_map__fd(data_map);
-+
-+	bss_mmaped = mmap(NULL, bss_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
-+			  bpf_map__fd(bss_map), 0);
-+	if (CHECK(bss_mmaped == MAP_FAILED, "bss_mmap",
-+		  ".bss mmap failed: %d\n", errno)) {
-+		bss_mmaped = NULL;
-+		goto cleanup;
-+	}
-+	/* map as R/W first */
-+	map_mmaped = mmap(NULL, map_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
-+			  data_map_fd, 0);
-+	if (CHECK(map_mmaped == MAP_FAILED, "data_mmap",
-+		  "data_map mmap failed: %d\n", errno)) {
-+		map_mmaped = NULL;
-+		goto cleanup;
-+	}
-+
-+	bss_data = bss_mmaped;
-+	map_data = map_mmaped;
-+
-+	CHECK_FAIL(bss_data->in_val);
-+	CHECK_FAIL(bss_data->out_val);
-+	CHECK_FAIL(map_data->val[0]);
-+	CHECK_FAIL(map_data->val[1]);
-+	CHECK_FAIL(map_data->val[2]);
-+
-+	link = bpf_program__attach_raw_tracepoint(prog, tp_name);
-+	if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n", PTR_ERR(link)))
-+		goto cleanup;
-+
-+	bss_data->in_val = 123;
-+	usleep(1);
-+	CHECK_FAIL(bss_data->in_val != 123);
-+	CHECK_FAIL(bss_data->out_val != 123);
-+	CHECK_FAIL(map_data->val[2] != 123);
-+
-+	/* data_map freeze should fail due to R/W mmap() */
-+	err = bpf_map_freeze(data_map_fd);
-+	if (CHECK(!err || errno != EBUSY, "no_freeze",
-+		  "data_map freeze succeeded: err=%d, errno=%d\n", err, errno))
-+		goto cleanup;
-+
-+	/* unmap R/W mapping */
-+	err = munmap(map_mmaped, map_sz);
-+	map_mmaped = NULL;
-+	if (CHECK(err, "data_map_munmap", "data_map munmap failed: %d\n", errno))
-+		goto cleanup;
-+
-+	/* re-map as R/O now */
-+	map_mmaped = mmap(NULL, map_sz, PROT_READ, MAP_SHARED, data_map_fd, 0);
-+	if (CHECK(map_mmaped == MAP_FAILED, "data_mmap",
-+		  "data_map R/O mmap failed: %d\n", errno)) {
-+		map_mmaped = NULL;
-+		goto cleanup;
-+	}
-+	map_data = map_mmaped;
-+
-+	/* map/unmap in a loop to test ref counting */
-+	for (i = 0; i < 10; i++) {
-+		int flags = i % 2 ? PROT_READ : PROT_WRITE;
-+		void *p;
-+
-+		p = mmap(NULL, map_sz, flags, MAP_SHARED, data_map_fd, 0);
-+		if (CHECK_FAIL(p == MAP_FAILED))
-+			goto cleanup;
-+		err = munmap(p, map_sz);
-+		if (CHECK_FAIL(err))
-+			goto cleanup;
-+	}
-+
-+	/* data_map freeze should now succeed due to no R/W mapping */
-+	err = bpf_map_freeze(data_map_fd);
-+	if (CHECK(err, "freeze", "data_map freeze failed: err=%d, errno=%d\n",
-+		  err, errno))
-+		goto cleanup;
-+
-+	/* mapping as R/W now should fail */
-+	tmp_mmaped = mmap(NULL, map_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
-+			  data_map_fd, 0);
-+	if (CHECK(tmp_mmaped != MAP_FAILED, "data_mmap",
-+		  "data_map mmap succeeded\n")) {
-+		munmap(tmp_mmaped, map_sz);
-+		goto cleanup;
-+	}
-+
-+	bss_data->in_val = 321;
-+	usleep(1);
-+	CHECK_FAIL(bss_data->in_val != 321);
-+	CHECK_FAIL(bss_data->out_val != 321);
-+	CHECK_FAIL(map_data->val[2] != 321);
-+
-+cleanup:
-+	if (bss_mmaped)
-+		CHECK_FAIL(munmap(bss_mmaped, bss_sz));
-+	if (map_mmaped)
-+		CHECK_FAIL(munmap(map_mmaped, map_sz));
-+	if (!IS_ERR_OR_NULL(link))
-+		bpf_link__destroy(link);
-+	bpf_object__close(obj);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_mmap.c b/tools/testing/selftests/bpf/progs/test_mmap.c
-new file mode 100644
-index 000000000000..22bd5f042332
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_mmap.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/bpf.h>
-+#include <stdint.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(max_entries, 3);
-+	__uint(map_flags, BPF_F_MMAPABLE);
-+	__type(key, __u32);
-+	__type(value, __u64);
-+} data_map SEC(".maps");
-+
-+static volatile __u64 in_val;
-+static volatile __u64 out_val;
-+
-+SEC("raw_tracepoint/sys_enter")
-+int test_mmap(void *ctx)
-+{
-+	int idx = 2;
-+
-+	out_val = in_val;
-+	bpf_map_update_elem(&data_map, &idx, (const void *)&in_val, 0);
-+
-+	return 0;
-+}
-+
--- 
-2.17.1
+-----Original Message-----
+From: David Miller <davem@davemloft.net> 
+Sent: Friday, November 8, 2019 11:07 AM
+To: tuong.t.lien@dektech.com.au
+Cc: jon.maloy@ericsson.com; maloy@donjonn.com; ying.xue@windriver.com;
+netdev@vger.kernel.org; tipc-discussion@lists.sourceforge.net
+Subject: Re: [net-next 0/5] TIPC encryption
+
+From: Tuong Lien <tuong.t.lien@dektech.com.au>
+Date: Fri,  8 Nov 2019 08:42:08 +0700
+
+> This series provides TIPC encryption feature, kernel part. There will be
+> another one in the 'iproute2/tipc' for user space to set key.
+
+If gcm(aes) is the only algorithm you accept, you will need to express
+this dependency in the Kconfig file.  Otherwise it is pointless to
+turn on the TIPC crypto Kconfig option.
 
