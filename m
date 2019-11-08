@@ -2,160 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C036F536A
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:19:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76974F536F
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:20:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728495AbfKHSTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 13:19:30 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:38868 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbfKHSTa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:19:30 -0500
-Received: by mail-ot1-f67.google.com with SMTP id v24so5998862otp.5;
-        Fri, 08 Nov 2019 10:19:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V9pDZPCOB72mc0w+CgAkcjIsa5BFmf772gEgW5V819A=;
-        b=rFchVElXx4ycLxgyvwHwizGlgV9wSkmPk70wocBF25tpayTj9CKIo9+m6DvG8g6COH
-         prTiA2ks7ooexqGRhWOOiLLFhzBFh83/aNMwHBoNn0KH/Pjre8tgcIJ07UoJBxDwkqHS
-         qaKAZCvouthU+E8lKUI/pnwF05Rn8JBAg1P2RZx0FWAEmHiUw5w1jiARlW9Fkh5Z1Xta
-         1dCWBFT3SFmOvdmkj49QQtDUaxwATJBqzs0nkPTWnnLliiDSl14lUgQ3vKWFI2A9LM0u
-         ukUskZmL3fWk4HcfaKM+kYb/YyitXhShwqlHLgt1VFoZFc+wuw5kb7CXq0COwy/uVj18
-         Eqqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V9pDZPCOB72mc0w+CgAkcjIsa5BFmf772gEgW5V819A=;
-        b=HbfW8OCrIXcLjXT89FAiJA8KHyoKbv1nvWDHXW0QhMrSHaBXLbFFkIOlLNVvq7ygso
-         0gi2SFhg4XMJoGLEOSooMEGyVer0yYNuIzWGH0Haj8P6dGZLaYBiKZfjQ/VIUZALdsg1
-         nPMj3Wg1VHxjz7J1ttmgByeB39Io0VuYMABOqgpxTulOggZ72NIcDlxI4VLq3kx/z/ud
-         G+ZCK/0eD8+chRc271KnVeAkS2kUnSw0FBMJFEQ2WtCHjHnBdOMLvOSTDk6A18eJ84PB
-         hVOKh9iNMVFvLT2fcDagQ5EwsENuR1cAMQzdFHyMTI11ZpOs406LQvzhTDhm1VTnkixv
-         o/zw==
-X-Gm-Message-State: APjAAAVyzsZn4BwdKeCaOmg+19t4aCAlwghO6CI0qN9E/6WAkKJxgrew
-        egGDnp4ISi0psrTiqhtDYytY4PO/7JpDYMoehf8=
-X-Google-Smtp-Source: APXvYqyGmKprODME71EZE5mb0NXD8QAqoculJAjy1x6ox/WP7nKtzfzu1r6Q/EG/opGDzZhfPGIGYW6UnRoUOw4YNBA=
-X-Received: by 2002:a9d:286:: with SMTP id 6mr9858567otl.192.1573237169439;
- Fri, 08 Nov 2019 10:19:29 -0800 (PST)
-MIME-Version: 1.0
-References: <1573148860-30254-1-git-send-email-magnus.karlsson@intel.com>
- <1573148860-30254-2-git-send-email-magnus.karlsson@intel.com> <20191108180314.GA30004@gmail.com>
-In-Reply-To: <20191108180314.GA30004@gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 8 Nov 2019 19:19:18 +0100
-Message-ID: <CAJ8uoz0DJx0sbsAU1GyjZcX3JvcEq7QKFRM5sYrZ_ScAHgEE=A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/5] libbpf: support XDP_SHARED_UMEM with
- external XDP program
-To:     William Tu <u9012063@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
+        id S1727210AbfKHSUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 13:20:33 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:29662 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726446AbfKHSUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:20:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573237232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XVB+8Y+BOU3YP07+qU7F9r488uZcAFtKX5p9i/hOhtc=;
+        b=F/YLkW6VblDJLFDUiwOFCeC+5pWzGxfwlLwnxyfdzRAQm2vKO+ZGsRe6Ng5godvHJOt4wt
+        OthfV36bcAUEwmQqwS8MfTvDLv/SEhy4iS5BEzis6S/siAw+PlyPkIdfP1vyc4G6HNSvlH
+        /F+YxU6IVvjwFL8+v09eFIhDXJzErYQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-396-GY3gCyzZNKSgDSmg6dI8sw-1; Fri, 08 Nov 2019 13:20:29 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80D4F1005500;
+        Fri,  8 Nov 2019 18:20:27 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-27.brq.redhat.com [10.40.200.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 06D9960BE1;
+        Fri,  8 Nov 2019 18:20:19 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id B75D530FC134D;
+        Fri,  8 Nov 2019 19:20:17 +0100 (CET)
+Subject: [net-next v1 PATCH 0/2] Change XDP lifetime guarantees for
+ page_pool objects
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Matteo Croce <mcroce@redhat.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
+Date:   Fri, 08 Nov 2019 19:20:17 +0100
+Message-ID: <157323719180.10408.3472322881536070517.stgit@firesoul>
+User-Agent: StGit/0.17.1-dirty
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: GY3gCyzZNKSgDSmg6dI8sw-1
+X-Mimecast-Spam-Score: 2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 7:03 PM William Tu <u9012063@gmail.com> wrote:
->
-> Hi Magnus,
->
-> Thanks for the patch.
->
-> On Thu, Nov 07, 2019 at 06:47:36PM +0100, Magnus Karlsson wrote:
-> > Add support in libbpf to create multiple sockets that share a single
-> > umem. Note that an external XDP program need to be supplied that
-> > routes the incoming traffic to the desired sockets. So you need to
-> > supply the libbpf_flag XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD and load
-> > your own XDP program.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  tools/lib/bpf/xsk.c | 27 +++++++++++++++++----------
-> >  1 file changed, 17 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> > index 86c1b61..8ebd810 100644
-> > --- a/tools/lib/bpf/xsk.c
-> > +++ b/tools/lib/bpf/xsk.c
-> > @@ -586,15 +586,21 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
-> >       if (!umem || !xsk_ptr || !rx || !tx)
-> >               return -EFAULT;
-> >
-> > -     if (umem->refcount) {
-> > -             pr_warn("Error: shared umems not supported by libbpf.\n");
-> > -             return -EBUSY;
-> > -     }
-> > -
-> >       xsk = calloc(1, sizeof(*xsk));
-> >       if (!xsk)
-> >               return -ENOMEM;
-> >
-> > +     err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
-> > +     if (err)
-> > +             goto out_xsk_alloc;
-> > +
-> > +     if (umem->refcount &&
-> > +         !(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
-> > +             pr_warn("Error: shared umems not supported by libbpf supplied XDP program.\n");
->
-> Why can't we use the existing default one in libbpf?
-> If users don't want to redistribute packet to different queue,
-> then they can still use the libbpf default one.
+This patchset change XDP lifetime guarantees for page_pool objects
+(registered via the xdp_rxq_info_reg_mem_model API). The new guarantee
+is that page_pool objects stay valid (are not free'ed) until all
+inflight pages are returned.
 
-Is there any point in creating two or more sockets tied to the same
-umem and directing all traffic to just one socket? IMHO, I believe
-that most users in this case would want to distribute the packets over
-the sockets in some way. I also think that users might be unpleasantly
-surprised if they create multiple sockets and all packets only get to
-a single socket because libbpf loaded an XDP program that makes little
-sense in the XDP_SHARED_UMEM case. If we force them to supply an XDP
-program, they need to make this decision. I also wanted to extend the
-sample with an explicit user loaded XDP program as an example of how
-to do this. What do you think?
+It was commit d956a048cd3f (=E2=80=9Cxdp: force mem allocator removal and
+periodic warning=E2=80=9D) that introduce the force removal of page_pool
+objects (after 120 second). While working on extending page_pool
+recycling to cover SKBs[1], we[2] realised that this force removal
+approach was a mistake.
 
-/Magnus
+Tested and monitored via bpftrace scripts provide here[3].
 
-> William
-> > +             err = -EBUSY;
-> > +             goto out_xsk_alloc;
-> > +     }
-> > +
-> >       if (umem->refcount++ > 0) {
-> >               xsk->fd = socket(AF_XDP, SOCK_RAW, 0);
-> >               if (xsk->fd < 0) {
-> > @@ -616,10 +622,6 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
-> >       memcpy(xsk->ifname, ifname, IFNAMSIZ - 1);
-> >       xsk->ifname[IFNAMSIZ - 1] = '\0';
-> >
-> > -     err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
-> > -     if (err)
-> > -             goto out_socket;
-> > -
-> >       if (rx) {
-> >               err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
-> >                                &xsk->config.rx_size,
-> > @@ -687,7 +689,12 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
-> >       sxdp.sxdp_family = PF_XDP;
-> >       sxdp.sxdp_ifindex = xsk->ifindex;
-> >       sxdp.sxdp_queue_id = xsk->queue_id;
-> > -     sxdp.sxdp_flags = xsk->config.bind_flags;
-> > +     if (umem->refcount > 1) {
-> > +             sxdp.sxdp_flags = XDP_SHARED_UMEM;
-> > +             sxdp.sxdp_shared_umem_fd = umem->fd;
-> > +     } else {
-> > +             sxdp.sxdp_flags = xsk->config.bind_flags;
-> > +     }
-> >
-> >       err = bind(xsk->fd, (struct sockaddr *)&sxdp, sizeof(sxdp));
-> >       if (err) {
-> > --
-> > 2.7.4
-> >
+[1] https://github.com/xdp-project/xdp-project/tree/master/areas/mem
+[2] we =3D=3D Ilias, Jonathan, Tariq, Saeed and me
+[3] https://github.com/xdp-project/xdp-project/tree/master/areas/mem/bpftra=
+ce
+
+---
+
+Jesper Dangaard Brouer (2):
+      xdp: revert forced mem allocator removal for page_pool
+      page_pool: make inflight returns more robust via blocking alloc cache
+
+
+ include/net/page_pool.h    |    2 ++
+ include/trace/events/xdp.h |   35 +++--------------------------------
+ net/core/page_pool.c       |   32 +++++++++++++++++++++++++-------
+ net/core/xdp.c             |   36 +++++++++++++-----------------------
+ 4 files changed, 43 insertions(+), 62 deletions(-)
+
+--
+
