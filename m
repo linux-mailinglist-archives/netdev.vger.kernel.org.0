@@ -2,107 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 019D1F551C
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:01:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6082CF570B
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:05:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389702AbfKHTAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 14:00:22 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:44371 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387395AbfKHTAV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 14:00:21 -0500
-Received: by mail-wr1-f66.google.com with SMTP id f2so8176160wrs.11
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 11:00:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Q0460TgzgnaZLvm1IV8VLVUyZ7xHs8aC72SXVYWvcVU=;
-        b=K5YNkYk1UQ4vtj9aLjQOleIjNFwGE4P2DPtHyOJKrm0VgEBuu1FvF13NT7V6HiWCsP
-         2u7A8KRacDJqAIeW1V9A/AKGyW3tacYFM4tF+E8y+VrHe1LrIeGifRm2kZvDP9ShD1xk
-         MSn9TeRoGe9QjWqJAovsmJOxKrpscIvIuP7pHGloR+7Ewb9aGj8swRsEYVzKKcV+0Qk7
-         h7QbtOR1ZxrblMnDQ+DR2f8eSTdXOl9q2CoIfpnLlQ4yMKNtrjw4W4+F28N0cwvSfgwf
-         zO/DiJFBfOQjQzmDvNzJq6tnQqw/F5wbcJLgqLPncsZZvPU5Llar08p05tequHk9kSyr
-         Yrrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Q0460TgzgnaZLvm1IV8VLVUyZ7xHs8aC72SXVYWvcVU=;
-        b=r0u4nl1GWB7QPROtXbogPJRDJiAJYZWUd76heyNRzrm+eujbTuiiFqqez15+LS4tdA
-         62npjiyais/bwEQS5992OYbt6Ejlz9ggXESuLTNFyEfXiyY8rc8BfvJi7hMhO+rYTVWA
-         hfI8BITNbQHbgenmLWuDA82njwm/TNAz84JlRhg8XkkFT7Pxa0XdDH0rZyK/bvnCVZcR
-         isAf8yyaL4282GJBG5SW9cdrhnVm9uZlBMwu0mUUGy5nlbOQUwW6rXja5F4S7rgGmk/2
-         C3X96R0z0xQNu4FJSJNkGsICf2O0zju6WybNf8HNlbm5LFSN3ek++qgJ+f4Ti0KrlnjT
-         txCA==
-X-Gm-Message-State: APjAAAWuQGAWM+vZvaf8mf4VT3YmFz9OELhRUbUV3LwMoXYs56ev/bfW
-        K8vRCwPf3z4sAtHxN6GVEOQWoeKS5+hfYjvx81iJ4w==
-X-Google-Smtp-Source: APXvYqxjvSn3tePuyqDvQ6GTaS29yRgNed6/yx0spNQiJlJgU2nkcHKd2TvCuJggSLkyrxxhA+C8KKXP8Qjt6n+6A/g=
-X-Received: by 2002:adf:b1cb:: with SMTP id r11mr2543917wra.246.1573239611844;
- Fri, 08 Nov 2019 11:00:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20191107132755.8517-1-jonas@norrbonn.se> <CAF2d9jjteagJGmt64mNFH-pFmGg_eM8_NNBrDtROcaVKhcNkRQ@mail.gmail.com>
- <d34174c2-a4d4-b3da-ded5-dcb97a89c80c@gmail.com> <229cdce6-f510-5d9f-401b-69bad4af0722@norrbonn.se>
-In-Reply-To: <229cdce6-f510-5d9f-401b-69bad4af0722@norrbonn.se>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Fri, 8 Nov 2019 10:59:55 -0800
-Message-ID: <CAF2d9jg01+AjBHJtMMpzdqV1iyGd-vZzVS96nmGmcVJLK82D3A@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] Add namespace awareness to Netlink methods
-To:     Jonas Bonn <jonas@norrbonn.se>
-Cc:     David Ahern <dsahern@gmail.com>, nicolas.dichtel@6wind.com,
-        linux-netdev <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        id S2390839AbfKHTQG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 14:16:06 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61278 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390820AbfKHTDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 14:03:40 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA8ItGIg028030;
+        Fri, 8 Nov 2019 11:03:25 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=EHio6oNmtkZVOl1mRKulaGsfjlNdaXZ4iuCOePk2qAU=;
+ b=LYU1tvaVjl74Ulm4s+0CQYSKgDPDoc2KBKmhazNQTJhMESkGm7ePmzPlkXplEOB5xxF5
+ mFWVOy1odRHrp2dp04Uu9v/9l8qbz0pputbPa7Ca5Im3Ylbtod3jreXBkkKBtv4nBOh/
+ 5JcuLBx2L0IkjHNkJTu4Z+AIKW0/PdMwMLQ= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2w5brygvk4-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 08 Nov 2019 11:03:25 -0800
+Received: from ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) by
+ ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 8 Nov 2019 11:03:18 -0800
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 8 Nov 2019 11:03:18 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hjq9kiouvhvhlbSYzZJz6nZnUeF+l2D+5tG0QI/KfKpXKLqc0vxN77zE0jZpGJ1EQyvjN9yPu1wZeUac7f95gDm8yRBdiuwtdq8EyLL1iM704JiBAfGk5bP9dUllCG74z/PKUmkdgyp5fgVhT3O8EhEK3TJYvGcSYJmI5eQ9fUMN2HH71rQBMzD6OiwTlyb62EjpXaVoiMioYTrNMsYFBq12nuZln174/3bo07X2iPhkAHj4zqrbb3VfFRuYvdYkRBnL0XGZ/61IuZPvYwaUofk9+AxkN7rZ2sx3jErhEhP1RrRuEEruRmMmFgla29xfi97IcYppuwuXi7d9kvpF+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EHio6oNmtkZVOl1mRKulaGsfjlNdaXZ4iuCOePk2qAU=;
+ b=IX9kmOrOMT3CFr14c2KqhLeYJ+KI0gASqb6xs2AJ7xlrbIIy9nkdP5IaZtZSj4B/qJsHR9mMSoNim2r44X7VEn6oZMbhYcQZq/6vpI24xQCqxxvruw6kX1qWBoHS7b1eSetzMn8+6wgV7kjabXsbLxxoQ6wPEBJ1GZCwsDtkozPV3QQdKTT9baT18vRBYPnyqK+Q5umxico66o0ubb615F3XFfUBUaoBEyosNeR2EXCjsVbhwmWDLZLOfWzeEC75huUkzuYBk+rC9yr7Wu3TsDpW3NHSbF0++IafqxfHEzcWxAR0dLbaPAMXYx/Ef3jwOhfvcUxZOaJe/EmtioZr1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EHio6oNmtkZVOl1mRKulaGsfjlNdaXZ4iuCOePk2qAU=;
+ b=PQ7DL0OiGeil4C3gf6dw1GgcxFF6l4N5fw+7rmYSwLmklSBgDUflaUvHFFOzTB7UmOh6n+s4fJAlw1ipnKDjg/2z3y/nRGgzssMitPh+WCaRSuXdShc6uHcPBvEYSF5zy3xULOWasTvVVF66U3xSjCvPANyOzsFz/jPxpgw45dw=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1711.namprd15.prod.outlook.com (10.174.254.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.20; Fri, 8 Nov 2019 19:03:17 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
+ 19:03:17 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v3 bpf-next 17/18] selftests/bpf: Extend test_pkt_access
+ test
+Thread-Topic: [PATCH v3 bpf-next 17/18] selftests/bpf: Extend test_pkt_access
+ test
+Thread-Index: AQHVlf+Yu86FroKmhUuAZh1018dUrKeBolsA
+Date:   Fri, 8 Nov 2019 19:03:16 +0000
+Message-ID: <CC4F692C-1245-4199-9BDD-4C64C035590B@fb.com>
+References: <20191108064039.2041889-1-ast@kernel.org>
+ <20191108064039.2041889-18-ast@kernel.org>
+In-Reply-To: <20191108064039.2041889-18-ast@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3601.0.10)
+x-originating-ip: [2620:10d:c090:200::b292]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a8404e7b-cb5b-4cad-7106-08d7647e504f
+x-ms-traffictypediagnostic: MWHPR15MB1711:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR15MB171187D34BE61ACDC5D168C6B37B0@MWHPR15MB1711.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3276;
+x-forefront-prvs: 0215D7173F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(346002)(376002)(366004)(136003)(189003)(199004)(54906003)(86362001)(53546011)(6506007)(7736002)(102836004)(478600001)(6916009)(14454004)(2616005)(11346002)(476003)(229853002)(25786009)(76176011)(66556008)(6436002)(46003)(6512007)(305945005)(6246003)(316002)(186003)(99286004)(76116006)(66946007)(36756003)(4326008)(50226002)(486006)(6116002)(446003)(14444005)(256004)(33656002)(66476007)(2906002)(71190400001)(71200400001)(5660300002)(64756008)(8676002)(8936002)(66446008)(81156014)(6486002)(81166006);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1711;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OcC7Yo0eYlnJldqtiSU3A36nMDUJBxQwY0WZZd9yxtrVuM1QAE4gAjI7Pkvs/5GPvkZnpHZueDaXu/8Ge3dunBjbjLQ6kVe6bf4vCJuwXyFRZ5nvmkAOM5C49MaaZHC8U5ajLkFE5v1nweXgOZT7XemwyzwqCaBwTdsTaoG4nTTwBBkIBfQWaATxyJR8Zshvvcul+HWQrjRktk8R7Gy/pQaYa6ZCx11u25SZa03iJRxWClyYn829oh3nHOHujDBf76AFmDTYnbBDtpnbohYps9CXRIS3W7wFZKW1KvFHYlgtXduIzgINkL8fQjSxGLilkVnEvGJ1jJ28kc62NSE5hRZ+PdGvmZOT4bkLfrEH9+wu+lxReG2e0sedRaGRVQR/0z7lN6pwmi/Ww7Y1CBQb51xtgk8QuR/u4L3CfUogQPEair1QgKKm88sOFHlTBBE0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <08E1AE770E26F14E9DAF2EFCDCF72AB4@namprd15.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8404e7b-cb5b-4cad-7106-08d7647e504f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 19:03:16.9956
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FN1jrxDSLVoYgb27Bxsk0CPG8e7QVycbp3mPOvKM6YgqYW3jKbf8rKa4URripV9P6qNaIcO4JjyKX4S4nDr9ZQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1711
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-08_07:2019-11-08,2019-11-08 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ malwarescore=0 adultscore=0 spamscore=0 clxscore=1015 bulkscore=0
+ mlxlogscore=999 priorityscore=1501 impostorscore=0 lowpriorityscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911080186
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 7:36 AM Jonas Bonn <jonas@norrbonn.se> wrote:
->
->
->
-> On 07/11/2019 22:11, David Ahern wrote:
-> > On 11/7/19 1:40 PM, Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=E0=A4=
-=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) wrote:
-> >> On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
-> >>>
-> >>> Changed in v3:
-> >>> - added patch 6 for setting IPv6 address outside current namespace
-> >>> - address checkpatch warnings
-> >>> - address comment from Nicolas
-> >>>
-> >>> Changed in v2:
-> >>> - address comment from Nicolas
-> >>> - add accumulated ACK's
-> >>>
-> >>> Currently, Netlink has partial support for acting outside of the curr=
-ent
-> >>> namespace.  It appears that the intention was to extend this to all t=
-he
-> >>> methods eventually, but it hasn't been done to date.
-> >>>
-> >>> With this series RTM_SETLINK, RTM_NEWLINK, RTM_NEWADDR, and RTM_NEWNS=
-ID
-> >>> are extended to respect the selection of the namespace to work in.
-> >>>
-> >> This is nice, is there a plan to update userspace commands using this?
-> >
-> > I'm hoping for an iproute2 update and test cases to validate the change=
-s.
-> >
->
-> I'm looking into it.  The change to iproute2 to support
-> (namespace,index) pairs instead of just (index) to identify interfaces
-> looks to be invasive.  The rest of it looks like trivial changes.
->
-> I've got all these kernel patches tested against my own "namespace aware
-> network manager" that I'm writing for a customer with a particular use
-> case.  iproute2 wasn't actually in play here.
->
-I'll echo David's comment for iproute2 as well as tests to ensure this
-new behavior is usable and healthy.
 
-> /Jonas
+
+> On Nov 7, 2019, at 10:40 PM, Alexei Starovoitov <ast@kernel.org> wrote:
+>=20
+> The test_pkt_access.o is used by multiple tests. Fix its section name so =
+that
+> program type can be automatically detected by libbpf and make it call oth=
+er
+> subprograms with skb argument.
+>=20
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+
+Acked-by: Song Liu <songliubraving@fb.com>
+
+> ---
+> .../selftests/bpf/progs/test_pkt_access.c     | 38 ++++++++++++++++++-
+> 1 file changed, 36 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/tools/testing/selftests/bpf/progs/test_pkt_access.c b/tools/=
+testing/selftests/bpf/progs/test_pkt_access.c
+> index 7cf42d14103f..3a7b4b607ed3 100644
+> --- a/tools/testing/selftests/bpf/progs/test_pkt_access.c
+> +++ b/tools/testing/selftests/bpf/progs/test_pkt_access.c
+> @@ -17,8 +17,38 @@
+> #define barrier() __asm__ __volatile__("": : :"memory")
+> int _version SEC("version") =3D 1;
+>=20
+> -SEC("test1")
+> -int process(struct __sk_buff *skb)
+> +/* llvm will optimize both subprograms into exactly the same BPF assembl=
+y
+> + *
+> + * Disassembly of section .text:
+> + *
+> + * 0000000000000000 test_pkt_access_subprog1:
+> + * ; 	return skb->len * 2;
+> + *        0:	61 10 00 00 00 00 00 00	r0 =3D *(u32 *)(r1 + 0)
+> + *        1:	64 00 00 00 01 00 00 00	w0 <<=3D 1
+> + *        2:	95 00 00 00 00 00 00 00	exit
+> + *
+> + * 0000000000000018 test_pkt_access_subprog2:
+> + * ; 	return skb->len * val;
+> + *        3:	61 10 00 00 00 00 00 00	r0 =3D *(u32 *)(r1 + 0)
+> + *        4:	64 00 00 00 01 00 00 00	w0 <<=3D 1
+> + *        5:	95 00 00 00 00 00 00 00	exit
+> + *
+> + * Which makes it an interesting test for BTF-enabled verifier.
+
+This is interesting!
+
