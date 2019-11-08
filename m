@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D8BF4A7E
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:09:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32E7DF4A73
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:09:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391941AbfKHMJf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:09:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52950 "EHLO mail.kernel.org"
+        id S2388477AbfKHLkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:40:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388327AbfKHLkE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:40:04 -0500
+        id S2388406AbfKHLkH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:40:07 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7D08220869;
-        Fri,  8 Nov 2019 11:40:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F14E921D6C;
+        Fri,  8 Nov 2019 11:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213203;
-        bh=S4hGAQcWq3BmNUikVDjThFlx+Q15Rqc902O6gvM3WAA=;
+        s=default; t=1573213206;
+        bh=rmvVJUanAKAsUv3kGo40KfhFzGB1VQW2ebOCc4xWCzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qq88hRicGKqQOitO6zQ/IJuQ/JIEtFMuzR9gVvlhgZWD5dbCPxJXjuQDnxprADI11
-         ncdFnuUeeoziRrmoQacQxClKZGuI3eWCfxYP1oCM/9lGu7dNBbhQveEP5bPOJVcurM
-         kZtIH+VmiTTs3RNkBVkXlo4qT8XYQsVDnci3WYhk=
+        b=DdQiFKYylFV9WoNX1Ynuy2dngD6+uyQ7Phmr3ZlFA5ZVSQkzAUyCrtP3IB/mJIbcw
+         rqos3Adu8Xsy6tC609jwOtE1oO9dMA4SGwyVWqugZQO8R3m5a5BiVQwZ0eKKdWTs5S
+         XbSRQdGjIS7HllCDtzezrE1RElmKLsfb15nR4QOI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Naftali Goldstein <naftali.goldstein@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 086/205] mac80211: fix saving a few HE values
-Date:   Fri,  8 Nov 2019 06:35:53 -0500
-Message-Id: <20191108113752.12502-86-sashal@kernel.org>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Raghuram Chary Jallipalli 
+        <raghuramchary.jallipalli@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 089/205] net: lan78xx: Bail out if lan78xx_get_endpoints fails
+Date:   Fri,  8 Nov 2019 06:35:56 -0500
+Message-Id: <20191108113752.12502-89-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
 References: <20191108113752.12502-1-sashal@kernel.org>
@@ -45,55 +46,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Naftali Goldstein <naftali.goldstein@intel.com>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 77cbbc35a49b75969d98edce9400beb21720aa39 ]
+[ Upstream commit fa8cd98c06407b5798b927cd7fd14d30f360ed02 ]
 
-After masking the he_oper_params, to get the requested values as
-integers one must rshift and not lshift.  Fix that by using the
-le32_get_bits() macro.
+We need to bail out if lan78xx_get_endpoints() fails, otherwise the
+result is overwritten.
 
-Fixes: 41cbb0f5a295 ("mac80211: add support for HE")
-Signed-off-by: Naftali Goldstein <naftali.goldstein@intel.com>
-[converted to use le32_get_bits()]
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Raghuram Chary Jallipalli <raghuramchary.jallipalli@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/mlme.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+ drivers/net/usb/lan78xx.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/mac80211/mlme.c b/net/mac80211/mlme.c
-index 5c9dcafbc3424..b0667467337d4 100644
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -3255,19 +3255,16 @@ static bool ieee80211_assoc_success(struct ieee80211_sub_if_data *sdata,
- 	}
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index e20266bd209e2..9e995767dbfe3 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2947,6 +2947,11 @@ static int lan78xx_bind(struct lan78xx_net *dev, struct usb_interface *intf)
+ 	int i;
  
- 	if (bss_conf->he_support) {
--		u32 he_oper_params =
--			le32_to_cpu(elems.he_operation->he_oper_params);
-+		bss_conf->bss_color =
-+			le32_get_bits(elems.he_operation->he_oper_params,
-+				      IEEE80211_HE_OPERATION_BSS_COLOR_MASK);
+ 	ret = lan78xx_get_endpoints(dev, intf);
++	if (ret) {
++		netdev_warn(dev->net, "lan78xx_get_endpoints failed: %d\n",
++			    ret);
++		return ret;
++	}
  
--		bss_conf->bss_color = he_oper_params &
--				      IEEE80211_HE_OPERATION_BSS_COLOR_MASK;
- 		bss_conf->htc_trig_based_pkt_ext =
--			(he_oper_params &
--			 IEEE80211_HE_OPERATION_DFLT_PE_DURATION_MASK) <<
--			IEEE80211_HE_OPERATION_DFLT_PE_DURATION_OFFSET;
-+			le32_get_bits(elems.he_operation->he_oper_params,
-+			      IEEE80211_HE_OPERATION_DFLT_PE_DURATION_MASK);
- 		bss_conf->frame_time_rts_th =
--			(he_oper_params &
--			 IEEE80211_HE_OPERATION_RTS_THRESHOLD_MASK) <<
--			IEEE80211_HE_OPERATION_RTS_THRESHOLD_OFFSET;
-+			le32_get_bits(elems.he_operation->he_oper_params,
-+			      IEEE80211_HE_OPERATION_RTS_THRESHOLD_MASK);
+ 	dev->data[0] = (unsigned long)kzalloc(sizeof(*pdata), GFP_KERNEL);
  
- 		bss_conf->multi_sta_back_32bit =
- 			sta->sta.he_cap.he_cap_elem.mac_cap_info[2] &
 -- 
 2.20.1
 
