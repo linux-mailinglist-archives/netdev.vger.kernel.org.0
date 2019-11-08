@@ -2,89 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB57AF4577
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0285BF45A4
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727459AbfKHLNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:13:24 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:36245 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbfKHLNY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 06:13:24 -0500
-Received: by mail-wr1-f68.google.com with SMTP id r10so6608102wrx.3
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 03:13:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=K+Eo0glUzjalQHt6xvHUxzQrB7u3vMyGwdCkPxcCzJY=;
-        b=u7QLJGpnAhW16VTXD/Gmf8wGHRwCNuydIXbhIRkLruxGqEccaxt4cGg+fjCalmVcOH
-         36Vd0JvzO7da+wUXNT3V7+HSK1Ak9QtB8AuiV3bPkf3ku/uVPT+oloU5+jUGD2S2+/P4
-         d45RFmwEibq89tq5v02AUDRgfiUy6X0543v0SOq7NsDMKInckdUU+l0VJ7nBrLE8Z0vI
-         sNOBy5SfOQ1d6nS9qVKJu5WyGhqxC0uNvi5MMfN1SfJAYUg3rdUO+dLzD/O2DhtpCIzB
-         o6Xq6h3x0FdW3fKMLJxO4io6+EZL4HhQkBOOWSHmxWC9IjclTTL88meL/fwkc95abNHq
-         QkZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=K+Eo0glUzjalQHt6xvHUxzQrB7u3vMyGwdCkPxcCzJY=;
-        b=IN7B4ev2NvdkaWbCcW38sqD3D/EgUk5kUPAetVm77Prouot6kxQJdLy/MX6m3bg/Tj
-         Zqt8SnHCvDkVJrdgl7h5b74s3jm9SpH6yxbyKroXRJvrgXtXsytMh3xCsU5nyRp8HQMW
-         edAIKS4AZy7krrI3IXOC47P3PDnwlvOt3wIvVRv7u4rcBwvMBi8oCJ+nKb5BJvGjxDuY
-         n8zdNVXpHtK+5fWci1Ehhg3ZFGELpJ+uVyYLLeE5aq3NKf1/NgeFxiJUEvRjE0CvlW8T
-         e0Zs7KQeIPTnG2iq9Nhi+rEcyX8zQnvIufNfvrt5iyX6NewQ/4cnvQ3+3nhEumvKDVao
-         NItw==
-X-Gm-Message-State: APjAAAXpdJkrwkKihPMit45jMMBX4w0c/lt6Dj9udMYwyQvVDY6186kK
-        fitp4tssmPzY4pX99wQfGu3oeQ==
-X-Google-Smtp-Source: APXvYqwnP2QDmQBcfmJLh3FRIv+V4z/O+BIfKcf6B34Ft5wA/wQ3rdOItRHB5FmTkCO/S9Z5vQlKng==
-X-Received: by 2002:adf:e346:: with SMTP id n6mr7240613wrj.234.1573211601794;
-        Fri, 08 Nov 2019 03:13:21 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id 11sm4575378wmi.8.2019.11.08.03.13.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 03:13:21 -0800 (PST)
-Date:   Fri, 8 Nov 2019 12:13:20 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     alex.williamson@redhat.com, davem@davemloft.net,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, saeedm@mellanox.com,
-        kwankhede@nvidia.com, leon@kernel.org, cohuck@redhat.com,
-        jiri@mellanox.com, linux-rdma@vger.kernel.org,
-        Vu Pham <vuhuong@mellanox.com>
-Subject: Re: [PATCH net-next 15/19] net/mlx5: Add load/unload routines for SF
- driver binding
-Message-ID: <20191108111320.GI6990@nanopsycho>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107160834.21087-1-parav@mellanox.com>
- <20191107160834.21087-15-parav@mellanox.com>
- <20191108094854.GC6990@nanopsycho>
+        id S1730690AbfKHLYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:24:45 -0500
+Received: from cloudserver094114.home.pl ([79.96.170.134]:48453 "EHLO
+        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfKHLYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 06:24:45 -0500
+Received: from 79.184.254.83.ipv4.supernova.orange.pl (79.184.254.83) (HELO kreacher.localnet)
+ by serwer1319399.home.pl (79.96.170.134) with SMTP (IdeaSmtpServer 0.83.292)
+ id c76056e31ef5e5d1; Fri, 8 Nov 2019 12:24:42 +0100
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Breno =?ISO-8859-1?Q?Leit=E3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        David@rox.of.borg, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Casey Leedom <leedom@chelsio.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Kevin Hilman <khilman@kernel.org>, Nishanth Menon <nm@ti.com>,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] power: avs: smartreflex: Remove superfluous cast in debugfs_create_file() call
+Date:   Fri, 08 Nov 2019 12:24:42 +0100
+Message-ID: <4367615.jSCgeRn5tF@kreacher>
+In-Reply-To: <20191021145149.31657-5-geert+renesas@glider.be>
+References: <20191021145149.31657-1-geert+renesas@glider.be> <20191021145149.31657-5-geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191108094854.GC6990@nanopsycho>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Nov 08, 2019 at 10:48:54AM CET, jiri@resnulli.us wrote:
->Thu, Nov 07, 2019 at 05:08:30PM CET, parav@mellanox.com wrote:
->>Add SF load/unload helper routines which will be used during
->>binding/unbinding a SF to mlx5_core driver as mediated device.
->>
->>Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
->>Signed-off-by: Vu Pham <vuhuong@mellanox.com>
->>Signed-off-by: Parav Pandit <parav@mellanox.com>
->>---
->> .../net/ethernet/mellanox/mlx5/core/main.c    | 11 ++-
->> .../ethernet/mellanox/mlx5/core/meddev/sf.c   | 67 +++++++++++++++++++
->
->Nit: Why not s/meddev/mdev/ ? I think that "mdev" is widely recognized term.
+On Monday, October 21, 2019 4:51:48 PM CET Geert Uytterhoeven wrote:
+> There is no need to cast a typed pointer to a void pointer when calling
+> a function that accepts the latter.  Remove it, as the cast prevents
+> further compiler checks.
+> 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-I take it back after grepping drivers/net/ethernet/mellanox/mlx5/core/
-for mdev :)
+Greg, have you taken this one by any chance?
 
->
->[...]
+> ---
+>  drivers/power/avs/smartreflex.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/power/avs/smartreflex.c b/drivers/power/avs/smartreflex.c
+> index 4684e7df833a81e9..5376f3d22f31eade 100644
+> --- a/drivers/power/avs/smartreflex.c
+> +++ b/drivers/power/avs/smartreflex.c
+> @@ -905,7 +905,7 @@ static int omap_sr_probe(struct platform_device *pdev)
+>  	sr_info->dbg_dir = debugfs_create_dir(sr_info->name, sr_dbg_dir);
+>  
+>  	debugfs_create_file("autocomp", S_IRUGO | S_IWUSR, sr_info->dbg_dir,
+> -			    (void *)sr_info, &pm_sr_fops);
+> +			    sr_info, &pm_sr_fops);
+>  	debugfs_create_x32("errweight", S_IRUGO, sr_info->dbg_dir,
+>  			   &sr_info->err_weight);
+>  	debugfs_create_x32("errmaxlimit", S_IRUGO, sr_info->dbg_dir,
+> 
+
+
+
+
