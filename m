@@ -2,291 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06F5BF3D83
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 02:42:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE40F3D7E
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 02:42:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728740AbfKHBmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 20:42:33 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:33082 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727070AbfKHBmd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 20:42:33 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id B28264AB00;
-        Fri,  8 Nov 2019 12:42:28 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from:received:received:received; s=mail_dkim; t=
-        1573177348; bh=jgAr5XuZGz6inhlcKIL3RPvRafEMh5xmUe3jtOV6+7A=; b=n
-        yFXQWa+IiB2QWRnEeKzIgPY7S4FyPw4xRN53710ApneNbCnUEgOkIwNEeNpDKFfA
-        H5xaUMBCUBtNzHJoIsLPTCwbM3AO+YBtKvqxVRQt+RyMnDT6rXB8h5NBEtwpCMSq
-        C9vDHHexq71R0kfPhIvsLV/8LejRSa2Z6gNofFYtG4=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 6s_9ibE9BKHp; Fri,  8 Nov 2019 12:42:28 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 984824AAF8;
-        Fri,  8 Nov 2019 12:42:28 +1100 (AEDT)
-Received: from localhost.localdomain (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 8ACBA4AB02;
-        Fri,  8 Nov 2019 12:42:27 +1100 (AEDT)
-From:   Tuong Lien <tuong.t.lien@dektech.com.au>
-To:     davem@davemloft.net, jon.maloy@ericsson.com, maloy@donjonn.com,
-        ying.xue@windriver.com, netdev@vger.kernel.org
-Cc:     tipc-discussion@lists.sourceforge.net
-Subject: [net-next 5/5] tipc: add support for AEAD key setting via netlink
-Date:   Fri,  8 Nov 2019 08:42:13 +0700
-Message-Id: <20191108014213.32219-6-tuong.t.lien@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
-In-Reply-To: <20191108014213.32219-1-tuong.t.lien@dektech.com.au>
-References: <20191108014213.32219-1-tuong.t.lien@dektech.com.au>
+        id S1728370AbfKHBmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 20:42:17 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:45801 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725930AbfKHBmR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 20:42:17 -0500
+Received: by mail-io1-f65.google.com with SMTP id v17so3481277iol.12
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 17:42:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nJ/qm2JOnzd8OdsNenDmUxwWka0qRwI2Fo+GHuvPjS4=;
+        b=Q32ivsx+Yk6Jl9sizGOxP9afLDjI42WGzM9UBG2CKUzndqu034WA6ZLz2VLSptgSas
+         nrXhOtitME5ZIA7CRn9iuL33GFisn8pRZk54UjmFRELq0zK6axA+n6ofHhfjBAR93qqR
+         8Rb1FliHrL7I3jamX3KY0D6kjT+nC9osOqFay2t263emSEUmNIKbqpaSNoKI8wdCNktA
+         hbZSIMBbCv9HU7WjXwxVJQxm4EDwNpIso62uaTAUy6u1LDJAagBKxn9TOtyZ4ZdROJNs
+         SIWXP7hKZBIYqhm0wjVZaZBM/nv5x4s+9jC/eNyS1/9+Rxo4fEnF6QcfP8x9OvAD2PKY
+         GAZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nJ/qm2JOnzd8OdsNenDmUxwWka0qRwI2Fo+GHuvPjS4=;
+        b=UmAH4h5CAcohqz2tObFm/3DCu0zgHDNE2BywSwa0Z5yyffK6kYP+RCShgfDsGTaikM
+         poP055AKSIG0C468O9GJ7vgOy7CtyWMyiQTmcalfkKA21YSKIhtZMJRyhOuyaXcyB+rp
+         htzLmea3S49AROIpd90nBVjIWpkUOpqUFXk6KgkPJrWazMNEvFZSJerYeLTYtu5KL6yH
+         y3mHjgqMGSpgxSR0n3mjjB0Kw0tGytw5Cv+PDMGDq52RhZ7653Q6xFgOJL71hp4jAjoC
+         vuQwzzEWL/2S/akgQvX4QqsyoAO4KIjIhpIPSvHglB8+y2m2tJkkESI+OlkOG9dxqyyB
+         4Lgg==
+X-Gm-Message-State: APjAAAUgCONrfPjKFj/PowQvweXmAvMx27je8G8GlbyBvsamdbAw5xdu
+        u5vtge4Fo+LOIftIB4cQZd6ehYmR
+X-Google-Smtp-Source: APXvYqwTg3g/RvGNA5XqCc05UNJq0dzIT+1LkfOpbIUqqoha6OKto3L0DURoGd6J39fM64jAAR4kig==
+X-Received: by 2002:a5e:a70e:: with SMTP id b14mr7532465iod.166.1573177336302;
+        Thu, 07 Nov 2019 17:42:16 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:48b9:89c9:cd6f:19d4])
+        by smtp.googlemail.com with ESMTPSA id a18sm359335ioo.11.2019.11.07.17.42.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Nov 2019 17:42:15 -0800 (PST)
+Subject: Re: [PATCH net-next] selftests: Add source route tests to fib_tests
+To:     David Miller <davem@davemloft.net>, dsahern@kernel.org
+Cc:     netdev@vger.kernel.org
+References: <20191107183232.4510-1-dsahern@kernel.org>
+ <20191107.161732.1974074514689745098.davem@davemloft.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <650f515a-88f2-f9c6-3167-920dd7f12f80@gmail.com>
+Date:   Thu, 7 Nov 2019 18:42:14 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.1
+MIME-Version: 1.0
+In-Reply-To: <20191107.161732.1974074514689745098.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds two netlink commands to TIPC in order for user to be
-able to set or remove AEAD keys:
-- TIPC_NL_KEY_SET
-- TIPC_NL_KEY_FLUSH
+On 11/7/19 5:17 PM, David Miller wrote:
+> Trailing whitespace which I fixed up.
 
-When the 'KEY_SET' is given along with the key data, the key will be
-initiated and attached to TIPC crypto. On the other hand, the
-'KEY_FLUSH' command will remove all existing keys if any.
-
-Acked-by: Ying Xue <ying.xue@windreiver.com>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
----
- include/uapi/linux/tipc_netlink.h |   4 ++
- net/tipc/netlink.c                |  18 ++++-
- net/tipc/node.c                   | 135 ++++++++++++++++++++++++++++++++++++++
- net/tipc/node.h                   |   4 ++
- 4 files changed, 160 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/tipc_netlink.h b/include/uapi/linux/tipc_netlink.h
-index efb958fd167d..6c2194ab745b 100644
---- a/include/uapi/linux/tipc_netlink.h
-+++ b/include/uapi/linux/tipc_netlink.h
-@@ -63,6 +63,8 @@ enum {
- 	TIPC_NL_PEER_REMOVE,
- 	TIPC_NL_BEARER_ADD,
- 	TIPC_NL_UDP_GET_REMOTEIP,
-+	TIPC_NL_KEY_SET,
-+	TIPC_NL_KEY_FLUSH,
- 
- 	__TIPC_NL_CMD_MAX,
- 	TIPC_NL_CMD_MAX = __TIPC_NL_CMD_MAX - 1
-@@ -160,6 +162,8 @@ enum {
- 	TIPC_NLA_NODE_UNSPEC,
- 	TIPC_NLA_NODE_ADDR,		/* u32 */
- 	TIPC_NLA_NODE_UP,		/* flag */
-+	TIPC_NLA_NODE_ID,		/* data */
-+	TIPC_NLA_NODE_KEY,		/* data */
- 
- 	__TIPC_NLA_NODE_MAX,
- 	TIPC_NLA_NODE_MAX = __TIPC_NLA_NODE_MAX - 1
-diff --git a/net/tipc/netlink.c b/net/tipc/netlink.c
-index d32bbd0f5e46..e53231bd23b4 100644
---- a/net/tipc/netlink.c
-+++ b/net/tipc/netlink.c
-@@ -102,7 +102,11 @@ const struct nla_policy tipc_nl_link_policy[TIPC_NLA_LINK_MAX + 1] = {
- const struct nla_policy tipc_nl_node_policy[TIPC_NLA_NODE_MAX + 1] = {
- 	[TIPC_NLA_NODE_UNSPEC]		= { .type = NLA_UNSPEC },
- 	[TIPC_NLA_NODE_ADDR]		= { .type = NLA_U32 },
--	[TIPC_NLA_NODE_UP]		= { .type = NLA_FLAG }
-+	[TIPC_NLA_NODE_UP]		= { .type = NLA_FLAG },
-+	[TIPC_NLA_NODE_ID]		= { .type = NLA_BINARY,
-+					    .len = TIPC_NODEID_LEN},
-+	[TIPC_NLA_NODE_KEY]		= { .type = NLA_BINARY,
-+					    .len = TIPC_AEAD_KEY_SIZE_MAX},
- };
- 
- /* Properties valid for media, bearer and link */
-@@ -257,6 +261,18 @@ static const struct genl_ops tipc_genl_v2_ops[] = {
- 		.dumpit	= tipc_udp_nl_dump_remoteip,
- 	},
- #endif
-+#ifdef CONFIG_TIPC_CRYPTO
-+	{
-+		.cmd	= TIPC_NL_KEY_SET,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= tipc_nl_node_set_key,
-+	},
-+	{
-+		.cmd	= TIPC_NL_KEY_FLUSH,
-+		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit	= tipc_nl_node_flush_key,
-+	},
-+#endif
- };
- 
- struct genl_family tipc_genl_family __ro_after_init = {
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 20f795f5cc21..81101ecc38bd 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -2760,6 +2760,141 @@ int tipc_nl_node_dump_monitor_peer(struct sk_buff *skb,
- 	return skb->len;
- }
- 
-+#ifdef CONFIG_TIPC_CRYPTO
-+static int tipc_nl_retrieve_key(struct nlattr **attrs,
-+				struct tipc_aead_key **key)
-+{
-+	struct nlattr *attr = attrs[TIPC_NLA_NODE_KEY];
-+
-+	if (!attr)
-+		return -ENODATA;
-+
-+	*key = (struct tipc_aead_key *)nla_data(attr);
-+	if (nla_len(attr) < tipc_aead_key_size(*key))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int tipc_nl_retrieve_nodeid(struct nlattr **attrs, u8 **node_id)
-+{
-+	struct nlattr *attr = attrs[TIPC_NLA_NODE_ID];
-+
-+	if (!attr)
-+		return -ENODATA;
-+
-+	if (nla_len(attr) < TIPC_NODEID_LEN)
-+		return -EINVAL;
-+
-+	*node_id = (u8 *)nla_data(attr);
-+	return 0;
-+}
-+
-+int __tipc_nl_node_set_key(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct nlattr *attrs[TIPC_NLA_NODE_MAX + 1];
-+	struct net *net = sock_net(skb->sk);
-+	struct tipc_net *tn = tipc_net(net);
-+	struct tipc_node *n = NULL;
-+	struct tipc_aead_key *ukey;
-+	struct tipc_crypto *c;
-+	u8 *id, *own_id;
-+	int rc = 0;
-+
-+	if (!info->attrs[TIPC_NLA_NODE])
-+		return -EINVAL;
-+
-+	rc = nla_parse_nested(attrs, TIPC_NLA_NODE_MAX,
-+			      info->attrs[TIPC_NLA_NODE],
-+			      tipc_nl_node_policy, info->extack);
-+	if (rc)
-+		goto exit;
-+
-+	own_id = tipc_own_id(net);
-+	if (!own_id) {
-+		rc = -EPERM;
-+		goto exit;
-+	}
-+
-+	rc = tipc_nl_retrieve_key(attrs, &ukey);
-+	if (rc)
-+		goto exit;
-+
-+	rc = tipc_aead_key_validate(ukey);
-+	if (rc)
-+		goto exit;
-+
-+	rc = tipc_nl_retrieve_nodeid(attrs, &id);
-+	switch (rc) {
-+	case -ENODATA:
-+		/* Cluster key mode */
-+		rc = tipc_crypto_key_init(tn->crypto_tx, ukey, CLUSTER_KEY);
-+		break;
-+	case 0:
-+		/* Per-node key mode */
-+		if (!memcmp(id, own_id, NODE_ID_LEN)) {
-+			c = tn->crypto_tx;
-+		} else {
-+			n = tipc_node_find_by_id(net, id) ?:
-+				tipc_node_create(net, 0, id, 0xffffu, 0, true);
-+			if (unlikely(!n)) {
-+				rc = -ENOMEM;
-+				break;
-+			}
-+			c = n->crypto_rx;
-+		}
-+
-+		rc = tipc_crypto_key_init(c, ukey, PER_NODE_KEY);
-+		if (n)
-+			tipc_node_put(n);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+exit:
-+	return (rc < 0) ? rc : 0;
-+}
-+
-+int tipc_nl_node_set_key(struct sk_buff *skb, struct genl_info *info)
-+{
-+	int err;
-+
-+	rtnl_lock();
-+	err = __tipc_nl_node_set_key(skb, info);
-+	rtnl_unlock();
-+
-+	return err;
-+}
-+
-+int __tipc_nl_node_flush_key(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct net *net = sock_net(skb->sk);
-+	struct tipc_net *tn = tipc_net(net);
-+	struct tipc_node *n;
-+
-+	tipc_crypto_key_flush(tn->crypto_tx);
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(n, &tn->node_list, list)
-+		tipc_crypto_key_flush(n->crypto_rx);
-+	rcu_read_unlock();
-+
-+	pr_info("All keys are flushed!\n");
-+	return 0;
-+}
-+
-+int tipc_nl_node_flush_key(struct sk_buff *skb, struct genl_info *info)
-+{
-+	int err;
-+
-+	rtnl_lock();
-+	err = __tipc_nl_node_flush_key(skb, info);
-+	rtnl_unlock();
-+
-+	return err;
-+}
-+#endif
-+
- /**
-  * tipc_node_dump - dump TIPC node data
-  * @n: tipc node to be dumped
-diff --git a/net/tipc/node.h b/net/tipc/node.h
-index 1a15cf82cb11..a6803b449a2c 100644
---- a/net/tipc/node.h
-+++ b/net/tipc/node.h
-@@ -119,5 +119,9 @@ int tipc_nl_node_get_monitor(struct sk_buff *skb, struct genl_info *info);
- int tipc_nl_node_dump_monitor(struct sk_buff *skb, struct netlink_callback *cb);
- int tipc_nl_node_dump_monitor_peer(struct sk_buff *skb,
- 				   struct netlink_callback *cb);
-+#ifdef CONFIG_TIPC_CRYPTO
-+int tipc_nl_node_set_key(struct sk_buff *skb, struct genl_info *info);
-+int tipc_nl_node_flush_key(struct sk_buff *skb, struct genl_info *info);
-+#endif
- void tipc_node_pre_cleanup_net(struct net *exit_net);
- #endif
--- 
-2.13.7
-
+oops. A new setup and I forgot to setup the pre-commit hook to run
+checkpatch. Will fix.
