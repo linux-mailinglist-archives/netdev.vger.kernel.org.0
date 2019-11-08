@@ -2,97 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2212FF5AD5
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 23:22:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B60B4F5AE8
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 23:31:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728633AbfKHWWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 17:22:02 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40069 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726095AbfKHWWB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 17:22:01 -0500
-Received: by mail-wr1-f68.google.com with SMTP id i10so8702380wrs.7
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 14:22:00 -0800 (PST)
+        id S1728080AbfKHWbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 17:31:06 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:32821 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726095AbfKHWbG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 17:31:06 -0500
+Received: by mail-pf1-f196.google.com with SMTP id c184so5764474pfb.0;
+        Fri, 08 Nov 2019 14:31:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=8VW7ZVBK+YAO0o+au+kCkhW3vuMonEY9Pz0PV59kQ9M=;
-        b=EPFj5K7m3kgY+SL+t0JFkLTLgYQAeulxLqEIg5eRb5T7qX3qAa80qeXWdEUxAm7zhm
-         vZBts0GQaUwrvGYhUawgUTrfucafvvg8PlbdZHgWg2TveRPtaNHmi2T00SkwGull10dC
-         Ll7TQ465703PWueYt66SBVDUyol/SXrYCerzK6hkbzMSBy3WfNt6OAuCkEzimiN8GhyM
-         OhXhLZUdEdeO4f/7dCgrVjMIt0RIfSSvZ4iW6O7sk+gGyDoFFKJT2yCJxgeZX/tHe8qw
-         IfcufsTbuMgH8jSq5AYQ3NY9eGR56eoC4L+61Ewv49qcRXqymqAkNXgHwZxjpxy87KSj
-         9gHw==
+        bh=Wu5ubnZYQLIP4fPqXNQ/8DGx/HEXQ/JJIGFSBZLMbVc=;
+        b=DdVvDJH+Z+0z01wrW959AIrvQL72PAHNB9Ocn6xoJ/f2c0b+W1Vkca6MJRugrJX67K
+         BJgQqXUHt/PA0frKRJkoVCPRRMjYjvnUZtVjd+l1MtD1imxgMqq6HPo5ewaZnkbr5rDj
+         PT4Kyk7RqhvRWzI1ey4Hj/LKpNcYxXOEwuAeUzAcM7rHmx8i1ue2QVwCd85Y7YkufYjk
+         X5/fMXCyw34xu06u20WAaW31vZPYif4eeKQDH9IbaOGqxyyNoQ+jXFxt3znAYtW2JmGX
+         vOSBXjU5KCj3AeohvAoujwCYLwEwhozqPFGgZy93htSYDUr2eZ47qe5dyegGx/9WXraO
+         g78g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8VW7ZVBK+YAO0o+au+kCkhW3vuMonEY9Pz0PV59kQ9M=;
-        b=A0qfpMLihV0Wt2863l/xoLgj/Cr3/OZb3xkSUItXKvADmHdhc7QBWFRRm3+rs++uFM
-         saHX0mUPAEzl56ZuFTYG9e8ZADvSMyQBVlGWELCvLYD3s7ULCzUTz2e70flNpxn4cdXD
-         f9KTQc06ATpiRh1Ss1rczI5j/oE+fysF1ykEl3J9HpHXSdInEWd2Ya3HyYhudq+XUNtj
-         LjavmhdIhROtzwosHPORaGp8BhOh06cr6xFE5lV/rVIjMN+rGQDH8y7sTWI+wYUVKy6c
-         a3+JnfrxzAWOo2ZxilPHacnWzIylsRVxIdWdW7as484mKutcprF5HIobbv4Fq1pOv4es
-         kTSw==
-X-Gm-Message-State: APjAAAXO8d3SKLXvoDDQpIoWTuWULaz0iLsXP8BA9ySUqVEAU5hPJS24
-        vOhlRVfSVaqq5aBYKRUFqndIbQ==
-X-Google-Smtp-Source: APXvYqwLJ+xHNTc7EgKLeKLvowLL4K8rqbIV8juqoxylgCJWLK/zh3ujQdys2rlCFM6QL95KPZWsVw==
-X-Received: by 2002:adf:ab4c:: with SMTP id r12mr10157594wrc.3.1573251720204;
-        Fri, 08 Nov 2019 14:22:00 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id p15sm5277565wmb.10.2019.11.08.14.21.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 14:21:59 -0800 (PST)
-Date:   Fri, 8 Nov 2019 23:21:59 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Parav Pandit <parav@mellanox.com>, alex.williamson@redhat.com,
-        davem@davemloft.net, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        saeedm@mellanox.com, kwankhede@nvidia.com, leon@kernel.org,
-        cohuck@redhat.com, jiri@mellanox.com, linux-rdma@vger.kernel.org,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191108222159.GA6990@nanopsycho>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107153234.0d735c1f@cakuba.netronome.com>
- <20191108121233.GJ6990@nanopsycho>
- <20191108110640.225b2724@cakuba>
- <20191108194118.GY6990@nanopsycho>
- <20191108132120.510d8b87@cakuba>
- <20191108213952.GZ6990@nanopsycho>
- <20191108135109.0c833847@cakuba>
+        bh=Wu5ubnZYQLIP4fPqXNQ/8DGx/HEXQ/JJIGFSBZLMbVc=;
+        b=jA5X0v7Rjg7M4pj6I6w7Wpf+dvlRSfLd/Vn2VX+LoWTaQLBNM+6ICYJEW1sAD/G2ot
+         A+g7Z7wu8F+pgncpfIIB0QFOQpJo9DJq2/1zPgZL3VCRYcgxZl2a0wNJ1qoLCmAMn6FM
+         fe5cMXxuBmFpcW/Xy3SldQGJdqYv2qxoSPFBTTxL4b9gGlqIhW0824VyeUKyBASelIEH
+         z99yHSVOey48URcRsJDO6v6HI2jkGlRYTGVS/wSCtWFfG28GKEMVsii+8ijSh2liJPhy
+         fSMG3Bfwu+l2aablVLXHk2mXMdS8IY1lQ86zwv9tunykIkGQ4N0xbIch6dnEjaMeQmpQ
+         AP4A==
+X-Gm-Message-State: APjAAAUD1BJuNEofTRsEU4an4nx/Ia8ctTU2E6pvm5RJJ1jb0SBduWIm
+        soFHpT9Zm4W3VhObfVBRyO4=
+X-Google-Smtp-Source: APXvYqznSnVLNyR5dWZDRhth8Ex1T07zuKOQiERUdAHrIVKh9vn+bZ1UOI/qFPoImmMfm9jbhrEPnQ==
+X-Received: by 2002:a63:6506:: with SMTP id z6mr14541726pgb.65.1573252263287;
+        Fri, 08 Nov 2019 14:31:03 -0800 (PST)
+Received: from gmail.com ([66.170.99.95])
+        by smtp.gmail.com with ESMTPSA id d8sm6605908pfo.47.2019.11.08.14.31.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 08 Nov 2019 14:31:02 -0800 (PST)
+Date:   Fri, 8 Nov 2019 14:31:01 -0800
+From:   William Tu <u9012063@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/5] libbpf: support XDP_SHARED_UMEM with
+ external XDP program
+Message-ID: <20191108223101.GA32043@gmail.com>
+References: <1573148860-30254-1-git-send-email-magnus.karlsson@intel.com>
+ <1573148860-30254-2-git-send-email-magnus.karlsson@intel.com>
+ <20191108180314.GA30004@gmail.com>
+ <CAJ8uoz0DJx0sbsAU1GyjZcX3JvcEq7QKFRM5sYrZ_ScAHgEE=A@mail.gmail.com>
+ <20191108184320.GC30004@gmail.com>
+ <CAJ8uoz3_N4JZZtJpWAsRBSLHv0tm4vtC4RT-r-USN0WhudMbig@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191108135109.0c833847@cakuba>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <CAJ8uoz3_N4JZZtJpWAsRBSLHv0tm4vtC4RT-r-USN0WhudMbig@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Nov 08, 2019 at 10:51:09PM CET, jakub.kicinski@netronome.com wrote:
->On Fri, 8 Nov 2019 22:39:52 +0100, Jiri Pirko wrote:
->> >> Please let me understand how your device is different.
->> >> Originally Parav didn't want to have mlx5 subfunctions as mdev. He
->> >> wanted to have them tight to the same pci device as the pf. No
->> >> difference from what you describe you want. However while we thought
->> >> about how to fit things in, how to handle na phys_port_name, how to see
->> >> things in sysfs we came up with an idea of a dedicated bus.  
->> >
->> >The difference is that there is naturally a main device and subslices
->> >with this new mlx5 code. In mlx4 or nfp all ports are equal and
->> >statically allocated when FW initializes based on port breakout.  
->> 
->> Ah, I see. I was missing the static part in nfp. Now I understand. It is
->> just an another "pf", but not real pf in the pci terminology, right?
->
->Ack, due to (real and perceived) HW limitations what should have been
->separate PFs got squished into a single big one.
->
->Biggest NFP chip has an insane (for a NIC) number Ethernet ports.
+On Fri, Nov 08, 2019 at 08:17:53PM +0100, Magnus Karlsson wrote:
+> On Fri, Nov 8, 2019 at 7:43 PM William Tu <u9012063@gmail.com> wrote:
+> >
+> > On Fri, Nov 08, 2019 at 07:19:18PM +0100, Magnus Karlsson wrote:
+> > > On Fri, Nov 8, 2019 at 7:03 PM William Tu <u9012063@gmail.com> wrote:
+> > > >
+> > > > Hi Magnus,
+> > > >
+> > > > Thanks for the patch.
+> > > >
+> > > > On Thu, Nov 07, 2019 at 06:47:36PM +0100, Magnus Karlsson wrote:
+> > > > > Add support in libbpf to create multiple sockets that share a single
+> > > > > umem. Note that an external XDP program need to be supplied that
+> > > > > routes the incoming traffic to the desired sockets. So you need to
+> > > > > supply the libbpf_flag XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD and load
+> > > > > your own XDP program.
+> > > > >
+> > > > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > > > > ---
+> > > > >  tools/lib/bpf/xsk.c | 27 +++++++++++++++++----------
+> > > > >  1 file changed, 17 insertions(+), 10 deletions(-)
+> > > > >
+> > > > > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > > > > index 86c1b61..8ebd810 100644
+> > > > > --- a/tools/lib/bpf/xsk.c
+> > > > > +++ b/tools/lib/bpf/xsk.c
+> > > > > @@ -586,15 +586,21 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+> > > > >       if (!umem || !xsk_ptr || !rx || !tx)
+> > > > >               return -EFAULT;
+> > > > >
+> > > > > -     if (umem->refcount) {
+> > > > > -             pr_warn("Error: shared umems not supported by libbpf.\n");
+> > > > > -             return -EBUSY;
+> > > > > -     }
+> > > > > -
+> > > > >       xsk = calloc(1, sizeof(*xsk));
+> > > > >       if (!xsk)
+> > > > >               return -ENOMEM;
+> > > > >
+> > > > > +     err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
+> > > > > +     if (err)
+> > > > > +             goto out_xsk_alloc;
+> > > > > +
+> > > > > +     if (umem->refcount &&
+> > > > > +         !(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+> > > > > +             pr_warn("Error: shared umems not supported by libbpf supplied XDP program.\n");
+> > > >
+> > > > Why can't we use the existing default one in libbpf?
+> > > > If users don't want to redistribute packet to different queue,
+> > > > then they can still use the libbpf default one.
+> > >
+> > > Is there any point in creating two or more sockets tied to the same
+> > > umem and directing all traffic to just one socket? IMHO, I believe
+> >
+> > When using build-in XDP, isn't the traffic being directed to its
+> > own xsk on its queue? (so not just one xsk socket)
+> >
+> > So using build-in XDP, for example, queue1/xsk1 and queue2/xsk2, and
+> > sharing one umem. Both xsk1 and xsk2 receive packets from their queue.
+> 
+> WIth the XDP_SHARED_UMEM flag this is not allowed. In your example,
+> queue1/xsk1 and queue1/xsk2 would be allowed. All sockets need to be
+> tied to the same queue id if they share a umem. In this case an XDP
+> program has to decide how to distribute the packets since they all
+> arrive on the same queue.
+> 
+> If you want queue1/xsk1 and queue2/xsk2 you need separate umems since
+> it would otherwise violate the SPSC requirement or the rings. Or
+> implement MPSC and SPMC queues to be used in this configuration.
+> 
+> > > that most users in this case would want to distribute the packets over
+> > > the sockets in some way. I also think that users might be unpleasantly
+> > > surprised if they create multiple sockets and all packets only get to
+> > > a single socket because libbpf loaded an XDP program that makes little
+> > > sense in the XDP_SHARED_UMEM case. If we force them to supply an XDP
+> >
+> > Do I misunderstand the code?
+> > I looked at xsk_setup_xdp_prog, xsk_load_xdp_prog, and xsk_set_bpf_maps.
+> > The build-in prog will distribute packets to different xsk sockets,
+> > not a single socket.
+> 
+> True, but only for the case above (queue1/xsk1 and queue2/xsk2) where
+> they have separate umems. For the queue1/xsk1 and queue1/xsk2 case, it
+> would send everything to xsk1.
+> 
+> /Magnus
 
-Okay. So we'll endup in having flavour "mdev" for the SFs that are
-spawned on fly by user and "sf" for the fixed one - that is your
-patchset if I recall correctly.
+Hi Magnus,
+
+Thanks for your explanation. Now I understand.
+
+William
+
