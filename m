@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 117DCF59EE
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 22:34:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83FB9F59F1
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 22:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732169AbfKHVdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 16:33:10 -0500
-Received: from mx1.redhat.com ([209.132.183.28]:35092 "EHLO mx1.redhat.com"
+        id S1732246AbfKHVdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 16:33:12 -0500
+Received: from mx1.redhat.com ([209.132.183.28]:35094 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726900AbfKHVdJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 16:33:09 -0500
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com [209.85.167.69])
+        id S1732137AbfKHVdL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 16:33:11 -0500
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com [209.85.167.72])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8299D4DB1F
-        for <netdev@vger.kernel.org>; Fri,  8 Nov 2019 21:33:09 +0000 (UTC)
-Received: by mail-lf1-f69.google.com with SMTP id x14so1543870lfq.15
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 13:33:09 -0800 (PST)
+        by mx1.redhat.com (Postfix) with ESMTPS id 395764DB1F
+        for <netdev@vger.kernel.org>; Fri,  8 Nov 2019 21:33:10 +0000 (UTC)
+Received: by mail-lf1-f72.google.com with SMTP id w24so1549116lfa.11
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 13:33:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=1DCfcPMRcQE3dnKy41Mo12+FWrfPcDfte0JBBQdKuN0=;
-        b=al2jMPqgIQcZtgQdMSN5hPGAKbL4klzIZAkNQgk/z5yQkyluxly4ghEPXybJv2SVZl
-         /tHUDwdk/+6Fb9ox/V6vYZmTCDxNIgYCPXWNVOwLLH1lDhOAqSZCf1Z6uwrq8Gn8meWq
-         bTz2D/88F6wLWh5HMytRzY3hWeoTEHUONLHoUOJOcTp83YB752xFICwso180RacXHYHK
-         GHupkMEwT6SehXNBSmYQHMV/YaQ68++ByLGEVPgrxv0Mv91Di5hL2Lmvm2ygfDCFDfu2
-         /JLMTLwwZ9p6aXRs5WrXGB4qJ42cJ2QCGHbIBir+n4SvMKsSoNtOwhhJg884QICDlucq
-         0lbQ==
-X-Gm-Message-State: APjAAAUaEcOLZNjcBGAkbJ+NQPDBGvwN/5TmarJATOLqAz7eRXn6F9OR
-        cbPXgDeTe3PcGPllMj4Xz+WZGCkYP96rOYqaGozeH6tnn5j3aQ7KAVwS4jpcA7YE5lhAygbgJnI
-        txfjV4SCUftLdCKga
-X-Received: by 2002:ac2:53b0:: with SMTP id j16mr864817lfh.187.1573248788086;
+        bh=coY7ll6zI9iYn6/3XVcHoVcsUowxThFI2UGP9S+O/jc=;
+        b=c+7O8cOf+Fev7Ao7zoPHNrgaUiEXeM6o1hm1bqTJF9ij3PUHNu8AP0axz1MzRGVd/J
+         Q8vDlMe6DeDrWJf9rnszWc055tE/8kk7zU54kE4KL8NGepg/r2Q1t4frlNA3m0cCWSPS
+         0a+HdEKYvbVxGuPjwyJZk5bmg1QMmkkDE0T3tVR4laE/CIrHiO4Bo2t4m0SpznqXmcCe
+         Et2p2dqz3XZOkc0n+USr8eCOWxk+acnlLunaDhXdMONp8RTS+xQt/vgm7UWFsFsgaAfO
+         ZW9vwHILh3qv3hHkTlC9iakDm5Wvy6/+K598Ikahp/2ydla7gBpjCMCY9zJKxO9Q6gpA
+         pSww==
+X-Gm-Message-State: APjAAAXUpof4F+Yd0X2uCEgOUr6tXeBvtY74yw+uiPFy26KOUDA6cYFw
+        RMBJEq7QDQd8o6UZBUksHSF4YGMa1tkeaAf16uza3aR4yeVz1eHd5feEcpXLcthbNJGCi34bzO7
+        cSzUe3FLrycYBW3N6
+X-Received: by 2002:ac2:51c5:: with SMTP id u5mr8174917lfm.154.1573248788775;
         Fri, 08 Nov 2019 13:33:08 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyBKajnrxB/C/5vx2Dim1kbcAJDwar/EJHcoIc5lMigwPb7LmYVBFm7ZvLXAigv6LmfQtKRrg==
-X-Received: by 2002:ac2:53b0:: with SMTP id j16mr864809lfh.187.1573248787927;
-        Fri, 08 Nov 2019 13:33:07 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id m28sm2935592ljc.96.2019.11.08.13.33.06
+X-Google-Smtp-Source: APXvYqzyvHDP0efgof/jZJ2h6EkcDKkWKmHCdHOUs+1eGf8DMuVoc4vo/yLq0eHMxx+YHrTB9wijNA==
+X-Received: by 2002:ac2:51c5:: with SMTP id u5mr8174901lfm.154.1573248788622;
+        Fri, 08 Nov 2019 13:33:08 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id c14sm2964566ljd.3.2019.11.08.13.33.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 13:33:07 -0800 (PST)
+        Fri, 08 Nov 2019 13:33:08 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 53ADF1800CB; Fri,  8 Nov 2019 22:33:06 +0100 (CET)
-Subject: [PATCH bpf-next v2 1/6] libbpf: Unpin auto-pinned maps if loading
- fails
+        id 7A7901800BD; Fri,  8 Nov 2019 22:33:07 +0100 (CET)
+Subject: [PATCH bpf-next v2 2/6] selftests/bpf: Add tests for automatic map
+ unpinning on load failure
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,8 +54,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Fri, 08 Nov 2019 22:33:06 +0100
-Message-ID: <157324878624.910124.5124587166846797199.stgit@toke.dk>
+Date:   Fri, 08 Nov 2019 22:33:07 +0100
+Message-ID: <157324878734.910124.13947548477668878554.stgit@toke.dk>
 In-Reply-To: <157324878503.910124.12936814523952521484.stgit@toke.dk>
 References: <157324878503.910124.12936814523952521484.stgit@toke.dk>
 User-Agent: StGit/0.21
@@ -69,80 +69,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Since the automatic map-pinning happens during load, it will leave pinned
-maps around if the load fails at a later stage. Fix this by unpinning any
-pinned maps on cleanup. To avoid unpinning pinned maps that were reused
-rather than newly pinned, add a new boolean property on struct bpf_map to
-keep track of whether that map was reused or not; and only unpin those maps
-that were not reused.
+This add tests for the different variations of automatic map unpinning on
+load failure.
 
-Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
-Acked-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- tools/lib/bpf/libbpf.c |   16 +++++++++++++---
- 1 file changed, 13 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/pinning.c |   20 +++++++++++++++++---
+ tools/testing/selftests/bpf/progs/test_pinning.c |    2 +-
+ 2 files changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index be4af95d5a2c..cea61b2ec9d3 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -229,6 +229,7 @@ struct bpf_map {
- 	enum libbpf_map_type libbpf_type;
- 	char *pin_path;
- 	bool pinned;
-+	bool was_reused;
- };
+diff --git a/tools/testing/selftests/bpf/prog_tests/pinning.c b/tools/testing/selftests/bpf/prog_tests/pinning.c
+index 525388971e08..041952524c55 100644
+--- a/tools/testing/selftests/bpf/prog_tests/pinning.c
++++ b/tools/testing/selftests/bpf/prog_tests/pinning.c
+@@ -163,12 +163,15 @@ void test_pinning(void)
+ 		goto out;
+ 	}
  
- struct bpf_secdata {
-@@ -1995,6 +1996,7 @@ int bpf_map__reuse_fd(struct bpf_map *map, int fd)
- 	map->def.map_flags = info.map_flags;
- 	map->btf_key_type_id = info.btf_key_type_id;
- 	map->btf_value_type_id = info.btf_value_type_id;
-+	map->was_reused = true;
+-	/* swap pin paths of the two maps */
++	/* set pin paths so that nopinmap2 will attempt to reuse the map at
++	 * pinpath (which will fail), but not before pinmap has already been
++	 * reused
++	 */
+ 	bpf_object__for_each_map(map, obj) {
+ 		if (!strcmp(bpf_map__name(map), "nopinmap"))
++			err = bpf_map__set_pin_path(map, nopinpath2);
++		else if (!strcmp(bpf_map__name(map), "nopinmap2"))
+ 			err = bpf_map__set_pin_path(map, pinpath);
+-		else if (!strcmp(bpf_map__name(map), "pinmap"))
+-			err = bpf_map__set_pin_path(map, NULL);
+ 		else
+ 			continue;
  
- 	return 0;
+@@ -181,6 +184,17 @@ void test_pinning(void)
+ 	if (CHECK(err != -EINVAL, "param mismatch load", "err %d errno %d\n", err, errno))
+ 		goto out;
  
-@@ -4007,15 +4009,18 @@ bpf_object__open_buffer(const void *obj_buf, size_t obj_buf_sz,
- 	return bpf_object__open_mem(obj_buf, obj_buf_sz, &opts);
- }
- 
--int bpf_object__unload(struct bpf_object *obj)
-+static int __bpf_object__unload(struct bpf_object *obj, bool unpin)
- {
- 	size_t i;
- 
- 	if (!obj)
- 		return -EINVAL;
- 
--	for (i = 0; i < obj->nr_maps; i++)
-+	for (i = 0; i < obj->nr_maps; i++) {
- 		zclose(obj->maps[i].fd);
-+		if (unpin && obj->maps[i].pinned && !obj->maps[i].was_reused)
-+			bpf_map__unpin(&obj->maps[i], NULL);
-+	}
- 
- 	for (i = 0; i < obj->nr_programs; i++)
- 		bpf_program__unload(&obj->programs[i]);
-@@ -4023,6 +4028,11 @@ int bpf_object__unload(struct bpf_object *obj)
- 	return 0;
- }
- 
-+int bpf_object__unload(struct bpf_object *obj)
-+{
-+	return __bpf_object__unload(obj, false);
-+}
++	/* nopinmap2 should have been pinned and cleaned up again */
++	err = stat(nopinpath2, &statbuf);
++	if (CHECK(!err || errno != ENOENT, "stat nopinpath2",
++		  "err %d errno %d\n", err, errno))
++		goto out;
 +
- int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
- {
- 	struct bpf_object *obj;
-@@ -4047,7 +4057,7 @@ int bpf_object__load_xattr(struct bpf_object_load_attr *attr)
++	/* pinmap should still be there */
++	err = stat(pinpath, &statbuf);
++	if (CHECK(err, "stat pinpath", "err %d errno %d\n", err, errno))
++		goto out;
++
+ 	bpf_object__close(obj);
  
- 	return 0;
- out:
--	bpf_object__unload(obj);
-+	__bpf_object__unload(obj, true);
- 	pr_warn("failed to load object '%s'\n", obj->path);
- 	return err;
- }
+ 	/* test auto-pinning at custom path with open opt */
+diff --git a/tools/testing/selftests/bpf/progs/test_pinning.c b/tools/testing/selftests/bpf/progs/test_pinning.c
+index f69a4a50d056..f20e7e00373f 100644
+--- a/tools/testing/selftests/bpf/progs/test_pinning.c
++++ b/tools/testing/selftests/bpf/progs/test_pinning.c
+@@ -21,7 +21,7 @@ struct {
+ } nopinmap SEC(".maps");
+ 
+ struct {
+-	__uint(type, BPF_MAP_TYPE_ARRAY);
++	__uint(type, BPF_MAP_TYPE_HASH);
+ 	__uint(max_entries, 1);
+ 	__type(key, __u32);
+ 	__type(value, __u64);
 
