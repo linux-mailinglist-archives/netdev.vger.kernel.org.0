@@ -2,85 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92CAFF4570
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB57AF4577
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:13:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbfKHLKk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:10:40 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:27506 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730614AbfKHLKk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 06:10:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573211439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3nYT87qwUirFN/Bs+GrE3cX/9b5VoxR9UXPdSVM6IKE=;
-        b=e8hfq0MN5zF2EllYDX5y8Lxw6aO5e0YQ5uHPQjNwGkuTwjjcQzo6YdLETK7mHaHIvUx1Ys
-        5iXfFVoG9feL5a/KZIFA6e/7fhRYf5Zj3ko1J1i0OawUEvpYNP3E4s9X+zx/5nQun1cs74
-        66cCBvYS1Qg2pdEeCLLrMDOg+UjF1tE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-63-eir2viv0OcmvHDnBioCDyQ-1; Fri, 08 Nov 2019 06:10:37 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8CED11800D7B;
-        Fri,  8 Nov 2019 11:10:35 +0000 (UTC)
-Received: from gondolin (dhcp-192-218.str.redhat.com [10.33.192.218])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EEF625DA7F;
-        Fri,  8 Nov 2019 11:10:32 +0000 (UTC)
-Date:   Fri, 8 Nov 2019 12:10:30 +0100
-From:   Cornelia Huck <cohuck@redhat.com>
+        id S1727459AbfKHLNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:13:24 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36245 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfKHLNY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 06:13:24 -0500
+Received: by mail-wr1-f68.google.com with SMTP id r10so6608102wrx.3
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 03:13:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=K+Eo0glUzjalQHt6xvHUxzQrB7u3vMyGwdCkPxcCzJY=;
+        b=u7QLJGpnAhW16VTXD/Gmf8wGHRwCNuydIXbhIRkLruxGqEccaxt4cGg+fjCalmVcOH
+         36Vd0JvzO7da+wUXNT3V7+HSK1Ak9QtB8AuiV3bPkf3ku/uVPT+oloU5+jUGD2S2+/P4
+         d45RFmwEibq89tq5v02AUDRgfiUy6X0543v0SOq7NsDMKInckdUU+l0VJ7nBrLE8Z0vI
+         sNOBy5SfOQ1d6nS9qVKJu5WyGhqxC0uNvi5MMfN1SfJAYUg3rdUO+dLzD/O2DhtpCIzB
+         o6Xq6h3x0FdW3fKMLJxO4io6+EZL4HhQkBOOWSHmxWC9IjclTTL88meL/fwkc95abNHq
+         QkZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=K+Eo0glUzjalQHt6xvHUxzQrB7u3vMyGwdCkPxcCzJY=;
+        b=IN7B4ev2NvdkaWbCcW38sqD3D/EgUk5kUPAetVm77Prouot6kxQJdLy/MX6m3bg/Tj
+         Zqt8SnHCvDkVJrdgl7h5b74s3jm9SpH6yxbyKroXRJvrgXtXsytMh3xCsU5nyRp8HQMW
+         edAIKS4AZy7krrI3IXOC47P3PDnwlvOt3wIvVRv7u4rcBwvMBi8oCJ+nKb5BJvGjxDuY
+         n8zdNVXpHtK+5fWci1Ehhg3ZFGELpJ+uVyYLLeE5aq3NKf1/NgeFxiJUEvRjE0CvlW8T
+         e0Zs7KQeIPTnG2iq9Nhi+rEcyX8zQnvIufNfvrt5iyX6NewQ/4cnvQ3+3nhEumvKDVao
+         NItw==
+X-Gm-Message-State: APjAAAXpdJkrwkKihPMit45jMMBX4w0c/lt6Dj9udMYwyQvVDY6186kK
+        fitp4tssmPzY4pX99wQfGu3oeQ==
+X-Google-Smtp-Source: APXvYqwnP2QDmQBcfmJLh3FRIv+V4z/O+BIfKcf6B34Ft5wA/wQ3rdOItRHB5FmTkCO/S9Z5vQlKng==
+X-Received: by 2002:adf:e346:: with SMTP id n6mr7240613wrj.234.1573211601794;
+        Fri, 08 Nov 2019 03:13:21 -0800 (PST)
+Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
+        by smtp.gmail.com with ESMTPSA id 11sm4575378wmi.8.2019.11.08.03.13.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Nov 2019 03:13:21 -0800 (PST)
+Date:   Fri, 8 Nov 2019 12:13:20 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
 To:     Parav Pandit <parav@mellanox.com>
 Cc:     alex.williamson@redhat.com, davem@davemloft.net,
         kvm@vger.kernel.org, netdev@vger.kernel.org, saeedm@mellanox.com,
-        kwankhede@nvidia.com, leon@kernel.org, jiri@mellanox.com,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 07/19] vfio/mdev: Introduce sha1 based mdev
- alias
-Message-ID: <20191108121030.5466dd3e.cohuck@redhat.com>
-In-Reply-To: <20191107160834.21087-7-parav@mellanox.com>
+        kwankhede@nvidia.com, leon@kernel.org, cohuck@redhat.com,
+        jiri@mellanox.com, linux-rdma@vger.kernel.org,
+        Vu Pham <vuhuong@mellanox.com>
+Subject: Re: [PATCH net-next 15/19] net/mlx5: Add load/unload routines for SF
+ driver binding
+Message-ID: <20191108111320.GI6990@nanopsycho>
 References: <20191107160448.20962-1-parav@mellanox.com>
-        <20191107160834.21087-1-parav@mellanox.com>
-        <20191107160834.21087-7-parav@mellanox.com>
-Organization: Red Hat GmbH
+ <20191107160834.21087-1-parav@mellanox.com>
+ <20191107160834.21087-15-parav@mellanox.com>
+ <20191108094854.GC6990@nanopsycho>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: eir2viv0OcmvHDnBioCDyQ-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191108094854.GC6990@nanopsycho>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  7 Nov 2019 10:08:22 -0600
-Parav Pandit <parav@mellanox.com> wrote:
+Fri, Nov 08, 2019 at 10:48:54AM CET, jiri@resnulli.us wrote:
+>Thu, Nov 07, 2019 at 05:08:30PM CET, parav@mellanox.com wrote:
+>>Add SF load/unload helper routines which will be used during
+>>binding/unbinding a SF to mlx5_core driver as mediated device.
+>>
+>>Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+>>Signed-off-by: Vu Pham <vuhuong@mellanox.com>
+>>Signed-off-by: Parav Pandit <parav@mellanox.com>
+>>---
+>> .../net/ethernet/mellanox/mlx5/core/main.c    | 11 ++-
+>> .../ethernet/mellanox/mlx5/core/meddev/sf.c   | 67 +++++++++++++++++++
+>
+>Nit: Why not s/meddev/mdev/ ? I think that "mdev" is widely recognized term.
 
-> Some vendor drivers want an identifier for an mdev device that is
-> shorter than the UUID, due to length restrictions in the consumers of
-> that identifier.
->=20
-> Add a callback that allows a vendor driver to request an alias of a
-> specified length to be generated for an mdev device. If generated,
-> that alias is checked for collisions.
->=20
-> It is an optional attribute.
-> mdev alias is generated using sha1 from the mdev name.
->=20
-> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
-> Signed-off-by: Parav Pandit <parav@mellanox.com>
-> ---
->  drivers/vfio/mdev/mdev_core.c    | 123 ++++++++++++++++++++++++++++++-
->  drivers/vfio/mdev/mdev_private.h |   5 +-
->  drivers/vfio/mdev/mdev_sysfs.c   |  13 ++--
->  include/linux/mdev.h             |   4 +
->  4 files changed, 135 insertions(+), 10 deletions(-)
+I take it back after grepping drivers/net/ethernet/mellanox/mlx5/core/
+for mdev :)
 
-Is this (or any of the other mdev alias patches) different from what I
-reviewed in the past?
-
+>
+>[...]
