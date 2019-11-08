@@ -2,182 +2,254 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E56ADF58C1
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:43:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C5D7F58C4
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:43:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731335AbfKHUky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 15:40:54 -0500
-Received: from mail-eopbgr140089.outbound.protection.outlook.com ([40.107.14.89]:57314
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728371AbfKHUkx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 15:40:53 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lFPZfOpDBhxi96B8TvaABixBNR10zATb7ZfICBq1EPTXDzantcy1NaFKeYzHI5ODfspbYPeLtP0a63IpmBQgYjpX0jLpvyeKQMTcTT9JySC3MY3csRI5r9w4CrEhwRxf1SsoNhkqT8IGPpPyROVmtV9NWhsxeHFBiFjTNP5gljDTNYoVZkYZx74JIszZNJP/3aamInM/h+SovBsZSPNx2zp/T4/4JrOyhEjDDOB+4sf5lFGYSHdQC7WRJ96lbDngP4mB1gfsVkvbNJaUaXejdXC7p/Se2sBqwvmjfZm3cKeG00thpr0UJdLVVY5yJvobFs+CGzaLyNfwYiUqbb6tDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rqMkVco1mioqpQUzo/SqdWaL1ban0D2VCEXu/RdRlu0=;
- b=TSPFu37MO50bC3diwtN/e0f/PJ4D0IZdAPLIxJ+iInrZ4sVVQE8aJa4STPFY8Zk1rDZy9AAZCJ9J0jxI7tn95aXov8q9VBaJtKDZsHbgvFtz3s4ySU6EMQjANR1YI14b3lI6lvnHQI7hglj80vSTyciTZyYN/jIDjGq6FiroM9zmzAeZe5dQs4aVYiEwzVvXaAyVETg5E+mnACtJCWViBIrAj1PX2NHnmd2wekB+taYa4sqE+klqUOK9NILXADybaeiZJ6RUpgr/tUKyfsgXYNRdAUB/NeGO0g9RayZTupjOyoo3IdkzM/Y8aEGtsZuD23uorslLdBgqsF6knQ+klA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rqMkVco1mioqpQUzo/SqdWaL1ban0D2VCEXu/RdRlu0=;
- b=SCoTcvs2ub9V/MhPMGA7FQ9ePjjBOBVjT/9UfjQ/0wOYEtmVTzieVbm84LhsDGvLZluWf6saYsuGgrDCSejZOoM4/j3gtqtz5G6pXDOvAKfRKUOsFoMgzJgy0YHmkOzfMtgWPejB4B82gtypWHwSKGx3xr7hc1A181Ly3rYSLco=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6273.eurprd05.prod.outlook.com (20.179.35.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Fri, 8 Nov 2019 20:40:46 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 20:40:46 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: RE: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Thread-Topic: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Thread-Index: AQHVlYUoVUzzBv4k4UmQHUerp08scaeAKe4AgAEGoYCAAHO0AIAACa0AgAADgBA=
-Date:   Fri, 8 Nov 2019 20:40:46 +0000
-Message-ID: <AM0PR05MB48666B8475EF12809FE31059D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107153234.0d735c1f@cakuba.netronome.com>
- <20191108121233.GJ6990@nanopsycho> <20191108110640.225b2724@cakuba>
- <20191108194118.GY6990@nanopsycho>
-In-Reply-To: <20191108194118.GY6990@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [208.176.44.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 42f2b5e1-7b0d-4943-c2ec-08d7648bee9c
-x-ms-traffictypediagnostic: AM0PR05MB6273:|AM0PR05MB6273:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB627344F51F0FEC3F286D04D3D17B0@AM0PR05MB6273.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(366004)(396003)(346002)(189003)(199004)(13464003)(102836004)(11346002)(7696005)(71200400001)(486006)(71190400001)(6246003)(14454004)(110136005)(4326008)(478600001)(52536014)(256004)(66946007)(76116006)(66476007)(66556008)(64756008)(66446008)(86362001)(5660300002)(316002)(25786009)(55016002)(33656002)(6116002)(6506007)(229853002)(3846002)(8936002)(186003)(6436002)(81156014)(26005)(8676002)(446003)(7416002)(14444005)(74316002)(2906002)(76176011)(305945005)(99286004)(7736002)(9686003)(66066001)(81166006)(476003)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6273;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DgNL+uryIDjbii/XBxQCZV2SJI7+KT3ZPKhHpkKe3AY4mP4SVfdQCFTO0SbDkLVaZvbH2ts53UN8hgFX3BQr+PjhKAP+AR2g0AZHztGw2BOTyF4odWwFhNsgPYkN/pK3yJ2Xuag/u4GC6ey3YrWhwYlyy1MVju0Ztq25As63FC4b2iP6AnDNsUrZveTpRiBxOVxUP2e04KEKvTpHpVdTcwNUB2LSpuxFuHOlIX7cnGXdl1zqJYQsOe4bjpo3p5awgymHepEUCCvwGTTE0WQbxnBVHbVmeZnxKKQjayy8m1mQPNBRQD+Wdn0JrBqLcHSPOmNRT5uZGwuDoa6N2FEd0WbWjMVahPMCWx5LdA1SG2BcRt5HuLoMhptd7ZHDRpZZAECg6bZ9/qxRGLYwGwDQzzK8GSTM5DIVnkltnMevAsw22tGzyR2Um2XIG/k76dn7
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1730951AbfKHUmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 15:42:47 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:38621 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726231AbfKHUmq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 15:42:46 -0500
+Received: by mail-wr1-f65.google.com with SMTP id i12so1573220wro.5
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 12:42:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JwoUIytky8KFIplKABVcprVJbi9zb2oLasBKQHogq0c=;
+        b=TpjSw3l199//gLyh9wmCtxqYwen/sH3AcyUaMI2zgx7/zVyCzYpkS2dZKf6Pe6WnRh
+         HYGXkWRSvXP07ufGCtayPES/9uQmbjck0HyGZlflwE2/XZGWh8zd+UKMwn2autydrePs
+         9A76YdhfUVtJnbEqdb7eIpS+CL7qphB7GqheWYtGtmtA8K/NwUUwCa8mHE6467epv5AY
+         ADtnVmh1KeOE9Wg9NMjcJkI1md3C8o4dGgE93HfPwUdTBaT/IkS+C4iQF7VtxojQhxCH
+         WuufS+6Wo+2sBig+vvO/LMUNYGhfcd8NpYRkvV/cyY3Izg1+aVV+XltSAgWRxMdZxDi1
+         jQ/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JwoUIytky8KFIplKABVcprVJbi9zb2oLasBKQHogq0c=;
+        b=N01urIn2D+JyxIDn0Lj5HYmTIz5k4wU07xhvzGiM2CqS/0zdxt/zmCxeYX+YUCTPiy
+         uF6Tn4j+tNeKLVTZlzs4QYvNRevkNgIWEmTwMJAwMlzwE3Vv4bQL4byu+LmZVz0wqEl9
+         /66wnFbxI7rtyaS5Gd6MdPYuJgfoBHvrznaMdNRjcwBboAkEPYxcQ9uoTEEQ6chBklnT
+         Ce9A0BJTMDAaKkGoIC2miEpV+bND0i/OZDHwj/zbznYymdEan5sKlfw3FE+qYS+WNn6/
+         /64FbcNdZBDZvG1stmiEkU0shDw34VXRenIu0htE6LLHjVnBwYLwW/sVb2ffwjyQNV/9
+         agog==
+X-Gm-Message-State: APjAAAV+FRUhVF+dBRBRAOpbR20UxqUZX2Q2RbBmBBR38oiNgUvg5/aa
+        m+4TJ6q8MAZxlmetaDLHG7pCLM6MFmo=
+X-Google-Smtp-Source: APXvYqwbrciqbTIyHHRQWMX8UKG828CYCkEmHn2wjLSi1xe16J9/zd0fijwR6O9hUeGbcP9byFrlww==
+X-Received: by 2002:adf:efcb:: with SMTP id i11mr10100674wrp.229.1573245764268;
+        Fri, 08 Nov 2019 12:42:44 -0800 (PST)
+Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
+        by smtp.gmail.com with ESMTPSA id z6sm8338116wro.18.2019.11.08.12.42.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Nov 2019 12:42:43 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        idosch@mellanox.com, mlxsw@mellanox.com
+Subject: [patch net-next] devlink: disallow reload operation during device cleanup
+Date:   Fri,  8 Nov 2019 21:42:43 +0100
+Message-Id: <20191108204243.7241-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42f2b5e1-7b0d-4943-c2ec-08d7648bee9c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 20:40:46.1068
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nam1WP/EN9YIw9x9GjFHt4NTWuIUJhgi2UMKN5aRpMTdiyNvkIPx6urxxa9KCQv9DwU8SDejbmKmBO+oe7enFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6273
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiri Pirko <jiri@mellanox.com>
 
+There is a race between driver code that does setup/cleanup of device
+and devlink reload operation that in some drivers works with the same
+code. Use after free could we easily obtained by running:
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
->=20
-> Fri, Nov 08, 2019 at 08:06:40PM CET, jakub.kicinski@netronome.com wrote:
-> >On Fri, 8 Nov 2019 13:12:33 +0100, Jiri Pirko wrote:
-> >> Thu, Nov 07, 2019 at 09:32:34PM CET, jakub.kicinski@netronome.com
-> wrote:
-> >> >On Thu,  7 Nov 2019 10:04:48 -0600, Parav Pandit wrote:
-> >> >> Mellanox sub function capability allows users to create several
-> >> >> hundreds of networking and/or rdma devices without depending on PCI
-> SR-IOV support.
-> >> >
-> >> >You call the new port type "sub function" but the devlink port
-> >> >flavour is mdev.
-> >> >
-> >> >As I'm sure you remember you nacked my patches exposing NFP's PCI
-> >> >sub functions which are just regions of the BAR without any mdev
-> >> >capability. Am I in the clear to repost those now? Jiri?
-> >>
-> >> Well question is, if it makes sense to have SFs without having them
-> >> as mdev? I mean, we discussed the modelling thoroughtly and
-> >> eventually we realized that in order to model this correctly, we need =
-SFs on
-> "a bus".
-> >> Originally we were thinking about custom bus, but mdev is already
-> >> there to handle this.
-> >
-> >But the "main/real" port is not a mdev in your case. NFP is like mlx4.
-> >It has one PCI PF for multiple ports.
->=20
-> I don't see how relevant the number of PFs-vs-uplink_ports is.
->=20
->=20
-> >
-> >> Our SFs are also just regions of the BAR, same thing as you have.
-> >>
-> >> Can't you do the same for nfp SFs?
-> >> Then the "mdev" flavour is enough for all.
-> >
-> >Absolutely not.
-> >
-> >Why not make the main device of mlx5 a mdev, too, if that's acceptable.
-> >There's (a) long precedence for multiple ports on one PCI PF in
-> >networking devices, (b) plenty deployed software which depend on the
-> >main devices hanging off the PCI PF directly.
-> >
-> >The point of mdevs is being able to sign them to VFs or run DPDK on
-> >them (map to user space).
-> >
-> >For normal devices existing sysfs hierarchy were one device has
-> >multiple children of a certain class, without a bus and a separate
-> >driver is perfectly fine. Do you think we should also slice all serial
-> >chips into mdevs if they have multiple lines.
-> >
-> >Exactly as I predicted much confusion about what's being achieved here,
-> >heh :)
->=20
-> Please let me understand how your device is different.
-> Originally Parav didn't want to have mlx5 subfunctions as mdev. He wanted=
- to
-> have them tight to the same pci device as the pf. No difference from what=
- you
-> describe you want.
-> However while we thought about how to fit things in, how to
-> handle na phys_port_name, how to see things in sysfs we came up with an i=
-dea
-> of a dedicated bus. We took it upstream and people suggested to use mdev =
-bus
-> for this.
->=20
-You are right. We considered multiple ports approach, followed by subdevice=
-s and mfd.
-Around that time mdev was being proposed that can address current and futur=
-e VM/userspace usecases using one way to lifecycle the devices.
+while true; do
+        echo 10 > /sys/bus/netdevsim/new_device
+        devlink dev reload netdevsim/netdevsim10 &
+        echo 10 > /sys/bus/netdevsim/del_device
+done
 
-> Parav, please correct me if I'm wrong but I don't think where is a plan t=
-o push
-> SFs into VM or to userspace as Jakub expects, right?
-With this series - certainly not.
-In future, if mdev to be used by via vfio/VM framework, why should we preve=
-nt it (ofcourse after implementing necessary isolation method)?
+Fix this by enabling reload only after setup of device is complete and
+disabling it at the beginning of the cleanup process.
+
+Reported-by: Ido Schimmel <idosch@mellanox.com>
+Fixes: 2d8dc5bbf4e7 ("devlink: Add support for reload")
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/main.c  |  3 ++
+ drivers/net/ethernet/mellanox/mlxsw/core.c |  6 +++-
+ drivers/net/netdevsim/dev.c                |  3 ++
+ include/net/devlink.h                      |  7 ++--
+ net/core/devlink.c                         | 42 +++++++++++++++++++++-
+ 5 files changed, 57 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
+index 22c72fb7206a..77f056b0895e 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/main.c
++++ b/drivers/net/ethernet/mellanox/mlx4/main.c
+@@ -4015,6 +4015,7 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err_params_unregister;
+ 
+ 	devlink_params_publish(devlink);
++	devlink_reload_enable(devlink);
+ 	pci_save_state(pdev);
+ 	return 0;
+ 
+@@ -4126,6 +4127,8 @@ static void mlx4_remove_one(struct pci_dev *pdev)
+ 	struct devlink *devlink = priv_to_devlink(priv);
+ 	int active_vfs = 0;
+ 
++	devlink_reload_disable(devlink);
++
+ 	if (mlx4_is_slave(dev))
+ 		persist->interface_state |= MLX4_INTERFACE_STATE_NOWAIT;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index e1a90f5bddd0..da436a6aad2f 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1198,8 +1198,10 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
+ 	if (err)
+ 		goto err_thermal_init;
+ 
+-	if (mlxsw_driver->params_register)
++	if (mlxsw_driver->params_register) {
+ 		devlink_params_publish(devlink);
++		devlink_reload_enable(devlink);
++	}
+ 
+ 	return 0;
+ 
+@@ -1263,6 +1265,8 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
+ {
+ 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
+ 
++	if (!reload)
++		devlink_reload_disable(devlink);
+ 	if (devlink_is_reload_failed(devlink)) {
+ 		if (!reload)
+ 			/* Only the parts that were not de-initialized in the
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 3da96c7e8265..059711edfc61 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -820,6 +820,7 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
+ 		goto err_bpf_dev_exit;
+ 
+ 	devlink_params_publish(devlink);
++	devlink_reload_enable(devlink);
+ 	return 0;
+ 
+ err_bpf_dev_exit:
+@@ -865,6 +866,8 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
+ 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
+ 	struct devlink *devlink = priv_to_devlink(nsim_dev);
+ 
++	devlink_reload_disable(devlink);
++
+ 	nsim_dev_reload_destroy(nsim_dev);
+ 
+ 	nsim_bpf_dev_exit(nsim_dev);
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 8d6b5846822c..7891611868e4 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -38,8 +38,9 @@ struct devlink {
+ 	struct device *dev;
+ 	possible_net_t _net;
+ 	struct mutex lock;
+-	bool reload_failed;
+-	bool registered;
++	u8 reload_failed:1,
++	   reload_enabled:1,
++	   registered:1;
+ 	char priv[0] __aligned(NETDEV_ALIGN);
+ };
+ 
+@@ -824,6 +825,8 @@ void devlink_net_set(struct devlink *devlink, struct net *net);
+ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size);
+ int devlink_register(struct devlink *devlink, struct device *dev);
+ void devlink_unregister(struct devlink *devlink);
++void devlink_reload_enable(struct devlink *devlink);
++void devlink_reload_disable(struct devlink *devlink);
+ void devlink_free(struct devlink *devlink);
+ int devlink_port_register(struct devlink *devlink,
+ 			  struct devlink_port *devlink_port,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index ff53f7d29dea..2e027c9436e0 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -2791,6 +2791,9 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
+ {
+ 	int err;
+ 
++	if (!devlink->reload_enabled)
++		return -EOPNOTSUPP;
++
+ 	err = devlink->ops->reload_down(devlink, !!dest_net, extack);
+ 	if (err)
+ 		return err;
+@@ -6308,12 +6311,49 @@ EXPORT_SYMBOL_GPL(devlink_register);
+ void devlink_unregister(struct devlink *devlink)
+ {
+ 	mutex_lock(&devlink_mutex);
++	WARN_ON(devlink_reload_supported(devlink) &&
++		devlink->reload_enabled);
+ 	devlink_notify(devlink, DEVLINK_CMD_DEL);
+ 	list_del(&devlink->list);
+ 	mutex_unlock(&devlink_mutex);
+ }
+ EXPORT_SYMBOL_GPL(devlink_unregister);
+ 
++/**
++ *	devlink_reload_enable - Enable reload of devlink instance
++ *
++ *	@devlink: devlink
++ *
++ *	Should be called at end of device initialization
++ *	process when reload operation is supported.
++ */
++void devlink_reload_enable(struct devlink *devlink)
++{
++	mutex_lock(&devlink_mutex);
++	devlink->reload_enabled = true;
++	mutex_unlock(&devlink_mutex);
++}
++EXPORT_SYMBOL_GPL(devlink_reload_enable);
++
++/**
++ *	devlink_reload_disable - Disable reload of devlink instance
++ *
++ *	@devlink: devlink
++ *
++ *	Should be called at the beginning of device cleanup
++ *	process when reload operation is supported.
++ */
++void devlink_reload_disable(struct devlink *devlink)
++{
++	mutex_lock(&devlink_mutex);
++	/* Mutex is taken which ensures that no reload operation is in
++	 * progress while setting up forbidded flag.
++	 */
++	devlink->reload_enabled = false;
++	mutex_unlock(&devlink_mutex);
++}
++EXPORT_SYMBOL_GPL(devlink_reload_disable);
++
+ /**
+  *	devlink_free - Free devlink instance resources
+  *
+@@ -8201,7 +8241,7 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
+ 			if (WARN_ON(!devlink_reload_supported(devlink)))
+ 				continue;
+ 			err = devlink_reload(devlink, &init_net, NULL);
+-			if (err)
++			if (err && err != -EOPNOTSUPP)
+ 				pr_warn("Failed to reload devlink instance into init_net\n");
+ 		}
+ 	}
+-- 
+2.21.0
 
