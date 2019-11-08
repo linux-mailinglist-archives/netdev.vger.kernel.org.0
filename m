@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36724F47CB
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:53:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECCFCF47BC
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:52:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390819AbfKHLww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:52:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35102 "EHLO mail.kernel.org"
+        id S2391512AbfKHLwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:52:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403799AbfKHLq7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:46:59 -0500
+        id S2391486AbfKHLrJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:47:09 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E9FE9218AE;
-        Fri,  8 Nov 2019 11:46:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B461222C5;
+        Fri,  8 Nov 2019 11:47:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213618;
-        bh=ON1L6FHRZCSgyfc+YX7cNsYgDakQmYbouwjMn0KnQBE=;
+        s=default; t=1573213629;
+        bh=k4tdz4yFHELGQ9BeDxGxiBnlgXv0f9QXUrKImfwLVYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CRnwpEht6byJvfdDH/NiC9BbKN16tUy042TS5yiR+BjCWeoIY8XZ/rRjrGzupZ2ip
-         QDEkkxLF79+y6IVUWL5UToJWG8MH1rXbI6Vsuvrvz3lUah8GbedU+UbC0wDi4qMK9b
-         GPSlAzp7fAXcEYnQbxN4VKCiDEePsKw6S3oqV3GA=
+        b=iNMzdKjdjtSDfeUtW+tbC0CxNzl9y+Gwaxkh9OTfPORwZWbn/OpJws8s+BQvGLLTi
+         awEsh4S0JCFyqOOvTW9aFaa4sdsbjhihhHvCEvmynrgZKOn6Xq78fhjeU92X851Poo
+         +7KoSZmoVEXw4CM/Y+TPb2jHdqW3bQ51wmCAobo4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+Cc:     Ganesh Goudar <ganeshgr@chelsio.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 51/64] llc: avoid blocking in llc_sap_close()
-Date:   Fri,  8 Nov 2019 06:45:32 -0500
-Message-Id: <20191108114545.15351-51-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 56/64] cxgb4: Fix endianness issue in t4_fwcache()
+Date:   Fri,  8 Nov 2019 06:45:37 -0500
+Message-Id: <20191108114545.15351-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108114545.15351-1-sashal@kernel.org>
 References: <20191108114545.15351-1-sashal@kernel.org>
@@ -43,52 +44,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <xiyou.wangcong@gmail.com>
+From: Ganesh Goudar <ganeshgr@chelsio.com>
 
-[ Upstream commit 9708d2b5b7c648e8e0a40d11e8cea12f6277f33c ]
+[ Upstream commit 0dc235afc59a226d951352b0adf4a89b532a9d13 ]
 
-llc_sap_close() is called by llc_sap_put() which
-could be called in BH context in llc_rcv(). We can't
-block in BH.
+Do not put host-endian 0 or 1 into big endian feild.
 
-There is no reason to block it here, kfree_rcu() should
-be sufficient.
-
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Ganesh Goudar <ganeshgr@chelsio.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/llc.h  | 1 +
- net/llc/llc_core.c | 4 +---
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/llc.h b/include/net/llc.h
-index 82d989995d18a..95e5ced4c1339 100644
---- a/include/net/llc.h
-+++ b/include/net/llc.h
-@@ -66,6 +66,7 @@ struct llc_sap {
- 	int sk_count;
- 	struct hlist_nulls_head sk_laddr_hash[LLC_SK_LADDR_HASH_ENTRIES];
- 	struct hlist_head sk_dev_hash[LLC_SK_DEV_HASH_ENTRIES];
-+	struct rcu_head rcu;
- };
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index ebeeb3581b9c5..b4b435276a18d 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -3541,7 +3541,7 @@ int t4_fwcache(struct adapter *adap, enum fw_params_param_dev_fwcache op)
+ 	c.param[0].mnem =
+ 		cpu_to_be32(FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
+ 			    FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_FWCACHE));
+-	c.param[0].val = (__force __be32)op;
++	c.param[0].val = cpu_to_be32(op);
  
- static inline
-diff --git a/net/llc/llc_core.c b/net/llc/llc_core.c
-index e896a2c53b120..f1e442a39db8d 100644
---- a/net/llc/llc_core.c
-+++ b/net/llc/llc_core.c
-@@ -127,9 +127,7 @@ void llc_sap_close(struct llc_sap *sap)
- 	list_del_rcu(&sap->node);
- 	spin_unlock_bh(&llc_sap_list_lock);
- 
--	synchronize_rcu();
--
--	kfree(sap);
-+	kfree_rcu(sap, rcu);
+ 	return t4_wr_mbox(adap, adap->mbox, &c, sizeof(c), NULL);
  }
- 
- static struct packet_type llc_packet_type __read_mostly = {
 -- 
 2.20.1
 
