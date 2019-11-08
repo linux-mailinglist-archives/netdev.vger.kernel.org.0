@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A10E9F4A72
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:09:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68817F4A3B
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:08:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391926AbfKHMJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:09:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53180 "EHLO mail.kernel.org"
+        id S2390810AbfKHMHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 07:07:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53702 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388519AbfKHLkM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:40:12 -0500
+        id S2388949AbfKHLko (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:40:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B91D321D7F;
-        Fri,  8 Nov 2019 11:40:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CCB0222C2;
+        Fri,  8 Nov 2019 11:40:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213211;
-        bh=e6m2D9GsLTb/2SC3kjO+2tBWWWAaE8pBWyaHznMx5kw=;
+        s=default; t=1573213244;
+        bh=IEDcQfMvzR+IzJeitdKQq+ocOapyJqcmGHUCSGPIY50=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HNVFxTDeFTQayrAGyXVaoWCYBium5U7HCQaNG9QUvvKhicK0+QWXlAKTiSFLI/P/d
-         0R571ACA0kFLRVltjBe2eoys3XCZ2CgAQiZRnHhNJeZJM97K9oNEBH52R3V775sutb
-         sPfWCiy9aG+iB/sdEVEs+PWsB6+Mxwlz2eFtLU4w=
+        b=CV5FcorhI76pa7vp8NYgTkKRX7Pkui7PmNuL3oWnNvhKEsUNHb4B+uHW8OwCd1xQu
+         kmizxc3aljTXuReVWW0HB9Dyy0zVZRDQSTL9kzwPjUS3QcJvDJ/hcrSckmSpZfwO6W
+         jBASYoVv19OV40gXLDlnNhJ+etYpaUeLsrpDLiL8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "K.T.VIJAYAKUMAAR" <vijay.bvb@samsung.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 092/205] ath10k: avoid possible memory access violation
-Date:   Fri,  8 Nov 2019 06:35:59 -0500
-Message-Id: <20191108113752.12502-92-sashal@kernel.org>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 113/205] failover: Fix error return code in net_failover_create
+Date:   Fri,  8 Nov 2019 06:36:20 -0500
+Message-Id: <20191108113752.12502-113-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
 References: <20191108113752.12502-1-sashal@kernel.org>
@@ -44,48 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "K.T.VIJAYAKUMAAR" <vijay.bvb@samsung.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 97c69a70dc2cecb2c3b96a66529e0082dabc2d2c ]
+[ Upstream commit 09317da317e55e70ccbe23f65008348a4a1b7c7f ]
 
-array "ctl_power_table" access index "pream" is initialized with -1 and
-is raised as a static analysis tool issue.
-[drivers\net\wireless\ath\ath10k\wmi.c:4719] ->
-[drivers\net\wireless\ath\ath10k\wmi.c:4730]: (error) Array index -1 is
-out of bounds.
+if failover_register failed, 'err' code should be set correctly
 
-Since the "pream" index for accessing ctl_power_table array is initialized
-with -1, there is a chance of memory access violation for the cases below.
-1) wmi_pdev_tpc_final_table_event change frequency is between 2483 and 5180
-2) pream_idx is out of the enumeration ranges of wmi_tpc_pream_2ghz,
-wmi_tpc_pream_5ghz
-
-Signed-off-by: K.T.VIJAYAKUMAAR <vijay.bvb@samsung.com>
-[kvalo@codeaurora.org: clean up the warning message]
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: cfc80d9a1163 ("net: Introduce net_failover driver")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/wmi.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/net_failover.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
-index 9f31b9a108507..583147f00fa4e 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi.c
-@@ -4785,6 +4785,13 @@ ath10k_wmi_tpc_final_get_rate(struct ath10k *ar,
- 		}
- 	}
+diff --git a/drivers/net/net_failover.c b/drivers/net/net_failover.c
+index 5a749dc25bec4..beeb7eb76ca32 100644
+--- a/drivers/net/net_failover.c
++++ b/drivers/net/net_failover.c
+@@ -765,8 +765,10 @@ struct failover *net_failover_create(struct net_device *standby_dev)
+ 	netif_carrier_off(failover_dev);
  
-+	if (pream == -1) {
-+		ath10k_warn(ar, "unknown wmi tpc final index and frequency: %u, %u\n",
-+			    pream_idx, __le32_to_cpu(ev->chan_freq));
-+		tpc = 0;
-+		goto out;
+ 	failover = failover_register(failover_dev, &net_failover_ops);
+-	if (IS_ERR(failover))
++	if (IS_ERR(failover)) {
++		err = PTR_ERR(failover);
+ 		goto err_failover_register;
 +	}
-+
- 	if (pream == 4)
- 		tpc = min_t(u8, ev->rates_array[rate_idx],
- 			    ev->max_reg_allow_pow[ch]);
+ 
+ 	return failover;
+ 
 -- 
 2.20.1
 
