@@ -2,189 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55FAFF5B9E
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 00:05:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71975F5BAA
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 00:11:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbfKHXF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 18:05:29 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33892 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726095AbfKHXF3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 18:05:29 -0500
-Received: by mail-pf1-f196.google.com with SMTP id n13so5850861pff.1;
-        Fri, 08 Nov 2019 15:05:28 -0800 (PST)
+        id S1727672AbfKHXLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 18:11:02 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:36280 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726227AbfKHXLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 18:11:01 -0500
+Received: by mail-qv1-f66.google.com with SMTP id f12so2884994qvu.3;
+        Fri, 08 Nov 2019 15:10:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uVow6JqXxpLA3BRONlweqDMZCyRX7TOJPSQCFGOONeU=;
-        b=hqVgdy2+VedAre5Kgqg/3lJ9f1oo25OZO51ytlRJyam+89fuZQEM45SWZ1wUu5lz9T
-         pBlOCK4C3pVgodxRilCNrb/1l0WEGeg/RV0j74pDj1iN+uOoiSEdjHjA8QILKJTWAmPD
-         Ph5B4/BUfvH/oXxbbFubY5qQ4dFkLfq/orQ/oHzlXOA9ntEL92SYl6mUseBa77b9Fvzr
-         QHVg+ACnnnnpXL+ZHA/zMGO9w8Is0L8yT7pJwTrWYvG1V5h9CU2gDC0SD5Y4YDbzZirS
-         yM4QukG01pvzt+giPB1WhLMDe1QVkogxXyPm6tqehQkijmv2pq1GQPVufpcie9Nx5a3v
-         GXlA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Ql2lLaPFhSOOU0q1jXK6+MSZStci03aMlTpcYCeFuD4=;
+        b=sjQcRjtxBKKF4/oKMqTIwTHahQohtDUmnAFH7KjPgG5npJNxVjOzSDew1gv0IWvWKU
+         lu8GCpHmlRPqdnsWUIfNqhIQbDIO6uO9OMpRG+JFP7RpcD8i/zTqsPzAGkAwuOPF0Gu0
+         fTcIgFMA0+2ogsi2tXLAMU1iNCQMwMt1m9OT6FkHeKEDIRvFynYbSZ9ri7CWldmV4Cos
+         k0Uj4+3O1Wgdw5t33MdrUrk+frbihOFAqR7QH7VTMKijfRK+hlIFLGJjMNWZ4Zui3OyC
+         19+2YxOlQJBbMwwCV3qdRQLZ9jK+wlE8IAxi0sr7FjaCpD8jbxUyW0gAEFbPLughXP7N
+         G5Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uVow6JqXxpLA3BRONlweqDMZCyRX7TOJPSQCFGOONeU=;
-        b=Cpq0C6/ZBE7PfOube/HJ0ItUG9MDMbQRXSr29BwkGaY6CzCAfmXOqMPVITQf8vbxwE
-         PG4mzstz0+N2vS2qFVkFxTD53B1IZo4FZn63D8gKkPlYCbzerUJGZup6XPGkA3xN5Mak
-         omneF7l7J0Td3V/Ktwhmj7ZhmEfbFoMg8AR0oplBzpG2yWaYFAx5ObheKUbpdaIBHWeD
-         5g2zYlCAQ5087+2CnJ0m5gWnXI4tXGpZYMIEeMAyLA4e7vnE+KIGerl13E5dQ4U7khbj
-         IiX9PFyvWLPzGV/paaKZ2VltILt9AN3zlcF8nJRbCIRwQuM95Ca8Pv97Qy/2jJ5jyl80
-         kx7w==
-X-Gm-Message-State: APjAAAWF6p6kXZZyfMl6urmkg10S9VG+65ncbt4BhMNywS0sIZdOcG7L
-        LH7yCXgSY6Elmf/jH2h7Suw=
-X-Google-Smtp-Source: APXvYqyGVkzEFjMJi45DCayB1/aa6gPTSWdRLqKw7uMSpgOyYpNcuhvAxD8XBSBuKlgbbARhfaE3RQ==
-X-Received: by 2002:a62:7f93:: with SMTP id a141mr14890368pfd.107.1573254328054;
-        Fri, 08 Nov 2019 15:05:28 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:f248])
-        by smtp.gmail.com with ESMTPSA id o1sm6348523pgm.1.2019.11.08.15.05.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 08 Nov 2019 15:05:27 -0800 (PST)
-Date:   Fri, 8 Nov 2019 15:05:25 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 02/18] bpf: Add bpf_arch_text_poke() helper
-Message-ID: <20191108230524.4j5jui2izyexxhkx@ast-mbp.dhcp.thefacebook.com>
-References: <20191108064039.2041889-1-ast@kernel.org>
- <20191108064039.2041889-3-ast@kernel.org>
- <20191108091156.GG4114@hirez.programming.kicks-ass.net>
- <20191108093607.GO5671@hirez.programming.kicks-ass.net>
- <59d3af80-a781-9765-4d01-4c8006cd574f@fb.com>
- <CAADnVQKmrVGVHM70OT0jc7reRp1LdWTM8dhE1Gde21oxw++jwg@mail.gmail.com>
- <20191108213624.GM3079@worktop.programming.kicks-ass.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Ql2lLaPFhSOOU0q1jXK6+MSZStci03aMlTpcYCeFuD4=;
+        b=M3hHKyfKQaG3pvqY/2KzhzMu2fjrm8oUsrYOmbj66lTkbhmo4s5F+3FHLZcZ5uwUWW
+         AHQMxkAIZHO2ZYhf8HWsl7nCl+ISWDcybsK5xp4LVbn5E0RglmICemkB36WeYP/d2EgD
+         P/twrpxoPogvNUjgx68RMyVUUF1rWUY+jHfNg+qbv675B9ogfMgo6Yk1b2E9wbNl+uqh
+         wVgpqYowJPeDgikbXBB31FAvDWyibxhZ2KQN+qqm5Hp6S97UK+wvZV4pbyt/fK4gydFB
+         nnG1yx/TYmxbzEm/YOoX0f0KwR4AKc5zqbFWVnL/giInljCpLBp90eJUL7Ywwqo80GrT
+         /a+g==
+X-Gm-Message-State: APjAAAUtQjFigFFzWCkTN1RQANAc4KJzYGQuRG63BeoS4xhozwWleH/T
+        Ku7tcjrqKiYYZnmowShvRyM9BN9t80CCuhNjkhY=
+X-Google-Smtp-Source: APXvYqxn5i54AEhmfJ/OOu0ZJWVMLK9zUCNkNnuDojSJUlV+xn1CEHS3513T9NDgu8H5pniQwZLjZpHqFosnjiuNq/A=
+X-Received: by 2002:ad4:558e:: with SMTP id e14mr11869316qvx.247.1573254658481;
+ Fri, 08 Nov 2019 15:10:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191108213624.GM3079@worktop.programming.kicks-ass.net>
-User-Agent: NeoMutt/20180223
+References: <157324878503.910124.12936814523952521484.stgit@toke.dk> <157324879070.910124.16900285171727920636.stgit@toke.dk>
+In-Reply-To: <157324879070.910124.16900285171727920636.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 8 Nov 2019 15:10:47 -0800
+Message-ID: <CAEf4Bzbr7K3n8mNj-ay7WqJfxGA2hMQ3dXGDVcuKUiohm4_JBQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/6] libbpf: Add bpf_get_link_xdp_info()
+ function to get more XDP information
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 08, 2019 at 10:36:24PM +0100, Peter Zijlstra wrote:
-> On Fri, Nov 08, 2019 at 11:32:41AM -0800, Alexei Starovoitov wrote:
-> > On Fri, Nov 8, 2019 at 5:42 AM Alexei Starovoitov <ast@fb.com> wrote:
-> > >
-> > > On 11/8/19 1:36 AM, Peter Zijlstra wrote:
-> > > > On Fri, Nov 08, 2019 at 10:11:56AM +0100, Peter Zijlstra wrote:
-> > > >> On Thu, Nov 07, 2019 at 10:40:23PM -0800, Alexei Starovoitov wrote:
-> > > >>> Add bpf_arch_text_poke() helper that is used by BPF trampoline logic to patch
-> > > >>> nops/calls in kernel text into calls into BPF trampoline and to patch
-> > > >>> calls/nops inside BPF programs too.
-> > > >>
-> > > >> This thing assumes the text is unused, right? That isn't spelled out
-> > > >> anywhere. The implementation is very much unsafe vs concurrent execution
-> > > >> of the text.
-> > > >
-> > > > Also, what NOP/CALL instructions will you be hijacking? If you're
-> > > > planning on using the fentry nops, then what ensures this and ftrace
-> > > > don't trample on one another? Similar for kprobes.
-> > > >
-> > > > In general, what ensures every instruction only has a single modifier?
-> > >
-> > > Looks like you didn't bother reading cover letter and missed a month
-> 
-> I did indeed not. A Changelog should be self sufficient and this one is
-> sorely lacking. The cover leter is not preserved and should therefore
-> not contain anything of value that is not also covered in the
-> Changelogs.
-> 
-> > > of discussions between my and Steven regarding exactly this topic
-> > > though you were directly cc-ed in all threads :(
-> 
-> I read some of it; it is a sad fact that I cannot read all email in my
-> inbox, esp. not if, like in the last week or so, I'm busy hunting a
-> regression.
-> 
-> And what I did remember of the emails I saw left me with the questions
-> that were not answered by the changelog.
-> 
-> > > tldr for kernel fentry nops it will be converted to use
-> > > register_ftrace_direct() whenever it's available.
-> 
-> So why the rush and not wait for that work to complete? It appears to me
-> that without due coordination between bpf and ftrace badness could
-> happen.
-> 
-> > > For all other nops, calls, jumps that are inside BPF programs BPF infra
-> > > will continue modifying them through this helper.
-> > > Daniel's upcoming bpf_tail_call() optimization will use text_poke as well.
-> 
-> This is probably off topic, but isn't tail-call optimization something
-> done at JIT time and therefore not in need ot text_poke()?
+On Fri, Nov 8, 2019 at 1:33 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
+t.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> Currently, libbpf only provides a function to get a single ID for the XDP
+> program attached to the interface. However, it can be useful to get the
+> full set of program IDs attached, along with the attachment mode, in one
+> go. Add a new getter function to support this, using an extendible
+> structure to carry the information. Express the old bpf_get_link_id()
+> function in terms of the new function.
+>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  tools/lib/bpf/libbpf.h   |   10 ++++++
+>  tools/lib/bpf/libbpf.map |    1 +
+>  tools/lib/bpf/netlink.c  |   78 ++++++++++++++++++++++++++++++----------=
+------
+>  3 files changed, 62 insertions(+), 27 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index 6ddc0419337b..f0947cc949d2 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -427,8 +427,18 @@ LIBBPF_API int bpf_prog_load_xattr(const struct bpf_=
+prog_load_attr *attr,
+>  LIBBPF_API int bpf_prog_load(const char *file, enum bpf_prog_type type,
+>                              struct bpf_object **pobj, int *prog_fd);
+>
+> +struct xdp_link_info {
+> +       __u32 prog_id;
+> +       __u32 drv_prog_id;
+> +       __u32 hw_prog_id;
+> +       __u32 skb_prog_id;
+> +       __u8 attach_mode;
+> +};
+> +
+>  LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
+>  LIBBPF_API int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 fl=
+ags);
+> +LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *=
+info,
+> +                                    size_t info_size, __u32 flags);
+>
+>  struct perf_buffer;
+>
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index 86173cbb159d..d1a782a3a58d 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -193,6 +193,7 @@ LIBBPF_0.0.5 {
+>
+>  LIBBPF_0.0.6 {
+>         global:
+> +               bpf_get_link_xdp_info;
+>                 bpf_map__get_pin_path;
+>                 bpf_map__is_pinned;
+>                 bpf_map__set_pin_path;
+> diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+> index a261df9cb488..85019da01d3b 100644
+> --- a/tools/lib/bpf/netlink.c
+> +++ b/tools/lib/bpf/netlink.c
+> @@ -25,7 +25,7 @@ typedef int (*__dump_nlmsg_t)(struct nlmsghdr *nlmsg, l=
+ibbpf_dump_nlmsg_t,
+>  struct xdp_id_md {
+>         int ifindex;
+>         __u32 flags;
+> -       __u32 id;
+> +       struct xdp_link_info info;
+>  };
+>
+>  int libbpf_netlink_open(__u32 *nl_pid)
+> @@ -203,26 +203,11 @@ static int __dump_link_nlmsg(struct nlmsghdr *nlh,
+>         return dump_link_nlmsg(cookie, ifi, tb);
+>  }
+>
+> -static unsigned char get_xdp_id_attr(unsigned char mode, __u32 flags)
+> -{
+> -       if (mode !=3D XDP_ATTACHED_MULTI)
+> -               return IFLA_XDP_PROG_ID;
+> -       if (flags & XDP_FLAGS_DRV_MODE)
+> -               return IFLA_XDP_DRV_PROG_ID;
+> -       if (flags & XDP_FLAGS_HW_MODE)
+> -               return IFLA_XDP_HW_PROG_ID;
+> -       if (flags & XDP_FLAGS_SKB_MODE)
+> -               return IFLA_XDP_SKB_PROG_ID;
+> -
+> -       return IFLA_XDP_UNSPEC;
+> -}
+> -
+> -static int get_xdp_id(void *cookie, void *msg, struct nlattr **tb)
+> +static int get_xdp_info(void *cookie, void *msg, struct nlattr **tb)
+>  {
+>         struct nlattr *xdp_tb[IFLA_XDP_MAX + 1];
+>         struct xdp_id_md *xdp_id =3D cookie;
+>         struct ifinfomsg *ifinfo =3D msg;
+> -       unsigned char mode, xdp_attr;
+>         int ret;
+>
+>         if (xdp_id->ifindex && xdp_id->ifindex !=3D ifinfo->ifi_index)
+> @@ -238,27 +223,40 @@ static int get_xdp_id(void *cookie, void *msg, stru=
+ct nlattr **tb)
+>         if (!xdp_tb[IFLA_XDP_ATTACHED])
+>                 return 0;
+>
+> -       mode =3D libbpf_nla_getattr_u8(xdp_tb[IFLA_XDP_ATTACHED]);
+> -       if (mode =3D=3D XDP_ATTACHED_NONE)
+> -               return 0;
+> +       xdp_id->info.attach_mode =3D libbpf_nla_getattr_u8(
+> +               xdp_tb[IFLA_XDP_ATTACHED]);
+>
+> -       xdp_attr =3D get_xdp_id_attr(mode, xdp_id->flags);
+> -       if (!xdp_attr || !xdp_tb[xdp_attr])
+> +       if (xdp_id->info.attach_mode =3D=3D XDP_ATTACHED_NONE)
+>                 return 0;
+>
+> -       xdp_id->id =3D libbpf_nla_getattr_u32(xdp_tb[xdp_attr]);
+> +       if (xdp_tb[IFLA_XDP_PROG_ID])
+> +               xdp_id->info.prog_id =3D libbpf_nla_getattr_u32(
+> +                       xdp_tb[IFLA_XDP_PROG_ID]);
+> +
+> +       if (xdp_tb[IFLA_XDP_SKB_PROG_ID])
+> +               xdp_id->info.skb_prog_id =3D libbpf_nla_getattr_u32(
+> +                       xdp_tb[IFLA_XDP_SKB_PROG_ID]);
+> +
+> +       if (xdp_tb[IFLA_XDP_DRV_PROG_ID])
+> +               xdp_id->info.drv_prog_id =3D libbpf_nla_getattr_u32(
+> +                       xdp_tb[IFLA_XDP_DRV_PROG_ID]);
+> +
+> +       if (xdp_tb[IFLA_XDP_HW_PROG_ID])
+> +               xdp_id->info.hw_prog_id =3D libbpf_nla_getattr_u32(
+> +                       xdp_tb[IFLA_XDP_HW_PROG_ID]);
+>
+>         return 0;
+>  }
+>
+> -int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
+> +int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+> +                         size_t info_size, __u32 flags)
+>  {
+>         struct xdp_id_md xdp_id =3D {};
+>         int sock, ret;
+>         __u32 nl_pid;
+>         __u32 mask;
+>
+> -       if (flags & ~XDP_FLAGS_MASK)
+> +       if (flags & ~XDP_FLAGS_MASK || info_size !=3D sizeof(*info))
 
-Not quite. bpf_tail_call() are done via prog_array which is indirect jmp and
-it suffers from retpoline. The verifier can see that in a lot of cases the
-prog_array is used with constant index into array instead of a variable. In
-such case indirect jmps can be optimized with direct jmps. That is
-essentially what Daniel's patches are doing that are building on top of
-bpf_arch_text_poke() and trampoline that I'm introducing in this set.
+This is not forward-compatible. Newer application can pass bigger
+info_size, if xdp_link_info gets extended. We should probably just
+zero-fill the part we don't understand.
 
-Another set is being prepared by Bjorn that also builds on top of
-bpf_arch_text_poke() and trampoline. It's serving the purpose of getting rid of
-indirect call when driver calls into BPF program for the first time. We've
-looked at your static_call and concluded that it doesn't quite cut for this use
-case.
+>                 return -EINVAL;
+>
+>         /* Check whether the single {HW,DRV,SKB} mode is set */
+> @@ -274,14 +272,40 @@ int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id=
+, __u32 flags)
+>         xdp_id.ifindex =3D ifindex;
+>         xdp_id.flags =3D flags;
+>
+> -       ret =3D libbpf_nl_get_link(sock, nl_pid, get_xdp_id, &xdp_id);
+> +       ret =3D libbpf_nl_get_link(sock, nl_pid, get_xdp_info, &xdp_id);
+>         if (!ret)
+> -               *prog_id =3D xdp_id.id;
+> +               memcpy(info, &xdp_id.info, sizeof(*info));
+>
+>         close(sock);
+>         return ret;
+>  }
+>
+> +static __u32 get_xdp_id(struct xdp_link_info *info, __u32 flags)
+> +{
+> +       if (info->attach_mode !=3D XDP_ATTACHED_MULTI)
+> +               return info->prog_id;
+> +       if (flags & XDP_FLAGS_DRV_MODE)
+> +               return info->drv_prog_id;
+> +       if (flags & XDP_FLAGS_HW_MODE)
+> +               return info->hw_prog_id;
+> +       if (flags & XDP_FLAGS_SKB_MODE)
+> +               return info->skb_prog_id;
+> +
+> +       return 0;
+> +}
+> +
+> +int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
+> +{
+> +       struct xdp_link_info info =3D {};
 
-The third framework is worked on by Martin. Who is using BPF trampoline for
-BPF-based TCP extensions. This bit is not related to indirect call/jmp
-optimization, but needs trampoline.
+seems like there is no need to pre-initialize info, it should be
+initialized (on success) by bpf_get_link_xdp_info?
 
-> > I was thinking more about this.
-> > Peter,
-> > do you mind we apply your first patch:
-> > https://lore.kernel.org/lkml/20191007081944.88332264.2@infradead.org/
-> > to both tip and bpf-next trees?
-> 
-> That would indeed be a much better solution. I'll repost much of that on
-> Monday, and then we'll work on getting at the very least that one patch
-> in a tip/branch we can share.
-
-Awesome! I can certainly wait till next week. I just don't want to miss the
-merge window for the work that it is ready. More below.
-
-> > Then I can use text_poke_bp() as-is without any additional ugliness
-> > on my side that would need to be removed in few weeks.
-> 
-> This I do _NOT_ understand. Why are you willing to merge a known broken
-> patch? What is the rush, why can't you wait for all the prerequisites to
-> land?
-
-People have deadlines and here I'm not talking about fb deadlines. If it was
-only up to me I could have waited until yours and Steven's patches land in
-Linus's tree. Then Dave would pick them up after the merge window into net-next
-and bpf things would be ready for the next release. Which is in 1.5 + 2 + 8
-weeks (assuming 1.5 weeks until merge window, 2 weeks merge window, and 8
-weeks next release cycle).
-But most of bpf things are ready. I have one more follow up to do for another
-feature. The first 4-5 patches of my set will enable Bjorn, Daniel, and
-Martin's work. So I'm mainly looking for a way to converge three trees during
-the merge window with no conflicts.
-
-Just saw that Steven posted his set. That is great. If you land your first part
-of text_poke_pb() next week into tip it will enable us to cherry-pick the first
-few patches from tip and continue with bpf trampoline in net-next. Then during
-the merge window tip, Steven's and net-next land into Linus's tree. Then I'll
-send small follow up to switch to Steven's register_ftrace_direct() in places
-that can use it and the other bits of bpf will keep using yours text_poke_bp()
-because it's for the code inside generated bpf progs, various generated
-trampolines and such. The conversion of some of bpf bits to
-register_ftrace_direct() can be delayed by a release if really necessary. Since
-text_poke_bp() approach will work fine, just not as nice if there is a full
-integration via ftrace.
-imo it's the best path for 3 trees to converge without delaying things for bpf
-folks by a full release. At the end the deadlines are met and a bunch of people
-are unblocked and happy. I hope that explains the rush.
-
+> +       int ret;
+> +
+> +       ret =3D bpf_get_link_xdp_info(ifindex, &info, sizeof(info), flags=
+);
+> +       if (!ret)
+> +               *prog_id =3D get_xdp_id(&info, flags);
+> +
+> +       return ret;
+> +}
+> +
+>  int libbpf_nl_get_link(int sock, unsigned int nl_pid,
+>                        libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
+>  {
+>
