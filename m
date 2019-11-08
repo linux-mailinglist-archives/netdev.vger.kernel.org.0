@@ -2,119 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 799DFF4200
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 09:20:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078C8F420C
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 09:24:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730364AbfKHIUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 03:20:44 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:42544 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbfKHIUo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 03:20:44 -0500
-Received: by mail-lj1-f196.google.com with SMTP id n5so5238343ljc.9
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 00:20:43 -0800 (PST)
+        id S1727620AbfKHIYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 03:24:10 -0500
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:33523 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726149AbfKHIYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 03:24:10 -0500
+Received: by mail-qk1-f195.google.com with SMTP id 71so4571482qkl.0;
+        Fri, 08 Nov 2019 00:24:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QG9zESozXuPqax0Su22O3OuOKh63DOSfZk/pA62adHY=;
-        b=tb4SJdKVM/w0afIl2iDuSX1FsRMT3D5VW7rb46sbKMYFjCDJ7FG4wbT+OmmYHd9Np+
-         mAn67I7zY5tlX5PbhNUT9ZUgvP5KhWQDjKCATuXQa8qTt0eOnlE3Pqa610+pSZrmYtDs
-         6PkyyKCSTj7M+vwQ4+/OFkc29lK/eXpbnf2vjAmCIBAjzcxy2doAC8x0Tqut3x2C+7zT
-         nP+XezvW/C+sH7/eLPd7VC652IqObU6nbzKPRE9jRYarWSJsUhkF4+YySPGDBK0rdxPe
-         Y+GnIwsIx320akOFEEnwpR2jHL0sR5N/QQbq9YnBnKfiFkYtmPQPKN+W8PdUopjyyQcJ
-         2LnQ==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ylZtXsGX91kH7Dqbo0BnsKW8PhIfg/TWG7A6n5OwFqM=;
+        b=suDoiDGtFRdnRgyAh/t2snA/V4IaKsdK9gjp2IYkK6RdZYRq7p7GeC7/VSkxCHth1L
+         e053OMjeYxtEYfIhQadHrB0dKpOdroWDGSVedIzrA4zjnSOvbnXJSxqeueSTlinY7vNY
+         YFTeBdpgsk9sUs2a11orRHOr1QOoBRnZe7i1Q2q+in4LKgidIBECyXlK+fYUsEHIHshE
+         B9YKWqIMi4KgkdnvlUuFp/D1cAbulwhNNXU1SsGUEERtUUbrTf0WMwBWsqXmpSNRcZkV
+         9A0KbwxxggdjlOqusx6eEoS2WkAKAiQPJPqmY/nQPtiHk2nvhnJJzRPoYqthxHW0q3/M
+         PVsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QG9zESozXuPqax0Su22O3OuOKh63DOSfZk/pA62adHY=;
-        b=GoWyK5p7hcJuMoK/aToAcyb8GpGiF0UHTXRH8Rju5a+4wO3Ht2pqZ4YqZDI+tdCVKh
-         6QPeaGIkAOwiMLnR0jt4Mltq//ClHtLZ6T7neR/AMCDHeDZLlVt72seWWqfT5UFmRkir
-         8559dJrrj6HSorQo+lLMbHUpgsx7Q/zM9Tu3ms2/Q8ldKUYvZB79tA/jnHT5DNTfLowF
-         wjm+j84eMMEUEpH77bRFsAHBMPApjra/jgN/lnd7olcx3033DTpZbOQsYndux9ifBO7t
-         S7b6DccU11pH8mNEjRcoxsG2O3N4i92SY00Hw2YjyDGzGp5zZUxAqfOSFgQ6354dJKBk
-         ScSQ==
-X-Gm-Message-State: APjAAAWb2hbBXChDTbrtJpeTHEDhXSPWQXVTEvtiQc+LR0ecWrfymKui
-        kda6ixr2WLRXgfExfn8bLtZS0w==
-X-Google-Smtp-Source: APXvYqyq6o5NlSxHPqiqstI0v5ozYcuJbwWvebOQkf/OT4itQMED7hNHHM+1S1k07Hx73vma7ozOdw==
-X-Received: by 2002:a2e:8595:: with SMTP id b21mr286960lji.155.1573201242525;
-        Fri, 08 Nov 2019 00:20:42 -0800 (PST)
-Received: from [10.0.156.104] ([195.22.87.57])
-        by smtp.gmail.com with ESMTPSA id 68sm2523544ljf.26.2019.11.08.00.20.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Nov 2019 00:20:41 -0800 (PST)
-Subject: Re: [PATCH v3 1/6] rtnetlink: allow RTM_SETLINK to reference other
- namespaces
-To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS1?=
-         =?UTF-8?B?4KS+4KSwKQ==?= <maheshb@google.com>
-Cc:     nicolas.dichtel@6wind.com, linux-netdev <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
-References: <20191107132755.8517-1-jonas@norrbonn.se>
- <20191107132755.8517-2-jonas@norrbonn.se>
- <CAF2d9jjRLZ07Qx0NJ9fi1iUpHn+qYEJ+cacKgBmeZ2FvZLObEQ@mail.gmail.com>
-From:   Jonas Bonn <jonas@norrbonn.se>
-Message-ID: <fff51fa7-5c42-7fa7-6208-d911b18bd91e@norrbonn.se>
-Date:   Fri, 8 Nov 2019 09:20:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ylZtXsGX91kH7Dqbo0BnsKW8PhIfg/TWG7A6n5OwFqM=;
+        b=eZGeM9K361/7HO0InSDo5vS2yeniRPcpp0gu5CUP4u2HTN3EoPLNJdyKlU/nEouwQb
+         YLD4mE6qVezFF01HHlSQigEH37lagtlvh+pLTj7WhbT9PlPpxYcAkYKQHGjeSWU6QfcE
+         CdY3jiZpJUMoJdFSJ9NkUpZ5uLlS2QC5CiCcGFo3Av0LoifTVOPQX+jng97iIoxJgCPb
+         drwMYOAmG7dJLmhxYjf0yD5fNAOhpeDf2XTbPf7/OUwBkteoZlgqQw1bJDxk13l9zfGX
+         B3/mN6/hIq4iW+rDCNxpF8J2/HQutIb4XtSzPSX2SNlggtq3gxHkKBQYPApWmTbl4pQ0
+         wGwA==
+X-Gm-Message-State: APjAAAXcPVMJ/aSWY3CuWmUTctegolg1bLv87Ta6eG8P5LG9rBcNdRJM
+        0+tSTyqdFQviiKtvUxRNMTXhjolsiEYxWNqreh7vRpAKzXM=
+X-Google-Smtp-Source: APXvYqwgai6dS/qQ9Jfq237IatUHX8ugJUUoQGomUBNz9B6ULoOxuaYNJfQEj0oiccfTE8fUKr+t47AYgWw0VBwHflk=
+X-Received: by 2002:a37:8b03:: with SMTP id n3mr5235664qkd.493.1573201448644;
+ Fri, 08 Nov 2019 00:24:08 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAF2d9jjRLZ07Qx0NJ9fi1iUpHn+qYEJ+cacKgBmeZ2FvZLObEQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20191108064039.2041889-1-ast@kernel.org> <20191108064039.2041889-3-ast@kernel.org>
+In-Reply-To: <20191108064039.2041889-3-ast@kernel.org>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Fri, 8 Nov 2019 09:23:57 +0100
+Message-ID: <CAJ+HfNhOBCamXzMV0XKmVUeDFvdEJXpDHdVCNsdTb6PFRP7Hqg@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 02/18] bpf: Add bpf_arch_text_poke() helper
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>, x86@kernel.org,
+        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mahesh,
+On Fri, 8 Nov 2019 at 07:41, Alexei Starovoitov <ast@kernel.org> wrote:
+>
+> Add bpf_arch_text_poke() helper that is used by BPF trampoline logic to patch
+> nops/calls in kernel text into calls into BPF trampoline and to patch
+> calls/nops inside BPF programs too.
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  arch/x86/net/bpf_jit_comp.c | 51 +++++++++++++++++++++++++++++++++++++
+>  include/linux/bpf.h         |  8 ++++++
+>  kernel/bpf/core.c           |  6 +++++
+>  3 files changed, 65 insertions(+)
+>
+> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+> index 0399b1f83c23..bb8467fd6715 100644
+> --- a/arch/x86/net/bpf_jit_comp.c
+> +++ b/arch/x86/net/bpf_jit_comp.c
+> @@ -9,9 +9,11 @@
+>  #include <linux/filter.h>
+>  #include <linux/if_vlan.h>
+>  #include <linux/bpf.h>
+> +#include <linux/memory.h>
+>  #include <asm/extable.h>
+>  #include <asm/set_memory.h>
+>  #include <asm/nospec-branch.h>
+> +#include <asm/text-patching.h>
+>
+>  static u8 *emit_code(u8 *ptr, u32 bytes, unsigned int len)
+>  {
+> @@ -487,6 +489,55 @@ static int emit_call(u8 **pprog, void *func, void *ip)
+>         return 0;
+>  }
+>
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+> +                      void *old_addr, void *new_addr)
+> +{
+> +       u8 old_insn[X86_CALL_SIZE] = {};
+> +       u8 new_insn[X86_CALL_SIZE] = {};
+> +       u8 *prog;
+> +       int ret;
+> +
+> +       if (!is_kernel_text((long)ip))
+> +               /* BPF trampoline in modules is not supported */
+> +               return -EINVAL;
+> +
+> +       if (old_addr) {
+> +               prog = old_insn;
+> +               ret = emit_call(&prog, old_addr, (void *)ip);
+> +               if (ret)
+> +                       return ret;
+> +       }
+> +       if (new_addr) {
+> +               prog = new_insn;
+> +               ret = emit_call(&prog, new_addr, (void *)ip);
+> +               if (ret)
+> +                       return ret;
+> +       }
+> +       ret = -EBUSY;
+> +       mutex_lock(&text_mutex);
+> +       switch (t) {
+> +       case BPF_MOD_NOP_TO_CALL:
+> +               if (memcmp(ip, ideal_nops[NOP_ATOMIC5], X86_CALL_SIZE))
+> +                       goto out;
+> +               text_poke(ip, new_insn, X86_CALL_SIZE);
 
-On 07/11/2019 21:36, Mahesh Bandewar (महेश बंडेवार) wrote:
-> On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
->>
->>
->> +       /* A hack to preserve kernel<->userspace interface.
->> +        * It was previously allowed to pass the IFLA_TARGET_NETNSID
->> +        * attribute as a way to _set_ the network namespace.  In this
->> +        * case, the device interface was assumed to be in the  _current_
->> +        * namespace.
->> +        * If the device cannot be found in the target namespace then we
->> +        * assume that the request is to set the device in the current
->> +        * namespace and thus we attempt to find the device there.
->> +        */
-> Could this bypasses the ns_capable() check? i.e. if the target is
-> "foo" but your current ns is bar. The process may be "capable" is foo
-> but the interface is not found in foo but present in bar and ends up
-> modifying it (especially when you are not capable in bar)?
+I'm probably missing something, but why isn't text_poke_bp() needed here?
 
-I don't think so.  There was never any capable-check for the "current" 
-namespace so there's no change in that regard.
-
-I do think there is an issue with this hack that I can't see any 
-workaround for.  If the user specifies an interface (by name or index) 
-for another namespace that doesn't exist, there's a potential problem if 
-that name/index happens to exist in the "current" namespace.  In that 
-case, one many end up inadvertently modifying the interface in the 
-current namespace.  I don't see how to avoid that while maintaining the 
-backwards compatibility.
-
-My absolute preference would be to drop this compat-hack altogether. 
-iproute2 doesn't use a bare TARGET_NETNSID in this manner (for changing 
-namespaces) and I didn't find any other users by a quick search of other 
-prominent Netlink users:  systemd, network-manager, connman.  This 
-compat-hack is there for the _potential ab-user_ of the interface, not 
-for any known such.
-
-> 
->> +       if (!dev && tgt_net) {
->> +               net = sock_net(skb->sk);
->> +               if (ifm->ifi_index > 0)
->> +                       dev = __dev_get_by_index(net, ifm->ifi_index);
->> +               else if (tb[IFLA_IFNAME])
->> +                       dev = __dev_get_by_name(net, ifname);
->> +       }
-
-
-/Jonas
+> +               break;
+> +       case BPF_MOD_CALL_TO_CALL:
+> +               if (memcmp(ip, old_insn, X86_CALL_SIZE))
+> +                       goto out;
+> +               text_poke(ip, new_insn, X86_CALL_SIZE);
+> +               break;
+> +       case BPF_MOD_CALL_TO_NOP:
+> +               if (memcmp(ip, old_insn, X86_CALL_SIZE))
+> +                       goto out;
+> +               text_poke(ip, ideal_nops[NOP_ATOMIC5], X86_CALL_SIZE);
+> +               break;
+> +       }
+> +       ret = 0;
+> +out:
+> +       mutex_unlock(&text_mutex);
+> +       return ret;
+> +}
+> +
+>  static bool ex_handler_bpf(const struct exception_table_entry *x,
+>                            struct pt_regs *regs, int trapnr,
+>                            unsigned long error_code, unsigned long fault_addr)
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 7c7f518811a6..8b90db25348a 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1157,4 +1157,12 @@ static inline u32 bpf_xdp_sock_convert_ctx_access(enum bpf_access_type type,
+>  }
+>  #endif /* CONFIG_INET */
+>
+> +enum bpf_text_poke_type {
+> +       BPF_MOD_NOP_TO_CALL,
+> +       BPF_MOD_CALL_TO_CALL,
+> +       BPF_MOD_CALL_TO_NOP,
+> +};
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+> +                      void *addr1, void *addr2);
+> +
+>  #endif /* _LINUX_BPF_H */
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index c1fde0303280..c4bcec1014a9 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2140,6 +2140,12 @@ int __weak skb_copy_bits(const struct sk_buff *skb, int offset, void *to,
+>         return -EFAULT;
+>  }
+>
+> +int __weak bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+> +                             void *addr1, void *addr2)
+> +{
+> +       return -ENOTSUPP;
+> +}
+> +
+>  DEFINE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
+>  EXPORT_SYMBOL(bpf_stats_enabled_key);
+>
+> --
+> 2.23.0
+>
