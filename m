@@ -2,174 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1237DF587C
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:42:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 091AEF5847
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728206AbfKHUYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 15:24:38 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6804 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727148AbfKHUYi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 15:24:38 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA8IsKjR003938;
-        Fri, 8 Nov 2019 10:58:04 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=i1ZMfPXB3rnnMpX/JK1ZDfbqjvciksSg9zSqfdQvJNY=;
- b=Afqn2f9pCJpqgKnNuyVW3lhGyJc6UGQ332ETZBgzD4NWNrdks5w7hc7RGe935fd6PfT3
- v4yIpUSruE05+FRhgel+Sc2dpk65oe5kHHb3Qy6DtNW90JN3PNsizB5woyaVlxhyOZ+0
- 2m1xcxc8ff/n1fsPlaAk20ztsqfOEYD8ZJ0= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w59shhkrq-9
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 08 Nov 2019 10:58:04 -0800
-Received: from prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 8 Nov 2019 10:57:42 -0800
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx05.TheFacebook.com (2620:10d:c081:6::19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 8 Nov 2019 10:57:42 -0800
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 8 Nov 2019 10:57:42 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BbbNQwcLWH5nf3C4S2+pC21mUmIdrHahNEpk2CKdHHdh3rDcWeucVUZ5OkaU4xt6GkG1IRDU659Px5GK4DlVeQQWjqcFx1qBSFhd1RYi+TsZnpR/eytGGOLcFwp+2R37S9VUXnXzjC77Sdjdb5VX5t8JDuxOQiFBSS6ZxaUc9aCei4RIP9I1BnpbK38b0DcMVnVBhnISP3hqn40hMlq8fY/bGtWihLsKRn9sxKKd8sKRTRKowgyMa0oi9UX8/PAvRVsrXWHa91ywZJdfEkB9DcNFiqg7mkz0LoZALxZL4nw7SupOZ1jcx6/AM/dLFyUFhyWVMPEqQe04iiAmVqJRQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i1ZMfPXB3rnnMpX/JK1ZDfbqjvciksSg9zSqfdQvJNY=;
- b=VT65GH2IGHEpuzrw2QeR8KS2RWyZ+JPc7cmPaR7t/xu2UtqfVCvb/tMGYNt82fBbC4rGWNuijjV1026r0RdeXeSnP0OTIE97N/mxgzN+asvhEa5PpxuKme4Hjj/zF+/Y1IIJ0etTsbjMdf6XHwnhdTFfXWa5UPXUaMnnrOWvOxXaDVmfvd2JzEH7fv9sXXgJJJzr8a5NElUOMyg09ma0pMsE49pTN3JPzRigZJE80CbOKfTXvfnGseKCDUsIxMcP2pD01m/IM6j20n3QnqhSSeuEScY9EFixdErC87KyHs6l9MxkRTDv4SwrEalj+bPUI8aDfB3er7uJp/G8ChkdLA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i1ZMfPXB3rnnMpX/JK1ZDfbqjvciksSg9zSqfdQvJNY=;
- b=JaHk6tIGTrsHTLZPYTTECXTTxFqGjAzodMBCSapTHxOoe1KfL2aNjBf1nQGKyiaMP1DjJlxc2M/5sJt7pxZwT++bd13qlZF990FkRvpZRUWBh92sZSqCxL3hgxGq1Mfml7rF96z3o15dr76EpL/kvipVzYZn+s/zJ9UwryrkBpM=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1119.namprd15.prod.outlook.com (10.175.8.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Fri, 8 Nov 2019 18:57:41 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 18:57:41 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-CC:     David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
+        id S1730018AbfKHUM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 15:12:58 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39750 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729986AbfKHUM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 15:12:57 -0500
+Received: by mail-qt1-f193.google.com with SMTP id t8so7879578qtc.6
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 12:12:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NLzzQDU72ig8KfWmw87Ix0K7Ft/g9vtt1FAkWohl1xA=;
+        b=VhVO5jt8rk/A1fGmGergGSo2tNtd7es7msTyv5T1NZHnq75PZOeDBFvB3w+Gy3vz3V
+         9DG7xGFANVYqlZRbzQC5AFklqZmhTsgHAFznUmcpwJkKkQ85V//ouTf6ogzQRuODNUgS
+         9uJQB3YS42w4UT96goDlzmIVE68Di/3ljrEWyA91KKj3c2/fy4l3QOWGBPJS4Ek1dM3g
+         dTmSHMQur2JIR2OsDA1pIqqdtXZMESgGEtvDIzk+QfkWw03oJ6VXrpSvtzCilMVBHTl2
+         IyWLRM+RKNMOlK2RycR+rpNptAK6+JSj8PkcSBY71fPoNcOTnYy6mAy9TWU2MQ3dHTZO
+         2n8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NLzzQDU72ig8KfWmw87Ix0K7Ft/g9vtt1FAkWohl1xA=;
+        b=rulaH2Ibf6LwS2Xd1ok3HjaStii5OrjsOc9fJy87hRDU/drL4JSbHy/ASJSmkFgTbe
+         q0b8mVl/F2CquS6vlqco2xAFAPWbpev3zGUBuDu8rqlt05Bn3XdV/Xq06fzPw8lTOxI4
+         JPVFV/0aIc6wxGeO6MNl4ymsrVbFp1DuSHPt36IQOVnIC82PWqYUZNab0VCI9tDxah0o
+         zVoyGtaQwGOBW6OykAInweQPNkb6WCYVRHibIWoe+SF5TSYbrLFecbukfdIjiP5v5oQT
+         OmsrC+r0rZ4RBNvyVEm1/V+xY6YzVcocAcHF84Ryhq7aobxzjPMxvkKAgXeLe5YPnDZB
+         2RFw==
+X-Gm-Message-State: APjAAAWBthJKnjUQ6evxrQQHOHtV3MxPHQasEOt33cLg1VcUi4NUN8y7
+        mEbB8Y56ifTIb00BEae1vJrFmA==
+X-Google-Smtp-Source: APXvYqxrTTvHwI6sqCWDAIuQw5CJ/CEsII1bP7ILXwgGxNSEeoHzmzvOA37vnD/EU3697mSCPuAkiw==
+X-Received: by 2002:ac8:7550:: with SMTP id b16mr31008qtr.286.1573243974947;
+        Fri, 08 Nov 2019 12:12:54 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id k40sm4132449qta.76.2019.11.08.12.12.54
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 08 Nov 2019 12:12:54 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iTAcn-00054i-KZ; Fri, 08 Nov 2019 16:12:53 -0400
+Date:   Fri, 8 Nov 2019 16:12:53 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Parav Pandit <parav@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
+        David M <david.m.ertman@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 16/18] libbpf: Add support for attaching BPF
- programs to other BPF programs
-Thread-Topic: [PATCH v3 bpf-next 16/18] libbpf: Add support for attaching BPF
- programs to other BPF programs
-Thread-Index: AQHVlf+YwwRq5FosuE2y6hpnfHhzDqeBoMoA
-Date:   Fri, 8 Nov 2019 18:57:41 +0000
-Message-ID: <88611E3B-DD55-4D33-AA15-73DE58F8D44D@fb.com>
-References: <20191108064039.2041889-1-ast@kernel.org>
- <20191108064039.2041889-17-ast@kernel.org>
-In-Reply-To: <20191108064039.2041889-17-ast@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3601.0.10)
-x-originating-ip: [2620:10d:c090:200::b292]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 77e5b1d0-5697-43bb-c404-08d7647d8816
-x-ms-traffictypediagnostic: MWHPR15MB1119:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1119C0D93E6764F60F7CA6C8B37B0@MWHPR15MB1119.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(396003)(39860400002)(136003)(346002)(366004)(199004)(189003)(33656002)(8936002)(4326008)(66446008)(8676002)(305945005)(5660300002)(36756003)(6116002)(86362001)(71200400001)(76116006)(54906003)(229853002)(46003)(66556008)(64756008)(316002)(66476007)(66946007)(6512007)(50226002)(5024004)(446003)(486006)(81156014)(71190400001)(6246003)(14454004)(81166006)(99286004)(11346002)(2616005)(476003)(186003)(6436002)(6506007)(25786009)(102836004)(478600001)(256004)(53546011)(6486002)(2906002)(6916009)(7736002)(76176011);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1119;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hku1Fq7u76MieiKMvy7uc0CfVtwuE/E5GvHA6PW5a5G0B3Rtc35IybLvClcyhnAtS4DQ6wpa7On0rS7o7tTyHXRXelLICcTbbFp78PeqV1af/FhEuCubKy9a6/mXskbvJ9OQDOQjP30BXeKtUEe8HbvsGC7qn7re57dyF1R4goYEFuQRrhu0faA+UtLiDmX5FsC2Ir0oSLVTXeVpLqz8ukiHgKXCFsvQbYiGlK0shF0BridsnMb7GxPGEUVug8xUn+Hitw6YwZXYdoxQqDl0ixAO0z0rQaGn2Tk8rfPijzIs8dWE4d/QBC+6kSkYG2GdUlnmhfY31M3nhT6BMEk/vLPQoZjjc3bEuzmvnowkypr60pSH6X8/UUmQFd4sDUDdj7XP1QeRGpTno9UvHLGZXTvHF2LrZJVzUggBsZ8eZ9B0NOkOPGDY0/NNaQ8UvLdU
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <310EED5D7FE37C4EA448E5E54451A67D@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191108201253.GE10956@ziepe.ca>
+References: <20191107160448.20962-1-parav@mellanox.com>
+ <20191107153234.0d735c1f@cakuba.netronome.com>
+ <20191108121233.GJ6990@nanopsycho>
+ <20191108144054.GC10956@ziepe.ca>
+ <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108111238.578f44f1@cakuba>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77e5b1d0-5697-43bb-c404-08d7647d8816
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 18:57:41.1588
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HBhqITCBuiGgb/mXR2tjBYfq7RtDYEqAj/2gKs1ATEbv15NubCKOpMATmNjs7dh0rjQ8B31i7mlC3yyTPVkE8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1119
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-08_07:2019-11-08,2019-11-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- suspectscore=0 impostorscore=0 clxscore=1015 mlxlogscore=960 spamscore=0
- adultscore=0 mlxscore=0 malwarescore=0 bulkscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911080185
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191108111238.578f44f1@cakuba>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Nov 08, 2019 at 11:12:38AM -0800, Jakub Kicinski wrote:
+> On Fri, 8 Nov 2019 15:40:22 +0000, Parav Pandit wrote:
+> > > The new intel driver has been having a very similar discussion about how to
+> > > model their 'multi function device' ie to bind RDMA and other drivers to a
+> > > shared PCI function, and I think that discussion settled on adding a new bus?
+> > > 
+> > > Really these things are all very similar, it would be nice to have a clear
+> > > methodology on how to use the device core if a single PCI device is split by
+> > > software into multiple different functional units and attached to different
+> > > driver instances.
+> > > 
+> > > Currently there is alot of hacking in this area.. And a consistent scheme
+> > > might resolve the ugliness with the dma_ops wrappers.
+> > > 
+> > > We already have the 'mfd' stuff to support splitting platform devices, maybe
+> > > we need to create a 'pci-mfd' to support splitting PCI devices?
+> > > 
+> > > I'm not really clear how mfd and mdev relate, I always thought mdev was
+> > > strongly linked to vfio.
+> > >
+> >
+> > Mdev at beginning was strongly linked to vfio, but as I mentioned
+> > above it is addressing more use case.
+> > 
+> > I observed that discussion, but was not sure of extending mdev further.
+> > 
+> > One way to do for Intel drivers to do is after series [9].
+> > Where PCI driver says, MDEV_CLASS_ID_I40_FOO
+> > RDMA driver mdev_register_driver(), matches on it and does the probe().
+> 
+> Yup, FWIW to me the benefit of reusing mdevs for the Intel case vs
+> muddying the purpose of mdevs is not a clear trade off.
 
+IMHO, mdev has amdev_parent_ops structure clearly intended to link it
+to vfio, so using a mdev for something not related to vfio seems like
+a poor choice.
 
-> On Nov 7, 2019, at 10:40 PM, Alexei Starovoitov <ast@kernel.org> wrote:
->=20
-> Extend libbpf api to pass attach_prog_fd into bpf_object__open.
->=20
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> ---
+I suppose this series is the start and we will eventually see the
+mlx5's mdev_parent_ops filled in to support vfio - but *right now*
+this looks identical to the problem most of the RDMA capable net
+drivers have splitting into a 'core' and a 'function'
 
-[...]
+> IMHO MFD should be of more natural use for Intel, since it's about
+> providing different functionality rather than virtual slices of the
+> same device.
 
-> +static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog_f=
-d)
-> +{
-> +	struct bpf_prog_info_linear *info_linear;
-> +	struct bpf_prog_info *info;
-> +	struct btf *btf =3D NULL;
-> +	int err =3D -EINVAL;
-> +
-> +	info_linear =3D bpf_program__get_prog_info_linear(attach_prog_fd, 0);
-> +	if (IS_ERR_OR_NULL(info_linear)) {
-> +		pr_warn("failed get_prog_info_linear for FD %d\n",
-> +			attach_prog_fd);
-> +		return -EINVAL;
-> +	}
-> +	info =3D &info_linear->info;
-> +	if (!info->btf_id) {
-> +		pr_warn("The target program doesn't have BTF\n");
-> +		goto out;
-> +	}
-> +	if (btf__get_from_id(info->btf_id, &btf)) {
-> +		pr_warn("Failed to get BTF of the program\n");
-> +		goto out;
-> +	}
-> +	err =3D btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
-> +	btf__free(btf);
-> +	if (err <=3D 0) {
-> +		pr_warn("%s is not found in prog's BTF\n", name);
-> +		goto out;
-		^^^ This goto doesn't really do much.=20
-> +	}
-> +out:
-> +	free(info_linear);
-> +	return err;
-> +}
+I don't think the 'different functionality' should matter much. 
 
-Otherwise
+Generally these multi-function drivers are build some some common
+'core' language like queues interrupts, BAR space, etc and then these
+common things can be specialized into netdev, rdma, scsi, etc. So we
+see a general rough design with a core layer managing the raw HW then
+drivers on top of that (including netdev) using that API.
 
-Acked-by: Song Liu <songliubraving@fb.com>
+The actual layering doesn't come through in the driver model,
+generally people put all the core stuff in with the netdev and then
+try and shuffle the netdev around as the 'handle' for that core API.
 
+These SFs are pretty similar in that the core physical driver
+continues to provide some software API support to the SF children (at
+least for mlx it is a small API)
+
+For instance mdev has no generic way to learn the BAR struct
+resources, so there is some extra API around the side that does this -
+in this series it is done by hackily co-opting the drvdata to
+something owned by the struct device instead of the device_driver and
+using that to access the API surface on 'struct mlx5_sf *', which
+includes the BAR info and so forth.
+
+This is probably the main difference from MFD. At least the few
+drivers I looked at, did not try and expose an SW API from the 'core'
+to the 'part', everything was usual generic driver resource stuff.
+
+Jason
