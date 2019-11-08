@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DEBFF4943
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:02:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84BBFF493A
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:02:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390340AbfKHLnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:43:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57340 "EHLO mail.kernel.org"
+        id S2390988AbfKHMBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 07:01:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57980 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390304AbfKHLnC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:43:02 -0500
+        id S2390464AbfKHLna (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:43:30 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7291C222C4;
-        Fri,  8 Nov 2019 11:43:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 56E1C21D82;
+        Fri,  8 Nov 2019 11:43:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213382;
-        bh=mreQAMbZ+CpRVpcttSNGFJi8T0eMst7r9ESpUc40GFM=;
+        s=default; t=1573213409;
+        bh=oj6ivdFfTCNKtO4RHc9SGueECtIuC8xF3bEQJgR81/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ImhFU1t4pptf21yrOE8oX5int5JugckN4gBTiOb5fjQFwxIIUHVTsqRHPGWd7Cdgx
-         HYUAkqAYal8+IgWmHHl1lv/LX/RcME9hEmcaUAdjQwhc8uqIG1ItNt5AfbPsC1dtKD
-         pyNRIYJsKPzBjJd5IKcLhsXe4ghjwXufeAW1KAnY=
+        b=r0H9eHSWzR39RazXkLyqSLYCHn3vZMWHb6haw8XbZM3EAbIlFSvJ+7QVn5AsXETbA
+         QPlfWUE7r1PGIAURyWiRdeu6ptdvQxWCRhzuDxSLoEhF5+D7DFC1nlvuNqv6AWumZH
+         mVDgJ2bD8em5pNEc4Qx+6j3oc72zWpkCSvTPTCfs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Rajeev Kumar Sirasanagandla <rsirasan@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 205/205] ath9k: Fix a locking bug in ath9k_add_interface()
-Date:   Fri,  8 Nov 2019 06:37:52 -0500
-Message-Id: <20191108113752.12502-205-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 013/103] cfg80211: Avoid regulatory restore when COUNTRY_IE_IGNORE is set
+Date:   Fri,  8 Nov 2019 06:41:38 -0500
+Message-Id: <20191108114310.14363-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
-References: <20191108113752.12502-1-sashal@kernel.org>
+In-Reply-To: <20191108114310.14363-1-sashal@kernel.org>
+References: <20191108114310.14363-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,46 +44,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Rajeev Kumar Sirasanagandla <rsirasan@codeaurora.org>
 
-[ Upstream commit 461cf036057477805a8a391e5fd0f5264a5e56a8 ]
+[ Upstream commit 7417844b63d4b0dc8ab23f88259bf95de7d09b57 ]
 
-We tried to revert commit d9c52fd17cb4 ("ath9k: fix tx99 with monitor
-mode interface") but accidentally missed part of the locking change.
+When REGULATORY_COUNTRY_IE_IGNORE is set,  __reg_process_hint_country_ie()
+ignores the country code change request from __cfg80211_connect_result()
+via regulatory_hint_country_ie().
 
-The lock has to be held earlier so that we're holding it when we do
-"sc->tx99_vif = vif;" and also there in the current code there is a
-stray unlock before we have taken the lock.
+After Disconnect, similar to above, country code should not be reset to
+world when country IE ignore is set. But this is violated and restore of
+regulatory settings is invoked by cfg80211_disconnect_work via
+regulatory_hint_disconnect().
 
-Fixes: 6df0580be8bc ("ath9k: add back support for using active monitor interfaces for tx99")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+To address this, avoid regulatory restore from regulatory_hint_disconnect()
+when COUNTRY_IE_IGNORE is set.
+
+Note: Currently, restore_regulatory_settings() takes care of clearing
+beacon hints. But in the proposed change, regulatory restore is avoided.
+Therefore, explicitly clear beacon hints when DISABLE_BEACON_HINTS
+is not set.
+
+Signed-off-by: Rajeev Kumar Sirasanagandla <rsirasan@codeaurora.org>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/wireless/reg.c | 46 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/main.c b/drivers/net/wireless/ath/ath9k/main.c
-index c85f613e8ceb5..74f98bbaea889 100644
---- a/drivers/net/wireless/ath/ath9k/main.c
-+++ b/drivers/net/wireless/ath/ath9k/main.c
-@@ -1251,6 +1251,7 @@ static int ath9k_add_interface(struct ieee80211_hw *hw,
- 	struct ath_vif *avp = (void *)vif->drv_priv;
- 	struct ath_node *an = &avp->mcast_node;
+diff --git a/net/wireless/reg.c b/net/wireless/reg.c
+index b940d5c2003b0..804eac073b6b9 100644
+--- a/net/wireless/reg.c
++++ b/net/wireless/reg.c
+@@ -2703,8 +2703,54 @@ static void restore_regulatory_settings(bool reset_user)
+ 	schedule_work(&reg_work);
+ }
  
-+	mutex_lock(&sc->mutex);
- 	if (IS_ENABLED(CONFIG_ATH9K_TX99)) {
- 		if (sc->cur_chan->nvifs >= 1) {
- 			mutex_unlock(&sc->mutex);
-@@ -1259,8 +1260,6 @@ static int ath9k_add_interface(struct ieee80211_hw *hw,
- 		sc->tx99_vif = vif;
- 	}
- 
--	mutex_lock(&sc->mutex);
--
- 	ath_dbg(common, CONFIG, "Attach a VIF of type: %d\n", vif->type);
- 	sc->cur_chan->nvifs++;
- 
++static bool is_wiphy_all_set_reg_flag(enum ieee80211_regulatory_flags flag)
++{
++	struct cfg80211_registered_device *rdev;
++	struct wireless_dev *wdev;
++
++	list_for_each_entry(rdev, &cfg80211_rdev_list, list) {
++		list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
++			wdev_lock(wdev);
++			if (!(wdev->wiphy->regulatory_flags & flag)) {
++				wdev_unlock(wdev);
++				return false;
++			}
++			wdev_unlock(wdev);
++		}
++	}
++
++	return true;
++}
++
+ void regulatory_hint_disconnect(void)
+ {
++	/* Restore of regulatory settings is not required when wiphy(s)
++	 * ignore IE from connected access point but clearance of beacon hints
++	 * is required when wiphy(s) supports beacon hints.
++	 */
++	if (is_wiphy_all_set_reg_flag(REGULATORY_COUNTRY_IE_IGNORE)) {
++		struct reg_beacon *reg_beacon, *btmp;
++
++		if (is_wiphy_all_set_reg_flag(REGULATORY_DISABLE_BEACON_HINTS))
++			return;
++
++		spin_lock_bh(&reg_pending_beacons_lock);
++		list_for_each_entry_safe(reg_beacon, btmp,
++					 &reg_pending_beacons, list) {
++			list_del(&reg_beacon->list);
++			kfree(reg_beacon);
++		}
++		spin_unlock_bh(&reg_pending_beacons_lock);
++
++		list_for_each_entry_safe(reg_beacon, btmp,
++					 &reg_beacon_list, list) {
++			list_del(&reg_beacon->list);
++			kfree(reg_beacon);
++		}
++
++		return;
++	}
++
+ 	pr_debug("All devices are disconnected, going to restore regulatory settings\n");
+ 	restore_regulatory_settings(false);
+ }
 -- 
 2.20.1
 
