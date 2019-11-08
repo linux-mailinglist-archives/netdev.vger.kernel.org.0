@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B67F50FD
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7649F5111
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:28:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbfKHQWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 11:22:51 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:35742 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726768AbfKHQWv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 11:22:51 -0500
-Received: by mail-wm1-f68.google.com with SMTP id 8so6843156wmo.0
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 08:22:48 -0800 (PST)
+        id S1727461AbfKHQ2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 11:28:07 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50500 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727168AbfKHQ2H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 11:28:07 -0500
+Received: by mail-wm1-f67.google.com with SMTP id l17so5997990wmh.0
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 08:28:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=1hEKhdVfyO4yewnCI8/1KBs9vIJ4ofje9lXGykRyyCQ=;
-        b=b1qFA61Tma0gRUWaFZBFRrOCcniNjzRFqKPQkAbRS3u+qT7PYE9m8/7fMRuvG7bRkK
-         NigudxLRzuodvlkqXlZURobWU4FFkHzMUax94X8fnGrSR3qjrw1bTLBYQUCg7AK8hz/b
-         1c7pjzr+9/9Xpkp1IVQTCopyuf0OKkdM3vNRcL9oRe0C3nxWZWgLvwxxuqR4n+10I5Iz
-         dHM43QKKbMRtBYYT+ViQuQ1/TgyG1YEBH5mQYrIAoIVaAaoY8xcgU7pW8tCPN40FUNh7
-         q6K14XCHPaeeCKHOXfmFuB4jHyI3FlxLSble/sPhXSnJJGiFJQh3yMR5BsLde2Ww/btE
-         ApHQ==
+        bh=Qfw5+H5+VmRkk4Ngvgedyo88XB4FJADrjMcpnGrVOlM=;
+        b=kVwQhDRdB+PtDsgGYBN4ieYVRQFhPWUmmm7I4+MwKbUE/w96AHS5jaQE2ALn+NLQjx
+         nRwiQs7KBIh1oEeFNQgpf1ahq0vO8GaXH8rECuB81idG2G9jH6wH70nazQsOmmAQZeuL
+         BHos7sM45dMUzR3EL40enqoTeMS+XPJcmz17sSEG8ljs2BBPstC+7PABDJ6MXKtEDizH
+         bFFfPnwFl266yn7sLDEuU32lWobBJYI1lFxg3cRs9eU8ybUCqsDnCReT9DA1uuUUX6GH
+         r4gll9sloNUprhxU7igSGkoFy1lkWOeZLRse9CV7AP2QetKhopbTqNrH/RjGaSjgLuQH
+         pceg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=1hEKhdVfyO4yewnCI8/1KBs9vIJ4ofje9lXGykRyyCQ=;
-        b=E8TZ+P6I63aQqjegiUU2NfHk+HZLamkM5/Aa65nhN2DpoOpa+9zh6gBIzcBrkWZuOU
-         hp6yxLUl5iZG31KJQTS6IgUKee6YtZVQhJa30taiOTJhRQiDvRJV4+ihIVnPuZ/tqTBm
-         t0lsv+a0wsB87SgdVtvb70HLFaf4RuZfNFNaWPXl6cHh+5iVGXHID/ftSX2quCdBRyw0
-         IiQ7iw8zFxikyk3lLRF/K/v5u9HYBACaNmdnlP87Anx7mENiQPc3LI7yTvlD4bSz4z5q
-         idvLwOXQ24tpDWkkbYXhzZWZ1s7pyzm1UeVyJwsa64J2x4b1xymScGna9wB4X5RSA56G
-         TXyg==
-X-Gm-Message-State: APjAAAWmRwHXK+Auw9x2s5C2me1ZA3YAGCNfKGRwdUIFklwF7VKGv/xc
-        sIPPzeyF8oFFrtv3kXdZxC6/GOGQvlU=
-X-Google-Smtp-Source: APXvYqyEO3yYImFDMX6b+ebGJ70btDiELBQr7l+ul6qPtiqg5rSRR1thE5ikNvJniBIAXxVobGvrGw==
-X-Received: by 2002:a1c:6309:: with SMTP id x9mr8521783wmb.108.1573230167714;
-        Fri, 08 Nov 2019 08:22:47 -0800 (PST)
+        bh=Qfw5+H5+VmRkk4Ngvgedyo88XB4FJADrjMcpnGrVOlM=;
+        b=AsEcG5uPCp8588SUvp7guv4LxfSjTnfurIokrW9xgNQFlrwVwQ4wBwdJZd2g4IhAV3
+         IROQhf4GOguHjvbwlMlqp5aoi+6vMBKV++RjrjNzKTG2hDbR/QoAmOBfdTBz+OurBKnS
+         kDbgXy2EDjaCV4sMYv8ydK54ZRaHyATqWpEYyFjuP9FLV5VbiCcTKotXMkiOVZJGTVkG
+         Ufbn40A3cTC7iNNAnNTJOpU7kH5iTzsB4Op1wK7KzLGTG4zgdM87swtENhnlXEmIFDY0
+         8klbmisXpBxNhX2Mz5+/ZEItvSE2gvCyKwNffazzexZ6bCaUDLYUf5JNcfuZOR9WE6DF
+         TJUg==
+X-Gm-Message-State: APjAAAVJw2M80qUWkCpdUS03aQlwdjnpQwH+m79eyN+WsXNqyDPtrMxo
+        G6o5xFy+0x22QSvT3h5yUk12+w==
+X-Google-Smtp-Source: APXvYqzpb9EnZi/4lRhF2ee6bghRGriqVMLc9rb5ubvCJ+9fxX3LCe/M6BbPWImctFMPwDj9ntURng==
+X-Received: by 2002:a1c:4089:: with SMTP id n131mr9410705wma.86.1573230484274;
+        Fri, 08 Nov 2019 08:28:04 -0800 (PST)
 Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id w132sm9995010wma.6.2019.11.08.08.22.47
+        by smtp.gmail.com with ESMTPSA id 16sm9805181wmf.0.2019.11.08.08.28.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 08:22:47 -0800 (PST)
-Date:   Fri, 8 Nov 2019 17:22:46 +0100
+        Fri, 08 Nov 2019 08:28:03 -0800 (PST)
+Date:   Fri, 8 Nov 2019 17:28:03 +0100
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Parav Pandit <parav@mellanox.com>
 Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
@@ -56,103 +56,101 @@ Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
         "leon@kernel.org" <leon@kernel.org>,
         "cohuck@redhat.com" <cohuck@redhat.com>,
         Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Vu Pham <vuhuong@mellanox.com>
-Subject: Re: [PATCH net-next 06/19] net/mlx5: Add support for mediated
- devices in switchdev mode
-Message-ID: <20191108162246.GN6990@nanopsycho>
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH net-next 07/19] vfio/mdev: Introduce sha1 based mdev alias
+Message-ID: <20191108162803.GO6990@nanopsycho>
 References: <20191107160448.20962-1-parav@mellanox.com>
  <20191107160834.21087-1-parav@mellanox.com>
- <20191107160834.21087-6-parav@mellanox.com>
- <20191108103249.GE6990@nanopsycho>
- <AM0PR05MB486609CBD40E1E26BB18C6B3D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191107160834.21087-7-parav@mellanox.com>
+ <20191108110456.GH6990@nanopsycho>
+ <AM0PR05MB48667AF9F6EACF0CE1688262D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM0PR05MB486609CBD40E1E26BB18C6B3D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+In-Reply-To: <AM0PR05MB48667AF9F6EACF0CE1688262D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Nov 08, 2019 at 05:03:13PM CET, parav@mellanox.com wrote:
->
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Friday, November 8, 2019 4:33 AM
->> To: Parav Pandit <parav@mellanox.com>
->> Cc: alex.williamson@redhat.com; davem@davemloft.net;
->> kvm@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
->> <saeedm@mellanox.com>; kwankhede@nvidia.com; leon@kernel.org;
->> cohuck@redhat.com; Jiri Pirko <jiri@mellanox.com>; linux-
->> rdma@vger.kernel.org; Vu Pham <vuhuong@mellanox.com>
->> Subject: Re: [PATCH net-next 06/19] net/mlx5: Add support for mediated
->> devices in switchdev mode
->> 
->> Thu, Nov 07, 2019 at 05:08:21PM CET, parav@mellanox.com wrote:
->> >From: Vu Pham <vuhuong@mellanox.com>
->> 
->> [...]
->> 
->> 
->> >+static ssize_t
->> >+max_mdevs_show(struct kobject *kobj, struct device *dev, char *buf) {
->> >+	struct pci_dev *pdev = to_pci_dev(dev);
->> >+	struct mlx5_core_dev *coredev;
->> >+	struct mlx5_mdev_table *table;
->> >+	u16 max_sfs;
->> >+
->> >+	coredev = pci_get_drvdata(pdev);
->> >+	table = coredev->priv.eswitch->mdev_table;
->> >+	max_sfs = mlx5_core_max_sfs(coredev, &table->sf_table);
->> >+
->> >+	return sprintf(buf, "%d\n", max_sfs); } static
->> >+MDEV_TYPE_ATTR_RO(max_mdevs);
->> >+
->> >+static ssize_t
->> >+available_instances_show(struct kobject *kobj, struct device *dev,
->> >+char *buf) {
->> >+	struct pci_dev *pdev = to_pci_dev(dev);
->> >+	struct mlx5_core_dev *coredev;
->> >+	struct mlx5_mdev_table *table;
->> >+	u16 free_sfs;
->> >+
->> >+	coredev = pci_get_drvdata(pdev);
->> >+	table = coredev->priv.eswitch->mdev_table;
->> >+	free_sfs = mlx5_get_free_sfs(coredev, &table->sf_table);
->> >+	return sprintf(buf, "%d\n", free_sfs); } static
->> >+MDEV_TYPE_ATTR_RO(available_instances);
->> 
->> These 2 arbitrary sysfs files are showing resource size/usage for the whole
->> eswitch/asic. That is a job for "devlink resource". Please implement that.
->>
->Jiri,
->This series is already too long. I will implement it as follow on. It is already in plan.
->However, available_instances file is needed regardless of devlink resource, as its read by the userspace for all mdev drivers.
+Fri, Nov 08, 2019 at 04:59:53PM CET, parav@mellanox.com wrote:
 
-If that is the case, why isn't that implemented in mdev code rather than
-individual drivers? I don't understand.
+[...]
+
+>> >+	if (parent->ops->get_alias_length) {
+>> >+		unsigned int alias_len;
+>> >+
+>> >+		alias_len = parent->ops->get_alias_length();
+>> >+		if (alias_len) {
+>> 
+>> I think this should be with WARN_ON. Driver should not never return such
+>> 0 and if it does, it's a bug.
+>>
+>Ok. will add it.
+> 
+>> Also I think this check should be extended by checking value is multiple of 2.
+>Do you mean driver must set alias length as always multiple of 2? Why?
+
+Why not? Why would driver want to have even len? If say 11 is too long,
+it should return 10. The last byte for even is set by your code
+to '0' anyway...
+
+
+>
+>> Then you can avoid the roundup() above. No need to allow even len.
+>Did you mean "no need to allow odd"? or? 
+
+Yes, odd.
 
 
 > 
 >> 
+>> [...]
+>> 
+>> >diff --git a/drivers/vfio/mdev/mdev_sysfs.c
+>> >b/drivers/vfio/mdev/mdev_sysfs.c index 7570c7602ab4..43afe0e80b76
+>> >100644
+>> >--- a/drivers/vfio/mdev/mdev_sysfs.c
+>> >+++ b/drivers/vfio/mdev/mdev_sysfs.c
+>> >@@ -63,15 +63,18 @@ static ssize_t create_store(struct kobject *kobj,
+>> struct device *dev,
+>> > 		return -ENOMEM;
+>> >
+>> > 	ret = guid_parse(str, &uuid);
+>> >-	kfree(str);
+>> > 	if (ret)
+>> >-		return ret;
+>> >+		goto err;
+>> >
+>> >-	ret = mdev_device_create(kobj, dev, &uuid);
+>> >+	ret = mdev_device_create(kobj, dev, str, &uuid);
+>> 
+>> Why to pass the same thing twice? Move the guid_parse() call to the
+>> beginning of mdev_device_create() function.
+>>
+>Because alias should be unique and need to hold the lock while searching for duplicate.
+>So it is not done twice, and moving guid_parse() won't help due to need of lock.
+
+I'm not saying anything about a lock. Not sure why do you think so.
+I'm saying that you pass the same value in 2 args. That's it.
+Better to pass it as char* only and process it inside.
+If by guid_parse() or otherwise, does not matter. That is my point.
+
+> 
+>> 
+>> > 	if (ret)
+>> >-		return ret;
+>> >+		goto err;
+>> >
+>> >-	return count;
+>> >+	ret = count;
 >> >+
->> >+static struct attribute *mdev_dev_attrs[] = {
->> >+	&mdev_type_attr_max_mdevs.attr,
->> >+	&mdev_type_attr_available_instances.attr,
->> >+	NULL,
->> >+};
->> >+
->> >+static struct attribute_group mdev_mgmt_group = {
->> >+	.name  = "local",
->> >+	.attrs = mdev_dev_attrs,
->> >+};
->> >+
->> >+static struct attribute_group *mlx5_meddev_groups[] = {
->> >+	&mdev_mgmt_group,
->> >+	NULL,
->> >+};
+>> >+err:
+>> >+	kfree(str);
+>> >+	return ret;
+>> > }
+>> >
+>> > MDEV_TYPE_ATTR_WO(create);
 >> 
 >> [...]
