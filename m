@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 837D3F4AE4
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:13:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13604F4AE1
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:13:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391916AbfKHMML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:12:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51864 "EHLO mail.kernel.org"
+        id S2388854AbfKHMME (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 07:12:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51870 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732886AbfKHLiw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732900AbfKHLiw (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 8 Nov 2019 06:38:52 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 46CB721D6C;
-        Fri,  8 Nov 2019 11:38:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6472421D7E;
+        Fri,  8 Nov 2019 11:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213131;
-        bh=SCOsppBGLQaVZeUlajuqmFaM0qbiYHtbb7n/++vr5wk=;
+        s=default; t=1573213132;
+        bh=FBFUnT8LQXED72+Al9YJaWDfbqJLi+M8khoAEx+dqV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ed0pkacBLcVvJUdRjBWkJgbeez2EqYOlpZlzhpWcxoMmeUNpc8YkqwJK/1gqTa7xS
-         bQ7XkZb/DoDUji+KILjoqUVACk4qI6cVvseCPIYkbQy17H+jvP6pBSqYP7byMliw3T
-         3FFE+bx74KTSFEIWpQwANZHgTObVkl8unzmYfxog=
+        b=kZmDKTrDoBezHLCwqndpJSKwjhacobY4wp7n1k913Pm4bSucRTkQLL3eHkr9WmBS3
+         wTHMCicaqSF/bj7nhTwuAsjpLpBTo8keLJF8jbx9n1KwmPGTWqff81BojjEgtYab9m
+         sLGMTIO6k6oZrTrpOOXjzZW1uoJITm9fXosqhuvE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jan Sokolowski <jan.sokolowski@intel.com>,
+Cc:     =?UTF-8?q?Patryk=20Ma=C5=82ek?= <patryk.malek@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 049/205] i40e: Check and correct speed values for link on open
-Date:   Fri,  8 Nov 2019 06:35:16 -0500
-Message-Id: <20191108113752.12502-49-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 050/205] i40evf: Don't enable vlan stripping when rx offload is turned on
+Date:   Fri,  8 Nov 2019 06:35:17 -0500
+Message-Id: <20191108113752.12502-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
 References: <20191108113752.12502-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -44,76 +45,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jan Sokolowski <jan.sokolowski@intel.com>
+From: Patryk Małek <patryk.malek@intel.com>
 
-[ Upstream commit e78d9a39fd06109022d11c8ca444cfcec2abb290 ]
+[ Upstream commit 3bd77e2ae1477d6f87fc3f542c737119d5decf9f ]
 
-If our card has been put in an unstable state due to
-other drivers interacting with it, speed settings
-might be incorrect. If incorrect, forcefully reset them
-on open to known default values.
+With current implementation of i40evf_set_features when user sets
+any offload via ethtool we set I40EVF_FLAG_AQ_ENABLE_VLAN_STRIPPING
+as a required aq which triggers driver to call
+i40evf_enable_vlan_stripping. This shouldn't take place.
+This patches fixes it by setting the flag only when VLAN offload
+is turned on.
 
-Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
+Signed-off-by: Patryk Małek <patryk.malek@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 27 ++++++++++++++++++---
- 1 file changed, 24 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/i40evf/i40evf_main.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 055562c930fb0..1577dbaab7425 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -6587,6 +6587,24 @@ static i40e_status i40e_force_link_state(struct i40e_pf *pf, bool is_up)
- 	struct i40e_hw *hw = &pf->hw;
- 	i40e_status err;
- 	u64 mask;
-+	u8 speed;
-+
-+	/* Card might've been put in an unstable state by other drivers
-+	 * and applications, which causes incorrect speed values being
-+	 * set on startup. In order to clear speed registers, we call
-+	 * get_phy_capabilities twice, once to get initial state of
-+	 * available speeds, and once to get current PHY config.
-+	 */
-+	err = i40e_aq_get_phy_capabilities(hw, false, true, &abilities,
-+					   NULL);
-+	if (err) {
-+		dev_err(&pf->pdev->dev,
-+			"failed to get phy cap., ret =  %s last_status =  %s\n",
-+			i40e_stat_str(hw, err),
-+			i40e_aq_str(hw, hw->aq.asq_last_status));
-+		return err;
-+	}
-+	speed = abilities.link_speed;
+diff --git a/drivers/net/ethernet/intel/i40evf/i40evf_main.c b/drivers/net/ethernet/intel/i40evf/i40evf_main.c
+index bc4fa9df6da3e..3fc46d2adc087 100644
+--- a/drivers/net/ethernet/intel/i40evf/i40evf_main.c
++++ b/drivers/net/ethernet/intel/i40evf/i40evf_main.c
+@@ -3097,18 +3097,19 @@ static int i40evf_set_features(struct net_device *netdev,
+ {
+ 	struct i40evf_adapter *adapter = netdev_priv(netdev);
  
- 	/* Get the current phy config */
- 	err = i40e_aq_get_phy_capabilities(hw, false, false, &abilities,
-@@ -6600,9 +6618,9 @@ static i40e_status i40e_force_link_state(struct i40e_pf *pf, bool is_up)
+-	/* Don't allow changing VLAN_RX flag when VLAN is set for VF
+-	 * and return an error in this case
++	/* Don't allow changing VLAN_RX flag when adapter is not capable
++	 * of VLAN offload
+ 	 */
+-	if (VLAN_ALLOWED(adapter)) {
++	if (!VLAN_ALLOWED(adapter)) {
++		if ((netdev->features ^ features) & NETIF_F_HW_VLAN_CTAG_RX)
++			return -EINVAL;
++	} else if ((netdev->features ^ features) & NETIF_F_HW_VLAN_CTAG_RX) {
+ 		if (features & NETIF_F_HW_VLAN_CTAG_RX)
+ 			adapter->aq_required |=
+ 				I40EVF_FLAG_AQ_ENABLE_VLAN_STRIPPING;
+ 		else
+ 			adapter->aq_required |=
+ 				I40EVF_FLAG_AQ_DISABLE_VLAN_STRIPPING;
+-	} else if ((netdev->features ^ features) & NETIF_F_HW_VLAN_CTAG_RX) {
+-		return -EINVAL;
  	}
  
- 	/* If link needs to go up, but was not forced to go down,
--	 * no need for a flap
-+	 * and its speed values are OK, no need for a flap
- 	 */
--	if (is_up && abilities.phy_type != 0)
-+	if (is_up && abilities.phy_type != 0 && abilities.link_speed != 0)
- 		return I40E_SUCCESS;
- 
- 	/* To force link we need to set bits for all supported PHY types,
-@@ -6614,7 +6632,10 @@ static i40e_status i40e_force_link_state(struct i40e_pf *pf, bool is_up)
- 	config.phy_type_ext = is_up ? (u8)((mask >> 32) & 0xff) : 0;
- 	/* Copy the old settings, except of phy_type */
- 	config.abilities = abilities.abilities;
--	config.link_speed = abilities.link_speed;
-+	if (abilities.link_speed != 0)
-+		config.link_speed = abilities.link_speed;
-+	else
-+		config.link_speed = speed;
- 	config.eee_capability = abilities.eee_capability;
- 	config.eeer = abilities.eeer_val;
- 	config.low_power_ctrl = abilities.d3_lpan;
+ 	return 0;
 -- 
 2.20.1
 
