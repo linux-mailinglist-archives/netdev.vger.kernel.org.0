@@ -2,102 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 591F6F5340
+	by mail.lfdr.de (Postfix) with ESMTP id EAA9DF5341
 	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726462AbfKHSIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 13:08:44 -0500
-Received: from mga02.intel.com ([134.134.136.20]:61537 "EHLO mga02.intel.com"
+        id S1727296AbfKHSJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 13:09:05 -0500
+Received: from mga04.intel.com ([192.55.52.120]:6163 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726049AbfKHSIo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 13:08:44 -0500
+        id S1726670AbfKHSJE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 13:09:04 -0500
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Nov 2019 10:08:43 -0800
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Nov 2019 10:09:04 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,282,1569308400"; 
-   d="p7s'?scan'208";a="201758223"
+   d="p7s'?scan'208";a="201758264"
 Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
-  by fmsmga007.fm.intel.com with ESMTP; 08 Nov 2019 10:08:43 -0800
-Received: from orsmsx163.amr.corp.intel.com (10.22.240.88) by
- ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 8 Nov 2019 10:08:42 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 08 Nov 2019 10:09:04 -0800
 Received: from orsmsx116.amr.corp.intel.com ([169.254.7.79]) by
- ORSMSX163.amr.corp.intel.com ([169.254.9.158]) with mapi id 14.03.0439.000;
- Fri, 8 Nov 2019 10:08:42 -0800
+ ORSMSX110.amr.corp.intel.com ([169.254.10.200]) with mapi id 14.03.0439.000;
+ Fri, 8 Nov 2019 10:09:03 -0800
 From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
 To:     "davem@davemloft.net" <davem@davemloft.net>,
         "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "nhorman@redhat.com" <nhorman@redhat.com>,
+CC:     "Ertman, David M" <david.m.ertman@intel.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
         "sassmann@redhat.com" <sassmann@redhat.com>,
         "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Subject: Re: [net-next 01/15] ice: Use ice_ena_vsi and ice_dis_vsi in DCB
- configuration flow
-Thread-Topic: [net-next 01/15] ice: Use ice_ena_vsi and ice_dis_vsi in DCB
- configuration flow
-Thread-Index: AQHVlbjBijBTbEgdB0WQtGu2hhYoUqeA8M8AgAEo9AA=
-Date:   Fri, 8 Nov 2019 18:08:41 +0000
-Message-ID: <54c22ba9110b299f9f222cd1cffbdfb6ca6024d8.camel@intel.com>
+Subject: Re: [net-next 03/15] ice: Implement DCBNL support
+Thread-Topic: [net-next 03/15] ice: Implement DCBNL support
+Thread-Index: AQHVlbjDoGSBrCPT302EgqtfgIThkaeA8U+AgAEojYA=
+Date:   Fri, 8 Nov 2019 18:09:03 +0000
+Message-ID: <eed79960a7480c5012492d6ddd2db6c7324ab818.camel@intel.com>
 References: <20191107221438.17994-1-jeffrey.t.kirsher@intel.com>
-         <20191107221438.17994-2-jeffrey.t.kirsher@intel.com>
-         <20191107.162550.125702977926999669.davem@davemloft.net>
-In-Reply-To: <20191107.162550.125702977926999669.davem@davemloft.net>
+         <20191107221438.17994-4-jeffrey.t.kirsher@intel.com>
+         <20191107.162737.1165653881854546260.davem@davemloft.net>
+In-Reply-To: <20191107.162737.1165653881854546260.davem@davemloft.net>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-originating-ip: [10.166.244.155]
 Content-Type: multipart/signed; micalg=sha-1;
-        protocol="application/x-pkcs7-signature"; boundary="=-xucFm4CHg6lS0cp1wMwh"
+        protocol="application/x-pkcs7-signature"; boundary="=-mZIN3MfZCeCmWuu711B8"
 MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-xucFm4CHg6lS0cp1wMwh
+--=-mZIN3MfZCeCmWuu711B8
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2019-11-07 at 16:25 -0800, David Miller wrote:
+On Thu, 2019-11-07 at 16:27 -0800, David Miller wrote:
 > From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Date: Thu,  7 Nov 2019 14:14:24 -0800
+> Date: Thu,  7 Nov 2019 14:14:26 -0800
 >=20
-> > @@ -169,15 +170,23 @@ int ice_pf_dcb_cfg(struct ice_pf *pf, struct
-> > ice_dcbx_cfg *new_cfg, bool locked)
-> >  	}
-> > =20
-> >  	/* Store old config in case FW config fails */
-> > -	old_cfg =3D devm_kzalloc(&pf->pdev->dev, sizeof(*old_cfg),
-> > GFP_KERNEL);
-> > -	memcpy(old_cfg, curr_cfg, sizeof(*old_cfg));
-> > +	old_cfg =3D kmemdup(curr_cfg, sizeof(*old_cfg), GFP_KERNEL);
+> > +static int ice_dcbnl_getpfc(struct net_device *netdev, struct
+> > ieee_pfc *pfc)
+> > +{
+> > +	struct ice_pf *pf =3D ice_netdev_to_pf(netdev);
+> > +	struct ice_dcbx_cfg *dcbxcfg;
+> > +	struct ice_port_info *pi =3D pf->hw.port_info;
+> > +	int i;
 >=20
-> Why not use devm_kmemdup()?  Then you don't have to add the kfree()
-> code paths.
+> Reverse christmas tree here please.
 
+Sorry, will fix that.
 
-https://lore.kernel.org/netdev/20190819161142.6f4cc14d@cakuba.netronome.com=
-/
-
-https://lore.kernel.org/netdev/20190819.165955.1428577625599018007.davem@da=
-vemloft.net/
-
-https://lore.kernel.org/netdev/20190819.183158.1151163538921922149.davem@da=
-vemloft.net/
-
-Our interpretation of this feedback was that it is unnecessary to use
-devres variants of memory allocation/deallocation when memory is
-alloc'd and freed in the same function. After getting this feedback, we
-are changing the ice driver to follow this guideline and this change is
-one of those.
-
-
---=-xucFm4CHg6lS0cp1wMwh
+--=-mZIN3MfZCeCmWuu711B8
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -153,13 +130,13 @@ B8uO1XlhOrj+Z3mSi85eblWWhJlq6+TQH/hZWSiyZH2lo3J49oHClTlk86GUEIUp/sf5v5cxggIX
 MIICEwIBATCBkDB5MQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFDASBgNVBAcTC1NhbnRhIENs
 YXJhMRowGAYDVQQKExFJbnRlbCBDb3Jwb3JhdGlvbjErMCkGA1UEAxMiSW50ZWwgRXh0ZXJuYWwg
 QmFzaWMgSXNzdWluZyBDQSA0QQITMwAA0J5PWjT/SLEH2wAAAADQnjAJBgUrDgMCGgUAoF0wGAYJ
-KoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkxMTA4MTgwODQwWjAjBgkq
-hkiG9w0BCQQxFgQUrVkPoI912977AlzFhwXx4y5hAeIwDQYJKoZIhvcNAQEBBQAEggEAZVTQOYWd
-UCezfftIV1hmgP/KQXLBktQ6QLRVAA2lQTcSvoKVFOClOofXwIoBZUSZk1gqWn9dnhL7hSnPh0wi
-xQKppyCGzyIvk7ZofaILKwzTkVuBpO5sB5n97N/sfVU1Zh9nUsyvQFKKBCVqlFkgLVIyzJkiYvVB
-Ves50nSTJHOTJl9O+GM67uf70Px767SvMnqHEAmH9tOjb+G9HJusNm7X9RNRm35vNlOHaoZyy8wb
-HTIiGKtxl2/veQsQJjJogOQ5eUXzwxfxs2VoTxui08aJcAbcJwcgqz2CsLhOJVo8X9jfJlfiSbfK
-D1vdRLGQeTusMSX6iSf0QmGGXH8+GwAAAAAAAA==
+KoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkxMTA4MTgwOTAxWjAjBgkq
+hkiG9w0BCQQxFgQUD072+OkzKWJ1/b2DAcod6kfALx0wDQYJKoZIhvcNAQEBBQAEggEA3RLikX/i
+yOSiK8WVhdjr3y8OZS3DbH8DsUEbp3SvMrxT8g/T80ABaZQCnQfXzKOjX89UBlfWXXkUgfpb8Y5h
+iA2O3pWSQxx/SZdzuEkvjlLWLMq4WwP6BDIDOLQ6xFUJpjaD/fhNmMTpzY87RJMPQc98/NmL/Wt8
+1lclf5xWluPOmtN7KP6fQpNY701WqbMEt5IIumsguJnQCBdtmqHZLMsZqqtCn6tzlB7hXChBnm1L
+fiVoUZJzrhp9vuyLNu/UUiJlmH4J48iIPxCRiU7XdjWXOzKlZAxzYojK8L43QP6YIPmXvt2lb5j8
+iREwHCrctqYoBJbq4P/tx/8IQ8GbKgAAAAAAAA==
 
 
---=-xucFm4CHg6lS0cp1wMwh--
+--=-mZIN3MfZCeCmWuu711B8--
