@@ -2,104 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE25F4FAB
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 16:29:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 53571F4FBA
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 16:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727010AbfKHP3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 10:29:37 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:36811 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726755AbfKHP3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 10:29:36 -0500
-Received: by mail-io1-f65.google.com with SMTP id s3so6793905ioe.3
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 07:29:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QjMM7TzDwENpfLcRG8tZi/AAD20SHkYme2eBgBpgSkQ=;
-        b=jTjo2O7fA+N/fpmkC29gSJX7jatDMTZbmvhKQXLa2Vic020IqResgwFHp6/Bdgu+7g
-         Z5uGubUE0vOt9DLxGNNJJBV4OUAsiMm8tZQxhnR3dwJMQEhuG1nhD/5K1YR4l0TuN6CG
-         Ys0WwHIgWrfw05BkD+V8WhTw4dpxMTcy/O9ZC6gO3duGw8pMlJwGjMLz3uLh4iiXabp2
-         1Ugmsbr5tmJD995WMgljzXKXaGzcmfWLMwSKGi/hY6zZDODtZcMRwHgs1F1BtbewaTpj
-         TQAC4Sx8K4rKkMg7VSaE7kxDfwwXlVdtu5i5OfCSeHbGXYEOIZYUXfUS01qxTTWFLRiq
-         wgZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QjMM7TzDwENpfLcRG8tZi/AAD20SHkYme2eBgBpgSkQ=;
-        b=AqpJL61K6WQfY2e8G2vHnH6LcYMXnbh4PMur6XzlW4sziM/V85JASpuaJvvLs8Tdav
-         6+D9zpdzrqYzTLyyK+tZnYnHL2H6uEdMtlM/bGYA8J5W/feiHhDG6xGEP+AqNsjvb6pz
-         QIXmQu+rG3wvKSlZStR20IdKvCr8TP/FnpGO5cJwmKNokSgt3iyZxkFrl390imi39+bx
-         O2H7Zp4oIe+dvFv99bw3BOaZp9JH8u9Zn1SmqyHtOlots21M0jIK8MwjTfd8nTN/HJaM
-         AU/zJnt3KPEwZ+P4Y4QVr03/ERbruDCAImPdKd44gIA2hLP4MZNhO+e9wW2q2wMwvZSK
-         qnTw==
-X-Gm-Message-State: APjAAAXiEc3ZXFB1D00QzQ7MM8y1CCz/wuR7dR6AaRpY9CYx46EObfzf
-        UUNMESOpx0Rn0h9f0mMNliJanOBm
-X-Google-Smtp-Source: APXvYqxrVf71mtgFqSXmPBc/9wVOaSQwHpltLmKnyMoGFUyBOeoCLeP0jbEjIyESu8wp03oyhMvrZw==
-X-Received: by 2002:a02:3b10:: with SMTP id c16mr11730202jaa.39.1573226975842;
-        Fri, 08 Nov 2019 07:29:35 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:5957:ca04:7584:ed9f])
-        by smtp.googlemail.com with ESMTPSA id q3sm813767ill.0.2019.11.08.07.29.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Nov 2019 07:29:34 -0800 (PST)
-Subject: Re: [PATCH net-next 0/5] lwtunnel: add ip and ip6 options setting and
- dumping
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        network dev <netdev@vger.kernel.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Jiri Benc <jbenc@redhat.com>, Thomas Graf <tgraf@suug.ch>,
-        William Tu <u9012063@gmail.com>
-References: <cover.1573030805.git.lucien.xin@gmail.com>
- <20191106.211459.329583246222911896.davem@davemloft.net>
- <CADvbK_ePx7F62BR43UAFF5dmwHKJdkU6Tth06t5iirsH9_XgLg@mail.gmail.com>
- <c89c4f99-d37f-17c8-07e6-ee04351c8c36@gmail.com>
- <CADvbK_dDVJs23x9Y-x3TNBRhoU6pQ5xH51B_nn0SuSws+C5QRA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <6fbb1c89-8123-e179-ad8c-b4368b2e3cd0@gmail.com>
-Date:   Fri, 8 Nov 2019 08:29:33 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <CADvbK_dDVJs23x9Y-x3TNBRhoU6pQ5xH51B_nn0SuSws+C5QRA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1726537AbfKHPbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 10:31:43 -0500
+Received: from mail-eopbgr80083.outbound.protection.outlook.com ([40.107.8.83]:40097
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726152AbfKHPbm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 10:31:42 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BmM5BK/Xpl9AMXgo+hTs/LEKtzEDBkgiaExYoDV8Esyk6nDerXKyx76UHPq0EGYBSebYraCSDqokeevllr5G/ljl16nXt+MCjsJYCXQKVKHVqauEZA2HZozzsmSIK57CRw5mmYYAmoC6Jya7fPGUhJ5IcGf8cawPUkMrWax+vHEldUlhpnsU2M49TQFe+BRJ42+c9YsDVbjHrSfAaykLKGX9aI7QcY+54zE4+cRvF5BoN5svBW8zieIRJU244Xxw7nbJ+j6+gOgZzAsyxYNeDxPojQW2gsWtCeVYiyzTMLx7e3pLqLO8pI6EQUy/SwoB70HsjslEd6dIUli7t+CMWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f4gHjSEYN0fSojbVCn1+gHxIN3v189gnNflTrSMdzXw=;
+ b=TnVqaT3UjQ/CP5CqyqjGo3G/3BbE3JRn29Lny1Oe9DFOB76KKGV66LsLFCke6i28ydx8iQIT7GbNqpYbLedZkgqpWopPIrXOboIXsVLiWSyJBYXHBHkM6MXmYPse3bTkH0sED+taJfeo83woINROYd0+TlDD4Vjj3Kh4HIJSzpReaFz7Hxv+mCqmgBtFzSAIgM1Wm45wzQVWOG0ryPhUQGERNVynRAZr7DZLi0LIotz1ic5sEpb0F5Egx2htu8bQoDd5dFbhClPGe33ABatCGhH5TCN6U1bVHy0tAAXMjy/woMfZMdqlKMZAOcLMIrUWUm5+/rrp5qlSVqgUoTKtbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f4gHjSEYN0fSojbVCn1+gHxIN3v189gnNflTrSMdzXw=;
+ b=q6AfhxY2feRJG6m3i7GG3YZsmYm9u2HkNzHtANCaRCh4NGttVq3Ohd4u8rR2Fq4IujetRIZeFfFfYggEOz5wPMA0F9incUU0ajZFP/nlhYTVRI98Jj6yQ+Q5QuXsldCJ/hLV0UL3h0raMeamZK9I9zdNfiJOwjLqEAu98MqhVcQ=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6132.eurprd05.prod.outlook.com (20.178.203.32) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.24; Fri, 8 Nov 2019 15:30:59 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
+ 15:30:59 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Cornelia Huck <cohuck@redhat.com>
+CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [PATCH net-next 19/19] mtty: Optionally support mtty alias
+Thread-Topic: [PATCH net-next 19/19] mtty: Optionally support mtty alias
+Thread-Index: AQHVlYXKCkwgRpy5N0GblxIWUl4Rt6eBSruAgAAXETCAAAV+AIAAAGtw
+Date:   Fri, 8 Nov 2019 15:30:59 +0000
+Message-ID: <AM0PR05MB486622134AD1F1A83714629CD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+        <20191107160834.21087-1-parav@mellanox.com>
+        <20191107160834.21087-19-parav@mellanox.com>
+        <20191108144615.3646e9bb.cohuck@redhat.com>
+        <AM0PR05MB48667622386BBC6D52BE8BE8D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108162828.6e12fc05.cohuck@redhat.com>
+In-Reply-To: <20191108162828.6e12fc05.cohuck@redhat.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:9dfd:71f9:eb37:f669]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 1a11a60b-da46-453d-8657-08d76460a7d0
+x-ms-traffictypediagnostic: AM0PR05MB6132:|AM0PR05MB6132:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB6132903FA98F442CC4D127EDD17B0@AM0PR05MB6132.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 0215D7173F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(366004)(346002)(39860400002)(396003)(199004)(189003)(13464003)(46003)(102836004)(99286004)(6506007)(53546011)(76176011)(55016002)(186003)(9686003)(7696005)(476003)(6246003)(229853002)(52536014)(6916009)(6436002)(81166006)(81156014)(8676002)(4326008)(6116002)(8936002)(446003)(11346002)(256004)(71190400001)(71200400001)(25786009)(66556008)(5660300002)(64756008)(66446008)(66476007)(86362001)(486006)(76116006)(316002)(33656002)(54906003)(2906002)(14454004)(7736002)(305945005)(74316002)(478600001)(66946007)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6132;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PGqITpKKhmFQmiQIGGwxvL4+WH31ZgqPnq85G+UpQaBoQJiIfXBnuDCcFhz0cqJP5XeMoaybn9n3ND4aGwSWV84Ju1wDjJmxJy1p2musdTX1/a1jHyTDeGXRuxIa6K4fBMUDi1VUgdoXqggTg92nuET4R5lv4MRo1hgiz3znxXBDQDv7I5CFFnIXteX8w9bGliuZp6Q8qoXo8UxhC/CW3H9vSlWm+/yM64KhSMsuPMUVAAPAMSDbqO9fbhFPXESbE8TWKGzhgMRBVmM7f8s22/L7Ht7vYUWZElDWyATbdoR7ALjzwbikX6JAyddTPJaPF+Kknq9tEbRSCvi057OawRPztgG7a1G54erTYr50eAV6aSHlHX4MDLgxWrfNTKaP7GddZ39598mrwe5JAGSVHBVuunQK/UZ1O5mit1FiCuvr0s0mQCPszBafbha9GNAP
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a11a60b-da46-453d-8657-08d76460a7d0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 15:30:59.0573
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jm8ZJZdad+lbyTThkF2eUd8mIbPHL9WmHYyI9BTDkqc1ooly6HgWbuZWYKQZEWcKsxadkdppie/Cvd//wtlKCQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6132
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/8/19 7:08 AM, Xin Long wrote:
-> On Fri, Nov 8, 2019 at 12:18 AM David Ahern <dsahern@gmail.com> wrote:
->>
->> On 11/7/19 3:50 AM, Xin Long wrote:
->>> Now think about it again, nla_parse_nested() should always be used on
->>> new options, should I post a fix for it? since no code to access this
->>> from userspace yet.
->>
->> please do. All new options should use strict parsing from the beginning.
->> And you should be able to set LWTUNNEL_IP_OPT_GENEVE_UNSPEC to
->> .strict_start_type = LWTUNNEL_IP_OPT_GENEVE_UNSPEC + 1 in the policy so
->> that new command using new option on an old kernel throws an error.
-> I'm not sure if strict_start_type is needed when using nla_parse_nested().
-> 
-> .strict_start_type seems only checked in validate_nla():
-> 
->         if (strict_start_type && type >= strict_start_type)
->                 validate |= NL_VALIDATE_STRICT; <------ [1]
-> 
-> But in the path of:
->   nla_parse_nested() ->
->     __nla_parse() ->
->       __nla_validate_parse() ->
->         validate_nla()
-> 
-> The param 'validate' is always NL_VALIDATE_STRICT, no matter Code [1] is
-> triggered or not. or am I missing something here?
-> 
 
-ok, I missed that.
+
+> -----Original Message-----
+> From: Cornelia Huck <cohuck@redhat.com>
+> Sent: Friday, November 8, 2019 9:28 AM
+> To: Parav Pandit <parav@mellanox.com>
+> Cc: alex.williamson@redhat.com; davem@davemloft.net;
+> kvm@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
+> <saeedm@mellanox.com>; kwankhede@nvidia.com; leon@kernel.org; Jiri
+> Pirko <jiri@mellanox.com>; linux-rdma@vger.kernel.org
+> Subject: Re: [PATCH net-next 19/19] mtty: Optionally support mtty alias
+>=20
+> On Fri, 8 Nov 2019 15:10:42 +0000
+> Parav Pandit <parav@mellanox.com> wrote:
+>=20
+> > > -----Original Message-----
+> > > From: Cornelia Huck <cohuck@redhat.com>
+> > > Sent: Friday, November 8, 2019 7:46 AM
+> > > To: Parav Pandit <parav@mellanox.com>
+> > > Cc: alex.williamson@redhat.com; davem@davemloft.net;
+> > > kvm@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
+> > > <saeedm@mellanox.com>; kwankhede@nvidia.com; leon@kernel.org; Jiri
+> > > Pirko <jiri@mellanox.com>; linux-rdma@vger.kernel.org
+> > > Subject: Re: [PATCH net-next 19/19] mtty: Optionally support mtty
+> > > alias
+> > >
+> > > On Thu,  7 Nov 2019 10:08:34 -0600
+> > > Parav Pandit <parav@mellanox.com> wrote:
+> > >
+> > > > Provide a module parameter to set alias length to optionally
+> > > > generate mdev alias.
+> > > >
+> > > > Example to request mdev alias.
+> > > > $ modprobe mtty alias_length=3D12
+> > > >
+> > > > Make use of mtty_alias() API when alias_length module parameter is
+> set.
+> > > >
+> > > > Signed-off-by: Parav Pandit <parav@mellanox.com>
+> > > > ---
+> > > >  samples/vfio-mdev/mtty.c | 13 +++++++++++++
+> > > >  1 file changed, 13 insertions(+)
+> > >
+> > > If you already have code using the alias interface, you probably
+> > > don't need to add it to the sample driver here. Especially as the
+> > > alias looks kind of pointless here.
+> >
+> > It is pointless.
+> > Alex point when we ran through the series in August, was, QA should be
+> able to do cover coverage of mdev_core where there is mdev collision and
+> mdev_create() can fail.
+> > And QA should be able to set alias length to be short to 1 or 2 letters=
+ to
+> trigger it.
+> > Hence this patch was added.
+>=20
+> If we want this for testing purposes, that should be spelled out explicit=
+ly (the
+> above had already dropped from my cache). Even better if we had
+> something in actual test infrastructure.
+
+What else purpose sample driver has other than getting reference on how to =
+use API? :-)
