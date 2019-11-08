@@ -2,164 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AADE9F58A0
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:43:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46774F588D
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:42:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732269AbfKHUga (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 15:36:30 -0500
-Received: from mout.kundenserver.de ([217.72.192.74]:36201 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732171AbfKHUg3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 15:36:29 -0500
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1MEF87-1iadeR36H7-00AGgW; Fri, 08 Nov 2019 21:36:18 +0100
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     y2038@lists.linaro.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Eric Dumazet <edumazet@google.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 5/8] netfilter: xt_time: use time64_t
-Date:   Fri,  8 Nov 2019 21:34:28 +0100
-Message-Id: <20191108203435.112759-6-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20191108203435.112759-1-arnd@arndb.de>
-References: <20191108203435.112759-1-arnd@arndb.de>
+        id S1730598AbfKHUen (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 15:34:43 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:38343 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729617AbfKHUem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 15:34:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573245281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KMSEjXsq99hiNjoujWoEIIjY1ii1GajRovSx/9CzKSI=;
+        b=EP/IWnQbFT35K9LL7V04GhTiL6DgsSZFbx4PoTreHJyMM4GTXUNCi5nHSOKfzVfAOedQfJ
+        4uzBdknw6eoNWCuzZqnuLzLTGtjtjx2nbT3GkeRN3yXtKoVdush2BINZOGtsszhlTo6N2J
+        cnPKPhmsebLt3mDBIIzmXEFusKlckN4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-83-rqU7v7gZOdGJik4OXqMK6g-1; Fri, 08 Nov 2019 15:34:40 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C2915800C72;
+        Fri,  8 Nov 2019 20:34:37 +0000 (UTC)
+Received: from x1.home (ovpn-116-138.phx2.redhat.com [10.3.116.138])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 37DAA60BE1;
+        Fri,  8 Nov 2019 20:34:36 +0000 (UTC)
+Date:   Fri, 8 Nov 2019 13:34:35 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David M <david.m.ertman@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191108133435.6dcc80bd@x1.home>
+In-Reply-To: <20191108201253.GE10956@ziepe.ca>
+References: <20191107160448.20962-1-parav@mellanox.com>
+        <20191107153234.0d735c1f@cakuba.netronome.com>
+        <20191108121233.GJ6990@nanopsycho>
+        <20191108144054.GC10956@ziepe.ca>
+        <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191108111238.578f44f1@cakuba>
+        <20191108201253.GE10956@ziepe.ca>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:LAqgtMHpuHsHVqesPbRDDOnPbG3k3aIkl2ycNWLlt4hNWDe/h94
- GNpZ9xbyyD7LXXBKIdA2s2/AdUHfbg0DIx01Kj4OMx3p5kvSqUbOebvbj/QnE7eakpz0lHv
- uN5N4Lbi3Ve2HiOXFaAex9XSmQCyebw9uVyDgEMXqAnhjjgfzDAXhsrlExb0jFUFKUWnK+D
- 4XcdXehRUk7EHSe1W5zeA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:uTLnXhQlaoA=:6gkTKIzGkH8u4p9n9EzB5+
- lrHh5mqs0gNbpufpMED1aZFRj6EM8Vdvk21VmgHmavXEMmYc2wxSYeavDcGdpdZ7CadtsRnAO
- qsbfYORBBYZdz02Y0pFnzClpTjdJxDYOiPorKaYrirT28tLfMyelNHuTue4mitFpPQkwUJ2vp
- 1FdPn/cyPCua8wGrtCyi9289PPkzr214fg0Fv+WOBBWFYibuPoFVWzXyI83DcKdtvvPnvqIDz
- wdprTdsC/ZkfYx1s1jMPDmmohjYlPkV8FnO3K6nxce9wT/3gnfnxHFHUeiCMMJA22LZs2nOvn
- OLypew6aJxfs20P57HiMNl93gEsT/ycbJ4slABRZ7SD+vI3RGS4lWKiSvlZ4ZZmiwnhqiqFF6
- Fi/2Y9koVFyxao8U3z3LmwEw2d4k9EduaQb3mljAM4tskCgWqBzRabEsK+FQfK0VwMISD3IIW
- eKKPfoaXuB3AV6ejoIfIyfJQvB+avcI6HFn8HPjfm6LOHo9GWEk0eoUOa9jTziwzOGTcl+cD8
- gcHV80qweuOKUQszTaHIGeyW8GHBB0VgQf7EVzpkJjjJF7Cxl4bJVh8XV/7vXbWIf9M7eiW7O
- mucjrJW1Dqc/K1zHhLFKmZyuNrarpADVQ5zsZZu9VmgOrOVksy4eAIJbaKozfWtrjPhTIEmlZ
- D0+GgCVexquumqnxI1GUzSo2LH4sTJm7GUM6VZ190VgN9woJKTRGsN+7Vw1Az+NSbFtjEehCe
- ApXUQOzEXIOlfr98kuJiFJt4keBc1XueRtApEJZ9SKiLF9K6Hg4vDTcxSG9OWPjl48mdsLGTh
- jn56Ebw8x8hxA5jYZEZPKd2MMV86gz8op0dpLqRShX5Ujbjw2cpu0anrthVv58jvg5/ELj2ro
- rymaqfVxE+cCH9UVrcxg==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: rqU7v7gZOdGJik4OXqMK6g-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current xt_time driver suffers from the y2038 overflow on 32-bit
-architectures, when the time of day calculations break.
+On Fri, 8 Nov 2019 16:12:53 -0400
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-Also, on both 32-bit and 64-bit architectures, there is a problem with
-info->date_start/stop, which is part of the user ABI and overflows in
-in 2106.
+> On Fri, Nov 08, 2019 at 11:12:38AM -0800, Jakub Kicinski wrote:
+> > On Fri, 8 Nov 2019 15:40:22 +0000, Parav Pandit wrote: =20
+> > > > The new intel driver has been having a very similar discussion abou=
+t how to
+> > > > model their 'multi function device' ie to bind RDMA and other drive=
+rs to a
+> > > > shared PCI function, and I think that discussion settled on adding =
+a new bus?
+> > > >=20
+> > > > Really these things are all very similar, it would be nice to have =
+a clear
+> > > > methodology on how to use the device core if a single PCI device is=
+ split by
+> > > > software into multiple different functional units and attached to d=
+ifferent
+> > > > driver instances.
+> > > >=20
+> > > > Currently there is alot of hacking in this area.. And a consistent =
+scheme
+> > > > might resolve the ugliness with the dma_ops wrappers.
+> > > >=20
+> > > > We already have the 'mfd' stuff to support splitting platform devic=
+es, maybe
+> > > > we need to create a 'pci-mfd' to support splitting PCI devices?
+> > > >=20
+> > > > I'm not really clear how mfd and mdev relate, I always thought mdev=
+ was
+> > > > strongly linked to vfio.
+> > > > =20
+> > >
+> > > Mdev at beginning was strongly linked to vfio, but as I mentioned
+> > > above it is addressing more use case.
+> > >=20
+> > > I observed that discussion, but was not sure of extending mdev furthe=
+r.
+> > >=20
+> > > One way to do for Intel drivers to do is after series [9].
+> > > Where PCI driver says, MDEV_CLASS_ID_I40_FOO
+> > > RDMA driver mdev_register_driver(), matches on it and does the probe(=
+). =20
+> >=20
+> > Yup, FWIW to me the benefit of reusing mdevs for the Intel case vs
+> > muddying the purpose of mdevs is not a clear trade off. =20
+>=20
+> IMHO, mdev has amdev_parent_ops structure clearly intended to link it
+> to vfio, so using a mdev for something not related to vfio seems like
+> a poor choice.
 
-Fix the first issue by using time64_t and explicit calls to div_u64()
-and div_u64_rem(), and document the seconds issue.
+Unless there's some opposition, I'm intended to queue this for v5.5:
 
-The explicit 64-bit division is unfortunately slower on 32-bit
-architectures, but doing it as unsigned lets us use the optimized
-division-through-multiplication path in most configurations.  This should
-be fine, as the code already does not allow any negative time of day
-values.
+https://www.spinics.net/lists/kvm/msg199613.html
 
-Using u32 seconds values consistently would probably also work and
-be a little more efficient, but that doesn't feel right as it would
-propagate the y2106 overflow to more place rather than fewer.
+mdev has started out as tied to vfio, but at it's core, it's just a
+device life cycle infrastructure with callbacks between bus drivers
+and vendor devices.  If virtio is on the wrong path with the above
+series, please speak up.  Thanks,
 
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/netfilter/xt_time.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+Alex
 
-diff --git a/net/netfilter/xt_time.c b/net/netfilter/xt_time.c
-index 8dbb4d48f2ed..67cb98489415 100644
---- a/net/netfilter/xt_time.c
-+++ b/net/netfilter/xt_time.c
-@@ -77,12 +77,12 @@ static inline bool is_leap(unsigned int y)
-  * This is done in three separate functions so that the most expensive
-  * calculations are done last, in case a "simple match" can be found earlier.
-  */
--static inline unsigned int localtime_1(struct xtm *r, time_t time)
-+static inline unsigned int localtime_1(struct xtm *r, time64_t time)
- {
- 	unsigned int v, w;
- 
- 	/* Each day has 86400s, so finding the hour/minute is actually easy. */
--	v         = time % SECONDS_PER_DAY;
-+	div_u64_rem(time, SECONDS_PER_DAY, &v);
- 	r->second = v % 60;
- 	w         = v / 60;
- 	r->minute = w % 60;
-@@ -90,13 +90,13 @@ static inline unsigned int localtime_1(struct xtm *r, time_t time)
- 	return v;
- }
- 
--static inline void localtime_2(struct xtm *r, time_t time)
-+static inline void localtime_2(struct xtm *r, time64_t time)
- {
- 	/*
- 	 * Here comes the rest (weekday, monthday). First, divide the SSTE
- 	 * by seconds-per-day to get the number of _days_ since the epoch.
- 	 */
--	r->dse = time / 86400;
-+	r->dse = div_u64(time, SECONDS_PER_DAY);
- 
- 	/*
- 	 * 1970-01-01 (w=0) was a Thursday (4).
-@@ -105,7 +105,7 @@ static inline void localtime_2(struct xtm *r, time_t time)
- 	r->weekday = (4 + r->dse - 1) % 7 + 1;
- }
- 
--static void localtime_3(struct xtm *r, time_t time)
-+static void localtime_3(struct xtm *r, time64_t time)
- {
- 	unsigned int year, i, w = r->dse;
- 
-@@ -160,7 +160,7 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	const struct xt_time_info *info = par->matchinfo;
- 	unsigned int packet_time;
- 	struct xtm current_time;
--	s64 stamp;
-+	time64_t stamp;
- 
- 	/*
- 	 * We need real time here, but we can neither use skb->tstamp
-@@ -173,14 +173,14 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	 *	1. match before 13:00
- 	 *	2. match after 13:00
- 	 *
--	 * If you match against processing time (get_seconds) it
-+	 * If you match against processing time (ktime_get_real_seconds) it
- 	 * may happen that the same packet matches both rules if
- 	 * it arrived at the right moment before 13:00, so it would be
- 	 * better to check skb->tstamp and set it via __net_timestamp()
- 	 * if needed.  This however breaks outgoing packets tx timestamp,
- 	 * and causes them to get delayed forever by fq packet scheduler.
- 	 */
--	stamp = get_seconds();
-+	stamp = ktime_get_real_seconds();
- 
- 	if (info->flags & XT_TIME_LOCAL_TZ)
- 		/* Adjust for local timezone */
-@@ -193,6 +193,9 @@ time_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	 *   - 'now' is in the weekday mask
- 	 *   - 'now' is in the daytime range time_start..time_end
- 	 * (and by default, libxt_time will set these so as to match)
-+	 *
-+	 * note: info->date_start/stop are unsigned 32-bit values that
-+	 *	 can hold values beyond y2038, but not after y2106.
- 	 */
- 
- 	if (stamp < info->date_start || stamp > info->date_stop)
--- 
-2.20.0
+=20
+> I suppose this series is the start and we will eventually see the
+> mlx5's mdev_parent_ops filled in to support vfio - but *right now*
+> this looks identical to the problem most of the RDMA capable net
+> drivers have splitting into a 'core' and a 'function'
+>=20
+> > IMHO MFD should be of more natural use for Intel, since it's about
+> > providing different functionality rather than virtual slices of the
+> > same device. =20
+>=20
+> I don't think the 'different functionality' should matter much.=20
+>=20
+> Generally these multi-function drivers are build some some common
+> 'core' language like queues interrupts, BAR space, etc and then these
+> common things can be specialized into netdev, rdma, scsi, etc. So we
+> see a general rough design with a core layer managing the raw HW then
+> drivers on top of that (including netdev) using that API.
+>=20
+> The actual layering doesn't come through in the driver model,
+> generally people put all the core stuff in with the netdev and then
+> try and shuffle the netdev around as the 'handle' for that core API.
+>=20
+> These SFs are pretty similar in that the core physical driver
+> continues to provide some software API support to the SF children (at
+> least for mlx it is a small API)
+>=20
+> For instance mdev has no generic way to learn the BAR struct
+> resources, so there is some extra API around the side that does this -
+> in this series it is done by hackily co-opting the drvdata to
+> something owned by the struct device instead of the device_driver and
+> using that to access the API surface on 'struct mlx5_sf *', which
+> includes the BAR info and so forth.
+>=20
+> This is probably the main difference from MFD. At least the few
+> drivers I looked at, did not try and expose an SW API from the 'core'
+> to the 'part', everything was usual generic driver resource stuff.
+>=20
+> Jason
 
