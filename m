@@ -2,110 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 456B9F42A6
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 09:58:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC6DF42DF
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 10:12:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730623AbfKHI6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 03:58:09 -0500
-Received: from mail-il1-f199.google.com ([209.85.166.199]:48670 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730005AbfKHI6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 03:58:09 -0500
-Received: by mail-il1-f199.google.com with SMTP id j68so6087844ili.15
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 00:58:08 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=2MJ4JwOdeIflnsknF0Y5CtsGEv4aAsO6Kz3RgLYo/Zo=;
-        b=D+kdYXgDfiAjRutk/f77c54K9245HjQwlCF0L1cRj0BDxfVszdBC1oUwftsO3E1IwU
-         JC1DnO2roYmgN2oTGVlPfckAscjvf9wQw8dc1S/Lk8kroQMu39a6ZxB8AsbYuoSvTsbm
-         OJj+ziq9ULkPdIWsliKL0kSmkIPXBjhM+DiVRCmg8iQuiQfnqtgOdwmagXakviKn9u6n
-         ddem+tYJyY6vKUzbX32Nkml8YiqlmZp66xdgpP0Z5txpNVbgGc6isEWtTLb01p1bAzvc
-         Awq/j4UIAfkvKMf0GLoI5hAC65Kg7kpWa/NVHxJfcm6WqJXKRVi8F6bjLQg7u6ssKPuI
-         kXag==
-X-Gm-Message-State: APjAAAVJU3J/wSXwyvg7H7kXM4XyrrXS3jZ55fJjtaLw9P8MnYzE+roy
-        VxP66D8wACPzKFoJjHQhak0Y+WnDVS5EXZ37G6Bxod4SvlN6
-X-Google-Smtp-Source: APXvYqz9BMWTyKrpiCo4kSdUfqLjyYid3sMHPZ/B5YkypwRE2tnRy3x1leIg54zjKuTWVY+Iv+TvYYuYi2QctJ7Rb8k49vbJUzoH
+        id S1730618AbfKHJMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 04:12:02 -0500
+Received: from bombadil.infradead.org ([198.137.202.133]:51368 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730281AbfKHJMC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 04:12:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=YIHYOpvUjexfzszN8OUhE0GgVLo5FF0K9taZHuF6CJY=; b=U+yYFmO6HnI5cXs5XTlph3lp8
+        +KGjTaDx4sPVtGPQiFcC7wmgih7Mk8AGaZbUeiOgaiqRzC9Qr6skgw4mQ2UdHCUkznrolq7fGdtxa
+        FRr6s8vVsUjQCyjLCVU3wEAKM5tO4TucOj5ImlWeSqL+QsKRNKqaGjCZ705jEGS4uDVh2Oa6HlE8z
+        0xH7BiKMlIaGDfAqfHiJb0q8p4WCv/i2E+xdKFsI/tQYu74wShgFZKBL5NlqQIrMjEvnG/fpCN0Hh
+        9bBjagmGc1GiGpkEEbkHen/4BpqFuu8iyzUPENO50srcutsHZhZaru1fkE+cVIFaKNk181ZQHPg6M
+        MfpNrvo7w==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iT0JD-0001P1-B3; Fri, 08 Nov 2019 09:11:59 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E788F301A79;
+        Fri,  8 Nov 2019 10:10:51 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7668D20241336; Fri,  8 Nov 2019 10:11:56 +0100 (CET)
+Date:   Fri, 8 Nov 2019 10:11:56 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexei Starovoitov <ast@kernel.org>
+Cc:     davem@davemloft.net, daniel@iogearbox.net, x86@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v3 bpf-next 02/18] bpf: Add bpf_arch_text_poke() helper
+Message-ID: <20191108091156.GG4114@hirez.programming.kicks-ass.net>
+References: <20191108064039.2041889-1-ast@kernel.org>
+ <20191108064039.2041889-3-ast@kernel.org>
 MIME-Version: 1.0
-X-Received: by 2002:a5e:c010:: with SMTP id u16mr9018293iol.275.1573203488435;
- Fri, 08 Nov 2019 00:58:08 -0800 (PST)
-Date:   Fri, 08 Nov 2019 00:58:08 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000001677ca0596d1fb43@google.com>
-Subject: WARNING in devlink_port_type_warn
-From:   syzbot <syzbot+b0a18ed7b08b735d2f41@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jiri@mellanox.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191108064039.2041889-3-ast@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Nov 07, 2019 at 10:40:23PM -0800, Alexei Starovoitov wrote:
+> Add bpf_arch_text_poke() helper that is used by BPF trampoline logic to patch
+> nops/calls in kernel text into calls into BPF trampoline and to patch
+> calls/nops inside BPF programs too.
 
-syzbot found the following crash on:
-
-HEAD commit:    c68c5373 Add linux-next specific files for 20191107
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10b177fae00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=742545dcdea21726
-dashboard link: https://syzkaller.appspot.com/bug?extid=b0a18ed7b08b735d2f41
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+b0a18ed7b08b735d2f41@syzkaller.appspotmail.com
-
-hid-generic 0000:0000:0000.0009: unknown main item tag 0x0
-hid-generic 0000:0000:0000.0009: unknown main item tag 0x0
-hid-generic 0000:0000:0000.0009: hidraw0: <UNKNOWN> HID v0.00 Device [syz1]  
-on syz1
-------------[ cut here ]------------
-Type was not set for devlink port.
-WARNING: CPU: 1 PID: 50 at net/core/devlink.c:6342  
-devlink_port_type_warn+0x15/0x20 net/core/devlink.c:6342
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 50 Comm: kworker/1:1 Not tainted 5.4.0-rc6-next-20191107 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: events devlink_port_type_warn
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x197/0x210 lib/dump_stack.c:118
-  panic+0x2e3/0x75c kernel/panic.c:221
-  __warn.cold+0x2f/0x35 kernel/panic.c:582
-  report_bug+0x289/0x300 lib/bug.c:195
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  fixup_bug arch/x86/kernel/traps.c:169 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:267
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:286
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:devlink_port_type_warn+0x15/0x20 net/core/devlink.c:6342
-Code: 89 df e8 de 44 ec fb e9 d3 fe ff ff 66 0f 1f 84 00 00 00 00 00 55 48  
-89 e5 e8 f7 19 b0 fb 48 c7 c7 e0 ef 4a 88 e8 63 2b 81 fb <0f> 0b 5d c3 0f  
-1f 80 00 00 00 00 55 48 89 e5 41 55 49 89 f5 41 54
-RSP: 0018:ffff8880a9b07d30 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815d0b86 RDI: ffffed1015360f98
-RBP: ffff8880a9b07d30 R08: ffff8880a9b365c0 R09: fffffbfff14f374c
-R10: fffffbfff14f374b R11: ffffffff8a79ba5f R12: ffff888076daecc0
-R13: 0000000000000080 R14: ffff8880a99aa900 R15: ffff8880ae934540
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2263
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2409
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+This thing assumes the text is unused, right? That isn't spelled out
+anywhere. The implementation is very much unsafe vs concurrent execution
+of the text.
