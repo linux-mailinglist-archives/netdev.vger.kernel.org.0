@@ -2,155 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DFA9F50CA
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:15:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34FFCF50DD
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:19:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727497AbfKHQPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 11:15:18 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:48439 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727149AbfKHQPQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 11:15:16 -0500
-Received: by mail-io1-f70.google.com with SMTP id q84so5688331iod.15
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 08:15:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:cc;
-        bh=EntwwLODpyY62XQRYlVLnbG2S7/f1rAzhT5hFJTJSbM=;
-        b=Zkho5Xa04UZy93i94VlA4YdUezrkKPnRT4H8zMzbssairBxTALh9MCQazK2NAeL/5B
-         rQPLVfIv67O94TREgwJstcNiC3Lv1hL9LD7vgDkHKc1QSvNANRNnAgzgmn0Yel3AVQtk
-         8IDcSQWOIdv+LQfkZcEEhtPmUOO/bZAs8ibDn02iFAYV2S+4rEREUtbZHMZ0HEMyuamQ
-         aj5grPGdrYXIfhzeI9AMlX+xLvjSkdf0vtY7AY5rSJ42KhkUp+HzOE0fu102hjCv3/6c
-         3u/D8jqfbDAH63zadfBgIG7hozVBiIjkjlSMhpQhSxCsal1Pq9MQt79+7IGZRYX/g6OO
-         odfQ==
-X-Gm-Message-State: APjAAAXDDaCyYgwHoY9mDfkPiWhfmmdbz5pMn2Pudd957xNaDV2RpEf1
-        o9VCAbRy9luq5ojFdULjBbuJv6g4ja5jmy58MYEAmcprUjiF
-X-Google-Smtp-Source: APXvYqxBtgpBDe6GetQ1LkAJ95G+0MLSgVJj1ZlffQlRsU/gy09LNV9oamAfIrswACaI1WBRzGA/KiG0AmyFOpKmSXnH4nhe0XDO
+        id S1727148AbfKHQS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 11:18:57 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:60236 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725941AbfKHQS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 11:18:56 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from yuvalav@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 8 Nov 2019 18:18:51 +0200
+Received: from sw-mtx-008.mtx.labs.mlnx (sw-mtx-008.mtx.labs.mlnx [10.9.150.35])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xA8GInuj003095;
+        Fri, 8 Nov 2019 18:18:50 +0200
+Received: from sw-mtx-008.mtx.labs.mlnx (localhost [127.0.0.1])
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7) with ESMTP id xA8GIm11030079;
+        Fri, 8 Nov 2019 18:18:48 +0200
+Received: (from yuvalav@localhost)
+        by sw-mtx-008.mtx.labs.mlnx (8.14.7/8.14.7/Submit) id xA8GIlTW030078;
+        Fri, 8 Nov 2019 18:18:47 +0200
+From:   Yuval Avnery <yuvalav@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jiri@mellanox.com, saeedm@mellanox.com, leon@kernel.org,
+        davem@davemloft.net, jakub.kicinski@netronome.com,
+        shuah@kernel.org, danielj@mellanox.com, parav@mellanox.com,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        Yuval Avnery <yuvalav@mellanox.com>
+Subject: [PATCH net-next v2 00/10] devlink subdev
+Date:   Fri,  8 Nov 2019 18:18:36 +0200
+Message-Id: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8b0c:: with SMTP id k12mr10971583ion.115.1573229714011;
- Fri, 08 Nov 2019 08:15:14 -0800 (PST)
-Date:   Fri, 08 Nov 2019 08:15:14 -0800
-In-Reply-To: <CACT4Y+bOy+OOp2h=jNYJB8xBhQ9x_=MEgP-XcU7KHs7v1v0YPA@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000040fb360596d81689@google.com>
-Subject: Re: Re: KMSAN: uninit-value in kernel_sendmsg
-From:   syzbot <syzbot+4b6f070bb7a8ea5420d4@syzkaller.appspotmail.com>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     davem@davemloft.net, dhowells@redhat.com, dvyukov@google.com,
-        glider@google.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Fri, Nov 8, 2019 at 4:54 PM syzbot
-> <syzbot+4b6f070bb7a8ea5420d4@syzkaller.appspotmail.com> wrote:
+This patchset introduces devlink subdev.
 
->> Hello,
+Currently, legacy tools do not provide a comprehensive solution that can
+be used in both SmartNic and non-SmartNic mode.
+Subdev represents a device that exists on the ASIC but is not necessarily
+visible to the kernel.
 
->> syzbot found the following crash on:
+Using devlink ports is not suitable because:
 
->> HEAD commit:    124037e0 kmsan: drop inlines, rename  
->> do_kmsan_task_create()
->> git tree:       https://github.com/google/kmsan.git master
->> console output: https://syzkaller.appspot.com/x/log.txt?x=1648eb9d600000
->> kernel config:   
->> https://syzkaller.appspot.com/x/.config?x=f03c659d0830ab8d
->> dashboard link:  
->> https://syzkaller.appspot.com/bug?extid=4b6f070bb7a8ea5420d4
->> compiler:       clang version 9.0.0 (/home/glider/llvm/clang
->> 80fee25776c2fb61e74c1ecb1a523375c2500b69)
+1. Those devices aren't necessarily network devices (such as NVMe devices)
+   and doesn’t have E-switch representation. Therefore, there is need for
+   more generic representation of PCI VF.
+2. Some attributes are not necessarily pure port attributes
+   (number of MSIX vectors)
+3. It creates a confusing devlink topology, with multiple port flavours
+   and indices.
 
->> Unfortunately, I don't have any reproducer for this crash yet.
+Subdev will be created along with flavour and attributes.
+Some network subdevs may be linked with a devlink port.
 
->> IMPORTANT: if you fix the bug, please add the following tag to the  
->> commit:
->> Reported-by: syzbot+4b6f070bb7a8ea5420d4@syzkaller.appspotmail.com
+This is also aimed to replace "ip link vf" commands as they are strongly
+linked to the PCI topology and allow access only to enabled VFs.
+Even though current patchset and example is limited to MAC address
+of the VF, this interface will allow to manage PF, VF, mdev in
+SmartNic and non SmartNic modes, in unified way for networking and
+non-networking devices via devlink instance.
 
-> I think this is:
-
-> #syz dup: KMSAN: use-after-free in rxrpc_send_keepalive
-
-Can't dup bug to a bug in different reporting (upstream->moderation).Please  
-dup syzbot bugs only onto syzbot bugs for the same kernel/reporting.
-
-
-> https://syzkaller.appspot.com/bug?id=428e72dc175d0f4b23a1fb9b7d3d16fad7ef2a4b
-
->> =====================================================
->> BUG: KMSAN: uninit-value in rxrpc_send_keepalive+0x2fa/0x830
->> net/rxrpc/output.c:655
->> CPU: 0 PID: 3367 Comm: kworker/0:2 Not tainted 5.3.0-rc7+ #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
->> Google 01/01/2011
->> Workqueue: krxrpcd rxrpc_peer_keepalive_worker
->> Call Trace:
->>    __dump_stack lib/dump_stack.c:77 [inline]
->>    dump_stack+0x191/0x1f0 lib/dump_stack.c:113
->>    kmsan_report+0x13a/0x2b0 mm/kmsan/kmsan_report.c:108
->>    __msan_warning+0x73/0xe0 mm/kmsan/kmsan_instr.c:250
->>    sock_sendmsg_nosec net/socket.c:637 [inline]
->>    sock_sendmsg net/socket.c:657 [inline]
->>    kernel_sendmsg+0x2c9/0x440 net/socket.c:677
->>    rxrpc_send_keepalive+0x2fa/0x830 net/rxrpc/output.c:655
->>    rxrpc_peer_keepalive_dispatch net/rxrpc/peer_event.c:369 [inline]
->>    rxrpc_peer_keepalive_worker+0xb82/0x1510 net/rxrpc/peer_event.c:430
->>    process_one_work+0x1572/0x1ef0 kernel/workqueue.c:2269
->>    worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
->>    kthread+0x4b5/0x4f0 kernel/kthread.c:256
->>    ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
-
->> Uninit was created at:
->>    kmsan_save_stack_with_flags mm/kmsan/kmsan.c:150 [inline]
->>    kmsan_internal_poison_shadow+0x53/0x100 mm/kmsan/kmsan.c:134
->>    kmsan_slab_alloc+0xaa/0x120 mm/kmsan/kmsan_hooks.c:103
->>    slab_alloc_node mm/slub.c:2790 [inline]
->>    slab_alloc mm/slub.c:2799 [inline]
->>    kmem_cache_alloc_trace+0x8c5/0xd20 mm/slub.c:2816
->>    kmalloc include/linux/slab.h:552 [inline]
->>    __hw_addr_create_ex net/core/dev_addr_lists.c:30 [inline]
->>    __hw_addr_add_ex net/core/dev_addr_lists.c:76 [inline]
->>    __hw_addr_add net/core/dev_addr_lists.c:84 [inline]
->>    dev_addr_init+0x152/0x700 net/core/dev_addr_lists.c:464
->>    alloc_netdev_mqs+0x2a9/0x1650 net/core/dev.c:9150
->>    rtnl_create_link+0x559/0x1190 net/core/rtnetlink.c:2931
->>    __rtnl_newlink net/core/rtnetlink.c:3186 [inline]
->>    rtnl_newlink+0x2757/0x38d0 net/core/rtnetlink.c:3254
->>    rtnetlink_rcv_msg+0x115a/0x1580 net/core/rtnetlink.c:5223
->>    netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2477
->>    rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5241
->>    netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
->>    netlink_unicast+0xf6c/0x1050 net/netlink/af_netlink.c:1328
->>    netlink_sendmsg+0x110f/0x1330 net/netlink/af_netlink.c:1917
->>    sock_sendmsg_nosec net/socket.c:637 [inline]
->>    sock_sendmsg net/socket.c:657 [inline]
->>    ___sys_sendmsg+0x14ff/0x1590 net/socket.c:2311
->>    __sys_sendmsg net/socket.c:2356 [inline]
->>    __do_sys_sendmsg net/socket.c:2365 [inline]
->>    __se_sys_sendmsg+0x305/0x460 net/socket.c:2363
->>    __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2363
->>    do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:297
->>    entry_SYSCALL_64_after_hwframe+0x63/0xe7
->> =====================================================
+Use case example:
+An example system view of a networking ASIC (aka SmartNIC), can be seen in
+below diagram, where devlink eswitch instance and PCI PF and/or VFs are
+situated on two different CPU subsystems:
 
 
->> ---
->> This bug is generated by a bot. It may contain errors.
->> See https://goo.gl/tpsmEJ for more information about syzbot.
->> syzbot engineers can be reached at syzkaller@googlegroups.com.
+      +------------------------------+
+      |                              |
+      |             HOST             |
+      |                              |
+      |   +----+-----+-----+-----+   |
+      |   | PF | VF0 | VF1 | VF2 |   |
+      +---+----+-----------+-----+---+
+                 PCI1|
+          +---+------------+
+              |
+     +----------------------------------------+
+     |        |         SmartNic              |
+     |   +----+-------------------------+     |
+     |   |                              |     |
+     |   |               NIC            |     |
+     |   |                              |     |
+     |   +---------------------+--------+     |
+     |                         |  PCI2        |
+     |         +-----+---------+--+           |
+     |               |                        |
+     |      +-----+--+--+--------------+      |
+     |      |     | PF  |              |      |
+     |      |     +-----+              |      |
+     |      |      Embedded CPU        |      |
+     |      |                          |      |
+     |      +--------------------------+      |
+     |                                        |
+     +----------------------------------------+
 
->> syzbot will keep track of this bug report. See:
->> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+The below diagram shows an example devlink subdev topology where some
+subdevs are connected to devlink ports::
 
->> --
->> You received this message because you are subscribed to the Google  
->> Groups "syzkaller-bugs" group.
->> To unsubscribe from this group and stop receiving emails from it, send  
->> an email to syzkaller-bugs+unsubscribe@googlegroups.com.
->> To view this discussion on the web visit  
->> https://groups.google.com/d/msgid/syzkaller-bugs/000000000000e3a8e00596d7ca32%40google.com.
+
+
+            (PF0)    (VF0)    (VF1)           (NVME VF2)
+         +--------------------------+         +--------+
+         | devlink| devlink| devlink|         | devlink|
+         | subdev | subdev | subdev |         | subdev |
+         |    0   |    1   |    2   |         |    3   |
+         +--------------------------+         +--------+
+              |        |        |
+              |        |        |
+              |        |        |
+     +----------------------------------+
+     |   | devlink| devlink| devlink|   |
+     |   |  port  |  port  |  port  |   |
+     |   |    0   |    1   |    2   |   |
+     |   +--------------------------+   |
+     |                                  |
+     |                                  |
+     |           E-switch               |
+     |                                  |
+     |                                  |
+     |          +--------+              |
+     |          | uplink |              |
+     |          | devlink|              |
+     |          |  port  |              |
+     +----------------------------------+
+ 
+Devlink command example:
+
+A privileged user wants to configure a VF's hw_addr, before the VF is
+enabled.
+
+$ devlink subdev set pci/0000:03:00.0/1 hw_addr 10:22:33:44:55:66
+
+$ devlink subdev show pci/0000:03:00.0/1
+pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0 port_index 1 hw_addr 10:22:33:44:55:66
+
+$ devlink subdev show pci/0000:03:00.0/1 -jp
+{
+    "subdev": {
+        "pci/0000:03:00.0/1": {
+            "flavour": "pcivf",
+            "pf": 0,
+            "vf": 0,
+            "port_index": 1,
+            "hw_addr": "10:22:33:44:55:66"
+        }
+    }
+}
+
+Patches 1-6 adds devlink support for subdev.
+Patches 7-8 adds netdevsim implementation and test.
+Patch 10 adds mlx5 subdev creation and hw_addr get/set.
+
+---
+
+v1->v2:
+ - vdev -> subdev
+ - Update cover letter and add more examples.
+
+Yuval Avnery (10):
+  devlink: Introduce subdev
+  devlink: Add PCI attributes support for subdev
+  devlink: Add port with subdev register support
+  devlink: Support subdev HW address get
+  devlink: Support subdev HW address set
+  Documentation: Add devlink-subdev documentation.
+  netdevsim: Add max_vfs to bus_dev
+  netdevsim: Add devlink subdev creation
+  netdevsim: Add devlink subdev sefltest for netdevsim
+  net/mlx5e: Add support for devlink subdev and subdev hw_addr set/show
+
+ Documentation/networking/devlink-subdev.rst   |  96 +++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.c |  92 ++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.h |   5 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   6 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   9 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c |  19 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h |   7 +-
+ .../mellanox/mlx5/core/eswitch_offloads.c     |   8 +
+ drivers/net/netdevsim/Makefile                |   2 +-
+ drivers/net/netdevsim/bus.c                   |  39 +-
+ drivers/net/netdevsim/dev.c                   |   9 +-
+ drivers/net/netdevsim/netdevsim.h             |  11 +
+ drivers/net/netdevsim/subdev.c                |  99 +++++
+ include/net/devlink.h                         |  46 ++
+ include/uapi/linux/devlink.h                  |  16 +
+ net/core/devlink.c                            | 403 +++++++++++++++++-
+ .../drivers/net/netdevsim/devlink.sh          |  55 ++-
+ 17 files changed, 894 insertions(+), 28 deletions(-)
+ create mode 100644 Documentation/networking/devlink-subdev.rst
+ create mode 100644 drivers/net/netdevsim/subdev.c
+
+-- 
+2.17.1
+
