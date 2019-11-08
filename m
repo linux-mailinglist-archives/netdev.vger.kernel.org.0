@@ -2,166 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC5DF5942
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 22:15:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7CCF5982
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 22:15:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731373AbfKHVIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 16:08:46 -0500
-Received: from mout.kundenserver.de ([212.227.17.24]:43469 "EHLO
+        id S1732876AbfKHVP3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 16:15:29 -0500
+Received: from mout.kundenserver.de ([217.72.192.75]:46059 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726349AbfKHVIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 16:08:45 -0500
+        with ESMTP id S1732425AbfKHVP3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 16:15:29 -0500
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue108 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1Mv2pC-1hcBKf32ie-00r1bf; Fri, 08 Nov 2019 22:08:29 +0100
+ (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MWjUc-1iQvSV0sdk-00X7z7; Fri, 08 Nov 2019 22:15:15 +0100
 From:   Arnd Bergmann <arnd@arndb.de>
-To:     y2038@lists.linaro.org, Thomas Gleixner <tglx@linutronix.de>,
-        John Stultz <john.stultz@linaro.org>
+To:     y2038@lists.linaro.org, "David S. Miller" <davem@davemloft.net>
 Cc:     linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Benjamin LaHaise <bcrl@kvack.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-fsdevel@vger.kernel.org, linux-aio@kvack.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 01/23] y2038: remove CONFIG_64BIT_TIME
-Date:   Fri,  8 Nov 2019 22:07:21 +0100
-Message-Id: <20191108210824.1534248-1-arnd@arndb.de>
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>, netdev@vger.kernel.org
+Subject: [PATCH 13/23] y2038: socket: remove timespec reference in timestamping
+Date:   Fri,  8 Nov 2019 22:12:12 +0100
+Message-Id: <20191108211323.1806194-4-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20191108210236.1296047-1-arnd@arndb.de>
 References: <20191108210236.1296047-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:H2tiCmOPXYw8s1qtnX/2cKq67XKFxksIA+eJap+sUEcVUWZWb+Y
- 8qBIXKy6r6bmI22vV77RnVQUuIj7iwJikQx6acqRH7nHsZTPjpxMcyvlS/WoqsCQJhc+0bI
- X/svWIrOH3ivqFs2+WfQmIBo7M1x9Coag63s5V0Nz6hOszrZ4K8t595MS92PQ3lbhuIvQop
- IEsAxjRtAtCpbkolITw/g==
+X-Provags-ID: V03:K1:IYjzYvve4HwgUd3LWF3hcYp3XGsNmdTj+aFo75G76y0fsDG/owT
+ ArX9Fi9VGH6tv0x2woDwVeV2R1dyaK92WLIrAqWENK5veUYsaDwJLWeK+JhypYxcISRcRJC
+ cjsePdvza6eEmh7shkRvT11+XeE7Jl86ZUT3hXuYyPzgHwwInuDwicN5DrCsWFhJKtCuPjh
+ Lj4cBfFfvsY9G33VIjgMg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Ga9diiCQdOk=:i8WuivqPZNstauNeRgqfYF
- XxoGLuFx6ewBMCyp9wIrs18C/yqZN+6404yWmhT82msLSJeX2vSKHrAFnYnzg/8MdJ803WspP
- SeKEga2VQG3SKNkMdXbrPU8qlEGog0T3nd0aK+j7NxqbixbqnfRcgFyPRznM6I7CFpYXuhNG3
- hwBLs01rZjsBnn6CjQbQvPkvcNUXdW4u09kN5yoJ3EjXlItrfLObZSd7JLBUZC9+TXFRQf3z8
- Uq6KzhBTPCtKpmVHbGKmR5PAcuZIQ+oh8BpDo+r9+8KXGg7U6ePPPvFj5bdJU/CmGbTnbxuHK
- 4lvg0GaC/SouPKAT5KxCVR9w3ltBoVdSyEx/nDFNYTVU8nM1oFoU/mwhdQzyQYh87cuQZ3dUc
- c8xyLsvMCae1P4y9EjSF3z3U8KMBmlNOqBokGX/GVYghcOR2zvJyVT3IsepSNkfW+CHBlqWCV
- AIW9zf/jfzxipCBsntrLzHma+84YW0ajLN6J0pn7ZB+H3tlMdOM1YDRwhuX3ABeqSPv7Vjorv
- Xf11OoHQuaKkncSn9mfJRaPD050DbTjRckQjyKxRDHw8uDB0GxqHcv22gE5Qi051n44ItIxdM
- 09xIWJQQlN+Dz0XlXU2/h4Fqi40/NAAQm8m21mzw0BzuiYw+yEVDmTDC+aqhBAFTTsJU6bLOy
- j++yfRwfHZh0lgIcWboO7bYTO6gWwQ64I4U1YWyipuR571DU1pL3429Ca8FZOMrbMFG9g8hrp
- ugSbD3CgtnzJmTpy41Xc8CWytO8HqrSc7JdKcb4U1HK4c5XwlcVg+L3stkOQBKmy4qlP/0GIb
- 12JmTyvu9QAMNB2OeZwl9LfD8GHfEoWlW7JbT2kVWaPgydoIjMugiKOPDMqwCP0gtbbePHmlG
- 5GfM8WBlOtDbzNDlEwQQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:JlPu9h1gens=:OPJRztXUGTZz2MC1IDn4A0
+ suSnrJB6u9/B1GtIPFzBJHmgAdvL1Ct0kLw5rVLgbNe47vdnDYTiED7S0hvkBpgaiQzWUt9Ip
+ ArswN/3rSOq7zFwVqlEVHIbP8d1BuiAHsyN8e5RindxJOiycaVSaS5Y1oi32Os/qbDSIkkuyK
+ sjRLh0S4aQrFAqwpgD/7HZ31JUu+hXWwpuQmgYDFO+5Oq2fQTaiIDPJKbcnwBUfzbPIpEQGvO
+ +FhnKSj8eztpH5p5pZ8YqN8n7PrVujwmZ/xWiV3ZVLFUaN5Z8H7RDPq8+KaXaCyWR1inurjel
+ qfA9vXCz7LaCygipg5Mu6BQNgHEkyr2ykhEYce7S3bd0fQdlvRQsrWBf54nRfGnAfuv1QzPSn
+ IQnplaQckYXxGOp7fAXNZHyND4yIGxQsOiBmKpShA4rbqt2xnUt4N6o9mp1eaQ6L6SrKcUCCZ
+ 8cy5eeTJypxnGCop2Q7rR8oKvS3WGPBfiNifrh+hLaeYFQLAiuHeUQnAwUj2oKFkNyhZqswTk
+ driyMfXxKWergCWqDajaV4fEwBIiay2ni+WsHR5BMPVxguf7j9YhQE3Qg2u5gSKWl2N/1JKYj
+ r/VPkNJXvNAoqY2eDo04u4k9QjOW5nabavScLniw7jFoH9rtmDQ/XpyKX2CVmD4vSvux2fl2V
+ PAQL+KTlL3Dqaa0gijc2BT2Aw1RHLMexVwKfAaHELJj5dH0p3V6hndkwLHoUjnRVQeEZIeuj8
+ DNrnzhYmF0hLP4xMa375H6hJeDfTtbeHQzNltykTUCMTaRo/aii/4J4tLhM7seeBDbGA8ag+p
+ RPvMp7BA6rRrvkZRXDcmQkb6omOI8f/hRxqsxjnXZfzNB8LKJI5oRPfP/tyZKC6FccGPlUMll
+ 1f4KMOnfZr+BcbtIkimw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The CONFIG_64BIT_TIME option is defined on all architectures, and can
-be removed for simplicity now.
+In order to remove the 'struct timespec' definition and the
+timespec64_to_timespec() helper function, change over the in-kernel
+definition of 'struct scm_timestamping' to use the __kernel_old_timespec
+replacement and open-code the assignment.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/Kconfig          | 8 --------
- fs/aio.c              | 2 +-
- ipc/syscall.c         | 2 +-
- kernel/time/hrtimer.c | 2 +-
- kernel/time/time.c    | 4 ++--
- net/socket.c          | 2 +-
- 6 files changed, 6 insertions(+), 14 deletions(-)
+ include/uapi/linux/errqueue.h | 7 +++++++
+ net/core/scm.c                | 6 ++++--
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/arch/Kconfig b/arch/Kconfig
-index 5f8a5d84dbbe..0e1fded2940e 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -796,14 +796,6 @@ config OLD_SIGACTION
- config COMPAT_OLD_SIGACTION
- 	bool
- 
--config 64BIT_TIME
--	def_bool y
--	help
--	  This should be selected by all architectures that need to support
--	  new system calls with a 64-bit time_t. This is relevant on all 32-bit
--	  architectures, and 64-bit architectures as part of compat syscall
--	  handling.
--
- config COMPAT_32BIT_TIME
- 	def_bool !64BIT || COMPAT
- 	help
-diff --git a/fs/aio.c b/fs/aio.c
-index 01e0fb9ae45a..447e3a0c572c 100644
---- a/fs/aio.c
-+++ b/fs/aio.c
-@@ -2056,7 +2056,7 @@ static long do_io_getevents(aio_context_t ctx_id,
-  *	specifies an infinite timeout. Note that the timeout pointed to by
-  *	timeout is relative.  Will fail with -ENOSYS if not implemented.
+diff --git a/include/uapi/linux/errqueue.h b/include/uapi/linux/errqueue.h
+index 28491dac074b..0cca19670fd2 100644
+--- a/include/uapi/linux/errqueue.h
++++ b/include/uapi/linux/errqueue.h
+@@ -37,9 +37,16 @@ struct sock_extended_err {
+  *	The timestamping interfaces SO_TIMESTAMPING, MSG_TSTAMP_*
+  *	communicate network timestamps by passing this struct in a cmsg with
+  *	recvmsg(). See Documentation/networking/timestamping.txt for details.
++ *	User space sees a timespec definition that matches either
++ *	__kernel_timespec or __kernel_old_timespec, in the kernel we
++ *	require two structure definitions to provide both.
   */
--#if !defined(CONFIG_64BIT_TIME) || defined(CONFIG_64BIT)
-+#ifdef CONFIG_64BIT
+ struct scm_timestamping {
++#ifdef __KERNEL__
++	struct __kernel_old_timespec ts[3];
++#else
+ 	struct timespec ts[3];
++#endif
+ };
  
- SYSCALL_DEFINE5(io_getevents, aio_context_t, ctx_id,
- 		long, min_nr,
-diff --git a/ipc/syscall.c b/ipc/syscall.c
-index 581bdff4e7c5..dfb0e988d542 100644
---- a/ipc/syscall.c
-+++ b/ipc/syscall.c
-@@ -30,7 +30,7 @@ int ksys_ipc(unsigned int call, int first, unsigned long second,
- 		return ksys_semtimedop(first, (struct sembuf __user *)ptr,
- 				       second, NULL);
- 	case SEMTIMEDOP:
--		if (IS_ENABLED(CONFIG_64BIT) || !IS_ENABLED(CONFIG_64BIT_TIME))
-+		if (IS_ENABLED(CONFIG_64BIT))
- 			return ksys_semtimedop(first, ptr, second,
- 			        (const struct __kernel_timespec __user *)fifth);
- 		else if (IS_ENABLED(CONFIG_COMPAT_32BIT_TIME))
-diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 65605530ee34..9e20873148c6 100644
---- a/kernel/time/hrtimer.c
-+++ b/kernel/time/hrtimer.c
-@@ -1940,7 +1940,7 @@ long hrtimer_nanosleep(const struct timespec64 *rqtp,
- 	return ret;
+ struct scm_timestamping64 {
+diff --git a/net/core/scm.c b/net/core/scm.c
+index 31a38239c92f..dc6fed1f221c 100644
+--- a/net/core/scm.c
++++ b/net/core/scm.c
+@@ -268,8 +268,10 @@ void put_cmsg_scm_timestamping(struct msghdr *msg, struct scm_timestamping_inter
+ 	struct scm_timestamping tss;
+ 	int i;
+ 
+-	for (i = 0; i < ARRAY_SIZE(tss.ts); i++)
+-		tss.ts[i] = timespec64_to_timespec(tss_internal->ts[i]);
++	for (i = 0; i < ARRAY_SIZE(tss.ts); i++) {
++		tss.ts[i].tv_sec = tss_internal->ts[i].tv_sec;
++		tss.ts[i].tv_nsec = tss_internal->ts[i].tv_nsec;
++	}
+ 
+ 	put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMPING_OLD, sizeof(tss), &tss);
  }
- 
--#if !defined(CONFIG_64BIT_TIME) || defined(CONFIG_64BIT)
-+#ifdef CONFIG_64BIT
- 
- SYSCALL_DEFINE2(nanosleep, struct __kernel_timespec __user *, rqtp,
- 		struct __kernel_timespec __user *, rmtp)
-diff --git a/kernel/time/time.c b/kernel/time/time.c
-index 45a358953f09..ddbddf504c23 100644
---- a/kernel/time/time.c
-+++ b/kernel/time/time.c
-@@ -267,7 +267,7 @@ COMPAT_SYSCALL_DEFINE2(settimeofday, struct old_timeval32 __user *, tv,
- }
- #endif
- 
--#if !defined(CONFIG_64BIT_TIME) || defined(CONFIG_64BIT)
-+#ifdef CONFIG_64BIT
- SYSCALL_DEFINE1(adjtimex, struct __kernel_timex __user *, txc_p)
- {
- 	struct __kernel_timex txc;		/* Local copy of parameter */
-@@ -884,7 +884,7 @@ int get_timespec64(struct timespec64 *ts,
- 	ts->tv_sec = kts.tv_sec;
- 
- 	/* Zero out the padding for 32 bit systems or in compat mode */
--	if (IS_ENABLED(CONFIG_64BIT_TIME) && in_compat_syscall())
-+	if (in_compat_syscall())
- 		kts.tv_nsec &= 0xFFFFFFFFUL;
- 
- 	ts->tv_nsec = kts.tv_nsec;
-diff --git a/net/socket.c b/net/socket.c
-index 6a9ab7a8b1d2..98f6544b0096 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2833,7 +2833,7 @@ SYSCALL_DEFINE2(socketcall, int, call, unsigned long __user *, args)
- 				    a[2], true);
- 		break;
- 	case SYS_RECVMMSG:
--		if (IS_ENABLED(CONFIG_64BIT) || !IS_ENABLED(CONFIG_64BIT_TIME))
-+		if (IS_ENABLED(CONFIG_64BIT))
- 			err = __sys_recvmmsg(a0, (struct mmsghdr __user *)a1,
- 					     a[2], a[3],
- 					     (struct __kernel_timespec __user *)a[4],
 -- 
 2.20.0
 
