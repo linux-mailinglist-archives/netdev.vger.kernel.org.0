@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 318F7F3FBB
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 06:21:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9FACF3FBE
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 06:21:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730299AbfKHFVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 00:21:18 -0500
-Received: from mail-pl1-f179.google.com ([209.85.214.179]:34559 "EHLO
-        mail-pl1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730268AbfKHFVR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 00:21:17 -0500
-Received: by mail-pl1-f179.google.com with SMTP id k7so3287755pll.1;
-        Thu, 07 Nov 2019 21:21:17 -0800 (PST)
+        id S1730312AbfKHFV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 00:21:27 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36196 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730268AbfKHFV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 00:21:26 -0500
+Received: by mail-pg1-f193.google.com with SMTP id k13so3323954pgh.3;
+        Thu, 07 Nov 2019 21:21:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=jc3l67xyQEPXPNEHSGvIuL4hU3WHuMxsFHqC+kHwtwo=;
-        b=FCIob4ixx962E3QVUIB6PPRoeW8/5XT97nAqMKKwzrXAI/l6B78NafhJXcojLDApas
-         /B7K3plJChqcJPBxmmVVhTQ9Mi4eZRZbVgvHTetZ7cqVt6oej7d+lFDH/xuB8fkcA+TS
-         N6ukj6ICK43jNs+UTYpDyAGCbHDjrn9JBjbD9LJ9wWStKrz3uBXAntQcmeO0FZScScHm
-         SfBL5huzC2KRuCGiNfXmB79khm/wlDIXe/mQQfxalsr38rPuuZJexZBby5FcQXk2kZDs
-         L1fd/JfH84L8hbP9fv50UjCJWenTyfKl61XJcoGuy6rTYGr5/VkesC3TGjsUJh5qNCUb
-         8TqA==
+        bh=vtjbsKLyYyOp7RqCiTkoO5zTq8GmnpssqheYeOiJDYw=;
+        b=Zu4A2ZDmRyVeokYqG8wqpRJWxmpFW5RJz8UHmMIxEabFc10T9Q9VNKBReeUg723Lja
+         HQC8hv6kknUsISHsMWoV7HV2D4uqBYfTzmMbeyEyknvixWwOqHGCwpgS3+WTRF+yMPTn
+         ZVa7ofxw0fJQab8WzT5J8hczpTOAWo9pKTaqg0//GmRzHmPT8a7etsVnNWD0Vo94zr7H
+         WV+qSkVCDE24S4DzDKY317+rL4cmdr14X6DciOeVjNKzlhmQpr6XMkHe+kQjBCGoMddl
+         9iU8vBJUIfAWYiHf0unltqMGarwR4q/mqo/UqaYynnT1kifV69qOiVXa2hrfTFFEuixq
+         Is0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=jc3l67xyQEPXPNEHSGvIuL4hU3WHuMxsFHqC+kHwtwo=;
-        b=uVPmDS9vjsChz9XfO356jGwPU7QuEfrhATdZIG4wJ8+nqg3oQ/6vqpCoJCYPSHsjIj
-         D4X1ABvW2OYqfljGZk06nikKVqdljqk0OXCGcyWaHssLvU3gh2/pFvgwZFTI1lfgQBBe
-         ESdr4RfFdiiQcMJmjaivWXiVSFz4uaMkjQg7fmh7sbmSr/0WZf9rPKJzCB2jQFysRFvD
-         oA7YYGoMKbU1LmA8WcKbgvd1XSolC4FTy+Q5XrhkGA89VOqRF1RcFmqMZHeqbNI9P79q
-         iUKXWHNZ/0MYM7nqYTVg/c9mWBKb9l9wN9YzdVvOw1byd4r6MPS+aZTdE2Dbg2n67H8d
-         QK3A==
-X-Gm-Message-State: APjAAAU4M12LRLQV/LAOrw0/gLLegr9pa52qh6p/wrRk8PY/glyFTbcg
-        G3YZFann6ROvOeA24qhCp/EMW/Ji
-X-Google-Smtp-Source: APXvYqx3QXkolwErhbK37uQfAyhvXWAr/fScYJyIlhJFLShz6JTZi9p+6TsAu6zHgyN97kv42OkQ3A==
-X-Received: by 2002:a17:90a:3390:: with SMTP id n16mr10306574pjb.53.1573190476348;
-        Thu, 07 Nov 2019 21:21:16 -0800 (PST)
+        bh=vtjbsKLyYyOp7RqCiTkoO5zTq8GmnpssqheYeOiJDYw=;
+        b=m+7KaP0/bwbtoscMQ33/lMbmQ38Fq+IDUxbP43qtQcVUXXxIPZsHSYCk5zhTq5OIBV
+         AeDIXRFYRL8GGhSGuwrublsPxgNfBM8OXI0A3xVMgXvJE0ZBJIeJbTaMuE6XZEVBQGnm
+         nKlG/x4hWVLMKjAj8az7MFr1WCSDlnPbhPOiF1q2UuwU9MvAVkFyjsWddDfg3E1kiRsk
+         Jte+vGEpWn9HzMIKCC+M8xJJl3qjNyzIqrNo8d6D/iB6M5JYmzkbZw77a07NWSChB63n
+         6OnXIKGAThxNMOpbcjhiSYp/jygNDkRIr3tmxJrL9v8KZzCs3sUl1XO9fthae7QFREtB
+         P1lQ==
+X-Gm-Message-State: APjAAAXNVTFnp7lBZU1t2K/YPO5OCRO81cnBbKkh6ek8b7NZD3Lk/CI0
+        S80j9YTzfdT26+vpaXuwVbq+sCeo
+X-Google-Smtp-Source: APXvYqyi+38miPjK7PYBaYyIV4IKxp3RI5O3mc3Gk7CZQcL7nR2QUps3OXhuyAqOn85Da1dCmaV58A==
+X-Received: by 2002:a63:5406:: with SMTP id i6mr8848829pgb.1.1573190485262;
+        Thu, 07 Nov 2019 21:21:25 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 31sm7135815pgy.63.2019.11.07.21.21.15
+        by smtp.gmail.com with ESMTPSA id q22sm4219810pgb.81.2019.11.07.21.21.24
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 07 Nov 2019 21:21:15 -0800 (PST)
+        Thu, 07 Nov 2019 21:21:24 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
         David Laight <david.laight@aculab.com>
-Subject: [PATCHv4 net-next 4/5] sctp: add support for Primary Path Switchover
-Date:   Fri,  8 Nov 2019 13:20:35 +0800
-Message-Id: <55f4edd068149ff8bd2c15023f181b07baef7ad0.1573190212.git.lucien.xin@gmail.com>
+Subject: [PATCHv4 net-next 5/5] sctp: add SCTP_PEER_ADDR_THLDS_V2 sockopt
+Date:   Fri,  8 Nov 2019 13:20:36 +0800
+Message-Id: <1e71490cd58220df0789cbd67006911d18c546bc.1573190212.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <45e03c4050ed2f122b6a4e19ebd6a532087088d3.1573190212.git.lucien.xin@gmail.com>
+In-Reply-To: <55f4edd068149ff8bd2c15023f181b07baef7ad0.1573190212.git.lucien.xin@gmail.com>
 References: <cover.1573190212.git.lucien.xin@gmail.com>
  <d008eb59f963118ae264e0151da79c382f16a69b.1573190212.git.lucien.xin@gmail.com>
  <7fa091e035b70859acbfd74ea06fcb3064c4bef7.1573190212.git.lucien.xin@gmail.com>
  <45e03c4050ed2f122b6a4e19ebd6a532087088d3.1573190212.git.lucien.xin@gmail.com>
+ <55f4edd068149ff8bd2c15023f181b07baef7ad0.1573190212.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1573190212.git.lucien.xin@gmail.com>
 References: <cover.1573190212.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -65,229 +66,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a new feature defined in section 5 of rfc7829: "Primary Path
-Switchover". By introducing a new tunable parameter:
+Section 7.2 of rfc7829: "Peer Address Thresholds (SCTP_PEER_ADDR_THLDS)
+Socket Option" extends 'struct sctp_paddrthlds' with 'spt_pathcpthld'
+added to allow a user to change ps_retrans per sock/asoc/transport, as
+other 2 paddrthlds: pf_retrans, pathmaxrxt.
 
-  Primary.Switchover.Max.Retrans (PSMR)
+Note: to not break the user's program, here to support pf_retrans dump
+and setting by adding a new sockopt SCTP_PEER_ADDR_THLDS_V2, and a new
+structure sctp_paddrthlds_v2 instead of extending sctp_paddrthlds.
 
-The primary path will be changed to another active path when the path
-error counter on the old primary path exceeds PSMR, so that "the SCTP
-sender is allowed to continue data transmission on a new working path
-even when the old primary destination address becomes active again".
+Also, when setting ps_retrans, the value is not allowed to be greater
+than pf_retrans.
 
-This patch is to add this tunable parameter, 'ps_retrans' per netns,
-sock, asoc and transport. It also allows a user to change ps_retrans
-per netns by sysctl, and ps_retrans per sock/asoc/transport will be
-initialized with it.
-
-The check will be done in sctp_do_8_2_transport_strike() when this
-feature is enabled.
-
-Note this feature is disabled by initializing 'ps_retrans' per netns
-as 0xffff by default, and its value can't be less than 'pf_retrans'
-when changing by sysctl.
-
-v3->v4:
-  - add define SCTP_PS_RETRANS_MAX 0xffff, and use it on extra2 of
-    sysctl 'ps_retrans'.
-  - add a new entry for ps_retrans on ip-sysctl.txt.
+v1->v2:
+  - use SCTP_PEER_ADDR_THLDS_V2 to set/get pf_retrans instead,
+    as Marcelo and David Laight suggested.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Acked-by: Neil Horman <nhorman@tuxdriver.com>
 ---
- Documentation/networking/ip-sysctl.txt | 12 ++++++++++++
- include/net/netns/sctp.h               |  6 ++++++
- include/net/sctp/constants.h           |  2 ++
- include/net/sctp/structs.h             | 11 ++++++++---
- net/sctp/associola.c                   |  3 +++
- net/sctp/protocol.c                    |  3 +++
- net/sctp/sm_sideeffect.c               |  5 +++++
- net/sctp/socket.c                      |  1 +
- net/sctp/sysctl.c                      | 12 +++++++++++-
- 9 files changed, 51 insertions(+), 4 deletions(-)
+ include/uapi/linux/sctp.h | 10 +++++++++
+ net/sctp/socket.c         | 54 +++++++++++++++++++++++++++++++++++------------
+ 2 files changed, 50 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index ad374b4..33c1d16 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -2192,6 +2192,18 @@ pf_retrans - INTEGER
+diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+index a190e4a..28ad40d 100644
+--- a/include/uapi/linux/sctp.h
++++ b/include/uapi/linux/sctp.h
+@@ -105,6 +105,7 @@ typedef __s32 sctp_assoc_t;
+ #define SCTP_DEFAULT_SNDINFO	34
+ #define SCTP_AUTH_DEACTIVATE_KEY	35
+ #define SCTP_REUSE_PORT		36
++#define SCTP_PEER_ADDR_THLDS_V2	37
  
- 	Default: 0
- 
-+ps_retrans - INTEGER
-+	Primary.Switchover.Max.Retrans (PSMR), it's a tunable parameter coming
-+	from section-5 "Primary Path Switchover" in rfc7829.  The primary path
-+	will be changed to another active path when the path error counter on
-+	the old primary path exceeds PSMR, so that "the SCTP sender is allowed
-+	to continue data transmission on a new working path even when the old
-+	primary destination address becomes active again".   Note this feature
-+	is disabled by initializing 'ps_retrans' per netns as 0xffff by default,
-+	and its value can't be less than 'pf_retrans' when changing by sysctl.
-+
-+	Default: 0xffff
-+
- rto_initial - INTEGER
- 	The initial round trip timeout value in milliseconds that will be used
- 	in calculating round trip times.  This is the initial time interval
-diff --git a/include/net/netns/sctp.h b/include/net/netns/sctp.h
-index 18c3dda..d8d02e4 100644
---- a/include/net/netns/sctp.h
-+++ b/include/net/netns/sctp.h
-@@ -89,6 +89,12 @@ struct netns_sctp {
- 	 */
- 	int pf_retrans;
- 
-+	/* Primary.Switchover.Max.Retrans sysctl value
-+	 * taken from:
-+	 * https://tools.ietf.org/html/rfc7829
-+	 */
-+	int ps_retrans;
-+
- 	/*
- 	 * Disable Potentially-Failed feature, the feature is enabled by default
- 	 * pf_enable	-  0  : disable pf
-diff --git a/include/net/sctp/constants.h b/include/net/sctp/constants.h
-index e88b77a..15b4d9a 100644
---- a/include/net/sctp/constants.h
-+++ b/include/net/sctp/constants.h
-@@ -296,6 +296,8 @@ enum {
+ /* Internal Socket Options. Some of the sctp library functions are
+  * implemented using these socket options.
+@@ -1087,6 +1088,15 @@ struct sctp_paddrthlds {
+ 	__u16 spt_pathpfthld;
  };
- #define SCTP_PF_EXPOSE_MAX	SCTP_PF_EXPOSE_ENABLE
  
-+#define SCTP_PS_RETRANS_MAX	0xffff
++/* Use a new structure with spt_pathcpthld for back compatibility */
++struct sctp_paddrthlds_v2 {
++	sctp_assoc_t spt_assoc_id;
++	struct sockaddr_storage spt_address;
++	__u16 spt_pathmaxrxt;
++	__u16 spt_pathpfthld;
++	__u16 spt_pathcpthld;
++};
 +
- /* These return values describe the success or failure of a number of
-  * routines which form the lower interface to SCTP_outqueue.
+ /*
+  * Socket Option for Getting the Association/Stream-Specific PR-SCTP Status
   */
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 9a43738..3cc913f 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -184,7 +184,8 @@ struct sctp_sock {
- 	__u32 flowlabel;
- 	__u8  dscp;
- 
--	int pf_retrans;
-+	__u16 pf_retrans;
-+	__u16 ps_retrans;
- 
- 	/* The initial Path MTU to use for new associations. */
- 	__u32 pathmtu;
-@@ -897,7 +898,9 @@ struct sctp_transport {
- 	 * and will be initialized from the assocs value.  This can be changed
- 	 * using the SCTP_PEER_ADDR_THLDS socket option
- 	 */
--	int pf_retrans;
-+	__u16 pf_retrans;
-+	/* Used for primary path switchover. */
-+	__u16 ps_retrans;
- 	/* PMTU	      : The current known path MTU.  */
- 	__u32 pathmtu;
- 
-@@ -1773,7 +1776,9 @@ struct sctp_association {
- 	 * and will be initialized from the assocs value.  This can be
- 	 * changed using the SCTP_PEER_ADDR_THLDS socket option
- 	 */
--	int pf_retrans;
-+	__u16 pf_retrans;
-+	/* Used for primary path switchover. */
-+	__u16 ps_retrans;
- 
- 	/* Maximum number of times the endpoint will retransmit INIT  */
- 	__u16 max_init_attempts;
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index c183d0e..4725ca4 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -86,6 +86,7 @@ static struct sctp_association *sctp_association_init(
- 	 */
- 	asoc->max_retrans = sp->assocparams.sasoc_asocmaxrxt;
- 	asoc->pf_retrans  = sp->pf_retrans;
-+	asoc->ps_retrans  = sp->ps_retrans;
- 	asoc->pf_expose   = sp->pf_expose;
- 
- 	asoc->rto_initial = msecs_to_jiffies(sp->rtoinfo.srto_initial);
-@@ -628,6 +629,8 @@ struct sctp_transport *sctp_assoc_add_peer(struct sctp_association *asoc,
- 
- 	/* And the partial failure retrans threshold */
- 	peer->pf_retrans = asoc->pf_retrans;
-+	/* And the primary path switchover retrans threshold */
-+	peer->ps_retrans = asoc->ps_retrans;
- 
- 	/* Initialize the peer's SACK delay timeout based on the
- 	 * association configured value.
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index f86be7b..fbbf191 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -1217,6 +1217,9 @@ static int __net_init sctp_defaults_init(struct net *net)
- 	/* Max.Burst		    - 4 */
- 	net->sctp.max_burst			= SCTP_DEFAULT_MAX_BURST;
- 
-+	/* Disable of Primary Path Switchover by default */
-+	net->sctp.ps_retrans = SCTP_PS_RETRANS_MAX;
-+
- 	/* Enable pf state by default */
- 	net->sctp.pf_enable = 1;
- 
-diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-index e52b212..acd737d 100644
---- a/net/sctp/sm_sideeffect.c
-+++ b/net/sctp/sm_sideeffect.c
-@@ -567,6 +567,11 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
- 					     SCTP_FAILED_THRESHOLD);
- 	}
- 
-+	if (transport->error_count > transport->ps_retrans &&
-+	    asoc->peer.primary_path == transport &&
-+	    asoc->peer.active_path != transport)
-+		sctp_assoc_set_primary(asoc, asoc->peer.active_path);
-+
- 	/* E2) For the destination address for which the timer
- 	 * expires, set RTO <- RTO * 2 ("back off the timer").  The
- 	 * maximum value discussed in rule C7 above (RTO.max) may be
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index eccd689..38d102b 100644
+index 38d102b..3d2bad2 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -5078,6 +5078,7 @@ static int sctp_init_sock(struct sock *sk)
- 	sp->hbinterval  = net->sctp.hb_interval;
- 	sp->pathmaxrxt  = net->sctp.max_retrans_path;
- 	sp->pf_retrans  = net->sctp.pf_retrans;
-+	sp->ps_retrans  = net->sctp.ps_retrans;
- 	sp->pf_expose   = net->sctp.pf_expose;
- 	sp->pathmtu     = 0; /* allow default discovery */
- 	sp->sackdelay   = net->sctp.sack_timeout;
-diff --git a/net/sctp/sysctl.c b/net/sctp/sysctl.c
-index 5d1ad44..4740aa7 100644
---- a/net/sctp/sysctl.c
-+++ b/net/sctp/sysctl.c
-@@ -35,6 +35,7 @@ static int rto_beta_min = 0;
- static int rto_alpha_max = 1000;
- static int rto_beta_max = 1000;
- static int pf_expose_max = SCTP_PF_EXPOSE_MAX;
-+static int ps_retrans_max = SCTP_PS_RETRANS_MAX;
+@@ -3943,18 +3943,22 @@ static int sctp_setsockopt_auto_asconf(struct sock *sk, char __user *optval,
+  */
+ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
+ 					    char __user *optval,
+-					    unsigned int optlen)
++					    unsigned int optlen, bool v2)
+ {
+-	struct sctp_paddrthlds val;
++	struct sctp_paddrthlds_v2 val;
+ 	struct sctp_transport *trans;
+ 	struct sctp_association *asoc;
++	int len;
  
- static unsigned long max_autoclose_min = 0;
- static unsigned long max_autoclose_max =
-@@ -213,7 +214,16 @@ static struct ctl_table sctp_net_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec_minmax,
- 		.extra1		= SYSCTL_ZERO,
--		.extra2		= SYSCTL_INT_MAX,
-+		.extra2		= &init_net.sctp.ps_retrans,
-+	},
-+	{
-+		.procname	= "ps_retrans",
-+		.data		= &init_net.sctp.ps_retrans,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec_minmax,
-+		.extra1		= &init_net.sctp.pf_retrans,
-+		.extra2		= &ps_retrans_max,
- 	},
- 	{
- 		.procname	= "sndbuf_policy",
+-	if (optlen < sizeof(struct sctp_paddrthlds))
++	len = v2 ? sizeof(val) : sizeof(struct sctp_paddrthlds);
++	if (optlen < len)
+ 		return -EINVAL;
+-	if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval,
+-			   sizeof(struct sctp_paddrthlds)))
++	if (copy_from_user(&val, optval, len))
+ 		return -EFAULT;
+ 
++	if (v2 && val.spt_pathpfthld > val.spt_pathcpthld)
++		return -EINVAL;
++
+ 	if (!sctp_is_any(sk, (const union sctp_addr *)&val.spt_address)) {
+ 		trans = sctp_addr_id2transport(sk, &val.spt_address,
+ 					       val.spt_assoc_id);
+@@ -3963,6 +3967,8 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
+ 
+ 		if (val.spt_pathmaxrxt)
+ 			trans->pathmaxrxt = val.spt_pathmaxrxt;
++		if (v2)
++			trans->ps_retrans = val.spt_pathcpthld;
+ 		trans->pf_retrans = val.spt_pathpfthld;
+ 
+ 		return 0;
+@@ -3978,17 +3984,23 @@ static int sctp_setsockopt_paddr_thresholds(struct sock *sk,
+ 				    transports) {
+ 			if (val.spt_pathmaxrxt)
+ 				trans->pathmaxrxt = val.spt_pathmaxrxt;
++			if (v2)
++				trans->ps_retrans = val.spt_pathcpthld;
+ 			trans->pf_retrans = val.spt_pathpfthld;
+ 		}
+ 
+ 		if (val.spt_pathmaxrxt)
+ 			asoc->pathmaxrxt = val.spt_pathmaxrxt;
++		if (v2)
++			asoc->ps_retrans = val.spt_pathcpthld;
+ 		asoc->pf_retrans = val.spt_pathpfthld;
+ 	} else {
+ 		struct sctp_sock *sp = sctp_sk(sk);
+ 
+ 		if (val.spt_pathmaxrxt)
+ 			sp->pathmaxrxt = val.spt_pathmaxrxt;
++		if (v2)
++			sp->ps_retrans = val.spt_pathcpthld;
+ 		sp->pf_retrans = val.spt_pathpfthld;
+ 	}
+ 
+@@ -4778,7 +4790,12 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 		retval = sctp_setsockopt_auto_asconf(sk, optval, optlen);
+ 		break;
+ 	case SCTP_PEER_ADDR_THLDS:
+-		retval = sctp_setsockopt_paddr_thresholds(sk, optval, optlen);
++		retval = sctp_setsockopt_paddr_thresholds(sk, optval, optlen,
++							  false);
++		break;
++	case SCTP_PEER_ADDR_THLDS_V2:
++		retval = sctp_setsockopt_paddr_thresholds(sk, optval, optlen,
++							  true);
+ 		break;
+ 	case SCTP_RECVRCVINFO:
+ 		retval = sctp_setsockopt_recvrcvinfo(sk, optval, optlen);
+@@ -7217,18 +7234,19 @@ static int sctp_getsockopt_assoc_ids(struct sock *sk, int len,
+  * http://www.ietf.org/id/draft-nishida-tsvwg-sctp-failover-05.txt
+  */
+ static int sctp_getsockopt_paddr_thresholds(struct sock *sk,
+-					    char __user *optval,
+-					    int len,
+-					    int __user *optlen)
++					    char __user *optval, int len,
++					    int __user *optlen, bool v2)
+ {
+-	struct sctp_paddrthlds val;
++	struct sctp_paddrthlds_v2 val;
+ 	struct sctp_transport *trans;
+ 	struct sctp_association *asoc;
++	int min;
+ 
+-	if (len < sizeof(struct sctp_paddrthlds))
++	min = v2 ? sizeof(val) : sizeof(struct sctp_paddrthlds);
++	if (len < min)
+ 		return -EINVAL;
+-	len = sizeof(struct sctp_paddrthlds);
+-	if (copy_from_user(&val, (struct sctp_paddrthlds __user *)optval, len))
++	len = min;
++	if (copy_from_user(&val, optval, len))
+ 		return -EFAULT;
+ 
+ 	if (!sctp_is_any(sk, (const union sctp_addr *)&val.spt_address)) {
+@@ -7239,6 +7257,7 @@ static int sctp_getsockopt_paddr_thresholds(struct sock *sk,
+ 
+ 		val.spt_pathmaxrxt = trans->pathmaxrxt;
+ 		val.spt_pathpfthld = trans->pf_retrans;
++		val.spt_pathcpthld = trans->ps_retrans;
+ 
+ 		goto out;
+ 	}
+@@ -7251,11 +7270,13 @@ static int sctp_getsockopt_paddr_thresholds(struct sock *sk,
+ 	if (asoc) {
+ 		val.spt_pathpfthld = asoc->pf_retrans;
+ 		val.spt_pathmaxrxt = asoc->pathmaxrxt;
++		val.spt_pathcpthld = asoc->ps_retrans;
+ 	} else {
+ 		struct sctp_sock *sp = sctp_sk(sk);
+ 
+ 		val.spt_pathpfthld = sp->pf_retrans;
+ 		val.spt_pathmaxrxt = sp->pathmaxrxt;
++		val.spt_pathcpthld = sp->ps_retrans;
+ 	}
+ 
+ out:
+@@ -8135,7 +8156,12 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
+ 		retval = sctp_getsockopt_auto_asconf(sk, len, optval, optlen);
+ 		break;
+ 	case SCTP_PEER_ADDR_THLDS:
+-		retval = sctp_getsockopt_paddr_thresholds(sk, optval, len, optlen);
++		retval = sctp_getsockopt_paddr_thresholds(sk, optval, len,
++							  optlen, false);
++		break;
++	case SCTP_PEER_ADDR_THLDS_V2:
++		retval = sctp_getsockopt_paddr_thresholds(sk, optval, len,
++							  optlen, true);
+ 		break;
+ 	case SCTP_GET_ASSOC_STATS:
+ 		retval = sctp_getsockopt_assoc_stats(sk, len, optval, optlen);
 -- 
 2.1.0
 
