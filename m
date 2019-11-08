@@ -2,162 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB417F5371
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:20:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5344EF5373
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:21:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729771AbfKHSUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 13:20:40 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:44775 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726446AbfKHSUk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:20:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573237238;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eFKgszGEpzR2nnwoquaFNs0TBvv5DvOXN/SDdEuxKgM=;
-        b=i6xkgcPjR6hcoMQ9YTUzlJdVV3meXj/7qhw5O7gVWMSCuN1F+PwdUXNxjVlnQ4kFhB62/O
-        T1+2WikkRN5rN0qq0CK5cT//2AkskrC8aDNnZ2C/Z7XC1PUO7Hh8EjyNmXBuBlWFRJ3RQv
-        Ja4MDaS2UT+jhYqilzC3bBWmLGIPLmc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-3Ew8BlhkMJ6n5sNt-KfY-Q-1; Fri, 08 Nov 2019 13:20:35 -0500
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 66AC48017E0;
-        Fri,  8 Nov 2019 18:20:34 +0000 (UTC)
-Received: from firesoul.localdomain (ovpn-200-27.brq.redhat.com [10.40.200.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AF6EF600CA;
-        Fri,  8 Nov 2019 18:20:28 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id DC2F730FC134D;
-        Fri,  8 Nov 2019 19:20:27 +0100 (CET)
-Subject: [net-next v1 PATCH 2/2] page_pool: make inflight returns more
- robust via blocking alloc cache
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        netdev@vger.kernel.org,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
+        id S1729953AbfKHSVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 13:21:06 -0500
+Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:7297
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726446AbfKHSVG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 13:21:06 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lY3PIWAvSiMAThp+kSdHGtvBBAJx2kMexaol5zX0DZzY3HHMJpEqH5Bd2At+pi4SWQs0zPsewXwRchPMLXrVklEIngw9kLyoSFoHTZ3Y/n4A4TRKjnT10Jc+kst/7JheF226G5lUU23hdXH4OE8tcACZlApLNxd5OzBXO5fOV3b7CoXSA52E2pZaV3mdyUbCaLJ9Jv7NWavMrv3Q8txy6nG+X78U7XDaG7QecHGO5fyMXfceRbQLDVsPfKcTanzh5a00bB3Qmx6fm6cMednblKDoLtjKySd/Nlti+BodSg7V3hUJkbwBjveWMlkGHBNTlRFNVD05YHem1MrTGBofAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=APbkRU01k+xyrmVBS+QSq7cjBU2v0qiK2TfOrXynO2Q=;
+ b=EP2+6sE4uLUG2PfQdLQWY3I2eFJFWdYoBxJ1iuiJ2r9YIqdnBfgGsq67rprqfbrKbkdrkc9XEwRtVqBiYUWsVgwvUKirqkEQ5xkqzO5XLSm2hkbVFco60lsmDwk9ylFHbRlyU0QJCoV/BOGpyp9ZRbRfeji4ILDWmM4gE12sIOyg3TvVRDHRuRifPKXwyut6hrLPE+/fWnEbjKIPez6jceeYjbH0c0CdIlqxBHLivtMsc74QRJsLyhKJ6OP6wgs5uwd16TKq25Op+K0/Vi6lx0dSGPjWWyOQSgE3EjFXaB15z+DmgZqXUUOA1WQ1DJZsKztzTSdVnYUw9UddHYGNEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=APbkRU01k+xyrmVBS+QSq7cjBU2v0qiK2TfOrXynO2Q=;
+ b=OjVp6b31Lpc2aye3Kx2vO+6Tml9lVL1T3eU9c4W8Iyx6i/V9YKDK/P5k7nN1GUyafmrkVazt0PkzfNN5uOMFQOjezkL2am4NaY+AGO19YoHmxHsQhsT5K7ljNmniTepsH0XsvzDge3ob/nafUwmRih6cxmjUTaFRS1QFyjz4H8c=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB5025.eurprd05.prod.outlook.com (52.134.89.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.22; Fri, 8 Nov 2019 18:21:02 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
+ 18:21:02 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        Matteo Croce <mcroce@redhat.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
-Date:   Fri, 08 Nov 2019 19:20:27 +0100
-Message-ID: <157323722783.10408.5060384163093162553.stgit@firesoul>
-In-Reply-To: <157323719180.10408.3472322881536070517.stgit@firesoul>
-References: <157323719180.10408.3472322881536070517.stgit@firesoul>
-User-Agent: StGit/0.17.1-dirty
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-MC-Unique: 3Ew8BlhkMJ6n5sNt-KfY-Q-1
-X-Mimecast-Spam-Score: 2
-Content-Type: text/plain; charset=UTF-8
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Vu Pham <vuhuong@mellanox.com>
+Subject: RE: [PATCH net-next 06/19] net/mlx5: Add support for mediated devices
+ in switchdev mode
+Thread-Topic: [PATCH net-next 06/19] net/mlx5: Add support for mediated
+ devices in switchdev mode
+Thread-Index: AQHVlYWxPB2tLfSvAEa4v60P1JBDkKeBFLCAgABbf8CAAAZHAIAAATbQgAAbNoCAAAOzYA==
+Date:   Fri, 8 Nov 2019 18:21:02 +0000
+Message-ID: <AM0PR05MB4866D17AAB3DD59D7E7E84D9D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+ <20191107160834.21087-1-parav@mellanox.com>
+ <20191107160834.21087-6-parav@mellanox.com>
+ <20191108103249.GE6990@nanopsycho>
+ <AM0PR05MB486609CBD40E1E26BB18C6B3D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108162246.GN6990@nanopsycho>
+ <AM0PR05MB48665096F40059F63B0895C6D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108180429.GS6990@nanopsycho>
+In-Reply-To: <20191108180429.GS6990@nanopsycho>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [208.176.44.194]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: dcac853c-274e-46f4-bb04-08d7647869a7
+x-ms-traffictypediagnostic: AM0PR05MB5025:|AM0PR05MB5025:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB502517033DDBF610F9F18782D17B0@AM0PR05MB5025.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-forefront-prvs: 0215D7173F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(39860400002)(376002)(396003)(346002)(189003)(199004)(13464003)(33656002)(55016002)(229853002)(478600001)(186003)(14454004)(25786009)(8936002)(6916009)(4326008)(66066001)(99286004)(6116002)(316002)(2906002)(3846002)(26005)(256004)(7736002)(81156014)(66476007)(11346002)(476003)(76176011)(8676002)(86362001)(66446008)(52536014)(54906003)(76116006)(66946007)(5660300002)(6506007)(66556008)(74316002)(81166006)(102836004)(6246003)(9686003)(7696005)(446003)(71190400001)(6436002)(305945005)(71200400001)(486006)(64756008)(107886003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5025;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3mAmqPSAdm84IAnjdOk38uZS9STF0qaZlVEvlAnDl5JksBPMrdSwwDJ6Mc/TWkW6QW3q8qR7ycIml0jvufND+sylvoa+F+oYol/Qusc87UOjqWduXKB0SZUjRwdQxWVVicPo/MzfytziZoEjYkpBib0NqPaP7/LrmfHkaMV+FNyJxjUgPw76w7hhpL1QxcCbWT58DZPu2gNpiHrW3AZtxUUeei1kpH0GxpZ4X637E562+1n/o/62NUBEXaW+zn3iAJjDi6pQ9sI3UqcbNx79izQN6ewIJNLp4TQrQafaRQM5nzrCNVgrIW9M7EwcTCA6rYoLtvI+M+Hz3ltpTYgOatJGiXghwDZdqCHsMpIXtVkXF2rucj3XwS8kyYXS9Pw4P0PjROYhpGcsS5Pq/VXfgTVgWTvPw/2NrkgjoaB/FBybvf5hvM6UJqpT/ZgJIwXj
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-To:     unlisted-recipients:; (no To-header on input)
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcac853c-274e-46f4-bb04-08d7647869a7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 18:21:02.6028
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 8Hz6N8HBXsc49Gs5BBDNYw7wppTCI+SdBnuGvxp05jqLy6i7KK/Pe/KQJeFUv4pH693XRSvxg64qzQ8D0XipJg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5025
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When requesting page_pool shutdown, it's a requirement that consumer
-RX-side have been disconnected, but __page_pool_request_shutdown()
-have a loop that empty RX alloc cache each time. Producers can still
-be inflight, but they MUST NOT return pages into RX alloc cache. Thus,
-the RX alloc cache MUST remain empty after the first clearing, else it
-is considered a bug. Lets make it more clear this is only cleared once.
 
-This patch only empty RX alloc cache once and then block alloc cache.
-The alloc cache is blocked via pretending it is full, and then also
-poisoning the last element. This blocks producers from using fast-path,
-and consumer (which is not allowed) will see a NULL pointer.
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- include/net/page_pool.h |    2 ++
- net/core/page_pool.c    |   28 +++++++++++++++++++++-------
- 2 files changed, 23 insertions(+), 7 deletions(-)
+> -----Original Message-----
+> From: Jiri Pirko <jiri@resnulli.us>
 
-diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-index 2cbcdbdec254..ab39b7955f9b 100644
---- a/include/net/page_pool.h
-+++ b/include/net/page_pool.h
-@@ -107,6 +107,8 @@ struct page_pool {
- =09 * refcnt serves purpose is to simplify drivers error handling.
- =09 */
- =09refcount_t user_cnt;
-+
-+=09bool shutdown_in_progress;
- };
-=20
- struct page *page_pool_alloc_pages(struct page_pool *pool, gfp_t gfp);
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 226f2eb30418..89feee635d08 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -357,7 +357,7 @@ void __page_pool_free(struct page_pool *pool)
- =09if (!page_pool_put(pool))
- =09=09return;
-=20
--=09WARN(pool->alloc.count, "API usage violation");
-+=09WARN(!pool->shutdown_in_progress, "API usage violation");
- =09WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
-=20
- =09if (!__page_pool_safe_to_destroy(pool))
-@@ -367,8 +367,6 @@ void __page_pool_free(struct page_pool *pool)
-=20
- =09/* Make sure kernel will crash on use-after-free */
- =09pool->ring.queue =3D NULL;
--=09pool->alloc.cache[PP_ALLOC_CACHE_SIZE - 1] =3D NULL;
--=09pool->alloc.count =3D PP_ALLOC_CACHE_SIZE;
-=20
- =09if (pool->p.flags & PP_FLAG_DMA_MAP)
- =09=09put_device(pool->p.dev);
-@@ -377,22 +375,38 @@ void __page_pool_free(struct page_pool *pool)
- }
- EXPORT_SYMBOL(__page_pool_free);
-=20
--/* Request to shutdown: release pages cached by page_pool, and check
-- * for in-flight pages
-- */
--bool __page_pool_request_shutdown(struct page_pool *pool)
-+/* Empty alloc cache once and block it */
-+void page_pool_empty_alloc_cache_once(struct page_pool *pool)
- {
- =09struct page *page;
-=20
-+=09if (pool->shutdown_in_progress)
-+=09=09return;
-+
- =09/* Empty alloc cache, assume caller made sure this is
- =09 * no-longer in use, and page_pool_alloc_pages() cannot be
- =09 * call concurrently.
- =09 */
- =09while (pool->alloc.count) {
- =09=09page =3D pool->alloc.cache[--pool->alloc.count];
-+=09=09pool->alloc.cache[pool->alloc.count] =3D NULL;
- =09=09__page_pool_return_page(pool, page);
- =09}
-=20
-+=09/* Block alloc cache, pretend it's full and poison last element */
-+=09pool->alloc.cache[PP_ALLOC_CACHE_SIZE - 1] =3D NULL;
-+=09pool->alloc.count =3D PP_ALLOC_CACHE_SIZE;
-+
-+=09pool->shutdown_in_progress =3D true;
-+}
-+
-+/* Request to shutdown: release pages cached by page_pool, and check
-+ * for in-flight pages. RX-alloc side MUST be stopped prior to this.
-+ */
-+bool __page_pool_request_shutdown(struct page_pool *pool)
-+{
-+=09page_pool_empty_alloc_cache_once(pool);
-+
- =09/* No more consumers should exist, but producers could still
- =09 * be in-flight.
- =09 */
+[..]
 
+> >It should be. It isn't yet.
+> >It is similar to how phys_port_name preparation was done in legacy way
+> >in individual drivers and later on moved to devlink.c So some other time=
+, can
+> move this to mdev core.
+>=20
+> Btw, Documentation/driver-api/vfio-mediated-device.rst says:
+>   "[<type-id>], device_api, and available_instances are mandatory attribu=
+tes
+>    that should be provided by vendor driver."
+>=20
+> Why don't you implement "device_api" as well?
+Because currently device_api definitions are not central to mdev_core. It s=
+hould be in mdev core and not in include/uapi/linux/vfio.h.
+So, it needs to refactored.
+Additionally, current mlx5 mdev are not going to be bound to vfio framework=
+.
+So, it is not breaking anything.
++ class_id is getting implemented to have more appropriate binding method.
+Hence it is not implemented.
+>=20
+>=20
+> >
+> >
+> >>
+> >> >
+> >> >>
+> >> >> >+
+> >> >> >+static struct attribute *mdev_dev_attrs[] =3D {
+> >> >> >+	&mdev_type_attr_max_mdevs.attr,
+> >> >> >+	&mdev_type_attr_available_instances.attr,
+> >> >> >+	NULL,
+> >> >> >+};
+> >> >> >+
+> >> >> >+static struct attribute_group mdev_mgmt_group =3D {
+> >> >> >+	.name  =3D "local",
+>=20
+> This local name is "type-id"?
+Yes.
+
+> Why "local?
+Local to this system.
+
+>=20
+>=20
+>=20
+>=20
+>=20
+> >> >> >+	.attrs =3D mdev_dev_attrs,
+> >> >> >+};
+> >> >> >+
+> >> >> >+static struct attribute_group *mlx5_meddev_groups[] =3D {
+> >> >> >+	&mdev_mgmt_group,
+> >> >> >+	NULL,
+> >> >> >+};
+> >> >>
+> >> >> [...]
