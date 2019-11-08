@@ -2,128 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51957F515F
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28FBFF5164
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 17:44:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726576AbfKHQni (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 11:43:38 -0500
-Received: from mga05.intel.com ([192.55.52.43]:28635 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726095AbfKHQni (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 11:43:38 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Nov 2019 08:43:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,282,1569308400"; 
-   d="scan'208";a="193213375"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by orsmga007.jf.intel.com with ESMTP; 08 Nov 2019 08:43:37 -0800
-Received: from orsmsx111.amr.corp.intel.com (10.22.240.12) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 8 Nov 2019 08:43:37 -0800
-Received: from orsmsx113.amr.corp.intel.com ([169.254.9.28]) by
- ORSMSX111.amr.corp.intel.com ([169.254.12.154]) with mapi id 14.03.0439.000;
- Fri, 8 Nov 2019 08:43:37 -0800
-From:   "Creeley, Brett" <brett.creeley@intel.com>
-To:     "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Arkady Gilinsky <arcadyg@gmail.com>
-Subject: RE: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg interface between
- VF and PF
-Thread-Topic: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg interface
- between VF and PF
-Thread-Index: AQHVktE9LXQEe1tn8E2yMWCX6YmauKd7neLQgABu5ACAALtz8IAA2KwAgAMFkICAANqjAA==
-Date:   Fri, 8 Nov 2019 16:43:36 +0000
-Message-ID: <3508A0C5D531054DBDD98909F6FA64FA11B3EB75@ORSMSX113.amr.corp.intel.com>
-References: <1572845537.13810.225.camel@harmonicinc.com>
-         <3508A0C5D531054DBDD98909F6FA64FA11B3936D@ORSMSX113.amr.corp.intel.com>
-         <1572931430.13810.227.camel@harmonicinc.com>
-         <3508A0C5D531054DBDD98909F6FA64FA11B39863@ORSMSX113.amr.corp.intel.com>
-         <1573018214.10368.1.camel@harmonicinc.com>
- <d078d3efc784805a67ba1a1c6e94fb4ec1c0aec6.camel@intel.com>
-In-Reply-To: <d078d3efc784805a67ba1a1c6e94fb4ec1c0aec6.camel@intel.com>
+        id S1727033AbfKHQo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 11:44:27 -0500
+Received: from mail-eopbgr40051.outbound.protection.outlook.com ([40.107.4.51]:23463
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726095AbfKHQo1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 11:44:27 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a84yxZBxzPtxNX9Vo2kDKM143JEW4C6pXXa7VkdwfE91rYV3dfDmC353t5iGsr5ByorCgJD+wrGXttDJSRwhELGWb3sJMUDpv3C5XJ9P0lqIUMFxpTCh1Oue85JEInP4XVUBo0blhhosYsHBO+GHJK5wQX1uP3TKQs6xU7IehRut0z5+5xAil8afljvzDVIdVefgM89Fs4PY6Fqn2fM2d3zEBMF23SBFD/ZFshEiCZw9EyjBNJTPXuTHBpo1OUrYRPhv5QEbhF5wYhsg1ATR71eEZ41NPT97XGGNE+rlFFuERMwh9u1ZNAEgWE0Yd6SMSSLBtS8u6n0MRLkhFAOaiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jSjMRTdqrq+6u2kNutGNTtHjdyHl9eHejNHj8hH/NyU=;
+ b=AnX7oQ+acDZcpCzLCcyRdYAdJqRYmEXb5gRhi3tPtCvFTkRTdVjURsINi/VRogKusXdXXuobfQcpeOsO5X5lkrk9UXUvhMJKK65dN+K9GFDL0dPFkHY1PqheV3HnE8Wwtn7XjSG0a9beCfc9QCDxNiCUHNDOD5Ph2SEmEI++L4DNY2qDV+N0hMHhrPz1JjvXEXwmNlVRihhUq760Ii5q9vW2+51Joe4CRK8khc5aXJ1uk+MS4fLvCIIG0DJI3o5mIV5QfTTXdEZTWe3Dp9fEyOjh1PCzTzCLrKV8duKOcboYSo1X9xmr6ih9wILdikuP/D+E/7hIagOz4CO33zr0Gw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jSjMRTdqrq+6u2kNutGNTtHjdyHl9eHejNHj8hH/NyU=;
+ b=YIFyGoOJDKkKfBhVdpvbv57rfhuQmczot087Wl+WvkQDejTItvgFv166PATxTovHVai93+1J7+3CXUL4oQfQlHEuhZXpEfIlEe8N207DKDt6SZ0Ih+2giWZ7VbSVugMrD4Sv9mJDw0dTxRCIz4aFo5E9K08Hyo+OM2nzJYGKqh4=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6049.eurprd05.prod.outlook.com (20.178.202.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.20; Fri, 8 Nov 2019 16:43:43 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
+ 16:43:43 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
+Thread-Topic: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
+Thread-Index: AQHVlYW+5ckj7/tyDUu1ocZ3bBFvo6eAK5wAgAAEe2CAAEmKAIAAA1+ggAAOHACAAAFAIIAAe3YAgABjcxCAAA2tgIAAAeXA
+Date:   Fri, 8 Nov 2019 16:43:43 +0000
+Message-ID: <AM0PR05MB48669A9AE494CCCE8E07C367D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191107160834.21087-1-parav@mellanox.com>
+ <20191107160834.21087-12-parav@mellanox.com>
+ <20191107153836.29c09400@cakuba.netronome.com>
+ <AM0PR05MB4866963BE7BA1EE0831C9624D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191107201750.6ac54aed@cakuba>
+ <AM0PR05MB4866BEC2A2B586AA72BAA9ABD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191107212024.61926e11@cakuba>
+ <AM0PR05MB4866C0798EA5746EE23F2D2BD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108094646.GB6990@nanopsycho>
+ <AM0PR05MB4866969D18877C7AAD19D236D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108163139.GQ6990@nanopsycho>
+In-Reply-To: <20191108163139.GQ6990@nanopsycho>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYzEwYjA3MDYtMzk1OS00ZDRmLWJiYWUtNWY5NTVkODViNWY0IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiXC9rMXR6cGt5NFRIMUpcL3FCRnhvQ2xCaTh4M1MzNm0rR0dOZVdqcXJiRm9CbVVJNUtQRFg0YnErY0NsOVwvN3p5ZiJ9
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:9dfd:71f9:eb37:f669]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 39c6e869-a1e5-4204-2f94-08d7646ad110
+x-ms-traffictypediagnostic: AM0PR05MB6049:|AM0PR05MB6049:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB6049B082AAF0D98460DAEB80D17B0@AM0PR05MB6049.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0215D7173F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(39860400002)(376002)(136003)(396003)(13464003)(189003)(199004)(9686003)(229853002)(74316002)(102836004)(6916009)(305945005)(46003)(99286004)(446003)(476003)(33656002)(316002)(14454004)(7736002)(486006)(11346002)(76176011)(86362001)(186003)(8936002)(25786009)(256004)(7696005)(7416002)(6246003)(6116002)(478600001)(54906003)(6506007)(81156014)(81166006)(52536014)(5024004)(71200400001)(71190400001)(76116006)(4326008)(6436002)(66556008)(64756008)(66446008)(66946007)(55016002)(5660300002)(8676002)(66476007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6049;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 83ipESw0173vCNBR4DsrbQ3YODHqjirECLTbbGkMUUrtRFuADKOq4p16kiNIgkNSbsBrC2LWSSrHJpR1aMU45ls0WcU2EJDlCOIJKF8G/jmIbPQx7++yyb609lGZV7tzvIN1qmKjOuuPX6lpvAA5b/YvEXSeKRD/Neko9eXHfaURqWl4JKNntFnwsdjOMozTHAA07bMZFXTjaONUxx/YdZkiQKj8nk5iSXJrklVs9iIV2A8wv23FNAJID1DjgRqCGSJoHofia+Hvd3EPB30UBO5ESKzN56c4EZjJSBqYJnfivyShJEe+yvUhf+NmU5Fqi1KTBV3qFQxj0HdNuLwlV2I7P5fWkzHYnyv+9pOhLOPd90hm2M72BZoYn3OReAszSsTKbcLQWvI2VP57F2JanI4F9lk1Cb1G/r0g01lnwENphMoRQ1gp8AeWBfZ4Nyub
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39c6e869-a1e5-4204-2f94-08d7646ad110
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 16:43:43.1475
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JFnBOJZdceitpZaH9Q2Xld4EOAdvDrkOD8WZG6XkoYGy4zqvDeu7xGJwwY3ql2FYOPK/Lr12EQtMkTpAIq31wg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6049
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBLaXJzaGVyLCBKZWZmcmV5IFQg
-PGplZmZyZXkudC5raXJzaGVyQGludGVsLmNvbT4NCj4gU2VudDogVGh1cnNkYXksIE5vdmVtYmVy
-IDcsIDIwMTkgMTE6MzkgQU0NCj4gVG86IEFya2FkeSBHaWxpbnNreSA8YXJrYWR5LmdpbGluc2t5
-QGhhcm1vbmljaW5jLmNvbT47IENyZWVsZXksIEJyZXR0IDxicmV0dC5jcmVlbGV5QGludGVsLmNv
-bT47IGludGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vvc2wub3JnOw0KPiBuZXRkZXZAdmdlci5rZXJu
-ZWwub3JnDQo+IENjOiBBcmthZHkgR2lsaW5za3kgPGFyY2FkeWdAZ21haWwuY29tPg0KPiBTdWJq
-ZWN0OiBSZTogW0VYVEVSTkFMXSBSRTogW1BBVENIIG5ldF0gaTQwZS9pYXZmOiBGaXggbXNnIGlu
-dGVyZmFjZSBiZXR3ZWVuIFZGIGFuZCBQRg0KPiANCj4gT24gV2VkLCAyMDE5LTExLTA2IGF0IDA1
-OjMwICswMDAwLCBBcmthZHkgR2lsaW5za3kgd3JvdGU6DQo+ID4gT24gVHVlLCAyMDE5LTExLTA1
-IGF0IDE2OjU1ICswMDAwLCBDcmVlbGV5LCBCcmV0dCB3cm90ZToNCj4gPiA+ID4gLS0tLS1Pcmln
-aW5hbCBNZXNzYWdlLS0tLS0NCj4gPiA+ID4gRnJvbTogQXJrYWR5IEdpbGluc2t5IDxhcmthZHku
-Z2lsaW5za3lAaGFybW9uaWNpbmMuY29tPg0KPiA+ID4gPiBTZW50OiBNb25kYXksIE5vdmVtYmVy
-IDQsIDIwMTkgOToyNCBQTQ0KPiA+ID4gPiBUbzogQ3JlZWxleSwgQnJldHQgPGJyZXR0LmNyZWVs
-ZXlAaW50ZWwuY29tPjsNCj4gPiA+ID4gaW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc7
-IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IEtpcnNoZXIsDQo+ID4gPiA+IEplZmZyZXkgVA0KPiA+
-ID4gPiA8amVmZnJleS50LmtpcnNoZXJAaW50ZWwuY29tPg0KPiA+ID4gPiBDYzogQXJrYWR5IEdp
-bGluc2t5IDxhcmNhZHlnQGdtYWlsLmNvbT4NCj4gPiA+ID4gU3ViamVjdDogUmU6IFtFWFRFUk5B
-TF0gUkU6IFtQQVRDSCBuZXRdIGk0MGUvaWF2ZjogRml4IG1zZyBpbnRlcmZhY2UNCj4gPiA+ID4g
-YmV0d2VlbiBWRiBhbmQgUEYNCj4gPiA+ID4gPiBzdGF0aWMgYm9vbCBpNDBlX3ZjX3ZlcmlmeV92
-cXNfYml0bWFwcyhzdHJ1Y3QgdmlydGNobmxfcXVldWVfc2VsZWN0DQo+ID4gPiA+ID4gKnZxcykN
-Cj4gPiA+ID4gPiB7DQo+ID4gPiA+ID4gICAgLyogdGhpcyB3aWxsIGNhdGNoIGFueSBjaGFuZ2Vz
-IG1hZGUgdG8gdGhlIHZpcnRjaG5sX3F1ZXVlX3NlbGVjdA0KPiA+ID4gPiA+IGJpdG1hcCAqLw0K
-PiA+ID4gPiA+ICAgIGlmIChzaXplb2YodnFzLT5yeF9xdWV1ZXMpICE9IHNpemVvZih1MzIpIHx8
-DQo+ID4gPiA+ID4gICAgICAgICBzaXplb2YodnFzLT50eF9xdWV1ZXMpICE9IHNpemVvZih1MzIp
-KQ0KPiA+ID4gPiA+ICAgICAgICAgICAgcmV0dXJuIGZhbHNlOw0KPiA+ID4gPg0KPiA+ID4gPiBJ
-ZiBzbywgdGhlbiBpcyBpdCBiZXR0ZXIgdG8gY2hlY2sgdGhlIHR5cGUgb2YgdGhlIGZpZWxkcyBp
-biBjb21waWxlLQ0KPiA+ID4gPiB0aW1lIHJhdGhlciB0aGFuIGluIHJ1bnRpbWUgPw0KPiA+ID4g
-PiBTb21ldGhpbmcgbGlrZSB0aGlzOg0KPiA+ID4gPiBCVUlMRF9CVUdfT04oc2l6ZW9mKHZxcy0+
-cnhfcXVldWVzKSAhPSBzaXplb2YodTMyKSk7DQo+ID4gPiA+IEJVSUxEX0JVR19PTihzaXplb2Yo
-dnFzLT50eF9xdWV1ZXMpICE9IHNpemVvZih1MzIpKTsNCj4gPiA+ID4gVGhpcyBpcyBub3QgcmVx
-dWlyZWQgY29tcGFyaXNvbiBlYWNoIHRpbWUgd2hlbiBmdW5jdGlvbiBpcyBjYWxsZWQgYW5kDQo+
-ID4gPiA+IG1hZGUgY29kZSBtb3JlIG9wdGltaXplZC4NCj4gPiA+DQo+ID4gPiBJIGRvbid0IHRo
-aW5rIHRoaXMgaXMgcmVxdWlyZWQgd2l0aCB0aGUgY2hhbmdlIHlvdSBzdWdnZXN0ZWQgYmVsb3cu
-DQo+ID4gQWdyZWUuDQo+ID4gSWYgb3RoZXIgY29kZSBpbiBkcml2ZXIgbm90IG5lZWQgdG8gYmUg
-YWRqdXN0ZWQvdmVyaWZpZWQsIHRoZW4gdGhpcyBjaGVjaw0KPiA+IGlzIG5vdCBuZWVkZWQuDQo+
-ID4gPiA+ID4gICAgaWYgKCh2cXMtPnJ4X3F1ZXVlcyA9PSAwICYmIHZxcy0+dHhfcXVldWVzID09
-IDApIHx8DQo+ID4gPiA+ID4gICAgICAgICAgaHdlaWdodDMyKHZxcy0+cnhfcXVldWVzKSA+IEk0
-MEVfTUFYX1ZGX1FVRVVFUyB8fA0KPiA+ID4gPiA+ICAgICAgICAgIGh3ZWlnaHQzMih2cXMtPnR4
-X3F1ZXVlcykgPiBJNDBFX01BWF9WRl9RVUVVRVMpDQo+ID4gPiA+ID4gICAgICAgICAgICByZXR1
-cm4gZmFsc2U7DQo+ID4gPiA+DQo+ID4gPiA+IEFnYWluLCBmcm9tIG9wdGltaXphdGlvbiBQT1Yg
-aXQgaXMgYmV0dGVyIHRvIGhhdmUgY29uc3RhbnQgY2hhbmdlZA0KPiA+ID4gPiB0aGFuIHZhcmlh
-YmxlLA0KPiA+ID4gPiBzaW5jZSBpdCBpcyBjb21waWxlIHRpbWUgYW5kIG5vdCBydW4gdGltZSBh
-Y3Rpb246DQo+ID4gPiA+ICAgICAgaWYgKCh2cXMtPnJ4X3F1ZXVlcyA9PSAwICYmIHZxcy0+dHhf
-cXVldWVzID09IDApIHx8DQo+ID4gPiA+ICAgICAgICAgICAgdnFzLT5yeF9xdWV1ZXMgPj0gKEJJ
-VChJNDBFX01BWF9WRl9RVUVVRVMpKSB8fA0KPiA+ID4gPg0KPiA+ID4gPiAgICAgICB2cXMtPnR4
-X3F1ZXVlcyA+PSAoQklUKEk0MEVfTUFYX1ZGX1FVRVVFUykpKQ0KPiA+ID4gPiAgICAgICAgICAg
-ICAgcmV0dXJuIGZhbHNlOw0KPiA+ID4NCj4gPiA+IFRoaXMgc2VlbXMgbXVjaCBiZXR0ZXIgdGhh
-biBteSBzb2x1dGlvbi4gSXQgZml4ZXMgdGhlIG9yaWdpbmFsIGlzc3VlLA0KPiA+ID4gaGFuZGxl
-cyBpZiB0aGUNCj4gPiA+IHZxcy0+W3J8dF14X3F1ZXVlcyB2YXJpYWJsZXMgaGF2ZSBjaGFuZ2Vk
-IGluIHNpemUsIGFuZCB0aGUgcXVldWUgYml0bWFwDQo+ID4gPiBjb21wYXJpc29uDQo+ID4gPiB1
-c2VzIGEgY29uc3RhbnQuIFRoYW5rcyENCj4gPiBUaGFua3MgdG8geW91IGZvciBmZWVkYmFjay4N
-Cj4gPiBJIGFtIHRyeWluZyB0byB1bmRlcnN0YW5kIGlmIHRoaXMgcGF0Y2ggd2lsbCBlbnRlciBp
-bnRvIG9mZmljaWFsIGtlcm5lbA0KPiA+IHRyZWUNCj4gPiBhbmQsIG5vdCBsZXNzIGltcG9ydGFu
-dCBmcm9tIG15IFBPViwgdG8gb2ZmaWNpYWwgSW50ZWwgZHJpdmVycy4NCj4gPiBCcmV0dC9KZWZm
-cmV5LCBjb3VsZCB5b3UsIHBsZWFzZSwgYXNzaXN0IHRvIG1ha2Ugc3VyZSB0aGF0IHRoaXMgZml4
-LCBvcg0KPiA+IGZpeCBzdWdnZXN0ZWQgYnkgQnJldHQsDQo+ID4gd2lsbCBiZSBpbnRlZ3JhdGVk
-IGludG8gSW50ZWwgaTQwZS9pYXZmIGRyaXZlcnMgPw0KPiA+IE9yIG1heSBiZSBJIHNob3VsZCB3
-cml0ZSBtYWlsIHN0cmFpZ2h0IHRvIEludGVsIHN1cHBvcnQgPw0KPiANCj4gQXMgQnJldHQgcG9p
-bnRlZCBvdXQsIHRoZXJlIGFyZSBpc3N1ZXMgd2l0aCB0aGlzIHBhdGNoLiBQbGVhc2UgbWFrZSB0
-aGUNCj4gc3VnZ2VzdGVkIGNoYW5nZXMgYW5kIHJlLXN1Ym1pdCB0aGUgcGF0Y2ggdG8NCj4gaW50
-ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmcNCg0KSmVmZi9BcmthZHk6IEkgaGF2ZSBhbHJl
-YWR5IHN1Ym1pdHRlZCBwYXRjaGVzIGZvciB0aGlzIGludGVybmFsbHkgZm9yDQpvZmZpY2lhbCBJ
-bnRlbCBkcml2ZXJzLiBBcG9sb2dpZXMgZm9yIHRoZSBkZWxheWVkIHJlc3BvbnNlLg0K
+
+
+> -----Original Message-----
+> From: Jiri Pirko <jiri@resnulli.us>
+> >> >> On Fri, 8 Nov 2019 01:44:53 +0000, Parav Pandit wrote:
+> >> >> > > I'm talking about netlink attributes. I'm not suggesting to
+> >> >> > > sprintf it all into the phys_port_name.
+> >> >> > >
+> >> >> > I didn't follow your comment. For devlink port show command
+> >> >> > output you said,
+> >> >> >
+> >> >> > "Surely those devices are anchored in on of the PF (or possibly
+> >> >> > VFs) that should be exposed here from the start."
+> >> >> > So I was trying to explain why we don't expose PF/VF detail in
+> >> >> > the port attributes which contains
+> >> >> > (a) flavour
+> >> >> > (b) netdev representor (name derived from phys_port_name)
+> >> >> > (c) mdev alias
+> >> >> >
+> >> >> > Can you please describe which netlink attribute I missed?
+> >> >>
+> >> >> Identification of the PCI device. The PCI devices are not linked
+> >> >> to devlink ports, so the sysfs hierarchy (a) is irrelevant, (b)
+> >> >> may not be visible in multi- host (or SmartNIC).
+> >> >>
+> >> >
+> >> >It's the unique mdev device alias. It is not right to attach to the P=
+CI
+> device.
+> >> >Mdev is bus in itself where devices are identified uniquely. So an
+> >> >alias
+> >> suffice that identity.
+> >>
+> >> Wait a sec. For mdev, what you say is correct. But here we talk about
+> >> devlink_port which is representing this mdev. And this devlink_port
+> >> is very similar to VF devlink_port. It is bound to specific PF (in
+> >> case of mdev it could be PF-VF).
+> >>
+> >But mdev port has unique phys_port_name in system, it incorrect to use
+> PF/VF prefix.
+>=20
+> Why incorrect? It is always bound to pf/vf?
+>=20
+Because mdev device already identified using its unique alias. Why does it =
+need prefix?
+Mdev core generating the alias is not aware of the prefixes applied devlink=
+. it shouldn't be.
+We want more letters towards uniqueness of the alias and filling it up with=
+ such prefixes doesn't make sense.
+
+> >What in hypothetical case, mdev is not on top of PCI...
+>=20
+> Okay, let's go hypothetical. In that case, it is going to be on top of so=
+mething
+> else, wouldn't it?
+Yes, it will be. But just because it is on top of something, doesn't mean w=
+e include the whole parent dev, its bridge, its rc hierarchy here.
+There should be a need.
+It was needed in PF/VF case due to overlapping numbers of VFs via single de=
+vlink instance. You probably missed my reply to Jakub.
+Here it is no overlap.
+
