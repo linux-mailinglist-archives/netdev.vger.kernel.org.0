@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFFA9F3CD6
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 01:27:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E14DCF3CD7
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 01:27:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727511AbfKHA1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 7 Nov 2019 19:27:36 -0500
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:39767 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbfKHA1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 19:27:36 -0500
-Received: by mail-pf1-f202.google.com with SMTP id l20so3302745pff.6
-        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 16:27:34 -0800 (PST)
+        id S1727744AbfKHA1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 7 Nov 2019 19:27:38 -0500
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:36709 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726320AbfKHA1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 7 Nov 2019 19:27:38 -0500
+Received: by mail-pl1-f202.google.com with SMTP id g2so2938635plq.3
+        for <netdev@vger.kernel.org>; Thu, 07 Nov 2019 16:27:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=i6lrO4RCQJoJb5MZpV9TLnE9dGHWjdDUX3k7hmorzYs=;
-        b=KhnldxRie71fKficiKOaHDDkVbhuUV5HSx2SPhUmoWebUTxaEldAHPCZ8l+tRBbgdx
-         LfCMy53gYN6cMXVjYNlEVMBk8gN/KxyPo2e6XJPGW1FMRMWvJD0I3qnxdDZWkFB9uvMO
-         21BW2+R+LCMpYAvAETvIWnu5KlpeW8XoYO7gaK/T6mOJBUP163RWEX8hwpGNtBflCVCu
-         VVWuzhksjzGX2d9Lzby1p7ytMXzW+KL5CDQs9gbhoQj67g0i9jtnY0YEOmGuOsLB9xIA
-         rT8Ppsc/iR+aS4k2ajKXCyUYDyyHLA0YQC1ATBBKIuC3DzDBtAvsX8Jm9rhbmJbUkoyn
-         JLYw==
+        bh=2rfQJPhWyGs4WYtykBhK+gfUYdjHV5wJtRqLM0MmU0A=;
+        b=St798GbZHtw/NE0PffftFDbtPJA3wlkzMICViBgJdmvVyVlJPoxjkxmWpqZfqAkp51
+         0Sy6WJaMmPgZ+DIS27kCljeTLAd6I4S4yXUp8qIH2CayObA4jqwbiiAjntL5N3b1jlDy
+         k5bkegRusA5WwTej24iTupTl7nYokRppTWgx9O5fzWN1m1hGnZ9HUFI17dsonhhOvK4D
+         6MaqvOiKys7Cew9J0eJhF/Eu50G2mCSVFRNBzWmD7mKAsl4sekkd3UA/V4LPf9lGCFFG
+         t6bYkDo3x4NCh5ZtnIayM6CjSe/AqMUcEK6JvvLg8V6z0IlWUTpmHv0RICMt0r5MB+xv
+         O8VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=i6lrO4RCQJoJb5MZpV9TLnE9dGHWjdDUX3k7hmorzYs=;
-        b=U1A2X0hvgarvVqq9fjTbKFKXyyq8sbJyrmJrOUipMxNsBXmwlcj9/VgOHHaL92RYz1
-         QBN3z708wVv9Ku2hnmHf+gYlk/HgS0oyJGxynGSwa1SN+TKY+7ly4AqoF9ijy3WYm6fZ
-         grGAnP6Y20UagUrc8HojO7CB8bmqBen+UfsXrSdhjKNG81I6jH1QoRjDlKE5G5TiDW9I
-         Ya/nF4pFXs8iaqzeK4s5LAeftQaX65gILHtAmH0kFZ/CeLIM2tTlb7Ab36CNLgUa3ScN
-         xrIokkxTJQmDz1pnfNn45Q8tLLFQ3sBmN8TboWU67oRQANlTo7bR1hXFmQ8Lrq7flHtv
-         NK6Q==
-X-Gm-Message-State: APjAAAWnaaMqFm3S6FGwQvM8kDkq2Ps4eIgIg8BbMIBmKspodYMso1Gy
-        yJNhHz7kMJdMEGfe34TWB5IiLgveTv6gNw==
-X-Google-Smtp-Source: APXvYqyZbDw+I9IOA1PYZEfuiP5d/iYPW+E3Lqx22i/rzR8laUk3vmb22M86L0OBn+Q3NtWvLDLZvBtcegKi2w==
-X-Received: by 2002:a65:678a:: with SMTP id e10mr8186411pgr.258.1573172853555;
- Thu, 07 Nov 2019 16:27:33 -0800 (PST)
-Date:   Thu,  7 Nov 2019 16:27:15 -0800
+        bh=2rfQJPhWyGs4WYtykBhK+gfUYdjHV5wJtRqLM0MmU0A=;
+        b=ZBIoA66MkJ0efEdA/mx1dTNOgHGWpdcdKo/Mogl807+bAgwdW1K+F8MQWUOPcJCDFO
+         xPDiHNeo/R2uk0kL5SOwvk/y+N9qzBHityCIlFWG74YDpq1P37KRKN62+VA2h2pp1KSb
+         ay8krrn1oP2NxZzJzivx5BiBXUDowMYmFnEUvc6l+OqOLtZ9OI03Ecct+IbUJbRyTqR/
+         Ad0V5Q9DQtAuMkgGMXPxuYGIcN8n8tnWMjVe3jI+VipYW9JArGGolKfcD+m47LDO/PHx
+         n0VwhyDJNob72022bdZDVgs0WQXCxOg8nBBvMQksO9lX0WMzcff5hZ1qWMuuEoa/sPwk
+         W6uA==
+X-Gm-Message-State: APjAAAUD3Pha3hH41pK4UT3eaLW+ofLc/sBQkNIf2U24p4MHa/JlRvt2
+        0J6cFj0w122tHiVOlfEB/73ZAUNNZGyAVQ==
+X-Google-Smtp-Source: APXvYqzsAGvClFf5Q1ZL/IcHUoMo8gGDfXYTLucCe2lLZXwNje+5g6CTbUMQaNvDGPApWu0h+Wya6vhj8hV2eA==
+X-Received: by 2002:a63:a5b:: with SMTP id z27mr8486381pgk.416.1573172857226;
+ Thu, 07 Nov 2019 16:27:37 -0800 (PST)
+Date:   Thu,  7 Nov 2019 16:27:16 -0800
 In-Reply-To: <20191108002722.129055-1-edumazet@google.com>
-Message-Id: <20191108002722.129055-3-edumazet@google.com>
+Message-Id: <20191108002722.129055-4-edumazet@google.com>
 Mime-Version: 1.0
 References: <20191108002722.129055-1-edumazet@google.com>
 X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
-Subject: [PATCH net-next 2/9] net: provide dev_lstats_add() helper
+Subject: [PATCH net-next 3/9] net: nlmon: use standard dev_lstats_add() and dev_lstats_read()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -58,68 +58,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Many network drivers need it and hand-coded the same function.
-
-In order to ease u64_stats_t adoption, it is time to factorize.
+No need to hand-code the exact same functions.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- drivers/net/loopback.c    | 12 ++----------
- include/linux/netdevice.h | 10 ++++++++++
- 2 files changed, 12 insertions(+), 10 deletions(-)
+ drivers/net/nlmon.c | 28 +++-------------------------
+ 1 file changed, 3 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index 92336ac4c5e68f63b814d6a70e7361b8954a91cf..47ad2478b9f350f8bf3b103bd2a9a956379c75fa 100644
---- a/drivers/net/loopback.c
-+++ b/drivers/net/loopback.c
-@@ -68,7 +68,6 @@ EXPORT_SYMBOL(blackhole_netdev);
- static netdev_tx_t loopback_xmit(struct sk_buff *skb,
- 				 struct net_device *dev)
+diff --git a/drivers/net/nlmon.c b/drivers/net/nlmon.c
+index 68771b2f351a228860cdfbc7ab3f028665b2590e..afb119f383252cc4c78e5456d12b7066eb26953f 100644
+--- a/drivers/net/nlmon.c
++++ b/drivers/net/nlmon.c
+@@ -9,13 +9,7 @@
+ 
+ static netdev_tx_t nlmon_xmit(struct sk_buff *skb, struct net_device *dev)
  {
--	struct pcpu_lstats *lb_stats;
- 	int len;
- 
- 	skb_tx_timestamp(skb);
-@@ -85,16 +84,9 @@ static netdev_tx_t loopback_xmit(struct sk_buff *skb,
- 
- 	skb->protocol = eth_type_trans(skb, dev);
- 
--	/* it's OK to use per_cpu_ptr() because BHs are off */
--	lb_stats = this_cpu_ptr(dev->lstats);
+-	int len = skb->len;
+-	struct pcpu_lstats *stats = this_cpu_ptr(dev->lstats);
 -
- 	len = skb->len;
--	if (likely(netif_rx(skb) == NET_RX_SUCCESS)) {
--		u64_stats_update_begin(&lb_stats->syncp);
--		lb_stats->bytes += len;
--		lb_stats->packets++;
--		u64_stats_update_end(&lb_stats->syncp);
+-	u64_stats_update_begin(&stats->syncp);
+-	stats->bytes += len;
+-	stats->packets++;
+-	u64_stats_update_end(&stats->syncp);
++	dev_lstats_add(dev, skb->len);
+ 
+ 	dev_kfree_skb(skb);
+ 
+@@ -56,25 +50,9 @@ static int nlmon_close(struct net_device *dev)
+ static void
+ nlmon_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
+ {
+-	int i;
+-	u64 bytes = 0, packets = 0;
+-
+-	for_each_possible_cpu(i) {
+-		const struct pcpu_lstats *nl_stats;
+-		u64 tbytes, tpackets;
+-		unsigned int start;
+-
+-		nl_stats = per_cpu_ptr(dev->lstats, i);
+-
+-		do {
+-			start = u64_stats_fetch_begin_irq(&nl_stats->syncp);
+-			tbytes = nl_stats->bytes;
+-			tpackets = nl_stats->packets;
+-		} while (u64_stats_fetch_retry_irq(&nl_stats->syncp, start));
++	u64 packets, bytes;
+ 
+-		packets += tpackets;
+-		bytes += tbytes;
 -	}
-+	if (likely(netif_rx(skb) == NET_RX_SUCCESS))
-+		dev_lstats_add(dev, len);
++	dev_lstats_read(dev, &packets, &bytes);
  
- 	return NETDEV_TX_OK;
- }
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 75561992c31f7c32f5a50e3879bafb5a54bc5fa3..461a36220cf46d62114efac0c4fb2b7b9a2ee386 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2403,6 +2403,16 @@ struct pcpu_lstats {
- 
- void dev_lstats_read(struct net_device *dev, u64 *packets, u64 *bytes);
- 
-+static inline void dev_lstats_add(struct net_device *dev, unsigned int len)
-+{
-+	struct pcpu_lstats *lstats = this_cpu_ptr(dev->lstats);
-+
-+	u64_stats_update_begin(&lstats->syncp);
-+	lstats->bytes += len;
-+	lstats->packets++;
-+	u64_stats_update_end(&lstats->syncp);
-+}
-+
- #define __netdev_alloc_pcpu_stats(type, gfp)				\
- ({									\
- 	typeof(type) __percpu *pcpu_stats = alloc_percpu_gfp(type, gfp);\
+ 	stats->rx_packets = packets;
+ 	stats->tx_packets = 0;
 -- 
 2.24.0.432.g9d3f5f5b63-goog
 
