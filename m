@@ -2,134 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C473FF5967
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 22:15:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4AE3F59AD
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 22:24:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727655AbfKHVOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 16:14:05 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34222 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729832AbfKHVOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 16:14:05 -0500
-Received: by mail-pf1-f193.google.com with SMTP id n13so5503118pff.1;
-        Fri, 08 Nov 2019 13:14:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=IkOG4wMelMkdtz15a0RzG5RgUJm6TFFa3nFHB4ADVL0=;
-        b=Odzw2l/KwJOgPla7N9s4JzT5cdbQRiI5jg3Urp7zeQcENpOI5zm8m/8GFDunaFSpNB
-         IMeXYd87wN8V7bcAwzW4zeznp+sWaDOicCPLc2xqPKG/PHVQaoNRzjZC4uvhzqx9Sch8
-         fCWPxa7XLEiN7j4WmdVNbplKk469qKKf4qRhhyFVdy3mbYnIH/qXYm/Ti6+uOIPQn0ul
-         J+JhfHk3I6tM/pxeX/4Pyesi23XA8lmt4W+WEHukdmYrcTf0ZagOYqorTapRwtFVWa7C
-         rQPQvplfjz6RDOHYxNIfbn+PXXZ21ttCircZPmrobaAoLTrhlv1p68IpRjPw5E5nChRe
-         TzdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=IkOG4wMelMkdtz15a0RzG5RgUJm6TFFa3nFHB4ADVL0=;
-        b=fLaItdzYiUw6RNyETuNGn/XUOfahyz2HsVJNP4mM4HC3TdQHbtv9kClAWQre44SNE5
-         ptykOVqpY8kUMthSxyjFO36ekgdRDqejJNhqvBA8Qs2jq0lOnkUxh3ueVCiGp7YfM2u7
-         i33SUM5fBO4FLEuu+MHbgoCgp/33mm9c+zhXN6CN7eSnIQAnfUhwdO6nGA2BilD3i8dd
-         JKFHTZEx8jlRboi1Byu/cpdUv+0C8LzahFumXK3pEanje3ccWMh/hKLjVpqo8vQEBmmG
-         5ShtkFA9ft9UH03j3TXHTEbo3x0BZL+SEIql9L57/4YkendumpQlCNPRUtrgdC2YKhie
-         bcpQ==
-X-Gm-Message-State: APjAAAV29QQGsGoPOlAMuF++OCjxpzlD11hP6sMkyLLkfcOLPhaOtGGO
-        5dWDlGjuiAJJoqeJGDNXLbY=
-X-Google-Smtp-Source: APXvYqxmtjzodCX277us50CIxM4qAb+YH01OR6UmaZO+JOMdAaBwQBxgf7LQwGO0tBAciLcqpOGY8A==
-X-Received: by 2002:a63:1065:: with SMTP id 37mr14190425pgq.31.1573247644500;
-        Fri, 08 Nov 2019 13:14:04 -0800 (PST)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:f248])
-        by smtp.gmail.com with ESMTPSA id p5sm6030812pgb.14.2019.11.08.13.14.03
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 08 Nov 2019 13:14:03 -0800 (PST)
-Date:   Fri, 8 Nov 2019 13:14:02 -0800
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net,
-        daniel@iogearbox.net, x86@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 15/18] bpf: Support attaching tracing BPF
- program to other BPF programs
-Message-ID: <20191108211400.m6kuuyvkp2p56gmo@ast-mbp.dhcp.thefacebook.com>
-References: <20191108064039.2041889-1-ast@kernel.org>
- <20191108064039.2041889-16-ast@kernel.org>
- <87pni2ced3.fsf@toke.dk>
+        id S1732881AbfKHVTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 16:19:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58262 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728265AbfKHVTM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 16:19:12 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C295C207FA;
+        Fri,  8 Nov 2019 21:19:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573247951;
+        bh=a0U51YF9f9EgyVgSrBELVFo2AKXC5xwkaUrc+s+q6Oc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cmYrboaw+orEQo0At3suUiEualybPlAV/AM7UGRoedElW/VA3FeOHUr3fzNCM/yfl
+         tSsLjhrxYdqpD19ifB5XOrtuO3iAujhDkEGUZnEuMU8Xz3LnHqHYKFOkr/bCtn/PIZ
+         GP7vMwINVRgmuhUgH1URBTZ8XFKFWipgZQLpoh28=
+Date:   Fri, 8 Nov 2019 22:19:09 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David M <david.m.ertman@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191108211909.GA1284849@kroah.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+ <20191107153234.0d735c1f@cakuba.netronome.com>
+ <20191108121233.GJ6990@nanopsycho>
+ <20191108144054.GC10956@ziepe.ca>
+ <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108111238.578f44f1@cakuba>
+ <20191108201253.GE10956@ziepe.ca>
+ <20191108133435.6dcc80bd@x1.home>
+ <20191108210545.GG10956@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87pni2ced3.fsf@toke.dk>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20191108210545.GG10956@ziepe.ca>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 08, 2019 at 09:17:12PM +0100, Toke Høiland-Jørgensen wrote:
-> Alexei Starovoitov <ast@kernel.org> writes:
+On Fri, Nov 08, 2019 at 05:05:45PM -0400, Jason Gunthorpe wrote:
+> On Fri, Nov 08, 2019 at 01:34:35PM -0700, Alex Williamson wrote:
+> > On Fri, 8 Nov 2019 16:12:53 -0400
+> > Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > 
+> > > On Fri, Nov 08, 2019 at 11:12:38AM -0800, Jakub Kicinski wrote:
+> > > > On Fri, 8 Nov 2019 15:40:22 +0000, Parav Pandit wrote:  
+> > > > > > The new intel driver has been having a very similar discussion about how to
+> > > > > > model their 'multi function device' ie to bind RDMA and other drivers to a
+> > > > > > shared PCI function, and I think that discussion settled on adding a new bus?
+> > > > > > 
+> > > > > > Really these things are all very similar, it would be nice to have a clear
+> > > > > > methodology on how to use the device core if a single PCI device is split by
+> > > > > > software into multiple different functional units and attached to different
+> > > > > > driver instances.
+> > > > > > 
+> > > > > > Currently there is alot of hacking in this area.. And a consistent scheme
+> > > > > > might resolve the ugliness with the dma_ops wrappers.
+> > > > > > 
+> > > > > > We already have the 'mfd' stuff to support splitting platform devices, maybe
+> > > > > > we need to create a 'pci-mfd' to support splitting PCI devices?
+> > > > > > 
+> > > > > > I'm not really clear how mfd and mdev relate, I always thought mdev was
+> > > > > > strongly linked to vfio.
+> > > > > >  
+> > > > >
+> > > > > Mdev at beginning was strongly linked to vfio, but as I mentioned
+> > > > > above it is addressing more use case.
+> > > > > 
+> > > > > I observed that discussion, but was not sure of extending mdev further.
+> > > > > 
+> > > > > One way to do for Intel drivers to do is after series [9].
+> > > > > Where PCI driver says, MDEV_CLASS_ID_I40_FOO
+> > > > > RDMA driver mdev_register_driver(), matches on it and does the probe().  
+> > > > 
+> > > > Yup, FWIW to me the benefit of reusing mdevs for the Intel case vs
+> > > > muddying the purpose of mdevs is not a clear trade off.  
+> > > 
+> > > IMHO, mdev has amdev_parent_ops structure clearly intended to link it
+> > > to vfio, so using a mdev for something not related to vfio seems like
+> > > a poor choice.
+> > 
+> > Unless there's some opposition, I'm intended to queue this for v5.5:
+> > 
+> > https://www.spinics.net/lists/kvm/msg199613.html
+> > 
+> > mdev has started out as tied to vfio, but at it's core, it's just a
+> > device life cycle infrastructure with callbacks between bus drivers
+> > and vendor devices.  If virtio is on the wrong path with the above
+> > series, please speak up.  Thanks,
 > 
-> > Allow FENTRY/FEXIT BPF programs to attach to other BPF programs of any type
-> > including their subprograms. This feature allows snooping on input and output
-> > packets in XDP, TC programs including their return values. In order to do that
-> > the verifier needs to track types not only of vmlinux, but types of other BPF
-> > programs as well. The verifier also needs to translate uapi/linux/bpf.h types
-> > used by networking programs into kernel internal BTF types used by FENTRY/FEXIT
-> > BPF programs. In some cases LLVM optimizations can remove arguments from BPF
-> > subprograms without adjusting BTF info that LLVM backend knows. When BTF info
-> > disagrees with actual types that the verifiers sees the BPF trampoline has to
-> > fallback to conservative and treat all arguments as u64. The FENTRY/FEXIT
-> > program can still attach to such subprograms, but won't be able to recognize
-> > pointer types like 'struct sk_buff *' into won't be able to pass them to
-> > bpf_skb_output() for dumping to user space.
-> >
-> > The BPF_PROG_LOAD command is extended with attach_prog_fd field. When it's set
-> > to zero the attach_btf_id is one vmlinux BTF type ids. When attach_prog_fd
-> > points to previously loaded BPF program the attach_btf_id is BTF type id of
-> > main function or one of its subprograms.
-> >
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> 
-> This is cool! Certainly solves the xdpdump use case; thanks!
-> 
-> I do have a few questions (thinking about whether it can also be used
-> for running multiple XDP programs):
+> Well, I think Greg just objected pretty strongly.
 
-excellent questions.
+Yes I did.
 
-> - Can a FEXIT function loaded this way only *observe* the return code of
->   the BPF program it attaches to, or can it also change it?
+I keep saying this again and again, and so did you here:
 
-yes. the verifier can be taught to support that for certain class of programs.
-That needs careful thinking to make sure it's safe.
+> IMHO it is wrong to turn mdev into some API multiplexor. That is what
+> the driver core already does and AFAIK your bus type is supposed to
+> represent your API contract to your drivers.
 
-> - Is it possible to attach multiple FENTRY/FEXIT programs to the same
->   XDP program 
+That is exactly right.  Don't re-create the driver api interface at
+another layer please.
 
-Yes. Already possible. See fexit_stress.c that attaches 40 progs to the same
-kernel function. Same thing when attaching fexit BPF to any XDP program.
-Since all of them are read only tracing prog all progs have access to skb on
-input and ouput along with unmodified return value.
+thanks,
 
-> and/or to recursively attach FENTRY/FEXIT programs to each
->   other?
-
-Not right now to avoid complex logic of detecting cycles. See simple bit:
-   if (tgt_prog->type == BPF_PROG_TYPE_TRACING) {
-           /* prevent cycles */
-           verbose(env, "Cannot recursively attach\n");
-
-> - Could it be possible for an FENTRY/FEXIT program to call into another
->   XDP program (i.e., one that has the regular XDP program type)?
-
-It's possible to teach verifier to do that, but we probably shouldn't take that
-route. Instead I've started exploring the idea of dynamic linking. The
-trampoline logic will be used to replace existing BPF program or subprogram
-instead of attaching read-only to it. If types match the new program can
-replace existing one. The concept allows to build any kind of callchain
-programmatically. Pretty much what Ed proposed with static linking, but doing
-it dynamically. I'll start a separate email thread explaining details.
-
+greg k-h
