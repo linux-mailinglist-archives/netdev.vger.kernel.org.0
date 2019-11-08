@@ -2,177 +2,261 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D76B7F56FA
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:05:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F75FF570D
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391015AbfKHTOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 14:14:50 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:44740 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2390693AbfKHTOt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 14:14:49 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xA8J9iIa009300;
-        Fri, 8 Nov 2019 11:14:35 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=nunCWavD89YTneHOOmrUlLndwiFkMX/GpAdBp75wYxE=;
- b=UD90vbyL8DTGjnMTXH+Su44UBiZIh1iobeVhFsGnC3yI+2u/VZvv0edV938yw2Otcbl9
- a1mFIg6W6JDq0IY/vcPPOc+wCEUKs+Kz9luiv33SVqMq4VA3BlSLLXVd62DkZkjpeXol
- ZwWk2eioYxWrxTX/p+HyIemeNBWGgN75G8I= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2w5ckcgmw9-17
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 08 Nov 2019 11:14:35 -0800
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 8 Nov 2019 11:14:18 -0800
-Received: from NAM05-DM3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 8 Nov 2019 11:14:18 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M1HFyFJcXK2xOzaywWZr21dzvASt4KPdG1EyctLi/Jy7oS5k6YoQcNTvJdpYYtuiiiubi3MoG4kPZSNadcX8EEwYvZ7NJbcIWN737+QrJKzMZDKd7yxMExzlWRZu9A7pALXERba4/hS7m/e8KJMa95LgHjF2R4mKUHGAV27mnEFi6NP8yTrnGcoBYMhND+YDuYwgssEmkBq+PiToOtv6o10Jm/nVkzGffnoKM92RvWcwMmQy61bjAlxVyTEZdeMsCW8R29yLp1owiSv9yu/Vv4Dz9z6NFn6L6BK3Xqc1AWlskpkPb06zxXVrFie76hM/PpUde0PLvnFsFakSFsE/Zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nunCWavD89YTneHOOmrUlLndwiFkMX/GpAdBp75wYxE=;
- b=ItZ/6+BfJJydr/FoW7UXA7d2EFeUIiYYEqp2J72slXu6gy/EUjnq6bx3tJucXPAKPMiqqJtpvHEgBiWPei+EDRmn/BT0d1Ps7ojChvHcL0/+VE/fmuIk+e8qC93/d4C4yoPCwG/K45UVegnDlowuq469aAfQEFoDPeZXsUlquYYndQAtMPasb0JrCUFk10KkTUdysSYhiARcGNfUuA8sv+CrWidc6HR5KqDQ4r5VL24EW0uLicdPHQZ1TyB6k575fDzJtJDuBeqKZIu8AndRHGV82gNo5ieI7mxVlNZEqyCKhdU6JV34OyZz29n04sKFVH4oCBuJbidp0hzldxJipg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nunCWavD89YTneHOOmrUlLndwiFkMX/GpAdBp75wYxE=;
- b=IiLOBk1+U5cH91i4m9sB795Ratg1jVGa3a7IXm8cM2GUnDl52wQcC6X5hHofb3LC62Psg7dK7Scb+227mrEwBO3mfSkfq0Zr716xpL23UZr+WqcxIbNvdtsuos6cAdJnrqymH+PLMgeHrq9JZo+ow2Xoh52S5EODjTZEW5u71U4=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1565.namprd15.prod.outlook.com (10.173.235.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Fri, 8 Nov 2019 19:14:17 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 19:14:17 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Alexei Starovoitov <ast@fb.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH v3 bpf-next 16/18] libbpf: Add support for attaching BPF
- programs to other BPF programs
-Thread-Topic: [PATCH v3 bpf-next 16/18] libbpf: Add support for attaching BPF
- programs to other BPF programs
-Thread-Index: AQHVlf+YwwRq5FosuE2y6hpnfHhzDqeBoMoAgAAETQCAAABWAA==
-Date:   Fri, 8 Nov 2019 19:14:17 +0000
-Message-ID: <484B1B7E-8B72-4BF1-A8DB-ECEEAC69E269@fb.com>
-References: <20191108064039.2041889-1-ast@kernel.org>
- <20191108064039.2041889-17-ast@kernel.org>
- <88611E3B-DD55-4D33-AA15-73DE58F8D44D@fb.com>
- <624d217e-ac6f-f69b-855d-b3b533ed5104@fb.com>
-In-Reply-To: <624d217e-ac6f-f69b-855d-b3b533ed5104@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3601.0.10)
-x-originating-ip: [2620:10d:c090:200::b292]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1ed99466-35c0-438f-7b90-08d7647fd9cb
-x-ms-traffictypediagnostic: MWHPR15MB1565:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB156523025602E221BB9C3375B37B0@MWHPR15MB1565.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(376002)(39860400002)(396003)(366004)(136003)(199004)(189003)(99286004)(54906003)(50226002)(6486002)(6436002)(64756008)(7736002)(25786009)(4326008)(6512007)(36756003)(14454004)(229853002)(316002)(86362001)(46003)(76176011)(6116002)(37006003)(6862004)(71200400001)(53546011)(66556008)(66476007)(186003)(102836004)(478600001)(2616005)(76116006)(2906002)(6636002)(71190400001)(446003)(6246003)(8676002)(66446008)(5024004)(476003)(8936002)(305945005)(486006)(256004)(5660300002)(66946007)(33656002)(81156014)(81166006)(6506007)(11346002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1565;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NZLRWIZyCDAeYEXNbEpPaOoUyJzFf6yiWHW/bBej19tgAlUiz6tvfxpfbrQ33fsXKx1N/9opcPaiH6BggDB4nBKW1Eman/EXIp7HLGdLsUHV5lJgX2Y5SO8WQaZTiMkKHxae7g7atfTZ5v6baBcCFKQElezHV+YcYUoIUlhr3OqoRmcPtrtw5b++j51NYEJYSKuFqjsuwlq+KIPCoofj9CY+TFQgfxundGblfc6yVynBiOEPNubrLonRkSF2y/iMfiJt+vaQFjTwmr9qWtWu7FD8kidwmlpvK+tFr59frEqaKBwb69UIA64f+YqoXpWtQpIlv5HL8uUOxWkNAInRmLG+CcxO1XG4CJGJP7/0Epm0cw7/Y/iGFS043TxnBS7wpZW+48iHviTMK5G2k5vPcgDECCbvdfbW7fMZ5cUHEi8jsyLylXSiteggnxGBBfnj
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3206EA231CFAAF46BC7A8E8BAC867817@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2389724AbfKHTQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 14:16:46 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44597 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726670AbfKHTQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 14:16:46 -0500
+Received: by mail-pg1-f193.google.com with SMTP id f19so4526342pgk.11
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 11:16:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zvlN34Wj8F3p3Rp4+zPhD3Iza6mz+Zo9zKKsYvWGiEU=;
+        b=YAN7Jc+A/aJbJNrbF+tY30kxNVtkVytBzStZ9d6lTcqLcS1waAsCEWR2ocXkdmuJ9s
+         ZzYI2OlF4nb26y+7BcZ9EehOLu05H4eLvupy/+2NDfXN+2idA65aujU429rlBvVmxewm
+         SuUFHkjPcaLHpBdBk+WGZQiWbE+8W04ElKMfxFgb8wTxC8j8QsCy0oq3gsbPjOQoJmv5
+         ImSruE6FI7c7HX+jExqomEwu8rV2SKx95gwBUJG4MIPY3kFEMuokln9OewWF83oMBe6p
+         xXEgz8UYugLB5+C+qpsCRxVjRrSV9uhXbqyVG/UgSjj4EfYEimshoacwr/v27NYaOd6x
+         FvSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zvlN34Wj8F3p3Rp4+zPhD3Iza6mz+Zo9zKKsYvWGiEU=;
+        b=sUTwdoqgZtnJgtXe8ilqJqZHagFaAS9bIGA9UZCc35s059I15jtWUyOwcHauPTyz6z
+         p7qVqU4kkCS47GQlrR7sw/SoUkCMzmsivt1XuZw0mYFm7pd/kP7if4yZGi9Kt2aja+qz
+         pckfRw4c38UuqKsgNuuYP3qXHJLURzSUcR+Onf5hqpsZXkOAVycnhsAU6LdT5BFjmfQ9
+         XuTPxkh0Rk04hfpf53wSXJiNvKd+mvZKHI0XAhewMhOk7Uq4GmEKRNDsCCWYLEypPbqD
+         oAVxoDX5eZ5hwMsLht5x3xB6IRN6OqSTRuMXWNEypmNjWO94pPDAws6U8pdy05CKV7R/
+         dBsg==
+X-Gm-Message-State: APjAAAWR+ogniAK7I1AeUT6Wt7HVd1ENAGZ/IM76THGy8vxW8AkQcRBC
+        EYO3rgAQMe2hbtOJKMSfErI=
+X-Google-Smtp-Source: APXvYqwjUbZPhXSfv1/Aa9w34sf0VIeZizidr21HGQWbx4qoLBbwG3l/LStGU2nmOdtsuDcsuwNL/w==
+X-Received: by 2002:a63:2226:: with SMTP id i38mr13706087pgi.50.1573240604487;
+        Fri, 08 Nov 2019 11:16:44 -0800 (PST)
+Received: from [172.20.40.253] ([2620:10d:c090:200::3:c214])
+        by smtp.gmail.com with ESMTPSA id t13sm7224386pfh.12.2019.11.08.11.16.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 08 Nov 2019 11:16:43 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
+Cc:     "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
+        netdev@vger.kernel.org,
+        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
+        "Saeed Mahameed" <saeedm@mellanox.com>,
+        "Matteo Croce" <mcroce@redhat.com>,
+        "Lorenzo Bianconi" <lorenzo@kernel.org>,
+        "Tariq Toukan" <tariqt@mellanox.com>
+Subject: Re: [net-next v1 PATCH 1/2] xdp: revert forced mem allocator removal
+ for page_pool
+Date:   Fri, 08 Nov 2019 11:16:43 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <80027E83-6C82-4238-AF7E-315F09457F43@gmail.com>
+In-Reply-To: <157323722276.10408.11333995838112864686.stgit@firesoul>
+References: <157323719180.10408.3472322881536070517.stgit@firesoul>
+ <157323722276.10408.11333995838112864686.stgit@firesoul>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ed99466-35c0-438f-7b90-08d7647fd9cb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 19:14:17.2880
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pPYpQ0BKypvGEEZNwvd9DdR/60ULPRnZ8fjkUqazdJCzyyfZiMz2s+ktdhl9OyLsmgzq/pmCK6PvQ/orqihysg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1565
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-08_07:2019-11-08,2019-11-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 lowpriorityscore=0 clxscore=1015
- mlxlogscore=999 impostorscore=0 spamscore=0 bulkscore=0 phishscore=0
- mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911080188
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8 Nov 2019, at 10:20, Jesper Dangaard Brouer wrote:
+
+> Forced removal of XDP mem allocator, specifically related to 
+> page_pool, turned
+> out to be a wrong approach.  Special thanks to Jonathan Lemon for 
+> convincing me.
+> This patch is a partial revert of commit d956a048cd3f (“xdp: force 
+> mem allocator
+> removal and periodic warning”).
+>
+> It is much better to provide a guarantee that page_pool object stays 
+> valid
+> until 'inflight' pages reach zero, making it safe to remove.
+>
+> We keep the periodic warning via a work-queue, but increased interval 
+> to
+> 5-minutes. The reason is to have a way to catch bugs, where inflight
+> pages/packets never reach zero, indicating some kind of leak. These 
+> kind of
+> bugs have been observed while converting drivers over to use page_pool 
+> API.
+>
+> Details on when to crash the kernel. If page_pool API is misused and
+> somehow __page_pool_free() is invoked while there are still inflight
+> frames, then (like before) a WARN() is triggered and not a BUG(). This 
+> can
+> potentially lead to use-after-free, which we try to catch via 
+> poisoning the
+> page_pool object memory with some NULL pointers. Doing it this way,
+> pinpoint both the driver (likely) prematurely freeing page_pool via 
+> WARN(),
+> and crash-dump for inflight page/packet show who to blame for late 
+> return.
+>
+> Fixes: d956a048cd3f (“xdp: force mem allocator removal and periodic 
+> warning”)
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  include/trace/events/xdp.h |   35 +++--------------------------------
+>  net/core/page_pool.c       |    8 ++++++--
+>  net/core/xdp.c             |   36 
+> +++++++++++++-----------------------
+>  3 files changed, 22 insertions(+), 57 deletions(-)
+>
+> diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+> index c7e3c9c5bad3..a3ead2b1f00e 100644
+> --- a/include/trace/events/xdp.h
+> +++ b/include/trace/events/xdp.h
+> @@ -318,9 +318,9 @@ __MEM_TYPE_MAP(__MEM_TYPE_TP_FN)
+>  TRACE_EVENT(mem_disconnect,
+>
+>  	TP_PROTO(const struct xdp_mem_allocator *xa,
+> -		 bool safe_to_remove, bool force),
+> +		 bool safe_to_remove),
+>
+> -	TP_ARGS(xa, safe_to_remove, force),
+> +	TP_ARGS(xa, safe_to_remove),
+>
+>  	TP_STRUCT__entry(
+>  		__field(const struct xdp_mem_allocator *,	xa)
+> @@ -328,7 +328,6 @@ TRACE_EVENT(mem_disconnect,
+>  		__field(u32,		mem_type)
+>  		__field(const void *,	allocator)
+>  		__field(bool,		safe_to_remove)
+> -		__field(bool,		force)
+>  		__field(int,		disconnect_cnt)
+>  	),
+>
+> @@ -338,17 +337,15 @@ TRACE_EVENT(mem_disconnect,
+>  		__entry->mem_type	= xa->mem.type;
+>  		__entry->allocator	= xa->allocator;
+>  		__entry->safe_to_remove	= safe_to_remove;
+> -		__entry->force		= force;
+>  		__entry->disconnect_cnt	= xa->disconnect_cnt;
+>  	),
+>
+>  	TP_printk("mem_id=%d mem_type=%s allocator=%p"
+> -		  " safe_to_remove=%s force=%s disconnect_cnt=%d",
+> +		  " safe_to_remove=%s disconnect_cnt=%d",
+>  		  __entry->mem_id,
+>  		  __print_symbolic(__entry->mem_type, __MEM_TYPE_SYM_TAB),
+>  		  __entry->allocator,
+>  		  __entry->safe_to_remove ? "true" : "false",
+> -		  __entry->force ? "true" : "false",
+>  		  __entry->disconnect_cnt
+>  	)
+>  );
+> @@ -387,32 +384,6 @@ TRACE_EVENT(mem_connect,
+>  	)
+>  );
+>
+> -TRACE_EVENT(mem_return_failed,
+> -
+> -	TP_PROTO(const struct xdp_mem_info *mem,
+> -		 const struct page *page),
+> -
+> -	TP_ARGS(mem, page),
+> -
+> -	TP_STRUCT__entry(
+> -		__field(const struct page *,	page)
+> -		__field(u32,		mem_id)
+> -		__field(u32,		mem_type)
+> -	),
+> -
+> -	TP_fast_assign(
+> -		__entry->page		= page;
+> -		__entry->mem_id		= mem->id;
+> -		__entry->mem_type	= mem->type;
+> -	),
+> -
+> -	TP_printk("mem_id=%d mem_type=%s page=%p",
+> -		  __entry->mem_id,
+> -		  __print_symbolic(__entry->mem_type, __MEM_TYPE_SYM_TAB),
+> -		  __entry->page
+> -	)
+> -);
+> -
+>  #endif /* _TRACE_XDP_H */
+>
+>  #include <trace/define_trace.h>
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 5bc65587f1c4..226f2eb30418 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -346,7 +346,7 @@ static void __warn_in_flight(struct page_pool 
+> *pool)
+>
+>  	distance = _distance(hold_cnt, release_cnt);
+>
+> -	/* Drivers should fix this, but only problematic when DMA is used */
+> +	/* BUG but warn as kernel should crash later */
+>  	WARN(1, "Still in-flight pages:%d hold:%u released:%u",
+>  	     distance, hold_cnt, release_cnt);
+>  }
+> @@ -360,12 +360,16 @@ void __page_pool_free(struct page_pool *pool)
+>  	WARN(pool->alloc.count, "API usage violation");
+>  	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
+>
+> -	/* Can happen due to forced shutdown */
+>  	if (!__page_pool_safe_to_destroy(pool))
+>  		__warn_in_flight(pool);
+
+If it's not safe to destroy, we shouldn't be getting here.
 
 
-> On Nov 8, 2019, at 11:13 AM, Alexei Starovoitov <ast@fb.com> wrote:
->=20
-> On 11/8/19 10:57 AM, Song Liu wrote:
->>=20
->>=20
->>> On Nov 7, 2019, at 10:40 PM, Alexei Starovoitov <ast@kernel.org> wrote:
->>>=20
->>> Extend libbpf api to pass attach_prog_fd into bpf_object__open.
->>>=20
->>> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
->>> ---
->>=20
->> [...]
->>=20
->>> +static int libbpf_find_prog_btf_id(const char *name, __u32 attach_prog=
-_fd)
->>> +{
->>> +	struct bpf_prog_info_linear *info_linear;
->>> +	struct bpf_prog_info *info;
->>> +	struct btf *btf =3D NULL;
->>> +	int err =3D -EINVAL;
->>> +
->>> +	info_linear =3D bpf_program__get_prog_info_linear(attach_prog_fd, 0);
->>> +	if (IS_ERR_OR_NULL(info_linear)) {
->>> +		pr_warn("failed get_prog_info_linear for FD %d\n",
->>> +			attach_prog_fd);
->>> +		return -EINVAL;
->>> +	}
->>> +	info =3D &info_linear->info;
->>> +	if (!info->btf_id) {
->>> +		pr_warn("The target program doesn't have BTF\n");
->>> +		goto out;
->>> +	}
->>> +	if (btf__get_from_id(info->btf_id, &btf)) {
->>> +		pr_warn("Failed to get BTF of the program\n");
->>> +		goto out;
->>> +	}
->>> +	err =3D btf__find_by_name_kind(btf, name, BTF_KIND_FUNC);
->>> +	btf__free(btf);
->>> +	if (err <=3D 0) {
->>> +		pr_warn("%s is not found in prog's BTF\n", name);
->>> +		goto out;
->> 		^^^ This goto doesn't really do much.
->=20
-> yeah. it does look a bit weird.
-> I wanted to keep uniform error handling, but can remove it
-> if you insist.
 
-I think it is good as-is.=20
+>  	ptr_ring_cleanup(&pool->ring, NULL);
+>
+> +	/* Make sure kernel will crash on use-after-free */
+> +	pool->ring.queue = NULL;
+> +	pool->alloc.cache[PP_ALLOC_CACHE_SIZE - 1] = NULL;
+> +	pool->alloc.count = PP_ALLOC_CACHE_SIZE;
 
-Thanks,
-Song=
+The pool is going to be freed.  This is useless code; if we're
+really concerned about use-after-free, the correct place for catching
+this is with the memory-allocator tools, not scattering things like
+this ad-hoc over the codebase.
+
+
+> +
+>  	if (pool->p.flags & PP_FLAG_DMA_MAP)
+>  		put_device(pool->p.dev);
+>
+> diff --git a/net/core/xdp.c b/net/core/xdp.c
+> index 20781ad5f9c3..8673f199d9f4 100644
+> --- a/net/core/xdp.c
+> +++ b/net/core/xdp.c
+> @@ -85,7 +85,7 @@ static void __xdp_mem_allocator_rcu_free(struct 
+> rcu_head *rcu)
+>  	kfree(xa);
+>  }
+>
+> -static bool __mem_id_disconnect(int id, bool force)
+> +static bool __mem_id_disconnect(int id)
+>  {
+>  	struct xdp_mem_allocator *xa;
+>  	bool safe_to_remove = true;
+> @@ -104,30 +104,26 @@ static bool __mem_id_disconnect(int id, bool 
+> force)
+>  	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+>  		safe_to_remove = page_pool_request_shutdown(xa->page_pool);
+>
+> -	trace_mem_disconnect(xa, safe_to_remove, force);
+> +	trace_mem_disconnect(xa, safe_to_remove);
+>
+> -	if ((safe_to_remove || force) &&
+> +	if ((safe_to_remove) &&
+
+Remove extra parenthesis.
+-- 
+Jonathan
