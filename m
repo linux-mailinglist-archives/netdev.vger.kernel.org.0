@@ -2,106 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28110F4FE2
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 16:37:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26928F5002
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 16:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727178AbfKHPgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 10:36:52 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34615 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726101AbfKHPgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 10:36:52 -0500
-Received: by mail-lj1-f194.google.com with SMTP id 139so6684498ljf.1
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 07:36:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2pe6fLgoaZ20F6d1ALx8ua+vYps6HC8ap7HyPfV+7qA=;
-        b=hrJLm8NT5gvZlCLVkDal51GeCoaKTjY3KJCkYz2j5LVZ+4oYahm+oTar+PhaGjcYwF
-         Igw4em3xySiJL8DsHAdByg4PeswhflQq/4q/J70XFPzXdF1Wc8Rr15NEiV78eWG/51RB
-         XEU3Cxpt44PGidtswt/SH/Wa0gfVqq8VxC+WIS1ubqtu8ZEApFD3XGSOdwv798ltSt3+
-         JOMLZ9Uv8bxKRzVRT7qGi+uOrerthzymaeSnZBlU/eKv0fpHoH40MGb6olgJEzRHplh5
-         BGHGZ/hSZ9QGDtNe8+SnoSeOWzyvb59rXaqUgRbnfag6y7wiNqZoWa19bNOwTtuh+jDu
-         SrWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2pe6fLgoaZ20F6d1ALx8ua+vYps6HC8ap7HyPfV+7qA=;
-        b=iQSvEkRmaIxFNtmJsD/z+glRKCuyk5HZeo8ERBPCHfwQmRPT9NviGa9yhJbGW9fV3+
-         9u3ixpkhHVESQQep54ualJaKMmowe1Dg8djG6IHwnOBxfNAmDZ+Vgi+/Mc2snD/oSo7E
-         ObbLCDV8RJp0JJTTtpixXLlaW1qiIu6BlhTJGOFTer4pNy2b167BygYBnLQ/2ZtP3eZg
-         qemXAOFsr4mrkfL10k22ExLKdT9hPiYlq2IBpH1bJ+FzPQ9FrYfn8TzwKQLfxfVEEBYt
-         2mXrrKkVmXGJbnL7qlwmWX14Zhsrb9jy6V33HXJQLaLRhRLLNNuzBjeVZTQA4b+9S8L0
-         zBng==
-X-Gm-Message-State: APjAAAVboJ7JkWA1n3CJfvLPQAFQy457/U2y2lvfXNx1K1eU7t305Ei8
-        lSiuQncRe+c3AGPicdHjXKOblw==
-X-Google-Smtp-Source: APXvYqyUgqYQ3oDvYgH32FgzCklgL9KCOEjJQGak0IjSzDhdq744+iVcrZsQtqMfAO54gdDffckFsw==
-X-Received: by 2002:a2e:81d2:: with SMTP id s18mr7088062ljg.189.1573227409814;
-        Fri, 08 Nov 2019 07:36:49 -0800 (PST)
-Received: from [10.0.156.104] ([195.22.87.57])
-        by smtp.gmail.com with ESMTPSA id q16sm1072855lfm.87.2019.11.08.07.36.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Nov 2019 07:36:48 -0800 (PST)
-Subject: Re: [PATCH v3 0/6] Add namespace awareness to Netlink methods
-To:     David Ahern <dsahern@gmail.com>,
-        =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+?=
-         =?UTF-8?B?4KSwKQ==?= <maheshb@google.com>
-Cc:     nicolas.dichtel@6wind.com, linux-netdev <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
-References: <20191107132755.8517-1-jonas@norrbonn.se>
- <CAF2d9jjteagJGmt64mNFH-pFmGg_eM8_NNBrDtROcaVKhcNkRQ@mail.gmail.com>
- <d34174c2-a4d4-b3da-ded5-dcb97a89c80c@gmail.com>
-From:   Jonas Bonn <jonas@norrbonn.se>
-Message-ID: <229cdce6-f510-5d9f-401b-69bad4af0722@norrbonn.se>
-Date:   Fri, 8 Nov 2019 16:36:46 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+        id S1727065AbfKHPlM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 10:41:12 -0500
+Received: from smtp-sh2.infomaniak.ch ([128.65.195.6]:36977 "EHLO
+        smtp-sh2.infomaniak.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbfKHPlL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 10:41:11 -0500
+Received: from smtp7.infomaniak.ch (smtp7.infomaniak.ch [83.166.132.30])
+        by smtp-sh2.infomaniak.ch (8.14.4/8.14.4/Debian-8+deb8u2) with ESMTP id xA8Fe0wD187815
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 8 Nov 2019 16:40:00 +0100
+Received: from ns3096276.ip-94-23-54.eu (ns3096276.ip-94-23-54.eu [94.23.54.103])
+        (authenticated bits=0)
+        by smtp7.infomaniak.ch (8.14.5/8.14.5) with ESMTP id xA8FduEU195949
+        (version=TLSv1/SSLv3 cipher=AES128-SHA bits=128 verify=NO);
+        Fri, 8 Nov 2019 16:39:56 +0100
+Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     KP Singh <kpsingh@chromium.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        David Drysdale <drysdale@google.com>,
+        Florent Revest <revest@chromium.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
+        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
+References: <20191104172146.30797-1-mic@digikod.net>
+ <20191104172146.30797-5-mic@digikod.net>
+ <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
+ <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
+ <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
+ <20191106100655.GA18815@chromium.org>
+ <813cedde-8ed7-2d3b-883d-909efa978d41@digikod.net>
+ <20191106214526.GA22244@chromium.org>
+ <3e208632-e7ab-3405-5196-ab1d770e20c3@digikod.net>
+ <5d0f1dc5-5a99-bd6a-4acc-0cdcd062a0c9@iogearbox.net>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Openpgp: preference=signencrypt
+Message-ID: <78b75ea3-3a7c-103c-ee00-a9c6c41bcd9c@digikod.net>
+Date:   Fri, 8 Nov 2019 16:39:55 +0100
+User-Agent: 
 MIME-Version: 1.0
-In-Reply-To: <d34174c2-a4d4-b3da-ded5-dcb97a89c80c@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <5d0f1dc5-5a99-bd6a-4acc-0cdcd062a0c9@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Antivirus: Dr.Web (R) for Unix mail servers drweb plugin ver.6.0.2.8
+X-Antivirus-Code: 0x100000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 07/11/2019 22:11, David Ahern wrote:
-> On 11/7/19 1:40 PM, Mahesh Bandewar (महेश बंडेवार) wrote:
->> On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
->>>
->>> Changed in v3:
->>> - added patch 6 for setting IPv6 address outside current namespace
->>> - address checkpatch warnings
->>> - address comment from Nicolas
->>>
->>> Changed in v2:
->>> - address comment from Nicolas
->>> - add accumulated ACK's
->>>
->>> Currently, Netlink has partial support for acting outside of the current
->>> namespace.  It appears that the intention was to extend this to all the
->>> methods eventually, but it hasn't been done to date.
->>>
->>> With this series RTM_SETLINK, RTM_NEWLINK, RTM_NEWADDR, and RTM_NEWNSID
->>> are extended to respect the selection of the namespace to work in.
->>>
->> This is nice, is there a plan to update userspace commands using this?
+On 08/11/2019 15:34, Daniel Borkmann wrote:
+> On 11/8/19 3:08 PM, Mickaël Salaün wrote:
+>> On 06/11/2019 22:45, KP Singh wrote:
+>>> On 06-Nov 17:55, Mickaël Salaün wrote:
+>>>> On 06/11/2019 11:06, KP Singh wrote:
+>>>>> On 05-Nov 11:34, Alexei Starovoitov wrote:
+>>>>>> On Tue, Nov 05, 2019 at 07:01:41PM +0100, Mickaël Salaün wrote:
+>>>>>>> On 05/11/2019 18:18, Alexei Starovoitov wrote:
+> [...]
+>>> * Use a single BPF program type; this is necessary for a key requirement
+>>>    of KRSI, i.e. runtime instrumentation. The upcoming prototype should
+>>>    illustrate how this works for KRSI - note that it’s possible to vary
+>>>    the context types exposed by different hooks.
+>>
+>> Why a single BPF program type? Do you mean *attach* types? Landlock only
+>> use one program type, but will use multiple attach types.
+>>
+>> Why do you think it is necessary for KRSI or for runtime instrumentation?
+>>
+>> If it is justified, it could be a dedicated program attach type (e.g.
+>> BPF_LANDLOCK_INTROSPECTION).
+>>
+>> What is the advantage to have the possibility to vary the context types
+>> over dedicated *typed* contexts? I don't see any advantages, but at
+>> least one main drawback: to require runtime checks (when helpers use
+>> this generic context) instead of load time checks (thanks to static type
+>> checking of the context).
 > 
-> I'm hoping for an iproute2 update and test cases to validate the changes.
+> Lets take security_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> as one specific example here: the running kernel has its own internal
+> btf_vmlinux and therefore a complete description of itself. From verifier
+> side we can retrieve & introspect the security_sock_rcv_skb signatue
+
+OK, this is indeed the signature defined by the kernel API. What happen
+if this API change (e.g. if struct sock is replaced with a struct
+sock_meta)?
+
+
+> and
+> thus know that the given BPF attachment point has struct sock and struct
+> sk_buff as input arguments
+
+How does the verifier know a given BPF attachment point for a program
+without relying on its type or attach type? How and where is registered
+this mapping?
+
+To say it another way, if there is no way to differentiate two program
+targeting different hook, I don't understand how the verifier could
+check if a given program can legitimately call a helper which could read
+the tracer and tracee fields (legitimate for a ptrace hook), whereas
+this program may be attached to a sock_rcv_skb hook (and there is no way
+to know that).
+
+
+> which can then be accessed generically by the
+> prog in order to allow sk_filter_trim_cap() to pass or to drop the skb.
+> The same generic approach can be done for many of the other lsm hooks, so
+> single program type would be enough there and context is derived
+> automatically,
+> no dedicated extra context per attach type would be needed and no runtime
+> checks as you mentioned above since its still all asserted at verification
+> time.
+
+I mentioned runtime check because I though a helper should handle the
+case when it doesn't make sense for a program attached to a specific
+point/hook (e.g. ptrace) to use an input argument (e.g. sk) defined for
+another point/hook (e.g. sock_rcv_skb).
+
+
+> 
+> Thanks,
+> Daniel
 > 
 
-I'm looking into it.  The change to iproute2 to support 
-(namespace,index) pairs instead of just (index) to identify interfaces 
-looks to be invasive.  The rest of it looks like trivial changes.
-
-I've got all these kernel patches tested against my own "namespace aware 
-network manager" that I'm writing for a customer with a particular use 
-case.  iproute2 wasn't actually in play here.
-
-/Jonas
+Thanks for this explanation Daniel.
