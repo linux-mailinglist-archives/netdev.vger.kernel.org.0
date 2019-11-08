@@ -2,72 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9B5F436D
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 10:36:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82A7BF4380
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 10:38:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731340AbfKHJgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 04:36:13 -0500
-Received: from bombadil.infradead.org ([198.137.202.133]:35920 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731278AbfKHJgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 04:36:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Q9a6tsf4e5tRgi5gmLwBv+7tmHnUPZ10nV6Lvv6OfeU=; b=hnxk+rGka0JaSx93lXdK13EmU
-        GFtdB79u8WgqfsdK1edi7N/q6waDWtwFD9AINs1x/HUdXgj980K/juLFLLGmEG8lGwnfkTE2dZlgk
-        O2VxBQSsZYHEz+6O1L4v3QMme3aMZivE3xl6HOfdXwJPRvCF8BLJyvHieLQEZnnNsRCixBuMJn3hW
-        lTIt8p5V9M2wxt6YJKiH76zEfCImrX+XN9AY23eYi/tpgQzD3UYbYCyVi8+8+3UlgEfcP0acvFMwq
-        c0D9T3/m6WISX5Yn1JKWvOMAU8FnzpuMJaN2U9ozzshIz06sJFZh87GGm7M6TZTMz0KqxHN34Ic0N
-        gnvnmEYUA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1iT0gb-0003Fq-0n; Fri, 08 Nov 2019 09:36:09 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 80746305FC2;
-        Fri,  8 Nov 2019 10:35:02 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 29A832022B9E1; Fri,  8 Nov 2019 10:36:07 +0100 (CET)
-Date:   Fri, 8 Nov 2019 10:36:07 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     davem@davemloft.net, daniel@iogearbox.net, x86@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 02/18] bpf: Add bpf_arch_text_poke() helper
-Message-ID: <20191108093607.GO5671@hirez.programming.kicks-ass.net>
-References: <20191108064039.2041889-1-ast@kernel.org>
- <20191108064039.2041889-3-ast@kernel.org>
- <20191108091156.GG4114@hirez.programming.kicks-ass.net>
+        id S1731040AbfKHJh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 04:37:59 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39422 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730005AbfKHJh7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 04:37:59 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id E19B8AC79;
+        Fri,  8 Nov 2019 09:37:56 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 27B4A1E4331; Fri,  8 Nov 2019 10:37:56 +0100 (CET)
+Date:   Fri, 8 Nov 2019 10:37:56 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     syzbot <syzbot+cd0ec5211ac07c18c049@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, dev@openvswitch.org, jack@suse.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pshelar@ovn.org, syzkaller-bugs@googlegroups.com,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: BUG: MAX_LOCKDEP_ENTRIES too low!
+Message-ID: <20191108093756.GC20863@quack2.suse.cz>
+References: <000000000000ec7273058b877e1f@google.com>
+ <000000000000e676b00596cdbbde@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191108091156.GG4114@hirez.programming.kicks-ass.net>
+In-Reply-To: <000000000000e676b00596cdbbde@google.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 08, 2019 at 10:11:56AM +0100, Peter Zijlstra wrote:
-> On Thu, Nov 07, 2019 at 10:40:23PM -0800, Alexei Starovoitov wrote:
-> > Add bpf_arch_text_poke() helper that is used by BPF trampoline logic to patch
-> > nops/calls in kernel text into calls into BPF trampoline and to patch
-> > calls/nops inside BPF programs too.
+I guess this is more for Peter or Ingo...
+
+On Thu 07-11-19 19:54:08, syzbot wrote:
+> syzbot has found a reproducer for the following crash on:
 > 
-> This thing assumes the text is unused, right? That isn't spelled out
-> anywhere. The implementation is very much unsafe vs concurrent execution
-> of the text.
-
-Also, what NOP/CALL instructions will you be hijacking? If you're
-planning on using the fentry nops, then what ensures this and ftrace
-don't trample on one another? Similar for kprobes.
-
-In general, what ensures every instruction only has a single modifier?
-
-I'm very uncomfortable letting random bpf proglets poke around in the
-kernel text.
+> HEAD commit:    99a8efbb NFC: st21nfca: fix double free
+> git tree:       net
+> console output: https://syzkaller.appspot.com/x/log.txt?x=15ed70d8e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=cbbed3e8d4eb64bf
+> dashboard link: https://syzkaller.appspot.com/bug?extid=cd0ec5211ac07c18c049
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13cf5594e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1036c762e00000
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+cd0ec5211ac07c18c049@syzkaller.appspotmail.com
+> 
+> device 5580n entered promiscuous mode
+> BUG: MAX_LOCKDEP_ENTRIES too low!
+> turning off the locking correctness validator.
+> CPU: 0 PID: 14197 Comm: syz-executor527 Not tainted 5.4.0-rc5+ #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+>  alloc_list_entry.cold+0x11/0x18 kernel/locking/lockdep.c:1292
+>  add_lock_to_list kernel/locking/lockdep.c:1313 [inline]
+>  check_prev_add kernel/locking/lockdep.c:2528 [inline]
+>  check_prevs_add kernel/locking/lockdep.c:2581 [inline]
+>  validate_chain kernel/locking/lockdep.c:2971 [inline]
+>  __lock_acquire+0x2a15/0x4a00 kernel/locking/lockdep.c:3955
+>  lock_acquire+0x190/0x410 kernel/locking/lockdep.c:4487
+>  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+>  _raw_spin_lock_bh+0x33/0x50 kernel/locking/spinlock.c:175
+>  spin_lock_bh include/linux/spinlock.h:343 [inline]
+>  netif_addr_lock_bh include/linux/netdevice.h:4055 [inline]
+>  dev_set_rx_mode+0x20/0x40 net/core/dev.c:7808
+>  dev_set_promiscuity+0xbf/0xe0 net/core/dev.c:7716
+>  internal_dev_create+0x387/0x550 net/openvswitch/vport-internal_dev.c:196
+>  ovs_vport_add+0x150/0x500 net/openvswitch/vport.c:199
+>  new_vport+0x1b/0x1d0 net/openvswitch/datapath.c:194
+>  ovs_dp_cmd_new+0x5e5/0xe30 net/openvswitch/datapath.c:1644
+>  genl_family_rcv_msg+0x74b/0xf90 net/netlink/genetlink.c:629
+>  genl_rcv_msg+0xca/0x170 net/netlink/genetlink.c:654
+>  netlink_rcv_skb+0x177/0x450 net/netlink/af_netlink.c:2477
+>  genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+>  netlink_unicast+0x531/0x710 net/netlink/af_netlink.c:1328
+>  netlink_sendmsg+0x8a5/0xd60 net/netlink/af_netlink.c:1917
+>  sock_sendmsg_nosec net/socket.c:637 [inline]
+>  sock_sendmsg+0xd7/0x130 net/socket.c:657
+>  ___sys_sendmsg+0x803/0x920 net/socket.c:2311
+>  __sys_sendmsg+0x105/0x1d0 net/socket.c:2356
+>  __do_sys_sendmsg net/socket.c:2365 [inline]
+>  __se_sys_sendmsg net/socket.c:2363 [inline]
+>  __x64_sys_sendmsg+0x78/0xb0 net/socket.c:2363
+>  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+>  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> RIP: 0033:0x441779
+> Code: e8 9c ad 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7
+> 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff
+> 0f 83 1b 0a fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007ffea7e5fcc8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000441779
+> RDX: 0000000000000000 RSI: 0000000020000240 RDI: 0000000000000003
+> RBP: 0000000000058f66 R08: 00007ffe00000025 R09: 00007ffe00000025
+> R10: 0000000000000004 R11: 0000000000000246 R12: 00000000006cdbc0
+> R13: 0000000000000013 R14: 0000000000000000 R15: 0000000000000000
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
