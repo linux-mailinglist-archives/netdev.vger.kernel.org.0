@@ -2,127 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0052F4E16
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 15:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A50F4E34
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 15:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726768AbfKHO2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 09:28:11 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:41063 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725995AbfKHO2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 09:28:10 -0500
-Received: by mail-io1-f69.google.com with SMTP id v5so5423180iot.8
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 06:28:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=Fc1AeehNUTfKl/ssy9FjKjLKkl1fuRqIqy43NB+5sHo=;
-        b=fj2iH6od1BJCirUJRgjIWLRuazKq0beAcN5kNBRR2yyZdcoeHkDQt2+MMQksBW0Ufm
-         QJbahFtNsvW32vhsFHAuLm3uGSJMWcoILv+94xQGdQRCIBGuVEKvAKzqcW/ARx4K2Yop
-         Tqa/Q4kHFhajQDlYHU8GnDa+MYGTMLgAAemgS50Wh/DndmWgQSc9SqlpMwSxiXqOl3qu
-         uM7PkBkx+3DgiKR0OpWrjFBn9f9jb05P9Ua5V9fIbYufws+2kTJsjLmYodNTPrPYqOFT
-         SJ5hCxf/yGPh0SSBvYGd5YzxPDfFUdEXU/TFnetNXDU9B6Qxjuz9xdGcaeuZtNziH1Bh
-         jTfg==
-X-Gm-Message-State: APjAAAUxHBeMwMGXHgT0NNuahtkMmzZ2goXixTRKADQkWXAaqtcw0Zwb
-        HDcpwBBoCLX5ACUZtAJ25qUCyUTMrPkxm01yQGGbWKLE/S2m
-X-Google-Smtp-Source: APXvYqz+GUs/qSBf9Rk2PflrXCYjo2fZBhJeXHTaoeYr9Pwgzk5CdLXlg5K4ytx+w1iK/Rh4YNNi2GUdwdnyaeumKqxb4jvNtCt6
+        id S1727126AbfKHOfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 09:35:06 -0500
+Received: from www62.your-server.de ([213.133.104.62]:40894 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726768AbfKHOfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 09:35:06 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iT5Lo-0001VR-E6; Fri, 08 Nov 2019 15:35:00 +0100
+Received: from [2a02:1205:507e:bf80:bef8:7f66:49c8:72e5] (helo=pc-11.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1iT5Ln-000Uz8-JS; Fri, 08 Nov 2019 15:34:59 +0100
+Subject: Re: [PATCH bpf-next v13 4/7] landlock: Add ptrace LSM hooks
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
+        KP Singh <kpsingh@chromium.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        David Drysdale <drysdale@google.com>,
+        Florent Revest <revest@chromium.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
+        John Johansen <john.johansen@canonical.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Kees Cook <keescook@chromium.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
+        Paul Moore <paul@paul-moore.com>,
+        Sargun Dhillon <sargun@sargun.me>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Tycho Andersen <tycho@tycho.ws>,
+        Will Drewry <wad@chromium.org>, bpf@vger.kernel.org,
+        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
+References: <20191104172146.30797-1-mic@digikod.net>
+ <20191104172146.30797-5-mic@digikod.net>
+ <20191105171824.dfve44gjiftpnvy7@ast-mbp.dhcp.thefacebook.com>
+ <23acf523-dbc4-855b-ca49-2bbfa5e7117e@digikod.net>
+ <20191105193446.s4pswwwhrmgk6hcx@ast-mbp.dhcp.thefacebook.com>
+ <20191106100655.GA18815@chromium.org>
+ <813cedde-8ed7-2d3b-883d-909efa978d41@digikod.net>
+ <20191106214526.GA22244@chromium.org>
+ <3e208632-e7ab-3405-5196-ab1d770e20c3@digikod.net>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5d0f1dc5-5a99-bd6a-4acc-0cdcd062a0c9@iogearbox.net>
+Date:   Fri, 8 Nov 2019 15:34:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:1223:: with SMTP id z3mr319283iot.92.1573223290084;
- Fri, 08 Nov 2019 06:28:10 -0800 (PST)
-Date:   Fri, 08 Nov 2019 06:28:10 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005ba74a0596d697be@google.com>
-Subject: KCSAN: data-race in batadv_tt_local_add / batadv_tt_local_add
-From:   syzbot <syzbot+1d5dadec56d9e87f0aac@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, elver@google.com,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <3e208632-e7ab-3405-5196-ab1d770e20c3@digikod.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.101.4/25627/Fri Nov  8 11:02:39 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 11/8/19 3:08 PM, Mickaël Salaün wrote:
+> On 06/11/2019 22:45, KP Singh wrote:
+>> On 06-Nov 17:55, Mickaël Salaün wrote:
+>>> On 06/11/2019 11:06, KP Singh wrote:
+>>>> On 05-Nov 11:34, Alexei Starovoitov wrote:
+>>>>> On Tue, Nov 05, 2019 at 07:01:41PM +0100, Mickaël Salaün wrote:
+>>>>>> On 05/11/2019 18:18, Alexei Starovoitov wrote:
+[...]
+>> * Use a single BPF program type; this is necessary for a key requirement
+>>    of KRSI, i.e. runtime instrumentation. The upcoming prototype should
+>>    illustrate how this works for KRSI - note that it’s possible to vary
+>>    the context types exposed by different hooks.
+> 
+> Why a single BPF program type? Do you mean *attach* types? Landlock only
+> use one program type, but will use multiple attach types.
+> 
+> Why do you think it is necessary for KRSI or for runtime instrumentation?
+> 
+> If it is justified, it could be a dedicated program attach type (e.g.
+> BPF_LANDLOCK_INTROSPECTION).
+> 
+> What is the advantage to have the possibility to vary the context types
+> over dedicated *typed* contexts? I don't see any advantages, but at
+> least one main drawback: to require runtime checks (when helpers use
+> this generic context) instead of load time checks (thanks to static type
+> checking of the context).
 
-syzbot found the following crash on:
+Lets take security_sock_rcv_skb(struct sock *sk, struct sk_buff *skb)
+as one specific example here: the running kernel has its own internal
+btf_vmlinux and therefore a complete description of itself. From verifier
+side we can retrieve & introspect the security_sock_rcv_skb signatue and
+thus know that the given BPF attachment point has struct sock and struct
+sk_buff as input arguments which can then be accessed generically by the
+prog in order to allow sk_filter_trim_cap() to pass or to drop the skb.
+The same generic approach can be done for many of the other lsm hooks, so
+single program type would be enough there and context is derived automatically,
+no dedicated extra context per attach type would be needed and no runtime
+checks as you mentioned above since its still all asserted at verification
+time.
 
-HEAD commit:    05f22368 x86, kcsan: Enable KCSAN for x86
-git tree:       https://github.com/google/ktsan.git kcsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=1195a0d4e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=87d111955f40591f
-dashboard link: https://syzkaller.appspot.com/bug?extid=1d5dadec56d9e87f0aac
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+1d5dadec56d9e87f0aac@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KCSAN: data-race in batadv_tt_local_add / batadv_tt_local_add
-
-write to 0xffff8880a8e19698 of 2 bytes by task 10064 on cpu 0:
-  batadv_tt_local_add+0x21b/0x1020 net/batman-adv/translation-table.c:799
-  batadv_interface_tx+0x398/0xae0 net/batman-adv/soft-interface.c:249
-  __netdev_start_xmit include/linux/netdevice.h:4420 [inline]
-  netdev_start_xmit include/linux/netdevice.h:4434 [inline]
-  xmit_one net/core/dev.c:3280 [inline]
-  dev_hard_start_xmit+0xef/0x430 net/core/dev.c:3296
-  __dev_queue_xmit+0x14c9/0x1b60 net/core/dev.c:3873
-  dev_queue_xmit+0x21/0x30 net/core/dev.c:3906
-  __bpf_tx_skb net/core/filter.c:2060 [inline]
-  __bpf_redirect_common net/core/filter.c:2099 [inline]
-  __bpf_redirect+0x4b4/0x710 net/core/filter.c:2106
-  ____bpf_clone_redirect net/core/filter.c:2139 [inline]
-  bpf_clone_redirect+0x1a5/0x1f0 net/core/filter.c:2111
-  bpf_prog_bb15b996d00816f9+0x71c/0x1000
-  bpf_test_run+0x1c3/0x490 net/bpf/test_run.c:44
-  bpf_prog_test_run_skb+0x4da/0x840 net/bpf/test_run.c:310
-  bpf_prog_test_run kernel/bpf/syscall.c:2108 [inline]
-  __do_sys_bpf+0x1664/0x2b90 kernel/bpf/syscall.c:2884
-  __se_sys_bpf kernel/bpf/syscall.c:2825 [inline]
-  __x64_sys_bpf+0x4c/0x60 kernel/bpf/syscall.c:2825
-  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-read to 0xffff8880a8e19698 of 2 bytes by task 9969 on cpu 1:
-  batadv_tt_local_add+0x3d1/0x1020 net/batman-adv/translation-table.c:801
-  batadv_interface_tx+0x398/0xae0 net/batman-adv/soft-interface.c:249
-  __netdev_start_xmit include/linux/netdevice.h:4420 [inline]
-  netdev_start_xmit include/linux/netdevice.h:4434 [inline]
-  xmit_one net/core/dev.c:3280 [inline]
-  dev_hard_start_xmit+0xef/0x430 net/core/dev.c:3296
-  __dev_queue_xmit+0x14c9/0x1b60 net/core/dev.c:3873
-  dev_queue_xmit+0x21/0x30 net/core/dev.c:3906
-  __bpf_tx_skb net/core/filter.c:2060 [inline]
-  __bpf_redirect_common net/core/filter.c:2099 [inline]
-  __bpf_redirect+0x4b4/0x710 net/core/filter.c:2106
-  ____bpf_clone_redirect net/core/filter.c:2139 [inline]
-  bpf_clone_redirect+0x1a5/0x1f0 net/core/filter.c:2111
-  bpf_prog_bb15b996d00816f9+0x312/0x1000
-  bpf_test_run+0x1c3/0x490 net/bpf/test_run.c:44
-  bpf_prog_test_run_skb+0x4da/0x840 net/bpf/test_run.c:310
-  bpf_prog_test_run kernel/bpf/syscall.c:2108 [inline]
-  __do_sys_bpf+0x1664/0x2b90 kernel/bpf/syscall.c:2884
-  __se_sys_bpf kernel/bpf/syscall.c:2825 [inline]
-  __x64_sys_bpf+0x4c/0x60 kernel/bpf/syscall.c:2825
-  do_syscall_64+0xcc/0x370 arch/x86/entry/common.c:290
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 9969 Comm: syz-executor.2 Not tainted 5.4.0-rc3+ #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-==================================================================
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks,
+Daniel
