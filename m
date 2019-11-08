@@ -2,135 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59041F4AF0
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:13:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F36F4B59
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:22:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391989AbfKHMMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 07:12:36 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33828 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388220AbfKHMMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 07:12:36 -0500
-Received: by mail-wm1-f68.google.com with SMTP id v3so7216932wmh.1
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 04:12:34 -0800 (PST)
+        id S1731931AbfKHMWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 07:22:23 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:38816 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727598AbfKHMWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 07:22:23 -0500
+Received: by mail-pg1-f194.google.com with SMTP id 15so3857542pgh.5;
+        Fri, 08 Nov 2019 04:22:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vi0FXEb1SaKZF+1W08jxMvHKOZ5OFQySHO0NRC440W8=;
-        b=k63tbg3ComKTwLI7+A1lutM9sDSJqb95sZk2Bbq4O05Sg5yWeq5zkkNHdIw6xvDmrC
-         euJGRWxMCSlcwjvNTfZ82ueGzCQiYa/6POan1a/f9HsxbcNhsse+bqBFXUzBDt8Xnibi
-         qGce4fdYovXckgOKtMI9rFnE4e1ZP6pR9xvGLIIcsHGQvaXCpYSz1tq4MSGpnsJo2XFu
-         B5PAbUZ/RW2h0cwPeCDqssLxNgKzGiFEv8CikCvCb+NBCLtjIghXvVI7ZSI2Ux13+XH9
-         iygblYqwJLz0u3VZyjVQI8qDa7ftROqQ/SROAdW6SHeXdGYvixBnp4LQC7k5hfdEBohT
-         RqKA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=265ilrPyAc+08beKAE2CsGbxxp/QxNAUXvuAhj1glKw=;
+        b=Xqvv0JCtG2UB2ibnORP5AnamGOCO5c5RCClyrHl5tAcm0SKqpjy3Jb8jbFJlv54Gs4
+         bqs0hUGHEO6qTLaRqH5AmbEl/9BJaRElGMx7JbzJFtcz9suz8bAkY3czNgrYc+gjK3Hq
+         r4jnLqxU9bXeSQi8rzhgeqacY7VO1QZ/o4yvCkvgGPoR8uZKY7Hsc8/tGDxml1w8CO4f
+         NLSht01j9yKBWBUBuUZ6M2oa6XkSnQgB+Rq6ZquOeKVj6EMzVXtMPORtsMosRN0BaDKq
+         kVWHh87zTtyoYmR6jNFcloHsuuQhZcU9ZrnBeljnwt7nvZrOyW0i/O6CZqLFS4krF2ai
+         WD7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vi0FXEb1SaKZF+1W08jxMvHKOZ5OFQySHO0NRC440W8=;
-        b=X+FUWsJEjsqxvA8/ijHy5Qxjfce4krGAaS/hQ1I1qcz5UTmGHMCI3ZV0rR6Zi+UWbT
-         tz3Up/nOVBAmIxbJ9KCdj+3Ox8zaQdd7DFLuSQu76GrCJm/nntAIA7FDF27qOXoX9hUl
-         3x//1vDu1EmTPitvpLt7ZUJc1FM7LECKjArHN4tJzi4JfjYEeSR3oA0bD1qOAP/4f51e
-         ksGd7D35phwsllA+5OnHLLiyjWDpJxRzQM90tzVrE0Hx6a/8BW92XyDpUTSmqvZrh+0M
-         yDByHEt5cGGf64hBpo3gFNHB/sa8OK4utZNcx6hQYO6456dzP1TGLHp60gZRMx1Pk19V
-         tKjA==
-X-Gm-Message-State: APjAAAW25ut5Z9ftHyW1GiZeaQbBRi4zBN1P3NRjG340DaYJCO1ukEGc
-        SVE2evur0c+0JF1hUidgvYKK0w==
-X-Google-Smtp-Source: APXvYqyaVvcyf53tsacNRyq5/ftg7f45Rs1oRCuUUTHNz0pnl3bHqejbD4wPXM08nTvMBhQQvwJoOw==
-X-Received: by 2002:a05:600c:2945:: with SMTP id n5mr8532196wmd.80.1573215154142;
-        Fri, 08 Nov 2019 04:12:34 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id p10sm6917186wmi.44.2019.11.08.04.12.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 04:12:33 -0800 (PST)
-Date:   Fri, 8 Nov 2019 13:12:33 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Parav Pandit <parav@mellanox.com>, alex.williamson@redhat.com,
-        davem@davemloft.net, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        saeedm@mellanox.com, kwankhede@nvidia.com, leon@kernel.org,
-        cohuck@redhat.com, jiri@mellanox.com, linux-rdma@vger.kernel.org,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191108121233.GJ6990@nanopsycho>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107153234.0d735c1f@cakuba.netronome.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=265ilrPyAc+08beKAE2CsGbxxp/QxNAUXvuAhj1glKw=;
+        b=I4O+zwE3QM+9rHbs9b74ihV/fkMwzjIOn5jjxlS79xqCaWIAh9bFT5jFQREYuLdQsU
+         gdMTOYLjvOyoJpLqrhxc3vvpN8LSJGsGfd8FW2tIVfe2EsXzgG6xhpPoc+ujm+29G0Ah
+         geYYOaH0N8ie+boaOXm4Iy44zN9J1dHLpft26d/tI/XJUPTi+Ej/Dy0P8YffDzDQnVhp
+         d525SAHVomZZaYE62NIuGL3OIYsY3ouftxRcRnyiPmMNPUYUypFFNJnqNoLAYPPEM71E
+         B93nfz4RIYDo0TjWp7l/YIkWL7iujmVKNnBTeNMybWr+ezICZa+uM7DHJN6ZCQqzeZbT
+         UmSQ==
+X-Gm-Message-State: APjAAAWhOrU9Ky9HbHcPbIywzi2Eh/hbFK5FNgwMDHkQ0jm5fi3S1USZ
+        HrpmJJnJxpm7rJvEnFabwlI=
+X-Google-Smtp-Source: APXvYqwIeSgiKu+IYnmeeumT/W7JTJ8l7PzqnI/dvRO+PyZMa04u0DS4TctCHfVEreUrjgTqhw7/vg==
+X-Received: by 2002:a63:f923:: with SMTP id h35mr11853341pgi.323.1573215742278;
+        Fri, 08 Nov 2019 04:22:22 -0800 (PST)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id j23sm5465721pfe.95.2019.11.08.04.22.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 08 Nov 2019 04:22:21 -0800 (PST)
+Subject: Re: [PATCH] tcp: remove redundant new line from tcp_event_sk_skb
+To:     Tony Lu <tonylu@linux.alibaba.com>, edumazet@google.com,
+        rostedt@goodmis.org, mingo@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yafang Shao <laoar.shao@gmail.com>
+References: <20191108095007.26187-1-tonylu@linux.alibaba.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <795f4bb1-b40e-1745-0df4-6e55d80d5272@gmail.com>
+Date:   Fri, 8 Nov 2019 04:22:19 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191107153234.0d735c1f@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191108095007.26187-1-tonylu@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Nov 07, 2019 at 09:32:34PM CET, jakub.kicinski@netronome.com wrote:
->On Thu,  7 Nov 2019 10:04:48 -0600, Parav Pandit wrote:
->> Mellanox sub function capability allows users to create several hundreds
->> of networking and/or rdma devices without depending on PCI SR-IOV support.
->
->You call the new port type "sub function" but the devlink port flavour
->is mdev.
->
->As I'm sure you remember you nacked my patches exposing NFP's PCI 
->sub functions which are just regions of the BAR without any mdev
->capability. Am I in the clear to repost those now? Jiri?
-
-Well question is, if it makes sense to have SFs without having them as
-mdev? I mean, we discussed the modelling thoroughtly and eventually we
-realized that in order to model this correctly, we need SFs on "a bus".
-Originally we were thinking about custom bus, but mdev is already there
-to handle this.
-
-Our SFs are also just regions of the BAR, same thing as you have.
-
-Can't you do the same for nfp SFs?
-Then the "mdev" flavour is enough for all.
 
 
->
->> Overview:
->> ---------
->> Mellanox ConnectX sub functions are exposed to user as a mediated
->> device (mdev) [2] as discussed in RFC [3] and further during
->> netdevconf0x13 at [4].
->> 
->> mlx5 mediated device (mdev) enables users to create multiple netdevices
->> and/or RDMA devices from single PCI function.
->> 
->> Each mdev maps to a mlx5 sub function.
->> mlx5 sub function is similar to PCI VF. However it doesn't have its own
->> PCI function and MSI-X vectors.
->> 
->> mlx5 mdevs share common PCI resources such as PCI BAR region,
->> MSI-X interrupts.
->> 
->> Each mdev has its own window in the PCI BAR region, which is
->> accessible only to that mdev and applications using it.
->> 
->> Each mlx5 sub function has its own resource namespace for RDMA resources.
->> 
->> mdevs are supported when eswitch mode of the devlink instance
->> is in switchdev mode described in devlink documentation [5].
->
->So presumably the mdevs don't spawn their own devlink instance today,
->but once mapped via VIRTIO to a VM they will create one?
+On 11/8/19 1:50 AM, Tony Lu wrote:
+> This removes '\n' from trace event class tcp_event_sk_skb to avoid
+> redundant new blank line and make output compact.
+> 
+> Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
+> ---
+>  include/trace/events/tcp.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
+> index 2bc9960a31aa..cf97f6339acb 100644
+> --- a/include/trace/events/tcp.h
+> +++ b/include/trace/events/tcp.h
+> @@ -86,7 +86,7 @@ DECLARE_EVENT_CLASS(tcp_event_sk_skb,
+>  			      sk->sk_v6_rcv_saddr, sk->sk_v6_daddr);
+>  	),
+>  
+> -	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s\n",
+> +	TP_printk("sport=%hu dport=%hu saddr=%pI4 daddr=%pI4 saddrv6=%pI6c daddrv6=%pI6c state=%s",
+>  		  __entry->sport, __entry->dport, __entry->saddr, __entry->daddr,
+>  		  __entry->saddr_v6, __entry->daddr_v6,
+>  		  show_tcp_state_name(__entry->state))
+> 
 
-I don't think it is needed for anything. Maybe one day if there is a
-need to create devlink instance for VF or SF, we can add it. But
-currently, I don't see the need.
+This seems good to me. Only few comments :
 
+I would add a
 
->
->It could be useful to specify.
->
->> Network side:
->> - By default the netdevice and the rdma device of mlx5 mdev cannot send or
->> receive any packets over the network or to any other mlx5 mdev.
->
->Does this mean the frames don't fall back to the repr by default?
+Fixes: af4325ecc24f ("tcp: expose sk_state in tcp_retransmit_skb tracepoint")
 
-That would be the sane default. If I up the representor, I should see
-packets coming in from SF/VF and I should be able to send packets back.
+And also CC (I just did in this reply) the author of the above patch to make sure nothing unexpected happens.
+
+Thanks.
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
