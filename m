@@ -2,76 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A30CFF45CC
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ECEBF468D
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:43:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730622AbfKHLhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:37:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50384 "EHLO mail.kernel.org"
+        id S2390402AbfKHLnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:43:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57618 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726149AbfKHLhJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:37:09 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2390383AbfKHLnP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:43:15 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C480320869;
-        Fri,  8 Nov 2019 11:37:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C9712222CB;
+        Fri,  8 Nov 2019 11:43:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213028;
-        bh=G5j+RwShAgrettv3VQJ2Hzibs0yOoFaJu63CqOxn8Oo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iWFuYTQcqXM/DR65wCIopKLQsBH2V3ve8n4fUHcE6O0QCwEWq5LcBR7HT3UYbVuXy
-         LLH+DzR/qTOHmtgWKoaaTL5pocOV+6Wehrg/cMS5rr/2mDYoYQbR8bXug4dIKrlFDH
-         izPZgMynJUZ3fTgx+ygLAuT+nnb+N95WoPMCQjcs=
-Date:   Fri, 8 Nov 2019 12:37:05 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Breno =?iso-8859-1?Q?Leit=E3o?= <leitao@debian.org>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        David@rox.of.borg, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Casey Leedom <leedom@chelsio.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Pensando Drivers <drivers@pensando.io>,
-        Kevin Hilman <khilman@kernel.org>, Nishanth Menon <nm@ti.com>,
-        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] power: avs: smartreflex: Remove superfluous cast in
- debugfs_create_file() call
-Message-ID: <20191108113705.GA721212@kroah.com>
-References: <20191021145149.31657-1-geert+renesas@glider.be>
- <20191021145149.31657-5-geert+renesas@glider.be>
- <4367615.jSCgeRn5tF@kreacher>
+        s=default; t=1573213394;
+        bh=UM+uiVXGrOUFsU4KqPI+fr6gwIOMvJUHAQ2n0jspCrI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qRo+40bz06aPtoCBcA/cj6CDBJstQHEamiPzyMfogAXyr/Tsf9mmF0S8UlEYxRlyC
+         cIugfY0naJOd/ySEuG0Y2DakeJ58pA7b2LdggdNUDVB8k3vmgpSyUcGadyo+35d1LF
+         o5vO3QCYvIr4a+9FFyaC0t4uuocg5upJHwK7eHPw=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Tamizh chelvam <tamizhr@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 003/103] ath10k: fix kernel panic by moving pci flush after napi_disable
+Date:   Fri,  8 Nov 2019 06:41:28 -0500
+Message-Id: <20191108114310.14363-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191108114310.14363-1-sashal@kernel.org>
+References: <20191108114310.14363-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4367615.jSCgeRn5tF@kreacher>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 08, 2019 at 12:24:42PM +0100, Rafael J. Wysocki wrote:
-> On Monday, October 21, 2019 4:51:48 PM CET Geert Uytterhoeven wrote:
-> > There is no need to cast a typed pointer to a void pointer when calling
-> > a function that accepts the latter.  Remove it, as the cast prevents
-> > further compiler checks.
-> > 
-> > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> 
-> Greg, have you taken this one by any chance?
+From: Tamizh chelvam <tamizhr@codeaurora.org>
 
-Nope, it's all yours!  :)
+[ Upstream commit bd1d395070cca4f42a93e520b0597274789274a4 ]
+
+When continuously running wifi up/down sequence, the napi poll
+can be scheduled after the CE buffers being freed by ath10k_pci_flush
+
+Steps:
+  In a certain condition, during wifi down below scenario might occur.
+
+ath10k_stop->ath10k_hif_stop->napi_schedule->ath10k_pci_flush->napi_poll(napi_synchronize).
+
+In the above scenario, CE buffer entries will be freed up and become NULL in
+ath10k_pci_flush. And the napi_poll has been invoked after the flush process
+and it will try to get the skb from the CE buffer entry and perform some action on that.
+Since the CE buffer already cleaned by pci flush this action will create NULL
+pointer dereference and trigger below kernel panic.
+
+Unable to handle kernel NULL pointer dereference at virtual address 0000005c
+PC is at ath10k_pci_htt_rx_cb+0x64/0x3ec [ath10k_pci]
+ath10k_pci_htt_rx_cb [ath10k_pci]
+ath10k_ce_per_engine_service+0x74/0xc4 [ath10k_pci]
+ath10k_ce_per_engine_service [ath10k_pci]
+ath10k_ce_per_engine_service_any+0x74/0x80 [ath10k_pci]
+ath10k_ce_per_engine_service_any [ath10k_pci]
+ath10k_pci_napi_poll+0x48/0xec [ath10k_pci]
+ath10k_pci_napi_poll [ath10k_pci]
+net_rx_action+0xac/0x160
+net_rx_action
+__do_softirq+0xdc/0x208
+__do_softirq
+irq_exit+0x84/0xe0
+irq_exit
+__handle_domain_irq+0x80/0xa0
+__handle_domain_irq
+gic_handle_irq+0x38/0x5c
+gic_handle_irq
+__irq_usr+0x44/0x60
+
+Tested on QCA4019 and firmware version 10.4.3.2.1.1-00010
+
+Signed-off-by: Tamizh chelvam <tamizhr@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/ahb.c | 4 ++--
+ drivers/net/wireless/ath/ath10k/pci.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/ahb.c b/drivers/net/wireless/ath/ath10k/ahb.c
+index ff6815e956848..1404ec9f56be9 100644
+--- a/drivers/net/wireless/ath/ath10k/ahb.c
++++ b/drivers/net/wireless/ath/ath10k/ahb.c
+@@ -663,10 +663,10 @@ static void ath10k_ahb_hif_stop(struct ath10k *ar)
+ 	ath10k_ahb_irq_disable(ar);
+ 	synchronize_irq(ar_ahb->irq);
+ 
+-	ath10k_pci_flush(ar);
+-
+ 	napi_synchronize(&ar->napi);
+ 	napi_disable(&ar->napi);
++
++	ath10k_pci_flush(ar);
+ }
+ 
+ static int ath10k_ahb_hif_power_up(struct ath10k *ar)
+diff --git a/drivers/net/wireless/ath/ath10k/pci.c b/drivers/net/wireless/ath/ath10k/pci.c
+index d790ea20b95d9..27ab3eb47534f 100644
+--- a/drivers/net/wireless/ath/ath10k/pci.c
++++ b/drivers/net/wireless/ath/ath10k/pci.c
+@@ -1787,9 +1787,9 @@ static void ath10k_pci_hif_stop(struct ath10k *ar)
+ 
+ 	ath10k_pci_irq_disable(ar);
+ 	ath10k_pci_irq_sync(ar);
+-	ath10k_pci_flush(ar);
+ 	napi_synchronize(&ar->napi);
+ 	napi_disable(&ar->napi);
++	ath10k_pci_flush(ar);
+ 
+ 	spin_lock_irqsave(&ar_pci->ps_lock, flags);
+ 	WARN_ON(ar_pci->ps_wake_refcount > 0);
+-- 
+2.20.1
 
