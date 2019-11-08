@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 688B9F45FA
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40F00F4611
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732955AbfKHLi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:38:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51918 "EHLO mail.kernel.org"
+        id S2387955AbfKHLjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:39:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52608 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732910AbfKHLiy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:38:54 -0500
+        id S2387899AbfKHLjo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:39:44 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A107C21D7E;
-        Fri,  8 Nov 2019 11:38:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C344521D6C;
+        Fri,  8 Nov 2019 11:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213134;
-        bh=U24cqw19Ki1GCxDzs7Eviju9mnv0Og7Nxqdr/g0uSQ8=;
+        s=default; t=1573213183;
+        bh=bxAO4w5X5zEmrbHOpKpbvHsXKjaiz0sk0Z5cc1tOT0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYa/decjF060e8XlXf4f/ym2rrO97WKmRFI0HJVv3dIomy7+LTilJ2EybNdHf+88z
-         vMn7HBpwrcAqimlmwsd2OGDBuKCi8Zyq+ksHy3DqU6CEEgQy6TZLP4XD6n8f7RqHoW
-         AqpUM60/Gsx4v/BTYVcE2aDehjGsOSEZb3KIPTAM=
+        b=C+g3NQT14QfPk77ELNbBD1xl0kw8VbYnp/2xhjqYb12RkXejwPnexwWDPYXeTS1Uh
+         GKRRfKJzk8KBvT5XQe0GTzNJJzgStjilahwLsS+lR/4bmxepTRUR4sBVdez3I8lIBx
+         I6SI93XQA1aMvT+pqEalHTbDM3CLYzxx1PLfQOro=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lihong Yang <lihong.yang@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
+        Peng Li <lipeng321@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 052/205] i40evf: cancel workqueue sync for adminq when a VF is removed
-Date:   Fri,  8 Nov 2019 06:35:19 -0500
-Message-Id: <20191108113752.12502-52-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 074/205] net: hns3: Change the dst mac addr of loopback packet
+Date:   Fri,  8 Nov 2019 06:35:41 -0500
+Message-Id: <20191108113752.12502-74-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108113752.12502-1-sashal@kernel.org>
 References: <20191108113752.12502-1-sashal@kernel.org>
@@ -44,36 +45,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lihong Yang <lihong.yang@intel.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-[ Upstream commit babbcc60040abfb7a9e3caa1c58fe182ae73762a ]
+[ Upstream commit 7f7d9e501f4123e64b130576621d24f9379adc8f ]
 
-If a VF is being removed, there is no need to continue with the
-workqueue sync for the adminq task, thus cancel it. Without this call,
-when VFs are created and removed right away, there might be a chance for
-the driver to crash with events stuck in the adminq.
+Currently, the dst mac addr of loopback packet is the same as
+the host' mac addr, the SSU component may loop back the packet
+to host before the packet reaches mac or serdes, which will defect
+the purpose of mac or serdes selftest.
 
-Signed-off-by: Lihong Yang <lihong.yang@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+This patch changes it by adding 0x1f to the last byte of dst mac
+addr.
+
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40evf/i40evf_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/i40evf/i40evf_main.c b/drivers/net/ethernet/intel/i40evf/i40evf_main.c
-index 3fc46d2adc087..f50c19b833686 100644
---- a/drivers/net/ethernet/intel/i40evf/i40evf_main.c
-+++ b/drivers/net/ethernet/intel/i40evf/i40evf_main.c
-@@ -3884,6 +3884,8 @@ static void i40evf_remove(struct pci_dev *pdev)
- 	if (adapter->watchdog_timer.function)
- 		del_timer_sync(&adapter->watchdog_timer);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 5bdcd92d86122..0c34ea1223580 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -137,6 +137,7 @@ static void hns3_lp_setup_skb(struct sk_buff *skb)
+ 	packet = skb_put(skb, HNS3_NIC_LB_TEST_PACKET_SIZE);
  
-+	cancel_work_sync(&adapter->adminq_task);
-+
- 	i40evf_free_rss(adapter);
- 
- 	if (hw->aq.asq.count)
+ 	memcpy(ethh->h_dest, ndev->dev_addr, ETH_ALEN);
++	ethh->h_dest[5] += 0x1f;
+ 	eth_zero_addr(ethh->h_source);
+ 	ethh->h_proto = htons(ETH_P_ARP);
+ 	skb_reset_mac_header(skb);
 -- 
 2.20.1
 
