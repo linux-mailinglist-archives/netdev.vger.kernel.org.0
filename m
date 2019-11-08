@@ -2,158 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72374F5367
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:18:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C036F536A
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:19:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729790AbfKHSSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 13:18:31 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52440 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727001AbfKHSSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:18:30 -0500
-Received: by mail-wm1-f68.google.com with SMTP id c17so7128945wmk.2
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 10:18:26 -0800 (PST)
+        id S1728495AbfKHSTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 13:19:30 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:38868 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726462AbfKHSTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:19:30 -0500
+Received: by mail-ot1-f67.google.com with SMTP id v24so5998862otp.5;
+        Fri, 08 Nov 2019 10:19:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=YFWgg2ppFdsSmvg1LO5Op3wVrU8obP4yfGKEavUKWnE=;
-        b=odPKyS18+DSSsImN1b6xBaUshgxpKtpxWVGaSny1LSRPawCj0YlfQAbxynL4QzAcLp
-         dTRQYG78FTiX7zHN/GcrlcEPpgQcXl36mZXEqOL9c6wFcnGVWO9NpWTd72QJ++CFC0lQ
-         KsMMuG3RuuKWrBBc85IkXpqzjEC5O5NLUeohSJZdiKLXoKJNY2XqiaPLfxxf1A9AQ4/Z
-         UxUcs29U0W4lqKrfKGeMUUJyz7KArVlugWeKGmoYQG1NoKiwB9IEVO/zxXsAmXH4U2/y
-         NpcBIcIAGJnn89f+Mh9a4UIEccmrwelPlOqmsd5HaCrME4UO7IyDLFjGm0GUSVwfmchr
-         TP1Q==
+        bh=V9pDZPCOB72mc0w+CgAkcjIsa5BFmf772gEgW5V819A=;
+        b=rFchVElXx4ycLxgyvwHwizGlgV9wSkmPk70wocBF25tpayTj9CKIo9+m6DvG8g6COH
+         prTiA2ks7ooexqGRhWOOiLLFhzBFh83/aNMwHBoNn0KH/Pjre8tgcIJ07UoJBxDwkqHS
+         qaKAZCvouthU+E8lKUI/pnwF05Rn8JBAg1P2RZx0FWAEmHiUw5w1jiARlW9Fkh5Z1Xta
+         1dCWBFT3SFmOvdmkj49QQtDUaxwATJBqzs0nkPTWnnLliiDSl14lUgQ3vKWFI2A9LM0u
+         ukUskZmL3fWk4HcfaKM+kYb/YyitXhShwqlHLgt1VFoZFc+wuw5kb7CXq0COwy/uVj18
+         Eqqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=YFWgg2ppFdsSmvg1LO5Op3wVrU8obP4yfGKEavUKWnE=;
-        b=GjCjH460Q+if+ah3B4bAvQjhGELt+bAfKi8IqbR2Q6JyXndzqoDC2Alqti+FdrPpul
-         PrkWBLMVVfd+CvPQVjbQJjEkzJGWrCY3YMYhQmH2ROZMf4lNzXMHZP5MEX3bDdB+T17p
-         YsELSZ1eydvebNA9vX9avjQKMj/YYQ7WXLDshVc8oXwBJr5HSHVrXvlpxZV2HhQDKNmw
-         YwQx0juv8Yuo9MgPVQC1/LAyweaWNTL8rQ8C2GaN/SW34jsWTQInCl3d9KauWJ4K/wN7
-         5/KjcQGTZ3YfvGSZAaprVTpVhgyXt2K2LyKqBWKoqKDb0RdLCwXVZ+kMq4lbqc2qTBJ0
-         a2wA==
-X-Gm-Message-State: APjAAAUWp8Lrr/Uf1/TMyleGd2qJgQ+SGm+nuSu5WHxMQWdzLbxZU+BW
-        F0OySfnDg5slQmMDUNrkbSrKmRJ+kgNF5RR+pkf1nA==
-X-Google-Smtp-Source: APXvYqyU6oVLGbDhInMDhJxLdE4qvb46gnjNmeO+08bYNzQOCoi0whdlXnTfSIjGUb8cBku2xStC02eJfl/G99qaqrY=
-X-Received: by 2002:a1c:a791:: with SMTP id q139mr9275963wme.155.1573237105658;
- Fri, 08 Nov 2019 10:18:25 -0800 (PST)
+        bh=V9pDZPCOB72mc0w+CgAkcjIsa5BFmf772gEgW5V819A=;
+        b=HbfW8OCrIXcLjXT89FAiJA8KHyoKbv1nvWDHXW0QhMrSHaBXLbFFkIOlLNVvq7ygso
+         0gi2SFhg4XMJoGLEOSooMEGyVer0yYNuIzWGH0Haj8P6dGZLaYBiKZfjQ/VIUZALdsg1
+         nPMj3Wg1VHxjz7J1ttmgByeB39Io0VuYMABOqgpxTulOggZ72NIcDlxI4VLq3kx/z/ud
+         G+ZCK/0eD8+chRc271KnVeAkS2kUnSw0FBMJFEQ2WtCHjHnBdOMLvOSTDk6A18eJ84PB
+         hVOKh9iNMVFvLT2fcDagQ5EwsENuR1cAMQzdFHyMTI11ZpOs406LQvzhTDhm1VTnkixv
+         o/zw==
+X-Gm-Message-State: APjAAAVyzsZn4BwdKeCaOmg+19t4aCAlwghO6CI0qN9E/6WAkKJxgrew
+        egGDnp4ISi0psrTiqhtDYytY4PO/7JpDYMoehf8=
+X-Google-Smtp-Source: APXvYqyGmKprODME71EZE5mb0NXD8QAqoculJAjy1x6ox/WP7nKtzfzu1r6Q/EG/opGDzZhfPGIGYW6UnRoUOw4YNBA=
+X-Received: by 2002:a9d:286:: with SMTP id 6mr9858567otl.192.1573237169439;
+ Fri, 08 Nov 2019 10:19:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20191030223448.12930-1-irogers@google.com> <20191107221428.168286-1-irogers@google.com>
- <20191107222315.GA7261@kernel.org>
-In-Reply-To: <20191107222315.GA7261@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 8 Nov 2019 10:18:14 -0800
-Message-ID: <CAP-5=fVNYbZoEmFzxMj850eorOtRJAouzvCFObxZRZT2G7YOCg@mail.gmail.com>
-Subject: Re: [PATCH v6 00/10] Improvements to memory usage by parse events
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
+References: <1573148860-30254-1-git-send-email-magnus.karlsson@intel.com>
+ <1573148860-30254-2-git-send-email-magnus.karlsson@intel.com> <20191108180314.GA30004@gmail.com>
+In-Reply-To: <20191108180314.GA30004@gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Fri, 8 Nov 2019 19:19:18 +0100
+Message-ID: <CAJ8uoz0DJx0sbsAU1GyjZcX3JvcEq7QKFRM5sYrZ_ScAHgEE=A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] libbpf: support XDP_SHARED_UMEM with
+ external XDP program
+To:     William Tu <u9012063@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        John Garry <john.garry@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Stephane Eranian <eranian@google.com>
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 7, 2019 at 2:23 PM Arnaldo Carvalho de Melo
-<arnaldo.melo@gmail.com> wrote:
+On Fri, Nov 8, 2019 at 7:03 PM William Tu <u9012063@gmail.com> wrote:
 >
-> Em Thu, Nov 07, 2019 at 02:14:18PM -0800, Ian Rogers escreveu:
-> > The parse events parser leaks memory for certain expressions as well
-> > as allowing a char* to reference stack, heap or .rodata. This series
-> > of patches improves the hygeine and adds free-ing operations to
-> > reclaim memory in the parser in error and non-error situations.
-> >
-> > The series of patches was generated with LLVM's address sanitizer and
-> > libFuzzer:
-> > https://llvm.org/docs/LibFuzzer.html
-> > called on the parse_events function with randomly generated input. With
-> > the patches no leaks or memory corruption issues were present.
-> >
-> > The v6 patches address a C90 compilation issue.
+> Hi Magnus,
 >
-> Please take a look at what is in my perf/core branch, to see what is
-> left, if something needs fixing, please send a patch on top of that,
+> Thanks for the patch.
+>
+> On Thu, Nov 07, 2019 at 06:47:36PM +0100, Magnus Karlsson wrote:
+> > Add support in libbpf to create multiple sockets that share a single
+> > umem. Note that an external XDP program need to be supplied that
+> > routes the incoming traffic to the desired sockets. So you need to
+> > supply the libbpf_flag XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD and load
+> > your own XDP program.
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > ---
+> >  tools/lib/bpf/xsk.c | 27 +++++++++++++++++----------
+> >  1 file changed, 17 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > index 86c1b61..8ebd810 100644
+> > --- a/tools/lib/bpf/xsk.c
+> > +++ b/tools/lib/bpf/xsk.c
+> > @@ -586,15 +586,21 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+> >       if (!umem || !xsk_ptr || !rx || !tx)
+> >               return -EFAULT;
+> >
+> > -     if (umem->refcount) {
+> > -             pr_warn("Error: shared umems not supported by libbpf.\n");
+> > -             return -EBUSY;
+> > -     }
+> > -
+> >       xsk = calloc(1, sizeof(*xsk));
+> >       if (!xsk)
+> >               return -ENOMEM;
+> >
+> > +     err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
+> > +     if (err)
+> > +             goto out_xsk_alloc;
+> > +
+> > +     if (umem->refcount &&
+> > +         !(xsk->config.libbpf_flags & XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD)) {
+> > +             pr_warn("Error: shared umems not supported by libbpf supplied XDP program.\n");
+>
+> Why can't we use the existing default one in libbpf?
+> If users don't want to redistribute packet to different queue,
+> then they can still use the libbpf default one.
 
-Thanks, just the last patch remaining. I resent it rebased on your
-perf/core branch:
-https://lkml.org/lkml/2019/11/8/1103
-https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/log/?h=perf/core
+Is there any point in creating two or more sockets tied to the same
+umem and directing all traffic to just one socket? IMHO, I believe
+that most users in this case would want to distribute the packets over
+the sockets in some way. I also think that users might be unpleasantly
+surprised if they create multiple sockets and all packets only get to
+a single socket because libbpf loaded an XDP program that makes little
+sense in the XDP_SHARED_UMEM case. If we force them to supply an XDP
+program, they need to make this decision. I also wanted to extend the
+sample with an explicit user loaded XDP program as an example of how
+to do this. What do you think?
 
-Thanks,
-Ian
+/Magnus
 
-> Thanks,
->
-> - Arnaldo
->
-> > The v5 patches add initial error print to the set, as requested by
-> > Jiri Olsa. They also fix additional 2 missed frees in the patch
-> > 'before yyabort-ing free components' and remove a redundant new_str
-> > variable from the patch 'add parse events handle error' as spotted by
-> > Stephane Eranian.
+> William
+> > +             err = -EBUSY;
+> > +             goto out_xsk_alloc;
+> > +     }
+> > +
+> >       if (umem->refcount++ > 0) {
+> >               xsk->fd = socket(AF_XDP, SOCK_RAW, 0);
+> >               if (xsk->fd < 0) {
+> > @@ -616,10 +622,6 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+> >       memcpy(xsk->ifname, ifname, IFNAMSIZ - 1);
+> >       xsk->ifname[IFNAMSIZ - 1] = '\0';
 > >
-> > The v4 patches address review comments from Jiri Olsa, turning a long
-> > error message into a single warning, fixing the data type in a list
-> > iterator and reordering patches.
+> > -     err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
+> > -     if (err)
+> > -             goto out_socket;
+> > -
+> >       if (rx) {
+> >               err = setsockopt(xsk->fd, SOL_XDP, XDP_RX_RING,
+> >                                &xsk->config.rx_size,
+> > @@ -687,7 +689,12 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+> >       sxdp.sxdp_family = PF_XDP;
+> >       sxdp.sxdp_ifindex = xsk->ifindex;
+> >       sxdp.sxdp_queue_id = xsk->queue_id;
+> > -     sxdp.sxdp_flags = xsk->config.bind_flags;
+> > +     if (umem->refcount > 1) {
+> > +             sxdp.sxdp_flags = XDP_SHARED_UMEM;
+> > +             sxdp.sxdp_shared_umem_fd = umem->fd;
+> > +     } else {
+> > +             sxdp.sxdp_flags = xsk->config.bind_flags;
+> > +     }
 > >
-> > The v3 patches address review comments from Jiri Olsa improving commit
-> > messages, handling ENOMEM errors from strdup better, and removing a
-> > printed warning if an invalid event is passed.
-> >
-> > The v2 patches are preferable to an earlier proposed patch:
-> >    perf tools: avoid reading out of scope array
-> >
-> > Ian Rogers (10):
-> >   perf tools: add parse events handle error
-> >   perf tools: move ALLOC_LIST into a function
-> >   perf tools: avoid a malloc for array events
-> >   perf tools: splice events onto evlist even on error
-> >   perf tools: ensure config and str in terms are unique
-> >   perf tools: add destructors for parse event terms
-> >   perf tools: before yyabort-ing free components
-> >   perf tools: if pmu configuration fails free terms
-> >   perf tools: add a deep delete for parse event terms
-> >   perf tools: report initial event parsing error
-> >
-> >  tools/perf/arch/powerpc/util/kvm-stat.c |   9 +-
-> >  tools/perf/builtin-stat.c               |   2 +
-> >  tools/perf/builtin-trace.c              |  16 +-
-> >  tools/perf/tests/parse-events.c         |   3 +-
-> >  tools/perf/util/metricgroup.c           |   2 +-
-> >  tools/perf/util/parse-events.c          | 239 +++++++++++----
-> >  tools/perf/util/parse-events.h          |   7 +
-> >  tools/perf/util/parse-events.y          | 390 +++++++++++++++++-------
-> >  tools/perf/util/pmu.c                   |  32 +-
-> >  9 files changed, 511 insertions(+), 189 deletions(-)
-> >
+> >       err = bind(xsk->fd, (struct sockaddr *)&sxdp, sizeof(sxdp));
+> >       if (err) {
 > > --
-> > 2.24.0.432.g9d3f5f5b63-goog
->
-> --
->
-> - Arnaldo
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20191107222315.GA7261%40kernel.org.
+> > 2.7.4
+> >
