@@ -2,254 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C5D7F58C4
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:43:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F6C3F58E9
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:58:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730951AbfKHUmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 15:42:47 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38621 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726231AbfKHUmq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 15:42:46 -0500
-Received: by mail-wr1-f65.google.com with SMTP id i12so1573220wro.5
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 12:42:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JwoUIytky8KFIplKABVcprVJbi9zb2oLasBKQHogq0c=;
-        b=TpjSw3l199//gLyh9wmCtxqYwen/sH3AcyUaMI2zgx7/zVyCzYpkS2dZKf6Pe6WnRh
-         HYGXkWRSvXP07ufGCtayPES/9uQmbjck0HyGZlflwE2/XZGWh8zd+UKMwn2autydrePs
-         9A76YdhfUVtJnbEqdb7eIpS+CL7qphB7GqheWYtGtmtA8K/NwUUwCa8mHE6467epv5AY
-         ADtnVmh1KeOE9Wg9NMjcJkI1md3C8o4dGgE93HfPwUdTBaT/IkS+C4iQF7VtxojQhxCH
-         WuufS+6Wo+2sBig+vvO/LMUNYGhfcd8NpYRkvV/cyY3Izg1+aVV+XltSAgWRxMdZxDi1
-         jQ/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JwoUIytky8KFIplKABVcprVJbi9zb2oLasBKQHogq0c=;
-        b=N01urIn2D+JyxIDn0Lj5HYmTIz5k4wU07xhvzGiM2CqS/0zdxt/zmCxeYX+YUCTPiy
-         uF6Tn4j+tNeKLVTZlzs4QYvNRevkNgIWEmTwMJAwMlzwE3Vv4bQL4byu+LmZVz0wqEl9
-         /66wnFbxI7rtyaS5Gd6MdPYuJgfoBHvrznaMdNRjcwBboAkEPYxcQ9uoTEEQ6chBklnT
-         Ce9A0BJTMDAaKkGoIC2miEpV+bND0i/OZDHwj/zbznYymdEan5sKlfw3FE+qYS+WNn6/
-         /64FbcNdZBDZvG1stmiEkU0shDw34VXRenIu0htE6LLHjVnBwYLwW/sVb2ffwjyQNV/9
-         agog==
-X-Gm-Message-State: APjAAAV+FRUhVF+dBRBRAOpbR20UxqUZX2Q2RbBmBBR38oiNgUvg5/aa
-        m+4TJ6q8MAZxlmetaDLHG7pCLM6MFmo=
-X-Google-Smtp-Source: APXvYqwbrciqbTIyHHRQWMX8UKG828CYCkEmHn2wjLSi1xe16J9/zd0fijwR6O9hUeGbcP9byFrlww==
-X-Received: by 2002:adf:efcb:: with SMTP id i11mr10100674wrp.229.1573245764268;
-        Fri, 08 Nov 2019 12:42:44 -0800 (PST)
-Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
-        by smtp.gmail.com with ESMTPSA id z6sm8338116wro.18.2019.11.08.12.42.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Nov 2019 12:42:43 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        idosch@mellanox.com, mlxsw@mellanox.com
-Subject: [patch net-next] devlink: disallow reload operation during device cleanup
-Date:   Fri,  8 Nov 2019 21:42:43 +0100
-Message-Id: <20191108204243.7241-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        id S1730914AbfKHUwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 15:52:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51382 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727903AbfKHUwJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 15:52:09 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8172D215EA;
+        Fri,  8 Nov 2019 20:52:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573246327;
+        bh=rZ2fzRBjTIttDv3ZKd9CF9dBPvTjqYQBSYwZ0sNc1TU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1SdgK2KQQ8K5KhLdq9xeml+m1kO8wwQl6pj6zXQi3GutHANkGEeHPsMAHoiDHbQqm
+         Z2RHe10OEOfrBHyS3s+Z2UYWDjC8Fxo5MKqbFnnsJdto3XrsiHKtov7+ZcMMN+br2G
+         hIyywKk3i7RmpkxFtDhBcJRJkQcW2jxQuBTE3Ccw=
+Date:   Fri, 8 Nov 2019 21:52:04 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David M <david.m.ertman@intel.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191108205204.GB1277001@kroah.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+ <20191107153234.0d735c1f@cakuba.netronome.com>
+ <20191108121233.GJ6990@nanopsycho>
+ <20191108144054.GC10956@ziepe.ca>
+ <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108111238.578f44f1@cakuba>
+ <20191108201253.GE10956@ziepe.ca>
+ <AM0PR05MB4866299C3AE2448C8226DC00D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108203209.GF10956@ziepe.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191108203209.GF10956@ziepe.ca>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+On Fri, Nov 08, 2019 at 04:32:09PM -0400, Jason Gunthorpe wrote:
+> On Fri, Nov 08, 2019 at 08:20:43PM +0000, Parav Pandit wrote:
+> > 
+> > 
+> > > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > > On Fri, Nov 08, 2019 at 11:12:38AM -0800, Jakub Kicinski wrote:
+> > > > On Fri, 8 Nov 2019 15:40:22 +0000, Parav Pandit wrote:
+> > > > > > The new intel driver has been having a very similar discussion
+> > > > > > about how to model their 'multi function device' ie to bind RDMA
+> > > > > > and other drivers to a shared PCI function, and I think that discussion
+> > > settled on adding a new bus?
+> > > > > >
+> > > > > > Really these things are all very similar, it would be nice to have
+> > > > > > a clear methodology on how to use the device core if a single PCI
+> > > > > > device is split by software into multiple different functional
+> > > > > > units and attached to different driver instances.
+> > > > > >
+> > > > > > Currently there is alot of hacking in this area.. And a consistent
+> > > > > > scheme might resolve the ugliness with the dma_ops wrappers.
+> > > > > >
+> > > > > > We already have the 'mfd' stuff to support splitting platform
+> > > > > > devices, maybe we need to create a 'pci-mfd' to support splitting PCI
+> > > devices?
+> > > > > >
+> > > > > > I'm not really clear how mfd and mdev relate, I always thought
+> > > > > > mdev was strongly linked to vfio.
+> > > > > >
+> > > > >
+> > > > > Mdev at beginning was strongly linked to vfio, but as I mentioned
+> > > > > above it is addressing more use case.
+> > > > >
+> > > > > I observed that discussion, but was not sure of extending mdev further.
+> > > > >
+> > > > > One way to do for Intel drivers to do is after series [9].
+> > > > > Where PCI driver says, MDEV_CLASS_ID_I40_FOO RDMA driver
+> > > > > mdev_register_driver(), matches on it and does the probe().
+> > > >
+> > > > Yup, FWIW to me the benefit of reusing mdevs for the Intel case vs
+> > > > muddying the purpose of mdevs is not a clear trade off.
+> > > 
+> > > IMHO, mdev has amdev_parent_ops structure clearly intended to link it to vfio,
+> > > so using a mdev for something not related to vfio seems like a poor choice.
+> > > 
+> > Splitting mdev_parent_ops{} is already in works for larger use case in series [1] for virtio.
+> > 
+> > [1] https://patchwork.kernel.org/patch/11233127/
+> 
+> Weird. So what is mdev actually providing and what does it represent
+> if the entire driver facing API surface is under a union?
+> 
+> This smells a lot like it is re-implementing a bus.. AFAIK bus is
+> supposed to represent the in-kernel API the struct device presents to
+> drivers.
 
-There is a race between driver code that does setup/cleanup of device
-and devlink reload operation that in some drivers works with the same
-code. Use after free could we easily obtained by running:
+Yes, yes yes yes...
 
-while true; do
-        echo 10 > /sys/bus/netdevsim/new_device
-        devlink dev reload netdevsim/netdevsim10 &
-        echo 10 > /sys/bus/netdevsim/del_device
-done
+I'm getting tired of saying the same thing here, just use a bus, that's
+what it is there for.
 
-Fix this by enabling reload only after setup of device is complete and
-disabling it at the beginning of the cleanup process.
-
-Reported-by: Ido Schimmel <idosch@mellanox.com>
-Fixes: 2d8dc5bbf4e7 ("devlink: Add support for reload")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx4/main.c  |  3 ++
- drivers/net/ethernet/mellanox/mlxsw/core.c |  6 +++-
- drivers/net/netdevsim/dev.c                |  3 ++
- include/net/devlink.h                      |  7 ++--
- net/core/devlink.c                         | 42 +++++++++++++++++++++-
- 5 files changed, 57 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index 22c72fb7206a..77f056b0895e 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -4015,6 +4015,7 @@ static int mlx4_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto err_params_unregister;
- 
- 	devlink_params_publish(devlink);
-+	devlink_reload_enable(devlink);
- 	pci_save_state(pdev);
- 	return 0;
- 
-@@ -4126,6 +4127,8 @@ static void mlx4_remove_one(struct pci_dev *pdev)
- 	struct devlink *devlink = priv_to_devlink(priv);
- 	int active_vfs = 0;
- 
-+	devlink_reload_disable(devlink);
-+
- 	if (mlx4_is_slave(dev))
- 		persist->interface_state |= MLX4_INTERFACE_STATE_NOWAIT;
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index e1a90f5bddd0..da436a6aad2f 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1198,8 +1198,10 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 	if (err)
- 		goto err_thermal_init;
- 
--	if (mlxsw_driver->params_register)
-+	if (mlxsw_driver->params_register) {
- 		devlink_params_publish(devlink);
-+		devlink_reload_enable(devlink);
-+	}
- 
- 	return 0;
- 
-@@ -1263,6 +1265,8 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
- {
- 	struct devlink *devlink = priv_to_devlink(mlxsw_core);
- 
-+	if (!reload)
-+		devlink_reload_disable(devlink);
- 	if (devlink_is_reload_failed(devlink)) {
- 		if (!reload)
- 			/* Only the parts that were not de-initialized in the
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 3da96c7e8265..059711edfc61 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -820,6 +820,7 @@ int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev)
- 		goto err_bpf_dev_exit;
- 
- 	devlink_params_publish(devlink);
-+	devlink_reload_enable(devlink);
- 	return 0;
- 
- err_bpf_dev_exit:
-@@ -865,6 +866,8 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
- 	struct devlink *devlink = priv_to_devlink(nsim_dev);
- 
-+	devlink_reload_disable(devlink);
-+
- 	nsim_dev_reload_destroy(nsim_dev);
- 
- 	nsim_bpf_dev_exit(nsim_dev);
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 8d6b5846822c..7891611868e4 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -38,8 +38,9 @@ struct devlink {
- 	struct device *dev;
- 	possible_net_t _net;
- 	struct mutex lock;
--	bool reload_failed;
--	bool registered;
-+	u8 reload_failed:1,
-+	   reload_enabled:1,
-+	   registered:1;
- 	char priv[0] __aligned(NETDEV_ALIGN);
- };
- 
-@@ -824,6 +825,8 @@ void devlink_net_set(struct devlink *devlink, struct net *net);
- struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size);
- int devlink_register(struct devlink *devlink, struct device *dev);
- void devlink_unregister(struct devlink *devlink);
-+void devlink_reload_enable(struct devlink *devlink);
-+void devlink_reload_disable(struct devlink *devlink);
- void devlink_free(struct devlink *devlink);
- int devlink_port_register(struct devlink *devlink,
- 			  struct devlink_port *devlink_port,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index ff53f7d29dea..2e027c9436e0 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -2791,6 +2791,9 @@ static int devlink_reload(struct devlink *devlink, struct net *dest_net,
- {
- 	int err;
- 
-+	if (!devlink->reload_enabled)
-+		return -EOPNOTSUPP;
-+
- 	err = devlink->ops->reload_down(devlink, !!dest_net, extack);
- 	if (err)
- 		return err;
-@@ -6308,12 +6311,49 @@ EXPORT_SYMBOL_GPL(devlink_register);
- void devlink_unregister(struct devlink *devlink)
- {
- 	mutex_lock(&devlink_mutex);
-+	WARN_ON(devlink_reload_supported(devlink) &&
-+		devlink->reload_enabled);
- 	devlink_notify(devlink, DEVLINK_CMD_DEL);
- 	list_del(&devlink->list);
- 	mutex_unlock(&devlink_mutex);
- }
- EXPORT_SYMBOL_GPL(devlink_unregister);
- 
-+/**
-+ *	devlink_reload_enable - Enable reload of devlink instance
-+ *
-+ *	@devlink: devlink
-+ *
-+ *	Should be called at end of device initialization
-+ *	process when reload operation is supported.
-+ */
-+void devlink_reload_enable(struct devlink *devlink)
-+{
-+	mutex_lock(&devlink_mutex);
-+	devlink->reload_enabled = true;
-+	mutex_unlock(&devlink_mutex);
-+}
-+EXPORT_SYMBOL_GPL(devlink_reload_enable);
-+
-+/**
-+ *	devlink_reload_disable - Disable reload of devlink instance
-+ *
-+ *	@devlink: devlink
-+ *
-+ *	Should be called at the beginning of device cleanup
-+ *	process when reload operation is supported.
-+ */
-+void devlink_reload_disable(struct devlink *devlink)
-+{
-+	mutex_lock(&devlink_mutex);
-+	/* Mutex is taken which ensures that no reload operation is in
-+	 * progress while setting up forbidded flag.
-+	 */
-+	devlink->reload_enabled = false;
-+	mutex_unlock(&devlink_mutex);
-+}
-+EXPORT_SYMBOL_GPL(devlink_reload_disable);
-+
- /**
-  *	devlink_free - Free devlink instance resources
-  *
-@@ -8201,7 +8241,7 @@ static void __net_exit devlink_pernet_pre_exit(struct net *net)
- 			if (WARN_ON(!devlink_reload_supported(devlink)))
- 				continue;
- 			err = devlink_reload(devlink, &init_net, NULL);
--			if (err)
-+			if (err && err != -EOPNOTSUPP)
- 				pr_warn("Failed to reload devlink instance into init_net\n");
- 		}
- 	}
--- 
-2.21.0
-
+greg k-h
