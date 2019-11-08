@@ -2,101 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5DBCF404F
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 07:20:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C16F4054
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 07:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726987AbfKHGUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 01:20:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53938 "EHLO mail.kernel.org"
+        id S1727953AbfKHG0h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 01:26:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54628 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725802AbfKHGUP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 01:20:15 -0500
+        id S1725802AbfKHG0h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 01:26:37 -0500
 Received: from localhost (unknown [77.137.81.198])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 138742087E;
-        Fri,  8 Nov 2019 06:20:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 67072222C2;
+        Fri,  8 Nov 2019 06:26:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573194014;
-        bh=N/MoQ4MYJawRwuvj7G31vynYOq6V+QZcyF3n3loEhM4=;
+        s=default; t=1573194397;
+        bh=qjfE54URHfqvAnEJ7EoYiqEN8S0J3N3H4YuveiHQSKQ=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UuXBAZDx7Mx0GED68RAmJ+/7SvmCBsgtEXSYFHQGuzdftMLIV89ZDpsZqNb6EpLQO
-         X55jQ3GZZM1VL0TfRC9sO+qdRGoOOD2PDm4ea3ATp+FUrhMS393IIDmaI28eY5n0Z+
-         ufbLhHmTyVPtFPkJYsy/pTEDu+y1pgK3qCCyc1u0=
-Date:   Fri, 8 Nov 2019 08:20:03 +0200
+        b=AcI81P3oOyPrnpkVnjUtpSm+gjKFBvYwbZbByB3cIQPH7iPuwEX5EYFMdzKiBdZP7
+         Q764JMMCLNjQ2g10HXb4lyP4LoajlXwZYNIQTmlaeCZMHyryD3sTshaC4ot2cE5fyY
+         s1pNkcBeg17krSTMOI9U4MlgcZJGhIQLxznbCYZY=
+Date:   Fri, 8 Nov 2019 08:26:32 +0200
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Parav Pandit <parav@mellanox.com>
-Cc:     "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191108062003.GN6763@unreal>
+Cc:     alex.williamson@redhat.com, davem@davemloft.net,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, saeedm@mellanox.com,
+        kwankhede@nvidia.com, cohuck@redhat.com, jiri@mellanox.com,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next 19/19] mtty: Optionally support mtty alias
+Message-ID: <20191108062632.GO6763@unreal>
 References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107170341.GM6763@unreal>
- <AM0PR05MB4866BE0BA3BEA9523A034EDDD1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191107160834.21087-1-parav@mellanox.com>
+ <20191107160834.21087-19-parav@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM0PR05MB4866BE0BA3BEA9523A034EDDD1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
+In-Reply-To: <20191107160834.21087-19-parav@mellanox.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 07, 2019 at 08:10:45PM +0000, Parav Pandit wrote:
-> Hi Leon,
->
-> > -----Original Message-----
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Thursday, November 7, 2019 11:04 AM
-> > To: Parav Pandit <parav@mellanox.com>
-> > Cc: alex.williamson@redhat.com; davem@davemloft.net;
-> > kvm@vger.kernel.org; netdev@vger.kernel.org; Saeed Mahameed
-> > <saeedm@mellanox.com>; kwankhede@nvidia.com; cohuck@redhat.com; Jiri
-> > Pirko <jiri@mellanox.com>; linux-rdma@vger.kernel.org
-> > Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-> >
-> > On Thu, Nov 07, 2019 at 10:04:48AM -0600, Parav Pandit wrote:
-> > > Hi Dave, Jiri, Alex,
-> > >
-> >
-> > <...>
-> >
-> > > - View netdevice and (optionally) RDMA device using iproute2 tools
-> > >     $ ip link show
-> > >     $ rdma dev show
-> >
-> > You perfectly explained how ETH devices will be named, but what about
-> > RDMA?
-> > How will be named? I feel that rdma-core needs to be extended to support such
-> > mediated devices.
-> >
-> rdma devices are named by default using mlx_X.
-> After your persistent naming patches, I thought we have GUID based naming scheme which doesn't care about its underlying bus.
+On Thu, Nov 07, 2019 at 10:08:34AM -0600, Parav Pandit wrote:
+> Provide a module parameter to set alias length to optionally generate
+> mdev alias.
 
-No, it is not how it is done. RDMA persistent naming is modeled exactly
-as ETH naming, it means that we do care about bus and we don't use GUID
-unless user explicitly asked, exactly as MAC based names in ETH world.
-
-> So mdevs will be able to use current GUID based naming scheme we already have.
-
-Unfortunately, no.
+Why do we need it?
 
 >
-> Additionally, if user prefers, mdev alias, we can extend systemd/udev to use mdev alias based names (like PCI bdf).
-
-It is not "Additionally", but "must".
-
-> Such as,
-> rocem<alias1>
-> ibm<alias2>
-> Format is:
-> <link_layer><m><alias>
-> m -> stands for mdev device (similar to 'p' for PCI)
+> Example to request mdev alias.
+> $ modprobe mtty alias_length=12
+>
+> Make use of mtty_alias() API when alias_length module parameter is set.
+>
+> Signed-off-by: Parav Pandit <parav@mellanox.com>
+> ---
+>  samples/vfio-mdev/mtty.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>
+> diff --git a/samples/vfio-mdev/mtty.c b/samples/vfio-mdev/mtty.c
+> index ce84a300a4da..5a69121ed5ec 100644
+> --- a/samples/vfio-mdev/mtty.c
+> +++ b/samples/vfio-mdev/mtty.c
+> @@ -150,6 +150,10 @@ static const struct file_operations vd_fops = {
+>  	.owner          = THIS_MODULE,
+>  };
+>
+> +static unsigned int mtty_alias_length;
+> +module_param_named(alias_length, mtty_alias_length, uint, 0444);
+> +MODULE_PARM_DESC(alias_length, "mdev alias length; default=0");
+> +
+>  /* function prototypes */
+>
+>  static int mtty_trigger_interrupt(struct mdev_state *mdev_state);
+> @@ -755,6 +759,9 @@ static int mtty_create(struct kobject *kobj, struct mdev_device *mdev)
+>  	list_add(&mdev_state->next, &mdev_devices_list);
+>  	mutex_unlock(&mdev_list_lock);
+>
+> +	if (mtty_alias_length)
+> +		dev_dbg(mdev_dev(mdev), "alias is %s\n", mdev_alias(mdev));
+> +
+>  	return 0;
+>  }
+>
+> @@ -1387,6 +1394,11 @@ static struct attribute_group *mdev_type_groups[] = {
+>  	NULL,
+>  };
+>
+> +static unsigned int mtty_get_alias_length(void)
+> +{
+> +	return mtty_alias_length;
+> +}
+> +
+>  static const struct mdev_parent_ops mdev_fops = {
+>  	.owner                  = THIS_MODULE,
+>  	.dev_attr_groups        = mtty_dev_groups,
+> @@ -1399,6 +1411,7 @@ static const struct mdev_parent_ops mdev_fops = {
+>  	.read                   = mtty_read,
+>  	.write                  = mtty_write,
+>  	.ioctl		        = mtty_ioctl,
+> +	.get_alias_length	= mtty_get_alias_length
+>  };
+>
+>  static void mtty_device_release(struct device *dev)
+> --
+> 2.19.2
+>
