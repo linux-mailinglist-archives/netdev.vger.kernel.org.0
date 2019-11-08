@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0B3F481E
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3F42F4817
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 12:54:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391299AbfKHLqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:46:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33870 "EHLO mail.kernel.org"
+        id S2391310AbfKHLqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 06:46:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33920 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391281AbfKHLqP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:46:15 -0500
+        id S2390158AbfKHLqQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:46:16 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C7A421D82;
-        Fri,  8 Nov 2019 11:46:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B05D7222C2;
+        Fri,  8 Nov 2019 11:46:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213574;
-        bh=HImH6DBQCdYDbrYV5nm8VU8wabB9MtuWvxvVxo2aZSQ=;
+        s=default; t=1573213575;
+        bh=SLrivsqtWUW1YaeUJjXQacHkwJO/47lWejE0nFG1YqU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z6OfsJbG0TDk491sGkSr32yDZHEule2jJ9FO9Y4t6d1SyS0YKhVLxExSKlO1iyrDW
-         +I+VIex8+9il/lasc+bJG6Ic9SBEPwRQ2iT9G6sVVpvubc0q0O/ILlqAAC6isSINhi
-         0u8c38IUbqWw49AAdwygWYqhakQsYr0TRWqgbTiY=
+        b=lvPzkzZxmdF9okVi3Wcb2nDFqobKYx7pbXz3tf9mpXxSfbFFl/ho5gNoShN0jryjf
+         pRwg9Frz93rQgrpWB8dsmJPzRRA7BXTELKMfocxvQBoK9XdWGCCWFdC/FVKZKgQQt1
+         9/3/Lw6IUbarXbmKtBxStvoppwu2I6l8+Ihww4CA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 20/64] rtl8187: Fix warning generated when strncpy() destination length matches the sixe argument
-Date:   Fri,  8 Nov 2019 06:45:01 -0500
-Message-Id: <20191108114545.15351-20-sashal@kernel.org>
+Cc:     Stefan Wahren <stefan.wahren@i2se.com>,
+        Raghuram Chary Jallipalli 
+        <raghuramchary.jallipalli@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 21/64] net: lan78xx: Bail out if lan78xx_get_endpoints fails
+Date:   Fri,  8 Nov 2019 06:45:02 -0500
+Message-Id: <20191108114545.15351-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108114545.15351-1-sashal@kernel.org>
 References: <20191108114545.15351-1-sashal@kernel.org>
@@ -44,34 +46,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Larry Finger <Larry.Finger@lwfinger.net>
+From: Stefan Wahren <stefan.wahren@i2se.com>
 
-[ Upstream commit 199ba9faca909e77ac533449ecd1248123ce89e7 ]
+[ Upstream commit fa8cd98c06407b5798b927cd7fd14d30f360ed02 ]
 
-In gcc8, when the 3rd argument (size) of a call to strncpy() matches the
-length of the first argument, the compiler warns of the possibility of an
-unterminated string. Using strlcpy() forces a null at the end.
+We need to bail out if lan78xx_get_endpoints() fails, otherwise the
+result is overwritten.
 
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: 55d7de9de6c3 ("Microchip's LAN7800 family USB 2/3 to 10/100/1000 Ethernet")
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reviewed-by: Raghuram Chary Jallipalli <raghuramchary.jallipalli@microchip.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/lan78xx.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c b/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c
-index c2d5b495c179a..c089540116fa7 100644
---- a/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c
-+++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c
-@@ -146,7 +146,7 @@ static int rtl8187_register_led(struct ieee80211_hw *dev,
- 	led->dev = dev;
- 	led->ledpin = ledpin;
- 	led->is_radio = is_radio;
--	strncpy(led->name, name, sizeof(led->name));
-+	strlcpy(led->name, name, sizeof(led->name));
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index e143a7fe93201..a3f9d8f05db4a 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2621,6 +2621,11 @@ static int lan78xx_bind(struct lan78xx_net *dev, struct usb_interface *intf)
+ 	int i;
  
- 	led->led_dev.name = led->name;
- 	led->led_dev.default_trigger = default_trigger;
+ 	ret = lan78xx_get_endpoints(dev, intf);
++	if (ret) {
++		netdev_warn(dev->net, "lan78xx_get_endpoints failed: %d\n",
++			    ret);
++		return ret;
++	}
+ 
+ 	dev->data[0] = (unsigned long)kzalloc(sizeof(*pdata), GFP_KERNEL);
+ 
 -- 
 2.20.1
 
