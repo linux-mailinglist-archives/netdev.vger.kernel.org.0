@@ -2,133 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CBE0F57BF
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12D63F57CF
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 21:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388708AbfKHThb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 14:37:31 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18810 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387561AbfKHTha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 14:37:30 -0500
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA8JYW0a009803;
-        Fri, 8 Nov 2019 11:37:12 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=pfRPNSN2L7TWs/MO61i+lL6xzxGjfeRQ590HHryc3ew=;
- b=gahjwbAuTHGThr7FbrNZUcywE3FjV80L0yOR0RQpyhJmNvrDBhgETLcuEAkE1wvlUBtD
- FGKPvSl2h9b3rNhyvxQc82YutFNqPILtEZXpNIKmGgJrPneYY3mD1TXrc0EIjOhHOI8g
- /F7WGvkigBvSpwQY3q3bdtv9aqaLB192wHo= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w41u0w505-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 08 Nov 2019 11:37:12 -0800
-Received: from ash-exhub203.TheFacebook.com (2620:10d:c0a8:83::5) by
- ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 8 Nov 2019 11:37:10 -0800
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 8 Nov 2019 11:37:10 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WlJpeb0wMBQuxTwNo8gghs2exFRVAc3XWflnLJNKT9piRjlADRC4iVOdLkBEQFTdxkA/DZcF7CCmVkeCm/HbmumnzKKSHTJwYvZnEPRpi/Nq7WOWNvYZ0N5Sjg4Dxeur39CTB38C28HkfYBrYqbVwc1QHAWULfWibIrc4JfBYBkXX6lLTsqlI0wVoevEVve9l5vq5gGLP5RW/cJE1wAhZRZ+zn0nXg8jcnILg/KSPY2H7f2wXOEAEYlQTw/9xrzeBZHoVf0RxfOmas8YZ2TTewUsI8wGwBbvvLolPnmM6E8Mi6cdUcfQiXnsRrxaIliy7sJDT9AFxweRPHO2OJ56Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pfRPNSN2L7TWs/MO61i+lL6xzxGjfeRQ590HHryc3ew=;
- b=m6IhVAXUHyTiH567N2EWr9in+1NvbVTgJZHxRl4teW+DAHN+afElMjiGlkA5QIc8MDiKVFfM1UesK3W6Z8tbtNlCt/29+JfndDNDZ8en+uT1AeMUSLpQvEn+QsbYPe7WEc0TLjw1E9aIfjeAy+EsY/NnU4/fxAmtjGYwFroYfNL2pxpB37D3CddrWW+V2syMOqpFFeiBIDNwzyA+l4uo7s7gtV7/EPgHHHG7rA6J8F1IMcqcGyqVv7j+gzsmV4f+uz7xmTeprcxgWPbWqwCKNK/YTGKvFsDvuSC8KZhofApBLwx7Kkj/C8kdVIw48q8UkTog0aot93llkWx4x3h0Lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pfRPNSN2L7TWs/MO61i+lL6xzxGjfeRQ590HHryc3ew=;
- b=QUn5zZxFSYo9Enrn9o1IuqisWfKxWa/FExwMhNtLyfLEOUagNn43aYaYbdDj5sb6HghmzW6BABKempCt6xHtFl3d/WGyXpqrKadtrdqD5G1KmmLizwUj7rS2PKi3/iM9+YMwf4T8BTetIHG5fgwqpTHJxmzrEQL2imoYabjEZgM=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1565.namprd15.prod.outlook.com (10.173.235.138) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Fri, 8 Nov 2019 19:37:09 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 19:37:09 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-CC:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 4/6] libbpf: Use pr_warn() when printing netlink
- errors
-Thread-Topic: [PATCH bpf-next 4/6] libbpf: Use pr_warn() when printing netlink
- errors
-Thread-Index: AQHVlYu/pp0nmqZhhU2FreEh/9dAq6eBrLkA
-Date:   Fri, 8 Nov 2019 19:37:09 +0000
-Message-ID: <6E83C846-60D7-4289-B696-6982FC6CE26D@fb.com>
-References: <157314553801.693412.15522462897300280861.stgit@toke.dk>
- <157314554255.693412.241635799002790913.stgit@toke.dk>
-In-Reply-To: <157314554255.693412.241635799002790913.stgit@toke.dk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3601.0.10)
-x-originating-ip: [2620:10d:c090:200::b292]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8869a73c-ab42-417e-57f7-08d764830b8e
-x-ms-traffictypediagnostic: MWHPR15MB1565:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1565F8E736B36FD354402133B37B0@MWHPR15MB1565.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(366004)(39860400002)(396003)(376002)(346002)(199004)(189003)(2906002)(71190400001)(446003)(66476007)(53546011)(66556008)(76116006)(4744005)(186003)(102836004)(2616005)(478600001)(81166006)(81156014)(33656002)(256004)(66946007)(5660300002)(11346002)(6506007)(66446008)(6246003)(8676002)(305945005)(8936002)(486006)(476003)(6436002)(6486002)(54906003)(50226002)(64756008)(25786009)(7736002)(99286004)(6916009)(46003)(6116002)(76176011)(316002)(86362001)(4326008)(71200400001)(229853002)(36756003)(6512007)(14454004);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1565;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: emD251L9qkmYzAkwbIrk4+KF+EBH/TC+osLW1PkAuuPQoynVC3IsV5k75TpKTt5iunNzCgXUoR4vv7IQJD2MphZQvOHIfAT5Xvuwp14E1l6yywHaHIYYRfOZxa5pEAefTfYkFlw8cOb97nmU4tvWsLD9lHU1NyWYyY0o22sf1Qim6OP4NvzPZeAgzG1OfOIDZyf90+qNh5uleT1hfbc6vBXQ1ghxb/Ajd77v0HpkJZivcXu1j4Ics+uk1OHaTEDmmhTeD+iwUad/xW2YNB/O7ruzPSNX6E+fGmnQ9Dxwq7UQCRPjqAWMI3xBLktGhxM+Waj4QL2Mntput2+wqtBdkyIzc97YsGw49C+36XNuscUbD11MVRjR0W8qLFcCLlC/H55vL3qd+WzTllZIxCTkK4oOB3B5dUkxxycl8iotMvrkKgkUSd8nImD2pYmrQM9k
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A29D870028B3614F9A5ACCEE4CBC3370@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2389684AbfKHTlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 14:41:22 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38858 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388041AbfKHTlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 14:41:21 -0500
+Received: by mail-wm1-f66.google.com with SMTP id z19so7387642wmk.3
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 11:41:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=+9uGOxKFFBUrhoWMRi3B1c9hleXqKEW5ns1xGB5QCLw=;
+        b=RdC7juWMDszU+G4FO/0JoRP2XeWH9lY+LtmBqOPdgJ8XC6bkf0NsFqVVwGK8yLCxqv
+         EO1HfAv7ZfSzhBEdN7BCxRUx2gp9YwTma+QA8ajkcTZBaihCYJXVob5lq+x8ipiHdpVI
+         oIYas0WhlvacPGwe3mR2Tj1Rh4ctWx4sccW69DAyyDVJp4A9NxYnHuLH8B7g81U+4la6
+         XawfSyVx+FZWkBsB7A4E77QWKj2/nBCn3YgXz5dkQ3EVzWDM36yIAnaStgWWRVP7edng
+         taQxO9wEL2tfCct60bus98ZHmzHtiOmjtDYwCzMSUtEZ7h0QWEctjaQ6O4PXQKx7l8Wx
+         QM3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+9uGOxKFFBUrhoWMRi3B1c9hleXqKEW5ns1xGB5QCLw=;
+        b=ZhmtIHxNxFuWTfvOKImApZbqvt/YpW/6HIki69eJwAGiPflBjvsIvXtW8v8Ucm6C/o
+         4V1lDJFp2uK4ZWb4w7ayffrqkEMLhtujSQ3zaczROG5hC4Qh4DX9fIHSV0elS/pAkDV3
+         f3UaHroD7466CgRq2asQCtnym6rDotlroYHyE0qp2yfIBOGTXfDoUHT88zkxHQWgU2My
+         22OYq+2JtdP8HdlGo8vVtGPBzhaE8HXuAC9iNWRcHGj7d7U6aV7Op6hHDPST+DJWzo+g
+         8Q6EjgDrRVH+a7o3hlVPEU7q1cZAy/pqmmQB1823l2e7+3KOmG8hCV2WT15Dbf/67+IB
+         C0BA==
+X-Gm-Message-State: APjAAAVdchroBIDUFNzb9mV5lgqqw1Aj9Rtf5t3M0r/fyX5IlcmTf4NH
+        xzJZvXmQCEZV47INhlXFJbgLJg==
+X-Google-Smtp-Source: APXvYqyBo+um2KBRP3w/o5IKRdasbCg/n+9n9Fm8EBf8ZOSK8hHVpV/DZgPvcvWDfNWOBncYfBP5Pw==
+X-Received: by 2002:a1c:2e8f:: with SMTP id u137mr9951666wmu.105.1573242079736;
+        Fri, 08 Nov 2019 11:41:19 -0800 (PST)
+Received: from localhost (ip-94-113-220-175.net.upcbroadband.cz. [94.113.220.175])
+        by smtp.gmail.com with ESMTPSA id o81sm7427640wmb.38.2019.11.08.11.41.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Nov 2019 11:41:19 -0800 (PST)
+Date:   Fri, 8 Nov 2019 20:41:18 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Parav Pandit <parav@mellanox.com>, alex.williamson@redhat.com,
+        davem@davemloft.net, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        saeedm@mellanox.com, kwankhede@nvidia.com, leon@kernel.org,
+        cohuck@redhat.com, jiri@mellanox.com, linux-rdma@vger.kernel.org,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191108194118.GY6990@nanopsycho>
+References: <20191107160448.20962-1-parav@mellanox.com>
+ <20191107153234.0d735c1f@cakuba.netronome.com>
+ <20191108121233.GJ6990@nanopsycho>
+ <20191108110640.225b2724@cakuba>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8869a73c-ab42-417e-57f7-08d764830b8e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 19:37:09.2236
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: osUwHn0XVFTCCZ2d67gNqUTuLyVFaB9mz4JsTuyHazyZgx5IcgAWNkgYAAiy87TiWSIZaHkbdAnSvrI3npQnkQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1565
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-08_07:2019-11-08,2019-11-08 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- suspectscore=0 bulkscore=0 clxscore=1011 priorityscore=1501 adultscore=0
- lowpriorityscore=0 mlxscore=0 spamscore=0 impostorscore=0 mlxlogscore=794
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911080190
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191108110640.225b2724@cakuba>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gT24gTm92IDcsIDIwMTksIGF0IDg6NTIgQU0sIFRva2UgSMO4aWxhbmQtSsO4cmdlbnNl
-biA8dG9rZUByZWRoYXQuY29tPiB3cm90ZToNCj4gDQo+IEZyb206IFRva2UgSMO4aWxhbmQtSsO4
-cmdlbnNlbiA8dG9rZUByZWRoYXQuY29tPg0KPiANCj4gVGhlIG5ldGxpbmsgZnVuY3Rpb25zIHdl
-cmUgdXNpbmcgZnByaW50ZihzdGRlcnIsICkgZGlyZWN0bHkgdG8gcHJpbnQgb3V0DQo+IGVycm9y
-IG1lc3NhZ2VzLCBpbnN0ZWFkIG9mIGdvaW5nIHRocm91Z2ggdGhlIHVzdWFsIGxvZ2dpbmcgbWFj
-cm9zLiBUaGlzDQo+IG1ha2VzIGl0IGltcG9zc2libGUgZm9yIHRoZSBjYWxsaW5nIGFwcGxpY2F0
-aW9uIHRvIHNpbGVuY2Ugb3IgcmVkaXJlY3QNCj4gdGhvc2UgZXJyb3IgbWVzc2FnZXMuIEZpeCB0
-aGlzIGJ5IHN3aXRjaGluZyB0byBwcl93YXJuKCkgaW4gbmxhdHRyLmMgYW5kDQo+IG5ldGxpbmsu
-Yy4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFRva2UgSMO4aWxhbmQtSsO4cmdlbnNlbiA8dG9rZUBy
-ZWRoYXQuY29tPg0KPiANCg0KQWNrZWQtYnk6IFNvbmcgTGl1IDxzb25nbGl1YnJhdmluZ0BmYi5j
-b20+DQoNCg==
+Fri, Nov 08, 2019 at 08:06:40PM CET, jakub.kicinski@netronome.com wrote:
+>On Fri, 8 Nov 2019 13:12:33 +0100, Jiri Pirko wrote:
+>> Thu, Nov 07, 2019 at 09:32:34PM CET, jakub.kicinski@netronome.com wrote:
+>> >On Thu,  7 Nov 2019 10:04:48 -0600, Parav Pandit wrote:  
+>> >> Mellanox sub function capability allows users to create several hundreds
+>> >> of networking and/or rdma devices without depending on PCI SR-IOV support.  
+>> >
+>> >You call the new port type "sub function" but the devlink port flavour
+>> >is mdev.
+>> >
+>> >As I'm sure you remember you nacked my patches exposing NFP's PCI 
+>> >sub functions which are just regions of the BAR without any mdev
+>> >capability. Am I in the clear to repost those now? Jiri?  
+>> 
+>> Well question is, if it makes sense to have SFs without having them as
+>> mdev? I mean, we discussed the modelling thoroughtly and eventually we
+>> realized that in order to model this correctly, we need SFs on "a bus".
+>> Originally we were thinking about custom bus, but mdev is already there
+>> to handle this.
+>
+>But the "main/real" port is not a mdev in your case. NFP is like mlx4. 
+>It has one PCI PF for multiple ports.
+
+I don't see how relevant the number of PFs-vs-uplink_ports is.
+
+
+>
+>> Our SFs are also just regions of the BAR, same thing as you have.
+>> 
+>> Can't you do the same for nfp SFs?
+>> Then the "mdev" flavour is enough for all.
+>
+>Absolutely not. 
+>
+>Why not make the main device of mlx5 a mdev, too, if that's acceptable.
+>There's (a) long precedence for multiple ports on one PCI PF in
+>networking devices, (b) plenty deployed software 
+>which depend on the main devices hanging off the PCI PF directly.
+>
+>The point of mdevs is being able to sign them to VFs or run DPDK on
+>them (map to user space).
+>
+>For normal devices existing sysfs hierarchy were one device has
+>multiple children of a certain class, without a bus and a separate
+>driver is perfectly fine. Do you think we should also slice all serial
+>chips into mdevs if they have multiple lines.
+>
+>Exactly as I predicted much confusion about what's being achieved here,
+>heh :)
+
+Please let me understand how your device is different.
+Originally Parav didn't want to have mlx5 subfunctions as mdev. He
+wanted to have them tight to the same pci device as the pf. No
+difference from what you describe you want. However while we thought
+about how to fit things in, how to handle na phys_port_name, how to see
+things in sysfs we came up with an idea of a dedicated bus. We took it
+upstream and people suggested to use mdev bus for this.
+
+Parav, please correct me if I'm wrong but I don't think where is a plan
+to push SFs into VM or to userspace as Jakub expects, right?
