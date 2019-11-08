@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FA8EF4914
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:01:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB20F491F
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 13:01:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390536AbfKHLnn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 06:43:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58238 "EHLO mail.kernel.org"
+        id S1732820AbfKHMBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 07:01:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58324 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388718AbfKHLnl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:43:41 -0500
+        id S2390533AbfKHLnn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:43:43 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4C759222C2;
-        Fri,  8 Nov 2019 11:43:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9296C222D1;
+        Fri,  8 Nov 2019 11:43:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213420;
-        bh=qvaJckDGdLrK/qEiSj60eF89SiNSLo3wCVU4ci/H+BM=;
+        s=default; t=1573213422;
+        bh=L/S6jj7DjumFJ+aYhX8gtox1aMBuIiR/X1oK5cVsu1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=so8UyrBBYmSQdY1yiCWORXqMHAN5lyRTOwMboW5eft/8m1bipWAUhQvhFA2FSMKg3
-         SMvQkHFLMBvLZeFwj5YtlKtczRLTUMyIuwSHttPXFWEk4n31/A9++eCJkg+PdGJUph
-         qpkDeMUKm/TeKHY0GIXCDX6DPDPb0ibkmGfiRrVg=
+        b=zCGNGYTXO4m8YsZZeyIXRNxD7ehQ4vORZBTBIFFeU/t6QXbBW+p5lSGtGvQDEkPlF
+         dZO64APb6L/uKgSY6IoMfJ/ayt6IrazZe8OKQ+Nh1zkHmGqx8FJyic4SBc3REedHtr
+         zYe447i41nS0XTNSeI8fSfgBnSVlMLfAAurSYD/I=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rick Farrington <ricardo.farrington@cavium.com>,
-        Felix Manlunas <felix.manlunas@cavium.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Mitch Williams <mitch.a.williams@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 022/103] liquidio: fix race condition in instruction completion processing
-Date:   Fri,  8 Nov 2019 06:41:47 -0500
-Message-Id: <20191108114310.14363-22-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 024/103] i40e: use correct length for strncpy
+Date:   Fri,  8 Nov 2019 06:41:49 -0500
+Message-Id: <20191108114310.14363-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191108114310.14363-1-sashal@kernel.org>
 References: <20191108114310.14363-1-sashal@kernel.org>
@@ -44,75 +44,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rick Farrington <ricardo.farrington@cavium.com>
+From: Mitch Williams <mitch.a.williams@intel.com>
 
-[ Upstream commit b943f17e06493fd2c7fd00743093ad5dcdb90e7f ]
+[ Upstream commit 7eb74ff891b4e94b8bac48f648a21e4b94ddee64 ]
 
-In lio_enable_irq, the pkt_in_done count register was being cleared to
-zero.  However, there could be some completed instructions which were not
-yet processed due to budget and limit constraints.
-So, only write this register with the number of actual completions
-that were processed.
+Caught by GCC 8. When we provide a length for strncpy, we should not
+include the terminating null. So we must tell it one less than the size
+of the destination buffer.
 
-Signed-off-by: Rick Farrington <ricardo.farrington@cavium.com>
-Signed-off-by: Felix Manlunas <felix.manlunas@cavium.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cavium/liquidio/octeon_device.c   | 5 +++--
- drivers/net/ethernet/cavium/liquidio/octeon_iq.h       | 2 ++
- drivers/net/ethernet/cavium/liquidio/request_manager.c | 2 ++
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_ptp.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_device.c b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-index 29d53b1763a72..2a9c925376cc1 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_device.c
-@@ -1444,8 +1444,9 @@ void lio_enable_irq(struct octeon_droq *droq, struct octeon_instr_queue *iq)
- 	}
- 	if (iq) {
- 		spin_lock_bh(&iq->lock);
--		writel(iq->pkt_in_done, iq->inst_cnt_reg);
--		iq->pkt_in_done = 0;
-+		writel(iq->pkts_processed, iq->inst_cnt_reg);
-+		iq->pkt_in_done -= iq->pkts_processed;
-+		iq->pkts_processed = 0;
- 		/* this write needs to be flushed before we release the lock */
- 		mmiowb();
- 		spin_unlock_bh(&iq->lock);
-diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_iq.h b/drivers/net/ethernet/cavium/liquidio/octeon_iq.h
-index 5c3c8da976f73..1860603452ee7 100644
---- a/drivers/net/ethernet/cavium/liquidio/octeon_iq.h
-+++ b/drivers/net/ethernet/cavium/liquidio/octeon_iq.h
-@@ -84,6 +84,8 @@ struct octeon_instr_queue {
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ptp.c b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
+index ef242dbae116b..5fc8707574809 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ptp.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ptp.c
+@@ -704,7 +704,8 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
+ 	if (!IS_ERR_OR_NULL(pf->ptp_clock))
+ 		return 0;
  
- 	u32 pkt_in_done;
- 
-+	u32 pkts_processed;
-+
- 	/** A spinlock to protect access to the input ring.*/
- 	spinlock_t iq_flush_running_lock;
- 
-diff --git a/drivers/net/ethernet/cavium/liquidio/request_manager.c b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-index 55e8731264634..0ea623768783e 100644
---- a/drivers/net/ethernet/cavium/liquidio/request_manager.c
-+++ b/drivers/net/ethernet/cavium/liquidio/request_manager.c
-@@ -122,6 +122,7 @@ int octeon_init_instr_queue(struct octeon_device *oct,
- 	iq->do_auto_flush = 1;
- 	iq->db_timeout = (u32)conf->db_timeout;
- 	atomic_set(&iq->instr_pending, 0);
-+	iq->pkts_processed = 0;
- 
- 	/* Initialize the spinlock for this instruction queue */
- 	spin_lock_init(&iq->lock);
-@@ -474,6 +475,7 @@ octeon_flush_iq(struct octeon_device *oct, struct octeon_instr_queue *iq,
- 				lio_process_iq_request_list(oct, iq, 0);
- 
- 		if (inst_processed) {
-+			iq->pkts_processed += inst_processed;
- 			atomic_sub(inst_processed, &iq->instr_pending);
- 			iq->stats.instr_processed += inst_processed;
- 		}
+-	strncpy(pf->ptp_caps.name, i40e_driver_name, sizeof(pf->ptp_caps.name));
++	strncpy(pf->ptp_caps.name, i40e_driver_name,
++		sizeof(pf->ptp_caps.name) - 1);
+ 	pf->ptp_caps.owner = THIS_MODULE;
+ 	pf->ptp_caps.max_adj = 999999999;
+ 	pf->ptp_caps.n_ext_ts = 0;
 -- 
 2.20.1
 
