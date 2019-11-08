@@ -2,139 +2,239 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84A7DF5377
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:23:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FB8F5381
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 19:26:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbfKHSXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 13:23:48 -0500
-Received: from mail-eopbgr150079.outbound.protection.outlook.com ([40.107.15.79]:31300
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726445AbfKHSXs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 8 Nov 2019 13:23:48 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VAXgF4KqK7sdxfdFzQum+JKthQaJofxaJn/oEL3UmWnrQXQ7Coxsql0br0qy3cIxl6pfXvah5wfjxg6KrBWp4a+yIqKApGeUCbgC4jIk2G5pCKDgAKlZtd+S/sKQSAuu/PXBJFzT0PmwGw+hOUNF3I1ryZwPsrBlxFtrWrhRUxfxQ4LJIlbB/HhTtEIX1yIYIzYY0bq9HH/SfPzY14kWQfX6BjLGMGT+hFhusGKHKLqpQ1ZlE7Yi3755P0GDu/wCh9evNngSth0LwkFta2rpEGa76gVII5X+erQaADV2yHPjjjz4DQEV7YnfG9/rR8rlptnI90jbbgfOL0kO5qafOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=keoD8SLI4MH+tSgpDKrZFIdzWHTqUzNAFRxBZtBoTyw=;
- b=XWQIVrryyKg+JxlvP0MWJquU+v3iXXlyrMdA2ERcS9P2/NFgDSzuyBv21HKPbLbDqcrJRljeYqKiHqspiiIDIcqr/YgK5oVYhmPQxCGBdtQVa4sl0cK88xKOwicw1o+qPXKmrF5ZuhUYqqSR6B/IPWS8WogICzmLCAcWNBwFdtiDFAGARD9MgZEAPVH3AuX3zTGgFyD8CIJJL6lN355h+J7QedLcNtzA7l1lo78eT5ox/kLdf/re6Pi2R/snTOHPEqzJfdThHZN0FoyzD04NhOseQt2PNQNLnBCtVN0eSNE2mXTyT/lgrCke0XoyPcPcDHQyEwUSm8T/S6dKmEkY/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=keoD8SLI4MH+tSgpDKrZFIdzWHTqUzNAFRxBZtBoTyw=;
- b=JdW7b9J20THu2Smc7daT+Hnp8t+GhjfTI0NzBzTu6sQ7i0WXt3pH259cVkJCUCA8ADNzhpreAhRp3L02K1qB2FfiLViAqoeve0MZap1uxyO+MP6+ehArkYQ94QOY2qo/2Y6myzIUan2e2TapwZ9XzwoEUQHPDOcLDhHHMzZkQQ8=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB5025.eurprd05.prod.outlook.com (52.134.89.82) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Fri, 8 Nov 2019 18:23:44 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.020; Fri, 8 Nov 2019
- 18:23:44 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
-Thread-Topic: [PATCH net-next 12/19] devlink: Introduce mdev port flavour
-Thread-Index: AQHVlYW+5ckj7/tyDUu1ocZ3bBFvo6eAK5wAgAAEe2CAAEmKAIAAA1+ggAAOHACAAAFAIIAAe3YAgABjcxCAAA2tgIAAAeXAgAAZ84CAAALlcA==
-Date:   Fri, 8 Nov 2019 18:23:44 +0000
-Message-ID: <AM0PR05MB48667057857062CB24DD57D2D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20191107153836.29c09400@cakuba.netronome.com>
- <AM0PR05MB4866963BE7BA1EE0831C9624D1780@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191107201750.6ac54aed@cakuba>
- <AM0PR05MB4866BEC2A2B586AA72BAA9ABD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191107212024.61926e11@cakuba>
- <AM0PR05MB4866C0798EA5746EE23F2D2BD17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108094646.GB6990@nanopsycho>
- <AM0PR05MB4866969D18877C7AAD19D236D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108163139.GQ6990@nanopsycho>
- <AM0PR05MB48669A9AE494CCCE8E07C367D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108181119.GT6990@nanopsycho>
-In-Reply-To: <20191108181119.GT6990@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [208.176.44.194]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: bc1375a5-51fa-4ea9-a006-08d76478ca29
-x-ms-traffictypediagnostic: AM0PR05MB5025:|AM0PR05MB5025:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB5025E010FC3B27D4BD4B97A3D17B0@AM0PR05MB5025.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0215D7173F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(39860400002)(376002)(396003)(346002)(189003)(199004)(13464003)(33656002)(55016002)(229853002)(478600001)(186003)(14454004)(25786009)(8936002)(6916009)(4326008)(66066001)(99286004)(6116002)(7416002)(316002)(2906002)(3846002)(26005)(256004)(7736002)(81156014)(66476007)(11346002)(476003)(76176011)(8676002)(86362001)(66446008)(52536014)(54906003)(76116006)(66946007)(5660300002)(6506007)(66556008)(74316002)(81166006)(102836004)(6246003)(9686003)(7696005)(446003)(71190400001)(6436002)(305945005)(71200400001)(486006)(64756008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5025;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: pK7Sd5k6DL2NftNV1Ka/rlEK7NM2j+pleVjb7a2KIi6pVZpYIqeCevnnPK8BnmWKijMyCsOcO+CnO/cLD6WbpwM1e8cyEBJQxPYjVLCragCJ4eD802Ik+Hep1JlTvz9ZvFyEnFswLQTwkcVL9zyIwG36SVPfEXLexzphuMe/WN42yFfBQ19dLxDN7gJIMY4lO/LocjKSeQpyRJcclKRyoSjLTvJ5SRQFTAClakkyP6VmDGt6zERaqNC+J+mJ0DNxepCkuJ/Czu20RcidpAqABRQc11If4m6NfkX2GuZ2HxVVLUCFBLVNwg2C+0i2EzxrYxO/7wBQo+hwYcz4elLb44bXZ/gVwmGUjcD0wXKEJqnBGU8MDk8ZFM/2WAcagDROM+Rfiv7a68HLVDvDHsA6bgLG6g0g9E0nP5zPqzQfQAExioK+lM+KtKRd8B9TU9Fs
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1729328AbfKHS0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 13:26:34 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40690 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727210AbfKHS0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 13:26:34 -0500
+Received: by mail-lj1-f194.google.com with SMTP id q2so7224696ljg.7
+        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 10:26:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yfrqk4oAZSRdxNXU7NWHV3s/qknksusoqMId/97+bh8=;
+        b=y1K0awVaPkO46sJakcQS8uKieCdS/hCTRRGdp7q5Dcku0FUI40wj7F+zld2UORzEbf
+         t8YG8QSWNop4/suFu+5p6OBsjDlLmTswYjH/3bLUmv9AcOoVfZDeOxZjGeOYnoTXA6HQ
+         J8aMPm2axVmOGDf5xSwuijEvUOv5sKpFh9JUyrH0Kqx/t6feWNf2IUF+xYaJPauhde4n
+         IuGvkCufzn9sVUy4WXyW1gLblbgYB8D+aexe4RpGSB9pg3OV5iGRR2py7xDoNKIYBlIc
+         PZTrGRMZIlhMNrWif9jD4E8iCrXApMODQRFEsPi4vx5MLLJacWWpJdjOsLxXzD9bVAd1
+         r26w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yfrqk4oAZSRdxNXU7NWHV3s/qknksusoqMId/97+bh8=;
+        b=m4KxQquZ0OU2v/JI6bC5tux5sz3YOmCu5W4UFVr0skTKBDxAMNIysLlil868HHNAvo
+         X4yvAZDQCMDH38evOr9ZkQxFazubW7qwgZZCVUMzJbdPnp0KTNnib0hE0OcD1awWTzll
+         MEJZknHs+J5mNyR15WpbgiaJLkDhmmGQNmXZvUIuK54JpNMIhGkOMmwEEjoPpBRyURiC
+         9gN5vv+8ErvSPIytHGsSU3NX03s/viFEjvtY9tcoQWdS+aqdmn300LYXa6en5VURM0ut
+         Z+U5R+O8vw4pJA98i8D2BLvQPVAWAkEJKigfbM2yjDoYfcA2e8U2AdhAQ+5dMBUPw5MY
+         Qusw==
+X-Gm-Message-State: APjAAAW+61JMlD9uhXEmo09OeHdT40PhOhnqbv+QEpbmt244yq23azd/
+        sX8CaHr9743+R+exsxdj2TGnYAuAt8L0oSfKx4LE
+X-Google-Smtp-Source: APXvYqw1CojLXlLXhi44VGUdhNOsRF4p9i8B7yLeQIjTFUXYF7RTFSwfHA6RC+gtdGcnk7X56NGlBF0xrTDt5/lxnqc=
+X-Received: by 2002:a2e:85d5:: with SMTP id h21mr7824291ljj.243.1573237589836;
+ Fri, 08 Nov 2019 10:26:29 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc1375a5-51fa-4ea9-a006-08d76478ca29
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Nov 2019 18:23:44.6153
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: jQzxfY7P5FluriHtvcSjtja6Mr/y4UKlS8Lc/1Fuml/sbNOadEUSEiVFJCZyE3QmEwY0gvV6ISNwhnGCmVQU4w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5025
+References: <cover.1568834524.git.rgb@redhat.com> <6fb4e270bfafef3d0477a06b0365fdcc5a5305b5.1568834524.git.rgb@redhat.com>
+ <CAHC9VhS2111YTQ_rbHKe6+n9coPNbcTJqf5wnBx9LYHSf69THA@mail.gmail.com> <20191025210004.jzkenjg6jrka22ak@madcap2.tricolour.ca>
+In-Reply-To: <20191025210004.jzkenjg6jrka22ak@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 8 Nov 2019 13:26:18 -0500
+Message-ID: <CAHC9VhRMJkeC7HkAMr1TwymtT7eHOB_B=_28R6zVfQQk-gW-DA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V7 04/21] audit: convert to contid list to check
+ for orch/engine ownership
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     containers@lists.linux-foundation.org, linux-api@vger.kernel.org,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        sgrubb@redhat.com, omosnace@redhat.com, dhowells@redhat.com,
+        simo@redhat.com, Eric Paris <eparis@parisplace.org>,
+        Serge Hallyn <serge@hallyn.com>, ebiederm@xmission.com,
+        nhorman@tuxdriver.com, Dan Walsh <dwalsh@redhat.com>,
+        mpatel@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-
-[..]
-> Well, I don't really need those in the phys_port_name, mainly simply beca=
-use
-> they would not fit. However, I believe that you should fillup the PF/VF d=
-evlink
-> netlink attrs.
->=20
-> Note that we are not talking here about the actual mdev, but rather
-> devlink_port associated with this mdev. And devlink port should have this=
- info.
->=20
->=20
+On Fri, Oct 25, 2019 at 5:00 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2019-10-10 20:38, Paul Moore wrote:
+> > On Wed, Sep 18, 2019 at 9:24 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > Store the audit container identifier in a refcounted kernel object that
+> > > is added to the master list of audit container identifiers.  This will
+> > > allow multiple container orchestrators/engines to work on the same
+> > > machine without danger of inadvertantly re-using an existing identifier.
+> > > It will also allow an orchestrator to inject a process into an existing
+> > > container by checking if the original container owner is the one
+> > > injecting the task.  A hash table list is used to optimize searches.
+> > >
+> > > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+> > > ---
+> > >  include/linux/audit.h | 26 ++++++++++++++--
+> > >  kernel/audit.c        | 86 ++++++++++++++++++++++++++++++++++++++++++++++++---
+> > >  kernel/audit.h        |  8 +++++
+> > >  3 files changed, 112 insertions(+), 8 deletions(-)
 > >
-> >> >What in hypothetical case, mdev is not on top of PCI...
-> >>
-> >> Okay, let's go hypothetical. In that case, it is going to be on top
-> >> of something else, wouldn't it?
-> >Yes, it will be. But just because it is on top of something, doesn't mea=
-n we
-> include the whole parent dev, its bridge, its rc hierarchy here.
-> >There should be a need.
-> >It was needed in PF/VF case due to overlapping numbers of VFs via single
-> devlink instance. You probably missed my reply to Jakub.
->=20
-> Sure. Again, I don't really care about having that in phys_port_name.
-> But please fillup the attrs.
->=20
-Ah ok. but than that would be optional attribute?
-Because you can have non pci based mdev, though it doesn't exist today alon=
-g with devlink to my knowledge.
+> > One general comment before we go off into the weeds on this ... I can
+> > understand why you wanted to keep this patch separate from the earlier
+> > patches, but as we get closer to having mergeable code this should get
+> > folded into the previous patches.  For example, there shouldn't be a
+> > change in audit_task_info where you change the contid field from a u64
+> > to struct pointer, it should be a struct pointer from the start.
+>
+> I should have marked this patchset as RFC even though it was v7 due to a
+> lot of new ideas/code that was added with uncertainties needing comment
+> and direction.
+>
+> > It's also disappointing that idr appears to only be for 32-bit ID
+> > values, if we had a 64-bit idr I think we could simplify this greatly.
+>
+> Perhaps.  I do still see value in letting the orchestrator choose the
+> value.
+
+Agreed.  I was just thinking out loud that it seems like much of what
+we need could be a generic library mechanism similar to, but not quite
+like, the existing idr code.
+
+> > > diff --git a/include/linux/audit.h b/include/linux/audit.h
+> > > index f2e3b81f2942..e317807cdd3e 100644
+> > > --- a/include/linux/audit.h
+> > > +++ b/include/linux/audit.h
+> > > @@ -95,10 +95,18 @@ struct audit_ntp_data {
+> > >  struct audit_ntp_data {};
+> > >  #endif
+> > >
+> > > +struct audit_cont {
+> > > +       struct list_head        list;
+> > > +       u64                     id;
+> > > +       struct task_struct      *owner;
+> > > +       refcount_t              refcount;
+> > > +       struct rcu_head         rcu;
+> > > +};
+> >
+> > It seems as though in most of the code you are using "contid", any
+> > reason why didn't stick with that naming scheme here, e.g. "struct
+> > audit_contid"?
+>
+> I was using contid to refer to the value itself and cont to refer to the
+> refcounted object.  I find cont a bit too terse, so I'm still thinking
+> of changing it.  Perhaps contobj?
+
+Yes, just "cont" is a bit too ambiguous considering we have both
+integer values and structures being passed around.  Whatever you
+decide on, a common base with separate suffixes seems like a good
+idea.
+
+FWIW, I still think the "audit container ID" : "ACID" thing is kinda funny ;)
+
+> > > @@ -203,11 +211,15 @@ static inline unsigned int audit_get_sessionid(struct task_struct *tsk)
+> > >
+> > >  static inline u64 audit_get_contid(struct task_struct *tsk)
+> > >  {
+> > > -       if (!tsk->audit)
+> > > +       if (!tsk->audit || !tsk->audit->cont)
+> > >                 return AUDIT_CID_UNSET;
+> > > -       return tsk->audit->contid;
+> > > +       return tsk->audit->cont->id;
+> > >  }
+> >
+> > Assuming for a moment that we implement an audit_contid_get() (see
+> > Neil's comment as well as mine below), we probably need to name this
+> > something different so we don't all lose our minds when we read this
+> > code.  On the plus side we can probably preface it with an underscore
+> > since it is a static, in which case _audit_contid_get() might be okay,
+> > but I'm open to suggestions.
+>
+> I'm fine with the "_" prefix, can you point to precedent or convention?
+
+Generally kernel functions which are "special"/private/unsafe/etc.
+have a one, or two, underscore prefix.  If you don't want to add the
+prefix, that's fine, but please change the name as mentioned
+previously.
+
+> > > @@ -231,7 +235,9 @@ int audit_alloc(struct task_struct *tsk)
+> > >         }
+> > >         info->loginuid = audit_get_loginuid(current);
+> > >         info->sessionid = audit_get_sessionid(current);
+> > > -       info->contid = audit_get_contid(current);
+> > > +       info->cont = audit_cont(current);
+> > > +       if (info->cont)
+> > > +               refcount_inc(&info->cont->refcount);
+> >
+> > See the other comments about a "get" function, but I think we need a
+> > RCU read lock around the above, no?
+>
+> The rcu read lock is to protect the list rather than the cont object
+> itself, the latter of which is protected by its refcount.
+
+What protects you from info->cont going away between when you fetch
+the pointer via audit_cont() to when you dereference it in
+refcount_inc()?
+
+> > > @@ -2397,8 +2438,43 @@ int audit_set_contid(struct task_struct *task, u64 contid)
+> > >         else if (audit_contid_set(task))
+> > >                 rc = -ECHILD;
+> > >         read_unlock(&tasklist_lock);
+> > > -       if (!rc)
+> > > -               task->audit->contid = contid;
+> > > +       if (!rc) {
+> > > +               struct audit_cont *oldcont = audit_cont(task);
+> >
+> > Previously we held the tasklist_lock to protect the audit container ID
+> > associated with the struct, should we still be holding it here?
+>
+> We held the tasklist_lock to protect access to the target task's
+> child/parent/thread relationships.
+
+What protects us in the case of simultaneous calls to audit_set_contid()?
+
+> > Regardless, I worry that the lock dependencies between the
+> > tasklist_lock and the audit_contid_list_lock are going to be tricky.
+> > It might be nice to document the relationship in a comment up near
+> > where you declare audit_contid_list_lock.
+>
+> I don't think there should be a conflict between the two.
+>
+> The contid_list_lock doesn't care if the cont object is associated to a
+> particular task.
+
+Please document the relationship between the two, I worry we could
+easily run into lockdep problems without a clearly defined ordering.
+
+> > > +               struct audit_cont *cont = NULL;
+> > > +               struct audit_cont *newcont = NULL;
+> > > +               int h = audit_hash_contid(contid);
+> > > +
+> > > +               spin_lock(&audit_contid_list_lock);
+> > > +               list_for_each_entry_rcu(cont, &audit_contid_hash[h], list)
+> > > +                       if (cont->id == contid) {
+> > > +                               /* task injection to existing container */
+> > > +                               if (current == cont->owner) {
+> >
+> > I understand the desire to limit a given audit container ID to the
+> > orchestrator that created it, but are we certain that we can track
+> > audit container ID "ownership" via a single instance of a task_struct?
+>
+> Are you suggesting that a task_struct representing a task may be
+> replaced for a specific task?  I don't believe that will ever happen.
+>
+> >  What happens when the orchestrator stops/restarts/crashes?  Do we
+> > even care?
+>
+> Reap all of its containers?
+
+These were genuine questions, I'm not suggesting anything in
+particular, I'm just curious about how we handle an orchestrator that
+isn't continuously running ... is this possible?  Do we care?
+
+-- 
+paul moore
+www.paul-moore.com
