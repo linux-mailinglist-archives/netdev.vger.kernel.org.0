@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D3D2F3FB4
-	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 06:21:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDA4FF3FB8
+	for <lists+netdev@lfdr.de>; Fri,  8 Nov 2019 06:21:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730231AbfKHFVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 00:21:04 -0500
-Received: from mail-pf1-f170.google.com ([209.85.210.170]:35519 "EHLO
-        mail-pf1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730193AbfKHFVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 00:21:04 -0500
-Received: by mail-pf1-f170.google.com with SMTP id d13so3898350pfq.2;
-        Thu, 07 Nov 2019 21:21:03 -0800 (PST)
+        id S1730258AbfKHFVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 00:21:14 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:34806 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726180AbfKHFVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 00:21:13 -0500
+Received: by mail-pf1-f194.google.com with SMTP id n13so3912205pff.1;
+        Thu, 07 Nov 2019 21:21:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=/mQQB4W3TqBl2ffoZEa9D2KE2awAYRMQqt3o4RLi5fQ=;
-        b=hddid7TV+wrH11NHmd/PHp7V2X1sF9sTkRX0OBAI8F9gVgfqb+lLaPTMpXpWJNyIwI
-         8UD9EYaPyzq5/zEJraxbWd+IYtsjp/Mu39bo75w8qufkyAnDA9lmCsSxs1tyNoj+cksa
-         T1Yna9yxydH13hd4bZUF1gKU8KNvqB5uojVq0jo8SmyERKfYr+x8UeEl+cr4Srzx19d/
-         IdQB/M6OYZXd2lbvqLNV0mBytecsRV2D+thOejTiNBiKHUlJU95MikJhF9cqtdtSsjwJ
-         +HP55/7ueg28V1v2KEY73jHwXilfxJe57OWGK9z8ln8mOQcMP3ECP0AbJgKUkBoSlQhF
-         sfgQ==
+        bh=mwQ+SJNKxBfvJ+6pAWzpERZnLoFCvCVSB6GvO3x3n+g=;
+        b=H74D/DqVBEp7zuQsnsl5g38yhsgVx6gE9+XepXAdx+2GyfSdsLDVID7wq0xIAGvKG4
+         FeNLlDnQhALY/7ik2lcQz61qocQ/rgo/KKxarKqlHaNLOyqPajEbEycDNT9TzGii/BJh
+         tUumzGXYLKit0hSme46Ei+sMApoxxCU3WHh7fMVm4GnX0+TEpyj/CEvG5X0p+gENYFpp
+         PiV/1iJJf5ffZDiVcYqZAIgFawGjmdhL4upnyqUQYH9v0h8PL+jAy95qn43R2mkPx+J8
+         4A8Siy7Vaedn+3ilzY4HFxizd2i/rEmwCtgNSBwh10Mey3/NgCmcMpFjC0TXn3XfKAVr
+         5RvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=/mQQB4W3TqBl2ffoZEa9D2KE2awAYRMQqt3o4RLi5fQ=;
-        b=FKYZoIWxsgwIxoI5g4kurHEK2JqKK6Mw36VdRPpoabWiZvxz2WAAni8jNWuYWw3MdG
-         5iKKtnyZ/o3fCq/KJY1T64uxQzemcP/XJHAqeFZJUvW7eTwVaYx09ZBFsDj028QjqS0S
-         bd+Z1592LGdaIS+tCu+yVLE0BXQ7roQ2RHvv2nxePyVVX5F4t6ta5Z6obljic1DT0dCv
-         8AcwTR9THkGfqUUq2RjjSC+O1dJZCUjlU6GHzGSgnk8S9wN8nTl+QJ1tLyEsSS5YHawa
-         /qD1joHQX5k89Z/osM1mjG5/sRqonPcM7Qt3vlgfskNTeSMIsXMvCDOxOxZGm/ET7XCb
-         lyXA==
-X-Gm-Message-State: APjAAAU26/h1cw5C6aqxyGv5abr6cvzgpzmCmoYCK0TJ9wkUaEL8LyN8
-        jpf06DLUKRb7op+yqVwUh6vNXSsV
-X-Google-Smtp-Source: APXvYqyQRLsjU8IPf2yLXD+EpXFH0Fk8W4QNFcee9Qfy/ZIR0zjU3d1r+wskLrf49deo92GfFliKOg==
-X-Received: by 2002:aa7:8815:: with SMTP id c21mr9309052pfo.66.1573190462848;
-        Thu, 07 Nov 2019 21:21:02 -0800 (PST)
+        bh=mwQ+SJNKxBfvJ+6pAWzpERZnLoFCvCVSB6GvO3x3n+g=;
+        b=JS/BsxEvv/lC7kzT2eHCB7BTOoVLMyROx9S2LjyF8Gnvyi+iAERNIw2PVdXApUwOK/
+         aj3DocDcxghbmdECLUwB/3M0tgSLP5ZRnC8EsIZea3IIjnvG1JkW5RmuQr2H0TvGHz8R
+         rnRO0sPBb5x4AvuZ9EQyz2W/TpYjsgVGWkZjN2ekET3gE60LAh+UadYVHzVha23+1nYr
+         5BJ1iOp8Beabla23Mkdhn1kk/IAs7sGN05U1LnDQfUYhz5ALK+vkFXA6rNJ/93V29WZx
+         q9NL/qOHX5AKzZeuhtRpLH0pMXQKWhkPFZKpVArw4GIYAOB2pL4qZunQpmds/FhHS1fn
+         hNWQ==
+X-Gm-Message-State: APjAAAX4UDnhhb0MzEvFZEAA9fZSbz7Qt5f/r9ZiZWnQjh6QoHMfOWAO
+        lMJi7e3bVgfBHx+YN4g2swOCxNWb
+X-Google-Smtp-Source: APXvYqxoJ7abfhb+LjMDM4y2Dw7XSpU5B4j8xDKzHntWnpBX9lgU5lbQV1c/Jsll1YtndWBYt6GIdw==
+X-Received: by 2002:a63:b644:: with SMTP id v4mr9391083pgt.249.1573190471525;
+        Thu, 07 Nov 2019 21:21:11 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 3sm4206415pfh.45.2019.11.07.21.21.01
+        by smtp.gmail.com with ESMTPSA id h6sm3566546pji.21.2019.11.07.21.21.10
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 07 Nov 2019 21:21:01 -0800 (PST)
+        Thu, 07 Nov 2019 21:21:10 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
         David Laight <david.laight@aculab.com>
-Subject: [PATCHv4 net-next 2/5] sctp: add SCTP_ADDR_POTENTIALLY_FAILED notification
-Date:   Fri,  8 Nov 2019 13:20:33 +0800
-Message-Id: <7fa091e035b70859acbfd74ea06fcb3064c4bef7.1573190212.git.lucien.xin@gmail.com>
+Subject: [PATCHv4 net-next 3/5] sctp: add SCTP_EXPOSE_POTENTIALLY_FAILED_STATE sockopt
+Date:   Fri,  8 Nov 2019 13:20:34 +0800
+Message-Id: <45e03c4050ed2f122b6a4e19ebd6a532087088d3.1573190212.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <d008eb59f963118ae264e0151da79c382f16a69b.1573190212.git.lucien.xin@gmail.com>
+In-Reply-To: <7fa091e035b70859acbfd74ea06fcb3064c4bef7.1573190212.git.lucien.xin@gmail.com>
 References: <cover.1573190212.git.lucien.xin@gmail.com>
  <d008eb59f963118ae264e0151da79c382f16a69b.1573190212.git.lucien.xin@gmail.com>
+ <7fa091e035b70859acbfd74ea06fcb3064c4bef7.1573190212.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1573190212.git.lucien.xin@gmail.com>
 References: <cover.1573190212.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -63,113 +64,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SCTP Quick failover draft section 5.1, point 5 has been removed
-from rfc7829. Instead, "the sender SHOULD (i) notify the Upper
-Layer Protocol (ULP) about this state transition", as said in
-section 3.2, point 8.
+This is a sockopt defined in section 7.3 of rfc7829: "Exposing
+the Potentially Failed Path State", by which users can change
+pf_expose per sock and asoc.
 
-So this patch is to add SCTP_ADDR_POTENTIALLY_FAILED, defined
-in section 7.1, "which is reported if the affected address
-becomes PF". Also remove transport cwnd's update when moving
-from PF back to ACTIVE , which is no longer in rfc7829 either.
-
-Note that ulp_notify will be set to false if asoc->expose is
-not 'enabled', according to last patch.
+The new sockopt SCTP_EXPOSE_POTENTIALLY_FAILED_STATE is also
+known as SCTP_EXPOSE_PF_STATE for short.
 
 v2->v3:
-  - define SCTP_ADDR_PF SCTP_ADDR_POTENTIALLY_FAILED.
+  - return -EINVAL if params.assoc_value > SCTP_PF_EXPOSE_MAX.
+  - define SCTP_EXPOSE_PF_STATE SCTP_EXPOSE_POTENTIALLY_FAILED_STATE.
 v3->v4:
-  - initialize spc_state with SCTP_ADDR_AVAILABLE, as Marcelo suggested.
-  - check asoc->pf_expose in sctp_assoc_control_transport(), as Marcelo
-    suggested.
+  - improve changelog.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Acked-by: Neil Horman <nhorman@tuxdriver.com>
 ---
  include/uapi/linux/sctp.h |  2 ++
- net/sctp/associola.c      | 32 ++++++++++++++------------------
- 2 files changed, 16 insertions(+), 18 deletions(-)
+ net/sctp/socket.c         | 79 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 81 insertions(+)
 
 diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-index 765f41a..d99b428 100644
+index d99b428..a190e4a 100644
 --- a/include/uapi/linux/sctp.h
 +++ b/include/uapi/linux/sctp.h
-@@ -410,6 +410,8 @@ enum sctp_spc_state {
- 	SCTP_ADDR_ADDED,
- 	SCTP_ADDR_MADE_PRIM,
- 	SCTP_ADDR_CONFIRMED,
-+	SCTP_ADDR_POTENTIALLY_FAILED,
-+#define SCTP_ADDR_PF	SCTP_ADDR_POTENTIALLY_FAILED
- };
+@@ -137,6 +137,8 @@ typedef __s32 sctp_assoc_t;
+ #define SCTP_ASCONF_SUPPORTED	128
+ #define SCTP_AUTH_SUPPORTED	129
+ #define SCTP_ECN_SUPPORTED	130
++#define SCTP_EXPOSE_POTENTIALLY_FAILED_STATE	131
++#define SCTP_EXPOSE_PF_STATE	SCTP_EXPOSE_POTENTIALLY_FAILED_STATE
  
+ /* PR-SCTP policies */
+ #define SCTP_PR_SCTP_NONE	0x0000
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 669e02e..eccd689 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -4589,6 +4589,40 @@ static int sctp_setsockopt_ecn_supported(struct sock *sk,
+ 	return retval;
+ }
  
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index 4cadff5..c183d0e 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -787,8 +787,8 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
- 				  enum sctp_transport_cmd command,
- 				  sctp_sn_error_t error)
- {
-+	int spc_state = SCTP_ADDR_AVAILABLE;
- 	bool ulp_notify = true;
--	int spc_state = 0;
- 
- 	/* Record the transition on the transport.  */
- 	switch (command) {
-@@ -797,19 +797,13 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
- 		 * to heartbeat success, report the SCTP_ADDR_CONFIRMED
- 		 * state to the user, otherwise report SCTP_ADDR_AVAILABLE.
- 		 */
--		if (SCTP_UNCONFIRMED == transport->state &&
--		    SCTP_HEARTBEAT_SUCCESS == error)
--			spc_state = SCTP_ADDR_CONFIRMED;
--		else
--			spc_state = SCTP_ADDR_AVAILABLE;
--		/* Don't inform ULP about transition from PF to
--		 * active state and set cwnd to 1 MTU, see SCTP
--		 * Quick failover draft section 5.1, point 5
--		 */
--		if (transport->state == SCTP_PF) {
-+		if (transport->state == SCTP_PF &&
-+		    asoc->pf_expose != SCTP_PF_EXPOSE_ENABLE)
- 			ulp_notify = false;
--			transport->cwnd = asoc->pathmtu;
--		}
-+		else if (transport->state == SCTP_UNCONFIRMED &&
-+			 error == SCTP_HEARTBEAT_SUCCESS)
-+			spc_state = SCTP_ADDR_CONFIRMED;
++static int sctp_setsockopt_pf_expose(struct sock *sk,
++				     char __user *optval,
++				     unsigned int optlen)
++{
++	struct sctp_assoc_value params;
++	struct sctp_association *asoc;
++	int retval = -EINVAL;
 +
- 		transport->state = SCTP_ACTIVE;
++	if (optlen != sizeof(params))
++		goto out;
++
++	if (copy_from_user(&params, optval, optlen)) {
++		retval = -EFAULT;
++		goto out;
++	}
++
++	if (params.assoc_value > SCTP_PF_EXPOSE_MAX)
++		goto out;
++
++	asoc = sctp_id2assoc(sk, params.assoc_id);
++	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
++	    sctp_style(sk, UDP))
++		goto out;
++
++	if (asoc)
++		asoc->pf_expose = params.assoc_value;
++	else
++		sctp_sk(sk)->pf_expose = params.assoc_value;
++	retval = 0;
++
++out:
++	return retval;
++}
++
+ /* API 6.2 setsockopt(), getsockopt()
+  *
+  * Applications use setsockopt() and getsockopt() to set or retrieve
+@@ -4798,6 +4832,9 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 	case SCTP_ECN_SUPPORTED:
+ 		retval = sctp_setsockopt_ecn_supported(sk, optval, optlen);
  		break;
- 
-@@ -818,19 +812,21 @@ void sctp_assoc_control_transport(struct sctp_association *asoc,
- 		 * to inactive state.  Also, release the cached route since
- 		 * there may be a better route next time.
- 		 */
--		if (transport->state != SCTP_UNCONFIRMED)
-+		if (transport->state != SCTP_UNCONFIRMED) {
- 			transport->state = SCTP_INACTIVE;
--		else {
-+			spc_state = SCTP_ADDR_UNREACHABLE;
-+		} else {
- 			sctp_transport_dst_release(transport);
- 			ulp_notify = false;
- 		}
--
--		spc_state = SCTP_ADDR_UNREACHABLE;
- 		break;
- 
- 	case SCTP_TRANSPORT_PF:
- 		transport->state = SCTP_PF;
--		ulp_notify = false;
-+		if (asoc->pf_expose != SCTP_PF_EXPOSE_ENABLE)
-+			ulp_notify = false;
-+		else
-+			spc_state = SCTP_ADDR_POTENTIALLY_FAILED;
- 		break;
- 
++	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
++		retval = sctp_setsockopt_pf_expose(sk, optval, optlen);
++		break;
  	default:
+ 		retval = -ENOPROTOOPT;
+ 		break;
+@@ -7909,6 +7946,45 @@ static int sctp_getsockopt_ecn_supported(struct sock *sk, int len,
+ 	return retval;
+ }
+ 
++static int sctp_getsockopt_pf_expose(struct sock *sk, int len,
++				     char __user *optval,
++				     int __user *optlen)
++{
++	struct sctp_assoc_value params;
++	struct sctp_association *asoc;
++	int retval = -EFAULT;
++
++	if (len < sizeof(params)) {
++		retval = -EINVAL;
++		goto out;
++	}
++
++	len = sizeof(params);
++	if (copy_from_user(&params, optval, len))
++		goto out;
++
++	asoc = sctp_id2assoc(sk, params.assoc_id);
++	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
++	    sctp_style(sk, UDP)) {
++		retval = -EINVAL;
++		goto out;
++	}
++
++	params.assoc_value = asoc ? asoc->pf_expose
++				  : sctp_sk(sk)->pf_expose;
++
++	if (put_user(len, optlen))
++		goto out;
++
++	if (copy_to_user(optval, &params, len))
++		goto out;
++
++	retval = 0;
++
++out:
++	return retval;
++}
++
+ static int sctp_getsockopt(struct sock *sk, int level, int optname,
+ 			   char __user *optval, int __user *optlen)
+ {
+@@ -8121,6 +8197,9 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
+ 	case SCTP_ECN_SUPPORTED:
+ 		retval = sctp_getsockopt_ecn_supported(sk, len, optval, optlen);
+ 		break;
++	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
++		retval = sctp_getsockopt_pf_expose(sk, len, optval, optlen);
++		break;
+ 	default:
+ 		retval = -ENOPROTOOPT;
+ 		break;
 -- 
 2.1.0
 
