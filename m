@@ -2,126 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C88AF5F4E
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 14:03:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7F2BF5F7B
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 15:17:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbfKINDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 08:03:46 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51142 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726720AbfKINDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 08:03:45 -0500
-Received: by mail-wm1-f66.google.com with SMTP id l17so8020471wmh.0
-        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 05:03:43 -0800 (PST)
+        id S1726478AbfKIORR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 09:17:17 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:37260 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726424AbfKIORQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 09:17:16 -0500
+Received: by mail-lj1-f194.google.com with SMTP id l21so1825286ljg.4
+        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 06:17:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EYy/hjzsllEpsH3Cm/t6xTMUhWb7unIXSrje8MyOveI=;
-        b=lUEAxLb2unjZRH13bT75q2sA6qfTx935D80H2mdtoIv9Jqv9jrDWfDphbN7RqFuGJE
-         4zXgDL5Hk3Y/kmOvw2j1IYYNDtJIvVTUUfJRCGRFD4/R2mfs4MyZjAHIqHnma/ZugS6H
-         N1oIxQUR3g7TiNbFKG2WnnBQazDVGKWgS5SKyHOabinwOwT+tvPtMRwPuilbUtI5WJte
-         df31GjR8DNzHpPSudnHgfYGiymtzUZpU42z9g/OpxpdhGn9SKKMHC8Iznye5wXnWALXC
-         9+jImFN4IK//D0ODzjklDadrBVE6wGyl+NIoaVRN4xcEjIDrGAyyVAifovbMpPT+0c8o
-         Pqzw==
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=373hZQFjGDkdP8oWwEgNTTKymtleYEbU8x1y8O7m7Q4=;
+        b=G256I2sIoSp6v7Pgth5vlVFlVoNGTVPdzMlc+3iK7wEv4frU9HiIPJFWiqwBOY9WwK
+         HxMTz32p4o/eL6ukrBwl9ru4dsUUSa61aZ35ukgQIzLsPmgckom0Iz5FnRKUh8KUPelF
+         xBuz+RUymPh5FFnf84dnfpXwjUYnel12NkhwwhW4rUvf5yQ4Myf8z2nw8FBaNIIKimrA
+         3A1L13Lld8jLBZewoRFJ41NlHZ3jmsS5Uat+QjH7zRAjsQv9RKFxgEcWMxIaTrAPet7u
+         T408IpfO1XZCqM7lD878r4U53Qci25wV2MtiXat2NeVKkXzUPrUh5tPVfF+i/9/UIwqc
+         HYVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=EYy/hjzsllEpsH3Cm/t6xTMUhWb7unIXSrje8MyOveI=;
-        b=nL7ciqZG6zFgWn108Ma/Bch9B6viTTb+cU6RLBVySU6dHE5ioJ04lqonsNHl0eCpR5
-         AAiVwC3KA9JqHd8E8tn3X0H1NB6eM8DSoBsa7h0aXtm46eM/2j7KCNDth05SRkwvz+Qe
-         UXcn6IvxKQ6CLK+MQLNN4wtO03E87GVFINP7A0ZCQaj1SCYlylZFyeTrEcsanBzAxIyT
-         VNR90zqI2O6wW1zFEiFng5Z7//W7RR+dpEmqR2Qt0WnZCGueWGfuku0d5wfePORVcmo1
-         FS5lLCSflKTi+SNGDDFPLUpDazCaYBvKOvijNOW6969rMpKgg7m0J5LsoXcyF6KBp688
-         if/w==
-X-Gm-Message-State: APjAAAWSmX2/EOxEzaJqQiqHLdtAyVO+SnAQQDGjmR4qWA5OtOKNrpA+
-        ddZYi5zpsnWqPI8Wwz/l1W0=
-X-Google-Smtp-Source: APXvYqzyco8QUFC2fsmB6NRjdb1PXulRYe6fYChcMlTuQLab0sQoiRfKv+YvjpQAO+7iHT38mrvngQ==
-X-Received: by 2002:a1c:9a4f:: with SMTP id c76mr12701425wme.103.1573304622982;
-        Sat, 09 Nov 2019 05:03:42 -0800 (PST)
-Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id n13sm8370908wmi.25.2019.11.09.05.03.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Nov 2019 05:03:42 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     jakub.kicinski@netronome.com, davem@davemloft.net,
-        alexandre.belloni@bootlin.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
-        horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
-        netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 15/15] net: mscc: ocelot: don't hardcode the number of the CPU port
-Date:   Sat,  9 Nov 2019 15:03:01 +0200
-Message-Id: <20191109130301.13716-16-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191109130301.13716-1-olteanv@gmail.com>
-References: <20191109130301.13716-1-olteanv@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=373hZQFjGDkdP8oWwEgNTTKymtleYEbU8x1y8O7m7Q4=;
+        b=EGNQYjX2fPelG2YDC15vOENcRwp95/TNRv2FYRFSpwXhCZQaDSFdk+OPtm1/iyCKIM
+         bbB87grxmpBQx/2AtUbDnhnIWHCiRN7Y72JwVY4usVTNf4872OvweGh1bn8Rz8XiV3fM
+         dzQIXPeLTaSoy5e7bTLhJ1dZf7BM2JANYFOkBwktmpFiYULixUA07tNOQFwJg+DAn1zQ
+         Lkjfa0Hhp2l8YLWI8BBeZ2rSaK60SVT2wBTqnUh3Rc3OqT2/kgkfeVf4LQbUjBKBNrTD
+         +vuFtxTrhl1LGS9Psd8JDK0oTCsKPP3rmsa1qNHkUFqKLk6bZ+1CzlIvka67SfxqgdZL
+         QPaQ==
+X-Gm-Message-State: APjAAAVUsby7Q7h3edpTIFNkM+vEer6Y/y4pVJwNYkfF2jfvXlYiIToz
+        O6dY7blcvaLnvNlpsvUug80HZQ==
+X-Google-Smtp-Source: APXvYqy9v9IeeMY/RwXclXlMYoDeFscZzbeSaXvNZA+Emm8++78lNlt1HEcL7vhe27PXMGBFF7N3iQ==
+X-Received: by 2002:a2e:9208:: with SMTP id k8mr10578421ljg.14.1573309034029;
+        Sat, 09 Nov 2019 06:17:14 -0800 (PST)
+Received: from [192.168.1.169] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id s7sm4101921ljo.98.2019.11.09.06.17.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 09 Nov 2019 06:17:13 -0800 (PST)
+Subject: Re: [PATCH v3 1/6] rtnetlink: allow RTM_SETLINK to reference other
+ namespaces
+To:     =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS1?=
+         =?UTF-8?B?4KS+4KSwKQ==?= <maheshb@google.com>
+Cc:     nicolas.dichtel@6wind.com, linux-netdev <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
+References: <20191107132755.8517-1-jonas@norrbonn.se>
+ <20191107132755.8517-2-jonas@norrbonn.se>
+ <CAF2d9jjRLZ07Qx0NJ9fi1iUpHn+qYEJ+cacKgBmeZ2FvZLObEQ@mail.gmail.com>
+ <fff51fa7-5c42-7fa7-6208-d911b18bd91e@norrbonn.se>
+ <CAF2d9jib=Qdn9uB=kKn4CTbqvqOiGs+FGh4427=o+UySLf=BwA@mail.gmail.com>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <7a2038c8-d3a6-2144-f11d-965394d1b420@norrbonn.se>
+Date:   Sat, 9 Nov 2019 15:17:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
+MIME-Version: 1.0
+In-Reply-To: <CAF2d9jib=Qdn9uB=kKn4CTbqvqOiGs+FGh4427=o+UySLf=BwA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hi Mahesh,
 
-VSC7514 is a 10-port switch with 2 extra "CPU ports" (targets in the
-queuing subsystem for terminating traffic locally).
+Thanks for the detailed response.  It provided valuable insight.
 
-There are 2 issues with hardcoding the CPU port as #10:
-- It is not clear which snippets of the code are configuring something
-  for one of the CPU ports, and which snippets are just doing something
-  related to the number of physical ports.
-- Actually any physical port can act as a CPU port connected to an
-  external CPU (in addition to the local CPU). This is called NPI mode
-  (Node Processor Interface) and is the way that the 6-port VSC9959
-  (Felix) switch is integrated inside NXP LS1028A (the "local management
-  CPU" functionality is not used there).
+On 08/11/2019 19:55, Mahesh Bandewar (महेश बंडेवार) wrote:
+> Hi Jonas, thanks for the response.
+> 
+> On Fri, Nov 8, 2019 at 12:20 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>>
+>> Hi Mahesh,
+>>
+>> On 07/11/2019 21:36, Mahesh Bandewar (महेश बंडेवार) wrote:
+>>> On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
+>>>>
+>>>>
+>>>> +       /* A hack to preserve kernel<->userspace interface.
+>>>> +        * It was previously allowed to pass the IFLA_TARGET_NETNSID
+>>>> +        * attribute as a way to _set_ the network namespace.  In this
+>>>> +        * case, the device interface was assumed to be in the  _current_
+>>>> +        * namespace.
+>>>> +        * If the device cannot be found in the target namespace then we
+>>>> +        * assume that the request is to set the device in the current
+>>>> +        * namespace and thus we attempt to find the device there.
+>>>> +        */
+>>> Could this bypasses the ns_capable() check? i.e. if the target is
+>>> "foo" but your current ns is bar. The process may be "capable" is foo
+>>> but the interface is not found in foo but present in bar and ends up
+>>> modifying it (especially when you are not capable in bar)?
+>>
+>> I don't think so.  There was never any capable-check for the "current"
+>> namespace so there's no change in that regard.
 
-This patch makes it clear that the ocelot_bridge_stp_state_set function
-operates on the CPU port (by making it an implicit member of the
-bridging domain), and at the same time adds logic for the NPI port (aka
-a physical port) to play the role of a CPU port (it shouldn't be part of
-bridge_fwd_mask, as it's not explicitly enslaved to a bridge).
+I was wrong on this point.  There IS a capable-check for the "current" 
+net.  The code to create interfaces in 'other' namespaces was already in 
+place before my patch and that code does the right thing with respect to 
+checking NS capabilities on the "destination" and "link" nets.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/mscc/ocelot.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+My patch is mostly just accounting for the "setlink" aspect of NEWLINK 
+where the device already exists in a foreign namespace and needs to be 
+searched for there.  Even in that code path, all the ns-capable checks 
+are in place and the behaviour is the same as before.
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index bba6d60dc5a8..3e7a2796c37d 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1383,7 +1383,7 @@ static void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port,
- 	 * a source for the other ports.
- 	 */
- 	for (p = 0; p < ocelot->num_phys_ports; p++) {
--		if (ocelot->bridge_fwd_mask & BIT(p)) {
-+		if (p == ocelot->cpu || (ocelot->bridge_fwd_mask & BIT(p))) {
- 			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(p);
- 
- 			for (i = 0; i < ocelot->num_phys_ports; i++) {
-@@ -1398,15 +1398,18 @@ static void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port,
- 				}
- 			}
- 
--			ocelot_write_rix(ocelot,
--					 BIT(ocelot->num_phys_ports) | mask,
-+			/* Avoid the NPI port from looping back to itself */
-+			if (p != ocelot->cpu)
-+				mask |= BIT(ocelot->cpu);
-+
-+			ocelot_write_rix(ocelot, mask,
- 					 ANA_PGID_PGID, PGID_SRC + p);
- 		} else {
- 			/* Only the CPU port, this is compatible with link
- 			 * aggregation.
- 			 */
- 			ocelot_write_rix(ocelot,
--					 BIT(ocelot->num_phys_ports),
-+					 BIT(ocelot->cpu),
- 					 ANA_PGID_PGID, PGID_SRC + p);
- 		}
- 	}
--- 
-2.17.1
+>>
+> not having capable-check seems wrong as we don't want random
+> not-capable processes to alter settings. However, it may be at the API
+> entry level, which will provide necessary protection (haven't
+> checked!). Having said that, this could be bad for the stuff that you
+> are implementing since I could be in "foo" and attempting to change
+> "bar". For this I must be capable in "bar" but the top-level capable
+> check will by default check me in "foo" as well which is not required
+> and could potentially block me from performing legal operation in
+> "bar".
+> 
+> Not saying this is a problem, but without having an implementation to
+> use this would be hard to try. You would most likely have a way to
+> verify this, so please check it.
 
+The above shouldn't be an issue with the current implementation.
+
+> 
+>> I do think there is an issue with this hack that I can't see any
+>> workaround for.  If the user specifies an interface (by name or index)
+>> for another namespace that doesn't exist, there's a potential problem if
+>> that name/index happens to exist in the "current" namespace.  In that
+>> case, one many end up inadvertently modifying the interface in the
+>> current namespace.  I don't see how to avoid that while maintaining the
+>> backwards compatibility.
+>>
+> This could very well be the case always for single digit ifindex
+> values. (We recently suffered a local scare because of something very
+> similar).
+> 
+>> My absolute preference would be to drop this compat-hack altogether.
+>> iproute2 doesn't use a bare TARGET_NETNSID in this manner (for changing
+>> namespaces) and I didn't find any other users by a quick search of other
+>> prominent Netlink users:  systemd, network-manager, connman.  This
+>> compat-hack is there for the _potential ab-user_ of the interface, not
+>> for any known such.
+>>
+> what is forcing you keeping you keeping / implementing this hack? I
+> would also prefer simple solution without creating a potential problem
+> / vulnerability (problem: potentially modifying unintended interface,
+> vulnerability: potentially allow changing without proper credentials;
+> both not proven but are possibilities) down the line. One possibility
+> is to drop the compatibility hack and keep it as a backup if something
+> breaks / someone complains.
+
+OK, this would be my preference, too.  If we can work on the assumption 
+that this isn't actually providing compatibility for anybody in 
+practice, then we can drop it.  With that, the potential problem of 
+inadvertently modifying the wrong device disappears.  There's no problem 
+of being able to access a namespace that one isn't capable in, but 
+leaving a hole through which the user may end up doing something 
+unexpected is pretty ugly.
+
+I'll remove this and repost the series.
+
+Thanks for your insight into this issue.  It was helpful.
+
+/Jonas
