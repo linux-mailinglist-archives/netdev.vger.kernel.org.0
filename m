@@ -2,184 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9951CF5D1A
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 03:52:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D09CF5D2C
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 04:26:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726019AbfKICwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 21:52:00 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:35910 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725876AbfKICv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 21:51:59 -0500
-Received: by mail-il1-f196.google.com with SMTP id s75so6895358ilc.3
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 18:51:58 -0800 (PST)
+        id S1726135AbfKID0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 22:26:39 -0500
+Received: from mail-lj1-f173.google.com ([209.85.208.173]:38381 "EHLO
+        mail-lj1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbfKID0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 22:26:38 -0500
+Received: by mail-lj1-f173.google.com with SMTP id v8so8239492ljh.5;
+        Fri, 08 Nov 2019 19:26:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=c9Pm1A88p06AUxA+q62MVcruzAQFMayciiO1u1hTOUY=;
-        b=kYZRyYalXGmKd2IdrWTXyA20/lBHRdARI1cv9BtXPmbRmqnVadPD2HcFVim7g8R/qS
-         0w9tk74zn2OHUI04aoN9lXHHPITkp7zwb2greou7TY7GKC8mlY8bihR/bq4swdiROKWe
-         O6mOPopfcXWSKm/wmRd3lHxgo+quDMcsDX0obtD3+hUbUNtHZw7wh5aEIAbgiYqOamyz
-         UVte9iDcgd1yLj0eLFyyhPZbR2fNSkklqp4WVlqqb7ROyPBd86/qtnN1CvQ+SVwty1+7
-         74uCbncGxP/wGs6+OlWhFMLTlBeLOfqLMeiMjaHVZT/MX31t0/dVykade+42rFKYpaeo
-         c63Q==
+        bh=6mWpHOx7d3RC93m4tPpgEfkg8hGRzXNMxcpawVMB0/U=;
+        b=gyz/kW81uFp5O10kUeR0WLM/DkBFXyGdlMpBa+/SEnymxBe78dLg74Uf7a42oWb3ZB
+         w3k3peXe3cUOtgeUG8i7A/2LU3RvgGjGgxHYzQcroTEyzwbif+71ueA2mNVj1wG0nDcE
+         Xh8fpumZCEr/Lvt+vJBRSRAKQRuU378rLdU3CimTa59YSMkeQllamtDzMW79PpSD3ClX
+         kNQJCUkg3+FJkSscFrXEMI3ERjLAjVizeO+dHA9mZAlfY8Q3NJqTgZEd7xr33CdxSeG2
+         om+hRroMi6G53/tXXCYzBNYywMjgmxc/AM72bEEj8eUbtEG8RBN6R60OUL0nj1qWNVQM
+         kB/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=c9Pm1A88p06AUxA+q62MVcruzAQFMayciiO1u1hTOUY=;
-        b=F9OFus/VRAC7+2ZrrTjSfq1AyUvKC8B7XDceyqSlPX43vBYi1DxJPyf/DYj2nSotSd
-         IX8w9uW9Vg7ATtipDSXKD+k04LLruIwEFhSuyOHFVfG/f10ql3U0MbbxsIJSNPJn8V5q
-         TcYNALJhcBK13XDrY6brbPiIzoyOfj+8FmuP2ElkczV/TvYlTKmzKaxBiVZkOoY3a0eK
-         pZ6hPB9WRQakhDyvmbqRt/Fr2IhTsq4mqKFDX3g/R1i2IiUvWCCeOxVYYthcY2bg9PoU
-         0AdzOHAXnWp+bj+K5OcTpxxuCOMjZaGoeDB4XL+mvA388rShmo6a3qDuAA8qFzPA2AW6
-         S3QQ==
-X-Gm-Message-State: APjAAAVfZE+mBFiSxlP74kRDbsaRQOKXFJtWhF4dgp2XRGifziV2B010
-        RNRbU1/dBvDPVtbHFERVv0lRhDg0SUbC7/06r/ELqw==
-X-Google-Smtp-Source: APXvYqzwwA3TltroQmqHfxip74LV/V8FQqcvDFL6GR25rHWYg/eJaftC21mbdFMyL21YDfFKGKtsHfkKL3x7f4D1f6M=
-X-Received: by 2002:a92:99cb:: with SMTP id t72mr14904655ilk.218.1573267918020;
- Fri, 08 Nov 2019 18:51:58 -0800 (PST)
+        bh=6mWpHOx7d3RC93m4tPpgEfkg8hGRzXNMxcpawVMB0/U=;
+        b=c6u2ekwNA+6XP7tTtCZ7IV230qDlwSVFe+GzIaKktsGOi/uvlpSr5XqFsRp4ZbLSWp
+         b+9kK2tztplvaP85Ex19ONGTS9g9gnpz0lyvTLTGdWh5+oT3jQ8Ym0kHt5tKDMGzE0eG
+         S9YNw9/12YWbRevmGeVJQQ3K02lE8Pek0n62XV2UVXXDSRnl1x7CtrPCWJQd9X072Hd2
+         bhtWz6vo5Pujf0sAFbOKZkbCKXmf/S9KxrS49a4OIPmYTWdEkd7tWGggm08sj3H85FzF
+         rFEU7My0xAkdTYXCmpUNGMMT+nOHDA6Gp3uk6xuXB4P9f/FGmt+xSrn6LF5YkD8ZrFzk
+         OprQ==
+X-Gm-Message-State: APjAAAXBYwAwuVZTcBErHXPozWRqNlSSG6g/Eztd1Z8dn6Z4gi7ZRE97
+        TQNUm/30i1L8VCQ1/Sq7hz8q7s3EttdrFV8SSNw=
+X-Google-Smtp-Source: APXvYqy8ps35ipYMBZMhRxqth0qghotkaQzYujvBcxNzMmvLQdMgFR4+1VJlVEaxMISJPKUAQO3L2fFFVkJ+VqVhyMU=
+X-Received: by 2002:a2e:92c4:: with SMTP id k4mr8854685ljh.10.1573269996294;
+ Fri, 08 Nov 2019 19:26:36 -0800 (PST)
 MIME-Version: 1.0
-References: <20191108034701.77736-1-edumazet@google.com> <20191109013342.d7notm6wmllgydsf@gondor.apana.org.au>
-In-Reply-To: <20191109013342.d7notm6wmllgydsf@gondor.apana.org.au>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 8 Nov 2019 18:51:46 -0800
-Message-ID: <CANn89iKjMD9r0+8CGdAOFpm3jPYtUsymXaDeG2US2WRzFicueg@mail.gmail.com>
-Subject: Re: [PATCH net-next] xfrm: add missing rcu verbs to fix data-race
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Will Deacon <will@kernel.org>
+References: <20191107005153.31541-1-danieltimlee@gmail.com>
+ <20191107005153.31541-3-danieltimlee@gmail.com> <CAEf4BzZpBqPAKy1fKUQYSm3Wxez29EuBYqu_n2SayCfDt_ziUg@mail.gmail.com>
+ <CAEKGpzi5qz14TWm4ZSmk8zWcw_z2f9iM+dW10Tu6evJg60aa_g@mail.gmail.com>
+In-Reply-To: <CAEKGpzi5qz14TWm4ZSmk8zWcw_z2f9iM+dW10Tu6evJg60aa_g@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 8 Nov 2019 19:26:24 -0800
+Message-ID: <CAADnVQJp9RyWX9d9DKMgvC-kaYQiPv0ae0DMHJx4KENechoYeA@mail.gmail.com>
+Subject: Re: [PATCH,bpf-next v2 2/2] samples: bpf: update map definition to
+ new syntax BTF-defined map
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 5:33 PM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+On Wed, Nov 6, 2019 at 8:45 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
-> On Thu, Nov 07, 2019 at 07:47:01PM -0800, Eric Dumazet wrote:
-> > KCSAN reported a data-race in xfrm_lookup_with_ifid() and
-> > xfrm_sk_free_policy() [1]
->
-> I'm very uncomfortable with these warnings being enabled in KASAN
-> unless there is a way to opt out of them without adding unnecessary
-> READ_ONCE/WRITE_ONCE tags.
->
-> All they do is create patches such as this one that simply adds
-> these tags without resolving the underlying issues (if there are
-> any).
->
-> > diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-> > index aa08a7a5f6ac5836524dd34115cd57e2675e574d..8884575ae2135b739a2c316bf8a92b56d6cc807c 100644
-> > --- a/include/net/xfrm.h
-> > +++ b/include/net/xfrm.h
-> > @@ -1093,7 +1093,7 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
-> >       struct net *net = dev_net(skb->dev);
-> >       int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
+> On Thu, Nov 7, 2019 at 11:53 AM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
 > >
-> > -     if (sk && sk->sk_policy[XFRM_POLICY_IN])
-> > +     if (sk && rcu_access_pointer(sk->sk_policy[XFRM_POLICY_IN]))
-> >               return __xfrm_policy_check(sk, ndir, skb, family);
->
-> This is simply an optimisation and we don't care if we get it
-> wrong due to the lack of READ_ONCE/WRITE_ONCE.  Even with the
-> READ_ONCE tag, there is nothing stopping a policy from being
-> added after the test returns false, or all policies from being
-> deleted after the test returns true.
->
-> IOW this is simply unnecessary.
+> > On Wed, Nov 6, 2019 at 4:52 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> > >
+> > > Since, the new syntax of BTF-defined map has been introduced,
+> > > the syntax for using maps under samples directory are mixed up.
+> > > For example, some are already using the new syntax, and some are using
+> > > existing syntax by calling them as 'legacy'.
+> > >
+> > > As stated at commit abd29c931459 ("libbpf: allow specifying map
+> > > definitions using BTF"), the BTF-defined map has more compatablility
+> > > with extending supported map definition features.
+> > >
+> > > The commit doesn't replace all of the map to new BTF-defined map,
+> > > because some of the samples still use bpf_load instead of libbpf, which
+> > > can't properly create BTF-defined map.
+> > >
+> > > This will only updates the samples which uses libbpf API for loading bpf
+> > > program. (ex. bpf_prog_load_xattr)
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 
-How do you suggest to silence the KCSAN warnings then ?
-
->
-> > @@ -1171,7 +1171,8 @@ static inline int xfrm_sk_clone_policy(struct sock *sk, const struct sock *osk)
-> >  {
-> >       sk->sk_policy[0] = NULL;
-> >       sk->sk_policy[1] = NULL;
-> > -     if (unlikely(osk->sk_policy[0] || osk->sk_policy[1]))
-> > +     if (unlikely(rcu_access_pointer(osk->sk_policy[0]) ||
-> > +                  rcu_access_pointer(osk->sk_policy[1])))
-> >               return __xfrm_sk_clone_policy(sk, osk);
-> >       return 0;
->
-> These on the other hand are done under socket lock.  IOW they
-> are completely synchronised with respect to the write side which
-> is also under socket lock so no tagging is necessary.
->
-> Incidentally rcu_access_pointer is now practically the same as
-> rcu_dereference because the smp_read_barrier_depends has been
-> moved over to READ_ONCE.  In fact there is no performance difference
-> between rcu_dereference and rcu_dereference_raw either.
->
-> I think we should either remove the smp_barrier_depends from
-> rcu_access_pointer, or just get rid of rcu_access_pointer completely.
->
-> > @@ -1185,12 +1186,12 @@ static inline void xfrm_sk_free_policy(struct sock *sk)
-> >       pol = rcu_dereference_protected(sk->sk_policy[0], 1);
-> >       if (unlikely(pol != NULL)) {
-> >               xfrm_policy_delete(pol, XFRM_POLICY_MAX);
-> > -             sk->sk_policy[0] = NULL;
-> > +             rcu_assign_pointer(sk->sk_policy[0], NULL);
-> >       }
-> >       pol = rcu_dereference_protected(sk->sk_policy[1], 1);
-> >       if (unlikely(pol != NULL)) {
-> >               xfrm_policy_delete(pol, XFRM_POLICY_MAX+1);
-> > -             sk->sk_policy[1] = NULL;
-> > +             rcu_assign_pointer(sk->sk_policy[1], NULL);
->
-> These should use RCU_INIT_POINTER.
-
-This does not matter anymore.
-Please double check rcu_assign_pointer(), it handles the NULL case.
-
-commit 3a37f7275cda5ad25c1fe9be8f20c76c60d175fa
-Author: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-Date:   Sun May 1 18:46:54 2016 -0700
-
-    rcu: No ordering for rcu_assign_pointer() of NULL
-
-    This commit does a compile-time check for rcu_assign_pointer() of NULL,
-    and uses WRITE_ONCE() rather than smp_store_release() in that case.
-
-    Reported-by: Christoph Hellwig <hch@infradead.org>
-    Signed-off-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
-
-
->
-> > diff --git a/net/smc/smc.h b/net/smc/smc.h
-> > index be11ba41190fb58be3ce9e8ab1a9ea4f8aa6a05b..4324dd39de99ba5967e1325746a2f5eff4baf2e7 100644
-> > --- a/net/smc/smc.h
-> > +++ b/net/smc/smc.h
-> > @@ -253,8 +253,8 @@ static inline u32 ntoh24(u8 *net)
-> >  #ifdef CONFIG_XFRM
-> >  static inline bool using_ipsec(struct smc_sock *smc)
-> >  {
-> > -     return (smc->clcsock->sk->sk_policy[0] ||
-> > -             smc->clcsock->sk->sk_policy[1]) ? true : false;
-> > +     return (rcu_access_pointer(smc->clcsock->sk->sk_policy[0]) ||
-> > +             rcu_access_pointer(smc->clcsock->sk->sk_policy[1])) ? true : false;
-> >  }
-> >  #else
-> >  static inline bool using_ipsec(struct smc_sock *smc)
->
-> Now this could actually be a real bug because it doesn't appear
-> to be an optimisation and it doesn't seem to be holding the socket
-> lock either.
->
-> Again this shows that we shouldn't just add READ_ONCE/WRITE_ONCE
-> tags because they might be papering over real bugs and help them
-> hide better because people will automatically assume that using
-> READ_ONCE/WRITE_ONCE means that the code is *safe*.
->
-
-Hmm, I will leave to you the resolution of this bug.
-
-Thanks.
+Applied. Thanks
