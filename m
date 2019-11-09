@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32713F5E2B
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 10:03:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2829CF5E29
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 10:03:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbfKIJD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 04:03:26 -0500
-Received: from mout.web.de ([212.227.15.4]:33809 "EHLO mout.web.de"
+        id S1726327AbfKIJDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 04:03:24 -0500
+Received: from mout.web.de ([212.227.15.14]:55171 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726145AbfKIJDY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726143AbfKIJDY (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 9 Nov 2019 04:03:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
         s=dbaedf251592; t=1573290197;
@@ -19,9 +19,9 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
          JQxkmGGlZ31Bk49lGHGP+WCJr94YoqXQZjWR3LJntT/Fy9whju4N+wat0BmCPZjP3M
          wooicXx+UapWia9jjXzgAKgW0tzMR2npnNjQTOQU=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.82.67]) by smtp.web.de (mrweb003
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0M6Dve-1hiZkl0830-00y828; Sat, 09
- Nov 2019 10:03:17 +0100
+Received: from [192.168.1.2] ([2.243.82.67]) by smtp.web.de (mrweb004
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0M0f1C-1hd3yk3UMQ-00uqJg; Sat, 09
+ Nov 2019 10:03:16 +0100
 Subject: [PATCH 2/3] fsl/fman: Use common error handling code in mac_probe()
 From:   Markus Elfring <Markus.Elfring@web.de>
 To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
@@ -72,7 +72,7 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <8af4d161-cf85-b40f-6cc1-7ccf6d505918@web.de>
+Message-ID: <38159f52-81a1-8ece-076f-da66180f4d5e@web.de>
 Date:   Sat, 9 Nov 2019 10:03:15 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
@@ -81,30 +81,30 @@ In-Reply-To: <132e8369-c4da-249f-76b8-834e394dc6d5@web.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:4ifrebuGtQEnat8+4sGV6OJL8On2wzvwy92TxOtI89YYT+2OM/2
- v89WSktNRUYt4BVGwP6MHHz/MPglNojWC8Xy8Xy0NidQM1wa+iQpA3HthN9WJqg0Jl7yakY
- Gj5042adq20Emlm/539xrKh0NxQI6GmESKdPH4rgaZ6oEcJ5vmKNebnRAxFs6LyFNTLcwe9
- dAZAxyq8xFqaKdNXwKHxg==
+X-Provags-ID: V03:K1:5QjZZUF/uEC5ha8UFxSqCFcACX950kwsosWqC4ZkjAORgg/6rnK
+ 5GCF7hefvFU13OJG6Sw+kzPpSnyQP+b/eYREkmNy0IWZdbh55bY0ZyudP0CNc1hx9odK7+R
+ Anu5K+OnPha8xpVry43ehXE2kHZud6Wng3gdh9k7on1LGs0k5uHLD88J9YcIXFsj1zbP/fv
+ mQgMFQ+MuIFTa9FDAj+HA==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UJRVT5At2G8=:OSqbbWdF15C4JMCF4hN0mC
- fe5Yy8W97SrYl3Kk7rWfc4Robm9eOFHz+Y1voo1uZX9BeQXJp537uU5Ytmx3tgUAaNGERnF+b
- 5VN+AoxEMozndEFtu9Tt6F5RiPs5PFMJNrwcoKTheU3gE5Vbmu4DYScCqTNZRtEoczW69qcGw
- SmhDC2LY99KkTlFzp30oer0rwywUEtiDPxWAhku8fsBjsqeiAgGg9+NQM+GVpCPWJ6486/Idq
- Ghf+ImL124D1Nn0FevXylsLIUGYYutyzUZ/UHvw04NeGVi0RoW7/tUlY4AGvxgbJ/0pTNTqCv
- x/6GjozzvtLBpInxT1dqEx7s/woKZh8K9BqL94piMHDGTg8/9SOVT7i8sxoAnIUlflIWs3oqo
- NkzqfuYMcU1lUpbRQSoKxbV1HhwgtvlfKj7BS/TE6EuY2ZIugjohW4FCzrs+nU0rrnIclwn2M
- wUID8KACN4eosYOI73BLP9/qrYPgnhZ8ipE/7zj9pcpyZGfG1lofwlygkAZgL0XicdAeDXdGQ
- 0DnHTe+euRLIzJ16RsLGW3P3tqBxi7Bkoi/zplrq6n4ACNUROhJNya0DxByDeYE8nqrm9JZYh
- N9cc8c7JcZrMDoTfyLo8z2KN8kO7RJTsXrFu2zk+9vDcuRA/X40icTj9zci3UQ/Sq0ypLE02L
- siWG4nkOkKp9Fo0X/E1o0Et9/T1Un3CmCwpTMTb+jWlFJt8tTjUdu/iw9DQb1jut79npplRBP
- yWUaSR/DRv6B9qWcR29HIyYmItfJzB9DfWYRZf4ufZavDPr6lKWQnrIq6X6esqBRcKvDu6hUy
- LHl9R6QS7p1BGdNq9H6GTnQLyke1o5womdq1RWAIKnvDa6BvtigMBwUGwfNLuCbnLTxyCUYqn
- FiOdwK3IcfCwiuHD+LurAs1ET1BrDVoPnEQMtrNJfSiet7CfQxYdzZ8nzltBg4MyH5zLsq45A
- Z3hsZNhq1FFyLK9BcaExgPEN8lu7JbD1kvAEm0rUxHZwiPiRkZ9thjkPjKLLPcdmVGc88MUg8
- g7MbklYPf7OzcQVcucdyCNs1dsHfULaZIQ/lc4pNTuZkndngFUR+BT4rtII2HjtmO2t+QpZvW
- 4vuwCDAYqtW/lH0xvTSVUTIUtBlu1VluABIF/74r9RzoEbMp3NRPxaG1I3b4HWeeg8hZbYdek
- JlRZrfSs8mky1xJOZrBt1g089v+JE8PGxgqL9MPydOEn7XdbNcW+/5WL4MfgLnnsealloOkkZ
- ifUQDoSRWh4wp4YWgEPYRVMX7/x12k+BKpptaoMT3d2KU5ynzyt5COjSsQhU=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qlQGOrf0uCA=:15IgdzL/4mrHeQXKdvyPyg
+ nEjHDrk0oVstuA2uvcjO+VywMh2hGr4Pd+XF1ZkHMah9em4sWAiLQcyBimPFD7kLmKmDoheIS
+ OHqhD6whqLEFdYrX5XlFCZavEi6VLeMsxf+QFAhR85nRJEsY+If7NsKeoiXY4yYQF6ZTTBU06
+ ov/zdZGEifyI5s7V3PBYAjR2M8O+sw5J3aItBNE1EGanbYwMQ/gh/I0UPvbV72ujOnen232FW
+ noDY7VU6un8kB2KJKtghDXOVPU1NpOoNZ0GPmd0BqFk3ZU19A+A40NpLpZ5x4BO3WGsHf4ASQ
+ YLkhbEnQVJw0Jjm0xvtBmdOY7DBNO4KOmfFS66aThw5qMUQHyUMyZOKbcdc9J5Ili0gewIllZ
+ 9MjAu+8exvwdtsfgcL6mhuFvqCUNQQo4HFK4T7g+ODRQbH3Se/VuiNHf8QX1G73w+DFDACLJV
+ EZ4+HxRz33WjHjz2V+j4kGDfjp7pMBBOEDoVi6yZQfR0IRhG2cbgcXJeHIxwR0429ceDA5e78
+ 9am6VVBR/Buh6HkE6JdObCbiVqn8Ey4Si/Oy0Z/PXZ0jV445/z39803micoLAENd8UK0A+hC+
+ 53rzAaPswuTLqERh3JtAXZKgDfzY0PUR5/20s9UEdQYUby3gRO1m34xRviC7PkyoyDIf3HEib
+ 2lfmPLYzCaOMGlJsdhp9/ngVx2jwRBatjI6sqmqtLUoyW9oSP9IAicHsvMkuaxAECeM4d0Evh
+ fIGlG734+Ajwmr1EgI2nRKrCS9VzLhVl8q1uMvZh8uLZvPSM/l5uFF/ndsecnfV3+AimA8JJt
+ 5oT9H9oc7sU2C/9+iVnO7sK+hef2uOYIUdKy8H+wnEtECZbqV/per6Ku/KBG2DQBup7unOrkn
+ l5hwS4v0H8EcU3Y6IWABGPPylDhnP+/T1vJ4N9Zzv1ke3GKFnZkIUgW2gMVuL9thBJEsI7mzc
+ GUbqJHhUOOs1inq9rzzbWU0VbX6MKfaoT3bOXfiLSGQtFV5lyr4pXgt07T8vysF7bBy5Elxow
+ MQQjoxEDyQGdERvav8JjezivHp0pg/LIWtrZOuYNdTKlBx7ZNg11WmTfuh2rQRbQXGMJ+zjQi
+ ZRekQnh+gyhajzt1pPV5D2I+0NsZBTCX79AKvXjKpInbVtMX2/3WFwBwGkBIXZWs5fDHjrpy9
+ c13lryo5qybk1VOMYZh49WeHNOkZL2q22hsZdrmSOM+H1uinGATaOY9/GdkUZNNB1H8n/+3PB
+ h93crA5osxziKxR5LE2VibDFyI2FX1wBUPhbULgKDg43vbL7tvKE8jlp4fC4=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
