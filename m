@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9FBF5F46
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 14:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BFA0F5F4D
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 14:03:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbfKINDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 08:03:34 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41809 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfKINDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 08:03:31 -0500
-Received: by mail-wr1-f66.google.com with SMTP id p4so9917988wrm.8
-        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 05:03:30 -0800 (PST)
+        id S1726764AbfKINDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 08:03:45 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52012 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbfKINDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 08:03:33 -0500
+Received: by mail-wm1-f66.google.com with SMTP id q70so8821856wme.1
+        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 05:03:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7HxLSRkakGUkkAU1gXE6jl3MxJjgpRnG4RCmbCLhCqo=;
-        b=nhP7XLx1JbWPPHs8BJ6xwLzZJjK9cC6V8vhr5OyIar9DTNIAF8W+3Zp2UCHMKZQfpJ
-         xbR1bqkyxVLC3o5e94PEr1WREodXdt8kHVcLoMF5Zmy4Jy80wL5h+jFozoUsy55aRky5
-         Gk9xzXa4mZdwmbA4acmIxpqqxeH8dxCCXfl2s7UhmQ2AFsvu/Y8hm/fEId/UA2gDiJYj
-         7YLss7x6r7FCjm2jPud7e08q9IxxZ0kuv1t+5E1GA6RhxSG6nR6fGLsU4vg6Wxq3fCKA
-         mYEGAD3m0JllLSMVEu/o5TeNz2lhek+zGaB3PuNRdJdzvJq8Aq6cqDUTHNU1hwJCgHr6
-         gKIA==
+        bh=pz7jCL0OncQl+ctY/keoi4YKSykPbYYoa7XcwtNUZko=;
+        b=XrNTsoCefNNreY1BnIDCVnNEG85vIZ14SYXU/Lm20ycEjfGjc2PyumSNIoL62YubrL
+         cZ4gRO3WQo8AYI2xrj6fkjNuETMHUwlA7tnd/gwWUhHeaIsFmFFJjTAptXm0vyCkh7AY
+         j3aOCdZEM4ax9gHvN/WtgcSAn+oSEu925lb/i6Pz+j/8ygDB6IdYkmlAkDXRosYGnrur
+         ID8ZWYVN5zmMyQVE8/Xl1XpNbc4dsvGTjnTPTVSRWbDIHGriQNDx+H8zelzfsHffVsfZ
+         ZtRwoCIDZ4Wa1aqLKNvG/a21UGJKcarjtL3drNXOnSlH+4h2EkYWcYyNMQ68yjCziz4k
+         HHNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=7HxLSRkakGUkkAU1gXE6jl3MxJjgpRnG4RCmbCLhCqo=;
-        b=HEmJGB9xY39bFy+pPb+v8siee5RoBPxgFloxMTdXs5BZ5o+NSa3tOyYYFG0ExdSh9D
-         W84tm1BGzU/oUsQMVChFl4nWTkiRo544OGbMt0nh4Tu5ayWCl0sLvEcT/bdSFAmiWHcH
-         ygxAfNID02a2M63kInZp6tn3mZYAflUclmeLwy6LPYZxP3kmHYRxlPfsbr5TcGqqYNEE
-         44aNHvXuhPQmbYSMqfK4/l7d+SknF9V9N0wq2B1GrGGoa1P/PWJw7SOe9mqjnVg6hewV
-         05rVQC9HkVR3e+maZjQ6MzdDHPnV6KkrEjW/BPa+uf94wd0BJ/Y+CHF/BMipE/xkfiYY
-         a92w==
-X-Gm-Message-State: APjAAAUeAqFZLjfolDeb1SnXN3gI76Hf0KzWsuoxynVzErCgY9qGs37W
-        VEBzSuvxTjKSjVDG+f5tHbI=
-X-Google-Smtp-Source: APXvYqw3CzB6x8VqAnbe44UvSOvFjWpgFKTtxBEpHV+8kEYrIWfDOT3h0dxao/o/xe6zK6dsOIadZA==
-X-Received: by 2002:adf:f303:: with SMTP id i3mr3254wro.157.1573304610014;
-        Sat, 09 Nov 2019 05:03:30 -0800 (PST)
+        bh=pz7jCL0OncQl+ctY/keoi4YKSykPbYYoa7XcwtNUZko=;
+        b=ImoBGTU4e5UPcj9en5DUcdOB2CcZMHYJEqov4T1Y+tMP8k4OmuQXSrV1iiAq4lRkgC
+         UKL/rncYTx9WcoB/vCOy+QiR94e3y0vEIye9q0qIk5cQV+o6o5TrGkk6out4MiSIWpvK
+         yaPj9VTJNF88Xro2jndeZnK2jfK1O+9swW0nFBv4WlciHvBeeLcJhDrciDuZXfREyhjo
+         OBIgtzi7kpPRtD9zurPtdXg0cdItR+Sr93G+ZCURaiqPHAq0NEzB9j+WWqcGr74ttjBK
+         65rwJdu0Y3xhiw8RRBbXGEUnGBWyaYg0ey1UIaB6jdI1xQwwSXRZQp0chLDoY7nRaQFC
+         3GdQ==
+X-Gm-Message-State: APjAAAVlIa2HZDkmek8mZMLHW9V8oAZWKOG1ogOgblvXTVWx0s+8TZ+i
+        nuEwPcI3zgdKt8CFEp1VJzs=
+X-Google-Smtp-Source: APXvYqxIHVHHuKJbj1H5bY5NiOxLMXPmc+ppTJxXJ5bNaVOVymU1aYirJaNd1Vyjs7xvasM5AR+UZA==
+X-Received: by 2002:a1c:2dd0:: with SMTP id t199mr12152675wmt.58.1573304611804;
+        Sat, 09 Nov 2019 05:03:31 -0800 (PST)
 Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id n13sm8370908wmi.25.2019.11.09.05.03.28
+        by smtp.gmail.com with ESMTPSA id n13sm8370908wmi.25.2019.11.09.05.03.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Nov 2019 05:03:29 -0800 (PST)
+        Sat, 09 Nov 2019 05:03:30 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     jakub.kicinski@netronome.com, davem@davemloft.net,
         alexandre.belloni@bootlin.com
@@ -50,9 +50,9 @@ Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 09/15] net: mscc: ocelot: limit vlan ingress filtering to actual number of ports
-Date:   Sat,  9 Nov 2019 15:02:55 +0200
-Message-Id: <20191109130301.13716-10-olteanv@gmail.com>
+Subject: [PATCH net-next 10/15] net: mscc: ocelot: move port initialization into separate function
+Date:   Sat,  9 Nov 2019 15:02:56 +0200
+Message-Id: <20191109130301.13716-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191109130301.13716-1-olteanv@gmail.com>
 References: <20191109130301.13716-1-olteanv@gmail.com>
@@ -63,29 +63,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The VSC7514 switch (Ocelot) is a 10-port device, while VSC9959 (Felix)
-is 6-port. Therefore the VLAN filtering mask would be out of bounds when
-calling for this new switch. Fix that.
+We need a function for the DSA front-end that does none of the
+net_device registration, but initializes the hardware ports.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mscc/ocelot.c | 45 ++++++++++++++++--------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 58ead0652bce..107a07cfaec9 100644
+index 107a07cfaec9..83ecbbd720fd 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -389,7 +389,8 @@ static void ocelot_vlan_init(struct ocelot *ocelot)
- 	/* Set vlan ingress filter mask to all ports but the CPU port by
- 	 * default.
- 	 */
--	ocelot_write(ocelot, GENMASK(9, 0), ANA_VLANMASK);
-+	ocelot_write(ocelot, GENMASK(ocelot->num_phys_ports - 1, 0),
-+		     ANA_VLANMASK);
+@@ -2133,6 +2133,28 @@ static int ocelot_init_timestamp(struct ocelot *ocelot)
+ 	return 0;
+ }
  
- 	for (port = 0; port < ocelot->num_phys_ports; port++) {
- 		ocelot_write_gix(ocelot, 0, REW_PORT_VLAN_CFG, port);
++static void ocelot_init_port(struct ocelot *ocelot, int port)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++
++	INIT_LIST_HEAD(&ocelot_port->skbs);
++
++	/* Basic L2 initialization */
++
++	/* Drop frames with multicast source address */
++	ocelot_rmw_gix(ocelot, ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA,
++		       ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA,
++		       ANA_PORT_DROP_CFG, port);
++
++	/* Set default VLAN and tag type to 8021Q. */
++	ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_TPID(ETH_P_8021Q),
++		       REW_PORT_VLAN_CFG_PORT_TPID_M,
++		       REW_PORT_VLAN_CFG, port);
++
++	/* Enable vcap lookups */
++	ocelot_vcap_enable(ocelot, port);
++}
++
+ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+ 		      void __iomem *regs,
+ 		      struct phy_device *phy)
+@@ -2140,7 +2162,6 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+ 	struct ocelot_port_private *priv;
+ 	struct ocelot_port *ocelot_port;
+ 	struct net_device *dev;
+-	u32 val;
+ 	int err;
+ 
+ 	dev = alloc_etherdev(sizeof(struct ocelot_port_private));
+@@ -2168,32 +2189,14 @@ int ocelot_probe_port(struct ocelot *ocelot, u8 port,
+ 	ocelot_mact_learn(ocelot, PGID_CPU, dev->dev_addr, ocelot_port->pvid,
+ 			  ENTRYTYPE_LOCKED);
+ 
+-	INIT_LIST_HEAD(&ocelot_port->skbs);
++	ocelot_init_port(ocelot, port);
+ 
+ 	err = register_netdev(dev);
+ 	if (err) {
+ 		dev_err(ocelot->dev, "register_netdev failed\n");
+-		goto err_register_netdev;
++		free_netdev(dev);
+ 	}
+ 
+-	/* Basic L2 initialization */
+-
+-	/* Drop frames with multicast source address */
+-	val = ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA;
+-	ocelot_rmw_gix(ocelot, val, val, ANA_PORT_DROP_CFG, port);
+-
+-	/* Set default VLAN and tag type to 8021Q. */
+-	ocelot_rmw_gix(ocelot, REW_PORT_VLAN_CFG_PORT_TPID(ETH_P_8021Q),
+-		       REW_PORT_VLAN_CFG_PORT_TPID_M,
+-		       REW_PORT_VLAN_CFG, port);
+-
+-	/* Enable vcap lookups */
+-	ocelot_vcap_enable(ocelot, port);
+-
+-	return 0;
+-
+-err_register_netdev:
+-	free_netdev(dev);
+ 	return err;
+ }
+ EXPORT_SYMBOL(ocelot_probe_port);
 -- 
 2.17.1
 
