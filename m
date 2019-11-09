@@ -2,134 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAB60F60D5
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 19:17:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E58A6F60FB
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 20:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbfKISNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 13:13:36 -0500
-Received: from mail-eopbgr60089.outbound.protection.outlook.com ([40.107.6.89]:14917
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726383AbfKISNg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 13:13:36 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jSJr5YSxnDr72Jd66DBIaLo3cUEzJlx4MVDdLzvwYlxY5A5G4WEQoMLfBQ2hNKZ9os6dCyD4oTn5xBKI7MWGux3Xa/KH+hKNpNo1/3PUmRODw2xEuTprFiRxPiPwPclBRT0e3avgzMXEXwnhqEiKcU5JwsU1A9ZblPDtda0NcKLlV6Q+9sorX9hios3qZzLn/97D0JDUixIoFhNrKx9c0lf8Qlops1PAw3dDEqIr3I1PjUI5TadfiUkQYwrjbObLFffXGYuaXNrgk3qBH9FeeWzcfYIagnQSQDY5dWlIcMh117+/0D5RW9JtXnX0VZVeeaX8pXNafws+m9Z2wfntgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hQyZsSeU6HonI/uzMW9P5WPzCut9s4DEXR33UClvhRE=;
- b=N/hFeZzWDOs/ZP+mHuJ6K/bI7Ii99dOF8m5bvr0LoRx3Frh4HpX1S/sSoi6au/ZX2ZgHNrTQ9sAb2u3hSS6W/eKqE/2gd/+ss9CO72vQB8VPS6dPScpcNiLRB64cl1HZLZZwpt0kMTYnbQi2x7IY67HQHnFadf17ngvjruDST34X9wMqastB0XhHQc4myVU91tUauCwIlySfTLiDrP+w2Uy199v3nE2lsiAFX0dFuzXbJgJyKUuuKyh7WQv+qyqhx3tsUowZc0FCLL1VFNYiknNr9KBvHO6rpDSkwkDFbOxg+I7rF6A16N4A9HM5VWoGHt9GVjmToZhkBfijdP4SxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hQyZsSeU6HonI/uzMW9P5WPzCut9s4DEXR33UClvhRE=;
- b=tNAQyDzDaCgcrx1tH+XTpiyDEzl4pp9E68cE9vcTp8+JBkIAJG1TM3vikFGlACXF0XaSNlNzMlMhmAcf0Esawz3pPVL58Cu1cGktQ+qTrWxdtqmRBLNWnYR3ajQujpT6N0hW+q1w/a8eOfmNzkzQxsUKf9j9NU1gel/4RN8ComY=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB5185.eurprd05.prod.outlook.com (20.178.18.22) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.20; Sat, 9 Nov 2019 18:13:31 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.023; Sat, 9 Nov 2019
- 18:13:31 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Yuval Avnery <yuvalav@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: RE: [PATCH net-next v2 04/10] devlink: Support subdev HW address get
-Thread-Topic: [PATCH net-next v2 04/10] devlink: Support subdev HW address get
-Thread-Index: AQHVllBB2/zEJqwON0qPJYQ0F3Add6eBj3XQgAGOuwCAAAbMkA==
-Date:   Sat, 9 Nov 2019 18:13:30 +0000
-Message-ID: <AM0PR05MB48669E4E79976591D8728D0AD17A0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
- <1573229926-30040-5-git-send-email-yuvalav@mellanox.com>
- <AM0PR05MB48663DAB2C9B5359DB15BB89D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <AM6PR05MB5142FEFE41F0B06B7E61FEC5C57A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-In-Reply-To: <AM6PR05MB5142FEFE41F0B06B7E61FEC5C57A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [68.203.16.89]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 18f11956-c42f-4329-7c81-08d7654086d6
-x-ms-traffictypediagnostic: AM0PR05MB5185:|AM0PR05MB5185:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB5185D3D1CAA25C21BB50EA37D17A0@AM0PR05MB5185.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 021670B4D2
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(39850400004)(366004)(376002)(136003)(189003)(199004)(5660300002)(2501003)(11346002)(446003)(486006)(66066001)(476003)(186003)(26005)(86362001)(102836004)(7696005)(33656002)(2906002)(4326008)(74316002)(25786009)(6246003)(76176011)(6436002)(6116002)(229853002)(3846002)(7736002)(305945005)(9686003)(55016002)(256004)(6506007)(8936002)(71190400001)(71200400001)(316002)(8676002)(478600001)(99286004)(81156014)(81166006)(52536014)(66476007)(66446008)(64756008)(66556008)(14454004)(54906003)(76116006)(110136005)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5185;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WXeXRVGvpS266l612yhcVojVRHVcDtrLxpF36EX96hRIJIVwBi7+ap62Ha3vEY2yCEMdXvkdSJ1FohBMRHMAdgF88EL4NvOC3crUBoXVaJ5RJ120jlkGgkFgwg+1A+eqYpVsdi5sB9AqcQmyiN1UYC0V6cFHMiqIbTSYEMslWbVYw/DGRkA/raELngxT3ckp6rZRUYneCjNe2OmLr0Dyqg+mJi4YcrpvCFAVuiz30ND5xyJ31NdLhmgdQGJdrlEo3WuS7JbbpQ3/fnxmXcbzo7fqHFjfcsaARGvLpegDq94dXrAw32x5g1xneIluDE737ssnfu0fu1H+7xOjgr8/dpW+/6McUOT/SIVQNtvdJ/5EIQPSoPcxxPsm4f/4u09oLDdtEW++1KP29LLgZLIxHMrVWewz1rtggov3FTChYUqTJvHrqS920chZI2a+rwfB
-Content-Type: text/plain; charset="us-ascii"
+        id S1726778AbfKITCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 14:02:21 -0500
+Received: from mout.gmx.net ([212.227.15.18]:49563 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726834AbfKITCS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 14:02:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1573326036;
+        bh=K7CKH2sFHfDimmW1dIbo69c8oSLm5ez1U7M3pM6s/+E=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=dW6JW4Ob+mqjTz46lOUHJX1v+0S4LkxRQRVOj2Wbri+Rr3qP0uKYxOze2JwKKYO60
+         vuZd1KkCdHq6YZMCDSBgUXz2Ew6cf8NgdkLUpTFVDJMfFsDud+E2AholP4nhkeC3fP
+         +dhp4oSYYpcxFSqYDx+HzMfsXRr0+M59le77pp2o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([37.4.249.112]) by mail.gmx.com
+ (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MvsEn-1hazuV0LEF-00stL6; Sat, 09 Nov 2019 20:00:36 +0100
+From:   Stefan Wahren <wahrenst@gmx.net>
+To:     Matthias Brugger <matthias.bgg@kernel.org>,
+        Matthias Brugger <mbrugger@suse.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Eric Anholt <eric@anholt.net>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org,
+        Stefan Wahren <wahrenst@gmx.net>
+Subject: [PATCH V3 net-next 0/7] ARM: Enable GENET support for RPi 4
+Date:   Sat,  9 Nov 2019 20:00:02 +0100
+Message-Id: <1573326009-2275-1-git-send-email-wahrenst@gmx.net>
+X-Mailer: git-send-email 2.7.4
+X-Provags-ID: V03:K1:OgFDCO0NwXvuJHy+Vu+h73awi0XbS0g0wqaxOoCfcg6M1laaqr0
+ 42WMpGs3AOwhMdR1fBhvUbb5TFyk20DV7l/TL5hZ0vYJypBqkuBTym/6BIIYZQedzi6jc7O
+ SsdVWY4+RAHJWI9+LCWmt5YdJGHx6weJsESvw1u3d8fX8GqJeve499d7ejAJydocs8zlhUX
+ WwWlW3ZTVtX4dtMANBHEw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:cib+r+eNvWs=:/uhI6kKPMUNqdQMoO4/yG2
+ ZCp5Za+V80fsbbFDY6WK/xAFVYennLWAhHpDw+JO4A/4Bc81M8vX27o6hPTgJYwdb3PUcR7oR
+ TGsFXkrAQ8UAJaC+JxrNJQFzqaDtdOlulZ2q0YtTPe2zXzj6Har6goypTugNGaDnLCAJPLplc
+ h7jtXElDUVdCBcMK5wzGUmGts/rzLN8ppvE3jDst1bWUIo5FdZDDGeOlZ4lu2t8ZS+0hyS+KV
+ iIoPcgzB+l6Q6ltxsCbpPbUG7h33fBLYDXu4sb6GTt5pi4LEU/BuxbiWhPdfjfwUdRbDhCu9n
+ 4dwZ7lJERqEczy672tPXGxAMQ5eGhPX+ZEyT/yHM9GnuA7HFIHt3k5qnKehBZSKI3iJAIGbor
+ ugkMRTasIjB2Thl4QFjYeMBGqEKJ1pYwRUpISrT6fBEKly8VvGl2xQBG8+rPxmfhf38xGG7MA
+ 0JHJKwdcLNk5fwGikclfVyHHKWd8oCSKQuMwTpwdga0BeSUfUI0cL5HXPkp+D/mR9Su8jru+x
+ J1IOLG6XHkezIlO+LzWA1/47qbgffe5cDoC7pkSLZCvIXKCcU4C+mCvFBBOBZrXbyYmzk5GZW
+ uQT4VS2sVRhsxaOqT9jtC942aSzuZGnnMYhZcYzHxOD7iCr7euefq/bNun5Xj3CjOcnX3SDDs
+ MZkRI7QDuqQTVrMS4dLf8/jFFOILLxr7FMwxP62dqWCej8FkbtkDoo9YthyE5rrQLPY/igbnj
+ Xe2G18cdSlAH1eMRoZJgJlqNf/1CVcn23SIL+OrvyD3JFCzC567IPFlYDWhpRry/3vRuZcFmS
+ AJ3bOERQImA4WcoBFqWcTq+wM0ZUki1Pl6vLcHt3wc4tCx7weqSt1b6TfPzVw1+LtFg9wKE7E
+ M0yLP3R2cEfVWDhVQOSSBNFJiNmBRJaq/yhRNf8wwGpHbHc+CARxwzwWEgWNa5zW6dRyPrsim
+ rvaVmcaapIGVTkGQE8Xa5XD7mQi7xZBc3z1dhz8a9YVtBgAZJlb4w0/ylA4YDTGT4nz8tgkhp
+ 0K0QEcVGdEP1W+8+LzBG6atdFPv26lml75vAPVWYByZ0JSzAgNW0RWFueEVmA6DC6EeYCN5sz
+ VcJJ6AsMBx8r5f9sEKo4v8SivF0AruA2NQ9+mK0kUFeLvo9qbRTWv87S7iydq4lO3jxuSzJKw
+ w8uCmT1f6lc2Ebsud+CneJJYcFtSuPLJqb2B9EqYrKVzFXij+27mzAA7T1dxB7677PXbO8JNi
+ 4Baau5LFAXOqKrGLV9eOf23rkjkx0Q/xGHFSh/w==
 Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18f11956-c42f-4329-7c81-08d7654086d6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2019 18:13:30.9221
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: cTzLK/PA0HKzWHbQuALdv/YFjGeC0tfmBJTqpXwngMGyTuNdZGl9W4iW3IDh7rR97n2D622c1yi6oQKm9SCQFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5185
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Raspberry Pi 4 uses the broadcom genet chip in version five.
+This chip has a dma controller integrated. Up to now the maximal
+burst size was hard-coded to 0x10. But it turns out that Raspberry Pi 4
+does only work with the smaller maximal burst size of 0x8.
 
+This series based on Matthias Brugger's V1 series [1].
 
-> From: Yuval Avnery <yuvalav@mellanox.com>
-> > > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
-> > > Avnery <yuvalav@mellanox.com>
-> > > Subject: [PATCH net-next v2 04/10] devlink: Support subdev HW
-> > > address get
-> > >
-> > > Allow privileged user to get the HW address of a subdev.
-> > >
-> > > Example:
-> > >
-> > > $ devlink subdev show pci/0000:03:00.0/1
-> > > pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0 port_index 1 hw_addr
-> > > 00:23:35:af:35:34
-> > >
-> > > $ devlink subdev show pci/0000:03:00.0/1 -pj {
-> > >     "subdev": {
-> > >         "pci/0000:03:00.0/1": {
-> > >             "flavour": "pcivf",
-> > >             "pf": 0,
-> > >             "vf": 0,
-> > >             "port_index": 1,
-> > >             "hw_addr": "00:23:35:af:35:34"
-> > I prefer this to be 'address' to match to 'ip link set address LLADDR'.
-> > That will make it consistent with rest of the iproute2/ip tool.
-> > So that users don't have to remember one mor keyword for the 'address'.
-> I think hw_addr is more accurate, and consistency doesn't exist here anyw=
-ay.
-> We already have "ip link set vf set mac"
-> Address is not specific enough and can also mean IP address, while hw_add=
-r
-> covers both ETH and IB
-Ok.
+[1] - https://patchwork.kernel.org/cover/11186193/
 
-Jiri,
-Do you want to wait to conclude the SF discussion, as we are discussing sub=
-dev there in confused state currently?
+Changes in V3:
+- introduce SoC-specific compatibles for GENET (incl. dt-binding)
+- use platform_get_irq_optional for optional IRQ
+- remove Fixes tag from IRQ error handling change
+- move most of MDIO stuff to bcm2711.dtsi
+
+Changes in V2:
+- add 2 fixes for IRQ retrieval
+- add support for missing PHY modes
+- declare PHY mode RGMII RXID based on the default settings
+- add alias to allow firmware append the MAC address
+
+Stefan Wahren (7):
+  net: bcmgenet: Avoid touching non-existent interrupt
+  net: bcmgenet: Fix error handling on IRQ retrieval
+  dt-bindings: net: bcmgenet: Add BCM2711 support
+  net: bcmgenet: Add BCM2711 support
+  net: bcmgenet: Refactor register access in bcmgenet_mii_config
+  net: bcmgenet: Add RGMII_RXID and RGMII_ID support
+  ARM: dts: bcm2711-rpi-4: Enable GENET support
+
+ .../devicetree/bindings/net/brcm,bcmgenet.txt      |  2 +-
+ arch/arm/boot/dts/bcm2711-rpi-4-b.dts              | 17 +++++
+ arch/arm/boot/dts/bcm2711.dtsi                     | 26 ++++++++
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 74 +++++++++++++++++=
++----
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  1 +
+ drivers/net/ethernet/broadcom/genet/bcmmii.c       | 51 ++++++++-------
+ 6 files changed, 133 insertions(+), 38 deletions(-)
+
+=2D-
+2.7.4
+
