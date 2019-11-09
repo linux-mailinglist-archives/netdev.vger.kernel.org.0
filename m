@@ -2,155 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D40F60B7
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 18:34:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 44423F60C2
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 18:43:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726349AbfKIRey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 12:34:54 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42205 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbfKIRey (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 12:34:54 -0500
-Received: by mail-pf1-f195.google.com with SMTP id s5so7277077pfh.9
-        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 09:34:52 -0800 (PST)
+        id S1726582AbfKIRlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 12:41:08 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39554 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726492AbfKIRlI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 12:41:08 -0500
+Received: by mail-pg1-f196.google.com with SMTP id 29so6243161pgm.6
+        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 09:41:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=qEVl6DQFymxQWqaOwZDhMknEuuQQut3G7AhwPE4cmng=;
-        b=Isngil6cuCiZmp2wzx2nhrXFrYSRbMrvTP75IoZFiVFk2+5VoSe41Z4cq9VdYCCvCy
-         LyzSlEpxPdBjyybMcCgiZvWj4EolBmle9OSMX6R5Xk2kWE4Da2a05SVv6WGPy/D96tvu
-         LELSVo97OIOcUFG2GSxpttGeGNzluN+I5laW/KwCTzd40udLwksXw74A/lIEtU0UzQwW
-         abYy+LOSP9BGCOVl5xnxLPnDslGB5FF4rt63qqJi8sKnA5CKh/yXE1P3h0hL32UYVnnh
-         PDPHIKWyn4DS6zcPJOsK5LEhQheVssXGi6o34xkhyKA6W2Kp2LWQEBVQaj4+Ks8tqZ3D
-         evUA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=2B7miXvo12sd3AwR/N24hvrji1TnW/1jP59Zv1D2zxA=;
+        b=Ux66y2/Kev7fAowQYcNDFqBF2oMucxESjkkRfo8IKup+pQkx6c41HWBsZj9GcF/XH7
+         9q5bddJ0Ib4aWwuzqXvZ/f6ExZS0BhSgfZfP25ahtYi6cRFgd6bNKGUNcmMNHudNagcC
+         gCsZz3t6Mq+E1k40G+tbKVjUsRtLsUqFwOo01ugae2GCJvy2GLhJrtoc20el2oh7SbBf
+         ROYWJC/rPRLGrqeXE6yeGN7xdj1TF4KXEbxh+FAYZYVgj9tCuD0GO2qMFAKfYbcAHD09
+         n6ptYL86QvSyY/z14h/xrMQJ/T5NEtw6+1My7DBq0+zYNnCHlHm/tL1osxRC9TA7a9Sc
+         ltcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=qEVl6DQFymxQWqaOwZDhMknEuuQQut3G7AhwPE4cmng=;
-        b=gqKkvko5xMc27HxGZDluPFnYSlRUx0Tx9rrMcHv0odY/aiF8j4MkCf+Zfs4FTN/FmP
-         WvrhgiLVgGxZsffbxM4lyymE7mREUxumOst7J1gjHcqaB+LIWYGCihaENrPm8EQHkdj9
-         cpcmtUllWH8vuCD5QswFgWOjOHuF6Jz9wOTyp79dLibnd/XQUwmnZBxPVXCw509UjEl1
-         AN1xR4QPeKTrwo16Ri7KtX5IhvSattdk/nRXM9vr/i/VHiJJJcl1hSVSCO7I/dzyp/lk
-         2PVptRP3gZWCFxpTXpIwMSuGm27n94Hn2r85r8RAi+VP5Fvz4TdiGPrMcLIXrAm93P+B
-         4plw==
-X-Gm-Message-State: APjAAAXPpSFHR225EhqmpPmB4yHu0hs0c1B6Ft7D8Ir1hnkfttGD62Un
-        M69/4YNx6VVsuGjcFvqX2ToR0yiP
-X-Google-Smtp-Source: APXvYqw9bnibCMiVvmApprFFvg1iVw8873TaV2zjAIBZZQ1ef1Lsx/rDt+O1E7Y1DoXzpkXyj1iM0w==
-X-Received: by 2002:aa7:982c:: with SMTP id q12mr20267521pfl.83.1573320892048;
-        Sat, 09 Nov 2019 09:34:52 -0800 (PST)
-Received: from [172.26.104.170] ([2620:10d:c090:180::e678])
-        by smtp.gmail.com with ESMTPSA id v3sm9252825pfn.129.2019.11.09.09.34.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 09 Nov 2019 09:34:51 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     "Toke =?utf-8?b?SMO4aWxhbmQtSsO4cmdlbnNlbg==?=" <toke@redhat.com>,
-        netdev@vger.kernel.org,
-        "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
-        "Saeed Mahameed" <saeedm@mellanox.com>,
-        "Matteo Croce" <mcroce@redhat.com>,
-        "Lorenzo Bianconi" <lorenzo@kernel.org>,
-        "Tariq Toukan" <tariqt@mellanox.com>
-Subject: Re: [net-next v1 PATCH 1/2] xdp: revert forced mem allocator removal
- for page_pool
-Date:   Sat, 09 Nov 2019 09:34:50 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <5FDB1D3C-3A80-4F70-A7F0-03D4CD4061EB@gmail.com>
-In-Reply-To: <20191109171109.38c90490@carbon>
-References: <157323719180.10408.3472322881536070517.stgit@firesoul>
- <157323722276.10408.11333995838112864686.stgit@firesoul>
- <80027E83-6C82-4238-AF7E-315F09457F43@gmail.com>
- <20191109171109.38c90490@carbon>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=2B7miXvo12sd3AwR/N24hvrji1TnW/1jP59Zv1D2zxA=;
+        b=Rn1T4+Yd3TIJylMixRIobeK0zPGxIhcUFmdThCpa9vwmZGB6MerC7o+gAOl1cAI+QM
+         RdMg2Z1iHJOa6HkJXKCTz5cNYqPc4JIi+wDy9Ym3AN77dxGSFRuxrXOlv8nkYdl8zp9b
+         wjYUxottfe1sIwtl/GCUCD//PpwRvRPZH5fdU6YLhG4qvzHceEt/7O2BewI9Nd4aDu5+
+         cWyEmaP3gppWX8EulpB8iZ40mjMdpvaQOSrZCiHFe5K1D4Q3HqPrLieDkNZddqEppe6f
+         FKjK0c8X+TI30fFBweA4BygXElRyn4cVYIPN1g8Io9X/rE5pMhoSlMhlfmDA/zsnXCVw
+         IxHQ==
+X-Gm-Message-State: APjAAAWkzFIK0wxkWQsZqvitLa8OLBi6ykF8XJ+wy8xjDJnYENxW0o5X
+        xfByj+hk2+8taUtqfunAuxnI56/b4Qc=
+X-Google-Smtp-Source: APXvYqzxYgwMmVIq1JfKtIHriDl97HY1zcdcpAYzr8weQ2+HF6xR/h1VetUuPsLmf6vJjuss1CYESw==
+X-Received: by 2002:a63:3205:: with SMTP id y5mr19364349pgy.42.1573321267604;
+        Sat, 09 Nov 2019 09:41:07 -0800 (PST)
+Received: from cakuba (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
+        by smtp.gmail.com with ESMTPSA id a23sm5103400pjv.26.2019.11.09.09.41.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 09 Nov 2019 09:41:07 -0800 (PST)
+Date:   Sat, 9 Nov 2019 09:41:03 -0800
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Parav Pandit <parav@mellanox.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        David M <david.m.ertman@intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>,
+        "Jason Wang (jasowang@redhat.com)" <jasowang@redhat.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191109094103.739033a3@cakuba>
+In-Reply-To: <20191109005708.GC31761@ziepe.ca>
+References: <20191107153234.0d735c1f@cakuba.netronome.com>
+        <20191108121233.GJ6990@nanopsycho>
+        <20191108144054.GC10956@ziepe.ca>
+        <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191108111238.578f44f1@cakuba>
+        <20191108201253.GE10956@ziepe.ca>
+        <20191108133435.6dcc80bd@x1.home>
+        <20191108210545.GG10956@ziepe.ca>
+        <20191108145210.7ad6351c@x1.home>
+        <AM0PR05MB4866444210721BC4EE775D27D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191109005708.GC31761@ziepe.ca>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9 Nov 2019, at 8:11, Jesper Dangaard Brouer wrote:
+On Fri, 8 Nov 2019 20:57:08 -0400, Jason Gunthorpe wrote:
+> On Fri, Nov 08, 2019 at 10:48:31PM +0000, Parav Pandit wrote:
+> > We should be creating 3 different buses, instead of mdev bus being de-multiplexer of that?
+> > 
+> > Hence, depending the device flavour specified, create such device on right bus?
+> > 
+> > For example,
+> > $ devlink create subdev pci/0000:05:00.0 flavour virtio name foo subdev_id 1
+> > $ devlink create subdev pci/0000:05:00.0 flavour mdev <uuid> subdev_id 2
+> > $ devlink create subdev pci/0000:05:00.0 flavour mlx5 id 1 subdev_id 3  
+> 
+> I like the idea of specifying what kind of interface you want at sub
+> device creation time. It fits the driver model pretty well and doesn't
+> require abusing the vfio mdev for binding to a netdev driver.
 
-> On Fri, 08 Nov 2019 11:16:43 -0800
-> "Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
->
->>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->>> index 5bc65587f1c4..226f2eb30418 100644
->>> --- a/net/core/page_pool.c
->>> +++ b/net/core/page_pool.c
->>> @@ -346,7 +346,7 @@ static void __warn_in_flight(struct page_pool
->>> *pool)
->>>
->>>  	distance = _distance(hold_cnt, release_cnt);
->>>
->>> -	/* Drivers should fix this, but only problematic when DMA is used */
->>> +	/* BUG but warn as kernel should crash later */
->>>  	WARN(1, "Still in-flight pages:%d hold:%u released:%u",
->>>  	     distance, hold_cnt, release_cnt);
->
-> Because this is kept as a WARN, I set pool->ring.queue = NULL later.
+Aren't the HW resources spun out in all three cases exactly identical?
 
-... which is also an API violation, reaching into the ring internals.
-I strongly dislike this.
-
-
->>>  }
->>> @@ -360,12 +360,16 @@ void __page_pool_free(struct page_pool *pool)
->>>  	WARN(pool->alloc.count, "API usage violation");
->>>  	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
->>>
->>> -	/* Can happen due to forced shutdown */
->>>  	if (!__page_pool_safe_to_destroy(pool))
->>>  		__warn_in_flight(pool);
->>
->> If it's not safe to destroy, we shouldn't be getting here.
->
-> Don't make such assumptions. The API is going to be used by driver
-> developer and they are always a little too creative...
-
-If the driver hits this case, the driver has a bug, and it isn't
-safe to continue in any fashion.  The developer needs to fix their
-driver in that case.  (see stmmac code)
-
-
-> The page_pool is a separate facility, it is not tied to the
-> xdp_rxq_info memory model.  Some drivers use page_pool directly e.g.
-> drivers/net/ethernet/stmicro/stmmac.  It can easily trigger this case,
-> when some extend that driver.
-
-Yes, and I pointed out that the mem_info should likely be completely
-detached from xdp.c since it really has nothing to do with XDP.
-The stmmac driver is actually broken at the moment, as it tries to
-free the pool immediately without a timeout.
-
-What should be happening is that drivers just call page_pool_destroy(),
-which kicks off the shutdown process if this was the last user ref,
-and delays destruction if packets are in flight.
-
-
-
->>>  	ptr_ring_cleanup(&pool->ring, NULL);
->>>
->>> +	/* Make sure kernel will crash on use-after-free */
->>> +	pool->ring.queue = NULL;
->>> +	pool->alloc.cache[PP_ALLOC_CACHE_SIZE - 1] = NULL;
->>> +	pool->alloc.count = PP_ALLOC_CACHE_SIZE;
->>
->> The pool is going to be freed.  This is useless code; if we're
->> really concerned about use-after-free, the correct place for catching
->> this is with the memory-allocator tools, not scattering things like
->> this ad-hoc over the codebase.
->
-> No, I need this code here, because we kept the above WARN() and didn't
-> change that into a BUG().  It is obviously not a full solution for
-> use-after-free detection.  The memory subsystem have kmemleak to catch
-> this kind of stuff, but nobody runs this in production.  I need this
-> here to catch some obvious runtime cases.
-
-The WARN() indicates something went off the rails already.  I really
-don't like half-assed solutions like the above; it may or may not work
-properly.  If it doesn't work properly, then what's the point?
--- 
-Jonathan
-
+IMHO creation of sub device should only define which HW resources are
+provisioned/relegated. Specifying a driver when recreating a device
+seems a little backwards.
