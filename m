@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57A82F5C21
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 01:01:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 026E3F5C1B
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 01:01:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728265AbfKIABC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729047AbfKIABC (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Fri, 8 Nov 2019 19:01:02 -0500
-Received: from mx1.redhat.com ([209.132.183.28]:45156 "EHLO mx1.redhat.com"
+Received: from mx1.redhat.com ([209.132.183.28]:58912 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727731AbfKIABB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727862AbfKIABB (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 8 Nov 2019 19:01:01 -0500
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com [209.85.208.200])
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com [209.85.208.199])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 6726F811BD
-        for <netdev@vger.kernel.org>; Sat,  9 Nov 2019 00:01:00 +0000 (UTC)
-Received: by mail-lj1-f200.google.com with SMTP id p25so1590330lji.23
+        by mx1.redhat.com (Postfix) with ESMTPS id 07C3459445
+        for <netdev@vger.kernel.org>; Sat,  9 Nov 2019 00:01:01 +0000 (UTC)
+Received: by mail-lj1-f199.google.com with SMTP id l12so1593988lji.10
         for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 16:01:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=nbp3QfN0TQNkDe9Q9+yAlcUGzwTWjk7ZLS5MnwIXPgY=;
-        b=MCz12p+aQ4v0UWUVUue1fifQMg61i9go7COkM93NjxbfEEclRZI58+BJszDbq7mNry
-         9i9Nwj5qP5zbo+a6zK2ta1ow+x4bZC0o93Vagi/Fq1uJqykHNj/GNTI6/aj8OwmJ0sL6
-         cpEahmHGlkT6nnSTbEF+8Df2+95SrlR25pHhM1MFXiTM569b5CkEU3PVS0o/mXqZiWg2
-         M+tgdxfWM2tkdKVBvE5a8i7guWNmmUak97FNPYqZ5khGKiNGoXCGJwmIL6hk5QoW0SfP
-         rv8pwgHwvANMXn5T4Lw9ZiY7Stp+kVqP4JUwTNyzkAo1PzhHzUSGZAQeEDgwZyXJAd12
-         HeFg==
-X-Gm-Message-State: APjAAAXxNv9M6GTqve9tmWm6B2LtIwC48BgSA8RGU7ffRpm/yhuh6Wsl
-        6p5NDQ/vy9cr8bbRX/gMjCEh2vWZRjjZa+9kRTvJdAeu0SrPTaJ4q1/69m96pUDoC/E71PxyKT8
-        P7OqU8ROKzi0ly0WS
-X-Received: by 2002:a19:c18d:: with SMTP id r135mr860548lff.75.1573257658962;
-        Fri, 08 Nov 2019 16:00:58 -0800 (PST)
-X-Google-Smtp-Source: APXvYqxDf1KmgoRL4yrpm3DCosTJB86HPeyRGvRNRw2V6JURy8FvjCLASOTjEdpnFwJ84ef+XrJa9A==
-X-Received: by 2002:a19:c18d:: with SMTP id r135mr860537lff.75.1573257658807;
-        Fri, 08 Nov 2019 16:00:58 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id l82sm5216038lfd.81.2019.11.08.16.00.57
+        bh=L3fzVLzeN6KFGe91Y6bIKoJNlhwlBaMnwS94UGwm964=;
+        b=qDh0/Zr++IRVjYS2F9N6oKwE2sBMpdBDiFonCqG6lFVMTf8pfZLIvp9FYD/wawXExW
+         A6PiE/FUjY48QL8WD8YnyN14td+eD8Lo21Ta/LOzmTttwyZQYds3jLK71N8vyF//ugoP
+         AaNE2qYjLuAnArjMcA8EjuQ7Vu0naquqMeguVodpL4C6sH3O4tJpfzpwIroekNqF6AdP
+         iheqXM5UxoqXSZcbvW/pERqvzh+qEZ+AH4ZSQcXyi3tOshybo/f9FmLn5CDUBdnbuUZI
+         ZbBQVwnWuVHY9xBXHNHk6lYa6AJCNOs+UKHDU9d2FKA+hdBMydF3vUq8RRASaSR/3UMj
+         awAw==
+X-Gm-Message-State: APjAAAXjSvsyVVwbIgxsHyIFmcHoxgVdgwwmwvImwzTfh9I8v5xEaUUZ
+        aFqBOtkxj1MA3FpqUxpkddMk1aKa9vFKaFJsUcqu7kTbCBYcu2qvmVWX6PYuvnx4+A3/GajUsum
+        ZcUsAeTBRxjdEebWF
+X-Received: by 2002:a2e:99c2:: with SMTP id l2mr8466689ljj.145.1573257659599;
+        Fri, 08 Nov 2019 16:00:59 -0800 (PST)
+X-Google-Smtp-Source: APXvYqygWKvy+Oti3Lbq08pPu90GaVpEinwByo5YhB5glyFGtEzDwWsQNVywdNIdkQ08Bp5g3N4lDg==
+X-Received: by 2002:a2e:99c2:: with SMTP id l2mr8466676ljj.145.1573257659447;
+        Fri, 08 Nov 2019 16:00:59 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id n19sm3224900lfl.85.2019.11.08.16.00.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 08 Nov 2019 16:00:58 -0800 (PST)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id E98D01800CC; Sat,  9 Nov 2019 01:00:56 +0100 (CET)
-Subject: [PATCH bpf-next v3 2/6] selftests/bpf: Add tests for automatic map
- unpinning on load failure
+        id 08EE21800CE; Sat,  9 Nov 2019 01:00:58 +0100 (CET)
+Subject: [PATCH bpf-next v3 3/6] libbpf: Propagate EPERM to caller on program
+ load
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -54,8 +54,8 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Sat, 09 Nov 2019 01:00:56 +0100
-Message-ID: <157325765687.27401.1792577441648065280.stgit@toke.dk>
+Date:   Sat, 09 Nov 2019 01:00:58 +0100
+Message-ID: <157325765795.27401.949901357190446266.stgit@toke.dk>
 In-Reply-To: <157325765467.27401.1930972466188738545.stgit@toke.dk>
 References: <157325765467.27401.1930972466188738545.stgit@toke.dk>
 User-Agent: StGit/0.21
@@ -69,70 +69,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This add tests for the different variations of automatic map unpinning on
-load failure.
+When loading an eBPF program, libbpf overrides the return code for EPERM
+errors instead of returning it to the caller. This makes it hard to figure
+out what went wrong on load.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+In particular, EPERM is returned when the system rlimit is too low to lock
+the memory required for the BPF program. Previously, this was somewhat
+obscured because the rlimit error would be hit on map creation (which does
+return it correctly). However, since maps can now be reused, object load
+can proceed all the way to loading programs without hitting the error;
+propagating it even in this case makes it possible for the caller to react
+appropriately (and, e.g., attempt to raise the rlimit before retrying).
+
 Acked-by: David S. Miller <davem@davemloft.net>
 Acked-by: Song Liu <songliubraving@fb.com>
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- tools/testing/selftests/bpf/prog_tests/pinning.c |   20 +++++++++++++++++---
- tools/testing/selftests/bpf/progs/test_pinning.c |    2 +-
- 2 files changed, 18 insertions(+), 4 deletions(-)
+ tools/lib/bpf/libbpf.c |   27 +++++++++++----------------
+ 1 file changed, 11 insertions(+), 16 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/pinning.c b/tools/testing/selftests/bpf/prog_tests/pinning.c
-index 525388971e08..041952524c55 100644
---- a/tools/testing/selftests/bpf/prog_tests/pinning.c
-+++ b/tools/testing/selftests/bpf/prog_tests/pinning.c
-@@ -163,12 +163,15 @@ void test_pinning(void)
- 		goto out;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index a70ade546a73..094f5c64611a 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -3721,7 +3721,7 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+ 		free(log_buf);
+ 		goto retry_load;
+ 	}
+-	ret = -LIBBPF_ERRNO__LOAD;
++	ret = -errno;
+ 	cp = libbpf_strerror_r(errno, errmsg, sizeof(errmsg));
+ 	pr_warn("load bpf program failed: %s\n", cp);
+ 
+@@ -3734,23 +3734,18 @@ load_program(struct bpf_program *prog, struct bpf_insn *insns, int insns_cnt,
+ 		pr_warn("Program too large (%zu insns), at most %d insns\n",
+ 			load_attr.insns_cnt, BPF_MAXINSNS);
+ 		ret = -LIBBPF_ERRNO__PROG2BIG;
+-	} else {
++	} else if (load_attr.prog_type != BPF_PROG_TYPE_KPROBE) {
+ 		/* Wrong program type? */
+-		if (load_attr.prog_type != BPF_PROG_TYPE_KPROBE) {
+-			int fd;
+-
+-			load_attr.prog_type = BPF_PROG_TYPE_KPROBE;
+-			load_attr.expected_attach_type = 0;
+-			fd = bpf_load_program_xattr(&load_attr, NULL, 0);
+-			if (fd >= 0) {
+-				close(fd);
+-				ret = -LIBBPF_ERRNO__PROGTYPE;
+-				goto out;
+-			}
+-		}
++		int fd;
+ 
+-		if (log_buf)
+-			ret = -LIBBPF_ERRNO__KVER;
++		load_attr.prog_type = BPF_PROG_TYPE_KPROBE;
++		load_attr.expected_attach_type = 0;
++		fd = bpf_load_program_xattr(&load_attr, NULL, 0);
++		if (fd >= 0) {
++			close(fd);
++			ret = -LIBBPF_ERRNO__PROGTYPE;
++			goto out;
++		}
  	}
  
--	/* swap pin paths of the two maps */
-+	/* set pin paths so that nopinmap2 will attempt to reuse the map at
-+	 * pinpath (which will fail), but not before pinmap has already been
-+	 * reused
-+	 */
- 	bpf_object__for_each_map(map, obj) {
- 		if (!strcmp(bpf_map__name(map), "nopinmap"))
-+			err = bpf_map__set_pin_path(map, nopinpath2);
-+		else if (!strcmp(bpf_map__name(map), "nopinmap2"))
- 			err = bpf_map__set_pin_path(map, pinpath);
--		else if (!strcmp(bpf_map__name(map), "pinmap"))
--			err = bpf_map__set_pin_path(map, NULL);
- 		else
- 			continue;
- 
-@@ -181,6 +184,17 @@ void test_pinning(void)
- 	if (CHECK(err != -EINVAL, "param mismatch load", "err %d errno %d\n", err, errno))
- 		goto out;
- 
-+	/* nopinmap2 should have been pinned and cleaned up again */
-+	err = stat(nopinpath2, &statbuf);
-+	if (CHECK(!err || errno != ENOENT, "stat nopinpath2",
-+		  "err %d errno %d\n", err, errno))
-+		goto out;
-+
-+	/* pinmap should still be there */
-+	err = stat(pinpath, &statbuf);
-+	if (CHECK(err, "stat pinpath", "err %d errno %d\n", err, errno))
-+		goto out;
-+
- 	bpf_object__close(obj);
- 
- 	/* test auto-pinning at custom path with open opt */
-diff --git a/tools/testing/selftests/bpf/progs/test_pinning.c b/tools/testing/selftests/bpf/progs/test_pinning.c
-index f69a4a50d056..f20e7e00373f 100644
---- a/tools/testing/selftests/bpf/progs/test_pinning.c
-+++ b/tools/testing/selftests/bpf/progs/test_pinning.c
-@@ -21,7 +21,7 @@ struct {
- } nopinmap SEC(".maps");
- 
- struct {
--	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(type, BPF_MAP_TYPE_HASH);
- 	__uint(max_entries, 1);
- 	__type(key, __u32);
- 	__type(value, __u64);
+ out:
 
