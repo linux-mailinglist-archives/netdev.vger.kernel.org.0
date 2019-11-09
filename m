@@ -2,103 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 752C3F618E
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 22:02:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8585F6197
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 22:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbfKIVCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 16:02:53 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33628 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726467AbfKIVCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 16:02:53 -0500
-Received: by mail-wr1-f65.google.com with SMTP id w9so3880522wrr.0
-        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 13:02:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=KJY/VJ63TFo1ZH23E6cn4jdvaITuhiRajFhOXqWR15U=;
-        b=mhr0LfNuw5svYT0aUxEuEZnusj7DOJyeIjriEXMm71RrnnOg/XiaCLd6GyJ8Eh8rjw
-         rGisRuT+wlcH9KQPkZL8FeHuZS9rq+MtiXF+/LkScHMReHgouOtNkaYBWsqNd+5O4F2h
-         NY6Igs+xTTs3694AdrAk7F8LgbkUFeWQI4bGaOK2nu5Rs70iAmpOkLUvmjjpbMQmFmaC
-         bwYsmpN6ykxAjbs8OgsCGItV+8+bb55GDQOW/nJ6DQp5WbJLKf0LoTvqHeJJDziphTyh
-         Vbu6Hmj32NRLSorOZMpmMB6d0rBr89Y8aGK8b2kKj3+11vHeSqhlWqmqTJ88CI0kgCkr
-         ZvWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KJY/VJ63TFo1ZH23E6cn4jdvaITuhiRajFhOXqWR15U=;
-        b=Ld/hXDIuxcyJojdjN5PvyZfI6p9nRHljqOm5cVtEuHmAdCQ6+E/tjifLwYcT97Yidg
-         OwY5AmWvVDUvq7CixCAe27GoajQrdtib3n5p/ACt3EFbQqVJuStvcz5xpfAIwdlVONaW
-         i3K/yYwU1vHJrXFYay/aZPSdhRTLmOqF1/dbz8ju4f0r2ucDXMuQTyBpCS88IRLux+Kv
-         Mg4KKwF5Y9zKUBtN1LYAQu3B6bcpdBMi/ilRk42ccFSci5UHoo+Cra5349SoSreAMI8S
-         ePPOm7olSEJtyfmXnxxMon8Q1+AU55gEM6R0U/r4njHb6iDkg5JzFmzdN55ATM1o0FBM
-         m1ug==
-X-Gm-Message-State: APjAAAV/a+r+kO8ctMT8/V/4MWY0Pur74tJPi6LqcXl+GnO50EpAPYs/
-        w0Sb1FeF+VuwsrSsDLWo3M4jgzcR
-X-Google-Smtp-Source: APXvYqyCpg+EgDhUVoHeBerrXfm4uxgLypuSHB5p8GXxe/iqgV1zNCTgSEnitbEOx5VXCtVtAXOVbw==
-X-Received: by 2002:a5d:6a4c:: with SMTP id t12mr4899474wrw.141.1573333371450;
-        Sat, 09 Nov 2019 13:02:51 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f4d:a200:7127:c2c7:8451:a38b? (p200300EA8F4DA2007127C2C78451A38B.dip0.t-ipconnect.de. [2003:ea:8f4d:a200:7127:c2c7:8451:a38b])
-        by smtp.googlemail.com with ESMTPSA id v10sm18291900wmg.48.2019.11.09.13.02.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 09 Nov 2019 13:02:51 -0800 (PST)
-Subject: [PATCH net-next 5/5] r8169: remove rtl8168c_4_hw_phy_config
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <11f690c9-ed72-f84b-a7c3-9e18235d6a9a@gmail.com>
-Message-ID: <70946ba6-d18b-2fc3-81e4-df124bdb011b@gmail.com>
-Date:   Sat, 9 Nov 2019 22:02:30 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1726565AbfKIVGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 16:06:05 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58498 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726470AbfKIVGF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 16:06:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=AeGy6oWAVhpsj0BuOFBbXLEEpIX0zbaOX8ktv7sw73c=; b=lYQBPpkdLtKmSRGPLw1rP6Sksg
+        5cbWGNaNDZmJvgYtA1Bu3BaWCIDw5+TcbSLT/PtHyDpdwR0UwQB3Qq9itkCuBTffpi4ZXU7qGEbsB
+        Gjb8s+Mps3XmVAbR9KR4IuqePkrcPpDIDNG/PnJJLfFTYw8Vj3qY5wZuv6erEbfcpD0g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iTXvZ-0003tj-MJ; Sat, 09 Nov 2019 22:05:49 +0100
+Date:   Sat, 9 Nov 2019 22:05:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexander Stein <alexander.stein@mailbox.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, shawnguo@kernel.org,
+        mark.rutland@arm.com, devicetree@vger.kernel.org,
+        leoyang.li@nxp.com, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: ls1021a-tsn: Use interrupts for the SGMII PHYs
+Message-ID: <20191109210549.GB12999@lunn.ch>
+References: <20191109105642.30700-1-olteanv@gmail.com>
+ <20191109150953.GJ22978@lunn.ch>
+ <CA+h21hoqkE2D03BHrFeU+STbK8pStRRFu+x7+9j2nwFf+EHJNg@mail.gmail.com>
+ <393335751.FoSYQk3TTC@kongar>
 MIME-Version: 1.0
-In-Reply-To: <11f690c9-ed72-f84b-a7c3-9e18235d6a9a@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <393335751.FoSYQk3TTC@kongar>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl8168c_4_hw_phy_config() duplicates rtl8168c_3_hw_phy_config(),
-so we can remove the function.
+On Sat, Nov 09, 2019 at 08:52:54PM +0100, Alexander Stein wrote:
+>  On Saturday, November 9, 2019, 4:21:51 PM CET Vladimir Oltean wrote:
+> > On 09/11/2019, Andrew Lunn <andrew@lunn.ch> wrote:
+> > > On Sat, Nov 09, 2019 at 12:56:42PM +0200, Vladimir Oltean wrote:
+> > >> On the LS1021A-TSN board, the 2 Atheros AR8031 PHYs for eth0 and eth1
+> > >> have interrupt lines connected to the shared IRQ2_B LS1021A pin.
+> > >>
+> > >> The interrupts are active low, but the GICv2 controller does not support
+> > >> active-low and falling-edge interrupts, so the only mode it can be
+> > >> configured in is rising-edge.
+> > >
+> > > Hi Vladimir
+> > >
+> > > So how does this work? The rising edge would occur after the interrupt
+> > > handler has completed? What triggers the interrupt handler?
+> > >
+> > > 	Andrew
+> > >
+> > 
+> > Hi Andrew,
+> > 
+> > I hope I am not terribly confused about this. I thought I am telling
+> > the interrupt controller to raise an IRQ as a result of the
+> > low-to-high transition of the electrical signal. Experimentation sure
+> > seems to agree with me. So the IRQ is generated immediately _after_
+> > the PHY has left the line in open drain and it got pulled up to Vdd.
+> 
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+> It is correct GIC only supports raising edge and active-high. The
+> IRQ[0:5] on ls1021a are a bit special though.  They not directly
+> connected to GIC, but there is an optional inverter, enabled by
+> default.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 8aa681dfe..d4345493f 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2635,11 +2635,6 @@ static void rtl8168c_3_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_writephy(tp, 0x1f, 0x0000);
- }
- 
--static void rtl8168c_4_hw_phy_config(struct rtl8169_private *tp)
--{
--	rtl8168c_3_hw_phy_config(tp);
--}
--
- static const struct phy_reg rtl8168d_1_phy_reg_init_0[] = {
- 	/* Channel Estimation */
- 	{ 0x1f, 0x0001 },
-@@ -3528,7 +3523,7 @@ static void rtl_hw_phy_config(struct net_device *dev)
- 		[RTL_GIGA_MAC_VER_19] = rtl8168c_1_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_20] = rtl8168c_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_21] = rtl8168c_3_hw_phy_config,
--		[RTL_GIGA_MAC_VER_22] = rtl8168c_4_hw_phy_config,
-+		[RTL_GIGA_MAC_VER_22] = rtl8168c_3_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_23] = rtl8168cp_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_24] = rtl8168cp_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_25] = rtl8168d_1_hw_phy_config,
--- 
-2.24.0
+Ah, O.K. So configuring for a rising edge is actually giving a falling
+edge. Which is why it works.
 
+Actually supporting this correctly is going a cause some pain. I
+wonder how many DT files currently say rising/active high, when in
+fact falling/active low is actually being used? And when the IRQ
+controller really does support active low and falling, things brake?
 
+Vladimir, since this is a shared interrupt, you really should use
+active low here. Maybe the first step is to get control of the
+inverter, and define a DT binding which is not going to break
+backwards compatibility. And then wire up this interrupt.
+
+	  Andrew
