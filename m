@@ -2,129 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B433EF6113
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 20:10:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 275BDF6144
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 20:57:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbfKITKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 14:10:51 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:43109 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726240AbfKITKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 14:10:50 -0500
-Received: by mail-qv1-f66.google.com with SMTP id cg2so3482270qvb.10;
-        Sat, 09 Nov 2019 11:10:50 -0800 (PST)
+        id S1726458AbfKIT4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 14:56:52 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:32880 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726349AbfKIT4w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 14:56:52 -0500
+Received: by mail-pg1-f193.google.com with SMTP id h27so6387081pgn.0;
+        Sat, 09 Nov 2019 11:56:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9lPvnsm9QLh6XHrfYmLhUjqAsas7/lxQyvL6wH13db8=;
-        b=svj2YiRGXR/MgL2mcZYxgEUWFIhrCyq3q/bIZ8PpSfLoJDN6UDclrbx3NQW/nZuIdC
-         5JdAtZMqm18MuucBWF+CKV4hywYusTIpK6AbGszxaOBoPOaLHlPgLt0p2BpxQPv1y7Ty
-         tpYbPyCtwEjxWEZ/h2VcABRGorOl46hzJX0g5X9dh5c4m0SMcEQszRtvAxeGBIVYc2m4
-         u9xhFst1FeYIUu+LDj7/cviHmQTkMmQd9jF+LEVUSlVc+Ubm1QnzNastJJB/YW4ing+d
-         fH5f9kWQrPzB/PVuUYaSH9WOeMuVq4z/J2Ak0KN13hYsUSJRjy3zNXtXmLwOHfF1XXf1
-         1axA==
+        h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
+         :references;
+        bh=sLWE3rS63Cpkf+p4HwP4LC/KJ6xTAmv/RqA0nojUWoM=;
+        b=fAdAhYgwJKwty7+hqYCuAAzC/oBBAUd7GqZD3SHIuzj+eqZNIYlDs/fxpiOa0T4JZc
+         Z9+pJrjI1gxGklPWKQOYpBG76ru/KUvxodo43RasDGmLjzAsHsYmjHjrxIG2ll1IqfA4
+         eZa1FieBQEzxYwTNawDzwTc3EoJEW1a4qxgDAfKIcmqGNpwdCuNr7IxZJz9y6Lv1hEYZ
+         2qxBPO9Jc+126IrckZ4aXX0guMp1DDBTU9iczzUzONCL6OeTBPf9YcYrk5jcxxJ4gW92
+         sBP2yuHaaL6LRJ4GtcyCJAYhcFMTBYcZT2CGMybJ2XsWjme64ZoIMCiGPpl1tOXH9xKC
+         cNNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9lPvnsm9QLh6XHrfYmLhUjqAsas7/lxQyvL6wH13db8=;
-        b=jyzifOU40dVHYO3iivIiaW18V5HYxHevtq28okFEoVgbORjIzyLprryb3bs+60mVrw
-         e8TxOrZgpjIaElDnbOo5m85rASvRk6SUjrrN2oli9CQVhv1fb0wENbhMow6YgG4SILNF
-         cCboUj3+E4hvmVXOlEC548DU6dcMbQjnYaxIkc74ywrHUv1rqIP+2EHTI6zy6S10pjTp
-         ZznhvZifS73BTp6trsVJkPwfB7XICXWq9X/BJPlDtT0QBN1eE1r9CXV5ZMMQo3p0jkSx
-         KcnldAg6UhXM9aOXpTcigMVEIo3gArYD38ETCpEjdYSCQ16vmKrrvfmjryD0LnKi/6o5
-         cZgA==
-X-Gm-Message-State: APjAAAUcI81z62nkz9OKtxyKfM5E3ojsR0jUwbVfDoG24/Hu+bRefZyy
-        W4nNvNcTd76iAxDVRkkki65Ls0BwUd6URo3wSIk=
-X-Google-Smtp-Source: APXvYqyhN7i9s1RJ6RSAMFHbHn1WovNgHhulAP6lRkD0vGIrnC7sMBFXk5s+WKn7zJ7r458nHj5R8nTqv/w5IiSSZfk=
-X-Received: by 2002:a05:6214:90f:: with SMTP id dj15mr2479613qvb.224.1573326649545;
- Sat, 09 Nov 2019 11:10:49 -0800 (PST)
-MIME-Version: 1.0
-References: <157325765467.27401.1930972466188738545.stgit@toke.dk>
- <157325766011.27401.5278664694085166014.stgit@toke.dk> <CAEf4BzYvv6pCHygeNyOBE4MRtcLxE1XP4Ww+sxoaPgQw5i1Rjw@mail.gmail.com>
- <87mud5qosd.fsf@toke.dk>
-In-Reply-To: <87mud5qosd.fsf@toke.dk>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 9 Nov 2019 11:10:38 -0800
-Message-ID: <CAEf4BzbRGryvV+wYzOUECN3ceTZaGObtQQ3dQuaJJ4tTRbyyzw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 5/6] libbpf: Add bpf_get_link_xdp_info()
- function to get more XDP information
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:message-id:mime-version:subject:date
+         :in-reply-to:cc:to:references;
+        bh=sLWE3rS63Cpkf+p4HwP4LC/KJ6xTAmv/RqA0nojUWoM=;
+        b=R6l2v62rID7Zepgp9b2x+VgUdHmx8rcOl2RVeMPq2caCbA5cCtSuoZ0IJ3wiKhRTO0
+         cUJ9w2RbbJj/ZHUoSaU19iqGZ4AzggUUaqv8TRoBVeMG45YhKSRLUX4WIhp00VkBAKL1
+         lTYOFBv3cHnlXuFdRFbJNEvXiyYviLGsiLtVhBYMOYK2q7L3OivuqNTyBnuBSm75oxh5
+         OxsAh8fc0UFECcSiKY2SLI5XR2fFQ4KfoxQWegNVp2qv6fV3NHnnCo7zxwLLktj19wwP
+         bLCviGGeEY88hS0bz2wntZIJ9Otvo0OhvJT4/T7U1e3azvyRY0x88+4Lx37/RJQQlhh1
+         dijA==
+X-Gm-Message-State: APjAAAXR4jlN++ufQ7TT8K/fGJTwvEEQOA00O1cSkFHUkNAuVrlHOdAk
+        dMPPMcYX/sVPSW2PiTBWmtLe4HKbC+M7JQ==
+X-Google-Smtp-Source: APXvYqwkpMtHuF6e0ZHz0Id4WN1/wzmYxymX9kUI/DmbK7uNv7OIWFpdllt3rhd3YEpuFVVABKIUAA==
+X-Received: by 2002:a62:b616:: with SMTP id j22mr19597192pff.201.1573329409964;
+        Sat, 09 Nov 2019 11:56:49 -0800 (PST)
+Received: from [192.168.1.104] (c-76-21-111-180.hsd1.ca.comcast.net. [76.21.111.180])
+        by smtp.gmail.com with ESMTPSA id f12sm9690619pfn.152.2019.11.09.11.56.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 09 Nov 2019 11:56:49 -0800 (PST)
+From:   Mark D Rustad <mrustad@gmail.com>
+Message-Id: <A48EFA5D-56C6-404B-96FF-75736FCFD11E@gmail.com>
+Content-Type: multipart/signed;
+        boundary="Apple-Mail=_5BF3661D-48DD-4761-9FE1-54AFC65DF771";
+        protocol="application/pgp-signature";
+        micalg=pgp-sha256
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH 2/2] IFC VDPA layer
+Date:   Sat, 9 Nov 2019 11:56:46 -0800
+In-Reply-To: <1572946660-26265-3-git-send-email-lingshan.zhu@intel.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+References: <1572946660-26265-1-git-send-email-lingshan.zhu@intel.com>
+ <1572946660-26265-3-git-send-email-lingshan.zhu@intel.com>
+X-Mailer: Apple Mail (2.3445.104.11)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 9, 2019 at 3:20 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redha=
-t.com> wrote:
->
-> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->
-> > On Fri, Nov 8, 2019 at 4:01 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@r=
-edhat.com> wrote:
-> >>
-> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >>
-> >> Currently, libbpf only provides a function to get a single ID for the =
-XDP
-> >> program attached to the interface. However, it can be useful to get th=
-e
-> >> full set of program IDs attached, along with the attachment mode, in o=
-ne
-> >> go. Add a new getter function to support this, using an extendible
-> >> structure to carry the information. Express the old bpf_get_link_id()
-> >> function in terms of the new function.
-> >>
-> >> Acked-by: David S. Miller <davem@davemloft.net>
-> >> Acked-by: Song Liu <songliubraving@fb.com>
-> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> >> ---
-> >>  tools/lib/bpf/libbpf.h   |   10 ++++++
-> >>  tools/lib/bpf/libbpf.map |    1 +
-> >>  tools/lib/bpf/netlink.c  |   82 ++++++++++++++++++++++++++++++-------=
----------
-> >>  3 files changed, 65 insertions(+), 28 deletions(-)
-> >>
-> >
-> > [...]
-> >
-> >>
-> >> -int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags)
-> >> +int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
-> >> +                         size_t info_size, __u32 flags)
-> >>  {
-> >>         struct xdp_id_md xdp_id =3D {};
-> >>         int sock, ret;
-> >>         __u32 nl_pid;
-> >>         __u32 mask;
-> >>
-> >> -       if (flags & ~XDP_FLAGS_MASK)
-> >> +       if (flags & ~XDP_FLAGS_MASK || info_size < sizeof(*info))
-> >>                 return -EINVAL;
-> >
-> > Well, now it's backwards-incompatible: older program passes smaller
-> > (but previously perfectly valid) sizeof(struct xdp_link_info) to newer
-> > version of libbpf. This has to go both ways: smaller struct should be
-> > supported as long as program doesn't request (using flags) something,
-> > that can't be put into allowed space.
->
-> But there's nothing to be backwards-compatible with? I get that *when*
-> we extend the size of xdp_link_info, we should still accept the old,
-> smaller size. But in this case that cannot happen as we're only just
-> introducing this now?
 
-This seems like a shifting burden to next person that will have to
-extend this, but ok, fine by me.
+--Apple-Mail=_5BF3661D-48DD-4761-9FE1-54AFC65DF771
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset=us-ascii;
+	delsp=yes;
+	format=flowed
 
+On Nov 5, 2019, at 1:37 AM, Zhu Lingshan <lingshan.zhu@intel.com> wrote:
+
+> This commit introduced IFC operations for vdpa, which complys to
+> virtio_mdev and vhost_mdev interfaces, handles IFC VF
+> initialization, configuration and removal.
 >
-> -Toke
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vhost/ifcvf/ifcvf_main.c | 605 +++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 605 insertions(+)
+>  create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
+>
+> diff --git a/drivers/vhost/ifcvf/ifcvf_main.c  
+> b/drivers/vhost/ifcvf/ifcvf_main.c
+> new file mode 100644
+> index 0000000..7165457
+> --- /dev/null
+> +++ b/drivers/vhost/ifcvf/ifcvf_main.c
+> @@ -0,0 +1,605 @@
+
+<snip>
+
+> +	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
+> +		if (!vf->vring[i].ready) {
+> +			IFC_ERR(ifcvf->dev,
+> +				"Failed to start datapath, vring %d not ready.\n", i);
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (!vf->vring[i].size) {
+> +			IFC_ERR(ifcvf->dev,
+> +				"Failed to start datapath, vring %d size is zero.\n", i);
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (!vf->vring[i].desc || !vf->vring[i].avail ||
+> +			!vf->vring[i].used) {
+> +			IFC_ERR(ifcvf->dev,
+> +				"Failed to start datapath, "
+> +				"invaild value for vring %d desc,"
+> +				"avail_idx or usex_idx.\n", i);
+
+Please don't break up the format string. Start it on the second line and  
+let it run as long as it needs to. Also you will find that it is improperly  
+spaced as it is. It makes it easier to grep the source to find the source  
+of a message. The coding style has an explicit exception for such long  
+lines for this reason.
+
+Also, please don't put .'s on the end of log messages. It serves no purpose  
+and just adds to the log, the binary size and the source size. There are  
+quite a few of these.
+
+<snip>
+
+--
+Mark Rustad, MRustad@gmail.com
+
+--Apple-Mail=_5BF3661D-48DD-4761-9FE1-54AFC65DF771
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
+
+-----BEGIN PGP SIGNATURE-----
+Comment: GPGTools - http://gpgtools.org
+
+iQIzBAEBCAAdFiEE6ug8b0Wg+ULmnksNPA7/547j7m4FAl3HGf4ACgkQPA7/547j
+7m5i5hAAp5HzGpa+FtAAiSu0nbqUTR1JdW8w3XQwR+PqLGPPDZm8o5j/NMowthPA
+YwP3oJvINev2V6ibYRePdFg9mvgqjAII61RSaXeNuFxX8feBZU5k5+UzaOx9/zZp
+rSafgIqKyEGiR5zSdoeK6GS852O18MAwKNmoc80vyARppI959f0D64rLjYi7ApOv
+9PcQ5J0JQqlMmj7EeYM1cHnnCtxANbGu011291JjjpcsYlB173Ma0CVSPzcmnBjw
+ZpRhiKhMaV8o0Pznc1b6NQIZMx7y+dGRYkaw7aeuJr9vCergpsJu4OVrp6nk8/1x
+asxfx5qbmoZvpA7/WK+PDCORDZNwCxFjHIwmg8P8/PjqNgMHiZ98QsYS25YU8nm9
+1ArgG5Op5ngmaYZ4npZu/5blWasJWIciWfWLdHTjv1ZLGUsafWlNDh7YzEVVPPtR
+b+aT6s4MC+ttn0zJRYsuj7U+B0jr8PhfQQ8ng6EzbdQ5Aa1sBeR0nKxBpf/2KNsF
+kCvJYQqBvrtOshq2SY/bryGqW1XNwE0W7ARhE9+UEjriQG3Qu2et6K3MNmDG31cS
+cI41oSy41i6zsfwZwJKJl4Orgtr3Hz2G0aozyyqmKTrHlTUTQ/1Er4ol6oZlzrL+
+gZhXDyihHwXikwjZTWqfRw9jFVV2WHpJQt59mjmLuXbAk8bR0FI=
+=CTNy
+-----END PGP SIGNATURE-----
+
+--Apple-Mail=_5BF3661D-48DD-4761-9FE1-54AFC65DF771--
