@@ -2,107 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44423F60C2
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 18:43:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3BECF60C3
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 18:45:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726582AbfKIRlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 12:41:08 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:39554 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726492AbfKIRlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 12:41:08 -0500
-Received: by mail-pg1-f196.google.com with SMTP id 29so6243161pgm.6
-        for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 09:41:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=2B7miXvo12sd3AwR/N24hvrji1TnW/1jP59Zv1D2zxA=;
-        b=Ux66y2/Kev7fAowQYcNDFqBF2oMucxESjkkRfo8IKup+pQkx6c41HWBsZj9GcF/XH7
-         9q5bddJ0Ib4aWwuzqXvZ/f6ExZS0BhSgfZfP25ahtYi6cRFgd6bNKGUNcmMNHudNagcC
-         gCsZz3t6Mq+E1k40G+tbKVjUsRtLsUqFwOo01ugae2GCJvy2GLhJrtoc20el2oh7SbBf
-         ROYWJC/rPRLGrqeXE6yeGN7xdj1TF4KXEbxh+FAYZYVgj9tCuD0GO2qMFAKfYbcAHD09
-         n6ptYL86QvSyY/z14h/xrMQJ/T5NEtw6+1My7DBq0+zYNnCHlHm/tL1osxRC9TA7a9Sc
-         ltcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=2B7miXvo12sd3AwR/N24hvrji1TnW/1jP59Zv1D2zxA=;
-        b=Rn1T4+Yd3TIJylMixRIobeK0zPGxIhcUFmdThCpa9vwmZGB6MerC7o+gAOl1cAI+QM
-         RdMg2Z1iHJOa6HkJXKCTz5cNYqPc4JIi+wDy9Ym3AN77dxGSFRuxrXOlv8nkYdl8zp9b
-         wjYUxottfe1sIwtl/GCUCD//PpwRvRPZH5fdU6YLhG4qvzHceEt/7O2BewI9Nd4aDu5+
-         cWyEmaP3gppWX8EulpB8iZ40mjMdpvaQOSrZCiHFe5K1D4Q3HqPrLieDkNZddqEppe6f
-         FKjK0c8X+TI30fFBweA4BygXElRyn4cVYIPN1g8Io9X/rE5pMhoSlMhlfmDA/zsnXCVw
-         IxHQ==
-X-Gm-Message-State: APjAAAWkzFIK0wxkWQsZqvitLa8OLBi6ykF8XJ+wy8xjDJnYENxW0o5X
-        xfByj+hk2+8taUtqfunAuxnI56/b4Qc=
-X-Google-Smtp-Source: APXvYqzxYgwMmVIq1JfKtIHriDl97HY1zcdcpAYzr8weQ2+HF6xR/h1VetUuPsLmf6vJjuss1CYESw==
-X-Received: by 2002:a63:3205:: with SMTP id y5mr19364349pgy.42.1573321267604;
-        Sat, 09 Nov 2019 09:41:07 -0800 (PST)
-Received: from cakuba (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id a23sm5103400pjv.26.2019.11.09.09.41.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 09 Nov 2019 09:41:07 -0800 (PST)
-Date:   Sat, 9 Nov 2019 09:41:03 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Parav Pandit <parav@mellanox.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David M <david.m.ertman@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        id S1726320AbfKIRpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 12:45:45 -0500
+Received: from mail-eopbgr30064.outbound.protection.outlook.com ([40.107.3.64]:3302
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726204AbfKIRpo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 12:45:44 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UDkIFD23o9Q2ZzY6jkyZwav9MUOLGc7qPGk3UH1bbqUye63YBiR73GReSbOGTPHz/4tk1TBntnYrpJ8FyWTFN2n7yFB1qPpPzQkStzWdPmDzYZcMV8ya3Xa3L5gFBzs57D2rCSGaYSC+wYJK7UIbKrt36PDvGv9aFqTTs9oUdROnsvm8I4dfePegme9EhqFZ22hlnHOH3iX9XD9UdEYXTbzopf1riFAyTO5wqpB4d6xT4IvE4ZAOQUD6R69yxtG2aq8guIZQWrDz3+rDEy7XffnsgIqXUtJc1bSbHOllWZMOs8nmfn5JylU6HXtP+igguOXSNKA2SEHe57732a+jGw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U9l9UwnVT/yDjAjwXa/KzaTusRJlVnmjVi9kSPkdZqM=;
+ b=ffZ879Bei/GE5t/IAxz3sFA2coYoMX7cet+cpWEbGj5hggN/vdEuZZZyjvFOi7qr+oh230FE8qPIT57Ygk1xxf6sOXJ6cXdVN1R0e6fVOnmGhCHkZKZb8eV7e9/g6uWgDXrC1dE3KlBIEDjGxrYFbZ0PQezgQVazGYRI4D24n35Y3Rk4qflO3pIuMNr3DbTZnMDaJQKfTiwnRWpZyae0e+wVjGY91c9NGGJerAS43ITJ1bX/Nn27Rm8182IpPNh6YNmqquOIQtLM1ZOYm8xnkXWL8EerBBXdYofThaCdfrmel3244Byij8LATeTJJ7Ds8F24JSWNjFE9SMMcgu2VvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=U9l9UwnVT/yDjAjwXa/KzaTusRJlVnmjVi9kSPkdZqM=;
+ b=mNu7uNLAKgxf82dYQuJfzhvn3P5P+McHwnSrGZTnUSVA4eat9WvMB1nlSYAjtsNLdEkrziogv94FTUkQzIulR4yiwAnbc5b8g4TZEhMTnkai7U/fDYwSFsMJOVDYpUZjimzDpWuDBQs6lmqH5NdJwdPRSqKyCba5ggjIdBXoSDc=
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com (20.177.197.210) by
+ AM6PR05MB5318.eurprd05.prod.outlook.com (20.177.191.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.20; Sat, 9 Nov 2019 17:45:01 +0000
+Received: from AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::2c8b:72fb:19e2:ff34]) by AM6PR05MB5142.eurprd05.prod.outlook.com
+ ([fe80::2c8b:72fb:19e2:ff34%4]) with mapi id 15.20.2430.023; Sat, 9 Nov 2019
+ 17:45:01 +0000
+From:   Yuval Avnery <yuvalav@mellanox.com>
+To:     Parav Pandit <parav@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jiri Pirko <jiri@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
         "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        "Jason Wang (jasowang@redhat.com)" <jasowang@redhat.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191109094103.739033a3@cakuba>
-In-Reply-To: <20191109005708.GC31761@ziepe.ca>
-References: <20191107153234.0d735c1f@cakuba.netronome.com>
-        <20191108121233.GJ6990@nanopsycho>
-        <20191108144054.GC10956@ziepe.ca>
-        <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20191108111238.578f44f1@cakuba>
-        <20191108201253.GE10956@ziepe.ca>
-        <20191108133435.6dcc80bd@x1.home>
-        <20191108210545.GG10956@ziepe.ca>
-        <20191108145210.7ad6351c@x1.home>
-        <AM0PR05MB4866444210721BC4EE775D27D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20191109005708.GC31761@ziepe.ca>
-Organization: Netronome Systems, Ltd.
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        Daniel Jurgens <danielj@mellanox.com>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Subject: RE: [PATCH net-next v2 04/10] devlink: Support subdev HW address get
+Thread-Topic: [PATCH net-next v2 04/10] devlink: Support subdev HW address get
+Thread-Index: AQHVllBEjaulcda5Yki5oMDisUeEGKeBkCsAgAGMhGA=
+Date:   Sat, 9 Nov 2019 17:45:00 +0000
+Message-ID: <AM6PR05MB5142FEFE41F0B06B7E61FEC5C57A0@AM6PR05MB5142.eurprd05.prod.outlook.com>
+References: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
+ <1573229926-30040-5-git-send-email-yuvalav@mellanox.com>
+ <AM0PR05MB48663DAB2C9B5359DB15BB89D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+In-Reply-To: <AM0PR05MB48663DAB2C9B5359DB15BB89D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Accept-Language: he-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yuvalav@mellanox.com; 
+x-originating-ip: [70.66.202.183]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 3335b4bd-e842-4a6f-2144-08d7653c8ba6
+x-ms-traffictypediagnostic: AM6PR05MB5318:|AM6PR05MB5318:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB5318509218C8E1E5B365734BC57A0@AM6PR05MB5318.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 021670B4D2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(346002)(39850400004)(366004)(376002)(396003)(189003)(199004)(13464003)(9686003)(229853002)(478600001)(14454004)(6436002)(8676002)(316002)(256004)(81156014)(55016002)(81166006)(3846002)(6116002)(6246003)(54906003)(86362001)(26005)(8936002)(186003)(7736002)(53546011)(4326008)(52536014)(476003)(76116006)(2501003)(486006)(99286004)(74316002)(66556008)(64756008)(66446008)(2906002)(33656002)(71190400001)(71200400001)(102836004)(76176011)(66476007)(25786009)(66066001)(6506007)(66946007)(7696005)(5660300002)(11346002)(305945005)(110136005)(446003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5318;H:AM6PR05MB5142.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KbMCA3d9cOzcqlS5RZ8Xnb21oT4Y0O9xt8gfTTRbnPqeduYPd3ke9/YTDEtF5FP9xmtwoc6gWB41pEiPB9UlRYzNeQWMe147F2Kp/gEC2w0T4FXgsahNGG5TyBqqyp5c5evOoqs4H4oqPqkK3q4Lar2OlQ70751VLnD1WOGUma7yQrHwoSSVKVScdLOMOHmHRVRs/iaCvrJQXw3oVREwmV7rCVDv3w58DAM0B8l2IAsOFTbIR5Unfq15d3eL5ift2Wp8TEhAhha+ibV98sZtpodv7tRrP/WAuTiY79qCjoEJ6uMDBn5uy0amgNDACwO1Ui8RhlO+g73ghwnHKTX6mYLQr83+EuC7bmUDLS5K58K1Gfa/EURM5uplpqxh/SifiwhegcauI4tCVdb23KmVStlYt2atGPsuJt9fYarsl67ZUDASpre5R7Ch5xIsMnWI
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3335b4bd-e842-4a6f-2144-08d7653c8ba6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Nov 2019 17:45:01.0019
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: fpnCXCGPCk9/VQtomWjCbjnJRsib7kkRluit4heC5S7c3ICofKXS82L3av0Mxh2eB8Rpbpcf/P3Qwc4Iox30/w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5318
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Nov 2019 20:57:08 -0400, Jason Gunthorpe wrote:
-> On Fri, Nov 08, 2019 at 10:48:31PM +0000, Parav Pandit wrote:
-> > We should be creating 3 different buses, instead of mdev bus being de-multiplexer of that?
-> > 
-> > Hence, depending the device flavour specified, create such device on right bus?
-> > 
-> > For example,
-> > $ devlink create subdev pci/0000:05:00.0 flavour virtio name foo subdev_id 1
-> > $ devlink create subdev pci/0000:05:00.0 flavour mdev <uuid> subdev_id 2
-> > $ devlink create subdev pci/0000:05:00.0 flavour mlx5 id 1 subdev_id 3  
-> 
-> I like the idea of specifying what kind of interface you want at sub
-> device creation time. It fits the driver model pretty well and doesn't
-> require abusing the vfio mdev for binding to a netdev driver.
 
-Aren't the HW resources spun out in all three cases exactly identical?
 
-IMHO creation of sub device should only define which HW resources are
-provisioned/relegated. Specifying a driver when recreating a device
-seems a little backwards.
+> -----Original Message-----
+> From: Parav Pandit
+> Sent: Friday, November 8, 2019 10:00 AM
+> To: Yuval Avnery <yuvalav@mellanox.com>; netdev@vger.kernel.org
+> Cc: Jiri Pirko <jiri@mellanox.com>; Saeed Mahameed
+> <saeedm@mellanox.com>; leon@kernel.org; davem@davemloft.net;
+> jakub.kicinski@netronome.com; shuah@kernel.org; Daniel Jurgens
+> <danielj@mellanox.com>; andrew.gospodarek@broadcom.com;
+> michael.chan@broadcom.com; Yuval Avnery <yuvalav@mellanox.com>
+> Subject: RE: [PATCH net-next v2 04/10] devlink: Support subdev HW address
+> get
+>=20
+>=20
+>=20
+> > -----Original Message-----
+> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
+> On
+> > Behalf Of Yuval Avnery
+> > Sent: Friday, November 8, 2019 10:19 AM
+> > To: netdev@vger.kernel.org
+> > Cc: Jiri Pirko <jiri@mellanox.com>; Saeed Mahameed
+> > <saeedm@mellanox.com>; leon@kernel.org; davem@davemloft.net;
+> > jakub.kicinski@netronome.com; shuah@kernel.org; Daniel Jurgens
+> > <danielj@mellanox.com>; Parav Pandit <parav@mellanox.com>;
+> > andrew.gospodarek@broadcom.com; michael.chan@broadcom.com;
+> Yuval
+> > Avnery <yuvalav@mellanox.com>
+> > Subject: [PATCH net-next v2 04/10] devlink: Support subdev HW address
+> > get
+> >
+> > Allow privileged user to get the HW address of a subdev.
+> >
+> > Example:
+> >
+> > $ devlink subdev show pci/0000:03:00.0/1
+> > pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0 port_index 1 hw_addr
+> > 00:23:35:af:35:34
+> >
+> > $ devlink subdev show pci/0000:03:00.0/1 -pj {
+> >     "subdev": {
+> >         "pci/0000:03:00.0/1": {
+> >             "flavour": "pcivf",
+> >             "pf": 0,
+> >             "vf": 0,
+> >             "port_index": 1,
+> >             "hw_addr": "00:23:35:af:35:34"
+> I prefer this to be 'address' to match to 'ip link set address LLADDR'.
+> That will make it consistent with rest of the iproute2/ip tool.
+> So that users don't have to remember one mor keyword for the 'address'.
+I think hw_addr is more accurate, and consistency doesn't exist here anyway=
+.
+We already have "ip link set vf set mac"
+Address is not specific enough and can also mean IP address, while hw_addr
+covers both ETH and IB
+
