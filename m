@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C10B1F6191
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 22:02:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5DABF6190
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 22:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726653AbfKIVCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 16:02:55 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34825 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726594AbfKIVCy (ORCPT
+        id S1726645AbfKIVCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 16:02:54 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:56155 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726515AbfKIVCy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 16:02:54 -0500
-Received: by mail-wr1-f68.google.com with SMTP id p2so10728150wro.2
+Received: by mail-wm1-f66.google.com with SMTP id b11so9516462wmb.5
         for <netdev@vger.kernel.org>; Sat, 09 Nov 2019 13:02:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ibiLE+pcyQqLCDrO5hL4RpaWrQlSgp9oWgf9PyFLxSU=;
-        b=EBqhvKkaJV1+7xfCkYJuwervawvevzgos/7eMIlUIWLJUSbLI/FEjhWjEnBQlLh/Ct
-         LvcyLS+QZ6FV4b1vIHvUtKDARMd315xkqoj/cRCqlNklbr+SKg6X+T7hLT4JznIpdNns
-         EGqnvcrfRGvfyVcnRHh5RlLEfgB9letYD8Mz3PWmJZZlIb9ocRUqKimxEb4Gjy4qpxE1
-         yEKymM32mIo12cc/ivNUFSNIk22B5Zs2Xde88akP0mtW7m27+UD4YIkvJjnJWL9Dm4CD
-         5cQmC1jJiiU7Q2DlgtASgwm2/STEblDDTjXGHKPo1SugNDUfgEBpyNRhN/PUW36erF8B
-         82IQ==
+        bh=hpvdTj//YhwZvEdzZgKOFrKODL2Z5pFINiJtN37s6Ow=;
+        b=aJWP9b3Syu7DTV4n1g4fnICkHRFuI9mTPS5Q9QRPcWvk9I4irEdSuY+j4uyt3rIe10
+         /a+JtNhMdxsUEpRGSD8sRv61XO9i1zSjhSWxhJRG7oBcMdquOUAcN/iQN1GWim7iC1bB
+         SF9pNeMZ93GcLTRqdLZO4oJwViCPAxHjWPthgfKmDf1WxBFlYMeW1K5tqWKvfNeWZWAL
+         a3jS8PamZaAczOKcYhnhuXLg8PisSV7O2vW22Xmq1VbE3uid7kaq5WTzu4X1wXFDn5Ww
+         2oOZZay1OYfz+LNLlSxzf4exk40XhxQ4y5Ez+fjA5TFLNKloFx23JxzNWL1JlHNFhe9D
+         27Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ibiLE+pcyQqLCDrO5hL4RpaWrQlSgp9oWgf9PyFLxSU=;
-        b=VLt7zVFVURpm0z+L/byWSo6/kN7PHZjsYTOisoUgim+5gPVQbiWfOs9QVhAcvWTD4X
-         V+dexmlPNJ9XJWv/Bdv1G5CwuyuflhW645jk8vp6orPBqNkjdXS/vMtkc8a42QV7sNKb
-         F1NUV7bxzJ5G80ge4MMLNyVrpMSrEkZTkGfVyCxVbIQExDmPwmyaTkzV0zjgvmIKQbkM
-         mBifCNtlrzLL2vdbN0MxNxMPChPZi+/TNBX+YHmFreKoDZO3E8iHEFU/xsmgZ8R5xjlT
-         TTotFgdfdbNrbNqnCZc+wBiwMRuvm51e/px0wiDRk51tcTfTmrSVkcL47VfFzQ9IxjVP
-         fq9A==
-X-Gm-Message-State: APjAAAWX1AJ553/c5sTAAhIDvr98U5Q/FWpO8b7Mb2MqwYICPgofDEuf
-        /1K+/Yfcj4jywDsWPBqCFS0ijgz/
-X-Google-Smtp-Source: APXvYqyoqqumWuS4jdBjfrflf6+m0CxbdC2nnuJ70FaRlsRZnV0ZJzW0axKlU5opv1/Py+4BwVTnrA==
-X-Received: by 2002:a5d:4445:: with SMTP id x5mr4970604wrr.42.1573333369516;
-        Sat, 09 Nov 2019 13:02:49 -0800 (PST)
+        bh=hpvdTj//YhwZvEdzZgKOFrKODL2Z5pFINiJtN37s6Ow=;
+        b=XkvGiKQMseMFK4EX7HuWHc7iuDAIrZbArp01RnKk2BkXCGMbyydsIJR7awycsRJ5Kx
+         DkTu/yZKJXpzwQOwur5UcDEK+bQl6qVdDBbkH7tnfep0ieyNF+96pcUQcy/YMhOGTkWz
+         xwAXyasq0WgiJep60RQIP8dRzAYkFc1K4z4cs3Jnj5fTSlRvQKXZsJ0gRn51nw1BD6x3
+         5sxexrMU3rGLGkamqF4T2kSq40obt962z7SawOUaykmZQYQUGwOSZymQfl07A5ucILHW
+         8G7KOV60CmPY6s5T63saQr089ycSw0KqzRuCvI92ESRIt6HLridUyIjT1MKYoqgHStVM
+         hFmg==
+X-Gm-Message-State: APjAAAUsVskJ0OF20HK3PauoPb8n+FFriTvO41Y2tamvJoVKhT9ucLiP
+        rrMf/6Yx6EqfIlz7yvUYGypbdplv
+X-Google-Smtp-Source: APXvYqyC2YtV6ucVO7p2pSaV/fsu18KOuhEUJzweoEOmhWnHD/e0mBBd9RK64ZfoAo3LjtLnX4UV3g==
+X-Received: by 2002:a1c:610b:: with SMTP id v11mr13766620wmb.156.1573333370476;
+        Sat, 09 Nov 2019 13:02:50 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f4d:a200:7127:c2c7:8451:a38b? (p200300EA8F4DA2007127C2C78451A38B.dip0.t-ipconnect.de. [2003:ea:8f4d:a200:7127:c2c7:8451:a38b])
-        by smtp.googlemail.com with ESMTPSA id q15sm1173341wrs.91.2019.11.09.13.02.48
+        by smtp.googlemail.com with ESMTPSA id y6sm10115145wrw.6.2019.11.09.13.02.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 09 Nov 2019 13:02:49 -0800 (PST)
-Subject: [PATCH net-next 3/5] r8169: switch to phylib functions in more places
+        Sat, 09 Nov 2019 13:02:50 -0800 (PST)
+Subject: [PATCH net-next 4/5] r8169: add helper r8168d_modify_extpage
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <11f690c9-ed72-f84b-a7c3-9e18235d6a9a@gmail.com>
-Message-ID: <a3de4783-e91e-f5bc-7c10-c3835a936dda@gmail.com>
-Date:   Sat, 9 Nov 2019 22:00:51 +0100
+Message-ID: <83c15641-7630-c0b4-a28a-d937265da540@gmail.com>
+Date:   Sat, 9 Nov 2019 22:01:36 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.1
 MIME-Version: 1.0
@@ -65,169 +65,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use the phylib MDIO access functions in more places to simplify
-the code.
+Certain integrated PHY's from RTL8168d support extended pages. On page
+0x0007 the number of the extended page is written to register 0x1e,
+then the registers on the extended page can be accessed. Add a helper
+for this to improve readability and simplify the code.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 85 +++++------------------
- 1 file changed, 17 insertions(+), 68 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 121 +++++++---------------
+ 1 file changed, 39 insertions(+), 82 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index fa4b3d71f..b3263a887 100644
+index b3263a887..8aa681dfe 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2405,13 +2405,7 @@ static void rtl8169s_hw_phy_config(struct rtl8169_private *tp)
+@@ -1086,6 +1086,17 @@ static void rtl_w0w1_phy(struct rtl8169_private *tp, int reg_addr, int p, int m)
+ 	rtl_writephy(tp, reg_addr, (val & ~m) | p);
+ }
  
- static void rtl8169sb_hw_phy_config(struct rtl8169_private *tp)
++static void r8168d_modify_extpage(struct phy_device *phydev, int extpage,
++				  int reg, u16 mask, u16 val)
++{
++	int oldpage = phy_select_page(phydev, 0x0007);
++
++	__phy_write(phydev, 0x1e, extpage);
++	__phy_modify(phydev, reg, mask, val);
++
++	phy_restore_page(phydev, oldpage, 0);
++}
++
+ static void r8168d_phy_param(struct phy_device *phydev, u16 parm,
+ 			     u16 mask, u16 val)
  {
--	static const struct phy_reg phy_reg_init[] = {
--		{ 0x1f, 0x0002 },
--		{ 0x01, 0x90d0 },
+@@ -2830,30 +2841,18 @@ static void rtl8168d_3_hw_phy_config(struct rtl8169_private *tp)
+ 		{ 0x04, 0xf800 },
+ 		{ 0x04, 0xf000 },
+ 		{ 0x1f, 0x0000 },
+-
+-		{ 0x1f, 0x0007 },
+-		{ 0x1e, 0x0023 },
+-		{ 0x16, 0x0000 },
 -		{ 0x1f, 0x0000 }
--	};
--
--	rtl_writephy_batch(tp, phy_reg_init);
-+	phy_write_paged(tp->phydev, 0x0002, 0x01, 0x90d0);
- }
- 
- static void rtl8169scd_hw_phy_config_quirk(struct rtl8169_private *tp)
-@@ -2422,9 +2416,7 @@ static void rtl8169scd_hw_phy_config_quirk(struct rtl8169_private *tp)
- 	    (pdev->subsystem_device != 0xe000))
- 		return;
- 
--	rtl_writephy(tp, 0x1f, 0x0001);
--	rtl_writephy(tp, 0x10, 0xf01b);
--	rtl_writephy(tp, 0x1f, 0x0000);
-+	phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf01b);
- }
- 
- static void rtl8169scd_hw_phy_config(struct rtl8169_private *tp)
-@@ -2529,54 +2521,28 @@ static void rtl8169sce_hw_phy_config(struct rtl8169_private *tp)
- 
- static void rtl8168bb_hw_phy_config(struct rtl8169_private *tp)
- {
--	static const struct phy_reg phy_reg_init[] = {
--		{ 0x10, 0xf41b },
--		{ 0x1f, 0x0000 }
--	};
--
- 	rtl_writephy(tp, 0x1f, 0x0001);
- 	rtl_patchphy(tp, 0x16, 1 << 0);
--
--	rtl_writephy_batch(tp, phy_reg_init);
-+	rtl_writephy(tp, 0x10, 0xf41b);
-+	rtl_writephy(tp, 0x1f, 0x0000);
- }
- 
- static void rtl8168bef_hw_phy_config(struct rtl8169_private *tp)
- {
--	static const struct phy_reg phy_reg_init[] = {
--		{ 0x1f, 0x0001 },
--		{ 0x10, 0xf41b },
--		{ 0x1f, 0x0000 }
--	};
--
--	rtl_writephy_batch(tp, phy_reg_init);
-+	phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf41b);
- }
- 
- static void rtl8168cp_1_hw_phy_config(struct rtl8169_private *tp)
- {
--	static const struct phy_reg phy_reg_init[] = {
--		{ 0x1f, 0x0000 },
--		{ 0x1d, 0x0f00 },
--		{ 0x1f, 0x0002 },
--		{ 0x0c, 0x1ec8 },
--		{ 0x1f, 0x0000 }
--	};
--
--	rtl_writephy_batch(tp, phy_reg_init);
-+	phy_write(tp->phydev, 0x1d, 0x0f00);
-+	phy_write_paged(tp->phydev, 0x0002, 0x0c, 0x1ec8);
- }
- 
- static void rtl8168cp_2_hw_phy_config(struct rtl8169_private *tp)
- {
--	static const struct phy_reg phy_reg_init[] = {
--		{ 0x1f, 0x0001 },
--		{ 0x1d, 0x3d98 },
--		{ 0x1f, 0x0000 }
--	};
--
--	rtl_writephy(tp, 0x1f, 0x0000);
--	rtl_patchphy(tp, 0x14, 1 << 5);
--	rtl_patchphy(tp, 0x0d, 1 << 5);
--
--	rtl_writephy_batch(tp, phy_reg_init);
-+	phy_set_bits(tp->phydev, 0x14, BIT(5));
-+	phy_set_bits(tp->phydev, 0x0d, BIT(5));
-+	phy_write_paged(tp->phydev, 0x0001, 0x1d, 0x3d98);
- }
- 
- static void rtl8168c_1_hw_phy_config(struct rtl8169_private *tp)
-@@ -2929,9 +2895,7 @@ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_writephy(tp, 0x1f, 0x0000);
- 
- 	/* For impedance matching */
--	rtl_writephy(tp, 0x1f, 0x0002);
--	rtl_w0w1_phy(tp, 0x08, 0x8000, 0x7f00);
--	rtl_writephy(tp, 0x1f, 0x0000);
-+	phy_modify_paged(phydev, 0x0002, 0x08, 0x7f00, 0x8000);
- 
- 	/* PHY auto speed down */
- 	rtl_writephy(tp, 0x1f, 0x0007);
-@@ -3428,35 +3392,21 @@ static void rtl8102e_hw_phy_config(struct rtl8169_private *tp)
- 
- static void rtl8105e_hw_phy_config(struct rtl8169_private *tp)
- {
--	static const struct phy_reg phy_reg_init[] = {
--		{ 0x1f, 0x0005 },
--		{ 0x1a, 0x0000 },
--		{ 0x1f, 0x0000 },
--
--		{ 0x1f, 0x0004 },
--		{ 0x1c, 0x0000 },
--		{ 0x1f, 0x0000 },
--
--		{ 0x1f, 0x0001 },
--		{ 0x15, 0x7701 },
--		{ 0x1f, 0x0000 }
--	};
--
- 	/* Disable ALDPS before ram code */
--	rtl_writephy(tp, 0x1f, 0x0000);
--	rtl_writephy(tp, 0x18, 0x0310);
-+	phy_write(tp->phydev, 0x18, 0x0310);
- 	msleep(100);
- 
- 	rtl_apply_firmware(tp);
- 
--	rtl_writephy_batch(tp, phy_reg_init);
-+	phy_write_paged(tp->phydev, 0x0005, 0x1a, 0x0000);
-+	phy_write_paged(tp->phydev, 0x0004, 0x1c, 0x0000);
-+	phy_write_paged(tp->phydev, 0x0001, 0x15, 0x7701);
- }
- 
- static void rtl8402_hw_phy_config(struct rtl8169_private *tp)
- {
- 	/* Disable ALDPS before setting firmware */
--	rtl_writephy(tp, 0x1f, 0x0000);
--	rtl_writephy(tp, 0x18, 0x0310);
-+	phy_write(tp->phydev, 0x18, 0x0310);
- 	msleep(20);
- 
- 	rtl_apply_firmware(tp);
-@@ -3479,8 +3429,7 @@ static void rtl8106e_hw_phy_config(struct rtl8169_private *tp)
  	};
  
- 	/* Disable ALDPS before ram code */
+ 	rtl_writephy_batch(tp, phy_reg_init);
++
++	r8168d_modify_extpage(tp->phydev, 0x0023, 0x16, 0xffff, 0x0000);
+ }
+ 
+ static void rtl8168d_4_hw_phy_config(struct rtl8169_private *tp)
+ {
+-	static const struct phy_reg phy_reg_init[] = {
+-		{ 0x1f, 0x0001 },
+-		{ 0x17, 0x0cc0 },
+-
+-		{ 0x1f, 0x0007 },
+-		{ 0x1e, 0x002d },
+-		{ 0x18, 0x0040 },
+-		{ 0x1f, 0x0000 }
+-	};
+-
+-	rtl_writephy_batch(tp, phy_reg_init);
+-	rtl_patchphy(tp, 0x0d, 1 << 5);
++	phy_write_paged(tp->phydev, 0x0001, 0x17, 0x0cc0);
++	r8168d_modify_extpage(tp->phydev, 0x002d, 0x18, 0xffff, 0x0040);
++	phy_set_bits(tp->phydev, 0x0d, BIT(5));
+ }
+ 
+ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp)
+@@ -2867,17 +2866,6 @@ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp)
+ 		{ 0x1f, 0x0003 },
+ 		{ 0x14, 0x6420 },
+ 		{ 0x1f, 0x0000 },
+-
+-		/* Update PFM & 10M TX idle timer */
+-		{ 0x1f, 0x0007 },
+-		{ 0x1e, 0x002f },
+-		{ 0x15, 0x1919 },
+-		{ 0x1f, 0x0000 },
+-
+-		{ 0x1f, 0x0007 },
+-		{ 0x1e, 0x00ac },
+-		{ 0x18, 0x0006 },
+-		{ 0x1f, 0x0000 }
+ 	};
+ 	struct phy_device *phydev = tp->phydev;
+ 
+@@ -2888,31 +2876,26 @@ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp)
+ 
+ 	rtl_writephy_batch(tp, phy_reg_init);
+ 
++	/* Update PFM & 10M TX idle timer */
++	r8168d_modify_extpage(phydev, 0x002f, 0x15, 0xffff, 0x1919);
++
++	r8168d_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
++
+ 	/* DCO enable for 10M IDLE Power */
+-	rtl_writephy(tp, 0x1f, 0x0007);
+-	rtl_writephy(tp, 0x1e, 0x0023);
+-	rtl_w0w1_phy(tp, 0x17, 0x0006, 0x0000);
 -	rtl_writephy(tp, 0x1f, 0x0000);
--	rtl_writephy(tp, 0x18, 0x0310);
-+	phy_write(tp->phydev, 0x18, 0x0310);
- 	msleep(100);
++	r8168d_modify_extpage(phydev, 0x0023, 0x17, 0x0000, 0x0006);
+ 
+ 	/* For impedance matching */
+ 	phy_modify_paged(phydev, 0x0002, 0x08, 0x7f00, 0x8000);
+ 
+ 	/* PHY auto speed down */
+-	rtl_writephy(tp, 0x1f, 0x0007);
+-	rtl_writephy(tp, 0x1e, 0x002d);
+-	rtl_w0w1_phy(tp, 0x18, 0x0050, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
+-	rtl_w0w1_phy(tp, 0x14, 0x8000, 0x0000);
++	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0050);
++	phy_set_bits(phydev, 0x14, BIT(15));
+ 
+ 	r8168d_phy_param(phydev, 0x8b86, 0x0000, 0x0001);
+ 	r8168d_phy_param(phydev, 0x8b85, 0x2000, 0x0000);
+ 
+-	rtl_writephy(tp, 0x1f, 0x0007);
+-	rtl_writephy(tp, 0x1e, 0x0020);
+-	rtl_w0w1_phy(tp, 0x15, 0x0000, 0x1100);
+-	rtl_writephy(tp, 0x1f, 0x0006);
+-	rtl_writephy(tp, 0x00, 0x5a00);
+-	rtl_writephy(tp, 0x1f, 0x0000);
++	r8168d_modify_extpage(phydev, 0x0020, 0x15, 0x1100, 0x0000);
++	phy_write_paged(phydev, 0x0006, 0x00, 0x5a00);
+ 
+ 	phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, 0x0000);
+ }
+@@ -2933,27 +2916,15 @@ static void rtl_rar_exgmac_set(struct rtl8169_private *tp, u8 *addr)
+ 
+ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp)
+ {
+-	static const struct phy_reg phy_reg_init[] = {
+-		/* Enable Delay cap */
+-		{ 0x1f, 0x0004 },
+-		{ 0x1f, 0x0007 },
+-		{ 0x1e, 0x00ac },
+-		{ 0x18, 0x0006 },
+-		{ 0x1f, 0x0002 },
+-		{ 0x1f, 0x0000 },
+-		{ 0x1f, 0x0000 },
+-
+-		/* Channel estimation fine tune */
+-		{ 0x1f, 0x0003 },
+-		{ 0x09, 0xa20f },
+-		{ 0x1f, 0x0000 },
+-		{ 0x1f, 0x0000 },
+-	};
+ 	struct phy_device *phydev = tp->phydev;
  
  	rtl_apply_firmware(tp);
+ 
+-	rtl_writephy_batch(tp, phy_reg_init);
++	/* Enable Delay cap */
++	r8168d_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
++
++	/* Channel estimation fine tune */
++	phy_write_paged(phydev, 0x0003, 0x09, 0xa20f);
+ 
+ 	/* Green Setting */
+ 	r8168d_phy_param(phydev, 0x8b5b, 0xffff, 0x9222);
+@@ -2967,13 +2938,8 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp)
+ 	rtl_writephy(tp, 0x1f, 0x0000);
+ 
+ 	/* PHY auto speed down */
+-	rtl_writephy(tp, 0x1f, 0x0004);
+-	rtl_writephy(tp, 0x1f, 0x0007);
+-	rtl_writephy(tp, 0x1e, 0x002d);
+-	rtl_w0w1_phy(tp, 0x18, 0x0010, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0002);
+-	rtl_writephy(tp, 0x1f, 0x0000);
+-	rtl_w0w1_phy(tp, 0x14, 0x8000, 0x0000);
++	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
++	phy_set_bits(phydev, 0x14, BIT(15));
+ 
+ 	/* improve 10M EEE waveform */
+ 	r8168d_phy_param(phydev, 0x8b86, 0x0000, 0x0001);
+@@ -3005,11 +2971,8 @@ static void rtl8168f_hw_phy_config(struct rtl8169_private *tp)
+ 	r8168d_phy_param(phydev, 0x8b80, 0x0000, 0x0006);
+ 
+ 	/* PHY auto speed down */
+-	rtl_writephy(tp, 0x1f, 0x0007);
+-	rtl_writephy(tp, 0x1e, 0x002d);
+-	rtl_w0w1_phy(tp, 0x18, 0x0010, 0x0000);
+-	rtl_writephy(tp, 0x1f, 0x0000);
+-	rtl_w0w1_phy(tp, 0x14, 0x8000, 0x0000);
++	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
++	phy_set_bits(phydev, 0x14, BIT(15));
+ 
+ 	/* Improve 10M EEE waveform */
+ 	r8168d_phy_param(phydev, 0x8b86, 0x0000, 0x0001);
+@@ -3032,11 +2995,8 @@ static void rtl8168f_1_hw_phy_config(struct rtl8169_private *tp)
+ 	r8168d_phy_param(phydev, 0x8b5e, 0xffff, 0x0000);
+ 	r8168d_phy_param(phydev, 0x8b67, 0xffff, 0x0000);
+ 	r8168d_phy_param(phydev, 0x8b70, 0xffff, 0x0000);
+-	phy_write(phydev, 0x1f, 0x0007);
+-	phy_write(phydev, 0x1e, 0x0078);
+-	phy_write(phydev, 0x17, 0x0000);
+-	phy_write(phydev, 0x19, 0x00fb);
+-	phy_write(phydev, 0x1f, 0x0000);
++	r8168d_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
++	r8168d_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00fb);
+ 
+ 	/* Modify green table for 10M */
+ 	r8168d_phy_param(phydev, 0x8b79, 0xffff, 0xaa00);
+@@ -3076,11 +3036,8 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp)
+ 	r8168d_phy_param(phydev, 0x8b5e, 0xffff, 0x0000);
+ 	r8168d_phy_param(phydev, 0x8b67, 0xffff, 0x0000);
+ 	r8168d_phy_param(phydev, 0x8b70, 0xffff, 0x0000);
+-	phy_write(phydev, 0x1f, 0x0007);
+-	phy_write(phydev, 0x1e, 0x0078);
+-	phy_write(phydev, 0x17, 0x0000);
+-	phy_write(phydev, 0x19, 0x00aa);
+-	phy_write(phydev, 0x1f, 0x0000);
++	r8168d_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
++	r8168d_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00aa);
+ 
+ 	/* Modify green table for 10M */
+ 	r8168d_phy_param(phydev, 0x8b79, 0xffff, 0xaa00);
 -- 
 2.24.0
 
