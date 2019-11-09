@@ -2,91 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67B2BF5CC3
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 02:36:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E6EBF5D06
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 03:35:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726399AbfKIBge (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 8 Nov 2019 20:36:34 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:40159 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbfKIBge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 8 Nov 2019 20:36:34 -0500
-Received: by mail-il1-f193.google.com with SMTP id d83so6788420ilk.7
-        for <netdev@vger.kernel.org>; Fri, 08 Nov 2019 17:36:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bXY9nJGvpXa2Hj2sERPdL08J0xpm8vhzQIH+YlWH51E=;
-        b=C6zXJgV9/u+Wn6pMS8SSQFn0srTX6nLN2C/CLM1m44TtrvLYjgK/NEVsl4tsyqLrDy
-         OWIBzthUChXNEPPPvrFVYKnB8L9ASGfJuqzTM+bjGmtZPml/Sx3my1Gs5mPUp5iXXZaZ
-         olK89C0Iibnkjhd0zdvmmB1zsB+yKF+mG8WZD9oP8wVFIEEym7PI7hBAutDv4YGHhykN
-         BjngdCBWq06MszUt+YGyS6DHCcM4GfJg5ZAGrCU14W1sm9hl6NCpjuw4+t+AcxPWvNEa
-         xTMpo/FxWGe1ADNXW1a99LvWvz5QLv+T15d/83TnikDNA2vUjwwKeawoGdY8l6yE1uSZ
-         v8vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bXY9nJGvpXa2Hj2sERPdL08J0xpm8vhzQIH+YlWH51E=;
-        b=DAysgf7hlNWqvnMJ7tzw07nAW+OP2EGlENiQb9l11vltSsEZQbDbP9CUkCoeh9TziD
-         4joarwwX6rcWRUWj7320HdSExnJvR6QM6Rh2e8qU0anCxafszijwPvSQ+whJxkDwS2zx
-         XO8OEp7yd6JNZfb63F7PAgHpq2kLvASCiP0IGRgiv923K+CIhUXvNCRWZG7IYA+JW6oe
-         U6TYWCb2VSc8olq4a//xzrv0Ke96F2etb7mzmLJRk8avvXcyZGHxOjNC9on7Wquv1hx5
-         jNeQR2IyXTPk/zIfiCeY4eKywyAvjLtAfffwuMTL+cILql5l1tzf0Z+8/baOTtmXXhQS
-         XkUg==
-X-Gm-Message-State: APjAAAXnF3hCpmUWRXV/GvjEiNjaoHa5isTlxb5LAv7cZNY3Pg0sjRJs
-        lFh9aKa4LK0Yabpgem/jH7+tF6GbsRQ=
-X-Google-Smtp-Source: APXvYqzJN+lEPUlhkF1NuLCfA43Z2R3eq4IQEK8MiKpmRcKKLDwuqOtjex74oicFonSlpS7WzvCieA==
-X-Received: by 2002:a92:9ace:: with SMTP id c75mr16904958ill.296.1573263393893;
-        Fri, 08 Nov 2019 17:36:33 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:9c6a:665b:15c2:c3c0])
-        by smtp.googlemail.com with ESMTPSA id g23sm602986ioe.73.2019.11.08.17.36.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Nov 2019 17:36:32 -0800 (PST)
-Subject: Re: [PATCH iproute2-next 0/5] ipnetns: cleanup and harden processing
- of netns ids
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     netdev@vger.kernel.org, Nicolas Dichtel <nicolas.dichtel@6wind.com>
-References: <cover.1573231189.git.gnault@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d05692ad-410f-ce81-65ca-8afd3d7cdea2@gmail.com>
-Date:   Fri, 8 Nov 2019 18:36:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <cover.1573231189.git.gnault@redhat.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1726260AbfKICfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 8 Nov 2019 21:35:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60140 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725990AbfKICfF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 8 Nov 2019 21:35:05 -0500
+Subject: Re: [GIT] Networking
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573266904;
+        bh=ZnfK/xdvUd4/XUscNHvzylDj0cqnh+/IIfsSY8oJja8=;
+        h=From:In-Reply-To:References:Date:To:Cc:From;
+        b=xFPZjqNURR+/wYdQsZQvl5jwEX7fJqlLuplVonjrLq30eUaLywiG1WcgYSRs/DnsI
+         YeuspYUSkn8vpWPfs1UAstM0JdEtYSDkGyBibfEkWclMurncoXNeYN2lHogg03FQQb
+         h5RRJ8bl492xEvX9szmLMI9xFN/pwTxqWpwoJR/s=
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20191108.173432.1139057558916119461.davem@davemloft.net>
+References: <20191108.173432.1139057558916119461.davem@davemloft.net>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20191108.173432.1139057558916119461.davem@davemloft.net>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+ refs/heads/master
+X-PR-Tracked-Commit-Id: a2582cdc32f071422e0197a6c59bd1235b426ce2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 0058b0a506e40d9a2c62015fe92eb64a44d78cd9
+Message-Id: <157326690465.18517.1376695479110349158.pr-tracker-bot@kernel.org>
+Date:   Sat, 09 Nov 2019 02:35:04 +0000
+To:     David Miller <davem@davemloft.net>
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/8/19 10:00 AM, Guillaume Nault wrote:
-> It's currently hard to review ipnetns. The netns ids are inconsistently
-> treated as signed or unsigned and most helper functions aren't prepared
-> to use negative ids.
-> 
-> Netns id attributes can be negative: NETNSA_NSID_NOT_ASSIGNED == -1.
-> So let's consistently treat nsids as signed and also reject negative
-> values in functions that are supposed to only handle assigned netns
-> ids.
-> 
-> While there, let's drop the extra blank line generated by some command
-> line parsing errors (patch 5/5).
-> 
-> Guillaume Nault (5):
->   ipnetns: treat NETNSA_NSID and NETNSA_CURRENT_NSID as signed
->   ipnetns: fix misleading comment about 'ip monitor nsid'
->   ipnetns: harden helper functions wrt. negative netns ids
->   ipnetns: don't print unassigned nsid in json export
->   ipnetns: remove blank lines printed by invarg() messages
-> 
->  ip/ipnetns.c | 49 +++++++++++++++++++++++++++++--------------------
->  1 file changed, 29 insertions(+), 20 deletions(-)
-> 
+The pull request you sent on Fri, 08 Nov 2019 17:34:32 -0800 (PST):
 
-looks good. applied to iproute2-next. Thanks for doing the cleanup.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/0058b0a506e40d9a2c62015fe92eb64a44d78cd9
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.wiki.kernel.org/userdoc/prtracker
