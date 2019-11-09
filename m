@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2829CF5E29
-	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 10:03:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78B90F5E32
+	for <lists+netdev@lfdr.de>; Sat,  9 Nov 2019 10:06:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726327AbfKIJDY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 04:03:24 -0500
-Received: from mout.web.de ([212.227.15.14]:55171 "EHLO mout.web.de"
+        id S1726537AbfKIJGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 04:06:13 -0500
+Received: from mout.web.de ([212.227.15.4]:60183 "EHLO mout.web.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726143AbfKIJDY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 04:03:24 -0500
+        id S1726136AbfKIJGN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 04:06:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1573290197;
-        bh=qoIQImRdmD44LsZ6ub5WyhVN02SxMTzaAmh82B3FbiQ=;
+        s=dbaedf251592; t=1573290365;
+        bh=HJqqvOPiLrBZhZlGpdiUIZoAA6i9aylcFpOm0pxa0y4=;
         h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
-        b=KD54TrJuFUMbOY4o01necvCS3Jz4zylZAHVYsSzc2AJY9D0KKZh5bHhIt+BRLICn5
-         JQxkmGGlZ31Bk49lGHGP+WCJr94YoqXQZjWR3LJntT/Fy9whju4N+wat0BmCPZjP3M
-         wooicXx+UapWia9jjXzgAKgW0tzMR2npnNjQTOQU=
+        b=Iw40WaYpq+WCmGktF6ar3LpEFcdcS+VItZXzCAJUVpmQQXMALz11LOan9VIG5M2Sv
+         LMZgB6syYfvypKUU5+o01/pah7MC4SgrH3pdlX1z3t904rOpppfOJa6P0cq3OtnzeB
+         sIDbS/P7wHzm1OzN+6/ZaTVHhXyzwJCZwPijPHw8=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.82.67]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0M0f1C-1hd3yk3UMQ-00uqJg; Sat, 09
- Nov 2019 10:03:16 +0100
-Subject: [PATCH 2/3] fsl/fman: Use common error handling code in mac_probe()
+Received: from [192.168.1.2] ([2.243.82.67]) by smtp.web.de (mrweb002
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 0MCZTG-1ibePu3Pms-009NIN; Sat, 09
+ Nov 2019 10:06:04 +0100
+Subject: [PATCH 3/3] fsl/fman: Return directly after a failed devm_kzalloc()
+ in mac_probe()
 From:   Markus Elfring <Markus.Elfring@web.de>
 To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Madalin Bucur <madalin.bucur@nxp.com>
@@ -72,8 +73,8 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <38159f52-81a1-8ece-076f-da66180f4d5e@web.de>
-Date:   Sat, 9 Nov 2019 10:03:15 +0100
+Message-ID: <8ffc16a2-62cc-f948-e11b-55bae1d6aae4@web.de>
+Date:   Sat, 9 Nov 2019 10:06:03 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
@@ -81,177 +82,74 @@ In-Reply-To: <132e8369-c4da-249f-76b8-834e394dc6d5@web.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:5QjZZUF/uEC5ha8UFxSqCFcACX950kwsosWqC4ZkjAORgg/6rnK
- 5GCF7hefvFU13OJG6Sw+kzPpSnyQP+b/eYREkmNy0IWZdbh55bY0ZyudP0CNc1hx9odK7+R
- Anu5K+OnPha8xpVry43ehXE2kHZud6Wng3gdh9k7on1LGs0k5uHLD88J9YcIXFsj1zbP/fv
- mQgMFQ+MuIFTa9FDAj+HA==
+X-Provags-ID: V03:K1:eLIXJeDSxsn/QQdSB2uFUJVZ6LS8AYKedpK+I/+HDllWZmjgIqu
+ MgBFt51wz25TKWTP5yGGAfPt7QWFjXSY4qx6MICNpkBW6vuVjiveWVJhw+whrVDsk9hnjWL
+ pJpxX+iHNhak5SaYci5QxoKzL37Q08VcvxVh8tL5oh4kEM4YJaWtjTaEmyA5/7OvRS/WS9e
+ PTsVi/3VLXDugPOJ39Ngw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:qlQGOrf0uCA=:15IgdzL/4mrHeQXKdvyPyg
- nEjHDrk0oVstuA2uvcjO+VywMh2hGr4Pd+XF1ZkHMah9em4sWAiLQcyBimPFD7kLmKmDoheIS
- OHqhD6whqLEFdYrX5XlFCZavEi6VLeMsxf+QFAhR85nRJEsY+If7NsKeoiXY4yYQF6ZTTBU06
- ov/zdZGEifyI5s7V3PBYAjR2M8O+sw5J3aItBNE1EGanbYwMQ/gh/I0UPvbV72ujOnen232FW
- noDY7VU6un8kB2KJKtghDXOVPU1NpOoNZ0GPmd0BqFk3ZU19A+A40NpLpZ5x4BO3WGsHf4ASQ
- YLkhbEnQVJw0Jjm0xvtBmdOY7DBNO4KOmfFS66aThw5qMUQHyUMyZOKbcdc9J5Ili0gewIllZ
- 9MjAu+8exvwdtsfgcL6mhuFvqCUNQQo4HFK4T7g+ODRQbH3Se/VuiNHf8QX1G73w+DFDACLJV
- EZ4+HxRz33WjHjz2V+j4kGDfjp7pMBBOEDoVi6yZQfR0IRhG2cbgcXJeHIxwR0429ceDA5e78
- 9am6VVBR/Buh6HkE6JdObCbiVqn8Ey4Si/Oy0Z/PXZ0jV445/z39803micoLAENd8UK0A+hC+
- 53rzAaPswuTLqERh3JtAXZKgDfzY0PUR5/20s9UEdQYUby3gRO1m34xRviC7PkyoyDIf3HEib
- 2lfmPLYzCaOMGlJsdhp9/ngVx2jwRBatjI6sqmqtLUoyW9oSP9IAicHsvMkuaxAECeM4d0Evh
- fIGlG734+Ajwmr1EgI2nRKrCS9VzLhVl8q1uMvZh8uLZvPSM/l5uFF/ndsecnfV3+AimA8JJt
- 5oT9H9oc7sU2C/9+iVnO7sK+hef2uOYIUdKy8H+wnEtECZbqV/per6Ku/KBG2DQBup7unOrkn
- l5hwS4v0H8EcU3Y6IWABGPPylDhnP+/T1vJ4N9Zzv1ke3GKFnZkIUgW2gMVuL9thBJEsI7mzc
- GUbqJHhUOOs1inq9rzzbWU0VbX6MKfaoT3bOXfiLSGQtFV5lyr4pXgt07T8vysF7bBy5Elxow
- MQQjoxEDyQGdERvav8JjezivHp0pg/LIWtrZOuYNdTKlBx7ZNg11WmTfuh2rQRbQXGMJ+zjQi
- ZRekQnh+gyhajzt1pPV5D2I+0NsZBTCX79AKvXjKpInbVtMX2/3WFwBwGkBIXZWs5fDHjrpy9
- c13lryo5qybk1VOMYZh49WeHNOkZL2q22hsZdrmSOM+H1uinGATaOY9/GdkUZNNB1H8n/+3PB
- h93crA5osxziKxR5LE2VibDFyI2FX1wBUPhbULgKDg43vbL7tvKE8jlp4fC4=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:ZMs4svgeo8Q=:JeiHgeqUkIyjqk+cjSLHik
+ P8w1zMdyPDHMLh/ysyUhA6Bgui8xDi1fvzHHS4hLT7CqoHsKxCDyGTUftVVjFJtWnF8G9hdP8
+ 7MVv5zvkArClvN75IP4t+rw5Y1bE+eclxqDdeExiN+XFvCJHLCxyrjlUaiCgDdsSV/s7r0T3J
+ vnf7GugR2Yeamx2Uo784CtZgsTMd8k9EIAYEZTgLaYN0/LFtJaxKvg/24l/kOnSzsB8/0fkzZ
+ +5BFRWI7mK14MfiFhjfaMAp5QHvoVhNYPKxcWCKmpVE8mfPReGY3dV1rxenfbWvMhG4I7iVSc
+ NG/CDzMhhnIrKDNlLOnmNmnpcbMu4JHFEgP4D+MWOxReSd0QcItDUyxXglpr2zTp6jK5hfxpo
+ nbAE2aiDr5EEKrKLTpwD0530AiAawqZPJwsta7PPDfelO+S20CIkx3tFsPWbr+rBNtFY06gSA
+ LrPQBHhD4vn9soc0Eyl77sV2gLXlCncaKLcqWsi3chCHqEQJol/ilvMGUuRjN2DGN4hd/h9DU
+ PgqUjogKdzOJKE6dM160vkuFrt2ElSCvWlr8aiwTMyq0MW7+5sKBPdePFR9zo4PGY4brSWtHt
+ V5yMvqkdlTwB55BBNRUu4ex4JxfKt0t+xL6RRwb2CdDOGydkMxFH9Qa4WGesz9FkVeABFAPCR
+ nyCacuqbmW8ZCUbGNEHD8CNEvXfHjRPMVBbNK7eFXCGc0iU9omYY8dauBlNwSxAzIJ73PhANo
+ 1rDoNORchiTFtv0KHVM+0yK/8rgiUPS4Gsmi92cMc8bI0/bi2PZfnSIKxqhcaJtiyTJKjhqtS
+ KPqDVzcmzVcGvbpAECBe89UTrxhIbtDI3zuUl52TS1SWE9KDbgxQZBvFGcVvguWz31+aIRyzi
+ r1XSPZMy4rq+QHN7/MtlqhxlQ/9cnOsZQYXTd34nGvnNuxH2iZS0ewzppZOkekEakibBKOZXP
+ wVD+xJn3U/yR/uRP25XvXiFqUeiErCxXDgazvLTdghZGi8AfJ+YuKMO/Yy4zVcUSVl2kz1uiG
+ rNhX6m4rTt2mchmqli7tzfV1whPwEHa2cu+FxhHm6lIaqsBlt55jo+2Knpmx6ZrDCW57vYoVb
+ NpV6nzX35i9Ttt799i+8FACwH/o9CLZ3tP9MzaWJ2cENq2VB4HsuhixW1Bt+FDaT6q4ihdnHi
+ BMf5G7D52Bd4u2VlmpfBu0eH3cIsDDKbZQDqQUrtd7RC7/LNmjfGPEFfz/05tUtp8IHUgLN8X
+ geMewjKppsR6/nQM3EtaCnU0pVuC6FGtCcuCkTOZ1Cqy8wpvBIBj78oqmbyc=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Sat, 9 Nov 2019 09:13:01 +0100
+Date: Sat, 9 Nov 2019 09:26:12 +0100
 
-Adjust jump targets so that exception handling code can be better reused
-at the end of this function.
-
-This issue was detected by using the Coccinelle software.
+Return directly after a call of the function =E2=80=9Cdevm_kzalloc=E2=80=
+=9D failed
+at the beginning.
 
 Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 =2D--
- drivers/net/ethernet/freescale/fman/mac.c | 42 ++++++++++++-----------
- 1 file changed, 22 insertions(+), 20 deletions(-)
+ drivers/net/ethernet/freescale/fman/mac.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ether=
 net/freescale/fman/mac.c
-index e0680257532c..7fbd7cc24ede 100644
+index 7fbd7cc24ede..75614e2ebda3 100644
 =2D-- a/drivers/net/ethernet/freescale/fman/mac.c
 +++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -659,16 +659,14 @@ static int mac_probe(struct platform_device *_of_dev=
+@@ -614,15 +614,12 @@ static int mac_probe(struct platform_device *_of_dev=
 )
- 	of_dev =3D of_find_device_by_node(dev_node);
- 	if (!of_dev) {
- 		dev_err(dev, "of_find_device_by_node(%pOF) failed\n", dev_node);
--		err =3D -EINVAL;
--		goto _return_of_node_put;
-+		goto _e_inval_put_node;
- 	}
+ 	mac_node =3D dev->of_node;
 
- 	/* Get the FMan cell-index */
- 	err =3D of_property_read_u32(dev_node, "cell-index", &val);
- 	if (err) {
- 		dev_err(dev, "failed to read cell-index for %pOF\n", dev_node);
--		err =3D -EINVAL;
--		goto _put_device;
-+		goto _e_inval_put_device;
- 	}
- 	/* cell-index 0 =3D> FMan id 1 */
- 	fman_id =3D (u8)(val + 1);
-@@ -717,8 +715,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 	err =3D of_property_read_u32(mac_node, "cell-index", &val);
- 	if (err) {
- 		dev_err(dev, "failed to read cell-index for %pOF\n", mac_node);
--		err =3D -EINVAL;
--		goto _put_parent_device;
-+		goto _e_inval_put_parent_device;
- 	}
- 	priv->cell_index =3D (u8)val;
-
-@@ -726,8 +723,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 	mac_addr =3D of_get_mac_address(mac_node);
- 	if (IS_ERR(mac_addr)) {
- 		dev_err(dev, "of_get_mac_address(%pOF) failed\n", mac_node);
--		err =3D -EINVAL;
--		goto _put_parent_device;
-+		goto _e_inval_put_parent_device;
- 	}
- 	ether_addr_copy(mac_dev->addr, mac_addr);
-
-@@ -743,8 +739,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 	if (nph !=3D ARRAY_SIZE(mac_dev->port)) {
- 		dev_err(dev, "Not supported number of fman-ports handles of mac node %p=
-OF from device tree\n",
- 			mac_node);
--		err =3D -EINVAL;
--		goto _put_parent_device;
-+		goto _e_inval_put_parent_device;
- 	}
-
- 	for (i =3D 0; i < ARRAY_SIZE(mac_dev->port); i++) {
-@@ -753,24 +748,21 @@ static int mac_probe(struct platform_device *_of_dev=
-)
- 		if (!dev_node) {
- 			dev_err(dev, "of_parse_phandle(%pOF, fsl,fman-ports) failed\n",
- 				mac_node);
--			err =3D -EINVAL;
--			goto _return_of_node_put;
-+			goto _e_inval_put_node;
- 		}
-
- 		of_dev =3D of_find_device_by_node(dev_node);
- 		if (!of_dev) {
- 			dev_err(dev, "of_find_device_by_node(%pOF) failed\n",
- 				dev_node);
--			err =3D -EINVAL;
--			goto _return_of_node_put;
-+			goto _e_inval_put_node;
- 		}
-
- 		mac_dev->port[i] =3D fman_port_bind(&of_dev->dev);
- 		if (!mac_dev->port[i]) {
- 			dev_err(dev, "dev_get_drvdata(%pOF) failed\n",
- 				dev_node);
--			err =3D -EINVAL;
--			goto _put_device;
-+			goto _e_inval_put_device;
- 		}
- 		of_node_put(dev_node);
- 	}
-@@ -821,8 +813,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 		phy =3D of_phy_find_device(mac_dev->phy_node);
- 		if (!phy) {
- 			err =3D -EINVAL;
--			of_node_put(mac_dev->phy_node);
--			goto _return_of_get_parent;
-+			goto _put_phy_node;
- 		}
-
- 		priv->fixed_link->link =3D phy->link;
-@@ -837,8 +828,7 @@ static int mac_probe(struct platform_device *_of_dev)
- 	err =3D mac_dev->init(mac_dev);
- 	if (err < 0) {
- 		dev_err(dev, "mac_dev->init() =3D %d\n", err);
--		of_node_put(mac_dev->phy_node);
--		goto _return_of_get_parent;
-+		goto _put_phy_node;
- 	}
-
- 	/* pause frame autonegotiation enabled */
-@@ -866,10 +856,22 @@ static int mac_probe(struct platform_device *_of_dev=
-)
-
- 	goto _return;
-
-+_put_phy_node:
-+	of_node_put(mac_dev->phy_node);
-+	goto _return_of_get_parent;
+ 	mac_dev =3D devm_kzalloc(dev, sizeof(*mac_dev), GFP_KERNEL);
+-	if (!mac_dev) {
+-		err =3D -ENOMEM;
+-		goto _return;
+-	}
++	if (!mac_dev)
++		return -ENOMEM;
 +
-+_e_inval_put_node:
-+	err =3D -EINVAL;
-+	goto _return_of_node_put;
-+
-+_e_inval_put_parent_device:
-+	err =3D -EINVAL;
- _put_parent_device:
- 	put_device(&of_dev->dev);
- 	goto _return_of_get_parent;
+ 	priv =3D devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv) {
+-		err =3D -ENOMEM;
+-		goto _return;
+-	}
++	if (!priv)
++		return -ENOMEM;
 
-+_e_inval_put_device:
-+	err =3D -EINVAL;
- _put_device:
- 	put_device(&of_dev->dev);
- _return_of_node_put:
+ 	/* Save private information */
+ 	mac_dev->priv =3D priv;
 =2D-
 2.24.0
 
