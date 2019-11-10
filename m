@@ -2,98 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CD41F694C
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3416AF6951
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfKJOH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:07:29 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35312 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfKJOH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:29 -0500
-Received: by mail-pg1-f195.google.com with SMTP id q22so7461706pgk.2;
-        Sun, 10 Nov 2019 06:07:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eU8YcK7QmEzgV0st1+64+ecJ2UFrzFdTVmX7+bTQHP0=;
-        b=iCV/dOMt1Gxk9wD35Bds5vRMgfgQvWjuluHI8tie+4FFYwR0998MKuplvLQFnBJp/B
-         A8nzAtnI+sxOgpdl9SzBuXyOO34cvuveEM+KwgNqV3ESwmN+ni/03WGaH1dNgdXipUEL
-         xqWsXtQev+WX9Nwdfmt+oritax4VtSLT8dzmEkCKdFhgCiWbtHStR9aqBjxqEtJQcHDz
-         JSlKI3itKlTQXrQh24BjQrbYDZeaxrvDIEifZPLazbM5baQ93GI0FYgxIN2N+iGExYL2
-         AcZp3GycHovPo6RxWCYkRxL7uxwEv8+PVrEqekLpf1AybBrOvdNMVjR8d0++mGIrS5ri
-         ObhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eU8YcK7QmEzgV0st1+64+ecJ2UFrzFdTVmX7+bTQHP0=;
-        b=SoH6ArLEcOCPQYJNEPcOT8pQEYaQwATOjubG0W92eUHPRUrSBgRZL9lU0vuWglKwqe
-         /7/xLvMpOO/5oBw7HqDKLUhXj75QM3EG7eS3hOlBZwtxUnJcivbq3jLyQwrJ9DpUq+Ir
-         a5lcvqaIRR3wlDLmya+QMNx+KDJbd0eilZx1JIHci76Hf7OIMonziEkBKqfRP/5u9ojG
-         h1mFwlX7tdC0sbqjP3vHYKN+SZhedzUSlV3kWNQYG9FCm6iDw+aq35rQP+pDoDcaenFQ
-         hBI3hvno406EE1xYE0aHdLjOw0GyhFmnATU+3UOVpQWDsXRsgUkNUmsrDafRp1GaZfIe
-         aELA==
-X-Gm-Message-State: APjAAAXP/LlURMUtlX24ujSKlZdoJ8NcTfW25UFXc89tSsNSbg1CCF9D
-        0xDllvVA8sFYTbkC11kJfRk=
-X-Google-Smtp-Source: APXvYqwemy1rr3PRyYeBoTH00pTVQ3zewYcQ0DbOrpCd/MlP5CKPo5HW2QO+pfqB/dc5HnjOuqoU3Q==
-X-Received: by 2002:a63:e801:: with SMTP id s1mr16008814pgh.213.1573394848386;
-        Sun, 10 Nov 2019 06:07:28 -0800 (PST)
-Received: from debian.net.fpt ([2405:4800:58f7:3f8f:27cb:abb4:d0bd:49cb])
-        by smtp.gmail.com with ESMTPSA id c12sm12520388pfp.178.2019.11.10.06.07.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Nov 2019 06:07:27 -0800 (PST)
-From:   Phong Tran <tranmanphong@gmail.com>
-To:     davem@davemloft.net
-Cc:     glider@google.com, gregkh@linuxfoundation.org,
-        hslester96@gmail.com, kstewart@linuxfoundation.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org,
-        syzbot+7dc7c28d4577bbe55b10@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        tranmanphong@gmail.com
-Subject: [[Patch V2]] usb: asix: cleanup the buffer in asix_read_cmd
-Date:   Sun, 10 Nov 2019 21:07:16 +0700
-Message-Id: <20191110140716.11996-1-tranmanphong@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191107.152118.922830217121663373.davem@davemloft.net>
-References: <20191107.152118.922830217121663373.davem@davemloft.net>
+        id S1727027AbfKJOHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:07:44 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45748 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726390AbfKJOHo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=dU1V6RasLiNMKuldMwSNTnG3A4mzaK/rcWOaxD7kS1Y=; b=D89P/NX9DkZLlZAEOoWL60987m
+        z8/pGJAuDVXBqJMR9InCJB2FSKKPcH8cRwQnIthJeFmnbBlcsS+R0ZoQkDD7j3mJ8/JiyfFByghTS
+        DZ3noGMOGqJuilL2vP/PmM1MRWzxSgNXM1FhC8/btbdUF1mut8ZfM08mcvbDdTAAO4XryJUjSZBiO
+        jcDs38wTTSw8ecLduvwNiEelE78Uri5qphfY1mnGYrd97gFQXair49uAlAnUwsCodNd47zw3PYyGO
+        4SFLzt9dUS6tXdqF5xNULk702TLQzs158LadITj1T6/jLKQ3lwb9+peoElnuH9SPv+RmtnKIhBNE3
+        1o2InClw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:47414 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iTnsB-0007eu-3O; Sun, 10 Nov 2019 14:07:23 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iTns8-0005Bj-0F; Sun, 10 Nov 2019 14:07:20 +0000
+In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
+References: <20191110140530.GA25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next 14/17] net: sfp: split power mode switching from
+ probe
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1iTns8-0005Bj-0F@rmk-PC.armlinux.org.uk>
+Date:   Sun, 10 Nov 2019 14:07:20 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is for fixing KMSAN: uninit-value in asix_mdio_write
-comes from syzbot.
+Switch the power mode switching from the probe, so that we don't
+repeatedly re-probe the SFP device if there is a problem accessing
+the registers at I2C address 0x51.
 
-Reported-by: syzbot+7dc7c28d4577bbe55b10@syzkaller.appspotmail.com
+In splitting this out, we can also fix a bug where we leave the module
+in high-power mode when the upstream device is detached but the module
+is still inserted.
 
-Tested by:
-
-https://groups.google.com/d/msg/syzkaller-bugs/3H_n05x_sPU/07UIX_TUEgAJ
-
-Signed-off-by: Phong Tran <tranmanphong@gmail.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/usb/asix_common.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/phy/sfp.c | 101 ++++++++++++++++++++++++++----------------
+ 1 file changed, 64 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index e39f41efda3e..f3eeb7875a4d 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -22,6 +22,8 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
- 	else
- 		fn = usbnet_read_cmd_nopm;
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 95e0dd4a52df..1d58e0d0478b 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -49,6 +49,7 @@ enum {
+ 	SFP_MOD_EMPTY = 0,
+ 	SFP_MOD_PROBE,
+ 	SFP_MOD_HPOWER,
++	SFP_MOD_WAITPWR,
+ 	SFP_MOD_PRESENT,
+ 	SFP_MOD_ERROR,
  
-+	memset(data, 0, size);
+@@ -71,6 +72,7 @@ static const char  * const mod_state_strings[] = {
+ 	[SFP_MOD_EMPTY] = "empty",
+ 	[SFP_MOD_PROBE] = "probe",
+ 	[SFP_MOD_HPOWER] = "hpower",
++	[SFP_MOD_WAITPWR] = "waitpwr",
+ 	[SFP_MOD_PRESENT] = "present",
+ 	[SFP_MOD_ERROR] = "error",
+ };
+@@ -1360,37 +1362,34 @@ static int sfp_module_parse_power(struct sfp *sfp)
+ 	return 0;
+ }
+ 
+-static int sfp_sm_mod_hpower(struct sfp *sfp)
++static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
+ {
+ 	u8 val;
+ 	int err;
+ 
+-	if (sfp->module_power_mW <= 1000)
+-		return 0;
+-
+ 	err = sfp_read(sfp, true, SFP_EXT_STATUS, &val, sizeof(val));
+ 	if (err != sizeof(val)) {
+ 		dev_err(sfp->dev, "Failed to read EEPROM: %d\n", err);
+-		err = -EAGAIN;
+-		goto err;
++		return -EAGAIN;
+ 	}
+ 
+-	val |= BIT(0);
++	if (enable)
++		val |= BIT(0);
++	else
++		val &= ~BIT(0);
+ 
+ 	err = sfp_write(sfp, true, SFP_EXT_STATUS, &val, sizeof(val));
+ 	if (err != sizeof(val)) {
+ 		dev_err(sfp->dev, "Failed to write EEPROM: %d\n", err);
+-		err = -EAGAIN;
+-		goto err;
++		return -EAGAIN;
+ 	}
+ 
+-	dev_info(sfp->dev, "Module switched to %u.%uW power level\n",
+-		 sfp->module_power_mW / 1000,
+-		 (sfp->module_power_mW / 100) % 10);
+-	return T_HPOWER_LEVEL;
++	if (enable)
++		dev_info(sfp->dev, "Module switched to %u.%uW power level\n",
++			 sfp->module_power_mW / 1000,
++			 (sfp->module_power_mW / 100) % 10);
+ 
+-err:
+-	return err;
++	return 0;
+ }
+ 
+ static int sfp_sm_mod_probe(struct sfp *sfp)
+@@ -1486,7 +1485,7 @@ static int sfp_sm_mod_probe(struct sfp *sfp)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return sfp_sm_mod_hpower(sfp);
++	return 0;
+ }
+ 
+ static void sfp_sm_mod_remove(struct sfp *sfp)
+@@ -1531,13 +1530,22 @@ static void sfp_sm_device(struct sfp *sfp, unsigned int event)
+  */
+ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
+ {
+-	/* Handle remove event globally, it resets this state machine.
+-	 * Also deal with upstream detachment.
+-	 */
+-	if (event == SFP_E_REMOVE || sfp->sm_dev_state < SFP_DEV_DOWN) {
++	int err;
 +
- 	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
- 		 value, index, data, size);
++	/* Handle remove event globally, it resets this state machine */
++	if (event == SFP_E_REMOVE) {
+ 		if (sfp->sm_mod_state > SFP_MOD_PROBE)
+ 			sfp_sm_mod_remove(sfp);
+-		if (sfp->sm_mod_state != SFP_MOD_EMPTY)
++		sfp_sm_mod_next(sfp, SFP_MOD_EMPTY, 0);
++		return;
++	}
++
++	/* Handle device detach globally */
++	if (sfp->sm_dev_state < SFP_DEV_DOWN) {
++		if (sfp->module_power_mW > 1000 &&
++		    sfp->sm_mod_state > SFP_MOD_HPOWER)
++			sfp_sm_mod_hpower(sfp, false);
++		if (sfp->sm_mod_state > SFP_MOD_EMPTY)
+ 			sfp_sm_mod_next(sfp, SFP_MOD_EMPTY, 0);
+ 		return;
+ 	}
+@@ -1549,26 +1557,45 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
+ 		break;
  
+ 	case SFP_MOD_PROBE:
+-		if (event == SFP_E_TIMEOUT) {
+-			int val = sfp_sm_mod_probe(sfp);
+-
+-			if (val == 0)
+-				sfp_sm_mod_next(sfp, SFP_MOD_PRESENT, 0);
+-			else if (val > 0)
+-				sfp_sm_mod_next(sfp, SFP_MOD_HPOWER, val);
+-			else if (val != -EAGAIN)
+-				sfp_sm_mod_next(sfp, SFP_MOD_ERROR, 0);
+-			else
+-				sfp_sm_set_timer(sfp, T_PROBE_RETRY);
++		if (event != SFP_E_TIMEOUT)
++			break;
++
++		err = sfp_sm_mod_probe(sfp);
++		if (err == -EAGAIN) {
++			sfp_sm_set_timer(sfp, T_PROBE_RETRY);
++			break;
++		}
++		if (err < 0) {
++			sfp_sm_mod_next(sfp, SFP_MOD_ERROR, 0);
++			break;
+ 		}
+-		break;
+ 
++		/* If this is a power level 1 module, we are done */
++		if (sfp->module_power_mW <= 1000)
++			goto insert;
++
++		sfp_sm_mod_next(sfp, SFP_MOD_HPOWER, 0);
++		/* fall through */
+ 	case SFP_MOD_HPOWER:
+-		if (event == SFP_E_TIMEOUT) {
+-			sfp_sm_mod_next(sfp, SFP_MOD_PRESENT, 0);
++		/* Enable high power mode */
++		err = sfp_sm_mod_hpower(sfp, true);
++		if (err == 0)
++			sfp_sm_mod_next(sfp, SFP_MOD_WAITPWR, T_HPOWER_LEVEL);
++		else if (err != -EAGAIN)
++			sfp_sm_mod_next(sfp, SFP_MOD_ERROR, 0);
++		else
++			sfp_sm_set_timer(sfp, T_PROBE_RETRY);
++		break;
++
++	case SFP_MOD_WAITPWR:
++		/* Wait for T_HPOWER_LEVEL to time out */
++		if (event != SFP_E_TIMEOUT)
+ 			break;
+-		}
+-		/* fallthrough */
++
++	insert:
++		sfp_sm_mod_next(sfp, SFP_MOD_PRESENT, 0);
++		break;
++
+ 	case SFP_MOD_PRESENT:
+ 	case SFP_MOD_ERROR:
+ 		break;
 -- 
 2.20.1
 
