@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC6EEF6970
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:23:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6314BF6971
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726778AbfKJOXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:23:12 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:46002 "EHLO
+        id S1726845AbfKJOXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:23:17 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:46012 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726402AbfKJOXL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:23:11 -0500
+        with ESMTP id S1726402AbfKJOXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:23:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=MmokANADVNxSKfPnBLkOrQaIxUZ7Bt71vd5PbXhA/1M=; b=1FEREbFu9kYG+u8BMAXPz1h3Qd
-        escrP2NkAuWFMOmtgB+tg2ZN+pYzSDcucDAG9FAX8PcYpO2RSo+7FAX2mG4yFz9UxTDniWT2N67Yl
-        xUgmWSYxTMOe5ndsVRfgARHNop+gsqgudQeDAxyvEQ23laQLKCWZnXb1Tnkvsuy5DbsHGjEiaUkTs
-        BM1tiWZT9nq34BpS3D1D73Q8yS0q/KlM/xLbbM3hY+/CspgqNhW8IewLBuH3kOmaERb4mll+t1znS
-        04SJyS/yR5bOxbvl6E1o8oTCFIY7aV90Urj6jF8wXqVAFHGqtaLXrvLdBB+GrS5welLZ7cd8ZzFLq
-        eFPYYjTg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54140 helo=rmk-PC.armlinux.org.uk)
+        bh=7iVNr8dfoiGZ/Qt3oRMQxgKF3UAjeMk8uMONbT3sj2U=; b=znbjNMOQCyzJadvI8OyRFsgVqB
+        ifw14kxXGutIktmaSCD6qBpV5fyN833feidNXfLU+Ogt2hGAmtW8iaokD1VTKoTetaYaE2qEbnBUn
+        vF/wgoFj1P4z2VwHtU1MCIG99XrbSHEwnr01xcR74oMbFDL+pI+CZ1FYN+7rXmxMoHE//RSdI597Q
+        prOZSnHIXm/ba39SlXhPmqkpvECd7Wuq3NPQfISyNVnDoiqN1tChhATJUoFzKv1avpXVuBBgRSuyV
+        QF7N9D/hROjrEdynRi7STG7pFTaCPbEI34wseAdtE0rxJTHG2Q1oFTi4WIP07XtI8Rta3I95D99US
+        Z8VLRbpw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54142 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTo7O-0007kK-9T; Sun, 10 Nov 2019 14:23:06 +0000
+        id 1iTo7T-0007kT-Ci; Sun, 10 Nov 2019 14:23:11 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTo7N-0005Sj-Nk; Sun, 10 Nov 2019 14:23:05 +0000
+        id 1iTo7S-0005Sx-RH; Sun, 10 Nov 2019 14:23:10 +0000
 In-Reply-To: <20191110142226.GB25745@shell.armlinux.org.uk>
 References: <20191110142226.GB25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,202 +38,82 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 1/2] net: phy: add core phylib sfp support
+Subject: [PATCH net-next 2/2] net: phy: marvell10g: add SFP+ support
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTo7N-0005Sj-Nk@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:23:05 +0000
+Message-Id: <E1iTo7S-0005Sx-RH@rmk-PC.armlinux.org.uk>
+Date:   Sun, 10 Nov 2019 14:23:10 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add core phylib help for supporting SFP sockets on PHYs.  This provides
-a mechanism to inform the SFP layer about PHY up/down events, and also
-unregister the SFP bus when the PHY is going away.
+Add support for SFP+ cages to the Marvell 10G PHY driver. This is
+slightly complicated by the way phylib works in that we need to use
+a multi-step process to attach the SFP bus, and we also need to track
+the phylink state machine to know when the module's transmit disable
+signal should change state.
+
+With appropriate DT changes, this allows the SFP+ canges on the
+Macchiatobin platform to be functional.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/phy.c        |  7 ++++
- drivers/net/phy/phy_device.c | 66 ++++++++++++++++++++++++++++++++++++
- include/linux/phy.h          | 11 ++++++
- 3 files changed, 84 insertions(+)
+ drivers/net/phy/marvell10g.c | 25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 0a314cf45408..cb9ab24ee898 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -23,6 +23,7 @@
- #include <linux/ethtool.h>
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 3b99882692e3..1bf13017d288 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -26,6 +26,7 @@
+ #include <linux/hwmon.h>
+ #include <linux/marvell_phy.h>
  #include <linux/phy.h>
- #include <linux/phy_led_triggers.h>
 +#include <linux/sfp.h>
- #include <linux/workqueue.h>
- #include <linux/mdio.h>
- #include <linux/io.h>
-@@ -866,6 +867,9 @@ void phy_stop(struct phy_device *phydev)
  
- 	mutex_lock(&phydev->lock);
- 
-+	if (phydev->sfp_bus)
-+		sfp_upstream_stop(phydev->sfp_bus);
-+
- 	phydev->state = PHY_HALTED;
- 
- 	mutex_unlock(&phydev->lock);
-@@ -900,6 +904,9 @@ void phy_start(struct phy_device *phydev)
- 		goto out;
- 	}
- 
-+	if (phydev->sfp_bus)
-+		sfp_upstream_start(phydev->sfp_bus);
-+
- 	/* if phy was suspended, bring the physical link up again */
- 	__phy_resume(phydev);
- 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 9ddfb8b0ce04..ff47ec245100 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -27,6 +27,7 @@
- #include <linux/bitmap.h>
- #include <linux/phy.h>
- #include <linux/phy_led_triggers.h>
-+#include <linux/sfp.h>
- #include <linux/mdio.h>
- #include <linux/io.h>
- #include <linux/uaccess.h>
-@@ -1174,6 +1175,65 @@ phy_standalone_show(struct device *dev, struct device_attribute *attr,
+ #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
+ #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
+@@ -206,6 +207,28 @@ static int mv3310_hwmon_probe(struct phy_device *phydev)
  }
- static DEVICE_ATTR_RO(phy_standalone);
+ #endif
  
-+/**
-+ * phy_sfp_attach - attach the SFP bus to the PHY upstream network device
-+ * @upstream: pointer to the phy device
-+ * @bus: sfp bus representing cage being attached
-+ *
-+ * This is used to fill in the sfp_upstream_ops .attach member.
-+ */
-+void phy_sfp_attach(void *upstream, struct sfp_bus *bus)
++static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
 +{
 +	struct phy_device *phydev = upstream;
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
++	phy_interface_t iface;
 +
-+	if (phydev->attached_dev)
-+		phydev->attached_dev->sfp_bus = bus;
-+	phydev->sfp_bus_attached = true;
-+}
-+EXPORT_SYMBOL(phy_sfp_attach);
++	sfp_parse_support(phydev->sfp_bus, id, support);
++	iface = sfp_select_interface(phydev->sfp_bus, id, support);
 +
-+/**
-+ * phy_sfp_detach - detach the SFP bus from the PHY upstream network device
-+ * @upstream: pointer to the phy device
-+ * @bus: sfp bus representing cage being attached
-+ *
-+ * This is used to fill in the sfp_upstream_ops .detach member.
-+ */
-+void phy_sfp_detach(void *upstream, struct sfp_bus *bus)
-+{
-+	struct phy_device *phydev = upstream;
-+
-+	if (phydev->attached_dev)
-+		phydev->attached_dev->sfp_bus = NULL;
-+	phydev->sfp_bus_attached = false;
-+}
-+EXPORT_SYMBOL(phy_sfp_detach);
-+
-+/**
-+ * phy_sfp_probe - probe for a SFP cage attached to this PHY device
-+ * @phydev: Pointer to phy_device
-+ * @ops: SFP's upstream operations
-+ */
-+int phy_sfp_probe(struct phy_device *phydev,
-+		  const struct sfp_upstream_ops *ops)
-+{
-+	struct sfp_bus *bus;
-+	int ret;
-+
-+	if (phydev->mdio.dev.fwnode) {
-+		bus = sfp_bus_find_fwnode(phydev->mdio.dev.fwnode);
-+		if (IS_ERR(bus))
-+			return PTR_ERR(bus);
-+
-+		phydev->sfp_bus = bus;
-+
-+		ret = sfp_bus_add_upstream(bus, phydev, ops);
-+		sfp_bus_put(bus);
++	if (iface != PHY_INTERFACE_MODE_10GKR) {
++		dev_err(&phydev->mdio.dev, "incompatible SFP module inserted\n");
++		return -EINVAL;
 +	}
 +	return 0;
 +}
-+EXPORT_SYMBOL(phy_sfp_probe);
 +
- /**
-  * phy_attach_direct - attach a network device to a given PHY device pointer
-  * @dev: network device to attach
-@@ -1249,6 +1309,9 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
- 	if (dev) {
- 		phydev->attached_dev = dev;
- 		dev->phydev = phydev;
++static const struct sfp_upstream_ops mv3310_sfp_ops = {
++	.attach = phy_sfp_attach,
++	.detach = phy_sfp_detach,
++	.module_insert = mv3310_sfp_insert,
++};
 +
-+		if (phydev->sfp_bus_attached)
-+			dev->sfp_bus = phydev->sfp_bus;
- 	}
+ static int mv3310_probe(struct phy_device *phydev)
+ {
+ 	struct mv3310_priv *priv;
+@@ -236,7 +259,7 @@ static int mv3310_probe(struct phy_device *phydev)
+ 	if (ret)
+ 		return ret;
  
- 	/* Some Ethernet drivers try to connect to a PHY device before
-@@ -2333,6 +2396,9 @@ static int phy_remove(struct device *dev)
- 	phydev->state = PHY_DOWN;
- 	mutex_unlock(&phydev->lock);
+-	return 0;
++	return phy_sfp_probe(phydev, &mv3310_sfp_ops);
+ }
  
-+	sfp_bus_del_upstream(phydev->sfp_bus);
-+	phydev->sfp_bus = NULL;
-+
- 	if (phydev->drv && phydev->drv->remove) {
- 		phydev->drv->remove(phydev);
- 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 1f9a141ccfb4..9753d9f28d73 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -203,6 +203,8 @@ static inline const char *phy_modes(phy_interface_t interface)
- 
- struct device;
- struct phylink;
-+struct sfp_bus;
-+struct sfp_upstream_ops;
- struct sk_buff;
- 
- /*
-@@ -342,6 +344,8 @@ struct phy_c45_device_ids {
-  * dev_flags: Device-specific flags used by the PHY driver.
-  * irq: IRQ number of the PHY's interrupt (-1 if none)
-  * phy_timer: The timer for handling the state machine
-+ * sfp_bus_attached: flag indicating whether the SFP bus has been attached
-+ * sfp_bus: SFP bus attached to this PHY's fiber port
-  * attached_dev: The attached enet driver's device instance ptr
-  * adjust_link: Callback for the enet controller to respond to
-  * changes in the link state.
-@@ -430,6 +434,9 @@ struct phy_device {
- 
- 	struct mutex lock;
- 
-+	/* This may be modified under the rtnl lock */
-+	bool sfp_bus_attached;
-+	struct sfp_bus *sfp_bus;
- 	struct phylink *phylink;
- 	struct net_device *attached_dev;
- 
-@@ -1015,6 +1022,10 @@ int phy_suspend(struct phy_device *phydev);
- int phy_resume(struct phy_device *phydev);
- int __phy_resume(struct phy_device *phydev);
- int phy_loopback(struct phy_device *phydev, bool enable);
-+void phy_sfp_attach(void *upstream, struct sfp_bus *bus);
-+void phy_sfp_detach(void *upstream, struct sfp_bus *bus);
-+int phy_sfp_probe(struct phy_device *phydev,
-+	          const struct sfp_upstream_ops *ops);
- struct phy_device *phy_attach(struct net_device *dev, const char *bus_id,
- 			      phy_interface_t interface);
- struct phy_device *phy_find_first(struct mii_bus *bus);
+ static int mv3310_suspend(struct phy_device *phydev)
 -- 
 2.20.1
 
