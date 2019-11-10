@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BFA5F65A2
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:09:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD8AF6607
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:11:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728673AbfKJCov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:44:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44840 "EHLO mail.kernel.org"
+        id S1729133AbfKJDKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 22:10:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45058 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727668AbfKJCou (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:44:50 -0500
+        id S1728683AbfKJCow (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:44:52 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E1D4421655;
-        Sun, 10 Nov 2019 02:44:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 147AB21655;
+        Sun, 10 Nov 2019 02:44:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573353889;
-        bh=yN32PYfjsyUrcNe1jxL8v16H/2fHGlbsjA34/dPKFko=;
+        s=default; t=1573353891;
+        bh=WpEQZ96HSyMvJyMLElFdXV/w39V1EhtGl8Y9d68T/ME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u2kEZbDvG2YsQ8CZNygGSJ5hIZ48/g7dQKZ+a+KBcIcQQT+kAsyXcL9cpeoJMrcro
-         kn4IPu8u6IWfOUrUgt1NK5pp6OvVZITW7vomqSSwBDj2A0b97Fiqr6+kpxx3U7b96V
-         L/GVqwupyx7+92cknUxTqVm6auZfGMMttc12d6vU=
+        b=S/0/6SEwkD2ayaACbkvmQh6EyLs7u8CQH/NHsuNA3v1omK9vFuSrJYd2/k74CkyxJ
+         hFxuo+YQum1mo5BsANr1xumr9TFrS/kAXqjEOOd1BgS4nmgyzsZiWsuectljdgixdd
+         JB9ADSuSnpUll6pAOFupgaLiYDevEIvyS9j7Y/48=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sara Sharon <sara.sharon@intel.com>,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 162/191] iwlwifi: pcie: read correct prph address for newer devices
-Date:   Sat,  9 Nov 2019 21:39:44 -0500
-Message-Id: <20191110024013.29782-162-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 163/191] iwlwifi: api: annotate compressed BA notif array sizes
+Date:   Sat,  9 Nov 2019 21:39:45 -0500
+Message-Id: <20191110024013.29782-163-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024013.29782-1-sashal@kernel.org>
 References: <20191110024013.29782-1-sashal@kernel.org>
@@ -44,57 +44,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sara Sharon <sara.sharon@intel.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 84fb372c892e231e9a2ffdaa5c2df52d94aa536c ]
+[ Upstream commit 6f68cc367ab6578a33cca21b6056804165621f00 ]
 
-For newer devices we have higher range of periphery
-addresses. Currently it is masked out, so we end up
-reading another address.
+Annotate the compressed BA notification array sizes and
+make both of them 0-length since the length of 1 is just
+confusing - it may be different than that and the offset
+to the second one needs to be calculated in the C code
+anyhow.
 
-Signed-off-by: Sara Sharon <sara.sharon@intel.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/fw/api/tx.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-index 7d319b6863feb..954f932e9c88e 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -1830,18 +1830,30 @@ static u32 iwl_trans_pcie_read32(struct iwl_trans *trans, u32 ofs)
- 	return readl(IWL_TRANS_GET_PCIE_TRANS(trans)->hw_base + ofs);
- }
- 
-+static u32 iwl_trans_pcie_prph_msk(struct iwl_trans *trans)
-+{
-+	if (trans->cfg->device_family >= IWL_DEVICE_FAMILY_22560)
-+		return 0x00FFFFFF;
-+	else
-+		return 0x000FFFFF;
-+}
-+
- static u32 iwl_trans_pcie_read_prph(struct iwl_trans *trans, u32 reg)
- {
-+	u32 mask = iwl_trans_pcie_prph_msk(trans);
-+
- 	iwl_trans_pcie_write32(trans, HBUS_TARG_PRPH_RADDR,
--			       ((reg & 0x000FFFFF) | (3 << 24)));
-+			       ((reg & mask) | (3 << 24)));
- 	return iwl_trans_pcie_read32(trans, HBUS_TARG_PRPH_RDAT);
- }
- 
- static void iwl_trans_pcie_write_prph(struct iwl_trans *trans, u32 addr,
- 				      u32 val)
- {
-+	u32 mask = iwl_trans_pcie_prph_msk(trans);
-+
- 	iwl_trans_pcie_write32(trans, HBUS_TARG_PRPH_WADDR,
--			       ((addr & 0x000FFFFF) | (3 << 24)));
-+			       ((addr & mask) | (3 << 24)));
- 	iwl_trans_pcie_write32(trans, HBUS_TARG_PRPH_WDAT, val);
- }
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h b/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
+index 514b86123d3d3..80853f6cbd6d2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
++++ b/drivers/net/wireless/intel/iwlwifi/fw/api/tx.h
+@@ -747,9 +747,9 @@ enum iwl_mvm_ba_resp_flags {
+  * @tfd_cnt: number of TFD-Q elements
+  * @ra_tid_cnt: number of RATID-Q elements
+  * @tfd: array of TFD queue status updates. See &iwl_mvm_compressed_ba_tfd
+- *	for details.
++ *	for details. Length in @tfd_cnt.
+  * @ra_tid: array of RA-TID queue status updates. For debug purposes only. See
+- *	&iwl_mvm_compressed_ba_ratid for more details.
++ *	&iwl_mvm_compressed_ba_ratid for more details. Length in @ra_tid_cnt.
+  */
+ struct iwl_mvm_compressed_ba_notif {
+ 	__le32 flags;
+@@ -766,7 +766,7 @@ struct iwl_mvm_compressed_ba_notif {
+ 	__le32 tx_rate;
+ 	__le16 tfd_cnt;
+ 	__le16 ra_tid_cnt;
+-	struct iwl_mvm_compressed_ba_tfd tfd[1];
++	struct iwl_mvm_compressed_ba_tfd tfd[0];
+ 	struct iwl_mvm_compressed_ba_ratid ra_tid[0];
+ } __packed; /* COMPRESSED_BA_RES_API_S_VER_4 */
  
 -- 
 2.20.1
