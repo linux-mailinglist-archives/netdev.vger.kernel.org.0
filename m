@@ -2,91 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20C08F6A1E
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 17:30:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 890BCF6A22
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 17:31:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726983AbfKJQaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 11:30:05 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:45600 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726906AbfKJQaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 11:30:05 -0500
-Received: by mail-ed1-f67.google.com with SMTP id b5so9972644eds.12
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 08:30:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0TUMPUp3339KR/pgz9a6XtdA5sRCKin0tKa5Y7s/JHo=;
-        b=uU3xew3fndi3iUPJyj23KENKm6Rn+gJWucfrtWA9RO7IbQ93CLVGEFyNrGSyzcNhEj
-         onEbuDS7J5GyBYtPunql0LvdOKevxUQW1UN/k+sPnGL1ZZDQ0LOeLNwu1WsNkiqADX5o
-         V6nv8I4wpPm7e3BQarqI6TWJYY73PwYB3SdTU11cPcA2SM94seZ70Xubab7s3Q4edxOD
-         LcoRgCLcdF97+u4I2Mf3HBs3pNCop5tMNDmTqaZ4eGI/ff6fvPDg7X/1f92b/dRktHSX
-         ca4UWfJ4LU+wT1I6C76X6YswA2jo6B3KpgBJkbUJtOGwgdLcuy+2Ztx+ISrf9t9khllY
-         UZtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0TUMPUp3339KR/pgz9a6XtdA5sRCKin0tKa5Y7s/JHo=;
-        b=aWK2PulNqACREc69VCnpKj9X1bwbdzgZblaO+NCAWXcypbHTmjKl9rVG/w+nO38S0H
-         VPGhvyIK596yGaiwxQSLf1r7aBI9jGTdyBPagK48hga4jTNlEI+x19jIjQyAgN9YoKuH
-         wLGGck5cyj7KsFr7Ek9X6yrqNtglJ2kOozTDx8lJOXsHDM/JCV6UC1zeAUhe/Placybe
-         4CjWs2axFj6tmxyPHsa0EA/wM0WkMTdA7QeJMhkNRVge4hoRoIZBk4ts+OKFHnQeQBUw
-         /Paj3qIQQ5yp0HUKvs3sZPyCITk0LrxcYwbjgWelpb/RMAo290Jn/wP5mh7tJOG2W126
-         B9rg==
-X-Gm-Message-State: APjAAAVxQN19EIkeQRzl0CqVB73tCTSAfWZDdJH2jTz2BDaDTCdavwNr
-        025rqyMBaFNDCL0vYT6TcWhd4NDoi8koVzPEUa8=
-X-Google-Smtp-Source: APXvYqw56jHnYByrhWVRv99AbgAADFpMlxvCTekyxBvYS4uOclQHTK3F/5ZNsw+t2CO2FWirC376JqCJzf0p1jvPThM=
-X-Received: by 2002:a17:906:4910:: with SMTP id b16mr18627571ejq.133.1573403403781;
- Sun, 10 Nov 2019 08:30:03 -0800 (PST)
+        id S1727010AbfKJQbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 11:31:25 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:47173 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726843AbfKJQbZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 11:31:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573403484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=NYL+EMILRZtMS9HsJMtfOH0Pn977hfVVaofdbnoRpeY=;
+        b=KEprjiaKM5D7rsHtxaknr5x5chTR/dSXG/T8TknBZZJs6wxdRxUSCtDfasHJUT4w4h06iD
+        F78GYNWCZ9z+u2CvQwndzFZlVpcO4oskzbLIztc3ECV40PkU545Pvwb8+OUSfsOG8V6GFH
+        nyvkSOjSvIS88bIfcX+uxJFaDuS9xjU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-378-qC36rPmGM62JiDsMD6VHlw-1; Sun, 10 Nov 2019 11:31:21 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB15FDB20;
+        Sun, 10 Nov 2019 16:31:19 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-27.brq.redhat.com [10.40.200.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 221015DA75;
+        Sun, 10 Nov 2019 16:31:17 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 2DBAD30FC134F;
+        Sun, 10 Nov 2019 17:31:16 +0100 (CET)
+Subject: [net-next PATCH] samples/bpf: adjust Makefile and README.rst
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     linux-kbuild@vger.kernel.org, netdev@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 10 Nov 2019 17:31:16 +0100
+Message-ID: <157340347607.14617.683175264051058224.stgit@firesoul>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-References: <20191109130301.13716-1-olteanv@gmail.com> <20191109130301.13716-10-olteanv@gmail.com>
- <20191110162559.GD25889@lunn.ch>
-In-Reply-To: <20191110162559.GD25889@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 10 Nov 2019 18:29:52 +0200
-Message-ID: <CA+h21hq=Vm+2D+0r7cgMc7T1RR4tQuBw+jTh9SdsbjNHnqcNZQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 09/15] net: mscc: ocelot: limit vlan ingress
- filtering to actual number of ports
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: qC36rPmGM62JiDsMD6VHlw-1
+X-Mimecast-Spam-Score: 2
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Nov 2019 at 18:26, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sat, Nov 09, 2019 at 03:02:55PM +0200, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > The VSC7514 switch (Ocelot) is a 10-port device, while VSC9959 (Felix)
-> > is 6-port. Therefore the VLAN filtering mask would be out of bounds when
-> > calling for this new switch. Fix that.
->
-> Hi Vladimir
->
-> Is this a real fix? Should it be posted to net?
->
-> Thanks
->         Andrew
+Side effect of some kbuild changes resulted in breaking the
+documented way to build samples/bpf/.
 
-Hi Andrew,
+This patch change the samples/bpf/Makefile to work again, when
+invoking make from the subdir samples/bpf/. Also update the
+documentation in README.rst, to reflect the new way to build.
 
-Felix is not supported by the mainline ocelot driver yet, so there's
-no bug per se: ocelot->num_phys_ports can only be 10 at the moment.
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+---
+ samples/bpf/Makefile   |    4 ++--
+ samples/bpf/README.rst |   12 +++++-------
+ 2 files changed, 7 insertions(+), 9 deletions(-)
 
-Thanks,
--Vladimir
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index d88c01275239..8e32a4d29a38 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -203,7 +203,7 @@ TPROGLDLIBS_test_overhead=09+=3D -lrt
+ TPROGLDLIBS_xdpsock=09=09+=3D -pthread
+=20
+ # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine o=
+n cmdline:
+-#  make samples/bpf/ LLC=3D~/git/llvm/build/bin/llc CLANG=3D~/git/llvm/bui=
+ld/bin/clang
++#  make M=3Dsamples/bpf/ LLC=3D~/git/llvm/build/bin/llc CLANG=3D~/git/llvm=
+/build/bin/clang
+ LLC ?=3D llc
+ CLANG ?=3D clang
+ LLVM_OBJCOPY ?=3D llvm-objcopy
+@@ -246,7 +246,7 @@ endif
+=20
+ # Trick to allow make to be run from this directory
+ all:
+-=09$(MAKE) -C ../../ $(CURDIR)/ BPF_SAMPLES_PATH=3D$(CURDIR)
++=09$(MAKE) -C ../../ M=3D$(CURDIR) BPF_SAMPLES_PATH=3D$(CURDIR)
+=20
+ clean:
+ =09$(MAKE) -C ../../ M=3D$(CURDIR) clean
+diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+index cc1f00a1ee06..dd34b2d26f1c 100644
+--- a/samples/bpf/README.rst
++++ b/samples/bpf/README.rst
+@@ -46,12 +46,10 @@ Compiling
+ For building the BPF samples, issue the below command from the kernel
+ top level directory::
+=20
+- make samples/bpf/
+-
+-Do notice the "/" slash after the directory name.
++ make M=3Dsamples/bpf
+=20
+ It is also possible to call make from this directory.  This will just
+-hide the the invocation of make as above with the appended "/".
++hide the invocation of make as above.
+=20
+ Manually compiling LLVM with 'bpf' support
+ ------------------------------------------
+@@ -77,7 +75,7 @@ Quick sniplet for manually compiling LLVM and clang
+ It is also possible to point make to the newly compiled 'llc' or
+ 'clang' command via redefining LLC or CLANG on the make command line::
+=20
+- make samples/bpf/ LLC=3D~/git/llvm/build/bin/llc CLANG=3D~/git/llvm/build=
+/bin/clang
++ make M=3Dsamples/bpf LLC=3D~/git/llvm/build/bin/llc CLANG=3D~/git/llvm/bu=
+ild/bin/clang
+=20
+ Cross compiling samples
+ -----------------------
+@@ -98,10 +96,10 @@ Pointing LLC and CLANG is not necessarily if it's insta=
+lled on HOST and have
+ in its targets appropriate arm64 arch (usually it has several arches).
+ Build samples::
+=20
+- make samples/bpf/
++ make M=3Dsamples/bpf
+=20
+ Or build samples with SYSROOT if some header or library is absent in toolc=
+hain,
+ say libelf, providing address to file system containing headers and libs,
+ can be RFS of target board::
+=20
+- make samples/bpf/ SYSROOT=3D~/some_sysroot
++ make M=3Dsamples/bpf SYSROOT=3D~/some_sysroot
+
