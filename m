@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8DE4F6426
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B556F6436
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729678AbfKJC5p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:57:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47202 "EHLO mail.kernel.org"
+        id S1727961AbfKJC6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:58:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47208 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729415AbfKJC4s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729449AbfKJC4s (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 9 Nov 2019 21:56:48 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 095E22249A;
-        Sun, 10 Nov 2019 02:48:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D1495224D5;
+        Sun, 10 Nov 2019 02:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573354087;
-        bh=sL0SKLEML4Y9k9kz/zU2jbjo+8R+OhLdgvLoi8HegYo=;
+        s=default; t=1573354094;
+        bh=+n7iVh86RQOyMDJvHXT6SEMYYRji/+S9KG4f4GoUtnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n0q3KAQVWkrGgyKRZE7mAWbYRcpduLqIZO79Gfxt/t0vf/lcYKVYkK7y2oPHyMaRd
-         Kr7uT0H5yXfPy5e+N7xLi4EPh0FActD5okLflp/IWzSmGb6jiQ5fH8EElRyuHl/cH1
-         SOzilgatMbAQwkleXsBRIC6mifYE//BwHsugd+j8=
+        b=NRbsaftyHu5+cXCQwxZQlp1YdLrvCUJbvog8Jt3VX7fKIu11Xaae6uGxwBB27ER8P
+         K+N68k9ngCWfn4nbT6ldnKwBl2wupAZPoNwKG/fJfaHVCgW8mQlO75ZLK4ykrUX+r6
+         RiQkD8XGKgQWmnHMh3WTvew6iidphtY8YYdIFmso=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+Cc:     Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 084/109] Bluetooth: L2CAP: Detect if remote is not able to use the whole MPS
-Date:   Sat,  9 Nov 2019 21:45:16 -0500
-Message-Id: <20191110024541.31567-84-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 088/109] iwlwifi: dbg: don't crash if the firmware crashes in the middle of a debug dump
+Date:   Sat,  9 Nov 2019 21:45:20 -0500
+Message-Id: <20191110024541.31567-88-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024541.31567-1-sashal@kernel.org>
 References: <20191110024541.31567-1-sashal@kernel.org>
@@ -44,42 +44,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
 
-[ Upstream commit a5c3021bb62b970713550db3f7fd08aa70665d7e ]
+[ Upstream commit 79f25b10c9da3dbc953e47033d0494e51580ac3b ]
 
-If the remote is not able to fully utilize the MPS choosen recalculate
-the credits based on the actual amount it is sending that way it can
-still send packets of MTU size without credits dropping to 0.
+We can dump data from the firmware either when it crashes,
+or when the firmware is alive.
+Not all the data is available if the firmware is running
+(like the Tx / Rx FIFOs which are available only when the
+firmware is halted), so we first check that the firmware
+is alive to compute the required size for the dump and then
+fill the buffer with the data.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+When we allocate the buffer, we test the STATUS_FW_ERROR
+bit to check if the firmware is alive or not. This bit
+can be changed during the course of the dump since it is
+modified in the interrupt handler.
+
+We hit a case where we allocate the buffer while the
+firmware is sill working, and while we start to fill the
+buffer, the firmware crashes. Then we test STATUS_FW_ERROR
+again and decide to fill the buffer with data like the
+FIFOs even if no room was allocated for this data in the
+buffer. This means that we overflow the buffer that was
+allocated leading to memory corruption.
+
+To fix this, test the STATUS_FW_ERROR bit only once and
+rely on local variables to check if we should dump fifos
+or other firmware components.
+
+Fixes: 04fd2c28226f ("iwlwifi: mvm: add rxf and txf to dump data")
+Signed-off-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_core.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/fw/dbg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index 0c2219f483d70..f63d9918b15ad 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -6819,6 +6819,16 @@ static int l2cap_le_data_rcv(struct l2cap_chan *chan, struct sk_buff *skb)
- 		chan->sdu_len = sdu_len;
- 		chan->sdu_last_frag = skb;
+diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+index 8390104172410..414dc34f3f3bd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
++++ b/drivers/net/wireless/intel/iwlwifi/fw/dbg.c
+@@ -775,7 +775,7 @@ void iwl_fw_error_dump(struct iwl_fw_runtime *fwrt)
+ 	dump_data = iwl_fw_error_next_data(dump_data);
  
-+		/* Detect if remote is not able to use the selected MPS */
-+		if (skb->len + L2CAP_SDULEN_SIZE < chan->mps) {
-+			u16 mps_len = skb->len + L2CAP_SDULEN_SIZE;
-+
-+			/* Adjust the number of credits */
-+			BT_DBG("chan->mps %u -> %u", chan->mps, mps_len);
-+			chan->mps = mps_len;
-+			l2cap_chan_le_send_credits(chan);
-+		}
-+
- 		return 0;
- 	}
- 
+ 	/* We only dump the FIFOs if the FW is in error state */
+-	if (test_bit(STATUS_FW_ERROR, &fwrt->trans->status)) {
++	if (fifo_data_len) {
+ 		iwl_fw_dump_fifos(fwrt, &dump_data);
+ 		if (radio_len)
+ 			iwl_read_radio_regs(fwrt, &dump_data);
 -- 
 2.20.1
 
