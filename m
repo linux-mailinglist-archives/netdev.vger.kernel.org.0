@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDDAF6341
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:50:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1D7DF63A7
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729841AbfKJCuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:50:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35004 "EHLO mail.kernel.org"
+        id S1728937AbfKJCyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:54:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35094 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729822AbfKJCux (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:50:53 -0500
+        id S1729849AbfKJCu4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:50:56 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E9DD922790;
-        Sun, 10 Nov 2019 02:50:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DD7A22583;
+        Sun, 10 Nov 2019 02:50:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573354252;
-        bh=ujhPlnlerUbVFby2mytHtPwSpm/UGTUI8gqoX3sAceo=;
+        s=default; t=1573354255;
+        bh=PZRlICB5aO4OWvYpbx6HZcXJmevUP+PXMNBT0wS6Slc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VEry+ysNwStVVVkzZK+SFDE4BG+8mKvOPNeJ7j3ktHb4N/qt6bEMtFon+e9VZSEWt
-         BrCGbm1yy0GGxHQogdqCP1w13wJbkplRMSjIf+uawXXN3rolaGnnqCuHWWbsBU+u1t
-         YrLXe2hH0IqOVR4z4sH2WDGYg8gCz9teaIHJ++Xs=
+        b=BT3ISpP35usGZWfpG6yeQFllUjyVifZUg9a4W3JvS/u+LoXDrioRE69OwJZZGSJE7
+         NW5X/BDVEvFOpg6+kSbWaHhLi3VM6Yb2dfErS880Yc4ROskQabWNuCtaJ7MD7Uud0/
+         LgwyOc3mteYJaPtAN0vg33W2KS3ODSSOUda9MaKA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     YueHaibing <yuehaibing@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.4 10/40] net: toshiba: fix return type of ndo_start_xmit function
-Date:   Sat,  9 Nov 2019 21:50:02 -0500
-Message-Id: <20191110025032.827-10-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 11/40] net: xilinx: fix return type of ndo_start_xmit function
+Date:   Sat,  9 Nov 2019 21:50:03 -0500
+Message-Id: <20191110025032.827-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110025032.827-1-sashal@kernel.org>
 References: <20191110025032.827-1-sashal@kernel.org>
@@ -46,7 +45,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit bacade822524e02f662d88f784d2ae821a5546fb ]
+[ Upstream commit 81255af8d9d5565004792c295dde49344df450ca ]
 
 The method ndo_start_xmit() is defined as returning an 'netdev_tx_t',
 which is a typedef for an enum type, so make sure the implementation in
@@ -59,81 +58,74 @@ Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/toshiba/ps3_gelic_net.c | 4 ++--
- drivers/net/ethernet/toshiba/ps3_gelic_net.h | 2 +-
- drivers/net/ethernet/toshiba/spider_net.c    | 4 ++--
- drivers/net/ethernet/toshiba/tc35815.c       | 6 ++++--
- 4 files changed, 9 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c       | 3 ++-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 3 ++-
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c     | 9 +++++----
+ 3 files changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.c b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-index 79f0ec4e51ace..964df98b54ea1 100644
---- a/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-+++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.c
-@@ -845,9 +845,9 @@ static int gelic_card_kick_txdma(struct gelic_card *card,
-  * @skb: packet to send out
-  * @netdev: interface device structure
-  *
-- * returns 0 on success, <0 on failure
-+ * returns NETDEV_TX_OK on success, NETDEV_TX_BUSY on failure
-  */
--int gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
-+netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
- {
- 	struct gelic_card *card = netdev_card(netdev);
- 	struct gelic_descr *descr;
-diff --git a/drivers/net/ethernet/toshiba/ps3_gelic_net.h b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
-index 8505196be9f52..d123644bd720b 100644
---- a/drivers/net/ethernet/toshiba/ps3_gelic_net.h
-+++ b/drivers/net/ethernet/toshiba/ps3_gelic_net.h
-@@ -370,7 +370,7 @@ void gelic_card_up(struct gelic_card *card);
- void gelic_card_down(struct gelic_card *card);
- int gelic_net_open(struct net_device *netdev);
- int gelic_net_stop(struct net_device *netdev);
--int gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev);
-+netdev_tx_t gelic_net_xmit(struct sk_buff *skb, struct net_device *netdev);
- void gelic_net_set_multi(struct net_device *netdev);
- void gelic_net_tx_timeout(struct net_device *netdev);
- int gelic_net_change_mtu(struct net_device *netdev, int new_mtu);
-diff --git a/drivers/net/ethernet/toshiba/spider_net.c b/drivers/net/ethernet/toshiba/spider_net.c
-index 3c54a2cae5dfd..8e53211aedd82 100644
---- a/drivers/net/ethernet/toshiba/spider_net.c
-+++ b/drivers/net/ethernet/toshiba/spider_net.c
-@@ -881,9 +881,9 @@ spider_net_kick_tx_dma(struct spider_net_card *card)
-  * @skb: packet to send out
-  * @netdev: interface device structure
-  *
-- * returns 0 on success, !0 on failure
-+ * returns NETDEV_TX_OK on success, NETDEV_TX_BUSY on failure
-  */
--static int
-+static netdev_tx_t
- spider_net_xmit(struct sk_buff *skb, struct net_device *netdev)
- {
- 	int cnt;
-diff --git a/drivers/net/ethernet/toshiba/tc35815.c b/drivers/net/ethernet/toshiba/tc35815.c
-index 868fb6306df02..3e33c165a4278 100644
---- a/drivers/net/ethernet/toshiba/tc35815.c
-+++ b/drivers/net/ethernet/toshiba/tc35815.c
-@@ -475,7 +475,8 @@ static void free_rxbuf_skb(struct pci_dev *hwdev, struct sk_buff *skb, dma_addr_
- /* Index to functions, as function prototypes. */
+diff --git a/drivers/net/ethernet/xilinx/ll_temac_main.c b/drivers/net/ethernet/xilinx/ll_temac_main.c
+index 5a1068df7038c..ed6a88cf3281c 100644
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -673,7 +673,8 @@ static inline int temac_check_tx_bd_space(struct temac_local *lp, int num_frag)
+ 	return 0;
+ }
  
- static int	tc35815_open(struct net_device *dev);
--static int	tc35815_send_packet(struct sk_buff *skb, struct net_device *dev);
-+static netdev_tx_t	tc35815_send_packet(struct sk_buff *skb,
-+					    struct net_device *dev);
- static irqreturn_t	tc35815_interrupt(int irq, void *dev_id);
- static int	tc35815_rx(struct net_device *dev, int limit);
- static int	tc35815_poll(struct napi_struct *napi, int budget);
-@@ -1279,7 +1280,8 @@ tc35815_open(struct net_device *dev)
-  * invariant will hold if you make sure that the netif_*_queue()
-  * calls are done at the proper times.
-  */
--static int tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
+-static int temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 +static netdev_tx_t
-+tc35815_send_packet(struct sk_buff *skb, struct net_device *dev)
++temac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
  {
- 	struct tc35815_local *lp = netdev_priv(dev);
- 	struct TxFD *txfd;
+ 	struct temac_local *lp = netdev_priv(ndev);
+ 	struct cdmac_bd *cur_p;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index f1e969128a4ee..7f1a57bb2ab10 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -656,7 +656,8 @@ static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
+  * start the transmission. Additionally if checksum offloading is supported,
+  * it populates AXI Stream Control fields with appropriate values.
+  */
+-static int axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
++static netdev_tx_t
++axienet_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	u32 ii;
+ 	u32 num_frag;
+diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+index 4cb8b85cbf2c2..909a008f99276 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
++++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+@@ -1008,9 +1008,10 @@ static int xemaclite_close(struct net_device *dev)
+  * deferred and the Tx queue is stopped so that the deferred socket buffer can
+  * be transmitted when the Emaclite device is free to transmit data.
+  *
+- * Return:	0, always.
++ * Return:	NETDEV_TX_OK, always.
+  */
+-static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
++static netdev_tx_t
++xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
+ {
+ 	struct net_local *lp = netdev_priv(dev);
+ 	struct sk_buff *new_skb;
+@@ -1031,7 +1032,7 @@ static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
+ 		/* Take the time stamp now, since we can't do this in an ISR. */
+ 		skb_tx_timestamp(new_skb);
+ 		spin_unlock_irqrestore(&lp->reset_lock, flags);
+-		return 0;
++		return NETDEV_TX_OK;
+ 	}
+ 	spin_unlock_irqrestore(&lp->reset_lock, flags);
+ 
+@@ -1040,7 +1041,7 @@ static int xemaclite_send(struct sk_buff *orig_skb, struct net_device *dev)
+ 	dev->stats.tx_bytes += len;
+ 	dev_consume_skb_any(new_skb);
+ 
+-	return 0;
++	return NETDEV_TX_OK;
+ }
+ 
+ /**
 -- 
 2.20.1
 
