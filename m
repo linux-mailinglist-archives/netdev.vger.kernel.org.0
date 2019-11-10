@@ -2,167 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFB86F6B21
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 20:38:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93831F6B27
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 20:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbfKJTiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 14:38:04 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39356 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbfKJTiE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 14:38:04 -0500
-Received: by mail-qk1-f193.google.com with SMTP id 15so9479782qkh.6
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 11:38:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=0vZwFYOuDdSX+7LqpPDPzgdJy0sWXL92EwHEmSxoTbk=;
-        b=ilk0ThIpMHJ2/wyFwEppEi+xbC659+fRET4PBQYY3RV4LEEyhC/3rEtDrGtvK6zZ+6
-         Q0xkcdu/NecJcrkyfRok20OQlTWoPXdj1zmHkPwOWf4tECFfPE1Bi18HegedyAg7YPMN
-         zgpqcegLO4AQNWDqpTUyqexFpdBNYHJXHehs+beL2E9NToCqoW/WZ5E3Cc7mLeIKzhV5
-         uD2YEsunwEMaNxQTxhdG3Fu78UqAqPq+q4jTieUvxL6gNKM4Y23ps7vUcAEXoQqO3djG
-         RUH5Hek0RKbOhMHTgAl7K5fup0nraKbMxTUGcqmuU6x82YFbZJg7xGgrecs44eMfdLsQ
-         T/uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=0vZwFYOuDdSX+7LqpPDPzgdJy0sWXL92EwHEmSxoTbk=;
-        b=c1syrtb1ozctBD5japC+9LVoNjAARAyps7DWA/KXPq/ZPzGK6ZLVk7b9VVMvROa0Oy
-         VRjE+WVYpU2AelwN1+D8KEIY2fs3w6SFKP7L9rRv1Hz5at5MEgulS0Xsz25tB/FR370D
-         2+fHlf2kb3/Hc30P5q8wea5YBgXgrydQwjWGWa3la5kqo718Bl8YNNO5LNqAVDpDlSxE
-         HPyS1/iLk+gU+6NZ3HlhVjePv4bBaBUoSSX5c+DfQsMHM8enKfK2R1bbs+5L+PYa7ptS
-         4a4JOlSnqz0QR6VI25XiL7G/CeKhRtn+MjLkrraHHAoavO5NFvwoIeCrSGwaMJ1jzgdN
-         s9fA==
-X-Gm-Message-State: APjAAAVP7Cg48rY+gfjZg+OID3WiWDMaPYIIHMSFjfmR8qEYRth6+Mzl
-        7w1B6S3nnELzlCgePqRgxn2ZkQ==
-X-Google-Smtp-Source: APXvYqwKmNJyGpWeMlAXSChz0a9yOQh5O0eCYSigMHS7jzPwZyfdvLoYTZdk5uoPdhtJBWKmhgyKaQ==
-X-Received: by 2002:a05:620a:16bb:: with SMTP id s27mr2516614qkj.501.1573414681721;
-        Sun, 10 Nov 2019 11:38:01 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
-        by smtp.gmail.com with ESMTPSA id i10sm5712127qtj.19.2019.11.10.11.38.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 10 Nov 2019 11:38:00 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iTt27-0004PL-NN; Sun, 10 Nov 2019 15:37:59 -0400
-Date:   Sun, 10 Nov 2019 15:37:59 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Parav Pandit <parav@mellanox.com>, Jiri Pirko <jiri@resnulli.us>,
-        David M <david.m.ertman@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191110193759.GE31761@ziepe.ca>
-References: <20191107160448.20962-1-parav@mellanox.com>
- <20191107153234.0d735c1f@cakuba.netronome.com>
- <20191108121233.GJ6990@nanopsycho>
- <20191108144054.GC10956@ziepe.ca>
- <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108111238.578f44f1@cakuba>
- <20191108201253.GE10956@ziepe.ca>
- <20191108134559.42fbceff@cakuba>
- <20191109004426.GB31761@ziepe.ca>
- <20191109092747.26a1a37e@cakuba>
+        id S1726925AbfKJTrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 14:47:36 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:49610 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726778AbfKJTrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 14:47:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=tR3H4KvBtaE/IafaL5KtA4e8CkwiaCUTo6BKMxJuOLY=; b=JLnN9IDMWoTGERd5m7jvfb1Db
+        1cBZrczDntRD95u6OJ7AHxKGEgVpY8F1Tm1B0+d8kkW3JSIx0WufSqr1C3y60qi/H2a/ix1DGvEmr
+        kvS4Vyeh3SNVdOPJztWZ8uBj/23EpudF1xOuL7FS2fIXyhgilfTpXmOYSz2tLmcehOpQHJ9JuqHXW
+        JsfXlQaCaYv8yZG1GT5TnAfPKR9a53PkT99WJYfahj8M3MbthaUshoEZsox/xtAzRnDLiYZMItX3v
+        E/hWLMhhkOXzDCvw3P21dOYIj2pQrvIGPhxeCPoLBI9Xb3YSmcvpxyuB3A6mr5y28i28sCHLdvCnw
+        dcMRF07Cg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:33752)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iTtBI-0000r6-Qj; Sun, 10 Nov 2019 19:47:28 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iTtBF-0008CR-JP; Sun, 10 Nov 2019 19:47:25 +0000
+Date:   Sun, 10 Nov 2019 19:47:25 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 00/17] Allow slow to initialise GPON modules to
+ work
+Message-ID: <20191110194725.GE25745@shell.armlinux.org.uk>
+References: <20191110140530.GA25745@shell.armlinux.org.uk>
+ <20191110175217.GL25889@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191109092747.26a1a37e@cakuba>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20191110175217.GL25889@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 09, 2019 at 09:27:47AM -0800, Jakub Kicinski wrote:
-> On Fri, 8 Nov 2019 20:44:26 -0400, Jason Gunthorpe wrote:
-> > On Fri, Nov 08, 2019 at 01:45:59PM -0800, Jakub Kicinski wrote:
-> > > Yes, my suggestion to use mdev was entirely based on the premise that
-> > > the purpose of this work is to get vfio working.. otherwise I'm unclear
-> > > as to why we'd need a bus in the first place. If this is just for
-> > > containers - we have macvlan offload for years now, with no need for a
-> > > separate device.  
-> > 
-> > This SF thing is a full fledged VF function, it is not at all like
-> > macvlan. This is perhaps less important for the netdev part of the
-> > world, but the difference is very big for the RDMA side, and should
-> > enable VFIO too..
+On Sun, Nov 10, 2019 at 06:52:17PM +0100, Andrew Lunn wrote:
+> On Sun, Nov 10, 2019 at 02:05:30PM +0000, Russell King - ARM Linux admin wrote:
+> > Some GPON modules take longer than the SFF MSA specified time to
+> > initialise and respond to transactions on the I2C bus for either
+> > both 0x50 and 0x51, or 0x51 bus addresses.  Technically these modules
+> > are non-compliant with the SFP Multi-Source Agreement, they have
+> > been around for some time, so are difficult to just ignore.
 > 
-> Well, macvlan used VMDq so it was pretty much a "legacy SR-IOV" VF.
-> I'd perhaps need to learn more about RDMA to appreciate the difference.
-
-It has a lot to do with the how the RDMA functionality works in the
-HW.. At least for mlx the RDMA is 'below' all the netdev stuff, so
-even though netdev has some offloaded vlan RDMA sees, essentially, the
-union of all the vlan's on the system.
-
-Which at least breaks the security model of a macvlan device for
-net-namespaces.
-
-Maybe with new HW something could be done, but today, the HW is
-limited.
-
-> > > On the RDMA/Intel front, would you mind explaining what the main
-> > > motivation for the special buses is? I'm a little confurious.  
-> > 
-> > Well, the issue is driver binding. For years we have had these
-> > multi-function netdev drivers that have a single PCI device which must
-> > bind into multiple subsystems, ie mlx5 does netdev and RDMA, the cxgb
-> > drivers do netdev, RDMA, SCSI initiator, SCSI target, etc. [And I
-> > expect when NVMe over TCP rolls out we will have drivers like cxgb4
-> > binding to 6 subsytems in total!]
+> Hi Russell
 > 
-> What I'm missing is why is it so bad to have a driver register to
-> multiple subsystems.
+> We are seeing quite a few SFP/SFF which violate the spec. Do you think
+> there is any value in naming and shaming in the kernel logs SFP which
+> don't conform to the standard? If you need to wait longer than 1
+> second for the EEPROM to become readable, print the vendor name from
+> the EEPROM and warn it is not conforment. If the diagnostic page is
+> not immediately available, again, print the vendor name warn it is not
+> conforment?
 
-Well, for example, if you proposed to have a RDMA driver in
-drivers/net/ethernet/foo/, I would NAK it, and I hope Dave would
-too. Same for SCSI and nvme.
+I really don't think it will achieve anything.  Once something is
+established in the market, it's difficult to get the vendor to change
+it.
 
-This Linux process is that driver code for a subsystem lives in the
-subsystem and should be in a subsystem specific module. While it is
-technically possible to have a giant driver, it distorts our process
-in a way I don't think is good.
+In some cases, it's not possible to change it without an entire
+hardware redesign, and we're not going to achieve that by "naming and
+shaming" when most places this will be used is in embedded devices
+where hardly anyone looks at the kernel message log.
 
-So, we have software layers between the large Linux subsystems just to
-make the development side manageable and practical.
+It is annoying that there are these modules that do not conform, but
+we have many instances in the kernel of hardware that doesn't quite
+conform, yet we still make it work.
 
-.. once the code lives in another subsystem, it is in a new module. A
-new module requires some way to connect them all together, the driver
-core is the logical way to do this connection.
+I have another fun case with another module - a copper SFP+ module that
+has a Broadcom Clause 45 NBASE-T PHY on it.  On reset, it quickly
+becomes accessible via the I2C bus, but it hasn't finished
+initialising.  We're soo quick in the kernel that we read the IDs and
+bind the PHY driver for it, and attempt to set the advertisements - but
+because the PHY hasn't finished initialising, the kernels
+advertisements get overwritten by the PHY (presumably EEPROM loading,
+or maybe via PHY firmware initialisation.)
 
-I don't think a driver should be split beyond that. Even my suggestion
-of a 'core' may in practice just be the netdev driver as most of the
-other modules can't function without netdev. ie you can't do iSCSI
-without an IP stack.
+I've stumbled over (very annoyingly) the fact that OpenWRT is carrying
+a patch for the SFP code to deal with PHYs that need longer to
+initialise - but there has been no upstream report of it afaics:
 
-> > What is a generation? Mellanox has had a stable RDMA driver across
-> > many sillicon generations. Intel looks like their new driver will
-> > support at least the last two or more sillicon generations..
-> > 
-> > RDMA drivers are monstrous complex things, there is a big incentive to
-> > not respin them every time a new chip comes out.
-> 
-> Ack, but then again none of the drivers gets rewritten from scratch,
-> right? It's not that some "sub-drivers" get reused and some not, no?
+https://github.com/openwrt/openwrt/blob/master/target/linux/mvebu/patches-4.19/450-reprobe_sfp_phy.patch
 
-Remarkably Intel is saying their new RDMA 'sub-driver' will be compatible
-with their ICE and pre-ICE (sorry, forget the names) netdev core
-drivers. 
+That may be due to us not quite checking the TX_FAULT line correctly
+(which these patches change) - we had assumed that the PHY would
+always be available after 50ms, but the spec actually says that
+modules are allowed 300ms to startup (even longer, 90s, for cooled
+laser optical modules, which I haven't published the patches for.)
+End of the startup is signalled by TX_FAULT being deasserted.  However,
+the copper PHYs I've seen so far tie TX_FAULT to ground on the module,
+and I have no cooled laser modules to test with.  Maybe all copper PHY
+modules are non-compliant...
 
-netdev will get a different driver for each, but RDMA will use the
-same driver.
+Also, remember that there is nothing in the EEPROM which tells us what
+mode the host serdes should operate in - we work that out by best-
+guessing today, and so far we're getting away with it.  There are,
+however, copper SFP modules that are 1G only that use 1000BASE-X,
+where the only difference from their 1G/100M/10M cousins is a different
+part number and use SGMII by default.
 
-Jason
+What I'm basically saying is that relying on the "specification" is
+all well and good, but if we implmented the letter of the spec, we
+would only allow 1000BASE-X with SFP and 10GBASE-R with SFP+ cages,
+and wouldn't have copper SFPs working.  Technically, the majority of
+those on the market are non-compliant.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
