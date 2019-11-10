@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF4BFF6AD2
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 19:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CB75F6AD4
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 19:35:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbfKJSfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 13:35:38 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:35155 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726832AbfKJSfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 13:35:38 -0500
-Received: by mail-qt1-f193.google.com with SMTP id n4so8601983qte.2;
-        Sun, 10 Nov 2019 10:35:37 -0800 (PST)
+        id S1727123AbfKJSfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 13:35:48 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38435 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726832AbfKJSfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 13:35:48 -0500
+Received: by mail-qt1-f195.google.com with SMTP id p20so13211255qtq.5;
+        Sun, 10 Nov 2019 10:35:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UAi4MHvKoC/qoYpWGaKycEF7gNGDDWdJ5Bg+6jdpebo=;
-        b=phawDoK5z0oL0Iq2xkCY/FL0A4wSVlHADg6Y4hpCGPkOBUkRv6luRZs9nQeW+EIfzB
-         8yIfoWmrgjNxgF6fIkVdqFLSqRqUQu2qHkKV/Tz3uih6qfH5Sthh9b+lzu1rkg55itb3
-         SXTizMg4dszm7u7RkglCGczEiSWt8KtSrGZYI+i/YgnLrSQ69j74BJisJ/5EM9tT5gcC
-         VbmRyb/edoiYVVj+uUQXABLjrr2NH0trSioPI9gw3DBv6aKO03PH4sH/cwNNyx56ntcW
-         GqjvO6a9je9c+roQoJipY0efYHYd48ucr3rU9gHEEaK3fVoNG9gErrbslZwdNmt+o9lL
-         8ylQ==
+        bh=M+7XtFRR1aFUJ5RUHT/ta5/osbGsH0+8LVuCJxRQH00=;
+        b=o9jZzuVpAgavEg97GZZ/1x1Kg5DDDTb0pR9b5BhIKP7Mm2EgFRcidzXXWGeIl7afmk
+         tb6qVJrSB6C3dY1p6WeW3N2c56cocVJHB4fSpkdtZEXTCN0aRdAPrIgskNv5dU6cQV7E
+         G9B/jkhV8qgUZBwslMr0OkrnwguduEHk3uotr2grtUTWIw3l9mPFf0TbxJg3Jx43MlK4
+         /QUNTmqaPYBHx+dvWytUPTCkuNioJU2v4IOupVTrZx222YOwt6Dy5aMNk2FKfScGEGDb
+         re23njS/wtWf+v8iv6p+BMgchSzbzHn59lYTxsp5raQROkQrbpXTGheSdI2OSOvjSHIp
+         AG7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UAi4MHvKoC/qoYpWGaKycEF7gNGDDWdJ5Bg+6jdpebo=;
-        b=GXBJSwQY4YGlhZ1D7QH6jTUQ3fUPc5XuS25tUMppaKvAvRWniMk17n0+oJp0f0t72S
-         0tAZFo0SMNB/wgGmeFH8qrSBpDVfKQzuE7z3Bke8W79OqdoWj/Gfni5CQIw/xuGv7ojY
-         kK7gEUwyUfglnMxgpQhHFeTcUfkhTIi8todadEs7Azp6MiJNce3jw0JgocrVuiixZdsL
-         5uoQJXdTRA0LNXqdoM+78BV0P6cJKPJXVZOgWtP5jBHAmCfy+70I2FAUDKRfpqn2YXnP
-         bHSZyV8Ic3WIeFHjzYEGqhpzpnIFoZpCzWq6aZnXsjGumS/4RNstnq0Ne8P2Wtl3K07M
-         WxEw==
-X-Gm-Message-State: APjAAAV3wUHKAwyA8AVOjP5UzbJJDtLYGNwO1H85KDwszqXURECpju8t
-        Otl98EmW4dWtyRoxt26R7PvhrfBlqwenpxIvH2Y=
-X-Google-Smtp-Source: APXvYqyvWV1/poB/jX7CzhiUZJgVtlUIOdKPSs67gh5ROt63qorpCip+ejnDwG5HTZ/TiOa8er7Wz3jbhuBd5CKxbEQ=
-X-Received: by 2002:ac8:6f4e:: with SMTP id n14mr22304934qtv.309.1573410937339;
- Sun, 10 Nov 2019 10:35:37 -0800 (PST)
+        bh=M+7XtFRR1aFUJ5RUHT/ta5/osbGsH0+8LVuCJxRQH00=;
+        b=Yg1Fpyg4yaFytb1GzlE8iuBILsPTr3SEef7yic67WJdu4vtumzBIGGT8Gdf9JcRqp+
+         m5fWQH69heYUoTC4AmNNQ+05HaX38vzbL3l17gcKM5PXMfGO/vOTtLGBm9PUXwjv2hal
+         +1UlF4rXCVIHbBBX0q7QFbdqQSx3L7ZwuqUn1/V1/smBqG3ieAnrtIAybAZqsaKjVUxu
+         6GUGqS/v/3yGGRkSQUTRWRTPfDxJMpW7Oes7emmpNOj2/JcLxaJvddQrT2leurYkqMCo
+         8RbRTR9v1lE8FEzRtaG5dGuEoBDxzP+lW43P9JsoqJbj5+U2pg6TPXYsc2MIhjWuN5BG
+         I5CA==
+X-Gm-Message-State: APjAAAVGI3MzIlGINMS0Kc5Yhpqdtd/CyJWj4GMa1UQvhiOi2pFLA6zj
+        dVh7eO8hZoaZs5MsUot2M9sQJlRukoVk3BRH7zOmNF1x5Dk=
+X-Google-Smtp-Source: APXvYqxM/HK7YEbXQUxq2BrqICxpBhgxJ/H1ynd7F+hb8D9ZieLu1E1M2Xw1lpJMYHsJXxUFHLM92JJ7VwyRqs9LN90=
+X-Received: by 2002:ac8:17ce:: with SMTP id r14mr22870237qtk.301.1573410945893;
+ Sun, 10 Nov 2019 10:35:45 -0800 (PST)
 MIME-Version: 1.0
 References: <1573148860-30254-1-git-send-email-magnus.karlsson@intel.com>
- <1573148860-30254-5-git-send-email-magnus.karlsson@intel.com> <FC0465CF-6F62-4FEF-88CF-B5496E9E4881@gmail.com>
-In-Reply-To: <FC0465CF-6F62-4FEF-88CF-B5496E9E4881@gmail.com>
+ <1573148860-30254-6-git-send-email-magnus.karlsson@intel.com> <7C1BBFA7-8811-46CE-BDCF-3F93F5AB1C6F@gmail.com>
+In-Reply-To: <7C1BBFA7-8811-46CE-BDCF-3F93F5AB1C6F@gmail.com>
 From:   William Tu <u9012063@gmail.com>
-Date:   Sun, 10 Nov 2019 10:34:58 -0800
-Message-ID: <CALDO+Sbo=ROFGGZO_CJxLxK3NHMCUQPRG3=Gfvx5zFW+P+_Rhw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/5] samples/bpf: use Rx-only and Tx-only sockets
- in xdpsock
+Date:   Sun, 10 Nov 2019 10:35:07 -0800
+Message-ID: <CALDO+SZx+TbDH-PhpF52ypPmgg6EovSnjXw33SbxqFsdYU78cg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/5] xsk: extend documentation for Rx|Tx-only
+ sockets and shared umems
 To:     Jonathan Lemon <jonathan.lemon@gmail.com>
 Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
         =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
@@ -62,15 +62,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 8, 2019 at 3:02 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+On Fri, Nov 8, 2019 at 3:03 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
 >
 >
 >
 > On 7 Nov 2019, at 9:47, Magnus Karlsson wrote:
 >
-> > Use Rx-only sockets for the rxdrop sample and Tx-only sockets for the
-> > txpush sample in the xdpsock application. This so that we exercise and
-> > show case these socket types too.
+> > Add more documentation about the new Rx-only and Tx-only sockets in
+> > libbpf and also how libbpf can now support shared umems. Also found
+> > two pieces that could be improved in the text, that got fixed in this
+> > commit.
 > >
 > > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 >
