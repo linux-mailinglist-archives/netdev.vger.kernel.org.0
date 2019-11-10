@@ -2,249 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5025F6954
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A78F6958
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:12:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727049AbfKJOHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:07:55 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45774 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726773AbfKJOHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=oAsW+6vaZ3vMQ22IWpMAq/IXQq11fFKYU/9W2qOrH9g=; b=KNrVj44Qobmp+N05mebfbPJZOF
-        CL4aNuPzVCeNKrgFoJHiowpNJmlgWok+64KAEXk06Au2Ez0mzoiLhmq6w8l4oqqJreIXz337ggbai
-        aizrLQm29Fg+QLHQd3Mn1WUq1Rmrq54kyuu6/qzmFdu51FnVQ64O+z5kDR6/5zhoiaC/ovy6Ok7cJ
-        d+fuxh3ARLxxfTCrf1UlGDIC081j9MyqcJ2JLdv/azBw1vfgQ6kpXnPTJoc9m0FXFuzS+953MHxpi
-        EqdLn9JJ4ovv6qgZ1AHzWIMbyXaZLBz0x1mKudgfLq2OsynWeyoLVgAoBCYqGZ7xB+P+TEkfLbbSE
-        /kzFZHJA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:53666 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnsQ-0007fP-Uo; Sun, 10 Nov 2019 14:07:39 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnsN-0005CH-CM; Sun, 10 Nov 2019 14:07:35 +0000
-In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
-References: <20191110140530.GA25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 17/17] net: sfp: allow modules with slow diagnostics
- to probe
+        id S1726845AbfKJOMD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 10 Nov 2019 09:12:03 -0500
+Received: from mail-oln040092254042.outbound.protection.outlook.com ([40.92.254.42]:54878
+        "EHLO APC01-PU1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726402AbfKJOMC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Nov 2019 09:12:02 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KCwE8c1gbHTjuhmvD1VHMf9J96PlW4mBGwA5UotQqp+fkLs+ekQs/AJ/E+fNNd/M+dvRJpD9a0qkWJr4QOqN7LEHLSSVF3TBTrAvzoHy7kps6twDfU5hyamPhaMpTuFrB5Bq+ePrWpACc1ZXU/1es+OJM6p+Yl7aFgV0YG0cJD2bckn2PE1Yxvs2RGQFxdoemj0zSqATGoBXm7MrmPAQ7ULItnm8UgUOrMkjAqwWcM1p1D0VObJ9V96yjOqFucEPGWHErCBo/Nyl+UhbRRYQuxn8WUxVjPGSCMpKsJxX7xs3o1rKB41EK0rOYosTLGEKn+QZvs9LifmqhjBrxCKVtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vkI36TAke4nE/5+MWGt/ueIKRMwHwE1gaAtdUV+vPBw=;
+ b=HPINdMi+DYgK8mYKkqug2nOK/RZurFqJr+33j7d0F+dhWIpfz82+1aommQndhxxehBUk3iAX8EyT77vpEKjxbNOcq92GGdmJdzQHVAGKKSx64ycVQdbTjbw/L7v3MZ3C5GGicdlXW5LCQzzur1lI+cNSxuUqoyLoy6bPn0Mq7+zP2Ym4FLyts+aUGS63E9hM1zFG8oJzTbZr/gK+mAcSZ/xoHD3YyqnhzDyoe2ZO9m9wCpUItgOXflUPioIseLdrpfy3aPiZOA3BxKsRcbAuBKQqM8e8QCpuk4Kg1rGiBFibImn/Nbkxqs4wSqVkm7nHoIPE8Wod37ZDTKSGJ4EtyA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from PU1APC01FT064.eop-APC01.prod.protection.outlook.com
+ (10.152.252.54) by PU1APC01HT172.eop-APC01.prod.protection.outlook.com
+ (10.152.253.171) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2430.22; Sun, 10 Nov
+ 2019 14:10:17 +0000
+Received: from PS2P216MB0755.KORP216.PROD.OUTLOOK.COM (10.152.252.56) by
+ PU1APC01FT064.mail.protection.outlook.com (10.152.253.70) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.22 via Frontend Transport; Sun, 10 Nov 2019 14:10:17 +0000
+Received: from PS2P216MB0755.KORP216.PROD.OUTLOOK.COM
+ ([fe80::44f5:f4bb:1601:2602]) by PS2P216MB0755.KORP216.PROD.OUTLOOK.COM
+ ([fe80::44f5:f4bb:1601:2602%9]) with mapi id 15.20.2430.023; Sun, 10 Nov 2019
+ 14:10:17 +0000
+From:   Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: Possibility of me mainlining Tehuti Networks 10GbE driver
+Thread-Topic: Possibility of me mainlining Tehuti Networks 10GbE driver
+Thread-Index: AQHVlduusrLCB8qbpUuakWm6pLXSWqeAqBUAgAPNUAA=
+Date:   Sun, 10 Nov 2019 14:10:16 +0000
+Message-ID: <PS2P216MB0755A999533207D9E687F61780750@PS2P216MB0755.KORP216.PROD.OUTLOOK.COM>
+References: <PS2P216MB0755843A57F285E4EE452EE5807B0@PS2P216MB0755.KORP216.PROD.OUTLOOK.COM>
+ <6fc9c7ef-0f6c-01e0-132b-74a80711788e@gmail.com>
+In-Reply-To: <6fc9c7ef-0f6c-01e0-132b-74a80711788e@gmail.com>
+Accept-Language: en-AU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: SYYP282CA0002.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:10:b4::12) To PS2P216MB0755.KORP216.PROD.OUTLOOK.COM
+ (2603:1096:300:1c::13)
+x-incomingtopheadermarker: OriginalChecksum:A1BA89E1520E866C796FAF937C712EEC25AEE12ABFDE2D32373E6989E9977982;UpperCasedChecksum:9C2CF4C6A91C3B552F7B0B7A19C5150056ACE05D1EA1B08E83A6099E6A770D5F;SizeAsReceived:7596;Count:49
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [qFtxrHEPPIc04BEWNAIJpivv1MRYHifjjxMNLvNgtoVe4yaPtxRTZMluWxi/OvMpOxu5SC6vasQ=]
+x-microsoft-original-message-id: <20191110141008.GA1404@nicholas-dell-linux>
+x-ms-publictraffictype: Email
+x-incomingheadercount: 49
+x-eopattributedmessage: 0
+x-ms-office365-filtering-correlation-id: 8d31b90c-ca80-44be-fe22-08d765e7b5ac
+x-ms-traffictypediagnostic: PU1APC01HT172:
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 4HHWYWI4HgrGqb6vhqJblD8Vn/mNLIsADhYjDMNKGvrkI3MHNb1R4ZlWmMs0ghqcTNpvRd6hGOs2Q3RzlWMguVpdmyD+wKQOLOCFigv/rgXpB6hzGkdAXrdVxabYpr1FIqEFvGDHNIT+yf/nzC+m8DLdEr+boupsHDijZQH4RcABf5fOschbshTOO5JnBX5p
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <08F64B2109815C4295C230028098087B@KORP216.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTnsN-0005CH-CM@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:07:35 +0000
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d31b90c-ca80-44be-fe22-08d765e7b5ac
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2019 14:10:16.9772
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Internet
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1APC01HT172
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a module is inserted, we attempt to read read the ID from address
-0x50.  Once we are able to read the ID, we immediately attempt to
-initialise the hwmon support by reading from address 0x51.  If this
-fails, then we fall into error state, and assume that the module is
-not usable.
+On Thu, Nov 07, 2019 at 08:06:30PM -0800, Florian Fainelli wrote:
+> Hi,
+> 
+> On 11/7/2019 6:24 PM, Nicholas Johnson wrote:
+> > Hi all,
+> > 
+> > To start off, if I am emailing the wrong people, please blame the output 
+> > of: "scripts/get_maintainer.pl drivers/net/ethernet/tehuti/" and let me 
+> > know who I should be contacting. Should I add in 
+> > "linux-kernel@vger.kernel.org"?
+> > 
+> > I just discovered that the Tehuti 10GbE networking drivers (required for 
+> > things such as some AKiTiO Thunderbolt to 10GbE adapters) are not in 
+> > mainline. I am interested in mainlining it, but need to know how much 
+> > work it would take and if it will force me to be the maintainer for all 
+> > eternity.
+> > 
+> > The driver, in tn40xx-0.3.6.15-c.tar appears to be available here:
+> > Link: https://www.akitio.com/faq/341-thunder3-10gbe-adapter-can-i-use-this-network-adapter-on-linux
+> > Also here:
+> > Link: https://github.com/acooks/tn40xx-driver
+> > 
+> > I see some immediate style problems and indentation issues. I can fix 
+> > these.
+> > 
+> > The current driver only works with Linux v4.19, I believe. There are a 
+> > small handful of compile errors with v5.4. I can probably fix these.
+> > 
+> > However, could somebody please comment on any technical issues that you 
+> > can see here? How much work do you think I would have to do to mainline 
+> > this? Would I have to buy such a device for testing? Would I have to buy 
+> > *all* of the supported devices for testing? Or can other people do that 
+> > for me?
+> 
+> This is based on roughly 5 minutes of browsing source files, but what I
+> see, which is typical from out of tree vendor drivers is a complete lack
+> of use of existing kernel APIs beyond registering a net_device which you
+> would have to use to seek upstream inclusion, that includes for the most
+> part:
+> 
+> - make use of the PHYLINK subsystem for supporting 10GBaseT and SFP
+> modules instead of doing your own, there might be existing PHY drivers
+> that you can use for the Aquantia and Marvell parts, see
+> drivers/net/phy/ to check whether the PHY models are indeed supported
+> 
+> - implement a proper mii_bus interface for "talking" to the PHYs,
+> implement a proper gpio_chip instance to register with Linux as a GPIO
+> controller, such that then you can use i2c-gpio to become an i2c bus
+> master driver, and then talk to the SFPs properly
+> 
+> - lots and lots of stylistic issues that must be fixed
+> 
+> - getting rid of private driver ioctl implementation
+> 
+> There are certainly many more details once we start digging of course.
+> 
+> > 
+> > I am not keen on having to buy anything without mainline support - it is 
+> > an instant disqualification of a hardware vendor. It results in a 
+> > terrible user experience for experienced people (might not be able to 
+> > use latest kernel which is needed for supporting other things) and is 
+> > debilitating for people new to Linux who do not how to use the terminal, 
+> > possibly enough so that they will go back to Windows.
+> 
+> Seems like a reasonable position to me, the grey area is when there is a
+> Linux driver, but its quality is not making it upstream available, then
+> you find yourself emailing netdev about that very situation :)
+To clarify, I do not own the device, but I realised that the driver 
+needs mainlining and this could be good experience.
 
-Modules such as the ALCATELLUCENT 3FE46541AA use a real EEPROM for
-I2C address 0x50, which responds immediately.  However, address 0x51
-is an emulated, which only becomes available once the on-board firmware
-has booted.  This prompts us to fall into the error state.
+> 
+> > 
+> > Andy, what is your relationship to Tehuti Networks? Would you be happy 
+> > to maintain this if I mainlined it? It says you are maintainer of 
+> > drivers/net/ethernet/tehuti/ directory. I will not do this if I am 
+> > expected to maintain it - in no small part because I do not know a lot 
+> > about it. I will only be modifying what is currently available to make 
+> > it acceptable for mainline, if possible.
+> 
+> Given how the driver is broken up, you can do a couple of strategies:
+> 
+> - try to submit it all as-is (almost) under drivers/staging/ where it
+> may get contributions from people to clean it up to the kernel coding
+> style, using coccinelle semantic patch and pretty much anything that can
+> be done by inspecting code visually while not really testing it. This
+> might make the driver stay in staging for a long time, but if there are
+> in-kernel API changes, they will be done and so it will continue to
+> build and maybe even work, for any version of Linux in which it got
+> included and onward. The problem with that approach is that it will
+> likely stay in limbo unless a dedicated set of people start working
+> towards moving it out of staging.
+> 
+> - rewrite it in smaller parts and submit it in small chunks, with basic
+> functionality one step at a time, e.g.: driver skeleton/entry point as a
+> pci_device/driver, then net_device registration without anything, then
+> RX path, then TX path, then control path, then ethtool interface, etc.
+> etc. Given the shape of the driver, but not knowing how familiar you are
+> with the driver or the kernel, a 3 man/month work for someone motivated
+> is probably an optimistic estimate of the work you have ahead of you,
+> 6m/m sounds more realistic. There is also an expectation that you will
+> be maintaining this driver for a few months (maybe years) to come, and
+> network drivers tend to always have something that needs to be fixed, so
+> it is a nice side gig, but it could be time consuming.
+Okay, that is a lot. Perhaps this is unwise.
 
-Since the module may be usable without diagnostics, arrange for the
-hwmon probe independent of the rest of the SFP itself, retrying every
-5s for up to about 60s for the monitoring to become available, and
-print an error message if it doesn't become available.
+One strategy could be to hollow out a mainline driver and use its 
+structure?
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 96 +++++++++++++++++++++++++++++++++----------
- 1 file changed, 74 insertions(+), 22 deletions(-)
+> 
+> > 
+> > Also, license issues - does GPLv2 permit mainlining to happen? I believe 
+> > the Tehuti driver is available under GPLv2 (correct me if I am wrong).
+> 
+> The source code on the github tree suggests this is the case, therefore
+> it is entirely appropriate to seek upstream inclusion given the license
+> allows it.
+> 
+> What needs to be figured out is the PHY firmware situation which appears
+> to be completed punted onto the user to figure out which files (and
+> where to download), how to extract the relevant firmware blobs (there
+> are scripts, okay). If you have a contact with one of the vendors
+> supported by the driver, or better yet, with Tehuti, that may be
+> something they could help with. A mainline driver with proprietary
+> firmware blobs is not uncommon, but having to get the blobs outside of
+> linux-firmware is a real pain for distributions and some might even
+> refuse to build your driver because of that.
+Could I please have more information / reading resources on the PHY 
+business? My understanding is that the NIC firmware would be dealing 
+with the PHY (this is the MII, right?) and the OS would have nothing to 
+do with it (it just sees a NIC which processes packets). But it seems 
+like this is not the case. Can you please clarify this? One guess is 
+that the NIC firmware handles most of it, but the OS is able to detect 
+and display info on the PHY to userspace. Incorrect?
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 68d91fae2077..69bedef96ca7 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -218,6 +218,8 @@ struct sfp {
- 
- #if IS_ENABLED(CONFIG_HWMON)
- 	struct sfp_diag diag;
-+	struct delayed_work hwmon_probe;
-+	unsigned int hwmon_tries;
- 	struct device *hwmon_dev;
- 	char *hwmon_name;
- #endif
-@@ -1096,29 +1098,27 @@ static const struct hwmon_chip_info sfp_hwmon_chip_info = {
- 	.info = sfp_hwmon_info,
- };
- 
--static int sfp_hwmon_insert(struct sfp *sfp)
-+static void sfp_hwmon_probe(struct work_struct *work)
- {
-+	struct sfp *sfp = container_of(work, struct sfp, hwmon_probe.work);
- 	int err, i;
- 
--	if (sfp->id.ext.sff8472_compliance == SFP_SFF8472_COMPLIANCE_NONE)
--		return 0;
--
--	if (!(sfp->id.ext.diagmon & SFP_DIAGMON_DDM))
--		return 0;
--
--	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE)
--		/* This driver in general does not support address
--		 * change.
--		 */
--		return 0;
--
- 	err = sfp_read(sfp, true, 0, &sfp->diag, sizeof(sfp->diag));
--	if (err < 0)
--		return err;
-+	if (err < 0) {
-+		if (sfp->hwmon_tries--) {
-+			mod_delayed_work(system_wq, &sfp->hwmon_probe,
-+					 T_PROBE_RETRY_SLOW);
-+		} else {
-+			dev_warn(sfp->dev, "hwmon probe failed: %d\n", err);
-+		}
-+		return;
-+	}
- 
- 	sfp->hwmon_name = kstrdup(dev_name(sfp->dev), GFP_KERNEL);
--	if (!sfp->hwmon_name)
--		return -ENODEV;
-+	if (!sfp->hwmon_name) {
-+		dev_err(sfp->dev, "out of memory for hwmon name\n");
-+		return;
-+	}
- 
- 	for (i = 0; sfp->hwmon_name[i]; i++)
- 		if (hwmon_is_bad_char(sfp->hwmon_name[i]))
-@@ -1128,18 +1128,52 @@ static int sfp_hwmon_insert(struct sfp *sfp)
- 							 sfp->hwmon_name, sfp,
- 							 &sfp_hwmon_chip_info,
- 							 NULL);
-+	if (IS_ERR(sfp->hwmon_dev))
-+		dev_err(sfp->dev, "failed to register hwmon device: %ld\n",
-+			PTR_ERR(sfp->hwmon_dev));
-+}
-+
-+static int sfp_hwmon_insert(struct sfp *sfp)
-+{
-+	if (sfp->id.ext.sff8472_compliance == SFP_SFF8472_COMPLIANCE_NONE)
-+		return 0;
- 
--	return PTR_ERR_OR_ZERO(sfp->hwmon_dev);
-+	if (!(sfp->id.ext.diagmon & SFP_DIAGMON_DDM))
-+		return 0;
-+
-+	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE)
-+		/* This driver in general does not support address
-+		 * change.
-+		 */
-+		return 0;
-+
-+	mod_delayed_work(system_wq, &sfp->hwmon_probe, 1);
-+	sfp->hwmon_tries = R_PROBE_RETRY_SLOW;
-+
-+	return 0;
- }
- 
- static void sfp_hwmon_remove(struct sfp *sfp)
- {
-+	cancel_delayed_work_sync(&sfp->hwmon_probe);
- 	if (!IS_ERR_OR_NULL(sfp->hwmon_dev)) {
- 		hwmon_device_unregister(sfp->hwmon_dev);
- 		sfp->hwmon_dev = NULL;
- 		kfree(sfp->hwmon_name);
- 	}
- }
-+
-+static int sfp_hwmon_init(struct sfp *sfp)
-+{
-+	INIT_DELAYED_WORK(&sfp->hwmon_probe, sfp_hwmon_probe);
-+
-+	return 0;
-+}
-+
-+static void sfp_hwmon_exit(struct sfp *sfp)
-+{
-+	cancel_delayed_work_sync(&sfp->hwmon_probe);
-+}
- #else
- static int sfp_hwmon_insert(struct sfp *sfp)
- {
-@@ -1149,6 +1183,15 @@ static int sfp_hwmon_insert(struct sfp *sfp)
- static void sfp_hwmon_remove(struct sfp *sfp)
- {
- }
-+
-+static int sfp_hwmon_init(struct sfp *sfp)
-+{
-+	return 0;
-+}
-+
-+static void sfp_hwmon_exit(struct sfp *sfp)
-+{
-+}
- #endif
- 
- /* Helpers */
-@@ -1485,10 +1528,6 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = sfp_hwmon_insert(sfp);
--	if (ret < 0)
--		return ret;
--
- 	return 0;
- }
- 
-@@ -1637,6 +1676,15 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- 	case SFP_MOD_ERROR:
- 		break;
- 	}
-+
-+#if IS_ENABLED(CONFIG_HWMON)
-+	if (sfp->sm_mod_state >= SFP_MOD_WAITDEV &&
-+	    IS_ERR_OR_NULL(sfp->hwmon_dev)) {
-+		err = sfp_hwmon_insert(sfp);
-+		if (err)
-+			dev_warn(sfp->dev, "hwmon probe failed: %d\n", err);
-+	}
-+#endif
- }
- 
- static void sfp_sm_main(struct sfp *sfp, unsigned int event)
-@@ -1938,6 +1986,8 @@ static struct sfp *sfp_alloc(struct device *dev)
- 	INIT_DELAYED_WORK(&sfp->poll, sfp_poll);
- 	INIT_DELAYED_WORK(&sfp->timeout, sfp_timeout);
- 
-+	sfp_hwmon_init(sfp);
-+
- 	return sfp;
- }
- 
-@@ -1945,6 +1995,8 @@ static void sfp_cleanup(void *data)
- {
- 	struct sfp *sfp = data;
- 
-+	sfp_hwmon_exit(sfp);
-+
- 	cancel_delayed_work_sync(&sfp->poll);
- 	cancel_delayed_work_sync(&sfp->timeout);
- 	if (sfp->i2c_mii) {
--- 
-2.20.1
+Above you mentioned mii_bus for PHYs, but a driver like Aquantia 
+Atlantic does not have references to PHYs or MII. Why do some not need 
+the feature when others do?
 
+> 
+> > 
+> > Would I need to send patches for this, or for something this size, is it 
+> > better to send a pull request? If I am going to do patches, I will need 
+> > to make a gmail account or something, as Outlook messes with the 
+> > encoding of the things which I send.
+> 
+> For sending patches, you would want to use git send-email to make sure
+> you avoid MUA issues.
+> 
+> > 
+> > Thanks for any comments on this.
+> 
+> Hope all of this helps. Cheers
+Thanks, it does answer a lot of questions.
+
+> -- 
+> Florian
+
+Would it make it easier to buy a single Tehuti NIC and try to make a 
+driver just for that model? Or does each additional model generally not 
+add much more work?
+
+I would dive into this and see how far I can get, but I have to make an 
+investment in an expensive piece of hardware I do not particularly want.
+
+Given my inexperience, it is unlikely to succeed, and then I have a 
+device laying around without mainline support, making it difficult to 
+use.
+
+Perhaps a better tree to be barking up is "what do I need to do to get 
+to the point where I could do something like this?" Can you suggest 
+smaller pieces of work which are not trivial / harder than code cleanup 
+to start building experience?
+
+Thanks!
+
+Regards,
+Nicholas.
