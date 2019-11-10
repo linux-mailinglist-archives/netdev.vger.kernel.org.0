@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9976F6319
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:49:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B18F63E1
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:55:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729468AbfKJCtd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:49:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59030 "EHLO mail.kernel.org"
+        id S1729635AbfKJCuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:50:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32990 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729459AbfKJCtc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:49:32 -0500
+        id S1729545AbfKJCuK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:50:10 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8716322593;
-        Sun, 10 Nov 2019 02:49:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ACEEC22581;
+        Sun, 10 Nov 2019 02:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573354171;
-        bh=5UItLLFjlDhOXz3KBCG5KhmUDXK4+F73pnrDOEoTvcQ=;
+        s=default; t=1573354209;
+        bh=l2m3Bh9vF4Mn39FY35Lc/9YluNkiD+znKwgEkD5vbu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/eoAWfV5kprP1dzZHFa/NhV2oO1Wo3GJ5O2GlRW5lv5aZQiaZxGRlqbh1mQuv5oe
-         zkRgH8JpCpKX6yvsDbYhlgsEM+1qRO1HfQLrN45+pj2hdYZeiyJBGsqauqVzurJfps
-         j2OMMU9xUZBQK5LvrTYgcxoAkzEFPSvN016pV64c=
+        b=VTJP6wHzh5+C07f4p+OpTbtOEW5aHaZZpfreu0AWk+mNNipZgzUoGrzBtwrpGFVDP
+         yiTyOPWn0XSt52DgZHr/eBEljSMbq+DvBQ1BkovkkQjIwJ5NWbR+bnwEmezeT9h7ms
+         orwFeBtCwnWBCtMrzmQZ2y0cK1zT+CfNINuKkaRw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shahed Shaikh <Shahed.Shaikh@cavium.com>,
-        Ariel Elior <ariel.elior@cavium.com>,
+Cc:     YueHaibing <yuehaibing@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 26/66] bnx2x: Ignore bandwidth attention in single function mode
-Date:   Sat,  9 Nov 2019 21:48:05 -0500
-Message-Id: <20191110024846.32598-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 49/66] net: smsc: fix return type of ndo_start_xmit function
+Date:   Sat,  9 Nov 2019 21:48:28 -0500
+Message-Id: <20191110024846.32598-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024846.32598-1-sashal@kernel.org>
 References: <20191110024846.32598-1-sashal@kernel.org>
@@ -44,45 +43,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shahed Shaikh <Shahed.Shaikh@cavium.com>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 75a110a1783ef8324ffd763b24f4ac268253cbca ]
+[ Upstream commit 6323d57f335ce1490d025cacc83fc10b07792130 ]
 
-This is a workaround for FW bug -
-MFW generates bandwidth attention in single function mode, which
-is only expected to be generated in multi function mode.
-This undesired attention in SF mode results in incorrect HW
-configuration and resulting into Tx timeout.
+The method ndo_start_xmit() is defined as returning an 'netdev_tx_t',
+which is a typedef for an enum type, so make sure the implementation in
+this driver has returns 'netdev_tx_t' value, and change the function
+return type to netdev_tx_t.
 
-Signed-off-by: Shahed Shaikh <Shahed.Shaikh@cavium.com>
-Signed-off-by: Ariel Elior <ariel.elior@cavium.com>
+Found by coccinelle.
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/ethernet/smsc/smc911x.c  | 3 ++-
+ drivers/net/ethernet/smsc/smc91x.c   | 3 ++-
+ drivers/net/ethernet/smsc/smsc911x.c | 3 ++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-index a9681b191304a..ce8a777b1e975 100644
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -3540,6 +3540,16 @@ static void bnx2x_drv_info_iscsi_stat(struct bnx2x *bp)
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index cb49c9654f0a7..323b3ac16bc0e 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -514,7 +514,8 @@ static void smc911x_hardware_send_pkt(struct net_device *dev)
+  * now, or set the card to generates an interrupt when ready
+  * for the packet.
   */
- static void bnx2x_config_mf_bw(struct bnx2x *bp)
+-static int smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t
++smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
-+	/* Workaround for MFW bug.
-+	 * MFW is not supposed to generate BW attention in
-+	 * single function mode.
-+	 */
-+	if (!IS_MF(bp)) {
-+		DP(BNX2X_MSG_MCP,
-+		   "Ignoring MF BW config in single function mode\n");
-+		return;
-+	}
-+
- 	if (bp->link_vars.link_up) {
- 		bnx2x_cmng_fns_init(bp, true, CMNG_FNS_MINMAX);
- 		bnx2x_link_sync_notify(bp);
+ 	struct smc911x_local *lp = netdev_priv(dev);
+ 	unsigned int free;
+diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
+index 73212590d04a3..b0c72167badec 100644
+--- a/drivers/net/ethernet/smsc/smc91x.c
++++ b/drivers/net/ethernet/smsc/smc91x.c
+@@ -637,7 +637,8 @@ done:	if (!THROTTLE_TX_PKTS)
+  * now, or set the card to generates an interrupt when ready
+  * for the packet.
+  */
+-static int smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t
++smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct smc_local *lp = netdev_priv(dev);
+ 	void __iomem *ioaddr = lp->base;
+diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
+index 734caa7a557be..4143659615e10 100644
+--- a/drivers/net/ethernet/smsc/smsc911x.c
++++ b/drivers/net/ethernet/smsc/smsc911x.c
+@@ -1776,7 +1776,8 @@ static int smsc911x_stop(struct net_device *dev)
+ }
+ 
+ /* Entry point for transmitting a packet */
+-static int smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t
++smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct smsc911x_data *pdata = netdev_priv(dev);
+ 	unsigned int freespace;
 -- 
 2.20.1
 
