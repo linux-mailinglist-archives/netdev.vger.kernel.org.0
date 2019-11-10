@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D447F6945
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:06:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 135DFF6946
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:06:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726910AbfKJOGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:06:49 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45648 "EHLO
+        id S1726923AbfKJOGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:06:52 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45654 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfKJOGt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:06:49 -0500
+        with ESMTP id S1726390AbfKJOGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:06:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QUJJsKPigRneGWY4KkZws/KIWlRGFymyD4/NegV6zrA=; b=P8Q4nS6sfH8dkjsRjDWNVluoeg
-        16tLgHitaQS1Q6JDG0qAGZvAPE1lpKetbdR7SC5/MA6ngPdPKriUBvpFLU2Zs4ufeanRM9xMSOXWg
-        I0lgED485M+Q9GYlk44fXhzZRYcgAVlZnYoLxmBfIhDzFDNx9iUoSh6MfS+fLYAloyJWD9d6CFb7a
-        ro0NMJ0/KeV4fWNLY8QqHhgAyVmsxNMZNSDwXtNj7JpQkFwf9gZ5f7FMj4uZcgq4Xbm5/NA5Qf+3k
-        5u0eEoIjcx82AKOIxKvuypwK97DeHAqeMm5eT4vsqaFTYclt85lweZrzo+vyPFxXnJeXpIJm732iQ
-        ffrS9gEQ==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54030 helo=rmk-PC.armlinux.org.uk)
+        bh=7dEaHp/rgE9QRrNou7PlsW6UKtDmn+2D9ZwS4wWXrZI=; b=OnTB2LPVP9JVIDoIBSYnhHw+42
+        t+61rDZTCjNmxFQ6JcLtn8FACwBtNUCT7hWj1m4YbK571SrPLNpUf/iwHm2s9C/H4Ga1XcR4BbWYt
+        ZxFwg9qd8J6RNEPIa+LAGgHI8N9G6TrSYck9IDGtIEDNhLlcdPeU+u9ZWKTPFDB7Sjt/dCyMCbY/E
+        jimaaH9jRPsAP7b+002H+x56MvLaVFwXb/ruW3FvNlUiujbfz5my3nOpL11tBqfjevrXZMjncHeG5
+        gou8Ws+wclm2AyGzpO3ufIAbGoESB3yaLlMYPGQYEmaNzniKoe2OYC26AaULLF1XWr8ndSkh8iGkv
+        Ni8kb3Bg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:53636 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnrR-0007dg-Fx; Sun, 10 Nov 2019 14:06:37 +0000
+        id 1iTnrU-0007dl-AB; Sun, 10 Nov 2019 14:06:40 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnrN-0005A5-U9; Sun, 10 Nov 2019 14:06:33 +0000
+        id 1iTnrT-0005AH-1u; Sun, 10 Nov 2019 14:06:39 +0000
 In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
 References: <20191110140530.GA25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,66 +38,130 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 05/17] net: sfp: rename T_PROBE_WAIT to T_SERIAL
+Subject: [PATCH net-next 06/17] net: sfp: parse SFP power requirement earlier
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTnrN-0005A5-U9@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:06:33 +0000
+Message-Id: <E1iTnrT-0005AH-1u@rmk-PC.armlinux.org.uk>
+Date:   Sun, 10 Nov 2019 14:06:39 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SFF-8472 rev 12.2 defines the time for the serial bus to become ready
-using t_serial.  Use this as our identifier for this timeout to make
-it clear what we are referring to.
+Parse the SFP power requirement earlier, in preparation for moving the
+power level setup code.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/phy/sfp.c | 42 +++++++++++++++++++++++++++++-------------
+ 1 file changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index e34370c4a6c5..955ada116ec9 100644
+index 955ada116ec9..b105bbe7720a 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -149,11 +149,10 @@ static const enum gpiod_flags gpio_flags[] = {
-  * the same length on the PCB, which means it's possible for MOD DEF 0 to
-  * connect before the I2C bus on MOD DEF 1/2.
-  *
-- * The SFP MSA specifies 300ms as t_init (the time taken for TX_FAULT to
-- * be deasserted) but makes no mention of the earliest time before we can
-- * access the I2C EEPROM.  However, Avago modules require 300ms.
-+ * The SFF-8472 specifies t_serial ("Time from power on until module is
-+ * ready for data transmission over the two wire serial bus.") as 300ms.
-  */
--#define T_PROBE_INIT	msecs_to_jiffies(300)
-+#define T_SERIAL	msecs_to_jiffies(300)
- #define T_HPOWER_LEVEL	msecs_to_jiffies(300)
- #define T_PROBE_RETRY	msecs_to_jiffies(100)
+@@ -198,6 +198,8 @@ struct sfp {
+ 	unsigned int sm_retries;
  
-@@ -1497,8 +1496,8 @@ static void sfp_sm_device(struct sfp *sfp, unsigned int event)
- 	}
+ 	struct sfp_eeprom_id id;
++	unsigned int module_power_mW;
++
+ #if IS_ENABLED(CONFIG_HWMON)
+ 	struct sfp_diag diag;
+ 	struct device *hwmon_dev;
+@@ -1311,17 +1313,14 @@ static void sfp_sm_mod_init(struct sfp *sfp)
+ 		sfp_sm_probe_phy(sfp);
  }
  
--/* This state machine tracks the insert/remove state of
-- * the module, and handles probing the on-board EEPROM.
-+/* This state machine tracks the insert/remove state of the module, probes
-+ * the on-board EEPROM, and sets up the power level.
-  */
- static void sfp_sm_module(struct sfp *sfp, unsigned int event)
+-static int sfp_sm_mod_hpower(struct sfp *sfp)
++static int sfp_module_parse_power(struct sfp *sfp)
  {
-@@ -1514,7 +1513,7 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- 	default:
- 		if (event == SFP_E_INSERT && sfp->attached) {
- 			sfp_module_tx_disable(sfp);
--			sfp_sm_mod_next(sfp, SFP_MOD_PROBE, T_PROBE_INIT);
-+			sfp_sm_mod_next(sfp, SFP_MOD_PROBE, T_SERIAL);
- 		}
- 		break;
+-	u32 power;
+-	u8 val;
+-	int err;
++	u32 power_mW = 1000;
  
+-	power = 1000;
+ 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
+-		power = 1500;
++		power_mW = 1500;
+ 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
+-		power = 2000;
++		power_mW = 2000;
+ 
+ 	if (sfp->id.ext.sff8472_compliance == SFP_SFF8472_COMPLIANCE_NONE &&
+ 	    (sfp->id.ext.diagmon & (SFP_DIAGMON_DDM | SFP_DIAGMON_ADDRMODE)) !=
+@@ -1330,23 +1329,33 @@ static int sfp_sm_mod_hpower(struct sfp *sfp)
+ 		 * or requires an address change sequence, so assume that
+ 		 * the module powers up in the indicated power mode.
+ 		 */
+-		if (power > sfp->max_power_mW) {
++		if (power_mW > sfp->max_power_mW) {
+ 			dev_err(sfp->dev,
+ 				"Host does not support %u.%uW modules\n",
+-				power / 1000, (power / 100) % 10);
++				power_mW / 1000, (power_mW / 100) % 10);
+ 			return -EINVAL;
+ 		}
+ 		return 0;
+ 	}
+ 
+-	if (power > sfp->max_power_mW) {
++	if (power_mW > sfp->max_power_mW) {
+ 		dev_warn(sfp->dev,
+ 			 "Host does not support %u.%uW modules, module left in power mode 1\n",
+-			 power / 1000, (power / 100) % 10);
++			 power_mW / 1000, (power_mW / 100) % 10);
+ 		return 0;
+ 	}
+ 
+-	if (power <= 1000)
++	sfp->module_power_mW = power_mW;
++
++	return 0;
++}
++
++static int sfp_sm_mod_hpower(struct sfp *sfp)
++{
++	u8 val;
++	int err;
++
++	if (sfp->module_power_mW <= 1000)
+ 		return 0;
+ 
+ 	err = sfp_read(sfp, true, SFP_EXT_STATUS, &val, sizeof(val));
+@@ -1366,7 +1375,8 @@ static int sfp_sm_mod_hpower(struct sfp *sfp)
+ 	}
+ 
+ 	dev_info(sfp->dev, "Module switched to %u.%uW power level\n",
+-		 power / 1000, (power / 100) % 10);
++		 sfp->module_power_mW / 1000,
++		 (sfp->module_power_mW / 100) % 10);
+ 	return T_HPOWER_LEVEL;
+ 
+ err:
+@@ -1453,6 +1463,11 @@ static int sfp_sm_mod_probe(struct sfp *sfp)
+ 		dev_warn(sfp->dev,
+ 			 "module address swap to access page 0xA2 is not supported.\n");
+ 
++	/* Parse the module power requirement */
++	ret = sfp_module_parse_power(sfp);
++	if (ret < 0)
++		return ret;
++
+ 	ret = sfp_hwmon_insert(sfp);
+ 	if (ret < 0)
+ 		return ret;
+@@ -1476,6 +1491,7 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
+ 	sfp_module_tx_disable(sfp);
+ 
+ 	memset(&sfp->id, 0, sizeof(sfp->id));
++	sfp->module_power_mW = 0;
+ 
+ 	dev_info(sfp->dev, "module removed\n");
+ }
 -- 
 2.20.1
 
