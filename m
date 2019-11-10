@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D461F6B49
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 21:23:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C39B2F6B4C
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 21:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727077AbfKJUXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 15:23:52 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36956 "EHLO
+        id S1727040AbfKJUY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 15:24:58 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45130 "EHLO
         mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726800AbfKJUXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 15:23:52 -0500
-Received: by mail-pg1-f193.google.com with SMTP id z24so7962070pgu.4
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 12:23:51 -0800 (PST)
+        with ESMTP id S1726800AbfKJUY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 15:24:57 -0500
+Received: by mail-pg1-f193.google.com with SMTP id w11so7929679pga.12
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 12:24:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XfsqRg4Quhz0cvGHHa5PymJPXuDB7J2u42uw2a8NbBQ=;
-        b=olbWGtHynTSmjTH0PVicbArTcBnztzLY63lwzlrUpZdQJHRrdS+eHUJsqGSx0KRhOS
-         8qzg5VmcRl3vEc1B4xKdAMKyJm88WVvZ/ZeieeEZ6+mBT2V10jb4j2RW+u50WNCJ3d+x
-         RSsPWO4GD/D/p6F0NDdrL/T61FFYEQiW8Ym8fWrUjyqECPmb8+0mrji2iup350AFkC5b
-         +dUVdsRfnA3zWTmMNpFkgrV0c6LNoyJrQH8rcyiTseTXyj2dfQdqPMYnPynOhKI688Nu
-         4afloT3ueq5NpaydyNmCFAm+3ICJcJEpE2mgGibI6q88HKQxlvwxT0j2P7HLISokg17z
-         hRow==
+        bh=dh9ncICb4yqeK0Pc0Q/QhXMWgi5mXnDAbtoLhJ9uxQw=;
+        b=AgMASCJWxp8ed+3GDD0f436W3fndcP4XoMBuxGMEmhRRB3WA6qtJJIZu/d9og8aefk
+         lJWgzvkgwR+kfPRoskAB8GBOxStCWCImR/tDS9VJaJOJXFrzrqjts2HyE7eCsQ6iXgZs
+         NodqETnQYD3hxj7af4kns4q/BlCG9+c+YTU88cG+3oSerIVSo8uiL/17uuzHlx4W41xq
+         zw8fHWbwt7xJRnZjO9pFYsds39XOCwejKO4I4iq1+OHBYbMZwziB16S3Q/DuCb8IjYt8
+         dKkFHsNf6wgL+ZVIf0rvV9j9KvP/cYDj8l5GvS4BvXl7qDlZqMHs5+aTcK4ziqm+/lny
+         sFQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=XfsqRg4Quhz0cvGHHa5PymJPXuDB7J2u42uw2a8NbBQ=;
-        b=DLhOqpWu7/0CLJjfl13aghkuXd+Gkel0WTjujpwFTOhg39j/5NNyYMyRZ7Sg3Hrg2a
-         e8v7mHgnLIjCdupUvZ05aL2RceZAL65IspZ2xtB7knnM6ZhJKg2PGNfJNaNy8qVr7BzZ
-         tQ3y/lWWIj5+yT/zgALHM2x9FvFz5Hh9Cy3jMTjaMeQEJhmnB4C+jE/O6rI9VWPUj6s4
-         7iiG0yyfGtA35A9BUYZ7GzIJgA+gmmdhPlC0QG2LO7ck45y52jkgHE69grP6f3aFDgI7
-         J6HxrLqoMEL0UXm62YRnVNglZwuCUiWfhXo5d9oZ9xYE2tWvwOXSPDeLGyRTZWdHiJ3Y
-         2bfw==
-X-Gm-Message-State: APjAAAUTCRPyTIxTdwWh3t3ZHw/eU7EAvr45oHrIcvLbudgXmC0QTlXU
-        iI4EVYO7o5wIWfwvNIPOSAc=
-X-Google-Smtp-Source: APXvYqya7x/01nMLaXR4ldc1pnbOr41wog6CoaRSkOTxjR2OOn9vdg5f3Ufi7tXJL828NTzGSW4F1Q==
-X-Received: by 2002:a17:90a:268c:: with SMTP id m12mr28855132pje.69.1573417431273;
-        Sun, 10 Nov 2019 12:23:51 -0800 (PST)
+        bh=dh9ncICb4yqeK0Pc0Q/QhXMWgi5mXnDAbtoLhJ9uxQw=;
+        b=EBljb9dLBzBjma1BWS52OkQCKbl+Mk5Hs3lCDVjSrj6Ndccye3xUT3OEOkYvJjxZCi
+         2dDKGErCCkFmOgOLOBLg8PJ6794oUjkeFRKS3NLS+mELeejo5CGqphRb5hpgmA6W1C/D
+         K4V0PwgBQApxGo9TYNLn3g7az3zCHzHmko6+Vx+mCTBFNpRvdsoo9AQyPWBAlzJRNY9P
+         UUavmJzv2nzWh3X6fwW1ehYuXgw2FYwWt2kNXse0xkTbR2DPQBOK8xSP64laswWpkNPc
+         diatT5iSqUMUjjk9OqSdjtJ7EigSbMI1OPANCZWq9Xi/N6tFX0GyHlGjUe+9GLUPs8Ud
+         JoZg==
+X-Gm-Message-State: APjAAAU0zm0BiVe4iky/aHLfquzt9HizkPHlxSe8YlfN1zDGAY9lBlxR
+        Q8/FChdgZrokHTN5iQg3ppo=
+X-Google-Smtp-Source: APXvYqx5xiDXdW10ASH3MO/3HEN1mlYD62GdwEPzlgxN1yIGp6rgVdCQ2TO7mh5pEbICBdE5oVU/8Q==
+X-Received: by 2002:a65:6492:: with SMTP id e18mr19859262pgv.111.1573417495162;
+        Sun, 10 Nov 2019 12:24:55 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id z10sm4570577pgg.39.2019.11.10.12.23.49
+        by smtp.gmail.com with ESMTPSA id q8sm11707764pgg.15.2019.11.10.12.24.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Nov 2019 12:23:50 -0800 (PST)
-Subject: Re: [PATCH V3 net-next 1/7] net: bcmgenet: Avoid touching
- non-existent interrupt
+        Sun, 10 Nov 2019 12:24:54 -0800 (PST)
+Subject: Re: [PATCH V3 net-next 2/7] net: bcmgenet: Fix error handling on IRQ
+ retrieval
 To:     Stefan Wahren <wahrenst@gmx.net>,
         Matthias Brugger <matthias.bgg@kernel.org>,
         Matthias Brugger <mbrugger@suse.com>,
@@ -58,7 +58,7 @@ Cc:     Eric Anholt <eric@anholt.net>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org
 References: <1573326009-2275-1-git-send-email-wahrenst@gmx.net>
- <1573326009-2275-2-git-send-email-wahrenst@gmx.net>
+ <1573326009-2275-3-git-send-email-wahrenst@gmx.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <fa75d3ae-147b-8537-9cc5-522a7dc5a5d2@gmail.com>
-Date:   Sun, 10 Nov 2019 12:23:49 -0800
+Message-ID: <77ab5768-5298-2c9a-20f3-42c96744ea70@gmail.com>
+Date:   Sun, 10 Nov 2019 12:24:53 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1573326009-2275-2-git-send-email-wahrenst@gmx.net>
+In-Reply-To: <1573326009-2275-3-git-send-email-wahrenst@gmx.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -131,19 +131,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/9/2019 11:00 AM, Stefan Wahren wrote:
-> As platform_get_irq() now prints an error when the interrupt does not
-> exist, we are getting a confusing error message in case the optional
-> WOL IRQ is not defined:
+> This fixes the error handling for the mandatory IRQs. There is no need
+> for the error message anymore, this is now handled by platform_get_irq.
 > 
->   bcmgenet fd58000.ethernet: IRQ index 2 not found
-> 
-> Fix this by using the platform_get_irq_optional().
-> 
-> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
 > Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-
-I still don't think this warrant a Fixes tag, as this is not a bug
-per-se, just a minor annoyance:
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
