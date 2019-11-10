@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF29F694F
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BA35F6950
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727011AbfKJOHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:07:34 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45726 "EHLO
+        id S1727022AbfKJOHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:07:39 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45738 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfKJOHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:33 -0500
+        with ESMTP id S1726390AbfKJOHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=YxhOWVuXK2cHl1ZVRXoZ0zGJB4GtZe7GSUTkaaZanpw=; b=SolSMfj7P6R9p1MYTrh2yvas88
-        enqN9ADtCbibusgjYMSrffIjJcrGKDHMquHF5Z+HmeplN6Bf9aQWJbK/ns1Jz7mondWFg5OQLIsZs
-        3H0Fho4EeUcB3cLeDpiotCxT+nZ+eAvjWJNLXU/PmK6ZPoiVc442Mr3N+JAlt4vuPURJ0j6tVPAwC
-        G1Mde1HMxfOPoTNNxPBHvJg8EWODlLRoxtk07kQlRgpwkshi6kt9ZSULTTw4kdNJ5fVvJMpJwC4R/
-        VgrxefBaCf7arumUEZ6bAk6QuYfSiGR8oLniz7iB/zbAKsWgjNtyGaq+aI8YJaBYr2yKMZXezJzN3
-        mLB6xJeg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:53652 helo=rmk-PC.armlinux.org.uk)
+        bh=rQrX17/ggzZaFccnRPETxXa6FnrpC9GRGpPG7gEAXSI=; b=Z7kXqe/8qR41I+OfVX55xL76A+
+        NQEUObcfA+yKAZZd9gBlP3Z3hbuRc9f4W0FS3uPUb4DQN5/SfnedsSDZPYfT8yBmjFto3ZH/r6O45
+        3vuMc4BWzdBU1TN6hU60FDn9sKwGsE/5ltXK0Wu1HcOC+SoWqiFmMo+nl7iIqOgVu8ai08kVwb1ws
+        PxAQ+kfKTYIhe0JnC10yGgExtZhIkrD+3LwP580M2lNLu5dsSojRUtnh2Crx5jqCp952PIAXZYn4l
+        BCcv+WiWSTrTYfQIUUFlYlJnjUX3LbDDa88+DkXx3R9ua7pzMbsjiuD95YxsMzOkA4VhnUGixaKPg
+        jxzuCc4Q==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54054 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTns0-0007ed-Ni; Sun, 10 Nov 2019 14:07:12 +0000
+        id 1iTns5-0007ek-Ru; Sun, 10 Nov 2019 14:07:18 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnrx-0005BM-PM; Sun, 10 Nov 2019 14:07:09 +0000
+        id 1iTns2-0005BY-TE; Sun, 10 Nov 2019 14:07:14 +0000
 In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
 References: <20191110140530.GA25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,95 +38,168 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 12/17] net: sfp: ensure TX_FAULT has deasserted
- before probing the PHY
+Subject: [PATCH net-next 13/17] net: sfp: track upstream's attachment state in
+ state machine
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTnrx-0005BM-PM@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:07:09 +0000
+Message-Id: <E1iTns2-0005BY-TE@rmk-PC.armlinux.org.uk>
+Date:   Sun, 10 Nov 2019 14:07:14 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TX_FAULT should be deasserted to indicate that the module has completed
-its initialisation.  This may include the on-board PHY, so wait until
-the module has deasserted TX_FAULT before probing the PHY.
+Track the upstream's attachment state in the state machine rather than
+maintaining a boolean, which ensures that we have a strict order of
+ATTACH followed by an UP event - we can never believe that a newly
+attached upstream will be anything but down.
 
-This means that we need an extra state to handle a TX_FAULT that
-remains set for longer than t_init, since using the existing handling
-state would bypass the PHY probe.
+Rearrange the order of state machines so we run the module state
+machine after the upstream device's state machine, so the module state
+machine can check the current state of the device and take action to
+e.g. reset back to empty state when the upstream is detached.
+
+This is to allow the module detection to run independently of the
+network device becoming available.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp.c | 31 +++++++++++++++++++++++++------
- 1 file changed, 25 insertions(+), 6 deletions(-)
+ drivers/net/phy/sfp.c | 42 +++++++++++++++++++++++++++++-------------
+ 1 file changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index bdc633cc7c30..91fd218ba6b6 100644
+index 91fd218ba6b6..95e0dd4a52df 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -56,6 +56,7 @@ enum {
+@@ -36,6 +36,8 @@ enum {
+ 
+ 	SFP_E_INSERT = 0,
+ 	SFP_E_REMOVE,
++	SFP_E_DEV_ATTACH,
++	SFP_E_DEV_DETACH,
+ 	SFP_E_DEV_DOWN,
+ 	SFP_E_DEV_UP,
+ 	SFP_E_TX_FAULT,
+@@ -50,7 +52,8 @@ enum {
+ 	SFP_MOD_PRESENT,
+ 	SFP_MOD_ERROR,
+ 
+-	SFP_DEV_DOWN = 0,
++	SFP_DEV_DETACHED = 0,
++	SFP_DEV_DOWN,
+ 	SFP_DEV_UP,
+ 
  	SFP_S_DOWN = 0,
- 	SFP_S_WAIT,
- 	SFP_S_INIT,
-+	SFP_S_INIT_TX_FAULT,
- 	SFP_S_WAIT_LOS,
- 	SFP_S_LINK_UP,
- 	SFP_S_TX_FAULT,
-@@ -113,6 +114,7 @@ static const char * const sm_state_strings[] = {
- 	[SFP_S_DOWN] = "down",
- 	[SFP_S_WAIT] = "wait",
- 	[SFP_S_INIT] = "init",
-+	[SFP_S_INIT_TX_FAULT] = "init_tx_fault",
- 	[SFP_S_WAIT_LOS] = "wait_los",
- 	[SFP_S_LINK_UP] = "link_up",
- 	[SFP_S_TX_FAULT] = "tx_fault",
-@@ -1597,8 +1599,6 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 		if (event != SFP_E_TIMEOUT)
- 			break;
+@@ -80,6 +83,7 @@ static const char *mod_state_to_str(unsigned short mod_state)
+ }
  
--		sfp_sm_probe_for_phy(sfp);
--
- 		if (sfp->state & SFP_F_TX_FAULT) {
- 			/* Wait t_init before indicating that the link is up,
- 			 * provided the current state indicates no TX_FAULT. If
-@@ -1620,10 +1620,29 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 		break;
+ static const char * const dev_state_strings[] = {
++	[SFP_DEV_DETACHED] = "detached",
+ 	[SFP_DEV_DOWN] = "down",
+ 	[SFP_DEV_UP] = "up",
+ };
+@@ -94,6 +98,8 @@ static const char *dev_state_to_str(unsigned short dev_state)
+ static const char * const event_strings[] = {
+ 	[SFP_E_INSERT] = "insert",
+ 	[SFP_E_REMOVE] = "remove",
++	[SFP_E_DEV_ATTACH] = "dev_attach",
++	[SFP_E_DEV_DETACH] = "dev_detach",
+ 	[SFP_E_DEV_DOWN] = "dev_down",
+ 	[SFP_E_DEV_UP] = "dev_up",
+ 	[SFP_E_TX_FAULT] = "tx_fault",
+@@ -188,7 +194,6 @@ struct sfp {
+ 	struct gpio_desc *gpio[GPIO_MAX];
+ 	int gpio_irq[GPIO_MAX];
  
- 	case SFP_S_INIT:
--		if (event == SFP_E_TIMEOUT && sfp->state & SFP_F_TX_FAULT)
--			sfp_sm_fault(sfp, SFP_S_TX_FAULT, true);
--		else if (event == SFP_E_TIMEOUT || event == SFP_E_TX_CLEAR)
--	init_done:	sfp_sm_link_check_los(sfp);
-+		if (event == SFP_E_TIMEOUT && sfp->state & SFP_F_TX_FAULT) {
-+			/* TX_FAULT is still asserted after t_init, so assume
-+			 * there is a fault.
-+			 */
-+			sfp_sm_fault(sfp, SFP_S_INIT_TX_FAULT,
-+				     sfp->sm_retries == 5);
-+		} else if (event == SFP_E_TIMEOUT || event == SFP_E_TX_CLEAR) {
-+	init_done:	/* TX_FAULT deasserted or we timed out with TX_FAULT
-+			 * clear.  Probe for the PHY and check the LOS state.
-+			 */
-+			sfp_sm_probe_for_phy(sfp);
-+			sfp_sm_link_check_los(sfp);
-+
-+			/* Reset the fault retry count */
-+			sfp->sm_retries = 5;
-+		}
+-	bool attached;
+ 	struct mutex st_mutex;			/* Protects state */
+ 	unsigned int state;
+ 	struct delayed_work poll;
+@@ -1496,17 +1501,26 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
+ 	dev_info(sfp->dev, "module removed\n");
+ }
+ 
+-/* This state machine tracks the netdev up/down state */
++/* This state machine tracks the upstream's state */
+ static void sfp_sm_device(struct sfp *sfp, unsigned int event)
+ {
+ 	switch (sfp->sm_dev_state) {
+ 	default:
+-		if (event == SFP_E_DEV_UP)
++		if (event == SFP_E_DEV_ATTACH)
++			sfp->sm_dev_state = SFP_DEV_DOWN;
 +		break;
 +
-+	case SFP_S_INIT_TX_FAULT:
-+		if (event == SFP_E_TIMEOUT) {
-+			sfp_module_tx_fault_reset(sfp);
-+			sfp_sm_next(sfp, SFP_S_INIT, T_INIT_JIFFIES);
-+		}
++	case SFP_DEV_DOWN:
++		if (event == SFP_E_DEV_DETACH)
++			sfp->sm_dev_state = SFP_DEV_DETACHED;
++		else if (event == SFP_E_DEV_UP)
+ 			sfp->sm_dev_state = SFP_DEV_UP;
  		break;
  
- 	case SFP_S_WAIT_LOS:
+ 	case SFP_DEV_UP:
+-		if (event == SFP_E_DEV_DOWN)
++		if (event == SFP_E_DEV_DETACH)
++			sfp->sm_dev_state = SFP_DEV_DETACHED;
++		else if (event == SFP_E_DEV_DOWN)
+ 			sfp->sm_dev_state = SFP_DEV_DOWN;
+ 		break;
+ 	}
+@@ -1517,17 +1531,20 @@ static void sfp_sm_device(struct sfp *sfp, unsigned int event)
+  */
+ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
+ {
+-	/* Handle remove event globally, it resets this state machine */
+-	if (event == SFP_E_REMOVE) {
++	/* Handle remove event globally, it resets this state machine.
++	 * Also deal with upstream detachment.
++	 */
++	if (event == SFP_E_REMOVE || sfp->sm_dev_state < SFP_DEV_DOWN) {
+ 		if (sfp->sm_mod_state > SFP_MOD_PROBE)
+ 			sfp_sm_mod_remove(sfp);
+-		sfp_sm_mod_next(sfp, SFP_MOD_EMPTY, 0);
++		if (sfp->sm_mod_state != SFP_MOD_EMPTY)
++			sfp_sm_mod_next(sfp, SFP_MOD_EMPTY, 0);
+ 		return;
+ 	}
+ 
+ 	switch (sfp->sm_mod_state) {
+ 	default:
+-		if (event == SFP_E_INSERT && sfp->attached)
++		if (event == SFP_E_INSERT)
+ 			sfp_sm_mod_next(sfp, SFP_MOD_PROBE, T_SERIAL);
+ 		break;
+ 
+@@ -1693,8 +1710,8 @@ static void sfp_sm_event(struct sfp *sfp, unsigned int event)
+ 		sm_state_to_str(sfp->sm_state),
+ 		event_to_str(event));
+ 
+-	sfp_sm_module(sfp, event);
+ 	sfp_sm_device(sfp, event);
++	sfp_sm_module(sfp, event);
+ 	sfp_sm_main(sfp, event);
+ 
+ 	dev_dbg(sfp->dev, "SM: exit %s:%s:%s\n",
+@@ -1707,15 +1724,14 @@ static void sfp_sm_event(struct sfp *sfp, unsigned int event)
+ 
+ static void sfp_attach(struct sfp *sfp)
+ {
+-	sfp->attached = true;
++	sfp_sm_event(sfp, SFP_E_DEV_ATTACH);
+ 	if (sfp->state & SFP_F_PRESENT)
+ 		sfp_sm_event(sfp, SFP_E_INSERT);
+ }
+ 
+ static void sfp_detach(struct sfp *sfp)
+ {
+-	sfp->attached = false;
+-	sfp_sm_event(sfp, SFP_E_REMOVE);
++	sfp_sm_event(sfp, SFP_E_DEV_DETACH);
+ }
+ 
+ static void sfp_start(struct sfp *sfp)
 -- 
 2.20.1
 
