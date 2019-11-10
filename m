@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E539FF66B8
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:15:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02C08F668C
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:15:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727474AbfKJClb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:41:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35844 "EHLO mail.kernel.org"
+        id S1727551AbfKJCln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:41:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727451AbfKJCl3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:41:29 -0500
+        id S1727533AbfKJClm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:41:42 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3795721850;
-        Sun, 10 Nov 2019 02:41:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2729821019;
+        Sun, 10 Nov 2019 02:41:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573353687;
-        bh=TWMtyGoTPlsTVwTgBV9Um9JUDKWHvmdAk1nWhp7XC/0=;
+        s=default; t=1573353700;
+        bh=YOGm9STSFPQ+vtoTJurMaYiBTcEOOG+frLIikCdXxAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H8yrPZZ3yKyRct/SVz+z4m6/HLI+ByhdxNiDEB76S0HFs7+c5oUwKQ4Tq3zTLqOmF
-         sHmOCcWSDrIoOXaU1BIrH4ihxMoYLOMBffo4xyKk+mH2JY5aOkloLyGKY3tqjKZxYQ
-         4h//6Onr0lFLvZMro8qeftplQTIX3WrfgyZqqCCQ=
+        b=kMt294jE0RAvaFx7eZ5Yn1/IYVKP05zFdWxWbFL0cRKNSSaoV2p7rdoFhNFNrdN6N
+         mvPoJO6Qwbd2oTJANa3VgiO+Z2Gt3c/NCeUguP1Z0YR/V7KP3FOBNaCUuA9wuwZXHz
+         fWq5I9o2ktLl8nhXHInPHJ8weSpC68Y2XFaKpN88=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     YueHaibing <yuehaibing@huawei.com>,
+        Shannon Nelson <shannon.nelson@oracle.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 043/191] net: broadcom: fix return type of ndo_start_xmit function
-Date:   Sat,  9 Nov 2019 21:37:45 -0500
-Message-Id: <20191110024013.29782-43-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 045/191] net: sun: fix return type of ndo_start_xmit function
+Date:   Sat,  9 Nov 2019 21:37:47 -0500
+Message-Id: <20191110024013.29782-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024013.29782-1-sashal@kernel.org>
 References: <20191110024013.29782-1-sashal@kernel.org>
@@ -45,65 +46,130 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 0c13b8d1aee87c35a2fbc1d85a1f766227cf54b5 ]
+[ Upstream commit 0e0cc31f6999df18bb5cfd0bd83c892ed5633975 ]
 
 The method ndo_start_xmit() is defined as returning an 'netdev_tx_t',
-which is a typedef for an enum type, so make sure the implementation in
-this driver has returns 'netdev_tx_t' value, and change the function
-return type to netdev_tx_t.
+which is a typedef for an enum type, but the implementation in this
+driver returns an 'int'.
 
 Found by coccinelle.
 
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Acked-by: Shannon Nelson <shannon.nelson@oracle.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bcm63xx_enet.c | 5 +++--
- drivers/net/ethernet/broadcom/sb1250-mac.c   | 4 ++--
- 2 files changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/sun/ldmvsw.c         |  2 +-
+ drivers/net/ethernet/sun/sunbmac.c        |  3 ++-
+ drivers/net/ethernet/sun/sunqe.c          |  2 +-
+ drivers/net/ethernet/sun/sunvnet.c        |  2 +-
+ drivers/net/ethernet/sun/sunvnet_common.c | 14 ++++++++------
+ drivers/net/ethernet/sun/sunvnet_common.h |  7 ++++---
+ 6 files changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bcm63xx_enet.c b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-index 897302adc38ec..50f8a377596e1 100644
---- a/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-+++ b/drivers/net/ethernet/broadcom/bcm63xx_enet.c
-@@ -568,12 +568,13 @@ static irqreturn_t bcm_enet_isr_dma(int irq, void *dev_id)
- /*
-  * tx request callback
-  */
--static int bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+diff --git a/drivers/net/ethernet/sun/ldmvsw.c b/drivers/net/ethernet/sun/ldmvsw.c
+index d42f47f6c632f..644e42c181ee6 100644
+--- a/drivers/net/ethernet/sun/ldmvsw.c
++++ b/drivers/net/ethernet/sun/ldmvsw.c
+@@ -113,7 +113,7 @@ static u16 vsw_select_queue(struct net_device *dev, struct sk_buff *skb,
+ }
+ 
+ /* Wrappers to common functions */
+-static int vsw_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t vsw_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	return sunvnet_start_xmit_common(skb, dev, vsw_tx_port_find);
+ }
+diff --git a/drivers/net/ethernet/sun/sunbmac.c b/drivers/net/ethernet/sun/sunbmac.c
+index f047b27971564..720b7ac77f3b3 100644
+--- a/drivers/net/ethernet/sun/sunbmac.c
++++ b/drivers/net/ethernet/sun/sunbmac.c
+@@ -950,7 +950,8 @@ static void bigmac_tx_timeout(struct net_device *dev)
+ }
+ 
+ /* Put a packet on the wire. */
+-static int bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
 +static netdev_tx_t
-+bcm_enet_start_xmit(struct sk_buff *skb, struct net_device *dev)
++bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct bcm_enet_priv *priv;
- 	struct bcm_enet_desc *desc;
- 	u32 len_stat;
--	int ret;
-+	netdev_tx_t ret;
+ 	struct bigmac *bp = netdev_priv(dev);
+ 	int len, entry;
+diff --git a/drivers/net/ethernet/sun/sunqe.c b/drivers/net/ethernet/sun/sunqe.c
+index 7fe0d5e339221..1468fa0a54e9b 100644
+--- a/drivers/net/ethernet/sun/sunqe.c
++++ b/drivers/net/ethernet/sun/sunqe.c
+@@ -570,7 +570,7 @@ static void qe_tx_timeout(struct net_device *dev)
+ }
  
- 	priv = netdev_priv(dev);
- 
-diff --git a/drivers/net/ethernet/broadcom/sb1250-mac.c b/drivers/net/ethernet/broadcom/sb1250-mac.c
-index ef4a0c326736d..7e3f9642ba6c5 100644
---- a/drivers/net/ethernet/broadcom/sb1250-mac.c
-+++ b/drivers/net/ethernet/broadcom/sb1250-mac.c
-@@ -299,7 +299,7 @@ static enum sbmac_state sbmac_set_channel_state(struct sbmac_softc *,
- static void sbmac_promiscuous_mode(struct sbmac_softc *sc, int onoff);
- static uint64_t sbmac_addr2reg(unsigned char *ptr);
- static irqreturn_t sbmac_intr(int irq, void *dev_instance);
--static int sbmac_start_tx(struct sk_buff *skb, struct net_device *dev);
-+static netdev_tx_t sbmac_start_tx(struct sk_buff *skb, struct net_device *dev);
- static void sbmac_setmulti(struct sbmac_softc *sc);
- static int sbmac_init(struct platform_device *pldev, long long base);
- static int sbmac_set_speed(struct sbmac_softc *s, enum sbmac_speed speed);
-@@ -2028,7 +2028,7 @@ static irqreturn_t sbmac_intr(int irq,void *dev_instance)
-  *  Return value:
-  *  	   nothing
-  ********************************************************************* */
--static int sbmac_start_tx(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t sbmac_start_tx(struct sk_buff *skb, struct net_device *dev)
+ /* Get a packet queued to go onto the wire. */
+-static int qe_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t qe_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct sbmac_softc *sc = netdev_priv(dev);
- 	unsigned long flags;
+ 	struct sunqe *qep = netdev_priv(dev);
+ 	struct sunqe_buffers *qbufs = qep->buffers;
+diff --git a/drivers/net/ethernet/sun/sunvnet.c b/drivers/net/ethernet/sun/sunvnet.c
+index 12539b357a784..590172818b922 100644
+--- a/drivers/net/ethernet/sun/sunvnet.c
++++ b/drivers/net/ethernet/sun/sunvnet.c
+@@ -247,7 +247,7 @@ static u16 vnet_select_queue(struct net_device *dev, struct sk_buff *skb,
+ }
+ 
+ /* Wrappers to common functions */
+-static int vnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t vnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	return sunvnet_start_xmit_common(skb, dev, vnet_tx_port_find);
+ }
+diff --git a/drivers/net/ethernet/sun/sunvnet_common.c b/drivers/net/ethernet/sun/sunvnet_common.c
+index d8f4c3f281505..baa3088b475c7 100644
+--- a/drivers/net/ethernet/sun/sunvnet_common.c
++++ b/drivers/net/ethernet/sun/sunvnet_common.c
+@@ -1216,9 +1216,10 @@ static inline struct sk_buff *vnet_skb_shape(struct sk_buff *skb, int ncookies)
+ 	return skb;
+ }
+ 
+-static int vnet_handle_offloads(struct vnet_port *port, struct sk_buff *skb,
+-				struct vnet_port *(*vnet_tx_port)
+-				(struct sk_buff *, struct net_device *))
++static netdev_tx_t
++vnet_handle_offloads(struct vnet_port *port, struct sk_buff *skb,
++		     struct vnet_port *(*vnet_tx_port)
++		     (struct sk_buff *, struct net_device *))
+ {
+ 	struct net_device *dev = VNET_PORT_TO_NET_DEVICE(port);
+ 	struct vio_dring_state *dr = &port->vio.drings[VIO_DRIVER_TX_RING];
+@@ -1321,9 +1322,10 @@ static int vnet_handle_offloads(struct vnet_port *port, struct sk_buff *skb,
+ 	return NETDEV_TX_OK;
+ }
+ 
+-int sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
+-			      struct vnet_port *(*vnet_tx_port)
+-			      (struct sk_buff *, struct net_device *))
++netdev_tx_t
++sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
++			  struct vnet_port *(*vnet_tx_port)
++			  (struct sk_buff *, struct net_device *))
+ {
+ 	struct vnet_port *port = NULL;
+ 	struct vio_dring_state *dr;
+diff --git a/drivers/net/ethernet/sun/sunvnet_common.h b/drivers/net/ethernet/sun/sunvnet_common.h
+index 1ea0b016580a4..2b808d2482d60 100644
+--- a/drivers/net/ethernet/sun/sunvnet_common.h
++++ b/drivers/net/ethernet/sun/sunvnet_common.h
+@@ -136,9 +136,10 @@ int sunvnet_close_common(struct net_device *dev);
+ void sunvnet_set_rx_mode_common(struct net_device *dev, struct vnet *vp);
+ int sunvnet_set_mac_addr_common(struct net_device *dev, void *p);
+ void sunvnet_tx_timeout_common(struct net_device *dev);
+-int sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
+-			   struct vnet_port *(*vnet_tx_port)
+-			   (struct sk_buff *, struct net_device *));
++netdev_tx_t
++sunvnet_start_xmit_common(struct sk_buff *skb, struct net_device *dev,
++			  struct vnet_port *(*vnet_tx_port)
++			  (struct sk_buff *, struct net_device *));
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ void sunvnet_poll_controller_common(struct net_device *dev, struct vnet *vp);
+ #endif
 -- 
 2.20.1
 
