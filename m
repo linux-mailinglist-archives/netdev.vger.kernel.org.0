@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C183F6948
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BEDDF6949
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbfKJOHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:07:05 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45674 "EHLO
+        id S1726955AbfKJOHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:07:14 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45686 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfKJOHE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:04 -0500
+        with ESMTP id S1726390AbfKJOHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:14 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2DzdZLJNroVgDKs8nh9lEW/hjx8ltfHN0trEkcAQrDM=; b=DcRfke7SCyDcq2zRnatrz41Y9t
-        xvZdIYFuplehxlpG+kKVlmuyyI1rFvNw9awxsbX2U4SLH7hbxtX8gQN+xYjk3kCwouN0H0pyQwpS0
-        1dN+E+uULGT46hg6+IXztprrn49nwL2HgX1vWCpv5IEN4xLAC2KOJ7MmiNaJ5Oh+JgY5jzAgaXKKD
-        7Tce49x7wQOStwoW/xFxBOjBW4WOGTYBR/T0y2U/iYizRbA0b+qmQu8p67PPdPvZmYEh4rOZadIFM
-        mczhErcKryRnrlcb5C3/CGGRtANu8gUQE6GturEkZvbC1t8sBNZzXbUVR4Wv3DNvlUQD6TRqlv3VR
-        kYuwsOEg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54036 helo=rmk-PC.armlinux.org.uk)
+        bh=g+1QKpsty/T87TA1EdqIrrVlrIJChegTB68BfW5J7mM=; b=MoI4+sb/SCJpR/TgOniJU4GCK2
+        veFMybxfnMcK6TeLr47d+Tp0FyY4bUz0JNSL2bT5Crv4aYekHb0C5igtItg8Vnr0YzamuymRQNJ4c
+        UnIo0jxyhI6FcwAVr/Egxkj2tEmQHD+RSGxWX4dUGhIDgTDzQC39GLPntrCzg60ZoMN0EJtVeNii9
+        TQapSDgjeXea6Yb1kQjTbYKAT6GwDQFPnF8MNhOKrDVDxBBEL7WFhVFkgm7EzI3/xDO1GUxefLGLq
+        cd+JWH9rT/7coAgntxirkB5bRLaR48bP13ivqZDbqE4rUcKjzoKEC+uDjfxudSb0f7f29mZitgWie
+        NIpZRNCg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54040 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnrf-0007e1-Ck; Sun, 10 Nov 2019 14:06:51 +0000
+        id 1iTnrk-0007eA-Fy; Sun, 10 Nov 2019 14:06:56 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnrd-0005Ad-9B; Sun, 10 Nov 2019 14:06:49 +0000
+        id 1iTnri-0005Aq-CV; Sun, 10 Nov 2019 14:06:54 +0000
 In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
 References: <20191110140530.GA25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,67 +38,69 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 08/17] net: sfp: control TX_DISABLE and phy only from
- main state machine
+Subject: [PATCH net-next 09/17] net: sfp: split the PHY probe from
+ sfp_sm_mod_init()
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTnrd-0005Ad-9B@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:06:49 +0000
+Message-Id: <E1iTnri-0005Aq-CV@rmk-PC.armlinux.org.uk>
+Date:   Sun, 10 Nov 2019 14:06:54 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We initialise TX_DISABLE when the sfp cage is probed, and then
-maintain its state in the main state machine.  However, the module
-state machine:
-- negates it when detecting a newly inserted module when it's already
-  guaranteed to be negated.
-- negates it when the module is removed, but the main state machine
-  will do this anyway.
-
-Make TX_DISABLE entirely controlled by the main state machine.
-
-The main state machine also probes the module for a PHY, and removes
-the PHY when the the module is removed.  Hence, removing the PHY in
-sfp_sm_module_remove() is also redundant, and is a left-over from
-when we tried to probe for the PHY from the module state machine.
+Move the PHY probe into a separate function, splitting it from
+sfp_sm_mod_init().  This will allow us to eliminate the 50ms mdelay()
+inside the state machine.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/net/phy/sfp.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 7accd24a6875..bd55584e193d 100644
+index bd55584e193d..6fa32246ba41 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -1494,11 +1494,6 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
+@@ -1290,14 +1290,10 @@ static void sfp_sm_fault(struct sfp *sfp, bool warn)
+ static void sfp_sm_mod_init(struct sfp *sfp)
+ {
+ 	sfp_module_tx_enable(sfp);
++}
  
- 	sfp_hwmon_remove(sfp);
- 
--	if (sfp->mod_phy)
--		sfp_sm_phy_detach(sfp);
+-	/* Wait t_init before indicating that the link is up, provided the
+-	 * current state indicates no TX_FAULT.  If TX_FAULT clears before
+-	 * this time, that's fine too.
+-	 */
+-	sfp_sm_next(sfp, SFP_S_INIT, T_INIT_JIFFIES);
+-	sfp->sm_retries = 5;
 -
--	sfp_module_tx_disable(sfp);
--
- 	memset(&sfp->id, 0, sizeof(sfp->id));
- 	sfp->module_power_mW = 0;
- 
-@@ -1536,10 +1531,8 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- 
- 	switch (sfp->sm_mod_state) {
- 	default:
--		if (event == SFP_E_INSERT && sfp->attached) {
--			sfp_module_tx_disable(sfp);
-+		if (event == SFP_E_INSERT && sfp->attached)
- 			sfp_sm_mod_next(sfp, SFP_MOD_PROBE, T_SERIAL);
--		}
++static void sfp_sm_probe_for_phy(struct sfp *sfp)
++{
+ 	/* Setting the serdes link mode is guesswork: there's no
+ 	 * field in the EEPROM which indicates what mode should
+ 	 * be used.
+@@ -1582,8 +1578,17 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
+ 	switch (sfp->sm_state) {
+ 	case SFP_S_DOWN:
+ 		if (sfp->sm_mod_state == SFP_MOD_PRESENT &&
+-		    sfp->sm_dev_state == SFP_DEV_UP)
++		    sfp->sm_dev_state == SFP_DEV_UP) {
+ 			sfp_sm_mod_init(sfp);
++			sfp_sm_probe_for_phy(sfp);
++
++			/* Wait t_init before indicating that the link is up,
++			 * provided the current state indicates no TX_FAULT. If
++			 * TX_FAULT clears before this time, that's fine too.
++			 */
++			sfp_sm_next(sfp, SFP_S_INIT, T_INIT_JIFFIES);
++			sfp->sm_retries = 5;
++		}
  		break;
  
- 	case SFP_MOD_PROBE:
+ 	case SFP_S_INIT:
 -- 
 2.20.1
 
