@@ -2,41 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ACB8F669F
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:15:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CC95F66AB
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:15:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727798AbfKJCmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:42:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37770 "EHLO mail.kernel.org"
+        id S1726989AbfKJDOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 22:14:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727777AbfKJCmP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:42:15 -0500
+        id S1727809AbfKJCmS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:42:18 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE2CE214E0;
-        Sun, 10 Nov 2019 02:42:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C604221655;
+        Sun, 10 Nov 2019 02:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573353735;
-        bh=JimTXPtAbX8YoTT19Gr8WHDW98DSZBe8ND3dur/LtAQ=;
+        s=default; t=1573353737;
+        bh=G8lJ2j3/oBPS6i/yoR6pbKyVq2pXSDmOnUhlWt+bOgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iOK1QRdq1T6pP3u8DQiNuaLLupupY6uSJRwtl8Ac2ofZSwkKAnxG4s4TaKzvWsELJ
-         aUbgWoLu9t3mQjgSlEkt0nsvdmV1rPvvbtCY7NhQGVU1bEXCGOFQeUJYejpDifDsOK
-         CyXXTiM2lcVcM07w+0v/iquzJWbbd4pV3UwMkwxo=
+        b=u1THzImqux36XCiZ5y+6ee3GpN17P44ywfq1wk9SvO0K2fS9sYqd2RmCsr7L1794A
+         zT+HguKMVMzZbWgKymaW5N+BZlHFu2WpYUPE2bYuDh/eQEj8DEsm6xbsxxxszvZZco
+         ONc+R8Ix+Yfo3E0zFQ6gLv1WJQ/BchlZBdcs5/6Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Takashi Iwai <tiwai@suse.de>, Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org,
         brcm80211-dev-list.pdl@broadcom.com,
         brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 058/191] brcmfmac: increase buffer for obtaining firmware capabilities
-Date:   Sat,  9 Nov 2019 21:38:00 -0500
-Message-Id: <20191110024013.29782-58-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 059/191] brcmsmac: Use kvmalloc() for ucode allocations
+Date:   Sat,  9 Nov 2019 21:38:01 -0500
+Message-Id: <20191110024013.29782-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024013.29782-1-sashal@kernel.org>
 References: <20191110024013.29782-1-sashal@kernel.org>
@@ -49,38 +45,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arend van Spriel <arend.vanspriel@broadcom.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 59c2a30d36c8ae430d26a902c4c9665ea33ccee5 ]
+[ Upstream commit 6c3efbe77bc78bf49db851aec7f385be475afca6 ]
 
-When obtaining the firmware capability a buffer is provided of 512
-bytes. However, if all features in firmware are supported the buffer
-needs to be 565 bytes as otherwise truncated information is retrieved
-from firmware. Increasing the buffer to 768 bytes on stack.
+The ucode chunk might be relatively large and the allocation with
+kmalloc() may fail occasionally.  Since the data isn't DMA-transferred
+but by manual loops, we can use vmalloc instead of kmalloc.
+For a better performance, though, kvmalloc() would be the best choice
+in such a case, so let's replace with it.
 
-Reviewed-by: Hante Meuleman <hante.meuleman@broadcom.com>
-Reviewed-by: Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>
-Reviewed-by: Franky Lin <franky.lin@broadcom.com>
-Signed-off-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+Bugzilla: https://bugzilla.suse.com/show_bug.cgi?id=1103431
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c  | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
-index 8347da632a5b0..4c5a3995dc352 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.c
-@@ -178,7 +178,7 @@ static void brcmf_feat_iovar_data_set(struct brcmf_if *ifp,
- 	ifp->fwil_fwerr = false;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+index ecc89e718b9c1..6255fb6d97a70 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/mac80211_if.c
+@@ -1578,10 +1578,10 @@ int brcms_ucode_init_buf(struct brcms_info *wl, void **pbuf, u32 idx)
+ 			if (le32_to_cpu(hdr->idx) == idx) {
+ 				pdata = wl->fw.fw_bin[i]->data +
+ 					le32_to_cpu(hdr->offset);
+-				*pbuf = kmemdup(pdata, len, GFP_KERNEL);
++				*pbuf = kvmalloc(len, GFP_KERNEL);
+ 				if (*pbuf == NULL)
+ 					goto fail;
+-
++				memcpy(*pbuf, pdata, len);
+ 				return 0;
+ 			}
+ 		}
+@@ -1629,7 +1629,7 @@ int brcms_ucode_init_uint(struct brcms_info *wl, size_t *n_bytes, u32 idx)
+  */
+ void brcms_ucode_free_buf(void *p)
+ {
+-	kfree(p);
++	kvfree(p);
  }
  
--#define MAX_CAPS_BUFFER_SIZE	512
-+#define MAX_CAPS_BUFFER_SIZE	768
- static void brcmf_feat_firmware_capabilities(struct brcmf_if *ifp)
- {
- 	char caps[MAX_CAPS_BUFFER_SIZE];
+ /*
 -- 
 2.20.1
 
