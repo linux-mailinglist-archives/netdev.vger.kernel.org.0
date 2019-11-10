@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E14BFF638C
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:53:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E661FF636A
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728492AbfKJCvR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:51:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35640 "EHLO mail.kernel.org"
+        id S1727206AbfKJCwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:52:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36568 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728484AbfKJCvQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:51:16 -0500
+        id S1730024AbfKJCvk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:51:40 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7DEE122583;
-        Sun, 10 Nov 2019 02:51:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8C78122581;
+        Sun, 10 Nov 2019 02:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573354276;
-        bh=UTXw+8OAS8XcJ+yXQiEfH5etCMRkA8k0yFtoVe6scbQ=;
+        s=default; t=1573354300;
+        bh=i1i7cHnRw8mqsnFpsZPU0xEVm/PGqfyMQsM3ZrClmjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W+M37v0nndiOa3bTZNqULTyyhu9Ynpb7oIqd404iyE8nZT6Cq//88CVEd4Z2m/wjd
-         WEYv6dyDzLW9EV+dC99h1nYlwocY6ljf0H9WZHmOuaDeaLj4fBJm0cGllJEL+gjGXw
-         sj7nXZ+R7kkqvRFq96T4MwBUVliUdt4ds6hTqrLs=
+        b=hLoAzClW2BmjRUsIaE1ZjHmkdkz3qS9V+SK+2G0qbQhKGsimEFTf+u8xK9azH9evI
+         /QjbmuQoy0nKavLN/jCQ8SPwdH7SPP6/g43aSiiaDNU7gYndeN3EtSsuraNI5EhSmr
+         3u854rU108UQWy3vxJOMS1P9FndLqhZ91kY4sCdg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     YueHaibing <yuehaibing@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 21/40] net: micrel: fix return type of ndo_start_xmit function
-Date:   Sat,  9 Nov 2019 21:50:13 -0500
-Message-Id: <20191110025032.827-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 36/40] net: smsc: fix return type of ndo_start_xmit function
+Date:   Sat,  9 Nov 2019 21:50:28 -0500
+Message-Id: <20191110025032.827-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110025032.827-1-sashal@kernel.org>
 References: <20191110025032.827-1-sashal@kernel.org>
@@ -45,7 +45,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 2b49117a5abee8478b0470cba46ac74f93b4a479 ]
+[ Upstream commit 6323d57f335ce1490d025cacc83fc10b07792130 ]
 
 The method ndo_start_xmit() is defined as returning an 'netdev_tx_t',
 which is a typedef for an enum type, so make sure the implementation in
@@ -58,39 +58,53 @@ Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/micrel/ks8695net.c  | 2 +-
- drivers/net/ethernet/micrel/ks8851_mll.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/smsc/smc911x.c  | 3 ++-
+ drivers/net/ethernet/smsc/smc91x.c   | 3 ++-
+ drivers/net/ethernet/smsc/smsc911x.c | 3 ++-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/micrel/ks8695net.c b/drivers/net/ethernet/micrel/ks8695net.c
-index a8522d8af95d3..2126286b72e9b 100644
---- a/drivers/net/ethernet/micrel/ks8695net.c
-+++ b/drivers/net/ethernet/micrel/ks8695net.c
-@@ -1156,7 +1156,7 @@ ks8695_timeout(struct net_device *ndev)
-  *	sk_buff and adds it to the TX ring. It then kicks the TX DMA
-  *	engine to ensure transmission begins.
+diff --git a/drivers/net/ethernet/smsc/smc911x.c b/drivers/net/ethernet/smsc/smc911x.c
+index bd64eb982e527..37fb6dfc10875 100644
+--- a/drivers/net/ethernet/smsc/smc911x.c
++++ b/drivers/net/ethernet/smsc/smc911x.c
+@@ -511,7 +511,8 @@ static void smc911x_hardware_send_pkt(struct net_device *dev)
+  * now, or set the card to generates an interrupt when ready
+  * for the packet.
   */
--static int
+-static int smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 +static netdev_tx_t
- ks8695_start_xmit(struct sk_buff *skb, struct net_device *ndev)
++smc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
- 	struct ks8695_priv *ksp = netdev_priv(ndev);
-diff --git a/drivers/net/ethernet/micrel/ks8851_mll.c b/drivers/net/ethernet/micrel/ks8851_mll.c
-index 2fc5cd56c0a84..8dc1f0277117d 100644
---- a/drivers/net/ethernet/micrel/ks8851_mll.c
-+++ b/drivers/net/ethernet/micrel/ks8851_mll.c
-@@ -1020,9 +1020,9 @@ static void ks_write_qmu(struct ks_net *ks, u8 *pdata, u16 len)
-  * spin_lock_irqsave is required because tx and rx should be mutual exclusive.
-  * So while tx is in-progress, prevent IRQ interrupt from happenning.
+ 	struct smc911x_local *lp = netdev_priv(dev);
+ 	unsigned int free;
+diff --git a/drivers/net/ethernet/smsc/smc91x.c b/drivers/net/ethernet/smsc/smc91x.c
+index 23a0388100834..7405f537beca7 100644
+--- a/drivers/net/ethernet/smsc/smc91x.c
++++ b/drivers/net/ethernet/smsc/smc91x.c
+@@ -637,7 +637,8 @@ done:	if (!THROTTLE_TX_PKTS)
+  * now, or set the card to generates an interrupt when ready
+  * for the packet.
   */
--static int ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
-+static netdev_tx_t ks_start_xmit(struct sk_buff *skb, struct net_device *netdev)
+-static int smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t
++smc_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
  {
--	int retv = NETDEV_TX_OK;
-+	netdev_tx_t retv = NETDEV_TX_OK;
- 	struct ks_net *ks = netdev_priv(netdev);
+ 	struct smc_local *lp = netdev_priv(dev);
+ 	void __iomem *ioaddr = lp->base;
+diff --git a/drivers/net/ethernet/smsc/smsc911x.c b/drivers/net/ethernet/smsc/smsc911x.c
+index 219a99b7a631d..b62bf77a64f43 100644
+--- a/drivers/net/ethernet/smsc/smsc911x.c
++++ b/drivers/net/ethernet/smsc/smsc911x.c
+@@ -1677,7 +1677,8 @@ static int smsc911x_stop(struct net_device *dev)
+ }
  
- 	disable_irq(netdev->irq);
+ /* Entry point for transmitting a packet */
+-static int smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t
++smsc911x_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct smsc911x_data *pdata = netdev_priv(dev);
+ 	unsigned int freespace;
 -- 
 2.20.1
 
