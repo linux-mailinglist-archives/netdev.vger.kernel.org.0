@@ -2,129 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B797CF68DA
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 13:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AECCDF68DE
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 13:12:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726800AbfKJMJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 07:09:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51350 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726438AbfKJMJu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Nov 2019 07:09:50 -0500
-Received: from localhost.localdomain (unknown [77.139.212.74])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7A7C920B7C;
-        Sun, 10 Nov 2019 12:09:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573387790;
-        bh=jDaPaVHqvBmFCZggvccVVlywRpbYL0oLVSi1IBCj3Qc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l2WVmWEHHhwFOe29vrJXWjq/xZMTWkCpkuQ3ZOIwdiiMfPviLtqkMl73ziKGmsZoo
-         jykFzWaWnlHZuCijA0DvHdJlqqJ/bizwuxPnxx7pNWzEBRubXt3KrQ79c2kcok9MXn
-         Ge+Plp/lID2BfrBYwXCMRfvrk/HiiGqRuM/7tdoU=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net,
-        thomas.petazzoni@bootlin.com, brouer@redhat.com,
-        ilias.apalodimas@linaro.org, matteo.croce@redhat.com
-Subject: [PATCH net-next 3/3] net: mvneta: get rid of huge DMA sync in mvneta_rx_refill
-Date:   Sun, 10 Nov 2019 14:09:10 +0200
-Message-Id: <b18159e702ec28bb33c492da216a12eaf3e7490c.1573383212.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1573383212.git.lorenzo@kernel.org>
-References: <cover.1573383212.git.lorenzo@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726700AbfKJMMR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 07:12:17 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35916 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726641AbfKJMMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 07:12:16 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from ayal@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 10 Nov 2019 14:12:14 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (dev-l-vrt-210.mtl.labs.mlnx [10.134.210.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xAACCESD002363;
+        Sun, 10 Nov 2019 14:12:14 +0200
+Received: from dev-l-vrt-210.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Debian-8ubuntu1) with ESMTP id xAACCEwg016761;
+        Sun, 10 Nov 2019 14:12:14 +0200
+Received: (from ayal@localhost)
+        by dev-l-vrt-210.mtl.labs.mlnx (8.15.2/8.15.2/Submit) id xAACCC44016760;
+        Sun, 10 Nov 2019 14:12:12 +0200
+From:   Aya Levin <ayal@mellanox.com>
+To:     David Miller <davem@davemloft.net>, Jiri Pirko <jiri@mellanox.com>
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@mellanox.com>
+Subject: [PATCH net V2] devlink: Add method for time-stamp on reporter's dump
+Date:   Sun, 10 Nov 2019 14:11:56 +0200
+Message-Id: <1573387916-16717-1-git-send-email-ayal@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Get rid of costly dma_sync_single_for_device in mvneta_rx_refill
-since now the driver can let page_pool API to manage needed DMA
-sync with a proper size.
+When setting the dump's time-stamp, use ktime_get_real in addition to
+jiffies. This simplifies the user space implementation and bypasses
+some inconsistent behavior with translating jiffies to current time.
+The time taken is transformed into nsec, to comply with y2038 issue.
 
-- XDP_DROP DMA sync managed by mvneta driver:	~420Kpps
-- XDP_DROP DMA sync managed by page_pool API:	~595Kpps
-
-Tested-by: Matteo Croce <mcroce@redhat.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Fixes: c8e1da0bf923 ("devlink: Add health report functionality")
+Signed-off-by: Aya Levin <ayal@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/marvell/mvneta.c | 25 +++++++++++++++----------
- 1 file changed, 15 insertions(+), 10 deletions(-)
+Changelog:
+v1 -> v2: Rebased against net
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index ed93eecb7485..591d580c68b4 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -1846,7 +1846,6 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 			    struct mvneta_rx_queue *rxq,
- 			    gfp_t gfp_mask)
- {
--	enum dma_data_direction dma_dir;
- 	dma_addr_t phys_addr;
- 	struct page *page;
+ include/uapi/linux/devlink.h | 1 +
+ net/core/devlink.c           | 6 ++++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index 580b7a2e40e1..a8a2174db030 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -421,6 +421,7 @@ enum devlink_attr {
  
-@@ -1856,9 +1855,6 @@ static int mvneta_rx_refill(struct mvneta_port *pp,
- 		return -ENOMEM;
+ 	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
  
- 	phys_addr = page_pool_get_dma_addr(page) + pp->rx_offset_correction;
--	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
--	dma_sync_single_for_device(pp->dev->dev.parent, phys_addr,
--				   MVNETA_MAX_RX_BUF_SIZE, dma_dir);
- 	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
++	DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,	/* u64 */
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index f80151eeaf51..e15335b949fa 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4618,6 +4618,7 @@ struct devlink_health_reporter {
+ 	bool auto_recover;
+ 	u8 health_state;
+ 	u64 dump_ts;
++	u64 dump_real_ts;
+ 	u64 error_count;
+ 	u64 recovery_count;
+ 	u64 last_recovery_ts;
+@@ -4790,6 +4791,7 @@ static int devlink_health_do_dump(struct devlink_health_reporter *reporter,
+ 		goto dump_err;
+ 
+ 	reporter->dump_ts = jiffies;
++	reporter->dump_real_ts = ktime_get_real_ns();
  
  	return 0;
-@@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		err = xdp_do_redirect(pp->dev, xdp, prog);
- 		if (err) {
- 			ret = MVNETA_XDP_DROPPED;
--			page_pool_recycle_direct(rxq->page_pool,
--						 virt_to_head_page(xdp->data));
-+			__page_pool_put_page(rxq->page_pool,
-+					virt_to_head_page(xdp->data),
-+					xdp->data_end - xdp->data_hard_start,
-+					true);
- 		} else {
- 			ret = MVNETA_XDP_REDIR;
- 		}
-@@ -2107,8 +2105,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 	case XDP_TX:
- 		ret = mvneta_xdp_xmit_back(pp, xdp);
- 		if (ret != MVNETA_XDP_TX)
--			page_pool_recycle_direct(rxq->page_pool,
--						 virt_to_head_page(xdp->data));
-+			__page_pool_put_page(rxq->page_pool,
-+					virt_to_head_page(xdp->data),
-+					xdp->data_end - xdp->data_hard_start,
-+					true);
- 		break;
- 	default:
- 		bpf_warn_invalid_xdp_action(act);
-@@ -2117,8 +2117,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct mvneta_rx_queue *rxq,
- 		trace_xdp_exception(pp->dev, prog, act);
- 		/* fall through */
- 	case XDP_DROP:
--		page_pool_recycle_direct(rxq->page_pool,
--					 virt_to_head_page(xdp->data));
-+		__page_pool_put_page(rxq->page_pool,
-+				     virt_to_head_page(xdp->data),
-+				     xdp->data_end - xdp->data_hard_start,
-+				     true);
- 		ret = MVNETA_XDP_DROPPED;
- 		break;
- 	}
-@@ -3072,6 +3074,9 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
- 		.nid = cpu_to_node(0),
- 		.dev = pp->dev->dev.parent,
- 		.dma_dir = xdp_prog ? DMA_BIDIRECTIONAL : DMA_FROM_DEVICE,
-+		.offset = pp->rx_offset_correction,
-+		.max_len = MVNETA_MAX_RX_BUF_SIZE,
-+		.sync = 1,
- 	};
- 	int err;
  
+@@ -4952,6 +4954,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
+ 			      jiffies_to_msecs(reporter->dump_ts),
+ 			      DEVLINK_ATTR_PAD))
+ 		goto reporter_nest_cancel;
++	if (reporter->dump_fmsg &&
++	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
++			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
++		goto reporter_nest_cancel;
+ 
+ 	nla_nest_end(msg, reporter_attr);
+ 	genlmsg_end(msg, hdr);
 -- 
-2.21.0
+2.14.1
 
