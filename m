@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1152BF6953
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5025F6954
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:08:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727043AbfKJOHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:07:53 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45770 "EHLO
+        id S1727049AbfKJOHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:07:55 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45774 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfKJOHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:53 -0500
+        with ESMTP id S1726773AbfKJOHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:54 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=H+kT9jYEduanuWAT/zZOesiMCLBgnL+jklgvsfLEkNI=; b=dbZnkApyOb0DPYHoC+iC6FHvAV
-        pZCd7rT389kX3VDARiD84hhM/ntFieBeN5tTof8t7KY0wEX1feQqfMA58u7Jpmeeqzkc9bWM9c+hy
-        HaWb/Eposng4ZEFhf95H7P64h/R5LmoAKyHeGt1rAajNZn8fBMVsHSKQoqeyTMMNkkrgrVAVedqxP
-        j3l/pCmgUdY37damvEGC2dtKb6Kf+xBV6e7oRhCdlbwxx4qiECn2tTkO8Brt+durmV4+8rVqoLWfy
-        MVnjcYzZgZ+Q1X0GTJBZkIZXMZv6WeJp/H7Ro2XQ3gckBAVOb4rF/UPENzjjDmfRwsd6xJuWCXrfe
-        S2I07H8A==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:53664 helo=rmk-PC.armlinux.org.uk)
+        bh=oAsW+6vaZ3vMQ22IWpMAq/IXQq11fFKYU/9W2qOrH9g=; b=KNrVj44Qobmp+N05mebfbPJZOF
+        CL4aNuPzVCeNKrgFoJHiowpNJmlgWok+64KAEXk06Au2Ez0mzoiLhmq6w8l4oqqJreIXz337ggbai
+        aizrLQm29Fg+QLHQd3Mn1WUq1Rmrq54kyuu6/qzmFdu51FnVQ64O+z5kDR6/5zhoiaC/ovy6Ok7cJ
+        d+fuxh3ARLxxfTCrf1UlGDIC081j9MyqcJ2JLdv/azBw1vfgQ6kpXnPTJoc9m0FXFuzS+953MHxpi
+        EqdLn9JJ4ovv6qgZ1AHzWIMbyXaZLBz0x1mKudgfLq2OsynWeyoLVgAoBCYqGZ7xB+P+TEkfLbbSE
+        /kzFZHJA==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:53666 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnsM-0007fF-53; Sun, 10 Nov 2019 14:07:34 +0000
+        id 1iTnsQ-0007fP-Uo; Sun, 10 Nov 2019 14:07:39 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTnsI-0005C3-7G; Sun, 10 Nov 2019 14:07:30 +0000
+        id 1iTnsN-0005CH-CM; Sun, 10 Nov 2019 14:07:35 +0000
 In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
 References: <20191110140530.GA25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,125 +38,213 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 16/17] net: sfp: allow sfp to probe slow to
- initialise GPON modules
+Subject: [PATCH net-next 17/17] net: sfp: allow modules with slow diagnostics
+ to probe
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTnsI-0005C3-7G@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:07:30 +0000
+Message-Id: <E1iTnsN-0005CH-CM@rmk-PC.armlinux.org.uk>
+Date:   Sun, 10 Nov 2019 14:07:35 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some GPON modules (e.g. Huawei MA5671A) take a significant amount of
-time to start responding on the I2C bus, contary to the SFF
-specifications.
+When a module is inserted, we attempt to read read the ID from address
+0x50.  Once we are able to read the ID, we immediately attempt to
+initialise the hwmon support by reading from address 0x51.  If this
+fails, then we fall into error state, and assume that the module is
+not usable.
 
-Work around this by implementing a two-level timeout strategy, where
-we initially quickly retry for the module, and then use a slower retry
-after we exceed a maximum number of quick attempts.
+Modules such as the ALCATELLUCENT 3FE46541AA use a real EEPROM for
+I2C address 0x50, which responds immediately.  However, address 0x51
+is an emulated, which only becomes available once the on-board firmware
+has booted.  This prompts us to fall into the error state.
+
+Since the module may be usable without diagnostics, arrange for the
+hwmon probe independent of the rest of the SFP itself, retrying every
+5s for up to about 60s for the monitoring to become available, and
+print an error message if it doesn't become available.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/sfp.c | 38 ++++++++++++++++++++++++++++----------
- 1 file changed, 28 insertions(+), 10 deletions(-)
+ drivers/net/phy/sfp.c | 96 +++++++++++++++++++++++++++++++++----------
+ 1 file changed, 74 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 5aaeee461d06..68d91fae2077 100644
+index 68d91fae2077..69bedef96ca7 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -167,9 +167,12 @@ static const enum gpiod_flags gpio_flags[] = {
-  * The SFF-8472 specifies t_serial ("Time from power on until module is
-  * ready for data transmission over the two wire serial bus.") as 300ms.
-  */
--#define T_SERIAL	msecs_to_jiffies(300)
--#define T_HPOWER_LEVEL	msecs_to_jiffies(300)
--#define T_PROBE_RETRY	msecs_to_jiffies(100)
-+#define T_SERIAL		msecs_to_jiffies(300)
-+#define T_HPOWER_LEVEL		msecs_to_jiffies(300)
-+#define T_PROBE_RETRY_INIT	msecs_to_jiffies(100)
-+#define R_PROBE_RETRY_INIT	10
-+#define T_PROBE_RETRY_SLOW	msecs_to_jiffies(5000)
-+#define R_PROBE_RETRY_SLOW	12
+@@ -218,6 +218,8 @@ struct sfp {
  
- /* SFP modules appear to always have their PHY configured for bus address
-  * 0x56 (which with mdio-i2c, translates to a PHY address of 22).
-@@ -204,6 +207,8 @@ struct sfp {
- 	struct delayed_work timeout;
- 	struct mutex sm_mutex;			/* Protects state machine */
- 	unsigned char sm_mod_state;
-+	unsigned char sm_mod_tries_init;
-+	unsigned char sm_mod_tries;
- 	unsigned char sm_dev_state;
- 	unsigned short sm_state;
- 	unsigned int sm_retries;
-@@ -1394,7 +1399,7 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
+ #if IS_ENABLED(CONFIG_HWMON)
+ 	struct sfp_diag diag;
++	struct delayed_work hwmon_probe;
++	unsigned int hwmon_tries;
+ 	struct device *hwmon_dev;
+ 	char *hwmon_name;
+ #endif
+@@ -1096,29 +1098,27 @@ static const struct hwmon_chip_info sfp_hwmon_chip_info = {
+ 	.info = sfp_hwmon_info,
+ };
+ 
+-static int sfp_hwmon_insert(struct sfp *sfp)
++static void sfp_hwmon_probe(struct work_struct *work)
+ {
++	struct sfp *sfp = container_of(work, struct sfp, hwmon_probe.work);
+ 	int err, i;
+ 
+-	if (sfp->id.ext.sff8472_compliance == SFP_SFF8472_COMPLIANCE_NONE)
+-		return 0;
+-
+-	if (!(sfp->id.ext.diagmon & SFP_DIAGMON_DDM))
+-		return 0;
+-
+-	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE)
+-		/* This driver in general does not support address
+-		 * change.
+-		 */
+-		return 0;
+-
+ 	err = sfp_read(sfp, true, 0, &sfp->diag, sizeof(sfp->diag));
+-	if (err < 0)
+-		return err;
++	if (err < 0) {
++		if (sfp->hwmon_tries--) {
++			mod_delayed_work(system_wq, &sfp->hwmon_probe,
++					 T_PROBE_RETRY_SLOW);
++		} else {
++			dev_warn(sfp->dev, "hwmon probe failed: %d\n", err);
++		}
++		return;
++	}
+ 
+ 	sfp->hwmon_name = kstrdup(dev_name(sfp->dev), GFP_KERNEL);
+-	if (!sfp->hwmon_name)
+-		return -ENODEV;
++	if (!sfp->hwmon_name) {
++		dev_err(sfp->dev, "out of memory for hwmon name\n");
++		return;
++	}
+ 
+ 	for (i = 0; sfp->hwmon_name[i]; i++)
+ 		if (hwmon_is_bad_char(sfp->hwmon_name[i]))
+@@ -1128,18 +1128,52 @@ static int sfp_hwmon_insert(struct sfp *sfp)
+ 							 sfp->hwmon_name, sfp,
+ 							 &sfp_hwmon_chip_info,
+ 							 NULL);
++	if (IS_ERR(sfp->hwmon_dev))
++		dev_err(sfp->dev, "failed to register hwmon device: %ld\n",
++			PTR_ERR(sfp->hwmon_dev));
++}
++
++static int sfp_hwmon_insert(struct sfp *sfp)
++{
++	if (sfp->id.ext.sff8472_compliance == SFP_SFF8472_COMPLIANCE_NONE)
++		return 0;
+ 
+-	return PTR_ERR_OR_ZERO(sfp->hwmon_dev);
++	if (!(sfp->id.ext.diagmon & SFP_DIAGMON_DDM))
++		return 0;
++
++	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE)
++		/* This driver in general does not support address
++		 * change.
++		 */
++		return 0;
++
++	mod_delayed_work(system_wq, &sfp->hwmon_probe, 1);
++	sfp->hwmon_tries = R_PROBE_RETRY_SLOW;
++
++	return 0;
+ }
+ 
+ static void sfp_hwmon_remove(struct sfp *sfp)
+ {
++	cancel_delayed_work_sync(&sfp->hwmon_probe);
+ 	if (!IS_ERR_OR_NULL(sfp->hwmon_dev)) {
+ 		hwmon_device_unregister(sfp->hwmon_dev);
+ 		sfp->hwmon_dev = NULL;
+ 		kfree(sfp->hwmon_name);
+ 	}
+ }
++
++static int sfp_hwmon_init(struct sfp *sfp)
++{
++	INIT_DELAYED_WORK(&sfp->hwmon_probe, sfp_hwmon_probe);
++
++	return 0;
++}
++
++static void sfp_hwmon_exit(struct sfp *sfp)
++{
++	cancel_delayed_work_sync(&sfp->hwmon_probe);
++}
+ #else
+ static int sfp_hwmon_insert(struct sfp *sfp)
+ {
+@@ -1149,6 +1183,15 @@ static int sfp_hwmon_insert(struct sfp *sfp)
+ static void sfp_hwmon_remove(struct sfp *sfp)
+ {
+ }
++
++static int sfp_hwmon_init(struct sfp *sfp)
++{
++	return 0;
++}
++
++static void sfp_hwmon_exit(struct sfp *sfp)
++{
++}
+ #endif
+ 
+ /* Helpers */
+@@ -1485,10 +1528,6 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = sfp_hwmon_insert(sfp);
+-	if (ret < 0)
+-		return ret;
+-
  	return 0;
  }
  
--static int sfp_sm_mod_probe(struct sfp *sfp)
-+static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- {
- 	/* SFP module inserted - read I2C data */
- 	struct sfp_eeprom_id id;
-@@ -1404,7 +1409,8 @@ static int sfp_sm_mod_probe(struct sfp *sfp)
- 
- 	ret = sfp_read(sfp, false, 0, &id, sizeof(id));
- 	if (ret < 0) {
--		dev_err(sfp->dev, "failed to read EEPROM: %d\n", ret);
-+		if (report)
-+			dev_err(sfp->dev, "failed to read EEPROM: %d\n", ret);
- 		return -EAGAIN;
- 	}
- 
-@@ -1551,8 +1557,11 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- 
- 	switch (sfp->sm_mod_state) {
- 	default:
--		if (event == SFP_E_INSERT)
-+		if (event == SFP_E_INSERT) {
- 			sfp_sm_mod_next(sfp, SFP_MOD_PROBE, T_SERIAL);
-+			sfp->sm_mod_tries_init = R_PROBE_RETRY_INIT;
-+			sfp->sm_mod_tries = R_PROBE_RETRY_SLOW;
-+		}
+@@ -1637,6 +1676,15 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
+ 	case SFP_MOD_ERROR:
  		break;
+ 	}
++
++#if IS_ENABLED(CONFIG_HWMON)
++	if (sfp->sm_mod_state >= SFP_MOD_WAITDEV &&
++	    IS_ERR_OR_NULL(sfp->hwmon_dev)) {
++		err = sfp_hwmon_insert(sfp);
++		if (err)
++			dev_warn(sfp->dev, "hwmon probe failed: %d\n", err);
++	}
++#endif
+ }
  
- 	case SFP_MOD_PROBE:
-@@ -1560,10 +1569,19 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- 		if (event != SFP_E_TIMEOUT)
- 			break;
+ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
+@@ -1938,6 +1986,8 @@ static struct sfp *sfp_alloc(struct device *dev)
+ 	INIT_DELAYED_WORK(&sfp->poll, sfp_poll);
+ 	INIT_DELAYED_WORK(&sfp->timeout, sfp_timeout);
  
--		err = sfp_sm_mod_probe(sfp);
-+		err = sfp_sm_mod_probe(sfp, sfp->sm_mod_tries == 1);
- 		if (err == -EAGAIN) {
--			sfp_sm_set_timer(sfp, T_PROBE_RETRY);
--			break;
-+			if (sfp->sm_mod_tries_init &&
-+			   --sfp->sm_mod_tries_init) {
-+				sfp_sm_set_timer(sfp, T_PROBE_RETRY_INIT);
-+				break;
-+			} else if (sfp->sm_mod_tries && --sfp->sm_mod_tries) {
-+				if (sfp->sm_mod_tries == R_PROBE_RETRY_SLOW - 1)
-+					dev_warn(sfp->dev,
-+						 "please wait, module slow to respond\n");
-+				sfp_sm_set_timer(sfp, T_PROBE_RETRY_SLOW);
-+				break;
-+			}
- 		}
- 		if (err < 0) {
- 			sfp_sm_mod_next(sfp, SFP_MOD_ERROR, 0);
-@@ -1598,7 +1616,7 @@ static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- 				sfp_module_remove(sfp->sfp_bus);
- 				sfp_sm_mod_next(sfp, SFP_MOD_ERROR, 0);
- 			} else {
--				sfp_sm_set_timer(sfp, T_PROBE_RETRY);
-+				sfp_sm_set_timer(sfp, T_PROBE_RETRY_INIT);
- 			}
- 			break;
- 		}
++	sfp_hwmon_init(sfp);
++
+ 	return sfp;
+ }
+ 
+@@ -1945,6 +1995,8 @@ static void sfp_cleanup(void *data)
+ {
+ 	struct sfp *sfp = data;
+ 
++	sfp_hwmon_exit(sfp);
++
+ 	cancel_delayed_work_sync(&sfp->poll);
+ 	cancel_delayed_work_sync(&sfp->timeout);
+ 	if (sfp->i2c_mii) {
 -- 
 2.20.1
 
