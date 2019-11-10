@@ -2,204 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BA35F6950
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CD41F694C
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 15:07:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbfKJOHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 09:07:39 -0500
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45738 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfKJOHj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rQrX17/ggzZaFccnRPETxXa6FnrpC9GRGpPG7gEAXSI=; b=Z7kXqe/8qR41I+OfVX55xL76A+
-        NQEUObcfA+yKAZZd9gBlP3Z3hbuRc9f4W0FS3uPUb4DQN5/SfnedsSDZPYfT8yBmjFto3ZH/r6O45
-        3vuMc4BWzdBU1TN6hU60FDn9sKwGsE/5ltXK0Wu1HcOC+SoWqiFmMo+nl7iIqOgVu8ai08kVwb1ws
-        PxAQ+kfKTYIhe0JnC10yGgExtZhIkrD+3LwP580M2lNLu5dsSojRUtnh2Crx5jqCp952PIAXZYn4l
-        BCcv+WiWSTrTYfQIUUFlYlJnjUX3LbDDa88+DkXx3R9ua7pzMbsjiuD95YxsMzOkA4VhnUGixaKPg
-        jxzuCc4Q==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:54054 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTns5-0007ek-Ru; Sun, 10 Nov 2019 14:07:18 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1iTns2-0005BY-TE; Sun, 10 Nov 2019 14:07:14 +0000
-In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
-References: <20191110140530.GA25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 13/17] net: sfp: track upstream's attachment state in
- state machine
+        id S1726988AbfKJOH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 09:07:29 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:35312 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726390AbfKJOH3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 09:07:29 -0500
+Received: by mail-pg1-f195.google.com with SMTP id q22so7461706pgk.2;
+        Sun, 10 Nov 2019 06:07:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=eU8YcK7QmEzgV0st1+64+ecJ2UFrzFdTVmX7+bTQHP0=;
+        b=iCV/dOMt1Gxk9wD35Bds5vRMgfgQvWjuluHI8tie+4FFYwR0998MKuplvLQFnBJp/B
+         A8nzAtnI+sxOgpdl9SzBuXyOO34cvuveEM+KwgNqV3ESwmN+ni/03WGaH1dNgdXipUEL
+         xqWsXtQev+WX9Nwdfmt+oritax4VtSLT8dzmEkCKdFhgCiWbtHStR9aqBjxqEtJQcHDz
+         JSlKI3itKlTQXrQh24BjQrbYDZeaxrvDIEifZPLazbM5baQ93GI0FYgxIN2N+iGExYL2
+         AcZp3GycHovPo6RxWCYkRxL7uxwEv8+PVrEqekLpf1AybBrOvdNMVjR8d0++mGIrS5ri
+         ObhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=eU8YcK7QmEzgV0st1+64+ecJ2UFrzFdTVmX7+bTQHP0=;
+        b=SoH6ArLEcOCPQYJNEPcOT8pQEYaQwATOjubG0W92eUHPRUrSBgRZL9lU0vuWglKwqe
+         /7/xLvMpOO/5oBw7HqDKLUhXj75QM3EG7eS3hOlBZwtxUnJcivbq3jLyQwrJ9DpUq+Ir
+         a5lcvqaIRR3wlDLmya+QMNx+KDJbd0eilZx1JIHci76Hf7OIMonziEkBKqfRP/5u9ojG
+         h1mFwlX7tdC0sbqjP3vHYKN+SZhedzUSlV3kWNQYG9FCm6iDw+aq35rQP+pDoDcaenFQ
+         hBI3hvno406EE1xYE0aHdLjOw0GyhFmnATU+3UOVpQWDsXRsgUkNUmsrDafRp1GaZfIe
+         aELA==
+X-Gm-Message-State: APjAAAXP/LlURMUtlX24ujSKlZdoJ8NcTfW25UFXc89tSsNSbg1CCF9D
+        0xDllvVA8sFYTbkC11kJfRk=
+X-Google-Smtp-Source: APXvYqwemy1rr3PRyYeBoTH00pTVQ3zewYcQ0DbOrpCd/MlP5CKPo5HW2QO+pfqB/dc5HnjOuqoU3Q==
+X-Received: by 2002:a63:e801:: with SMTP id s1mr16008814pgh.213.1573394848386;
+        Sun, 10 Nov 2019 06:07:28 -0800 (PST)
+Received: from debian.net.fpt ([2405:4800:58f7:3f8f:27cb:abb4:d0bd:49cb])
+        by smtp.gmail.com with ESMTPSA id c12sm12520388pfp.178.2019.11.10.06.07.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 10 Nov 2019 06:07:27 -0800 (PST)
+From:   Phong Tran <tranmanphong@gmail.com>
+To:     davem@davemloft.net
+Cc:     glider@google.com, gregkh@linuxfoundation.org,
+        hslester96@gmail.com, kstewart@linuxfoundation.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org,
+        syzbot+7dc7c28d4577bbe55b10@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        tranmanphong@gmail.com
+Subject: [[Patch V2]] usb: asix: cleanup the buffer in asix_read_cmd
+Date:   Sun, 10 Nov 2019 21:07:16 +0700
+Message-Id: <20191110140716.11996-1-tranmanphong@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191107.152118.922830217121663373.davem@davemloft.net>
+References: <20191107.152118.922830217121663373.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1iTns2-0005BY-TE@rmk-PC.armlinux.org.uk>
-Date:   Sun, 10 Nov 2019 14:07:14 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Track the upstream's attachment state in the state machine rather than
-maintaining a boolean, which ensures that we have a strict order of
-ATTACH followed by an UP event - we can never believe that a newly
-attached upstream will be anything but down.
+This is for fixing KMSAN: uninit-value in asix_mdio_write
+comes from syzbot.
 
-Rearrange the order of state machines so we run the module state
-machine after the upstream device's state machine, so the module state
-machine can check the current state of the device and take action to
-e.g. reset back to empty state when the upstream is detached.
+Reported-by: syzbot+7dc7c28d4577bbe55b10@syzkaller.appspotmail.com
 
-This is to allow the module detection to run independently of the
-network device becoming available.
+Tested by:
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+https://groups.google.com/d/msg/syzkaller-bugs/3H_n05x_sPU/07UIX_TUEgAJ
+
+Signed-off-by: Phong Tran <tranmanphong@gmail.com>
 ---
- drivers/net/phy/sfp.c | 42 +++++++++++++++++++++++++++++-------------
- 1 file changed, 29 insertions(+), 13 deletions(-)
+ drivers/net/usb/asix_common.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 91fd218ba6b6..95e0dd4a52df 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -36,6 +36,8 @@ enum {
+diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
+index e39f41efda3e..f3eeb7875a4d 100644
+--- a/drivers/net/usb/asix_common.c
++++ b/drivers/net/usb/asix_common.c
+@@ -22,6 +22,8 @@ int asix_read_cmd(struct usbnet *dev, u8 cmd, u16 value, u16 index,
+ 	else
+ 		fn = usbnet_read_cmd_nopm;
  
- 	SFP_E_INSERT = 0,
- 	SFP_E_REMOVE,
-+	SFP_E_DEV_ATTACH,
-+	SFP_E_DEV_DETACH,
- 	SFP_E_DEV_DOWN,
- 	SFP_E_DEV_UP,
- 	SFP_E_TX_FAULT,
-@@ -50,7 +52,8 @@ enum {
- 	SFP_MOD_PRESENT,
- 	SFP_MOD_ERROR,
- 
--	SFP_DEV_DOWN = 0,
-+	SFP_DEV_DETACHED = 0,
-+	SFP_DEV_DOWN,
- 	SFP_DEV_UP,
- 
- 	SFP_S_DOWN = 0,
-@@ -80,6 +83,7 @@ static const char *mod_state_to_str(unsigned short mod_state)
- }
- 
- static const char * const dev_state_strings[] = {
-+	[SFP_DEV_DETACHED] = "detached",
- 	[SFP_DEV_DOWN] = "down",
- 	[SFP_DEV_UP] = "up",
- };
-@@ -94,6 +98,8 @@ static const char *dev_state_to_str(unsigned short dev_state)
- static const char * const event_strings[] = {
- 	[SFP_E_INSERT] = "insert",
- 	[SFP_E_REMOVE] = "remove",
-+	[SFP_E_DEV_ATTACH] = "dev_attach",
-+	[SFP_E_DEV_DETACH] = "dev_detach",
- 	[SFP_E_DEV_DOWN] = "dev_down",
- 	[SFP_E_DEV_UP] = "dev_up",
- 	[SFP_E_TX_FAULT] = "tx_fault",
-@@ -188,7 +194,6 @@ struct sfp {
- 	struct gpio_desc *gpio[GPIO_MAX];
- 	int gpio_irq[GPIO_MAX];
- 
--	bool attached;
- 	struct mutex st_mutex;			/* Protects state */
- 	unsigned int state;
- 	struct delayed_work poll;
-@@ -1496,17 +1501,26 @@ static void sfp_sm_mod_remove(struct sfp *sfp)
- 	dev_info(sfp->dev, "module removed\n");
- }
- 
--/* This state machine tracks the netdev up/down state */
-+/* This state machine tracks the upstream's state */
- static void sfp_sm_device(struct sfp *sfp, unsigned int event)
- {
- 	switch (sfp->sm_dev_state) {
- 	default:
--		if (event == SFP_E_DEV_UP)
-+		if (event == SFP_E_DEV_ATTACH)
-+			sfp->sm_dev_state = SFP_DEV_DOWN;
-+		break;
++	memset(data, 0, size);
 +
-+	case SFP_DEV_DOWN:
-+		if (event == SFP_E_DEV_DETACH)
-+			sfp->sm_dev_state = SFP_DEV_DETACHED;
-+		else if (event == SFP_E_DEV_UP)
- 			sfp->sm_dev_state = SFP_DEV_UP;
- 		break;
+ 	ret = fn(dev, cmd, USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+ 		 value, index, data, size);
  
- 	case SFP_DEV_UP:
--		if (event == SFP_E_DEV_DOWN)
-+		if (event == SFP_E_DEV_DETACH)
-+			sfp->sm_dev_state = SFP_DEV_DETACHED;
-+		else if (event == SFP_E_DEV_DOWN)
- 			sfp->sm_dev_state = SFP_DEV_DOWN;
- 		break;
- 	}
-@@ -1517,17 +1531,20 @@ static void sfp_sm_device(struct sfp *sfp, unsigned int event)
-  */
- static void sfp_sm_module(struct sfp *sfp, unsigned int event)
- {
--	/* Handle remove event globally, it resets this state machine */
--	if (event == SFP_E_REMOVE) {
-+	/* Handle remove event globally, it resets this state machine.
-+	 * Also deal with upstream detachment.
-+	 */
-+	if (event == SFP_E_REMOVE || sfp->sm_dev_state < SFP_DEV_DOWN) {
- 		if (sfp->sm_mod_state > SFP_MOD_PROBE)
- 			sfp_sm_mod_remove(sfp);
--		sfp_sm_mod_next(sfp, SFP_MOD_EMPTY, 0);
-+		if (sfp->sm_mod_state != SFP_MOD_EMPTY)
-+			sfp_sm_mod_next(sfp, SFP_MOD_EMPTY, 0);
- 		return;
- 	}
- 
- 	switch (sfp->sm_mod_state) {
- 	default:
--		if (event == SFP_E_INSERT && sfp->attached)
-+		if (event == SFP_E_INSERT)
- 			sfp_sm_mod_next(sfp, SFP_MOD_PROBE, T_SERIAL);
- 		break;
- 
-@@ -1693,8 +1710,8 @@ static void sfp_sm_event(struct sfp *sfp, unsigned int event)
- 		sm_state_to_str(sfp->sm_state),
- 		event_to_str(event));
- 
--	sfp_sm_module(sfp, event);
- 	sfp_sm_device(sfp, event);
-+	sfp_sm_module(sfp, event);
- 	sfp_sm_main(sfp, event);
- 
- 	dev_dbg(sfp->dev, "SM: exit %s:%s:%s\n",
-@@ -1707,15 +1724,14 @@ static void sfp_sm_event(struct sfp *sfp, unsigned int event)
- 
- static void sfp_attach(struct sfp *sfp)
- {
--	sfp->attached = true;
-+	sfp_sm_event(sfp, SFP_E_DEV_ATTACH);
- 	if (sfp->state & SFP_F_PRESENT)
- 		sfp_sm_event(sfp, SFP_E_INSERT);
- }
- 
- static void sfp_detach(struct sfp *sfp)
- {
--	sfp->attached = false;
--	sfp_sm_event(sfp, SFP_E_REMOVE);
-+	sfp_sm_event(sfp, SFP_E_DEV_DETACH);
- }
- 
- static void sfp_start(struct sfp *sfp)
 -- 
 2.20.1
 
