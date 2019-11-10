@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E601F6B4E
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 21:26:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86F62F6B50
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 21:27:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbfKJU0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 15:26:05 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45059 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726995AbfKJU0E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 15:26:04 -0500
-Received: by mail-pf1-f193.google.com with SMTP id z4so9064968pfn.12
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 12:26:03 -0800 (PST)
+        id S1727032AbfKJU1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 15:27:04 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44172 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726963AbfKJU1D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 15:27:03 -0500
+Received: by mail-pg1-f194.google.com with SMTP id f19so7931465pgk.11
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 12:27:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QMZVeFANfG/X5h0Mfj24NAxkL4BSkECd5usnEeND7Mo=;
-        b=g/WjcTR5SK4aII+yTvXdE+njqdBP/6PeP17EfsqBD/EfwIhmWZ52/uSDy7dWAT/k07
-         1VwwHByRyjS6IQOiNPxEx/GSrJwuWkNt3Gr4N0VPPoNsjM1pjVfsKI07aVIiqkpzz0gi
-         wv3VCSkRIPPSRuJ4t14BGm6mzu5T6chtpbUBUxVxJUyM7rEnYHx1+QmP1RrEaOoo3li5
-         e94DO0wJs78X/PeUuQq9G9fHxNXM6YZOghvMgMBmDw6ggk1LRCEBwL2XW9UgMEVyaH5x
-         TK/X2LrF2JbjSZIPJcqEVXPBVwbKBLXxbR734yp3wAZVGUi14uxIyyj4/GxvxQZhg9DL
-         TywA==
+        bh=gFgFkJ54QV/+SZ+CVBw3IlpICtb0pGNAuc4Yzp6h59Y=;
+        b=N7neRmbB+4eZS8e09JdRVt8mqYy7LRpXem+YmI40C9hVJrjtFGyyGNjAWK89HeX4ua
+         GDm+EiipraEcZvDGVmga9qPnU0PjTkZhIf5gAgFoxzqyf9St1aB96L4rKfu1hLqta07f
+         Mh6w2o4EvPaS5Qmddgv1uPYZG98lhJh3glm1XG8YIAaxn4RYZVUiCpYnOfmkh7zaIghN
+         Zb9OkcEXux808sloB4t+b61clTWwbZFpKcenDnZgOStxiAHxwOJkiViGHjK4B1Lr2c59
+         Q4tRFYFGyJAH9wW1UAkO2S3liI3g2GM4IGFN2Yt+wz/TPHCjxI9I5++zYrYz9Ko+aJ/W
+         6rGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=QMZVeFANfG/X5h0Mfj24NAxkL4BSkECd5usnEeND7Mo=;
-        b=jZyaTEhs0jvi9p4RLaIfYfiWWlRkjqbA1O5UtvCFfRS2b/jtyr2Zg+RWRRhfcIUmbL
-         gvL9wkJ2Fyl5fi0bqwwO/tKT+/+SIrExWGrY9fAcKYtiRz2+yYPFYCzC1OS9Zaij6X4o
-         Y39jv4/4t72S+n2fABIHBaeyCz11wFl7+f5SG9P9/oPq08PZAf54dqzsJdoVlmaBVgQT
-         i6QWJGP/pDGJm0ZcWNLoH+XcRF+I4Y7o7KS8ANBfyZf9Ue/i0h/FrGdNuxDmVYbr30hk
-         RBcvy9u68AX8c4dxzfIaeIpgT0g9EyXdaKeZINHkOPeG733e46Sz73UGJb6fXNrqFXFY
-         XxuA==
-X-Gm-Message-State: APjAAAWJhjoDHkt8jKBV61BCNzJ3wu+qmxZh82sgZZt37tPW2lD+m/S9
-        VAYOvQ5PEmIS9dTseu4zYN8=
-X-Google-Smtp-Source: APXvYqzZpQO8pkBP1HE2HZIgifodV6nWfXqBH3IwSAstn6jvZBZp6VhvztN3t4GmAIuizFtmUVlK5Q==
-X-Received: by 2002:a62:7dce:: with SMTP id y197mr25576741pfc.164.1573417563175;
-        Sun, 10 Nov 2019 12:26:03 -0800 (PST)
+        bh=gFgFkJ54QV/+SZ+CVBw3IlpICtb0pGNAuc4Yzp6h59Y=;
+        b=TPdrcUT7oz3nXlf/atfisgmZHwhUO83rYDaIYxBXIjfimPGYQmN1MhO0o5zleLUMqs
+         yvl4Ggmw0CrYPgK7LIk/lHajqDFmbkEpkCmy6RD4JnogiU9lxtcSE9XYVUnlWPYYZuSD
+         ZGtUUbw/nXALgTNXBAsSjjlC/L0P1SVKmav50A8Wt6d7CDotF0pgWyKj6eiUsYxI8Tsh
+         VMjpXcoail5fxO7618z/EwXClQ5SJpjKT1pJh7NCGC9ZN8DpUbAE7CM1jEmG/lasUWz2
+         rjHsYsciR39A/vDC4Ig2DeXvY3+sWvGsf+eksNpd7RNl+rKrrOR8sLBjG2bvTsmxfepD
+         rsQg==
+X-Gm-Message-State: APjAAAX5dERrkSeXRfnXhbDIWmEUn/50ZgL8wsFCCRi1Mc0BD0a0R7QG
+        5KWf2ZQo5qimtXD4ZsjX6RA=
+X-Google-Smtp-Source: APXvYqwtZ8Rd7dg9lU0HF8O4ihui58i+qPX3xZJ1xx5e3SU9lBAPeqi55u4S6h+iua5OHWhnlpyMOg==
+X-Received: by 2002:a17:90b:24c:: with SMTP id fz12mr29230001pjb.51.1573417621349;
+        Sun, 10 Nov 2019 12:27:01 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id b137sm1419572pga.91.2019.11.10.12.26.01
+        by smtp.gmail.com with ESMTPSA id w7sm14357399pfb.101.2019.11.10.12.26.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Nov 2019 12:26:02 -0800 (PST)
-Subject: Re: [PATCH V3 net-next 4/7] net: bcmgenet: Add BCM2711 support
+        Sun, 10 Nov 2019 12:27:00 -0800 (PST)
+Subject: Re: [PATCH V3 net-next 0/7] ARM: Enable GENET support for RPi 4
 To:     Stefan Wahren <wahrenst@gmx.net>,
         Matthias Brugger <matthias.bgg@kernel.org>,
         Matthias Brugger <mbrugger@suse.com>,
@@ -57,7 +57,6 @@ Cc:     Eric Anholt <eric@anholt.net>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org
 References: <1573326009-2275-1-git-send-email-wahrenst@gmx.net>
- <1573326009-2275-5-git-send-email-wahrenst@gmx.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -113,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <26066bfd-2049-5c22-4ed5-251e11005422@gmail.com>
-Date:   Sun, 10 Nov 2019 12:26:00 -0800
+Message-ID: <5ac89ec4-71f2-8982-a3e9-a4a191446eed@gmail.com>
+Date:   Sun, 10 Nov 2019 12:26:59 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1573326009-2275-5-git-send-email-wahrenst@gmx.net>
+In-Reply-To: <1573326009-2275-1-git-send-email-wahrenst@gmx.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -127,19 +126,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
+Hi David,
 
 On 11/9/2019 11:00 AM, Stefan Wahren wrote:
-> The BCM2711 needs a different maximum DMA burst length. If not set
-> accordingly a timeout in the transmit queue happens and no package
-> can be sent. So use the new compatible to derive this value.
+> Raspberry Pi 4 uses the broadcom genet chip in version five.
+> This chip has a dma controller integrated. Up to now the maximal
+> burst size was hard-coded to 0x10. But it turns out that Raspberry Pi 4
+> does only work with the smaller maximal burst size of 0x8.
 > 
-> Until now the GENET HW version was used as the platform identifier.
-> This doesn't work with SoC-specific modifications, so introduce a proper
-> platform data structure.
+> This series based on Matthias Brugger's V1 series [1].
 > 
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> [1] - https://patchwork.kernel.org/cover/11186193/
+> 
+> Changes in V3:
+> - introduce SoC-specific compatibles for GENET (incl. dt-binding)
+> - use platform_get_irq_optional for optional IRQ
+> - remove Fixes tag from IRQ error handling change
+> - move most of MDIO stuff to bcm2711.dtsi
+> 
+> Changes in V2:
+> - add 2 fixes for IRQ retrieval
+> - add support for missing PHY modes
+> - declare PHY mode RGMII RXID based on the default settings
+> - add alias to allow firmware append the MAC address
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Do you want to merge patches 1-6 through net-next and I will take patch
+7 through the Broadcom ARM SoC pull request since this depends on the
+Device Tree files being present?
+
+> 
+> Stefan Wahren (7):
+>   net: bcmgenet: Avoid touching non-existent interrupt
+>   net: bcmgenet: Fix error handling on IRQ retrieval
+>   dt-bindings: net: bcmgenet: Add BCM2711 support
+>   net: bcmgenet: Add BCM2711 support
+>   net: bcmgenet: Refactor register access in bcmgenet_mii_config
+>   net: bcmgenet: Add RGMII_RXID and RGMII_ID support
+>   ARM: dts: bcm2711-rpi-4: Enable GENET support
+> 
+>  .../devicetree/bindings/net/brcm,bcmgenet.txt      |  2 +-
+>  arch/arm/boot/dts/bcm2711-rpi-4-b.dts              | 17 +++++
+>  arch/arm/boot/dts/bcm2711.dtsi                     | 26 ++++++++
+>  drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 74 ++++++++++++++++++----
+>  drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  1 +
+>  drivers/net/ethernet/broadcom/genet/bcmmii.c       | 51 ++++++++-------
+>  6 files changed, 133 insertions(+), 38 deletions(-)
+> 
+> --
+> 2.7.4
+> 
+
 -- 
 Florian
