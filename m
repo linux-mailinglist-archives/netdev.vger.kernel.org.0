@@ -2,77 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B5177F689E
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 11:55:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65A93F68B2
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 12:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbfKJKzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 05:55:18 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:54449 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726609AbfKJKzR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 05:55:17 -0500
-Received: from p5b06da22.dip0.t-ipconnect.de ([91.6.218.34] helo=nanos)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1iTks6-0004g9-5I; Sun, 10 Nov 2019 11:55:06 +0100
-Date:   Sun, 10 Nov 2019 11:54:58 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-cc:     Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v3 bpf-next 02/18] bpf: Add bpf_arch_text_poke() helper
-In-Reply-To: <20191108230524.4j5jui2izyexxhkx@ast-mbp.dhcp.thefacebook.com>
-Message-ID: <alpine.DEB.2.21.1911101152140.12583@nanos.tec.linutronix.de>
-References: <20191108064039.2041889-1-ast@kernel.org> <20191108064039.2041889-3-ast@kernel.org> <20191108091156.GG4114@hirez.programming.kicks-ass.net> <20191108093607.GO5671@hirez.programming.kicks-ass.net> <59d3af80-a781-9765-4d01-4c8006cd574f@fb.com>
- <CAADnVQKmrVGVHM70OT0jc7reRp1LdWTM8dhE1Gde21oxw++jwg@mail.gmail.com> <20191108213624.GM3079@worktop.programming.kicks-ass.net> <20191108230524.4j5jui2izyexxhkx@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+        id S1726681AbfKJLcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 06:32:14 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46119 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726610AbfKJLcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 06:32:13 -0500
+Received: by mail-wr1-f67.google.com with SMTP id b3so11593266wrs.13
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 03:32:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=eqtZaRSTf6xIkwuPq1/HFHXXUlATMq/NHIIuhCWeknE=;
+        b=0kwJ4ih0MBW94wtyqcnSiEUWwf7e4nSsn7yZjt1Ih7C14XjKqudwbSRuNuRXNwioYK
+         yRsvj0cK1ELFBUaF6SP4LZ36SsDk8pgOVRo2dUc2h/mtmUckG1TbphQzWu6iYxj6aT2A
+         GJS8Ps8Dbc9bT4z6oFAVtpKz7/qzKzbeeSxpWG1SND6foE6Vm4K9uUQtECf4P+G0C1vw
+         oaJr6SdzCoLyCX4D8NIhIexfeRZWjPJGzTN+O5wiPRpzLhCokFbACXrvkbaR/okV2KKU
+         XwI3jRTFPtsnCNh9E8fx/T9UmSXGX75Ws1ZDqOIVD39sT16TArR4eJqBukqx2bFlF5Kt
+         O1Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=eqtZaRSTf6xIkwuPq1/HFHXXUlATMq/NHIIuhCWeknE=;
+        b=ZcY+R4XYDo17HJ5O6ZFeMDtxdTcUBjnlRICrbidtBMZRXyr14UyUU3UcEAHJgkNdL6
+         LAfsVStgOhL1YXCj044Har/n+BzRmCsMu1epP39bogBUp3k9UOxTYSKYpZqKa6cyQpvZ
+         dui/Q/t9cEZX9w4cSrWQ5Apk/CbX/FlDiD2ZzEIGpzEThiC5ZjjCX4pQzicIOoMhIDRL
+         BKqq+Bb4uD/WqiQAmBg9sX9qOulQzMiX25r2/EULzKZKVRSvab2VEP+x3C8ZsfG2IXf2
+         XO9IfZySgahsJdOUdq8aNf50bf1M4IACaAjxp+k9z+6Dfw0rKq9sZ0N41x7Xv5uQQg/k
+         bEJQ==
+X-Gm-Message-State: APjAAAXj8EG/tY/Wzqcts2OAeMUKLVw9b72wsfb7+RvO1QCN+DNNfVaL
+        1wPK9Kq6n3uH6AxyAXursGnOKw==
+X-Google-Smtp-Source: APXvYqwVMKPltIJcxfYK5pX/jgL4O+v5P+oIZIcn6bHiA4cAV1wqJtXljV3PMLaASgLhKqeraItTfg==
+X-Received: by 2002:adf:fe8d:: with SMTP id l13mr172966wrr.287.1573385530196;
+        Sun, 10 Nov 2019 03:32:10 -0800 (PST)
+Received: from localhost.localdomain ([51.15.160.169])
+        by smtp.googlemail.com with ESMTPSA id p4sm13440238wrx.71.2019.11.10.03.32.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 10 Nov 2019 03:32:09 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     alexandre.torgue@st.com, davem@davemloft.net, joabreu@synopsys.com,
+        mripard@kernel.org, peppe.cavallaro@st.com, wens@csie.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-sunxi@googlegroups.com,
+        Corentin Labbe <clabbe@baylibre.com>,
+        "# v4 . 15+" <stable@vger.kernel.org>
+Subject: [PATCH] net: ethernet: dwmac-sun8i: Use the correct function in exit path
+Date:   Sun, 10 Nov 2019 11:30:48 +0000
+Message-Id: <1573385448-30282-1-git-send-email-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 8 Nov 2019, Alexei Starovoitov wrote:
-> On Fri, Nov 08, 2019 at 10:36:24PM +0100, Peter Zijlstra wrote:
-> > This I do _NOT_ understand. Why are you willing to merge a known broken
-> > patch? What is the rush, why can't you wait for all the prerequisites to
-> > land?
-> 
-> People have deadlines and here I'm not talking about fb deadlines. If it was
-> only up to me I could have waited until yours and Steven's patches land in
-> Linus's tree. Then Dave would pick them up after the merge window into net-next
-> and bpf things would be ready for the next release. Which is in 1.5 + 2 + 8
-> weeks (assuming 1.5 weeks until merge window, 2 weeks merge window, and 8
-> weeks next release cycle).
-> But most of bpf things are ready. I have one more follow up to do for another
-> feature. The first 4-5 patches of my set will enable Bjorn, Daniel, and
-> Martin's work. So I'm mainly looking for a way to converge three trees during
-> the merge window with no conflicts.
+When PHY is not powered, the probe function fail and some resource are
+still unallocated.
+Furthermore some BUG happens:
+dwmac-sun8i 5020000.ethernet: EMAC reset timeout
+------------[ cut here ]------------
+kernel BUG at /linux-next/net/core/dev.c:9844!
 
-No. Nobodys deadlines are justifying anything.
+So let's use the right function (stmmac_pltfr_remove) in the error path.
 
-You recently gave me a lecture how to do proper kernel development just
-because I did the right thing, i.e. preventing a bad interaction by making
-a Kconfig dependency which does not affect you in any way.
+Fixes: 9f93ac8d4085 ("net-next: stmmac: Add dwmac-sun8i")
+Cc: <stable@vger.kernel.org> # v4.15+
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Now for your own interests you try to justify something which is
-fundamentaly worse: Merging known to be broken code.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index eefb06d918c8..1c8d84ed8410 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -1227,7 +1227,7 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ dwmac_mux:
+ 	sun8i_dwmac_unset_syscon(gmac);
+ dwmac_exit:
+-	sun8i_dwmac_exit(pdev, plat_dat->bsp_priv);
++	stmmac_pltfr_remove(pdev);
+ return ret;
+ }
+ 
+-- 
+2.23.0
 
-BPF is not special and has to wait for the next merge window if the
-prerequisites are not ready in time as any other patch set does.
-
-Thanks,
-
-	tglx
