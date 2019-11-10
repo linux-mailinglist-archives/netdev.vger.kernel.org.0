@@ -2,93 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ADC9F69B2
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 16:31:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5ABCF69E7
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 16:48:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726958AbfKJPbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 10:31:47 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:52240 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726653AbfKJPbr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 10:31:47 -0500
-Received: by mail-wm1-f68.google.com with SMTP id c17so10796769wmk.2
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 07:31:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RnYSxk87fb/VR6ZUTie18l/+t1zJ4HyYOkmNS4kOfmw=;
-        b=aKyA2kq6O+97MYxjefnLSVVVBTjByFomDU6j03Je3AIt5y3QEILS7kLOe0Q8WNKG5U
-         oRyXYZNtNVz7cNKMUMd4tvNM/OO5OhbhcIf8PI/mUuuYeqGioiLxyuxf8uzUcUaMlVFz
-         72PcAUqUefscjrVEvsfBMso+PGuP17ITFwBlYPBNlUpnxoJWwSqRl2GC9o5G1Q4miujV
-         vbCRqdkypZ85yAcFUIMpAqGPQ8j58nPo2Uuuk9tAnqSYIhkez5QjpJRunNZaxq+V54n+
-         yIioEfure6M0rIEyVw6DKGquBq4W4pficW5v+MNpFEWZQjiaj6oBGj5it3yVYi3FZ7aq
-         IDVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RnYSxk87fb/VR6ZUTie18l/+t1zJ4HyYOkmNS4kOfmw=;
-        b=rpIs/A28+G9Wdkkj5cCie0D0ozJhgtDRH8fJEiWjk+wIr6ujB1V8Ktoa/9BcvHOeZN
-         Q790sL9x70KRFYbFsR2brHg5JV6fBxHZA3oO3+eWDp9UU6e0TZ5WesEMcoeENRS9n2zF
-         /Sx64potJBIRPIAzte+0DnjP5jAxmfbwiU390SeYLKE58Loc6KPuDETZjW8EvzgIgfxR
-         EIRsbXyOd/rSLwU2wUJC7SmhaaRbINjY/GNCSXBuhMrf6WZRnnj9DK4AaIJ2yE56a2nk
-         6U2ly1+rikjy6S6UZFPEhRjH8J22Tcz5ixSYCF/p6iB3A9gudJyM5f3SvcMpHRGBUHS/
-         zvVQ==
-X-Gm-Message-State: APjAAAWyWS9CteNISKMbrl5OQmsSBPiHSCzuOuKMZvHGDTujeX0sGwpY
-        g5VL8ApvMtj5UQYwpAubxWKahH79Sr0=
-X-Google-Smtp-Source: APXvYqybDjXbK2wAXW+wFhFSMfpxdS8JlmYlzSPSUqvw+3bTvGE4SmQuFbfzbm1uQMZQqc6Pta3yKg==
-X-Received: by 2002:a05:600c:22cb:: with SMTP id 11mr16959688wmg.117.1573399905497;
-        Sun, 10 Nov 2019 07:31:45 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id k1sm437344wrp.29.2019.11.10.07.31.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Nov 2019 07:31:45 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        idosch@mellanox.com, shalomt@mellanox.com, mlxsw@mellanox.com
-Subject: [patch net-next] mlxsw: core: Enable devlink reload only on probe
-Date:   Sun, 10 Nov 2019 16:31:44 +0100
-Message-Id: <20191110153144.15941-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        id S1726985AbfKJPsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 10:48:23 -0500
+Received: from mail-eopbgr130078.outbound.protection.outlook.com ([40.107.13.78]:8323
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726800AbfKJPsX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Nov 2019 10:48:23 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=deG/CKsiF2+qbCIsTgivLeLIKHCfvmIh4aUmVrwnqQUkoAPtUpeD4vn7EUnYG2DvlvfGqRiRlwFD+Bf1NH4PiDrTCvNsm2kUUtXfGJwD5zlI+gNZCpWrEzMY5wJmjZuqq6yeEsXTwp/5g0o1c2e0gfiEnl4plSAn+PRQxasCD8wgTkkEb9+el3THIR0VMN7cqfNXgqf+Dc0EfWiOSVb1OYZh17RXYsCJSK2X0hbONrk+j6unlSfn52UTGO1re0UNPa+uDrf4bf3udBcvitRacpLtwoudnPsCX0crJxFqZEpPOy0xv9H3VzOxUPKhbvf+AcWLUYclYCcRViwbdbOfBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iikGl7GnndINLAF8o65m304E5k1/ryNVsP+bRBZy+Fs=;
+ b=J0oyctJs/O1XsE4ej8/JvZDAMjixyK/DEJNA76+gKktSxB6u0GCYSPh2l/5PyTpwMvgOXTL7X0XVu68zJul54qPIJEknir7WRVCmLhXdWMxYelkfEm/urcL29HSN5rSeH58qkBExo34iwySJfA1RNCWp6vuzXXUF3yVUOc13scannvF1htp/ZqcHecLLiKVU69V008s8UpCmGUbebIqQhPItAuLT7neEgRWzXreErCSAjJAhp+3X2Wt1Rl20VDPok6vzh/GdXLDtlf8zK5kDcvEQoSNpiF6XoiD8+9XFne9BBdIWDQbKbzd7TfpQS8gJbP70QLhEfn67FmZdf0yR3Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iikGl7GnndINLAF8o65m304E5k1/ryNVsP+bRBZy+Fs=;
+ b=Lteff9pY0aGt51KszMNraOTEDk4P6+91Y5JuXQ2IXykEIGDm6bHhhheRCPwNRbp7Qy+q+FAetnfgCJQMGyYg7VWWhvKxJte9Lze3iaB4uUpJc3pVLBhjB5pVCdOEIGsF1Ac6TkpGPld/HTHePKB5acqHuZXNfNoyr3LPMQzMvd8=
+Received: from AM6PR0502MB3783.eurprd05.prod.outlook.com (52.133.17.145) by
+ AM6PR0502MB3672.eurprd05.prod.outlook.com (52.133.20.11) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.24; Sun, 10 Nov 2019 15:48:19 +0000
+Received: from AM6PR0502MB3783.eurprd05.prod.outlook.com
+ ([fe80::7478:e4bb:fa38:3687]) by AM6PR0502MB3783.eurprd05.prod.outlook.com
+ ([fe80::7478:e4bb:fa38:3687%6]) with mapi id 15.20.2430.023; Sun, 10 Nov 2019
+ 15:48:18 +0000
+From:   Shalom Toledo <shalomt@mellanox.com>
+To:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        Ido Schimmel <idosch@mellanox.com>, mlxsw <mlxsw@mellanox.com>
+Subject: Re: [patch net-next] mlxsw: core: Enable devlink reload only on probe
+Thread-Topic: [patch net-next] mlxsw: core: Enable devlink reload only on
+ probe
+Thread-Index: AQHVl9v2Q8NcuSHj4E+XCxFYoer4s6eEjNAA
+Date:   Sun, 10 Nov 2019 15:48:18 +0000
+Message-ID: <bf10e51a-0533-1fb7-8181-9e190590ae53@mellanox.com>
+References: <20191110153144.15941-1-jiri@resnulli.us>
+In-Reply-To: <20191110153144.15941-1-jiri@resnulli.us>
+Accept-Language: en-IL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.1
+x-clientproxiedby: AM4PR08CA0047.eurprd08.prod.outlook.com
+ (2603:10a6:205:2::18) To AM6PR0502MB3783.eurprd05.prod.outlook.com
+ (2603:10a6:209:3::17)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=shalomt@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 3b0c47e4-91c1-47ce-5498-08d765f5683e
+x-ms-traffictypediagnostic: AM6PR0502MB3672:|AM6PR0502MB3672:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR0502MB3672A5FAF5AAF9921FA314B9C5750@AM6PR0502MB3672.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:400;
+x-forefront-prvs: 02176E2458
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(376002)(39860400002)(396003)(366004)(136003)(199004)(189003)(52116002)(2501003)(76176011)(386003)(6506007)(7736002)(66476007)(66446008)(64756008)(66556008)(66946007)(53546011)(102836004)(31696002)(305945005)(86362001)(186003)(26005)(6246003)(107886003)(478600001)(4326008)(8936002)(6436002)(229853002)(6512007)(31686004)(256004)(6486002)(65956001)(8676002)(446003)(25786009)(66066001)(65806001)(81166006)(81156014)(4744005)(5660300002)(99286004)(14454004)(486006)(476003)(2616005)(3846002)(6116002)(2906002)(316002)(58126008)(54906003)(11346002)(71200400001)(71190400001)(36756003)(110136005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR0502MB3672;H:AM6PR0502MB3783.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HwMgm+hZCXBpfJoT+HtwDAMZEeQC/yEaZArpoBiqG/eotLJuhZTVv5X+8ZdyhJg0x6J6q7NPXgCMnqp0nywo+aaEpBXRoEHK4mF61OysQVEomAbOO4f+k0+bc8Lvg2N7DokwuHnRyN9NKzDrWN89my1TNBHjFz4Ri0bU/3DufJCPhwhTvrb9/3G1OhxCzwOoLLeAAWdp0li/4OHpL7D+ApMta8Gtze65tgUfGqH0U52nLY0VUaB1LRwAszyYoySXN4ZCpgvt87Pw7N5Dp58jXdB1O+39A5gVsyVXJD0s7qcBSSSGd9ZlLhwzVsUJVP/9tABMELuTLR6gmsscsvjLBg17W/QGz2yl0AqmXvGoU2q8ZPpPhVPn0QydFlvrJ+ireQPTPOUk9mpUNQLa5zqPgoOEcVV6cGwJIuit1QcfU4JByfKmFicsE+5kIuRdfk65
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8B82EF5D3184754EA36FEB2D7A7D2939@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b0c47e4-91c1-47ce-5498-08d765f5683e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Nov 2019 15:48:18.8201
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 25tWJzk6XDeGMGZjXolb+vk98W8G016Sn3xMiKRplU1QD+88hyWM+c6iT3woS+fJ09FkQj0qcOgg6gTEuLM+6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0502MB3672
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
-
-Call devlink enable only during probe time and avoid deadlock
-during reload.
-
-Reported-by: Shalom Toledo <shalomt@mellanox.com>
-Fixes: a0c76345e3d3 ("devlink: disallow reload operation during device cleanup")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index da436a6aad2f..42e1ce3e39e1 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -1198,10 +1198,11 @@ __mlxsw_core_bus_device_register(const struct mlxsw_bus_info *mlxsw_bus_info,
- 	if (err)
- 		goto err_thermal_init;
- 
--	if (mlxsw_driver->params_register) {
-+	if (mlxsw_driver->params_register)
- 		devlink_params_publish(devlink);
-+
-+	if (!reload)
- 		devlink_reload_enable(devlink);
--	}
- 
- 	return 0;
- 
--- 
-2.21.0
-
+T24gMTAvMTEvMjAxOSAxNzozMSwgSmlyaSBQaXJrbyB3cm90ZToNCj4gRnJvbTogSmlyaSBQaXJr
+byA8amlyaUBtZWxsYW5veC5jb20+DQo+IA0KPiBDYWxsIGRldmxpbmsgZW5hYmxlIG9ubHkgZHVy
+aW5nIHByb2JlIHRpbWUgYW5kIGF2b2lkIGRlYWRsb2NrDQo+IGR1cmluZyByZWxvYWQuDQo+IA0K
+PiBSZXBvcnRlZC1ieTogU2hhbG9tIFRvbGVkbyA8c2hhbG9tdEBtZWxsYW5veC5jb20+DQo+IEZp
+eGVzOiBhMGM3NjM0NWUzZDMgKCJkZXZsaW5rOiBkaXNhbGxvdyByZWxvYWQgb3BlcmF0aW9uIGR1
+cmluZyBkZXZpY2UgY2xlYW51cCIpDQo+IFNpZ25lZC1vZmYtYnk6IEppcmkgUGlya28gPGppcmlA
+bWVsbGFub3guY29tPg0KDQpUZXN0ZWQtYnk6IFNoYWxvbSBUb2xlZG8gPHNoYWxvbXRAbWVsbGFu
+b3guY29tPg0K
