@@ -2,109 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A5BDF6A6F
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 18:00:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4427F6A6E
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 18:00:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbfKJRAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 12:00:47 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35507 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726616AbfKJRAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 12:00:46 -0500
-Received: by mail-ed1-f68.google.com with SMTP id r16so10064884edq.2
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 09:00:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ljK8Hs0++npJrSXpORUXvZl0zNOvtiEx3+TTGNivwow=;
-        b=Klsxu0piXKd8/Wo7PO0ZD/EhUXNYiSHRQaFeEcq8xSCSSS5FUXhxHJirl2Ay7f8FTI
-         N251lgLQdFjehd6k5xb8FDoPeCbXduFqiNS60RtBav62XZheHvwTakv0DyJNzgyKfMNg
-         VS8gThgEqit2kgRpEtBdUIETAZYjbATQpVJxgDa890Pq3ywlBWMSZKUS7sPdNOVp0ybo
-         1KNV6BdKKDf4J1XMjZpAa9d6jz/b1qrwb07TMCxmRdtt6cPcXTdY6zqaY1YZIXaFTMy6
-         mcKPMXLG+ehloUO34F7zqO6n/b3FLBBwo8J5P1m9gJ4rxdvrnQwmM9+kyl4f6294Al2P
-         DKzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ljK8Hs0++npJrSXpORUXvZl0zNOvtiEx3+TTGNivwow=;
-        b=Ipa2pFxxn8PKsSeX2/Bj9bTI5KPWvkpOnMIT/LPVONZ3CAVzC5UmvZ2Be5aEEBQYtu
-         UnwvBgaICLXpbmCDB0O9e0dsaR+RglS8H/tUIhDIERZp9Zt1EiHI9Ez+8KUkIFuFuYHH
-         QIthqEf/h3lvwF2cr0kgxZ0O3R8VJjwfLLo4Fr8d1dpOzYgwg0sadPNpaXcExHLtJr/t
-         L5Vdi4fPlC5LE9z6GWxNKczgCfmE2dpfW6Edal5CgyNvVZBOicYqnTBCfOiGY8Hh4Pb/
-         lrEx4Nip11ySHLe6TyG4cbkpF0Sg8QO7p5Q4DNeU1D7KObDssWYa2NHKK4BoC4SRoFgL
-         voVw==
-X-Gm-Message-State: APjAAAWCIeMhbJbP8yNjB7qH/QWKHL8NSfBAECVbYpN0BGohtxLj7QzR
-        LxvPgsSaQ5QhgvcnmDE5sRmOLGLHa6NgDx+MDCQ=
-X-Google-Smtp-Source: APXvYqwTBV6ldDhgxJZfgv8g1wIst9aUFDKBqL5thaMY9OPo7nS8+uPufwV+J1IPcI25rdxAS/gXfwOxD7MPk8VYgdA=
-X-Received: by 2002:a17:906:1812:: with SMTP id v18mr18959092eje.86.1573405244894;
- Sun, 10 Nov 2019 09:00:44 -0800 (PST)
+        id S1726832AbfKJRAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 12:00:44 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:59144 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726616AbfKJRAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 10 Nov 2019 12:00:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uWWNSJqKsK4gx8+98KOhYrPNuK9UZ/+4RYLTF6up4H4=; b=aDWV7oe+GVGaauLXcjVZwyw7Rp
+        zJkfdsDy5Oq9MxZvlVtXs6Q36b1i/jJFlB3M+TE5W/lt6o/I0XrEcLyjhW870rhXvpgyM95JebJ9Q
+        eO6kAt73PfAYs9LZ9kfDkf3H9rr0iDTUGWcSB+qXtbtL73StQG2uzB40O6dU8ifM5Tho=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iTqZs-0006yf-5J; Sun, 10 Nov 2019 18:00:40 +0100
+Date:   Sun, 10 Nov 2019 18:00:40 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: phy: add core phylib sfp support
+Message-ID: <20191110170040.GG25889@lunn.ch>
+References: <20191110142226.GB25745@shell.armlinux.org.uk>
+ <E1iTo7N-0005Sj-Nk@rmk-PC.armlinux.org.uk>
+ <20191110161307.GC25889@lunn.ch>
+ <20191110164007.GC25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20191109130301.13716-1-olteanv@gmail.com> <20191109130301.13716-16-olteanv@gmail.com>
- <20191110165031.GF25889@lunn.ch>
-In-Reply-To: <20191110165031.GF25889@lunn.ch>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 10 Nov 2019 19:00:33 +0200
-Message-ID: <CA+h21hoDvAX7NgUL0VxkBwyaAst6cr_-xTz9=7T+CANqV=Zv9A@mail.gmail.com>
-Subject: Re: [PATCH net-next 15/15] net: mscc: ocelot: don't hardcode the
- number of the CPU port
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191110164007.GC25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Nov 2019 at 18:50, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sat, Nov 09, 2019 at 03:03:01PM +0200, Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > VSC7514 is a 10-port switch with 2 extra "CPU ports" (targets in the
-> > queuing subsystem for terminating traffic locally).
->
-> So maybe that answers my last question.
->
-> > There are 2 issues with hardcoding the CPU port as #10:
-> > - It is not clear which snippets of the code are configuring something
-> >   for one of the CPU ports, and which snippets are just doing something
-> >   related to the number of physical ports.
-> > - Actually any physical port can act as a CPU port connected to an
-> >   external CPU (in addition to the local CPU). This is called NPI mode
-> >   (Node Processor Interface) and is the way that the 6-port VSC9959
-> >   (Felix) switch is integrated inside NXP LS1028A (the "local management
-> >   CPU" functionality is not used there).
->
-> So i'm having trouble reading this and spotting the difference between
-> the DSA concept of a CPU port and the two extra "CPU ports". Maybe
-> using the concept of virtual ports would help?
->
-> Are the physical ports number 0-9, and so port #10 is the first extra
-> "CPU port", aka a virtual port? And so that would not work for DSA,
-> where you need a physical port.
->
->       Andrew
+On Sun, Nov 10, 2019 at 04:40:07PM +0000, Russell King - ARM Linux admin wrote:
+> On Sun, Nov 10, 2019 at 05:13:07PM +0100, Andrew Lunn wrote:
+> > On Sun, Nov 10, 2019 at 02:23:05PM +0000, Russell King wrote:
+> > > Add core phylib help for supporting SFP sockets on PHYs.  This provides
+> > > a mechanism to inform the SFP layer about PHY up/down events, and also
+> > > unregister the SFP bus when the PHY is going away.
+> > 
+> > Hi Russell
+> > 
+> > What does the device tree binding look like? I think you have SFP
+> > proprieties in the PHYs node?
+> 
+> Correct, just the same as network devices.  Hmm, however, neither are
+> documented... oh dear, it looks like I need to figure out how this
+> yaml stuff works. :(
 
-Right. See my other answer which links to Ocelot documentation. The
-3.14 chapter "CPU Port Module" should clarify. The switch core has a
-number of CPU ports (typically 2) which are to be integrated with
-SoC-specific frame transfer abilities, typically DMA. The way this was
-integrated in LS1028A is described by: "It is also possible to use a
-regular front port as a CPU port. This is known as a Node Processor
-Interface (NPI)." So the embedded switch and the rest of the system
-are strangers and talk over Ethernet (the 2 "virtual" CPU ports are
-not used), hence the reason why the "normal" (virtual, etc) CPU ports
-are better modelled as switchdev and the "NPI" CPU port is better
-modelled as DSA.
+Yes, that would be good. I also assume you have at least one DT patch
+for one of the Marvell boards? Seeing that would also help.
+
+FYI: It is good to see this feature added. It has been blocked for a
+long time, but this implementation is actually nice and simple.
+
+Thanks
+	Andrew
