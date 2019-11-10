@@ -2,182 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 524BFF6215
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:02:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C434CF622D
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 03:40:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbfKJCCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:02:15 -0500
-Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:43019 "EHLO
-        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726537AbfKJCCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 9 Nov 2019 21:02:15 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R241e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01f04391;MF=wenyang@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0ThbLYBI_1573351320;
-Received: from localhost(mailfrom:wenyang@linux.alibaba.com fp:SMTPD_---0ThbLYBI_1573351320)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 10 Nov 2019 10:02:09 +0800
-From:   Wen Yang <wenyang@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     zhiche.yy@alibaba-inc.com, xlpang@linux.alibaba.com,
-        Wen Yang <wenyang@linux.alibaba.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kevin Athey <kda@google.com>,
-        Xiaotian Pei <xiaotian@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: core: fix unbalanced qdisc_run_begin/qdisc_run_end
-Date:   Sun, 10 Nov 2019 10:01:49 +0800
-Message-Id: <20191110020149.65307-1-wenyang@linux.alibaba.com>
-X-Mailer: git-send-email 2.23.0
+        id S1727012AbfKJCkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:40:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34036 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726995AbfKJCkk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:40:40 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2927F215EA;
+        Sun, 10 Nov 2019 02:40:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573353639;
+        bh=+9AgfnQ/f2SSJRj40XnA8qiVKYyV9U3rZ+vwSTSG8zw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WUYLzgwd3phcUUD0hMBO1kIqwdCtWkvxLGlKDdtgr306WyXHH/ds19GkOcUEq1Q0s
+         AMmpe8X3wobJshDC/iuqUs2siYQc10DYoSWq/ZTt1eo52O2sw4BowCrNkD4NsqHwiD
+         dNrSM7X6/w9uFqc1U6rd7OPG9gmf+awGyT7NQvjI=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 023/191] net: hns3: fix return type of ndo_start_xmit function
+Date:   Sat,  9 Nov 2019 21:37:25 -0500
+Message-Id: <20191110024013.29782-23-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191110024013.29782-1-sashal@kernel.org>
+References: <20191110024013.29782-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-3598 static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
-3599                                  struct net_device *dev,
-3600                                  struct netdev_queue *txq)
-3601 {
-...
-3650         } else if ((q->flags & TCQ_F_CAN_BYPASS) && !qdisc_qlen(q) &&
-3651                    qdisc_run_begin(q)) {
+From: YueHaibing <yuehaibing@huawei.com>
 
----> Those multiple *and conditions* in this if statement are not
-     necessarily executed sequentially. If the qdisc_run_begin(q)
-     statement is executed first and the other conditions are not
-     satisfied, qdisc_run_end will have no chance to be executed,
-     and the lowest bit of q->running will always be 1.
-     This may lead to a softlockup:
-     https://bugzilla.kernel.org/show_bug.cgi?id=205427
-...
-3657
-3658                 qdisc_bstats_update(q, skb);
-...
-3661                         if (unlikely(contended)) {
-3662                                 spin_unlock(&q->busylock);
-3663                                 contended = false;
-3664                         }
-3665                         __qdisc_run(q);
-3666                 }
-3667
-3668                 qdisc_run_end(q);
-3669                 rc = NET_XMIT_SUCCESS;
-3670         }
-...
+[ Upstream commit c9c3941186c5637caed131c4f4064411d6882299 ]
 
-We ensure the correct execution order by explicitly
-specifying those dependencies.
-Fixes: edb09eb17ed8 ("net: sched: do not acquire qdisc spinlock in qdisc/class stats dump")
-Signed-off-by: Wen Yang <wenyang@linux.alibaba.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Kevin Athey <kda@google.com>
-Cc: Xiaotian Pei <xiaotian@google.com>
-Cc: netdev@vger.kernel.org
-Cc: bpf@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+The method ndo_start_xmit() is defined as returning an 'netdev_tx_t',
+which is a typedef for an enum type, also the implementation in this
+driver has returns 'netdev_tx_t' value, so just change the function
+return type to netdev_tx_t.
+
+Found by coccinelle.
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 63 ++++++++++++++++++++++++++++++----------------------------
- 1 file changed, 33 insertions(+), 30 deletions(-)
+ drivers/net/ethernet/hisilicon/hip04_eth.c    | 3 ++-
+ drivers/net/ethernet/hisilicon/hix5hd2_gmac.c | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 20c7a67..d2690ee 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3602,27 +3602,28 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 	spinlock_t *root_lock = qdisc_lock(q);
- 	struct sk_buff *to_free = NULL;
- 	bool contended;
--	int rc;
-+	int rc = NET_XMIT_SUCCESS;
+diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
+index a91d49dd92ea6..eaa0c579d49f5 100644
+--- a/drivers/net/ethernet/hisilicon/hip04_eth.c
++++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
+@@ -423,7 +423,8 @@ static void hip04_start_tx_timer(struct hip04_priv *priv)
+ 			       ns, HRTIMER_MODE_REL);
+ }
  
- 	qdisc_calculate_pkt_len(skb, q);
+-static int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
++static netdev_tx_t
++hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	struct hip04_priv *priv = netdev_priv(ndev);
+ 	struct net_device_stats *stats = &ndev->stats;
+diff --git a/drivers/net/ethernet/hisilicon/hix5hd2_gmac.c b/drivers/net/ethernet/hisilicon/hix5hd2_gmac.c
+index c5727003af8c1..471805ea363b6 100644
+--- a/drivers/net/ethernet/hisilicon/hix5hd2_gmac.c
++++ b/drivers/net/ethernet/hisilicon/hix5hd2_gmac.c
+@@ -736,7 +736,7 @@ static int hix5hd2_fill_sg_desc(struct hix5hd2_priv *priv,
+ 	return 0;
+ }
  
- 	if (q->flags & TCQ_F_NOLOCK) {
--		if ((q->flags & TCQ_F_CAN_BYPASS) && q->empty &&
--		    qdisc_run_begin(q)) {
--			if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED,
--					      &q->state))) {
--				__qdisc_drop(skb, &to_free);
--				rc = NET_XMIT_DROP;
--				goto end_run;
--			}
--			qdisc_bstats_cpu_update(q, skb);
-+		if ((q->flags & TCQ_F_CAN_BYPASS) && q->empty) {
-+			if (qdisc_run_begin(q)) {
-+				if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED,
-+						      &q->state))) {
-+					__qdisc_drop(skb, &to_free);
-+					rc = NET_XMIT_DROP;
-+					goto end_run;
-+				}
-+				qdisc_bstats_cpu_update(q, skb);
- 
--			rc = NET_XMIT_SUCCESS;
--			if (sch_direct_xmit(skb, q, dev, txq, NULL, true))
--				__qdisc_run(q);
-+				if (sch_direct_xmit(skb, q, dev, txq, NULL,
-+						    true))
-+					__qdisc_run(q);
- 
- end_run:
--			qdisc_run_end(q);
-+				qdisc_run_end(q);
-+			}
- 		} else {
- 			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
- 			qdisc_run(q);
-@@ -3647,26 +3648,28 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
- 	if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
- 		__qdisc_drop(skb, &to_free);
- 		rc = NET_XMIT_DROP;
--	} else if ((q->flags & TCQ_F_CAN_BYPASS) && !qdisc_qlen(q) &&
--		   qdisc_run_begin(q)) {
--		/*
--		 * This is a work-conserving queue; there are no old skbs
--		 * waiting to be sent out; and the qdisc is not running -
--		 * xmit the skb directly.
--		 */
-+	} else if ((q->flags & TCQ_F_CAN_BYPASS) && !qdisc_qlen(q)) {
-+		if (qdisc_run_begin(q)) {
-+			/* This is a work-conserving queue;
-+			 * there are no old skbs waiting to be sent out;
-+			 * and the qdisc is not running -
-+			 * xmit the skb directly.
-+			 */
- 
--		qdisc_bstats_update(q, skb);
-+			qdisc_bstats_update(q, skb);
- 
--		if (sch_direct_xmit(skb, q, dev, txq, root_lock, true)) {
--			if (unlikely(contended)) {
--				spin_unlock(&q->busylock);
--				contended = false;
-+			if (sch_direct_xmit(skb, q, dev, txq, root_lock,
-+					    true)) {
-+				if (unlikely(contended)) {
-+					spin_unlock(&q->busylock);
-+					contended = false;
-+				}
-+				__qdisc_run(q);
- 			}
--			__qdisc_run(q);
--		}
- 
--		qdisc_run_end(q);
--		rc = NET_XMIT_SUCCESS;
-+			qdisc_run_end(q);
-+			rc = NET_XMIT_SUCCESS;
-+		}
- 	} else {
- 		rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
- 		if (qdisc_run_begin(q)) {
+-static int hix5hd2_net_xmit(struct sk_buff *skb, struct net_device *dev)
++static netdev_tx_t hix5hd2_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct hix5hd2_priv *priv = netdev_priv(dev);
+ 	struct hix5hd2_desc *desc;
 -- 
-1.8.3.1
+2.20.1
 
