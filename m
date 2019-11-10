@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33115F68C3
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 12:44:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E15AEF68D1
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 12:54:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbfKJLoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 06:44:30 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:40274 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbfKJLoa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 06:44:30 -0500
-Received: by mail-pf1-f195.google.com with SMTP id r4so8366286pfl.7
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 03:44:30 -0800 (PST)
+        id S1726656AbfKJLyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 06:54:17 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37868 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726617AbfKJLyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 06:54:17 -0500
+Received: by mail-pl1-f193.google.com with SMTP id g8so2215942plt.4
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 03:54:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=i3M2XFh7zCkdkyqXSHfgQMzIjNF+fRtqb7jKC3Ogcu4=;
-        b=Ov5YNZKypBr5YJYT3x/CBi3HHSHsDdBLiPC+sS6PsmSzav/ssrEENWdyVSZNZNBHTx
-         lb33sMUAvfjz8/zTJbDReV5qQ4g9j8h1So3M7lUzz8m2za/MEYq4PqHqH1+jSNRMZy0H
-         fLyBK70PF9951ehGYzsaEqVLEeocI3yQZJXD31Juq5J6Pmvx70YBqNiuh7VQ1PmvCiJm
-         GbcHgXvb8LJa75RgZ+nyjAgR5/pPAV6o6CmuBiWXisRlR67ACmPy2ZOQn95KloGotSoB
-         7jQ6GxitQv1lB157XAxBExmPkiOuvuE09t9FcbEriRHuBsXNI6fkfBzAb41d53mnF52c
-         +E9Q==
+        bh=slcDd6mBj/FzNCchVLX/2U16a5BQK+C9W1oPutDB+FY=;
+        b=PHaDAg33GM4aB6ox69KX5q3AuIdibjsDyzh2esCrlPQodgb6Q8IQxYgn3SAza/vU/g
+         +FSA4T64rCu0uGqSuSH9Y8egJ5YbgFzp0a45mZzRVBh0RF6Vg3UuG02gzcxowxXFNEwO
+         hrKfTVuvfBWXVT+DyrQAGLzCWif9ujkXuHutJDJnrKKI2EZBBD69Vq9XWouqTa29BFbu
+         wfm+0GsUjkpB8TS86I1GDziOR2Mr7iNnLRUZ69+wz9kMIAbK/WQG7Q2hOiZru1pJ602D
+         Rkey7wdIEeAlXxS4In5cQtHsPHz/AucAHdEDPYeBC58XO8n43KXcbCSWVFoX3Z7tuwhR
+         ZsTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=i3M2XFh7zCkdkyqXSHfgQMzIjNF+fRtqb7jKC3Ogcu4=;
-        b=q0GjF0DNvhX1y6LYicxesLpnOyrK50uOinQX+IZE2F5SsM1zGpZboqH2R+BOwjsX81
-         qkbTYQmOy2vI3flWRrp3laEjIn5SRybcdaOXcta2wv+EsjyNcRqkGsNpR/IRFV2hMtWh
-         QUSPwxjqygsBOEV51y1yGAEEkkqfPAxOkNQvusVYiikBzcjgTyPmnnyGH5sD6rrC/K2W
-         6axtMyHNYBBUoBoO5CUvzO2gAMfLCu/bDasQketwChYpmjxPurbzWhbpt0/+ft/zy7mz
-         JUyBAPeTtyfapZez8Iri5+yRvnozV8JL3XOQ0/KWvkBEV8vfakQgVKMdF2KDEZ6sFUtG
-         l3ww==
-X-Gm-Message-State: APjAAAWcCGPAeGHnNflC4O66qNjBuvhNQUFdjAfuSHbJZ2ZG58vKZvr2
-        g4UGhCTQeW4bfjd1RZetHsA=
-X-Google-Smtp-Source: APXvYqy8P4cX0n0/ML3NVtEBK9bsHtekfAcJaeYaykCa1SOXYh90GXcdkop3t/LTDy/Hvdw9DYHU/g==
-X-Received: by 2002:a62:7697:: with SMTP id r145mr22931053pfc.261.1573386269810;
-        Sun, 10 Nov 2019 03:44:29 -0800 (PST)
+        bh=slcDd6mBj/FzNCchVLX/2U16a5BQK+C9W1oPutDB+FY=;
+        b=HMYzuJuq22qX0U71ssOyau9+KYNGNJbnZ9HOMXcaulP/VfcJfBi8dYhMoBFfIrhFds
+         rCfxlb8gbTsdeTn48JUAVTkjxSY+juPjfOENTSjKmrIMVErzo1TDIUnuShmtIIkCMM6X
+         htmES1b5SByu5d79V8VtLnuPZtxbxJSgASiM7D7Sc3CQSGiZbEeMY9lfsNntxtCRzLyO
+         nDlpQahN8YYPzWe1ABfLjL9RvHlLKhicxd1IghTcJndOMLUro46B57aoAjAZ7MrOTtYN
+         dvO/3748EknAnVLOy8j/U10bZy41QDy/e+8Ui+6Te2k2Ygvg2f5h0hwH8wQzOIyhL5SR
+         gycQ==
+X-Gm-Message-State: APjAAAVkIt7ybZx593fcyRDi1VUhJtbAeMToxjbZu9ZJDrmqyaRM88F9
+        ERRAVRmZnFuEmTs8ne+Pd6o=
+X-Google-Smtp-Source: APXvYqwX7zddhuOFckIKbKkb8Cp4IAz3Yj6GoM3R23UzjwFqXTB2d7H1IbNw0gPOyKuV/lbFNBwOSA==
+X-Received: by 2002:a17:902:6b4b:: with SMTP id g11mr20599949plt.196.1573386856077;
+        Sun, 10 Nov 2019 03:54:16 -0800 (PST)
 Received: from local.opencloud.tech.localdomain ([203.100.54.194])
-        by smtp.gmail.com with ESMTPSA id g6sm10820808pfh.125.2019.11.10.03.44.27
+        by smtp.gmail.com with ESMTPSA id l62sm11587886pgl.24.2019.11.10.03.54.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 10 Nov 2019 03:44:29 -0800 (PST)
+        Sun, 10 Nov 2019 03:54:15 -0800 (PST)
 From:   xiangxia.m.yue@gmail.com
 To:     pshelar@ovn.org, blp@ovn.org
 Cc:     netdev@vger.kernel.org, dev@openvswitch.org, ychen103103@163.com,
         Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next] net: openvswitch: add hash info to upcall
-Date:   Sun, 10 Nov 2019 19:44:18 +0800
-Message-Id: <1573386258-35040-1-git-send-email-xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v2] net: openvswitch: add hash info to upcall
+Date:   Sun, 10 Nov 2019 19:54:04 +0800
+Message-Id: <1573386844-35344-1-git-send-email-xiangxia.m.yue@gmail.com>
 X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -79,7 +79,7 @@ from rest packets. The topo is shown.
 
 $ ovs-vsctl add-br br-int
 $ ovs-vsctl add-port br-int vxl0 -- \
-		set Interface vxl0 type=vxlan options:key=100 options:remote_ip=1.1.1.200
+                set Interface vxl0 type=vxlan options:key=100 options:remote_ip=1.1.1.200
 
 $ __tap is internal type on host
 $ or tap net device for VM/Dockers
@@ -100,10 +100,12 @@ $ ovs-vsctl add-port br-int __tap
 Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
 Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 ---
+v2: add define before #endif
+---
  include/uapi/linux/openvswitch.h |  2 ++
  net/openvswitch/datapath.c       | 31 ++++++++++++++++++++++++++++++-
- net/openvswitch/datapath.h       |  3 +++
- 3 files changed, 35 insertions(+), 1 deletion(-)
+ net/openvswitch/datapath.h       |  4 ++++
+ 3 files changed, 36 insertions(+), 1 deletion(-)
 
 diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
 index 1887a451c388..1c58e019438e 100644
@@ -196,16 +198,18 @@ index 2088619c03f0..f938c43e3085 100644
  	flow = ovs_flow_alloc();
  	err = PTR_ERR(flow);
 diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-index 81e85dde8217..ba89a08647ac 100644
+index 81e85dde8217..b95f322fc752 100644
 --- a/net/openvswitch/datapath.h
 +++ b/net/openvswitch/datapath.h
-@@ -248,3 +248,6 @@ do {								\
+@@ -247,4 +247,8 @@ do {								\
+ 	if (logging_allowed && net_ratelimit())			\
  		pr_info("netlink: " fmt "\n", ##__VA_ARGS__);	\
  } while (0)
- #endif /* datapath.h */
 +
 +#define OVS_PACKET_HASH_SW	(1ULL << 32)
 +#define OVS_PACKET_HASH_L4	(1ULL << 33)
++
+ #endif /* datapath.h */
 -- 
 2.23.0
 
