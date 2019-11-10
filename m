@@ -2,56 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 391C1F6AB9
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 19:19:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC3AF6ACC
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 19:35:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727046AbfKJSTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 13:19:47 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59330 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726684AbfKJSTr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Nov 2019 13:19:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=bUNh01Emfi6h124v+a0B5g8+8uuBEOeNkKNUnbSVWoE=; b=02Mz1cUUnv9ByASYWP63ht4fMy
-        IS7vJXIfwh9HQZCmfLtHq8/3ujA0kFgkrI/v+Y2sbRfxtg+VNYascXNQDcH5ktkmPaWRlnBObGd9A
-        79i9Ih4rY937APY2fdLb/FXQh25GgKY5LVQm6+tihARm38zbIdlZQQaWrFpo7xmga6Ww=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iTroN-0007IS-0U; Sun, 10 Nov 2019 19:19:43 +0100
-Date:   Sun, 10 Nov 2019 19:19:42 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 09/17] net: sfp: split the PHY probe from
- sfp_sm_mod_init()
-Message-ID: <20191110181942.GU25889@lunn.ch>
-References: <20191110140530.GA25745@shell.armlinux.org.uk>
- <E1iTnri-0005Aq-CV@rmk-PC.armlinux.org.uk>
+        id S1727076AbfKJSfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 13:35:00 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41117 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726925AbfKJSe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 13:34:59 -0500
+Received: by mail-qt1-f195.google.com with SMTP id o3so13190891qtj.8;
+        Sun, 10 Nov 2019 10:34:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zm/3EwpJ2HpVRswz/zK4pzpGrD4TVxZKrD3+K9GZ4iY=;
+        b=qyoFa2xMNU4aHM0tqRiizc+I4yFfG2qUhJY8hFVBCtjfRziHa1sqeNW4k37xkdowsD
+         HSioVdyS2U6Y+bp97yrVMBZtO/zUlPGNAFzos+0RyfIOpopNWm0wd0/h2MibF13RTzbT
+         xm0WOtxnZhUXRntduQDq3o2bdFj2QXCZK+bXehhUOMLceeXXhzOfGWqHdDlP6oTabXdE
+         be6DFgNyqnvwVNdre13ZLwDxQJ2Qef97qQXP2gA0vdy7c/wCaa/hdlY14EfYSNPVQ5Mq
+         02zcGRuLwN7uWT3kLe6JeosMm9J5xIuFHmSwFomCh9pQmupQ3mj0LFkMxyQV/NiK/qRv
+         ws5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zm/3EwpJ2HpVRswz/zK4pzpGrD4TVxZKrD3+K9GZ4iY=;
+        b=bS1MR2igA/PI3jXQFBfKcij3vRtFjpFVspnKAGEuaYBBS1opEFUaG7LTizSxPudtEK
+         FiIWHAbmLTVSUwL5/yE9LYQdyoFpAdI0cOtzjqcdPo/7sO7nVyX//Zz3F5kojU7JKrmw
+         45wK7bDXj1mECoJyrCDiPuy+eojb+u2b8TiNJKDhscIscnyYyngaeXG/PTVjQtekZjbO
+         KOLvYhqtItq9fB8l0iRbYZwrK5j1ZnRvrYNPME/0q2wO8yTpsIQEcMrBUCsl3pR/Jcs3
+         g3yXCvvs0K+O5uYHpgvUw/oXeNTkC4+OJ/1WAZblRPFUeaM6GlR+4Dukd6KaAkWxpp2X
+         J80g==
+X-Gm-Message-State: APjAAAXOu3fLBRVKnvnQ2utb6wGQb4ttgJa7Dk4g/JPp5AcTSRqJoO8Z
+        WH4DsXbIIfDAB7eC8F95zF5+fs2yAmL+1I5zPpM=
+X-Google-Smtp-Source: APXvYqxarf+BC2SmHAOJYwNrNQEO7/OrZnjZYBOKjwnb1bDVNyRuTbkekrIcgN23y7HGVYvqMYxtEFMSNZhCChe82OQ=
+X-Received: by 2002:ac8:30f4:: with SMTP id w49mr22735294qta.35.1573410898868;
+ Sun, 10 Nov 2019 10:34:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1iTnri-0005Aq-CV@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1573148860-30254-1-git-send-email-magnus.karlsson@intel.com>
+ <1573148860-30254-2-git-send-email-magnus.karlsson@intel.com> <90122A08-8AF0-4B22-886F-C863D96D119E@gmail.com>
+In-Reply-To: <90122A08-8AF0-4B22-886F-C863D96D119E@gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Sun, 10 Nov 2019 10:34:20 -0800
+Message-ID: <CALDO+SaLAQaMixtzA2VEq4a08KJnm8M5hiyC0P0xmPaMjdq05w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/5] libbpf: support XDP_SHARED_UMEM with
+ external XDP program
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 10, 2019 at 02:06:54PM +0000, Russell King wrote:
-> Move the PHY probe into a separate function, splitting it from
-> sfp_sm_mod_init().  This will allow us to eliminate the 50ms mdelay()
-> inside the state machine.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+On Fri, Nov 8, 2019 at 2:56 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>
+>
+>
+> On 7 Nov 2019, at 9:47, Magnus Karlsson wrote:
+>
+> > Add support in libbpf to create multiple sockets that share a single
+> > umem. Note that an external XDP program need to be supplied that
+> > routes the incoming traffic to the desired sockets. So you need to
+> > supply the libbpf_flag XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD and load
+> > your own XDP program.
+> >
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+>
+> Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+Tested-by: William Tu <u9012063@gmail.com>
