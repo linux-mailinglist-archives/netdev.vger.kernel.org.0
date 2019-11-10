@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C88CDF6690
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:15:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 34C72F6693
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 04:15:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727629AbfKJClw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 9 Nov 2019 21:41:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36714 "EHLO mail.kernel.org"
+        id S1727671AbfKJCl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 9 Nov 2019 21:41:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727611AbfKJClu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 9 Nov 2019 21:41:50 -0500
+        id S1727640AbfKJCly (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 9 Nov 2019 21:41:54 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E2E4A20650;
-        Sun, 10 Nov 2019 02:41:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BC50921019;
+        Sun, 10 Nov 2019 02:41:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573353709;
-        bh=E6NZP6ynkriCsftnvRMiOdDW/QfXQMjf7r0Z3bIB+9g=;
+        s=default; t=1573353713;
+        bh=tcqXIsDZ/fwaw6bNtdBN2YjV3WXKhsfVXHfENSPcaYM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lwcQ2ZmnyJep36azdb+xgyGzOSYgjkGOnrff6NIGU/QHnQFHXU81AAHAWe/rCsneM
-         oQ0NkfaMCvnFOXyVAkDRIW7qYSAUbcvITQ25Fuhkbwfb43hmH981ANIswhegZ+AjBL
-         HLCgYVoCK+ykD7Vvo5z09nMSz5LhJZXRTzMeOpk0=
+        b=dslDZ1XVeE8pEIhsNZGmj3qxlGZFqiB+y76JLtXjxfaAOS+gnA/txP0BOzf2Vwbjx
+         X2Rw9Nkj49i3EzBUEeoj/bv+yCDHJX76VBo09afUgu55bPe+TXVmtZ5BKJ5q4B/SId
+         XaKyb9Odm1KA5t56mk7MyncpPSsnvUAZzPeP4ohg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jian Shen <shenjian15@huawei.com>, Peng Li <lipeng321@huawei.com>,
         Salil Mehta <salil.mehta@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 048/191] net: hns3: Clear client pointer when initialize client failed or unintialize finished
-Date:   Sat,  9 Nov 2019 21:37:50 -0500
-Message-Id: <20191110024013.29782-48-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 049/191] net: hns3: Fix client initialize state issue when roce client initialize failed
+Date:   Sat,  9 Nov 2019 21:37:51 -0500
+Message-Id: <20191110024013.29782-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191110024013.29782-1-sashal@kernel.org>
 References: <20191110024013.29782-1-sashal@kernel.org>
@@ -46,13 +46,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-[ Upstream commit 49dd80541c75c2f21c28bbbdd958e993b55bf97b ]
+[ Upstream commit d9f28fc23d544f673d087b00a6c7132d972f89ea ]
 
-If initialize client failed or finish uninitializing client, we should
-clear the client pointer. It may cause unexpected result when use
-uninitialized client. Meanwhile, we also should check whether client
-exist when uninitialize it.
+When roce is loaded before nic, the roce client will not be initialized
+until nic client is initialized, but roce init flag is set before it.
+Furthermore, in this case of nic initialized success and roce failed,
+the nic init flag is not set, and roce init flag is not cleared.
 
+This patch fixes it by set init flag only after the client is initialized
+successfully.
+
+Fixes: e2cb1dec9779 ("net: hns3: Add HNS3 VF HCL(Hardware Compatibility Layer) Support")
 Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine & Compatibility Layer Support")
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Peng Li <lipeng321@huawei.com>
@@ -60,174 +64,146 @@ Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 25 +++++++++-----
- .../hisilicon/hns3/hns3vf/hclgevf_main.c      | 33 ++++++++++++++-----
- 2 files changed, 41 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hnae3.c          | 12 +++++-------
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h          |  3 +++
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c  |  9 +++++++++
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c    |  9 +++++++++
+ 4 files changed, 26 insertions(+), 7 deletions(-)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.c b/drivers/net/ethernet/hisilicon/hns3/hnae3.c
+index 0594a6c3dccda..2097f92e14c5c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.c
+@@ -29,8 +29,8 @@ static bool hnae3_client_match(enum hnae3_client_type client_type,
+ 	return false;
+ }
+ 
+-static void hnae3_set_client_init_flag(struct hnae3_client *client,
+-				       struct hnae3_ae_dev *ae_dev, int inited)
++void hnae3_set_client_init_flag(struct hnae3_client *client,
++				struct hnae3_ae_dev *ae_dev, int inited)
+ {
+ 	switch (client->type) {
+ 	case HNAE3_CLIENT_KNIC:
+@@ -46,6 +46,7 @@ static void hnae3_set_client_init_flag(struct hnae3_client *client,
+ 		break;
+ 	}
+ }
++EXPORT_SYMBOL(hnae3_set_client_init_flag);
+ 
+ static int hnae3_get_client_init_flag(struct hnae3_client *client,
+ 				       struct hnae3_ae_dev *ae_dev)
+@@ -86,14 +87,11 @@ static int hnae3_match_n_instantiate(struct hnae3_client *client,
+ 	/* now, (un-)instantiate client by calling lower layer */
+ 	if (is_reg) {
+ 		ret = ae_dev->ops->init_client_instance(client, ae_dev);
+-		if (ret) {
++		if (ret)
+ 			dev_err(&ae_dev->pdev->dev,
+ 				"fail to instantiate client, ret = %d\n", ret);
+-			return ret;
+-		}
+ 
+-		hnae3_set_client_init_flag(client, ae_dev, 1);
+-		return 0;
++		return ret;
+ 	}
+ 
+ 	if (hnae3_get_client_init_flag(client, ae_dev)) {
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+index 67befff0bfc50..f5c7fc9c5e5cc 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
+@@ -521,4 +521,7 @@ void hnae3_register_ae_algo(struct hnae3_ae_algo *ae_algo);
+ 
+ void hnae3_unregister_client(struct hnae3_client *client);
+ int hnae3_register_client(struct hnae3_client *client);
++
++void hnae3_set_client_init_flag(struct hnae3_client *client,
++				struct hnae3_ae_dev *ae_dev, int inited);
+ #endif
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 6907280d316fb..671144d1f14ac 100644
+index 671144d1f14ac..5b579a740e5d1 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -5467,13 +5467,13 @@ static int hclge_init_client_instance(struct hnae3_client *client,
- 			vport->nic.client = client;
- 			ret = client->ops->init_instance(&vport->nic);
- 			if (ret)
--				return ret;
-+				goto clear_nic;
- 
- 			ret = hclge_init_instance_hw(hdev);
- 			if (ret) {
- 			        client->ops->uninit_instance(&vport->nic,
- 			                                     0);
--			        return ret;
-+				goto clear_nic;
+@@ -5476,6 +5476,8 @@ static int hclge_init_client_instance(struct hnae3_client *client,
+ 				goto clear_nic;
  			}
  
++			hnae3_set_client_init_flag(client, ae_dev, 1);
++
  			if (hdev->roce_client &&
-@@ -5482,11 +5482,11 @@ static int hclge_init_client_instance(struct hnae3_client *client,
- 
- 				ret = hclge_init_roce_base_info(vport);
- 				if (ret)
--					return ret;
-+					goto clear_roce;
- 
+ 			    hnae3_dev_roce_supported(hdev)) {
+ 				struct hnae3_client *rc = hdev->roce_client;
+@@ -5487,6 +5489,9 @@ static int hclge_init_client_instance(struct hnae3_client *client,
  				ret = rc->ops->init_instance(&vport->roce);
  				if (ret)
--					return ret;
-+					goto clear_roce;
+ 					goto clear_roce;
++
++				hnae3_set_client_init_flag(hdev->roce_client,
++							   ae_dev, 1);
  			}
  
  			break;
-@@ -5496,7 +5496,7 @@ static int hclge_init_client_instance(struct hnae3_client *client,
- 
- 			ret = client->ops->init_instance(&vport->nic);
+@@ -5498,6 +5503,8 @@ static int hclge_init_client_instance(struct hnae3_client *client,
  			if (ret)
--				return ret;
-+				goto clear_nic;
+ 				goto clear_nic;
  
++			hnae3_set_client_init_flag(client, ae_dev, 1);
++
  			break;
  		case HNAE3_CLIENT_ROCE:
-@@ -5508,16 +5508,25 @@ static int hclge_init_client_instance(struct hnae3_client *client,
- 			if (hdev->roce_client && hdev->nic_client) {
- 				ret = hclge_init_roce_base_info(vport);
- 				if (ret)
--					return ret;
-+					goto clear_roce;
- 
+ 			if (hnae3_dev_roce_supported(hdev)) {
+@@ -5513,6 +5520,8 @@ static int hclge_init_client_instance(struct hnae3_client *client,
  				ret = client->ops->init_instance(&vport->roce);
  				if (ret)
--					return ret;
-+					goto clear_roce;
+ 					goto clear_roce;
++
++				hnae3_set_client_init_flag(client, ae_dev, 1);
  			}
  		}
  	}
- 
- 	return 0;
-+
-+clear_nic:
-+	hdev->nic_client = NULL;
-+	vport->nic.client = NULL;
-+	return ret;
-+clear_roce:
-+	hdev->roce_client = NULL;
-+	vport->roce.client = NULL;
-+	return ret;
- }
- 
- static void hclge_uninit_client_instance(struct hnae3_client *client,
-@@ -5537,7 +5546,7 @@ static void hclge_uninit_client_instance(struct hnae3_client *client,
- 		}
- 		if (client->type == HNAE3_CLIENT_ROCE)
- 			return;
--		if (client->ops->uninit_instance) {
-+		if (hdev->nic_client && client->ops->uninit_instance) {
- 			hclge_uninit_instance_hw(hdev);
- 			client->ops->uninit_instance(&vport->nic, 0);
- 			hdev->nic_client = NULL;
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 5570fb5dc2eb4..83fcdd326de71 100644
+index 83fcdd326de71..beae1e2cd59b1 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -1629,17 +1629,17 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
- 
- 		ret = client->ops->init_instance(&hdev->nic);
+@@ -1631,6 +1631,8 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
  		if (ret)
--			return ret;
-+			goto clear_nic;
+ 			goto clear_nic;
  
++		hnae3_set_client_init_flag(client, ae_dev, 1);
++
  		if (hdev->roce_client && hnae3_dev_roce_supported(hdev)) {
  			struct hnae3_client *rc = hdev->roce_client;
  
- 			ret = hclgevf_init_roce_base_info(hdev);
- 			if (ret)
--				return ret;
-+				goto clear_roce;
+@@ -1640,6 +1642,9 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
  			ret = rc->ops->init_instance(&hdev->roce);
  			if (ret)
--				return ret;
-+				goto clear_roce;
+ 				goto clear_roce;
++
++			hnae3_set_client_init_flag(hdev->roce_client, ae_dev,
++						   1);
  		}
  		break;
  	case HNAE3_CLIENT_UNIC:
-@@ -1648,7 +1648,7 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
- 
+@@ -1649,6 +1654,8 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
  		ret = client->ops->init_instance(&hdev->nic);
  		if (ret)
--			return ret;
-+			goto clear_nic;
+ 			goto clear_nic;
++
++		hnae3_set_client_init_flag(client, ae_dev, 1);
  		break;
  	case HNAE3_CLIENT_ROCE:
  		if (hnae3_dev_roce_supported(hdev)) {
-@@ -1659,15 +1659,24 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
- 		if (hdev->roce_client && hdev->nic_client) {
- 			ret = hclgevf_init_roce_base_info(hdev);
+@@ -1665,6 +1672,8 @@ static int hclgevf_init_client_instance(struct hnae3_client *client,
  			if (ret)
--				return ret;
-+				goto clear_roce;
- 
- 			ret = client->ops->init_instance(&hdev->roce);
- 			if (ret)
--				return ret;
-+				goto clear_roce;
+ 				goto clear_roce;
  		}
++
++		hnae3_set_client_init_flag(client, ae_dev, 1);
  	}
  
  	return 0;
-+
-+clear_nic:
-+	hdev->nic_client = NULL;
-+	hdev->nic.client = NULL;
-+	return ret;
-+clear_roce:
-+	hdev->roce_client = NULL;
-+	hdev->roce.client = NULL;
-+	return ret;
- }
- 
- static void hclgevf_uninit_client_instance(struct hnae3_client *client,
-@@ -1676,13 +1685,19 @@ static void hclgevf_uninit_client_instance(struct hnae3_client *client,
- 	struct hclgevf_dev *hdev = ae_dev->priv;
- 
- 	/* un-init roce, if it exists */
--	if (hdev->roce_client)
-+	if (hdev->roce_client) {
- 		hdev->roce_client->ops->uninit_instance(&hdev->roce, 0);
-+		hdev->roce_client = NULL;
-+		hdev->roce.client = NULL;
-+	}
- 
- 	/* un-init nic/unic, if this was not called by roce client */
--	if ((client->ops->uninit_instance) &&
--	    (client->type != HNAE3_CLIENT_ROCE))
-+	if (client->ops->uninit_instance && hdev->nic_client &&
-+	    client->type != HNAE3_CLIENT_ROCE) {
- 		client->ops->uninit_instance(&hdev->nic, 0);
-+		hdev->nic_client = NULL;
-+		hdev->nic.client = NULL;
-+	}
- }
- 
- static int hclgevf_pci_init(struct hclgevf_dev *hdev)
 -- 
 2.20.1
 
