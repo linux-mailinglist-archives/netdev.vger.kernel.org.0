@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D129F6B56
-	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 21:32:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A94F6B59
+	for <lists+netdev@lfdr.de>; Sun, 10 Nov 2019 21:34:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbfKJUcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 15:32:41 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:37723 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726856AbfKJUcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 15:32:41 -0500
-Received: by mail-pl1-f194.google.com with SMTP id g8so2660447plt.4
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 12:32:40 -0800 (PST)
+        id S1727073AbfKJUeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 15:34:05 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:42006 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726965AbfKJUeF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 15:34:05 -0500
+Received: by mail-pg1-f193.google.com with SMTP id q17so7956167pgt.9
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 12:34:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cGsR5WngjJ6vlJ/9N7eXh+HPWceHblVfJN5R+oJU0ho=;
-        b=fVy+394BGOzOnm65Hb7ehesJCIphLGVZYc/9Rimg/RazDJ2/E4iAyEMPLz2Tvs+so9
-         cFcYAHCQbz4Nre+CwYacNZtO6AVqdyL1rhsj2655W8rPPbkH8l7N2wxbzNVEMsh2v2sO
-         fiiCUfGKubfY6eCJXUnPFbFD8O9oNhL8upC+KsGi+MCRIY0v8b03x+9xt9IRS9swVwpC
-         yAjL1A8+IhMOLd9iDrBzuHBpg205+8HwVDgXgQUPI/wdobFPG1GCzMAiGlAzYUlzSa6u
-         6KJfVmZN5hR7Vxvs9I/7oV0yoHlpsGZ4Nz7CqQxuIEUZijAgDh/VrOmv9k4HCibwdhwe
-         sq1A==
+        bh=zeyXL9EBqLifVcUFGXVoKedqOJMbrsEvfongGwHV/ug=;
+        b=Dno+oIX1vTGCT0rXZqaFwWCPIMoquTxttsMhY2oPYJdJ3gs8lyhWiA+C4G3oWbQAo6
+         Zd3Kek81Ni1VOCD0T3gUIIo4OQxj2rVlZ6WegGCGXhfFVUjUXxJfZh3mqeZ9PQlfR6xr
+         J1bXD7OjMqmMd78ySNhc/2SjxvC2e+2NiV55qwHVu/WSV48hjD/Yb4KdIkAcjaA652y0
+         yrupZI6Tt4LB9m9Z+3/X0Pgdsas+bRpmlcPrcm9lPQQpyzgnLORy87mS6QO8+W8tt5Lx
+         3Uw4u7TV1+ZUWBZNUY1eUkoJj5RxCRm6UCB3z+TFnu4lFU1w2Pi0cSWPaEO6NuEUE5SV
+         ddFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=cGsR5WngjJ6vlJ/9N7eXh+HPWceHblVfJN5R+oJU0ho=;
-        b=dGPIj2EZa3DAeVFLL3ssLc2j/D/KB/0zHreun3whCv2mYHZJdilULXcR5zdgLiB4SQ
-         BTnl77+y5DQGo1usUg5bjSTAAzJ89LltVxMSt7DpAETrrsNu1PcbLkMk7ZITHOSnLoUS
-         06ohSBI7Cus0RxA4TKBP335tIUnQ/w9212/HCaTFLWC1FuTmLJsjmi3osNy76d2YU7Z0
-         OQalnexhiU/k0ecOYEvFT+zb1u/tHRd3J3OAMGHVWBOw520NLJXVO0UFsdgb9br1GNFC
-         TMUw1/JJCtdoisw6/lZkP3XfZAN1Emiv3JNBZptRPjZ/YC11cBEs89oT39suAWbBfyad
-         2euQ==
-X-Gm-Message-State: APjAAAX7jm9GMMEnq22x98kdSsALFjQg5fepUu1Zpz98ocNSX/OO79lY
-        DDJyaUH4SjJ7MAyb5MesbsM=
-X-Google-Smtp-Source: APXvYqz2iV9/I/iJ1sYmdc/5PANZgu0jsuKh1WpOj1SEhxX4aAXpXPTx4axizD+Xmbt9aKqnmE12aw==
-X-Received: by 2002:a17:902:7790:: with SMTP id o16mr20489198pll.47.1573417960034;
-        Sun, 10 Nov 2019 12:32:40 -0800 (PST)
+        bh=zeyXL9EBqLifVcUFGXVoKedqOJMbrsEvfongGwHV/ug=;
+        b=lxjzU3dZtNdq0NBrTbjI+TpAEcbBFyqc1eYc0EzUWZY6LbTZCmoQBzgljrPli0H7cd
+         LhN6bQujI6ifNg6tZwvn/ZLNwgxks+KtiD+t+JgrMi56zt+JPPDY6xrB8IUWoRu5NPnY
+         7DxhzBYojEWUEpzbbRm1R6Uieyu7sFBGza6qt5Z5RlohuD3djR5OtilmQdoa9cUEWOft
+         XB2PIn1gBUneKJNfJbgxms3pS6zPUg2tztWdAlHFHFnYzjOOscpkHsGOmLaw5TbvQlwN
+         RCkwIZvV7s2fRh6Qapz20lzXuOjlORyOlxPAUG77q0IrPWA5LyV0Ezerw+CojVypnSKj
+         +cuw==
+X-Gm-Message-State: APjAAAX+/p6uMFjDLfZ3b4yKn0G4Wpicj301/iM2qVYXAul60T4J19p9
+        aB0e49dvV/hFwxcnzVAIUcg=
+X-Google-Smtp-Source: APXvYqwWVqu7+x5/fmHTc0obYn2IVB6bV3vaHoNJ2Hf6k3sD6KI/M2RZvcbhlacYZ/0HyYJleTLrFQ==
+X-Received: by 2002:a63:fe47:: with SMTP id x7mr25923321pgj.112.1573418044380;
+        Sun, 10 Nov 2019 12:34:04 -0800 (PST)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id c16sm11775027pfo.34.2019.11.10.12.32.38
+        by smtp.gmail.com with ESMTPSA id j10sm12473243pfn.128.2019.11.10.12.34.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 10 Nov 2019 12:32:39 -0800 (PST)
-Subject: Re: [PATCH V3 net-next 6/7] net: bcmgenet: Add RGMII_RXID and
- RGMII_ID support
+        Sun, 10 Nov 2019 12:34:03 -0800 (PST)
+Subject: Re: [PATCH V3 net-next 5/7] net: bcmgenet: Refactor register access
+ in bcmgenet_mii_config
 To:     Stefan Wahren <wahrenst@gmx.net>,
         Matthias Brugger <matthias.bgg@kernel.org>,
         Matthias Brugger <mbrugger@suse.com>,
@@ -58,7 +58,7 @@ Cc:     Eric Anholt <eric@anholt.net>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org
 References: <1573326009-2275-1-git-send-email-wahrenst@gmx.net>
- <1573326009-2275-7-git-send-email-wahrenst@gmx.net>
+ <1573326009-2275-6-git-send-email-wahrenst@gmx.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -114,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <741ffd9e-2f38-5605-2c44-e6411bf5d8d8@gmail.com>
-Date:   Sun, 10 Nov 2019 12:32:38 -0800
+Message-ID: <0a6ba358-b1a8-9a57-1e29-6443f07929e5@gmail.com>
+Date:   Sun, 10 Nov 2019 12:34:02 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <1573326009-2275-7-git-send-email-wahrenst@gmx.net>
+In-Reply-To: <1573326009-2275-6-git-send-email-wahrenst@gmx.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -131,40 +131,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 11/9/2019 11:00 AM, Stefan Wahren wrote:
-> This adds the missing support for the PHY modes RGMII_RXID and
-> RGMII_ID. Based on the used register settings in the downstream tree
-> the mode RGMII_RXID is necessary for the Raspberry Pi 4.
+> The register access in bcmgenet_mii_config() is a little bit opaque and
+> not easy to extend. In preparation for the missing RGMII PHY modes
+> move the real register access to the end of the function. This make
+> the code easier to read and extend.
 > 
 > Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+You will most likely have to resubmit this patch series after Doug's
+recent GENET changes:
 
-> ---
->  drivers/net/ethernet/broadcom/genet/bcmmii.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> index 8f7b2c0..9091e5b 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
-> @@ -273,6 +273,16 @@ int bcmgenet_mii_config(struct net_device *dev, bool init)
->  		phy_name = "external RGMII (TX delay)";
->  		port_ctrl = PORT_MODE_EXT_GPHY;
->  		break;
-> +
-> +	case PHY_INTERFACE_MODE_RGMII_RXID:
-> +		phy_name = "external RGMII (RX delay)";
-> +		port_ctrl = PORT_MODE_EXT_GPHY;
-> +		break;
-> +
-> +	case PHY_INTERFACE_MODE_RGMII_ID:
-> +		phy_name = "external RGMII (RX/TX delay)";
-> +		port_ctrl = PORT_MODE_EXT_GPHY;
-> +		break;
+https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/drivers/net/ethernet/broadcom/genet?id=3a55402c93877d291b0a612d25edb03d1b4b93ac
+https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/drivers/net/ethernet/broadcom/genet?id=6b6d017fccb4693767d2fcae9ef2fd05243748bb
+https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/drivers/net/ethernet/broadcom/genet?id=0686bd9d5e6863f60e4bb1e78e6fe7bb217a0890
 
-Technically for this one we should probably make sure that we do set
-id_mode_dis in order for the MAC not to add the delay and leave the PHY
-to do it though I don't have such a configuration handy to
-prove/disprove that is necessary.
+And while you are at it with this patch, you may even take a step
+further and do something like this for the INTERNAL and MOCA PHYs:
+
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmmii.c
+b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+index dbe18cdf6c1b..e363a824d662 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmmii.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmmii.c
+@@ -218,6 +218,7 @@ int bcmgenet_mii_config(struct net_device *dev, bool
+init)
+
+        switch (priv->phy_interface) {
+        case PHY_INTERFACE_MODE_INTERNAL:
++               phy_name = "internal PHY";
+        case PHY_INTERFACE_MODE_MOCA:
+                /* Irrespective of the actually configured PHY speed (100 or
+                 * 1000) GENETv4 only has an internal GPHY so we will
+just end
+@@ -229,14 +230,8 @@ int bcmgenet_mii_config(struct net_device *dev,
+bool init)
+                else
+                        port_ctrl = PORT_MODE_INT_EPHY;
+
+-               bcmgenet_sys_writel(priv, port_ctrl, SYS_PORT_CTRL);
+-
+-               if (priv->internal_phy) {
+-                       phy_name = "internal PHY";
+-               } else if (priv->phy_interface == PHY_INTERFACE_MODE_MOCA) {
++               if (!phy_name)
+                        phy_name = "MoCA";
+-                       bcmgenet_moca_phy_setup(priv);
+-               }
+                break;
+
+such that all the port_ctrl and the phy_name are set within the same
+location and the register write/configuration is done after the mode has
+been determined.
 -- 
 Florian
