@@ -2,50 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30954F7067
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 10:21:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C109F7076
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 10:24:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727064AbfKKJVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 04:21:16 -0500
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36328 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726808AbfKKJVQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 04:21:16 -0500
+        id S1726893AbfKKJY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 04:24:57 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:60842 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726871AbfKKJY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 04:24:57 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573464074;
+        s=mimecast20190719; t=1573464296;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JxbIgXTR6bQeWKATcv/ljlKOYJL+BoThIxLdtQrzukE=;
-        b=eapJH0/CYuieClamtYuqAcjHaioKSe9UbwnsIOTE2WoXdgTfRoA4Ac2vj6q54eaeaN1PzT
-        Mtlyu+RyYC9yFrmTHyTS8+LmeWBzcAVG7BLvaOzbLOld8LvY6lMghMQK0Jq1n1wCirnFNW
-        gqXMEhr4Oyb9pTY8SkiWZEKIkVLZGyU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-97-aCjYt2AzOPOzaZtSbuO5BA-1; Mon, 11 Nov 2019 04:21:12 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7755A100551A;
-        Mon, 11 Nov 2019 09:21:11 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EF73810001BD;
-        Mon, 11 Nov 2019 09:21:05 +0000 (UTC)
-Date:   Mon, 11 Nov 2019 10:21:04 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     <netdev@vger.kernel.org>, <ilias.apalodimas@linaro.org>,
-        <kernel-team@fb.com>, brouer@redhat.com
-Subject: Re: [RFC PATCH 1/1] page_pool: do not release pool until inflight
- == 0.
-Message-ID: <20191111102104.1ac9620d@carbon>
-In-Reply-To: <20191111062038.2336521-2-jonathan.lemon@gmail.com>
-References: <20191111062038.2336521-1-jonathan.lemon@gmail.com>
-        <20191111062038.2336521-2-jonathan.lemon@gmail.com>
+        bh=2Nj1jXUErntBq71VW4mO6DE48JXy/eVyWGhHD6EUL/w=;
+        b=JL7eEtTEiH0JO2ROBnq+E8u6EwcOobu8L0kafeeq4GXaT7Wxpm/Ubgi0hq1vn3Zlsy38HD
+        i3rcGr7ScopVWhgWjhsN9w/6VbpYTTgvxwvX2uJcY6vypivmn5Vj0naq5A29lqJ1pYjwKs
+        ZM7gfI/huxO3gHD6sHBbfngJ47WwHF8=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-206-AWZAyaH5PJik0xI2QaJLvw-1; Mon, 11 Nov 2019 04:24:53 -0500
+Received: by mail-ed1-f72.google.com with SMTP id l1so9814735ede.1
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 01:24:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=rK/IE93Ia0gre+In92ABappDCl0/7Lq4UUq1d9yP+l8=;
+        b=pPF25sy11u3pfBcVNxV9b97u8Vc05bvSfsg+1iwGbxUDI576L1GucV+uS9WTocm3Mu
+         Eqlb6cvBX4jT9XjV4CwSXe3sPGlP2kA6jvFTCMu3itR3g/+E+ZcJeQCH9Rdx4xyclsnU
+         Ldb+fpioYTRQ8ndX5noQjS6lE4YsyINHcrBmZ83Y8E5twy9xALd8Si5efk+jZrpzo5e8
+         Kf+r3BLbkc9m3f1K5Trw+IH0bTYIEfh/7Mie3KkbPxJbZ8STxXFX3ajCryumJQGa124l
+         XuYEf9k5ibmibNYAGY6N7+q80/GBl+CAtM7t9eHnUet7O2LuKaooBQis7vbANscrEjwJ
+         SPwA==
+X-Gm-Message-State: APjAAAVTx1g162yV5xSLs8gdT7L7n4G3b1q+yIDlOG59Nfj3RBfqvxds
+        aYSt/5BbZBKJQfRXSgbaUoGhR1OqwryPHlQbGXKvHeWIEQY18gG0HHfzyold3C0yCkFcZuHwD77
+        NzzbiEeAFBlBllFYp
+X-Received: by 2002:a17:907:205b:: with SMTP id pg27mr20914426ejb.144.1573464292322;
+        Mon, 11 Nov 2019 01:24:52 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyY6vIm3jnwFOPQ5+TYCcaRZda+A8DqvSf5r53dbg58NtJln5wV1fGdG9IluCcVLn8vPcWIUw==
+X-Received: by 2002:a17:907:205b:: with SMTP id pg27mr20914421ejb.144.1573464292138;
+        Mon, 11 Nov 2019 01:24:52 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id h3sm145062ejp.11.2019.11.11.01.24.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Nov 2019 01:24:51 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E1A761803C7; Mon, 11 Nov 2019 10:24:50 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <thoiland@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH] samples: bpf: fix outdated README build command
+In-Reply-To: <CAEf4BzYRqeg5vFm+Ac2TVVeAw=N+qhosy5qF9Dr_ka3hn8DsPg@mail.gmail.com>
+References: <20191110081901.20851-1-danieltimlee@gmail.com> <CAEf4BzYRqeg5vFm+Ac2TVVeAw=N+qhosy5qF9Dr_ka3hn8DsPg@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 11 Nov 2019 10:24:50 +0100
+Message-ID: <87bltircil.fsf@toke.dk>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: aCjYt2AzOPOzaZtSbuO5BA-1
+X-MC-Unique: AWZAyaH5PJik0xI2QaJLvw-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -54,50 +75,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Nov 2019 22:20:38 -0800
-Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-> diff --git a/net/core/xdp.c b/net/core/xdp.c
-> index 20781ad5f9c3..e334fad0a6b8 100644
-> --- a/net/core/xdp.c
-> +++ b/net/core/xdp.c
-> @@ -70,25 +70,47 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_h=
-ead *rcu)
-> =20
->  =09xa =3D container_of(rcu, struct xdp_mem_allocator, rcu);
-> =20
-> -=09/* Allocator have indicated safe to remove before this is called */
-> -=09if (xa->mem.type =3D=3D MEM_TYPE_PAGE_POOL)
-> -=09=09page_pool_free(xa->page_pool);
-> -
->  =09/* Allow this ID to be reused */
->  =09ida_simple_remove(&mem_id_pool, xa->mem.id);
-> =20
-> -=09/* Poison memory */
-> -=09xa->mem.id =3D 0xFFFF;
-> -=09xa->mem.type =3D 0xF0F0;
-> -=09xa->allocator =3D (void *)0xDEAD9001;
-> -
->  =09kfree(xa);
->  }
+> On Sun, Nov 10, 2019 at 12:19 AM Daniel T. Lee <danieltimlee@gmail.com> w=
+rote:
+>>
+>> Currently, building the bpf samples under samples/bpf directory isn't
+>> working. Running make from the directory 'samples/bpf' will just shows
+>> following result without compiling any samples.
+>>
+>
+> Do you mind trying to see if it's possible to detect that plain `make`
+> is being run from samples/bpf subdirectory, and if that's the case,
+> just running something like `make M=3Dsamples/bpf -C ../../`? If that's
+> not too hard, it would be a nice touch to still have it working old
+> (and intuitive) way, IMO.
 
-Can you PLEASE leave the memory poisonings that I have added alone.
-Removing these are irrelevant for current patch. You clearly don't like
-this approach, but I've also clearly told that I disagree.  I'm the
-maintainer of this code and I prefer letting them stay. I'm the one
-that signed up for dealing with hard to find bugs in the code.
+I think it's just the M=3D that's missing. Tentatively, the below seems to
+work for me (I get some other compile errors, but I think that is
+unrelated).
 
-I'll try to explain again, hopefully one last time.  You argue that the
-memory subsystem already have use-after-free detection e.g via
-kmemleak.  I argue that these facilities change the timing so much,
-that race condition will not be provoked when enabled.  This is not
-theoretical, I've seen bugzilla cases consume a huge amount of support
-and engineering resources, trying to track down bugs that would
-disappear once the debug facility is enabled.
+-Toke
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 8a9af3ab7769..48e7f1ff7861 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -246,7 +246,7 @@ endif
+=20
+ # Trick to allow make to be run from this directory
+ all:
+-       $(MAKE) -C ../../ $(CURDIR)/ BPF_SAMPLES_PATH=3D$(CURDIR)
++       $(MAKE) -C ../../ M=3D$(CURDIR) BPF_SAMPLES_PATH=3D$(CURDIR)
+=20
+ clean:
+        $(MAKE) -C ../../ M=3D$(CURDIR) clean
 
