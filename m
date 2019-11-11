@@ -2,122 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2988F73AF
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 13:18:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D17CF73DE
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 13:29:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbfKKMR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 07:17:59 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:35275 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726810AbfKKMR7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 07:17:59 -0500
-Received: by mail-ed1-f67.google.com with SMTP id r16so11773628edq.2
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 04:17:57 -0800 (PST)
+        id S1726915AbfKKM3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 07:29:08 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:52522 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726829AbfKKM3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 07:29:07 -0500
+Received: by mail-wm1-f67.google.com with SMTP id l1so1742494wme.2
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 04:29:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=85KE1bGsf40kFvJl5/bYHDS7rzfwXQA2rbej+m3UPeo=;
-        b=WdShSI/7wdEClanOzqpRdFh+RN8cKEcaZzkoOb7Ox9aJaPiMMRsl7Srm0CIsBDMWNS
-         syFZMqgcikbxUs5uXwpOua0AVGZJmU88XnODeXq7VSlu2K8GcXoEdMxcjTFPDqLLmJdJ
-         61gQqgH8W3R4WxRPlVdrKchNsNVvwr7d9fUipQhglkJY0ZW0OW3TdGokoXMYntqZsA+c
-         xFnEX2ytUXrIzzJX79V5n8TEJ3u6V+e3bKxe10KHsRdAgOw+Ve/U6ZCI84MWONTB8WP6
-         88d5qeRtSED5qD+S8zoL2M3DSlrVes4YZnaCjaS821E2aBSEEo9ksxUt/Kgo6KQKsloD
-         gvtQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=dSewQoeACmq1i1jpvr49vxw60LKl1U3C6WonRLxoHo0=;
+        b=m742fK844x/AKk8KLUcMNI/xB3PL7U/PKYIrZRbBI6HHBHB0Xftdnqn+CdxGBajHiU
+         qf/+lGuVOwdsUcByXWOoq/4uWy+RyPAHX+FmSkh8ivk3IZJGEMcRK5s1U9PG6pctruAU
+         x5cdMfvqDVbx9PpWanjh+YnIsNlR7xKuTDuyChMjREHTPvLJkhQZ0Mz5Kp4aFScRUtKy
+         VY/yBirGXm6Ex8bwo0kQzpK+jJyz+juMYkp3GOgMwtP7DUNJdtpzHghBe6MIPTjJf55T
+         cmrW18SFS6MUx5JKGDvhlVfYSbYwOiNZ7+HzSR9v+xtby+FIjUHWluguBGptbDkXrn8V
+         ViFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=85KE1bGsf40kFvJl5/bYHDS7rzfwXQA2rbej+m3UPeo=;
-        b=GzbnGUkYrhw6sZZJmKOdAHrzd/eHDgy7QRJ4p1mcti9f0LK+47QmA2JlNSPyPA3JmN
-         kuKqpJIcQCayxdMa9BAxLMQvPYXYJdzFNsTSmxmrhG/hWi41MyMZN9Qzok5GyiBP9U6L
-         iM6X11tksqvoh400uP+1XR9kfGsdfDoAmwuLKAm7zQdqarzK/icgKwYi7wrf9qgG3kjh
-         8Y+hagpcSLVX3n21qOY+onJm+gEVK6CbT9NUGe2lkXj53GsRj6urEMbtc0yt6gYD0ayJ
-         j0hWlKbrNgmTmNYuaz0FpKb5A8PF6ks02mlc/WvBrrBKKll8LvUsKmccM1hrWFge2Ocn
-         dmdA==
-X-Gm-Message-State: APjAAAWknGKeS32hqKzfnPa1hBNU/Y/nTgL9kmEEPlJF+v0BY/O6W879
-        9mMt5bTVhj1FLZam2qfSWlSQgkZVnbn7xuiFUIQ=
-X-Google-Smtp-Source: APXvYqy49gA4f8S4VBu1Du2fu2JjyZY7O+hr2HMpTObeduwY1g8kIEoQyObsehskMRlJnEuMAFHrPHyVNGmqebRH/MQ=
-X-Received: by 2002:a50:91c4:: with SMTP id h4mr26259411eda.36.1573474677240;
- Mon, 11 Nov 2019 04:17:57 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dSewQoeACmq1i1jpvr49vxw60LKl1U3C6WonRLxoHo0=;
+        b=n6IRrdRlqVcHYJ1WbjFLqqDKswRXl32CvBnFdMZDDSd1gRcK8W3l+tGeGYljhvY+ze
+         1RYBxCvKYanSA8Z4Oko1tHrtU0+LWJD6B6HiQOlE5DFAj56GHJUKjwTKbQ/LvaGQeo3D
+         BafOiS2Do7tiPBuZVc8vE6xnRL28CbbiMzb3fpnmwspoyBVw4t9g0ONOEHGesbHbY02n
+         3lHTKQnQed3EqTcpq6VxI5OG4T5ghpfH+AXVPX7vDZpBZSHEfcdAhWFgQ2m2CeQPF/sg
+         GNVGBrO0MqU6NM69YDEKyyFmq6egop5Zvs2pIfRcFvGV7k70htppgvDC39zveUl/8O0Z
+         kuug==
+X-Gm-Message-State: APjAAAUz+5FiY8AiPl+UssskdOXcUgvwVR9H3xOoagw3eBAfCpSRNC5J
+        gLYEhcJXzePVu/iQha4L34h7Wg==
+X-Google-Smtp-Source: APXvYqyZIKxeXx4xEQ1NF4pOosCu14x+2PE3xpwtY7eYZ1cc7Li7ooYJvY2hEnMV6QiKRzLBKjnX6Q==
+X-Received: by 2002:a7b:c768:: with SMTP id x8mr21085407wmk.26.1573475344622;
+        Mon, 11 Nov 2019 04:29:04 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id y2sm22728920wmy.2.2019.11.11.04.29.03
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 11 Nov 2019 04:29:04 -0800 (PST)
+Date:   Mon, 11 Nov 2019 13:29:03 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: dp83869: Add TI dp83869 phy
+Message-ID: <20191111122902.567r2geh4popqknq@netronome.com>
+References: <20191107174002.11227-1-dmurphy@ti.com>
 MIME-Version: 1.0
-References: <20191109130301.13716-1-olteanv@gmail.com> <20191111121049.3hrammgeez5x6cm3@soft-dev3.microsemi.net>
-In-Reply-To: <20191111121049.3hrammgeez5x6cm3@soft-dev3.microsemi.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Mon, 11 Nov 2019 14:17:46 +0200
-Message-ID: <CA+h21hqj3ZL1t7RurXNOnEvN0G7i0Z8Vm9vp1L+HLtLCpA6sTw@mail.gmail.com>
-Subject: Re: [PATCH net-next 00/15] Accomodate DSA front-end into Ocelot
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191107174002.11227-1-dmurphy@ti.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Nov 2019 at 14:10, Horatiu Vultur
-<horatiu.vultur@microchip.com> wrote:
->
-> The 11/09/2019 15:02, Vladimir Oltean wrote:
-> > External E-Mail
-> >
-> >
-> > After the nice "change-my-mind" discussion about Ocelot, Felix and
-> > LS1028A (which can be read here: https://lkml.org/lkml/2019/6/21/630),
-> > we have decided to take the route of reworking the Ocelot implementation
-> > in a way that is DSA-compatible.
-> >
-> > This is a large series, but hopefully is easy enough to digest, since it
-> > contains mostly code refactoring. What needs to be changed:
-> > - The struct net_device, phy_device needs to be isolated from Ocelot
-> >   private structures (struct ocelot, struct ocelot_port). These will
-> >   live as 1-to-1 equivalents to struct dsa_switch and struct dsa_port.
-> > - The function prototypes need to be compatible with DSA (of course,
-> >   struct dsa_switch will become struct ocelot).
-> > - The CPU port needs to be assigned via a higher-level API, not
-> >   hardcoded in the driver.
-> >
-> > What is going to be interesting is that the new DSA front-end of Ocelot
-> > will need to have features in lockstep with the DSA core itself. At the
-> > moment, some more advanced tc offloading features of Ocelot (tc-flower,
-> > etc) are not available in the DSA front-end due to lack of API in the
-> > DSA core. It also means that Ocelot practically re-implements large
-> > parts of DSA (although it is not a DSA switch per se) - see the FDB API
-> > for example.
-> >
-> > The code has been only compile-tested on Ocelot, since I don't have
-> > access to any VSC7514 hardware. It was proven to work on NXP LS1028A,
-> > which instantiates a DSA derivative of Ocelot. So I would like to ask
-> > Alex Belloni if you could confirm this series causes no regression on
-> > the Ocelot MIPS SoC.
-> >
-> > The goal is to get this rework upstream as quickly as possible,
-> > precisely because it is a large volume of code that risks gaining merge
-> > conflicts if we keep it for too long.
-> >
-> > This is but the first chunk of the LS1028A Felix DSA driver upstreaming.
-> > For those who are interested, the concept can be seen on my private
-> > Github repo, the user of this reworked Ocelot driver living under
-> > drivers/net/dsa/vitesse/:
-> > https://github.com/vladimiroltean/ls1028ardb-linux
->
-> I have done some tests on Ocelot hardware and it seems to work fine.
->
-> Acked-by: Horatiu Vultur <horatiu.vultur@microchip.com>
->
+On Thu, Nov 07, 2019 at 11:40:01AM -0600, Dan Murphy wrote:
+> Add dt bindings for the TI dp83869 Gigabit ethernet phy
+> device.
+> 
+> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+> CC: Rob Herring <robh+dt@kernel.org>
+> ---
+> 
+> v2 - No changes 
+> 
+>  .../devicetree/bindings/net/ti,dp83869.yaml   | 84 +++++++++++++++++++
+>  1 file changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,dp83869.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/ti,dp83869.yaml b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+> new file mode 100644
+> index 000000000000..6fe3e451da8a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/ti,dp83869.yaml
+> @@ -0,0 +1,84 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +# Copyright (C) 2019 Texas Instruments Incorporated
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/net/ti,dp83869.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: TI DP83869 ethernet PHY
+> +
+> +allOf:
+> +  - $ref: "ethernet-controller.yaml#"
+> +
+> +maintainers:
+> +  - Dan Murphy <dmurphy@ti.com>
+> +
+> +description: |
+> +  The DP83869HM device is a robust, fully-featured Gigabit (PHY) transceiver
+> +  with integrated PMD sublayers that supports 10BASE-Te, 100BASE-TX and
+> +  1000BASE-T Ethernet protocols. The DP83869 also supports 1000BASE-X and
+> +  100BASE-FX Fiber protocols.
+> +  This device interfaces to the MAC layer through Reduced GMII (RGMII) and
+> +  SGMII The DP83869HM supports Media Conversion in Managed mode. In this mode,
+> +  the DP83869HM can run 1000BASE-X-to-1000BASE-T and 100BASE-FX-to-100BASE-TX
+> +  conversions.  The DP83869HM can also support Bridge Conversion from RGMII to
+> +  SGMII and SGMII to RGMII.
+> +
+> +  Specifications about the charger can be found at:
+> +    http://www.ti.com/lit/ds/symlink/dp83869hm.pdf
+> +
+> +properties:
+> +  reg:
+> +    maxItems: 1
+> +
+> +  ti,min-output-impedance:
+> +    type: boolean
+> +    description: |
+> +       MAC Interface Impedance control to set the programmable output impedance
+> +       to a minimum value (35 ohms).
+> +
+> +  ti,max-output-impedance:
+> +    type: boolean
+> +    description: |
+> +       MAC Interface Impedance control to set the programmable output impedance
+> +       to a maximum value (70 ohms).
+> +
+> +  tx-fifo-depth:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    description: |
+> +       Transmitt FIFO depth see dt-bindings/net/ti-dp83869.h for values
+> +
+> +  rx-fifo-depth:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    description: |
+> +       Receive FIFO depth see dt-bindings/net/ti-dp83869.h for values
+> +
+> +  ti,clk-output-sel:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    description: |
+> +       Muxing option for CLK_OUT pin see dt-bindings/net/ti-dp83869.h for values.
+> +
+> +  ti,op-mode:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    description: |
+> +       Operational mode for the PHY.  If this is not set then the operational
+> +       mode is set by the straps. see dt-bindings/net/ti-dp83869.h for values
+> +
+> +required:
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/net/ti-dp83869.h>
 
-Thanks, Horatiu!
+The header above does not exist until patch 2 is applied.
+Which means that make dtbs_check fails.
 
-> --
-> /Horatiu
+Perhaps adding the header could be moved into this patch?
 
--Vladimir
+> +    mdio0 {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      ethphy0: ethernet-phy@0 {
+> +        reg = <0>;
+> +        tx-fifo-depth = <DP83869_PHYCR_FIFO_DEPTH_4_B_NIB>;
+> +        rx-fifo-depth = <DP83869_PHYCR_FIFO_DEPTH_4_B_NIB>;
+> +        ti,op-mode = <DP83869_RGMII_COPPER_ETHERNET>;
+> +        ti,max-output-impedance = "true";
+> +        ti,clk-output-sel = <DP83869_CLK_O_SEL_CHN_A_RCLK>;
+> +      };
+> +    };
+> -- 
+> 2.22.0.214.g8dca754b1e
+> 
