@@ -2,119 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A64EEF6CD3
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 03:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63AD1F6D4B
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 04:29:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726832AbfKKCgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 21:36:51 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:33018 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726765AbfKKCgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 21:36:50 -0500
-Received: by mail-ed1-f66.google.com with SMTP id a24so7048260edt.0
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 18:36:49 -0800 (PST)
+        id S1726834AbfKKD3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 22:29:24 -0500
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:33281 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726742AbfKKD3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 22:29:24 -0500
+Received: by mail-lj1-f193.google.com with SMTP id t5so12159838ljk.0;
+        Sun, 10 Nov 2019 19:29:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lixom-net.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EUrEftNBotZRmamMjZf+7wcByK3TrrvQAevsRHHxM3I=;
-        b=SULQ0aULd3u/aCVWCLj80EWv6uLHoH1+hM5ggFrAQWk1GFNACw4lmf3XOfCENV0g/1
-         yeCgNQWqxExHQG3gDHEFYxDjh+mlmv4Outtmhz+0iyXk/V9Rg7S+CBJhiMrCyJckRKZf
-         ijwIKkmyYlab5CXkTSELrhYTEx75v9cFBQ0xZNZH29czgav++1w9gENnJx+VpizgmLVL
-         r8GP+WDcSVDQH04gvFIVz1Jkv0vQXf5SZgDs98ex7srehIB50gJQn81XCNEGSy/Ndoi9
-         FyfKZ+ifsvpWmZRiQY8Zi+QAmP/KRKQVaWj9wLT0ui6DTzcTxs0R3DLgtEDkZuP9kEMV
-         CaGg==
+         :cc:content-transfer-encoding;
+        bh=dSu5P7at4A5HmomswAGNarjUX/ilYNhxexUoEMw0I/M=;
+        b=lGyWbb+Zw1+8fisjF9Hs+LyVaefKq5wFMB1N86b5EUUhieJxbh+Fm8n/U912vifvcf
+         xV9M1mrdXpv0dyQVpB0D2ATI8kiFHjhOhU1S+DBvMMqc3wJtKBBWN0uGVTE5Mr7JJAzE
+         iC813V8Qf1SjVGyzTTMbMLATL+uNoOHbwe9+vahKu1eB4FAFOugweufw0otodmZOyS5+
+         IaaNKQF5j6YkxGkA0YojFWjch6vZZSvjS8VLRi+1e5AGXihoo19UEXE/4R8Su14O09By
+         ZClukSBpbrAK0l2871CLs+ow5/0MQQMgx1mKDJfS07HR/XvgszeUl19xykUcu0d+PSDh
+         VbTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EUrEftNBotZRmamMjZf+7wcByK3TrrvQAevsRHHxM3I=;
-        b=UNF6oSSme5bdXCZnBOLDC3uovuuLUeZLgZQR+oRiI3NTGYgksDVroAGM6Nzrp40+KL
-         wUI2OHPo1RY7mzKe+QuUzg6IunzdYUGZMrHVgJ7JLFj5Z1W3C3Ilh7o8MuC6gvawk7I0
-         T8HE64yZtZImZLigDIhTyDcbMsampPQwCxq4b5K06Rc9A43boTt4Ku8MKKUlPMn/Ak3M
-         ZqzM1lVtaICVEC68ZIYMvOu83v27Fbny3gshTPTuwEOTZc7Cy9nLBs2rh7ulcknDFsIJ
-         oDVTvqIGnTxX7qSt8nuZisfA5JBJXe2xQEDtE2MVLP4DHe3o9eN04RMeXkuEp/JW3WOs
-         30KA==
-X-Gm-Message-State: APjAAAUgA2wFuTVqc+jKyxJ3Qy5LxNFJKVAQjNgjOZQQzyM2WYTfaRd+
-        DGJ4MvDOsh/qwbhDOEIaXgxVBQCSrNO5+Tbt/2p4S+kRqeizPg==
-X-Google-Smtp-Source: APXvYqw01OaHjEqaML0Q/wUNAOq5QSeReweaP1MtIZ0zQhqqMHFhtOuJhxTLbtcM/0e284Nxk12KxX+fZnfjA8uUHOU=
-X-Received: by 2002:a17:906:4dd5:: with SMTP id f21mr20454702ejw.203.1573439808834;
- Sun, 10 Nov 2019 18:36:48 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=dSu5P7at4A5HmomswAGNarjUX/ilYNhxexUoEMw0I/M=;
+        b=euUkqP4aBPNlBjAlEjhw4mSUBBdc7ZGVjkIguJLHSYgJ54AfbhFnLnCqg/QkUgD43h
+         0DYJhk8Qz3a4j8F/sZKZZt92m1safLTDuAs6GHXZdBqlZXZ1cKZT6m0JTDqTpAqYmNbg
+         PXkprT0KWclZ1Ma/XWg0XC3OGdEkUGHmfphoWRl/zYbcRgRhkMEQNeyT3IMJ6KLbfflL
+         HfjHJwD8rjcjDFpeQGz2730MsqpKC3NwHScBMe5ghy9ycWBFWhkekohx+Vbb6cL0C+21
+         R3wL5WlqkJv7D7kK7eIzAezv++Q9nw4SO4StAl4Su5rl8hyzPZBFlJew3LEie0UMg42L
+         gMAg==
+X-Gm-Message-State: APjAAAV6wZKNQf2muf9EKD9GsUbPW4J1gdfFVRS4bxOsEw1p2O0MSfUl
+        lVp5b09GI80MaYAI7+lKrvVDT4tubxk09fF4iwA=
+X-Google-Smtp-Source: APXvYqwPjQaU3Xia1cyHiD6cheU9VW9chFLuPuO/KQKtKx0UtQPJER+khiRO1bK2FOEGN+CcQLaSwfhM9VGmhpuSMy8=
+X-Received: by 2002:a2e:7d17:: with SMTP id y23mr166980ljc.228.1573442962001;
+ Sun, 10 Nov 2019 19:29:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20191111004211.96425-1-olof@lixom.net> <20191111023255.GY25889@lunn.ch>
-In-Reply-To: <20191111023255.GY25889@lunn.ch>
-From:   Olof Johansson <olof@lixom.net>
-Date:   Sun, 10 Nov 2019 18:36:35 -0800
-Message-ID: <CAOesGMgokhLiTnAc7b04FPYY=i7ehCE5a3jJaj4j_UDuqR_DHA@mail.gmail.com>
-Subject: Re: [PATCH] net: mdio-octeon: Fix pointer/integer casts
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+References: <157333184619.88376.13377736576285554047.stgit@toke.dk>
+In-Reply-To: <157333184619.88376.13377736576285554047.stgit@toke.dk>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 10 Nov 2019 19:29:10 -0800
+Message-ID: <CAADnVQ+qFOf0bchRNr270=dJ08R1wVgnYLAqJ8QnXwNt=fgNMQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 0/6] libbpf: Fix pinning and error message
+ bugs and add new getters
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        David Miller <davem@davemloft.net>,
         Network Development <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 10, 2019 at 6:32 PM Andrew Lunn <andrew@lunn.ch> wrote:
+On Sat, Nov 9, 2019 at 12:37 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> On Sun, Nov 10, 2019 at 04:42:11PM -0800, Olof Johansson wrote:
-> > Fixes a bunch of these warnings on arm allmodconfig:
-> >
-> > In file included from /build/drivers/net/phy/mdio-cavium.c:11:
-> > /build/drivers/net/phy/mdio-cavium.c: In function 'cavium_mdiobus_set_mode':
-> > /build/drivers/net/phy/mdio-cavium.h:114:37: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
-> >   114 | #define oct_mdio_readq(addr)  readq((void *)addr)
-> >       |                                     ^
-> > /build/drivers/net/phy/mdio-cavium.c:21:16: note: in expansion of macro 'oct_mdio_readq'
-> >    21 |  smi_clk.u64 = oct_mdio_readq(p->register_base + SMI_CLK);
-> >       |                ^~~~~~~~~~~~~~
-> >
-> > Fixes: 171a9bae68c7 ("staging/octeon: Allow test build on !MIPS")
-> > Signed-off-by: Olof Johansson <olof@lixom.net>
-> > ---
-> >  drivers/net/phy/mdio-cavium.h  | 14 +++++++-------
-> >  drivers/net/phy/mdio-octeon.c  |  5 ++---
-> >  drivers/net/phy/mdio-thunder.c |  2 +-
-> >  3 files changed, 10 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
-> > index b7f89ad27465f..1cf81f0bc585f 100644
-> > --- a/drivers/net/phy/mdio-cavium.h
-> > +++ b/drivers/net/phy/mdio-cavium.h
-> > @@ -90,7 +90,7 @@ union cvmx_smix_wr_dat {
-> >
-> >  struct cavium_mdiobus {
-> >       struct mii_bus *mii_bus;
-> > -     u64 register_base;
-> > +     void __iomem *register_base;
-> >       enum cavium_mdiobus_mode mode;
-> >  };
-> >
-> > @@ -98,20 +98,20 @@ struct cavium_mdiobus {
-> >
-> >  #include <asm/octeon/octeon.h>
-> >
-> > -static inline void oct_mdio_writeq(u64 val, u64 addr)
-> > +static inline void oct_mdio_writeq(u64 val, void __iomem *addr)
-> >  {
-> > -     cvmx_write_csr(addr, val);
-> > +     cvmx_write_csr((u64)addr, val);
-> >  }
+> This series fixes a few bugs in libbpf that I discovered while playing ar=
+ound
+> with the new auto-pinning code, and writing the first utility in xdp-tool=
+s[0]:
 >
-> Hi Olof
+> - If object loading fails, libbpf does not clean up the pinnings created =
+by the
+>   auto-pinning mechanism.
+> - EPERM is not propagated to the caller on program load
+> - Netlink functions write error messages directly to stderr
 >
-> Humm. The warning goes away, but is it really any better?
+> In addition, libbpf currently only has a somewhat limited getter function=
+ for
+> XDP link info, which makes it impossible to discover whether an attached =
+program
+> is in SKB mode or not. So the last patch in the series adds a new getter =
+for XDP
+> link info which returns all the information returned via netlink (and whi=
+ch can
+> be extended later).
 >
-> Did you try also changing the stub function in
-> drivers/staging/octeon/octeon-stubs.h so it takes void __iomem?  Or
-> did that cause a lot more warnings from other places?
+> Finally, add a getter for BPF program size, which can be used by the call=
+er to
+> estimate the amount of locked memory needed to load a program.
+>
+> A selftest is added for the pinning change, while the other features were=
+ tested
+> in the xdp-filter tool from the xdp-tools repo. The 'new-libbpf-features'=
+ branch
+> contains the commits that make use of the new XDP getter and the correcte=
+d EPERM
+> error code.
+>
+> [0] https://github.com/xdp-project/xdp-tools
+>
+> Changelog:
+>
+> v4:
+>   - Don't do any size checks on struct xdp_info, just copy (and/or zero)
+>     whatever size the caller supplied.
 
-That percolates through a bunch of MIPS code that I didn't feel like
-getting into. So indeed, I stopped at that point.
-
-
--Olof
+Applied. Thanks
