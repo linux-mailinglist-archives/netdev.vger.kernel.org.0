@@ -2,80 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2945F9A0D
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 20:55:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C92BF9A56
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:12:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbfKLTzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 14:55:09 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41451 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726376AbfKLTzI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 14:55:08 -0500
-Received: by mail-io1-f65.google.com with SMTP id r144so20113486iod.8
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 11:55:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CylV7vEgYMGXG47AibjGq725RdeZznGBZxWFkjLjRAw=;
-        b=t2nCJF/J/0SMp3HN6cdI/bLZQYqQH6kQc2u26AG3fxHmLjsgNlB2ipLHatVxmU2Kdo
-         t/sY8XS/O/dujXk7K3lQm9AHjEItLEdrVGG0/jMaJIiR9/YMA6qCFYIpXheCIc7JTbUC
-         ZW+CL+VZ9j7kcjMXlMZynt6X1cRE4/4ajMS7G3nDp+CPNM+OMk3DqfZ2/7c+DHfESoQH
-         TxSOSJV0z9a+Ru+1IjcWgtxMfFpfpBM4iJLWjQptafARmL2hlSUyVPlz27VGGa4fo0j9
-         yK3vt3DMpa7HVxRFAHNQgJq50ixrVqh9GGwOTEYv9px6tBAZuyPVcceGP5zwpmf94rZs
-         hZ6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CylV7vEgYMGXG47AibjGq725RdeZznGBZxWFkjLjRAw=;
-        b=aqTv18x+5zqAmCQJNBySs3W3Vh9pzh867ZK/3bmWKRYJZtWRQZ64hLrganDpFOcVlW
-         c+Mayi74K6pk7lvIpdd4btfC9kJp9SUxTGEbS7e0D5aB9HlwnIHQLEd4qxZCW0cqByfH
-         EMo42gab+m58GjUfQ62+dZcOnBW4FUFYJSff0Asg6dr+H+GlCFR8WF19KLHaXiWd1OYT
-         nRX5fEQM7QmV0Pxkii/lkJ7FVdkXQTucHwh9rDYuh+uqnPrw1TFPlQ9ZYesBKNqyijo2
-         75KuNQRb4VjuVj3+bOLPjWOczP34tz+YAj9Xn6K9+CEOOTDzTuU4MiXUKeu0LPiGNGTi
-         UBNQ==
-X-Gm-Message-State: APjAAAWaX3nXj7R7rrj3GwRrBFbdybUZ67qiTKbby6x3HaHZklhk5baC
-        AAZdx8ssHsVy8uCmCB7hRWs=
-X-Google-Smtp-Source: APXvYqzlXc2lV/BYCVIHywGFHBNVi63TzhYR+AqrGJ//qfcT33CbuMiT/sbcyOGxZDByRWWPYiIEPw==
-X-Received: by 2002:a02:782a:: with SMTP id p42mr7526032jac.104.1573588506487;
-        Tue, 12 Nov 2019 11:55:06 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:5dee:f33b:95af:feb2])
-        by smtp.googlemail.com with ESMTPSA id s11sm2674145ilh.54.2019.11.12.11.55.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Nov 2019 11:55:05 -0800 (PST)
-Subject: Re: [PATCH iproute2-next 0/8] flower match support for masked ports
-To:     Roi Dayan <roid@mellanox.com>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eli Britstein <elibr@mellanox.com>
-References: <20191112145154.145289-1-roid@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2dca1929-15a6-d7ff-c8b1-c2605bed6b2c@gmail.com>
-Date:   Tue, 12 Nov 2019 12:55:04 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20191112145154.145289-1-roid@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1726986AbfKLUMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 15:12:08 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:48918 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726388AbfKLUMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:12:08 -0500
+Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 27653154D23BD;
+        Tue, 12 Nov 2019 12:12:07 -0800 (PST)
+Date:   Mon, 11 Nov 2019 14:38:30 -0800 (PST)
+Message-Id: <20191111.143830.839461521636004353.davem@davemloft.net>
+To:     grygorii.strashko@ti.com
+Cc:     f.fainelli@gmail.com, netdev@vger.kernel.org,
+        ilias.apalodimas@linaro.org, andrew@lunn.ch,
+        ivan.khoronzhuk@linaro.org, jiri@resnulli.us, nsekhar@ti.com,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        m-karicheri2@ti.com, ivecera@redhat.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 net-next 02/13] net: ethernet: ti: cpsw: allow
+ untagged traffic on host port
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20191109151525.18651-3-grygorii.strashko@ti.com>
+References: <20191109151525.18651-1-grygorii.strashko@ti.com>
+        <20191109151525.18651-3-grygorii.strashko@ti.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 12 Nov 2019 12:12:07 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/19 7:51 AM, Roi Dayan wrote:
-> Hi,
-> 
-> This series is for adding support for flower match on masked
-> src/dst ports.
-> 
-> First commits are preparations and fixing tos and ttl output.
-> Last 3 commits add support for masked src/dst port.
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+Date: Sat, 9 Nov 2019 17:15:14 +0200
 
-Seems like the bug fixes patches should go to master.
+> +	ale->p0_untag_vid_mask =
+> +		devm_kmalloc_array(params->dev, BITS_TO_LONGS(VLAN_N_VID),
+> +				   sizeof(unsigned long),
+> +				   GFP_KERNEL);
+> +
 
-Send those separately, once committed I can merge master to next and
-then you can re-send the remaining patches.
+devm_kmalloc_array() can fail and you must check the return value and
+cleanup with -ENOMEM if necessary.
