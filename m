@@ -2,101 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83A36F7F0A
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:08:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95E1CF7EFC
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:08:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727412AbfKKTHb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 14:07:31 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:33007 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728250AbfKKShs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 13:37:48 -0500
-Received: by mail-pl1-f195.google.com with SMTP id ay6so8156587plb.0
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 10:37:47 -0800 (PST)
+        id S1728232AbfKKSi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 13:38:26 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36322 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728865AbfKKSiZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 13:38:25 -0500
+Received: by mail-pl1-f196.google.com with SMTP id d7so6249173pls.3
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 10:38:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=XOOoBZ0re6Ve1q2YuhhAZNQkL2NgQkbUu3Jh3Rye1tk=;
-        b=TxYshMCdbP5TCGKLfCSTUv0fMznilQ9G2WFtv1pXk+y365BLer6Km1l/7JlK6fOfHi
-         wxiH4nxUt26GY+Y+pIhVcCs2APSYNYWw1ppktjgjuKrsPZxM9v6Do6Nkx6WIUYrtHjwM
-         JdXUXs7bI/4vqB6ujDqZvRUUW/l/Ijh/l9TGHPn+hswU9lYir2GkAijBREnofHecRTY1
-         f56Z3hRRN7zMxjBHcvJfhgWhyAC9fF1Zu5ui+u+UjVwYhSgp07TWYkp4rv7iL5TAGD6b
-         MpaYGCO85YpTDqGHp7ddsYZdXPClkeXQckV5Ckrt1TVOyJygmGTRk8EXWDvi6yHJX2XD
-         7n0A==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=fJokKN/kqj9P4bkNlR78VGRGCEeWbWy9Ft5png3CrC0=;
+        b=IDE32DyQgKMK5iSJBGz6Fm//X4n+aWHqXbSBxFRlfqzjwiCejwtApf/lMKCL7nn/VP
+         oMWTvuobAi7FkyWRmv10hWjsFUTz4XztPgImoGNQBzDjgovx6JwCvo4naeBkaxSD4CBT
+         fk6MFfwBGnWPoXHRwod1xvgZPQUSKuj8tN2HFNwpm5DRep5bZGQyZEPELm76zii4jkkI
+         lNfwQxa0aTQWsTdoDPL+dPQJndcoeytPNHSgf/U7IqivYP+yqryZiWYysg5baGcMM/Xn
+         /R9ia2f37fCPa3Z5OdX23gbhD9iBbNRYaOu9Ct72KpTpNc3YCY+R1ss9RDzl/p9OHn1o
+         Phww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=XOOoBZ0re6Ve1q2YuhhAZNQkL2NgQkbUu3Jh3Rye1tk=;
-        b=fgfYTfdDm3bCf5cIL6/0Jd1oNBHOs17/2yCGnILGfgoLAmJ2DBUKIy19tI5G//66e1
-         18GxgqXrGyKL641QaSfPPoJuYfRLX6IeeW9OXAASvf4sweRfPEmo2zBk2GVDJZ1yuxDQ
-         jvancxcqk58lCiKKSLBehRJugHvIMdlko1WXzqwVPtTMABUm+k/uU8Cx4b11O0bW2tb3
-         HwWP7IltSeQsRIx/J4DjAtWLSSpupI3GgCpQofl9W3R+1l5jUlcSWJg+bFHsLq+sCKrn
-         paI0OaeH4Uy3CsdLdXk3tziuCc2tH0WPDralB5S/t8RptZWOdwg4rjPNHBhyO1ERPOUL
-         ZyqA==
-X-Gm-Message-State: APjAAAVacYAUuDhA5SVX1uo0M9N8uOPO47+49Jw0b5mYHkmiGZnNHvcE
-        Jw+0H+DsOMlKOccvr/IW3eudHQ==
-X-Google-Smtp-Source: APXvYqyMQBUyQf6Gl4KA2tQxYftn7cNhpbPzeLivgGlsCF2E02Jz5hoKgzYxZ8zY2vaet9QD3NJZrA==
-X-Received: by 2002:a17:902:fe10:: with SMTP id g16mr532442plj.102.1573497467456;
-        Mon, 11 Nov 2019 10:37:47 -0800 (PST)
-Received: from cakuba (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id z23sm14003206pgu.16.2019.11.11.10.37.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2019 10:37:47 -0800 (PST)
-Date:   Mon, 11 Nov 2019 10:37:43 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
-        <kernel-team@fb.com>, Rik van Riel <riel@surriel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-Message-ID: <20191111103743.1c3a38a3@cakuba>
-In-Reply-To: <20191109080633.2855561-2-andriin@fb.com>
-References: <20191109080633.2855561-1-andriin@fb.com>
-        <20191109080633.2855561-2-andriin@fb.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fJokKN/kqj9P4bkNlR78VGRGCEeWbWy9Ft5png3CrC0=;
+        b=ON+LzD1iKiv6IvdTLCFrmnYqyhr1y5SnEFWfl0Ink1KzYGCz65TevUQmLMgk3bCjwh
+         SOCZPuEPXw3boUgUswu0d3UpXvs8EaC3/+3OBAjaTjZj0VOc9fMNv2H5wZm4GBc6NX5u
+         oEv80ZhAToWrebLke7/65FtRC5dHcgmpanP+F5rvXiUQtNrbJAg6FbaIVKoWZBfpnRZN
+         7nHuo5RXmIwxxLZP0BgUX7QakO3FDZeE/WTitBy7l9QtQPVY4PBtEA5xn9JsvMXbuUY9
+         kzSH4dSP2P5DRYznMQaYHixQd0a74slI6/4p7vrZ+gJylQxqOSWpIzDnP3f63WyGcBqX
+         NUBw==
+X-Gm-Message-State: APjAAAW8MM9dg0U01UdStjosU3zMmdkCigQ+BAvedOlIrHaHmcOggbjg
+        QkhT/hhXtgl/RKKDMLuf6vVi0kW1LeI=
+X-Google-Smtp-Source: APXvYqyYtvRJgw3muyNhRm2c9aB5TW6TEjODbGnapvDaJOi8JgcCr0/h+zOgCiH5rnzb52hkUWUkzw==
+X-Received: by 2002:a17:902:6b0a:: with SMTP id o10mr20416814plk.15.1573497504441;
+        Mon, 11 Nov 2019 10:38:24 -0800 (PST)
+Received: from machine421.caveonetworks.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id b5sm16921762pfp.149.2019.11.11.10.38.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 11 Nov 2019 10:38:23 -0800 (PST)
+From:   sunil.kovvuri@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH 00/18] octeontx-af: Debugfs support and updates to parser profile
+Date:   Tue, 12 Nov 2019 00:07:56 +0530
+Message-Id: <1573497494-11468-1-git-send-email-sunil.kovvuri@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 9 Nov 2019 00:06:30 -0800, Andrii Nakryiko wrote:
-> With BPF_F_MMAPABLE array allocating data in separate chunk of memory,
-> array_map_gen_lookup has to accomodate these changes. For non-memory-mapped
-> there are no changes and no extra instructions. For BPF_F_MMAPABLE case,
-> pointer to where array data is stored has to be dereferenced first.
-> 
-> Generated code for non-memory-mapped array:
-> 
-> ; p = bpf_map_lookup_elem(&data_map, &zero);
->   22: (18) r1 = map[id:19]
->   24: (07) r1 += 408			/* array->inline_data offset */
->   25: (61) r0 = *(u32 *)(r2 +0)
->   26: (35) if r0 >= 0x3 goto pc+3
->   27: (67) r0 <<= 3
->   28: (0f) r0 += r1
->   29: (05) goto pc+1
->   30: (b7) r0 = 0
-> 
-> Generated code for memory-mapped array:
-> 
-> ; p = bpf_map_lookup_elem(&data_map, &zero);
->   22: (18) r1 = map[id:27]
->   24: (07) r1 += 400			/* array->data offset */
->   25: (79) r1 = *(u64 *)(r1 +0)		/* extra dereference */
->   26: (61) r0 = *(u32 *)(r2 +0)
->   27: (35) if r0 >= 0x3 goto pc+3
->   28: (67) r0 <<= 3
->   29: (0f) r0 += r1
->   30: (05) goto pc+1
->   31: (b7) r0 = 0
+From: Sunil Goutham <sgoutham@marvell.com>
 
-Would it not be possible to overallocate the memory and align the start
-of the bpf_map in case of BPF_F_MMAPABLE so that no extra dereference
-is needed?
+This patchset adds debugfs support to dump various HW state machine info
+which helps in debugging issues. Info includes 
+- Current queue context, stats, resource utilization etc
+- MCAM entry utilization, miss and pkt drop counter
+- CGX ingress and egress stats
+- Current RVU block allocation status
+- etc.
+
+Rest patches has changes wrt
+- Updated packet parsing profile for parsing more protocols.
+- RSS algorithms to include inner protocols while generating hash
+- Handle current version of silicon's limitations wrt shaping, coloring
+  and fixed mapping of transmit limiter queue's configuration.
+- Enable broadcast packet replication to PF and it's VFs.
+- Support for configurable NDC cache waymask
+- etc
+
+Christina Jacob (2):
+  octeontx2-af: Dump current resource provisioning status
+  octeontx2-af: Add NPA aura and pool contexts to debugfs
+
+Geetha sowjanya (2):
+  octeontx2-af: Sync hw mbox with bounce buffer.
+  octeontx2-af: Support configurable NDC cache way_mask
+
+Hao Zheng (1):
+  octeontx2-af: Update NPC KPU packet parsing profile
+
+Kiran Kumar K (1):
+  octeontx2-af: Add more RSS algorithms
+
+Linu Cherian (1):
+  octeontx2-af: Add per CGX port level NIX Rx/Tx counters
+
+Nithin Dabilpuram (1):
+  octeontx2-af: Clear NPC MCAM entries before update
+
+Prakash Brahmajyosyula (3):
+  octeontx2-af: Add NIX RQ, SQ and CQ contexts to debugfs
+  octeontx2-af: Add NDC block stats to debugfs.
+  octeontx2-af: Add CGX LMAC stats to debugfs
+
+Subbaraya Sundeep (2):
+  octeontx2-af: Add macro to generate mbox handlers declarations
+  octeontx2-af: Start/Stop traffic in CGX along with NPC
+
+Sunil Goutham (5):
+  octeontx2-af: Add NPC MCAM entry allocation status to debugfs
+  octeontx2-af: Add mbox API to validate all responses
+  octeontx2-af: Support fixed transmit scheduler topology
+  octeontx2-af: Enable broadcast packet replication
+  octeontx2-af: Add option to disable dynamic entry caching in NDC
+
+ drivers/net/ethernet/marvell/octeontx2/Kconfig     |    10 +
+ drivers/net/ethernet/marvell/octeontx2/af/Makefile |     2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |    60 +
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |    13 +
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |    16 +
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.c   |    87 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |    28 +-
+ drivers/net/ethernet/marvell/octeontx2/af/npc.h    |    95 +-
+ .../ethernet/marvell/octeontx2/af/npc_profile.h    | 14946 ++++++++++++++-----
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   116 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   217 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |   125 +
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    |  1711 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    |   876 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_npa.c    |    55 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |   187 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |    28 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_struct.h |    36 +-
+ 18 files changed, 14256 insertions(+), 4352 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+
+-- 
+2.7.4
+
