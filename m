@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E50EEF78C2
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 17:27:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 878C0F78E4
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 17:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbfKKQ1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 11:27:32 -0500
-Received: from mail-eopbgr720083.outbound.protection.outlook.com ([40.107.72.83]:35828
-        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
+        id S1726981AbfKKQg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 11:36:28 -0500
+Received: from mail-eopbgr730070.outbound.protection.outlook.com ([40.107.73.70]:45793
+        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726887AbfKKQ1b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Nov 2019 11:27:31 -0500
+        id S1726877AbfKKQg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 11:36:27 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fDVBZvng1L1nZE7ijn2zvodLoxKCtZoznf+XlfFe9yNlhX71zHu6LoHebsYDCE5LGB0Ij9+wyk7pp+yA3tbgUu+rth9sP/eFSei6osXy9JSzaLySZqsWwzvKte9QkCxOSdi6fXdOI++ukWA6Ul+uGahfN1AkAwxtMUdNLcqTBg4Vo8eOLaI3FPYmoDoJuw5x/8/wtQdaHeoAJMa9zru9C49KnWXfGra1AZ2ijqxJTxPe25fJ8yRgVon6ertGuQv4bQOyTbzq/+TelBhkDXAB5ZYnTSgiUjgWFGnFktpSnuzFCS8fo1qxIAMdYysBR5/DsY8vXZYF2TE1c1fygUa5Gg==
+ b=Tk2d27cw/WeaRrf4IJ9DvPSdhvqbcffjwfFJQjAln88uRKiBNEEWEz/6r3SFYDJTgXBlE/HiFNdnZ03bTqa3rRkPm4rt4tkydPQXTZHDI2b9PvXTButYzKu5RMXv1vhfG8Dloe0nVv5B11+QndBdrzBctEXs3MB7Ny4FyJ2AfS4OCXXiOVM1lZ5Mo1u/9rtqiJGodlwKCJ6RJibcH9JGUjx2QiFil6UGHssrLZitpGSH37sZlTepK00d/4bMXOTuPP5/KHRYH36LCnLWL9Al+iktPlMIQSLsVFiZxXPgq6qQMiEqn280NTOcj7aCpphsLTvc6c6+bvYAbTivoLlKvA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AXvAtoe6H0nGMj7s82Yhp9LrKED1RsO+HXsUKBqTz9M=;
- b=R8ijmwXW4MtAAcqwkjDcWjAWiUDxiFl0OB3zgQR5S/HroXrd4G/nfu+OhIQbk1MiXVsS7kNVkTl5WuFM84smOWFvkthOAGAMvOhlmq/q+ZzxfUIgneZ4VQNmbFUe4fm9mp0ewV0lxnAwDcMABeq/eshNo/ZJkrn4LohYudZ9Y+/hSFU9GiWnXxYQHWzxFNBW/9/7X6kBZczzv7s9iWYbWpgUdYAi0a7Zkqm4nYh1r/b1y8mc48w04vsjEDAPahm9esg6edvIrDRTh7sCSfmKIFS7ICFiIlM5TpDynlq4bCWHdbc5HlwC60YWpoETbhxxcMTfSAG2kxmUfrVYcY44ow==
+ bh=HhECcW+STZ6+97zS4fFba30Zd0+2lh5Tvswncz34eyQ=;
+ b=bkzUTsvKuVHDhIN6vHk0LgdXuuUV9sW+2adhkygTDuExJSmKlb96TXo3K9BvrqsauYEenNGUHYLIxT1Qpl7YgXkvE3hXJrgrFIl1UrAz2wi9o03BgXsWZEipbzmdPtulz0smKopsZ21gvg/uSitpxpRuki9/VeO1sHwvjx/xicwJKPMZxaglBDY147JtXWhkbaHWyd5MdpbrRexzgEjEMRmC9tS7I4ajM+KBSzPqd0hIFhdLAtMsHTfD+9p0QvM4RXuHNnLfvMQ2rSpGU6JLpa6B2kEsP9LlRk2YOg2e+BkgjvS/AS7M15801R4P9Csw3hJeVf5qS22uxpqxmAevSQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
  dkim=pass header.d=vmware.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AXvAtoe6H0nGMj7s82Yhp9LrKED1RsO+HXsUKBqTz9M=;
- b=Bm8ip3yME644tIOCnCxoUiMoucUIjJTxSBkF8+qXkv3YE1NsP8qDB7KPpltb6Ttc/3WvWFg2L0Znmrf4rA3Sa0rW1F0btSYf1UwLBB2tjKR0/sntf7+pdD4HESBYJQaU7YmY4indZJRTCRgdtSWAQiqfv7kBMIlPpjcm3d1X2WQ=
+ bh=HhECcW+STZ6+97zS4fFba30Zd0+2lh5Tvswncz34eyQ=;
+ b=qUqQrkGzBPKN5HxEWi0NfR9usFiw1T3HrsaKhkd2Rbcq3yPlfPOoaT6Oj6RCPdXF1kvAgf1xf6TbFTez6GpiYQTExsUZwJpTOapJ6C5u4+a7Yvc1XfD+n75vbp5hcb2Nh/nh0OayL5fh//wu/kA0FaBaRijJhPbG0/JZrSav2Cg=
 Received: from MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) by
- MWHPR05MB3486.namprd05.prod.outlook.com (10.174.250.164) with Microsoft SMTP
+ MWHPR05MB2925.namprd05.prod.outlook.com (10.168.246.144) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.17; Mon, 11 Nov 2019 16:27:28 +0000
+ 15.20.2451.17; Mon, 11 Nov 2019 16:36:23 +0000
 Received: from MWHPR05MB3376.namprd05.prod.outlook.com
  ([fe80::4098:2c39:d8d3:a209]) by MWHPR05MB3376.namprd05.prod.outlook.com
  ([fe80::4098:2c39:d8d3:a209%7]) with mapi id 15.20.2451.018; Mon, 11 Nov 2019
- 16:27:28 +0000
+ 16:36:23 +0000
 From:   Jorgen Hansen <jhansen@vmware.com>
 To:     'Stefano Garzarella' <sgarzare@redhat.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
@@ -54,16 +54,15 @@ CC:     "Michael S. Tsirkin" <mst@redhat.com>,
         Stephen Hemminger <sthemmin@microsoft.com>,
         "virtualization@lists.linux-foundation.org" 
         <virtualization@lists.linux-foundation.org>
-Subject: RE: [PATCH net-next 12/14] vsock/vmci: register vmci_transport only
- when VMCI guest/host are active
-Thread-Topic: [PATCH net-next 12/14] vsock/vmci: register vmci_transport only
- when VMCI guest/host are active
-Thread-Index: AQHViYhpRc2q1qJxVEORBsxH5VDhoaeGP/hg
-Date:   Mon, 11 Nov 2019 16:27:28 +0000
-Message-ID: <MWHPR05MB3376266BC6AE9E6E0B75F1A1DA740@MWHPR05MB3376.namprd05.prod.outlook.com>
+Subject: RE: [PATCH net-next 13/14] vsock: prevent transport modules unloading
+Thread-Topic: [PATCH net-next 13/14] vsock: prevent transport modules
+ unloading
+Thread-Index: AQHViYhrCrVR34m96EWV4ga8NEWQKaeGSMwQ
+Date:   Mon, 11 Nov 2019 16:36:23 +0000
+Message-ID: <MWHPR05MB337664DF4523C75B44982048DA740@MWHPR05MB3376.namprd05.prod.outlook.com>
 References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-13-sgarzare@redhat.com>
-In-Reply-To: <20191023095554.11340-13-sgarzare@redhat.com>
+ <20191023095554.11340-14-sgarzare@redhat.com>
+In-Reply-To: <20191023095554.11340-14-sgarzare@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -72,31 +71,31 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=jhansen@vmware.com; 
 x-originating-ip: [208.91.2.2]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5a36f301-eeef-4b0b-3e63-08d766c40b58
-x-ms-traffictypediagnostic: MWHPR05MB3486:
-x-microsoft-antispam-prvs: <MWHPR05MB34869134C628EC8AE5E94152DA740@MWHPR05MB3486.namprd05.prod.outlook.com>
+x-ms-office365-filtering-correlation-id: 3ee2f900-6355-42ab-931e-08d766c54a39
+x-ms-traffictypediagnostic: MWHPR05MB2925:
+x-microsoft-antispam-prvs: <MWHPR05MB2925AB366AEE3F58191B0668DA740@MWHPR05MB2925.namprd05.prod.outlook.com>
 x-vmwhitelist: True
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-oob-tlc-oobclassifiers: OLM:2399;
 x-forefront-prvs: 0218A015FA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(346002)(136003)(376002)(396003)(39860400002)(199004)(189003)(9686003)(14454004)(55016002)(6506007)(256004)(7696005)(81166006)(229853002)(54906003)(2501003)(102836004)(186003)(110136005)(6436002)(81156014)(7416002)(99286004)(26005)(8936002)(4326008)(71190400001)(71200400001)(2906002)(76176011)(478600001)(446003)(3846002)(6116002)(25786009)(6246003)(74316002)(305945005)(7736002)(76116006)(316002)(8676002)(86362001)(52536014)(66066001)(476003)(33656002)(486006)(66476007)(5660300002)(64756008)(66556008)(11346002)(66446008)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB3486;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(346002)(396003)(39860400002)(136003)(199004)(189003)(54906003)(186003)(8936002)(110136005)(81166006)(81156014)(8676002)(4744005)(6116002)(3846002)(2906002)(7736002)(33656002)(478600001)(2501003)(52536014)(316002)(71200400001)(71190400001)(86362001)(305945005)(6436002)(14454004)(74316002)(25786009)(486006)(7416002)(66946007)(5660300002)(7696005)(76116006)(26005)(76176011)(4326008)(476003)(229853002)(66066001)(102836004)(6506007)(66556008)(446003)(9686003)(64756008)(14444005)(99286004)(256004)(6246003)(66446008)(11346002)(66476007)(55016002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB2925;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: vmware.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fexRGydaepfMKWtbl4XysVBFMqAFL73AQytNS1zhQu8sVwe1zj6bNYBsloVpasVJn+Etkebh3yMq293S/YPvN4B7sb8i7whCh1+bme4tHGKorgZuUpm2okqQYOXuBgUOK5rqKUTxN97gkPAXquvliUChnh5Izi5P0dbQL9/OFFV/VRxe19byHFPlHRdC7ucq2Wcyt1I6q4Hi1sl8o8Q1UcJePDnZiNBL6oUps+K10Y9POmCMpXcL+aartSNqb7Cr3RpnreubcgB/Ml2DIoE5UgmFc1/tyNcTkzcjQUGBHoLOFQNUevbMVoK00jnvufP0SEwJ3v+wZIJNNHpEp+X6x8zLC0BJwawW3N/tBdjAOK4qAHIZg/V0HyHhUdPmmXZJeaZKYJEJvrfElqOvKi9k83evnzscSCibeK4WBe31Lr65L1wj+fl6mVCvWU4WHj1H
+x-microsoft-antispam-message-info: xJtJkxVDW9mRhJtj1by2ha0VJ5jOpV4ypwBZvMJUMRM3gIC2tbMLM3JTGzShdzZE+MnT1sQmTmS51Wt7pc+w69lvN8V+JfD0ZwkBydt57zuD5qu0UgqwxcZlxCEu2vh64pnHPdCSuzKuqQD0EF1Is0pPpYO5nQgiLTblldc/zgzVjDEuhYUnAMOGXnU4AzIogCyydX/jkr41z5J2QoHEvRVf/eCgaDeRzVk5o2nrk1LXNKlsDuabtKEn9INGCJo5fH0e1E/bRjF9l6BF4f/2oyvD3zl+FMuyxAxt7idsuA5v3orxb2cx3mRSX1BgO+r8nOQKDbZ3eCJKYH9psN0ClgQVLLKXlWhyVWHu0SpoDGgZdV+E2LdnXUw4wO9gKxoqIArCJzG0h4w2feYaCRPnXq588QColvwhiuy/5h9F8txZeBa40m6/pQoantYrL+FY
 x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a36f301-eeef-4b0b-3e63-08d766c40b58
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 16:27:28.4501
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ee2f900-6355-42ab-931e-08d766c54a39
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 16:36:23.4653
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Zes/fuRBeZrVaUaxor5w4oSlnj5fdFyL10fL4oTqcXlREj841iXVflQPPiHYSg/SqqZtcwHpSo8XqTW3elt8ww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB3486
+X-MS-Exchange-CrossTenant-userprincipalname: 3Whm2uLdV7QJh+Mo6uyPUVP314BE4Mkm4Ygh4g7fTnPUJ0xkZQpgqKsQT0a87nPsuIpjWq8clN/qSoTZbvaMjw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB2925
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -104,52 +103,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 > From: Stefano Garzarella [mailto:sgarzare@redhat.com]
 > Sent: Wednesday, October 23, 2019 11:56 AM
->=20
-> To allow other transports to be loaded with vmci_transport,
-> we register the vmci_transport as G2H or H2G only when a VMCI guest
-> or host is active.
->=20
-> To do that, this patch adds a callback registered in the vmci driver
-> that will be called when a new host or guest become active.
-> This callback will register the vmci_transport in the VSOCK core.
-> If the transport is already registered, we ignore the error coming
-> from vsock_core_register().
 
-So today this is mainly an issue for the VMCI vsock transport, because
-VMCI autoloads with vsock (and with this solution it can continue to
-do that, so none of our old products break due to changed behavior,
-which is great). Shouldn't vhost behave similar, so that any module
-that registers a h2g transport only does so if it is in active use?
-
-
-> --- a/drivers/misc/vmw_vmci/vmci_host.c
-> +++ b/drivers/misc/vmw_vmci/vmci_host.c
-> @@ -108,6 +108,11 @@ bool vmci_host_code_active(void)
->  	     atomic_read(&vmci_host_active_users) > 0);
->  }
+> This patch adds 'module' member in the 'struct vsock_transport'
+> in order to get/put the transport module. This prevents the
+> module unloading while sockets are assigned to it.
 >=20
-> +int vmci_host_users(void)
-> +{
-> +	return atomic_read(&vmci_host_active_users);
-> +}
-> +
->  /*
->   * Called on open of /dev/vmci.
->   */
-> @@ -338,6 +343,8 @@ static int vmci_host_do_init_context(struct
-> vmci_host_dev *vmci_host_dev,
->  	vmci_host_dev->ct_type =3D VMCIOBJ_CONTEXT;
->  	atomic_inc(&vmci_host_active_users);
+> We increase the module refcnt when a socket is assigned to a
+> transport, and we decrease the module refcnt when the socket
+> is destructed.
 >=20
-> +	vmci_call_vsock_callback(true);
-> +
+> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+> RFC -> v1:
+> - fixed typo 's/tranport/transport/' in a comment (Stefan)
+> ---
+>  drivers/vhost/vsock.c            |  2 ++
+>  include/net/af_vsock.h           |  2 ++
+>  net/vmw_vsock/af_vsock.c         | 20 ++++++++++++++++----
+>  net/vmw_vsock/hyperv_transport.c |  2 ++
+>  net/vmw_vsock/virtio_transport.c |  2 ++
+>  net/vmw_vsock/vmci_transport.c   |  1 +
+>  6 files changed, 25 insertions(+), 4 deletions(-)
 
-Since we don't unregister the transport if user count drops back to 0, we c=
-ould
-just call this the first time, a VM is powered on after the module is loade=
-d.
-
->  	retval =3D 0;
->=20
->  out:
+Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
 
