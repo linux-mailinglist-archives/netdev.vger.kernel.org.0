@@ -2,155 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AAF4F80B1
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E4FAF8104
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 21:19:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727390AbfKKT4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 14:56:03 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:38920 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726943AbfKKT4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 14:56:02 -0500
-Received: by mail-ed1-f66.google.com with SMTP id l25so12921870edt.6;
-        Mon, 11 Nov 2019 11:55:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7HxecichZk8d4CUHax8DahjzrEfytSXVfJQefFmO2G8=;
-        b=R9Vl0xuIzo1FS0DVMnEl2jeMzAYfIAKti+pjk2JX3hpqh1cCcCvuDxEgAKjjpmncyL
-         gCFwEBLpMXWKkTNcq1T5+btEYSK4VIOKVtv4WbhiyMfr3TWa+SG26Wf0xBAzNCIO6jfR
-         PU3+/NkBGJyjg0k5uJF5I377nhpOTeZYXYlU9gPAYzQjW8dg615dG5W7NNoPCV+CfGvV
-         zMitJQYCPP8kX3xbvPpqydgsoj5hUYu+5x93tO0SOmSKfj9L1pC1U7mLkZ0xUgyhWEYW
-         D1jixCkD/EoGy/bFk+9FO3vbt7ydYFt7DlXnzGncAW2hq087tJuZgrxSyai7tXMJ88Qn
-         Kupw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=7HxecichZk8d4CUHax8DahjzrEfytSXVfJQefFmO2G8=;
-        b=n0nEEAbqaMXZaGLcmxltcQZ1r/d+6QxEUGdFgByJXXXU98eTLmHDEQxbWYcnTSMa3U
-         kCE1Uzc/1i721/pE2od4mrleVdwdhwfy6ebvv7d/Hiydu/rr8CHIdFxd6Gz8Hz+1a4w+
-         DNsfy79YTw1pA+DYKKQP76w0gNAe9Gk87IGiSINlIV5qIfSPT+4qQW816AccGPHr80nU
-         +9jHGQoo1tRvdJLIEvc3m3qD2SPUwzaReVKxQu7BCXZCIds/GN6tqh/lHPgd11Pyxh/q
-         n+rGXFuCWKE8JJC+7BC+2DKBJst6WZl1JQdOTS/L9XTHzXexaQxiy597vyTT0JqjCuAG
-         S4vA==
-X-Gm-Message-State: APjAAAVyLwis3eKRK8dtEzGQyxThvnezr2tdzn22BlVz5c23+sMbpTX4
-        gSyyj5iotjeorQU7+Wq+uwnw9oVG
-X-Google-Smtp-Source: APXvYqxm8H+rRb61th0mg1hGmpVfr4+FHMj5uZ7jxy8RZ4SR2qKbIC5UZhvtGkfm6PLDGNEvRy62yQ==
-X-Received: by 2002:a17:906:6006:: with SMTP id o6mr22003552ejj.51.1573502158960;
-        Mon, 11 Nov 2019 11:55:58 -0800 (PST)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h1sm128998ejb.86.2019.11.11.11.55.56
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Nov 2019 11:55:58 -0800 (PST)
-Subject: Re: [PATCH net-next] net: dsa: Prevent usage of NET_DSA_TAG_8021Q as
- tagging protocol
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20191111195421.11619-1-f.fainelli@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1f653232-c877-069d-8412-ef141dcf0dab@gmail.com>
-Date:   Mon, 11 Nov 2019 11:55:54 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20191111195421.11619-1-f.fainelli@gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S1727533AbfKKUTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 15:19:06 -0500
+Received: from mail-eopbgr40044.outbound.protection.outlook.com ([40.107.4.44]:33745
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727059AbfKKUTG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 15:19:06 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fLj/141oUqfzlF+ypFJx03j7geRbn2v9Om/gMs6kNIDf1HH3GGneLYegEXa3FuREugaOivOoFcpLfRB/KpC8+6eE76AHDI5zJ4OGC/TtQ9Kke/OKRzQTp8ICBpwn6SimnvH+CourwwjlKr2lXAAAKkEOtswKnyqfeiHKAgcxMkYTRzTRRQ+QeV557X6ZNR0vFlItwbcJvcycOy+f3bSJ5QT8r0qVOEKAcRow1cjb08BugghanzsL3bQ+XGFhTUlnPWzENhdI60uJc2+4caFeKwTmy9aL0vD+tMYEV3yl96gPXu1WXW59gpykNxe8xkj41dUNsVPfFiV3c05KBDv6IA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NeWoeZ/0T+H84XNeFvjJ8kCDwAsRObaxRalBej4DkAs=;
+ b=ZerxxbrSwzQeEysadu7iyBbaZdFb67mpdMDEd5xpa63v1jn4Ilz8AHilQSBvUKZQ1RajgITBNEJu2GznIgSsudK0PJdfXlePrl7QfhzKQqyxWlyfXttYMLrJ9Yzlsc+oepontNn+8qngKSbMYYaRK4zdcGKGE45w7vYHXJLIzTM6wAn0+lmllMs7A2m+/D1yqp6gcBckPKGtPhTjDQq4sJWNFjCrv9yUCitjb4O/MV9WLU0Khbfbp8YMnn1Zr8WR+B4xT7rOtjrpGOK2oxuaA1XpSUuLCdYMmFUdWFVnKTDadGpWeprqTvqkWM5kykue9ZQ+YC8uBg8Msw4+U6Khyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NeWoeZ/0T+H84XNeFvjJ8kCDwAsRObaxRalBej4DkAs=;
+ b=PDQ408Iwdue2kSmkFgmvNgU+m+04nwpDIyGlQAxEiezatT/St906RCWIyHj+V801kbSK48aWolCGJ5re7I1h7unoKJ4bjZuwBqJHqnDNoUAzT0DkdFn7tsWSam0OKSr0YBwPnALtjJ/HWAEK+bvcMnuU10uK4Li9V53U/Imo+g4=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB4541.eurprd05.prod.outlook.com (20.176.2.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.22; Mon, 11 Nov 2019 20:19:00 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2430.027; Mon, 11 Nov 2019
+ 20:19:00 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     Leon Romanovsky <leonro@mellanox.com>
+CC:     Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next 0/5] Mellanox, mlx5 roce enable devlink
+ parameter
+Thread-Topic: [PATCH mlx5-next 0/5] Mellanox, mlx5 roce enable devlink
+ parameter
+Thread-Index: AQHVlo6Tcf69cInxPkuJQUqWBpS4R6eGbWIA
+Date:   Mon, 11 Nov 2019 20:18:59 +0000
+Message-ID: <515df88e0347754a994c73487b4afbc46b2d75c1.camel@mellanox.com>
+References: <20191108234451.31660-1-saeedm@mellanox.com>
+In-Reply-To: <20191108234451.31660-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: bebfc5d9-227f-4940-a9e8-08d766e46344
+x-ms-traffictypediagnostic: VI1PR05MB4541:|VI1PR05MB4541:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB4541DBEC9CAACE87BB2E5C16BE740@VI1PR05MB4541.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0218A015FA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(366004)(376002)(136003)(396003)(189003)(199004)(53754006)(476003)(229853002)(8676002)(5660300002)(8936002)(11346002)(2616005)(99286004)(186003)(81156014)(81166006)(102836004)(7736002)(2906002)(6506007)(66066001)(4744005)(76176011)(26005)(71190400001)(71200400001)(450100002)(305945005)(446003)(25786009)(36756003)(256004)(3846002)(4326008)(118296001)(6246003)(6512007)(6636002)(66476007)(486006)(478600001)(6486002)(54906003)(6862004)(66946007)(91956017)(14444005)(76116006)(66446008)(64756008)(6116002)(6436002)(14454004)(86362001)(66556008)(316002)(37006003)(58126008);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4541;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: PC8ZBGHw0OAhyLOGW05u5YR+vy/S/XM794WCS2lDrdYnqk1CXVnu8wgBgbF7007Ikbse7iwbLx4Ds3D+uAMlziFGfVHaRP2AOZz43NUk3zJtDyypIiyREhazM19qI2hFEQxLeNrKCn+toEUg96WVdghc8O3aWOcGijlb0VeDBIfB/ph11aT9yVi3kaGpDWf0eQtUnRFSMDj5frpIT5b/HgGabBLUU62jJxo35mpA+xLT58b2rWb/Ku4/U0xKoywzIWvFhXCMYyWsNv204rkZ0YFKcHHpnqDUXQ3Y1+Xh2x/I/p1/tpXVOZQWOZpam1CGf4JXOz9khoWBrtdpBbkTQc9QSjiABzXygGjYKtdT8ghLM/poW29jhLHR4R5MAya8qHFS50kV+VbN8FWN/kMPdAViHOe8RE0x2CIGiyMCkrc5NjifRqfkzjJCXSvs9z8D
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <B1F1252925F96A47BDBCED6EBE0E0E01@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bebfc5d9-227f-4940-a9e8-08d766e46344
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 20:18:59.8516
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: aNxLS/h38jLz3U5i5se3j3d997rSz0sCP5dF9xgh14vW76EfrMJybiH75hKz4izwuyP1sJmWEiemfRvGM4lBrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4541
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/11/19 11:54 AM, Florian Fainelli wrote:
-> It is possible for a switch driver to use NET_DSA_TAG_8021Q as a valid
-> DSA tagging protocol since it registers itself as such, unfortunately
-> since there are not xmit or rcv functions provided, the lack of a xmit()
-> function will lead to a NPD in dsa_slave_xmit() to start with.
-> 
-> net/dsa/tag_8021q.c is only comprised of a set of helper functions at
-> the moment, but is not a fully autonomous or functional tagging "driver"
-> (though it could become later on). We do not have any users of
-> NET_DSA_TAG_8021Q so now is a good time to make sure there are not
-> issues being encountered by making this file strictly a place holder for
-> helper functions.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-
-[snip]
-
-> -static const struct dsa_device_ops dsa_8021q_netdev_ops = {
-> -	.name		= "8021q",
-> -	.proto		= DSA_TAG_PROTO_8021Q,
-> -	.overhead	= VLAN_HLEN,
-> -};
-> -
-> -MODULE_LICENSE("GPL v2");
-
-I probably need to keep that around to avoid complaints about the module
-tainting the kernel, expect a v2 based on that and/or reviewer comments.
--- 
-Florian
+T24gRnJpLCAyMDE5LTExLTA4IGF0IDIzOjQ1ICswMDAwLCBTYWVlZCBNYWhhbWVlZCB3cm90ZToN
+Cj4gSGkgQWxsLA0KPiANCj4gQ3VycmVudGx5IFJvQ0UgaXMgYWx3YXlzIGVuYWJsZWQgYnkgZGVm
+YXVsdCBpbiBtbHg1IGFuZCB0aGVyZSBpcyBubw0KPiBvcHRpb24NCj4gZm9yIHRoZSB1c2VyIHRv
+IGRpc2FibGUgaXQuDQo+IA0KPiBUaGlzIGNoYW5nZSBpbnRyb2R1Y2VzIG5ldyBnZW5lcmljIGRl
+dmxpbmsgcGFyYW0gImVuYWJsZV9yb2NlIi4gDQo+IFVzZXIgc2hvdWxkIHNldCBkZXNpcmVkIHBh
+cmFtIHZhbHVlIGFuZCByZWxvYWQgdGhlIGRyaXZlciB0byBnZXQNCj4gZGVzaXJlZCBjb25maWd1
+cmF0aW9uLg0KPiANCj4gVHdvIG9wdGlvbnMgZm9yIHJlbG9hZDoNCj4gMSkgcmVsb2FkIG1seDVf
+aWIgZHJpdmVyLg0KPiAyKSByZWxvYWQgdmlhIGRldmxpbmssIG9uY2UgdGhlIGRldmxpbmsgbWx4
+NSByZWxvYWQgc3VwcG9ydCBbMV0NCj4gbGFuZHMgaW4gbmV0LW5leHQgYnJhbmNoLCBhZnRlciB0
+aGlzIHNlcmllcyBpcyBhcHBsaWVkLg0KPiANCj4gbWx4NSBkZXZsaW5rIHJlbG9hZCBpcyBub3Qg
+cGFydCBvZiB0aGlzIHBhdGNoc2V0IHNpbmNlIGl0IGRlcGVuZHMgb24NCj4gY2hhbmdlcyBmcm9t
+IG5ldC1uZXh0IHRyZWUuDQo+IA0KPiBSb0NFIHdpbGwgc3RpbGwgYmUgZW5hYmxlZCBieSBkZWZh
+dWx0IGFmdGVyIHRoaXMgY2hhbmdlLg0KPiANCj4gSW4gY2FzZSBvZiBubyBvYmplY3Rpb24gdGhp
+cyBzZXJpZXMgd2lsbCBiZSBhcHBsaWVkIHRvIG1seDUtbmV4dA0KPiBicmFuY2gNCj4gYW5kIHNl
+bnQgbGF0ZXIgYXMgcHVsbCByZXF1ZXN0IHRvIGJvdGggcmRtYS1uZXh0IGFuZCBuZXQtbmV4dA0K
+PiBicmFuY2hlcy4NCj4gDQoNClNlcmllcyBhcHBsaWVkIHRvIG1seDUtbmV4dC4NCg0KVGhhbmtz
+Lg0KDQo=
