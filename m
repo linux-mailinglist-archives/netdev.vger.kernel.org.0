@@ -2,121 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 49C5CF6D65
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 04:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59B32F6D6A
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 04:57:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726888AbfKKDqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 22:46:07 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37084 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726756AbfKKDqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 22:46:06 -0500
-Received: by mail-pg1-f194.google.com with SMTP id z24so8567785pgu.4
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 19:46:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=AqhM9u1bzCnw7qhUa4mHnqgFKW6TzFtxLFQ8BM/epMs=;
-        b=SOIlwK5mjoyFW/tXHeVmYa4IK11qYjcalG4RreXwkjwE6o05256yuTEZ4tqlNqlfGD
-         shDyAVTcAHfRAPjk0HgUUKt78RLGstgu/5t3Xt/YTXXdCjfzs9mSIpOwHV2fBRUr4arr
-         AimZYIbgl6d67DxMbwVkHuQhEjqCZvV6SfPQ8uDxtE9RoCr+xi1KecnA+sD5oHcnju5t
-         dFGKlm2zNCLvQWMxLDvuJZZCdRP6iqrhDPSdCZijkrYJ/JogxXmCgPyhTq2g5iRb3//X
-         4ZXSpxzZA92++uyYySNgIfmELbtXgsdpqUoyYO5dKpkYYGsBdF1TrYchrVlxN9pAY8EW
-         +iRA==
+        id S1726804AbfKKD5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 10 Nov 2019 22:57:02 -0500
+Received: from mail-il1-f200.google.com ([209.85.166.200]:48140 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726749AbfKKD5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 10 Nov 2019 22:57:02 -0500
+Received: by mail-il1-f200.google.com with SMTP id j68so15812918ili.15
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 19:57:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=AqhM9u1bzCnw7qhUa4mHnqgFKW6TzFtxLFQ8BM/epMs=;
-        b=oIfn5wPLlLpYZkG51Y33ozoXAWmYUCGUzD9gKvllkPQqx7Ni71+RkvO0k/h0ue3F+K
-         Z8WXnSNeq0L5hA2bgfpV8NDTZQbtpKxQn+CPAgA+Q9uoOlm9jrHUl1JYMy8i7Bx2dhy4
-         ijcbLbEaM9uET0Yuorst2IFyKjDQ0P3Jr7ZcmQgB5lkWgnN1ETc793iDQB6B2b+HtDXG
-         Evk5H8vxo6SooaWzaV/7iODGIXJYjCOQlZamBGZWogZLDD/55yRIC7s3so9eHj7j6A47
-         CeP6S14zZcospHHJUWS1L3UfXh7zgRH4Mb10u2O2fEgHSDrBgjaWyfF5g4PArh+l4RHJ
-         jqzA==
-X-Gm-Message-State: APjAAAWmKMs+5daZmi6QJzmll6eJb+4NLlTkObG0Ez6JikEs+EvSl1aH
-        xk5vu0lSyFR7WFcaigEdMx1Q2g==
-X-Google-Smtp-Source: APXvYqyvsmmGRubdY0eCp6Hd53IA2QHIUdVnV/J9ottQSlb0FTBMpy9oBY7rLSA0rhkW3bsD3dRtVQ==
-X-Received: by 2002:a63:86c6:: with SMTP id x189mr25278222pgd.341.1573443966052;
-        Sun, 10 Nov 2019 19:46:06 -0800 (PST)
-Received: from cakuba (c-73-202-202-92.hsd1.ca.comcast.net. [73.202.202.92])
-        by smtp.gmail.com with ESMTPSA id w8sm12009631pfi.60.2019.11.10.19.46.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 10 Nov 2019 19:46:05 -0800 (PST)
-Date:   Sun, 10 Nov 2019 19:46:01 -0800
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, Parav Pandit <parav@mellanox.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David M <david.m.ertman@intel.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191110194601.0d6ed1a0@cakuba>
-In-Reply-To: <20191110091855.GE1435668@kroah.com>
-References: <20191107160448.20962-1-parav@mellanox.com>
-        <20191107153234.0d735c1f@cakuba.netronome.com>
-        <20191108121233.GJ6990@nanopsycho>
-        <20191108144054.GC10956@ziepe.ca>
-        <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20191108111238.578f44f1@cakuba>
-        <20191108201253.GE10956@ziepe.ca>
-        <20191108134559.42fbceff@cakuba>
-        <20191109004426.GB31761@ziepe.ca>
-        <20191109092747.26a1a37e@cakuba>
-        <20191110091855.GE1435668@kroah.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ahqf5JMi9x4MvVhOL42cOCJqrc4gS0aQJVD9aozCigk=;
+        b=GgxGLYtabVyzPl8hhUhI4ZerEi3VmfIGSVlcohY7uTKmqB583Au1zUiKOgzryQqpBP
+         4rLz4wrPmnx3UEKXzEvZBLQkOY/nQhEYcJClbXEq1154LkIbQfolz7CarP7iT0b6+mSP
+         +DqWXZN8l1IJCnSrFA/tmq2KBkf5I5Ob84Hs//+nNk7JQQn/YG4VYTR+wtaW0mE5RXv7
+         UJy2uKQUndNFSzKB8jC8Gd4p4HToyubazGvj2Glix56F60Qb3X2NY2CVu1mw1GKXyErA
+         EAeG/cXuNg8YFiyOau/K9pEhuIdxJaul1lGSzd8fnO4016dEnGztlApwRd5OC0EdADh4
+         wVYg==
+X-Gm-Message-State: APjAAAVG6qDzkBv5bp3dTlY/HH5IH3DJK62FTJ05YV57u3tsn4+CDKZW
+        LSpwzH7Kg0G5oGBHNX4J2t+s5obZ8+ls4ZioI8i28sulQjq/
+X-Google-Smtp-Source: APXvYqxIayoK3rWM7U/FC6CNlkGPnuolY7jUbXULvgiXcBHeAhVQj+4RetmukhTi4OYUOkBjLlTShjAPyzdnLzWMGXOucgeE3et/
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:3903:: with SMTP id l3mr22649703jaa.72.1573444621272;
+ Sun, 10 Nov 2019 19:57:01 -0800 (PST)
+Date:   Sun, 10 Nov 2019 19:57:01 -0800
+In-Reply-To: <00000000000082c66d059705e442@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b98cf305970a1fd3@google.com>
+Subject: Re: KASAN: use-after-free Read in j1939_session_get_by_addr_locked
+From:   syzbot <syzbot+ca172a0ac477ac90f045@syzkaller.appspotmail.com>
+To:     bst@pengutronix.de, davem@davemloft.net,
+        dev.kurt@vandijck-laurijssen.be, ecathinds@gmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
+        lkp@intel.com, maxime.jayat@mobile-devices.fr, mkl@pengutronix.de,
+        netdev@vger.kernel.org, o.rempel@pengutronix.de, robin@protonic.nl,
+        socketcan@hartkopp.net, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Nov 2019 10:18:55 +0100, gregkh@linuxfoundation.org wrote:
-> > What I'm missing is why is it so bad to have a driver register to
-> > multiple subsystems.  
-> 
-> Because these PCI devices seem to do "different" things all in one PCI
-> resource set.  Blame the hardware designers :)
+syzbot has bisected this bug to:
 
-See below, I don't think you can blame the HW designers in this
-particular case :)
+commit 9d71dd0c70099914fcd063135da3c580865e924c
+Author: The j1939 authors <linux-can@vger.kernel.org>
+Date:   Mon Oct 8 09:48:36 2018 +0000
 
-> > For the nfp I think the _real_ reason to have a bus was that it
-> > was expected to have some out-of-tree modules bind to it. Something 
-> > I would not encourage :)  
-> 
-> That's not ok, and I agree with you.
-> 
-> But there seems to be some more complex PCI devices that do lots of
-> different things all at once.  Kind of like a PCI device that wants to
-> be both a keyboard and a storage device at the same time (i.e. a button
-> on a disk drive...)
+     can: add support of SAE J1939 protocol
 
-The keyboard which is also a storage device may be a clear cut case
-where multiple devices were integrated into one bus endpoint.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11bc06d6e00000
+start commit:   00aff683 Merge tag 'for-5.4-rc6-tag' of git://git.kernel.o..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=13bc06d6e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=15bc06d6e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8c5e2eca3f31f9bf
+dashboard link: https://syzkaller.appspot.com/bug?extid=ca172a0ac477ac90f045
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=144150e2e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11aaa9fce00000
 
-The case with these advanced networking adapters is a little different
-in that they are one HW device which has oodles of FW implementing
-clients or acceleration for various networking protocols.
+Reported-by: syzbot+ca172a0ac477ac90f045@syzkaller.appspotmail.com
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
 
-The nice thing about having a fake bus is you can load out-of-tree
-drivers to operate extra protocols quite cleanly.
-
-I'm not saying that's what the code in question is doing, I'm saying 
-I'd personally like to understand the motivation more clearly before
-every networking driver out there starts spawning buses. The only
-argument I've heard so far for the separate devices is reloading subset
-of the drivers, which I'd rate as moderately convincing.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
