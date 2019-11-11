@@ -2,79 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 511C1F7770
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3343F7773
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:14:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbfKKPNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 10:13:00 -0500
-Received: from mail-wm1-f43.google.com ([209.85.128.43]:53086 "EHLO
-        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726843AbfKKPNA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 10:13:00 -0500
-Received: by mail-wm1-f43.google.com with SMTP id l1so2345443wme.2
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 07:12:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=B0SKQVMaBiazT/Ub8cwg9vpH5k+7aSukWaFMu0C6vBg=;
-        b=y+NNWiJ0R1XNto2SbrNIDaVAis7uPwNejRf2PaDKdARqsVNq8p4PdiXT3GS2oFrRNo
-         LFYzPFGC0RzPuwfqw8EiTftB2ln3YmcddLXovb6LaqGETTBtfer8ZelMb8MhFgkd6TzS
-         0RXS/dD0mreuD/AqMWaIOQtcJi75u9ab9O/F50RwlDW1vfoOo/bKcRg5B+QFVFAWNzLE
-         0YTahywRyrsItODYzFaK6rqfP3TJCTiynJnwpHUzpCaqPbKCG8rGhIQ4b88Sclc5CBgi
-         GPI4w+YS/qPigQ60hndaoyMcn7BlMYVqblgz3viIozPAdiM9VVHjTWw8q5m6sLlcwf0v
-         OUHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=B0SKQVMaBiazT/Ub8cwg9vpH5k+7aSukWaFMu0C6vBg=;
-        b=Afdtn/73revH9Wp2XdB31SbGrbHgyErIMSxU1xo2n+w94NhwgKcCV5twn6aXPMULXa
-         V6JdjA2O2H2d3L8XLExT2eV/WavlCDvT46Lv9/4XxKIsRW6H2PtkKhRkaiAhwfKuwIyD
-         UaE9ItfoQCDyVpUXYfLyqr4SWpXS6fIla4mL/MbAKdg1iaXOJj7sH8+D/0OOeq8ocj9x
-         dGH2C9SM0iowWgySaQCAY8sbH6WtA12AlmzYeEm0mWrVOmQ6OPrhT4fyZwlu9aGdI84p
-         ntiglo+94G5SqaGrkHZvZ5pdiMF5VY+JPisN6aL+CYlIX2qVDUalvBGQTNyRH1dWeqoz
-         ZU9Q==
-X-Gm-Message-State: APjAAAVSA3QRggtX4+FUTDBI+PcA6lzvdbjOgzwMvoxnTmPxzM5OjCcl
-        kgM2HiPSbg//4Di2R1qJVk9yuo1Og7I=
-X-Google-Smtp-Source: APXvYqx0xVsJx9vZX4vKPlKvvmMI+EmhVA+LEwTaykrXjiQsfR+9qHrE0zc+4K4f7eHxEcj/W80S+w==
-X-Received: by 2002:a1c:4c15:: with SMTP id z21mr19366559wmf.132.1573485178252;
-        Mon, 11 Nov 2019 07:12:58 -0800 (PST)
-Received: from apalos.home (athedsl-4484009.home.otenet.gr. [94.71.55.177])
-        by smtp.gmail.com with ESMTPSA id 65sm32725886wrs.9.2019.11.11.07.12.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2019 07:12:57 -0800 (PST)
-Date:   Mon, 11 Nov 2019 17:12:55 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+        id S1726952AbfKKPOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 10:14:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54866 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726811AbfKKPOp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 10:14:45 -0500
+Received: from localhost.localdomain (unknown [77.139.212.74])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 75399206A3;
+        Mon, 11 Nov 2019 15:14:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573485285;
+        bh=AXe786mBXmzC6AAt1V++vDFNc8sZfXq4LE5voRgw2Hs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RlV33XrN8IapoWFB3W9gWjpatHW8dVe44wiyVSh0W3fBGV/sPWtYkZPT66Yluq9/u
+         XM9zg5J2B0k0YM+jhv+KjZGc9PL/fNkgJt79J/OTLH7+f8Tz8EAKz+/hbl8SjhAEo2
+         i3emYvdT6eQvb81Ewt9p1/1mMBUc1n0YsfXkCCXQ=
+Date:   Mon, 11 Nov 2019 17:14:36 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, brouer@redhat.com,
+Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>, brouer@redhat.com,
         netdev <netdev@vger.kernel.org>
 Subject: Re: Regression in mvneta with XDP patches
-Message-ID: <20191111151255.GA3614@apalos.home>
+Message-ID: <20191111151436.GC4197@localhost.localdomain>
 References: <20191111134615.GA8153@lunn.ch>
- <20191111143725.GB4197@localhost.localdomain>
- <20191111150907.GD1105@lunn.ch>
+ <20191111143352.GA2698@apalos.home>
+ <20191111150553.GC1105@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="GyRA7555PLgSTuth"
 Content-Disposition: inline
-In-Reply-To: <20191111150907.GD1105@lunn.ch>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191111150553.GC1105@lunn.ch>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 04:09:07PM +0100, Andrew Lunn wrote:
-> > looking at the dts, could you please confirm mvneta is using hw or sw buffer manager
-> > on this board? Moreover are you using DSA as well?
-> 
-> So my reply to Ilias answered the first question. And yes, i'm using
-> DSA. But that should not matter, mvneta is just receiving frames which
-> happen to have an extra header after the two MAC addresses.
-> 
-In theory (famous last words) DSA or not shouldn't be affected by this. 
-The driver was already allocating a page per packet before our changes. 
-We just allocate that page via page_pool.
 
-Thanks
-/Ilias
+--GyRA7555PLgSTuth
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Nov 11, Andrew Lunn wrote:
+> On Mon, Nov 11, 2019 at 04:33:52PM +0200, Ilias Apalodimas wrote:
+> > Hi Andrew,
+> >=20
+> > On Mon, Nov 11, 2019 at 02:46:15PM +0100, Andrew Lunn wrote:
+> > > Hi Lorenzo, Jesper, Ilias
+> > >=20
+> > > I just found that the XDP patches to mvneta have caused a regression.
+> > >=20
+> > > This one breaks networking:
+> >=20
+> > Thaks for the report.
+> > Looking at the DTS i can see 'buffer-manager' in it. The changes we mad=
+e were
+> > for the driver path software buffer manager.=20
+> > Can you confirm which one your hardware uses?
+>=20
+> Hi Ilias
+>=20
+> Ah, interesting.
+>=20
+> # CONFIG_MVNETA_BM_ENABLE is not set
+>=20
+> So in fact it is not being compiled in, so should be falling back to
+> software buffer manager.
+>=20
+> If i do enable it, then it works. So we are in a corner cases you
+> probably never tested. Requested by DT, but not actually available.
+>=20
+> 	 Andrew
+
+Maybe I got the issue. If mvneta_bm_port_init fails (e.g. if
+CONFIG_MVNETA_BM_ENABLE is not set) rx_offset_correction will be set to a w=
+rong
+value. To bisect the issue, could you please test the following patch?
+
+Regards,
+Lorenzo
+
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/m=
+arvell/mvneta.c
+index 591d580c68b4..e476fb043379 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -4944,7 +4944,6 @@ static int mvneta_probe(struct platform_device *pdev)
+ 	SET_NETDEV_DEV(dev, &pdev->dev);
+=20
+ 	pp->id =3D global_port_id++;
+-	pp->rx_offset_correction =3D MVNETA_SKB_HEADROOM;
+=20
+ 	/* Obtain access to BM resources if enabled and already initialized */
+ 	bm_node =3D of_parse_phandle(dn, "buffer-manager", 0);
+@@ -4969,6 +4968,9 @@ static int mvneta_probe(struct platform_device *pdev)
+ 	}
+ 	of_node_put(bm_node);
+=20
++	if (!pp->bm_priv)
++		pp->rx_offset_correction =3D MVNETA_SKB_HEADROOM;
++
+ 	err =3D mvneta_init(&pdev->dev, pp);
+ 	if (err < 0)
+ 		goto err_netdev;
+
+
+--GyRA7555PLgSTuth
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXcl62QAKCRA6cBh0uS2t
+rIHYAP48saZGw4j52/DK+QYAlySZ2fgcCrsr5Uz071euC5aWHAD/bHMo3cJZ/50+
+Uq0JONgtT6DH0b7mjdJjI23ZbOwJrQs=
+=937P
+-----END PGP SIGNATURE-----
+
+--GyRA7555PLgSTuth--
