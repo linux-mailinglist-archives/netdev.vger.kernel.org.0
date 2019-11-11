@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C70DF76AA
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:43:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C9FCF76B6
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:43:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726908AbfKKOnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 09:43:00 -0500
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:44432 "EHLO
+        id S1727178AbfKKOnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 09:43:06 -0500
+Received: from us03-smtprelay2.synopsys.com ([149.117.87.133]:55184 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726889AbfKKOm7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 09:42:59 -0500
+        by vger.kernel.org with ESMTP id S1726877AbfKKOnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 09:43:05 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 70152C0E0E;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 8422FC08BA;
         Mon, 11 Nov 2019 14:42:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1573483379; bh=OCh1D547y/ayETMzIo+QdmplbDDiqGFplipLwIl0zCI=;
+        t=1573483383; bh=EoTBZOC0Je6korS7Ma+EpCD7GT0gwifStY63b9qn/QM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=CB2IXLhVsqkG7Upl+6dfOsinDVyVVQ1KnspNHR0ExRMVHt32EqiAKmCbiIHcSW5lT
-         HUIPmJN/HljDz7QT0CGsTROsS6LRDcsUvy6LHUgPI4mTW+1KUdhSgizaiz9kWIc8NK
-         fSm0DCQkzfuz7wqqcUptYw7AGnwrLLb9F1m9NwoszeZql+z3OMXPwIXXPvYTcUoGAG
-         F8C/kOen/G3uK2Pa2h3DJt/eRIrT7/AqAMasVOI7PnHwqp6r2NhczxBHik7mWDFPCg
-         HZOz5Avax6RJUIYlIg/2o8g4IhoEf68oPYRaK29tr5ooD60mb147qp3+8ywClNrauK
-         Y9hwd+ByylpZQ==
+        b=hbn0NJ+mb/rTGEomSAZ4/TiBwfPh7NpN2ndEFXioU0VRtifnVv8mwXrzxpss9syqz
+         WLXHnVtHFcyNNOjIVG7AlWNOxaxt/F89Zls9BDrBRDh28+iTQoyshwXY4mReHFODlK
+         RCXQ/t+/EL8Dal16GUPwVvtiOoI1JxZwaRcbkhWtUKUIwVe3xsLxzCvF4ZxKon8gBL
+         mWkJRDObUtMdvSxAaucvEdN5/15WxIEtkcy5WyJiU3gAWw3mb+MiULcriweMFPHpVW
+         7uK7Q3kZpV0jGxJhIr5sP8M+CugVf4UdVTGN82pW/IMWwOKcdbwrJud+A4YRGkIuCX
+         gn1rDEw3/ckEw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 28168A0257;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 3E315A025B;
         Mon, 11 Nov 2019 14:42:57 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/6] net: stmmac: Rework stmmac_rx()
-Date:   Mon, 11 Nov 2019 15:42:38 +0100
-Message-Id: <c475850fdb0e71cbf6e0b7559bf1546d27996ed4.1573482991.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next 6/6] net: stmmac: Implement UDP Segmentation Offload
+Date:   Mon, 11 Nov 2019 15:42:39 +0100
+Message-Id: <7a62a0532edaec95312308d7a4ced7eae331bc6d.1573482992.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1573482991.git.Jose.Abreu@synopsys.com>
 References: <cover.1573482991.git.Jose.Abreu@synopsys.com>
@@ -53,9 +53,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This looks over-engineered. Let's use some helpers to get the buffer
-length and hereby simplify the stmmac_rx() function. No performance drop
-was seen with the new implementation.
+Implement the UDP Segmentation Offload feature in stmmac. This is only
+available in GMAC4+ cores.
 
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
@@ -70,249 +69,112 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 146 ++++++++++++++--------
- 1 file changed, 94 insertions(+), 52 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 32 ++++++++++++++++-------
+ 1 file changed, 23 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 5f40fbb67bac..a2fac7772666 100644
+index a2fac7772666..39b4efd521f9 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3443,6 +3443,55 @@ static inline void stmmac_rx_refill(struct stmmac_priv *priv, u32 queue)
- 	stmmac_set_rx_tail_ptr(priv, priv->ioaddr, rx_q->rx_tail_addr, queue);
- }
+@@ -36,6 +36,7 @@
+ #endif /* CONFIG_DEBUG_FS */
+ #include <linux/net_tstamp.h>
+ #include <linux/phylink.h>
++#include <linux/udp.h>
+ #include <net/pkt_cls.h>
+ #include "stmmac_ptp.h"
+ #include "stmmac.h"
+@@ -2916,9 +2917,9 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	u32 queue = skb_get_queue_mapping(skb);
+ 	struct stmmac_tx_queue *tx_q;
+ 	unsigned int first_entry;
++	u8 proto_hdr_len, hdr;
+ 	int tmp_pay_len = 0;
+ 	u32 pay_len, mss;
+-	u8 proto_hdr_len;
+ 	dma_addr_t des;
+ 	bool has_vlan;
+ 	int i;
+@@ -2926,7 +2927,13 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	tx_q = &priv->tx_queue[queue];
  
-+static unsigned int stmmac_rx_buf1_len(struct stmmac_priv *priv,
-+				       struct dma_desc *p,
-+				       int status, unsigned int len)
-+{
-+	int ret, coe = priv->hw->rx_csum;
-+	unsigned int plen = 0, hlen = 0;
-+
-+	/* Not first descriptor, buffer is always zero */
-+	if (priv->sph && len)
-+		return 0;
-+
-+	/* First descriptor, get split header length */
-+	ret = stmmac_get_rx_header_len(priv, p, &hlen);
-+	if (priv->sph && hlen) {
-+		priv->xstats.rx_split_hdr_pkt_n++;
-+		return hlen;
+ 	/* Compute header lengths */
+-	proto_hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
++	if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4) {
++		proto_hdr_len = skb_transport_offset(skb) + sizeof(struct udphdr);
++		hdr = sizeof(struct udphdr);
++	} else {
++		proto_hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
++		hdr = tcp_hdrlen(skb);
 +	}
-+
-+	/* First descriptor, not last descriptor and not split header */
-+	if (status & rx_not_ls)
-+		return priv->dma_buf_sz;
-+
-+	plen = stmmac_get_rx_frame_len(priv, p, coe);
-+
-+	/* First descriptor and last descriptor and not split header */
-+	return min_t(unsigned int, priv->dma_buf_sz, plen);
-+}
-+
-+static unsigned int stmmac_rx_buf2_len(struct stmmac_priv *priv,
-+				       struct dma_desc *p,
-+				       int status, unsigned int len)
-+{
-+	int coe = priv->hw->rx_csum;
-+	unsigned int plen = 0;
-+
-+	/* Not split header, buffer is not available */
-+	if (!priv->sph)
-+		return 0;
-+
-+	/* Not last descriptor */
-+	if (status & rx_not_ls)
-+		return priv->dma_buf_sz;
-+
-+	plen = stmmac_get_rx_frame_len(priv, p, coe);
-+
-+	/* Last descriptor */
-+	return plen - len;
-+}
-+
- /**
-  * stmmac_rx - manage the receive process
-  * @priv: driver private structure
-@@ -3472,11 +3521,10 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 		stmmac_display_ring(priv, rx_head, DMA_RX_SIZE, true);
- 	}
- 	while (count < limit) {
--		unsigned int hlen = 0, prev_len = 0;
-+		unsigned int buf1_len = 0, buf2_len = 0;
- 		enum pkt_hash_types hash_type;
- 		struct stmmac_rx_buffer *buf;
- 		struct dma_desc *np, *p;
--		unsigned int sec_len;
- 		int entry;
- 		u32 hash;
  
-@@ -3495,7 +3543,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			break;
- 
- read_again:
--		sec_len = 0;
-+		buf1_len = 0;
-+		buf2_len = 0;
- 		entry = next_entry;
- 		buf = &rx_q->buf_pool[entry];
- 
-@@ -3520,7 +3569,6 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			np = rx_q->dma_rx + next_entry;
- 
- 		prefetch(np);
--		prefetch(page_address(buf->page));
- 
- 		if (priv->extend_desc)
- 			stmmac_rx_extended_status(priv, &priv->dev->stats,
-@@ -3537,69 +3585,61 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			goto read_again;
- 		if (unlikely(error)) {
- 			dev_kfree_skb(skb);
-+			skb = NULL;
- 			count++;
- 			continue;
- 		}
- 
- 		/* Buffer is good. Go on. */
- 
--		if (likely(status & rx_not_ls)) {
--			len += priv->dma_buf_sz;
--		} else {
--			prev_len = len;
--			len = stmmac_get_rx_frame_len(priv, p, coe);
--
--			/* ACS is set; GMAC core strips PAD/FCS for IEEE 802.3
--			 * Type frames (LLC/LLC-SNAP)
--			 *
--			 * llc_snap is never checked in GMAC >= 4, so this ACS
--			 * feature is always disabled and packets need to be
--			 * stripped manually.
--			 */
--			if (unlikely(priv->synopsys_id >= DWMAC_CORE_4_00) ||
--			    unlikely(status != llc_snap))
--				len -= ETH_FCS_LEN;
-+		prefetch(page_address(buf->page));
-+		if (buf->sec_page)
-+			prefetch(page_address(buf->sec_page));
-+
-+		buf1_len = stmmac_rx_buf1_len(priv, p, status, len);
-+		len += buf1_len;
-+		buf2_len = stmmac_rx_buf2_len(priv, p, status, len);
-+		len += buf2_len;
-+
-+		/* ACS is set; GMAC core strips PAD/FCS for IEEE 802.3
-+		 * Type frames (LLC/LLC-SNAP)
-+		 *
-+		 * llc_snap is never checked in GMAC >= 4, so this ACS
-+		 * feature is always disabled and packets need to be
-+		 * stripped manually.
-+		 */
-+		if (unlikely(priv->synopsys_id >= DWMAC_CORE_4_00) ||
-+		    unlikely(status != llc_snap)) {
-+			if (buf2_len)
-+				buf2_len -= ETH_FCS_LEN;
-+			else
-+				buf1_len -= ETH_FCS_LEN;
-+
-+			len -= ETH_FCS_LEN;
- 		}
- 
- 		if (!skb) {
--			int ret = stmmac_get_rx_header_len(priv, p, &hlen);
--
--			if (priv->sph && !ret && (hlen > 0)) {
--				sec_len = len;
--				if (!(status & rx_not_ls))
--					sec_len = sec_len - hlen;
--				len = hlen;
--
--				prefetch(page_address(buf->sec_page));
--				priv->xstats.rx_split_hdr_pkt_n++;
--			}
--
--			skb = napi_alloc_skb(&ch->rx_napi, len);
-+			skb = napi_alloc_skb(&ch->rx_napi, buf1_len);
- 			if (!skb) {
- 				priv->dev->stats.rx_dropped++;
- 				count++;
--				continue;
-+				goto drain_data;
- 			}
- 
--			dma_sync_single_for_cpu(priv->device, buf->addr, len,
--						DMA_FROM_DEVICE);
-+			dma_sync_single_for_cpu(priv->device, buf->addr,
-+						buf1_len, DMA_FROM_DEVICE);
- 			skb_copy_to_linear_data(skb, page_address(buf->page),
--						len);
--			skb_put(skb, len);
-+						buf1_len);
-+			skb_put(skb, buf1_len);
- 
- 			/* Data payload copied into SKB, page ready for recycle */
- 			page_pool_recycle_direct(rx_q->page_pool, buf->page);
- 			buf->page = NULL;
--		} else {
--			unsigned int buf_len = len - prev_len;
--
--			if (likely(status & rx_not_ls))
--				buf_len = priv->dma_buf_sz;
--
-+		} else if (buf1_len) {
- 			dma_sync_single_for_cpu(priv->device, buf->addr,
--						buf_len, DMA_FROM_DEVICE);
-+						buf1_len, DMA_FROM_DEVICE);
- 			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
--					buf->page, 0, buf_len,
-+					buf->page, 0, buf1_len,
- 					priv->dma_buf_sz);
- 
- 			/* Data payload appended into SKB */
-@@ -3607,22 +3647,23 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 			buf->page = NULL;
- 		}
- 
--		if (sec_len > 0) {
-+		if (buf2_len) {
- 			dma_sync_single_for_cpu(priv->device, buf->sec_addr,
--						sec_len, DMA_FROM_DEVICE);
-+						buf2_len, DMA_FROM_DEVICE);
- 			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
--					buf->sec_page, 0, sec_len,
-+					buf->sec_page, 0, buf2_len,
- 					priv->dma_buf_sz);
- 
--			len += sec_len;
--
- 			/* Data payload appended into SKB */
- 			page_pool_release_page(rx_q->page_pool, buf->sec_page);
- 			buf->sec_page = NULL;
- 		}
- 
-+drain_data:
- 		if (likely(status & rx_not_ls))
- 			goto read_again;
-+		if (!skb)
-+			continue;
- 
- 		/* Got entire packet into SKB. Finish it. */
- 
-@@ -3640,13 +3681,14 @@ static int stmmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
- 
- 		skb_record_rx_queue(skb, queue);
- 		napi_gro_receive(&ch->rx_napi, skb);
-+		skb = NULL;
- 
- 		priv->dev->stats.rx_packets++;
- 		priv->dev->stats.rx_bytes += len;
- 		count++;
+ 	/* Desc availability based on threshold should be enough safe */
+ 	if (unlikely(stmmac_tx_avail(priv, queue) <
+@@ -2956,8 +2963,8 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
  	}
  
--	if (status & rx_not_ls) {
-+	if (status & rx_not_ls || skb) {
- 		rx_q->state_saved = true;
- 		rx_q->state.skb = skb;
- 		rx_q->state.error = error;
+ 	if (netif_msg_tx_queued(priv)) {
+-		pr_info("%s: tcphdrlen %d, hdr_len %d, pay_len %d, mss %d\n",
+-			__func__, tcp_hdrlen(skb), proto_hdr_len, pay_len, mss);
++		pr_info("%s: hdrlen %d, hdr_len %d, pay_len %d, mss %d\n",
++			__func__, hdr, proto_hdr_len, pay_len, mss);
+ 		pr_info("\tskb->len %d, skb->data_len %d\n", skb->len,
+ 			skb->data_len);
+ 	}
+@@ -3071,7 +3078,7 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			proto_hdr_len,
+ 			pay_len,
+ 			1, tx_q->tx_skbuff_dma[first_entry].last_segment,
+-			tcp_hdrlen(skb) / 4, (skb->len - proto_hdr_len));
++			hdr / 4, (skb->len - proto_hdr_len));
+ 
+ 	/* If context desc is used to change MSS */
+ 	if (mss_desc) {
+@@ -3130,6 +3137,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	int i, csum_insertion = 0, is_jumbo = 0;
+ 	u32 queue = skb_get_queue_mapping(skb);
+ 	int nfrags = skb_shinfo(skb)->nr_frags;
++	int gso = skb_shinfo(skb)->gso_type;
+ 	struct dma_desc *desc, *first;
+ 	struct stmmac_tx_queue *tx_q;
+ 	unsigned int first_entry;
+@@ -3145,7 +3153,9 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	/* Manage oversized TCP frames for GMAC4 device */
+ 	if (skb_is_gso(skb) && priv->tso) {
+-		if (skb_shinfo(skb)->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))
++		if (gso & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))
++			return stmmac_tso_xmit(skb, dev);
++		if (priv->plat->has_gmac4 && (gso & SKB_GSO_UDP_L4))
+ 			return stmmac_tso_xmit(skb, dev);
+ 	}
+ 
+@@ -4036,11 +4046,13 @@ static int stmmac_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+ static u16 stmmac_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 			       struct net_device *sb_dev)
+ {
+-	if (skb_shinfo(skb)->gso_type & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6)) {
++	int gso = skb_shinfo(skb)->gso_type;
++
++	if (gso & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6 | SKB_GSO_UDP_L4)) {
+ 		/*
+-		 * There is no way to determine the number of TSO
++		 * There is no way to determine the number of TSO/USO
+ 		 * capable Queues. Let's use always the Queue 0
+-		 * because if TSO is supported then at least this
++		 * because if TSO/USO is supported then at least this
+ 		 * one will be capable.
+ 		 */
+ 		return 0;
+@@ -4555,6 +4567,8 @@ int stmmac_dvr_probe(struct device *device,
+ 
+ 	if ((priv->plat->tso_en) && (priv->dma_cap.tsoen)) {
+ 		ndev->hw_features |= NETIF_F_TSO | NETIF_F_TSO6;
++		if (priv->plat->has_gmac4)
++			ndev->hw_features |= NETIF_F_GSO_UDP_L4;
+ 		priv->tso = true;
+ 		dev_info(priv->device, "TSO feature enabled\n");
+ 	}
 -- 
 2.7.4
 
