@@ -2,35 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF7BBF7624
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:14:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 556B2F7632
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:17:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726960AbfKKOOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 09:14:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60918 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726843AbfKKOOd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Nov 2019 09:14:33 -0500
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA40C21925;
-        Mon, 11 Nov 2019 14:14:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573481672;
-        bh=0IDDU6b5/Y6auVkjsPzFNFLTUrYbv58q9hkKdzQUSNI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XdzM8eMhYSmS19YTBemsLCBU/GHzm2gOp6gPrWol5hs9QTFY6JVhAlBUh7YD3I1l1
-         Z+TnpWQLpX2z5dMlOECaQKZyQa14MpK0euWtP0BiZWBNc9iuT3Z+y2/luEZmm88FWV
-         3ZIkZYj0SuRNAmGlF9cD6Gtm6QsRKPqhLH5GPJ0M=
-Date:   Mon, 11 Nov 2019 15:14:30 +0100
-From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Parav Pandit <parav@mellanox.com>,
+        id S1726915AbfKKORh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 09:17:37 -0500
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40643 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbfKKORg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 09:17:36 -0500
+Received: by mail-wm1-f67.google.com with SMTP id f3so13355600wmc.5
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 06:17:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=MRo3diKBYBcGwLp50p5aMXNWzBa5ZFfKRAtoFXF24qM=;
+        b=dXHguEr+pnsoyOwJp1GVq+vDV+A1Je27ggMBZ2b/vndbZJIaCDFTevPrer+RTDP3Um
+         ogcdMj2g/XE7dIwkvXHxzOba0bqTQTUcGi+UgqhNOLZUlWeDgM57A5I8yzdfwfrmNZa6
+         QlZ4nGHeSfAhCiW6uAJkk/h/pXD8YvkdU6UerlVTFHTdJfTl14zKQmyq+XgV9bcMONtx
+         MigTj6GdtxHybPj3X5W5BgqtegohvqItwrvez3X73+zsyh5JRU/gy0p5F3YkaqLx0eW2
+         ytnBoPCaRl8iC6tbJ4JOkuxu1AM+yrabi5Sw/GcWD44Izvyajky+FPFSfnodzF6wvkGx
+         rrog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=MRo3diKBYBcGwLp50p5aMXNWzBa5ZFfKRAtoFXF24qM=;
+        b=Fpads7OZ6mHkwWTgD9QONhwg2glNk1bqTzT8Ab70HdPCo79MCduOlB06WgsSVdy/FN
+         VfET/ut0gS5CV8KtzyNv36WaPRKPTG8ks01mfEkBt+e6IRC4gPlauMinRIm3z5jLDZrj
+         37n82sCfgzOqI/LOmFSUz20Af5VJ4W7zsIEU0uJFycZMmWQgL9/f3YmdOcAPSLrXCxzK
+         /lmv9j5CU4Cj6g/MPQncsLKBc6PWOH69f+m8d2YqSyX9PVq72TW+TCW94GZsEmBP1Yta
+         C3ZaS3i47yzTA3Bq9FeMRhYZ5DC5BuNpPixBBU/nSYWheYBh7YM94kAz0YWk6aX77wgB
+         GpFQ==
+X-Gm-Message-State: APjAAAVsul/+uaFv/ovxrNu3k1vTxoaZIcDEOofr0CoCPzlBRDYHbeFG
+        komyldY3GDkzxI/pmaV2k5Kt4g==
+X-Google-Smtp-Source: APXvYqygTn1+LECGsozea1woUc7UCG2I1xnXTksMPMj5fVNHY0rtYCsRarOakCqPeCoTAmAEemWt2w==
+X-Received: by 2002:a1c:60d7:: with SMTP id u206mr21651174wmb.101.1573481853654;
+        Mon, 11 Nov 2019 06:17:33 -0800 (PST)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id u13sm6360308wmm.45.2019.11.11.06.17.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Nov 2019 06:17:33 -0800 (PST)
+Date:   Mon, 11 Nov 2019 15:17:32 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         David M <david.m.ertman@intel.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -40,80 +61,97 @@ Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         "cohuck@redhat.com" <cohuck@redhat.com>,
         Jiri Pirko <jiri@mellanox.com>,
         "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>
+        Or Gerlitz <gerlitz.or@gmail.com>,
+        "Jason Wang (jasowang@redhat.com)" <jasowang@redhat.com>
 Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191111141430.GB585609@kroah.com>
+Message-ID: <20191111141732.GB2202@nanopsycho>
 References: <20191108144054.GC10956@ziepe.ca>
  <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
  <20191108111238.578f44f1@cakuba>
  <20191108201253.GE10956@ziepe.ca>
- <20191108134559.42fbceff@cakuba>
- <20191109004426.GB31761@ziepe.ca>
- <20191109092747.26a1a37e@cakuba>
- <20191110091855.GE1435668@kroah.com>
- <20191110194601.0d6ed1a0@cakuba>
- <20191111133026.GA2202@nanopsycho>
+ <20191108133435.6dcc80bd@x1.home>
+ <20191108210545.GG10956@ziepe.ca>
+ <20191108145210.7ad6351c@x1.home>
+ <AM0PR05MB4866444210721BC4EE775D27D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191109005708.GC31761@ziepe.ca>
+ <AM0PR05MB48660E49342EC2CD6AB825F8D1750@AM0PR05MB4866.eurprd05.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191111133026.GA2202@nanopsycho>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <AM0PR05MB48660E49342EC2CD6AB825F8D1750@AM0PR05MB4866.eurprd05.prod.outlook.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 02:30:26PM +0100, Jiri Pirko wrote:
-> Mon, Nov 11, 2019 at 04:46:01AM CET, jakub.kicinski@netronome.com wrote:
-> >On Sun, 10 Nov 2019 10:18:55 +0100, gregkh@linuxfoundation.org wrote:
-> >> > What I'm missing is why is it so bad to have a driver register to
-> >> > multiple subsystems.  
-> >> 
-> >> Because these PCI devices seem to do "different" things all in one PCI
-> >> resource set.  Blame the hardware designers :)
-> >
-> >See below, I don't think you can blame the HW designers in this
-> >particular case :)
-> >
-> >> > For the nfp I think the _real_ reason to have a bus was that it
-> >> > was expected to have some out-of-tree modules bind to it. Something 
-> >> > I would not encourage :)  
-> >> 
-> >> That's not ok, and I agree with you.
-> >> 
-> >> But there seems to be some more complex PCI devices that do lots of
-> >> different things all at once.  Kind of like a PCI device that wants to
-> >> be both a keyboard and a storage device at the same time (i.e. a button
-> >> on a disk drive...)
-> >
-> >The keyboard which is also a storage device may be a clear cut case
-> >where multiple devices were integrated into one bus endpoint.
-> 
-> Also, I think that very important differentiator between keyboard/button
-> and NIC is that keyboard/button is fixed. You have driver bus with 2
-> devices on constant addresses.
-> 
-> However in case of NIC subfunctions. You have 0 at he beginning and user
-> instructs to create more (maybe hundreds). Now important questions
-> appear:
-> 
-> 1) How to create devices (what API) - mdev has this figured out
-> 2) How to to do the addressing of the devices. Needs to be
->    predictable/defined by the user - mdev has this figured out
-> 3) Udev names of netdevices - udev names that according to the
->    bus/address. That is straightforeward with mdev.
->    I can't really see how to figure this one in particular with
->    per-driver busses :/
+Sun, Nov 10, 2019 at 08:48:31PM CET, parav@mellanox.com wrote:
+>
+>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>> Sent: Friday, November 8, 2019 6:57 PM
+>> > We should be creating 3 different buses, instead of mdev bus being de-
+>> multiplexer of that?
+>> >
+>> > Hence, depending the device flavour specified, create such device on right
+>> bus?
+>> >
+>> > For example,
+>> > $ devlink create subdev pci/0000:05:00.0 flavour virtio name foo
+>> > subdev_id 1 $ devlink create subdev pci/0000:05:00.0 flavour mdev
+>> > <uuid> subdev_id 2 $ devlink create subdev pci/0000:05:00.0 flavour
+>> > mlx5 id 1 subdev_id 3
+>> 
+>> I like the idea of specifying what kind of interface you want at sub device
+>> creation time. It fits the driver model pretty well and doesn't require abusing
+>> the vfio mdev for binding to a netdev driver.
+>> 
+>> > $ devlink subdev pci/0000:05:00.0/<subdev_id> config <params> $ echo
+>> > <respective_device_id> <sysfs_path>/bind
+>> 
+>> Is explicit binding really needed?
+>No.
+>
+>> If you specify a vfio flavour why shouldn't
+>> the vfio driver autoload and bind to it right away? That is kind of the point
+>> of the driver model...
+>> 
+>It some configuration is needed that cannot be passed at device creation time, explicit bind later can be used.
+>
+>> (kind of related, but I don't get while all that GUID and lifecycle stuff in mdev
+>> should apply for something like a SF)
+>> 
+>GUID is just the name of the device.
+>But lets park this aside for a moment.
+>
+>> > Implement power management callbacks also on all above 3 buses?
+>> > Abstract out mlx5_bus into more generic virtual bus (vdev bus?) so
+>> > that multiple vendors can reuse?
+>> 
+>> In this specific case, why does the SF in mlx5 mode even need a bus?
+>> Is it only because of devlink? That would be unfortunate
+>>
+>Devlink is one part due to identifying using bus/dev.
+>How do we refer to its devlink instance of SF without bus/device?
 
-Are network devices somehow only allowed to be on mdev busses?
+Question is, why to have devlink instance for SF itself. Same as VF, you
+don't need devlink instance. You only need devlink_port (or
+devlink_subdev) instance on the PF devlink parent for it.
 
-No, don't be silly, userspace handles this just fine today on any type
-of bus, it's not an issue.
 
-You don't have to like individual "driver busses", but you had better
-not be using a fake platform device to use mdev.  That's my main
-objection...
-
-thanks,
-
-greg k-h
+>Can we extend devlink_register() to accept optionally have sf_id?
+>
+>If we don't have a bus, creating sub function (a device), without a 'struct device' which will have BAR, resources, etc is odd.
+>
+>Now if we cannot see 'struct device' in sysfs, how do we persistently name them?
+>Are we ok to add /sys/class/net/sf_netdev/subdev_id
+>And
+>/sys/class/infiniband/<rdma_dev>/subdev_id
+>
+>So that systemd/udev can rename them as en<X?><subdev_id> and roce<X><subdev_id>
+>If so, what will be X without a bus type?
+>
+>This route without a bus is certainly helpful to overcome the IOMMU limitation where IOMMU only listens to pci bus type for DMAR setup, 
+>dmar_register_bus_notifier(), and in 
+>intel_iommu_init()-> bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+>and other IOMMU doing similar PCI/AMBA binding.
+>This is currently overcome using WA dma_ops.
