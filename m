@@ -2,153 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E80DF7FFD
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:32:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B375F8090
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbfKKTcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 14:32:54 -0500
-Received: from mail-pl1-f174.google.com ([209.85.214.174]:38138 "EHLO
-        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726879AbfKKTcy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 14:32:54 -0500
-Received: by mail-pl1-f174.google.com with SMTP id w8so8214460plq.5;
-        Mon, 11 Nov 2019 11:32:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:mime-version
-         :content-disposition:user-agent;
-        bh=MAVRFnvbcrE0oPCckW9ArD+KIh8O0Hu6OBx+zFq+Fg4=;
-        b=Drdzwb2nscVTUsB8sRGh16MAgdw5z+ll+mtgIJ15yQ8p+RYfZGwnrf0XYFbbyQ29jD
-         kWP/2737Z1+FNx9tb6Vk2uX2ED2lJmrXmijq8YIjXuf1Wo7M3qpJrTCn+DnBD8cvRa+G
-         oj3+6YYUOnYE9/hWv/Hfj4BrEDzo98UdhJQRFDpMN628uAcOjERUVL2CUY9MtapPn6Jb
-         TOdhxknDp/7yEPABg0L8eqgB14dCt206lGqwP2DkQ7ne6E/EROL7nMZemwFXuz3soaFF
-         bIMdusLhiEuX1xTIlGsZj3Uca/MJWOIVFd1EXvySSKs+O70vysrviwaMp0saaDheWt37
-         1SNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:mime-version:content-disposition:user-agent;
-        bh=MAVRFnvbcrE0oPCckW9ArD+KIh8O0Hu6OBx+zFq+Fg4=;
-        b=GMLDmH5E8ono08C6UNfPyGavnuObNl5NcfTtbiW+7MI4OKpN9UIMN+gio8dLyTEEv6
-         hiQ7GdME8u26gf2yUZ3DCCdhx5gwrMWIud9GiW5O6OVXBAH/8QjH+mByRqSGrBaQGF9z
-         bbU5e/xmi35mrXQqfPQC0yWG3pfMe84KJUF/c9hChmzGr8Z9O8afjeK96T9zdr6Z4QQh
-         3/Jpzo6FQhvmRWYFkaHS3BChkfSK9XlwV9YWob6nOeixjOpS0KmRpHKaaDwwWe78HDyP
-         exjqsBs1wqFd0qnKRP7dMhKsKcnQjbwFQdo9ztXurN9D6YrhxNlHDmd9pJQWFVCKwS6C
-         VaZQ==
-X-Gm-Message-State: APjAAAXoIWMVnixzv7ZQ125JqQfPCvG0jF5Alx+KLalt2s7sKE0SWxhi
-        LIk0tspciDH9+OTWLb8INfRHD36UXx5cww==
-X-Google-Smtp-Source: APXvYqy5EVkN6pTfpTvaMnYBCyp15qKCfbVVPxPn+3WubSycvOehVYMwuXIm2bwlsbkvDTlxra6cuw==
-X-Received: by 2002:a17:902:b20b:: with SMTP id t11mr28026745plr.211.1573500773399;
-        Mon, 11 Nov 2019 11:32:53 -0800 (PST)
-Received: from localhost ([192.55.54.40])
-        by smtp.gmail.com with ESMTPSA id x17sm4463414pfa.119.2019.11.11.11.32.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2019 11:32:52 -0800 (PST)
-Date:   Mon, 11 Nov 2019 21:32:49 +0200
-From:   Johan Hedberg <johan.hedberg@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Subject: pull request: linux-bluetooth 2019-11-11
-Message-ID: <20191111193249.GA34408@fashcrof-mobl1.ger.corp.intel.com>
-Mail-Followup-To: davem@davemloft.net, netdev@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="WIyZ46R2i8wDzkSu"
-Content-Disposition: inline
-User-Agent: Mutt/1.12.2 (2019-09-21)
+        id S1727531AbfKKTvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 14:51:50 -0500
+Received: from mout.gmx.net ([212.227.15.18]:49399 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726912AbfKKTvf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 14:51:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1573501790;
+        bh=xi27iTDjcDpnSMVKDfT12Ab/Na1O4J3NDmJZO0y75tU=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=kY3FqCT7Gl0cbyXCF81zKfL++TQWx6NhtCRrEtvb0KAAqRydkfgoy8ckrn5z0izza
+         yQbK+9M243Lku6pp40OPjWrQqSDgToSg2PWMBAJBvcq8vLMktyZI1PTEoyekRgHmLt
+         fzPAZ+YViqlT3lTDSHshHj1M3UfyY2eGuEsSiu9c=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([37.4.249.112]) by mail.gmx.com
+ (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1N9MpS-1hrdfu19O8-015ING; Mon, 11 Nov 2019 20:49:50 +0100
+From:   Stefan Wahren <wahrenst@gmx.net>
+To:     Matthias Brugger <matthias.bgg@kernel.org>,
+        Matthias Brugger <mbrugger@suse.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Eric Anholt <eric@anholt.net>,
+        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        Stefan Wahren <wahrenst@gmx.net>
+Subject: [PATCH V5 net-next 0/7] ARM: Enable GENET support for RPi 4
+Date:   Mon, 11 Nov 2019 20:49:19 +0100
+Message-Id: <1573501766-21154-1-git-send-email-wahrenst@gmx.net>
+X-Mailer: git-send-email 2.7.4
+X-Provags-ID: V03:K1:sjjegBo9YJ4+FLoHPimLpHajqn+WYg1I1Rp8rwOjLXsa7L/nY7q
+ oTpQIHadPsrmBmEnpRdl1CUiPy85n2bqRaBFQFGo1wc93JCv5PbLe6OJ0Rd/nf7HR0/nRiV
+ BqB1PmNXYZ7zKSaz15G5R86QIlR2bNB+5uJ+uZpQ8TE+m9RkKbWDG/k9xDl3SVeVcYwQwL2
+ AiE9AhJIUZpNSgaDeEf5A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5rnjUq1GL6Q=:h2srEYoWauvk3KmY7i1/z5
+ D16sVhzBFyhW6kZvltK/ah5N6QJGmqoQ5IcPqRfIIrJY6tJWNes75FYgyUqJ19Vyj6SIm/aNq
+ MBcEVKxPiGsIJoCoXCde60zAspD++Qctu/Tv+nP9cXSjAVu34PCUH08B8bpTp92denTakOMqU
+ jIo4OEkTH86xrR04RvRabLNLclmN2rm+ATRMRe/feNdrGgehFET7jkcryliTkuRXKmtkad4Cf
+ xkQAQ/mhSApq2rAWoJO6Gvt4cqQrBv/qvuNDc0+h85kywi29RqDQLe1/e1A7T148BbPagDok0
+ xhX9NlqrU2Gk2YA4wv8A68xvhOFEJBmgJrqi5WeoHKs6JNphC3st1yWBYAs8y4aYzEypgABhm
+ 9yvYdsqbu38BOts0vwDVX93H4bCgdtXLoYMTSrzVO4lEG1oRwJeKN8esGEDwONSkRgq6weikJ
+ Y4V+b+WGSRrB4DJboswb2mvJ3l86pg/5+dSfz/SR5eqOx1juruKXvhCqYXR0nhtUlGPe4vvSt
+ gcNHQawN2O+LS8N4i/Vef+E9zyf8gX2XRioxmQdlVkBXKCd9aJzqAuhPSEnSxYSG2wfFrrge/
+ BcPjLtuOLE8RgxK7uq+Rr/Lunc7XBW9cx6S62VlEHARWW1/vnrBju5Hx9RzSCxPMyzr25YwTA
+ gG1z+cVjpLr54/4aGMD3DCV878cnHjQwuXX30Gl/6zOWWfHX+gnraIcg+emaUmyHq9xUkQbpl
+ knHMTJ7feFMRsx2iN99S1q+lkkXx8O7nOvlya79ME0PdjBiS+LFs4O6qHMhQ0u3xmEMNbjNMK
+ JOUVJ26xqf3t80kX77SRa2aohmtzj7N0UwA/MGw7iWPV73u/8dkRQFiHpoOw8La/Q7fkMxEAj
+ whJ43wwDoKFxAmCruu73mFM3bDDgFsGawpnsYTqDU4viuxhHa9n6JehtupsVS0gM0HDx98sWY
+ qE+Um9GWD8R2Cae/izH8s6PNYPM/yw2gj7SaIVF+Vm2mI7j4OHuH7m7y9di6DfeULH8+Jdn/Z
+ tOe4UUIu3ve6zKL+cv6oD1mljxyz3PBn2dCel0F6TRUSeHt3ekCEOWa+UFZduWgpV4zXqhcxS
+ vxJ0c3yd9/wo5IrtdsSYV+2Cum3t1uf08kOQaQvS1TN9fFryVr7HMbf6clKVy6Xx9jvRgkEAT
+ gjPJstZJ6WOU3MahlQ91hU4iGLIFKsb0XzHHo5ijJbA8PGYDuOS2pu7x2f8aoqsGUjXHsm+qP
+ 22FT4TYAzDyVMEfDh5tX90dvpFC3cTm9UTFVHww==
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Raspberry Pi 4 uses the broadcom genet chip in version five.
+This chip has a dma controller integrated. Up to now the maximal
+burst size was hard-coded to 0x10. But it turns out that Raspberry Pi 4
+does only work with the smaller maximal burst size of 0x8.
 
---WIyZ46R2i8wDzkSu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Additionally the patch series has some IRQ retrieval improvements and
+adds support for a missing PHY mode.
 
-Hi Dave,
+This series based on Matthias Brugger's V1 series [1].
 
-Here's one more bluetooth-next pull request for the 5.5 kernel release.
+[1] - https://patchwork.kernel.org/cover/11186193/
 
- - Several fixes for LE advertising
- - Added PM support to hci_qca driver
- - Added support for WCN3991 SoC in hci_qca driver
- - Added DT bindings for BCM43540 module
- - A few other small cleanups/fixes
+Changes in V5:
+- address Doug's comment
 
-Please let me know if there are any issues pulling. Thanks.
+Changes in V4:
+- rebased on current net-next
+- remove RGMII_ID support
+- remove fixes tag from patch 1
+- add Florian's suggestions to patch 5
 
-Johan
+Changes in V3:
+- introduce SoC-specific compatibles for GENET (incl. dt-binding)
+- use platform_get_irq_optional for optional IRQ
+- remove Fixes tag from IRQ error handling change
+- move most of MDIO stuff to bcm2711.dtsi
 
----
-The following changes since commit 0629d2456ae3bfb374fdc686abb30b73294e4f99:
+Changes in V2:
+- add 2 fixes for IRQ retrieval
+- add support for missing PHY modes
+- declare PHY mode RGMII RXID based on the default settings
+- add alias to allow firmware append the MAC address
 
-  Merge branch 'ionic-updates' (2019-10-25 20:52:36 -0700)
+Stefan Wahren (7):
+  net: bcmgenet: Avoid touching non-existent interrupt
+  net: bcmgenet: Fix error handling on IRQ retrieval
+  dt-bindings: net: bcmgenet: Add BCM2711 support
+  net: bcmgenet: Add BCM2711 support
+  net: bcmgenet: Refactor register access in bcmgenet_mii_config
+  net: bcmgenet: Add RGMII_RXID support
+  ARM: dts: bcm2711-rpi-4: Enable GENET support
 
-are available in the Git repository at:
+ .../devicetree/bindings/net/brcm,bcmgenet.txt      |  2 +-
+ arch/arm/boot/dts/bcm2711-rpi-4-b.dts              | 17 +++++
+ arch/arm/boot/dts/bcm2711.dtsi                     | 26 ++++++++
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 74 +++++++++++++++++=
++----
+ drivers/net/ethernet/broadcom/genet/bcmgenet.h     |  1 +
+ drivers/net/ethernet/broadcom/genet/bcmmii.c       | 47 +++++++-------
+ 6 files changed, 130 insertions(+), 37 deletions(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git for-upstream
+=2D-
+2.7.4
 
-for you to fetch changes up to 7d250a062f75e6ee8368b64ac6ff1e09fbb6783d:
-
-  Bluetooth: hci_qca: Add support for Qualcomm Bluetooth SoC WCN3991 (2019-11-09 03:26:47 +0100)
-
-----------------------------------------------------------------
-Abhishek Pandit-Subedi (2):
-      Bluetooth: hci_bcm: Add compatible string for BCM43540
-      dt-bindings: net: broadcom-bluetooth: Add BCM43540 compatible string
-
-Balakrishna Godavarthi (2):
-      Bluetooth: btqca: Rename ROME specific variables to generic variables
-      Bluetooth: hci_qca: Add support for Qualcomm Bluetooth SoC WCN3991
-
-Bartosz Golaszewski (1):
-      Bluetooth: btmtksdio: add MODULE_DEVICE_TABLE()
-
-Claire Chang (1):
-      Bluetooth: hci_qca: add PM support
-
-Luiz Augusto von Dentz (3):
-      Bluetooth: Fix using advertising instance duration as timeout
-      Bluetooth: Fix not using LE_ADV_NONCONN_IND for instance 0
-      Bluetooth: Fix advertising duplicated flags
-
-Tomas Bortoli (1):
-      Bluetooth: Fix invalid-free in bcsp_close()
-
-YueHaibing (1):
-      Bluetooth: btrtl: remove unneeded semicolon
-
- .../devicetree/bindings/net/broadcom-bluetooth.txt |   1 +
- drivers/bluetooth/btmtksdio.c                      |   1 +
- drivers/bluetooth/btqca.c                          |  92 +++++++++----
- drivers/bluetooth/btqca.h                          |  32 +++--
- drivers/bluetooth/btrtl.c                          |   2 +-
- drivers/bluetooth/hci_bcm.c                        |   1 +
- drivers/bluetooth/hci_bcsp.c                       |   3 +
- drivers/bluetooth/hci_qca.c                        | 143 ++++++++++++++++++++-
- net/bluetooth/hci_request.c                        |  19 ++-
- 9 files changed, 242 insertions(+), 52 deletions(-)
-
---WIyZ46R2i8wDzkSu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEyxvsVXjY3jV7sQ0/JCP2+/mo1BIFAl3Jt14ACgkQJCP2+/mo
-1BLO3A/9GmDa28w5jpYzHj5UWboZhtZmoc2v49s03NRf8dtruXY0DeoG1Ha45JVU
-uRsApH0QOlzSZC3Pp7xHj4wnj5Uej0K5f2KqxBf9Ux2d0PVm3AU7eUY04ZCXMPty
-hfkMDlBwzwqqSHnT6hq3VGBhB/j+6OBTTqR8b41IFTxDL82K2IXrgDgGb2XAFA0k
-jehP+AfUUfaKInAc/KOpU3HTpOBZtw8iJTmf7FfpdkcCvP2LNqIrItf+A1HYGL25
-+ZnFdIWUKxUEOGM4QGYiEDcu7MxGheyARjiZNNso8K/DQN7XpeU9QwVZ8F5nr8Cu
-yRTVFqmAVY8l1B3Ra0mo42UC//kokuWNsva8hUSxIN4CYNlB7jGGFh232D0RSfrB
-fnED1JNPb7LUDbIFbOrDk6Nb5sED5l2+1NsNM54p5PeOLdjuyORQKJc7ncawjbnj
-3S7t+s0tiYDkCWR40RNaS/kat3/vSLsczu+odk+uEl3X4RAHU0p/HCMDz+ntBMiZ
-+54Am1dp3N60v3tSdhLWGnPqvhJEuDHpkhi3L/Jei/4K+lSDXr8UORmVT5cnyedf
-TlktSoh6+SO/jJAylQYoMnSGgWjP1SNzRBtmvz7NK9eKLPQ7c8oHKbmMz4Jluu2f
-xaRdWjbvFay5oe+RTq9Tq/cNYEwkOIIUFXJBzXey65lj0bol7vo=
-=B6rj
------END PGP SIGNATURE-----
-
---WIyZ46R2i8wDzkSu--
