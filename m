@@ -2,150 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C364F77F7
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:44:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB5BFF77FA
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:44:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727015AbfKKPoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 10:44:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37320 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726908AbfKKPoa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Nov 2019 10:44:30 -0500
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7A5D3222C2
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 15:44:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573487068;
-        bh=x7SR6fdBWAz/l54llm+ur+VDErM1R98oI3VyvdUnkrs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=0CqAM1NQ5FcDXdVlDVGNAPQFTMm1f/pI+PXQxRgEiSWyaMzTx2H7K+lQVTu0bPGt5
-         eo5C0dT8zcPXVetMUvPzkhIRIyLJE9Pzg9WCAlGIiw6dTgbnXr1jdPi/lcrG9giH45
-         GyAy3bmXlP/bgA8+EXu9ewNIKHwX+p3P++PCg7VA=
-Received: by mail-qk1-f174.google.com with SMTP id z16so11558368qkg.7
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 07:44:28 -0800 (PST)
-X-Gm-Message-State: APjAAAVUlHtZ5doQp3UIJrEjfWMd1L66e7I6JdzK19FxSS1u5xElZe0h
-        6pheLj4fiSWFVCJKZqy7mJYvG4sF/35AFoYL7w==
-X-Google-Smtp-Source: APXvYqxBp0XQw8G1lAZcBjGpep7ojhIMPI0eXcjcWEAN1PpBf/jHS1av7i8zVw/vylKxRSUa4hFBQQiVtToK8tH/gvg=
-X-Received: by 2002:ae9:dd83:: with SMTP id r125mr2655352qkf.223.1573487067567;
- Mon, 11 Nov 2019 07:44:27 -0800 (PST)
+        id S1727012AbfKKPoq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 10:44:46 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34784 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726878AbfKKPop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 10:44:45 -0500
+Received: by mail-wr1-f67.google.com with SMTP id e6so15220954wrw.1
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 07:44:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OTPVxnQFejq+AoNfEY9ziHLlBKyMve0E2Eb7D8CDsvM=;
+        b=NlZMZ6JNKrmFbgq1d+v60CJLMAEcPitVUMyH8CO8Oabh4/hijRW+hFrF4gOCzJHOSH
+         nxTuVd/pZ5G2nGvcoz9DfIDhIxLVdINocZqhHVdo766p2D7td1MnJtojV7OGdcVkD0Zg
+         o6gsI8Ecqq+51r8pD6bdlhAtsRA36E0K/CmYpbsNummwK2MAhlBD//uK5to/HKA6c/1y
+         vDmURgwu+WNn0Po0spr5qYSGS2L/DMsyHZUPFiv/Xbr2nCLx1ppqHzMnoW3YnZCR4v+Q
+         Ut0KV6/S/Tm2jTteNJyUvoF3IlBskkIaHXGfSS+8sqZZJDc09ZROpg852P6tvqYs2dgD
+         UxMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OTPVxnQFejq+AoNfEY9ziHLlBKyMve0E2Eb7D8CDsvM=;
+        b=XskOS0njjOrTrusdmYHlIde+AoT36g6VsNxGIKGInUwswJbfMCaAnoxWrL41y5nURQ
+         DCiiV6GmUb1iQyQhZb3EryiX8fQ7cTHlFK0rbvdAGl5BrSnPQ8Yc118wEGd4gxYv+q7v
+         JlpRGBHTSsQsZuuhI+dgu7vXRTAjrg5dhVlgMUFd2tsJk5d4WqWUh+bnmdcd72K7F6s+
+         sDzZIbLUkItjpZSCkho0s7bDzZYf8LeXbJSWUcGbAr5837TJb0IeUz6hvOq2yaJnyWTg
+         8gBRIhmjBBfXvr0YYtu5cfJyXu4OK1qlZyBi4+8EnG28VR71MiP5YmYsfkQiC6nnBuJU
+         82lQ==
+X-Gm-Message-State: APjAAAWc8/13G3YxbZqJbcSaNYtM4bv49aD2MVD7zcWsPpQuZ1cb/aTR
+        qfZC8l1ZSfpxfUxRJ2VhEi7GlA==
+X-Google-Smtp-Source: APXvYqxb5lV2vP+fMkclWvxE7Ml+3jil7wNaTNQRgPvSM5vEA13rUp7frW173OTD/hcCik/EbCb1FA==
+X-Received: by 2002:a5d:6706:: with SMTP id o6mr727306wru.54.1573487083488;
+        Mon, 11 Nov 2019 07:44:43 -0800 (PST)
+Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id p10sm18000080wmi.44.2019.11.11.07.44.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Nov 2019 07:44:43 -0800 (PST)
+Date:   Mon, 11 Nov 2019 16:44:40 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Olof Johansson <olof@lixom.net>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: bnxt_en: Fix array overrun in
+ bnxt_fill_l2_rewrite_fields()
+Message-ID: <20191111154440.GA29052@netronome.com>
+References: <20191111020855.20775-1-olof@lixom.net>
 MIME-Version: 1.0
-References: <20191110142226.GB25745@shell.armlinux.org.uk> <E1iTo7N-0005Sj-Nk@rmk-PC.armlinux.org.uk>
- <20191110161307.GC25889@lunn.ch> <20191110164007.GC25745@shell.armlinux.org.uk>
- <20191110170040.GG25889@lunn.ch> <20191111140114.GH25745@shell.armlinux.org.uk>
- <CAL_JsqJe1xUKnREx17vY=Umf9dQimvK7QTqAkunvUxF8GKzjMQ@mail.gmail.com> <20191111150754.GI25745@shell.armlinux.org.uk>
-In-Reply-To: <20191111150754.GI25745@shell.armlinux.org.uk>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 11 Nov 2019 09:44:16 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqK5hm6-WJtUBf1don7=iDHC4aAGwFMaJQjzWwyKH4U=fg@mail.gmail.com>
-Message-ID: <CAL_JsqK5hm6-WJtUBf1don7=iDHC4aAGwFMaJQjzWwyKH4U=fg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: phy: add core phylib sfp support
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191111020855.20775-1-olof@lixom.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 9:08 AM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> On Mon, Nov 11, 2019 at 09:01:22AM -0600, Rob Herring wrote:
-> > On Mon, Nov 11, 2019 at 8:01 AM Russell King - ARM Linux admin
-> > <linux@armlinux.org.uk> wrote:
-> > >
-> > > On Sun, Nov 10, 2019 at 06:00:40PM +0100, Andrew Lunn wrote:
-> > > > On Sun, Nov 10, 2019 at 04:40:07PM +0000, Russell King - ARM Linux admin wrote:
-> > > > > On Sun, Nov 10, 2019 at 05:13:07PM +0100, Andrew Lunn wrote:
-> > > > > > On Sun, Nov 10, 2019 at 02:23:05PM +0000, Russell King wrote:
-> > > > > > > Add core phylib help for supporting SFP sockets on PHYs.  This provides
-> > > > > > > a mechanism to inform the SFP layer about PHY up/down events, and also
-> > > > > > > unregister the SFP bus when the PHY is going away.
-> > > > > >
-> > > > > > Hi Russell
-> > > > > >
-> > > > > > What does the device tree binding look like? I think you have SFP
-> > > > > > proprieties in the PHYs node?
-> > > > >
-> > > > > Correct, just the same as network devices.  Hmm, however, neither are
-> > > > > documented... oh dear, it looks like I need to figure out how this
-> > > > > yaml stuff works. :(
-> > > >
-> > > > Yes, that would be good. I also assume you have at least one DT patch
-> > > > for one of the Marvell boards? Seeing that would also help.
-> > >
-> > > So, how does one make sure that the .yaml files are correct?
-> > >
-> > > The obvious thing is to use the "dtbs_check" target, described by
-> > > Documentation/devicetree/writing-schema.md, but that's far from
-> > > trivial.
-> >
-> > 'dt_binding_check' will check just the bindings. 'dtbs_check' is
-> > pretty slow given we have so many dts files and it generates lots of
-> > warnings.
-> >
-> > > First it complained about lack of libyaml development, which is easy
-> > > to solve.  Having given it that, "dtbs_check" now complains:
-> > >
-> > > /bin/sh: 1: dt-doc-validate: not found
-> > > /bin/sh: 1: dt-mk-schema: not foundmake[2]: ***
-> > > [...Documentation/devicetree/bindings/Makefile:12:
-> > > Documentation/devicetree/bindings/arm/stm32/stm32.example.dts] Error 127
-> > >
-> > > (spot the lack of newline character - which is obviously an entirely
-> > > different problem...)
-> > >
-> > > # apt search dt-doc-validate
-> > > Sorting... Done
-> > > Full Text Search... Done
-> > > # apt search dt-mk-schema
-> > > Sorting... Done
-> > > Full Text Search... Done
-> > >
-> > > Searching google, it appears it needs another git repository
-> > > (https://github.com/robherring/dt-schema/) from Rob Herring to use
-> > > this stuff, which is totally undocumented in the kernel tree.
-> >
-> > The dependencies are all documented in writing-schema.rst (formerly
-> > .md) in the 'Dependencies' section.
-> >
-> > TL;DR: pip3 install git+https://github.com/devicetree-org/dt-schema.git@master
->
-> What is pip3, and where do I get it from (I'm running Debian stable).
+On Sun, Nov 10, 2019 at 06:08:55PM -0800, Olof Johansson wrote:
+> This is caused by what seems to be a fragile typing approach by
+> the Broadcom firmware/driver:
+> 
+> /* FW expects smac to be in u16 array format */
+> 
+> So the driver uses eth_addr and eth_addr_mask as u16[6] instead of u8[12],
+> so the math in bnxt_fill_l2_rewrite_fields does a [6] deref of the u16
+> pointer, it goes out of bounds on the array.
+> 
+> Just a few lines below, they use ETH_ALEN/2, so this must have been
+> overlooked. I'm surprised original developers didn't notice the compiler
+> warnings?!
+> 
+> Fixes: 90f906243bf6 ("bnxt_en: Add support for L2 rewrite")
+> Signed-off-by: Olof Johansson <olof@lixom.net>
 
-apt install python3-pip
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-This is not in the documentation because it is distro specific.
-
-> # apt search pip3
-> Sorting... Done
-> Full Text Search... Done
->
-> Don't expect people know python.
-
-How about rewording:
-
-'The DT schema project can be installed with pip:'
-
-to this:
-
-'The DT schema project is a Python project and is most easily
-installed using the Python package manager "pip":
-
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master
-
-It is also possible to install by cloning the git repository and
-running "setup.py".
-'
-
-Googling 'python pip' or 'setup.py' should get folks the rest of the
-way if 'pip' or 'setup.py' is new to them.
-
-Rob
