@@ -2,56 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C19B4F7ECB
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:06:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99116F7EC4
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:06:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729102AbfKKSi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 13:38:58 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35289 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729099AbfKKSi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 13:38:56 -0500
-Received: by mail-pl1-f195.google.com with SMTP id s10so8148755plp.2
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 10:38:56 -0800 (PST)
+        id S1728819AbfKKTGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 14:06:08 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36998 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728611AbfKKSjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 13:39:18 -0500
+Received: by mail-pg1-f193.google.com with SMTP id z24so9975735pgu.4
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 10:39:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=F0EndsoPU9b+4eYMKoe2V0vT5gGlSwF+OtIWyuplaSU=;
-        b=Gc92JcKEltosEAKcKaPmlrjLunt00/WHiADENOrYE+mP/DKvwJQOa+Gwp+XfxE2ox8
-         Iaera133lVFWCDpVPMccA3+5QVmKflKvsX3+FTeJLR5pWK+H7Np7TBf1kaXVKoeqEcCp
-         U6gA0MEQ9g5dodHL/f5IaIIiZ77eO/+0qqr64RKCzR+2/FiApm7eLtIcv1Oe4x3b2WBk
-         kRkv05ySYpDhUZpBmQ3sqxB3h0TohocPz9jJjkcZC6qkeqJdaTwejIkGMSHg9jfqFC8c
-         jMyrRWM7t4fMcsChZU0BBCu1QS4qc8tlRprb48jnaxY3HUSPCLOqW1Zh/IytoCG5vwoG
-         u07A==
+        bh=fLtO5zLbW86+bzjsKhNZf6HAuKvDZwZOfF4PORPPAHU=;
+        b=YFn8MCfiygptMy0SlHjwd5t3jRN6p8dq+n2t8RHga98/IvziLl4CnItYz+R/vzVgdF
+         EYnESXohBh2dnYGAISqeiOnQAkDCX4GwTlhLdPqyVjqAuaa8QwSKJe0zHlnNXf2yicXt
+         XUYqD0hhnBsQIHusH2Frx+9b77AFTc+nZhMAT6VgQb25n5fUehTcE5WjHa9HgcQwQluj
+         KzDfPdFSzf6sKghks0NDpbp8o3FYzqje6aHDGJbU/Knb0ummUOIiM8qMaZ2/kyrSTRqD
+         sOn+k3PHVJG2Cd8p1XfYVuZq978KXKNROWPe5K3CNAIBbVeGGG5bN2hUMbBYTtU+EzoK
+         Qo0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=F0EndsoPU9b+4eYMKoe2V0vT5gGlSwF+OtIWyuplaSU=;
-        b=TehIjZV+qVdLyDiSXz73UA9ZCsQPoYlZ1HrH0QQSlouc3WGQ/F/F5UWgRWhJ0cosw1
-         bl8AmanY0JlUWL+vR2NMk3rnZo4IDOvIEZdu0x/QIkKFRAPO3fRqSxBfqLaQQadhuEu9
-         UDOivUCAl8HL8xrWVtgoOAtmnPRzHzQoO+Ocl5+O4C02Vezd8dOHRy43RxNgI/4bn1+U
-         Pib2HLFxuokjxKaZtvrTXDM5GOUUoiCB4dNWLwkQoagXjWyvJwNsyVdVSAQxy8alz8z4
-         SuuC9JXDS8isruvP67Jb8ta1qcGo+i0A/WE6096V4bRd0+ZPgjBi0cRW95JrfDCQ6mmV
-         1oEw==
-X-Gm-Message-State: APjAAAXLjGf25sh7Z9J/svBh88o5SuclaSqWFBPeDLovHBBdwSOIT6U8
-        niBINhSpWAgKeaymTGhIh4nYLPsLuwM=
-X-Google-Smtp-Source: APXvYqzmPly8UKZn9RAOq6wqM0LjGvs0qE+O7sioFS1zRvoQU5CyJL91veYAtyvkrzK09XIhARsJJw==
-X-Received: by 2002:a17:902:9046:: with SMTP id w6mr6740455plz.323.1573497535506;
-        Mon, 11 Nov 2019 10:38:55 -0800 (PST)
+        bh=fLtO5zLbW86+bzjsKhNZf6HAuKvDZwZOfF4PORPPAHU=;
+        b=IbgIIGD0odv1TQwUPpKEwKVWSK85dlkiF+OjrBGHoKzlBW2uGw+RhevfgOfgy9t6yq
+         dpCSURN4gd4P5StEeWD1nIe+0a5Ih31TJLHJw/eSThjcYNCRDrWAjjzQlzul7F4mwx+j
+         l9AIrCBED8X4Wz8rX4VK4KEpdocdHrDli/02GOwYyW4T6APzsIc9Dz2gvqQT89eD4BMF
+         QYIYrz9qj+TtXP/StNHsxvAuym3e/3Kc8ttWWbYZm96nmuNZfG/bi2zhwDtVIUjDAwqP
+         UFs3o34kFWGVazQw5gkM2ce2GIaEnGosKQuRwqqHy5kPoIhuMHgZNiPcJ85P9/domYvQ
+         jSzw==
+X-Gm-Message-State: APjAAAVmni5Yt4E2RtYkutCjKwMDie+VLcgqM4J1oynF1ZekSwH5R/Zk
+        tZW/5QeFSLgRwdBSuywSEJAcMv6zXfQ=
+X-Google-Smtp-Source: APXvYqxyEAF1ZA3BBLpah42paPtPArA3fsrnBDQGFlaQO5hnRPWAPxAKoERkFXRPGN44rdHiwvhnvQ==
+X-Received: by 2002:a63:f94e:: with SMTP id q14mr25896731pgk.411.1573497555494;
+        Mon, 11 Nov 2019 10:39:15 -0800 (PST)
 Received: from machine421.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id b5sm16921762pfp.149.2019.11.11.10.38.53
+        by smtp.googlemail.com with ESMTPSA id b5sm16921762pfp.149.2019.11.11.10.39.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 11 Nov 2019 10:38:54 -0800 (PST)
+        Mon, 11 Nov 2019 10:39:14 -0800 (PST)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Prakash Brahmajyosyula <bprakash@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH 05/18] octeontx2-af: Add CGX LMAC stats to debugfs
-Date:   Tue, 12 Nov 2019 00:08:01 +0530
-Message-Id: <1573497494-11468-6-git-send-email-sunil.kovvuri@gmail.com>
+Cc:     davem@davemloft.net, Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH 07/18] octeontx2-af: Add NPC MCAM entry allocation status to debugfs
+Date:   Tue, 12 Nov 2019 00:08:03 +0530
+Message-Id: <1573497494-11468-8-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1573497494-11468-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1573497494-11468-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -63,225 +61,327 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Prakash Brahmajyosyula <bprakash@marvell.com>
+From: Sunil Goutham <sgoutham@marvell.com>
 
-This patch adds CGX LMAC physical interface or serdes Rx/Tx
-packet stats to debugfs.
+Added support to display current NPC MCAM entries and counter's allocation
+status ín debugfs.
 
-'cat cgx<idx>/lmac<idx>/stats' dumps the current interface link
-status and Rx/Tx stats. Stats include pkt received/transmitted,
-dropped, pause frames etc etc.
+cat /sys/kernel/debug/octeontx2/npc/mcam_info' will dump following info
+- MCAM Rx and Tx keysize
+- Total MCAM entries and counters
+- Current available count
+- Count of number of MCAM entries and counters allocated
+  by a RVU PF/VF device.
 
-Signed-off-by: Prakash Brahmajyosyula <bprakash@marvell.com>
-Signed-off-by: Linu Cherian <lcherian@marvell.com>
+Also, one NPC MCAM counter (last one) is reserved and mapped to
+NPC RX_INTF's MISS_ACTION to count dropped packets due to no MCAM
+entry match. This pkt drop counter can be checked via debugfs.
+
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   3 +
- .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 160 +++++++++++++++++++++
- 2 files changed, 163 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   8 ++
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 154 +++++++++++++++++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    |  52 ++++++-
+ 3 files changed, 213 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index 269c43f..2fb871d 100644
+index 0451c2b..63b6bbc 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -44,6 +44,9 @@ struct dump_ctx {
- 
- struct rvu_debugfs {
- 	struct dentry *root;
-+	struct dentry *cgx_root;
-+	struct dentry *cgx;
-+	struct dentry *lmac;
+@@ -49,6 +49,7 @@ struct rvu_debugfs {
+ 	struct dentry *lmac;
  	struct dentry *npa;
  	struct dentry *nix;
++	struct dentry *npc;
  	struct dump_ctx npa_aura_ctx;
+ 	struct dump_ctx npa_pool_ctx;
+ 	struct dump_ctx nix_cq_ctx;
+@@ -123,6 +124,7 @@ struct npc_mcam {
+ 	u16	lprio_start;
+ 	u16	hprio_count;
+ 	u16	hprio_end;
++	u16     rx_miss_act_cntr; /* Counter for RX MISS action */
+ };
+ 
+ /* Structure for per RVU func info ie PF/VF */
+@@ -498,6 +500,12 @@ void rvu_npc_disable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
+ void rvu_npc_enable_default_entries(struct rvu *rvu, u16 pcifunc, int nixlf);
+ void rvu_npc_update_flowkey_alg_idx(struct rvu *rvu, u16 pcifunc, int nixlf,
+ 				    int group, int alg_idx, int mcam_index);
++void rvu_npc_get_mcam_entry_alloc_info(struct rvu *rvu, u16 pcifunc,
++				       int blkaddr, int *alloc_cnt,
++				       int *enable_cnt);
++void rvu_npc_get_mcam_counter_alloc_info(struct rvu *rvu, u16 pcifunc,
++					 int blkaddr, int *alloc_cnt,
++					 int *enable_cnt);
+ int rvu_mbox_handler_npc_mcam_alloc_entry(struct rvu *rvu,
+ 					  struct npc_mcam_alloc_entry_req *req,
+ 					  struct npc_mcam_alloc_entry_rsp *rsp);
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-index 581b611..c01a85e 100644
+index 023f3e5..916e141 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
-@@ -18,9 +18,69 @@
- #include "rvu_struct.h"
+@@ -19,6 +19,7 @@
  #include "rvu_reg.h"
  #include "rvu.h"
-+#include "cgx.h"
+ #include "cgx.h"
++#include "npc.h"
  
  #define DEBUGFS_DIR_NAME "octeontx2"
  
-+enum {
-+	CGX_STAT0,
-+	CGX_STAT1,
-+	CGX_STAT2,
-+	CGX_STAT3,
-+	CGX_STAT4,
-+	CGX_STAT5,
-+	CGX_STAT6,
-+	CGX_STAT7,
-+	CGX_STAT8,
-+	CGX_STAT9,
-+	CGX_STAT10,
-+	CGX_STAT11,
-+	CGX_STAT12,
-+	CGX_STAT13,
-+	CGX_STAT14,
-+	CGX_STAT15,
-+	CGX_STAT16,
-+	CGX_STAT17,
-+	CGX_STAT18,
-+};
-+
-+static char *cgx_rx_stats_fields[] = {
-+	[CGX_STAT0]	= "Received packets",
-+	[CGX_STAT1]	= "Octets of received packets",
-+	[CGX_STAT2]	= "Received PAUSE packets",
-+	[CGX_STAT3]	= "Received PAUSE and control packets",
-+	[CGX_STAT4]	= "Filtered DMAC0 (NIX-bound) packets",
-+	[CGX_STAT5]	= "Filtered DMAC0 (NIX-bound) octets",
-+	[CGX_STAT6]	= "Packets dropped due to RX FIFO full",
-+	[CGX_STAT7]	= "Octets dropped due to RX FIFO full",
-+	[CGX_STAT8]	= "Error packets",
-+	[CGX_STAT9]	= "Filtered DMAC1 (NCSI-bound) packets",
-+	[CGX_STAT10]	= "Filtered DMAC1 (NCSI-bound) octets",
-+	[CGX_STAT11]	= "NCSI-bound packets dropped",
-+	[CGX_STAT12]	= "NCSI-bound octets dropped",
-+};
-+
-+static char *cgx_tx_stats_fields[] = {
-+	[CGX_STAT0]	= "Packets dropped due to excessive collisions",
-+	[CGX_STAT1]	= "Packets dropped due to excessive deferral",
-+	[CGX_STAT2]	= "Multiple collisions before successful transmission",
-+	[CGX_STAT3]	= "Single collisions before successful transmission",
-+	[CGX_STAT4]	= "Total octets sent on the interface",
-+	[CGX_STAT5]	= "Total frames sent on the interface",
-+	[CGX_STAT6]	= "Packets sent with an octet count < 64",
-+	[CGX_STAT7]	= "Packets sent with an octet count == 64",
-+	[CGX_STAT8]	= "Packets sent with an octet count of 65–127",
-+	[CGX_STAT9]	= "Packets sent with an octet count of 128-255",
-+	[CGX_STAT10]	= "Packets sent with an octet count of 256-511",
-+	[CGX_STAT11]	= "Packets sent with an octet count of 512-1023",
-+	[CGX_STAT12]	= "Packets sent with an octet count of 1024-1518",
-+	[CGX_STAT13]	= "Packets sent with an octet count of > 1518",
-+	[CGX_STAT14]	= "Packets sent to a broadcast DMAC",
-+	[CGX_STAT15]	= "Packets sent to the multicast DMAC",
-+	[CGX_STAT16]	= "Transmit underflow and were truncated",
-+	[CGX_STAT17]	= "Control/PAUSE packets sent",
-+};
-+
- #define NDC_MAX_BANK(rvu, blk_addr) (rvu_read64(rvu, \
- 						blk_addr, NDC_AF_CONST) & 0xFF)
- 
-@@ -1269,6 +1329,105 @@ static void rvu_dbg_npa_init(struct rvu *rvu)
- 	debugfs_remove_recursive(rvu->rvu_dbg.npa);
+@@ -1523,6 +1524,158 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
+ 	debugfs_remove_recursive(rvu->rvu_dbg.cgx_root);
  }
  
-+static int cgx_print_stats(struct seq_file *s, int lmac_id)
++/* NPC debugfs APIs */
++static inline void rvu_print_npc_mcam_info(struct seq_file *s,
++					   u16 pcifunc, int blkaddr)
 +{
-+	struct cgx_link_user_info linfo;
-+	void *cgxd = s->private;
-+	int stat = 0, err = 0;
-+	u64 tx_stat, rx_stat;
++	struct rvu *rvu = s->private;
++	int entry_acnt, entry_ecnt;
++	int cntr_acnt, cntr_ecnt;
 +
-+	/* Link status */
-+	seq_puts(s, "\n=======Link Status======\n\n");
-+	err = cgx_get_link_info(cgxd, lmac_id, &linfo);
-+	if (err)
-+		seq_puts(s, "Failed to read link status\n");
-+	seq_printf(s, "\nLink is %s %d Mbps\n\n",
-+		   linfo.link_up ? "UP" : "DOWN", linfo.speed);
++	/* Skip PF0 */
++	if (!pcifunc)
++		return;
++	rvu_npc_get_mcam_entry_alloc_info(rvu, pcifunc, blkaddr,
++					  &entry_acnt, &entry_ecnt);
++	rvu_npc_get_mcam_counter_alloc_info(rvu, pcifunc, blkaddr,
++					    &cntr_acnt, &cntr_ecnt);
++	if (!entry_acnt && !cntr_acnt)
++		return;
 +
-+	/* Rx stats */
-+	seq_puts(s, "\n=======CGX RX_STATS======\n\n");
-+	while (stat < CGX_RX_STATS_COUNT) {
-+		err = cgx_get_rx_stats(cgxd, lmac_id, stat, &rx_stat);
-+		if (err)
-+			return err;
-+		seq_printf(s, "%s: %llu\n", cgx_rx_stats_fields[stat], rx_stat);
-+		stat++;
++	if (!(pcifunc & RVU_PFVF_FUNC_MASK))
++		seq_printf(s, "\n\t\t Device \t\t: PF%d\n",
++			   rvu_get_pf(pcifunc));
++	else
++		seq_printf(s, "\n\t\t Device \t\t: PF%d VF%d\n",
++			   rvu_get_pf(pcifunc),
++			   (pcifunc & RVU_PFVF_FUNC_MASK) - 1);
++
++	if (entry_acnt) {
++		seq_printf(s, "\t\t Entries allocated \t: %d\n", entry_acnt);
++		seq_printf(s, "\t\t Entries enabled \t: %d\n", entry_ecnt);
 +	}
-+
-+	/* Tx stats */
-+	stat = 0;
-+	seq_puts(s, "\n=======CGX TX_STATS======\n\n");
-+	while (stat < CGX_TX_STATS_COUNT) {
-+		err = cgx_get_tx_stats(cgxd, lmac_id, stat, &tx_stat);
-+		if (err)
-+			return err;
-+		seq_printf(s, "%s: %llu\n", cgx_tx_stats_fields[stat], tx_stat);
-+		stat++;
++	if (cntr_acnt) {
++		seq_printf(s, "\t\t Counters allocated \t: %d\n", cntr_acnt);
++		seq_printf(s, "\t\t Counters enabled \t: %d\n", cntr_ecnt);
 +	}
-+
-+	return err;
 +}
 +
-+static int rvu_dbg_cgx_stat_display(struct seq_file *filp, void *unused)
++static int rvu_dbg_npc_mcam_info_display(struct seq_file *filp, void *unsued)
 +{
-+	struct dentry *current_dir;
-+	int err, lmac_id;
-+	char *buf;
++	struct rvu *rvu = filp->private;
++	int pf, vf, numvfs, blkaddr;
++	struct npc_mcam *mcam;
++	u16 pcifunc;
++	u64 cfg;
 +
-+	current_dir = filp->file->f_path.dentry->d_parent;
-+	buf = strrchr(current_dir->d_name.name, 'c');
-+	if (!buf)
-+		return -EINVAL;
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
++	if (blkaddr < 0)
++		return -ENODEV;
 +
-+	err = kstrtoint(buf + 1, 10, &lmac_id);
-+	if (!err) {
-+		err = cgx_print_stats(filp, lmac_id);
-+		if (err)
-+			return err;
++	mcam = &rvu->hw->mcam;
++
++	seq_puts(filp, "\nNPC MCAM info:\n");
++	/* MCAM keywidth on receive and transmit sides */
++	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(NIX_INTF_RX));
++	cfg = (cfg >> 32) & 0x07;
++	seq_printf(filp, "\t\t RX keywidth \t: %s\n", (cfg == NPC_MCAM_KEY_X1) ?
++		   "112bits" : ((cfg == NPC_MCAM_KEY_X2) ?
++		   "224bits" : "448bits"));
++	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(NIX_INTF_TX));
++	cfg = (cfg >> 32) & 0x07;
++	seq_printf(filp, "\t\t TX keywidth \t: %s\n", (cfg == NPC_MCAM_KEY_X1) ?
++		   "112bits" : ((cfg == NPC_MCAM_KEY_X2) ?
++		   "224bits" : "448bits"));
++
++	mutex_lock(&mcam->lock);
++	/* MCAM entries */
++	seq_printf(filp, "\n\t\t MCAM entries \t: %d\n", mcam->total_entries);
++	seq_printf(filp, "\t\t Reserved \t: %d\n",
++		   mcam->total_entries - mcam->bmap_entries);
++	seq_printf(filp, "\t\t Available \t: %d\n", mcam->bmap_fcnt);
++
++	/* MCAM counters */
++	cfg = rvu_read64(rvu, blkaddr, NPC_AF_CONST);
++	cfg = (cfg >> 48) & 0xFFFF;
++	seq_printf(filp, "\n\t\t MCAM counters \t: %lld\n", cfg);
++	seq_printf(filp, "\t\t Reserved \t: %lld\n", cfg - mcam->counters.max);
++	seq_printf(filp, "\t\t Available \t: %d\n",
++		   rvu_rsrc_free_count(&mcam->counters));
++
++	if (mcam->bmap_entries == mcam->bmap_fcnt) {
++		mutex_unlock(&mcam->lock);
++		return 0;
 +	}
-+	return err;
++
++	seq_puts(filp, "\n\t\t Current allocation\n");
++	seq_puts(filp, "\t\t====================\n");
++	for (pf = 0; pf < rvu->hw->total_pfs; pf++) {
++		pcifunc = (pf << RVU_PFVF_PF_SHIFT);
++		rvu_print_npc_mcam_info(filp, pcifunc, blkaddr);
++
++		cfg = rvu_read64(rvu, BLKADDR_RVUM, RVU_PRIV_PFX_CFG(pf));
++		numvfs = (cfg >> 12) & 0xFF;
++		for (vf = 0; vf < numvfs; vf++) {
++			pcifunc = (pf << RVU_PFVF_PF_SHIFT) | (vf + 1);
++			rvu_print_npc_mcam_info(filp, pcifunc, blkaddr);
++		}
++	}
++
++	mutex_unlock(&mcam->lock);
++	return 0;
 +}
 +
-+RVU_DEBUG_SEQ_FOPS(cgx_stat, cgx_stat_display, NULL);
++RVU_DEBUG_SEQ_FOPS(npc_mcam_info, npc_mcam_info_display, NULL);
 +
-+static void rvu_dbg_cgx_init(struct rvu *rvu)
++static int rvu_dbg_npc_rx_miss_stats_display(struct seq_file *filp,
++					     void *unused)
++{
++	struct rvu *rvu = filp->private;
++	struct npc_mcam *mcam;
++	int blkaddr;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPC, 0);
++	if (blkaddr < 0)
++		return -ENODEV;
++
++	mcam = &rvu->hw->mcam;
++
++	seq_puts(filp, "\nNPC MCAM RX miss action stats\n");
++	seq_printf(filp, "\t\tStat %d: \t%lld\n", mcam->rx_miss_act_cntr,
++		   rvu_read64(rvu, blkaddr,
++			      NPC_AF_MATCH_STATX(mcam->rx_miss_act_cntr)));
++
++	return 0;
++}
++
++RVU_DEBUG_SEQ_FOPS(npc_rx_miss_act, npc_rx_miss_stats_display, NULL);
++
++static void rvu_dbg_npc_init(struct rvu *rvu)
 +{
 +	const struct device *dev = &rvu->pdev->dev;
 +	struct dentry *pfile;
-+	int i, lmac_id;
-+	char dname[20];
-+	void *cgx;
 +
-+	rvu->rvu_dbg.cgx_root = debugfs_create_dir("cgx", rvu->rvu_dbg.root);
++	rvu->rvu_dbg.npc = debugfs_create_dir("npc", rvu->rvu_dbg.root);
++	if (!rvu->rvu_dbg.npc)
++		return;
 +
-+	for (i = 0; i < cgx_get_cgxcnt_max(); i++) {
-+		cgx = rvu_cgx_pdata(i, rvu);
-+		if (!cgx)
-+			continue;
-+		/* cgx debugfs dir */
-+		sprintf(dname, "cgx%d", i);
-+		rvu->rvu_dbg.cgx = debugfs_create_dir(dname,
-+						      rvu->rvu_dbg.cgx_root);
-+		for (lmac_id = 0; lmac_id < cgx_get_lmac_cnt(cgx); lmac_id++) {
-+			/* lmac debugfs dir */
-+			sprintf(dname, "lmac%d", lmac_id);
-+			rvu->rvu_dbg.lmac =
-+				debugfs_create_dir(dname, rvu->rvu_dbg.cgx);
++	pfile = debugfs_create_file("mcam_info", 0444, rvu->rvu_dbg.npc,
++				    rvu, &rvu_dbg_npc_mcam_info_fops);
++	if (!pfile)
++		goto create_failed;
 +
-+			pfile =	debugfs_create_file("stats", 0600,
-+						    rvu->rvu_dbg.lmac, cgx,
-+						    &rvu_dbg_cgx_stat_fops);
-+			if (!pfile)
-+				goto create_failed;
-+		}
-+	}
++	pfile = debugfs_create_file("rx_miss_act_stats", 0444, rvu->rvu_dbg.npc,
++				    rvu, &rvu_dbg_npc_rx_miss_act_fops);
++	if (!pfile)
++		goto create_failed;
++
 +	return;
 +
 +create_failed:
-+	dev_err(dev, "Failed to create debugfs dir/file for CGX\n");
-+	debugfs_remove_recursive(rvu->rvu_dbg.cgx_root);
++	dev_err(dev, "Failed to create debugfs dir/file for NPC\n");
++	debugfs_remove_recursive(rvu->rvu_dbg.npc);
 +}
 +
  void rvu_dbg_init(struct rvu *rvu)
  {
  	struct device *dev = &rvu->pdev->dev;
-@@ -1286,6 +1445,7 @@ void rvu_dbg_init(struct rvu *rvu)
- 
+@@ -1541,6 +1694,7 @@ void rvu_dbg_init(struct rvu *rvu)
  	rvu_dbg_npa_init(rvu);
  	rvu_dbg_nix_init(rvu);
-+	rvu_dbg_cgx_init(rvu);
+ 	rvu_dbg_cgx_init(rvu);
++	rvu_dbg_npc_init(rvu);
  
  	return;
  
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+index 15f7027..e300abb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc.c
+@@ -1064,6 +1064,13 @@ static int npc_mcam_rsrcs_init(struct rvu *rvu, int blkaddr)
+ 	mcam->hprio_count = mcam->lprio_count;
+ 	mcam->hprio_end = mcam->hprio_count;
+ 
++	/* Reserve last counter for MCAM RX miss action which is set to
++	 * drop pkt. This way we will know how many pkts didn't match
++	 * any MCAM entry.
++	 */
++	mcam->counters.max--;
++	mcam->rx_miss_act_cntr = mcam->counters.max;
++
+ 	/* Allocate bitmap for managing MCAM counters and memory
+ 	 * for saving counter to RVU PFFUNC allocation mapping.
+ 	 */
+@@ -1101,6 +1108,7 @@ static int npc_mcam_rsrcs_init(struct rvu *rvu, int blkaddr)
+ int rvu_npc_init(struct rvu *rvu)
+ {
+ 	struct npc_pkind *pkind = &rvu->hw->pkind;
++	struct npc_mcam *mcam = &rvu->hw->mcam;
+ 	u64 keyz = NPC_MCAM_KEY_X2;
+ 	int blkaddr, entry, bank, err;
+ 	u64 cfg, nibble_ena;
+@@ -1183,9 +1191,13 @@ int rvu_npc_init(struct rvu *rvu)
+ 	rvu_write64(rvu, blkaddr, NPC_AF_INTFX_MISS_ACT(NIX_INTF_TX),
+ 		    NIX_TX_ACTIONOP_UCAST_DEFAULT);
+ 
+-	/* If MCAM lookup doesn't result in a match, drop the received packet */
++	/* If MCAM lookup doesn't result in a match, drop the received packet.
++	 * And map this action to a counter to count dropped pkts.
++	 */
+ 	rvu_write64(rvu, blkaddr, NPC_AF_INTFX_MISS_ACT(NIX_INTF_RX),
+ 		    NIX_RX_ACTIONOP_DROP);
++	rvu_write64(rvu, blkaddr, NPC_AF_INTFX_MISS_STAT_ACT(NIX_INTF_RX),
++		    BIT_ULL(9) | mcam->rx_miss_act_cntr);
+ 
+ 	return 0;
+ }
+@@ -1200,6 +1212,44 @@ void rvu_npc_freemem(struct rvu *rvu)
+ 	mutex_destroy(&mcam->lock);
+ }
+ 
++void rvu_npc_get_mcam_entry_alloc_info(struct rvu *rvu, u16 pcifunc,
++				       int blkaddr, int *alloc_cnt,
++				       int *enable_cnt)
++{
++	struct npc_mcam *mcam = &rvu->hw->mcam;
++	int entry;
++
++	*alloc_cnt = 0;
++	*enable_cnt = 0;
++
++	for (entry = 0; entry < mcam->bmap_entries; entry++) {
++		if (mcam->entry2pfvf_map[entry] == pcifunc) {
++			(*alloc_cnt)++;
++			if (is_mcam_entry_enabled(rvu, mcam, blkaddr, entry))
++				(*enable_cnt)++;
++		}
++	}
++}
++
++void rvu_npc_get_mcam_counter_alloc_info(struct rvu *rvu, u16 pcifunc,
++					 int blkaddr, int *alloc_cnt,
++					 int *enable_cnt)
++{
++	struct npc_mcam *mcam = &rvu->hw->mcam;
++	int cntr;
++
++	*alloc_cnt = 0;
++	*enable_cnt = 0;
++
++	for (cntr = 0; cntr < mcam->counters.max; cntr++) {
++		if (mcam->cntr2pfvf_map[cntr] == pcifunc) {
++			(*alloc_cnt)++;
++			if (mcam->cntr_refcnt[cntr])
++				(*enable_cnt)++;
++		}
++	}
++}
++
+ static int npc_mcam_verify_entry(struct npc_mcam *mcam,
+ 				 u16 pcifunc, int entry)
+ {
 -- 
 2.7.4
 
