@@ -2,224 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25ECBF7E8B
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:06:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32241F7F84
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:14:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727942AbfKKSj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 13:39:56 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39135 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728692AbfKKSjz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 13:39:55 -0500
-Received: by mail-pf1-f193.google.com with SMTP id x28so11230745pfo.6
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 10:39:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=O84puTg6T69ldNuEOb50dicRPX7vl5jtCEhMtgqcSsc=;
-        b=uKfYZ5seoSYqxD5cdHflMEPYTWODAsM/aFdSXNEh23sCkFuqiEkHTIAxcazvktf2PV
-         13AmZLgkmRC2qXy6E0p8IBoyDQll9aF6iQ5kA46kbwlFhT//iuzd7caNZV7VMD85+wsU
-         NBs+JWHKr1Zl4qVi7mQfMDFVtGwsOfcjsUeg9w8lI3W0aTIsvgxZpQ/FbQn3UAvV+A7f
-         v3JXy11/eAWQd6dHX61uWYMshedPxMRnzY6frEOAYb/ylptF56x6HXI60TFdTxit9LbD
-         WWf95VrYZkgJGRzzRH0lvGXI1rDd4u2T9sSMjM8pjskAFdtNuwy5QJW0iPwJaaEtmZuq
-         4GcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=O84puTg6T69ldNuEOb50dicRPX7vl5jtCEhMtgqcSsc=;
-        b=PAY8ED5ACKxu364SY50IFVeXBviJdWEtCftqmcuOEeWtsJnMguiKVc7k63nCyjXxTK
-         lloBRhJEDH4TlfGY72MX19I/WoCwpByNqHdRiLvTL4nKjy5fOOgu7hYWCtka+yltantn
-         BNHe12mzGivsGUXUoq+MbxreEuNGdqLXfsUKimwOEqpo5fINNUlYOERSjmjXeE/0aeEh
-         Mk8jdY17UCBWcPyn+6Spn+8u5uI9DdbCzjKBgoNs/KVM8mywJB1ZMBn6CzdbSodh3b+c
-         lqQhR280QGDnLARx0cpAi1AudLpRwT3PPMkbiWEDc4NqZ0mqpAvXK9S+QkMuecaaMu35
-         1zOg==
-X-Gm-Message-State: APjAAAUZhC59tQ37xKhmudKKvbJ02FWptxSdBlhGd+hXu6FnrtByUgEn
-        31iYkamYAaKlcRVc4TIlXTW6D//E1ks=
-X-Google-Smtp-Source: APXvYqyawi+rmCeFYoDe1vqp+e/DpyhrM6yb2Mf7GWqO27GG0tQlgMF1hHSJoCbAFSdXfaND1FNfBA==
-X-Received: by 2002:a17:90a:5d83:: with SMTP id t3mr583702pji.90.1573497593313;
-        Mon, 11 Nov 2019 10:39:53 -0800 (PST)
-Received: from machine421.caveonetworks.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id b5sm16921762pfp.149.2019.11.11.10.39.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 11 Nov 2019 10:39:52 -0800 (PST)
-From:   sunil.kovvuri@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Geetha sowjanya <gakula@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH 16/18] octeontx2-af: Support configurable NDC cache way_mask
-Date:   Tue, 12 Nov 2019 00:08:12 +0530
-Message-Id: <1573497494-11468-17-git-send-email-sunil.kovvuri@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1573497494-11468-1-git-send-email-sunil.kovvuri@gmail.com>
-References: <1573497494-11468-1-git-send-email-sunil.kovvuri@gmail.com>
+        id S1727355AbfKKTMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 14:12:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44096 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726962AbfKKTMD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 14:12:03 -0500
+Received: from localhost.localdomain (unknown [77.139.212.74])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B5C420674;
+        Mon, 11 Nov 2019 19:11:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573499521;
+        bh=RAhdRzAxyJrzCk0ECZGyYH9utFg5k8KBsjbf6xLsU4E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uu+yiY5SjDBOq3sBLGqQIOKWYPJ6i3GpA0fADIYryktglfqaXLUGXFCuJ3ynMSZ+9
+         faqL+ZWRHdvNHk7zWZVY0iAUSH2bLYrfdpBMSCL3r+QpMfXDmjIifBOBlDQKaTT5wo
+         1nqDKOpVYbHJvE6GShDPB6deNQe+GjB4EAnCUP8Y=
+Date:   Mon, 11 Nov 2019 21:11:50 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        ilias.apalodimas@linaro.org, matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
+ DMA memory for non-coherent devices
+Message-ID: <20191111191150.GF4197@localhost.localdomain>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+ <20191111174835.7344731b@carbon>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="4eRLI4hEmsdu6Npr"
+Content-Disposition: inline
+In-Reply-To: <20191111174835.7344731b@carbon>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geetha sowjanya <gakula@marvell.com>
 
-Each of the NIX/NPA LFs can choose which ways of their respective
-NDC caches should be used to cache their contexts. This enables
-flexible configurations like disabling caching for a LF, limiting
-it's context to a certain set of ways etc etc. Separate way_mask
-for NIX-TX and NIX-RX is not supported.
+--4eRLI4hEmsdu6Npr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  2 ++
- .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 28 +++++++++++++++-------
- .../net/ethernet/marvell/octeontx2/af/rvu_npa.c    |  9 +++++--
- 3 files changed, 28 insertions(+), 11 deletions(-)
+> On Sun, 10 Nov 2019 14:09:09 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > Introduce the following parameters in order to add the possibility to s=
+ync
+> > DMA memory area before putting allocated buffers in the page_pool cache=
+s:
+>=20
+> > - sync: set to 1 if device is non cache-coherent and needs to flush DMA=
+ area
+>=20
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index fc9c731..f143d7b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -361,6 +361,7 @@ struct npa_lf_alloc_req {
- 	int node;
- 	int aura_sz;  /* No of auras */
- 	u32 nr_pools; /* No of pools */
-+	u64 way_mask;
- };
- 
- struct npa_lf_alloc_rsp {
-@@ -451,6 +452,7 @@ struct nix_lf_alloc_req {
- 	u16 npa_func;
- 	u16 sso_func;
- 	u64 rx_cfg;   /* See NIX_AF_LF(0..127)_RX_CFG */
-+	u64 way_mask;
- };
- 
- struct nix_lf_alloc_rsp {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-index 4519d80..86042a7 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
-@@ -378,7 +378,8 @@ static void nix_ctx_free(struct rvu *rvu, struct rvu_pfvf *pfvf)
- 
- static int nixlf_rss_ctx_init(struct rvu *rvu, int blkaddr,
- 			      struct rvu_pfvf *pfvf, int nixlf,
--			      int rss_sz, int rss_grps, int hwctx_size)
-+			      int rss_sz, int rss_grps, int hwctx_size,
-+			      u64 way_mask)
- {
- 	int err, grp, num_indices;
- 
-@@ -398,7 +399,8 @@ static int nixlf_rss_ctx_init(struct rvu *rvu, int blkaddr,
- 	/* Config full RSS table size, enable RSS and caching */
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_RSS_CFG(nixlf),
- 		    BIT_ULL(36) | BIT_ULL(4) |
--		    ilog2(num_indices / MAX_RSS_INDIR_TBL_SIZE));
-+		    ilog2(num_indices / MAX_RSS_INDIR_TBL_SIZE) |
-+		    way_mask << 20);
- 	/* Config RSS group offset and sizes */
- 	for (grp = 0; grp < rss_grps; grp++)
- 		rvu_write64(rvu, blkaddr, NIX_AF_LFX_RSS_GRPX(nixlf, grp),
-@@ -741,6 +743,9 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 	if (!req->rq_cnt || !req->sq_cnt || !req->cq_cnt)
- 		return NIX_AF_ERR_PARAM;
- 
-+	if (req->way_mask)
-+		req->way_mask &= 0xFFFF;
-+
- 	pfvf = rvu_get_pfvf(rvu, pcifunc);
- 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, pcifunc);
- 	if (!pfvf->nixlf || blkaddr < 0)
-@@ -806,7 +811,7 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 		    (u64)pfvf->rq_ctx->iova);
- 
- 	/* Set caching and queue count in HW */
--	cfg = BIT_ULL(36) | (req->rq_cnt - 1);
-+	cfg = BIT_ULL(36) | (req->rq_cnt - 1) | req->way_mask << 20;
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_RQS_CFG(nixlf), cfg);
- 
- 	/* Alloc NIX SQ HW context memory and config the base */
-@@ -821,7 +826,8 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_SQS_BASE(nixlf),
- 		    (u64)pfvf->sq_ctx->iova);
--	cfg = BIT_ULL(36) | (req->sq_cnt - 1);
-+
-+	cfg = BIT_ULL(36) | (req->sq_cnt - 1) | req->way_mask << 20;
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_SQS_CFG(nixlf), cfg);
- 
- 	/* Alloc NIX CQ HW context memory and config the base */
-@@ -836,13 +842,14 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_CQS_BASE(nixlf),
- 		    (u64)pfvf->cq_ctx->iova);
--	cfg = BIT_ULL(36) | (req->cq_cnt - 1);
-+
-+	cfg = BIT_ULL(36) | (req->cq_cnt - 1) | req->way_mask << 20;
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_CQS_CFG(nixlf), cfg);
- 
- 	/* Initialize receive side scaling (RSS) */
- 	hwctx_size = 1UL << ((ctx_cfg >> 12) & 0xF);
--	err = nixlf_rss_ctx_init(rvu, blkaddr, pfvf, nixlf,
--				 req->rss_sz, req->rss_grps, hwctx_size);
-+	err = nixlf_rss_ctx_init(rvu, blkaddr, pfvf, nixlf, req->rss_sz,
-+				 req->rss_grps, hwctx_size, req->way_mask);
- 	if (err)
- 		goto free_mem;
- 
-@@ -856,7 +863,9 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_CINTS_BASE(nixlf),
- 		    (u64)pfvf->cq_ints_ctx->iova);
--	rvu_write64(rvu, blkaddr, NIX_AF_LFX_CINTS_CFG(nixlf), BIT_ULL(36));
-+
-+	rvu_write64(rvu, blkaddr, NIX_AF_LFX_CINTS_CFG(nixlf),
-+		    BIT_ULL(36) | req->way_mask << 20);
- 
- 	/* Alloc memory for QINT's HW contexts */
- 	cfg = rvu_read64(rvu, blkaddr, NIX_AF_CONST2);
-@@ -868,7 +877,8 @@ int rvu_mbox_handler_nix_lf_alloc(struct rvu *rvu,
- 
- 	rvu_write64(rvu, blkaddr, NIX_AF_LFX_QINTS_BASE(nixlf),
- 		    (u64)pfvf->nix_qints_ctx->iova);
--	rvu_write64(rvu, blkaddr, NIX_AF_LFX_QINTS_CFG(nixlf), BIT_ULL(36));
-+	rvu_write64(rvu, blkaddr, NIX_AF_LFX_QINTS_CFG(nixlf),
-+		    BIT_ULL(36) | req->way_mask << 20);
- 
- 	/* Setup VLANX TPID's.
- 	 * Use VLAN1 for 802.1Q
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
-index e702a11..a8f9376 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_npa.c
-@@ -289,6 +289,9 @@ int rvu_mbox_handler_npa_lf_alloc(struct rvu *rvu,
- 	    req->aura_sz == NPA_AURA_SZ_0 || !req->nr_pools)
- 		return NPA_AF_ERR_PARAM;
- 
-+	if (req->way_mask)
-+		req->way_mask &= 0xFFFF;
-+
- 	pfvf = rvu_get_pfvf(rvu, pcifunc);
- 	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NPA, pcifunc);
- 	if (!pfvf->npalf || blkaddr < 0)
-@@ -345,7 +348,8 @@ int rvu_mbox_handler_npa_lf_alloc(struct rvu *rvu,
- 	/* Clear way partition mask and set aura offset to '0' */
- 	cfg &= ~(BIT_ULL(34) - 1);
- 	/* Set aura size & enable caching of contexts */
--	cfg |= (req->aura_sz << 16) | BIT_ULL(34);
-+	cfg |= (req->aura_sz << 16) | BIT_ULL(34) | req->way_mask;
-+
- 	rvu_write64(rvu, blkaddr, NPA_AF_LFX_AURAS_CFG(npalf), cfg);
- 
- 	/* Configure aura HW context's base */
-@@ -353,7 +357,8 @@ int rvu_mbox_handler_npa_lf_alloc(struct rvu *rvu,
- 		    (u64)pfvf->aura_ctx->iova);
- 
- 	/* Enable caching of qints hw context */
--	rvu_write64(rvu, blkaddr, NPA_AF_LFX_QINTS_CFG(npalf), BIT_ULL(36));
-+	rvu_write64(rvu, blkaddr, NPA_AF_LFX_QINTS_CFG(npalf),
-+		    BIT_ULL(36) | req->way_mask << 20);
- 	rvu_write64(rvu, blkaddr, NPA_AF_LFX_QINTS_BASE(npalf),
- 		    (u64)pfvf->npa_qints_ctx->iova);
- 
--- 
-2.7.4
+Hi Jesper,
 
+thx for the review
+
+> I don't agree that this is only for non cache-coherent devices.
+>=20
+> This change is generally for all device drivers.  Via setting 'sync'
+> (which I prefer to rename 'dma_sync') driver request that page_pool
+> takes over doing DMA-sync-for-device. (Very important, DMA-sync-for-CPU
+> is still drivers responsibility).  Drivers can benefit from removing
+> their calls to dma_sync_single_for_device().
+>=20
+> We need to define meaning/semantics of this setting (my definition):
+> - This means that all pages that driver gets from page_pool, will be
+>   DMA-synced-for-device.
+
+ack, will fix it in v2
+
+>=20
+> > - offset: DMA address offset where the DMA engine starts copying rx data
+>=20
+> > - max_len: maximum DMA memory size page_pool is allowed to flush. This
+> >   is currently used in __page_pool_alloc_pages_slow routine when pages
+> >   are allocated from page allocator
+>=20
+> Implementation wise (you did as I suggested offlist), and does the
+> DMA-sync-for-device at return-time page_pool_put_page() time, because
+> we (often) know the length that was/can touched by CPU.  This is key to
+> the optimization, that we know this length.
+
+right, refilling the cache we now the exact length that was/can touched by =
+CPU.
+
+>=20
+> I also think you/we need to explain why this optimization is correct,
+> my attempt:=20
+>=20
+> This optimization reduce the length of the DMA-sync-for-device.  The
+> optimization is valid, because page is initially DMA-synced-for-device,
+> as defined via max_len.  At driver RX time, the driver will do a
+> DMA-sync-for-CPU on the memory for the packet length.  What is
+> important is the memory occupied by packet payload, because this is the
+> memory CPU is allowed to read and modify.  If CPU have not written into
+> a cache-line, then we know that CPU will not be flushing this, thus it
+> doesn't need a DMA-sync-for-device.  As we don't track cache-lines
+> written into, simply use the full packet length as dma_sync_size, at
+> page_pool recycle time.  This also take into account any tail-extend.
+
+ack, will update it in v2
+
+Regards,
+Lorenzo
+
+>=20
+>=20
+> > These parameters are supposed to be set by device drivers
+>=20
+>=20
+> =20
+> > Tested-by: Matteo Croce <mcroce@redhat.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  include/net/page_pool.h | 11 +++++++----
+> >  net/core/page_pool.c    | 39 +++++++++++++++++++++++++++++++++------
+> >  2 files changed, 40 insertions(+), 10 deletions(-)
+> >=20
+> > diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> > index 2cbcdbdec254..defbfd90ab46 100644
+> > --- a/include/net/page_pool.h
+> > +++ b/include/net/page_pool.h
+> > @@ -65,6 +65,9 @@ struct page_pool_params {
+> >  	int		nid;  /* Numa node id to allocate from pages from */
+> >  	struct device	*dev; /* device, for DMA pre-mapping purposes */
+> >  	enum dma_data_direction dma_dir; /* DMA mapping direction */
+> > +	unsigned int	max_len; /* max DMA sync memory size */
+> > +	unsigned int	offset;  /* DMA addr offset */
+> > +	u8 sync;
+> >  };
+> > =20
+> >  struct page_pool {
+> > @@ -150,8 +153,8 @@ static inline void page_pool_destroy(struct page_po=
+ol *pool)
+> >  }
+> > =20
+> >  /* Never call this directly, use helpers below */
+> > -void __page_pool_put_page(struct page_pool *pool,
+> > -			  struct page *page, bool allow_direct);
+> > +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> > +			  unsigned int dma_sync_size, bool allow_direct);
+> > =20
+> >  static inline void page_pool_put_page(struct page_pool *pool,
+> >  				      struct page *page, bool allow_direct)
+> > @@ -160,14 +163,14 @@ static inline void page_pool_put_page(struct page=
+_pool *pool,
+> >  	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+> >  	 */
+> >  #ifdef CONFIG_PAGE_POOL
+> > -	__page_pool_put_page(pool, page, allow_direct);
+> > +	__page_pool_put_page(pool, page, 0, allow_direct);
+> >  #endif
+> >  }
+> >  /* Very limited use-cases allow recycle direct */
+> >  static inline void page_pool_recycle_direct(struct page_pool *pool,
+> >  					    struct page *page)
+> >  {
+> > -	__page_pool_put_page(pool, page, true);
+> > +	__page_pool_put_page(pool, page, 0, true);
+> >  }
+> > =20
+> >  /* API user MUST have disconnected alloc-side (not allowed to call
+> > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> > index 5bc65587f1c4..af9514c2d15b 100644
+> > --- a/net/core/page_pool.c
+> > +++ b/net/core/page_pool.c
+> > @@ -112,6 +112,17 @@ static struct page *__page_pool_get_cached(struct =
+page_pool *pool)
+> >  	return page;
+> >  }
+> > =20
+> > +/* Used for non-coherent devices */
+> > +static void page_pool_dma_sync_for_device(struct page_pool *pool,
+> > +					  struct page *page,
+> > +					  unsigned int dma_sync_size)
+> > +{
+> > +	dma_sync_size =3D min(dma_sync_size, pool->p.max_len);
+> > +	dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
+> > +					 pool->p.offset, dma_sync_size,
+> > +					 pool->p.dma_dir);
+> > +}
+> > +
+> >  /* slow path */
+> >  noinline
+> >  static struct page *__page_pool_alloc_pages_slow(struct page_pool *poo=
+l,
+> > @@ -156,6 +167,10 @@ static struct page *__page_pool_alloc_pages_slow(s=
+truct page_pool *pool,
+> >  	}
+> >  	page->dma_addr =3D dma;
+> > =20
+> > +	/* non-coherent devices - flush memory */
+> > +	if (pool->p.sync)
+> > +		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+> > +
+> >  skip_dma_map:
+> >  	/* Track how many pages are held 'in-flight' */
+> >  	pool->pages_state_hold_cnt++;
+> > @@ -255,7 +270,8 @@ static void __page_pool_return_page(struct page_poo=
+l *pool, struct page *page)
+> >  }
+> > =20
+> >  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
+> > -				   struct page *page)
+> > +					  struct page *page,
+> > +					  unsigned int dma_sync_size)
+> >  {
+> >  	int ret;
+> >  	/* BH protection not needed if current is serving softirq */
+> > @@ -264,6 +280,10 @@ static bool __page_pool_recycle_into_ring(struct p=
+age_pool *pool,
+> >  	else
+> >  		ret =3D ptr_ring_produce_bh(&pool->ring, page);
+> > =20
+> > +	/* non-coherent devices - flush memory */
+> > +	if (ret =3D=3D 0 && pool->p.sync)
+> > +		page_pool_dma_sync_for_device(pool, page, dma_sync_size);
+> > +
+> >  	return (ret =3D=3D 0) ? true : false;
+> >  }
+> > =20
+> > @@ -273,18 +293,23 @@ static bool __page_pool_recycle_into_ring(struct =
+page_pool *pool,
+> >   * Caller must provide appropriate safe context.
+> >   */
+> >  static bool __page_pool_recycle_direct(struct page *page,
+> > -				       struct page_pool *pool)
+> > +				       struct page_pool *pool,
+> > +				       unsigned int dma_sync_size)
+> >  {
+> >  	if (unlikely(pool->alloc.count =3D=3D PP_ALLOC_CACHE_SIZE))
+> >  		return false;
+> > =20
+> >  	/* Caller MUST have verified/know (page_ref_count(page) =3D=3D 1) */
+> >  	pool->alloc.cache[pool->alloc.count++] =3D page;
+> > +
+> > +	/* non-coherent devices - flush memory */
+> > +	if (pool->p.sync)
+> > +		page_pool_dma_sync_for_device(pool, page, dma_sync_size);
+> >  	return true;
+> >  }
+> > =20
+> > -void __page_pool_put_page(struct page_pool *pool,
+> > -			  struct page *page, bool allow_direct)
+> > +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> > +			  unsigned int dma_sync_size, bool allow_direct)
+> >  {
+> >  	/* This allocator is optimized for the XDP mode that uses
+> >  	 * one-frame-per-page, but have fallbacks that act like the
+> > @@ -296,10 +321,12 @@ void __page_pool_put_page(struct page_pool *pool,
+> >  		/* Read barrier done in page_ref_count / READ_ONCE */
+> > =20
+> >  		if (allow_direct && in_serving_softirq())
+> > -			if (__page_pool_recycle_direct(page, pool))
+> > +			if (__page_pool_recycle_direct(page, pool,
+> > +						       dma_sync_size))
+> >  				return;
+> > =20
+> > -		if (!__page_pool_recycle_into_ring(pool, page)) {
+> > +		if (!__page_pool_recycle_into_ring(pool, page,
+> > +						   dma_sync_size)) {
+> >  			/* Cache full, fallback to free pages */
+> >  			__page_pool_return_page(pool, page);
+> >  		}
+>=20
+>=20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
+
+--4eRLI4hEmsdu6Npr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXcmycwAKCRA6cBh0uS2t
+rOxzAQD7tFYuaeeAZvz8KDSMkFdpvsXoM6V1HlVmmzGD7++IwgD+OrB0vq08W/Aw
+CBkqba05rLkSpQostOyx97gCLDO35QU=
+=0cpn
+-----END PGP SIGNATURE-----
+
+--4eRLI4hEmsdu6Npr--
