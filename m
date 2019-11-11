@@ -2,160 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36167F8086
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77080F80A5
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:54:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727564AbfKKTvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 14:51:39 -0500
-Received: from mout.gmx.net ([212.227.15.15]:41555 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727345AbfKKTvg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Nov 2019 14:51:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1573501793;
-        bh=am5k+ShH8U/QfQdyBRZNILtXr6ux5dgQyoLfNDeiNlM=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=ZWLhzips9JEVDIrybY6YZcYBeIVNzxFEKx90FCwd2Yiba8sDGCabOeWQ347jmVkr7
-         ogVIhSnMlCy45GR5EjCClDrm3fXviNF7L7mKdH6W5/MiD3CMKn7EB3KMm/4a06aBHU
-         uZqFYg9N9RGBN5PsEVU3JvL8fdUFDi8zGLmo67wg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.localdomain ([37.4.249.112]) by mail.gmx.com
- (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MGz1V-1ihfgw2UBX-00E9p7; Mon, 11 Nov 2019 20:49:53 +0100
-From:   Stefan Wahren <wahrenst@gmx.net>
-To:     Matthias Brugger <matthias.bgg@kernel.org>,
-        Matthias Brugger <mbrugger@suse.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Eric Anholt <eric@anholt.net>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH V5 net-next 7/7] ARM: dts: bcm2711-rpi-4: Enable GENET support
-Date:   Mon, 11 Nov 2019 20:49:26 +0100
-Message-Id: <1573501766-21154-8-git-send-email-wahrenst@gmx.net>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1573501766-21154-1-git-send-email-wahrenst@gmx.net>
-References: <1573501766-21154-1-git-send-email-wahrenst@gmx.net>
-X-Provags-ID: V03:K1:UbrYrgHW74lfPA+tgJPjDhRQ6IU7i7clWdYMrwjznjqM4z8OCOv
- 9soJZvWh6RiQjlx86Z4/ybxzlbBbCNoWCxQlfbKHxsUtUJapUW6VkMLllv8A6l7+DKr0up1
- ttn3VEs/6ZR1/JwC/HOvqKkvM3mCvjip6er3QlQeVsN+hQZE2GCRPObWy2qgkIvbZqajF/3
- ROvXvD0XmLIqc4aQSP1rQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:grgUlR0qMM0=:g+87Wk7DpT63/3SlHoio/H
- QTUC9LkZyBoxnpDHuuTBxZ/sMXjNFqsmoWwwM2K+4MblutuXqlS4LSx6XAto5aNy5VDpvDVr3
- TeukniDGy+yKwRev2xXONw9DYmMCGX/CPQfzx1/ZBuh9Zu9t+KoTBx/rUlFdGgXO4hyEGdKHJ
- UOOA+tbd95sjl/72JNSNcophpZkRTX4n5LB53ye3OnxxBUKDe0NMhs5cmgn4z2wmb0OzQTPeK
- v/+4gOLM7ebmIqchn6JVJx4UgaMMLmryU9TDCn3Y0/R6MK+R8nl5DzK9nPFfYPMhcpys0gJoz
- DzYwn1bzopphNrPyKVz4dQVQ8KnEurKaMeJA791iWl3dSdaJgdx9Y5EfM3vzOGRlwSgQIFAy2
- n1uBj3fkakArQ1PWdY4Pwj8GrjZL2RaOF/NCJSfDkBfVpwGrYi2Wv4QaUsPBi+/N0bYxnuns3
- 64zBjryA+Wc7EDF3CGRs//6C2F9Nxi8WT9sUjSz1+zfGv1a2J34qvKj5N6KlrW97i9jytGp++
- qmds288WQfB1aOAUVS9+OIDzlogo0HgFpmc8jWNXvOnfpmsPpfD97Gqb9iOGchjgLDPNzTshl
- RLjKvGqQ7NBwStZkAMW+aXZG4kWRIa8PoQNSudd7qaXFsvcxf4FQl0C6XwyBn1bGXsM3x5zKn
- v4vtMQARqStBLrQpwBfzUogAFjX8eV8wh6/ynFcugCQNzlyPAGtVIMI7weinOJbIWcSd97FxD
- 44mlK961rBcPBKnKssezG3ujTgMzaYS3GoWVUndhTmHMK0EqB1JR2uk/7fYFCwJrnMAdrP1Re
- v/QaGTh6TxXjhCUs5DMV/z/VQzNTpcOIWKvxi2hJLCp5oGCR5Qpbn6tG3rVEhO9G4bapQoNBz
- NnbuortocfuBz5itzKt3kbP3DhNB/bSFqko8fMcqAOht1OCcl734k2NWv5pemPxIcJLN3CxfX
- Dk0i2s+aCoKNKyj4Jy/TQ3ZUmDhcvQDQxP+uOLK8/FXXHOKUBvvTEq/nUCRi4q2Xy/DguPc/e
- Dfl026/Hx2EmacHN7BvXV2fow57s1hn6E9ThXG9Jg/dZsNsniuOu0NBojv61W+CfyvqlUehYt
- 2zUo3kipSI/irjy5lJ1gl9G+Z87s6h5gMRsIX4aw0eQNoZZWghmawg8POkiAU0geDOkkgJV0s
- rIRz2cXTRziCZrLf0AY8i/LEuLsMH3CGTbyLtTxtwcak9P7RhUd/+2oGP02Lt3MaE6kScdQiN
- VyE18gITYg62+tlQUO54NRoHQ2JhoNBOHHsJSCw==
-Content-Transfer-Encoding: quoted-printable
+        id S1727015AbfKKTyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 14:54:31 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42112 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726897AbfKKTya (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 14:54:30 -0500
+Received: by mail-wr1-f65.google.com with SMTP id a15so15973299wrf.9;
+        Mon, 11 Nov 2019 11:54:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=20txlUJ7gvdO0tkGUOgm6wj1CtIHPkIsh+wOv+owYcI=;
+        b=P4kJDZB/+n6iZzdi6MJ8VWswH0+nwIov4JLWyezLlNxZCCAj1Bvi7W6ra1boWYqQ0S
+         KREcpRcwhCKJDmweGXngjaN7g3evr/OcfhkI1rMXEvKd6CP+JIeeuqP0hFi+XHTgJdFY
+         WUWLnEq8CvtgqoE4HXi7VeIa+Ptrz3IDC3oyfxO63prcF0xdefVbI5H89y/3p932e25V
+         5UcE35XB+12Hu2AbaojaUoIeqWFEdeXCb4d55j1Y8s8ZjqohKTFLQAr+0Euox4nnIaeQ
+         NDiipmZAa457pg4DRA2TuteOT5pnTN2NxhpVFA0zqbFWtEOEuPpJ08ZrNCjJdxKs+Ay1
+         9sYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=20txlUJ7gvdO0tkGUOgm6wj1CtIHPkIsh+wOv+owYcI=;
+        b=SSs8OhnFHw/KvVXbieSvdjuTPbRlP1jhkZs4r9Vj/6BOimbrR9vTkCJHE1rZOr/IMQ
+         J7DdUlkn/caiv6rvATn/VBpxVh19p/xwpLPGazOCknkQvmXlQIfAYucBUTWjgAB2N9/p
+         SWEJu0Tecyi4PDd0uLTJLsr8RRFAcVKUWUNZIaqgyOyUR8toThlMpoQ+lTXepLe/8JVv
+         H4k1HlAgPPWyI9ZzjXV2lp05ko39//q9XDfGjMcriHvXr0n6Hfj3DdZZxylB7+5qhBeM
+         AHdwR2lvZys2tBOgCDMzkErgGuIoupVFGq2NrDj5MbZvDyoOcniVROzZuCy3l8I23iTd
+         EYNw==
+X-Gm-Message-State: APjAAAVsMZUVSpUvlKnBXuWHM2H7d3+tlo9p8I/YYAJ/pQ1qMDRBwKjQ
+        NhS6tXQN4nYbsdy+Z7jNPdAYL/ou
+X-Google-Smtp-Source: APXvYqxM4ouUDp0Q8CtCJHhxFRTR2PXD3PKjDazSIR6Izp1yH9JZxYIERhoQzNWG8c4jPEI1PIGAug==
+X-Received: by 2002:adf:da42:: with SMTP id r2mr21389542wrl.383.1573502067949;
+        Mon, 11 Nov 2019 11:54:27 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id z4sm552508wmf.36.2019.11.11.11.54.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Nov 2019 11:54:27 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     olteanv@gmail.com, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: dsa: Prevent usage of NET_DSA_TAG_8021Q as tagging protocol
+Date:   Mon, 11 Nov 2019 11:54:20 -0800
+Message-Id: <20191111195421.11619-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This enables the Gigabit Ethernet support on the Raspberry Pi 4.
-The defined PHY mode is equivalent to the default register settings
-in the downstream tree.
+It is possible for a switch driver to use NET_DSA_TAG_8021Q as a valid
+DSA tagging protocol since it registers itself as such, unfortunately
+since there are not xmit or rcv functions provided, the lack of a xmit()
+function will lead to a NPD in dsa_slave_xmit() to start with.
 
-Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-=2D--
- arch/arm/boot/dts/bcm2711-rpi-4-b.dts | 17 +++++++++++++++++
- arch/arm/boot/dts/bcm2711.dtsi        | 26 ++++++++++++++++++++++++++
- 2 files changed, 43 insertions(+)
+net/dsa/tag_8021q.c is only comprised of a set of helper functions at
+the moment, but is not a fully autonomous or functional tagging "driver"
+(though it could become later on). We do not have any users of
+NET_DSA_TAG_8021Q so now is a good time to make sure there are not
+issues being encountered by making this file strictly a place holder for
+helper functions.
 
-diff --git a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts b/arch/arm/boot/dts/bcm=
-2711-rpi-4-b.dts
-index cccc1cc..1b5a835 100644
-=2D-- a/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-+++ b/arch/arm/boot/dts/bcm2711-rpi-4-b.dts
-@@ -19,6 +19,10 @@
- 		reg =3D <0 0 0>;
- 	};
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ net/dsa/Kconfig     |  2 +-
+ net/dsa/tag_8021q.c | 11 -----------
+ 2 files changed, 1 insertion(+), 12 deletions(-)
 
-+	aliases {
-+		ethernet0 =3D &genet;
-+	};
-+
- 	leds {
- 		act {
- 			gpios =3D <&gpio 42 GPIO_ACTIVE_HIGH>;
-@@ -97,6 +101,19 @@
- 	status =3D "okay";
- };
-
-+&genet {
-+	phy-handle =3D <&phy1>;
-+	phy-mode =3D "rgmii-rxid";
-+	status =3D "okay";
-+};
-+
-+&genet_mdio {
-+	phy1: ethernet-phy@1 {
-+		/* No PHY interrupt */
-+		reg =3D <0x1>;
-+	};
-+};
-+
- /* uart0 communicates with the BT module */
- &uart0 {
- 	pinctrl-names =3D "default";
-diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dt=
-si
-index ac83dac..a571223 100644
-=2D-- a/arch/arm/boot/dts/bcm2711.dtsi
-+++ b/arch/arm/boot/dts/bcm2711.dtsi
-@@ -305,6 +305,32 @@
- 			cpu-release-addr =3D <0x0 0x000000f0>;
- 		};
- 	};
-+
-+	scb {
-+		compatible =3D "simple-bus";
-+		#address-cells =3D <2>;
-+		#size-cells =3D <1>;
-+
-+		ranges =3D <0x0 0x7c000000  0x0 0xfc000000  0x03800000>;
-+
-+		genet: ethernet@7d580000 {
-+			compatible =3D "brcm,bcm2711-genet-v5";
-+			reg =3D <0x0 0x7d580000 0x10000>;
-+			#address-cells =3D <0x1>;
-+			#size-cells =3D <0x1>;
-+			interrupts =3D <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>;
-+			status =3D "disabled";
-+
-+			genet_mdio: mdio@e14 {
-+				compatible =3D "brcm,genet-mdio-v5";
-+				reg =3D <0xe14 0x8>;
-+				reg-names =3D "mdio";
-+				#address-cells =3D <0x0>;
-+				#size-cells =3D <0x1>;
-+			};
-+		};
-+	};
- };
-
- &clk_osc {
-=2D-
-2.7.4
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index 29e2bd5cc5af..136612792c08 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -20,7 +20,7 @@ if NET_DSA
+ 
+ # tagging formats
+ config NET_DSA_TAG_8021Q
+-	tristate "Tag driver for switches using custom 802.1Q VLAN headers"
++	tristate
+ 	select VLAN_8021Q
+ 	help
+ 	  Unlike the other tagging protocols, the 802.1Q config option simply
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 9c1cc2482b68..f54f4a778821 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -341,14 +341,3 @@ struct sk_buff *dsa_8021q_remove_header(struct sk_buff *skb)
+ 	return skb;
+ }
+ EXPORT_SYMBOL_GPL(dsa_8021q_remove_header);
+-
+-static const struct dsa_device_ops dsa_8021q_netdev_ops = {
+-	.name		= "8021q",
+-	.proto		= DSA_TAG_PROTO_8021Q,
+-	.overhead	= VLAN_HLEN,
+-};
+-
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_8021Q);
+-
+-module_dsa_tag_driver(dsa_8021q_netdev_ops);
+-- 
+2.17.1
 
