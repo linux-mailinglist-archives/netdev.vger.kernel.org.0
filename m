@@ -2,157 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D181CF7816
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:53:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED076F782D
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:58:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfKKPxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 10:53:47 -0500
-Received: from mail-io1-f67.google.com ([209.85.166.67]:37557 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726857AbfKKPxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 10:53:46 -0500
-Received: by mail-io1-f67.google.com with SMTP id 1so15105236iou.4
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 07:53:46 -0800 (PST)
+        id S1726950AbfKKP6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 10:58:13 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:37689 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726889AbfKKP6N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 10:58:13 -0500
+Received: by mail-wr1-f65.google.com with SMTP id t1so15222614wrv.4
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 07:58:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FJ/7Xjql9joXVcK8sa+4UElmLiYfJPeDkhbXJfFPJbs=;
-        b=eF1/kIYClCt2WFCqVGU4Zf/EgpLNsBd4f0oCpvdu2kVpMe4QmyxOy8iVD1OMsb/IaV
-         a1p/jqJUjjbaTBd3SEDdcwXbVZ1JrwmReG6LFhz6aqg3hck4fsdF6K68YNj8Ux9HiTCK
-         ZyZLTAw94KbsynfhNm6ZKR8dyTdf8FUVJKTzGQBCI1w9C13bduSaBzoZolaKOMB3GAce
-         BKrRYxnzB8iV43WYbpoVH/bysiSvqfIYkRigVDbuDzPRThvcvnQw+hZxGaNhvuPQ/UcP
-         KIQdGLyeFB+rvfFY/EqC1WGP1Q97pNbmk9C933sSy05bq1ho942IpxYOflskHJv0lJWe
-         UZPA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=nL1rheNUN9lEuzzFdb2XL3FRoWR7EojL9bAG+X/nUzQ=;
+        b=VmT5fzoAyecLK4EH6hOG9xRKy7oVzN+kb9xbXeMDufKYxOLufv6VieVcQ0keJSzU+a
+         gXjOM4j0gdbw1tkbagN7pYhF5iz6tLJYTk+29fOiUhV4FyFRvNkROCP5JkeRwTKxebDD
+         6+6gR0NkMT6xRpa0NWw0QUwmaVvzK3SOJVJJ4gwDdCYiZormPY0Lnfrc5rHAJu+ffKEr
+         JdzxxG5HVoS87uM8Z5KHAnQyYQZgf3c8uH7ZTF7nOwbiV/Vyj7RsZt1Jli3sW+Qb7tID
+         cDY/WOzgWC/86z755064fZXYlaXHSWRRiNr1DC3T2TN1toGhk8XpiPT1GrAhDgbS+0Uh
+         dncA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FJ/7Xjql9joXVcK8sa+4UElmLiYfJPeDkhbXJfFPJbs=;
-        b=XqssOMf+MH0UDQKNacgkUJcqWJ72JdAEd3zWXs0VKRVZGePFYZE8PskNmcQ+9csWjT
-         ooa2vPy+acm1JLRX0whk0HBBkKtmnt8fcxDz6Fr5+iRh1w4n6sqF8SkK/a447ymW7aHI
-         Uub8L9fmZlBjl26FULvuDr8DZxFmgD5PiXo/mJb9nM6i4Gjp6hnrUF1ZTy/K0dO2WltU
-         ++bH7/v16ZseXX8d1jTxbbP3QqZSanpDPu/25OvX6z6FqyMrNgoB9jzq+LSXaYfRNuB2
-         tnkivHjQXlM8AOA82g1wr5pvITnVX9yuiRVxzoS4Ls+aDLul/bmIDeaiMGxHXKecs7pK
-         aGGQ==
-X-Gm-Message-State: APjAAAVjIIn852ygXxPVBivYpKpBPW4G3/VVYQc74fl+KpDrPy93U6pz
-        BPqqjmYsHox0uFAaKdqQA/nSkhPlf++HbpF/xHmtSg==
-X-Google-Smtp-Source: APXvYqxi2nekNDZv9/xs0cPIuurtM6auyN95/capgrWHgFu+xVx6vxCclCpc3oHr9lZpfqqaZJNfxecWvLBtSOHYKy0=
-X-Received: by 2002:a5e:8e02:: with SMTP id a2mr397196ion.269.1573487625670;
- Mon, 11 Nov 2019 07:53:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=nL1rheNUN9lEuzzFdb2XL3FRoWR7EojL9bAG+X/nUzQ=;
+        b=ZrjngkaIzmxplc0Zj/fqukqI5MHJ4hk5Q93c2mgNxhJK3PrQ4N9ltivyhp0Hm02POy
+         Qz4tB5EGqZjNb/9bDcfP1+c5wsrCNtgOaoNIXv2yqmRhThsQfWM0fyPsligEmvOAIDJg
+         Tfbe/J2VPzvJXAvIYEVArsnKwYCMJ0RqDJSR8v4KE0uKgc/HxKu2Zy61ysM/5sQ+jf08
+         j4eCgHZfNjyEGZ6jXfhfQd7AzIDnBwHQZp7u72dDAeBiRaHzWWtnQ6XaDlVi/jbIVJ/3
+         IjTqvVlmIPMne3Befbzf4VccOHTWO+UDWKx54Vp1j59x6OCiPpW3ELZ5TbLdz7KLV6wX
+         Gl5Q==
+X-Gm-Message-State: APjAAAUBE/GnsxlMX7idJfA8/ZfEFz/Pp28emKyHy/oM7lY8V/np95sM
+        /VE5hbAhIu6/4Ydjo61JdU47DKZDKd0=
+X-Google-Smtp-Source: APXvYqz23q0Ee6ynwb1+HB2nx2vWKkBUthxwxwYMRVQO2/o/w1xHoSBPCzqRWrRnGenqJWgZ7d4qkA==
+X-Received: by 2002:a05:6000:104c:: with SMTP id c12mr14209726wrx.212.1573487891043;
+        Mon, 11 Nov 2019 07:58:11 -0800 (PST)
+Received: from netronome.com (fred-musen.rivierenbuurt.horms.nl. [2001:470:7eb3:404:a2a4:c5ff:fe4c:9ce9])
+        by smtp.gmail.com with ESMTPSA id 36sm21256930wrj.42.2019.11.11.07.58.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Nov 2019 07:58:10 -0800 (PST)
+Date:   Mon, 11 Nov 2019 16:58:09 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] rtw88: remove duplicated include from ps.c
+Message-ID: <20191111155808.GB29052@netronome.com>
+References: <20191111033427.122443-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-References: <20191101173219.18631-1-edumazet@google.com> <20191101.145923.2168876543627475825.davem@davemloft.net>
- <CAC=O2+SdhuLmsDEUsNQS3hbEH_Puy07gxsN98dQzTNsF0qx2UA@mail.gmail.com>
- <CANn89iJUVcpbknBsKn5aJLhJP6DkhErZBcEh3P_uwGs4ZJbMYQ@mail.gmail.com> <CAC=O2+R3gHT6RtqL6RPiWsyuptpa+vrSQsxdN=DW1LaD1B-vGw@mail.gmail.com>
-In-Reply-To: <CAC=O2+R3gHT6RtqL6RPiWsyuptpa+vrSQsxdN=DW1LaD1B-vGw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 11 Nov 2019 07:53:33 -0800
-Message-ID: <CANn89iLPfy6Nbk0pouySQq=xVsEOGJMkVEXM=nKWW3=e4OGjoQ@mail.gmail.com>
-Subject: Re: [PATCH net] inet: stop leaking jiffies on the wire
-To:     Thiemo Nagel <tnagel@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191111033427.122443-1-yuehaibing@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 12:53 AM Thiemo Nagel <tnagel@google.com> wrote:
->
-> Hey Eric,
->
-> I've been thinking about this some more. The prandom_u32() description
-> says: "This algorithm is NOT considered safe for cryptographic use."
-> -- Afaiu this implies that an attacker could deduce internal state by
-> looking at a sequence of random numbers.
+On Mon, Nov 11, 2019 at 03:34:27AM +0000, YueHaibing wrote:
+> Remove duplicated include.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-Keep in mind that we need some entropy, and some device can not provide any=
-.
+Reviewed-by: Simon Horman <simon.horman@netronome.com>
 
-prandom_u32() gets some reasonable amount of entropy. And it seems
-better than ' jiffies' .
-
-If you want strong (hardware) generators, I guess next Android/Chrome
-devices will cost a bit more.
-
-
- Consequently, I believe that
-> we shouldn't use prandom_* for data that gets sent over the wire.
-> Instead get_random_* should be used which is described as
-> cryptographically secure.
->
-
-If IP ID had to be cryptographically secure, you can be sure we would
-have addressed the problem 20 years ago.
-
-Please discuss this matter with random maintainers, not networking ones ;)
-
-> Kind regards,
-> Thiemo
->
-> From /drivers/char/random.c:
->
-> [About get_random_*:]
->  * Besides the obvious cryptographic uses, these numbers are also good
->  * for seeding TCP sequence numbers, and other places where it is
->  * desirable to have numbers which are not only random, but hard to
->  * predict by an attacker.
-> [...]
->  * It *is* safe to expose get_random_int() output to attackers (e.g. as
->  * network cookies); given outputs 1..n, it's not feasible to predict
->  * outputs 0 or n+1.
-> [...]
->
->  * prandom_u32()
->  * -------------
->  *
->  * For even weaker applications, see the pseudorandom generator
->  * prandom_u32(), prandom_max(), and prandom_bytes().  If the random
->  * numbers aren't security-critical at all, these are *far* cheaper.
->  * Useful for self-tests, random error simulation, randomized backoffs,
->  * and any other application where you trust that nobody is trying to
->  * maliciously mess with you by guessing the "random" numbers.
->
->
-> On Mon, Nov 4, 2019 at 4:50 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Mon, Nov 4, 2019 at 7:24 AM Thiemo Nagel <tnagel@google.com> wrote:
-> > >
-> > > Thanks a lot, Eric!
-> > >
-> > > Grepping through the source, it seems to me there are two more
-> > > occurrences of jiffies in inet_id:
-> > >
-> > > https://github.com/torvalds/linux/blob/v5.3/net/dccp/ipv4.c#L120
-> > > https://github.com/torvalds/linux/blob/v5.3/net/dccp/ipv4.c#L419
-> > >
-> >
-> > Indeed.
-> >
-> > The one in dccp_v4_connect() has been handled in my patch.
-> > I missed it in dccp_v4_request_recv_sock()
-> >
-> > Thanks.
-> >
-> > > Kind regards,
-> > > Thiemo
->
->
->
-> --
->
-> Thiemo Nagel
->
-> Software Engineer
->
->
-> Google Germany GmbH, Erika-Mann-Stra=C3=9Fe 33, 80686 M=C3=BCnchen
->
-> Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Halimah DeLaine Prado
->
-> Registergericht und -nummer: Hamburg, HRB 86891
->
-> Sitz der Gesellschaft: Hamburg
