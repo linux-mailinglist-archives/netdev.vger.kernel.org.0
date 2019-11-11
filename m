@@ -2,137 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67BF9F8277
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 22:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1ECF8291
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 22:47:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727793AbfKKVqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 16:46:22 -0500
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:9442 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727121AbfKKVqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 16:46:20 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc9d66d0000>; Mon, 11 Nov 2019 13:45:17 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 11 Nov 2019 13:46:18 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 11 Nov 2019 13:46:18 -0800
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 11 Nov
- 2019 21:46:18 +0000
-Subject: Re: [PATCH v2 04/18] media/v4l2-core: set pages dirty upon releasing
- DMA buffers
-To:     Hans Verkuil <hverkuil@xs4all.nl>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>
-References: <20191103211813.213227-1-jhubbard@nvidia.com>
- <20191103211813.213227-5-jhubbard@nvidia.com>
- <4b2337f6-102d-ae9d-e690-4331d77660c4@xs4all.nl>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <5846f15d-f03b-cd1a-051c-42b1519c4c48@nvidia.com>
-Date:   Mon, 11 Nov 2019 13:46:18 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <4b2337f6-102d-ae9d-e690-4331d77660c4@xs4all.nl>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
+        id S1727632AbfKKVrO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 16:47:14 -0500
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:28490 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726991AbfKKVrN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 16:47:13 -0500
+Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
+  Woojung.Huh@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Woojung.Huh@microchip.com";
+  x-sender="Woojung.Huh@microchip.com"; x-conformance=spf_only;
+  x-record-type="v=spf1"; x-record-text="v=spf1 mx
+  a:ushub1.microchip.com a:smtpout.microchip.com
+  a:mx1.microchip.iphmx.com a:mx2.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa5.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Woojung.Huh@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa5.microchip.iphmx.com; spf=Pass smtp.mailfrom=Woojung.Huh@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: HNcaRYR2GK9NDLjFrSGlPxjFqjuhn814RgOlZ23KOWAa0sraRj5W4c2ahshs5PtlV5ReEWuWa8
+ FzpBPtk2gVGdKMmGNwK4ljNSLp+RstlixNGKgGkU74pLq/+5hhiJQ93HBQ6UHXRitAOiO0fCqM
+ 97kgxrWzoW26NAoBmsJ+psjDhQcOxGwBxlkn7SbMuv+h+8WTV278eytrIecZpiMF3ZqJ22pbt7
+ msx47booCbmGlPYFa2dffJ+OfxWtYicJ5oKvx/5S0VQMrCaQtv1ldNYGmnakJw8T3fSSGoE31M
+ 78c=
+X-IronPort-AV: E=Sophos;i="5.68,293,1569308400"; 
+   d="scan'208";a="55019317"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 11 Nov 2019 14:47:13 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 11 Nov 2019 14:47:13 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5 via Frontend
+ Transport; Mon, 11 Nov 2019 14:47:13 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gmI7gwU9gsy19Uy21ZoF7LxPjMiFF+gMPEp4xUThi3KyamPBSa/VHsxvJ64d/58nYbUtEBKaKjUAR3VpEb5jHUkt2pL0lnWs64HOTPpwA433dz4TyWWAGu3/Cx5lU3pK7nlunQSCcW7XKBRwMg6SH4xKjt5+0/SRhnLg7t8YiqCMe7jcoQqru4JuXssQUJElJDQ1k/nmnuXk92UGwYtuKeceRXHPOTv0sXCEj7N+1Qhfv/KGcEuPHgULKIlutDucOnjp5IVUuf+JCIrPqaMYBcxDgYy9bfaakDEh7DSt0tt2f4atp9r0dJhh2ONqTRYX57+zpgeX30vwWUvHKbvJDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S1NJZP2OuEWx2OxyLcmG5bucQRo/hVhKOKB7oubart8=;
+ b=i5isKHi4/+8QI9ZrY3Ng/4djT0icHDzmsvOcduFofBEcfbcgAXuDJvoUEmDOhhwdEjH5BtA1+nvgTXRifG8TRRggosv0/TeXYA/WJVERGFGTIxYXdabJJc/T0xAMV30ftQqcbJVJYl6V8zEHM+sookPTtPhb9jMhPIGsPIxZMZPegDutfIu/mH/SIxxLat5B/gk4wQQJoWulTeTHqSwfogZsRFUtCZw/45FB9x3TGHmKXc4CsZbWVmJd2RtnPpUOaMGUyT3zLSN17cG35lYte6GpNDf78YUtido1/litpP6VY/XBj6uMShxisk/QAOuD7iE8b1GwEQ+h0GzsDJuxqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=S1NJZP2OuEWx2OxyLcmG5bucQRo/hVhKOKB7oubart8=;
+ b=mPJfgxopm9SFicGLszlWDqNIOjRJC1dLpDfAZBemXmiaskVFpTuHBa3qmHGhutdBfTBHTZqjDqwfWjXYBA5BMFngCqEgucNYvmrA9ruIJKV3PccYswFRnep3FRr98MsJ1RUAxi7Mw3CZOeH4WSPcPM+N0GVOqBBVie5XTVFJGi4=
+Received: from BL0PR11MB3012.namprd11.prod.outlook.com (20.177.204.78) by
+ BL0PR11MB3155.namprd11.prod.outlook.com (10.167.235.74) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.24; Mon, 11 Nov 2019 21:47:11 +0000
+Received: from BL0PR11MB3012.namprd11.prod.outlook.com
+ ([fe80::30ce:9d88:778c:f8c3]) by BL0PR11MB3012.namprd11.prod.outlook.com
+ ([fe80::30ce:9d88:778c:f8c3%4]) with mapi id 15.20.2430.027; Mon, 11 Nov 2019
+ 21:47:11 +0000
+From:   <Woojung.Huh@microchip.com>
+To:     <Horatiu.Vultur@microchip.com>
+CC:     <alexandre.belloni@bootlin.com>, <UNGLinuxDriver@microchip.com>,
+        <davem@davemloft.net>, <andrew@lunn.ch>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <Horatiu.Vultur@microchip.com>
+Subject: RE: [PATCH] net: mscc: ocelot: reinterpret the return value of
+ of_get_phy_mode
+Thread-Topic: [PATCH] net: mscc: ocelot: reinterpret the return value of
+ of_get_phy_mode
+Thread-Index: AQHVmKyJlG49ssDkQUm2Lowd3l6CSqeGgRlQ
+Date:   Mon, 11 Nov 2019 21:47:11 +0000
+Message-ID: <BL0PR11MB3012FA0DEC75685EA73D7F4CE7740@BL0PR11MB3012.namprd11.prod.outlook.com>
+References: <20191111162127.18684-1-horatiu.vultur@microchip.com>
+In-Reply-To: <20191111162127.18684-1-horatiu.vultur@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573508717; bh=JgFNDA0v0XtnqpGBZO9zS12edBVCSHH4nhh2s8SsfW8=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=KJdHonRoY4lGZsGGXFA+s6C9dAs+F+pw/0M4pYcPJTv8UjN4AOAtOKwCMIML32E4J
-         r1oa+qdIiwIStrqpxJM1Ivl0+B4WzoS3hMuEMwbOHFQnWENnyAiOG7rxglRiMPOsG2
-         P1hEnkWRlMLt+KFRHY1ADSR7l9DzNOzOUd8zjn8ytb8H6XjFU3HR0TMaYulAaIN8Ej
-         W15iUuEbFCS+gYNQ7bbS2hBGFlr0gEiNZEHH94kd699lxQXaw52Pbe2bTEp8/kn2Gi
-         RR0P48w8xGu3BkU/HHy5EhGqoz+wSP++cOtfAjoHUddj6CK5tYXuhTndLB24+KM9Al
-         oii/NsVBT+BQA==
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [47.19.18.123]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 83dab4dc-8498-4d24-0f75-08d766f0b522
+x-ms-traffictypediagnostic: BL0PR11MB3155:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BL0PR11MB3155EE2B14D3CE75BE38B9C8E7740@BL0PR11MB3155.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0218A015FA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(366004)(136003)(39860400002)(396003)(189003)(199004)(6246003)(66946007)(66446008)(8676002)(107886003)(305945005)(66476007)(86362001)(76176011)(76116006)(486006)(229853002)(33656002)(9686003)(66556008)(64756008)(99286004)(478600001)(7696005)(256004)(71190400001)(52536014)(55016002)(71200400001)(8936002)(7736002)(25786009)(6636002)(66066001)(74316002)(4744005)(4326008)(81166006)(81156014)(6436002)(316002)(6862004)(3846002)(2906002)(26005)(186003)(446003)(54906003)(11346002)(14454004)(6116002)(102836004)(5660300002)(476003)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:BL0PR11MB3155;H:BL0PR11MB3012.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: microchip.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: N4lkqPo11U6TPuPfJR2+B218nYljkPFJ6VPxTtA68nj2dpJCe+qHrxlh8EwHS/l4deesYVNJbz+GieaYoCZfFYTmh1wEqUa2hbApXoRx+ry0/Rh0NjbGkQ7OoSjgQoiejuJcvQqyXjbm89jy812adzDZ9zVa/fQSWMWDTwquGVbBepFynR/j5KbqdddcqwjrZzOZuP0jbDT2x6cukdXcPYj5D/TXrghqguXOWzsbj32eRs/IcrU5cNFs0tSsHVeJ2T3tkFLUwxw6BsG8unAOSoZXCZhUwFmng4pWi5eWd8yew6LcUqqf+nvCqrV2bV+uuxTRDvH1Eh5QzL7qzTD+G+KKTpTFGHgbnzw8aaBS7Kr0lANlUfrtNOeSv4skFcYMaGtTQIFLgd/+GZaFk+MdHb4TLiPJVD3vqEYplW+GSgftJdk1xMit4Glgj0Z1n5n6
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83dab4dc-8498-4d24-0f75-08d766f0b522
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 21:47:11.2677
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wdtqhie3E4mQXw4ehY3VLJCC8fvoDiDRTrYdo5pMHJps3KZx002Sw99EKRHMwn+6dj+vqHvN74gHas1B70l9N8utK2G9VN+FI2pyI7W984E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR11MB3155
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/10/19 2:10 AM, Hans Verkuil wrote:
-> On 11/3/19 10:17 PM, John Hubbard wrote:
->> After DMA is complete, and the device and CPU caches are synchronized,
->> it's still required to mark the CPU pages as dirty, if the data was
->> coming from the device. However, this driver was just issuing a
->> bare put_page() call, without any set_page_dirty*() call.
->>
->> Fix the problem, by calling set_page_dirty_lock() if the CPU pages
->> were potentially receiving data from the device.
->>
->> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
->> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> 
-> Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-> 
-> Looks good, thanks!
-> 
+Hi Horatiu,
 
-Hi Hans, it's great that you could take a look at this and the other v4l2 
-patch, much appreciated.
+> -		err =3D of_get_phy_mode(portnp, &phy_mode);
+> -		if (err && err !=3D -ENODEV)
+> -			goto out_put_ports;
+> +		phy_err =3D of_get_phy_mode(portnp, &phy_mode);
+> +		if (phy_err)
+> +			phy_mode =3D PHY_INTERFACE_MODE_NA;
 
+Because of_get_phy_mode() would assign PHY_INTERFACE_MODE_NA to phy_mode
+when error, may not need this "if (phy_err)" statement at all.
 
-thanks,
--- 
-John Hubbard
-NVIDIA
->> ---
->>  drivers/media/v4l2-core/videobuf-dma-sg.c | 5 ++++-
->>  1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/media/v4l2-core/videobuf-dma-sg.c b/drivers/media/v4l2-core/videobuf-dma-sg.c
->> index 66a6c6c236a7..28262190c3ab 100644
->> --- a/drivers/media/v4l2-core/videobuf-dma-sg.c
->> +++ b/drivers/media/v4l2-core/videobuf-dma-sg.c
->> @@ -349,8 +349,11 @@ int videobuf_dma_free(struct videobuf_dmabuf *dma)
->>  	BUG_ON(dma->sglen);
->>  
->>  	if (dma->pages) {
->> -		for (i = 0; i < dma->nr_pages; i++)
->> +		for (i = 0; i < dma->nr_pages; i++) {
->> +			if (dma->direction == DMA_FROM_DEVICE)
->> +				set_page_dirty_lock(dma->pages[i]);
->>  			put_page(dma->pages[i]);
->> +		}
->>  		kfree(dma->pages);
->>  		dma->pages = NULL;
->>  	}
->>
-> 
+Thanks.
+Woojung
