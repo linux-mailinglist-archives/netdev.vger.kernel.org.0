@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8C5F8087
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:51:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56EBAF8083
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 20:51:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727607AbfKKTvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 14:51:40 -0500
-Received: from mout.gmx.net ([212.227.15.15]:58943 "EHLO mout.gmx.net"
+        id S1727524AbfKKTvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 14:51:38 -0500
+Received: from mout.gmx.net ([212.227.15.18]:48039 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727458AbfKKTvh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Nov 2019 14:51:37 -0500
+        id S1727279AbfKKTvf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 14:51:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
         s=badeba3b8450; t=1573501791;
-        bh=PDcMlsTNCVoRx2qfDTLufTFxlXCLrYMeLsjNAqTRG/Q=;
+        bh=jyAikbVVRrPYgn/XSwbrVXcnTYEvKUjvXNC1/tigGeU=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=e6VDnkqN/GjWfXRN+3RPAetHrQKaByV8xvtUpUs6fCMz+5mi1DrODshBgX9aJnI7F
-         DLG2l5bEcSgrxrsNOUDVYYbMuZiEhPBndkjZ746PFt9O61k5THZXuLh1Z5BbzZtR1G
-         N70bfmX//GMAWCGHNkhcAoX72wFBkq+6zYAo8iYM=
+        b=i/dlo/DUcvwxzGVktgQW99DJ2Vq+tJF6Cd2QGH1Ud0ws5cwuYr67vyCqFtqYfqVxt
+         G7v/oy115FdmaJLyecIxDw/4nJYObyvHjJIHf/pcIIeVoAssAvTs+FoiWGecOkeF7x
+         aAPAjHGANJEie+Zp2bt9+i077vRr/Yg+mIMHu0R4=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from localhost.localdomain ([37.4.249.112]) by mail.gmx.com
  (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1Mk0JW-1i1TSZ0meu-00kRZO; Mon, 11 Nov 2019 20:49:51 +0100
+ 1MzhnH-1hhUek2jXl-00vdsF; Mon, 11 Nov 2019 20:49:51 +0100
 From:   Stefan Wahren <wahrenst@gmx.net>
 To:     Matthias Brugger <matthias.bgg@kernel.org>,
         Matthias Brugger <mbrugger@suse.com>,
@@ -34,78 +34,68 @@ Cc:     Eric Anholt <eric@anholt.net>,
         bcm-kernel-feedback-list@broadcom.com,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         Stefan Wahren <wahrenst@gmx.net>
-Subject: [PATCH V5 net-next 2/7] net: bcmgenet: Fix error handling on IRQ retrieval
-Date:   Mon, 11 Nov 2019 20:49:21 +0100
-Message-Id: <1573501766-21154-3-git-send-email-wahrenst@gmx.net>
+Subject: [PATCH V5 net-next 3/7] dt-bindings: net: bcmgenet: Add BCM2711 support
+Date:   Mon, 11 Nov 2019 20:49:22 +0100
+Message-Id: <1573501766-21154-4-git-send-email-wahrenst@gmx.net>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1573501766-21154-1-git-send-email-wahrenst@gmx.net>
 References: <1573501766-21154-1-git-send-email-wahrenst@gmx.net>
-X-Provags-ID: V03:K1:dM7skxclhbRUMKWP3MbL6zRTCYfjFKuM73YgvozwoH1DWTlJBlu
- illYPB9DIL8Lla6T4g/TzHImP8HKEcJXDniUnPbeDmg8C/0PZgi+UmNAsLYdGFkYhr1Tm43
- EWgG4ZVTea1IWnJbo6nLBNNk/O72Cn+KG23UAocPBabWpSdv7BmOUlWzCV0LgWHHZQHZ591
- sl8TxybCfnR5+RgkRqYQg==
+X-Provags-ID: V03:K1:xBehJ0MPIR6kysFz74j6TneXJCtJsc8Ik14GvPjliUkZNbYE5eu
+ se1t/umwYp46w7t9aSD9NTCBzsAd+4QG+tnUKdP/UpGT2RlHrzfj/Qrw8n5oxS7+gnscMdD
+ UaWtdt7hCIvHSx0kxpSfA4vbH4trDFbPW5UkYhgL4C+y+CCboLoRLOiTS738Ct+MVogLK1A
+ +EqmHZOIHj02BhcZn7IbQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ao/Namynt30=:74ucEwRxe5+EmU0eXIzQjF
- DjWYmZZ7+x2ExYuwzQEBUad6d/p00KSqazR0d2H8yLy/0/z7mWgN6bgJ3Jv7aK0grD+gL2wfM
- ynYFNK1361/q4t3S2s7sYopp5/GJ4ob8LlO6lnn5wIIjJTt1MqMnwbo7RRlIpGYy2ydLBEH5G
- CQ6G5btVXh1rRBSgOnQDElFR1OEUmzNfYMQxYFHAjSQysbQGExWQspWCNrk6cErV1kQUNsZl0
- WA1Dr2E2xXccYgQKRgJxIffhTj8AWIBkh9s52ddLPhfo29Z+67ih1PtYp0+LLKjRWN+dfAy9Y
- eTPSeIaQWLbX3BeC79lH7VhWL58l+2VP9dJlgXT7TbxTKXxyRkH8PUkSPoDBhqcS9abAgXmM6
- 1JcLysRtNbYmkF2hKS2a2ThpKIiD26JBKaIS2MJgHhTIYXRkamVxmDNpVCLVmGn4wFpkco+Kn
- p1AbiiiEHCHYdeMkD/R1RE0cIos6N4MnNQty9WkOct3K7arhiLqCfHufDnXvgEXhvHkig4Vr4
- Ntpg+iy3OCDFng1TdyVuuGDnUxieW6y6bHMeZSI+yEp798wfFfDZUIJyHkx4W9rGuil+sHX7w
- Ldn0Ly7HJdyTRiEa2flgNZKkbfO0lJNUMfcpGGKQCrIkMU9WyFp1NJIFDid6fhEIL8/L6OGgp
- sQhJPTQTfnC2hnu1hxUSX1JONdyciCvTXCb3BS75L0pFwk2TwK18pAvvJEwjkuHBm7W0rQ8RZ
- 6KKxxP3+Cfv0JDt2lZLuwKE3lOnSIRRK+qtrxiZBulmfORp29SShtiLweyoP2W5FbhLBT/e9K
- iBehdjYKTkq3JF04ebQZvGByLPldQ4hPCf9CM3i8kNfs9fpbDYz5IhCEytsMCsFJTHcGVEysE
- wFb7ct2PIgsYBmfOeUhfoYZRu1detYW2HHaivR2ZEP1RIQd9Fj8ra4B4j4zvIFQGW1RhkWXXT
- jhmNVWG/epi7ueQ4SU40sL1l3wcf9xZE8/hapUuaIOrzGdWvIjJ6dwLEqfroFnuK1xtO5XLZL
- 8B8GOYteByW7ZoqXWkUSSJc7v+qTYLQwyxFHL5DvDaCn0yjPs06MBcz9fG7fbIri6yqgDL/5j
- MtL9t3A4c5NaXGJBEcKtRB2oszjPGr2sUoAohpGe4/5qKsjCsHD3g0y9cE2HN8i/43bq0FHW8
- IfB45zNxhcBKGovHRYoYaL3c/Qg4Y4c5FyuJ1I+cEVmC7y+27F9Dh5NgRpGvdu4XybzLcPPwZ
- cbcDh9bTp8/QbdWVPOdWYzT3UyniAqsofJgkrQA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:aHNgqRhvbKQ=:1eqhjT4X88JxB5c8xm91rE
+ txFPAcx26aPKZK74X8qLWqydluXMDviQ3StJ8WTgy5My/CKLihzvLfqrXbv0r2r8nJlGiWjkW
+ 5FCu5zSO3U9ebdi2KVwKr2OqvOYYm/u6rGrdgLXZXTRsQrDfKFN69El5r3veHh9xC5j2AqeGA
+ tcqMzeiyXJ3UcZbJX4Er8tL27pg0LnaGAShqw7pjlw4XB5Yl5oK3hHUMdgPfhTpSPt6hNoBsD
+ Jn1LmfbvgU+zNt2E2NQ3YJCXo57Oqaj+AnTw3aNiYxP+jiOI/JbsnZoDKvPfZzWQC+3cEavlB
+ mNZ/hPFOF4CiSiD8B/YBZ09ND6TR6KinPVdCBD+KhYf5TaP8Ax3Le6CHHeLZUA1vgkHeQKZCm
+ /VG9N226znsUQvyhpapIbp1vm5jG0u/Kytb58P/r32O493PG1du2XLGwiDfB1fsAG/CtTScN5
+ cNjlIPzxHhspJXcu3IKLIB3cKDCaBegkqd5v+FAYL277Lb3UDdoGxdNNGbuMUQ121jW7NAP3x
+ cHDsjOPNoMsgzlLKT9+S42goB0+qdZE1QZYlH+DL4M0HNypq5AaJ5Tw/Tl9CAh89lsl3YHXUH
+ 77bglIDa2QILjK4ep8iFeMRdGXa7C33KHNW5okQwKjx7pmngq8HeRloqT1V3Vo98QbDfDSi+O
+ F3hM6/tw/AWlCVQpIpWczpaDeX2yGfiqCZUSzXfM9GrHyWH9Yz4PnfyukM3WUH3oQw8MwSt5Z
+ 4y2uLh+kH5laXhIScerz5eFJ8xK3jwb/JmAcw0hOlTQhkWFRnL9va3xF5LA1xRncatWzhtP5L
+ GJZC/qAl/DsUsjkrXczdxIZmSPLj5qMSe5KPxEiO1G92bgSK5h9kzxQJAp7BYSRctAqieQdoI
+ QQf8ltYr1Jt6wy0E79ZWP5m6VHBdKjO+siK5JSYipra1qv8RfOiqTIwUjXTm7gHnfQ0ETllPx
+ PiOyO1DUT2zuWqwb6/D+pX5S1yL1FZHlERbUWouXsVpfJHXW+CS600AQ6MG9WiitIceCgi8Pl
+ 3WSe+IHTM2T9wULMTlLx2Y4uinmFoRIwqOuv8FIZ+YmNJK8hJcT39d4BfZa8Ad+TrO4eYG8H+
+ pDzL19DHyT+eVQ9+dF6bMbLHyuWFp9GjX8J+yNa6OkAGNS8Vv/NPE8jDkTk+rLIFskgtKdzQW
+ LyxAOZnuncaEDN4IZ4AHE9sFoB9Byzfq4TE6Shp7Xf5J/GGBcrYF2LKyvAnyE9Ll++Lm9Gfnq
+ EJB1YuRp6X6H8ZKW36yDN0PL2BqM+5/uTii9UuA==
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This fixes the error handling for the mandatory IRQs. There is no need
-for the error message anymore, this is now handled by platform_get_irq.
+The BCM2711 has some modifications to the GENET v5. So add this SoC
+specific compatible.
 
+Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 =2D--
- drivers/net/ethernet/broadcom/genet/bcmgenet.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/net/brcm,bcmgenet.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/=
-ethernet/broadcom/genet/bcmgenet.c
-index 575f162..ee4d8ef 100644
-=2D-- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -3458,13 +3458,16 @@ static int bcmgenet_probe(struct platform_device *=
-pdev)
+diff --git a/Documentation/devicetree/bindings/net/brcm,bcmgenet.txt b/Doc=
+umentation/devicetree/bindings/net/brcm,bcmgenet.txt
+index 3956af1..33a0d67 100644
+=2D-- a/Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
++++ b/Documentation/devicetree/bindings/net/brcm,bcmgenet.txt
+@@ -2,7 +2,7 @@
 
- 	priv =3D netdev_priv(dev);
- 	priv->irq0 =3D platform_get_irq(pdev, 0);
-+	if (priv->irq0 < 0) {
-+		err =3D priv->irq0;
-+		goto err;
-+	}
- 	priv->irq1 =3D platform_get_irq(pdev, 1);
--	priv->wol_irq =3D platform_get_irq_optional(pdev, 2);
--	if (!priv->irq0 || !priv->irq1) {
--		dev_err(&pdev->dev, "can't find IRQs\n");
--		err =3D -EINVAL;
-+	if (priv->irq1 < 0) {
-+		err =3D priv->irq1;
- 		goto err;
- 	}
-+	priv->wol_irq =3D platform_get_irq_optional(pdev, 2);
-
- 	if (dn)
- 		macaddr =3D of_get_mac_address(dn);
+ Required properties:
+ - compatible: should contain one of "brcm,genet-v1", "brcm,genet-v2",
+-  "brcm,genet-v3", "brcm,genet-v4", "brcm,genet-v5".
++  "brcm,genet-v3", "brcm,genet-v4", "brcm,genet-v5", "brcm,bcm2711-genet-=
+v5".
+ - reg: address and length of the register set for the device
+ - interrupts and/or interrupts-extended: must be two cells, the first cel=
+l
+   is the general purpose interrupt line, while the second cell is the
 =2D-
 2.7.4
 
