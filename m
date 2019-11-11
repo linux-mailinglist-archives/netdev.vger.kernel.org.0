@@ -2,157 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF877F7683
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:37:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1FCBF7686
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:37:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726915AbfKKOhU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 09:37:20 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37278 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726832AbfKKOhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 09:37:19 -0500
-Received: by mail-wr1-f66.google.com with SMTP id t1so14908616wrv.4
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 06:37:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vWmsvXOxLILOeMxH5L7QAWLc3/R25fgjknw/j9uIX0A=;
-        b=YmVQjaG9yNNiUeYFoYLzLvy8mhdFOEAhi88nkdZRHSViKfUQXC69VHPP/R4M9sTDES
-         FBZVb56mqMQQo3wxdusd/ckD4yqsurYYD/RxuVL5Yg4eYviajjgLWhWh4m4lCxWWx3zP
-         2+VwRsIYPWnfgCeEwHOu70hGr/E/KB6+iliSSOiDd4CMAH9z0AvjYSH4n/kj4gThAPQ5
-         3vknbqnJBybiu8sNS0nBsqdNeOqzwcLoYttNwPwTrG72LPBzpIXhFKYPbhYNmOBAIadO
-         pLTqBOvTglY5SWA6ERFWEFxOgxJ/0MeIQStcFNUUlFbRXqLA5lESw1FafaiQUxZUQ4kI
-         uz9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vWmsvXOxLILOeMxH5L7QAWLc3/R25fgjknw/j9uIX0A=;
-        b=g8vsCWnZYE/tyGqzzRAt5/I60K0IfvjvI0umfTjEUfPN4EpMU8NH7ZlLr3ug/2vm6i
-         kcj9eNT4QdiGWptcidwt1nrf30YftMSrMBVkXMBMOXdBxrLQR1NRDtcVJjOgEAdJP3nI
-         OYRrHMiWU6KGLOJq0b23rXiQ1FP/9UVLV49UXw9lYLkJLW6A4FVra/sE73RYnvVjsCw2
-         aL3W5vw6nKJEfSMvXjgYdNqDqTk3TNvVF3YllnkRGKlTKo+6cFloEYaggHrrilF7WKnF
-         WhKRJgPV5iDhpQzL6hPyRHjQkbKRcvTqIYn6zArWgOPa6/uIvrjh9B+8JZI3/oKWghtS
-         GQoA==
-X-Gm-Message-State: APjAAAV6XtoY3wOEgDxi8Wi6t1ZwRtIjM1SHHRCKkTqTMDENWgSgPSXB
-        T5KcdlgNXDZYi9eldWZ08pJprA==
-X-Google-Smtp-Source: APXvYqzOaLjQQaYGN5JkRRxujp+prfgCYrtUbv69efERk6stRxI4fRDhwend3GXBqSpfYglDZN1y9Q==
-X-Received: by 2002:a5d:522e:: with SMTP id i14mr8748558wra.27.1573483036582;
-        Mon, 11 Nov 2019 06:37:16 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id b8sm14931767wrt.39.2019.11.11.06.37.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2019 06:37:15 -0800 (PST)
-Date:   Mon, 11 Nov 2019 15:37:14 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Parav Pandit <parav@mellanox.com>,
-        David M <david.m.ertman@intel.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191111143714.GC2202@nanopsycho>
-References: <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191108111238.578f44f1@cakuba>
- <20191108201253.GE10956@ziepe.ca>
- <20191108134559.42fbceff@cakuba>
- <20191109004426.GB31761@ziepe.ca>
- <20191109092747.26a1a37e@cakuba>
- <20191110091855.GE1435668@kroah.com>
- <20191110194601.0d6ed1a0@cakuba>
- <20191111133026.GA2202@nanopsycho>
- <20191111141430.GB585609@kroah.com>
+        id S1726973AbfKKOhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 09:37:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43148 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726832AbfKKOhe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 09:37:34 -0500
+Received: from localhost.localdomain (unknown [77.139.212.74])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA70121925;
+        Mon, 11 Nov 2019 14:37:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573483053;
+        bh=wt2SP0Q7YpLCVKnumwcbslHQuGSL73MTys1RYn9Q7yA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j3Cnu/Lr+GY5ByGjbfJNXHl3blG1p0sR/Zv8TSCZXqDTTOO49tpNoMjoug4Or1BdF
+         jo4CR9OfNfbFqyWXAm/fltYXC5Y9AaBpm2EgVeeI8lRPzbk6LWwn7FaICcQ+kUrivL
+         KjkjfopEOZ8zxE+DE62hbrmKH7VXbewGpFNA3RHc=
+Date:   Mon, 11 Nov 2019 16:37:25 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     ilias.apalodimas@linaro.org, brouer@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: Regression in mvneta with XDP patches
+Message-ID: <20191111143725.GB4197@localhost.localdomain>
+References: <20191111134615.GA8153@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="mvpLiMfbWzRoNl4x"
 Content-Disposition: inline
-In-Reply-To: <20191111141430.GB585609@kroah.com>
+In-Reply-To: <20191111134615.GA8153@lunn.ch>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Nov 11, 2019 at 03:14:30PM CET, gregkh@linuxfoundation.org wrote:
->On Mon, Nov 11, 2019 at 02:30:26PM +0100, Jiri Pirko wrote:
->> Mon, Nov 11, 2019 at 04:46:01AM CET, jakub.kicinski@netronome.com wrote:
->> >On Sun, 10 Nov 2019 10:18:55 +0100, gregkh@linuxfoundation.org wrote:
->> >> > What I'm missing is why is it so bad to have a driver register to
->> >> > multiple subsystems.  
->> >> 
->> >> Because these PCI devices seem to do "different" things all in one PCI
->> >> resource set.  Blame the hardware designers :)
->> >
->> >See below, I don't think you can blame the HW designers in this
->> >particular case :)
->> >
->> >> > For the nfp I think the _real_ reason to have a bus was that it
->> >> > was expected to have some out-of-tree modules bind to it. Something 
->> >> > I would not encourage :)  
->> >> 
->> >> That's not ok, and I agree with you.
->> >> 
->> >> But there seems to be some more complex PCI devices that do lots of
->> >> different things all at once.  Kind of like a PCI device that wants to
->> >> be both a keyboard and a storage device at the same time (i.e. a button
->> >> on a disk drive...)
->> >
->> >The keyboard which is also a storage device may be a clear cut case
->> >where multiple devices were integrated into one bus endpoint.
->> 
->> Also, I think that very important differentiator between keyboard/button
->> and NIC is that keyboard/button is fixed. You have driver bus with 2
->> devices on constant addresses.
->> 
->> However in case of NIC subfunctions. You have 0 at he beginning and user
->> instructs to create more (maybe hundreds). Now important questions
->> appear:
->> 
->> 1) How to create devices (what API) - mdev has this figured out
->> 2) How to to do the addressing of the devices. Needs to be
->>    predictable/defined by the user - mdev has this figured out
->> 3) Udev names of netdevices - udev names that according to the
->>    bus/address. That is straightforeward with mdev.
->>    I can't really see how to figure this one in particular with
->>    per-driver busses :/
->
->Are network devices somehow only allowed to be on mdev busses?
 
-Of course not. But there is a difference if we are talking about:
-a) "the usual" network devices, like PF, VF. - They are well defined and
-   they have well defined lifecycle (pci probe, sriov sysfs for number
-   of VFs, etc). I this world all works fine. Even if a device has 100
-   static subdevices (bus or no bus).
-b) dynamically created sub-bar-devices or subfunctions. Could be created
-   by user. This is not handled now in kernel, we have to find correct iface.
-   I don't really care it it is fakebus, driverbus, etc. I'm just concerned
-   about how to handle 1), 2), 3) above.
+--mvpLiMfbWzRoNl4x
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->
->No, don't be silly, userspace handles this just fine today on any type
->of bus, it's not an issue.
->
->You don't have to like individual "driver busses", but you had better
->not be using a fake platform device to use mdev.  That's my main
->objection...
+> Hi Lorenzo, Jesper, Ilias
+>=20
 
-Okay, I understand your objection. Do you have suggestion how to handle
-1) 2) 3) from above?
+Hi Andrew,
 
+> I just found that the XDP patches to mvneta have caused a regression.
+>=20
+> This one breaks networking:
+>=20
+> commit 8dc9a0888f4c8e27b25e48ff1b4bc2b3a845cc2d (HEAD)
+> Author: Lorenzo Bianconi <lorenzo@kernel.org>
+> Date:   Sat Oct 19 10:13:23 2019 +0200
+>=20
+>     net: mvneta: rely on build_skb in mvneta_rx_swbm poll routine
+>    =20
+>     Refactor mvneta_rx_swbm code introducing mvneta_swbm_rx_frame and
+>     mvneta_swbm_add_rx_fragment routines. Rely on build_skb in oreder to
+>     allocate skb since the previous patch introduced buffer recycling usi=
+ng
+>     the page_pool API.
+>     This patch fixes even an issue in the original driver where dma buffe=
+rs
+>     are accessed before dma sync.
+>     mvneta driver can run on not cache coherent devices so it is
+>     necessary to sync DMA buffers before sending them to the device
+>     in order to avoid memory corruptions. Running perf analysis we can
+>     see a performance cost associated with this DMA-sync (anyway it is
+>     already there in the original driver code). In follow up patches we
+>     will add more logic to reduce DMA-sync as much as possible.
+>=20
+> I'm using an Linksys WRT1900ac, which has an Armada XP SoC. Device
+> tree is arch/arm/boot/dts/armada-xp-linksys-mamba.dts.
 
+looking at the dts, could you please confirm mvneta is using hw or sw buffe=
+r manager
+on this board? Moreover are you using DSA as well?
 
->
->thanks,
->
->greg k-h
+Regards,
+Lorenzo
+
+>=20
+> With this patch applied, transmit appears to work O.K. My dhcp server
+> is seeing good looking BOOTP requests and replying. However what is
+> being received by the WRT1900ac is bad.
+>=20
+> 11:36:20.038558 d8:f7:00:00:00:00 (oui Unknown) > 00:00:00:00:5a:45 (oui =
+Ethernet) Null Informati4
+>         0x0000:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x0010:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x0020:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x0030:  0000 0000 0000                           ......
+> 11:36:26.924914 d8:f7:00:00:00:00 (oui Unknown) > 00:00:00:00:5a:45 (oui =
+Ethernet) Null Informati4
+>         0x0000:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x0010:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x0020:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x0030:  0000 0000 0000                           ......
+> 11:36:27.636597 4c:69:6e:75:78:20 (oui Unknown) > 6e:20:47:4e:55:2f (oui =
+Unknown), ethertype Unkn=20
+>         0x0000:  2873 7472 6574 6368 2920 4c69 6e75 7820  (stretch).Linux.
+>         0x0010:  352e 342e 302d 7263 362d 3031 3438 312d  5.4.0-rc6-01481-
+>         0x0020:  6739 3264 3965 3038 3439 3662 382d 6469  g92d9e08496b8-di
+>         0x0030:  7274 7920 2333 2053 756e 204e 6f76 2031  rty.#3.Sun.Nov.1
+>         0x0040:  3020 3136 3a31 373a 3531 2043 5354 2032  0.16:17:51.CST.2
+>         0x0050:  3031 3920 6172 6d76 376c 0e04 009c 0080  019.armv7l......
+>         0x0060:  100c 0501 0a00 000e 0200 0000 0200 1018  ................
+>         0x0070:  1102 fe80 0000 0000 0000 eefa aaff fe01  ................
+>         0x0080:  12fe 0200 0000 0200 0804 6574 6830 fe09  ..........eth0..
+>         0x0090:  0012 0f03 0100 0000 00fe 0900 120f 0103  ................
+>         0x00a0:  ec00 0010 0000 e3ed 5509 0000 0000 0000  ........U.......
+>         0x00b0:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x00c0:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x00d0:  0000 0000 0000 0000 0000 0000 0000 0000  ................
+>         0x00e0:  0000 0000 0000
+>=20
+> This actually looks like random kernel memory.
+>=20
+>      Andrew
+
+--mvpLiMfbWzRoNl4x
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXclyIgAKCRA6cBh0uS2t
+rDpEAQD4pZz+sgn4HFLyKWSzwkEo0CWcBEB9dTUMXyjr7piPXQEAgASHPediNrB1
+WHfdbfhPsEB4jcHjM6IUcBB1Cljemw8=
+=LGoR
+-----END PGP SIGNATURE-----
+
+--mvpLiMfbWzRoNl4x--
