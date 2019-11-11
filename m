@@ -2,98 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47145F79C5
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 18:22:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5F21F79E2
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 18:27:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbfKKRWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 12:22:16 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39637 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726897AbfKKRWP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 12:22:15 -0500
-Received: by mail-pf1-f193.google.com with SMTP id x28so11095756pfo.6;
-        Mon, 11 Nov 2019 09:22:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Pr9jUK9hpR06BOxorbUjpb5j/ZN+oD1+Umx76qwU/ks=;
-        b=uf1FoXh7fETXaGUhjBbp1T0r6CHwI2Dr0B3c5/VWEfLu3oqNHcFsc0fmItV0uJmq3P
-         +D/IKTD0cd2b3I8MJ1DlfzK4aPwBPyOHrZoRijpaBRnHqhuNWF0uVTcptuQciwbSH3Hr
-         VOqc+twXNgZBes7Pi5nsgp1m9EImrPDePgQukr8Fs/lg9zQR2UIvejFAdZOuihrh6Pi+
-         zrcQYtmZZu/z1K9k/YKTSaHjmsXxAiBa/9VritC+iwiLspUivPd+paxlgcDSVNiOqJS/
-         He4bJsqwkJaZrJU+Q9CODk/JDt93TlayEdZlQ+FyEmGgB1L7j4tZxyJv+lv4jjYxi7le
-         4ruA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Pr9jUK9hpR06BOxorbUjpb5j/ZN+oD1+Umx76qwU/ks=;
-        b=HhnPZm8bkqPvkYxroaa5dTV3pmDhcBUFGjso6marc7x+AQFY5Vybkwz/4HGZPbgijv
-         DTUTRuRSb92UpjUPQpzXcs2RgBaBB6Ygky16FslXy4o7iqYyAVCMQIGQa+QkXzyrHsXp
-         mvpJxuyLZTEzqRECPzfdDNcYfW4/5/s+dVfScu3ZJKBdZ0y1sCmueebFXU47xmfR/DAO
-         taUipBu8K7oikvBrlcI5BPsLqKb39ZUjmRKVpL4QybBTLj5bO6fjL5K7jRwRzxC7XUFH
-         +4lWPql8EKHxS74CyDn56uH99sthiuFwrJvec8a/R93LJsN1olqJILW3ASMjnSmndHpo
-         +BgQ==
-X-Gm-Message-State: APjAAAXez8KzHQ72dlTYYQPxAthuVqb4J8TtqkfRwLocitxRCMLFtQJO
-        M9CbsTTM9DRQ5mWnaoKsfjQPYZjV
-X-Google-Smtp-Source: APXvYqyfVniq/GPk0yH5+Occz+MRoBCdn4jwH3FWqvxY0j6sD3Ae+bwribzwRueZ1UFivRTL+8x6+w==
-X-Received: by 2002:a63:3203:: with SMTP id y3mr29971550pgy.437.1573492933488;
-        Mon, 11 Nov 2019 09:22:13 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id a34sm17956799pgl.56.2019.11.11.09.22.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Nov 2019 09:22:12 -0800 (PST)
-Subject: Re: [PATCH] net: remove static inline from dev_put/dev_hold
-To:     Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net
-Cc:     shemminger@osdl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191111140502.17541-1-tonylu@linux.alibaba.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <c6230ad9-e859-4bee-dacb-4d7910a3f120@gmail.com>
-Date:   Mon, 11 Nov 2019 09:21:58 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726979AbfKKR1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 12:27:00 -0500
+Received: from muru.com ([72.249.23.125]:41588 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726763AbfKKR1A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 12:27:00 -0500
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id 4423B8047;
+        Mon, 11 Nov 2019 17:27:33 +0000 (UTC)
+Date:   Mon, 11 Nov 2019 09:26:52 -0800
+From:   Tony Lindgren <tony@atomide.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jiri Pirko <jiri@resnulli.us>, Sekhar Nori <nsekhar@ti.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 net-next 06/13] dt-bindings: net: ti: add new cpsw
+ switch driver bindings
+Message-ID: <20191111172652.GV5610@atomide.com>
+References: <20191109151525.18651-1-grygorii.strashko@ti.com>
+ <20191109151525.18651-7-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-In-Reply-To: <20191111140502.17541-1-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191109151525.18651-7-grygorii.strashko@ti.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+* Grygorii Strashko <grygorii.strashko@ti.com> [191109 15:17]:
+> +    mac_sw: switch@0 {
+> +        compatible = "ti,dra7-cpsw-switch","ti,cpsw-switch";
+> +        reg = <0x0 0x4000>;
+> +        ranges = <0 0 0x4000>;
+> +        clocks = <&gmac_main_clk>;
+> +        clock-names = "fck";
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        syscon = <&scm_conf>;
+> +        inctrl-names = "default", "sleep";
+> +
+> +        interrupts = <GIC_SPI 334 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 335 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 336 IRQ_TYPE_LEVEL_HIGH>,
+> +                     <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;
+> +        interrupt-names = "rx_thresh", "rx", "tx", "misc";
 
-On 11/11/19 6:05 AM, Tony Lu wrote:
-> This patch removes static inline from dev_put/dev_hold in order to help
-> trace the pcpu_refcnt leak of net_device.
-> 
-> We have sufferred this kind of issue for several times during
-> manipulating NIC between different net namespaces. It prints this
-> log in dmesg:
-> 
->   unregister_netdevice: waiting for eth0 to become free. Usage count = 1
-> 
-> However, it is hard to find out who called and leaked refcnt in time. It
-> only left the crime scene but few evidence. Once leaked, it is not
-> safe to fix it up on the running host. We can't trace dev_put/dev_hold
-> directly, for the functions are inlined and used wildly amoung modules.
-> And this issue is common, there are tens of patches fix net_device
-> refcnt leak for various causes.
-> 
-> To trace the refcnt manipulating, this patch removes static inline from
-> dev_put/dev_hold. We can use handy tools, such as eBPF with kprobe, to
-> find out who holds but forgets to put refcnt. This will not be called
-> frequently, so the overhead is limited.
->
+I think with the ti-sysc managing the interconnect target module as the
+parent of this, you should be able add all the modules as direct children
+of ti-sysc with minor fixups. This would simplify things, and makes it
+easier to update the driver later on when the child modules get
+changed/updated/moved around.
 
-This looks as a first step.
+The child modules just need to call PM runtime to have access to their
+registers, and whatever cpsw control module part could be a separate
+driver providing Linux standard services for example for clock gating :)
 
-But I would rather get a full set of scripts/debugging features,
-instead of something that most people can not use right now.
+> +        davinci_mdio_sw: mdio@1000 {
+> +                compatible = "ti,cpsw-mdio","ti,davinci_mdio";
+> +                reg = <0x1000 0x100>;
+> +                clocks = <&gmac_clkctrl DRA7_GMAC_GMAC_CLKCTRL 0>;
+> +                clock-names = "fck";
+> +                #address-cells = <1>;
+> +                #size-cells = <0>;
+> +                bus_freq = <1000000>;
+> +
+> +                ethphy0_sw: ethernet-phy@0 {
+> +                        reg = <0>;
+> +                };
+> +
+> +                ethphy1_sw: ethernet-phy@1 {
+> +                        reg = <41>;
+> +                };
+> +        };
 
-Please share the whole thing.
+And in this case, mdio above would just move up one level.
 
+This goes back to my earlier comments saying the cpsw is really just
+a private interconnect with a collection of various mostly independent
+modules. Sounds like you're heading that way already though at the
+driver level :)
+
+Regards,
+
+Tony
