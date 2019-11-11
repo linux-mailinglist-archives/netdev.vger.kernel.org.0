@@ -2,98 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55806F6E69
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 07:09:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8AACF6E7F
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 07:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbfKKGJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 01:09:47 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:37381 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbfKKGJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 01:09:47 -0500
-Received: by mail-qt1-f193.google.com with SMTP id g50so14503144qtb.4;
-        Sun, 10 Nov 2019 22:09:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S6NQzB3WBxIeLZV4LIcFE2waNjc0WRlZ5UskUxWA7TQ=;
-        b=msqiXp95r8XzOdEtevAVWtBwB+2wLXbRzCsjOUq/jvOHa08d6UFIwC8hGmdZC+MGB9
-         1BkR3XQRslIZa0c1PU5F6TXP1YNqc+Qooj7Ja7+z4UIRA8AyKzPQobwfJ3+IohhdHUiQ
-         HCDJiBDh3Vi351u4xz8veAVOkVQCpndlOjOdYrWSqQgiO0j99xehc8Va/67Nfew3maxS
-         vq/PA0fHhcTQq3ccsYioXCbnysudH2hGxltsaoxghBGA27/0aryEW8Cc/xcwZADBcWvz
-         otRUDHqyulkryBL1GI/ANKVV8q4mdI/EJl2MZSIWA8VMh7+dsZmvhNLTjSAaUnSdAFhg
-         jd0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S6NQzB3WBxIeLZV4LIcFE2waNjc0WRlZ5UskUxWA7TQ=;
-        b=D/5iwQoee34HbxWK48pfVI+nyIU7SEcSbI8y79Nqm+lSJ5UTvJ6BN161xQHU51C7Oh
-         MU7gBkPfr2wXNuinT0+I0J7Cqv371UIf2heVRQwUzaTCNzQBb9vGW9gHvrIwbB1e0lue
-         YeiPf3z50/erniNAlR4fdAKeANW7noIJCGmDOm6cwCgJMsBh+xykY5hg7j+z9C0jip0N
-         5ZZ4uO+3zybhL7r0wHoPNNA7H3EHOFEML45jjkS6p0rvgx9TYR38548IH1LRuNEK1k/O
-         fRMKvTKovMBVmWFmkNeLxdd1Rz0vxBWvE85IFM+g/dDMOwrVdpq5HIBGy850VU/s4O2K
-         313w==
-X-Gm-Message-State: APjAAAVMs/DU/EfNVIX2dOdZ9Abrzo8PygC+GtPU29uHmF8rCaBrfMwt
-        5RsiFzA1H+kM5x4Nj5D9BBnOlL1mGTJ8tib5P7I=
-X-Google-Smtp-Source: APXvYqxt+1LMRVuJjIMYPfY0o826lJldjZnUHsWYpAZfR878wzkrwE4iivcqbx3WZlVnQLjhqdqGj3Nl8ODWkrGkbwI=
-X-Received: by 2002:ac8:7116:: with SMTP id z22mr24468816qto.117.1573452585876;
- Sun, 10 Nov 2019 22:09:45 -0800 (PST)
+        id S1726780AbfKKGR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 01:17:26 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:51278 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725796AbfKKGR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 01:17:26 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 7807120491;
+        Mon, 11 Nov 2019 07:17:24 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id pUyyva2aiWxk; Mon, 11 Nov 2019 07:17:24 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 03D622027C;
+        Mon, 11 Nov 2019 07:17:24 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 11 Nov 2019
+ 07:17:23 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 64E393180071;
+ Mon, 11 Nov 2019 07:17:22 +0100 (CET)
+Date:   Mon, 11 Nov 2019 07:17:22 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xiaodong Xu <stid.smth@gmail.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <chenborfc@163.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH] xfrm: release device reference for invalid state
+Message-ID: <20191111061722.GO13225@gauss3.secunet.de>
+References: <20191108082059.22515-1-stid.smth@gmail.com>
 MIME-Version: 1.0
-References: <20191110081901.20851-1-danieltimlee@gmail.com>
-In-Reply-To: <20191110081901.20851-1-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sun, 10 Nov 2019 22:09:34 -0800
-Message-ID: <CAEf4BzYRqeg5vFm+Ac2TVVeAw=N+qhosy5qF9Dr_ka3hn8DsPg@mail.gmail.com>
-Subject: Re: [PATCH] samples: bpf: fix outdated README build command
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20191108082059.22515-1-stid.smth@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Nov 10, 2019 at 12:19 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> Currently, building the bpf samples under samples/bpf directory isn't
-> working. Running make from the directory 'samples/bpf' will just shows
-> following result without compiling any samples.
->
+Please make sure to always Cc netdev@vger.kernel.org on networking
+patches.
 
-Do you mind trying to see if it's possible to detect that plain `make`
-is being run from samples/bpf subdirectory, and if that's the case,
-just running something like `make M=samples/bpf -C ../../`? If that's
-not too hard, it would be a nice touch to still have it working old
-(and intuitive) way, IMO.
+Aso, what is the difference between this patch and the one you sent
+before? Please add version numbers to your patches and describe the
+changes between the versions.
 
-
->  $ make
->  make -C ../../ /git/linux/samples/bpf/ BPF_SAMPLES_PATH=/git/linux/samples/bpf
->  make[1]: Entering directory '/git/linux'
->    CALL    scripts/checksyscalls.sh
->    CALL    scripts/atomic/check-atomics.sh
->    DESCEND  objtool
->  make[1]: Leaving directory '/git/linux'
->
-> Due to commit 394053f4a4b3 ("kbuild: make single targets work more
-> correctly"), building samples/bpf without support of samples/Makefile
-> is unavailable. Instead, building the samples with 'make M=samples/bpf'
-> from the root source directory will solve this issue.[1]
->
-> This commit fixes the outdated README build command with samples/bpf.
->
-> [0]: https://patchwork.kernel.org/patch/11168393/
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+On Fri, Nov 08, 2019 at 12:20:59AM -0800, Xiaodong Xu wrote:
+> An ESP packet could be decrypted in async mode if the input handler for
+> this packet returns -EINPROGRESS in xfrm_input(). At this moment the device
+> reference in skb is held. Later xfrm_input() will be invoked again to
+> resume the processing.
+> If the transform state is still valid it would continue to release the
+> device reference and there won't be a problem; however if the transform
+> state is not valid when async resumption happens, the packet will be
+> dropped while the device reference is still being held.
+> When the device is deleted for some reason and the reference to this
+> device is not properly released, the kernel will keep logging like:
+> 
+> unregister_netdevice: waiting for ppp2 to become free. Usage count = 1
+> 
+> The issue is observed when running IPsec traffic over a PPPoE device based
+> on a bridge interface. By terminating the PPPoE connection on the server
+> end for multiple times, the PPPoE device on the client side will eventually
+> get stuck on the above warning message.
+> 
+> This patch will check the async mode first and continue to release device
+> reference in async resumption, before it is dropped due to invalid state.
+> 
+> Fixes: 4ce3dbe397d7b ("xfrm: Fix xfrm_input() to verify state is valid when (encap_type < 0)")
+> Signed-off-by: Xiaodong Xu <stid.smth@gmail.com>
+> Reported-by: Bo Chen <chenborfc@163.com>
+> Tested-by: Bo Chen <chenborfc@163.com>
 > ---
->  samples/bpf/README.rst | 19 +++++++++----------
->  1 file changed, 9 insertions(+), 10 deletions(-)
->
+>  net/xfrm/xfrm_input.c | 30 +++++++++++++++++++++---------
+>  1 file changed, 21 insertions(+), 9 deletions(-)
+> 
+> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+> index 9b599ed66d97..80c5af7cfec7 100644
+> --- a/net/xfrm/xfrm_input.c
+> +++ b/net/xfrm/xfrm_input.c
+> @@ -474,6 +474,13 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+>  	if (encap_type < 0) {
+>  		x = xfrm_input_state(skb);
+>  
+> +		/* An encap_type of -1 indicates async resumption. */
+> +		if (encap_type == -1) {
+> +			async = 1;
+> +			seq = XFRM_SKB_CB(skb)->seq.input.low;
+> +			goto resume;
+> +		}
+> +
+>  		if (unlikely(x->km.state != XFRM_STATE_VALID)) {
+>  			if (x->km.state == XFRM_STATE_ACQ)
+>  				XFRM_INC_STATS(net, LINUX_MIB_XFRMACQUIREERROR);
 
-[...]
+Why not just dropping the reference here if the state became invalid
+after async resumption?
+
