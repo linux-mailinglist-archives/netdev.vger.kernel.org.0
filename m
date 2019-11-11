@@ -2,107 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8AACF6E7F
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 07:17:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC32F6E81
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 07:20:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbfKKGR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 01:17:26 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:51278 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725796AbfKKGR0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Nov 2019 01:17:26 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 7807120491;
-        Mon, 11 Nov 2019 07:17:24 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id pUyyva2aiWxk; Mon, 11 Nov 2019 07:17:24 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 03D622027C;
-        Mon, 11 Nov 2019 07:17:24 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Mon, 11 Nov 2019
- 07:17:23 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 64E393180071;
- Mon, 11 Nov 2019 07:17:22 +0100 (CET)
-Date:   Mon, 11 Nov 2019 07:17:22 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Xiaodong Xu <stid.smth@gmail.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <chenborfc@163.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH] xfrm: release device reference for invalid state
-Message-ID: <20191111061722.GO13225@gauss3.secunet.de>
-References: <20191108082059.22515-1-stid.smth@gmail.com>
+        id S1726791AbfKKGUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 01:20:43 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52266 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726360AbfKKGUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 01:20:43 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAB6Abqs029150
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 22:20:41 -0800
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0089730.ppops.net with ESMTP id 2w5w7j6w87-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 22:20:41 -0800
+Received: from 2401:db00:2120:81dc:face:0:23:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Sun, 10 Nov 2019 22:20:40 -0800
+Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
+        id A28065F8677D; Sun, 10 Nov 2019 22:20:38 -0800 (PST)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
+To:     <netdev@vger.kernel.org>, <brouer@redhat.com>,
+        <ilias.apalodimas@linaro.org>
+CC:     <kernel-team@fb.com>
+Smtp-Origin-Cluster: vll1c12
+Subject: [RFC PATCH 0/1] Change page_pool timeout handling
+Date:   Sun, 10 Nov 2019 22:20:37 -0800
+Message-ID: <20191111062038.2336521-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20191108082059.22515-1-stid.smth@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-11_01:2019-11-08,2019-11-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 adultscore=0 impostorscore=0 malwarescore=0
+ clxscore=1034 suspectscore=0 mlxlogscore=999 lowpriorityscore=0
+ phishscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911110060
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please make sure to always Cc netdev@vger.kernel.org on networking
-patches.
+It isn't safe to remove the page pool until all in-flight pages 
+are returned.  If the pages are handed up the stack, it might be
+a while before they are returned.
 
-Aso, what is the difference between this patch and the one you sent
-before? Please add version numbers to your patches and describe the
-changes between the versions.
+The page pool can also be used independently of xdp, so it shouldn't
+be depending on timeout handling from xdp.  Change things around so
+the pool handles its own timeout.
 
-On Fri, Nov 08, 2019 at 12:20:59AM -0800, Xiaodong Xu wrote:
-> An ESP packet could be decrypted in async mode if the input handler for
-> this packet returns -EINPROGRESS in xfrm_input(). At this moment the device
-> reference in skb is held. Later xfrm_input() will be invoked again to
-> resume the processing.
-> If the transform state is still valid it would continue to release the
-> device reference and there won't be a problem; however if the transform
-> state is not valid when async resumption happens, the packet will be
-> dropped while the device reference is still being held.
-> When the device is deleted for some reason and the reference to this
-> device is not properly released, the kernel will keep logging like:
-> 
-> unregister_netdevice: waiting for ppp2 to become free. Usage count = 1
-> 
-> The issue is observed when running IPsec traffic over a PPPoE device based
-> on a bridge interface. By terminating the PPPoE connection on the server
-> end for multiple times, the PPPoE device on the client side will eventually
-> get stuck on the above warning message.
-> 
-> This patch will check the async mode first and continue to release device
-> reference in async resumption, before it is dropped due to invalid state.
-> 
-> Fixes: 4ce3dbe397d7b ("xfrm: Fix xfrm_input() to verify state is valid when (encap_type < 0)")
-> Signed-off-by: Xiaodong Xu <stid.smth@gmail.com>
-> Reported-by: Bo Chen <chenborfc@163.com>
-> Tested-by: Bo Chen <chenborfc@163.com>
-> ---
->  net/xfrm/xfrm_input.c | 30 +++++++++++++++++++++---------
->  1 file changed, 21 insertions(+), 9 deletions(-)
-> 
-> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-> index 9b599ed66d97..80c5af7cfec7 100644
-> --- a/net/xfrm/xfrm_input.c
-> +++ b/net/xfrm/xfrm_input.c
-> @@ -474,6 +474,13 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
->  	if (encap_type < 0) {
->  		x = xfrm_input_state(skb);
->  
-> +		/* An encap_type of -1 indicates async resumption. */
-> +		if (encap_type == -1) {
-> +			async = 1;
-> +			seq = XFRM_SKB_CB(skb)->seq.input.low;
-> +			goto resume;
-> +		}
-> +
->  		if (unlikely(x->km.state != XFRM_STATE_VALID)) {
->  			if (x->km.state == XFRM_STATE_ACQ)
->  				XFRM_INC_STATS(net, LINUX_MIB_XFRMACQUIREERROR);
+I wanted to send this out to clarify how I see things working.  This
+is currently being tested with the mlx4/mlx5 drivers for attaching 
+DMA-mapped pages to skbs, sending them up the stack, and then putting
+them back in the page pool afterwards.
 
-Why not just dropping the reference here if the state became invalid
-after async resumption?
+Jonathan Lemon (1):
+  page_pool: do not release pool until inflight == 0.
+
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   4 +-
+ include/net/page_pool.h                       |  55 +++-----
+ include/net/xdp_priv.h                        |   4 -
+ include/trace/events/xdp.h                    |  19 +--
+ net/core/page_pool.c                          | 115 ++++++++++------
+ net/core/xdp.c                                | 130 +++++++-----------
+ 6 files changed, 138 insertions(+), 189 deletions(-)
+
+-- 
+2.17.1
 
