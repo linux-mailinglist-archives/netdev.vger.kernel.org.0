@@ -2,270 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93CA3F791B
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 17:48:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2F7DF7938
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 17:54:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726932AbfKKQs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 11:48:56 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:26561 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726877AbfKKQsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 11:48:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573490933;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XHcb9xMzvnoFwitwZbsJ+TxtpnUZfs2mIGFvP+6VJXM=;
-        b=Ilw0C34K6/pK7J6lZ39vZ+iuSh46zjDIl4BKUB4Y8LQ4F/Hp8GUOa/ebYWFvOuSypMQU41
-        sLPBeZ6sUynLqRAjk4RzNM3MO67+Cte8HSfXg/619RyXkWEGF2ZNLG2A7AJz1A/KvSO5tL
-        DvKPcAhV5kQqbWMRQrCLavxDBIAaBLk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-129-eVL9ODY9PPKEp2X4pS_55Q-1; Mon, 11 Nov 2019 11:48:50 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 790E818B9FCE;
-        Mon, 11 Nov 2019 16:48:49 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 418D765E80;
-        Mon, 11 Nov 2019 16:48:38 +0000 (UTC)
-Date:   Mon, 11 Nov 2019 17:48:35 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, thomas.petazzoni@bootlin.com,
-        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for non-coherent devices
-Message-ID: <20191111174835.7344731b@carbon>
-In-Reply-To: <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
-References: <cover.1573383212.git.lorenzo@kernel.org>
-        <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: eVL9ODY9PPKEp2X4pS_55Q-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
+        id S1727009AbfKKQyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 11:54:00 -0500
+Received: from mail-eopbgr790045.outbound.protection.outlook.com ([40.107.79.45]:12594
+        "EHLO NAM03-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726845AbfKKQyA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 11:54:00 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZMHaihd5swPTo8NM4iJvoDHaYFhG22GbuwU1rxP6flebx/5NwfxDpeaDgD5Hm4M1UcXnSnSfFO5YFOv+TFpTu4XPi7gJYvxVT1NfRrprYyfIb29R/iqI56nYktyRupt6yS/J3JQ80fUB9nH7UIs5347/Xk8hr7y3GN0Liqwae1qfFkh4cIPKGyHgzwO+iJrnJo8CqMFffdcptmjNDDnxXGPVDc3QibgdE5cnpRwRz+PMAsELAmlHydH9g/e/yDihFWWfgrUdcTC11EJWgu3R8gBSeKEa1Bv8+UJveCyq7f9bXS5seM7DyhCgKhC9jXcD445YbGvYfPcwLvI5xVq98w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eXxpGMwcY8AIlKUPc+HRRXrp/xU6aEhztN1pZ4ZGk0Q=;
+ b=Bxdun3Kwt1L5N3vQVzqbOKB29EQPnOsA8bNYH5D4UTcx+BaVkc6PvT3KeYyKfWrX64SOFkSeQ4bHlZJuFxUxTBuzbZHaK73ZWWA3FohPJsQ6wtp9mT94RXMiN6zIAYrbHqhTRnWBauvj5/tX4Jy/9+nbvUdjBUCYLRzWiVoE636DbF1FcRomuPJB72CTN8dHh1bwJ+hHVMFXcKIlGeHfJiD+AeirmPlRqgRcXZxHHZUWMvnPoBJ8G9ktWdd0XSVc+wQp3os0S+yDK/XPhwRziaRH+mVFMSn71P1UK0poqYJTK6i4LJbXivWHpI4A2XjY+GLeDuE42JyaHCEYdSGDhA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eXxpGMwcY8AIlKUPc+HRRXrp/xU6aEhztN1pZ4ZGk0Q=;
+ b=o6/7BoHPgqhPv4cR/CGNcZ+Ti32aUES47NMPTTtIxXrMmm20Y9r3Qtl/gwuutReG/SbY5kGSrQU4liIHl8FIEO7pgVuzG3PoYFS/eBtElBSSv/aFX3AzhT27UfZpxwXi43LdElDh7zl0WxW3ZceRzJ/udT2pVFf3dUWnioJst4I=
+Received: from MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) by
+ MWHPR05MB3214.namprd05.prod.outlook.com (10.173.230.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.16; Mon, 11 Nov 2019 16:53:56 +0000
+Received: from MWHPR05MB3376.namprd05.prod.outlook.com
+ ([fe80::4098:2c39:d8d3:a209]) by MWHPR05MB3376.namprd05.prod.outlook.com
+ ([fe80::4098:2c39:d8d3:a209%7]) with mapi id 15.20.2451.018; Mon, 11 Nov 2019
+ 16:53:56 +0000
+From:   Jorgen Hansen <jhansen@vmware.com>
+To:     'Stefano Garzarella' <sgarzare@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>
+Subject: RE: [PATCH net-next 14/14] vsock: fix bind() behaviour taking care of
+ CID
+Thread-Topic: [PATCH net-next 14/14] vsock: fix bind() behaviour taking care
+ of CID
+Thread-Index: AQHViYhvgtICjaQ2wUamZLOokx2SmaeGTQhw
+Date:   Mon, 11 Nov 2019 16:53:56 +0000
+Message-ID: <MWHPR05MB3376C7CE32B8FD98DE4EF45FDA740@MWHPR05MB3376.namprd05.prod.outlook.com>
+References: <20191023095554.11340-1-sgarzare@redhat.com>
+ <20191023095554.11340-15-sgarzare@redhat.com>
+In-Reply-To: <20191023095554.11340-15-sgarzare@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jhansen@vmware.com; 
+x-originating-ip: [208.91.2.2]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 586862f1-092d-41fc-a29a-08d766c7bdb8
+x-ms-traffictypediagnostic: MWHPR05MB3214:
+x-microsoft-antispam-prvs: <MWHPR05MB32147DCDB81F19C830A822CDDA740@MWHPR05MB3214.namprd05.prod.outlook.com>
+x-vmwhitelist: True
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-forefront-prvs: 0218A015FA
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(39860400002)(366004)(396003)(346002)(189003)(199004)(8676002)(9686003)(256004)(8936002)(4326008)(14444005)(446003)(81156014)(81166006)(2906002)(11346002)(26005)(2501003)(186003)(6246003)(55016002)(476003)(486006)(66946007)(6116002)(3846002)(6436002)(74316002)(66066001)(305945005)(76116006)(54906003)(76176011)(33656002)(478600001)(66446008)(64756008)(66556008)(66476007)(102836004)(110136005)(99286004)(4744005)(86362001)(71200400001)(316002)(71190400001)(7696005)(7736002)(229853002)(5660300002)(52536014)(7416002)(14454004)(6506007)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB3214;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: vmware.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0gonDZt8gbrfqqulTmmSYlQceZvrHcvVDoCXJfczH8BhRpKryXFvP0EVRB2lurxjZy4f7vPPmezXL28N+HdM8ICLQVfAUVgIo8/4YttqfxtdgfscHLe5w22bgqsxPaxyOhRhr4SjLj99NjT7fQP4flR02D3iVoHGW5XLja7DlX+5a0L0I0Opx9oJFtesTRNua/vrdHSgDlG+Db12+NAjKKJRkWwLPCb30U9vyUgwXQq32nIGjwqglm1XQtEqTo7sj08ltDIKTF9+SJKekwEIKh4zWzkHGsFh3UqJCScHFxWErE49cHCDAjVdr1JgwSwPMIcx2+9GuiQA56c8dGR1pjDJQD7YiROetxGEBte85uXKWX3SjR9IIE8l9DMeTRkR0NGKFGckHbuuswWclNmhwBsAcQLmAh1tjCo5IzJHn1XsmYejpJM/Avd2neEBWeHp
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 586862f1-092d-41fc-a29a-08d766c7bdb8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 16:53:56.1814
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +iiRXE6SDCUoPODDvrOpHq2NEj7NcnaL7jbnL7rWeDois7ccpL+lgCg+qMCEKwd1M2Anqxq5UCUWc6RKIjNBuA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB3214
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Nov 2019 14:09:09 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-
-> Introduce the following parameters in order to add the possibility to syn=
-c
-> DMA memory area before putting allocated buffers in the page_pool caches:
-
-> - sync: set to 1 if device is non cache-coherent and needs to flush DMA a=
-rea
-
-I don't agree that this is only for non cache-coherent devices.
-
-This change is generally for all device drivers.  Via setting 'sync'
-(which I prefer to rename 'dma_sync') driver request that page_pool
-takes over doing DMA-sync-for-device. (Very important, DMA-sync-for-CPU
-is still drivers responsibility).  Drivers can benefit from removing
-their calls to dma_sync_single_for_device().
-
-We need to define meaning/semantics of this setting (my definition):
-- This means that all pages that driver gets from page_pool, will be
-  DMA-synced-for-device.
-
-> - offset: DMA address offset where the DMA engine starts copying rx data
-
-> - max_len: maximum DMA memory size page_pool is allowed to flush. This
->   is currently used in __page_pool_alloc_pages_slow routine when pages
->   are allocated from page allocator
-
-Implementation wise (you did as I suggested offlist), and does the
-DMA-sync-for-device at return-time page_pool_put_page() time, because
-we (often) know the length that was/can touched by CPU.  This is key to
-the optimization, that we know this length.
-
-I also think you/we need to explain why this optimization is correct,
-my attempt:=20
-
-This optimization reduce the length of the DMA-sync-for-device.  The
-optimization is valid, because page is initially DMA-synced-for-device,
-as defined via max_len.  At driver RX time, the driver will do a
-DMA-sync-for-CPU on the memory for the packet length.  What is
-important is the memory occupied by packet payload, because this is the
-memory CPU is allowed to read and modify.  If CPU have not written into
-a cache-line, then we know that CPU will not be flushing this, thus it
-doesn't need a DMA-sync-for-device.  As we don't track cache-lines
-written into, simply use the full packet length as dma_sync_size, at
-page_pool recycle time.  This also take into account any tail-extend.
-
-
-> These parameters are supposed to be set by device drivers
-
-
-=20
-> Tested-by: Matteo Croce <mcroce@redhat.com>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  include/net/page_pool.h | 11 +++++++----
->  net/core/page_pool.c    | 39 +++++++++++++++++++++++++++++++++------
->  2 files changed, 40 insertions(+), 10 deletions(-)
+> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
+> Sent: Wednesday, October 23, 2019 11:56 AM
+> When we are looking for a socket bound to a specific address,
+> we also have to take into account the CID.
 >=20
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 2cbcdbdec254..defbfd90ab46 100644
-> --- a/include/net/page_pool.h
-> +++ b/include/net/page_pool.h
-> @@ -65,6 +65,9 @@ struct page_pool_params {
->  =09int=09=09nid;  /* Numa node id to allocate from pages from */
->  =09struct device=09*dev; /* device, for DMA pre-mapping purposes */
->  =09enum dma_data_direction dma_dir; /* DMA mapping direction */
-> +=09unsigned int=09max_len; /* max DMA sync memory size */
-> +=09unsigned int=09offset;  /* DMA addr offset */
-> +=09u8 sync;
->  };
-> =20
->  struct page_pool {
-> @@ -150,8 +153,8 @@ static inline void page_pool_destroy(struct page_pool=
- *pool)
->  }
-> =20
->  /* Never call this directly, use helpers below */
-> -void __page_pool_put_page(struct page_pool *pool,
-> -=09=09=09  struct page *page, bool allow_direct);
-> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
-> +=09=09=09  unsigned int dma_sync_size, bool allow_direct);
-> =20
->  static inline void page_pool_put_page(struct page_pool *pool,
->  =09=09=09=09      struct page *page, bool allow_direct)
-> @@ -160,14 +163,14 @@ static inline void page_pool_put_page(struct page_p=
-ool *pool,
->  =09 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
->  =09 */
->  #ifdef CONFIG_PAGE_POOL
-> -=09__page_pool_put_page(pool, page, allow_direct);
-> +=09__page_pool_put_page(pool, page, 0, allow_direct);
->  #endif
->  }
->  /* Very limited use-cases allow recycle direct */
->  static inline void page_pool_recycle_direct(struct page_pool *pool,
->  =09=09=09=09=09    struct page *page)
->  {
-> -=09__page_pool_put_page(pool, page, true);
-> +=09__page_pool_put_page(pool, page, 0, true);
->  }
-> =20
->  /* API user MUST have disconnected alloc-side (not allowed to call
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 5bc65587f1c4..af9514c2d15b 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -112,6 +112,17 @@ static struct page *__page_pool_get_cached(struct pa=
-ge_pool *pool)
->  =09return page;
->  }
-> =20
-> +/* Used for non-coherent devices */
-> +static void page_pool_dma_sync_for_device(struct page_pool *pool,
-> +=09=09=09=09=09  struct page *page,
-> +=09=09=09=09=09  unsigned int dma_sync_size)
-> +{
-> +=09dma_sync_size =3D min(dma_sync_size, pool->p.max_len);
-> +=09dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
-> +=09=09=09=09=09 pool->p.offset, dma_sync_size,
-> +=09=09=09=09=09 pool->p.dma_dir);
-> +}
-> +
->  /* slow path */
->  noinline
->  static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
-> @@ -156,6 +167,10 @@ static struct page *__page_pool_alloc_pages_slow(str=
-uct page_pool *pool,
->  =09}
->  =09page->dma_addr =3D dma;
-> =20
-> +=09/* non-coherent devices - flush memory */
-> +=09if (pool->p.sync)
-> +=09=09page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
-> +
->  skip_dma_map:
->  =09/* Track how many pages are held 'in-flight' */
->  =09pool->pages_state_hold_cnt++;
-> @@ -255,7 +270,8 @@ static void __page_pool_return_page(struct page_pool =
-*pool, struct page *page)
->  }
-> =20
->  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
-> -=09=09=09=09   struct page *page)
-> +=09=09=09=09=09  struct page *page,
-> +=09=09=09=09=09  unsigned int dma_sync_size)
->  {
->  =09int ret;
->  =09/* BH protection not needed if current is serving softirq */
-> @@ -264,6 +280,10 @@ static bool __page_pool_recycle_into_ring(struct pag=
-e_pool *pool,
->  =09else
->  =09=09ret =3D ptr_ring_produce_bh(&pool->ring, page);
-> =20
-> +=09/* non-coherent devices - flush memory */
-> +=09if (ret =3D=3D 0 && pool->p.sync)
-> +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
-> +
->  =09return (ret =3D=3D 0) ? true : false;
->  }
-> =20
-> @@ -273,18 +293,23 @@ static bool __page_pool_recycle_into_ring(struct pa=
-ge_pool *pool,
->   * Caller must provide appropriate safe context.
->   */
->  static bool __page_pool_recycle_direct(struct page *page,
-> -=09=09=09=09       struct page_pool *pool)
-> +=09=09=09=09       struct page_pool *pool,
-> +=09=09=09=09       unsigned int dma_sync_size)
->  {
->  =09if (unlikely(pool->alloc.count =3D=3D PP_ALLOC_CACHE_SIZE))
->  =09=09return false;
-> =20
->  =09/* Caller MUST have verified/know (page_ref_count(page) =3D=3D 1) */
->  =09pool->alloc.cache[pool->alloc.count++] =3D page;
-> +
-> +=09/* non-coherent devices - flush memory */
-> +=09if (pool->p.sync)
-> +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
->  =09return true;
->  }
-> =20
-> -void __page_pool_put_page(struct page_pool *pool,
-> -=09=09=09  struct page *page, bool allow_direct)
-> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
-> +=09=09=09  unsigned int dma_sync_size, bool allow_direct)
->  {
->  =09/* This allocator is optimized for the XDP mode that uses
->  =09 * one-frame-per-page, but have fallbacks that act like the
-> @@ -296,10 +321,12 @@ void __page_pool_put_page(struct page_pool *pool,
->  =09=09/* Read barrier done in page_ref_count / READ_ONCE */
-> =20
->  =09=09if (allow_direct && in_serving_softirq())
-> -=09=09=09if (__page_pool_recycle_direct(page, pool))
-> +=09=09=09if (__page_pool_recycle_direct(page, pool,
-> +=09=09=09=09=09=09       dma_sync_size))
->  =09=09=09=09return;
-> =20
-> -=09=09if (!__page_pool_recycle_into_ring(pool, page)) {
-> +=09=09if (!__page_pool_recycle_into_ring(pool, page,
-> +=09=09=09=09=09=09   dma_sync_size)) {
->  =09=09=09/* Cache full, fallback to free pages */
->  =09=09=09__page_pool_return_page(pool, page);
->  =09=09}
+> This patch is useful with multi-transports support because it
+> allows the binding of the same port with different CID, and
+> it prevents a connection to a wrong socket bound to the same
+> port, but with different CID.
+>=20
+> Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+>  net/vmw_vsock/af_vsock.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
 
-
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
 
