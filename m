@@ -2,261 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F84F6D9F
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 05:41:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5D1CF6DC7
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 06:19:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726989AbfKKElq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Nov 2019 23:41:46 -0500
-Received: from mail-eopbgr40081.outbound.protection.outlook.com ([40.107.4.81]:8930
+        id S1726770AbfKKFTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 00:19:43 -0500
+Received: from mail-eopbgr40041.outbound.protection.outlook.com ([40.107.4.41]:48755
         "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726954AbfKKElq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 10 Nov 2019 23:41:46 -0500
+        id S1725892AbfKKFTm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 00:19:42 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bWLrgx4dNgMNRX99UBg8IoBIFPrZeIwD/ASRpCptiG+n4YCiPjIGa0N95bUIXl13bTiKny7B8/JziXZJq6UFQcDHhdqG2nYerDDQUUuNOABGFGBhjhv2t7JXdXEkk3ScenrXD/s0q7A2QRw2gtBuhycYWFkulTLP3EwzcK6wxvRj9KgPJckwaBHFLBSIIXxeD8YmuEcYGahIwuuW1KAdKIiRi8/jqFz3ubHaP8zBUPAeAFXpvGDJmogas4C+HqBsApX02cEGpGXBWl2Q0o6eRc3QLWTQ3en0OEoE4aP/FC4G1tW6ixUSK1W3ESrDj1twR7PMJ5ArzuO/LdqTVtnQ4Q==
+ b=HDLSpkGhuf8LeQwr2mWD3Ktsn9o++NTQmD9kdp10VOrA3CPqclw2JugUwsPXsJsjQ0lfB8J8l2fLnIeVR0ELo4spLtvFyMarhhx0IZHa0ETfkSN0fzYtP2EOEGCjJXGdzH9RRgbMGTC0LFAghgWhnnMiM3tqR/pzX1KcfIIPpY/UdS+A/NkfVx3UnwSg/kNraBDNQeG2KPODwYwoTSURFUz6ilXbOMLYyixogy8OcBEow7ke5Tpb4vuFdgKd7NFWnNaEVuyB3fBc6m8Yvw8uxtBKucy2Ij6gGn5r7bcPQZ4MqTvB2tPvViJuxzIefVj9jisEafsisHeyPdjHksCq3w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J+sOHd6zr9k/lgfKuim+ygUwgFs9BGni6360vNVdXCU=;
- b=hXpVwvom3eewdIRWoC5q2XchrR3OxjYoRHXLsgoZNEboh0/oq4KYBsMlWy5jwCRA4vOAeQ1k+xEMQyIjip8kOYJI3cZEto3r7JahsOAUypjH1PSf79dTnbyIUsqlM/e+y9v4V+u0sEaCmHM3db/Lip3G5v8GiUk4Mjcv52ahUzDAX59V+vQxkn02ZQIRHfSdiCgNfutPNz18tjRKuoq4nWy6M5YhZ/a3gx0DuOoW/Zr0yjTIznAB0tCN0Ho/a1IDdm/omF1TqY1K2rX92w2Fw/q6cWmo7TIXNLIKwikeMN3dl9harY2offHDv9GUEb6lsguLqbF9x80ov1oAM0ZFig==
+ bh=1SyIajGS12HV+NllRtfSqg1osLj0YsoumuKnMN8eFHk=;
+ b=h0zUUIlNYegm1H2ffA7SDI/hW9zjCPukMoQpk6yx/llmxeNssaVuLFGjs8SxwBgJ9twAfE4hNxTljlnHnzJ6zkEhPtoy+lM93Krugdmzjmba0tfZI2wEhKettPg21G+vIAWMpU3tIlDqyC7I9CBt2QMaSYeu9uzsRlf7ITAJ8K9qte3GoNNjn3RTpGMkNgVjHPGvVvXir4PetqhoIW9XY/AMMjo7caYrbsytRp8No1O4ywUyOiMzNRJlBpHPLL1BNQxU4CAKdYf5Hhe7HIDZbfQ/YWnCaKLMmG3AfjdDfUfTm80NE0wQTO2SQVu/lhj8TVX8iZ8ZexuVveRnX7yMdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J+sOHd6zr9k/lgfKuim+ygUwgFs9BGni6360vNVdXCU=;
- b=CdcvaZ5nsFv7PrCA78EwYzCJJIi9Lxe+lhEa9zKzHMBXL0nNNoLXuk2pCBIciJoG8EebHTZd5OVpqXZt1dVEbEesTTW7klaSB+pERqvLGaDc50q9K8q1OW6GkK0DEa8nG8HdrUXt1BGAW2zIUC4UE1Z6/vPE6i5584RiBokU5e8=
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (20.179.232.221) by
- VE1PR04MB6704.eurprd04.prod.outlook.com (20.179.235.205) with Microsoft SMTP
+ bh=1SyIajGS12HV+NllRtfSqg1osLj0YsoumuKnMN8eFHk=;
+ b=j3GkzlLWvarPeBGnlgSYlfEx0Q8d5UNOf0MzxjWbjfVXCuQNDLp2S+wxAejUyHrYzz5UYfohbVtWkOs6DnpGHFJ1TQ1dcPoro23EqKr5sfVDVFZ671YBjp84NWZBPd2izP8qkOGbcKBSH4oPcaU8Z4UhBmhCwG6HNpZMpNPAfwQ=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6148.eurprd05.prod.outlook.com (20.178.115.22) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.25; Mon, 11 Nov 2019 04:41:39 +0000
-Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::7c6e:3d38:6630:5515]) by VE1PR04MB6496.eurprd04.prod.outlook.com
- ([fe80::7c6e:3d38:6630:5515%4]) with mapi id 15.20.2430.027; Mon, 11 Nov 2019
- 04:41:39 +0000
-From:   Po Liu <po.liu@nxp.com>
-To:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+ 15.20.2430.24; Mon, 11 Nov 2019 05:18:58 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.027; Mon, 11 Nov 2019
+ 05:18:58 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     Jason Gunthorpe <jgg@ziepe.ca>, Jiri Pirko <jiri@resnulli.us>,
+        David M <david.m.ertman@intel.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
-        Po Liu <po.liu@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
-        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>,
-        Po Liu <po.liu@nxp.com>
-Subject: [net-next, 2/2] enetc: update TSN Qbv PSPEED set according to adjust
- link speed
-Thread-Topic: [net-next, 2/2] enetc: update TSN Qbv PSPEED set according to
- adjust link speed
-Thread-Index: AQHVmEpO2cKBb2NFk0Clba5j/tGCPg==
-Date:   Mon, 11 Nov 2019 04:41:39 +0000
-Message-ID: <20191111042715.13444-2-Po.Liu@nxp.com>
-References: <20191111042715.13444-1-Po.Liu@nxp.com>
-In-Reply-To: <20191111042715.13444-1-Po.Liu@nxp.com>
-Accept-Language: zh-CN, en-US
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: RE: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Thread-Topic: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Thread-Index: AQHVlYUoVUzzBv4k4UmQHUerp08scaeAKe4AgAEGoYCAAClyAIAADgnAgAA94wCAABDWgIAAGgOAgAAx3ACAARhVgIABCb6AgAE1UoCAABjPkA==
+Date:   Mon, 11 Nov 2019 05:18:57 +0000
+Message-ID: <AM0PR05MB48661B4BA4906D90F7969BA5D1740@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191107160448.20962-1-parav@mellanox.com>
+        <20191107153234.0d735c1f@cakuba.netronome.com>
+        <20191108121233.GJ6990@nanopsycho>
+        <20191108144054.GC10956@ziepe.ca>
+        <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20191108111238.578f44f1@cakuba>
+        <20191108201253.GE10956@ziepe.ca>
+        <20191108134559.42fbceff@cakuba>
+        <20191109004426.GB31761@ziepe.ca>
+        <20191109092747.26a1a37e@cakuba>
+        <20191110091855.GE1435668@kroah.com> <20191110194601.0d6ed1a0@cakuba>
+In-Reply-To: <20191110194601.0d6ed1a0@cakuba>
+Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.17.1
-x-clientproxiedby: SN2PR01CA0034.prod.exchangelabs.com (2603:10b6:804:2::44)
- To VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
-authentication-results: spf=none (sender IP is ) smtp.mailfrom=po.liu@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.73]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:61ca:c318:74fc:4df4]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f0ed30c6-8759-4f2e-1e43-08d76661710f
-x-ms-traffictypediagnostic: VE1PR04MB6704:|VE1PR04MB6704:
+x-ms-office365-filtering-correlation-id: 83df0e5f-0424-43bd-e3a1-08d76666a790
+x-ms-traffictypediagnostic: AM0PR05MB6148:|AM0PR05MB6148:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6704D08290FD2552F97A357D92740@VE1PR04MB6704.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-microsoft-antispam-prvs: <AM0PR05MB6148860488EA4A17C90B87CFD1740@AM0PR05MB6148.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-forefront-prvs: 0218A015FA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(39860400002)(346002)(136003)(366004)(189003)(199004)(486006)(52116002)(6436002)(76176011)(2616005)(4326008)(476003)(25786009)(14454004)(305945005)(26005)(86362001)(71190400001)(71200400001)(5660300002)(66946007)(6506007)(66446008)(64756008)(99286004)(6512007)(256004)(66476007)(11346002)(14444005)(6486002)(66066001)(386003)(1076003)(66556008)(446003)(102836004)(3846002)(6116002)(54906003)(50226002)(186003)(81166006)(8676002)(81156014)(8936002)(2501003)(478600001)(316002)(36756003)(7736002)(2201001)(2906002)(110136005)(15650500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6704;H:VE1PR04MB6496.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(396003)(376002)(366004)(136003)(199004)(13464003)(189003)(14454004)(478600001)(25786009)(2906002)(6116002)(81156014)(81166006)(76116006)(86362001)(64756008)(66946007)(561944003)(33656002)(66556008)(14444005)(66476007)(66446008)(8676002)(256004)(8936002)(7736002)(52536014)(6246003)(9686003)(6436002)(55016002)(2501003)(229853002)(11346002)(446003)(46003)(74316002)(305945005)(7416002)(476003)(486006)(71200400001)(54906003)(110136005)(4326008)(316002)(99286004)(102836004)(5660300002)(71190400001)(76176011)(7696005)(6506007)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6148;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9WrIroRjUhf6J2AWK/sMxbwYlpvOeO+jNskJAVTcho7ws7Wcb0QB0MEslpS2Lh8IhnI1EvJq1+c393+0P1onvLgDB2GpTW+9isKYhY6jJKXCsLex+xGEmSbUDpEEVEj8b9mbHxbktgqxfN0WPrH5MDiqOOFqzh9BGXnIqAmP8p+0U8QSlzU6zc228a2ebNoP9bR+d/D+t/vhLUd4vP1ufuB6OyxKCpRvSosqpCBp86QqdzG+vDPJw0MtKAnY4VuBFCmnK45xGOgHqAm+OQVMvzgGKz5NMn6DoTVQ5mboIvTe4HNlEdqEfa2GGHn/fV9yZQvFVJy/OefXdrkQ3f/UxiF432jLRDUKXm3FFxdtkHtRqsNkThx5tIawkCLjrtwTo3q++F1kCgio4q7F26hsTOAg04YHXF/7jempm6IXmYvJ7Vv5XOpeRovRtvmPKDiw
-Content-Type: text/plain; charset="iso-8859-1"
+x-microsoft-antispam-message-info: GgxN1e0dZ9gFNVUnPs7YLpIOfi+7sibczaSCpMnFhlcIpd3/K+yWVa+txJfzAxc822We0x+x/oQzOgo4cng8bEVaTBcsZFznIMU8LLqXvcv8G1HpFT+LNyh/inEUbcmT42rD8XPbOJCCp9bOX2rcLXg3BAqzYzc5aEQzz+tB0ZQ0zFWEuIdZbGZrv5OGe8IOtg3MVJ0GxpdNMvZkrGbsyat5L4V1uxlh3sTeZ9VU3wXuT9QxUlxt65aN4d0QHAv7R6ziWjdrjx/iuankusGAuQ1UvJBTeFWJ8k8vxFGWbmvhau7KfLbTzM/kjq7VsA4cbF2DA1oy0D7HGJzktjAEedAlIlod9t7ipReYgON5a6CsSdOr5DWpxfHOZt+690K7XSM1ltFz9K714CJ0NAhsW+SRfa6WDzxvCbcAZKo11Gu2o+3rjJQeRrVFntulKrHh
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0ed30c6-8759-4f2e-1e43-08d76661710f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 04:41:39.5538
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83df0e5f-0424-43bd-e3a1-08d76666a790
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 05:18:57.8953
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Xsppl36zKz99Y/sI4KhD/8Xn0+VccdAWSOVE8VB/df+sAouF6ru8J12RtlIYCbMd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6704
+X-MS-Exchange-CrossTenant-userprincipalname: 5s6K9nWPHA5GszhMspx4HCB2mEq/nczksQ55zOwnZkPrHgXmjugy2vDPyXS8tUjDBDf+kAsBZQfv4q9Fekurng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6148
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ENETC has a register PSPEED to indicate the link speed of hardware.
-It is need to update accordingly. PSPEED field needs to be updated
-with the port speed for QBV scheduling purposes. Or else there is
-chance for gate slot not free by frame taking the MAC if PSPEED and
-phy speed not match. So update PSPEED when link adjust. This is
-implement by the adjust_link.
+> -----Original Message-----
+> From: kvm-owner@vger.kernel.org <kvm-owner@vger.kernel.org> On Behalf
+> Of Jakub Kicinski
+> Sent: Sunday, November 10, 2019 9:46 PM
+> On Sun, 10 Nov 2019 10:18:55 +0100, gregkh@linuxfoundation.org wrote:
 
-Signed-off-by: Po Liu <Po.Liu@nxp.com>
-Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
-Singed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/freescale/enetc/enetc.c  | 13 +++++--
- drivers/net/ethernet/freescale/enetc/enetc.h  |  7 ++++
- .../net/ethernet/freescale/enetc/enetc_pf.c   |  3 ++
- .../net/ethernet/freescale/enetc/enetc_qos.c  | 34 +++++++++++++++++++
- 4 files changed, 55 insertions(+), 2 deletions(-)
+[..]
+> The nice thing about having a fake bus is you can load out-of-tree driver=
+s to
+> operate extra protocols quite cleanly.
+>=20
+This series does NOT intent to do any out of tree driver.
+Please do not think in that direction for this series.
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/eth=
-ernet/freescale/enetc/enetc.c
-index d58dbc2c4270..f6b00c68451b 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -742,9 +742,14 @@ void enetc_get_si_caps(struct enetc_si *si)
- 	si->num_rss =3D 0;
- 	val =3D enetc_rd(hw, ENETC_SIPCAPR0);
- 	if (val & ENETC_SIPCAPR0_RSS) {
--		val =3D enetc_rd(hw, ENETC_SIRSSCAPR);
--		si->num_rss =3D ENETC_SIRSSCAPR_GET_NUM_RSS(val);
-+		u32 rss;
-+
-+		rss =3D enetc_rd(hw, ENETC_SIRSSCAPR);
-+		si->num_rss =3D ENETC_SIRSSCAPR_GET_NUM_RSS(rss);
- 	}
-+
-+	if (val & ENETC_SIPCAPR0_QBV)
-+		si->hw_features |=3D ENETC_SI_F_QBV;
- }
-=20
- static int enetc_dma_alloc_bdr(struct enetc_bdr *r, size_t bd_size)
-@@ -1314,8 +1319,12 @@ static void enetc_disable_interrupts(struct enetc_nd=
-ev_priv *priv)
-=20
- static void adjust_link(struct net_device *ndev)
- {
-+	struct enetc_ndev_priv *priv =3D netdev_priv(ndev);
- 	struct phy_device *phydev =3D ndev->phydev;
-=20
-+	if (priv->active_offloads & ENETC_F_QBV)
-+		enetc_sched_speed_set(ndev);
-+
- 	phy_print_status(phydev);
- }
-=20
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/eth=
-ernet/freescale/enetc/enetc.h
-index 8676631041d5..e85e5301c578 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -118,6 +118,8 @@ enum enetc_errata {
- 	ENETC_ERR_UCMCSWP	=3D BIT(2),
- };
-=20
-+#define ENETC_SI_F_QBV  (1<<0)
-+
- /* PCI IEP device data */
- struct enetc_si {
- 	struct pci_dev *pdev;
-@@ -133,6 +135,7 @@ struct enetc_si {
- 	int num_fs_entries;
- 	int num_rss; /* number of RSS buckets */
- 	unsigned short pad;
-+	int hw_features;
- };
-=20
- #define ENETC_SI_ALIGN	32
-@@ -173,6 +176,7 @@ struct enetc_cls_rule {
- enum enetc_active_offloads {
- 	ENETC_F_RX_TSTAMP	=3D BIT(0),
- 	ENETC_F_TX_TSTAMP	=3D BIT(1),
-+	ENETC_F_QBV             =3D BIT(2),
- };
-=20
- struct enetc_ndev_priv {
-@@ -188,6 +192,8 @@ struct enetc_ndev_priv {
- 	u16 msg_enable;
- 	int active_offloads;
-=20
-+	u32 speed; /* store speed for compare update pspeed */
-+
- 	struct enetc_bdr *tx_ring[16];
- 	struct enetc_bdr *rx_ring[16];
-=20
-@@ -246,3 +252,4 @@ int enetc_get_rss_table(struct enetc_si *si, u32 *table=
-, int count);
- int enetc_set_rss_table(struct enetc_si *si, const u32 *table, int count);
- int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd);
- int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
-+void enetc_sched_speed_set(struct net_device *ndev);
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/=
-ethernet/freescale/enetc/enetc_pf.c
-index 7da79b816416..e7482d483b28 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
-@@ -742,6 +742,9 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, =
-struct net_device *ndev,
-=20
- 	ndev->priv_flags |=3D IFF_UNICAST_FLT;
-=20
-+	if (si->hw_features & ENETC_SI_F_QBV)
-+		priv->active_offloads |=3D ENETC_F_QBV;
-+
- 	/* pick up primary MAC address from SI */
- 	enetc_get_primary_mac_addr(&si->hw, ndev->dev_addr);
- }
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net=
-/ethernet/freescale/enetc/enetc_qos.c
-index 036bb39c7a0b..801104dd2ba6 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
-@@ -11,6 +11,40 @@ static u16 enetc_get_max_gcl_len(struct enetc_hw *hw)
- 		& ENETC_QBV_MAX_GCL_LEN_MASK;
- }
-=20
-+void enetc_sched_speed_set(struct net_device *ndev)
-+{
-+	struct enetc_ndev_priv *priv =3D netdev_priv(ndev);
-+	struct phy_device *phydev =3D ndev->phydev;
-+	u32 old_speed =3D priv->speed;
-+	u32 speed, pspeed;
-+
-+	if (phydev->speed =3D=3D old_speed)
-+		return;
-+
-+	speed =3D phydev->speed;
-+	switch (speed) {
-+	case SPEED_1000:
-+		pspeed =3D ENETC_PMR_PSPEED_1000M;
-+		break;
-+	case SPEED_2500:
-+		pspeed =3D ENETC_PMR_PSPEED_2500M;
-+		break;
-+	case SPEED_100:
-+		pspeed =3D ENETC_PMR_PSPEED_100M;
-+		break;
-+	case SPEED_10:
-+	default:
-+		pspeed =3D ENETC_PMR_PSPEED_10M;
-+		netdev_err(ndev, "Qbv PSPEED set speed link down.\n");
-+	}
-+
-+	priv->speed =3D speed;
-+	enetc_port_wr(&priv->si->hw, ENETC_PMR,
-+		      (enetc_port_rd(&priv->si->hw, ENETC_PMR)
-+		      & (~ENETC_PMR_PSPEED_MASK))
-+		      | pspeed);
-+}
-+
- static int enetc_setup_taprio(struct net_device *ndev,
- 			      struct tc_taprio_qopt_offload *admin_conf)
- {
---=20
-2.17.1
+> I'm not saying that's what the code in question is doing, I'm saying I'd
+> personally like to understand the motivation more clearly before every
+> networking driver out there starts spawning buses. The only argument I've
+> heard so far for the separate devices is reloading subset of the drivers,=
+ which
+> I'd rate as moderately convincing.
 
+Primary objectives behind using a bus in this series is:
+
+1. get same level of device view as PF/VF/SF by devlink instance
+2. to not re-invent already matured pm (suspend/resume) in devlink and/or v=
+endor driver
+3. ability to bind a sub-function to different drivers depending on use cas=
+e based on 'in-kernel' defined class-id
+(mdev/virtio/kernel) - just like vfio-pci and regular PF driver, by followi=
+ng standard driver model
+(Ofcourse, It can be done using 3 or more buses as one virtual mdev bus app=
+ears an abuse)
+4. create->configure->bind process of an sub function (just like a VF)
+5. persistent naming of sf's netdev and rdmadev (again like PF and VF)
+
+I will wait for Jason's and Jiri's view on the alternative proposal I sent =
+few hours back to omit bus for in-kernel use of sf; and see how far can we =
+run without a bus :-)
