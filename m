@@ -2,132 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2B54F760D
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF7BBF7624
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 15:14:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbfKKOMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 09:12:13 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:39595 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726832AbfKKOMN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 09:12:13 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0Tho9KK0_1573481523;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0Tho9KK0_1573481523)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 11 Nov 2019 22:12:03 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     shemminger@osdl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: remove static inline from dev_put/dev_hold
-Date:   Mon, 11 Nov 2019 22:05:03 +0800
-Message-Id: <20191111140502.17541-1-tonylu@linux.alibaba.com>
-X-Mailer: git-send-email 2.24.0
+        id S1726960AbfKKOOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 09:14:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60918 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726843AbfKKOOd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 09:14:33 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA40C21925;
+        Mon, 11 Nov 2019 14:14:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573481672;
+        bh=0IDDU6b5/Y6auVkjsPzFNFLTUrYbv58q9hkKdzQUSNI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XdzM8eMhYSmS19YTBemsLCBU/GHzm2gOp6gPrWol5hs9QTFY6JVhAlBUh7YD3I1l1
+         Z+TnpWQLpX2z5dMlOECaQKZyQa14MpK0euWtP0BiZWBNc9iuT3Z+y2/luEZmm88FWV
+         3ZIkZYj0SuRNAmGlF9cD6Gtm6QsRKPqhLH5GPJ0M=
+Date:   Mon, 11 Nov 2019 15:14:30 +0100
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Parav Pandit <parav@mellanox.com>,
+        David M <david.m.ertman@intel.com>,
+        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Or Gerlitz <gerlitz.or@gmail.com>
+Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
+Message-ID: <20191111141430.GB585609@kroah.com>
+References: <20191108144054.GC10956@ziepe.ca>
+ <AM0PR05MB486658D1D2A4F3999ED95D45D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191108111238.578f44f1@cakuba>
+ <20191108201253.GE10956@ziepe.ca>
+ <20191108134559.42fbceff@cakuba>
+ <20191109004426.GB31761@ziepe.ca>
+ <20191109092747.26a1a37e@cakuba>
+ <20191110091855.GE1435668@kroah.com>
+ <20191110194601.0d6ed1a0@cakuba>
+ <20191111133026.GA2202@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191111133026.GA2202@nanopsycho>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch removes static inline from dev_put/dev_hold in order to help
-trace the pcpu_refcnt leak of net_device.
+On Mon, Nov 11, 2019 at 02:30:26PM +0100, Jiri Pirko wrote:
+> Mon, Nov 11, 2019 at 04:46:01AM CET, jakub.kicinski@netronome.com wrote:
+> >On Sun, 10 Nov 2019 10:18:55 +0100, gregkh@linuxfoundation.org wrote:
+> >> > What I'm missing is why is it so bad to have a driver register to
+> >> > multiple subsystems.  
+> >> 
+> >> Because these PCI devices seem to do "different" things all in one PCI
+> >> resource set.  Blame the hardware designers :)
+> >
+> >See below, I don't think you can blame the HW designers in this
+> >particular case :)
+> >
+> >> > For the nfp I think the _real_ reason to have a bus was that it
+> >> > was expected to have some out-of-tree modules bind to it. Something 
+> >> > I would not encourage :)  
+> >> 
+> >> That's not ok, and I agree with you.
+> >> 
+> >> But there seems to be some more complex PCI devices that do lots of
+> >> different things all at once.  Kind of like a PCI device that wants to
+> >> be both a keyboard and a storage device at the same time (i.e. a button
+> >> on a disk drive...)
+> >
+> >The keyboard which is also a storage device may be a clear cut case
+> >where multiple devices were integrated into one bus endpoint.
+> 
+> Also, I think that very important differentiator between keyboard/button
+> and NIC is that keyboard/button is fixed. You have driver bus with 2
+> devices on constant addresses.
+> 
+> However in case of NIC subfunctions. You have 0 at he beginning and user
+> instructs to create more (maybe hundreds). Now important questions
+> appear:
+> 
+> 1) How to create devices (what API) - mdev has this figured out
+> 2) How to to do the addressing of the devices. Needs to be
+>    predictable/defined by the user - mdev has this figured out
+> 3) Udev names of netdevices - udev names that according to the
+>    bus/address. That is straightforeward with mdev.
+>    I can't really see how to figure this one in particular with
+>    per-driver busses :/
 
-We have sufferred this kind of issue for several times during
-manipulating NIC between different net namespaces. It prints this
-log in dmesg:
+Are network devices somehow only allowed to be on mdev busses?
 
-  unregister_netdevice: waiting for eth0 to become free. Usage count = 1
+No, don't be silly, userspace handles this just fine today on any type
+of bus, it's not an issue.
 
-However, it is hard to find out who called and leaked refcnt in time. It
-only left the crime scene but few evidence. Once leaked, it is not
-safe to fix it up on the running host. We can't trace dev_put/dev_hold
-directly, for the functions are inlined and used wildly amoung modules.
-And this issue is common, there are tens of patches fix net_device
-refcnt leak for various causes.
+You don't have to like individual "driver busses", but you had better
+not be using a fake platform device to use mdev.  That's my main
+objection...
 
-To trace the refcnt manipulating, this patch removes static inline from
-dev_put/dev_hold. We can use handy tools, such as eBPF with kprobe, to
-find out who holds but forgets to put refcnt. This will not be called
-frequently, so the overhead is limited.
+thanks,
 
-Signed-off-by: Tony Lu <tonylu@linux.alibaba.com>
----
- include/linux/netdevice.h | 24 ++++--------------------
- net/core/dev.c            | 24 ++++++++++++++++++++++++
- 2 files changed, 28 insertions(+), 20 deletions(-)
-
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index c20f190b4c18..872d266c6da5 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -3720,27 +3720,11 @@ extern unsigned int	netdev_budget_usecs;
- /* Called by rtnetlink.c:rtnl_unlock() */
- void netdev_run_todo(void);
- 
--/**
-- *	dev_put - release reference to device
-- *	@dev: network device
-- *
-- * Release reference to device to allow it to be freed.
-- */
--static inline void dev_put(struct net_device *dev)
--{
--	this_cpu_dec(*dev->pcpu_refcnt);
--}
-+/* Release reference to device to allow it to be freed. */
-+void dev_put(struct net_device *dev);
- 
--/**
-- *	dev_hold - get reference to device
-- *	@dev: network device
-- *
-- * Hold reference to device to keep it from being freed.
-- */
--static inline void dev_hold(struct net_device *dev)
--{
--	this_cpu_inc(*dev->pcpu_refcnt);
--}
-+/* Hold reference to device to keep it from being freed. */
-+void dev_hold(struct net_device *dev);
- 
- /* Carrier loss detection, dial on demand. The functions netif_carrier_on
-  * and _off may be called from IRQ context, but it is caller
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 99ac84ff398f..620fb3d6718a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -1294,6 +1294,30 @@ void netdev_notify_peers(struct net_device *dev)
- }
- EXPORT_SYMBOL(netdev_notify_peers);
- 
-+/**
-+ *	dev_put - release reference to device
-+ *	@dev: network device
-+ *
-+ * Release reference to device to allow it to be freed.
-+ */
-+void dev_put(struct net_device *dev)
-+{
-+	this_cpu_dec(*dev->pcpu_refcnt);
-+}
-+EXPORT_SYMBOL(dev_put);
-+
-+/**
-+ *	dev_hold - get reference to device
-+ *	@dev: network device
-+ *
-+ * Hold reference to device to keep it from being freed.
-+ */
-+void dev_hold(struct net_device *dev)
-+{
-+	this_cpu_inc(*dev->pcpu_refcnt);
-+}
-+EXPORT_SYMBOL(dev_hold);
-+
- static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
- {
- 	const struct net_device_ops *ops = dev->netdev_ops;
--- 
-2.24.0
-
+greg k-h
