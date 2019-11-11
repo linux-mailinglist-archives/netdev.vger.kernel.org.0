@@ -2,239 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D49E5F74F8
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 14:31:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99471F750D
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 14:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbfKKNbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 08:31:31 -0500
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:33724 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727109AbfKKNba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 08:31:30 -0500
-Received: by mail-oi1-f194.google.com with SMTP id m193so11486535oig.0
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 05:31:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lGbf2Dc9C3MaMMZf9tcEUAWy5nVZH41T271h0X0pq+8=;
-        b=nTv+5HfvQbk3AmVEs1de/Yxo3SLLzS+wZB3G9V0iev64TXDN+YkUwkBNUywhQMEJeH
-         W79v65a9sa0Z5AmG2qOnWd2XrclrXaZboL7wDyesL1/fGdV7MjwMPB12molM2q/V1yZz
-         sJRjPvCHdgoXOXETbRUf/+roF4VVowcPrXEapfAQKVLvDD1NWN0/YCPRL9NDyXfFSRcm
-         qMnAOFrRk/gqUqOBQVRXZV9anMmr0GKah7A9t9TGRE6z5dM6/gB+UIbzSvZX8QVtOX7z
-         8aMQU+WwE4+eXNNrXszJS7DCcTRzmHjhg9emOOq3lw2QWndym8xN6B5vEapjSS/vAZwu
-         Sb6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lGbf2Dc9C3MaMMZf9tcEUAWy5nVZH41T271h0X0pq+8=;
-        b=hqr7BMZo5kOkPcy2HFXKVpz7/mnYp9U0GwETN/3pjI5xWEJ07PNuZZJV5SvOqy6upa
-         9IOo4AielVCsmgRIXlLUWQvlnC9o55/QFdjB4E+YTa3h2VdsNnpAMD2kyTAyQOVHx4VW
-         up9/fMVZw7qWhjIyJIS1uDrzGXe26ey4IqozZ6PnG4WMrT/uspeWqN3yF3gnPQEeiWIl
-         uWEqBMzZdwwWccP+IBXCEPVaJBanInEnSiqO55B3K7hym7GI7IPY1z0F0U6gjlFG6L4E
-         1UKf73lvA/nR78BuwQBFNkvrUYRbbmHERY45QZNxzTnYSjlqEHrtzePkmu8kaltF11ZG
-         DF+Q==
-X-Gm-Message-State: APjAAAUgoUFwKgqO0+bWn9zs6SD+4Tx8yyN1cE3CQYcrld/kBdK88bA8
-        AVcU5qivpuMfDpd5H4X+t2zdBUxPTMkDzsIwUD0=
-X-Google-Smtp-Source: APXvYqwgM+FMMyDFTHGhFmdF8oVo86FDnvww4GZyF/fjfta7ceqNls3rATFDLnTwj0LeHExjCcTyPfRCCzWy0Qj8iH8=
-X-Received: by 2002:aca:5104:: with SMTP id f4mr23788778oib.40.1573479089043;
- Mon, 11 Nov 2019 05:31:29 -0800 (PST)
+        id S1727028AbfKKNes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 08:34:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43718 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726910AbfKKNes (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Nov 2019 08:34:48 -0500
+Received: from paulmck-ThinkPad-P72.home (199-192-87-166.static.wiline.com [199.192.87.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2DB8921925;
+        Mon, 11 Nov 2019 13:34:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573479287;
+        bh=srvmMX061TiFEZ0qlmejLfO0lWperz2F6wvxZPI8u/E=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=yZ7umLxsxGp/T8LWwJgzJPVqgIUTlPasbb4EkMNV3PFB995wTADXhRQaOxlcCmdg8
+         iuVJgOk1fCGWi5YOg6vumd0ohqZ4AzwgPKdtVi9W1bOP7HweOKm717vSxgWYwZCfSR
+         3/aOedCNuKEOmzefcevny5PH1a2n4FBYls/mEuFo=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id ACA4935227B6; Mon, 11 Nov 2019 05:34:46 -0800 (PST)
+Date:   Mon, 11 Nov 2019 05:34:46 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     joel@joelfernandes.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org
+Subject: Re: next-20191108: qemu arm64: WARNING: suspicious RCU usage
+Message-ID: <20191111133446.GK2865@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20191111075925.GB25277@localhost.localdomain>
 MIME-Version: 1.0
-References: <1573386258-35040-1-git-send-email-xiangxia.m.yue@gmail.com> <20191111130736.pyicdoc7x55fqosq@netronome.com>
-In-Reply-To: <20191111130736.pyicdoc7x55fqosq@netronome.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Mon, 11 Nov 2019 21:30:53 +0800
-Message-ID: <CAMDZJNWv7u79Y2hqgRoj1KicG-kPPQqzWD8cEE8+0YfkMrMciQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: openvswitch: add hash info to upcall
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Pravin Shelar <pshelar@ovn.org>, Ben Pfaff <blp@ovn.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>, ychen <ychen103103@163.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191111075925.GB25277@localhost.localdomain>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 9:07 PM Simon Horman <simon.horman@netronome.com> wrote:
->
-> On Sun, Nov 10, 2019 at 07:44:18PM +0800, xiangxia.m.yue@gmail.com wrote:
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > When using the kernel datapath, the upcall don't
-> > add skb hash info relatived. That will introduce
-> > some problem, because the hash of skb is very
-> > important (e.g. vxlan module uses it for udp src port,
-> > tx queue selection on tx path.).
-> >
-> > For example, there will be one upcall, without information
-> > skb hash, to ovs-vswitchd, for the first packet of one tcp
-> > session. When kernel sents the tcp packets, the hash is
-> > random for a tcp socket:
-> >
-> > tcp_v4_connect
-> >   -> sk_set_txhash (is random)
-> >
-> > __tcp_transmit_skb
-> >   -> skb_set_hash_from_sk
-> >
-> > Then the udp src port of first tcp packet is different
-> > from rest packets. The topo is shown.
-> >
-> > $ ovs-vsctl add-br br-int
-> > $ ovs-vsctl add-port br-int vxl0 -- \
-> >               set Interface vxl0 type=vxlan options:key=100 options:remote_ip=1.1.1.200
-> >
-> > $ __tap is internal type on host
-> > $ or tap net device for VM/Dockers
-> > $ ovs-vsctl add-port br-int __tap
-> >
-> > +---------------+          +-------------------------+
-> > |   Docker/VMs  |          |     ovs-vswitchd        |
-> > +----+----------+          +-------------------------+
-> >      |                       ^                    |
-> >      |                       |                    |
-> >      |                       |  upcall            v recalculate packet hash
-> >      |                     +-+--------------------+--+
-> >      |  tap netdev         |                         |   vxlan modules
-> >      +--------------->     +-->  Open vSwitch ko   --+--->
-> >        internal type       |                         |
-> >                            +-------------------------+
->
-> I think I see the problem that you are trying to solve, but this approach
-> feels wrong to me. In my view the HASH is transparent to components
-> outside of the datapath (in this case the Open vSwitch ko box).
-The hash affects the vxlan modules to select the udp src port and tx
-queue selection.
+On Mon, Nov 11, 2019 at 08:59:25AM +0100, Anders Roxell wrote:
+> Hi,
+> 
+> I'm seeing the following warning when I'm booting an arm64 allmodconfig
+> kernel [1] on linux-next tag next-20191108, is this anything you've seen
+> before ?
+> 
+> 
+> The code seems to have introduced that is f0ad0860d01e ("ipv4: ipmr:
+> support multiple tables") in 2010 and the warning was added reacently
+> 28875945ba98 ("rcu: Add support for consolidated-RCU reader checking").
+> 
+> 
+> [   32.496021][    T1] =============================
+> [   32.497616][    T1] WARNING: suspicious RCU usage
+> [   32.499614][    T1] 5.4.0-rc6-next-20191108-00003-gf74bac957b5c-dirty #2 Not tainted
+> [   32.502018][    T1] -----------------------------
+> [   32.503976][    T1] net/ipv4/ipmr.c:136 RCU-list traversed in non-reader section!!
+> [   32.506746][    T1] 
+> [   32.506746][    T1] other info that might help us debug this:
+> [   32.506746][    T1] 
+> [   32.509794][    T1] 
+> [   32.509794][    T1] rcu_scheduler_active = 2, debug_locks = 1
+> [   32.512661][    T1] 1 lock held by swapper/0/1:
+> [   32.514169][    T1]  #0: ffffa000150dd678 (pernet_ops_rwsem){+.+.}, at: register_pernet_subsys+0x24/0x50
+> [   32.517621][    T1] 
+> [   32.517621][    T1] stack backtrace:
+> [   32.519930][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.4.0-rc6-next-20191108-00003-gf74bac957b5c-dirty #2
+> [   32.523063][    T1] Hardware name: linux,dummy-virt (DT)
+> [   32.524787][    T1] Call trace:
+> [   32.525946][    T1]  dump_backtrace+0x0/0x2d0
+> [   32.527433][    T1]  show_stack+0x20/0x30
+> [   32.528811][    T1]  dump_stack+0x204/0x2ac
+> [   32.530258][    T1]  lockdep_rcu_suspicious+0xf4/0x108
+> [   32.531993][    T1]  ipmr_get_table+0xc8/0x170
 
-> For one thing, with this change ovs-vswitchd can now supply any hash
-> value it likes.
-the patch for ovs-vswitchd is not sent for now, this patch will get
-the hash from upcall
-and sent it back to kernel.
-> Is it not possible to fix things so that "recalculate packet hash"
-> in fact recalculates the same hash value as was calculated before
-> the upcall?
-Hi, Simon
-I don't get a better solution, because the hash calculated with
-different way, for example
-hash is random for tcp which may come from host or VMs, and hash may
-is calculated in hw, software.
+So this one is invoking ipmr_for_each_table(), which in turn invokes
+list_for_each_entry_rcu(), which really does want to be in an
+RCU read-side critical section.  (But you can pass it an optional
+additional lockdep expressions.
 
-> >
-> > Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
-> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > ---
-> >  include/uapi/linux/openvswitch.h |  2 ++
-> >  net/openvswitch/datapath.c       | 31 ++++++++++++++++++++++++++++++-
-> >  net/openvswitch/datapath.h       |  3 +++
-> >  3 files changed, 35 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> > index 1887a451c388..1c58e019438e 100644
-> > --- a/include/uapi/linux/openvswitch.h
-> > +++ b/include/uapi/linux/openvswitch.h
-> > @@ -170,6 +170,7 @@ enum ovs_packet_cmd {
-> >   * output port is actually a tunnel port. Contains the output tunnel key
-> >   * extracted from the packet as nested %OVS_TUNNEL_KEY_ATTR_* attributes.
-> >   * @OVS_PACKET_ATTR_MRU: Present for an %OVS_PACKET_CMD_ACTION and
-> > + * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_hash in skb)
-> >   * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
-> >   * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragment
-> >   * size.
-> > @@ -190,6 +191,7 @@ enum ovs_packet_attr {
-> >       OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe,
-> >                                      error logging should be suppressed. */
-> >       OVS_PACKET_ATTR_MRU,        /* Maximum received IP fragment size. */
-> > +     OVS_PACKET_ATTR_HASH,       /* Packet hash. */
-> >       OVS_PACKET_ATTR_LEN,            /* Packet size before truncation. */
-> >       __OVS_PACKET_ATTR_MAX
-> >  };
-> > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-> > index 2088619c03f0..f938c43e3085 100644
-> > --- a/net/openvswitch/datapath.c
-> > +++ b/net/openvswitch/datapath.c
-> > @@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
-> >       size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
-> >               + nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
-> >               + nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
-> > -             + nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATTR_LEN */
-> > +             + nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
-> > +             + nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
-> >
-> >       /* OVS_PACKET_ATTR_USERDATA */
-> >       if (upcall_info->userdata)
-> > @@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
-> >       size_t len;
-> >       unsigned int hlen;
-> >       int err, dp_ifindex;
-> > +     u64 hash;
-> >
-> >       dp_ifindex = get_dpifindex(dp);
-> >       if (!dp_ifindex)
-> > @@ -504,6 +506,24 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
-> >               pad_packet(dp, user_skb);
-> >       }
-> >
-> > +     if (skb_get_hash_raw(skb)) {
-> > +             hash = skb_get_hash_raw(skb);
-> > +
-> > +             if (skb->sw_hash)
-> > +                     hash |= OVS_PACKET_HASH_SW;
-> > +
-> > +             if (skb->l4_hash)
-> > +                     hash |= OVS_PACKET_HASH_L4;
-> > +
-> > +             if (nla_put(user_skb, OVS_PACKET_ATTR_HASH,
-> > +                         sizeof (u64), &hash)) {
-> > +                     err = -ENOBUFS;
-> > +                     goto out;
-> > +             }
-> > +
-> > +             pad_packet(dp, user_skb);
-> > +     }
-> > +
-> >       /* Only reserve room for attribute header, packet data is added
-> >        * in skb_zerocopy() */
-> >       if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
-> > @@ -543,6 +563,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
-> >       struct datapath *dp;
-> >       struct vport *input_vport;
-> >       u16 mru = 0;
-> > +     u64 hash;
-> >       int len;
-> >       int err;
-> >       bool log = !a[OVS_PACKET_ATTR_PROBE];
-> > @@ -568,6 +589,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
-> >       }
-> >       OVS_CB(packet)->mru = mru;
-> >
-> > +     if (a[OVS_PACKET_ATTR_HASH]) {
-> > +             hash = nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
-> > +
-> > +             __skb_set_hash(packet, hash & 0xFFFFFFFFUL,
-> > +                            !!(hash & OVS_PACKET_HASH_SW),
-> > +                            !!(hash & OVS_PACKET_HASH_L4));
-> > +     }
-> > +
-> >       /* Build an sw_flow for sending this packet. */
-> >       flow = ovs_flow_alloc();
-> >       err = PTR_ERR(flow);
-> > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> > index 81e85dde8217..ba89a08647ac 100644
-> > --- a/net/openvswitch/datapath.h
-> > +++ b/net/openvswitch/datapath.h
-> > @@ -248,3 +248,6 @@ do {                                                              \
-> >               pr_info("netlink: " fmt "\n", ##__VA_ARGS__);   \
-> >  } while (0)
-> >  #endif /* datapath.h */
-> > +
-> > +#define OVS_PACKET_HASH_SW   (1ULL << 32)
-> > +#define OVS_PACKET_HASH_L4   (1ULL << 33)
->
-> I think that BIT macro is appropriate here.
-I got it, thanks.
-> > --
-> > 2.23.0
-> >
+> [   32.533496][    T1]  ipmr_new_table+0x48/0xa0
+
+And this does look like update-side code...
+
+> [   32.535002][    T1]  ipmr_net_init+0xe8/0x258
+
+And this one is marked with "__net_init", which turns out to be __init.
+So this is being invoked during early boot (see inet_init() below).
+Or with RTNL held when invoked at runtime.  So, can we make a lockdep
+expression for this combination?
+
+The RTNL part is easy, something like this in include/linux/rtnetlink.h:
+
+#ifdef CONFIG_PROVE_LOCKING
+extern int lockdep_rtnl_is_held(void);
+#else
+#define lockdep_rtnl_is_held() 1
+#endif
+
+And in net/core/rtnetlink.c:
+
+#ifdef CONFIG_PROVE_LOCKING
+int lockdep_rtnl_is_held(void)
+{
+	return lockdep_is_held(&rtnl_mutex);
+}
+#endif
+
+> [   32.536465][    T1]  ops_init+0x280/0x2d8
+> [   32.537876][    T1]  register_pernet_operations+0x210/0x420
+> [   32.539707][    T1]  register_pernet_subsys+0x30/0x50
+> [   32.541372][    T1]  ip_mr_init+0x54/0x180
+> [   32.542785][    T1]  inet_init+0x25c/0x3e8
+
+And this is an fs_initcall().  This is late enough during boot that
+RTNL could conceivably be held, but I don't see evidence of that.
+One approach would be to hold RTNL across this initialization code.
+
+So the other approach would be to have a global variable in net/ipv4/ipmr.c
+whose definition depends on whether lockdep is enabled:
+
+#ifdef CONFIG_PROVE_LOCKING
+int ip_mr_initialized;
+void ip_mr_now_initialized(void) { ip_mr_initialized = 1; }
+#else
+const int ip_mr_initialized = 1;
+void ip_mr_now_initialized(void) { }
+#endif
+
+Then at the end of ip_mr_init():
+
+	ip_mr_now_initialized();
+
+And finally change the CONFIG_IP_MROUTE_MULTIPLE_TABLES definition
+of ipmr_for_each_table() to be something like:
+
+#define ipmr_for_each_table(mrt, net) \
+	list_for_each_entry_rcu(mrt, &net->ipv4.mr_tables, list, \
+				lockdep_rtnl_is_held() || !ip_mr_initialized)
+
+> [   32.544186][    T1]  do_one_initcall+0x4c0/0xad8
+> [   32.545757][    T1]  kernel_init_freeable+0x3e0/0x500
+> [   32.547443][    T1]  kernel_init+0x14/0x1f0
+> [   32.548875][    T1]  ret_from_fork+0x10/0x18
+
+Does that work for you?
+
+							Thanx, Paul
