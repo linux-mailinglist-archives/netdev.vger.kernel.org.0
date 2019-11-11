@@ -2,155 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F818F78FD
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 17:40:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93CA3F791B
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 17:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbfKKQku (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 11:40:50 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24768 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726916AbfKKQkt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 11:40:49 -0500
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xABGcDva018455;
-        Mon, 11 Nov 2019 08:40:33 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=BNSLygC7vaO1h8Ss2S4u4ievSqBY/ePaxsgmtELrOnc=;
- b=p5fe6qE/vh27SrdIrQ0p8tLbMpHQf1dotxw75gN7CSulakQhZqOHpsAmLMd97Zt4QsA0
- Sg8xwHPFViLMf6BkGYL2uwANbI/L8xyTcwwtQU0ZqpbS0e4FkokX0a0/Q5fnCk4UpBxE
- E0NbS0nJcqSGF4b6Zr6IsCPe5VxJe75HcQg= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w5v5jswhb-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 11 Nov 2019 08:40:33 -0800
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Mon, 11 Nov 2019 08:40:30 -0800
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Mon, 11 Nov 2019 08:40:30 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z9RvE7U1De/YhwYv2/k9kZbBcek4KPw7bHlGuLhhk6hWYfuPoR8WQeMvMpPnSg1FZSuj+JmRml5XMKwRpMGp1xtiGbHwjCpusuBJzQ7q8v7PPl998NFTTHm9TPtO9T0JoG/Z4XWDAgZQB0PyL784wltSsw+avRkqxm26ZbrXPWoBA758VtChkD+Kc+I6f+Rmket3qOmARQl5gXNnFHZIsEWJnEJPz8yoJ19BdQFY3yDZtoY2CS5jemIgfEV8l/QHmVfhCI7VqBP7oVDIyVMDYlIRS9zHJ3WIcRCSmQQqsHzPXja0iERvp0/XGSNHMNGKyoRGgYuOZjz/MC7VC1Dk+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BNSLygC7vaO1h8Ss2S4u4ievSqBY/ePaxsgmtELrOnc=;
- b=bIIIrWZhlM5Pl6h5p7Z2BQA4drVulmfKnG1EOf8/fG0p7Nt0h36hELpWqpKM3cKZMbgXKpEpS6I9g+Klfl+V1/oQRKqmlYL5Z1An0+iRqWgzlLmCxm6t0CvuygTABM0dafQ975RJyZwPOu4zxlwHXBegDCJrCoH/VN3Kg54BhZ0ZctjeBjPoMJTdvI079I/66zQgaJiEEdM2aNbM0FiD/ly51eS2/2m+jcSwr5rFQwyj1UTkuoDKuS2ozkHYdwPuz/ppCnLkf1yykOtaJ76GVd1/gNUPSKDWfm3u7HcL35rZDlI0BUh5B+j5nZqzt1LfYGlXnZMDe1tBioKVdoER6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BNSLygC7vaO1h8Ss2S4u4ievSqBY/ePaxsgmtELrOnc=;
- b=ZFSbnxvzWq0Rtq6hZoP+9PRIqri3QbV3tiVzzUTSfWCHnnz4xpsNmnY5MrKo5V7XXd8Yoi1gcZZLgtUZrW4UjcUaj5n3JnBaPCMlRkgjMyXDpCGS+LcS3q6/J2UULE/5UONwd1iXU8B414ttG7IK5K6XVeaJkrloJlNsvkjW77A=
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
- MWHPR15MB1454.namprd15.prod.outlook.com (10.173.235.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.20; Mon, 11 Nov 2019 16:40:29 +0000
-Received: from MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5]) by MWHPR15MB1165.namprd15.prod.outlook.com
- ([fe80::fdc8:5546:bace:15f5%5]) with mapi id 15.20.2430.027; Mon, 11 Nov 2019
- 16:40:29 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-CC:     bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>,
-        Rik van Riel <riel@surriel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Subject: Re: [PATCH v2 bpf-next 1/3] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-Thread-Topic: [PATCH v2 bpf-next 1/3] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-Thread-Index: AQHVltSv5fGgsOJ7m0CeIYf1LWjTP6eGL8qA
-Date:   Mon, 11 Nov 2019 16:40:29 +0000
-Message-ID: <D7B3FE47-B8E6-4FDB-BB69-F8E3475FCBDA@fb.com>
-References: <20191109080633.2855561-1-andriin@fb.com>
- <20191109080633.2855561-2-andriin@fb.com>
-In-Reply-To: <20191109080633.2855561-2-andriin@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3601.0.10)
-x-originating-ip: [2620:10d:c090:200::3:1a5a]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b5d6bf35-5395-4761-6ed4-08d766c5dd0c
-x-ms-traffictypediagnostic: MWHPR15MB1454:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR15MB1454A58DCF3D975DF17380CBB3740@MWHPR15MB1454.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2331;
-x-forefront-prvs: 0218A015FA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(396003)(376002)(346002)(366004)(189003)(199004)(64756008)(66476007)(4326008)(81166006)(81156014)(66446008)(316002)(71190400001)(66556008)(66946007)(6862004)(54906003)(76116006)(14444005)(305945005)(6512007)(256004)(7736002)(37006003)(71200400001)(14454004)(86362001)(6246003)(8676002)(33656002)(4744005)(53546011)(478600001)(6506007)(76176011)(6636002)(6436002)(6486002)(186003)(2906002)(8936002)(229853002)(46003)(446003)(5660300002)(6116002)(2616005)(476003)(486006)(11346002)(50226002)(99286004)(36756003)(102836004)(25786009);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1454;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ArJVMq7KS+UkPCd2Ze//ID6BEfcOyBqOIW4Efi3nkAKK4r3kV0gR2ChJ++5zqPMmkzfRveLzSstp+OFykHK+Dpm/cLU0anBQUBsFJtwVc/mpk8a1+N5VvolT2kqHsMoEcZ7WC9OSy06VC54ukNdiDPJWxFJsAIp88nddAaCFLz+shT6iYixZXptngzr9BVOjdSeWYbjJphtreTnofWIS2tmoOxktBdqNGQlQAfasoj0HQG/j5wbcYkDnxS2/aQxT1DVaPl0zCCOAhjGtOHdlpUkWtSfBYFxeTMs0TOZ3lV2mjKe1V9LPs3PemBZeSSk52OWANMI1C1rxjTcYSnhRO7ldyTY1fuouHlh9r4E9SmFtB2Ip/FACkkIsncKRsmiCaff51Y3UxJTw54GjpsIszu0SlDQnuI3KroG+ocFsm7PF01AcpJnxEELjVhv1aPKs
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7473AC7E2A857647BA551BDD04CF3CD0@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1726932AbfKKQs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 11:48:56 -0500
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:26561 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726877AbfKKQsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 11:48:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573490933;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XHcb9xMzvnoFwitwZbsJ+TxtpnUZfs2mIGFvP+6VJXM=;
+        b=Ilw0C34K6/pK7J6lZ39vZ+iuSh46zjDIl4BKUB4Y8LQ4F/Hp8GUOa/ebYWFvOuSypMQU41
+        sLPBeZ6sUynLqRAjk4RzNM3MO67+Cte8HSfXg/619RyXkWEGF2ZNLG2A7AJz1A/KvSO5tL
+        DvKPcAhV5kQqbWMRQrCLavxDBIAaBLk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-129-eVL9ODY9PPKEp2X4pS_55Q-1; Mon, 11 Nov 2019 11:48:50 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 790E818B9FCE;
+        Mon, 11 Nov 2019 16:48:49 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 418D765E80;
+        Mon, 11 Nov 2019 16:48:38 +0000 (UTC)
+Date:   Mon, 11 Nov 2019 17:48:35 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
+        brouer@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for non-coherent devices
+Message-ID: <20191111174835.7344731b@carbon>
+In-Reply-To: <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+        <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: b5d6bf35-5395-4761-6ed4-08d766c5dd0c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Nov 2019 16:40:29.6235
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UAScNDmngQuy5387e2BMtLhDnqUepDsi1h2UsiYEeO16Nxl1/2Orelfu0BWBUqWfvohyfjj2JeybkxYjBYZAkg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1454
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-11_05:2019-11-11,2019-11-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0
- lowpriorityscore=0 mlxlogscore=418 phishscore=0 malwarescore=0 bulkscore=0
- mlxscore=0 suspectscore=0 clxscore=1015 adultscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911110151
-X-FB-Internal: deliver
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: eVL9ODY9PPKEp2X4pS_55Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 10 Nov 2019 14:09:09 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+
+> Introduce the following parameters in order to add the possibility to syn=
+c
+> DMA memory area before putting allocated buffers in the page_pool caches:
+
+> - sync: set to 1 if device is non cache-coherent and needs to flush DMA a=
+rea
+
+I don't agree that this is only for non cache-coherent devices.
+
+This change is generally for all device drivers.  Via setting 'sync'
+(which I prefer to rename 'dma_sync') driver request that page_pool
+takes over doing DMA-sync-for-device. (Very important, DMA-sync-for-CPU
+is still drivers responsibility).  Drivers can benefit from removing
+their calls to dma_sync_single_for_device().
+
+We need to define meaning/semantics of this setting (my definition):
+- This means that all pages that driver gets from page_pool, will be
+  DMA-synced-for-device.
+
+> - offset: DMA address offset where the DMA engine starts copying rx data
+
+> - max_len: maximum DMA memory size page_pool is allowed to flush. This
+>   is currently used in __page_pool_alloc_pages_slow routine when pages
+>   are allocated from page allocator
+
+Implementation wise (you did as I suggested offlist), and does the
+DMA-sync-for-device at return-time page_pool_put_page() time, because
+we (often) know the length that was/can touched by CPU.  This is key to
+the optimization, that we know this length.
+
+I also think you/we need to explain why this optimization is correct,
+my attempt:=20
+
+This optimization reduce the length of the DMA-sync-for-device.  The
+optimization is valid, because page is initially DMA-synced-for-device,
+as defined via max_len.  At driver RX time, the driver will do a
+DMA-sync-for-CPU on the memory for the packet length.  What is
+important is the memory occupied by packet payload, because this is the
+memory CPU is allowed to read and modify.  If CPU have not written into
+a cache-line, then we know that CPU will not be flushing this, thus it
+doesn't need a DMA-sync-for-device.  As we don't track cache-lines
+written into, simply use the full packet length as dma_sync_size, at
+page_pool recycle time.  This also take into account any tail-extend.
 
 
-> On Nov 9, 2019, at 12:06 AM, Andrii Nakryiko <andriin@fb.com> wrote:
+> These parameters are supposed to be set by device drivers
+
+
+=20
+> Tested-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/page_pool.h | 11 +++++++----
+>  net/core/page_pool.c    | 39 +++++++++++++++++++++++++++++++++------
+>  2 files changed, 40 insertions(+), 10 deletions(-)
 >=20
-> Add ability to memory-map contents of BPF array map. This is extremely us=
-eful
-> for working with BPF global data from userspace programs. It allows to av=
-oid
-> typical bpf_map_{lookup,update}_elem operations, improving both performan=
-ce
-> and usability.
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 2cbcdbdec254..defbfd90ab46 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -65,6 +65,9 @@ struct page_pool_params {
+>  =09int=09=09nid;  /* Numa node id to allocate from pages from */
+>  =09struct device=09*dev; /* device, for DMA pre-mapping purposes */
+>  =09enum dma_data_direction dma_dir; /* DMA mapping direction */
+> +=09unsigned int=09max_len; /* max DMA sync memory size */
+> +=09unsigned int=09offset;  /* DMA addr offset */
+> +=09u8 sync;
+>  };
+> =20
+>  struct page_pool {
+> @@ -150,8 +153,8 @@ static inline void page_pool_destroy(struct page_pool=
+ *pool)
+>  }
+> =20
+>  /* Never call this directly, use helpers below */
+> -void __page_pool_put_page(struct page_pool *pool,
+> -=09=09=09  struct page *page, bool allow_direct);
+> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> +=09=09=09  unsigned int dma_sync_size, bool allow_direct);
+> =20
+>  static inline void page_pool_put_page(struct page_pool *pool,
+>  =09=09=09=09      struct page *page, bool allow_direct)
+> @@ -160,14 +163,14 @@ static inline void page_pool_put_page(struct page_p=
+ool *pool,
+>  =09 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+>  =09 */
+>  #ifdef CONFIG_PAGE_POOL
+> -=09__page_pool_put_page(pool, page, allow_direct);
+> +=09__page_pool_put_page(pool, page, 0, allow_direct);
+>  #endif
+>  }
+>  /* Very limited use-cases allow recycle direct */
+>  static inline void page_pool_recycle_direct(struct page_pool *pool,
+>  =09=09=09=09=09    struct page *page)
+>  {
+> -=09__page_pool_put_page(pool, page, true);
+> +=09__page_pool_put_page(pool, page, 0, true);
+>  }
+> =20
+>  /* API user MUST have disconnected alloc-side (not allowed to call
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 5bc65587f1c4..af9514c2d15b 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -112,6 +112,17 @@ static struct page *__page_pool_get_cached(struct pa=
+ge_pool *pool)
+>  =09return page;
+>  }
+> =20
+> +/* Used for non-coherent devices */
+> +static void page_pool_dma_sync_for_device(struct page_pool *pool,
+> +=09=09=09=09=09  struct page *page,
+> +=09=09=09=09=09  unsigned int dma_sync_size)
+> +{
+> +=09dma_sync_size =3D min(dma_sync_size, pool->p.max_len);
+> +=09dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
+> +=09=09=09=09=09 pool->p.offset, dma_sync_size,
+> +=09=09=09=09=09 pool->p.dma_dir);
+> +}
+> +
+>  /* slow path */
+>  noinline
+>  static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
+> @@ -156,6 +167,10 @@ static struct page *__page_pool_alloc_pages_slow(str=
+uct page_pool *pool,
+>  =09}
+>  =09page->dma_addr =3D dma;
+> =20
+> +=09/* non-coherent devices - flush memory */
+> +=09if (pool->p.sync)
+> +=09=09page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+> +
+>  skip_dma_map:
+>  =09/* Track how many pages are held 'in-flight' */
+>  =09pool->pages_state_hold_cnt++;
+> @@ -255,7 +270,8 @@ static void __page_pool_return_page(struct page_pool =
+*pool, struct page *page)
+>  }
+> =20
+>  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
+> -=09=09=09=09   struct page *page)
+> +=09=09=09=09=09  struct page *page,
+> +=09=09=09=09=09  unsigned int dma_sync_size)
+>  {
+>  =09int ret;
+>  =09/* BH protection not needed if current is serving softirq */
+> @@ -264,6 +280,10 @@ static bool __page_pool_recycle_into_ring(struct pag=
+e_pool *pool,
+>  =09else
+>  =09=09ret =3D ptr_ring_produce_bh(&pool->ring, page);
+> =20
+> +=09/* non-coherent devices - flush memory */
+> +=09if (ret =3D=3D 0 && pool->p.sync)
+> +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
+> +
+>  =09return (ret =3D=3D 0) ? true : false;
+>  }
+> =20
+> @@ -273,18 +293,23 @@ static bool __page_pool_recycle_into_ring(struct pa=
+ge_pool *pool,
+>   * Caller must provide appropriate safe context.
+>   */
+>  static bool __page_pool_recycle_direct(struct page *page,
+> -=09=09=09=09       struct page_pool *pool)
+> +=09=09=09=09       struct page_pool *pool,
+> +=09=09=09=09       unsigned int dma_sync_size)
+>  {
+>  =09if (unlikely(pool->alloc.count =3D=3D PP_ALLOC_CACHE_SIZE))
+>  =09=09return false;
+> =20
+>  =09/* Caller MUST have verified/know (page_ref_count(page) =3D=3D 1) */
+>  =09pool->alloc.cache[pool->alloc.count++] =3D page;
+> +
+> +=09/* non-coherent devices - flush memory */
+> +=09if (pool->p.sync)
+> +=09=09page_pool_dma_sync_for_device(pool, page, dma_sync_size);
+>  =09return true;
+>  }
+> =20
+> -void __page_pool_put_page(struct page_pool *pool,
+> -=09=09=09  struct page *page, bool allow_direct)
+> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> +=09=09=09  unsigned int dma_sync_size, bool allow_direct)
+>  {
+>  =09/* This allocator is optimized for the XDP mode that uses
+>  =09 * one-frame-per-page, but have fallbacks that act like the
+> @@ -296,10 +321,12 @@ void __page_pool_put_page(struct page_pool *pool,
+>  =09=09/* Read barrier done in page_ref_count / READ_ONCE */
+> =20
+>  =09=09if (allow_direct && in_serving_softirq())
+> -=09=09=09if (__page_pool_recycle_direct(page, pool))
+> +=09=09=09if (__page_pool_recycle_direct(page, pool,
+> +=09=09=09=09=09=09       dma_sync_size))
+>  =09=09=09=09return;
+> =20
+> -=09=09if (!__page_pool_recycle_into_ring(pool, page)) {
+> +=09=09if (!__page_pool_recycle_into_ring(pool, page,
+> +=09=09=09=09=09=09   dma_sync_size)) {
+>  =09=09=09/* Cache full, fallback to free pages */
+>  =09=09=09__page_pool_return_page(pool, page);
+>  =09=09}
 
-[...]
 
->=20
-> Generated code for memory-mapped array:
->=20
-> ; p =3D bpf_map_lookup_elem(&data_map, &zero);
->  22: (18) r1 =3D map[id:27]
->  24: (07) r1 +=3D 400			/* array->data offset */
->  25: (79) r1 =3D *(u64 *)(r1 +0)		/* extra dereference */
->  26: (61) r0 =3D *(u32 *)(r2 +0)
->  27: (35) if r0 >=3D 0x3 goto pc+3
->  28: (67) r0 <<=3D 3
->  29: (0f) r0 +=3D r1
->  30: (05) goto pc+1
->  31: (b7) r0 =3D 0
->=20
-> Cc: Rik van Riel <riel@surriel.com>
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-Acked-by: Song Liu <songliubraving@fb.com>=
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
