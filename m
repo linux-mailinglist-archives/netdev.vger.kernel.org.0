@@ -2,137 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 476F7F6E98
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 07:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F34B4F6EAF
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 07:51:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbfKKGix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 01:38:53 -0500
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:46766 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726789AbfKKGix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 01:38:53 -0500
-Received: by mail-vs1-f67.google.com with SMTP id m6so8007683vsn.13
-        for <netdev@vger.kernel.org>; Sun, 10 Nov 2019 22:38:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p46hzvIcUjsAWpCCt2YN6Zzu/jAmNkdJVCvhuCVu7+8=;
-        b=KULiXQBtodG2aavD8IkPh1eeB2oDKEPzMuHtVNVYsV0wpcv2OzBZgrrfMb7UwUAOZx
-         2SHWFxHCuQ16ayudrPRpigEwCqvZoL4JQBVitW2SL382xu5ZcnAO8cUPcwTOoX4W2csC
-         ZN0deRbr3cTzlTyVnwt8aPEU0uyyUdAami6o+ya827Ylkbuv558D9yZviiAYCylFgk/W
-         R8aEJ502jHQ4euN2q8Adi9PrXUMSu9m+GwtKMc7C8liUD5HVJbeZCBrS7o+l6KuJg1B5
-         PJh9vaerrRLhtbvmT+FFLkRi3PfJOjPGIyFqCmjm5dg+m2ND9wRQd2KIyWX1KpEDml3R
-         F6hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p46hzvIcUjsAWpCCt2YN6Zzu/jAmNkdJVCvhuCVu7+8=;
-        b=LnAwSu8e+aKXo/WfImOf/kxH59YrSyrVrQ/xsilJVLL8fLV+nVgw2j0qqdPuW4u/gw
-         cKWfFAfxL8ReylJfvZ0bH6kya63j4eD/7wpGkTBq0z8IbEiQ4sA6frbcE3SFqAJ9kXO1
-         DX4BnB4+kxP76y2TulNWe+/Rw9cF4ue7WLT3d1h5s1ntwbyOa0OaQMtKi0xMEBVxErrj
-         igKpLyMYRRkirUmFra/jGvrSuEPDXrRH9hzTaePuz82EXJoC8BVB0i8g/IY8csUQdELI
-         fQXiM3IEkDDqlA26sS1ixfpcke1C/I9VXmDV+1CUjk/BYpj44ejNzX4Bvx9OMoKeQNv3
-         pFtw==
-X-Gm-Message-State: APjAAAXqwGRMOWpZrk2PIxYcDnxbG7Iwq9ZXaqdwEhFTJD2q6HolUMBM
-        A3HHdqZojdPQuyf7YXohI1zddXBsj4tJNWV4D8U=
-X-Google-Smtp-Source: APXvYqw1nv034QnEk9C4LV07jujJWb7P561C2h7TYJIlYKS/q1Wvx8te8mBnwcKWexcZHsS6PtP1X+K84wAGhYfUUR4=
-X-Received: by 2002:a67:f44b:: with SMTP id r11mr3122525vsn.23.1573454332039;
- Sun, 10 Nov 2019 22:38:52 -0800 (PST)
+        id S1726906AbfKKGvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 01:51:42 -0500
+Received: from mailgw01.mediatek.com ([210.61.82.183]:48916 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726785AbfKKGvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 01:51:41 -0500
+X-UUID: 80a7be139c414cc08cfec1efc5c1d8c2-20191111
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=1NPMi5s0B7PLycleggl/Ct6ul55hyyE2HzaKv33AkXA=;
+        b=J9nHo+XK+ak6jlO69eM+HHcJwe15+MNuWYckGI0u1iPzmQS1DQjhRu3jSU7RlprLxnn1oU6TiKAQCZTkdnmafk3CaQIFDeFRYEAn9vCaPX7e0dp4QdRI2MfjrTT4lGomFEPbNaz3vnpLWzWD0NGMLLyICmymfYKDDEyOMirb5gc=;
+X-UUID: 80a7be139c414cc08cfec1efc5c1d8c2-20191111
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+        (envelope-from <mark-mc.lee@mediatek.com>)
+        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+        with ESMTP id 44719251; Mon, 11 Nov 2019 14:51:31 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs05n2.mediatek.inc (172.21.101.140) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Mon, 11 Nov 2019 14:51:28 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Mon, 11 Nov 2019 14:51:28 +0800
+From:   MarkLee <Mark-MC.Lee@mediatek.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Sean Wang <sean.wang@mediatek.com>,
+        John Crispin <john@phrozen.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rene van Dorst <opensource@vdorst.com>,
+        <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        MarkLee <Mark-MC.Lee@mediatek.com>
+Subject: [PATCH net,v2 0/3]  Rework mt762x GDM setup flow
+Date:   Mon, 11 Nov 2019 14:51:26 +0800
+Message-ID: <20191111065129.30078-1-Mark-MC.Lee@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-References: <20191108082059.22515-1-stid.smth@gmail.com> <20191111061722.GO13225@gauss3.secunet.de>
-In-Reply-To: <20191111061722.GO13225@gauss3.secunet.de>
-From:   Xiaodong Xu <stid.smth@gmail.com>
-Date:   Sun, 10 Nov 2019 22:38:41 -0800
-Message-ID: <CANEcBPQ5de-qpYRbYxoMKfwyvm3T=Ddfpn_z03bd40JaO9cDjA@mail.gmail.com>
-Subject: Re: [PATCH] xfrm: release device reference for invalid state
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        chenborfc@163.com, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for reviewing the patch, Steffen. Please check my replies below.
+VGhlIG10NzYyeCBHRE0gYmxvY2sgaXMgbWFpbmx5IHVzZWQgdG8gc2V0dXAgdGhlIEhXIGludGVy
+bmFsDQpyeCBwYXRoIGZyb20gR01BQyB0byBSWCBETUEgZW5naW5lKFBETUEpIGFuZCB0aGUgcGFj
+a2V0DQpzd2l0Y2hpbmcgZW5naW5lKFBTRSkgaXMgcmVzcG9uc2VkIHRvIGRvIHRoZSBkYXRhIGZv
+cndhcmQNCmZvbGxvd2luZyB0aGUgR0RNIGNvbmZpZ3VyYXRpb24uDQoNClRoaXMgcGF0Y2ggc2V0
+IGhhdmUgdGhyZWUgZ29hbHMgOg0KDQoxLiBJbnRlZ3JhdGUgR0RNL1BTRSBzZXR1cCBvcGVyYXRp
+b25zIGludG8gc2luZ2xlIGZ1bmN0aW9uICJtdGtfZ2RtX2NvbmZpZyINCg0KMi4gUmVmaW5lIHRo
+ZSB0aW1pbmcgb2YgR0RNL1BTRSBzZXR1cCwgbW92ZSBpdCBmcm9tIG10a19od19pbml0IA0KICAg
+dG8gbXRrX29wZW4NCg0KMy4gRW5hYmxlIEdETSBHRE1BX0RST1BfQUxMIG1vZGUgdG8gZHJvcCBh
+bGwgcGFja2V0IGR1cmluZyB0aGUgDQogICBzdG9wIG9wZXJhdGlvbg0KDQpNYXJrTGVlICgzKToN
+CiAgbmV0OiBldGhlcm5ldDogbWVkaWF0ZWs6IEludGVncmF0ZSBHRE0vUFNFIHNldHVwIG9wZXJh
+dGlvbnMNCiAgbmV0OiBldGhlcm5ldDogbWVkaWF0ZWs6IFJlZmluZSB0aGUgdGltaW5nIG9mIEdE
+TS9QU0Ugc2V0dXANCiAgbmV0OiBldGhlcm5ldDogbWVkaWF0ZWs6IEVuYWJsZSBHRE0gR0RNQV9E
+Uk9QX0FMTCBtb2RlDQoNCiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3Nv
+Yy5jIHwgNDQgKysrKysrKysrKysrKystLS0tLS0tDQogZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVk
+aWF0ZWsvbXRrX2V0aF9zb2MuaCB8ICAyICsNCiAyIGZpbGVzIGNoYW5nZWQsIDMxIGluc2VydGlv
+bnMoKyksIDE1IGRlbGV0aW9ucygtKQ0KDQotLSANCjIuMTcuMQ0K
 
-On Sun, Nov 10, 2019 at 10:17 PM Steffen Klassert
-<steffen.klassert@secunet.com> wrote:
->
-> Please make sure to always Cc netdev@vger.kernel.org on networking
-> patches.
->
-> Aso, what is the difference between this patch and the one you sent
-> before? Please add version numbers to your patches and describe the
-> changes between the versions.
->
-The main difference in the new version is that 'family' will not be
-assigned (in which case x->outer_mode needs to be accessed, and I'm
-not sure if x->outer_mode is still accessible when the state is
-invalid) in an invalid state.
-I'll update the version to my patch.
-
-> On Fri, Nov 08, 2019 at 12:20:59AM -0800, Xiaodong Xu wrote:
-> > An ESP packet could be decrypted in async mode if the input handler for
-> > this packet returns -EINPROGRESS in xfrm_input(). At this moment the device
-> > reference in skb is held. Later xfrm_input() will be invoked again to
-> > resume the processing.
-> > If the transform state is still valid it would continue to release the
-> > device reference and there won't be a problem; however if the transform
-> > state is not valid when async resumption happens, the packet will be
-> > dropped while the device reference is still being held.
-> > When the device is deleted for some reason and the reference to this
-> > device is not properly released, the kernel will keep logging like:
-> >
-> > unregister_netdevice: waiting for ppp2 to become free. Usage count = 1
-> >
-> > The issue is observed when running IPsec traffic over a PPPoE device based
-> > on a bridge interface. By terminating the PPPoE connection on the server
-> > end for multiple times, the PPPoE device on the client side will eventually
-> > get stuck on the above warning message.
-> >
-> > This patch will check the async mode first and continue to release device
-> > reference in async resumption, before it is dropped due to invalid state.
-> >
-> > Fixes: 4ce3dbe397d7b ("xfrm: Fix xfrm_input() to verify state is valid when (encap_type < 0)")
-> > Signed-off-by: Xiaodong Xu <stid.smth@gmail.com>
-> > Reported-by: Bo Chen <chenborfc@163.com>
-> > Tested-by: Bo Chen <chenborfc@163.com>
-> > ---
-> >  net/xfrm/xfrm_input.c | 30 +++++++++++++++++++++---------
-> >  1 file changed, 21 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-> > index 9b599ed66d97..80c5af7cfec7 100644
-> > --- a/net/xfrm/xfrm_input.c
-> > +++ b/net/xfrm/xfrm_input.c
-> > @@ -474,6 +474,13 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
-> >       if (encap_type < 0) {
-> >               x = xfrm_input_state(skb);
-> >
-> > +             /* An encap_type of -1 indicates async resumption. */
-> > +             if (encap_type == -1) {
-> > +                     async = 1;
-> > +                     seq = XFRM_SKB_CB(skb)->seq.input.low;
-> > +                     goto resume;
-> > +             }
-> > +
-> >               if (unlikely(x->km.state != XFRM_STATE_VALID)) {
-> >                       if (x->km.state == XFRM_STATE_ACQ)
-> >                               XFRM_INC_STATS(net, LINUX_MIB_XFRMACQUIREERROR);
->
-> Why not just dropping the reference here if the state became invalid
-> after async resumption?
->
-I was thinking about releasing the device reference immediately after
-checking the state in the async resumption too. However it seems more
-natural to me to simply jump to the 'resume' label in the async case.
-Suppose there are more resources to be held before the async
-resumption, we don't have to worry about that before dropping the
-packet.
-But if you prefer the other way I am OK with that too.
-
-Regards,
-Xiaodong
