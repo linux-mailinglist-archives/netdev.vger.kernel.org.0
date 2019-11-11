@@ -2,159 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D805EF775A
-	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:06:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A9F9F7760
+	for <lists+netdev@lfdr.de>; Mon, 11 Nov 2019 16:08:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726924AbfKKPGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 10:06:19 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:32903 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726902AbfKKPGT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 10:06:19 -0500
-Received: by mail-wr1-f68.google.com with SMTP id w9so8212661wrr.0
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 07:06:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=D7+Mln7zioZD6z9hmTpNuqpl/vZ6+iDnL/aNBB0t0B8=;
-        b=vOTeLvaI3JoAPhQ1gZGRFtG1QJiZHvozDFYKeaIURUMNdAQkib65m+tjGMLojX0gFw
-         xI3wyAbQ8xPD+CY60961ksYgQwTefeS3WQFVOTX+ecOWJzFgZBSQBbz6U3LKHaav8J9f
-         1pInlZiU3nF0RywrzTKDmPNJFJxstLEIzjeY+MJ2Ij4QwJOiHCxYNmwzGdn3BTjnTE96
-         OuHxbtM2LsGB2SSK1+cziKIJidUqrZ4kuE3CutB/1mSouPJAw5xEgN3+Wkkfpcsrkhn4
-         4f5KV9us43gWKuRJ1l87rtq5fGDyYga3gSp81xQaoDjW2HtTdfSYRtA/DbNrCPLNLfCT
-         30ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=D7+Mln7zioZD6z9hmTpNuqpl/vZ6+iDnL/aNBB0t0B8=;
-        b=gPuC7rRM6YiWXZhd6w6SOB4f6Ka3Q919xhznfB306w+ORtXDvmTh9PZABUtWCJBNQY
-         Df0105yuiiS+C7ok2TgTQSzQSfRklUr1il0o1LftLxv5XS0U69aiP/KDHfBZ3pU/95Of
-         kjdUy11d9XVKCwp0CUqMapNGiQ//OZ6gi9iIAh+uQpK/KKTNEC5t5jZISv2btW4Y9xZf
-         +b1C2QPOH4fXvOxzC+bp8G6FEhTzlB59dSK6Wtzo8nfEi1DL8K0j4r8z/miT12jGO84L
-         9PQ8kR6Ep2nOnh5OR47fRD5lJR2UVuhXtdzgPkuGcKxVdyrXBDYS1xFtxKXMBA2M30vV
-         kJ8A==
-X-Gm-Message-State: APjAAAUcwce6o6el+3Fkaockv037jFQP/b0roo9L8kRe25xqu9UG3BtV
-        F7VsY0/MLKdObR1/5+PIcYeZrg==
-X-Google-Smtp-Source: APXvYqz6okKQgXRrOy85hnlIawdK9gpnUJjod9cWU6khuWt2+pYd1K708rZyCf8daoD0He67rMrrDA==
-X-Received: by 2002:adf:f60a:: with SMTP id t10mr17950637wrp.29.1573484774756;
-        Mon, 11 Nov 2019 07:06:14 -0800 (PST)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f14sm14853190wrv.17.2019.11.11.07.06.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Nov 2019 07:06:14 -0800 (PST)
-Date:   Mon, 11 Nov 2019 16:06:13 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        David M <david.m.ertman@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Or Gerlitz <gerlitz.or@gmail.com>,
-        "Jason Wang (jasowang@redhat.com)" <jasowang@redhat.com>
-Subject: Re: [PATCH net-next 00/19] Mellanox, mlx5 sub function support
-Message-ID: <20191111150613.GD2202@nanopsycho>
-References: <20191108111238.578f44f1@cakuba>
- <20191108201253.GE10956@ziepe.ca>
- <20191108133435.6dcc80bd@x1.home>
- <20191108210545.GG10956@ziepe.ca>
- <20191108145210.7ad6351c@x1.home>
- <AM0PR05MB4866444210721BC4EE775D27D17B0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191109005708.GC31761@ziepe.ca>
- <AM0PR05MB48660E49342EC2CD6AB825F8D1750@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20191111141732.GB2202@nanopsycho>
- <AM0PR05MB4866A5F11AED9ABA70FAE7EED1740@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        id S1726927AbfKKPID (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 10:08:03 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:34778 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726811AbfKKPID (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 10:08:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=IyGO6iNAGWiw/JKav8Sd5vDKxTsoTepq8HwN9DUax6o=; b=dTzmZkPE7t2Vp5kmTCL/euuQ9
+        p7CktAgNkLbOhKio8c74SALHmy/tyESGOPOyMQccIMfNVifbbp7hqlvd0MkUoa8KOB7H/X7vqCyA4
+        dN98ehS6aW4uIcyR1bU1ikXv25oImTLUckh5lzPyzpboFGAaD1lGVoZlFAgnigbmjFqxG9ad35NGe
+        zFZpF/VgQ4i8kyzLyXfCjB2payfHxpTkknt3wz7zzTDvawzwjpDH3aF9CwDmIAR0pnzZNAxZ1SHNB
+        FZOagyL3Wczh1SdvLDz5eTNmhYdkITsF/14om3Ht2Ikbuvpcv+BmXfY1yjeAefao6YDDu0Pyhtbdj
+        ui/KQz0+Q==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38248)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1iUBIJ-0006PZ-SX; Mon, 11 Nov 2019 15:07:56 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1iUBII-0000Zm-DO; Mon, 11 Nov 2019 15:07:54 +0000
+Date:   Mon, 11 Nov 2019 15:07:54 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/2] net: phy: add core phylib sfp support
+Message-ID: <20191111150754.GI25745@shell.armlinux.org.uk>
+References: <20191110142226.GB25745@shell.armlinux.org.uk>
+ <E1iTo7N-0005Sj-Nk@rmk-PC.armlinux.org.uk>
+ <20191110161307.GC25889@lunn.ch>
+ <20191110164007.GC25745@shell.armlinux.org.uk>
+ <20191110170040.GG25889@lunn.ch>
+ <20191111140114.GH25745@shell.armlinux.org.uk>
+ <CAL_JsqJe1xUKnREx17vY=Umf9dQimvK7QTqAkunvUxF8GKzjMQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <AM0PR05MB4866A5F11AED9ABA70FAE7EED1740@AM0PR05MB4866.eurprd05.prod.outlook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <CAL_JsqJe1xUKnREx17vY=Umf9dQimvK7QTqAkunvUxF8GKzjMQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Nov 11, 2019 at 03:58:18PM CET, parav@mellanox.com wrote:
->
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Monday, November 11, 2019 8:18 AM
->> Sun, Nov 10, 2019 at 08:48:31PM CET, parav@mellanox.com wrote:
->> >
->> >> From: Jason Gunthorpe <jgg@ziepe.ca>
->> >> Sent: Friday, November 8, 2019 6:57 PM
->> >> > We should be creating 3 different buses, instead of mdev bus being
->> >> > de-
->> >> multiplexer of that?
->> >> >
->> >> > Hence, depending the device flavour specified, create such device
->> >> > on right
->> >> bus?
->> >> >
->> >> > For example,
->> >> > $ devlink create subdev pci/0000:05:00.0 flavour virtio name foo
->> >> > subdev_id 1 $ devlink create subdev pci/0000:05:00.0 flavour mdev
->> >> > <uuid> subdev_id 2 $ devlink create subdev pci/0000:05:00.0 flavour
->> >> > mlx5 id 1 subdev_id 3
->> >>
->> >> I like the idea of specifying what kind of interface you want at sub
->> >> device creation time. It fits the driver model pretty well and
->> >> doesn't require abusing the vfio mdev for binding to a netdev driver.
->> >>
->> >> > $ devlink subdev pci/0000:05:00.0/<subdev_id> config <params> $
->> >> > echo <respective_device_id> <sysfs_path>/bind
->> >>
->> >> Is explicit binding really needed?
->> >No.
->> >
->> >> If you specify a vfio flavour why shouldn't the vfio driver autoload
->> >> and bind to it right away? That is kind of the point of the driver
->> >> model...
->> >>
->> >It some configuration is needed that cannot be passed at device creation
->> time, explicit bind later can be used.
->> >
->> >> (kind of related, but I don't get while all that GUID and lifecycle
->> >> stuff in mdev should apply for something like a SF)
->> >>
->> >GUID is just the name of the device.
->> >But lets park this aside for a moment.
->> >
->> >> > Implement power management callbacks also on all above 3 buses?
->> >> > Abstract out mlx5_bus into more generic virtual bus (vdev bus?) so
->> >> > that multiple vendors can reuse?
->> >>
->> >> In this specific case, why does the SF in mlx5 mode even need a bus?
->> >> Is it only because of devlink? That would be unfortunate
->> >>
->> >Devlink is one part due to identifying using bus/dev.
->> >How do we refer to its devlink instance of SF without bus/device?
->> 
->> Question is, why to have devlink instance for SF itself. Same as VF, you don't
->mlx5_core has devlink instance for PF and VF for long time now.
->Health report, txq/rxq dumps etc all anchored to this devlink instance even for VF. (similar to PF).
->And so, SF same framework should work for SF.
+On Mon, Nov 11, 2019 at 09:01:22AM -0600, Rob Herring wrote:
+> On Mon, Nov 11, 2019 at 8:01 AM Russell King - ARM Linux admin
+> <linux@armlinux.org.uk> wrote:
+> >
+> > On Sun, Nov 10, 2019 at 06:00:40PM +0100, Andrew Lunn wrote:
+> > > On Sun, Nov 10, 2019 at 04:40:07PM +0000, Russell King - ARM Linux admin wrote:
+> > > > On Sun, Nov 10, 2019 at 05:13:07PM +0100, Andrew Lunn wrote:
+> > > > > On Sun, Nov 10, 2019 at 02:23:05PM +0000, Russell King wrote:
+> > > > > > Add core phylib help for supporting SFP sockets on PHYs.  This provides
+> > > > > > a mechanism to inform the SFP layer about PHY up/down events, and also
+> > > > > > unregister the SFP bus when the PHY is going away.
+> > > > >
+> > > > > Hi Russell
+> > > > >
+> > > > > What does the device tree binding look like? I think you have SFP
+> > > > > proprieties in the PHYs node?
+> > > >
+> > > > Correct, just the same as network devices.  Hmm, however, neither are
+> > > > documented... oh dear, it looks like I need to figure out how this
+> > > > yaml stuff works. :(
+> > >
+> > > Yes, that would be good. I also assume you have at least one DT patch
+> > > for one of the Marvell boards? Seeing that would also help.
+> >
+> > So, how does one make sure that the .yaml files are correct?
+> >
+> > The obvious thing is to use the "dtbs_check" target, described by
+> > Documentation/devicetree/writing-schema.md, but that's far from
+> > trivial.
+> 
+> 'dt_binding_check' will check just the bindings. 'dtbs_check' is
+> pretty slow given we have so many dts files and it generates lots of
+> warnings.
+> 
+> > First it complained about lack of libyaml development, which is easy
+> > to solve.  Having given it that, "dtbs_check" now complains:
+> >
+> > /bin/sh: 1: dt-doc-validate: not found
+> > /bin/sh: 1: dt-mk-schema: not foundmake[2]: ***
+> > [...Documentation/devicetree/bindings/Makefile:12:
+> > Documentation/devicetree/bindings/arm/stm32/stm32.example.dts] Error 127
+> >
+> > (spot the lack of newline character - which is obviously an entirely
+> > different problem...)
+> >
+> > # apt search dt-doc-validate
+> > Sorting... Done
+> > Full Text Search... Done
+> > # apt search dt-mk-schema
+> > Sorting... Done
+> > Full Text Search... Done
+> >
+> > Searching google, it appears it needs another git repository
+> > (https://github.com/robherring/dt-schema/) from Rob Herring to use
+> > this stuff, which is totally undocumented in the kernel tree.
+> 
+> The dependencies are all documented in writing-schema.rst (formerly
+> .md) in the 'Dependencies' section.
+> 
+> TL;DR: pip3 install git+https://github.com/devicetree-org/dt-schema.git@master
 
-Right, for health it makes sense.
+What is pip3, and where do I get it from (I'm running Debian stable).
 
->
->> need devlink instance. You only need devlink_port (or
->> devlink_subdev) instance on the PF devlink parent for it.
->> 
->Devlink_port or devlink_subdev are still on eswitch or mgmt side.
->They are not present on the side where devlink instance exist on side where txq/rxq/eq etc exist.
->
+# apt search pip3
+Sorting... Done
+Full Text Search... Done
 
-Got it.
+Don't expect people know python.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
