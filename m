@@ -2,622 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 839E6F9C46
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:28:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A81F9C48
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:29:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbfKLV2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:28:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42694 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726799AbfKLV2h (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 16:28:37 -0500
-Received: from localhost (unknown [8.46.76.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E38B52084E;
-        Tue, 12 Nov 2019 21:28:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573594116;
-        bh=y3hLIuTALfyf6w0cXcOXstELcimtJSdNdmh7Cyqw0FE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F+1PknJzQQLgyqJW7756qIh+kS7W3PbDsBra6GNNIZYh1ltFD4SE6oRGbmg5jeWNw
-         1NPgCEWQ1CzYAIB8zOpWXAZ/Tvd1RpMe+L3RBevuTL1N87M8ZiCLygAajTyZzuqntn
-         Mn+1812DMlEJMIt6gGVoRcW4znHmDOykZIivHlsY=
-Date:   Tue, 12 Nov 2019 22:28:26 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, Dave Ertman <david.m.ertman@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com, parav@mellanox.com,
-        jgg@ziepe.ca, Kiran Patil <kiran.patil@intel.com>
-Subject: Re: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191112212826.GA1837470@kroah.com>
-References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
+        id S1726981AbfKLV3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:29:05 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:38203 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726799AbfKLV3F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:29:05 -0500
+Received: by mail-ed1-f66.google.com with SMTP id s10so6904edi.5
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:29:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5YC57BfaWLUCsQeYWXoRUh2xk07bw1KA5kEv8DECfLk=;
+        b=NpmD5oE7B5jAPM8nwOVgmcEYNAjZ1MQM83GpzZ/lWMyfq43Q6qZ/9AGji7brseVlzs
+         3qNueiO9HYE2XAbhga/8N075I/4IWjsOlhNDk79n9hJybmovFryqP17jLsTGdbwjZxIN
+         c0BWCEzD9N6L0VVdv+kmTRNV84IIVpQ8NnLIOAtLFvqR//n15Dv4/n/MAlzndVlA11PU
+         irSH90HbES+4OJmO3czJB60w7rTCebJRLlJ3KiLZtJrppFLCJ6+vXERPSG6SzsTRYdW2
+         ltTlKw25e7P2byfgsizLvRSHJnzmUc9RTCdpx9abou4P3jbvMtLiKrjvMfE8eWVc8ubX
+         m7hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=5YC57BfaWLUCsQeYWXoRUh2xk07bw1KA5kEv8DECfLk=;
+        b=bzY9YYjOhs058deglhNOMBFmWTxYnZYlaEzB7glpdyA9gVQV8yt8gVotdc0xhp16ta
+         rgeApJH5vauGLQ8sqpXxB+cMxdCaobBwK8SxZgu9Jlo2bNjlAbF37bf7Akka3ROL9gLa
+         jbOjE9IOD2TSaxm6zwDfvrWiF1Kkc5yfnaSNfutqHg0jhOrX5jeVOq5MYXBaqTiNEyz5
+         nmiBRdEP0tHkZK0WhJoGUi/aSmDOX5/sJTdMZMrNsc51/ZhM+NCWe4XQVCXy/2jzbFzk
+         aWDU93Oi2pYr9/RDrhzL3FxPYtxJCNSjz1+4vhyFVO5Wm4nAsx5laImzwEkUFMhTy770
+         MGJg==
+X-Gm-Message-State: APjAAAVFgtUjLtvj9djbjybkdQOmdmVn3DPnIHKwoD/0JmGZ0rpZaymz
+        aUZ9/9XEc2vo+ceI0XmsP4LN63CM
+X-Google-Smtp-Source: APXvYqzlBUJqTRSY5QlfEpz4cHBREE1Jc2cuu5E93tUumGBsALpzrq786c/cW/nPYuOfi9POMqa8/w==
+X-Received: by 2002:aa7:d05a:: with SMTP id n26mr21269340edo.239.1573594142731;
+        Tue, 12 Nov 2019 13:29:02 -0800 (PST)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id p12sm2823edw.81.2019.11.12.13.28.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Nov 2019 13:29:02 -0800 (PST)
+Subject: Re: [PATCH net-next 02/12] net: mscc: ocelot: filter out ocelot SoC
+ specific PCS config from common path
+To:     Vladimir Oltean <olteanv@gmail.com>, jakub.kicinski@netronome.com,
+        davem@davemloft.net, alexandre.belloni@bootlin.com
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
+        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
+        horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
+        netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20191112124420.6225-1-olteanv@gmail.com>
+ <20191112124420.6225-3-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <431507ae-6210-91bc-bfc9-54ecbc7a1641@gmail.com>
+Date:   Tue, 12 Nov 2019 13:28:58 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <20191112124420.6225-3-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 11:22:19AM -0800, Jeff Kirsher wrote:
-> From: Dave Ertman <david.m.ertman@intel.com>
+On 11/12/19 4:44 AM, Vladimir Oltean wrote:
+> From: Claudiu Manoil <claudiu.manoil@nxp.com>
 > 
-> This is the initial implementation of the Virtual Bus,
-> virtbus_device and virtbus_driver.  The virtual bus is
-> a software based bus intended to support lightweight
-> devices and drivers and provide matching between them
-> and probing of the registered drivers.
+> The adjust_link routine should be generic enough to be (re)used by
+> any SoC that integrates a switch core compatible with the Ocelot
+> core switch driver.  Currently all configurations are generic except
+> for the PCS settings that are SoC specific.  Move these out to the
+> Ocelot SoC/board instance.
 > 
-> Files added:
-> 	drivers/bus/virtual_bus.c
-> 	include/linux/virtual_bus.h
-> 	Documentation/driver-api/virtual_bus.rst
-> 
-> The primary purpose of the virual bus is to provide
-> matching services and to pass the data pointer
-> contained in the virtbus_device to the virtbus_driver
-> during its probe call.  This will allow two separate
-> kernel objects to match up and start communication.
-> 
-> The bus will support probe/remove shutdown and
-> suspend/resume callbacks.
-> 
-> Kconfig and Makefile alterations are included
-> 
-> Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Interesting, and kind of what I was thinking of, but the implementation
-is odd and I don't really see how you can use it.
-
-Can you provide a second patch that actually uses this api?
-
-Code comments below for when you resend:
-
-> +Virtual Bus Structs
-> +~~~~~~~~~~~~~~~~~~~
-> +struct device virtual_bus = {
-> +        .init_name      = "virtbus",
-> +        .release        = virtual_bus_release,
-> +};
-> +
-> +struct bus_type virtual_bus_type = {
-> +        .name           = "virtbus",
-> +        .match          = virtbus_match,
-> +        .probe          = virtbus_probe,
-> +        .remove         = virtbus_remove,
-> +        .shutdown       = virtbus_shutdown,
-> +        .suspend        = virtbus_suspend,
-> +        .resume         = virtbus_resume,
-> +};
-> +
-> +struct virtbus_device {
-> +        const char                      *name;
-> +        int                             id;
-> +        const struct virtbus_dev_id     *dev_id;
-> +        struct device                   dev;
-> +        void                            *data;
-> +};
-> +
-> +struct virtbus_driver {
-> +        int (*probe)(struct virtbus_device *);
-> +        int (*remove)(struct virtbus_device *);
-> +        void (*shutdown)(struct virtbus_device *);
-> +        int (*suspend)(struct virtbus_device *, pm_message_t state);
-> +        int (*resume)(struct virtbus_device *);
-> +        struct device_driver driver;
-> +};
-
-
-All of the above should come straight from the .c/.h files, no need to
-duplicate it in a text file that will be guaranteed to get out of sync.
-
-> diff --git a/drivers/bus/virtual_bus.c b/drivers/bus/virtual_bus.c
-> new file mode 100644
-> index 000000000000..af3f6d9b60f4
-> --- /dev/null
-> +++ b/drivers/bus/virtual_bus.c
-> @@ -0,0 +1,339 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * virtual_bus.c - lightweight software based bus for virtual devices
-> + *
-> + * Copyright (c) 2019-20 Intel Corporation
-> + *
-> + * Please see Documentation/driver-api/virtual_bus.rst for
-> + * more information
-> + */
-> +
-> +#include <linux/string.h>
-> +#include <linux/virtual_bus.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/module.h>
-> +#include <linux/init.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/pm_domain.h>
-> +#include <linux/acpi.h>
-> +#include <linux/device.h>
-> +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("Lightweight Virtual Bus");
-> +MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
-> +MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
-> +
-> +static DEFINE_IDA(virtbus_dev_id);
-> +
-> +static void virtual_bus_release(struct device *dev)
-> +{
-> +	pr_info("Removing virtual bus device.\n");
-> +}
-
-This is just one step away from doing horrible things.
-
-A release function should free the memory.  Not just print a message :(
-
-Also, this is the driver code, use dev_info() and friends, never use
-pr_*()   Same goes for all places in this code.
-
-So this is a debugging line, why?
-How can this be called?  You only use it:
-
-> +
-> +struct device virtual_bus = {
-> +	.init_name	= "virtbus",
-> +	.release	= virtual_bus_release,
-> +};
-> +EXPORT_SYMBOL_GPL(virtual_bus);
-
-Here.
-
-Ick.
-
-A static struct device?  Called 'bus'?  That's _REALLY_ confusing.  What
-is this for?  And why export it?  That's guaranteed to cause problems
-(hint, code lifecycle vs. data lifecycles...)
-
-> +/**
-> + * virtbus_add_dev - add a virtual bus device
-> + * @vdev: virtual bus device to add
-> + */
-> +int virtbus_dev_add(struct virtbus_device *vdev)
-> +{
-> +	int ret;
-> +
-> +	if (!vdev)
-> +		return -EINVAL;
-> +
-> +	device_initialize(&vdev->dev);
-> +	if (!vdev->dev.parent)
-> +		vdev->dev.parent = &virtual_bus;
-
-So it's a parent?  Ok, then why export it?
-
-Again I want to see a user please...
-
-> +
-> +	vdev->dev.bus = &virtual_bus_type;
-> +	/* All device IDs are automatically allocated */
-> +	ret = ida_simple_get(&virtbus_dev_id, 0, 0, GFP_KERNEL);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	vdev->id = ret;
-> +	dev_set_name(&vdev->dev, "%s.%d", vdev->name, vdev->id);
-> +
-> +	pr_debug("Registering VirtBus device '%s'. Parent at %s\n",
-> +		 dev_name(&vdev->dev), dev_name(vdev->dev.parent));
-
-dev_dbg().
-
-> +
-> +	ret = device_add(&vdev->dev);
-> +	if (!ret)
-> +		return ret;
-> +
-> +	/* Error adding virtual device */
-> +	ida_simple_remove(&virtbus_dev_id, vdev->id);
-> +	vdev->id = VIRTBUS_DEVID_NONE;
-
-That's all you need to clean up?  Did you read the device_add()
-documentation?  Please do so.
-
-And what's up with this DEVID_NONE stuff?
-
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(virtbus_dev_add);
-> +
-> +/**
-> + * virtbus_dev_del - remove a virtual bus device
-> + * vdev: virtual bus device we are removing
-> + */
-> +void virtbus_dev_del(struct virtbus_device *vdev)
-> +{
-> +	if (!IS_ERR_OR_NULL(vdev)) {
-> +		device_del(&vdev->dev);
-> +
-> +		ida_simple_remove(&virtbus_dev_id, vdev->id);
-> +		vdev->id = VIRTBUS_DEVID_NONE;
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(virtbus_dev_del);
-> +
-> +struct virtbus_object {
-> +	struct virtbus_device vdev;
-> +	char name[];
-> +};
-
-A device has a name, why have another one?
-
-> +
-> +/**
-> + * virtbus_dev_release - Destroy a virtbus device
-> + * @vdev: virtual device to release
-> + *
-> + * Note that the vdev->data which is separately allocated needs to be
-> + * separately freed on it own.
-> + */
-> +static void virtbus_dev_release(struct device *dev)
-> +{
-> +	struct virtbus_object *vo = container_of(dev, struct virtbus_object,
-> +						 vdev.dev);
-> +
-> +	kfree(vo);
-> +}
-> +
-> +/**
-> + * virtbus_dev_alloc - allocate a virtbus device
-> + * @name: name to associate with the vdev
-> + * @data: pointer to data to be associated with this device
-> + */
-> +struct virtbus_device *virtbus_dev_alloc(const char *name, void *data)
-> +{
-> +	struct virtbus_object *vo;
-> +
-> +	/* Create a virtbus object to contain the vdev and name.  This
-> +	 * avoids a problem with the const attribute of name in the vdev.
-> +	 * The virtbus_object will be allocated here and freed in the
-> +	 * release function.
-> +	 */
-> +	vo = kzalloc(sizeof(*vo) + strlen(name) + 1, GFP_KERNEL);
-> +	if (!vo)
-> +		return NULL;
-
-What problem are you trying to work around with the name?
-
-> +
-> +	strcpy(vo->name, name);
-> +	vo->vdev.name = vo->name;
-> +	vo->vdev.data = data;
-> +	vo->vdev.dev.release = virtbus_dev_release;
-> +
-> +	return &vo->vdev;
-> +}
-> +EXPORT_SYMBOL_GPL(virtbus_dev_alloc);
-
-Why have an alloc/add pair of functions?  Why not just one?
-
-> +
-> +static int virtbus_drv_probe(struct device *_dev)
-> +{
-> +	struct virtbus_driver *vdrv = to_virtbus_drv(_dev->driver);
-> +	struct virtbus_device *vdev = to_virtbus_dev(_dev);
-> +	int ret;
-> +
-> +	ret = dev_pm_domain_attach(_dev, true);
-> +	if (ret) {
-> +		dev_warn(_dev, "Failed to attatch to PM Domain : %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	if (vdrv->probe) {
-> +		ret = vdrv->probe(vdev);
-> +		if (ret)
-> +			dev_pm_domain_detach(_dev, true);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int virtbus_drv_remove(struct device *_dev)
-> +{
-> +	struct virtbus_driver *vdrv = to_virtbus_drv(_dev->driver);
-> +	struct virtbus_device *vdev = to_virtbus_dev(_dev);
-> +	int ret = 0;
-> +
-> +	if (vdrv->remove)
-> +		ret = vdrv->remove(vdev);
-> +
-> +	dev_pm_domain_detach(_dev, true);
-> +
-> +	return ret;
-> +}
-> +
-> +static void virtbus_drv_shutdown(struct device *_dev)
-> +{
-> +	struct virtbus_driver *vdrv = to_virtbus_drv(_dev->driver);
-> +	struct virtbus_device *vdev = to_virtbus_dev(_dev);
-> +
-> +	if (vdrv->shutdown)
-> +		vdrv->shutdown(vdev);
-> +}
-> +
-> +static int virtbus_drv_suspend(struct device *_dev, pm_message_t state)
-> +{
-> +	struct virtbus_driver *vdrv = to_virtbus_drv(_dev->driver);
-> +	struct virtbus_device *vdev = to_virtbus_dev(_dev);
-> +
-> +	return vdrv->suspend ? vdrv->suspend(vdev, state) : 0;
-> +}
-> +
-> +static int virtbus_drv_resume(struct device *_dev)
-> +{
-> +	struct virtbus_driver *vdrv = to_virtbus_drv(_dev->driver);
-> +	struct virtbus_device *vdev = to_virtbus_dev(_dev);
-> +
-> +	return vdrv->resume ? vdrv->resume(vdev) : 0;
-> +}
-> +
-> +/**
-> + * virtbus_drv_register - register a driver for virtual bus devices
-> + * @vdrv: virtbus_driver structure
-> + * @owner: owning module/driver
-> + */
-> +int virtbus_drv_register(struct virtbus_driver *vdrv, struct module *owner)
-
-Don't force someone to type THIS_MODULE for this call, use the macro
-trick instead that most subsystems use.
-
-Again, I want to see a user, that will cause lots of these types of
-things to be painfully obvious :)
-
-
-> +{
-> +	vdrv->driver.owner = owner;
-> +	vdrv->driver.bus = &virtual_bus_type;
-> +	vdrv->driver.probe = virtbus_drv_probe;
-> +	vdrv->driver.remove = virtbus_drv_remove;
-> +	vdrv->driver.shutdown = virtbus_drv_shutdown;
-> +	vdrv->driver.suspend = virtbus_drv_suspend;
-> +	vdrv->driver.resume = virtbus_drv_resume;
-> +
-> +	return driver_register(&vdrv->driver);
-> +}
-> +EXPORT_SYMBOL_GPL(virtbus_drv_register);
-> +
-> +/**
-> + * virtbus_drv_unregister - unregister a driver for virtual bus devices
-> + * @drv: virtbus_driver structure
-> + */
-> +void virtbus_drv_unregister(struct virtbus_driver *vdrv)
-> +{
-> +	driver_unregister(&vdrv->driver);
-> +}
-> +EXPORT_SYMBOL_GPL(virtbus_drv_unregister);
-> +
-> +static const
-> +struct virtbus_dev_id *virtbus_match_id(const struct virtbus_dev_id *id,
-> +					struct virtbus_device *vdev)
-> +{
-> +	while (id->name[0]) {
-> +		if (strcmp(vdev->name, id->name) == 0) {
-> +			vdev->dev_id = id;
-> +			return id;
-> +		}
-> +		id++;
-> +	}
-> +	return NULL;
-> +}
-> +
-> +/**
-> + * virtbus_match - bind virtbus device to virtbus driver
-> + * @dev: device
-> + * @drv: driver
-> + *
-> + * Virtbus device IDs are always in "<name>.<instance>" format.
-> + * Instances are automatically selected through an ida_simple_get so
-> + * are positive integers. Names are taken from the device name field.
-> + * Driver IDs are simple <name>.  Need to extract the name from the
-> + * Virtual Device compare to name of the driver.
-> + */
-> +static int virtbus_match(struct device *dev, struct device_driver *drv)
-> +{
-> +	struct virtbus_driver *vdrv = to_virtbus_drv(drv);
-> +	struct virtbus_device *vdev = to_virtbus_dev(dev);
-> +
-> +	if (vdrv->id_table)
-> +		return virtbus_match_id(vdrv->id_table, vdev) != NULL;
-> +
-> +	return (strcmp(vdev->name, drv->name) == 0);
-> +}
-> +
-> +/**
-> + * virtbus_probe - call probe of the virtbus_drv
-> + * @dev: device struct
-> + */
-> +static int virtbus_probe(struct device *dev)
-> +{
-> +	return dev->driver->probe ? dev->driver->probe(dev) : 0;
-> +}
-> +
-> +static int virtbus_remove(struct device *dev)
-> +{
-> +	return dev->driver->remove ? dev->driver->remove(dev) : 0;
-> +}
-> +
-> +static void virtbus_shutdown(struct device *dev)
-> +{
-> +	if (dev->driver->shutdown)
-> +		dev->driver->shutdown(dev);
-> +}
-> +
-> +static int virtbus_suspend(struct device *dev, pm_message_t state)
-> +{
-> +	if (dev->driver->suspend)
-> +		return dev->driver->suspend(dev, state);
-
-You have two different styles here with these calls, use this one
-instead of the crazy ? : style above in probe/remove please.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static int virtbus_resume(struct device *dev)
-> +{
-> +	if (dev->driver->resume)
-> +		return dev->driver->resume(dev);
-> +
-> +	return 0;
-> +}
-> +
-> +struct bus_type virtual_bus_type = {
-> +	.name		= "virtbus",
-> +	.match		= virtbus_match,
-> +	.probe		= virtbus_probe,
-> +	.remove		= virtbus_remove,
-> +	.shutdown	= virtbus_shutdown,
-> +	.suspend	= virtbus_suspend,
-> +	.resume		= virtbus_resume,
-> +};
-> +EXPORT_SYMBOL_GPL(virtual_bus_type);
-
-Why is this exported?
-
-> +
-> +static int __init virtual_bus_init(void)
-> +{
-> +	int err;
-> +
-> +	err = device_register(&virtual_bus);
-> +	if (err) {
-> +		put_device(&virtual_bus);
-> +		return err;
-> +	}
-> +
-> +	err = bus_register(&virtual_bus_type);
-> +	if (err) {
-> +		device_unregister(&virtual_bus);
-> +		return err;
-> +	}
-> +
-> +	pr_debug("Virtual Bus (virtbus) registered with kernel\n");
-
-Don't be noisy.  And remove your debugging code :)
-
-
-> +	return err;
-> +}
-> +
-> +static void __exit virtual_bus_exit(void)
-> +{
-> +	bus_unregister(&virtual_bus_type);
-> +	device_unregister(&virtual_bus);
-> +}
-> +
-> +module_init(virtual_bus_init);
-> +module_exit(virtual_bus_exit);
-> diff --git a/include/linux/virtual_bus.h b/include/linux/virtual_bus.h
-> new file mode 100644
-> index 000000000000..722f020ac53b
-> --- /dev/null
-> +++ b/include/linux/virtual_bus.h
-> @@ -0,0 +1,64 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * virtual_bus.h - lightweight software bus
-> + *
-> + * Copyright (c) 2019-20 Intel Corporation
-> + *
-> + * Please see Documentation/driver-api/virtual_bus.rst for more information
-> + */
-> +
-> +#ifndef _VIRTUAL_BUS_H_
-> +#define _VIRTUAL_BUS_H_
-> +
-> +#include <linux/device.h>
-> +
-> +#define VIRTBUS_DEVID_NONE	(-1)
-
-What is this for?
-
-> +#define VIRTBUS_NAME_SIZE	20
-
-Why?  Why is 20 "ok"?
-
-> +
-> +struct virtbus_dev_id {
-> +	char name[VIRTBUS_NAME_SIZE];
-> +	u64 driver_data;
-
-u64 or a pointer?  You use both, pick one please.
-
-> +};
-> +
-> +/* memory allocation for dev_id is expected to be done by the virtbus_driver
-> + * that will match with the virtbus_device, and the matching process will
-> + * copy the pointer from the matched element from the driver to the device.
-
-What pointer?  I don't understand.
-
-> + */
-> +struct virtbus_device {
-> +	const char			*name;
-> +	int				id;
-> +	const struct virtbus_dev_id	*dev_id;
-> +	struct device			dev;
-> +	void				*data;
-> +};
-> +
-> +struct virtbus_driver {
-> +	int (*probe)(struct virtbus_device *);
-> +	int (*remove)(struct virtbus_device *);
-> +	void (*shutdown)(struct virtbus_device *);
-> +	int (*suspend)(struct virtbus_device *, pm_message_t state);
-> +	int (*resume)(struct virtbus_device *);
-> +	struct device_driver driver;
-> +	const struct virtbus_dev_id *id_table;
-> +};
-> +
-> +#define virtbus_get_dev_id(vdev)	((vdev)->id_entry)
-> +#define virtbus_get_devdata(dev)	((dev)->devdata)
-
-What are these for?
-
-> +#define dev_is_virtbus(dev)	((dev)->bus == &virtbus_type)
-
-Who needs this?
-
-> +#define to_virtbus_dev(x)	container_of((x), struct virtbus_device, dev)
-> +#define to_virtbus_drv(drv)	(container_of((drv), struct virtbus_driver, \
-> +				 driver))
-
-Why are these in a public .h file?
-
-> +
-> +extern struct bus_type virtual_bus_type;
-> +extern struct device virtual_bus;
-
-Again, why exported?
-
-> +
-> +int virtbus_dev_add(struct virtbus_device *vdev);
-> +void virtbus_dev_del(struct virtbus_device *vdev);
-> +struct virtbus_device *virtbus_dev_alloc(const char *name, void *devdata);
-> +int virtbus_drv_register(struct virtbus_driver *vdrv, struct module *owner);
-> +void virtbus_drv_unregister(struct virtbus_driver *vdrv);
-> +
-> +int virtbus_for_each_dev(void *data, int (*fn)(struct device *, void *));
-> +int virtbus_for_each_drv(void *data, int(*fn)(struct device_driver *, void *));
-
-pick a coding style and stick with it please...
-
-thanks,
-
-greg k-h
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
