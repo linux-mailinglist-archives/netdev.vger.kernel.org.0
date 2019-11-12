@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA167F975D
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 18:39:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 197B6F979A
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 18:50:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726959AbfKLRjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 12:39:33 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:44112 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726912AbfKLRjd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 12:39:33 -0500
-Received: by mail-qv1-f66.google.com with SMTP id d3so5132940qvs.11;
-        Tue, 12 Nov 2019 09:39:32 -0800 (PST)
+        id S1726983AbfKLRu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 12:50:57 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45311 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725997AbfKLRu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 12:50:56 -0500
+Received: by mail-qk1-f193.google.com with SMTP id q70so15207101qke.12;
+        Tue, 12 Nov 2019 09:50:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=7DIrP1Yf+X4ZzvL9JgMF6ymSVIXZzSV6EaGGlyzgr8E=;
-        b=F0+AzZDsiOs2+N9QKh4Krn+lX3z95dKwqiHgk5VjKmukaVewRVBZhGg42+FGR8cryl
-         j2heo0VGJucBp/mk8butiXDk/KnSctCLK7T5l2GL4vVZhRXoiO/6f75Hgmz85rXeLets
-         cuAsZYepd3UN4wBGRN/xMJ1qCq6GozZUhf9rRB8VHFrEholud61pV+Ok2WuWax3nr3tW
-         35LtPvkBoacPshNHxKbH/xkCSdiep0vt2gy29JpR+5khUAn+mtq8fu1p3v8rRIsl4IIx
-         mmAz3nc9BYlRWVu+O93AN9fI1wCNavwp8frJfcA0+2tTHwD3WiZfzYvgE8/LZIpUZqMV
-         QwKA==
+        bh=ylsEy4MlIJErY/GVeWNeaZDzsBVBxc5FEWIayo4Qyjo=;
+        b=L/AvwS0/Y1MZ20SMB3ivYZroc8LBgL6ZFMjiW/GsU0vEGMoroGXsFu71DJSTUaF40F
+         HAnASGcyjiPzyMkkcPF4J/awvnGmPMcF1A6nJS2CSSZ8EnfNLouTDmM+DQG3AFkBpfsG
+         GEp2Tjl1zaGARAEmcluupriVsrqFTpJo6SG/7Ay1tRpZVaPJ/kKSAYzPhpLUKX9FLUOl
+         h/C2M/XMoS6JF3OuJNgktD93BmGjWRPwV0x7jqiAxLj7Qk3l5Db9ssKNEovzM+PyTexR
+         0ExP7CZqYj2lj2OATyPVKgR4cbxmkKvCo5sp6MMawFtamaix3UU5nHrlK6Ns6uLcKIeS
+         3MnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7DIrP1Yf+X4ZzvL9JgMF6ymSVIXZzSV6EaGGlyzgr8E=;
-        b=KG6j8ejOWRFgw+4ord1M3hKT4luiolR109EcRgwr0FKU/MX/Ew6aShZx5u3htk0/En
-         qjoPH+qyJ+udsZcVOoCrV04Vwa3Axy5ewAgvXk3W9G5ZKx2m2Bw8lTDmLtIa2+dSMJZO
-         U9AdwUV3LggLdeyqEaFWFrgeJdHHoOCBbuK/zzoSfJ1KfQxiT/hSOo7FTfn/j2HL7M6o
-         n1EE28grzPi581yFeOBsBHuOzVU24CR89sJxk2wLS9V/w4HGpEmmFO5xmNq/4JHDIL+b
-         3wTbr4Lxf46Wob/AkyWvTDr0PWe1Yt3Yh2EVQxg9qDfel5PAwKLimmS/knlCHOjOKwUA
-         0pqw==
-X-Gm-Message-State: APjAAAWDvoEGa7ULUqlB1vjpWI26KN2fUO/KRCEQH74kmKRccHco0qZW
-        0rG5YFG3LhLdGn+o0Q4QRaYQ7855G6uEciYK9iw=
-X-Google-Smtp-Source: APXvYqzgEhcDmcaFlF19CO4Y4ZVJje318juiacOkBQLSxLi13vs2iRrv5SqCROIvkOZS3JrdMZ0ahduV4+TdzehpkF0=
-X-Received: by 2002:a0c:9a43:: with SMTP id q3mr30455153qvd.101.1573580371802;
- Tue, 12 Nov 2019 09:39:31 -0800 (PST)
+        bh=ylsEy4MlIJErY/GVeWNeaZDzsBVBxc5FEWIayo4Qyjo=;
+        b=DCUJQh2a9KWBLewV5qKbzFUaTfm+q08eF/dplIarMHHWwRDiGjmeo6uNirFVDgDcOd
+         L3u1MCwXJa7pqmrdVoipeA/D/ykAQxfaRqIrsud4KJNUwNqQCD7q03xWkVllo41ftAvR
+         e7gQfk2mfwCShZAl4MwgGTRXJwtpkU6p8MVMRXU1i61rJe7JdTW24nc1YaO7tz4qU7tz
+         bqvcBFqriZCcrX4DZ+7sTG74csu08GcMIjH0h3SFK/FmEc2Bl9ruEJhamOkRyu2x6efT
+         nrHGD/l6NaO80QPKXQi3F9DO+tiBbLKSRKcBrz8FQl5739RDkxO0NMUJq0RwsmeBG2+o
+         S1MA==
+X-Gm-Message-State: APjAAAXQH2K1BR1Taw/7Fy78uZL8XsbSC4U4gfzo6bZ06gtx1f/uL2mO
+        +eDO6doFPI42NYxYXI/6J1QVqnowHoNFrUN0y+s=
+X-Google-Smtp-Source: APXvYqyoB8p+nd3VwU28X4m1ygubakyjyy3i940CLBO0CujySu+a32k1m4E67Wuew0ZPLfOfe2cqiMju5WI84VEKfpU=
+X-Received: by 2002:a37:8a01:: with SMTP id m1mr1867882qkd.147.1573581054354;
+ Tue, 12 Nov 2019 09:50:54 -0800 (PST)
 MIME-Version: 1.0
-References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
- <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
- <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
- <87h840oese.fsf@toke.dk> <282d61fe-7178-ebf1-e0da-bdc3fb724e4b@gmail.com> <87wocqrz2v.fsf@toke.dk>
-In-Reply-To: <87wocqrz2v.fsf@toke.dk>
+References: <87h840oese.fsf@toke.dk> <282d61fe-7178-ebf1-e0da-bdc3fb724e4b@gmail.com>
+ <87wocqrz2v.fsf@toke.dk> <20191027.121727.1776345635168200501.davem@davemloft.net>
+ <09817958-e331-63e9-efbf-05341623a006@gmail.com>
+In-Reply-To: <09817958-e331-63e9-efbf-05341623a006@gmail.com>
 From:   William Tu <u9012063@gmail.com>
-Date:   Tue, 12 Nov 2019 09:38:55 -0800
-Message-ID: <CALDO+SZEU7yfZK_JTPKQm-8HR_HMUfNjdMMik862dJDBc8SGQA@mail.gmail.com>
+Date:   Tue, 12 Nov 2019 09:50:17 -0800
+Message-ID: <CALDO+SaxbNpON+=3zA4r4k6BE7UhbGU1WovW8Owyi8-9J_Wbkw@mail.gmail.com>
 Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
         John Fastabend <john.fastabend@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
@@ -66,7 +65,7 @@ Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
         Florian Westphal <fw@strlen.de>,
-        Pravin B Shelar <pshelar@ovn.org>,
+        pravin shelar <pshelar@ovn.org>,
         Linux Kernel Network Developers <netdev@vger.kernel.org>,
         bpf <bpf@vger.kernel.org>, Stanislav Fomichev <sdf@fomichev.me>
 Content-Type: text/plain; charset="UTF-8"
@@ -76,75 +75,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 27, 2019 at 8:24 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Wed, Oct 30, 2019 at 5:32 PM Toshiaki Makita
+<toshiaki.makita1@gmail.com> wrote:
 >
-> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
->
-> > On 19/10/23 (=E6=B0=B4) 2:45:05, Toke H=C3=B8iland-J=C3=B8rgensen wrote=
-:
-> >> John Fastabend <john.fastabend@gmail.com> writes:
-> >>
-> >>> I think for sysadmins in general (not OVS) use case I would work
-> >>> with Jesper and Toke. They seem to be working on this specific
-> >>> problem.
-> >>
-> >> We're definitely thinking about how we can make "XDP magically speeds =
-up
-> >> my network stack" a reality, if that's what you mean. Not that we have
-> >> arrived at anything specific yet...
-> >>
-> >> And yeah, I'd also be happy to discuss what it would take to make a
-> >> native XDP implementation of the OVS datapath; including what (if
-> >> anything) is missing from the current XDP feature set to make this
-> >> feasible. I must admit that I'm not quite clear on why that wasn't the
-> >> approach picked for the first attempt to speed up OVS using XDP...
+> On 2019/10/28 4:17, David Miller wrote:
+> > From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > Date: Sun, 27 Oct 2019 16:24:24 +0100
 > >
-> > Here's some history from William Tu et al.
-> > https://linuxplumbersconf.org/event/2/contributions/107/
+> >> The results in the paper also shows somewhat disappointing performance
+> >> for the eBPF implementation, but that is not too surprising given that
+> >> it's implemented as a TC eBPF hook, not an XDP program. I seem to reca=
+ll
+> >> that this was also one of the things puzzling to me back when this was
+> >> presented...
 > >
-> > Although his aim was not to speed up OVS but to add kernel-independent
-> > datapath, his experience shows full OVS support by eBPF is very
-> > difficult.
->
-> Yeah, I remember seeing that presentation; it still isn't clear to me
-> what exactly the issue was with implementing the OVS datapath in eBPF.
-> As far as I can tell from glancing through the paper, only lists program
-> size and lack of loops as limitations; both of which have been lifted
-> now.
->
-Sorry it's not very clear in the presentation and paper.
-Some of the limitations are resolved today, let me list my experiences.
+> > Also, no attempt was made to dyanamically optimize the data structures
+> > and code generated in response to features actually used.
+> >
+> > That's the big error.
+> >
+> > The full OVS key is huge, OVS is really quite a monster.
+> >
+> > But people don't use the entire key, nor do they use the totality of
+> > the data paths.
+> >
+> > So just doing a 1-to-1 translation of the OVS datapath into BPF makes
+> > absolutely no sense whatsoever and it is guaranteed to have worse
+> > performance.
 
-This is from OVS's feature requirements:
-What's missing in eBPF
-- limited stack size (resolved now)
-- limited program size (resolved now)
-- dynamic loop support for OVS actions applied to packet
-  (now bounded loop is supported)
-- no connection tracking/alg support (people suggest to look cilium)
-- no packet fragment/defragment support
-- no wildcard table/map type support
-I think it would be good to restart the project again using
-existing eBPF features.
+1-to-1 translation has nothing to do with performance.
 
-What's missing in XDP
-- clone a packet: this is very basic feature for a switch to
-  broadcast/multicast. I understand it's hard to implement.
-  A workaround is to XDP_PASS and let tc do the clone. But slow.
+eBPF/XDP is faster only when you can by-pass/shortcut some code.
+If the number of features required are the same, then an eBPF
+implementation should be less than or equal to a kernel module's
+performance. "less than" because eBPF usually has some limitations
+so you have to redesign the data structure.
 
-Because of no packet cloning support, I didn't try implementing
-OVS datapath in XDP.
-
-> The results in the paper also shows somewhat disappointing performance
-> for the eBPF implementation, but that is not too surprising given that
-> it's implemented as a TC eBPF hook, not an XDP program. I seem to recall
-> that this was also one of the things puzzling to me back when this was
-> presented...
-
-Right, the point of that project is not performance improvement.
-But sort of to see how existing eBPF feature can be used to implement
-all features needed by OVS datapath.
+It's possible that after redesigning your data structure to eBPF,
+it becomes faster. But there is no such case in my experience.
 
 Regards,
 William
