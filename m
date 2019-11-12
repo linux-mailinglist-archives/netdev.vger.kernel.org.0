@@ -2,76 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 115E6F903B
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 14:09:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94808F908C
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 14:23:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726645AbfKLNJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 08:09:51 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:33607 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbfKLNJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 08:09:51 -0500
-X-Originating-IP: 92.137.17.54
-Received: from localhost (alyon-657-1-975-54.w92-137.abo.wanadoo.fr [92.137.17.54])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id A8619FF805;
-        Tue, 12 Nov 2019 13:09:47 +0000 (UTC)
-Date:   Tue, 12 Nov 2019 14:09:47 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     jakub.kicinski@netronome.com, davem@davemloft.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
-        horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
-        netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
- a separate folder
-Message-ID: <20191112130947.GE3572@piout.net>
-References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-11-olteanv@gmail.com>
+        id S1727187AbfKLNXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 08:23:18 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35702 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726188AbfKLNXS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 08:23:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=EkOskIfrlI4bkz4+Vg1LatDiIG96BWRzkY/ggrPRwOw=; b=b2yL+wmOhtnmgb4EeBedjT/nTY
+        dPTwwgAouo89wqS7BDa7kJivRsY2wymHv4kx2QZI1rhAViFN87AtxZtoEdbjuxu74AP6nL7+H27d0
+        X0bJBgY/ZK9EtgAS/6z1qRwqwQs+kZvhc1KOZWMyHb2NFvtKOthiVfEaTA2s+v3mDt/0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iUW8V-0001S0-8d; Tue, 12 Nov 2019 14:23:11 +0100
+Date:   Tue, 12 Nov 2019 14:23:11 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@redhat.com>
+Cc:     olof@lixom.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mdio-octeon: Fix pointer/integer casts
+Message-ID: <20191112132311.GA5090@lunn.ch>
+References: <20191111004211.96425-1-olof@lixom.net>
+ <20191111.214658.1031500406952713920.davem@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191112124420.6225-11-olteanv@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191111.214658.1031500406952713920.davem@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 12/11/2019 14:44:18+0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, Nov 11, 2019 at 09:46:58PM -0800, David Miller wrote:
+> From: Olof Johansson <olof@lixom.net>
+> Date: Sun, 10 Nov 2019 16:42:11 -0800
 > 
-> The vitesse/ folder will contain drivers for switching chips derived
-> from legacy Vitesse IPs (VSC family), including those produced by
-> Microsemi and Microchip (acquirers of Vitesse).
+> > -static inline void oct_mdio_writeq(u64 val, u64 addr)
+> > +static inline void oct_mdio_writeq(u64 val, void __iomem *addr)
+> >  {
+> > -	cvmx_write_csr(addr, val);
+> > +	cvmx_write_csr((u64)addr, val);
+> >  }
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/dsa/Kconfig                       | 31 +------------------
->  drivers/net/dsa/Makefile                      |  4 +--
->  drivers/net/dsa/vitesse/Kconfig               | 31 +++++++++++++++++++
->  drivers/net/dsa/vitesse/Makefile              |  3 ++
->  .../vsc73xx-core.c}                           |  2 +-
->  .../vsc73xx-platform.c}                       |  2 +-
->  .../vsc73xx-spi.c}                            |  2 +-
->  .../{vitesse-vsc73xx.h => vitesse/vsc73xx.h}  |  0
->  8 files changed, 39 insertions(+), 36 deletions(-)
->  create mode 100644 drivers/net/dsa/vitesse/Kconfig
->  create mode 100644 drivers/net/dsa/vitesse/Makefile
->  rename drivers/net/dsa/{vitesse-vsc73xx-core.c => vitesse/vsc73xx-core.c} (99%)
->  rename drivers/net/dsa/{vitesse-vsc73xx-platform.c => vitesse/vsc73xx-platform.c} (99%)
->  rename drivers/net/dsa/{vitesse-vsc73xx-spi.c => vitesse/vsc73xx-spi.c} (99%)
->  rename drivers/net/dsa/{vitesse-vsc73xx.h => vitesse/vsc73xx.h} (100%)
-> 
+> I hate stuff like this, I think you really need to fix this from the bottom
+> up or similar.  MMIO and such addresses are __iomem pointers, period.
 
-As there are no commonalities between the vsc73xx and felix drivers,
-shouldn't you simply leave that one out and have felix in the existing
-microchip folder?
+Yes, i agree, but did not want to push the work to Olof. The point of
+COMPILE_TEST is to find issues like this, code which should be
+architecture independent, but is not. The cast just papers over the
+cracks.
 
--- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+At a minimum, could we fix the stub cvmx_write_csr() used for
+everything !MIPS. That should hopefully fix everything !MIPS, but
+cause MIPS to start issuing warning. The MIPS folks can then cleanup
+their code, which is really what is broken here.
+
+      Andrew
