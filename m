@@ -2,80 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93BDCF9339
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97A4FF9347
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbfKLOvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:51:01 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:36074 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727192AbfKLOu7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 09:50:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=MdO8IrDo0V2nICpGDkF61n2bFV7gKeYNL4A6C+BnRIs=; b=uAn4oWKZIeMF8Zb+73VRISTr9P
-        9OHIEinLYoEXy9XnBos3oGnZLaO/xsPBbxc0u6otYdEeo+NqOayuIWLj9am6mByiTDIxMKbg1mMHN
-        2Q4kUJLEJMtOJKZw+bFaqfdqzr9RePt8MzUZUGfjd6qCuxHbpejXtTdQ1bfaJnFTK4oU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iUXVO-00022N-Or; Tue, 12 Nov 2019 15:50:54 +0100
-Date:   Tue, 12 Nov 2019 15:50:54 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
- a separate folder
-Message-ID: <20191112145054.GG10875@lunn.ch>
-References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-11-olteanv@gmail.com>
- <20191112130947.GE3572@piout.net>
- <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
- <20191112143346.3pzshxapotwdbzpg@lx-anielsen.microsemi.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191112143346.3pzshxapotwdbzpg@lx-anielsen.microsemi.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727717AbfKLOwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:52:31 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44324 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727677AbfKLOw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:52:27 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 12 Nov 2019 16:52:21 +0200
+Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKx5020273;
+        Tue, 12 Nov 2019 16:52:21 +0200
+From:   Roi Dayan <roid@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Eli Britstein <elibr@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>
+Subject: [PATCH iproute2-next 0/8] flower match support for masked ports
+Date:   Tue, 12 Nov 2019 16:51:46 +0200
+Message-Id: <20191112145154.145289-1-roid@mellanox.com>
+X-Mailer: git-send-email 2.8.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > As there are no commonalities between the vsc73xx and felix drivers,
-> > > shouldn't you simply leave that one out and have felix in the existing
-> > > microchip folder?
-> > >
-> > 
-> > I don't have a strong preference, although where I come from, all new
-> > NXP networking drivers are still labeled as "freescale" even though
-> > there is no code reuse. There are even less commonalities with
-> > Microchip (ex-Micrel, if I am not mistaken) KSZ switches than with the
-> > old vsc73xx. I'll let the ex-Vitesse people decide.
-> I'm on the same page as Alexandre here.
+Hi,
 
-Leaving them where they are makes maintenance easier. Fixes are easier
-to backport if things don't move around.
+This series is for adding support for flower match on masked
+src/dst ports.
 
-> I think we should leave vsc73xx where it is already, and put the felix driver in
-> the drivers/net/ethernet/mscc/ folder where ocelot is already.
+First commits are preparations and fixing tos and ttl output.
+Last 3 commits add support for masked src/dst port.
 
-Currently, all DSA drivers are in drivers/net/dsa. We do occasionally
-make changes over all DSA drivers at once, so it is nice they are all
-together. So i would prefer the DSA part of Felix is also there. But
-the core can be in drivers/net/ethernet/mscc/.
+Thanks,
+Roi
 
-    Andrew
+Eli Britstein (8):
+  tc_util: introduce a function to print JSON/non-JSON masked numbers
+  tc_util: add an option to print masked numbers with/without a newline
+  tc: flower: fix newline prints for ct-mark and ct-zone
+  tc_util: fix JSON prints for ct-mark and ct-zone
+  tc: flower: fix output for ip tos and ttl
+  tc: flower: add u16 big endian parse option
+  tc_util: add functions for big endian masked numbers
+  tc: flower: support masked port destination and source match
+
+ man/man8/tc-flower.8 | 13 ++++----
+ tc/f_flower.c        | 92 +++++++++++++++++++++++++++++++++-------------------
+ tc/m_ct.c            |  4 +--
+ tc/tc_util.c         | 88 ++++++++++++++++++++++++++++++++++---------------
+ tc/tc_util.h         |  8 +++--
+ 5 files changed, 136 insertions(+), 69 deletions(-)
+
+-- 
+2.8.4
+
