@@ -2,205 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40C73F9B52
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:56:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA44CF9B61
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:00:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbfKLU4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 15:56:22 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:17881 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726718AbfKLU4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:56:21 -0500
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Bryan.Whitehead@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Bryan.Whitehead@microchip.com";
-  x-sender="Bryan.Whitehead@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Bryan.Whitehead@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; spf=Pass smtp.mailfrom=Bryan.Whitehead@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: iOZF2MiRIGt8NQnobQmaGhMMm++awndlrSlq8t5DvueinXXkxMi58QLZscHZloYGU/ZVxd3Vh9
- NWCpHS6VRSC9+S4G5efBowV/43BA4tBldYtW97bH8XF5bzYqFNLBmnIRC55NpgYgF+r6nROyhJ
- E90L+omcDwvchM38F1Sq1SKcQuNSFsP8E9m0FOTgVpiAgxybCUEOY78ZRaaTDXCogSOytuZpDC
- fzg+t2mI+HDaKL1dtCxzvw3Py2xg2AlBvswKS4Os28a4tLCfYLkwk1tFqtm8u450ngaKZJp33D
- i6k=
-X-IronPort-AV: E=Sophos;i="5.68,297,1569308400"; 
-   d="scan'208";a="54008556"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2019 13:56:20 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 12 Nov 2019 13:56:11 -0700
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 12 Nov 2019 13:56:11 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ng+J/4vdJudJfLgpP5EGA9lJo4YkuocUHVSIjcNWHeruQOXKGMob6/WCXmkBHpmQIo4IJexJISfGi3oY2VLQeHomWiKcDwPQxkiVeS6ZwFEEUmMIIMVMTEYsgCLlAPB3TnWl1NUqCn7/SgycRsLgK1wC4OXvOelW5qoR5XBPOkeKd2dkPSy2bm9PP7N8/IFKfFbn/U1sX/DOK5r5VJLcSBJ8m2CGnVkB5+bncmaK8CV8tilQ7L9txswi/Rdm7/SmB/N7qFsbwQehJVYyWOouu5yWhGHHSIYjW642/WdMQqekwG+Uqb1w/X3B/CQ2huVjApxj6z8Gw61yVKaDB6C6Wg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=06BdHPzNL1BViFG24z7wI0LiQoUeqWIns7AO4OqB9X4=;
- b=TlsQ1dSSZFsmXS6qaxwXmWjFE3OymrVLBL6hTL5SGIhSFFmtDkEbX6EDr/T1/vA34RYcitYRo8VLhj22PfXgMAblVFyR3yutD+BBtnyRruOcZ+A/lNXJF5KUtbGLWUHW430mldr8P3aDT7ENGQs2OoI2tOiSghzrWm7y8bQuqJvDkaLj6gmmQTWQXVrnq8O+Ib9SefEApG6RPQyexpJvq6VIa/QcN2K2hwQoxtv9QMSb4Qnn9vQJAWR7+x9ZiULOlOMUiasEtagorB+1bd6Kfpu2Ijrhyok4paSVAFxROtE1PqsfIv4a0KJfPp+KLrCuQ1tnxXjoTyd0N6G2fxlr2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S1726954AbfKLVAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:00:02 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45917 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbfKLVAC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:00:02 -0500
+Received: by mail-qt1-f195.google.com with SMTP id 30so21350651qtz.12
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:00:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=06BdHPzNL1BViFG24z7wI0LiQoUeqWIns7AO4OqB9X4=;
- b=IRMHUMR0/qT6vcYKtibOFd5YYlP9rms4KLY6ycxJnWrbQ/jwrng/HhActrZiT3BFdj8n0WFKBryGrotme9cihk48t/JkQ9sHRZ9wBulojbzV9FRd8DAIWNKWuuRX1JhcmUNwG77+q0RMxn8gAPstuWH3gLVFgtmigC22MooGffU=
-Received: from MN2PR11MB4333.namprd11.prod.outlook.com (10.255.90.25) by
- MN2PR11MB3727.namprd11.prod.outlook.com (20.178.252.13) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Tue, 12 Nov 2019 20:56:08 +0000
-Received: from MN2PR11MB4333.namprd11.prod.outlook.com
- ([fe80::e82a:ef05:d8ca:4cd]) by MN2PR11MB4333.namprd11.prod.outlook.com
- ([fe80::e82a:ef05:d8ca:4cd%6]) with mapi id 15.20.2430.023; Tue, 12 Nov 2019
- 20:56:08 +0000
-From:   <Bryan.Whitehead@microchip.com>
-To:     <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: RE: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
-Thread-Topic: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
-Thread-Index: AQHVmXJIiwJOwhRbeU+HRtKC5Z72x6eH//SAgAABu0A=
-Date:   Tue, 12 Nov 2019 20:56:08 +0000
-Message-ID: <MN2PR11MB4333B89CD568C6B66C8C60E3FA770@MN2PR11MB4333.namprd11.prod.outlook.com>
-References: <1573574048-12251-1-git-send-email-Bryan.Whitehead@microchip.com>
- <20191112204031.GH10875@lunn.ch>
-In-Reply-To: <20191112204031.GH10875@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [47.19.18.123]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 314c28f7-96d2-431e-0d95-08d767b2be2a
-x-ms-traffictypediagnostic: MN2PR11MB3727:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR11MB3727B365C66ED948F4D43A64FA770@MN2PR11MB3727.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 021975AE46
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(39860400002)(346002)(396003)(366004)(376002)(199004)(189003)(256004)(71200400001)(71190400001)(446003)(8676002)(66066001)(25786009)(9686003)(8936002)(6436002)(4326008)(52536014)(55016002)(229853002)(81156014)(3846002)(6116002)(81166006)(2906002)(316002)(11346002)(54906003)(99286004)(14454004)(5660300002)(33656002)(486006)(476003)(7696005)(6506007)(76176011)(6916009)(66946007)(66476007)(86362001)(186003)(305945005)(74316002)(478600001)(26005)(6246003)(76116006)(66446008)(107886003)(66556008)(102836004)(64756008)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3727;H:MN2PR11MB4333.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JAZgbbBtPODtEjBSzGNbvMZYTLEbh1c05XRycXpASPgp/7SZh+RMtiJ7i2A7xym/teZbqzslQpWs87IPLtZJ5df7KS3bZLAQhGTBV8yPZp4v6XESuhdSaXmnumNTnNKtinruuw4Xqjwd3A079aNbmEKpTI0qkue2yNDb23XmWyNNR/VFV5wsyFwxdpgn+lzqK+tlGFw0hVONMgyAwYvsMOnYBtGMsjW21vnjKatpG82TIgVZVhjoUpglU1XsN5z4/pypWKaekzxbpSSSnYZH61JFRNj2/Nlk2zYZUgTQY4j8Ia/dIeojZxpZs1jG6Yn8paR6JGKZSKjZ9g77ZyT1Ik+CFfnvT9a+JTaIL9UZelSBoA5HFtDWbQYijSBI4ahK/I3wpxjRZs9oMoXJpZsqp+h2VzCPegV2/b/spb1MMP7MDMxyNd6ub3867KAmqlxq
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=RcA1vdVtYr2ysVNVJFn5DcgKL3bMRqBRJU+TaaCpfL0=;
+        b=gsLyECWBq7P2ygaM5CenSPIK2Bb9Vzk/GapR143RLs/FRENjwLSRxB75aYNhw5984F
+         rKvpW++sjGFPZRLl5Gkywo/VH4TZSIMo3Kz1Zdcr5u/c49gDlDhrtWbIqu252GfATxmH
+         huRGQsHzg7f8DK06/AdCV6NOn3chUF3DGq+OsDZLShQQwKQsyC0eXXArp6Z2p2RNRQVX
+         SFaLXbxKX5ZisLYH3fNPGdqqW8GGEVa5htyEoRcrHF79nrnEeGrlnGSrJ2Mhl/FUgXb5
+         BZggyE+OornQNmefaRE6HGW52cGEvmbEcBgxTiDrOI4NDDUARx1mjzZFS7R5MrQt2IQH
+         2PmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=RcA1vdVtYr2ysVNVJFn5DcgKL3bMRqBRJU+TaaCpfL0=;
+        b=t9P73KXGrWASuq7WZ+hfKyBGbLh0UTchS7AWV1/YV1zaw1m8jt51i2JnTRFHYUHpFQ
+         cR7S75JbNQCuuGnR8ltrHwsZ21WZg7jpvsJl9eO6l/n16Er9ZISfBkiSEHq784WmVzTk
+         bt+OwT0OO/6GMOs/QhCAA7VoWVwAVaaBbpDb05z/t3iYv9fIrr2mvLsATqsWPGHNhvU7
+         7ZkBZqdjhMiB5CP/elfriZ+hg/O8tilTg4wMPbHl+Li6UEYdKlHb6ct1sk1KRCZ5YD5l
+         acNlt653gHpeSXNZCNNq4HBMLkQbIBKVMBaYMotlDS5n7WSM11pMPOJD/glqSfHMQweg
+         F42w==
+X-Gm-Message-State: APjAAAWzkEpp5ehM+tfbSVO2JfTe39uL7qWqJULfFMy8cEm0vpEggnmj
+        lDg5nTWBdPbzRZ9RglatRa9HHA==
+X-Google-Smtp-Source: APXvYqzqv+RVz+VwrSvo2+CFjhM5L0G7lxnRYD0DPmy0gOr43rtZwxesUpgTldGoOYGZryde9POElg==
+X-Received: by 2002:aed:255c:: with SMTP id w28mr34148037qtc.185.1573592400902;
+        Tue, 12 Nov 2019 13:00:00 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id w69sm9693057qkb.26.2019.11.12.12.59.59
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Nov 2019 12:59:59 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iUdGY-0004I0-Te; Tue, 12 Nov 2019 16:59:58 -0400
+Date:   Tue, 12 Nov 2019 16:59:58 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, parav@mellanox.com,
+        Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191112205958.GH5584@ziepe.ca>
+References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 314c28f7-96d2-431e-0d95-08d767b2be2a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Nov 2019 20:56:08.6592
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zDqA5b5zb31fhzuc5ExLfZf8kaB0gfgp9YJg5eeFpPyqaieFzETRvfMJcH7x9IVQLjdJve9tLXYFso7PRoIeqn2wR1q0G9qj0rAKUgGi2LI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3727
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Tue, Nov 12, 2019 at 10:54:08AM -0500, Bryan Whitehead wrote:
-> > Add support for the following VSC PHYs
-> > 	VSC8504, VSC8552, VSC8572,
-> > 	VSC8562, VSC8564, VSC8575, VSC8582
-> >
-> > Signed-off-by: Bryan Whitehead <Bryan.Whitehead@microchip.com>
-> > ---
-> >  drivers/net/phy/mscc.c | 182
-> > +++++++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 182 insertions(+)
-> >
-> > diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c index
-> > 805cda3..8933681 100644
-> > --- a/drivers/net/phy/mscc.c
-> > +++ b/drivers/net/phy/mscc.c
-> > @@ -253,12 +253,18 @@ enum rgmii_rx_clock_delay {
-> >  #define MSCC_PHY_TR_MSB			  18
-> >
-> >  /* Microsemi PHY ID's */
-> > +#define PHY_ID_VSC8504			  0x000704c0
-> >  #define PHY_ID_VSC8514			  0x00070670
-> >  #define PHY_ID_VSC8530			  0x00070560
-> >  #define PHY_ID_VSC8531			  0x00070570
-> >  #define PHY_ID_VSC8540			  0x00070760
-> >  #define PHY_ID_VSC8541			  0x00070770
-> > +#define PHY_ID_VSC8552			  0x000704e0
-> > +#define PHY_ID_VSC856X			  0x000707e0
-> > +#define PHY_ID_VSC8572			  0x000704d0
-> >  #define PHY_ID_VSC8574			  0x000704a0
-> > +#define PHY_ID_VSC8575			  0x000707d0
-> > +#define PHY_ID_VSC8582			  0x000707b0
-> >  #define PHY_ID_VSC8584			  0x000707c0
-> >
-> >  #define MSCC_VDDMAC_1500		  1500
-> > @@ -1597,6 +1603,8 @@ static bool vsc8584_is_pkg_init(struct
-> > phy_device *phydev, bool reversed)
-> >
-> >  		phy =3D container_of(map[addr], struct phy_device, mdio);
-> >
-> > +		if (!phy)
-> > +			continue;
-> > +
-> >  		if ((phy->phy_id & phydev->drv->phy_id_mask) !=3D
-> >  		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
-> >  			continue;
-> > @@ -1648,9 +1656,27 @@ static int vsc8584_config_init(struct phy_device
-> *phydev)
-> >  	 */
-> >  	if (!vsc8584_is_pkg_init(phydev, val & PHY_ADDR_REVERSED ? 1 : 0))
-> {
-> >  		if ((phydev->phy_id & phydev->drv->phy_id_mask) =3D=3D
-> > +		    (PHY_ID_VSC8504 & phydev->drv->phy_id_mask))
-> > +			ret =3D vsc8574_config_pre_init(phydev);
-> > +		else if ((phydev->phy_id & phydev->drv->phy_id_mask) =3D=3D
-> > +		    (PHY_ID_VSC8552 & phydev->drv->phy_id_mask))
-> > +			ret =3D vsc8574_config_pre_init(phydev);
-> > +		else if ((phydev->phy_id & phydev->drv->phy_id_mask) =3D=3D
-> > +		    (PHY_ID_VSC856X & phydev->drv->phy_id_mask))
-> > +			ret =3D vsc8584_config_pre_init(phydev);
->=20
-> Could we turn this into a switch statement? I think
->=20
->       switch (phydev->phy_id & phydev->drv->phy_id_mask) {
->       case PHY_ID_VSC8504:
->       case PHY_ID_VSC8552:
->       	   ret =3D vsc8574_config_pre_init(phydev);
-> 	   break
->       case PHY_ID_VSC856X:
->       	   ret =3D vsc8584_config_pre_init(phydev);
-> 	   break;
->=20
-> etc should work, since PHY_ID_VSC8<FOO> always has the lower nibble set
-> to 0.
+On Mon, Nov 11, 2019 at 11:22:19AM -0800, Jeff Kirsher wrote:
+> From: Dave Ertman <david.m.ertman@intel.com>
+> 
+> This is the initial implementation of the Virtual Bus,
+> virtbus_device and virtbus_driver.  The virtual bus is
+> a software based bus intended to support lightweight
+> devices and drivers and provide matching between them
+> and probing of the registered drivers.
+> 
+> Files added:
+> 	drivers/bus/virtual_bus.c
+> 	include/linux/virtual_bus.h
+> 	Documentation/driver-api/virtual_bus.rst
+> 
+> The primary purpose of the virual bus is to provide
+> matching services and to pass the data pointer
+> contained in the virtbus_device to the virtbus_driver
+> during its probe call.  This will allow two separate
+> kernel objects to match up and start communication.
 
-Hi Andrew,
+I think this is the 'multi_subsystem_device' idea I threw out in this
+thread. ie pass an opaque void *pointer, done here by
+virtbus_get_devdata():
+ 
+ https://lore.kernel.org/r/20191109084659.GB1289838@kroah.com
 
-I would like to do exactly that, but I was concerned future changes might c=
-hange the phy_id_mask, so to keep code less brittle, and more flexible I th=
-ought I should keep the "AND mask" operations such as (PHY_ID_VSC8<FOO> & p=
-hydev->drv->phy_id_mask)
+And Greg said 'Ick, no'..
 
-If you judge this is an unreasonable concern, then I will change it to a sw=
-itch statement.
-Let me know,
-Thanks,
-Bryan
+So each driver should makes its own bus, and perhaps we should provide
+some helper stuff for the repeating code, like PM function reflection?
 
+Jason
