@@ -2,184 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFBBAF8C6F
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 11:04:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08D5DF8CC4
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 11:25:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbfKLKEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 05:04:37 -0500
-Received: from mail-eopbgr770078.outbound.protection.outlook.com ([40.107.77.78]:38786
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725834AbfKLKEh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 05:04:37 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VSn7pUrYOI7MCzIyka7wWeX1AXA0Z7zjhXJ8PDVGWUlNLThl7TzKYOGY5Wt06ZHe0wo8/t99GoY16p8/C2QJJ5FWngA5b8r9zA+V2aa1GjFRWW0d7f1QUipJQ3sPyd5/TpLgChiB2ZEP8fv/SgXKl3JvnDmmVZCWedn0ogb0ibX2z0scKaUKGMr1pKiR6HldlEIb+T7FzHYniRQYStrfcEDtPavmlAif9ZA5J9tlacsbRwomiiDOLmVr+y8IZRXryzzgjpWC8rLhPyN1o4cspe8JYT1P6ndGnTSy8YroQ5DYp2EwDnZumpKl4WnW0vEkluhoTQ8FUWE1wGrlfcULjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/HO/x6devdd6+YjosteSm9fciE0iF7fXqKQYDx0tb4Y=;
- b=SaAu+leT+7EqHy6JlD49ZhUfGEdTgVdUnN/LETUinZyQB1GTqG21qcnLohqYV0ha4lx05E4Thxlf2go49OvZTTNBSYQklc0uXqHriQdod18iQ69gYY8n8b/FWU6kqeRwnE55rlVNkcPcSaLpimMpU4qYOCSLuviG3NFhskySOv7QP1QjAswXxrk4uSy5kQS+IQbn3heL6tg6DCdrEVOGUDKlgtvUsFzhpEkTd8TD//vktdl+XGnHD+ctQgDfmdHCQNQ+7QIvY8bjo3JyhBH/4fdWEv/N4T3x9UhrDyjaNHSnJTv8TpK9tLOBmwuVXB/EgnFx9YQxwnSUcmj69mYJAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/HO/x6devdd6+YjosteSm9fciE0iF7fXqKQYDx0tb4Y=;
- b=gok7cftFwI2e70/bVh9WxHPYrVllo3cI6XfAdGZCHv6dadn+x8jF6AUrfIF7+RmPiecc9zbYrX29vWtCYUeVw+FqqQqJh7d8FTd7AfIyWMLSgcYHWkix51cMcXZu0xF2b8VFNcNuEDT81s0iEZYduRovY5NhnuiKp6+BMiI1z0c=
-Received: from MWHPR05MB3376.namprd05.prod.outlook.com (10.174.175.149) by
- MWHPR05MB2845.namprd05.prod.outlook.com (10.168.245.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.19; Tue, 12 Nov 2019 10:03:54 +0000
-Received: from MWHPR05MB3376.namprd05.prod.outlook.com
- ([fe80::4098:2c39:d8d3:a209]) by MWHPR05MB3376.namprd05.prod.outlook.com
- ([fe80::4098:2c39:d8d3:a209%7]) with mapi id 15.20.2451.018; Tue, 12 Nov 2019
- 10:03:54 +0000
-From:   Jorgen Hansen <jhansen@vmware.com>
-To:     'Stefano Garzarella' <sgarzare@redhat.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jason Wang <jasowang@redhat.com>,
+        id S1727004AbfKLKZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 05:25:26 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:24066 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726497AbfKLKZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 05:25:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573554325;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=FeJe2qKR4AroS5wb+VoFiHA+D8O79Hn1DkUHm8ygPhU=;
+        b=OgWJcMhvszP8VVDpW+eP+Nd+MESudH5m51w98FV/jqLWNuDCAUtXaqOLQ2UQxLHcLGANmS
+        GYAYIO8pol2KWz6CChKpn0huX+c/ZX8KZzGqPxmNPC5mPsZN6f7UIxI2MOrtqCMFASlora
+        5T6RNkl2p2+LX3/cq1wjgKG/VgEiqnI=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-155-zTGsW_W7NRKKCPQO8JnMig-1; Tue, 12 Nov 2019 05:25:24 -0500
+Received: by mail-wm1-f69.google.com with SMTP id 199so1252196wmb.0
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 02:25:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BrR3QsKS92XMMhW8UwZv36u713+8n4HIqLr/ZFLbFHQ=;
+        b=Z0EoAvWj0ML1Q+m4ExL6AlsSlj+Bw5JOuaTo7I/E7cdTOgkAotCjwIJYRDTDdyXdnA
+         CxhMeSRXNbMrwac2zlGUgJ6rQFkpeOT6qt5KXYsLKSLzukyycgtSRFBfAooaQ3KPVmE2
+         g+OWgBzigkx+tAJ36/WS7nuJNIAbwvgNGw6kGcsIONjTKQWczYakZ/DywV6M63WgoCvK
+         GgrlPW8Wc0RUOrBpPDIZfBqGhzCfd1w53R/zI7XU+7mHq6BmyCrXYuV/fUKwpnQAhX4/
+         kkez3dgO4W0d+RxoBybkIAalgVcLjGRkQgtfkRBNZZTi0KPLc7p+7/l7r+frv5qsOdMW
+         3Cug==
+X-Gm-Message-State: APjAAAWltDnZpbO0j13e2OX2FrojGyUj8xYsDVibD76lKs1RMDBvYLID
+        JrqiLUh/S9KEEqYV6tQdYwkj/eDTQzc/M6nS/QAAOazadKWNj6mxn55e6+iB37xsqsyiN1qd4Iq
+        Kjh07ZU9rLZYMNBPb
+X-Received: by 2002:adf:fd84:: with SMTP id d4mr24416308wrr.152.1573554322639;
+        Tue, 12 Nov 2019 02:25:22 -0800 (PST)
+X-Google-Smtp-Source: APXvYqzzd01lEO1dSmRM5lGpocQcsRID0AkIXa07bDyw/j7sqhyXEVhx1JHsIG70FQL413foyixXCg==
+X-Received: by 2002:adf:fd84:: with SMTP id d4mr24416280wrr.152.1573554322325;
+        Tue, 12 Nov 2019 02:25:22 -0800 (PST)
+Received: from mcroce-redhat.mxp.redhat.com (nat-pool-mxp-t.redhat.com. [149.6.153.186])
+        by smtp.gmail.com with ESMTPSA id x5sm2290277wmj.7.2019.11.12.02.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Nov 2019 02:25:21 -0800 (PST)
+From:   Matteo Croce <mcroce@redhat.com>
+To:     netdev@vger.kernel.org, dev@openvswitch.org
+Cc:     linux-kernel@vger.kernel.org, Pravin B Shelar <pshelar@ovn.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>
-Subject: RE: [PATCH net-next 12/14] vsock/vmci: register vmci_transport only
- when VMCI guest/host are active
-Thread-Topic: [PATCH net-next 12/14] vsock/vmci: register vmci_transport only
- when VMCI guest/host are active
-Thread-Index: AQHViYhpRc2q1qJxVEORBsxH5VDhoaeGP/hggAAYgICAARRFEA==
-Date:   Tue, 12 Nov 2019 10:03:54 +0000
-Message-ID: <MWHPR05MB33769FD52B833FC1C82F0A80DA770@MWHPR05MB3376.namprd05.prod.outlook.com>
-References: <20191023095554.11340-1-sgarzare@redhat.com>
- <20191023095554.11340-13-sgarzare@redhat.com>
- <MWHPR05MB3376266BC6AE9E6E0B75F1A1DA740@MWHPR05MB3376.namprd05.prod.outlook.com>
- <20191111173053.erwfzawioxje635o@steredhat>
-In-Reply-To: <20191111173053.erwfzawioxje635o@steredhat>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jhansen@vmware.com; 
-x-originating-ip: [208.91.2.2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6159e3f2-39bf-4964-e23d-08d76757a03c
-x-ms-traffictypediagnostic: MWHPR05MB2845:
-x-microsoft-antispam-prvs: <MWHPR05MB28454DC7E240204D86E8E465DA770@MWHPR05MB2845.namprd05.prod.outlook.com>
-x-vmwhitelist: True
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 021975AE46
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(366004)(136003)(346002)(39860400002)(189003)(199004)(6246003)(3846002)(71190400001)(81166006)(6506007)(229853002)(99286004)(55016002)(71200400001)(8936002)(6116002)(14454004)(478600001)(86362001)(5660300002)(102836004)(74316002)(6916009)(9686003)(256004)(7736002)(7696005)(76176011)(305945005)(2906002)(446003)(11346002)(81156014)(316002)(6436002)(8676002)(476003)(76116006)(186003)(26005)(4326008)(66066001)(64756008)(33656002)(25786009)(66946007)(7416002)(54906003)(486006)(66556008)(52536014)(66476007)(66446008);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR05MB2845;H:MWHPR05MB3376.namprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: vmware.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HJgnxj7auhSs7J3hUaOWmu8KPHlyh3ngMVp5Ojm+KAhvQM95+FhFf3ooVZ9jJUXqiuT/S2S/Vm5+xCrH8qJQ5JgysfPe4mFfrE1uj/el7QvKpoVjNgUSYTNrgzk8BWsqEhQHG15SYQB2IECmvUbeJvLp8rKh5rroofM53zyofH6aDqKZ7ZBlIbVVWqKNL/L6sypnYVtoqH4DwVVhRLGCbJpHaJqB5J5WHyvm/qNlkDHdU6bGdAf9hQ1zWDbVgHcHeI8zk0uasA8aKvJ00Dut2Qal36Veat0TLV1c0dkqi1qNf5vyxrxoqqrclrPmS93GedG6LatjCSRKAujCjMZx9cb/M2bPiAmmSEX+PaGKLYLlHCGjKjb/T6QtoPS7yjhdt6VliddvMqUjjboowGfnEWN8UzDGERCSsCnGtIpmrLtSMbzlVT5EsKU4tnIJ/vEy
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Bindiya Kurle <bindiyakurle@gmail.com>
+Subject: [PATCH net-next] openvswitch: add TTL decrement action
+Date:   Tue, 12 Nov 2019 11:25:18 +0100
+Message-Id: <20191112102518.4406-1-mcroce@redhat.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6159e3f2-39bf-4964-e23d-08d76757a03c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Nov 2019 10:03:54.3665
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OZgmAGcx40hBwHqu5Rgy2uhRyi0wXYEv3NPQHQTYULODH+xp+L/NgValHWso993HglNgwiIalMEpm7wjvwkc1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR05MB2845
+X-MC-Unique: zTGsW_W7NRKKCPQO8JnMig-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Stefano Garzarella [mailto:sgarzare@redhat.com]
-> Sent: Monday, November 11, 2019 6:31 PM
-> On Mon, Nov 11, 2019 at 04:27:28PM +0000, Jorgen Hansen wrote:
-> > > From: Stefano Garzarella [mailto:sgarzare@redhat.com]
-> > > Sent: Wednesday, October 23, 2019 11:56 AM
-> > >
-> > > To allow other transports to be loaded with vmci_transport,
-> > > we register the vmci_transport as G2H or H2G only when a VMCI guest
-> > > or host is active.
-> > >
-> > > To do that, this patch adds a callback registered in the vmci driver
-> > > that will be called when a new host or guest become active.
-> > > This callback will register the vmci_transport in the VSOCK core.
-> > > If the transport is already registered, we ignore the error coming
-> > > from vsock_core_register().
-> >
-> > So today this is mainly an issue for the VMCI vsock transport, because
-> > VMCI autoloads with vsock (and with this solution it can continue to
-> > do that, so none of our old products break due to changed behavior,
-> > which is great).
->=20
-> I tried to not break anything :-)
->=20
-> >                  Shouldn't vhost behave similar, so that any module
-> > that registers a h2g transport only does so if it is in active use?
-> >
->=20
-> The vhost-vsock module will load when the first hypervisor open
-> /dev/vhost-vsock, so in theory, when there's at least one active user.
+New action to decrement TTL instead of setting it to a fixed value.
+This action will decrement the TTL and, in case of expired TTL, send the
+packet to userspace via output_userspace() to take care of it.
 
-Ok, sounds good then.=20
+Supports both IPv4 and IPv6 via the ttl and hop_limit fields, respectively.
 
->=20
-> >
-> > > --- a/drivers/misc/vmw_vmci/vmci_host.c
-> > > +++ b/drivers/misc/vmw_vmci/vmci_host.c
-> > > @@ -108,6 +108,11 @@ bool vmci_host_code_active(void)
-> > >  	     atomic_read(&vmci_host_active_users) > 0);
-> > >  }
-> > >
-> > > +int vmci_host_users(void)
-> > > +{
-> > > +	return atomic_read(&vmci_host_active_users);
-> > > +}
-> > > +
-> > >  /*
-> > >   * Called on open of /dev/vmci.
-> > >   */
-> > > @@ -338,6 +343,8 @@ static int vmci_host_do_init_context(struct
-> > > vmci_host_dev *vmci_host_dev,
-> > >  	vmci_host_dev->ct_type =3D VMCIOBJ_CONTEXT;
-> > >  	atomic_inc(&vmci_host_active_users);
-> > >
-> > > +	vmci_call_vsock_callback(true);
-> > > +
-> >
-> > Since we don't unregister the transport if user count drops back to 0, =
-we
-> could
-> > just call this the first time, a VM is powered on after the module is l=
-oaded.
->=20
-> Yes, make sense. can I use the 'vmci_host_active_users' or is better to
-> add a new 'vmci_host_vsock_loaded'?
->=20
-> My doubt is that vmci_host_active_users can return to 0, so when it retur=
-ns
-> to 1, we call vmci_call_vsock_callback() again.
+Tested with a corresponding change in the userspace:
 
-vmci_host_active_users can drop to 0 and then increase again, so having a f=
-lag
-indicating whether the callback has been invoked would ensure that it is on=
-ly
-called once.
+    # ovs-dpctl dump-flows
+    in_port(2),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, acti=
+ons:dec_ttl,1
+    in_port(1),eth(),eth_type(0x0800), packets:0, bytes:0, used:never, acti=
+ons:dec_ttl,2
+    in_port(1),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, acti=
+ons:2
+    in_port(2),eth(),eth_type(0x0806), packets:0, bytes:0, used:never, acti=
+ons:1
 
-Thanks,
-Jorgen
+    # ping -c1 192.168.0.2 -t 42
+    IP (tos 0x0, ttl 41, id 61647, offset 0, flags [DF], proto ICMP (1), le=
+ngth 84)
+        192.168.0.1 > 192.168.0.2: ICMP echo request, id 386, seq 1, length=
+ 64
+    # ping -c1 192.168.0.2 -t 120
+    IP (tos 0x0, ttl 119, id 62070, offset 0, flags [DF], proto ICMP (1), l=
+ength 84)
+        192.168.0.1 > 192.168.0.2: ICMP echo request, id 388, seq 1, length=
+ 64
+    # ping -c1 192.168.0.2 -t 1
+    #
 
+Co-authored-by: Bindiya Kurle <bindiyakurle@gmail.com>
+Signed-off-by: Bindiya Kurle <bindiyakurle@gmail.com>
+Signed-off-by: Matteo Croce <mcroce@redhat.com>
+---
+ include/uapi/linux/openvswitch.h |  2 ++
+ net/openvswitch/actions.c        | 46 ++++++++++++++++++++++++++++++++
+ net/openvswitch/flow_netlink.c   |  6 +++++
+ 3 files changed, 54 insertions(+)
+
+diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswi=
+tch.h
+index 1887a451c388..a3bdb1ecd1e7 100644
+--- a/include/uapi/linux/openvswitch.h
++++ b/include/uapi/linux/openvswitch.h
+@@ -890,6 +890,7 @@ struct check_pkt_len_arg {
+  * @OVS_ACTION_ATTR_CHECK_PKT_LEN: Check the packet length and execute a s=
+et
+  * of actions if greater than the specified packet length, else execute
+  * another set of actions.
++ * @OVS_ACTION_ATTR_DEC_TTL: Decrement the IP TTL.
+  *
+  * Only a single header can be set with a single %OVS_ACTION_ATTR_SET.  No=
+t all
+  * fields within a header are modifiable, e.g. the IPv4 protocol and fragm=
+ent
+@@ -925,6 +926,7 @@ enum ovs_action_attr {
+ =09OVS_ACTION_ATTR_METER,        /* u32 meter ID. */
+ =09OVS_ACTION_ATTR_CLONE,        /* Nested OVS_CLONE_ATTR_*.  */
+ =09OVS_ACTION_ATTR_CHECK_PKT_LEN, /* Nested OVS_CHECK_PKT_LEN_ATTR_*. */
++=09OVS_ACTION_ATTR_DEC_TTL,      /* Decrement ttl action */
+=20
+ =09__OVS_ACTION_ATTR_MAX,=09      /* Nothing past this will be accepted
+ =09=09=09=09       * from userspace. */
+diff --git a/net/openvswitch/actions.c b/net/openvswitch/actions.c
+index 12936c151cc0..077b7f309c93 100644
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -1174,6 +1174,43 @@ static int execute_check_pkt_len(struct datapath *dp=
+, struct sk_buff *skb,
+ =09=09=09     nla_len(actions), last, clone_flow_key);
+ }
+=20
++static int execute_dec_ttl(struct sk_buff *skb, struct sw_flow_key *key)
++{
++=09int err;
++
++=09if (skb->protocol =3D=3D htons(ETH_P_IPV6)) {
++=09=09struct ipv6hdr *nh =3D ipv6_hdr(skb);
++
++=09=09err =3D skb_ensure_writable(skb, skb_network_offset(skb) +
++=09=09=09=09=09  sizeof(*nh));
++=09=09if (unlikely(err))
++=09=09=09return err;
++
++=09=09if (nh->hop_limit <=3D 1)
++=09=09=09return -EHOSTUNREACH;
++
++=09=09key->ip.ttl =3D --nh->hop_limit;
++=09} else {
++=09=09struct iphdr *nh =3D ip_hdr(skb);
++=09=09u8 old_ttl;
++
++=09=09err =3D skb_ensure_writable(skb, skb_network_offset(skb) +
++=09=09=09=09=09  sizeof(*nh));
++=09=09if (unlikely(err))
++=09=09=09return err;
++
++=09=09if (nh->ttl <=3D 1)
++=09=09=09return -EHOSTUNREACH;
++
++=09=09old_ttl =3D nh->ttl--;
++=09=09csum_replace2(&nh->check, htons(old_ttl << 8),
++=09=09=09      htons(nh->ttl << 8));
++=09=09key->ip.ttl =3D nh->ttl;
++=09}
++
++=09return 0;
++}
++
+ /* Execute a list of actions against 'skb'. */
+ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
+ =09=09=09      struct sw_flow_key *key,
+@@ -1345,6 +1382,15 @@ static int do_execute_actions(struct datapath *dp, s=
+truct sk_buff *skb,
+=20
+ =09=09=09break;
+ =09=09}
++
++=09=09case OVS_ACTION_ATTR_DEC_TTL:
++=09=09=09err =3D execute_dec_ttl(skb, key);
++=09=09=09if (err =3D=3D -EHOSTUNREACH) {
++=09=09=09=09output_userspace(dp, skb, key, a, attr,
++=09=09=09=09=09=09 len, OVS_CB(skb)->cutlen);
++=09=09=09=09OVS_CB(skb)->cutlen =3D 0;
++=09=09=09}
++=09=09=09break;
+ =09=09}
+=20
+ =09=09if (unlikely(err)) {
+diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.=
+c
+index 65c2e3458ff5..d17f2d4b420f 100644
+--- a/net/openvswitch/flow_netlink.c
++++ b/net/openvswitch/flow_netlink.c
+@@ -79,6 +79,7 @@ static bool actions_may_change_flow(const struct nlattr *=
+actions)
+ =09=09case OVS_ACTION_ATTR_SET_MASKED:
+ =09=09case OVS_ACTION_ATTR_METER:
+ =09=09case OVS_ACTION_ATTR_CHECK_PKT_LEN:
++=09=09case OVS_ACTION_ATTR_DEC_TTL:
+ =09=09default:
+ =09=09=09return true;
+ =09=09}
+@@ -3005,6 +3006,7 @@ static int __ovs_nla_copy_actions(struct net *net, co=
+nst struct nlattr *attr,
+ =09=09=09[OVS_ACTION_ATTR_METER] =3D sizeof(u32),
+ =09=09=09[OVS_ACTION_ATTR_CLONE] =3D (u32)-1,
+ =09=09=09[OVS_ACTION_ATTR_CHECK_PKT_LEN] =3D (u32)-1,
++=09=09=09[OVS_ACTION_ATTR_DEC_TTL] =3D 0,
+ =09=09};
+ =09=09const struct ovs_action_push_vlan *vlan;
+ =09=09int type =3D nla_type(a);
+@@ -3233,6 +3235,10 @@ static int __ovs_nla_copy_actions(struct net *net, c=
+onst struct nlattr *attr,
+ =09=09=09break;
+ =09=09}
+=20
++=09=09case OVS_ACTION_ATTR_DEC_TTL:
++=09=09=09/* Nothing to do.  */
++=09=09=09break;
++
+ =09=09default:
+ =09=09=09OVS_NLERR(log, "Unknown Action type %d", type);
+ =09=09=09return -EINVAL;
+--=20
+2.23.0
 
