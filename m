@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF697F9C51
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:30:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82ECDF9C52
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:31:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727059AbfKLVap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:30:45 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:39021 "EHLO
+        id S1726980AbfKLVb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:31:28 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35132 "EHLO
         mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726910AbfKLVao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:30:44 -0500
-Received: by mail-ed1-f66.google.com with SMTP id l25so6232edt.6
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:30:42 -0800 (PST)
+        with ESMTP id S1726376AbfKLVb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:31:27 -0500
+Received: by mail-ed1-f66.google.com with SMTP id r16so25647edq.2
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:31:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=8vqpSWSXVAggXIB9OBM/431r2NdkK7dzvKFsVJX7DPY=;
-        b=s/cg2iC7rTO1RxIJqjCXOnxoFAIj61BAYZGqaBzXChYr2jRbl+XzUwvPGGzc7tmUJg
-         okb1q8LK1jgaqWZ1I73bslfbe+QUKe1xiFtZ0J+HD0wmGBoDD78mypDUrO1Tew4paslp
-         T89ew6hqTLiDKw2rbOg2zx9J6KUzQJlhq8WCTf/DwkYkbK/+huFEwiazTSmWKcpEHclp
-         JYgUUCaMg7s8Xk6QEuQWD0+w/iw+ZcPfVqr89gRIGkCSyeWwnDgL8oovRhyLzZj+HCLU
-         1eCoFBEXYi5JwtYcudUmgnQTIpTFcZnsNfzW7nCitrFSdmn4Ra1c6kJeqsTV6rra0WvK
-         mTrg==
+        bh=/gHKJGg9juHl7ccns68WSH/NOVFtus7gaIYLEsi6Cwg=;
+        b=jBxIfwDQ/7D2q7ZR3LghQqJ8uPvHSKBTjkL17E1rwde1XqJoaQAaXM3zZO7lbZDuX7
+         hD/UAgoyIE+bcxd7vqqcRkfheVsuGEg2W6nBYLlq5iOKtVmWX72VOx8PpZtoWITgeTe9
+         Ix7mkFBqmDEz2QH4bOzfqm2O7/bhGYh8QfbhqAIoxbHfwFLWiIKo5V1fhviEiGQEcOyC
+         fQxAhOtLNW3GtydCsKJTQFL8YHXY8Len1gSyicyZQwmZzMhTTZ3PO23JwUYRZL8/m6R2
+         XB7O+3xQpAvHQVygWJJjr50wwg2R9bQyfBf69njcX6QMBpnBhesed1cm6aW1VrMcPl58
+         egbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=8vqpSWSXVAggXIB9OBM/431r2NdkK7dzvKFsVJX7DPY=;
-        b=GhinrXYc/wUuvOALeRl5yomT16cNCZ64Echi7zu3iihavlTSIII2r6MisLRjLPKs+U
-         E418DTYICr7hmWRco3YyrgU2i9apjD85qSPfEFl6RfO1oKGi+Xspc7idBV/NmlXw1oce
-         t9J7Ajf3kpY2aQTILKYot3BRA+WXAGDXAYXAVvmRL7hEwCP0WfiEYYcCoYqTkK9ibVQX
-         pySrdttyg+U/0eEIYuDyHq40VmFnYetJ1DlvyV2cHXe4Lh9+lAnEhbK5Q1k1nhZQ9/5+
-         8AcbYrHArMT4zMKJDhnmTZgD01tmNc3hQRc7SgJdIb+dlDwYQxdyzg+0bPRwK+wnjPCD
-         U+2w==
-X-Gm-Message-State: APjAAAVvRR3+wrjHr4Z9tipRhU9u6lxygH2codTPCDTFa0bLA4jjZDPE
-        AhZ2HuC6qG08JqkbjJitvUY=
-X-Google-Smtp-Source: APXvYqzvwdy6s97ShTarHzX8fupJx0/qrYKp3dcRGjECpsVVekE/oAYYWrRVhyMbrk69iAu+IzCApg==
-X-Received: by 2002:a50:aad2:: with SMTP id r18mr36069467edc.44.1573594242000;
-        Tue, 12 Nov 2019 13:30:42 -0800 (PST)
+        bh=/gHKJGg9juHl7ccns68WSH/NOVFtus7gaIYLEsi6Cwg=;
+        b=sIffH7so38kzWil0ThLR3TAgHx1MYCz5oJUCQVQnZbgyROWI+DwfocsBUljvLE/WEA
+         PDRrHkVhqUeGAC3XAG7hRWrg9s7uF5B7mb1jxakZL1lLkyR1pJNNVUEYVowP/VuYt//A
+         WSRMQsliOlt5ykz+aDQuU2TPGXtVrbwRsIM2qwA2yHTb76PmTu63adGq/W64A+lExl48
+         5ShLoAg1adGhTCJTpdOgh9y84S2uR+Np9fu52jZXGg+4IiYC5y9netyGVrOMjMR3tAUy
+         w0Ov4lKD82d/tpJQfDfOadPSoJAUSlFTccsm6OgWmmcuLHyQvJKdpbVJQxV7Bs1mCWh3
+         oXmw==
+X-Gm-Message-State: APjAAAW57D2mDTHmXQeOroo2fmQHmefGGUqjxBm0YfYAZ3LeypOqzAyu
+        CCKq32A2aw/zTsyu1SFMUTfoWsU9
+X-Google-Smtp-Source: APXvYqyOs5U7B8yhp1luzzOLrwxFPhs/yPA/xhZUHURwXIngnTDmPWX2lN2oPKQY7rFZSwuhVneNhA==
+X-Received: by 2002:aa7:c756:: with SMTP id c22mr34923136eds.25.1573594285434;
+        Tue, 12 Nov 2019 13:31:25 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v13sm3674edy.35.2019.11.12.13.30.38
+        by smtp.googlemail.com with ESMTPSA id v13sm3767edy.35.2019.11.12.13.31.21
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 13:30:41 -0800 (PST)
-Subject: Re: [PATCH net-next 03/12] net: mscc: ocelot: move invariant configs
- out of adjust_link
+        Tue, 12 Nov 2019 13:31:23 -0800 (PST)
+Subject: Re: [PATCH net-next 04/12] net: mscc: ocelot: create a helper for
+ changing the port MTU
 To:     Vladimir Oltean <olteanv@gmail.com>, jakub.kicinski@netronome.com,
         davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,7 +55,7 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-4-olteanv@gmail.com>
+ <20191112124420.6225-5-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c0670ef5-d59b-54d1-c385-56344ebeb6b0@gmail.com>
-Date:   Tue, 12 Nov 2019 13:30:35 -0800
+Message-ID: <fb7fe7ae-16c0-d2f1-455b-fa31d613a36c@gmail.com>
+Date:   Tue, 12 Nov 2019 13:31:19 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191112124420.6225-4-olteanv@gmail.com>
+In-Reply-To: <20191112124420.6225-5-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,12 +129,9 @@ X-Mailing-List: netdev@vger.kernel.org
 On 11/12/19 4:44 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> It doesn't make sense to rewrite all these registers every time the PHY
-> library notifies us about a link state change.
-> 
-> In a future patch we will customize the MTU for the CPU port, and since
-> the MTU was previously configured from adjust_link, if we don't make
-> this change, its value would have got overridden.
+> Since in an NPI/DSA setup, not all ports will have the same MTU, we need
+> to make sure the watermarks for pause frames and/or tail dropping logic
+> that existed in the driver is still coherent for the new MTU values.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
