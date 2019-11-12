@@ -2,118 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EC24F8852
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 06:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F368DF8854
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:00:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725847AbfKLF7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 00:59:19 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33312 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725298AbfKLF7T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 00:59:19 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xAC5upED013407;
-        Tue, 12 Nov 2019 00:59:04 -0500
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w7nus1uqe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Nov 2019 00:59:03 -0500
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id xAC5x3Hf017018;
-        Tue, 12 Nov 2019 00:59:03 -0500
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w7nus1uq0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Nov 2019 00:59:03 -0500
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xAC5sfo3028381;
-        Tue, 12 Nov 2019 05:59:02 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma01dal.us.ibm.com with ESMTP id 2w5n36b1x2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Nov 2019 05:59:02 +0000
-Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAC5x2H150528654
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Nov 2019 05:59:02 GMT
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 02CE46A04D;
-        Tue, 12 Nov 2019 05:59:02 +0000 (GMT)
-Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E2FC6A047;
-        Tue, 12 Nov 2019 05:58:59 +0000 (GMT)
-Received: from [9.199.43.206] (unknown [9.199.43.206])
-        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Nov 2019 05:58:58 +0000 (GMT)
-Message-ID: <1573538337.1382.3.camel@abdul>
-Subject: net-next branch fails to build on my P8 CI system
-From:   Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-To:     linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Date:   Tue, 12 Nov 2019 11:28:57 +0530
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.10.4-0ubuntu1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-12_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1910280000 definitions=main-1911120053
+        id S1725887AbfKLGA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 01:00:29 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37933 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725298AbfKLGA3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 01:00:29 -0500
+Received: by mail-pf1-f195.google.com with SMTP id c13so12564221pfp.5
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 22:00:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=8fvQOrs+FIbEFD8P4si+BoIRG1YUsg9SpPbqnJtpVZA=;
+        b=uYHkahXXKf1PNyURFfuClpOiBjbICjGajrLqDJHhGesgbYtC4cnXRfoEn2NffNYPjH
+         a0eNAiGUGu0vDjw9dcre5zoTGn08zg1v7g6uKQGGzvVnW4KWAq4yyG6VDmSZXo2YXcmm
+         tcqBBHHcIgivJeT7z6YClto4Y7lInq2frjFzOAlwJk3vPZxAdjSdpwjQtJnBUGPEAy9F
+         R7+2kOx7KO0O6FZ1wPND19XeKqIfN8rLlG8+87oiMD2YiWIuIg2T2zzT8O6fy0urS4ic
+         EsxGZx1nWF2kul+bQXNGuUU+itbhegJODf9ZEGFbPY/BltR+qvWMDHCTVgO5coKjhV1L
+         gGMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=8fvQOrs+FIbEFD8P4si+BoIRG1YUsg9SpPbqnJtpVZA=;
+        b=XjzJC63U/MLVs5X6egKhNoebCjpyXEzHzJ40z30SpzJkKH3ID6h6ae7YNHUr/VRs8R
+         gwdqnTAk5JaYVX5k0MMHjma4RE3IqmHok6veDGymW3c4+UTSPDJEPyGqbMrSKQiI0ZQj
+         Q9vkr7WWsilDye7eK/lL93hksKk+StLjLcKz7x0brrMN+AVo3mBsOMAhEdXti4iwV7Ez
+         dyPIpNLhPLpw1C2U7/YICibYoM562zOeyslHb9sq0F7NhMaKBhKfc6nR83OABy5wVI/Y
+         sdJk7G6bVjOyM6KHXBsBhGNuVsh+ADG6KfvXOr3hpA1nyZED59Js1SxESKe/8zgOZD3k
+         0OPg==
+X-Gm-Message-State: APjAAAW+kO5vb19rSevJ2k0kvAbsLEDIwcZVFtYogm9PCUTmNWPwAq7d
+        /OoBgj+gm8bh0B05py146ds=
+X-Google-Smtp-Source: APXvYqwxYytPW6CJvW3K6VWZs82vrEmb74hja0vWj10fHQhf6w+wHzrPbUXS2uunlshRE6mi9HaIHw==
+X-Received: by 2002:a63:1b4e:: with SMTP id b14mr12997627pgm.280.1573538428617;
+        Mon, 11 Nov 2019 22:00:28 -0800 (PST)
+Received: from [172.26.105.13] ([2620:10d:c090:180::c0bd])
+        by smtp.gmail.com with ESMTPSA id d23sm17042856pfo.140.2019.11.11.22.00.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 Nov 2019 22:00:27 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        kernel-team@fb.com
+Subject: Re: [RFC PATCH 1/1] page_pool: do not release pool until inflight ==
+ 0.
+Date:   Mon, 11 Nov 2019 22:00:26 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <8066DA9D-7913-4BB9-9B44-0E2D1D07B8E1@gmail.com>
+In-Reply-To: <20191111124721.5a2afe91@carbon>
+References: <20191111062038.2336521-1-jonathan.lemon@gmail.com>
+ <20191111062038.2336521-2-jonathan.lemon@gmail.com>
+ <20191111124721.5a2afe91@carbon>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greeting's
 
-I see a build failure for net-next branch on my Power 8 system
+On 11 Nov 2019, at 3:47, Jesper Dangaard Brouer wrote:
 
-13:25:10 ERROR| [stderr] ./include/linux/u64_stats_sync.h: In function 64_stats_read�:
-13:25:10 ERROR| [stderr] ./include/linux/u64_stats_sync.h:80:2: warning: passing argument 1 of 鈥榣ocal_read鈥� discards 鈥榗onst鈥� qualifier from pointer target type [enabled by default]
-13:25:10 ERROR| [stderr]   return local64_read(&p->v);
-13:25:10 ERROR| [stderr]   ^
-13:25:10 ERROR| [stderr] In file included from ./include/asm-generic/local64.h:22:0,
-13:25:10 ERROR| [stderr]                  from ./arch/powerpc/include/generated/asm/local64.h:1,
-13:25:10 ERROR| [stderr]                  from ./include/linux/u64_stats_sync.h:72,
-13:25:10 ERROR| [stderr]                  from ./include/linux/cgroup-defs.h:20,
-13:25:10 ERROR| [stderr]                  from ./include/linux/cgroup.h:28,
-13:25:10 ERROR| [stderr]                  from ./include/linux/memcontrol.h:13,
-13:25:10 ERROR| [stderr]                  from ./include/linux/swap.h:9,
-13:25:10 ERROR| [stderr]                  from ./include/linux/suspend.h:5,
-13:25:10 ERROR| [stderr]                  from init/do_mounts.c:7:
-13:25:10 ERROR| [stderr] ./arch/powerpc/include/asm/local.h:20:24: note: expected 鈥榮truct local_t *鈥� but argument is of type 鈥榗onst struct local_t *鈥�
-13:25:10 ERROR| [stderr]  static __inline__ long local_read(local_t *l)
-13:25:10 ERROR| [stderr]                         ^
-13:25:11 ERROR| [stderr] In file included from ./include/linux/cgroup-defs.h:20:0,
-13:25:11 ERROR| [stderr]                  from ./include/linux/cgroup.h:28,
-13:25:11 ERROR| [stderr]                  from ./include/linux/hugetlb.h:9,
-13:25:11 ERROR| [stderr]                  from arch/powerpc/kvm/book3s_64_vio_hv.c:16:
-13:25:11 ERROR| [stderr] ./include/linux/u64_stats_sync.h: In function 鈥榰64_stats_read鈥�:
-13:25:11 ERROR| [stderr] ./include/linux/u64_stats_sync.h:80:2: error: passing argument 1 of 鈥榣ocal_read鈥� discards 鈥榗onst鈥� qualifier from pointer target type [-Werror]
-13:25:11 ERROR| [stderr]   return local64_read(&p->v);
-13:25:11 ERROR| [stderr]   ^
+> On Sun, 10 Nov 2019 22:20:38 -0800
+> Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
+>
+>> The page pool keeps track of the number of pages in flight, and
+>> it isn't safe to remove the pool until all pages are returned.
+>>
+>> Disallow removing the pool until all pages are back, so the pool
+>> is always available for page producers.
+>>
+>> Make the page pool responsible for its own delayed destruction
+>
+> I like this part, making page_pool responsible for its own delayed
+> destruction.  I originally also wanted to do this, but got stuck on
+> mem.id getting removed prematurely from rhashtable.  You actually
+> solved this, via introducing a disconnect callback, from page_pool into
+> mem_allocator_disconnect(). I like it.
+>
+>> instead of relying on XDP, so the page pool can be used without
+>> xdp.
+>
+> This is a misconception, the xdp_rxq_info_reg_mem_model API does not
+> imply driver is using XDP.  Yes, I know the naming is sort of wrong,
+> contains "xdp". Also the xdp_mem_info name.  Ilias and I have discussed
+> to rename this several times.
+>
+> The longer term plan is/was to use this (xdp_)mem_info as generic
+> return path for SKBs, creating a more flexible memory model for
+> networking.  This patch is fine and in itself does not disrupt/change
+> that, but your offlist changes does.  As your offlist changes does
+> imply a performance gain, I will likely accept this (and then find
+> another plan for more flexible memory model for networking).
 
-I see some recent code changes here
+Are you referring to the patch which encodes the page pool pointer
+in the page, and then sends it directly to the pool on skb free
+instead of performing a mem id lookup and indirection through the
+memory model?
 
-9dfd871481c8e9c512938e9ce632beed645363e0 Merge branch 'u64_stats_t'
-fd2f4737870eb866537fbbffa2b59414b9b0c0a2 net: use u64_stats_t in struct
-pcpu_lstats
-5260dd3ed1ff7eba39251b28977e4d8950e2f099 tun: switch to u64_stats_t
-316580b69d0a7aeeee5063af47438b626bc47cbd u64_stats: provide u64_stats_t
-type
+It could be done either way.  I'm not seeing any advantages of
+the additional indirection, as the pool lifetime is guaranteed.
 
+All that is needed is:
+1) A way to differentiate this page as coming from the page pool.
+
+   The current plan of setting a bit on the skb which indicates that
+   the pages should be returned via the page pool is workable, but there
+   will be some pages returned which came from the system page allocator,
+   and these need to be filtered out.
+
+   There must be some type of signature the page permits filtering and
+   returning non-matching pages back to the page allocator.
+
+
+2) Identifying up exactly which page pool the page belongs to.
+
+   This could be done by just placing the pool pointer on the page,
+   or putting the mem info there and indirecting through the lookup.
 
 -- 
-Regard's
-
-Abdul Haleem
-IBM Linux Technology Centre
-
-
-
+Jonathan
