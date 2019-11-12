@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2B7F9349
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C524F9344
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727721AbfKLOwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:52:33 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44323 "EHLO
+        id S1727711AbfKLOwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:52:30 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44322 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727673AbfKLOw1 (ORCPT
+        with ESMTP id S1727675AbfKLOw1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:52:27 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 12 Nov 2019 16:52:21 +0200
 Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKx6020273;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKx7020273;
         Tue, 12 Nov 2019 16:52:21 +0200
 From:   Roi Dayan <roid@mellanox.com>
 To:     netdev@vger.kernel.org
@@ -23,9 +23,9 @@ Cc:     David Ahern <dsahern@gmail.com>,
         Jiri Pirko <jiri@mellanox.com>,
         Eli Britstein <elibr@mellanox.com>,
         Roi Dayan <roid@mellanox.com>
-Subject: [PATCH iproute2-next 1/8] tc_util: introduce a function to print JSON/non-JSON masked numbers
-Date:   Tue, 12 Nov 2019 16:51:47 +0200
-Message-Id: <20191112145154.145289-2-roid@mellanox.com>
+Subject: [PATCH iproute2-next 2/8] tc_util: add an option to print masked numbers with/without a newline
+Date:   Tue, 12 Nov 2019 16:51:48 +0200
+Message-Id: <20191112145154.145289-3-roid@mellanox.com>
 X-Mailer: git-send-email 2.8.4
 In-Reply-To: <20191112145154.145289-1-roid@mellanox.com>
 References: <20191112145154.145289-1-roid@mellanox.com>
@@ -36,91 +36,136 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eli Britstein <elibr@mellanox.com>
 
-Introduce a function to print masked number with a different output for
-JSON or non-JSON methods, as a pre-step towards printing numbers using
-this common function.
+Add an option to print masked numbers with or without a newline, as a
+pre-step towards using a common function.
 
 Signed-off-by: Eli Britstein <elibr@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- tc/tc_util.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
- tc/tc_util.h |  2 ++
- 2 files changed, 50 insertions(+)
+ tc/f_flower.c |  4 ++--
+ tc/m_ct.c     |  4 ++--
+ tc/tc_util.c  | 17 +++++++++--------
+ tc/tc_util.h  |  6 +++---
+ 4 files changed, 16 insertions(+), 15 deletions(-)
 
-diff --git a/tc/tc_util.c b/tc/tc_util.c
-index 0eb530408d05..2b391f182b96 100644
---- a/tc/tc_util.c
-+++ b/tc/tc_util.c
-@@ -915,6 +915,42 @@ compat_xstats:
- 		*xstats = tb[TCA_XSTATS];
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index a2a230162f78..41b81217e47e 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -1847,13 +1847,13 @@ static void flower_print_ct_label(struct rtattr *attr,
+ static void flower_print_ct_zone(struct rtattr *attr,
+ 				 struct rtattr *mask_attr)
+ {
+-	print_masked_u16("ct_zone", attr, mask_attr);
++	print_masked_u16("ct_zone", attr, mask_attr, false);
  }
  
-+static void print_masked_type(__u32 type_max,
-+			      __u32 (*rta_getattr_type)(const struct rtattr *),
-+			      const char *name, struct rtattr *attr,
-+			      struct rtattr *mask_attr)
-+{
-+	SPRINT_BUF(namefrm);
-+	__u32 value, mask;
-+	SPRINT_BUF(out);
-+	size_t done;
-+
-+	if (attr) {
-+		value = rta_getattr_type(attr);
-+		mask = mask_attr ? rta_getattr_type(mask_attr) : type_max;
-+
-+		if (is_json_context()) {
-+			sprintf(namefrm, "\n  %s %%u", name);
-+			print_hu(PRINT_ANY, name, namefrm,
-+				 rta_getattr_type(attr));
-+			if (mask != type_max) {
-+				char mask_name[SPRINT_BSIZE-6];
-+
-+				sprintf(mask_name, "%s_mask", name);
-+				sprintf(namefrm, "\n  %s %%u", mask_name);
-+				print_hu(PRINT_ANY, mask_name, namefrm, mask);
-+			}
-+		} else {
-+			done = sprintf(out, "%u", value);
-+			if (mask != type_max)
-+				sprintf(out + done, "/0x%x", mask);
-+
-+			sprintf(namefrm, "\n  %s %%s", name);
-+			print_string(PRINT_ANY, name, namefrm, out);
-+		}
-+	}
-+}
-+
- void print_masked_u32(const char *name, struct rtattr *attr,
- 		      struct rtattr *mask_attr)
+ static void flower_print_ct_mark(struct rtattr *attr,
+ 				 struct rtattr *mask_attr)
  {
-@@ -958,3 +994,15 @@ void print_masked_u16(const char *name, struct rtattr *attr,
- 	sprintf(namefrm, " %s %%s", name);
+-	print_masked_u32("ct_mark", attr, mask_attr);
++	print_masked_u32("ct_mark", attr, mask_attr, false);
+ }
+ 
+ static void flower_print_key_id(const char *name, struct rtattr *attr)
+diff --git a/tc/m_ct.c b/tc/m_ct.c
+index d79eb5e361ac..8df2f6103601 100644
+--- a/tc/m_ct.c
++++ b/tc/m_ct.c
+@@ -466,8 +466,8 @@ static int print_ct(struct action_util *au, FILE *f, struct rtattr *arg)
+ 		print_string(PRINT_ANY, "action", " %s", "clear");
+ 	}
+ 
+-	print_masked_u32("mark", tb[TCA_CT_MARK], tb[TCA_CT_MARK_MASK]);
+-	print_masked_u16("zone", tb[TCA_CT_ZONE], NULL);
++	print_masked_u32("mark", tb[TCA_CT_MARK], tb[TCA_CT_MARK_MASK], false);
++	print_masked_u16("zone", tb[TCA_CT_ZONE], NULL, false);
+ 	ct_print_labels(tb[TCA_CT_LABELS], tb[TCA_CT_LABELS_MASK]);
+ 	ct_print_nat(ct_action, tb);
+ 
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index 2b391f182b96..d1ef4fac13f6 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
+@@ -918,7 +918,7 @@ compat_xstats:
+ static void print_masked_type(__u32 type_max,
+ 			      __u32 (*rta_getattr_type)(const struct rtattr *),
+ 			      const char *name, struct rtattr *attr,
+-			      struct rtattr *mask_attr)
++			      struct rtattr *mask_attr, bool newline)
+ {
+ 	SPRINT_BUF(namefrm);
+ 	__u32 value, mask;
+@@ -945,14 +945,15 @@ static void print_masked_type(__u32 type_max,
+ 			if (mask != type_max)
+ 				sprintf(out + done, "/0x%x", mask);
+ 
+-			sprintf(namefrm, "\n  %s %%s", name);
++			sprintf(namefrm, "%s %s %%s", newline ? "\n " : "",
++				name);
+ 			print_string(PRINT_ANY, name, namefrm, out);
+ 		}
+ 	}
+ }
+ 
+ void print_masked_u32(const char *name, struct rtattr *attr,
+-		      struct rtattr *mask_attr)
++		      struct rtattr *mask_attr, bool newline)
+ {
+ 	__u32 value, mask;
+ 	SPRINT_BUF(namefrm);
+@@ -969,12 +970,12 @@ void print_masked_u32(const char *name, struct rtattr *attr,
+ 	if (mask != UINT32_MAX)
+ 		sprintf(out + done, "/0x%x", mask);
+ 
+-	sprintf(namefrm, " %s %%s", name);
++	sprintf(namefrm, "%s %s %%s", newline ? "\n " : "", name);
  	print_string(PRINT_ANY, name, namefrm, out);
  }
-+
-+static __u32 __rta_getattr_u8_u32(const struct rtattr *attr)
-+{
-+	return rta_getattr_u8(attr);
-+}
-+
-+void print_masked_u8(const char *name, struct rtattr *attr,
-+		     struct rtattr *mask_attr)
-+{
-+	print_masked_type(UINT8_MAX,  __rta_getattr_u8_u32, name, attr,
-+			  mask_attr);
-+}
+ 
+ void print_masked_u16(const char *name, struct rtattr *attr,
+-		      struct rtattr *mask_attr)
++		      struct rtattr *mask_attr, bool newline)
+ {
+ 	__u16 value, mask;
+ 	SPRINT_BUF(namefrm);
+@@ -991,7 +992,7 @@ void print_masked_u16(const char *name, struct rtattr *attr,
+ 	if (mask != UINT16_MAX)
+ 		sprintf(out + done, "/0x%x", mask);
+ 
+-	sprintf(namefrm, " %s %%s", name);
++	sprintf(namefrm, "%s %s %%s", newline ? "\n " : "", name);
+ 	print_string(PRINT_ANY, name, namefrm, out);
+ }
+ 
+@@ -1001,8 +1002,8 @@ static __u32 __rta_getattr_u8_u32(const struct rtattr *attr)
+ }
+ 
+ void print_masked_u8(const char *name, struct rtattr *attr,
+-		     struct rtattr *mask_attr)
++		     struct rtattr *mask_attr, bool newline)
+ {
+ 	print_masked_type(UINT8_MAX,  __rta_getattr_u8_u32, name, attr,
+-			  mask_attr);
++			  mask_attr, newline);
+ }
 diff --git a/tc/tc_util.h b/tc/tc_util.h
-index 0c3425abc62f..7e5d93cbac66 100644
+index 7e5d93cbac66..9adf2ab42138 100644
 --- a/tc/tc_util.h
 +++ b/tc/tc_util.h
-@@ -131,4 +131,6 @@ void print_masked_u32(const char *name, struct rtattr *attr,
- 		      struct rtattr *mask_attr);
+@@ -128,9 +128,9 @@ int action_a2n(char *arg, int *result, bool allow_num);
+ bool tc_qdisc_block_exists(__u32 block_index);
+ 
+ void print_masked_u32(const char *name, struct rtattr *attr,
+-		      struct rtattr *mask_attr);
++		      struct rtattr *mask_attr, bool newline);
  void print_masked_u16(const char *name, struct rtattr *attr,
- 		      struct rtattr *mask_attr);
-+void print_masked_u8(const char *name, struct rtattr *attr,
-+		     struct rtattr *mask_attr);
+-		      struct rtattr *mask_attr);
++		      struct rtattr *mask_attr, bool newline);
+ void print_masked_u8(const char *name, struct rtattr *attr,
+-		     struct rtattr *mask_attr);
++		     struct rtattr *mask_attr, bool newline);
  #endif
 -- 
 2.8.4
