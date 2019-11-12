@@ -2,130 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84C41F9C36
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:26:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D256EF9C3C
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:26:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbfKLVZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:25:23 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40602 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726906AbfKLVZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:25:22 -0500
-Received: by mail-wr1-f68.google.com with SMTP id i10so20169736wrs.7
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:25:21 -0800 (PST)
+        id S1727097AbfKLVZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:25:53 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:40649 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726923AbfKLVZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:25:53 -0500
+Received: by mail-wr1-f66.google.com with SMTP id i10so20171025wrs.7
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:25:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=/Bc9mD0su6y/qMwnSap3fGfdGalbmMm43pLfTXBSjvE=;
-        b=Mu8ETqT7ONL/N4WWBxCn63ynw1xcAAMJfm6yc/3QvObzzkcYQpdzm3oNsdRf12uO1k
-         KXu4NdOUqflEhWtDtUcU4K2ahDe+MhNn5XWulN0UG/OhEOV1e/6xZweBCDvjdxJWm34J
-         BdvJ2uhiBmnphEgzAJcfU8lT4uh3SplNBaogWXK0K8KjkQAvmi6ZgCb4H+r6VyST/OvY
-         HRIb6fNZtPktfTdodixA+xbeaPrZKVvyqefyffXshMgikl37AnDlfv+87Yt2gmjy94LJ
-         WsdzTB4tnvAxmlwX/Tjghvpk2AU11mr2KCiw6/HOdbI69PVjcUDust7rZ+bgUO3+k/0x
-         Ki5Q==
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VkXDjfg/XJv9mTTfH4nBJNoJJotjJqktXs3P71Itf/k=;
+        b=A260tcGUxdYYtlQ0f+Q5OlvOfRRDRxpV8TlD+maHmCHwzcEy0WzclR/oGzi1w8wqA/
+         qWQXcY9EhK8KIvJADN767Ba176k3845d35YCj/1TRKr2KRAxcgfxE1cqoKQj5nk4R33N
+         PwUZJfdZs6lCnuRSHiUBJ30cGSAhxlMUhzqS7KYg/NuRlHiwPDygsrDAgFCab8nVGgxC
+         Mmv7AtP3YBnBj3McMOMgvYZrp8aEDM6H03VTr1wgdeONLKPeUTocvAZi/g94GDCKPGqM
+         Pj3IoNCicoomuWG/maLV7m2NlenSCbCGagUlIbxOae/j5DIylDjjdkE6KcVP+Z3R72nL
+         wN+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=/Bc9mD0su6y/qMwnSap3fGfdGalbmMm43pLfTXBSjvE=;
-        b=bVIqHqmSXa1DZ/p96BJcuVykXAWLmjizZeH+91drZA32jcdNFc54Nlv/z+LpmAnc79
-         ozypQoTqWm8kAQwn9XzRd8RpcL0IhH74fXBgqQCsnYFbW6uNnuYnM0OnhD3nQMOrW/lw
-         HdbvaXSrTZLVAiDeiQaNGfB9PguC1jSXUkZL75rMXw3u/K3mJFkk4we9otZEqaSI6u3J
-         0lq7tMVvzj7Kg2Q96ezOd8Z8lbvO7e/tMrTPefEGiYI2X77HwJl/BjKvpH2Mo5IX+/1T
-         Ok7nEajixK3QrG6H/+dn81oUUDVwF0hrZTYVN1zePzryRIchOQ4Vb08X4Nxh5qsB9OiA
-         WzEw==
-X-Gm-Message-State: APjAAAXA7+Uqn34ylkKg5st9W3R9Ee7+2DZOTIjDZrTnpW5LzoxR125u
-        SDTKXaBtoOyeESQkBYw3dUQ1zLOX
-X-Google-Smtp-Source: APXvYqzeq7YZisDW9dzGegpcNRDWOIJccmxE266dz5qZ7oSdSFPaJfARJ3rp4AcmHoZwAGBtuSRmzg==
-X-Received: by 2002:a5d:6607:: with SMTP id n7mr14270387wru.133.1573593920650;
-        Tue, 12 Nov 2019 13:25:20 -0800 (PST)
-Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id w132sm8758291wma.6.2019.11.12.13.25.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Nov 2019 13:25:20 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next] net: dsa: sja1105: Make HOSTPRIO a kernel config
-Date:   Tue, 12 Nov 2019 23:25:15 +0200
-Message-Id: <20191112212515.6663-1-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VkXDjfg/XJv9mTTfH4nBJNoJJotjJqktXs3P71Itf/k=;
+        b=M6gL38OfAkyBZLmhTco1G52QQWsxVHjPzVSAUt9VZqZFlux33EoeXnB+KKWOGK0YmD
+         EhflAw6QvU+ZaNOGyOwihvjVl5CMC1VKAwt+7SMaoI12o+jPECaP3AQN7HkyLkDlc9RY
+         jYyZpxGMFHNvhAseVZxxJMrdZXhTE55jgH/DOrUz2EryJuI0cIBcDCMkkFnbZZP33t4Y
+         EZx/tHDZjx3WaJvn01CrCH8pH1A9FSbmTNr04EdS+3jO0A62Yc8eYT+LDm4CnyJ5arso
+         6QosTxKvqQMyuQgu3kFcXwMJAjpH5ADzFS6icjpp5vTWAcnKmifRWKCdQkRwb1k5kcYZ
+         0aaQ==
+X-Gm-Message-State: APjAAAVyEBqA+Y5+gJkPR65vpFKObidmRg2U6NFYqus1uuePdkN11Q0+
+        /ZenvrkI1Q94VjGZ1rkJhACusuuF
+X-Google-Smtp-Source: APXvYqy4cOFDKpMeJUtB2NkomPip1NTFzvtWmOLGMaDk3QZhdezFobhdtexaUtJ8ktd4inEG99lruA==
+X-Received: by 2002:a5d:4c4e:: with SMTP id n14mr30375551wrt.260.1573593951425;
+        Tue, 12 Nov 2019 13:25:51 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f2d:7d00:7:bfb7:2ee9:e19? (p200300EA8F2D7D000007BFB72EE90E19.dip0.t-ipconnect.de. [2003:ea:8f2d:7d00:7:bfb7:2ee9:e19])
+        by smtp.googlemail.com with ESMTPSA id j66sm3503258wma.19.2019.11.12.13.25.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Nov 2019 13:25:51 -0800 (PST)
+Subject: [PATCH net-next 3/3] r8169: consider new hard dependency on
+ REALTEK_PHY
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <461096ec-9185-a919-ae56-0208e73342fe@gmail.com>
+Message-ID: <d74af231-be05-7f3f-2c00-55ae2cd91fc4@gmail.com>
+Date:   Tue, 12 Nov 2019 22:25:34 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
+MIME-Version: 1.0
+In-Reply-To: <461096ec-9185-a919-ae56-0208e73342fe@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unfortunately with this hardware, there is no way to transmit in-band
-QoS hints with management frames (i.e. VLAN PCP is ignored). The traffic
-class for these is fixed in the static config (which in turn requires a
-reset to change).
+Now r8169 has a hard dependency on the Realtek PHY driver. Reflect this
+in Kconfig and remove the soft dependency. REALTEK_PHY depends on
+PHYLIB, therefore r8169 doesn't need an explicit dependency on PHYLIB.
 
-With the new ability to add time gates for individual traffic classes,
-there is a real danger that the user might unknowingly turn off the
-traffic class for PTP, BPDUs, LLDP etc.
-
-So we need to manage this situation the best we can. There isn't any
-knob in Linux for this, and changing it at runtime probably isn't worth
-it either. So just make the setting loud enough by promoting it to a
-Kconfig, which the user can customize to their particular setup.
-
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- Documentation/networking/dsa/sja1105.rst |  4 ++--
- drivers/net/dsa/sja1105/Kconfig          | 11 +++++++++++
- drivers/net/dsa/sja1105/sja1105_main.c   |  2 +-
- 3 files changed, 14 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/realtek/Kconfig      | 3 +--
+ drivers/net/ethernet/realtek/r8169_main.c | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/Documentation/networking/dsa/sja1105.rst b/Documentation/networking/dsa/sja1105.rst
-index eef20d0bcf7c..2eaa6edf9c5b 100644
---- a/Documentation/networking/dsa/sja1105.rst
-+++ b/Documentation/networking/dsa/sja1105.rst
-@@ -181,8 +181,8 @@ towards the switch, with the VLAN PCP bits set appropriately.
- Management traffic (having DMAC 01-80-C2-xx-xx-xx or 01-19-1B-xx-xx-xx) is the
- notable exception: the switch always treats it with a fixed priority and
- disregards any VLAN PCP bits even if present. The traffic class for management
--traffic has a value of 7 (highest priority) at the moment, which is not
--configurable in the driver.
-+traffic is configurable through ``CONFIG_NET_DSA_SJA1105_HOSTPRIO``, which by
-+default has a value of 7 (highest priority).
- 
- Below is an example of configuring a 500 us cyclic schedule on egress port
- ``swp5``. The traffic class gate for management traffic (7) is open for 100 us,
-diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
-index 0fe1ae173aa1..ac63054f578e 100644
---- a/drivers/net/dsa/sja1105/Kconfig
-+++ b/drivers/net/dsa/sja1105/Kconfig
-@@ -17,6 +17,17 @@ tristate "NXP SJA1105 Ethernet switch family support"
- 	    - SJA1105R (Gen. 2, SGMII, No TT-Ethernet)
- 	    - SJA1105S (Gen. 2, SGMII, TT-Ethernet)
- 
-+config NET_DSA_SJA1105_HOSTPRIO
-+	int "Traffic class for management traffic"
-+	range 0 7
-+	default 7
-+	depends on NET_DSA_SJA1105
-+	help
-+	  Configure the traffic class which will be used for management
-+	  (link-local) traffic injected and trapped to/from the CPU.
-+
-+	  Higher is better as long as you care about your PTP frames.
-+
- config NET_DSA_SJA1105_PTP
- 	bool "Support for the PTP clock on the NXP SJA1105 Ethernet switch"
- 	depends on NET_DSA_SJA1105
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index b60224c55244..907babeb8c8a 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -388,7 +388,7 @@ static int sja1105_init_general_params(struct sja1105_private *priv)
- 		/* Priority queue for link-local management frames
- 		 * (both ingress to and egress from CPU - PTP, STP etc)
- 		 */
--		.hostprio = 7,
-+		.hostprio = CONFIG_NET_DSA_SJA1105_HOSTPRIO,
- 		.mac_fltres1 = SJA1105_LINKLOCAL_FILTER_A,
- 		.mac_flt1    = SJA1105_LINKLOCAL_FILTER_A_MASK,
- 		.incl_srcpt1 = false,
+diff --git a/drivers/net/ethernet/realtek/Kconfig b/drivers/net/ethernet/realtek/Kconfig
+index 5e0b9d2f1..9551ad5c1 100644
+--- a/drivers/net/ethernet/realtek/Kconfig
++++ b/drivers/net/ethernet/realtek/Kconfig
+@@ -98,10 +98,9 @@ config 8139_OLD_RX_RESET
+ config R8169
+ 	tristate "Realtek 8169/8168/8101/8125 ethernet support"
+ 	depends on PCI
++	depends on REALTEK_PHY
+ 	select FW_LOADER
+ 	select CRC32
+-	select PHYLIB
+-	select REALTEK_PHY
+ 	---help---
+ 	  Say Y here if you have a Realtek Ethernet adapter belonging to
+ 	  the following families:
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 785987aae..73186e9b0 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -697,7 +697,6 @@ MODULE_AUTHOR("Realtek and the Linux r8169 crew <netdev@vger.kernel.org>");
+ MODULE_DESCRIPTION("RealTek RTL-8169 Gigabit Ethernet driver");
+ module_param_named(debug, debug.msg_enable, int, 0);
+ MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 16=all)");
+-MODULE_SOFTDEP("pre: realtek");
+ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE(FIRMWARE_8168D_1);
+ MODULE_FIRMWARE(FIRMWARE_8168D_2);
 -- 
-2.17.1
+2.24.0
+
 
