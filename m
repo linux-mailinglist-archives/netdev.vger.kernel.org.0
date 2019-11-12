@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82ECDF9C52
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5E6F9C55
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:32:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfKLVb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:31:28 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35132 "EHLO
+        id S1726982AbfKLVcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:32:20 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:37380 "EHLO
         mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726376AbfKLVb1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:31:27 -0500
-Received: by mail-ed1-f66.google.com with SMTP id r16so25647edq.2
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:31:26 -0800 (PST)
+        with ESMTP id S1726376AbfKLVcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:32:19 -0500
+Received: by mail-ed1-f66.google.com with SMTP id k14so18222eds.4
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:32:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=/gHKJGg9juHl7ccns68WSH/NOVFtus7gaIYLEsi6Cwg=;
-        b=jBxIfwDQ/7D2q7ZR3LghQqJ8uPvHSKBTjkL17E1rwde1XqJoaQAaXM3zZO7lbZDuX7
-         hD/UAgoyIE+bcxd7vqqcRkfheVsuGEg2W6nBYLlq5iOKtVmWX72VOx8PpZtoWITgeTe9
-         Ix7mkFBqmDEz2QH4bOzfqm2O7/bhGYh8QfbhqAIoxbHfwFLWiIKo5V1fhviEiGQEcOyC
-         fQxAhOtLNW3GtydCsKJTQFL8YHXY8Len1gSyicyZQwmZzMhTTZ3PO23JwUYRZL8/m6R2
-         XB7O+3xQpAvHQVygWJJjr50wwg2R9bQyfBf69njcX6QMBpnBhesed1cm6aW1VrMcPl58
-         egbA==
+        bh=6285HO4hKOMlpOWPVcBor1sfaPS5ndvxwlbHS4bUY5o=;
+        b=MWDX/LqUbcRNyIdDcGLLtMc3xKPdDlVKUkt56NcAIvukWMSxYjbxNhJnvAok4iLAOH
+         Cgym2q7qSw66v3/QFs88Lrr8BsPmb4vhx4XKhMYnMUCy3ABdb94yzAK0wKfvOZpzjxrW
+         +IYQ/O6IDIAZ4o/P3JPc+TEynw3ezSHFi8BvK9uWDrV+7zFMAxvhjjaNfVAQKe3mfhD1
+         +w4/LKC4knc3j+Sf9TCFDzKIBFEbQ3YVAudjvnSH1olsyTWJDvfT2+mAZNyOi5rJFM4m
+         4FVSRlQZNa2HevtpzHawSqLP+JyUXK1yM0ZIvp33mAxcI5DUQvztdnKMyUKXl0GuQLCd
+         pwxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=/gHKJGg9juHl7ccns68WSH/NOVFtus7gaIYLEsi6Cwg=;
-        b=sIffH7so38kzWil0ThLR3TAgHx1MYCz5oJUCQVQnZbgyROWI+DwfocsBUljvLE/WEA
-         PDRrHkVhqUeGAC3XAG7hRWrg9s7uF5B7mb1jxakZL1lLkyR1pJNNVUEYVowP/VuYt//A
-         WSRMQsliOlt5ykz+aDQuU2TPGXtVrbwRsIM2qwA2yHTb76PmTu63adGq/W64A+lExl48
-         5ShLoAg1adGhTCJTpdOgh9y84S2uR+Np9fu52jZXGg+4IiYC5y9netyGVrOMjMR3tAUy
-         w0Ov4lKD82d/tpJQfDfOadPSoJAUSlFTccsm6OgWmmcuLHyQvJKdpbVJQxV7Bs1mCWh3
-         oXmw==
-X-Gm-Message-State: APjAAAW57D2mDTHmXQeOroo2fmQHmefGGUqjxBm0YfYAZ3LeypOqzAyu
-        CCKq32A2aw/zTsyu1SFMUTfoWsU9
-X-Google-Smtp-Source: APXvYqyOs5U7B8yhp1luzzOLrwxFPhs/yPA/xhZUHURwXIngnTDmPWX2lN2oPKQY7rFZSwuhVneNhA==
-X-Received: by 2002:aa7:c756:: with SMTP id c22mr34923136eds.25.1573594285434;
-        Tue, 12 Nov 2019 13:31:25 -0800 (PST)
+        bh=6285HO4hKOMlpOWPVcBor1sfaPS5ndvxwlbHS4bUY5o=;
+        b=r4Wq6uHNKs8gMbv/NxPthAb2b/qcZeeLMVZqIKJNVB7lrtquU67Vt43Vc2uDNHZNEA
+         vUsuoHZ+WqKIBdIwZKiZZUN7bLsoCJmRuLDjPk3eux3U+SPN4pEYn2nagFzyi1r25GCU
+         xbTRhFpJkHn7D1RL93dxxjZauqJ6kMGIFygmxfX9hKQThMb4yJ6JjwBVUf4nkkPNYUob
+         Bylk/Ymg32rSHas6IZPcBUYH6ZsY5JTHvKunenir6clngfVC+8nhup6TUtpVoH+D4I+F
+         yDtHeSLw2BEmi4C7HddzwPhWn1yBa0GutyD4q/SeguXEEcfAwcm3nVo6XNqhUxvXvFV/
+         cIqw==
+X-Gm-Message-State: APjAAAW4gcnmnIjkOucrhyjezEM+Y2y23Dk5lN+zjf67FJ5Z78u77BoE
+        c6mCOXxqxJytFvyNGGWIZ+c=
+X-Google-Smtp-Source: APXvYqwZaY/uPE4zm50Re+ZkCB8WSnhWbTonyQ33XwDmlO250KaWV3wJ1vjK1xUgORX8f8S3bB343w==
+X-Received: by 2002:a17:906:69d7:: with SMTP id g23mr4044210ejs.20.1573594335871;
+        Tue, 12 Nov 2019 13:32:15 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id v13sm3767edy.35.2019.11.12.13.31.21
+        by smtp.googlemail.com with ESMTPSA id d16sm3909edv.32.2019.11.12.13.32.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 13:31:23 -0800 (PST)
-Subject: Re: [PATCH net-next 04/12] net: mscc: ocelot: create a helper for
- changing the port MTU
+        Tue, 12 Nov 2019 13:32:15 -0800 (PST)
+Subject: Re: [PATCH net-next 05/12] net: mscc: ocelot: export a constant for
+ the tag length in bytes
 To:     Vladimir Oltean <olteanv@gmail.com>, jakub.kicinski@netronome.com,
         davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,7 +55,7 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-5-olteanv@gmail.com>
+ <20191112124420.6225-6-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <fb7fe7ae-16c0-d2f1-455b-fa31d613a36c@gmail.com>
-Date:   Tue, 12 Nov 2019 13:31:19 -0800
+Message-ID: <f6772ad3-3598-3bd5-67b4-d2cd5f4405e8@gmail.com>
+Date:   Tue, 12 Nov 2019 13:32:11 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191112124420.6225-5-olteanv@gmail.com>
+In-Reply-To: <20191112124420.6225-6-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,9 +129,8 @@ X-Mailing-List: netdev@vger.kernel.org
 On 11/12/19 4:44 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Since in an NPI/DSA setup, not all ports will have the same MTU, we need
-> to make sure the watermarks for pause frames and/or tail dropping logic
-> that existed in the driver is still coherent for the new MTU values.
+> This constant will be used in a future patch to increase the MTU on NPI
+> ports, and will also be used in the tagger driver for Felix.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
