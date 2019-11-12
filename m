@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A39CF9577
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:22:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AC7AF957A
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:22:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbfKLQWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 11:22:04 -0500
-Received: from inva021.nxp.com ([92.121.34.21]:49224 "EHLO inva021.nxp.com"
+        id S1726982AbfKLQWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 11:22:35 -0500
+Received: from muru.com ([72.249.23.125]:41876 "EHLO muru.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726645AbfKLQWE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 11:22:04 -0500
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 95F332001F9;
-        Tue, 12 Nov 2019 17:22:02 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 89648200247;
-        Tue, 12 Nov 2019 17:22:02 +0100 (CET)
-Received: from fsr-ub1464-137.ea.freescale.net (fsr-ub1464-137.ea.freescale.net [10.171.82.114])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 5622F20624;
-        Tue, 12 Nov 2019 17:22:02 +0100 (CET)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net v3] dpaa2-eth: free already allocated channels on probe defer
-Date:   Tue, 12 Nov 2019 18:21:52 +0200
-Message-Id: <1573575712-1366-1-git-send-email-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 1.9.1
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726008AbfKLQWf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 11:22:35 -0500
+Received: from atomide.com (localhost [127.0.0.1])
+        by muru.com (Postfix) with ESMTPS id DA60480F3;
+        Tue, 12 Nov 2019 16:23:09 +0000 (UTC)
+Date:   Tue, 12 Nov 2019 08:22:30 -0800
+From:   Tony Lindgren <tony@atomide.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
+        Jiri Pirko <jiri@resnulli.us>, Sekhar Nori <nsekhar@ti.com>,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 net-next 06/13] dt-bindings: net: ti: add new cpsw
+ switch driver bindings
+Message-ID: <20191112162230.GK5610@atomide.com>
+References: <20191109151525.18651-1-grygorii.strashko@ti.com>
+ <20191109151525.18651-7-grygorii.strashko@ti.com>
+ <20191111172652.GV5610@atomide.com>
+ <bac9a300-cbd5-d342-a96d-d90fdcf2e4c3@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bac9a300-cbd5-d342-a96d-d90fdcf2e4c3@ti.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The setup_dpio() function tries to allocate a number of channels equal
-to the number of CPUs online. When there are not enough DPCON objects
-already probed, the function will return EPROBE_DEFER. When this
-happens, the already allocated channels are not freed. This results in
-the incapacity of properly probing the next time around.
-Fix this by freeing the channels on the error path.
+Hi,
 
-Fixes: d7f5a9d89a55 ("dpaa2-eth: defer probe on object allocate")
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
-Changes in v2:
- - add the proper Fixes tag
-Changes in v3:
- - cleanup should be done only on EPROBE_DEFER
+* Grygorii Strashko <grygorii.strashko@ti.com> [191112 09:54]:
+> No, sorry I do not agree. The MDIO is inseparable part of CPSW and it's enabled when CPSW is enabled
+> (on interconnect level), more over I want to get rid of platform device in MDIO for most of the cases
+> as it only introduces boot/probing complexity.
 
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Well the fact that mdio is enabled at the interconnect level is why
+I think the cpsw child modules are independent components :)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 19379bae0144..bf5add954181 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -2232,8 +2232,16 @@ static int setup_dpio(struct dpaa2_eth_priv *priv)
- err_service_reg:
- 	free_channel(priv, channel);
- err_alloc_ch:
--	if (err == -EPROBE_DEFER)
-+	if (err == -EPROBE_DEFER) {
-+		for (i = 0; i < priv->num_channels; i++) {
-+			channel = priv->channel[i];
-+			nctx = &channel->nctx;
-+			dpaa2_io_service_deregister(channel->dpio, nctx, dev);
-+			free_channel(priv, channel);
-+		}
-+		priv->num_channels = 0;
- 		return err;
-+	}
- 
- 	if (cpumask_empty(&priv->dpio_cpumask)) {
- 		dev_err(dev, "No cpu with an affine DPIO/DPCON\n");
--- 
-1.9.1
+So I did the following quick test on pocketbeagle with Linux next,
+it has no Ethernet wired up, and by default we have ethernet@0
+set to status = "disabled".
 
+Manually enable the target module at 0x4a100000:
+# echo on > /sys/devices/platform/ocp/4a000000.interconnect/\
+4a000000.interconnect:segment@0/4a101200.target-module/power/control
+
+Dump out mdio registers at offset 0x1000:
+# rwmem 0x4a101000+0x100
+0x4a101000 = 0x40070106
+0x4a101004 = 0x810000ff
+0x4a101008 = 0000000000
+0x4a10100c = 0000000000
+0x4a101010 = 0000000000
+0x4a101014 = 0000000000
+0x4a101018 = 0000000000
+...
+
+So yup, it seems quite independent of the other child devices
+on the same interconnect target mdoule. I'm quessing it's the
+same story for other modules like cppi_dma and so on, this
+should be easy to check.
+
+Hmm and isn't the some version of mdio also used stuffed into
+davinci_emac and netcp too?
+
+Anyways, up to you. But my experience is that having separate
+driver modules is the way to go than trying to treat any TI
+"subsystem" as a single device. This is because the child modules
+tend to get updated and changed and moved around over time.
+
+Regards,
+
+Tony
