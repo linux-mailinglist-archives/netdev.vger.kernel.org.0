@@ -2,180 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E33F9B1E
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:46:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C73F9B52
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:56:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbfKLUqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 15:46:18 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33339 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726388AbfKLUqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:46:17 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iUd3D-0007fe-Ef; Tue, 12 Nov 2019 21:46:11 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:fcf3:94db:a77f:e6a3] (unknown [IPv6:2a03:f580:87bc:d400:fcf3:94db:a77f:e6a3])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 5CF5047B4DE;
-        Tue, 12 Nov 2019 20:46:06 +0000 (UTC)
-Subject: Re: pull-request: can-next 2019-10-07,pull-request: can-next
- 2019-10-07
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, socketcan@hartkopp.net,
-        bst@pengutronix.de, ecathinds@gmail.com,
-        dev.kurt@vandijck-laurijssen.be, maxime.jayat@mobile-devices.fr,
-        robin@protonic.nl, ore@pengutronix.de, david@protonic.nl
-References: <0d53fe03-50a4-8a96-5605-7f20bd3c17fa@pengutronix.de>
- <20191112.122847.1174111917347660159.davem@davemloft.net>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <1329a507-9f81-741b-1bef-9d604143cc8f@pengutronix.de>
-Date:   Tue, 12 Nov 2019 21:46:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727065AbfKLU4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 15:56:22 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:17881 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726718AbfKLU4V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:56:21 -0500
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Bryan.Whitehead@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Bryan.Whitehead@microchip.com";
+  x-sender="Bryan.Whitehead@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Bryan.Whitehead@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; spf=Pass smtp.mailfrom=Bryan.Whitehead@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: iOZF2MiRIGt8NQnobQmaGhMMm++awndlrSlq8t5DvueinXXkxMi58QLZscHZloYGU/ZVxd3Vh9
+ NWCpHS6VRSC9+S4G5efBowV/43BA4tBldYtW97bH8XF5bzYqFNLBmnIRC55NpgYgF+r6nROyhJ
+ E90L+omcDwvchM38F1Sq1SKcQuNSFsP8E9m0FOTgVpiAgxybCUEOY78ZRaaTDXCogSOytuZpDC
+ fzg+t2mI+HDaKL1dtCxzvw3Py2xg2AlBvswKS4Os28a4tLCfYLkwk1tFqtm8u450ngaKZJp33D
+ i6k=
+X-IronPort-AV: E=Sophos;i="5.68,297,1569308400"; 
+   d="scan'208";a="54008556"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2019 13:56:20 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 12 Nov 2019 13:56:11 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 12 Nov 2019 13:56:11 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ng+J/4vdJudJfLgpP5EGA9lJo4YkuocUHVSIjcNWHeruQOXKGMob6/WCXmkBHpmQIo4IJexJISfGi3oY2VLQeHomWiKcDwPQxkiVeS6ZwFEEUmMIIMVMTEYsgCLlAPB3TnWl1NUqCn7/SgycRsLgK1wC4OXvOelW5qoR5XBPOkeKd2dkPSy2bm9PP7N8/IFKfFbn/U1sX/DOK5r5VJLcSBJ8m2CGnVkB5+bncmaK8CV8tilQ7L9txswi/Rdm7/SmB/N7qFsbwQehJVYyWOouu5yWhGHHSIYjW642/WdMQqekwG+Uqb1w/X3B/CQ2huVjApxj6z8Gw61yVKaDB6C6Wg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=06BdHPzNL1BViFG24z7wI0LiQoUeqWIns7AO4OqB9X4=;
+ b=TlsQ1dSSZFsmXS6qaxwXmWjFE3OymrVLBL6hTL5SGIhSFFmtDkEbX6EDr/T1/vA34RYcitYRo8VLhj22PfXgMAblVFyR3yutD+BBtnyRruOcZ+A/lNXJF5KUtbGLWUHW430mldr8P3aDT7ENGQs2OoI2tOiSghzrWm7y8bQuqJvDkaLj6gmmQTWQXVrnq8O+Ib9SefEApG6RPQyexpJvq6VIa/QcN2K2hwQoxtv9QMSb4Qnn9vQJAWR7+x9ZiULOlOMUiasEtagorB+1bd6Kfpu2Ijrhyok4paSVAFxROtE1PqsfIv4a0KJfPp+KLrCuQ1tnxXjoTyd0N6G2fxlr2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=06BdHPzNL1BViFG24z7wI0LiQoUeqWIns7AO4OqB9X4=;
+ b=IRMHUMR0/qT6vcYKtibOFd5YYlP9rms4KLY6ycxJnWrbQ/jwrng/HhActrZiT3BFdj8n0WFKBryGrotme9cihk48t/JkQ9sHRZ9wBulojbzV9FRd8DAIWNKWuuRX1JhcmUNwG77+q0RMxn8gAPstuWH3gLVFgtmigC22MooGffU=
+Received: from MN2PR11MB4333.namprd11.prod.outlook.com (10.255.90.25) by
+ MN2PR11MB3727.namprd11.prod.outlook.com (20.178.252.13) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.24; Tue, 12 Nov 2019 20:56:08 +0000
+Received: from MN2PR11MB4333.namprd11.prod.outlook.com
+ ([fe80::e82a:ef05:d8ca:4cd]) by MN2PR11MB4333.namprd11.prod.outlook.com
+ ([fe80::e82a:ef05:d8ca:4cd%6]) with mapi id 15.20.2430.023; Tue, 12 Nov 2019
+ 20:56:08 +0000
+From:   <Bryan.Whitehead@microchip.com>
+To:     <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
+Thread-Topic: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
+Thread-Index: AQHVmXJIiwJOwhRbeU+HRtKC5Z72x6eH//SAgAABu0A=
+Date:   Tue, 12 Nov 2019 20:56:08 +0000
+Message-ID: <MN2PR11MB4333B89CD568C6B66C8C60E3FA770@MN2PR11MB4333.namprd11.prod.outlook.com>
+References: <1573574048-12251-1-git-send-email-Bryan.Whitehead@microchip.com>
+ <20191112204031.GH10875@lunn.ch>
+In-Reply-To: <20191112204031.GH10875@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [47.19.18.123]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 314c28f7-96d2-431e-0d95-08d767b2be2a
+x-ms-traffictypediagnostic: MN2PR11MB3727:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR11MB3727B365C66ED948F4D43A64FA770@MN2PR11MB3727.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 021975AE46
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(39860400002)(346002)(396003)(366004)(376002)(199004)(189003)(256004)(71200400001)(71190400001)(446003)(8676002)(66066001)(25786009)(9686003)(8936002)(6436002)(4326008)(52536014)(55016002)(229853002)(81156014)(3846002)(6116002)(81166006)(2906002)(316002)(11346002)(54906003)(99286004)(14454004)(5660300002)(33656002)(486006)(476003)(7696005)(6506007)(76176011)(6916009)(66946007)(66476007)(86362001)(186003)(305945005)(74316002)(478600001)(26005)(6246003)(76116006)(66446008)(107886003)(66556008)(102836004)(64756008)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3727;H:MN2PR11MB4333.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microchip.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JAZgbbBtPODtEjBSzGNbvMZYTLEbh1c05XRycXpASPgp/7SZh+RMtiJ7i2A7xym/teZbqzslQpWs87IPLtZJ5df7KS3bZLAQhGTBV8yPZp4v6XESuhdSaXmnumNTnNKtinruuw4Xqjwd3A079aNbmEKpTI0qkue2yNDb23XmWyNNR/VFV5wsyFwxdpgn+lzqK+tlGFw0hVONMgyAwYvsMOnYBtGMsjW21vnjKatpG82TIgVZVhjoUpglU1XsN5z4/pypWKaekzxbpSSSnYZH61JFRNj2/Nlk2zYZUgTQY4j8Ia/dIeojZxpZs1jG6Yn8paR6JGKZSKjZ9g77ZyT1Ik+CFfnvT9a+JTaIL9UZelSBoA5HFtDWbQYijSBI4ahK/I3wpxjRZs9oMoXJpZsqp+h2VzCPegV2/b/spb1MMP7MDMxyNd6ub3867KAmqlxq
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <20191112.122847.1174111917347660159.davem@davemloft.net>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="fQgPJMdoh2lGR5gnSG5AKfOEOuTY0YCz0"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-MS-Exchange-CrossTenant-Network-Message-Id: 314c28f7-96d2-431e-0d95-08d767b2be2a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Nov 2019 20:56:08.6592
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zDqA5b5zb31fhzuc5ExLfZf8kaB0gfgp9YJg5eeFpPyqaieFzETRvfMJcH7x9IVQLjdJve9tLXYFso7PRoIeqn2wR1q0G9qj0rAKUgGi2LI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3727
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---fQgPJMdoh2lGR5gnSG5AKfOEOuTY0YCz0
-Content-Type: multipart/mixed; boundary="UjPyxzZAIRdWiimfTCRDrJDXRFbk8QxxJ";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: David Miller <davem@davemloft.net>
-Cc: netdev@vger.kernel.org, kernel@pengutronix.de, linux-can@vger.kernel.org,
- socketcan@hartkopp.net, bst@pengutronix.de, ecathinds@gmail.com,
- dev.kurt@vandijck-laurijssen.be, maxime.jayat@mobile-devices.fr,
- robin@protonic.nl, ore@pengutronix.de, david@protonic.nl
-Message-ID: <1329a507-9f81-741b-1bef-9d604143cc8f@pengutronix.de>
-Subject: Re: pull-request: can-next 2019-10-07,pull-request: can-next
- 2019-10-07
-References: <0d53fe03-50a4-8a96-5605-7f20bd3c17fa@pengutronix.de>
- <20191112.122847.1174111917347660159.davem@davemloft.net>
-In-Reply-To: <20191112.122847.1174111917347660159.davem@davemloft.net>
-
---UjPyxzZAIRdWiimfTCRDrJDXRFbk8QxxJ
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 11/12/19 9:28 PM, David Miller wrote:
-> From: Marc Kleine-Budde <mkl@pengutronix.de>
-> Date: Tue, 12 Nov 2019 16:57:50 +0100
+> On Tue, Nov 12, 2019 at 10:54:08AM -0500, Bryan Whitehead wrote:
+> > Add support for the following VSC PHYs
+> > 	VSC8504, VSC8552, VSC8572,
+> > 	VSC8562, VSC8564, VSC8575, VSC8582
+> >
+> > Signed-off-by: Bryan Whitehead <Bryan.Whitehead@microchip.com>
+> > ---
+> >  drivers/net/phy/mscc.c | 182
+> > +++++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 182 insertions(+)
+> >
+> > diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c index
+> > 805cda3..8933681 100644
+> > --- a/drivers/net/phy/mscc.c
+> > +++ b/drivers/net/phy/mscc.c
+> > @@ -253,12 +253,18 @@ enum rgmii_rx_clock_delay {
+> >  #define MSCC_PHY_TR_MSB			  18
+> >
+> >  /* Microsemi PHY ID's */
+> > +#define PHY_ID_VSC8504			  0x000704c0
+> >  #define PHY_ID_VSC8514			  0x00070670
+> >  #define PHY_ID_VSC8530			  0x00070560
+> >  #define PHY_ID_VSC8531			  0x00070570
+> >  #define PHY_ID_VSC8540			  0x00070760
+> >  #define PHY_ID_VSC8541			  0x00070770
+> > +#define PHY_ID_VSC8552			  0x000704e0
+> > +#define PHY_ID_VSC856X			  0x000707e0
+> > +#define PHY_ID_VSC8572			  0x000704d0
+> >  #define PHY_ID_VSC8574			  0x000704a0
+> > +#define PHY_ID_VSC8575			  0x000707d0
+> > +#define PHY_ID_VSC8582			  0x000707b0
+> >  #define PHY_ID_VSC8584			  0x000707c0
+> >
+> >  #define MSCC_VDDMAC_1500		  1500
+> > @@ -1597,6 +1603,8 @@ static bool vsc8584_is_pkg_init(struct
+> > phy_device *phydev, bool reversed)
+> >
+> >  		phy =3D container_of(map[addr], struct phy_device, mdio);
+> >
+> > +		if (!phy)
+> > +			continue;
+> > +
+> >  		if ((phy->phy_id & phydev->drv->phy_id_mask) !=3D
+> >  		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
+> >  			continue;
+> > @@ -1648,9 +1656,27 @@ static int vsc8584_config_init(struct phy_device
+> *phydev)
+> >  	 */
+> >  	if (!vsc8584_is_pkg_init(phydev, val & PHY_ADDR_REVERSED ? 1 : 0))
+> {
+> >  		if ((phydev->phy_id & phydev->drv->phy_id_mask) =3D=3D
+> > +		    (PHY_ID_VSC8504 & phydev->drv->phy_id_mask))
+> > +			ret =3D vsc8574_config_pre_init(phydev);
+> > +		else if ((phydev->phy_id & phydev->drv->phy_id_mask) =3D=3D
+> > +		    (PHY_ID_VSC8552 & phydev->drv->phy_id_mask))
+> > +			ret =3D vsc8574_config_pre_init(phydev);
+> > +		else if ((phydev->phy_id & phydev->drv->phy_id_mask) =3D=3D
+> > +		    (PHY_ID_VSC856X & phydev->drv->phy_id_mask))
+> > +			ret =3D vsc8584_config_pre_init(phydev);
 >=20
->> this is a pull request for net-next/master consisting of 32 patches.
+> Could we turn this into a switch statement? I think
 >=20
-> Pulled, thanks Marc.
+>       switch (phydev->phy_id & phydev->drv->phy_id_mask) {
+>       case PHY_ID_VSC8504:
+>       case PHY_ID_VSC8552:
+>       	   ret =3D vsc8574_config_pre_init(phydev);
+> 	   break
+>       case PHY_ID_VSC856X:
+>       	   ret =3D vsc8584_config_pre_init(phydev);
+> 	   break;
+>=20
+> etc should work, since PHY_ID_VSC8<FOO> always has the lower nibble set
+> to 0.
 
-tnx
+Hi Andrew,
 
-> Your pull request had two Subject: lines, please fix that.
+I would like to do exactly that, but I was concerned future changes might c=
+hange the phy_id_mask, so to keep code less brittle, and more flexible I th=
+ought I should keep the "AND mask" operations such as (PHY_ID_VSC8<FOO> & p=
+hydev->drv->phy_id_mask)
 
-Doh! And none of them was correct.
+If you judge this is an unreasonable concern, then I will change it to a sw=
+itch statement.
+Let me know,
+Thanks,
+Bryan
 
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---UjPyxzZAIRdWiimfTCRDrJDXRFbk8QxxJ--
-
---fQgPJMdoh2lGR5gnSG5AKfOEOuTY0YCz0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3LGgoACgkQWsYho5Hk
-nSBIlAgAsrLlrCnR0AGkCF9olzHn08Xhv3yVH86KHtcj0HRqA6AqXMc4Jdx22Wvp
-LaxwtV3vQNuFhQtNrhwd8W83AY9EHkijJpJXFLnrTL6CZCYZjZERl4k2ivwj9zzk
-haS6Q+XHRT7kqHPdqIB8G4n0jNii518XS4Yq90Bi+EgNN6wdAoL4Tv/DMg69hg/y
-x9CnQ44z3DRWDgxtTQeJIOVf3b0qcB3SKGxU+tCtsYQDzZAVj6aAtpIB/VAfRgOn
-1uqExnj8wf3e7Gt8E0aa8zpLIzB33CUhYDzJfpAYQ7WPfFxEnwhReaGoTBGWqlwY
-L8Ml7T4bUlgpDGFBqopxcCNbLaU14w==
-=+lQB
------END PGP SIGNATURE-----
-
---fQgPJMdoh2lGR5gnSG5AKfOEOuTY0YCz0--
