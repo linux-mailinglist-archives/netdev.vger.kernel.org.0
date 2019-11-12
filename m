@@ -2,113 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6655FF8B52
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:04:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E62DF8B7D
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727233AbfKLJEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 04:04:49 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:53204 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727180AbfKLJEs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 04:04:48 -0500
-Received: by mail-wm1-f65.google.com with SMTP id l1so2195282wme.2
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 01:04:47 -0800 (PST)
+        id S1726957AbfKLJPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 04:15:19 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:43372 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbfKLJPT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 04:15:19 -0500
+Received: by mail-wr1-f65.google.com with SMTP id n1so17575423wra.10
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 01:15:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=Y+xqaA+PPE83+8NKlD/ArjFhQQS4KR3/VLoI8CbMHTQ=;
-        b=OrhbC81KkHxApm8Cyz6wofLkMe30UUYrZ7SAIxLPpbWOQjNRJ+9i1INbWFIyA56cLo
-         +BPL+Bu+q910hA2jR8t+LHkEUJg2RtT1luLd+cTyw1q6vBbZW+00jX28LiDUftYcJcNz
-         pr7RWL8NXHx8ktgGMGhfU5ikoMwf2CapBm6n8L8DxBPB/Km+TB9z7aLDt2FfNr+yauBM
-         QnSiiLl9ZxWQ0RT6f/bEBdg/14II3kFpNt7QQ9dJFZRnddNZqxa4EcFIdKdtAIriqmKY
-         FF/bK5CEC1RZK71LX2MpRDEw7FcfVrB+k27pH+ptjJ3xINLTCK/2TbYmctl9G565MNs4
-         7rQQ==
+        bh=5zriEFojyVbt7ELQVanoYbgxzAFKHxi+UtmPwx0zmeQ=;
+        b=0gkGcUth8FLOYxIwdZiDgR1Ug9t1VBkV/3FwqbV7Q0OlC+Vnjq19TT2qyCHUVKF/vP
+         xdyiQ1QMLC15zHuNxZa0g4PJoKcO0gxfNPTSTdKFqWIDgBQucl+tKWv/Wgu96XF+l4EC
+         GePrmS8gHuU5b34yWy4N1ZDP0a6Dm87jhF8JmDu8AL2s6dcQEiXZIW2FjIwPVEScBxcn
+         6ul3OgpUkJcW9ZPpYN4sggNPfJ156PbxG9iFTX8eybTpwN1zHmR3LDOnCTShPahCKN60
+         TNKZDin0L9emwY/sf5PJwSW1f4dE9rV1pSJ2wZuEBC63PHpBBtA2eWcyjUea0wS/FxP9
+         Qr9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Y+xqaA+PPE83+8NKlD/ArjFhQQS4KR3/VLoI8CbMHTQ=;
-        b=ASGUAxxZPxEsKU0Cn4+wsNKqpjl6zlJxuL6qxwjAZyTkfYcmNIqJo/ipbW/V7Bg9lF
-         gK+IBzT3iW83nNSnVod8ym+cfuInF4Q5cqHK6TlyRADEaelhUkjkr9y9J2xdES5EUXH/
-         vyY7fOrMTWfb9XQKLDdUWeYfYFmHbLKyLbcEPymxg2buDwJ8O/HUUE3L7hTCEpAM8x8l
-         z3LmCYDlyFqnMwuMY6co5ahtpFpWp6Ij297XPw40gBtIiC2SnMFb39Un0wW+iVIDrNPS
-         KpjC5Mr4XaItzWi3+0eYi6VIjp15NpUoBmTYi5q7PfzsxgsoByCF9OWyn5i+CX/aZPvY
-         0kKA==
-X-Gm-Message-State: APjAAAX5LnlNlXmXPM0VlAoH+mmQpmhihIY3weJlkDUPJQKFwRdVg7Sw
-        HbJfmxX/8T0vA6amV7YkQu7mTA==
-X-Google-Smtp-Source: APXvYqzAugh1NnuNK1H/GCm69vuRvJ84ZPDmwfNcjCKH7OcWchiOigPgyE3JxWJgXjnInQMy6zlEMg==
-X-Received: by 2002:a7b:cb4a:: with SMTP id v10mr2715803wmj.106.1573549486843;
-        Tue, 12 Nov 2019 01:04:46 -0800 (PST)
+        bh=5zriEFojyVbt7ELQVanoYbgxzAFKHxi+UtmPwx0zmeQ=;
+        b=UQVSKQ5gxuD84JTwiLjSEgKkQ3m/VDllAWXQH2SidHTW24bOYPixFJ9iOTQcSbo2L0
+         M9zOzCGQsW+JbeWdh9G9XbcVHlCa9xsIhJ81xkaSxANnl1jkepJn2Ny9dp05Lmu510Bj
+         hDTDZ2IsiPLs6qHyK9ilFgImvUEBwlbrRnCDMGlHehbMdVRXyvrOi8NrcI0lVL7erriM
+         Dh3wU12xNl2DEQapN9QsKavIqzKc1G0wxDs01fbyLgTSu92uvuAf+b0C3B8whfqqVzZD
+         Qxvo/5nM4MJ+r9mIf4y8oMP1XZTHCUO4lZns1/zDD88tKU9xDrm0Zd2aCxl5mHEblSpO
+         G4kA==
+X-Gm-Message-State: APjAAAUDG87jN4uqwXxs7+wM4/69pzd0kKQj3f/cDgQwfvB8ainha74z
+        VK6NnDfyRES5WBAjISVpDvmT2A==
+X-Google-Smtp-Source: APXvYqx+VbXRh53fdGzs8aktmfDb/8p3+34H0pWGuEbXJ4Iu26iSzSwF5u9NWkTtoQhxRr47dqsTZw==
+X-Received: by 2002:adf:f388:: with SMTP id m8mr8138227wro.18.1573550117445;
+        Tue, 12 Nov 2019 01:15:17 -0800 (PST)
 Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id b17sm20011773wru.36.2019.11.12.01.04.45
+        by smtp.gmail.com with ESMTPSA id h15sm16794949wrb.44.2019.11.12.01.15.16
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Nov 2019 01:04:46 -0800 (PST)
-Date:   Tue, 12 Nov 2019 10:04:45 +0100
+        Tue, 12 Nov 2019 01:15:16 -0800 (PST)
+Date:   Tue, 12 Nov 2019 10:15:16 +0100
 From:   Simon Horman <simon.horman@netronome.com>
-To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Cc:     kvalo@codeaurora.org, davem@davemloft.net,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ath10k: Handle "invalid" BDFs for msm8998 devices
-Message-ID: <20191112090444.ak2xu67eawfgpdgb@netronome.com>
-References: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
+To:     Andy Duan <fugang.duan@nxp.com>
+Cc:     Chuhong Yuan <hslester96@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXT] [PATCH] net: fec: add a check for CONFIG_PM to avoid clock
+ count mis-match
+Message-ID: <20191112091515.glw4jzlqluecg4m2@netronome.com>
+References: <20191106080128.23284-1-hslester96@gmail.com>
+ <VI1PR0402MB3600F14956A82EF8D7B53CC4FF790@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+ <CANhBUQ1wZU92K=XTRCNU5HhOzZ761+S83zyjqOdZKpyQVuXrCw@mail.gmail.com>
+ <VI1PR0402MB36000BE1C169ECA035BE3610FF790@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+ <CANhBUQ2qN+vLYiHdUFGH22LnTa3nuKMYncq3JHDJp=vM=ZvCPA@mail.gmail.com>
+ <VI1PR0402MB3600111063607DDAC4DFFE26FF780@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
+In-Reply-To: <VI1PR0402MB3600111063607DDAC4DFFE26FF780@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 06, 2019 at 03:47:12PM -0800, Jeffrey Hugo wrote:
-> When the BDF download QMI message has the end field set to 1, it signals
-> the end of the transfer, and triggers the firmware to do a CRC check.  The
-> BDFs for msm8998 devices fail this check, yet the firmware is happy to
-> still use the BDF.  It appears that this error is not caught by the
-> downstream drive by concidence, therefore there are production devices
-> in the field where this issue needs to be handled otherwise we cannot
-> support wifi on them.  So, attempt to detect this scenario as best we can
-> and treat it as non-fatal.
-> 
-> Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-> ---
->  drivers/net/wireless/ath/ath10k/qmi.c | 11 +++++++----
->  1 file changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-> index eb618a2652db..5ff8cfc93778 100644
-> --- a/drivers/net/wireless/ath/ath10k/qmi.c
-> +++ b/drivers/net/wireless/ath/ath10k/qmi.c
-> @@ -265,10 +265,13 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
->  			goto out;
->  
->  		if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
-> -			ath10k_err(ar, "failed to download board data file: %d\n",
-> -				   resp.resp.error);
-> -			ret = -EINVAL;
-> -			goto out;
-> +			if (!(req->end == 1 &&
-> +			      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
+On Thu, Nov 07, 2019 at 01:44:11AM +0000, Andy Duan wrote:
+> From: Chuhong Yuan <hslester96@gmail.com> Sent: Thursday, November 7, 2019 9:19 AM
+> > On Wed, Nov 6, 2019 at 6:17 PM Andy Duan <fugang.duan@nxp.com> wrote:
+> > >
+> > > From: Chuhong Yuan <hslester96@gmail.com> Sent: Wednesday, November
+> > 6,
+> > > 2019 4:29 PM
+> > > > On Wed, Nov 6, 2019 at 4:13 PM Andy Duan <fugang.duan@nxp.com>
+> > wrote:
+> > > > >
+> > > > > From: Chuhong Yuan <hslester96@gmail.com> Sent: Wednesday,
+> > > > > November
+> > > > 6,
+> > > > > 2019 4:01 PM
+> > > > > > If CONFIG_PM is enabled, runtime pm will work and call
+> > > > > > runtime_suspend automatically to disable clks.
+> > > > > > Therefore, remove only needs to disable clks when CONFIG_PM is
+> > > > disabled.
+> > > > > > Add this check to avoid clock count mis-match caused by
+> > double-disable.
+> > > > > >
+> > > > > > This patch depends on patch
+> > > > > > ("net: fec: add missed clk_disable_unprepare in remove").
+> > > > > >
+> > > > > Please add Fixes tag here.
+> > > > >
+> > > >
+> > > > The previous patch has not been merged to linux, so I do not know
+> > > > which commit ID should be used.
+> > >
+> > > It should be merged into net-next tree.
+> > >
+> > 
+> > I have searched in net-next but did not find it.
 
-Would it make sense to combine the inner and outer condition,
-something like this (completely untested) ?
+Commit ids are stable, so if there is an id in Linus's tree
+it will be same in net-next (when the patch appears there).
 
-		if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
-		    !(req->end == 1 &&
-		      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
+So you want:
 
-> +				ath10k_err(ar, "failed to download board data file: %d\n",
-> +					   resp.resp.error);
-> +				ret = -EINVAL;
-> +				goto out;
-> +			}
->  		}
->  
->  		remaining -= req->data_len;
-> -- 
-> 2.17.1
+Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in remove")
+
+Also, it is unclear from the patch subject if this patch is targeted at
+'net' or 'net-next'. But as c43eab3eddb4 is in Linus's tree I think
+it should be for 'net'. So the correct patch subject would be:
+
+[PATCH net] net: fec: add a check for CONFIG_PM to avoid clock
+
+> David, please give the comment. Thanks.
 > 
+> Regards,
+> Andy
+> > 
+> > > Andy
+> > > >
+> > > > > Andy
+> > > > > > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> > > > > > ---
+> > > > > >  drivers/net/ethernet/freescale/fec_main.c | 2 ++
+> > > > > >  1 file changed, 2 insertions(+)
+> > > > > >
+> > > > > > diff --git a/drivers/net/ethernet/freescale/fec_main.c
+> > > > > > b/drivers/net/ethernet/freescale/fec_main.c
+> > > > > > index a9c386b63581..696550f4972f 100644
+> > > > > > --- a/drivers/net/ethernet/freescale/fec_main.c
+> > > > > > +++ b/drivers/net/ethernet/freescale/fec_main.c
+> > > > > > @@ -3645,8 +3645,10 @@ fec_drv_remove(struct platform_device
+> > > > *pdev)
+> > > > > >                 regulator_disable(fep->reg_phy);
+> > > > > >         pm_runtime_put(&pdev->dev);
+> > > > > >         pm_runtime_disable(&pdev->dev);
+> > > > > > +#ifndef CONFIG_PM
+> > > > > >         clk_disable_unprepare(fep->clk_ahb);
+> > > > > >         clk_disable_unprepare(fep->clk_ipg);
+> > > > > > +#endif
+
+FWIIW, I am surprised this is the cleanest way to resolve this problem,
+though I confess that I have no specific alternative in mind.
+
+> > > > > >         if (of_phy_is_fixed_link(np))
+> > > > > >                 of_phy_deregister_fixed_link(np);
+> > > > > >         of_node_put(fep->phy_node);
+> > > > > > --
+> > > > > > 2.23.0
+> > > > >
