@@ -2,264 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F5CF94F2
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:00:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 800BBF9500
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727064AbfKLP7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 10:59:45 -0500
-Received: from mx2.suse.de ([195.135.220.15]:56940 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725954AbfKLP7n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 10:59:43 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 32F7DB3C9;
-        Tue, 12 Nov 2019 15:59:40 +0000 (UTC)
-From:   Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To:     andrew.murray@arm.com, maz@kernel.org,
-        linux-kernel@vger.kernel.org, Tariq Toukan <tariqt@mellanox.com>,
-        Tom Joseph <tjoseph@cadence.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Cc:     james.quinlan@broadcom.com, mbrugger@suse.com,
-        f.fainelli@gmail.com, phil@raspberrypi.org, wahrenst@gmx.net,
-        jeremy.linton@arm.com,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org
-Subject: [PATCH v2 1/6] linux/log2.h: Add roundup/rounddown_pow_two64() family of functions
-Date:   Tue, 12 Nov 2019 16:59:20 +0100
-Message-Id: <20191112155926.16476-2-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191112155926.16476-1-nsaenzjulienne@suse.de>
-References: <20191112155926.16476-1-nsaenzjulienne@suse.de>
+        id S1726957AbfKLQBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 11:01:23 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40865 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726008AbfKLQBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 11:01:23 -0500
+Received: by mail-wm1-f66.google.com with SMTP id f3so3525931wmc.5
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 08:01:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=greyhouse-net.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5GNy4kWoH7uUJb7iK5pCT2GbryG8qmSs8tn6dbpPoFo=;
+        b=iVVMQ1fmMgLaW6nvD0WeX2flZJdNI1Pdxi/XRfDsklbkV52ptyrmUEKyVtD5UlX4CK
+         yFYj4VzdlzAQziB1Iiype73Ipd1ebMmI1pksREnCOSjkDmZXENpoMXRq1qlVwRrdEEvK
+         wzqUVgRy7oriFUkWH8rG2t9bMWnrrtVQfjaG3Gi4gU3mpqER76JaSemoMb76GGi3HE1S
+         gLBe831WtvWgSlQAULxyLuNwtGkZ+IVODubeoMCMK0wiSewFo41/3kjY5PMaHtBegvvw
+         JrXKjin+cZ/mRiY+C+PKZEJRMu+7MiuTmiSQj/iGZd7GwCE+ATr4JyU6it/goRt0kf2c
+         Z/+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5GNy4kWoH7uUJb7iK5pCT2GbryG8qmSs8tn6dbpPoFo=;
+        b=rgzR7cFiTrDqhyxNzpVK7SURHAvinSX0hKlZ3zyvHzrVRyocU92hkcF99q/g04Yn9I
+         QILA6RrjgZrvK2HeQ/erx5FNxOmIwRkCYoy3kHAb/q3uzgqxzq6ehD+U/QFQMX7suDfe
+         MoF/l1Cvybr5E/xDB/oTf8WEu2Ft8YME8R2PzXSRbt/6nHydn8mwAlK27eBWH1aW+pJv
+         oiaxOaPIv9aWp4jeFaUXUsSZKcIgqkKhzEy3RaRPSleUO/8MYMBD2BkBjFEiTF8tm+UI
+         Y60s8D6nRhTIXSi5G0cPJuEumYVzVEBeWjUzbjH2CNuP0Mh+ceKwayQWFuE85JzGVETG
+         hA9g==
+X-Gm-Message-State: APjAAAVq6nIjdR8HvjPTuGgwFdtH+MY05eN72eH/4X9RIyKk/GFd6L02
+        VFq0/58tqiiGP2OtFKf2ryctlniHOc0=
+X-Google-Smtp-Source: APXvYqww5ypr9C4rNaoYMueY5yBv3xV2JIx02Cvj/Matw/UZbBFnNgPnKK46gfBATupwdRHEpq1/WQ==
+X-Received: by 2002:a1c:3b05:: with SMTP id i5mr4816744wma.8.1573574480117;
+        Tue, 12 Nov 2019 08:01:20 -0800 (PST)
+Received: from C02YVCJELVCG ([192.19.231.250])
+        by smtp.gmail.com with ESMTPSA id r15sm42582214wrc.5.2019.11.12.08.01.18
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Nov 2019 08:01:19 -0800 (PST)
+Date:   Tue, 12 Nov 2019 11:01:15 -0500
+From:   Andy Gospodarek <andy@greyhouse.net>
+To:     Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: Possibility of me mainlining Tehuti Networks 10GbE driver
+Message-ID: <20191112160115.GA16865@C02YVCJELVCG>
+References: <PS2P216MB0755843A57F285E4EE452EE5807B0@PS2P216MB0755.KORP216.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PS2P216MB0755843A57F285E4EE452EE5807B0@PS2P216MB0755.KORP216.PROD.OUTLOOK.COM>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some users need to make sure their rounding function accepts and returns
-64bit long variables regardless of the architecture. Sadly
-roundup/rounddown_pow_two() takes and returns unsigned longs. Create a
-new generic 64bit variant of the function and cleanup rougue custom
-implementations.
+On Fri, Nov 08, 2019 at 02:24:44AM +0000, Nicholas Johnson wrote:
+> Hi all,
+> 
+> To start off, if I am emailing the wrong people, please blame the output 
+> of: "scripts/get_maintainer.pl drivers/net/ethernet/tehuti/" and let me 
+> know who I should be contacting. Should I add in 
+> "linux-kernel@vger.kernel.org"?
+> 
+> I just discovered that the Tehuti 10GbE networking drivers (required for 
+> things such as some AKiTiO Thunderbolt to 10GbE adapters) are not in 
+> mainline. I am interested in mainlining it, but need to know how much 
+> work it would take and if it will force me to be the maintainer for all 
+> eternity.
+> 
+> The driver, in tn40xx-0.3.6.15-c.tar appears to be available here:
+> Link: https://www.akitio.com/faq/341-thunder3-10gbe-adapter-can-i-use-this-network-adapter-on-linux
+> Also here:
+> Link: https://github.com/acooks/tn40xx-driver
+> 
+> I see some immediate style problems and indentation issues. I can fix 
+> these.
+> 
+> The current driver only works with Linux v4.19, I believe. There are a 
+> small handful of compile errors with v5.4. I can probably fix these.
+> 
+> However, could somebody please comment on any technical issues that you 
+> can see here? How much work do you think I would have to do to mainline 
+> this? Would I have to buy such a device for testing? Would I have to buy 
+> *all* of the supported devices for testing? Or can other people do that 
+> for me?
+> 
+> I am not keen on having to buy anything without mainline support - it is 
+> an instant disqualification of a hardware vendor. It results in a 
+> terrible user experience for experienced people (might not be able to 
+> use latest kernel which is needed for supporting other things) and is 
+> debilitating for people new to Linux who do not how to use the terminal, 
+> possibly enough so that they will go back to Windows.
+> 
+> Andy, what is your relationship to Tehuti Networks? Would you be happy 
+> to maintain this if I mainlined it? It says you are maintainer of 
+> drivers/net/ethernet/tehuti/ directory. I will not do this if I am 
+> expected to maintain it - in no small part because I do not know a lot 
+> about it. I will only be modifying what is currently available to make 
+> it acceptable for mainline, if possible.
 
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
----
- drivers/net/ethernet/mellanox/mlx4/en_clock.c |  3 +-
- drivers/pci/controller/pcie-cadence-ep.c      |  7 +--
- drivers/pci/controller/pcie-cadence.c         |  7 +--
- drivers/pci/controller/pcie-rockchip-ep.c     |  9 ++--
- include/linux/log2.h                          | 52 +++++++++++++++++++
- kernel/dma/direct.c                           |  3 +-
- 6 files changed, 63 insertions(+), 18 deletions(-)
+[Nicolas, sorry for the slow response -- I've been AFK for a bit.]
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/en_clock.c b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-index 024788549c25..027bd72505e2 100644
---- a/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/en_clock.c
-@@ -33,6 +33,7 @@
- 
- #include <linux/mlx4/device.h>
- #include <linux/clocksource.h>
-+#include <linux/log2.h>
- 
- #include "mlx4_en.h"
- 
-@@ -252,7 +253,7 @@ static u32 freq_to_shift(u16 freq)
- {
- 	u32 freq_khz = freq * 1000;
- 	u64 max_val_cycles = freq_khz * 1000 * MLX4_EN_WRAP_AROUND_SEC;
--	u64 max_val_cycles_rounded = 1ULL << fls64(max_val_cycles - 1);
-+	u64 max_val_cycles_rounded = roundup_pow_of_two64(max_val_cycles);
- 	/* calculate max possible multiplier in order to fit in 64bit */
- 	u64 max_mul = div64_u64(ULLONG_MAX, max_val_cycles_rounded);
- 
-diff --git a/drivers/pci/controller/pcie-cadence-ep.c b/drivers/pci/controller/pcie-cadence-ep.c
-index def7820cb824..26ff424b16f5 100644
---- a/drivers/pci/controller/pcie-cadence-ep.c
-+++ b/drivers/pci/controller/pcie-cadence-ep.c
-@@ -10,6 +10,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/sizes.h>
-+#include <linux/log2.h>
- 
- #include "pcie-cadence.h"
- 
-@@ -90,11 +91,7 @@ static int cdns_pcie_ep_set_bar(struct pci_epc *epc, u8 fn,
- 
- 	/* BAR size is 2^(aperture + 7) */
- 	sz = max_t(size_t, epf_bar->size, CDNS_PCIE_EP_MIN_APERTURE);
--	/*
--	 * roundup_pow_of_two() returns an unsigned long, which is not suited
--	 * for 64bit values.
--	 */
--	sz = 1ULL << fls64(sz - 1);
-+	sz = roundup_pow_of_two64(sz);
- 	aperture = ilog2(sz) - 7; /* 128B -> 0, 256B -> 1, 512B -> 2, ... */
- 
- 	if ((flags & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_IO) {
-diff --git a/drivers/pci/controller/pcie-cadence.c b/drivers/pci/controller/pcie-cadence.c
-index cd795f6fc1e2..b2278e6b955c 100644
---- a/drivers/pci/controller/pcie-cadence.c
-+++ b/drivers/pci/controller/pcie-cadence.c
-@@ -4,6 +4,7 @@
- // Author: Cyrille Pitchen <cyrille.pitchen@free-electrons.com>
- 
- #include <linux/kernel.h>
-+#include <linux/log2.h>
- 
- #include "pcie-cadence.h"
- 
-@@ -11,11 +12,7 @@ void cdns_pcie_set_outbound_region(struct cdns_pcie *pcie, u8 fn,
- 				   u32 r, bool is_io,
- 				   u64 cpu_addr, u64 pci_addr, size_t size)
- {
--	/*
--	 * roundup_pow_of_two() returns an unsigned long, which is not suited
--	 * for 64bit values.
--	 */
--	u64 sz = 1ULL << fls64(size - 1);
-+	u64 sz = roundup_pow_of_two64(size);
- 	int nbits = ilog2(sz);
- 	u32 addr0, addr1, desc0, desc1;
- 
-diff --git a/drivers/pci/controller/pcie-rockchip-ep.c b/drivers/pci/controller/pcie-rockchip-ep.c
-index d743b0a48988..ed50aaf27784 100644
---- a/drivers/pci/controller/pcie-rockchip-ep.c
-+++ b/drivers/pci/controller/pcie-rockchip-ep.c
-@@ -16,6 +16,7 @@
- #include <linux/platform_device.h>
- #include <linux/pci-epf.h>
- #include <linux/sizes.h>
-+#include <linux/log2.h>
- 
- #include "pcie-rockchip.h"
- 
-@@ -70,7 +71,7 @@ static void rockchip_pcie_prog_ep_ob_atu(struct rockchip_pcie *rockchip, u8 fn,
- 					 u32 r, u32 type, u64 cpu_addr,
- 					 u64 pci_addr, size_t size)
- {
--	u64 sz = 1ULL << fls64(size - 1);
-+	u64 sz = roundup_pow_of_two64(size);
- 	int num_pass_bits = ilog2(sz);
- 	u32 addr0, addr1, desc0, desc1;
- 	bool is_nor_msg = (type == AXI_WRAPPER_NOR_MSG);
-@@ -172,11 +173,7 @@ static int rockchip_pcie_ep_set_bar(struct pci_epc *epc, u8 fn,
- 	/* BAR size is 2^(aperture + 7) */
- 	sz = max_t(size_t, epf_bar->size, MIN_EP_APERTURE);
- 
--	/*
--	 * roundup_pow_of_two() returns an unsigned long, which is not suited
--	 * for 64bit values.
--	 */
--	sz = 1ULL << fls64(sz - 1);
-+	sz = roundup_pow_of_two64(sz);
- 	aperture = ilog2(sz) - 7; /* 128B -> 0, 256B -> 1, 512B -> 2, ... */
- 
- 	if ((flags & PCI_BASE_ADDRESS_SPACE) == PCI_BASE_ADDRESS_SPACE_IO) {
-diff --git a/include/linux/log2.h b/include/linux/log2.h
-index 83a4a3ca3e8a..db12d92ab6eb 100644
---- a/include/linux/log2.h
-+++ b/include/linux/log2.h
-@@ -67,6 +67,24 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
- 	return 1UL << (fls_long(n) - 1);
- }
- 
-+/**
-+ * __roundup_pow_of_two64() - round 64bit value up to nearest power of two
-+ * @n: value to round up
-+ */
-+static inline __attribute__((const)) __u64 __roundup_pow_of_two64(__u64 n)
-+{
-+	return 1UL << fls64(n - 1);
-+}
-+
-+/**
-+ * __rounddown_pow_of_two64() - round 64bit value down to nearest power of two
-+ * @n: value to round down
-+ */
-+static inline __attribute__((const)) __u64 __rounddown_pow_of_two64(__u64 n)
-+{
-+	return 1UL << (fls64(n) - 1);
-+}
-+
- /**
-  * const_ilog2 - log base 2 of 32-bit or a 64-bit constant unsigned value
-  * @n: parameter
-@@ -194,6 +212,40 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
- 	__rounddown_pow_of_two(n)		\
-  )
- 
-+/**
-+ * roundup_pow_of_two64 - round the given 64bit value up to nearest power of
-+ * two
-+ * @n: parameter
-+ *
-+ * round the given value up to the nearest power of two
-+ * - the result is undefined when n == 0
-+ * - this can be used to initialise global variables from constant data
-+ */
-+#define roundup_pow_of_two64(n)			\
-+(						\
-+	__builtin_constant_p(n) ? (		\
-+		(n == 1) ? 1 :			\
-+		(1UL << (ilog2((n) - 1) + 1))	\
-+				   ) :		\
-+	__roundup_pow_of_two64(n)		\
-+)
-+
-+/**
-+ * rounddown_pow_of_two64 - round the given 64bit value down to nearest power
-+ * of two
-+ * @n: parameter
-+ *
-+ * round the given value down to the nearest power of two
-+ * - the result is undefined when n == 0
-+ * - this can be used to initialise global variables from constant data
-+ */
-+#define rounddown_pow_of_two64(n)		\
-+(						\
-+	__builtin_constant_p(n) ? (		\
-+		(1UL << ilog2(n))) :		\
-+	__rounddown_pow_of_two64(n)		\
-+)
-+
- static inline __attribute_const__
- int __order_base_2(unsigned long n)
- {
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index b9e1744999d9..a419530abd3e 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -15,6 +15,7 @@
- #include <linux/vmalloc.h>
- #include <linux/set_memory.h>
- #include <linux/swiotlb.h>
-+#include <linux/log2.h>
- 
- /*
-  * Most architectures use ZONE_DMA for the first 16 Megabytes, but some use it
-@@ -53,7 +54,7 @@ u64 dma_direct_get_required_mask(struct device *dev)
- {
- 	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
- 
--	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
-+	return rounddown_pow_of_two64(max_dma) * 2 - 1;
- }
- 
- static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
--- 
-2.24.0
+A long time ago, in a galaxy far, far away Tehuti sent me one of their
+early 10GbE adapters and asked if I would help them take their driver
+upstream.  They provided an out of tree driver as a basis and after a
+few revisions David Miller agreed to take this into net-next.  The
+driver as it exists today could use lots of work.  There were many items
+on my TODO list for it, but I never made the time to clean it up
+properly so it could still use some care and feeding.  I just checked my
+cache of cards and unfortunately it looks like I do not have any of
+these adapters at home any longer.  I may need to check the office to
+see if I have one there, but I think chances are slim.
 
+I'd feel better about helping to maintain the driver if there was
+hardware available for whoever was doing the work.  It looks like there
+are some pretty cheap (sub-200USD) cards available online that use that
+chipset.  Frankly, I'd probably also feel better about maintaining it
+and updating to all the coolest new features if I didn't currently work
+at another hardware vendor, so I need to consider that.
+
+I haven't pulled down their latest driver from github, but I'd be
+curious to see how close the hardware drivers appear to be between the
+40xx chipset and the original TOE SmartNIC[sic] that is supported
+upstream today.  Did you by any chance compare the two?
+
+> Also, license issues - does GPLv2 permit mainlining to happen? I believe 
+> the Tehuti driver is available under GPLv2 (correct me if I am wrong).
+> 
+> Would I need to send patches for this, or for something this size, is it 
+> better to send a pull request? If I am going to do patches, I will need 
+> to make a gmail account or something, as Outlook messes with the 
+> encoding of the things which I send.
+> 
+> Thanks for any comments on this.
+> 
+> Kind regards,
+> Nicholas Johnson
