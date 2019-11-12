@@ -2,251 +2,598 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1765DF8798
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 05:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E43F8804
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 06:32:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbfKLExL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 23:53:11 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37542 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726924AbfKLExL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 23:53:11 -0500
-Received: by mail-pf1-f194.google.com with SMTP id p24so12459814pfn.4
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 20:53:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=mjINTL6L6LPzJj0Fr5x3S95C2PCahmAefdYE+b3ZKVc=;
-        b=LRx233K/9rm8bncwyLdJ21CU5FH95EeqvGZvWnJlo5WrOlMzr7LtoXNJId4FXypMKS
-         Rcb45LWQn8Dap0jk5PIxYcgzd9dxFyN+es7a3ypP1JrVUwGdWeokWVJOYOcw3ZJw7N4E
-         ZlzNaXRzjcj5XYoHZVLS77agK/lS8xp08SJ23ClaL9KesQo4GJQUWAusm0pCJoKIIs4V
-         rCFxdZHXIWLW2XdHgmwRKrfqAYGv2rAo/MAVUSC1cAu60oExUN22mgNTwxBO/IaNk1et
-         wu/LpJX7xh27GIjXDaB6+HmmOdmiz1DuVvHoOMZo2RL8mPvkk9I0HyjIWY+l5H/qupEN
-         Y69A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=mjINTL6L6LPzJj0Fr5x3S95C2PCahmAefdYE+b3ZKVc=;
-        b=RdAOapAPfeL/P3Nhdb5vop+MW3fuvbDTeqqC8/UYAbAu9qe7WAe9v9SafA6qu198AG
-         P39E6ka1hr1l+kb1INPJwOsIHCtPeXG7EgIPMKaA1WWr++t34Jy3I0kFJecXXDNuB7fT
-         TQ8bpr0SM+kYxI5pzePPc9rVPT6UV4PcItBRjvpJbjHtgcSvX5JcmV1GMAMToMjARqu5
-         jxxsWNeAtftdsUrVgw+yPQxJExcRpVUi9XjNmzZEeyBMxWxr2ZRB1qKKrikTOxWeJ8/y
-         FNVDQCo34Ictvh19smrCgpDH8CGVkbcX1bsL0z/2n3yBWB/AclIHjCFCZec9QhdOqhsb
-         T5LA==
-X-Gm-Message-State: APjAAAWch4vpQKjVQksQ9IBmP2FTUDhoks6p4uizn5aXm6G7qoSHYlL8
-        T+6Sag+aub6wljZ3We2I6DY=
-X-Google-Smtp-Source: APXvYqy3Ckpdr0Fej77VcWyy2yHqcDvwcGuowSnxaEoO8Ly3VngZ9R7DwYAHaH/Waqg8FIp+eTl1ag==
-X-Received: by 2002:a63:cc56:: with SMTP id q22mr5198299pgi.439.1573534390145;
-        Mon, 11 Nov 2019 20:53:10 -0800 (PST)
-Received: from [10.54.128.71] ([114.242.249.189])
-        by smtp.gmail.com with ESMTPSA id n5sm1883124pgg.80.2019.11.11.20.53.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Nov 2019 20:53:09 -0800 (PST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH net-next] net: openvswitch: add hash info to upcall
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-X-Mailer: iPhone Mail (16F203)
-In-Reply-To: <CAOrHB_CmtDnqpuEtiBSJvS5tDjP8A+6a4ynYGWahF8k3heezUw@mail.gmail.com>
-Date:   Tue, 12 Nov 2019 12:53:07 +0800
-Cc:     Ben Pfaff <blp@ovn.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>, ychen103103@163.com
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <01C51609-C58C-4D45-9A10-DA5B400CCF4A@gmail.com>
-References: <1573386258-35040-1-git-send-email-xiangxia.m.yue@gmail.com> <CAOrHB_CmtDnqpuEtiBSJvS5tDjP8A+6a4ynYGWahF8k3heezUw@mail.gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>
+        id S1727077AbfKLFcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 00:32:47 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54838 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726995AbfKLFcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 00:32:32 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAC5WTbX030150
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 21:32:31 -0800
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by m0001303.ppops.net with ESMTP id 2w5t0mnk5m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 21:32:30 -0800
+Received: from 2401:db00:2120:81ca:face:0:31:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Mon, 11 Nov 2019 21:32:11 -0800
+Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
+        id 73C336075C82; Mon, 11 Nov 2019 21:32:10 -0800 (PST)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
+CC:     <kernel-team@fb.com>, <brouer@redhat.com>,
+        <ilias.apalodimas@linaro.org>
+Smtp-Origin-Cluster: vll1c12
+Subject: [net-next PATCH] page_pool: do not release pool until inflight == 0.
+Date:   Mon, 11 Nov 2019 21:32:10 -0800
+Message-ID: <20191112053210.2555169-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-12_01:2019-11-11,2019-11-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 clxscore=1034 phishscore=0
+ malwarescore=0 suspectscore=2 priorityscore=1501 adultscore=0 bulkscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911120049
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The page pool keeps track of the number of pages in flight, and
+it isn't safe to remove the pool until all pages are returned.
 
+Disallow removing the pool until all pages are back, so the pool
+is always available for page producers.
 
-> On Nov 12, 2019, at 12:35 PM, Pravin Shelar <pshelar@ovn.org> wrote:
->=20
->> On Sun, Nov 10, 2019 at 3:44 AM <xiangxia.m.yue@gmail.com> wrote:
->>=20
->> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->>=20
->> When using the kernel datapath, the upcall don't
->> add skb hash info relatived. That will introduce
->> some problem, because the hash of skb is very
->> important (e.g. vxlan module uses it for udp src port,
->> tx queue selection on tx path.).
->>=20
->> For example, there will be one upcall, without information
->> skb hash, to ovs-vswitchd, for the first packet of one tcp
->> session. When kernel sents the tcp packets, the hash is
->> random for a tcp socket:
->>=20
->> tcp_v4_connect
->>  -> sk_set_txhash (is random)
->>=20
->> __tcp_transmit_skb
->>  -> skb_set_hash_from_sk
->>=20
->> Then the udp src port of first tcp packet is different
->> from rest packets. The topo is shown.
->>=20
->> $ ovs-vsctl add-br br-int
->> $ ovs-vsctl add-port br-int vxl0 -- \
->>                set Interface vxl0 type=3Dvxlan options:key=3D100 options:=
-remote_ip=3D1.1.1.200
->>=20
->> $ __tap is internal type on host
->> $ or tap net device for VM/Dockers
->> $ ovs-vsctl add-port br-int __tap
->>=20
->> +---------------+          +-------------------------+
->> |   Docker/VMs  |          |     ovs-vswitchd        |
->> +----+----------+          +-------------------------+
->>     |                       ^                    |
->>     |                       |                    |
->>     |                       |  upcall            v recalculate packet has=
-h
->>     |                     +-+--------------------+--+
->>     |  tap netdev         |                         |   vxlan modules
->>     +--------------->     +-->  Open vSwitch ko   --+--->
->>       internal type       |                         |
->>                           +-------------------------+
->>=20
->> Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/=
-364062.html
->> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->> ---
->> include/uapi/linux/openvswitch.h |  2 ++
->> net/openvswitch/datapath.c       | 31 ++++++++++++++++++++++++++++++-
->> net/openvswitch/datapath.h       |  3 +++
->> 3 files changed, 35 insertions(+), 1 deletion(-)
->>=20
->> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvs=
-witch.h
->> index 1887a451c388..1c58e019438e 100644
->> --- a/include/uapi/linux/openvswitch.h
->> +++ b/include/uapi/linux/openvswitch.h
->> @@ -170,6 +170,7 @@ enum ovs_packet_cmd {
->>  * output port is actually a tunnel port. Contains the output tunnel key
->>  * extracted from the packet as nested %OVS_TUNNEL_KEY_ATTR_* attributes.=
+Make the page pool responsible for its own delayed destruction
+instead of relying on XDP, so the page pool can be used without
+xdp.
 
->>  * @OVS_PACKET_ATTR_MRU: Present for an %OVS_PACKET_CMD_ACTION and
->> + * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_ha=
-sh in skb)
->>  * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
->>  * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragmen=
-t
->>  * size.
->> @@ -190,6 +191,7 @@ enum ovs_packet_attr {
->>        OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe=
-,
->>                                       error logging should be suppressed.=
- */
->>        OVS_PACKET_ATTR_MRU,        /* Maximum received IP fragment size. *=
-/
->> +       OVS_PACKET_ATTR_HASH,       /* Packet hash. */
->>        OVS_PACKET_ATTR_LEN,            /* Packet size before truncation. *=
-/
->>        __OVS_PACKET_ATTR_MAX
->> };
->> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
->> index 2088619c03f0..f938c43e3085 100644
->> --- a/net/openvswitch/datapath.c
->> +++ b/net/openvswitch/datapath.c
->> @@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_=
-info *upcall_info,
->>        size_t size =3D NLMSG_ALIGN(sizeof(struct ovs_header))
->>                + nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
->>                + nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_K=
-EY */
->> -               + nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATT=
-R_LEN */
->> +               + nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR=
-_LEN */
->> +               + nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */=
+When all pages are returned, free the pool and notify xdp if the
+pool is registered with the xdp memory system.  Have the callback
+perform a table walk since some drivers (cpsw) may share the pool
+among multiple xdp_rxq_info.
 
->>=20
->>        /* OVS_PACKET_ATTR_USERDATA */
->>        if (upcall_info->userdata)
->> @@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp=
-, struct sk_buff *skb,
->>        size_t len;
->>        unsigned int hlen;
->>        int err, dp_ifindex;
->> +       u64 hash;
->>=20
->>        dp_ifindex =3D get_dpifindex(dp);
->>        if (!dp_ifindex)
->> @@ -504,6 +506,24 @@ static int queue_userspace_packet(struct datapath *d=
-p, struct sk_buff *skb,
->>                pad_packet(dp, user_skb);
->>        }
->>=20
->> +       if (skb_get_hash_raw(skb)) {
-> skb_get_hash_raw() never fails to return hash, so I do not see point
-> of checking hash value.
-If hash value is 0, we don't add hash info to upcall.
->=20
->> +               hash =3D skb_get_hash_raw(skb);
->> +
->> +               if (skb->sw_hash)
->> +                       hash |=3D OVS_PACKET_HASH_SW;
->> +
->> +               if (skb->l4_hash)
->> +                       hash |=3D OVS_PACKET_HASH_L4;
->> +
->> +               if (nla_put(user_skb, OVS_PACKET_ATTR_HASH,
->> +                           sizeof (u64), &hash)) {
->> +                       err =3D -ENOBUFS;
->> +                       goto out;
->> +               }
->> +
->> +               pad_packet(dp, user_skb);
->> +       }
->> +
->>        /* Only reserve room for attribute header, packet data is added
->>         * in skb_zerocopy() */
->>        if (!(nla =3D nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {=
+Fixes: d956a048cd3f ("xdp: force mem allocator removal and periodic warning")
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   4 +-
+ include/net/page_pool.h                       |  54 +++-----
+ include/net/xdp_priv.h                        |   4 -
+ include/trace/events/xdp.h                    |  19 +--
+ net/core/page_pool.c                          | 115 ++++++++++------
+ net/core/xdp.c                                | 125 +++++++-----------
+ 6 files changed, 137 insertions(+), 184 deletions(-)
 
->> @@ -543,6 +563,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb=
-, struct genl_info *info)
->>        struct datapath *dp;
->>        struct vport *input_vport;
->>        u16 mru =3D 0;
->> +       u64 hash;
->>        int len;
->>        int err;
->>        bool log =3D !a[OVS_PACKET_ATTR_PROBE];
->> @@ -568,6 +589,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *sk=
-b, struct genl_info *info)
->>        }
->>        OVS_CB(packet)->mru =3D mru;
->>=20
->> +       if (a[OVS_PACKET_ATTR_HASH]) {
->> +               hash =3D nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
->> +
->> +               __skb_set_hash(packet, hash & 0xFFFFFFFFUL,
->> +                              !!(hash & OVS_PACKET_HASH_SW),
->> +                              !!(hash & OVS_PACKET_HASH_L4));
->> +       }
->> +
->>        /* Build an sw_flow for sending this packet. */
->>        flow =3D ovs_flow_alloc();
->>        err =3D PTR_ERR(flow);
->> diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
->> index 81e85dde8217..ba89a08647ac 100644
->> --- a/net/openvswitch/datapath.h
->> +++ b/net/openvswitch/datapath.h
->> @@ -248,3 +248,6 @@ do {                                                 =
-               \
->>                pr_info("netlink: " fmt "\n", ##__VA_ARGS__);   \
->> } while (0)
->> #endif /* datapath.h */
->> +
->> +#define OVS_PACKET_HASH_SW     (1ULL << 32)
->> +#define OVS_PACKET_HASH_L4     (1ULL << 33)
->=20
-> We could define these using enum pkt_hash_types values, rather than
-> constant values.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 199c4f938bb2..cd0d8a4bbeb3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1502,10 +1502,8 @@ static void free_dma_rx_desc_resources(struct stmmac_priv *priv)
+ 					  rx_q->dma_erx, rx_q->dma_rx_phy);
+ 
+ 		kfree(rx_q->buf_pool);
+-		if (rx_q->page_pool) {
+-			page_pool_request_shutdown(rx_q->page_pool);
++		if (rx_q->page_pool)
+ 			page_pool_destroy(rx_q->page_pool);
+-		}
+ 	}
+ }
+ 
+diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+index 2cbcdbdec254..0a9eba9c682c 100644
+--- a/include/net/page_pool.h
++++ b/include/net/page_pool.h
+@@ -70,7 +70,12 @@ struct page_pool_params {
+ struct page_pool {
+ 	struct page_pool_params p;
+ 
+-        u32 pages_state_hold_cnt;
++	struct delayed_work release_dw;
++	void (*disconnect)(void *);
++	unsigned long defer_start;
++	unsigned long defer_warn;
++
++	u32 pages_state_hold_cnt;
+ 
+ 	/*
+ 	 * Data structure for allocation side
+@@ -129,26 +134,20 @@ inline enum dma_data_direction page_pool_get_dma_dir(struct page_pool *pool)
+ 
+ struct page_pool *page_pool_create(const struct page_pool_params *params);
+ 
+-void __page_pool_free(struct page_pool *pool);
+-static inline void page_pool_free(struct page_pool *pool)
+-{
+-	/* When page_pool isn't compiled-in, net/core/xdp.c doesn't
+-	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+-	 */
+ #ifdef CONFIG_PAGE_POOL
+-	__page_pool_free(pool);
+-#endif
+-}
+-
+-/* Drivers use this instead of page_pool_free */
++void page_pool_destroy(struct page_pool *pool);
++void page_pool_use_xdp_mem(struct page_pool *pool, void (*disconnect)(void *));
++#else
+ static inline void page_pool_destroy(struct page_pool *pool)
+ {
+-	if (!pool)
+-		return;
+-
+-	page_pool_free(pool);
+ }
+ 
++static inline void page_pool_use_xdp_mem(struct page_pool *pool,
++					 void (*disconnect)(void *));
++{
++}
++#endif
++
+ /* Never call this directly, use helpers below */
+ void __page_pool_put_page(struct page_pool *pool,
+ 			  struct page *page, bool allow_direct);
+@@ -170,24 +169,6 @@ static inline void page_pool_recycle_direct(struct page_pool *pool,
+ 	__page_pool_put_page(pool, page, true);
+ }
+ 
+-/* API user MUST have disconnected alloc-side (not allowed to call
+- * page_pool_alloc_pages()) before calling this.  The free-side can
+- * still run concurrently, to handle in-flight packet-pages.
+- *
+- * A request to shutdown can fail (with false) if there are still
+- * in-flight packet-pages.
+- */
+-bool __page_pool_request_shutdown(struct page_pool *pool);
+-static inline bool page_pool_request_shutdown(struct page_pool *pool)
+-{
+-	bool safe_to_remove = false;
+-
+-#ifdef CONFIG_PAGE_POOL
+-	safe_to_remove = __page_pool_request_shutdown(pool);
+-#endif
+-	return safe_to_remove;
+-}
+-
+ /* Disconnects a page (from a page_pool).  API users can have a need
+  * to disconnect a page (from a page_pool), to allow it to be used as
+  * a regular page (that will eventually be returned to the normal
+@@ -216,11 +197,6 @@ static inline bool is_page_pool_compiled_in(void)
+ #endif
+ }
+ 
+-static inline void page_pool_get(struct page_pool *pool)
+-{
+-	refcount_inc(&pool->user_cnt);
+-}
+-
+ static inline bool page_pool_put(struct page_pool *pool)
+ {
+ 	return refcount_dec_and_test(&pool->user_cnt);
+diff --git a/include/net/xdp_priv.h b/include/net/xdp_priv.h
+index 6a8cba6ea79a..a9d5b7603b89 100644
+--- a/include/net/xdp_priv.h
++++ b/include/net/xdp_priv.h
+@@ -12,12 +12,8 @@ struct xdp_mem_allocator {
+ 		struct page_pool *page_pool;
+ 		struct zero_copy_allocator *zc_alloc;
+ 	};
+-	int disconnect_cnt;
+-	unsigned long defer_start;
+ 	struct rhash_head node;
+ 	struct rcu_head rcu;
+-	struct delayed_work defer_wq;
+-	unsigned long defer_warn;
+ };
+ 
+ #endif /* __LINUX_NET_XDP_PRIV_H__ */
+diff --git a/include/trace/events/xdp.h b/include/trace/events/xdp.h
+index c7e3c9c5bad3..a7378bcd9928 100644
+--- a/include/trace/events/xdp.h
++++ b/include/trace/events/xdp.h
+@@ -317,19 +317,15 @@ __MEM_TYPE_MAP(__MEM_TYPE_TP_FN)
+ 
+ TRACE_EVENT(mem_disconnect,
+ 
+-	TP_PROTO(const struct xdp_mem_allocator *xa,
+-		 bool safe_to_remove, bool force),
++	TP_PROTO(const struct xdp_mem_allocator *xa),
+ 
+-	TP_ARGS(xa, safe_to_remove, force),
++	TP_ARGS(xa),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(const struct xdp_mem_allocator *,	xa)
+ 		__field(u32,		mem_id)
+ 		__field(u32,		mem_type)
+ 		__field(const void *,	allocator)
+-		__field(bool,		safe_to_remove)
+-		__field(bool,		force)
+-		__field(int,		disconnect_cnt)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -337,19 +333,12 @@ TRACE_EVENT(mem_disconnect,
+ 		__entry->mem_id		= xa->mem.id;
+ 		__entry->mem_type	= xa->mem.type;
+ 		__entry->allocator	= xa->allocator;
+-		__entry->safe_to_remove	= safe_to_remove;
+-		__entry->force		= force;
+-		__entry->disconnect_cnt	= xa->disconnect_cnt;
+ 	),
+ 
+-	TP_printk("mem_id=%d mem_type=%s allocator=%p"
+-		  " safe_to_remove=%s force=%s disconnect_cnt=%d",
++	TP_printk("mem_id=%d mem_type=%s allocator=%p",
+ 		  __entry->mem_id,
+ 		  __print_symbolic(__entry->mem_type, __MEM_TYPE_SYM_TAB),
+-		  __entry->allocator,
+-		  __entry->safe_to_remove ? "true" : "false",
+-		  __entry->force ? "true" : "false",
+-		  __entry->disconnect_cnt
++		  __entry->allocator
+ 	)
+ );
+ 
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 5bc65587f1c4..bfe96326335d 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -18,6 +18,9 @@
+ 
+ #include <trace/events/page_pool.h>
+ 
++#define DEFER_TIME (msecs_to_jiffies(1000))
++#define DEFER_WARN_INTERVAL (60 * HZ)
++
+ static int page_pool_init(struct page_pool *pool,
+ 			  const struct page_pool_params *params)
+ {
+@@ -193,22 +196,14 @@ static s32 page_pool_inflight(struct page_pool *pool)
+ {
+ 	u32 release_cnt = atomic_read(&pool->pages_state_release_cnt);
+ 	u32 hold_cnt = READ_ONCE(pool->pages_state_hold_cnt);
+-	s32 distance;
++	s32 inflight;
+ 
+-	distance = _distance(hold_cnt, release_cnt);
++	inflight = _distance(hold_cnt, release_cnt);
+ 
+-	trace_page_pool_inflight(pool, distance, hold_cnt, release_cnt);
+-	return distance;
+-}
+-
+-static bool __page_pool_safe_to_destroy(struct page_pool *pool)
+-{
+-	s32 inflight = page_pool_inflight(pool);
+-
+-	/* The distance should not be able to become negative */
++	trace_page_pool_inflight(pool, inflight, hold_cnt, release_cnt);
+ 	WARN(inflight < 0, "Negative(%d) inflight packet-pages", inflight);
+ 
+-	return (inflight == 0);
++	return inflight;
+ }
+ 
+ /* Cleanup page_pool state from page */
+@@ -338,31 +333,10 @@ static void __page_pool_empty_ring(struct page_pool *pool)
+ 	}
+ }
+ 
+-static void __warn_in_flight(struct page_pool *pool)
++static void page_pool_free(struct page_pool *pool)
+ {
+-	u32 release_cnt = atomic_read(&pool->pages_state_release_cnt);
+-	u32 hold_cnt = READ_ONCE(pool->pages_state_hold_cnt);
+-	s32 distance;
+-
+-	distance = _distance(hold_cnt, release_cnt);
+-
+-	/* Drivers should fix this, but only problematic when DMA is used */
+-	WARN(1, "Still in-flight pages:%d hold:%u released:%u",
+-	     distance, hold_cnt, release_cnt);
+-}
+-
+-void __page_pool_free(struct page_pool *pool)
+-{
+-	/* Only last user actually free/release resources */
+-	if (!page_pool_put(pool))
+-		return;
+-
+-	WARN(pool->alloc.count, "API usage violation");
+-	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
+-
+-	/* Can happen due to forced shutdown */
+-	if (!__page_pool_safe_to_destroy(pool))
+-		__warn_in_flight(pool);
++	if (pool->disconnect)
++		pool->disconnect(pool);
+ 
+ 	ptr_ring_cleanup(&pool->ring, NULL);
+ 
+@@ -371,12 +345,8 @@ void __page_pool_free(struct page_pool *pool)
+ 
+ 	kfree(pool);
+ }
+-EXPORT_SYMBOL(__page_pool_free);
+ 
+-/* Request to shutdown: release pages cached by page_pool, and check
+- * for in-flight pages
+- */
+-bool __page_pool_request_shutdown(struct page_pool *pool)
++static void page_pool_scrub(struct page_pool *pool)
+ {
+ 	struct page *page;
+ 
+@@ -393,7 +363,64 @@ bool __page_pool_request_shutdown(struct page_pool *pool)
+ 	 * be in-flight.
+ 	 */
+ 	__page_pool_empty_ring(pool);
+-
+-	return __page_pool_safe_to_destroy(pool);
+ }
+-EXPORT_SYMBOL(__page_pool_request_shutdown);
++
++static int page_pool_release(struct page_pool *pool)
++{
++	int inflight;
++
++	page_pool_scrub(pool);
++	inflight = page_pool_inflight(pool);
++	if (!inflight)
++		page_pool_free(pool);
++
++	return inflight;
++}
++
++static void page_pool_release_retry(struct work_struct *wq)
++{
++	struct delayed_work *dwq = to_delayed_work(wq);
++	struct page_pool *pool = container_of(dwq, typeof(*pool), release_dw);
++	int inflight;
++
++	inflight = page_pool_release(pool);
++	if (!inflight)
++		return;
++
++	/* Periodic warning */
++	if (time_after_eq(jiffies, pool->defer_warn)) {
++		int sec = (s32)((u32)jiffies - (u32)pool->defer_start) / HZ;
++
++		pr_warn("%s() stalled pool shutdown %d inflight %d sec\n",
++			__func__, inflight, sec);
++		pool->defer_warn = jiffies + DEFER_WARN_INTERVAL;
++	}
++
++	/* Still not ready to be disconnected, retry later */
++	schedule_delayed_work(&pool->release_dw, DEFER_TIME);
++}
++
++void page_pool_use_xdp_mem(struct page_pool *pool, void (*disconnect)(void *))
++{
++	refcount_inc(&pool->user_cnt);
++	pool->disconnect = disconnect;
++}
++
++void page_pool_destroy(struct page_pool *pool)
++{
++	if (!pool)
++		return;
++
++	if (!page_pool_put(pool))
++		return;
++
++	if (!page_pool_release(pool))
++		return;
++
++	pool->defer_start = jiffies;
++	pool->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
++
++	INIT_DELAYED_WORK(&pool->release_dw, page_pool_release_retry);
++	schedule_delayed_work(&pool->release_dw, DEFER_TIME);
++}
++EXPORT_SYMBOL(page_pool_destroy);
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 20781ad5f9c3..8e405abaf05a 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -70,10 +70,6 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+ 
+ 	xa = container_of(rcu, struct xdp_mem_allocator, rcu);
+ 
+-	/* Allocator have indicated safe to remove before this is called */
+-	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+-		page_pool_free(xa->page_pool);
+-
+ 	/* Allow this ID to be reused */
+ 	ida_simple_remove(&mem_id_pool, xa->mem.id);
+ 
+@@ -85,10 +81,41 @@ static void __xdp_mem_allocator_rcu_free(struct rcu_head *rcu)
+ 	kfree(xa);
+ }
+ 
+-static bool __mem_id_disconnect(int id, bool force)
++static void mem_xa_remove(struct xdp_mem_allocator *xa)
++{
++	trace_mem_disconnect(xa);
++
++	mutex_lock(&mem_id_lock);
++
++	if (!rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
++		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
++
++	mutex_unlock(&mem_id_lock);
++}
++
++static void mem_allocator_disconnect(void *allocator)
++{
++	struct xdp_mem_allocator *xa;
++	struct rhashtable_iter iter;
++
++	rhashtable_walk_enter(mem_id_ht, &iter);
++	do {
++		rhashtable_walk_start(&iter);
++
++		while ((xa = rhashtable_walk_next(&iter)) && !IS_ERR(xa)) {
++			if (xa->allocator == allocator)
++				mem_xa_remove(xa);
++		}
++
++		rhashtable_walk_stop(&iter);
++
++	} while (xa == ERR_PTR(-EAGAIN));
++	rhashtable_walk_exit(&iter);
++}
++
++static void mem_id_disconnect(int id)
+ {
+ 	struct xdp_mem_allocator *xa;
+-	bool safe_to_remove = true;
+ 
+ 	mutex_lock(&mem_id_lock);
+ 
+@@ -96,51 +123,15 @@ static bool __mem_id_disconnect(int id, bool force)
+ 	if (!xa) {
+ 		mutex_unlock(&mem_id_lock);
+ 		WARN(1, "Request remove non-existing id(%d), driver bug?", id);
+-		return true;
++		return;
+ 	}
+-	xa->disconnect_cnt++;
+ 
+-	/* Detects in-flight packet-pages for page_pool */
+-	if (xa->mem.type == MEM_TYPE_PAGE_POOL)
+-		safe_to_remove = page_pool_request_shutdown(xa->page_pool);
++	trace_mem_disconnect(xa);
+ 
+-	trace_mem_disconnect(xa, safe_to_remove, force);
+-
+-	if ((safe_to_remove || force) &&
+-	    !rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
++	if (!rhashtable_remove_fast(mem_id_ht, &xa->node, mem_id_rht_params))
+ 		call_rcu(&xa->rcu, __xdp_mem_allocator_rcu_free);
+ 
+ 	mutex_unlock(&mem_id_lock);
+-	return (safe_to_remove|force);
+-}
+-
+-#define DEFER_TIME (msecs_to_jiffies(1000))
+-#define DEFER_WARN_INTERVAL (30 * HZ)
+-#define DEFER_MAX_RETRIES 120
+-
+-static void mem_id_disconnect_defer_retry(struct work_struct *wq)
+-{
+-	struct delayed_work *dwq = to_delayed_work(wq);
+-	struct xdp_mem_allocator *xa = container_of(dwq, typeof(*xa), defer_wq);
+-	bool force = false;
+-
+-	if (xa->disconnect_cnt > DEFER_MAX_RETRIES)
+-		force = true;
+-
+-	if (__mem_id_disconnect(xa->mem.id, force))
+-		return;
+-
+-	/* Periodic warning */
+-	if (time_after_eq(jiffies, xa->defer_warn)) {
+-		int sec = (s32)((u32)jiffies - (u32)xa->defer_start) / HZ;
+-
+-		pr_warn("%s() stalled mem.id=%u shutdown %d attempts %d sec\n",
+-			__func__, xa->mem.id, xa->disconnect_cnt, sec);
+-		xa->defer_warn = jiffies + DEFER_WARN_INTERVAL;
+-	}
+-
+-	/* Still not ready to be disconnected, retry later */
+-	schedule_delayed_work(&xa->defer_wq, DEFER_TIME);
+ }
+ 
+ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+@@ -153,38 +144,21 @@ void xdp_rxq_info_unreg_mem_model(struct xdp_rxq_info *xdp_rxq)
+ 		return;
+ 	}
+ 
+-	if (xdp_rxq->mem.type != MEM_TYPE_PAGE_POOL &&
+-	    xdp_rxq->mem.type != MEM_TYPE_ZERO_COPY) {
+-		return;
+-	}
+-
+ 	if (id == 0)
+ 		return;
+ 
+-	if (__mem_id_disconnect(id, false))
+-		return;
++	if (xdp_rxq->mem.type == MEM_TYPE_ZERO_COPY)
++		return mem_id_disconnect(id);
+ 
+-	/* Could not disconnect, defer new disconnect attempt to later */
+-	mutex_lock(&mem_id_lock);
+-
+-	xa = rhashtable_lookup_fast(mem_id_ht, &id, mem_id_rht_params);
+-	if (!xa) {
+-		mutex_unlock(&mem_id_lock);
+-		return;
++	if (xdp_rxq->mem.type == MEM_TYPE_PAGE_POOL) {
++		rcu_read_lock();
++		xa = rhashtable_lookup(mem_id_ht, &id, mem_id_rht_params);
++		page_pool_destroy(xa->page_pool);
++		rcu_read_unlock();
+ 	}
+-	xa->defer_start = jiffies;
+-	xa->defer_warn  = jiffies + DEFER_WARN_INTERVAL;
+-
+-	INIT_DELAYED_WORK(&xa->defer_wq, mem_id_disconnect_defer_retry);
+-	mutex_unlock(&mem_id_lock);
+-	schedule_delayed_work(&xa->defer_wq, DEFER_TIME);
+ }
+ EXPORT_SYMBOL_GPL(xdp_rxq_info_unreg_mem_model);
+ 
+-/* This unregister operation will also cleanup and destroy the
+- * allocator. The page_pool_free() operation is first called when it's
+- * safe to remove, possibly deferred to a workqueue.
+- */
+ void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq)
+ {
+ 	/* Simplify driver cleanup code paths, allow unreg "unused" */
+@@ -371,7 +345,7 @@ int xdp_rxq_info_reg_mem_model(struct xdp_rxq_info *xdp_rxq,
+ 	}
+ 
+ 	if (type == MEM_TYPE_PAGE_POOL)
+-		page_pool_get(xdp_alloc->page_pool);
++		page_pool_use_xdp_mem(allocator, mem_allocator_disconnect);
+ 
+ 	mutex_unlock(&mem_id_lock);
+ 
+@@ -402,15 +376,8 @@ static void __xdp_return(void *data, struct xdp_mem_info *mem, bool napi_direct,
+ 		/* mem->id is valid, checked in xdp_rxq_info_reg_mem_model() */
+ 		xa = rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+ 		page = virt_to_head_page(data);
+-		if (likely(xa)) {
+-			napi_direct &= !xdp_return_frame_no_direct();
+-			page_pool_put_page(xa->page_pool, page, napi_direct);
+-		} else {
+-			/* Hopefully stack show who to blame for late return */
+-			WARN_ONCE(1, "page_pool gone mem.id=%d", mem->id);
+-			trace_mem_return_failed(mem, page);
+-			put_page(page);
+-		}
++		napi_direct &= !xdp_return_frame_no_direct();
++		page_pool_put_page(xa->page_pool, page, napi_direct);
+ 		rcu_read_unlock();
+ 		break;
+ 	case MEM_TYPE_PAGE_SHARED:
+-- 
+2.17.1
+
