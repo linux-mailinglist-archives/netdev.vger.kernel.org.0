@@ -2,73 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A966F8501
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 01:18:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2137EF850E
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 01:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726960AbfKLASg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 19:18:36 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:35518 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726845AbfKLASg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 19:18:36 -0500
-Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 92F80154014C3;
-        Mon, 11 Nov 2019 16:18:35 -0800 (PST)
-Date:   Mon, 11 Nov 2019 16:18:34 -0800 (PST)
-Message-Id: <20191111.161834.1399688973316931565.davem@davemloft.net>
-To:     linux@armlinux.org.uk
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 00/17] Allow slow to initialise GPON modules
- to work
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191110140530.GA25745@shell.armlinux.org.uk>
-References: <20191110140530.GA25745@shell.armlinux.org.uk>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 11 Nov 2019 16:18:36 -0800 (PST)
+        id S1727199AbfKLAUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 19:20:02 -0500
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45102 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726958AbfKLAUA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 19:20:00 -0500
+Received: by mail-pf1-f196.google.com with SMTP id z4so11930669pfn.12
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 16:19:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5m2NG6A+YgxDfMfpQtOFvpd6UPNiApr1ET296m72/Jw=;
+        b=LmHtHTSLUL2+tujgPcdLdh4oJucSyAFboxlu4pQO4dgCTYOivpUDb3eZljCFo9YCiz
+         iTRgV4e8h/ACWzZ/aDa3yjZj7HO2PXQlYaUzp4oKePffml2I6UilI1IysWAwh8LQVBK+
+         31as/o7Db8bOeXEV7OuMzb3FcZwiaH3AX5Fic=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5m2NG6A+YgxDfMfpQtOFvpd6UPNiApr1ET296m72/Jw=;
+        b=kOBkC6rEyf5pz39sxtNyw57QiOvVxPp86wAEaayGvEt14d3jTkqE1cAti6v1AvnKSf
+         5wVQyt6QJ8xZID4QSF9pM2q8Ej0Ow/NaswWr9fVmxDK3PvNo1mx3k98FsgbKuRU6pq6T
+         t0H/vMW51KQM81xys2bj9MHgD5iX/O1GaaIomd+ImqPXaM3VVOZ2z6rKg20UcJ9etaK8
+         c+yM8rYZDk4Ot8zVNRhyzvFyTO7LwAiPDNq6yL7USSqDNR9WyGCiNeKBul8HM1Rv6akA
+         OontURxla0TSvvsfdUNb1OacXAF9f2610sD39Rfc8pCmu2DQ4d5aDo5lp3NTWGNpzw12
+         WwjA==
+X-Gm-Message-State: APjAAAXFJzhZbh89RbROILDb2vzqWKZmG4Ha+qzVFMaMJM9ljiua/2WN
+        yzavHobIB/PAqkWiByZNFfTtHQ==
+X-Google-Smtp-Source: APXvYqxRBAafOGGdkjoeoMMLCuVKQsBTyvDmgFCv91eTMAU5wmb/LfQzoz+wYOxDAVLQfYbN4idhyQ==
+X-Received: by 2002:a63:77c3:: with SMTP id s186mr9434885pgc.370.1573517999167;
+        Mon, 11 Nov 2019 16:19:59 -0800 (PST)
+Received: from apsdesk.mtv.corp.google.com ([2620:15c:202:1:e09a:8d06:a338:aafb])
+        by smtp.gmail.com with ESMTPSA id h23sm8430898pgg.58.2019.11.11.16.19.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Nov 2019 16:19:58 -0800 (PST)
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-bluetooth@vger.kernel.org, dianders@chromium.org,
+        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        devicetree@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
+Subject: [PATCH v3 0/4] Bluetooth: hci_bcm: Additional changes for BCM4354 support
+Date:   Mon, 11 Nov 2019 16:19:45 -0800
+Message-Id: <20191112001949.136377-1-abhishekpandit@chromium.org>
+X-Mailer: git-send-email 2.24.0.rc1.363.gb1bccd3e3d-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Date: Sun, 10 Nov 2019 14:05:30 +0000
 
-> Some GPON modules take longer than the SFF MSA specified time to
-> initialise and respond to transactions on the I2C bus for either
-> both 0x50 and 0x51, or 0x51 bus addresses.  Technically these modules
-> are non-compliant with the SFP Multi-Source Agreement, they have
-> been around for some time, so are difficult to just ignore.
-> 
-> Most of the patch series is restructuring the code to make it more
-> readable, and split various things into separate functions.
-> 
-> We split the three state machines into three separate functions, and
-> re-arrange them to start probing the module as soon as a module has
-> been detected (without waiting for the network device.)  We try to
-> read the module's EEPROM, retrying quickly for the first second, and
-> then once every five seconds for about a minute until we have read
-> the EEPROM.  So that the kernel isn't entirely silent, we print a
-> message indicating that we're waiting for the module to respond after
-> the first second, or when all retries have expired.
-> 
-> Once the module ID has been read, we kick off a delayed work queue
-> which attempts to register the hwmon, retrying for up to a minute if
-> the monitoring parameters are unreadable; this allows us to proceed
-> with module initialisation independently of the hwmon state.
-> 
-> With high-power modules, we wait for the netdev to be attached before
-> switching the module power mode, and retry this in a similar way to
-> before until we have successfully read and written the EEPROM at 0x51.
-> 
-> We also move the handling of the TX_DISABLE signal entirely to the main
-> state machine, and avoid probing any on-board PHY while TX_FAULT is
-> set.
+While adding support for the BCM4354, I discovered a few more things
+that weren't working as they should have.
 
-Series applied.
+First, we disallow serdev from setting the baudrate on BCM4354. Serdev
+sets the oper_speed first before calling hu->setup() in
+hci_uart_setup(). On the BCM4354, this results in bcm_setup() failing
+when the hci reset times out.
+
+Next, we add support for setting the PCM parameters, which consists of
+a pair of vendor specific opcodes to set the pcm parameters. The
+documentation for these params are available in the brcm_patchram_plus
+package (i.e. https://github.com/balena-os/brcm_patchram_plus). This is
+necessary for PCM to work properly.
+
+All changes were tested with rk3288-veyron-minnie.dts.
+
+
+Changes in v3:
+- Change disallow baudrate setting to return -EBUSY if called before
+  ready. bcm_proto is no longer modified and is back to being const.
+- Changed btbcm_set_pcm_params to btbcm_set_pcm_int_params
+- Changed brcm,sco-routing to brcm,bt-sco-routing
+
+Changes in v2:
+- Use match data to disallow baudrate setting
+- Parse pcm parameters by name instead of as a byte string
+- Fix prefix for dt-bindings commit
+
+Abhishek Pandit-Subedi (4):
+  Bluetooth: hci_bcm: Disallow set_baudrate for BCM4354
+  Bluetooth: btbcm: Support pcm configuration
+  Bluetooth: hci_bcm: Support pcm params in dts
+  dt-bindings: net: broadcom-bluetooth: Add pcm config
+
+ .../bindings/net/broadcom-bluetooth.txt       | 11 +++
+ drivers/bluetooth/btbcm.c                     | 18 +++++
+ drivers/bluetooth/btbcm.h                     |  8 +++
+ drivers/bluetooth/hci_bcm.c                   | 70 ++++++++++++++++++-
+ 4 files changed, 106 insertions(+), 1 deletion(-)
+
+-- 
+2.24.0.rc1.363.gb1bccd3e3d-goog
+
