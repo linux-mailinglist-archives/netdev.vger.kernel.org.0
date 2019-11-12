@@ -2,212 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87430F8EB9
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 12:39:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A963F8ED2
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 12:45:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726718AbfKLLji (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 06:39:38 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:51587 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbfKLLjh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 06:39:37 -0500
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1iUUWC-0006I8-Rq; Tue, 12 Nov 2019 12:39:32 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:fcf3:94db:a77f:e6a3] (unknown [IPv6:2a03:f580:87bc:d400:fcf3:94db:a77f:e6a3])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 716FF47AEE2;
-        Tue, 12 Nov 2019 11:39:31 +0000 (UTC)
-Subject: Re: [PATCH v1 1/9] can: af_can: export can_sock_destruct()
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
-        netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
-References: <20191112111600.18719-1-o.rempel@pengutronix.de>
- <20191112111600.18719-2-o.rempel@pengutronix.de>
- <20191112113724.pff6atmyii5ri4my@pengutronix.de>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <1da06748-6233-b65e-9b02-da5a867a4ecb@pengutronix.de>
-Date:   Tue, 12 Nov 2019 12:39:27 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727104AbfKLLps (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 06:45:48 -0500
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:44357 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726008AbfKLLpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 06:45:47 -0500
+Received: by mail-yb1-f194.google.com with SMTP id g38so7449303ybe.11;
+        Tue, 12 Nov 2019 03:45:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zze64Tjkpcna3jw2z4tcVgFoaR/PTDyV/TrWdLqNFp0=;
+        b=JKKSqD83FUdkdnT5Dki0Sba5fcso+rZpA8tmSf7pku6J303dvhwHIXtIUj/RooAUMl
+         1UAeFFl7S7H+HB+dQJZatpl7pY/rnJoQ89pgbplkDLAAqrLxNJhRDiobQ//m9KR9Q/YP
+         fu/D+evgqhdbB9TkyMPQakIkZsh8USkuXXt2cJb/y17dmEMXgGFxZcL7GAgpjvpZyyHo
+         MkHAXgBFwhBTUIl53iHIzbRx/5QgT7wam+tOrYa00PG4o0cgr8kUfcuV8HgzooorJeEP
+         0YZJr+3NEEiLjQ8s6xm7zO6ysz6xvC3OE7mTcFxmeZXspaW9VWFRETE3Y1bQURcAfsRd
+         1QqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Zze64Tjkpcna3jw2z4tcVgFoaR/PTDyV/TrWdLqNFp0=;
+        b=FxX0LSJEwlCbIy3dCtdS99sheOrsq/bZ8jidYUm3RyzicRwFwg9f26hKW+Fu9QxVvY
+         6HnWe+jecoc32cUBJnkmNpXEjaqof2XRLSkTaFYs0tNRlBRsq595wRE0tOlhYR/4QGTf
+         sTzX+ecMMQK0+83yXBx+x0BbbX1AunsG0oUbept+1Xsf5lZoGrvuC22TVZrHlU+yob02
+         J1NRBPB5HhJ4UFQpy4qQ6kVEp3FLdkjlfYKKb4mHRx63kp7SEVVT4aX2c8cDv5k/Mes9
+         URD8WXbxpoDXtC1OZBm+LWu0vMgQdHujettpArXK32Sz1UmhdmykV34GwW/HADaXqTjF
+         S8+Q==
+X-Gm-Message-State: APjAAAVp32PjQoyroGz+qJ+vVnhshdzqiJO8D30C9jZ6GbB3ycpRAr5w
+        4La2qXhZ7knI7jPgLsp+Sx+bS25xM64tAVJUDQ==
+X-Google-Smtp-Source: APXvYqzXVvPlqePTpm4+7jSq28ds4cuofCbIayRQNE4ktjkhekkJ4Fuvxn0KKSAlL8HCnHnSLOxNSFjTPAMQC6PuG7w=
+X-Received: by 2002:a25:c503:: with SMTP id v3mr11928306ybe.333.1573559146429;
+ Tue, 12 Nov 2019 03:45:46 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191112113724.pff6atmyii5ri4my@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="QADIWKTIrD8NcHZB4Xtkmum8vjDppTM8W"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20191110081901.20851-1-danieltimlee@gmail.com> <CAEf4BzYRqeg5vFm+Ac2TVVeAw=N+qhosy5qF9Dr_ka3hn8DsPg@mail.gmail.com>
+In-Reply-To: <CAEf4BzYRqeg5vFm+Ac2TVVeAw=N+qhosy5qF9Dr_ka3hn8DsPg@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Tue, 12 Nov 2019 20:45:31 +0900
+Message-ID: <CAEKGpzhEuNfZq+XGfTau4uaHhijtx316sLQmQWm7-P_H=iZ=bA@mail.gmail.com>
+Subject: Re: [PATCH] samples: bpf: fix outdated README build command
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---QADIWKTIrD8NcHZB4Xtkmum8vjDppTM8W
-Content-Type: multipart/mixed; boundary="XHfAHzUpqR7KtdT6a3rO3jSW08nagutHV";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
- Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
- netdev@vger.kernel.org, kernel@pengutronix.de, linux-can@vger.kernel.org
-Message-ID: <1da06748-6233-b65e-9b02-da5a867a4ecb@pengutronix.de>
-Subject: Re: [PATCH v1 1/9] can: af_can: export can_sock_destruct()
-References: <20191112111600.18719-1-o.rempel@pengutronix.de>
- <20191112111600.18719-2-o.rempel@pengutronix.de>
- <20191112113724.pff6atmyii5ri4my@pengutronix.de>
-In-Reply-To: <20191112113724.pff6atmyii5ri4my@pengutronix.de>
+On Mon, Nov 11, 2019 at 3:09 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Sun, Nov 10, 2019 at 12:19 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> >
+> > Currently, building the bpf samples under samples/bpf directory isn't
+> > working. Running make from the directory 'samples/bpf' will just shows
+> > following result without compiling any samples.
+> >
+>
+> Do you mind trying to see if it's possible to detect that plain `make`
+> is being run from samples/bpf subdirectory, and if that's the case,
+> just running something like `make M=samples/bpf -C ../../`? If that's
+> not too hard, it would be a nice touch to still have it working old
+> (and intuitive) way, IMO.
+>
 
---XHfAHzUpqR7KtdT6a3rO3jSW08nagutHV
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Thanks for the review!
+And seems it works with `make M=samples/bpf -C ../../` and it's better
+solution!
 
-On 11/12/19 12:37 PM, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
->=20
-> On Tue, Nov 12, 2019 at 12:15:52PM +0100, Oleksij Rempel wrote:
->> In j1939 we need our own struct sock::sk_destruct callback. Export the=
+It's just the issue has been solved as Daniel Borkmann mentioned.
+Anyway, thanks for the review!
 
->> generic af_can can_sock_destruct() that allows us to chain-call it.
->>
->> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
->> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->> ---
->>  include/linux/can/core.h | 1 +
->>  net/can/af_can.c         | 3 ++-
->>  2 files changed, 3 insertions(+), 1 deletion(-)
->>
->> diff --git a/include/linux/can/core.h b/include/linux/can/core.h
->> index 8339071ab08b..e20a0cd09ba5 100644
->> --- a/include/linux/can/core.h
->> +++ b/include/linux/can/core.h
->> @@ -65,5 +65,6 @@ extern void can_rx_unregister(struct net *net, struc=
-t net_device *dev,
->>  			      void *data);
->> =20
->>  extern int can_send(struct sk_buff *skb, int loop);
->> +void can_sock_destruct(struct sock *sk);
->> =20
->>  #endif /* !_CAN_CORE_H */
->> diff --git a/net/can/af_can.c b/net/can/af_can.c
->> index 5518a7d9eed9..128d37a4c2e0 100644
->> --- a/net/can/af_can.c
->> +++ b/net/can/af_can.c
->> @@ -86,11 +86,12 @@ static atomic_t skbcounter =3D ATOMIC_INIT(0);
->> =20
->>  /* af_can socket functions */
->> =20
->> -static void can_sock_destruct(struct sock *sk)
->> +void can_sock_destruct(struct sock *sk)
->>  {
->>  	skb_queue_purge(&sk->sk_receive_queue);
->>  	skb_queue_purge(&sk->sk_error_queue);
->>  }
->> +EXPORT_SYMBOL(can_sock_destruct);
->=20
-> If the users are only expected to be another can module, it might make
-> sense to use a namespace here?!
+Best,
+Daniel
 
-How?
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---XHfAHzUpqR7KtdT6a3rO3jSW08nagutHV--
-
---QADIWKTIrD8NcHZB4Xtkmum8vjDppTM8W
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3Kme8ACgkQWsYho5Hk
-nSCadggAm/XxOzN8MEwFh/n4yWfVx2Lb2RDb0s/HGZ3DB7LlTtrGoJKw9FpGR3o6
-OZ12ZWt5qMSpzyPCNUqWmAtlENlho4bEfF6udBUW2yu+YwGBa38U/zRlyJGqxm8w
-0CFHFFuJSWMIcAp6W+MrYXNRQ/K4YfRlQ7zlJwNpSOMD+hcnl05OcRv5b7+QgoHh
-Miy98noqRIhVO/GBKf8KBIq50hwXFMpgAV2FnoaebqjIJwzucQJLXF4pIQwt/bMQ
-69P8XeMRaMunBPNx1hapqrQ5Tl3/ex81oLsliUfyEVLamxEkyFlQT0PR0IsirITd
-t21S5QUllwczNtmSZekwynKyWoaEGg==
-=1a6X
------END PGP SIGNATURE-----
-
---QADIWKTIrD8NcHZB4Xtkmum8vjDppTM8W--
+>
+> >  $ make
+> >  make -C ../../ /git/linux/samples/bpf/ BPF_SAMPLES_PATH=/git/linux/samples/bpf
+> >  make[1]: Entering directory '/git/linux'
+> >    CALL    scripts/checksyscalls.sh
+> >    CALL    scripts/atomic/check-atomics.sh
+> >    DESCEND  objtool
+> >  make[1]: Leaving directory '/git/linux'
+> >
+> > Due to commit 394053f4a4b3 ("kbuild: make single targets work more
+> > correctly"), building samples/bpf without support of samples/Makefile
+> > is unavailable. Instead, building the samples with 'make M=samples/bpf'
+> > from the root source directory will solve this issue.[1]
+> >
+> > This commit fixes the outdated README build command with samples/bpf.
+> >
+> > [0]: https://patchwork.kernel.org/patch/11168393/
+> >
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > ---
+> >  samples/bpf/README.rst | 19 +++++++++----------
+> >  1 file changed, 9 insertions(+), 10 deletions(-)
+> >
+>
+> [...]
