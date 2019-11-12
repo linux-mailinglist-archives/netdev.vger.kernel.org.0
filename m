@@ -2,64 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE4BF985A
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 19:17:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE05F9894
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 19:25:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727002AbfKLSRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 13:17:32 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:41146 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726970AbfKLSRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 13:17:32 -0500
-Received: by mail-pg1-f196.google.com with SMTP id h4so12366849pgv.8
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 10:17:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6u8AuSwwEE+YzGjQ7qfJp6neppsuNi6MySBbeF4/IPk=;
-        b=Kgu/GllJJW+hHZrChI1erjsLqLhM4zsC5sx0iwwMF+a9Jzy9LOjqpJcgsPpm7LV7E+
-         5lhtCGSYnmaXdzaOdhr2dPsDec+bP2GsFoL76MoBDQ1cdGhDTHFhQz8Zj4JKg5L6lRUS
-         cn441jUZWJCGSOMKxb3lajAPyNZX2lTGt8gIJyQWahOTPWJmEWHffqJlotB6PnW7XoAW
-         58jz2Yio7zzqtuPFzbmS1qRf6eXYdzAno4LyzZ7dmYhEBnieUj0N5V+jXau3h9mIedp+
-         OVjwUNh0OPhCMfcbBqg/mUB+mR/FuloVxjzzBJ1XmvWkqBPQTVyKZv8Gc32hh+Pvujip
-         qEYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6u8AuSwwEE+YzGjQ7qfJp6neppsuNi6MySBbeF4/IPk=;
-        b=Y2u9FJJH8WwfGh2vhxLB50aw/3+KO+IW6gbU6TdrrQoHn4Qm92IQp+s3EK0m14G56B
-         Tk/YkYsk/rPpwqtlRdJ0dlVLpClAGwU3uLy4gS4jjeqvzwCg8a68QEkdtep9PHisTFwT
-         OZr9M5LZl7wNleqi8sIGqx/lmgEatOyhWdBNGz57/A9j24WZAC3qBsncvBB/XSJCYhz3
-         wTpZv0MgN+Of7oQnbL29jhF36n3/kekkncjRVQHRMV/g3aDoizbnbefg9btt+bHnOGzJ
-         M05fCXlwpO+vOdAIxKrK81sV44Utxojz+K8u+u7InkeCT7TG0nsgFZ74av/V+UPwsWYV
-         DpVA==
-X-Gm-Message-State: APjAAAVi9R/o9rEo+cl2RZ8XTaULENcGodKi/rzP6c5hfZJqWVJ7kiAj
-        ExbwZ/Shi+g0ZsElHDkt9bNiD/Kw
-X-Google-Smtp-Source: APXvYqwwSH0qDU9uj6WdYBx522qw+uctwzudp+uGOiDq9r/xUGj7tA3eafhCY2h5xpmPHLqI9MGhLA==
-X-Received: by 2002:a62:aa0d:: with SMTP id e13mr38879031pff.214.1573582651106;
-        Tue, 12 Nov 2019 10:17:31 -0800 (PST)
-Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
-        by smtp.gmail.com with ESMTPSA id 206sm10280425pfu.45.2019.11.12.10.17.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Nov 2019 10:17:30 -0800 (PST)
-Subject: Re: net-next branch fails to build on my P8 CI system
-To:     Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1573538337.1382.3.camel@abdul>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <951e74ff-07ef-faac-2a55-6dce8bd3d2d5@gmail.com>
-Date:   Tue, 12 Nov 2019 10:17:28 -0800
+        id S1727122AbfKLSZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 13:25:13 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:18573 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726906AbfKLSZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 13:25:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1573583109;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=fSJGRofWvt7LvLz9HBtmizCcIhkTJDFC2UnS/Pd8oQY=;
+        b=tX2kTQUqV/HDaPoXbt6htZ4trJ23KwCCjFky/RwdwwKz0P8Bh8dzemoybyM5vcqOLK
+        owoc2CrfohKUcJhYqoxVaG25WWbLIiB9az/OiUu1FUvh3omBqqGdaTYFDVP19htGkmMs
+        hRY2GAArLNH2EHrtkFes8bOJxN8s8Xdq0kq6wEY1sfRHFRUbf7lFYG9fDjoxRHnVmyEP
+        xMM9447PP44Q8gYkoVyF0/J9FgOkVqFHYE2Tk2pfDVzIR9aXByAYawCuLAJ25h4T6ExM
+        Fg05ZtiSKOi0Ud6XXulNyBX0MqBImqbDUqPhEZzcQ7Y6UOiV8McOZqiqQDtn18QtLCuB
+        /arA==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMGX8h5lkuA"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.1.177]
+        by smtp.strato.de (RZmta 44.29.0 DYNA|AUTH)
+        with ESMTPSA id C03a03vACIOxggE
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Tue, 12 Nov 2019 19:24:59 +0100 (CET)
+Subject: Re: [PATCH v1 1/9] can: af_can: export can_sock_destruct()
+To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
+        netdev@vger.kernel.org, kernel@pengutronix.de,
+        linux-can@vger.kernel.org
+References: <20191112111600.18719-1-o.rempel@pengutronix.de>
+ <20191112111600.18719-2-o.rempel@pengutronix.de>
+ <20191112113724.pff6atmyii5ri4my@pengutronix.de>
+ <1da06748-6233-b65e-9b02-da5a867a4ecb@pengutronix.de>
+ <20191112114539.zjluqnpo3cynhssi@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <5e561756-26b4-9a71-8fe2-c876e0e7d1af@hartkopp.net>
+Date:   Tue, 12 Nov 2019 19:24:54 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <1573538337.1382.3.camel@abdul>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20191112114539.zjluqnpo3cynhssi@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -69,84 +59,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 11/11/19 9:58 PM, Abdul Haleem wrote:
-> Greeting's
+On 12/11/2019 12.45, Uwe Kleine-König wrote:
+> Hello Marc,
 > 
-> I see a build failure for net-next branch on my Power 8 system
+> On Tue, Nov 12, 2019 at 12:39:27PM +0100, Marc Kleine-Budde wrote:
+>> On 11/12/19 12:37 PM, Uwe Kleine-König wrote:
+>>> On Tue, Nov 12, 2019 at 12:15:52PM +0100, Oleksij Rempel wrote:
+>>>> +EXPORT_SYMBOL(can_sock_destruct);
+>>>
+>>> If the users are only expected to be another can module, it might make
+>>> sense to use a namespace here?!
+>>
+>> How?
 > 
-> 13:25:10 ERROR| [stderr] ./include/linux/u64_stats_sync.h: In function 64_stats_read�:
-> 13:25:10 ERROR| [stderr] ./include/linux/u64_stats_sync.h:80:2: warning: passing argument 1 of 鈥榣ocal_read鈥� discards 鈥榗onst鈥� qualifier from pointer target type [enabled by default]
-> 13:25:10 ERROR| [stderr]   return local64_read(&p->v);
-> 13:25:10 ERROR| [stderr]   ^
-> 13:25:10 ERROR| [stderr] In file included from ./include/asm-generic/local64.h:22:0,
-> 13:25:10 ERROR| [stderr]                  from ./arch/powerpc/include/generated/asm/local64.h:1,
-> 13:25:10 ERROR| [stderr]                  from ./include/linux/u64_stats_sync.h:72,
-> 13:25:10 ERROR| [stderr]                  from ./include/linux/cgroup-defs.h:20,
-> 13:25:10 ERROR| [stderr]                  from ./include/linux/cgroup.h:28,
-> 13:25:10 ERROR| [stderr]                  from ./include/linux/memcontrol.h:13,
-> 13:25:10 ERROR| [stderr]                  from ./include/linux/swap.h:9,
-> 13:25:10 ERROR| [stderr]                  from ./include/linux/suspend.h:5,
-> 13:25:10 ERROR| [stderr]                  from init/do_mounts.c:7:
-> 13:25:10 ERROR| [stderr] ./arch/powerpc/include/asm/local.h:20:24: note: expected 鈥榮truct local_t *鈥� but argument is of type 鈥榗onst struct local_t *鈥�
-> 13:25:10 ERROR| [stderr]  static __inline__ long local_read(local_t *l)
-> 13:25:10 ERROR| [stderr]                         ^
-> 13:25:11 ERROR| [stderr] In file included from ./include/linux/cgroup-defs.h:20:0,
-> 13:25:11 ERROR| [stderr]                  from ./include/linux/cgroup.h:28,
-> 13:25:11 ERROR| [stderr]                  from ./include/linux/hugetlb.h:9,
-> 13:25:11 ERROR| [stderr]                  from arch/powerpc/kvm/book3s_64_vio_hv.c:16:
-> 13:25:11 ERROR| [stderr] ./include/linux/u64_stats_sync.h: In function 鈥榰64_stats_read鈥�:
-> 13:25:11 ERROR| [stderr] ./include/linux/u64_stats_sync.h:80:2: error: passing argument 1 of 鈥榣ocal_read鈥� discards 鈥榗onst鈥� qualifier from pointer target type [-Werror]
-> 13:25:11 ERROR| [stderr]   return local64_read(&p->v);
-> 13:25:11 ERROR| [stderr]   ^
+> Use
 > 
-> I see some recent code changes here
+> 	EXPORT_SYMBOL_NS(can_sock_destruct, CAN)
 > 
-> 9dfd871481c8e9c512938e9ce632beed645363e0 Merge branch 'u64_stats_t'
-> fd2f4737870eb866537fbbffa2b59414b9b0c0a2 net: use u64_stats_t in struct
-> pcpu_lstats
-> 5260dd3ed1ff7eba39251b28977e4d8950e2f099 tun: switch to u64_stats_t
-> 316580b69d0a7aeeee5063af47438b626bc47cbd u64_stats: provide u64_stats_t
-> type
+> instead of the plain EXPORT_SYMBOL, and near the declaration of
+> can_sock_destruct or in the source that makes use of the symbol add:
 > 
+> 	MODULE_IMPORT_NS(CAN);
 > 
+> See https://lwn.net/Articles/760045/ for some details.
 
-Fix has been sent few days ago.
+Looks nice! Good idea!
 
-For some reason the linuxppc-dev@lists.ozlabs.org  list has not received the patch.
+But I would tend to introduce the symbol namespaces for this and the 
+other (existing) symbols via can-next and not within this patch set that 
+addresses the j1939 fixes.
 
-From 47c47befdcf31fb8498c9e630bb8e0dc3ef88079 Mon Sep 17 00:00:00 2001
-From: Eric Dumazet <edumazet@google.com>
-Date: Fri, 8 Nov 2019 06:04:35 -0800
-Subject: [PATCH] powerpc: add const qual to local_read() parameter
-
-A patch in net-next triggered a compile error on powerpc.
-
-This seems reasonable to relax powerpc local_read() requirements.
-
-Fixes: 316580b69d0a ("u64_stats: provide u64_stats_t type")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: kbuild test robot <lkp@intel.com>
-Cc:	Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:	Paul Mackerras <paulus@samba.org>
-Cc:	Michael Ellerman <mpe@ellerman.id.au>
-Cc:	linuxppc-dev@lists.ozlabs.org
----
- arch/powerpc/include/asm/local.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/include/asm/local.h b/arch/powerpc/include/asm/local.h
-index fdd00939270bf08113b537a090d6a6e34a048361..bc4bd19b7fc235b80ec1132f44409b6fe1057975 100644
---- a/arch/powerpc/include/asm/local.h
-+++ b/arch/powerpc/include/asm/local.h
-@@ -17,7 +17,7 @@ typedef struct
- 
- #define LOCAL_INIT(i)	{ (i) }
- 
--static __inline__ long local_read(local_t *l)
-+static __inline__ long local_read(const local_t *l)
- {
- 	return READ_ONCE(l->v);
- }
--- 
-2.24.0.432.g9d3f5f5b63-goog
-
+Best regards,
+Oliver
