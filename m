@@ -2,205 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64656F9C3B
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:26:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BC80F9C38
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727069AbfKLVZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:25:53 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42790 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726932AbfKLVZw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:25:52 -0500
-Received: by mail-wr1-f65.google.com with SMTP id a15so20143334wrf.9
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:25:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lhXbtTnVDS5IJUMpB5Oj2rwMSBp5mMVOSJLoNX8iIWU=;
-        b=SeemqDuUOpNhNPAzj2mFtOPa3RwuMNNu47kCoJvqx2I6zu+sRs8pnifKXj8fd8hTQZ
-         9K27RtKctjyWD51Yn9VlnkjfV4tpBRqBahMaO6QODKeYbb6aBnB5D7+0DZboV9vULE71
-         5OWC4T7qUd3j3bJPV90LSyz4M1SQh7HE41w25Ktp5zYyXX3lEgvXAXccDzmOu+rjFqoN
-         WmEb3RN36KMG6Yvv4jyampuOM/12EG3Hi7Yilf/ohwVVhgtaWQC0pjwaz719Mi5lhYfz
-         k3yPh5tCnD3/LZBivb+ahESgiPVAWDN/GXHw25DMyv7AjUMk4Dct8UWHVUnku+zqKOTF
-         M0lQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lhXbtTnVDS5IJUMpB5Oj2rwMSBp5mMVOSJLoNX8iIWU=;
-        b=QKGaL2VqN8WnSGC466QrLrqd1XbdiVoBdlJwHjNFsI5RYb9mpPK3GmvYwRZMAQ24HR
-         /YC3X9BOiHSDbC7drvuuM7YbxUjQy5jmfC7RkcA1IN7M/Hy7GmVRw95IbFsX3PkzhEbh
-         CdzMveFJ1mijNEPx4LpIsBdwn0b9fU/UtZQXBMb30zqlffoD7VEQ6qY4YrrTAj9z9rkc
-         uHwtXoBworP5MfxlFDYeVMh0XDFq0T30W878WKUscqAQ1G0RdHpvjSC9mRHuhVuMrVvY
-         aSRN2OlFPSk3dqxIek3ZGhL0B7xOO6+K9MOfNHsdDmEkeh4LOTr7aN2sqzs/rSoSKpj+
-         eXgg==
-X-Gm-Message-State: APjAAAVs3EeAvcVHhoqwR2uNKAhfnc3JVkxvHC01jDa72tKdN6VTOkFh
-        c7OV8Gh2+BFJ8XPkSSM90wtxdPiP
-X-Google-Smtp-Source: APXvYqzAZaPC2kIneu13rG+p6i3XB8LlPA9n/nZhbAXZvvJuJkML5WNQDoGOXxy+pktriMbRlTCxpA==
-X-Received: by 2002:adf:9527:: with SMTP id 36mr26723207wrs.398.1573593950280;
-        Tue, 12 Nov 2019 13:25:50 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f2d:7d00:7:bfb7:2ee9:e19? (p200300EA8F2D7D000007BFB72EE90E19.dip0.t-ipconnect.de. [2003:ea:8f2d:7d00:7:bfb7:2ee9:e19])
-        by smtp.googlemail.com with ESMTPSA id y78sm6363365wmd.32.2019.11.12.13.25.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 13:25:49 -0800 (PST)
-Subject: [PATCH net-next 2/3] r8169: use rtl821x_modify_extpage
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <461096ec-9185-a919-ae56-0208e73342fe@gmail.com>
-Message-ID: <2a191cbc-7f5b-43f5-85f7-3dbd406ea559@gmail.com>
-Date:   Tue, 12 Nov 2019 22:24:38 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1726973AbfKLVZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:25:27 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:58506 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726906AbfKLVZ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:25:27 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8B6FA400098;
+        Tue, 12 Nov 2019 21:25:25 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 12 Nov
+ 2019 21:25:10 +0000
+Subject: Re: static and dynamic linking. Was: [PATCH bpf-next v3 1/5] bpf:
+ Support chain calling multiple BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+CC:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <5da4ab712043c_25f42addb7c085b83b@john-XPS-13-9370.notmuch>
+ <87eezfi2og.fsf@toke.dk>
+ <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com>
+ <87r23egdua.fsf@toke.dk>
+ <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+ <874l07fu61.fsf@toke.dk>
+ <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
+ <87eez4odqp.fsf@toke.dk>
+ <20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com>
+ <87h839oymg.fsf@toke.dk>
+ <20191112195223.cp5kcmkko54dsfbg@ast-mbp.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <8c251f3d-67bd-9bc2-8037-a15d93b48674@solarflare.com>
+Date:   Tue, 12 Nov 2019 21:25:06 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-In-Reply-To: <461096ec-9185-a919-ae56-0208e73342fe@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20191112195223.cp5kcmkko54dsfbg@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25038.003
+X-TM-AS-Result: No-3.376300-8.000000-10
+X-TMASE-MatchedRID: VfovoVrt/obmLzc6AOD8DfHkpkyUphL92oQN+Q/21gTXLRpcXl5f6Hi1
+        9VmdeeTeTEki2VoSh3OahIW1kCatWsuRBwUhxclNBjNCJF/iXbG6s6UL48vRAMsh83hywc54NyR
+        9yudqy2SRTH9S8o7AzQlzvpzzhhC0jeydHFnA4nkFKwjjJHbgBFWBVWOe7+fX0HC66mQRqD/V9x
+        7gL2l/MkmWjzn4zelHjVwOiEQlwVPUP+i/4eUoEnw6481wsCtCFTFJRL+t8UtGMe+tDjQ3Fq5Pq
+        qbCfIUPvgeYjOys8+fl5ftrM+CQ9q+/EguYor8cgxsfzkNRlfLdB/CxWTRRuwihQpoXbuXFlnu+
+        TS9e3C7i5vg6AE5Ku30/m/3qz/XjDndCTNqDNTXwPBjnakTbmXW36pe/wPJ5VGl3mPvY+jXOnZY
+        ws3d4dGCiAEKXfTTlooBB8uyeEuspZK3gOa9uGmJwouYrZN4qaw+fkLqdalOeqD9WtJkSIw==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--3.376300-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25038.003
+X-MDID: 1573593926-vjhoyKufPu4S
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the "extended page" access function is exported by the
-Realtek PHY driver we don't have to implement it too.
+On 12/11/2019 19:52, Alexei Starovoitov wrote:
+> We haven't yet defined what 'extern' keyword in the program means.
+> There are a preliminary patches for llvm to support extern variables. Extern
+> functions are not done yet. We have to walk before we run. With dynamic linking
+> I'm proposing an api for the kernel that I think will work regardless of how
+> libbpf and llvm decide to define the meaning of 'extern'.
+Fwiw the 'natural' C way of doing it would be that for any extern symbol in
+ the C file, the ELF file gets a symbol entry with st_shndx=SHN_UNDEF, and
+ code in .text that uses that symbol gets relocation entries.  That's (AIUI)
+ how it works on 'normal' architectures, and that's what my ebld linker
+ understands; when it sees a definition in another file for that symbol
+ (matched just by the symbol name) it applies all the relocations of the
+ symbol to the appropriate progbits.
+I don't really see what else you could define 'extern' to mean.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 40 +++++++++--------------
- 1 file changed, 15 insertions(+), 25 deletions(-)
+> Partial verification should be available regardless of
+> whether kernel performs dynamic linking or libbpf staticly links multiple .o
+> together.
+It's not clear to me how partial verification would work for statically
+ linked programs — could you elaborate on this?
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index c177837b9..785987aae 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -18,6 +18,7 @@
- #include <linux/delay.h>
- #include <linux/ethtool.h>
- #include <linux/phy.h>
-+#include <linux/realtek_phy.h>
- #include <linux/if_vlan.h>
- #include <linux/crc32.h>
- #include <linux/in.h>
-@@ -1089,17 +1090,6 @@ static void rtl_w0w1_phy(struct rtl8169_private *tp, int reg_addr, int p, int m)
- 	rtl_writephy(tp, reg_addr, (val & ~m) | p);
- }
- 
--static void r8168d_modify_extpage(struct phy_device *phydev, int extpage,
--				  int reg, u16 mask, u16 val)
--{
--	int oldpage = phy_select_page(phydev, 0x0007);
--
--	__phy_write(phydev, 0x1e, extpage);
--	__phy_modify(phydev, reg, mask, val);
--
--	phy_restore_page(phydev, oldpage, 0);
--}
--
- static void r8168d_phy_param(struct phy_device *phydev, u16 parm,
- 			     u16 mask, u16 val)
- {
-@@ -2850,13 +2840,13 @@ static void rtl8168d_3_hw_phy_config(struct rtl8169_private *tp)
- 
- 	rtl_writephy_batch(tp, phy_reg_init);
- 
--	r8168d_modify_extpage(tp->phydev, 0x0023, 0x16, 0xffff, 0x0000);
-+	rtl821x_modify_extpage(tp->phydev, 0x0023, 0x16, 0xffff, 0x0000);
- }
- 
- static void rtl8168d_4_hw_phy_config(struct rtl8169_private *tp)
- {
- 	phy_write_paged(tp->phydev, 0x0001, 0x17, 0x0cc0);
--	r8168d_modify_extpage(tp->phydev, 0x002d, 0x18, 0xffff, 0x0040);
-+	rtl821x_modify_extpage(tp->phydev, 0x002d, 0x18, 0xffff, 0x0040);
- 	phy_set_bits(tp->phydev, 0x0d, BIT(5));
- }
- 
-@@ -2882,24 +2872,24 @@ static void rtl8168e_1_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_writephy_batch(tp, phy_reg_init);
- 
- 	/* Update PFM & 10M TX idle timer */
--	r8168d_modify_extpage(phydev, 0x002f, 0x15, 0xffff, 0x1919);
-+	rtl821x_modify_extpage(phydev, 0x002f, 0x15, 0xffff, 0x1919);
- 
--	r8168d_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
-+	rtl821x_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
- 
- 	/* DCO enable for 10M IDLE Power */
--	r8168d_modify_extpage(phydev, 0x0023, 0x17, 0x0000, 0x0006);
-+	rtl821x_modify_extpage(phydev, 0x0023, 0x17, 0x0000, 0x0006);
- 
- 	/* For impedance matching */
- 	phy_modify_paged(phydev, 0x0002, 0x08, 0x7f00, 0x8000);
- 
- 	/* PHY auto speed down */
--	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0050);
-+	rtl821x_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0050);
- 	phy_set_bits(phydev, 0x14, BIT(15));
- 
- 	r8168d_phy_param(phydev, 0x8b86, 0x0000, 0x0001);
- 	r8168d_phy_param(phydev, 0x8b85, 0x2000, 0x0000);
- 
--	r8168d_modify_extpage(phydev, 0x0020, 0x15, 0x1100, 0x0000);
-+	rtl821x_modify_extpage(phydev, 0x0020, 0x15, 0x1100, 0x0000);
- 	phy_write_paged(phydev, 0x0006, 0x00, 0x5a00);
- 
- 	phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, 0x0000);
-@@ -2926,7 +2916,7 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_apply_firmware(tp);
- 
- 	/* Enable Delay cap */
--	r8168d_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
-+	rtl821x_modify_extpage(phydev, 0x00ac, 0x18, 0xffff, 0x0006);
- 
- 	/* Channel estimation fine tune */
- 	phy_write_paged(phydev, 0x0003, 0x09, 0xa20f);
-@@ -2943,7 +2933,7 @@ static void rtl8168e_2_hw_phy_config(struct rtl8169_private *tp)
- 	rtl_writephy(tp, 0x1f, 0x0000);
- 
- 	/* PHY auto speed down */
--	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
-+	rtl821x_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
- 	phy_set_bits(phydev, 0x14, BIT(15));
- 
- 	/* improve 10M EEE waveform */
-@@ -2976,7 +2966,7 @@ static void rtl8168f_hw_phy_config(struct rtl8169_private *tp)
- 	r8168d_phy_param(phydev, 0x8b80, 0x0000, 0x0006);
- 
- 	/* PHY auto speed down */
--	r8168d_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
-+	rtl821x_modify_extpage(phydev, 0x002d, 0x18, 0x0000, 0x0010);
- 	phy_set_bits(phydev, 0x14, BIT(15));
- 
- 	/* Improve 10M EEE waveform */
-@@ -3000,8 +2990,8 @@ static void rtl8168f_1_hw_phy_config(struct rtl8169_private *tp)
- 	r8168d_phy_param(phydev, 0x8b5e, 0xffff, 0x0000);
- 	r8168d_phy_param(phydev, 0x8b67, 0xffff, 0x0000);
- 	r8168d_phy_param(phydev, 0x8b70, 0xffff, 0x0000);
--	r8168d_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
--	r8168d_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00fb);
-+	rtl821x_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
-+	rtl821x_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00fb);
- 
- 	/* Modify green table for 10M */
- 	r8168d_phy_param(phydev, 0x8b79, 0xffff, 0xaa00);
-@@ -3041,8 +3031,8 @@ static void rtl8411_hw_phy_config(struct rtl8169_private *tp)
- 	r8168d_phy_param(phydev, 0x8b5e, 0xffff, 0x0000);
- 	r8168d_phy_param(phydev, 0x8b67, 0xffff, 0x0000);
- 	r8168d_phy_param(phydev, 0x8b70, 0xffff, 0x0000);
--	r8168d_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
--	r8168d_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00aa);
-+	rtl821x_modify_extpage(phydev, 0x0078, 0x17, 0xffff, 0x0000);
-+	rtl821x_modify_extpage(phydev, 0x0078, 0x19, 0xffff, 0x00aa);
- 
- 	/* Modify green table for 10M */
- 	r8168d_phy_param(phydev, 0x8b79, 0xffff, 0xaa00);
--- 
-2.24.0
-
-
+-Ed
