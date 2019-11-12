@@ -2,196 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 77290F9722
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 18:32:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA167F975D
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 18:39:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbfKLRco (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 12:32:44 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:41010 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726932AbfKLRcn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 12:32:43 -0500
-Received: by mail-pl1-f194.google.com with SMTP id d29so9683914plj.8
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 09:32:43 -0800 (PST)
+        id S1726959AbfKLRjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 12:39:33 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:44112 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726912AbfKLRjd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 12:39:33 -0500
+Received: by mail-qv1-f66.google.com with SMTP id d3so5132940qvs.11;
+        Tue, 12 Nov 2019 09:39:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=g5EnIaW67IXl3e+lyfyMEx0JP31xG+YrRaWW+828rsA=;
-        b=jU0Bpa2JX+z3DM3htJg81TASmFoqwE9b0CLylfIzBmEMK0t3jVEe6/uHzg3aGcBJD2
-         JcANDBesbH4uQmKj/7UWSaOGmacuPfb1y2DvrM2Et9dqsrz8IDlJoZ0VzyQc9l6ceCUX
-         4QDeGClhy/rxjUkr4vMos2nD5DRlYdAN5aGyV12WvgrKC8q5/nXG5a/VaQ2bBpcFWeRx
-         igBQWtC1bcYddT51m+Ob5/4KT+w6VBF/DVJqqi4Ccd/wZIQpsHxMe1eiwukimUSTEbx7
-         VBhnuJpSWpZne/IUB4eZsFf8RskC+73cvZ+n2d0NQKVvf2iuUhgL5f11OfrRpdBkCDTk
-         6MKQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7DIrP1Yf+X4ZzvL9JgMF6ymSVIXZzSV6EaGGlyzgr8E=;
+        b=F0+AzZDsiOs2+N9QKh4Krn+lX3z95dKwqiHgk5VjKmukaVewRVBZhGg42+FGR8cryl
+         j2heo0VGJucBp/mk8butiXDk/KnSctCLK7T5l2GL4vVZhRXoiO/6f75Hgmz85rXeLets
+         cuAsZYepd3UN4wBGRN/xMJ1qCq6GozZUhf9rRB8VHFrEholud61pV+Ok2WuWax3nr3tW
+         35LtPvkBoacPshNHxKbH/xkCSdiep0vt2gy29JpR+5khUAn+mtq8fu1p3v8rRIsl4IIx
+         mmAz3nc9BYlRWVu+O93AN9fI1wCNavwp8frJfcA0+2tTHwD3WiZfzYvgE8/LZIpUZqMV
+         QwKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=g5EnIaW67IXl3e+lyfyMEx0JP31xG+YrRaWW+828rsA=;
-        b=LWi/RaY4BwSlsIn005vUzbCCz4BmMCBpjnqDF++7KfQ0ZYKhdMuMwess+auaCLhRj4
-         oLADwNIx7mQCq5kdvVVo8qhowcyz4W54mwxwiLmujh8meSF4Lt0ytTVxb6ScBaGCTHI+
-         BFn1tn0dqqRh9p3TXHXsPhDImdcUIDDo5CZVsOfANGfR9Led5441IpwESdw3IhOa1Zai
-         WPSUqWHZ5vkmSkja6DP6ESxHMGyayC8jP7/vA3P5YanQxAFdcqc3zFqObkR2CnhSxdPn
-         uOo7lS1osCV6kOHvwrT5IGpBTom1xWZ6WJcFDdHVtbdgxmYbQQULq+43z1EThccUnse/
-         qPrg==
-X-Gm-Message-State: APjAAAWFNwETohQiaOR7gY24Gmg4EUj/YC6hvUBBybUuE8DlZhtvH1Im
-        0nTgKEHyhgnlDKh1gRCncVE=
-X-Google-Smtp-Source: APXvYqxA6byZk+dm2hJBYcSQK2oyYsB1IHAa64mQ14jb2gOI9W7D1QLRaZod791yIoOizKFuA4oV/g==
-X-Received: by 2002:a17:902:690a:: with SMTP id j10mr12908251plk.67.1573579962827;
-        Tue, 12 Nov 2019 09:32:42 -0800 (PST)
-Received: from [172.26.105.13] ([2620:10d:c090:180::8f4f])
-        by smtp.gmail.com with ESMTPSA id 83sm17971190pgh.86.2019.11.12.09.32.41
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 09:32:42 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Alexei Starovoitov" <ast@fb.com>
-Cc:     "Jesper Dangaard Brouer" <brouer@redhat.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        "Kernel Team" <Kernel-team@fb.com>, ilias.apalodimas@linaro.org
-Subject: Re: [net-next PATCH] page_pool: do not release pool until inflight ==
- 0.
-Date:   Tue, 12 Nov 2019 09:32:10 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <04EECB84-2958-4D59-BE2D-FD7ABD8E4C05@gmail.com>
-In-Reply-To: <e4aa8923-7c81-a215-345c-a2127862048f@fb.com>
-References: <20191112053210.2555169-1-jonathan.lemon@gmail.com>
- <20191112130832.6b3d69d5@carbon>
- <12C67CAA-4C7A-465D-84DD-8C3F94115CAA@gmail.com>
- <20191112174822.4b635e56@carbon>
- <e4aa8923-7c81-a215-345c-a2127862048f@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7DIrP1Yf+X4ZzvL9JgMF6ymSVIXZzSV6EaGGlyzgr8E=;
+        b=KG6j8ejOWRFgw+4ord1M3hKT4luiolR109EcRgwr0FKU/MX/Ew6aShZx5u3htk0/En
+         qjoPH+qyJ+udsZcVOoCrV04Vwa3Axy5ewAgvXk3W9G5ZKx2m2Bw8lTDmLtIa2+dSMJZO
+         U9AdwUV3LggLdeyqEaFWFrgeJdHHoOCBbuK/zzoSfJ1KfQxiT/hSOo7FTfn/j2HL7M6o
+         n1EE28grzPi581yFeOBsBHuOzVU24CR89sJxk2wLS9V/w4HGpEmmFO5xmNq/4JHDIL+b
+         3wTbr4Lxf46Wob/AkyWvTDr0PWe1Yt3Yh2EVQxg9qDfel5PAwKLimmS/knlCHOjOKwUA
+         0pqw==
+X-Gm-Message-State: APjAAAWDvoEGa7ULUqlB1vjpWI26KN2fUO/KRCEQH74kmKRccHco0qZW
+        0rG5YFG3LhLdGn+o0Q4QRaYQ7855G6uEciYK9iw=
+X-Google-Smtp-Source: APXvYqzgEhcDmcaFlF19CO4Y4ZVJje318juiacOkBQLSxLi13vs2iRrv5SqCROIvkOZS3JrdMZ0ahduV4+TdzehpkF0=
+X-Received: by 2002:a0c:9a43:: with SMTP id q3mr30455153qvd.101.1573580371802;
+ Tue, 12 Nov 2019 09:39:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+References: <20191018040748.30593-1-toshiaki.makita1@gmail.com>
+ <5da9d8c125fd4_31cf2adc704105c456@john-XPS-13-9370.notmuch>
+ <22e6652c-e635-4349-c863-255d6c1c548b@gmail.com> <5daf34614a4af_30ac2b1cb5d205bce4@john-XPS-13-9370.notmuch>
+ <87h840oese.fsf@toke.dk> <282d61fe-7178-ebf1-e0da-bdc3fb724e4b@gmail.com> <87wocqrz2v.fsf@toke.dk>
+In-Reply-To: <87wocqrz2v.fsf@toke.dk>
+From:   William Tu <u9012063@gmail.com>
+Date:   Tue, 12 Nov 2019 09:38:55 -0800
+Message-ID: <CALDO+SZEU7yfZK_JTPKQm-8HR_HMUfNjdMMik862dJDBc8SGQA@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 bpf-next 00/15] xdp_flow: Flow offload to XDP
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Stanislav Fomichev <sdf@fomichev.me>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 12 Nov 2019, at 9:23, Alexei Starovoitov wrote:
-
-> On 11/12/19 8:48 AM, Jesper Dangaard Brouer wrote:
->>> The trace_page_pool_state_release() does not dereference pool, it 
->>> just
->>> reports the pointer value, so there shouldn't be any use-after-free.
->> In the tracepoint we can still dereference the pool object pointer.
->> This is made easier via using bpftrace for example see[1] (and with 
->> BTF
->> this will become more common to do so).
+On Sun, Oct 27, 2019 at 8:24 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
+at.com> wrote:
 >
-> bpf tracing progs cannot assume that the pointer is valid.
-> The program can remember a kernel pointer in a map and then
-> access it days later.
-> Like kretprobe on kfree_skb(). The skb is freed. 100% use-after-free.
-> Such bpf program is broken and won't be reading meaningful values,
-> but it won't crash the kernel.
+> Toshiaki Makita <toshiaki.makita1@gmail.com> writes:
 >
-> On the other side we should not be passing pointers to freed objects
-> into tracepoints. That just wrong.
-> May be simply move that questionable tracepoint?
+> > On 19/10/23 (=E6=B0=B4) 2:45:05, Toke H=C3=B8iland-J=C3=B8rgensen wrote=
+:
+> >> John Fastabend <john.fastabend@gmail.com> writes:
+> >>
+> >>> I think for sysadmins in general (not OVS) use case I would work
+> >>> with Jesper and Toke. They seem to be working on this specific
+> >>> problem.
+> >>
+> >> We're definitely thinking about how we can make "XDP magically speeds =
+up
+> >> my network stack" a reality, if that's what you mean. Not that we have
+> >> arrived at anything specific yet...
+> >>
+> >> And yeah, I'd also be happy to discuss what it would take to make a
+> >> native XDP implementation of the OVS datapath; including what (if
+> >> anything) is missing from the current XDP feature set to make this
+> >> feasible. I must admit that I'm not quite clear on why that wasn't the
+> >> approach picked for the first attempt to speed up OVS using XDP...
+> >
+> > Here's some history from William Tu et al.
+> > https://linuxplumbersconf.org/event/2/contributions/107/
+> >
+> > Although his aim was not to speed up OVS but to add kernel-independent
+> > datapath, his experience shows full OVS support by eBPF is very
+> > difficult.
+>
+> Yeah, I remember seeing that presentation; it still isn't clear to me
+> what exactly the issue was with implementing the OVS datapath in eBPF.
+> As far as I can tell from glancing through the paper, only lists program
+> size and lack of loops as limitations; both of which have been lifted
+> now.
+>
+Sorry it's not very clear in the presentation and paper.
+Some of the limitations are resolved today, let me list my experiences.
 
-Yes, move and simplify it.  I believe this patch should resolve the 
-issue,
-it just reports pages entering/exiting the pool, without trying to 
-access
-the counters - the counters are reported through the inflight 
-tracepoint.
--- 
-Jonathan
+This is from OVS's feature requirements:
+What's missing in eBPF
+- limited stack size (resolved now)
+- limited program size (resolved now)
+- dynamic loop support for OVS actions applied to packet
+  (now bounded loop is supported)
+- no connection tracking/alg support (people suggest to look cilium)
+- no packet fragment/defragment support
+- no wildcard table/map type support
+I think it would be good to restart the project again using
+existing eBPF features.
 
-diff --git a/include/trace/events/page_pool.h 
-b/include/trace/events/page_pool.h
-index 47b5ee880aa9..0adf9aed9f5b 100644
---- a/include/trace/events/page_pool.h
-+++ b/include/trace/events/page_pool.h
-@@ -35,50 +35,46 @@ TRACE_EVENT(page_pool_inflight,
-  	  __entry->pool, __entry->inflight, __entry->hold, __entry->release)
-  );
+What's missing in XDP
+- clone a packet: this is very basic feature for a switch to
+  broadcast/multicast. I understand it's hard to implement.
+  A workaround is to XDP_PASS and let tc do the clone. But slow.
 
--TRACE_EVENT(page_pool_state_release,
-+TRACE_EVENT(page_pool_page_release,
+Because of no packet cloning support, I didn't try implementing
+OVS datapath in XDP.
 
-  	TP_PROTO(const struct page_pool *pool,
--		 const struct page *page, u32 release),
-+		 const struct page *page)
+> The results in the paper also shows somewhat disappointing performance
+> for the eBPF implementation, but that is not too surprising given that
+> it's implemented as a TC eBPF hook, not an XDP program. I seem to recall
+> that this was also one of the things puzzling to me back when this was
+> presented...
 
--	TP_ARGS(pool, page, release),
-+	TP_ARGS(pool, page),
+Right, the point of that project is not performance improvement.
+But sort of to see how existing eBPF feature can be used to implement
+all features needed by OVS datapath.
 
-  	TP_STRUCT__entry(
-  		__field(const struct page_pool *,	pool)
-  		__field(const struct page *,		page)
--		__field(u32,				release)
-  	),
-
-  	TP_fast_assign(
-  		__entry->pool		= pool;
-  		__entry->page		= page;
--		__entry->release	= release;
-  	),
-
--	TP_printk("page_pool=%p page=%p release=%u",
--		  __entry->pool, __entry->page, __entry->release)
-+	TP_printk("page_pool=%p page=%p",
-+		  __entry->pool, __entry->page)
-  );
-
--TRACE_EVENT(page_pool_state_hold,
-+TRACE_EVENT(page_pool_page_hold,
-
-  	TP_PROTO(const struct page_pool *pool,
--		 const struct page *page, u32 hold),
-+		 const struct page *page),
-
--	TP_ARGS(pool, page, hold),
-+	TP_ARGS(pool, page),
-
-  	TP_STRUCT__entry(
-  		__field(const struct page_pool *,	pool)
-  		__field(const struct page *,		page)
--		__field(u32,				hold)
-  	),
-
-  	TP_fast_assign(
-  		__entry->pool	= pool;
-  		__entry->page	= page;
--		__entry->hold	= hold;
-  	),
-
--	TP_printk("page_pool=%p page=%p hold=%u",
--		  __entry->pool, __entry->page, __entry->hold)
-+	TP_printk("page_pool=%p page=%p",
-+		  __entry->pool, __entry->page)
-  );
-
-  #endif /* _TRACE_PAGE_POOL_H */
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index bfe96326335d..05b93ea67ac5 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -163,7 +163,7 @@ static struct page 
-*__page_pool_alloc_pages_slow(struct page_pool *pool,
-  	/* Track how many pages are held 'in-flight' */
-  	pool->pages_state_hold_cnt++;
-
--	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
-+	trace_page_pool_page_hold(pool, page);
-
-  	/* When page just alloc'ed is should/must have refcnt 1. */
-  	return page;
-@@ -222,9 +223,11 @@ static void __page_pool_clean_page(struct page_pool 
-*pool,
-  			     DMA_ATTR_SKIP_CPU_SYNC);
-  	page->dma_addr = 0;
-  skip_dma_unmap:
-+	trace_page_pool_page_release(pool, page);
-+	/* This may be the last page returned, releasing the pool, so
-+	 * it is not safe to reference pool afterwards.
-+	 */
-  	atomic_inc(&pool->pages_state_release_cnt);
--	trace_page_pool_state_release(pool, page,
--			      atomic_read(&pool->pages_state_release_cnt));
-  }
-
-  /* unmap the page and clean our state */
+Regards,
+William
