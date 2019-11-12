@@ -2,127 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F368DF8854
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:00:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69698F8857
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:01:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725887AbfKLGA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 01:00:29 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37933 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725298AbfKLGA3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 01:00:29 -0500
-Received: by mail-pf1-f195.google.com with SMTP id c13so12564221pfp.5
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 22:00:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=8fvQOrs+FIbEFD8P4si+BoIRG1YUsg9SpPbqnJtpVZA=;
-        b=uYHkahXXKf1PNyURFfuClpOiBjbICjGajrLqDJHhGesgbYtC4cnXRfoEn2NffNYPjH
-         a0eNAiGUGu0vDjw9dcre5zoTGn08zg1v7g6uKQGGzvVnW4KWAq4yyG6VDmSZXo2YXcmm
-         tcqBBHHcIgivJeT7z6YClto4Y7lInq2frjFzOAlwJk3vPZxAdjSdpwjQtJnBUGPEAy9F
-         R7+2kOx7KO0O6FZ1wPND19XeKqIfN8rLlG8+87oiMD2YiWIuIg2T2zzT8O6fy0urS4ic
-         EsxGZx1nWF2kul+bQXNGuUU+itbhegJODf9ZEGFbPY/BltR+qvWMDHCTVgO5coKjhV1L
-         gGMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=8fvQOrs+FIbEFD8P4si+BoIRG1YUsg9SpPbqnJtpVZA=;
-        b=XjzJC63U/MLVs5X6egKhNoebCjpyXEzHzJ40z30SpzJkKH3ID6h6ae7YNHUr/VRs8R
-         gwdqnTAk5JaYVX5k0MMHjma4RE3IqmHok6veDGymW3c4+UTSPDJEPyGqbMrSKQiI0ZQj
-         Q9vkr7WWsilDye7eK/lL93hksKk+StLjLcKz7x0brrMN+AVo3mBsOMAhEdXti4iwV7Ez
-         dyPIpNLhPLpw1C2U7/YICibYoM562zOeyslHb9sq0F7NhMaKBhKfc6nR83OABy5wVI/Y
-         sdJk7G6bVjOyM6KHXBsBhGNuVsh+ADG6KfvXOr3hpA1nyZED59Js1SxESKe/8zgOZD3k
-         0OPg==
-X-Gm-Message-State: APjAAAW+kO5vb19rSevJ2k0kvAbsLEDIwcZVFtYogm9PCUTmNWPwAq7d
-        /OoBgj+gm8bh0B05py146ds=
-X-Google-Smtp-Source: APXvYqwxYytPW6CJvW3K6VWZs82vrEmb74hja0vWj10fHQhf6w+wHzrPbUXS2uunlshRE6mi9HaIHw==
-X-Received: by 2002:a63:1b4e:: with SMTP id b14mr12997627pgm.280.1573538428617;
-        Mon, 11 Nov 2019 22:00:28 -0800 (PST)
-Received: from [172.26.105.13] ([2620:10d:c090:180::c0bd])
-        by smtp.gmail.com with ESMTPSA id d23sm17042856pfo.140.2019.11.11.22.00.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Nov 2019 22:00:27 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
-        kernel-team@fb.com
-Subject: Re: [RFC PATCH 1/1] page_pool: do not release pool until inflight ==
- 0.
-Date:   Mon, 11 Nov 2019 22:00:26 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <8066DA9D-7913-4BB9-9B44-0E2D1D07B8E1@gmail.com>
-In-Reply-To: <20191111124721.5a2afe91@carbon>
-References: <20191111062038.2336521-1-jonathan.lemon@gmail.com>
- <20191111062038.2336521-2-jonathan.lemon@gmail.com>
- <20191111124721.5a2afe91@carbon>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1725957AbfKLGBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 01:01:48 -0500
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:59733 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725298AbfKLGBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 01:01:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573538507;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Inq6FWcoiOjRkPM+C10tqpzJKwC9a+cKBaqM1tHrej4=;
+        b=J00Wn5Yv27K40PULMvT4PsSvalGTXt/HOZATqp+c+MvL6ifIU3zfoCbJudn6Ein1jW/HtB
+        nwuwF3kqxODmayiKfL2QCO3Mp+HjaHZfRyl6APDla1k3VkmcXkFEF9+jA2PcvKkTCbToww
+        6GZsmmQ0x3ZpPvhPHbH6itOgFlXvSok=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-38-h6pO4xmxO8qSTK_XoEGZ8Q-1; Tue, 12 Nov 2019 01:01:43 -0500
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10A53107ACC4;
+        Tue, 12 Nov 2019 06:01:42 +0000 (UTC)
+Received: from localhost (ovpn-112-54.rdu2.redhat.com [10.10.112.54])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 80E1428D19;
+        Tue, 12 Nov 2019 06:01:39 +0000 (UTC)
+Date:   Mon, 11 Nov 2019 22:01:37 -0800 (PST)
+Message-Id: <20191111.220137.766852670780646785.davem@redhat.com>
+To:     yuehaibing@huawei.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        mail@david-bauer.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mdio_bus: Fix PTR_ERR applied after initialization to
+ constant
+From:   David Miller <davem@redhat.com>
+In-Reply-To: <20191111071347.21712-1-yuehaibing@huawei.com>
+References: <20191111071347.21712-1-yuehaibing@huawei.com>
+Mime-Version: 1.0
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: h6pO4xmxO8qSTK_XoEGZ8Q-1
+X-Mimecast-Spam-Score: 0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: YueHaibing <yuehaibing@huawei.com>
+Date: Mon, 11 Nov 2019 15:13:47 +0800
 
-On 11 Nov 2019, at 3:47, Jesper Dangaard Brouer wrote:
+> Fix coccinelle warning:
+>=20
+> ./drivers/net/phy/mdio_bus.c:67:5-12: ERROR: PTR_ERR applied after initia=
+lization to constant on line 62
+> ./drivers/net/phy/mdio_bus.c:68:5-12: ERROR: PTR_ERR applied after initia=
+lization to constant on line 62
+>=20
+> Fix this by using IS_ERR before PTR_ERR
+>=20
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: 71dd6c0dff51 ("net: phy: add support for reset-controller")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-> On Sun, 10 Nov 2019 22:20:38 -0800
-> Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
->
->> The page pool keeps track of the number of pages in flight, and
->> it isn't safe to remove the pool until all pages are returned.
->>
->> Disallow removing the pool until all pages are back, so the pool
->> is always available for page producers.
->>
->> Make the page pool responsible for its own delayed destruction
->
-> I like this part, making page_pool responsible for its own delayed
-> destruction.  I originally also wanted to do this, but got stuck on
-> mem.id getting removed prematurely from rhashtable.  You actually
-> solved this, via introducing a disconnect callback, from page_pool into
-> mem_allocator_disconnect(). I like it.
->
->> instead of relying on XDP, so the page pool can be used without
->> xdp.
->
-> This is a misconception, the xdp_rxq_info_reg_mem_model API does not
-> imply driver is using XDP.  Yes, I know the naming is sort of wrong,
-> contains "xdp". Also the xdp_mem_info name.  Ilias and I have discussed
-> to rename this several times.
->
-> The longer term plan is/was to use this (xdp_)mem_info as generic
-> return path for SKBs, creating a more flexible memory model for
-> networking.  This patch is fine and in itself does not disrupt/change
-> that, but your offlist changes does.  As your offlist changes does
-> imply a performance gain, I will likely accept this (and then find
-> another plan for more flexible memory model for networking).
+Applied.
 
-Are you referring to the patch which encodes the page pool pointer
-in the page, and then sends it directly to the pool on skb free
-instead of performing a mem id lookup and indirection through the
-memory model?
-
-It could be done either way.  I'm not seeing any advantages of
-the additional indirection, as the pool lifetime is guaranteed.
-
-All that is needed is:
-1) A way to differentiate this page as coming from the page pool.
-
-   The current plan of setting a bit on the skb which indicates that
-   the pages should be returned via the page pool is workable, but there
-   will be some pages returned which came from the system page allocator,
-   and these need to be filtered out.
-
-   There must be some type of signature the page permits filtering and
-   returning non-matching pages back to the page allocator.
-
-
-2) Identifying up exactly which page pool the page belongs to.
-
-   This could be done by just placing the pool pointer on the page,
-   or putting the mem info there and indirecting through the lookup.
-
--- 
-Jonathan
