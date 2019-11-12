@@ -2,324 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DCBBF94F8
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:00:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04531F94CE
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 16:54:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbfKLQAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 11:00:14 -0500
-Received: from esa6.microchip.iphmx.com ([216.71.154.253]:53927 "EHLO
-        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726957AbfKLQAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 11:00:13 -0500
-Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
-  Bryan.Whitehead@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Bryan.Whitehead@microchip.com";
-  x-sender="Bryan.Whitehead@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa6.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
-  envelope-from="Bryan.Whitehead@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Bryan.Whitehead@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: acEvPi9lxLteHBLMYQk8dFsiKJUsm7/JZUUtk2vA+IGhetNmRRROn0kznDq818PVvnMfXp91N/
- H0dE+R3uxtYCvgo5npFMP0tkrVGc6tUOCQtg8B6HX9GXDLZrTsCyk3nSrmDGAOfU6/AJQ95vzD
- qyzyGx3Ad52JQxlgLdMEwO7UTOEgUDJXsjmF3PHWwNcpGL+EPzPSv4lcsLxMVS/J4LmN7zTL3i
- mrUHwjjJx+Ax070sw7QiYeogw+fiexx/1CZOQr6WhEXccoWXzuHe0Wdj4NwR/wFV7ZOxtf10/N
- RuE=
-X-IronPort-AV: E=Sophos;i="5.68,297,1569308400"; 
-   d="scan'208";a="53946206"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2019 09:00:11 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 12 Nov 2019 09:00:10 -0700
-Received: from BW-Ubuntu-tester.mchp-main.com (10.10.85.251) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Tue, 12 Nov 2019 09:00:10 -0700
-From:   Bryan Whitehead <Bryan.Whitehead@microchip.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
-Date:   Tue, 12 Nov 2019 10:54:08 -0500
-Message-ID: <1573574048-12251-1-git-send-email-Bryan.Whitehead@microchip.com>
-X-Mailer: git-send-email 2.7.4
+        id S1727229AbfKLPyL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 10:54:11 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:51022 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726659AbfKLPyL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 10:54:11 -0500
+Received: by mail-il1-f198.google.com with SMTP id l63so10951188ili.17
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 07:54:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-transfer-encoding;
+        bh=zjKfYX9Y71KeSUb/1gQKHQ2wvEhUa2rjdLhzJ/Qo+7w=;
+        b=DOGXtHcmaXTYAIx3wCTrN4FitGxQf3MmrwRqxqPrYtYJxRI8EgTjzat1oj0xO5/k3l
+         sXO18VTkWHPJsm8IcYc4Nd98IqjVBEm8guK7iaLJFJ0+upV0r51HDK9rEzklms/o8JGd
+         IgF/w0wldWb/0fL3V1+mIO7Qh4m6JouyHxmrjsH+GHAfr8id0WsmYjPBIiv5O5ySxstN
+         k32jqkUQEeyX1FpSHq+0TuonSXbRfX0UVHjJhj2c9pdUfb23TOyG5IipCecqxBF9RPZ5
+         M36m9Sab283fgJm1SQbHTYOYiLjwkh1PMwbQsEUgojqq3lxCAzuY1hAKpc+H24XwGG5F
+         dGGw==
+X-Gm-Message-State: APjAAAWA65snrI9ybrrF3gLg/33GTW6tQRKAwMTCPyPmaijl0fVZQYMR
+        SrLVNS4ith4PZog/3zBZDcPTsGTvju5sP/4O7z1MasAKdM0f
+X-Google-Smtp-Source: APXvYqw/hbNacQYIaTJ57lcm3uv119lqRh7ltTADYTIJNW1e5PVkACAFQzIMx/QAlZOFWIx2S701jet22tIaRl5p0XBhM+LZNR3e
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Received: by 2002:a02:b602:: with SMTP id h2mr13833907jam.26.1573574049822;
+ Tue, 12 Nov 2019 07:54:09 -0800 (PST)
+Date:   Tue, 12 Nov 2019 07:54:09 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000447eb705972842c6@google.com>
+Subject: KMSAN: uninit-value in __skb_flow_dissect (2)
+From:   syzbot <syzbot+591798c238c7b7108f72@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, edumazet@google.com, glider@google.com,
+        jakub@cloudflare.com, jiri@mellanox.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        paulb@mellanox.com, sdf@google.com, songliubraving@fb.com,
+        soukjin.bae@samsung.com, syzkaller-bugs@googlegroups.com,
+        yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the following VSC PHYs
-	VSC8504, VSC8552, VSC8572,
-	VSC8562, VSC8564, VSC8575, VSC8582
-
-Signed-off-by: Bryan Whitehead <Bryan.Whitehead@microchip.com>
----
- drivers/net/phy/mscc.c | 182 +++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 182 insertions(+)
-
-diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
-index 805cda3..8933681 100644
---- a/drivers/net/phy/mscc.c
-+++ b/drivers/net/phy/mscc.c
-@@ -253,12 +253,18 @@ enum rgmii_rx_clock_delay {
- #define MSCC_PHY_TR_MSB			  18
- 
- /* Microsemi PHY ID's */
-+#define PHY_ID_VSC8504			  0x000704c0
- #define PHY_ID_VSC8514			  0x00070670
- #define PHY_ID_VSC8530			  0x00070560
- #define PHY_ID_VSC8531			  0x00070570
- #define PHY_ID_VSC8540			  0x00070760
- #define PHY_ID_VSC8541			  0x00070770
-+#define PHY_ID_VSC8552			  0x000704e0
-+#define PHY_ID_VSC856X			  0x000707e0
-+#define PHY_ID_VSC8572			  0x000704d0
- #define PHY_ID_VSC8574			  0x000704a0
-+#define PHY_ID_VSC8575			  0x000707d0
-+#define PHY_ID_VSC8582			  0x000707b0
- #define PHY_ID_VSC8584			  0x000707c0
- 
- #define MSCC_VDDMAC_1500		  1500
-@@ -1597,6 +1603,8 @@ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
- 
- 		phy = container_of(map[addr], struct phy_device, mdio);
- 
-+		if (!phy)
-+			continue;
-+
- 		if ((phy->phy_id & phydev->drv->phy_id_mask) !=
- 		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
- 			continue;
-@@ -1648,9 +1656,27 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 	 */
- 	if (!vsc8584_is_pkg_init(phydev, val & PHY_ADDR_REVERSED ? 1 : 0)) {
- 		if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
-+		    (PHY_ID_VSC8504 & phydev->drv->phy_id_mask))
-+			ret = vsc8574_config_pre_init(phydev);
-+		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
-+		    (PHY_ID_VSC8552 & phydev->drv->phy_id_mask))
-+			ret = vsc8574_config_pre_init(phydev);
-+		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
-+		    (PHY_ID_VSC856X & phydev->drv->phy_id_mask))
-+			ret = vsc8584_config_pre_init(phydev);
-+		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
-+		    (PHY_ID_VSC8572 & phydev->drv->phy_id_mask))
-+			ret = vsc8574_config_pre_init(phydev);
-+		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
- 		    (PHY_ID_VSC8574 & phydev->drv->phy_id_mask))
- 			ret = vsc8574_config_pre_init(phydev);
- 		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
-+		    (PHY_ID_VSC8575 & phydev->drv->phy_id_mask))
-+			ret = vsc8584_config_pre_init(phydev);
-+		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
-+		    (PHY_ID_VSC8582 & phydev->drv->phy_id_mask))
-+			ret = vsc8584_config_pre_init(phydev);
-+		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
- 			 (PHY_ID_VSC8584 & phydev->drv->phy_id_mask))
- 			ret = vsc8584_config_pre_init(phydev);
- 		else
-@@ -2322,6 +2348,32 @@ static int vsc85xx_probe(struct phy_device *phydev)
- /* Microsemi VSC85xx PHYs */
- static struct phy_driver vsc85xx_driver[] = {
- {
-+	.phy_id		= PHY_ID_VSC8504,
-+	.name		= "Microsemi GE VSC8504 SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_GBIT_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init    = &vsc8584_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.aneg_done	= &genphy_aneg_done,
-+	.read_status	= &vsc85xx_read_status,
-+	.ack_interrupt  = &vsc85xx_ack_interrupt,
-+	.config_intr    = &vsc85xx_config_intr,
-+	.did_interrupt  = &vsc8584_did_interrupt,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc8574_probe,
-+	.set_wol	= &vsc85xx_wol_set,
-+	.get_wol	= &vsc85xx_wol_get,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
-+{
- 	.phy_id		= PHY_ID_VSC8514,
- 	.name		= "Microsemi GE VSC8514 SyncE",
- 	.phy_id_mask	= 0xfffffff0,
-@@ -2445,6 +2497,82 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_stats      = &vsc85xx_get_stats,
- },
- {
-+	.phy_id		= PHY_ID_VSC8552,
-+	.name		= "Microsemi GE VSC8552 SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_GBIT_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init    = &vsc8584_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.aneg_done	= &genphy_aneg_done,
-+	.read_status	= &vsc85xx_read_status,
-+	.ack_interrupt  = &vsc85xx_ack_interrupt,
-+	.config_intr    = &vsc85xx_config_intr,
-+	.did_interrupt  = &vsc8584_did_interrupt,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc8574_probe,
-+	.set_wol	= &vsc85xx_wol_set,
-+	.get_wol	= &vsc85xx_wol_get,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
-+{
-+	.phy_id		= PHY_ID_VSC856X,
-+	.name		= "Microsemi GE VSC856X SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_GBIT_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init    = &vsc8584_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.aneg_done	= &genphy_aneg_done,
-+	.read_status	= &vsc85xx_read_status,
-+	.ack_interrupt  = &vsc85xx_ack_interrupt,
-+	.config_intr    = &vsc85xx_config_intr,
-+	.did_interrupt  = &vsc8584_did_interrupt,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc8584_probe,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
-+{
-+	.phy_id		= PHY_ID_VSC8572,
-+	.name		= "Microsemi GE VSC8572 SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_GBIT_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init    = &vsc8584_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.aneg_done	= &genphy_aneg_done,
-+	.read_status	= &vsc85xx_read_status,
-+	.ack_interrupt  = &vsc85xx_ack_interrupt,
-+	.config_intr    = &vsc85xx_config_intr,
-+	.did_interrupt  = &vsc8584_did_interrupt,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc8574_probe,
-+	.set_wol	= &vsc85xx_wol_set,
-+	.get_wol	= &vsc85xx_wol_get,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
-+{
- 	.phy_id		= PHY_ID_VSC8574,
- 	.name		= "Microsemi GE VSC8574 SyncE",
- 	.phy_id_mask	= 0xfffffff0,
-@@ -2471,6 +2599,54 @@ static struct phy_driver vsc85xx_driver[] = {
- 	.get_stats      = &vsc85xx_get_stats,
- },
- {
-+	.phy_id		= PHY_ID_VSC8575,
-+	.name		= "Microsemi GE VSC8575 SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_GBIT_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init    = &vsc8584_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.aneg_done	= &genphy_aneg_done,
-+	.read_status	= &vsc85xx_read_status,
-+	.ack_interrupt  = &vsc85xx_ack_interrupt,
-+	.config_intr    = &vsc85xx_config_intr,
-+	.did_interrupt  = &vsc8584_did_interrupt,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc8584_probe,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
-+{
-+	.phy_id		= PHY_ID_VSC8582,
-+	.name		= "Microsemi GE VSC8582 SyncE",
-+	.phy_id_mask	= 0xfffffff0,
-+	/* PHY_GBIT_FEATURES */
-+	.soft_reset	= &genphy_soft_reset,
-+	.config_init    = &vsc8584_config_init,
-+	.config_aneg    = &vsc85xx_config_aneg,
-+	.aneg_done	= &genphy_aneg_done,
-+	.read_status	= &vsc85xx_read_status,
-+	.ack_interrupt  = &vsc85xx_ack_interrupt,
-+	.config_intr    = &vsc85xx_config_intr,
-+	.did_interrupt  = &vsc8584_did_interrupt,
-+	.suspend	= &genphy_suspend,
-+	.resume		= &genphy_resume,
-+	.probe		= &vsc8584_probe,
-+	.get_tunable	= &vsc85xx_get_tunable,
-+	.set_tunable	= &vsc85xx_set_tunable,
-+	.read_page	= &vsc85xx_phy_read_page,
-+	.write_page	= &vsc85xx_phy_write_page,
-+	.get_sset_count = &vsc85xx_get_sset_count,
-+	.get_strings    = &vsc85xx_get_strings,
-+	.get_stats      = &vsc85xx_get_stats,
-+},
-+{
- 	.phy_id		= PHY_ID_VSC8584,
- 	.name		= "Microsemi GE VSC8584 SyncE",
- 	.phy_id_mask	= 0xfffffff0,
-@@ -2500,12 +2676,18 @@ static struct phy_driver vsc85xx_driver[] = {
- module_phy_driver(vsc85xx_driver);
- 
- static struct mdio_device_id __maybe_unused vsc85xx_tbl[] = {
-+	{ PHY_ID_VSC8504, 0xfffffff0, },
- 	{ PHY_ID_VSC8514, 0xfffffff0, },
- 	{ PHY_ID_VSC8530, 0xfffffff0, },
- 	{ PHY_ID_VSC8531, 0xfffffff0, },
- 	{ PHY_ID_VSC8540, 0xfffffff0, },
- 	{ PHY_ID_VSC8541, 0xfffffff0, },
-+	{ PHY_ID_VSC8552, 0xfffffff0, },
-+	{ PHY_ID_VSC856X, 0xfffffff0, },
-+	{ PHY_ID_VSC8572, 0xfffffff0, },
- 	{ PHY_ID_VSC8574, 0xfffffff0, },
-+	{ PHY_ID_VSC8575, 0xfffffff0, },
-+	{ PHY_ID_VSC8582, 0xfffffff0, },
- 	{ PHY_ID_VSC8584, 0xfffffff0, },
- 	{ }
- };
--- 
-2.7.4
-
+SGVsbG8sDQoNCnN5emJvdCBmb3VuZCB0aGUgZm9sbG93aW5nIGNyYXNoIG9uOg0KDQpIRUFEIGNv
+bW1pdDogICAgZmExNjkwMjUga21zYW46IGdldCByaWQgb2YgdW51c2VkIHN0YXRpYyBmdW5jdGlv
+bnMgaW4ga21zYS4uDQpnaXQgdHJlZTogICAgICAgaHR0cHM6Ly9naXRodWIuY29tL2dvb2dsZS9r
+bXNhbi5naXQgbWFzdGVyDQpjb25zb2xlIG91dHB1dDogaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3Bv
+dC5jb20veC9sb2cudHh0P3g9MTQ5OGRkZTc2MDAwMDANCmtlcm5lbCBjb25maWc6ICBodHRwczov
+L3N5emthbGxlci5hcHBzcG90LmNvbS94Ly5jb25maWc/eD00OTU0ODc5OGU4N2QzMmQ3DQpkYXNo
+Ym9hcmQgbGluazogaHR0cHM6Ly9zeXprYWxsZXIuYXBwc3BvdC5jb20vYnVnP2V4dGlkPTU5MTc5
+OGMyMzhjN2I3MTA4ZjcyDQpjb21waWxlcjogICAgICAgY2xhbmcgdmVyc2lvbiA5LjAuMCAoL2hv
+bWUvZ2xpZGVyL2xsdm0vY2xhbmcgIA0KODBmZWUyNTc3NmMyZmI2MWU3NGMxZWNiMWE1MjMzNzVj
+MjUwMGI2OSkNCg0KVW5mb3J0dW5hdGVseSwgSSBkb24ndCBoYXZlIGFueSByZXByb2R1Y2VyIGZv
+ciB0aGlzIGNyYXNoIHlldC4NCg0KSU1QT1JUQU5UOiBpZiB5b3UgZml4IHRoZSBidWcsIHBsZWFz
+ZSBhZGQgdGhlIGZvbGxvd2luZyB0YWcgdG8gdGhlIGNvbW1pdDoNClJlcG9ydGVkLWJ5OiBzeXpi
+b3QrNTkxNzk4YzIzOGM3YjcxMDhmNzJAc3l6a2FsbGVyLmFwcHNwb3RtYWlsLmNvbQ0KDQpkZXZp
+Y2UgbnIwASBlbnRlcmVkIHByb21pc2N1b3VzIG1vZGUNCj09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQpCVUc6IEtNU0FOOiB1bmluaXQtdmFsdWUg
+aW4gX19za2JfZmxvd19kaXNzZWN0KzB4MjA3ZS8weDdhNDAgIA0KbmV0L2NvcmUvZmxvd19kaXNz
+ZWN0b3IuYzo5NTcNCkNQVTogMSBQSUQ6IDIxMjQzIENvbW06IHN5ei1leGVjdXRvci4xIE5vdCB0
+YWludGVkIDUuNC4wLXJjMisgIzANCkhhcmR3YXJlIG5hbWU6IEdvb2dsZSBHb29nbGUgQ29tcHV0
+ZSBFbmdpbmUvR29vZ2xlIENvbXB1dGUgRW5naW5lLCBCSU9TICANCkdvb2dsZSAwMS8wMS8yMDEx
+DQpDYWxsIFRyYWNlOg0KICBfX2R1bXBfc3RhY2sgbGliL2R1bXBfc3RhY2suYzo3NyBbaW5saW5l
+XQ0KICBkdW1wX3N0YWNrKzB4MTkxLzB4MWYwIGxpYi9kdW1wX3N0YWNrLmM6MTEzDQogIGttc2Fu
+X3JlcG9ydCsweDE0ZS8weDJjMCBtbS9rbXNhbi9rbXNhbl9yZXBvcnQuYzoxMTANCiAgX19tc2Fu
+X3dhcm5pbmcrMHg3My8weGUwIG1tL2ttc2FuL2ttc2FuX2luc3RyLmM6MjQ1DQogIF9fc2tiX2Zs
+b3dfZGlzc2VjdCsweDIwN2UvMHg3YTQwIG5ldC9jb3JlL2Zsb3dfZGlzc2VjdG9yLmM6OTU3DQog
+IF9fc2tiX2dldF9oYXNoX3N5bW1ldHJpYysweDEwOC8weDI2MCBuZXQvY29yZS9mbG93X2Rpc3Nl
+Y3Rvci5jOjE1MjMNCiAgZmFub3V0X2RlbXV4X2hhc2ggbmV0L3BhY2tldC9hZl9wYWNrZXQuYzox
+MzE0IFtpbmxpbmVdDQogIHBhY2tldF9yY3ZfZmFub3V0KzB4YTczLzB4MjU1MCBuZXQvcGFja2V0
+L2FmX3BhY2tldC5jOjE0MjkNCiAgZGVsaXZlcl9za2IgbmV0L2NvcmUvZGV2LmM6MTk2OSBbaW5s
+aW5lXQ0KICBfX25ldGlmX3JlY2VpdmVfc2tiX2NvcmUrMHgxY2FiLzB4NTFhMCBuZXQvY29yZS9k
+ZXYuYzo0ODk2DQogIF9fbmV0aWZfcmVjZWl2ZV9za2Jfb25lX2NvcmUgbmV0L2NvcmUvZGV2LmM6
+NTAwOCBbaW5saW5lXQ0KICBfX25ldGlmX3JlY2VpdmVfc2tiIG5ldC9jb3JlL2Rldi5jOjUxMjQg
+W2lubGluZV0NCiAgbmV0aWZfcmVjZWl2ZV9za2JfaW50ZXJuYWwrMHgzY2MvMHhjMjAgbmV0L2Nv
+cmUvZGV2LmM6NTIxNA0KICBuZXRpZl9yZWNlaXZlX3NrYisweDFkYS8weDNhMCBuZXQvY29yZS9k
+ZXYuYzo1MjczDQogIHR1bl9yeF9iYXRjaGVkIGRyaXZlcnMvbmV0L3R1bi5jOjE1NTMgW2lubGlu
+ZV0NCiAgdHVuX2dldF91c2VyKzB4NmM0NC8weDZmNzAgZHJpdmVycy9uZXQvdHVuLmM6MTk5Mw0K
+ICB0dW5fY2hyX3dyaXRlX2l0ZXIrMHgxZjIvMHgzNjAgZHJpdmVycy9uZXQvdHVuLmM6MjAyMg0K
+ICBjYWxsX3dyaXRlX2l0ZXIgaW5jbHVkZS9saW51eC9mcy5oOjE4OTUgW2lubGluZV0NCiAgbmV3
+X3N5bmNfd3JpdGUgZnMvcmVhZF93cml0ZS5jOjQ4MyBbaW5saW5lXQ0KICBfX3Zmc193cml0ZSsw
+eGEyYy8weGNiMCBmcy9yZWFkX3dyaXRlLmM6NDk2DQogIHZmc193cml0ZSsweDQ4MS8weDkyMCBm
+cy9yZWFkX3dyaXRlLmM6NTU4DQogIGtzeXNfd3JpdGUrMHgyNjUvMHg0MzAgZnMvcmVhZF93cml0
+ZS5jOjYxMQ0KICBfX2RvX3N5c193cml0ZSBmcy9yZWFkX3dyaXRlLmM6NjIzIFtpbmxpbmVdDQog
+IF9fc2Vfc3lzX3dyaXRlKzB4OTIvMHhiMCBmcy9yZWFkX3dyaXRlLmM6NjIwDQogIF9feDY0X3N5
+c193cml0ZSsweDRhLzB4NzAgZnMvcmVhZF93cml0ZS5jOjYyMA0KICBkb19zeXNjYWxsXzY0KzB4
+YjYvMHgxNjAgYXJjaC94ODYvZW50cnkvY29tbW9uLmM6MjkxDQogIGVudHJ5X1NZU0NBTExfNjRf
+YWZ0ZXJfaHdmcmFtZSsweDYzLzB4ZTcNClJJUDogMDAzMzoweDQ1OWE1OQ0KQ29kZTogZmQgYjcg
+ZmIgZmYgYzMgNjYgMmUgMGYgMWYgODQgMDAgMDAgMDAgMDAgMDAgNjYgOTAgNDggODkgZjggNDgg
+ODkgZjcgIA0KNDggODkgZDYgNDggODkgY2EgNGQgODkgYzIgNGQgODkgYzggNGMgOGIgNGMgMjQg
+MDggMGYgMDUgPDQ4PiAzZCAwMSBmMCBmZiAgDQpmZiAwZiA4MyBjYiBiNyBmYiBmZiBjMyA2NiAy
+ZSAwZiAxZiA4NCAwMCAwMCAwMCAwMA0KUlNQOiAwMDJiOjAwMDA3ZjA3M2Q2MmFjNzggRUZMQUdT
+OiAwMDAwMDI0NiBPUklHX1JBWDogMDAwMDAwMDAwMDAwMDAwMQ0KUkFYOiBmZmZmZmZmZmZmZmZm
+ZmRhIFJCWDogMDAwMDAwMDAwMDAwMDAwMyBSQ1g6IDAwMDAwMDAwMDA0NTlhNTkNClJEWDogMDAw
+MDAwMDAwMDAwYjEwNyBSU0k6IDAwMDAwMDAwMjAwMDAwYzAgUkRJOiAwMDAwMDAwMDAwMDAwMDA1
+DQpSQlA6IDAwMDAwMDAwMDA3NWJmMjAgUjA4OiAwMDAwMDAwMDAwMDAwMDAwIFIwOTogMDAwMDAw
+MDAwMDAwMDAwMA0KUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIxMTogMDAwMDAwMDAwMDAwMDI0NiBS
+MTI6IDAwMDA3ZjA3M2Q2MmI2ZDQNClIxMzogMDAwMDAwMDAwMDRjOWVhMCBSMTQ6IDAwMDAwMDAw
+MDA0ZTFhYzAgUjE1OiAwMDAwMDAwMGZmZmZmZmZmDQoNClVuaW5pdCB3YXMgc3RvcmVkIHRvIG1l
+bW9yeSBhdDoNCiAga21zYW5fc2F2ZV9zdGFja193aXRoX2ZsYWdzIG1tL2ttc2FuL2ttc2FuLmM6
+MTU0IFtpbmxpbmVdDQogIGttc2FuX2ludGVybmFsX2NoYWluX29yaWdpbisweGJkLzB4MTcwIG1t
+L2ttc2FuL2ttc2FuLmM6MzIxDQogIF9fbXNhbl9jaGFpbl9vcmlnaW4rMHg2Yi8weGUwIG1tL2tt
+c2FuL2ttc2FuX2luc3RyLmM6MTc5DQogIF9fc2tiX2Zsb3dfZGlzc2VjdCsweDMwZWUvMHg3YTQw
+IG5ldC9jb3JlL2Zsb3dfZGlzc2VjdG9yLmM6MTA2MA0KICBfX3NrYl9nZXRfaGFzaF9zeW1tZXRy
+aWMrMHgxMDgvMHgyNjAgbmV0L2NvcmUvZmxvd19kaXNzZWN0b3IuYzoxNTIzDQogIGZhbm91dF9k
+ZW11eF9oYXNoIG5ldC9wYWNrZXQvYWZfcGFja2V0LmM6MTMxNCBbaW5saW5lXQ0KICBwYWNrZXRf
+cmN2X2Zhbm91dCsweGE3My8weDI1NTAgbmV0L3BhY2tldC9hZl9wYWNrZXQuYzoxNDI5DQogIGRl
+bGl2ZXJfc2tiIG5ldC9jb3JlL2Rldi5jOjE5NjkgW2lubGluZV0NCiAgX19uZXRpZl9yZWNlaXZl
+X3NrYl9jb3JlKzB4MWNhYi8weDUxYTAgbmV0L2NvcmUvZGV2LmM6NDg5Ng0KICBfX25ldGlmX3Jl
+Y2VpdmVfc2tiX29uZV9jb3JlIG5ldC9jb3JlL2Rldi5jOjUwMDggW2lubGluZV0NCiAgX19uZXRp
+Zl9yZWNlaXZlX3NrYiBuZXQvY29yZS9kZXYuYzo1MTI0IFtpbmxpbmVdDQogIG5ldGlmX3JlY2Vp
+dmVfc2tiX2ludGVybmFsKzB4M2NjLzB4YzIwIG5ldC9jb3JlL2Rldi5jOjUyMTQNCiAgbmV0aWZf
+cmVjZWl2ZV9za2IrMHgxZGEvMHgzYTAgbmV0L2NvcmUvZGV2LmM6NTI3Mw0KICB0dW5fcnhfYmF0
+Y2hlZCBkcml2ZXJzL25ldC90dW4uYzoxNTUzIFtpbmxpbmVdDQogIHR1bl9nZXRfdXNlcisweDZj
+NDQvMHg2ZjcwIGRyaXZlcnMvbmV0L3R1bi5jOjE5OTMNCiAgdHVuX2Nocl93cml0ZV9pdGVyKzB4
+MWYyLzB4MzYwIGRyaXZlcnMvbmV0L3R1bi5jOjIwMjINCiAgY2FsbF93cml0ZV9pdGVyIGluY2x1
+ZGUvbGludXgvZnMuaDoxODk1IFtpbmxpbmVdDQogIG5ld19zeW5jX3dyaXRlIGZzL3JlYWRfd3Jp
+dGUuYzo0ODMgW2lubGluZV0NCiAgX192ZnNfd3JpdGUrMHhhMmMvMHhjYjAgZnMvcmVhZF93cml0
+ZS5jOjQ5Ng0KICB2ZnNfd3JpdGUrMHg0ODEvMHg5MjAgZnMvcmVhZF93cml0ZS5jOjU1OA0KICBr
+c3lzX3dyaXRlKzB4MjY1LzB4NDMwIGZzL3JlYWRfd3JpdGUuYzo2MTENCiAgX19kb19zeXNfd3Jp
+dGUgZnMvcmVhZF93cml0ZS5jOjYyMyBbaW5saW5lXQ0KICBfX3NlX3N5c193cml0ZSsweDkyLzB4
+YjAgZnMvcmVhZF93cml0ZS5jOjYyMA0KICBfX3g2NF9zeXNfd3JpdGUrMHg0YS8weDcwIGZzL3Jl
+YWRfd3JpdGUuYzo2MjANCiAgZG9fc3lzY2FsbF82NCsweGI2LzB4MTYwIGFyY2gveDg2L2VudHJ5
+L2NvbW1vbi5jOjI5MQ0KICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHg2My8weGU3
+DQoNClVuaW5pdCB3YXMgc3RvcmVkIHRvIG1lbW9yeSBhdDoNCiAga21zYW5fc2F2ZV9zdGFja193
+aXRoX2ZsYWdzIG1tL2ttc2FuL2ttc2FuLmM6MTU0IFtpbmxpbmVdDQogIGttc2FuX2ludGVybmFs
+X2NoYWluX29yaWdpbisweGJkLzB4MTcwIG1tL2ttc2FuL2ttc2FuLmM6MzIxDQogIF9fbXNhbl9j
+aGFpbl9vcmlnaW4rMHg2Yi8weGUwIG1tL2ttc2FuL2ttc2FuX2luc3RyLmM6MTc5DQogIHZsYW5f
+c2V0X2VuY2FwX3Byb3RvIGluY2x1ZGUvbGludXgvc2tidWZmLmg6MTU4NyBbaW5saW5lXQ0KICBz
+a2Jfdmxhbl91bnRhZysweDZiYy8weGQyMCBuZXQvY29yZS9za2J1ZmYuYzo1MzI5DQogIF9fbmV0
+aWZfcmVjZWl2ZV9za2JfY29yZSsweDgzMy8weDUxYTAgbmV0L2NvcmUvZGV2LmM6NDg1NQ0KICBf
+X25ldGlmX3JlY2VpdmVfc2tiX29uZV9jb3JlIG5ldC9jb3JlL2Rldi5jOjUwMDggW2lubGluZV0N
+CiAgX19uZXRpZl9yZWNlaXZlX3NrYiBuZXQvY29yZS9kZXYuYzo1MTI0IFtpbmxpbmVdDQogIG5l
+dGlmX3JlY2VpdmVfc2tiX2ludGVybmFsKzB4M2NjLzB4YzIwIG5ldC9jb3JlL2Rldi5jOjUyMTQN
+CiAgbmV0aWZfcmVjZWl2ZV9za2IrMHgxZGEvMHgzYTAgbmV0L2NvcmUvZGV2LmM6NTI3Mw0KICB0
+dW5fcnhfYmF0Y2hlZCBkcml2ZXJzL25ldC90dW4uYzoxNTUzIFtpbmxpbmVdDQogIHR1bl9nZXRf
+dXNlcisweDZjNDQvMHg2ZjcwIGRyaXZlcnMvbmV0L3R1bi5jOjE5OTMNCiAgdHVuX2Nocl93cml0
+ZV9pdGVyKzB4MWYyLzB4MzYwIGRyaXZlcnMvbmV0L3R1bi5jOjIwMjINCiAgY2FsbF93cml0ZV9p
+dGVyIGluY2x1ZGUvbGludXgvZnMuaDoxODk1IFtpbmxpbmVdDQogIG5ld19zeW5jX3dyaXRlIGZz
+L3JlYWRfd3JpdGUuYzo0ODMgW2lubGluZV0NCiAgX192ZnNfd3JpdGUrMHhhMmMvMHhjYjAgZnMv
+cmVhZF93cml0ZS5jOjQ5Ng0KICB2ZnNfd3JpdGUrMHg0ODEvMHg5MjAgZnMvcmVhZF93cml0ZS5j
+OjU1OA0KICBrc3lzX3dyaXRlKzB4MjY1LzB4NDMwIGZzL3JlYWRfd3JpdGUuYzo2MTENCiAgX19k
+b19zeXNfd3JpdGUgZnMvcmVhZF93cml0ZS5jOjYyMyBbaW5saW5lXQ0KICBfX3NlX3N5c193cml0
+ZSsweDkyLzB4YjAgZnMvcmVhZF93cml0ZS5jOjYyMA0KICBfX3g2NF9zeXNfd3JpdGUrMHg0YS8w
+eDcwIGZzL3JlYWRfd3JpdGUuYzo2MjANCiAgZG9fc3lzY2FsbF82NCsweGI2LzB4MTYwIGFyY2gv
+eDg2L2VudHJ5L2NvbW1vbi5jOjI5MQ0KICBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUr
+MHg2My8weGU3DQoNClVuaW5pdCB3YXMgY3JlYXRlZCBhdDoNCiAga21zYW5fc2F2ZV9zdGFja193
+aXRoX2ZsYWdzIG1tL2ttc2FuL2ttc2FuLmM6MTU0IFtpbmxpbmVdDQogIGttc2FuX2ludGVybmFs
+X3BvaXNvbl9zaGFkb3crMHg2MC8weDEyMCBtbS9rbXNhbi9rbXNhbi5jOjEzNw0KICBrbXNhbl9z
+bGFiX2FsbG9jKzB4YWEvMHgxMjAgbW0va21zYW4va21zYW5faG9va3MuYzoxMDMNCiAgc2xhYl9h
+bGxvY19ub2RlIG1tL3NsdWIuYzoyNzkyIFtpbmxpbmVdDQogIF9fa21hbGxvY19ub2RlX3RyYWNr
+X2NhbGxlcisweGI1NS8weDEzMjAgbW0vc2x1Yi5jOjQzOTANCiAgX19rbWFsbG9jX3Jlc2VydmUg
+bmV0L2NvcmUvc2tidWZmLmM6MTQxIFtpbmxpbmVdDQogIF9fYWxsb2Nfc2tiKzB4MzA2LzB4YTEw
+IG5ldC9jb3JlL3NrYnVmZi5jOjIwOQ0KICBhbGxvY19za2IgaW5jbHVkZS9saW51eC9za2J1ZmYu
+aDoxMDUwIFtpbmxpbmVdDQogIGFsbG9jX3NrYl93aXRoX2ZyYWdzKzB4MThjLzB4YTgwIG5ldC9j
+b3JlL3NrYnVmZi5jOjU2NTkNCiAgc29ja19hbGxvY19zZW5kX3Bza2IrMHhhZmQvMHgxMGEwIG5l
+dC9jb3JlL3NvY2suYzoyMjQwDQogIHR1bl9hbGxvY19za2IgZHJpdmVycy9uZXQvdHVuLmM6MTUy
+OSBbaW5saW5lXQ0KICB0dW5fZ2V0X3VzZXIrMHgxMTMyLzB4NmY3MCBkcml2ZXJzL25ldC90dW4u
+YzoxODQzDQogIHR1bl9jaHJfd3JpdGVfaXRlcisweDFmMi8weDM2MCBkcml2ZXJzL25ldC90dW4u
+YzoyMDIyDQogIGNhbGxfd3JpdGVfaXRlciBpbmNsdWRlL2xpbnV4L2ZzLmg6MTg5NSBbaW5saW5l
+XQ0KICBuZXdfc3luY193cml0ZSBmcy9yZWFkX3dyaXRlLmM6NDgzIFtpbmxpbmVdDQogIF9fdmZz
+X3dyaXRlKzB4YTJjLzB4Y2IwIGZzL3JlYWRfd3JpdGUuYzo0OTYNCiAgdmZzX3dyaXRlKzB4NDgx
+LzB4OTIwIGZzL3JlYWRfd3JpdGUuYzo1NTgNCiAga3N5c193cml0ZSsweDI2NS8weDQzMCBmcy9y
+ZWFkX3dyaXRlLmM6NjExDQogIF9fZG9fc3lzX3dyaXRlIGZzL3JlYWRfd3JpdGUuYzo2MjMgW2lu
+bGluZV0NCiAgX19zZV9zeXNfd3JpdGUrMHg5Mi8weGIwIGZzL3JlYWRfd3JpdGUuYzo2MjANCiAg
+X194NjRfc3lzX3dyaXRlKzB4NGEvMHg3MCBmcy9yZWFkX3dyaXRlLmM6NjIwDQogIGRvX3N5c2Nh
+bGxfNjQrMHhiNi8weDE2MCBhcmNoL3g4Ni9lbnRyeS9jb21tb24uYzoyOTENCiAgZW50cnlfU1lT
+Q0FMTF82NF9hZnRlcl9od2ZyYW1lKzB4NjMvMHhlNw0KPT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCg0KDQotLS0NClRoaXMgYnVnIGlzIGdlbmVy
+YXRlZCBieSBhIGJvdC4gSXQgbWF5IGNvbnRhaW4gZXJyb3JzLg0KU2VlIGh0dHBzOi8vZ29vLmds
+L3Rwc21FSiBmb3IgbW9yZSBpbmZvcm1hdGlvbiBhYm91dCBzeXpib3QuDQpzeXpib3QgZW5naW5l
+ZXJzIGNhbiBiZSByZWFjaGVkIGF0IHN5emthbGxlckBnb29nbGVncm91cHMuY29tLg0KDQpzeXpi
+b3Qgd2lsbCBrZWVwIHRyYWNrIG9mIHRoaXMgYnVnIHJlcG9ydC4gU2VlOg0KaHR0cHM6Ly9nb28u
+Z2wvdHBzbUVKI3N0YXR1cyBmb3IgaG93IHRvIGNvbW11bmljYXRlIHdpdGggc3l6Ym90Lg0K
