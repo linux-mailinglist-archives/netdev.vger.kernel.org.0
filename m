@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A5EF9348
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59F87F9342
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727725AbfKLOwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:52:33 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44331 "EHLO
+        id S1727697AbfKLOw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:52:29 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44332 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727680AbfKLOw1 (ORCPT
+        with ESMTP id S1727678AbfKLOw1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:52:27 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 12 Nov 2019 16:52:21 +0200
 Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKxA020273;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKxB020273;
         Tue, 12 Nov 2019 16:52:21 +0200
 From:   Roi Dayan <roid@mellanox.com>
 To:     netdev@vger.kernel.org
@@ -23,9 +23,9 @@ Cc:     David Ahern <dsahern@gmail.com>,
         Jiri Pirko <jiri@mellanox.com>,
         Eli Britstein <elibr@mellanox.com>,
         Roi Dayan <roid@mellanox.com>
-Subject: [PATCH iproute2-next 5/8] tc: flower: fix output for ip tos and ttl
-Date:   Tue, 12 Nov 2019 16:51:51 +0200
-Message-Id: <20191112145154.145289-6-roid@mellanox.com>
+Subject: [PATCH iproute2-next 6/8] tc: flower: add u16 big endian parse option
+Date:   Tue, 12 Nov 2019 16:51:52 +0200
+Message-Id: <20191112145154.145289-7-roid@mellanox.com>
 X-Mailer: git-send-email 2.8.4
 In-Reply-To: <20191112145154.145289-1-roid@mellanox.com>
 References: <20191112145154.145289-1-roid@mellanox.com>
@@ -36,73 +36,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eli Britstein <elibr@mellanox.com>
 
-Fix the output for ip tos and ttl to be numbers in JSON format.
+Add u16 big endian parse option as a pre-step towards TCP/UDP/SCTP
+ports usage.
 
-Example:
-$ tc qdisc add dev eth0 ingress
-$ tc filter add dev eth0 protocol ip parent ffff: prio 1 flower skip_hw \
-      ip_tos 5/0xf action drop
-
-Non JSON format remains the same:
-$ tc filter show dev eth0 parent ffff:
-filter protocol ip pref 1 flower chain 0
-filter protocol ip pref 1 flower chain 0 handle 0x1
-  eth_type ipv4
-  ip_tos 5/0xf
-  skip_hw
-  not_in_hw
-        action order 1: gact action drop
-         random type none pass val 0
-         index 1 ref 1 bind 1
-
-JSON format is changed (partial output):
-$ tc -p -j filter show dev eth0 parent ffff:
-Before:
-        "options": {
-            "keys": {
-                "ip_tos": "0x5/f",
-                ...
-After:
-        "options": {
-            "keys": {
-                "ip_tos": 5,
-                "ip_tos_mask": 15,
-                ...
-
-Fixes: 6ea2c2b1cff6 ("tc: flower: add support for matching on ip tos and ttl")
 Signed-off-by: Eli Britstein <elibr@mellanox.com>
 Reviewed-by: Roi Dayan <roid@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
- tc/f_flower.c | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+ tc/f_flower.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/tc/f_flower.c b/tc/f_flower.c
-index 724577563c27..1b518ef30583 100644
+index 1b518ef30583..69de6a80735b 100644
 --- a/tc/f_flower.c
 +++ b/tc/f_flower.c
-@@ -1617,20 +1617,7 @@ static void flower_print_ip_proto(__u8 *p_ip_proto,
- static void flower_print_ip_attr(const char *name, struct rtattr *key_attr,
- 				 struct rtattr *mask_attr)
- {
--	SPRINT_BUF(namefrm);
--	SPRINT_BUF(out);
--	size_t done;
--
--	if (!key_attr)
--		return;
--
--	done = sprintf(out, "0x%x", rta_getattr_u8(key_attr));
--	if (mask_attr)
--		sprintf(out + done, "/%x", rta_getattr_u8(mask_attr));
--
--	print_string(PRINT_FP, NULL, "%s  ", _SL_);
--	sprintf(namefrm, "%s %%s", name);
--	print_string(PRINT_ANY, name, namefrm, out);
-+	print_masked_u8(name, key_attr, mask_attr, true);
+@@ -220,7 +220,7 @@ static int flower_parse_matching_flags(char *str,
  }
  
- static void flower_print_matching_flags(char *name,
+ static int flower_parse_u16(char *str, int value_type, int mask_type,
+-			    struct nlmsghdr *n)
++			    struct nlmsghdr *n, bool be)
+ {
+ 	__u16 value, mask;
+ 	char *slash;
+@@ -239,6 +239,10 @@ static int flower_parse_u16(char *str, int value_type, int mask_type,
+ 		mask = UINT16_MAX;
+ 	}
+ 
++	if (be) {
++		value = htons(value);
++		mask = htons(mask);
++	}
+ 	addattr16(n, MAX_MSG, value_type, value);
+ 	addattr16(n, MAX_MSG, mask_type, mask);
+ 
+@@ -284,7 +288,8 @@ static int flower_parse_ct_zone(char *str, struct nlmsghdr *n)
+ 	return flower_parse_u16(str,
+ 				TCA_FLOWER_KEY_CT_ZONE,
+ 				TCA_FLOWER_KEY_CT_ZONE_MASK,
+-				n);
++				n,
++				false);
+ }
+ 
+ static int flower_parse_ct_labels(char *str, struct nlmsghdr *n)
 -- 
 2.8.4
 
