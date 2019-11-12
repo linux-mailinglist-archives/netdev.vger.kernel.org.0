@@ -2,209 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A4EF96D4
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 18:14:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D870F9705
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 18:23:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727298AbfKLROx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 12:14:53 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33406 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726008AbfKLROx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 12:14:53 -0500
-Received: by mail-pf1-f193.google.com with SMTP id c184so13858187pfb.0
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 09:14:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=o6LJZhwKflP1d1NL6VA403/lEpKKpxma3g1FymYAfPE=;
-        b=h+rzlOcHT6v0592ErW0+uB6g3cruAZfk3wIUlPQFkqSjWvmktzSJGJ1ufuuO4gJVfd
-         3jizhRTElNqXKh4la+DjxU5tz2uXPisWZimT9MlLQfcC6OfrNgWyMaCksGbv5ng2F71t
-         NaSGMCVy8nE7V3wZgxW2knJHnCEw8pbwVZEte4AszDLKfnOzhRo+gj/MyKwyxczPA3FN
-         eBrgZsa48KCOHd/GZ0pPZTmgRfsR9iUvc6Q7C/cSp9Xj5fwehGUEtAtS1IwJmy2/L3Km
-         cErkmtzg7+trWlwcWMBfcXUapGeYru7ogYjjTIAHP+ABusuxyEPslIMuOgIPKy1uag/I
-         XODA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=o6LJZhwKflP1d1NL6VA403/lEpKKpxma3g1FymYAfPE=;
-        b=CoOSutWUXEfv6KkeEKoBifUTz80kTRfwdJukJQUCZdI20r46+7MRLhM0o1fm5Ikeln
-         y1s7A7xyhZEhxaLNYQVGPeBN9DrGB7Q6RNrpSwO3HRFN02SoGFNSMf30WchuimgNonen
-         TFaRcYZ1jd24OE4u0zxrpJEwErBEOQSCpAdni8R9TyPQA44A9tdD4kvUjjiW+ieHo6TO
-         7KO1/9pj3TSsQOux+H3Iup9yECunuJdsSAKjlHbVMw0cIk+4eMSlYFqlinzsBC9VvyOP
-         nReHLSUcmaHzokDOr1b8HcWe0o6w8zji1SADuNz6IQ62vAySeQ2h0+SfN5DeD4mq2uNL
-         zBxA==
-X-Gm-Message-State: APjAAAVseSfApcJL8SyNfjKCj92tfsAYaMDiG/g0vuJ80scBHCYvCf14
-        Y8BONTh0agYtlhlZiHqArNk=
-X-Google-Smtp-Source: APXvYqwC5TLyasJXYQjQdP09B5jTu2BDklrjJuiROXmk8RvYN3DAFDmGeD5wMdzYEnvEy8Fw7CcysQ==
-X-Received: by 2002:a17:90a:ca0e:: with SMTP id x14mr7950393pjt.95.1573578892243;
-        Tue, 12 Nov 2019 09:14:52 -0800 (PST)
-Received: from [172.26.105.13] ([2620:10d:c090:180::8f4f])
-        by smtp.gmail.com with ESMTPSA id w69sm13094514pfc.164.2019.11.12.09.14.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 09:14:51 -0800 (PST)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel-team@fb.com,
-        ilias.apalodimas@linaro.org
+        id S1727316AbfKLRX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 12:23:27 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38178 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726952AbfKLRX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 12:23:27 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xACHJxXQ007300;
+        Tue, 12 Nov 2019 09:23:17 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=98rPujDdGk2Zyw9mHGKDZ1aDaIdmFle6LXh4uV7DRFE=;
+ b=MUawOUfFvOfaY8i32UvbIs8WtbqMhLZMvSdmWNpzFCBElXUhRp+K7UbklwHwV0GfcTed
+ bl/Twn2clLR0yIsJ+7jfYm47gYzsvlIrJjyjGZUuXqfNcahbrFJGQdr60XWDB2g5rLtx
+ GcabNF2VsYZ2ENPJEK3vqVVtbq3qVvZjKMM= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2w7pr9u4pe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 Nov 2019 09:23:17 -0800
+Received: from ash-exhub103.TheFacebook.com (2620:10d:c0a8:82::c) by
+ ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 12 Nov 2019 09:23:16 -0800
+Received: from NAM05-DM3-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 12 Nov 2019 09:23:16 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RtzWLN6EQPK+hjAdTMr1z46+4ryfV+6EKnbo3J3Bp/mjAWSKhVXysv0Y+ciUIbayqxlSwxu0pH3Zu/n242g/F3tuOfw++TSvhYYpD6wxc7d55+upUlMx22TFHJk5CccNNRYM40MDpCUHJ3IB1I2zXsOqRAuv4L1haD7uoXtxhu5QWnJZGnptkcP6xOjZr1V8qeq2lzXopOmgMspwqn+Yy/wby2OWPdQq4XD1uJ9h8IV9cfN+FOfTZ0Y0NrUqIfHGwiYGLAm+01Sfv1K980D19EBRorpWkZsxTHw7XILo3pGzbx41z/cpYsB3PP8IzeOqi8DqgWFs3xZZipfj4xJsdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=98rPujDdGk2Zyw9mHGKDZ1aDaIdmFle6LXh4uV7DRFE=;
+ b=ABK9vydR7zIOmSFRLV7U1KF3ea2szBTnd49q8/EjLd5AKXpyuKCQHBYClECR22B9WIs3B9QQLkihtpSLQrzvg65dZtGuxiffRpnJsphssZH/COEfAINf3U6DxoWR2Mmec7BkMcdIdB+StPNOD1k8SmOI0ov0Aef0CYgZA3rlGYzKqZrTJpctvcvMrRdNyECRUQLH335u/gYxRZ2MTLrBY6JO1//EzLB2WKoLk8R9OjFMDWmD5Zi5FbM2Av+raUND/NfMODr3fr0KAkH/gYSq0KpiFmThQtjBOI/G4vj8y/rRO5KZ8TCcj32DrWE8NW4x6j2lrVSyN6CsSA3m/KW3jw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=98rPujDdGk2Zyw9mHGKDZ1aDaIdmFle6LXh4uV7DRFE=;
+ b=Q70tRbEpa/I4z/zLxXXTNejlU3Z9e9utKwtf/SEXiFgPp+ocD1LuPBdYJZsv98k9xp3hCEBHB8C4flOxFCCveeAR0AAw073VfjZohmXG/XcfhCFkQim0z5wMHdZ+XvAEUKnbjrEY+hEVf87h2De2Nqd/hJL1RDjZ/x7inL7w0/s=
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
+ BYAPR15MB2486.namprd15.prod.outlook.com (52.135.194.33) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.23; Tue, 12 Nov 2019 17:23:13 +0000
+Received: from BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::e864:c934:8b54:4a40]) by BYAPR15MB2501.namprd15.prod.outlook.com
+ ([fe80::e864:c934:8b54:4a40%5]) with mapi id 15.20.2430.027; Tue, 12 Nov 2019
+ 17:23:13 +0000
+From:   Alexei Starovoitov <ast@fb.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>
 Subject: Re: [net-next PATCH] page_pool: do not release pool until inflight ==
  0.
-Date:   Tue, 12 Nov 2019 09:14:50 -0800
-X-Mailer: MailMate (1.13r5655)
-Message-ID: <A46945E9-A060-4621-BB43-63C940F6E4B9@gmail.com>
-In-Reply-To: <20191112174822.4b635e56@carbon>
+Thread-Topic: [net-next PATCH] page_pool: do not release pool until inflight
+ == 0.
+Thread-Index: AQHVmRqNKHbrdA+p1kSynDGQUj+KsaeHcZgAgABKKQCAAAQGAIAACbkA
+Date:   Tue, 12 Nov 2019 17:23:13 +0000
+Message-ID: <e4aa8923-7c81-a215-345c-a2127862048f@fb.com>
 References: <20191112053210.2555169-1-jonathan.lemon@gmail.com>
  <20191112130832.6b3d69d5@carbon>
  <12C67CAA-4C7A-465D-84DD-8C3F94115CAA@gmail.com>
  <20191112174822.4b635e56@carbon>
+In-Reply-To: <20191112174822.4b635e56@carbon>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR20CA0030.namprd20.prod.outlook.com
+ (2603:10b6:300:ed::16) To BYAPR15MB2501.namprd15.prod.outlook.com
+ (2603:10b6:a02:88::11)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:e001]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f214f307-4822-4e35-e9ff-08d76794ff30
+x-ms-traffictypediagnostic: BYAPR15MB2486:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR15MB2486756F77F315D486A93E24D7770@BYAPR15MB2486.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 021975AE46
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(346002)(376002)(136003)(39860400002)(366004)(189003)(199004)(86362001)(31696002)(4326008)(6246003)(229853002)(6512007)(6486002)(6436002)(99286004)(81166006)(8936002)(81156014)(8676002)(2906002)(110136005)(6116002)(54906003)(7736002)(305945005)(66556008)(4744005)(66476007)(14454004)(486006)(186003)(2616005)(66946007)(316002)(64756008)(66446008)(14444005)(256004)(102836004)(46003)(5660300002)(478600001)(476003)(11346002)(446003)(76176011)(52116002)(71190400001)(31686004)(36756003)(25786009)(71200400001)(386003)(53546011)(6506007);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2486;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sYKiNlsPShI1z4aCrenrG1ejwaWRtLfv2lLqlNDWUa4ORSJitM46hVKEDyUrW79um3B8mzkL7+3PMWE/L/CUBGaJZWF8wo8JyrDiJ1qrJIeUCwOcCp6/AaBdyTs7HaDML2dHufmIhdf/6MT7htkQWj/as2USDzfebIb6s7r2U9YRSFukLtGLz3DEZJtPtb7RgTfjp7fL70my4QLsXi9O47SyHAzT0LBq8PS4FxxmKSh6LUKW1s1kk4xLFyUMftK2mS4o2w4/7o5idlfKI/KFh/f2LyGjPg2anFH5s6YpXSnR/R+bNayHhOQF2cXSCY+QUrKbsX/aNqI/R/jy+jA51/p9ohjyOwYQSpIvu9x5uL3+cnHeSh/OecnX7qDz6F5VMg0PD+Xl+mH6dSCUueUgkRb7ILsSl8tL2eR9uIu2CjLGFpJU0KPZc3vkG6kOh9+f
+Content-Type: text/plain; charset="Windows-1252"
+Content-ID: <86B1BA1928C8FD42ABEF959FF616E3A2@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-Network-Message-Id: f214f307-4822-4e35-e9ff-08d76794ff30
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Nov 2019 17:23:13.4768
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7sbxu5+/ZVKUhcIW4dqSFFpu/BovESK1M9wvPSFi4D9/CGtGOFcCCiOnxq6sJS+D
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2486
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-12_06:2019-11-11,2019-11-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ clxscore=1011 phishscore=0 spamscore=0 bulkscore=0 impostorscore=0
+ malwarescore=0 priorityscore=1501 adultscore=0 lowpriorityscore=0
+ mlxlogscore=790 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911120148
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12 Nov 2019, at 8:48, Jesper Dangaard Brouer wrote:
-
-> On Tue, 12 Nov 2019 08:33:58 -0800
-> "Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
->
->> On 12 Nov 2019, at 4:08, Jesper Dangaard Brouer wrote:
->>
->>> On Mon, 11 Nov 2019 21:32:10 -0800
->>> Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
->>>
->>>> The page pool keeps track of the number of pages in flight, and
->>>> it isn't safe to remove the pool until all pages are returned.
->>>>
->>>> Disallow removing the pool until all pages are back, so the pool
->>>> is always available for page producers.
->>>>
->>>> Make the page pool responsible for its own delayed destruction
->>>> instead of relying on XDP, so the page pool can be used without
->>>> xdp.
->>>
->>> Can you please change this to:
->>>  [... can be used without] xdp memory model.
->>
->> Okay.
->>
->>
->>>> When all pages are returned, free the pool and notify xdp if the
->>>> pool is registered with the xdp memory system.  Have the callback
->>>> perform a table walk since some drivers (cpsw) may share the pool
->>>> among multiple xdp_rxq_info.
->>>>
->>>> Fixes: d956a048cd3f ("xdp: force mem allocator removal and periodic
->>>> warning")
->>>> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->>>> ---
->>> [...]
->>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->>>> index 5bc65587f1c4..bfe96326335d 100644
->>>> --- a/net/core/page_pool.c
->>>> +++ b/net/core/page_pool.c
->>> [...]
->>>
->>> Found an issue, see below.
->>>
->>>> @@ -338,31 +333,10 @@ static void __page_pool_empty_ring(struct
->>>> page_pool *pool)
->>>>  	}
->>>>  }
->>>>
->>>> -static void __warn_in_flight(struct page_pool *pool)
->>>> +static void page_pool_free(struct page_pool *pool)
->>>>  {
->>>> -	u32 release_cnt = atomic_read(&pool->pages_state_release_cnt);
->>>> -	u32 hold_cnt = READ_ONCE(pool->pages_state_hold_cnt);
->>>> -	s32 distance;
->>>> -
->>>> -	distance = _distance(hold_cnt, release_cnt);
->>>> -
->>>> -	/* Drivers should fix this, but only problematic when DMA is used
->>>> */
->>>> -	WARN(1, "Still in-flight pages:%d hold:%u released:%u",
->>>> -	     distance, hold_cnt, release_cnt);
->>>> -}
->>>> -
->>>> -void __page_pool_free(struct page_pool *pool)
->>>> -{
->>>> -	/* Only last user actually free/release resources */
->>>> -	if (!page_pool_put(pool))
->>>> -		return;
->>>> -
->>>> -	WARN(pool->alloc.count, "API usage violation");
->>>> -	WARN(!ptr_ring_empty(&pool->ring), "ptr_ring is not empty");
->>>> -
->>>> -	/* Can happen due to forced shutdown */
->>>> -	if (!__page_pool_safe_to_destroy(pool))
->>>> -		__warn_in_flight(pool);
->>>> +	if (pool->disconnect)
->>>> +		pool->disconnect(pool);
->>>>  	ptr_ring_cleanup(&pool->ring, NULL);
->>>>
->>>> @@ -371,12 +345,8 @@ void __page_pool_free(struct page_pool *pool)
->>>>
->>>>  	kfree(pool);
->>>>  }
->>>> -EXPORT_SYMBOL(__page_pool_free);
->>>
->>> I don't think this is correct according to RCU.
->>>
->>> Let me reproduce the resulting version of page_pool_free():
->>>
->>>  static void page_pool_free(struct page_pool *pool)
->>>  {
->>> 	if (pool->disconnect)
->>> 		pool->disconnect(pool);
->>>
->>> 	ptr_ring_cleanup(&pool->ring, NULL);
->>>
->>> 	if (pool->p.flags & PP_FLAG_DMA_MAP)
->>> 		put_device(pool->p.dev);
->>>
->>> 	kfree(pool);
->>>  }
->>>
->>> The issue is that pool->disconnect() will call into
->>> mem_allocator_disconnect() -> mem_xa_remove(), and mem_xa_remove()
->>> does
->>> a RCU delayed free.  And this function immediately does a kfree(pool).
->>>
->>> I do know that we can ONLY reach this page_pool_free() function, when
->>> inflight == 0, but that can happen as soon as __page_pool_clean_page()
->>> does the decrement, and after this trace_page_pool_state_release()
->>> still have access the page_pool object (thus, hard to catch
->>> use-after-free).
->>
->> Is this an issue?  The RCU delayed free is for the xa object, it is held
->> in an RCU-protected mem_id_ht, so it can't be freed until all the
->> readers
->> are complete.
->>
->> The change of &pool->pages_state_release_cnt can decrement the inflight
->> pages to 0, and another thread could see inflight == 0 and immediately
->> the remove the pool.  The atomic manipulation should be the last use of
->> the pool - this should be documented, I'll add that as well:
->>
->> skip_dma_unmap:
->>          /* This may be the last page returned, releasing the pool, so
->>           * it is not safe to reference pool afterwards.
->>           */
->>          count = atomic_inc_return(&pool->pages_state_release_cnt);
->>          trace_page_pool_state_release(pool, page, count);
->>
+On 11/12/19 8:48 AM, Jesper Dangaard Brouer wrote:
 >> The trace_page_pool_state_release() does not dereference pool, it just
 >> reports the pointer value, so there shouldn't be any use-after-free.
->
 > In the tracepoint we can still dereference the pool object pointer.
 > This is made easier via using bpftrace for example see[1] (and with BTF
 > this will become more common to do so).
 
-This seems problematic today - essentially the current code is only
-safe because it's borrowing the RCU protection from the xdp_mem info,
-right?
--- 
-Jonathan
+bpf tracing progs cannot assume that the pointer is valid.
+The program can remember a kernel pointer in a map and then
+access it days later.
+Like kretprobe on kfree_skb(). The skb is freed. 100% use-after-free.
+Such bpf program is broken and won't be reading meaningful values,
+but it won't crash the kernel.
+
+On the other side we should not be passing pointers to freed objects
+into tracepoints. That just wrong.
+May be simply move that questionable tracepoint?
+
