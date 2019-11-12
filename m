@@ -2,89 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8677F92B1
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CA27F92B4
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:33:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727492AbfKLOdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:33:23 -0500
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:57995 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726645AbfKLOdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:33:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573569201;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=r+wi19x3rFI2K1WDJL194GaP8lLRT5DWKj7RFRFiiGQ=;
-        b=H2Xi0IE11Y3yb0URVVr6FNHu+QMJK1GkalcpELy0DB91eHdPW9qiLxzK4gbwj9CTDKJFlu
-        gCFQZsqd8FLyyjqbqHAVq5J4oqIZBptSXAPiyT/e9hRCe/mVt0ZytY1mJcs9fdplSbWnCz
-        c4ttrIEg+XYcURe8JsxlVB1OKnwiUSA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-181-vloIDwteNtCh-OjR2xeuig-1; Tue, 12 Nov 2019 09:33:18 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 40277108C2AC;
-        Tue, 12 Nov 2019 14:33:15 +0000 (UTC)
-Received: from localhost.localdomain.com (unknown [10.32.181.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3910D5DDA8;
-        Tue, 12 Nov 2019 14:33:14 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org
-Cc:     Ivan Vecera <ivecera@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] net/sched: actions: remove unused 'order'
-Date:   Tue, 12 Nov 2019 15:33:11 +0100
-Message-Id: <e50fe84bfbe3c6fa8c424a5a0af9074c2df63826.1573564420.git.dcaratti@redhat.com>
+        id S1727495AbfKLOdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:33:49 -0500
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:12607 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726008AbfKLOdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:33:49 -0500
+Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa5.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: vyflLMw4yvZBuu1vZSAjpz23pAj03nCpVYSiRxD783dgmViXcF+msHkzoLb/JWbLXvqt3VGAD0
+ qdCjbtWP976ld9l+ujqfHrDbxBy7K2hoscBWgTeyH4qJu3LprIpS1GqndK8a3RNIFSEPQjvIgx
+ NtXd+p7RjHT/8ZT0VBN345Mm5VNdCCFPXiNG80Ae+nN4xuoGQsAHAXdu0WAlTbIXl1EA0DTF0E
+ 6QaalO1w8XmFtSUa74VYsLpk9Z6FX0j+R6zzLC7puynuWIBOg9qBFcaWNICBBVVyLqdzf++P89
+ /RA=
+X-IronPort-AV: E=Sophos;i="5.68,296,1569308400"; 
+   d="scan'208";a="55166426"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2019 07:33:49 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 12 Nov 2019 07:33:47 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Tue, 12 Nov 2019 07:33:48 -0700
+Date:   Tue, 12 Nov 2019 15:33:46 +0100
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
+ a separate folder
+Message-ID: <20191112143346.3pzshxapotwdbzpg@lx-anielsen.microsemi.net>
+References: <20191112124420.6225-1-olteanv@gmail.com>
+ <20191112124420.6225-11-olteanv@gmail.com>
+ <20191112130947.GE3572@piout.net>
+ <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: vloIDwteNtCh-OjR2xeuig-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-after commit 4097e9d250fb ("net: sched: don't use tc_action->order during
-action dump"), 'act->order' is initialized but then it's no more read, so
-we can just remove this member of struct tc_action.
+The 11/12/2019 15:40, Vladimir Oltean wrote:
+> External E-Mail
+> 
+> 
+> On Tue, 12 Nov 2019 at 15:09, Alexandre Belloni
+> <alexandre.belloni@bootlin.com> wrote:
+> >
+> > Hi,
+> >
+> > On 12/11/2019 14:44:18+0200, Vladimir Oltean wrote:
+> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > >
+> > > The vitesse/ folder will contain drivers for switching chips derived
+> > > from legacy Vitesse IPs (VSC family), including those produced by
+> > > Microsemi and Microchip (acquirers of Vitesse).
+> > >
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > ---
+> > >  drivers/net/dsa/Kconfig                       | 31 +------------------
+> > >  drivers/net/dsa/Makefile                      |  4 +--
+> > >  drivers/net/dsa/vitesse/Kconfig               | 31 +++++++++++++++++++
+> > >  drivers/net/dsa/vitesse/Makefile              |  3 ++
+> > >  .../vsc73xx-core.c}                           |  2 +-
+> > >  .../vsc73xx-platform.c}                       |  2 +-
+> > >  .../vsc73xx-spi.c}                            |  2 +-
+> > >  .../{vitesse-vsc73xx.h => vitesse/vsc73xx.h}  |  0
+> > >  8 files changed, 39 insertions(+), 36 deletions(-)
+> > >  create mode 100644 drivers/net/dsa/vitesse/Kconfig
+> > >  create mode 100644 drivers/net/dsa/vitesse/Makefile
+> > >  rename drivers/net/dsa/{vitesse-vsc73xx-core.c => vitesse/vsc73xx-core.c} (99%)
+> > >  rename drivers/net/dsa/{vitesse-vsc73xx-platform.c => vitesse/vsc73xx-platform.c} (99%)
+> > >  rename drivers/net/dsa/{vitesse-vsc73xx-spi.c => vitesse/vsc73xx-spi.c} (99%)
+> > >  rename drivers/net/dsa/{vitesse-vsc73xx.h => vitesse/vsc73xx.h} (100%)
+> > >
+> >
+> > As there are no commonalities between the vsc73xx and felix drivers,
+> > shouldn't you simply leave that one out and have felix in the existing
+> > microchip folder?
+> >
+> 
+> I don't have a strong preference, although where I come from, all new
+> NXP networking drivers are still labeled as "freescale" even though
+> there is no code reuse. There are even less commonalities with
+> Microchip (ex-Micrel, if I am not mistaken) KSZ switches than with the
+> old vsc73xx. I'll let the ex-Vitesse people decide.
+I'm on the same page as Alexandre here.
 
-CC: Ivan Vecera <ivecera@redhat.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- include/net/act_api.h | 1 -
- net/sched/act_api.c   | 1 -
- 2 files changed, 2 deletions(-)
+I think we should leave vsc73xx where it is already, and put the felix driver in
+the drivers/net/ethernet/mscc/ folder where ocelot is already.
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index 0495bdc034d2..71347a90a9d1 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -23,7 +23,6 @@ struct tc_action_ops;
- struct tc_action {
- =09const struct tc_action_ops=09*ops;
- =09__u32=09=09=09=09type; /* for backward compat(TCA_OLD_COMPAT) */
--=09__u32=09=09=09=09order;
- =09struct tcf_idrinfo=09=09*idrinfo;
-=20
- =09u32=09=09=09=09tcfa_index;
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index bda1ba25c59e..7fc1e2c1b656 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -1003,7 +1003,6 @@ int tcf_action_init(struct net *net, struct tcf_proto=
- *tp, struct nlattr *nla,
- =09=09=09err =3D PTR_ERR(act);
- =09=09=09goto err;
- =09=09}
--=09=09act->order =3D i;
- =09=09sz +=3D tcf_action_fill_size(act);
- =09=09/* Start from index 0 */
- =09=09actions[i - 1] =3D act;
---=20
-2.23.0
+/Allan
 
