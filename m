@@ -2,145 +2,534 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 800BBF9500
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:01:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF71F9509
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:03:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfKLQBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 11:01:23 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:40865 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726008AbfKLQBX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 11:01:23 -0500
-Received: by mail-wm1-f66.google.com with SMTP id f3so3525931wmc.5
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 08:01:21 -0800 (PST)
+        id S1727202AbfKLQDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 11:03:08 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:46738 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727097AbfKLQDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 11:03:07 -0500
+Received: by mail-lf1-f68.google.com with SMTP id o65so9598451lff.13
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 08:03:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=greyhouse-net.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5GNy4kWoH7uUJb7iK5pCT2GbryG8qmSs8tn6dbpPoFo=;
-        b=iVVMQ1fmMgLaW6nvD0WeX2flZJdNI1Pdxi/XRfDsklbkV52ptyrmUEKyVtD5UlX4CK
-         yFYj4VzdlzAQziB1Iiype73Ipd1ebMmI1pksREnCOSjkDmZXENpoMXRq1qlVwRrdEEvK
-         wzqUVgRy7oriFUkWH8rG2t9bMWnrrtVQfjaG3Gi4gU3mpqER76JaSemoMb76GGi3HE1S
-         gLBe831WtvWgSlQAULxyLuNwtGkZ+IVODubeoMCMK0wiSewFo41/3kjY5PMaHtBegvvw
-         JrXKjin+cZ/mRiY+C+PKZEJRMu+7MiuTmiSQj/iGZd7GwCE+ATr4JyU6it/goRt0kf2c
-         Z/+A==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=J4jwRZqjd4l540cGkxytaRFha/R6Ih/k2goKtfn0EIo=;
+        b=AqOtEItXImqKxZHhAJWBsVyFp5jrHd8WvnpVRfxmlFX/7g0KlzyiYdqqWFVd6MS9kM
+         oZFGPUxkIf7I3phqGqetaxRvB80lpfsuzksy3MvI6OgK+ERS/7zBH3jJlfMiHygRrNy0
+         HwT69WnwiZ3bPP0BY3yDqC7tGpi+8xyDzIN05/AdVfo2/UThFy/WqsrsyQ25XVv7c9Z7
+         QeRdnejSlEUcQj2GJPkape+TMrbTg5IuVnTxvZ/HB4X+h1PzWgyfscKftKco9A3yywet
+         XOAXo+9204vtPeq4UKHIlVci4JFtdxccW19C2v4uye4oIQXc/3IXWUr+rbI7cmRwqE6n
+         BmfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5GNy4kWoH7uUJb7iK5pCT2GbryG8qmSs8tn6dbpPoFo=;
-        b=rgzR7cFiTrDqhyxNzpVK7SURHAvinSX0hKlZ3zyvHzrVRyocU92hkcF99q/g04Yn9I
-         QILA6RrjgZrvK2HeQ/erx5FNxOmIwRkCYoy3kHAb/q3uzgqxzq6ehD+U/QFQMX7suDfe
-         MoF/l1Cvybr5E/xDB/oTf8WEu2Ft8YME8R2PzXSRbt/6nHydn8mwAlK27eBWH1aW+pJv
-         oiaxOaPIv9aWp4jeFaUXUsSZKcIgqkKhzEy3RaRPSleUO/8MYMBD2BkBjFEiTF8tm+UI
-         Y60s8D6nRhTIXSi5G0cPJuEumYVzVEBeWjUzbjH2CNuP0Mh+ceKwayQWFuE85JzGVETG
-         hA9g==
-X-Gm-Message-State: APjAAAVq6nIjdR8HvjPTuGgwFdtH+MY05eN72eH/4X9RIyKk/GFd6L02
-        VFq0/58tqiiGP2OtFKf2ryctlniHOc0=
-X-Google-Smtp-Source: APXvYqww5ypr9C4rNaoYMueY5yBv3xV2JIx02Cvj/Matw/UZbBFnNgPnKK46gfBATupwdRHEpq1/WQ==
-X-Received: by 2002:a1c:3b05:: with SMTP id i5mr4816744wma.8.1573574480117;
-        Tue, 12 Nov 2019 08:01:20 -0800 (PST)
-Received: from C02YVCJELVCG ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id r15sm42582214wrc.5.2019.11.12.08.01.18
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 08:01:19 -0800 (PST)
-Date:   Tue, 12 Nov 2019 11:01:15 -0500
-From:   Andy Gospodarek <andy@greyhouse.net>
-To:     Nicholas Johnson <nicholas.johnson-opensource@outlook.com.au>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: Possibility of me mainlining Tehuti Networks 10GbE driver
-Message-ID: <20191112160115.GA16865@C02YVCJELVCG>
-References: <PS2P216MB0755843A57F285E4EE452EE5807B0@PS2P216MB0755.KORP216.PROD.OUTLOOK.COM>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=J4jwRZqjd4l540cGkxytaRFha/R6Ih/k2goKtfn0EIo=;
+        b=SayLodY7lhcqh212rsb0a9Eb7EUOmIVHshRloR/7S+AHXvIBoufzuYb/77C2ZzHFk+
+         v4vla330kfoJJYTOZp32lcGwOc8vPIzQH9xRqdGOtriT0eext+t9DdqEBZdBH25OB5+u
+         BKvWtmbHfq44cCHwFS9+wu9qaQe04RzCU1GLzRZfId/0nSYYSDx7YvUb2eV+f6Uc1+N7
+         KPy6cJrgGKUnEjArczDwi7H0z87Gx+Pb+YEPBjsweUBVwkGUY+nV+KVRsDzDKBYBI/Ad
+         DgReMXElZnJIQfz6c0dJoxegXZSnGHVz3/jaVCTlySULBW4w2L769Bd3f+crS/m3MvUY
+         JxUA==
+X-Gm-Message-State: APjAAAU1ZD9ip7/LP3h8BinMZShzrzdkyEl6OI2Mv84VRAIrIdWh52cG
+        FpqJO4hbZLwRWqVdI6VJYjNY9kt2C8s=
+X-Google-Smtp-Source: APXvYqwyUItMaWUVjD9+EmnxpEsowI8xx5HMmUAe2mAdlc3qwMvVKRlOYFi9tIgYUkZ3TYkYx8xszg==
+X-Received: by 2002:ac2:5967:: with SMTP id h7mr19346554lfp.119.1573574583220;
+        Tue, 12 Nov 2019 08:03:03 -0800 (PST)
+Received: from khorivan (57-201-94-178.pool.ukrtel.net. [178.94.201.57])
+        by smtp.gmail.com with ESMTPSA id y189sm15028284lfc.9.2019.11.12.08.03.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Nov 2019 08:03:02 -0800 (PST)
+Date:   Tue, 12 Nov 2019 18:03:00 +0200
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
+Subject: Re: [net-next, 1/2] enetc: Configure the Time-Aware Scheduler via
+ tc-taprio offload
+Message-ID: <20191112160258.GA1833@khorivan>
+Mail-Followup-To: Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
+References: <20191111042715.13444-1-Po.Liu@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <PS2P216MB0755843A57F285E4EE452EE5807B0@PS2P216MB0755.KORP216.PROD.OUTLOOK.COM>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20191111042715.13444-1-Po.Liu@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Nov 08, 2019 at 02:24:44AM +0000, Nicholas Johnson wrote:
-> Hi all,
-> 
-> To start off, if I am emailing the wrong people, please blame the output 
-> of: "scripts/get_maintainer.pl drivers/net/ethernet/tehuti/" and let me 
-> know who I should be contacting. Should I add in 
-> "linux-kernel@vger.kernel.org"?
-> 
-> I just discovered that the Tehuti 10GbE networking drivers (required for 
-> things such as some AKiTiO Thunderbolt to 10GbE adapters) are not in 
-> mainline. I am interested in mainlining it, but need to know how much 
-> work it would take and if it will force me to be the maintainer for all 
-> eternity.
-> 
-> The driver, in tn40xx-0.3.6.15-c.tar appears to be available here:
-> Link: https://www.akitio.com/faq/341-thunder3-10gbe-adapter-can-i-use-this-network-adapter-on-linux
-> Also here:
-> Link: https://github.com/acooks/tn40xx-driver
-> 
-> I see some immediate style problems and indentation issues. I can fix 
-> these.
-> 
-> The current driver only works with Linux v4.19, I believe. There are a 
-> small handful of compile errors with v5.4. I can probably fix these.
-> 
-> However, could somebody please comment on any technical issues that you 
-> can see here? How much work do you think I would have to do to mainline 
-> this? Would I have to buy such a device for testing? Would I have to buy 
-> *all* of the supported devices for testing? Or can other people do that 
-> for me?
-> 
-> I am not keen on having to buy anything without mainline support - it is 
-> an instant disqualification of a hardware vendor. It results in a 
-> terrible user experience for experienced people (might not be able to 
-> use latest kernel which is needed for supporting other things) and is 
-> debilitating for people new to Linux who do not how to use the terminal, 
-> possibly enough so that they will go back to Windows.
-> 
-> Andy, what is your relationship to Tehuti Networks? Would you be happy 
-> to maintain this if I mainlined it? It says you are maintainer of 
-> drivers/net/ethernet/tehuti/ directory. I will not do this if I am 
-> expected to maintain it - in no small part because I do not know a lot 
-> about it. I will only be modifying what is currently available to make 
-> it acceptable for mainline, if possible.
+On Mon, Nov 11, 2019 at 04:41:26AM +0000, Po Liu wrote:
+>ENETC supports in hardware for time-based egress shaping according
+>to IEEE 802.1Qbv. This patch implement the Qbv enablement by the
+>hardware offload method qdisc tc-taprio method.
+>Also update cbdr writeback to up level since control bd ring may
+>writeback data to control bd ring.
+>
+>Signed-off-by: Po Liu <Po.Liu@nxp.com>
+>Singed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+>---
+> drivers/net/ethernet/freescale/enetc/Makefile |   1 +
+> drivers/net/ethernet/freescale/enetc/enetc.c  |  19 ++-
+> drivers/net/ethernet/freescale/enetc/enetc.h  |   2 +
+> .../net/ethernet/freescale/enetc/enetc_cbdr.c |   5 +-
+> .../net/ethernet/freescale/enetc/enetc_hw.h   | 150 ++++++++++++++++--
+> .../net/ethernet/freescale/enetc/enetc_qos.c  | 130 +++++++++++++++
+> 6 files changed, 285 insertions(+), 22 deletions(-)
+> create mode 100644 drivers/net/ethernet/freescale/enetc/enetc_qos.c
+>
+>diff --git a/drivers/net/ethernet/freescale/enetc/Makefile b/drivers/net/ethernet/freescale/enetc/Makefile
+>index d200c27c3bf6..389f722efc43 100644
+>--- a/drivers/net/ethernet/freescale/enetc/Makefile
+>+++ b/drivers/net/ethernet/freescale/enetc/Makefile
+>@@ -5,6 +5,7 @@ common-objs := enetc.o enetc_cbdr.o enetc_ethtool.o
+> obj-$(CONFIG_FSL_ENETC) += fsl-enetc.o
+> fsl-enetc-y := enetc_pf.o enetc_mdio.o $(common-objs)
+> fsl-enetc-$(CONFIG_PCI_IOV) += enetc_msg.o
+>+fsl-enetc-$(CONFIG_NET_SCH_TAPRIO) += enetc_qos.o
+>
+> obj-$(CONFIG_FSL_ENETC_VF) += fsl-enetc-vf.o
+> fsl-enetc-vf-y := enetc_vf.o $(common-objs)
+>diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+>index 3e8f9819f08c..d58dbc2c4270 100644
+>--- a/drivers/net/ethernet/freescale/enetc/enetc.c
+>+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+>@@ -1427,8 +1427,7 @@ int enetc_close(struct net_device *ndev)
+> 	return 0;
+> }
+>
+>-int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+>-		   void *type_data)
+>+int enetc_setup_tc_mqprio(struct net_device *ndev, void *type_data)
+> {
+> 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+> 	struct tc_mqprio_qopt *mqprio = type_data;
+>@@ -1436,9 +1435,6 @@ int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+> 	u8 num_tc;
+> 	int i;
+>
+>-	if (type != TC_SETUP_QDISC_MQPRIO)
+>-		return -EOPNOTSUPP;
+>-
+> 	mqprio->hw = TC_MQPRIO_HW_OFFLOAD_TCS;
+> 	num_tc = mqprio->num_tc;
+>
+>@@ -1483,6 +1479,19 @@ int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+> 	return 0;
+> }
+>
+>+int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+>+		   void *type_data)
+>+{
+>+	switch (type) {
+>+	case TC_SETUP_QDISC_MQPRIO:
+>+		return enetc_setup_tc_mqprio(ndev, type_data);
 
-[Nicolas, sorry for the slow response -- I've been AFK for a bit.]
+This patch is for taprio offload, I see that mqprio is related and is part of
+taprio offload configuration. But taprio offload has own mqprio settings.
+The taprio mqprio part is not offloaded with TC_SETUP_QDISC_MQPRIO.
 
-A long time ago, in a galaxy far, far away Tehuti sent me one of their
-early 10GbE adapters and asked if I would help them take their driver
-upstream.  They provided an out of tree driver as a basis and after a
-few revisions David Miller agreed to take this into net-next.  The
-driver as it exists today could use lots of work.  There were many items
-on my TODO list for it, but I never made the time to clean it up
-properly so it could still use some care and feeding.  I just checked my
-cache of cards and unfortunately it looks like I do not have any of
-these adapters at home any longer.  I may need to check the office to
-see if I have one there, but I think chances are slim.
+So, a combination of mqprio and tario qdiscs used.
+Could you please share the commands were used for your setup?
 
-I'd feel better about helping to maintain the driver if there was
-hardware available for whoever was doing the work.  It looks like there
-are some pretty cheap (sub-200USD) cards available online that use that
-chipset.  Frankly, I'd probably also feel better about maintaining it
-and updating to all the coolest new features if I didn't currently work
-at another hardware vendor, so I need to consider that.
+And couple interesting questions about all of this:
+- The taprio qdisc has to have mqprio settings, but if it's done with
+mqprio then it just skipped (by reading tc class num).
+- If no separate mqprio qdisc configuration then mqprio conf from taprio
+is set, who should restore tc mappings when taprio qdisc is unloaded?
 
-I haven't pulled down their latest driver from github, but I'd be
-curious to see how close the hardware drivers appear to be between the
-40xx chipset and the original TOE SmartNIC[sic] that is supported
-upstream today.  Did you by any chance compare the two?
+Maybe there is reason to implement TC_SETUP_QDISC_MQPRIO offload in taprio
+since it's required feature?
 
-> Also, license issues - does GPLv2 permit mainlining to happen? I believe 
-> the Tehuti driver is available under GPLv2 (correct me if I am wrong).
-> 
-> Would I need to send patches for this, or for something this size, is it 
-> better to send a pull request? If I am going to do patches, I will need 
-> to make a gmail account or something, as Outlook messes with the 
-> encoding of the things which I send.
-> 
-> Thanks for any comments on this.
-> 
-> Kind regards,
-> Nicholas Johnson
+Would be better to move changes for mqprio in separate patch with explanation.
+
+>+	case TC_SETUP_QDISC_TAPRIO:
+>+		return enetc_setup_tc_taprio(ndev, type_data);
+>+	default:
+>+		return -EOPNOTSUPP;
+>+	}
+>+}
+>+
+> struct net_device_stats *enetc_get_stats(struct net_device *ndev)
+> {
+> 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+>index 541b4e2073fe..8676631041d5 100644
+>--- a/drivers/net/ethernet/freescale/enetc/enetc.h
+>+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+>@@ -244,3 +244,5 @@ int enetc_set_fs_entry(struct enetc_si *si, struct enetc_cmd_rfse *rfse,
+> void enetc_set_rss_key(struct enetc_hw *hw, const u8 *bytes);
+> int enetc_get_rss_table(struct enetc_si *si, u32 *table, int count);
+> int enetc_set_rss_table(struct enetc_si *si, const u32 *table, int count);
+>+int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd);
+>+int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
+>diff --git a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
+>index de466b71bf8f..201cbc362e33 100644
+>--- a/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
+>+++ b/drivers/net/ethernet/freescale/enetc/enetc_cbdr.c
+>@@ -32,7 +32,7 @@ static int enetc_cbd_unused(struct enetc_cbdr *r)
+> 		r->bd_count;
+> }
+>
+>-static int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd)
+>+int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd)
+> {
+> 	struct enetc_cbdr *ring = &si->cbd_ring;
+> 	int timeout = ENETC_CBDR_TIMEOUT;
+>@@ -66,6 +66,9 @@ static int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd)
+> 	if (!timeout)
+> 		return -EBUSY;
+>
+>+	/* CBD may writeback data, feedback up level */
+>+	*cbd = *dest_cbd;
+>+
+> 	enetc_clean_cbdr(si);
+>
+> 	return 0;
+>diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+>index 88276299f447..75a7c0f1f8ce 100644
+>--- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+>+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+>@@ -18,6 +18,7 @@
+> #define ENETC_SICTR0	0x18
+> #define ENETC_SICTR1	0x1c
+> #define ENETC_SIPCAPR0	0x20
+>+#define ENETC_SIPCAPR0_QBV	BIT(4)
+> #define ENETC_SIPCAPR0_RSS	BIT(8)
+> #define ENETC_SIPCAPR1	0x24
+> #define ENETC_SITGTGR	0x30
+>@@ -148,6 +149,12 @@ enum enetc_bdr_type {TX, RX};
+> #define ENETC_PORT_BASE		0x10000
+> #define ENETC_PMR		0x0000
+> #define ENETC_PMR_EN	GENMASK(18, 16)
+>+#define ENETC_PMR_PSPEED_MASK GENMASK(11, 8)
+>+#define ENETC_PMR_PSPEED_10M 0x000
+>+#define ENETC_PMR_PSPEED_100M 0x100
+>+#define ENETC_PMR_PSPEED_1000M 0x200
+>+#define ENETC_PMR_PSPEED_2500M 0x400
+>+
+> #define ENETC_PSR		0x0004 /* RO */
+> #define ENETC_PSIPMR		0x0018
+> #define ENETC_PSIPMR_SET_UP(n)	BIT(n) /* n = SI index */
+>@@ -440,22 +447,6 @@ union enetc_rx_bd {
+> #define EMETC_MAC_ADDR_FILT_RES	3 /* # of reserved entries at the beginning */
+> #define ENETC_MAX_NUM_VFS	2
+>
+>-struct enetc_cbd {
+>-	union {
+>-		struct {
+>-			__le32 addr[2];
+>-			__le32 opt[4];
+>-		};
+>-		__le32 data[6];
+>-	};
+>-	__le16 index;
+>-	__le16 length;
+>-	u8 cmd;
+>-	u8 cls;
+>-	u8 _res;
+>-	u8 status_flags;
+>-};
+>-
+> #define ENETC_CBD_FLAGS_SF	BIT(7) /* short format */
+> #define ENETC_CBD_STATUS_MASK	0xf
+>
+>@@ -554,3 +545,130 @@ static inline void enetc_set_bdr_prio(struct enetc_hw *hw, int bdr_idx,
+> 	val |= ENETC_TBMR_SET_PRIO(prio);
+> 	enetc_txbdr_wr(hw, bdr_idx, ENETC_TBMR, val);
+> }
+>+
+>+enum bdcr_cmd_class {
+>+	BDCR_CMD_UNSPEC = 0,
+>+	BDCR_CMD_MAC_FILTER,
+>+	BDCR_CMD_VLAN_FILTER,
+>+	BDCR_CMD_RSS,
+>+	BDCR_CMD_RFS,
+>+	BDCR_CMD_PORT_GCL,
+>+	BDCR_CMD_RECV_CLASSIFIER,
+>+	__BDCR_CMD_MAX_LEN,
+>+	BDCR_CMD_MAX_LEN = __BDCR_CMD_MAX_LEN - 1,
+>+};
+>+
+>+/* class 5, command 0 */
+>+struct tgs_gcl_conf {
+>+	u8	atc;	/* init gate value */
+>+	u8	res[7];
+>+	union {
+>+		struct {
+>+			u8	res1[4];
+>+			__le16	acl_len;
+>+			u8	res2[2];
+>+		};
+>+		struct {
+>+			u32 cctl;
+>+			u32 ccth;
+>+		};
+>+	};
+>+};
+>+
+>+#define ENETC_CBDR_SGL_IOMEN	BIT(0)
+>+#define ENETC_CBDR_SGL_IPVEN	BIT(3)
+>+#define ENETC_CBDR_SGL_GTST	BIT(4)
+>+#define ENETC_CBDR_SGL_IPV_MASK 0xe
+>+
+>+/* gate control list entry */
+>+struct gce {
+>+	u32	period;
+>+	u8	gate;
+>+	u8	res[3];
+>+};
+>+
+>+/* tgs_gcl_conf address point to this data space */
+>+struct tgs_gcl_data {
+>+	u32	btl;
+>+	u32	bth;
+>+	u32	ct;
+>+	u32	cte;
+>+};
+>+
+>+/* class 5, command 1 */
+>+struct tgs_gcl_query {
+>+		u8	res[12];
+>+		union {
+>+			struct {
+>+				__le16	acl_len; /* admin list length */
+>+				__le16	ocl_len; /* operation list length */
+>+			};
+>+			struct {
+>+				u16 admin_list_len;
+>+				u16 oper_list_len;
+>+			};
+>+		};
+>+};
+>+
+>+/* tgs_gcl_query command response data format */
+>+struct tgs_gcl_resp {
+>+	u32 abtl;	/* base time */
+>+	u32 abth;
+>+	u32 act;	/* cycle time */
+>+	u32 acte;	/* cycle time extend */
+>+	u32 cctl;	/* config change time */
+>+	u32 ccth;
+>+	u32 obtl;	/* operation base time */
+>+	u32 obth;
+>+	u32 oct;	/* operation cycle time */
+>+	u32 octe;	/* operation cycle time extend */
+>+	u32 ccel;	/* config change error */
+>+	u32 cceh;
+>+};
+>+
+>+struct enetc_cbd {
+>+	union{
+>+		struct {
+>+			__le32	addr[2];
+>+			union {
+>+				__le32	opt[4];
+>+				struct tgs_gcl_conf	gcl_conf;
+>+				struct tgs_gcl_query	gcl_query;
+>+			};
+>+		};	/* Long format */
+>+		__le32 data[6];
+>+	};
+>+	__le16 index;
+>+	__le16 length;
+>+	u8 cmd;
+>+	u8 cls;
+>+	u8 _res;
+>+	u8 status_flags;
+>+};
+>+
+>+#define ENETC_PTCFPR(n)		(0x1910 + (n) * 4) /* n = [0 ..7] */
+>+#define ENETC_FPE		BIT(31)
+>+
+>+/* Port capability register 0 */
+>+#define ENETC_PCAPR0_PSFPM	BIT(10)
+>+#define ENETC_PCAPR0_PSFP	BIT(9)
+>+#define ENETC_PCAPR0_TSN	BIT(4)
+>+#define ENETC_PCAPR0_QBU	BIT(3)
+>+
+>+/* port time gating control register */
+>+#define ENETC_QBV_PTGCR_OFFSET		0x11a00
+>+#define ENETC_QBV_TGE			0x80000000
+>+#define ENETC_QBV_TGPE			BIT(30)
+>+#define ENETC_QBV_TGDROP_DISABLE	BIT(29)
+>+
+>+/* Port time gating capability register */
+>+#define ENETC_QBV_PTGCAPR_OFFSET	0x11a08
+>+#define ENETC_QBV_MAX_GCL_LEN_MASK	0xffff
+>+
+>+/* Port time gating admin gate list status register */
+>+#define ENETC_QBV_PTGAGLSR_OFFSET	0x11a10
+>+#define ENETC_QBV_CFG_PEND_MASK	0x00000002
+>+
+>+#define ENETC_TGLSTR			0xa200
+>+#define ENETC_TGS_MIN_DIS_MASK		0x80000000
+>+#define ENETC_MIN_LOOKAHEAD_MASK	0xffff
+>diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+>new file mode 100644
+>index 000000000000..036bb39c7a0b
+>--- /dev/null
+>+++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+>@@ -0,0 +1,130 @@
+>+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+>+/* Copyright 2019 NXP */
+>+
+>+#include "enetc.h"
+>+
+>+#include <net/pkt_sched.h>
+>+
+>+static u16 enetc_get_max_gcl_len(struct enetc_hw *hw)
+>+{
+>+	return enetc_rd(hw, ENETC_QBV_PTGCAPR_OFFSET)
+>+		& ENETC_QBV_MAX_GCL_LEN_MASK;
+>+}
+>+
+>+static int enetc_setup_taprio(struct net_device *ndev,
+>+			      struct tc_taprio_qopt_offload *admin_conf)
+>+{
+>+	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>+	struct enetc_cbd cbd = {.cmd = 0};
+>+	struct tgs_gcl_conf *gcl_config;
+>+	struct tgs_gcl_data *gcl_data;
+>+	struct gce *gce;
+>+	dma_addr_t dma;
+>+	u16 data_size;
+>+	u16 gcl_len;
+>+	u32 temp;
+>+	int i;
+>+
+>+	gcl_len = admin_conf->num_entries;
+>+	if (gcl_len > enetc_get_max_gcl_len(&priv->si->hw))
+>+		return -EINVAL;
+>+
+>+	if (admin_conf->enable) {
+>+		enetc_wr(&priv->si->hw,
+>+			 ENETC_QBV_PTGCR_OFFSET,
+>+			 temp & (~ENETC_QBV_TGE));
+>+		usleep_range(10, 20);
+>+		enetc_wr(&priv->si->hw,
+>+			 ENETC_QBV_PTGCR_OFFSET,
+>+			 temp | ENETC_QBV_TGE);
+>+	} else {
+>+		enetc_wr(&priv->si->hw,
+>+			 ENETC_QBV_PTGCR_OFFSET,
+>+			 temp & (~ENETC_QBV_TGE));
+>+		return 0;
+>+	}
+>+
+>+	/* Configure the (administrative) gate control list using the
+>+	 * control BD descriptor.
+>+	 */
+>+	gcl_config = &cbd.gcl_conf;
+>+
+>+	data_size = sizeof(struct tgs_gcl_data) + gcl_len * sizeof(struct gce);
+>+
+>+	gcl_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
+>+	if (!gcl_data)
+>+		return -ENOMEM;
+>+
+>+	gce = (struct gce *)(gcl_data + 1);
+>+
+>+	/* Since no initial state config in taprio, set gates open as default.
+>+	 */
+>+	gcl_config->atc = 0xff;
+>+	gcl_config->acl_len = cpu_to_le16(gcl_len);
+>+
+>+	if (!admin_conf->base_time) {
+>+		gcl_data->btl =
+>+			cpu_to_le32(enetc_rd(&priv->si->hw, ENETC_SICTR0));
+>+		gcl_data->bth =
+>+			cpu_to_le32(enetc_rd(&priv->si->hw, ENETC_SICTR1));
+>+	} else {
+>+		gcl_data->btl =
+>+			cpu_to_le32(lower_32_bits(admin_conf->base_time));
+>+		gcl_data->bth =
+>+			cpu_to_le32(upper_32_bits(admin_conf->base_time));
+>+	}
+>+
+>+	gcl_data->ct = cpu_to_le32(admin_conf->cycle_time);
+>+	gcl_data->cte = cpu_to_le32(admin_conf->cycle_time_extension);
+>+
+>+	for (i = 0; i < gcl_len; i++) {
+>+		struct tc_taprio_sched_entry *temp_entry;
+>+		struct gce *temp_gce = gce + i;
+>+
+>+		temp_entry = &admin_conf->entries[i];
+>+
+>+		temp_gce->gate = cpu_to_le32(temp_entry->gate_mask);
+>+		temp_gce->period = cpu_to_le32(temp_entry->interval);
+>+	}
+>+
+>+	cbd.length = cpu_to_le16(data_size);
+>+	cbd.status_flags = 0;
+>+
+>+	dma = dma_map_single(&priv->si->pdev->dev, gcl_data,
+>+			     data_size, DMA_TO_DEVICE);
+>+	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
+>+		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
+>+		kfree(gcl_data);
+>+		return -ENOMEM;
+>+	}
+>+
+>+	cbd.addr[0] = lower_32_bits(dma);
+>+	cbd.addr[1] = upper_32_bits(dma);
+>+	cbd.cls = BDCR_CMD_PORT_GCL;
+>+
+>+	/* Updated by ENETC on completion of the configuration
+>+	 * command. A zero value indicates success.
+>+	 */
+>+	cbd.status_flags = 0;
+>+
+>+	enetc_send_cmd(priv->si, &cbd);
+>+
+>+	dma_unmap_single(&priv->si->pdev->dev, dma, data_size, DMA_TO_DEVICE);
+>+	kfree(gcl_data);
+>+
+>+	return 0;
+>+}
+>+
+>+int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data)
+>+{
+>+	struct tc_taprio_qopt_offload *taprio = type_data;
+>+	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>+	int i;
+>+
+>+	for (i = 0; i < priv->num_tx_rings; i++)
+>+		enetc_set_bdr_prio(&priv->si->hw,
+>+				   priv->tx_ring[i]->index,
+>+				   taprio->enable ? i : 0);
+>+
+>+	return enetc_setup_taprio(ndev, taprio);
+>+}
+>-- 
+>2.17.1
+>
+
+-- 
+Regards,
+Ivan Khoronzhuk
