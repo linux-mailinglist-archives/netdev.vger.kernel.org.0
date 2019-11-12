@@ -2,143 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6FCBF9BE7
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2115DF9BF9
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:22:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726995AbfKLVSy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 12 Nov 2019 16:18:54 -0500
-Received: from mga02.intel.com ([134.134.136.20]:8238 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726981AbfKLVSx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 16:18:53 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Nov 2019 13:18:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,297,1569308400"; 
-   d="scan'208";a="202815791"
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
-  by fmsmga007.fm.intel.com with ESMTP; 12 Nov 2019 13:18:52 -0800
-Received: from orsmsx153.amr.corp.intel.com (10.22.226.247) by
- ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 12 Nov 2019 13:18:52 -0800
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.229]) by
- ORSMSX153.amr.corp.intel.com ([169.254.12.169]) with mapi id 14.03.0439.000;
- Tue, 12 Nov 2019 13:18:52 -0800
-From:   "Ertman, David M" <david.m.ertman@intel.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "nhorman@redhat.com" <nhorman@redhat.com>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Topic: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
-Thread-Index: AQHVmMVm9b0Ngs5xNEiEdFE1b2GqoqeIjNoA//97xfA=
-Date:   Tue, 12 Nov 2019 21:18:52 +0000
-Message-ID: <2B0E3F215D1AB84DA946C8BEE234CCC97B2FE421@ORSMSX101.amr.corp.intel.com>
-References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
- <20191112205958.GH5584@ziepe.ca>
-In-Reply-To: <20191112205958.GH5584@ziepe.ca>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.139]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727279AbfKLVV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:21:57 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46708 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727275AbfKLVV5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:21:57 -0500
+Received: by mail-pf1-f194.google.com with SMTP id 193so14208108pfc.13
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:21:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=56RmInZgI7Bh5RV3HY6BrZUpnFAVvdE9v++wifdVVbQ=;
+        b=ZfNUt0qSlG/eNpBtAZ0VTYWsyYp45EI1kg059Eym4v5QX0Rd4eJhUdGDHMn6QKbyy7
+         rAEVCINxRbPGFWvH2zmErPehM9LKyDLyBoDAInAHNKT4/quKkG/EtZO/FhCOkM/nDfkP
+         OwUp5RB5f4lGpDiCQlYFyWhQBMqbf0YFKIWuU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=56RmInZgI7Bh5RV3HY6BrZUpnFAVvdE9v++wifdVVbQ=;
+        b=LIev/NDMPWV3oE6zIIm4TyslUSIUSbtTH2dpJ+7dMH9awvP4Yw+OU7o3mk0Fd8S0dt
+         m69T0FNdZB1RzWofEx3eM1hFgnALOQqVUT7Y9MuFPiSvSwdpYOcDeHNNSJ4W/0QBi9nZ
+         tviLNsyjhQIq0jVnNEQFbmKdi5QY+JOKWHF30+P19gndg7DX+/8qDbQlhhazWaTd4RcS
+         a/K4woKQp38pbtBa+CyqPJMiABZleHojR1uoyaRZ5NaTbruUKeVwmGZHMgBG4A0KlvXk
+         IPP6LRsj5PWI3RO3hqXk4AEH2GTHmQZzB3/djkNu17pgargti9K9eBSyFYe+Jw6qqyt8
+         gZjg==
+X-Gm-Message-State: APjAAAXUNNBf1/2skV+qdqJWAQLIZvTMvgPY/QSXTkMq/G3RNQsWwAM5
+        3w37nZE7XdSnCGqYKtGqDyWdrw==
+X-Google-Smtp-Source: APXvYqzdFzu4zPPFnJ9ABSyKsWziEZi4Dk2O2pVHeNcsXTcPeB3CKkazqUJ/8FJ/XZkexPEBBAMb2g==
+X-Received: by 2002:aa7:8d8b:: with SMTP id i11mr11186741pfr.45.1573593716214;
+        Tue, 12 Nov 2019 13:21:56 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id c21sm19635349pgh.25.2019.11.12.13.21.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Nov 2019 13:21:55 -0800 (PST)
+Date:   Tue, 12 Nov 2019 13:21:54 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Jiri Slaby <jslaby@suse.cz>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-xfs@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Christoph Lameter <cl@linux.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Laura Abbott <labbott@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Christoffer Dall <christoffer.dall@linaro.org>,
+        Dave Kleikamp <dave.kleikamp@oracle.com>,
+        Jan Kara <jack@suse.cz>,
+        Luis de Bethencourt <luisbg@kernel.org>,
+        Marc Zyngier <marc.zyngier@arm.com>,
+        Rik van Riel <riel@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
+ as usercopy caches
+Message-ID: <201911121313.1097D6EE@keescook>
+References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
+ <1515636190-24061-10-git-send-email-keescook@chromium.org>
+ <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jason Gunthorpe <jgg@ziepe.ca>
-> Sent: Tuesday, November 12, 2019 1:00 PM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> Cc: davem@davemloft.net; gregkh@linuxfoundation.org; Ertman, David M
-> <david.m.ertman@intel.com>; netdev@vger.kernel.org; linux-
-> rdma@vger.kernel.org; nhorman@redhat.com; sassmann@redhat.com;
-> parav@mellanox.com; Patil, Kiran <kiran.patil@intel.com>
-> Subject: Re: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+On Tue, Nov 12, 2019 at 08:17:57AM +0100, Jiri Slaby wrote:
+> On 11. 01. 18, 3:02, Kees Cook wrote:
+> > From: David Windsor <dave@nullcore.net>
+> > 
+> > Mark the kmalloc slab caches as entirely whitelisted. These caches
+> > are frequently used to fulfill kernel allocations that contain data
+> > to be copied to/from userspace. Internal-only uses are also common,
+> > but are scattered in the kernel. For now, mark all the kmalloc caches
+> > as whitelisted.
+> > 
+> > This patch is modified from Brad Spengler/PaX Team's PAX_USERCOPY
+> > whitelisting code in the last public patch of grsecurity/PaX based on my
+> > understanding of the code. Changes or omissions from the original code are
+> > mine and don't reflect the original grsecurity/PaX code.
+> > 
+> > Signed-off-by: David Windsor <dave@nullcore.net>
+> > [kees: merged in moved kmalloc hunks, adjust commit log]
+> > Cc: Pekka Enberg <penberg@kernel.org>
+> > Cc: David Rientjes <rientjes@google.com>
+> > Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+> > Cc: Andrew Morton <akpm@linux-foundation.org>
+> > Cc: linux-mm@kvack.org
+> > Cc: linux-xfs@vger.kernel.org
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > Acked-by: Christoph Lameter <cl@linux.com>
+> > ---
+> >  mm/slab.c        |  3 ++-
+> >  mm/slab.h        |  3 ++-
+> >  mm/slab_common.c | 10 ++++++----
+> >  3 files changed, 10 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/mm/slab.c b/mm/slab.c
+> > index b9b0df620bb9..dd367fe17a4e 100644
+> > --- a/mm/slab.c
+> > +++ b/mm/slab.c
+> ...
+> > @@ -1098,7 +1099,8 @@ void __init setup_kmalloc_cache_index_table(void)
+> >  static void __init new_kmalloc_cache(int idx, slab_flags_t flags)
+> >  {
+> >  	kmalloc_caches[idx] = create_kmalloc_cache(kmalloc_info[idx].name,
+> > -					kmalloc_info[idx].size, flags);
+> > +					kmalloc_info[idx].size, flags, 0,
+> > +					kmalloc_info[idx].size);
+> >  }
+> >  
+> >  /*
+> > @@ -1139,7 +1141,7 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+> >  
+> >  			BUG_ON(!n);
+> >  			kmalloc_dma_caches[i] = create_kmalloc_cache(n,
+> > -				size, SLAB_CACHE_DMA | flags);
+> > +				size, SLAB_CACHE_DMA | flags, 0, 0);
 > 
-> On Mon, Nov 11, 2019 at 11:22:19AM -0800, Jeff Kirsher wrote:
-> > From: Dave Ertman <david.m.ertman@intel.com>
-> >
-> > This is the initial implementation of the Virtual Bus, virtbus_device
-> > and virtbus_driver.  The virtual bus is a software based bus intended
-> > to support lightweight devices and drivers and provide matching
-> > between them and probing of the registered drivers.
-> >
-> > Files added:
-> > 	drivers/bus/virtual_bus.c
-> > 	include/linux/virtual_bus.h
-> > 	Documentation/driver-api/virtual_bus.rst
-> >
-> > The primary purpose of the virual bus is to provide matching services
-> > and to pass the data pointer contained in the virtbus_device to the
-> > virtbus_driver during its probe call.  This will allow two separate
-> > kernel objects to match up and start communication.
+> Hi,
 > 
-> I think this is the 'multi_subsystem_device' idea I threw out in this thread. ie
-> pass an opaque void *pointer, done here by
-> virtbus_get_devdata():
+> was there any (undocumented) reason NOT to mark DMA caches as usercopy?
 > 
->  https://lore.kernel.org/r/20191109084659.GB1289838@kroah.com
+> We are seeing this on s390x:
 > 
-> And Greg said 'Ick, no'..
-> 
-> So each driver should makes its own bus, and perhaps we should provide
-> some helper stuff for the repeating code, like PM function reflection?
-> 
-> Jason
+> > usercopy: Kernel memory overwrite attempt detected to SLUB object
+> 'dma-kmalloc-1k' (offset 0, size 11)!
+> > ------------[ cut here ]------------
+> > kernel BUG at mm/usercopy.c:99!
 
-This submission is from a thread with GregKH where I put forth a design proposal
-of implementing a new software based bus.  I originally was going to name it
-generic bus, and he suggested virtual bus.
+Interesting! I believe the rationale was that if the region is used for
+DMA, allowing direct access to it from userspace could be prone to
+races.
 
-Here is the meat of the thread:
+> See:
+> https://bugzilla.suse.com/show_bug.cgi?id=1156053
 
->> We could add a new module to the kernel named generic_bus.ko.  This 
->> would create a new generic software bus and a set of APIs that would 
->> allow for adding and removing simple generic virtual devices and 
->> drivers, not as a MFD cell or a platform device. The power management 
->> events would also be handled by the generic_bus infrastructure (suspend, resume, shutdown).
->> We would use this for matching up by having the irdma driver register 
->> with this generic bus and hook to virtual devices that were added from 
->> different PCI LAN drivers.
->> 
->> Pros:
->> 1) This would avoid us attaching anything to the platform bus
->> 2) Avoid having each PCI LAN driver creating its own software bus
->> 3) Provide a common matching ground for generic devices and drivers 
->> that eliminates problems caused by load order (all dependent on 
->> generic_bus.ko)
->> 4) Usable by any other entity that wants a lightweight matching system 
->> or information exchange mechanism
->> 
->> Cons:
->> 1) Duplicates part of the platform bus functionality
->> 2) Adds a new software bus to the kernel architecture
->> 
->> Is this path forward acceptable?
->
->Yes, that is much better.  But how about calling it a "virtual bus"?
->It's not really virtualization, but we already have virtual devices today when you look in sysfs for devices that are created that are not >associated with any specific bus.  So this could take those over quite nicely!  Look at how /sys/devices/virtual/ works for specifics, you could >create a new virtual bus of a specific "name" and then add devices to that bus directly.
->
->thanks,
->
->greg k-h
+For context from the bug, the trace is:
 
-I am hoping that I didn't completely misunderstand him.
+(<0000000000386c5a> usercopy_abort+0xa2/0xa8) 
+ <000000000036097a> __check_heap_object+0x11a/0x120  
+ <0000000000386b3a> __check_object_size+0x18a/0x208  
+ <000000000079b4ba> skb_copy_datagram_from_iter+0x62/0x240  
+ <000003ff804edd5c> iucv_sock_sendmsg+0x1fc/0x858 Ýaf_iucv¨  
+ <0000000000785894> sock_sendmsg+0x54/0x90  
+ <0000000000785944> sock_write_iter+0x74/0xa0  
+ <000000000038a3f0> new_sync_write+0x110/0x180  
+ <000000000038d42e> vfs_write+0xa6/0x1d0  
+ <000000000038d748> ksys_write+0x60/0xe8  
+ <000000000096a660> system_call+0xdc/0x2e0  
 
--Dave E
+I know Al worked on fixing up usercopy checking for iters. I wonder if
+there is redundant checking happening here? i.e. haven't iters already
+done object size verifications, so they're not needed during iter copy
+helpers?
+
+> This indeed fixes it:
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -1290,7 +1290,8 @@ void __init create_kmalloc_caches(slab_flags_t flags)
+>                         kmalloc_caches[KMALLOC_DMA][i] =
+> create_kmalloc_cache(
+>                                 kmalloc_info[i].name[KMALLOC_DMA],
+>                                 kmalloc_info[i].size,
+> -                               SLAB_CACHE_DMA | flags, 0, 0);
+> +                               SLAB_CACHE_DMA | flags, 0,
+> +                               kmalloc_info[i].size);
+>                 }
+>         }
+>  #endif
+
+How is iucv the only network protocol that has run into this? Do others
+use a bounce buffer?
+
+-- 
+Kees Cook
