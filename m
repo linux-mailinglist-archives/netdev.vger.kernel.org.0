@@ -2,246 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB1CF9843
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 19:06:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE4BF985A
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 19:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbfKLSGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 13:06:52 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46642 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726958AbfKLSGw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 13:06:52 -0500
-Received: by mail-pf1-f193.google.com with SMTP id 193so13872109pfc.13
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 10:06:51 -0800 (PST)
+        id S1727002AbfKLSRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 13:17:32 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:41146 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726970AbfKLSRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 13:17:32 -0500
+Received: by mail-pg1-f196.google.com with SMTP id h4so12366849pgv.8
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 10:17:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=M3FZVe2vFZusOHunLF45zPvR02DMow5VnuI1F6ljQq8=;
-        b=TaN+h5a6dPQ8TIrHk35rFC05Q1CXjCNi0W818K7Utywoga+APOVYVNSoKOZ7i0prR/
-         YeEO+Nj2RhLINA1CSUMfYX6ilkEanDiM14YG+0K08FiycFCJra/4AHx1mHlOGNesdtlC
-         fDKZABg9Vfkz47w9JBQrSmVaaO5+vlnvObfPrBs0Hlc5RkDDnt22IhpqrBNZJqGlqHIn
-         JNgXWcRABPvKJy9BgT7VrQFBGfx3J5wCX9uuuPTZhTLEKyZbUzOx7A63xv7WFWThcpKt
-         UVtHNWVvebKp7m0rpQr6rAnJhln5prgKs2cT+c2i/UkYFRyIWssKGz6hnc9WI4Ay69px
-         KdyQ==
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6u8AuSwwEE+YzGjQ7qfJp6neppsuNi6MySBbeF4/IPk=;
+        b=Kgu/GllJJW+hHZrChI1erjsLqLhM4zsC5sx0iwwMF+a9Jzy9LOjqpJcgsPpm7LV7E+
+         5lhtCGSYnmaXdzaOdhr2dPsDec+bP2GsFoL76MoBDQ1cdGhDTHFhQz8Zj4JKg5L6lRUS
+         cn441jUZWJCGSOMKxb3lajAPyNZX2lTGt8gIJyQWahOTPWJmEWHffqJlotB6PnW7XoAW
+         58jz2Yio7zzqtuPFzbmS1qRf6eXYdzAno4LyzZ7dmYhEBnieUj0N5V+jXau3h9mIedp+
+         OVjwUNh0OPhCMfcbBqg/mUB+mR/FuloVxjzzBJ1XmvWkqBPQTVyKZv8Gc32hh+Pvujip
+         qEYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=M3FZVe2vFZusOHunLF45zPvR02DMow5VnuI1F6ljQq8=;
-        b=fWhgn/QVLgS0gNWE2VR1HQPFlDruRyAXlOiXN2TWMPpSq3oSCyTkvXv8Fo/b8/N90Y
-         Zh9Da7VOoJy8Dy2gA+1MlRPFrBSc934drPqNifEk0NfNTZOW9WtvsGoo+HOFZi4MjCzW
-         aA3gaU8xub25uvpUMOJJg2tvXpw4BK825fekMuVyLGm9PMC6iR5/yC7dTgYf9Ku4yHil
-         RxGXxNMuv8M4/89TfIQRpRQUBqa4oJ4rlcDBFTLyW9wyJMMKR5kmBPdhSfoueH4q7EKW
-         tJt+HxaP3z1u7CbLJkBEyW2oF5V7hN3KEv8NcLl4Mfpgt0aBqV1ULoKkw+GMZqnJKGiR
-         2Qrg==
-X-Gm-Message-State: APjAAAXU/b8R5kPp5y6wpKt4XFtJxPnhyg71xm4pp39SE3TJZrQNuUAK
-        posL0GNKkAzDMfXZ9+kIqbw=
-X-Google-Smtp-Source: APXvYqwuqOMQEMs6es3u1QMd2CO85tCsdmJ+T/6sJgnArD7KtZ9Z+JuTMwCeZbfTNTLL6bWsagm6XA==
-X-Received: by 2002:aa7:82d8:: with SMTP id f24mr9910775pfn.55.1573582010911;
-        Tue, 12 Nov 2019 10:06:50 -0800 (PST)
-Received: from [192.168.0.16] (97-115-74-198.ptld.qwest.net. [97.115.74.198])
-        by smtp.gmail.com with ESMTPSA id e24sm3116008pjt.18.2019.11.12.10.06.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 10:06:49 -0800 (PST)
-Subject: Re: [ovs-dev] [PATCH net-next v3] net: openvswitch: add hash info to
- upcall
-To:     xiangxia.m.yue@gmail.com, pshelar@ovn.org, blp@ovn.org
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org, ychen103103@163.com
-References: <1573571327-6906-1-git-send-email-xiangxia.m.yue@gmail.com>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Message-ID: <2490a542-f0fc-f0db-3494-9fdf3b8aa30b@gmail.com>
-Date:   Tue, 12 Nov 2019 10:06:48 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6u8AuSwwEE+YzGjQ7qfJp6neppsuNi6MySBbeF4/IPk=;
+        b=Y2u9FJJH8WwfGh2vhxLB50aw/3+KO+IW6gbU6TdrrQoHn4Qm92IQp+s3EK0m14G56B
+         Tk/YkYsk/rPpwqtlRdJ0dlVLpClAGwU3uLy4gS4jjeqvzwCg8a68QEkdtep9PHisTFwT
+         OZr9M5LZl7wNleqi8sIGqx/lmgEatOyhWdBNGz57/A9j24WZAC3qBsncvBB/XSJCYhz3
+         wTpZv0MgN+Of7oQnbL29jhF36n3/kekkncjRVQHRMV/g3aDoizbnbefg9btt+bHnOGzJ
+         M05fCXlwpO+vOdAIxKrK81sV44Utxojz+K8u+u7InkeCT7TG0nsgFZ74av/V+UPwsWYV
+         DpVA==
+X-Gm-Message-State: APjAAAVi9R/o9rEo+cl2RZ8XTaULENcGodKi/rzP6c5hfZJqWVJ7kiAj
+        ExbwZ/Shi+g0ZsElHDkt9bNiD/Kw
+X-Google-Smtp-Source: APXvYqwwSH0qDU9uj6WdYBx522qw+uctwzudp+uGOiDq9r/xUGj7tA3eafhCY2h5xpmPHLqI9MGhLA==
+X-Received: by 2002:a62:aa0d:: with SMTP id e13mr38879031pff.214.1573582651106;
+        Tue, 12 Nov 2019 10:17:31 -0800 (PST)
+Received: from ?IPv6:2620:15c:2c1:200:55c7:81e6:c7d8:94b? ([2620:15c:2c1:200:55c7:81e6:c7d8:94b])
+        by smtp.gmail.com with ESMTPSA id 206sm10280425pfu.45.2019.11.12.10.17.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Nov 2019 10:17:30 -0800 (PST)
+Subject: Re: net-next branch fails to build on my P8 CI system
+To:     Abdul Haleem <abdhalee@linux.vnet.ibm.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+References: <1573538337.1382.3.camel@abdul>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <951e74ff-07ef-faac-2a55-6dce8bd3d2d5@gmail.com>
+Date:   Tue, 12 Nov 2019 10:17:28 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <1573571327-6906-1-git-send-email-xiangxia.m.yue@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1573538337.1382.3.camel@abdul>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 11/12/2019 7:08 AM, xiangxia.m.yue@gmail.com wrote:
-> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
->
-> When using the kernel datapath, the upcall don't
-> include skb hash info relatived. That will introduce
-> some problem, because the hash of skb is important
-> in kernel stack. For example, VXLAN module uses
-> it to select UDP src port. The tx queue selection
-> may also use the hash in stack.
->
-> Hash is computed in different ways. Hash is random
-> for a TCP socket, and hash may be computed in hardware,
-> or software stack. Recalculation hash is not easy.
->
-> Hash of TCP socket is computed:
->    tcp_v4_connect
->      -> sk_set_txhash (is random)
->
->    __tcp_transmit_skb
->      -> skb_set_hash_from_sk
->
-> There will be one upcall, without information of skb
-> hash, to ovs-vswitchd, for the first packet of a TCP
-> session. The rest packets will be processed in Open vSwitch
-> modules, hash kept. If this tcp session is forward to
-> VXLAN module, then the UDP src port of first tcp packet
-> is different from rest packets.
->
-> TCP packets may come from the host or dockers, to Open vSwitch.
-> To fix it, we store the hash info to upcall, and restore hash
-> when packets sent back.
->
-> +---------------+          +-------------------------+
-> |   Docker/VMs  |          |     ovs-vswitchd        |
-> +----+----------+          +-+--------------------+--+
->       |                       ^                    |
->       |                       |                    |
->       |                       |  upcall            v restore packet hash (not recalculate)
->       |                     +-+--------------------+--+
->       |  tap netdev         |                         |   vxlan module
->       +--------------->     +-->  Open vSwitch ko     +-->
->         or internal type    |                         |
->                             +-------------------------+
->
-> Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
-> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> ---
-> v3:
-> * add enum ovs_pkt_hash_types
-> * avoid duplicate call the skb_get_hash_raw.
-> * explain why we should fix this problem.
-> ---
->   include/uapi/linux/openvswitch.h |  2 ++
->   net/openvswitch/datapath.c       | 30 +++++++++++++++++++++++++++++-
->   net/openvswitch/datapath.h       | 12 ++++++++++++
->   3 files changed, 43 insertions(+), 1 deletion(-)
->
-> diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> index 1887a451c388..e65407c1f366 100644
-> --- a/include/uapi/linux/openvswitch.h
-> +++ b/include/uapi/linux/openvswitch.h
-> @@ -170,6 +170,7 @@ enum ovs_packet_cmd {
->    * output port is actually a tunnel port. Contains the output tunnel key
->    * extracted from the packet as nested %OVS_TUNNEL_KEY_ATTR_* attributes.
->    * @OVS_PACKET_ATTR_MRU: Present for an %OVS_PACKET_CMD_ACTION and
-> + * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_hash in skb).
->    * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
->    * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragment
->    * size.
-> @@ -190,6 +191,7 @@ enum ovs_packet_attr {
->   	OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe,
->   				       error logging should be suppressed. */
->   	OVS_PACKET_ATTR_MRU,	    /* Maximum received IP fragment size. */
-> +	OVS_PACKET_ATTR_HASH,	    /* Packet hash. */
->   	OVS_PACKET_ATTR_LEN,		/* Packet size before truncation. */
->   	__OVS_PACKET_ATTR_MAX
->   };
 
-Why do you add the new enum before the last entry OVS_PACKET_ATTR_LEN 
-instead of
-just adding it to the end of the list?
+On 11/11/19 9:58 PM, Abdul Haleem wrote:
+> Greeting's
+> 
+> I see a build failure for net-next branch on my Power 8 system
+> 
+> 13:25:10 ERROR| [stderr] ./include/linux/u64_stats_sync.h: In function 64_stats_read�:
+> 13:25:10 ERROR| [stderr] ./include/linux/u64_stats_sync.h:80:2: warning: passing argument 1 of 鈥榣ocal_read鈥� discards 鈥榗onst鈥� qualifier from pointer target type [enabled by default]
+> 13:25:10 ERROR| [stderr]   return local64_read(&p->v);
+> 13:25:10 ERROR| [stderr]   ^
+> 13:25:10 ERROR| [stderr] In file included from ./include/asm-generic/local64.h:22:0,
+> 13:25:10 ERROR| [stderr]                  from ./arch/powerpc/include/generated/asm/local64.h:1,
+> 13:25:10 ERROR| [stderr]                  from ./include/linux/u64_stats_sync.h:72,
+> 13:25:10 ERROR| [stderr]                  from ./include/linux/cgroup-defs.h:20,
+> 13:25:10 ERROR| [stderr]                  from ./include/linux/cgroup.h:28,
+> 13:25:10 ERROR| [stderr]                  from ./include/linux/memcontrol.h:13,
+> 13:25:10 ERROR| [stderr]                  from ./include/linux/swap.h:9,
+> 13:25:10 ERROR| [stderr]                  from ./include/linux/suspend.h:5,
+> 13:25:10 ERROR| [stderr]                  from init/do_mounts.c:7:
+> 13:25:10 ERROR| [stderr] ./arch/powerpc/include/asm/local.h:20:24: note: expected 鈥榮truct local_t *鈥� but argument is of type 鈥榗onst struct local_t *鈥�
+> 13:25:10 ERROR| [stderr]  static __inline__ long local_read(local_t *l)
+> 13:25:10 ERROR| [stderr]                         ^
+> 13:25:11 ERROR| [stderr] In file included from ./include/linux/cgroup-defs.h:20:0,
+> 13:25:11 ERROR| [stderr]                  from ./include/linux/cgroup.h:28,
+> 13:25:11 ERROR| [stderr]                  from ./include/linux/hugetlb.h:9,
+> 13:25:11 ERROR| [stderr]                  from arch/powerpc/kvm/book3s_64_vio_hv.c:16:
+> 13:25:11 ERROR| [stderr] ./include/linux/u64_stats_sync.h: In function 鈥榰64_stats_read鈥�:
+> 13:25:11 ERROR| [stderr] ./include/linux/u64_stats_sync.h:80:2: error: passing argument 1 of 鈥榣ocal_read鈥� discards 鈥榗onst鈥� qualifier from pointer target type [-Werror]
+> 13:25:11 ERROR| [stderr]   return local64_read(&p->v);
+> 13:25:11 ERROR| [stderr]   ^
+> 
+> I see some recent code changes here
+> 
+> 9dfd871481c8e9c512938e9ce632beed645363e0 Merge branch 'u64_stats_t'
+> fd2f4737870eb866537fbbffa2b59414b9b0c0a2 net: use u64_stats_t in struct
+> pcpu_lstats
+> 5260dd3ed1ff7eba39251b28977e4d8950e2f099 tun: switch to u64_stats_t
+> 316580b69d0a7aeeee5063af47438b626bc47cbd u64_stats: provide u64_stats_t
+> type
+> 
+> 
 
-Just curious.
+Fix has been sent few days ago.
 
-- Greg
+For some reason the linuxppc-dev@lists.ozlabs.org  list has not received the patch.
 
-> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-> index 2088619c03f0..b556cf62b77c 100644
-> --- a/net/openvswitch/datapath.c
-> +++ b/net/openvswitch/datapath.c
-> @@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
->   	size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
->   		+ nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
->   		+ nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
-> -		+ nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATTR_LEN */
-> +		+ nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
-> +		+ nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
->   
->   	/* OVS_PACKET_ATTR_USERDATA */
->   	if (upcall_info->userdata)
-> @@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
->   	size_t len;
->   	unsigned int hlen;
->   	int err, dp_ifindex;
-> +	u64 hash;
->   
->   	dp_ifindex = get_dpifindex(dp);
->   	if (!dp_ifindex)
-> @@ -504,6 +506,23 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
->   		pad_packet(dp, user_skb);
->   	}
->   
-> +	hash = skb_get_hash_raw(skb);
-> +	if (hash) {
-> +		if (skb->sw_hash)
-> +			hash |= OVS_PACKET_HASH_SW_BIT;
-> +
-> +		if (skb->l4_hash)
-> +			hash |= OVS_PACKET_HASH_L4_BIT;
-> +
-> +		if (nla_put(user_skb, OVS_PACKET_ATTR_HASH,
-> +			    sizeof (u64), &hash)) {
-> +			err = -ENOBUFS;
-> +			goto out;
-> +		}
-> +
-> +		pad_packet(dp, user_skb);
-> +	}
-> +
->   	/* Only reserve room for attribute header, packet data is added
->   	 * in skb_zerocopy() */
->   	if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
-> @@ -543,6 +562,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
->   	struct datapath *dp;
->   	struct vport *input_vport;
->   	u16 mru = 0;
-> +	u64 hash;
->   	int len;
->   	int err;
->   	bool log = !a[OVS_PACKET_ATTR_PROBE];
-> @@ -568,6 +588,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
->   	}
->   	OVS_CB(packet)->mru = mru;
->   
-> +	if (a[OVS_PACKET_ATTR_HASH]) {
-> +		hash = nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
-> +
-> +		__skb_set_hash(packet, hash & 0xFFFFFFFFULL,
-> +			       !!(hash & OVS_PACKET_HASH_SW_BIT),
-> +			       !!(hash & OVS_PACKET_HASH_L4_BIT));
-> +	}
-> +
->   	/* Build an sw_flow for sending this packet. */
->   	flow = ovs_flow_alloc();
->   	err = PTR_ERR(flow);
-> diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> index 81e85dde8217..e239a46c2f94 100644
-> --- a/net/openvswitch/datapath.h
-> +++ b/net/openvswitch/datapath.h
-> @@ -139,6 +139,18 @@ struct ovs_net {
->   	bool xt_label;
->   };
->   
-> +/**
-> + * enum ovs_pkt_hash_types - hash info to include with a packet
-> + * to send to userspace.
-> + * @OVS_PACKET_HASH_SW_BIT: indicates hash was computed in software stack.
-> + * @OVS_PACKET_HASH_L4_BIT: indicates hash is a canonical 4-tuple hash
-> + * over transport ports.
-> + */
-> +enum ovs_pkt_hash_types {
-> +	OVS_PACKET_HASH_SW_BIT = (1ULL << 32),
-> +	OVS_PACKET_HASH_L4_BIT = (1ULL << 33),
-> +};
-> +
->   extern unsigned int ovs_net_id;
->   void ovs_lock(void);
->   void ovs_unlock(void);
+From 47c47befdcf31fb8498c9e630bb8e0dc3ef88079 Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 8 Nov 2019 06:04:35 -0800
+Subject: [PATCH] powerpc: add const qual to local_read() parameter
+
+A patch in net-next triggered a compile error on powerpc.
+
+This seems reasonable to relax powerpc local_read() requirements.
+
+Fixes: 316580b69d0a ("u64_stats: provide u64_stats_t type")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: kbuild test robot <lkp@intel.com>
+Cc:	Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc:	Paul Mackerras <paulus@samba.org>
+Cc:	Michael Ellerman <mpe@ellerman.id.au>
+Cc:	linuxppc-dev@lists.ozlabs.org
+---
+ arch/powerpc/include/asm/local.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/powerpc/include/asm/local.h b/arch/powerpc/include/asm/local.h
+index fdd00939270bf08113b537a090d6a6e34a048361..bc4bd19b7fc235b80ec1132f44409b6fe1057975 100644
+--- a/arch/powerpc/include/asm/local.h
++++ b/arch/powerpc/include/asm/local.h
+@@ -17,7 +17,7 @@ typedef struct
+ 
+ #define LOCAL_INIT(i)	{ (i) }
+ 
+-static __inline__ long local_read(local_t *l)
++static __inline__ long local_read(const local_t *l)
+ {
+ 	return READ_ONCE(l->v);
+ }
+-- 
+2.24.0.432.g9d3f5f5b63-goog
 
