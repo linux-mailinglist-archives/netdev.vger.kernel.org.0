@@ -2,113 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BF67F9370
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:57:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BE92F9371
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:57:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbfKLO5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:57:18 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35946 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726932AbfKLO5S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:57:18 -0500
-Received: by mail-wr1-f65.google.com with SMTP id r10so18896644wrx.3
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 06:57:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=RkWjKVRNQNfzGHSWOT8z4Fy/9T8r5WD/gADF2K5BA/Q=;
-        b=gthua7DLU5n0wWPbNEzPcrQ92MzUuTXa80zw8BATTPrDwQVcuhkg4LkiqVhi/DZUOS
-         F+aL0QIkinxTORpkQT9xGBPNeV6kGUFTrsiff5TWNT3cvobB1lde5cFgSYWQV7CABAhz
-         f0qNUN0OrQVag0uo3wp6Hs002LUAy5IqfVFXUD76mPGghbJav22Myzatr0WYxO+FABUB
-         HLKIJdxTNLr6c/vrRPpCMFtrNRskBYTn5YFuInE1RVJzrZ1jOTzKb89PvuX3ZrDH2yTC
-         aDrdNtPZYihC5de0rzO5C3ZR7YC0Xx3HacOJXUhChSZrHNIeFlvk/6w+Wcgb5Ijau0oh
-         CTdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=RkWjKVRNQNfzGHSWOT8z4Fy/9T8r5WD/gADF2K5BA/Q=;
-        b=ezMdJQ/SF8+ZUjpBXSNenDlrOg0BxEYFt9EbOmw1JArfRL8f5uB366M9cezP4pbtjq
-         qaEoYxPRpLTB71fmTULj5WoT4NCf+DCNpvixfj45qJlR2hCTf6B8z5EKNmkxinKBBwYJ
-         6Gk9CTKTPdzIV2AsOg3bI7WcUkBoIuB/Ar83iPp4MtP7zy7MLvFA7cN2OTmMvg+XFKKq
-         F2l34Mnxi00MSc0ZXCLxdWfj03dtBP1WRCydwcfEEAZAilVay1nf0003Fe0IzECNhfp5
-         CVI3eQb2edQPX+e046CCbjrq7DpJD8k4BCUgZ/syOziPvvgSvBpiLtSOD7MTyyYNnF+D
-         s5lQ==
-X-Gm-Message-State: APjAAAWQy/NRd/gzXH8gpufapIzhOP3/1uca9+UyKw1Hl5vO8qvXJ129
-        vASMwqD+ft932xo8WdMDA2BAoQ==
-X-Google-Smtp-Source: APXvYqzto+8CZw/bC5LG2vG0lsb1p/SKDdyikSjqiZ3nIVgcM8E149q7bmpTIi+W9Y4h3wSl+md1CA==
-X-Received: by 2002:adf:d18b:: with SMTP id v11mr27582629wrc.308.1573570635963;
-        Tue, 12 Nov 2019 06:57:15 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id u1sm1324935wmc.3.2019.11.12.06.57.15
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Nov 2019 06:57:15 -0800 (PST)
-Date:   Tue, 12 Nov 2019 15:57:15 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] dpaa2-eth: free already allocated channels on
- probe defer
-Message-ID: <20191112145714.ohlnx6pmpkqxs5qs@netronome.com>
-References: <1573568693-18642-1-git-send-email-ioana.ciornei@nxp.com>
+        id S1727020AbfKLO5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:57:36 -0500
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:19548 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726932AbfKLO5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:57:36 -0500
+Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa3.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: UEz06bpbq8Vgi4hFCMScPaFIhbiAfUI2vW4Tc9UysC3/2D/N1gr2fE48loH5SuwqwanaWX+cDU
+ V4tBNVHZRNz6wAfaj/8L0KUP9J3dwICqE5QrxZo0Xm4hI1LOVVJ+PsttijHU9P6ddB9AfSKAcL
+ R3cS6bQ/4HkKrVlCSBAWoahDP86bI4sGj0gwiVFP2uEdqu6Lkv9nj1FsZ6wzg98jqSDK5A+2I5
+ 7u06g0R1Mml39Dsah5wCD1s6QeZwI/RrWL1RJomwmMqR2BC19mfBSwaVj6hph9Ve+7oPpXFPor
+ t5c=
+X-IronPort-AV: E=Sophos;i="5.68,296,1569308400"; 
+   d="scan'208";a="56687008"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2019 07:57:35 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 12 Nov 2019 07:57:33 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Tue, 12 Nov 2019 07:57:33 -0700
+Date:   Tue, 12 Nov 2019 15:57:32 +0100
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
+ a separate folder
+Message-ID: <20191112145732.o7pkbitrvrr2bb7j@lx-anielsen.microsemi.net>
+References: <20191112124420.6225-1-olteanv@gmail.com>
+ <20191112124420.6225-11-olteanv@gmail.com>
+ <20191112130947.GE3572@piout.net>
+ <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
+ <20191112143346.3pzshxapotwdbzpg@lx-anielsen.microsemi.net>
+ <20191112145054.GG10875@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <1573568693-18642-1-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20191112145054.GG10875@lunn.ch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 04:24:53PM +0200, Ioana Ciornei wrote:
-> The setup_dpio() function tries to allocate a number of channels equal
-> to the number of CPUs online. When there are not enough DPCON objects
-> already probed, the function will return EPROBE_DEFER. When this
-> happens, the already allocated channels are not freed. This results in
-> the incapacity of properly probing the next time around.
-> Fix this by freeing the channels on the error path.
+The 11/12/2019 15:50, Andrew Lunn wrote:
+> External E-Mail
 > 
-> Fixes: d7f5a9d89a55 ("dpaa2-eth: defer probe on object allocate")
-
-Its not clear to me that this clean-up problem was added by
-the defer change. But rather, looking at the git logs, it seems
-likely to have been present since the driver was added by:
-
-6e2387e8f19e ("staging: fsl-dpaa2/eth: Add Freescale DPAA2 Ethernet driver")
-
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
-> ---
-> Changes in v2:
->  - add the proper Fixes tag
 > 
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> > > > As there are no commonalities between the vsc73xx and felix drivers,
+> > > > shouldn't you simply leave that one out and have felix in the existing
+> > > > microchip folder?
+> > > >
+> > > 
+> > > I don't have a strong preference, although where I come from, all new
+> > > NXP networking drivers are still labeled as "freescale" even though
+> > > there is no code reuse. There are even less commonalities with
+> > > Microchip (ex-Micrel, if I am not mistaken) KSZ switches than with the
+> > > old vsc73xx. I'll let the ex-Vitesse people decide.
+> > I'm on the same page as Alexandre here.
 > 
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> index 19379bae0144..22e9519f65bb 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> @@ -2232,6 +2232,14 @@ static int setup_dpio(struct dpaa2_eth_priv *priv)
->  err_service_reg:
->  	free_channel(priv, channel);
->  err_alloc_ch:
-> +	for (i = 0; i < priv->num_channels; i++) {
-> +		channel = priv->channel[i];
-> +		nctx = &channel->nctx;
-> +		dpaa2_io_service_deregister(channel->dpio, nctx, dev);
-> +		free_channel(priv, channel);
-> +	}
-> +	priv->num_channels = 0;
-> +
->  	if (err == -EPROBE_DEFER)
->  		return err;
-
-This function goes on to return 0 unless cpumask_empty(&priv->dpio_cpumask)
-is zero. Given this is an errorr path and the clean-up above, is that correct?
-
->  
-> -- 
-> 1.9.1
+> Leaving them where they are makes maintenance easier. Fixes are easier
+> to backport if things don't move around.
 > 
+> > I think we should leave vsc73xx where it is already, and put the felix driver in
+> > the drivers/net/ethernet/mscc/ folder where ocelot is already.
+> 
+> Currently, all DSA drivers are in drivers/net/dsa. We do occasionally
+> make changes over all DSA drivers at once, so it is nice they are all
+> together. So i would prefer the DSA part of Felix is also there. But
+> the core can be in drivers/net/ethernet/mscc/.
+Ahh, my bad.
+
+In that case I do not have any strong feelings on this either.
+
+I should say that we are discussing to add support for a Ocelot VSC7511 as a DSA
+driver. This one does not have an internal MIPS CPU.
+
+The vsc73xx, felix and the drivers in dsa/microchip does not share any
+functionallity. Not in SW and not in HW.
+
+Maybe felix should just go directly into drivers/net/dsa/, and then if we add
+support for VSC7511 then they can both live in drivers/net/dsa/ocelot/
+
+/Allan
