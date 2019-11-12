@@ -2,68 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 679F9F92C6
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:35:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9DAF92E9
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:42:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbfKLOfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:35:50 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:53848 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727149AbfKLOft (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 09:35:49 -0500
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 59CACBCB7FFD305AFFB8;
-        Tue, 12 Nov 2019 22:35:45 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS408-HUB.china.huawei.com
- (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Tue, 12 Nov 2019
- 22:35:34 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <richardcochran@gmail.com>, <vincent.cheng.xh@renesas.com>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] ptp: ptp_clockmatrix: Fix build error
-Date:   Tue, 12 Nov 2019 22:35:14 +0800
-Message-ID: <20191112143514.10784-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1726645AbfKLOm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:42:57 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:36052 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726008AbfKLOm5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 09:42:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=CvGIcWa1AgIe1GWVRKf0dJ7uQMosCXIHqjgnaIbTKU0=; b=SfTEuqVj4LwsXk7jRMpfxBFbXw
+        DbKcwCt/RzJU0Wpaqb921NDF1xU/li4z9oUbA72bbxV9haYHUhRntXK8fEAHRTIFa69c9EOtnOUzg
+        gj2fMvXl6v/2Jkck7xb8mnEbslofO3Xh9LRQK6uq6cxPBBvP9RhaslwYerVNNh+8oqzs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1iUXNb-00020v-PV; Tue, 12 Nov 2019 15:42:51 +0100
+Date:   Tue, 12 Nov 2019 15:42:51 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     jakub.kicinski@netronome.com, davem@davemloft.net,
+        alexandre.belloni@bootlin.com, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, joergen.andreasen@microchip.com,
+        allan.nielsen@microchip.com, horatiu.vultur@microchip.com,
+        claudiu.manoil@nxp.com, netdev@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 08/12] net: mscc: ocelot: publish structure
+ definitions to include/soc/mscc/ocelot.h
+Message-ID: <20191112144251.GF10875@lunn.ch>
+References: <20191112124420.6225-1-olteanv@gmail.com>
+ <20191112124420.6225-9-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191112124420.6225-9-olteanv@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When do randbuilding, we got this warning:
+> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
 
-WARNING: unmet direct dependencies detected for PTP_1588_CLOCK
-  Depends on [n]: NET [=y] && POSIX_TIMERS [=n]
-  Selected by [y]:
-  - PTP_1588_CLOCK_IDTCM [=y]
+..
 
-Make PTP_1588_CLOCK_IDTCM depends on PTP_1588_CLOCK to fix this.
+> +#else
+> +
+> +/* I/O */
+> +u32 ocelot_port_readl(struct ocelot_port *port, u32 reg)
+> +{
+> +	return 0;
+> +}
 
-Fixes: 3a6ba7dc7799 ("ptp: Add a ptp clock driver for IDT ClockMatrix.")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/ptp/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+These stubs are for when the core is missing? I don't think that makes
+sense. What use is a DSA or switchdev driver without the core? I would
+put in a hard dependency in the Kconfig, so the DSA driver can only be
+built when the core is available, and skip these stubs.
 
-diff --git a/drivers/ptp/Kconfig b/drivers/ptp/Kconfig
-index c48ad23..b45d2b8 100644
---- a/drivers/ptp/Kconfig
-+++ b/drivers/ptp/Kconfig
-@@ -121,7 +121,7 @@ config PTP_1588_CLOCK_KVM
- 
- config PTP_1588_CLOCK_IDTCM
- 	tristate "IDT CLOCKMATRIX as PTP clock"
--	select PTP_1588_CLOCK
-+	depends on PTP_1588_CLOCK
- 	default n
- 	help
- 	  This driver adds support for using IDT CLOCKMATRIX(TM) as a PTP
--- 
-2.7.4
-
-
+      Andrew
