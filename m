@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97A4FF9347
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C2B7F9349
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727717AbfKLOwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:52:31 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44324 "EHLO
+        id S1727721AbfKLOwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:52:33 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44323 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727677AbfKLOw1 (ORCPT
+        with ESMTP id S1727673AbfKLOw1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:52:27 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from roid@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 12 Nov 2019 16:52:21 +0200
 Received: from mtr-vdi-191.wap.labs.mlnx. (mtr-vdi-191.wap.labs.mlnx [10.209.100.28])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKx5020273;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id xACEqKx6020273;
         Tue, 12 Nov 2019 16:52:21 +0200
 From:   Roi Dayan <roid@mellanox.com>
 To:     netdev@vger.kernel.org
@@ -23,43 +23,105 @@ Cc:     David Ahern <dsahern@gmail.com>,
         Jiri Pirko <jiri@mellanox.com>,
         Eli Britstein <elibr@mellanox.com>,
         Roi Dayan <roid@mellanox.com>
-Subject: [PATCH iproute2-next 0/8] flower match support for masked ports
-Date:   Tue, 12 Nov 2019 16:51:46 +0200
-Message-Id: <20191112145154.145289-1-roid@mellanox.com>
+Subject: [PATCH iproute2-next 1/8] tc_util: introduce a function to print JSON/non-JSON masked numbers
+Date:   Tue, 12 Nov 2019 16:51:47 +0200
+Message-Id: <20191112145154.145289-2-roid@mellanox.com>
 X-Mailer: git-send-email 2.8.4
+In-Reply-To: <20191112145154.145289-1-roid@mellanox.com>
+References: <20191112145154.145289-1-roid@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Eli Britstein <elibr@mellanox.com>
 
-This series is for adding support for flower match on masked
-src/dst ports.
+Introduce a function to print masked number with a different output for
+JSON or non-JSON methods, as a pre-step towards printing numbers using
+this common function.
 
-First commits are preparations and fixing tos and ttl output.
-Last 3 commits add support for masked src/dst port.
+Signed-off-by: Eli Britstein <elibr@mellanox.com>
+Reviewed-by: Roi Dayan <roid@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ tc/tc_util.c | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+ tc/tc_util.h |  2 ++
+ 2 files changed, 50 insertions(+)
 
-Thanks,
-Roi
-
-Eli Britstein (8):
-  tc_util: introduce a function to print JSON/non-JSON masked numbers
-  tc_util: add an option to print masked numbers with/without a newline
-  tc: flower: fix newline prints for ct-mark and ct-zone
-  tc_util: fix JSON prints for ct-mark and ct-zone
-  tc: flower: fix output for ip tos and ttl
-  tc: flower: add u16 big endian parse option
-  tc_util: add functions for big endian masked numbers
-  tc: flower: support masked port destination and source match
-
- man/man8/tc-flower.8 | 13 ++++----
- tc/f_flower.c        | 92 +++++++++++++++++++++++++++++++++-------------------
- tc/m_ct.c            |  4 +--
- tc/tc_util.c         | 88 ++++++++++++++++++++++++++++++++++---------------
- tc/tc_util.h         |  8 +++--
- 5 files changed, 136 insertions(+), 69 deletions(-)
-
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index 0eb530408d05..2b391f182b96 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
+@@ -915,6 +915,42 @@ compat_xstats:
+ 		*xstats = tb[TCA_XSTATS];
+ }
+ 
++static void print_masked_type(__u32 type_max,
++			      __u32 (*rta_getattr_type)(const struct rtattr *),
++			      const char *name, struct rtattr *attr,
++			      struct rtattr *mask_attr)
++{
++	SPRINT_BUF(namefrm);
++	__u32 value, mask;
++	SPRINT_BUF(out);
++	size_t done;
++
++	if (attr) {
++		value = rta_getattr_type(attr);
++		mask = mask_attr ? rta_getattr_type(mask_attr) : type_max;
++
++		if (is_json_context()) {
++			sprintf(namefrm, "\n  %s %%u", name);
++			print_hu(PRINT_ANY, name, namefrm,
++				 rta_getattr_type(attr));
++			if (mask != type_max) {
++				char mask_name[SPRINT_BSIZE-6];
++
++				sprintf(mask_name, "%s_mask", name);
++				sprintf(namefrm, "\n  %s %%u", mask_name);
++				print_hu(PRINT_ANY, mask_name, namefrm, mask);
++			}
++		} else {
++			done = sprintf(out, "%u", value);
++			if (mask != type_max)
++				sprintf(out + done, "/0x%x", mask);
++
++			sprintf(namefrm, "\n  %s %%s", name);
++			print_string(PRINT_ANY, name, namefrm, out);
++		}
++	}
++}
++
+ void print_masked_u32(const char *name, struct rtattr *attr,
+ 		      struct rtattr *mask_attr)
+ {
+@@ -958,3 +994,15 @@ void print_masked_u16(const char *name, struct rtattr *attr,
+ 	sprintf(namefrm, " %s %%s", name);
+ 	print_string(PRINT_ANY, name, namefrm, out);
+ }
++
++static __u32 __rta_getattr_u8_u32(const struct rtattr *attr)
++{
++	return rta_getattr_u8(attr);
++}
++
++void print_masked_u8(const char *name, struct rtattr *attr,
++		     struct rtattr *mask_attr)
++{
++	print_masked_type(UINT8_MAX,  __rta_getattr_u8_u32, name, attr,
++			  mask_attr);
++}
+diff --git a/tc/tc_util.h b/tc/tc_util.h
+index 0c3425abc62f..7e5d93cbac66 100644
+--- a/tc/tc_util.h
++++ b/tc/tc_util.h
+@@ -131,4 +131,6 @@ void print_masked_u32(const char *name, struct rtattr *attr,
+ 		      struct rtattr *mask_attr);
+ void print_masked_u16(const char *name, struct rtattr *attr,
+ 		      struct rtattr *mask_attr);
++void print_masked_u8(const char *name, struct rtattr *attr,
++		     struct rtattr *mask_attr);
+ #endif
 -- 
 2.8.4
 
