@@ -2,72 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44940F9A83
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:23:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F1B9F9A88
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbfKLUXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 15:23:03 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:49166 "EHLO
+        id S1727077AbfKLUYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 15:24:12 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:49214 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726958AbfKLUXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:23:02 -0500
+        with ESMTP id S1726906AbfKLUYM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:24:12 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D279F154D32D6;
-        Tue, 12 Nov 2019 12:23:01 -0800 (PST)
-Date:   Tue, 12 Nov 2019 12:23:01 -0800 (PST)
-Message-Id: <20191112.122301.947461264517400659.davem@davemloft.net>
-To:     sd@queasysnail.net
-Cc:     netdev@vger.kernel.org, herbert@gondor.apana.org.au,
-        steffen.klassert@secunet.com, jakub.kicinski@netronome.com
-Subject: Re: [PATCH net-next v5 0/6] ipsec: add TCP encapsulation support
- (RFC 8229)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 24D55154D4A28;
+        Tue, 12 Nov 2019 12:24:11 -0800 (PST)
+Date:   Tue, 12 Nov 2019 12:24:10 -0800 (PST)
+Message-Id: <20191112.122410.512273112809490584.davem@davemloft.net>
+To:     afabre@cloudflare.com
+Cc:     linux-net-drivers@solarflare.com, ecree@solarflare.com,
+        cmclachlan@solarflare.com, mhabets@solarflare.com, ast@kernel.org,
+        daniel@iogearbox.net, jakub.kicinski@netronome.com,
+        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@cloudflare.com
+Subject: Re: [PATCH v2 net-next] sfc: trace_xdp_exception on XDP failure
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1573487190.git.sd@queasysnail.net>
-References: <cover.1573487190.git.sd@queasysnail.net>
+In-Reply-To: <20191112153601.5849-1-afabre@cloudflare.com>
+References: <20191112153601.5849-1-afabre@cloudflare.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 12 Nov 2019 12:23:02 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 12 Nov 2019 12:24:11 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sabrina Dubroca <sd@queasysnail.net>
-Date: Tue, 12 Nov 2019 16:18:37 +0100
+From: Arthur Fabre <afabre@cloudflare.com>
+Date: Tue, 12 Nov 2019 15:36:01 +0000
 
-> This patchset introduces support for TCP encapsulation of IKE and ESP
-> messages, as defined by RFC 8229 [0]. It is an evolution of what
-> Herbert Xu proposed in January 2018 [1] that addresses the main
-> criticism against it, by not interfering with the TCP implementation
-> at all. The networking stack now has infrastructure for this: TCP ULPs
-> and Stream Parsers.
+> The sfc driver can drop packets processed with XDP, notably when running
+> out of buffer space on XDP_TX, or returning an unknown XDP action.
+> This increments the rx_xdp_bad_drops ethtool counter.
 > 
-> The first patches are preparation and refactoring, and the final patch
-> adds the feature.
+> Call trace_xdp_exception everywhere rx_xdp_bad_drops is incremented,
+> except for fragmented RX packets as the XDP program hasn't run yet.
+> This allows it to easily be monitored from userspace.
 > 
-> The main omission in this submission is IPv6 support. ESP
-> encapsulation over UDP with IPv6 is currently not supported in the
-> kernel either, as UDP encapsulation is aimed at NAT traversal, and NAT
-> is not frequently used with IPv6.
+> This mirrors the behavior of other drivers.
 > 
-> Some of the code is taken directly, or slightly modified, from Herbert
-> Xu's original submission [1]. The ULP and strparser pieces are
-> new. This work was presented and discussed at the IPsec workshop and
-> netdev 0x13 conference [2] in Prague, last March.
-> 
-> [0] https://tools.ietf.org/html/rfc8229
-> [1] https://patchwork.ozlabs.org/patch/859107/
-> [2] https://netdevconf.org/0x13/session.html?talk-ipsec-encap
- ...
+> Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
 
-This looks generally fine to me, and I assume Steffen will pick this up
-and integrate it into his ipsec-next tree.
-
-For the series:
-
-Acked-by: David S. Miller <davem@davemloft.net>
+Applied.
