@@ -2,117 +2,324 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C47F94C9
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 16:54:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DCBBF94F8
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 17:00:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727249AbfKLPyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 10:54:03 -0500
-Received: from mail-io1-f65.google.com ([209.85.166.65]:46880 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726659AbfKLPyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 10:54:03 -0500
-Received: by mail-io1-f65.google.com with SMTP id i11so2414931iol.13;
-        Tue, 12 Nov 2019 07:54:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+1IEojNQRKaJ8R6eORbksbI7U86NwchAf1hHUgJqjpo=;
-        b=vYzeDsKt+LCERvwGBGKTwYAcLMKlX8aTKqabbg0JK21GrAPQcAhDLvykQYDpYPAfJD
-         YSLYQ/FE+wZZfSIQTQ/Yfl7Kw7kSvXi9QyWB6LnGZyemMZ6LiHXsf8SBT7XwYboj2/fu
-         Kc+wpOunu+fXCe3b7ri344w3kI5J9edQYl1tiVytFiYlbAwhRtaT0WXT5jCSWw716too
-         Q02zA9iTCBInKENJ51YRMfMNNCjJ5PauBVoxh0PBk6wdYk9bDhvS9ZKW0ilYrVAtX7W1
-         Yn6Rx7f6IU9i++q919E5gjvTNU0yqQ0AZ4FGOiMGZB4HJ2Iq9ooJBWBWz0aO7yYrfqu8
-         BgbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+1IEojNQRKaJ8R6eORbksbI7U86NwchAf1hHUgJqjpo=;
-        b=QTH5g4tuxBVRrZyQR9e/hMRksN/4FDMzP0nsD+QejUdrhd1IZzNYTpiuTd83qDUcMB
-         2UT7cLVIumxDlyMeqdxvNGioSMfa9TOzpQmL0EDh/kQ2ih1izIguMEn5pd13P+5qBLzu
-         FyAVkXkMpDfVb/nwpRLAlReWPVR+MmB3y7srJQsU/EuYJLe8FBFIWxNJ4amCfCTUw07N
-         Kd/9sVs+CY6IdOyS9YMTEQoCVGJihNsMZ6sGy1Cw9fwHAoCEDy8PbCJ9t/BmIt8cyxHu
-         AabGWzFDdU5j3ZS1SCu0pWkeiSG7p3L2QZxyFl8oOTCWbaSJtm06Sz2PucvEoq70Gay/
-         ysXg==
-X-Gm-Message-State: APjAAAV+LjByOepCchutb13qyGV+oEtaN8y1UQ11Pr91dDaZ4ZwTwknO
-        9+5caMrzhypTUZdc7+XjVRV3iNm8Z4dU8LLgrAw=
-X-Google-Smtp-Source: APXvYqynO/p313AXOl/WdxEoymEYNA7twP36L4Z5wcKFago9vMAZVo1EBJvr39aEvnOSMtl/ae0Wh7uuhz+Vh0aPrHg=
-X-Received: by 2002:a5e:8a04:: with SMTP id d4mr31139489iok.42.1573574042003;
- Tue, 12 Nov 2019 07:54:02 -0800 (PST)
+        id S1727357AbfKLQAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 11:00:14 -0500
+Received: from esa6.microchip.iphmx.com ([216.71.154.253]:53927 "EHLO
+        esa6.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726957AbfKLQAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 11:00:13 -0500
+Received-SPF: Pass (esa6.microchip.iphmx.com: domain of
+  Bryan.Whitehead@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Bryan.Whitehead@microchip.com";
+  x-sender="Bryan.Whitehead@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa6.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa6.microchip.iphmx.com;
+  envelope-from="Bryan.Whitehead@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa6.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Bryan.Whitehead@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: acEvPi9lxLteHBLMYQk8dFsiKJUsm7/JZUUtk2vA+IGhetNmRRROn0kznDq818PVvnMfXp91N/
+ H0dE+R3uxtYCvgo5npFMP0tkrVGc6tUOCQtg8B6HX9GXDLZrTsCyk3nSrmDGAOfU6/AJQ95vzD
+ qyzyGx3Ad52JQxlgLdMEwO7UTOEgUDJXsjmF3PHWwNcpGL+EPzPSv4lcsLxMVS/J4LmN7zTL3i
+ mrUHwjjJx+Ax070sw7QiYeogw+fiexx/1CZOQr6WhEXccoWXzuHe0Wdj4NwR/wFV7ZOxtf10/N
+ RuE=
+X-IronPort-AV: E=Sophos;i="5.68,297,1569308400"; 
+   d="scan'208";a="53946206"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Nov 2019 09:00:11 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 12 Nov 2019 09:00:10 -0700
+Received: from BW-Ubuntu-tester.mchp-main.com (10.10.85.251) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Tue, 12 Nov 2019 09:00:10 -0700
+From:   Bryan Whitehead <Bryan.Whitehead@microchip.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
+Date:   Tue, 12 Nov 2019 10:54:08 -0500
+Message-ID: <1573574048-12251-1-git-send-email-Bryan.Whitehead@microchip.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-References: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com> <20191112090444.ak2xu67eawfgpdgb@netronome.com>
-In-Reply-To: <20191112090444.ak2xu67eawfgpdgb@netronome.com>
-From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-Date:   Tue, 12 Nov 2019 08:53:51 -0700
-Message-ID: <CAOCk7NoXv2-8GO=VYS8dNPJF6sj=S3RbkfqQGW0kvvVmR8V1kw@mail.gmail.com>
-Subject: Re: [PATCH] ath10k: Handle "invalid" BDFs for msm8998 devices
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     kvalo@codeaurora.org, davem@davemloft.net,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, MSM <linux-arm-msm@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 2:04 AM Simon Horman <simon.horman@netronome.com> wrote:
->
-> On Wed, Nov 06, 2019 at 03:47:12PM -0800, Jeffrey Hugo wrote:
-> > When the BDF download QMI message has the end field set to 1, it signals
-> > the end of the transfer, and triggers the firmware to do a CRC check.  The
-> > BDFs for msm8998 devices fail this check, yet the firmware is happy to
-> > still use the BDF.  It appears that this error is not caught by the
-> > downstream drive by concidence, therefore there are production devices
-> > in the field where this issue needs to be handled otherwise we cannot
-> > support wifi on them.  So, attempt to detect this scenario as best we can
-> > and treat it as non-fatal.
-> >
-> > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-> > ---
-> >  drivers/net/wireless/ath/ath10k/qmi.c | 11 +++++++----
-> >  1 file changed, 7 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-> > index eb618a2652db..5ff8cfc93778 100644
-> > --- a/drivers/net/wireless/ath/ath10k/qmi.c
-> > +++ b/drivers/net/wireless/ath/ath10k/qmi.c
-> > @@ -265,10 +265,13 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
-> >                       goto out;
-> >
-> >               if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
-> > -                     ath10k_err(ar, "failed to download board data file: %d\n",
-> > -                                resp.resp.error);
-> > -                     ret = -EINVAL;
-> > -                     goto out;
-> > +                     if (!(req->end == 1 &&
-> > +                           resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
->
-> Would it make sense to combine the inner and outer condition,
-> something like this (completely untested) ?
+Add support for the following VSC PHYs
+	VSC8504, VSC8552, VSC8572,
+	VSC8562, VSC8564, VSC8575, VSC8582
 
-I guess, make sense from what perspective?  Looks like the assembly
-ends up being the same, so it would be down to "readability" which is
-subjective - I personally don't see a major advantage to one way or
-the other.  It does look like Kalle already picked up this patch, so
-I'm guessing that if folks feel your suggestion is superior, then it
-would need to be a follow on.
+Signed-off-by: Bryan Whitehead <Bryan.Whitehead@microchip.com>
+---
+ drivers/net/phy/mscc.c | 182 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 182 insertions(+)
 
->
->                 if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
->                     !(req->end == 1 &&
->                       resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
->
-> > +                             ath10k_err(ar, "failed to download board data file: %d\n",
-> > +                                        resp.resp.error);
-> > +                             ret = -EINVAL;
-> > +                             goto out;
-> > +                     }
-> >               }
-> >
-> >               remaining -= req->data_len;
-> > --
-> > 2.17.1
-> >
+diff --git a/drivers/net/phy/mscc.c b/drivers/net/phy/mscc.c
+index 805cda3..8933681 100644
+--- a/drivers/net/phy/mscc.c
++++ b/drivers/net/phy/mscc.c
+@@ -253,12 +253,18 @@ enum rgmii_rx_clock_delay {
+ #define MSCC_PHY_TR_MSB			  18
+ 
+ /* Microsemi PHY ID's */
++#define PHY_ID_VSC8504			  0x000704c0
+ #define PHY_ID_VSC8514			  0x00070670
+ #define PHY_ID_VSC8530			  0x00070560
+ #define PHY_ID_VSC8531			  0x00070570
+ #define PHY_ID_VSC8540			  0x00070760
+ #define PHY_ID_VSC8541			  0x00070770
++#define PHY_ID_VSC8552			  0x000704e0
++#define PHY_ID_VSC856X			  0x000707e0
++#define PHY_ID_VSC8572			  0x000704d0
+ #define PHY_ID_VSC8574			  0x000704a0
++#define PHY_ID_VSC8575			  0x000707d0
++#define PHY_ID_VSC8582			  0x000707b0
+ #define PHY_ID_VSC8584			  0x000707c0
+ 
+ #define MSCC_VDDMAC_1500		  1500
+@@ -1597,6 +1603,8 @@ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
+ 
+ 		phy = container_of(map[addr], struct phy_device, mdio);
+ 
++		if (!phy)
++			continue;
++
+ 		if ((phy->phy_id & phydev->drv->phy_id_mask) !=
+ 		    (phydev->drv->phy_id & phydev->drv->phy_id_mask))
+ 			continue;
+@@ -1648,9 +1656,27 @@ static int vsc8584_config_init(struct phy_device *phydev)
+ 	 */
+ 	if (!vsc8584_is_pkg_init(phydev, val & PHY_ADDR_REVERSED ? 1 : 0)) {
+ 		if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
++		    (PHY_ID_VSC8504 & phydev->drv->phy_id_mask))
++			ret = vsc8574_config_pre_init(phydev);
++		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
++		    (PHY_ID_VSC8552 & phydev->drv->phy_id_mask))
++			ret = vsc8574_config_pre_init(phydev);
++		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
++		    (PHY_ID_VSC856X & phydev->drv->phy_id_mask))
++			ret = vsc8584_config_pre_init(phydev);
++		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
++		    (PHY_ID_VSC8572 & phydev->drv->phy_id_mask))
++			ret = vsc8574_config_pre_init(phydev);
++		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
+ 		    (PHY_ID_VSC8574 & phydev->drv->phy_id_mask))
+ 			ret = vsc8574_config_pre_init(phydev);
+ 		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
++		    (PHY_ID_VSC8575 & phydev->drv->phy_id_mask))
++			ret = vsc8584_config_pre_init(phydev);
++		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
++		    (PHY_ID_VSC8582 & phydev->drv->phy_id_mask))
++			ret = vsc8584_config_pre_init(phydev);
++		else if ((phydev->phy_id & phydev->drv->phy_id_mask) ==
+ 			 (PHY_ID_VSC8584 & phydev->drv->phy_id_mask))
+ 			ret = vsc8584_config_pre_init(phydev);
+ 		else
+@@ -2322,6 +2348,32 @@ static int vsc85xx_probe(struct phy_device *phydev)
+ /* Microsemi VSC85xx PHYs */
+ static struct phy_driver vsc85xx_driver[] = {
+ {
++	.phy_id		= PHY_ID_VSC8504,
++	.name		= "Microsemi GE VSC8504 SyncE",
++	.phy_id_mask	= 0xfffffff0,
++	/* PHY_GBIT_FEATURES */
++	.soft_reset	= &genphy_soft_reset,
++	.config_init    = &vsc8584_config_init,
++	.config_aneg    = &vsc85xx_config_aneg,
++	.aneg_done	= &genphy_aneg_done,
++	.read_status	= &vsc85xx_read_status,
++	.ack_interrupt  = &vsc85xx_ack_interrupt,
++	.config_intr    = &vsc85xx_config_intr,
++	.did_interrupt  = &vsc8584_did_interrupt,
++	.suspend	= &genphy_suspend,
++	.resume		= &genphy_resume,
++	.probe		= &vsc8574_probe,
++	.set_wol	= &vsc85xx_wol_set,
++	.get_wol	= &vsc85xx_wol_get,
++	.get_tunable	= &vsc85xx_get_tunable,
++	.set_tunable	= &vsc85xx_set_tunable,
++	.read_page	= &vsc85xx_phy_read_page,
++	.write_page	= &vsc85xx_phy_write_page,
++	.get_sset_count = &vsc85xx_get_sset_count,
++	.get_strings    = &vsc85xx_get_strings,
++	.get_stats      = &vsc85xx_get_stats,
++},
++{
+ 	.phy_id		= PHY_ID_VSC8514,
+ 	.name		= "Microsemi GE VSC8514 SyncE",
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -2445,6 +2497,82 @@ static struct phy_driver vsc85xx_driver[] = {
+ 	.get_stats      = &vsc85xx_get_stats,
+ },
+ {
++	.phy_id		= PHY_ID_VSC8552,
++	.name		= "Microsemi GE VSC8552 SyncE",
++	.phy_id_mask	= 0xfffffff0,
++	/* PHY_GBIT_FEATURES */
++	.soft_reset	= &genphy_soft_reset,
++	.config_init    = &vsc8584_config_init,
++	.config_aneg    = &vsc85xx_config_aneg,
++	.aneg_done	= &genphy_aneg_done,
++	.read_status	= &vsc85xx_read_status,
++	.ack_interrupt  = &vsc85xx_ack_interrupt,
++	.config_intr    = &vsc85xx_config_intr,
++	.did_interrupt  = &vsc8584_did_interrupt,
++	.suspend	= &genphy_suspend,
++	.resume		= &genphy_resume,
++	.probe		= &vsc8574_probe,
++	.set_wol	= &vsc85xx_wol_set,
++	.get_wol	= &vsc85xx_wol_get,
++	.get_tunable	= &vsc85xx_get_tunable,
++	.set_tunable	= &vsc85xx_set_tunable,
++	.read_page	= &vsc85xx_phy_read_page,
++	.write_page	= &vsc85xx_phy_write_page,
++	.get_sset_count = &vsc85xx_get_sset_count,
++	.get_strings    = &vsc85xx_get_strings,
++	.get_stats      = &vsc85xx_get_stats,
++},
++{
++	.phy_id		= PHY_ID_VSC856X,
++	.name		= "Microsemi GE VSC856X SyncE",
++	.phy_id_mask	= 0xfffffff0,
++	/* PHY_GBIT_FEATURES */
++	.soft_reset	= &genphy_soft_reset,
++	.config_init    = &vsc8584_config_init,
++	.config_aneg    = &vsc85xx_config_aneg,
++	.aneg_done	= &genphy_aneg_done,
++	.read_status	= &vsc85xx_read_status,
++	.ack_interrupt  = &vsc85xx_ack_interrupt,
++	.config_intr    = &vsc85xx_config_intr,
++	.did_interrupt  = &vsc8584_did_interrupt,
++	.suspend	= &genphy_suspend,
++	.resume		= &genphy_resume,
++	.probe		= &vsc8584_probe,
++	.get_tunable	= &vsc85xx_get_tunable,
++	.set_tunable	= &vsc85xx_set_tunable,
++	.read_page	= &vsc85xx_phy_read_page,
++	.write_page	= &vsc85xx_phy_write_page,
++	.get_sset_count = &vsc85xx_get_sset_count,
++	.get_strings    = &vsc85xx_get_strings,
++	.get_stats      = &vsc85xx_get_stats,
++},
++{
++	.phy_id		= PHY_ID_VSC8572,
++	.name		= "Microsemi GE VSC8572 SyncE",
++	.phy_id_mask	= 0xfffffff0,
++	/* PHY_GBIT_FEATURES */
++	.soft_reset	= &genphy_soft_reset,
++	.config_init    = &vsc8584_config_init,
++	.config_aneg    = &vsc85xx_config_aneg,
++	.aneg_done	= &genphy_aneg_done,
++	.read_status	= &vsc85xx_read_status,
++	.ack_interrupt  = &vsc85xx_ack_interrupt,
++	.config_intr    = &vsc85xx_config_intr,
++	.did_interrupt  = &vsc8584_did_interrupt,
++	.suspend	= &genphy_suspend,
++	.resume		= &genphy_resume,
++	.probe		= &vsc8574_probe,
++	.set_wol	= &vsc85xx_wol_set,
++	.get_wol	= &vsc85xx_wol_get,
++	.get_tunable	= &vsc85xx_get_tunable,
++	.set_tunable	= &vsc85xx_set_tunable,
++	.read_page	= &vsc85xx_phy_read_page,
++	.write_page	= &vsc85xx_phy_write_page,
++	.get_sset_count = &vsc85xx_get_sset_count,
++	.get_strings    = &vsc85xx_get_strings,
++	.get_stats      = &vsc85xx_get_stats,
++},
++{
+ 	.phy_id		= PHY_ID_VSC8574,
+ 	.name		= "Microsemi GE VSC8574 SyncE",
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -2471,6 +2599,54 @@ static struct phy_driver vsc85xx_driver[] = {
+ 	.get_stats      = &vsc85xx_get_stats,
+ },
+ {
++	.phy_id		= PHY_ID_VSC8575,
++	.name		= "Microsemi GE VSC8575 SyncE",
++	.phy_id_mask	= 0xfffffff0,
++	/* PHY_GBIT_FEATURES */
++	.soft_reset	= &genphy_soft_reset,
++	.config_init    = &vsc8584_config_init,
++	.config_aneg    = &vsc85xx_config_aneg,
++	.aneg_done	= &genphy_aneg_done,
++	.read_status	= &vsc85xx_read_status,
++	.ack_interrupt  = &vsc85xx_ack_interrupt,
++	.config_intr    = &vsc85xx_config_intr,
++	.did_interrupt  = &vsc8584_did_interrupt,
++	.suspend	= &genphy_suspend,
++	.resume		= &genphy_resume,
++	.probe		= &vsc8584_probe,
++	.get_tunable	= &vsc85xx_get_tunable,
++	.set_tunable	= &vsc85xx_set_tunable,
++	.read_page	= &vsc85xx_phy_read_page,
++	.write_page	= &vsc85xx_phy_write_page,
++	.get_sset_count = &vsc85xx_get_sset_count,
++	.get_strings    = &vsc85xx_get_strings,
++	.get_stats      = &vsc85xx_get_stats,
++},
++{
++	.phy_id		= PHY_ID_VSC8582,
++	.name		= "Microsemi GE VSC8582 SyncE",
++	.phy_id_mask	= 0xfffffff0,
++	/* PHY_GBIT_FEATURES */
++	.soft_reset	= &genphy_soft_reset,
++	.config_init    = &vsc8584_config_init,
++	.config_aneg    = &vsc85xx_config_aneg,
++	.aneg_done	= &genphy_aneg_done,
++	.read_status	= &vsc85xx_read_status,
++	.ack_interrupt  = &vsc85xx_ack_interrupt,
++	.config_intr    = &vsc85xx_config_intr,
++	.did_interrupt  = &vsc8584_did_interrupt,
++	.suspend	= &genphy_suspend,
++	.resume		= &genphy_resume,
++	.probe		= &vsc8584_probe,
++	.get_tunable	= &vsc85xx_get_tunable,
++	.set_tunable	= &vsc85xx_set_tunable,
++	.read_page	= &vsc85xx_phy_read_page,
++	.write_page	= &vsc85xx_phy_write_page,
++	.get_sset_count = &vsc85xx_get_sset_count,
++	.get_strings    = &vsc85xx_get_strings,
++	.get_stats      = &vsc85xx_get_stats,
++},
++{
+ 	.phy_id		= PHY_ID_VSC8584,
+ 	.name		= "Microsemi GE VSC8584 SyncE",
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -2500,12 +2676,18 @@ static struct phy_driver vsc85xx_driver[] = {
+ module_phy_driver(vsc85xx_driver);
+ 
+ static struct mdio_device_id __maybe_unused vsc85xx_tbl[] = {
++	{ PHY_ID_VSC8504, 0xfffffff0, },
+ 	{ PHY_ID_VSC8514, 0xfffffff0, },
+ 	{ PHY_ID_VSC8530, 0xfffffff0, },
+ 	{ PHY_ID_VSC8531, 0xfffffff0, },
+ 	{ PHY_ID_VSC8540, 0xfffffff0, },
+ 	{ PHY_ID_VSC8541, 0xfffffff0, },
++	{ PHY_ID_VSC8552, 0xfffffff0, },
++	{ PHY_ID_VSC856X, 0xfffffff0, },
++	{ PHY_ID_VSC8572, 0xfffffff0, },
+ 	{ PHY_ID_VSC8574, 0xfffffff0, },
++	{ PHY_ID_VSC8575, 0xfffffff0, },
++	{ PHY_ID_VSC8582, 0xfffffff0, },
+ 	{ PHY_ID_VSC8584, 0xfffffff0, },
+ 	{ }
+ };
+-- 
+2.7.4
+
