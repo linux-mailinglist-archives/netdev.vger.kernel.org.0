@@ -2,96 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F436F8B2C
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 09:57:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6655FF8B52
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:04:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfKLI46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 03:56:58 -0500
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:42593 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbfKLI46 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 03:56:58 -0500
-Received: by mail-qt1-f194.google.com with SMTP id t20so18935416qtn.9
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 00:56:57 -0800 (PST)
+        id S1727233AbfKLJEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 04:04:49 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53204 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727180AbfKLJEs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 04:04:48 -0500
+Received: by mail-wm1-f65.google.com with SMTP id l1so2195282wme.2
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 01:04:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ehqq8IaZ/5dSL//9xwGmnF4fadf7SCRUUDA3N7vZ7A8=;
-        b=XbmmTe9tJNwvAIP0H2kHJfpgxuoiAchUrT/hgItf2F4kfvAf2U83buYKUcG76/pxCL
-         nxQ8NR0uPsQKifJ5kyZPEu0XIUSGOkhP8MUHO/tCN4EYVm22/e/UI2x1uGuThmokemsz
-         KLdop2Skw6qGwXN35vmsQjxMrNlQFi4LCUquvkEes0yZG7WoC/0V8mKE0XobD9W2HkKn
-         ewbg2sT73/VDRblkbCIBq83YHBPg/vLx3Qng8wfg4au17z/IOQeaahj/t29XLi4c5czl
-         zSlXnEcjpNuZn+POx+Gac4A/r2RzHgDIhAuqAAeEdRigSvn7HVubXHyGWQpxdxuCTzpK
-         1/Rw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Y+xqaA+PPE83+8NKlD/ArjFhQQS4KR3/VLoI8CbMHTQ=;
+        b=OrhbC81KkHxApm8Cyz6wofLkMe30UUYrZ7SAIxLPpbWOQjNRJ+9i1INbWFIyA56cLo
+         +BPL+Bu+q910hA2jR8t+LHkEUJg2RtT1luLd+cTyw1q6vBbZW+00jX28LiDUftYcJcNz
+         pr7RWL8NXHx8ktgGMGhfU5ikoMwf2CapBm6n8L8DxBPB/Km+TB9z7aLDt2FfNr+yauBM
+         QnSiiLl9ZxWQ0RT6f/bEBdg/14II3kFpNt7QQ9dJFZRnddNZqxa4EcFIdKdtAIriqmKY
+         FF/bK5CEC1RZK71LX2MpRDEw7FcfVrB+k27pH+ptjJ3xINLTCK/2TbYmctl9G565MNs4
+         7rQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ehqq8IaZ/5dSL//9xwGmnF4fadf7SCRUUDA3N7vZ7A8=;
-        b=pvhWBDBrgrEM/FBbC1LK5alghT3vBKXwC+GjindGB/DXSNYybtyPI9mXJ1Twov4kYY
-         31jEjadGjlOAcPTmyr9TuinqvU1zMZtCFtYf1h1yoSxpzRiy6+kEljtUhYbTaLQYnDfc
-         54Ax9pvJeGUT2BtGPnmryJwUrb/Z3QbhSQV7LEcW9s+HXLNhMhUACOHKW9+0f8OUjEfv
-         kOX+bo5eD59sbpagNDP/RnnhCe39QJo6YCkwnjZszwzjou0nz3Pcelu59TEwk+J6LaS0
-         fS2m8Meocx1qwzaqJc/5hdNdbCVzZSGyQMVO36dD3F1/tFmR5G4P+L6oiu3puoZe8B5p
-         Jpdw==
-X-Gm-Message-State: APjAAAWaKccCAQgRwCpNk5E7qRmHyyLg3sloURy9S8Iz526abkeqo6rm
-        Q2usNiWvB+zYfAa1EeOxIhWuJ1FvK36oOYSm41IrlfSZW/E=
-X-Google-Smtp-Source: APXvYqwNsgcTK3qOcfmIaZDIkVv0vQHtN0QmMOy2DK33HG94UjGKZQI0NZPo194mhENov4l+mCmgyV/GpQ6mp7Tycyw=
-X-Received: by 2002:aed:3ae8:: with SMTP id o95mr30387057qte.277.1573549017191;
- Tue, 12 Nov 2019 00:56:57 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Y+xqaA+PPE83+8NKlD/ArjFhQQS4KR3/VLoI8CbMHTQ=;
+        b=ASGUAxxZPxEsKU0Cn4+wsNKqpjl6zlJxuL6qxwjAZyTkfYcmNIqJo/ipbW/V7Bg9lF
+         gK+IBzT3iW83nNSnVod8ym+cfuInF4Q5cqHK6TlyRADEaelhUkjkr9y9J2xdES5EUXH/
+         vyY7fOrMTWfb9XQKLDdUWeYfYFmHbLKyLbcEPymxg2buDwJ8O/HUUE3L7hTCEpAM8x8l
+         z3LmCYDlyFqnMwuMY6co5ahtpFpWp6Ij297XPw40gBtIiC2SnMFb39Un0wW+iVIDrNPS
+         KpjC5Mr4XaItzWi3+0eYi6VIjp15NpUoBmTYi5q7PfzsxgsoByCF9OWyn5i+CX/aZPvY
+         0kKA==
+X-Gm-Message-State: APjAAAX5LnlNlXmXPM0VlAoH+mmQpmhihIY3weJlkDUPJQKFwRdVg7Sw
+        HbJfmxX/8T0vA6amV7YkQu7mTA==
+X-Google-Smtp-Source: APXvYqzAugh1NnuNK1H/GCm69vuRvJ84ZPDmwfNcjCKH7OcWchiOigPgyE3JxWJgXjnInQMy6zlEMg==
+X-Received: by 2002:a7b:cb4a:: with SMTP id v10mr2715803wmj.106.1573549486843;
+        Tue, 12 Nov 2019 01:04:46 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id b17sm20011773wru.36.2019.11.12.01.04.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Nov 2019 01:04:46 -0800 (PST)
+Date:   Tue, 12 Nov 2019 10:04:45 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Cc:     kvalo@codeaurora.org, davem@davemloft.net,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ath10k: Handle "invalid" BDFs for msm8998 devices
+Message-ID: <20191112090444.ak2xu67eawfgpdgb@netronome.com>
+References: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
 MIME-Version: 1.0
-References: <CABT=TjGqD3wRBBJycSdWubYROtHRPCBNq1zCdOHNFcxPzLRyWw@mail.gmail.com>
- <CAM_iQpUpof_ix=HJyxgjS4G9Mv5Zmno05bq0cmSVVN9E_Mzasg@mail.gmail.com>
-In-Reply-To: <CAM_iQpUpof_ix=HJyxgjS4G9Mv5Zmno05bq0cmSVVN9E_Mzasg@mail.gmail.com>
-From:   Adeel Sharif <madeel.sharif@googlemail.com>
-Date:   Tue, 12 Nov 2019 09:56:45 +0100
-Message-ID: <CABT=TjGn8S3jy4bw6ShRpYJdcE3-H4fNaxEPGfNaxiEcxBtPrA@mail.gmail.com>
-Subject: Re: Unix domain socket missing error code
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It should but it is not used when two different sockets are communicating.
-This is the third check in the if statement and it is never called
-because the first unlikely check was false:
+On Wed, Nov 06, 2019 at 03:47:12PM -0800, Jeffrey Hugo wrote:
+> When the BDF download QMI message has the end field set to 1, it signals
+> the end of the transfer, and triggers the firmware to do a CRC check.  The
+> BDFs for msm8998 devices fail this check, yet the firmware is happy to
+> still use the BDF.  It appears that this error is not caught by the
+> downstream drive by concidence, therefore there are production devices
+> in the field where this issue needs to be handled otherwise we cannot
+> support wifi on them.  So, attempt to detect this scenario as best we can
+> and treat it as non-fatal.
+> 
+> Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+> ---
+>  drivers/net/wireless/ath/ath10k/qmi.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
+> index eb618a2652db..5ff8cfc93778 100644
+> --- a/drivers/net/wireless/ath/ath10k/qmi.c
+> +++ b/drivers/net/wireless/ath/ath10k/qmi.c
+> @@ -265,10 +265,13 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
+>  			goto out;
+>  
+>  		if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
+> -			ath10k_err(ar, "failed to download board data file: %d\n",
+> -				   resp.resp.error);
+> -			ret = -EINVAL;
+> -			goto out;
+> +			if (!(req->end == 1 &&
+> +			      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
 
-if (other != sk &&
-        unlikely(unix_peer(other) != sk && unix_recvq_full(other))) {
+Would it make sense to combine the inner and outer condition,
+something like this (completely untested) ?
 
-Thanks.
+		if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
+		    !(req->end == 1 &&
+		      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
 
-On Tue, Nov 12, 2019 at 1:12 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, Nov 11, 2019 at 5:41 AM Adeel Sharif
-> <madeel.sharif@googlemail.com> wrote:
-> >
-> > Hello,
-> >
-> > We are a group of people working on making Linux safe for everyone. In
-> > hope of doing that I started testing the System Calls. The one I am
-> > currently working on is send/write.
-> >
-> > If send() is used to send datagrams on unix socket and the receiver
-> > has stopped receiving, but still connected, there is a high
-> > possibility that Linux kernel could eat up the whole system memory.
-> > Although there is a system wide limit on write memory from wmem_max
-> > parameter but this is sometimes also increased to system momory size
-> > in order to avoid packet drops.
-> >
-> > After having a look in the kernel implementation of
-> > unix_dgram_sendmsg() it is obvious that user buffers are copied into
-> > kernel socket buffers and they are queued to a linked list. This list
-> > is growing without any limits. Although there is a qlen parameter but
-> > it is never used to impose a limit on it. Could we perhaps impose a
-> > limit on it and return an error with errcode Queue_Full or something
-> > instead?
->
-> Isn't unix_recvq_full() supposed to do what you said? It is called inside
-> unix_dgram_sendmsg() to determine whether to wake up the dst socket.
->
-> Thanks.
+> +				ath10k_err(ar, "failed to download board data file: %d\n",
+> +					   resp.resp.error);
+> +				ret = -EINVAL;
+> +				goto out;
+> +			}
+>  		}
+>  
+>  		remaining -= req->data_len;
+> -- 
+> 2.17.1
+> 
