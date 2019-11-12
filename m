@@ -2,633 +2,240 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B90F8BD9
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:32:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36ADBF8C16
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:41:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727321AbfKLJcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 04:32:13 -0500
-Received: from mga05.intel.com ([192.55.52.43]:56112 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727319AbfKLJcL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 04:32:11 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Nov 2019 01:32:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,295,1569308400"; 
-   d="scan'208";a="198017577"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
-  by orsmga008.jf.intel.com with ESMTP; 12 Nov 2019 01:32:08 -0800
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        netdev@vger.kernel.org, dan.daly@intel.com,
-        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
-        zhiyuan.lv@intel.com, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [RFC V3 2/2] This commit introduced IFC operations for vdpa, which complys to virtio_mdev and vhost_mdev interfaces, handles IFC VF initialization, configuration and removal.
-Date:   Tue, 12 Nov 2019 17:29:49 +0800
-Message-Id: <1573550989-40860-3-git-send-email-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1573550989-40860-1-git-send-email-lingshan.zhu@intel.com>
-References: <1573550989-40860-1-git-send-email-lingshan.zhu@intel.com>
+        id S1727344AbfKLJla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 04:41:30 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:46645 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727104AbfKLJla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 04:41:30 -0500
+Received: by mail-wr1-f68.google.com with SMTP id b3so17666058wrs.13
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 01:41:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZXiOCXbM4hw5/3nPee56/EdpSLE3wJqZQ92WaGPKTtA=;
+        b=UWM44IOvoZ9FhoUnupZJm2BQFl/dP/dnwJFhgZo424WXsHGHlR39NSakhkIT3pjI5d
+         rouMzU8HmYTqnhCPF95o2Pdiq7m2Up/zCcu+FT29Supvq7i13u4U7BXeVL1qYPDc1V0Z
+         +H68aOS1wpGKLezfzj2xZS2Oq3a1Wokrx0ji1HFt2cxq9xAygKXdIaAH7RQjBdu3izjP
+         8/0qq779rehuKgcaZfzwpmEaIPptoAmz20PkhPLjE4q3PF7l5+zVjWmIRLihq+6Ip1JA
+         /NtYNCkFyfc1hpA6LMF+pLKh1pK8V1CP253GLqHEa7tboT+yEiUjpNxJrLoUgIuiH6ui
+         fMJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZXiOCXbM4hw5/3nPee56/EdpSLE3wJqZQ92WaGPKTtA=;
+        b=EgbHv5PIt2b25PMYv1G8ujC7t/a+lOO08e3+6e/XotZPrXCpVPukwcRQ6unQXljX3m
+         Y1kFqs0/NZn/cYHhe5cckJW5ElxZVDOHYr3IBzARI+C8v3z6CSLUu8F0C6RvaMq595vO
+         n6McVB2jsmV/xHHjTgFWcVqBzk8fKXkMr39yiUJgmZ6vfxY9iPFgd2EZRMZiHiNS2bJr
+         I8t3nF4cIv2FsHv830X0E/q7WI3VuVzqBNGKOErjPYQnLzu0GAB07k4JAkb9mR7MZXlR
+         liglR6Qz0Gaka3hGSltJ0QC2v8wNyqtefqyx/jqSY3xjfGSBOl58VVQw44oNDPX1rVBX
+         uRuA==
+X-Gm-Message-State: APjAAAXTtabIWxQAo7xUAoMz1RFOf/k8PcOUL8uRy3CHUPprG4baBcm7
+        a7viUHB5Umh3tcuBkWMHmAo4uQ==
+X-Google-Smtp-Source: APXvYqy+zzcIPBiT2pyPQASExyEfhnKgezJ13Qq3+j6/2qXeVluF1V7SCkinvcEoerJDcqTtnHTcvA==
+X-Received: by 2002:a05:6000:110a:: with SMTP id z10mr23508130wrw.291.1573551687750;
+        Tue, 12 Nov 2019 01:41:27 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id g5sm3573129wmf.37.2019.11.12.01.41.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Nov 2019 01:41:27 -0800 (PST)
+Date:   Tue, 12 Nov 2019 10:41:26 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Po Liu <po.liu@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Roy Zang <roy.zang@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>,
+        Jerry Huang <jerry.huang@nxp.com>, Leo Li <leoyang.li@nxp.com>
+Subject: Re: [net-next, 2/2] enetc: update TSN Qbv PSPEED set according to
+ adjust link speed
+Message-ID: <20191112094125.jhcwrf3eb3wonlfn@netronome.com>
+References: <20191111042715.13444-1-Po.Liu@nxp.com>
+ <20191111042715.13444-2-Po.Liu@nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191111042715.13444-2-Po.Liu@nxp.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vhost/ifcvf/ifcvf_main.c | 579 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 579 insertions(+)
- create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
+On Mon, Nov 11, 2019 at 04:41:39AM +0000, Po Liu wrote:
+> ENETC has a register PSPEED to indicate the link speed of hardware.
+> It is need to update accordingly. PSPEED field needs to be updated
+> with the port speed for QBV scheduling purposes. Or else there is
+> chance for gate slot not free by frame taking the MAC if PSPEED and
+> phy speed not match. So update PSPEED when link adjust. This is
+> implement by the adjust_link.
+> 
+> Signed-off-by: Po Liu <Po.Liu@nxp.com>
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> Singed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/enetc/enetc.c  | 13 +++++--
+>  drivers/net/ethernet/freescale/enetc/enetc.h  |  7 ++++
+>  .../net/ethernet/freescale/enetc/enetc_pf.c   |  3 ++
+>  .../net/ethernet/freescale/enetc/enetc_qos.c  | 34 +++++++++++++++++++
+>  4 files changed, 55 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+> index d58dbc2c4270..f6b00c68451b 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+> @@ -742,9 +742,14 @@ void enetc_get_si_caps(struct enetc_si *si)
+>  	si->num_rss = 0;
+>  	val = enetc_rd(hw, ENETC_SIPCAPR0);
+>  	if (val & ENETC_SIPCAPR0_RSS) {
+> -		val = enetc_rd(hw, ENETC_SIRSSCAPR);
+> -		si->num_rss = ENETC_SIRSSCAPR_GET_NUM_RSS(val);
+> +		u32 rss;
+> +
+> +		rss = enetc_rd(hw, ENETC_SIRSSCAPR);
+> +		si->num_rss = ENETC_SIRSSCAPR_GET_NUM_RSS(rss);
+>  	}
+> +
+> +	if (val & ENETC_SIPCAPR0_QBV)
+> +		si->hw_features |= ENETC_SI_F_QBV;
+>  }
+>  
+>  static int enetc_dma_alloc_bdr(struct enetc_bdr *r, size_t bd_size)
+> @@ -1314,8 +1319,12 @@ static void enetc_disable_interrupts(struct enetc_ndev_priv *priv)
+>  
+>  static void adjust_link(struct net_device *ndev)
+>  {
+> +	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+>  	struct phy_device *phydev = ndev->phydev;
+>  
+> +	if (priv->active_offloads & ENETC_F_QBV)
+> +		enetc_sched_speed_set(ndev);
+> +
+>  	phy_print_status(phydev);
+>  }
+>  
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+> index 8676631041d5..e85e5301c578 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc.h
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+> @@ -118,6 +118,8 @@ enum enetc_errata {
+>  	ENETC_ERR_UCMCSWP	= BIT(2),
+>  };
+>  
+> +#define ENETC_SI_F_QBV  (1<<0)
+> +
+>  /* PCI IEP device data */
+>  struct enetc_si {
+>  	struct pci_dev *pdev;
+> @@ -133,6 +135,7 @@ struct enetc_si {
+>  	int num_fs_entries;
+>  	int num_rss; /* number of RSS buckets */
+>  	unsigned short pad;
+> +	int hw_features;
+>  };
+>  
+>  #define ENETC_SI_ALIGN	32
+> @@ -173,6 +176,7 @@ struct enetc_cls_rule {
+>  enum enetc_active_offloads {
+>  	ENETC_F_RX_TSTAMP	= BIT(0),
+>  	ENETC_F_TX_TSTAMP	= BIT(1),
+> +	ENETC_F_QBV             = BIT(2),
+>  };
+>  
+>  struct enetc_ndev_priv {
+> @@ -188,6 +192,8 @@ struct enetc_ndev_priv {
+>  	u16 msg_enable;
+>  	int active_offloads;
+>  
+> +	u32 speed; /* store speed for compare update pspeed */
 
-diff --git a/drivers/vhost/ifcvf/ifcvf_main.c b/drivers/vhost/ifcvf/ifcvf_main.c
-new file mode 100644
-index 0000000..0b33410
---- /dev/null
-+++ b/drivers/vhost/ifcvf/ifcvf_main.c
-@@ -0,0 +1,579 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2019 Intel Corporation.
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/mdev.h>
-+#include <linux/pci.h>
-+#include <linux/sysfs.h>
-+#include "ifcvf_base.h"
-+
-+#define VERSION_STRING	"0.1"
-+#define DRIVER_AUTHOR	"Intel Corporation"
-+#define IFCVF_DRIVER_NAME	"ifcvf"
-+
-+static struct ifcvf_hw *mdev_to_vf(struct mdev_device *mdev)
-+{
-+	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+
-+	return vf;
-+}
-+
-+static irqreturn_t ifcvf_intr_handler(int irq, void *arg)
-+{
-+	struct vring_info *vring = arg;
-+
-+	if (vring->cb.callback)
-+		return vring->cb.callback(vring->cb.private);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static u64 ifcvf_mdev_get_features(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return ifcvf_get_features(vf);
-+}
-+
-+static int ifcvf_mdev_set_features(struct mdev_device *mdev, u64 features)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->req_features = features;
-+
-+	return 0;
-+}
-+
-+static u64 ifcvf_mdev_get_vq_state(struct mdev_device *mdev, u16 qid)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+	u16 last_avail_idx;
-+	u16 __iomem *idx_addr;
-+
-+	idx_addr = (u16 __iomem*)(vf->lm_cfg + IFCVF_LM_RING_STATE_OFFSET +
-+			(qid / 2) * IFCVF_LM_CFG_SIZE + (qid % 2) * 4);
-+
-+	last_avail_idx = ioread16(idx_addr);
-+
-+	return last_avail_idx;
-+}
-+
-+static int ifcvf_mdev_set_vq_state(struct mdev_device *mdev, u16 qid, u64 num)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[qid].last_avail_idx = num;
-+
-+	return 0;
-+}
-+
-+static int ifcvf_mdev_set_vq_address(struct mdev_device *mdev, u16 idx,
-+				     u64 desc_area, u64 driver_area,
-+				     u64 device_area)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[idx].desc = desc_area;
-+	vf->vring[idx].avail = driver_area;
-+	vf->vring[idx].used = device_area;
-+
-+	return 0;
-+}
-+
-+static void ifcvf_mdev_set_vq_num(struct mdev_device *mdev, u16 qid, u32 num)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[qid].size = num;
-+}
-+
-+static void ifcvf_mdev_set_vq_ready(struct mdev_device *mdev,
-+				    u16 qid, bool ready)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[qid].ready = ready;
-+}
-+
-+static bool ifcvf_mdev_get_vq_ready(struct mdev_device *mdev, u16 qid)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return vf->vring[qid].ready;
-+}
-+
-+static void ifcvf_mdev_set_vq_cb(struct mdev_device *mdev, u16 idx,
-+				 struct virtio_mdev_callback *cb)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	vf->vring[idx].cb = *cb;
-+}
-+
-+static void ifcvf_mdev_kick_vq(struct mdev_device *mdev, u16 idx)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	ifcvf_notify_queue(vf, idx);
-+}
-+
-+static u8 ifcvf_mdev_get_status(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return ifcvf_get_status(vf);
-+}
-+
-+static u32 ifcvf_mdev_get_generation(struct mdev_device *mdev)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	return ioread8(&vf->common_cfg->config_generation);
-+}
-+
-+static u32 ifcvf_mdev_get_device_id(struct mdev_device *mdev)
-+{
-+	return VIRTIO_ID_NET;
-+}
-+
-+static u32 ifcvf_mdev_get_vendor_id(struct mdev_device *mdev)
-+{
-+	return IFCVF_VENDOR_ID;
-+}
-+
-+static u16 ifcvf_mdev_get_vq_align(struct mdev_device *mdev)
-+{
-+	return IFCVF_QUEUE_ALIGNMENT;
-+}
-+
-+static int ifcvf_start_datapath(void *private)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(private);
-+	struct ifcvf_adapter *ifcvf;
-+	int ret = 0;
-+	u8 status;
-+
-+	ifcvf = container_of(vf, struct ifcvf_adapter, vf);
-+	vf->nr_vring = IFCVF_MAX_QUEUE_PAIRS * 2;
-+	ret = ifcvf_start_hw(vf);
-+
-+	if (ret) {
-+		status = ifcvf_get_status(vf);
-+		status |= VIRTIO_CONFIG_S_FAILED;
-+		ifcvf_set_status(vf, status);
-+	}
-+
-+	return ret;
-+}
-+
-+static int ifcvf_stop_datapath(void *private)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(private);
-+	int i;
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUES; i++)
-+		vf->vring[i].cb.callback = NULL;
-+
-+	ifcvf_stop_hw(vf);
-+
-+	return 0;
-+}
-+
-+static void ifcvf_reset_vring(struct ifcvf_adapter *adapter)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+	int i;
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		vf->vring[i].last_used_idx = 0;
-+		vf->vring[i].last_avail_idx = 0;
-+		vf->vring[i].desc = 0;
-+		vf->vring[i].avail = 0;
-+		vf->vring[i].used = 0;
-+		vf->vring[i].ready = 0;
-+		vf->vring->cb.callback = NULL;
-+		vf->vring->cb.private = NULL;
-+
-+	}
-+
-+	ifcvf_reset(vf);
-+}
-+
-+static void ifcvf_mdev_set_status(struct mdev_device *mdev, u8 status)
-+{
-+	struct ifcvf_adapter *adapter = mdev_get_drvdata(mdev);
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+	int ret = 0;
-+
-+	if (status == 0) {
-+		ifcvf_stop_datapath(adapter);
-+		ifcvf_reset_vring(adapter);
-+		return;
-+	}
-+
-+	if (status & VIRTIO_CONFIG_S_DRIVER_OK) {
-+		ret = ifcvf_start_datapath(adapter);
-+
-+		if (ret)
-+			IFC_ERR(adapter->dev, "Failed to set mdev status %u\n",
-+				status);
-+	}
-+
-+	ifcvf_set_status(vf, status);
-+}
-+
-+static u16 ifcvf_mdev_get_vq_num_max(struct mdev_device *mdev)
-+{
-+
-+	return (u16)IFCVF_QUEUE_MAX;
-+}
-+static void ifcvf_mdev_get_config(struct mdev_device *mdev, unsigned int offset,
-+			     void *buf, unsigned int len)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	WARN_ON(offset + len > sizeof(struct virtio_net_config));
-+	ifcvf_read_net_config(vf, offset, buf, len);
-+}
-+
-+static void ifcvf_mdev_set_config(struct mdev_device *mdev, unsigned int offset,
-+			     const void *buf, unsigned int len)
-+{
-+	struct ifcvf_hw *vf = mdev_to_vf(mdev);
-+
-+	WARN_ON(offset + len > sizeof(struct virtio_net_config));
-+	ifcvf_write_net_config(vf, offset, buf, len);
-+}
-+
-+static struct mdev_virtio_device_ops ifc_mdev_ops = {
-+	.get_features  = ifcvf_mdev_get_features,
-+	.set_features  = ifcvf_mdev_set_features,
-+	.get_status    = ifcvf_mdev_get_status,
-+	.set_status    = ifcvf_mdev_set_status,
-+	.get_vq_num_max = ifcvf_mdev_get_vq_num_max,
-+	.get_vq_state   = ifcvf_mdev_get_vq_state,
-+	.set_vq_state   = ifcvf_mdev_set_vq_state,
-+	.set_vq_cb      = ifcvf_mdev_set_vq_cb,
-+	.set_vq_ready   = ifcvf_mdev_set_vq_ready,
-+	.get_vq_ready	= ifcvf_mdev_get_vq_ready,
-+	.set_vq_num     = ifcvf_mdev_set_vq_num,
-+	.set_vq_address = ifcvf_mdev_set_vq_address,
-+	.kick_vq        = ifcvf_mdev_kick_vq,
-+	.get_generation	= ifcvf_mdev_get_generation,
-+	.get_device_id	= ifcvf_mdev_get_device_id,
-+	.get_vendor_id	= ifcvf_mdev_get_vendor_id,
-+	.get_vq_align	= ifcvf_mdev_get_vq_align,
-+	.get_config	= ifcvf_mdev_get_config,
-+	.set_config	= ifcvf_mdev_set_config,
-+};
-+
-+static int ifcvf_init_msix(struct ifcvf_adapter *adapter)
-+{
-+	struct pci_dev *pdev = to_pci_dev(adapter->dev);
-+	struct ifcvf_hw *vf = &adapter->vf;
-+	int vector, i, ret, irq;
-+
-+	ret = pci_alloc_irq_vectors(pdev, IFCVF_MAX_INTR,
-+				    IFCVF_MAX_INTR, PCI_IRQ_MSIX);
-+	if (ret < 0) {
-+		IFC_ERR(adapter->dev, "Failed to alloc irq vectors\n");
-+		return ret;
-+	}
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		vector = i + IFCVF_MSI_QUEUE_OFF;
-+		irq = pci_irq_vector(pdev, vector);
-+		ret = request_irq(irq, ifcvf_intr_handler, 0,
-+				pci_name(pdev), &vf->vring[i]);
-+		if (ret) {
-+			IFC_ERR(adapter->dev,
-+				"Failed to request irq for vq %d\n", i);
-+			return ret;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void ifcvf_destroy_adapter(struct ifcvf_adapter *adapter)
-+{
-+	struct ifcvf_hw *vf = IFC_PRIVATE_TO_VF(adapter);
-+	struct pci_dev *pdev = to_pci_dev(adapter->dev);
-+	int i, vector, irq;
-+
-+	for (i = 0; i < IFCVF_MAX_QUEUE_PAIRS * 2; i++) {
-+		vector = i + IFCVF_MSI_QUEUE_OFF;
-+		irq = pci_irq_vector(pdev, vector);
-+		free_irq(irq, &vf->vring[i]);
-+	}
-+}
-+
-+static ssize_t name_show(struct kobject *kobj, struct device *dev, char *buf)
-+{
-+	const char *name = "IFC VF virtio/vhost accelerator (virtio ring compatible)";
-+
-+	return sprintf(buf, "%s\n", name);
-+}
-+MDEV_TYPE_ATTR_RO(name);
-+
-+static ssize_t device_api_show(struct kobject *kobj, struct device *dev,
-+			       char *buf)
-+{
-+	return sprintf(buf, "%s\n", VIRTIO_MDEV_DEVICE_API_STRING);
-+}
-+MDEV_TYPE_ATTR_RO(device_api);
-+
-+static ssize_t available_instances_show(struct kobject *kobj,
-+					struct device *dev, char *buf)
-+{
-+	struct pci_dev *pdev;
-+	struct ifcvf_adapter *adapter;
-+
-+	pdev = to_pci_dev(dev);
-+	adapter = pci_get_drvdata(pdev);
-+
-+	return sprintf(buf, "%d\n", adapter->mdev_count);
-+}
-+
-+MDEV_TYPE_ATTR_RO(available_instances);
-+
-+static ssize_t type_show(struct kobject *kobj,
-+			struct device *dev, char *buf)
-+{
-+	return sprintf(buf, "%s\n", "net");
-+}
-+
-+MDEV_TYPE_ATTR_RO(type);
-+
-+
-+static struct attribute *mdev_types_attrs[] = {
-+	&mdev_type_attr_name.attr,
-+	&mdev_type_attr_device_api.attr,
-+	&mdev_type_attr_available_instances.attr,
-+	&mdev_type_attr_type.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group mdev_type_group_virtio = {
-+	.name  = "virtio_mdev",
-+	.attrs = mdev_types_attrs,
-+};
-+
-+static struct attribute_group mdev_type_group_vhost = {
-+	.name  = "vhost_mdev",
-+	.attrs = mdev_types_attrs,
-+};
-+
-+static struct attribute_group *mdev_type_groups[] = {
-+	&mdev_type_group_virtio,
-+	&mdev_type_group_vhost,
-+	NULL,
-+};
-+
-+const struct attribute_group *mdev_dev_groups[] = {
-+	NULL,
-+};
-+
-+static int ifcvf_mdev_create(struct kobject *kobj, struct mdev_device *mdev)
-+{
-+	struct device *dev = mdev_parent_dev(mdev);
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
-+	int ret = 0;
-+
-+	mutex_lock(&adapter->mdev_lock);
-+
-+	if (adapter->mdev_count < IFCVF_MDEV_LIMIT) {
-+		IFC_ERR(&pdev->dev,
-+			"Can not create mdev, reached limitation %d\n",
-+			IFCVF_MDEV_LIMIT);
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	if (!strcmp(kobj->name, "ifcvf-virtio_mdev"))
-+		mdev_set_virtio_ops(mdev, &ifc_mdev_ops);
-+
-+	if (!strcmp(kobj->name, "ifcvf-vhost_mdev"))
-+		mdev_set_vhost_ops(mdev, &ifc_mdev_ops);
-+
-+	mdev_set_drvdata(mdev, adapter);
-+	mdev_set_iommu_device(mdev_dev(mdev), dev);
-+	adapter->mdev_count--;
-+
-+out:
-+	mutex_unlock(&adapter->mdev_lock);
-+	return ret;
-+}
-+
-+static int ifcvf_mdev_remove(struct mdev_device *mdev)
-+{
-+	struct device *dev = mdev_parent_dev(mdev);
-+	struct pci_dev *pdev = to_pci_dev(dev);
-+	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
-+
-+	mutex_lock(&adapter->mdev_lock);
-+	adapter->mdev_count++;
-+	mutex_unlock(&adapter->mdev_lock);
-+
-+	return 0;
-+}
-+
-+static struct mdev_parent_ops ifcvf_mdev_fops = {
-+	.owner			= THIS_MODULE,
-+	.supported_type_groups	= mdev_type_groups,
-+	.mdev_attr_groups	= mdev_dev_groups,
-+	.create			= ifcvf_mdev_create,
-+	.remove			= ifcvf_mdev_remove,
-+};
-+
-+static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct ifcvf_adapter *adapter;
-+	struct ifcvf_hw *vf;
-+	int ret, i;
-+
-+	adapter = kzalloc(sizeof(struct ifcvf_adapter), GFP_KERNEL);
-+
-+	if (adapter == NULL) {
-+		ret = -ENOMEM;
-+		goto fail;
-+	}
-+
-+	mutex_init(&adapter->mdev_lock);
-+	adapter->mdev_count = IFCVF_MDEV_LIMIT;
-+	adapter->dev = dev;
-+	pci_set_drvdata(pdev, adapter);
-+	ret = pci_enable_device(pdev);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev, "Failed to enable device\n");
-+		goto free_adapter;
-+	}
-+
-+	ret = pci_request_regions(pdev, IFCVF_DRIVER_NAME);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev, "Failed to request MMIO region\n");
-+		goto disable_device;
-+	}
-+
-+	pci_set_master(pdev);
-+	ret = ifcvf_init_msix(adapter);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev, "Failed to initialize MSI-X\n");
-+		goto free_msix;
-+	}
-+
-+	vf = &adapter->vf;
-+	
-+	for (i = 0; i < IFCVF_PCI_MAX_RESOURCE; i++) {
-+		vf->mem_resource[i].phys_addr = pci_resource_start(pdev, i);
-+		vf->mem_resource[i].len = pci_resource_len(pdev, i);
-+		if (!vf->mem_resource[i].len) {
-+			vf->mem_resource[i].addr = NULL;
-+			continue;
-+		}
-+
-+		vf->mem_resource[i].addr = pci_iomap_range(pdev, i, 0,
-+				vf->mem_resource[i].len);
-+		if (!vf->mem_resource[i].addr) {
-+			IFC_ERR(adapter->dev, "Failed to map IO resource %d\n",
-+				i);
-+			ret = -1;
-+			goto free_msix;
-+		}
-+	}
-+
-+	if (ifcvf_init_hw(vf, pdev) < 0) {
-+		ret = -1;
-+		goto destroy_adapter;
-+	}
-+
-+	ret = mdev_register_device(dev, &ifcvf_mdev_fops);
-+
-+	if (ret) {
-+		IFC_ERR(adapter->dev,  "Failed to register mdev device\n");
-+		goto destroy_adapter;
-+	}
-+
-+	return 0;
-+
-+destroy_adapter:
-+	ifcvf_destroy_adapter(adapter);
-+free_msix:
-+	pci_free_irq_vectors(pdev);
-+	pci_release_regions(pdev);
-+disable_device:
-+	pci_disable_device(pdev);
-+free_adapter:
-+	kfree(adapter);
-+fail:
-+	return ret;
-+}
-+
-+static void ifcvf_remove(struct pci_dev *pdev)
-+{
-+	struct ifcvf_adapter *adapter = pci_get_drvdata(pdev);
-+	struct device *dev = &pdev->dev;
-+	struct ifcvf_hw *vf;
-+	int i;
-+
-+	mdev_unregister_device(dev);
-+
-+	vf = &adapter->vf;
-+	for (i = 0; i < IFCVF_PCI_MAX_RESOURCE; i++) {
-+		if (vf->mem_resource[i].addr) {
-+			pci_iounmap(pdev, vf->mem_resource[i].addr);
-+			vf->mem_resource[i].addr = NULL;
-+		}
-+	}
-+
-+	ifcvf_destroy_adapter(adapter);
-+	pci_free_irq_vectors(pdev);
-+	pci_release_regions(pdev);
-+	pci_disable_device(pdev);
-+	kfree(adapter);
-+}
-+
-+static struct pci_device_id ifcvf_pci_ids[] = {
-+	{ PCI_DEVICE_SUB(IFCVF_VENDOR_ID,
-+			IFCVF_DEVICE_ID,
-+			IFCVF_SUBSYS_VENDOR_ID,
-+			IFCVF_SUBSYS_DEVICE_ID) },
-+	{ 0 },
-+};
-+MODULE_DEVICE_TABLE(pci, ifcvf_pci_ids);
-+
-+static struct pci_driver ifcvf_driver = {
-+	.name     = IFCVF_DRIVER_NAME,
-+	.id_table = ifcvf_pci_ids,
-+	.probe    = ifcvf_probe,
-+	.remove   = ifcvf_remove,
-+};
-+
-+static int __init ifcvf_init_module(void)
-+{
-+	int ret;
-+
-+	ret = pci_register_driver(&ifcvf_driver);
-+	return ret;
-+}
-+
-+static void __exit ifcvf_exit_module(void)
-+{
-+	pci_unregister_driver(&ifcvf_driver);
-+}
-+
-+module_init(ifcvf_init_module);
-+module_exit(ifcvf_exit_module);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_VERSION(VERSION_STRING);
-+MODULE_AUTHOR(DRIVER_AUTHOR);
--- 
-1.8.3.1
+struct phy_device seems to use int for speed.
+Perhaps that would be a more appropriate type here,
+and likewise in enetc_sched_speed_set().
 
+> +
+>  	struct enetc_bdr *tx_ring[16];
+>  	struct enetc_bdr *rx_ring[16];
+>  
+> @@ -246,3 +252,4 @@ int enetc_get_rss_table(struct enetc_si *si, u32 *table, int count);
+>  int enetc_set_rss_table(struct enetc_si *si, const u32 *table, int count);
+>  int enetc_send_cmd(struct enetc_si *si, struct enetc_cbd *cbd);
+>  int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
+> +void enetc_sched_speed_set(struct net_device *ndev);
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> index 7da79b816416..e7482d483b28 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> @@ -742,6 +742,9 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
+>  
+>  	ndev->priv_flags |= IFF_UNICAST_FLT;
+>  
+> +	if (si->hw_features & ENETC_SI_F_QBV)
+> +		priv->active_offloads |= ENETC_F_QBV;
+> +
+>  	/* pick up primary MAC address from SI */
+>  	enetc_get_primary_mac_addr(&si->hw, ndev->dev_addr);
+>  }
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> index 036bb39c7a0b..801104dd2ba6 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> @@ -11,6 +11,40 @@ static u16 enetc_get_max_gcl_len(struct enetc_hw *hw)
+>  		& ENETC_QBV_MAX_GCL_LEN_MASK;
+>  }
+>  
+> +void enetc_sched_speed_set(struct net_device *ndev)
+> +{
+> +	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+> +	struct phy_device *phydev = ndev->phydev;
+> +	u32 old_speed = priv->speed;
+> +	u32 speed, pspeed;
+> +
+> +	if (phydev->speed == old_speed)
+> +		return;
+> +
+> +	speed = phydev->speed;
+> +	switch (speed) {
+> +	case SPEED_1000:
+> +		pspeed = ENETC_PMR_PSPEED_1000M;
+> +		break;
+> +	case SPEED_2500:
+> +		pspeed = ENETC_PMR_PSPEED_2500M;
+> +		break;
+> +	case SPEED_100:
+> +		pspeed = ENETC_PMR_PSPEED_100M;
+> +		break;
+> +	case SPEED_10:
+> +	default:
+> +		pspeed = ENETC_PMR_PSPEED_10M;
+> +		netdev_err(ndev, "Qbv PSPEED set speed link down.\n");
+> +	}
+> +
+> +	priv->speed = speed;
+> +	enetc_port_wr(&priv->si->hw, ENETC_PMR,
+> +		      (enetc_port_rd(&priv->si->hw, ENETC_PMR)
+> +		      & (~ENETC_PMR_PSPEED_MASK))
+> +		      | pspeed);
+
+The above two lines could be combined.
+
+Also, the parentheses seem unnecessary.
+
+> +}
+> +
+>  static int enetc_setup_taprio(struct net_device *ndev,
+>  			      struct tc_taprio_qopt_offload *admin_conf)
+>  {
+> -- 
+> 2.17.1
+> 
