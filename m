@@ -2,132 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4F30F915C
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:04:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5362F9184
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:07:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727192AbfKLOEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:04:10 -0500
-Received: from inca-roads.misterjones.org ([213.251.177.50]:60331 "EHLO
-        inca-roads.misterjones.org" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726912AbfKLOEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:04:10 -0500
-Received: from www-data by cheepnis.misterjones.org with local (Exim 4.80)
-        (envelope-from <maz@kernel.org>)
-        id 1iUWm5-0008Hj-04; Tue, 12 Nov 2019 15:04:05 +0100
-To:     Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH 2/2] ARM: dts: ls1021a-tsn: Use interrupts for the SGMII  PHYs
-X-PHP-Originating-Script: 0:main.inc
+        id S1727498AbfKLOHY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:07:24 -0500
+Received: from mga03.intel.com ([134.134.136.65]:57094 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726497AbfKLOHX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 09:07:23 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Nov 2019 06:07:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,296,1569308400"; 
+   d="scan'208";a="229401761"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 12 Nov 2019 06:07:21 -0800
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1iUWpF-0008eg-8s; Tue, 12 Nov 2019 22:07:21 +0800
+Date:   Tue, 12 Nov 2019 22:06:24 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: [net-next:master 1285/1291]
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:760:32: sparse: sparse:
+ restricted __le16 degrades to integer
+Message-ID: <201911122209.isu09tNx%lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Tue, 12 Nov 2019 15:13:25 +0109
-From:   Marc Zyngier <maz@kernel.org>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
-In-Reply-To: <CA+h21hpE-Nu_Sh1fRizUoEs082ev=9nzuumSXDrk-QTXdnEbzg@mail.gmail.com>
-References: <20191112132010.18274-1-linux@rasmusvillemoes.dk>
- <20191112132010.18274-3-linux@rasmusvillemoes.dk>
- <CA+h21hqw16o0TqOV1WWYYcOs3YWJe=xq_K0=miU+BFTA31OTmQ@mail.gmail.com>
- <6d4292fcb0cf290837306388bdfe9b0f@www.loen.fr>
- <CA+h21hpE-Nu_Sh1fRizUoEs082ev=9nzuumSXDrk-QTXdnEbzg@mail.gmail.com>
-Message-ID: <aee81d64979bb72b63a8889fb7193c3f@www.loen.fr>
-X-Sender: maz@kernel.org
-User-Agent: Roundcube Webmail/0.7.2
-X-SA-Exim-Connect-IP: <locally generated>
-X-SA-Exim-Rcpt-To: olteanv@gmail.com, linux@rasmusvillemoes.dk, shawnguo@kernel.org, leoyang.li@nxp.com, robh+dt@kernel.org, mark.rutland@arm.com, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, netdev@vger.kernel.org, andrew@lunn.ch
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on cheepnis.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-11-12 15:03, Vladimir Oltean wrote:
-> On Tue, 12 Nov 2019 at 15:49, Marc Zyngier <maz@kernel.org> wrote:
->>
->> On 2019-11-12 14:53, Vladimir Oltean wrote:
->> > On Tue, 12 Nov 2019 at 15:20, Rasmus Villemoes
->> > <linux@rasmusvillemoes.dk> wrote:
->> >>
->> >> From: Vladimir Oltean <olteanv@gmail.com>
->> >>
->> >> On the LS1021A-TSN board, the 2 Atheros AR8031 PHYs for eth0 and
->> >> eth1
->> >> have interrupt lines connected to the shared IRQ2_B LS1021A pin.
->> >>
->> >> Switching to interrupts offloads the PHY library from the task of
->> >> polling the MDIO status and AN registers (1, 4, 5) every second.
->> >>
->> >> Unfortunately, the BCM5464R quad PHY connected to the switch does
->> >> not
->> >> appear to have an interrupt line routed to the SoC.
->> >>
->> >> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
->> >> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
->> >> ---
->> >>  arch/arm/boot/dts/ls1021a-tsn.dts | 4 ++++
->> >>  1 file changed, 4 insertions(+)
->> >>
->> >> diff --git a/arch/arm/boot/dts/ls1021a-tsn.dts
->> >> b/arch/arm/boot/dts/ls1021a-tsn.dts
->> >> index 5b7689094b70..135d36461af4 100644
->> >> --- a/arch/arm/boot/dts/ls1021a-tsn.dts
->> >> +++ b/arch/arm/boot/dts/ls1021a-tsn.dts
->> >> @@ -203,11 +203,15 @@
->> >>         /* AR8031 */
->> >>         sgmii_phy1: ethernet-phy@1 {
->> >>                 reg = <0x1>;
->> >> +               /* SGMII1_PHY_INT_B: connected to IRQ2, active 
->> low
->> >> */
->> >> +               interrupts-extended = <&extirq 2
->> >> IRQ_TYPE_EDGE_FALLING>;
->> >>         };
->> >>
->> >>         /* AR8031 */
->> >>         sgmii_phy2: ethernet-phy@2 {
->> >>                 reg = <0x2>;
->> >> +               /* SGMII2_PHY_INT_B: connected to IRQ2, active 
->> low
->> >> */
->> >> +               interrupts-extended = <&extirq 2
->> >> IRQ_TYPE_EDGE_FALLING>;
->> >>         };
->> >>
->> >>         /* BCM5464 quad PHY */
->> >> --
->> >> 2.23.0
->> >>
->> >
->> > +netdev and Andrew for this patch, since the interrupt polarity
->> > caught
->> > his attention in v1.
->>
->> Certainly, the comments and the interrupt specifier do not match.
->> Which one is true?
->>
->>          M.
->> --
->> Jazz is not dead. It just smells funny...
->
-> The interrupt specifier certainly works. So that points to an issue
-> with the description. What do you mean, exactly? Does "active low"
-> mean "level-triggered"? How would you have described this?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
+head:   ca22d6977b9b4ab0fd2e7909b57e32ba5b95046f
+commit: a24cae7012b59bfe1aed01fe3fc13d81b7b97b08 [1285/1291] net: stmmac: Fix sparse warning
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-29-g781bc5d-dirty
+        git checkout a24cae7012b59bfe1aed01fe3fc13d81b7b97b08
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
-Active Low definitely implies level triggered. And if that's how it
-is described in the TRM, than the interrupt specifier is wrong, and
-just *seem to work* because the level goes back to high between two
-interrupts.
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
 
-Also, shared *edge* interrupts do not work, full stop. So I'm pretty
-convinced that what you have here is just wrong.
 
-         M.
--- 
-Jazz is not dead. It just smells funny...
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:760:32: sparse: sparse: restricted __le16 degrades to integer
+--
+>> drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c:594:32: sparse: sparse: restricted __le16 degrades to integer
+
+vim +760 drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+
+4ce84f4da7c472 Jose Abreu 2019-05-24  734  
+c1be0022df0dae Jose Abreu 2019-09-10  735  static void dwmac4_update_vlan_hash(struct mac_device_info *hw, u32 hash,
+a24cae7012b59b Jose Abreu 2019-11-11  736  				    __le16 perfect_match, bool is_double)
+c1be0022df0dae Jose Abreu 2019-09-10  737  {
+c1be0022df0dae Jose Abreu 2019-09-10  738  	void __iomem *ioaddr = hw->pcsr;
+c1be0022df0dae Jose Abreu 2019-09-10  739  
+c1be0022df0dae Jose Abreu 2019-09-10  740  	writel(hash, ioaddr + GMAC_VLAN_HASH_TABLE);
+c1be0022df0dae Jose Abreu 2019-09-10  741  
+c1be0022df0dae Jose Abreu 2019-09-10  742  	if (hash) {
+c1be0022df0dae Jose Abreu 2019-09-10  743  		u32 value = GMAC_VLAN_VTHM | GMAC_VLAN_ETV;
+c1be0022df0dae Jose Abreu 2019-09-10  744  		if (is_double) {
+c1be0022df0dae Jose Abreu 2019-09-10  745  			value |= GMAC_VLAN_EDVLP;
+c1be0022df0dae Jose Abreu 2019-09-10  746  			value |= GMAC_VLAN_ESVL;
+c1be0022df0dae Jose Abreu 2019-09-10  747  			value |= GMAC_VLAN_DOVLTC;
+c1be0022df0dae Jose Abreu 2019-09-10  748  		}
+c1be0022df0dae Jose Abreu 2019-09-10  749  
+c1be0022df0dae Jose Abreu 2019-09-10  750  		writel(value, ioaddr + GMAC_VLAN_TAG);
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  751  	} else if (perfect_match) {
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  752  		u32 value = GMAC_VLAN_ETV;
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  753  
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  754  		if (is_double) {
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  755  			value |= GMAC_VLAN_EDVLP;
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  756  			value |= GMAC_VLAN_ESVL;
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  757  			value |= GMAC_VLAN_DOVLTC;
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  758  		}
+c7ab0b8088d7f0 Jose Abreu 2019-10-06  759  
+c7ab0b8088d7f0 Jose Abreu 2019-10-06 @760  		writel(value | perfect_match, ioaddr + GMAC_VLAN_TAG);
+c1be0022df0dae Jose Abreu 2019-09-10  761  	} else {
+c1be0022df0dae Jose Abreu 2019-09-10  762  		u32 value = readl(ioaddr + GMAC_VLAN_TAG);
+c1be0022df0dae Jose Abreu 2019-09-10  763  
+c1be0022df0dae Jose Abreu 2019-09-10  764  		value &= ~(GMAC_VLAN_VTHM | GMAC_VLAN_ETV);
+c1be0022df0dae Jose Abreu 2019-09-10  765  		value &= ~(GMAC_VLAN_EDVLP | GMAC_VLAN_ESVL);
+c1be0022df0dae Jose Abreu 2019-09-10  766  		value &= ~GMAC_VLAN_DOVLTC;
+c1be0022df0dae Jose Abreu 2019-09-10  767  		value &= ~GMAC_VLAN_VID;
+c1be0022df0dae Jose Abreu 2019-09-10  768  
+c1be0022df0dae Jose Abreu 2019-09-10  769  		writel(value, ioaddr + GMAC_VLAN_TAG);
+c1be0022df0dae Jose Abreu 2019-09-10  770  	}
+c1be0022df0dae Jose Abreu 2019-09-10  771  }
+c1be0022df0dae Jose Abreu 2019-09-10  772  
+
+:::::: The code at line 760 was first introduced by commit
+:::::: c7ab0b8088d7f023f543013963f23aecc7e47efb net: stmmac: Fallback to VLAN Perfect filtering if HASH is not available
+
+:::::: TO: Jose Abreu <joabreu@synopsys.com>
+:::::: CC: David S. Miller <davem@davemloft.net>
+
+---
+0-DAY kernel test infrastructure                 Open Source Technology Center
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
