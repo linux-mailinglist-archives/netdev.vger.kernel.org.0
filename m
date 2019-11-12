@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1875F9C5B
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F4BEF9C5F
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:36:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfKLVeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:34:44 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:43739 "EHLO
+        id S1726981AbfKLVgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:36:17 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:39746 "EHLO
         mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbfKLVeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:34:44 -0500
-Received: by mail-ed1-f66.google.com with SMTP id w6so16222541edx.10
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:34:42 -0800 (PST)
+        with ESMTP id S1726799AbfKLVgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:36:16 -0500
+Received: by mail-ed1-f66.google.com with SMTP id l25so18016edt.6
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:36:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=rQ1lcZ74X7Yel4vG/bYpfU6N3m1u+GWcmqE579oZL84=;
-        b=E4TRu0Udg/k3T2np/kC7QOYIXlerjmKWxwX9izN94aIyyndPLUyXjsArkGn2D9WPwb
-         SwAgYRlrW2Abd0JXHChBkhiKqO4b6Rim9wz3FarHnUKgzwQDdLEmjSYvuM0cmgONMVJE
-         szCGdh/lhi6i8oSHgclpeMALlHXbDVAtRqB+ivW2FkNUXa/kRJDggmdaawl56TANC/M9
-         X6J6PcfLDWiGTMCVJzFmJ9Ndz6YtIyHKyMkP8V5J/NgbNEFRodr11QEjIDZY1ObMcA4f
-         0SV17p/Jf5YvW++z2HSOtQLk0xprfo47oiB8p8SBBnkarLV77X3cHg3jru+mAIguBCLA
-         EOlA==
+        bh=WojwpfoF4p9Xjal/y3VikQJulK70ySXdHOlkv6TzX0c=;
+        b=Lx8qMzWJIjlth58Mae2ndAt8kOcpHgNaLD7e8LRm03pzLBz57QIRRnB3dDTrRqnSuQ
+         lgFT5nluHBfEDt8ezsGTsLkVZDp1GKjW9cUUIBjCqIWnGxXKxbeMXJWF1cplmh0ocJZr
+         Ih2OKJEtI0Rcx37XKtGpkqu7TGEfNEsNV6U01CejnMg3j8RS5shV9DkRX2Ylw8hMa+vC
+         BGvxL9HTlPIOWpZhaPQmGfB/c3uOX9/94FAWlVrMm+/+7j1kpbbtqqotEYl3Zb/w7892
+         +IeMtXIzJEqAnkpf1IYg08grcgWU/mBdSRShn3ZTxAHFgbiwHq/mVdTuEKIewPSdaIem
+         lWsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=rQ1lcZ74X7Yel4vG/bYpfU6N3m1u+GWcmqE579oZL84=;
-        b=pFM38YIiUpMnpgjKDKm8bkCnu3TofF0fQL+Yq+HjXk7NmKvQKfGQtOJP4u1iSu1Rcj
-         of+VwWZ0Pi7BZ4XzY0OqUSSlDUvrag8PzvvDrhO6mgNVA52axAsC/TNc1jgm7N8QjbuS
-         SLzNM2JWPr/eMtnWjJVgopwy7/oF4+/ZYgr54Wqwh47gqBGn0H7yf6ZLEXf3Fq/YUXXK
-         rnJalCQP1EOCSHIW43/mWuuewzmHY9Q0MFElaGbgBvzXCHYtQirIrolghAIPsuM4Qk31
-         iysaG6kN2PI+wVDyRIwRyaXgecYYqKkTif4FSKIREegQnGTmOVWuLmIfJRHhhowvmTeY
-         P/BQ==
-X-Gm-Message-State: APjAAAUIdDTgoExNX0OeZQ88OC5RUbx9JaYQ+cu4psUIvBbg9rdQk6VP
-        Aw+aie5pL5Uk73+khRKtx+Q=
-X-Google-Smtp-Source: APXvYqwuhRZHa3ShTKjdhTijPG5KlM7o9xbnDa/PUPgbrfcGwYGvySO5cDGYmSNvoe/zfHDOKhi1Ew==
-X-Received: by 2002:a17:906:a995:: with SMTP id jr21mr29113099ejb.77.1573594481841;
-        Tue, 12 Nov 2019 13:34:41 -0800 (PST)
+        bh=WojwpfoF4p9Xjal/y3VikQJulK70ySXdHOlkv6TzX0c=;
+        b=QYMxdDaUr3UZvm67aR/x9bovMdtSb8Qpun+n9xlQtuEWCv4NJdWcruxNJb1zBgg18l
+         CCGpvVfp4VFhErYaG3FyNdtOzuC/hVlmDZpVGMtAEq60zqA5y5RXQEKgQDTo//2NEpDX
+         7a8tdsDH+WpGD+ni3aYTJyh41oPcQi8aFGHoUCqk5t8s7fukZ6nwt/QcdJiO1h3WUJbn
+         iYm9ydIClkkK5U9/y9zeiDuorn+0RPZFTtwHVJ4SM6MST4e2I7UgWDusvyHkgX2NlL7S
+         zvga0BPDhnVZcnr1AIg9KfY/GAgtMdVcnSsSGQSz47jlc1qmg+Mcu9/iE/2Fg7d/z6PX
+         c7/g==
+X-Gm-Message-State: APjAAAXXk/XfgpMJoTvdghPdEeM/JVizAajkaPu+AmMU0dlENCbr02QY
+        +UKitGmq+Vlg2JNCDpY7sW4=
+X-Google-Smtp-Source: APXvYqzZtKkxS2qlgGHAQAa/mjyoUeSipZ6mxjW3h9qwa6mZspurugI7clVGXdaCS8/KB0KVpYXujQ==
+X-Received: by 2002:a17:906:7e41:: with SMTP id z1mr30231288ejr.63.1573594574218;
+        Tue, 12 Nov 2019 13:36:14 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ay16sm1161ejb.33.2019.11.12.13.34.37
+        by smtp.googlemail.com with ESMTPSA id e13sm4114edv.42.2019.11.12.13.36.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 13:34:40 -0800 (PST)
-Subject: Re: [PATCH net-next 07/12] net: mscc: ocelot: separate the
- implementation of switch reset
+        Tue, 12 Nov 2019 13:36:13 -0800 (PST)
+Subject: Re: [PATCH net-next 08/12] net: mscc: ocelot: publish structure
+ definitions to include/soc/mscc/ocelot.h
 To:     Vladimir Oltean <olteanv@gmail.com>, jakub.kicinski@netronome.com,
         davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,7 +55,7 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-8-olteanv@gmail.com>
+ <20191112124420.6225-9-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <36baf6e7-fcd0-5516-6213-38a49aeb43da@gmail.com>
-Date:   Tue, 12 Nov 2019 13:34:31 -0800
+Message-ID: <e5377fe9-b222-b792-2bba-10cf624000dc@gmail.com>
+Date:   Tue, 12 Nov 2019 13:36:07 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191112124420.6225-8-olteanv@gmail.com>
+In-Reply-To: <20191112124420.6225-9-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,30 +129,15 @@ X-Mailing-List: netdev@vger.kernel.org
 On 11/12/19 4:44 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The Felix switch has a different reset procedure, so a function pointer
-> needs to be created and added to the ocelot_ops structure.
+> We will be registering another switch driver based on ocelot, which
+> lives under drivers/net/dsa.
 > 
-> The reset procedure has been moved into ocelot_init.
+> Make sure the Felix DSA front-end has the necessary abstractions to
+> implement a new Ocelot driver instantiation. This includes the function
+> prototypes for implementing DSA callbacks.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot.c       |  3 ++
->  drivers/net/ethernet/mscc/ocelot.h       |  1 +
->  drivers/net/ethernet/mscc/ocelot_board.c | 37 +++++++++++++++---------
->  3 files changed, 28 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-> index 42da193a8240..0fe928026e61 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.c
-> +++ b/drivers/net/ethernet/mscc/ocelot.c
-> @@ -2294,6 +2294,9 @@ int ocelot_init(struct ocelot *ocelot)
->  	ocelot_vlan_init(ocelot);
->  	ocelot_ace_init(ocelot);
->  
-> +	if (ocelot->ops->reset)
-> +		ocelot->ops->reset(ocelot);
 
-We were not checking doing any error code checking, but arguably we know
-should, any reason not to propagate the error code?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
