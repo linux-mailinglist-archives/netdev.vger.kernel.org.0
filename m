@@ -2,128 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB132F9434
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 16:27:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45AA2F9476
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 16:36:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727386AbfKLP1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 10:27:36 -0500
-Received: from mail-il1-f195.google.com ([209.85.166.195]:39100 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbfKLP1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 10:27:35 -0500
-Received: by mail-il1-f195.google.com with SMTP id a7so15442865ild.6;
-        Tue, 12 Nov 2019 07:27:34 -0800 (PST)
+        id S1727437AbfKLPgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 10:36:19 -0500
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38328 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727413AbfKLPgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 10:36:18 -0500
+Received: by mail-wr1-f67.google.com with SMTP id i12so12114781wro.5
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 07:36:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MpymBe9XsQT1dS+UbhPjtN/MblGXirGawihya0jKgPs=;
-        b=hDjMTzDPXNiJpMQgFJFOSQsVO+1E6Pj0NGG116eVdPAREYNtM4/R9YAEnGJoD8qBSS
-         4lAPvnGEatr2O8xzEWY5OaLtNYc3tfhYCPxYHJ+96vbvHDDjQGiN0vZX1c1ccWCb/ZoN
-         aaetvZJ65IKz66eT+y03do5rTHfhdWAhPUY5bC/FFPgCAGOZ4TT+ckVmGkEGf9vNRLcp
-         d00NpzbPBGWYxKrMHR/++4dliFWwr6mS8Mflixja9r20ZO6MDyoKR8u6T6xJSN7cKafz
-         lP7Ss0R+b85bh+y+bAPyI1W5i0l/NfSZlo1WIUvaXVLNukUS1KP793ukOos0f7b4oPP5
-         R0OA==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=k17G4/k14hbg33i0y5emKB2JxsbyP5lZINIA3GVR6Ac=;
+        b=vNZK49hL08luZcKZcNcKfN1l0ymztc0UsMX8ackvR3mqdcw+Pv2JwSJmkt96MtfoEi
+         dyy0MAniEffSDa2q+7Zy/98OJfySrJOc8dYsqobLW392O8eJyuXPbnzdXQQTJEIScITd
+         9DW+mV/22nfs3qdoy9Cuuh5VdhElFTDHORRig=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=MpymBe9XsQT1dS+UbhPjtN/MblGXirGawihya0jKgPs=;
-        b=BtoYvv0WNQgCL7TjtUWfoxGw4U3ihstwJfqAAcfmKKJqI6yzeGvYIrvyhWwzdnvm/J
-         WVI5m+c6+5jeqMUxSawDRvpaNogsdZV+O0w3dWVutKAUogtmgziqNPG1jnOW2Cb8iBcc
-         eZSMPTfMmWugQwpSSTH96ZWkVBwfprxFed7QOwwXSwkI4p8TdPj9hinRwf9++F8rYqxA
-         1jetmIxFJGu2g+QqtmuQJCWSRlxaP3Vdoh+t8ekB6YsIHWL1zGUDJ/fWq51I9mzYJOTP
-         nhy1SLGJsFtbAERzHSUcomyx8ltZvTdqGvIIA9KqgF+t/X66mC+bXmBrp8BN8RYZMOFr
-         ZWwg==
-X-Gm-Message-State: APjAAAUTmT34hCrD/vDGwFC2AAQ+OcRTdFOx2Ttpuaxn6SoCO8QufA5L
-        wiQPNYyi1SZwbU2ytj+AVu8ZRXky
-X-Google-Smtp-Source: APXvYqysdGik8YWhZRoGAvybGTd0EK7TyK5C+YDUaZ3RSwqbsJNoArWaCCdXbyvSREZbJYIca9KYPA==
-X-Received: by 2002:a92:1b49:: with SMTP id b70mr35879042ilb.180.1573572453629;
-        Tue, 12 Nov 2019 07:27:33 -0800 (PST)
-Received: from dahern-DO-MB.local ([2601:282:800:fd80:f828:9329:851c:5f36])
-        by smtp.googlemail.com with ESMTPSA id n20sm2009876ilj.23.2019.11.12.07.27.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Nov 2019 07:27:32 -0800 (PST)
-Subject: Re: [PATCH v2 2/2] net: add trace events for net_device refcnt
-To:     Tony Lu <tonylu@linux.alibaba.com>, davem@davemloft.net
-Cc:     xiyou.wangcong@gmail.com, eric.dumazet@gmail.com,
-        shemminger@osdl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20191112130510.91570-1-tonylu@linux.alibaba.com>
- <20191112130510.91570-2-tonylu@linux.alibaba.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ea3bf073-68af-d899-2664-fef54953a68d@gmail.com>
-Date:   Tue, 12 Nov 2019 08:27:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.2.2
+        bh=k17G4/k14hbg33i0y5emKB2JxsbyP5lZINIA3GVR6Ac=;
+        b=fGpQdx+co8FTw8k6Pg182yIYzGZj+lGpXg8iRujMk9lVBKOyEdINeXzBujFFgEkwOg
+         4CP/fIjFXzFdGJta83uAgOJC3fN5beERjUw9bf+yjcTdpLkzM3eqnN4wR788ZSE7+MLu
+         CDccm69SXtMfeuyL4HKK73ZSly+IgpnwBPinRhVYt/2QqM3yrFoLgsUu7jBsxTVoZ/+7
+         gnWbT35Y8lqqdUcLK1C7g0vEQq2uj3xptu9qaY+wfDs/eF16UqbjjF0+B9K1pCkZFqBd
+         LSaEQObdk/xfnMMXErloy7pYZLb6BunfkyUCZBkzA0n9Finx0aGJ7fazeLDSln1I6fY6
+         Sxvw==
+X-Gm-Message-State: APjAAAWovXCTvYEvYIYHIsP10TtJ8GJKHs/1o9kGgUOu9KeIGSRb3P2V
+        q6pxhbNHxohNsublrscPbz0n1g==
+X-Google-Smtp-Source: APXvYqzwUrXvfa2S84jmvkf+1VHxA7jW0AXBWdIpOIYr1V07/+IUjlgLUHUcp7h5W4FRHudbPBwvRg==
+X-Received: by 2002:a5d:5227:: with SMTP id i7mr7311556wra.277.1573572975840;
+        Tue, 12 Nov 2019 07:36:15 -0800 (PST)
+Received: from localhost.localdomain ([2a06:98c0:1000:8250:6be3:785e:4546:dd8f])
+        by smtp.gmail.com with ESMTPSA id f19sm35887935wrf.23.2019.11.12.07.36.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Nov 2019 07:36:14 -0800 (PST)
+From:   Arthur Fabre <afabre@cloudflare.com>
+To:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Charles McLachlan <cmclachlan@solarflare.com>,
+        Martin Habets <mhabets@solarflare.com>,
+        David Miller <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     kernel-team@cloudflare.com, Arthur Fabre <afabre@cloudflare.com>
+Subject: [PATCH v2 net-next] sfc: trace_xdp_exception on XDP failure
+Date:   Tue, 12 Nov 2019 15:36:01 +0000
+Message-Id: <20191112153601.5849-1-afabre@cloudflare.com>
+X-Mailer: git-send-email 2.24.0.rc2
 MIME-Version: 1.0
-In-Reply-To: <20191112130510.91570-2-tonylu@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/12/19 6:05 AM, Tony Lu wrote:
-> diff --git a/include/trace/events/net.h b/include/trace/events/net.h
-> index 3b28843652d2..3bf6dd738882 100644
-> --- a/include/trace/events/net.h
-> +++ b/include/trace/events/net.h
-> @@ -326,6 +326,47 @@ DEFINE_EVENT(net_dev_rx_exit_template, netif_receive_skb_list_exit,
->  	TP_ARGS(ret)
->  );
->  
-> +DECLARE_EVENT_CLASS(net_dev_refcnt_template,
-> +
-> +	TP_PROTO(struct net_device *dev, void *location),
-> +
-> +	TP_ARGS(dev, location),
-> +
-> +	TP_STRUCT__entry(
-> +		__string(	name,		dev->name	)
-> +		__field(	int,		refcnt		)
-> +		__field(	void *,		location	)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		int i, refcnt = 0;
-> +
-> +		for_each_possible_cpu(i)
-> +			refcnt += *per_cpu_ptr(dev->pcpu_refcnt, i);
+The sfc driver can drop packets processed with XDP, notably when running
+out of buffer space on XDP_TX, or returning an unknown XDP action.
+This increments the rx_xdp_bad_drops ethtool counter.
 
-Rather than copying the definition of netdev_refcnt_read here, so just
-use it.
+Call trace_xdp_exception everywhere rx_xdp_bad_drops is incremented,
+except for fragmented RX packets as the XDP program hasn't run yet.
+This allows it to easily be monitored from userspace.
 
-> +
-> +		__assign_str(name, dev->name);
-> +		__entry->refcnt = refcnt;
-> +		__entry->location = location;
-> +	),
-> +
-> +	TP_printk("dev=%s refcnt=%d location=%p",
-> +		__get_str(name), __entry->refcnt, __entry->location)
-> +);
-> +
-> +DEFINE_EVENT(net_dev_refcnt_template, net_dev_put,
-> +
-> +	TP_PROTO(struct net_device *dev, void *location),
-> +
-> +	TP_ARGS(dev, location)
-> +);
-> +
-> +DEFINE_EVENT(net_dev_refcnt_template, net_dev_hold,
-> +
-> +	TP_PROTO(struct net_device *dev, void *location),
-> +
-> +	TP_ARGS(dev, location)
-> +);
-> +
->  #endif /* _TRACE_NET_H */
->  
+This mirrors the behavior of other drivers.
 
-The location alone does nothing for resolving reference count leaks; you
-really have to use stack traces to pair up the hold and put and to give
-context for what are repetitive locations for the hold and put.
+Signed-off-by: Arthur Fabre <afabre@cloudflare.com>
+---
+
+Changes since v1:
+- Removed trace_xdp_exception from receive fragements check, as XDP
+  program hasn't been run yet
+
+ drivers/net/ethernet/sfc/rx.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+index a7d9841105d8..bec261905530 100644
+--- a/drivers/net/ethernet/sfc/rx.c
++++ b/drivers/net/ethernet/sfc/rx.c
+@@ -724,6 +724,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 				netif_err(efx, rx_err, efx->net_dev,
+ 					  "XDP TX failed (%d)\n", err);
+ 			channel->n_rx_xdp_bad_drops++;
++			trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
+ 		} else {
+ 			channel->n_rx_xdp_tx++;
+ 		}
+@@ -737,6 +738,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 				netif_err(efx, rx_err, efx->net_dev,
+ 					  "XDP redirect failed (%d)\n", err);
+ 			channel->n_rx_xdp_bad_drops++;
++			trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
+ 		} else {
+ 			channel->n_rx_xdp_redirect++;
+ 		}
+@@ -746,6 +748,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 		bpf_warn_invalid_xdp_action(xdp_act);
+ 		efx_free_rx_buffers(rx_queue, rx_buf, 1);
+ 		channel->n_rx_xdp_bad_drops++;
++		trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
+ 		break;
+ 
+ 	case XDP_ABORTED:
+-- 
+2.24.0.rc2
+
