@@ -2,102 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E51ACF934C
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:52:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1017FF9364
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:55:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727684AbfKLOwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:52:41 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39855 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726910AbfKLOwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:52:40 -0500
-Received: by mail-lj1-f193.google.com with SMTP id p18so18135383ljc.6
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 06:52:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zMxQ9/HiBoVmHgdjL1Dea6TBMrXdo7hHLCySnCEmogQ=;
-        b=HCajAbdidtsw4278qDsX+KBdupb0mCwkRKzWDvxwtPr0uVx7AP3AsTK7VI7QH43ME+
-         3qbMdoX6DF/sfBv8Lmh2/nFm8oFdVOL7VEZ/vGWufN7FuTmVyKLm+wQCC3d+ik21GG5g
-         PDuMUSVA4McUzRjX5mWdlcDrcZW4n/1KYyQNk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zMxQ9/HiBoVmHgdjL1Dea6TBMrXdo7hHLCySnCEmogQ=;
-        b=kk2r1fUjJ//Xk40Xfjb5undR7XjS0p5FwA3KyQO8iORnBV54cTsDTzO25XrkheVirs
-         AakX14lNmM+uLcgBuFmXMK9CoCu/GomZXzmOHbtpmlPrAWB7Z161wLB03x9Ub4W57Fqj
-         GVQ906/x8GbLEwsxs4qzneoMhI/FmwdOk9b1RLkaUuyaa9Ucn0WeBZQY5dZpDS8NSV0R
-         ldT/2yGDokBWygxwqVDzMQIVKhtfShP+R9cTz4oYRKF7LClBhY+iM0uhcFTZ6+nhLFEj
-         nUR8kZHKekYXPpnea2NBTJWgIxAloRU9ljV1vvjtBqKx/gVZpLWpsEV5/5pmyowd6eVn
-         uHag==
-X-Gm-Message-State: APjAAAVpdo7IMhuo8YbWJvqVs1OOvfib60RV8JtHueXELTtWguFN6Ep5
-        5t4M1wTxLRyREWDyks8gKHNMYQsuk7ZqunLpo9yQiA==
-X-Google-Smtp-Source: APXvYqwqMsztcy5Mg+165AlF5ASR4319ObjY+ke77gSvEtLMeESmNyD8jVL3nabXwv2uf85mJpGcjovZi5EK5iD75EI=
-X-Received: by 2002:a2e:9712:: with SMTP id r18mr10190601lji.12.1573570358059;
- Tue, 12 Nov 2019 06:52:38 -0800 (PST)
-MIME-Version: 1.0
-References: <20191111105100.2992-1-afabre@cloudflare.com> <f58a73a8-631c-a9a1-25e9-a5f0050df13c@solarflare.com>
- <CAOn4ftvqib3y+Gfhq+dS4cUeWQVyGDM+rNeLnoVoYz9O_VLYLA@mail.gmail.com> <6a3705cc-809d-0c7a-d39f-97d61c4ce58c@solarflare.com>
-In-Reply-To: <6a3705cc-809d-0c7a-d39f-97d61c4ce58c@solarflare.com>
-From:   Arthur Fabre <afabre@cloudflare.com>
-Date:   Tue, 12 Nov 2019 14:52:26 +0000
-Message-ID: <CAOn4ftuyCNSehwLHTfZkNP27zbMOpBo+7j5N97J31-gxoAdYCQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] sfc: trace_xdp_exception on XDP failure
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
-        Charles McLachlan <cmclachlan@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        David Miller <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726978AbfKLOzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:55:14 -0500
+Received: from inva021.nxp.com ([92.121.34.21]:47826 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726659AbfKLOzO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 09:55:14 -0500
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5C60B200228;
+        Tue, 12 Nov 2019 15:55:12 +0100 (CET)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 4E74B2001AB;
+        Tue, 12 Nov 2019 15:55:12 +0100 (CET)
+Received: from fsr-ub1664-016.ea.freescale.net (fsr-ub1664-016.ea.freescale.net [10.171.71.216])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 21019205E9;
+        Tue, 12 Nov 2019 15:55:12 +0100 (CET)
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, danielwa@cisco.com
+Subject: [PATCH net] gianfar: Don't force RGMII mode after reset, use defaults
+Date:   Tue, 12 Nov 2019 16:55:11 +0200
+Message-Id: <1573570511-32651-1-git-send-email-claudiu.manoil@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 6:01 PM Edward Cree <ecree@solarflare.com> wrote:
->
-> On 11/11/2019 17:38, Arthur Fabre wrote:
-> > On Mon, Nov 11, 2019 at 5:27 PM Edward Cree <ecree@solarflare.com> wrote:
-> >>
-> >> On 11/11/2019 10:51, Arthur Fabre wrote:
-> >>> diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
-> >>> index a7d9841105d8..5bfe1f6112a1 100644
-> >>> --- a/drivers/net/ethernet/sfc/rx.c
-> >>> +++ b/drivers/net/ethernet/sfc/rx.c
-> >>> @@ -678,6 +678,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
-> >>>                                 "XDP is not possible with multiple receive fragments (%d)\n",
-> >>>                                 channel->rx_pkt_n_frags);
-> >>>               channel->n_rx_xdp_bad_drops++;
-> >>> +             trace_xdp_exception(efx->net_dev, xdp_prog, xdp_act);
-> >>>               return false;
-> >>>       }
-> >> AIUI trace_xdp_exception() is improper here as we have not run
-> >>  the XDP program (and xdp_act is thus uninitialised).
-> >>
-> >> The other three, below, appear to be correct.
-> >> -Ed
-> >>
-> >
-> > Good point. Do you know under what conditions we'd end up with
-> > "fragmented" packets? As far as I can tell this isn't IP
-> > fragmentation?
->
-> Fragments in this case means that the packet data are spread across
->  multiple RX buffers (~= memory pages).  This should only happen if
->  the RX packet is too big to fit in a single buffer, and when
->  enabling XDP we ensure that the MTU is small enough to prevent
->  that.  So in theory this can't happen if the NIC is functioning
->  correctly.
->
-> -Ed
+We received reports that forcing the MAC into RGMII (1 Gbps)
+interface mode after MAC reset occasionally disrupts operation
+of PHYs capable only of 100Mbps, even after adjust_link kicks
+in and re-adjusts the interface mode in MACCFG2 accordingly.
+Instead of forcing MACCFG2 into RGMII mode, let's use the default
+reset value of MACCFG2 (that leaves the IF_Mode field unset) and
+let adjust_link configure the correct mode from the beginning.
+MACCFG2_INIT_SETTINGS is dropped, only the PAD_CRC bit is preserved,
+the remaining fields (IF_Mode and Duplex) are left for adjust_link.
+Tested on boards with gigabit PHYs.
 
-Makes sense, thank you for the explanation.
+MACCFG2_INIT_SETTINGS is there since day one, but the issue
+got visible after introducing the MAC reset and reconfig support,
+which added MAC reset at runtime, at interface open.
+
+Fixes: a328ac92d314 ("gianfar: Implement MAC reset and reconfig procedure")
+
+Reported-by: Daniel Walker <danielwa@cisco.com>
+Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+---
+ drivers/net/ethernet/freescale/gianfar.c | 3 ++-
+ drivers/net/ethernet/freescale/gianfar.h | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 51ad864..0f4d13d 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -3173,7 +3173,8 @@ void gfar_mac_reset(struct gfar_private *priv)
+ 	gfar_write(&regs->minflr, MINFLR_INIT_SETTINGS);
+ 
+ 	/* Initialize MACCFG2. */
+-	tempval = MACCFG2_INIT_SETTINGS;
++	tempval = gfar_read(&regs->maccfg2);
++	tempval |= MACCFG2_PAD_CRC;
+ 
+ 	/* eTSEC74 erratum: Rx frames of length MAXFRM or MAXFRM-1
+ 	 * are marked as truncated.  Avoid this by MACCFG2[Huge Frame]=1,
+diff --git a/drivers/net/ethernet/freescale/gianfar.h b/drivers/net/ethernet/freescale/gianfar.h
+index f472a6d..cc70e03 100644
+--- a/drivers/net/ethernet/freescale/gianfar.h
++++ b/drivers/net/ethernet/freescale/gianfar.h
+@@ -150,8 +150,8 @@ extern const char gfar_driver_version[];
+ #define MACCFG1_SYNCD_TX_EN	0x00000002
+ #define MACCFG1_TX_EN		0x00000001
+ 
+-#define MACCFG2_INIT_SETTINGS	0x00007205
+ #define MACCFG2_FULL_DUPLEX	0x00000001
++#define MACCFG2_PAD_CRC         0x00000004
+ #define MACCFG2_IF              0x00000300
+ #define MACCFG2_MII             0x00000100
+ #define MACCFG2_GMII            0x00000200
+-- 
+2.7.4
+
