@@ -2,81 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5278F88A1
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:35:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83FBDF88B9
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:49:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfKLGfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 01:35:22 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:59262 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725801AbfKLGfW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 01:35:22 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 56C3283795D75D7FDCD4;
-        Tue, 12 Nov 2019 14:35:19 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.439.0; Tue, 12 Nov 2019 14:35:08 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>,
-        <grygorii.strashko@ti.com>, <tony@atomide.com>,
-        <brouer@redhat.com>, <jakub.kicinski@netronome.com>,
-        <ivan.khoronzhuk@linaro.org>, <tglx@linutronix.de>,
-        <maowenan@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>
-Subject: [PATCH -next] net: ethernet: ti: Add dependency for TI_DAVINCI_EMAC
-Date:   Tue, 12 Nov 2019 14:33:58 +0800
-Message-ID: <20191112063358.73800-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726188AbfKLGta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 01:49:30 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:50733 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725283AbfKLGt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 01:49:29 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0A6BF22114;
+        Tue, 12 Nov 2019 01:49:29 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 12 Nov 2019 01:49:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=UIHRYNpx6RbjbQzi1
+        kr7XFvcwo2leei1I8nD+bV9xpA=; b=b8DBs3Et5mE8WPMvXPPKKfblt8qFUX4qa
+        yO7ZOC+OdXS+IGtod7FHxDKP7aZXX5MR1HPsmMC2U3ePpP+VuDf8D4zLva1obMgG
+        lHMAvIujenp0gcn4SUEGkyfgxccB55YSiyBb+Qhj9I/1nijJE8LZ9S42pgpxjXkM
+        0uBZJA1alSheWwmfNWmvqauuVZlGmmuee2eLUpTBZE6ucxq306OaZ7MPsrpvp0rn
+        08HDidS1bNrZNPZAv5tnZxxH9odAFceTgCQ0RVIC4oNyf0bm0qQPB+U6O4ag7Mjt
+        4B8xDsL+mgf1Yx7RMbqo4z7fgGjT456k/yzgcbqWv3WkiOQPgX9uQ==
+X-ME-Sender: <xms:-FXKXVHCyAT96ek587-cDq03eQKOs-WytGJLp-6x7XV53AnYVH3zJA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddvkedggeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:-FXKXadiwzbGdPQUsKCksN_6KipSZB4ZWWEBOeoSlDHVVSGzVePpgw>
+    <xmx:-FXKXU9pnZqzO6a0-wrgffHhevZ6c-Vld3Wj8WDdfwWv30-f0hqVMw>
+    <xmx:-FXKXfUPbGwCqvfd2zFWvpEKOnMHCrCpX13-rd6zVLtppdHxWLqypQ>
+    <xmx:-VXKXZDZw9OafX19fi4be-03giXYVngrsB8WzMp22W9-IiapoowEaQ>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 51B1E80068;
+        Tue, 12 Nov 2019 01:49:27 -0500 (EST)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
+        jakub.kicinski@netronome.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 0/7] mlxsw: Add extended ACK for EMADs
+Date:   Tue, 12 Nov 2019 08:48:23 +0200
+Message-Id: <20191112064830.27002-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If TI_DAVINCI_EMAC=y and GENERIC_ALLOCATOR is not set,
-below erros can be seen:
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_desc_pool_destroy.isra.14':
-davinci_cpdma.c:(.text+0x359): undefined reference to `gen_pool_size'
-davinci_cpdma.c:(.text+0x365): undefined reference to `gen_pool_avail'
-davinci_cpdma.c:(.text+0x373): undefined reference to `gen_pool_avail'
-davinci_cpdma.c:(.text+0x37f): undefined reference to `gen_pool_size'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `__cpdma_chan_free':
-davinci_cpdma.c:(.text+0x4a2): undefined reference to `gen_pool_free_owner'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_chan_submit_si':
-davinci_cpdma.c:(.text+0x66c): undefined reference to `gen_pool_alloc_algo_owner'
-davinci_cpdma.c:(.text+0x805): undefined reference to `gen_pool_free_owner'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_ctlr_create':
-davinci_cpdma.c:(.text+0xabd): undefined reference to `devm_gen_pool_create'
-davinci_cpdma.c:(.text+0xb79): undefined reference to `gen_pool_add_owner'
-drivers/net/ethernet/ti/davinci_cpdma.o: In function `cpdma_check_free_tx_desc':
-davinci_cpdma.c:(.text+0x16c6): undefined reference to `gen_pool_avail'
+From: Ido Schimmel <idosch@mellanox.com>
 
-This patch mades TI_DAVINCI_EMAC select GENERIC_ALLOCATOR.
+Shalom says:
 
-Fixes: 99f629718272 ("net: ethernet: ti: cpsw: drop TI_DAVINCI_CPDMA config option")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
----
- drivers/net/ethernet/ti/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+Ethernet Management Datagrams (EMADs) are Ethernet packets sent between
+the driver and device's firmware. They are used to pass various
+configurations to the device, but also to get events (e.g., port up)
+from it. After the Ethernet header, these packets are built in a TLV
+format.
 
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-index 834afca3..137632b 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -22,6 +22,7 @@ config TI_DAVINCI_EMAC
- 	depends on ARM && ( ARCH_DAVINCI || ARCH_OMAP3 ) || COMPILE_TEST
- 	select TI_DAVINCI_MDIO
- 	select PHYLIB
-+	select GENERIC_ALLOCATOR
- 	---help---
- 	  This driver supports TI's DaVinci Ethernet .
- 
+Up until now, whenever the driver issued an erroneous register access it
+only got an error code indicating a bad parameter was used. This patch
+set adds a new TLV (string TLV) that can be used by the firmware to
+encode a 128 character string describing the error. The new TLV is
+allocated by the driver and set to zeros. In case of error, the driver
+will check the length of the string in the response and report it using
+devlink hwerr tracepoint.
+
+Example:
+
+$ perf record -a -q -e devlink:devlink_hwerr &
+
+$ pkill -2 perf
+
+$ perf script -F trace:event,trace | grep hwerr
+devlink:devlink_hwerr: bus_name=pci dev_name=0000:03:00.0 driver_name=mlxsw_spectrum err=7 (tid=9913892d00001593,reg_id=8018(rauhtd)) bad parameter (inside er_rauhtd_write_query(), num_rec=32 is over the maximum  number of records supported)
+
+Patch #1 parses the offsets of the different TLVs in incoming EMADs and
+stores them in the skb's control block. This makes it easier to later
+add new TLVs.
+
+Patches #2-#3 remove deprecated TLVs and add string TLV definition.
+
+Patches #4-#7 gradually add support for the new string TLV.
+
+v2:
+* Use existing devlink hwerr tracepoint to report the error string,
+  instead of printing it to kernel log
+
+Shalom Toledo (7):
+  mlxsw: core: Parse TLVs' offsets of incoming EMADs
+  mlxsw: emad: Remove deprecated EMAD TLVs
+  mlxsw: core: Add EMAD string TLV
+  mlxsw: core: Add support for EMAD string TLV parsing
+  mlxsw: core: Extend EMAD information reported to devlink hwerr
+  mlxsw: core: Add support for using EMAD string TLV
+  mlxsw: spectrum: Enable EMAD string TLV
+
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 171 ++++++++++++++++--
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/emad.h    |   7 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |   2 +
+ 4 files changed, 162 insertions(+), 20 deletions(-)
+
 -- 
-2.7.4
+2.21.0
 
