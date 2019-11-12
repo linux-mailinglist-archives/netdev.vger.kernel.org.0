@@ -2,53 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D71BDF9098
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 14:26:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B260EF909F
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 14:27:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727181AbfKLN0Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 08:26:25 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35718 "EHLO vps0.lunn.ch"
+        id S1727310AbfKLN1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 08:27:32 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35734 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727047AbfKLN0Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 08:26:25 -0500
+        id S1725944AbfKLN1c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 08:27:32 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=dE/Jgw28Vq2IjFxagqxspxlNAFnz5xX9TXfS+8o5LEE=; b=aYJgtF/zKLKDV+Nomvw8mU79il
-        8ozZWs9CspV4nyWLfLyWwHlGuMmodwNaAJmEnUPVSuunech+jAl1yg7ZmmLDlyMnWTR+cN/ly1uew
-        ioIzMDq+OtTdbdbjPaNdCza6xtO8fZbv3MGGunlpUKQ2Sql7Y1d3nwR8fS/TETBSW3+E=;
+        bh=euNUpgPVSFECHKrlPOqySzeXVv/LTuML8q4Esa2KSao=; b=XPrY76jGMc1pxZG3n/FWKdj1bp
+        RrmBbhUjtJid7xU9Wtv9uQvDYDjb7fXB8BjrxI3XhhjZXsUIhqNQVHD4dG5/r7MvXH5PQbG2tz+47
+        Yc8Gn5CC42pqFtluXt8wYnTFV9dwbOxENy/ub0yBeVlLE2GOQgqJuA+1E90qxSMWxKWI=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1iUWBT-0001VY-Af; Tue, 12 Nov 2019 14:26:15 +0100
-Date:   Tue, 12 Nov 2019 14:26:15 +0100
+        id 1iUWCe-0001XN-3P; Tue, 12 Nov 2019 14:27:28 +0100
+Date:   Tue, 12 Nov 2019 14:27:28 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH net-next] net: sfp: fix sfp_bus_add_upstream() warning
-Message-ID: <20191112132615.GB5090@lunn.ch>
-References: <E1iUURo-0003A9-KA@rmk-PC.armlinux.org.uk>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Iwan R Timmer <irtimmer@gmail.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: dsa: mv88e6xxx: fix broken if statement
+ because of a stray semicolon
+Message-ID: <20191112132728.GC5090@lunn.ch>
+References: <20191112130523.232461-1-colin.king@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1iUURo-0003A9-KA@rmk-PC.armlinux.org.uk>
+In-Reply-To: <20191112130523.232461-1-colin.king@canonical.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 11:35:00AM +0000, Russell King wrote:
-> When building with SFP disabled, the stub for sfp_bus_add_upstream()
-> missed "inline".  Add it.
+On Tue, Nov 12, 2019 at 01:05:23PM +0000, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Fixes: 727b3668b730 ("net: sfp: rework upstream interface")
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> There is a stray semicolon in an if statement that will cause a dev_err
+> message to be printed unconditionally. Fix this by removing the stray
+> semicolon.
+> 
+> Addresses-Coverity: ("Stay semicolon")
+> Fixes: f0942e00a1ab ("net: dsa: mv88e6xxx: Add support for port mirroring")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
