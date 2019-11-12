@@ -2,31 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C356AF8DCA
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 12:16:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 050DFF8DC8
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 12:16:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbfKLLQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 06:16:18 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:42307 "EHLO
+        id S1726959AbfKLLQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 06:16:11 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:51073 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbfKLLQS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 06:16:18 -0500
+        with ESMTP id S1726738AbfKLLQK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 06:16:10 -0500
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1iUU9T-0003FD-Oj; Tue, 12 Nov 2019 12:16:03 +0100
+        id 1iUU9U-0003FE-2E; Tue, 12 Nov 2019 12:16:04 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1iUU9S-0004zB-Ew; Tue, 12 Nov 2019 12:16:02 +0100
+        id 1iUU9S-0004zM-Fu; Tue, 12 Nov 2019 12:16:02 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     dev.kurt@vandijck-laurijssen.be, mkl@pengutronix.de,
         wg@grandegger.com
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v1 7/9] can: j1939: transport: j1939_cancel_active_session(): use hrtimer_try_to_cancel() instead of hrtimer_cancel()
-Date:   Tue, 12 Nov 2019 12:15:58 +0100
-Message-Id: <20191112111600.18719-8-o.rempel@pengutronix.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        syzbot+ca172a0ac477ac90f045@syzkaller.appspotmail.com,
+        syzbot+07ca5bce8530070a5650@syzkaller.appspotmail.com,
+        syzbot+a47537d3964ef6c874e1@syzkaller.appspotmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v1 8/9] can: j1939: j1939_can_recv(): add priv refcounting
+Date:   Tue, 12 Nov 2019 12:15:59 +0100
+Message-Id: <20191112111600.18719-9-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.24.0.rc1
 In-Reply-To: <20191112111600.18719-1-o.rempel@pengutronix.de>
 References: <20191112111600.18719-1-o.rempel@pengutronix.de>
@@ -41,32 +45,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This part of the code protected by lock used in the hrtimer as well.
-Using hrtimer_cancel() will trigger dead lock.
+j1939_can_recv() can be called in parallel with socket release. In this
+case sk_release and sk_destruct can be done earlier than
+j1939_can_recv() is processed.
 
+Reported-by: syzbot+ca172a0ac477ac90f045@syzkaller.appspotmail.com
+Reported-by: syzbot+07ca5bce8530070a5650@syzkaller.appspotmail.com
+Reported-by: syzbot+a47537d3964ef6c874e1@syzkaller.appspotmail.com
 Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- net/can/j1939/transport.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/can/j1939/main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index afc2adfd97e4..0c62b8fc4b20 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -2039,7 +2039,11 @@ int j1939_cancel_active_session(struct j1939_priv *priv, struct sock *sk)
- 				 &priv->active_session_list,
- 				 active_session_list_entry) {
- 		if (!sk || sk == session->sk) {
--			j1939_session_timers_cancel(session);
-+			if (hrtimer_try_to_cancel(&session->txtimer) == 1)
-+				j1939_session_put(session);
-+			if (hrtimer_try_to_cancel(&session->rxtimer) == 1)
-+				j1939_session_put(session);
-+
- 			session->err = ESHUTDOWN;
- 			j1939_session_deactivate_locked(session);
- 		}
+diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
+index 8dc935dc2e54..2afcf27c72c8 100644
+--- a/net/can/j1939/main.c
++++ b/net/can/j1939/main.c
+@@ -51,6 +51,7 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
+ 	if (!skb)
+ 		return;
+ 
++	j1939_priv_get(priv);
+ 	can_skb_set_owner(skb, iskb->sk);
+ 
+ 	/* get a pointer to the header of the skb
+@@ -104,6 +105,7 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
+ 	j1939_simple_recv(priv, skb);
+ 	j1939_sk_recv(priv, skb);
+  done:
++	j1939_priv_put(priv);
+ 	kfree_skb(skb);
+ }
+ 
 -- 
 2.24.0.rc1
 
