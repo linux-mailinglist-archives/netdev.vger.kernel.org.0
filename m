@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29B83F84D7
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 01:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBDA7F84C2
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 01:11:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727729AbfKLALN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 19:11:13 -0500
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:3253 "EHLO
+        id S1727229AbfKLAHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 19:07:14 -0500
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:3257 "EHLO
         hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726910AbfKLAHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 19:07:13 -0500
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dc9f7720000>; Mon, 11 Nov 2019 16:06:10 -0800
+        with ESMTP id S1726902AbfKLAHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 19:07:12 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dc9f7730001>; Mon, 11 Nov 2019 16:06:11 -0800
 Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate102.nvidia.com (PGP Universal service);
-  Mon, 11 Nov 2019 16:07:06 -0800
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 11 Nov 2019 16:07:07 -0800
 X-PGP-Universal: processed;
-        by hqpgpgate102.nvidia.com on Mon, 11 Nov 2019 16:07:06 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 12 Nov
- 2019 00:07:05 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Tue, 12 Nov 2019 00:07:05 +0000
+        by hqpgpgate101.nvidia.com on Mon, 11 Nov 2019 16:07:07 -0800
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 12 Nov
+ 2019 00:07:07 +0000
+Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Tue, 12 Nov 2019 00:07:06 +0000
 Received: from blueforge.nvidia.com (Not Verified[10.110.48.28]) by rnnvemgw01.nvidia.com with Trustwave SEG (v7,5,8,10121)
-        id <B5dc9f7a70008>; Mon, 11 Nov 2019 16:07:05 -0800
+        id <B5dc9f7a90000>; Mon, 11 Nov 2019 16:07:06 -0800
 From:   John Hubbard <jhubbard@nvidia.com>
 To:     Andrew Morton <akpm@linux-foundation.org>
 CC:     Al Viro <viro@zeniv.linux.org.uk>,
@@ -56,246 +56,95 @@ CC:     Al Viro <viro@zeniv.linux.org.uk>,
         <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
         <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
         <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v3 02/23] mm/gup: factor out duplicate code from four routines
-Date:   Mon, 11 Nov 2019 16:06:39 -0800
-Message-ID: <20191112000700.3455038-3-jhubbard@nvidia.com>
+        John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH v3 03/23] mm/gup: move try_get_compound_head() to top, fix minor issues
+Date:   Mon, 11 Nov 2019 16:06:40 -0800
+Message-ID: <20191112000700.3455038-4-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191112000700.3455038-1-jhubbard@nvidia.com>
 References: <20191112000700.3455038-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573517170; bh=kJfdBwtxV0Xf/7sPEfLRjg5QuIfiLXYo87o9tgl9dSA=;
+        t=1573517171; bh=5vGfYGjp3s6bW36xq9/Bb46iugaNKE7HlOm7HXQ5wWg=;
         h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
          In-Reply-To:References:MIME-Version:X-NVConfidentiality:
-         Content-Type:Content-Transfer-Encoding;
-        b=BrEsyttE6RAmwKB2dP7t/hBES/LaE75S+oPLzu5r7Y/kro8+cn3Newv+8jmhnecuh
-         M8pIqjj1obr+Rk//EYouq3SWQOmaPTVaz/JRvgWyHkvjTy13z1nMPs1kDmMbzyjy4i
-         B2DtnxHMFX/uC7ck8Y+TAzvF3XL88SsmUr7NyzOGpy0u7RUKqOUw8eOx5DcCuBfGqG
-         sotzZd7RDCoVqxqBS/corUzcJ6EVGB7oX93vLKNtalUTMugHKtxPEADexZRDM+fkzO
-         BcA7dsCfwX4C8fZC3v4YoCmiwJmXmqAvlc0PzjO8cVkU+tfPIs2yiWH/W+Fuvfe7k0
-         LC9kAMJdb6nyA==
+         Content-Transfer-Encoding:Content-Type;
+        b=GkDH7li9lP7A/uMpxLR/P9FNhMq8JTTMAN0SWpbrJSFjXGyR/2s9DlCPum2PGa7jS
+         5drAJ2N47vT5h8NKUbzJDgy+l4lgeEnj4eGWzvzqlIlYp5/bn++aheJOdFNX7wAfGI
+         JFW0BhIXxLq2jL3t1c2FtH1mVrBDrEARcO31SdbgzvbdMembdb9e6J0rVv0+jswL2Q
+         m9MWfxq3HHmN1Dge0LLpO6W3G+XeMFrpoGnRwBReM/8tedKtKrqPaeNLNp5pGfn99+
+         Rf4dT9miWLuHEHaykyiWZaS9DgnEPoNCck1Vo5IUhU1r8GP2qmo/PaOTok7Cj6p+9F
+         d9k7VvHI1voLg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are four locations in gup.c that have a fair amount of code
-duplication. This means that changing one requires making the same
-changes in four places, not to mention reading the same code four
-times, and wondering if there are subtle differences.
+An upcoming patch uses try_get_compound_head() more widely,
+so move it to the top of gup.c.
 
-Factor out the common code into static functions, thus reducing the
-overall line count and the code's complexity.
+Also fix a tiny spelling error and a checkpatch.pl warning.
 
-Also, take the opportunity to slightly improve the efficiency of the
-error cases, by doing a mass subtraction of the refcount, surrounded
-by get_page()/put_page().
-
-Also, further simplify (slightly), by waiting until the the successful
-end of each routine, to increment *nr.
-
-Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- mm/gup.c | 104 ++++++++++++++++++++++++-------------------------------
- 1 file changed, 45 insertions(+), 59 deletions(-)
+ mm/gup.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
 
 diff --git a/mm/gup.c b/mm/gup.c
-index 85caf76b3012..199da99e8ffc 100644
+index 199da99e8ffc..933524de6249 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -1969,6 +1969,34 @@ static int __gup_device_huge_pud(pud_t pud, pud_t *p=
-udp, unsigned long addr,
+@@ -29,6 +29,21 @@ struct follow_page_context {
+ 	unsigned int page_mask;
+ };
+=20
++/*
++ * Return the compound head page with ref appropriately incremented,
++ * or NULL if that failed.
++ */
++static inline struct page *try_get_compound_head(struct page *page, int re=
+fs)
++{
++	struct page *head =3D compound_head(page);
++
++	if (WARN_ON_ONCE(page_ref_count(head) < 0))
++		return NULL;
++	if (unlikely(!page_cache_add_speculative(head, refs)))
++		return NULL;
++	return head;
++}
++
+ /**
+  * put_user_pages_dirty_lock() - release and optionally dirty gup-pinned p=
+ages
+  * @pages:  array of pages to be maybe marked dirty, and definitely releas=
+ed.
+@@ -1793,20 +1808,6 @@ static void __maybe_unused undo_dev_pagemap(int *nr,=
+ int nr_start,
+ 	}
  }
- #endif
 =20
-+static int __record_subpages(struct page *page, unsigned long addr,
-+			     unsigned long end, struct page **pages, int nr)
-+{
-+	int nr_recorded_pages =3D 0;
-+
-+	do {
-+		pages[nr] =3D page;
-+		nr++;
-+		page++;
-+		nr_recorded_pages++;
-+	} while (addr +=3D PAGE_SIZE, addr !=3D end);
-+	return nr_recorded_pages;
-+}
-+
-+static void put_compound_head(struct page *page, int refs)
-+{
-+	/* Do a get_page() first, in case refs =3D=3D page->_refcount */
-+	get_page(page);
-+	page_ref_sub(page, refs);
-+	put_page(page);
-+}
-+
-+static void __huge_pt_done(struct page *head, int nr_recorded_pages, int *=
-nr)
-+{
-+	*nr +=3D nr_recorded_pages;
-+	SetPageReferenced(head);
-+}
-+
- #ifdef CONFIG_ARCH_HAS_HUGEPD
- static unsigned long hugepte_addr_end(unsigned long addr, unsigned long en=
-d,
- 				      unsigned long sz)
-@@ -1998,33 +2026,20 @@ static int gup_hugepte(pte_t *ptep, unsigned long s=
-z, unsigned long addr,
- 	/* hugepages are never "special" */
- 	VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
-=20
--	refs =3D 0;
- 	head =3D pte_page(pte);
+-/*
+- * Return the compund head page with ref appropriately incremented,
+- * or NULL if that failed.
+- */
+-static inline struct page *try_get_compound_head(struct page *page, int re=
+fs)
+-{
+-	struct page *head =3D compound_head(page);
+-	if (WARN_ON_ONCE(page_ref_count(head) < 0))
+-		return NULL;
+-	if (unlikely(!page_cache_add_speculative(head, refs)))
+-		return NULL;
+-	return head;
+-}
 -
- 	page =3D head + ((addr & (sz-1)) >> PAGE_SHIFT);
--	do {
--		VM_BUG_ON(compound_head(page) !=3D head);
--		pages[*nr] =3D page;
--		(*nr)++;
--		page++;
--		refs++;
--	} while (addr +=3D PAGE_SIZE, addr !=3D end);
-+	refs =3D __record_subpages(page, addr, end, pages, *nr);
-=20
- 	head =3D try_get_compound_head(head, refs);
--	if (!head) {
--		*nr -=3D refs;
-+	if (!head)
- 		return 0;
--	}
-=20
- 	if (unlikely(pte_val(pte) !=3D pte_val(*ptep))) {
--		/* Could be optimized better */
--		*nr -=3D refs;
--		while (refs--)
--			put_page(head);
-+		put_compound_head(head, refs);
- 		return 0;
- 	}
-=20
--	SetPageReferenced(head);
-+	__huge_pt_done(head, refs, nr);
- 	return 1;
- }
-=20
-@@ -2071,29 +2086,19 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, un=
-signed long addr,
- 					     pages, nr);
- 	}
-=20
--	refs =3D 0;
- 	page =3D pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
--	do {
--		pages[*nr] =3D page;
--		(*nr)++;
--		page++;
--		refs++;
--	} while (addr +=3D PAGE_SIZE, addr !=3D end);
-+	refs =3D __record_subpages(page, addr, end, pages, *nr);
-=20
- 	head =3D try_get_compound_head(pmd_page(orig), refs);
--	if (!head) {
--		*nr -=3D refs;
-+	if (!head)
- 		return 0;
--	}
-=20
- 	if (unlikely(pmd_val(orig) !=3D pmd_val(*pmdp))) {
--		*nr -=3D refs;
--		while (refs--)
--			put_page(head);
-+		put_compound_head(head, refs);
- 		return 0;
- 	}
-=20
--	SetPageReferenced(head);
-+	__huge_pt_done(head, refs, nr);
- 	return 1;
- }
-=20
-@@ -2114,29 +2119,19 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, un=
-signed long addr,
- 					     pages, nr);
- 	}
-=20
--	refs =3D 0;
- 	page =3D pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
--	do {
--		pages[*nr] =3D page;
--		(*nr)++;
--		page++;
--		refs++;
--	} while (addr +=3D PAGE_SIZE, addr !=3D end);
-+	refs =3D __record_subpages(page, addr, end, pages, *nr);
-=20
- 	head =3D try_get_compound_head(pud_page(orig), refs);
--	if (!head) {
--		*nr -=3D refs;
-+	if (!head)
- 		return 0;
--	}
-=20
- 	if (unlikely(pud_val(orig) !=3D pud_val(*pudp))) {
--		*nr -=3D refs;
--		while (refs--)
--			put_page(head);
-+		put_compound_head(head, refs);
- 		return 0;
- 	}
-=20
--	SetPageReferenced(head);
-+	__huge_pt_done(head, refs, nr);
- 	return 1;
- }
-=20
-@@ -2151,29 +2146,20 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, un=
-signed long addr,
- 		return 0;
-=20
- 	BUILD_BUG_ON(pgd_devmap(orig));
--	refs =3D 0;
-+
- 	page =3D pgd_page(orig) + ((addr & ~PGDIR_MASK) >> PAGE_SHIFT);
--	do {
--		pages[*nr] =3D page;
--		(*nr)++;
--		page++;
--		refs++;
--	} while (addr +=3D PAGE_SIZE, addr !=3D end);
-+	refs =3D __record_subpages(page, addr, end, pages, *nr);
-=20
- 	head =3D try_get_compound_head(pgd_page(orig), refs);
--	if (!head) {
--		*nr -=3D refs;
-+	if (!head)
- 		return 0;
--	}
-=20
- 	if (unlikely(pgd_val(orig) !=3D pgd_val(*pgdp))) {
--		*nr -=3D refs;
--		while (refs--)
--			put_page(head);
-+		put_compound_head(head, refs);
- 		return 0;
- 	}
-=20
--	SetPageReferenced(head);
-+	__huge_pt_done(head, refs, nr);
- 	return 1;
- }
-=20
+ #ifdef CONFIG_ARCH_HAS_PTE_SPECIAL
+ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+ 			 unsigned int flags, struct page **pages, int *nr)
 --=20
 2.24.0
 
