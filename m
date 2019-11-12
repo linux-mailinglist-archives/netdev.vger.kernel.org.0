@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79992F9C57
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:33:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1875F9C5B
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbfKLVdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:33:05 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33891 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726376AbfKLVdE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:33:04 -0500
-Received: by mail-ed1-f65.google.com with SMTP id b72so33066edf.1
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:33:02 -0800 (PST)
+        id S1726957AbfKLVeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:34:44 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:43739 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbfKLVeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:34:44 -0500
+Received: by mail-ed1-f66.google.com with SMTP id w6so16222541edx.10
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:34:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=bv7WaA6erp0Ek6ypTZmOSS9y4anvTGb7BCo2kIn/st0=;
-        b=shEW6sF3Opcv2xTu0+gDLMeiHclV9kwyTv62Gji/5VAobVaMVeLhAzBxPRr39HUXIK
-         rx0uBpfUFKhufavaLDnjZcvg7TTpB3ClIkxag1Kdx3lwNFbK6kwwfA3fLh58HOEHkIhQ
-         1yMbS2IufUunukTsJEZEn9WS7P7Eqg86lv4v8HVcWFlGQrNfgK5mI27MGmai8YU2Nips
-         BPaUsk0qv//TF8p34pw9WW4wKLsrEtsgGZ8RNtl8Bb3OKsddwpMf9G4i9bbNbChIYl11
-         meQGR4p9rEJ9kE6efSdaImHrD8JDBWRQwdWu19NE8cnFdoYQUOIYbfAOgtElMFs5WInL
-         nCyQ==
+        bh=rQ1lcZ74X7Yel4vG/bYpfU6N3m1u+GWcmqE579oZL84=;
+        b=E4TRu0Udg/k3T2np/kC7QOYIXlerjmKWxwX9izN94aIyyndPLUyXjsArkGn2D9WPwb
+         SwAgYRlrW2Abd0JXHChBkhiKqO4b6Rim9wz3FarHnUKgzwQDdLEmjSYvuM0cmgONMVJE
+         szCGdh/lhi6i8oSHgclpeMALlHXbDVAtRqB+ivW2FkNUXa/kRJDggmdaawl56TANC/M9
+         X6J6PcfLDWiGTMCVJzFmJ9Ndz6YtIyHKyMkP8V5J/NgbNEFRodr11QEjIDZY1ObMcA4f
+         0SV17p/Jf5YvW++z2HSOtQLk0xprfo47oiB8p8SBBnkarLV77X3cHg3jru+mAIguBCLA
+         EOlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=bv7WaA6erp0Ek6ypTZmOSS9y4anvTGb7BCo2kIn/st0=;
-        b=V/7spTkl8uJRuhJiTyfsy602DlKPrlYMklDH/lHvkYcBmGo4SO32S/8c/rdTy5fuXz
-         lVBypohMjkboR4SQ0axZrXDwFlk8Nkr+WBSsce1imrgQti1RlL1ZKom0zockqACUWDL9
-         iPK+8ZJnq0J+Psp+h2fXk5ZF8/Vgcszd43m0M4h+TfApe3viXtNe4/HvgYNSn4pFysoX
-         9x+VUupZe4XlZuPreiobLskMg5cxRhhLoLhrnvEbLOjv5cSOqbG2b1T0SFvKlYWD9/4R
-         IWLoxzAMbHcy2w7sZzr88sp3Vo4VBpyekIU5ViQ/XnZ8GR0KQq07tENUGEqtufTHY/FT
-         ogzQ==
-X-Gm-Message-State: APjAAAUgZYe2nHaYJIEsmVFW4CPOsHTaIWaaEYkXzWghuy3oV8WHUDlQ
-        G2CEp+50Fn78G7myLLfOChs=
-X-Google-Smtp-Source: APXvYqxMC9OAdyBKwDxeToOj9/8j00mRRVLY8SEPP4TUKR+VyiVXvCf8CfGiNIaJaZV/Zi9/oJAKNA==
-X-Received: by 2002:aa7:c0c8:: with SMTP id j8mr35333823edp.235.1573594382236;
-        Tue, 12 Nov 2019 13:33:02 -0800 (PST)
+        bh=rQ1lcZ74X7Yel4vG/bYpfU6N3m1u+GWcmqE579oZL84=;
+        b=pFM38YIiUpMnpgjKDKm8bkCnu3TofF0fQL+Yq+HjXk7NmKvQKfGQtOJP4u1iSu1Rcj
+         of+VwWZ0Pi7BZ4XzY0OqUSSlDUvrag8PzvvDrhO6mgNVA52axAsC/TNc1jgm7N8QjbuS
+         SLzNM2JWPr/eMtnWjJVgopwy7/oF4+/ZYgr54Wqwh47gqBGn0H7yf6ZLEXf3Fq/YUXXK
+         rnJalCQP1EOCSHIW43/mWuuewzmHY9Q0MFElaGbgBvzXCHYtQirIrolghAIPsuM4Qk31
+         iysaG6kN2PI+wVDyRIwRyaXgecYYqKkTif4FSKIREegQnGTmOVWuLmIfJRHhhowvmTeY
+         P/BQ==
+X-Gm-Message-State: APjAAAUIdDTgoExNX0OeZQ88OC5RUbx9JaYQ+cu4psUIvBbg9rdQk6VP
+        Aw+aie5pL5Uk73+khRKtx+Q=
+X-Google-Smtp-Source: APXvYqwuhRZHa3ShTKjdhTijPG5KlM7o9xbnDa/PUPgbrfcGwYGvySO5cDGYmSNvoe/zfHDOKhi1Ew==
+X-Received: by 2002:a17:906:a995:: with SMTP id jr21mr29113099ejb.77.1573594481841;
+        Tue, 12 Nov 2019 13:34:41 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id p20sm1486ejz.5.2019.11.12.13.32.59
+        by smtp.googlemail.com with ESMTPSA id ay16sm1161ejb.33.2019.11.12.13.34.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 13:33:01 -0800 (PST)
-Subject: Re: [PATCH net-next 06/12] net: mscc: ocelot: adjust MTU on the CPU
- port in NPI mode
+        Tue, 12 Nov 2019 13:34:40 -0800 (PST)
+Subject: Re: [PATCH net-next 07/12] net: mscc: ocelot: separate the
+ implementation of switch reset
 To:     Vladimir Oltean <olteanv@gmail.com>, jakub.kicinski@netronome.com,
         davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,7 +55,7 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-7-olteanv@gmail.com>
+ <20191112124420.6225-8-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <c8d64c76-e786-c419-6546-e0ef9338cdd9@gmail.com>
-Date:   Tue, 12 Nov 2019 13:32:57 -0800
+Message-ID: <36baf6e7-fcd0-5516-6213-38a49aeb43da@gmail.com>
+Date:   Tue, 12 Nov 2019 13:34:31 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191112124420.6225-7-olteanv@gmail.com>
+In-Reply-To: <20191112124420.6225-8-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,13 +129,30 @@ X-Mailing-List: netdev@vger.kernel.org
 On 11/12/19 4:44 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> When using the NPI port, the DSA tag is passed through Ethernet, so the
-> switch's MAC needs to accept it as it comes from the DSA master. Increase
-> the MTU on the external CPU port to account for the length of the
-> injection header.
+> The Felix switch has a different reset procedure, so a function pointer
+> needs to be created and added to the ocelot_ops structure.
+> 
+> The reset procedure has been moved into ocelot_init.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/ethernet/mscc/ocelot.c       |  3 ++
+>  drivers/net/ethernet/mscc/ocelot.h       |  1 +
+>  drivers/net/ethernet/mscc/ocelot_board.c | 37 +++++++++++++++---------
+>  3 files changed, 28 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+> index 42da193a8240..0fe928026e61 100644
+> --- a/drivers/net/ethernet/mscc/ocelot.c
+> +++ b/drivers/net/ethernet/mscc/ocelot.c
+> @@ -2294,6 +2294,9 @@ int ocelot_init(struct ocelot *ocelot)
+>  	ocelot_vlan_init(ocelot);
+>  	ocelot_ace_init(ocelot);
+>  
+> +	if (ocelot->ops->reset)
+> +		ocelot->ops->reset(ocelot);
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+We were not checking doing any error code checking, but arguably we know
+should, any reason not to propagate the error code?
 -- 
 Florian
