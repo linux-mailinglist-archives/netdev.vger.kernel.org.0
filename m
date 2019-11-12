@@ -2,180 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3642F8660
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 02:30:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68043F8672
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 02:35:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbfKLBa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 20:30:26 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:53007 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726965AbfKLBaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 20:30:25 -0500
-Received: by mail-wm1-f66.google.com with SMTP id l1so1309054wme.2
-        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 17:30:22 -0800 (PST)
+        id S1727140AbfKLBfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 20:35:36 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:36874 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726986AbfKLBfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 20:35:36 -0500
+Received: by mail-il1-f195.google.com with SMTP id s5so14021244iln.4
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 17:35:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8B2NZ4PfR61JzfugaxVIwYxo10Xu/i9sEhzmQqu6MqE=;
-        b=Q4Xi9fjijjroN9+pFk/k+GO3xcSUmBu9dZVChvtk6BNLEHYBIkFEbdY1wnd5TT8VIU
-         pbcq9Uzai87oBpR6pMdr+OZtaRFoDLf4QZcUkJqQ5A3W6CC3pc1g5eWpRcxLvX/WilVF
-         /o0MF0NX3GnFDxcz2OuTRW9PD1N9FYytxhxiGYqrbbxcFtN9N7R0LHeJ172SHyzLihSb
-         DhX5BL5hOMVpFNkUKar4DzdHX9VxiFdQcrilPFtmGAwAjmTPpV0G3P+IkptojbdHRL5L
-         aVWG4OfL3nUbNTcdcfBWfVwJmOBB+URAWBoDBZiXRBbl96ASEPdG4Xj4+Ekk/S4zloBa
-         W+vQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BkP3PjDCFygbnpKKR8L99C5aR0zjxZYNtEWWrmS27KU=;
+        b=Coi/TV60dX1T+3IUmq+X/74Bn0b+0skiWwpE+C2z2xhthSVZda03DS+68kIM9LSMXO
+         GCrlfu2hGwveAwXrKLYyqtj3YNCZptjMUexi6MSSqt37/baSXso7P3nzFFMhbGbya8+e
+         d9blL0SuhZbymcms68jDpZcR8ZJ9hI7TlgucBv0kb/DN1y+406HCXNRfmrmwGBfrsR8Z
+         lKgz4Nl+ddrRbAUzq3KDyYfRwYMBIw6ZVLRN5CfO8gtUAui0GpDWG1PVYWxd154ub0AY
+         tWBLLdSu1iPF/hsYdW3qB5dJlEUGpnGbqiId1eW75sQJ6eoze68isVlC4rAf/W/qsIAA
+         b2Cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8B2NZ4PfR61JzfugaxVIwYxo10Xu/i9sEhzmQqu6MqE=;
-        b=LGXKRgewjdGC1SslDYzrdwtqlX23jYOo4nSZX7CK/ezK9kbw7SISG3zE6xHvlsZOzu
-         fIRzEQb6WazjSrAejAbGY8dB7OzAIN11IqpTpMKxbgYOjAV/+D0t6o41SHz6B/tQqQe9
-         +gdy3NUqHcrOk7jJM1PSMW47DrUXRHaCdJE1N7NvzoM6tv/jbjE1hoThhiiNg6ogxzjc
-         fCp29H5DA0vb8RCHsxpV0TiT14HQzqDB0rBANZ8qYCcQT57aGPUg7Gpc/kchSJHCL9CU
-         eybrD8FBoVnznu2kir2c2nV6fo7Vc+NcfE9CEuIpHu897DI4eMI0uQavNwgTnKpeFKme
-         Dw2g==
-X-Gm-Message-State: APjAAAVVxcm780rUAxO4qN0E+0fi71bGYiVLfT0E2DacwIwhP0atHjSE
-        nv3XxySSLG/ryzY2wmZYirQ/uiVEcTLag9Ve33entA==
-X-Google-Smtp-Source: APXvYqyHsOIfQh0ZE+Iewpa2QCk0jqORNL5kDnw68XZLcijkVuKb2lUFQzIHPnj+mD3ll8zMo9bzEqsY90vIJmgBNTM=
-X-Received: by 2002:a05:600c:2383:: with SMTP id m3mr1474407wma.66.1573522221235;
- Mon, 11 Nov 2019 17:30:21 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BkP3PjDCFygbnpKKR8L99C5aR0zjxZYNtEWWrmS27KU=;
+        b=kc3acCIPnXJlpXniNCrHcmlE8XvnemcpWE8oqG6iDUhrc3ZoPS7n/MY+aUPy9f9KZh
+         5VIIBU1fEK4viHoYYKPfK0n+BeHGEz/nW9jH76P9TT0j+YM9K3+nSV9OjqZaz2fXzYH8
+         DpeolUoP0t5IutVLvgpBEX/XxaVxIipNCQI7rH88t19mBAaD8EKOd1mq186kSA7e+t7C
+         YSRFLDCp+0GDHNp43py0OhM/31OGzGEvlZfk9q64x6khLtcCdH2Gtb4diKokP+WM6khV
+         qtonnSPLGcIUmT4RTvD2n+6O8AofcAhYWpeSJMnI40dljod0FXGQkfQtMHxC3SxgvAXg
+         iNIQ==
+X-Gm-Message-State: APjAAAXNLzF/SMFjkqFwdUkXZ9q1njc1+6gq+ZQ5sI+3I3t1cjWMOHX8
+        LRWFkGmBuJip4Rft8LoN/FU=
+X-Google-Smtp-Source: APXvYqzsn6ra+3uzuyxUmz3UHjG9gZf/qJ27adGaBV/LoribbuY9WEGAoAB1s+ake3IFv7YZxVvgEQ==
+X-Received: by 2002:a92:dd12:: with SMTP id n18mr14312652ilm.9.1573522533968;
+        Mon, 11 Nov 2019 17:35:33 -0800 (PST)
+Received: from dahern-DO-MB.local ([2601:282:800:fd80:6053:1891:d785:89f2])
+        by smtp.googlemail.com with ESMTPSA id f21sm1397034ioh.21.2019.11.11.17.35.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Nov 2019 17:35:32 -0800 (PST)
+Subject: Re: ping6 packets high probability loss occurs by the default
+ firewalld rule(rpfilter invert) with low traffic generated by iperf
+To:     hujunwei <hujunwei4@huawei.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
+        kafai@fb.com, weiwan@google.com
+Cc:     netdev@vger.kernel.org, wangxiaogang3@huawei.com,
+        xuhanbing@huawei.com, Wei Wang <weiwan@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+References: <96ac86f8-eb74-f3fc-ab23-5a97603fac82@huawei.com>
+ <8f66b92f-5068-f9a5-0d28-0db075c3c07e@gmail.com>
+ <09f64e3f-137d-93d7-5b96-b73926b39583@huawei.com>
+ <6b6361fd-9ea1-93be-a60b-ac051bda4c10@huawei.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2a302e61-26c8-07c5-607b-3c1e9562ef3d@gmail.com>
+Date:   Mon, 11 Nov 2019 18:35:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20191107132755.8517-1-jonas@norrbonn.se> <20191107132755.8517-2-jonas@norrbonn.se>
- <CAF2d9jjRLZ07Qx0NJ9fi1iUpHn+qYEJ+cacKgBmeZ2FvZLObEQ@mail.gmail.com>
- <fff51fa7-5c42-7fa7-6208-d911b18bd91e@norrbonn.se> <CAF2d9jib=Qdn9uB=kKn4CTbqvqOiGs+FGh4427=o+UySLf=BwA@mail.gmail.com>
- <7a2038c8-d3a6-2144-f11d-965394d1b420@norrbonn.se>
-In-Reply-To: <7a2038c8-d3a6-2144-f11d-965394d1b420@norrbonn.se>
-From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
-        <maheshb@google.com>
-Date:   Mon, 11 Nov 2019 17:29:52 -0800
-Message-ID: <CAF2d9jiLcLHUrNveQRFyv_SpV+LVW+aUpMAD_MArd8wzeZnUWA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/6] rtnetlink: allow RTM_SETLINK to reference other namespaces
-To:     Jonas Bonn <jonas@norrbonn.se>
-Cc:     nicolas.dichtel@6wind.com, linux-netdev <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <6b6361fd-9ea1-93be-a60b-ac051bda4c10@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Nov 9, 2019 at 6:17 AM Jonas Bonn <jonas@norrbonn.se> wrote:
->
-> Hi Mahesh,
->
-> Thanks for the detailed response.  It provided valuable insight.
->
-> On 08/11/2019 19:55, Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=E0=A4=
-=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) wrote:
-> > Hi Jonas, thanks for the response.
-> >
-> > On Fri, Nov 8, 2019 at 12:20 AM Jonas Bonn <jonas@norrbonn.se> wrote:
-> >>
-> >> Hi Mahesh,
-> >>
-> >> On 07/11/2019 21:36, Mahesh Bandewar (=E0=A4=AE=E0=A4=B9=E0=A5=87=E0=
-=A4=B6 =E0=A4=AC=E0=A4=82=E0=A4=A1=E0=A5=87=E0=A4=B5=E0=A4=BE=E0=A4=B0) wro=
-te:
-> >>> On Thu, Nov 7, 2019 at 5:30 AM Jonas Bonn <jonas@norrbonn.se> wrote:
-> >>>>
-> >>>>
-> >>>> +       /* A hack to preserve kernel<->userspace interface.
-> >>>> +        * It was previously allowed to pass the IFLA_TARGET_NETNSID
-> >>>> +        * attribute as a way to _set_ the network namespace.  In th=
-is
-> >>>> +        * case, the device interface was assumed to be in the  _cur=
-rent_
-> >>>> +        * namespace.
-> >>>> +        * If the device cannot be found in the target namespace the=
-n we
-> >>>> +        * assume that the request is to set the device in the curre=
-nt
-> >>>> +        * namespace and thus we attempt to find the device there.
-> >>>> +        */
-> >>> Could this bypasses the ns_capable() check? i.e. if the target is
-> >>> "foo" but your current ns is bar. The process may be "capable" is foo
-> >>> but the interface is not found in foo but present in bar and ends up
-> >>> modifying it (especially when you are not capable in bar)?
-> >>
-> >> I don't think so.  There was never any capable-check for the "current"
-> >> namespace so there's no change in that regard.
->
-> I was wrong on this point.  There IS a capable-check for the "current"
-> net.  The code to create interfaces in 'other' namespaces was already in
-> place before my patch and that code does the right thing with respect to
-> checking NS capabilities on the "destination" and "link" nets.
->
-> My patch is mostly just accounting for the "setlink" aspect of NEWLINK
-> where the device already exists in a foreign namespace and needs to be
-> searched for there.  Even in that code path, all the ns-capable checks
-> are in place and the behaviour is the same as before.
->
-> >>
-> > not having capable-check seems wrong as we don't want random
-> > not-capable processes to alter settings. However, it may be at the API
-> > entry level, which will provide necessary protection (haven't
-> > checked!). Having said that, this could be bad for the stuff that you
-> > are implementing since I could be in "foo" and attempting to change
-> > "bar". For this I must be capable in "bar" but the top-level capable
-> > check will by default check me in "foo" as well which is not required
-> > and could potentially block me from performing legal operation in
-> > "bar".
-> >
-> > Not saying this is a problem, but without having an implementation to
-> > use this would be hard to try. You would most likely have a way to
-> > verify this, so please check it.
->
-> The above shouldn't be an issue with the current implementation.
->
-> >
-> >> I do think there is an issue with this hack that I can't see any
-> >> workaround for.  If the user specifies an interface (by name or index)
-> >> for another namespace that doesn't exist, there's a potential problem =
-if
-> >> that name/index happens to exist in the "current" namespace.  In that
-> >> case, one many end up inadvertently modifying the interface in the
-> >> current namespace.  I don't see how to avoid that while maintaining th=
-e
-> >> backwards compatibility.
-> >>
-> > This could very well be the case always for single digit ifindex
-> > values. (We recently suffered a local scare because of something very
-> > similar).
-> >
-> >> My absolute preference would be to drop this compat-hack altogether.
-> >> iproute2 doesn't use a bare TARGET_NETNSID in this manner (for changin=
-g
-> >> namespaces) and I didn't find any other users by a quick search of oth=
-er
-> >> prominent Netlink users:  systemd, network-manager, connman.  This
-> >> compat-hack is there for the _potential ab-user_ of the interface, not
-> >> for any known such.
-> >>
-> > what is forcing you keeping you keeping / implementing this hack? I
-> > would also prefer simple solution without creating a potential problem
-> > / vulnerability (problem: potentially modifying unintended interface,
-> > vulnerability: potentially allow changing without proper credentials;
-> > both not proven but are possibilities) down the line. One possibility
-> > is to drop the compatibility hack and keep it as a backup if something
-> > breaks / someone complains.
->
-> OK, this would be my preference, too.  If we can work on the assumption
-> that this isn't actually providing compatibility for anybody in
-> practice, then we can drop it.  With that, the potential problem of
-> inadvertently modifying the wrong device disappears.  There's no problem
-> of being able to access a namespace that one isn't capable in, but
-> leaving a hole through which the user may end up doing something
-> unexpected is pretty ugly.
->
-> I'll remove this and repost the series.
->
-sgtm
+On 11/11/19 6:26 PM, hujunwei wrote:
+> 
+> On 2019/11/4 10:29, hujunwei wrote:
+>>
+>>
+>> On 2019/11/4 2:53, Eric Dumazet wrote:
+>>>
+>>> By how much have you increased gc_thresh ?
+>>>
+>>> I wonder if you are not hit by RCU being unable to drain its queue fast enough.
+>>>
+>>> Could you try backporting :
+>>>
+>>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cfcdef5e30469f3f2d6786ad35fc3fdef2a3833f
+>>>
+>>> But the default gc_thresh of 1024 might be too small for this patch
+>>> to make any difference, since (1024 >> 7) is 8 
+>>>
+>>>
+>>
+>> Hi Eric,
+>> Thanks for your reply, I set gc_thresh to 10240 last time. I will backport and test the patch later.
+>>
+>> Regards Junwei
+>>
+> 
+> Hi Eric,
+> I applied the patch and find packetes still drop with default value of gc_thresh.
+> I will submit a patch later.
+> 
+> Regards Junwei
+> 
 
-thanks,
---mahesh..
-
-> Thanks for your insight into this issue.  It was helpful.
->
-> /Jonas
+perhaps it is time to update IPv6's gc_thresh to match IPv4's - meaning
+it stays but gets set to -1 and is not used. Is there a reason to keep a
+limit these days?
