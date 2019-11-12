@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F50EF8E95
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 12:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BFA5F8EAB
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 12:35:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726376AbfKLL2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 06:28:50 -0500
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37215 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbfKLL2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 06:28:50 -0500
-Received: by mail-pf1-f195.google.com with SMTP id p24so13159778pfn.4;
-        Tue, 12 Nov 2019 03:28:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oT7NRAnyWQZcqS8AZQGXhNMhZCid5Elpr5j+vrnZHcU=;
-        b=lYkJbcXPDdsi7jkKZGkeVZiExzVguF/ZPSqgZSlTY+l9kqmuYUTbaQMEnFKbSfDQBt
-         CbOPc4nWtfOUsf5HymN5KnawVbboJh+p0h35SMpaotcIZPhH3skBMDtB8Nhwle2j5xv3
-         TyGPQZ2MgTFuNbDIUWKPQj3a613j6aqIrGPGeGXEZM3I22zqXnaho9cP0we8IwJiXoul
-         Myc9souDNDHVIN1I5XijI8OQuDjTodID4uq0Stnc3PLwV1r7lwN+wD+3t69aWJ+gawEp
-         pgt/jisP73JZIGB7SOMBP5hd9/qJUNCd4+aq/qwWnJ9+bgeHUqw72745mCVahb+Zp0hI
-         grnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oT7NRAnyWQZcqS8AZQGXhNMhZCid5Elpr5j+vrnZHcU=;
-        b=GhhNkCHzrfBGU2WTppdUk5BxUK0V180fdOMDuJfHNnYlW0eiq9GshbmEJR/h66NGXi
-         Hb5mzGYmes5JvvbRgpLQF5hu4sglQPH0JyzTzgfTdLLPUWX3m12GnEgsxlDfPy7Am0WH
-         ePwmA32hMXROypK5kXekxzcqH03kjnEWOs+Y5OOuhOWfFDmdsitzx5raZQdW3Vp8HYMW
-         NGlfS/nT4KYEa9OXul2cmH5UmCGuQJI5HouJCD0MAt96QbkthXfQSu7951j6rdkD+D+f
-         DVArZI6BLHe8x4NK8QZnE4Ta+jbGJDqjR5luZOGkHDJi9i6sCyWRFbWGdTnFrGEL6qoQ
-         fklQ==
-X-Gm-Message-State: APjAAAV8YwDl1oeZsNrJotuxFAj/DIx+ZH6zs1DNqM1kIRAy1kvLcxxL
-        ixHrRGEVP/JL2bXvz1GDlOw=
-X-Google-Smtp-Source: APXvYqymsjHT/w3t33EfC2KpLRIRSqzElbdl0GKlJ/vpN8hBO5y8qeRVeFRiRbK4P9p/QhS0tKMb5A==
-X-Received: by 2002:aa7:90d5:: with SMTP id k21mr24209947pfk.178.1573558129598;
-        Tue, 12 Nov 2019 03:28:49 -0800 (PST)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([202.120.40.82])
-        by smtp.gmail.com with ESMTPSA id c9sm29569778pfb.114.2019.11.12.03.28.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Nov 2019 03:28:48 -0800 (PST)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH net v2] net: fec: add a check for CONFIG_PM to avoid clock count mis-match
-Date:   Tue, 12 Nov 2019 19:28:30 +0800
-Message-Id: <20191112112830.27561-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        id S1725881AbfKLLfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 06:35:16 -0500
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:50384 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725834AbfKLLfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 06:35:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Ni1GYJnemBzlrcauLb4nzH5o+GAAXgQ/RJnpDmw8IIs=; b=NN6c51mGF8Xbbq3xnOtikdcPBf
+        HCA27OvInDoXiOj0PqxA8uvQByEm+OOEkvkoZSgib+evpL3yo8G+AbtZoXKvVE6/uF2nmAQnT7M8h
+        O2A0P1DPmWUK11JAHALJYWfJxzl2CPCIqVx0Vizx9FUMSpgkV0O/xCGzIff0JnqqQ1hLfA6XJJFOz
+        evzfoCdVHpK1yzYvfCR5sUzBjxiPCm6O7kqQF29u2IqV+i6gHbAOQqn7jHZpVng9XsY9lXzrA7KPl
+        ohe8B6pRqpGMZJts0dadUY+e3GfEE6HbsKXGuSWgHf3rsHXxpIDFB0uGXAtr/92uYv5EpnNw2nTeM
+        j3cS81Rw==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:37346 helo=rmk-PC.armlinux.org.uk)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iUURp-0004Qe-7O; Tue, 12 Nov 2019 11:35:01 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1iUURo-0003A9-KA; Tue, 12 Nov 2019 11:35:00 +0000
+From:   Russell King <rmk+kernel@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH net-next] net: sfp: fix sfp_bus_add_upstream() warning
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1iUURo-0003A9-KA@rmk-PC.armlinux.org.uk>
+Date:   Tue, 12 Nov 2019 11:35:00 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If CONFIG_PM is enabled, runtime pm will work and call runtime_suspend
-automatically to disable clks.
-Therefore, remove only needs to disable clks when CONFIG_PM is disabled.
-Add this check to avoid clock count mis-match caused by double-disable.
+When building with SFP disabled, the stub for sfp_bus_add_upstream()
+missed "inline".  Add it.
 
-Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in remove")
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+Fixes: 727b3668b730 ("net: sfp: rework upstream interface")
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
-Changes in v2:
-  - Add fixes tag.
+ include/linux/sfp.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/freescale/fec_main.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index a9c386b63581..696550f4972f 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3645,8 +3645,10 @@ fec_drv_remove(struct platform_device *pdev)
- 		regulator_disable(fep->reg_phy);
- 	pm_runtime_put(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
-+#ifndef CONFIG_PM
- 	clk_disable_unprepare(fep->clk_ahb);
- 	clk_disable_unprepare(fep->clk_ipg);
-+#endif
- 	if (of_phy_is_fixed_link(np))
- 		of_phy_deregister_fixed_link(np);
- 	of_node_put(fep->phy_node);
+diff --git a/include/linux/sfp.h b/include/linux/sfp.h
+index c8464de7cff5..3b35efd85bb1 100644
+--- a/include/linux/sfp.h
++++ b/include/linux/sfp.h
+@@ -563,8 +563,8 @@ static inline struct sfp_bus *sfp_bus_find_fwnode(struct fwnode_handle *fwnode)
+ 	return NULL;
+ }
+ 
+-static int sfp_bus_add_upstream(struct sfp_bus *bus, void *upstream,
+-				const struct sfp_upstream_ops *ops)
++static inline int sfp_bus_add_upstream(struct sfp_bus *bus, void *upstream,
++				       const struct sfp_upstream_ops *ops)
+ {
+ 	return 0;
+ }
 -- 
-2.23.0
+2.20.1
 
