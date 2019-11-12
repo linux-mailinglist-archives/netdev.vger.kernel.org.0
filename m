@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9BFFF88BD
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:49:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41753F88BE
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 07:49:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726978AbfKLGth (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 01:49:37 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:49469 "EHLO
+        id S1726983AbfKLGtj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 01:49:39 -0500
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:60635 "EHLO
         out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726955AbfKLGtg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 01:49:36 -0500
+        by vger.kernel.org with ESMTP id S1726973AbfKLGti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 01:49:38 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8579021EAE;
-        Tue, 12 Nov 2019 01:49:35 -0500 (EST)
+        by mailout.nyi.internal (Postfix) with ESMTP id 2EA3B220E7;
+        Tue, 12 Nov 2019 01:49:37 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 12 Nov 2019 01:49:35 -0500
+  by compute3.internal (MEProxy); Tue, 12 Nov 2019 01:49:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=lwFfCoKMm8wGod0vCtoyj+wM4H0TE3HchN6+/LTnEaE=; b=Rjl1ynjw
-        TdHxT4XrbvekBHoKh7hc/V7U2TzJmapZcFaqXjP3D665sFkWTWGGzcDknDcVYJD6
-        UzJpaFaCS7T0oCI/91D76SoEtFCuYUI0853BoewAsruB4zZQI9Pl2md9ws/8uSmk
-        +KP7rXCIYLBT+eLKa1ZY/p6l3z6yA6Jfz5O+N51IrzkJxpDV7wiqsDHHmX35X4ju
-        aZTUjkxmXkil9wst4t3/n292L0Afkur7BEcd2MwUdGVav7eJeoY4PsxWMc7xx4Gh
-        xHU47YIVP00u9GP0m9+bKqQeqULXqZn5UBdxxZKSipW+SzHuWYNFU4Pi1O4bO3E9
-        1m0IJKrpBl6GRw==
-X-ME-Sender: <xms:_1XKXdPh5-0HgR-QwCIQGMJL1QJYJApk8ezYnpgzXhUn46I2Q9ilBg>
+        fm1; bh=tK3A69kJ0VUiZjaS7esssaZgzi5PqvJGhU5MUP7LPNw=; b=XE5ult28
+        Bt+QrUDi64x1j9O3xVqx4K5+JxhAqRqFraJr8evsXNNivvzVxPDEU1o+g+ejvvii
+        hGDVTNPIfyMJv4MXCOuyYFcm8pevw7NDwakoSil7g/QRqsMKI1/iIpOp1yi8NS+Y
+        UPxkEUnUHkkyOOATtO61OqF9dorM8vLfAIWE2tZSJXxAcOLoBL8R9YJKUnxSArGl
+        Gt0c/6c9F7NBLUBzS4kVR+fD6V5M5PqQLntBRLHCcWOOFoqNImXkd69vFEVD4Bi3
+        I0QmUEQ6YT4wZSaMyWSHR9GKtTPG8jnz3nNhmW9UMIQBz9r2LQ8UgaFzRVxlQUJN
+        N8R1juRzoCtUSA==
+X-ME-Sender: <xms:AVbKXbMWiUKRhLPEYtVOysb6hK96_3ZnI2vaCIGniKirRilBm_WTXA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddvkedggeehucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedruddvkedggeehucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpeef
-X-ME-Proxy: <xmx:_1XKXbxY6XUxOrOEQ22kaxP9eazZH8IuLMkscZiSx9nQncv6721hwQ>
-    <xmx:_1XKXSvUysqBsNlbtzcPp_m5JDdvVIQebV7825TMPp8w65S_SHcq9w>
-    <xmx:_1XKXWb9yQgajW3m4uY35HJici16Lkm0_VHvnMNW6kNx8ss0CNzTxA>
-    <xmx:_1XKXUTLUwdCs0POn826-wHNbtKfCGCf-KnRnJEk00eCXDsKxjbLfw>
+X-ME-Proxy: <xmx:AVbKXZOERdr1kLriVjR4p5vZiDzYT7vLqRhUE6CFOat3phfUvfn33g>
+    <xmx:AVbKXTsIBP8FtGyWkjFxevw9975dF5aDtsbmfvC4Jsa6lkhkZclfNA>
+    <xmx:AVbKXbX-4V4TVcGKugyTV-AYqBRKrZ5lOsuhnDjJwV_kwVE1k2TTPQ>
+    <xmx:AVbKXYGbgM_gTFCtywOewl72C6UTgpTehDFny6voB7BXI-a9OMkmIg>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 085D180059;
-        Tue, 12 Nov 2019 01:49:33 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id A74D580060;
+        Tue, 12 Nov 2019 01:49:35 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, shalomt@mellanox.com,
         jakub.kicinski@netronome.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 4/7] mlxsw: core: Add support for EMAD string TLV parsing
-Date:   Tue, 12 Nov 2019 08:48:27 +0200
-Message-Id: <20191112064830.27002-5-idosch@idosch.org>
+Subject: [PATCH net-next v2 5/7] mlxsw: core: Extend EMAD information reported to devlink hwerr
+Date:   Tue, 12 Nov 2019 08:48:28 +0200
+Message-Id: <20191112064830.27002-6-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191112064830.27002-1-idosch@idosch.org>
 References: <20191112064830.27002-1-idosch@idosch.org>
@@ -62,53 +62,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Shalom Toledo <shalomt@mellanox.com>
 
-During parsing of incoming EMADs, fill the string TLV's offset when it is
-used.
+Extend EMAD information reported to devlink hwerr tracepoint with
+transaction id and reg id (both, hex and string).
 
 Signed-off-by: Shalom Toledo <shalomt@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/core.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index a50a36f9584b..d834bdc632ef 100644
+index d834bdc632ef..d6a10727d4e6 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/core.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -382,17 +382,32 @@ static void mlxsw_emad_construct(struct sk_buff *skb,
- 
- struct mlxsw_emad_tlv_offsets {
- 	u16 op_tlv;
-+	u16 string_tlv;
- 	u16 reg_tlv;
- };
- 
-+static bool mlxsw_emad_tlv_is_string_tlv(const char *tlv)
-+{
-+	u8 tlv_type = mlxsw_emad_string_tlv_type_get(tlv);
-+
-+	return tlv_type == MLXSW_EMAD_TLV_TYPE_STRING;
-+}
-+
- static void mlxsw_emad_tlv_parse(struct sk_buff *skb)
- {
- 	struct mlxsw_emad_tlv_offsets *offsets =
- 		(struct mlxsw_emad_tlv_offsets *) skb->cb;
- 
- 	offsets->op_tlv = MLXSW_EMAD_ETH_HDR_LEN;
-+	offsets->string_tlv = 0;
- 	offsets->reg_tlv = MLXSW_EMAD_ETH_HDR_LEN +
- 			   MLXSW_EMAD_OP_TLV_LEN * sizeof(u32);
-+
-+	/* If string TLV is present, it must come after the operation TLV. */
-+	if (mlxsw_emad_tlv_is_string_tlv(skb->data + offsets->reg_tlv)) {
-+		offsets->string_tlv = offsets->reg_tlv;
-+		offsets->reg_tlv += MLXSW_EMAD_STRING_TLV_LEN * sizeof(u32);
-+	}
+@@ -1683,8 +1683,11 @@ int mlxsw_reg_trans_write(struct mlxsw_core *mlxsw_core,
  }
+ EXPORT_SYMBOL(mlxsw_reg_trans_write);
  
- static char *mlxsw_emad_op_tlv(const struct sk_buff *skb)
++#define MLXSW_REG_TRANS_ERR_STRING_SIZE	256
++
+ static int mlxsw_reg_trans_wait(struct mlxsw_reg_trans *trans)
+ {
++	char err_string[MLXSW_REG_TRANS_ERR_STRING_SIZE];
+ 	struct mlxsw_core *mlxsw_core = trans->core;
+ 	int err;
+ 
+@@ -1702,9 +1705,14 @@ static int mlxsw_reg_trans_wait(struct mlxsw_reg_trans *trans)
+ 			mlxsw_core_reg_access_type_str(trans->type),
+ 			trans->emad_status,
+ 			mlxsw_emad_op_tlv_status_str(trans->emad_status));
++
++		snprintf(err_string, MLXSW_REG_TRANS_ERR_STRING_SIZE,
++			 "(tid=%llx,reg_id=%x(%s)) %s\n", trans->tid,
++			 trans->reg->id, mlxsw_reg_id_str(trans->reg->id),
++			 mlxsw_emad_op_tlv_status_str(trans->emad_status));
++
+ 		trace_devlink_hwerr(priv_to_devlink(mlxsw_core),
+-				    trans->emad_status,
+-				    mlxsw_emad_op_tlv_status_str(trans->emad_status));
++				    trans->emad_status, err_string);
+ 	}
+ 
+ 	list_del(&trans->bulk_list);
 -- 
 2.21.0
 
