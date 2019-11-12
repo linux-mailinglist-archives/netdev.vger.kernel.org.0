@@ -2,308 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F15BF9369
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:56:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF67F9370
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 15:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbfKLOz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 09:55:59 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51496 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726659AbfKLOz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:55:59 -0500
-Received: by mail-wm1-f66.google.com with SMTP id q70so3538162wme.1
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 06:55:57 -0800 (PST)
+        id S1727132AbfKLO5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 09:57:18 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35946 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726932AbfKLO5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 09:57:18 -0500
+Received: by mail-wr1-f65.google.com with SMTP id r10so18896644wrx.3
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 06:57:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=5tb4vPw+H7YY5HpWcFSbuKtki5U1MB7kYBKdNWPSgxQ=;
-        b=eRbGoS8ULccadGrkxNTdzyM4LEugreo8o4BjzR27BdWQOmvS5sNeODUctnN05Yd3Dt
-         tSWHvPKJxq12LuWzCyhSmHnP6HcTgmFhab0iC/pISkXPXvgA7RhNTb5Dq13K/OzZQdW+
-         Preucd9f9OL+39E2cHKeulHal6pZxVrdm7UU8=
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=RkWjKVRNQNfzGHSWOT8z4Fy/9T8r5WD/gADF2K5BA/Q=;
+        b=gthua7DLU5n0wWPbNEzPcrQ92MzUuTXa80zw8BATTPrDwQVcuhkg4LkiqVhi/DZUOS
+         F+aL0QIkinxTORpkQT9xGBPNeV6kGUFTrsiff5TWNT3cvobB1lde5cFgSYWQV7CABAhz
+         f0qNUN0OrQVag0uo3wp6Hs002LUAy5IqfVFXUD76mPGghbJav22Myzatr0WYxO+FABUB
+         HLKIJdxTNLr6c/vrRPpCMFtrNRskBYTn5YFuInE1RVJzrZ1jOTzKb89PvuX3ZrDH2yTC
+         aDrdNtPZYihC5de0rzO5C3ZR7YC0Xx3HacOJXUhChSZrHNIeFlvk/6w+Wcgb5Ijau0oh
+         CTdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=5tb4vPw+H7YY5HpWcFSbuKtki5U1MB7kYBKdNWPSgxQ=;
-        b=BYu/v0YZb7iUiYUQuDbJ4Zo2WP2ZMACFLCQqUc8bZmh0Kf742uVj3kFzEzzkvmNewA
-         C48xYjTunsGJRhp4RDHkfSKHEl77fH9jTpICnyVdXO7RmNAWL+Dc1YJokerKszH1HPvv
-         +8RdW/evWDoxAPJiCxpY3GeFYOinrrxJBT54ad7kFX4T6OVaMcUC4Ztjn9KucxxETb0I
-         Usx5m77NlJCaAdhmvaE1trJiiMjvmB9Zdc1Kaagi5hoG9fl2Payg1zGGxH3a1cWXfMQD
-         VxrGRis9muvpCD1uc+1fmGPV4oXuHzqXJJjmwT0n8rvj3yYyTVSKdBssM6+qydLscuN7
-         Y5bQ==
-X-Gm-Message-State: APjAAAXtRWI3wLJBzwmiBaqB/IUmwwJjpu1X4K2rE8+DYCcn3FJYia92
-        k4RPJz7STCFtAD72Uxmkj/oUfg==
-X-Google-Smtp-Source: APXvYqwXxwZBYiepT3L1UJNlYDgidJEgahE0xj4A9T3EAUHz6o4DoX54aqztCNoM1sz/fxU7pfD6wQ==
-X-Received: by 2002:a1c:f705:: with SMTP id v5mr4144313wmh.82.1573570556398;
-        Tue, 12 Nov 2019 06:55:56 -0800 (PST)
-Received: from C02YVCJELVCG ([192.19.231.250])
-        by smtp.gmail.com with ESMTPSA id p1sm2795048wmc.38.2019.11.12.06.55.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 06:55:55 -0800 (PST)
-From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
-X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
-Date:   Tue, 12 Nov 2019 09:55:42 -0500
-To:     Yuval Avnery <yuvalav@mellanox.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: Re: [PATCH net-next v2 00/10] devlink subdev
-Message-ID: <20191112145542.GA6619@C02YVCJELVCG>
-References: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
- <20191111100004.683b7320@cakuba>
- <AM6PR05MB5142D5C8B186A50D49D857ABC5740@AM6PR05MB5142.eurprd05.prod.outlook.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=RkWjKVRNQNfzGHSWOT8z4Fy/9T8r5WD/gADF2K5BA/Q=;
+        b=ezMdJQ/SF8+ZUjpBXSNenDlrOg0BxEYFt9EbOmw1JArfRL8f5uB366M9cezP4pbtjq
+         qaEoYxPRpLTB71fmTULj5WoT4NCf+DCNpvixfj45qJlR2hCTf6B8z5EKNmkxinKBBwYJ
+         6Gk9CTKTPdzIV2AsOg3bI7WcUkBoIuB/Ar83iPp4MtP7zy7MLvFA7cN2OTmMvg+XFKKq
+         F2l34Mnxi00MSc0ZXCLxdWfj03dtBP1WRCydwcfEEAZAilVay1nf0003Fe0IzECNhfp5
+         CVI3eQb2edQPX+e046CCbjrq7DpJD8k4BCUgZ/syOziPvvgSvBpiLtSOD7MTyyYNnF+D
+         s5lQ==
+X-Gm-Message-State: APjAAAWQy/NRd/gzXH8gpufapIzhOP3/1uca9+UyKw1Hl5vO8qvXJ129
+        vASMwqD+ft932xo8WdMDA2BAoQ==
+X-Google-Smtp-Source: APXvYqzto+8CZw/bC5LG2vG0lsb1p/SKDdyikSjqiZ3nIVgcM8E149q7bmpTIi+W9Y4h3wSl+md1CA==
+X-Received: by 2002:adf:d18b:: with SMTP id v11mr27582629wrc.308.1573570635963;
+        Tue, 12 Nov 2019 06:57:15 -0800 (PST)
+Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
+        by smtp.gmail.com with ESMTPSA id u1sm1324935wmc.3.2019.11.12.06.57.15
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Nov 2019 06:57:15 -0800 (PST)
+Date:   Tue, 12 Nov 2019 15:57:15 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2] dpaa2-eth: free already allocated channels on
+ probe defer
+Message-ID: <20191112145714.ohlnx6pmpkqxs5qs@netronome.com>
+References: <1573568693-18642-1-git-send-email-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AM6PR05MB5142D5C8B186A50D49D857ABC5740@AM6PR05MB5142.eurprd05.prod.outlook.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <1573568693-18642-1-git-send-email-ioana.ciornei@nxp.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 06:46:52PM +0000, Yuval Avnery wrote:
+On Tue, Nov 12, 2019 at 04:24:53PM +0200, Ioana Ciornei wrote:
+> The setup_dpio() function tries to allocate a number of channels equal
+> to the number of CPUs online. When there are not enough DPCON objects
+> already probed, the function will return EPROBE_DEFER. When this
+> happens, the already allocated channels are not freed. This results in
+> the incapacity of properly probing the next time around.
+> Fix this by freeing the channels on the error path.
 > 
-> 
-> > -----Original Message-----
-> > From: Jakub Kicinski <jakub.kicinski@netronome.com>
-> > Sent: Monday, November 11, 2019 10:00 AM
-> > To: Yuval Avnery <yuvalav@mellanox.com>; Jiri Pirko <jiri@mellanox.com>
-> > Cc: netdev@vger.kernel.org; Saeed Mahameed <saeedm@mellanox.com>;
-> > leon@kernel.org; davem@davemloft.net; shuah@kernel.org; Daniel Jurgens
-> > <danielj@mellanox.com>; Parav Pandit <parav@mellanox.com>;
-> > andrew.gospodarek@broadcom.com; michael.chan@broadcom.com
-> > Subject: Re: [PATCH net-next v2 00/10] devlink subdev
-> > 
-> > On Fri,  8 Nov 2019 18:18:36 +0200, Yuval Avnery wrote:
-> > > This patchset introduces devlink subdev.
-> > >
-> > > Currently, legacy tools do not provide a comprehensive solution that
-> > > can be used in both SmartNic and non-SmartNic mode.
-> > > Subdev represents a device that exists on the ASIC but is not
-> > > necessarily visible to the kernel.
-> > >
-> > > Using devlink ports is not suitable because:
-> > >
-> > > 1. Those devices aren't necessarily network devices (such as NVMe devices)
-> > >    and doesn’t have E-switch representation. Therefore, there is need for
-> > >    more generic representation of PCI VF.
-> > > 2. Some attributes are not necessarily pure port attributes
-> > >    (number of MSIX vectors)
-> > 
-> > PCIe attrs will require persistence. Where is that in this design?
-> > 
-> > Also MSIX vectors are configuration of the devlink port (ASIC side), the only
-> > reason you're putting them in subdev is because some of the subdevs don't
-> > have a port, muddying up the meaning of things.
-> 
-> The way I see this, they are both on the ASIC side.
-> But port has nothing to do with MSIX so subdev makes more sense.
-> 
-> > 
-> > > 3. It creates a confusing devlink topology, with multiple port flavours
-> > >    and indices.
-> > >
-> > > Subdev will be created along with flavour and attributes.
-> > > Some network subdevs may be linked with a devlink port.
-> > >
-> > > This is also aimed to replace "ip link vf" commands as they are
-> > > strongly linked to the PCI topology and allow access only to enabled VFs.
-> > > Even though current patchset and example is limited to MAC address of
-> > > the VF, this interface will allow to manage PF, VF, mdev in SmartNic
-> > > and non SmartNic modes, in unified way for networking and
-> > > non-networking devices via devlink instance.
-> > >
-> > > Use case example:
-> > > An example system view of a networking ASIC (aka SmartNIC), can be
-> > > seen in below diagram, where devlink eswitch instance and PCI PF
-> > > and/or VFs are situated on two different CPU subsystems:
-> > >
-> > >
-> > >       +------------------------------+
-> > >       |                              |
-> > >       |             HOST             |
-> > >       |                              |
-> > >       |   +----+-----+-----+-----+   |
-> > >       |   | PF | VF0 | VF1 | VF2 |   |
-> > >       +---+----+-----------+-----+---+
-> > >                  PCI1|
-> > >           +---+------------+
-> > >               |
-> > >      +----------------------------------------+
-> > >      |        |         SmartNic              |
-> > >      |   +----+-------------------------+     |
-> > >      |   |                              |     |
-> > >      |   |               NIC            |     |
-> > >      |   |                              |     |
-> > >      |   +---------------------+--------+     |
-> > >      |                         |  PCI2        |
-> > >      |         +-----+---------+--+           |
-> > >      |               |                        |
-> > >      |      +-----+--+--+--------------+      |
-> > >      |      |     | PF  |              |      |
-> > >      |      |     +-----+              |      |
-> > >      |      |      Embedded CPU        |      |
-> > >      |      |                          |      |
-> > >      |      +--------------------------+      |
-> > >      |                                        |
-> > >      +----------------------------------------+
-> > >
-> > > The below diagram shows an example devlink subdev topology where
-> > some
-> > > subdevs are connected to devlink ports::
-> > >
-> > >
-> > >
-> > >             (PF0)    (VF0)    (VF1)           (NVME VF2)
-> > >          +--------------------------+         +--------+
-> > >          | devlink| devlink| devlink|         | devlink|
-> > >          | subdev | subdev | subdev |         | subdev |
-> > >          |    0   |    1   |    2   |         |    3   |
-> > >          +--------------------------+         +--------+
-> > >               |        |        |
-> > 
-> > What is this NVME VF2 connected to? It's gotta get traffic from somewhere?
-> > Frames come in from the uplink, then what?
-> 
-> The whole point here is that this is not a network device
-> So it has nothing to do with the network.
-> It is simply a PCI device exposed by the NIC to the host.
-> devlink subdev lets us configure attributes for this device.
-> 
-> > 
-> > >               |        |        |
-> > >               |        |        |
-> > >      +----------------------------------+
-> > >      |   | devlink| devlink| devlink|   |
-> > >      |   |  port  |  port  |  port  |   |
-> > >      |   |    0   |    1   |    2   |   |
-> > >      |   +--------------------------+   |
-> > >      |                                  |
-> > >      |                                  |
-> > >      |           E-switch               |
-> > >      |                                  |
-> > >      |                                  |
-> > >      |          +--------+              |
-> > >      |          | uplink |              |
-> > >      |          | devlink|              |
-> > >      |          |  port  |              |
-> > >      +----------------------------------+
-> > >
-> > > Devlink command example:
-> > >
-> > > A privileged user wants to configure a VF's hw_addr, before the VF is
-> > > enabled.
-> > >
-> > > $ devlink subdev set pci/0000:03:00.0/1 hw_addr 10:22:33:44:55:66
-> > >
-> > > $ devlink subdev show pci/0000:03:00.0/1
-> > > pci/0000:03:00.0/1: flavour pcivf pf 0 vf 0 port_index 1 hw_addr
-> > > 10:22:33:44:55:66
-> > >
-> > > $ devlink subdev show pci/0000:03:00.0/1 -jp {
-> > >     "subdev": {
-> > >         "pci/0000:03:00.0/1": {
-> > >             "flavour": "pcivf",
-> > 
-> > If the flavour is pcivf what differentiates this (Ethernet) VF from a NVME
-> > one?
-> > 
-> 
-> This describes the bus not the device purpose.
-> 
-> > >             "pf": 0,
-> > >             "vf": 0,
-> > >             "port_index": 1,
-> > >             "hw_addr": "10:22:33:44:55:66"
-> > 
-> > Since you're messing with the "hw_addr", you should at least provision the
-> > uAPI for adding multiple addresses. Intel guys were asking for this long time
-> > ago.
-> 
-> This is the "permanent" address. The one the subdev boots with.
-> 
-> > 
-> > Have you considered implementing some compat code so drivers don't have
-> > to implement the legacy ndos if they support subdevs?
-> 
-> Will consider
-> 
-> > 
-> > >         }
-> > >     }
-> > > }
-> > 
-> > Okay, so you added two diagrams. I guess I was naive in thinking that "you
-> > thought this all through in detail and have more documentation and design
-> > docs internally".
-> > 
-> > I don't like how unconstrained this is, the only implemented use case is
-> > weak. But since you're not seeing this you probably never will, so seems like
-> > a waste of time to fight it.
-> 
-> What am I missing? How would you constrain this?
+> Fixes: d7f5a9d89a55 ("dpaa2-eth: defer probe on object allocate")
 
-It feels a bit 'unconstrained' to me as well.  As Jakub said you added
-some documentation, but the direction of this long-term is not clear.
-What seems to happen too often is that we skip creating better infra for
-existing devices and create it only for the newest shiniest object.
-These changes are what garners the most attention from those who grant
-permission to push things upstream (*cough* managers *cough*), but it's
-not the right choice in this case.  I'm not sure if that is part of what
-bothers Jakub, but it is one thing that bothers me and why this feels
-incomplete.
+Its not clear to me that this clean-up problem was added by
+the defer change. But rather, looking at the git logs, it seems
+likely to have been present since the driver was added by:
 
-The thing that has been bouncing around in my head about this (and until
-I was in front of a good text-based MUA I didn't dare respond) is that
-we seem to have an overlap in functionality between what you are
-proposing and existing virtual device configuration, but you are
-completely ignoring improving upon the existing creation methods.
-Whether dealing with a SmartNIC (which I used to describe a NIC with
-general purpose processors that could be running Linux and I think you
-do, too) or a regular NIC it seems like we should use devlink to create
-and configure a variety of devices these could be:
+6e2387e8f19e ("staging: fsl-dpaa2/eth: Add Freescale DPAA2 Ethernet driver")
 
-1.  Number of PFs (there are cases where more than 1 PF per uplink port
-    is required for command/control of the SmartNIC or where a single
-    PCI b/d/f may have many uplink ports that need to be addressed
-    separately)
-2.  Device-specific SR-IOV VFs visible to server
-3.  mdev devices that _may_ have representers on the embedded cores of
-    the NIC
-4.  Hardware VirtIO-net devices supported
-5.  Other non-network devices (storage given as the first example) 
-6.  ...
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> ---
+> Changes in v2:
+>  - add the proper Fixes tag
+> 
+>  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> index 19379bae0144..22e9519f65bb 100644
+> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+> @@ -2232,6 +2232,14 @@ static int setup_dpio(struct dpaa2_eth_priv *priv)
+>  err_service_reg:
+>  	free_channel(priv, channel);
+>  err_alloc_ch:
+> +	for (i = 0; i < priv->num_channels; i++) {
+> +		channel = priv->channel[i];
+> +		nctx = &channel->nctx;
+> +		dpaa2_io_service_deregister(channel->dpio, nctx, dev);
+> +		free_channel(priv, channel);
+> +	}
+> +	priv->num_channels = 0;
+> +
+>  	if (err == -EPROBE_DEFER)
+>  		return err;
 
-We cannot get rid of the methods for creating hardware VFs via sysfs,
-but now that we are seeing lots of different flavors of devices that
-might be created we should start by making sure at a minimum we can
-create existing hardware devices (VFs) with this devlink interface and
-move from there.  Is there a plan to use this interface to create
-subdevs that are VFs or just new subdev flavors?  I could start to get
-behind an interface like this if the patches showed that devlink would
-be the one place where device creation and control could be done for all
-types of subdevs, but that isn't clear that it is your direction based
-on the patches.
+This function goes on to return 0 unless cpumask_empty(&priv->dpio_cpumask)
+is zero. Given this is an errorr path and the clean-up above, is that correct?
 
-So just to make sure this is clear, what I'm proposing that devlink is
-used to create and configure all types of devices that it may be
-possible to create, configure, or address from a PF and the starting
-place should be standard, hardware VFs.  If that can be done right and
-we can address some of the issues with the current implementation (more
-than one hw addr is a _great_ example) then adding new flavours for the
-server devices and and adding new flavors for SmartNIC-based devices
-should be easy and feel natural.
-
+>  
+> -- 
+> 1.9.1
+> 
