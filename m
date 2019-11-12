@@ -2,229 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D7EF9A24
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:01:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8325F9A46
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 21:11:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfKLUBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 15:01:40 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:35241 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726008AbfKLUBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:01:39 -0500
-Received: by mail-ed1-f68.google.com with SMTP id r16so16066073edq.2
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 12:01:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VCjpXDi0o+CjPh7Lsc/CgK+2RJ4n7mek2rPWCDuj2mM=;
-        b=lvnAIQu4RuzVba15dSY5w7R7T7HCB4MbEdAA59Ci/Uxbysb0/DIhSnwCgmmfy3DWnX
-         ESvSS6x9A6N8HN9j/qpaOW1TdUXDn6zSlSk3AZGj9Kv/2kQRS0QHEVROwxqgIvrEMYF0
-         Z9AytlKz+nAXVXCNi67RThgYmEuODgBliVyk4TsEdEf3lIcH+PNRFBk+M9OmnuHBrBGc
-         w6SYCrhmaI61IJC+4UuyBfPOxelAlONM1J1c9WwQTtvxew9bNRKm0mgWLGLJs2xJX3th
-         Lh9d/UVvvnP0rUMvYqT1KGYjZQvwti8pLWacmQQs6iA9hwIMmFfwrNDoEB8ukshnZswG
-         jLfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VCjpXDi0o+CjPh7Lsc/CgK+2RJ4n7mek2rPWCDuj2mM=;
-        b=bthLFv8/KW6wks1B0+J8v6tRhdpzb+E8eShLVWh9Bf9ZKCN36u08jQ9zkbylYbJKJd
-         +zqPpIS3TWB3axkdnktmzhckO9379LMk5YQdgNuydpaVvhv10jLp8wC3qLflwZP7Qjgk
-         WWDxE2NdR+cUY7vcieKXn4abnuLggA9ET0glAkn8pKAe64Rheb+pGEDiFQcbmpRbNWuz
-         zv7j7An609n7phIrnFLTtmHvnVp+faCdC9Z8g6QpyZJjRQ3tTf26ZLts8bxIQ3RdfKvd
-         7mRu3ZkcjY/WjLyfmAX9uGRe/kRfel5gphFlDatdxyb/IJtJqJqZQxwWSnFXxmyU40IR
-         /I4A==
-X-Gm-Message-State: APjAAAXeVl17NuPG77poYXmX0cg2HUD/iQGDFEkoVosD6S7nKMCT1keR
-        xAAtfCc1rLgAU7diQ78KXQmEpHc7hOk/l1GJTT0=
-X-Google-Smtp-Source: APXvYqw4mUG6mKbbB0LNRLxX7uG6uynpCm0LAgf7AVIB4QV3nrLHGo/icRm+M+xQVwLU44nhnig7FIK2fNm29JOAUaQ=
-X-Received: by 2002:a17:906:3450:: with SMTP id d16mr17084021ejb.216.1573588896622;
- Tue, 12 Nov 2019 12:01:36 -0800 (PST)
+        id S1726906AbfKLULO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 15:11:14 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:36495 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726388AbfKLULO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 15:11:14 -0500
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1iUcVK-0004Ng-W9; Tue, 12 Nov 2019 21:11:11 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:fcf3:94db:a77f:e6a3] (unknown [IPv6:2a03:f580:87bc:d400:fcf3:94db:a77f:e6a3])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id F2B1847B46D;
+        Tue, 12 Nov 2019 20:11:08 +0000 (UTC)
+Subject: Re: [PATCH v1 1/9] can: af_can: export can_sock_destruct()
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
+        netdev@vger.kernel.org, kernel@pengutronix.de,
+        linux-can@vger.kernel.org
+References: <20191112111600.18719-1-o.rempel@pengutronix.de>
+ <20191112111600.18719-2-o.rempel@pengutronix.de>
+ <20191112113724.pff6atmyii5ri4my@pengutronix.de>
+ <1da06748-6233-b65e-9b02-da5a867a4ecb@pengutronix.de>
+ <20191112114539.zjluqnpo3cynhssi@pengutronix.de>
+ <5e561756-26b4-9a71-8fe2-c876e0e7d1af@hartkopp.net>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <70a410f6-d57b-7586-b645-35d97680ac0b@pengutronix.de>
+Date:   Tue, 12 Nov 2019 21:10:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-References: <20191112124420.6225-1-olteanv@gmail.com> <20191112124420.6225-11-olteanv@gmail.com>
- <20191112130947.GE3572@piout.net> <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
- <20191112143346.3pzshxapotwdbzpg@lx-anielsen.microsemi.net>
- <20191112145054.GG10875@lunn.ch> <20191112145732.o7pkbitrvrr2bb7j@lx-anielsen.microsemi.net>
- <CA+h21hrc-vb412iK+hp20K6huFPBABx6xYQjgi7Ew7ET8ryK+g@mail.gmail.com>
- <20191112190957.nbfb6g2bxiipjnbi@lx-anielsen.microsemi.net>
- <CA+h21hqo9dWct-068pGv2YhzACp5ooaDKzeh92jHNTYyBvgmqw@mail.gmail.com> <20191112194814.gmenwbje3dg52s6l@lx-anielsen.microsemi.net>
-In-Reply-To: <20191112194814.gmenwbje3dg52s6l@lx-anielsen.microsemi.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 12 Nov 2019 22:01:25 +0200
-Message-ID: <CA+h21hrh4oYs3j3cOz4Afe2GSbU9ME+nzoRaZ4D22mu9_jkO=g@mail.gmail.com>
-Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
- a separate folder
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5e561756-26b4-9a71-8fe2-c876e0e7d1af@hartkopp.net>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="eMNh1igYGG4bzUYbu2KYGP7gB78exY0oT"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Nov 2019 at 21:48, Allan W. Nielsen
-<allan.nielsen@microchip.com> wrote:
->
-> The 11/12/2019 21:26, Vladimir Oltean wrote:
-> > External E-Mail
-> >
-> >
-> > On Tue, 12 Nov 2019 at 21:10, Allan W. Nielsen
-> > <allan.nielsen@microchip.com> wrote:
-> > >
-> > > The 11/12/2019 17:26, Vladimir Oltean wrote:
-> > > > External E-Mail
-> > > >
-> > > >
-> > > > On Tue, 12 Nov 2019 at 16:57, Allan W. Nielsen
-> > > > <allan.nielsen@microchip.com> wrote:
-> > > > >
-> > > > > The 11/12/2019 15:50, Andrew Lunn wrote:
-> > > > > > External E-Mail
-> > > > > >
-> > > > > >
-> > > > > > > > > As there are no commonalities between the vsc73xx and felix drivers,
-> > > > > > > > > shouldn't you simply leave that one out and have felix in the existing
-> > > > > > > > > microchip folder?
-> > > > > > > > >
-> > > > > > > >
-> > > > > > > > I don't have a strong preference, although where I come from, all new
-> > > > > > > > NXP networking drivers are still labeled as "freescale" even though
-> > > > > > > > there is no code reuse. There are even less commonalities with
-> > > > > > > > Microchip (ex-Micrel, if I am not mistaken) KSZ switches than with the
-> > > > > > > > old vsc73xx. I'll let the ex-Vitesse people decide.
-> > > > > > > I'm on the same page as Alexandre here.
-> > > > > >
-> > > > > > Leaving them where they are makes maintenance easier. Fixes are easier
-> > > > > > to backport if things don't move around.
-> > > > > >
-> > > > > > > I think we should leave vsc73xx where it is already, and put the felix driver in
-> > > > > > > the drivers/net/ethernet/mscc/ folder where ocelot is already.
-> > > > > >
-> > > > > > Currently, all DSA drivers are in drivers/net/dsa. We do occasionally
-> > > > > > make changes over all DSA drivers at once, so it is nice they are all
-> > > > > > together. So i would prefer the DSA part of Felix is also there. But
-> > > > > > the core can be in drivers/net/ethernet/mscc/.
-> > > > > Ahh, my bad.
-> > > > >
-> > > > > In that case I do not have any strong feelings on this either.
-> > > > >
-> > > > > I should say that we are discussing to add support for a Ocelot VSC7511 as a DSA
-> > > > > driver. This one does not have an internal MIPS CPU.
-> > > > >
-> > > > > The vsc73xx, felix and the drivers in dsa/microchip does not share any
-> > > > > functionallity. Not in SW and not in HW.
-> > > > >
-> > > > > Maybe felix should just go directly into drivers/net/dsa/, and then if we add
-> > > > > support for VSC7511 then they can both live in drivers/net/dsa/ocelot/
-> > >
-> > >
-> > > A bit of background such that people outside NXP/MCHP has a better change to
-> > > follow and add to the discussion.
-> > >
-> > > Ocelot is a family name covering 4 VSC parts (VSC7511-14), and a IP used by NXP
-> > > (VSC9959).
-> > >
-> > > VSC7511-14 are all register compatible, it uses the same serdes etc.
-> > >
-> > > VSC7511/12 are "unmanaged" meaning that they do not have an embedded CPU.
-> > >
-> > > VSC7513/14 has an embedded MIPS CPU.
-> > >
-> > > VSC9959 not the same core as VSC7511-14, it is a newer generation with more
-> > > features, it is not register compatible, but all the basic functionallity is
-> > > very similar VSC7511-14 which is why it can call into the
-> > > drivers/net/ethernet/mscc/ocelot.c file.
-> > >
-> > > It is likely that NXP want to add more features in felix/VSC9959 which does not
-> > > exists in VSC7511-14.
-> > >
-> > > > When the felix driver is going to support the vsc7511 ocelot switch
-> > > > through the ocelot core, it will be naming chaos.
-> > > I do not think a VSC7511 will be based on Felix, but it will relay on the
-> > > refacturing/restructuring you have done in Ocelot.
-> > >
-> > > VSC7511 will use the same PCS and serdes settings as Ocelot (VSC7513/VSC7514)
-> > >
-> > > > Maybe we need to clarify what "felix" means (at the moment it means VSC9959).
-> > > Yes.
-> > >
-> > > > What if we just make it mean "DSA driver for Ocelot", and it supports both the
-> > > > VSC751x (Ocelot) and the VSC9959 (Felix) families?
-> > > I'm not too keen on using the felix name for that.
-> > >
-> > > Here is my suggestion:
-> > >
-> > > Drop the felix name and put it in drivers/net/dsa/ocelot_vsc9959* (this would be
-> > > my preference)
-> > >
-> >
-> > This has one big issue: the name is very long! I can't see myself
-> > prefixing all function and structure names with ocelot_vsc9959_*.
-> > Felix is just 5 letters. And I can't use "ocelot" either, since that
-> > is taken :)
-> > So the DSA driver needs its own (short) name.
-> I certainly agree that ocelot_vsc9959_* is too long a prefix.
->
-> If you put it in drivers/net/dsa/ocelot_felix* or drivers/net/dsa/ocelot/felix*
-> then you can prefix with 'felix_'.
->
-> If you put it in drivers/net/dsa/ocelot_vsc9959* or drivers/net/dsa/ocelot/vsc9959*
-> then you can prefix with 'vsc9959_'.
->
-> The one thing all of this parts has in common is that they are all based on the
-> Ocelot family, which is why I suggest to include this into the path. It will
-> provide more information than putting it in the vitesse/microchip folders.
->
-> > > Or if you want the felix name put it in drivers/net/dsa/ocelot_felix*
-> > >
-> > > Or if we want folders put it in drivers/net/dsa/ocelot/vsc9959*
-> > >
-> >
-> > The way I see an Ocelot DSA driver, it would be done a la mv88e6xxx,
-> > aka a single struct dsa_switch_ops registered for the entire family,
-> > and function pointers where the implementation differs. You're not
-> > proposing that here, but rather that each switch driver works in
-> > parallel with each other, and they all call into the Ocelot core. That
-> > would produce a lot more boilerplate, I think.
-> > And if the DSA driver for Ocelot ends up supporting more than 1
-> > device, its name should better not contain "vsc9959" since that's
-> > rather specific.
-> A vsc7511/12 will not share code with felix/vsc9959. I do not expect any other
-> IP/chip will be register compatible with vsc9959.
->
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--eMNh1igYGG4bzUYbu2KYGP7gB78exY0oT
+Content-Type: multipart/mixed; boundary="CvSg4F7QtbR3ei47g1qefK1E9FliPeTyP";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Oliver Hartkopp <socketcan@hartkopp.net>,
+ =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+ dev.kurt@vandijck-laurijssen.be, wg@grandegger.com, netdev@vger.kernel.org,
+ kernel@pengutronix.de, linux-can@vger.kernel.org
+Message-ID: <70a410f6-d57b-7586-b645-35d97680ac0b@pengutronix.de>
+Subject: Re: [PATCH v1 1/9] can: af_can: export can_sock_destruct()
+References: <20191112111600.18719-1-o.rempel@pengutronix.de>
+ <20191112111600.18719-2-o.rempel@pengutronix.de>
+ <20191112113724.pff6atmyii5ri4my@pengutronix.de>
+ <1da06748-6233-b65e-9b02-da5a867a4ecb@pengutronix.de>
+ <20191112114539.zjluqnpo3cynhssi@pengutronix.de>
+ <5e561756-26b4-9a71-8fe2-c876e0e7d1af@hartkopp.net>
+In-Reply-To: <5e561756-26b4-9a71-8fe2-c876e0e7d1af@hartkopp.net>
 
-I don't exactly understand this comment. Register-incompatible in a
-logical sense, or in a layout sense? Judging from the attachment in
-chapter 6 of the VSC7511 datasheet [1], at least the basic
-functionality appears to be almost the same. And for the rest, there's
-regmap magic.
+--CvSg4F7QtbR3ei47g1qefK1E9FliPeTyP
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
 
-> A vsc7511/12 will use the ocelot DSA tagger, but other from that it will call into the
-> ocelot driver (I think).
->
-> But to be honest, I do not think we should spend too much energy on vsc7511/12
-> now. When/if it comes, we will see how it fit best.
->
-> /Allan
+On 11/12/19 7:24 PM, Oliver Hartkopp wrote:
+>=20
+>=20
+> On 12/11/2019 12.45, Uwe Kleine-K=C3=B6nig wrote:
+>> Hello Marc,
+>>
+>> On Tue, Nov 12, 2019 at 12:39:27PM +0100, Marc Kleine-Budde wrote:
+>>> On 11/12/19 12:37 PM, Uwe Kleine-K=C3=B6nig wrote:
+>>>> On Tue, Nov 12, 2019 at 12:15:52PM +0100, Oleksij Rempel wrote:
+>>>>> +EXPORT_SYMBOL(can_sock_destruct);
+>>>>
+>>>> If the users are only expected to be another can module, it might ma=
+ke
+>>>> sense to use a namespace here?!
+>>>
+>>> How?
+>>
+>> Use
+>>
+>> 	EXPORT_SYMBOL_NS(can_sock_destruct, CAN)
+>>
+>> instead of the plain EXPORT_SYMBOL, and near the declaration of
+>> can_sock_destruct or in the source that makes use of the symbol add:
+>>
+>> 	MODULE_IMPORT_NS(CAN);
+>>
+>> See https://lwn.net/Articles/760045/ for some details.
+>=20
+> Looks nice! Good idea!
+>=20
+> But I would tend to introduce the symbol namespaces for this and the=20
+> other (existing) symbols via can-next and not within this patch set tha=
+t=20
+> addresses the j1939 fixes.
 
-Ok. So the driver will still be called "felix", it will instantiate a
-struct felix_info_vsc9959 instead of the current felix_info_ls1028a,
-but will live in the root drivers/net/dsa folder. Then, when/if you
-add support for vsc7511, you'll move both into an "ocelot" folder and
-figure out how much of the driver minus the tagger is worth reusing
-(aka instantiate a struct felix_info_vsc7511). Agree?
+So I should take this series as is?
 
-[1]: http://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10488.pdf
+And the CAN namespace is introduced later?
 
--Vladimir
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--CvSg4F7QtbR3ei47g1qefK1E9FliPeTyP--
+
+--eMNh1igYGG4bzUYbu2KYGP7gB78exY0oT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl3LEcsACgkQWsYho5Hk
+nSBWKQgAlpFLnk1A4pZ8fJOB6EwY8rRPzA7ZllnjJa6ziGM0/6pUyHsgs8ap9nNM
+8WcdGEYo/Os6sEO6Cg0X1AhTtDHlQwA3Sn2lQ2Mi8wZ2AAHoljhHK4bKOlDjTK5R
+UAFZEgv4ey3nIgXayFK6QL5JPQ3BPkrftwXtgCu8wmw8OBUtg2bl7mcYUiaxKhom
+Fv0SupnrUv69pB+MLfugrnAFpbXTnceSBZX07TiOT+/cVM4IFYXv+0x/L909vEnL
+vBcy0T0iHmtU5cRCmMXNh6f+Jkvaw60QADdTSMr2B8Q5CQ3uecKFjf3q+XF8T2OM
+e14Xk8KpoWrKvC8x4m57Ir0Mn25kQg==
+=hXkj
+-----END PGP SIGNATURE-----
+
+--eMNh1igYGG4bzUYbu2KYGP7gB78exY0oT--
