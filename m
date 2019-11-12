@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48DAEF9C66
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:38:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94241F9C78
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:48:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726936AbfKLViv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:38:51 -0500
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:37194 "EHLO
+        id S1726970AbfKLVs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:48:57 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46836 "EHLO
         mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726912AbfKLViu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:38:50 -0500
-Received: by mail-ed1-f68.google.com with SMTP id k14so31994eds.4
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:38:49 -0800 (PST)
+        with ESMTP id S1726376AbfKLVs4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:48:56 -0500
+Received: by mail-ed1-f68.google.com with SMTP id x11so13408eds.13
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:48:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=7IQIL9Get0wH/ZS5WQf63zxHfLvK+H+M/awmh5weoiw=;
-        b=JCEURPSWzNcF9XSqELGSHXmST8B3GdT6C05UTs0TnmG9kydtaMiFOMx0ATjifTbB7j
-         Oc956Qd90UJysuHgj1qcmna+TsLSgjyG2H6/99Ll+vAx5RCdBPegXoOs9X8c22NaP2UM
-         Nx605+uN8FT8bGPKtw8cj5ey2wnveJNhd//psg/B7AMEW5LP9KDSxwOiyg8jJ+f8Vrp3
-         mH8BkXzMZgYusWJ+QTi/Y1n+cD2112fd55JvD5bMmwCQgKQzs4O9EbgexJdmLmsIrld9
-         bo9thaN1pi15glVjQaZoGyYnxZvVdO5J34mwLhMr63HjPIEgh4n+86h2uVtIoJ0WZG+1
-         +6mw==
+        bh=gFRQzgegRK+qe8khs8t3Em4E5JXHcupe6lvVQ25OxUw=;
+        b=ARjZjk/R0VAJV67CfsvvR4qy0fZcoUQYp9j7HXdNT1KYtXUbVCyrLTxC2pp/JFH+i4
+         9BScXrlR2D61GpURnGuM3dkPBsQwIzJ1XLrUNthH3A2gk/VpBwKBg3vaeLcVgUFOvRFn
+         gC5moJ0ZQ7yNz2D7Uk41zNlL6OsxVC7Ps9Y6aKVp5ZJDxrNZsHYGZCOAvBIqn8rIAcm8
+         vzXkfIV53Fq3hos2NW9MyIWSg5NbQvorwyl9aZLZaTEj8BpP3dXl7h/YmnCxl0X+s9Uf
+         57xW7zfRvXjxxi7cXIP3bVbo7veBX4TCx5dJQZU2Rs12I67faym1WZGzLvq4RU1tnjTd
+         8giA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=7IQIL9Get0wH/ZS5WQf63zxHfLvK+H+M/awmh5weoiw=;
-        b=e463AKMZDYks8HAIhX08edDfHObq8NYQBUE5tvzQNv8yxZId1XB7ml7FuYGE2x3jER
-         h4p9BosamCpQ/K7h0vbQFgCV0kRmpdBFZol55aO4lK708xvoSb5Y3NNSb01yQH0OMIHs
-         +TJcGSOvJ0dytyZjMn80m2M5DeW67txOFPa21UcjH4FCNQRkL500Es8F7GjtEuePmv8w
-         jvT9runZOc3fAzFXUSH62bnjfhqlSvzUGO2iTIV4QfirmfFFdthpyNfnomkw+hBDrnBL
-         DzPDnyM075fBHSJSXzaHfXfFhoqiXUz9xp7mKSMqTyOhFaxHAZ3N8xVl4e6/G1509PJU
-         pEkg==
-X-Gm-Message-State: APjAAAUW8TxOfLlm27VQwwVgagwJJKI019pz+h9BWImS+UtY/ysCKcWb
-        fEuz+K+ogg8Ch3mc2JVO+Hkjac1i
-X-Google-Smtp-Source: APXvYqy/bW0x40JoiXaEbsWiTN4T7zX8fwPbOgTKUg4SgwQzlkcyBNaGLRxzk0I6wdm/Ec05H9ZywQ==
-X-Received: by 2002:a05:6402:1156:: with SMTP id g22mr36063428edw.233.1573594728403;
-        Tue, 12 Nov 2019 13:38:48 -0800 (PST)
+        bh=gFRQzgegRK+qe8khs8t3Em4E5JXHcupe6lvVQ25OxUw=;
+        b=JJ9ZuAWTxkSn3/cszxJ/7IOJlC3i1A8Gk4Ab5oUs2uY9EFLbd8iaL12HkjxJZjT5cs
+         mp00F7B8C7hamnBT1t5KYfZwv+OwcEg/6yqK7Q4Kj2VI5Qa+o9wI6TBNJMcrcY1Q6Npx
+         4ity5QrF5ZAwoZbeGza7Tjo8UuiuaFc34MjSUczEY7Eg9ljsQ9pM+yCzTcL7d0HGf4cP
+         nXGH2D9LnMzrAHJaeCz8qLYf5WgUbJswlzA5d4sAjzhLP/T5vwX9hPAjjlDvJoOmIVPC
+         g4nCZiV9ubrhVwaU7PLdkCXxE9e32Ac1FIG5DvAs9k24TZ7wbIoSyIY5HH2m1eP0DN1b
+         xFww==
+X-Gm-Message-State: APjAAAWouwHEO8O6IJ3qPM1ZM0P65SOpGZI1vcwQjC/YOI+raehfYY7/
+        nMuiT7clTWCB+8Iz4fRQaQw=
+X-Google-Smtp-Source: APXvYqz6OIOu+rgUqYRKLqI5ri+UDXo9eTEzct3ThuzITXAWERMFdtQfB2nx2KHyjvWWBs1GDlQtNA==
+X-Received: by 2002:a05:6402:4c7:: with SMTP id n7mr35141658edw.263.1573595334409;
+        Tue, 12 Nov 2019 13:48:54 -0800 (PST)
 Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d18sm3074edy.79.2019.11.12.13.38.45
+        by smtp.googlemail.com with ESMTPSA id g43sm5395edb.14.2019.11.12.13.48.50
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Nov 2019 13:38:47 -0800 (PST)
-Subject: Re: [PATCH net-next 09/12] net: mscc: ocelot: publish ocelot_sys.h to
- include/soc/mscc
+        Tue, 12 Nov 2019 13:48:53 -0800 (PST)
+Subject: Re: [PATCH net-next 12/12] net: dsa: vitesse: add tagger for
+ Ocelot/Felix switches
 To:     Vladimir Oltean <olteanv@gmail.com>, jakub.kicinski@netronome.com,
         davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
@@ -55,7 +55,7 @@ Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-10-olteanv@gmail.com>
+ <20191112124420.6225-13-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -112,12 +112,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <6f92f3bd-9d97-9cea-b485-843521dcee9a@gmail.com>
-Date:   Tue, 12 Nov 2019 13:38:38 -0800
+Message-ID: <2d7ede34-dd8e-fbdd-c15a-bb1d8861470a@gmail.com>
+Date:   Tue, 12 Nov 2019 13:48:48 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191112124420.6225-10-olteanv@gmail.com>
+In-Reply-To: <20191112124420.6225-13-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,58 +129,30 @@ X-Mailing-List: netdev@vger.kernel.org
 On 11/12/19 4:44 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The Felix DSA driver needs to write to SYS_RAM_INIT_RAM_INIT for its own
-> chip initialization process.
+> While it is entirely possible that this tagger format is in fact more
+> generic than just these 2 switch families, I don't have that knowledge.
+> The Seville switch in NXP T1040 has a similar frame format, but there
+> are enough differences (e.g. DEST field starts at bit 57 instead of 56)
+> that calling this file tag_vitesse.c is a bit of a stretch at the
+> moment. The frame format has been listed in a comment so that people who
+> add support for further Vitesse switches can rework this tagger while
+> keeping compatibility with Felix.
+> 
+> The "ocelot" name was chosen instead of "felix" because even the Ocelot
+> switch can act as a DSA device when it is used in NPI mode, and the Felix
+> tagger format is almost identical. Currently it is only used for the
+> Felix switch embedded in the NXP LS1028A chip.
+> 
+> The ABI for this tagger should be considered "not stable" at the moment.
+> The DSA tag is always placed before the Ethernet header and therefore,
+> we are using the long prefix for RX tags to avoid putting the DSA master
+> port in promiscuous mode. Once there will be an API in DSA for drivers
+> to request DSA masters to be in promiscuous mode unconditionally, we
+> will switch to the "no prefix" extraction frame header, which will save
+> 16 padding bytes for each RX frame.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot.h                      | 2 +-
->  {drivers/net/ethernet => include/soc}/mscc/ocelot_sys.h | 0
->  2 files changed, 1 insertion(+), 1 deletion(-)
->  rename {drivers/net/ethernet => include/soc}/mscc/ocelot_sys.h (100%)
 
-This was not done before for include/soc/mscc/ocelot_hsio.h but you need
-an update to the MAINTAINERS file to catch that file now:
-
-$ ./scripts/get_maintainer.pl -f include/soc/mscc/ocelot_hsio.h
-linux-kernel@vger.kernel.org (open list)
-
-expected:
-
-
-Alexandre Belloni <alexandre.belloni@bootlin.com> (supporter:MICROSEMI
-ETHERNET SWITCH DRIVER)
-Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-(supporter:MICROSEMI ETHERNET SWITCH DRIVER)
-"David S. Miller" <davem@davemloft.net> (odd fixer:NETWORKING DRIVERS)
-netdev@vger.kernel.org (open list:MICROSEMI ETHERNET SWITCH DRIVER)
-
-
-> 
-> diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-> index 325afea3e846..32fef4f495aa 100644
-> --- a/drivers/net/ethernet/mscc/ocelot.h
-> +++ b/drivers/net/ethernet/mscc/ocelot.h
-> @@ -18,12 +18,12 @@
->  #include <linux/ptp_clock_kernel.h>
->  #include <linux/regmap.h>
->  
-> +#include <soc/mscc/ocelot_sys.h>
->  #include <soc/mscc/ocelot.h>
->  #include "ocelot_ana.h"
->  #include "ocelot_dev.h"
->  #include "ocelot_qsys.h"
->  #include "ocelot_rew.h"
-> -#include "ocelot_sys.h"
->  #include "ocelot_qs.h"
->  #include "ocelot_tc.h"
->  #include "ocelot_ptp.h"
-> diff --git a/drivers/net/ethernet/mscc/ocelot_sys.h b/include/soc/mscc/ocelot_sys.h
-> similarity index 100%
-> rename from drivers/net/ethernet/mscc/ocelot_sys.h
-> rename to include/soc/mscc/ocelot_sys.h
-> 
-
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
