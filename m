@@ -2,133 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E2FF857B
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 01:40:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88394F859D
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 01:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726928AbfKLAkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Nov 2019 19:40:20 -0500
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:32950 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726903AbfKLAkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 19:40:20 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id 38A3F4AC53;
-        Tue, 12 Nov 2019 11:40:13 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=content-transfer-encoding:mime-version:x-mailer:message-id
-        :date:date:subject:subject:from:from:received:received:received;
-         s=mail_dkim; t=1573519213; bh=D6wSYolnnaGGUCfp42yd05Iow704javOn
-        uwz29SwktM=; b=BV0Qu6b+z22uHJ/JFf1Wa/BOYYjLS172m+nORZ4x95aJPpCkk
-        Oh9bru8nkj53+jDS9I7vBVgj98XRZfmFsPGLHs/7PrR0hBFk/bHjm6Rw93VjcFFn
-        Wedn1BKVzkW7YpS3izDBpgTKBXqc7SVWnaEwafHlwG4loWpnpTHredtrBY=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id RYFcF8dyTdEi; Tue, 12 Nov 2019 11:40:13 +1100 (AEDT)
-Received: from mail.dektech.com.au (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPS id 0C3C54AC54;
-        Tue, 12 Nov 2019 11:40:12 +1100 (AEDT)
-Received: from dhost.dek-tpc.internal (unknown [14.161.14.188])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.dektech.com.au (Postfix) with ESMTPSA id 2FE164AC53;
-        Tue, 12 Nov 2019 11:40:12 +1100 (AEDT)
-From:   Hoang Le <hoang.h.le@dektech.com.au>
-To:     jon.maloy@ericsson.com, maloy@donjonn.com,
-        tipc-discussion@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [net-next] tipc: update mon's self addr when node addr generated
-Date:   Tue, 12 Nov 2019 07:40:04 +0700
-Message-Id: <20191112004004.3625-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.20.1
+        id S1727024AbfKLAxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Nov 2019 19:53:39 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:43651 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726908AbfKLAxj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Nov 2019 19:53:39 -0500
+Received: by mail-ed1-f67.google.com with SMTP id w6so13471001edx.10
+        for <netdev@vger.kernel.org>; Mon, 11 Nov 2019 16:53:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fcSxLNS/biUc89tWphozIjzqziKHdWqDkzf/MRzUwLI=;
+        b=aEIW8qlW9Fs3KD6+QuR/lZR65NIOYSejq8qalYvtaYkBc6fYPe/CrPBdmKxRj3tRqA
+         SvACVGX4477RMyrfSCaLeo+nAYOb2jWtTo5Pw7L10PPcrtnyE/tNhos43BmUUxfKzvzx
+         BW1yntjk2cjistsBv1uKBtgEBncFRzcD4WrWsd/tunT3aifyl8gOyHH/bd+hsiXNmBgf
+         hEBzPM1ue3yw1q7Vp1/Jl2OhVobHu8tOe7ly/0xEtJOlGDGtETZuwTRahtML4utbyCY7
+         k7yc2N4CsrhuV9ZNePpcnywVSUrxSpyEAewMDeowmp9xUVofJB7kV54XDsWyU0GECof+
+         fJfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fcSxLNS/biUc89tWphozIjzqziKHdWqDkzf/MRzUwLI=;
+        b=Bds8IdYdHHlChnSjv1QLc0A6SPusV7wC2PDM4e7QGETWXMg6jT9J3etvBPSUqGYSQz
+         ZVuuNtqW1IG4HMMxwocBOOFvbvsC5Fsm7WeSyXMamkCNG+ywJ+fN9qjrKK/MRokcVHwp
+         VTaXC/L9nyYMyj78yt6GCY91HWpGKCATestmkrZF7MeeBZRy2cHyt11+CczrMOFpB407
+         hCTK2gsuL5KVae8PIxBgAnjCu1v9mVLDiWaHdkUjO1UtD0kjLDYDQkeILaNk59ESa2db
+         hJ0AlCduZ60gdmjEOgGjCVPoHyz7FENVtkBW8ePWfkPyM4iiWKPo5NZGiU0xt8tmAuTI
+         qVeA==
+X-Gm-Message-State: APjAAAWPbR5mOO893w7oJxOhUVRmztukoXHeOBxeYP7gbJcqxiLuFSXz
+        aEpo6JGTD/+KMXrGZ3tROt0RGGTMqkFvDmJMgRdKBmTK
+X-Google-Smtp-Source: APXvYqyWXGIxePhXlU/bZ5cfmyk0lUafF0BTjv+X3vYuGkL7imU2T56xnaoD6Snrr6nb4RzGykVUJN33xg4TVZB1qKE=
+X-Received: by 2002:a50:c408:: with SMTP id v8mr29833770edf.140.1573520016910;
+ Mon, 11 Nov 2019 16:53:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+References: <20191109130301.13716-1-olteanv@gmail.com> <20191109130301.13716-16-olteanv@gmail.com>
+ <20191110165031.GF25889@lunn.ch> <CA+h21hoDvAX7NgUL0VxkBwyaAst6cr_-xTz9=7T+CANqV=Zv9A@mail.gmail.com>
+ <20191110171250.GH25889@lunn.ch> <CA+h21hpg2a=V44R_YNBBxTP4jLMgQaHBzHXyqaMDhg9uBvtpAA@mail.gmail.com>
+ <d99479d0-b5c2-bee2-73ff-7d9235840225@gmail.com>
+In-Reply-To: <d99479d0-b5c2-bee2-73ff-7d9235840225@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 12 Nov 2019 02:53:26 +0200
+Message-ID: <CA+h21hqvYnj-4mTwQ5zF9HNh8RHH3PMyBgpHHiiyT4+9RPkLbQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 15/15] net: mscc: ocelot: don't hardcode the
+ number of the CPU port
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In commit 25b0b9c4e835 ("tipc: handle collisions of 32-bit node address
-hash values"), the 32-bit node address only generated after one second
-trial period expired. However the self's addr in struct tipc_monitor do
-not update according to node address generated. This lead to it is
-always zero as initial value. As result, sorting algorithm using this
-value does not work as expected, neither neighbor monitoring framework.
+On Sun, 10 Nov 2019 at 22:54, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+>
+>
+> On 11/10/2019 9:33 AM, Vladimir Oltean wrote:
+> > On Sun, 10 Nov 2019 at 19:12, Andrew Lunn <andrew@lunn.ch> wrote:
+> >>
+> >> On Sun, Nov 10, 2019 at 07:00:33PM +0200, Vladimir Oltean wrote:
+> >>> On Sun, 10 Nov 2019 at 18:50, Andrew Lunn <andrew@lunn.ch> wrote:
+> >>>>
+> >>>> On Sat, Nov 09, 2019 at 03:03:01PM +0200, Vladimir Oltean wrote:
+> >>>>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >>>>>
+> >>>>> VSC7514 is a 10-port switch with 2 extra "CPU ports" (targets in the
+> >>>>> queuing subsystem for terminating traffic locally).
+> >>>>
+> >>>> So maybe that answers my last question.
+> >>>>
+> >>>>> There are 2 issues with hardcoding the CPU port as #10:
+> >>>>> - It is not clear which snippets of the code are configuring something
+> >>>>>   for one of the CPU ports, and which snippets are just doing something
+> >>>>>   related to the number of physical ports.
+> >>>>> - Actually any physical port can act as a CPU port connected to an
+> >>>>>   external CPU (in addition to the local CPU). This is called NPI mode
+> >>>>>   (Node Processor Interface) and is the way that the 6-port VSC9959
+> >>>>>   (Felix) switch is integrated inside NXP LS1028A (the "local management
+> >>>>>   CPU" functionality is not used there).
+> >>>>
+> >>>> So i'm having trouble reading this and spotting the difference between
+> >>>> the DSA concept of a CPU port and the two extra "CPU ports". Maybe
+> >>>> using the concept of virtual ports would help?
+> >>>>
+> >>>> Are the physical ports number 0-9, and so port #10 is the first extra
+> >>>> "CPU port", aka a virtual port? And so that would not work for DSA,
+> >>>> where you need a physical port.
+> >>>>
+> >>>>       Andrew
+> >>>
+> >>> Right. See my other answer which links to Ocelot documentation.
+> >>
+> >> Yes, i'm getting the picture now.
+> >>
+> >> The basic problem is that in the Linux kernel CPU port has a specific
+> >> meaning, and it is clashing with the meaning used in the datasheet. So
+> >> maybe in the driver, we need to refer to these two ports as 'local
+> >> ports'?
+> >>
+> >
+> > Hmm, I don't know. Both types of CPU ports lead to management CPUs,
+> > but to different types of them. I understand the clash with the DSA
+> > meaning, but even if I rename it I would have to provide an
+> > explanation relative to the datasheet definitions (and I already
+> > explain that the NPI mode is the DSA type of CPU port). I'm not sure
+> > there is a net gain.
+>
+> Maybe we need to agree on renaming DSA's CPU port to "mgmt_port" or
+> something that indicates that there is in-band signaling to help support
+> the function of managing the switch, incidentally Broadcom switches call
+> their ports In-Band Management Port (IMP) which is clearer IMHO.
+> --
+> Florian
 
-In this commit, we add a fix to update self's addr when 32-bit node
-address generated.
+In the hardware conceptions that I float in, a "management port" has
+the connotation of "exclusively management" (link-local multicast plus
+user-defined trapping rules). While I completely understand that this
+model is something that doesn't help the Linux abstraction at all, it
+is something that apparently enough people in NXP have thought of as
+being a good idea since they actually put it in practice in designs.
+Just something to keep in mind.
 
-Fixes: 25b0b9c4e835 ("tipc: handle collisions of 32-bit node address hash=
- values")
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
----
- net/tipc/monitor.c | 15 +++++++++++++++
- net/tipc/monitor.h |  1 +
- net/tipc/net.c     |  2 ++
- 3 files changed, 18 insertions(+)
+Andrew, is the Z80 embedded CPU able to run Linux? If not, then from
+what perspective are you saying you're going to call it "the z80 port"
+instead of "CPU port", and why would you add support for it?
+The current ocelot driver runs on the little CPU and doesn't support
+external management, and the downstream felix driver runs on the big
+CPU and doesn't support "local" I/O (DMA, PIO), so there are both at
+the extremes. I don't know of any kernel driver that sets up the
+switch for a remote DSA master, but I'd be curious to see what is the
+terminology there.
 
-diff --git a/net/tipc/monitor.c b/net/tipc/monitor.c
-index 6a6eae88442f..58708b4c7719 100644
---- a/net/tipc/monitor.c
-+++ b/net/tipc/monitor.c
-@@ -665,6 +665,21 @@ void tipc_mon_delete(struct net *net, int bearer_id)
- 	kfree(mon);
- }
-=20
-+void tipc_mon_reinit_self(struct net *net)
-+{
-+	struct tipc_monitor *mon;
-+	int bearer_id;
-+
-+	for (bearer_id =3D 0; bearer_id < MAX_BEARERS; bearer_id++) {
-+		mon =3D tipc_monitor(net, bearer_id);
-+		if (!mon)
-+			continue;
-+		write_lock_bh(&mon->lock);
-+		mon->self->addr =3D tipc_own_addr(net);
-+		write_unlock_bh(&mon->lock);
-+	}
-+}
-+
- int tipc_nl_monitor_set_threshold(struct net *net, u32 cluster_size)
- {
- 	struct tipc_net *tn =3D tipc_net(net);
-diff --git a/net/tipc/monitor.h b/net/tipc/monitor.h
-index 2a21b93e0d04..ed63d2e650b0 100644
---- a/net/tipc/monitor.h
-+++ b/net/tipc/monitor.h
-@@ -77,6 +77,7 @@ int __tipc_nl_add_monitor(struct net *net, struct tipc_=
-nl_msg *msg,
- 			  u32 bearer_id);
- int tipc_nl_add_monitor_peer(struct net *net, struct tipc_nl_msg *msg,
- 			     u32 bearer_id, u32 *prev_node);
-+void tipc_mon_reinit_self(struct net *net);
-=20
- extern const int tipc_max_domain_size;
- #endif
-diff --git a/net/tipc/net.c b/net/tipc/net.c
-index 85707c185360..2de3cec9929d 100644
---- a/net/tipc/net.c
-+++ b/net/tipc/net.c
-@@ -42,6 +42,7 @@
- #include "node.h"
- #include "bcast.h"
- #include "netlink.h"
-+#include "monitor.h"
-=20
- /*
-  * The TIPC locking policy is designed to ensure a very fine locking
-@@ -136,6 +137,7 @@ static void tipc_net_finalize(struct net *net, u32 ad=
-dr)
- 	tipc_set_node_addr(net, addr);
- 	tipc_named_reinit(net);
- 	tipc_sk_reinit(net);
-+	tipc_mon_reinit_self(net);
- 	tipc_nametbl_publish(net, TIPC_CFG_SRV, addr, addr,
- 			     TIPC_CLUSTER_SCOPE, 0, addr);
- }
---=20
-2.20.1
+But otherwise, I don't know whether there's anything really actionable
+here. What the ocelot driver calls a CPU port is always a "port
+towards the CPU running Linux and managing the switch", so the CPU
+port is always local by definition, no matter whether the CPU is
+connected over DMA or over Ethernet (aka NPI mode or not).
 
+Thanks,
+-Vladimir
