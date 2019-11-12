@@ -2,69 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA3FFF9CDE
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 23:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51BC5F9CE6
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 23:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726954AbfKLWUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 17:20:05 -0500
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:37264 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726896AbfKLWUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 17:20:04 -0500
-Received: by mail-lf1-f68.google.com with SMTP id b20so183963lfp.4
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 14:20:02 -0800 (PST)
+        id S1726936AbfKLWW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 17:22:28 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40225 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726896AbfKLWW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 17:22:28 -0500
+Received: by mail-lj1-f196.google.com with SMTP id q2so214712ljg.7
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 14:22:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=FaG/Lq6UjFSgxoe0xQS6nnz6Kfzut+QfDC31o6BtulQ=;
-        b=ZGv5/eyhYasg2ZW1/Ml5E4wctqkAD97f8ARHlPqWQbFJno3AQahj2Ydx65cV6yynAs
-         2MR8XL4/YujjIp2qY6HTKGdhNwJOTQqg/DZQA7BWHoRuOT/c9jQad0enTlgHhkA7kEdq
-         zgI5d+79Fd/ZkpaaxuheRWoMSqpgZX8pr1d1YgiXD7TE9tT1img/RjOQQ3BjmdQYQoSm
-         p6eI7Gb8IPP77rH9dxWN5lxIUNSrORX22Og4EWgH1rWZEpW55y1E/yZgMdS11pTg7aGq
-         Q53C+OH75m6tdilo6QT/YVrHkUy4hHsCl/yzeEN5Nmuakla5gjoOmZLwfjkneCeSG2qZ
-         JF/Q==
+        bh=vX4wzp3op3/loo1RCM+LXKXjgadCdjlCLVpUZ293jw4=;
+        b=Bgch8T+spbQ5vYsSDbSdL8ZJwxQ3LBa/KsCsmCkEo0MUUKUmtYAbR5n8orvs2bayaq
+         FvXIFl/hVp/BluFdzwHmHvfnI/aUMNr8U+aW+RvLicftB5MYnDiDM0PdgjtIi0JBpbb1
+         qXddgxlI6fj42485+lfBtZr5L6NXamMOOpPEWYu3g5ezEcPG+V9kp3IGnDuIgSW2prZO
+         owhXqKcLMeI/NZRYKxePXpOUBLBpTWTFJAEdjsxTgFfA8ByXc1paU7oOlP19dzBWjbNc
+         aWoEonz2gZzExLo/WQK+90M9GZkypVFCzh8HfFpntgaXaMKX+hyjf0ii63r9Df3rBfef
+         EmSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=FaG/Lq6UjFSgxoe0xQS6nnz6Kfzut+QfDC31o6BtulQ=;
-        b=fD96iqXBW/1u1AX9T/+tOew0+t02OXzjVNMCahRb7gb47aYG73BgVeHNJS4gVgPioO
-         ThUsWEelRET2RGm9VgoP1/l4aO9vyoLNrXc7vhsic6E2kJOYdRw/4kZ10GeLK3BiyLF8
-         arWK4Y6AW49OSAsDIpMwX/HZzdL6+MwsgK7YO/b/fD5yRUCKhmvtsJH+QlpxK4LJFN/j
-         u13wMpaDn70TV1a44m2Ogx9NupSUQxMLEOWBuOdCqaMm/yvbd/b7Y9COSUFHkb5RsgoO
-         8ffxYLgqCeIMMyJD8+GofxHPr3BByclv6MZDDTpWKZn3aCkbjRgShJ1B+beJVV7ThaKk
-         ar8Q==
-X-Gm-Message-State: APjAAAX8A9zaPDk9Luq+oXxf+WmN/TFRMo3pVY1GTcAYZJfyQ+XwbH+K
-        Xfb1ss3s3cbTsduhl0kfydpwLaAdRxE=
-X-Google-Smtp-Source: APXvYqzvyo4zrAiQUXlbWAeyIJ7T/fogtTvVpdwqpW6K3h3Ze+7AfZccSm3h2F7yn/uBEb9DTUX7lQ==
-X-Received: by 2002:a19:6a03:: with SMTP id u3mr127156lfu.25.1573597201931;
-        Tue, 12 Nov 2019 14:20:01 -0800 (PST)
+        bh=vX4wzp3op3/loo1RCM+LXKXjgadCdjlCLVpUZ293jw4=;
+        b=hr7yzJgaJKB+RPo8hzYz1sIXPJ5nLW3qNxtdB2FyPIoCGtb4FnJsEE4xgYsmBabjC8
+         +j2r0REDUP2qN5iN2O+mboQW0FPvCDgN47kPJmfOAQcFiY94BPsq1S2f2VZBXxpICvfy
+         ti+e7yZ7YkM9NSPJE1iq+BVaTeY55fnxRpyjwM6C1zuN7nAKMOZ8arVmDdQlB9BGtwcx
+         Fa0uxWBhl0IRLbHtpFmEhKNHuftMFDGhIO6dTU8Ax5dOa7QtzB2SJYf8Svu9dN8b4+J5
+         6CCJMlIcH+cR8hmkesHt0yGCCrtLuJvXxMqBaBJ+i+qnQ2asJODqV+c/SSSmCdJi3HNS
+         AeXw==
+X-Gm-Message-State: APjAAAWMhUblLwmZfLs9WkYRfc3tLshNbrGjU3EmeRCZVL4CKKZinBI0
+        HSHeRW/8JKBGo3jVOBf/c1WoRhKGeLc=
+X-Google-Smtp-Source: APXvYqy40AfW6Yo5QUqqfYuY6Jg0Lx1f2txTb1htySnF6X5LWlhlS8pLdsjaPoFIdIzYXLsQTrFDMQ==
+X-Received: by 2002:a2e:8658:: with SMTP id i24mr55670ljj.163.1573597344978;
+        Tue, 12 Nov 2019 14:22:24 -0800 (PST)
 Received: from cakuba ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 77sm50589lfj.67.2019.11.12.14.19.58
+        by smtp.gmail.com with ESMTPSA id q16sm51774lfm.87.2019.11.12.14.22.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Nov 2019 14:20:01 -0800 (PST)
-Date:   Tue, 12 Nov 2019 14:19:54 -0800
+        Tue, 12 Nov 2019 14:22:24 -0800 (PST)
+Date:   Tue, 12 Nov 2019 14:22:18 -0800
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Yuval Avnery <yuvalav@mellanox.com>
-Cc:     Andy Gospodarek <andrew.gospodarek@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: Re: [PATCH net-next v2 00/10] devlink subdev
-Message-ID: <20191112141954.371e8cd2@cakuba>
-In-Reply-To: <AM6PR05MB5142D1ADB06CB0D5FF646F46C5770@AM6PR05MB5142.eurprd05.prod.outlook.com>
-References: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
-        <20191111100004.683b7320@cakuba>
-        <AM6PR05MB5142D5C8B186A50D49D857ABC5740@AM6PR05MB5142.eurprd05.prod.outlook.com>
-        <20191112145542.GA6619@C02YVCJELVCG>
-        <AM6PR05MB5142D1ADB06CB0D5FF646F46C5770@AM6PR05MB5142.eurprd05.prod.outlook.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        shalomt@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v2 0/7] mlxsw: Add extended ACK for EMADs
+Message-ID: <20191112142218.146b0edf@cakuba>
+In-Reply-To: <20191112064830.27002-1-idosch@idosch.org>
+References: <20191112064830.27002-1-idosch@idosch.org>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -74,128 +63,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Nov 2019 18:35:26 +0000, Yuval Avnery wrote:
-> > It feels a bit 'unconstrained' to me as well.  As Jakub said you added =
-some
-> > documentation, but the direction of this long-term is not clear.
-> > What seems to happen too often is that we skip creating better infra for
-> > existing devices and create it only for the newest shiniest object.
-> > These changes are what garners the most attention from those who grant
-> > permission to push things upstream (*cough* managers *cough*), but it's
-> > not the right choice in this case.  I'm not sure if that is part of wha=
-t bothers
-> > Jakub, but it is one thing that bothers me and why this feels incomplet=
-e.
-> >=20
-> > The thing that has been bouncing around in my head about this (and unti=
-l I
-> > was in front of a good text-based MUA I didn't dare respond) is that we=
- seem
-> > to have an overlap in functionality between what you are proposing and
-> > existing virtual device configuration, but you are completely ignoring
-> > improving upon the existing creation methods.
-> > Whether dealing with a SmartNIC (which I used to describe a NIC with
-> > general purpose processors that could be running Linux and I think you =
-do,
-> > too) or a regular NIC it seems like we should use devlink to create and
-> > configure a variety of devices these could be:
-> >=20
-> > 1.  Number of PFs (there are cases where more than 1 PF per uplink port
-> >     is required for command/control of the SmartNIC or where a single
-> >     PCI b/d/f may have many uplink ports that need to be addressed
-> >     separately) =20
+On Tue, 12 Nov 2019 08:48:23 +0200, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
 >=20
-> Yes, uplink ports can be addressed using "devlink port".
+> Shalom says:
 >=20
-> Multiple pfs are already supported.
+> Ethernet Management Datagrams (EMADs) are Ethernet packets sent between
+> the driver and device's firmware. They are used to pass various
+> configurations to the device, but also to get events (e.g., port up)
+> from it. After the Ethernet header, these packets are built in a TLV
+> format.
 >=20
-> $ devlink subdev show
-> pci/0000:03:00.0/1: flavour pcipf pf 0
-> pci/0000:03:00.0/1: flavour pcipf pf 1
-> pci/0000:03:00.0/1: flavour pcivf pf 1 vf 0
+> Up until now, whenever the driver issued an erroneous register access it
+> only got an error code indicating a bad parameter was used. This patch
+> set adds a new TLV (string TLV) that can be used by the firmware to
+> encode a 128 character string describing the error. The new TLV is
+> allocated by the driver and set to zeros. In case of error, the driver
+> will check the length of the string in the response and report it using
+> devlink hwerr tracepoint.
+>=20
+> Example:
+>=20
+> $ perf record -a -q -e devlink:devlink_hwerr &
+>=20
+> $ pkill -2 perf
+>=20
+> $ perf script -F trace:event,trace | grep hwerr
+> devlink:devlink_hwerr: bus_name=3Dpci dev_name=3D0000:03:00.0 driver_name=
+=3Dmlxsw_spectrum err=3D7 (tid=3D9913892d00001593,reg_id=3D8018(rauhtd)) ba=
+d parameter (inside er_rauhtd_write_query(), num_rec=3D32 is over the maxim=
+um  number of records supported)
+>=20
+> Patch #1 parses the offsets of the different TLVs in incoming EMADs and
+> stores them in the skb's control block. This makes it easier to later
+> add new TLVs.
+>=20
+> Patches #2-#3 remove deprecated TLVs and add string TLV definition.
+>=20
+> Patches #4-#7 gradually add support for the new string TLV.
+>=20
+> v2:
+> * Use existing devlink hwerr tracepoint to report the error string,
+>   instead of printing it to kernel log
 
-I don't think that covers what Andy was taking about.
-
-> > 2.  Device-specific SR-IOV VFs visible to server 3.  mdev devices that =
-_may_
-> > have representers on the embedded cores of
-> >     the NIC =20
->=20
-> Yes, Is also planned for current interface. (will need to add mdev flavor=
- in the future)
->=20
-> > 4.  Hardware VirtIO-net devices supported 5.  Other non-network devices
-> > (storage given as the first example) 6.  ... =20
->=20
-> All is up to driver - what to expose and what flavor to grant the subdev.
->=20
-> > We cannot get rid of the methods for creating hardware VFs via sysfs, b=
-ut
-> > now that we are seeing lots of different flavors of devices that might =
-be
-> > created we should start by making sure at a minimum we can create exist=
-ing
-> > hardware devices (VFs) with this devlink interface and move from there.=
-  Is
-> > there a plan to use this interface to create subdevs that are VFs or ju=
-st new
-> > subdev flavors?  I could start to get behind an interface like this if =
-the patches
-> > showed that devlink would be the one place where device creation and
-> > control could be done for all types of subdevs, but that isn't clear th=
-at it is
-> > your direction based on the patches. =20
->=20
-> I don=E2=80=99t see how the SmartNic can force the host PF to create new =
-VFs.
-> Isn=E2=80=99t that the host PF responsibility? Doesn't make sense to me.
-> Do we want to have an interface that works only for NICs and not from
-> the SmartNic embedded system?
->
-> What we do here is expose all the PFS and potential VFs/mdevs that the ho=
-st can enable.
-> Unlike ip link which exposes only enabled VFs, here (in mlx5
-> implementation) we expose all the VFs that the host PF _can_ enable.
-> This allows, for example, to set the MAC of a VF before it is enabled.
-
-So subdev will never be used to create interfaces? Just expose all
-_possible_? Ugh. Wouldn't that be something to document?
-
-How things are configured matters. This patch set throws some basics
-together to get you the hw_addr from the SmartNIC side, and then you
-start talking big plans like NVMe and PCIe control which you don't seem
-to have thought through.
-
-How does the PF in your diagram magically have different types of VFs?
-PCIe SR-IOV cap has VF device vendor:product, you won't have NVMe VFs
-hanging off the main PF like that in a normal world :/
-
-Jiri pitched the subdev object as the "other side of the wire" but you
-are back to arguing that you think it's actually the same as the port,
-just more general. How does the hw_addr belongs to the ASIC side then?
-
-And for PCIe you'd use this new interface for MSI-X or other resource
-allocation. Say VFs. Who controls that in a SmartNIC scenario? Is the
-host not allowed to move them around? This starts to touch multi-host
-use case which Linux networking never begun to address.
-
-You're creating a new object type with no clear semantics just to throw
-in one feature - namely the hw_addr. If this is the quality of design
-we can expect - just add the hw addr to devlink ports and let's move on.
-
-> > So just to make sure this is clear, what I'm proposing that devlink
-> > is used to create and configure all types of devices that it may be
-> > possible to create, =20
->=20
-> More flavors can be defiantly added in the future. About creation,
-> see my comment above. Actually flavor is the only required attribute
-> for registration. The rest is optional.=20
-> > configure, or address from a PF and the starting place should be
-> > standard, hardware VFs.  If that can be done right and we can
-> > address some of the issues with the current implementation (more
-> > than one hw addr is a _great_ example) then adding new flavours for
-> > the server devices and and adding new flavors for SmartNIC-based
-> > devices should be easy and feel natural. =20
->=20
-> So what you are saying that allowing multiple addresses per subdev
-> will make a strong case for this patch set?
+Thanks, this is much better! =F0=9F=91=8D
