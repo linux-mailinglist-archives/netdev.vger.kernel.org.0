@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F83FF8FDA
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 13:44:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A598F8FDE
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 13:45:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727279AbfKLMoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 07:44:54 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34155 "EHLO
+        id S1727264AbfKLMox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 07:44:53 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:45979 "EHLO
         mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727199AbfKLMor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 07:44:47 -0500
-Received: by mail-wr1-f68.google.com with SMTP id e6so18433044wrw.1
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 04:44:46 -0800 (PST)
+        with ESMTP id S1727220AbfKLMot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 07:44:49 -0500
+Received: by mail-wr1-f68.google.com with SMTP id z10so13056911wrs.12
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 04:44:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EiYiX/kmOPogNm6cQNtCRHKk2Gxmhi5DMg9ko2kAIaY=;
-        b=nIYNtFGJm4bN5YwTYCAXtHGq0tf/y7g31uchKNXRtZibv6hh0d9Z3kLRk0wsEDjRhT
-         dPz0GVcCXM+6r9sQLTZXx+Y0+T0k8UxJPZYX79aNIcVcT4QZFAETFEUKCbOdECucSPzn
-         yK3tE2uNgjqhLuyg5Jnv7yI4aRkKfzaH+0I0sdLu+3L3Tna8n87LFwQCUAvZvBYOydtm
-         PpCJB76YNWx31S3qR5UL+LRXgRnrZMmSGO4495vDzal8o+bbYG84OZz7bPEwdF7w3ShT
-         UuHp9/PZlv/twBqn3tpYxHIXlXOIeS8kVgipzpxlORIFoUDHHvn+tDqxqKXrGZCnTevq
-         Ttmw==
+        bh=htO3NaGF/rYsY0CnNr/FEqqtqUup384P1QEiCmmfNdQ=;
+        b=GhXxar35mY6+jgHaa2PPOuAnIWE1ThNHHMx0TwSuAf9YTlOhwIO6cR0s8Kbu2raQqU
+         3VTW8hKurdxwgliRVwmT1fsHBJmi1qDReoE1cjCOEP/NgfjliyqX1nlGeBAUN+e9NpZn
+         /h0U/iYW2RQ1zSEbPLA+AE0wTa0yGSplcvlSL18ULwPNiVZlESo4SR7yCpGDYJwO54VY
+         Zx5PVvLScR468J1l5NW8D6F60QmxAquTck//iHmP2Uow8TSLePXISuiyScY5bs9KqIVI
+         pWj4nSZ+mlVCXcgqoKY8hRNPh9RlF/8AbQ3HQjF9xDU0sPhP/tj5w3KLcjqkAdWaWcSP
+         91nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=EiYiX/kmOPogNm6cQNtCRHKk2Gxmhi5DMg9ko2kAIaY=;
-        b=Cnnzp58MBWEdJLATHAUqAIet8RO92Mjh2wSVwoE/BP9Xa3ps2bFwk3iOFoaPZHErvg
-         dKOBe/VgQkoqjcRuhdlmj+oe7bpwjrZp7hNhQZYRs9MUwY7jUrCfC4T9yrUNd8BRSphL
-         KwenLNN3Wji8EkVTtn1L1M2uALKLiPhWlBqUp4ToWUsFelQPU70wDTWChFRfGrbb1sxO
-         V3WYSQDSq7hrQvdoBBP8A9CV2HAvm+ZzSztEOxuylN+4c6JL01MK5xS9eaXPrxdaXFqE
-         EN2g3l8HXRObG4seAC/P1lWoLNtlDzXEOlJQ/mEJJL6lmUCuYGuoikjIcI+xoF85UeZV
-         BQQg==
-X-Gm-Message-State: APjAAAVOxszCP+DxKZ5xNmeH4PCGIc60PL7TdKPNwpJBOVlQI5JvRlv+
-        d70lMu2vszzJt1utxaw2AsA=
-X-Google-Smtp-Source: APXvYqwpNSXg6WR1++T4D0iLkDXus++cyJguOzDSVqpf3zTaLYh/jEMSOA8pVc641dtW4opzw2dMXw==
-X-Received: by 2002:adf:97dd:: with SMTP id t29mr3790211wrb.283.1573562685808;
-        Tue, 12 Nov 2019 04:44:45 -0800 (PST)
+        bh=htO3NaGF/rYsY0CnNr/FEqqtqUup384P1QEiCmmfNdQ=;
+        b=aEac4hmTQqDZ+uDvAbQydNrfZ9zXyBtPVNJRqCFvBos+YIY/RuQsikvo/BgBkLR0BD
+         Vj4SBcx5bJaA+uBP1a9iXLfruK7eZ2Fspy8zuR8284d8Pv8fKXXRopMVsw8oLIkSZ2kX
+         aU/mLg8yYB0pwHZWm0jlACxC1TbHZGTvsU5C+Z1cMkkOW0/jzilIRw82iVsYcrOjYUZ1
+         Hkz3rLTixyMFZAi7NubNtksLSnoXin+X+xkx4Gt18iwBeBJkhg646r85N3K1eTwSQAqF
+         zIca2B6rhNq7xaf/SsiTCWa4gVgs6h98gEdDWd47EMd4pDcaAsE9VO6hDA+QscQCBVhh
+         c2gw==
+X-Gm-Message-State: APjAAAXatwsi+BqaRySP9IQIeJuUEroujV/8C4jtafJdzRicm45OXGtK
+        4X+gdFSVdUlCD/+gkHeQO38=
+X-Google-Smtp-Source: APXvYqydvis+oSRXnlvN4ATQutwGNc+Covc0uZZnGEsdkeEr+9QdgCdtwR8Ro7772QCANGqMfrPVgA==
+X-Received: by 2002:a5d:4a50:: with SMTP id v16mr24202792wrs.85.1573562687033;
+        Tue, 12 Nov 2019 04:44:47 -0800 (PST)
 Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id g184sm4197688wma.8.2019.11.12.04.44.44
+        by smtp.gmail.com with ESMTPSA id g184sm4197688wma.8.2019.11.12.04.44.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Nov 2019 04:44:45 -0800 (PST)
+        Tue, 12 Nov 2019 04:44:46 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     jakub.kicinski@netronome.com, davem@davemloft.net,
         alexandre.belloni@bootlin.com
@@ -50,9 +50,9 @@ Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         netdev@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH net-next 05/12] net: mscc: ocelot: export a constant for the tag length in bytes
-Date:   Tue, 12 Nov 2019 14:44:13 +0200
-Message-Id: <20191112124420.6225-6-olteanv@gmail.com>
+Subject: [PATCH net-next 06/12] net: mscc: ocelot: adjust MTU on the CPU port in NPI mode
+Date:   Tue, 12 Nov 2019 14:44:14 +0200
+Message-Id: <20191112124420.6225-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191112124420.6225-1-olteanv@gmail.com>
 References: <20191112124420.6225-1-olteanv@gmail.com>
@@ -63,77 +63,53 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This constant will be used in a future patch to increase the MTU on NPI
-ports, and will also be used in the tagger driver for Felix.
+When using the NPI port, the DSA tag is passed through Ethernet, so the
+switch's MAC needs to accept it as it comes from the DSA master. Increase
+the MTU on the external CPU port to account for the length of the
+injection header.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c       | 4 ++--
- drivers/net/ethernet/mscc/ocelot.h       | 4 ++--
- drivers/net/ethernet/mscc/ocelot_board.c | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 9 +++++++++
+ drivers/net/ethernet/mscc/ocelot.h | 2 ++
+ 2 files changed, 11 insertions(+)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 8ede8ad902c9..8b73d760dfa5 100644
+index 8b73d760dfa5..42da193a8240 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -576,11 +576,11 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 	struct skb_shared_info *shinfo = skb_shinfo(skb);
- 	struct ocelot_port *ocelot_port = &priv->port;
- 	struct ocelot *ocelot = ocelot_port->ocelot;
-+	u32 val, ifh[OCELOT_TAG_LEN / 4];
- 	struct frame_info info = {};
- 	u8 grp = 0; /* Send everything on CPU group 0 */
- 	unsigned int i, count, last;
- 	int port = priv->chip_port;
--	u32 val, ifh[IFH_LEN];
+@@ -2230,9 +2230,18 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
+ 	 * Only one port can be an NPI at the same time.
+ 	 */
+ 	if (cpu < ocelot->num_phys_ports) {
++		int mtu = VLAN_ETH_FRAME_LEN + OCELOT_TAG_LEN;
++
+ 		ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
+ 			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(cpu),
+ 			     QSYS_EXT_CPU_CFG);
++
++		if (injection == OCELOT_TAG_PREFIX_SHORT)
++			mtu += OCELOT_SHORT_PREFIX_LEN;
++		else if (injection == OCELOT_TAG_PREFIX_LONG)
++			mtu += OCELOT_LONG_PREFIX_LEN;
++
++		ocelot_port_set_mtu(ocelot, cpu, mtu);
+ 	}
  
- 	val = ocelot_read(ocelot, QS_INJ_STATUS);
- 	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))) ||
-@@ -603,7 +603,7 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 	ocelot_gen_ifh(ifh, &info);
- 
--	for (i = 0; i < IFH_LEN; i++)
-+	for (i = 0; i < OCELOT_TAG_LEN / 4; i++)
- 		ocelot_write_rix(ocelot, (__force u32)cpu_to_be32(ifh[i]),
- 				 QS_INJ_WR, grp);
- 
+ 	/* CPU port Injection/Extraction configuration */
 diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 7e28434c22c1..9159b0adf1e7 100644
+index 9159b0adf1e7..bdc9b1d34b81 100644
 --- a/drivers/net/ethernet/mscc/ocelot.h
 +++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -43,8 +43,6 @@
- 
- #define OCELOT_PTP_QUEUE_SZ	128
- 
--#define IFH_LEN 4
--
- struct frame_info {
- 	u32 len;
- 	u16 port;
-@@ -66,6 +64,8 @@ struct frame_info {
- #define IFH_REW_OP_TWO_STEP_PTP		0x3
+@@ -65,6 +65,8 @@ struct frame_info {
  #define IFH_REW_OP_ORIGIN_PTP		0x5
  
-+#define OCELOT_TAG_LEN			16
-+
+ #define OCELOT_TAG_LEN			16
++#define OCELOT_SHORT_PREFIX_LEN		4
++#define OCELOT_LONG_PREFIX_LEN		16
+ 
  #define OCELOT_SPEED_2500 0
  #define OCELOT_SPEED_1000 1
- #define OCELOT_SPEED_100  2
-diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
-index de2da6d33d43..32aafd951483 100644
---- a/drivers/net/ethernet/mscc/ocelot_board.c
-+++ b/drivers/net/ethernet/mscc/ocelot_board.c
-@@ -105,7 +105,7 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
- 		int sz, len, buf_len;
- 		struct sk_buff *skb;
- 
--		for (i = 0; i < IFH_LEN; i++) {
-+		for (i = 0; i < OCELOT_TAG_LEN / 4; i++) {
- 			err = ocelot_rx_frame_word(ocelot, grp, true, &ifh[i]);
- 			if (err != 4)
- 				break;
 -- 
 2.17.1
 
