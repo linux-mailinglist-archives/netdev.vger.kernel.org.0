@@ -2,156 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E62DF8B7D
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:15:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D334F8BD3
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 10:32:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfKLJPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 04:15:19 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43372 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725835AbfKLJPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 04:15:19 -0500
-Received: by mail-wr1-f65.google.com with SMTP id n1so17575423wra.10
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 01:15:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5zriEFojyVbt7ELQVanoYbgxzAFKHxi+UtmPwx0zmeQ=;
-        b=0gkGcUth8FLOYxIwdZiDgR1Ug9t1VBkV/3FwqbV7Q0OlC+Vnjq19TT2qyCHUVKF/vP
-         xdyiQ1QMLC15zHuNxZa0g4PJoKcO0gxfNPTSTdKFqWIDgBQucl+tKWv/Wgu96XF+l4EC
-         GePrmS8gHuU5b34yWy4N1ZDP0a6Dm87jhF8JmDu8AL2s6dcQEiXZIW2FjIwPVEScBxcn
-         6ul3OgpUkJcW9ZPpYN4sggNPfJ156PbxG9iFTX8eybTpwN1zHmR3LDOnCTShPahCKN60
-         TNKZDin0L9emwY/sf5PJwSW1f4dE9rV1pSJ2wZuEBC63PHpBBtA2eWcyjUea0wS/FxP9
-         Qr9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5zriEFojyVbt7ELQVanoYbgxzAFKHxi+UtmPwx0zmeQ=;
-        b=UQVSKQ5gxuD84JTwiLjSEgKkQ3m/VDllAWXQH2SidHTW24bOYPixFJ9iOTQcSbo2L0
-         M9zOzCGQsW+JbeWdh9G9XbcVHlCa9xsIhJ81xkaSxANnl1jkepJn2Ny9dp05Lmu510Bj
-         hDTDZ2IsiPLs6qHyK9ilFgImvUEBwlbrRnCDMGlHehbMdVRXyvrOi8NrcI0lVL7erriM
-         Dh3wU12xNl2DEQapN9QsKavIqzKc1G0wxDs01fbyLgTSu92uvuAf+b0C3B8whfqqVzZD
-         Qxvo/5nM4MJ+r9mIf4y8oMP1XZTHCUO4lZns1/zDD88tKU9xDrm0Zd2aCxl5mHEblSpO
-         G4kA==
-X-Gm-Message-State: APjAAAUDG87jN4uqwXxs7+wM4/69pzd0kKQj3f/cDgQwfvB8ainha74z
-        VK6NnDfyRES5WBAjISVpDvmT2A==
-X-Google-Smtp-Source: APXvYqx+VbXRh53fdGzs8aktmfDb/8p3+34H0pWGuEbXJ4Iu26iSzSwF5u9NWkTtoQhxRr47dqsTZw==
-X-Received: by 2002:adf:f388:: with SMTP id m8mr8138227wro.18.1573550117445;
-        Tue, 12 Nov 2019 01:15:17 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id h15sm16794949wrb.44.2019.11.12.01.15.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Nov 2019 01:15:16 -0800 (PST)
-Date:   Tue, 12 Nov 2019 10:15:16 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     Chuhong Yuan <hslester96@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [EXT] [PATCH] net: fec: add a check for CONFIG_PM to avoid clock
- count mis-match
-Message-ID: <20191112091515.glw4jzlqluecg4m2@netronome.com>
-References: <20191106080128.23284-1-hslester96@gmail.com>
- <VI1PR0402MB3600F14956A82EF8D7B53CC4FF790@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <CANhBUQ1wZU92K=XTRCNU5HhOzZ761+S83zyjqOdZKpyQVuXrCw@mail.gmail.com>
- <VI1PR0402MB36000BE1C169ECA035BE3610FF790@VI1PR0402MB3600.eurprd04.prod.outlook.com>
- <CANhBUQ2qN+vLYiHdUFGH22LnTa3nuKMYncq3JHDJp=vM=ZvCPA@mail.gmail.com>
- <VI1PR0402MB3600111063607DDAC4DFFE26FF780@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB3600111063607DDAC4DFFE26FF780@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+        id S1727124AbfKLJcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 04:32:04 -0500
+Received: from mga05.intel.com ([192.55.52.43]:56112 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725834AbfKLJcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 04:32:04 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Nov 2019 01:32:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,295,1569308400"; 
+   d="scan'208";a="198017529"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.79])
+  by orsmga008.jf.intel.com with ESMTP; 12 Nov 2019 01:31:59 -0800
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     mst@redhat.com, jasowang@redhat.com, alex.williamson@redhat.com
+Cc:     linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, dan.daly@intel.com,
+        cunming.liang@intel.com, tiwei.bie@intel.com, jason.zeng@intel.com,
+        zhiyuan.lv@intel.com, Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [RFC V3 0/2] Intel IFC VF driver for VDPA
+Date:   Tue, 12 Nov 2019 17:29:47 +0800
+Message-Id: <1573550989-40860-1-git-send-email-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 07, 2019 at 01:44:11AM +0000, Andy Duan wrote:
-> From: Chuhong Yuan <hslester96@gmail.com> Sent: Thursday, November 7, 2019 9:19 AM
-> > On Wed, Nov 6, 2019 at 6:17 PM Andy Duan <fugang.duan@nxp.com> wrote:
-> > >
-> > > From: Chuhong Yuan <hslester96@gmail.com> Sent: Wednesday, November
-> > 6,
-> > > 2019 4:29 PM
-> > > > On Wed, Nov 6, 2019 at 4:13 PM Andy Duan <fugang.duan@nxp.com>
-> > wrote:
-> > > > >
-> > > > > From: Chuhong Yuan <hslester96@gmail.com> Sent: Wednesday,
-> > > > > November
-> > > > 6,
-> > > > > 2019 4:01 PM
-> > > > > > If CONFIG_PM is enabled, runtime pm will work and call
-> > > > > > runtime_suspend automatically to disable clks.
-> > > > > > Therefore, remove only needs to disable clks when CONFIG_PM is
-> > > > disabled.
-> > > > > > Add this check to avoid clock count mis-match caused by
-> > double-disable.
-> > > > > >
-> > > > > > This patch depends on patch
-> > > > > > ("net: fec: add missed clk_disable_unprepare in remove").
-> > > > > >
-> > > > > Please add Fixes tag here.
-> > > > >
-> > > >
-> > > > The previous patch has not been merged to linux, so I do not know
-> > > > which commit ID should be used.
-> > >
-> > > It should be merged into net-next tree.
-> > >
-> > 
-> > I have searched in net-next but did not find it.
+Hi all:
+  This series intends to introduce Intel IFC VF NIC driver for Vhost
+Data Plane Acceleration(VDPA).
 
-Commit ids are stable, so if there is an id in Linus's tree
-it will be same in net-next (when the patch appears there).
+Here comes two main parts, one is ifcvf_base layer, which handles
+hardware operations. The other is ifcvf_main layer handles VF
+initialization, configuration and removal, which depends on
+and complys to:
+virtio_mdev https://lkml.org/lkml/2019/11/7/650
+vhost_mdev https://lkml.org/lkml/2019/11/7/62
 
-So you want:
+This patchset passed netperf tests.
 
-Fixes: c43eab3eddb4 ("net: fec: add missed clk_disable_unprepare in remove")
+This is RFC V3, plese help review.
 
-Also, it is unclear from the patch subject if this patch is targeted at
-'net' or 'net-next'. But as c43eab3eddb4 is in Linus's tree I think
-it should be for 'net'. So the correct patch subject would be:
+Changes from V2:
+removed some unnecessary code.
+using a struct ifcvf_lm_cfg to address hw->lm_cfg and operations on it.
+set CONFIG_S_FAILED  when ifcvf_start_hw() fail.
+removed VIRTIO_NET_F_CTRL_VQ and VIRTIO_NET_F_STATUS
+replace ifcvf_net_config with virtio_net_config.
+minor changes
 
-[PATCH net] net: fec: add a check for CONFIG_PM to avoid clock
+Changes from V1:
+using le32_to_cpu() to convert PCI capabilities.
+some set /get  operations will sync with the hardware, eg get_status
+and get_generation.
+remove feature bit VHOST_F_LOG_ALL, add VIRTIO_F_ORDERED_PLATFORM
+add get/set_config functions.
+split mdev type group into mdev_type_group_virtio and mdev_type_group_vhost
+add ifcvf_mdev_get_mdev_features()
+coding stype changes.
 
-> David, please give the comment. Thanks.
-> 
-> Regards,
-> Andy
-> > 
-> > > Andy
-> > > >
-> > > > > Andy
-> > > > > > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> > > > > > ---
-> > > > > >  drivers/net/ethernet/freescale/fec_main.c | 2 ++
-> > > > > >  1 file changed, 2 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> > > > > > b/drivers/net/ethernet/freescale/fec_main.c
-> > > > > > index a9c386b63581..696550f4972f 100644
-> > > > > > --- a/drivers/net/ethernet/freescale/fec_main.c
-> > > > > > +++ b/drivers/net/ethernet/freescale/fec_main.c
-> > > > > > @@ -3645,8 +3645,10 @@ fec_drv_remove(struct platform_device
-> > > > *pdev)
-> > > > > >                 regulator_disable(fep->reg_phy);
-> > > > > >         pm_runtime_put(&pdev->dev);
-> > > > > >         pm_runtime_disable(&pdev->dev);
-> > > > > > +#ifndef CONFIG_PM
-> > > > > >         clk_disable_unprepare(fep->clk_ahb);
-> > > > > >         clk_disable_unprepare(fep->clk_ipg);
-> > > > > > +#endif
+Zhu Lingshan (2):
+  This commit introduced ifcvf_base layer, which handles hardware    
+    operations and configurations.
+  This commit introduced IFC operations for vdpa, which complys to    
+    virtio_mdev and vhost_mdev interfaces, handles IFC VF    
+    initialization, configuration and removal.
 
-FWIIW, I am surprised this is the cleanest way to resolve this problem,
-though I confess that I have no specific alternative in mind.
+ drivers/vhost/ifcvf/ifcvf_base.c | 326 ++++++++++++++++++++++
+ drivers/vhost/ifcvf/ifcvf_base.h | 129 +++++++++
+ drivers/vhost/ifcvf/ifcvf_main.c | 579 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1034 insertions(+)
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.c
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_base.h
+ create mode 100644 drivers/vhost/ifcvf/ifcvf_main.c
 
-> > > > > >         if (of_phy_is_fixed_link(np))
-> > > > > >                 of_phy_deregister_fixed_link(np);
-> > > > > >         of_node_put(fep->phy_node);
-> > > > > > --
-> > > > > > 2.23.0
-> > > > >
+-- 
+1.8.3.1
+
