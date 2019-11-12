@@ -2,203 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C564F98D5
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 19:35:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8F8F98F6
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 19:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727401AbfKLSfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 13:35:31 -0500
-Received: from mail-eopbgr150058.outbound.protection.outlook.com ([40.107.15.58]:14308
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727387AbfKLSfa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 13:35:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mDSzi9qtqGTPt7bdObA+K3xkdeLroFxwiLMduJ6cVnZwKvav5/gvxwqcXkrqtpng0qKp+YE8kCbT+MBVRREBFEzmKncrF6zcGkmrFGLc2FXcSQZq0MMZq7HZx55kAY3TYpoFzVzQqEbaFtBWOpnyYa400LLZhF/3zFySBGt28xjGboMaLnHFH0/xWwg0sOTqpBu4SjVkxFe7gCzIIKlHsVHA/CQQBIy2h5fPSVu2QvqHU13lt/yWK2RFQ4KXXnTi22tSUKdRqC4TiNbQ0lIxwR4KST9HVzT+s5a4yU/WA6nqS6hR2TCreDXHoEfM8uJgf+hjHy1BcIXajlhUzyLu7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pfRicOa7O7Jd4GXtCx2ztV+dCzATVkPQRoulTWuH7Ho=;
- b=Xtnm4UGFKGt4jW+QFNBCCOrX76cxlL5Aj15NSbhmPHiLJBLT3Im4dF+U+GmRpzVJ2kDsxnSWSDKpsoAEOULSace4OGAAJPIWlQ8KVEtozUlmZKAGc+gyVUc3O1B+a4dWPDcz2Sfd5yadlKDOctX2bxCcfxkItRqoEwEAOV6t95QxDRzXOFfg3roMep55RS8LVUtv32rFZiuWnHEx0dgwkGfP7Ol9TnbwkebRaMpqWEcbp84eBsMy8Tpku/j7YS/lJ7Z+iawmBj27Bc2Ifsy+Q7KcBli9jyBq81CLytbR8TgCVd5jHPUuzspetDVaL+zhsMXk1mpFTBTheTNdakEC1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pfRicOa7O7Jd4GXtCx2ztV+dCzATVkPQRoulTWuH7Ho=;
- b=THRTDnb31I4U31qHnfCrIwBkdBycj4OcLKAWv1vfWAoPogeGxz/l6ALYIyDgiJ01L3lvMKrMbjhTwDpCw1KtmKd+vEJr1hT9NUgEXPW0ngF0NkRUzAcjDu7dXac48rX23UeSCjru7hNnQUhIqXtfwSHIkxxo5+eO1Wunv/A4u7I=
-Received: from AM6PR05MB5142.eurprd05.prod.outlook.com (20.177.197.210) by
- AM6PR05MB6023.eurprd05.prod.outlook.com (20.179.0.10) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.22; Tue, 12 Nov 2019 18:35:26 +0000
-Received: from AM6PR05MB5142.eurprd05.prod.outlook.com
- ([fe80::2c8b:72fb:19e2:ff34]) by AM6PR05MB5142.eurprd05.prod.outlook.com
- ([fe80::2c8b:72fb:19e2:ff34%4]) with mapi id 15.20.2430.027; Tue, 12 Nov 2019
- 18:35:26 +0000
-From:   Yuval Avnery <yuvalav@mellanox.com>
-To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>
-CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        Daniel Jurgens <danielj@mellanox.com>,
-        Parav Pandit <parav@mellanox.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
-Subject: RE: [PATCH net-next v2 00/10] devlink subdev
-Thread-Topic: [PATCH net-next v2 00/10] devlink subdev
-Thread-Index: AQHVllBTfzIwI8/JMkWv1C9gIdxnw6eGRw8AgAAC+qCAAVvYAIAAN2aw
-Date:   Tue, 12 Nov 2019 18:35:26 +0000
-Message-ID: <AM6PR05MB5142D1ADB06CB0D5FF646F46C5770@AM6PR05MB5142.eurprd05.prod.outlook.com>
-References: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
- <20191111100004.683b7320@cakuba>
- <AM6PR05MB5142D5C8B186A50D49D857ABC5740@AM6PR05MB5142.eurprd05.prod.outlook.com>
- <20191112145542.GA6619@C02YVCJELVCG>
-In-Reply-To: <20191112145542.GA6619@C02YVCJELVCG>
-Accept-Language: he-IL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yuvalav@mellanox.com; 
-x-originating-ip: [70.66.202.183]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: bba54956-4e4d-461c-4f5b-08d7679f163f
-x-ms-traffictypediagnostic: AM6PR05MB6023:|AM6PR05MB6023:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB6023ED3891126DCBB1AFFC45C5770@AM6PR05MB6023.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 021975AE46
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(136003)(396003)(366004)(13464003)(189003)(199004)(11346002)(71190400001)(229853002)(53546011)(6506007)(76176011)(99286004)(7696005)(102836004)(71200400001)(2906002)(486006)(26005)(256004)(8676002)(446003)(476003)(81156014)(54906003)(6436002)(33656002)(9686003)(14454004)(14444005)(186003)(6916009)(81166006)(8936002)(66476007)(66556008)(66446008)(64756008)(66946007)(478600001)(76116006)(55016002)(6246003)(86362001)(6116002)(5660300002)(3846002)(66066001)(4326008)(305945005)(52536014)(25786009)(7736002)(74316002)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6023;H:AM6PR05MB5142.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8eJL75Ln1BLuFjN+d1nkO+vaVMvY4hvTG751+kGm428hbrJNqbgetC1nZnsrqh+VKsiEhQYkcr57QdBQiwEJs1fTATQxrP5oXgq8eH+uFklR8D1wiz9+pRW0GO5XDbQL7bNosdlXhg7JriLknHMEjiDj534+LK/pNLrcvC37o1vziBO0HAetxwaojx/gjcowaxvhtMtP4/Nz3fzOfeIv/9Kkr+/ArLkQKGlG5c/z7fk8U0wfOiP9pQL6UVoQNsKu+xlNnLo5s8wAz/m9sAj3ooSR7kfwxlMpqHggM987+h7pItH5ogGCW+J5nJDzm5v/0Jm6/HsudGPnMTQ2/ydyUAn1XQDhB87lSKb9qSOHvJJSl33UxytbMZ4118V0Pv72A2kH3qY+S3Tqxswh8z15Hc7qfA2K6mvAiGlsnSuymqd7LewxGKICCJvP1bB/b1T4
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727058AbfKLSkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 13:40:37 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:37170 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726958AbfKLSkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 13:40:37 -0500
+Received: by mail-oi1-f193.google.com with SMTP id y194so15779870oie.4
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 10:40:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rWtumuXhocaaxI92FG03XX6OsSNe4/p0v1JeGeTEFdU=;
+        b=QKCYR8IQIK6/1R9zXbI5lO7+4efuJvvWVjNTUTWT7Eq1PJjGg4alVD7+vVwIaHt57j
+         QVpPyxwDiLL+ISh6g0KX6vmEX7hhiE6QNRXLACV5wtSAcPtlsxnsJ9Q7aQ1rTwdtqRNx
+         5v/gvowgnT7lt0BjKA5WZLMXN4vVPwyWCxQNMiQ+5Q6LatCblAd6GDqmDDgTljJ3PSWx
+         C5IPV7EBwrz1p7DwqD1KS+wIOdVsdVgl/mCS1giGMBw84ZM/KYpkJDH+7SPTlXWcXvIb
+         EE5MSmWVZWUjinVGJGVbUqPYk1vf+4cn6px17QRwrrPqge0hZFmKPJI4WGNAu0uAhjb4
+         K7hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rWtumuXhocaaxI92FG03XX6OsSNe4/p0v1JeGeTEFdU=;
+        b=LFwD0mBVbu+Z75zwV/JTIpsy+cockSwBJiOeY91DcI9lFt95yDAESX59FYD9qX5LlL
+         zjjNiBZ5viIWp0ihcKBOlFFFHaNCI01xsLOPG0oNXW2G9pLRe46ay8uWIw4fYtnQh4h8
+         mjNaenjL+o5Q1l/MkCqXnT+j871IsrJZcj+ZLXt1Z6s7xkGGcfFCqGXhsTr7GzzUnYqC
+         W7sRd7ZUGqzwNDCBil9xEo77w+u57W43bp7/aPuYCrlFQ1JIYwDYvrhj9wj9WoHukk8y
+         nuTMzPiQjXP5WiUzgJmOnsTIy4SLeQWQtoXHMiXjfq8wNYv2EdmHT8NEqEbdcJiXnqtO
+         +eNQ==
+X-Gm-Message-State: APjAAAXs4owsgOYc9jPkQoCuXKLMWe5h1ri+e9lndwczitYDb3oBMYjW
+        swP6clzWBXoouJcqodRqInAtu3YrcBqGo6IAeIl765AfhHE=
+X-Google-Smtp-Source: APXvYqxqjF5onBMtA28R69K0BJGCYv0IJZXcGKvdGE/0THu8N46nJ1nryFG/9JfvokS0ipa4nsN4HvKOGg+IqPOzpGA=
+X-Received: by 2002:aca:4742:: with SMTP id u63mr306926oia.177.1573584035634;
+ Tue, 12 Nov 2019 10:40:35 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bba54956-4e4d-461c-4f5b-08d7679f163f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Nov 2019 18:35:26.5764
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HxyD9Hl6gzxDTQuQ8qI4PIDTWgwfek5BXAbqCfUxOpXLqE/6Rxu392ORX8MdJH0RZ7SblcSafpumSsoibMcplg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6023
+References: <1573571327-6906-1-git-send-email-xiangxia.m.yue@gmail.com> <2490a542-f0fc-f0db-3494-9fdf3b8aa30b@gmail.com>
+In-Reply-To: <2490a542-f0fc-f0db-3494-9fdf3b8aa30b@gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Wed, 13 Nov 2019 02:39:59 +0800
+Message-ID: <CAMDZJNWE9bRKuXUmp7GuuR0Oq3o+EaDSUtj6Fcam79mvNbzXAQ@mail.gmail.com>
+Subject: Re: [ovs-dev] [PATCH net-next v3] net: openvswitch: add hash info to upcall
+To:     Gregory Rose <gvrose8192@gmail.com>
+Cc:     Pravin Shelar <pshelar@ovn.org>, Ben Pfaff <blp@ovn.org>,
+        ovs dev <dev@openvswitch.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ychen <ychen103103@163.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQW5keSBHb3Nwb2RhcmVr
-IDxhbmRyZXcuZ29zcG9kYXJla0Bicm9hZGNvbS5jb20+DQo+IFNlbnQ6IFR1ZXNkYXksIE5vdmVt
-YmVyIDEyLCAyMDE5IDY6NTYgQU0NCj4gVG86IFl1dmFsIEF2bmVyeSA8eXV2YWxhdkBtZWxsYW5v
-eC5jb20+DQo+IENjOiBKYWt1YiBLaWNpbnNraSA8amFrdWIua2ljaW5za2lAbmV0cm9ub21lLmNv
-bT47IEppcmkgUGlya28NCj4gPGppcmlAbWVsbGFub3guY29tPjsgbmV0ZGV2QHZnZXIua2VybmVs
-Lm9yZzsgU2FlZWQgTWFoYW1lZWQNCj4gPHNhZWVkbUBtZWxsYW5veC5jb20+OyBsZW9uQGtlcm5l
-bC5vcmc7IGRhdmVtQGRhdmVtbG9mdC5uZXQ7DQo+IHNodWFoQGtlcm5lbC5vcmc7IERhbmllbCBK
-dXJnZW5zIDxkYW5pZWxqQG1lbGxhbm94LmNvbT47IFBhcmF2IFBhbmRpdA0KPiA8cGFyYXZAbWVs
-bGFub3guY29tPjsgYW5kcmV3Lmdvc3BvZGFyZWtAYnJvYWRjb20uY29tOw0KPiBtaWNoYWVsLmNo
-YW5AYnJvYWRjb20uY29tDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgdjIgMDAvMTBd
-IGRldmxpbmsgc3ViZGV2DQo+IA0KPiBPbiBNb24sIE5vdiAxMSwgMjAxOSBhdCAwNjo0Njo1MlBN
-ICswMDAwLCBZdXZhbCBBdm5lcnkgd3JvdGU6DQo+ID4NCj4gPg0KPiA+ID4gLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCj4gPiA+IEZyb206IEpha3ViIEtpY2luc2tpIDxqYWt1Yi5raWNpbnNr
-aUBuZXRyb25vbWUuY29tPg0KPiA+ID4gU2VudDogTW9uZGF5LCBOb3ZlbWJlciAxMSwgMjAxOSAx
-MDowMCBBTQ0KPiA+ID4gVG86IFl1dmFsIEF2bmVyeSA8eXV2YWxhdkBtZWxsYW5veC5jb20+OyBK
-aXJpIFBpcmtvDQo+ID4gPiA8amlyaUBtZWxsYW5veC5jb20+DQo+ID4gPiBDYzogbmV0ZGV2QHZn
-ZXIua2VybmVsLm9yZzsgU2FlZWQgTWFoYW1lZWQNCj4gPHNhZWVkbUBtZWxsYW5veC5jb20+Ow0K
-PiA+ID4gbGVvbkBrZXJuZWwub3JnOyBkYXZlbUBkYXZlbWxvZnQubmV0OyBzaHVhaEBrZXJuZWwu
-b3JnOyBEYW5pZWwNCj4gPiA+IEp1cmdlbnMgPGRhbmllbGpAbWVsbGFub3guY29tPjsgUGFyYXYg
-UGFuZGl0IDxwYXJhdkBtZWxsYW5veC5jb20+Ow0KPiA+ID4gYW5kcmV3Lmdvc3BvZGFyZWtAYnJv
-YWRjb20uY29tOyBtaWNoYWVsLmNoYW5AYnJvYWRjb20uY29tDQo+ID4gPiBTdWJqZWN0OiBSZTog
-W1BBVENIIG5ldC1uZXh0IHYyIDAwLzEwXSBkZXZsaW5rIHN1YmRldg0KPiA+ID4NCj4gPiA+IE9u
-IEZyaSwgIDggTm92IDIwMTkgMTg6MTg6MzYgKzAyMDAsIFl1dmFsIEF2bmVyeSB3cm90ZToNCj4g
-PiA+ID4gVGhpcyBwYXRjaHNldCBpbnRyb2R1Y2VzIGRldmxpbmsgc3ViZGV2Lg0KPiA+ID4NCj4g
-PiA+IE9rYXksIHNvIHlvdSBhZGRlZCB0d28gZGlhZ3JhbXMuIEkgZ3Vlc3MgSSB3YXMgbmFpdmUg
-aW4gdGhpbmtpbmcNCj4gPiA+IHRoYXQgInlvdSB0aG91Z2h0IHRoaXMgYWxsIHRocm91Z2ggaW4g
-ZGV0YWlsIGFuZCBoYXZlIG1vcmUNCj4gPiA+IGRvY3VtZW50YXRpb24gYW5kIGRlc2lnbiBkb2Nz
-IGludGVybmFsbHkiLg0KPiA+ID4NCj4gPiA+IEkgZG9uJ3QgbGlrZSBob3cgdW5jb25zdHJhaW5l
-ZCB0aGlzIGlzLCB0aGUgb25seSBpbXBsZW1lbnRlZCB1c2UNCj4gPiA+IGNhc2UgaXMgd2Vhay4g
-QnV0IHNpbmNlIHlvdSdyZSBub3Qgc2VlaW5nIHRoaXMgeW91IHByb2JhYmx5IG5ldmVyDQo+ID4g
-PiB3aWxsLCBzbyBzZWVtcyBsaWtlIGEgd2FzdGUgb2YgdGltZSB0byBmaWdodCBpdC4NCj4gPg0K
-PiA+IFdoYXQgYW0gSSBtaXNzaW5nPyBIb3cgd291bGQgeW91IGNvbnN0cmFpbiB0aGlzPw0KPiAN
-Cj4gSXQgZmVlbHMgYSBiaXQgJ3VuY29uc3RyYWluZWQnIHRvIG1lIGFzIHdlbGwuICBBcyBKYWt1
-YiBzYWlkIHlvdSBhZGRlZCBzb21lDQo+IGRvY3VtZW50YXRpb24sIGJ1dCB0aGUgZGlyZWN0aW9u
-IG9mIHRoaXMgbG9uZy10ZXJtIGlzIG5vdCBjbGVhci4NCj4gV2hhdCBzZWVtcyB0byBoYXBwZW4g
-dG9vIG9mdGVuIGlzIHRoYXQgd2Ugc2tpcCBjcmVhdGluZyBiZXR0ZXIgaW5mcmEgZm9yDQo+IGV4
-aXN0aW5nIGRldmljZXMgYW5kIGNyZWF0ZSBpdCBvbmx5IGZvciB0aGUgbmV3ZXN0IHNoaW5pZXN0
-IG9iamVjdC4NCj4gVGhlc2UgY2hhbmdlcyBhcmUgd2hhdCBnYXJuZXJzIHRoZSBtb3N0IGF0dGVu
-dGlvbiBmcm9tIHRob3NlIHdobyBncmFudA0KPiBwZXJtaXNzaW9uIHRvIHB1c2ggdGhpbmdzIHVw
-c3RyZWFtICgqY291Z2gqIG1hbmFnZXJzICpjb3VnaCopLCBidXQgaXQncw0KPiBub3QgdGhlIHJp
-Z2h0IGNob2ljZSBpbiB0aGlzIGNhc2UuICBJJ20gbm90IHN1cmUgaWYgdGhhdCBpcyBwYXJ0IG9m
-IHdoYXQgYm90aGVycw0KPiBKYWt1YiwgYnV0IGl0IGlzIG9uZSB0aGluZyB0aGF0IGJvdGhlcnMg
-bWUgYW5kIHdoeSB0aGlzIGZlZWxzIGluY29tcGxldGUuDQo+IA0KPiBUaGUgdGhpbmcgdGhhdCBo
-YXMgYmVlbiBib3VuY2luZyBhcm91bmQgaW4gbXkgaGVhZCBhYm91dCB0aGlzIChhbmQgdW50aWwg
-SQ0KPiB3YXMgaW4gZnJvbnQgb2YgYSBnb29kIHRleHQtYmFzZWQgTVVBIEkgZGlkbid0IGRhcmUg
-cmVzcG9uZCkgaXMgdGhhdCB3ZSBzZWVtDQo+IHRvIGhhdmUgYW4gb3ZlcmxhcCBpbiBmdW5jdGlv
-bmFsaXR5IGJldHdlZW4gd2hhdCB5b3UgYXJlIHByb3Bvc2luZyBhbmQNCj4gZXhpc3Rpbmcgdmly
-dHVhbCBkZXZpY2UgY29uZmlndXJhdGlvbiwgYnV0IHlvdSBhcmUgY29tcGxldGVseSBpZ25vcmlu
-Zw0KPiBpbXByb3ZpbmcgdXBvbiB0aGUgZXhpc3RpbmcgY3JlYXRpb24gbWV0aG9kcy4NCj4gV2hl
-dGhlciBkZWFsaW5nIHdpdGggYSBTbWFydE5JQyAod2hpY2ggSSB1c2VkIHRvIGRlc2NyaWJlIGEg
-TklDIHdpdGgNCj4gZ2VuZXJhbCBwdXJwb3NlIHByb2Nlc3NvcnMgdGhhdCBjb3VsZCBiZSBydW5u
-aW5nIExpbnV4IGFuZCBJIHRoaW5rIHlvdSBkbywNCj4gdG9vKSBvciBhIHJlZ3VsYXIgTklDIGl0
-IHNlZW1zIGxpa2Ugd2Ugc2hvdWxkIHVzZSBkZXZsaW5rIHRvIGNyZWF0ZSBhbmQNCj4gY29uZmln
-dXJlIGEgdmFyaWV0eSBvZiBkZXZpY2VzIHRoZXNlIGNvdWxkIGJlOg0KPiANCj4gMS4gIE51bWJl
-ciBvZiBQRnMgKHRoZXJlIGFyZSBjYXNlcyB3aGVyZSBtb3JlIHRoYW4gMSBQRiBwZXIgdXBsaW5r
-IHBvcnQNCj4gICAgIGlzIHJlcXVpcmVkIGZvciBjb21tYW5kL2NvbnRyb2wgb2YgdGhlIFNtYXJ0
-TklDIG9yIHdoZXJlIGEgc2luZ2xlDQo+ICAgICBQQ0kgYi9kL2YgbWF5IGhhdmUgbWFueSB1cGxp
-bmsgcG9ydHMgdGhhdCBuZWVkIHRvIGJlIGFkZHJlc3NlZA0KPiAgICAgc2VwYXJhdGVseSkNCg0K
-WWVzLCB1cGxpbmsgcG9ydHMgY2FuIGJlIGFkZHJlc3NlZCB1c2luZyAiZGV2bGluayBwb3J0Ii4N
-Cg0KTXVsdGlwbGUgcGZzIGFyZSBhbHJlYWR5IHN1cHBvcnRlZC4NCg0KJCBkZXZsaW5rIHN1YmRl
-diBzaG93DQpwY2kvMDAwMDowMzowMC4wLzE6IGZsYXZvdXIgcGNpcGYgcGYgMA0KcGNpLzAwMDA6
-MDM6MDAuMC8xOiBmbGF2b3VyIHBjaXBmIHBmIDENCnBjaS8wMDAwOjAzOjAwLjAvMTogZmxhdm91
-ciBwY2l2ZiBwZiAxIHZmIDANCg0KPiAyLiAgRGV2aWNlLXNwZWNpZmljIFNSLUlPViBWRnMgdmlz
-aWJsZSB0byBzZXJ2ZXIgMy4gIG1kZXYgZGV2aWNlcyB0aGF0IF9tYXlfDQo+IGhhdmUgcmVwcmVz
-ZW50ZXJzIG9uIHRoZSBlbWJlZGRlZCBjb3JlcyBvZg0KPiAgICAgdGhlIE5JQw0KDQpZZXMsIElz
-IGFsc28gcGxhbm5lZCBmb3IgY3VycmVudCBpbnRlcmZhY2UuICh3aWxsIG5lZWQgdG8gYWRkIG1k
-ZXYgZmxhdm9yIGluIHRoZSBmdXR1cmUpDQoNCj4gNC4gIEhhcmR3YXJlIFZpcnRJTy1uZXQgZGV2
-aWNlcyBzdXBwb3J0ZWQgNS4gIE90aGVyIG5vbi1uZXR3b3JrIGRldmljZXMNCj4gKHN0b3JhZ2Ug
-Z2l2ZW4gYXMgdGhlIGZpcnN0IGV4YW1wbGUpIDYuICAuLi4NCg0KQWxsIGlzIHVwIHRvIGRyaXZl
-ciAtIHdoYXQgdG8gZXhwb3NlIGFuZCB3aGF0IGZsYXZvciB0byBncmFudCB0aGUgc3ViZGV2Lg0K
-DQo+IA0KPiBXZSBjYW5ub3QgZ2V0IHJpZCBvZiB0aGUgbWV0aG9kcyBmb3IgY3JlYXRpbmcgaGFy
-ZHdhcmUgVkZzIHZpYSBzeXNmcywgYnV0DQo+IG5vdyB0aGF0IHdlIGFyZSBzZWVpbmcgbG90cyBv
-ZiBkaWZmZXJlbnQgZmxhdm9ycyBvZiBkZXZpY2VzIHRoYXQgbWlnaHQgYmUNCj4gY3JlYXRlZCB3
-ZSBzaG91bGQgc3RhcnQgYnkgbWFraW5nIHN1cmUgYXQgYSBtaW5pbXVtIHdlIGNhbiBjcmVhdGUg
-ZXhpc3RpbmcNCj4gaGFyZHdhcmUgZGV2aWNlcyAoVkZzKSB3aXRoIHRoaXMgZGV2bGluayBpbnRl
-cmZhY2UgYW5kIG1vdmUgZnJvbSB0aGVyZS4gIElzDQo+IHRoZXJlIGEgcGxhbiB0byB1c2UgdGhp
-cyBpbnRlcmZhY2UgdG8gY3JlYXRlIHN1YmRldnMgdGhhdCBhcmUgVkZzIG9yIGp1c3QgbmV3DQo+
-IHN1YmRldiBmbGF2b3JzPyAgSSBjb3VsZCBzdGFydCB0byBnZXQgYmVoaW5kIGFuIGludGVyZmFj
-ZSBsaWtlIHRoaXMgaWYgdGhlIHBhdGNoZXMNCj4gc2hvd2VkIHRoYXQgZGV2bGluayB3b3VsZCBi
-ZSB0aGUgb25lIHBsYWNlIHdoZXJlIGRldmljZSBjcmVhdGlvbiBhbmQNCj4gY29udHJvbCBjb3Vs
-ZCBiZSBkb25lIGZvciBhbGwgdHlwZXMgb2Ygc3ViZGV2cywgYnV0IHRoYXQgaXNuJ3QgY2xlYXIg
-dGhhdCBpdCBpcw0KPiB5b3VyIGRpcmVjdGlvbiBiYXNlZCBvbiB0aGUgcGF0Y2hlcy4NCg0KSSBk
-b27igJl0IHNlZSBob3cgdGhlIFNtYXJ0TmljIGNhbiBmb3JjZSB0aGUgaG9zdCBQRiB0byBjcmVh
-dGUgbmV3IFZGcy4NCklzbuKAmXQgdGhhdCB0aGUgaG9zdCBQRiByZXNwb25zaWJpbGl0eT8gRG9l
-c24ndCBtYWtlIHNlbnNlIHRvIG1lLg0KRG8gd2Ugd2FudCB0byBoYXZlIGFuIGludGVyZmFjZSB0
-aGF0IHdvcmtzIG9ubHkgZm9yIE5JQ3MgYW5kIG5vdCBmcm9tIHRoZSBTbWFydE5pYyBlbWJlZGRl
-ZCBzeXN0ZW0/DQogDQpXaGF0IHdlIGRvIGhlcmUgaXMgZXhwb3NlIGFsbCB0aGUgUEZTIGFuZCBw
-b3RlbnRpYWwgVkZzL21kZXZzIHRoYXQgdGhlIGhvc3QgY2FuIGVuYWJsZS4NClVubGlrZSBpcCBs
-aW5rIHdoaWNoIGV4cG9zZXMgb25seSBlbmFibGVkIFZGcywgaGVyZSAoaW4gbWx4NSBpbXBsZW1l
-bnRhdGlvbikgd2UgZXhwb3NlIGFsbCB0aGUgVkZzIHRoYXQgdGhlIGhvc3QgUEYgX2Nhbl8gZW5h
-YmxlLg0KVGhpcyBhbGxvd3MsIGZvciBleGFtcGxlLCB0byBzZXQgdGhlIE1BQyBvZiBhIFZGIGJl
-Zm9yZSBpdCBpcyBlbmFibGVkLg0KDQo+IA0KPiBTbyBqdXN0IHRvIG1ha2Ugc3VyZSB0aGlzIGlz
-IGNsZWFyLCB3aGF0IEknbSBwcm9wb3NpbmcgdGhhdCBkZXZsaW5rIGlzIHVzZWQgdG8NCj4gY3Jl
-YXRlIGFuZCBjb25maWd1cmUgYWxsIHR5cGVzIG9mIGRldmljZXMgdGhhdCBpdCBtYXkgYmUgcG9z
-c2libGUgdG8gY3JlYXRlLA0KDQpNb3JlIGZsYXZvcnMgY2FuIGJlIGRlZmlhbnRseSBhZGRlZCBp
-biB0aGUgZnV0dXJlLiBBYm91dCBjcmVhdGlvbiwgc2VlIG15IGNvbW1lbnQgYWJvdmUuDQpBY3R1
-YWxseSBmbGF2b3IgaXMgdGhlIG9ubHkgcmVxdWlyZWQgYXR0cmlidXRlIGZvciByZWdpc3RyYXRp
-b24uIFRoZSByZXN0IGlzIG9wdGlvbmFsLg0KIA0KPiBjb25maWd1cmUsIG9yIGFkZHJlc3MgZnJv
-bSBhIFBGIGFuZCB0aGUgc3RhcnRpbmcgcGxhY2Ugc2hvdWxkIGJlIHN0YW5kYXJkLA0KPiBoYXJk
-d2FyZSBWRnMuICBJZiB0aGF0IGNhbiBiZSBkb25lIHJpZ2h0IGFuZCB3ZSBjYW4gYWRkcmVzcyBz
-b21lIG9mIHRoZQ0KPiBpc3N1ZXMgd2l0aCB0aGUgY3VycmVudCBpbXBsZW1lbnRhdGlvbiAobW9y
-ZSB0aGFuIG9uZSBodyBhZGRyIGlzIGEgX2dyZWF0Xw0KPiBleGFtcGxlKSB0aGVuIGFkZGluZyBu
-ZXcgZmxhdm91cnMgZm9yIHRoZSBzZXJ2ZXIgZGV2aWNlcyBhbmQgYW5kIGFkZGluZw0KPiBuZXcg
-Zmxhdm9ycyBmb3IgU21hcnROSUMtYmFzZWQgZGV2aWNlcyBzaG91bGQgYmUgZWFzeSBhbmQgZmVl
-bCBuYXR1cmFsLg0KDQpTbyB3aGF0IHlvdSBhcmUgc2F5aW5nIHRoYXQgYWxsb3dpbmcgbXVsdGlw
-bGUgYWRkcmVzc2VzIHBlciBzdWJkZXYgd2lsbCBtYWtlIGEgc3Ryb25nIGNhc2UgZm9yIHRoaXMg
-cGF0Y2ggc2V0Pw0K
+On Wed, Nov 13, 2019 at 2:06 AM Gregory Rose <gvrose8192@gmail.com> wrote:
+>
+>
+> On 11/12/2019 7:08 AM, xiangxia.m.yue@gmail.com wrote:
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > When using the kernel datapath, the upcall don't
+> > include skb hash info relatived. That will introduce
+> > some problem, because the hash of skb is important
+> > in kernel stack. For example, VXLAN module uses
+> > it to select UDP src port. The tx queue selection
+> > may also use the hash in stack.
+> >
+> > Hash is computed in different ways. Hash is random
+> > for a TCP socket, and hash may be computed in hardware,
+> > or software stack. Recalculation hash is not easy.
+> >
+> > Hash of TCP socket is computed:
+> >    tcp_v4_connect
+> >      -> sk_set_txhash (is random)
+> >
+> >    __tcp_transmit_skb
+> >      -> skb_set_hash_from_sk
+> >
+> > There will be one upcall, without information of skb
+> > hash, to ovs-vswitchd, for the first packet of a TCP
+> > session. The rest packets will be processed in Open vSwitch
+> > modules, hash kept. If this tcp session is forward to
+> > VXLAN module, then the UDP src port of first tcp packet
+> > is different from rest packets.
+> >
+> > TCP packets may come from the host or dockers, to Open vSwitch.
+> > To fix it, we store the hash info to upcall, and restore hash
+> > when packets sent back.
+> >
+> > +---------------+          +-------------------------+
+> > |   Docker/VMs  |          |     ovs-vswitchd        |
+> > +----+----------+          +-+--------------------+--+
+> >       |                       ^                    |
+> >       |                       |                    |
+> >       |                       |  upcall            v restore packet hash (not recalculate)
+> >       |                     +-+--------------------+--+
+> >       |  tap netdev         |                         |   vxlan module
+> >       +--------------->     +-->  Open vSwitch ko     +-->
+> >         or internal type    |                         |
+> >                             +-------------------------+
+> >
+> > Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
+> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > ---
+> > v3:
+> > * add enum ovs_pkt_hash_types
+> > * avoid duplicate call the skb_get_hash_raw.
+> > * explain why we should fix this problem.
+> > ---
+> >   include/uapi/linux/openvswitch.h |  2 ++
+> >   net/openvswitch/datapath.c       | 30 +++++++++++++++++++++++++++++-
+> >   net/openvswitch/datapath.h       | 12 ++++++++++++
+> >   3 files changed, 43 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+> > index 1887a451c388..e65407c1f366 100644
+> > --- a/include/uapi/linux/openvswitch.h
+> > +++ b/include/uapi/linux/openvswitch.h
+> > @@ -170,6 +170,7 @@ enum ovs_packet_cmd {
+> >    * output port is actually a tunnel port. Contains the output tunnel key
+> >    * extracted from the packet as nested %OVS_TUNNEL_KEY_ATTR_* attributes.
+> >    * @OVS_PACKET_ATTR_MRU: Present for an %OVS_PACKET_CMD_ACTION and
+> > + * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_hash in skb).
+> >    * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
+> >    * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragment
+> >    * size.
+> > @@ -190,6 +191,7 @@ enum ovs_packet_attr {
+> >       OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe,
+> >                                      error logging should be suppressed. */
+> >       OVS_PACKET_ATTR_MRU,        /* Maximum received IP fragment size. */
+> > +     OVS_PACKET_ATTR_HASH,       /* Packet hash. */
+> >       OVS_PACKET_ATTR_LEN,            /* Packet size before truncation. */
+> >       __OVS_PACKET_ATTR_MAX
+> >   };
+>
+> Why do you add the new enum before the last entry OVS_PACKET_ATTR_LEN
+> instead of
+> just adding it to the end of the list?
+Should be at end of the list, but I run the "make check" without patch
+for ovs-vswitchd,
+There is not error. There is not a OVS_PACKET_ATTR_LEN test case ?
+I will change the order of enum in next version, thanks.
+> Just curious.
+>
+> - Greg
+>
+> > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> > index 2088619c03f0..b556cf62b77c 100644
+> > --- a/net/openvswitch/datapath.c
+> > +++ b/net/openvswitch/datapath.c
+> > @@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
+> >       size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
+> >               + nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
+> >               + nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
+> > -             + nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATTR_LEN */
+> > +             + nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
+> > +             + nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
+> >
+> >       /* OVS_PACKET_ATTR_USERDATA */
+> >       if (upcall_info->userdata)
+> > @@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
+> >       size_t len;
+> >       unsigned int hlen;
+> >       int err, dp_ifindex;
+> > +     u64 hash;
+> >
+> >       dp_ifindex = get_dpifindex(dp);
+> >       if (!dp_ifindex)
+> > @@ -504,6 +506,23 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
+> >               pad_packet(dp, user_skb);
+> >       }
+> >
+> > +     hash = skb_get_hash_raw(skb);
+> > +     if (hash) {
+> > +             if (skb->sw_hash)
+> > +                     hash |= OVS_PACKET_HASH_SW_BIT;
+> > +
+> > +             if (skb->l4_hash)
+> > +                     hash |= OVS_PACKET_HASH_L4_BIT;
+> > +
+> > +             if (nla_put(user_skb, OVS_PACKET_ATTR_HASH,
+> > +                         sizeof (u64), &hash)) {
+> > +                     err = -ENOBUFS;
+> > +                     goto out;
+> > +             }
+> > +
+> > +             pad_packet(dp, user_skb);
+> > +     }
+> > +
+> >       /* Only reserve room for attribute header, packet data is added
+> >        * in skb_zerocopy() */
+> >       if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
+> > @@ -543,6 +562,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+> >       struct datapath *dp;
+> >       struct vport *input_vport;
+> >       u16 mru = 0;
+> > +     u64 hash;
+> >       int len;
+> >       int err;
+> >       bool log = !a[OVS_PACKET_ATTR_PROBE];
+> > @@ -568,6 +588,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+> >       }
+> >       OVS_CB(packet)->mru = mru;
+> >
+> > +     if (a[OVS_PACKET_ATTR_HASH]) {
+> > +             hash = nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
+> > +
+> > +             __skb_set_hash(packet, hash & 0xFFFFFFFFULL,
+> > +                            !!(hash & OVS_PACKET_HASH_SW_BIT),
+> > +                            !!(hash & OVS_PACKET_HASH_L4_BIT));
+> > +     }
+> > +
+> >       /* Build an sw_flow for sending this packet. */
+> >       flow = ovs_flow_alloc();
+> >       err = PTR_ERR(flow);
+> > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+> > index 81e85dde8217..e239a46c2f94 100644
+> > --- a/net/openvswitch/datapath.h
+> > +++ b/net/openvswitch/datapath.h
+> > @@ -139,6 +139,18 @@ struct ovs_net {
+> >       bool xt_label;
+> >   };
+> >
+> > +/**
+> > + * enum ovs_pkt_hash_types - hash info to include with a packet
+> > + * to send to userspace.
+> > + * @OVS_PACKET_HASH_SW_BIT: indicates hash was computed in software stack.
+> > + * @OVS_PACKET_HASH_L4_BIT: indicates hash is a canonical 4-tuple hash
+> > + * over transport ports.
+> > + */
+> > +enum ovs_pkt_hash_types {
+> > +     OVS_PACKET_HASH_SW_BIT = (1ULL << 32),
+> > +     OVS_PACKET_HASH_L4_BIT = (1ULL << 33),
+> > +};
+> > +
+> >   extern unsigned int ovs_net_id;
+> >   void ovs_lock(void);
+> >   void ovs_unlock(void);
+>
