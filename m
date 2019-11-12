@@ -2,200 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2115DF9BF9
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:22:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBBD3F9BFF
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 22:22:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727279AbfKLVV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 16:21:57 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46708 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727275AbfKLVV5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:21:57 -0500
-Received: by mail-pf1-f194.google.com with SMTP id 193so14208108pfc.13
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:21:56 -0800 (PST)
+        id S1727065AbfKLVWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 16:22:09 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35265 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726958AbfKLVWJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 16:22:09 -0500
+Received: by mail-wr1-f66.google.com with SMTP id s5so9071534wrw.2
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 13:22:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=56RmInZgI7Bh5RV3HY6BrZUpnFAVvdE9v++wifdVVbQ=;
-        b=ZfNUt0qSlG/eNpBtAZ0VTYWsyYp45EI1kg059Eym4v5QX0Rd4eJhUdGDHMn6QKbyy7
-         rAEVCINxRbPGFWvH2zmErPehM9LKyDLyBoDAInAHNKT4/quKkG/EtZO/FhCOkM/nDfkP
-         OwUp5RB5f4lGpDiCQlYFyWhQBMqbf0YFKIWuU=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=AfvTzi6YifDxrT24vq0fRNLq/D4pzOsX1bfKzbB4/JM=;
+        b=IUxs2Oc1W5kVxJinxRpDDDsHIRW8MPRGJtP2vehBwcBs9AN7g8DeI4mpHQQSOALKGY
+         yZ79CVasacMo28CrYUXocF1KZ7jIy/e1yqDBMVnpzn1EW2LsNE2nzSR8SffYyMbhDgXC
+         zipIlfZfgh3ogLTahAu/MRe9zGFGhd2GftjaRKHay8oNfMe99MuB4NeAsgNBvYn1+jub
+         Zw3iZUXH/3RwodKRBp5/OGqoKGMfIDkTbq5Tc2IuM8jBbQWeQkFI13TKy9Rv5OGaEkBR
+         zgRUYHKKftr/MYbsRsy/PiEUKtSRUYPLSwJo5Mbc4TOG7QHoSbz6ECxVhYkGAVJBs9Mb
+         j8FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=56RmInZgI7Bh5RV3HY6BrZUpnFAVvdE9v++wifdVVbQ=;
-        b=LIev/NDMPWV3oE6zIIm4TyslUSIUSbtTH2dpJ+7dMH9awvP4Yw+OU7o3mk0Fd8S0dt
-         m69T0FNdZB1RzWofEx3eM1hFgnALOQqVUT7Y9MuFPiSvSwdpYOcDeHNNSJ4W/0QBi9nZ
-         tviLNsyjhQIq0jVnNEQFbmKdi5QY+JOKWHF30+P19gndg7DX+/8qDbQlhhazWaTd4RcS
-         a/K4woKQp38pbtBa+CyqPJMiABZleHojR1uoyaRZ5NaTbruUKeVwmGZHMgBG4A0KlvXk
-         IPP6LRsj5PWI3RO3hqXk4AEH2GTHmQZzB3/djkNu17pgargti9K9eBSyFYe+Jw6qqyt8
-         gZjg==
-X-Gm-Message-State: APjAAAXUNNBf1/2skV+qdqJWAQLIZvTMvgPY/QSXTkMq/G3RNQsWwAM5
-        3w37nZE7XdSnCGqYKtGqDyWdrw==
-X-Google-Smtp-Source: APXvYqzdFzu4zPPFnJ9ABSyKsWziEZi4Dk2O2pVHeNcsXTcPeB3CKkazqUJ/8FJ/XZkexPEBBAMb2g==
-X-Received: by 2002:aa7:8d8b:: with SMTP id i11mr11186741pfr.45.1573593716214;
-        Tue, 12 Nov 2019 13:21:56 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id c21sm19635349pgh.25.2019.11.12.13.21.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AfvTzi6YifDxrT24vq0fRNLq/D4pzOsX1bfKzbB4/JM=;
+        b=k6Sud1yXRXsY/RRJlaKg+jq3KyKPz3Qe/cfLstQnTWQ+qGYvFKrLR9O90SymDpcQ0a
+         vKhdu4b/orEeJt/5kRj8b4+awvMIxXnMspvovb+JMx/mxTXqWcyO5ME7Jd+3vpa5H0oQ
+         orKbCprOWJQLCCoOcXf6y0SSF1AR5tpoFnA5EduGsr3UiWFseOeu2/Vdtmq06HlJR8bQ
+         KTtHBfRSQ5AD1zFjFeXc09eZ1DD5gRFnSNAYc1Tw1tXOWCYhMhu84S3xLVi/VZE3Snql
+         AVRQvE4za5DaJOvaZfCnOevlksc37Msokg7VLKnAXpd7FRNa162oUmhaDiYFeNBZIhaN
+         IMNQ==
+X-Gm-Message-State: APjAAAXnmYEtq8LK9739xThDSEesjJG5/tQGbjuBEYHZh2DZdZtNBLkE
+        nqi2znxeH/B5HvboKnwdv88=
+X-Google-Smtp-Source: APXvYqxIKiAoUOOKHDVqBzWMJC3X17OOqRR/xX3hMrY/thWSi5tXnfRNZYxETxTlkmcEIoL2oVphUg==
+X-Received: by 2002:adf:f4c9:: with SMTP id h9mr26618524wrp.354.1573593726650;
+        Tue, 12 Nov 2019 13:22:06 -0800 (PST)
+Received: from localhost.localdomain ([86.121.29.241])
+        by smtp.gmail.com with ESMTPSA id w7sm118450wru.62.2019.11.12.13.22.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Nov 2019 13:21:55 -0800 (PST)
-Date:   Tue, 12 Nov 2019 13:21:54 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jiri Slaby <jslaby@suse.cz>,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-kernel@vger.kernel.org, David Windsor <dave@nullcore.net>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-xfs@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christoph Lameter <cl@linux.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Laura Abbott <labbott@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Christoffer Dall <christoffer.dall@linaro.org>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        Jan Kara <jack@suse.cz>,
-        Luis de Bethencourt <luisbg@kernel.org>,
-        Marc Zyngier <marc.zyngier@arm.com>,
-        Rik van Riel <riel@redhat.com>,
-        Matthew Garrett <mjg59@google.com>,
-        linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-hardening@lists.openwall.com,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Michal Kubecek <mkubecek@suse.cz>
-Subject: Re: [kernel-hardening] [PATCH 09/38] usercopy: Mark kmalloc caches
- as usercopy caches
-Message-ID: <201911121313.1097D6EE@keescook>
-References: <1515636190-24061-1-git-send-email-keescook@chromium.org>
- <1515636190-24061-10-git-send-email-keescook@chromium.org>
- <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9519edb7-456a-a2fa-659e-3e5a1ff89466@suse.cz>
+        Tue, 12 Nov 2019 13:22:06 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next] net: dsa: sja1105: Print the reset reason
+Date:   Tue, 12 Nov 2019 23:22:00 +0200
+Message-Id: <20191112212200.5572-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 08:17:57AM +0100, Jiri Slaby wrote:
-> On 11. 01. 18, 3:02, Kees Cook wrote:
-> > From: David Windsor <dave@nullcore.net>
-> > 
-> > Mark the kmalloc slab caches as entirely whitelisted. These caches
-> > are frequently used to fulfill kernel allocations that contain data
-> > to be copied to/from userspace. Internal-only uses are also common,
-> > but are scattered in the kernel. For now, mark all the kmalloc caches
-> > as whitelisted.
-> > 
-> > This patch is modified from Brad Spengler/PaX Team's PAX_USERCOPY
-> > whitelisting code in the last public patch of grsecurity/PaX based on my
-> > understanding of the code. Changes or omissions from the original code are
-> > mine and don't reflect the original grsecurity/PaX code.
-> > 
-> > Signed-off-by: David Windsor <dave@nullcore.net>
-> > [kees: merged in moved kmalloc hunks, adjust commit log]
-> > Cc: Pekka Enberg <penberg@kernel.org>
-> > Cc: David Rientjes <rientjes@google.com>
-> > Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: linux-mm@kvack.org
-> > Cc: linux-xfs@vger.kernel.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > Acked-by: Christoph Lameter <cl@linux.com>
-> > ---
-> >  mm/slab.c        |  3 ++-
-> >  mm/slab.h        |  3 ++-
-> >  mm/slab_common.c | 10 ++++++----
-> >  3 files changed, 10 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/mm/slab.c b/mm/slab.c
-> > index b9b0df620bb9..dd367fe17a4e 100644
-> > --- a/mm/slab.c
-> > +++ b/mm/slab.c
-> ...
-> > @@ -1098,7 +1099,8 @@ void __init setup_kmalloc_cache_index_table(void)
-> >  static void __init new_kmalloc_cache(int idx, slab_flags_t flags)
-> >  {
-> >  	kmalloc_caches[idx] = create_kmalloc_cache(kmalloc_info[idx].name,
-> > -					kmalloc_info[idx].size, flags);
-> > +					kmalloc_info[idx].size, flags, 0,
-> > +					kmalloc_info[idx].size);
-> >  }
-> >  
-> >  /*
-> > @@ -1139,7 +1141,7 @@ void __init create_kmalloc_caches(slab_flags_t flags)
-> >  
-> >  			BUG_ON(!n);
-> >  			kmalloc_dma_caches[i] = create_kmalloc_cache(n,
-> > -				size, SLAB_CACHE_DMA | flags);
-> > +				size, SLAB_CACHE_DMA | flags, 0, 0);
-> 
-> Hi,
-> 
-> was there any (undocumented) reason NOT to mark DMA caches as usercopy?
-> 
-> We are seeing this on s390x:
-> 
-> > usercopy: Kernel memory overwrite attempt detected to SLUB object
-> 'dma-kmalloc-1k' (offset 0, size 11)!
-> > ------------[ cut here ]------------
-> > kernel BUG at mm/usercopy.c:99!
+Sometimes it can be quite opaque even for me why the driver decided to
+reset the switch. So instead of adding dump_stack() calls each time for
+debugging, just add a reset reason to sja1105_static_config_reload
+calls which gets printed to the console.
 
-Interesting! I believe the rationale was that if the region is used for
-DMA, allowing direct access to it from userspace could be prone to
-races.
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/sja1105/sja1105.h      | 10 +++++++++-
+ drivers/net/dsa/sja1105/sja1105_main.c | 18 +++++++++++++++---
+ drivers/net/dsa/sja1105/sja1105_ptp.c  |  2 +-
+ drivers/net/dsa/sja1105/sja1105_tas.c  |  4 ++--
+ 4 files changed, 27 insertions(+), 7 deletions(-)
 
-> See:
-> https://bugzilla.suse.com/show_bug.cgi?id=1156053
-
-For context from the bug, the trace is:
-
-(<0000000000386c5a> usercopy_abort+0xa2/0xa8) 
- <000000000036097a> __check_heap_object+0x11a/0x120  
- <0000000000386b3a> __check_object_size+0x18a/0x208  
- <000000000079b4ba> skb_copy_datagram_from_iter+0x62/0x240  
- <000003ff804edd5c> iucv_sock_sendmsg+0x1fc/0x858 Ýaf_iucv¨  
- <0000000000785894> sock_sendmsg+0x54/0x90  
- <0000000000785944> sock_write_iter+0x74/0xa0  
- <000000000038a3f0> new_sync_write+0x110/0x180  
- <000000000038d42e> vfs_write+0xa6/0x1d0  
- <000000000038d748> ksys_write+0x60/0xe8  
- <000000000096a660> system_call+0xdc/0x2e0  
-
-I know Al worked on fixing up usercopy checking for iters. I wonder if
-there is redundant checking happening here? i.e. haven't iters already
-done object size verifications, so they're not needed during iter copy
-helpers?
-
-> This indeed fixes it:
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -1290,7 +1290,8 @@ void __init create_kmalloc_caches(slab_flags_t flags)
->                         kmalloc_caches[KMALLOC_DMA][i] =
-> create_kmalloc_cache(
->                                 kmalloc_info[i].name[KMALLOC_DMA],
->                                 kmalloc_info[i].size,
-> -                               SLAB_CACHE_DMA | flags, 0, 0);
-> +                               SLAB_CACHE_DMA | flags, 0,
-> +                               kmalloc_info[i].size);
->                 }
->         }
->  #endif
-
-How is iucv the only network protocol that has run into this? Do others
-use a bounce buffer?
-
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index 64b3ee7b9771..1a3722971b61 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -115,7 +115,15 @@ typedef enum {
+ } sja1105_spi_rw_mode_t;
+ 
+ /* From sja1105_main.c */
+-int sja1105_static_config_reload(struct sja1105_private *priv);
++enum sja1105_reset_reason {
++	SJA1105_VLAN_FILTERING = 0,
++	SJA1105_RX_HWTSTAMPING,
++	SJA1105_AGEING_TIME,
++	SJA1105_SCHEDULING,
++};
++
++int sja1105_static_config_reload(struct sja1105_private *priv,
++				 enum sja1105_reset_reason reason);
+ 
+ /* From sja1105_spi.c */
+ int sja1105_xfer_buf(const struct sja1105_private *priv,
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 475cc2d8b0e8..b60224c55244 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1341,13 +1341,21 @@ static void sja1105_bridge_leave(struct dsa_switch *ds, int port,
+ 	sja1105_bridge_member(ds, port, br, false);
+ }
+ 
++static const char * const sja1105_reset_reasons[] = {
++	[SJA1105_VLAN_FILTERING] = "VLAN filtering",
++	[SJA1105_RX_HWTSTAMPING] = "RX timestamping",
++	[SJA1105_AGEING_TIME] = "Ageing time",
++	[SJA1105_SCHEDULING] = "Time-aware scheduling",
++};
++
+ /* For situations where we need to change a setting at runtime that is only
+  * available through the static configuration, resetting the switch in order
+  * to upload the new static config is unavoidable. Back up the settings we
+  * modify at runtime (currently only MAC) and restore them after uploading,
+  * such that this operation is relatively seamless.
+  */
+-int sja1105_static_config_reload(struct sja1105_private *priv)
++int sja1105_static_config_reload(struct sja1105_private *priv,
++				 enum sja1105_reset_reason reason)
+ {
+ 	struct ptp_system_timestamp ptp_sts_before;
+ 	struct ptp_system_timestamp ptp_sts_after;
+@@ -1405,6 +1413,10 @@ int sja1105_static_config_reload(struct sja1105_private *priv)
+ out_unlock_ptp:
+ 	mutex_unlock(&priv->ptp_data.lock);
+ 
++	dev_info(priv->ds->dev,
++		 "Reset switch and programmed static config. Reason: %s\n",
++		 sja1105_reset_reasons[reason]);
++
+ 	/* Configure the CGU (PLLs) for MII and RMII PHYs.
+ 	 * For these interfaces there is no dynamic configuration
+ 	 * needed, since PLLs have same settings at all speeds.
+@@ -1599,7 +1611,7 @@ static int sja1105_vlan_filtering(struct dsa_switch *ds, int port, bool enabled)
+ 	l2_lookup_params = table->entries;
+ 	l2_lookup_params->shared_learn = !enabled;
+ 
+-	rc = sja1105_static_config_reload(priv);
++	rc = sja1105_static_config_reload(priv, SJA1105_VLAN_FILTERING);
+ 	if (rc)
+ 		dev_err(ds->dev, "Failed to change VLAN Ethertype\n");
+ 
+@@ -1871,7 +1883,7 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
+ 
+ 	l2_lookup_params->maxage = maxage;
+ 
+-	return sja1105_static_config_reload(priv);
++	return sja1105_static_config_reload(priv, SJA1105_AGEING_TIME);
+ }
+ 
+ static int sja1105_port_setup_tc(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/sja1105/sja1105_ptp.c b/drivers/net/dsa/sja1105/sja1105_ptp.c
+index 0a35813f9328..6b9b2bef8a7b 100644
+--- a/drivers/net/dsa/sja1105/sja1105_ptp.c
++++ b/drivers/net/dsa/sja1105/sja1105_ptp.c
+@@ -102,7 +102,7 @@ static int sja1105_change_rxtstamping(struct sja1105_private *priv,
+ 		priv->tagger_data.stampable_skb = NULL;
+ 	}
+ 
+-	return sja1105_static_config_reload(priv);
++	return sja1105_static_config_reload(priv, SJA1105_RX_HWTSTAMPING);
+ }
+ 
+ int sja1105_hwtstamp_set(struct dsa_switch *ds, int port, struct ifreq *ifr)
+diff --git a/drivers/net/dsa/sja1105/sja1105_tas.c b/drivers/net/dsa/sja1105/sja1105_tas.c
+index 33eca6a82ec5..d846fb5c4e4d 100644
+--- a/drivers/net/dsa/sja1105/sja1105_tas.c
++++ b/drivers/net/dsa/sja1105/sja1105_tas.c
+@@ -352,7 +352,7 @@ int sja1105_setup_tc_taprio(struct dsa_switch *ds, int port,
+ 		if (rc < 0)
+ 			return rc;
+ 
+-		return sja1105_static_config_reload(priv);
++		return sja1105_static_config_reload(priv, SJA1105_SCHEDULING);
+ 	}
+ 
+ 	/* The cycle time extension is the amount of time the last cycle from
+@@ -400,7 +400,7 @@ int sja1105_setup_tc_taprio(struct dsa_switch *ds, int port,
+ 	if (rc < 0)
+ 		return rc;
+ 
+-	return sja1105_static_config_reload(priv);
++	return sja1105_static_config_reload(priv, SJA1105_SCHEDULING);
+ }
+ 
+ void sja1105_tas_setup(struct dsa_switch *ds)
 -- 
-Kees Cook
+2.17.1
+
