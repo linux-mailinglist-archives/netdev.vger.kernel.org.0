@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 043F6F90D2
-	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 14:40:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D71BF90DA
+	for <lists+netdev@lfdr.de>; Tue, 12 Nov 2019 14:41:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbfKLNks (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 08:40:48 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:38498 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbfKLNks (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 08:40:48 -0500
-Received: by mail-ed1-f67.google.com with SMTP id s10so14940950edi.5
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 05:40:47 -0800 (PST)
+        id S1727241AbfKLNle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 08:41:34 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46262 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726939AbfKLNld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 08:41:33 -0500
+Received: by mail-ed1-f68.google.com with SMTP id x11so14907530eds.13
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 05:41:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ch71/YowF7JQ2VkonRdn067RVMIX98UklrBCO1JHGCI=;
-        b=M+yARMg9mTRP/vC+5Nrn/Y+ABa5bRgUPd6DxSbrxy5ThIcFtpwEYHvnoogPQ0lGi04
-         +i891rWQn/YPcxuXOfW/eUH7TE6x+ngIXeNA9lHIUUUIzUQ7JSDXECEO1JQbQ5lW2YIw
-         L+RHkxHYtBjkItf2pVKgNT1EEgc3MUJ8EZEULbYfsppDKJ1LVwnbK+VHdAJRSfNO0pLJ
-         GjpuGM7zZrzlc2WV0fB5g0T2r/se63Wo03YGlI0r9DMfe2QdqydXU/8AHWwaLLmBo0QZ
-         Ny1R0PGDCtpta5fIDwNKRFmaOtfZNH0ZLdmTsg5ulJEGXXr6psfXAq0PX8Phz34W0Wjx
-         eG4Q==
+        bh=sXgW0jx5yGW44bwsmo+2CWaYrX0xe/7Zhr7EheJ3VYQ=;
+        b=ABuH02is6TaJO0Rth2TprgRWq4WuNCgidoc+SqIVgDNR3fpR4PWKIJi5Ul9MoUID+5
+         x8cVHIgFFqEuCtoWlXdKK7qoRPV+TUoHWpb8Z1+dlvCNzj9VjF9O6WeUA5bSLGrlj/j9
+         yY3U2jECY3IFbFbjyodcZystZPS6WWP3egVDHM3olXHAYBF83+7ocWj5Vc2XDnlBiSzm
+         sUo2YhqBWgcHSHgqrToS3SVmfO2DwHeb8anQB8xUmLrstJj0HtSQgQXIdRuL1qGY8aFm
+         jDQyMBGu5xoGqoxP1Bk78nrejQDxjPvtZK091nBuS0U86XhZyo/5J7STB4nbc3NGZXjw
+         UwaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ch71/YowF7JQ2VkonRdn067RVMIX98UklrBCO1JHGCI=;
-        b=UXl7z9s9FhOx7TnF6iV+MNIlO6VkSlkxzXRRQ6c/u5QOC1nafFl8xzjcaG7i4UAASg
-         Djf3M3PTGMiI0OVZBrYrsX8QzRDe5Bri/uQfc9sMdTGKywwiW3ugh2B/EV89oLamFVlc
-         sKZS5p+qYkdzA0qDG5K0/LoPeFU0ljK82nCuEWLAwsIxjfCqryTuNacNNWq5jvezcofL
-         97SeOXCdYsGGb3ddYGK+0vF1cDG2fITatDYu4+/kM1NgTSKkRHXpAKVUdW7NTMBEOwc3
-         bCZn+s8PJb9KaVCMxez5C3RquPJL9UKsOX0LzKSE591Il+MYBX0ShOXGL+qPwDEfwZ0C
-         vqBQ==
-X-Gm-Message-State: APjAAAU/ZEFF3cBEYxHOHOHiuU3QSaaJmzoTTHWXWsFV51LWd5KICdyG
-        BRb3RMKKTBpfbU9Qkq3bwYLgAN3HK2xx3t3eSVA=
-X-Google-Smtp-Source: APXvYqwwvw4ICy8NSDdBrv9QLbKAJHILV7xQkK8ZM6h0WJoLJwRAVtJMZiD/GZNYRyrpdiIGeMJcPzSxtvu6d6NKi34=
-X-Received: by 2002:aa7:c3d0:: with SMTP id l16mr33021243edr.18.1573566046538;
- Tue, 12 Nov 2019 05:40:46 -0800 (PST)
+        bh=sXgW0jx5yGW44bwsmo+2CWaYrX0xe/7Zhr7EheJ3VYQ=;
+        b=IB0MhLyojnkcyOo4Od/BwSSBLBJL+CJh6HYcE46JLLktKkrLEjttQokdR1OkYTISaX
+         21eef7wSaeyn6Dn+/JpAjwHeWmFmEcBeAninyrn9wrkT0yuPTR27QpdRoENwYF9V04M3
+         5egZLmgXTp9bDRrYvYwdKlNnbUgyYI8HVgVAzOQ08Q2NY5jSQrdXL6Eb2vQNfloZy/cJ
+         m2h/30MFnELQCjlxcqWcyhWCsOwsyB3Yl42Crw0d6myLA1Ba+qwE8XtPuQRvh4JtH/7/
+         aOzo2NODY1F7fym7URImBUtVHxEJxAcOP5OzGaRepKoLGELBZEw3+vmf58WF80gap4wp
+         WrPA==
+X-Gm-Message-State: APjAAAXwSjlKT3HfdUdRWH0NvG1q1H0dJyBm2pGm3TTpnAkeCoUY3qe+
+        wsCWaDLxMI9RJhsvTySJTP1s0AwLM7DR8c84E6M=
+X-Google-Smtp-Source: APXvYqwaMK+Ua6a+Qkm/oiT7b/rImDxWLOsS8ly4OIHUEAWEN3vZseTEpQTmVDtKDQCH6u62YIPZw5cLBK4QtrFIWYg=
+X-Received: by 2002:a17:906:4910:: with SMTP id b16mr28250062ejq.133.1573566091938;
+ Tue, 12 Nov 2019 05:41:31 -0800 (PST)
 MIME-Version: 1.0
-References: <20191112124420.6225-1-olteanv@gmail.com> <20191112124420.6225-11-olteanv@gmail.com>
- <20191112130947.GE3572@piout.net>
-In-Reply-To: <20191112130947.GE3572@piout.net>
+References: <20191112124420.6225-1-olteanv@gmail.com> <20191112124420.6225-5-olteanv@gmail.com>
+ <20191112133959.GF5090@lunn.ch>
+In-Reply-To: <20191112133959.GF5090@lunn.ch>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 12 Nov 2019 15:40:35 +0200
-Message-ID: <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
-Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
- a separate folder
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Date:   Tue, 12 Nov 2019 15:41:20 +0200
+Message-ID: <CA+h21hoxjeqZzdg1KLKB3Yp39zEz7Q0BZ5bNXocEnsreczpL_w@mail.gmail.com>
+Subject: Re: [PATCH net-next 04/12] net: mscc: ocelot: create a helper for
+ changing the port MTU
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Joergen Andreasen <joergen.andreasen@microchip.com>,
@@ -67,50 +67,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Nov 2019 at 15:09, Alexandre Belloni
-<alexandre.belloni@bootlin.com> wrote:
+On Tue, 12 Nov 2019 at 15:40, Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Hi,
->
-> On 12/11/2019 14:44:18+0200, Vladimir Oltean wrote:
+> On Tue, Nov 12, 2019 at 02:44:12PM +0200, Vladimir Oltean wrote:
 > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > >
-> > The vitesse/ folder will contain drivers for switching chips derived
-> > from legacy Vitesse IPs (VSC family), including those produced by
-> > Microsemi and Microchip (acquirers of Vitesse).
-> >
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  drivers/net/dsa/Kconfig                       | 31 +------------------
-> >  drivers/net/dsa/Makefile                      |  4 +--
-> >  drivers/net/dsa/vitesse/Kconfig               | 31 +++++++++++++++++++
-> >  drivers/net/dsa/vitesse/Makefile              |  3 ++
-> >  .../vsc73xx-core.c}                           |  2 +-
-> >  .../vsc73xx-platform.c}                       |  2 +-
-> >  .../vsc73xx-spi.c}                            |  2 +-
-> >  .../{vitesse-vsc73xx.h => vitesse/vsc73xx.h}  |  0
-> >  8 files changed, 39 insertions(+), 36 deletions(-)
-> >  create mode 100644 drivers/net/dsa/vitesse/Kconfig
-> >  create mode 100644 drivers/net/dsa/vitesse/Makefile
-> >  rename drivers/net/dsa/{vitesse-vsc73xx-core.c => vitesse/vsc73xx-core.c} (99%)
-> >  rename drivers/net/dsa/{vitesse-vsc73xx-platform.c => vitesse/vsc73xx-platform.c} (99%)
-> >  rename drivers/net/dsa/{vitesse-vsc73xx-spi.c => vitesse/vsc73xx-spi.c} (99%)
-> >  rename drivers/net/dsa/{vitesse-vsc73xx.h => vitesse/vsc73xx.h} (100%)
-> >
+> > Since in an NPI/DSA setup, not all ports will have the same MTU
 >
-> As there are no commonalities between the vsc73xx and felix drivers,
-> shouldn't you simply leave that one out and have felix in the existing
-> microchip folder?
+> By this, do you mean that the CPU port needs a bigger MTU because of
+> the extra header?
+
+Yes, see the next patch.
+
 >
-
-I don't have a strong preference, although where I come from, all new
-NXP networking drivers are still labeled as "freescale" even though
-there is no code reuse. There are even less commonalities with
-Microchip (ex-Micrel, if I am not mistaken) KSZ switches than with the
-old vsc73xx. I'll let the ex-Vitesse people decide.
-
-
-> --
-> Alexandre Belloni, Bootlin
-> Embedded Linux and Kernel engineering
-> https://bootlin.com
+>     Andrew
