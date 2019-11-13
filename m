@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AA6FA170
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 02:58:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74ACDFA179
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 02:58:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729646AbfKMB5G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 20:57:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50026 "EHLO mail.kernel.org"
+        id S1728205AbfKMB5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 20:57:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729663AbfKMB5F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 20:57:05 -0500
+        id S1729737AbfKMB5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:57:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C96A42247C;
-        Wed, 13 Nov 2019 01:57:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4E738222D3;
+        Wed, 13 Nov 2019 01:57:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573610224;
-        bh=AxvpmB2Sb0ryC9UrYM1Dehg4vu0x0EADb0FbcdB7REY=;
+        s=default; t=1573610244;
+        bh=kYRv6X1JijuFRXp3cEKnjfaokBgri1XdSpNc8t1YNv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GzHtAv5vwMiRz/4o6uBUpjArcJV2bkVuVDP5deO48JrAUs+KqON6f7RweECWxNu44
-         TFZFeAntHgPH7Vg2AtEJ8T0g1jpKj50r4eYCSNzvxjKpU7H+FcAKuQOi81gYKzpyqp
-         F7bA1cdwA8zWqU4FDDOM1fYFEQL9KUwnPVUW2cE0=
+        b=m4bJMZED7tfQUe5OM23CpHBIhd6RgsU4i1LGw6HbUZAhW54oZvCTOX5GkYIxGryVy
+         cGz5EcJy2Nna19j8zVCgqFXZMKSmjY0a2H4Yi2dIPJZ8pLPwHGSpWp3Z+K+RyARzM2
+         SoPe0Vhe0+xzkTAR9ysQmluTEopCMmVN3EkNLpxs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        Andrew Bowers <andrewx.bowers@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.14 029/115] cxgb4: Use proper enum in cxgb4_dcb_handle_fw_update
-Date:   Tue, 12 Nov 2019 20:54:56 -0500
-Message-Id: <20191113015622.11592-29-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 043/115] i40e: Use proper enum in i40e_ndo_set_vf_link_state
+Date:   Tue, 12 Nov 2019 20:55:10 -0500
+Message-Id: <20191113015622.11592-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113015622.11592-1-sashal@kernel.org>
 References: <20191113015622.11592-1-sashal@kernel.org>
@@ -47,51 +47,45 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nathan Chancellor <natechancellor@gmail.com>
 
-[ Upstream commit 3b0b8f0d9a259f6a428af63e7a77547325f8e081 ]
+[ Upstream commit 43ade6ad18416b8fd5bb3c9e9789faa666527eec ]
 
-Clang warns when one enumerated type is implicitly converted to another.
+Clang warns when one enumerated type is converted implicitly to another.
 
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c:303:7: warning: implicit
-conversion from enumeration type 'enum cxgb4_dcb_state' to different
-enumeration type 'enum cxgb4_dcb_state_input' [-Wenum-conversion]
-                         ? CXGB4_DCB_STATE_FW_ALLSYNCED
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c:304:7: warning: implicit
-conversion from enumeration type 'enum cxgb4_dcb_state' to different
-enumeration type 'enum cxgb4_dcb_state_input' [-Wenum-conversion]
-                         : CXGB4_DCB_STATE_FW_INCOMPLETE);
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2 warnings generated.
+drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c:4214:42: warning:
+implicit conversion from enumeration type 'enum i40e_aq_link_speed' to
+different enumeration type 'enum virtchnl_link_speed'
+      [-Wenum-conversion]
+                pfe.event_data.link_event.link_speed = I40E_LINK_SPEED_40GB;
+                                                     ~ ^~~~~~~~~~~~~~~~~~~~
+1 warning generated.
 
-Use the equivalent value of the expected type to silence Clang while
-resulting in no functional change.
+Use the proper enum from virtchnl_link_speed, which has the same value
+as I40E_LINK_SPEED_40GB, VIRTCHNL_LINK_SPEED_40GB. This appears to be
+missed by commit ff3f4cc267f6 ("virtchnl: finish conversion to virtchnl
+interface").
 
-CXGB4_DCB_STATE_FW_INCOMPLETE = CXGB4_DCB_INPUT_FW_INCOMPLETE = 2
-CXGB4_DCB_STATE_FW_ALLSYNCED = CXGB4_DCB_INPUT_FW_ALLSYNCED = 3
-
+Link: https://github.com/ClangBuiltLinux/linux/issues/81
 Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-index 6ee2ed30626bf..306b4b3206168 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-@@ -266,8 +266,8 @@ void cxgb4_dcb_handle_fw_update(struct adapter *adap,
- 		enum cxgb4_dcb_state_input input =
- 			((pcmd->u.dcb.control.all_syncd_pkd &
- 			  FW_PORT_CMD_ALL_SYNCD_F)
--			 ? CXGB4_DCB_STATE_FW_ALLSYNCED
--			 : CXGB4_DCB_STATE_FW_INCOMPLETE);
-+			 ? CXGB4_DCB_INPUT_FW_ALLSYNCED
-+			 : CXGB4_DCB_INPUT_FW_INCOMPLETE);
- 
- 		if (dcb->dcb_version != FW_PORT_DCB_VER_UNKNOWN) {
- 			dcb_running_version = FW_PORT_CMD_DCB_VERSION_G(
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+index bdb7523216000..ea42240ddace7 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -3191,7 +3191,7 @@ int i40e_ndo_set_vf_link_state(struct net_device *netdev, int vf_id, int link)
+ 		vf->link_forced = true;
+ 		vf->link_up = true;
+ 		pfe.event_data.link_event.link_status = true;
+-		pfe.event_data.link_event.link_speed = I40E_LINK_SPEED_40GB;
++		pfe.event_data.link_event.link_speed = VIRTCHNL_LINK_SPEED_40GB;
+ 		break;
+ 	case IFLA_VF_LINK_STATE_DISABLE:
+ 		vf->link_forced = true;
 -- 
 2.20.1
 
