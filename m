@@ -2,167 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19CC0FABF6
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:23:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DB96FAC13
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727352AbfKMIW4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 03:22:56 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:46204 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727291AbfKMIWs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:22:48 -0500
-Received: by mail-oi1-f193.google.com with SMTP id n14so982743oie.13
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 00:22:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9ayY6gCXrrA3VgRAyrp2bK0EyrP0ektptyzgRBWzw5I=;
-        b=A+5ZDAwm0sisXEXV26bplYhx0LMI9tSEqcz5XKqugaaiNBsieQDhWSu2ezHIxsk3ok
-         PapqJ40EqXbuXexGXvb3dctMfbGHjaFuYDAai4pvCrk3ttwW8fkWJFMlnWK5Sh3WDfzP
-         au9tTKQUHDCal3qSVw21r18Mu3ZTlLggTEjdE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9ayY6gCXrrA3VgRAyrp2bK0EyrP0ektptyzgRBWzw5I=;
-        b=tabFh5W88W9oHoKKq0MqrpFodwt7iyjeKsmwgUnp/9of10X34yw+SthZsIlNU9wv8M
-         Fn/TIaNnzH5NBMTQXH0+5l5igBL0RicoIeG7WObvyEmP9K6qDVF4Y5IgjEyzNbDnk12r
-         2mSyaUg3XPYXDjH4XVtOjMHlrIwlqXrpwEzkAxXEfnU1xYcvZgRxJshyQNgHAfMV/wm1
-         qb6GVo2ousqFKojNyZpg/8Jnr299sQFkcCslEu9vZpB5LWnXjjkBFjxVT9wKXpR+Cqjn
-         0/GJ64hGo1qArGplForrJ6X/zrxdOdG/l4hSUeI62KscoOGYr/Li87kChqhR3tMM2aze
-         fwrg==
-X-Gm-Message-State: APjAAAUZl4F7N+18TRBWCOpnttcZF8q8xvNHs9Owk1jfSGm0Ikw9i99p
-        kUvxIG9CemOdObKUuhYYQ+HwG0xitCHqWb99ZdUKUQ==
-X-Google-Smtp-Source: APXvYqxfSdLpxppf1Yvj8Pnz7e2iZsxyqjYKBICjfkF8MEX8zkGbqRRzZo57EW2FfCAXfyKFCc6JsAljOesoFoCv0a8=
-X-Received: by 2002:a05:6808:4cf:: with SMTP id a15mr1806257oie.132.1573633368138;
- Wed, 13 Nov 2019 00:22:48 -0800 (PST)
+        id S1726338AbfKMI3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 03:29:23 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35352 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725966AbfKMI3W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:29:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573633761;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s1akMTlo+i8m4HmhAJ7H+DLpdqdkV4atkZW1vivI704=;
+        b=eR/R0+XXt5W1LREqJkZvCUYvQCPkFm320DpXAU3oS1XsLYr9MdIzbR++y8FQqlQe8+vGdZ
+        Jw7aSJ4eGkFwYVN8S3WOe75jj9GUQ7RrKMhQDs0lXbq3PxrRpL5fRGmmU+9cHtI3bbXYIN
+        uzZT+qrd7Lx+stX04PU1nqmv45wLddg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-100-Basd25mzMJCLetYnItVzrA-1; Wed, 13 Nov 2019 03:29:20 -0500
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 042D4DBE6;
+        Wed, 13 Nov 2019 08:29:19 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 22C8C60C85;
+        Wed, 13 Nov 2019 08:29:08 +0000 (UTC)
+Date:   Wed, 13 Nov 2019 09:29:07 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
+        brouer@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to
+ sync DMA memory for non-coherent devices
+Message-ID: <20191113092907.569f6b8e@carbon>
+In-Reply-To: <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+        <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <20191112000700.3455038-1-jhubbard@nvidia.com> <20191112203802.GD5584@ziepe.ca>
- <02fa935c-3469-b766-b691-5660084b60b9@nvidia.com>
-In-Reply-To: <02fa935c-3469-b766-b691-5660084b60b9@nvidia.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Wed, 13 Nov 2019 09:22:36 +0100
-Message-ID: <CAKMK7uHvk+ti00mCCF2006U003w1dofFg9nSfmZ4bS2Z2pEDNQ@mail.gmail.com>
-Subject: Re: [PATCH v3 00/23] mm/gup: track dma-pinned pages: FOLL_PIN, FOLL_LONGTERM
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf <bpf@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-MC-Unique: Basd25mzMJCLetYnItVzrA-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 10:10 PM John Hubbard <jhubbard@nvidia.com> wrote:
->
-> On 11/12/19 12:38 PM, Jason Gunthorpe wrote:
-> > On Mon, Nov 11, 2019 at 04:06:37PM -0800, John Hubbard wrote:
-> >> Hi,
-> >>
-> >> The cover letter is long, so the more important stuff is first:
-> >>
-> >> * Jason, if you or someone could look at the the VFIO cleanup (patch 8)
-> >>   and conversion to FOLL_PIN (patch 18), to make sure it's use of
-> >>   remote and longterm gup matches what we discussed during the review
-> >>   of v2, I'd appreciate it.
-> >>
-> >> * Also for Jason and IB: as noted below, in patch 11, I am (too?) boldly
-> >>   converting from put_user_pages() to release_pages().
-> >
-> > Why are we doing this? I think things got confused here someplace, as
->
->
-> Because:
->
-> a) These need put_page() calls,  and
->
-> b) there is no put_pages() call, but there is a release_pages() call that
-> is, arguably, what put_pages() would be.
->
->
-> > the comment still says:
-> >
-> > /**
-> >  * put_user_page() - release a gup-pinned page
-> >  * @page:            pointer to page to be released
-> >  *
-> >  * Pages that were pinned via get_user_pages*() must be released via
-> >  * either put_user_page(), or one of the put_user_pages*() routines
-> >  * below.
->
->
-> Ohhh, I missed those comments. They need to all be changed over to
-> say "pages that were pinned via pin_user_pages*() or
-> pin_longterm_pages*() must be released via put_user_page*()."
->
-> The get_user_pages*() pages must still be released via put_page.
->
-> The churn is due to a fairly significant change in strategy, whis
-> is: instead of changing all get_user_pages*() sites to call
-> put_user_page(), change selected sites to call pin_user_pages*() or
-> pin_longterm_pages*(), plus put_user_page().
+On Sun, 10 Nov 2019 14:09:09 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-Can't we call this unpin_user_page then, for some symmetry? Or is that
-even more churn?
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 2cbcdbdec254..defbfd90ab46 100644
+[...]
+> @@ -150,8 +153,8 @@ static inline void page_pool_destroy(struct page_pool=
+ *pool)
+>  }
+> =20
+>  /* Never call this directly, use helpers below */
+> -void __page_pool_put_page(struct page_pool *pool,
+> -=09=09=09  struct page *page, bool allow_direct);
+> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> +=09=09=09  unsigned int dma_sync_size, bool allow_direct);
+> =20
+>  static inline void page_pool_put_page(struct page_pool *pool,
+>  =09=09=09=09      struct page *page, bool allow_direct)
+> @@ -160,14 +163,14 @@ static inline void page_pool_put_page(struct page_p=
+ool *pool,
+>  =09 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+>  =09 */
+>  #ifdef CONFIG_PAGE_POOL
+> -=09__page_pool_put_page(pool, page, allow_direct);
+> +=09__page_pool_put_page(pool, page, 0, allow_direct);
+>  #endif
+>  }
+>  /* Very limited use-cases allow recycle direct */
+>  static inline void page_pool_recycle_direct(struct page_pool *pool,
+>  =09=09=09=09=09    struct page *page)
+>  {
+> -=09__page_pool_put_page(pool, page, true);
+> +=09__page_pool_put_page(pool, page, 0, true);
+>  }
 
-Looking from afar the naming here seems really confusing.
--Daniel
+We need to use another "default" value than zero for 'dma_sync_size' in
+above calls.  I suggest either 0xFFFFFFFF or -1 (which unsigned is
+0xFFFFFFFF).
 
-> That allows incrementally converting the kernel over to using the
-> new pin APIs, without taking on the huge risk of a big one-shot
-> conversion.
->
-> So, I've ended up with one place that actually needs to get reverted
-> back to get_user_pages(), and that's the IB ODP code.
->
-> >
-> > I feel like if put_user_pages() is not the correct way to undo
-> > get_user_pages() then it needs to be deleted.
-> >
->
-> Yes, you're right. I'll fix the put_user_page comments() as described.
->
->
-> thanks,
->
-> John Hubbard
-> NVIDIA
+Point is that in case caller doesn't know the length (the CPU have had
+access to) then page_pool will need to sync with pool->p.max_len.
+
+If choosing a larger value here default value your code below takes
+care of it via min(dma_sync_size, pool->p.max_len).
+
+=20
+>  /* API user MUST have disconnected alloc-side (not allowed to call
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 5bc65587f1c4..af9514c2d15b 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -112,6 +112,17 @@ static struct page
+> *__page_pool_get_cached(struct page_pool *pool) return page;
+>  }
+> =20
+> +/* Used for non-coherent devices */
+> +static void page_pool_dma_sync_for_device(struct page_pool *pool,
+> +=09=09=09=09=09  struct page *page,
+> +=09=09=09=09=09  unsigned int dma_sync_size)
+> +{
+> +=09dma_sync_size =3D min(dma_sync_size, pool->p.max_len);
+> +=09dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
+> +=09=09=09=09=09 pool->p.offset, dma_sync_size,
+> +=09=09=09=09=09 pool->p.dma_dir);
+> +}
 
 
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-+41 (0) 79 365 57 48 - http://blog.ffwll.ch
