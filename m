@@ -2,130 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DB96FAC13
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:29:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B126FAC34
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:47:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbfKMI3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 03:29:23 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:35352 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725966AbfKMI3W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:29:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573633761;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=s1akMTlo+i8m4HmhAJ7H+DLpdqdkV4atkZW1vivI704=;
-        b=eR/R0+XXt5W1LREqJkZvCUYvQCPkFm320DpXAU3oS1XsLYr9MdIzbR++y8FQqlQe8+vGdZ
-        Jw7aSJ4eGkFwYVN8S3WOe75jj9GUQ7RrKMhQDs0lXbq3PxrRpL5fRGmmU+9cHtI3bbXYIN
-        uzZT+qrd7Lx+stX04PU1nqmv45wLddg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-100-Basd25mzMJCLetYnItVzrA-1; Wed, 13 Nov 2019 03:29:20 -0500
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 042D4DBE6;
-        Wed, 13 Nov 2019 08:29:19 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 22C8C60C85;
-        Wed, 13 Nov 2019 08:29:08 +0000 (UTC)
-Date:   Wed, 13 Nov 2019 09:29:07 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
-        davem@davemloft.net, thomas.petazzoni@bootlin.com,
-        ilias.apalodimas@linaro.org, matteo.croce@redhat.com,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for non-coherent devices
-Message-ID: <20191113092907.569f6b8e@carbon>
-In-Reply-To: <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
-References: <cover.1573383212.git.lorenzo@kernel.org>
-        <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+        id S1727036AbfKMIr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 03:47:27 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:60771 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725966AbfKMIr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:47:27 -0500
+X-Originating-IP: 92.137.17.54
+Received: from localhost (alyon-657-1-975-54.w92-137.abo.wanadoo.fr [92.137.17.54])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 8AC5D1C0014;
+        Wed, 13 Nov 2019 08:47:23 +0000 (UTC)
+Date:   Wed, 13 Nov 2019 09:47:22 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH net-next 10/12] net: dsa: vitesse: move vsc73xx driver to
+ a separate folder
+Message-ID: <20191113084722.GI3572@piout.net>
+References: <CA+h21hqYynoGwfd=g3rZFgYSKNxsv8PXstD+6btopykweEi1dw@mail.gmail.com>
+ <20191112143346.3pzshxapotwdbzpg@lx-anielsen.microsemi.net>
+ <20191112145054.GG10875@lunn.ch>
+ <20191112145732.o7pkbitrvrr2bb7j@lx-anielsen.microsemi.net>
+ <CA+h21hrc-vb412iK+hp20K6huFPBABx6xYQjgi7Ew7ET8ryK+g@mail.gmail.com>
+ <20191112190957.nbfb6g2bxiipjnbi@lx-anielsen.microsemi.net>
+ <CA+h21hqo9dWct-068pGv2YhzACp5ooaDKzeh92jHNTYyBvgmqw@mail.gmail.com>
+ <20191112194814.gmenwbje3dg52s6l@lx-anielsen.microsemi.net>
+ <CA+h21hrh4oYs3j3cOz4Afe2GSbU9ME+nzoRaZ4D22mu9_jkO=g@mail.gmail.com>
+ <20191113073822.wlsgalzznlng2owt@lx-anielsen.microsemi.net>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-MC-Unique: Basd25mzMJCLetYnItVzrA-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191113073822.wlsgalzznlng2owt@lx-anielsen.microsemi.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Nov 2019 14:09:09 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On 13/11/2019 08:38:22+0100, Allan W. Nielsen wrote:
+> > > > The way I see an Ocelot DSA driver, it would be done a la mv88e6xxx,
+> > > > aka a single struct dsa_switch_ops registered for the entire family,
+> > > > and function pointers where the implementation differs. You're not
+> > > > proposing that here, but rather that each switch driver works in
+> > > > parallel with each other, and they all call into the Ocelot core. That
+> > > > would produce a lot more boilerplate, I think.
+> > > > And if the DSA driver for Ocelot ends up supporting more than 1
+> > > > device, its name should better not contain "vsc9959" since that's
+> > > > rather specific.
+> > > A vsc7511/12 will not share code with felix/vsc9959. I do not expect any other
+> > > IP/chip will be register compatible with vsc9959.
+> > I don't exactly understand this comment. Register-incompatible in a
+> > logical sense, or in a layout sense? Judging from the attachment in
+> > chapter 6 of the VSC7511 datasheet [1], at least the basic
+> > functionality appears to be almost the same. And for the rest, there's
+> > regmap magic.
+> My point is that vsc7511 has more in commen with vsc7514 than it has with
+> felix/vsc9959.
+> 
+> vsc7511 will use the same regmaps as those in vsc7514 (with different helper
+> functions as it will be accessing the reguster via SPI).
+> 
 
-> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
-> index 2cbcdbdec254..defbfd90ab46 100644
-[...]
-> @@ -150,8 +153,8 @@ static inline void page_pool_destroy(struct page_pool=
- *pool)
->  }
-> =20
->  /* Never call this directly, use helpers below */
-> -void __page_pool_put_page(struct page_pool *pool,
-> -=09=09=09  struct page *page, bool allow_direct);
-> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
-> +=09=09=09  unsigned int dma_sync_size, bool allow_direct);
-> =20
->  static inline void page_pool_put_page(struct page_pool *pool,
->  =09=09=09=09      struct page *page, bool allow_direct)
-> @@ -160,14 +163,14 @@ static inline void page_pool_put_page(struct page_p=
-ool *pool,
->  =09 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
->  =09 */
->  #ifdef CONFIG_PAGE_POOL
-> -=09__page_pool_put_page(pool, page, allow_direct);
-> +=09__page_pool_put_page(pool, page, 0, allow_direct);
->  #endif
->  }
->  /* Very limited use-cases allow recycle direct */
->  static inline void page_pool_recycle_direct(struct page_pool *pool,
->  =09=09=09=09=09    struct page *page)
->  {
-> -=09__page_pool_put_page(pool, page, true);
-> +=09__page_pool_put_page(pool, page, 0, true);
->  }
-
-We need to use another "default" value than zero for 'dma_sync_size' in
-above calls.  I suggest either 0xFFFFFFFF or -1 (which unsigned is
-0xFFFFFFFF).
-
-Point is that in case caller doesn't know the length (the CPU have had
-access to) then page_pool will need to sync with pool->p.max_len.
-
-If choosing a larger value here default value your code below takes
-care of it via min(dma_sync_size, pool->p.max_len).
-
-=20
->  /* API user MUST have disconnected alloc-side (not allowed to call
-> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> index 5bc65587f1c4..af9514c2d15b 100644
-> --- a/net/core/page_pool.c
-> +++ b/net/core/page_pool.c
-> @@ -112,6 +112,17 @@ static struct page
-> *__page_pool_get_cached(struct page_pool *pool) return page;
->  }
-> =20
-> +/* Used for non-coherent devices */
-> +static void page_pool_dma_sync_for_device(struct page_pool *pool,
-> +=09=09=09=09=09  struct page *page,
-> +=09=09=09=09=09  unsigned int dma_sync_size)
-> +{
-> +=09dma_sync_size =3D min(dma_sync_size, pool->p.max_len);
-> +=09dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
-> +=09=09=09=09=09 pool->p.offset, dma_sync_size,
-> +=09=09=09=09=09 pool->p.dma_dir);
-> +}
+regmap will properly abstract the underlying bus, this was the whole
+point of using it.
 
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
