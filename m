@@ -2,153 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE9EFBC41
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 00:08:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40302FBC51
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 00:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726949AbfKMXIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 18:08:48 -0500
-Received: from correo.us.es ([193.147.175.20]:38448 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726363AbfKMXIr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 18:08:47 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 3013DE34D5
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 00:08:43 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 215ADD2B1F
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 00:08:43 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 16D35DA4D0; Thu, 14 Nov 2019 00:08:43 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id F10A621FE5;
-        Thu, 14 Nov 2019 00:08:40 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 14 Nov 2019 00:08:40 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id C9AE142EE38E;
-        Thu, 14 Nov 2019 00:08:40 +0100 (CET)
-Date:   Thu, 14 Nov 2019 00:08:42 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Phil Sutter <phil@nwl.cc>
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        Eric Garver <eric@garver.life>
-Subject: Re: [nf-next PATCH] net: netfilter: Support iif matches in
- POSTROUTING
-Message-ID: <20191113230842.blotm5i3ftz24rml@salvia>
-References: <20191112161437.19511-1-phil@nwl.cc>
+        id S1726628AbfKMXOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 18:14:53 -0500
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:14878 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726251AbfKMXOw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 18:14:52 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dcc8e6b0000>; Wed, 13 Nov 2019 15:14:51 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 13 Nov 2019 15:14:48 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 13 Nov 2019 15:14:48 -0800
+Received: from [10.2.160.107] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 13 Nov
+ 2019 23:14:47 +0000
+Subject: Re: [PATCH v4 02/23] mm/gup: factor out duplicate code from four
+ routines
+To:     Jan Kara <jack@suse.cz>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+References: <20191113042710.3997854-1-jhubbard@nvidia.com>
+ <20191113042710.3997854-3-jhubbard@nvidia.com>
+ <20191113111521.GI6367@quack2.suse.cz>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <56a575ac-c090-4063-67fc-c6cb24109442@nvidia.com>
+Date:   Wed, 13 Nov 2019 15:12:02 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191112161437.19511-1-phil@nwl.cc>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20191113111521.GI6367@quack2.suse.cz>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1573686891; bh=9LRqaiCXGyssScdgi2q8tAszCMUWmamss75JnSCD7Rw=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=A51eKIWPld+4B5s2mm0c+AftPX6dpBjqpWkYujEzQW8kVLlFqmGjocd27BfsONHAP
+         mmPJsbiq51gzeODte2X2C/uPkzYNTjtPJH03F4HVdvsPm9WWyPO3mCuFy2qZ+53ojk
+         w6MdkTLmNoJEsvjJ1mHPlZG7UOzdlPWuN7wE/1LLT4AJNdQe+bbFVcAcD30SjuESOC
+         HMOwl+XnOLJvxdKZ8WjJigzroAhsM6sSwkk0PcI+BOHfFZzPS0NsqTuAU0nk8z5SAy
+         WgcifEMQlIH1QeCvlXON5hCNNd97lHyEHTXJRg5VuAfoyXIGForJZxdZ7GM5/XPnDu
+         zIFH0GBGYNRaQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 05:14:37PM +0100, Phil Sutter wrote:
-> Instead of generally passing NULL to NF_HOOK_COND() for input device,
-> pass skb->dev which contains input device for routed skbs.
-> 
-> Note that iptables (both legacy and nft) reject rules with input
-> interface match from being added to POSTROUTING chains, but nftables
-> allows this.
+On 11/13/19 3:15 AM, Jan Kara wrote:
+> On Tue 12-11-19 20:26:49, John Hubbard wrote:
+>> There are four locations in gup.c that have a fair amount of code
+>> duplication. This means that changing one requires making the same
+>> changes in four places, not to mention reading the same code four
+>> times, and wondering if there are subtle differences.
+>>
+>> Factor out the common code into static functions, thus reducing the
+>> overall line count and the code's complexity.
+>>
+>> Also, take the opportunity to slightly improve the efficiency of the
+>> error cases, by doing a mass subtraction of the refcount, surrounded
+>> by get_page()/put_page().
+>>
+>> Also, further simplify (slightly), by waiting until the the successful
+>> end of each routine, to increment *nr.
+>>
+>> Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
+>> Cc: Ira Weiny <ira.weiny@intel.com>
+>> Cc: Christoph Hellwig <hch@lst.de>
+>> Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+>=20
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index 85caf76b3012..199da99e8ffc 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -1969,6 +1969,34 @@ static int __gup_device_huge_pud(pud_t pud, pud_t=
+ *pudp, unsigned long addr,
+>>   }
+>>   #endif
+>>  =20
+>> +static int __record_subpages(struct page *page, unsigned long addr,
+>> +			     unsigned long end, struct page **pages, int nr)
+>> +{
+>> +	int nr_recorded_pages =3D 0;
+>> +
+>> +	do {
+>> +		pages[nr] =3D page;
+>> +		nr++;
+>> +		page++;
+>> +		nr_recorded_pages++;
+>> +	} while (addr +=3D PAGE_SIZE, addr !=3D end);
+>> +	return nr_recorded_pages;
+>> +}
+>=20
+> Why don't you pass in already pages + nr?
 
-Yes, it allows this but it will not ever match, right? So even if the
-rule is loaded, it will be useless.
+Aha, that does save a function argument. Will do.
 
-Do you have a usecase in mind that would benefit from this specifically?
+...
+>> +static void __huge_pt_done(struct page *head, int nr_recorded_pages, in=
+t *nr)
+>> +{
+>> +	*nr +=3D nr_recorded_pages;
+>> +	SetPageReferenced(head);
+>> +}
+>=20
+> I don't find this last helper very useful. It seems to muddy water more
+> than necessary...
 
-> Cc: Eric Garver <eric@garver.life>
-> Signed-off-by: Phil Sutter <phil@nwl.cc>
-> ---
->  net/ipv4/ip_output.c    | 4 ++--
->  net/ipv4/xfrm4_output.c | 2 +-
->  net/ipv6/ip6_output.c   | 4 ++--
->  net/ipv6/xfrm6_output.c | 2 +-
->  4 files changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-> index 3d8baaaf7086d..9d83cb320dcb7 100644
-> --- a/net/ipv4/ip_output.c
-> +++ b/net/ipv4/ip_output.c
-> @@ -422,7 +422,7 @@ int ip_mc_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  
->  int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  {
-> -	struct net_device *dev = skb_dst(skb)->dev;
-> +	struct net_device *dev = skb_dst(skb)->dev, *indev = skb->dev;
->  
->  	IP_UPD_PO_STATS(net, IPSTATS_MIB_OUT, skb->len);
->  
-> @@ -430,7 +430,7 @@ int ip_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  	skb->protocol = htons(ETH_P_IP);
->  
->  	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
-> -			    net, sk, skb, NULL, dev,
-> +			    net, sk, skb, indev, dev,
->  			    ip_finish_output,
->  			    !(IPCB(skb)->flags & IPSKB_REROUTED));
->  }
-> diff --git a/net/ipv4/xfrm4_output.c b/net/ipv4/xfrm4_output.c
-> index ecff3fce98073..89ba7c87de5df 100644
-> --- a/net/ipv4/xfrm4_output.c
-> +++ b/net/ipv4/xfrm4_output.c
-> @@ -92,7 +92,7 @@ static int __xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  int xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  {
->  	return NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,
-> -			    net, sk, skb, NULL, skb_dst(skb)->dev,
-> +			    net, sk, skb, skb->dev, skb_dst(skb)->dev,
->  			    __xfrm4_output,
->  			    !(IPCB(skb)->flags & IPSKB_REROUTED));
->  }
-> diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-> index 71827b56c0063..945508a7cb0f1 100644
-> --- a/net/ipv6/ip6_output.c
-> +++ b/net/ipv6/ip6_output.c
-> @@ -160,7 +160,7 @@ static int ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff *s
->  
->  int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  {
-> -	struct net_device *dev = skb_dst(skb)->dev;
-> +	struct net_device *dev = skb_dst(skb)->dev, *indev = skb->dev;
->  	struct inet6_dev *idev = ip6_dst_idev(skb_dst(skb));
->  
->  	skb->protocol = htons(ETH_P_IPV6);
-> @@ -173,7 +173,7 @@ int ip6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  	}
->  
->  	return NF_HOOK_COND(NFPROTO_IPV6, NF_INET_POST_ROUTING,
-> -			    net, sk, skb, NULL, dev,
-> +			    net, sk, skb, indev, dev,
->  			    ip6_finish_output,
->  			    !(IP6CB(skb)->flags & IP6SKB_REROUTED));
->  }
-> diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
-> index eecac1b7148e5..fbe51d40bd7e9 100644
-> --- a/net/ipv6/xfrm6_output.c
-> +++ b/net/ipv6/xfrm6_output.c
-> @@ -187,7 +187,7 @@ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  int xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
->  {
->  	return NF_HOOK_COND(NFPROTO_IPV6, NF_INET_POST_ROUTING,
-> -			    net, sk, skb,  NULL, skb_dst(skb)->dev,
-> +			    net, sk, skb,  skb->dev, skb_dst(skb)->dev,
->  			    __xfrm6_output,
->  			    !(IP6CB(skb)->flags & IP6SKB_REROUTED));
->  }
-> -- 
-> 2.24.0
-> 
+Yes, I suspect it's rather unloved, and the fact that it was hard to accura=
+tely
+name should have been a big hint to not do it. I'll remove the helper and
+put the lines back in directly.
+
+
+thanks,
+--=20
+John Hubbard
+NVIDIA
+
+>=20
+> Other than that the cleanup looks nice to me.
+>=20
+> 								Honza
+>=20
