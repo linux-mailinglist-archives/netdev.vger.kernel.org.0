@@ -2,124 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 063E7FAA8F
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 08:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 920E0FAA98
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 08:03:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726474AbfKMHAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 02:00:36 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42103 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbfKMHAf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 02:00:35 -0500
-Received: by mail-wr1-f67.google.com with SMTP id a15so975665wrf.9
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 23:00:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rugrYaxZCiP2gM4hsS0PmTY/T9FiVMFS6xWRRwp7Uks=;
-        b=iLRBNzKe3Ty81HmbP7CV1b8+p7WvR524FmbkGbeQglx6vlgdPRIEtlT5aQ667wL1tT
-         fa5Jk+lPWh5Aba5vbf7Qv0SxdNsfarPP+m89qaVpdBD6q1y1SSlKcVdKojOZpKOD6o6d
-         jEoXGrwvFyn1VDH2BV6jkMVVKdGisEZ2TLc3U1/71aFYAsETXJS68fekfL7x/wRPQzTg
-         d/pWhoDmZkQTwAmliusnRed7o+iNesnwRFxbNsvtQbpgkOmFNOCfJIHBwFSiHBHwIe+b
-         t9EiLrDZ3+fQ7fkIi/BH3hCQgdP8zNfLg+akdBk7LMt23LTHtzUqpviZYkD8Uxx8o59Z
-         8yWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rugrYaxZCiP2gM4hsS0PmTY/T9FiVMFS6xWRRwp7Uks=;
-        b=Gt4jWqchYrz1lrD5k28fG1ZSNnEzJaQbwKpNPMlS4kgownhyCS0Drv2/56oEuXiGVE
-         Gf9uvD3VeF9zUuty6iAoIW42lxV+G072N90pVwwoRsvK02bPDU9eYBqFlUDCkgbVbWjl
-         K3/XehNBLa4sctp3RXRR/xAMoPXx0E/BvQ/lAqQc8/vsiWRKHx+a/8lGRp9bpRWS9+FF
-         kVdPAIugfQQ/lgy6Q2mX/x6RJo1MtK3do3DmYndIIVuRnqRMgEPYd6LFKM0Boe7ryQbj
-         bkhZ5nRWMP2igZsNCXBWsfrVwhcSjrqWO9n5cPtCygvpiFsnkpF59QMO1PX1xLYmq0OO
-         t67Q==
-X-Gm-Message-State: APjAAAWLxQUOK5rnGRf7vxjHAQycKkl2anwYoXoyqZQVNj1oDaRth+02
-        Oqk+5CAnnEwSkRjYF7lvgZ80Ow==
-X-Google-Smtp-Source: APXvYqzxXo5+THKRrJBHRbmsw/q0KRwfVf5UnS3F6vDui9Ylkubka0wc+vrYEI1WSLZkHjvVSA2Odw==
-X-Received: by 2002:adf:e8ce:: with SMTP id k14mr1149133wrn.393.1573628432175;
-        Tue, 12 Nov 2019 23:00:32 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id 4sm1292022wmd.33.2019.11.12.23.00.31
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Nov 2019 23:00:32 -0800 (PST)
-Date:   Wed, 13 Nov 2019 08:00:31 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     Jeffrey Hugo <jeffrey.l.hugo@gmail.com>, davem@davemloft.net,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, MSM <linux-arm-msm@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: Handle "invalid" BDFs for msm8998 devices
-Message-ID: <20191113070031.qlikjctfnoxtald5@netronome.com>
-References: <20191106234712.2380-1-jeffrey.l.hugo@gmail.com>
- <20191112090444.ak2xu67eawfgpdgb@netronome.com>
- <CAOCk7NoXv2-8GO=VYS8dNPJF6sj=S3RbkfqQGW0kvvVmR8V1kw@mail.gmail.com>
- <878soks77y.fsf@kamboji.qca.qualcomm.com>
+        id S1726350AbfKMHDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 02:03:44 -0500
+Received: from mail-eopbgr70083.outbound.protection.outlook.com ([40.107.7.83]:59013
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726074AbfKMHDn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 02:03:43 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Rw0Sz+lCrnogGnzuHvOcBl2f512jmjvwPr/aWMG67DwnJLzO5QKrx08d2z5Uax/6bZyKplHULUhtAT8aPTQpL9vGOXnk3uspipmoWQ/YdJbOUaGNuCGuVeDJLsjpS8daHYz4Wzpx+oEGUCNJQSxato7v4k93b6fxbHjPuBv+cVZNphsCm0XYyxcnsST2Aj/uXz2z0g/PVdLGF7FJbLGyksdDI3QqHLFlF9wCllFPcXUhHyTsewHZA/auBk8sfy8R9SI16Cm5Wa2+lDuzD2vnqxiXgdVORmdOIXIsMW395zePsMExey/3z/yusU4kt+K2Ked1oRo1uzojYcEaQkG9QQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zfQs5gcVh04MXP6iyPeEJP4H6TaXr1w9snxvvlsQg2s=;
+ b=YuQ+/+V7pnncM6JPTo55jq2aRHkCstsnycfaWcUjldzzSHXhLgE69ZySWWrnnPxylgGKVeRrTpFfZvWGpf8Rb4OWH4Oq8+P/CiTamX0nvbAVUJBNTFiJyuixbPzl2l8H9L6xPCsDHfbCJivnvnPL1xjjAaEjeeUPl8bIDarApoyPq50mfdB3aI4LXsrZyadn0P37yrawLLyVjWIFpkT5HcnURnYe7BnShaQTbavLX6CNGl/X6DFMQQNkPHMUDMTo+4sWJY4KuE4xJx1If5zueUMfLldNpsx2GqDXamgRB/zFOCID4a3abasPJueoHZheooAuqqrMzVz2LSuibWzE4w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zfQs5gcVh04MXP6iyPeEJP4H6TaXr1w9snxvvlsQg2s=;
+ b=iQwyUiyU4Bez4jncLaPs5R6oUnV72W9alVo80FqThMyacqPSwvPf0IKDiHfLV4+EvrXl6u/5b98cZJ5lI6IuWSF6LexHLVDTamhySXdbYtnQUzQqQeKBYBh0zmLrFFgFc39qsLq1OuT81oLBGFuTUG1AHcQ4l/gVsqPgYXMf/mQ=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB6338.eurprd05.prod.outlook.com (20.179.36.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.23; Wed, 13 Nov 2019 07:03:40 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.027; Wed, 13 Nov 2019
+ 07:03:40 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>, Kiran Patil <kiran.patil@intel.com>
+Subject: RE: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+Thread-Topic: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+Thread-Index: AQHVmMVkwGO915shK0y7Ue5RV91ix6eIDrEAgACb0JA=
+Date:   Wed, 13 Nov 2019 07:03:40 +0000
+Message-ID: <AM0PR05MB48665308FEE50EAB5C25C086D1760@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
+ <20191112212826.GA1837470@kroah.com>
+In-Reply-To: <20191112212826.GA1837470@kroah.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:64c2:47ad:dfe6:e0d9]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 22711514-8d6c-4480-9bae-08d768079d03
+x-ms-traffictypediagnostic: AM0PR05MB6338:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <AM0PR05MB63389535D39C45052603F2FDD1760@AM0PR05MB6338.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0220D4B98D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(396003)(136003)(366004)(199004)(189003)(305945005)(14444005)(71190400001)(7416002)(256004)(71200400001)(486006)(14454004)(8936002)(8676002)(81166006)(81156014)(6436002)(74316002)(2906002)(33656002)(6246003)(7736002)(966005)(4326008)(7696005)(76176011)(86362001)(6306002)(99286004)(110136005)(55016002)(186003)(5660300002)(6506007)(9686003)(46003)(11346002)(6116002)(25786009)(52536014)(316002)(476003)(446003)(76116006)(478600001)(66556008)(64756008)(66476007)(66446008)(54906003)(66946007)(102836004)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6338;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: jxXwchvUhGwuFjzXE1o2Lt2cRtzgAq8z6cha+skEXQfFSNBa2k46Xe53nH0CMXfDCeTpfNqRya0DRIj1A2XMKBVX8Xn8+EwxLHnLeDDamxx9I8qOIznBNKTUX8wTkackx78dG+LbQROMCwjQllicWo3iLgydB0tVIifvhXSvyMWPOxGMNdhmIURFZe5dj1ylfyWsIDxpCGvB1Vl3p+Ga9eEs/kwjjbohyFBOXu149db4swyP6L59nufajcN6gg9yprk7Fb22wYsi3TEjkt1QFXG2V2HJDLAn3WrfdyZUjME+dJw894R3EXBwh7lDEbfVAG7wcpENz+SUjv6FDB6hMW2N9T6JE72OuR87zuvYL/wXVMEZJMGbMCfpHsmRvu5B0F8KJs0/FuR+B70L+JZHQZI+pGkIJSWGsIb8dv7ftfOinHC+hToJ+4VXa7kw1++fVIFXZaTP5srRHStYdxQYVb7AO6/dXVNqRz2qLgJMwNA=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878soks77y.fsf@kamboji.qca.qualcomm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22711514-8d6c-4480-9bae-08d768079d03
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 07:03:40.3744
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uoaar3NfMTYGAeUe0JURNJj+M7FJUdo1mYxMH2LUQ5dOaVP3x7sIggyeyhereeYVpmQ/DXiwpUUlRSSnZOrE1g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6338
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 13, 2019 at 06:58:25AM +0200, Kalle Valo wrote:
-> Jeffrey Hugo <jeffrey.l.hugo@gmail.com> writes:
-> 
-> > On Tue, Nov 12, 2019 at 2:04 AM Simon Horman <simon.horman@netronome.com> wrote:
-> >>
-> >> On Wed, Nov 06, 2019 at 03:47:12PM -0800, Jeffrey Hugo wrote:
-> >> > When the BDF download QMI message has the end field set to 1, it signals
-> >> > the end of the transfer, and triggers the firmware to do a CRC check.  The
-> >> > BDFs for msm8998 devices fail this check, yet the firmware is happy to
-> >> > still use the BDF.  It appears that this error is not caught by the
-> >> > downstream drive by concidence, therefore there are production devices
-> >> > in the field where this issue needs to be handled otherwise we cannot
-> >> > support wifi on them.  So, attempt to detect this scenario as best we can
-> >> > and treat it as non-fatal.
-> >> >
-> >> > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
-> >> > ---
-> >> >  drivers/net/wireless/ath/ath10k/qmi.c | 11 +++++++----
-> >> >  1 file changed, 7 insertions(+), 4 deletions(-)
-> >> >
-> >> > diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-> >> > index eb618a2652db..5ff8cfc93778 100644
-> >> > --- a/drivers/net/wireless/ath/ath10k/qmi.c
-> >> > +++ b/drivers/net/wireless/ath/ath10k/qmi.c
-> >> > @@ -265,10 +265,13 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
-> >> >                       goto out;
-> >> >
-> >> >               if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
-> >> > -                     ath10k_err(ar, "failed to download board data file: %d\n",
-> >> > -                                resp.resp.error);
-> >> > -                     ret = -EINVAL;
-> >> > -                     goto out;
-> >> > +                     if (!(req->end == 1 &&
-> >> > +                           resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
-> >>
-> >> Would it make sense to combine the inner and outer condition,
-> >> something like this (completely untested) ?
+Hi Greg, Jason,
+
+> From: Greg KH <gregkh@linuxfoundation.org>
+> Sent: Tuesday, November 12, 2019 3:28 PM
+> > From: Dave Ertman <david.m.ertman@intel.com>
 > >
-> > I guess, make sense from what perspective?  Looks like the assembly
-> > ends up being the same, so it would be down to "readability" which is
-> > subjective - I personally don't see a major advantage to one way or
-> > the other.  It does look like Kalle already picked up this patch, so
-> > I'm guessing that if folks feel your suggestion is superior, then it
-> > would need to be a follow on.
+> > This is the initial implementation of the Virtual Bus, virtbus_device
+> > and virtbus_driver.  The virtual bus is a software based bus intended
+> > to support lightweight devices and drivers and provide matching
+> > between them and probing of the registered drivers.
+> >
+> > Files added:
+> > 	drivers/bus/virtual_bus.c
+> > 	include/linux/virtual_bus.h
+> > 	Documentation/driver-api/virtual_bus.rst
+> >
+> > The primary purpose of the virual bus is to provide matching services
+> > and to pass the data pointer contained in the virtbus_device to the
+> > virtbus_driver during its probe call.  This will allow two separate
+> > kernel objects to match up and start communication.
+> >
+> > The bus will support probe/remove shutdown and suspend/resume
+> > callbacks.
+> >
+> > Kconfig and Makefile alterations are included
+> >
 
-My feeling is that it would reduce the churn in the patch making the
-patch more readable and likewise improving the readability of the code.
-But I do agree this does not affect run-time and I am ambivalent about
-updating the patch if it has already been (semi-)accepted.
+[..]
 
-> 
-> Same here, it's only on the pending branch so changes are still
-> possible.
-> 
-> -- 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+I have a basic question with this bus.
+I read device-driver model [1] few times but couldn't get the clarity.
+
+mlx5_core driver will create virtbus device on virtbus.
+mlx5_ib driver binds to virtbus device in probe().
+However mlx5_ib driver's probe() will create rdma device whose parent devic=
+e will be PCI device and not virtbus_device.
+Is that correct?
+
+If so, bus driver of bus A, creating devices binding to device of bus B (pc=
+i) adheres to the linux device model?
+If so, such cross binding is not just limited to virtbus, right?
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree=
+/Documentation/driver-api/driver-model
