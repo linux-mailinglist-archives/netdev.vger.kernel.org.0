@@ -2,128 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE698FB643
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 18:21:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E08FB690
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 18:48:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbfKMRVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 12:21:12 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:1314 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726210AbfKMRVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 12:21:12 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xADGwOxS195727
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 12:21:10 -0500
-Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2w8ms9c3dk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 12:21:10 -0500
-Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
-        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xADHJso3025517
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 17:21:09 GMT
-Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
-        by ppma05wdc.us.ibm.com with ESMTP id 2w5n36hufq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 17:21:09 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xADHL83R54985082
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Nov 2019 17:21:08 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 74C45C6057;
-        Wed, 13 Nov 2019 17:21:08 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 09B50C6055;
-        Wed, 13 Nov 2019 17:21:07 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.80.198.248])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Nov 2019 17:21:07 +0000 (GMT)
-Subject: Re: [PATCH net-next] ibmveth: Detect unsupported packets before
- sending to the hypervisor
-To:     Cris Forno <cforno12@linux.vnet.ibm.com>, netdev@vger.kernel.org
-References: <20191113154407.50653-1-cforno12@linux.vnet.ibm.com>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <6a3b6d64-8f12-7be7-6e0d-e158474f1d8c@linux.ibm.com>
-Date:   Wed, 13 Nov 2019 11:21:07 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        id S1727083AbfKMRsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 12:48:09 -0500
+Received: from mail-ed1-f47.google.com ([209.85.208.47]:45712 "EHLO
+        mail-ed1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbfKMRsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 12:48:08 -0500
+Received: by mail-ed1-f47.google.com with SMTP id b5so2565501eds.12
+        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 09:48:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=456bcQjEvXeW7l592fw/efzt1WDifEcQv/t51a2XAVk=;
+        b=tgqNHvp5FozwnU4cA+9KtbaUJFMIh72Vzf8g8cmqfUeYfGN3M92HgwIE0DRJoN3h39
+         8fJb979WEUbn8CQLlb75jmfdskaFd+v782VAoJqJaI3raUhjcv3u2GKlxo8PQnUtA7py
+         CAd1OI6o1EMBC3SbYkGfc2HAar3Dcnm+JlLYqPWFM0fGoXgl87BxK+n7+V6TvwN9wDlX
+         vOaa93QP+X3oSAGPtLFLQc/H1ZsIlvJRYT0PnbrrWrpaU7f4Zu1dDIZ7OnWst18jR/AO
+         tl7SqbNqDWR7OuvOmVK+We3epy3JPbH4wbieJxqG+9Y9YBIWGRnYHZWWHYktMUZWUBqg
+         NR2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=456bcQjEvXeW7l592fw/efzt1WDifEcQv/t51a2XAVk=;
+        b=VneoLlWvCcMfbtsyYwZgPnDCi2JVk+bDTxEOpuB3Vqy7+9zbsO7EIJiP0u+2LWnlH9
+         3fsnPeZLPdLWq25/vt6pbX0Il7J+aecm0Mcl3X5HOARi109Scp1Zg9X/sOGBB2sXU71o
+         N3Vl4q+c+JDWoQkf61SF3PC8fHrpnvNxzpAUY5gGMkkWsRAWuJb3hdXBZUdozlD7ZulU
+         RmQdjoNNoRs0ZfaxMmYe9EfuJA6CAj9z9OFXJWC1hOuwWuViNyIxLKmswKqnNpPPri1h
+         bl/TyVun9Wg5Ddlw53lWjGUvZfk9AgcpWfJzvTo9bdO2B8yjEEuBNOF46JRwYmGMPMNR
+         +rRw==
+X-Gm-Message-State: APjAAAVTDHT2Fvo0ZAZZgbWRIj3fx8c+UIT4ZUSHUjYYyke5e/ZROe5n
+        FXXO6OHEa+UDaMqKT+D6+v5SJVfNxhXKrBV1Y4A=
+X-Google-Smtp-Source: APXvYqxOUtQDm00VkmggMzTk8BQupVwAasVIOG9mnVMUfroi7s24fsQDM6cNK6X2FZqrjNBKK6M2Ynm4Y8dOLwPmo74=
+X-Received: by 2002:a17:906:594a:: with SMTP id g10mr3125824ejr.164.1573667285943;
+ Wed, 13 Nov 2019 09:48:05 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191113154407.50653-1-cforno12@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-13_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=989 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1910280000 definitions=main-1911130147
+References: <CA+h21hqte1sOefqVXKvSQ6N7WoTU3BH7qKpq3C7pieaqSB6AFg@mail.gmail.com>
+ <20191113165300.GC27785@lunn.ch>
+In-Reply-To: <20191113165300.GC27785@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 13 Nov 2019 19:47:54 +0200
+Message-ID: <CA+h21hqLoRFpgcRHOciAFPSTzQQ1U5-k-yE=dq-LTwjaa2dY7Q@mail.gmail.com>
+Subject: Re: Offloading DSA taggers to hardware
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/19 9:44 AM, Cris Forno wrote:
-> Currently, when ibmveth receive a loopback packet, it reports an
-> ambiguous error message "tx: h_send_logical_lan failed with rc=-4"
-> because the hypervisor rejects those types of packets. This fix
-> detects loopback packet and assures the source packet's MAC address
-> matches the driver's MAC address before transmitting to the
-> hypervisor.
+Hi Andrew,
+
+On Wed, 13 Nov 2019 at 18:53, Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
-
-Thanks, Cris!
-
-Reviewed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-
-> ---
->   drivers/net/ethernet/ibm/ibmveth.c | 26 ++++++++++++++++++++++++++
->   1 file changed, 26 insertions(+)
+> Hi Vladimir
 >
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-> index d654c23..e8bb6c7 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.c
-> +++ b/drivers/net/ethernet/ibm/ibmveth.c
-> @@ -1011,6 +1011,29 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
->   	return 0;
->   }
->   
-> +static int ibmveth_is_packet_unsupported(struct sk_buff *skb,
-> +					 struct net_device *netdev)
-> +{
-> +	int ret = 0;
-> +	struct ethhdr *ether_header;
-> +
-> +	ether_header = eth_hdr(skb);
-> +
-> +	if (ether_addr_equal(ether_header->h_dest, netdev->dev_addr)) {
-> +		netdev_err(netdev, "veth doesn't support loopback packets, dropping packet.\n");
-> +		netdev->stats.tx_dropped++;
-> +		ret = -EOPNOTSUPP;
-> +	}
-> +
-> +	if (!ether_addr_equal(ether_header->h_source, netdev->dev_addr)) {
-> +		netdev_err(netdev, "source packet MAC address does not match veth device's, dropping packet.\n");
-> +		netdev->stats.tx_dropped++;
-> +		ret = -EOPNOTSUPP;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->   static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
->   				      struct net_device *netdev)
->   {
-> @@ -1022,6 +1045,9 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
->   	dma_addr_t dma_addr;
->   	unsigned long mss = 0;
->   
-> +	if (ibmveth_is_packet_unsupported(skb, netdev))
-> +		goto out;
-> +
->   	/* veth doesn't handle frag_list, so linearize the skb.
->   	 * When GRO is enabled SKB's can have frag_list.
->   	 */
+> I've not seen any hardware that can do this. There is an
+> Atheros/Qualcom integrated SoC/Switch where the 'header' is actually
+> just a field in the transmit/receive descriptor. There is an out of
+> tree driver for it, and the tag driver is very minimal. But clearly
+> this only works for integrated systems.
+>
+
+What is this Atheros SoC?
+It is funny that the topic reminded you of it. Your line of reasoning
+probably was: "Atheros pushed this idea so far that they omitted the
+DSA frame tag altogether for their own CPU port/DSA master". Which
+means that even if they try to use this "offloaded DSA tagger"
+abstraction, it would slightly violate the main idea of an offload,
+which is the fact that it's optional. What do you think?
+
+> The other 'smart' features i've seen in NICs with respect to DSA is
+> being able to do hardware checksums. Freescale FEC for example cannot
+> figure out where the IP header is, because of the DSA header, and so
+> cannot calculate IP/TCP/UDP checksums. Marvell, and i expect some
+> other vendors of both MAC and switch devices, know about these
+> headers, and can do checksumming.
+>
+
+Of course there are many more benefits that derive from more complete
+frame parsing as well, for some reason my mind just stopped at QoS
+when I wrote this email.
+
+> I'm not even sure there are any NICs which can do GSO or LRO when
+> there is a DSA header involved.
+>
+> In the direction CPU to switch, i think many of the QoS issues are
+> higher up the stack. By the time the tagger is involved, all the queue
+> discipline stuff has been done, and it really is time to send the
+> frame. In the 'post buffer bloat world', the NICs hardware queue
+> should be small, so QoS is not so relevant once you reach the TX
+> queue. The real QoS issue i guess is that the slave interfaces have no
+> idea they are sharing resources at the lowest level. So a high
+> priority frames from slave 1 are not differentiated from best effort
+> frames from slave 2. If we were serious about improving QoS, we need a
+> meta scheduler across the slaves feeding the master interface in a QoS
+> aware way.
+>
+
+Qdiscs on the DSA master are a good discussion to be had, but this
+wasn't the main thing I wanted to bring up here.
+
+> In the other direction, how much is the NIC really looking at QoS
+> information on the receive path? Are you thinking RPS? I'm not sure
+> any of the NICs commonly used today with DSA are actually multi-queue
+> and do RPS.
+>
+
+Actually both DSA master drivers I've been using so far (gianfar,
+enetc) register a number of RX queues equal to the number of cores. It
+is possible to add ethtool --config-nfc rules to steer certain
+priority traffic to its own CPU, but the keys need to be masked
+according to where the QoS field in the DSA frame tag overlaps with
+what the DSA master thinks it's looking at, aka DMAC, SMAC, EtherType,
+etc. It's not pretty.
+
+> Another aspect here might be, what Linux is doing with DSA is probably
+> well past the silicon vendors expected use cases. None of the 'vendor
+> crap' drivers i've seen for these SOHO class switches have the level
+> of integration we have in Linux. We are pushing the limits of the
+> host/switch interfaces much more then vendors do, and so silicon
+> vendors are not so aware of the limits in these areas? But DSA is
+> being successful, vendors are taking more notice of it, and maybe with
+> time, the host/switch interface will improve. NICs might start
+> supporting GSO/LRO when there is a DSA header involved? Multi-queue
+> NICs become more popular in this class of hardware and RPS knows how
+> to handle DSA headers. But my guess would be, it will be for a Marvell
+> NIC paired with a Marvell Switch, Broadcom NIC paired with a Broadcom
+> switch, etc. I doubt there will be cross vendor support.
+
+...Atheros with Atheros... :)
+
+Yes, that's kind of the angle I'm coming from, basically trying to
+understand what a correct abstraction from Linux's perspective would
+look like, and what is considered too much "tribalism". The DSA model
+is attractive even for an integrated system because there is more
+modularity in the design, but there are some clear optimizations that
+can be made when the master+switch recipe is tightly controlled.
+
+>
+>         Andrew
+
+Thanks,
+-Vladimir
