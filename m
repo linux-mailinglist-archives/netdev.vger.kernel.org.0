@@ -2,80 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EAD9FB8EF
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 20:34:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18584FB8FA
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 20:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726410AbfKMTen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 14:34:43 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36571 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726190AbfKMTen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 14:34:43 -0500
-Received: by mail-pl1-f195.google.com with SMTP id d7so1489848pls.3
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 11:34:41 -0800 (PST)
+        id S1726410AbfKMTiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 14:38:00 -0500
+Received: from mail-io1-f67.google.com ([209.85.166.67]:40095 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726179AbfKMTiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 14:38:00 -0500
+Received: by mail-io1-f67.google.com with SMTP id p6so3897025iod.7;
+        Wed, 13 Nov 2019 11:37:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uFiiinmU7VuSwSjR0tRrB18CeSFkGpY08UzT3rIZvmc=;
-        b=UV9Kf2gVOsBdO5ejOJwPlirMHT8i90Zaft/Qr8Sym9a1CDH8LOmJDq4yj6ly3qWye9
-         4etKNUvzvDPo8y2j7RdURPvH6ix2mbxrxN1NE+WPudoYb0YJIKdl5BwxFnFb2zFaFpaV
-         HsluNeyZV//JVobgKi2Q5sSVQUDzcSKn0orLWSVICaJry1hi9qY1/itnCEnY14kpGou4
-         LKVxfn6NXOvy5JvxBXxG2f65zmwkYfp4uNZknGSiJCO4yCdW/Mw3eRNmf/PuL39nK2mo
-         j79DfQrl/8SvGf6IRGHIwSf+gZJERJZkgxp0TZ6OwKSxlGBBccT5t3rheQgU5+j9fOUm
-         zqjA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qzwujp8rTgTl9+3sAbPrswzrZfz1gfQWPbEg9+4F518=;
+        b=ozjH8/ZUfQ2cn2Shup6m3S6r23+l600p3IQKlEwI/WV41WNVyzYTOXRhSmhi9cSaU8
+         8C2MfrQNRoEBF2iuxNSsfOWM3FrWzd/0BYYi/DNbr+VvXJ1loO6FOwer0u3b+nTzmYfN
+         cliWX/v+W+IB14U2s4Jd+EktLLph+ba1wDP2kT9ZB0l4q/A6EnDfmrqkp24SO8IyCkUH
+         Hay6Eq4pLvDpOWl2x8BoFpXSIRSrwuVREz7SUaJy3YsUMRQAZvHjSu+1uV8lbr9vOh6U
+         /y+NHQpCoGFhBM4eYxEAM/4H51tXI6O2acTKYOG4YhFF728sXGpqWkMgW5uFQ4tWv2nM
+         jkzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uFiiinmU7VuSwSjR0tRrB18CeSFkGpY08UzT3rIZvmc=;
-        b=I0/GhFfexHUJPEdH5YoyXQ2Xk8vNT4TAXEec+kXny4mApAcotPoRC62HCW2C/4JF4f
-         aUKuv5nWHqxSJt8JNbjDqBKq2EMGbkqXKgsgHadtLDHlLhTjX4DLPwSLyH6Fuh//MVMf
-         G2OKSjyVAJL96U11tHx/gF+0K8aoJh7rVxtp13ZBAe2l9yY65DypLzcdMhiHawelFekJ
-         T5ZYeDOofziSe5AGGn4bmQNzK4rXLRB+tYiH8mA79fTYfN1rqttRh/8IjexBku//EwIA
-         lLIaTc5NBreILlwkkpCIKAt/zB1QzJwPHnpwmwBqXc+9EnfUNLPokGHadGW5b1k0+02+
-         lUZQ==
-X-Gm-Message-State: APjAAAUkGVPm7t1DfmW6YhhgTUMATE0UuGRzPVEK0E8WHEPpl2uXuuSq
-        gSTHiBV4QbpUBeVhp9ji440=
-X-Google-Smtp-Source: APXvYqyOyqRgk9XA/5nMpx3rETdHgxbSmmSKl9+Au45Vh3PNZ6EWoe3rmaZuJB5Kds9JvfGgTyiLPw==
-X-Received: by 2002:a17:902:8491:: with SMTP id c17mr3123821plo.143.1573673680863;
-        Wed, 13 Nov 2019 11:34:40 -0800 (PST)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id z10sm3421558pgg.39.2019.11.13.11.34.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Nov 2019 11:34:40 -0800 (PST)
-Date:   Wed, 13 Nov 2019 11:34:38 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org,
-        Intel Wired LAN <intel-wired-lan@lists.osuosl.org>,
-        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: Re: [net-next v3 0/7] new PTP ioctl fixes
-Message-ID: <20191113193438.GA7551@localhost>
-References: <20190926181109.4871-1-jacob.e.keller@intel.com>
- <20191113015809.GA8608@localhost>
- <20191113171011.GA16997@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qzwujp8rTgTl9+3sAbPrswzrZfz1gfQWPbEg9+4F518=;
+        b=HDpXz1H4MbZ1fIK+6x/RyX0gb5dGUCiCSg1xpA3TgnZbZFLGcmh1LI84JvdXqABAY4
+         /pYcKC9xcSoQz2tQ1yM03fbnVr2rRv79mUZsXCypAfR7eifakB/GqNpt60GE1pel61mY
+         XO67lAfRB2XG40pISOGBDqOsmMqzfw4pgARsvU9LK+vwpBaCUNnl6OpcPPiVpwyZVtKf
+         MjkUgV4RASxTaGyf3YvyYH5Uvhc36bOhv1xS4NwnExETKUtFv+YZsOfWFl4kVVv6hdGD
+         vM0UJtJ4S51z3zfDQkFp21BXm/zkPDgvJNFvL2qZ8XtQMIwFRIHtI82LRdX+SNNDqyEf
+         xMXg==
+X-Gm-Message-State: APjAAAUtV+Kb13FDEWyVoJi8KXH8y9xeBh9ZMNKatNdziLs8K+ss5lPD
+        IESYRVFQlXr8fygvAFenNU3M2VTGVvRPYuB5KCQ=
+X-Google-Smtp-Source: APXvYqxni+hm9YE3cMiiBsq+tA2kd4YY3cEWlU1jikSd8uLb3c2eNIA4I/pha8dG2m3lQDNH4a37yhjSSHETvVXpYtI=
+X-Received: by 2002:a02:9a02:: with SMTP id b2mr2194449jal.15.1573673877724;
+ Wed, 13 Nov 2019 11:37:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191113171011.GA16997@localhost>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1565903072-3948-1-git-send-email-wenwen@cs.uga.edu> <20191113192821.GA3441686@builder>
+In-Reply-To: <20191113192821.GA3441686@builder>
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Date:   Wed, 13 Nov 2019 12:37:46 -0700
+Message-ID: <CAOCk7NpoQ_JEQj61BvU4HLzxSOQtxUuB-nyrXRKQTxjZ7infbQ@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: add cleanup in ath10k_sta_state()
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Wenwen Wang <wenwen@cs.uga.edu>, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:QUALCOMM ATHEROS ATH10K WIRELESS DRIVER" 
+        <ath10k@lists.infradead.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        govinds@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 13, 2019 at 09:10:11AM -0800, Richard Cochran wrote:
-> On Tue, Nov 12, 2019 at 05:58:09PM -0800, Richard Cochran wrote:
-> > There is still time before v5.4 gets released.  Would you care to
-> > re-submit the missing six patches?
-> 
-> Or, if you don't mind, I can submit these for you, along with the
-> STRICT flag checking for v2 ioctls that we discussed.
+On Wed, Nov 13, 2019 at 12:28 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Thu 15 Aug 14:04 PDT 2019, Wenwen Wang wrote:
+>
+> > If 'sta->tdls' is false, no cleanup is executed, leading to memory/resource
+> > leaks, e.g., 'arsta->tx_stats'. To fix this issue, perform cleanup before
+> > go to the 'exit' label.
+> >
+>
+> Unfortunately this patch consistently crashes all my msm8998, sdm845 and
+> qcs404 devices (running ath10k_snoc).  Upon trying to join a network the
+> WiFi firmware crashes with the following:
+>
+> [  124.315286] wlan0: authenticate with 70:3a:cb:4d:34:f3
+> [  124.334051] wlan0: send auth to 70:3a:cb:4d:34:f3 (try 1/3)
+> [  124.338828] wlan0: authenticated
+> [  124.342470] wlan0: associate with 70:3a:cb:4d:34:f3 (try 1/3)
+> [  124.347223] wlan0: RX AssocResp from 70:3a:cb:4d:34:f3 (capab=0x1011 status=0 aid=2)
+> [  124.402535] qcom-q6v5-mss 4080000.remoteproc: fatal error received: err_qdi.c:456:EF:wlan_process:1:cmnos_thread.c:3900:Asserted in wlan_vdev.c:_wlan_vdev_up:3219
+>
+> Can we please revert it for v5.5?
 
-Okay, so I took the liberty of taking your series, picking up the
-tags, and adding the new strict checking.  I'll post it later today or
-early tomorrow after testing.
+I observe the same, and concur with this request.
 
-Thanks,
-Richard
+>
+> Regards,
+> Bjorn
+>
+> > Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+> > ---
+> >  drivers/net/wireless/ath/ath10k/mac.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+> > index 0606416..f99e6d2 100644
+> > --- a/drivers/net/wireless/ath/ath10k/mac.c
+> > +++ b/drivers/net/wireless/ath/ath10k/mac.c
+> > @@ -6548,8 +6548,12 @@ static int ath10k_sta_state(struct ieee80211_hw *hw,
+> >
+> >               spin_unlock_bh(&ar->data_lock);
+> >
+> > -             if (!sta->tdls)
+> > +             if (!sta->tdls) {
+> > +                     ath10k_peer_delete(ar, arvif->vdev_id, sta->addr);
+> > +                     ath10k_mac_dec_num_stations(arvif, sta);
+> > +                     kfree(arsta->tx_stats);
+> >                       goto exit;
+> > +             }
+> >
+> >               ret = ath10k_wmi_update_fw_tdls_state(ar, arvif->vdev_id,
+> >                                                     WMI_TDLS_ENABLE_ACTIVE);
+> > --
+> > 2.7.4
+> >
