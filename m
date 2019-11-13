@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C99F0FA53E
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:22:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1CBAFA522
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728667AbfKMBxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 20:53:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43694 "EHLO mail.kernel.org"
+        id S1730087AbfKMCVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 21:21:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727561AbfKMBxo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 20:53:44 -0500
+        id S1728738AbfKMByC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:54:02 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 82062222D3;
-        Wed, 13 Nov 2019 01:53:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7731C20674;
+        Wed, 13 Nov 2019 01:54:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573610023;
-        bh=j1xtx9yjAgRktUtejvRwP+MnUo+B8NrgqFSuVJrAbdw=;
+        s=default; t=1573610042;
+        bh=JQi6aKOLE0wwtWtTLw0u7djK2iBnPGoeA7mPz4NJIYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e+kOh8iElHlaNSAc/FSBbT4fvsRwcnb3WKbOk9UIEDL6BRFDr2KhYBMDsRaGT3ndh
-         Bi2fiZcPKWnWQoBEBmVCa0qm7O4/ezsB64zFqCePCrYbl6ot/qKSGq/B1hsR6Rg78C
-         /mZrpHVCaMD7d14s+3bqhxmOX891TWDHHIMg630Q=
+        b=nx9kMdO4pDxJQAXtLHN3OAEZUCe7BDgCLelRI5G0rb5QpJHvJryvdfvih7ws6NNum
+         XyUAc5gJdgDnAY5ImRhwwMzRMSli+Eylp2KuROLT2dx/jIG46MdKe3l9po8KgzNOU7
+         9jBcyhDXxBzSz3tGLexP7/2HfeiSciGGpBmaH+IY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jian Shen <shenjian15@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
+Cc:     Li RongQing <lirongqing@baidu.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 123/209] net: hns3: Fix for rx vlan id handle to support Rev 0x21 hardware
-Date:   Tue, 12 Nov 2019 20:48:59 -0500
-Message-Id: <20191113015025.9685-123-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 132/209] xfrm: use correct size to initialise sp->ovec
+Date:   Tue, 12 Nov 2019 20:49:08 -0500
+Message-Id: <20191113015025.9685-132-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113015025.9685-1-sashal@kernel.org>
 References: <20191113015025.9685-1-sashal@kernel.org>
@@ -44,92 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+From: Li RongQing <lirongqing@baidu.com>
 
-[ Upstream commit 701a6d6ac78c76083ddb7c6581fdbedd95093e11 ]
+[ Upstream commit f1193e915748291fb205a908db33bd3debece6e2 ]
 
-In revision 0x20, we use vlan id != 0 to check whether a vlan tag
-has been offloaded, so vlan id 0 is not supported.
+This place should want to initialize array, not a element,
+so it should be sizeof(array) instead of sizeof(element)
 
-In revision 0x21, rx buffer descriptor adds two bits to indicate
-whether one or more vlan tags have been offloaded, so vlan id 0
-is valid now.
+but now this array only has one element, so no error in
+this condition that XFRM_MAX_OFFLOAD_DEPTH is 1
 
-This patch seperates the handle for vlan id 0, add vlan id 0 support
-for revision 0x21.
-
-Fixes: 5b5455a9ed5a ("net: hns3: Add STRP_TAGP field support for hardware revision 0x21")
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 30 ++++++++-----------
- 1 file changed, 13 insertions(+), 17 deletions(-)
+ net/xfrm/xfrm_input.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index 15030df574a8b..e11a7de20b8f4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -2124,18 +2124,18 @@ static void hns3_rx_skb(struct hns3_enet_ring *ring, struct sk_buff *skb)
- 	napi_gro_receive(&ring->tqp_vector->napi, skb);
- }
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 790b514f86b62..d5635908587f4 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -131,7 +131,7 @@ struct sec_path *secpath_dup(struct sec_path *src)
+ 	sp->len = 0;
+ 	sp->olen = 0;
  
--static u16 hns3_parse_vlan_tag(struct hns3_enet_ring *ring,
--			       struct hns3_desc *desc, u32 l234info)
-+static bool hns3_parse_vlan_tag(struct hns3_enet_ring *ring,
-+				struct hns3_desc *desc, u32 l234info,
-+				u16 *vlan_tag)
- {
- 	struct pci_dev *pdev = ring->tqp->handle->pdev;
--	u16 vlan_tag;
+-	memset(sp->ovec, 0, sizeof(sp->ovec[XFRM_MAX_OFFLOAD_DEPTH]));
++	memset(sp->ovec, 0, sizeof(sp->ovec));
  
- 	if (pdev->revision == 0x20) {
--		vlan_tag = le16_to_cpu(desc->rx.ot_vlan_tag);
--		if (!(vlan_tag & VLAN_VID_MASK))
--			vlan_tag = le16_to_cpu(desc->rx.vlan_tag);
-+		*vlan_tag = le16_to_cpu(desc->rx.ot_vlan_tag);
-+		if (!(*vlan_tag & VLAN_VID_MASK))
-+			*vlan_tag = le16_to_cpu(desc->rx.vlan_tag);
- 
--		return vlan_tag;
-+		return (*vlan_tag != 0);
- 	}
- 
- #define HNS3_STRP_OUTER_VLAN	0x1
-@@ -2144,17 +2144,14 @@ static u16 hns3_parse_vlan_tag(struct hns3_enet_ring *ring,
- 	switch (hnae3_get_field(l234info, HNS3_RXD_STRP_TAGP_M,
- 				HNS3_RXD_STRP_TAGP_S)) {
- 	case HNS3_STRP_OUTER_VLAN:
--		vlan_tag = le16_to_cpu(desc->rx.ot_vlan_tag);
--		break;
-+		*vlan_tag = le16_to_cpu(desc->rx.ot_vlan_tag);
-+		return true;
- 	case HNS3_STRP_INNER_VLAN:
--		vlan_tag = le16_to_cpu(desc->rx.vlan_tag);
--		break;
-+		*vlan_tag = le16_to_cpu(desc->rx.vlan_tag);
-+		return true;
- 	default:
--		vlan_tag = 0;
--		break;
-+		return false;
- 	}
--
--	return vlan_tag;
- }
- 
- static int hns3_handle_rx_bd(struct hns3_enet_ring *ring,
-@@ -2256,8 +2253,7 @@ static int hns3_handle_rx_bd(struct hns3_enet_ring *ring,
- 	if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX) {
- 		u16 vlan_tag;
- 
--		vlan_tag = hns3_parse_vlan_tag(ring, desc, l234info);
--		if (vlan_tag & VLAN_VID_MASK)
-+		if (hns3_parse_vlan_tag(ring, desc, l234info, &vlan_tag))
- 			__vlan_hwaccel_put_tag(skb,
- 					       htons(ETH_P_8021Q),
- 					       vlan_tag);
+ 	if (src) {
+ 		int i;
 -- 
 2.20.1
 
