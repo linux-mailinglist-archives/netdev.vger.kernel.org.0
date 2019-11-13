@@ -2,36 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEBB4FA404
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:16:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A3B5FA3E0
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:13:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729798AbfKMB50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 20:57:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50624 "EHLO mail.kernel.org"
+        id S1730486AbfKMCNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 21:13:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51466 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729782AbfKMB5Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 20:57:25 -0500
+        id S1728890AbfKMB57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:57:59 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 845B4222CF;
-        Wed, 13 Nov 2019 01:57:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C70CA222D3;
+        Wed, 13 Nov 2019 01:57:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573610245;
-        bh=ZbNF/HOQmAyS7qUPtr8/B5e3AqtF1X/+pA8iO8KsUvY=;
+        s=default; t=1573610278;
+        bh=JAvM7CkiVRXc3zfljbJU26xCBWfObc0AvnV9AUKGXWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M6pdmhnoheEkdMLfBMWFWh3jDKr7wA1ZctEMvaQED0cwTZ95HXJd8a8AEVmN54u6z
-         CaQHPkarmvDsoF8Ods18C/4Amo1VQnXJQEw+CMm5K78H0x1bEp+/l1TQ4Hm6BrO15j
-         POWbWXONvYGbgs7zu4tYnK7W1FWP5LVUhG3OQ6d8=
+        b=t84M/dadbQ2DGuu3eCa2OKzVvqbYE9NIpZqEEB7XLQrLG2w/y0rrh8rHVdJfsW6Zj
+         AQpBeJSOvu/1XriFh3lUlEH7QnyzYKHgCOsFO1j0MiAGBZEWGcGom2eT88Un0F9Dl+
+         k11z0iym0xJeqimy73l0mIEVarDtsfwii3G2+lek=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Radoslaw Tyl <radoslawx.tyl@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 044/115] ixgbe: Fix crash with VFs and flow director on interface flap
-Date:   Tue, 12 Nov 2019 20:55:11 -0500
-Message-Id: <20191113015622.11592-44-sashal@kernel.org>
+Cc:     Chung-Hsien Hsu <stanley.hsu@cypress.com>,
+        Chi-Hsien Lin <chi-hsien.lin@cypress.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 060/115] brcmfmac: fix full timeout waiting for action frame on-channel tx
+Date:   Tue, 12 Nov 2019 20:55:27 -0500
+Message-Id: <20191113015622.11592-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113015622.11592-1-sashal@kernel.org>
 References: <20191113015622.11592-1-sashal@kernel.org>
@@ -44,54 +47,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Radoslaw Tyl <radoslawx.tyl@intel.com>
+From: Chung-Hsien Hsu <stanley.hsu@cypress.com>
 
-[ Upstream commit 5d826d209164b0752c883607be4cdbbcf7cab494 ]
+[ Upstream commit fbf07000960d9c8a13fdc17c6de0230d681c7543 ]
 
-This patch fix crash when we have restore flow director filters after reset
-adapter. In ixgbe_fdir_filter_restore() filter->action is outside of the
-rx_ring array, as it has a VF identifier in the upper 32 bits.
+The driver sends an action frame down and waits for a completion signal
+triggered by the received BRCMF_E_ACTION_FRAME_OFF_CHAN_COMPLETE event
+to continue the process. However, the action frame could be transmitted
+either on the current channel or on an off channel. For the on-channel
+case, only BRCMF_E_ACTION_FRAME_COMPLETE event will be received when
+the frame is transmitted, which make the driver always wait a full
+timeout duration. This patch has the completion signal be triggered by
+receiving the BRCMF_E_ACTION_FRAME_COMPLETE event for the on-channel
+case.
 
-Signed-off-by: Radoslaw Tyl <radoslawx.tyl@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+This change fixes WFA p2p certification 5.1.19 failure.
+
+Signed-off-by: Chung-Hsien Hsu <stanley.hsu@cypress.com>
+Signed-off-by: Chi-Hsien Lin <chi-hsien.lin@cypress.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ .../wireless/broadcom/brcm80211/brcmfmac/p2p.c  | 17 +++++++++++++++--
+ .../wireless/broadcom/brcm80211/brcmfmac/p2p.h  |  2 ++
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index d1472727ef882..4801d96c4fa91 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -5129,6 +5129,7 @@ static void ixgbe_fdir_filter_restore(struct ixgbe_adapter *adapter)
- 	struct ixgbe_hw *hw = &adapter->hw;
- 	struct hlist_node *node2;
- 	struct ixgbe_fdir_filter *filter;
-+	u64 action;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+index c9566c9036721..4a883f4bbf885 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+@@ -1462,10 +1462,12 @@ int brcmf_p2p_notify_action_tx_complete(struct brcmf_if *ifp,
+ 		return 0;
  
- 	spin_lock(&adapter->fdir_perfect_lock);
+ 	if (e->event_code == BRCMF_E_ACTION_FRAME_COMPLETE) {
+-		if (e->status == BRCMF_E_STATUS_SUCCESS)
++		if (e->status == BRCMF_E_STATUS_SUCCESS) {
+ 			set_bit(BRCMF_P2P_STATUS_ACTION_TX_COMPLETED,
+ 				&p2p->status);
+-		else {
++			if (!p2p->wait_for_offchan_complete)
++				complete(&p2p->send_af_done);
++		} else {
+ 			set_bit(BRCMF_P2P_STATUS_ACTION_TX_NOACK, &p2p->status);
+ 			/* If there is no ack, we don't need to wait for
+ 			 * WLC_E_ACTION_FRAME_OFFCHAN_COMPLETE event
+@@ -1516,6 +1518,17 @@ static s32 brcmf_p2p_tx_action_frame(struct brcmf_p2p_info *p2p,
+ 	p2p->af_sent_channel = le32_to_cpu(af_params->channel);
+ 	p2p->af_tx_sent_jiffies = jiffies;
  
-@@ -5137,12 +5138,17 @@ static void ixgbe_fdir_filter_restore(struct ixgbe_adapter *adapter)
- 
- 	hlist_for_each_entry_safe(filter, node2,
- 				  &adapter->fdir_filter_list, fdir_node) {
-+		action = filter->action;
-+		if (action != IXGBE_FDIR_DROP_QUEUE && action != 0)
-+			action =
-+			(action >> ETHTOOL_RX_FLOW_SPEC_RING_VF_OFF) - 1;
++	if (test_bit(BRCMF_P2P_STATUS_DISCOVER_LISTEN, &p2p->status) &&
++	    p2p->af_sent_channel ==
++	    ieee80211_frequency_to_channel(p2p->remain_on_channel.center_freq))
++		p2p->wait_for_offchan_complete = false;
++	else
++		p2p->wait_for_offchan_complete = true;
 +
- 		ixgbe_fdir_write_perfect_filter_82599(hw,
- 				&filter->filter,
- 				filter->sw_idx,
--				(filter->action == IXGBE_FDIR_DROP_QUEUE) ?
-+				(action == IXGBE_FDIR_DROP_QUEUE) ?
- 				IXGBE_FDIR_DROP_QUEUE :
--				adapter->rx_ring[filter->action]->reg_idx);
-+				adapter->rx_ring[action]->reg_idx);
- 	}
++	brcmf_dbg(TRACE, "Waiting for %s tx completion event\n",
++		  (p2p->wait_for_offchan_complete) ?
++		   "off-channel" : "on-channel");
++
+ 	timeout = wait_for_completion_timeout(&p2p->send_af_done,
+ 					      P2P_AF_MAX_WAIT_TIME);
  
- 	spin_unlock(&adapter->fdir_perfect_lock);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.h
+index 0e8b34d2d85cb..39f0d02180882 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.h
+@@ -124,6 +124,7 @@ struct afx_hdl {
+  * @gon_req_action: about to send go negotiation requets frame.
+  * @block_gon_req_tx: drop tx go negotiation requets frame.
+  * @p2pdev_dynamically: is p2p device if created by module param or supplicant.
++ * @wait_for_offchan_complete: wait for off-channel tx completion event.
+  */
+ struct brcmf_p2p_info {
+ 	struct brcmf_cfg80211_info *cfg;
+@@ -144,6 +145,7 @@ struct brcmf_p2p_info {
+ 	bool gon_req_action;
+ 	bool block_gon_req_tx;
+ 	bool p2pdev_dynamically;
++	bool wait_for_offchan_complete;
+ };
+ 
+ s32 brcmf_p2p_attach(struct brcmf_cfg80211_info *cfg, bool p2pdev_forced);
 -- 
 2.20.1
 
