@@ -2,249 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A6E8FAA3C
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 07:35:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7935EFAA44
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 07:37:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbfKMGfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 01:35:12 -0500
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:33771 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725858AbfKMGfL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 01:35:11 -0500
-Received: by mail-oi1-f195.google.com with SMTP id m193so826302oig.0
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 22:35:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M/YIPM6O/zW00bf9A1c5BFlMOU+KnoNWnP/Cj7CNrYo=;
-        b=q/gQzVnX6Al9ZW6OW/sVMeGvRNUrleOpa1wfJhE/BOmqj2yqx5N8nD4zxNB/5HC6oY
-         ECGqry6r1K2N6ybmubHT4gygmsnpLhuwXax6KKg5bOtRkzik/ucF3VUK1OV8gJwDVidx
-         7FzSGrOM4DPez/kiMJcCFNox6MHjeh4USGdGDDSauc71/8M7GM9TYRrLudV5LUdoK2oO
-         q9gLJwXFS1jSGw7cSHJq8YoCGCOas4nllB4KfunpdJBE92QXZu00pB1rjXnoD9XfbZE7
-         jPaOFZEj6P7zGatnVROeYKQ15y5Sh+zzDEmUOluBaPcc1ikAYFu8NHzCZsEARejRIIa9
-         SYUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M/YIPM6O/zW00bf9A1c5BFlMOU+KnoNWnP/Cj7CNrYo=;
-        b=qv0Mt2w6wOrTC/+vJuepbAaBlnEDZ9JTQrBrCROmCz9MFFtoxJwISi/hdljRdJJBbL
-         zzoUDI/+RwiZRRzHpcJCFNYwPT6oQNrL74JtrU3NGBaN1vqbcTFWxcBu+aO/eDVEqEdO
-         W0twN+msqtoDjj/YY7yYxmMWLZ2HJBuaFmWgg63xdUWMxx+gg785JIZXwQPnRysQA7pd
-         r5cm/pkYlih1jPda8Qi7o53TZ8RBjqpG2Ra0gisiAPIquJjptJKNwrULuFS9/GaPWWv1
-         h6Fe7IxmjD83t0a7aoYgMqZwJTGstMbot//LQmNBSpHRNHOFKAtOhufaBSpoJifJBCeM
-         YD2w==
-X-Gm-Message-State: APjAAAVPylxXngelP2uMrx8lWC9/gffBU3KVvT2/isO7bSWlfGfu11fX
-        Wm1cE4mlxZ0ir7lcyECr8Vs5kN3I6i9B4KMB0lQ=
-X-Google-Smtp-Source: APXvYqxSUACESjd9AbGWHIZCbwUO/fNfCvN56S/pib4wCaDeZcsp+oej7FzYQ7dCm3myPWH7wqWjbV5QWmtqjc+Lsws=
-X-Received: by 2002:aca:5104:: with SMTP id f4mr1659326oib.40.1573626910588;
- Tue, 12 Nov 2019 22:35:10 -0800 (PST)
+        id S1726392AbfKMGhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 01:37:33 -0500
+Received: from mail-eopbgr00068.outbound.protection.outlook.com ([40.107.0.68]:3246
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725858AbfKMGhd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 01:37:33 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l1F0AmckpCxx22jgUKZLop1GK2lG5ExEJofpxFYQ9X9TsPhhQfgKWtYB0AOLI5+MWPF0duK7j5XkQr87+JMqAqoKDUtuxsezxdRWPXDpmGOGqSux50rSHbZFEaTz4ZkIdqEtaakr74mqz//OMi6UJoMDI1Yp6xS1Y/p/OITDqsjPaqGsiRZlenyVZiuXAnXGrXqvxjiiXzIdnWGKje218eM/NX3aplsKDEeRwe+PC8QkUMKeTGkjQeqMxyhczUg2IpssHHmQEBmEvAJtkKj9O8dx3E3vX643yu4Vc9JTmo9bHCKZD86azRsaNb/VIz9ODufPbPT7ohK+h2L9a26j7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8hxRHXuZ4qqOphwPtHu4DK/7yDTpancYE/4AyD9vmNE=;
+ b=nojye6FlkaCKY1Zunr9zjiVtbdggw7vMmvgBWyqj7PSEDTGHLx1J5+lWZJy543JHJfIQhKk7dGC655akx/P/J52XyTtuOXMZ8BqjmVrfEFi2AhPSsVUI/pNxcCHTHWuPWrKvhBV3rEyFI2d8E1wyxgOhn25FTssE6uGZ1UbiJiQaGL3TJFvaWSd2dQkoc2G5QMlCHYfvz6k+XUYrxvkpvmNh31llVDCc9LyncxDvX2g3CzNsWCx5LfGTS7/CTyxt9ZG+SupNADSpGGKf/Miq/dPXdCSzaLGYmS9oWrMBus+sPxmjkxBnDhiSYDsJiIACy3V3vtgWvNSNXCI1pKQD8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8hxRHXuZ4qqOphwPtHu4DK/7yDTpancYE/4AyD9vmNE=;
+ b=j++DKeAuO5itQdu3pP8dHsG4yMKmCpaGfgBijcqka0c0I21M9Z66TCH945PiLUpCT59Rvcy6fzypW58p1Am6+s8UulAPUDMmPM46x2iHFQGG5DGRqiBBsWDkn1yuOBuA6yl4tA1dDzsrMDH26gCM4EufdWnZoXzQezbwGL9KqXQ=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB5059.eurprd05.prod.outlook.com (52.134.89.92) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.25; Wed, 13 Nov 2019 06:37:27 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.027; Wed, 13 Nov 2019
+ 06:37:27 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        Yuval Avnery <yuvalav@mellanox.com>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        Daniel Jurgens <danielj@mellanox.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>
+Subject: RE: [PATCH net-next v2 00/10] devlink subdev
+Thread-Topic: [PATCH net-next v2 00/10] devlink subdev
+Thread-Index: AQHVllA8leE7wEHN5kmIm9zGGLpffaeGRw8AgAANFACAAVG+AIAA2feg
+Date:   Wed, 13 Nov 2019 06:37:27 +0000
+Message-ID: <AM0PR05MB4866553530461C933DA3181ED1760@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <1573229926-30040-1-git-send-email-yuvalav@mellanox.com>
+ <20191111100004.683b7320@cakuba>
+ <AM6PR05MB5142D5C8B186A50D49D857ABC5740@AM6PR05MB5142.eurprd05.prod.outlook.com>
+ <20191112145542.GA6619@C02YVCJELVCG>
+In-Reply-To: <20191112145542.GA6619@C02YVCJELVCG>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:64c2:47ad:dfe6:e0d9]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 935ceb12-a22d-45c2-288b-08d76803f36c
+x-ms-traffictypediagnostic: AM0PR05MB5059:|AM0PR05MB5059:
+x-ms-exchange-purlcount: 4
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB505924D3F8FC294198793151D1760@AM0PR05MB5059.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0220D4B98D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(376002)(39860400002)(396003)(136003)(199004)(189003)(14444005)(6636002)(2906002)(74316002)(7736002)(305945005)(229853002)(5660300002)(476003)(9686003)(6306002)(11346002)(446003)(55016002)(486006)(86362001)(52536014)(6246003)(46003)(4326008)(76176011)(256004)(186003)(64756008)(66556008)(66476007)(7696005)(71200400001)(66446008)(71190400001)(6116002)(102836004)(6506007)(76116006)(316002)(110136005)(54906003)(66946007)(99286004)(478600001)(45080400002)(6436002)(14454004)(33656002)(966005)(8676002)(81156014)(81166006)(8936002)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5059;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TlJXsFxsmrOloEeUU3Uq5FCbO4WYeD0Sl4eXl9kW3fEWHfZ2YkO9D5vXk0SxM25xyh39jxAf2GEo/pKaH4i7P1gfri/DAU09xU+ddvkc1m8Fb49RELOIkKevQ2mYqRd1unIvEooxsF5vNTwzgz5IBORaepoVzUnMRtghvxExSjquwWU4pvJQ26vwEkKDmz4Gp294RsRcAq0TiU+gV6yTzyu4DtSDk2DXwkyarGh1Gp239+fBIrHoTDx5/D+a4bOUqSLbhVFfSt6PlbWSVg0MJ0AOfWPUqkdZDVDzcxzVkkTPBCmf4Xb6Z2B7ZGPdh9cs4pdarEoJytObdJLsSrU3mo98RV0nPyy77n9wdSVddX/SPQMPBp5QmbcsXbFbR5h842M4Vf+9kemSz03bnHlJMc53r7aHmRrzCLnO1u1HWl5MEJZHfDeJ75UKQNGHDbRV51LuXZy/RlFyb9FDOFzmhCqQutN2eYcRAEGJTUcL2UY=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1573571327-6906-1-git-send-email-xiangxia.m.yue@gmail.com> <CAOrHB_Cp_KOyU80SezEq7QKNTTmoidmLZ-GR-fuXSyD0MHrO-w@mail.gmail.com>
-In-Reply-To: <CAOrHB_Cp_KOyU80SezEq7QKNTTmoidmLZ-GR-fuXSyD0MHrO-w@mail.gmail.com>
-From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Date:   Wed, 13 Nov 2019 14:34:34 +0800
-Message-ID: <CAMDZJNWu2qV90+8BxaofWr+X1yBUT2jVaC6U00w4-a2LcUKKxg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: openvswitch: add hash info to upcall
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Ben Pfaff <blp@ovn.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>, ychen <ychen103103@163.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 935ceb12-a22d-45c2-288b-08d76803f36c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 06:37:27.3327
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oT9V1weiM7dvpUMeKiwcB4s2HYQU9eMDX+q4R/S3kNVRA3K5MHu8AuBbe9tt6EJlrNCTPTws+PSPE7hbni8+SQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5059
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 13, 2019 at 12:54 PM Pravin Shelar <pshelar@ovn.org> wrote:
->
-> On Tue, Nov 12, 2019 at 7:09 AM <xiangxia.m.yue@gmail.com> wrote:
-> >
-> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> >
-> > When using the kernel datapath, the upcall don't
-> > include skb hash info relatived. That will introduce
-> > some problem, because the hash of skb is important
-> > in kernel stack. For example, VXLAN module uses
-> > it to select UDP src port. The tx queue selection
-> > may also use the hash in stack.
-> >
-> > Hash is computed in different ways. Hash is random
-> > for a TCP socket, and hash may be computed in hardware,
-> > or software stack. Recalculation hash is not easy.
-> >
-> > Hash of TCP socket is computed:
-> >   tcp_v4_connect
-> >     -> sk_set_txhash (is random)
-> >
-> >   __tcp_transmit_skb
-> >     -> skb_set_hash_from_sk
-> >
-> > There will be one upcall, without information of skb
-> > hash, to ovs-vswitchd, for the first packet of a TCP
-> > session. The rest packets will be processed in Open vSwitch
-> > modules, hash kept. If this tcp session is forward to
-> > VXLAN module, then the UDP src port of first tcp packet
-> > is different from rest packets.
-> >
-> > TCP packets may come from the host or dockers, to Open vSwitch.
-> > To fix it, we store the hash info to upcall, and restore hash
-> > when packets sent back.
-> >
-> > +---------------+          +-------------------------+
-> > |   Docker/VMs  |          |     ovs-vswitchd        |
-> > +----+----------+          +-+--------------------+--+
-> >      |                       ^                    |
-> >      |                       |                    |
-> >      |                       |  upcall            v restore packet hash (not recalculate)
-> >      |                     +-+--------------------+--+
-> >      |  tap netdev         |                         |   vxlan module
-> >      +--------------->     +-->  Open vSwitch ko     +-->
-> >        or internal type    |                         |
-> >                            +-------------------------+
-> >
-> > Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
-> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > ---
-> > v3:
-> > * add enum ovs_pkt_hash_types
-> > * avoid duplicate call the skb_get_hash_raw.
-> > * explain why we should fix this problem.
-> > ---
-> >  include/uapi/linux/openvswitch.h |  2 ++
-> >  net/openvswitch/datapath.c       | 30 +++++++++++++++++++++++++++++-
-> >  net/openvswitch/datapath.h       | 12 ++++++++++++
-> >  3 files changed, 43 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-> > index 1887a451c388..e65407c1f366 100644
-> > --- a/include/uapi/linux/openvswitch.h
-> > +++ b/include/uapi/linux/openvswitch.h
-> > @@ -170,6 +170,7 @@ enum ovs_packet_cmd {
-> >   * output port is actually a tunnel port. Contains the output tunnel key
-> >   * extracted from the packet as nested %OVS_TUNNEL_KEY_ATTR_* attributes.
-> >   * @OVS_PACKET_ATTR_MRU: Present for an %OVS_PACKET_CMD_ACTION and
-> > + * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_hash in skb).
-> >   * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
-> >   * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragment
-> >   * size.
-> > @@ -190,6 +191,7 @@ enum ovs_packet_attr {
-> >         OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe,
-> >                                        error logging should be suppressed. */
-> >         OVS_PACKET_ATTR_MRU,        /* Maximum received IP fragment size. */
-> > +       OVS_PACKET_ATTR_HASH,       /* Packet hash. */
-> >         OVS_PACKET_ATTR_LEN,            /* Packet size before truncation. */
-> >         __OVS_PACKET_ATTR_MAX
-> >  };
-> I agree with Greg, value of existing enums can not be changed in UAPI.
->
-> > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-> > index 2088619c03f0..b556cf62b77c 100644
-> > --- a/net/openvswitch/datapath.c
-> > +++ b/net/openvswitch/datapath.c
-> > @@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
-> >         size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
-> >                 + nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
-> >                 + nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
-> > -               + nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATTR_LEN */
-> > +               + nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
-> > +               + nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
-> >
-> >         /* OVS_PACKET_ATTR_USERDATA */
-> >         if (upcall_info->userdata)
-> > @@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
-> >         size_t len;
-> >         unsigned int hlen;
-> >         int err, dp_ifindex;
-> > +       u64 hash;
-> >
-> >         dp_ifindex = get_dpifindex(dp);
-> >         if (!dp_ifindex)
-> > @@ -504,6 +506,23 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
-> >                 pad_packet(dp, user_skb);
-> >         }
-> >
-> > +       hash = skb_get_hash_raw(skb);
-> > +       if (hash) {
-> Zero hash is valid hash of skb. due to this check packets with zero
-> hash would not get same vxlan source port number. This patch should
-> solve the issue for all values of skb hash.
-I got it. thanks.
-One question, should we call the pad_packet? because the
-nla_put_u16/nla_put_u32/nla_put
-will reserve room with NLA_ALIGN. I think we can remove the pad_packet
-after setting
-OVS_PACKET_ATTR_MRU/OVS_PACKET_ATTR_LEN.
->
->
->
-> > +               if (skb->sw_hash)
-> > +                       hash |= OVS_PACKET_HASH_SW_BIT;
-> > +
-> > +               if (skb->l4_hash)
-> > +                       hash |= OVS_PACKET_HASH_L4_BIT;
-> > +
-> > +               if (nla_put(user_skb, OVS_PACKET_ATTR_HASH,
-> > +                           sizeof (u64), &hash)) {
-> > +                       err = -ENOBUFS;
-> > +                       goto out;
-> > +               }
-> > +
-> > +               pad_packet(dp, user_skb);
-> > +       }
-> > +
-> >         /* Only reserve room for attribute header, packet data is added
-> >          * in skb_zerocopy() */
-> >         if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
-> > @@ -543,6 +562,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
-> >         struct datapath *dp;
-> >         struct vport *input_vport;
-> >         u16 mru = 0;
-> > +       u64 hash;
-> >         int len;
-> >         int err;
-> >         bool log = !a[OVS_PACKET_ATTR_PROBE];
-> > @@ -568,6 +588,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
-> >         }
-> >         OVS_CB(packet)->mru = mru;
-> >
-> > +       if (a[OVS_PACKET_ATTR_HASH]) {
-> > +               hash = nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
-> > +
-> > +               __skb_set_hash(packet, hash & 0xFFFFFFFFULL,
-> > +                              !!(hash & OVS_PACKET_HASH_SW_BIT),
-> > +                              !!(hash & OVS_PACKET_HASH_L4_BIT));
-> > +       }
-> > +
-> >         /* Build an sw_flow for sending this packet. */
-> >         flow = ovs_flow_alloc();
-> >         err = PTR_ERR(flow);
-> > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> > index 81e85dde8217..e239a46c2f94 100644
-> > --- a/net/openvswitch/datapath.h
-> > +++ b/net/openvswitch/datapath.h
-> > @@ -139,6 +139,18 @@ struct ovs_net {
-> >         bool xt_label;
-> >  };
-> >
-> > +/**
-> > + * enum ovs_pkt_hash_types - hash info to include with a packet
-> > + * to send to userspace.
-> > + * @OVS_PACKET_HASH_SW_BIT: indicates hash was computed in software stack.
-> > + * @OVS_PACKET_HASH_L4_BIT: indicates hash is a canonical 4-tuple hash
-> > + * over transport ports.
-> > + */
-> > +enum ovs_pkt_hash_types {
-> > +       OVS_PACKET_HASH_SW_BIT = (1ULL << 32),
-> > +       OVS_PACKET_HASH_L4_BIT = (1ULL << 33),
-> > +};
-> > +
->
->
-> >  extern unsigned int ovs_net_id;
-> >  void ovs_lock(void);
-> >  void ovs_unlock(void);
-> > --
-> > 2.23.0
-> >
+SGkgQW5keSwNCg0KPiBGcm9tOiBBbmR5IEdvc3BvZGFyZWsgPGFuZHJldy5nb3Nwb2RhcmVrQGJy
+b2FkY29tLmNvbT4NCj4gU2VudDogVHVlc2RheSwgTm92ZW1iZXIgMTIsIDIwMTkgODo1NiBBTQ0K
+PiBPbiBNb24sIE5vdiAxMSwgMjAxOSBhdCAwNjo0Njo1MlBNICswMDAwLCBZdXZhbCBBdm5lcnkg
+d3JvdGU6DQo+ID4NCj4gPiA+DQpbLi5dDQoNCj4gDQo+IEl0IGZlZWxzIGEgYml0ICd1bmNvbnN0
+cmFpbmVkJyB0byBtZSBhcyB3ZWxsLiAgQXMgSmFrdWIgc2FpZCB5b3UgYWRkZWQgc29tZQ0KPiBk
+b2N1bWVudGF0aW9uLCBidXQgdGhlIGRpcmVjdGlvbiBvZiB0aGlzIGxvbmctdGVybSBpcyBub3Qg
+Y2xlYXIuDQoNCkkgYW0gaW50ZXJlc3RlZCB0byBrbm93IGlmIHRoZSBsb25nLXRlcm0gZGlyZWN0
+aW9uIG9mIHRoZSBkZXZsaW5rIHdhcyBjbGVhciBlbm91Z2ggaW4gY292ZXIgbGV0dGVyIFsxXSwg
+dGhhdCBkZXZsaW5rIGRldmljZSB3aWxsIGNoYW5nZSBuZXQgbmFtZXNwYWNlLCBpdCB3aWxsIGhh
+dmUgaGVhbHRoIHJlcG9ydGVycywgZHVtcCByZWdpb25zLCBlc3dpdGNoIFZGIGFuZCBQRiBwb3J0
+cywgcmVwcmVzZW50b3IgYmluZGluZywgImVuYWJsZV9yb2NlIiBleHRlbnNpb25zLg0KQmVjYXVz
+ZSB0aGF0IHZpc2lvbiBpcyBub3QgY2xlYXIgaW4gdGhlIGNvdmVyIGxldHRlciBbMV0gYXQgbGVh
+c3QgdG8gbWUuDQoNClJlc291cmNlIGRpdmlzaW9uIHdhcyB2ZXJ5IGNsZWFybHkgZGVzY3JpYmVk
+IGluICg0KSBpbiBjb3ZlciBsZXR0ZXIgWzFdIHdoaWNoIHlvdSB3ZXJlIGZhbiBvZiBmcm9tIDIw
+MTYgaW4gWzJdLg0KTVNJWCBvciBpbiBnZW5lcmFsIGludGVycnVwdHMgcmVzb3VyY2Ugc3BsaXR0
+aW5nIGFtb25nIFZGcyBpcyBubyBkaWZmZXJlbnQgdGhhbiBhbnkgb3RoZXIgcmVzb3VyY2UgZGl2
+aXNpb24uDQoNCmRldmxpbmsgZXN3aXRjaCBwb3J0IGZvciBhbmNob3JpbmcgaW50ZXJydXB0IGF0
+dHJpYnV0ZSBpcyBjZXJ0YWlubHkgYWJ1c2Ugb2YgYW4gJ2VzdyBwb3J0JyBvYmplY3QuDQpEZWZp
+bmluZyBhIHN1YmRldiBvYmplY3QsIGV2ZW4gdGhvdWdoIHRvZGF5IGl0IGhvbGRzIGp1c3QgMiBh
+dHRyaWJ1dGVzIChod19hZGRyZXNzLCBhbmQgbXNpeCBpbnRlcnJ1cHQpLCBpdCBzdGlsbCBzYW5l
+IG9iamVjdCBoaWVyYXJjaHkuDQpTZXR0aW5nIGhvc3Qgc2lkZSBtYWMgYWRkcmVzcyBpcyBub3Qg
+cmVhbGx5IGpvYiBvZiBlc3dpdGNoIHBvcnRzLg0KSXQgbWF5IGJlIG9uIHRoZSBzYW1lIEFTSUMs
+IGJ1dCBpdCBzaG91bGQgYmUgcHV0IGF0IHJpZ2h0IG9iamVjdC4NCg0KPiBXaGF0IHNlZW1zIHRv
+IGhhcHBlbiB0b28gb2Z0ZW4gaXMgdGhhdCB3ZSBza2lwIGNyZWF0aW5nIGJldHRlciBpbmZyYSBm
+b3INCj4gZXhpc3RpbmcgZGV2aWNlcyBhbmQgY3JlYXRlIGl0IG9ubHkgZm9yIHRoZSBuZXdlc3Qg
+c2hpbmllc3Qgb2JqZWN0Lg0KVGhpcyBpbmZyYXN0cnVjdHVyZSBpcyBmb3IgZXhpc3RpbmcgZGV2
+aWNlcyAobm9uIHNtYXJ0bmljIGRldmljZXMgdG9vKS4NCk1heSBiZSB3b3J0aCBjbGFyaWZ5aW5n
+IGV4cGxpY2l0bHkgaW4gY292ZXIgbGV0dGVyLg0KDQo+IEknbSBub3Qgc3VyZSBpZiB0aGF0IGlz
+IHBhcnQgb2Ygd2hhdCBib3RoZXJzIEpha3ViLA0KPiBidXQgaXQgaXMgb25lIHRoaW5nIHRoYXQg
+Ym90aGVycyBtZSBhbmQgd2h5IHRoaXMgZmVlbHMgaW5jb21wbGV0ZS4NCkxldCdzIHdvcmsgdG93
+YXJkcyBtYWtpbmcgaXQgY29tcGxldGUgYXMgbXVjaCBhcyBmb3IgZ2l2ZW4gZnVuY3Rpb25hbGl0
+eS4NCg0KPiANCj4gVGhlIHRoaW5nIHRoYXQgaGFzIGJlZW4gYm91bmNpbmcgYXJvdW5kIGluIG15
+IGhlYWQgYWJvdXQgdGhpcyAoYW5kIHVudGlsIEkgd2FzDQo+IGluIGZyb250IG9mIGEgZ29vZCB0
+ZXh0LWJhc2VkIE1VQSBJIGRpZG4ndCBkYXJlIHJlc3BvbmQpIGlzIHRoYXQgd2Ugc2VlbSB0bw0K
+PiBoYXZlIGFuIG92ZXJsYXAgaW4gZnVuY3Rpb25hbGl0eSBiZXR3ZWVuIHdoYXQgeW91IGFyZSBw
+cm9wb3NpbmcgYW5kIGV4aXN0aW5nDQo+IHZpcnR1YWwgZGV2aWNlIGNvbmZpZ3VyYXRpb24sIGJ1
+dCB5b3UgYXJlIGNvbXBsZXRlbHkgaWdub3JpbmcgaW1wcm92aW5nIHVwb24NCj4gdGhlIGV4aXN0
+aW5nIGNyZWF0aW9uIG1ldGhvZHMuDQo+IFdoZXRoZXIgZGVhbGluZyB3aXRoIGEgU21hcnROSUMg
+KHdoaWNoIEkgdXNlZCB0byBkZXNjcmliZSBhIE5JQyB3aXRoIGdlbmVyYWwNCj4gcHVycG9zZSBw
+cm9jZXNzb3JzIHRoYXQgY291bGQgYmUgcnVubmluZyBMaW51eCBhbmQgSSB0aGluayB5b3UgZG8s
+IHRvbykgb3IgYQ0KPiByZWd1bGFyIE5JQyBpdCBzZWVtcyBsaWtlIHdlIHNob3VsZCB1c2UgZGV2
+bGluayB0byBjcmVhdGUgYW5kIGNvbmZpZ3VyZSBhDQo+IHZhcmlldHkgb2YgZGV2aWNlcyB0aGVz
+ZSBjb3VsZCBiZToNCj4gDQo+IDEuICBOdW1iZXIgb2YgUEZzICh0aGVyZSBhcmUgY2FzZXMgd2hl
+cmUgbW9yZSB0aGFuIDEgUEYgcGVyIHVwbGluayBwb3J0DQo+ICAgICBpcyByZXF1aXJlZCBmb3Ig
+Y29tbWFuZC9jb250cm9sIG9mIHRoZSBTbWFydE5JQyBvciB3aGVyZSBhIHNpbmdsZQ0KPiAgICAg
+UENJIGIvZC9mIG1heSBoYXZlIG1hbnkgdXBsaW5rIHBvcnRzIHRoYXQgbmVlZCB0byBiZSBhZGRy
+ZXNzZWQNCj4gICAgIHNlcGFyYXRlbHkpDQpIb3cgaXMgdGhpcyByZWxhdGVkIHRvIHN1YmRldiBv
+YmplY3Q/IERvIHlvdSBtZWFuIHVzZXIgc2hvdWxkIGJlIGFibGUgdG8gY3JlYXRlIFBGIHN1YmRl
+dmljZSBvYmplY3QgZm9yIGhvc3Q/DQpDdXJyZW50bHkgZGVjaXNpb24gdG8gY3JlYXRlIHN1YmRl
+diBvYmplY3RzIGlzIGRvbmUgYnkgdGhlIHZlbmRvciBkcml2ZXIuDQpCdXQgaXQgaXMgbm90IHBy
+ZXZlbnRlZCBpbiBmdXR1cmUgdG8gZXh0ZW5kIGl0LCBpZiBpdCBtYWtlIHNlbnNlLg0KWW91IG5l
+ZWQgdG8gZGVzY3JpYmUgdGhlIHVzZWNhc2UgYW5kIHVzdWFsIHJldmlldyBwcm9jZXNzLi4NCg0K
+PiAyLiAgRGV2aWNlLXNwZWNpZmljIFNSLUlPViBWRnMgdmlzaWJsZSB0byBzZXJ2ZXIgDQo+IDMu
+ICBtZGV2IGRldmljZXMgdGhhdCBfbWF5Xw0KPiBoYXZlIHJlcHJlc2VudGVycyBvbiB0aGUgZW1i
+ZWRkZWQgY29yZXMgb2YNCj4gICAgIHRoZSBOSUMNClRoZXJlIGlzIG5vIG1kZXYgTklDIGRldmlj
+ZXMgb24gZW1iZWRkZWQgY29yZXMgTklDIGRyaXZlciBleGlzdCBpbiBrZXJuZWwgdG9kYXkuDQpJ
+IHBvc3RlZCB0aGUgc2VyaWVzIFszXSB0byBjb3ZlciB0aGlzIHBhcnQgYW5kIHdlIHdvcmtlZCB0
+aHJvdWdoIGt2bSBhbmQgbmV0ZGV2IG1haWxpbmcgbGlzdCB0byBnZXQgcmlnaHQsIGRldGVybWlu
+aXN0aWMgcGh5c19wb3J0X25hbWUgZm9yIGl0LCByaWdodCBkZXZsaW5rIHBvcnQgZmxhdm91ciBl
+dGMgbmVjZXNzYXJ5IHBsdW1iaW5nLiBUaGlzIHdhcyBkb25lIDIgbW9udGhzIGJlZm9yZSBwb3N0
+aW5nIFszXS4NClNvIG1kZXYncyBzdWJkZXYgbWFuYWdlbWVudCBpcyBjb3ZlcmVkIGFuZCBjb3Zl
+ciBsZXR0ZXIgYWxzbyB0YWxrcyBhYm91dCBpdCB0byBtYW5hZ2UgaXQgaW4gdW5pZm9ybSB3YXkg
+YXMgUEYvVkYvbWRldi4NCg0KPiA0LiAgSGFyZHdhcmUgVmlydElPLW5ldCBkZXZpY2VzIHN1cHBv
+cnRlZCANCkhvdyB0aGlzIGlzIGJsb2NrZWQgYnkgc3ViZGV2IG9iamVjdCBpbnRyb2R1Y3Rpb24/
+DQpUaGUgd2F5IEkgZW52aXNpb24gZnJvbSB0aGUgcmVjZW50IGRpc2N1c3Npb24gaXMsDQpUaGVy
+ZSB3aWxsIGJlIG1kZXYtdmlydGlvIG9yIHZpcnRpbyBidXMgd2hlcmUgaGFyZHdhcmUgdmlydG8g
+ZGV2aWNlcyB3aWxsIGJlIGV4cG9zZWQuDQpBbmQgdGhlcmVmb3JlLCB0aGVpciBzdWJkZXZpY2Vz
+IGNhbiBiZSBhbHNvIGNvbnRyb2xsZWQgdGhpcyB3YXkuDQpCdXQgbXkgdW5kZXJzdGFuZGluZyBv
+ZiB1bnB1Ymxpc2hlZCBtZWxsYW5veCB2aXJ0aW8tbmV0IGRldmljZSBhbmQgeW91cnMgY291bGQg
+YmUgZGlmZmVyZW50LiA6LSkNClNvIGlmIHlvdSBoYXZlIGxpbmsvcHB0L3JmYy9wYXRjaGVzIEkg
+c2hvdWxkIHJlYWQsIHBsZWFzZSBsZXQgbWUga25vdywgaG93IHlvdSBzZWUgaHcgdmlydGlvLW5l
+dCBkZXZpY2VzLg0KDQo+IDUuICBPdGhlciBub24tbmV0d29yayBkZXZpY2VzDQo+IChzdG9yYWdl
+IGdpdmVuIGFzIHRoZSBmaXJzdCBleGFtcGxlKSA2LiAgLi4uDQo+IA0KSSB0aGluayBpdHMgcmVh
+bGx5IGJleW9uZCB0aGUgc2NvcGUgb2YgbGlmZSBjeWNsaW5nIGV2ZXJ5dGhpbmcgdXNpbmcgdGhp
+cyBzdWJkZXYgb2JqZWN0Lg0KSXQgaXMgbm90IGEgdWx0aW1hdGUgc29sdXRpb24gdG8gYWxsIHVz
+ZSBjYXNlcy4gOi0pDQoNCj4gV2UgY2Fubm90IGdldCByaWQgb2YgdGhlIG1ldGhvZHMgZm9yIGNy
+ZWF0aW5nIGhhcmR3YXJlIFZGcyB2aWEgc3lzZnMsIGJ1dCBub3cNCj4gdGhhdCB3ZSBhcmUgc2Vl
+aW5nIGxvdHMgb2YgZGlmZmVyZW50IGZsYXZvcnMgb2YgZGV2aWNlcyB0aGF0IG1pZ2h0IGJlIGNy
+ZWF0ZWQgd2UNCj4gc2hvdWxkIHN0YXJ0IGJ5IG1ha2luZyBzdXJlIGF0IGEgbWluaW11bSB3ZSBj
+YW4gY3JlYXRlIGV4aXN0aW5nIGhhcmR3YXJlDQo+IGRldmljZXMgKFZGcykgd2l0aCB0aGlzIGRl
+dmxpbmsgaW50ZXJmYWNlIGFuZCBtb3ZlIGZyb20gdGhlcmUuDQpXZWxsLCBJIGhhdmUgYmVlbiB0
+aGlua2luZyBhYm91dCBpdCBmb3IgbGFzdCA2LTcgbW9udGhzIGFzIHRoZXJlIGlzIGxvY2tpbmcg
+aXNzdWVzIHByZXNlbnQgYmV0d2VlbiBudW1fdmZzIHN5c2ZzIChkZXZpY2UgbG9jayEpLCBpcCBs
+aW5rIChubyBsb2NrKSBhbmQgZGV2bGluayAoZGV2bGluayBsb2NrKS4NCkFsbCB1bnN5bmNyb25p
+emVkIHdpdGggZWFjaCBvdGhlciB3aGljaCBsZWFkcyB0byBjYWxsIHRyYWNlczsgdXNpbmcgc29t
+ZSBsb2NrIGluIG11bHRpcGxlIGRyaXZlcnMgd2lsbCBiZSBhIHJlZCBiYW5kYWdlLg0KSXQgaXMg
+bm90IHRoZSBzY29wZSBvZiB0aGlzIHNlcmllcy4NCg0KPiBJcyB0aGVyZSBhIHBsYW4NCj4gdG8g
+dXNlIHRoaXMgaW50ZXJmYWNlIHRvIGNyZWF0ZSBzdWJkZXZzIHRoYXQgYXJlIFZGcyBvciBqdXN0
+IG5ldyBzdWJkZXYgZmxhdm9ycz8NCkNyZWF0aW5nIGluZGl2aWR1YWwgVkZzIGlzIHN1cHBvcnRl
+ZCBieSBQQ0kgc3BlYyB3aGVuIEkgY2hlY2tlZCBsYXN0IHRpbWUuDQpEbyB5b3Uga25vdyBpZiB0
+aGF0IGlzIHN1cHBvcnRlZCBub3c/DQpMYXN0IHllYXIgYXV0b3Byb2JlIGZpbGUgd2FzIGFkZGVk
+IHRvIHBjaSBjb3JlIHRvIGR5bmFtaWNhbGx5IGJpbmQgdGhlIFZGcyBhbmQgYnVnIHdhcyBmaXhl
+ZCByZWNlbnRseSBieSBBbGV4IFdpbGxpYW1zb24uDQoNCkxldCdzIHNheSBpZiB0aGF0IGlzIGFk
+ZGVkIGluIGZ1dHVyZSwgZXZlbiB0aGFuIHN1YmRldiBvYmplY3QgY3JlYXRpb24gb24gZXZlbnQg
+b2YgZHluYW1pYyBWRiBjcmVhdGlvbiBob2xkcyBnb29kLiBJc24ndCBpdD8NCldoZW5ldmVyIG1k
+ZXYgc2VyaWVzIHVwZGF0ZWQgdmVyc2lvbiBnZXRzIGFjY2VwdGVkLCBpdCB3aWxsIGR5bmFtaWNh
+bGx5IGNyZWF0ZSB0aGUgc3ViZGV2IG9iamVjdCBhbnl3YXkgb2YgbWRldiBvciBzb21lIG90aGVy
+IGZsYXZvdXIuDQoNCj4gSSBjb3VsZCBzdGFydCB0byBnZXQgYmVoaW5kIGFuIGludGVyZmFjZSBs
+aWtlIHRoaXMgaWYgdGhlIHBhdGNoZXMgc2hvd2VkIHRoYXQNCj4gZGV2bGluayB3b3VsZCBiZSB0
+aGUgb25lIHBsYWNlIHdoZXJlIGRldmljZSBjcmVhdGlvbiBhbmQgY29udHJvbCBjb3VsZCBiZQ0K
+PiBkb25lIGZvciBhbGwgdHlwZXMgb2Ygc3ViZGV2cywgYnV0IHRoYXQgaXNuJ3QgY2xlYXIgdGhh
+dCBpdCBpcyB5b3VyIGRpcmVjdGlvbiBiYXNlZA0KPiBvbiB0aGUgcGF0Y2hlcy4NCj4gDQo+IFNv
+IGp1c3QgdG8gbWFrZSBzdXJlIHRoaXMgaXMgY2xlYXIsIHdoYXQgSSdtIHByb3Bvc2luZyB0aGF0
+IGRldmxpbmsgaXMgdXNlZCB0bw0KPiBjcmVhdGUgYW5kIGNvbmZpZ3VyZSBhbGwgdHlwZXMgb2Yg
+ZGV2aWNlcyB0aGF0IGl0IG1heSBiZSBwb3NzaWJsZSB0byBjcmVhdGUsDQo+IGNvbmZpZ3VyZSwg
+b3IgYWRkcmVzcyBmcm9tIGEgUEYgYW5kIHRoZSBzdGFydGluZyBwbGFjZSBzaG91bGQgYmUgc3Rh
+bmRhcmQsDQo+IGhhcmR3YXJlIFZGcy4gIA0KSSBkbyBub3QgYWdyZWUgd2l0aCAnY3JlYXRpbmcg
+YWxsIGRldmljZXMnIHBhcnQgdGhhdCBpdCBzaG91bGQgYmUgdGhlIHN0YXJ0aW5nIHBvaW50IGdp
+dmVuIHRoYXQgb3RoZXIgbWV0aG9kIGFscmVhZHkgZXhpc3RzIGZvciBWRnMsIG1kZXYgKHRob3Vn
+aCBpdHMgYnVnZ3kgZm9yIFZGcykuDQpFeHRlbmRpbmcgZGV2bGluayB0byBjcmVhdGUgbWRldiBp
+cyBuaWNlLCBidXQgbm90IGEgbXVzdC4gU2FtZSBnb2VzIGZvciBvdGhlciBmbGF2b3VycyBzdWNo
+IGFzIHZpcnRpby9zZi4NCkkgYWxzbyBwcm9wb3NlZCB0aGF0IHRvIGNyZWF0ZSB0aGVtIHZpYSBk
+ZXZsaW5rIGluIFs0XSwgYnV0IGl0cyBub3QgbXVzdC4NClRoaXMgc2VyaWVzIGZvciBtZGV2IFsz
+XSBhbHJlYWR5IGZpdHMgaW4gdGhlIGV4aXN0aW5nIGRldmxpbmssIGVzd2l0Y2gsIGRldmxpbmsg
+cG9ydCwgZGV2bGluayBzdWJkZXYgb2JqZWN0IG1vZGVsLg0KDQo+IElmIHRoYXQgY2FuIGJlIGRv
+bmUgcmlnaHQgYW5kIHdlIGNhbiBhZGRyZXNzIHNvbWUgb2YgdGhlIGlzc3Vlcw0KPiB3aXRoIHRo
+ZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIChtb3JlIHRoYW4gb25lIGh3IGFkZHIgaXMgYSBfZ3Jl
+YXRfDQo+IGV4YW1wbGUpIHRoZW4gYWRkaW5nIG5ldyBmbGF2b3VycyBmb3IgdGhlIHNlcnZlciBk
+ZXZpY2VzIGFuZCBhbmQgYWRkaW5nIG5ldw0KPiBmbGF2b3JzIGZvciBTbWFydE5JQy1iYXNlZCBk
+ZXZpY2VzIHNob3VsZCBiZSBlYXN5IGFuZCBmZWVsIG5hdHVyYWwuDQpJIGFsc28gYWdyZWUgdGhh
+dCBzZXR0aW5nIG1vcmUgdGhhbiBvbmUgaHcgYWRkcmVzcyBzaG91bGQgYmUgc3VwcG9ydGVkLCBK
+YWt1YiBoaWdobGlnaHRlZCB0b28gb2YgdGhpcyBuZWVkIGZvciBJbnRlbC4NCkNvbW1hbmQgc2hv
+dWxkIGJlIHNpbWlsYXIgdG8gJ2lwIGFkZHIgYWRkJywgYW5kIG5vdCAnZGV2bGluayBzZXQgaHdf
+YWRkcicuDQpNbHg1IGRvZXNuJ3QgY3VycmVudGx5IHN1cHBvcnRlZCBzbyBzZXR0aW5nIG11bHRp
+cGxlIGh3X2FkZHJlc3Mgc2hvdWxkIHJldHVybiByaWdodCBlcnJvciBjb2RlIEVOT1NQRUMgb3Ig
+RU5PU1VQUCBieSBtbHg1IGRyaXZlci4NCg0KWXV2YWwsIENhbiB5b3UgcGxlYXNlIGFkZHJlc3Mg
+dGhpcyBjb21tZW50IGZyb20gSmFrdWIgYW5kIEFuZHkgdG8gc3VwcG9ydCBtdWx0aXBsZSBod19h
+ZGRyZXNzPw0KDQpJIGp1c3Qgd2FudCB0byBzYXkgdGhhdCBzdWJkZXYgaXMgbm90IHNvIGdyYW5k
+IG9iamVjdC4NCkFzIHVzZSBjYXNlLCBmZWF0dXJlcywgQVNJQyBldm9sdmVzIHJpZ2h0IGF0dHJp
+YnV0ZXMgc2hvdWxkIGJlIHBsYWNlZCBpbiByaWdodCBvYmplY3QuDQooanVzdCBsaWtlIGhvdyBk
+ZXZsaW5rIGV2b2x2ZWQgZnJvbSBbMV0gdG8gbm93LikNCkFyZW4ndCB3ZSByZXZpZXdpbmcgdGhl
+IHBhdGNoZXM/IFdoeSBzaG91bGQgaXQgYmVjb21lIGEgdW5jb25zdHJhaW5lZCBvYmplY3QgdG8g
+cHV0IGV2ZXJ5dGhpbmcgaW4gaXQ/DQpUaGlzIHNlcmllcyBkb2Vzbid0IGFzayB0byBwdXQgZXZl
+cnl0aGluZyBpbiBpdC4NCg0KQXMgWXV2YWwgcG9pbnRlZCwgdGhlcmUgYXJlIHR3by90aHJlZSBu
+ZWFyIHRlcm0gcGxhbiBhZnRlciB0aGlzIHNlcmllcy4NCjEuIEdyb3VwaW5nIFZGcyBzdWJkZXZz
+IHNvIHRoYXQgaG9zdCBzaWRlIG1pbi9tYXggcmF0ZXMgY2FuIGJlIGFwcGxpZWQgb24gdGhlIGdy
+b3VwIChncm91cCBvZiBWRnMpDQoyLiBFeHRlbmRpbmcgc3ViZGV2IGZsYXZvdXIgZm9yIG1kZXYv
+dmlydGlvL3NmIGRlcGVuZGluZyBvbiBob3cgc2VyaWVzIFszXSB0YWtlIHNoYXBlDQozLiBtc2l4
+IGNvbmZpZ3VyYXRpb24gZm9yIFZGcw0KDQpbMV0gaHR0cHM6Ly9sd24ubmV0L0FydGljbGVzLzY3
+Nzk2Ny8NClsyXSBodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9uZXRkZXYvbXNnMzY1NTMy
+Lmh0bWwNClszXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1yZG1hLzIwMTkxMTA3MTYw
+NDQ4LjIwOTYyLTEtcGFyYXZAbWVsbGFub3guY29tLw0KWzRdIGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xpbnV4LXJkbWEvQU0wUFIwNU1CNDg2NjQ0NDIxMDcyMUJDNEVFNzc1RDI3RDE3QjBAQU0w
+UFIwNU1CNDg2Ni5ldXJwcmQwNS5wcm9kLm91dGxvb2suY29tLw0KDQoNCg==
