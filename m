@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B924EFA38B
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AF27FA38E
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:12:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730963AbfKMCKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730910AbfKMCKQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 12 Nov 2019 21:10:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53678 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:53726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730211AbfKMB7R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 20:59:17 -0500
+        id S1730239AbfKMB7S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:59:18 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E5AA02053B;
-        Wed, 13 Nov 2019 01:59:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1819F222CF;
+        Wed, 13 Nov 2019 01:59:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573610356;
-        bh=Sy7hbScv19rV8NDL9qHrMbFUObG15Smc8I2tCM0i/MU=;
+        s=default; t=1573610357;
+        bh=T12/7retfQyoc+36Vzb58+LWVgO4QkqdGYK53unX8Tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yU4oxzmSkA2VzU9925+tX0JAxWOnCkbp5mAUe39rAxHdys4P2/kuJStzjjFM5rPep
-         +u1I/vINGw2CoEOxmQs8Gj9GUYSYWjdcPlIq5YgIOC/E8wF1WhZeYSko/MktBWXC61
-         akZboQ7lF0uF2YfOVKS9RU0akyDimdCv6fn4RMeo=
+        b=IXh42tCcR4e2mmyHHCpJihwmBckBOVHXLdmWMNQJFvRIkOUoknT1q5gDtE9om/6+9
+         UUIfbssEGa+8y5ObUiNXyubDZLvieCcngfbCO66ckDwK5goR1yVHaYvOvPLBFpny0v
+         EqHnhlGLfNsMxOEoIXfnAasFJTuJX2wiApBmghiw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Felix Fietkau <nbd@nbd.name>,
         Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 107/115] mac80211: minstrel: fix using short preamble CCK rates on HT clients
-Date:   Tue, 12 Nov 2019 20:56:14 -0500
-Message-Id: <20191113015622.11592-107-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 108/115] mac80211: minstrel: fix CCK rate group streams value
+Date:   Tue, 12 Nov 2019 20:56:15 -0500
+Message-Id: <20191113015622.11592-108-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113015622.11592-1-sashal@kernel.org>
 References: <20191113015622.11592-1-sashal@kernel.org>
@@ -46,43 +46,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Felix Fietkau <nbd@nbd.name>
 
-[ Upstream commit 37439f2d6e43ae79e22be9be159f0af157468f82 ]
+[ Upstream commit 80df9be67c44cb636bbc92caeddad8caf334c53c ]
 
-mi->supported[MINSTREL_CCK_GROUP] needs to be updated
-short preamble rates need to be marked as supported regardless of
-whether it's currently enabled. Its state can change at any time without
-a rate_update call.
+Fixes a harmless underflow issue when CCK rates are actively being used
 
-Fixes: 782dda00ab8e ("mac80211: minstrel_ht: move short preamble check out of get_rate")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/rc80211_minstrel_ht.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/mac80211/rc80211_minstrel_ht.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/mac80211/rc80211_minstrel_ht.c b/net/mac80211/rc80211_minstrel_ht.c
-index 4a5bdad9f3030..25cb3e5f8b482 100644
+index 25cb3e5f8b482..bc97d31907f60 100644
 --- a/net/mac80211/rc80211_minstrel_ht.c
 +++ b/net/mac80211/rc80211_minstrel_ht.c
-@@ -1132,7 +1132,6 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
- 	struct ieee80211_mcs_info *mcs = &sta->ht_cap.mcs;
- 	u16 sta_cap = sta->ht_cap.cap;
- 	struct ieee80211_sta_vht_cap *vht_cap = &sta->vht_cap;
--	struct sta_info *sinfo = container_of(sta, struct sta_info, sta);
- 	int use_vht;
- 	int n_supported = 0;
- 	int ack_dur;
-@@ -1258,8 +1257,7 @@ minstrel_ht_update_caps(void *priv, struct ieee80211_supported_band *sband,
- 	if (!n_supported)
- 		goto use_legacy;
+@@ -129,7 +129,7 @@
  
--	if (test_sta_flag(sinfo, WLAN_STA_SHORT_PREAMBLE))
--		mi->cck_supported_short |= mi->cck_supported_short << 4;
-+	mi->supported[MINSTREL_CCK_GROUP] |= mi->cck_supported_short << 4;
- 
- 	/* create an initial rate table with the lowest supported rates */
- 	minstrel_ht_update_stats(mp, mi);
+ #define CCK_GROUP					\
+ 	[MINSTREL_CCK_GROUP] = {			\
+-		.streams = 0,				\
++		.streams = 1,				\
+ 		.flags = 0,				\
+ 		.duration = {				\
+ 			CCK_DURATION_LIST(false),	\
 -- 
 2.20.1
 
