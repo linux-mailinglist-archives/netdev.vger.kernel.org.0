@@ -2,81 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7378FFABCD
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C03FABD6
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:16:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbfKMIKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 03:10:25 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:34888 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725966AbfKMIKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 03:10:25 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 734C4200A7;
-        Wed, 13 Nov 2019 09:10:24 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id HD8klcpCHdRG; Wed, 13 Nov 2019 09:10:24 +0100 (CET)
-Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 057FE200A3;
-        Wed, 13 Nov 2019 09:10:24 +0100 (CET)
-Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
- (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 13 Nov 2019
- 09:10:23 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id C137A3180095;
- Wed, 13 Nov 2019 09:10:21 +0100 (CET)
-Date:   Wed, 13 Nov 2019 09:10:21 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Xiaodong Xu <stid.smth@gmail.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <chenborfc@163.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3] xfrm: release device reference for invalid state
-Message-ID: <20191113081021.GV13225@gauss3.secunet.de>
-References: <20191111230546.17105-1-stid.smth@gmail.com>
+        id S1726276AbfKMIQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 03:16:52 -0500
+Received: from relay12.mail.gandi.net ([217.70.178.232]:58581 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725966AbfKMIQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:16:51 -0500
+Received: from localhost (lfbn-tou-1-421-123.w86-206.abo.wanadoo.fr [86.206.246.123])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 6F8EA200011;
+        Wed, 13 Nov 2019 08:16:48 +0000 (UTC)
+Date:   Wed, 13 Nov 2019 09:16:47 +0100
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     antoine.tenart@bootlin.com, linux@armlinux.org.uk, andrew@lunn.ch,
+        alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com,
+        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        mparab@cadence.com, piotrs@cadence.com, dkangude@cadence.com,
+        ewanm@cadence.com, arthurm@cadence.com, stevenh@cadence.com
+Subject: Re: [PATCH net-next v2] net: macb: convert to phylink
+Message-ID: <20191113081647.GC4783@kwain>
+References: <20191112142548.13037-1-antoine.tenart@bootlin.com>
+ <20191112.114357.667316757358233747.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20191111230546.17105-1-stid.smth@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191112.114357.667316757358233747.davem@davemloft.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Nov 11, 2019 at 03:05:46PM -0800, Xiaodong Xu wrote:
-> An ESP packet could be decrypted in async mode if the input handler for
-> this packet returns -EINPROGRESS in xfrm_input(). At this moment the device
-> reference in skb is held. Later xfrm_input() will be invoked again to
-> resume the processing.
-> If the transform state is still valid it would continue to release the
-> device reference and there won't be a problem; however if the transform
-> state is not valid when async resumption happens, the packet will be
-> dropped while the device reference is still being held.
-> When the device is deleted for some reason and the reference to this
-> device is not properly released, the kernel will keep logging like:
-> 
-> unregister_netdevice: waiting for ppp2 to become free. Usage count = 1
-> 
-> The issue is observed when running IPsec traffic over a PPPoE device based
-> on a bridge interface. By terminating the PPPoE connection on the server
-> end for multiple times, the PPPoE device on the client side will eventually
-> get stuck on the above warning message.
-> 
-> This patch will check the async mode first and continue to release device
-> reference in async resumption, before it is dropped due to invalid state.
-> 
-> v2: Do not assign address family from outer_mode in the transform if the
-> state is invalid
-> 
-> v3: Release device reference in the error path instead of jumping to resume
-> 
-> Fixes: 4ce3dbe397d7b ("xfrm: Fix xfrm_input() to verify state is valid when (encap_type < 0)")
-> Signed-off-by: Xiaodong Xu <stid.smth@gmail.com>
-> Reported-by: Bo Chen <chenborfc@163.com>
-> Tested-by: Bo Chen <chenborfc@163.com>
+Hi David,
 
-Patch applied, thanks a lot!
+On Tue, Nov 12, 2019 at 11:43:57AM -0800, David Miller wrote:
+> From: Antoine Tenart <antoine.tenart@bootlin.com>
+> Date: Tue, 12 Nov 2019 15:25:48 +0100
+> 
+> > This patch converts the MACB Ethernet driver to the Phylink framework.
+> > The MAC configuration is moved to the Phylink ops and Phylink helpers
+> > are now used in the ethtools functions. This helps to access the flow
+> > control and pauseparam logic and this will be helpful in the future
+> > for boards using this controller with SFP cages.
+> > 
+> > Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+> 
+> Things like pulling out the buffer init code into a helper function are
+> separate from the actual phylink conversion, so please split these changes
+> out into separate patches and make this a bonafide patch series.
+> 
+> Please do not forget to provide an appropriate patch series header
+> posting when you do this.
+
+Will do for v3.
+
+Thanks,
+Antoine
+
+-- 
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
