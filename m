@@ -2,129 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A451FB470
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:58:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F02E9FB482
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 17:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727987AbfKMP6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 10:58:54 -0500
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:38362 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727136AbfKMP6y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:58:54 -0500
-Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
-  Bryan.Whitehead@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Bryan.Whitehead@microchip.com";
-  x-sender="Bryan.Whitehead@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa4.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Bryan.Whitehead@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa4.microchip.iphmx.com; spf=Pass smtp.mailfrom=Bryan.Whitehead@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: coGPaDra5I5QfgTG3ebViLJ6hrzdRkHrhyXqPopxx4ctuzVQg/RTUiwTZftRhj0/6Mqwm0BrHu
- 5h79a/EBXetdbCubEbHkiqMx0rbuoC/U19frCwHeRVP1CYKeIBxPu1pQ3bsW74Ovs4sjsWDY/Z
- 0bpZrVC43r5TDW9JkKQbx+kxvmx0JqIO0F/rsGAPdeKyGMdwaYRtzuUiyxivsJa2E30gheqdxd
- /MCPqwqk61cZk4Qjp1m95ol0nv92CtxSAC3/3o3lSPFU7dHjocKhOe6ySkoSonXOwqaYqVTZIh
- YIQ=
-X-IronPort-AV: E=Sophos;i="5.68,300,1569308400"; 
-   d="scan'208";a="55309877"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Nov 2019 08:58:53 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 13 Nov 2019 08:58:46 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5 via Frontend
- Transport; Wed, 13 Nov 2019 08:58:46 -0700
+        id S1728235AbfKMQBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 11:01:44 -0500
+Received: from mail-eopbgr10045.outbound.protection.outlook.com ([40.107.1.45]:44421
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726190AbfKMQBn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 11:01:43 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R8YVEzxnWSIEVhCsqyQM0bKYBmyrzl6cK5kHL/BQtDc+O8MkopsL7KXlHg9fcAhwPQWhgZ6ebmmu7PBozEvpFahtmn5+jaEH4yIMsp9R5/nAZ+gqS6opsMhrtpOdPNOwOQaaqdv1wYHKiwCKXXgMXI9MgR8Q1CNxOPVOfe/5F8ish5h1Xq3ceKccyi8grMz/RKOIGSMLSBBstIk1LMXNNJ2X1rIP1djg8OmUEhLMq5537KINKIDbD/meWL0gsLUXqhyZSTTJKiJ7bkP4yvv0O3yXuIKc4Iz2FlYj0GQhc55l8sMwkEnWoM+hq7zZ8nRP3CAmktmE4J3wJj/Pi3jcEQ==
+ b=Q3mJJOhmK7VsHFV7nSlVmBoLjNciZJvZQmQ0qtagPl1GEHxf98uNpbsTKwLvTft1qGbmH/j7ZQJagQsyTE0hhebmUD3Yb+txTRvlran2nL/Egsn7Vw5/c2gdqCHgl3NpCb5OhgPkFzxYYdLpfm/o4azmAZl7O+sqn9ALTmvuLVqDaQvgUhiXWy2d6U6v66fiGtdJrgicOj38AtPG3zRTNfjczMzU7tEvy2KnRlrCwWftq2wlSt/LUt/BR5WEEFf2gzGQk6qsGG4vKScw7dpwVHNomlzZOXN3ttx4NDfzVpJTXEHsAbr/fDDPOytl11c2o2Pg530/Ka+rx8BCejqEsQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mpO2ktbwKrcvK1OQMhj9BuMGbhSH+cUAeoroF3O7B40=;
- b=hriyTFpzR7edWlZ7Kc0CrGADQZl/EtwnRXBA6wdlIwoKMpXdbbmDoYuwa4iVJ/spA6FSEQVA7Fpi+sXxogsxfcTtTpVwQqYwycQyCguDhweVKChe8rXVS4Y7V82eB8jqGAI3kYOhciM2Z8QC1j1ns8zIM8VoOXLiLcH8A5Ey3Jn7j2YS2COfgmsd/szoBNp4f7oWlHA9F3h2UhNY3tLFeE3FY1vIH6gRLcMti6+eP6LRYEw2fQNTcIvD4Q/quPOAcBthbLG8c1h0vTN+Axl4/EKbIL7Sft5i0DLOZ9zUxgxu3kYlEnWTi76/KlVvF3EjFY0Di05NuGgQUmGmJ9U2hQ==
+ bh=g6tlt7eTPMGF1n7M/DQiQUvWZxprxu3WgTTfsmW6gjE=;
+ b=eL/HDZ7YJZC3GXQny0Fna8UxcgNhDNhMkL9Mh6r2ngbz4FlytfGbuC4f5NyzLSPT8hWqlW1xL6NVE5T+WOkkRnDz9yhTCRfnM3KsOe+owjX/YSI7TSW15SSt4PDlj35wtoGr90h7Dyd1Ou5kbSkrVy9DxIuMlEgo7iZyjsMAwQ+32amMkN5aEUGG4V7k3oE7xDcE2/G6usgBq9mMOZIu1bDwsHfJ/+5ietaySq85MYTxIby5or0mklY9kREuKzLiYlz8DF/8kMjmpoNnWDjaO55B3lu7k6eIVf9JVOtER17PmSlE5tNM01aiAaZWHh5bnGWTKlO/9IifJjyweLRnDQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mpO2ktbwKrcvK1OQMhj9BuMGbhSH+cUAeoroF3O7B40=;
- b=oSHf1764pukZlENrdI1dQ3bZ7KKDyyKL7A6xyzcTTj4Fzh6//X65FrX5HpiaThHm2PzxmtuuFSOSznqOHOvQSJvJAfCNnbVVQlDIOC/KaaLsBdTDt2lJ0TVF9djR7a3Tcujhv0E38g1kK0dpYN1tNAKKkSru8fntLgKYmpBpJAI=
-Received: from MN2PR11MB4333.namprd11.prod.outlook.com (10.255.90.25) by
- MN2PR11MB3584.namprd11.prod.outlook.com (20.178.251.206) with Microsoft SMTP
+ bh=g6tlt7eTPMGF1n7M/DQiQUvWZxprxu3WgTTfsmW6gjE=;
+ b=Uo1a4jR+hxbXKD5qTpNidUpkdoneYpyVZCYcR7onB3kKfieTI3tF8ziMtHCWJzE/o9U1n3Z3YiYYciEyFy16K39/0KvI5ECE0SQCniN8K+6qvII2IM3y0UItNFD3Jyuo+yk2L2YAanym8HtUY5IdS14+YTwxc3jfqAT+6y4EEq0=
+Received: from VI1PR04MB4880.eurprd04.prod.outlook.com (20.177.49.153) by
+ VI1PR04MB4333.eurprd04.prod.outlook.com (52.134.122.155) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Wed, 13 Nov 2019 15:58:42 +0000
-Received: from MN2PR11MB4333.namprd11.prod.outlook.com
- ([fe80::e82a:ef05:d8ca:4cd]) by MN2PR11MB4333.namprd11.prod.outlook.com
- ([fe80::e82a:ef05:d8ca:4cd%6]) with mapi id 15.20.2430.028; Wed, 13 Nov 2019
- 15:58:42 +0000
-From:   <Bryan.Whitehead@microchip.com>
-To:     <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: RE: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
-Thread-Topic: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
-Thread-Index: AQHVmXJIiwJOwhRbeU+HRtKC5Z72x6eH//SAgAABu0CAATysgIAABQOg
-Date:   Wed, 13 Nov 2019 15:58:42 +0000
-Message-ID: <MN2PR11MB4333038C5259D3029CFC8477FA760@MN2PR11MB4333.namprd11.prod.outlook.com>
-References: <1573574048-12251-1-git-send-email-Bryan.Whitehead@microchip.com>
- <20191112204031.GH10875@lunn.ch>
- <MN2PR11MB4333B89CD568C6B66C8C60E3FA770@MN2PR11MB4333.namprd11.prod.outlook.com>
- <20191113154007.GJ10875@lunn.ch>
-In-Reply-To: <20191113154007.GJ10875@lunn.ch>
+ 15.20.2451.23; Wed, 13 Nov 2019 16:01:39 +0000
+Received: from VI1PR04MB4880.eurprd04.prod.outlook.com
+ ([fe80::9470:d3aa:b0e0:9a9b]) by VI1PR04MB4880.eurprd04.prod.outlook.com
+ ([fe80::9470:d3aa:b0e0:9a9b%6]) with mapi id 15.20.2430.028; Wed, 13 Nov 2019
+ 16:01:39 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     "HEMANT RAMDASI (hramdasi)" <hramdasi@cisco.com>,
+        "Daniel Walker (danielwa)" <danielwa@cisco.com>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Sathish Jarugumalli -X (sjarugum - ARICENT TECHNOLOGIES HOLDINGS
+        LIMITED at Cisco)" <sjarugum@cisco.com>
+Subject: RE: [PATCH net] gianfar: Don't force RGMII mode after reset, use
+ defaults
+Thread-Topic: [PATCH net] gianfar: Don't force RGMII mode after reset, use
+ defaults
+Thread-Index: AQHVmWkzb/KVHeRA/ECvEdv93vqv/qeHvtCAgAACaQCAAAFWgIAAB7IAgAFH0xCAABZzAIAAGbCg
+Date:   Wed, 13 Nov 2019 16:01:39 +0000
+Message-ID: <VI1PR04MB48805B8F4AE80B3E72D14E7B96760@VI1PR04MB4880.eurprd04.prod.outlook.com>
+References: <1573570511-32651-1-git-send-email-claudiu.manoil@nxp.com>
+ <20191112164707.GQ18744@zorba>
+ <E84DB6A8-AB7F-428C-8A90-46A7A982D4BF@cisco.com>
+ <VI1PR04MB4880787A714A9E49A436AD2496770@VI1PR04MB4880.eurprd04.prod.outlook.com>
+ <873EB68B-47CB-44D6-80BD-48DD3F65683B@cisco.com>
+ <VI1PR04MB4880A48175A5FE0F08AB7B2196760@VI1PR04MB4880.eurprd04.prod.outlook.com>
+ <79AEA72F-38A7-447C-812E-4CA31BFC4B55@cisco.com>
+In-Reply-To: <79AEA72F-38A7-447C-812E-4CA31BFC4B55@cisco.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [47.19.18.123]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=claudiu.manoil@nxp.com; 
+x-originating-ip: [212.146.100.6]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7b0ef302-7228-4ec0-9033-08d768525b59
-x-ms-traffictypediagnostic: MN2PR11MB3584:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR11MB35845EB68448B38745BF47F4FA760@MN2PR11MB3584.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2887;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2d634c67-df70-48fc-4d67-08d76852c4b7
+x-ms-traffictypediagnostic: VI1PR04MB4333:
+x-microsoft-antispam-prvs: <VI1PR04MB4333E9B5732D544373B3A05496760@VI1PR04MB4333.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-forefront-prvs: 0220D4B98D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(366004)(396003)(39860400002)(346002)(136003)(199004)(189003)(107886003)(4326008)(66446008)(66476007)(256004)(71200400001)(71190400001)(9686003)(229853002)(55016002)(14454004)(64756008)(76116006)(66066001)(66556008)(6246003)(6436002)(5660300002)(52536014)(66946007)(7736002)(6916009)(476003)(33656002)(7696005)(486006)(76176011)(11346002)(558084003)(446003)(316002)(54906003)(86362001)(478600001)(3846002)(6116002)(25786009)(2906002)(6506007)(8936002)(74316002)(81166006)(102836004)(81156014)(99286004)(26005)(305945005)(186003)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3584;H:MN2PR11MB4333.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(396003)(136003)(376002)(39860400002)(189003)(199004)(13464003)(3846002)(33656002)(316002)(81156014)(25786009)(81166006)(8676002)(229853002)(6436002)(6116002)(71200400001)(71190400001)(110136005)(54906003)(99286004)(2906002)(9686003)(6246003)(8936002)(14444005)(256004)(305945005)(74316002)(7736002)(55016002)(4326008)(4744005)(11346002)(446003)(44832011)(476003)(102836004)(52536014)(186003)(26005)(6506007)(7696005)(5660300002)(76176011)(66946007)(66476007)(66556008)(64756008)(66066001)(66446008)(14454004)(478600001)(486006)(86362001)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR04MB4333;H:VI1PR04MB4880.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fIJICtbzE3JrzAmqM0kFWc/eopkA8XeUKV2pDvn9lSaMUG8fnZAiEajUAjHHspox5bfcYiXgOjItOvbqHnhOOWbfyErbFcT6bbGhkQVTcNe6tdDV4lDk5wCZQQufhXeN4Liv05amjla+QnWGtxdA4iOm6aGWGtNMvfoNGLGcIN/IdQQxETeKzNSjGJF6MwgbAJDYh3FtbCm2SiCUe1jcOkVrkVWpWin/+epnVPDAm6j56ccuCnyTYkOP5SxTYDINGk7JWWHJfQR2tpFKLfv/FfrJieZstaAVJS2E35zoCvvUTiE7jhG+MN67xY983+LIH8PYxkwhLpVM/8n+2fPWicO8W2V4k8r/xQDuKKpOmSEyYiC+qQTL/RGq0O7d9kuVPKwh+Jc1cxc2gbCi5WllQ1Uj20ZQWkrqOMkawx1YBStE9y3OSMzJ9EdiJO6Px8Bb
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: VRHAjGUSnAuv/q6DdKtLDZqCRfVQvph7UVoT4UjPxljn01iB9akMVBR6TA+W4sEeQqXyQ3u6r4CxaH5mdzpb2LPjTxUppJ0Z12MuJFFVE9/lzMM2NOhxF3qcHxVMoJtVGMnh8S0BZeJkMmLTlaKteovYIuqf9W9e9l3292EHi5ZWTfXu0bTJfxNtZBR1JZ+is7g4IG8pi4vobAbtF4980/VxT4/xR8H7IvH/nIq2Ygh+jzaM4ARjzZHxJapeHwcDgN29yLP+TA7ge3ZpuEoFF4aoakZEirBm7HlBiZ2JbKui3aKHtIB1WQnkgHEolfesWZo7iIHwBbhXPLJDC6NJyBPnDV2HrDGp13uENLWZJRYX0UwwJhBNSbRZ8c8AnEmL9b7HWjG5H/+PNdaksSBZ+c2KhH69WWLe4CoJ0p3K6/dNrTnhjbVdVhD/oZXOGElJ
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b0ef302-7228-4ec0-9033-08d768525b59
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 15:58:42.4728
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d634c67-df70-48fc-4d67-08d76852c4b7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 16:01:39.1709
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +rSNI488zA6BTfGmaoYxGq/VIwfUbsFU7lOriMmLsAkYi/W5S2BriaSYXEUWG9j8pJPDyp6Tp2CZ8m8i72wrVD6eSDL2Nc9m+smBfm9XvGs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3584
+X-MS-Exchange-CrossTenant-userprincipalname: 3YkDOEQ5DScoCe7rVmUyXT5f5MCOx3PFMdd4ALkwNpPSpOfSU3nqtXLSXYD6086OC+9SgeVt2765/dEjGllZYw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4333
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Bryan
->=20
-> You could add a WARN_ON(phydev->drv->phy_id_mask & 0xf); That should
-> catch any new PHY breaking the assumption.
->=20
->     Andrew
-
-Good idea, Thanks Andrew
-
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSEVNQU5UIFJBTURBU0kgKGhyYW1k
+YXNpKSA8aHJhbWRhc2lAY2lzY28uY29tPg0KWy4uXQ0KPg0KPj4+IFRoaXMgYml0IG11c3QgYmUg
+c2V0IHdoZW4gaW4gaGFsZi1kdXBsZXggbW9kZSAoTUFDQ0ZHMltGdWxsX0R1cGxleF0gaXMgY2xl
+YXJlZCkuDQo+Pg0KPj4gU2hvdWxkIHRoZSBiaXQgYmUgY2xlYXIgd2hlbiBpbiBmdWxsIGR1cGxl
+eCBvciBpdCBkb2VzIG5vdCBtYXR0ZXI/DQo+Pg0KPg0KPj4gRnJvbSBteSB0ZXN0cywgaW4gZnVs
+bCBkdXBsZXggbW9kZSBzbWFsbCBmcmFtZXMgd29uJ3QgZ2V0IHBhZGRlZCBpZiB0aGlzIGJpdCBp
+cyBkaXNhYmxlZCwNCj4+IGFuZCB3aWxsIGJlIGNvdW50ZWQgYXMgdW5kZXJzaXplIGZyYW1lcyBh
+bmQgZHJvcHBlZC4gU28gdGhpcyBiaXQgbmVlZHMgdG8gYmUgc2V0DQo+PiBpbiBmdWxsIGR1cGxl
+eCBtb2RlIHRvIGdldCBwYWNrZXRzIHNtYWxsZXIgdGhhbiA2NEIgcGFzdCB0aGUgTUFDICh3L28g
+c29mdHdhcmUgcGFkZGluZykuDQo+DQo+VGhpcyBpcyBsaXR0bGUgc3RyYW5nZSBhcyB3ZSBkbyBu
+b3Qgc2VlIHRoaXMgcHJvYmxlbSBvbiBhbGwgcGt0IHR5cGUsIGljbXAgcGFzc2VzDQo+d2VsbCBh
+bmQgd2Ugb2JzZXJ2ZWQgaXNzdWUgd2l0aCB0ZnRwIGFjay4NCg0KSSB0ZXN0ZWQgb24gYSAxR2Jp
+dCAoZnVsbCBkdXBsZXgpIGxpbmssIGFuZCBBUlAgYW5kIHNtYWxsIElDTVAgaXB2NCBwYWNrZXRz
+IHdlcmUgbm90IHBhc3NpbmcNCndpdGggdGhlIFBBRF9DUkMgYml0IGRpc2FibGVkLg0K
