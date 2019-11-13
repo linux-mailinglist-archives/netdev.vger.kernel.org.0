@@ -2,112 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F01EFAB9E
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:03:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7378FFABCD
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:10:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727128AbfKMID4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 03:03:56 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40519 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725976AbfKMID4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:03:56 -0500
-Received: by mail-wr1-f65.google.com with SMTP id i10so1172786wrs.7
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 00:03:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7TQHGsN3mozrWFIJwAEDpbojgUjtHC/Hf8HJqYnnYPE=;
-        b=sf/xpIwonLjUmRgpNpsvWQWuucv7CBFGwgLGp9i7Od3UCF4uIEp5XlNIgKGKxVlaO9
-         9duxaim1tjG/coKaFAXeARAgY9ggYS0+vi6i/aSgJAmWJHFi0bgenlyy/684DJv1KYnH
-         OYZ5g3CnzTHeFE8x39LNyYHdsFM/i8V1N4PRci/EDo8gJYcq2XT5Mhcw4aoq7BBiv0mu
-         Y7C3cLpEV68FzRJ2mIiucc4Vzi0NeDHTLT7xZgGFAO7AE+8v9iabiT78cyLDF3gS9cCO
-         irl2SjOXBEGwvTNZdb3//ovWGI1pvNI013ulACq6L41QMwB5gHv7AA65ImGSrtsBb4Ck
-         +3/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7TQHGsN3mozrWFIJwAEDpbojgUjtHC/Hf8HJqYnnYPE=;
-        b=qb/KwcsX1vO1jNYzkTN9IChVfXAdcxIvVaZLSr/etq79ivbaw4XLvYZ/rnv08N23rk
-         epR7EWYjccjO/URi+/RIsUbYZ9Gk4fJZS7xuC85pfIZB2lw2sUlvLOILMy80vq1qOEDy
-         yJiD3wFsMBJUI3D5O+szSvBu+cpmzuA9UngTieWcQRq5I/VnjK3RyzLGTruCdB1TMEfn
-         7YpfErZM74b4YTHHbOEUQwkXGH+gr5OrjQUXDZImgzXaSPNSxZRAEAz1bSx25BtL6pQs
-         oRd7KiFrZQvYfrb74XrKS8DycYlehenEVC3qCWG22mIERNwAlVvgfgtHmaclhvfClu7m
-         9yrw==
-X-Gm-Message-State: APjAAAUsxwxfJm/urGwU8GYUnOMIOuzQq26cKaCJWpgl/PgVJmhDAx59
-        pARyRa+zSARVJm88CG08RBwhLER4Gsg=
-X-Google-Smtp-Source: APXvYqz19ITCrhNm12KQaRjjuBS6cV3qt+ZwY+fHWtfYVHoSjqBmjJp0ZuZV63CNjOGEUR2aM1IMMQ==
-X-Received: by 2002:adf:fe8d:: with SMTP id l13mr1562400wrr.287.1573632234649;
-        Wed, 13 Nov 2019 00:03:54 -0800 (PST)
-Received: from netronome.com ([2001:982:756:703:d63d:7eff:fe99:ac9d])
-        by smtp.gmail.com with ESMTPSA id v9sm1760709wrs.95.2019.11.13.00.03.53
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 13 Nov 2019 00:03:54 -0800 (PST)
-Date:   Wed, 13 Nov 2019 09:03:53 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH net v3] dpaa2-eth: free already allocated channels on
- probe defer
-Message-ID: <20191113080352.55gde2wvsrccf2rp@netronome.com>
-References: <1573575712-1366-1-git-send-email-ioana.ciornei@nxp.com>
+        id S1726139AbfKMIKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 03:10:25 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:34888 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725966AbfKMIKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 03:10:25 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 734C4200A7;
+        Wed, 13 Nov 2019 09:10:24 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id HD8klcpCHdRG; Wed, 13 Nov 2019 09:10:24 +0100 (CET)
+Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 057FE200A3;
+        Wed, 13 Nov 2019 09:10:24 +0100 (CET)
+Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
+ (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 13 Nov 2019
+ 09:10:23 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id C137A3180095;
+ Wed, 13 Nov 2019 09:10:21 +0100 (CET)
+Date:   Wed, 13 Nov 2019 09:10:21 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Xiaodong Xu <stid.smth@gmail.com>
+CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <chenborfc@163.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3] xfrm: release device reference for invalid state
+Message-ID: <20191113081021.GV13225@gauss3.secunet.de>
+References: <20191111230546.17105-1-stid.smth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <1573575712-1366-1-git-send-email-ioana.ciornei@nxp.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20191111230546.17105-1-stid.smth@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 06:21:52PM +0200, Ioana Ciornei wrote:
-> The setup_dpio() function tries to allocate a number of channels equal
-> to the number of CPUs online. When there are not enough DPCON objects
-> already probed, the function will return EPROBE_DEFER. When this
-> happens, the already allocated channels are not freed. This results in
-> the incapacity of properly probing the next time around.
-> Fix this by freeing the channels on the error path.
+On Mon, Nov 11, 2019 at 03:05:46PM -0800, Xiaodong Xu wrote:
+> An ESP packet could be decrypted in async mode if the input handler for
+> this packet returns -EINPROGRESS in xfrm_input(). At this moment the device
+> reference in skb is held. Later xfrm_input() will be invoked again to
+> resume the processing.
+> If the transform state is still valid it would continue to release the
+> device reference and there won't be a problem; however if the transform
+> state is not valid when async resumption happens, the packet will be
+> dropped while the device reference is still being held.
+> When the device is deleted for some reason and the reference to this
+> device is not properly released, the kernel will keep logging like:
 > 
-> Fixes: d7f5a9d89a55 ("dpaa2-eth: defer probe on object allocate")
-> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+> unregister_netdevice: waiting for ppp2 to become free. Usage count = 1
+> 
+> The issue is observed when running IPsec traffic over a PPPoE device based
+> on a bridge interface. By terminating the PPPoE connection on the server
+> end for multiple times, the PPPoE device on the client side will eventually
+> get stuck on the above warning message.
+> 
+> This patch will check the async mode first and continue to release device
+> reference in async resumption, before it is dropped due to invalid state.
+> 
+> v2: Do not assign address family from outer_mode in the transform if the
+> state is invalid
+> 
+> v3: Release device reference in the error path instead of jumping to resume
+> 
+> Fixes: 4ce3dbe397d7b ("xfrm: Fix xfrm_input() to verify state is valid when (encap_type < 0)")
+> Signed-off-by: Xiaodong Xu <stid.smth@gmail.com>
+> Reported-by: Bo Chen <chenborfc@163.com>
+> Tested-by: Bo Chen <chenborfc@163.com>
 
-Thanks for the update,
-
-Reviewed-by: Simon Horman <simon.horman@netronome.com>
-
-> ---
-> Changes in v2:
->  - add the proper Fixes tag
-> Changes in v3:
->  - cleanup should be done only on EPROBE_DEFER
-> 
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> index 19379bae0144..bf5add954181 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-> @@ -2232,8 +2232,16 @@ static int setup_dpio(struct dpaa2_eth_priv *priv)
->  err_service_reg:
->  	free_channel(priv, channel);
->  err_alloc_ch:
-> -	if (err == -EPROBE_DEFER)
-> +	if (err == -EPROBE_DEFER) {
-> +		for (i = 0; i < priv->num_channels; i++) {
-> +			channel = priv->channel[i];
-> +			nctx = &channel->nctx;
-> +			dpaa2_io_service_deregister(channel->dpio, nctx, dev);
-> +			free_channel(priv, channel);
-> +		}
-> +		priv->num_channels = 0;
->  		return err;
-> +	}
->  
->  	if (cpumask_empty(&priv->dpio_cpumask)) {
->  		dev_err(dev, "No cpu with an affine DPIO/DPCON\n");
-> -- 
-> 1.9.1
-> 
+Patch applied, thanks a lot!
