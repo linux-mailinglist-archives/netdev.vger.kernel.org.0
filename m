@@ -2,104 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABD24FAE2C
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:12:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBA6DFAE34
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:12:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727341AbfKMKMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:12:08 -0500
-Received: from mail-eopbgr130052.outbound.protection.outlook.com ([40.107.13.52]:21476
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        id S1727514AbfKMKMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:12:21 -0500
+Received: from mx2.suse.de ([195.135.220.15]:39804 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726389AbfKMKMH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 05:12:07 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iTmOlhYq8XKrrDGOdoobSaTVbzD/sk1bvQUxsXOR9EtnaCv1ZKZrlqI3N3K4XVtyjWslJbdFKZKNisbn9xh0pDlCA+PiboJlab5JmuQV5vi02lGwFrqNje6A5OOAiQmFnnbFhTFD364Ce7DuK8Kf6GKXI7W9jik003UqXXsJmlmIJka8UczAn4urZpspIEYv8jKxSjWrzrWc4w4le5m2LDqlSensn2lNExJRaKfonsAfvUTWhHaEaYJtzIDYjwgoer/6NBz9KuqexgHz9nGTNtW46vfSIrh7qANadu/djnDR2SHF9itaN0sXztdzE7MXk/ipbSGsocHCcMHlXLlLnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MA3ZSU7fuZmWEpyA6UpN2D9hyZDNkEvrH5KnrHSqU1o=;
- b=m7QoMWFdkbKWKnGwmnwHGFmHeiZGT3YPGJv7m7TLbc3nwJMqkHJaPBl38SeLUMLlcnUhxRkQBvLQIgIzVVhhieUIZpndU6JqFJRqMszsuRCFyh64bqXmuCxgxzm0tjZ67ZQiMxqZfwLCm5s+BNKo/CIgJzG+tstUnKSbigRvnP4dPVQqhKl3DRtvXelVsNpvkelYokKKDIXZQ0lSN6o/ey5e+4GAoVNrvOFCDxv02f8dRQ08RcSItytZQ/w1RLtRX+MYk7Oe7CuMQeOU5wtaf5EgS7xX3Va1kjuFnaP6/dFRaufVTMKjsoz4d2flb1v5pp1ZmUnRiuWmR3e9XIyKTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MA3ZSU7fuZmWEpyA6UpN2D9hyZDNkEvrH5KnrHSqU1o=;
- b=nqqA5XNrCUomP+Z32p23MNpjlZOMTD8+FJQVXMhgcGDtSk3uvirux2iRwniZ4EzvfiQO9DgHSMp5BSUq/pFPHR6MxzBWm/jBvWo34SDq9YUMNOogFsHz9arDkC4DSUVnaeujjwMyGfcs+gew3nP7X/WAMk8WSjca78BZi2HVeLQ=
-Received: from AM6PR05MB4198.eurprd05.prod.outlook.com (52.135.161.31) by
- AM6PR05MB5588.eurprd05.prod.outlook.com (20.177.118.97) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2430.24; Wed, 13 Nov 2019 10:12:04 +0000
-Received: from AM6PR05MB4198.eurprd05.prod.outlook.com
- ([fe80::8435:9f63:f8da:650e]) by AM6PR05MB4198.eurprd05.prod.outlook.com
- ([fe80::8435:9f63:f8da:650e%7]) with mapi id 15.20.2430.027; Wed, 13 Nov 2019
- 10:12:03 +0000
-From:   Roi Dayan <roid@mellanox.com>
-To:     David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Eli Britstein <elibr@mellanox.com>
-Subject: Re: [PATCH iproute2-next 0/8] flower match support for masked ports
-Thread-Topic: [PATCH iproute2-next 0/8] flower match support for masked ports
-Thread-Index: AQHVmWjZ7rCBy79pO0ySMtRawFRdgqeH81QAgADvbIA=
-Date:   Wed, 13 Nov 2019 10:12:03 +0000
-Message-ID: <dbf574d1-4803-efbc-3670-33f9ddf9b5f4@mellanox.com>
-References: <20191112145154.145289-1-roid@mellanox.com>
- <2dca1929-15a6-d7ff-c8b1-c2605bed6b2c@gmail.com>
-In-Reply-To: <2dca1929-15a6-d7ff-c8b1-c2605bed6b2c@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [193.47.165.251]
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
-x-clientproxiedby: AM3PR05CA0086.eurprd05.prod.outlook.com
- (2603:10a6:207:1::12) To AM6PR05MB4198.eurprd05.prod.outlook.com
- (2603:10a6:209:40::31)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=roid@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a103ce25-1ab5-4990-a05b-08d76821ee38
-x-ms-traffictypediagnostic: AM6PR05MB5588:|AM6PR05MB5588:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB55886C5D4A1140750A951F1BB5760@AM6PR05MB5588.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2043;
-x-forefront-prvs: 0220D4B98D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(346002)(39860400002)(396003)(366004)(199004)(189003)(6116002)(476003)(11346002)(4326008)(58126008)(26005)(316002)(4744005)(6246003)(4001150100001)(3846002)(31696002)(478600001)(386003)(99286004)(102836004)(7736002)(6506007)(14454004)(446003)(52116002)(8936002)(2616005)(486006)(25786009)(31686004)(53546011)(305945005)(36756003)(66946007)(229853002)(54906003)(186003)(86362001)(8676002)(256004)(6486002)(71190400001)(2906002)(6436002)(71200400001)(107886003)(6512007)(76176011)(110136005)(5660300002)(65806001)(2501003)(65956001)(81166006)(81156014)(66476007)(66556008)(64756008)(66446008)(66066001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5588;H:AM6PR05MB4198.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: QDDP23JqJ0kB0UT2o+nDb4e4ZoyMviK2qJJceio6Otcjq4Cb8x1vzRxD70KR2c/s9GS50VitIBFF7WHApsMALk3WTunlgIQZeN3WRobHX1FzkYSMBXRu2x/v06MB8GZInAmODMDNgKsYbJZ+JV8sc3V6GnnmHFvKZq2tBVrQtSM5Q4nxMAhpytWqgjhQALehWawo1O2ky4Ty0DknG422z3zRY2WZml49KR0Li4N2+TackSbdomiAcETgmNvrze+bXDaL/pNvrJRzPho0yCNzh7l85mr6ZSH6O+ZJY/vPSLTmvjEVo2Dfda2sQtYmiYm3GwM9UStnFkoAy3q2yOuG7N+Y+MnPWtioB2V0D2dIDjqeXMk3CVEOxz7VFdg+fAt+cnBdqzmR/1PkEeg9JG2LMk4EXH4ESxZh7GJdbgNb4sProSN/xhy1ECDJ3AbiqxDF
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <29A883D6880E53468A65AC972022DA41@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726389AbfKMKMU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 05:12:20 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 826B9B3ED;
+        Wed, 13 Nov 2019 10:12:15 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id CA3AA1E1498; Wed, 13 Nov 2019 11:12:10 +0100 (CET)
+Date:   Wed, 13 Nov 2019 11:12:10 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf <bpf@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 00/23] mm/gup: track dma-pinned pages: FOLL_PIN,
+ FOLL_LONGTERM
+Message-ID: <20191113101210.GD6367@quack2.suse.cz>
+References: <20191112000700.3455038-1-jhubbard@nvidia.com>
+ <20191112203802.GD5584@ziepe.ca>
+ <02fa935c-3469-b766-b691-5660084b60b9@nvidia.com>
+ <CAKMK7uHvk+ti00mCCF2006U003w1dofFg9nSfmZ4bS2Z2pEDNQ@mail.gmail.com>
+ <7b671bf9-4d94-f2cc-8453-863acd5a1115@nvidia.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a103ce25-1ab5-4990-a05b-08d76821ee38
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 10:12:03.8690
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: b1G5eSQP4hZNvI2dbpSHYBAEta7sdlfYvsHLZQfq19qMSyDS1mhc6aMkR4EuyHmcIvwXhtc0wbrCWxh6b2zzrA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5588
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7b671bf9-4d94-f2cc-8453-863acd5a1115@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDIwMTktMTEtMTIgOTo1NSBQTSwgRGF2aWQgQWhlcm4gd3JvdGU6DQo+IE9uIDExLzEy
-LzE5IDc6NTEgQU0sIFJvaSBEYXlhbiB3cm90ZToNCj4+IEhpLA0KPj4NCj4+IFRoaXMgc2VyaWVz
-IGlzIGZvciBhZGRpbmcgc3VwcG9ydCBmb3IgZmxvd2VyIG1hdGNoIG9uIG1hc2tlZA0KPj4gc3Jj
-L2RzdCBwb3J0cy4NCj4+DQo+PiBGaXJzdCBjb21taXRzIGFyZSBwcmVwYXJhdGlvbnMgYW5kIGZp
-eGluZyB0b3MgYW5kIHR0bCBvdXRwdXQuDQo+PiBMYXN0IDMgY29tbWl0cyBhZGQgc3VwcG9ydCBm
-b3IgbWFza2VkIHNyYy9kc3QgcG9ydC4NCj4gDQo+IFNlZW1zIGxpa2UgdGhlIGJ1ZyBmaXhlcyBw
-YXRjaGVzIHNob3VsZCBnbyB0byBtYXN0ZXIuDQo+IA0KPiBTZW5kIHRob3NlIHNlcGFyYXRlbHks
-IG9uY2UgY29tbWl0dGVkIEkgY2FuIG1lcmdlIG1hc3RlciB0byBuZXh0IGFuZA0KPiB0aGVuIHlv
-dSBjYW4gcmUtc2VuZCB0aGUgcmVtYWluaW5nIHBhdGNoZXMuDQo+IA0KDQpvayB0aGFua3MNCg0K
+On Wed 13-11-19 01:02:02, John Hubbard wrote:
+> On 11/13/19 12:22 AM, Daniel Vetter wrote:
+> ...
+> > > > Why are we doing this? I think things got confused here someplace, as
+> > > 
+> > > 
+> > > Because:
+> > > 
+> > > a) These need put_page() calls,  and
+> > > 
+> > > b) there is no put_pages() call, but there is a release_pages() call that
+> > > is, arguably, what put_pages() would be.
+> > > 
+> > > 
+> > > > the comment still says:
+> > > > 
+> > > > /**
+> > > >   * put_user_page() - release a gup-pinned page
+> > > >   * @page:            pointer to page to be released
+> > > >   *
+> > > >   * Pages that were pinned via get_user_pages*() must be released via
+> > > >   * either put_user_page(), or one of the put_user_pages*() routines
+> > > >   * below.
+> > > 
+> > > 
+> > > Ohhh, I missed those comments. They need to all be changed over to
+> > > say "pages that were pinned via pin_user_pages*() or
+> > > pin_longterm_pages*() must be released via put_user_page*()."
+> > > 
+> > > The get_user_pages*() pages must still be released via put_page.
+> > > 
+> > > The churn is due to a fairly significant change in strategy, whis
+> > > is: instead of changing all get_user_pages*() sites to call
+> > > put_user_page(), change selected sites to call pin_user_pages*() or
+> > > pin_longterm_pages*(), plus put_user_page().
+> > 
+> > Can't we call this unpin_user_page then, for some symmetry? Or is that
+> > even more churn?
+> > 
+> > Looking from afar the naming here seems really confusing.
+> 
+> 
+> That look from afar is valuable, because I'm too close to the problem to see
+> how the naming looks. :)
+> 
+> unpin_user_page() sounds symmetrical. It's true that it would cause more
+> churn (which is why I started off with a proposal that avoids changing the
+> names of put_user_page*() APIs). But OTOH, the amount of churn is proportional
+> to the change in direction here, and it's really only 10 or 20 lines changed,
+> in the end.
+> 
+> So I'm open to changing to that naming. It would be nice to hear what others
+> prefer, too...
+
+FWIW I'd find unpin_user_page() also better than put_user_page() as a
+counterpart to pin_user_pages().
+
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
