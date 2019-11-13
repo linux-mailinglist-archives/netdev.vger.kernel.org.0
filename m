@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0322FB35B
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 324CAFB35E
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:13:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727915AbfKMPMW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 10:12:22 -0500
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:51218 "EHLO
+        id S1728129AbfKMPNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 10:13:04 -0500
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:51248 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726957AbfKMPMV (ORCPT
+        by vger.kernel.org with ESMTP id S1727550AbfKMPMV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:12:21 -0500
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 23FA0C0E95;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 38E03C0E98;
         Wed, 13 Nov 2019 15:12:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1573657941; bh=BDukAyowAZk0E3mYeClr0pY7CNQPO/82dQMmXYYRMf4=;
+        t=1573657941; bh=jjICtN6nRPvjHGBNW8f6sLnIxarejkUWdfnGT+fEkhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=gGfeRKLy5OnSABPHpsoRpQ1oNQLxPjzk8yLPClR94JuQq7ZtODaNwFGxiGZrPST1Z
-         bMDToDxnKjNzOlQXS+gAl0yW2nKZsibHY/mw7Bs+6JWXmNO4WT4nNnmucmBrR06ins
-         AFufK4AZwNTmIrjsoA/ErdvDLVQrQi/RsNfMMCHiNLD/g1E5+KCyhzXHPzia2cTvpv
-         u5Vs5zY/mB+9HOnrqiQ2HQXh41NpvtinEV1f5fEe/+O2PutWpUyLnDAOeTUJodw34o
-         dGkwuIfVmrm1TTFdi3ERQ+3UKCSx0E5H9xZJhuBFXmsPSRLP9pmlS8UbmCycGaJZXe
-         93tdULeu7rNpw==
+        b=RffYW4TN54gSvtHNErDOxuzEPR6/DnIaT4qIvG4Z1jzdg0kzB8kOXEroRoYNEPPNh
+         DHY/OLqKtEUbb4/tMUuu822UcQv+BfDeLk66Q1glFxlSsx6gT5RWk27Il8pZDflgEM
+         4f7HNGWeatmrf92VybDNnesbjHnyIRDd1pqJzlMF46p41EJj5NUfxU8jQnjC26IMWC
+         Vah+bJtb/vG53vdZRXa2LF30igCDU+J8hK8S2uVrbteRWiTvTX7RoUs/hJAiZghYpw
+         Wgwe+bLTF19xPBxDWALymorx+WFTld0ncIhQI+vjD0Yytzq9smLT2m9RH6LxeODkIz
+         UrkfjS4o6Xgsw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id CE630A0094;
+        by mailhost.synopsys.com (Postfix) with ESMTP id E3509A0097;
         Wed, 13 Nov 2019 15:12:19 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 6/7] net: stmmac: Tune-up default coalesce settings
-Date:   Wed, 13 Nov 2019 16:12:07 +0100
-Message-Id: <19636d3f37d1a202712e38c85f5a2d9bbbf8781c.1573657592.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next 7/7] net: stmmac: TX Coalesce should be per-packet
+Date:   Wed, 13 Nov 2019 16:12:08 +0100
+Message-Id: <904a2b53a0957f6f82562a73dffb4d69218c99b5.1573657593.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1573657592.git.Jose.Abreu@synopsys.com>
 References: <cover.1573657592.git.Jose.Abreu@synopsys.com>
@@ -53,8 +53,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tune-up the defalt coalesce settings for optimal values. This gives the
-best performance in most of the use-cases.
+TX Coalesce settings are per packet and not per fragment because
+otherwise the coalesce would be different between TSO and non-TSO
+packets.
 
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
@@ -69,24 +70,31 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/common.h | 4 ++--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index 309ea12ea61f..b210e987a1db 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -253,8 +253,8 @@ struct stmmac_safety_stats {
- #define STMMAC_COAL_TX_TIMER	1000
- #define STMMAC_MAX_COAL_TX_TICK	100000
- #define STMMAC_TX_MAX_FRAMES	256
--#define STMMAC_TX_FRAMES	1
--#define STMMAC_RX_FRAMES	25
-+#define STMMAC_TX_FRAMES	25
-+#define STMMAC_RX_FRAMES	0
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 6136ada20c8e..140abfcb54c6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3033,7 +3033,7 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	tx_q->tx_skbuff[tx_q->cur_tx] = skb;
  
- /* Packets types */
- enum packets_types {
+ 	/* Manage tx mitigation */
+-	tx_q->tx_count_frames += nfrags + 1;
++	tx_q->tx_count_frames++;
+ 	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
+ 	    !((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+ 	      priv->hwts_tx_en)) {
+@@ -3241,7 +3241,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	 * This approach takes care about the fragments: desc is the first
+ 	 * element in case of no SG.
+ 	 */
+-	tx_q->tx_count_frames += nfrags + 1;
++	tx_q->tx_count_frames++;
+ 	if (likely(priv->tx_coal_frames > tx_q->tx_count_frames) &&
+ 	    !((skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+ 	      priv->hwts_tx_en)) {
 -- 
 2.7.4
 
