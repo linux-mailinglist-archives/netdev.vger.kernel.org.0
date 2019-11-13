@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24306FAFC7
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 12:34:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5033FFAFC8
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 12:34:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727763AbfKMLeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 06:34:05 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:50388 "EHLO a.mx.secunet.com"
+        id S1727888AbfKMLeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 06:34:07 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:50384 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727567AbfKMLeF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726105AbfKMLeF (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 13 Nov 2019 06:34:05 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 3102520581;
+        by a.mx.secunet.com (Postfix) with ESMTP id 18A3F20591;
         Wed, 13 Nov 2019 12:34:04 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id HuPag4u4-vgA; Wed, 13 Nov 2019 12:34:03 +0100 (CET)
+        with ESMTP id gb4KB7eRQXay; Wed, 13 Nov 2019 12:34:03 +0100 (CET)
 Received: from mail-essen-01.secunet.de (mail-essen-01.secunet.de [10.53.40.204])
         (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id B1BFF205A4;
+        by a.mx.secunet.com (Postfix) with ESMTPS id A604D2058E;
         Wed, 13 Nov 2019 12:34:03 +0100 (CET)
 Received: from gauss2.secunet.de (10.182.7.193) by mail-essen-01.secunet.de
  (10.53.40.204) with Microsoft SMTP Server id 14.3.439.0; Wed, 13 Nov 2019
  12:34:03 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 9DA7631801A7;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id A2335318017F;
  Wed, 13 Nov 2019 12:34:01 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: pull request (net-next): ipsec-next 2019-11-13
-Date:   Wed, 13 Nov 2019 12:33:56 +0100
-Message-ID: <20191113113358.4740-1-steffen.klassert@secunet.com>
+Subject: [PATCH 1/2] xfrm: remove the unnecessary .net_exit for xfrmi
+Date:   Wed, 13 Nov 2019 12:33:57 +0100
+Message-ID: <20191113113358.4740-2-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191113113358.4740-1-steffen.klassert@secunet.com>
+References: <20191113113358.4740-1-steffen.klassert@secunet.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
@@ -45,36 +47,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1) Remove a unnecessary net_exit function from the xfrm interface.
-   From Xin Long.
+From: Xin Long <lucien.xin@gmail.com>
 
-2) Assign xfrm4_udp_encap_rcv to a UDP socket only if xfrm
-   is configured. From Alexey Dobriyan.
+The xfrm_if(s) on each netns can be deleted when its xfrmi dev is
+deleted. xfrmi dev's removal can happen when:
 
-Please pull or let me know if there are problems.
+  a. netns is being removed and all xfrmi devs will be deleted.
 
-Thanks!
+  b. rtnl_link_unregister(&xfrmi_link_ops) in xfrmi_fini() when
+     xfrm_interface.ko is being unloaded.
 
-The following changes since commit 02dc96ef6c25f990452c114c59d75c368a1f4c8f:
+So there's no need to use xfrmi_exit_net() to clean any xfrm_if up.
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2019-09-28 17:47:33 -0700)
+v1->v2:
+  - Fix some changelog.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
-
-for you to fetch changes up to fd1ac07f3f17fbbc2f08e3b43951bed937d86a7b:
-
-  xfrm: ifdef setsockopt(UDP_ENCAP_ESPINUDP/UDP_ENCAP_ESPINUDP_NON_IKE) (2019-10-09 06:55:32 +0200)
-
-----------------------------------------------------------------
-Alexey Dobriyan (1):
-      xfrm: ifdef setsockopt(UDP_ENCAP_ESPINUDP/UDP_ENCAP_ESPINUDP_NON_IKE)
-
-Xin Long (1):
-      xfrm: remove the unnecessary .net_exit for xfrmi
-
- include/net/xfrm.h        |  7 -------
- net/ipv4/udp.c            |  2 ++
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+---
  net/xfrm/xfrm_interface.c | 23 -----------------------
- 3 files changed, 2 insertions(+), 30 deletions(-)
+ 1 file changed, 23 deletions(-)
+
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 2ab4859df55a..fb4d1f99b0a7 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -732,30 +732,7 @@ static struct rtnl_link_ops xfrmi_link_ops __read_mostly = {
+ 	.get_link_net	= xfrmi_get_link_net,
+ };
+ 
+-static void __net_exit xfrmi_destroy_interfaces(struct xfrmi_net *xfrmn)
+-{
+-	struct xfrm_if *xi;
+-	LIST_HEAD(list);
+-
+-	xi = rtnl_dereference(xfrmn->xfrmi[0]);
+-	if (!xi)
+-		return;
+-
+-	unregister_netdevice_queue(xi->dev, &list);
+-	unregister_netdevice_many(&list);
+-}
+-
+-static void __net_exit xfrmi_exit_net(struct net *net)
+-{
+-	struct xfrmi_net *xfrmn = net_generic(net, xfrmi_net_id);
+-
+-	rtnl_lock();
+-	xfrmi_destroy_interfaces(xfrmn);
+-	rtnl_unlock();
+-}
+-
+ static struct pernet_operations xfrmi_net_ops = {
+-	.exit = xfrmi_exit_net,
+ 	.id   = &xfrmi_net_id,
+ 	.size = sizeof(struct xfrmi_net),
+ };
+-- 
+2.17.1
+
