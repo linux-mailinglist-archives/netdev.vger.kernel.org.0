@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9217FAED5
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0756FAEEB
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:50:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727641AbfKMKt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:49:26 -0500
-Received: from mx2.suse.de ([195.135.220.15]:33058 "EHLO mx1.suse.de"
+        id S1727746AbfKMKu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:50:28 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33800 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726138AbfKMKtZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 05:49:25 -0500
+        id S1727432AbfKMKu1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 05:50:27 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id B5441B20D;
-        Wed, 13 Nov 2019 10:49:20 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 91AAEB320;
+        Wed, 13 Nov 2019 10:50:23 +0000 (UTC)
 Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 1B6A71E1498; Wed, 13 Nov 2019 11:49:20 +0100 (CET)
-Date:   Wed, 13 Nov 2019 11:49:20 +0100
+        id 550261E1498; Wed, 13 Nov 2019 11:50:23 +0100 (CET)
+Date:   Wed, 13 Nov 2019 11:50:23 +0100
 From:   Jan Kara <jack@suse.cz>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -49,193 +49,86 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
         linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 04/23] mm: devmap: refactor 1-based refcounting for
- ZONE_DEVICE pages
-Message-ID: <20191113104920.GF6367@quack2.suse.cz>
+Subject: Re: [PATCH v4 03/23] mm/gup: move try_get_compound_head() to top,
+ fix minor issues
+Message-ID: <20191113105023.GG6367@quack2.suse.cz>
 References: <20191113042710.3997854-1-jhubbard@nvidia.com>
- <20191113042710.3997854-5-jhubbard@nvidia.com>
+ <20191113042710.3997854-4-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191113042710.3997854-5-jhubbard@nvidia.com>
+In-Reply-To: <20191113042710.3997854-4-jhubbard@nvidia.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 12-11-19 20:26:51, John Hubbard wrote:
-> An upcoming patch changes and complicates the refcounting and
-> especially the "put page" aspects of it. In order to keep
-> everything clean, refactor the devmap page release routines:
+On Tue 12-11-19 20:26:50, John Hubbard wrote:
+> An upcoming patch uses try_get_compound_head() more widely,
+> so move it to the top of gup.c.
 > 
-> * Rename put_devmap_managed_page() to page_is_devmap_managed(),
->   and limit the functionality to "read only": return a bool,
->   with no side effects.
+> Also fix a tiny spelling error and a checkpatch.pl warning.
 > 
-> * Add a new routine, put_devmap_managed_page(), to handle checking
->   what kind of page it is, and what kind of refcount handling it
->   requires.
-> 
-> * Rename __put_devmap_managed_page() to free_devmap_managed_page(),
->   and limit the functionality to unconditionally freeing a devmap
->   page.
-> 
-> This is originally based on a separate patch by Ira Weiny, which
-> applied to an early version of the put_user_page() experiments.
-> Since then, Jérôme Glisse suggested the refactoring described above.
-> 
-> Suggested-by: Jérôme Glisse <jglisse@redhat.com>
-> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 
-Looks good to me. You can add:
+Looks good. You can add:
 
 Reviewed-by: Jan Kara <jack@suse.cz>
 
 								Honza
 
 > ---
->  include/linux/mm.h | 27 ++++++++++++++++---
->  mm/memremap.c      | 67 ++++++++++++++++++++--------------------------
->  2 files changed, 53 insertions(+), 41 deletions(-)
+>  mm/gup.c | 29 +++++++++++++++--------------
+>  1 file changed, 15 insertions(+), 14 deletions(-)
 > 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index a2adf95b3f9c..96228376139c 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -967,9 +967,10 @@ static inline bool is_zone_device_page(const struct page *page)
->  #endif
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 199da99e8ffc..933524de6249 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -29,6 +29,21 @@ struct follow_page_context {
+>  	unsigned int page_mask;
+>  };
 >  
->  #ifdef CONFIG_DEV_PAGEMAP_OPS
-> -void __put_devmap_managed_page(struct page *page);
-> +void free_devmap_managed_page(struct page *page);
->  DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
-> -static inline bool put_devmap_managed_page(struct page *page)
-> +
-> +static inline bool page_is_devmap_managed(struct page *page)
->  {
->  	if (!static_branch_unlikely(&devmap_managed_key))
->  		return false;
-> @@ -978,7 +979,6 @@ static inline bool put_devmap_managed_page(struct page *page)
->  	switch (page->pgmap->type) {
->  	case MEMORY_DEVICE_PRIVATE:
->  	case MEMORY_DEVICE_FS_DAX:
-> -		__put_devmap_managed_page(page);
->  		return true;
->  	default:
->  		break;
-> @@ -986,6 +986,27 @@ static inline bool put_devmap_managed_page(struct page *page)
->  	return false;
->  }
->  
-> +static inline bool put_devmap_managed_page(struct page *page)
+> +/*
+> + * Return the compound head page with ref appropriately incremented,
+> + * or NULL if that failed.
+> + */
+> +static inline struct page *try_get_compound_head(struct page *page, int refs)
 > +{
-> +	bool is_devmap = page_is_devmap_managed(page);
+> +	struct page *head = compound_head(page);
 > +
-> +	if (is_devmap) {
-> +		int count = page_ref_dec_return(page);
-> +
-> +		/*
-> +		 * devmap page refcounts are 1-based, rather than 0-based: if
-> +		 * refcount is 1, then the page is free and the refcount is
-> +		 * stable because nobody holds a reference on the page.
-> +		 */
-> +		if (count == 1)
-> +			free_devmap_managed_page(page);
-> +		else if (!count)
-> +			__put_page(page);
-> +	}
-> +
-> +	return is_devmap;
+> +	if (WARN_ON_ONCE(page_ref_count(head) < 0))
+> +		return NULL;
+> +	if (unlikely(!page_cache_add_speculative(head, refs)))
+> +		return NULL;
+> +	return head;
 > +}
 > +
->  #else /* CONFIG_DEV_PAGEMAP_OPS */
->  static inline bool put_devmap_managed_page(struct page *page)
->  {
-> diff --git a/mm/memremap.c b/mm/memremap.c
-> index 03ccbdfeb697..bc7e2a27d025 100644
-> --- a/mm/memremap.c
-> +++ b/mm/memremap.c
-> @@ -410,48 +410,39 @@ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
->  EXPORT_SYMBOL_GPL(get_dev_pagemap);
->  
->  #ifdef CONFIG_DEV_PAGEMAP_OPS
-> -void __put_devmap_managed_page(struct page *page)
-> +void free_devmap_managed_page(struct page *page)
->  {
-> -	int count = page_ref_dec_return(page);
-> +	/* Clear Active bit in case of parallel mark_page_accessed */
-> +	__ClearPageActive(page);
-> +	__ClearPageWaiters(page);
-> +
-> +	mem_cgroup_uncharge(page);
->  
->  	/*
-> -	 * If refcount is 1 then page is freed and refcount is stable as nobody
-> -	 * holds a reference on the page.
-> +	 * When a device_private page is freed, the page->mapping field
-> +	 * may still contain a (stale) mapping value. For example, the
-> +	 * lower bits of page->mapping may still identify the page as
-> +	 * an anonymous page. Ultimately, this entire field is just
-> +	 * stale and wrong, and it will cause errors if not cleared.
-> +	 * One example is:
-> +	 *
-> +	 *  migrate_vma_pages()
-> +	 *    migrate_vma_insert_page()
-> +	 *      page_add_new_anon_rmap()
-> +	 *        __page_set_anon_rmap()
-> +	 *          ...checks page->mapping, via PageAnon(page) call,
-> +	 *            and incorrectly concludes that the page is an
-> +	 *            anonymous page. Therefore, it incorrectly,
-> +	 *            silently fails to set up the new anon rmap.
-> +	 *
-> +	 * For other types of ZONE_DEVICE pages, migration is either
-> +	 * handled differently or not done at all, so there is no need
-> +	 * to clear page->mapping.
->  	 */
-> -	if (count == 1) {
-> -		/* Clear Active bit in case of parallel mark_page_accessed */
-> -		__ClearPageActive(page);
-> -		__ClearPageWaiters(page);
-> -
-> -		mem_cgroup_uncharge(page);
-> -
-> -		/*
-> -		 * When a device_private page is freed, the page->mapping field
-> -		 * may still contain a (stale) mapping value. For example, the
-> -		 * lower bits of page->mapping may still identify the page as
-> -		 * an anonymous page. Ultimately, this entire field is just
-> -		 * stale and wrong, and it will cause errors if not cleared.
-> -		 * One example is:
-> -		 *
-> -		 *  migrate_vma_pages()
-> -		 *    migrate_vma_insert_page()
-> -		 *      page_add_new_anon_rmap()
-> -		 *        __page_set_anon_rmap()
-> -		 *          ...checks page->mapping, via PageAnon(page) call,
-> -		 *            and incorrectly concludes that the page is an
-> -		 *            anonymous page. Therefore, it incorrectly,
-> -		 *            silently fails to set up the new anon rmap.
-> -		 *
-> -		 * For other types of ZONE_DEVICE pages, migration is either
-> -		 * handled differently or not done at all, so there is no need
-> -		 * to clear page->mapping.
-> -		 */
-> -		if (is_device_private_page(page))
-> -			page->mapping = NULL;
-> +	if (is_device_private_page(page))
-> +		page->mapping = NULL;
->  
-> -		page->pgmap->ops->page_free(page);
-> -	} else if (!count)
-> -		__put_page(page);
-> +	page->pgmap->ops->page_free(page);
+>  /**
+>   * put_user_pages_dirty_lock() - release and optionally dirty gup-pinned pages
+>   * @pages:  array of pages to be maybe marked dirty, and definitely released.
+> @@ -1793,20 +1808,6 @@ static void __maybe_unused undo_dev_pagemap(int *nr, int nr_start,
+>  	}
 >  }
-> -EXPORT_SYMBOL(__put_devmap_managed_page);
-> +EXPORT_SYMBOL(free_devmap_managed_page);
->  #endif /* CONFIG_DEV_PAGEMAP_OPS */
+>  
+> -/*
+> - * Return the compund head page with ref appropriately incremented,
+> - * or NULL if that failed.
+> - */
+> -static inline struct page *try_get_compound_head(struct page *page, int refs)
+> -{
+> -	struct page *head = compound_head(page);
+> -	if (WARN_ON_ONCE(page_ref_count(head) < 0))
+> -		return NULL;
+> -	if (unlikely(!page_cache_add_speculative(head, refs)))
+> -		return NULL;
+> -	return head;
+> -}
+> -
+>  #ifdef CONFIG_ARCH_HAS_PTE_SPECIAL
+>  static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+>  			 unsigned int flags, struct page **pages, int *nr)
 > -- 
 > 2.24.0
 > 
