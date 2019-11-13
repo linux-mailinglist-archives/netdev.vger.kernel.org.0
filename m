@@ -2,818 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3FE6FAC8E
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 10:05:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4BB7FAC83
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 10:04:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbfKMJFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 04:05:12 -0500
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:39347 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727284AbfKMJFM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 04:05:12 -0500
-X-Originating-IP: 86.206.246.123
-Received: from localhost (lfbn-tou-1-421-123.w86-206.abo.wanadoo.fr [86.206.246.123])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 743C2E000C;
-        Wed, 13 Nov 2019 09:05:06 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, linux@armlinux.org.uk
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, andrew@lunn.ch,
-        alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com,
-        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        mparab@cadence.com, piotrs@cadence.com, dkangude@cadence.com,
-        ewanm@cadence.com, arthurm@cadence.com, stevenh@cadence.com
-Subject: [PATCH net-next v3 2/2] net: macb: convert to phylink
-Date:   Wed, 13 Nov 2019 10:00:06 +0100
-Message-Id: <20191113090006.58898-3-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191113090006.58898-1-antoine.tenart@bootlin.com>
-References: <20191113090006.58898-1-antoine.tenart@bootlin.com>
+        id S1727216AbfKMJEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 04:04:51 -0500
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:2292 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726086AbfKMJEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 04:04:51 -0500
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5dcbc7300000>; Wed, 13 Nov 2019 01:04:48 -0800
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 13 Nov 2019 01:04:48 -0800
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 13 Nov 2019 01:04:48 -0800
+Received: from [10.2.160.173] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 13 Nov
+ 2019 09:04:48 +0000
+Subject: Re: [PATCH v3 00/23] mm/gup: track dma-pinned pages: FOLL_PIN,
+ FOLL_LONGTERM
+To:     Daniel Vetter <daniel@ffwll.ch>
+CC:     Jason Gunthorpe <jgg@ziepe.ca>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf <bpf@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        <kvm@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DMA BUFFER SHARING FRAMEWORK" 
+        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20191112000700.3455038-1-jhubbard@nvidia.com>
+ <20191112203802.GD5584@ziepe.ca>
+ <02fa935c-3469-b766-b691-5660084b60b9@nvidia.com>
+ <CAKMK7uHvk+ti00mCCF2006U003w1dofFg9nSfmZ4bS2Z2pEDNQ@mail.gmail.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <7b671bf9-4d94-f2cc-8453-863acd5a1115@nvidia.com>
+Date:   Wed, 13 Nov 2019 01:02:02 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAKMK7uHvk+ti00mCCF2006U003w1dofFg9nSfmZ4bS2Z2pEDNQ@mail.gmail.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1573635888; bh=WuCLw1mNhRSSrQbzE2XtsJC46JZuOt82gJ5Z6A5sU6M=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=qgoX2qy8q+Pz4xwaUpJCPUDYqLc7AOyeowDXx94iSygezEmzpCR7ZZxo0cljsfswu
+         ukE0Cm+f0R483iPntRfn/ABXBRqJdTjYQOd5BMk3/+ahH8sNYpooo8xojMC+j2QKMp
+         YnZN0Muwss41C3UGdYFy5MS6hRmL0789DFptbHHfPd5vitO0CxsRYBJyPt01+pG4cX
+         6cPdl9NwtrthmFzBA5/mOnD1+FGwYZl+/Gsvcsk8njJ9ZjDk+S/T82e3qWgu+CaLxi
+         GAWOKJgmoqYLWXc9CemtInbG0/tG5R+23jPdDf2TY9FLXzVWhi+Ia12J1oxABZoP9Y
+         i24f/CxZw1J0Q==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch converts the MACB Ethernet driver to the Phylink framework.
-The MAC configuration is moved to the Phylink ops and Phylink helpers
-are now used in the ethtools functions. This helps to access the flow
-control and pauseparam logic and this will be helpful in the future for
-boards using this controller with SFP cages.
+On 11/13/19 12:22 AM, Daniel Vetter wrote:
+...
+>>> Why are we doing this? I think things got confused here someplace, as
+>>
+>>
+>> Because:
+>>
+>> a) These need put_page() calls,  and
+>>
+>> b) there is no put_pages() call, but there is a release_pages() call that
+>> is, arguably, what put_pages() would be.
+>>
+>>
+>>> the comment still says:
+>>>
+>>> /**
+>>>   * put_user_page() - release a gup-pinned page
+>>>   * @page:            pointer to page to be released
+>>>   *
+>>>   * Pages that were pinned via get_user_pages*() must be released via
+>>>   * either put_user_page(), or one of the put_user_pages*() routines
+>>>   * below.
+>>
+>>
+>> Ohhh, I missed those comments. They need to all be changed over to
+>> say "pages that were pinned via pin_user_pages*() or
+>> pin_longterm_pages*() must be released via put_user_page*()."
+>>
+>> The get_user_pages*() pages must still be released via put_page.
+>>
+>> The churn is due to a fairly significant change in strategy, whis
+>> is: instead of changing all get_user_pages*() sites to call
+>> put_user_page(), change selected sites to call pin_user_pages*() or
+>> pin_longterm_pages*(), plus put_user_page().
+> 
+> Can't we call this unpin_user_page then, for some symmetry? Or is that
+> even more churn?
+> 
+> Looking from afar the naming here seems really confusing.
 
-Tested-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/ethernet/cadence/Kconfig     |   2 +-
- drivers/net/ethernet/cadence/macb.h      |   9 +-
- drivers/net/ethernet/cadence/macb_main.c | 445 ++++++++++++-----------
- 3 files changed, 237 insertions(+), 219 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/Kconfig b/drivers/net/ethernet/cadence/Kconfig
-index f4b3bd85dfe3..53b50c24d9c9 100644
---- a/drivers/net/ethernet/cadence/Kconfig
-+++ b/drivers/net/ethernet/cadence/Kconfig
-@@ -22,7 +22,7 @@ if NET_VENDOR_CADENCE
- config MACB
- 	tristate "Cadence MACB/GEM support"
- 	depends on HAS_DMA && COMMON_CLK
--	select PHYLIB
-+	select PHYLINK
- 	---help---
- 	  The Cadence MACB ethernet interface is found on many Atmel AT32 and
- 	  AT91 parts.  This driver also supports the Cadence GEM (Gigabit
-diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
-index 03983bd46eef..19fe4f4867c7 100644
---- a/drivers/net/ethernet/cadence/macb.h
-+++ b/drivers/net/ethernet/cadence/macb.h
-@@ -7,7 +7,7 @@
- #ifndef _MACB_H
- #define _MACB_H
- 
--#include <linux/phy.h>
-+#include <linux/phylink.h>
- #include <linux/ptp_clock_kernel.h>
- #include <linux/net_tstamp.h>
- #include <linux/interrupt.h>
-@@ -1185,15 +1185,14 @@ struct macb {
- 	struct macb_or_gem_ops	macbgem_ops;
- 
- 	struct mii_bus		*mii_bus;
--	struct device_node	*phy_node;
--	int 			link;
--	int 			speed;
--	int 			duplex;
-+	struct phylink		*phylink;
-+	struct phylink_config	phylink_config;
- 
- 	u32			caps;
- 	unsigned int		dma_burst_length;
- 
- 	phy_interface_t		phy_interface;
-+	int			speed;
- 
- 	/* AT91RM9200 transmit */
- 	struct sk_buff *skb;			/* holds skb until xmit interrupt completes */
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 1b3c8d678116..8fc2e21f0bb1 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -25,7 +25,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/platform_data/macb.h>
- #include <linux/platform_device.h>
--#include <linux/phy.h>
-+#include <linux/phylink.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/of_gpio.h>
-@@ -453,114 +453,178 @@ static void macb_set_tx_clk(struct clk *clk, int speed, struct net_device *dev)
- 		netdev_err(dev, "adjusting tx_clk failed.\n");
- }
- 
--static void macb_handle_link_change(struct net_device *dev)
-+static void macb_validate(struct phylink_config *config,
-+			  unsigned long *supported,
-+			  struct phylink_link_state *state)
- {
--	struct macb *bp = netdev_priv(dev);
--	struct phy_device *phydev = dev->phydev;
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
-+	struct macb *bp = netdev_priv(ndev);
-+
-+	/* We only support MII, RMII, GMII, RGMII & SGMII. */
-+	if (state->interface != PHY_INTERFACE_MODE_NA &&
-+	    state->interface != PHY_INTERFACE_MODE_MII &&
-+	    state->interface != PHY_INTERFACE_MODE_RMII &&
-+	    state->interface != PHY_INTERFACE_MODE_GMII &&
-+	    state->interface != PHY_INTERFACE_MODE_SGMII &&
-+	    !phy_interface_mode_is_rgmii(state->interface)) {
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	if (!macb_is_gem(bp) &&
-+	    (state->interface == PHY_INTERFACE_MODE_GMII ||
-+	     phy_interface_mode_is_rgmii(state->interface))) {
-+		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+		return;
-+	}
-+
-+	phylink_set_port_modes(mask);
-+	phylink_set(mask, Autoneg);
-+	phylink_set(mask, Asym_Pause);
-+
-+	phylink_set(mask, 10baseT_Half);
-+	phylink_set(mask, 10baseT_Full);
-+	phylink_set(mask, 100baseT_Half);
-+	phylink_set(mask, 100baseT_Full);
-+
-+	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
-+	    (state->interface == PHY_INTERFACE_MODE_NA ||
-+	     state->interface == PHY_INTERFACE_MODE_GMII ||
-+	     state->interface == PHY_INTERFACE_MODE_SGMII ||
-+	     phy_interface_mode_is_rgmii(state->interface))) {
-+		phylink_set(mask, 1000baseT_Full);
-+		phylink_set(mask, 1000baseX_Full);
-+
-+		if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
-+			phylink_set(mask, 1000baseT_Half);
-+	}
-+
-+	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
-+	bitmap_and(state->advertising, state->advertising, mask,
-+		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-+}
-+
-+static int macb_mac_link_state(struct phylink_config *config,
-+			       struct phylink_link_state *state)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static void macb_mac_an_restart(struct phylink_config *config)
-+{
-+	/* Not supported */
-+}
-+
-+static void macb_mac_config(struct phylink_config *config, unsigned int mode,
-+			    const struct phylink_link_state *state)
-+{
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct macb *bp = netdev_priv(ndev);
- 	unsigned long flags;
--	int status_change = 0;
-+	u32 old_ctrl, ctrl;
- 
- 	spin_lock_irqsave(&bp->lock, flags);
- 
--	if (phydev->link) {
--		if ((bp->speed != phydev->speed) ||
--		    (bp->duplex != phydev->duplex)) {
--			u32 reg;
-+	old_ctrl = ctrl = macb_or_gem_readl(bp, NCFGR);
- 
--			reg = macb_readl(bp, NCFGR);
--			reg &= ~(MACB_BIT(SPD) | MACB_BIT(FD));
--			if (macb_is_gem(bp))
--				reg &= ~GEM_BIT(GBE);
-+	/* Clear all the bits we might set later */
-+	ctrl &= ~(GEM_BIT(GBE) | MACB_BIT(SPD) | MACB_BIT(FD) | MACB_BIT(PAE) |
-+		  GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL));
- 
--			if (phydev->duplex)
--				reg |= MACB_BIT(FD);
--			if (phydev->speed == SPEED_100)
--				reg |= MACB_BIT(SPD);
--			if (phydev->speed == SPEED_1000 &&
--			    bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
--				reg |= GEM_BIT(GBE);
-+	if (state->speed == SPEED_1000)
-+		ctrl |= GEM_BIT(GBE);
-+	else if (state->speed == SPEED_100)
-+		ctrl |= MACB_BIT(SPD);
- 
--			macb_or_gem_writel(bp, NCFGR, reg);
-+	if (state->duplex)
-+		ctrl |= MACB_BIT(FD);
- 
--			bp->speed = phydev->speed;
--			bp->duplex = phydev->duplex;
--			status_change = 1;
--		}
--	}
-+	/* We do not support MLO_PAUSE_RX yet */
-+	if (state->pause & MLO_PAUSE_TX)
-+		ctrl |= MACB_BIT(PAE);
- 
--	if (phydev->link != bp->link) {
--		if (!phydev->link) {
--			bp->speed = 0;
--			bp->duplex = -1;
--		}
--		bp->link = phydev->link;
-+	if (state->interface == PHY_INTERFACE_MODE_SGMII)
-+		ctrl |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
- 
--		status_change = 1;
--	}
-+	/* Apply the new configuration, if any */
-+	if (old_ctrl ^ ctrl)
-+		macb_or_gem_writel(bp, NCFGR, ctrl);
-+
-+	bp->speed = state->speed;
- 
- 	spin_unlock_irqrestore(&bp->lock, flags);
-+}
- 
--	if (status_change) {
--		if (phydev->link) {
--			/* Update the TX clock rate if and only if the link is
--			 * up and there has been a link change.
--			 */
--			macb_set_tx_clk(bp->tx_clk, phydev->speed, dev);
-+static void macb_mac_link_down(struct phylink_config *config, unsigned int mode,
-+			       phy_interface_t interface)
-+{
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct macb *bp = netdev_priv(ndev);
-+	struct macb_queue *queue;
-+	unsigned int q;
-+	u32 ctrl;
- 
--			netif_carrier_on(dev);
--			netdev_info(dev, "link up (%d/%s)\n",
--				    phydev->speed,
--				    phydev->duplex == DUPLEX_FULL ?
--				    "Full" : "Half");
--		} else {
--			netif_carrier_off(dev);
--			netdev_info(dev, "link down\n");
--		}
--	}
-+	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
-+		queue_writel(queue, IDR,
-+			     bp->rx_intr_mask | MACB_TX_INT_FLAGS | MACB_BIT(HRESP));
-+
-+	/* Disable Rx and Tx */
-+	ctrl = macb_readl(bp, NCR) & ~(MACB_BIT(RE) | MACB_BIT(TE));
-+	macb_writel(bp, NCR, ctrl);
-+
-+	netif_tx_stop_all_queues(ndev);
- }
- 
--/* based on au1000_eth. c*/
--static int macb_mii_probe(struct net_device *dev)
-+static void macb_mac_link_up(struct phylink_config *config, unsigned int mode,
-+			     phy_interface_t interface, struct phy_device *phy)
- {
--	struct macb *bp = netdev_priv(dev);
--	struct phy_device *phydev;
--	struct device_node *np;
--	int ret, i;
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct macb *bp = netdev_priv(ndev);
-+	struct macb_queue *queue;
-+	unsigned int q;
- 
--	np = bp->pdev->dev.of_node;
--	ret = 0;
-+	macb_set_tx_clk(bp->tx_clk, bp->speed, ndev);
- 
--	if (np) {
--		if (of_phy_is_fixed_link(np)) {
--			bp->phy_node = of_node_get(np);
--		} else {
--			bp->phy_node = of_parse_phandle(np, "phy-handle", 0);
--			/* fallback to standard phy registration if no
--			 * phy-handle was found nor any phy found during
--			 * dt phy registration
--			 */
--			if (!bp->phy_node && !phy_find_first(bp->mii_bus)) {
--				for (i = 0; i < PHY_MAX_ADDR; i++) {
--					phydev = mdiobus_scan(bp->mii_bus, i);
--					if (IS_ERR(phydev) &&
--					    PTR_ERR(phydev) != -ENODEV) {
--						ret = PTR_ERR(phydev);
--						break;
--					}
--				}
-+	/* Initialize rings & buffers as clearing MACB_BIT(TE) in link down
-+	 * cleared the pipeline and control registers.
-+	 */
-+	bp->macbgem_ops.mog_init_rings(bp);
-+	macb_init_buffers(bp);
- 
--				if (ret)
--					return -ENODEV;
--			}
--		}
--	}
-+	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
-+		queue_writel(queue, IER,
-+			     bp->rx_intr_mask | MACB_TX_INT_FLAGS | MACB_BIT(HRESP));
- 
--	if (bp->phy_node) {
--		phydev = of_phy_connect(dev, bp->phy_node,
--					&macb_handle_link_change, 0,
--					bp->phy_interface);
--		if (!phydev)
--			return -ENODEV;
-+	/* Enable Rx and Tx */
-+	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(RE) | MACB_BIT(TE));
-+
-+	netif_tx_wake_all_queues(ndev);
-+}
-+
-+static const struct phylink_mac_ops macb_phylink_ops = {
-+	.validate = macb_validate,
-+	.mac_link_state = macb_mac_link_state,
-+	.mac_an_restart = macb_mac_an_restart,
-+	.mac_config = macb_mac_config,
-+	.mac_link_down = macb_mac_link_down,
-+	.mac_link_up = macb_mac_link_up,
-+};
-+
-+static int macb_phylink_connect(struct macb *bp)
-+{
-+	struct net_device *dev = bp->dev;
-+	struct phy_device *phydev;
-+	int ret;
-+
-+	if (bp->pdev->dev.of_node &&
-+	    of_parse_phandle(bp->pdev->dev.of_node, "phy-handle", 0)) {
-+		ret = phylink_of_phy_connect(bp->phylink, bp->pdev->dev.of_node,
-+					     0);
-+		if (ret) {
-+			netdev_err(dev, "Could not attach PHY (%d)\n", ret);
-+			return ret;
-+		}
- 	} else {
- 		phydev = phy_find_first(bp->mii_bus);
- 		if (!phydev) {
-@@ -569,27 +633,33 @@ static int macb_mii_probe(struct net_device *dev)
- 		}
- 
- 		/* attach the mac to the phy */
--		ret = phy_connect_direct(dev, phydev, &macb_handle_link_change,
--					 bp->phy_interface);
-+		ret = phylink_connect_phy(bp->phylink, phydev);
- 		if (ret) {
--			netdev_err(dev, "Could not attach to PHY\n");
-+			netdev_err(dev, "Could not attach to PHY (%d)\n", ret);
- 			return ret;
- 		}
- 	}
- 
--	/* mask with MAC supported features */
--	if (macb_is_gem(bp) && bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE)
--		phy_set_max_speed(phydev, SPEED_1000);
--	else
--		phy_set_max_speed(phydev, SPEED_100);
-+	phylink_start(bp->phylink);
- 
--	if (bp->caps & MACB_CAPS_NO_GIGABIT_HALF)
--		phy_remove_link_mode(phydev,
--				     ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
-+	return 0;
-+}
- 
--	bp->link = 0;
--	bp->speed = 0;
--	bp->duplex = -1;
-+/* based on au1000_eth. c*/
-+static int macb_mii_probe(struct net_device *dev)
-+{
-+	struct macb *bp = netdev_priv(dev);
-+
-+	bp->phylink_config.dev = &dev->dev;
-+	bp->phylink_config.type = PHYLINK_NETDEV;
-+
-+	bp->phylink = phylink_create(&bp->phylink_config, bp->pdev->dev.fwnode,
-+				     bp->phy_interface, &macb_phylink_ops);
-+	if (IS_ERR(bp->phylink)) {
-+		netdev_err(dev, "Could not create a phylink instance (%ld)\n",
-+			   PTR_ERR(bp->phylink));
-+		return PTR_ERR(bp->phylink);
-+	}
- 
- 	return 0;
- }
-@@ -619,20 +689,10 @@ static int macb_mii_init(struct macb *bp)
- 	dev_set_drvdata(&bp->dev->dev, bp->mii_bus);
- 
- 	np = bp->pdev->dev.of_node;
--	if (np && of_phy_is_fixed_link(np)) {
--		if (of_phy_register_fixed_link(np) < 0) {
--			dev_err(&bp->pdev->dev,
--				"broken fixed-link specification %pOF\n", np);
--			goto err_out_free_mdiobus;
--		}
--
--		err = mdiobus_register(bp->mii_bus);
--	} else {
--		err = of_mdiobus_register(bp->mii_bus, np);
--	}
- 
-+	err = of_mdiobus_register(bp->mii_bus, np);
- 	if (err)
--		goto err_out_free_fixed_link;
-+		goto err_out_free_mdiobus;
- 
- 	err = macb_mii_probe(bp->dev);
- 	if (err)
-@@ -642,11 +702,7 @@ static int macb_mii_init(struct macb *bp)
- 
- err_out_unregister_bus:
- 	mdiobus_unregister(bp->mii_bus);
--err_out_free_fixed_link:
--	if (np && of_phy_is_fixed_link(np))
--		of_phy_deregister_fixed_link(np);
- err_out_free_mdiobus:
--	of_node_put(bp->phy_node);
- 	mdiobus_free(bp->mii_bus);
- err_out:
- 	return err;
-@@ -2230,19 +2286,13 @@ static void macb_configure_dma(struct macb *bp)
- 
- static void macb_init_hw(struct macb *bp)
- {
--	struct macb_queue *queue;
--	unsigned int q;
--
- 	u32 config;
- 
- 	macb_reset_hw(bp);
- 	macb_set_hwaddr(bp);
- 
- 	config = macb_mdc_clk_div(bp);
--	if (bp->phy_interface == PHY_INTERFACE_MODE_SGMII)
--		config |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
- 	config |= MACB_BF(RBOF, NET_IP_ALIGN);	/* Make eth data aligned */
--	config |= MACB_BIT(PAE);		/* PAuse Enable */
- 	config |= MACB_BIT(DRFCS);		/* Discard Rx FCS */
- 	if (bp->caps & MACB_CAPS_JUMBO)
- 		config |= MACB_BIT(JFRAME);	/* Enable jumbo frames */
-@@ -2258,36 +2308,11 @@ static void macb_init_hw(struct macb *bp)
- 	macb_writel(bp, NCFGR, config);
- 	if ((bp->caps & MACB_CAPS_JUMBO) && bp->jumbo_max_len)
- 		gem_writel(bp, JML, bp->jumbo_max_len);
--	bp->speed = SPEED_10;
--	bp->duplex = DUPLEX_HALF;
- 	bp->rx_frm_len_mask = MACB_RX_FRMLEN_MASK;
- 	if (bp->caps & MACB_CAPS_JUMBO)
- 		bp->rx_frm_len_mask = MACB_RX_JFRMLEN_MASK;
- 
- 	macb_configure_dma(bp);
--
--	/* Initialize TX and RX buffers */
--	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue) {
--		queue_writel(queue, RBQP, lower_32_bits(queue->rx_ring_dma));
--#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
--		if (bp->hw_dma_cap & HW_DMA_CAP_64B)
--			queue_writel(queue, RBQPH, upper_32_bits(queue->rx_ring_dma));
--#endif
--		queue_writel(queue, TBQP, lower_32_bits(queue->tx_ring_dma));
--#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
--		if (bp->hw_dma_cap & HW_DMA_CAP_64B)
--			queue_writel(queue, TBQPH, upper_32_bits(queue->tx_ring_dma));
--#endif
--
--		/* Enable interrupts */
--		queue_writel(queue, IER,
--			     bp->rx_intr_mask |
--			     MACB_TX_INT_FLAGS |
--			     MACB_BIT(HRESP));
--	}
--
--	/* Enable TX and RX */
--	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(RE) | MACB_BIT(TE));
- }
- 
- /* The hash address register is 64 bits long and takes up two
-@@ -2411,8 +2436,8 @@ static void macb_set_rx_mode(struct net_device *dev)
- 
- static int macb_open(struct net_device *dev)
- {
--	struct macb *bp = netdev_priv(dev);
- 	size_t bufsz = dev->mtu + ETH_HLEN + ETH_FCS_LEN + NET_IP_ALIGN;
-+	struct macb *bp = netdev_priv(dev);
- 	struct macb_queue *queue;
- 	unsigned int q;
- 	int err;
-@@ -2423,15 +2448,6 @@ static int macb_open(struct net_device *dev)
- 	if (err < 0)
- 		goto pm_exit;
- 
--	/* carrier starts down */
--	netif_carrier_off(dev);
--
--	/* if the phy is not yet register, retry later*/
--	if (!dev->phydev) {
--		err = -EAGAIN;
--		goto pm_exit;
--	}
--
- 	/* RX buffers initialization */
- 	macb_init_rx_buffer_size(bp, bufsz);
- 
-@@ -2445,11 +2461,11 @@ static int macb_open(struct net_device *dev)
- 	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
- 		napi_enable(&queue->napi);
- 
--	bp->macbgem_ops.mog_init_rings(bp);
- 	macb_init_hw(bp);
- 
--	/* schedule a link state check */
--	phy_start(dev->phydev);
-+	err = macb_phylink_connect(bp);
-+	if (err)
-+		goto pm_exit;
- 
- 	netif_tx_start_all_queues(dev);
- 
-@@ -2476,8 +2492,8 @@ static int macb_close(struct net_device *dev)
- 	for (q = 0, queue = bp->queues; q < bp->num_queues; ++q, ++queue)
- 		napi_disable(&queue->napi);
- 
--	if (dev->phydev)
--		phy_stop(dev->phydev);
-+	phylink_stop(bp->phylink);
-+	phylink_disconnect_phy(bp->phylink);
- 
- 	spin_lock_irqsave(&bp->lock, flags);
- 	macb_reset_hw(bp);
-@@ -2711,17 +2727,18 @@ static void macb_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
- 	wol->supported = 0;
- 	wol->wolopts = 0;
- 
--	if (bp->wol & MACB_WOL_HAS_MAGIC_PACKET) {
--		wol->supported = WAKE_MAGIC;
--
--		if (bp->wol & MACB_WOL_ENABLED)
--			wol->wolopts |= WAKE_MAGIC;
--	}
-+	if (bp->wol & MACB_WOL_HAS_MAGIC_PACKET)
-+		phylink_ethtool_get_wol(bp->phylink, wol);
- }
- 
- static int macb_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
- {
- 	struct macb *bp = netdev_priv(netdev);
-+	int ret;
-+
-+	ret = phylink_ethtool_set_wol(bp->phylink, wol);
-+	if (!ret)
-+		return 0;
- 
- 	if (!(bp->wol & MACB_WOL_HAS_MAGIC_PACKET) ||
- 	    (wol->wolopts & ~WAKE_MAGIC))
-@@ -2737,6 +2754,22 @@ static int macb_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
- 	return 0;
- }
- 
-+static int macb_get_link_ksettings(struct net_device *netdev,
-+				   struct ethtool_link_ksettings *kset)
-+{
-+	struct macb *bp = netdev_priv(netdev);
-+
-+	return phylink_ethtool_ksettings_get(bp->phylink, kset);
-+}
-+
-+static int macb_set_link_ksettings(struct net_device *netdev,
-+				   const struct ethtool_link_ksettings *kset)
-+{
-+	struct macb *bp = netdev_priv(netdev);
-+
-+	return phylink_ethtool_ksettings_set(bp->phylink, kset);
-+}
-+
- static void macb_get_ringparam(struct net_device *netdev,
- 			       struct ethtool_ringparam *ring)
- {
-@@ -3173,8 +3206,8 @@ static const struct ethtool_ops macb_ethtool_ops = {
- 	.get_ts_info		= ethtool_op_get_ts_info,
- 	.get_wol		= macb_get_wol,
- 	.set_wol		= macb_set_wol,
--	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
--	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
-+	.get_link_ksettings     = macb_get_link_ksettings,
-+	.set_link_ksettings     = macb_set_link_ksettings,
- 	.get_ringparam		= macb_get_ringparam,
- 	.set_ringparam		= macb_set_ringparam,
- };
-@@ -3187,8 +3220,8 @@ static const struct ethtool_ops gem_ethtool_ops = {
- 	.get_ethtool_stats	= gem_get_ethtool_stats,
- 	.get_strings		= gem_get_ethtool_strings,
- 	.get_sset_count		= gem_get_sset_count,
--	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
--	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
-+	.get_link_ksettings     = macb_get_link_ksettings,
-+	.set_link_ksettings     = macb_set_link_ksettings,
- 	.get_ringparam		= macb_get_ringparam,
- 	.set_ringparam		= macb_set_ringparam,
- 	.get_rxnfc			= gem_get_rxnfc,
-@@ -3197,26 +3230,21 @@ static const struct ethtool_ops gem_ethtool_ops = {
- 
- static int macb_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
- {
--	struct phy_device *phydev = dev->phydev;
- 	struct macb *bp = netdev_priv(dev);
- 
- 	if (!netif_running(dev))
- 		return -EINVAL;
- 
--	if (!phydev)
--		return -ENODEV;
--
--	if (!bp->ptp_info)
--		return phy_mii_ioctl(phydev, rq, cmd);
--
--	switch (cmd) {
--	case SIOCSHWTSTAMP:
--		return bp->ptp_info->set_hwtst(dev, rq, cmd);
--	case SIOCGHWTSTAMP:
--		return bp->ptp_info->get_hwtst(dev, rq);
--	default:
--		return phy_mii_ioctl(phydev, rq, cmd);
-+	if (bp->ptp_info) {
-+		switch (cmd) {
-+		case SIOCSHWTSTAMP:
-+			return bp->ptp_info->set_hwtst(dev, rq, cmd);
-+		case SIOCGHWTSTAMP:
-+			return bp->ptp_info->get_hwtst(dev, rq);
-+		}
- 	}
-+
-+	return phylink_mii_ioctl(bp->phylink, rq, cmd);
- }
- 
- static inline void macb_set_txcsum_feature(struct macb *bp,
-@@ -3339,7 +3367,8 @@ static void macb_configure_caps(struct macb *bp,
- #ifdef CONFIG_MACB_USE_HWSTAMP
- 		if (gem_has_ptp(bp)) {
- 			if (!GEM_BFEXT(TSU, gem_readl(bp, DCFG5)))
--				pr_err("GEM doesn't support hardware ptp.\n");
-+				dev_err(&bp->pdev->dev,
-+					"GEM doesn't support hardware ptp.\n");
- 			else {
- 				bp->hw_dma_cap |= HW_DMA_CAP_PTP;
- 				bp->ptp_info = &gem_ptp_info;
-@@ -3716,8 +3745,9 @@ static int at91ether_open(struct net_device *dev)
- 			     MACB_BIT(ISR_ROVR)	|
- 			     MACB_BIT(HRESP));
- 
--	/* schedule a link state check */
--	phy_start(dev->phydev);
-+	ret = macb_phylink_connect(lp);
-+	if (ret)
-+		return ret;
- 
- 	netif_start_queue(dev);
- 
-@@ -3746,6 +3776,9 @@ static int at91ether_close(struct net_device *dev)
- 
- 	netif_stop_queue(dev);
- 
-+	phylink_stop(lp->phylink);
-+	phylink_disconnect_phy(lp->phylink);
-+
- 	dma_free_coherent(&lp->pdev->dev,
- 			  AT91ETHER_MAX_RX_DESCR *
- 			  macb_dma_desc_get_size(lp),
-@@ -4190,7 +4223,6 @@ static int macb_probe(struct platform_device *pdev)
- 	struct clk *tsu_clk = NULL;
- 	unsigned int queue_mask, num_queues;
- 	bool native_io;
--	struct phy_device *phydev;
- 	phy_interface_t interface;
- 	struct net_device *dev;
- 	struct resource *regs;
-@@ -4325,6 +4357,8 @@ static int macb_probe(struct platform_device *pdev)
- 	else
- 		bp->phy_interface = interface;
- 
-+	bp->speed = SPEED_UNKNOWN;
-+
- 	/* IP specific init */
- 	err = init(pdev);
- 	if (err)
-@@ -4334,8 +4368,6 @@ static int macb_probe(struct platform_device *pdev)
- 	if (err)
- 		goto err_out_free_netdev;
- 
--	phydev = dev->phydev;
--
- 	netif_carrier_off(dev);
- 
- 	err = register_netdev(dev);
-@@ -4347,8 +4379,6 @@ static int macb_probe(struct platform_device *pdev)
- 	tasklet_init(&bp->hresp_err_tasklet, macb_hresp_error_task,
- 		     (unsigned long)bp);
- 
--	phy_attached_info(phydev);
--
- 	netdev_info(dev, "Cadence %s rev 0x%08x at 0x%08lx irq %d (%pM)\n",
- 		    macb_is_gem(bp) ? "GEM" : "MACB", macb_readl(bp, MID),
- 		    dev->base_addr, dev->irq, dev->dev_addr);
-@@ -4359,11 +4389,7 @@ static int macb_probe(struct platform_device *pdev)
- 	return 0;
- 
- err_out_unregister_mdio:
--	phy_disconnect(dev->phydev);
- 	mdiobus_unregister(bp->mii_bus);
--	of_node_put(bp->phy_node);
--	if (np && of_phy_is_fixed_link(np))
--		of_phy_deregister_fixed_link(np);
- 	mdiobus_free(bp->mii_bus);
- 
- err_out_free_netdev:
-@@ -4387,18 +4413,12 @@ static int macb_remove(struct platform_device *pdev)
- {
- 	struct net_device *dev;
- 	struct macb *bp;
--	struct device_node *np = pdev->dev.of_node;
- 
- 	dev = platform_get_drvdata(pdev);
- 
- 	if (dev) {
- 		bp = netdev_priv(dev);
--		if (dev->phydev)
--			phy_disconnect(dev->phydev);
- 		mdiobus_unregister(bp->mii_bus);
--		if (np && of_phy_is_fixed_link(np))
--			of_phy_deregister_fixed_link(np);
--		dev->phydev = NULL;
- 		mdiobus_free(bp->mii_bus);
- 
- 		unregister_netdev(dev);
-@@ -4413,7 +4433,7 @@ static int macb_remove(struct platform_device *pdev)
- 			clk_disable_unprepare(bp->tsu_clk);
- 			pm_runtime_set_suspended(&pdev->dev);
- 		}
--		of_node_put(bp->phy_node);
-+		phylink_destroy(bp->phylink);
- 		free_netdev(dev);
- 	}
- 
-@@ -4431,7 +4451,6 @@ static int __maybe_unused macb_suspend(struct device *dev)
- 	if (!netif_running(netdev))
- 		return 0;
- 
--
- 	if (bp->wol & MACB_WOL_ENABLED) {
- 		macb_writel(bp, IER, MACB_BIT(WOL));
- 		macb_writel(bp, WOL, MACB_BIT(MAG));
-@@ -4442,8 +4461,9 @@ static int __maybe_unused macb_suspend(struct device *dev)
- 		for (q = 0, queue = bp->queues; q < bp->num_queues;
- 		     ++q, ++queue)
- 			napi_disable(&queue->napi);
--		phy_stop(netdev->phydev);
--		phy_suspend(netdev->phydev);
-+		rtnl_lock();
-+		phylink_stop(bp->phylink);
-+		rtnl_unlock();
- 		spin_lock_irqsave(&bp->lock, flags);
- 		macb_reset_hw(bp);
- 		spin_unlock_irqrestore(&bp->lock, flags);
-@@ -4491,12 +4511,11 @@ static int __maybe_unused macb_resume(struct device *dev)
- 		for (q = 0, queue = bp->queues; q < bp->num_queues;
- 		     ++q, ++queue)
- 			napi_enable(&queue->napi);
--		phy_resume(netdev->phydev);
--		phy_init_hw(netdev->phydev);
--		phy_start(netdev->phydev);
-+		rtnl_lock();
-+		phylink_start(bp->phylink);
-+		rtnl_unlock();
- 	}
- 
--	bp->macbgem_ops.mog_init_rings(bp);
- 	macb_init_hw(bp);
- 	macb_set_rx_mode(netdev);
- 	macb_restore_features(bp);
+That look from afar is valuable, because I'm too close to the problem to see
+how the naming looks. :)
+
+unpin_user_page() sounds symmetrical. It's true that it would cause more
+churn (which is why I started off with a proposal that avoids changing the
+names of put_user_page*() APIs). But OTOH, the amount of churn is proportional
+to the change in direction here, and it's really only 10 or 20 lines changed,
+in the end.
+
+So I'm open to changing to that naming. It would be nice to hear what others
+prefer, too...
+
+
+thanks,
 -- 
-2.23.0
-
+John Hubbard
+NVIDIA
