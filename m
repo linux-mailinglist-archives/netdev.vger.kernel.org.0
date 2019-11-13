@@ -2,167 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40302FBC51
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 00:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC766FBC66
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 00:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726628AbfKMXOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 18:14:53 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:14878 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726251AbfKMXOw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 18:14:52 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dcc8e6b0000>; Wed, 13 Nov 2019 15:14:51 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 13 Nov 2019 15:14:48 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 13 Nov 2019 15:14:48 -0800
-Received: from [10.2.160.107] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 13 Nov
- 2019 23:14:47 +0000
-Subject: Re: [PATCH v4 02/23] mm/gup: factor out duplicate code from four
- routines
-To:     Jan Kara <jack@suse.cz>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, <bpf@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-mm@kvack.org>, LKML <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
-References: <20191113042710.3997854-1-jhubbard@nvidia.com>
- <20191113042710.3997854-3-jhubbard@nvidia.com>
- <20191113111521.GI6367@quack2.suse.cz>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <56a575ac-c090-4063-67fc-c6cb24109442@nvidia.com>
-Date:   Wed, 13 Nov 2019 15:12:02 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726960AbfKMXUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 18:20:22 -0500
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:33556 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726528AbfKMXUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 18:20:22 -0500
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 6E644891AF;
+        Thu, 14 Nov 2019 12:20:19 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1573687219;
+        bh=CpYFRRes09wx5hmQ80fisE1Uilx3AVAgdklymOJlF1Q=;
+        h=From:To:Cc:Subject:Date;
+        b=oSzbVPEfCdYG4NnFOKkByolXlqgbmQE5KmGUROhGjnjjW6F4+VeBmKUpYnN7I9DnR
+         aefFFI+kR0dJvZSMwhOlwhECI4Bl0gg0HZe409++QLmEbM0b/yH2O2YYhazH2tuc58
+         6e5i3qJ85jo9wWEVMUEfaKMKGmICKpHUoo/3xlyIe/DCnVK9ysBeXZM18/gFOraxUi
+         zEmF18TuJWNgKvni3TUiloJhacR1XNiiwQ1FFy9RjClPeaSPB+dHaumuWaEJg+Xw9I
+         GZLuFIORbCJSDzSAe+HdY5No19eXInoaoZElRs714RYQpfAr0pg6o+Rb1yExtOJX2M
+         M9dDhc2KFMzNw==
+Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5dcc8fae0000>; Thu, 14 Nov 2019 12:20:19 +1300
+Received: from mattb-dl.ws.atlnz.lc (mattb-dl.ws.atlnz.lc [10.33.25.30])
+        by smtp (Postfix) with ESMTP id 0A86913EEB5;
+        Thu, 14 Nov 2019 12:20:13 +1300 (NZDT)
+Received: by mattb-dl.ws.atlnz.lc (Postfix, from userid 1672)
+        id 2AF7B141874; Thu, 14 Nov 2019 12:20:14 +1300 (NZDT)
+From:   Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+To:     jon.maloy@ericsson.com, ying.xue@windriver.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Cc:     linux-kernel@vger.kernel.org,
+        Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+Subject: [PATCH] tipc: add back tipc prefix to log messages
+Date:   Thu, 14 Nov 2019 12:20:03 +1300
+Message-Id: <20191113232003.29436-1-matt.bennett@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-In-Reply-To: <20191113111521.GI6367@quack2.suse.cz>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573686891; bh=9LRqaiCXGyssScdgi2q8tAszCMUWmamss75JnSCD7Rw=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=A51eKIWPld+4B5s2mm0c+AftPX6dpBjqpWkYujEzQW8kVLlFqmGjocd27BfsONHAP
-         mmPJsbiq51gzeODte2X2C/uPkzYNTjtPJH03F4HVdvsPm9WWyPO3mCuFy2qZ+53ojk
-         w6MdkTLmNoJEsvjJ1mHPlZG7UOzdlPWuN7wE/1LLT4AJNdQe+bbFVcAcD30SjuESOC
-         HMOwl+XnOLJvxdKZ8WjJigzroAhsM6sSwkk0PcI+BOHfFZzPS0NsqTuAU0nk8z5SAy
-         WgcifEMQlIH1QeCvlXON5hCNNd97lHyEHTXJRg5VuAfoyXIGForJZxdZ7GM5/XPnDu
-         zIFH0GBGYNRaQ==
+x-atlnz-ls: pat
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/19 3:15 AM, Jan Kara wrote:
-> On Tue 12-11-19 20:26:49, John Hubbard wrote:
->> There are four locations in gup.c that have a fair amount of code
->> duplication. This means that changing one requires making the same
->> changes in four places, not to mention reading the same code four
->> times, and wondering if there are subtle differences.
->>
->> Factor out the common code into static functions, thus reducing the
->> overall line count and the code's complexity.
->>
->> Also, take the opportunity to slightly improve the efficiency of the
->> error cases, by doing a mass subtraction of the refcount, surrounded
->> by get_page()/put_page().
->>
->> Also, further simplify (slightly), by waiting until the the successful
->> end of each routine, to increment *nr.
->>
->> Reviewed-by: J=C3=A9r=C3=B4me Glisse <jglisse@redhat.com>
->> Cc: Ira Weiny <ira.weiny@intel.com>
->> Cc: Christoph Hellwig <hch@lst.de>
->> Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
->> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
->=20
->> diff --git a/mm/gup.c b/mm/gup.c
->> index 85caf76b3012..199da99e8ffc 100644
->> --- a/mm/gup.c
->> +++ b/mm/gup.c
->> @@ -1969,6 +1969,34 @@ static int __gup_device_huge_pud(pud_t pud, pud_t=
- *pudp, unsigned long addr,
->>   }
->>   #endif
->>  =20
->> +static int __record_subpages(struct page *page, unsigned long addr,
->> +			     unsigned long end, struct page **pages, int nr)
->> +{
->> +	int nr_recorded_pages =3D 0;
->> +
->> +	do {
->> +		pages[nr] =3D page;
->> +		nr++;
->> +		page++;
->> +		nr_recorded_pages++;
->> +	} while (addr +=3D PAGE_SIZE, addr !=3D end);
->> +	return nr_recorded_pages;
->> +}
->=20
-> Why don't you pass in already pages + nr?
+The tipc prefix for log messages generated by tipc was
+removed in commit 07f6c4bc048a ("tipc: convert tipc reference
+table to use generic rhashtable").
 
-Aha, that does save a function argument. Will do.
+This is still a useful prefix so add it back.
 
-...
->> +static void __huge_pt_done(struct page *head, int nr_recorded_pages, in=
-t *nr)
->> +{
->> +	*nr +=3D nr_recorded_pages;
->> +	SetPageReferenced(head);
->> +}
->=20
-> I don't find this last helper very useful. It seems to muddy water more
-> than necessary...
+Signed-off-by: Matt Bennett <matt.bennett@alliedtelesis.co.nz>
+---
+ net/tipc/core.c | 2 --
+ net/tipc/core.h | 6 ++++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-Yes, I suspect it's rather unloved, and the fact that it was hard to accura=
-tely
-name should have been a big hint to not do it. I'll remove the helper and
-put the lines back in directly.
-
-
-thanks,
+diff --git a/net/tipc/core.c b/net/tipc/core.c
+index 23cb379a93d6..8f35060a24e1 100644
+--- a/net/tipc/core.c
++++ b/net/tipc/core.c
+@@ -34,8 +34,6 @@
+  * POSSIBILITY OF SUCH DAMAGE.
+  */
+=20
+-#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-
+ #include "core.h"
+ #include "name_table.h"
+ #include "subscr.h"
+diff --git a/net/tipc/core.h b/net/tipc/core.h
+index 60d829581068..3042f654e0af 100644
+--- a/net/tipc/core.h
++++ b/net/tipc/core.h
+@@ -60,6 +60,12 @@
+ #include <linux/rhashtable.h>
+ #include <net/genetlink.h>
+=20
++#ifdef pr_fmt
++#undef pr_fmt
++#endif
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
+ struct tipc_node;
+ struct tipc_bearer;
+ struct tipc_bc_base;
 --=20
-John Hubbard
-NVIDIA
+2.24.0
 
->=20
-> Other than that the cleanup looks nice to me.
->=20
-> 								Honza
->=20
