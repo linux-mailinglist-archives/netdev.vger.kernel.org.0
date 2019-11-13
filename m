@@ -2,229 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83D53FB326
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A177FB33E
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:11:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727743AbfKMPFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 10:05:05 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43655 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbfKMPFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:05:04 -0500
-Received: by mail-pg1-f194.google.com with SMTP id l24so1534789pgh.10
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 07:05:04 -0800 (PST)
+        id S1727968AbfKMPLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 10:11:55 -0500
+Received: from mail-il1-f195.google.com ([209.85.166.195]:46147 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727550AbfKMPLy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:11:54 -0500
+Received: by mail-il1-f195.google.com with SMTP id q1so2072361ile.13;
+        Wed, 13 Nov 2019 07:11:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=345VlEGBSnYxFd4H+raHSbsJ/hlkhlhfLot28bYiH/k=;
-        b=ig3n+wLCVSQ+Non9VsE7Aw7W/rWEx9CnMlcni15k8GQGmumWI4n8B7oGevSqzqoPf3
-         ltEsr9jofgP18dYw6cbqPhonGi40yHcpbKh3MKY9Vgtc+OLnqFRgb3sjFyfnKWXolxu9
-         jqZlex/HIRWXkmMdBGp9sUkCR2dMQa+1qsac9gW4iD9sybuJSO1brvjaGDxFGGNK99d9
-         lTdXM4+XOR5qA5+eDM1kt/nsYK18hWg241mq44pz2p/MHpDOw/Upt+rHQxXc/j9ooI9v
-         9AeH+QFKKrzA83F8sCHW3IN4ekKAIo/tae+f+oXj1bbfWET45fVkcug5hfE+HWKngqCI
-         3C0A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Oet7iN8luRIwm2cG0enPN1WO0bfm28VO//v3gW2hBng=;
+        b=GQ3XKwp2AaghEayclfUYMtj06s+kNJ3pPo2qy6o3BVVu+8If5uf39XUbSZkODmmU33
+         WDeAJ8hMYpRvi0cUuO/9lrc5XrrtCMRY0onKyQX+VhaWxmTI+Lz9TJj1GRzi3MxLdt04
+         tekoOYGqFXTHSJzb8/GuwS7hRrbPZtwG2eVfgxdjpZDVr/iJ7aDlFDftc6szgU1vzaZZ
+         WeINd1UMXpiaoHmo3QdKl8f0o0Ow/3SUmeyIp8xIT1lRCsIZfWVSQ879lYWJ+YbUDZFI
+         II3F90tO59YT4Nw3DJh9VTEt4ev51KZP3sH1tQ8GQslbwz1aAb4/uPva7x6OjUoSOp5j
+         K0/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=345VlEGBSnYxFd4H+raHSbsJ/hlkhlhfLot28bYiH/k=;
-        b=sknsUvxtAcnb4o3irqPHkUG+TKyOcYo9FiLNa6CeJAFKdy0pwyM2KlmtQl/Nm9NPir
-         cFCOIpjtjzuWIPZ2MDAlXSk3vdg2ZQKdXOESYyOgY599cJQoIDyogmi47MwHy7Q1lzyB
-         yHhGBQ9X8P4Pftv9bfJzBCpEHc0bJh3ojMQpyqP4RmtNIh97n1xywRMmunKP7+JKOyiK
-         HwprluPF8zDmwhyRWmrVB+NJuANtCXwCg+5b2VzOMjrGiM3T6vQy0QJvavyLUJv8Jlat
-         46ikFB/LHOEqiQu+cJX3ZFTGhwH3x2RuK3xkW8sHTgZEjVVSjhLyV7OlL98V+zn9woSz
-         NfKg==
-X-Gm-Message-State: APjAAAV4FHAtbu0bv7JpVhitQ9kquBpdf9wrQJ+NjcwFnLxGfACrgD08
-        IK0+gXjeNWvoKVOemzHlpF8=
-X-Google-Smtp-Source: APXvYqy5gy6aEQwTDxRJc1JBjVMtCiI6xKQJS3VpN1NInCtEmFmm8e2YeHaoyXZjrjdB1GFTV9uABQ==
-X-Received: by 2002:a63:1242:: with SMTP id 2mr4155535pgs.288.1573657503716;
-        Wed, 13 Nov 2019 07:05:03 -0800 (PST)
-Received: from local.opencloud.tech.localdomain ([115.171.60.86])
-        by smtp.gmail.com with ESMTPSA id i5sm2863212pfo.52.2019.11.13.07.05.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 Nov 2019 07:05:02 -0800 (PST)
-From:   xiangxia.m.yue@gmail.com
-To:     pshelar@ovn.org, gvrose8192@gmail.com
-Cc:     blp@ovn.org, netdev@vger.kernel.org, dev@openvswitch.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v4] net: openvswitch: add hash info to upcall
-Date:   Wed, 13 Nov 2019 23:04:49 +0800
-Message-Id: <1573657489-16067-1-git-send-email-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Oet7iN8luRIwm2cG0enPN1WO0bfm28VO//v3gW2hBng=;
+        b=Em66xhI7iZmT7T/LPeWqOybGO8xX7y921lsnGQIplIt7UXDqLcwhSWXWW3A2PFTdDp
+         NdI07XtacRO9E02E1F671F71fgkCBB4QY4MPOgrMNPttUqk0+YcSKRU7o6zHKI11lEKQ
+         0Y/2wERkDV137dSeG1E6PylhdAo+gx1HWHE2KkKJUlpGwa8kVZXTWvrCiuYdLE7Ohq+d
+         Q7UDdGk88mjfNQAf0s+iSemnK3E9kF4Qh8UlO3pSIupl52kDkYgDjWoMaT5hXOFjQa5N
+         bTP547L7khkGVIUqu1guJ+eMTjQ1qoYsX6pz5c+RV4iCrHpVCnm/MjYgkTt6Y8vjCaGW
+         Itmg==
+X-Gm-Message-State: APjAAAUwwKznI1dOHVP9MtBLPCI29yxtfKU9x8i4EDTN7qdEFeRJ69gN
+        fW+pAlV0H4DH0Bp/pSySPEkt8KcwS0s1I0a28NaNIA==
+X-Google-Smtp-Source: APXvYqzJ6RcpW1AKYY64DcFg31Q3abj110+k7vsmWtJerlFCp+aLmBxLTxWeV9e9dqahFbq36N/70b0ruDZgONRDz9Y=
+X-Received: by 2002:a92:831d:: with SMTP id f29mr4564735ild.263.1573657912726;
+ Wed, 13 Nov 2019 07:11:52 -0800 (PST)
+MIME-Version: 1.0
+References: <20191106231650.1580-1-jeffrey.l.hugo@gmail.com>
+ <20191112084225.casuncbo7z54vu4g@netronome.com> <CAOCk7NpNgtTSus2KtBMe=jGLFyBumVfRVxKxtHoEDUEt2-6tqQ@mail.gmail.com>
+ <87d0dws79m.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87d0dws79m.fsf@kamboji.qca.qualcomm.com>
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Date:   Wed, 13 Nov 2019 08:11:41 -0700
+Message-ID: <CAOCk7NpGm7jLH-z9CdJaYAGkg_WuiBxtxgwby+BJef=asFbavw@mail.gmail.com>
+Subject: Re: [PATCH] ath10k: Fix qmi init error handling
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Simon Horman <simon.horman@netronome.com>, davem@davemloft.net,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, MSM <linux-arm-msm@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On Tue, Nov 12, 2019 at 9:57 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Jeffrey Hugo <jeffrey.l.hugo@gmail.com> writes:
+>
+> > On Tue, Nov 12, 2019 at 1:42 AM Simon Horman <simon.horman@netronome.com> wrote:
+> >>
+> >> On Wed, Nov 06, 2019 at 03:16:50PM -0800, Jeffrey Hugo wrote:
+> >> > When ath10k_qmi_init() fails, the error handling does not free the irq
+> >> > resources, which causes an issue if we EPROBE_DEFER as we'll attempt to
+> >> > (re-)register irqs which are already registered.
+> >> >
+> >> > Fixes: ba94c753ccb4 ("ath10k: add QMI message handshake for wcn3990 client")
+> >> > Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+> >> > ---
+> >> >  drivers/net/wireless/ath/ath10k/snoc.c | 2 +-
+> >> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >> >
+> >> > diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+> >> > index fc15a0037f0e..f2a0b7aaad3b 100644
+> >> > --- a/drivers/net/wireless/ath/ath10k/snoc.c
+> >> > +++ b/drivers/net/wireless/ath/ath10k/snoc.c
+> >> > @@ -1729,7 +1729,7 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+> >> >       ret = ath10k_qmi_init(ar, msa_size);
+> >> >       if (ret) {
+> >> >               ath10k_warn(ar, "failed to register wlfw qmi client: %d\n", ret);
+> >> > -             goto err_core_destroy;
+> >> > +             goto err_free_irq;
+> >> >       }
+> >>
+> >> From a casual examination of the code this seems like a step in the right
+> >> direction. But does this error path also need to call ath10k_hw_power_off() ?
+> >
+> > It probably should.  I don't see any fatal errors from the step being
+> > skipped, although it might silence some regulator warnings about being
+> > left on.  Unlikely to be observed by most folks as I was initing the
+> > driver pretty early to debug some things.  Looks like Kalle already
+> > picked up this patch though, so I guess your suggestion would need to
+> > be a follow up.
+>
+> Actually it's only in the pending branch, which means that the patch can
+> be changed or a new version can be submitted:
 
-When using the kernel datapath, the upcall don't
-include skb hash info relatived. That will introduce
-some problem, because the hash of skb is important
-in kernel stack. For example, VXLAN module uses
-it to select UDP src port. The tx queue selection
-may also use the hash in stack.
+Thats an interesting flow.  Ok.
 
-Hash is computed in different ways. Hash is random
-for a TCP socket, and hash may be computed in hardware,
-or software stack. Recalculation hash is not easy.
-
-Hash of TCP socket is computed:
-tcp_v4_connect
-    -> sk_set_txhash (is random)
-
-__tcp_transmit_skb
-    -> skb_set_hash_from_sk
-
-There will be one upcall, without information of skb
-hash, to ovs-vswitchd, for the first packet of a TCP
-session. The rest packets will be processed in Open vSwitch
-modules, hash kept. If this tcp session is forward to
-VXLAN module, then the UDP src port of first tcp packet
-is different from rest packets.
-
-TCP packets may come from the host or dockers, to Open vSwitch.
-To fix it, we store the hash info to upcall, and restore hash
-when packets sent back.
-
-+---------------+          +-------------------------+
-|   Docker/VMs  |          |     ovs-vswitchd        |
-+----+----------+          +-+--------------------+--+
-     |                       ^                    |
-     |                       |                    |
-     |                       |  upcall            v restore packet hash (not recalculate)
-     |                     +-+--------------------+--+
-     |  tap netdev         |                         |   vxlan module
-     +--------------->     +-->  Open vSwitch ko     +-->
-       or internal type    |                         |
-                           +-------------------------+
-
-Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
----
-v4:
-* all hash of skb to upcall
-* remove the pad_packet, nla_put makes sure len is align
-* add OVS_PACKET_ATTR_HASH at the end of ovs_packet_attr.
-v3:
-* add enum ovs_pkt_hash_types
-* avoid duplicate call the skb_get_hash_raw.
-* explain why we should fix this problem.
----
- include/uapi/linux/openvswitch.h |  4 +++-
- net/openvswitch/datapath.c       | 26 +++++++++++++++++++++++++-
- net/openvswitch/datapath.h       | 12 ++++++++++++
- 3 files changed, 40 insertions(+), 2 deletions(-)
-
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 1887a451c388..a87b44cd5590 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -173,6 +173,7 @@ enum ovs_packet_cmd {
-  * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
-  * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragment
-  * size.
-+ * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_hash in skb).
-  *
-  * These attributes follow the &struct ovs_header within the Generic Netlink
-  * payload for %OVS_PACKET_* commands.
-@@ -190,7 +191,8 @@ enum ovs_packet_attr {
- 	OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe,
- 				       error logging should be suppressed. */
- 	OVS_PACKET_ATTR_MRU,	    /* Maximum received IP fragment size. */
--	OVS_PACKET_ATTR_LEN,		/* Packet size before truncation. */
-+	OVS_PACKET_ATTR_LEN,	    /* Packet size before truncation. */
-+	OVS_PACKET_ATTR_HASH,	    /* Packet hash. */
- 	__OVS_PACKET_ATTR_MAX
- };
- 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 2088619c03f0..8ce1f773378d 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
- 	size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
- 		+ nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
- 		+ nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
--		+ nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATTR_LEN */
-+		+ nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
-+		+ nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
- 
- 	/* OVS_PACKET_ATTR_USERDATA */
- 	if (upcall_info->userdata)
-@@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- 	size_t len;
- 	unsigned int hlen;
- 	int err, dp_ifindex;
-+	u64 hash;
- 
- 	dp_ifindex = get_dpifindex(dp);
- 	if (!dp_ifindex)
-@@ -504,6 +506,19 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- 		pad_packet(dp, user_skb);
- 	}
- 
-+	/* Add OVS_PACKET_ATTR_HASH */
-+	hash = skb_get_hash_raw(skb);
-+	if (skb->sw_hash)
-+		hash |= OVS_PACKET_HASH_SW_BIT;
-+
-+	if (skb->l4_hash)
-+		hash |= OVS_PACKET_HASH_L4_BIT;
-+
-+	if (nla_put(user_skb, OVS_PACKET_ATTR_HASH, sizeof (u64), &hash)) {
-+		err = -ENOBUFS;
-+		goto out;
-+	}
-+
- 	/* Only reserve room for attribute header, packet data is added
- 	 * in skb_zerocopy() */
- 	if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
-@@ -543,6 +558,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
- 	struct datapath *dp;
- 	struct vport *input_vport;
- 	u16 mru = 0;
-+	u64 hash;
- 	int len;
- 	int err;
- 	bool log = !a[OVS_PACKET_ATTR_PROBE];
-@@ -568,6 +584,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
- 	}
- 	OVS_CB(packet)->mru = mru;
- 
-+	if (a[OVS_PACKET_ATTR_HASH]) {
-+		hash = nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
-+
-+		__skb_set_hash(packet, hash & 0xFFFFFFFFULL,
-+			       !!(hash & OVS_PACKET_HASH_SW_BIT),
-+			       !!(hash & OVS_PACKET_HASH_L4_BIT));
-+	}
-+
- 	/* Build an sw_flow for sending this packet. */
- 	flow = ovs_flow_alloc();
- 	err = PTR_ERR(flow);
-diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-index 81e85dde8217..e239a46c2f94 100644
---- a/net/openvswitch/datapath.h
-+++ b/net/openvswitch/datapath.h
-@@ -139,6 +139,18 @@ struct ovs_net {
- 	bool xt_label;
- };
- 
-+/**
-+ * enum ovs_pkt_hash_types - hash info to include with a packet
-+ * to send to userspace.
-+ * @OVS_PACKET_HASH_SW_BIT: indicates hash was computed in software stack.
-+ * @OVS_PACKET_HASH_L4_BIT: indicates hash is a canonical 4-tuple hash
-+ * over transport ports.
-+ */
-+enum ovs_pkt_hash_types {
-+	OVS_PACKET_HASH_SW_BIT = (1ULL << 32),
-+	OVS_PACKET_HASH_L4_BIT = (1ULL << 33),
-+};
-+
- extern unsigned int ovs_net_id;
- void ovs_lock(void);
- void ovs_unlock(void);
--- 
-2.23.0
-
+>
+> https://wireless.wiki.kernel.org/en/users/drivers/ath10k/submittingpatches#patch_flow
+>
+> The easiest way to check the state of a wireless patch is from
+> patchwork:
+>
+> https://patchwork.kernel.org/patch/11231325/
+>
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches#checking_state_of_patches_from_patchwork
+>
+> --
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
