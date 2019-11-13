@@ -2,92 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53F7AFBB4F
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 23:03:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BB48FBB67
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 23:11:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbfKMWDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 17:03:33 -0500
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39384 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726410AbfKMWDc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 17:03:32 -0500
-Received: by mail-wr1-f65.google.com with SMTP id l7so4172107wrp.6
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 14:03:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=5r31DwKobrQ9SSaPsklFKxvM/tsAsPnCi9BlHBU3MT4=;
-        b=tbTdFb/dvgaG+hEWVLLLO76TFBhBxTgbrtQTHrwVDLnDi9d3r3Y3BZEcvbIH6fIokn
-         hEGnakYdHdV8YUmhHALQxRDyya4S9rudDX/GBmhefl449VhZ5Rr3Quo59aT0sObTI405
-         1fKol/HXUzRrDJbe6bhhZ0RlozdOZFFlv+PbNRBi78qHp7x5jWsuED0sG9Xj4vHPHr1/
-         lpqcB4Kvtck7OgDyKMbNf6XfS+zecXATRQPHziSdgioUDVzH/ZpgjaqcrwLaF9WZ+Jav
-         xsOaufuUjJtnxDGQ/tyGGzCUKCz2MZ3xaHGwoQjQivoThsdLA81jh589AzWOYWPUC8SD
-         xMBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=5r31DwKobrQ9SSaPsklFKxvM/tsAsPnCi9BlHBU3MT4=;
-        b=tLZgybcEGy6/Ptv60lZ/rQ7DdmgTCWH/o76T2m5R05IJgIh4G+uiqP2lhyMUNiYrDH
-         CSvCfW/jRvehpJeT6h4Q/yi0h0WAXX2BuTxp5CnEy7+J2nuqQ3BEzuZSNAoAiCDL4oIJ
-         8c+BlOERV0V47cbwzOpXK2+6KjmLl4ECu5SadLc3lQT0lUsjQ3/9Glh7hAJFl1lWlLQ0
-         PQjlfBFR8+675Xw5zgyNeb8IHAZcb2APywc4psdACMFYz6FxAZuBRBu4snlTqTseZPj3
-         2WLrfzkVvF9PHgyYdnlrYwkcpegOosZKgg402D+I6WjnGJX3ZS/qiy2hlpgOfO2ul52S
-         JpTg==
-X-Gm-Message-State: APjAAAWcwAlslAozpbZfUv5xL5/ZlibpCH2UzJp9Aa9jz3Dw5TD+KoK9
-        2v06YIOC1scLfeRk6fPhUi+kJYAX
-X-Google-Smtp-Source: APXvYqzuDON0vrzzo+A+caVxfmZs57dwgWk5iedfE6/pNELhzdgz2uAmz+euQx0roLI3C0SWtHar5g==
-X-Received: by 2002:adf:e911:: with SMTP id f17mr1377053wrm.300.1573682610655;
-        Wed, 13 Nov 2019 14:03:30 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f2d:7d00:f8b2:b0b6:7d0e:ced4? (p200300EA8F2D7D00F8B2B0B67D0ECED4.dip0.t-ipconnect.de. [2003:ea:8f2d:7d00:f8b2:b0b6:7d0e:ced4])
-        by smtp.googlemail.com with ESMTPSA id g4sm4057801wru.75.2019.11.13.14.03.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 Nov 2019 14:03:30 -0800 (PST)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: use r8168d_modify_extpage in
- rtl8168f_config_eee_phy
-Message-ID: <5ebacbf1-f586-25ad-8e19-a23746ded538@gmail.com>
-Date:   Wed, 13 Nov 2019 23:03:26 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+        id S1726605AbfKMWLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 17:11:14 -0500
+Received: from ns.lynxeye.de ([87.118.118.114]:51621 "EHLO lynxeye.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726189AbfKMWLO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 17:11:14 -0500
+Received: by lynxeye.de (Postfix, from userid 501)
+        id 9D655E74222; Wed, 13 Nov 2019 23:11:12 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on lynxeye.de
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=3.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham version=3.3.1
+Received: from radon.fritz.box (a89-183-58-16.net-htp.de [89.183.58.16])
+        by lynxeye.de (Postfix) with ESMTPSA id 44667E7414D;
+        Wed, 13 Nov 2019 23:11:11 +0100 (CET)
+Message-ID: <e83f5b699c5652cbe2350ac3576215d24b748e03.camel@lynxeye.de>
+Subject: Re: long delays in rtl8723 drivers in irq disabled sections
+From:   Lucas Stach <dev@lynxeye.de>
+To:     Pkshih <pkshih@realtek.com>, wlanfae <wlanfae@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Wed, 13 Nov 2019 23:11:10 +0100
+In-Reply-To: <5B2DA6FDDF928F4E855344EE0A5C39D1D5C9CE47@RTITMBSVM04.realtek.com.tw>
+References: <5de65447f1d115f436f764a7ec811c478afbe2e0.camel@lynxeye.de>
+         <5B2DA6FDDF928F4E855344EE0A5C39D1D5C9CE47@RTITMBSVM04.realtek.com.tw>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1 (3.34.1-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use r8168d_modify_extpage() also in rtl8168f_config_eee_phy() to
-simplify the code.
+Hi PK,
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+Am Mittwoch, den 13.11.2019, 03:43 +0000 schrieb Pkshih:
+> > -----Original Message-----
+> > From: linux-wireless-owner@vger.kernel.org [mailto:linux-wireless-owner@vger.kernel.org] On Behalf
+> > Of Lucas Stach
+> > Sent: Wednesday, November 13, 2019 5:02 AM
+> > To: wlanfae; Pkshih
+> > Cc: linux-wireless@vger.kernel.org; netdev@vger.kernel.org
+> > Subject: long delays in rtl8723 drivers in irq disabled sections
+> > 
+> > Hi all,
+> > 
+> > while investigating some latency issues on my laptop I stumbled across
+> > quite large delays in the rtl8723 PHY code, which are done in IRQ
+> > disabled atomic sections, which is blocking IRQ servicing for all
+> > devices in the system.
+> > 
+> > Specifically there are 3 consecutive 1ms delays in
+> > rtl8723_phy_rf_serial_read(), which is used in an IRQ disabled call
+> > path. Sadly those delays don't have any comment in the code explaining
+> > why they are needed. I hope that anyone can tell if those delays are
+> > strictly neccessary and if so if they really need to be this long.
+> > 
+> 
+> These delays are because read RF register is an indirect access that hardware
+> needs time to accomplish read action, but there's no ready bit, so delay
+> is required to guarantee the read value is correct. 
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 9a21ac962..8b33c1aa3 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2324,11 +2324,7 @@ static void rtl8168f_config_eee_phy(struct rtl8169_private *tp)
- {
- 	struct phy_device *phydev = tp->phydev;
- 
--	phy_write(phydev, 0x1f, 0x0007);
--	phy_write(phydev, 0x1e, 0x0020);
--	phy_set_bits(phydev, 0x15, BIT(8));
--	phy_write(phydev, 0x1f, 0x0000);
--
-+	r8168d_modify_extpage(phydev, 0x0020, 0x15, 0, BIT(8));
- 	r8168d_phy_param(phydev, 0x8b85, 0, BIT(13));
- }
- 
--- 
-2.24.0
+Thanks for the confirmation, I suspected something like this.
+
+> It is possible to use smaller delay, but it's exactly required.
+
+1ms seems like an eternity on modern hardware, even for an indirect
+read.
+
+> 
+> An alternative way is to prevent calling this function in IRQ disabled flow.
+> Could you share the calling trace?
+
+Sure, trimmed callstack below. As you can see the IRQ disabled section
+is started via a spin_lock_irqsave(). The trace is from a 8723de
+module, which is still out of tree, but the same code is present in
+mainline and used by the other 8723 variants.
+I don't know if this function needs to guard against something running
+in the IRQ handler, so depending on the answer to that the solution
+might be as simple as not disabling IRQs when taking the spinlock.
+
+kworker/-276     4d...    0us : _raw_spin_lock_irqsave
+kworker/-276     4d...    0us : rtl8723_phy_rf_serial_read <-rtl8723de_phy_set_rf_reg
+kworker/-276     4d...    1us : rtl8723_phy_query_bb_reg <-rtl8723_phy_rf_serial_read
+kworker/-276     4d...    3us : rtl8723_phy_set_bb_reg <-rtl8723_phy_rf_serial_read
+kworker/-276     4d...    4us : __const_udelay <-rtl8723_phy_rf_serial_read
+kworker/-276     4d...    4us!: delay_mwaitx <-rtl8723_phy_rf_serial_read
+kworker/-276     4d... 1004us : rtl8723_phy_set_bb_reg <-rtl8723_phy_rf_serial_read
+[...]
+
+Regards,
+Lucas
 
