@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C36FA61F
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:27:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF411FA623
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:27:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727614AbfKMBvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 20:51:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38108 "EHLO mail.kernel.org"
+        id S1727637AbfKMBvD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 20:51:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727588AbfKMBu6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 20:50:58 -0500
+        id S1727505AbfKMBvB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:51:01 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 771CB222CE;
-        Wed, 13 Nov 2019 01:50:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 78F85222D3;
+        Wed, 13 Nov 2019 01:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573609857;
-        bh=/n033tAcWZldeMXOsgVbpUniNKRtBHljCjRdA4VUUMU=;
+        s=default; t=1573609860;
+        bh=cSP2I36sgXizIVf9FnNRZCxT9E+EkRMfG2cJCSFnRmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RPfb/Pk1qi9BCsQPj0vgquF6OTQk7L/lD16SXZN+jwtl+yh0L+o2tyzWreSDVJi5S
-         ToPzXwcCzhjI56GjT7B5jKS8QYc/e+7igfe6YwMEgwiLSVzgIi56lq9jXuV2CgbvtT
-         eYtXFEIiTu3M+hiMJDnRaYi9qEcVq/eQb6y4WNt8=
+        b=hzXlZLa4mt9tPTQ8oeWRy2OuwyuWhUIBSfNH9qg4j0r8ZvVbveBKhp/8zFivbHQsp
+         /dKCnaz9YFOg0YMJ5JQm5BJeQ7MGXCYHhxRqP1cip53o/M6VbCvKfOjViywct74foT
+         Qg9PodwtuDWjH9FSz4uLYhLJpId0qoox+ztAczOE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Greear <greearb@candelatech.com>,
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 025/209] ath10k: fix vdev-start timeout on error
-Date:   Tue, 12 Nov 2019 20:47:21 -0500
-Message-Id: <20191113015025.9685-25-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: [PATCH AUTOSEL 4.19 026/209] rtlwifi: btcoex: Use proper enumerated types for Wi-Fi only interface
+Date:   Tue, 12 Nov 2019 20:47:22 -0500
+Message-Id: <20191113015025.9685-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113015025.9685-1-sashal@kernel.org>
 References: <20191113015025.9685-1-sashal@kernel.org>
@@ -44,115 +46,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ben Greear <greearb@candelatech.com>
+From: Nathan Chancellor <natechancellor@gmail.com>
 
-[ Upstream commit 833fd34d743c728afe6d127ef7bee67e7d9199a8 ]
+[ Upstream commit 31138a827d1b3d6e4855bddb5a1e44e7b32309c0 ]
 
-The vdev-start-response message should cause the
-completion to fire, even in the error case.  Otherwise,
-the user still gets no useful information and everything
-is blocked until the timeout period.
+Clang warns when one enumerated type is implicitly converted to another.
 
-Add some warning text to print out the invalid status
-code to aid debugging, and propagate failure code.
+drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c:1327:34:
+warning: implicit conversion from enumeration type 'enum
+btc_chip_interface' to different enumeration type 'enum
+wifionly_chip_interface' [-Wenum-conversion]
+                wifionly_cfg->chip_interface = BTC_INTF_PCI;
+                                             ~ ^~~~~~~~~~~~
+drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c:1330:34:
+warning: implicit conversion from enumeration type 'enum
+btc_chip_interface' to different enumeration type 'enum
+wifionly_chip_interface' [-Wenum-conversion]
+                wifionly_cfg->chip_interface = BTC_INTF_USB;
+                                             ~ ^~~~~~~~~~~~
+drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c:1333:34:
+warning: implicit conversion from enumeration type 'enum
+btc_chip_interface' to different enumeration type 'enum
+wifionly_chip_interface' [-Wenum-conversion]
+                wifionly_cfg->chip_interface = BTC_INTF_UNKNOWN;
+                                             ~ ^~~~~~~~~~~~~~~~
+3 warnings generated.
 
-Signed-off-by: Ben Greear <greearb@candelatech.com>
+Use the values from the correct enumerated type, wifionly_chip_interface.
+
+BTC_INTF_UNKNOWN = WIFIONLY_INTF_UNKNOWN = 0
+BTC_INTF_PCI = WIFIONLY_INTF_PCI = 1
+BTC_INTF_USB = WIFIONLY_INTF_USB = 2
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/135
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/core.h |  1 +
- drivers/net/wireless/ath/ath10k/mac.c  |  2 +-
- drivers/net/wireless/ath/ath10k/wmi.c  | 19 ++++++++++++++++---
- drivers/net/wireless/ath/ath10k/wmi.h  |  8 +++++++-
- 4 files changed, 25 insertions(+), 5 deletions(-)
+ .../net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c   | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 9feea02e7d373..5c9fc4070fd24 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -1003,6 +1003,7 @@ struct ath10k {
+diff --git a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
+index b026e80940a4d..6fbf8845a2ab6 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
++++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
+@@ -1324,13 +1324,13 @@ bool exhalbtc_initlize_variables_wifi_only(struct rtl_priv *rtlpriv)
  
- 	struct completion install_key_done;
- 
-+	int last_wmi_vdev_start_status;
- 	struct completion vdev_setup_done;
- 
- 	struct workqueue_struct *workqueue;
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 1419f9d1505fe..e95bb397e1c96 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -967,7 +967,7 @@ static inline int ath10k_vdev_setup_sync(struct ath10k *ar)
- 	if (time_left == 0)
- 		return -ETIMEDOUT;
- 
--	return 0;
-+	return ar->last_wmi_vdev_start_status;
- }
- 
- static int ath10k_monitor_vdev_start(struct ath10k *ar, int vdev_id)
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
-index 9f31b9a108507..bf74aff9510be 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi.c
-@@ -3247,18 +3247,31 @@ void ath10k_wmi_event_vdev_start_resp(struct ath10k *ar, struct sk_buff *skb)
- {
- 	struct wmi_vdev_start_ev_arg arg = {};
- 	int ret;
-+	u32 status;
- 
- 	ath10k_dbg(ar, ATH10K_DBG_WMI, "WMI_VDEV_START_RESP_EVENTID\n");
- 
-+	ar->last_wmi_vdev_start_status = 0;
-+
- 	ret = ath10k_wmi_pull_vdev_start(ar, skb, &arg);
- 	if (ret) {
- 		ath10k_warn(ar, "failed to parse vdev start event: %d\n", ret);
--		return;
-+		ar->last_wmi_vdev_start_status = ret;
-+		goto out;
+ 	switch (rtlpriv->rtlhal.interface) {
+ 	case INTF_PCI:
+-		wifionly_cfg->chip_interface = BTC_INTF_PCI;
++		wifionly_cfg->chip_interface = WIFIONLY_INTF_PCI;
+ 		break;
+ 	case INTF_USB:
+-		wifionly_cfg->chip_interface = BTC_INTF_USB;
++		wifionly_cfg->chip_interface = WIFIONLY_INTF_USB;
+ 		break;
+ 	default:
+-		wifionly_cfg->chip_interface = BTC_INTF_UNKNOWN;
++		wifionly_cfg->chip_interface = WIFIONLY_INTF_UNKNOWN;
+ 		break;
  	}
  
--	if (WARN_ON(__le32_to_cpu(arg.status)))
--		return;
-+	status = __le32_to_cpu(arg.status);
-+	if (WARN_ON_ONCE(status)) {
-+		ath10k_warn(ar, "vdev-start-response reports status error: %d (%s)\n",
-+			    status, (status == WMI_VDEV_START_CHAN_INVALID) ?
-+			    "chan-invalid" : "unknown");
-+		/* Setup is done one way or another though, so we should still
-+		 * do the completion, so don't return here.
-+		 */
-+		ar->last_wmi_vdev_start_status = -EINVAL;
-+	}
- 
-+out:
- 	complete(&ar->vdev_setup_done);
- }
- 
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.h b/drivers/net/wireless/ath/ath10k/wmi.h
-index 36220258e3c7e..e341cfb3fcc26 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.h
-+++ b/drivers/net/wireless/ath/ath10k/wmi.h
-@@ -6642,11 +6642,17 @@ struct wmi_ch_info_ev_arg {
- 	__le32 rx_frame_count;
- };
- 
-+/* From 10.4 firmware, not sure all have the same values. */
-+enum wmi_vdev_start_status {
-+	WMI_VDEV_START_OK = 0,
-+	WMI_VDEV_START_CHAN_INVALID,
-+};
-+
- struct wmi_vdev_start_ev_arg {
- 	__le32 vdev_id;
- 	__le32 req_id;
- 	__le32 resp_type; /* %WMI_VDEV_RESP_ */
--	__le32 status;
-+	__le32 status; /* See wmi_vdev_start_status enum above */
- };
- 
- struct wmi_peer_kick_ev_arg {
 -- 
 2.20.1
 
