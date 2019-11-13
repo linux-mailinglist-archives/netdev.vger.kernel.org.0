@@ -2,105 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 092AFFAE18
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:08:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 492F9FAE26
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:11:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727159AbfKMKIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:08:36 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27190 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726597AbfKMKIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 05:08:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573639714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z5iAiTWoEzg4GUYQkCWobgITk/EP9oPO6a/TdmjXL2s=;
-        b=FZs6ByKyC0G6ZYZCnLLJ/ULnrfoK2kecn5RqyazfaNaAHUaGkJXNni32iLnheD2VIWWTJa
-        Q1aLrbm8RrZBrBNbpzPnU+sWxy/8epjUCjHpWn0dJLtpZjA2ThDBBnE38E+whwgLHQ1EwZ
-        GHxOFdXUxP/iX8B8UO8M/rqsCTvXZDY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-348-A4oNBqg6O8-xit-10lwqxw-1; Wed, 13 Nov 2019 05:08:31 -0500
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E3FD107ACC6;
-        Wed, 13 Nov 2019 10:08:30 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 454D95DF3A;
-        Wed, 13 Nov 2019 10:08:25 +0000 (UTC)
-Date:   Wed, 13 Nov 2019 11:08:23 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Jonathan Lemon" <jonathan.lemon@gmail.com>
-Cc:     "Alexei Starovoitov" <ast@fb.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, "Kernel Team" <Kernel-team@fb.com>,
-        ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [net-next PATCH] page_pool: do not release pool until inflight
- == 0.
-Message-ID: <20191113110823.0e1186a5@carbon>
-In-Reply-To: <04EECB84-2958-4D59-BE2D-FD7ABD8E4C05@gmail.com>
-References: <20191112053210.2555169-1-jonathan.lemon@gmail.com>
-        <20191112130832.6b3d69d5@carbon>
-        <12C67CAA-4C7A-465D-84DD-8C3F94115CAA@gmail.com>
-        <20191112174822.4b635e56@carbon>
-        <e4aa8923-7c81-a215-345c-a2127862048f@fb.com>
-        <04EECB84-2958-4D59-BE2D-FD7ABD8E4C05@gmail.com>
+        id S1727345AbfKMKLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:11:17 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35935 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726613AbfKMKLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 05:11:17 -0500
+Received: by mail-wm1-f66.google.com with SMTP id c22so1329768wmd.1
+        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 02:11:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+WeywjYhif8cbDEqMOV9DoOxbQ0mSoumc3+tLKw1uLM=;
+        b=H4cg+YZkn91KQnCu6mBp6aYcM6J1FTJ2Nx1UCRlGMBcC7vGLScX1L623Mp/ugSGMgF
+         BKu01xFWg8RZDf/qyhPH9EC2ZfRzylzJYMg2w5rAlL7G6jckM1fn/gS4QDqxcyLixycS
+         2Z3XsDxqlZejK5hp71L8Jqu7I7eqHz2TfY6gBGQbEvm/GdZTexGJH/M9AKKhnvQQND5C
+         FSp7te8fAZRfzQFihdNGMrOuDSNUMWa5rbHrHISIwmPrDS4NzecStq1pMB+WKWjHFxhS
+         eyLrKJT1L/PXDljA4hIN0iFTDMTbBGyasH5COY1vmYpOvB4CK9d62cKLslGA8nIwS8Av
+         cTXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+WeywjYhif8cbDEqMOV9DoOxbQ0mSoumc3+tLKw1uLM=;
+        b=tzuzw4u7Fx/SO6Ms8KNioxqL4/7IKEWew9fnZHX414kkwyKeLSPp/ixDtSOb4ZuZDC
+         Qwk9V1yHOPly7nPrF0xhuzWpByIAPta4GJ/XiEkXjgUkr+uVD9U+4Pewv/FTXFN6HpVI
+         leXJBa0eoNHkG4j1UJI/thxMkWWn8YjbOJbpcBXxzkMjO/5zVEWZ746SgZrTHe7xUc+1
+         tiJU3ppcRwUUo27tTbmcbI4oQImij7qaUNVgLJP4h0LAUJNDO26ekk8kfhYMpwSwquBR
+         UbJ2FRZEhglzYedlMbsncdcaCkGwPeGamsLHE7bNWG9GcAr9IsunEt5kbHY2/PdJLycS
+         68ow==
+X-Gm-Message-State: APjAAAW7p9KcV+Rz/pe33I46B8B1+TqbHZDZKjUa12wwW0/Cg7lwEbrb
+        mQufBTkzYEXmOCTXKRmKZ4hM+A==
+X-Google-Smtp-Source: APXvYqwst42K3LwIDuk0tBKtjOq4ShX05R4CRWd8xFX1teo1ExSOwBayxYOUvI9Fdmk6xfk9T6RxKA==
+X-Received: by 2002:a1c:ed16:: with SMTP id l22mr1918443wmh.151.1573639875005;
+        Wed, 13 Nov 2019 02:11:15 -0800 (PST)
+Received: from ares.lan (232.red-88-3-18.dynamicip.rima-tde.net. [88.3.18.232])
+        by smtp.gmail.com with ESMTPSA id k4sm1896719wmk.26.2019.11.13.02.11.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Nov 2019 02:11:14 -0800 (PST)
+From:   Aleksander Morgado <aleksander@aleksander.es>
+To:     bjorn@mork.no, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Cc:     Aleksander Morgado <aleksander@aleksander.es>
+Subject: [PATCH] net: usb: qmi_wwan: add support for Foxconn T77W968 LTE modules
+Date:   Wed, 13 Nov 2019 11:11:10 +0100
+Message-Id: <20191113101110.496306-1-aleksander@aleksander.es>
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-MC-Unique: A4oNBqg6O8-xit-10lwqxw-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Nov 2019 09:32:10 -0800
-"Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
+These are the Foxconn-branded variants of the Dell DW5821e modules,
+same USB layout as those.
 
-> On 12 Nov 2019, at 9:23, Alexei Starovoitov wrote:
->=20
-> > On 11/12/19 8:48 AM, Jesper Dangaard Brouer wrote: =20
-> >>> The trace_page_pool_state_release() does not dereference pool, it=20
-> >>> just
-> >>> reports the pointer value, so there shouldn't be any use-after-free. =
-=20
-> >> In the tracepoint we can still dereference the pool object pointer.
-> >> This is made easier via using bpftrace for example see[1] (and with=20
-> >> BTF
-> >> this will become more common to do so). =20
-> >
-> > bpf tracing progs cannot assume that the pointer is valid.
-> > The program can remember a kernel pointer in a map and then
-> > access it days later.
-> > Like kretprobe on kfree_skb(). The skb is freed. 100% use-after-free.
-> > Such bpf program is broken and won't be reading meaningful values,
-> > but it won't crash the kernel.
-> >
-> > On the other side we should not be passing pointers to freed objects
-> > into tracepoints. That just wrong.
-> > May be simply move that questionable tracepoint? =20
->=20
-> Yes, move and simplify it.  I believe this patch should resolve the=20
-> issue, it just reports pages entering/exiting the pool, without
-> trying to access the counters - the counters are reported through the
-> inflight tracepoint.
+The QMI interface is exposed in USB configuration #1:
 
-Sorry, I don't like loosing the counter.  I have a plan for using these
-counters in a bpftrace script.  (Worst case I might be able to live
-without the counters). =20
+P:  Vendor=0489 ProdID=e0b4 Rev=03.18
+S:  Manufacturer=FII
+S:  Product=T77W968 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-The basic idea is to use these tracepoints to detect if we leak
-DMA-mappings. I'll try write the bpftrace script today, and
-see it I can live without the counter.
+Signed-off-by: Aleksander Morgado <aleksander@aleksander.es>
+---
+ drivers/net/usb/qmi_wwan.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 56d334b9ad45..4196c0e32740 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1371,6 +1371,8 @@ static const struct usb_device_id products[] = {
+ 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
+ 	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
+ 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
++	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
++	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
+ 
+ 	/* 4. Gobi 1000 devices */
+ 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+-- 
+2.24.0
 
