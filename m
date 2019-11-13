@@ -2,69 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 90403FAF29
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:58:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74BE0FAF3E
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 12:03:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727452AbfKMK6H convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 13 Nov 2019 05:58:07 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:42519 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726165AbfKMK6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 05:58:07 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-266-jeJlDL0GMZqBGojpjIXSDg-1; Wed, 13 Nov 2019 05:58:03 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 73686911E9;
-        Wed, 13 Nov 2019 10:58:01 +0000 (UTC)
-Received: from bistromath.localdomain (unknown [10.36.118.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 181981891F;
-        Wed, 13 Nov 2019 10:57:58 +0000 (UTC)
-Date:   Wed, 13 Nov 2019 11:57:57 +0100
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: Re: [PATCH net-next v5 1/6] net: add queue argument to
- __skb_wait_for_more_packets and __skb_{,try_}recv_datagram
-Message-ID: <20191113105757.GA2855442@bistromath.localdomain>
-References: <cover.1573487190.git.sd@queasysnail.net>
- <0398d7e97db25019dcd32bbce4beba2bd1de27a7.1573487190.git.sd@queasysnail.net>
- <7c3de99a-4810-8a3b-72d4-04e72c47537b@gmail.com>
+        id S1727793AbfKMLCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 06:02:55 -0500
+Received: from cloudserver094114.home.pl ([79.96.170.134]:45734 "EHLO
+        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726165AbfKMLCz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 06:02:55 -0500
+Received: from 79.184.253.153.ipv4.supernova.orange.pl (79.184.253.153) (HELO kreacher.localnet)
+ by serwer1319399.home.pl (79.96.170.134) with SMTP (IdeaSmtpServer 0.83.292)
+ id f9c9ec80f02b64f5; Wed, 13 Nov 2019 12:02:52 +0100
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Breno =?ISO-8859-1?Q?Leit=E3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        David@rox.of.borg, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Casey Leedom <leedom@chelsio.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Pensando Drivers <drivers@pensando.io>,
+        Kevin Hilman <khilman@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/5] power: avs: smartreflex: Remove superfluous cast in debugfs_create_file() call
+Date:   Wed, 13 Nov 2019 12:02:51 +0100
+Message-ID: <2168390.66xqsT3ub9@kreacher>
+In-Reply-To: <20191021145149.31657-5-geert+renesas@glider.be>
+References: <20191021145149.31657-1-geert+renesas@glider.be> <20191021145149.31657-5-geert+renesas@glider.be>
 MIME-Version: 1.0
-In-Reply-To: <7c3de99a-4810-8a3b-72d4-04e72c47537b@gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: jeJlDL0GMZqBGojpjIXSDg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-Disposition: inline
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-11-12, 09:54:50 -0800, Eric Dumazet wrote:
+On Monday, October 21, 2019 4:51:48 PM CET Geert Uytterhoeven wrote:
+> There is no need to cast a typed pointer to a void pointer when calling
+> a function that accepts the latter.  Remove it, as the cast prevents
+> further compiler checks.
 > 
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+>  drivers/power/avs/smartreflex.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> On 11/12/19 7:18 AM, Sabrina Dubroca wrote:
-> > This will be used by ESP over TCP to handle the queue of IKE messages.
-> > 
-> > Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
-> > ---
-> > v2: document the new argument to __skb_try_recv_datagram
-> > 
-> >
+> diff --git a/drivers/power/avs/smartreflex.c b/drivers/power/avs/smartreflex.c
+> index 4684e7df833a81e9..5376f3d22f31eade 100644
+> --- a/drivers/power/avs/smartreflex.c
+> +++ b/drivers/power/avs/smartreflex.c
+> @@ -905,7 +905,7 @@ static int omap_sr_probe(struct platform_device *pdev)
+>  	sr_info->dbg_dir = debugfs_create_dir(sr_info->name, sr_dbg_dir);
+>  
+>  	debugfs_create_file("autocomp", S_IRUGO | S_IWUSR, sr_info->dbg_dir,
+> -			    (void *)sr_info, &pm_sr_fops);
+> +			    sr_info, &pm_sr_fops);
+>  	debugfs_create_x32("errweight", S_IRUGO, sr_info->dbg_dir,
+>  			   &sr_info->err_weight);
+>  	debugfs_create_x32("errmaxlimit", S_IRUGO, sr_info->dbg_dir,
 > 
-> Please rebase your tree Sabrina. Some READ_ONCE() have been added lately/
 
-Sorry, I messed up the subject tag, this series targets
-ipsec-next. The READ_ONCE() are missing there.
+Applying as 5.5 material, thanks!
 
--- 
-Sabrina
+
+
 
