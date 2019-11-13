@@ -2,74 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E830FAE21
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 092AFFAE18
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:08:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726982AbfKMKK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:10:28 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:17910 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbfKMKK2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 05:10:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1573639826;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=OzJc/z8N+OzYqWWGdfhr60X1rBKbg6zH4Hy1sttROBw=;
-        b=S5G7GM76cCyv1Bh9kMY0al8REsNNsLheP8/U0ODwzvSAEZv9ZERUR1lE0+dX831LeN
-        4RjnNPeIbINf9aoP/4/vcnizRJGe/izCLn+LgaEUSCq33AZnJ5tDIpIKk+hGb6iZBMdt
-        Mj9BSgBFvly27VNuvHUwr7PCr3c0ciEH5dbOFmeYsBBRqkvoP+xKfoIr4sgojwYGIOdL
-        kuuetqvbVw9fLsqC5bkaeeguSC78Exwtq9KzwxvKPkm5WNW1OKcScENo1/T/dgbhUznm
-        278V7BEqDTQ11wU5dok959hRbrnzfBnyDRbpBRf9mTn4+kMYEz2Ri4mqjU0lNub4Qrqm
-        CO/w==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1onjMalKFWXBdFnhSk9f/"
-X-RZG-CLASS-ID: mo00
-Received: from [10.120.65.22]
-        by smtp.strato.de (RZmta 44.29.0 AUTH)
-        with ESMTPSA id C03a03vADA4PiYC
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Wed, 13 Nov 2019 11:04:25 +0100 (CET)
-Subject: Re: [PATCH v1 1/9] can: af_can: export can_sock_destruct()
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        dev.kurt@vandijck-laurijssen.be, wg@grandegger.com,
-        netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
-References: <20191112111600.18719-1-o.rempel@pengutronix.de>
- <20191112111600.18719-2-o.rempel@pengutronix.de>
- <20191112113724.pff6atmyii5ri4my@pengutronix.de>
- <1da06748-6233-b65e-9b02-da5a867a4ecb@pengutronix.de>
- <20191112114539.zjluqnpo3cynhssi@pengutronix.de>
- <5e561756-26b4-9a71-8fe2-c876e0e7d1af@hartkopp.net>
- <70a410f6-d57b-7586-b645-35d97680ac0b@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <51b7adcd-3c32-3913-8dc0-72fe71f0aae9@hartkopp.net>
-Date:   Wed, 13 Nov 2019 11:04:20 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727159AbfKMKIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:08:36 -0500
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:27190 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726597AbfKMKIg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 05:08:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573639714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=z5iAiTWoEzg4GUYQkCWobgITk/EP9oPO6a/TdmjXL2s=;
+        b=FZs6ByKyC0G6ZYZCnLLJ/ULnrfoK2kecn5RqyazfaNaAHUaGkJXNni32iLnheD2VIWWTJa
+        Q1aLrbm8RrZBrBNbpzPnU+sWxy/8epjUCjHpWn0dJLtpZjA2ThDBBnE38E+whwgLHQ1EwZ
+        GHxOFdXUxP/iX8B8UO8M/rqsCTvXZDY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-348-A4oNBqg6O8-xit-10lwqxw-1; Wed, 13 Nov 2019 05:08:31 -0500
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6E3FD107ACC6;
+        Wed, 13 Nov 2019 10:08:30 +0000 (UTC)
+Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 454D95DF3A;
+        Wed, 13 Nov 2019 10:08:25 +0000 (UTC)
+Date:   Wed, 13 Nov 2019 11:08:23 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     "Jonathan Lemon" <jonathan.lemon@gmail.com>
+Cc:     "Alexei Starovoitov" <ast@fb.com>, netdev@vger.kernel.org,
+        davem@davemloft.net, "Kernel Team" <Kernel-team@fb.com>,
+        ilias.apalodimas@linaro.org, brouer@redhat.com
+Subject: Re: [net-next PATCH] page_pool: do not release pool until inflight
+ == 0.
+Message-ID: <20191113110823.0e1186a5@carbon>
+In-Reply-To: <04EECB84-2958-4D59-BE2D-FD7ABD8E4C05@gmail.com>
+References: <20191112053210.2555169-1-jonathan.lemon@gmail.com>
+        <20191112130832.6b3d69d5@carbon>
+        <12C67CAA-4C7A-465D-84DD-8C3F94115CAA@gmail.com>
+        <20191112174822.4b635e56@carbon>
+        <e4aa8923-7c81-a215-345c-a2127862048f@fb.com>
+        <04EECB84-2958-4D59-BE2D-FD7ABD8E4C05@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <70a410f6-d57b-7586-b645-35d97680ac0b@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-MC-Unique: A4oNBqg6O8-xit-10lwqxw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 12 Nov 2019 09:32:10 -0800
+"Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
 
+> On 12 Nov 2019, at 9:23, Alexei Starovoitov wrote:
+>=20
+> > On 11/12/19 8:48 AM, Jesper Dangaard Brouer wrote: =20
+> >>> The trace_page_pool_state_release() does not dereference pool, it=20
+> >>> just
+> >>> reports the pointer value, so there shouldn't be any use-after-free. =
+=20
+> >> In the tracepoint we can still dereference the pool object pointer.
+> >> This is made easier via using bpftrace for example see[1] (and with=20
+> >> BTF
+> >> this will become more common to do so). =20
+> >
+> > bpf tracing progs cannot assume that the pointer is valid.
+> > The program can remember a kernel pointer in a map and then
+> > access it days later.
+> > Like kretprobe on kfree_skb(). The skb is freed. 100% use-after-free.
+> > Such bpf program is broken and won't be reading meaningful values,
+> > but it won't crash the kernel.
+> >
+> > On the other side we should not be passing pointers to freed objects
+> > into tracepoints. That just wrong.
+> > May be simply move that questionable tracepoint? =20
+>=20
+> Yes, move and simplify it.  I believe this patch should resolve the=20
+> issue, it just reports pages entering/exiting the pool, without
+> trying to access the counters - the counters are reported through the
+> inflight tracepoint.
 
-On 12/11/2019 21.10, Marc Kleine-Budde wrote:
+Sorry, I don't like loosing the counter.  I have a plan for using these
+counters in a bpftrace script.  (Worst case I might be able to live
+without the counters). =20
 
-> So I should take this series as is?
-> 
-> And the CAN namespace is introduced later?
+The basic idea is to use these tracepoints to detect if we leak
+DMA-mappings. I'll try write the bpftrace script today, and
+see it I can live without the counter.
 
-Aeh - yes. Sorry for my late reply.
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-You already did it right.
-
-Best,
-Oliver
