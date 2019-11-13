@@ -2,124 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFE5FB317
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:01:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D53FB326
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727974AbfKMPBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 10:01:15 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:39684 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727730AbfKMPBP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:01:15 -0500
-Received: by mail-lj1-f193.google.com with SMTP id p18so2936850ljc.6
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 07:01:14 -0800 (PST)
+        id S1727743AbfKMPFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 10:05:05 -0500
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43655 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726812AbfKMPFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:05:04 -0500
+Received: by mail-pg1-f194.google.com with SMTP id l24so1534789pgh.10
+        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 07:05:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=O8tSTO4b37+TJZy2QOXQl2JOhqVE9t3JPNflwEZZ/Zs=;
-        b=huqsXWkaOzkWIp1qU/ndjAL26sQPMZzrVZ9ZiLERQf85EOj5X7iZIYj9iyz2Nzq6yh
-         iT6IS4nWAPo59/Y/ki9WF+u8gIggsT6O4x5o/LEt6v4hfXtlzmvmMJ1hIWlIi3cahf9G
-         +DoNNmAMLXh3Q7XIcgfl9MtoZUw62JxR0UVDOvJnhsQXGqlLPd00wOz9UAoq5+Vaoa5X
-         uDSzFP//nVoYMS7BWyhoNMuVKWTxZsPJLsA8CgGROGXvQqA2GkcEOVNIUXj4DiqQfFdK
-         LAc1ckXr6I42ygbSilfaZVsYwFHAKUbXMyQKCppfSV2V+TGtQd4rZ8ytlmFeXFuEeeQL
-         dKhw==
+        h=from:to:cc:subject:date:message-id;
+        bh=345VlEGBSnYxFd4H+raHSbsJ/hlkhlhfLot28bYiH/k=;
+        b=ig3n+wLCVSQ+Non9VsE7Aw7W/rWEx9CnMlcni15k8GQGmumWI4n8B7oGevSqzqoPf3
+         ltEsr9jofgP18dYw6cbqPhonGi40yHcpbKh3MKY9Vgtc+OLnqFRgb3sjFyfnKWXolxu9
+         jqZlex/HIRWXkmMdBGp9sUkCR2dMQa+1qsac9gW4iD9sybuJSO1brvjaGDxFGGNK99d9
+         lTdXM4+XOR5qA5+eDM1kt/nsYK18hWg241mq44pz2p/MHpDOw/Upt+rHQxXc/j9ooI9v
+         9AeH+QFKKrzA83F8sCHW3IN4ekKAIo/tae+f+oXj1bbfWET45fVkcug5hfE+HWKngqCI
+         3C0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=O8tSTO4b37+TJZy2QOXQl2JOhqVE9t3JPNflwEZZ/Zs=;
-        b=kIvKqI1HZc3DBZbzMsQmvcy7DSkZgtL3bS8yuTPZFd7KnPL6pNJTA9927O4R46Omit
-         TdNinuY46Ol4zgCCEhoOFAy+3Q/ih0qd9RdlzM6G9Z2gjp/HDN5+1m9Niqcs4tauo9dY
-         IdV0oW1e8IWRhnPtLVT0Ubf77ViY/FjrJEbwjjRYLBG9ye6E0v31o/VNygSAlfSltYZt
-         cmd0dMi08B3eE/ab/NPmqdkzHJ7OLeeKbiuaZbBvUS7HIe7p0oB4EmTZVfZBVqil28uE
-         Z/2/oVTGIUd6qKOWYzFdfoyGah4BcIlI6I6pUaRGSBD9HdIgij2wqdiRUFyhB9dk1IKB
-         oomg==
-X-Gm-Message-State: APjAAAVc5zbOvumidzL0G8lioBqROsj299f/rnLHj8JjsJDWHHxXgMdA
-        UczCEBecWM0dZn6HuZ3JXNzPUVmwim2VyuzJx4s=
-X-Google-Smtp-Source: APXvYqyXryrRMiuXfMrMBCFKcHL+JfCslrrUHPbODiEfALD19SeRFb2p7cYlR5oo6XkzSv1A93ZRJQOhja01BTdhqUg=
-X-Received: by 2002:a2e:9a41:: with SMTP id k1mr2825861ljj.11.1573657272879;
- Wed, 13 Nov 2019 07:01:12 -0800 (PST)
-MIME-Version: 1.0
-Reply-To: sebastient766@gmail.com
-Received: by 2002:a19:5d42:0:0:0:0:0 with HTTP; Wed, 13 Nov 2019 07:01:11
- -0800 (PST)
-From:   =?UTF-8?B?TXIuU8OpYmFzdGllbiBUb25p?= <sebastient766@gmail.com>
-Date:   Wed, 13 Nov 2019 15:01:11 +0000
-X-Google-Sender-Auth: vGmXiibsTgGUrrxsAEB7MnkEw0o
-Message-ID: <CA+bY3ZubaNLcOt4X1-reZ9VDLcihKubzwkJN27A4zXP0cyb+SA@mail.gmail.com>
-Subject: Dear Friend,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=345VlEGBSnYxFd4H+raHSbsJ/hlkhlhfLot28bYiH/k=;
+        b=sknsUvxtAcnb4o3irqPHkUG+TKyOcYo9FiLNa6CeJAFKdy0pwyM2KlmtQl/Nm9NPir
+         cFCOIpjtjzuWIPZ2MDAlXSk3vdg2ZQKdXOESYyOgY599cJQoIDyogmi47MwHy7Q1lzyB
+         yHhGBQ9X8P4Pftv9bfJzBCpEHc0bJh3ojMQpyqP4RmtNIh97n1xywRMmunKP7+JKOyiK
+         HwprluPF8zDmwhyRWmrVB+NJuANtCXwCg+5b2VzOMjrGiM3T6vQy0QJvavyLUJv8Jlat
+         46ikFB/LHOEqiQu+cJX3ZFTGhwH3x2RuK3xkW8sHTgZEjVVSjhLyV7OlL98V+zn9woSz
+         NfKg==
+X-Gm-Message-State: APjAAAV4FHAtbu0bv7JpVhitQ9kquBpdf9wrQJ+NjcwFnLxGfACrgD08
+        IK0+gXjeNWvoKVOemzHlpF8=
+X-Google-Smtp-Source: APXvYqy5gy6aEQwTDxRJc1JBjVMtCiI6xKQJS3VpN1NInCtEmFmm8e2YeHaoyXZjrjdB1GFTV9uABQ==
+X-Received: by 2002:a63:1242:: with SMTP id 2mr4155535pgs.288.1573657503716;
+        Wed, 13 Nov 2019 07:05:03 -0800 (PST)
+Received: from local.opencloud.tech.localdomain ([115.171.60.86])
+        by smtp.gmail.com with ESMTPSA id i5sm2863212pfo.52.2019.11.13.07.05.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 Nov 2019 07:05:02 -0800 (PST)
+From:   xiangxia.m.yue@gmail.com
+To:     pshelar@ovn.org, gvrose8192@gmail.com
+Cc:     blp@ovn.org, netdev@vger.kernel.org, dev@openvswitch.org,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Subject: [PATCH net-next v4] net: openvswitch: add hash info to upcall
+Date:   Wed, 13 Nov 2019 23:04:49 +0800
+Message-Id: <1573657489-16067-1-git-send-email-xiangxia.m.yue@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-FROM MR.S=C3=89BASTIEN TONI
-AUDIT& ACCOUNT MANAGER
-BANK OF AFRICA (B.O.A)
-OUAGADOUGOU BURKINA FASO
-WEST AFRICA.
+From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
 
-Dear Friend,
+When using the kernel datapath, the upcall don't
+include skb hash info relatived. That will introduce
+some problem, because the hash of skb is important
+in kernel stack. For example, VXLAN module uses
+it to select UDP src port. The tx queue selection
+may also use the hash in stack.
 
-With due respect, I have decided to contact you on
-abusinesstransaction  that will be beneficial to both of us. At the
-bank last account and  auditing evaluation, my staffs came across an
-old account which was being maintained by a foreign client who we
-learn was among the deceased passengers of motor accident on
-November.2003, the deceased was unable to run this account since his
-death. Theaccount has  remained dormant without the knowledge of his
-family since it was put in a  safe deposit account in the bank for
-future investment by the client.
+Hash is computed in different ways. Hash is random
+for a TCP socket, and hash may be computed in hardware,
+or software stack. Recalculation hash is not easy.
 
-Since his demise, even the members of his family haven't applied for
-claims  over this fund and it has been in the safe deposit account
-until I  discovered that it cannot be claimed since our client
-isaforeign national
-and we are sure that he has no next of kin here to file claims over
-the money. As the director of the department, this  discovery was
-brought to my office so as to decide what is to bedone.I  decided to
-seek ways through which to transfer this money out of the bank  and
-out of the country too.
+Hash of TCP socket is computed:
+tcp_v4_connect
+    -> sk_set_txhash (is random)
 
-The total amount in the account is 18.6 million with my positions as
-staffs  of the bank, I am handicapped because I cannot operate foreign
-accounts and  cannot lay bonafide claim over this money. The client
-was a foreign  national and you will only be asked to act as his next
-of kin and I will  supply you with all the necessary information and
-bank data to assist you in being able to transfer this money to any
-bank of your  choice where this money could be transferred into.The
-total sum will be  shared as follows: 50% for me, 50% for you and
-expenses incidental occur  during the transfer will be incur by both
-of us. The transfer is risk free
-on both sides hence you are going to follow my instruction till the
-fund  transfer to your account. Since I work in this bank that is why
-you should  be confident in the success of this transaction because
-you will be updated with information as at when desired.
+__tcp_transmit_skb
+    -> skb_set_hash_from_sk
 
-I will wish you to keep this transaction secret and confidential as I
-am  hoping to retire with my share of this money at the end of
-transaction  which will be when this money is safety in your account.
-I will then come over to your country for sharing according to the
-previously agreed percentages. You might even have to advise me on
-possibilities of investment in your country or elsewhere of our
-choice. May  God help you to help me to a restive retirement, Amen,And
-You have to  contact me through my private e-mail
-at(sebastient766@gmail.com)Please for further information and inquires
- feel free to contact me back
-immediately for more explanation and better  understanding I want you
-to assure me your capability of handling this  project with trust by
-providing me your following information details such as:
+There will be one upcall, without information of skb
+hash, to ovs-vswitchd, for the first packet of a TCP
+session. The rest packets will be processed in Open vSwitch
+modules, hash kept. If this tcp session is forward to
+VXLAN module, then the UDP src port of first tcp packet
+is different from rest packets.
 
-(1)NAME..............
-(2)AGE:................
-(3)SEX:.....................
-(4)PHONE NUMBER:.................
-(5)OCCUPATION:.....................
-(6)YOUR COUNTRY:.....................
+TCP packets may come from the host or dockers, to Open vSwitch.
+To fix it, we store the hash info to upcall, and restore hash
+when packets sent back.
 
-Yours sincerely,
-Mr.S=C3=A9bastien Toni
++---------------+          +-------------------------+
+|   Docker/VMs  |          |     ovs-vswitchd        |
++----+----------+          +-+--------------------+--+
+     |                       ^                    |
+     |                       |                    |
+     |                       |  upcall            v restore packet hash (not recalculate)
+     |                     +-+--------------------+--+
+     |  tap netdev         |                         |   vxlan module
+     +--------------->     +-->  Open vSwitch ko     +-->
+       or internal type    |                         |
+                           +-------------------------+
+
+Reported-at: https://mail.openvswitch.org/pipermail/ovs-dev/2019-October/364062.html
+Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+---
+v4:
+* all hash of skb to upcall
+* remove the pad_packet, nla_put makes sure len is align
+* add OVS_PACKET_ATTR_HASH at the end of ovs_packet_attr.
+v3:
+* add enum ovs_pkt_hash_types
+* avoid duplicate call the skb_get_hash_raw.
+* explain why we should fix this problem.
+---
+ include/uapi/linux/openvswitch.h |  4 +++-
+ net/openvswitch/datapath.c       | 26 +++++++++++++++++++++++++-
+ net/openvswitch/datapath.h       | 12 ++++++++++++
+ 3 files changed, 40 insertions(+), 2 deletions(-)
+
+diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
+index 1887a451c388..a87b44cd5590 100644
+--- a/include/uapi/linux/openvswitch.h
++++ b/include/uapi/linux/openvswitch.h
+@@ -173,6 +173,7 @@ enum ovs_packet_cmd {
+  * @OVS_PACKET_ATTR_LEN: Packet size before truncation.
+  * %OVS_PACKET_ATTR_USERSPACE action specify the Maximum received fragment
+  * size.
++ * @OVS_PACKET_ATTR_HASH: Packet hash info (e.g. hash, sw_hash and l4_hash in skb).
+  *
+  * These attributes follow the &struct ovs_header within the Generic Netlink
+  * payload for %OVS_PACKET_* commands.
+@@ -190,7 +191,8 @@ enum ovs_packet_attr {
+ 	OVS_PACKET_ATTR_PROBE,      /* Packet operation is a feature probe,
+ 				       error logging should be suppressed. */
+ 	OVS_PACKET_ATTR_MRU,	    /* Maximum received IP fragment size. */
+-	OVS_PACKET_ATTR_LEN,		/* Packet size before truncation. */
++	OVS_PACKET_ATTR_LEN,	    /* Packet size before truncation. */
++	OVS_PACKET_ATTR_HASH,	    /* Packet hash. */
+ 	__OVS_PACKET_ATTR_MAX
+ };
+ 
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 2088619c03f0..8ce1f773378d 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -350,7 +350,8 @@ static size_t upcall_msg_size(const struct dp_upcall_info *upcall_info,
+ 	size_t size = NLMSG_ALIGN(sizeof(struct ovs_header))
+ 		+ nla_total_size(hdrlen) /* OVS_PACKET_ATTR_PACKET */
+ 		+ nla_total_size(ovs_key_attr_size()) /* OVS_PACKET_ATTR_KEY */
+-		+ nla_total_size(sizeof(unsigned int)); /* OVS_PACKET_ATTR_LEN */
++		+ nla_total_size(sizeof(unsigned int)) /* OVS_PACKET_ATTR_LEN */
++		+ nla_total_size(sizeof(u64)); /* OVS_PACKET_ATTR_HASH */
+ 
+ 	/* OVS_PACKET_ATTR_USERDATA */
+ 	if (upcall_info->userdata)
+@@ -393,6 +394,7 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
+ 	size_t len;
+ 	unsigned int hlen;
+ 	int err, dp_ifindex;
++	u64 hash;
+ 
+ 	dp_ifindex = get_dpifindex(dp);
+ 	if (!dp_ifindex)
+@@ -504,6 +506,19 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
+ 		pad_packet(dp, user_skb);
+ 	}
+ 
++	/* Add OVS_PACKET_ATTR_HASH */
++	hash = skb_get_hash_raw(skb);
++	if (skb->sw_hash)
++		hash |= OVS_PACKET_HASH_SW_BIT;
++
++	if (skb->l4_hash)
++		hash |= OVS_PACKET_HASH_L4_BIT;
++
++	if (nla_put(user_skb, OVS_PACKET_ATTR_HASH, sizeof (u64), &hash)) {
++		err = -ENOBUFS;
++		goto out;
++	}
++
+ 	/* Only reserve room for attribute header, packet data is added
+ 	 * in skb_zerocopy() */
+ 	if (!(nla = nla_reserve(user_skb, OVS_PACKET_ATTR_PACKET, 0))) {
+@@ -543,6 +558,7 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+ 	struct datapath *dp;
+ 	struct vport *input_vport;
+ 	u16 mru = 0;
++	u64 hash;
+ 	int len;
+ 	int err;
+ 	bool log = !a[OVS_PACKET_ATTR_PROBE];
+@@ -568,6 +584,14 @@ static int ovs_packet_cmd_execute(struct sk_buff *skb, struct genl_info *info)
+ 	}
+ 	OVS_CB(packet)->mru = mru;
+ 
++	if (a[OVS_PACKET_ATTR_HASH]) {
++		hash = nla_get_u64(a[OVS_PACKET_ATTR_HASH]);
++
++		__skb_set_hash(packet, hash & 0xFFFFFFFFULL,
++			       !!(hash & OVS_PACKET_HASH_SW_BIT),
++			       !!(hash & OVS_PACKET_HASH_L4_BIT));
++	}
++
+ 	/* Build an sw_flow for sending this packet. */
+ 	flow = ovs_flow_alloc();
+ 	err = PTR_ERR(flow);
+diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+index 81e85dde8217..e239a46c2f94 100644
+--- a/net/openvswitch/datapath.h
++++ b/net/openvswitch/datapath.h
+@@ -139,6 +139,18 @@ struct ovs_net {
+ 	bool xt_label;
+ };
+ 
++/**
++ * enum ovs_pkt_hash_types - hash info to include with a packet
++ * to send to userspace.
++ * @OVS_PACKET_HASH_SW_BIT: indicates hash was computed in software stack.
++ * @OVS_PACKET_HASH_L4_BIT: indicates hash is a canonical 4-tuple hash
++ * over transport ports.
++ */
++enum ovs_pkt_hash_types {
++	OVS_PACKET_HASH_SW_BIT = (1ULL << 32),
++	OVS_PACKET_HASH_L4_BIT = (1ULL << 33),
++};
++
+ extern unsigned int ovs_net_id;
+ void ovs_lock(void);
+ void ovs_unlock(void);
+-- 
+2.23.0
+
