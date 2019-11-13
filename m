@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79D07FA2A1
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:05:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 614F1FA224
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:02:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730253AbfKMCE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 21:04:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58018 "EHLO mail.kernel.org"
+        id S1729456AbfKMCBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 21:01:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58082 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729440AbfKMCBu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 21:01:50 -0500
+        id S1729369AbfKMCBw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 21:01:52 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6153321783;
-        Wed, 13 Nov 2019 02:01:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 94C8F20674;
+        Wed, 13 Nov 2019 02:01:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573610510;
-        bh=63k5nOaH9wWUNGkyw0bu+WSVUTGRbskLnuFvOyvlJww=;
+        s=default; t=1573610511;
+        bh=TpNyeSDmfELcoGLhQcP1ky6+6+Aylb/u+dAmwQSzoVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZX00EYenGLVaiARPo9xUvY1BBUktlYWOufvudoFuF35a+PyAxWCjD3glH4vfZIAh5
-         XF31W4Hm4OpqxWSGTIxL0t2i/pGzu2oDQekSepfWy22SMSzZnH45moXlmPud8B5zkp
-         HlyN74j1MHAGrL8z0JZCt13EyX/uCuRHgKMxrhiM=
+        b=2CYoAIfxHAIAin81Fme/DR+WN135lOKD0oQt21+BN9sTsRM9WKvGiCKu7TtmjB301
+         aNItXeH1grnlUn5HVHuwWiYBnt3gRtu1mykO8+U/8EMLLrHruqI1pFD54b1PCpqDzJ
+         /DziqCxPpgYQrEQ4AQm4vukZYZ11lxgZ3gResphE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Nathan Chancellor <natechancellor@gmail.com>,
@@ -30,9 +30,9 @@ Cc:     Nathan Chancellor <natechancellor@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 4.4 12/48] cxgb4: Use proper enum in cxgb4_dcb_handle_fw_update
-Date:   Tue, 12 Nov 2019 21:00:55 -0500
-Message-Id: <20191113020131.13356-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 13/48] cxgb4: Use proper enum in IEEE_FAUX_SYNC
+Date:   Tue, 12 Nov 2019 21:00:56 -0500
+Message-Id: <20191113020131.13356-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113020131.13356-1-sashal@kernel.org>
 References: <20191113020131.13356-1-sashal@kernel.org>
@@ -47,26 +47,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nathan Chancellor <natechancellor@gmail.com>
 
-[ Upstream commit 3b0b8f0d9a259f6a428af63e7a77547325f8e081 ]
+[ Upstream commit 258b6d141878530ba1f8fc44db683822389de914 ]
 
 Clang warns when one enumerated type is implicitly converted to another.
 
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c:303:7: warning: implicit
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c:390:4: warning: implicit
 conversion from enumeration type 'enum cxgb4_dcb_state' to different
 enumeration type 'enum cxgb4_dcb_state_input' [-Wenum-conversion]
-                         ? CXGB4_DCB_STATE_FW_ALLSYNCED
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c:304:7: warning: implicit
-conversion from enumeration type 'enum cxgb4_dcb_state' to different
-enumeration type 'enum cxgb4_dcb_state_input' [-Wenum-conversion]
-                         : CXGB4_DCB_STATE_FW_INCOMPLETE);
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-2 warnings generated.
+                        IEEE_FAUX_SYNC(dev, dcb);
+                        ^~~~~~~~~~~~~~~~~~~~~~~~
+drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.h:70:10: note: expanded
+from macro 'IEEE_FAUX_SYNC'
+                                            CXGB4_DCB_STATE_FW_ALLSYNCED);
+                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use the equivalent value of the expected type to silence Clang while
 resulting in no functional change.
 
-CXGB4_DCB_STATE_FW_INCOMPLETE = CXGB4_DCB_INPUT_FW_INCOMPLETE = 2
 CXGB4_DCB_STATE_FW_ALLSYNCED = CXGB4_DCB_INPUT_FW_ALLSYNCED = 3
 
 Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
@@ -74,24 +71,22 @@ Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-index 052c660aca80a..658609c1bdabe 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.c
-@@ -266,8 +266,8 @@ void cxgb4_dcb_handle_fw_update(struct adapter *adap,
- 		enum cxgb4_dcb_state_input input =
- 			((pcmd->u.dcb.control.all_syncd_pkd &
- 			  FW_PORT_CMD_ALL_SYNCD_F)
--			 ? CXGB4_DCB_STATE_FW_ALLSYNCED
--			 : CXGB4_DCB_STATE_FW_INCOMPLETE);
-+			 ? CXGB4_DCB_INPUT_FW_ALLSYNCED
-+			 : CXGB4_DCB_INPUT_FW_INCOMPLETE);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.h b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.h
+index ccf24d3dc9824..2c418c405c508 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_dcb.h
+@@ -67,7 +67,7 @@
+ 	do { \
+ 		if ((__dcb)->dcb_version == FW_PORT_DCB_VER_IEEE) \
+ 			cxgb4_dcb_state_fsm((__dev), \
+-					    CXGB4_DCB_STATE_FW_ALLSYNCED); \
++					    CXGB4_DCB_INPUT_FW_ALLSYNCED); \
+ 	} while (0)
  
- 		if (dcb->dcb_version != FW_PORT_DCB_VER_UNKNOWN) {
- 			dcb_running_version = FW_PORT_CMD_DCB_VERSION_G(
+ /* States we can be in for a port's Data Center Bridging.
 -- 
 2.20.1
 
