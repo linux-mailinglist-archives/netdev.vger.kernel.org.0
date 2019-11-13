@@ -2,105 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 513E4FAE79
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:28:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 381BBFAEBA
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727470AbfKMK2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:28:05 -0500
-Received: from canardo.mork.no ([148.122.252.1]:54275 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727374AbfKMK2F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 05:28:05 -0500
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id xADARvwe000540
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Wed, 13 Nov 2019 11:27:57 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1573640878; bh=P6+yU5QsfqoGNEzxVibdDpCcnn3di0eFZU5up5TTlnQ=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=cUakuC4WIQsu9IRTJTDsQBjJbIs2f5iHuIReRrjRlCIioJKr1gY7DG/kyI9yBSX4b
-         UgqCXaHrtKTVvfQTHOaNkcFa1hg9xoQcGtMnxX74E/IB9vv6ppLcym2X+/iLlSY7XI
-         jEZVe5rKb4ZMM7QBTM6aZWhlFCLzNM5jrLQR+IOE=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1iUpsT-0006a0-QL; Wed, 13 Nov 2019 11:27:57 +0100
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Aleksander Morgado <aleksander@aleksander.es>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] net: usb: qmi_wwan: add support for Foxconn T77W968 LTE modules
-Organization: m
-References: <20191113101110.496306-1-aleksander@aleksander.es>
-Date:   Wed, 13 Nov 2019 11:27:57 +0100
-In-Reply-To: <20191113101110.496306-1-aleksander@aleksander.es> (Aleksander
-        Morgado's message of "Wed, 13 Nov 2019 11:11:10 +0100")
-Message-ID: <87woc4qdea.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1727603AbfKMKnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:43:17 -0500
+Received: from mx2.suse.de ([195.135.220.15]:58618 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727113AbfKMKnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 05:43:16 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 8E4ECB2D5;
+        Wed, 13 Nov 2019 10:43:11 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id 7E7151E1498; Wed, 13 Nov 2019 11:43:08 +0100 (CET)
+Date:   Wed, 13 Nov 2019 11:43:08 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v4 09/23] mm/gup: introduce pin_user_pages*() and FOLL_PIN
+Message-ID: <20191113104308.GE6367@quack2.suse.cz>
+References: <20191113042710.3997854-1-jhubbard@nvidia.com>
+ <20191113042710.3997854-10-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.101.4 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191113042710.3997854-10-jhubbard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aleksander Morgado <aleksander@aleksander.es> writes:
+On Tue 12-11-19 20:26:56, John Hubbard wrote:
+> Introduce pin_user_pages*() variations of get_user_pages*() calls,
+> and also pin_longterm_pages*() variations.
+> 
+> These variants all set FOLL_PIN, which is also introduced, and
+> thoroughly documented.
+> 
+> The pin_longterm*() variants also set FOLL_LONGTERM, in addition
+> to FOLL_PIN:
+> 
+>     pin_user_pages()
+>     pin_user_pages_remote()
+>     pin_user_pages_fast()
+> 
+>     pin_longterm_pages()
+>     pin_longterm_pages_remote()
+>     pin_longterm_pages_fast()
+> 
+> All pages that are pinned via the above calls, must be unpinned via
+> put_user_page().
+> 
+> The underlying rules are:
+> 
+> * These are gup-internal flags, so the call sites should not directly
+> set FOLL_PIN nor FOLL_LONGTERM. That behavior is enforced with
+> assertions, for the new FOLL_PIN flag. However, for the pre-existing
+> FOLL_LONGTERM flag, which has some call sites that still directly
+> set FOLL_LONGTERM, there is no assertion yet.
+> 
+> * Call sites that want to indicate that they are going to do DirectIO
+>   ("DIO") or something with similar characteristics, should call a
+>   get_user_pages()-like wrapper call that sets FOLL_PIN. These wrappers
+>   will:
+>         * Start with "pin_user_pages" instead of "get_user_pages". That
+>           makes it easy to find and audit the call sites.
+>         * Set FOLL_PIN
+> 
+> * For pages that are received via FOLL_PIN, those pages must be returned
+>   via put_user_page().
+> 
+> Thanks to Jan Kara and Vlastimil Babka for explaining the 4 cases
+> in this documentation. (I've reworded it and expanded upon it.)
+> 
+> Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>  # Documentation
+> Reviewed-by: Jérôme Glisse <jglisse@redhat.com>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 
-> These are the Foxconn-branded variants of the Dell DW5821e modules,
-> same USB layout as those.
->
-> The QMI interface is exposed in USB configuration #1:
->
-> P:  Vendor=3D0489 ProdID=3De0b4 Rev=3D03.18
-> S:  Manufacturer=3DFII
-> S:  Product=3DT77W968 LTE
-> S:  SerialNumber=3D0123456789ABCDEF
-> C:  #Ifs=3D 6 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
-> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3Dqmi_wwan
-> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 1 Cls=3D03(HID  ) Sub=3D00 Prot=3D00 Drive=
-r=3Dusbhid
-> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
-r=3Doption
-> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
-r=3Doption
-> I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3D00 Prot=3D00 Drive=
-r=3Doption
-> I:  If#=3D0x5 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3Doption
->
-> Signed-off-by: Aleksander Morgado <aleksander@aleksander.es>
-> ---
->  drivers/net/usb/qmi_wwan.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-> index 56d334b9ad45..4196c0e32740 100644
-> --- a/drivers/net/usb/qmi_wwan.c
-> +++ b/drivers/net/usb/qmi_wwan.c
-> @@ -1371,6 +1371,8 @@ static const struct usb_device_id products[] =3D {
->  	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
->  	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
->  	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
-> +	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
-> +	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM s=
-upport*/
->=20=20
->  	/* 4. Gobi 1000 devices */
->  	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+Thanks for the documentation. It looks great!
 
-Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 83702b2e86c8..4409e84dff51 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -201,6 +201,10 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
+>  	spinlock_t *ptl;
+>  	pte_t *ptep, pte;
+>  
+> +	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
+> +	if (WARN_ON_ONCE((flags & (FOLL_PIN | FOLL_GET)) ==
+> +			 (FOLL_PIN | FOLL_GET)))
+> +		return ERR_PTR(-EINVAL);
+>  retry:
+>  	if (unlikely(pmd_bad(*pmd)))
+>  		return no_page_table(vma, flags);
 
-Just one question, which I should have asked about the DW5821e too: Is
-it possible to configure the firmware of these modems to USB2 only, and
-do they work with the qmi_wwan driver then?
+How does FOLL_PIN result in grabbing (at least normal, for now) page reference?
+I didn't find that anywhere in this patch but it is a prerequisite to
+converting any user to pin_user_pages() interface, right?
 
-I suspect that these modems really need the SET_DTR quirk...  Or rather
-that I should get around to making that default, as it seems most new
-stuff needs it and most old stuff doesn't care.
+> +/**
+> + * pin_user_pages_fast() - pin user pages in memory without taking locks
+> + *
+> + * Nearly the same as get_user_pages_fast(), except that FOLL_PIN is set. See
+> + * get_user_pages_fast() for documentation on the function arguments, because
+> + * the arguments here are identical.
+> + *
+> + * FOLL_PIN means that the pages must be released via put_user_page(). Please
+> + * see Documentation/vm/pin_user_pages.rst for further details.
+> + *
+> + * This is intended for Case 1 (DIO) in Documentation/vm/pin_user_pages.rst. It
+> + * is NOT intended for Case 2 (RDMA: long-term pins).
+> + */
+> +int pin_user_pages_fast(unsigned long start, int nr_pages,
+> +			unsigned int gup_flags, struct page **pages)
+> +{
+> +	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
+> +	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
+> +		return -EINVAL;
+> +
+> +	gup_flags |= FOLL_PIN;
+> +	return internal_get_user_pages_fast(start, nr_pages, gup_flags, pages);
+> +}
+> +EXPORT_SYMBOL_GPL(pin_user_pages_fast);
+
+I was somewhat wondering about the number of functions you add here. So we
+have:
+
+pin_user_pages()
+pin_user_pages_fast()
+pin_user_pages_remote()
+
+and then longterm variants:
+
+pin_longterm_pages()
+pin_longterm_pages_fast()
+pin_longterm_pages_remote()
+
+and obviously we have gup like:
+get_user_pages()
+get_user_pages_fast()
+get_user_pages_remote()
+... and some other gup variants ...
+
+I think we really should have pin_* vs get_* variants as they are very
+different in terms of guarantees and after conversion, any use of get_*
+variant in non-mm code should be closely scrutinized. OTOH pin_longterm_*
+don't look *that* useful to me and just using pin_* instead with
+FOLL_LONGTERM flag would look OK to me and somewhat reduce the number of
+functions which is already large enough? What do people think? I don't feel
+too strongly about this but wanted to bring this up.
+
+								Honza
 
 
-Bj=C3=B8rn
+
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
