@@ -2,26 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1366CFA69D
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:39:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16649FA6A0
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727445AbfKMCix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 21:38:53 -0500
-Received: from mailgw01.mediatek.com ([210.61.82.183]:46451 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727077AbfKMCix (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 21:38:53 -0500
-X-UUID: 83eda557620c437bb945218c99a06319-20191113
+        id S1727221AbfKMCiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 21:38:52 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:20278 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726958AbfKMCiw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 21:38:52 -0500
+X-UUID: 4d5e93c17efb4d5099b71f334942ca0f-20191113
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=+FkK1iCNCZ5mbqNEG+dK1JRhB0qOI3mgu4fpv9haJ5A=;
-        b=Prlhh6GWfSTm3Q7qUu1xmtjE6bn56CvpBeDIDiwkbJWcm5aAKFkJ095PbTG9l0rOo/iglGjkzyOZ4L8kq9foblSIbcB/U8uNTnGZC/FUUfwD51zLguy4/CvLoX8n5N9F3zkxh2CmmmGwEKu1RaTftTq7b/J2PoO9Q3WTQnlo0O8=;
-X-UUID: 83eda557620c437bb945218c99a06319-20191113
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Xz5t62Az4ex1Dw4JbEiqpduOllpXnz09mFnqd5LCa2w=;
+        b=sLm8JMGgQrZ9PhTMwDtM/yPmXF/iUqkXiJ0+eL6e7yeBpX8Q0+VzzufD+s8PL5aDfCwvsMDWZHUiH1PDtozRyuJzLxt7lJ/SyejcTWh8Rhcwe9eKa1ZwsbLRlG5CrI1reXC9l75EtaylUGIxWbDMNfkoZ5QvyF9+oPIqCsok/yU=;
+X-UUID: 4d5e93c17efb4d5099b71f334942ca0f-20191113
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by mailgw02.mediatek.com
         (envelope-from <mark-mc.lee@mediatek.com>)
         (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 761743743; Wed, 13 Nov 2019 10:38:47 +0800
+        with ESMTP id 803015657; Wed, 13 Nov 2019 10:38:47 +0800
+Received: from mtkmbs05dr.mediatek.inc (172.21.101.97) by
+ mtkexhb02.mediatek.inc (172.21.101.103) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 13 Nov 2019 10:38:44 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs05n2.mediatek.inc (172.21.101.140) with Microsoft SMTP Server (TLS) id
+ mtkmbs05dr.mediatek.inc (172.21.101.97) with Microsoft SMTP Server (TLS) id
  15.0.1395.4; Wed, 13 Nov 2019 10:38:44 +0800
 Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
@@ -39,11 +42,11 @@ CC:     Rob Herring <robh+dt@kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-mediatek@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
         MarkLee <Mark-MC.Lee@mediatek.com>
-Subject: [PATCH net,v3 2/3] net: ethernet: mediatek: Refine the timing of GDM/PSE setup
-Date:   Wed, 13 Nov 2019 10:38:43 +0800
-Message-ID: <20191113023844.17800-3-Mark-MC.Lee@mediatek.com>
+Subject: [PATCH net,v3 3/3] net: ethernet: mediatek: Enable GDM GDMA_DROP_ALL mode
+Date:   Wed, 13 Nov 2019 10:38:44 +0800
+Message-ID: <20191113023844.17800-4-Mark-MC.Lee@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20191113023844.17800-1-Mark-MC.Lee@mediatek.com>
 References: <20191113023844.17800-1-Mark-MC.Lee@mediatek.com>
@@ -56,31 +59,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UmVmaW5lIHRoZSB0aW1pbmcgb2YgR0RNL1BTRSBzZXR1cCwgbW92ZSBpdCBmcm9tIG10a19od19p
-bml0IA0KdG8gbXRrX29wZW4uIFRoaXMgaXMgcmVjb21tZW5kZWQgYnkgdGhlIG10NzYyeCBIVyBk
-ZXNpZ24gdG8gDQpkbyBHRE0vUFNFIHNldHVwIG9ubHkgYWZ0ZXIgUERNQSBoYXMgYmVlbiBzdGFy
-dGVkLg0KDQpXZSBleGNsdWRlIG10NzYyOCBpbiBtdGtfZ2RtX2NvbmZpZyBmdW5jdGlvbiBzaW5j
-ZSBpdCBpcyBhIG9sZCBJUCANCmFuZCB0aGVyZSBpcyBubyBHRE0vUFNFIGJsb2NrIG9uIGl0Lg0K
-DQpTaWduZWQtb2ZmLWJ5OiBNYXJrTGVlIDxNYXJrLU1DLkxlZUBtZWRpYXRlay5jb20+DQotLQ0K
-djEtPnYyOg0KKiBubyBjaGFuZ2UNCnYyLT52MzoNCiogbm8gY2hhbmdlDQoNCi0tLQ0KIGRyaXZl
-cnMvbmV0L2V0aGVybmV0L21lZGlhdGVrL210a19ldGhfc29jLmMgfCA3ICsrKysrLS0NCiAxIGZp
-bGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KDQpkaWZmIC0tZ2l0
-IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuYyBiL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L21lZGlhdGVrL210a19ldGhfc29jLmMNCmluZGV4IDZlN2E3ZmVhMmY1Mi4u
-YjE0N2FiMGU0NGNlIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsv
-bXRrX2V0aF9zb2MuYw0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0
-aF9zb2MuYw0KQEAgLTIxODQsNiArMjE4NCw5IEBAIHN0YXRpYyB2b2lkIG10a19nZG1fY29uZmln
-KHN0cnVjdCBtdGtfZXRoICpldGgsIHUzMiBjb25maWcpDQogew0KIAlpbnQgaTsNCiANCisJaWYg
-KE1US19IQVNfQ0FQUyhldGgtPnNvYy0+Y2FwcywgTVRLX1NPQ19NVDc2MjgpKQ0KKwkJcmV0dXJu
-Ow0KKw0KIAlmb3IgKGkgPSAwOyBpIDwgTVRLX01BQ19DT1VOVDsgaSsrKSB7DQogCQl1MzIgdmFs
-ID0gbXRrX3IzMihldGgsIE1US19HRE1BX0ZXRF9DRkcoaSkpOw0KIA0KQEAgLTIyMjIsNiArMjIy
-NSw4IEBAIHN0YXRpYyBpbnQgbXRrX29wZW4oc3RydWN0IG5ldF9kZXZpY2UgKmRldikNCiAJCWlm
-IChlcnIpDQogCQkJcmV0dXJuIGVycjsNCiANCisJCW10a19nZG1fY29uZmlnKGV0aCwgTVRLX0dE
-TUFfVE9fUERNQSk7DQorDQogCQluYXBpX2VuYWJsZSgmZXRoLT50eF9uYXBpKTsNCiAJCW5hcGlf
-ZW5hYmxlKCZldGgtPnJ4X25hcGkpOw0KIAkJbXRrX3R4X2lycV9lbmFibGUoZXRoLCBNVEtfVFhf
-RE9ORV9JTlQpOw0KQEAgLTI0MDUsOCArMjQxMCw2IEBAIHN0YXRpYyBpbnQgbXRrX2h3X2luaXQo
-c3RydWN0IG10a19ldGggKmV0aCkNCiAJbXRrX3czMihldGgsIE1US19SWF9ET05FX0lOVCwgTVRL
-X1FETUFfSU5UX0dSUDIpOw0KIAltdGtfdzMyKGV0aCwgMHgyMTAyMTAwMCwgTVRLX0ZFX0lOVF9H
-UlApOw0KIA0KLQltdGtfZ2RtX2NvbmZpZyhldGgsIE1US19HRE1BX1RPX1BETUEpOw0KLQ0KIAly
-ZXR1cm4gMDsNCiANCiBlcnJfZGlzYWJsZV9wbToNCi0tIA0KMi4xNy4xDQo=
+RW5hYmxlIEdETSBHRE1BX0RST1BfQUxMIG1vZGUgdG8gZHJvcCBhbGwgcGFja2V0IGR1cmluZyB0
+aGUgDQpzdG9wIG9wZXJhdGlvbi4gVGhpcyBpcyByZWNvbW1lbmRlZCBieSB0aGUgbXQ3NjJ4IEhX
+IGRlc2lnbiANCnRvIGRyb3AgYWxsIHBhY2tldCBmcm9tIEdNQUMgYmVmb3JlIHN0b3BwaW5nIFBE
+TUEuDQoNClNpZ25lZC1vZmYtYnk6IE1hcmtMZWUgPE1hcmstTUMuTGVlQG1lZGlhdGVrLmNvbT4N
+Ci0tDQp2MS0+djI6DQoqIG5vIGNoYW5nZQ0KdjItPnYzOg0KKiBubyBjaGFuZ2UNCg0KLS0tDQog
+ZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuYyB8IDIgKysNCiBkcml2
+ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRlay9tdGtfZXRoX3NvYy5oIHwgMSArDQogMiBmaWxlcyBj
+aGFuZ2VkLCAzIGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVy
+bmV0L21lZGlhdGVrL210a19ldGhfc29jLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWRpYXRl
+ay9tdGtfZXRoX3NvYy5jDQppbmRleCBiMTQ3YWIwZTQ0Y2UuLjVmZTFhYjBjMTZjYyAxMDA2NDQN
+Ci0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lZGlhdGVrL210a19ldGhfc29jLmMNCisrKyBi
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L21lZGlhdGVrL210a19ldGhfc29jLmMNCkBAIC0yMjc5LDYg
+KzIyNzksOCBAQCBzdGF0aWMgaW50IG10a19zdG9wKHN0cnVjdCBuZXRfZGV2aWNlICpkZXYpDQog
+CWlmICghcmVmY291bnRfZGVjX2FuZF90ZXN0KCZldGgtPmRtYV9yZWZjbnQpKQ0KIAkJcmV0dXJu
+IDA7DQogDQorCW10a19nZG1fY29uZmlnKGV0aCwgTVRLX0dETUFfRFJPUF9BTEwpOw0KKw0KIAlt
+dGtfdHhfaXJxX2Rpc2FibGUoZXRoLCBNVEtfVFhfRE9ORV9JTlQpOw0KIAltdGtfcnhfaXJxX2Rp
+c2FibGUoZXRoLCBNVEtfUlhfRE9ORV9JTlQpOw0KIAluYXBpX2Rpc2FibGUoJmV0aC0+dHhfbmFw
+aSk7DQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9z
+b2MuaCBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lZGlhdGVrL210a19ldGhfc29jLmgNCmluZGV4
+IGIxNmQ4ZDliMTk2YS4uODU4MzBmZTE0YTFiIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWVkaWF0ZWsvbXRrX2V0aF9zb2MuaA0KKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQv
+bWVkaWF0ZWsvbXRrX2V0aF9zb2MuaA0KQEAgLTg1LDYgKzg1LDcgQEANCiAjZGVmaW5lIE1US19H
+RE1BX1RDU19FTgkJQklUKDIxKQ0KICNkZWZpbmUgTVRLX0dETUFfVUNTX0VOCQlCSVQoMjApDQog
+I2RlZmluZSBNVEtfR0RNQV9UT19QRE1BCTB4MA0KKyNkZWZpbmUgTVRLX0dETUFfRFJPUF9BTEwg
+ICAgICAgMHg3Nzc3DQogDQogLyogVW5pY2FzdCBGaWx0ZXIgTUFDIEFkZHJlc3MgUmVnaXN0ZXIg
+LSBMb3cgKi8NCiAjZGVmaW5lIE1US19HRE1BX01BQ19BRFJMKHgpCSgweDUwOCArICh4ICogMHgx
+MDAwKSkNCi0tIA0KMi4xNy4xDQo=
 
