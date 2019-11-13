@@ -2,136 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81F33F9EDB
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 01:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF9FF9EEE
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 01:09:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbfKMAIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 19:08:21 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:34229 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726970AbfKMAIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 19:08:21 -0500
-Received: by mail-qk1-f193.google.com with SMTP id 205so215420qkk.1
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 16:08:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=r4K7R0tR2iKjDwGj7h2AdFnAhKVb+PEh8hKXGhwzheo=;
-        b=fZud3ib9ugZ1H45gqE3Ufx6TkhfidwZqwWlQe2U/+whtXNqUICQgqqYOrhI9G7ja5h
-         8wz4z83SrHf90CcjxE/pqx7yyuqeqCwhGO/PglcW50daiLjpDhHLPtWIatjp83enLA1i
-         eCn9Cyh3/+6bkiKsYvohTq3vxERaDLgekZag44JZToiXvIR712sgs35f7P5IOnKrux9T
-         5/A7S2MFI7LRleIsmz6Z3nMdOR0RBtn0kvaVabK8o6Xbo0T11MJiJ4l+a9OV5hwhSrKI
-         CO6qigj/t+1GvMCaBySSbYJ+NLrLbAnXsZiSCRrRr749BBN2dmr4pM9uOxk+1bx6QohQ
-         /xig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=r4K7R0tR2iKjDwGj7h2AdFnAhKVb+PEh8hKXGhwzheo=;
-        b=jwWN0wZ+kFX8GHNamKVXQY2XxGFdKvXxctzWMadswfMrvIGRvWTikktcr0YhciluxB
-         0h55gejQPhG19VtSfAF5i4I4EWoLDRhNZPv2Gc2DP3IiZHit9EJlpm2jTyqLHLLAc8Kp
-         /W4Yi4Omada44JtslGaZHsbeN4dDQrXqYip4xg+xpIFvV/oBKWzv1jv202ZdXZ0CMRRz
-         IzAJSs9RU3vZaY4T4j8pAVORhRKorJfM83H9s505UNpe+1AKiPOfiHIcD/jgno/Fbxo+
-         OIXiN2Jccfa1chphFKi54erON2dJIxmmRGRkDyinwCTLxdvG9QEtG5IREH2UiWXENkLd
-         Za0Q==
-X-Gm-Message-State: APjAAAXq3T/EMNHZ8FWUJd9ia7BUrRdtqW6ii/wvjeP2ftsu+ExUJMZx
-        iJrqQloLiSZ8smO9nDMheM41lA==
-X-Google-Smtp-Source: APXvYqxUvDZJyIu1NzBqLzNMQJZcQEwGmA0sBjLaQeHkMjfR4xinoVbyQQ2cr4JogKuX1pAuI/x5jw==
-X-Received: by 2002:a05:620a:205d:: with SMTP id d29mr156309qka.152.1573603700172;
-        Tue, 12 Nov 2019 16:08:20 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
-        by smtp.gmail.com with ESMTPSA id m25sm309243qtc.0.2019.11.12.16.08.19
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Nov 2019 16:08:19 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1iUgCp-0005iu-4h; Tue, 12 Nov 2019 20:08:19 -0400
-Date:   Tue, 12 Nov 2019 20:08:19 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
-        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com, parav@mellanox.com,
-        Kiran Patil <kiran.patil@intel.com>
-Subject: Re: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
-Message-ID: <20191113000819.GB19615@ziepe.ca>
-References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
- <20191112212826.GA1837470@kroah.com>
+        id S1727149AbfKMAJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 19:09:44 -0500
+Received: from sonic315-27.consmr.mail.ne1.yahoo.com ([66.163.190.153]:34393
+        "EHLO sonic315-27.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727134AbfKMAJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 19:09:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1573603781; bh=fQopPU+QHEIhU1rMxngnZt5dLriz8PONEvXZFfDzj2M=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject; b=VIrKDrhyq9bFHOTNVoJJR+7kFNmfXmjbQnWVLE5ZMITv5HHkWVODswQ7TawSpL+0BfOABsLv6pWEY4YkFnzLEKJy+NBMaBz1cg5oQzbNq3iGvNZ3y4PfpAV/SadXkC+sT2dKPnPnKMLA6R4Bh/fxQ+qJZ6kAoqjcsd1t/FJdLyYDP+sDJMSNDdSZ78Tl9c53TfciZxPsEqmAi9EIhb0lMk0i90bmY8RIigXHwUKusVFSUekNvt1HUBoEb18RzOQAh1tNw14uG0p5xhuAOhn+E9NaCThL37OdPRoNFm+19vuo6qo1d5n6Em5xelZXbCLEsxD4HTNGnW95a3huhpr7JA==
+X-YMail-OSG: nXHSJ0UVM1mNznJO.AkXuFiBGQrd1UtHzHox9XQuRYjtuL.PPsY6OcT2bZATAJq
+ BIWMN_dylpUvbmeayEpGIo_SXDa40KAATm8.ypX7vNTajR5CaK2X7hSfM1ZqKE96dtNDiQtFFXx2
+ LZjV4M5HgZoQA1KJVwG0AGQLXYZAYrwin.PfH23XNkJKDX_RS.BLh2fPmoEUooNWXVecoOkyb4aH
+ KproHUnRvb18gFL01wZ76sR.ulGjEJLomrMIbHq56W5Y.z72E8jmmXCnbKlaFO3RXROOHrQ6J6IL
+ lBl82YQk3UIPs8uu3vK8PoevcHNbNRBDBenI1reJNA7k5LrDiM4JxnFn_vicDTaJpkEkqbd.gV2K
+ N9sPZjXjpguVg_lajo9YmNBrfoOsWS9QoVYwROE1Pn6ru9L7FyI1Kdsxf4.r.ikEjvSzvD6hjXJo
+ 6QmBNhSR4yh73ZR4h.wZ7egE9lAKvZ0LsGeGuBmqMANtRBD0chUYN2FuxNWMvhRQW94bnWk.2tXJ
+ kJ6Xk7Qi7n12m4tnhYZK49EIaMkGzOMKMFXNmdS3U.GdDHVk7g82lJocxV_QtdACIG9bM9x1UJo_
+ 43Pt3.MMQ6SxBHrQrcyP4zpvHCCcHGK_DQraGzpafZTmdp7fUQDspAP2gJ2hMBF9Q1joeMN8VOQr
+ DnZx63hmO2z5Fnv1Nt8yJhlDP4shkiomIgiVPaS2ihudi9IYCoEATUxR6TZdblaoK0BMGMlu8.Q3
+ STvSB1HNMksBxo0nEqbKU1MTZD94oM3HkFbvr8ABUARJ5MYhpKHShhx.rgyBqtadUgWCApbMHoBJ
+ RrdhGDR_MyxEUcC1AMwgYcqzGwaaTCcC3j1ytpuM6nOs_XlioTKWX_5.Eg7OusOVGYLRx0lgMANg
+ 9unbRS01iF.JlZ__0EBcrs6gRyMLVFXy.83nD3Z9llo8l5fcU6BFPx8915g.9Jp2wv4mLBEMlQz_
+ Kn3pDCEGWPDRE3p6FoaGeE9N4vPz4Al4b03iVZRpSKUVvnQD03n97Jw8l1iyG65K7xHjJXH2E8.m
+ z3ElSlJIzo1Yo9vGhFK5Po27hq7GtuGEUXkkt7E01fu04t8WDLE2WlgUQ6_kPBECFZaswMS9Scnx
+ zOnW6lf6EDtY0gGyOpyugl1ePgZWF4kHrZrJ1sXUqaWxkg6gFs3gmzOUATUYrW0nFZunoOXNFsyP
+ NCHxcFok18aPiis9kcQ7o9UdionZEJFKXcMrMJqVa2ZbhbtTrJ61ufEFfgaLCL5082DFNUG.3Eco
+ 0XrXhanRHnvbdiFoZb.rUBxfTbT6mzOyhmE_e4E7a3DxRrExybCUTmlZSiP0fg7K56TT2yxDDSUU
+ CQA2VJLqogykdyhIXkEP6huKziOHE8eyripBT3wGlfJ.Tq_FcY709ZupsYElAMF9nlknlIUW1OJ7
+ iFMASNAM0hZCRr1miiwcX5V8bjaMIMfeEssGy8qc61jwz.Lqni5rF.bTDZSKm.4F9kl5BSg--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic315.consmr.mail.ne1.yahoo.com with HTTP; Wed, 13 Nov 2019 00:09:41 +0000
+Received: by smtp427.mail.ne1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID eba4c54ba4d55f2cad95fb20ef489486;
+          Wed, 13 Nov 2019 00:09:38 +0000 (UTC)
+From:   Casey Schaufler <casey@schaufler-ca.com>
+To:     casey.schaufler@intel.com, jmorris@namei.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+Cc:     casey@schaufler-ca.com, keescook@chromium.org,
+        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
+        paul@paul-moore.com, sds@tycho.nsa.gov, netdev@vger.kernel.org
+Subject: [PATCH 05/25] net: Prepare UDS for security module stacking
+Date:   Tue, 12 Nov 2019 16:08:53 -0800
+Message-Id: <20191113000913.5414-6-casey@schaufler-ca.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191113000913.5414-1-casey@schaufler-ca.com>
+References: <20191113000913.5414-1-casey@schaufler-ca.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191112212826.GA1837470@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 10:28:26PM +0100, Greg KH wrote:
+Change the data used in UDS SO_PEERSEC processing from a
+secid to a more general struct lsmblob. Update the
+security_socket_getpeersec_dgram() interface to use the
+lsmblob. There is a small amount of scaffolding code
+that will come out when the security_secid_to_secctx()
+code is brought in line with the lsmblob.
 
-> > + */
-> > +struct virtbus_device {
-> > +	const char			*name;
-> > +	int				id;
-> > +	const struct virtbus_dev_id	*dev_id;
-> > +	struct device			dev;
-> > +	void				*data;
-> > +};
-> > +
-> > +struct virtbus_driver {
-> > +	int (*probe)(struct virtbus_device *);
-> > +	int (*remove)(struct virtbus_device *);
-> > +	void (*shutdown)(struct virtbus_device *);
-> > +	int (*suspend)(struct virtbus_device *, pm_message_t state);
-> > +	int (*resume)(struct virtbus_device *);
-> > +	struct device_driver driver;
-> > +	const struct virtbus_dev_id *id_table;
-> > +};
-> > +
-> > +#define virtbus_get_dev_id(vdev)	((vdev)->id_entry)
-> > +#define virtbus_get_devdata(dev)	((dev)->devdata)
-> 
-> What are these for?
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Reviewed-by: John Johansen <john.johansen@canonical.com>
+Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
+cc: netdev@vger.kernel.org
+---
+ include/linux/security.h |  7 +++++--
+ include/net/af_unix.h    |  2 +-
+ include/net/scm.h        |  8 +++++---
+ net/ipv4/ip_sockglue.c   |  8 +++++---
+ net/unix/af_unix.c       |  6 +++---
+ security/security.c      | 18 +++++++++++++++---
+ 6 files changed, 34 insertions(+), 15 deletions(-)
 
-As far as I can see, the scheme here, using the language from the most
-recent discussion is:
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 2b0ab47cfb26..d57f400a307e 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -1354,7 +1354,8 @@ int security_socket_shutdown(struct socket *sock, int how);
+ int security_sock_rcv_skb(struct sock *sk, struct sk_buff *skb);
+ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				      int __user *optlen, unsigned len);
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid);
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     struct lsmblob *blob);
+ int security_sk_alloc(struct sock *sk, int family, gfp_t priority);
+ void security_sk_free(struct sock *sk);
+ void security_sk_clone(const struct sock *sk, struct sock *newsk);
+@@ -1492,7 +1493,9 @@ static inline int security_socket_getpeersec_stream(struct socket *sock, char __
+ 	return -ENOPROTOOPT;
+ }
+ 
+-static inline int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++static inline int security_socket_getpeersec_dgram(struct socket *sock,
++						   struct sk_buff *skb,
++						   struct lsmblob *blob)
+ {
+ 	return -ENOPROTOOPT;
+ }
+diff --git a/include/net/af_unix.h b/include/net/af_unix.h
+index 3426d6dacc45..933492c08b8c 100644
+--- a/include/net/af_unix.h
++++ b/include/net/af_unix.h
+@@ -36,7 +36,7 @@ struct unix_skb_parms {
+ 	kgid_t			gid;
+ 	struct scm_fp_list	*fp;		/* Passed files		*/
+ #ifdef CONFIG_SECURITY_NETWORK
+-	u32			secid;		/* Security ID		*/
++	struct lsmblob		lsmblob;	/* Security LSM data	*/
+ #endif
+ 	u32			consumed;
+ } __randomize_layout;
+diff --git a/include/net/scm.h b/include/net/scm.h
+index 1ce365f4c256..e2e71c4bf9d0 100644
+--- a/include/net/scm.h
++++ b/include/net/scm.h
+@@ -33,7 +33,7 @@ struct scm_cookie {
+ 	struct scm_fp_list	*fp;		/* Passed files		*/
+ 	struct scm_creds	creds;		/* Skb credentials	*/
+ #ifdef CONFIG_SECURITY_NETWORK
+-	u32			secid;		/* Passed security ID 	*/
++	struct lsmblob		lsmblob;	/* Passed LSM data	*/
+ #endif
+ };
+ 
+@@ -46,7 +46,7 @@ struct scm_fp_list *scm_fp_dup(struct scm_fp_list *fpl);
+ #ifdef CONFIG_SECURITY_NETWORK
+ static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
+ {
+-	security_socket_getpeersec_dgram(sock, NULL, &scm->secid);
++	security_socket_getpeersec_dgram(sock, NULL, &scm->lsmblob);
+ }
+ #else
+ static __inline__ void unix_get_peersec_dgram(struct socket *sock, struct scm_cookie *scm)
+@@ -97,7 +97,9 @@ static inline void scm_passec(struct socket *sock, struct msghdr *msg, struct sc
+ 	int err;
+ 
+ 	if (test_bit(SOCK_PASSSEC, &sock->flags)) {
+-		err = security_secid_to_secctx(scm->secid, &secdata, &seclen);
++		/* Scaffolding - it has to be element 0 for now */
++		err = security_secid_to_secctx(scm->lsmblob.secid[0],
++					       &secdata, &seclen);
+ 
+ 		if (!err) {
+ 			put_cmsg(msg, SOL_SOCKET, SCM_SECURITY, seclen, secdata);
+diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
+index aa3fd61818c4..6cf57d5ac899 100644
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -130,15 +130,17 @@ static void ip_cmsg_recv_checksum(struct msghdr *msg, struct sk_buff *skb,
+ 
+ static void ip_cmsg_recv_security(struct msghdr *msg, struct sk_buff *skb)
+ {
++	struct lsmblob lb;
+ 	char *secdata;
+-	u32 seclen, secid;
++	u32 seclen;
+ 	int err;
+ 
+-	err = security_socket_getpeersec_dgram(NULL, skb, &secid);
++	err = security_socket_getpeersec_dgram(NULL, skb, &lb);
+ 	if (err)
+ 		return;
+ 
+-	err = security_secid_to_secctx(secid, &secdata, &seclen);
++	/* Scaffolding - it has to be element 0 */
++	err = security_secid_to_secctx(lb.secid[0], &secdata, &seclen);
+ 	if (err)
+ 		return;
+ 
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 0d8da809bea2..189fd6644e7f 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -138,17 +138,17 @@ static struct hlist_head *unix_sockets_unbound(void *addr)
+ #ifdef CONFIG_SECURITY_NETWORK
+ static void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+ {
+-	UNIXCB(skb).secid = scm->secid;
++	UNIXCB(skb).lsmblob = scm->lsmblob;
+ }
+ 
+ static inline void unix_set_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+ {
+-	scm->secid = UNIXCB(skb).secid;
++	scm->lsmblob = UNIXCB(skb).lsmblob;
+ }
+ 
+ static inline bool unix_secdata_eq(struct scm_cookie *scm, struct sk_buff *skb)
+ {
+-	return (scm->secid == UNIXCB(skb).secid);
++	return lsmblob_equal(&scm->lsmblob, &(UNIXCB(skb).lsmblob));
+ }
+ #else
+ static inline void unix_get_secdata(struct scm_cookie *scm, struct sk_buff *skb)
+diff --git a/security/security.c b/security/security.c
+index dd6f212e11af..55837706e3ef 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -2108,10 +2108,22 @@ int security_socket_getpeersec_stream(struct socket *sock, char __user *optval,
+ 				optval, optlen, len);
+ }
+ 
+-int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb, u32 *secid)
++int security_socket_getpeersec_dgram(struct socket *sock, struct sk_buff *skb,
++				     struct lsmblob *blob)
+ {
+-	return call_int_hook(socket_getpeersec_dgram, -ENOPROTOOPT, sock,
+-			     skb, secid);
++	struct security_hook_list *hp;
++	int rc = -ENOPROTOOPT;
++
++	hlist_for_each_entry(hp, &security_hook_heads.socket_getpeersec_dgram,
++			     list) {
++		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
++			continue;
++		rc = hp->hook.socket_getpeersec_dgram(sock, skb,
++						&blob->secid[hp->lsmid->slot]);
++		if (rc != 0)
++			break;
++	}
++	return rc;
+ }
+ EXPORT_SYMBOL(security_socket_getpeersec_dgram);
+ 
+-- 
+2.20.1
 
-   // in core or netdev module
-   int mlx5_core_create()
-   {
-      struct mlx5_core_dev *core = kzalloc(..)
-
-      [..]
-
-      core->vdev = virtbus_dev_alloc("mlx5_core", core);
-   }
-
-
-   // in rdma module
-   static int mlx5_rdma_probe(struct virtbus_device *dev)
-   {
-        // Get the value passed to virtbus_dev_alloc()
-	struct mlx5_core_dev *core = virtbus_get_devdata(dev)
-
-	// Use the huge API surrounding struct mlx5_core_dev
-	qp = mlx5_core_create_qp(core, ...);
-   }
-
-   static struct virtbus_driver mlx5_rdma_driver = {
-      .probe = mlx5_rdma_probe,
-      .match = {"mlx5_core"}
-   }
-
-Drivers that match "mlx5_core" know that the opaque
-'virtbus_get_devdata()' is a 'struct mlx5_core_dev *' and use that
-access the core driver.
-
-A "ice_core" would know it is some 'struct ice_core_dev *' for Intel
-and uses that pointer, etc.
-
-ie it is just a way to a pass a 'void *' from one module to another
-while using the driver core to manage module autoloading and binding.
-
-Jason
