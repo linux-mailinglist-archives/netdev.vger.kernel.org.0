@@ -2,134 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2840CFB9DB
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 21:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F43FB9D0
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 21:28:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726983AbfKMUay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 15:30:54 -0500
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:5469 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbfKMUax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 15:30:53 -0500
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5dcc67fb0000>; Wed, 13 Nov 2019 12:30:51 -0800
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 13 Nov 2019 12:30:48 -0800
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 13 Nov 2019 12:30:48 -0800
-Received: from [10.2.160.107] (172.20.13.39) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 13 Nov
- 2019 20:30:47 +0000
-Subject: Re: [PATCH v3 00/23] mm/gup: track dma-pinned pages: FOLL_PIN,
- FOLL_LONGTERM
-To:     Jan Kara <jack@suse.cz>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf <bpf@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        <kvm@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DMA BUFFER SHARING FRAMEWORK" 
-        <linux-media@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20191112000700.3455038-1-jhubbard@nvidia.com>
- <20191112203802.GD5584@ziepe.ca>
- <02fa935c-3469-b766-b691-5660084b60b9@nvidia.com>
- <CAKMK7uHvk+ti00mCCF2006U003w1dofFg9nSfmZ4bS2Z2pEDNQ@mail.gmail.com>
- <7b671bf9-4d94-f2cc-8453-863acd5a1115@nvidia.com>
- <20191113101210.GD6367@quack2.suse.cz>
- <20191113114311.GP23790@phenom.ffwll.local>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <283b121d-f526-f43f-de45-dc2f8318d860@nvidia.com>
-Date:   Wed, 13 Nov 2019 12:28:02 -0800
+        id S1726489AbfKMU2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 15:28:25 -0500
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:34672 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbfKMU2Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 15:28:25 -0500
+Received: by mail-ed1-f66.google.com with SMTP id b72so3044220edf.1
+        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 12:28:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ivGQ0iUanJX3vbwBQO6ZOcKtwYFRRMIs3DlXpnU14Is=;
+        b=hN4T44HxOR7JzTQYRGqG/83CALCmWAKa2zDQ+9TkhzFV7O1CjpUc+oKX94k7tOC8Ld
+         MLDCaVLmDaqvrlE/k6IDC3UgZ1r7iME4xZvNqoV917TQXiib/FqQU25XZKfx5vIx9R+W
+         W7pc6zleW1uRLE104EgZ5wUBjebER8gINLXApVdwZ7PC/Bfkd+LiV3mQsoNEOZDCGp3Y
+         S0LlYeTps2cGcgJFnD/a3qhhp4Dmw3KTNd/4eqXyhXIxrZ1wb89q0x2KnXApTJIFM80y
+         V+vL6/FZOLo5V4Bv+n0qiSZ4XJGAjLKj3rIF9+Xu4i4juEPDmgU8+el9i2+v7YeyrJCQ
+         qXUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ivGQ0iUanJX3vbwBQO6ZOcKtwYFRRMIs3DlXpnU14Is=;
+        b=FpJCYNP/FzlD0FpnCpNH7gYhEc9k2Njn5tWuMHXnLWpYiL6Czvn1XnLrhu2pP0jZFL
+         1QpeVqSitgoFiPYdn8h0s+K8LdSzczR122IRz845UbYRZbIFHyzZAIRuDw3uLbcHeoZk
+         saGB5ixpL/Khvsfb6ue3e6lehlFvBfXgc6cSf2KzxAkUGTDxrqDb8pQDWESAPJVFaZat
+         2y0LJj0C2f/LaR2LZnXCH0/uBsreLAmiN0ABAE1CsY0sotGkDqwHiqH+4DWsiVVf2tlZ
+         9xp6K8+Xes3RVHp3rf9MzyBjNUHdsrJmEHudrhEHu5NTyT6vgpiZExkVyYmo0fvhjgaN
+         7IEg==
+X-Gm-Message-State: APjAAAWLDMC1OsYRg7GxOVuwqABdX1tlYgW7/Q/LD6L47Z7iCuIIe4dC
+        B7VcUEPDmPHYCq9aRV0ZLNGK/r1R
+X-Google-Smtp-Source: APXvYqx5KxAhvJbc2Dtecjhes+QPfjwblXzhf0SKYpKMwU9H6xVa2DH5D3+ZJdJNJvQPx2F6TakeEg==
+X-Received: by 2002:a17:906:3418:: with SMTP id c24mr4874085ejb.121.1573676902677;
+        Wed, 13 Nov 2019 12:28:22 -0800 (PST)
+Received: from [10.67.50.53] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id y2sm289654edd.2.2019.11.13.12.28.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 Nov 2019 12:28:22 -0800 (PST)
+Subject: Re: [PATCH net-next] ibmveth: Detect unsupported packets before
+ sending to the hypervisor
+To:     Cris Forno <cforno12@linux.vnet.ibm.com>, netdev@vger.kernel.org
+Cc:     tlfalcon@linux.ibm.com
+References: <20191113154407.50653-1-cforno12@linux.vnet.ibm.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <4b610d50-be8e-af29-c235-0c211cc645b0@gmail.com>
+Date:   Wed, 13 Nov 2019 12:28:19 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191113114311.GP23790@phenom.ffwll.local>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <20191113154407.50653-1-cforno12@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1573677051; bh=w2mV+XepuxnOtihiYgL/XuqwUYU2QI7jYfF/MppVAWE=;
-        h=X-PGP-Universal:Subject:To:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=K3ELKy0LEaE4Frm6QQ4jLw8cJF3zobatTYiyQ/Vg2jO630IkqTksnY4sEeXMrgt5a
-         b46qAh7TsgPVJKCPcTPIoUnjxNn6h2xUdpivOkXuz3queuSeoxqaSFBxc3yHdAdKf1
-         weqLMTvKu8Vs4tf6la1SbXQc5ZvBvuc6pK240FvHmEYJ0o2WePNqZANag+FSCa5U1i
-         2iyzSKadjF0T/uRVrR4KM4Ey20Bg7sJaaQBcaSS9Pr1q7odGMaBmeJ4hRBriIHKA4P
-         1LTpfohPn7iHAuSCtXbApQkiiVLKyUBXMKbsJDCLOd3JNZEji1iUk1dM5atghZtAzC
-         EJVJspvV4f3sw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/13/19 3:43 AM, Daniel Vetter wrote:
-...
->>>> Can't we call this unpin_user_page then, for some symmetry? Or is that
->>>> even more churn?
->>>>
->>>> Looking from afar the naming here seems really confusing.
->>>
->>>
->>> That look from afar is valuable, because I'm too close to the problem to see
->>> how the naming looks. :)
->>>
->>> unpin_user_page() sounds symmetrical. It's true that it would cause more
->>> churn (which is why I started off with a proposal that avoids changing the
->>> names of put_user_page*() APIs). But OTOH, the amount of churn is proportional
->>> to the change in direction here, and it's really only 10 or 20 lines changed,
->>> in the end.
->>>
->>> So I'm open to changing to that naming. It would be nice to hear what others
->>> prefer, too...
->>
->> FWIW I'd find unpin_user_page() also better than put_user_page() as a
->> counterpart to pin_user_pages().
+On 11/13/19 7:44 AM, Cris Forno wrote:
+> Currently, when ibmveth receive a loopback packet, it reports an
+> ambiguous error message "tx: h_send_logical_lan failed with rc=-4"
+> because the hypervisor rejects those types of packets. This fix
+> detects loopback packet and assures the source packet's MAC address
+> matches the driver's MAC address before transmitting to the
+> hypervisor.
 > 
-> One more point from afar on pin/unpin: We use that a lot in graphics for
-> permanently pinned graphics buffer objects. Which really only should be
-> used for scanout. So at least graphics folks should have an appropriate
-> mindset and try to make sure we don't overuse this stuff.
-> -Daniel
+> Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
+> ---
+>  drivers/net/ethernet/ibm/ibmveth.c | 26 ++++++++++++++++++++++++++
+>  1 file changed, 26 insertions(+)
 > 
+> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+> index d654c23..e8bb6c7 100644
+> --- a/drivers/net/ethernet/ibm/ibmveth.c
+> +++ b/drivers/net/ethernet/ibm/ibmveth.c
+> @@ -1011,6 +1011,29 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
+>  	return 0;
+>  }
+>  
+> +static int ibmveth_is_packet_unsupported(struct sk_buff *skb,
+> +					 struct net_device *netdev)
+> +{
+> +	int ret = 0;
+> +	struct ethhdr *ether_header;
+> +
+> +	ether_header = eth_hdr(skb);
+> +
+> +	if (ether_addr_equal(ether_header->h_dest, netdev->dev_addr)) {
+> +		netdev_err(netdev, "veth doesn't support loopback packets, dropping packet.\n");
 
-OK, Ira also likes "unpin", and so far no one has said *anything* in favor
-of the "put_user_page" names, so I think we have a winner! I'll change the
-names to unpin_user_page*().
-
-
-thanks,
+These error messages should probably be demoted to netdev_dbg() prints,
+you would want a maliciously written program to spam your kernel log.
 -- 
-John Hubbard
-NVIDIA
+Florian
