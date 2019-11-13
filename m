@@ -2,98 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 492F9FAE26
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:11:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD24FAE2C
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:12:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbfKMKLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:11:17 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35935 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbfKMKLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 05:11:17 -0500
-Received: by mail-wm1-f66.google.com with SMTP id c22so1329768wmd.1
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 02:11:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aleksander-es.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+WeywjYhif8cbDEqMOV9DoOxbQ0mSoumc3+tLKw1uLM=;
-        b=H4cg+YZkn91KQnCu6mBp6aYcM6J1FTJ2Nx1UCRlGMBcC7vGLScX1L623Mp/ugSGMgF
-         BKu01xFWg8RZDf/qyhPH9EC2ZfRzylzJYMg2w5rAlL7G6jckM1fn/gS4QDqxcyLixycS
-         2Z3XsDxqlZejK5hp71L8Jqu7I7eqHz2TfY6gBGQbEvm/GdZTexGJH/M9AKKhnvQQND5C
-         FSp7te8fAZRfzQFihdNGMrOuDSNUMWa5rbHrHISIwmPrDS4NzecStq1pMB+WKWjHFxhS
-         eyLrKJT1L/PXDljA4hIN0iFTDMTbBGyasH5COY1vmYpOvB4CK9d62cKLslGA8nIwS8Av
-         cTXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+WeywjYhif8cbDEqMOV9DoOxbQ0mSoumc3+tLKw1uLM=;
-        b=tzuzw4u7Fx/SO6Ms8KNioxqL4/7IKEWew9fnZHX414kkwyKeLSPp/ixDtSOb4ZuZDC
-         Qwk9V1yHOPly7nPrF0xhuzWpByIAPta4GJ/XiEkXjgUkr+uVD9U+4Pewv/FTXFN6HpVI
-         leXJBa0eoNHkG4j1UJI/thxMkWWn8YjbOJbpcBXxzkMjO/5zVEWZ746SgZrTHe7xUc+1
-         tiJU3ppcRwUUo27tTbmcbI4oQImij7qaUNVgLJP4h0LAUJNDO26ekk8kfhYMpwSwquBR
-         UbJ2FRZEhglzYedlMbsncdcaCkGwPeGamsLHE7bNWG9GcAr9IsunEt5kbHY2/PdJLycS
-         68ow==
-X-Gm-Message-State: APjAAAW7p9KcV+Rz/pe33I46B8B1+TqbHZDZKjUa12wwW0/Cg7lwEbrb
-        mQufBTkzYEXmOCTXKRmKZ4hM+A==
-X-Google-Smtp-Source: APXvYqwst42K3LwIDuk0tBKtjOq4ShX05R4CRWd8xFX1teo1ExSOwBayxYOUvI9Fdmk6xfk9T6RxKA==
-X-Received: by 2002:a1c:ed16:: with SMTP id l22mr1918443wmh.151.1573639875005;
-        Wed, 13 Nov 2019 02:11:15 -0800 (PST)
-Received: from ares.lan (232.red-88-3-18.dynamicip.rima-tde.net. [88.3.18.232])
-        by smtp.gmail.com with ESMTPSA id k4sm1896719wmk.26.2019.11.13.02.11.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Nov 2019 02:11:14 -0800 (PST)
-From:   Aleksander Morgado <aleksander@aleksander.es>
-To:     bjorn@mork.no, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Cc:     Aleksander Morgado <aleksander@aleksander.es>
-Subject: [PATCH] net: usb: qmi_wwan: add support for Foxconn T77W968 LTE modules
-Date:   Wed, 13 Nov 2019 11:11:10 +0100
-Message-Id: <20191113101110.496306-1-aleksander@aleksander.es>
-X-Mailer: git-send-email 2.24.0
+        id S1727341AbfKMKMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:12:08 -0500
+Received: from mail-eopbgr130052.outbound.protection.outlook.com ([40.107.13.52]:21476
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726389AbfKMKMH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 05:12:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iTmOlhYq8XKrrDGOdoobSaTVbzD/sk1bvQUxsXOR9EtnaCv1ZKZrlqI3N3K4XVtyjWslJbdFKZKNisbn9xh0pDlCA+PiboJlab5JmuQV5vi02lGwFrqNje6A5OOAiQmFnnbFhTFD364Ce7DuK8Kf6GKXI7W9jik003UqXXsJmlmIJka8UczAn4urZpspIEYv8jKxSjWrzrWc4w4le5m2LDqlSensn2lNExJRaKfonsAfvUTWhHaEaYJtzIDYjwgoer/6NBz9KuqexgHz9nGTNtW46vfSIrh7qANadu/djnDR2SHF9itaN0sXztdzE7MXk/ipbSGsocHCcMHlXLlLnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MA3ZSU7fuZmWEpyA6UpN2D9hyZDNkEvrH5KnrHSqU1o=;
+ b=m7QoMWFdkbKWKnGwmnwHGFmHeiZGT3YPGJv7m7TLbc3nwJMqkHJaPBl38SeLUMLlcnUhxRkQBvLQIgIzVVhhieUIZpndU6JqFJRqMszsuRCFyh64bqXmuCxgxzm0tjZ67ZQiMxqZfwLCm5s+BNKo/CIgJzG+tstUnKSbigRvnP4dPVQqhKl3DRtvXelVsNpvkelYokKKDIXZQ0lSN6o/ey5e+4GAoVNrvOFCDxv02f8dRQ08RcSItytZQ/w1RLtRX+MYk7Oe7CuMQeOU5wtaf5EgS7xX3Va1kjuFnaP6/dFRaufVTMKjsoz4d2flb1v5pp1ZmUnRiuWmR3e9XIyKTQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MA3ZSU7fuZmWEpyA6UpN2D9hyZDNkEvrH5KnrHSqU1o=;
+ b=nqqA5XNrCUomP+Z32p23MNpjlZOMTD8+FJQVXMhgcGDtSk3uvirux2iRwniZ4EzvfiQO9DgHSMp5BSUq/pFPHR6MxzBWm/jBvWo34SDq9YUMNOogFsHz9arDkC4DSUVnaeujjwMyGfcs+gew3nP7X/WAMk8WSjca78BZi2HVeLQ=
+Received: from AM6PR05MB4198.eurprd05.prod.outlook.com (52.135.161.31) by
+ AM6PR05MB5588.eurprd05.prod.outlook.com (20.177.118.97) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2430.24; Wed, 13 Nov 2019 10:12:04 +0000
+Received: from AM6PR05MB4198.eurprd05.prod.outlook.com
+ ([fe80::8435:9f63:f8da:650e]) by AM6PR05MB4198.eurprd05.prod.outlook.com
+ ([fe80::8435:9f63:f8da:650e%7]) with mapi id 15.20.2430.027; Wed, 13 Nov 2019
+ 10:12:03 +0000
+From:   Roi Dayan <roid@mellanox.com>
+To:     David Ahern <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Eli Britstein <elibr@mellanox.com>
+Subject: Re: [PATCH iproute2-next 0/8] flower match support for masked ports
+Thread-Topic: [PATCH iproute2-next 0/8] flower match support for masked ports
+Thread-Index: AQHVmWjZ7rCBy79pO0ySMtRawFRdgqeH81QAgADvbIA=
+Date:   Wed, 13 Nov 2019 10:12:03 +0000
+Message-ID: <dbf574d1-4803-efbc-3670-33f9ddf9b5f4@mellanox.com>
+References: <20191112145154.145289-1-roid@mellanox.com>
+ <2dca1929-15a6-d7ff-c8b1-c2605bed6b2c@gmail.com>
+In-Reply-To: <2dca1929-15a6-d7ff-c8b1-c2605bed6b2c@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [193.47.165.251]
+user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
+x-clientproxiedby: AM3PR05CA0086.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::12) To AM6PR05MB4198.eurprd05.prod.outlook.com
+ (2603:10a6:209:40::31)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=roid@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: a103ce25-1ab5-4990-a05b-08d76821ee38
+x-ms-traffictypediagnostic: AM6PR05MB5588:|AM6PR05MB5588:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR05MB55886C5D4A1140750A951F1BB5760@AM6PR05MB5588.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2043;
+x-forefront-prvs: 0220D4B98D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(136003)(346002)(39860400002)(396003)(366004)(199004)(189003)(6116002)(476003)(11346002)(4326008)(58126008)(26005)(316002)(4744005)(6246003)(4001150100001)(3846002)(31696002)(478600001)(386003)(99286004)(102836004)(7736002)(6506007)(14454004)(446003)(52116002)(8936002)(2616005)(486006)(25786009)(31686004)(53546011)(305945005)(36756003)(66946007)(229853002)(54906003)(186003)(86362001)(8676002)(256004)(6486002)(71190400001)(2906002)(6436002)(71200400001)(107886003)(6512007)(76176011)(110136005)(5660300002)(65806001)(2501003)(65956001)(81166006)(81156014)(66476007)(66556008)(64756008)(66446008)(66066001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5588;H:AM6PR05MB4198.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QDDP23JqJ0kB0UT2o+nDb4e4ZoyMviK2qJJceio6Otcjq4Cb8x1vzRxD70KR2c/s9GS50VitIBFF7WHApsMALk3WTunlgIQZeN3WRobHX1FzkYSMBXRu2x/v06MB8GZInAmODMDNgKsYbJZ+JV8sc3V6GnnmHFvKZq2tBVrQtSM5Q4nxMAhpytWqgjhQALehWawo1O2ky4Ty0DknG422z3zRY2WZml49KR0Li4N2+TackSbdomiAcETgmNvrze+bXDaL/pNvrJRzPho0yCNzh7l85mr6ZSH6O+ZJY/vPSLTmvjEVo2Dfda2sQtYmiYm3GwM9UStnFkoAy3q2yOuG7N+Y+MnPWtioB2V0D2dIDjqeXMk3CVEOxz7VFdg+fAt+cnBdqzmR/1PkEeg9JG2LMk4EXH4ESxZh7GJdbgNb4sProSN/xhy1ECDJ3AbiqxDF
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <29A883D6880E53468A65AC972022DA41@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a103ce25-1ab5-4990-a05b-08d76821ee38
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 10:12:03.8690
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: b1G5eSQP4hZNvI2dbpSHYBAEta7sdlfYvsHLZQfq19qMSyDS1mhc6aMkR4EuyHmcIvwXhtc0wbrCWxh6b2zzrA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5588
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are the Foxconn-branded variants of the Dell DW5821e modules,
-same USB layout as those.
-
-The QMI interface is exposed in USB configuration #1:
-
-P:  Vendor=0489 ProdID=e0b4 Rev=03.18
-S:  Manufacturer=FII
-S:  Product=T77W968 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-
-Signed-off-by: Aleksander Morgado <aleksander@aleksander.es>
----
- drivers/net/usb/qmi_wwan.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 56d334b9ad45..4196c0e32740 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1371,6 +1371,8 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x2c7c, 0x0191, 4)},	/* Quectel EG91 */
- 	{QMI_FIXED_INTF(0x2c7c, 0x0296, 4)},	/* Quectel BG96 */
- 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
-+	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
-+	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
- 
- 	/* 4. Gobi 1000 devices */
- 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
--- 
-2.24.0
-
+DQoNCk9uIDIwMTktMTEtMTIgOTo1NSBQTSwgRGF2aWQgQWhlcm4gd3JvdGU6DQo+IE9uIDExLzEy
+LzE5IDc6NTEgQU0sIFJvaSBEYXlhbiB3cm90ZToNCj4+IEhpLA0KPj4NCj4+IFRoaXMgc2VyaWVz
+IGlzIGZvciBhZGRpbmcgc3VwcG9ydCBmb3IgZmxvd2VyIG1hdGNoIG9uIG1hc2tlZA0KPj4gc3Jj
+L2RzdCBwb3J0cy4NCj4+DQo+PiBGaXJzdCBjb21taXRzIGFyZSBwcmVwYXJhdGlvbnMgYW5kIGZp
+eGluZyB0b3MgYW5kIHR0bCBvdXRwdXQuDQo+PiBMYXN0IDMgY29tbWl0cyBhZGQgc3VwcG9ydCBm
+b3IgbWFza2VkIHNyYy9kc3QgcG9ydC4NCj4gDQo+IFNlZW1zIGxpa2UgdGhlIGJ1ZyBmaXhlcyBw
+YXRjaGVzIHNob3VsZCBnbyB0byBtYXN0ZXIuDQo+IA0KPiBTZW5kIHRob3NlIHNlcGFyYXRlbHks
+IG9uY2UgY29tbWl0dGVkIEkgY2FuIG1lcmdlIG1hc3RlciB0byBuZXh0IGFuZA0KPiB0aGVuIHlv
+dSBjYW4gcmUtc2VuZCB0aGUgcmVtYWluaW5nIHBhdGNoZXMuDQo+IA0KDQpvayB0aGFua3MNCg0K
