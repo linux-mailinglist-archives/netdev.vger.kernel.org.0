@@ -2,189 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F87FB7FF
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:47:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBBEFFB808
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:48:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727684AbfKMSrk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 13:47:40 -0500
-Received: from mga03.intel.com ([134.134.136.65]:58598 "EHLO mga03.intel.com"
+        id S1728641AbfKMSr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 13:47:59 -0500
+Received: from mga17.intel.com ([192.55.52.151]:43379 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727521AbfKMSrk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 13:47:40 -0500
+        id S1727241AbfKMSr6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 13:47:58 -0500
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Nov 2019 10:47:39 -0800
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Nov 2019 10:47:57 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.68,301,1569308400"; 
-   d="asc'?scan'208";a="235375560"
-Received: from jcesana-mobl1.amr.corp.intel.com ([10.255.89.181])
-  by fmsmga002.fm.intel.com with ESMTP; 13 Nov 2019 10:47:38 -0800
-Message-ID: <ab2d5acc31f94ecc97e412d286c375cee9640722.camel@intel.com>
-Subject: Re: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg interface between
- VF and PF
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>,
-        "Creeley, Brett" <brett.creeley@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Arkady Gilinsky <arcadyg@gmail.com>
-Date:   Wed, 13 Nov 2019 10:47:38 -0800
-In-Reply-To: <1573544002.10368.34.camel@harmonicinc.com>
-References: <1572845537.13810.225.camel@harmonicinc.com>
-         <3508A0C5D531054DBDD98909F6FA64FA11B3936D@ORSMSX113.amr.corp.intel.com>
-         <1572931430.13810.227.camel@harmonicinc.com>
-         <3508A0C5D531054DBDD98909F6FA64FA11B39863@ORSMSX113.amr.corp.intel.com>
-         <1573018214.10368.1.camel@harmonicinc.com>
-         <d078d3efc784805a67ba1a1c6e94fb4ec1c0aec6.camel@intel.com>
-         <3508A0C5D531054DBDD98909F6FA64FA11B3EB75@ORSMSX113.amr.corp.intel.com>
-         <1573544002.10368.34.camel@harmonicinc.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-cS1q6XGYtvjZoQ2pnC0a"
-User-Agent: Evolution 3.34.1 (3.34.1-1.fc31) 
+   d="scan'208";a="216489509"
+Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
+  by orsmga002.jf.intel.com with ESMTP; 13 Nov 2019 10:47:53 -0800
+Date:   Wed, 13 Nov 2019 10:47:53 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 08/23] vfio, mm: fix get_user_pages_remote() and
+ FOLL_LONGTERM
+Message-ID: <20191113184752.GD12699@iweiny-DESK2.sc.intel.com>
+References: <20191113042710.3997854-1-jhubbard@nvidia.com>
+ <20191113042710.3997854-9-jhubbard@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191113042710.3997854-9-jhubbard@nvidia.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Nov 12, 2019 at 08:26:55PM -0800, John Hubbard wrote:
+> As it says in the updated comment in gup.c: current FOLL_LONGTERM
+> behavior is incompatible with FAULT_FLAG_ALLOW_RETRY because of the
+> FS DAX check requirement on vmas.
+> 
+> However, the corresponding restriction in get_user_pages_remote() was
+> slightly stricter than is actually required: it forbade all
+> FOLL_LONGTERM callers, but we can actually allow FOLL_LONGTERM callers
+> that do not set the "locked" arg.
+> 
+> Update the code and comments accordingly, and update the VFIO caller
+> to take advantage of this, fixing a bug as a result: the VFIO caller
+> is logically a FOLL_LONGTERM user.
+> 
+> Also, remove an unnessary pair of calls that were releasing and
+> reacquiring the mmap_sem. There is no need to avoid holding mmap_sem
+> just in order to call page_to_pfn().
+> 
+> Also, move the DAX check ("if a VMA is DAX, don't allow long term
+> pinning") from the VFIO call site, all the way into the internals
+> of get_user_pages_remote() and __gup_longterm_locked(). That is:
+> get_user_pages_remote() calls __gup_longterm_locked(), which in turn
+> calls check_dax_vmas(). It's lightly explained in the comments as well.
+> 
+> Thanks to Jason Gunthorpe for pointing out a clean way to fix this,
+> and to Dan Williams for helping clarify the DAX refactoring.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: Jerome Glisse <jglisse@redhat.com>
+> Cc: Ira Weiny <ira.weiny@intel.com>
 
---=-cS1q6XGYtvjZoQ2pnC0a
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Ira Weiny <ira.weiny@intel.com>
 
-On Tue, 2019-11-12 at 07:33 +0000, Arkady Gilinsky wrote:
-> Hi All,
->=20
-> Jeffrey/Brett: I did re-submit the patch as "[v2,net] i40e/iavf: Fix msg
-> interface between VF and PF"
-> Please review.
-
-Sorry, Brett is on vacation for a couple of weeks.  Before he left, he
-provided an alternative patch, which I will be submitting later today.
-
->=20
-> On Fri, 2019-11-08 at 16:43 +0000, Creeley, Brett wrote:
-> > > -----Original Message-----
-> > > From: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>
-> > > Sent: Thursday, November 7, 2019 11:39 AM
-> > > To: Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>; Creeley, Brett
-> > > <brett.creeley@intel.com>; intel-wired-lan@lis
-> > > ts.osuosl.org;
-> > > netdev@vger.kernel.org
-> > > Cc: Arkady Gilinsky <arcadyg@gmail.com>
-> > > Subject: Re: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg interface
-> > > between VF and PF
-> > >=20
-> > > On Wed, 2019-11-06 at 05:30 +0000, Arkady Gilinsky wrote:
-> > > > On Tue, 2019-11-05 at 16:55 +0000, Creeley, Brett wrote:
-> > > > > > -----Original Message-----
-> > > > > > From: Arkady Gilinsky <arkady.gilinsky@harmonicinc.com>
-> > > > > > Sent: Monday, November 4, 2019 9:24 PM
-> > > > > > To: Creeley, Brett <brett.creeley@intel.com>;
-> > > > > > intel-wired-lan@lists.osuosl.org; netdev@vger.kernel.org;
-> > > > > > Kirsher,
-> > > > > > Jeffrey T
-> > > > > > <jeffrey.t.kirsher@intel.com>
-> > > > > > Cc: Arkady Gilinsky <arcadyg@gmail.com>
-> > > > > > Subject: Re: [EXTERNAL] RE: [PATCH net] i40e/iavf: Fix msg
-> > > > > > interface
-> > > > > > between VF and PF
-> > > > > > > static bool i40e_vc_verify_vqs_bitmaps(struct
-> > > > > > > virtchnl_queue_select
-> > > > > > > *vqs)
-> > > > > > > {
-> > > > > > >    /* this will catch any changes made to the
-> > > > > > > virtchnl_queue_select
-> > > > > > > bitmap */
-> > > > > > >    if (sizeof(vqs->rx_queues) !=3D sizeof(u32) ||
-> > > > > > >         sizeof(vqs->tx_queues) !=3D sizeof(u32))
-> > > > > > >            return false;
-> > > > > >=20
-> > > > > > If so, then is it better to check the type of the fields in
-> > > > > > compile-
-> > > > > > time rather than in runtime ?
-> > > > > > Something like this:
-> > > > > > BUILD_BUG_ON(sizeof(vqs->rx_queues) !=3D sizeof(u32));
-> > > > > > BUILD_BUG_ON(sizeof(vqs->tx_queues) !=3D sizeof(u32));
-> > > > > > This is not required comparison each time when function is
-> > > > > > called and
-> > > > > > made code more optimized.
-> > > > >=20
-> > > > > I don't think this is required with the change you suggested
-> > > > > below.
-> > > >=20
-> > > > Agree.
-> > > > If other code in driver not need to be adjusted/verified, then this
-> > > > check
-> > > > is not needed.
-> > > > > > >    if ((vqs->rx_queues =3D=3D 0 && vqs->tx_queues =3D=3D 0) |=
-|
-> > > > > > >          hweight32(vqs->rx_queues) > I40E_MAX_VF_QUEUES ||
-> > > > > > >          hweight32(vqs->tx_queues) > I40E_MAX_VF_QUEUES)
-> > > > > > >            return false;
-> > > > > >=20
-> > > > > > Again, from optimization POV it is better to have constant
-> > > > > > changed
-> > > > > > than variable,
-> > > > > > since it is compile time and not run time action:
-> > > > > >      if ((vqs->rx_queues =3D=3D 0 && vqs->tx_queues =3D=3D 0) |=
-|
-> > > > > >            vqs->rx_queues >=3D (BIT(I40E_MAX_VF_QUEUES)) ||
-> > > > > >=20
-> > > > > >       vqs->tx_queues >=3D (BIT(I40E_MAX_VF_QUEUES)))
-> > > > > >              return false;
-> > > > >=20
-> > > > > This seems much better than my solution. It fixes the original
-> > > > > issue,
-> > > > > handles if the
-> > > > > vqs->[r|t]x_queues variables have changed in size, and the queue
-> > > > > bitmap
-> > > > > comparison
-> > > > > uses a constant. Thanks!
-> > > >=20
-> > > > Thanks to you for feedback.
-> > > > I am trying to understand if this patch will enter into official
-> > > > kernel
-> > > > tree
-> > > > and, not less important from my POV, to official Intel drivers.
-> > > > Brett/Jeffrey, could you, please, assist to make sure that this
-> > > > fix, or
-> > > > fix suggested by Brett,
-> > > > will be integrated into Intel i40e/iavf drivers ?
-> > > > Or may be I should write mail straight to Intel support ?
-> > >=20
-> > > As Brett pointed out, there are issues with this patch. Please make
-> > > the
-> > > suggested changes and re-submit the patch to
-> > > intel-wired-lan@lists.osuosl.org
-> >=20
-> > Jeff/Arkady: I have already submitted patches for this internally for
-> > official Intel drivers. Apologies for the delayed response.
-
-
---=-cS1q6XGYtvjZoQ2pnC0a
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl3MT8oACgkQ5W/vlVpL
-7c6hNw//d73sfHPkXkKxBklmGsor6VgGrdzgXaZK/cNFxL0g8W/WibA/E5fRdZer
-8rxYCY5Ug7YFAXB4WJd4J8aez4gl1pYr4v18mTvht5/s3ayLE5sLMQZ3Smg+lWPN
-ALQytUnZhH5SuzxtWs73tioyn9nekyzaPM5lNWSJaHFA7S+KqSDyIjoJZoTky6Er
-qf67tI/N53H/iFhtYrwzr+mxdKAF7Cli+E12HB9eciH9nvEC6ziWmSLr67881ZbP
-xR1JSnsBAQR61Y3RUCt/I/Yfd4tluCi4uf0WBVD1A1Io8tEa/Cg0yaQxLbqKndz7
-XN07p8AauQvbbj9Jlh8cKYrBKI1IIiazk4LK/fT+1mXHOok4h6m2Veeznbij079J
-/yro0Fh8DRovRM9fsQXucfP+TDIBM32spHJb1zkpvnPt1l8IOORAc6EAsElpu72/
-wpIyZxeJ20boMCMrugDfjj34j++iTKSxTtor8wq/aiq/nGC8L0X8p4xMQjAgu7IH
-zHOECneJCGW8LEc1eFSW4s/MO7gWMzDV2vxVeg5UVuYe0URdlw2xN5bCp06NXryM
-7gb5bwjNNGkmFw00QJO5MpIXI/4xBFb47/f2NqwsCWjR/kGISsA9pK6YUIDjt5LE
-ZYnRIXorIEN5m4T7fJZ9/XuzmHiAmX5JxEoZtJ7ijOoTnCaGObU=
-=skKm
------END PGP SIGNATURE-----
-
---=-cS1q6XGYtvjZoQ2pnC0a--
-
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 25 ++-----------------------
+>  mm/gup.c                        | 27 ++++++++++++++++++++++-----
+>  2 files changed, 24 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index d864277ea16f..7301b710c9a4 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -340,7 +340,6 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  {
+>  	struct page *page[1];
+>  	struct vm_area_struct *vma;
+> -	struct vm_area_struct *vmas[1];
+>  	unsigned int flags = 0;
+>  	int ret;
+>  
+> @@ -348,33 +347,13 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  		flags |= FOLL_WRITE;
+>  
+>  	down_read(&mm->mmap_sem);
+> -	if (mm == current->mm) {
+> -		ret = get_user_pages(vaddr, 1, flags | FOLL_LONGTERM, page,
+> -				     vmas);
+> -	} else {
+> -		ret = get_user_pages_remote(NULL, mm, vaddr, 1, flags, page,
+> -					    vmas, NULL);
+> -		/*
+> -		 * The lifetime of a vaddr_get_pfn() page pin is
+> -		 * userspace-controlled. In the fs-dax case this could
+> -		 * lead to indefinite stalls in filesystem operations.
+> -		 * Disallow attempts to pin fs-dax pages via this
+> -		 * interface.
+> -		 */
+> -		if (ret > 0 && vma_is_fsdax(vmas[0])) {
+> -			ret = -EOPNOTSUPP;
+> -			put_page(page[0]);
+> -		}
+> -	}
+> -	up_read(&mm->mmap_sem);
+> -
+> +	ret = get_user_pages_remote(NULL, mm, vaddr, 1, flags | FOLL_LONGTERM,
+> +				    page, NULL, NULL);
+>  	if (ret == 1) {
+>  		*pfn = page_to_pfn(page[0]);
+>  		return 0;
+>  	}
+>  
+> -	down_read(&mm->mmap_sem);
+> -
+>  	vaddr = untagged_addr(vaddr);
+>  
+>  	vma = find_vma_intersection(mm, vaddr, vaddr + 1);
+> diff --git a/mm/gup.c b/mm/gup.c
+> index 933524de6249..83702b2e86c8 100644
+> --- a/mm/gup.c
+> +++ b/mm/gup.c
+> @@ -29,6 +29,13 @@ struct follow_page_context {
+>  	unsigned int page_mask;
+>  };
+>  
+> +static __always_inline long __gup_longterm_locked(struct task_struct *tsk,
+> +						  struct mm_struct *mm,
+> +						  unsigned long start,
+> +						  unsigned long nr_pages,
+> +						  struct page **pages,
+> +						  struct vm_area_struct **vmas,
+> +						  unsigned int flags);
+>  /*
+>   * Return the compound head page with ref appropriately incremented,
+>   * or NULL if that failed.
+> @@ -1167,13 +1174,23 @@ long get_user_pages_remote(struct task_struct *tsk, struct mm_struct *mm,
+>  		struct vm_area_struct **vmas, int *locked)
+>  {
+>  	/*
+> -	 * FIXME: Current FOLL_LONGTERM behavior is incompatible with
+> +	 * Parts of FOLL_LONGTERM behavior are incompatible with
+>  	 * FAULT_FLAG_ALLOW_RETRY because of the FS DAX check requirement on
+> -	 * vmas.  As there are no users of this flag in this call we simply
+> -	 * disallow this option for now.
+> +	 * vmas. However, this only comes up if locked is set, and there are
+> +	 * callers that do request FOLL_LONGTERM, but do not set locked. So,
+> +	 * allow what we can.
+>  	 */
+> -	if (WARN_ON_ONCE(gup_flags & FOLL_LONGTERM))
+> -		return -EINVAL;
+> +	if (gup_flags & FOLL_LONGTERM) {
+> +		if (WARN_ON_ONCE(locked))
+> +			return -EINVAL;
+> +		/*
+> +		 * This will check the vmas (even if our vmas arg is NULL)
+> +		 * and return -ENOTSUPP if DAX isn't allowed in this case:
+> +		 */
+> +		return __gup_longterm_locked(tsk, mm, start, nr_pages, pages,
+> +					     vmas, gup_flags | FOLL_TOUCH |
+> +					     FOLL_REMOTE);
+> +	}
+>  
+>  	return __get_user_pages_locked(tsk, mm, start, nr_pages, pages, vmas,
+>  				       locked,
+> -- 
+> 2.24.0
+> 
