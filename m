@@ -2,26 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D337CFADCB
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 10:56:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DE1FADB7
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 10:56:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727619AbfKMJ4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 04:56:24 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:40527 "EHLO
+        id S1727598AbfKMJ4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 04:56:04 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57193 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727505AbfKMJz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 04:55:59 -0500
+        with ESMTP id S1727524AbfKMJ4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 04:56:00 -0500
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1iUpNW-0006Nh-A3; Wed, 13 Nov 2019 10:55:58 +0100
+        id 1iUpNW-0006Nh-Pg; Wed, 13 Nov 2019 10:55:58 +0100
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Oleksij Rempel <o.rempel@pengutronix.de>
-Subject: [PATCH 7/9] can: j1939: transport: j1939_cancel_active_session(): use hrtimer_try_to_cancel() instead of hrtimer_cancel()
-Date:   Wed, 13 Nov 2019 10:55:48 +0100
-Message-Id: <20191113095550.26527-8-mkl@pengutronix.de>
+        kernel@pengutronix.de, Oleksij Rempel <o.rempel@pengutronix.de>,
+        syzbot+ca172a0ac477ac90f045@syzkaller.appspotmail.com,
+        syzbot+07ca5bce8530070a5650@syzkaller.appspotmail.com,
+        syzbot+a47537d3964ef6c874e1@syzkaller.appspotmail.com
+Subject: [PATCH 8/9] can: j1939: j1939_can_recv(): add priv refcounting
+Date:   Wed, 13 Nov 2019 10:55:49 +0100
+Message-Id: <20191113095550.26527-9-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191113095550.26527-1-mkl@pengutronix.de>
 References: <20191113095550.26527-1-mkl@pengutronix.de>
@@ -38,32 +41,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-This part of the code protected by lock used in the hrtimer as well.
-Using hrtimer_cancel() will trigger dead lock.
+j1939_can_recv() can be called in parallel with socket release. In this
+case sk_release and sk_destruct can be done earlier than
+j1939_can_recv() is processed.
 
+Reported-by: syzbot+ca172a0ac477ac90f045@syzkaller.appspotmail.com
+Reported-by: syzbot+07ca5bce8530070a5650@syzkaller.appspotmail.com
+Reported-by: syzbot+a47537d3964ef6c874e1@syzkaller.appspotmail.com
 Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- net/can/j1939/transport.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/can/j1939/main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-index afc2adfd97e4..0c62b8fc4b20 100644
---- a/net/can/j1939/transport.c
-+++ b/net/can/j1939/transport.c
-@@ -2039,7 +2039,11 @@ int j1939_cancel_active_session(struct j1939_priv *priv, struct sock *sk)
- 				 &priv->active_session_list,
- 				 active_session_list_entry) {
- 		if (!sk || sk == session->sk) {
--			j1939_session_timers_cancel(session);
-+			if (hrtimer_try_to_cancel(&session->txtimer) == 1)
-+				j1939_session_put(session);
-+			if (hrtimer_try_to_cancel(&session->rxtimer) == 1)
-+				j1939_session_put(session);
-+
- 			session->err = ESHUTDOWN;
- 			j1939_session_deactivate_locked(session);
- 		}
+diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
+index 8dc935dc2e54..2afcf27c72c8 100644
+--- a/net/can/j1939/main.c
++++ b/net/can/j1939/main.c
+@@ -51,6 +51,7 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
+ 	if (!skb)
+ 		return;
+ 
++	j1939_priv_get(priv);
+ 	can_skb_set_owner(skb, iskb->sk);
+ 
+ 	/* get a pointer to the header of the skb
+@@ -104,6 +105,7 @@ static void j1939_can_recv(struct sk_buff *iskb, void *data)
+ 	j1939_simple_recv(priv, skb);
+ 	j1939_sk_recv(priv, skb);
+  done:
++	j1939_priv_put(priv);
+ 	kfree_skb(skb);
+ }
+ 
 -- 
 2.24.0
 
