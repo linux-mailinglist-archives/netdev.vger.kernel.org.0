@@ -2,120 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FF77FB3FE
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8095EFB40B
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:46:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728114AbfKMPor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 10:44:47 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:9182 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726422AbfKMPoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:44:46 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xADFfYiU042777
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 10:44:45 -0500
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w8kmw3gc0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 10:44:44 -0500
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xADFZQmC002374
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 15:44:43 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma01dal.us.ibm.com with ESMTP id 2w5n36ud1k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 15:44:43 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xADFifcr23527894
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Nov 2019 15:44:41 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B17E428060;
-        Wed, 13 Nov 2019 15:44:41 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1057D28059;
-        Wed, 13 Nov 2019 15:44:41 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.211.141.91])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Nov 2019 15:44:40 +0000 (GMT)
-From:   Cris Forno <cforno12@linux.vnet.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     tlfalcon@linux.ibm.com, Cris Forno <cforno12@linux.vnet.ibm.com>
-Subject: [PATCH net-next] ibmveth: Detect unsupported packets before sending to the hypervisor
-Date:   Wed, 13 Nov 2019 09:44:07 -0600
-Message-Id: <20191113154407.50653-1-cforno12@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.24.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-13_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=596 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1910280000 definitions=main-1911130143
+        id S1728140AbfKMPqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 10:46:51 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40544 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727745AbfKMPqv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:46:51 -0500
+Received: by mail-pf1-f194.google.com with SMTP id r4so1918835pfl.7;
+        Wed, 13 Nov 2019 07:46:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=TBVtymOI9WwZsWEvU07x8pNEkzVPUQwttMv3w1HkiJ8=;
+        b=mvo2vdSi3TpgqVnEPaWhYlSWv2KwG7IyopXGZJg3fMsbp3v6j1pIvTAVW8UfVQkH9K
+         XdEFqj8ztEc9jrMWhZI0oyM3fLG+vzPaurnl13NBHlkvwMQQDhKJ6tjoxWfmuVy3EnkF
+         WoqlsNflDPGF0RgSgSo+t5DT/6kTQvRdi+rzdAh/wqLE6FZw2HyT08WjnZD03GNGakdY
+         rCCVMbfDRWP3TaNAPYx8WgMgXBxyrbVUACB9X7fOfbiVcpTu4DTMkV9WBeSyi6DAx7dY
+         YzujGpVbXJ+ZM7bDbrBcRP2H5GvkH/9WTqLtPyQuonXAb2cs/0VgfHG1ZROKJeg9Ea2Y
+         imUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=TBVtymOI9WwZsWEvU07x8pNEkzVPUQwttMv3w1HkiJ8=;
+        b=cJWfVSNCMkEefci9wmM/TGe3+gPIhXQ7hgUQwP5CfJ9w4nZEW5LCjxbkjEotZRlU0J
+         8nlzuvQ6wr2YdopsTQ853Fo1i91DISKroVjLfk5SucRP5jsiyr/iLZPwvFHRWpRFmWT+
+         418LV1N6Ri9F4tWTPFbeDCSu5ntmM+5fd3N02DavPKKPFNDYdEm14O9UPIQ0dtpCmI1n
+         g9X3sxbBrcrZQgk7yb32gfDPqZbC35IytqCOMCPTAkVnDBFn40GaSdn1JJXZ5nEjkWcp
+         AzPaG2h1fdlB9ZIBV2MkUpHsJn1rJEevIlWwU7tEu723lsF2Lpf5ZVPKWB/NkK52g/5p
+         I7rg==
+X-Gm-Message-State: APjAAAVUZFfScK6acZq7D1LT2q1beUn2i3ITnbSLdOVSdzU9h91WofcY
+        dnbDo70EeRWpfsYqBRhP3lQ=
+X-Google-Smtp-Source: APXvYqw+4YtAO4BurwCMDsiaBzTWfhVwSTwA+/T/CjKbuQnohvT7t9DtGQo9ioj0WANfV+2kt5VWFA==
+X-Received: by 2002:a63:e84d:: with SMTP id a13mr4422751pgk.226.1573660010409;
+        Wed, 13 Nov 2019 07:46:50 -0800 (PST)
+Received: from aw-bldr-10.qualcomm.com (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id 16sm3953091pfc.21.2019.11.13.07.46.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Nov 2019 07:46:49 -0800 (PST)
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: [PATCH v2] ath10k: Handle "invalid" BDFs for msm8998 devices
+Date:   Wed, 13 Nov 2019 07:46:46 -0800
+Message-Id: <20191113154646.43048-1-jeffrey.l.hugo@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when ibmveth receive a loopback packet, it reports an
-ambiguous error message "tx: h_send_logical_lan failed with rc=-4"
-because the hypervisor rejects those types of packets. This fix
-detects loopback packet and assures the source packet's MAC address
-matches the driver's MAC address before transmitting to the
-hypervisor.
+When the BDF download QMI message has the end field set to 1, it signals
+the end of the transfer, and triggers the firmware to do a CRC check.  The
+BDFs for msm8998 devices fail this check, yet the firmware is happy to
+still use the BDF.  It appears that this error is not caught by the
+downstream drive by concidence, therefore there are production devices
+in the field where this issue needs to be handled otherwise we cannot
+support wifi on them.  So, attempt to detect this scenario as best we can
+and treat it as non-fatal.
 
-Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
+Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/net/ethernet/ibm/ibmveth.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index d654c23..e8bb6c7 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1011,6 +1011,29 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
- 	return 0;
- }
+v2:
+-tweak conditional nesting
+-add comment in code to clarify
+
+ drivers/net/wireless/ath/ath10k/qmi.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
+index 637f83ef65f8..6df2d3ac5474 100644
+--- a/drivers/net/wireless/ath/ath10k/qmi.c
++++ b/drivers/net/wireless/ath/ath10k/qmi.c
+@@ -279,7 +279,15 @@ static int ath10k_qmi_bdf_dnld_send_sync(struct ath10k_qmi *qmi)
+ 		if (ret < 0)
+ 			goto out;
  
-+static int ibmveth_is_packet_unsupported(struct sk_buff *skb,
-+					 struct net_device *netdev)
-+{
-+	int ret = 0;
-+	struct ethhdr *ether_header;
-+
-+	ether_header = eth_hdr(skb);
-+
-+	if (ether_addr_equal(ether_header->h_dest, netdev->dev_addr)) {
-+		netdev_err(netdev, "veth doesn't support loopback packets, dropping packet.\n");
-+		netdev->stats.tx_dropped++;
-+		ret = -EOPNOTSUPP;
-+	}
-+
-+	if (!ether_addr_equal(ether_header->h_source, netdev->dev_addr)) {
-+		netdev_err(netdev, "source packet MAC address does not match veth device's, dropping packet.\n");
-+		netdev->stats.tx_dropped++;
-+		ret = -EOPNOTSUPP;
-+	}
-+
-+	return ret;
-+}
-+
- static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
- 				      struct net_device *netdev)
- {
-@@ -1022,6 +1045,9 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
- 	dma_addr_t dma_addr;
- 	unsigned long mss = 0;
- 
-+	if (ibmveth_is_packet_unsupported(skb, netdev))
-+		goto out;
-+
- 	/* veth doesn't handle frag_list, so linearize the skb.
- 	 * When GRO is enabled SKB's can have frag_list.
- 	 */
+-		if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
++		/* end = 1 triggers a CRC check on the BDF.  If this fails, we
++		 * get a QMI_ERR_MALFORMED_MSG_V01 error, but the FW is still
++		 * willing to use the BDF.  For some platforms, all the valid
++		 * released BDFs fail this CRC check, so attempt to detect this
++		 * scenario and treat it as non-fatal.
++		 */
++		if (resp.resp.result != QMI_RESULT_SUCCESS_V01 &&
++		    !(req->end == 1 &&
++		      resp.resp.result == QMI_ERR_MALFORMED_MSG_V01)) {
+ 			ath10k_err(ar, "failed to download board data file: %d\n",
+ 				   resp.resp.error);
+ 			ret = -EINVAL;
 -- 
-1.8.3.1
+2.17.1
 
