@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 148FFFBBC7
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 23:41:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20C0FFBBC8
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 23:41:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727016AbfKMWln (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 17:41:43 -0500
+        id S1727054AbfKMWlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 17:41:46 -0500
 Received: from mail-eopbgr150048.outbound.protection.outlook.com ([40.107.15.48]:22577
         "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726303AbfKMWln (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 17:41:43 -0500
+        id S1726251AbfKMWlp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 17:41:45 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A30GILafFcbSwIBeAB+9EpinfLNyGOeH+C46VoI9CCRB6zhkck7r+3U4rMBEjUvCF0Km/qfVa6MjWq1q/Yo84FoebI62mnW1r5xrlt1DQW2/65LafJSSiL0uYlfKpZUKAtO3pUfADaZnDB/Ro1xDAWg6a2J5RxZMeUwNGS1gw3NWdoeARGLfv9CBX0PbrXMtRX2S20TPOCKc++qU5YvZXDWSFFHvXnmqpBFdK8uUYtvVd/4mcC4MlKP2+7Rl3rS5gxznm6nN/T2OrRPKw5PW0bOtTLt25NBQgXqVleLxtA9rgwQM4gwr+ELJ7dljzq+oNli79DCXlvWmeI8M7g/a9g==
+ b=d45/CI0sHHaAf/Hcu1/ykv/f4OzodGlAjp3q09dnKsyYwMoU+L3Xx+zerqxN45vijG21uFEN2eBoXbP6mVfNuORPUe04QY9g39OvaOGAJLKAQd0NWFFbJxeJZRG98oPahqsTLoWdm+RuQT3qb8bQCyO04aW8yNp7ktk78y8c/iUvVAD0NaBj50LN8uwZc1hDBxzUYkTq/O+UAeTd3H7aPc5A1Ve7jDUBnW2RU/FedXoNo+0VDQXIQWXaz9jGW584IYy9p2tPb5Azr3cSc6kJ6Uoc7/1qldpvgBlQUdFDiZDorZ/jvKzE56rKkT9lPhq6JG5euq9Dwhg91QXojCI7cQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WOqdWfx6iQT0uskwkuUWp+n8PMGDk6yEZe730diCVFw=;
- b=W6ZLIz87Y08mvDlXnxh8wce/Cr8J4TJvJEq5Fib+3RivNqva4kzCD1wu9nVht9q6ya2ZfbcrOt4sQOi5Xrt1ACFfGEtYEYpFOG9EmymlCYhNojCSA1ad4cQeJEm3IIKhhZP7BUAZd8X2FYCioyMQCBeopox/S5uc5pmOFKHzOxb0EmUKYtDnD5sBuMBu8hFKxS8KTLYk1mMFmv7QzN0/ZrMQ8TW4VwLATb5tgMeaX3WyibqylO+t0fJdj1GtleS+rdgpUCEAoX6r/9/DL25MmVMpkGBaCxfQlrEvvVqTEjrcHJdzdVWe06HkDI1lsH67IokIXjCWSzUOx2weApVetQ==
+ bh=3sQi+Y4SAmyLTd0pQlzHjI/oaZXOCJ/c/diABNW6aSE=;
+ b=GMpsPZJsIfUe3bC92nCsMGMr59ZC4ip296MBmC7E0CNbHfQtMGqLT231BWtbEJ54zXsuxg2FQdHt50rnHhggNl7ZazhR6IK6cB0y8s+69Fm66lUmHpHm1/YYiUbgDGH3FbSG5VEPqxZ5FfrtL2bXgo191Rrxc0CFk+d6zmx8ar7olWK1jUQXF+ohy9vjr/aAl29AJ/WYWraOsNFdruYmSzt4Z472Q6nUeSTnqPXsr1tSmaF/Ol98qnVxCj4qGxZaIkLOWPkUam1te5Fw4pWt66iXT3A04f3Txnv1baGn1GZj9vdKJ0YU9ieGGA2rfrG5zwTRtAlNzThBwES7waWSdw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WOqdWfx6iQT0uskwkuUWp+n8PMGDk6yEZe730diCVFw=;
- b=opptzbAHSAMfAftdDSiLvzwbB0ExfZX9v3+XSB14MKb/TZ62jENBwkgbYfZiHBA2bllOXDfnMq1MhACa0hw3RjfR0x2AThOC0+6llrIPwUeRX223IFHl4LsynV/v0Vc+PUD3WsfNs81DuVN92LIxWsXvIO+cz36GT+aX7bm7L4k=
+ bh=3sQi+Y4SAmyLTd0pQlzHjI/oaZXOCJ/c/diABNW6aSE=;
+ b=gjImSD86dv0U+OFV+dv+XVGqEPq/GMpo04OMf668XozqqHSJ/2gE+ezJuesRR3odeP6092EqjTgyo6yHQSGO8/1IQTXkC1lp5JKCeBSG/kNxInNeNYJ0GNiRIG3CDHMOZeT4pvFlGuLI0Rnn4d8jcgFCnN2NKhUwkH+vVwKPzZc=
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB5135.eurprd05.prod.outlook.com (20.178.11.225) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.23; Wed, 13 Nov 2019 22:41:38 +0000
+ 15.20.2451.23; Wed, 13 Nov 2019 22:41:40 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d41a:9a5d:5482:497e]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::d41a:9a5d:5482:497e%5]) with mapi id 15.20.2430.028; Wed, 13 Nov 2019
- 22:41:38 +0000
+ 22:41:40 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
-        Eli Cohen <eli@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next V2 4/7] net/mlx5e: Fix error flow cleanup in
- mlx5e_tc_tun_create_header_ipv4/6
-Thread-Topic: [net-next V2 4/7] net/mlx5e: Fix error flow cleanup in
- mlx5e_tc_tun_create_header_ipv4/6
-Thread-Index: AQHVmnOChhhKk0KjVECWHMwjrErmoA==
-Date:   Wed, 13 Nov 2019 22:41:38 +0000
-Message-ID: <20191113224059.19051-5-saeedm@mellanox.com>
+Subject: [net-next V2 5/7] net/mlx5e: Set netdev name space on creation
+Thread-Topic: [net-next V2 5/7] net/mlx5e: Set netdev name space on creation
+Thread-Index: AQHVmnODujZItWLyrEK78Ilshqo/IA==
+Date:   Wed, 13 Nov 2019 22:41:40 +0000
+Message-ID: <20191113224059.19051-6-saeedm@mellanox.com>
 References: <20191113224059.19051-1-saeedm@mellanox.com>
 In-Reply-To: <20191113224059.19051-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -65,95 +63,109 @@ authentication-results: spf=none (sender IP is )
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 33f90724-463e-412a-0c83-08d7688aa528
+x-ms-office365-filtering-correlation-id: b6b7aa11-1048-4cd0-e918-08d7688aa65f
 x-ms-traffictypediagnostic: VI1PR05MB5135:|VI1PR05MB5135:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5135494696CC5B3ACD26B126BE760@VI1PR05MB5135.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-microsoft-antispam-prvs: <VI1PR05MB5135962A0B594470E992B700BE760@VI1PR05MB5135.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2958;
 x-forefront-prvs: 0220D4B98D
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(376002)(39860400002)(396003)(346002)(189003)(199004)(26005)(3846002)(6116002)(54906003)(66946007)(64756008)(66556008)(66476007)(2906002)(66446008)(36756003)(316002)(99286004)(81166006)(81156014)(8936002)(8676002)(50226002)(5660300002)(1076003)(102836004)(186003)(6512007)(6486002)(6436002)(386003)(478600001)(52116002)(25786009)(76176011)(7736002)(6506007)(14454004)(305945005)(86362001)(486006)(107886003)(256004)(4326008)(66066001)(2616005)(6916009)(11346002)(71200400001)(71190400001)(446003)(476003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5135;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(376002)(39860400002)(396003)(346002)(189003)(199004)(26005)(3846002)(6116002)(54906003)(66946007)(64756008)(66556008)(66476007)(2906002)(66446008)(36756003)(316002)(99286004)(81166006)(81156014)(8936002)(8676002)(50226002)(5660300002)(1076003)(102836004)(186003)(6512007)(6486002)(6436002)(386003)(478600001)(52116002)(25786009)(76176011)(7736002)(6506007)(14454004)(305945005)(86362001)(486006)(107886003)(256004)(4326008)(66066001)(5024004)(2616005)(6916009)(11346002)(71200400001)(71190400001)(446003)(476003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5135;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FmEdYmHKPBEarJ9joYTcW+BljMTfIFRYUKSeeI1bOPJQBBakt0AsopZYZ+zCLxUoeveboM9ClE8MM8GPNtK6K75looPXmsvJ7CuIVRlzVCJppqzl2tj5MqQWWk8FlULqGWEJAWURaOJxcomyvGq6V3hcAAfm+nmEBiYc1g1gPIPQSRrYTCMgnMSKHfiT27y6ptetOCe+G4iWQUa97/OEU5RCD+957EL/5sVD3UBhvBg5VW+TyJLzRR7JZlsnQd3omHwHyavcK7KCJsr38uB5BrX70TXkUDB+afqj42TrLr+darSZMUjYvdv1+tPW69cLu7NMc57vwhGGAAfwwsiutp9nGUgufyY+C2kC4TtfjymmVq1K8zMTxIiN4/pWVtqw3teKVYx+o530BRAoW0US0LJs+BBLVMXpDI3/jAPTWo+xezf10H2G7V0J2nGPyJLR
+x-microsoft-antispam-message-info: 8OXPZ43vHYM8UO/y/2XdesUTOibd7FPbC78eZYqGTNJbHKRIgUJy2RrqyUv/ccSD8Xr1IP16oGsqvTtLqn2KIWj+uRxVsYdHP08TBXaRstLDBWv5ntSlsWEyd4OYm8HqMwHtmz7YRx9tSWStpMPVEQ79oph/ZBWupwsfySENksEn9yTr5jOk6G83/XHmoJpfzBnY2PgqpweK8lQdv4fomc+9DKSWz6WxLuIdTLfubzlxIbX9+zk4WLCY9RI24tPUPds3TOezzVrn2s64wk32QklCKT46iW5OHQuzIQNcUwoY7Y/QwSxZ5IkePTA1eLdPt+UXW2p9V6mCRJJ7FHE2TYzMnLMDVUMbOwJsHbhfE483mo9BB9PuUBowHG2lFyDVyRXeBcXirxVUdwQX7RZXfWqC8naLl46nikVnLlsCI96Vpsnu+vcssluVB/ZAhQlT
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33f90724-463e-412a-0c83-08d7688aa528
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 22:41:38.3384
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6b7aa11-1048-4cd0-e918-08d7688aa65f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 22:41:40.4012
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z0I1B09XzlSUjrHdbljcRhbdVGCpOIUhr09q6QKoo+zIH67jw/hnPwI1B67RInypQSc2pkW1BHS3nv65k+WBkg==
+X-MS-Exchange-CrossTenant-userprincipalname: G1035KBMt1WB0KElpOq1gP35Ck7/7b+6nbTV/nYTprz8FK9K2exBWzJQ2HVotv6mKR3uICbBExqzLGg5tLJ9Tg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5135
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <eli@mellanox.com>
+From: Michael Guralnik <michaelgur@mellanox.com>
 
-Be sure to release the neighbour in case of failures after successful
-route lookup.
+Use devlink instance name space to set the netdev net namespace.
 
-Signed-off-by: Eli Cohen <eli@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
-Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
+Preparation patch for devlink reload implementation.
+
+Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../ethernet/mellanox/mlx5/core/en/tc_tun.c    | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h | 5 +++++
+ 3 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-index 4f78efeb6ee8..5316cedd78bf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-@@ -239,12 +239,15 @@ int mlx5e_tc_tun_create_header_ipv4(struct mlx5e_priv=
- *priv,
- 	if (max_encap_size < ipv4_encap_size) {
- 		mlx5_core_warn(priv->mdev, "encap size %d too big, max supported is %d\n=
-",
- 			       ipv4_encap_size, max_encap_size);
--		return -EOPNOTSUPP;
-+		err =3D -EOPNOTSUPP;
-+		goto out;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en_main.c
+index 772bfdbdeb9c..06a592fb62bf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -63,6 +63,7 @@
+ #include "en/xsk/rx.h"
+ #include "en/xsk/tx.h"
+ #include "en/hv_vhca_stats.h"
++#include "lib/mlx5.h"
+=20
+=20
+ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
+@@ -5427,6 +5428,7 @@ static void *mlx5e_add(struct mlx5_core_dev *mdev)
+ 		return NULL;
  	}
 =20
- 	encap_header =3D kzalloc(ipv4_encap_size, GFP_KERNEL);
--	if (!encap_header)
--		return -ENOMEM;
-+	if (!encap_header) {
-+		err =3D -ENOMEM;
-+		goto out;
-+	}
++	dev_net_set(netdev, mlx5_core_net(mdev));
+ 	priv =3D netdev_priv(netdev);
 =20
- 	/* used by mlx5e_detach_encap to lookup a neigh hash table
- 	 * entry in the neigh hash table when a user deletes a rule
-@@ -355,12 +358,15 @@ int mlx5e_tc_tun_create_header_ipv6(struct mlx5e_priv=
- *priv,
- 	if (max_encap_size < ipv6_encap_size) {
- 		mlx5_core_warn(priv->mdev, "encap size %d too big, max supported is %d\n=
-",
- 			       ipv6_encap_size, max_encap_size);
--		return -EOPNOTSUPP;
-+		err =3D -EOPNOTSUPP;
-+		goto out;
+ 	err =3D mlx5e_attach(mdev, priv);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net=
+/ethernet/mellanox/mlx5/core/en_rep.c
+index cd9bb7c7b341..c7f98f1fd9b1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -47,6 +47,7 @@
+ #include "en/tc_tun.h"
+ #include "fs_core.h"
+ #include "lib/port_tun.h"
++#include "lib/mlx5.h"
+ #define CREATE_TRACE_POINTS
+ #include "diag/en_rep_tracepoint.h"
+=20
+@@ -1877,6 +1878,7 @@ mlx5e_vport_rep_load(struct mlx5_core_dev *dev, struc=
+t mlx5_eswitch_rep *rep)
+ 		return -EINVAL;
  	}
 =20
- 	encap_header =3D kzalloc(ipv6_encap_size, GFP_KERNEL);
--	if (!encap_header)
--		return -ENOMEM;
-+	if (!encap_header) {
-+		err =3D -ENOMEM;
-+		goto out;
-+	}
++	dev_net_set(netdev, mlx5_core_net(dev));
+ 	rpriv->netdev =3D netdev;
+ 	rep->rep_data[REP_ETH].priv =3D rpriv;
+ 	INIT_LIST_HEAD(&rpriv->vport_sqs_list);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/n=
+et/ethernet/mellanox/mlx5/core/lib/mlx5.h
+index b99d469e4e64..249539247e2e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
+@@ -84,4 +84,9 @@ int mlx5_create_encryption_key(struct mlx5_core_dev *mdev=
+,
+ 			       void *key, u32 sz_bytes, u32 *p_key_id);
+ void mlx5_destroy_encryption_key(struct mlx5_core_dev *mdev, u32 key_id);
 =20
- 	/* used by mlx5e_detach_encap to lookup a neigh hash table
- 	 * entry in the neigh hash table when a user deletes a rule
++static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
++{
++	return devlink_net(priv_to_devlink(dev));
++}
++
+ #endif
 --=20
 2.21.0
 
