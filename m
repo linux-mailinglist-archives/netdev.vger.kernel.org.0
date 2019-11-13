@@ -2,55 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93895FBBA8
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 23:33:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CCAFBBAB
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 23:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726521AbfKMWdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 17:33:43 -0500
-Received: from shards.monkeyblade.net ([23.128.96.9]:39328 "EHLO
+        id S1726949AbfKMWdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 17:33:47 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:39336 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726338AbfKMWdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 17:33:42 -0500
+        with ESMTP id S1726251AbfKMWdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 17:33:47 -0500
 Received: from localhost (unknown [IPv6:2601:601:9f00:1e2::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4C275128F3858;
-        Wed, 13 Nov 2019 14:33:42 -0800 (PST)
-Date:   Wed, 13 Nov 2019 14:33:39 -0800 (PST)
-Message-Id: <20191113.143339.63552073098179182.davem@davemloft.net>
-To:     dan.carpenter@oracle.com
-Cc:     irusskikh@marvell.com, ndanilov@marvell.com,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] net: atlantic: Signedness bug in aq_vec_isr_legacy()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id E0E96128F3859;
+        Wed, 13 Nov 2019 14:33:46 -0800 (PST)
+Date:   Wed, 13 Nov 2019 14:33:46 -0800 (PST)
+Message-Id: <20191113.143346.1023883959757211854.davem@davemloft.net>
+To:     michael.chan@broadcom.com
+Cc:     netdev@vger.kernel.org, olof@lixom.net,
+        venkatkumar.duvvuru@broadcom.com
+Subject: Re: [PATCH net-next] bnxt_en: Fix array overrun in
+ bnxt_fill_l2_rewrite_fields().
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20191113183158.rogxsza632ppeen3@kili.mountain>
-References: <20191113183158.rogxsza632ppeen3@kili.mountain>
+In-Reply-To: <1573671079-27248-1-git-send-email-michael.chan@broadcom.com>
+References: <1573671079-27248-1-git-send-email-michael.chan@broadcom.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 13 Nov 2019 14:33:42 -0800 (PST)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 13 Nov 2019 14:33:47 -0800 (PST)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
-Date: Wed, 13 Nov 2019 21:31:58 +0300
+From: Michael Chan <michael.chan@broadcom.com>
+Date: Wed, 13 Nov 2019 13:51:19 -0500
 
-> irqreturn_t type is an enum and in this context it's unsigned, so "err"
-> can't be irqreturn_t or it breaks the error handling.  In fact the "err"
-> variable is only used to store integers (never irqreturn_t) so it should
-> be declared as int.
+> From: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
 > 
-> I removed the initialization because it's not required.  Using a bogus
-> initializer turns off GCC's uninitialized variable warnings.  Secondly,
-> there is a GCC warning about unused assignments and we would like to
-> enable that feature eventually so we have been trying to remove these
-> unnecessary initializers.
+> Fix the array overrun while keeping the eth_addr and eth_addr_mask
+> pointers as u16 to avoid unaligned u16 access.  These were overlooked
+> when modifying the code to use u16 pointer for proper alignment.
 > 
-> Fixes: 7b0c342f1f67 ("net: atlantic: code style cleanup")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Fixes: 90f906243bf6 ("bnxt_en: Add support for L2 rewrite")
+> Reported-by: Olof Johansson <olof@lixom.net>
+> Signed-off-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 
 Applied.
