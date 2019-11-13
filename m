@@ -2,128 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66021FA040
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 02:36:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DE81FA07D
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 02:50:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727239AbfKMBf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 20:35:59 -0500
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:40124 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726979AbfKMBf6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 20:35:58 -0500
-Received: by mail-ot1-f65.google.com with SMTP id m15so193603otq.7
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 17:35:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tA9TOCxBga9LLC7wRjd3ONed6e5UCLIuIdqzN/pcWuk=;
-        b=pgvm7B7MKRNHPnnm+UXqpNAxEKn59mgIkjpVIugT59Mu8TwvXIAzzyQhvDiVCxIl0p
-         vI+Yj+13Wusmq5tADceFQlsKUjuwgmmDrjkNeYGEIUHh9w8tZNldmP6Q5WtjVpISdJ0i
-         r3oVh4apWhwsDdj9Nw0bWAyVdq8zxIhXTRj/8PmhzFCoHQ/9X/Dg5B4Hj6Y0ruPyQaaR
-         rEPfI8qEDLrnHlL1idX+oRviz/9wQZUiz6o40remYNFeKqLceiYDgbAXk1ppNt84zSqw
-         zf+6WmCRWk7Wod/xBPOURyhyWoKZqScoLNTr5ASvgI3i5qH5c+mNJETCAbPrPmJU7Yqj
-         fNKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tA9TOCxBga9LLC7wRjd3ONed6e5UCLIuIdqzN/pcWuk=;
-        b=ehVGgbxPsNKakS+KXIAhqAI7ft3i/+XHK3ErKB5Vdd18nqCF9AS0sAMkew9pYDxLCf
-         rds/qbpSshQR5915wsRnjGld4qO29TJRfxvSTBfxiYiPzmaa9g4+XsmFgEB5QI9EYSaG
-         JDmJhjJLuZC13oeZjR8n1/J8H+VRhnuwCcGnkU4IRWS75p2rBx+9P16oI/b754f7x5NH
-         q0za5HxE/tcHKiBq5i7Au+IVogSH/fTRby5wQ3l247IzeiVG90M2hvTFycsTd8URU6+i
-         TD5AGaML9n38Fb70GIXLaB2bCJpM0DJvyV7dOQzB4JeCdtR5HZ8WVyNX7lJN7robNbF+
-         +qvw==
-X-Gm-Message-State: APjAAAWYBoGJfKkV0A0Se8OVstkoLsTbv0FLYWIaIa/nazUcdDrC4Ppo
-        xS+BRRlqN+mp4aThcTLNccuGl8s9EWG2bWv7WaDW2w==
-X-Google-Smtp-Source: APXvYqzyV061KEXPKPAkyAkGRgXJ6fWU+P7KwNCWCXXtSomJ5IUaejCErE/o1rH0NBMapixozrDCWZBdHagrZr75cJE=
-X-Received: by 2002:a05:6830:1b70:: with SMTP id d16mr411248ote.71.1573608957281;
- Tue, 12 Nov 2019 17:35:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20191112000700.3455038-1-jhubbard@nvidia.com> <20191112000700.3455038-9-jhubbard@nvidia.com>
- <20191112204338.GE5584@ziepe.ca> <0db36e86-b779-01af-77e7-469af2a2e19c@nvidia.com>
- <CAPcyv4hAEgw6ySNS+EFRS4yNRVGz9A3Fu1vOk=XtpjYC64kQJw@mail.gmail.com>
- <20191112234250.GA19615@ziepe.ca> <CAPcyv4hwFKmsQpp04rS6diCmZwGtbnriCjfY2ofWV485qT9kzg@mail.gmail.com>
- <28355eb0-4ee5-3418-b430-59302d15b478@nvidia.com>
-In-Reply-To: <28355eb0-4ee5-3418-b430-59302d15b478@nvidia.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 12 Nov 2019 17:35:46 -0800
-Message-ID: <CAPcyv4hdYZ__3+KJHh+0uX--f-U=pLiZfdO0JDhyBE-nZ=i4FQ@mail.gmail.com>
-Subject: Re: [PATCH v3 08/23] vfio, mm: fix get_user_pages_remote() and FOLL_LONGTERM
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
+        id S1727406AbfKMBue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 20:50:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37232 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727384AbfKMBud (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:50:33 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 57D6C2245C;
+        Wed, 13 Nov 2019 01:50:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573609833;
+        bh=WNsF6Bm/ucOCzZ4B1FgoNMBmvHRd5PQZhX2EkWDEkZM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KtZytccUj/M0ZV2VJx6eI1Aa6TSq5gJsEFm6utA3fXPC6R7PtRowiSy5xqeJAe4Lr
+         QoRV5tt3On5VGtI0gQxNVMVqwmA8VCVuJ3Q9pRssvXkTFmluUjz1Pe/Nr9aJrm0S6m
+         07caIac2Wfmaj5dCbIBwRSvM3qKujDlVi8lbCnMo=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Huazhong Tan <tanhuazhong@huawei.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, KVM list <kvm@vger.kernel.org>,
-        linux-block@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org,
-        "Linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Netdev <netdev@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 006/209] net: hns3: Fix loss of coal configuration while doing reset
+Date:   Tue, 12 Nov 2019 20:47:02 -0500
+Message-Id: <20191113015025.9685-6-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191113015025.9685-1-sashal@kernel.org>
+References: <20191113015025.9685-1-sashal@kernel.org>
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 5:08 PM John Hubbard <jhubbard@nvidia.com> wrote:
->
-> On 11/12/19 4:58 PM, Dan Williams wrote:
-> ...
-> >>> It's not redundant relative to upstream which does not do anything the
-> >>> FOLL_LONGTERM in the gup-slow path... but I have not looked at patches
-> >>> 1-7 to see if something there made it redundant.
-> >>
-> >> Oh, the hunk John had below for get_user_pages_remote() also needs to
-> >> call __gup_longterm_locked() when FOLL_LONGTERM is specified, then
-> >> that calls check_dax_vmas() which duplicates the vma_is_fsdax() check
-> >> above.
-> >
-> > Oh true, good eye. It is redundant if it does additionally call
-> > __gup_longterm_locked(), and it needs to do that otherwises it undoes
-> > the CMA migration magic that Aneesh added.
-> >
->
-> OK. So just to be clear, I'll be removing this from the patch:
->
->         /*
->          * The lifetime of a vaddr_get_pfn() page pin is
->          * userspace-controlled. In the fs-dax case this could
->          * lead to indefinite stalls in filesystem operations.
->          * Disallow attempts to pin fs-dax pages via this
->          * interface.
->          */
->         if (ret > 0 && vma_is_fsdax(vmas[0])) {
->                 ret = -EOPNOTSUPP;
->                 put_page(page[0]);
->         }
->
-> (and the declaration of "vmas", as well).
+From: Huazhong Tan <tanhuazhong@huawei.com>
 
-...and add a call to __gup_longterm_locked internal to
-get_user_pages_remote(), right?
+[ Upstream commit e4fd75022c24eb28cc1034e97e60cecc24f325f3 ]
+
+The user's coal configuration will be lost after reset, so the tx_coal
+and rx_coal fields are added to the struct hns_nic_priv to save the coal
+configuration and used to restore the user's configuration after the reset
+is complete.
+
+Fixes: bb6b94a896d4 ("net: hns3: Add reset interface implementation in client")
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   | 71 +++++++++----------
+ .../net/ethernet/hisilicon/hns3/hns3_enet.h   |  2 +
+ 2 files changed, 36 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index a5e3d38f18230..15030df574a8b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -195,8 +195,6 @@ void hns3_set_vector_coalesce_tx_gl(struct hns3_enet_tqp_vector *tqp_vector,
+ static void hns3_vector_gl_rl_init(struct hns3_enet_tqp_vector *tqp_vector,
+ 				   struct hns3_nic_priv *priv)
+ {
+-	struct hnae3_handle *h = priv->ae_handle;
+-
+ 	/* initialize the configuration for interrupt coalescing.
+ 	 * 1. GL (Interrupt Gap Limiter)
+ 	 * 2. RL (Interrupt Rate Limiter)
+@@ -209,9 +207,6 @@ static void hns3_vector_gl_rl_init(struct hns3_enet_tqp_vector *tqp_vector,
+ 	tqp_vector->tx_group.coal.int_gl = HNS3_INT_GL_50K;
+ 	tqp_vector->rx_group.coal.int_gl = HNS3_INT_GL_50K;
+ 
+-	/* Default: disable RL */
+-	h->kinfo.int_rl_setting = 0;
+-
+ 	tqp_vector->int_adapt_down = HNS3_INT_ADAPT_DOWN_START;
+ 	tqp_vector->rx_group.coal.flow_level = HNS3_FLOW_LOW;
+ 	tqp_vector->tx_group.coal.flow_level = HNS3_FLOW_LOW;
+@@ -3423,6 +3418,31 @@ int hns3_nic_reset_all_ring(struct hnae3_handle *h)
+ 	return 0;
+ }
+ 
++static void hns3_store_coal(struct hns3_nic_priv *priv)
++{
++	/* ethtool only support setting and querying one coal
++	 * configuation for now, so save the vector 0' coal
++	 * configuation here in order to restore it.
++	 */
++	memcpy(&priv->tx_coal, &priv->tqp_vector[0].tx_group.coal,
++	       sizeof(struct hns3_enet_coalesce));
++	memcpy(&priv->rx_coal, &priv->tqp_vector[0].rx_group.coal,
++	       sizeof(struct hns3_enet_coalesce));
++}
++
++static void hns3_restore_coal(struct hns3_nic_priv *priv)
++{
++	u16 vector_num = priv->vector_num;
++	int i;
++
++	for (i = 0; i < vector_num; i++) {
++		memcpy(&priv->tqp_vector[i].tx_group.coal, &priv->tx_coal,
++		       sizeof(struct hns3_enet_coalesce));
++		memcpy(&priv->tqp_vector[i].rx_group.coal, &priv->rx_coal,
++		       sizeof(struct hns3_enet_coalesce));
++	}
++}
++
+ static int hns3_reset_notify_down_enet(struct hnae3_handle *handle)
+ {
+ 	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
+@@ -3469,6 +3489,8 @@ static int hns3_reset_notify_init_enet(struct hnae3_handle *handle)
+ 	/* Carrier off reporting is important to ethtool even BEFORE open */
+ 	netif_carrier_off(netdev);
+ 
++	hns3_restore_coal(priv);
++
+ 	ret = hns3_nic_init_vector_data(priv);
+ 	if (ret)
+ 		return ret;
+@@ -3496,6 +3518,8 @@ static int hns3_reset_notify_uninit_enet(struct hnae3_handle *handle)
+ 		return ret;
+ 	}
+ 
++	hns3_store_coal(priv);
++
+ 	ret = hns3_uninit_all_ring(priv);
+ 	if (ret)
+ 		netdev_err(netdev, "uninit ring error\n");
+@@ -3530,24 +3554,7 @@ static int hns3_reset_notify(struct hnae3_handle *handle,
+ 	return ret;
+ }
+ 
+-static void hns3_restore_coal(struct hns3_nic_priv *priv,
+-			      struct hns3_enet_coalesce *tx,
+-			      struct hns3_enet_coalesce *rx)
+-{
+-	u16 vector_num = priv->vector_num;
+-	int i;
+-
+-	for (i = 0; i < vector_num; i++) {
+-		memcpy(&priv->tqp_vector[i].tx_group.coal, tx,
+-		       sizeof(struct hns3_enet_coalesce));
+-		memcpy(&priv->tqp_vector[i].rx_group.coal, rx,
+-		       sizeof(struct hns3_enet_coalesce));
+-	}
+-}
+-
+-static int hns3_modify_tqp_num(struct net_device *netdev, u16 new_tqp_num,
+-			       struct hns3_enet_coalesce *tx,
+-			       struct hns3_enet_coalesce *rx)
++static int hns3_modify_tqp_num(struct net_device *netdev, u16 new_tqp_num)
+ {
+ 	struct hns3_nic_priv *priv = netdev_priv(netdev);
+ 	struct hnae3_handle *h = hns3_get_handle(netdev);
+@@ -3565,7 +3572,7 @@ static int hns3_modify_tqp_num(struct net_device *netdev, u16 new_tqp_num,
+ 	if (ret)
+ 		goto err_alloc_vector;
+ 
+-	hns3_restore_coal(priv, tx, rx);
++	hns3_restore_coal(priv);
+ 
+ 	ret = hns3_nic_init_vector_data(priv);
+ 	if (ret)
+@@ -3597,7 +3604,6 @@ int hns3_set_channels(struct net_device *netdev,
+ 	struct hns3_nic_priv *priv = netdev_priv(netdev);
+ 	struct hnae3_handle *h = hns3_get_handle(netdev);
+ 	struct hnae3_knic_private_info *kinfo = &h->kinfo;
+-	struct hns3_enet_coalesce tx_coal, rx_coal;
+ 	bool if_running = netif_running(netdev);
+ 	u32 new_tqp_num = ch->combined_count;
+ 	u16 org_tqp_num;
+@@ -3629,15 +3635,7 @@ int hns3_set_channels(struct net_device *netdev,
+ 		goto open_netdev;
+ 	}
+ 
+-	/* Changing the tqp num may also change the vector num,
+-	 * ethtool only support setting and querying one coal
+-	 * configuation for now, so save the vector 0' coal
+-	 * configuation here in order to restore it.
+-	 */
+-	memcpy(&tx_coal, &priv->tqp_vector[0].tx_group.coal,
+-	       sizeof(struct hns3_enet_coalesce));
+-	memcpy(&rx_coal, &priv->tqp_vector[0].rx_group.coal,
+-	       sizeof(struct hns3_enet_coalesce));
++	hns3_store_coal(priv);
+ 
+ 	hns3_nic_dealloc_vector_data(priv);
+ 
+@@ -3645,10 +3643,9 @@ int hns3_set_channels(struct net_device *netdev,
+ 	hns3_put_ring_config(priv);
+ 
+ 	org_tqp_num = h->kinfo.num_tqps;
+-	ret = hns3_modify_tqp_num(netdev, new_tqp_num, &tx_coal, &rx_coal);
++	ret = hns3_modify_tqp_num(netdev, new_tqp_num);
+ 	if (ret) {
+-		ret = hns3_modify_tqp_num(netdev, org_tqp_num,
+-					  &tx_coal, &rx_coal);
++		ret = hns3_modify_tqp_num(netdev, org_tqp_num);
+ 		if (ret) {
+ 			/* If revert to old tqp failed, fatal error occurred */
+ 			dev_err(&netdev->dev,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index cb450d7ec8c16..94d7446811d5d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -541,6 +541,8 @@ struct hns3_nic_priv {
+ 	/* Vxlan/Geneve information */
+ 	struct hns3_udp_tunnel udp_tnl[HNS3_UDP_TNL_MAX];
+ 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
++	struct hns3_enet_coalesce tx_coal;
++	struct hns3_enet_coalesce rx_coal;
+ };
+ 
+ union l3_hdr_info {
+-- 
+2.20.1
+
