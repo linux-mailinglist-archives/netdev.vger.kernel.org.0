@@ -2,102 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05339FB817
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:51:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F51FFB832
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:59:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728075AbfKMSvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 13:51:37 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33525 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727582AbfKMSvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 13:51:37 -0500
-Received: by mail-pg1-f194.google.com with SMTP id h27so1941345pgn.0
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 10:51:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=7G3k1Npis6Ug8KuaTYrL9wL4coQNwf55SFRmPVfpiaE=;
-        b=EpAmnW6k8EXLXqJG5QCpQ4ejx5H+c8J30kkEZFWynmwLRIASU6AP6o2+gmzSJtCWbM
-         oTlOfEAptNlKoGm8Z0wzkAzo1ok32+I4T9g1YYhYLWPxU5SGUv7GjVgxCG7aQKNyH730
-         n6dvfSzpreHhVtsgrY0D1h7Y0JLDDGfiWdE9M=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=7G3k1Npis6Ug8KuaTYrL9wL4coQNwf55SFRmPVfpiaE=;
-        b=V0KQ+0b30QZ1Jqt+efZXeONPap8MGohHQ07Ev7AERbIsnrcID0pZZlXk5dH1AGN4j+
-         yx051k3xjLYTi+oy6apdqgcfE19YUiQXCAcfsFoihB5shr2V7hbT6i4BjtPpDGKdNKiV
-         yYY1VGk/jARHfD5wm3IEDF19qBeOIxuuxJnZJmplKhc0HqFpKAfT4NvEcECElmEq0ffC
-         hfmFjfzu8CO05JJGdG5YEl1dlJ2diMZMR16Qc/V/Vlg6C7MMJDrJ27TMP+tyotGXmdIa
-         VE+Dd1Wd2VJoEQDlfJWpqb1cnVNUc4Lio5IyBLY0IU6HrR0+fK3P6vPXkhhw6VGBA2Tx
-         w/rQ==
-X-Gm-Message-State: APjAAAWkQm5ogP084w7h99yAKxxSw8lMxoZPXpzpWFEiAqnqtdK4E7L1
-        H3xXqAyxR2cuxFGiEBDJNlG5qg==
-X-Google-Smtp-Source: APXvYqzIJ7l2nzK6j+ie/36d2d8yvrzt9ufXcx5l8IL0vR9rRRKAgFF5fWFC6x0Nt/eGpUp8c4sVZw==
-X-Received: by 2002:a62:7bd3:: with SMTP id w202mr5982952pfc.200.1573671096821;
-        Wed, 13 Nov 2019 10:51:36 -0800 (PST)
-Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z13sm5112296pgz.42.2019.11.13.10.51.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 Nov 2019 10:51:36 -0800 (PST)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, olof@lixom.net,
-        Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
-Subject: [PATCH net-next] bnxt_en: Fix array overrun in bnxt_fill_l2_rewrite_fields().
-Date:   Wed, 13 Nov 2019 13:51:19 -0500
-Message-Id: <1573671079-27248-1-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1728128AbfKMS7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 13:59:05 -0500
+Received: from mga06.intel.com ([134.134.136.31]:55527 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726285AbfKMS7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 13:59:04 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Nov 2019 10:59:03 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,301,1569308400"; 
+   d="scan'208";a="406064294"
+Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
+  by fmsmga006.fm.intel.com with ESMTP; 13 Nov 2019 10:59:02 -0800
+Date:   Wed, 13 Nov 2019 10:59:02 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jonathan Corbet <corbet@lwn.net>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCH v4 09/23] mm/gup: introduce pin_user_pages*() and FOLL_PIN
+Message-ID: <20191113185902.GB12915@iweiny-DESK2.sc.intel.com>
+References: <20191113042710.3997854-1-jhubbard@nvidia.com>
+ <20191113042710.3997854-10-jhubbard@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191113042710.3997854-10-jhubbard@nvidia.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+On Tue, Nov 12, 2019 at 08:26:56PM -0800, John Hubbard wrote:
+> Introduce pin_user_pages*() variations of get_user_pages*() calls,
+> and also pin_longterm_pages*() variations.
+> 
+> These variants all set FOLL_PIN, which is also introduced, and
+> thoroughly documented.
+> 
+> The pin_longterm*() variants also set FOLL_LONGTERM, in addition
+> to FOLL_PIN:
+> 
+>     pin_user_pages()
+>     pin_user_pages_remote()
+>     pin_user_pages_fast()
+> 
+>     pin_longterm_pages()
+>     pin_longterm_pages_remote()
+>     pin_longterm_pages_fast()
 
-Fix the array overrun while keeping the eth_addr and eth_addr_mask
-pointers as u16 to avoid unaligned u16 access.  These were overlooked
-when modifying the code to use u16 pointer for proper alignment.
+At some point in this conversation I thought we were going to put in "unpin_*"
+versions of these.
 
-Fixes: 90f906243bf6 ("bnxt_en: Add support for L2 rewrite")
-Reported-by: Olof Johansson <olof@lixom.net>
-Signed-off-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 4 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Is that still in the plans?
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 174412a..0cc6ec5 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -166,8 +166,8 @@ bnxt_fill_l2_rewrite_fields(struct bnxt_tc_actions *actions,
- 			actions->l2_rewrite_dmac[j] = cpu_to_be16(*(p + j));
- 	}
- 
--	if (!is_wildcard(&eth_addr_mask[ETH_ALEN], ETH_ALEN)) {
--		if (!is_exactmatch(&eth_addr_mask[ETH_ALEN], ETH_ALEN))
-+	if (!is_wildcard(&eth_addr_mask[ETH_ALEN / 2], ETH_ALEN)) {
-+		if (!is_exactmatch(&eth_addr_mask[ETH_ALEN / 2], ETH_ALEN))
- 			return -EINVAL;
- 		/* FW expects smac to be in u16 array format */
- 		p = &eth_addr[ETH_ALEN / 2];
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-index 2867549..10c62b0 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
-@@ -64,9 +64,9 @@ struct bnxt_tc_tunnel_key {
- 
- #define bnxt_eth_addr_key_mask_invalid(eth_addr, eth_addr_mask)		\
- 	((is_wildcard(&(eth_addr)[0], ETH_ALEN) &&			\
--	 is_wildcard(&(eth_addr)[ETH_ALEN], ETH_ALEN)) ||		\
-+	 is_wildcard(&(eth_addr)[ETH_ALEN / 2], ETH_ALEN)) ||		\
- 	(is_wildcard(&(eth_addr_mask)[0], ETH_ALEN) &&			\
--	 is_wildcard(&(eth_addr_mask)[ETH_ALEN], ETH_ALEN)))
-+	 is_wildcard(&(eth_addr_mask)[ETH_ALEN / 2], ETH_ALEN)))
- 
- struct bnxt_tc_actions {
- 	u32				flags;
--- 
-2.5.1
+Ira
 
