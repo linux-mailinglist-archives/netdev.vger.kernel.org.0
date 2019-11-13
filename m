@@ -2,95 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D6BFB788
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:29:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 960DFFB791
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:30:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728398AbfKMS3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 13:29:24 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:54704 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727074AbfKMS3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 13:29:24 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xADIT0iJ118599;
-        Wed, 13 Nov 2019 18:29:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
- bh=sGr/DIDnGTYsdgAAQOAvzvtrIvWYjXZuC3b0kLtXOyQ=;
- b=qA7Rtcc1IjJd8veNVWpkLuSGb6JekNurHL20+l6ioCTm0Ig7SWhXpAbRiQ3x7u6epKP6
- IBS1VVe/9rTZhbbmXWlBNTfTJ4W3CQvdfpOQVnToGNSBpGACYkOo8D10B+JodCm7v5VH
- qyYmmAP3T+pPnQ2bAQWVq6GUgNMJN/pn6EC/97fVSgp6FYAtxdmlS9tyu4wdkemmtXq9
- wqGshAqHvOlsQphxP2AbxocamwN0gATjkjm6pllyPJv8KFr/ZzNs8vuqEUfgpoO2znpN
- 517d381eIE2qY5GwLT33S/lbrXPmjGMrJdIKnbR3NBZZC+TpUAMigWxuIVYSCw5bwgjt Lg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2120.oracle.com with ESMTP id 2w5ndqedyq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Nov 2019 18:29:16 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xADISxlZ160232;
-        Wed, 13 Nov 2019 18:29:15 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2w7vppqqp1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Nov 2019 18:29:03 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xADISeZw031201;
-        Wed, 13 Nov 2019 18:28:40 GMT
-Received: from kili.mountain (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 13 Nov 2019 10:28:40 -0800
-Date:   Wed, 13 Nov 2019 21:28:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Oliver Neukum <oliver@neukum.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH net] net: cdc_ncm: Signedness bug in cdc_ncm_set_dgram_size()
-Message-ID: <20191113182831.yjbmhwacirh6kgzr@kili.mountain>
+        id S1728373AbfKMSaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 13:30:19 -0500
+Received: from dispatchb-us1.ppe-hosted.com ([148.163.129.53]:47620 "EHLO
+        dispatchb-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727687AbfKMSaT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 13:30:19 -0500
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3DDD7480079;
+        Wed, 13 Nov 2019 18:30:17 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 13 Nov
+ 2019 18:30:07 +0000
+Subject: Re: static and dynamic linking. Was: [PATCH bpf-next v3 1/5] bpf:
+ Support chain calling multiple BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        "Jesper Dangaard Brouer" <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+References: <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com>
+ <87r23egdua.fsf@toke.dk>
+ <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+ <874l07fu61.fsf@toke.dk>
+ <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
+ <87eez4odqp.fsf@toke.dk>
+ <20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com>
+ <87h839oymg.fsf@toke.dk>
+ <20191112195223.cp5kcmkko54dsfbg@ast-mbp.dhcp.thefacebook.com>
+ <8c251f3d-67bd-9bc2-8037-a15d93b48674@solarflare.com>
+ <20191112231822.o3gir44yskmntgnq@ast-mbp.dhcp.thefacebook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <0c90adc4-5992-8648-88bf-4993252e8992@solarflare.com>
+Date:   Wed, 13 Nov 2019 18:30:04 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9440 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1910280000 definitions=main-1911130158
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9440 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1910280000
- definitions=main-1911130158
+In-Reply-To: <20191112231822.o3gir44yskmntgnq@ast-mbp.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25040.003
+X-TM-AS-Result: No-11.123400-8.000000-10
+X-TMASE-MatchedRID: gTucSmrmRMPmLzc6AOD8DfHkpkyUphL9WDtrCb/B2hD4qcrtH/xgFZG7
+        2NzIAVHbSR6AUQrJJcuJjnQgB0y4MyH/qIKp8YHgzYdkhvBj72YGchEhVwJY3/yQXCBzKijhKMB
+        +A3R9wpjQnvspXsHGGjgVYVRiAYcYIly/lfs5uYll2ityh8f8abzETYfYS4xZkYldHqNEW7jVYV
+        lghh6bHLbVdljeKYS0SxgQeJeJcbtveCKWtaLcaNz4Qeg3eDOXNACXtweanwY26TIMgH4duvlgF
+        +Kg8U8ROcDxuFovi7sJc76c84YQtEY1icyaSXl7iVJZi91I9JipXdWa4gU0SyuGKh4AkqKVTx7y
+        4qsCFyjPNMvOUpFAAcC9Ectx7blhS6sB4alhNseSa1tNw2nFhJmuAlCliTSzSsLSc3Pt6d8cM+9
+        sw875Dq0O70YxrIQWboiPOocsN2Rzzu7iu0I3xElR2DE0NRda3V4UShoTXaeZt08TfNy6OGUsfN
+        azqaz0vi+sWY5pLUTAAptcaK2X1JH+r1dm7Q1Zec1y1wrvN8VRGnhVKO1nEseQfu6iwSfsL3cbW
+        SYN50zZT+PYC0MLLugYO29BmH8mcD+UkqIXD16Ev01fZOqaQPf6ZSoNZQrIIyM6bqaAlytOoawJ
+        u9w+jEGuPlleiAosuiY3Jd7OxZ1JT04BD0+0vjBgCmbnj9JmfS0Ip2eEHnzUHQeTVDUrItRnEQC
+        UU+jz9xS3mVzWUuA4wHSyGpeEevhHs6Nly492z6NxPA1Vi8Bk1F/HwgJmfnmyphMWrxPqzp5NFf
+        iy5h8=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--11.123400-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25040.003
+X-MDID: 1573669818-l01CeIA_ftqE
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This code is supposed to test for negative error codes and partial
-reads, but because sizeof() is size_t (unsigned) type then negative
-error codes are type promoted to high positive values and the condition
-doesn't work as expected.
+On 12/11/2019 23:18, Alexei Starovoitov wrote:
+> On Tue, Nov 12, 2019 at 09:25:06PM +0000, Edward Cree wrote:
+>> Fwiw the 'natural' C way of doing it would be that for any extern symbol in
+>>  the C file, the ELF file gets a symbol entry with st_shndx=SHN_UNDEF, and
+>>  code in .text that uses that symbol gets relocation entries.  That's (AIUI)
+>>  how it works on 'normal' architectures, and that's what my ebld linker
+>>  understands; when it sees a definition in another file for that symbol
+>>  (matched just by the symbol name) it applies all the relocations of the
+>>  symbol to the appropriate progbits.
+>> I don't really see what else you could define 'extern' to mean.
+> That's exactly the problem with standard 'extern'. ELF preserves the name only.
+> There is no type.
+But if you have BTFs, then you can look up each symbol's type at link time and
+ check that they match.  Point being that the BTF is for validation (and
+ therefore strictly optional at this point) rather than using it to identify a
+ symbol.  Trouble with the latter is that BTF ids get renumbered on linking, so
+ any references to them have to change, whereas symbol names stay the same.
 
-Fixes: 332f989a3b00 ("CDC-NCM: handle incomplete transfer of MTU")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/usb/cdc_ncm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> There is also
+> no way to place extern into a section. Currently SEC("..") is a standard way to
+> annotate bpf programs.
+While the symbol itself doesn't have a section, each _use_ of the symbol has a
+ reloc, and the SHT_REL[A] in which that reloc resides has a sh_info specifying
+ "the section header index of the section to which the relocation applies."  So
+ can't that be used if symbol visibility needs to depend on section?  Tbh I
+ can't exactly see why externs need placing in a section in the first place.
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index a245597a3902..c2c82e6391b4 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -579,7 +579,7 @@ static void cdc_ncm_set_dgram_size(struct usbnet *dev, int new_size)
- 	err = usbnet_read_cmd(dev, USB_CDC_GET_MAX_DATAGRAM_SIZE,
- 			      USB_TYPE_CLASS | USB_DIR_IN | USB_RECIP_INTERFACE,
- 			      0, iface_no, &max_datagram_size, sizeof(max_datagram_size));
--	if (err < sizeof(max_datagram_size)) {
-+	if (err != sizeof(max_datagram_size)) {
- 		dev_dbg(&dev->intf->dev, "GET_MAX_DATAGRAM_SIZE failed\n");
- 		goto out;
- 	}
--- 
-2.11.0
+> I think reliable 'extern' has to have more than just
+> name. 'extern int foo;' can be a reference to 'int foo;' in another BPF ELF
+> file, or it can be a reference to 'int foo;' in already loaded BPF prog, or it
+> can be a reference to 'int foo;' inside the kernel itself, or it can be a
+> reference to pseudo variable that libbpf should replace. For example 'extern
+> int kernel_version;' or 'extern int CONFIG_HZ;' would be useful extern-like
+> variables that program might want to use. Disambiguating by name is probably
+> not enough. We can define an order of resolution. libbpf will search in other
+> .o first, then will search in loaded bpf progs, than in kernel, and if all
+> fails than will resolve things like 'extern int CONFIG_HZ' on its own. It feels
+> fragile though.
+It sounds perfectly reasonable and not fragile to me.  The main alternative
+ I see, about equally good, is to not allow defining symbols that are already
+ (non-weakly) defined; so if a bpf prog tries to globally declare "int CONFIG_HZ"
+ or "int netif_receive_skb(struct sk_buff *skb)" then it gets rejected.
 
+> I think we need to be able to specify something like section to
+> extern variables and functions.
+It seems unnecessary to have the user code specify this.  Another a bad
+ analogy: in userland C code you don't have to annotate the function protos in
+ your header files to say whether they come from another .o file, a random
+ library or the libc.  You just declare "a function called this exists somewhere
+ and we'll find it at link time".
+
+> I was imagining that the verifier will do per-function verification
+> of program with sub-programs instead of analyzing from root.
+Ah I see.  Yes, that's a very attractive design.
+
+If we make it from a sufficiently generic idea of pre/postconditions, then it
+ could also be useful for e.g. loop bodies (user-supplied annotations that allow
+ us to walk the body only once instead of N times); then a function call just
+ gets standard pre/postconditions generated from its argument types if the user
+ didn't specify something else.
+
+That would then also support things like:
+> The next step is to extend this thought process to integers.
+> int foo(struct xdp_md *arg1, int arg2);
+> The verifier can check that the program is valid for any valid arg1 and
+> arg2 = mark_reg_unbounded().
+... this but arg2 isn't unbounded.
+However, it might be difficult to do this without exposing details of the
+ verifier into the ABI.  Still, if we can it sounds like it would make John
+ quite happy too.  And of course it doesn't need to have the user annotations
+ from the beginning, it can start out as just the kernel generating pre/post
+ conditions internally.
+
+-Ed
