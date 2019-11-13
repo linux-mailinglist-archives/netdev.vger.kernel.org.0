@@ -2,130 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF93FB0F4
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 14:01:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A0F4FB0FE
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 14:02:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727247AbfKMNBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 08:01:03 -0500
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:44162 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbfKMNBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 08:01:02 -0500
-Received: by mail-qv1-f68.google.com with SMTP id d3so735155qvs.11
-        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 05:01:01 -0800 (PST)
+        id S1727221AbfKMNCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 08:02:05 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:43409 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726962AbfKMNCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 08:02:05 -0500
+Received: by mail-qt1-f194.google.com with SMTP id j5so1021751qtn.10
+        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 05:02:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=FQZlZJfwGx5T8+OiXhUNJJSa05RBpNm89aoqb+QrgWA=;
-        b=DU2qjGpBBELIAQFZkyE46qRhJAUoFIBCHdQYwgs1smwq9qhQ134AO5258AAhy6U+4b
-         hHtwkJsqIleRzE/0LC+H+vO25MhzEcw1pjJvbx+UbVZ5mTvJ8vAiS/+w5ZYJrjlP+kz/
-         bebgA00fmr0N2yJcI+r+pEfs6dpHO1OPHkXCHmPYfBHrXkYcE+I8oY5mh6OQL+uA2aqq
-         1fgQ2c7ih8kH1wjsrtyxu9NYY82Trx2YP+hALT8CHz3zgrOxjMciLECdlsclQ+CIjFmu
-         63CHsWQ4Nl90nKOW1k9bcFGfV4c1eSbBHJfHN6vleEc+G/TtI1L7nGwRoERmV4Dcl5zg
-         tyMg==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=oMayMeIif+74vqoR9Hg244XFAjXhPl1nedXCyPx66Cc=;
+        b=nx3682LY4M40wGJ/sVGEu1B6oRowx3yCQZUXaDyQPZ8wp2PPM1JbbnvXpnwJ+1w7kN
+         lveYAqZtu6ZiCNE2GeOgCzqCbaPveYJh+bEnyDI89VRNGCHDXS9A7L5ZDDa96GF+3bm0
+         VmapuAT4FqF5vTUEuSGlcRA+NIY79GOrBmWnh2u551hGbiYfLURBD9nS87LvoXBLbrK0
+         o1TB/3BSIGkHlZVczCO3ubOoj5u0dVQwEYLzu7svoxCzx/+RmvcCH+ACjaNBf3sl94Zf
+         NRZR8twQGuvzHtghZ4nzQu/TUj0hyyqfJ3dXa+O6cdFNGC6w6BZNjOabe9aQdvwtecNu
+         AUCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=FQZlZJfwGx5T8+OiXhUNJJSa05RBpNm89aoqb+QrgWA=;
-        b=J6FbjcfgXEZakdg0bNl15O2cE3EJQxsbYAVoJbcpAe6FqmSAsB1VBLcG+BiUGvt/q8
-         iz96lUc+JXRc/0R3gm14Za4wJA6jTd97cmTvuO4XpfvI4sUzsfJIY5WzisAAwUh/RY3k
-         fsadbG0+0x7q8lnQBJgsgVfm7DfvnrNRwyg+VskFBAwFD7cJaS9AoQ9fvrWyeBpLi71u
-         xHP+o3xPJME46Q3A2w2/6viPMTj38TpAJum3jNbWKuNy9cGJEdxPIXpMQKRzVLzWFvWz
-         h2QYDHJ+xOkzkh1EOi4Jscci6PQp5CS0d44EcTntW/b783R/zhaaC4V1zxui1WzR3eIm
-         tCgw==
-X-Gm-Message-State: APjAAAUwlclzT846NOGd2qmED4csZVoGa7wtedzjXoB9lHD3rDC0A4J/
-        /I1Zao5SFpeqqKRBHlcELbAYBQ+fpYaBFa30y8eNvV8XDiY=
-X-Google-Smtp-Source: APXvYqyIW8ptob9SReFWK+XuQ3JsHSLEoBmPOmv3YAUtrmjUp7W7kujPT0J81cw3o1Kf88CUyj849W98YgNyqKn1OOQ=
-X-Received: by 2002:a0c:baad:: with SMTP id x45mr1616938qvf.230.1573650061074;
- Wed, 13 Nov 2019 05:01:01 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=oMayMeIif+74vqoR9Hg244XFAjXhPl1nedXCyPx66Cc=;
+        b=Rlkgsv687Cc4+gUgqB1HaHMTTYr8U6d5GnzjsCWKz+JOoSpmWqpmkdqbmdH4SeYVcm
+         34Sys+Q5JXknLdvoMSguBjgCa63Hi108AkRiESSMhldkW+zdHVxPo2pVXfjd7h9lUww5
+         LRe7f+dSCu10JCFahcoBAZrFuTxDa7sldIJvBTzcgWn7IIMIpnnbRlGPO0SxBlG2uOAx
+         TQpuYFRuHJVFF4N3sjgo7DDJR9ICzWUlBQMZtNjxW6x3jjyGJvDlmBi5iCT9TtadKPgw
+         P0Qd4sgcMDZ9r+RCxBbkx06xFjfEv6qb94FnmpkO9/CwCsjMD7iogWdCMHFOZdFPkez+
+         uh+w==
+X-Gm-Message-State: APjAAAU/pSFmSUZyR6861DrA9ckT6PsG9+oBt0LQuv058j5deLUhZfa/
+        +yxY8L8kGGdc4hrBxgcfjHiKCA==
+X-Google-Smtp-Source: APXvYqwGbusmGQAfGHn3CXk2dU2JO4knhTY4prDGLzmyu8apMpc1WOd3WOgt9K6JkDyAWe/3c1LxDA==
+X-Received: by 2002:ac8:724f:: with SMTP id l15mr2476006qtp.234.1573650124104;
+        Wed, 13 Nov 2019 05:02:04 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id 187sm918223qkk.103.2019.11.13.05.02.03
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 13 Nov 2019 05:02:03 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iUsHa-000767-Jc; Wed, 13 Nov 2019 09:02:02 -0400
+Date:   Wed, 13 Nov 2019 09:02:02 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jens Axboe <axboe@kernel.dk>, Jonathan Corbet <corbet@lwn.net>,
+        =?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Michal Hocko <mhocko@suse.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 08/23] vfio, mm: fix get_user_pages_remote() and
+ FOLL_LONGTERM
+Message-ID: <20191113130202.GA26068@ziepe.ca>
+References: <20191113042710.3997854-1-jhubbard@nvidia.com>
+ <20191113042710.3997854-9-jhubbard@nvidia.com>
 MIME-Version: 1.0
-References: <CABT=TjGqD3wRBBJycSdWubYROtHRPCBNq1zCdOHNFcxPzLRyWw@mail.gmail.com>
- <CAM_iQpUpof_ix=HJyxgjS4G9Mv5Zmno05bq0cmSVVN9E_Mzasg@mail.gmail.com> <CABT=TjGn8S3jy4bw6ShRpYJdcE3-H4fNaxEPGfNaxiEcxBtPrA@mail.gmail.com>
-In-Reply-To: <CABT=TjGn8S3jy4bw6ShRpYJdcE3-H4fNaxEPGfNaxiEcxBtPrA@mail.gmail.com>
-From:   Adeel Sharif <madeel.sharif@googlemail.com>
-Date:   Wed, 13 Nov 2019 14:00:48 +0100
-Message-ID: <CABT=TjEWnpD3oJCJXUUN9P+gGM+k1iS84LXdebfOTOCM+vHeCA@mail.gmail.com>
-Subject: Re: Unix domain socket missing error code
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191113042710.3997854-9-jhubbard@nvidia.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eventually Kernel OOM will start and kill the process:
+On Tue, Nov 12, 2019 at 08:26:55PM -0800, John Hubbard wrote:
+> As it says in the updated comment in gup.c: current FOLL_LONGTERM
+> behavior is incompatible with FAULT_FLAG_ALLOW_RETRY because of the
+> FS DAX check requirement on vmas.
+> 
+> However, the corresponding restriction in get_user_pages_remote() was
+> slightly stricter than is actually required: it forbade all
+> FOLL_LONGTERM callers, but we can actually allow FOLL_LONGTERM callers
+> that do not set the "locked" arg.
+> 
+> Update the code and comments accordingly, and update the VFIO caller
+> to take advantage of this, fixing a bug as a result: the VFIO caller
+> is logically a FOLL_LONGTERM user.
+> 
+> Also, remove an unnessary pair of calls that were releasing and
+> reacquiring the mmap_sem. There is no need to avoid holding mmap_sem
+> just in order to call page_to_pfn().
+> 
+> Also, move the DAX check ("if a VMA is DAX, don't allow long term
+> pinning") from the VFIO call site, all the way into the internals
+> of get_user_pages_remote() and __gup_longterm_locked(). That is:
+> get_user_pages_remote() calls __gup_longterm_locked(), which in turn
+> calls check_dax_vmas(). It's lightly explained in the comments as well.
+> 
+> Thanks to Jason Gunthorpe for pointing out a clean way to fix this,
+> and to Dan Williams for helping clarify the DAX refactoring.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: Jerome Glisse <jglisse@redhat.com>
+> Cc: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+>  drivers/vfio/vfio_iommu_type1.c | 25 ++-----------------------
+>  mm/gup.c                        | 27 ++++++++++++++++++++++-----
+>  2 files changed, 24 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index d864277ea16f..7301b710c9a4 100644
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -340,7 +340,6 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  {
+>  	struct page *page[1];
+>  	struct vm_area_struct *vma;
+> -	struct vm_area_struct *vmas[1];
+>  	unsigned int flags = 0;
+>  	int ret;
+>  
+> @@ -348,33 +347,13 @@ static int vaddr_get_pfn(struct mm_struct *mm, unsigned long vaddr,
+>  		flags |= FOLL_WRITE;
+>  
+>  	down_read(&mm->mmap_sem);
+> -	if (mm == current->mm) {
+> -		ret = get_user_pages(vaddr, 1, flags | FOLL_LONGTERM, page,
+> -				     vmas);
+> -	} else {
+> -		ret = get_user_pages_remote(NULL, mm, vaddr, 1, flags, page,
+> -					    vmas, NULL);
+> -		/*
+> -		 * The lifetime of a vaddr_get_pfn() page pin is
+> -		 * userspace-controlled. In the fs-dax case this could
+> -		 * lead to indefinite stalls in filesystem operations.
+> -		 * Disallow attempts to pin fs-dax pages via this
+> -		 * interface.
+> -		 */
+> -		if (ret > 0 && vma_is_fsdax(vmas[0])) {
+> -			ret = -EOPNOTSUPP;
+> -			put_page(page[0]);
+> -		}
+> -	}
+> -	up_read(&mm->mmap_sem);
+> -
+> +	ret = get_user_pages_remote(NULL, mm, vaddr, 1, flags | FOLL_LONGTERM,
+> +				    page, NULL, NULL);
+>  	if (ret == 1) {
+>  		*pfn = page_to_pfn(page[0]);
+>  		return 0;
 
-[  581.134746] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS 1.10.2-1ubuntu1 04/01/2014
-[  581.134816] Call Trace:
-[  581.135550]  dump_stack+0x46/0x5b
-[  581.135580]  dump_header.isra.35+0x5b/0x23c
-[  581.135590]  oom_kill_process+0x20f/0x3d0
-[  581.135603]  ? has_intersects_mems_allowed+0x6b/0x90
-[  581.135623]  out_of_memory+0xe9/0x580
-[  581.135630]  __alloc_pages_slowpath+0x9c9/0xd10
-[  581.135640]  __alloc_pages_nodemask+0x237/0x260
-[  581.135647]  filemap_fault+0x1eb/0x560
-[  581.135656]  ? __switch_to_asm+0x40/0x70
-[  581.135662]  ? __switch_to_asm+0x34/0x70
-[  581.135667]  ? __switch_to_asm+0x40/0x70
-[  581.135672]  ? alloc_set_pte+0x252/0x2f0
-[  581.135680]  ext4_filemap_fault+0x27/0x36
-[  581.135689]  __do_fault+0x2b/0x90
-[  581.135694]  __handle_mm_fault+0x67e/0xae0
-[  581.135704]  __do_page_fault+0x239/0x4b0
-[  581.135713]  ? page_fault+0x8/0x30
-[  581.135719]  page_fault+0x1e/0x30
-[  581.135867] RIP: 0033:0x561979ac3050
-[  581.136120] Code: Bad RIP value.
-[  581.136140] RSP: 002b:00007ffe528f8668 EFLAGS: 00000246
-[  581.136162] RAX: 0000000000000000 RBX: 0000000000000001 RCX: 00007fd49d85615d
-[  581.136170] RDX: 000056197b832ac0 RSI: 000056197b832ae0 RDI: 000056197b82da30
-[  581.136177] RBP: 000056197b82da30 R08: 00007ffe528f86e0 R09: 00007ffe5292d080
-[  581.136184] R10: 0000000000000008 R11: 0000000000000246 R12: 0000000000000245
-[  581.136191] R13: 0000561979b357e0 R14: 0000000000000003 R15: 00007ffe528f86e0
+Mind the return with the lock held this needs some goto unwind
 
-On Tue, Nov 12, 2019 at 9:56 AM Adeel Sharif
-<madeel.sharif@googlemail.com> wrote:
->
-> It should but it is not used when two different sockets are communicating.
-> This is the third check in the if statement and it is never called
-> because the first unlikely check was false:
->
-> if (other != sk &&
->         unlikely(unix_peer(other) != sk && unix_recvq_full(other))) {
->
-> Thanks.
->
-> On Tue, Nov 12, 2019 at 1:12 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Mon, Nov 11, 2019 at 5:41 AM Adeel Sharif
-> > <madeel.sharif@googlemail.com> wrote:
-> > >
-> > > Hello,
-> > >
-> > > We are a group of people working on making Linux safe for everyone. In
-> > > hope of doing that I started testing the System Calls. The one I am
-> > > currently working on is send/write.
-> > >
-> > > If send() is used to send datagrams on unix socket and the receiver
-> > > has stopped receiving, but still connected, there is a high
-> > > possibility that Linux kernel could eat up the whole system memory.
-> > > Although there is a system wide limit on write memory from wmem_max
-> > > parameter but this is sometimes also increased to system momory size
-> > > in order to avoid packet drops.
-> > >
-> > > After having a look in the kernel implementation of
-> > > unix_dgram_sendmsg() it is obvious that user buffers are copied into
-> > > kernel socket buffers and they are queued to a linked list. This list
-> > > is growing without any limits. Although there is a qlen parameter but
-> > > it is never used to impose a limit on it. Could we perhaps impose a
-> > > limit on it and return an error with errcode Queue_Full or something
-> > > instead?
-> >
-> > Isn't unix_recvq_full() supposed to do what you said? It is called inside
-> > unix_dgram_sendmsg() to determine whether to wake up the dst socket.
-> >
-> > Thanks.
+Jason
