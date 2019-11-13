@@ -2,78 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7228EFAA54
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 07:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CF7CFAA5C
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 07:44:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbfKMGl7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 01:41:59 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40273 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbfKMGl7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 01:41:59 -0500
-Received: by mail-wm1-f68.google.com with SMTP id f3so674181wmc.5
-        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 22:41:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8MwhdB2cTBecnrrNgOyyNpRPGP6IGrKoBhPRW46ANi0=;
-        b=UXBdz1xTu4XFejtkL4DKOewWgZhk1TD14Ea+SBBFDQCFrRuzqf5FRMNxxcx/LZE7I+
-         g2YWWoSXka9Fpg2QAJ2BjSU6KB7XN6gGDPIzxhfwgmrZReOsJrDCKuN1iIvVFiRz/yEE
-         E6MNJ9gnw/YtmiIMr63drYXQFwtb3viJshmAxgZxc6T8X/+Wx8GjfKD4MdVKPn3j6ni8
-         lCqRsbxgvDc5zsdILneuzDtyhR9EOzTJSynltXRwXp03LPAjS6LI6umRwwwUHgxCG3QH
-         mlUtimRVTal2srqweemSopu5zrjlfxw4RHBQlHBidV7vEQAdpf4pngOzyQJBuQsQrpWy
-         +YuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8MwhdB2cTBecnrrNgOyyNpRPGP6IGrKoBhPRW46ANi0=;
-        b=J4+2UTicxALNa2BSMbdvttpr9chPBmBvXfLqZsnqMZN+xgcXKwbVHv3GVQWk0vlEKI
-         yjkAtrWvBe2muOXMEHhjzcs7H3GQs38eY8qPhYmC+9A+7KW/5DlNKEWXHg9/6NiVV/Ie
-         p+xi5H5olMBoWSCLsK3XD312iZvf0YZUWmDZedlemT84eEBUSYgB+KdQg4ZJXF29JmBA
-         CGocyr1CmzmJcTaeAV5piE8pR0CorHOQ7EL+zV2fGatlkZpmkfBx4M+tYq2NHWNRc1NG
-         OJG4ougKWj6OwLtxab1CKWzc8RyxtOr2nxF81W2uFmg0TZbLCBXvQ06BTLEU3VNkHB8k
-         LIcg==
-X-Gm-Message-State: APjAAAXLGd29Ei1feY4CkxDGD/TyPcKTn8CqtV5lbzcVQYYBgNxl5lSj
-        S5M1Iy3T3Jjj9mueZclvRf/LvP08+L60MTpv6AIlFSGj
-X-Google-Smtp-Source: APXvYqzhkKoaGCTAzbViSg4X7rJpILJPhC/sJRx4oi8EWICXrXyf7isMuWSDp84jGeve/GVgV54K9cdt+6Pb00h0hpE=
-X-Received: by 2002:a1c:f20c:: with SMTP id s12mr1085976wmc.37.1573627317534;
- Tue, 12 Nov 2019 22:41:57 -0800 (PST)
+        id S1726115AbfKMGoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 01:44:55 -0500
+Received: from mail-eopbgr70059.outbound.protection.outlook.com ([40.107.7.59]:46494
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725866AbfKMGoz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 01:44:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=b/7U4MrGn1/Ag3oqaG/erBlifyIo+TrYXEFOAbTfpMMizGsP2v9PEBhs2OsNl/WGLXv4kiArBR86f2jxZHPYPHUfNqjI1XLqz+sW7gm7k5HSiVlp+TyH+wP+g3AlXC1lIuSd/DhyPHCmWP3w1NaxdzCo23pgiRKO+VV7cuE5Y15Vc8VDym0nhPcq4eJ8OQz58+8stdSoX30kmeT7hRRrirBYGUnM6ngvD0edAr1/U+bc3S3kLQDUZSLF8suG3m88xhByKqnPhYFXTTNoeDRA7s8KuFr+9SVCpqsV31HlSzwxS1pgi1bTSrvYIMWhA9TCp2nH6nHTlBOyiJkqXBgYIQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QAN6VDvGNoZJe+Mk0g24tiXa0BjlzVW5DRAiF0HvKHw=;
+ b=WrkUQjtB5TjO62UR4iHH9MwmXY3eAaZHLGDneceGV5MYgQNS82pz+0gdNJxmJCuh4O5OQ1c1dK1Eqy2C8L05CzMdDBAmpYx2qj+b4IUc5E0Bx0xxcle2sCu8xQg/zjhfqDbWAbO65hdJEvamqMC6BJop+MZ7hBidOHaZkea96SufVkKDJ7PPSCtu1jWtsgQcJGvRxAwPdgOo/NorBSSSjfpjGMn8q2583WRUIsQnzkHpOa93zOi5yttSjzB7fZTYzti7b1ElNHYQZo3sBZYbWvak8vqjAHxnLilpzySqmjrLdptG+xPaKhZZ+DLm0IPanWySMZAs065dFHJl3vklXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QAN6VDvGNoZJe+Mk0g24tiXa0BjlzVW5DRAiF0HvKHw=;
+ b=dHlRlLKRxunraFh2Xxrp/yDt15bMlR4LSC2vBogTVbp1VCD1YhGfy2595WZJM4u+0Z3YJJ6leYKQV3jUNnJWurSMiMq9rhUkQNCvt1poXgPuFPkt0IfeCOoZBBrAfk/rVwix/GMpMM5F0Nptlmiaggxr3n2mlXm9iHgooGjovFI=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB5041.eurprd05.prod.outlook.com (20.177.42.82) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.23; Wed, 13 Nov 2019 06:44:49 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::e5c2:b650:f89:12d4%7]) with mapi id 15.20.2430.027; Wed, 13 Nov 2019
+ 06:44:49 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+CC:     Greg KH <gregkh@linuxfoundation.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "nhorman@redhat.com" <nhorman@redhat.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        Kiran Patil <kiran.patil@intel.com>
+Subject: RE: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+Thread-Topic: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+Thread-Index: AQHVmMVkwGO915shK0y7Ue5RV91ix6eIDrEAgAAsrICAAA5rUIAAAv4AgABc5sA=
+Date:   Wed, 13 Nov 2019 06:44:49 +0000
+Message-ID: <AM0PR05MB48665001B54D3F29A9D4127FD1760@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
+ <20191112212826.GA1837470@kroah.com> <20191113000819.GB19615@ziepe.ca>
+ <AM0PR05MB48662DEDDE4750D399B8181ED1760@AM0PR05MB4866.eurprd05.prod.outlook.com>
+ <20191113011038.GC19615@ziepe.ca>
+In-Reply-To: <20191113011038.GC19615@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [2605:6000:ec82:1c00:64c2:47ad:dfe6:e0d9]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 799655a4-9902-414d-42c5-08d76804fb18
+x-ms-traffictypediagnostic: AM0PR05MB5041:
+x-microsoft-antispam-prvs: <AM0PR05MB50412F3515FDE6E605510845D1760@AM0PR05MB5041.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0220D4B98D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(39860400002)(396003)(346002)(136003)(376002)(199004)(189003)(25786009)(6916009)(54906003)(4326008)(6246003)(99286004)(256004)(229853002)(76116006)(9686003)(6436002)(71200400001)(71190400001)(55016002)(7416002)(52536014)(476003)(8936002)(102836004)(186003)(11346002)(446003)(478600001)(4744005)(33656002)(7696005)(5660300002)(7736002)(74316002)(76176011)(486006)(6506007)(305945005)(86362001)(81166006)(81156014)(2906002)(14454004)(8676002)(316002)(6116002)(64756008)(46003)(66446008)(66476007)(66556008)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5041;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: qx1gi/JVDYo7SJiXD/MJ07Z+DOnTe9Q4F5nmqK8it7ul65ifggvLuy62vc4ohJz4dEkSCcwdw5EhCGVcQ74fXav3psocjLfo+dWzw4jTEoU71TVvOdN8MnRpGIhjmoHaLIg1RXitgBYH9C36TNvShqbUj9E/GZ6cGBveXSR1/K6dbbnpo+oE3QszT/zL5BC438dvbv/4LnW0XVNb1TgxcqBPdYPK1JopQvy385oznv2JCM6b7Fcp2aJayU68K4hXtzz53qKykokD5bZZnx7lg2jnAGUsGLCn3Zq2tWHKSVcx8cTObDfDNevAyowgtwdRcqIp8iNJN4g+yv1Rqz0Od5ERPq2EYk5qlQEcON6gLzxwgMTrvSlsEMn596dQhOAZzfjOhJV0MqZ0uSHQk7ohf2El1VyG6viUU35e3sRkOVB5eX2EDIFWjs58xbBId+Tt
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1573497494-11468-1-git-send-email-sunil.kovvuri@gmail.com>
- <1573497494-11468-7-git-send-email-sunil.kovvuri@gmail.com> <20191112.192735.432206863470625660.davem@davemloft.net>
-In-Reply-To: <20191112.192735.432206863470625660.davem@davemloft.net>
-From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Date:   Wed, 13 Nov 2019 12:11:46 +0530
-Message-ID: <CA+sq2Ces4OdUcgEkxMXdmMyrOrDjETmA+U+nvmQtLUpoTj2-nw@mail.gmail.com>
-Subject: Re: [PATCH 06/18] octeontx2-af: Add per CGX port level NIX Rx/Tx counters
-To:     David Miller <davem@davemloft.net>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        Linu Cherian <lcherian@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 799655a4-9902-414d-42c5-08d76804fb18
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Nov 2019 06:44:49.6284
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: s4y4qfIQtdAw/f9JBfdiY3OTK1rRAoojHmlU/CuNQrOc7VAzcIu1C95IkjpLbBILMcZIHvaCjp5SaaZj4Q2GpA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5041
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 13, 2019 at 8:57 AM David Miller <davem@davemloft.net> wrote:
->
-> From: sunil.kovvuri@gmail.com
-> Date: Tue, 12 Nov 2019 00:08:02 +0530
->
-> > diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-> > index 7d7133c..10cd5da 100644
-> > --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-> > +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
->  ...
-> > +static inline int cgxlmac_to_pf(struct rvu *rvu, int cgx_id, int lmac_id)
->
-> I know it's already happening in this file, but do not use the inline keyword
-> in foo.c files please let the compiler decide.
 
-Okay, will fix this in all patches and resubmit.
 
-Thanks,
-Sunil.
+> From: Jason Gunthorpe <jgg@ziepe.ca>
+> Sent: Tuesday, November 12, 2019 7:11 PM
+>=20
+> > A small improvement below, because get_drvdata() and set_drvdata()
+>=20
+> Here it was called 'devdata' not the existing drvdata - so something diff=
+erent, I
+> was confused for a bit too..
+>=20
+Oh ok. but looks buggy in the patch as virtbus_dev doesn't have devdata fie=
+ld.
+Anyways, container_of() is better type checked anyway as below.
+
++#define virtbus_get_devdata(dev)	((dev)->devdata)
+
+> > is supposed to be called by the bus driver, not its creator.  And
+> > below data structure achieve strong type checks, no void* casts, and
+> > exactly achieves the foo_device example.  Isn't it better?
+>=20
+> > mlx5_virtbus_device {
+> > 	struct virtbus_device dev;
+> > 	struct mlx5_core_dev *dev;
+> > };
+>=20
+> This does seem a bit cleaner than using the void * trick (more, OOPy at l=
+east)
+>=20
+Ok. thanks.
