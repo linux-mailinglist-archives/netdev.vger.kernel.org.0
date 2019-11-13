@@ -2,670 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A51B7F9F10
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 01:10:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADDD2F9F31
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 01:21:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727283AbfKMAKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 19:10:19 -0500
-Received: from sonic313-15.consmr.mail.ne1.yahoo.com ([66.163.185.38]:40393
-        "EHLO sonic313-15.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727260AbfKMAKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 19:10:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1573603814; bh=KLbg7/TPn6TCFO2Gn7cUIlNzcOoZhrJusQzMi3c8JUw=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject; b=hQn3rhDNo/KNRm6OWEhvA5g30Nq44f/MEmuy5EGvkAMiY+4xBLX6HAtcLIkRoAk9LAwdo0Msk7FyoC/PM/u/LwWJTEoMS6lWWvLa3Av+lznzED9tEfTt6f85wO9wPOCRrWE5DHADcxjT/TqETTJ0jJJW0UGA+Zly21mSeIb3YR9TLCcDDJuau/rV12FeIeyMef1A8hfp+cPI+0AB8QBU5YK6m3vBIDM4OsuYAvAF7jUNNV+6QiKRC6b81LAULww6TOClVJxhMu9B1sUQLoBjYkvGMQdbzuZX3/+2zhv0fxiK3IgDfOHlzGQIvhLIowBs+Dz33HIelzhv9lzz00OsVw==
-X-YMail-OSG: oH8VXwoVM1kBSJYUi3s_a6bxK34MCVcBfOi9VZJgzvsb1.OLdHszhP5WfJCOIuj
- d2z2jEibRH4DIP5SjFWs92vs4MBb8jHY5BVigDi62p0ztmlpO_afi382hnWoMdWcLJuyG3iPbFz6
- FrtBIy6GrtEGoPSWU0XTP_bOG3ZeJiw.6vQXggKlx4OvFOJsOwKzhxLtNAJFSfuU3Gz.KMBtaqHV
- yxx5wv2MVm65ZJ8bepkBc6L96YegcOuo0I3CtCsq6fAHSiNeomVFXDgzQS2IDD7u0NSkSODugSEy
- EqtNF5vuPzQdvkY_39F0ASZyvF9snflQ0FnFuqiXCHDZTidPCFR6.yE0AckrN5fpbSCNLp0CNB4i
- lX_vSa076kawtwdT2zE350TfxDXuZygI82qewiJogujtR77K8xbc0rymmJ6E3pVQqQsUmItiQd0T
- aO5dUIMCg2K5I6zKen1IARd5kP4abVCoIWRT24e5QatkxdCfZuewtVtdjlx1tRobTQ5V1KnpnWCG
- meV0ZujSS2KIgUgs_mAFEyb_MX9pkW4I5ig5pWO8pHYLaUbAO_mmWxs2I.KsqL5hBWIkjmfS6jY6
- SbIL9XX6EizTLpb0eLWgt3hsRiHVOJERM_EAYfNxiWVLSxvQS7830w6R5syHyLUCFXk2s56A9.bJ
- J4t0b1bMXZw9zjzuMK.ng.tCvJPqjRVDY5jV6FcTpXxOgecPqhEkZ1UpAFY0TXNnAZUVAH5XN2gz
- _Q7CLNYkeZTbHMYG4boJJRTilS.cqIQ7v7w7LZOECIICFoGQdvyg1j8ytJdjoRFEKMJoz1ETLyb.
- haLZsWj_lxaniv7DvNw.XHww0aSM2ul10xeXu3dBh092ujKPM6NULv_OBk2A2aMJwwE9h_lwc1bH
- BBYdYkZLFxJATb4WitxjvEz1W8Q_ekZeXg0qeyNYMpK8pyKL3zf_7LCCrpfR4QpSRvsPAHVcgQHS
- zcuGNWiE4TCWWbj69mclJJQ2oOdYTzdEUGrmmE2ngbtwKqOZJ4VUO1tvjSIbk5hg4K6Iyjxp2yrN
- SL9mYzH..fWx4TY18wiguxBoIdfAq3zU0jRS2nmbgn0.etQTde1d8l8LLWirjIzKKw2otAE8FRqd
- XOzvCifH5CWdjnOS38245LmeyqkQfyB6vZfqhuI2t3H7sGHF54HxKAUuBthiWTJBw2e9DWiSD3tj
- xaW3GatYzjwE3ocpzPbualN1ReNWANNxqV6H089h660hUgqsiE8r6GqNLxm89ee3f0Ziu4Uab5zs
- jsocT7g1OAJnZo6IpYYvSqubwEZaYZsGZ3Iw1RQWA0RIYlEAGrAq1EDrCPK_2CgpJUP6UFoiLltW
- PB2Ga.BoJG0PxM7yokx.GSNqxZA4jaDagbk74uNpRaVTsHW.yt_wxmXv5W6XCccPGMfy3jF7AgDb
- qiOQ1OYioCeDefoSPaHGAf4pkyEVHpILyPBq1_B0J
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ne1.yahoo.com with HTTP; Wed, 13 Nov 2019 00:10:14 +0000
-Received: by smtp428.mail.ne1.yahoo.com (Oath Hermes SMTP Server) with ESMTPA ID 93aa6347d771200c823c70ba6657789f;
-          Wed, 13 Nov 2019 00:10:08 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, keescook@chromium.org,
-        john.johansen@canonical.com, penguin-kernel@i-love.sakura.ne.jp,
-        paul@paul-moore.com, sds@tycho.nsa.gov, linux-audit@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH 15/25] LSM: Use lsmcontext in security_secid_to_secctx
-Date:   Tue, 12 Nov 2019 16:09:03 -0800
-Message-Id: <20191113000913.5414-16-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191113000913.5414-1-casey@schaufler-ca.com>
-References: <20191113000913.5414-1-casey@schaufler-ca.com>
+        id S1726991AbfKMAVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 19:21:05 -0500
+Received: from mail-pg1-f172.google.com ([209.85.215.172]:39464 "EHLO
+        mail-pg1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726910AbfKMAVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 19:21:05 -0500
+Received: by mail-pg1-f172.google.com with SMTP id 29so114924pgm.6;
+        Tue, 12 Nov 2019 16:21:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=PgIcsa8HvQC00/GoMxFhJt5XqCSJnSCWAe8WXUnQOS8=;
+        b=hPfuJHNeT0iGFTzl4tKesXFAutQ265Zgg2z6jzPR0c7QJUZZEOKWZgChUg301NuCx1
+         S2FFoFB2m+oowBlytfBDvFnwLFNWyf1AnnL1GjuEEG9werEcNistl0ukwB5Di5pulZFc
+         NIO3hmlmE9niR7raQKa88rDMauxBCWp3BN4x0h7phrPlij1jGiDH7njPev/iyiAZ65gy
+         VRrBqjjtyuWJ4j7nT+qovOl7puifSDu1JuRpBwXy9hHr+eAb50Fqv/ZfiGag9CuNpWXI
+         ql2pBiHIdm3i2QYQsMd30VWUMePFNTMocC4hYc8iyvsClQVfVvEzAZXUqzk+stzOOEwf
+         1kVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PgIcsa8HvQC00/GoMxFhJt5XqCSJnSCWAe8WXUnQOS8=;
+        b=KQaNfXG7ibIW8uug06/yjkjWx7XrIVGINm9MS5oPPpgTfkP1dPbX0lQIgMAjas+dGy
+         tK5TbQCzfuaDbimKTt1tmbBoc2a4TqQhsNypI/aLaxxLXu59OuMYyOt1Zj47K/0X+iML
+         h/mKja8GJ+fKV6LT3dgs1STsze5/uQhoVcyw+glCbzKsNFHHjmxA1zUEz5yfrJzjvl0f
+         73uq7Y7mqAgGzG+PoD9JNl7LwtoSL8Ln2WsmdZegpwJCuW0tHQaUH5Eu56K0mS5GfxA/
+         gR+N04faiSLrIoDQ70BPEiaEDFYqXgI7u/fOpar1BUugDXg22zaEmYkRusnXGZVMGJDX
+         VOKQ==
+X-Gm-Message-State: APjAAAUoXbebD6c1MdhRp4q8WtdqggQz/tSwu4dRYtZgMf8JTTM10vrY
+        CDdejfYt9itlM2/Tv13ybmc=
+X-Google-Smtp-Source: APXvYqwpVaYDpGBWPRoOBN4/m4W7DOQF24V+1bdjmmnz3tEUl1y7yOny7Bwuums77/1hCFpjZvt6/Q==
+X-Received: by 2002:a17:90a:2385:: with SMTP id g5mr735530pje.117.1573604462979;
+        Tue, 12 Nov 2019 16:21:02 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::1:e001])
+        by smtp.gmail.com with ESMTPSA id m15sm134711pfh.19.2019.11.12.16.21.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Nov 2019 16:21:01 -0800 (PST)
+Date:   Tue, 12 Nov 2019 16:21:00 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: static and dynamic linking. Was: [PATCH bpf-next v3 1/5] bpf:
+ Support chain calling multiple BPF
+Message-ID: <20191113002058.bkch563wm6vhmn3l@ast-mbp.dhcp.thefacebook.com>
+References: <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com>
+ <87r23egdua.fsf@toke.dk>
+ <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+ <874l07fu61.fsf@toke.dk>
+ <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
+ <87eez4odqp.fsf@toke.dk>
+ <20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com>
+ <87h839oymg.fsf@toke.dk>
+ <20191112195223.cp5kcmkko54dsfbg@ast-mbp.dhcp.thefacebook.com>
+ <5dcb3f4e8be4_3202ae6af4ec5bcac@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5dcb3f4e8be4_3202ae6af4ec5bcac@john-XPS-13-9370.notmuch>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace the (secctx,seclen) pointer pair with a single
-lsmcontext pointer to allow return of the LSM identifier
-along with the context and context length. This allows
-security_release_secctx() to know how to release the
-context. Callers have been modified to use or save the
-returned data from the new structure.
+On Tue, Nov 12, 2019 at 03:25:02PM -0800, John Fastabend wrote:
+> 
+> same question as Ed so we can follow up there. How does static linking help
+> verification?
 
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-cc: linux-audit@redhat.com
-cc: netdev@vger.kernel.org
----
- drivers/android/binder.c                | 26 +++++++---------
- include/linux/security.h                |  4 +--
- include/net/scm.h                       | 10 ++-----
- kernel/audit.c                          | 29 +++++++-----------
- kernel/auditsc.c                        | 31 +++++++------------
- net/ipv4/ip_sockglue.c                  |  7 ++---
- net/netfilter/nf_conntrack_netlink.c    | 14 +++++----
- net/netfilter/nf_conntrack_standalone.c |  7 ++---
- net/netfilter/nfnetlink_queue.c         |  5 +++-
- net/netlabel/netlabel_unlabeled.c       | 40 ++++++++-----------------
- net/netlabel/netlabel_user.c            |  7 ++---
- security/security.c                     | 10 +++++--
- 12 files changed, 74 insertions(+), 116 deletions(-)
+pls see my reply to Ed.
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index 49b84b6fafd9..cc81d0f540fd 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -2863,9 +2863,7 @@ static void binder_transaction(struct binder_proc *proc,
- 	binder_size_t last_fixup_min_off = 0;
- 	struct binder_context *context = proc->context;
- 	int t_debug_id = atomic_inc_return(&binder_last_id);
--	char *secctx = NULL;
--	u32 secctx_sz = 0;
--	struct lsmcontext scaff; /* scaffolding */
-+	struct lsmcontext lsmctx = { };
- 
- 	e = binder_transaction_log_add(&binder_transaction_log);
- 	e->debug_id = t_debug_id;
-@@ -3113,14 +3111,14 @@ static void binder_transaction(struct binder_proc *proc,
- 		size_t added_size;
- 
- 		security_task_getsecid(proc->tsk, &blob);
--		ret = security_secid_to_secctx(&blob, &secctx, &secctx_sz);
-+		ret = security_secid_to_secctx(&blob, &lsmctx);
- 		if (ret) {
- 			return_error = BR_FAILED_REPLY;
- 			return_error_param = ret;
- 			return_error_line = __LINE__;
- 			goto err_get_secctx_failed;
- 		}
--		added_size = ALIGN(secctx_sz, sizeof(u64));
-+		added_size = ALIGN(lsmctx.len, sizeof(u64));
- 		extra_buffers_size += added_size;
- 		if (extra_buffers_size < added_size) {
- 			/* integer overflow of extra_buffers_size */
-@@ -3147,24 +3145,22 @@ static void binder_transaction(struct binder_proc *proc,
- 		t->buffer = NULL;
- 		goto err_binder_alloc_buf_failed;
- 	}
--	if (secctx) {
-+	if (lsmctx.context) {
- 		int err;
- 		size_t buf_offset = ALIGN(tr->data_size, sizeof(void *)) +
- 				    ALIGN(tr->offsets_size, sizeof(void *)) +
- 				    ALIGN(extra_buffers_size, sizeof(void *)) -
--				    ALIGN(secctx_sz, sizeof(u64));
-+				    ALIGN(lsmctx.len, sizeof(u64));
- 
- 		t->security_ctx = (uintptr_t)t->buffer->user_data + buf_offset;
- 		err = binder_alloc_copy_to_buffer(&target_proc->alloc,
- 						  t->buffer, buf_offset,
--						  secctx, secctx_sz);
-+						  lsmctx.context, lsmctx.len);
- 		if (err) {
- 			t->security_ctx = 0;
- 			WARN_ON(1);
- 		}
--		lsmcontext_init(&scaff, secctx, secctx_sz, 0);
--		security_release_secctx(&scaff);
--		secctx = NULL;
-+		security_release_secctx(&lsmctx);
- 	}
- 	t->buffer->debug_id = t->debug_id;
- 	t->buffer->transaction = t;
-@@ -3220,7 +3216,7 @@ static void binder_transaction(struct binder_proc *proc,
- 	off_end_offset = off_start_offset + tr->offsets_size;
- 	sg_buf_offset = ALIGN(off_end_offset, sizeof(void *));
- 	sg_buf_end_offset = sg_buf_offset + extra_buffers_size -
--		ALIGN(secctx_sz, sizeof(u64));
-+		ALIGN(lsmctx.len, sizeof(u64));
- 	off_min = 0;
- 	for (buffer_offset = off_start_offset; buffer_offset < off_end_offset;
- 	     buffer_offset += sizeof(binder_size_t)) {
-@@ -3496,10 +3492,8 @@ static void binder_transaction(struct binder_proc *proc,
- 	binder_alloc_free_buf(&target_proc->alloc, t->buffer);
- err_binder_alloc_buf_failed:
- err_bad_extra_size:
--	if (secctx) {
--		lsmcontext_init(&scaff, secctx, secctx_sz, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (lsmctx.context)
-+		security_release_secctx(&lsmctx);
- err_get_secctx_failed:
- 	kfree(tcomplete);
- 	binder_stats_deleted(BINDER_STAT_TRANSACTION_COMPLETE);
-diff --git a/include/linux/security.h b/include/linux/security.h
-index 9bb11d9f1348..e47cef3d62f0 100644
---- a/include/linux/security.h
-+++ b/include/linux/security.h
-@@ -528,7 +528,7 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
- 			 size_t size);
- int security_netlink_send(struct sock *sk, struct sk_buff *skb);
- int security_ismaclabel(const char *name);
--int security_secid_to_secctx(struct lsmblob *blob, char **secdata, u32 *seclen);
-+int security_secid_to_secctx(struct lsmblob *blob, struct lsmcontext *cp);
- int security_secctx_to_secid(const char *secdata, u32 seclen,
- 			     struct lsmblob *blob);
- void security_release_secctx(struct lsmcontext *cp);
-@@ -1333,7 +1333,7 @@ static inline int security_ismaclabel(const char *name)
- }
- 
- static inline int security_secid_to_secctx(struct lsmblob *blob,
--					   char **secdata, u32 *seclen)
-+					   struct lsmcontext *cp)
- {
- 	return -EOPNOTSUPP;
- }
-diff --git a/include/net/scm.h b/include/net/scm.h
-index 30ba801c91bd..4a6ad8caf423 100644
---- a/include/net/scm.h
-+++ b/include/net/scm.h
-@@ -93,18 +93,14 @@ static __inline__ int scm_send(struct socket *sock, struct msghdr *msg,
- static inline void scm_passec(struct socket *sock, struct msghdr *msg, struct scm_cookie *scm)
- {
- 	struct lsmcontext context;
--	char *secdata;
--	u32 seclen;
- 	int err;
- 
- 	if (test_bit(SOCK_PASSSEC, &sock->flags)) {
--		err = security_secid_to_secctx(&scm->lsmblob, &secdata,
--					       &seclen);
-+		err = security_secid_to_secctx(&scm->lsmblob, &context);
- 
- 		if (!err) {
--			put_cmsg(msg, SOL_SOCKET, SCM_SECURITY, seclen, secdata);
--			/*scaffolding*/
--			lsmcontext_init(&context, secdata, seclen, 0);
-+			put_cmsg(msg, SOL_SOCKET, SCM_SECURITY,
-+				 context.len, context.context);
- 			security_release_secctx(&context);
- 		}
- 	}
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 35970e7191b6..cd0024c89807 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -1178,9 +1178,8 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 	struct audit_buffer	*ab;
- 	u16			msg_type = nlh->nlmsg_type;
- 	struct audit_sig_info   *sig_data;
--	char			*ctx = NULL;
- 	u32			len;
--	struct lsmcontext	scaff; /* scaffolding */
-+	struct lsmcontext	context = { };
- 
- 	err = audit_netlink_ok(skb, msg_type);
- 	if (err)
-@@ -1418,25 +1417,22 @@ static int audit_receive_msg(struct sk_buff *skb, struct nlmsghdr *nlh)
- 	case AUDIT_SIGNAL_INFO:
- 		len = 0;
- 		if (lsmblob_is_set(&audit_sig_lsm)) {
--			err = security_secid_to_secctx(&audit_sig_lsm, &ctx,
--						       &len);
-+			err = security_secid_to_secctx(&audit_sig_lsm,
-+						       &context);
- 			if (err)
- 				return err;
- 		}
- 		sig_data = kmalloc(sizeof(*sig_data) + len, GFP_KERNEL);
- 		if (!sig_data) {
--			if (lsmblob_is_set(&audit_sig_lsm)) {
--				lsmcontext_init(&scaff, ctx, len, 0);
--				security_release_secctx(&scaff);
--			}
-+			if (lsmblob_is_set(&audit_sig_lsm))
-+				security_release_secctx(&context);
- 			return -ENOMEM;
- 		}
- 		sig_data->uid = from_kuid(&init_user_ns, audit_sig_uid);
- 		sig_data->pid = audit_sig_pid;
- 		if (lsmblob_is_set(&audit_sig_lsm)) {
--			memcpy(sig_data->ctx, ctx, len);
--			lsmcontext_init(&scaff, ctx, len, 0);
--			security_release_secctx(&scaff);
-+			memcpy(sig_data->ctx, context.context, context.len);
-+			security_release_secctx(&context);
- 		}
- 		audit_send_reply(skb, seq, AUDIT_SIGNAL_INFO, 0, 0,
- 				 sig_data, sizeof(*sig_data) + len);
-@@ -2061,26 +2057,23 @@ void audit_log_key(struct audit_buffer *ab, char *key)
- 
- int audit_log_task_context(struct audit_buffer *ab)
- {
--	char *ctx = NULL;
--	unsigned len;
- 	int error;
- 	struct lsmblob blob;
--	struct lsmcontext scaff; /* scaffolding */
-+	struct lsmcontext context;
- 
- 	security_task_getsecid(current, &blob);
- 	if (!lsmblob_is_set(&blob))
- 		return 0;
- 
--	error = security_secid_to_secctx(&blob, &ctx, &len);
-+	error = security_secid_to_secctx(&blob, &context);
- 	if (error) {
- 		if (error != -EINVAL)
- 			goto error_path;
- 		return 0;
- 	}
- 
--	audit_log_format(ab, " subj=%s", ctx);
--	lsmcontext_init(&scaff, ctx, len, 0);
--	security_release_secctx(&scaff);
-+	audit_log_format(ab, " subj=%s", context.context);
-+	security_release_secctx(&context);
- 	return 0;
- 
- error_path:
-diff --git a/kernel/auditsc.c b/kernel/auditsc.c
-index 8790e7aafa7d..6d273183dd87 100644
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -962,9 +962,7 @@ static int audit_log_pid_context(struct audit_context *context, pid_t pid,
- 				 struct lsmblob *blob, char *comm)
- {
- 	struct audit_buffer *ab;
--	struct lsmcontext lsmcxt;
--	char *ctx = NULL;
--	u32 len;
-+	struct lsmcontext lsmctx;
- 	int rc = 0;
- 
- 	ab = audit_log_start(context, GFP_KERNEL, AUDIT_OBJ_PID);
-@@ -975,13 +973,12 @@ static int audit_log_pid_context(struct audit_context *context, pid_t pid,
- 			 from_kuid(&init_user_ns, auid),
- 			 from_kuid(&init_user_ns, uid), sessionid);
- 	if (lsmblob_is_set(blob)) {
--		if (security_secid_to_secctx(blob, &ctx, &len)) {
-+		if (security_secid_to_secctx(blob, &lsmctx)) {
- 			audit_log_format(ab, " obj=(none)");
- 			rc = 1;
- 		} else {
--			audit_log_format(ab, " obj=%s", ctx);
--			lsmcontext_init(&lsmcxt, ctx, len, 0); /*scaffolding*/
--			security_release_secctx(&lsmcxt);
-+			audit_log_format(ab, " obj=%s", lsmctx.context);
-+			security_release_secctx(&lsmctx);
- 		}
- 	}
- 	audit_log_format(ab, " ocomm=");
-@@ -1194,7 +1191,6 @@ static void audit_log_fcaps(struct audit_buffer *ab, struct audit_names *name)
- 
- static void show_special(struct audit_context *context, int *call_panic)
- {
--	struct lsmcontext lsmcxt;
- 	struct audit_buffer *ab;
- 	int i;
- 
-@@ -1218,17 +1214,15 @@ static void show_special(struct audit_context *context, int *call_panic)
- 				 from_kgid(&init_user_ns, context->ipc.gid),
- 				 context->ipc.mode);
- 		if (osid) {
--			char *ctx = NULL;
--			u32 len;
-+			struct lsmcontext lsmcxt;
- 			struct lsmblob blob;
- 
- 			lsmblob_init(&blob, osid);
--			if (security_secid_to_secctx(&blob, &ctx, &len)) {
-+			if (security_secid_to_secctx(&blob, &lsmcxt)) {
- 				audit_log_format(ab, " osid=%u", osid);
- 				*call_panic = 1;
- 			} else {
--				audit_log_format(ab, " obj=%s", ctx);
--				lsmcontext_init(&lsmcxt, ctx, len, 0);
-+				audit_log_format(ab, " obj=%s", lsmcxt.context);
- 				security_release_secctx(&lsmcxt);
- 			}
- 		}
-@@ -1372,20 +1366,17 @@ static void audit_log_name(struct audit_context *context, struct audit_names *n,
- 				 MAJOR(n->rdev),
- 				 MINOR(n->rdev));
- 	if (n->osid != 0) {
--		char *ctx = NULL;
--		u32 len;
- 		struct lsmblob blob;
--		struct lsmcontext lsmcxt;
-+		struct lsmcontext lsmctx;
- 
- 		lsmblob_init(&blob, n->osid);
--		if (security_secid_to_secctx(&blob, &ctx, &len)) {
-+		if (security_secid_to_secctx(&blob, &lsmctx)) {
- 			audit_log_format(ab, " osid=%u", n->osid);
- 			if (call_panic)
- 				*call_panic = 2;
- 		} else {
--			audit_log_format(ab, " obj=%s", ctx);
--			lsmcontext_init(&lsmcxt, ctx, len, 0); /* scaffolding */
--			security_release_secctx(&lsmcxt);
-+			audit_log_format(ab, " obj=%s", lsmctx.context);
-+			security_release_secctx(&lsmctx);
- 		}
- 	}
- 
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 96d56a30ecca..27af7a6b8780 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -132,20 +132,17 @@ static void ip_cmsg_recv_security(struct msghdr *msg, struct sk_buff *skb)
- {
- 	struct lsmcontext context;
- 	struct lsmblob lb;
--	char *secdata;
--	u32 seclen;
- 	int err;
- 
- 	err = security_socket_getpeersec_dgram(NULL, skb, &lb);
- 	if (err)
- 		return;
- 
--	err = security_secid_to_secctx(&lb, &secdata, &seclen);
-+	err = security_secid_to_secctx(&lb, &context);
- 	if (err)
- 		return;
- 
--	put_cmsg(msg, SOL_IP, SCM_SECURITY, seclen, secdata);
--	lsmcontext_init(&context, secdata, seclen, 0); /* scaffolding */
-+	put_cmsg(msg, SOL_IP, SCM_SECURITY, context.len, context.context);
- 	security_release_secctx(&context);
- }
- 
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 78791e015d8b..7c8a7edac36d 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -329,13 +329,12 @@ static int ctnetlink_dump_mark(struct sk_buff *skb, const struct nf_conn *ct)
- static int ctnetlink_dump_secctx(struct sk_buff *skb, const struct nf_conn *ct)
- {
- 	struct nlattr *nest_secctx;
--	int len, ret;
--	char *secctx;
-+	int ret;
- 	struct lsmblob blob;
- 	struct lsmcontext context;
- 
- 	lsmblob_init(&blob, ct->secmark);
--	ret = security_secid_to_secctx(&blob, &secctx, &len);
-+	ret = security_secid_to_secctx(&blob, &context);
- 	if (ret)
- 		return 0;
- 
-@@ -344,13 +343,12 @@ static int ctnetlink_dump_secctx(struct sk_buff *skb, const struct nf_conn *ct)
- 	if (!nest_secctx)
- 		goto nla_put_failure;
- 
--	if (nla_put_string(skb, CTA_SECCTX_NAME, secctx))
-+	if (nla_put_string(skb, CTA_SECCTX_NAME, context.context))
- 		goto nla_put_failure;
- 	nla_nest_end(skb, nest_secctx);
- 
- 	ret = 0;
- nla_put_failure:
--	lsmcontext_init(&context, secctx, len, 0); /* scaffolding */
- 	security_release_secctx(&context);
- 	return ret;
- }
-@@ -626,12 +624,16 @@ static inline int ctnetlink_secctx_size(const struct nf_conn *ct)
- #ifdef CONFIG_NF_CONNTRACK_SECMARK
- 	int len, ret;
- 	struct lsmblob blob;
-+	struct lsmcontext context;
- 
- 	lsmblob_init(&blob, ct->secmark);
--	ret = security_secid_to_secctx(&blob, NULL, &len);
-+	ret = security_secid_to_secctx(&blob, &context);
- 	if (ret)
- 		return 0;
- 
-+	len = context.len;
-+	security_release_secctx(&context);
-+
- 	return nla_total_size(0) /* CTA_SECCTX */
- 	       + nla_total_size(sizeof(char) * len); /* CTA_SECCTX_NAME */
- #else
-diff --git a/net/netfilter/nf_conntrack_standalone.c b/net/netfilter/nf_conntrack_standalone.c
-index 8601fcb99f7a..8969754d7fe9 100644
---- a/net/netfilter/nf_conntrack_standalone.c
-+++ b/net/netfilter/nf_conntrack_standalone.c
-@@ -173,19 +173,16 @@ static void ct_seq_stop(struct seq_file *s, void *v)
- static void ct_show_secctx(struct seq_file *s, const struct nf_conn *ct)
- {
- 	int ret;
--	u32 len;
--	char *secctx;
- 	struct lsmblob blob;
- 	struct lsmcontext context;
- 
- 	lsmblob_init(&blob, ct->secmark);
--	ret = security_secid_to_secctx(&blob, &secctx, &len);
-+	ret = security_secid_to_secctx(&blob, &context);
- 	if (ret)
- 		return;
- 
--	seq_printf(s, "secctx=%s ", secctx);
-+	seq_printf(s, "secctx=%s ", context.context);
- 
--	lsmcontext_init(&context, secctx, len, 0); /* scaffolding */
- 	security_release_secctx(&context);
- }
- #else
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index cc3ef03ee198..2d6668fd026c 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -306,6 +306,7 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
- 	u32 seclen = 0;
- #if IS_ENABLED(CONFIG_NETWORK_SECMARK)
- 	struct lsmblob blob;
-+	struct lsmcontext context = { };
- 
- 	if (!skb || !sk_fullsock(skb->sk))
- 		return 0;
-@@ -314,10 +315,12 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
- 
- 	if (skb->secmark) {
- 		lsmblob_init(&blob, skb->secmark);
--		security_secid_to_secctx(&blob, secdata, &seclen);
-+		security_secid_to_secctx(&blob, &context);
-+		*secdata = context.context;
- 	}
- 
- 	read_unlock_bh(&skb->sk->sk_callback_lock);
-+	seclen = context.len;
- #endif
- 	return seclen;
- }
-diff --git a/net/netlabel/netlabel_unlabeled.c b/net/netlabel/netlabel_unlabeled.c
-index 288c005b44c7..c03fe9a4f7b9 100644
---- a/net/netlabel/netlabel_unlabeled.c
-+++ b/net/netlabel/netlabel_unlabeled.c
-@@ -374,8 +374,6 @@ int netlbl_unlhsh_add(struct net *net,
- 	struct netlbl_unlhsh_iface *iface;
- 	struct audit_buffer *audit_buf = NULL;
- 	struct lsmcontext context;
--	char *secctx = NULL;
--	u32 secctx_len;
- 	struct lsmblob blob;
- 
- 	if (addr_len != sizeof(struct in_addr) &&
-@@ -440,12 +438,9 @@ int netlbl_unlhsh_add(struct net *net,
- 	rcu_read_unlock();
- 	if (audit_buf != NULL) {
- 		lsmblob_init(&blob, secid);
--		if (security_secid_to_secctx(&blob,
--					     &secctx,
--					     &secctx_len) == 0) {
--			audit_log_format(audit_buf, " sec_obj=%s", secctx);
--			/* scaffolding */
--			lsmcontext_init(&context, secctx, secctx_len, 0);
-+		if (security_secid_to_secctx(&blob, &context) == 0) {
-+			audit_log_format(audit_buf, " sec_obj=%s",
-+					 context.context);
- 			security_release_secctx(&context);
- 		}
- 		audit_log_format(audit_buf, " res=%u", ret_val == 0 ? 1 : 0);
-@@ -478,8 +473,6 @@ static int netlbl_unlhsh_remove_addr4(struct net *net,
- 	struct audit_buffer *audit_buf;
- 	struct net_device *dev;
- 	struct lsmcontext context;
--	char *secctx;
--	u32 secctx_len;
- 	struct lsmblob blob;
- 
- 	spin_lock(&netlbl_unlhsh_lock);
-@@ -503,11 +496,9 @@ static int netlbl_unlhsh_remove_addr4(struct net *net,
- 		if (entry != NULL)
- 			lsmblob_init(&blob, entry->secid);
- 		if (entry != NULL &&
--		    security_secid_to_secctx(&blob,
--					     &secctx, &secctx_len) == 0) {
--			audit_log_format(audit_buf, " sec_obj=%s", secctx);
--			/* scaffolding */
--			lsmcontext_init(&context, secctx, secctx_len, 0);
-+		    security_secid_to_secctx(&blob, &context) == 0) {
-+			audit_log_format(audit_buf, " sec_obj=%s",
-+					 context.context);
- 			security_release_secctx(&context);
- 		}
- 		audit_log_format(audit_buf, " res=%u", entry != NULL ? 1 : 0);
-@@ -546,8 +537,6 @@ static int netlbl_unlhsh_remove_addr6(struct net *net,
- 	struct audit_buffer *audit_buf;
- 	struct net_device *dev;
- 	struct lsmcontext context;
--	char *secctx;
--	u32 secctx_len;
- 	struct lsmblob blob;
- 
- 	spin_lock(&netlbl_unlhsh_lock);
-@@ -570,10 +559,9 @@ static int netlbl_unlhsh_remove_addr6(struct net *net,
- 		if (entry != NULL)
- 			lsmblob_init(&blob, entry->secid);
- 		if (entry != NULL &&
--		    security_secid_to_secctx(&blob,
--					     &secctx, &secctx_len) == 0) {
--			audit_log_format(audit_buf, " sec_obj=%s", secctx);
--			lsmcontext_init(&context, secctx, secctx_len, 0);
-+		    security_secid_to_secctx(&blob, &context) == 0) {
-+			audit_log_format(audit_buf, " sec_obj=%s",
-+					 context.context);
- 			security_release_secctx(&context);
- 		}
- 		audit_log_format(audit_buf, " res=%u", entry != NULL ? 1 : 0);
-@@ -1091,8 +1079,6 @@ static int netlbl_unlabel_staticlist_gen(u32 cmd,
- 	struct lsmcontext context;
- 	void *data;
- 	u32 secid;
--	char *secctx;
--	u32 secctx_len;
- 	struct lsmblob blob;
- 
- 	data = genlmsg_put(cb_arg->skb, NETLINK_CB(cb_arg->nl_cb->skb).portid,
-@@ -1149,15 +1135,13 @@ static int netlbl_unlabel_staticlist_gen(u32 cmd,
- 	}
- 
- 	lsmblob_init(&blob, secid);
--	ret_val = security_secid_to_secctx(&blob, &secctx, &secctx_len);
-+	ret_val = security_secid_to_secctx(&blob, &context);
- 	if (ret_val != 0)
- 		goto list_cb_failure;
- 	ret_val = nla_put(cb_arg->skb,
- 			  NLBL_UNLABEL_A_SECCTX,
--			  secctx_len,
--			  secctx);
--	/* scaffolding */
--	lsmcontext_init(&context, secctx, secctx_len, 0);
-+			  context.len,
-+			  context.context);
- 	security_release_secctx(&context);
- 	if (ret_val != 0)
- 		goto list_cb_failure;
-diff --git a/net/netlabel/netlabel_user.c b/net/netlabel/netlabel_user.c
-index ef139d8ae7cd..951ba0639d20 100644
---- a/net/netlabel/netlabel_user.c
-+++ b/net/netlabel/netlabel_user.c
-@@ -85,8 +85,6 @@ struct audit_buffer *netlbl_audit_start_common(int type,
- {
- 	struct audit_buffer *audit_buf;
- 	struct lsmcontext context;
--	char *secctx;
--	u32 secctx_len;
- 	struct lsmblob blob;
- 
- 	if (audit_enabled == AUDIT_OFF)
-@@ -102,9 +100,8 @@ struct audit_buffer *netlbl_audit_start_common(int type,
- 
- 	lsmblob_init(&blob, audit_info->secid);
- 	if (audit_info->secid != 0 &&
--	    security_secid_to_secctx(&blob, &secctx, &secctx_len) == 0) {
--		audit_log_format(audit_buf, " subj=%s", secctx);
--		lsmcontext_init(&context, secctx, secctx_len, 0);/*scaffolding*/
-+	    security_secid_to_secctx(&blob, &context) == 0) {
-+		audit_log_format(audit_buf, " subj=%s", context.context);
- 		security_release_secctx(&context);
- 	}
- 
-diff --git a/security/security.c b/security/security.c
-index c05ef9d0c8ed..618d4f90936b 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -2109,18 +2109,22 @@ int security_ismaclabel(const char *name)
- }
- EXPORT_SYMBOL(security_ismaclabel);
- 
--int security_secid_to_secctx(struct lsmblob *blob, char **secdata, u32 *seclen)
-+int security_secid_to_secctx(struct lsmblob *blob, struct lsmcontext *cp)
- {
- 	struct security_hook_list *hp;
- 	int display = lsm_task_display(current);
- 
-+	memset(cp, 0, sizeof(*cp));
-+
- 	hlist_for_each_entry(hp, &security_hook_heads.secid_to_secctx, list) {
- 		if (WARN_ON(hp->lsmid->slot < 0 || hp->lsmid->slot >= lsm_slot))
- 			continue;
--		if (display == LSMBLOB_INVALID || display == hp->lsmid->slot)
-+		if (display == LSMBLOB_INVALID || display == hp->lsmid->slot) {
-+			cp->slot = hp->lsmid->slot;
- 			return hp->hook.secid_to_secctx(
- 					blob->secid[hp->lsmid->slot],
--					secdata, seclen);
-+					&cp->context, &cp->len);
-+		}
- 	}
- 	return 0;
- }
--- 
-2.20.1
+> > together. The only visible difference dynamic vs static should be that dynamic
+> > linking links to already loaded programs that could be executing whereas static
+> > counterpart links a set of .o. At that point libbpf may see that some 'extern
+> > int prog(...);' referenced in one .o cannot be resolved from another .o. In
+> > such case libbpf will try to link it dynamically with progs running in the
+> > kernel. We haven't yet defined what 'extern' keyword in the program means.
+> > There are a preliminary patches for llvm to support extern variables. Extern
+> > functions are not done yet. We have to walk before we run. With dynamic linking
+> > I'm proposing an api for the kernel that I think will work regardless of how
+> > libbpf and llvm decide to define the meaning of 'extern'.
+> > There are two parts to dynamic linking:
+> > 1. replace a prog or subprog in the kernel with new prog.
+> > 2. from new prog call a prog/subprog that is already loaded.
+> > 
+> > First case is useful to chain multiple progs together. Second is needed to
+> > reuse already present progs instead of loading duplicated coode. Imagine the
+> > following scenario:
+> > subprog1:
+> >   int bpf_packet_parser(struct xdp_md *ctx, struct flow_keys *key)
+> >   { /* parses the packet and populates flow_keys */ }
+> > subprog2:
+> >   int __weak xdp_firewall_placeholder(struct xdp_md *ctx)
+> >   { return XDP_PASS; }
+> > main prog:
+> >   int rootlet(struct xdp_md *ctx)
+> >   { ret = xdp_firewall_placeholder(ctx);
+> >     switch (ret) { case XDP_PASS: break;...
+> >   }
+> > 
+> > New xdp program might want to replace xdp_firewall_placeholder and it might
+> > also want to reuse existing code. It would want to call bpf_packet_parser()
+> > subprog. I'm proposing that a pair of (prog_fd, btf_id of subprog) to be used
+> > in both cases. To replace the program the new prog needs to specify (prog_fd of
+> > rootlet, btf_id of xdp_firewall_placeholder) at load time via
+> > attr->attach_prog_fd, attr->attach_btf_id fields that I'm adding as part of
+> > trampoline patches. To call bpf_packet_parser() from the new prog the call
+> > instruction inside the new prog needs to be annotated with (prog_fd of rootlet,
+> > btf_id of bpf_packet_parser). That is similar to how the maps are referenced
+> > from the program. I think such interface is nicely symmetrical and should work
+> > regardless of how libbpf decides to find 'foo' after seeing 'extern int foo()'.
+> > Similarly static linking should be able to do exactly the same linking, but
+> > completely in user space. I think libbpf should be able to statically link
+> > new_prog.o that calls bpf_packet_parser() with rootlet.o and adjust a call in
+> > rootlet.o into new xdp_firewall_placeholder. Conceptually both static and
+> > dynamic linking for BPF programs should look very similar to how traditional C
+> > programs do it. libbpf will do the magic of specifying (prog_fd, btf_id) in
+> > case dynamic is necessary. Otherwise libbpf will do static linking and adjust
+> > offsets in call instructions. libbpf is already doing call insn adjustment for
+> > subprograms within single .o. Support for static linking in libbpf will be
+> > straightforward to do as soon as we define the meaning of 'extern' and add llvm
+> > support.
+> > 
+> > On the kernel side the first part of dynamic linking (replacing the prog or
+> > subprog) is a relativly simple follow up to trampoline patches that build most
+> > of type checking and connecting apis. The second part of dynamic linking is a
+> > bit more work. Every subprog and prog need to be verified independently
+> > otherwise the whole thing won't scale beyond simple programs. I would like to
+> > build a consensus on the long term plan for dynamic and static linking before
+> > implementing the first step.
+> 
+> Another use case for dynamic linking (long-term) is to reduce verification
+> time. By and large many of the programs we (Cilium) load have large
+> blocks of repeated code. Currently, verification happens on the entire program
+> but would be great to front-load the verification by pre-loading a set of
+> library helpers that are validated at load time and generate a call contract
+> or set of preconditions needed to satisfy verification and set of postconditions
+> upon return. Then when we attach a program (kprobe or networking) the latency
+> can be reduced significantly. I think it likely looks similar (the same?) as
+> below with a slightly different flow from (2.).
+> 
+>    // first load shared libraries
+>    obj = bpf_object__open("fw2.o", attr)
+>    bpf_object__load(obj); // load and verify object could pin/unpin as well
+>   
+>    // inform open hook of symbols with attributes
+>    attr.attach_subprog[0] = libbpf_find__obj_btf_id("foo", obj);
+>    attr.attach_subprog[1] = libbpf_find__obj_btf_id("bar", obj);
+> 
+>    // open and load main program which will now use "foo", "bar"
+>    main = bpf_object__open("rootlet.o", attr)
+>    bpf_object__load(main)
+
+That sounds very similar to my 2nd case of dynamic linking above, no?
+Except that you propose to make it explicit by populating attach_subprog[0|1] ?
+I think the amount of explicit libbpf api calls should be brought to minimum.
+The .c program should have enough information about what it wants to link to
+and what it exposes to outside. imo standard C style should work. If BPF
+function is 'static' it cannot be used as helper by other BPF program. If it's
+non-static (global) then it can be. The main headache to resolve is the scope
+of search for libbpf to do. I think from libbpf api side it should look like:
+   obj = bpf_object__open("helpers.o", attr);
+   bpf_object__load(obj);
+   // kernel loads and verifies all funcs in helpers.o. They are not attached
+   // to anything yet.
+
+   main = bpf_object__open("main.o", attr);
+   // libbpf needs to figure out what main.o needs to link to.
+   // If libbpf can do static linking it should, otherwise it will link
+   // into funcs that were loaded as part of helpers.o
+   // libbpf will adjust call insns in main.o with
+   // (prog_fd_of_helpers, btf_id_of_that_helper_func)
+   bpf_object__load(main);
+
+
+> > Not sure I follow. Both fw1.o and fw2.o will have their own prog ids.
+> > fw1_prog->aux->linked_prog == rootlet_prog
+> > fw2_prog->aux->linked_prog == rootlet_prog
+> > Unloading and detaching fw1.o will make kernel to switch back to placeholder
+> > subprog in roolet_prog. I believe roolet_prog should not keep a list of progs
+> > that attached to it (or replaced its subprogs) to avoid circular dependency.
+> > Due to that detaching roolet_prog from netdev will stop the flow of packets
+> > into fw1.o, but refcnt of rootlet_prog will not go to zero, so it will stay in
+> > memory until both fw1.o and fw2.o detach from rootlet.o.
+> 
+> I would expect detaching rootlet prog from netdev to _detach_ the rootlet
+> program. Because it happens to be linked to two other object shouldn't
+> impact this IMO.
+> 
+> The first transition is clear,
+> 
+>   detaching fw1.o -> rootlet runs placeholder
+> 
+> But second case
+> 
+>   detach rootlet -> ???
+> 
+> Both fw1.o and fw2.o in this case are object files with their own lifetime
+> which can be pinned/unpinned, etc. I see it makes the implementation a bit
+> more difficult but should be doable.
+
+detach rootlet - is simply detaching rootlet. It's no longer executing.
+Hence fw1 doesn't see packets anymore. Both rootlet.o and fw1.o stay
+in kernel memory, because libxdp.so didn't unload fw1.o yet and fw1
+keeps rootlet.o alive in memory, because it tracks it as dependency.
+When refcnt drops to zero everywhere all of them gets unloaded and memory freed.
+Same thing when fw1.o and fw2.o did bpf_prog_get(rootlet.o) once for each.
+
+> > > What about attaching a third program? Would that work by recursion (as
+> > > above, but with the old proglet as old_fd), or should the library build
+> > > a whole new sequence from the component programs?
+> > 
+> > This choice is up to libxdp.so. It can have a number of placeholders
+> > ready to be replaced by new progs. Or it can re-generate rootlet.o
+> > every time new fwX.o comes along. Short term I would start development
+> > with auto-generated roolet.o and static linking done by libbpf
+> > while the policy and roolet are done by libxdp.so, since this work
+> > doesn't depend on any kernel changes. Long term auto-generation
+> > can stay in libxdp.so if it turns out to be sufficient.
+> 
+> Agreed. Otherwise who/what would have enough information to figure this
+> out. But we should allow for multiple levels of dynamic linking. Example:
+> 
+>    // first load shared libraries
+>    obj1 = bpf_object__open("shared1.o", attr)
+>    bpf_object__load(obj1); // load and verify object could pin/unpin as well
+> 
+>    // second shared lib using first libs
+>    attr.attach_subprog[0] = libbpf_find__obj_btf_id("foo", obj1);
+
+multi level certainly should be possible.
+I think 'multi level' is probably not entirely accurate name.
+It's the graph of progs and funcs that exists in the kernel and on disk
+that libbpf needs to link to.
+It can have any number of dependencies and levels.
+Hence my proposal above to keep only uni-directional dependency
+when replacing/attaching.
+
+> If you unload obj3 it will have to walk the chain of objects and dereference
+> them. Is this the circular dependency?
+
+By circular dependency I meant the case of fw1 and fw2 attaching to rootlet.
+I'm proposing that fw1 remembers that it attached to rootlet, and fw2 remembers
+that it attached to the same rootlet, but rootlet doesn't track what attached to
+it. Otherwise there are bi-directional links and link-lists everywhere.
 
