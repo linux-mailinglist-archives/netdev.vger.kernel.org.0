@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 381BBFAEBA
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:43:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9217FAED5
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 11:49:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727603AbfKMKnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 05:43:17 -0500
-Received: from mx2.suse.de ([195.135.220.15]:58618 "EHLO mx1.suse.de"
+        id S1727641AbfKMKt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 05:49:26 -0500
+Received: from mx2.suse.de ([195.135.220.15]:33058 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727113AbfKMKnQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 05:43:16 -0500
+        id S1726138AbfKMKtZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Nov 2019 05:49:25 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8E4ECB2D5;
-        Wed, 13 Nov 2019 10:43:11 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id B5441B20D;
+        Wed, 13 Nov 2019 10:49:20 +0000 (UTC)
 Received: by quack2.suse.cz (Postfix, from userid 1000)
-        id 7E7151E1498; Wed, 13 Nov 2019 11:43:08 +0100 (CET)
-Date:   Wed, 13 Nov 2019 11:43:08 +0100
+        id 1B6A71E1498; Wed, 13 Nov 2019 11:49:20 +0100 (CET)
+Date:   Wed, 13 Nov 2019 11:49:20 +0100
 From:   Jan Kara <jack@suse.cz>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
@@ -48,150 +48,197 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v4 09/23] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-Message-ID: <20191113104308.GE6367@quack2.suse.cz>
+        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 04/23] mm: devmap: refactor 1-based refcounting for
+ ZONE_DEVICE pages
+Message-ID: <20191113104920.GF6367@quack2.suse.cz>
 References: <20191113042710.3997854-1-jhubbard@nvidia.com>
- <20191113042710.3997854-10-jhubbard@nvidia.com>
+ <20191113042710.3997854-5-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20191113042710.3997854-10-jhubbard@nvidia.com>
+In-Reply-To: <20191113042710.3997854-5-jhubbard@nvidia.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 12-11-19 20:26:56, John Hubbard wrote:
-> Introduce pin_user_pages*() variations of get_user_pages*() calls,
-> and also pin_longterm_pages*() variations.
+On Tue 12-11-19 20:26:51, John Hubbard wrote:
+> An upcoming patch changes and complicates the refcounting and
+> especially the "put page" aspects of it. In order to keep
+> everything clean, refactor the devmap page release routines:
 > 
-> These variants all set FOLL_PIN, which is also introduced, and
-> thoroughly documented.
+> * Rename put_devmap_managed_page() to page_is_devmap_managed(),
+>   and limit the functionality to "read only": return a bool,
+>   with no side effects.
 > 
-> The pin_longterm*() variants also set FOLL_LONGTERM, in addition
-> to FOLL_PIN:
+> * Add a new routine, put_devmap_managed_page(), to handle checking
+>   what kind of page it is, and what kind of refcount handling it
+>   requires.
 > 
->     pin_user_pages()
->     pin_user_pages_remote()
->     pin_user_pages_fast()
+> * Rename __put_devmap_managed_page() to free_devmap_managed_page(),
+>   and limit the functionality to unconditionally freeing a devmap
+>   page.
 > 
->     pin_longterm_pages()
->     pin_longterm_pages_remote()
->     pin_longterm_pages_fast()
+> This is originally based on a separate patch by Ira Weiny, which
+> applied to an early version of the put_user_page() experiments.
+> Since then, Jérôme Glisse suggested the refactoring described above.
 > 
-> All pages that are pinned via the above calls, must be unpinned via
-> put_user_page().
-> 
-> The underlying rules are:
-> 
-> * These are gup-internal flags, so the call sites should not directly
-> set FOLL_PIN nor FOLL_LONGTERM. That behavior is enforced with
-> assertions, for the new FOLL_PIN flag. However, for the pre-existing
-> FOLL_LONGTERM flag, which has some call sites that still directly
-> set FOLL_LONGTERM, there is no assertion yet.
-> 
-> * Call sites that want to indicate that they are going to do DirectIO
->   ("DIO") or something with similar characteristics, should call a
->   get_user_pages()-like wrapper call that sets FOLL_PIN. These wrappers
->   will:
->         * Start with "pin_user_pages" instead of "get_user_pages". That
->           makes it easy to find and audit the call sites.
->         * Set FOLL_PIN
-> 
-> * For pages that are received via FOLL_PIN, those pages must be returned
->   via put_user_page().
-> 
-> Thanks to Jan Kara and Vlastimil Babka for explaining the 4 cases
-> in this documentation. (I've reworded it and expanded upon it.)
-> 
-> Reviewed-by: Mike Rapoport <rppt@linux.ibm.com>  # Documentation
-> Reviewed-by: Jérôme Glisse <jglisse@redhat.com>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: Ira Weiny <ira.weiny@intel.com>
+> Suggested-by: Jérôme Glisse <jglisse@redhat.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 
-Thanks for the documentation. It looks great!
+Looks good to me. You can add:
 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 83702b2e86c8..4409e84dff51 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -201,6 +201,10 @@ static struct page *follow_page_pte(struct vm_area_struct *vma,
->  	spinlock_t *ptl;
->  	pte_t *ptep, pte;
->  
-> +	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
-> +	if (WARN_ON_ONCE((flags & (FOLL_PIN | FOLL_GET)) ==
-> +			 (FOLL_PIN | FOLL_GET)))
-> +		return ERR_PTR(-EINVAL);
->  retry:
->  	if (unlikely(pmd_bad(*pmd)))
->  		return no_page_table(vma, flags);
-
-How does FOLL_PIN result in grabbing (at least normal, for now) page reference?
-I didn't find that anywhere in this patch but it is a prerequisite to
-converting any user to pin_user_pages() interface, right?
-
-> +/**
-> + * pin_user_pages_fast() - pin user pages in memory without taking locks
-> + *
-> + * Nearly the same as get_user_pages_fast(), except that FOLL_PIN is set. See
-> + * get_user_pages_fast() for documentation on the function arguments, because
-> + * the arguments here are identical.
-> + *
-> + * FOLL_PIN means that the pages must be released via put_user_page(). Please
-> + * see Documentation/vm/pin_user_pages.rst for further details.
-> + *
-> + * This is intended for Case 1 (DIO) in Documentation/vm/pin_user_pages.rst. It
-> + * is NOT intended for Case 2 (RDMA: long-term pins).
-> + */
-> +int pin_user_pages_fast(unsigned long start, int nr_pages,
-> +			unsigned int gup_flags, struct page **pages)
-> +{
-> +	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
-> +	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
-> +		return -EINVAL;
-> +
-> +	gup_flags |= FOLL_PIN;
-> +	return internal_get_user_pages_fast(start, nr_pages, gup_flags, pages);
-> +}
-> +EXPORT_SYMBOL_GPL(pin_user_pages_fast);
-
-I was somewhat wondering about the number of functions you add here. So we
-have:
-
-pin_user_pages()
-pin_user_pages_fast()
-pin_user_pages_remote()
-
-and then longterm variants:
-
-pin_longterm_pages()
-pin_longterm_pages_fast()
-pin_longterm_pages_remote()
-
-and obviously we have gup like:
-get_user_pages()
-get_user_pages_fast()
-get_user_pages_remote()
-... and some other gup variants ...
-
-I think we really should have pin_* vs get_* variants as they are very
-different in terms of guarantees and after conversion, any use of get_*
-variant in non-mm code should be closely scrutinized. OTOH pin_longterm_*
-don't look *that* useful to me and just using pin_* instead with
-FOLL_LONGTERM flag would look OK to me and somewhat reduce the number of
-functions which is already large enough? What do people think? I don't feel
-too strongly about this but wanted to bring this up.
+Reviewed-by: Jan Kara <jack@suse.cz>
 
 								Honza
 
-
-
+> ---
+>  include/linux/mm.h | 27 ++++++++++++++++---
+>  mm/memremap.c      | 67 ++++++++++++++++++++--------------------------
+>  2 files changed, 53 insertions(+), 41 deletions(-)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index a2adf95b3f9c..96228376139c 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -967,9 +967,10 @@ static inline bool is_zone_device_page(const struct page *page)
+>  #endif
+>  
+>  #ifdef CONFIG_DEV_PAGEMAP_OPS
+> -void __put_devmap_managed_page(struct page *page);
+> +void free_devmap_managed_page(struct page *page);
+>  DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
+> -static inline bool put_devmap_managed_page(struct page *page)
+> +
+> +static inline bool page_is_devmap_managed(struct page *page)
+>  {
+>  	if (!static_branch_unlikely(&devmap_managed_key))
+>  		return false;
+> @@ -978,7 +979,6 @@ static inline bool put_devmap_managed_page(struct page *page)
+>  	switch (page->pgmap->type) {
+>  	case MEMORY_DEVICE_PRIVATE:
+>  	case MEMORY_DEVICE_FS_DAX:
+> -		__put_devmap_managed_page(page);
+>  		return true;
+>  	default:
+>  		break;
+> @@ -986,6 +986,27 @@ static inline bool put_devmap_managed_page(struct page *page)
+>  	return false;
+>  }
+>  
+> +static inline bool put_devmap_managed_page(struct page *page)
+> +{
+> +	bool is_devmap = page_is_devmap_managed(page);
+> +
+> +	if (is_devmap) {
+> +		int count = page_ref_dec_return(page);
+> +
+> +		/*
+> +		 * devmap page refcounts are 1-based, rather than 0-based: if
+> +		 * refcount is 1, then the page is free and the refcount is
+> +		 * stable because nobody holds a reference on the page.
+> +		 */
+> +		if (count == 1)
+> +			free_devmap_managed_page(page);
+> +		else if (!count)
+> +			__put_page(page);
+> +	}
+> +
+> +	return is_devmap;
+> +}
+> +
+>  #else /* CONFIG_DEV_PAGEMAP_OPS */
+>  static inline bool put_devmap_managed_page(struct page *page)
+>  {
+> diff --git a/mm/memremap.c b/mm/memremap.c
+> index 03ccbdfeb697..bc7e2a27d025 100644
+> --- a/mm/memremap.c
+> +++ b/mm/memremap.c
+> @@ -410,48 +410,39 @@ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
+>  EXPORT_SYMBOL_GPL(get_dev_pagemap);
+>  
+>  #ifdef CONFIG_DEV_PAGEMAP_OPS
+> -void __put_devmap_managed_page(struct page *page)
+> +void free_devmap_managed_page(struct page *page)
+>  {
+> -	int count = page_ref_dec_return(page);
+> +	/* Clear Active bit in case of parallel mark_page_accessed */
+> +	__ClearPageActive(page);
+> +	__ClearPageWaiters(page);
+> +
+> +	mem_cgroup_uncharge(page);
+>  
+>  	/*
+> -	 * If refcount is 1 then page is freed and refcount is stable as nobody
+> -	 * holds a reference on the page.
+> +	 * When a device_private page is freed, the page->mapping field
+> +	 * may still contain a (stale) mapping value. For example, the
+> +	 * lower bits of page->mapping may still identify the page as
+> +	 * an anonymous page. Ultimately, this entire field is just
+> +	 * stale and wrong, and it will cause errors if not cleared.
+> +	 * One example is:
+> +	 *
+> +	 *  migrate_vma_pages()
+> +	 *    migrate_vma_insert_page()
+> +	 *      page_add_new_anon_rmap()
+> +	 *        __page_set_anon_rmap()
+> +	 *          ...checks page->mapping, via PageAnon(page) call,
+> +	 *            and incorrectly concludes that the page is an
+> +	 *            anonymous page. Therefore, it incorrectly,
+> +	 *            silently fails to set up the new anon rmap.
+> +	 *
+> +	 * For other types of ZONE_DEVICE pages, migration is either
+> +	 * handled differently or not done at all, so there is no need
+> +	 * to clear page->mapping.
+>  	 */
+> -	if (count == 1) {
+> -		/* Clear Active bit in case of parallel mark_page_accessed */
+> -		__ClearPageActive(page);
+> -		__ClearPageWaiters(page);
+> -
+> -		mem_cgroup_uncharge(page);
+> -
+> -		/*
+> -		 * When a device_private page is freed, the page->mapping field
+> -		 * may still contain a (stale) mapping value. For example, the
+> -		 * lower bits of page->mapping may still identify the page as
+> -		 * an anonymous page. Ultimately, this entire field is just
+> -		 * stale and wrong, and it will cause errors if not cleared.
+> -		 * One example is:
+> -		 *
+> -		 *  migrate_vma_pages()
+> -		 *    migrate_vma_insert_page()
+> -		 *      page_add_new_anon_rmap()
+> -		 *        __page_set_anon_rmap()
+> -		 *          ...checks page->mapping, via PageAnon(page) call,
+> -		 *            and incorrectly concludes that the page is an
+> -		 *            anonymous page. Therefore, it incorrectly,
+> -		 *            silently fails to set up the new anon rmap.
+> -		 *
+> -		 * For other types of ZONE_DEVICE pages, migration is either
+> -		 * handled differently or not done at all, so there is no need
+> -		 * to clear page->mapping.
+> -		 */
+> -		if (is_device_private_page(page))
+> -			page->mapping = NULL;
+> +	if (is_device_private_page(page))
+> +		page->mapping = NULL;
+>  
+> -		page->pgmap->ops->page_free(page);
+> -	} else if (!count)
+> -		__put_page(page);
+> +	page->pgmap->ops->page_free(page);
+>  }
+> -EXPORT_SYMBOL(__put_devmap_managed_page);
+> +EXPORT_SYMBOL(free_devmap_managed_page);
+>  #endif /* CONFIG_DEV_PAGEMAP_OPS */
+> -- 
+> 2.24.0
+> 
 -- 
 Jan Kara <jack@suse.com>
 SUSE Labs, CR
