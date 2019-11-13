@@ -2,27 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EB39FB87C
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 20:09:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9188FB882
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 20:10:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728455AbfKMTJk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 14:09:40 -0500
-Received: from mga05.intel.com ([192.55.52.43]:27273 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727290AbfKMTJj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 14:09:39 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Nov 2019 11:09:37 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,301,1569308400"; 
-   d="scan'208";a="355565939"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by orsmga004.jf.intel.com with ESMTP; 13 Nov 2019 11:09:36 -0800
-Date:   Wed, 13 Nov 2019 11:09:35 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
+        id S1728254AbfKMTKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 14:10:11 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:32514 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727290AbfKMTKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 14:10:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573672210;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xZKcq2+kOyDCaVGdS9JomObq8I4bIijQAekiTqk+QoQ=;
+        b=P9aAbaATvWtFc2rWffL1YeinkVUo0M4DYzmnFsWaIFs93f1llboEze32J8DUBArtZlV+7J
+        Bh+vBs2oxNG6+fkZVIXQMMuStrI30Itj8B0y+rqeW5jp7NPnZNz+3aCQCnYFJZNsBo8GcK
+        F2SWbDdvo4f2IHVlAriL18OzHN/SSzA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-101-lVqDgIG9Os6vw3HkWylEYw-1; Wed, 13 Nov 2019 14:10:08 -0500
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5FAA8048E2;
+        Wed, 13 Nov 2019 19:10:01 +0000 (UTC)
+Received: from redhat.com (ovpn-121-71.rdu2.redhat.com [10.10.121.71])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3175B601B8;
+        Wed, 13 Nov 2019 19:09:54 +0000 (UTC)
+Date:   Wed, 13 Nov 2019 14:09:52 -0500
+From:   Jerome Glisse <jglisse@redhat.com>
 To:     John Hubbard <jhubbard@nvidia.com>
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
@@ -34,10 +45,10 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         Daniel Vetter <daniel@ffwll.ch>,
         Dave Chinner <david@fromorbit.com>,
         David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>, Jan Kara <jack@suse.cz>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
         Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Michael Ellerman <mpe@ellerman.id.au>,
@@ -52,136 +63,198 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
         linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
         linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 23/23] mm/gup: remove support for gup(FOLL_LONGTERM)
-Message-ID: <20191113190935.GD12947@iweiny-DESK2.sc.intel.com>
+Subject: Re: [PATCH v4 04/23] mm: devmap: refactor 1-based refcounting for
+ ZONE_DEVICE pages
+Message-ID: <20191113190952.GA4369@redhat.com>
 References: <20191113042710.3997854-1-jhubbard@nvidia.com>
- <20191113042710.3997854-24-jhubbard@nvidia.com>
+ <20191113042710.3997854-5-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20191113042710.3997854-5-jhubbard@nvidia.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-MC-Unique: lVqDgIG9Os6vw3HkWylEYw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-In-Reply-To: <20191113042710.3997854-24-jhubbard@nvidia.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Nov 12, 2019 at 08:27:10PM -0800, John Hubbard wrote:
-> Now that all other kernel callers of get_user_pages(FOLL_LONGTERM)
-> have been converted to pin_longterm_pages(), lock it down:
-> 
-> 1) Add an assertion to get_user_pages(), preventing callers from
->    passing FOLL_LONGTERM (in addition to the existing assertion that
->    prevents FOLL_PIN).
-> 
-> 2) Remove the associated GUP_LONGTERM_BENCHMARK test.
-> 
+On Tue, Nov 12, 2019 at 08:26:51PM -0800, John Hubbard wrote:
+> An upcoming patch changes and complicates the refcounting and
+> especially the "put page" aspects of it. In order to keep
+> everything clean, refactor the devmap page release routines:
+>=20
+> * Rename put_devmap_managed_page() to page_is_devmap_managed(),
+>   and limit the functionality to "read only": return a bool,
+>   with no side effects.
+>=20
+> * Add a new routine, put_devmap_managed_page(), to handle checking
+>   what kind of page it is, and what kind of refcount handling it
+>   requires.
+>=20
+> * Rename __put_devmap_managed_page() to free_devmap_managed_page(),
+>   and limit the functionality to unconditionally freeing a devmap
+>   page.
+>=20
+> This is originally based on a separate patch by Ira Weiny, which
+> applied to an early version of the put_user_page() experiments.
+> Since then, J=E9r=F4me Glisse suggested the refactoring described above.
+>=20
+> Suggested-by: J=E9r=F4me Glisse <jglisse@redhat.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+
+Reviewed-by: J=E9r=F4me Glisse <jglisse@redhat.com>
+
 > ---
->  mm/gup.c                                   | 8 ++++----
->  mm/gup_benchmark.c                         | 9 +--------
->  tools/testing/selftests/vm/gup_benchmark.c | 7 ++-----
->  3 files changed, 7 insertions(+), 17 deletions(-)
-> 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 82e7e4ce5027..90f5f95ee7ac 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -1756,11 +1756,11 @@ long get_user_pages(unsigned long start, unsigned long nr_pages,
->  		struct vm_area_struct **vmas)
+>  include/linux/mm.h | 27 ++++++++++++++++---
+>  mm/memremap.c      | 67 ++++++++++++++++++++--------------------------
+>  2 files changed, 53 insertions(+), 41 deletions(-)
+>=20
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index a2adf95b3f9c..96228376139c 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -967,9 +967,10 @@ static inline bool is_zone_device_page(const struct =
+page *page)
+>  #endif
+> =20
+>  #ifdef CONFIG_DEV_PAGEMAP_OPS
+> -void __put_devmap_managed_page(struct page *page);
+> +void free_devmap_managed_page(struct page *page);
+>  DECLARE_STATIC_KEY_FALSE(devmap_managed_key);
+> -static inline bool put_devmap_managed_page(struct page *page)
+> +
+> +static inline bool page_is_devmap_managed(struct page *page)
 >  {
->  	/*
-> -	 * FOLL_PIN must only be set internally by the pin_user_page*() and
-> -	 * pin_longterm_*() APIs, never directly by the caller, so enforce that
-> -	 * with an assertion:
-> +	 * FOLL_PIN and FOLL_LONGTERM must only be set internally by the
-> +	 * pin_user_page*() and pin_longterm_*() APIs, never directly by the
-> +	 * caller, so enforce that with an assertion:
->  	 */
-> -	if (WARN_ON_ONCE(gup_flags & FOLL_PIN))
-> +	if (WARN_ON_ONCE(gup_flags & (FOLL_PIN | FOLL_LONGTERM)))
-
-Don't we want to block FOLL_LONGTERM in get_user_pages_fast() as well after all
-this?
-
-Ira
-
->  		return -EINVAL;
->  
->  	return __gup_longterm_locked(current, current->mm, start, nr_pages,
-> diff --git a/mm/gup_benchmark.c b/mm/gup_benchmark.c
-> index 8f980d91dbf5..679f0e6a0adb 100644
-> --- a/mm/gup_benchmark.c
-> +++ b/mm/gup_benchmark.c
-> @@ -6,7 +6,7 @@
->  #include <linux/debugfs.h>
->  
->  #define GUP_FAST_BENCHMARK	_IOWR('g', 1, struct gup_benchmark)
-> -#define GUP_LONGTERM_BENCHMARK	_IOWR('g', 2, struct gup_benchmark)
-> +/* Command 2 has been deleted. */
->  #define GUP_BENCHMARK		_IOWR('g', 3, struct gup_benchmark)
->  #define PIN_FAST_BENCHMARK	_IOWR('g', 4, struct gup_benchmark)
->  #define PIN_LONGTERM_BENCHMARK	_IOWR('g', 5, struct gup_benchmark)
-> @@ -28,7 +28,6 @@ static void put_back_pages(int cmd, struct page **pages, unsigned long nr_pages)
->  
->  	switch (cmd) {
->  	case GUP_FAST_BENCHMARK:
-> -	case GUP_LONGTERM_BENCHMARK:
->  	case GUP_BENCHMARK:
->  		for (i = 0; i < nr_pages; i++)
->  			put_page(pages[i]);
-> @@ -97,11 +96,6 @@ static int __gup_benchmark_ioctl(unsigned int cmd,
->  			nr = get_user_pages_fast(addr, nr, gup->flags,
->  						 pages + i);
->  			break;
-> -		case GUP_LONGTERM_BENCHMARK:
-> -			nr = get_user_pages(addr, nr,
-> -					    gup->flags | FOLL_LONGTERM,
-> -					    pages + i, NULL);
-> -			break;
->  		case GUP_BENCHMARK:
->  			nr = get_user_pages(addr, nr, gup->flags, pages + i,
->  					    NULL);
-> @@ -159,7 +153,6 @@ static long gup_benchmark_ioctl(struct file *filep, unsigned int cmd,
->  
->  	switch (cmd) {
->  	case GUP_FAST_BENCHMARK:
-> -	case GUP_LONGTERM_BENCHMARK:
->  	case GUP_BENCHMARK:
->  	case PIN_FAST_BENCHMARK:
->  	case PIN_LONGTERM_BENCHMARK:
-> diff --git a/tools/testing/selftests/vm/gup_benchmark.c b/tools/testing/selftests/vm/gup_benchmark.c
-> index 03928e47a86f..836b7082db13 100644
-> --- a/tools/testing/selftests/vm/gup_benchmark.c
-> +++ b/tools/testing/selftests/vm/gup_benchmark.c
-> @@ -15,7 +15,7 @@
->  #define PAGE_SIZE sysconf(_SC_PAGESIZE)
->  
->  #define GUP_FAST_BENCHMARK	_IOWR('g', 1, struct gup_benchmark)
-> -#define GUP_LONGTERM_BENCHMARK	_IOWR('g', 2, struct gup_benchmark)
-> +/* Command 2 has been deleted. */
->  #define GUP_BENCHMARK		_IOWR('g', 3, struct gup_benchmark)
->  
->  /*
-> @@ -49,7 +49,7 @@ int main(int argc, char **argv)
->  	char *file = "/dev/zero";
->  	char *p;
->  
-> -	while ((opt = getopt(argc, argv, "m:r:n:f:abctTLUuwSH")) != -1) {
-> +	while ((opt = getopt(argc, argv, "m:r:n:f:abctTUuwSH")) != -1) {
->  		switch (opt) {
->  		case 'a':
->  			cmd = PIN_FAST_BENCHMARK;
-> @@ -75,9 +75,6 @@ int main(int argc, char **argv)
->  		case 'T':
->  			thp = 0;
->  			break;
-> -		case 'L':
-> -			cmd = GUP_LONGTERM_BENCHMARK;
-> -			break;
->  		case 'U':
->  			cmd = GUP_BENCHMARK;
->  			break;
-> -- 
+>  =09if (!static_branch_unlikely(&devmap_managed_key))
+>  =09=09return false;
+> @@ -978,7 +979,6 @@ static inline bool put_devmap_managed_page(struct pag=
+e *page)
+>  =09switch (page->pgmap->type) {
+>  =09case MEMORY_DEVICE_PRIVATE:
+>  =09case MEMORY_DEVICE_FS_DAX:
+> -=09=09__put_devmap_managed_page(page);
+>  =09=09return true;
+>  =09default:
+>  =09=09break;
+> @@ -986,6 +986,27 @@ static inline bool put_devmap_managed_page(struct pa=
+ge *page)
+>  =09return false;
+>  }
+> =20
+> +static inline bool put_devmap_managed_page(struct page *page)
+> +{
+> +=09bool is_devmap =3D page_is_devmap_managed(page);
+> +
+> +=09if (is_devmap) {
+> +=09=09int count =3D page_ref_dec_return(page);
+> +
+> +=09=09/*
+> +=09=09 * devmap page refcounts are 1-based, rather than 0-based: if
+> +=09=09 * refcount is 1, then the page is free and the refcount is
+> +=09=09 * stable because nobody holds a reference on the page.
+> +=09=09 */
+> +=09=09if (count =3D=3D 1)
+> +=09=09=09free_devmap_managed_page(page);
+> +=09=09else if (!count)
+> +=09=09=09__put_page(page);
+> +=09}
+> +
+> +=09return is_devmap;
+> +}
+> +
+>  #else /* CONFIG_DEV_PAGEMAP_OPS */
+>  static inline bool put_devmap_managed_page(struct page *page)
+>  {
+> diff --git a/mm/memremap.c b/mm/memremap.c
+> index 03ccbdfeb697..bc7e2a27d025 100644
+> --- a/mm/memremap.c
+> +++ b/mm/memremap.c
+> @@ -410,48 +410,39 @@ struct dev_pagemap *get_dev_pagemap(unsigned long p=
+fn,
+>  EXPORT_SYMBOL_GPL(get_dev_pagemap);
+> =20
+>  #ifdef CONFIG_DEV_PAGEMAP_OPS
+> -void __put_devmap_managed_page(struct page *page)
+> +void free_devmap_managed_page(struct page *page)
+>  {
+> -=09int count =3D page_ref_dec_return(page);
+> +=09/* Clear Active bit in case of parallel mark_page_accessed */
+> +=09__ClearPageActive(page);
+> +=09__ClearPageWaiters(page);
+> +
+> +=09mem_cgroup_uncharge(page);
+> =20
+>  =09/*
+> -=09 * If refcount is 1 then page is freed and refcount is stable as nobo=
+dy
+> -=09 * holds a reference on the page.
+> +=09 * When a device_private page is freed, the page->mapping field
+> +=09 * may still contain a (stale) mapping value. For example, the
+> +=09 * lower bits of page->mapping may still identify the page as
+> +=09 * an anonymous page. Ultimately, this entire field is just
+> +=09 * stale and wrong, and it will cause errors if not cleared.
+> +=09 * One example is:
+> +=09 *
+> +=09 *  migrate_vma_pages()
+> +=09 *    migrate_vma_insert_page()
+> +=09 *      page_add_new_anon_rmap()
+> +=09 *        __page_set_anon_rmap()
+> +=09 *          ...checks page->mapping, via PageAnon(page) call,
+> +=09 *            and incorrectly concludes that the page is an
+> +=09 *            anonymous page. Therefore, it incorrectly,
+> +=09 *            silently fails to set up the new anon rmap.
+> +=09 *
+> +=09 * For other types of ZONE_DEVICE pages, migration is either
+> +=09 * handled differently or not done at all, so there is no need
+> +=09 * to clear page->mapping.
+>  =09 */
+> -=09if (count =3D=3D 1) {
+> -=09=09/* Clear Active bit in case of parallel mark_page_accessed */
+> -=09=09__ClearPageActive(page);
+> -=09=09__ClearPageWaiters(page);
+> -
+> -=09=09mem_cgroup_uncharge(page);
+> -
+> -=09=09/*
+> -=09=09 * When a device_private page is freed, the page->mapping field
+> -=09=09 * may still contain a (stale) mapping value. For example, the
+> -=09=09 * lower bits of page->mapping may still identify the page as
+> -=09=09 * an anonymous page. Ultimately, this entire field is just
+> -=09=09 * stale and wrong, and it will cause errors if not cleared.
+> -=09=09 * One example is:
+> -=09=09 *
+> -=09=09 *  migrate_vma_pages()
+> -=09=09 *    migrate_vma_insert_page()
+> -=09=09 *      page_add_new_anon_rmap()
+> -=09=09 *        __page_set_anon_rmap()
+> -=09=09 *          ...checks page->mapping, via PageAnon(page) call,
+> -=09=09 *            and incorrectly concludes that the page is an
+> -=09=09 *            anonymous page. Therefore, it incorrectly,
+> -=09=09 *            silently fails to set up the new anon rmap.
+> -=09=09 *
+> -=09=09 * For other types of ZONE_DEVICE pages, migration is either
+> -=09=09 * handled differently or not done at all, so there is no need
+> -=09=09 * to clear page->mapping.
+> -=09=09 */
+> -=09=09if (is_device_private_page(page))
+> -=09=09=09page->mapping =3D NULL;
+> +=09if (is_device_private_page(page))
+> +=09=09page->mapping =3D NULL;
+> =20
+> -=09=09page->pgmap->ops->page_free(page);
+> -=09} else if (!count)
+> -=09=09__put_page(page);
+> +=09page->pgmap->ops->page_free(page);
+>  }
+> -EXPORT_SYMBOL(__put_devmap_managed_page);
+> +EXPORT_SYMBOL(free_devmap_managed_page);
+>  #endif /* CONFIG_DEV_PAGEMAP_OPS */
+> --=20
 > 2.24.0
-> 
+>=20
+
