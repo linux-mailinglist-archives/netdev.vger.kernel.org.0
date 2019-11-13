@@ -2,54 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D22EEFB3DE
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05E3CFB3E1
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 16:40:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728016AbfKMPkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 10:40:11 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38266 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726957AbfKMPkL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 10:40:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=T/hX9SJQq6Ws1YkXKuSDFzJIPqQ2Lt93HIkRi5lZFOY=; b=ov5QI+U6fg1pOfHKSzeVX8buX4
-        ortfu3P/IpX4+7G0jpt6fy2dNH+FIZdlUJOHuZI9FGYPlWpbhA9onuMlAlvU3F2IibNRVFmsmjLP+
-        XkbIsMLktA9hlXjUMRQdiKFV7BZFx9ACdNeFO5P78CEVm45hehwB8h8d7g45/V0sN3cI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iUukZ-0007nT-Bb; Wed, 13 Nov 2019 16:40:07 +0100
-Date:   Wed, 13 Nov 2019 16:40:07 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Bryan.Whitehead@microchip.com
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v1 net-next] mscc.c: Add support for additional VSC PHYs
-Message-ID: <20191113154007.GJ10875@lunn.ch>
-References: <1573574048-12251-1-git-send-email-Bryan.Whitehead@microchip.com>
- <20191112204031.GH10875@lunn.ch>
- <MN2PR11MB4333B89CD568C6B66C8C60E3FA770@MN2PR11MB4333.namprd11.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MN2PR11MB4333B89CD568C6B66C8C60E3FA770@MN2PR11MB4333.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1728035AbfKMPkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 10:40:22 -0500
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46193 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726957AbfKMPkV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 10:40:21 -0500
+Received: by mail-pg1-f196.google.com with SMTP id r18so1583346pgu.13;
+        Wed, 13 Nov 2019 07:40:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Ki1SPD44lh1SNybw/5rgBcA9dSnsxmRipdKWolsiTPQ=;
+        b=ldo4ffH/lXYIRRC9tzF8JwFZccS5LE1eNAXXtU1VS/5IB4wnVJb7htBqIKuKI8178C
+         tO9TJGxlsknv5aUpJySM+Wem8RH82ICkpo3nAenXYrfA3W6c9rUby7YKTlE6RJAC+fef
+         +Vqi2ABeS++Z6YTbuqfZ4XBVt1uRMel9RyjDYlCAOnzEFPh4ikQRyJ7ZtDPm2XzKbLCk
+         0XvxdQphfr5HEwRpCp95eJ8HHjMwXFOB83ep+96dGDqMu6lwB1BQp90HYfRnqAoTFsMu
+         70ciVkQJS00t2lYlajUIKEOc2C6gWu0mrj8z/hQMDmoUShmuHCGmicWJLKfFgkuaAiVp
+         pCYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Ki1SPD44lh1SNybw/5rgBcA9dSnsxmRipdKWolsiTPQ=;
+        b=hpCavwQvju1slM1Zk9QHnyCZJSpZ7szvMbuUmRbiVSno4LsbFmk0B7gxk5cz8r+Hoy
+         ommMV9UC4l218md/RdtMi0rO5rVnwy2CvWtm4y+QDlftdk/norRc9GhNWFzCpFfU39NK
+         poy3I0tm84VJUHE1pqJPw1M9fENGqxp1fUBtngziarQuyM0n0TqQ2ylBk269tRWlh8kk
+         cTNw8neXYw3gufuHbfp3nGUSihC1jUglvFRTrfPcRy1POTfPWFJkXcY36mBNfum8T79w
+         2Hx/ycBhJdsBM5ZVIbtEvfH+5IsV5Jfa0baTeuIfhEo4bMuZJbLjqFf7hOMiz919Yhw1
+         wTvQ==
+X-Gm-Message-State: APjAAAX2Loj6wkaFuSLVw/PPoc+BHRK1++FY9tom/W3xlblnYEJRX1Yp
+        FdRM7UwwX44HC8DKIG56VLE=
+X-Google-Smtp-Source: APXvYqzV4a9iYr/kLopHbCKtDwEFBpFCvcaVBZZ4KkPQvS54XiRuxUSsvQNuQJEpJnmCLUzjZnLo6w==
+X-Received: by 2002:a63:db15:: with SMTP id e21mr4399962pgg.21.1573659620998;
+        Wed, 13 Nov 2019 07:40:20 -0800 (PST)
+Received: from aw-bldr-10.qualcomm.com (i-global254.qualcomm.com. [199.106.103.254])
+        by smtp.gmail.com with ESMTPSA id q8sm2911407pgg.15.2019.11.13.07.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Nov 2019 07:40:20 -0800 (PST)
+From:   Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+To:     kvalo@codeaurora.org, davem@davemloft.net
+Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+Subject: [PATCH v2] ath10k: Fix qmi init error handling
+Date:   Wed, 13 Nov 2019 07:40:16 -0800
+Message-Id: <20191113154016.42836-1-jeffrey.l.hugo@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
-> 
-> I would like to do exactly that, but I was concerned future changes might change the phy_id_mask, so to keep code less brittle, and more flexible I thought I should keep the "AND mask" operations such as (PHY_ID_VSC8<FOO> & phydev->drv->phy_id_mask)
+When ath10k_qmi_init() fails, the error handling does not free the irq
+resources, which causes an issue if we EPROBE_DEFER as we'll attempt to
+(re-)register irqs which are already registered.
 
-Hi Bryan
+Fix this by doing a power off since we just powered on the hardware, and
+freeing the irqs as error handling.
 
-You could add a WARN_ON(phydev->drv->phy_id_mask & 0xf); That should
-catch any new PHY breaking the assumption.
+Fixes: ba94c753ccb4 ("ath10k: add QMI message handshake for wcn3990 client")
+Signed-off-by: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>
+---
 
-    Andrew
+v2:
+-Call power_off() as well
+
+ drivers/net/wireless/ath/ath10k/snoc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
+index cd22c8654aa9..50b3d443ad37 100644
+--- a/drivers/net/wireless/ath/ath10k/snoc.c
++++ b/drivers/net/wireless/ath/ath10k/snoc.c
+@@ -1563,13 +1563,16 @@ static int ath10k_snoc_probe(struct platform_device *pdev)
+ 	ret = ath10k_qmi_init(ar, msa_size);
+ 	if (ret) {
+ 		ath10k_warn(ar, "failed to register wlfw qmi client: %d\n", ret);
+-		goto err_core_destroy;
++		goto err_power_off;
+ 	}
+ 
+ 	ath10k_dbg(ar, ATH10K_DBG_SNOC, "snoc probe\n");
+ 
+ 	return 0;
+ 
++err_power_off:
++	ath10k_hw_power_off(ar);
++
+ err_free_irq:
+ 	ath10k_snoc_free_irq(ar);
+ 
+-- 
+2.17.1
+
