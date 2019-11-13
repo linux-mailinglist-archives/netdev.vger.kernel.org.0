@@ -2,165 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12745FA6D0
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DECB9FA767
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 04:40:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727558AbfKMCqU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 21:46:20 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6650 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727226AbfKMCqU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 21:46:20 -0500
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 6950BC9426FED6CEC6A2;
-        Wed, 13 Nov 2019 10:46:13 +0800 (CST)
-Received: from [127.0.0.1] (10.74.221.148) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Wed, 13 Nov 2019
- 10:46:05 +0800
-Subject: Re: [PATCH v3] lib: optimize cpumask_local_spread()
-To:     Michal Hocko <mhocko@kernel.org>
-References: <1573091048-10595-1-git-send-email-zhangshaokun@hisilicon.com>
- <20191108103102.GF15658@dhcp22.suse.cz>
- <c6f24942-c8d6-e46a-f433-152d29af8c71@hisilicon.com>
- <20191112115630.GD2763@dhcp22.suse.cz>
-CC:     <linux-kernel@vger.kernel.org>, yuqi jin <jinyuqi@huawei.com>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        "Paul Burton" <paul.burton@mips.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        <netdev@vger.kernel.org>
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-Message-ID: <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
-Date:   Wed, 13 Nov 2019 10:46:05 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.1.1
+        id S1727614AbfKMDju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 22:39:50 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:57198 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727597AbfKMDjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 22:39:49 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAD39D0B020113
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 19:15:26 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=sjvxiTL/ckYkzroQxbAPNyW+qzPGBEdDamqyHnjH28Y=;
+ b=JwC4IZkdcKL5K2SIwYgjmqqy1n+FDg0JaPoRqHw/uuj/YjvYvKw2L2wL0GRzRyNsYXdQ
+ gZVBMgFGakdIKIWKkHBjCr5xYwPxwTMBASmNpp3snPs20bVTvlg8UyZu1O4EwthYtrtq
+ C2rGsszLOkMVLxhnaFNoEQvOJVI/JuzYHas= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2w7pr9wtam-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 19:15:25 -0800
+Received: from 2401:db00:2050:5102:face:0:3b:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 12 Nov 2019 19:15:23 -0800
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 08FC02EC1B1D; Tue, 12 Nov 2019 19:15:22 -0800 (PST)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 0/3] Add support for memory-mapping BPF array maps
+Date:   Tue, 12 Nov 2019 19:15:15 -0800
+Message-ID: <20191113031518.155618-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20191112115630.GD2763@dhcp22.suse.cz>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.221.148]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-12_10:2019-11-11,2019-11-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=8
+ clxscore=1015 phishscore=0 spamscore=0 bulkscore=0 impostorscore=0
+ malwarescore=0 priorityscore=1501 adultscore=0 lowpriorityscore=0
+ mlxlogscore=464 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911130026
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michal,
+This patch set adds ability to memory-map BPF array maps (single- and
+multi-element). The primary use case is memory-mapping BPF array maps, created
+to back global data variables, created by libbpf implicitly. This allows for
+much better usability, along with avoiding syscalls to read or update data
+completely.
 
-On 2019/11/12 19:56, Michal Hocko wrote:
-> On Mon 11-11-19 10:02:37, Shaokun Zhang wrote:
->> Hi Michal,
->>
->> On 2019/11/8 18:31, Michal Hocko wrote:
->>> This changelog looks better, thanks! I still have some questions though.
->>> Btw. cpumask_local_spread is used by the networking code but I do not
->>> see net guys involved (Cc netdev)
->>
->> Oh, I forgot to involve the net guys, sorry.
->>
->>>
->>> On Thu 07-11-19 09:44:08, Shaokun Zhang wrote:
->>>> From: yuqi jin <jinyuqi@huawei.com>
->>>>
->>>> In the multi-processors and NUMA system, I/O driver will find cpu cores
->>>> that which shall be bound IRQ. When cpu cores in the local numa have
->>>> been used, it is better to find the node closest to the local numa node,
->>>> instead of choosing any online cpu immediately.
->>>>
->>>> On Huawei Kunpeng 920 server, there are 4 NUMA node(0 -3) in the 2-cpu
->>>> system(0 - 1).
->>>
->>> Please send a topology of this server (numactl -H).
->>>
->>
->> available: 4 nodes (0-3)
->> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
->> node 0 size: 63379 MB
->> node 0 free: 61899 MB
->> node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
->> node 1 size: 64509 MB
->> node 1 free: 63942 MB
->> node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
->> node 2 size: 64509 MB
->> node 2 free: 63056 MB
->> node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
->> node 3 size: 63997 MB
->> node 3 free: 63420 MB
->> node distances:
->> node   0   1   2   3
->>   0:  10  16  32  33
->>   1:  16  10  25  32
->>   2:  32  25  10  16
->>   3:  33  32  16  10
->>
->>>> We perform PS (parameter server) business test, the
->>>> behavior of the service is that the client initiates a request through
->>>> the network card, the server responds to the request after calculation. 
->>>
->>> Is the benchmark any ublicly available?
->>>
->>
->> Sorry, the PS which we test is not open, but I think redis is the same as PS
->> on the macro level. When there are both 24 redis servers on node2 and node3.
->> if the 24-47 irqs and xps of NIC are not bound to node3, the redis servers
->> on node3 will not performance good.
-> 
-> Are there any other benchmarks showing improvements?
->
+Due to memory-mapping requirements, BPF array map that is supposed to be
+memory-mapped, has to be created with special BPF_F_MMAPABLE attribute, which
+triggers slightly different memory allocation strategy internally. See
+patch 1 for details.
 
-Sorry, I don't have it. The issue is clear and the patch is helpful for the
-actual Parameter Server and Redis test.
+Libbpf is extended to detect kernel support for this flag, and if supported,
+will specify it for all global data maps automatically.
 
->>>> When two PS processes run on node2 and node3 separately and the
->>>> network card is located on 'node2' which is in cpu1, the performance
->>>> of node2 (26W QPS) and node3 (22W QPS) was different.
->>>> It is better that the NIC queues are bound to the cpu1 cores in turn,
->>>> then XPS will also be properly initialized, while cpumask_local_spread
->>>> only considers the local node. When the number of NIC queues exceeds
->>>> the number of cores in the local node, it returns to the online core
->>>> directly. So when PS runs on node3 sending a calculated request,
->>>> the performance is not as good as the node2. It is considered that
->>>> the NIC and other I/O devices shall initialize the interrupt binding,
->>>> if the cores of the local node are used up, it is reasonable to return
->>>> the node closest to it.
->>>
->>> Can you post cpu affinities before and after this patch?
->>>
->>
->> Before this patch
->> Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
->> 2
->> Euler:~ # cat /proc/irq/345/smp_affinity    #IRQ0
->> 00000000,00010000,00000000
-> 
-> This representation is awkward to parse. Could you add smp_affinity_list
-> please? It would save quite some head scratching.
-> 
+v2->v3:
+- change allocation strategy to avoid extra pointer dereference (Jakub);
 
-before patch
-Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
-2
-Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
-48
-Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-0
-Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
-24
-Euler:/sys/bus/pci #
+v1->v2:
+- fix map lookup code generation for BPF_F_MMAPABLE case;
+- prevent BPF_F_MMAPABLE flag for all but plain array map type;
+- centralize ref-counting in generic bpf_map_mmap();
+- don't use uref counting (Alexei);
+- use vfree() directly;
+- print flags with %x (Song);
+- extend tests to verify bpf_map_{lookup,update}_elem() logic as well.
 
-after patch
-Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
-2
-Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
-48
-Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-72
-Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
-24
-Euler:/sys/bus/pci #
+Andrii Nakryiko (3):
+  bpf: add mmap() support for BPF_MAP_TYPE_ARRAY
+  libbpf: make global data internal arrays mmap()-able, if possible
+  selftests/bpf: add BPF_TYPE_MAP_ARRAY mmap() tests
 
-Thanks,
-Shaokun
+ include/linux/bpf.h                           |   6 +-
+ include/uapi/linux/bpf.h                      |   3 +
+ kernel/bpf/arraymap.c                         |  93 +++++++++-
+ kernel/bpf/syscall.c                          |  47 +++++
+ tools/include/uapi/linux/bpf.h                |   3 +
+ tools/lib/bpf/libbpf.c                        |  32 +++-
+ .../selftests/bpf/prog_tests/core_reloc.c     |  45 +++--
+ tools/testing/selftests/bpf/prog_tests/mmap.c | 170 ++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_mmap.c |  41 +++++
+ 9 files changed, 413 insertions(+), 27 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/mmap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_mmap.c
 
+-- 
+2.17.1
 
