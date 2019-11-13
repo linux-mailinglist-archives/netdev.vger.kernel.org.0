@@ -2,111 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A8B0F9E9B
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 00:55:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81F33F9EDB
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 01:08:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbfKLXzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 18:55:49 -0500
-Received: from ozlabs.org ([203.11.71.1]:34825 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726910AbfKLXzt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 18:55:49 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 47CPl63zYYz9sPc;
-        Wed, 13 Nov 2019 10:55:46 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1573602946;
-        bh=9/oHQmWzkmZQ3Y2KBGMkjOb1W+95AIdAK19GVnSXqkY=;
-        h=Date:From:To:Cc:Subject:From;
-        b=NzayJEYIuIGxScvf8+F3XPHFGtTBYmnBK+Y2zSGWouuAh7e5JOzSnKxQ1WkEGsLtl
-         qo/Lq0oP2fMlmp5XZDxFkTUnxW61TksTEQat5VwFXa4JlJp7SkBpJrLsqqhB9fJ17V
-         5ChDk0j7B5IiWSsqQj6S8poUcLN1Svh1CANgDZqwku4wi8umAaP9q0zSg1i7fBcsqQ
-         x3bfX6t3cA1P3B1bR8GvL2fqEPDfmhQtJUQUxosidjpj+Zg8Bn9/CedWpRiBBlbGbK
-         TVLY/EmJF+RFMwEFnfLzW7wJmFcHrc6QciGojM28QBXfx7Ah8IxiT9jiSZrWLmUVvr
-         sO4OkwYgkoIMA==
-Date:   Wed, 13 Nov 2019 10:55:38 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Aya Levin <ayal@mellanox.com>, Jiri Pirko <jiri@mellanox.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20191113105527.17d825da@canb.auug.org.au>
+        id S1727058AbfKMAIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 19:08:21 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34229 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726970AbfKMAIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Nov 2019 19:08:21 -0500
+Received: by mail-qk1-f193.google.com with SMTP id 205so215420qkk.1
+        for <netdev@vger.kernel.org>; Tue, 12 Nov 2019 16:08:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=r4K7R0tR2iKjDwGj7h2AdFnAhKVb+PEh8hKXGhwzheo=;
+        b=fZud3ib9ugZ1H45gqE3Ufx6TkhfidwZqwWlQe2U/+whtXNqUICQgqqYOrhI9G7ja5h
+         8wz4z83SrHf90CcjxE/pqx7yyuqeqCwhGO/PglcW50daiLjpDhHLPtWIatjp83enLA1i
+         eCn9Cyh3/+6bkiKsYvohTq3vxERaDLgekZag44JZToiXvIR712sgs35f7P5IOnKrux9T
+         5/A7S2MFI7LRleIsmz6Z3nMdOR0RBtn0kvaVabK8o6Xbo0T11MJiJ4l+a9OV5hwhSrKI
+         CO6qigj/t+1GvMCaBySSbYJ+NLrLbAnXsZiSCRrRr749BBN2dmr4pM9uOxk+1bx6QohQ
+         /xig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=r4K7R0tR2iKjDwGj7h2AdFnAhKVb+PEh8hKXGhwzheo=;
+        b=jwWN0wZ+kFX8GHNamKVXQY2XxGFdKvXxctzWMadswfMrvIGRvWTikktcr0YhciluxB
+         0h55gejQPhG19VtSfAF5i4I4EWoLDRhNZPv2Gc2DP3IiZHit9EJlpm2jTyqLHLLAc8Kp
+         /W4Yi4Omada44JtslGaZHsbeN4dDQrXqYip4xg+xpIFvV/oBKWzv1jv202ZdXZ0CMRRz
+         IzAJSs9RU3vZaY4T4j8pAVORhRKorJfM83H9s505UNpe+1AKiPOfiHIcD/jgno/Fbxo+
+         OIXiN2Jccfa1chphFKi54erON2dJIxmmRGRkDyinwCTLxdvG9QEtG5IREH2UiWXENkLd
+         Za0Q==
+X-Gm-Message-State: APjAAAXq3T/EMNHZ8FWUJd9ia7BUrRdtqW6ii/wvjeP2ftsu+ExUJMZx
+        iJrqQloLiSZ8smO9nDMheM41lA==
+X-Google-Smtp-Source: APXvYqxUvDZJyIu1NzBqLzNMQJZcQEwGmA0sBjLaQeHkMjfR4xinoVbyQQ2cr4JogKuX1pAuI/x5jw==
+X-Received: by 2002:a05:620a:205d:: with SMTP id d29mr156309qka.152.1573603700172;
+        Tue, 12 Nov 2019 16:08:20 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-180.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.180])
+        by smtp.gmail.com with ESMTPSA id m25sm309243qtc.0.2019.11.12.16.08.19
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Nov 2019 16:08:19 -0800 (PST)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1iUgCp-0005iu-4h; Tue, 12 Nov 2019 20:08:19 -0400
+Date:   Tue, 12 Nov 2019 20:08:19 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net,
+        Dave Ertman <david.m.ertman@intel.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, parav@mellanox.com,
+        Kiran Patil <kiran.patil@intel.com>
+Subject: Re: [net-next 1/1] virtual-bus: Implementation of Virtual Bus
+Message-ID: <20191113000819.GB19615@ziepe.ca>
+References: <20191111192219.30259-1-jeffrey.t.kirsher@intel.com>
+ <20191112212826.GA1837470@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/Kt0psQJsHnjo4Q6rmz3J/ke";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191112212826.GA1837470@kroah.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/Kt0psQJsHnjo4Q6rmz3J/ke
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Nov 12, 2019 at 10:28:26PM +0100, Greg KH wrote:
 
-Hi all,
+> > + */
+> > +struct virtbus_device {
+> > +	const char			*name;
+> > +	int				id;
+> > +	const struct virtbus_dev_id	*dev_id;
+> > +	struct device			dev;
+> > +	void				*data;
+> > +};
+> > +
+> > +struct virtbus_driver {
+> > +	int (*probe)(struct virtbus_device *);
+> > +	int (*remove)(struct virtbus_device *);
+> > +	void (*shutdown)(struct virtbus_device *);
+> > +	int (*suspend)(struct virtbus_device *, pm_message_t state);
+> > +	int (*resume)(struct virtbus_device *);
+> > +	struct device_driver driver;
+> > +	const struct virtbus_dev_id *id_table;
+> > +};
+> > +
+> > +#define virtbus_get_dev_id(vdev)	((vdev)->id_entry)
+> > +#define virtbus_get_devdata(dev)	((dev)->devdata)
+> 
+> What are these for?
 
-Today's linux-next merge of the net-next tree got a conflict in:
+As far as I can see, the scheme here, using the language from the most
+recent discussion is:
 
-  include/uapi/linux/devlink.h
+   // in core or netdev module
+   int mlx5_core_create()
+   {
+      struct mlx5_core_dev *core = kzalloc(..)
 
-between commit:
+      [..]
 
-  d279505b723c ("devlink: Add method for time-stamp on reporter's dump")
+      core->vdev = virtbus_dev_alloc("mlx5_core", core);
+   }
 
-from the net tree and commit:
 
-  070c63f20f6c ("net: devlink: allow to change namespaces during reload")
+   // in rdma module
+   static int mlx5_rdma_probe(struct virtbus_device *dev)
+   {
+        // Get the value passed to virtbus_dev_alloc()
+	struct mlx5_core_dev *core = virtbus_get_devdata(dev)
 
-from the net-next tree.
+	// Use the huge API surrounding struct mlx5_core_dev
+	qp = mlx5_core_create_qp(core, ...);
+   }
 
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
+   static struct virtbus_driver mlx5_rdma_driver = {
+      .probe = mlx5_rdma_probe,
+      .match = {"mlx5_core"}
+   }
 
---=20
-Cheers,
-Stephen Rothwell
+Drivers that match "mlx5_core" know that the opaque
+'virtbus_get_devdata()' is a 'struct mlx5_core_dev *' and use that
+access the core driver.
 
-diff --cc include/uapi/linux/devlink.h
-index a8a2174db030,b558ea88b766..000000000000
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@@ -421,7 -421,10 +421,12 @@@ enum devlink_attr=20
- =20
-  	DEVLINK_ATTR_RELOAD_FAILED,			/* u8 0 or 1 */
- =20
- +	DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,	/* u64 */
-++
-+ 	DEVLINK_ATTR_NETNS_FD,			/* u32 */
-+ 	DEVLINK_ATTR_NETNS_PID,			/* u32 */
-+ 	DEVLINK_ATTR_NETNS_ID,			/* u32 */
-+=20
-  	/* add new attributes above here, update the policy in devlink.c */
- =20
-  	__DEVLINK_ATTR_MAX,
+A "ice_core" would know it is some 'struct ice_core_dev *' for Intel
+and uses that pointer, etc.
 
---Sig_/Kt0psQJsHnjo4Q6rmz3J/ke
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+ie it is just a way to a pass a 'void *' from one module to another
+while using the driver core to manage module autoloading and binding.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl3LRnoACgkQAVBC80lX
-0GxPcgf/Vdy7NSKAT0Xz5/H2uJI7SvvjKDoQYXOcTo7iPy0PWe4xskRv4D1Ha7oI
-3YKdlhRGi6ENWE19SJ5vJyKMbQpUTotDsTooL+3sM2oH5Y10k3RhvhWClNYBmWjb
-JLID+hjqSrhYHtb5rKKBfU9EkoLgJnKur/2g6zIe/oDCdV6lsJn5+LukfNPjuda8
-pCCqXSAs/0Ysu9VTtJbpLVB8rySc30+EK/HdOw2Mk0u2TegNe3PNttPNDvqApvZ9
-wmQ3/q50LDAC0L8xBRcSCQRqL5y8Mm3UXYk2c2ydLxarEHFMkcvzGO8WExUtiXJF
-Vu9K8aV3HB1Jm3GGTjxoeXZivVRj2g==
-=mGw+
------END PGP SIGNATURE-----
-
---Sig_/Kt0psQJsHnjo4Q6rmz3J/ke--
+Jason
