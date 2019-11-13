@@ -2,127 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8C34FB796
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:31:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F253FB7A0
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 19:32:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbfKMSbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 13:31:42 -0500
-Received: from mga03.intel.com ([134.134.136.65]:57372 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726564AbfKMSbl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 13:31:41 -0500
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Nov 2019 10:31:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,301,1569308400"; 
-   d="scan'208";a="355555407"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by orsmga004.jf.intel.com with ESMTP; 13 Nov 2019 10:31:38 -0800
-Date:   Wed, 13 Nov 2019 10:31:38 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Jan Kara <jack@suse.cz>
-Cc:     John Hubbard <jhubbard@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Michal Hocko <mhocko@suse.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paul Mackerras <paulus@samba.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>, bpf@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, kvm@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-mm@kvack.org, LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCH v4 09/23] mm/gup: introduce pin_user_pages*() and FOLL_PIN
-Message-ID: <20191113183137.GA12699@iweiny-DESK2.sc.intel.com>
-References: <20191113042710.3997854-1-jhubbard@nvidia.com>
- <20191113042710.3997854-10-jhubbard@nvidia.com>
- <20191113104308.GE6367@quack2.suse.cz>
+        id S1728492AbfKMScK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 13:32:10 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:32868 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728338AbfKMScK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 13:32:10 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xADITHU6127460;
+        Wed, 13 Nov 2019 18:32:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
+ bh=wlOESdlP+I6ba8vhVLFzp7uW7rzgqu2CF/S70dfvgRY=;
+ b=J+qUVnxObzgaitTeoQEgY/Ke0/iFviBQ+jYcu8+Lc8VRUk9riMBoMp/Bx5tALjwsXiNs
+ qPVUE361JUkUiX4zYQHKYtiPpplc0xZO1ZgEfDm/5+hT/ZsJAVLMS5i109D3RR0pje2y
+ wG2/8MCFdmYdejHL0z5gQmufG6Qi5FkX3I+fj2T0stHwyIG/GR029pl/TphZrtKMknp2
+ BhTNRMJER1IXMEA4QqbqKPf/YvdwTqFofEOsVujnoFS4pYVqtA9gR6ygjfjC8davZznH
+ NQrVIQnIrJGOHs1hn8xEsisUjeK2g+Cm3n0c5MnSohmOjUtXlnl3QNRAYNs0pntdNyqV Jg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 2w5mvtxeth-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 Nov 2019 18:32:06 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xADISxTq160259;
+        Wed, 13 Nov 2019 18:32:05 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2w7vppqvjw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 Nov 2019 18:32:05 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id xADIW5jM000801;
+        Wed, 13 Nov 2019 18:32:05 GMT
+Received: from kili.mountain (/129.205.23.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 13 Nov 2019 10:32:04 -0800
+Date:   Wed, 13 Nov 2019 21:31:58 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Igor Russkikh <irusskikh@marvell.com>,
+        Nikita Danilov <ndanilov@marvell.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH] net: atlantic: Signedness bug in aq_vec_isr_legacy()
+Message-ID: <20191113183158.rogxsza632ppeen3@kili.mountain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20191113104308.GE6367@quack2.suse.cz>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+X-Mailer: git-send-email haha only kidding
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9440 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1910280000 definitions=main-1911130158
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9440 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1910280000
+ definitions=main-1911130158
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > +/**
-> > + * pin_user_pages_fast() - pin user pages in memory without taking locks
-> > + *
-> > + * Nearly the same as get_user_pages_fast(), except that FOLL_PIN is set. See
-> > + * get_user_pages_fast() for documentation on the function arguments, because
-> > + * the arguments here are identical.
-> > + *
-> > + * FOLL_PIN means that the pages must be released via put_user_page(). Please
-> > + * see Documentation/vm/pin_user_pages.rst for further details.
-> > + *
-> > + * This is intended for Case 1 (DIO) in Documentation/vm/pin_user_pages.rst. It
-> > + * is NOT intended for Case 2 (RDMA: long-term pins).
-> > + */
-> > +int pin_user_pages_fast(unsigned long start, int nr_pages,
-> > +			unsigned int gup_flags, struct page **pages)
-> > +{
-> > +	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
-> > +	if (WARN_ON_ONCE(gup_flags & FOLL_GET))
-> > +		return -EINVAL;
-> > +
-> > +	gup_flags |= FOLL_PIN;
-> > +	return internal_get_user_pages_fast(start, nr_pages, gup_flags, pages);
-> > +}
-> > +EXPORT_SYMBOL_GPL(pin_user_pages_fast);
-> 
-> I was somewhat wondering about the number of functions you add here. So we
-> have:
-> 
-> pin_user_pages()
-> pin_user_pages_fast()
-> pin_user_pages_remote()
-> 
-> and then longterm variants:
-> 
-> pin_longterm_pages()
-> pin_longterm_pages_fast()
-> pin_longterm_pages_remote()
-> 
-> and obviously we have gup like:
-> get_user_pages()
-> get_user_pages_fast()
-> get_user_pages_remote()
-> ... and some other gup variants ...
-> 
-> I think we really should have pin_* vs get_* variants as they are very
-> different in terms of guarantees and after conversion, any use of get_*
-> variant in non-mm code should be closely scrutinized. OTOH pin_longterm_*
-> don't look *that* useful to me and just using pin_* instead with
-> FOLL_LONGTERM flag would look OK to me and somewhat reduce the number of
-> functions which is already large enough? What do people think? I don't feel
-> too strongly about this but wanted to bring this up.
+irqreturn_t type is an enum and in this context it's unsigned, so "err"
+can't be irqreturn_t or it breaks the error handling.  In fact the "err"
+variable is only used to store integers (never irqreturn_t) so it should
+be declared as int.
 
-I'm a bit concerned with the function explosion myself.  I think what you
-suggest is a happy medium.  So I'd be ok with that.
+I removed the initialization because it's not required.  Using a bogus
+initializer turns off GCC's uninitialized variable warnings.  Secondly,
+there is a GCC warning about unused assignments and we would like to
+enable that feature eventually so we have been trying to remove these
+unnecessary initializers.
 
-Ira
+Fixes: 7b0c342f1f67 ("net: atlantic: code style cleanup")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/net/ethernet/aquantia/atlantic/aq_vec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+index 6e19e27b6200..f40a427970dc 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_vec.c
+@@ -307,8 +307,8 @@ irqreturn_t aq_vec_isr(int irq, void *private)
+ irqreturn_t aq_vec_isr_legacy(int irq, void *private)
+ {
+ 	struct aq_vec_s *self = private;
+-	irqreturn_t err = 0;
+ 	u64 irq_mask = 0U;
++	int err;
+ 
+ 	if (!self)
+ 		return IRQ_NONE;
+-- 
+2.11.0
 
