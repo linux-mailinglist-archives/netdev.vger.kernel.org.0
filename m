@@ -2,83 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7FAFAC6E
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 09:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4007DFAC8C
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 10:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbfKMI6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 03:58:03 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:55685 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725996AbfKMI6D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 03:58:03 -0500
-X-Originating-IP: 92.137.17.54
-Received: from localhost (alyon-657-1-975-54.w92-137.abo.wanadoo.fr [92.137.17.54])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id B715760009;
-        Wed, 13 Nov 2019 08:57:59 +0000 (UTC)
-Date:   Wed, 13 Nov 2019 09:57:59 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH net-next 07/12] net: mscc: ocelot: separate the
- implementation of switch reset
-Message-ID: <20191113085759.GJ3572@piout.net>
-References: <20191112124420.6225-1-olteanv@gmail.com>
- <20191112124420.6225-8-olteanv@gmail.com>
- <20191112135559.GI5090@lunn.ch>
- <CA+h21hpH7O_O83KD-oEJ4c7iu2VsXJFQm2upNadD7xxOv7dvfw@mail.gmail.com>
+        id S1727272AbfKMJFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 04:05:05 -0500
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:58695 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726988AbfKMJFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 04:05:05 -0500
+X-Originating-IP: 86.206.246.123
+Received: from localhost (lfbn-tou-1-421-123.w86-206.abo.wanadoo.fr [86.206.246.123])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 93927240018;
+        Wed, 13 Nov 2019 09:05:01 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, linux@armlinux.org.uk
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, andrew@lunn.ch,
+        alexandre.belloni@bootlin.com, nicolas.ferre@microchip.com,
+        netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        mparab@cadence.com, piotrs@cadence.com, dkangude@cadence.com,
+        ewanm@cadence.com, arthurm@cadence.com, stevenh@cadence.com
+Subject: [PATCH net-next v3 0/2] net: macb: convert to phylink
+Date:   Wed, 13 Nov 2019 10:00:04 +0100
+Message-Id: <20191113090006.58898-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hpH7O_O83KD-oEJ4c7iu2VsXJFQm2upNadD7xxOv7dvfw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/11/2019 15:59:37+0200, Vladimir Oltean wrote:
-> On Tue, 12 Nov 2019 at 15:56, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Tue, Nov 12, 2019 at 02:44:15PM +0200, Vladimir Oltean wrote:
-> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > >
-> > > The Felix switch has a different reset procedure, so a function pointer
-> > > needs to be created and added to the ocelot_ops structure.
-> > >
-> > > The reset procedure has been moved into ocelot_init.
-> > >
-> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > ---
-> > >  drivers/net/ethernet/mscc/ocelot.c       |  3 ++
-> > >  drivers/net/ethernet/mscc/ocelot.h       |  1 +
-> > >  drivers/net/ethernet/mscc/ocelot_board.c | 37 +++++++++++++++---------
-> >
-> > I'm wondering about the name board. So far, the code you have moved
-> > into ocelot_board has nothing to do with the board as such. This is
-> > not a GPIO used to reset the switch, it is not a regulator, etc. It is
-> > all internal to the device, but just differs per family. Maybe you can
-> > think of a better name?
-> >
-> 
-> Alexandre, what do you think? I agree "ocelot_board" is a bit strange.
-> 
+Hello,
 
-The name was coming from mscc, Allan agreed to rename it to
-ocelot_vsc7514.c which would make sense.
+This series converts the MACB Ethernet driver to the Phylink framework.
+The MAC configuration is moved to the Phylink ops and Phylink helpers
+are now used in the ethtools functions. This helps to access the flow
+control and pauseparam logic and this will be helpful in the future for
+boards using this controller with SFP cages.
 
+Thanks,
+Antoine
+
+Since v2:
+  - Moved the Tx and Rx buffer initialization rework to its own patch.
+
+Since v1:
+  - Stopped using state->link in mac_config and moved macb_set_tx_clk to
+    the link_up helper..
+  - Fixed the node given to phylink_of_phy_connect.
+  - Removed netif_carrier_off from macb_open.
+  - Fixed the macb_get_wol logic.
+  - Rewored macb_ioctl as suggested.
+  - Added a call to phylink_destroy in macb_remove.
+  - Fixed the suspend/resume case by calling phylink_start/stop in the
+    resume/suspend helpers. I had to take the rtnl lock to do this,
+    which might be something to discuss.
+
+Antoine Tenart (2):
+  net: macb: move the Tx and Rx buffer initialization into a function
+  net: macb: convert to phylink
+
+ drivers/net/ethernet/cadence/Kconfig     |   2 +-
+ drivers/net/ethernet/cadence/macb.h      |   9 +-
+ drivers/net/ethernet/cadence/macb_main.c | 484 ++++++++++++-----------
+ 3 files changed, 261 insertions(+), 234 deletions(-)
 
 -- 
-Alexandre Belloni, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.23.0
+
