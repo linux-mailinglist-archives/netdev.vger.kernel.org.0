@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D693FA1D1
-	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:00:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0D6FA35B
+	for <lists+netdev@lfdr.de>; Wed, 13 Nov 2019 03:12:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729441AbfKMB7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Nov 2019 20:59:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54384 "EHLO mail.kernel.org"
+        id S1730330AbfKMB7s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Nov 2019 20:59:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730305AbfKMB7m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Nov 2019 20:59:42 -0500
+        id S1728094AbfKMB7q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Nov 2019 20:59:46 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2683522474;
-        Wed, 13 Nov 2019 01:59:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C0AE722469;
+        Wed, 13 Nov 2019 01:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573610380;
-        bh=EaahZ43xIAI67Xn9sdPbZMgQlctzU9ySGIqHmmeZmDc=;
+        s=default; t=1573610385;
+        bh=okglWxbhWTSpQ+j01Uh3yunG0KPMLBP4XpLqcKMgxMg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=huU2i+BA9A++hRmKJxHphJ4HDXAjn+sUmYTSajIvGDiHD0uQMCijDVYn31aSVfR/s
-         BrSFpW0I0+BtYbI58954lIwcSkZ/AKXSO357qMzKBhKLm9QFKExtOzOIuRnR3/IzS+
-         UOiZgJoTAQ1wdmw5ihaqWNvrjlXPVGyIiGkyN7Ag=
+        b=OCviAlZ0nLKJZdE+pwfNWOviOsQl7kHlT0CFFNOu4he9gZEUK1JfJZbhl9hfD5gs7
+         Pj9BYvN0sm9lz2FtHY0oOdBAqt9vWauw8jNZjdo9NChoQ/Opy94dIPqaqlXc+jbFWv
+         aat+COw/GZlyatRSpYYBuTTPr1+dfje0UUxHcx2s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/68] SUNRPC: Fix priority queue fairness
-Date:   Tue, 12 Nov 2019 20:58:29 -0500
-Message-Id: <20191113015932.12655-5-sashal@kernel.org>
+Cc:     Ben Greear <greearb@candelatech.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/68] ath10k: fix vdev-start timeout on error
+Date:   Tue, 12 Nov 2019 20:58:32 -0500
+Message-Id: <20191113015932.12655-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191113015932.12655-1-sashal@kernel.org>
 References: <20191113015932.12655-1-sashal@kernel.org>
@@ -43,224 +44,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit f42f7c283078ce3c1e8368b140e270755b1ae313 ]
+[ Upstream commit 833fd34d743c728afe6d127ef7bee67e7d9199a8 ]
 
-Fix up the priority queue to not batch by owner, but by queue, so that
-we allow '1 << priority' elements to be dequeued before switching to
-the next priority queue.
-The owner field is still used to wake up requests in round robin order
-by owner to avoid single processes hogging the RPC layer by loading the
-queues.
+The vdev-start-response message should cause the
+completion to fire, even in the error case.  Otherwise,
+the user still gets no useful information and everything
+is blocked until the timeout period.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Add some warning text to print out the invalid status
+code to aid debugging, and propagate failure code.
+
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sunrpc/sched.h |   2 -
- net/sunrpc/sched.c           | 109 +++++++++++++++++------------------
- 2 files changed, 54 insertions(+), 57 deletions(-)
+ drivers/net/wireless/ath/ath10k/core.h |  1 +
+ drivers/net/wireless/ath/ath10k/mac.c  |  2 +-
+ drivers/net/wireless/ath/ath10k/wmi.c  | 19 ++++++++++++++++---
+ drivers/net/wireless/ath/ath10k/wmi.h  |  8 +++++++-
+ 4 files changed, 25 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/sunrpc/sched.h b/include/linux/sunrpc/sched.h
-index 7ba040c797ec4..da2791b5fe879 100644
---- a/include/linux/sunrpc/sched.h
-+++ b/include/linux/sunrpc/sched.h
-@@ -185,7 +185,6 @@ struct rpc_timer {
- struct rpc_wait_queue {
- 	spinlock_t		lock;
- 	struct list_head	tasks[RPC_NR_PRIORITY];	/* task queue for each priority level */
--	pid_t			owner;			/* process id of last task serviced */
- 	unsigned char		maxpriority;		/* maximum priority (0 if queue is not a priority queue) */
- 	unsigned char		priority;		/* current priority */
- 	unsigned char		nr;			/* # tasks remaining for cookie */
-@@ -201,7 +200,6 @@ struct rpc_wait_queue {
-  * from a single cookie.  The aim is to improve
-  * performance of NFS operations such as read/write.
-  */
--#define RPC_BATCH_COUNT			16
- #define RPC_IS_PRIORITY(q)		((q)->maxpriority > 0)
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index 90c0c4a7175db..414153cd57845 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -811,6 +811,7 @@ struct ath10k {
  
- /*
-diff --git a/net/sunrpc/sched.c b/net/sunrpc/sched.c
-index 600eacce653ae..0ef65822fdd34 100644
---- a/net/sunrpc/sched.c
-+++ b/net/sunrpc/sched.c
-@@ -99,64 +99,78 @@ __rpc_add_timer(struct rpc_wait_queue *queue, struct rpc_task *task)
- 	list_add(&task->u.tk_wait.timer_list, &queue->timer_list.list);
+ 	struct completion install_key_done;
+ 
++	int last_wmi_vdev_start_status;
+ 	struct completion vdev_setup_done;
+ 
+ 	struct workqueue_struct *workqueue;
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 1588fe8110d00..2294ba311c47a 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -947,7 +947,7 @@ static inline int ath10k_vdev_setup_sync(struct ath10k *ar)
+ 	if (time_left == 0)
+ 		return -ETIMEDOUT;
+ 
+-	return 0;
++	return ar->last_wmi_vdev_start_status;
  }
  
--static void rpc_rotate_queue_owner(struct rpc_wait_queue *queue)
--{
--	struct list_head *q = &queue->tasks[queue->priority];
--	struct rpc_task *task;
--
--	if (!list_empty(q)) {
--		task = list_first_entry(q, struct rpc_task, u.tk_wait.list);
--		if (task->tk_owner == queue->owner)
--			list_move_tail(&task->u.tk_wait.list, q);
--	}
--}
--
- static void rpc_set_waitqueue_priority(struct rpc_wait_queue *queue, int priority)
+ static int ath10k_monitor_vdev_start(struct ath10k *ar, int vdev_id)
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index bbfe7be214e12..68d324e6fcb45 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -3102,18 +3102,31 @@ void ath10k_wmi_event_vdev_start_resp(struct ath10k *ar, struct sk_buff *skb)
  {
- 	if (queue->priority != priority) {
--		/* Fairness: rotate the list when changing priority */
--		rpc_rotate_queue_owner(queue);
- 		queue->priority = priority;
-+		queue->nr = 1U << priority;
- 	}
- }
+ 	struct wmi_vdev_start_ev_arg arg = {};
+ 	int ret;
++	u32 status;
  
--static void rpc_set_waitqueue_owner(struct rpc_wait_queue *queue, pid_t pid)
--{
--	queue->owner = pid;
--	queue->nr = RPC_BATCH_COUNT;
--}
--
- static void rpc_reset_waitqueue_priority(struct rpc_wait_queue *queue)
- {
- 	rpc_set_waitqueue_priority(queue, queue->maxpriority);
--	rpc_set_waitqueue_owner(queue, 0);
- }
+ 	ath10k_dbg(ar, ATH10K_DBG_WMI, "WMI_VDEV_START_RESP_EVENTID\n");
  
- /*
-- * Add new request to a priority queue.
-+ * Add a request to a queue list
-  */
--static void __rpc_add_wait_queue_priority(struct rpc_wait_queue *queue,
--		struct rpc_task *task,
--		unsigned char queue_priority)
-+static void
-+__rpc_list_enqueue_task(struct list_head *q, struct rpc_task *task)
- {
--	struct list_head *q;
- 	struct rpc_task *t;
- 
--	INIT_LIST_HEAD(&task->u.tk_wait.links);
--	if (unlikely(queue_priority > queue->maxpriority))
--		queue_priority = queue->maxpriority;
--	if (queue_priority > queue->priority)
--		rpc_set_waitqueue_priority(queue, queue_priority);
--	q = &queue->tasks[queue_priority];
- 	list_for_each_entry(t, q, u.tk_wait.list) {
- 		if (t->tk_owner == task->tk_owner) {
--			list_add_tail(&task->u.tk_wait.list, &t->u.tk_wait.links);
-+			list_add_tail(&task->u.tk_wait.links,
-+					&t->u.tk_wait.links);
-+			/* Cache the queue head in task->u.tk_wait.list */
-+			task->u.tk_wait.list.next = q;
-+			task->u.tk_wait.list.prev = NULL;
- 			return;
- 		}
- 	}
-+	INIT_LIST_HEAD(&task->u.tk_wait.links);
- 	list_add_tail(&task->u.tk_wait.list, q);
- }
- 
-+/*
-+ * Remove request from a queue list
-+ */
-+static void
-+__rpc_list_dequeue_task(struct rpc_task *task)
-+{
-+	struct list_head *q;
-+	struct rpc_task *t;
++	ar->last_wmi_vdev_start_status = 0;
 +
-+	if (task->u.tk_wait.list.prev == NULL) {
-+		list_del(&task->u.tk_wait.links);
-+		return;
-+	}
-+	if (!list_empty(&task->u.tk_wait.links)) {
-+		t = list_first_entry(&task->u.tk_wait.links,
-+				struct rpc_task,
-+				u.tk_wait.links);
-+		/* Assume __rpc_list_enqueue_task() cached the queue head */
-+		q = t->u.tk_wait.list.next;
-+		list_add_tail(&t->u.tk_wait.list, q);
-+		list_del(&task->u.tk_wait.links);
-+	}
-+	list_del(&task->u.tk_wait.list);
-+}
-+
-+/*
-+ * Add new request to a priority queue.
-+ */
-+static void __rpc_add_wait_queue_priority(struct rpc_wait_queue *queue,
-+		struct rpc_task *task,
-+		unsigned char queue_priority)
-+{
-+	if (unlikely(queue_priority > queue->maxpriority))
-+		queue_priority = queue->maxpriority;
-+	__rpc_list_enqueue_task(&queue->tasks[queue_priority], task);
-+}
-+
- /*
-  * Add new request to wait queue.
-  *
-@@ -194,13 +208,7 @@ static void __rpc_add_wait_queue(struct rpc_wait_queue *queue,
-  */
- static void __rpc_remove_wait_queue_priority(struct rpc_task *task)
- {
--	struct rpc_task *t;
--
--	if (!list_empty(&task->u.tk_wait.links)) {
--		t = list_entry(task->u.tk_wait.links.next, struct rpc_task, u.tk_wait.list);
--		list_move(&t->u.tk_wait.list, &task->u.tk_wait.list);
--		list_splice_init(&task->u.tk_wait.links, &t->u.tk_wait.links);
--	}
-+	__rpc_list_dequeue_task(task);
- }
- 
- /*
-@@ -212,7 +220,8 @@ static void __rpc_remove_wait_queue(struct rpc_wait_queue *queue, struct rpc_tas
- 	__rpc_disable_timer(queue, task);
- 	if (RPC_IS_PRIORITY(queue))
- 		__rpc_remove_wait_queue_priority(task);
--	list_del(&task->u.tk_wait.list);
-+	else
-+		list_del(&task->u.tk_wait.list);
- 	queue->qlen--;
- 	dprintk("RPC: %5u removed from queue %p \"%s\"\n",
- 			task->tk_pid, queue, rpc_qname(queue));
-@@ -481,17 +490,9 @@ static struct rpc_task *__rpc_find_next_queued_priority(struct rpc_wait_queue *q
- 	 * Service a batch of tasks from a single owner.
- 	 */
- 	q = &queue->tasks[queue->priority];
--	if (!list_empty(q)) {
--		task = list_entry(q->next, struct rpc_task, u.tk_wait.list);
--		if (queue->owner == task->tk_owner) {
--			if (--queue->nr)
--				goto out;
--			list_move_tail(&task->u.tk_wait.list, q);
--		}
--		/*
--		 * Check if we need to switch queues.
--		 */
--		goto new_owner;
-+	if (!list_empty(q) && --queue->nr) {
-+		task = list_first_entry(q, struct rpc_task, u.tk_wait.list);
+ 	ret = ath10k_wmi_pull_vdev_start(ar, skb, &arg);
+ 	if (ret) {
+ 		ath10k_warn(ar, "failed to parse vdev start event: %d\n", ret);
+-		return;
++		ar->last_wmi_vdev_start_status = ret;
 +		goto out;
  	}
  
- 	/*
-@@ -503,7 +504,7 @@ static struct rpc_task *__rpc_find_next_queued_priority(struct rpc_wait_queue *q
- 		else
- 			q = q - 1;
- 		if (!list_empty(q)) {
--			task = list_entry(q->next, struct rpc_task, u.tk_wait.list);
-+			task = list_first_entry(q, struct rpc_task, u.tk_wait.list);
- 			goto new_queue;
- 		}
- 	} while (q != &queue->tasks[queue->priority]);
-@@ -513,8 +514,6 @@ static struct rpc_task *__rpc_find_next_queued_priority(struct rpc_wait_queue *q
+-	if (WARN_ON(__le32_to_cpu(arg.status)))
+-		return;
++	status = __le32_to_cpu(arg.status);
++	if (WARN_ON_ONCE(status)) {
++		ath10k_warn(ar, "vdev-start-response reports status error: %d (%s)\n",
++			    status, (status == WMI_VDEV_START_CHAN_INVALID) ?
++			    "chan-invalid" : "unknown");
++		/* Setup is done one way or another though, so we should still
++		 * do the completion, so don't return here.
++		 */
++		ar->last_wmi_vdev_start_status = -EINVAL;
++	}
  
- new_queue:
- 	rpc_set_waitqueue_priority(queue, (unsigned int)(q - &queue->tasks[0]));
--new_owner:
--	rpc_set_waitqueue_owner(queue, task->tk_owner);
- out:
- 	return task;
++out:
+ 	complete(&ar->vdev_setup_done);
  }
+ 
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.h b/drivers/net/wireless/ath/ath10k/wmi.h
+index 9b8562ff66987..cce028ea9b57d 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.h
++++ b/drivers/net/wireless/ath/ath10k/wmi.h
+@@ -6248,11 +6248,17 @@ struct wmi_ch_info_ev_arg {
+ 	__le32 rx_frame_count;
+ };
+ 
++/* From 10.4 firmware, not sure all have the same values. */
++enum wmi_vdev_start_status {
++	WMI_VDEV_START_OK = 0,
++	WMI_VDEV_START_CHAN_INVALID,
++};
++
+ struct wmi_vdev_start_ev_arg {
+ 	__le32 vdev_id;
+ 	__le32 req_id;
+ 	__le32 resp_type; /* %WMI_VDEV_RESP_ */
+-	__le32 status;
++	__le32 status; /* See wmi_vdev_start_status enum above */
+ };
+ 
+ struct wmi_peer_kick_ev_arg {
 -- 
 2.20.1
 
