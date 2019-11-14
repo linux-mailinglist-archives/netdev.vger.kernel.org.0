@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06327FCE3B
+	by mail.lfdr.de (Postfix) with ESMTP id 074C5FCE3C
 	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:57:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727075AbfKNS51 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 14 Nov 2019 13:57:27 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:52690 "EHLO
+        id S1727112AbfKNS52 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 Nov 2019 13:57:28 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15524 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726444AbfKNS51 (ORCPT
+        by vger.kernel.org with ESMTP id S1727059AbfKNS51 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:57:27 -0500
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEIeXnd028358
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:25 -0800
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEIhCjR012800
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:26 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w8n9s6xy1-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2w8rgdnq7n-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:25 -0800
-Received: from 2401:db00:30:6007:face:0:1:0 (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:26 -0800
+Received: from 2401:db00:2120:80e1:face:0:29:0 (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 14 Nov 2019 10:57:24 -0800
+ 15.1.1713.5; Thu, 14 Nov 2019 10:57:25 -0800
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id F1BF476071B; Thu, 14 Nov 2019 10:57:22 -0800 (PST)
+        id 02B4F76071B; Thu, 14 Nov 2019 10:57:25 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <x86@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v4 bpf-next 01/20] x86/alternatives: Teach text_poke_bp() to emulate instructions
-Date:   Thu, 14 Nov 2019 10:57:01 -0800
-Message-ID: <20191114185720.1641606-2-ast@kernel.org>
+Subject: [PATCH v4 bpf-next 02/20] bpf: refactor x86 JIT into helpers
+Date:   Thu, 14 Nov 2019 10:57:02 -0800
+Message-ID: <20191114185720.1641606-3-ast@kernel.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191114185720.1641606-1-ast@kernel.org>
 References: <20191114185720.1641606-1-ast@kernel.org>
@@ -43,10 +43,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-14_05:2019-11-14,2019-11-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0 mlxscore=0
- adultscore=0 impostorscore=0 priorityscore=1501 phishscore=0 clxscore=1034
- lowpriorityscore=0 malwarescore=0 suspectscore=1 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ mlxlogscore=527 mlxscore=0 suspectscore=1 clxscore=1034 priorityscore=1501
+ phishscore=0 spamscore=0 bulkscore=0 adultscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1911140157
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -54,364 +54,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+Refactor x86 JITing of LDX, STX, CALL instructions into separate helper
+functions.  No functional changes in LDX and STX helpers.  There is a minor
+change in CALL helper. It will populate target address correctly on the first
+pass of JIT instead of second pass. That won't reduce total number of JIT
+passes though.
 
-In preparation for static_call and variable size jump_label support,
-teach text_poke_bp() to emulate instructions, namely:
-
-  JMP32, JMP8, CALL, NOP2, NOP_ATOMIC5, INT3
-
-The current text_poke_bp() takes a @handler argument which is used as
-a jump target when the temporary INT3 is hit by a different CPU.
-
-When patching CALL instructions, this doesn't work because we'd miss
-the PUSH of the return address. Instead, teach poke_int3_handler() to
-emulate an instruction, typically the instruction we're patching in.
-
-This fits almost all text_poke_bp() users, except
-arch_unoptimize_kprobe() which restores random text, and for that site
-we have to build an explicit emulate instruction.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Reviewed-by: Daniel Bristot de Oliveira <bristot@redhat.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 ---
- arch/x86/include/asm/text-patching.h |  24 +++--
- arch/x86/kernel/alternative.c        | 132 ++++++++++++++++++++-------
- arch/x86/kernel/jump_label.c         |   9 +-
- arch/x86/kernel/kprobes/opt.c        |  11 ++-
- 4 files changed, 130 insertions(+), 46 deletions(-)
+ arch/x86/net/bpf_jit_comp.c | 152 +++++++++++++++++++++++-------------
+ 1 file changed, 98 insertions(+), 54 deletions(-)
 
-diff --git a/arch/x86/include/asm/text-patching.h b/arch/x86/include/asm/text-patching.h
-index 5e8319bb207a..23c626a742e8 100644
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -26,10 +26,11 @@ static inline void apply_paravirt(struct paravirt_patch_site *start,
- #define POKE_MAX_OPCODE_SIZE	5
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index 8cd23d8309bf..fb99d976ad6e 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -198,6 +198,8 @@ struct jit_context {
+ /* Maximum number of bytes emitted while JITing one eBPF insn */
+ #define BPF_MAX_INSN_SIZE	128
+ #define BPF_INSN_SAFETY		64
++/* number of bytes emit_call() needs to generate call instruction */
++#define X86_CALL_SIZE		5
  
- struct text_poke_loc {
--	void *detour;
- 	void *addr;
--	size_t len;
--	const char opcode[POKE_MAX_OPCODE_SIZE];
-+	int len;
-+	s32 rel32;
-+	u8 opcode;
-+	const u8 text[POKE_MAX_OPCODE_SIZE];
- };
+ #define PROLOGUE_SIZE		20
  
- extern void text_poke_early(void *addr, const void *opcode, size_t len);
-@@ -51,8 +52,10 @@ extern void text_poke_early(void *addr, const void *opcode, size_t len);
- extern void *text_poke(void *addr, const void *opcode, size_t len);
- extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
- extern int poke_int3_handler(struct pt_regs *regs);
--extern void text_poke_bp(void *addr, const void *opcode, size_t len, void *handler);
-+extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
- extern void text_poke_bp_batch(struct text_poke_loc *tp, unsigned int nr_entries);
-+extern void text_poke_loc_init(struct text_poke_loc *tp, void *addr,
-+			       const void *opcode, size_t len, const void *emulate);
- extern int after_bootmem;
- extern __ro_after_init struct mm_struct *poking_mm;
- extern __ro_after_init unsigned long poking_addr;
-@@ -63,8 +66,17 @@ static inline void int3_emulate_jmp(struct pt_regs *regs, unsigned long ip)
- 	regs->ip = ip;
+@@ -390,6 +392,99 @@ static void emit_mov_reg(u8 **pprog, bool is64, u32 dst_reg, u32 src_reg)
+ 	*pprog = prog;
  }
  
--#define INT3_INSN_SIZE 1
--#define CALL_INSN_SIZE 5
-+#define INT3_INSN_SIZE		1
-+#define INT3_INSN_OPCODE	0xCC
-+
-+#define CALL_INSN_SIZE		5
-+#define CALL_INSN_OPCODE	0xE8
-+
-+#define JMP32_INSN_SIZE		5
-+#define JMP32_INSN_OPCODE	0xE9
-+
-+#define JMP8_INSN_SIZE		2
-+#define JMP8_INSN_OPCODE	0xEB
- 
- static inline void int3_emulate_push(struct pt_regs *regs, unsigned long val)
- {
-diff --git a/arch/x86/kernel/alternative.c b/arch/x86/kernel/alternative.c
-index 9d3a971ea364..9ec463fe96f2 100644
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -956,16 +956,15 @@ NOKPROBE_SYMBOL(patch_cmp);
- int poke_int3_handler(struct pt_regs *regs)
- {
- 	struct text_poke_loc *tp;
--	unsigned char int3 = 0xcc;
- 	void *ip;
- 
- 	/*
- 	 * Having observed our INT3 instruction, we now must observe
- 	 * bp_patching.nr_entries.
- 	 *
--	 * 	nr_entries != 0			INT3
--	 * 	WMB				RMB
--	 * 	write INT3			if (nr_entries)
-+	 *	nr_entries != 0			INT3
-+	 *	WMB				RMB
-+	 *	write INT3			if (nr_entries)
- 	 *
- 	 * Idem for other elements in bp_patching.
- 	 */
-@@ -978,9 +977,9 @@ int poke_int3_handler(struct pt_regs *regs)
- 		return 0;
- 
- 	/*
--	 * Discount the sizeof(int3). See text_poke_bp_batch().
-+	 * Discount the INT3. See text_poke_bp_batch().
- 	 */
--	ip = (void *) regs->ip - sizeof(int3);
-+	ip = (void *) regs->ip - INT3_INSN_SIZE;
- 
- 	/*
- 	 * Skip the binary search if there is a single member in the vector.
-@@ -997,8 +996,28 @@ int poke_int3_handler(struct pt_regs *regs)
- 			return 0;
- 	}
- 
--	/* set up the specified breakpoint detour */
--	regs->ip = (unsigned long) tp->detour;
-+	ip += tp->len;
-+
-+	switch (tp->opcode) {
-+	case INT3_INSN_OPCODE:
-+		/*
-+		 * Someone poked an explicit INT3, they'll want to handle it,
-+		 * do not consume.
-+		 */
-+		return 0;
-+
-+	case CALL_INSN_OPCODE:
-+		int3_emulate_call(regs, (long)ip + tp->rel32);
-+		break;
-+
-+	case JMP32_INSN_OPCODE:
-+	case JMP8_INSN_OPCODE:
-+		int3_emulate_jmp(regs, (long)ip + tp->rel32);
-+		break;
-+
-+	default:
-+		BUG();
-+	}
- 
- 	return 1;
- }
-@@ -1014,7 +1033,7 @@ NOKPROBE_SYMBOL(poke_int3_handler);
-  * synchronization using int3 breakpoint.
-  *
-  * The way it is done:
-- * 	- For each entry in the vector:
-+ *	- For each entry in the vector:
-  *		- add a int3 trap to the address that will be patched
-  *	- sync cores
-  *	- For each entry in the vector:
-@@ -1027,9 +1046,9 @@ NOKPROBE_SYMBOL(poke_int3_handler);
-  */
- void text_poke_bp_batch(struct text_poke_loc *tp, unsigned int nr_entries)
- {
--	int patched_all_but_first = 0;
--	unsigned char int3 = 0xcc;
-+	unsigned char int3 = INT3_INSN_OPCODE;
- 	unsigned int i;
-+	int do_sync;
- 
- 	lockdep_assert_held(&text_mutex);
- 
-@@ -1053,16 +1072,16 @@ void text_poke_bp_batch(struct text_poke_loc *tp, unsigned int nr_entries)
- 	/*
- 	 * Second step: update all but the first byte of the patched range.
- 	 */
--	for (i = 0; i < nr_entries; i++) {
-+	for (do_sync = 0, i = 0; i < nr_entries; i++) {
- 		if (tp[i].len - sizeof(int3) > 0) {
- 			text_poke((char *)tp[i].addr + sizeof(int3),
--				  (const char *)tp[i].opcode + sizeof(int3),
-+				  (const char *)tp[i].text + sizeof(int3),
- 				  tp[i].len - sizeof(int3));
--			patched_all_but_first++;
-+			do_sync++;
- 		}
- 	}
- 
--	if (patched_all_but_first) {
-+	if (do_sync) {
- 		/*
- 		 * According to Intel, this core syncing is very likely
- 		 * not necessary and we'd be safe even without it. But
-@@ -1075,10 +1094,17 @@ void text_poke_bp_batch(struct text_poke_loc *tp, unsigned int nr_entries)
- 	 * Third step: replace the first byte (int3) by the first byte of
- 	 * replacing opcode.
- 	 */
--	for (i = 0; i < nr_entries; i++)
--		text_poke(tp[i].addr, tp[i].opcode, sizeof(int3));
-+	for (do_sync = 0, i = 0; i < nr_entries; i++) {
-+		if (tp[i].text[0] == INT3_INSN_OPCODE)
-+			continue;
-+
-+		text_poke(tp[i].addr, tp[i].text, sizeof(int3));
-+		do_sync++;
-+	}
-+
-+	if (do_sync)
-+		on_each_cpu(do_sync_core, NULL, 1);
- 
--	on_each_cpu(do_sync_core, NULL, 1);
- 	/*
- 	 * sync_core() implies an smp_mb() and orders this store against
- 	 * the writing of the new instruction.
-@@ -1087,6 +1113,60 @@ void text_poke_bp_batch(struct text_poke_loc *tp, unsigned int nr_entries)
- 	bp_patching.nr_entries = 0;
- }
- 
-+void text_poke_loc_init(struct text_poke_loc *tp, void *addr,
-+			const void *opcode, size_t len, const void *emulate)
++/* LDX: dst_reg = *(u8*)(src_reg + off) */
++static void emit_ldx(u8 **pprog, u32 size, u32 dst_reg, u32 src_reg, int off)
 +{
-+	struct insn insn;
++	u8 *prog = *pprog;
++	int cnt = 0;
 +
-+	if (!opcode)
-+		opcode = (void *)tp->text;
-+	else
-+		memcpy((void *)tp->text, opcode, len);
-+
-+	if (!emulate)
-+		emulate = opcode;
-+
-+	kernel_insn_init(&insn, emulate, MAX_INSN_SIZE);
-+	insn_get_length(&insn);
-+
-+	BUG_ON(!insn_complete(&insn));
-+	BUG_ON(len != insn.length);
-+
-+	tp->addr = addr;
-+	tp->len = len;
-+	tp->opcode = insn.opcode.bytes[0];
-+
-+	switch (tp->opcode) {
-+	case INT3_INSN_OPCODE:
++	switch (size) {
++	case BPF_B:
++		/* Emit 'movzx rax, byte ptr [rax + off]' */
++		EMIT3(add_2mod(0x48, src_reg, dst_reg), 0x0F, 0xB6);
 +		break;
-+
-+	case CALL_INSN_OPCODE:
-+	case JMP32_INSN_OPCODE:
-+	case JMP8_INSN_OPCODE:
-+		tp->rel32 = insn.immediate.value;
++	case BPF_H:
++		/* Emit 'movzx rax, word ptr [rax + off]' */
++		EMIT3(add_2mod(0x48, src_reg, dst_reg), 0x0F, 0xB7);
 +		break;
-+
-+	default: /* assume NOP */
-+		switch (len) {
-+		case 2: /* NOP2 -- emulate as JMP8+0 */
-+			BUG_ON(memcmp(emulate, ideal_nops[len], len));
-+			tp->opcode = JMP8_INSN_OPCODE;
-+			tp->rel32 = 0;
-+			break;
-+
-+		case 5: /* NOP5 -- emulate as JMP32+0 */
-+			BUG_ON(memcmp(emulate, ideal_nops[NOP_ATOMIC5], len));
-+			tp->opcode = JMP32_INSN_OPCODE;
-+			tp->rel32 = 0;
-+			break;
-+
-+		default: /* unknown instruction */
-+			BUG();
-+		}
++	case BPF_W:
++		/* Emit 'mov eax, dword ptr [rax+0x14]' */
++		if (is_ereg(dst_reg) || is_ereg(src_reg))
++			EMIT2(add_2mod(0x40, src_reg, dst_reg), 0x8B);
++		else
++			EMIT1(0x8B);
++		break;
++	case BPF_DW:
++		/* Emit 'mov rax, qword ptr [rax+0x14]' */
++		EMIT2(add_2mod(0x48, src_reg, dst_reg), 0x8B);
 +		break;
 +	}
++	/*
++	 * If insn->off == 0 we can save one extra byte, but
++	 * special case of x86 R13 which always needs an offset
++	 * is not worth the hassle
++	 */
++	if (is_imm8(off))
++		EMIT2(add_2reg(0x40, src_reg, dst_reg), off);
++	else
++		EMIT1_off32(add_2reg(0x80, src_reg, dst_reg), off);
++	*pprog = prog;
 +}
 +
- /**
-  * text_poke_bp() -- update instructions on live kernel on SMP
-  * @addr:	address to patch
-@@ -1098,20 +1178,10 @@ void text_poke_bp_batch(struct text_poke_loc *tp, unsigned int nr_entries)
-  * dynamically allocated memory. This function should be used when it is
-  * not possible to allocate memory.
-  */
--void text_poke_bp(void *addr, const void *opcode, size_t len, void *handler)
-+void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate)
- {
--	struct text_poke_loc tp = {
--		.detour = handler,
--		.addr = addr,
--		.len = len,
--	};
--
--	if (len > POKE_MAX_OPCODE_SIZE) {
--		WARN_ONCE(1, "len is larger than %d\n", POKE_MAX_OPCODE_SIZE);
--		return;
--	}
--
--	memcpy((void *)tp.opcode, opcode, len);
-+	struct text_poke_loc tp;
- 
-+	text_poke_loc_init(&tp, addr, opcode, len, emulate);
- 	text_poke_bp_batch(&tp, 1);
- }
-diff --git a/arch/x86/kernel/jump_label.c b/arch/x86/kernel/jump_label.c
-index 044053235302..c1a8b9e71408 100644
---- a/arch/x86/kernel/jump_label.c
-+++ b/arch/x86/kernel/jump_label.c
-@@ -89,8 +89,7 @@ static void __ref __jump_label_transform(struct jump_entry *entry,
- 		return;
- 	}
- 
--	text_poke_bp((void *)jump_entry_code(entry), &code, JUMP_LABEL_NOP_SIZE,
--		     (void *)jump_entry_code(entry) + JUMP_LABEL_NOP_SIZE);
-+	text_poke_bp((void *)jump_entry_code(entry), &code, JUMP_LABEL_NOP_SIZE, NULL);
- }
- 
- void arch_jump_label_transform(struct jump_entry *entry,
-@@ -147,11 +146,9 @@ bool arch_jump_label_transform_queue(struct jump_entry *entry,
- 	}
- 
- 	__jump_label_set_jump_code(entry, type,
--				   (union jump_code_union *) &tp->opcode, 0);
-+				   (union jump_code_union *)&tp->text, 0);
- 
--	tp->addr = entry_code;
--	tp->detour = entry_code + JUMP_LABEL_NOP_SIZE;
--	tp->len = JUMP_LABEL_NOP_SIZE;
-+	text_poke_loc_init(tp, entry_code, NULL, JUMP_LABEL_NOP_SIZE, NULL);
- 
- 	tp_vec_nr++;
- 
-diff --git a/arch/x86/kernel/kprobes/opt.c b/arch/x86/kernel/kprobes/opt.c
-index b348dd506d58..8900329c28a7 100644
---- a/arch/x86/kernel/kprobes/opt.c
-+++ b/arch/x86/kernel/kprobes/opt.c
-@@ -437,8 +437,7 @@ void arch_optimize_kprobes(struct list_head *oplist)
- 		insn_buff[0] = RELATIVEJUMP_OPCODE;
- 		*(s32 *)(&insn_buff[1]) = rel;
- 
--		text_poke_bp(op->kp.addr, insn_buff, RELATIVEJUMP_SIZE,
--			     op->optinsn.insn);
-+		text_poke_bp(op->kp.addr, insn_buff, RELATIVEJUMP_SIZE, NULL);
- 
- 		list_del_init(&op->list);
- 	}
-@@ -448,12 +447,18 @@ void arch_optimize_kprobes(struct list_head *oplist)
- void arch_unoptimize_kprobe(struct optimized_kprobe *op)
- {
- 	u8 insn_buff[RELATIVEJUMP_SIZE];
-+	u8 emulate_buff[RELATIVEJUMP_SIZE];
- 
- 	/* Set int3 to first byte for kprobes */
- 	insn_buff[0] = BREAKPOINT_INSTRUCTION;
- 	memcpy(insn_buff + 1, op->optinsn.copied_insn, RELATIVE_ADDR_SIZE);
++/* STX: *(u8*)(dst_reg + off) = src_reg */
++static void emit_stx(u8 **pprog, u32 size, u32 dst_reg, u32 src_reg, int off)
++{
++	u8 *prog = *pprog;
++	int cnt = 0;
 +
-+	emulate_buff[0] = RELATIVEJUMP_OPCODE;
-+	*(s32 *)(&emulate_buff[1]) = (s32)((long)op->optinsn.insn -
-+			((long)op->kp.addr + RELATIVEJUMP_SIZE));
++	switch (size) {
++	case BPF_B:
++		/* Emit 'mov byte ptr [rax + off], al' */
++		if (is_ereg(dst_reg) || is_ereg(src_reg) ||
++		    /* We have to add extra byte for x86 SIL, DIL regs */
++		    src_reg == BPF_REG_1 || src_reg == BPF_REG_2)
++			EMIT2(add_2mod(0x40, dst_reg, src_reg), 0x88);
++		else
++			EMIT1(0x88);
++		break;
++	case BPF_H:
++		if (is_ereg(dst_reg) || is_ereg(src_reg))
++			EMIT3(0x66, add_2mod(0x40, dst_reg, src_reg), 0x89);
++		else
++			EMIT2(0x66, 0x89);
++		break;
++	case BPF_W:
++		if (is_ereg(dst_reg) || is_ereg(src_reg))
++			EMIT2(add_2mod(0x40, dst_reg, src_reg), 0x89);
++		else
++			EMIT1(0x89);
++		break;
++	case BPF_DW:
++		EMIT2(add_2mod(0x48, dst_reg, src_reg), 0x89);
++		break;
++	}
++	if (is_imm8(off))
++		EMIT2(add_2reg(0x40, dst_reg, src_reg), off);
++	else
++		EMIT1_off32(add_2reg(0x80, dst_reg, src_reg), off);
++	*pprog = prog;
++}
 +
- 	text_poke_bp(op->kp.addr, insn_buff, RELATIVEJUMP_SIZE,
--		     op->optinsn.insn);
-+		     emulate_buff);
- }
++static int emit_call(u8 **pprog, void *func, void *ip)
++{
++	u8 *prog = *pprog;
++	int cnt = 0;
++	s64 offset;
++
++	offset = func - (ip + X86_CALL_SIZE);
++	if (!is_simm32(offset)) {
++		pr_err("Target call %p is out of range\n", func);
++		return -EINVAL;
++	}
++	EMIT1_off32(0xE8, offset);
++	*pprog = prog;
++	return 0;
++}
  
- /*
+ static bool ex_handler_bpf(const struct exception_table_entry *x,
+ 			   struct pt_regs *regs, int trapnr,
+@@ -773,68 +868,22 @@ st:			if (is_imm8(insn->off))
+ 
+ 			/* STX: *(u8*)(dst_reg + off) = src_reg */
+ 		case BPF_STX | BPF_MEM | BPF_B:
+-			/* Emit 'mov byte ptr [rax + off], al' */
+-			if (is_ereg(dst_reg) || is_ereg(src_reg) ||
+-			    /* We have to add extra byte for x86 SIL, DIL regs */
+-			    src_reg == BPF_REG_1 || src_reg == BPF_REG_2)
+-				EMIT2(add_2mod(0x40, dst_reg, src_reg), 0x88);
+-			else
+-				EMIT1(0x88);
+-			goto stx;
+ 		case BPF_STX | BPF_MEM | BPF_H:
+-			if (is_ereg(dst_reg) || is_ereg(src_reg))
+-				EMIT3(0x66, add_2mod(0x40, dst_reg, src_reg), 0x89);
+-			else
+-				EMIT2(0x66, 0x89);
+-			goto stx;
+ 		case BPF_STX | BPF_MEM | BPF_W:
+-			if (is_ereg(dst_reg) || is_ereg(src_reg))
+-				EMIT2(add_2mod(0x40, dst_reg, src_reg), 0x89);
+-			else
+-				EMIT1(0x89);
+-			goto stx;
+ 		case BPF_STX | BPF_MEM | BPF_DW:
+-			EMIT2(add_2mod(0x48, dst_reg, src_reg), 0x89);
+-stx:			if (is_imm8(insn->off))
+-				EMIT2(add_2reg(0x40, dst_reg, src_reg), insn->off);
+-			else
+-				EMIT1_off32(add_2reg(0x80, dst_reg, src_reg),
+-					    insn->off);
++			emit_stx(&prog, BPF_SIZE(insn->code), dst_reg, src_reg, insn->off);
+ 			break;
+ 
+ 			/* LDX: dst_reg = *(u8*)(src_reg + off) */
+ 		case BPF_LDX | BPF_MEM | BPF_B:
+ 		case BPF_LDX | BPF_PROBE_MEM | BPF_B:
+-			/* Emit 'movzx rax, byte ptr [rax + off]' */
+-			EMIT3(add_2mod(0x48, src_reg, dst_reg), 0x0F, 0xB6);
+-			goto ldx;
+ 		case BPF_LDX | BPF_MEM | BPF_H:
+ 		case BPF_LDX | BPF_PROBE_MEM | BPF_H:
+-			/* Emit 'movzx rax, word ptr [rax + off]' */
+-			EMIT3(add_2mod(0x48, src_reg, dst_reg), 0x0F, 0xB7);
+-			goto ldx;
+ 		case BPF_LDX | BPF_MEM | BPF_W:
+ 		case BPF_LDX | BPF_PROBE_MEM | BPF_W:
+-			/* Emit 'mov eax, dword ptr [rax+0x14]' */
+-			if (is_ereg(dst_reg) || is_ereg(src_reg))
+-				EMIT2(add_2mod(0x40, src_reg, dst_reg), 0x8B);
+-			else
+-				EMIT1(0x8B);
+-			goto ldx;
+ 		case BPF_LDX | BPF_MEM | BPF_DW:
+ 		case BPF_LDX | BPF_PROBE_MEM | BPF_DW:
+-			/* Emit 'mov rax, qword ptr [rax+0x14]' */
+-			EMIT2(add_2mod(0x48, src_reg, dst_reg), 0x8B);
+-ldx:			/*
+-			 * If insn->off == 0 we can save one extra byte, but
+-			 * special case of x86 R13 which always needs an offset
+-			 * is not worth the hassle
+-			 */
+-			if (is_imm8(insn->off))
+-				EMIT2(add_2reg(0x40, src_reg, dst_reg), insn->off);
+-			else
+-				EMIT1_off32(add_2reg(0x80, src_reg, dst_reg),
+-					    insn->off);
++			emit_ldx(&prog, BPF_SIZE(insn->code), dst_reg, src_reg, insn->off);
+ 			if (BPF_MODE(insn->code) == BPF_PROBE_MEM) {
+ 				struct exception_table_entry *ex;
+ 				u8 *_insn = image + proglen;
+@@ -899,13 +948,8 @@ xadd:			if (is_imm8(insn->off))
+ 			/* call */
+ 		case BPF_JMP | BPF_CALL:
+ 			func = (u8 *) __bpf_call_base + imm32;
+-			jmp_offset = func - (image + addrs[i]);
+-			if (!imm32 || !is_simm32(jmp_offset)) {
+-				pr_err("unsupported BPF func %d addr %p image %p\n",
+-				       imm32, func, image);
++			if (!imm32 || emit_call(&prog, func, image + addrs[i - 1]))
+ 				return -EINVAL;
+-			}
+-			EMIT1_off32(0xE8, jmp_offset);
+ 			break;
+ 
+ 		case BPF_JMP | BPF_TAIL_CALL:
 -- 
 2.23.0
 
