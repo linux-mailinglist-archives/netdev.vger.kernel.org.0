@@ -2,88 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 516D8FC8E1
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:28:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E904DFC915
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726592AbfKNO2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 09:28:39 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40501 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726190AbfKNO2j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 09:28:39 -0500
-Received: by mail-pf1-f193.google.com with SMTP id r4so4361224pfl.7
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 06:28:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/yJkWRHTJCwNu6KkVPSUDuHQtY8tsHFS93PMt6yJnpk=;
-        b=eectuFoMseyC2GH4k5tC3hrq2sxzAlgNwUMis+UY02aaF5JJtpBcNEaGXfDKKIVbfO
-         z/8p5sw7PuolZGG88S9pO7h6o0xztGhA/ZAdsHCILiQ6dCYZOhgySwHZ6F5zBCZwta89
-         b0kraDjb9fG7ZO00mUOW/TwlkCI8FdHUtf8FtO3Tp5bsKMTQoiuW3wStHIysx27XyLiC
-         BRceVGKrjcc/3Kogg8wSSpRJmh8FjRz34vqp/f50+kzlX+BkF+WrRFg8m3/QwydaOad8
-         UzoEoYdbgYBk8w7qSmAWRsI/BdguEQjktU8yzVMTaLpooYoqmL5ppPqQ3GRwvA466YEs
-         DG3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/yJkWRHTJCwNu6KkVPSUDuHQtY8tsHFS93PMt6yJnpk=;
-        b=PMlyvtddcVBrxqIJl86L3IaBkNQp73GnmE3uEMXhdhJBb0EEEh4QFuLXGyed0XwZyv
-         w17Rs/bGp4fxOT1gpjvOg2hKd3P8TzW0HgOVwu83Kd3rmakbTo+xnrBZEtxScKrutCPS
-         X7aW0yDX16aNJ3gR79Jsv5PcH2pcA7fzTibjqu3Znf+miC5EiVtegsVyPVvuWlrs9Hew
-         1W/g0jLrHtiAl2iAQqmq4SA4GXRIcm8FrTF2u9TMn4iCJjZRS1UHe4iLSNWYabUbmjPS
-         l1ENVYa2S0uUe/imRuvIDNfmA0K2G73z6Go0TqCWlD+RxF3tZet91ely2dQ8iS+4HE7x
-         nkxQ==
-X-Gm-Message-State: APjAAAXzzL7UH4j5AfGY5n0xCBEnzcBYAvJmfIi9Q21lfeY+yRt6FmZv
-        zWW2FtE4fKNWVhZxUyDa4jM=
-X-Google-Smtp-Source: APXvYqw/nhHItQY1xYIHk5chjo+2g+P4rqMRDfaqoQDgT2cftZip9zyFRne76ICyW/P6arjuxf6DSQ==
-X-Received: by 2002:a63:fc09:: with SMTP id j9mr1774014pgi.272.1573741718710;
-        Thu, 14 Nov 2019 06:28:38 -0800 (PST)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id l18sm3340672pff.79.2019.11.14.06.28.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Nov 2019 06:28:37 -0800 (PST)
-Subject: Re: [PATCH net] tcp: switch snprintf to scnprintf
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jiri Benc <jbenc@redhat.com>
-References: <20191114102831.23753-1-liuhangbin@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <557b2545-3b3c-63a9-580c-270a0a103b2e@gmail.com>
-Date:   Thu, 14 Nov 2019 06:28:35 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726597AbfKNOnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 09:43:20 -0500
+Received: from mx2.suse.de ([195.135.220.15]:56294 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726276AbfKNOnU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Nov 2019 09:43:20 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 755A8ADFB;
+        Thu, 14 Nov 2019 14:43:18 +0000 (UTC)
+Date:   Thu, 14 Nov 2019 15:43:17 +0100
+From:   Michal Hocko <mhocko@kernel.org>
+To:     Shaokun Zhang <zhangshaokun@hisilicon.com>
+Cc:     linux-kernel@vger.kernel.org, yuqi jin <jinyuqi@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Paul Burton <paul.burton@mips.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3] lib: optimize cpumask_local_spread()
+Message-ID: <20191114144317.GJ20866@dhcp22.suse.cz>
+References: <1573091048-10595-1-git-send-email-zhangshaokun@hisilicon.com>
+ <20191108103102.GF15658@dhcp22.suse.cz>
+ <c6f24942-c8d6-e46a-f433-152d29af8c71@hisilicon.com>
+ <20191112115630.GD2763@dhcp22.suse.cz>
+ <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
 MIME-Version: 1.0
-In-Reply-To: <20191114102831.23753-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed 13-11-19 10:46:05, Shaokun Zhang wrote:
+[...]
+> >> available: 4 nodes (0-3)
+> >> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+> >> node 0 size: 63379 MB
+> >> node 0 free: 61899 MB
+> >> node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
+> >> node 1 size: 64509 MB
+> >> node 1 free: 63942 MB
+> >> node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
+> >> node 2 size: 64509 MB
+> >> node 2 free: 63056 MB
+> >> node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+> >> node 3 size: 63997 MB
+> >> node 3 free: 63420 MB
+> >> node distances:
+> >> node   0   1   2   3
+> >>   0:  10  16  32  33
+> >>   1:  16  10  25  32
+> >>   2:  32  25  10  16
+> >>   3:  33  32  16  10
+[...]
+> before patch
+> Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
+> 2
+> Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
+> 48
 
+node 2
 
-On 11/14/19 2:28 AM, Hangbin Liu wrote:
-> snprintf returns the number of chars that would be written, not number
-> of chars that were actually written. As such, 'offs' may get larger than
-> 'tbl.maxlen', causing the 'tbl.maxlen - offs' being < 0, and since the
-> parameter is size_t, it would overflow.
+> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+> 0
+
+node 0
+
+> Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
+> 24
+
+node 1
+
+> Euler:/sys/bus/pci #
 > 
-> Currently, the buffer is still enough, but for future design, use scnprintf
-> would be safer.
->
+> after patch
+> Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
+> 2
+> Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
+> 48
 
-Why is it targeting net tree ?
+node 2
 
-How have you checked that it was actually safer ?
+> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
+> 72
 
-This looks unnecessary code churn to me, and it might hide an error in the future.
+node 3
 
-We need to properly size the output buffers before using them,
-we can not afford truncating silently the output.
+> Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
+> 24
 
+node 1
+
+So few more questions. The only difference seems to be IRQ369
+moving from 0 to 3 and having the device affinity to node 2
+makes some sense because node 3 is closer. So far so good.
+I still have a large gap to get the whole picture. Namely why those
+other IRQs are not using any of the existing CPUs on the node 2.
+Could you explain that please?
+
+Btw. this all should be in the changelog.
+-- 
+Michal Hocko
+SUSE Labs
