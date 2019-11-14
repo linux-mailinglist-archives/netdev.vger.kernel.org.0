@@ -2,163 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 452A9FCAD5
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 17:37:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC1FFCAE2
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 17:41:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbfKNQhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 11:37:23 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:8434 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726597AbfKNQhV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 11:37:21 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEGTeBN015002
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 08:37:20 -0800
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w8qbvvx5c-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 08:37:20 -0800
-Received: from 2401:db00:2050:5102:face:0:37:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 14 Nov 2019 08:37:17 -0800
-Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
-        id 90FBA6286EC5; Thu, 14 Nov 2019 08:37:15 -0800 (PST)
-Smtp-Origin-Hostprefix: devvm
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
-To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
-CC:     <kernel-team@fb.com>, <brouer@redhat.com>,
-        <ilias.apalodimas@linaro.org>
-Smtp-Origin-Cluster: vll1c12
-Subject: [net-next PATCH v2 2/2] page_pool: remove hold/release count from tracepoints
-Date:   Thu, 14 Nov 2019 08:37:15 -0800
-Message-ID: <20191114163715.4184099-3-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191114163715.4184099-1-jonathan.lemon@gmail.com>
-References: <20191114163715.4184099-1-jonathan.lemon@gmail.com>
-X-FB-Internal: Safe
+        id S1726865AbfKNQlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 11:41:07 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:33686 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726214AbfKNQlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 11:41:07 -0500
+Received: by mail-ed1-f65.google.com with SMTP id a24so5586361edt.0
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 08:41:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JmabFK8GQgzKaI6Pf3ctt9qB+xmo0mFBtsLMleCi/bU=;
+        b=MFDjd4MufKQOjl3C18NCMEVdKUvGsgTI8D5Ad/7A9YaWk4L0/N0Ym9N4jG94236spD
+         InHJxhjaY5CgW/0R7a7Ho+rzCaakpg84jCHBjm+KZlIm7Mjtxi3HAxh7UXHirABp6NwG
+         4hz0TkD0T8AIhJbFW75fo7lrdZTUnUCiJaVPmcF41AcXnaA+CwkVjrgQW7VoKjJyoE/Z
+         jMIn07DR2/MVtRk1At8kCPBJEnDzL8GmAArCLChpqubDOWv77NbFTxTXel/0DgjnUcY9
+         6UqXAD9jIXqrGvQ/QijHCkCFsfvWr34b0EINcN91dIyHbiLqvmb0xp1CmFCm88l0sXzv
+         NuzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JmabFK8GQgzKaI6Pf3ctt9qB+xmo0mFBtsLMleCi/bU=;
+        b=eEt3yYpD8Fp0BNG+duW/9/sF62Aka/30X0/5XWYOyXzGw9ZDrhjV9zKuM+0ZTk3VE6
+         Xl8hZ4bIVKJM7H0vfsXbXRjoU6+i2K28Jo0yEU6WX33fE+G9ZOh5+LEQBg5Pwe3dsoyV
+         yI44Pt6IdIEjB8Xeeq9OFtJTkzexTuJthXf2nJuZhtseJkoLy05SQXFfw6Jlhnv2tzLv
+         zamhJdnZYR7Rs/1mHC+Cyj411rMhnu2QSbvNe08NSc11e1gmL4f2leTsOvrk6Koo2/Zl
+         pS8MSU4mGBQ1BWKR4wjq0xPWFl4B5RR0FfZNWijaQOSkaK8+Y7kD7OIK55nUJJY23Oe4
+         07qw==
+X-Gm-Message-State: APjAAAW70Um7TWgWhkhkZbKQ8eB3G0YVm37qrrRDhEuGE5e6nIPS9HNv
+        vslEeAy78lJy056B3O9W0zyGjOUBsGZB9MG59hY=
+X-Google-Smtp-Source: APXvYqxK4KPSFW1wxFRfqXjgo9W7fw3DpXzvihdnrXCIa0YUmaNsxq92g4yd4MGc2QMOh/D99gTJruJ/dRso2L7KEo4=
+X-Received: by 2002:aa7:c3d0:: with SMTP id l16mr2331425edr.18.1573749665031;
+ Thu, 14 Nov 2019 08:41:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-14_05:2019-11-14,2019-11-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- mlxscore=0 mlxlogscore=999 spamscore=0 suspectscore=0 impostorscore=0
- malwarescore=0 phishscore=0 clxscore=1034 adultscore=0 priorityscore=1501
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911140149
-X-FB-Internal: deliver
+References: <CA+h21hqte1sOefqVXKvSQ6N7WoTU3BH7qKpq3C7pieaqSB6AFg@mail.gmail.com>
+ <6fbc4127-ab67-3898-8eaa-409c3209a2e2@gmail.com>
+In-Reply-To: <6fbc4127-ab67-3898-8eaa-409c3209a2e2@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 14 Nov 2019 18:40:53 +0200
+Message-ID: <CA+h21hrmP_nDZK9edm6_SGm6orzySj7=SGoui1QzmPV2BgFdBA@mail.gmail.com>
+Subject: Re: Offloading DSA taggers to hardware
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the last page is released from the page pool, it is possible
-that the delayed removal thread sees inflight == 0, and frees the
-pool.  While the freed pointer is only copied by the tracepoint
-and not dereferenced, it really isn't correct.  Avoid this case by
-reporting the page release before releasing the page.
+Hi Florian,
 
-This also removes a second atomic operation from the release path.
+On Wed, 13 Nov 2019 at 21:40, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 11/13/19 4:40 AM, Vladimir Oltean wrote:
+> > DSA is all about pairing any tagging-capable (or at least VLAN-capable) switch
+> > to any NIC, and the software stack creates N "virtual" net devices, each
+> > representing a switch port, with I/O capabilities based on the metadata present
+> > in the frame. It all looks like an hourglass:
+> >
+> >   switch           switch           switch           switch           switch
+> > net_device       net_device       net_device       net_device       net_device
+> >      |                |                |                |                |
+> >      |                |                |                |                |
+> >      |                |                |                |                |
+> >      +----------------+----------------+----------------+----------------+
+> >                                        |
+> >                                        |
+> >                                   DSA master
+> >                                   net_device
+> >                                        |
+> >                                        |
+> >                                   DSA master
+> >                                       NIC
+> >                                        |
+> >                                     switch
+> >                                    CPU port
+> >                                        |
+> >                                        |
+> >      +----------------+----------------+----------------+----------------+
+> >      |                |                |                |                |
+> >      |                |                |                |                |
+> >      |                |                |                |                |
+> >   switch           switch           switch           switch           switch
+> >    port             port             port             port             port
+> >
+> >
+> > But the process by which the stack:
+> > - Parses the frame on receive, decodes the DSA tag and redirects the frame from
+> >   the DSA master net_device to a switch net_device based on the source port,
+> >   then removes the DSA tag from the frame and recalculates checksums as
+> >   appropriate
+> > - Adds the DSA tag on xmit, then redirects the frame from the "virtual" switch
+> >   net_device to the real DSA master net_device
+> >
+> > can be optimized, if the DSA master NIC supports this. Let's say there is a
+> > fictional NIC that has a programmable hardware parser and the ability to
+> > perform frame manipulation (insert, extract a tag). Such a NIC could be
+> > programmed to do a better job adding/removing the DSA tag, as well as
+> > masquerading skb->dev based on the parser meta-data. In addition, there would
+> > be a net benefit for QoS, which as a consequence of the DSA model, cannot be
+> > really end-to-end: a frame classified to a high-priority traffic class by the
+> > switch may be treated as best-effort by the DSA master, due to the fact that it
+> > doesn't really parse the DSA tag (the traffic class, in this case).
+>
+> The QoS part can be guaranteed for an integrated design, not so much if
+> you have discrete/separate NIC and switch vendors and there is no agreed
+> upon mechanism to "not lose information" between the two.
+>
+> >
+> > I think the DSA hotpath would still need to be involved, but instead of calling
+> > the tagger's xmit/rcv it would need to call a newly introduced ndo that
+> > offloads this operation.
+> >
+> > Is there any hardware out there that can do this? Is it desirable to see
+> > something like this in DSA?
+>
+> BCM7445 and BCM7278 (and other DSL and Cable Modem chips, just not
+> supported upstream) use drivers/net/dsa/bcm_sf2.c along with
+> drivers/net/ethernet/broadcom/bcmsysport.c. It is possible to offload
+> the creation and extraction of the Broadcom tag:
+>
+> http://linux-kernel.2935.n7.nabble.com/PATCH-net-next-0-3-net-Switch-tag-HW-extraction-insertion-td1162606.html
+>
+> (this was reverted shortly after because napi_gro_receive() occupies the
+> full 48 bytes skb->cb[] space on 64-bit hosts, I have now a better view
+> of solving this though, see below).
+>
+> In my experience though, since the data is already hot in the cache in
+> either direction, so a memmove() is not that costly, it was not possible
+> to see sizable throughput improvements at 1Gbps or 2Gbps speeds because
+> the CPU is more than capable of managing the tag extraction in software,
+> and that is the most compatible way of doing it.
+>
+> To give you some more details, the SYSTEMPORT MAC will pre-pend an 8
+> byte Receive Status Block, word 0 contains status/length/error and word
+> 1 can contain the full 4byte Broadcom tag as extracted. Then there is a
+> (configurable) 2byte gap to align the IP header and then the Ethernet
+> header can be found. This is quite similar to the
+> NET_DSA_TAG_BRCM_PREPEND case, except for this 2b gap, which is why I am
+> wondering if I am not going to introduce an additional tagging protocol
+> NET_DSA_TAG_BRCM_PREPEND_WITH_2B or whatever side band information I can
+> provide in the skb to permit the removal of these extraneous 2bytes.
+>
+> On transmit, we also have an 8byte transmit status block which can be
+> constructed to contain information for the HW to insert a 4byte Broadcom
+> tag, along with a VLAN tag, and with the same length/checksum insertion
+> information. TX path would be equivalent to not doing any tagging, so
+> similarly, it may be desirable to have a separate
+> NET_DSA_TAG_BRCM_PREPEN value that indicates that nothing needs to be
+> done except queue the frame for transmission on the master netdev.
+>
+> Now from a practical angle, offloading DSA tagging only makes sense if
+> you happen to have a lot of host initiated/received traffic, which would
+> be the case for either a streaming device (BCM7445/BCM7278) with their
+> ports either completely separate (DSA default), or bridged. Does that
+> apply in your case?
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- include/trace/events/page_pool.h | 24 ++++++++++--------------
- net/core/page_pool.c             |  8 +++++---
- 2 files changed, 15 insertions(+), 17 deletions(-)
+Not at all, I would say. In fact, I was trying to understand what are
+the chances of interpreting information from the master's frame
+descriptor as the de-facto DSA tag in mainline Linux. Your story with
+Starfighter 2 chips seems to indicate that it isn't such a good idea.
 
-diff --git a/include/trace/events/page_pool.h b/include/trace/events/page_pool.h
-index 47b5ee880aa9..0adf9aed9f5b 100644
---- a/include/trace/events/page_pool.h
-+++ b/include/trace/events/page_pool.h
-@@ -35,50 +35,46 @@ TRACE_EVENT(page_pool_inflight,
- 	  __entry->pool, __entry->inflight, __entry->hold, __entry->release)
- );
- 
--TRACE_EVENT(page_pool_state_release,
-+TRACE_EVENT(page_pool_page_release,
- 
- 	TP_PROTO(const struct page_pool *pool,
--		 const struct page *page, u32 release),
-+		 const struct page *page)
- 
--	TP_ARGS(pool, page, release),
-+	TP_ARGS(pool, page),
- 
- 	TP_STRUCT__entry(
- 		__field(const struct page_pool *,	pool)
- 		__field(const struct page *,		page)
--		__field(u32,				release)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->pool		= pool;
- 		__entry->page		= page;
--		__entry->release	= release;
- 	),
- 
--	TP_printk("page_pool=%p page=%p release=%u",
--		  __entry->pool, __entry->page, __entry->release)
-+	TP_printk("page_pool=%p page=%p",
-+		  __entry->pool, __entry->page)
- );
- 
--TRACE_EVENT(page_pool_state_hold,
-+TRACE_EVENT(page_pool_page_hold,
- 
- 	TP_PROTO(const struct page_pool *pool,
--		 const struct page *page, u32 hold),
-+		 const struct page *page),
- 
--	TP_ARGS(pool, page, hold),
-+	TP_ARGS(pool, page),
- 
- 	TP_STRUCT__entry(
- 		__field(const struct page_pool *,	pool)
- 		__field(const struct page *,		page)
--		__field(u32,				hold)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->pool	= pool;
- 		__entry->page	= page;
--		__entry->hold	= hold;
- 	),
- 
--	TP_printk("page_pool=%p page=%p hold=%u",
--		  __entry->pool, __entry->page, __entry->hold)
-+	TP_printk("page_pool=%p page=%p",
-+		  __entry->pool, __entry->page)
- );
- 
- #endif /* _TRACE_PAGE_POOL_H */
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index bfe96326335d..1e66341fdac8 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -163,7 +163,7 @@ static struct page *__page_pool_alloc_pages_slow(struct page_pool *pool,
- 	/* Track how many pages are held 'in-flight' */
- 	pool->pages_state_hold_cnt++;
- 
--	trace_page_pool_state_hold(pool, page, pool->pages_state_hold_cnt);
-+	trace_page_pool_page_hold(pool, page);
- 
- 	/* When page just alloc'ed is should/must have refcnt 1. */
- 	return page;
-@@ -222,9 +222,11 @@ static void __page_pool_clean_page(struct page_pool *pool,
- 			     DMA_ATTR_SKIP_CPU_SYNC);
- 	page->dma_addr = 0;
- skip_dma_unmap:
-+	trace_page_pool_page_release(pool, page);
-+	/* This may be the last page returned, releasing the pool, so
-+	 * it is not safe to reference pool afterwards.
-+	 */
- 	atomic_inc(&pool->pages_state_release_cnt);
--	trace_page_pool_state_release(pool, page,
--			      atomic_read(&pool->pages_state_release_cnt));
- }
- 
- /* unmap the page and clean our state */
--- 
-2.17.1
+> --
+> Florian
 
+Thanks,
+-Vladimir
