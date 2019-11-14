@@ -2,143 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2780FCF4E
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 21:11:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFF4DFCFA5
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 21:27:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727036AbfKNULT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 15:11:19 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46444 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726991AbfKNULT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 15:11:19 -0500
-Received: by mail-wr1-f66.google.com with SMTP id b3so8095168wrs.13
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 12:11:16 -0800 (PST)
+        id S1726628AbfKNU1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 15:27:43 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38096 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726557AbfKNU1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 15:27:43 -0500
+Received: by mail-pf1-f193.google.com with SMTP id c13so5071095pfp.5
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 12:27:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ddSCavUCLd5KosCg8lLUMTZdqdQInSsJtEbAEEGwreQ=;
-        b=OIKScHEjmX3qL1Y09GVX7DcfeXWT3h7ihkyC8XsF0xd4TmgorWWrXNpkGMeHioDxNB
-         b9pTVHF5JLCfCDhuL2zrV4eR/UDdsx4LHz1/qRyIA1mWxkmYX7cW/+dTVPE2njyO9irN
-         oNrrouWcKfbNWlrNc/Xilv2F9hgCkuOEUTu150SYwXvmeNAE4pq2DwiPe2BjP11NM1l4
-         eZ3o4EFImFpF0GqyJI9kM4YP4FvJZos7Lxr5/UWbxrYx38N8o5BQaduytqqD00J6T48P
-         inHQSua6O+DwcHPYzfjF+z2nboESrz4vLjCke/Q5OHuCRjObU/N1mptkfqLRtTGpAbUX
-         OoZw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=dEU776sqvEqf63FyZHaxMoM1yxhqsrxknj0XsvdhvCU=;
+        b=fyxcm7hbOjZqQaa0GmvKeCbGa50e0C0XXHJONWMIsKp78eyVXI32g7qFvPbR/qImAd
+         oNCpzSH9J5SIYsd8qeIgLZr5d0tlyTZwnfGqBqEKONiNl+DjtO9xf808wTOaTt+qX0Yf
+         QSjsYFOy+1P0QD4RjklM5o8Cx/AHI/7+vviRDXCoC58R7wS5JpYF5QWRQGZGJHY06em3
+         +mgg904LDNKKZM9HIAkio+YE5Du8BEcHjyFJzvciTc8q3tJ5pqijwYH7tvjyGthux/WY
+         KQXAVqC7jtPMAODpeaNWmdgOS6uzzTttbVdDPxh+p5hY+G/y7LJ80E+c4yJpzBaLRTs3
+         hYBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ddSCavUCLd5KosCg8lLUMTZdqdQInSsJtEbAEEGwreQ=;
-        b=VqEsvNCKtbIX/uxQ15wmi3V0M3yb9gd+MEdRbtcPTYgWpQ2CNzBhQTLXy3t8Ebrhpl
-         G32mW4NBYFoG1sOhIwvY2uW5i1BzUc+1oauCit5INSBSJyA4H+SZqF9HyybmTUuWb3C2
-         1FDNea9v2+L7KmYiX9y1bre79FH8cOL1jCegMw06jy62TY817Zma0+NXNb61qDyBbSXp
-         YFJYaA3ueRiCXhjaQSost4zmhwYQNSjfevmyzyFzDWf2OfmpjGeGgBxHFy/XYNeXbSzi
-         FA8PzRi+ISGSGTneoQj2KCfxo5ukkFpU1HYNDIVdKrhYHOi86CCcpHtuhDkg4ZsEBvdW
-         EY4g==
-X-Gm-Message-State: APjAAAUWcsc7FJ6bBdoiVPnyYl8kCPd/d9dVTqknUsiY7Buzco8sGOQo
-        SA4KN9ShTvbw/+M9I1QHfSQ=
-X-Google-Smtp-Source: APXvYqyMiXov/IK79pUOMd4TKChfOfGAHn3SE77FWpZlKvZnxfcJCsNhcF4MmvoXVzl+wuf7ToOWGg==
-X-Received: by 2002:a5d:4201:: with SMTP id n1mr9616838wrq.372.1573762275589;
-        Thu, 14 Nov 2019 12:11:15 -0800 (PST)
-Received: from [10.67.50.53] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b6sm423006edf.21.2019.11.14.12.11.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=dEU776sqvEqf63FyZHaxMoM1yxhqsrxknj0XsvdhvCU=;
+        b=EsYtHom4o1MCOYA9gCPD+hzWqe5phvq+mkBFOlnTdHq6h1bpSDMzVQVAO4tAUjqh/d
+         TfzEDhv6KNk56wnTmaYP6acoxABCQGhFSKi3IXBHv+88mU7Rh2qMW9S5MStCryICovnT
+         4RMxwL0P/bydnhogQHY808qCEHSmyZ+7ufuiZ2gsl2JlEWJMXkLNTLTzHK7EUBJLyXyN
+         d7A9oN0ttEbq/CPy/rbz3Py6aOw3lVVwf7HKE0cfscgbGN8IjFYpi/piXNbXWV1ryx6u
+         XcXKyA/bbxCSfmXcLi1V8vruuzHM1PGJhls6gfJAHa8ZUX7pv6CI0206RvL7rtR+yaZj
+         4HPQ==
+X-Gm-Message-State: APjAAAVBFyRzgjNIU8WlcHof6B8X2stzHic5vRgRoxbowkZ2JytUu9uF
+        aWQq2Nd7TGZkMAai28QykqA=
+X-Google-Smtp-Source: APXvYqzqThj73OAh5LfRFwp9aSat7NrjYWiOfhCuCAYzcr/7+Ub3XyW9xY5yx+FjFOeDM4lqJkscnw==
+X-Received: by 2002:a62:1517:: with SMTP id 23mr13162944pfv.236.1573763262496;
+        Thu, 14 Nov 2019 12:27:42 -0800 (PST)
+Received: from [172.20.189.1] ([2620:10d:c090:180::dd67])
+        by smtp.gmail.com with ESMTPSA id p123sm8030459pfg.30.2019.11.14.12.27.41
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 12:11:14 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 09/11] net: mscc: ocelot: publish ocelot_sys.h
- to include/soc/mscc
-To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        alexandre.belloni@bootlin.com
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com,
-        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
-        horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
-        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20191114150330.25856-1-olteanv@gmail.com>
- <20191114150330.25856-10-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <cc970ac8-bbad-bab9-237e-ab594106331a@gmail.com>
-Date:   Thu, 14 Nov 2019 12:11:10 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        Thu, 14 Nov 2019 12:27:41 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Ilias Apalodimas" <ilias.apalodimas@linaro.org>
+Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com,
+        matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
+ DMA memory for non-coherent devices
+Date:   Thu, 14 Nov 2019 12:27:40 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
+In-Reply-To: <20191114185326.GA43048@PC192.168.49.172>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+ <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
+ <20191114185326.GA43048@PC192.168.49.172>
 MIME-Version: 1.0
-In-Reply-To: <20191114150330.25856-10-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/14/19 7:03 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> The Felix DSA driver needs to write to SYS_RAM_INIT_RAM_INIT for its own
-> chip initialization process.
-> 
-> Also update the MAINTAINERS file such that the headers exported by the
-> ocelot driver are under the same maintainers' umbrella as the driver
-> itself.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+On 14 Nov 2019, at 10:53, Ilias Apalodimas wrote:
+
+> [...]
+>>> index 2cbcdbdec254..defbfd90ab46 100644
+>>> --- a/include/net/page_pool.h
+>>> +++ b/include/net/page_pool.h
+>>> @@ -65,6 +65,9 @@ struct page_pool_params {
+>>>  	int		nid;  /* Numa node id to allocate from pages from */
+>>>  	struct device	*dev; /* device, for DMA pre-mapping purposes */
+>>>  	enum dma_data_direction dma_dir; /* DMA mapping direction */
+>>> +	unsigned int	max_len; /* max DMA sync memory size */
+>>> +	unsigned int	offset;  /* DMA addr offset */
+>>> +	u8 sync;
+>>>  };
+>>
+>> How about using PP_FLAG_DMA_SYNC instead of another flag word?
+>> (then it can also be gated on having DMA_MAP enabled)
+>
+> You mean instead of the u8?
+> As you pointed out on your V2 comment of the mail, some cards don't 
+> sync back to
+> device.
+> As the API tries to be generic a u8 was choosen instead of a flag to 
+> cover these
+> use cases. So in time we'll change the semantics of this to 'always 
+> sync', 'dont
+> sync if it's an skb-only queue' etc.
+> The first case Lorenzo covered is sync the required len only instead 
+> of the full
+> buffer
+
+Yes, I meant instead of:
++		.sync = 1,
+
+Something like:
+         .flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC
+
+Since .sync alone doesn't make sense if the page pool isn't performing 
+any
+DMA mapping, right?  Then existing drivers, if they're converted, can 
+just
+add the SYNC flag.
+
+I did see the initial case where only the RX_BUF_SIZE (1536) is sync'd
+instead of the full page.
+
+Could you expand on your 'skb-only queue' comment?  I'm currently 
+running
+a variant of your patch where iommu mapped pages are attached to skb's 
+and
+sent up the stack, then reclaimed on release.  I imagine that with this
+change, they would have the full RX_BUF_SIZE sync'd before returning to 
+the
+driver, since the upper layers could basically do anything with the 
+buffer
+area.
 -- 
-Florian
+Jonathan
