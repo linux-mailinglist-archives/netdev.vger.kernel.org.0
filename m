@@ -2,120 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D71E4FC952
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:56:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C40ABFC971
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:04:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbfKNOz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 09:55:59 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30063 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726410AbfKNOz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 09:55:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573743357;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uVXcjwtBf3NZ36Eq0yDSwVNdrCXxD9u9+76H1pXkzIY=;
-        b=ip+icRCjP+6sVgcMiTTuv9s00GKLscPuxSB5MmXImDKJ9BKHe2YiHLa+PT45ifBFHhdI38
-        G9QGKO2X+TfymNrvqrkMRVTcOJG3U/1EE1Avj8N7JHhkX1jAos2YvfsNwaErj5t2C6f8w2
-        Up2dlxMYlfo/ao2UmQcxIMw8D4cqpu0=
-Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
- [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-316-H_Z5yin4M8GfIybZkQZ03A-1; Thu, 14 Nov 2019 09:55:54 -0500
-Received: by mail-lj1-f198.google.com with SMTP id i27so756419ljb.17
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 06:55:54 -0800 (PST)
+        id S1726750AbfKNPEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 10:04:13 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52974 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726330AbfKNPEM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 10:04:12 -0500
+Received: by mail-wm1-f65.google.com with SMTP id l1so6016651wme.2
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:04:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=+CwUq6oRlSwW/2hY9AHWbhWiGW3GI87y2NDKcQiGFts=;
+        b=Cor9bVXYv4dbhjRwqTfOIHTsmdR3wC35qrlUspMnnuKN7sYq2T+KSxRdAPdPY/+DPk
+         BVTpgs5o8JE38KccO3wVxclVihPchDsvmV1FUTRwsYcsDnCsoBIEwsHF1RZ+fSn7Du32
+         h44PBuEga7VVhF68P3sxgSlfo418/KwBH5nVWwHy92LSScqNK05tAubEvvCn12hkChIB
+         kWHz4qQziSsjSYHLULEys/nC/kSIvkIZAxKugf4J049sz43JLsEOZvqa9Xc1o99yCWIU
+         WA51K750h9mw/iJ6iGxnE1sH/q2eiwlH+yKdDNSKe/Fe/GTbSJ9q0AVUyh6/2ZrKHfbA
+         gaeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=rIBZiL1FWythDUin873DaL6ByyNzCAJsvbPWa35uar8=;
-        b=nibnjJV59rOk3og4Do6yaL+it2kqrei35cHHWwB+CiCvyv54rRZpKxvJrJCnMl31jW
-         d31xTsR2HSijPUz892VkN6gPPo14YO06RrsFb922XRmbN3njBAgRVweTwL8FuXd2wERI
-         KlNjf7af6wHZecMIKTxayzdrdB6GxQ7NIc6LBdG55q8IF3UoOkBqSYh49196ZgYVl+rS
-         bA6mdEKOoYxslNxMW8oAmb7WO2/tpas7oOJuNar5DDv1Ydhek8vyIirtkDu2/yl0KIyM
-         bESD0YZAblLmQmJMRqmGsb7eN0jnQYwENDQ7qKTv69mwqHNo0GF6dC6MPFk5MPXr3/2I
-         onYg==
-X-Gm-Message-State: APjAAAUmZVxQyqW03nBaC8i+B2D2Uey9EukZ5xzSp3z/FI6Mh1gLNzbW
-        o/LFARM9QckMpEhi/sUOyMdMBlf26f9ImB9QeY8X/aumWEhyLq8DQTFWKpBf9ywmg9gOdHthF+P
-        KmxFX+j6DmworY7IG
-X-Received: by 2002:a19:ccd7:: with SMTP id c206mr6954014lfg.165.1573743352966;
-        Thu, 14 Nov 2019 06:55:52 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyDdMh8yqEOtvSSTWb+aD+1/y4JfNENnZFitaJOBGmj/dwnGACpjvDyAvuaqu4R5CeK4afWRg==
-X-Received: by 2002:a19:ccd7:: with SMTP id c206mr6953994lfg.165.1573743352754;
-        Thu, 14 Nov 2019 06:55:52 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
-        by smtp.gmail.com with ESMTPSA id d17sm2941336lja.27.2019.11.14.06.55.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=+CwUq6oRlSwW/2hY9AHWbhWiGW3GI87y2NDKcQiGFts=;
+        b=TWYjyxJOjYf2MLD5ps8PWrXgVDdladYTIphgQjvgTCfF0vYylG687qkJk7NjoyifAC
+         MR9wpZz4jepgQLCw1S46qMlXEpqxjoV+ctUuz2zR4Ak5Dg7WBxLRQrtt/KCZoLT+fWfQ
+         D0jZcuNof5vxiPkhnMU5b9dDo6lEPp4uGivuOWl7gjFt+z+O6AP5Fa4u5UHFa1nzCEs9
+         YTcVhJKnunc9rpTYOPRy2TcoKAe2xIlu/uO93w/rE2XvzK6c56616T4l1AyZcFoOlREP
+         DJMjBQye/8IMKhN1JZUnRdH+AXl/MALxJU7Vv3NKocxN42SVjjXZMA07Mnc7e2uvFqkV
+         3K1g==
+X-Gm-Message-State: APjAAAVYe6OMKbiUuoRug0svqDqKmeDZj1e/PwDMp5uVx2QdwMfuethQ
+        KZ26GsR1pa+mqK7LGULGYK8=
+X-Google-Smtp-Source: APXvYqzkT2AVajPa4HjXWCZF8bkqTjEnQDPTLMFP3x1TEZa3j3KNNF2WmSrVX5tGUDyp/vzWAFi1Fw==
+X-Received: by 2002:a05:600c:2105:: with SMTP id u5mr8031255wml.47.1573743850098;
+        Thu, 14 Nov 2019 07:04:10 -0800 (PST)
+Received: from localhost.localdomain ([86.121.29.241])
+        by smtp.gmail.com with ESMTPSA id v128sm7600094wmb.14.2019.11.14.07.04.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 06:55:52 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3827B1803C7; Thu, 14 Nov 2019 15:55:51 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
-In-Reply-To: <CAJ+HfNhPhCi4=taK7NcYuCvdcRBXVDobn7fpD3mi1eppTL7zLA@mail.gmail.com>
-References: <20191113204737.31623-1-bjorn.topel@gmail.com> <20191113204737.31623-3-bjorn.topel@gmail.com> <87o8xeod0s.fsf@toke.dk> <7893c97d-3d3f-35cc-4ea0-ac34d3d84dbc@iogearbox.net> <CAJ+HfNhPhCi4=taK7NcYuCvdcRBXVDobn7fpD3mi1eppTL7zLA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 14 Nov 2019 15:55:51 +0100
-Message-ID: <874kz6o6bs.fsf@toke.dk>
-MIME-Version: 1.0
-X-MC-Unique: H_Z5yin4M8GfIybZkQZ03A-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+        Thu, 14 Nov 2019 07:04:09 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net, alexandre.belloni@bootlin.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
+        horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
+        alexandru.marginean@nxp.com, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH v2 net-next 00/11] DSA driver for Vitesse Felix switch
+Date:   Thu, 14 Nov 2019 17:03:19 +0200
+Message-Id: <20191114150330.25856-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+This series builds upon the previous "Accomodate DSA front-end into
+Ocelot" topic and does the following:
 
-> On Thu, 14 Nov 2019 at 14:03, Daniel Borkmann <daniel@iogearbox.net> wrot=
-e:
->>
->> On 11/14/19 1:31 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->> >>
->> >> The BPF dispatcher builds on top of the BPF trampoline ideas;
->> >> Introduce bpf_arch_text_poke() and (re-)use the BPF JIT generate
->> >> code. The dispatcher builds a dispatch table for XDP programs, for
->> >> retpoline avoidance. The table is a simple binary search model, so
->> >> lookup is O(log n). Here, the dispatch table is limited to four
->> >> entries (for laziness reason -- only 1B relative jumps :-P). If the
->> >> dispatch table is full, it will fallback to the retpoline path.
->> >
->> > So it's O(log n) with n =3D=3D 4? Have you compared the performance of=
- just
->> > doing four linear compare-and-jumps? Seems to me it may not be that bi=
-g
->> > of a difference for such a small N?
->>
->> Did you perform some microbenchmarks wrt search tree? Mainly wondering
->> since for code emission for switch/case statements, clang/gcc turns off
->> indirect calls entirely under retpoline, see [0] from back then.
->>
->
-> As Toke stated, binsearch is not needed for 4 entries. I started out
-> with 16 (and explicit ids instead of pointers), and there it made more
-> sense. If folks think it's a good idea to move forward -- and with 4
-> entries, it makes sense to make the code generator easier, or maybe
-> based on static_calls like Ed did.
+- Reworks the Ocelot (VSC7514) driver to support one more switching core
+  (VSC9959), used in NPI mode. Some code which was thought to be
+  SoC-specific (ocelot_board.c) wasn't, and vice versa, so it is being
+  accordingly moved.
+- Exports ocelot driver structures and functions to include/soc/mscc.
+- Adds a DSA ocelot front-end for VSC9959, which is a PCI device and
+  uses the exported ocelot functionality for hardware configuration.
+- Adds a tagger driver for the Vitesse injection/extraction DSA headers.
+  This is known to be compatible with at least Ocelot and Felix.
 
-I don't really have anything to back it up, but my hunch is that only 4
-entries will end up being a limit that people are going to end up
-hitting. And since the performance falls off quite the cliff after
-hitting that limit, I do fear that this is something we will hear about
-quite emphatically :)
+Claudiu Manoil (2):
+  net: mscc: ocelot: move resource ioremap and regmap init to common
+    code
+  net: mscc: ocelot: filter out ocelot SoC specific PCS config from
+    common path
 
--Toke
+Vladimir Oltean (9):
+  net: mscc: ocelot: move invariant configs out of adjust_link
+  net: mscc: ocelot: create a helper for changing the port MTU
+  net: mscc: ocelot: export a constant for the tag length in bytes
+  net: mscc: ocelot: adjust MTU on the CPU port in NPI mode
+  net: mscc: ocelot: separate the implementation of switch reset
+  net: mscc: ocelot: publish structure definitions to
+    include/soc/mscc/ocelot.h
+  net: mscc: ocelot: publish ocelot_sys.h to include/soc/mscc
+  net: dsa: ocelot: add tagger for Ocelot/Felix switches
+  net: dsa: ocelot: add driver for Felix switch family
+
+ MAINTAINERS                                   |   9 +
+ drivers/net/dsa/Kconfig                       |   2 +
+ drivers/net/dsa/Makefile                      |   1 +
+ drivers/net/dsa/ocelot/Kconfig                |  11 +
+ drivers/net/dsa/ocelot/Makefile               |   6 +
+ drivers/net/dsa/ocelot/felix.c                | 441 ++++++++++++++
+ drivers/net/dsa/ocelot/felix.h                |  37 ++
+ drivers/net/dsa/ocelot/felix_vsc9959.c        | 567 ++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c            | 209 ++++---
+ drivers/net/ethernet/mscc/ocelot.h            | 479 +--------------
+ drivers/net/ethernet/mscc/ocelot_board.c      |  85 ++-
+ drivers/net/ethernet/mscc/ocelot_io.c         |  14 +-
+ drivers/net/ethernet/mscc/ocelot_regs.c       |   3 +-
+ include/net/dsa.h                             |   2 +
+ include/soc/mscc/ocelot.h                     | 539 +++++++++++++++++
+ .../soc}/mscc/ocelot_sys.h                    |   0
+ net/dsa/Kconfig                               |   7 +
+ net/dsa/Makefile                              |   1 +
+ net/dsa/tag_ocelot.c                          | 229 +++++++
+ 19 files changed, 2043 insertions(+), 599 deletions(-)
+ create mode 100644 drivers/net/dsa/ocelot/Kconfig
+ create mode 100644 drivers/net/dsa/ocelot/Makefile
+ create mode 100644 drivers/net/dsa/ocelot/felix.c
+ create mode 100644 drivers/net/dsa/ocelot/felix.h
+ create mode 100644 drivers/net/dsa/ocelot/felix_vsc9959.c
+ create mode 100644 include/soc/mscc/ocelot.h
+ rename {drivers/net/ethernet => include/soc}/mscc/ocelot_sys.h (100%)
+ create mode 100644 net/dsa/tag_ocelot.c
+
+-- 
+2.17.1
 
