@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23444FC32E
+	by mail.lfdr.de (Postfix) with ESMTP id F3101FC32F
 	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 10:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726930AbfKNJ6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 04:58:12 -0500
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:21598 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726628AbfKNJ6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 04:58:11 -0500
+        id S1726994AbfKNJ6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 04:58:16 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:46870 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726881AbfKNJ6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 04:58:15 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573725490;
+        s=mimecast20190719; t=1573725494;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ZC4IS+wABP7CjGBt1y2Fdpp5FeX+/EyGMLh5jKY6eME=;
-        b=VJoGSgAe2fDS2MxTtqy9S1dMZvkW9ZhkwcerJCFN/csMv5ZzrDtUWEtmq+W3Fd/zQi4ocQ
-        QjfyWs+giLEuVfVn2dVKhr3ZyopqO04dVAsApvFX2s5NMzoamrUcUHb/3dqtAF1jUPAtp2
-        j+4F1awA64wVaDbpNV5jSraAO8QgfwY=
+        bh=fnsq7tDFsMeM2bW2mfSnMuHGo8jDj07T4KGT6z4t4ZE=;
+        b=gXqQEl3xlPT3tOeBmwsbkNsqqy0tZHr44OI0gl+vt5QrTyCgP9yixDLzNkD2rp04oiQ8mP
+        rBk7pGHNzRyixPq4WIlJaAP0nsmxsS9c3/4AaB3wU21XuYfV411BxpebssrfOi5VxJ89Ez
+        YaRNdXDUEc0UZ1gzWvvtzytmZztFT/w=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-424-crdwlIMvN4K-IxoPHTS3jQ-1; Thu, 14 Nov 2019 04:58:06 -0500
+ us-mta-71-A843iaCbNWGJZRawbJf9lg-1; Thu, 14 Nov 2019 04:58:11 -0500
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E9AAB107ACC5;
-        Thu, 14 Nov 2019 09:58:04 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B9CCF1005509;
+        Thu, 14 Nov 2019 09:58:08 +0000 (UTC)
 Received: from steredhat.redhat.com (ovpn-117-81.ams2.redhat.com [10.36.117.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 89442165D3;
-        Thu, 14 Nov 2019 09:57:59 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 51FD2165D3;
+        Thu, 14 Nov 2019 09:58:05 +0000 (UTC)
 From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     Stephen Hemminger <sthemmin@microsoft.com>,
@@ -48,14 +48,14 @@ Cc:     Stephen Hemminger <sthemmin@microsoft.com>,
         Sasha Levin <sashal@kernel.org>,
         "K. Y. Srinivasan" <kys@microsoft.com>,
         Dexuan Cui <decui@microsoft.com>, linux-hyperv@vger.kernel.org
-Subject: [PATCH net-next v2 01/15] vsock/vmci: remove unused VSOCK_DEFAULT_CONNECT_TIMEOUT
-Date:   Thu, 14 Nov 2019 10:57:36 +0100
-Message-Id: <20191114095750.59106-2-sgarzare@redhat.com>
+Subject: [PATCH net-next v2 02/15] vsock: remove vm_sockets_get_local_cid()
+Date:   Thu, 14 Nov 2019 10:57:37 +0100
+Message-Id: <20191114095750.59106-3-sgarzare@redhat.com>
 In-Reply-To: <20191114095750.59106-1-sgarzare@redhat.com>
 References: <20191114095750.59106-1-sgarzare@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: crdwlIMvN4K-IxoPHTS3jQ-1
+X-MC-Unique: A843iaCbNWGJZRawbJf9lg-1
 X-Mimecast-Spam-Score: 0
 Content-Type: text/plain; charset=WINDOWS-1252
 Content-Transfer-Encoding: quoted-printable
@@ -64,40 +64,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VSOCK_DEFAULT_CONNECT_TIMEOUT definition was introduced with
-commit d021c344051af ("VSOCK: Introduce VM Sockets"), but it is
-never used in the net/vmw_vsock/vmci_transport.c.
+vm_sockets_get_local_cid() is only used in virtio_transport_common.c.
+We can replace it calling the virtio_transport_get_ops() and
+using the get_local_cid() callback registered by the transport.
 
-VSOCK_DEFAULT_CONNECT_TIMEOUT is used and defined in
-net/vmw_vsock/af_vsock.c
-
-Cc: Jorgen Hansen <jhansen@vmware.com>
 Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
 Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 ---
- net/vmw_vsock/vmci_transport.c | 5 -----
- 1 file changed, 5 deletions(-)
+ include/linux/vm_sockets.h              |  2 --
+ net/vmw_vsock/af_vsock.c                | 10 ----------
+ net/vmw_vsock/virtio_transport_common.c |  2 +-
+ 3 files changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/net/vmw_vsock/vmci_transport.c b/net/vmw_vsock/vmci_transport.=
-c
-index 6ba98a1efe2e..cf3b78f0038f 100644
---- a/net/vmw_vsock/vmci_transport.c
-+++ b/net/vmw_vsock/vmci_transport.c
-@@ -78,11 +78,6 @@ static int PROTOCOL_OVERRIDE =3D -1;
- #define VMCI_TRANSPORT_DEFAULT_QP_SIZE       262144
- #define VMCI_TRANSPORT_DEFAULT_QP_SIZE_MAX   262144
+diff --git a/include/linux/vm_sockets.h b/include/linux/vm_sockets.h
+index 33f1a2ecd905..7dd899ccb920 100644
+--- a/include/linux/vm_sockets.h
++++ b/include/linux/vm_sockets.h
+@@ -10,6 +10,4 @@
 =20
--/* The default peer timeout indicates how long we will wait for a peer res=
-ponse
-- * to a control message.
-- */
--#define VSOCK_DEFAULT_CONNECT_TIMEOUT (2 * HZ)
+ #include <uapi/linux/vm_sockets.h>
+=20
+-int vm_sockets_get_local_cid(void);
 -
- /* Helper function to convert from a VMCI error code to a VSock error code=
-. */
+ #endif /* _VM_SOCKETS_H */
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index 1f4fde4711b6..eb13693e9d04 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -129,16 +129,6 @@ static struct proto vsock_proto =3D {
+ static const struct vsock_transport *transport;
+ static DEFINE_MUTEX(vsock_register_mutex);
 =20
- static s32 vmci_transport_error_to_vsock_error(s32 vmci_error)
+-/**** EXPORTS ****/
+-
+-/* Get the ID of the local context.  This is transport dependent. */
+-
+-int vm_sockets_get_local_cid(void)
+-{
+-=09return transport->get_local_cid();
+-}
+-EXPORT_SYMBOL_GPL(vm_sockets_get_local_cid);
+-
+ /**** UTILS ****/
+=20
+ /* Each bound VSocket is stored in the bind hash table and each connected
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio=
+_transport_common.c
+index 828edd88488c..3edc373d2acc 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -168,7 +168,7 @@ static int virtio_transport_send_pkt_info(struct vsock_=
+sock *vsk,
+ =09struct virtio_vsock_pkt *pkt;
+ =09u32 pkt_len =3D info->pkt_len;
+=20
+-=09src_cid =3D vm_sockets_get_local_cid();
++=09src_cid =3D virtio_transport_get_ops()->transport.get_local_cid();
+ =09src_port =3D vsk->local_addr.svm_port;
+ =09if (!info->remote_cid) {
+ =09=09dst_cid=09=3D vsk->remote_addr.svm_cid;
 --=20
 2.21.0
 
