@@ -2,70 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54023FC20A
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 10:02:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B60FC216
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 10:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbfKNJCy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 04:02:54 -0500
-Received: from szxga06-in.huawei.com ([45.249.212.32]:60124 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725920AbfKNJCy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Nov 2019 04:02:54 -0500
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 1328043A7DF9ACC78C52;
-        Thu, 14 Nov 2019 17:02:51 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Thu, 14 Nov 2019
- 17:02:42 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <f.fainelli@gmail.com>, <jiri@mellanox.com>,
-        <geert+renesas@glider.be>, <jakub.kicinski@netronome.com>,
-        <gospo@broadcom.com>, <rdunlap@infradead.org>,
-        <yuehaibing@huawei.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] cnic: Fix Kconfig warning without MMU
-Date:   Thu, 14 Nov 2019 17:02:19 +0800
-Message-ID: <20191114090219.38344-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+        id S1726567AbfKNJHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 04:07:40 -0500
+Received: from ozlabs.org ([203.11.71.1]:48977 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725977AbfKNJHj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Nov 2019 04:07:39 -0500
+Received: by ozlabs.org (Postfix, from userid 1034)
+        id 47DFxN5pWqz9sP6; Thu, 14 Nov 2019 20:07:36 +1100 (AEDT)
+X-powerpc-patch-notification: thanks
+X-powerpc-patch-commit: 93a1544ad4ec4bd9147992e57b4f834ceb2cc159
+In-Reply-To: <20190612071901.21736-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>, <linux@armlinux.org.uk>,
+        <fw@strlen.de>, <steffen.klassert@secunet.com>,
+        <davem@davemloft.net>, <ralf@linux-mips.org>,
+        <paul.burton@mips.com>
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+Cc:     linux-s390@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        linux-sh@vger.kernel.org, netdev@vger.kernel.org,
+        YueHaibing <yuehaibing@huawei.com>, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net-next] defconfigs: remove obsolete CONFIG_INET_XFRM_MODE_* and CONFIG_INET6_XFRM_MODE_*
+Message-Id: <47DFxN5pWqz9sP6@ozlabs.org>
+Date:   Thu, 14 Nov 2019 20:07:36 +1100 (AEDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If MMU is not set, Kconfig warning this:
+On Wed, 2019-06-12 at 07:19:01 UTC, YueHaibing wrote:
+> These Kconfig options has been removed in
+> commit 4c145dce2601 ("xfrm: make xfrm modes builtin")
+> So there is no point to keep it in defconfigs any longer.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-WARNING: unmet direct dependencies detected for UIO
-  Depends on [n]: MMU [=n]
-  Selected by [y]:
-  - CNIC [=y] && NETDEVICES [=y] && ETHERNET [=y] && NET_VENDOR_BROADCOM [=y] && PCI [=y] && (IPV6 [=y] || IPV6 [=y]=n)
+Applied to powerpc next, thanks.
 
-Make CNIC depend on UIO instead of select it to fix this.
+https://git.kernel.org/powerpc/c/93a1544ad4ec4bd9147992e57b4f834ceb2cc159
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/broadcom/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/broadcom/Kconfig b/drivers/net/ethernet/broadcom/Kconfig
-index 53055ce..7acb677 100644
---- a/drivers/net/ethernet/broadcom/Kconfig
-+++ b/drivers/net/ethernet/broadcom/Kconfig
-@@ -87,8 +87,8 @@ config BNX2
- config CNIC
- 	tristate "QLogic CNIC support"
- 	depends on PCI && (IPV6 || IPV6=n)
-+	depends on UIO
- 	select BNX2
--	select UIO
- 	---help---
- 	  This driver supports offload features of QLogic bnx2 gigabit
- 	  Ethernet cards.
--- 
-2.7.4
-
-
+cheers
