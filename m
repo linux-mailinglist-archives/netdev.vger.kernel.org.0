@@ -2,130 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AABFC831
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 14:56:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD765FC83E
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 14:59:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726865AbfKNN4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 08:56:19 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:36088 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726254AbfKNN4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 08:56:18 -0500
-Received: by mail-qt1-f196.google.com with SMTP id y10so6864870qto.3;
-        Thu, 14 Nov 2019 05:56:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GR2keDSS6Ecy97PPzanGU4w7wjE7bCwqVAMt5IDxed8=;
-        b=aBYuSw6NDBRvMmetNJuJsMoqb39TvRRrZxA66BSGlkJvrfv0M6FHiOwqsWiPq4aTwZ
-         qf0aYxEVOi3/E+qkjnG7toGpHvUCtIXhIqKF+llUfDHWT09uD+8ts80wtZamzNYEC4ZL
-         qRnvz3ZH/J/el8m9kIas3GNtn030UtmpnpkQlrkooBfIm9la4Km1C8LXNe/tPNf0WjRs
-         onv08UWQyheM48bPZjWtrUsN7ASDeveaowvSVVHl317pAsUizNzwLTh/Gpq1w0CHPR/o
-         itfU1JxVWxfONUZeYItE3kF6oXyUTX9ELAdkVR9fPefVbHGnjCvb34H1W9dqrG1eB2In
-         4mDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GR2keDSS6Ecy97PPzanGU4w7wjE7bCwqVAMt5IDxed8=;
-        b=Kxcf/nKIbZDV5gk36rw7pkTLcEnXLSdD9yDhqw8RXlPpAINOuk/Vex/UxSL120Dv9H
-         NUkB9NbpVr+9JQcqFWxj2Itj7iA2DBWE6kAIjUmQPUwSQCVt8e5H6/tYWkbxa8MfPS9F
-         pThK2Du8IFWWU5WenrbCDFGF9K0MggKGSPRqFD046EE6qobmR15ZXQAUIIs9VFoxOk8F
-         PU9vaXBCMC7Hh9As+xJUfS1zlvYTcCj/8H/ZyXI52dkMO84X9Kd3VwlidtrfkDfw+pez
-         pb3UnGV4gujvS28b3D/pyAZnBzaaTkJ+m2sZl4fqpXG35GaRZRVvIfARXFNhxDvIAqg3
-         Hmkg==
-X-Gm-Message-State: APjAAAWlSkScpL8+rSknFuRJHrl+WeOdfIrT0bJbsYZux1hE0gvkOTnF
-        GjmcoMGa5dZzEVYm4MQwd9PXRrrZ00PObIPWHmo=
-X-Google-Smtp-Source: APXvYqzbH6dJGvoV3Qi73WsY9DguGWnnC8c5RWqxy9CbOAHjQp07jqJAi2lYOZjB+xiK6BqCT00nC3a0UTlNpSc2Ayo=
-X-Received: by 2002:aed:3ef2:: with SMTP id o47mr8458261qtf.107.1573739777271;
- Thu, 14 Nov 2019 05:56:17 -0800 (PST)
-MIME-Version: 1.0
-References: <20191113204737.31623-1-bjorn.topel@gmail.com> <20191113204737.31623-3-bjorn.topel@gmail.com>
- <87o8xeod0s.fsf@toke.dk> <7893c97d-3d3f-35cc-4ea0-ac34d3d84dbc@iogearbox.net>
-In-Reply-To: <7893c97d-3d3f-35cc-4ea0-ac34d3d84dbc@iogearbox.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 14 Nov 2019 14:56:06 +0100
-Message-ID: <CAJ+HfNhPhCi4=taK7NcYuCvdcRBXVDobn7fpD3mi1eppTL7zLA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <thoiland@redhat.com>,
+        id S1726812AbfKNN7C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 08:59:02 -0500
+Received: from merlin.infradead.org ([205.233.59.134]:49660 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726374AbfKNN7B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 08:59:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=RO0R2uX0myetPZy48Pt/keNvG06wRn8KGY9AfrvLL9w=; b=fDF2HEor8gvhw4Pm2d2dZsEuY6
+        hr3efgYJQK4s6muLfa50ubDy7JM+a3TNIPwqyuF4OG1x0nMt3G+m7cAPerQMZKoGfjx//JLLppk9i
+        b6qGJuWK2mpIFb0Z6/CeRD0x7r7/xPLhmB7i1qN48GXafH2eGh2dVJyDhP40StFSaUSz82O4Uv+2U
+        aoqsKCxRiHUtR3WwLIVJl/6wXP4vLEvg1EqWPEe+3hx9Jev5yIV8/cGeiNKu4zVVCUYUJDnYLPALq
+        p211Yt6/ZpyXzVPZuA/J5isFOFNaUgKAGWC2Zay8+jtArcBeFlAbFsotsi4pPl6TECMl6ux54JI0G
+        eY5gQxzg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1iVFe5-0007TP-8Q; Thu, 14 Nov 2019 13:58:49 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id E62E730018B;
+        Thu, 14 Nov 2019 14:57:39 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A107F203A589D; Thu, 14 Nov 2019 14:58:47 +0100 (CET)
+Date:   Thu, 14 Nov 2019 14:58:47 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     Edward Cree <ecree@solarflare.com>,
         Netdev <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
         bpf <bpf@vger.kernel.org>,
         Magnus Karlsson <magnus.karlsson@gmail.com>,
         "Karlsson, Magnus" <magnus.karlsson@intel.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
+Message-ID: <20191114135847.GY4131@hirez.programming.kicks-ass.net>
+References: <20191113204737.31623-1-bjorn.topel@gmail.com>
+ <20191113204737.31623-3-bjorn.topel@gmail.com>
+ <fa188bb2-6223-5aef-98e4-b5f7976ed485@solarflare.com>
+ <CAJ+HfNiDa912Uwt41_KMv+Z-sGr8fU7s4ncBPiUSx4PPAMQQqQ@mail.gmail.com>
+ <96811723-ab08-b987-78c7-2c9f2a0a972c@solarflare.com>
+ <CAJ+HfNhaOj+V7JuLb-SCAMf=7BudcE-C4EZAQrzT6P_NGpwvsw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ+HfNhaOj+V7JuLb-SCAMf=7BudcE-C4EZAQrzT6P_NGpwvsw@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Nov 2019 at 14:03, Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 11/14/19 1:31 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
-> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> >>
-> >> The BPF dispatcher builds on top of the BPF trampoline ideas;
-> >> Introduce bpf_arch_text_poke() and (re-)use the BPF JIT generate
-> >> code. The dispatcher builds a dispatch table for XDP programs, for
-> >> retpoline avoidance. The table is a simple binary search model, so
-> >> lookup is O(log n). Here, the dispatch table is limited to four
-> >> entries (for laziness reason -- only 1B relative jumps :-P). If the
-> >> dispatch table is full, it will fallback to the retpoline path.
-> >
-> > So it's O(log n) with n =3D=3D 4? Have you compared the performance of =
-just
-> > doing four linear compare-and-jumps? Seems to me it may not be that big
-> > of a difference for such a small N?
->
-> Did you perform some microbenchmarks wrt search tree? Mainly wondering
-> since for code emission for switch/case statements, clang/gcc turns off
-> indirect calls entirely under retpoline, see [0] from back then.
->
+On Thu, Nov 14, 2019 at 12:21:27PM +0100, Björn Töpel wrote:
+> Again, thanks for the pointers. PeterZ is (hopefully) still working on
+> the static_call stuff [3]. The static_call_inline would be a good fit
+> here, and maybe even using static_call as a patchpad/dispatcher like
+> you did is a better route. I will checkout Nadav's work!
 
-As Toke stated, binsearch is not needed for 4 entries. I started out
-with 16 (and explicit ids instead of pointers), and there it made more
-sense. If folks think it's a good idea to move forward -- and with 4
-entries, it makes sense to make the code generator easier, or maybe
-based on static_calls like Ed did.
-
-As for ubenchmarks I only compared with 1 cmp, vs 3 vs 4 + retpoline
-stated in the cover. For a proper patch I can do more in-depth
-analysis. Or was it anything particular you were looking for?
-
-For switch/case code generation there's a great paper on that here [3]
-from the 2008 GCC dev summit ("A Superoptimizer Analysis of Multiway
-Branch Code Generation")
-
-[3] http://citeseerx.ist.psu.edu/viewdoc/download;jsessionid=3D968AE7565678=
-63243AC7B1728915861A?doi=3D10.1.1.602.1875&rep=3Drep1&type=3Dpdf
-
-
-> >> An example: A module/driver allocates a dispatcher. The dispatcher is
-> >> shared for all netdevs. Each netdev allocate a slot in the dispatcher
-> >> and a BPF program. The netdev then uses the dispatcher to call the
-> >> correct program with a direct call (actually a tail-call).
-> >
-> > Is it really accurate to call it a tail call? To me, that would imply
-> > that it increments the tail call limit counter and all that? Isn't this
-> > just a direct jump using the trampoline stuff?
->
-> Not meant in BPF context here, but more general [1].
->
-> (For actual BPF tail calls I have a series close to ready for getting
-> rid of most indirect calls which I'll post later today.)
->
-
-Thanks for the clarification, Daniel! (call vs jmp)
-
-> Best,
-> Daniel
->
->    [0] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git=
-/commit/?id=3Da9d57ef15cbe327fe54416dd194ee0ea66ae53a4
->    [1] https://en.wikipedia.org/wiki/Tail_call
+Yes, I'll repost that once the current pile of text_poke and ftrace
+changes lands.
