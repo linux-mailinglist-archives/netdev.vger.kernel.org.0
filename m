@@ -2,249 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 271A7FC5D9
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 13:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96A3CFC5F7
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 13:14:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbfKNMDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 07:03:04 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:15360 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726491AbfKNMDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 07:03:02 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xAEBv7FD000626
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:03:02 -0500
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w96barq4a-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:03:02 -0500
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Thu, 14 Nov 2019 12:02:59 -0000
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Thu, 14 Nov 2019 12:02:57 -0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAEC2up938338774
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Nov 2019 12:02:56 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1328D4C050;
-        Thu, 14 Nov 2019 12:02:56 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C7B274C040;
-        Thu, 14 Nov 2019 12:02:55 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Nov 2019 12:02:55 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next 8/8] net/smc: immediate termination for SMCR link groups
-Date:   Thu, 14 Nov 2019 13:02:47 +0100
+        id S1726956AbfKNMOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 07:14:16 -0500
+Received: from foss.arm.com ([217.140.110.172]:41816 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726115AbfKNMOQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Nov 2019 07:14:16 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 726A231B;
+        Thu, 14 Nov 2019 04:14:15 -0800 (PST)
+Received: from entos-d05.shanghai.arm.com (entos-d05.shanghai.arm.com [10.169.40.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8FA853F6C4;
+        Thu, 14 Nov 2019 04:14:08 -0800 (PST)
+From:   Jianyong Wu <jianyong.wu@arm.com>
+To:     netdev@vger.kernel.org, yangbo.lu@nxp.com, john.stultz@linaro.org,
+        tglx@linutronix.de, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, maz@kernel.org,
+        richardcochran@gmail.com, Mark.Rutland@arm.com, will@kernel.org,
+        suzuki.poulose@arm.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        Steve.Capper@arm.com, Kaly.Xin@arm.com, justin.he@arm.com,
+        jianyong.wu@arm.com, nd@arm.com
+Subject: [RFC PATCH v7 0/7] Enable ptp_kvm for arm64
+Date:   Thu, 14 Nov 2019 20:13:51 +0800
+Message-Id: <20191114121358.6684-1-jianyong.wu@arm.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20191114120247.68889-1-kgraul@linux.ibm.com>
-References: <20191114120247.68889-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 19111412-0020-0000-0000-00000386206F
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19111412-0021-0000-0000-000021DC36E9
-Message-Id: <20191114120247.68889-9-kgraul@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-14_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1910280000 definitions=main-1911140113
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
+kvm ptp targets to provide high precision time sync between guest
+and host in virtualization environment. This patch enable kvm ptp
+for arm64.
+This patch set base on [1][2][3]
 
-If the SMC module is unloaded or an IB device is thrown away, the
-immediate link group freeing introduced for SMCD is exploited for SMCR
-as well. That means SMCR-specifics are added to smc_conn_kill().
+change log:
+from v6 to v7:
+        (1) include the omited clocksource_id.h in last version.
+        (2) reorder the header file in patch.
+        (3) refine some words in commit message to make it more impersonal.
+from v5 to v6:
+        (1) apply Mark's patch[4] to get SMCCC conduit.
+        (2) add mechanism to recognize current clocksource by add
+clocksouce_id value into struct clocksource instead of method in patch-v5.
+        (3) rename kvm_arch_ptp_get_clock_fn into
+kvm_arch_ptp_get_crosststamp.
 
-Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/smc_core.c | 58 +++++++++++++++++++++++++++++++---------------
- net/smc/smc_core.h |  3 ++-
- net/smc/smc_ib.c   |  3 ++-
- net/smc/smc_llc.c  |  4 +++-
- 4 files changed, 46 insertions(+), 22 deletions(-)
+from v4 to v5:
+        (1) remove hvc delay compensasion as it should leave to userspace.
+        (2) check current clocksource in hvc call service.
+        (3) expose current clocksource by adding it to
+system_time_snapshot.
+        (4) add helper to check if clocksource is arm_arch_counter.
+        (5) rename kvm_ptp.c to ptp_kvm_common.c
+from v3 to v4:
+        (1) fix clocksource of ptp_kvm to arch_sys_counter.
+        (2) move kvm_arch_ptp_get_clock_fn into arm_arch_timer.c
+        (3) subtract cntvoff before return cycles from host.
+        (4) use ktime_get_snapshot instead of getnstimeofday and
+get_current_counterval to return time and counter value.
+        (5) split ktime and counter into two 32-bit block respectively
+to avoid Y2038-safe issue.
+        (6) set time compensation to device time as half of the delay of
+hvc call.
+        (7) add ARM_ARCH_TIMER as dependency of ptp_kvm for
+arm64.
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 0755bd4b587c..97e9d21c4d1e 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -566,6 +566,10 @@ static void smc_lgr_cleanup(struct smc_link_group *lgr)
- 		struct smc_link *lnk = &lgr->lnk[SMC_SINGLE_LINK];
- 
- 		wake_up(&lnk->wr_reg_wait);
-+		if (lnk->state != SMC_LNK_INACTIVE) {
-+			smc_link_send_delete(lnk, false);
-+			smc_llc_link_inactive(lnk);
-+		}
- 	}
- }
- 
-@@ -638,14 +642,16 @@ void smc_port_terminate(struct smc_ib_device *smcibdev, u8 ibport)
- 	list_for_each_entry_safe(lgr, l, &smc_lgr_list.list, list) {
- 		if (!lgr->is_smcd &&
- 		    lgr->lnk[SMC_SINGLE_LINK].smcibdev == smcibdev &&
--		    lgr->lnk[SMC_SINGLE_LINK].ibport == ibport)
-+		    lgr->lnk[SMC_SINGLE_LINK].ibport == ibport) {
- 			list_move(&lgr->list, &lgr_free_list);
-+			lgr->freeing = 1;
-+		}
- 	}
- 	spin_unlock_bh(&smc_lgr_list.lock);
- 
- 	list_for_each_entry_safe(lgr, l, &lgr_free_list, list) {
- 		list_del_init(&lgr->list);
--		__smc_lgr_terminate(lgr, true);
-+		__smc_lgr_terminate(lgr, false);
- 	}
- }
- 
-@@ -695,6 +701,36 @@ void smc_smcd_terminate_all(struct smcd_dev *smcd)
- 		wait_event(smcd->lgrs_deleted, !atomic_read(&smcd->lgr_cnt));
- }
- 
-+/* Called when an SMCR device is removed or the smc module is unloaded.
-+ * If smcibdev is given, all SMCR link groups using this device are terminated.
-+ * If smcibdev is NULL, all SMCR link groups are terminated.
-+ */
-+void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
-+{
-+	struct smc_link_group *lgr, *lg;
-+	LIST_HEAD(lgr_free_list);
-+
-+	spin_lock_bh(&smc_lgr_list.lock);
-+	if (!smcibdev) {
-+		list_splice_init(&smc_lgr_list.list, &lgr_free_list);
-+		list_for_each_entry(lgr, &lgr_free_list, list)
-+			lgr->freeing = 1;
-+	} else {
-+		list_for_each_entry_safe(lgr, lg, &smc_lgr_list.list, list) {
-+			if (lgr->lnk[SMC_SINGLE_LINK].smcibdev == smcibdev) {
-+				list_move(&lgr->list, &lgr_free_list);
-+				lgr->freeing = 1;
-+			}
-+		}
-+	}
-+	spin_unlock_bh(&smc_lgr_list.lock);
-+
-+	list_for_each_entry_safe(lgr, lg, &lgr_free_list, list) {
-+		list_del_init(&lgr->list);
-+		__smc_lgr_terminate(lgr, false);
-+	}
-+}
-+
- /* Determine vlan of internal TCP socket.
-  * @vlan_id: address to store the determined vlan id into
-  */
-@@ -1215,32 +1251,16 @@ static void smc_core_going_away(void)
- /* Clean up all SMC link groups */
- static void smc_lgrs_shutdown(void)
- {
--	struct smc_link_group *lgr, *lg;
--	LIST_HEAD(lgr_freeing_list);
- 	struct smcd_dev *smcd;
- 
- 	smc_core_going_away();
- 
--	spin_lock_bh(&smc_lgr_list.lock);
--	list_splice_init(&smc_lgr_list.list, &lgr_freeing_list);
--	spin_unlock_bh(&smc_lgr_list.lock);
-+	smc_smcr_terminate_all(NULL);
- 
- 	spin_lock(&smcd_dev_list.lock);
- 	list_for_each_entry(smcd, &smcd_dev_list.list, list)
- 		smc_smcd_terminate_all(smcd);
- 	spin_unlock(&smcd_dev_list.lock);
--
--	list_for_each_entry_safe(lgr, lg, &lgr_freeing_list, list) {
--		list_del_init(&lgr->list);
--		if (!lgr->is_smcd) {
--			struct smc_link *lnk = &lgr->lnk[SMC_SINGLE_LINK];
--
--			smc_link_send_delete(&lgr->lnk[SMC_SINGLE_LINK], false);
--			smc_llc_link_inactive(lnk);
--		}
--		cancel_delayed_work_sync(&lgr->free_work);
--		smc_lgr_free(lgr); /* free link group */
--	}
- }
- 
- /* Called (from smc_exit) when module is removed */
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 7f34f4d5a514..a428db6cd2e2 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -287,7 +287,7 @@ static inline struct smc_connection *smc_lgr_find_conn(
- 
- static inline void smc_lgr_terminate_sched(struct smc_link_group *lgr)
- {
--	if (!lgr->terminating)
-+	if (!lgr->terminating && !lgr->freeing)
- 		schedule_work(&lgr->terminate_work);
- }
- 
-@@ -301,6 +301,7 @@ void smc_port_terminate(struct smc_ib_device *smcibdev, u8 ibport);
- void smc_smcd_terminate(struct smcd_dev *dev, u64 peer_gid,
- 			unsigned short vlan);
- void smc_smcd_terminate_all(struct smcd_dev *dev);
-+void smc_smcr_terminate_all(struct smc_ib_device *smcibdev);
- int smc_buf_create(struct smc_sock *smc, bool is_smcd);
- int smc_uncompress_bufsize(u8 compressed);
- int smc_rmb_rtoken_handling(struct smc_connection *conn,
-diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-index c15dcd08dc74..0ab122e66328 100644
---- a/net/smc/smc_ib.c
-+++ b/net/smc/smc_ib.c
-@@ -565,7 +565,7 @@ static void smc_ib_add_dev(struct ib_device *ibdev)
- 	schedule_work(&smcibdev->port_event_work);
- }
- 
--/* callback function for ib_register_client() */
-+/* callback function for ib_unregister_client() */
- static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
- {
- 	struct smc_ib_device *smcibdev;
-@@ -575,6 +575,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
- 	spin_lock(&smc_ib_devices.lock);
- 	list_del_init(&smcibdev->list); /* remove from smc_ib_devices */
- 	spin_unlock(&smc_ib_devices.lock);
-+	smc_smcr_terminate_all(smcibdev);
- 	smc_ib_cleanup_per_ibdev(smcibdev);
- 	ib_unregister_event_handler(&smcibdev->event_handler);
- 	kfree(smcibdev);
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index 8d1b076021ed..a9f6431dd69a 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -698,9 +698,11 @@ int smc_llc_do_confirm_rkey(struct smc_link *link,
- int smc_llc_do_delete_rkey(struct smc_link *link,
- 			   struct smc_buf_desc *rmb_desc)
- {
--	int rc;
-+	int rc = 0;
- 
- 	mutex_lock(&link->llc_delete_rkey_mutex);
-+	if (link->state != SMC_LNK_ACTIVE)
-+		goto out;
- 	reinit_completion(&link->llc_delete_rkey);
- 	rc = smc_llc_send_delete_rkey(link, rmb_desc);
- 	if (rc)
+from v2 to v3:
+        (1) fix some issues in commit log.
+        (2) add some receivers in send list.
+
+from v1 to v2:
+        (1) move arch-specific code from arch/ to driver/ptp/
+        (2) offer mechanism to inform userspace if ptp_kvm service is
+available.
+        (3) separate ptp_kvm code for arm64 into hypervisor part and
+guest part.
+        (4) add API to expose monotonic clock and counter value.
+        (5) refine code: remove no necessary part and reconsitution.
+
+[1]https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/
+commit/?h=kvm/hvc&id=125ea89e4a21e2fc5235410f966a996a1a7148bf
+[2]https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/
+commit/?h=kvm/hvc&id=464f5a1741e5959c3e4d2be1966ae0093b4dce06
+[3]https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/
+commit/?h=kvm/hvc&id=6597490e005d0eeca8ed8c1c1d7b4318ee014681
+[4]https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/
+commit/?h=for-next/smccc-conduit-cleanup&id=6b7fe77c334ae59fed9500140e08f4f896b36871
+
+Jianyong Wu (6):
+  psci: let arm_smccc_1_1_invoke available by modules
+  ptp: Reorganize ptp_kvm modules to make it arch-independent.
+  time: Add mechanism to recognize clocksource in time_get_snapshot
+  psci: Add hvc call service for ptp_kvm.
+  ptp: arm64: Enable ptp_kvm for arm64
+  kvm: arm64: Add capability check extension for ptp_kvm
+
+Mark Rutland (1):
+  arm/arm64: smccc/psci: add arm_smccc_1_1_get_conduit()
+
+ drivers/clocksource/arm_arch_timer.c        | 24 ++++++
+ drivers/firmware/psci/psci.c                | 16 ++++
+ drivers/ptp/Kconfig                         |  2 +-
+ drivers/ptp/Makefile                        |  1 +
+ drivers/ptp/ptp_kvm_arm64.c                 | 53 +++++++++++++
+ drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} | 77 +++++-------------
+ drivers/ptp/ptp_kvm_x86.c                   | 87 +++++++++++++++++++++
+ include/asm-generic/ptp_kvm.h               | 12 +++
+ include/linux/arm-smccc.h                   | 30 ++++++-
+ include/linux/clocksource.h                 |  6 ++
+ include/linux/clocksource_ids.h             | 13 +++
+ include/linux/timekeeping.h                 | 12 +--
+ include/uapi/linux/kvm.h                    |  1 +
+ kernel/time/clocksource.c                   |  3 +
+ kernel/time/timekeeping.c                   |  1 +
+ virt/kvm/arm/arm.c                          |  1 +
+ virt/kvm/arm/psci.c                         | 22 ++++++
+ 17 files changed, 295 insertions(+), 66 deletions(-)
+ create mode 100644 drivers/ptp/ptp_kvm_arm64.c
+ rename drivers/ptp/{ptp_kvm.c => ptp_kvm_common.c} (63%)
+ create mode 100644 drivers/ptp/ptp_kvm_x86.c
+ create mode 100644 include/asm-generic/ptp_kvm.h
+ create mode 100644 include/linux/clocksource_ids.h
+
 -- 
 2.17.1
 
