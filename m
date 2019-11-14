@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83CE4FCE02
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:45:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 007BCFCE03
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:45:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727001AbfKNSpL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 13:45:11 -0500
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36728 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726549AbfKNSpK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:45:10 -0500
-Received: by mail-pg1-f196.google.com with SMTP id k13so4349975pgh.3
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:45:10 -0800 (PST)
+        id S1727022AbfKNSpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 13:45:13 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41336 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbfKNSpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:45:12 -0500
+Received: by mail-pg1-f193.google.com with SMTP id h4so4333369pgv.8
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:45:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=wDwYkwxW0FxWLyE3I8m+kCLGsDG+n2ImaTBPf/mcEVk=;
-        b=GgJV72BuHJJp+UqwsWqxhsCz/9TI9AARKZs0gXDWAnzYYo5Gia6DMl7m8k5Tv8KzSw
-         NEMZAwt3LxpBgL7ENtWfg1Xkpnn3hChod84Jdw95rzyIc6cNQFOWALR4+xxTLNgKcfmu
-         dro3XzbVjse/GgHlk3GmEltz3/zWdjoHv0ejOVMx3+cpg+ERGao2KL16AAni+zSVhGb+
-         oR0pq1Wo7dn4j8rMhQZtfs+wkJBenV5KY3h0NQrkk0VEhnuTJFtMfS0q41SKSn5XvOn6
-         f4hvpbMw8vhBN3JAHnxDTC6LwOrAGsjtW3AF6kzRUrlG2sTkVK6LzkQcWM0XzY3STiNu
-         c6OQ==
+        bh=8TxLlnJ4BoD9B2pwZqmboySs4KscSO6XXXhYyisKwIU=;
+        b=Yhgj/vq+K/+BgF6v37h/l60TDGEItYnX6OCRofzkA61wbx49rVsGKH+4YsuHT2Uhnp
+         4QpbcgT1wxH4xljcubgW+/bugWjNhDnNs+2gkJ2KTbc+Ei0sZYtYF4c8FK5Yl8U+uJaB
+         G4KL+ATeMI5EFBbLr1HIFt0bE3yEfFN6BQkwQQZ30ww9FSJFrVx/o/+Nqoz7E9kQNQjK
+         g7t4PFtSI2VgBFCmolQFS9rWrcy8bwypgG63oBwvE70CJ4greNJgg0fpu9XJuH7Bh8AB
+         BzPosknm+rZTNH475+KpvoRmLpmDbrHeqqoixq0Lv0LkSnZy0KZRPHIYr83AXVB2IRk/
+         N4vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=wDwYkwxW0FxWLyE3I8m+kCLGsDG+n2ImaTBPf/mcEVk=;
-        b=IopNJO/VQQ1E9sVK7s7XqIDU6B5vzNcQhMQu1aPtiCOH6yXQlY6k2ufnXDOjVg0CVE
-         5xWYHKOk+C/3XYyD8HE+Yy7dRSrVYvRfFBEWqZiX5tgUq9DZRUsOKImyAqsWeHfJr5F0
-         BfM/VbPbQ5Jed97dlVal7tGGMK9Yq/PIYhXfLqCN1AfDSNQXVZ98X+by1w/dKxHIyPYL
-         PqziflA/+wRjS4ejuGwAdMNyq4g7icAuiKBrpPK9bn13k8ggoAekpvusFiVnB/3YOtww
-         Z6RFt/PeYEp3PAH7oNyhBYKO+bBndVvhk47adv8HK0TJrCz0PMWYgzoBW6X1bLSUlgEf
-         Xq6w==
-X-Gm-Message-State: APjAAAX5v2oIOcjR9qTcOA8PuzuIGvsw//qQc1LvPjRA+en3C0AZBKPo
-        pQUHLY/geoONAPuYpbZmcFA6LuLB
-X-Google-Smtp-Source: APXvYqwrUQaGEG3u5iMQy/fmgl1b2cO67i+m2RTiIx5cndf7jM7+Fv2AxcOgtwLPzNdYxDmxMzNKYQ==
-X-Received: by 2002:a17:90a:970a:: with SMTP id x10mr933679pjo.39.1573757109680;
-        Thu, 14 Nov 2019 10:45:09 -0800 (PST)
+        bh=8TxLlnJ4BoD9B2pwZqmboySs4KscSO6XXXhYyisKwIU=;
+        b=nY7BJ5Slc8K3vzUL4mOJKfuVoNy64SvN75I5OL/5H+XJlB0mXtsIz2r9ZZlGv4wmxw
+         aLogLvjoAS1iibvJM2jfJUUvzu9DGymlB/4nDUVgkQnq6RavAxQQPd6ryBgIXJ75qclv
+         U6LC+i8efFqbsmAt6vSh1u6vyTH7G+3pYvq1NR1M8zcyuwgWdhyzp3p5sgnMfHnAK0C/
+         17BpFZ9Zbe4WaElZNS2m1u9ONAleph3W4JDIIK0P9qeP9eMdr75otW5J4Q5rMojFjAfV
+         iw0Oq/Kqx3E2pcQ+w+t33sBdvjXRhDlawfv09omFnuOBsmQef0CMrs3dVKk4dsPaG4C0
+         dueA==
+X-Gm-Message-State: APjAAAWLbpqgceL59REf1LXfkhi0SQiQnxInw5QfJe/KT7QpcmWz3cDN
+        pjn03QQIQUhDzjVV7MEoWcd8iorG
+X-Google-Smtp-Source: APXvYqwdUBwNxm3Oy7UhcAMIgUJqoM+tDDV+OBw4iaOzMUqv+8BqU++lw7P+Laz3rFiRtH1VW7yWXw==
+X-Received: by 2002:a63:4d12:: with SMTP id a18mr11506093pgb.451.1573757110991;
+        Thu, 14 Nov 2019 10:45:10 -0800 (PST)
 Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id 23sm6819507pgw.8.2019.11.14.10.45.08
+        by smtp.gmail.com with ESMTPSA id 23sm6819507pgw.8.2019.11.14.10.45.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 10:45:08 -0800 (PST)
+        Thu, 14 Nov 2019 10:45:10 -0800 (PST)
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     intel-wired-lan@lists.osuosl.org,
@@ -57,61 +57,69 @@ Cc:     intel-wired-lan@lists.osuosl.org,
         Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>,
         Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
         Stefan Sorensen <stefan.sorensen@spectralink.com>
-Subject: [PATCH net 00/13] ptp: Validate the ancillary ioctl flags more carefully.
-Date:   Thu, 14 Nov 2019 10:44:54 -0800
-Message-Id: <20191114184507.18937-1-richardcochran@gmail.com>
+Subject: [PATCH net 01/13] ptp: Validate requests to enable time stamping of external signals.
+Date:   Thu, 14 Nov 2019 10:44:55 -0800
+Message-Id: <20191114184507.18937-2-richardcochran@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The flags passed to the ioctls for periodic output signals and
-time stamping of external signals were never checked, and thus formed
-a useless ABI inadvertently.  More recently, a version 2 of the ioctls
-was introduced in order make the flags meaningful.  This series
-tightens up the checks on the new ioctl flags.
+Commit 415606588c61 ("PTP: introduce new versions of IOCTLs")
+introduced a new external time stamp ioctl that validates the flags.
+This patch extends the validation to ensure that at least one rising
+or falling edge flag is set when enabling external time stamps.
 
-- Patch 1 ensures at least one edge flag is set for the new ioctl.
-- Patches 2-7 are Jacob's recent checks, picking up the tags.
-- Patch 8 introduces a "strict" flag for passing to the drivers when the
-  new ioctl is used.
-- Patches 9-12 implement the "strict" checking in the drivers.
-- Patch 13 extends the test program to exercise combinations of flags.
+Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+---
+ drivers/ptp/ptp_chardev.c      | 18 +++++++++++++-----
+ include/uapi/linux/ptp_clock.h |  1 +
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-Jacob Keller (6):
-  net: reject PTP periodic output requests with unsupported flags
-  mv88e6xxx: reject unsupported external timestamp flags
-  dp83640: reject unsupported external timestamp flags
-  igb: reject unsupported external timestamp flags
-  mlx5: reject unsupported external timestamp flags
-  renesas: reject unsupported external timestamp flags
-
-Richard Cochran (7):
-  ptp: Validate requests to enable time stamping of external signals.
-  ptp: Introduce strict checking of external time stamp options.
-  mv88e6xxx: Reject requests to enable time stamping on both edges.
-  dp83640: Reject requests to enable time stamping on both edges.
-  igb: Reject requests that fail to enable time stamping on both edges.
-  mlx5: Reject requests to enable time stamping on both edges.
-  ptp: Extend the test program to check the external time stamp flags.
-
- drivers/net/dsa/mv88e6xxx/ptp.c               | 13 +++++
- drivers/net/ethernet/broadcom/tg3.c           |  4 ++
- drivers/net/ethernet/intel/igb/igb_ptp.c      | 17 ++++++
- .../ethernet/mellanox/mlx5/core/lib/clock.c   | 17 ++++++
- drivers/net/ethernet/microchip/lan743x_ptp.c  |  4 ++
- drivers/net/ethernet/renesas/ravb_ptp.c       | 11 ++++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  |  4 ++
- drivers/net/phy/dp83640.c                     | 16 ++++++
- drivers/ptp/ptp_chardev.c                     | 20 +++++--
- include/uapi/linux/ptp_clock.h                |  5 +-
- tools/testing/selftests/ptp/testptp.c         | 53 ++++++++++++++++++-
- 11 files changed, 156 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index 67d0199840fd..cbbe1237ff8d 100644
+--- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -149,11 +149,19 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 			err = -EFAULT;
+ 			break;
+ 		}
+-		if (((req.extts.flags & ~PTP_EXTTS_VALID_FLAGS) ||
+-			req.extts.rsv[0] || req.extts.rsv[1]) &&
+-			cmd == PTP_EXTTS_REQUEST2) {
+-			err = -EINVAL;
+-			break;
++		if (cmd == PTP_EXTTS_REQUEST2) {
++			/* Make sure no reserved bit is set. */
++			if ((req.extts.flags & ~PTP_EXTTS_VALID_FLAGS) ||
++			    req.extts.rsv[0] || req.extts.rsv[1]) {
++				err = -EINVAL;
++				break;
++			}
++			/* Ensure one of the rising/falling edge bits is set. */
++			if ((req.extts.flags & PTP_ENABLE_FEATURE) &&
++			    (req.extts.flags & PTP_EXTTS_EDGES) == 0) {
++				err = -EINVAL;
++				break;
++			}
+ 		} else if (cmd == PTP_EXTTS_REQUEST) {
+ 			req.extts.flags &= PTP_EXTTS_V1_VALID_FLAGS;
+ 			req.extts.rsv[0] = 0;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 59e89a1bc3bb..304059b1609d 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -31,6 +31,7 @@
+ #define PTP_ENABLE_FEATURE (1<<0)
+ #define PTP_RISING_EDGE    (1<<1)
+ #define PTP_FALLING_EDGE   (1<<2)
++#define PTP_EXTTS_EDGES    (PTP_RISING_EDGE | PTP_FALLING_EDGE)
+ 
+ /*
+  * flag fields valid for the new PTP_EXTTS_REQUEST2 ioctl.
 -- 
 2.20.1
 
