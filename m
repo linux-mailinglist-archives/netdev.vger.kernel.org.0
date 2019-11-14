@@ -2,127 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D27FD080
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 22:43:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 462F2FD084
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 22:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbfKNVnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 16:43:24 -0500
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:20639 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726628AbfKNVnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 16:43:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1573767803;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SDfmOH9PNi4Wxo2sjghLF/7WTkfo/Nxl8i+LNOZea8g=;
-        b=MhWW02UaLZjm1K4aZ+Gxy9J9KuCqrJbA01ncoJbFjH3HLCL2rQvaSbwREHLr5XCT+uQmUU
-        Gp8kPfJ46Hc1aSWW4kao6V83zasmGC8pKT7LJdm5wLY8kBkZPtLweruCIHcAWHU3DcMbNw
-        Y5PMvG1RF6+VpD5Sd2TQlDaQSxDmew8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-421-JbhJwrGeNyqjlyLwt10Vug-1; Thu, 14 Nov 2019 16:43:22 -0500
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C8641802CE2;
-        Thu, 14 Nov 2019 21:43:20 +0000 (UTC)
-Received: from carbon (ovpn-200-19.brq.redhat.com [10.40.200.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 956F2A7D2;
-        Thu, 14 Nov 2019 21:43:10 +0000 (UTC)
-Date:   Thu, 14 Nov 2019 22:43:09 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     "Jonathan Lemon" <jonathan.lemon@gmail.com>
-Cc:     "Ilias Apalodimas" <ilias.apalodimas@linaro.org>,
-        "Lorenzo Bianconi" <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net,
-        thomas.petazzoni@bootlin.com, matteo.croce@redhat.com,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to
- sync DMA memory for non-coherent devices
-Message-ID: <20191114224309.649dfacb@carbon>
-In-Reply-To: <ECC7645D-082A-4590-9339-C45949E10C4D@gmail.com>
-References: <cover.1573383212.git.lorenzo@kernel.org>
-        <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
-        <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
-        <20191114185326.GA43048@PC192.168.49.172>
-        <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
-        <20191114204227.GA43707@PC192.168.49.172>
-        <ECC7645D-082A-4590-9339-C45949E10C4D@gmail.com>
+        id S1727021AbfKNVpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 16:45:20 -0500
+Received: from ns.lynxeye.de ([87.118.118.114]:55733 "EHLO lynxeye.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726953AbfKNVpU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Nov 2019 16:45:20 -0500
+Received: by lynxeye.de (Postfix, from userid 501)
+        id D2B85E74222; Thu, 14 Nov 2019 22:45:18 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on lynxeye.de
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=3.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=ham version=3.3.1
+Received: from radon.fritz.box (a89-183-75-168.net-htp.de [89.183.75.168])
+        by lynxeye.de (Postfix) with ESMTPSA id BFF50E74217;
+        Thu, 14 Nov 2019 22:45:17 +0100 (CET)
+Message-ID: <fa7c3b9b24a0d140847f1390fb09bae21477ebd1.camel@lynxeye.de>
+Subject: Re: long delays in rtl8723 drivers in irq disabled sections
+From:   Lucas Stach <dev@lynxeye.de>
+To:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Pkshih <pkshih@realtek.com>, wlanfae <wlanfae@realtek.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Date:   Thu, 14 Nov 2019 22:45:17 +0100
+In-Reply-To: <a6d55cfc-9de9-ce6e-1dcf-814372772327@lwfinger.net>
+References: <5de65447f1d115f436f764a7ec811c478afbe2e0.camel@lynxeye.de>
+         <5B2DA6FDDF928F4E855344EE0A5C39D1D5C9CE47@RTITMBSVM04.realtek.com.tw>
+         <e83f5b699c5652cbe2350ac3576215d24b748e03.camel@lynxeye.de>
+         <5B2DA6FDDF928F4E855344EE0A5C39D1D5C9D5F6@RTITMBSVM04.realtek.com.tw>
+         <a6d55cfc-9de9-ce6e-1dcf-814372772327@lwfinger.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.1 (3.34.1-1.fc31) 
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: JbhJwrGeNyqjlyLwt10Vug-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=WINDOWS-1252
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Nov 2019 13:04:26 -0800
-"Jonathan Lemon" <jonathan.lemon@gmail.com> wrote:
+Hi Larry,
 
-> On 14 Nov 2019, at 12:42, Ilias Apalodimas wrote:
->=20
-> > Hi Jonathan,
-> >
-> > On Thu, Nov 14, 2019 at 12:27:40PM -0800, Jonathan Lemon wrote: =20
-> >>
-> >>
-> >> On 14 Nov 2019, at 10:53, Ilias Apalodimas wrote:
-> >> =20
-> >>> [...] =20
-> >>>>> index 2cbcdbdec254..defbfd90ab46 100644
-> >>>>> --- a/include/net/page_pool.h
-> >>>>> +++ b/include/net/page_pool.h
-> >>>>> @@ -65,6 +65,9 @@ struct page_pool_params {
-> >>>>>  =09int=09=09nid;  /* Numa node id to allocate from pages from */
-> >>>>>  =09struct device=09*dev; /* device, for DMA pre-mapping purposes *=
-/
-> >>>>>  =09enum dma_data_direction dma_dir; /* DMA mapping direction */
-> >>>>> +=09unsigned int=09max_len; /* max DMA sync memory size */
-> >>>>> +=09unsigned int=09offset;  /* DMA addr offset */
-> >>>>> +=09u8 sync;
-> >>>>>  }; =20
-> >>>>
-> >>>> How about using PP_FLAG_DMA_SYNC instead of another flag word?
-> >>>> (then it can also be gated on having DMA_MAP enabled) =20
-> >>>
-> >>> You mean instead of the u8?
-> >>> As you pointed out on your V2 comment of the mail, some cards don't=
-=20
-> >>> sync back to device.
-> >>>
-> >>> As the API tries to be generic a u8 was choosen instead of a flag
-> >>> to cover these use cases. So in time we'll change the semantics of
-> >>> this to 'always sync', 'dont sync if it's an skb-only queue' etc.
-> >>>
-> >>> The first case Lorenzo covered is sync the required len only instead=
-=20
-> >>> of the full buffer =20
-> >>
-> >> Yes, I meant instead of:
-> >> +=09=09.sync =3D 1,
-> >>
-> >> Something like:
-> >>         .flags =3D PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC
-> >>
+Am Donnerstag, den 14.11.2019, 15:25 -0600 schrieb Larry Finger:
+[...]
+> > > I don't know if this function needs to guard against something running
+> > > in the IRQ handler, so depending on the answer to that the solution
+> > > might be as simple as not disabling IRQs when taking the spinlock.
+> > > 
+> > > kworker/-276     4d...    0us : _raw_spin_lock_irqsave
+> > > kworker/-276     4d...    0us : rtl8723_phy_rf_serial_read <-rtl8723de_phy_set_rf_reg
+> > > kworker/-276     4d...    1us : rtl8723_phy_query_bb_reg <-rtl8723_phy_rf_serial_read
+> > > kworker/-276     4d...    3us : rtl8723_phy_set_bb_reg <-rtl8723_phy_rf_serial_read
+> > > kworker/-276     4d...    4us : __const_udelay <-rtl8723_phy_rf_serial_read
+> > > kworker/-276     4d...    4us!: delay_mwaitx <-rtl8723_phy_rf_serial_read
+> > > kworker/-276     4d... 1004us : rtl8723_phy_set_bb_reg <-rtl8723_phy_rf_serial_read
+> > > [...]
+> > > 
+> > 
+> > I check TX/RX interrupt handlers, and I don't find one calls RF read function
+> > by now. I suspect that old code controls RF to do PS in interrupt context, so
+> > _irqsave version is used to ensure read RF isn't interrupted or deadlock.
+> > So, I change spin_lock to non-irqsave version, and do some tests on 8723BE
+> > that works well.
+> > 
+> > What do you think about two fixes mentioned above? If they're ok, I can send
+> > two patches to resolve this long delays.
+> 
+> Lucas,
+> 
+> If the above patch fixes the problem with the 8723de, I will modify the GitHub 
+> driver. Although 8723de will be added to rtw88, I will keep the driver in 
+> rtlwifi_new.
 
-I actually agree and think we could use a flag. I suggest
-PP_FLAG_DMA_SYNC_DEV to indicate that this DMA-sync-for-device.
+I'm currently running the rtlwifi_new based modules, modified with the
+reduced waits as suggested by PK, as well as removing the IRQ disable
+from the spinlocks in both rtl8723de_phy_query_rf_reg() and
+rtl8723de_phy_set_rf_reg().
 
-Ilias notice that the change I requested to Lorenzo, that dma_sync_size
-default value is 0xFFFFFFFF (-1).  That makes dma_sync_size=3D=3D0 a valid
-value, which you can use in the cases, where you know that nobody have
-written into the data-area.  This allow us to selectively choose it for
-these cases.
+I can confirm that with those changes rtl8723de no longer shows up my
+latency traces.
 
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Regards,
+Lucas
 
