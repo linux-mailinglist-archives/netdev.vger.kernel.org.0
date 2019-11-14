@@ -2,104 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53170FC4FC
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 12:03:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1D64FC525
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 12:13:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726969AbfKNLDK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 06:03:10 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:34660 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726923AbfKNLDB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 06:03:01 -0500
-Received: by mail-lj1-f193.google.com with SMTP id 139so6204916ljf.1
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 03:03:00 -0800 (PST)
+        id S1726410AbfKNLNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 06:13:54 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46932 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbfKNLNx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 06:13:53 -0500
+Received: by mail-lj1-f194.google.com with SMTP id e9so6197661ljp.13
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 03:13:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jb+MOMLuIdaHgEwx11sXFvRMBqWhHSyGkvnIDPsupdw=;
-        b=WOUcLW3G2Iayeuu5sPm24T439/72x+v6kvdOeZ3yyOFnInpWwaMAAiMlvEh+zz1v99
-         KB41QGiNZmpNupPI2zSDjYAUMw+jOuNTtO6FDm4F9YE1ldnhegAL+Omp0xYCregSGy+S
-         Zq9g75zHJ0vatkL7Y7LxTzPd5/s0ZaJslKRZ8=
+        d=unikie-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=RvY3+YNr2ELI1l1t+zgYft/TUShWupvx30AxUYL7RsU=;
+        b=hLKf2zheDCMbKjNYROqoByIaSZEtX7MI/0XO+XsIPteOeU9JFleucyrL0+d261t+F/
+         sEZMhocyCRXCm5pPCrGZV946t9B8Ek/b+8cFM7dYlz3IgAPPWAmR1xUnd7je8mU3TChI
+         bsrXqtVXmVkicOQfJRv+rFHJ+3pGaVZNYI0CPweFl5fqFYsM3pAZCfynS2RQxoZhrjIg
+         PBjedYLNhTujblF5ReA8qCDSUsbjxgwdU3w/etoL5Rx4DaQjAbpKQgwu7P4nBMAxLV/r
+         T1PxQlwxtTSiGZGg+sGyZHIBLTa2/z8Gs0zqDxwDoK63wviU/OT3z7DocI1U0zlojaHk
+         dQSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jb+MOMLuIdaHgEwx11sXFvRMBqWhHSyGkvnIDPsupdw=;
-        b=alx8NrRnq5lGYS6dd4oTe/zS2re5EdKTTXp/NVOxmyUvpvlTvdr+zxydKr31URaZTA
-         0xWn6Yp3A/GNm5AMSXD5Sd8SD5xjAEEwLqsNydlNxa+eoYYvgmnW6Ncc+z7nOi37ICmw
-         NQv9V/G4627aiiDRHu16X6p7Mt3GMnMsH8Lf3XI58IINk1qd8W9/6PEKpf8mWVcvye3G
-         wyKeOXBNxDT6mxfOviujqxav+3gvc0gc5Z7L8oD2H6zc0wRwXJckdLOhpimXpfCkNyOY
-         M0Lk1JgaHKKzPHfLRcKbyfMiWbKimR2kCEp849hy+2V8p+qtI0TXuVv2GsoOSRS8sKTz
-         XkxQ==
-X-Gm-Message-State: APjAAAXi6ezST68lMd9Z2al9p5L+VY4mHcX3XcEXhS2D/cjXxI5T/Jdm
-        KAX+B4fSK9baWeCg6DBt8Rl2Bg==
-X-Google-Smtp-Source: APXvYqyjNPi9tG3t/0IsBhpN6J0yN3A7dgHIGn4FZvEHTpjYDUeeXcxIhq+h6bgnCPrbA2iTYR8Fgw==
-X-Received: by 2002:a2e:7307:: with SMTP id o7mr6253561ljc.10.1573729379406;
-        Thu, 14 Nov 2019 03:02:59 -0800 (PST)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id x5sm2498795lfg.71.2019.11.14.03.02.58
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=RvY3+YNr2ELI1l1t+zgYft/TUShWupvx30AxUYL7RsU=;
+        b=nICLwLDiaRMav9gWzDv7Ss/Eqw3HS5qY6ZNCXO/0hqQ8J+0SXokTpBB1E1seu2/+z4
+         8kJ2KDsmkvH38Byu/GTh0k7F3y9Cb08/Tod114WQ57Ww/r5a8+XLD7X8ksQejKHM8NnS
+         ojHXNZ9iU9XYQYPV4lBj+WUU9RmnigtcT3nSjefAiras/hgR26XlDz6+UDpOZTD/9ftl
+         mA9wFwBCcAaJVw9+/D1xjKfWSU4RGpknfqYV4kdqIwbWqVX0/6ZuOe6+t7vfBSfEbq0A
+         TYokPDolhJR3pw3UGu/fvFnxgDz4lv/6hzfohn250YXVq9Jdt8RP2dihkGWhRIPSu/3O
+         z2Ew==
+X-Gm-Message-State: APjAAAWyTDPqMDBx2GJTCXcInKoQKdGrDaEbWjSyqLFKg4J68K1Q/fNw
+        puMaLGzyQzx4hHVf5/9v39M6H/O8VNYf2w==
+X-Google-Smtp-Source: APXvYqyYWV7NFNCcgTYEx6c/SjyjH8y86c41GmR97lbuD1paLAiXXF6WBWfRI9KN8mrnCbo1Io+DqQ==
+X-Received: by 2002:a2e:b4eb:: with SMTP id s11mr6179185ljm.38.1573730031620;
+        Thu, 14 Nov 2019 03:13:51 -0800 (PST)
+Received: from localhost.localdomain ([109.204.235.119])
+        by smtp.gmail.com with ESMTPSA id z127sm2486097lfa.19.2019.11.14.03.13.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 03:02:59 -0800 (PST)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Marc Zyngier <maz@kernel.org>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] ARM: dts: ls1021a-tsn: Use interrupts for the SGMII PHYs
-Date:   Thu, 14 Nov 2019 12:02:53 +0100
-Message-Id: <20191114110254.32171-3-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191114110254.32171-1-linux@rasmusvillemoes.dk>
-References: <20191114110254.32171-1-linux@rasmusvillemoes.dk>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 14 Nov 2019 03:13:50 -0800 (PST)
+From:   jouni.hogander@unikie.com
+To:     netdev@vger.kernel.org
+Cc:     Jouni Hogander <jouni.hogander@unikie.com>,
+        David Miller <davem@davemloft.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] net-sysfs: Fix memory leak in register_queue_kobjects
+Date:   Thu, 14 Nov 2019 13:13:25 +0200
+Message-Id: <20191114111325.2027-1-jouni.hogander@unikie.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+From: Jouni Hogander <jouni.hogander@unikie.com>
 
-On the LS1021A-TSN board, the 2 Atheros AR8031 PHYs for eth0 and eth1
-have interrupt lines connected to the shared IRQ2_B LS1021A pin.
+net_rx_queue_update_kobjects and netdev_queue_update_kobjects are
+leaking memory in their error paths. Leak was originally reported
+by Syzkaller:
 
-Switching to interrupts offloads the PHY library from the task of
-polling the MDIO status and AN registers (1, 4, 5) every second.
+BUG: memory leak
+unreferenced object 0xffff8880679f8b08 (size 8):
+  comm "netdev_register", pid 269, jiffies 4294693094 (age 12.132s)
+  hex dump (first 8 bytes):
+    72 78 2d 30 00 36 20 d4                          rx-0.6 .
+  backtrace:
+    [<000000008c93818e>] __kmalloc_track_caller+0x16e/0x290
+    [<000000001f2e4e49>] kvasprintf+0xb1/0x140
+    [<000000007f313394>] kvasprintf_const+0x56/0x160
+    [<00000000aeca11c8>] kobject_set_name_vargs+0x5b/0x140
+    [<0000000073a0367c>] kobject_init_and_add+0xd8/0x170
+    [<0000000088838e4b>] net_rx_queue_update_kobjects+0x152/0x560
+    [<000000006be5f104>] netdev_register_kobject+0x210/0x380
+    [<00000000e31dab9d>] register_netdevice+0xa1b/0xf00
+    [<00000000f68b2465>] __tun_chr_ioctl+0x20d5/0x3dd0
+    [<000000004c50599f>] tun_chr_ioctl+0x2f/0x40
+    [<00000000bbd4c317>] do_vfs_ioctl+0x1c7/0x1510
+    [<00000000d4c59e8f>] ksys_ioctl+0x99/0xb0
+    [<00000000946aea81>] __x64_sys_ioctl+0x78/0xb0
+    [<0000000038d946e5>] do_syscall_64+0x16f/0x580
+    [<00000000e0aa5d8f>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+    [<00000000285b3d1a>] 0xffffffffffffffff
 
-Unfortunately, the BCM5464R quad PHY connected to the switch does not
-appear to have an interrupt line routed to the SoC.
-
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc: David Miller <davem@davemloft.net>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Jouni Hogander <jouni.hogander@unikie.com>
 ---
- arch/arm/boot/dts/ls1021a-tsn.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/core/net-sysfs.c | 34 ++++++++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/boot/dts/ls1021a-tsn.dts b/arch/arm/boot/dts/ls1021a-tsn.dts
-index 5b7689094b70..9d8f0c2a8aba 100644
---- a/arch/arm/boot/dts/ls1021a-tsn.dts
-+++ b/arch/arm/boot/dts/ls1021a-tsn.dts
-@@ -203,11 +203,15 @@
- 	/* AR8031 */
- 	sgmii_phy1: ethernet-phy@1 {
- 		reg = <0x1>;
-+		/* SGMII1_PHY_INT_B: connected to IRQ2, active low */
-+		interrupts-extended = <&extirq 2 IRQ_TYPE_LEVEL_LOW>;
- 	};
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 865ba6ca16eb..2f44c6a3bcae 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -923,20 +923,25 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 	error = kobject_init_and_add(kobj, &rx_queue_ktype, NULL,
+ 				     "rx-%u", index);
+ 	if (error)
+-		return error;
++		goto err_init_and_add;
  
- 	/* AR8031 */
- 	sgmii_phy2: ethernet-phy@2 {
- 		reg = <0x2>;
-+		/* SGMII2_PHY_INT_B: connected to IRQ2, active low */
-+		interrupts-extended = <&extirq 2 IRQ_TYPE_LEVEL_LOW>;
- 	};
+ 	dev_hold(queue->dev);
  
- 	/* BCM5464 quad PHY */
+ 	if (dev->sysfs_rx_queue_group) {
+ 		error = sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
+-		if (error) {
+-			kobject_put(kobj);
+-			return error;
+-		}
++		if (error)
++			goto err_sysfs_create;
+ 	}
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+ 
++	return error;
++
++err_sysfs_create:
++	kobject_put(kobj);
++err_init_and_add:
++	kfree_const(kobj->name);
++
+ 	return error;
+ }
+ #endif /* CONFIG_SYSFS */
+@@ -968,6 +973,7 @@ net_rx_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
+ 		if (dev->sysfs_rx_queue_group)
+ 			sysfs_remove_group(kobj, dev->sysfs_rx_queue_group);
+ 		kobject_put(kobj);
++		kfree_const(kobj->name);
+ 	}
+ 
+ 	return error;
+@@ -1461,21 +1467,28 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ 	error = kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+ 				     "tx-%u", index);
+ 	if (error)
+-		return error;
++		goto err_init_and_add;
+ 
+ 	dev_hold(queue->dev);
+ 
+ #ifdef CONFIG_BQL
+ 	error = sysfs_create_group(kobj, &dql_group);
+-	if (error) {
+-		kobject_put(kobj);
+-		return error;
+-	}
++	if (error)
++		goto err_sysfs_create;
+ #endif
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+ 
+ 	return 0;
++
++#ifdef CONFIG_BQL
++err_sysfs_create:
++	kobject_put(kobj);
++#endif
++err_init_and_add:
++	kfree_const(kobj->name);
++
++	return error;
+ }
+ #endif /* CONFIG_SYSFS */
+ 
+@@ -1503,6 +1516,7 @@ netdev_queue_update_kobjects(struct net_device *dev, int old_num, int new_num)
+ 		sysfs_remove_group(&queue->kobj, &dql_group);
+ #endif
+ 		kobject_put(&queue->kobj);
++		kfree_const(queue->kobj.name);
+ 	}
+ 
+ 	return error;
 -- 
-2.23.0
+2.17.1
 
