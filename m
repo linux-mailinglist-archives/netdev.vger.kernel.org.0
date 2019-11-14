@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43BFAFC975
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:04:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B24BFC974
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:04:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726995AbfKNPET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 10:04:19 -0500
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:40181 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726828AbfKNPES (ORCPT
+        id S1727002AbfKNPEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 10:04:20 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42480 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726796AbfKNPES (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 10:04:18 -0500
-Received: by mail-wr1-f68.google.com with SMTP id i10so6846247wrs.7
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:04:16 -0800 (PST)
+Received: by mail-wr1-f65.google.com with SMTP id a15so6828879wrf.9
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:04:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XOfVJxcuUuw2NudxNMfi/4+4mLmNM1VdK9Htk8RiFag=;
-        b=OcvEE5IQfOl7FCPs8mFjHs/ck1V24ZBpSs3cIfWOwA89pBEasQi0C/byLAnv41FcTV
-         dyM2zqoYvXkyKBhI6g4AFNDUE+hiqeBzRmTF8RHYHHuCQpnIEr+HQ60F5Sgr7YexEiu6
-         y3RM+lDXXNQBLV+C6V3nfcoJxDVjgEl1pkGoGhvJTR2FDvGkr+K49V/TimkBv3j2cg2/
-         YGAbUbXLPWaoigPYNBx51bxexKVLw8i3zR8QadLbvM8m/i5MdPwofdoGjkBKahRJAy64
-         WKHGasver+7i1wSYPxPDwyMkFPnI9kHlSErmM1La8XWGdjJQaUaDCIlvIGz8nx3/ugaz
-         D+CA==
+        bh=0YqKP0RJoV3Y72FGyhKD7iDH8BnTVJVkfcHAPWs8qPs=;
+        b=mJtimPqVfedOsbscnvsz+9p0q8/LgjgZ0HMAb/pvrUaxcPRiCrcjE2+daON/ZoIMAm
+         DchemQTAR5+vTEA5UbJd6NtNW3U3wSEnMtWY8LX64+WIrXFAyZ0HODwH+T3sxxtrv0Ew
+         +BKLVH2NZiiI1FrEODayWOguRGSPU1vh+rTVKvgkdLCsxwTF7cZokms3QRlJ1jw94xP/
+         fB0Fgc0NisB5ASLEe5c9AFneLTkHxbGvkmkOscNZlQa4JrTgmFTfExnQoNfila5ygoXs
+         BEhZ7Qfu5LjihLzgi6N2Czab7Jm2ke8a7ao6UcrLB0smYgxsBCXJwdb9bDCslQUpjRr+
+         UtdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=XOfVJxcuUuw2NudxNMfi/4+4mLmNM1VdK9Htk8RiFag=;
-        b=s51K14bYNEh4fy/tkZUedYrfWUQ28fsdInrmdI+uM5peepzitSbiJHvPnmTmvcy7Lr
-         7wpmXsFhuNtf20RdseMBjUQhQYSqUnGIHpg6YM/TtPwkwZDfvXmfc1VYc3FhNW10wsLx
-         BLBAXdxihkUsLJckuJQKWfKIP/DkOkfU+nfaifLwyK/2gKpKDo1iqSKlGLwJB/1gd+qs
-         au6lHKLQa8p5zXBlCts8efrDt8Vd2Bz3IAD8Mw5SEMCyKkm+HDpT2cEC3vkQbqNey5uf
-         7C5M862OajpR7YXPqNNg0202hFtjSV+YzEOn0amMuMH56K47HnnQTajLa8Se3hzxn0HF
-         dvZw==
-X-Gm-Message-State: APjAAAVgz+oAvb6cDtU97c9lRRyVPDD/2pxQBBNPNJZdx0edXWJ2CCzq
-        7TCL8GUbN4tSfkSZ+LQfffA=
-X-Google-Smtp-Source: APXvYqz7bchCmrH/Z/TfQ6B9c0tjdoLTwkTphYa9scd+FCoXgZRMXaroXycWeS5PHJheT2gGceuf1A==
-X-Received: by 2002:adf:dc8d:: with SMTP id r13mr8358819wrj.391.1573743855664;
-        Thu, 14 Nov 2019 07:04:15 -0800 (PST)
+        bh=0YqKP0RJoV3Y72FGyhKD7iDH8BnTVJVkfcHAPWs8qPs=;
+        b=GT2vZTL0EVm5Y0gMeQgvGHuaS2zk2tVynaz5/WTAYoApbpysAZilHg3/1BrBMgQ/eH
+         go0mGP+rLS7q1XWYpqQwiudl4g4ePXYgIs0BHIvqmxyJjXMSI2QaErfKkEMHAUCe2Jfw
+         sivZcCtSPNiktTtdxjvAfJX7DCUp7PbvsJY0cT7iGO5gDJyjAzTS0D3RJOXS4RcJ+X4u
+         z+LF1XzdtN1uDWGL4N70Oa3H1xVvQrNtaB8jJi2ugjeARbNZOJdneJLUnpfIeH9klKND
+         tTL8NGP8ZeYLjbyhX2567jgYeQdZJWPzF9R8SwyQxgk8xi7VCQZ3RFhJnYHgthznbMxa
+         Alow==
+X-Gm-Message-State: APjAAAVi7q/87c0CpJn1dOITj9iE14AKSfQ87zZd4I8TI0J9IYOwMTpK
+        Vyu4rNqpWCWFZYrCisaTXok=
+X-Google-Smtp-Source: APXvYqxZVYCp+fYMQyHgKSRRVASiXl9ovF2wTr7s+E44fPy4FMkvN3aANfbT3GyTfx4ElALB0snMUA==
+X-Received: by 2002:a5d:5404:: with SMTP id g4mr4862757wrv.359.1573743857068;
+        Thu, 14 Nov 2019 07:04:17 -0800 (PST)
 Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id v128sm7600094wmb.14.2019.11.14.07.04.14
+        by smtp.gmail.com with ESMTPSA id v128sm7600094wmb.14.2019.11.14.07.04.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 07:04:15 -0800 (PST)
+        Thu, 14 Nov 2019 07:04:16 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
@@ -50,9 +50,9 @@ Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         alexandru.marginean@nxp.com, netdev@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 03/11] net: mscc: ocelot: move invariant configs out of adjust_link
-Date:   Thu, 14 Nov 2019 17:03:22 +0200
-Message-Id: <20191114150330.25856-4-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 04/11] net: mscc: ocelot: create a helper for changing the port MTU
+Date:   Thu, 14 Nov 2019 17:03:23 +0200
+Message-Id: <20191114150330.25856-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191114150330.25856-1-olteanv@gmail.com>
 References: <20191114150330.25856-1-olteanv@gmail.com>
@@ -63,80 +63,74 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It doesn't make sense to rewrite all these registers every time the PHY
-library notifies us about a link state change.
+Since in an NPI/DSA setup, not all ports will have the same MTU, we need
+to make sure the watermarks for pause frames and/or tail dropping logic
+that existed in the driver is still coherent for the new MTU values.
 
-In a future patch we will customize the MTU for the CPU port, and since
-the MTU was previously configured from adjust_link, if we don't make
-this change, its value would have got overridden.
+We need to do this because the NPI (aka external CPU) port needs an
+increased MTU for the DSA tag. This will be done in a future patch.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v2:
-None.
+Added the "why" in the commit message.
 
- drivers/net/ethernet/mscc/ocelot.c | 85 +++++++++++++++---------------
- 1 file changed, 43 insertions(+), 42 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 40 +++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 2b6792ab0eda..4558c09e2e8a 100644
+index 4558c09e2e8a..8ede8ad902c9 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -408,7 +408,7 @@ static void ocelot_adjust_link(struct ocelot *ocelot, int port,
- 			       struct phy_device *phydev)
+@@ -2097,11 +2097,32 @@ static int ocelot_init_timestamp(struct ocelot *ocelot)
+ 	return 0;
+ }
+ 
+-static void ocelot_init_port(struct ocelot *ocelot, int port)
++static void ocelot_port_set_mtu(struct ocelot *ocelot, int port, size_t mtu)
  {
  	struct ocelot_port *ocelot_port = ocelot->ports[port];
--	int speed, atop_wm, mode = 0;
-+	int speed, mode = 0;
+ 	int atop_wm;
  
- 	switch (phydev->speed) {
- 	case SPEED_10:
-@@ -440,32 +440,9 @@ static void ocelot_adjust_link(struct ocelot *ocelot, int port,
- 	ocelot_port_writel(ocelot_port, DEV_MAC_MODE_CFG_FDX_ENA |
- 			   mode, DEV_MAC_MODE_CFG);
++	ocelot_port_writel(ocelot_port, mtu, DEV_MAC_MAXLEN_CFG);
++
++	/* Set Pause WM hysteresis
++	 * 152 = 6 * mtu / OCELOT_BUFFER_CELL_SZ
++	 * 101 = 4 * mtu / OCELOT_BUFFER_CELL_SZ
++	 */
++	ocelot_write_rix(ocelot, SYS_PAUSE_CFG_PAUSE_ENA |
++			 SYS_PAUSE_CFG_PAUSE_STOP(101) |
++			 SYS_PAUSE_CFG_PAUSE_START(152), SYS_PAUSE_CFG, port);
++
++	/* Tail dropping watermark */
++	atop_wm = (ocelot->shared_queue_sz - 9 * mtu) / OCELOT_BUFFER_CELL_SZ;
++	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * mtu),
++			 SYS_ATOP, port);
++	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
++}
++
++static void ocelot_init_port(struct ocelot *ocelot, int port)
++{
++	struct ocelot_port *ocelot_port = ocelot->ports[port];
++
+ 	INIT_LIST_HEAD(&ocelot_port->skbs);
  
--	/* Set MAC IFG Gaps
--	 * FDX: TX_IFG = 5, RX_IFG1 = RX_IFG2 = 0
--	 * !FDX: TX_IFG = 5, RX_IFG1 = RX_IFG2 = 5
--	 */
--	ocelot_port_writel(ocelot_port, DEV_MAC_IFG_CFG_TX_IFG(5),
--			   DEV_MAC_IFG_CFG);
--
--	/* Load seed (0) and set MAC HDX late collision  */
--	ocelot_port_writel(ocelot_port, DEV_MAC_HDX_CFG_LATE_COL_POS(67) |
--			   DEV_MAC_HDX_CFG_SEED_LOAD,
--			   DEV_MAC_HDX_CFG);
--	mdelay(1);
--	ocelot_port_writel(ocelot_port, DEV_MAC_HDX_CFG_LATE_COL_POS(67),
--			   DEV_MAC_HDX_CFG);
--
- 	if (ocelot->ops->pcs_init)
- 		ocelot->ops->pcs_init(ocelot, port);
+ 	/* Basic L2 initialization */
+@@ -2122,8 +2143,7 @@ static void ocelot_init_port(struct ocelot *ocelot, int port)
+ 			   DEV_MAC_HDX_CFG);
  
--	/* Set Max Length and maximum tags allowed */
+ 	/* Set Max Length and maximum tags allowed */
 -	ocelot_port_writel(ocelot_port, VLAN_ETH_FRAME_LEN,
 -			   DEV_MAC_MAXLEN_CFG);
--	ocelot_port_writel(ocelot_port, DEV_MAC_TAGS_CFG_TAG_ID(ETH_P_8021AD) |
--			   DEV_MAC_TAGS_CFG_VLAN_AWR_ENA |
--			   DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA,
--			   DEV_MAC_TAGS_CFG);
--
- 	/* Enable MAC module */
- 	ocelot_port_writel(ocelot_port, DEV_MAC_ENA_CFG_RX_ENA |
- 			   DEV_MAC_ENA_CFG_TX_ENA, DEV_MAC_ENA_CFG);
-@@ -475,22 +452,10 @@ static void ocelot_adjust_link(struct ocelot *ocelot, int port,
- 	ocelot_port_writel(ocelot_port, DEV_CLOCK_CFG_LINK_SPEED(speed),
- 			   DEV_CLOCK_CFG);
- 
--	/* Set SMAC of Pause frame (00:00:00:00:00:00) */
--	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_HIGH_CFG);
--	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_LOW_CFG);
--
- 	/* No PFC */
- 	ocelot_write_gix(ocelot, ANA_PFC_PFC_CFG_FC_LINK_SPEED(speed),
- 			 ANA_PFC_PFC_CFG, port);
++	ocelot_port_set_mtu(ocelot, port, VLAN_ETH_FRAME_LEN);
+ 	ocelot_port_writel(ocelot_port, DEV_MAC_TAGS_CFG_TAG_ID(ETH_P_8021AD) |
+ 			   DEV_MAC_TAGS_CFG_VLAN_AWR_ENA |
+ 			   DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA,
+@@ -2133,20 +2153,6 @@ static void ocelot_init_port(struct ocelot *ocelot, int port)
+ 	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_HIGH_CFG);
+ 	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_LOW_CFG);
  
 -	/* Set Pause WM hysteresis
 -	 * 152 = 6 * VLAN_ETH_FRAME_LEN / OCELOT_BUFFER_CELL_SZ
@@ -146,73 +140,12 @@ index 2b6792ab0eda..4558c09e2e8a 100644
 -			 SYS_PAUSE_CFG_PAUSE_STOP(101) |
 -			 SYS_PAUSE_CFG_PAUSE_START(152), SYS_PAUSE_CFG, port);
 -
- 	/* Core: Enable port for frame transfer */
- 	ocelot_write_rix(ocelot, QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
- 			 QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG(1) |
-@@ -505,12 +470,6 @@ static void ocelot_adjust_link(struct ocelot *ocelot, int port,
- 			 SYS_MAC_FC_CFG_FC_LINK_SPEED(speed),
- 			 SYS_MAC_FC_CFG, port);
- 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
--
 -	/* Tail dropping watermark */
 -	atop_wm = (ocelot->shared_queue_sz - 9 * VLAN_ETH_FRAME_LEN) / OCELOT_BUFFER_CELL_SZ;
 -	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * VLAN_ETH_FRAME_LEN),
 -			 SYS_ATOP, port);
 -	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
- }
- 
- static void ocelot_port_adjust_link(struct net_device *dev)
-@@ -2141,11 +2100,53 @@ static int ocelot_init_timestamp(struct ocelot *ocelot)
- static void ocelot_init_port(struct ocelot *ocelot, int port)
- {
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
-+	int atop_wm;
- 
- 	INIT_LIST_HEAD(&ocelot_port->skbs);
- 
- 	/* Basic L2 initialization */
- 
-+	/* Set MAC IFG Gaps
-+	 * FDX: TX_IFG = 5, RX_IFG1 = RX_IFG2 = 0
-+	 * !FDX: TX_IFG = 5, RX_IFG1 = RX_IFG2 = 5
-+	 */
-+	ocelot_port_writel(ocelot_port, DEV_MAC_IFG_CFG_TX_IFG(5),
-+			   DEV_MAC_IFG_CFG);
-+
-+	/* Load seed (0) and set MAC HDX late collision  */
-+	ocelot_port_writel(ocelot_port, DEV_MAC_HDX_CFG_LATE_COL_POS(67) |
-+			   DEV_MAC_HDX_CFG_SEED_LOAD,
-+			   DEV_MAC_HDX_CFG);
-+	mdelay(1);
-+	ocelot_port_writel(ocelot_port, DEV_MAC_HDX_CFG_LATE_COL_POS(67),
-+			   DEV_MAC_HDX_CFG);
-+
-+	/* Set Max Length and maximum tags allowed */
-+	ocelot_port_writel(ocelot_port, VLAN_ETH_FRAME_LEN,
-+			   DEV_MAC_MAXLEN_CFG);
-+	ocelot_port_writel(ocelot_port, DEV_MAC_TAGS_CFG_TAG_ID(ETH_P_8021AD) |
-+			   DEV_MAC_TAGS_CFG_VLAN_AWR_ENA |
-+			   DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA,
-+			   DEV_MAC_TAGS_CFG);
-+
-+	/* Set SMAC of Pause frame (00:00:00:00:00:00) */
-+	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_HIGH_CFG);
-+	ocelot_port_writel(ocelot_port, 0, DEV_MAC_FC_MAC_LOW_CFG);
-+
-+	/* Set Pause WM hysteresis
-+	 * 152 = 6 * VLAN_ETH_FRAME_LEN / OCELOT_BUFFER_CELL_SZ
-+	 * 101 = 4 * VLAN_ETH_FRAME_LEN / OCELOT_BUFFER_CELL_SZ
-+	 */
-+	ocelot_write_rix(ocelot, SYS_PAUSE_CFG_PAUSE_ENA |
-+			 SYS_PAUSE_CFG_PAUSE_STOP(101) |
-+			 SYS_PAUSE_CFG_PAUSE_START(152), SYS_PAUSE_CFG, port);
-+
-+	/* Tail dropping watermark */
-+	atop_wm = (ocelot->shared_queue_sz - 9 * VLAN_ETH_FRAME_LEN) / OCELOT_BUFFER_CELL_SZ;
-+	ocelot_write_rix(ocelot, ocelot_wm_enc(9 * VLAN_ETH_FRAME_LEN),
-+			 SYS_ATOP, port);
-+	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
-+
+-
  	/* Drop frames with multicast source address */
  	ocelot_rmw_gix(ocelot, ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA,
  		       ANA_PORT_DROP_CFG_DROP_MC_SMAC_ENA,
