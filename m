@@ -2,114 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E904DFC915
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D71E4FC952
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbfKNOnU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 09:43:20 -0500
-Received: from mx2.suse.de ([195.135.220.15]:56294 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726276AbfKNOnU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Nov 2019 09:43:20 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 755A8ADFB;
-        Thu, 14 Nov 2019 14:43:18 +0000 (UTC)
-Date:   Thu, 14 Nov 2019 15:43:17 +0100
-From:   Michal Hocko <mhocko@kernel.org>
-To:     Shaokun Zhang <zhangshaokun@hisilicon.com>
-Cc:     linux-kernel@vger.kernel.org, yuqi jin <jinyuqi@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Paul Burton <paul.burton@mips.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3] lib: optimize cpumask_local_spread()
-Message-ID: <20191114144317.GJ20866@dhcp22.suse.cz>
-References: <1573091048-10595-1-git-send-email-zhangshaokun@hisilicon.com>
- <20191108103102.GF15658@dhcp22.suse.cz>
- <c6f24942-c8d6-e46a-f433-152d29af8c71@hisilicon.com>
- <20191112115630.GD2763@dhcp22.suse.cz>
- <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
+        id S1726598AbfKNOz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 09:55:59 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:30063 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726410AbfKNOz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 09:55:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573743357;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uVXcjwtBf3NZ36Eq0yDSwVNdrCXxD9u9+76H1pXkzIY=;
+        b=ip+icRCjP+6sVgcMiTTuv9s00GKLscPuxSB5MmXImDKJ9BKHe2YiHLa+PT45ifBFHhdI38
+        G9QGKO2X+TfymNrvqrkMRVTcOJG3U/1EE1Avj8N7JHhkX1jAos2YvfsNwaErj5t2C6f8w2
+        Up2dlxMYlfo/ao2UmQcxIMw8D4cqpu0=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-316-H_Z5yin4M8GfIybZkQZ03A-1; Thu, 14 Nov 2019 09:55:54 -0500
+Received: by mail-lj1-f198.google.com with SMTP id i27so756419ljb.17
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 06:55:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=rIBZiL1FWythDUin873DaL6ByyNzCAJsvbPWa35uar8=;
+        b=nibnjJV59rOk3og4Do6yaL+it2kqrei35cHHWwB+CiCvyv54rRZpKxvJrJCnMl31jW
+         d31xTsR2HSijPUz892VkN6gPPo14YO06RrsFb922XRmbN3njBAgRVweTwL8FuXd2wERI
+         KlNjf7af6wHZecMIKTxayzdrdB6GxQ7NIc6LBdG55q8IF3UoOkBqSYh49196ZgYVl+rS
+         bA6mdEKOoYxslNxMW8oAmb7WO2/tpas7oOJuNar5DDv1Ydhek8vyIirtkDu2/yl0KIyM
+         bESD0YZAblLmQmJMRqmGsb7eN0jnQYwENDQ7qKTv69mwqHNo0GF6dC6MPFk5MPXr3/2I
+         onYg==
+X-Gm-Message-State: APjAAAUmZVxQyqW03nBaC8i+B2D2Uey9EukZ5xzSp3z/FI6Mh1gLNzbW
+        o/LFARM9QckMpEhi/sUOyMdMBlf26f9ImB9QeY8X/aumWEhyLq8DQTFWKpBf9ywmg9gOdHthF+P
+        KmxFX+j6DmworY7IG
+X-Received: by 2002:a19:ccd7:: with SMTP id c206mr6954014lfg.165.1573743352966;
+        Thu, 14 Nov 2019 06:55:52 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyDdMh8yqEOtvSSTWb+aD+1/y4JfNENnZFitaJOBGmj/dwnGACpjvDyAvuaqu4R5CeK4afWRg==
+X-Received: by 2002:a19:ccd7:: with SMTP id c206mr6953994lfg.165.1573743352754;
+        Thu, 14 Nov 2019 06:55:52 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id d17sm2941336lja.27.2019.11.14.06.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Nov 2019 06:55:52 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3827B1803C7; Thu, 14 Nov 2019 15:55:51 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson\, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
+In-Reply-To: <CAJ+HfNhPhCi4=taK7NcYuCvdcRBXVDobn7fpD3mi1eppTL7zLA@mail.gmail.com>
+References: <20191113204737.31623-1-bjorn.topel@gmail.com> <20191113204737.31623-3-bjorn.topel@gmail.com> <87o8xeod0s.fsf@toke.dk> <7893c97d-3d3f-35cc-4ea0-ac34d3d84dbc@iogearbox.net> <CAJ+HfNhPhCi4=taK7NcYuCvdcRBXVDobn7fpD3mi1eppTL7zLA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 14 Nov 2019 15:55:51 +0100
+Message-ID: <874kz6o6bs.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00856999-739f-fd73-eddd-d71e4e94962e@hisilicon.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MC-Unique: H_Z5yin4M8GfIybZkQZ03A-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 13-11-19 10:46:05, Shaokun Zhang wrote:
-[...]
-> >> available: 4 nodes (0-3)
-> >> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
-> >> node 0 size: 63379 MB
-> >> node 0 free: 61899 MB
-> >> node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47
-> >> node 1 size: 64509 MB
-> >> node 1 free: 63942 MB
-> >> node 2 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
-> >> node 2 size: 64509 MB
-> >> node 2 free: 63056 MB
-> >> node 3 cpus: 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
-> >> node 3 size: 63997 MB
-> >> node 3 free: 63420 MB
-> >> node distances:
-> >> node   0   1   2   3
-> >>   0:  10  16  32  33
-> >>   1:  16  10  25  32
-> >>   2:  32  25  10  16
-> >>   3:  33  32  16  10
-[...]
-> before patch
-> Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
-> 2
-> Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
-> 48
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 
-node 2
+> On Thu, 14 Nov 2019 at 14:03, Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>>
+>> On 11/14/19 1:31 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> > Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+>> >> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>> >>
+>> >> The BPF dispatcher builds on top of the BPF trampoline ideas;
+>> >> Introduce bpf_arch_text_poke() and (re-)use the BPF JIT generate
+>> >> code. The dispatcher builds a dispatch table for XDP programs, for
+>> >> retpoline avoidance. The table is a simple binary search model, so
+>> >> lookup is O(log n). Here, the dispatch table is limited to four
+>> >> entries (for laziness reason -- only 1B relative jumps :-P). If the
+>> >> dispatch table is full, it will fallback to the retpoline path.
+>> >
+>> > So it's O(log n) with n =3D=3D 4? Have you compared the performance of=
+ just
+>> > doing four linear compare-and-jumps? Seems to me it may not be that bi=
+g
+>> > of a difference for such a small N?
+>>
+>> Did you perform some microbenchmarks wrt search tree? Mainly wondering
+>> since for code emission for switch/case statements, clang/gcc turns off
+>> indirect calls entirely under retpoline, see [0] from back then.
+>>
+>
+> As Toke stated, binsearch is not needed for 4 entries. I started out
+> with 16 (and explicit ids instead of pointers), and there it made more
+> sense. If folks think it's a good idea to move forward -- and with 4
+> entries, it makes sense to make the code generator easier, or maybe
+> based on static_calls like Ed did.
 
-> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-> 0
+I don't really have anything to back it up, but my hunch is that only 4
+entries will end up being a limit that people are going to end up
+hitting. And since the performance falls off quite the cliff after
+hitting that limit, I do fear that this is something we will hear about
+quite emphatically :)
 
-node 0
+-Toke
 
-> Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
-> 24
-
-node 1
-
-> Euler:/sys/bus/pci #
-> 
-> after patch
-> Euler:/sys/bus/pci/devices/0000:7d:00.2 # cat numa_node
-> 2
-> Euler:/sys/bus/pci # cat /proc/irq/345/smp_affinity_list
-> 48
-
-node 2
-
-> Euler:/sys/bus/pci # cat /proc/irq/369/smp_affinity_list
-> 72
-
-node 3
-
-> Euler:/sys/bus/pci # cat /proc/irq/393/smp_affinity_list
-> 24
-
-node 1
-
-So few more questions. The only difference seems to be IRQ369
-moving from 0 to 3 and having the device affinity to node 2
-makes some sense because node 3 is closer. So far so good.
-I still have a large gap to get the whole picture. Namely why those
-other IRQs are not using any of the existing CPUs on the node 2.
-Could you explain that please?
-
-Btw. this all should be in the changelog.
--- 
-Michal Hocko
-SUSE Labs
