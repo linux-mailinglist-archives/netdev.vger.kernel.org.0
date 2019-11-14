@@ -2,179 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F1D9FC31A
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 10:54:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D94D1FC32A
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 10:58:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbfKNJyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 04:54:41 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:46157 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726369AbfKNJyl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 04:54:41 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id F2F1C2106A;
-        Thu, 14 Nov 2019 04:54:39 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 14 Nov 2019 04:54:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=FW7MMtDHyqGF0VhAY
-        IYeOt/3K4bP0QXFxGa+1k5HxEI=; b=JyxsZIIN2icCpHKzBl3Bf/HVT8frtCZ6+
-        fbJeONcJi/E5hS3Gqdq6Md3A/svHQNac37yIu9dXaZZNgI8bjhry2BSTdWRlOzU1
-        akSjygn/ayQ1biKsYmWbDuLwiIS4qYvDxzGLkCP05lVY0edOb8i38w19Eh66ArDH
-        blYE4LVty3qeONvvDVr6CcO6Og54jYcS/572RCFES/VWwbq1VENPkjMqljXkz9VC
-        oVrSo4RB0JdiFOjWaQ5VCfoKSc0gEQqK4oloZ95nb+O+JNOHDFKjkDq/+wMxZxGw
-        NQqNhUuJFsbuY18MMPPzgIm942ZcGD5IsCL0vzvvVpNLUamPVxA+Q==
-X-ME-Sender: <xms:XyTNXUv_YfN2lD_pVjkBX3jxXlkDBKlCkVZo6IC8voO2iOQR_81cdw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrudeffedguddtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
-    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
-    iigvpedt
-X-ME-Proxy: <xmx:XyTNXf4wK9v46-RlekDbOVu5wlajadABTfso1RQeS1I_F_tUhaYJ2A>
-    <xmx:XyTNXdKDCstzORtu49K6qydMCbEHvE1QZmG5LZYHTpmpFjkDywqSwg>
-    <xmx:XyTNXaZRIT1odwbTuoG39xLab7NHu8lDTnGzYl47ttYCZ8J3w0CVog>
-    <xmx:XyTNXRn6vVhlAVG2xAK11RcJWFvrn72q-bTK9K4eNd7tBG16seoO3Q>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B10FF8005B;
-        Thu, 14 Nov 2019 04:54:37 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
+        id S1726818AbfKNJ6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 04:58:07 -0500
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:55709 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726628AbfKNJ6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 04:58:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1573725484;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=i+ghB/wyVNL5oaMuN4UVb/xQcoBfZlXxJT0AidebzUE=;
+        b=ZVFrWIseHa6oG8+5r15kV1alVIkd8roTf6ggh41eqjWnqLhA2+qPWlQZVWCvQoDC/zMZ3G
+        b6T7QnDzlKGGdpM0Mlsu7ZD/kAteJ8AAsF7uT/Yd3Lhlp+/+5Q+3X28S4KMgz2GRX2EERI
+        Hxu4jGZU8E5Gpicz0xXDrGMFeqLuks0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-400-hkAcOLRiNvW9sTlvdhU7Sw-1; Thu, 14 Nov 2019 04:58:01 -0500
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3AB44800EBE;
+        Thu, 14 Nov 2019 09:57:59 +0000 (UTC)
+Received: from steredhat.redhat.com (ovpn-117-81.ams2.redhat.com [10.36.117.81])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E6E0A7F1;
+        Thu, 14 Nov 2019 09:57:50 +0000 (UTC)
+From:   Stefano Garzarella <sgarzare@redhat.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next] mlxsw: spectrum_router: Allocate discard adjacency entry when needed
-Date:   Thu, 14 Nov 2019 11:54:19 +0200
-Message-Id: <20191114095419.27762-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
+Cc:     Stephen Hemminger <sthemmin@microsoft.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        Sasha Levin <sashal@kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>, linux-hyperv@vger.kernel.org
+Subject: [PATCH net-next v2 00/15] vsock: add multi-transports support
+Date:   Thu, 14 Nov 2019 10:57:35 +0100
+Message-Id: <20191114095750.59106-1-sgarzare@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: hkAcOLRiNvW9sTlvdhU7Sw-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+Most of the patches are reviewed by Dexuan, Stefan, and Jorgen.
+The following patches need reviews:
+- [11/15] vsock: add multi-transports support
+- [12/15] vsock/vmci: register vmci_transport only when VMCI guest/host
+          are active
+- [15/15] vhost/vsock: refuse CID assigned to the guest->host transport
 
-Commit 0c3cbbf96def ("mlxsw: Add specific trap for packets routed via
-invalid nexthops") allocated an adjacency entry during driver
-initialization whose purpose is to discard packets hitting the route
-pointing to it.
+RFC: https://patchwork.ozlabs.org/cover/1168442/
+v1: https://patchwork.ozlabs.org/cover/1181986/
 
-These adjacency entries are allocated from a resource called KVD linear
-(KVDL). There are situations in which the user can decide to set the
-size of this resource (via devlink-resource) to 0, in which case the
-driver will not be able to load.
+v1 -> v2:
+- Patch 11:
+    + vmci_transport: sent reset when vsock_assign_transport() fails
+      [Jorgen]
+    + fixed loopback in the guests, checking if the remote_addr is the
+      same of transport_g2h->get_local_cid()
+    + virtio_transport_common: updated space available while creating
+      the new child socket during a connection request
+- Patch 12:
+    + removed 'features' variable in vmci_transport_init() [Stefan]
+    + added a flag to register only once the host [Jorgen]
+- Added patch 15 to refuse CID assigned to the guest->host transport in
+  the vhost_transport
 
-Therefore, instead of pre-allocating this adjacency entry, simply
-allocate it only when needed. A variable indicating the validity of the
-entry is added and is used to ensure it is only allocated and written
-once and that it is freed after all the routes were flushed.
+This series adds the multi-transports support to vsock, following
+this proposal: https://www.spinics.net/lists/netdev/msg575792.html
 
-Fixes: 0c3cbbf96def ("mlxsw: Add specific trap for packets routed via invalid nexthops")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- .../ethernet/mellanox/mlxsw/spectrum_router.c | 43 ++++++++++++++-----
- 1 file changed, 32 insertions(+), 11 deletions(-)
+With the multi-transports support, we can use VSOCK with nested VMs
+(using also different hypervisors) loading both guest->host and
+host->guest transports at the same time.
+Before this series, vmci_transport supported this behavior but only
+using VMware hypervisor on L0, L1, etc.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 1aa436054490..517cb8b14b1d 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -78,6 +78,7 @@ struct mlxsw_sp_router {
- 	const struct mlxsw_sp_rif_ops **rif_ops_arr;
- 	const struct mlxsw_sp_ipip_ops **ipip_ops_arr;
- 	u32 adj_discard_index;
-+	bool adj_discard_index_valid;
- };
- 
- struct mlxsw_sp_rif {
-@@ -4203,13 +4204,33 @@ static int mlxsw_sp_adj_discard_write(struct mlxsw_sp *mlxsw_sp, u16 rif_index)
- 	u32 adj_discard_index = mlxsw_sp->router->adj_discard_index;
- 	enum mlxsw_reg_ratr_trap_action trap_action;
- 	char ratr_pl[MLXSW_REG_RATR_LEN];
-+	int err;
-+
-+	if (mlxsw_sp->router->adj_discard_index_valid)
-+		return 0;
-+
-+	err = mlxsw_sp_kvdl_alloc(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
-+				  &mlxsw_sp->router->adj_discard_index);
-+	if (err)
-+		return err;
- 
- 	trap_action = MLXSW_REG_RATR_TRAP_ACTION_DISCARD_ERRORS;
- 	mlxsw_reg_ratr_pack(ratr_pl, MLXSW_REG_RATR_OP_WRITE_WRITE_ENTRY, true,
- 			    MLXSW_REG_RATR_TYPE_ETHERNET, adj_discard_index,
- 			    rif_index);
- 	mlxsw_reg_ratr_trap_action_set(ratr_pl, trap_action);
--	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ratr), ratr_pl);
-+	err = mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ratr), ratr_pl);
-+	if (err)
-+		goto err_ratr_write;
-+
-+	mlxsw_sp->router->adj_discard_index_valid = true;
-+
-+	return 0;
-+
-+err_ratr_write:
-+	mlxsw_sp_kvdl_free(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
-+			   mlxsw_sp->router->adj_discard_index);
-+	return err;
- }
- 
- static int mlxsw_sp_fib_entry_op_remote(struct mlxsw_sp *mlxsw_sp,
-@@ -5956,6 +5977,16 @@ static void mlxsw_sp_router_fib_flush(struct mlxsw_sp *mlxsw_sp)
- 			continue;
- 		mlxsw_sp_vr_fib_flush(mlxsw_sp, vr, MLXSW_SP_L3_PROTO_IPV6);
- 	}
-+
-+	/* After flushing all the routes, it is not possible anyone is still
-+	 * using the adjacency index that is discarding packets, so free it in
-+	 * case it was allocated.
-+	 */
-+	if (!mlxsw_sp->router->adj_discard_index_valid)
-+		return;
-+	mlxsw_sp_kvdl_free(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
-+			   mlxsw_sp->router->adj_discard_index);
-+	mlxsw_sp->router->adj_discard_index_valid = false;
- }
- 
- static void mlxsw_sp_router_fib_abort(struct mlxsw_sp *mlxsw_sp)
-@@ -8170,11 +8201,6 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		goto err_neigh_init;
- 
--	err = mlxsw_sp_kvdl_alloc(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
--				  &router->adj_discard_index);
--	if (err)
--		goto err_adj_discard_index_alloc;
--
- 	mlxsw_sp->router->netevent_nb.notifier_call =
- 		mlxsw_sp_router_netevent_event;
- 	err = register_netevent_notifier(&mlxsw_sp->router->netevent_nb);
-@@ -8203,9 +8229,6 @@ int mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp,
- err_mp_hash_init:
- 	unregister_netevent_notifier(&mlxsw_sp->router->netevent_nb);
- err_register_netevent_notifier:
--	mlxsw_sp_kvdl_free(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
--			   router->adj_discard_index);
--err_adj_discard_index_alloc:
- 	mlxsw_sp_neigh_fini(mlxsw_sp);
- err_neigh_init:
- 	mlxsw_sp_vrs_fini(mlxsw_sp);
-@@ -8237,8 +8260,6 @@ void mlxsw_sp_router_fini(struct mlxsw_sp *mlxsw_sp)
- 	unregister_fib_notifier(mlxsw_sp_net(mlxsw_sp),
- 				&mlxsw_sp->router->fib_nb);
- 	unregister_netevent_notifier(&mlxsw_sp->router->netevent_nb);
--	mlxsw_sp_kvdl_free(mlxsw_sp, MLXSW_SP_KVDL_ENTRY_TYPE_ADJ, 1,
--			   mlxsw_sp->router->adj_discard_index);
- 	mlxsw_sp_neigh_fini(mlxsw_sp);
- 	mlxsw_sp_vrs_fini(mlxsw_sp);
- 	mlxsw_sp_mr_fini(mlxsw_sp);
--- 
+The first 9 patches are cleanups and preparations, maybe some of
+these can go regardless of this series.
+
+Patch 10 changes the hvs_remote_addr_init(). setting the
+VMADDR_CID_HOST as remote CID instead of VMADDR_CID_ANY to make
+the choice of transport to be used work properly.
+
+Patch 11 adds multi-transports support.
+
+Patch 12 changes a little bit the vmci_transport and the vmci driver
+to register the vmci_transport only when there are active host/guest.
+
+Patch 13 prevents the transport modules unloading while sockets are
+assigned to them.
+
+Patch 14 fixes an issue in the bind() logic discoverable only with
+the new multi-transport support.
+
+Patch 15 refuses CID assigned to the guest->host transport in the
+vhost_transport.
+
+I've tested this series with nested KVM (vsock-transport [L0,L1],
+virtio-transport[L1,L2]) and with VMware (L0) + KVM (L1)
+(vmci-transport [L0,L1], vhost-transport [L1], virtio-transport[L2]).
+
+Dexuan successfully tested the RFC series on HyperV with a Linux guest.
+
+Stefano Garzarella (15):
+  vsock/vmci: remove unused VSOCK_DEFAULT_CONNECT_TIMEOUT
+  vsock: remove vm_sockets_get_local_cid()
+  vsock: remove include/linux/vm_sockets.h file
+  vsock: add 'transport' member in the struct vsock_sock
+  vsock/virtio: add transport parameter to the
+    virtio_transport_reset_no_sock()
+  vsock: add 'struct vsock_sock *' param to vsock_core_get_transport()
+  vsock: handle buffer_size sockopts in the core
+  vsock: add vsock_create_connected() called by transports
+  vsock: move vsock_insert_unbound() in the vsock_create()
+  hv_sock: set VMADDR_CID_HOST in the hvs_remote_addr_init()
+  vsock: add multi-transports support
+  vsock/vmci: register vmci_transport only when VMCI guest/host are
+    active
+  vsock: prevent transport modules unloading
+  vsock: fix bind() behaviour taking care of CID
+  vhost/vsock: refuse CID assigned to the guest->host transport
+
+ drivers/misc/vmw_vmci/vmci_driver.c     |  67 +++++
+ drivers/misc/vmw_vmci/vmci_driver.h     |   2 +
+ drivers/misc/vmw_vmci/vmci_guest.c      |   2 +
+ drivers/misc/vmw_vmci/vmci_host.c       |   7 +
+ drivers/vhost/vsock.c                   | 102 ++++---
+ include/linux/virtio_vsock.h            |  18 +-
+ include/linux/vm_sockets.h              |  15 -
+ include/linux/vmw_vmci_api.h            |   2 +
+ include/net/af_vsock.h                  |  45 +--
+ include/net/vsock_addr.h                |   2 +-
+ net/vmw_vsock/af_vsock.c                | 382 ++++++++++++++++++------
+ net/vmw_vsock/hyperv_transport.c        |  70 ++---
+ net/vmw_vsock/virtio_transport.c        | 177 ++++++-----
+ net/vmw_vsock/virtio_transport_common.c | 166 +++++-----
+ net/vmw_vsock/vmci_transport.c          | 140 ++++-----
+ net/vmw_vsock/vmci_transport.h          |   3 -
+ net/vmw_vsock/vmci_transport_notify.h   |   1 -
+ 17 files changed, 679 insertions(+), 522 deletions(-)
+ delete mode 100644 include/linux/vm_sockets.h
+
+--=20
 2.21.0
 
