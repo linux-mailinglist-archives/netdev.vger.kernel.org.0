@@ -2,76 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A8C2FCCCE
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:08:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDA71FCCE9
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:14:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726592AbfKNSIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 13:08:11 -0500
-Received: from mail-il1-f196.google.com ([209.85.166.196]:32953 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726444AbfKNSIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:08:11 -0500
-Received: by mail-il1-f196.google.com with SMTP id m5so6215289ilq.0
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:08:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tyz2K0hJ7UpaKZAYvg7hXb4m9hDwm3mW76wd1dnCaL0=;
-        b=cbhTuSiCfaM9YXnX6tFYpadmx13g0LxYclsqzCagxiSN50TVkIfNGKg+hXXWMTQrNf
-         5qE2sjxUyRFtNVlrpv7mCb9N9ARYG0UrFe71HUwlpp5xLqZc672j6Ck42klTMsUvLO0h
-         BpS8E/0Vf7WglA1sxSDZZyf6F0Mk2YAKzni/9JvR3U1s8weYxE0gwOIW17MH3Re7vF8i
-         kXYDSV1coM/0/lmJJfwBd9AIWTQBQzMoiPFKY7W8Gvh+oIKXnRP6/d2xIqDweL9/XzqK
-         bJakSHrnstX4WTCBq2L5BewTjRSVUF6g9xL8WbCsXfBk8UHQUsqMkLe7z7GGuuaMN7Zq
-         cnpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tyz2K0hJ7UpaKZAYvg7hXb4m9hDwm3mW76wd1dnCaL0=;
-        b=KT+lw+H+unxd+sztF9ZrET3kpe66c0j9N2OqRQP2TsZTILNIMNig+Pbk8fRcuN3YoH
-         HA4OuJ24uP9rpN58xtzPvOuUG7zoX/S4hZlyiToerOMR2JnGpPtbfFLyHommnT5E43rK
-         lIesIrB6sP2nZEdskejycA6er+t2Ob2tNcLBH/KmvBn2WpHVMhSPGc0euuCctPCDHqVs
-         dEglEWMwzjD8d004zgyJhpZfUNsBGR/j98Yih7ubJaVZrN2viokzUCTv1RkTK57fSQ9w
-         KR7G8ifoxYAshRieOK1aCuLD5vFDkjoMrotUxZFGoCfjdMZyieMMSvpT7TF8IEfhMna9
-         gxyA==
-X-Gm-Message-State: APjAAAUAVTHYDBOeyrLiC7JRuRqexAzCSXbgIs3me7D8GJ/NPD+f0yxP
-        4aIAUmI0UgXvbxwWXqzI94UsD9W9Qd6Z5larMBYnCCTJ
-X-Google-Smtp-Source: APXvYqz9cTNWeJT5+iaEnoMSq4ciLoRZNX2oo9DPCrGv2Y0inlKfNMmKtbIl/Dby1cgfzkUM4GEx3WShcZyxo3IyNzU=
-X-Received: by 2002:a92:5fc2:: with SMTP id i63mr10685574ill.218.1573754889909;
- Thu, 14 Nov 2019 10:08:09 -0800 (PST)
+        id S1726984AbfKNSOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 13:14:25 -0500
+Received: from smtp1.emailarray.com ([65.39.216.14]:28963 "EHLO
+        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726597AbfKNSOZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:14:25 -0500
+Received: (qmail 19684 invoked by uid 89); 14 Nov 2019 18:14:23 -0000
+Received: from unknown (HELO ?172.20.189.1?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTk5LjIwMS42NC4z) (POLARISLOCAL)  
+  by smtp1.emailarray.com with (AES256-GCM-SHA384 encrypted) SMTP; 14 Nov 2019 18:14:23 -0000
+From:   "Jonathan Lemon" <jlemon@flugsvamp.com>
+To:     "Lorenzo Bianconi" <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 3/3] net: mvneta: get rid of huge DMA sync in
+ mvneta_rx_refill
+Date:   Thu, 14 Nov 2019 10:14:19 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <79304C3A-EC21-4D15-8D03-BA035D9E0F4C@flugsvamp.com>
+In-Reply-To: <b18159e702ec28bb33c492da216a12eaf3e7490c.1573383212.git.lorenzo@kernel.org>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <b18159e702ec28bb33c492da216a12eaf3e7490c.1573383212.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <20191114175209.205382-1-ppenkov.kernel@gmail.com>
-In-Reply-To: <20191114175209.205382-1-ppenkov.kernel@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 14 Nov 2019 10:07:58 -0800
-Message-ID: <CANn89i+hUmHk4wmAGd1z+YFFnDaSViwap2n9gB411T_d9n9T8w@mail.gmail.com>
-Subject: Re: [net-next] tun: fix data-race in gro_normal_list()
-To:     Petar Penkov <ppenkov.kernel@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Petar Penkov <ppenkov@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 9:52 AM Petar Penkov <ppenkov.kernel@gmail.com> wrote:
->
-> From: Petar Penkov <ppenkov@google.com>
->
-> There is a race in the TUN driver between napi_busy_loop and
-> napi_gro_frags. This commit resolves the race by adding the NAPI struct
-> via netif_tx_napi_add, instead of netif_napi_add, which disables polling
-> for the NAPI struct.
->
-> KCSAN reported:
-> BUG: KCSAN: data-race in gro_normal_list.part.0 / napi_busy_loop
-> Fixes: 943170998b20 ("tun: enable NAPI for TUN/TAP driver")
-> Signed-off-by: Petar Penkov <ppenkov@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> ---
+On 10 Nov 2019, at 4:09, Lorenzo Bianconi wrote:
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+> Get rid of costly dma_sync_single_for_device in mvneta_rx_refill
+> since now the driver can let page_pool API to manage needed DMA
+> sync with a proper size.
+>
+> - XDP_DROP DMA sync managed by mvneta driver:	~420Kpps
+> - XDP_DROP DMA sync managed by page_pool API:	~595Kpps
+>
+> Tested-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  drivers/net/ethernet/marvell/mvneta.c | 25 +++++++++++++++----------
+>  1 file changed, 15 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c 
+> b/drivers/net/ethernet/marvell/mvneta.c
+> index ed93eecb7485..591d580c68b4 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -1846,7 +1846,6 @@ static int mvneta_rx_refill(struct mvneta_port 
+> *pp,
+>  			    struct mvneta_rx_queue *rxq,
+>  			    gfp_t gfp_mask)
+>  {
+> -	enum dma_data_direction dma_dir;
+>  	dma_addr_t phys_addr;
+>  	struct page *page;
+>
+> @@ -1856,9 +1855,6 @@ static int mvneta_rx_refill(struct mvneta_port 
+> *pp,
+>  		return -ENOMEM;
+>
+>  	phys_addr = page_pool_get_dma_addr(page) + pp->rx_offset_correction;
+> -	dma_dir = page_pool_get_dma_dir(rxq->page_pool);
+> -	dma_sync_single_for_device(pp->dev->dev.parent, phys_addr,
+> -				   MVNETA_MAX_RX_BUF_SIZE, dma_dir);
+>  	mvneta_rx_desc_fill(rx_desc, phys_addr, page, rxq);
+>
+>  	return 0;
+> @@ -2097,8 +2093,10 @@ mvneta_run_xdp(struct mvneta_port *pp, struct 
+> mvneta_rx_queue *rxq,
+>  		err = xdp_do_redirect(pp->dev, xdp, prog);
+>  		if (err) {
+>  			ret = MVNETA_XDP_DROPPED;
+> -			page_pool_recycle_direct(rxq->page_pool,
+> -						 virt_to_head_page(xdp->data));
+> +			__page_pool_put_page(rxq->page_pool,
+> +					virt_to_head_page(xdp->data),
+> +					xdp->data_end - xdp->data_hard_start,
+> +					true);
+
+I just have a clarifying question.  Here, the RX buffer was received and 
+then
+dma_sync'd to the CPU.  Now, it is going to be recycled for RX again; 
+does it
+actually need to be sync'd back to the device?
+
+I'm asking since several of the other network drivers (mellanox, for 
+example)
+don't resync the buffer back to the device when recycling it for reuse.
+-- 
+Jonathan
