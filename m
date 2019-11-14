@@ -2,67 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 44712FC9EE
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:29:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A5E6FCA1E
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:42:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727053AbfKNP3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 10:29:01 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39832 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726251AbfKNP3A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Nov 2019 10:29:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ElG8Ta8wnxyvEpph2Zdu0/QL/JmLef30hlFTtXPVY2w=; b=b/58ij9zk28SivK4r5tm14Hq55
-        iuccP5RskD/WgI5i93dWzWsR8CMNTJ098NMLPvjZbt/6jPB7gIH3M5QmOxZ7D5p2HOpaBNNQ8aLJa
-        vF7huaLIaHiyw8bLOJqBGBsmT2Ptjq11+iN+/Qc3/gy1AfDGhFpRoZHcXH0URtb6CrcA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iVH3A-0004kD-8P; Thu, 14 Nov 2019 16:28:48 +0100
-Date:   Thu, 14 Nov 2019 16:28:48 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] ARM: dts: ls1021a-tsn: Use interrupts for the
- SGMII PHYs
-Message-ID: <20191114152848.GR10875@lunn.ch>
-References: <20191114110254.32171-1-linux@rasmusvillemoes.dk>
- <20191114110254.32171-3-linux@rasmusvillemoes.dk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191114110254.32171-3-linux@rasmusvillemoes.dk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726881AbfKNPm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 10:42:26 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:55548 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726786AbfKNPm0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 10:42:26 -0500
+Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id xAEFgLjU015413;
+        Thu, 14 Nov 2019 07:42:22 -0800
+From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: [PATCH net-next v2 0/2] cxgb4: add TC-MATCHALL classifier offload
+Date:   Thu, 14 Nov 2019 21:04:03 +0530
+Message-Id: <cover.1573738924.git.rahul.lakkireddy@chelsio.com>
+X-Mailer: git-send-email 2.5.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 12:02:53PM +0100, Rasmus Villemoes wrote:
-> From: Vladimir Oltean <olteanv@gmail.com>
-> 
-> On the LS1021A-TSN board, the 2 Atheros AR8031 PHYs for eth0 and eth1
-> have interrupt lines connected to the shared IRQ2_B LS1021A pin.
-> 
-> Switching to interrupts offloads the PHY library from the task of
-> polling the MDIO status and AN registers (1, 4, 5) every second.
-> 
-> Unfortunately, the BCM5464R quad PHY connected to the switch does not
-> appear to have an interrupt line routed to the SoC.
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+This series of patches add support to offload TC-MATCHALL classifier
+to hardware to classify all outgoing and incoming traffic on the
+underlying port. Only 1 egress and 1 ingress rule each can be
+offloaded on the underlying port.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Patch 1 adds support for TC-MATCHALL classifier offload on the egress
+side. TC-POLICE is the only action that can be offloaded on the egress
+side and is used to rate limit all outgoing traffic to specified max
+rate.
 
-    Andrew
+Patch 2 adds support for TC-MATCHALL classifier offload on the ingress
+side. The same set of actions supported by existing TC-FLOWER
+classifier offload can be applied on all the incoming traffic.
+
+Thanks,
+Rahul
+
+---
+v2:
+- Added check to reject flow block sharing for policers in patch 1.
+- Removed logic to fetch free index from end of TCAM in patch 2.
+  Must maintain the same ordering as in kernel.
+
+
+Rahul Lakkireddy (2):
+  cxgb4: add TC-MATCHALL classifier egress offload
+  cxgb4: add TC-MATCHALL classifier ingress offload
+
+ drivers/net/ethernet/chelsio/cxgb4/Makefile   |   3 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4.h    |   6 +
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |  79 +++-
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.c  |  21 +-
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.h  |   6 +
+ .../chelsio/cxgb4/cxgb4_tc_matchall.c         | 341 ++++++++++++++++++
+ .../chelsio/cxgb4/cxgb4_tc_matchall.h         |  50 +++
+ .../ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.c  |   5 +-
+ drivers/net/ethernet/chelsio/cxgb4/sched.c    |  56 ++-
+ drivers/net/ethernet/chelsio/cxgb4/sched.h    |   1 +
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c    |  11 +-
+ 11 files changed, 539 insertions(+), 40 deletions(-)
+ create mode 100644 drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
+ create mode 100644 drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h
+
+-- 
+2.24.0
+
