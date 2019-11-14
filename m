@@ -2,92 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACD1BFD09C
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 22:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DEADDFD0A3
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 22:56:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfKNVxT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 16:53:19 -0500
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39740 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726812AbfKNVxT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 16:53:19 -0500
-Received: by mail-wm1-f67.google.com with SMTP id t26so8002327wmi.4;
-        Thu, 14 Nov 2019 13:53:16 -0800 (PST)
+        id S1727054AbfKNV4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 16:56:18 -0500
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:34254 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726613AbfKNV4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 16:56:17 -0500
+Received: by mail-pg1-f193.google.com with SMTP id z188so4655389pgb.1
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 13:56:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AYtxXvV7rq10di0nCWaqkGfMn0fSIV9NDKI+yoF5mf8=;
-        b=vEQgq1op9ByoduD0PSXhrq+mTjXh/a9Gtfy2C1k2DUjnz8JbxAvA8+U5GF1tv9Lk6R
-         IsJPImJwyCgxRAdHe4sWwbis38qHhz5db7v3BSmaY6CAKtFDRa62ra2hSaAGIgGiYUW4
-         H9347pZryUbpiAIYVc3M0czQxk6u/MiKfhH/blYvu99pGd4Tpi1S6SxbK0asz5cyHTOf
-         I20Hm3bi6T+H5nEVXNn62VNv6qx63Gvp1PrgZkzxT6DyINgQWfcsT2fDehCfkt2vU/XT
-         eIDeZkVHQzXqPmwGvHJoCObgeUQiIXVf8f7JhGT9IMeRA7cvW1WAXaRJF3PiZ3/wqSpd
-         C6bQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=sGLset5Dnp8Ldm8ljmG59AeNAD0Jpi+RPkbtstLQToo=;
+        b=qG2fgkAXhV91v3ExlWg7uppTTF2/e2gvx2fo5osYPEf+EqFCTbHVvZvJoCaC7kf4YT
+         fZstmFWxEaCZ/kUkVxCUSBrIc+7a5uPQl6bVF14cjSKv7DibaZOZtP9ehvvw93FgIQZf
+         IXbSRISRS83cZHrv5YLFXCkzIe9L02jjdDVGZGMCWn9mCV02JTbBJzMKcLa9DuSR1SUm
+         qWxPCTAn8PtkuQp+gLEDk7/vwFIIEraZB3XJwc/Uu0QgH4YABH8n5OKtyF58nnyM2GIc
+         ujz4P8/mWB9R1ArK8wMyF+HshkUZ2EImGfI/EGuan5eE/gEemdEjURg/6CuqV7zW4rh1
+         6pKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AYtxXvV7rq10di0nCWaqkGfMn0fSIV9NDKI+yoF5mf8=;
-        b=V06Z+Knkd3J+KItgXykO3EDPz+UOZ8+dhBuQ+O+hcoyNX/Coyvj8anliIdDlx8V+7V
-         PIT2pVEvkjtBcFyhTpFkzdCkEFpiDVN9kmfxQ68YdrgobIujvwW3dmghZeioVMGKDLB1
-         b033guN3pdLpInFsvIeGvLNfTmJUMuN9NgL+6HWb7gI4A+1mcRnpE2lo2zfbZxnTi9qq
-         S0uQmRKOIhgflWezo/PlEoj9mAYjh/fPyOnDDi9vklc5+FIFGdTwwtBjtW9WcW5mMXgX
-         Gjt1Noz0vWZupyfP7TyvVQjRxkdGFXTSCpZWnwMo/J9RcGFOBzxIHA0p7xxWYAHyJba1
-         EnTg==
-X-Gm-Message-State: APjAAAUdCjOp424vLhQav/AVbz6qMsGPDlc0GEM80xTqpAHWL7ffXM58
-        KmV5BMi37rBwnNSsplHvrX6q6B8YhcvbrBg5UXA=
-X-Google-Smtp-Source: APXvYqyer25pIwMp04AbL8hennAHCOuUosGk+t1VEFMYAff37A/7WH3EIPa1ZSLfmfuxc9MZc4jsGSnMrgSUVRXVktQ=
-X-Received: by 2002:a1c:ed16:: with SMTP id l22mr10462653wmh.151.1573768395760;
- Thu, 14 Nov 2019 13:53:15 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=sGLset5Dnp8Ldm8ljmG59AeNAD0Jpi+RPkbtstLQToo=;
+        b=APO/ewyxyLPyXVqqrJJWc8dWCBdbhVi3D2ZD4EQWaE5pSI9/0IYO3suM+GNwnXSs6P
+         TKHTx8zkopSqNQbdalpb+7eFBH3p3aPGt8Y3YTNqMpBerHFuTBPV0+fqqPJg9Xb/2IXf
+         LptdwqVSExSZ/1yYaxpuLnNWj86+uf3V1X0Sr3qmrOssua95zgxgFyguxhYIHargZ7I6
+         86Mq4GUTh0KzoLh4/ty8RZ8i8Gevat32ECMhsHVLjp84ovm2LQNfhbEQ/kJMH65mMKzr
+         ZoRzjMwTXLKkm1VhRm0ro86djm/X+SY3yik+SIClgbuwJNPHHjtL9AP1QSRVYOaEG9F4
+         KNvA==
+X-Gm-Message-State: APjAAAXBwz44kpEnMCMCWxohK1tgrzMX2Y3MxRCDp9zhNHf5WnhjlP6e
+        8R8i7043aZl5QV5elEn4fF8=
+X-Google-Smtp-Source: APXvYqwYCfYSl2mOqjGIno6mvWeGeprpOl98DoBh0A1RpxxfhIbRz/OpirnOEzAEYLABpaxGz9nCSQ==
+X-Received: by 2002:a63:f852:: with SMTP id v18mr12224567pgj.71.1573768575963;
+        Thu, 14 Nov 2019 13:56:15 -0800 (PST)
+Received: from [172.20.189.1] ([2620:10d:c090:180::dd67])
+        by smtp.gmail.com with ESMTPSA id h9sm8703390pjh.8.2019.11.14.13.56.14
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 13:56:15 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Jesper Dangaard Brouer" <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel-team@fb.com,
+        ilias.apalodimas@linaro.org
+Subject: Re: [net-next PATCH v2 2/2] page_pool: remove hold/release count from
+ tracepoints
+Date:   Thu, 14 Nov 2019 13:56:14 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <9940A2D8-3B91-43D1-9381-C28C0151F4B7@gmail.com>
+In-Reply-To: <20191114220715.1ac54ddf@carbon>
+References: <20191114163715.4184099-1-jonathan.lemon@gmail.com>
+ <20191114163715.4184099-3-jonathan.lemon@gmail.com>
+ <20191114220715.1ac54ddf@carbon>
 MIME-Version: 1.0
-References: <20191114110254.32171-1-linux@rasmusvillemoes.dk> <20191114.133959.2299796714037910835.davem@davemloft.net>
-In-Reply-To: <20191114.133959.2299796714037910835.davem@davemloft.net>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 14 Nov 2019 23:53:04 +0200
-Message-ID: <CA+h21hqXnUE4d777T05y6tcS61B5SvdqSpCti=_0QAgUeEkqLw@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] ARM: dts: ls1021a: define and use external
- interrupt lines
-To:     David Miller <davem@davemloft.net>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        Marc Zyngier <maz@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Nov 2019 at 23:40, David Miller <davem@davemloft.net> wrote:
->
-> From: Rasmus Villemoes <linux@rasmusvillemoes.dk>
-> Date: Thu, 14 Nov 2019 12:02:51 +0100
->
-> > A device tree binding documentation as well as a driver implementing
-> > support for the external interrupt lines on the ls1021a has been
-> > merged into irqchip-next, so will very likely appear in v5.5. See
-> >
-> > 87cd38dfd9e6 dt/bindings: Add bindings for Layerscape external irqs
-> > 0dcd9f872769 irqchip: Add support for Layerscape external interrupt lines
-> >
-> > present in next-20191114.
-> >
-> > These patches simply add the extirq node to the ls1021a.dtsi and make
-> > use of it on the LS1021A-TSN board. I hope these can be picked up so
-> > they also land in v5.5, so we don't have to wait a full extra release
-> > cycle.
-> >
-> > v2: fix interrupt type in 2/2 (s/IRQ_TYPE_EDGE_FALLING/IRQ_TYPE_LEVEL_LOW/).
->
-> I am assuming this will go via an ARM tree.
+On 14 Nov 2019, at 13:07, Jesper Dangaard Brouer wrote:
+> I will prefer that you do an atomic_inc_return, and send the cnt to the
+> existing tracepoint.  I'm not dereferencing the pool in my tracepoint
+> use-case, and as Alexei wrote, this would still be 'safe' (as in not
+> crashing) for a tracepoint if someone do.
 
-Yes, of course, they are for Shawn. Netdev and Andrew was copied for
-patch 2/2 (an SGMII PHY interrupt).
-
-Regards,
--Vladimir
+Okay, will make that change, and send out a revision.
+-- 
+Jonathan
