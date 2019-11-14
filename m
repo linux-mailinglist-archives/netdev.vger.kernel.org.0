@@ -2,59 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 982B3FBCD7
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 01:06:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3DFFBD13
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 01:31:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726409AbfKNAG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Nov 2019 19:06:29 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:38816 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726195AbfKNAG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Nov 2019 19:06:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=oYauWHVDMgKjfE6gHfNdSG584tFCGCUIZrOcPaQwcF0=; b=jEFFKoE4bF8nqNxol51ILDhF9/
-        fPXKoFHuosU9hop0c6rD30gFhnxwTJWIjNaXgQ1Sv7/NJlbMHRr3liTn47blJenpVoxcX2JVv8RRx
-        RFVcnsWQOvxTmzqah2YJPMjA76AHjj2G+0aqFHSSC+91x6IkczrHJmNHl7SJuC/TL/2c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.92.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1iV2eX-0001I6-Jb; Thu, 14 Nov 2019 01:06:25 +0100
-Date:   Thu, 14 Nov 2019 01:06:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        ilias.apalodimas@linaro.org, brouer@redhat.com,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH net-next] net: mvneta: fix build skb for bm capable
- devices
-Message-ID: <20191114000625.GD27785@lunn.ch>
-References: <2369ff5a16ac160d8130612e4299efe072f53d80.1573686984.git.lorenzo@kernel.org>
+        id S1727211AbfKNAbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Nov 2019 19:31:43 -0500
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40468 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726428AbfKNAbm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Nov 2019 19:31:42 -0500
+Received: by mail-pf1-f195.google.com with SMTP id r4so2842952pfl.7
+        for <netdev@vger.kernel.org>; Wed, 13 Nov 2019 16:31:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9sAWI1/WyVUJMv+/9lzXmr/UTEtbsKqgfoRGVLEnFt8=;
+        b=Hlj6rDrliTvU/cepY3VqIv8iG73LNRL7563tZytDrLShqFopNYrRCLMIQdo9EA6jDE
+         FInBRd96HhgghlpO3VGkTnv17MaY+PkaVo6Vpr8glXkHGY3k+2KW690kk3LBlh3tLN/K
+         QHzIckFi5j/6rdruMb2CNBcJ8fpyccBBCzhrw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9sAWI1/WyVUJMv+/9lzXmr/UTEtbsKqgfoRGVLEnFt8=;
+        b=qWlH1wwfV3cexudEegiJd6hV9T6v1iM8tUhLiXBuhOiBH7MCM8ix3yKhA8IGHj7FUp
+         qxiM20eP1qCsTyzN/BfjwZzrXbQQHz14i/I9sDSfphWx9744o62rcufNzT+VJZz4y2S9
+         aoHWGDWbUownmZ398ZuEN7dR2WFH5FMyqIIhMcP0blv7d5daYDdHDlQvs5gAt3bWyoSy
+         hQECmMBdpfytvpbaRBCNsqwp7pAjbpTJNHqAsrytj1Wq5ZBpiK1ehI6mXJzp7ExpI1WI
+         ZSxbxbV1q7t+J1k1JQDJhR+u80kQD+DTTMpxSEgE5njTRH5At5ByYoAgJaOjX+AtPM1F
+         PDUQ==
+X-Gm-Message-State: APjAAAXg+BX6ZgqjBGMRynE/s3mDPOeBNPjsuTpWvSpr0BnoT8I4VUed
+        Vtbpgm88iFbIbN6QZ4tTbwuNXw==
+X-Google-Smtp-Source: APXvYqy73l8AcMr+AtoYg+/uiIszTaLYGFq4eHui1Ai1uiPyzjRywtbILY5sc/7uW/xNvwGKPlOrWQ==
+X-Received: by 2002:a17:90a:a898:: with SMTP id h24mr8777377pjq.48.1573691502087;
+        Wed, 13 Nov 2019 16:31:42 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d22sm3672614pjd.2.2019.11.13.16.31.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Nov 2019 16:31:41 -0800 (PST)
+Date:   Wed, 13 Nov 2019 16:31:40 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: print proper warning on dst underflow
+Message-ID: <201911131625.8B0F0BAEDE@keescook>
+References: <20190924090937.13001-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2369ff5a16ac160d8130612e4299efe072f53d80.1573686984.git.lorenzo@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190924090937.13001-1-Jason@zx2c4.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Nov 14, 2019 at 01:25:55AM +0200, Lorenzo Bianconi wrote:
-> Fix build_skb for bm capable devices when they fall-back using swbm path
-> (e.g. when bm properties are configured in device tree but
-> CONFIG_MVNETA_BM_ENABLE is not set). In this case rx_offset_correction is
-> overwritten so we need to use it building skb instead of
-> MVNETA_SKB_HEADROOM directly
+On Tue, Sep 24, 2019 at 11:09:37AM +0200, Jason A. Donenfeld wrote:
+> Proper warnings with stack traces make it much easier to figure out
+> what's doing the double free and create more meaningful bug reports from
+> users.
 > 
-> Fixes: 8dc9a0888f4c ("net: mvneta: rely on build_skb in mvneta_rx_swbm poll routine")
-> Fixes: 0db51da7a8e9 ("net: mvneta: add basic XDP support")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  net/core/dst.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/core/dst.c b/net/core/dst.c
+> index 1325316d9eab..193af526e908 100644
+> --- a/net/core/dst.c
+> +++ b/net/core/dst.c
+> @@ -172,7 +172,7 @@ void dst_release(struct dst_entry *dst)
+>  		int newrefcnt;
+>  
+>  		newrefcnt = atomic_dec_return(&dst->__refcnt);
+> -		if (unlikely(newrefcnt < 0))
+> +		if (WARN_ONCE(newrefcnt < 0, "dst_release underflow"))
+>  			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
+>  					     __func__, dst, newrefcnt);
 
-Reported-by: Andrew Lunn <andrew@lunn.ch>
-Tested-by: Andrew Lunn <andrew@lunn.ch>
+Should __refcnt be a refcount_t to gain saturation protection? It seems
+like going negative is bad...
 
-    Andrew
+-Kees
+
+>  		if (!newrefcnt)
+> @@ -187,7 +187,7 @@ void dst_release_immediate(struct dst_entry *dst)
+>  		int newrefcnt;
+>  
+>  		newrefcnt = atomic_dec_return(&dst->__refcnt);
+> -		if (unlikely(newrefcnt < 0))
+> +		if (WARN_ONCE(newrefcnt < 0, "dst_release_immediate underflow"))
+>  			net_warn_ratelimited("%s: dst:%p refcnt:%d\n",
+>  					     __func__, dst, newrefcnt);
+>  		if (!newrefcnt)
+> -- 
+> 2.21.0
+> 
+
+-- 
+Kees Cook
