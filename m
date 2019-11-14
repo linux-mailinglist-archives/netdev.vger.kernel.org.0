@@ -2,140 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B600FD18C
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 00:27:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F305FFD197
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 00:30:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbfKNX1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 18:27:09 -0500
-Received: from correo.us.es ([193.147.175.20]:52978 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726953AbfKNX1J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Nov 2019 18:27:09 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 341B2191912
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 00:27:05 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 283E2A8F1
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 00:27:05 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1A691CA0F3; Fri, 15 Nov 2019 00:27:05 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 1E16EDA4D0;
-        Fri, 15 Nov 2019 00:27:03 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 15 Nov 2019 00:27:03 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id EC8B8426CCBA;
-        Fri, 15 Nov 2019 00:27:02 +0100 (CET)
-Date:   Fri, 15 Nov 2019 00:27:04 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     davem@davemloft.net, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 3/4] netfilter: nf_tables: Fix check the err for
- FLOW_BLOCK_BIND setup call
-Message-ID: <20191114232704.475ucjd6hsk4mpqd@salvia>
-References: <1573620402-10318-1-git-send-email-wenxu@ucloud.cn>
- <1573620402-10318-4-git-send-email-wenxu@ucloud.cn>
+        id S1726986AbfKNXat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 18:30:49 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:43274 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726767AbfKNXat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 18:30:49 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id xAENTfBr005877;
+        Thu, 14 Nov 2019 15:30:32 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=16tvPcp3/h066Uwt/T0v0g2mLDsE1leooyxfcQsT90U=;
+ b=WfmrE3/XwGKgEePE0KLVFbBoizb4PPduXJKB+gPxCGgvFTu0qW8xj4AhRuZMmphEjr0A
+ cHgypi1cjaHmHnwSCrF8gQ8pD9iEqU4B5aFVzWVnbM7cW3A2M7bFBwAz3lKPkopDuSY2
+ vCWjYN2KVlir1RXRXRhZ3h96piRFTzeZwsg= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2w9c1avf2n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 14 Nov 2019 15:30:31 -0800
+Received: from ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) by
+ ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 14 Nov 2019 15:30:31 -0800
+Received: from NAM05-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 14 Nov 2019 15:30:31 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Mog6GAV5cYmU7DbDQUhRQmG92ixK1kzmjq0vUvAbS1+YJfH0j5DXq3Bm5bVZyQq+8J6QwAtJJ3Po6LfvfGmmKPCJI5luvurhP6E1zMX6RZV7751fsm4J6DdiQdpQWreV+pOrVAx4WFJib503jZdaCdIt2IN4HvTFux3Vd1PaMSSlYMu5bgEaQqitNQOzR9sPpTRwl2u1BMwFA2I/NVel02XIlwLElxmIXhUVlVX8G+ItBuHqvUTmQnNKaU4rtOHpAuJREmaKkciViimu3QTZUMludVoVmFXiPuYvzs007wZ76xq+rXImlLMaYavgEPZkx2rapSdigiyDF3UOG0tmrQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=16tvPcp3/h066Uwt/T0v0g2mLDsE1leooyxfcQsT90U=;
+ b=bLtrtyvcTjcVoBPMQ5eH2vBbI923jpo6Q7QfWQ29BJXuZP5ebWjsJ123LnR1TRl4xyCcekNDZSxehBn8Il7O1q/YjZ830Uc9D/2wHKSablabbRzIlWQPnfrBF6pOSEukLJKRKPSRGoUQxCYWdRPf0BIeBkWTp9ozgZptvhCP4ObVM1Kw6D8QOhdmN3ii8xT3JbeQ+Gq+qcQrd/Lwa6UyghmHZRJC/miq0JJOBkfXtLicn77/mOkGA5i1RN70WHda6HYGVRWlBLhEn1+iPOq8KDEJor1wRquYt2cypM91OLVUo70PRxg041lW0DAuonpAaemz40MfxxobK/0HoEhLRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=16tvPcp3/h066Uwt/T0v0g2mLDsE1leooyxfcQsT90U=;
+ b=fawfkwF58LWOe67AhXnrwVuLPj4vEnp3qr9Nn3a3sNTKIiOC+mg7Qdug1gU+LBIzW1/VPVlaS4ImeLetqAl44BmbNCReAyPUGdN9FWWsLpm3duwDMFs1wb/wpwCK1/r+1vBuBZaH1X6DDB+L8eK4B8xCDyKu6tI+asPn5VAoHqQ=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1902.namprd15.prod.outlook.com (10.174.255.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.23; Thu, 14 Nov 2019 23:30:29 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::f831:d112:6187:90d9]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::f831:d112:6187:90d9%4]) with mapi id 15.20.2451.027; Thu, 14 Nov 2019
+ 23:30:29 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Alexei Starovoitov <ast@kernel.org>
+CC:     David Miller <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH v4 bpf-next 17/20] bpf: Support attaching tracing BPF
+ program to other BPF programs
+Thread-Topic: [PATCH v4 bpf-next 17/20] bpf: Support attaching tracing BPF
+ program to other BPF programs
+Thread-Index: AQHVmx2ZZY1lM9hxUEu0c0DC3buF+qeLUMSA
+Date:   Thu, 14 Nov 2019 23:30:29 +0000
+Message-ID: <7F2E3D6E-C85C-44E1-9A99-4B28B0B60931@fb.com>
+References: <20191114185720.1641606-1-ast@kernel.org>
+ <20191114185720.1641606-18-ast@kernel.org>
+In-Reply-To: <20191114185720.1641606-18-ast@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3601.0.10)
+x-originating-ip: [2620:10d:c090:200::3:e9ac]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8e882481-a0e3-45cc-5c98-08d7695aa307
+x-ms-traffictypediagnostic: MWHPR15MB1902:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR15MB19021D0323DD74DEEDE66CE5B3710@MWHPR15MB1902.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 02213C82F8
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(396003)(346002)(39860400002)(366004)(199004)(189003)(66556008)(66446008)(64756008)(6486002)(186003)(5024004)(256004)(6436002)(50226002)(25786009)(316002)(478600001)(46003)(54906003)(14444005)(229853002)(99286004)(6246003)(5660300002)(86362001)(81156014)(4326008)(71200400001)(71190400001)(8676002)(81166006)(6512007)(66946007)(66476007)(6506007)(2616005)(8936002)(476003)(53546011)(33656002)(6116002)(486006)(2906002)(11346002)(102836004)(76116006)(36756003)(14454004)(6916009)(446003)(305945005)(76176011)(7736002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1902;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: g1FxAzfxsdFL1z4hv0hCEs9Eh8hujol3nX9nB6+R9IoRhcZuXO/uN1gyOJ9b2G5Wv1oXuYDO7TJb2xH9cBo0AMwa29BXYx96abrClg6rMW0pAV4FD5G/ou8J4VqYtkHt2RDmONOej7fPhwaRTNCnO3NkabiECrjCMVMXMQ4tZYLyLNnd+sqs18YqhBylkKrpafD0U8I4IFrUHy0hKcIvODzQMlIbfDdFcEh8S0yCneUZCU+bviJ/uJKXiZ6YfsoipAYLUCy0XcwxqNY+XGYHL+/8vsajMWbfQcorqBGCu+0h6U4TFfkGO5CZRj368QBwD6wq/gRPZYBU62GMnALtk4GcExW46CGuvsQb/J41MmEBJq/WvxP8oo+WNBcV1RG3+wkM0iQIUANieElEF71efQwLTsosMpvw5siTey/1rhZzYwznhpUM6Mwbt7+wAg+0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3E2A995E75BD554B977412E73230F148@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="il5uwdqck2k2kdz4"
-Content-Disposition: inline
-In-Reply-To: <1573620402-10318-4-git-send-email-wenxu@ucloud.cn>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e882481-a0e3-45cc-5c98-08d7695aa307
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Nov 2019 23:30:29.7477
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GdmINWdlvozzcvzBLzOxOqTlDpNL+8xoSvPK3LLFo84eecg+hlRAo0rMxvQVdDbxXYqRXog7RwnQV3tMI3zWow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1902
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-14_05:2019-11-14,2019-11-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ mlxlogscore=714 adultscore=0 impostorscore=0 bulkscore=0 phishscore=0
+ spamscore=0 mlxscore=0 suspectscore=0 clxscore=1015 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911140192
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---il5uwdqck2k2kdz4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-This one is incomplete, right? I'm attaching an alternative patch.
+> On Nov 14, 2019, at 10:57 AM, Alexei Starovoitov <ast@kernel.org> wrote:
+>=20
+> Allow FENTRY/FEXIT BPF programs to attach to other BPF programs of any ty=
+pe
+> including their subprograms. This feature allows snooping on input and ou=
+tput
+> packets in XDP, TC programs including their return values. In order to do=
+ that
+> the verifier needs to track types not only of vmlinux, but types of other=
+ BPF
+> programs as well. The verifier also needs to translate uapi/linux/bpf.h t=
+ypes
+> used by networking programs into kernel internal BTF types used by FENTRY=
+/FEXIT
+> BPF programs. In some cases LLVM optimizations can remove arguments from =
+BPF
+> subprograms without adjusting BTF info that LLVM backend knows. When BTF =
+info
+> disagrees with actual types that the verifiers sees the BPF trampoline ha=
+s to
+> fallback to conservative and treat all arguments as u64. The FENTRY/FEXIT
+> program can still attach to such subprograms, but it won't be able to rec=
+ognize
+> pointer types like 'struct sk_buff *' and it won't be able to pass them t=
+o
+> bpf_skb_output() for dumping packets to user space. The FENTRY/FEXIT prog=
+ram
+> would need to use bpf_probe_read_kernel() instead.
+>=20
+> The BPF_PROG_LOAD command is extended with attach_prog_fd field. When it'=
+s set
+> to zero the attach_btf_id is one vmlinux BTF type ids. When attach_prog_f=
+d
+> points to previously loaded BPF program the attach_btf_id is BTF type id =
+of
+> main function or one of its subprograms.
+>=20
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 
-On Wed, Nov 13, 2019 at 12:46:41PM +0800, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
-> 
-> Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
->  net/netfilter/nf_tables_api.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-> index 2dc636f..0a00812 100644
-> --- a/net/netfilter/nf_tables_api.c
-> +++ b/net/netfilter/nf_tables_api.c
-> @@ -5995,8 +5995,12 @@ static int nft_register_flowtable_net_hooks(struct net *net,
->  			}
->  		}
->  
-> -		flowtable->data.type->setup(&flowtable->data, hook->ops.dev,
-> -					    FLOW_BLOCK_BIND);
-> +		err = flowtable->data.type->setup(&flowtable->data,
-> +						  hook->ops.dev,
-> +						  FLOW_BLOCK_BIND);
-> +		if (err < 0)
-> +			goto err_unregister_net_hooks;
-> +
->  		err = nf_register_net_hook(net, &hook->ops);
->  		if (err < 0)
->  			goto err_unregister_net_hooks;
-> -- 
-> 1.8.3.1
-> 
+Acked-by: Song Liu <songliubraving@fb.com>
 
---il5uwdqck2k2kdz4
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="0001-netfilter-nf_tables-unbind-callbacks-if-flowtable-ho.patch"
-
-From a6e05e56907673e21948c6ae53f45494b25fc0aa Mon Sep 17 00:00:00 2001
-From: Pablo Neira Ayuso <pablo@netfilter.org>
-Date: Fri, 15 Nov 2019 00:22:55 +0100
-Subject: [PATCH] netfilter: nf_tables: unbind callbacks if flowtable hook
- registration fails
-
-Undo the callback binding before unregistering the existing hooks.
-
-Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-Reported-by: wenxu <wenxu@ucloud.cn>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_tables_api.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 2dc636faa322..ad3882e14e82 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5998,8 +5998,12 @@ static int nft_register_flowtable_net_hooks(struct net *net,
- 		flowtable->data.type->setup(&flowtable->data, hook->ops.dev,
- 					    FLOW_BLOCK_BIND);
- 		err = nf_register_net_hook(net, &hook->ops);
--		if (err < 0)
-+		if (err < 0) {
-+			flowtable->data.type->setup(&flowtable->data,
-+						    hook->ops.dev,
-+						    FLOW_BLOCK_UNBIND);
- 			goto err_unregister_net_hooks;
-+		}
- 
- 		i++;
- 	}
--- 
-2.11.0
+[...]
 
 
---il5uwdqck2k2kdz4--
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index 4620267b186e..40efde5eedcb 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -3530,6 +3530,20 @@ btf_get_prog_ctx_type(struct bpf_verifier_log *log=
+, struct btf *btf,
+> 	return ctx_type;
+> }
+>=20
+
+nit: maybe add a comment here or where we call btf_translate_to_vmlinux().=
+=20
+
+> +static int btf_translate_to_vmlinux(struct bpf_verifier_log *log,
+> +				     struct btf *btf,
+> +				     const struct btf_type *t,
+> +				     enum bpf_prog_type prog_type)
+> +{
+
+
