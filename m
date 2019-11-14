@@ -2,132 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FA9FCC4B
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 18:58:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 83D4FFCC9C
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:04:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbfKNR6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 12:58:39 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40433 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726474AbfKNR6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 12:58:39 -0500
-Received: by mail-pl1-f194.google.com with SMTP id e3so2954609plt.7
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 09:58:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xtjRZ4N/dj5TnunKPr1ub8m5J6PxcC016TNe/Bh9Z1k=;
-        b=EZv+Wg45gytZ+SSGZ2MxGiIv9faCbFgA5DBq38RREWXPPOYxT+1YkOhGIBThM1zv2s
-         TR/ceK4mmS3CtlaSEFdD51xZIXTwPfo9bq+cgqr+TzMCuaniV2rwiM15zbih8G8djOBO
-         1qkqwFzqGT11ywk/B3nSxFkc47m8FodSOHUBw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xtjRZ4N/dj5TnunKPr1ub8m5J6PxcC016TNe/Bh9Z1k=;
-        b=dCTQX68H23olah5bvJF5L/PiKb1SDuTs2ElZakmhxQSkWDfBzjn/eEIevWikTkSZlb
-         o0wRvUxmSbkCC2O9a1j0luZBlCdEULALjVWqUZrpu4cVidRcbX/IPOr14mN3G9dtGbGk
-         D6IFrcZSOshsU6Fa6Er3p7t4jmtSM+UJBUzJb6HEU0zHsNvdIwQFHRNOa331kLmWOY+z
-         laB7O0aj9+lSDLxeSoNd0VVPruC0TC8eV6HbUT5GJCwjDe52J+ooHMs2b/H9sQjzAQMY
-         pwmX/NPq/u+RbtE10qdIzX8Qvrytp18+EdqbM0d9HEMs0EniwgA2wRLwt/wXNFpo8EgY
-         r1zA==
-X-Gm-Message-State: APjAAAVCyTRxR0Shsw2qysViuB0GKGVy7VyP7XRplEbGns4h+KuUyBVR
-        HjHKaFNMV+MrRtVsyQQ8bOszBw==
-X-Google-Smtp-Source: APXvYqzLuxA1NXzpc+PtqUC7hvdD8QB6bq/rvafa9MU7QspCSAYdGw0pn8iQHHA0/Bk6SqzTzc8SsQ==
-X-Received: by 2002:a17:902:d917:: with SMTP id c23mr10706341plz.199.1573754318761;
-        Thu, 14 Nov 2019 09:58:38 -0800 (PST)
-Received: from localhost ([2620:15c:202:1:4fff:7a6b:a335:8fde])
-        by smtp.gmail.com with ESMTPSA id 13sm6901904pgu.53.2019.11.14.09.58.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Nov 2019 09:58:37 -0800 (PST)
-Date:   Thu, 14 Nov 2019 09:58:36 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-bluetooth@vger.kernel.org, dianders@chromium.org,
-        devicetree@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ondrej Jirman <megous@megous.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [PATCH v4 4/4] dt-bindings: net: broadcom-bluetooth: Add pcm
- config
-Message-ID: <20191114175836.GI27773@google.com>
-References: <20191112230944.48716-1-abhishekpandit@chromium.org>
- <20191112230944.48716-5-abhishekpandit@chromium.org>
- <0642BE4E-D3C7-48B3-9893-11828EAFA7EF@holtmann.org>
+        id S1727344AbfKNSEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 13:04:07 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:6112 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727296AbfKNSEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:04:06 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xAEHxGgL067341;
+        Thu, 14 Nov 2019 13:04:04 -0500
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2w9agbu30t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Nov 2019 13:04:03 -0500
+Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id xAEI0eqR073943;
+        Thu, 14 Nov 2019 13:03:56 -0500
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2w9agbu30a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Nov 2019 13:03:56 -0500
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id xAEHtiPk010463;
+        Thu, 14 Nov 2019 18:03:55 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma04wdc.us.ibm.com with ESMTP id 2w5n36kgwa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Nov 2019 18:03:55 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAEI3sSS35651994
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Nov 2019 18:03:54 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ABCA2AE063;
+        Thu, 14 Nov 2019 18:03:54 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 90323AE05C;
+        Thu, 14 Nov 2019 18:03:53 +0000 (GMT)
+Received: from Criss-MacBook-Pro.local (unknown [9.24.11.85])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 14 Nov 2019 18:03:53 +0000 (GMT)
+Subject: Re: [PATCH net-net v2] ibmveth: Detect unsupported packets before
+ sending to the hypervisor
+To:     netdev@vger.kernel.org
+Cc:     tlfalcon@linux.ibm.com, davem@davemloft.net, f.fainelli@gmail.com
+References: <20191113210616.55737-1-cforno12@linux.vnet.ibm.com>
+From:   Cristobal Forno <cforno12@linux.vnet.ibm.com>
+Message-ID: <3be004fb-5e00-2275-6f63-87c4605b8b0c@linux.vnet.ibm.com>
+Date:   Thu, 14 Nov 2019 12:03:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <0642BE4E-D3C7-48B3-9893-11828EAFA7EF@holtmann.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20191113210616.55737-1-cforno12@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-14_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1910280000 definitions=main-1911140154
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Nov 13, 2019 at 01:21:06AM +0100, Marcel Holtmann wrote:
-> Hi Abhishek,
-> 
-> > Add documentation for pcm parameters.
-> > 
-> > Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> > 
-> > ---
-> > 
-> > Changes in v4:
-> > - Fix incorrect function name in hci_bcm
-> > 
-> > Changes in v3:
-> > - Change disallow baudrate setting to return -EBUSY if called before
-> >  ready. bcm_proto is no longer modified and is back to being const.
-> > - Changed btbcm_set_pcm_params to btbcm_set_pcm_int_params
-> > - Changed brcm,sco-routing to brcm,bt-sco-routing
-> > 
-> > Changes in v2:
-> > - Use match data to disallow baudrate setting
-> > - Parse pcm parameters by name instead of as a byte string
-> > - Fix prefix for dt-bindings commit
-> > 
-> > .../devicetree/bindings/net/broadcom-bluetooth.txt    | 11 +++++++++++
-> > 1 file changed, 11 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> > index c749dc297624..42fb2fa8143d 100644
-> > --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> > +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
-> > @@ -29,6 +29,11 @@ Optional properties:
-> >    - "lpo": external low power 32.768 kHz clock
-> >  - vbat-supply: phandle to regulator supply for VBAT
-> >  - vddio-supply: phandle to regulator supply for VDDIO
-> > + - brcm,bt-sco-routing: 0-3 (PCM, Transport, Codec, I2S)
-> > + - brcm,pcm-interface-rate: 0-4 (128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps)
-> > + - brcm,pcm-frame-type: 0-1 (short, long)
-> > + - brcm,pcm-sync-mode: 0-1 (slave, master)
-> > + - brcm,pcm-clock-mode: 0-1 (slave, master)
-> 
-> I think that all of them need to start with brcm,bt- prefix since it is rather Bluetooth specific.
-> 
-> > 
-> > 
-> > Example:
-> > @@ -40,5 +45,11 @@ Example:
-> >        bluetooth {
-> >                compatible = "brcm,bcm43438-bt";
-> >                max-speed = <921600>;
-> > +
-> > +               brcm,bt-sco-routing = [01];
-> > +               brcm,pcm-interface-rate = [02];
-> > +               brcm,pcm-frame-type = [00];
-> > +               brcm,pcm-sync-mode = [01];
-> > +               brcm,pcm-clock-mode = [01];
-> >        };
-> 
-> My personal taste would be to add a comment after each entry that gives the human readable setting.
+CC'd Florian and David. Please review changes as suggested.
 
-I'd suggest to define constants in include/dt-bindings/bluetooth/brcm.h
-and use them instead of literals, with this we wouldn't rely on (optional)
-comments to make the configuration human readable.
+On 13/11/2019 15:06, Cris Forno wrote:
+> Currently, when ibmveth receive a loopback packet, it reports an
+> ambiguous error message "tx: h_send_logical_lan failed with rc=-4"
+> because the hypervisor rejects those types of packets. This fix
+> detects loopback packet and assures the source packet's MAC address
+> matches the driver's MAC address before transmitting to the
+> hypervisor.
+>
+> Signed-off-by: Cris Forno <cforno12@linux.vnet.ibm.com>
+> ---
+> changes in v2
+> -demoted messages to netdev_dbg
+> -reversed christmas tree ordering for local variables
+> ---
+>   drivers/net/ethernet/ibm/ibmveth.c | 26 ++++++++++++++++++++++++++
+>   1 file changed, 26 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+> index d654c23..1e0208f 100644
+> --- a/drivers/net/ethernet/ibm/ibmveth.c
+> +++ b/drivers/net/ethernet/ibm/ibmveth.c
+> @@ -1011,6 +1011,29 @@ static int ibmveth_send(struct ibmveth_adapter *adapter,
+>   	return 0;
+>   }
+>
+> +static int ibmveth_is_packet_unsupported(struct sk_buff *skb,
+> +					 struct net_device *netdev)
+> +{
+> +	struct ethhdr *ether_header;
+> +	int ret = 0;
+> +
+> +	ether_header = eth_hdr(skb);
+> +
+> +	if (ether_addr_equal(ether_header->h_dest, netdev->dev_addr)) {
+> +		netdev_dbg(netdev, "veth doesn't support loopback packets, dropping packet.\n");
+> +		netdev->stats.tx_dropped++;
+> +		ret = -EOPNOTSUPP;
+> +	}
+> +
+> +	if (!ether_addr_equal(ether_header->h_source, netdev->dev_addr)) {
+> +		netdev_dbg(netdev, "source packet MAC address does not match veth device's, dropping packet.\n");
+> +		netdev->stats.tx_dropped++;
+> +		ret = -EOPNOTSUPP;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>   static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+>   				      struct net_device *netdev)
+>   {
+> @@ -1022,6 +1045,9 @@ static netdev_tx_t ibmveth_start_xmit(struct sk_buff *skb,
+>   	dma_addr_t dma_addr;
+>   	unsigned long mss = 0;
+>
+> +	if (ibmveth_is_packet_unsupported(skb, netdev))
+> +		goto out;
+> +
+>   	/* veth doesn't handle frag_list, so linearize the skb.
+>   	 * When GRO is enabled SKB's can have frag_list.
+>   	 */
