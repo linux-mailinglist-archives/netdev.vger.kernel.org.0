@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93CA7FC97B
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B04FC976
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 16:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbfKNPEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 10:04:23 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:45087 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727016AbfKNPEW (ORCPT
+        id S1727041AbfKNPEY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 10:04:24 -0500
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:34109 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726796AbfKNPEW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 10:04:22 -0500
-Received: by mail-wr1-f67.google.com with SMTP id z10so6817751wrs.12
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:04:20 -0800 (PST)
+Received: by mail-wr1-f65.google.com with SMTP id e6so6880562wrw.1
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 07:04:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dL1tbTMOxMOwni4mK2EyUD3j/p1IkTd8YUEGJtmDyNA=;
-        b=OCcZmQlsYn56EvgIKslCVKu3um9JIyH6Z4TfirzSJnDfv0+cjWMRiXKBOlSojgEIZg
-         kp1RCzPaYlGjOIR/78yh/TZgNLNAQXHvPihJ3UUtBUqTLfJgBzf0D2BSKSJpgd4wxPyQ
-         X3PWdWMEpXq/TrBo2v7qYdz+hBZAJpABpj4Bmmg1vpi8hNOLusTdQZHLl9BBP4usMQYC
-         rdMwd7cjPypusMlp5kPgBDDaRLP7wfa7a+SeoGAU8ukFtI0m5PH0iY0heD5mrqTZ1Crh
-         XBnaDPXbM5dDBslvSv9Fndlt2WxgrV6fEbghHfV6GGSSPPMv1STBEZfQWGE+b9rLc6AX
-         OuBA==
+        bh=YtTqrtVR1oY9ijEDqKSRXx6n9cafOvnc0cFdZYtsoGk=;
+        b=Q/ulsKlDfCkq4MTnut9kXORZfGTobrDCT2rxlQ7xF3OucrQYkdGtcppeA/Y6jaEetC
+         dZxpyC2IfzzVX4FvneaVjM2cxAa7+9QNNzASESgAEyjzZDVawj1iBtdNnyjlZzHAaKCC
+         Az6vpTu+r2sjRIQ8aDmAot4xX/NBZ/p9+vTSgr1DO6ZbqpQ/XmVDkhDwagz7IJStCe19
+         La5n1RT30u+5/VeyYbzpISV9JTsrv23R/Nzpl++wmC5rUNYhfvT3Eorx8V2Xk8xfCCND
+         AZiiIJHyaArTT4olXGAnqvwYiaAvJ7J+cfB3ZVIaOBAyw5A0R75SefgHOPOUdaDFX8TZ
+         xT6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dL1tbTMOxMOwni4mK2EyUD3j/p1IkTd8YUEGJtmDyNA=;
-        b=DyW37BPRLMWqDVfp8ckizitAIKZKBPkaGY1x+VqCue/oPbj3Ku0NtLNBSVBGZJTgIA
-         NvDEW2RxoEwmNjU68VXQO0DIkc35+BKLgIXXM/2yMegJvHHPLK43uvsru/+J/0Ye6Wk1
-         P07yubpFezR1OUHI5HvzNVQMsTYFCZ+gRwntD11mvhUwbpkYGUBrP3IlSvmxs4MBfGtV
-         sFg8Rb9QKn+brafSeLzxmXaIhGejhdreSsuwlUGjIGdld5aRJIYrp4RLUpDDurFMPv3o
-         L4SXW7fqflFZOTB7ykYgburMztPuIfBBaPXtdjGEydgTCFbklEVbOM3cc/AUIDl9ZRpS
-         T2Sw==
-X-Gm-Message-State: APjAAAXfnbd74WHuRXHMiTpFNkCMw27f5u3U6cGx4I5bsLSkVUE46gTj
-        PHqIMynOuy1bGHunqzdmTLQ=
-X-Google-Smtp-Source: APXvYqxYD6o5kALIXsVmJojbD5lcVTAiXVtex14Zz74VMczh0BJ1Ya9zAMzb2bm+oHA/V0VHb/NLWg==
-X-Received: by 2002:a5d:640b:: with SMTP id z11mr8370357wru.195.1573743859852;
-        Thu, 14 Nov 2019 07:04:19 -0800 (PST)
+        bh=YtTqrtVR1oY9ijEDqKSRXx6n9cafOvnc0cFdZYtsoGk=;
+        b=dORj9XBsCsuz360kPXkISAHRlScp4VIMHADLnRfSHW301Ssj80WGSEQRoiaF9u0bN7
+         R5uMoPhk17mlSBQnBIFpve18IIYmAUUL26ToH2Gg803f8mpNZNc/VItmvGVxtwZuGH+q
+         r/UCCc84rVe+c0H7rpXqV3T8N1pOqtFBwpBEhnpH7Am9br4S43uL6YuwLb/8L1NfXc6s
+         08BD6r6q+NpplLMPEGmmCWqxcXcUXWgO1cU7V5flQsPOh9I2UhtwtXO4Th0U5wLZtdMi
+         8BZGOFm7Ij+DACX04ud1fa4XkwEb1560o9Lva2uLW/nyw3NIVWVkMsxDpImaOZSUN6hv
+         I/EA==
+X-Gm-Message-State: APjAAAXWkE/zzZGWHSEzppPJb/07gOb9KKh2n6BoUTmioTqwYHvCJvxj
+        +DkVD5XjkJCeV/D2TUJPkxU=
+X-Google-Smtp-Source: APXvYqwv7lbHIY88JOJhB689j8oIN+z7Y13+JHJrOhJwgXIowhcNWaCzRrO+QTYNTD1q3yK25Sl8fA==
+X-Received: by 2002:adf:cf10:: with SMTP id o16mr9080052wrj.334.1573743861091;
+        Thu, 14 Nov 2019 07:04:21 -0800 (PST)
 Received: from localhost.localdomain ([86.121.29.241])
-        by smtp.gmail.com with ESMTPSA id v128sm7600094wmb.14.2019.11.14.07.04.18
+        by smtp.gmail.com with ESMTPSA id v128sm7600094wmb.14.2019.11.14.07.04.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 07:04:19 -0800 (PST)
+        Thu, 14 Nov 2019 07:04:20 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     davem@davemloft.net, alexandre.belloni@bootlin.com
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
@@ -50,9 +50,9 @@ Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         horatiu.vultur@microchip.com, claudiu.manoil@nxp.com,
         alexandru.marginean@nxp.com, netdev@vger.kernel.org,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [PATCH v2 net-next 06/11] net: mscc: ocelot: adjust MTU on the CPU port in NPI mode
-Date:   Thu, 14 Nov 2019 17:03:25 +0200
-Message-Id: <20191114150330.25856-7-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 07/11] net: mscc: ocelot: separate the implementation of switch reset
+Date:   Thu, 14 Nov 2019 17:03:26 +0200
+Message-Id: <20191114150330.25856-8-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191114150330.25856-1-olteanv@gmail.com>
 References: <20191114150330.25856-1-olteanv@gmail.com>
@@ -63,61 +63,120 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-When using the NPI port, the DSA tag is passed through Ethernet, so the
-switch's MAC needs to accept it as it comes from the DSA master. Increase
-the MTU on the external CPU port to account for the length of the
-injection header.
+The Felix switch has a different reset procedure, so a function pointer
+needs to be created and added to the ocelot_ops structure.
 
-Without this patch, MTU-sized frames are dropped by the switch's CPU
-port on xmit, which is especially obvious in TCP sessions.
+The reset procedure has been moved into ocelot_init.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v2:
-None.
+- Added error checking for ocelot->ops->reset(ocelot).
+- Moved the call at the beginning of ocelot_init, to not overwrite the
+  action of calls to ocelot_mact_init, ocelot_vlan_init and
+  ocelot_ace_init.
 
- drivers/net/ethernet/mscc/ocelot.c | 9 +++++++++
- drivers/net/ethernet/mscc/ocelot.h | 2 ++
- 2 files changed, 11 insertions(+)
+ drivers/net/ethernet/mscc/ocelot.c       |  8 +++++
+ drivers/net/ethernet/mscc/ocelot.h       |  1 +
+ drivers/net/ethernet/mscc/ocelot_board.c | 37 +++++++++++++++---------
+ 3 files changed, 33 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 8b73d760dfa5..42da193a8240 100644
+index 42da193a8240..961f9a7c01e3 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2230,9 +2230,18 @@ void ocelot_set_cpu_port(struct ocelot *ocelot, int cpu,
- 	 * Only one port can be an NPI at the same time.
- 	 */
- 	if (cpu < ocelot->num_phys_ports) {
-+		int mtu = VLAN_ETH_FRAME_LEN + OCELOT_TAG_LEN;
-+
- 		ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
- 			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(cpu),
- 			     QSYS_EXT_CPU_CFG);
-+
-+		if (injection == OCELOT_TAG_PREFIX_SHORT)
-+			mtu += OCELOT_SHORT_PREFIX_LEN;
-+		else if (injection == OCELOT_TAG_PREFIX_LONG)
-+			mtu += OCELOT_LONG_PREFIX_LEN;
-+
-+		ocelot_port_set_mtu(ocelot, cpu, mtu);
- 	}
+@@ -2269,6 +2269,14 @@ int ocelot_init(struct ocelot *ocelot)
+ 	int i, ret;
+ 	u32 port;
  
- 	/* CPU port Injection/Extraction configuration */
++	if (ocelot->ops->reset) {
++		ret = ocelot->ops->reset(ocelot);
++		if (ret) {
++			dev_err(ocelot->dev, "Switch reset failed\n");
++			return ret;
++		}
++	}
++
+ 	ocelot->lags = devm_kcalloc(ocelot->dev, ocelot->num_phys_ports,
+ 				    sizeof(u32), GFP_KERNEL);
+ 	if (!ocelot->lags)
 diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 9159b0adf1e7..bdc9b1d34b81 100644
+index bdc9b1d34b81..199ca2d6ea32 100644
 --- a/drivers/net/ethernet/mscc/ocelot.h
 +++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -65,6 +65,8 @@ struct frame_info {
- #define IFH_REW_OP_ORIGIN_PTP		0x5
+@@ -446,6 +446,7 @@ struct ocelot_stat_layout {
  
- #define OCELOT_TAG_LEN			16
-+#define OCELOT_SHORT_PREFIX_LEN		4
-+#define OCELOT_LONG_PREFIX_LEN		16
+ struct ocelot_ops {
+ 	void (*pcs_init)(struct ocelot *ocelot, int port);
++	int (*reset)(struct ocelot *ocelot);
+ };
  
- #define OCELOT_SPEED_2500 0
- #define OCELOT_SPEED_1000 1
+ struct ocelot {
+diff --git a/drivers/net/ethernet/mscc/ocelot_board.c b/drivers/net/ethernet/mscc/ocelot_board.c
+index 32aafd951483..5581b3b0165c 100644
+--- a/drivers/net/ethernet/mscc/ocelot_board.c
++++ b/drivers/net/ethernet/mscc/ocelot_board.c
+@@ -277,8 +277,32 @@ static void ocelot_port_pcs_init(struct ocelot *ocelot, int port)
+ 	ocelot_port_writel(ocelot_port, 0, PCS1G_LB_CFG);
+ }
+ 
++static int ocelot_reset(struct ocelot *ocelot)
++{
++	int retries = 100;
++	u32 val;
++
++	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_INIT], 1);
++	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
++
++	do {
++		msleep(1);
++		regmap_field_read(ocelot->regfields[SYS_RESET_CFG_MEM_INIT],
++				  &val);
++	} while (val && --retries);
++
++	if (!retries)
++		return -ETIMEDOUT;
++
++	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
++	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_CORE_ENA], 1);
++
++	return 0;
++}
++
+ static const struct ocelot_ops ocelot_ops = {
+ 	.pcs_init		= ocelot_port_pcs_init,
++	.reset			= ocelot_reset,
+ };
+ 
+ static int mscc_ocelot_probe(struct platform_device *pdev)
+@@ -289,7 +313,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 	struct ocelot *ocelot;
+ 	struct regmap *hsio;
+ 	unsigned int i;
+-	u32 val;
+ 
+ 	struct {
+ 		enum ocelot_target id;
+@@ -369,18 +392,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 		ocelot->ptp = 1;
+ 	}
+ 
+-	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_INIT], 1);
+-	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
+-
+-	do {
+-		msleep(1);
+-		regmap_field_read(ocelot->regfields[SYS_RESET_CFG_MEM_INIT],
+-				  &val);
+-	} while (val);
+-
+-	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_MEM_ENA], 1);
+-	regmap_field_write(ocelot->regfields[SYS_RESET_CFG_CORE_ENA], 1);
+-
+ 	ocelot->num_cpu_ports = 1; /* 1 port on the switch, two groups */
+ 
+ 	ports = of_get_child_by_name(np, "ethernet-ports");
 -- 
 2.17.1
 
