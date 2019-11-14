@@ -2,151 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E7EFCB91
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 18:12:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABFF9FCBD8
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 18:29:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbfKNRMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 12:12:55 -0500
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:43259 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726597AbfKNRMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 12:12:54 -0500
-Received: by mail-qv1-f65.google.com with SMTP id cg2so2638488qvb.10
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 09:12:54 -0800 (PST)
+        id S1726977AbfKNR3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 12:29:47 -0500
+Received: from mail-io1-f65.google.com ([209.85.166.65]:37992 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726910AbfKNR3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 12:29:46 -0500
+Received: by mail-io1-f65.google.com with SMTP id i13so7718971ioj.5
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 09:29:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SB/N8Ptzig01YWuKDW7xcQj/aLQWm5msLsK8SizfSFo=;
-        b=qRoRkibLDkcQeR+vKYb00RQD2hLN4GpsM8H3Rg9diqaMAGdGQG05Fuldi+pIaVRXch
-         0zcUzLv2py01YRPPrf7a0x2OrRiYQohi1KokhFEdAO61TLNrTLSv7uNsrKwvC0wdS8JN
-         mTrvLFwjZJQ8Pdp0zENa3s7u+CDf1fJ8dx71b/qyG7OFNI6inJK8NbtqYaMRItkOvgWl
-         NjdgT/e+IQOd1DaHss5gzUJLAh1ff4Cg1KjZf5Tp1ag+3ErPKNo20iYeCv4O2tOSnwNq
-         pzSyaEmOyQVTL9coQiTg36LP7ZrEBXMdHhC3k2RDybvQR0CwVtYW6ebrUhYa9KSr9P1R
-         J4nA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RftPJC/z3aKe9Z2EQoJhnzZgJpMcylstQtfS6pNT5zM=;
+        b=iMlPJ+NJiZRBpDqEg1HSfcU3t5/w56CFqZq6rf17WXZtLre8hZjCjdf2fMoa0PRE9R
+         /RbNAy4ORogOiWqA8tDWCzhZo1WcPdQi5GyBEhjRPBqylco9vrfdCSM0R0mvB4WpUKZQ
+         EK8xlGCBJpsP+VtQqf6/0uzWYpwacWeZji/VM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SB/N8Ptzig01YWuKDW7xcQj/aLQWm5msLsK8SizfSFo=;
-        b=qgUZEyjqHQWlBvgxqPItXjy5V9/m3qSmZ0sU5lu2LnBD9J2+uqCHJQt49TxzLDi9Pm
-         c/icl1KXngytYvvcSXH7bUdsr1bEoozHs6plMKVad6TnLWYdALnBenxHyKmuK5UPGdMC
-         EP2evGduF0818k5sQ3GVZ2MXQpG9GRNnAX36yT8nRNOolJpx/j0CTSKnqhCCEOguxaD2
-         0fTybdlvbbtEU8Ei3yMoE1rw7PcAR08dvexvg6k0B0jFf0MfsmfCcsxzzEoPidm+6NiU
-         hfLJcVFa93kToGQ7mGAdsugLk5PHlbvT8NIRcyWR/U3dlhRP8IfR3ubr7r6m3yhV4srP
-         rHgw==
-X-Gm-Message-State: APjAAAWmElJX8eEVSFYmIFxB/omwgqjl8vS0Qxx4o1D4cT0AGlLl6FrG
-        8oCln2Rzg1MV1ul76ok2gH+TpA==
-X-Google-Smtp-Source: APXvYqzoFtd1AN7Cola7hUsKJ9xrGflS6FS7qygdW7w7JD2mf/QMeEHLk/uebwsvk//zVKmpVvMrsQ==
-X-Received: by 2002:a0c:c588:: with SMTP id a8mr9137649qvj.9.1573751573612;
-        Thu, 14 Nov 2019 09:12:53 -0800 (PST)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id n55sm3444361qta.24.2019.11.14.09.12.51
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 09:12:52 -0800 (PST)
-Message-ID: <1573751570.5937.122.camel@lca.pw>
-Subject: Re: [PATCH] net/skbuff: silence warnings under memory pressure
-From:   Qian Cai <cai@lca.pw>
-To:     Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 14 Nov 2019 12:12:50 -0500
-In-Reply-To: <20190905113208.GA521@jagdpanzerIV>
-References: <20190903185305.GA14028@dhcp22.suse.cz>
-         <1567546948.5576.68.camel@lca.pw> <20190904061501.GB3838@dhcp22.suse.cz>
-         <20190904064144.GA5487@jagdpanzerIV> <20190904065455.GE3838@dhcp22.suse.cz>
-         <20190904071911.GB11968@jagdpanzerIV> <20190904074312.GA25744@jagdpanzerIV>
-         <1567599263.5576.72.camel@lca.pw>
-         <20190904144850.GA8296@tigerII.localdomain>
-         <1567629737.5576.87.camel@lca.pw> <20190905113208.GA521@jagdpanzerIV>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RftPJC/z3aKe9Z2EQoJhnzZgJpMcylstQtfS6pNT5zM=;
+        b=GGgWZlLUU1hcB/ztZbHY9yNsh5gTAMGg3ecV770Jc+/6GfpuYeeyZZp8GWrC/QoWCo
+         kNCF5rNDRznF3j8G8Qk3lBk8lNe7gFwBZ7CWZhJfPcfOtBKLyQYzcfVOUaGHMCTWuew1
+         2HTOc1h4PivszzM08r62uWns6D41I8i2r3rXJVz6t7YqcMhu9K7tr4kKKRbkq2BI13E3
+         Nk796nmMWJ9OXAZwdgwDmgY9rmh3pkwm8DRiAhcyaEn3DFXxreKo4bvTo5n+j+Avcl3O
+         lqkd2Cg4CSDQoqDyMikzLlzKn/DB1/TcakvINQ2WsPvUhevaTngsFz1hXuiXtOCEUtG/
+         NPEg==
+X-Gm-Message-State: APjAAAV1oUBQRPxqrKxz0HG4uAW1AAI/7s7qx5Q0BAEGaz0/oWqe5eB0
+        PqGLkf680FIALuaXGXGl3toogyznOiU=
+X-Google-Smtp-Source: APXvYqxdo9FTQDgG/aDsnzzt+4fnbtgp9IMPzFqxgM88opLLxj57LoEbOCoYGb76NldaNBrTH8Z+1w==
+X-Received: by 2002:a5d:9349:: with SMTP id i9mr9607337ioo.163.1573752585242;
+        Thu, 14 Nov 2019 09:29:45 -0800 (PST)
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com. [209.85.166.50])
+        by smtp.gmail.com with ESMTPSA id w9sm843182ilo.68.2019.11.14.09.29.44
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Nov 2019 09:29:44 -0800 (PST)
+Received: by mail-io1-f50.google.com with SMTP id q83so7760769iod.1
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 09:29:44 -0800 (PST)
+X-Received: by 2002:a02:a813:: with SMTP id f19mr8324725jaj.12.1573752583817;
+ Thu, 14 Nov 2019 09:29:43 -0800 (PST)
+MIME-Version: 1.0
+References: <20191112230944.48716-1-abhishekpandit@chromium.org> <20191112230944.48716-5-abhishekpandit@chromium.org>
+In-Reply-To: <20191112230944.48716-5-abhishekpandit@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 14 Nov 2019 09:29:29 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=UfGDAtePrDmsEsdCNsHQZwDkU8z6E=qzSu=opht7evpQ@mail.gmail.com>
+Message-ID: <CAD=FV=UfGDAtePrDmsEsdCNsHQZwDkU8z6E=qzSu=opht7evpQ@mail.gmail.com>
+Subject: Re: [PATCH v4 4/4] dt-bindings: net: broadcom-bluetooth: Add pcm config
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-bluetooth@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ondrej Jirman <megous@megous.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2019-09-05 at 20:32 +0900, Sergey Senozhatsky wrote:
-> On (09/04/19 16:42), Qian Cai wrote:
-> > > Let me think more.
-> > 
-> > To summary, those look to me are all good long-term improvement that would
-> > reduce the likelihood of this kind of livelock in general especially for other
-> > unknown allocations that happen while processing softirqs, but it is still up to
-> > the air if it fixes it 100% in all situations as printk() is going to take more
-> > time
-> 
-> Well. So. I guess that we don't need irq_work most of the time.
-> 
-> We need to queue irq_work for "safe" wake_up_interruptible(), when we
-> know that we can deadlock in scheduler. IOW, only when we are invoked
-> from the scheduler. Scheduler has printk_deferred(), which tells printk()
-> that it cannot do wake_up_interruptible(). Otherwise we can just use
-> normal wake_up_process() and don't need that irq_work->wake_up_interruptible()
-> indirection. The parts of the scheduler, which by mistake call plain printk()
-> from under pi_lock or rq_lock have chances to deadlock anyway and should
-> be switched to printk_deferred().
-> 
-> I think we can queue significantly much less irq_work-s from printk().
-> 
-> Petr, Steven, what do you think?
+Hi,
 
-Sergey, do you still plan to get this patch merged?
-
-> 
-> Something like this. Call wake_up_interruptible(), switch to
-> wake_up_klogd() only when called from sched code.
-> 
+On Tue, Nov 12, 2019 at 3:10 PM Abhishek Pandit-Subedi
+<abhishekpandit@chromium.org> wrote:
+>
+> Add documentation for pcm parameters.
+>
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+>
 > ---
-> diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-> index cd51aa7d08a9..89cb47882254 100644
-> --- a/kernel/printk/printk.c
-> +++ b/kernel/printk/printk.c
-> @@ -2027,8 +2027,11 @@ asmlinkage int vprintk_emit(int facility, int level,
->  	pending_output = (curr_log_seq != log_next_seq);
->  	logbuf_unlock_irqrestore(flags);
->  
-> +	if (!pending_output)
-> +		return printed_len;
+>
+> Changes in v4:
+> - Fix incorrect function name in hci_bcm
+>
+> Changes in v3:
+> - Change disallow baudrate setting to return -EBUSY if called before
+>   ready. bcm_proto is no longer modified and is back to being const.
+> - Changed btbcm_set_pcm_params to btbcm_set_pcm_int_params
+> - Changed brcm,sco-routing to brcm,bt-sco-routing
+>
+> Changes in v2:
+> - Use match data to disallow baudrate setting
+> - Parse pcm parameters by name instead of as a byte string
+> - Fix prefix for dt-bindings commit
+>
+>  .../devicetree/bindings/net/broadcom-bluetooth.txt    | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> index c749dc297624..42fb2fa8143d 100644
+> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+> @@ -29,6 +29,11 @@ Optional properties:
+>     - "lpo": external low power 32.768 kHz clock
+>   - vbat-supply: phandle to regulator supply for VBAT
+>   - vddio-supply: phandle to regulator supply for VDDIO
+> + - brcm,bt-sco-routing: 0-3 (PCM, Transport, Codec, I2S)
+> + - brcm,pcm-interface-rate: 0-4 (128KBps, 256KBps, 512KBps, 1024KBps, 2048KBps)
+> + - brcm,pcm-frame-type: 0-1 (short, long)
+> + - brcm,pcm-sync-mode: 0-1 (slave, master)
+> + - brcm,pcm-clock-mode: 0-1 (slave, master)
+
+Since these are optional your patch should describe what happens if
+they are not present.  I think in patch #3 of the series you guys are
+discussing it, but whatever you end up with should be documented here.
+
+That actually made me realize that this is patch #4 in the series.  To
+be pedantic, bindings are supposed to be _earlier_ in the series than
+the code that implements them.
+
+
+>  Example:
+> @@ -40,5 +45,11 @@ Example:
+>         bluetooth {
+>                 compatible = "brcm,bcm43438-bt";
+>                 max-speed = <921600>;
 > +
->  	/* If called from the scheduler, we can not call up(). */
-> -	if (!in_sched && pending_output) {
-> +	if (!in_sched) {
->  		/*
->  		 * Disable preemption to avoid being preempted while holding
->  		 * console_sem which would prevent anyone from printing to
-> @@ -2043,10 +2046,11 @@ asmlinkage int vprintk_emit(int facility, int level,
->  		if (console_trylock_spinning())
->  			console_unlock();
->  		preempt_enable();
-> -	}
->  
-> -	if (pending_output)
-> +		wake_up_interruptible(&log_wait);
-> +	} else {
->  		wake_up_klogd();
-> +	}
->  	return printed_len;
->  }
->  EXPORT_SYMBOL(vprintk_emit);
-> ---
-> 
-> > and could deal with console hardware that involve irq_exit() anyway.
-> 
-> printk->console_driver->write() does not involve irq.
-> 
-> > On the other hand, adding __GPF_NOWARN in the build_skb() allocation will fix
-> > this known NET_TX_SOFTIRQ case which is common when softirqd involved at least
-> > in short-term. It even have a benefit to reduce the overall warn_alloc() noise
-> > out there.
-> 
-> That's not up to me to decide.
-> 
-> 	-ss
+> +               brcm,bt-sco-routing = [01];
+> +               brcm,pcm-interface-rate = [02];
+> +               brcm,pcm-frame-type = [00];
+> +               brcm,pcm-sync-mode = [01];
+> +               brcm,pcm-clock-mode = [01];
+
+I'm at least marginally curious why your example has a leading 0 for
+all numbers.  It makes me think you intend them to be represented in
+octal, though I don't know offhand if dtc uses that format for octal.
+I guess it doesn't matter since all your numbers are between 0 and 5,
+but it does seem strange.
+
+-Doug
