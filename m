@@ -2,79 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93A61FCFBD
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 21:36:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 272C5FCFC2
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 21:38:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbfKNUgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 15:36:07 -0500
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39887 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726533AbfKNUgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 15:36:07 -0500
-Received: by mail-wm1-f65.google.com with SMTP id t26so7681178wmi.4;
-        Thu, 14 Nov 2019 12:36:05 -0800 (PST)
+        id S1726533AbfKNUiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 15:38:12 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:46153 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbfKNUiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 15:38:12 -0500
+Received: by mail-lj1-f196.google.com with SMTP id e9so8131214ljp.13
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 12:38:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/T0Rg4n36uJouyisIYq+OO8Wawxqm7AHTLdrmHhfwqQ=;
-        b=QjAuB1h0TJNq+R/eBV5ZaGcnL2pZ5kGnbAeZWcn1gpJybTwSKK/Zzadbrd0n9U/yUy
-         A59YXwKP3qzMaUKNBWpi4YkXeZzrkEmeSBTv0YRXNIIyofOzs0YPu2HdFCTcRBP8uCzQ
-         sPp6eNcJMJz895oTZKAoQYjao7O3RuvJ0UHg07Zi2snQageqQjTWd1cG23TIjpbWyaVS
-         PaYnTDeikzJTl8aLycPmtk8Kgqe/zcnWWngaUtIeR0YB41jH5PcQLna4pdrlhmKv0q6g
-         lltmj/tddiZlXNUG5Clig0ZA3Qc5KIhFDYVE6lSgR5srqWM7rCaiOQDkwcioJdP4aKeX
-         GXog==
+        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oc3P5Afq3KH5qXhVRmfQSbsKXA7kwebSZi8EfNwho84=;
+        b=S61QlzamJgZG9f05uS4TssEeCYKifsXtXiqkkBUgBMiYgOfLxai2Dog9/pz9lW2Fns
+         a0W9NXM6rJWf7QC4unVfvV2rI/F0ud/qJcSxTecE9uZsYreMEJp0/yCKNzCeEWxj17sw
+         BBIwtTlm6zjFy1u/yYDcPthT2Mv1YeEciQMX6EAH8lcTcloCgAEU/F5euQeOt0Es+gsB
+         GIh2TDbhHtrzI5ljeTI0qpRtXz/6VHh4nm0BNL7+d9+2QrUCT0xkIecaeKPHgJOuN2Il
+         T5TPPqkkmroLQYgUPcvlRnr1yAQGxsRV9qnQVM0uAwljBfFIhsF6Qj4L2CnKvqKNHSFh
+         Qk1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=/T0Rg4n36uJouyisIYq+OO8Wawxqm7AHTLdrmHhfwqQ=;
-        b=ETt3ITdwADVFc0GbXIYAABhyKj7zFgqhGNJw0i7X3AjXBAKqzluGvD6DkhiW6X/y4s
-         PNfDHtv1BuhzK8zQIoRrCnrcylCp0ly+n/mWx7aPmfl24jZibP7tOYM54Zh7/Ke7KWL+
-         ENW1hUMbgvQ2tsLwzA4mY3Pk+5ufFKifXQ0wLhsdvK908yJf9KW1RdoHleMUUddHLlAo
-         G4pcPJB1RAe9dFvcqdnjYe+O03MfnVp3/VIb6esmRa877isximHseb4RXpmSmTdAomyX
-         nahK2t++PZKgJ1HTSntaVqRZrpAngYn1ao7gzRELxK/Jxuf7dCEz28PQNgLoiNcct+VB
-         CY4g==
-X-Gm-Message-State: APjAAAXSkk4S7sD7VaXNsHWy6+a2MaKgBDOqyVrtvf/tyyOQnyY6Szox
-        X3n6EQAFbHGVZl7FrSddKgY=
-X-Google-Smtp-Source: APXvYqxco0B6kyD8XmcSzehMoYkUCYFnw99z4LvXd73jRYCdNM2xfHk1C1VpFemgIurnM6vbrKHahg==
-X-Received: by 2002:a1c:62c5:: with SMTP id w188mr9861447wmb.77.1573763764596;
-        Thu, 14 Nov 2019 12:36:04 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id g184sm7914263wma.8.2019.11.14.12.36.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 12:36:03 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     bcm-kernel-feedback-list@broadcom.com,
-        Stefan Wahren <wahrenst@gmx.net>,
-        Matthias Brugger <matthias.bgg@kernel.org>,
-        Matthias Brugger <mbrugger@suse.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Eric Anholt <eric@anholt.net>,
-        Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Doug Berger <opendmb@gmail.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH V5 net-next 7/7] ARM: dts: bcm2711-rpi-4: Enable GENET support
-Date:   Thu, 14 Nov 2019 12:35:59 -0800
-Message-Id: <20191114203559.1250-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <1573501766-21154-8-git-send-email-wahrenst@gmx.net>
-References: <1573501766-21154-1-git-send-email-wahrenst@gmx.net> <1573501766-21154-8-git-send-email-wahrenst@gmx.net>
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=oc3P5Afq3KH5qXhVRmfQSbsKXA7kwebSZi8EfNwho84=;
+        b=smkkaEU9pfc98WOkf65l36NT8rWKQXPW42go5TxzB26hLt5EL7F38y2Y09D7J8KSPC
+         m1cCysZY7GNwcDQJZS4vmrbXla6auO95CGdJHx8MsvDKPYE3GkZavjycpL+TRFz7SF8a
+         xFAkYsM1m1bosymIiXtveNMZ0BbSFZB8O1c+eTkrafXP98zxdGut6k5Q5GTKM1XgDxJA
+         QAki6qy8dgdt248tAi1go8TUH+8KZjJ+8kqflpJSNadE1QTQNjo6tG8dz9vnTuL89oVP
+         wE6/DOjXEDYrLYauYOiZYKZcnyDGu2FSC7BUdrn5NyE1n6lO4AclTjHvrgZhM77o2A+F
+         OaUw==
+X-Gm-Message-State: APjAAAXE0N03AHNX14l9LyU0wvtJM6DiDI4VClc+jDn4Lpbb95NZ4ZLY
+        FxYlfZQDIZgeinFBlh5LMuztSw==
+X-Google-Smtp-Source: APXvYqzxFajzQp7aiaJfpWxsvEfCHLSfcxtEeJw8+CLeSZnVmK1Xnea/evdkSg0HvvbcWibekw759Q==
+X-Received: by 2002:a2e:7c12:: with SMTP id x18mr8340062ljc.130.1573763889935;
+        Thu, 14 Nov 2019 12:38:09 -0800 (PST)
+Received: from wasted.cogentembedded.com ([109.167.219.12])
+        by smtp.gmail.com with ESMTPSA id u17sm3330545ljl.90.2019.11.14.12.38.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 12:38:09 -0800 (PST)
+Subject: Re: [PATCH v4] ravb: implement MTU change while device is up
+To:     Ulrich Hecht <uli+renesas@fpond.eu>,
+        linux-renesas-soc@vger.kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        niklas.soderlund@ragnatech.se, wsa@the-dreams.de,
+        horms@verge.net.au, magnus.damm@gmail.com, geert@glider.be
+References: <20191114014949.31057-1-uli+renesas@fpond.eu>
+From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Organization: Cogent Embedded
+Message-ID: <e2e24b1b-a175-f0b4-2528-a09d786d380b@cogentembedded.com>
+Date:   Thu, 14 Nov 2019 23:38:08 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
+MIME-Version: 1.0
+In-Reply-To: <20191114014949.31057-1-uli+renesas@fpond.eu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-MW
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Nov 2019 20:49:26 +0100, Stefan Wahren <wahrenst@gmx.net> wrote:
-> This enables the Gigabit Ethernet support on the Raspberry Pi 4.
-> The defined PHY mode is equivalent to the default register settings
-> in the downstream tree.
-> 
-> Signed-off-by: Matthias Brugger <mbrugger@suse.com>
-> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
+Hello!
 
-Applied to devicetree/next, thanks!
---
-Florian
+On 11/14/2019 04:49 AM, Ulrich Hecht wrote:
+
+> Pre-allocates buffers sufficient for the maximum supported MTU (2026) in
+> order to eliminate the possibility of resource exhaustion when changing the
+> MTU while the device is up.
+> 
+> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
+
+Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+
+> ---
+>  drivers/net/ethernet/renesas/ravb.h      |  3 ++-
+>  drivers/net/ethernet/renesas/ravb_main.c | 26 +++++++++++++-----------
+>  2 files changed, 16 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+> index a9c89d5d8898..9f88b5db4f89 100644
+> --- a/drivers/net/ethernet/renesas/ravb.h
+> +++ b/drivers/net/ethernet/renesas/ravb.h
+> @@ -955,6 +955,8 @@ enum RAVB_QUEUE {
+>  #define NUM_RX_QUEUE	2
+>  #define NUM_TX_QUEUE	2
+>  
+> +#define RX_BUF_SZ	(2048 - ETH_FCS_LEN + sizeof(__sum16))
+
+   That's smart but won't scale iff we decide to support e.g. Jumbo frames (the real AVB h/w
+supports up to 128 KiB frames.
+
+[...]
+
+MBR, Sergei
