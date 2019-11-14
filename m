@@ -2,103 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 272C5FCFC2
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 21:38:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A7F8FCFD1
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 21:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726533AbfKNUiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 15:38:12 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46153 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726549AbfKNUiM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 15:38:12 -0500
-Received: by mail-lj1-f196.google.com with SMTP id e9so8131214ljp.13
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 12:38:10 -0800 (PST)
+        id S1726812AbfKNUos (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 15:44:48 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:45176 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726533AbfKNUos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 15:44:48 -0500
+Received: by mail-wr1-f66.google.com with SMTP id z10so8241639wrs.12
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 12:44:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oc3P5Afq3KH5qXhVRmfQSbsKXA7kwebSZi8EfNwho84=;
-        b=S61QlzamJgZG9f05uS4TssEeCYKifsXtXiqkkBUgBMiYgOfLxai2Dog9/pz9lW2Fns
-         a0W9NXM6rJWf7QC4unVfvV2rI/F0ud/qJcSxTecE9uZsYreMEJp0/yCKNzCeEWxj17sw
-         BBIwtTlm6zjFy1u/yYDcPthT2Mv1YeEciQMX6EAH8lcTcloCgAEU/F5euQeOt0Es+gsB
-         GIh2TDbhHtrzI5ljeTI0qpRtXz/6VHh4nm0BNL7+d9+2QrUCT0xkIecaeKPHgJOuN2Il
-         T5TPPqkkmroLQYgUPcvlRnr1yAQGxsRV9qnQVM0uAwljBfFIhsF6Qj4L2CnKvqKNHSFh
-         Qk1A==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Mr2plnEViTGuRWES/V4l4uHoOzGvUt0dtjyhRGpxvO8=;
+        b=RkBBg6xDDl8VgH8P+H4/6GchviTkb3fIE6UoJqq20D4yWXbxFwF0Ht4l7valhoVuTi
+         85/5hvHr3O7+alg+QThXlpmaofyip1IfLg2/PhJjeTKL3Bxrj+p8cILoLK5jbgzjgbF3
+         BhwzcP0D0Gx3pg8sYLBMM25eTLf1EzW5dhV32W/wmWpRYRbv+UpYxXzQNOW1eIOp5QNy
+         ngh+kpCTzksGoWcFHBJtN63nA1CV1DZmSUqdz1RziY99ySYlmH9VDSmxuNRS3/bSMEfP
+         zIQ8aGzQutZjkR6L0QVSP24AL1tISwnUQvnPMhzsixMeBJEUSduZElIdeVmaBaN3hOWA
+         6SDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=oc3P5Afq3KH5qXhVRmfQSbsKXA7kwebSZi8EfNwho84=;
-        b=smkkaEU9pfc98WOkf65l36NT8rWKQXPW42go5TxzB26hLt5EL7F38y2Y09D7J8KSPC
-         m1cCysZY7GNwcDQJZS4vmrbXla6auO95CGdJHx8MsvDKPYE3GkZavjycpL+TRFz7SF8a
-         xFAkYsM1m1bosymIiXtveNMZ0BbSFZB8O1c+eTkrafXP98zxdGut6k5Q5GTKM1XgDxJA
-         QAki6qy8dgdt248tAi1go8TUH+8KZjJ+8kqflpJSNadE1QTQNjo6tG8dz9vnTuL89oVP
-         wE6/DOjXEDYrLYauYOiZYKZcnyDGu2FSC7BUdrn5NyE1n6lO4AclTjHvrgZhM77o2A+F
-         OaUw==
-X-Gm-Message-State: APjAAAXE0N03AHNX14l9LyU0wvtJM6DiDI4VClc+jDn4Lpbb95NZ4ZLY
-        FxYlfZQDIZgeinFBlh5LMuztSw==
-X-Google-Smtp-Source: APXvYqzxFajzQp7aiaJfpWxsvEfCHLSfcxtEeJw8+CLeSZnVmK1Xnea/evdkSg0HvvbcWibekw759Q==
-X-Received: by 2002:a2e:7c12:: with SMTP id x18mr8340062ljc.130.1573763889935;
-        Thu, 14 Nov 2019 12:38:09 -0800 (PST)
-Received: from wasted.cogentembedded.com ([109.167.219.12])
-        by smtp.gmail.com with ESMTPSA id u17sm3330545ljl.90.2019.11.14.12.38.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Mr2plnEViTGuRWES/V4l4uHoOzGvUt0dtjyhRGpxvO8=;
+        b=ODCu1hvDhuOlsU6mJRRdb0Ka+bN4T14Svzv6YDqwjJf1e9zdajO5/BFDgMjcdT5dbR
+         BG3LuwGsgHU/MlsUwKZDN2pwyNXGjQ0JVJc0Qaf/XA2thRQE9SKEtCa08UTRHTIJS1NK
+         MJJjcy3y+JqJWHwykY+XyJwKKrbY2IIujzpB4qbR2qec785DnSOswcQrsxiNnPG8mdRN
+         ak/0fdi5Nm6z0oQ0TOf3MjcBCTY/+QrP0FXGxaUUa5cCoOu4ZzDtCN2OChGbVesXrG+3
+         j48h9oAEG0mnNP3fyTrdxzB08KTDi22Q5hJ2Eu3i30MCouPczYA3syDoCrNDaA/CPuOX
+         hj2w==
+X-Gm-Message-State: APjAAAWjAI5r2QCiY86+WJQYDh37dfVU5WN7sO7PtXoqhzi0YhvQBTYN
+        FuawARcTch72UfxnItHQZMMubA==
+X-Google-Smtp-Source: APXvYqwDj6tAzJx4bEe2npdZc5uCL0LqyVe+ZfEpq2Y1B7gm8kgORi5KBGYpjJyB7f0a3li6LVJkig==
+X-Received: by 2002:a5d:4609:: with SMTP id t9mr10890658wrq.178.1573764286162;
+        Thu, 14 Nov 2019 12:44:46 -0800 (PST)
+Received: from PC192.168.49.172 (athedsl-4484009.home.otenet.gr. [94.71.55.177])
+        by smtp.gmail.com with ESMTPSA id j22sm9866944wrd.41.2019.11.14.12.44.44
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Nov 2019 12:38:09 -0800 (PST)
-Subject: Re: [PATCH v4] ravb: implement MTU change while device is up
-To:     Ulrich Hecht <uli+renesas@fpond.eu>,
-        linux-renesas-soc@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        niklas.soderlund@ragnatech.se, wsa@the-dreams.de,
-        horms@verge.net.au, magnus.damm@gmail.com, geert@glider.be
-References: <20191114014949.31057-1-uli+renesas@fpond.eu>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Organization: Cogent Embedded
-Message-ID: <e2e24b1b-a175-f0b4-2528-a09d786d380b@cogentembedded.com>
-Date:   Thu, 14 Nov 2019 23:38:08 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        Thu, 14 Nov 2019 12:44:45 -0800 (PST)
+Date:   Thu, 14 Nov 2019 22:42:27 +0200
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net,
+        thomas.petazzoni@bootlin.com, brouer@redhat.com,
+        matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
+ DMA memory for non-coherent devices
+Message-ID: <20191114204227.GA43707@PC192.168.49.172>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+ <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
+ <20191114185326.GA43048@PC192.168.49.172>
+ <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191114014949.31057-1-uli+renesas@fpond.eu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3648E256-C048-4F74-90FB-94D184B26499@gmail.com>
+User-Agent: Mutt/1.9.5 (2018-04-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hi Jonathan,
 
-On 11/14/2019 04:49 AM, Ulrich Hecht wrote:
-
-> Pre-allocates buffers sufficient for the maximum supported MTU (2026) in
-> order to eliminate the possibility of resource exhaustion when changing the
-> MTU while the device is up.
+On Thu, Nov 14, 2019 at 12:27:40PM -0800, Jonathan Lemon wrote:
 > 
-> Signed-off-by: Ulrich Hecht <uli+renesas@fpond.eu>
-
-Reviewed-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-
-> ---
->  drivers/net/ethernet/renesas/ravb.h      |  3 ++-
->  drivers/net/ethernet/renesas/ravb_main.c | 26 +++++++++++++-----------
->  2 files changed, 16 insertions(+), 13 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
-> index a9c89d5d8898..9f88b5db4f89 100644
-> --- a/drivers/net/ethernet/renesas/ravb.h
-> +++ b/drivers/net/ethernet/renesas/ravb.h
-> @@ -955,6 +955,8 @@ enum RAVB_QUEUE {
->  #define NUM_RX_QUEUE	2
->  #define NUM_TX_QUEUE	2
->  
-> +#define RX_BUF_SZ	(2048 - ETH_FCS_LEN + sizeof(__sum16))
+> On 14 Nov 2019, at 10:53, Ilias Apalodimas wrote:
+> 
+> > [...]
+> > > > index 2cbcdbdec254..defbfd90ab46 100644
+> > > > --- a/include/net/page_pool.h
+> > > > +++ b/include/net/page_pool.h
+> > > > @@ -65,6 +65,9 @@ struct page_pool_params {
+> > > >  	int		nid;  /* Numa node id to allocate from pages from */
+> > > >  	struct device	*dev; /* device, for DMA pre-mapping purposes */
+> > > >  	enum dma_data_direction dma_dir; /* DMA mapping direction */
+> > > > +	unsigned int	max_len; /* max DMA sync memory size */
+> > > > +	unsigned int	offset;  /* DMA addr offset */
+> > > > +	u8 sync;
+> > > >  };
+> > > 
+> > > How about using PP_FLAG_DMA_SYNC instead of another flag word?
+> > > (then it can also be gated on having DMA_MAP enabled)
+> > 
+> > You mean instead of the u8?
+> > As you pointed out on your V2 comment of the mail, some cards don't sync
+> > back to
+> > device.
+> > As the API tries to be generic a u8 was choosen instead of a flag to
+> > cover these
+> > use cases. So in time we'll change the semantics of this to 'always
+> > sync', 'dont
+> > sync if it's an skb-only queue' etc.
+> > The first case Lorenzo covered is sync the required len only instead of
+> > the full
+> > buffer
+> 
+> Yes, I meant instead of:
+> +		.sync = 1,
+> 
+> Something like:
+>         .flags = PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC
+> 
+> Since .sync alone doesn't make sense if the page pool isn't performing any
+> DMA mapping, right?  
 
-   That's smart but won't scale iff we decide to support e.g. Jumbo frames (the real AVB h/w
-supports up to 128 KiB frames.
+Correct. If the sync happens regardless of the page pool mapping capabilities,
+this will affect performance negatively as well (on non-coherent architectures) 
 
-[...]
+> Then existing drivers, if they're converted, can just
+> add the SYNC flag.
+> 
+> I did see the initial case where only the RX_BUF_SIZE (1536) is sync'd
+> instead of the full page.
+> 
+> Could you expand on your 'skb-only queue' comment?  I'm currently running
+> a variant of your patch where iommu mapped pages are attached to skb's and
+> sent up the stack, then reclaimed on release.  I imagine that with this
+> change, they would have the full RX_BUF_SIZE sync'd before returning to the
+> driver, since the upper layers could basically do anything with the buffer
+> area.
 
-MBR, Sergei
+The idea was that page_pool lives per device queue. Usually some queues are
+reserved for XDP only. Since eBPF progs can change the packet we have to sync
+for the device, before we fill in the device descriptors. 
+
+For the skb reserved queues, this depends on the 'anything'. If the rest of the
+layers touch (or rather write) into that area, then we'll again gave to sync. 
+If we know that the data has not been altered though, we can hand them back to
+the device skipping that sync right?
+
+
+Thanks
+/Ilias
+> -- 
+> Jonathan
