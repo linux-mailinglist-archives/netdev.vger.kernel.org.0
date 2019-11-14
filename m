@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BADDFCE56
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:58:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B89FCE58
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727272AbfKNS55 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 14 Nov 2019 13:57:57 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55770 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727276AbfKNS5y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:57:54 -0500
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEIhOdu030164
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:54 -0800
+        id S1727301AbfKNS57 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 14 Nov 2019 13:57:59 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26284 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727257AbfKNS54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:57:56 -0500
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEIcdqb022517
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:55 -0800
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2w8qj9e1d7-2
+        by mx0a-00082601.pphosted.com with ESMTP id 2w8tnf52q7-3
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:54 -0800
-Received: from 2401:db00:2050:5076:face:0:7:0 (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:57:55 -0800
+Received: from 2401:db00:12:909f:face:0:3:0 (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Thu, 14 Nov 2019 10:57:52 -0800
+ Thu, 14 Nov 2019 10:57:54 -0800
 Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 979F076071B; Thu, 14 Nov 2019 10:57:51 -0800 (PST)
+        id A0ABC76071B; Thu, 14 Nov 2019 10:57:53 -0800 (PST)
 Smtp-Origin-Hostprefix: devbig
 From:   Alexei Starovoitov <ast@kernel.org>
 Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
@@ -31,9 +31,9 @@ To:     <davem@davemloft.net>
 CC:     <daniel@iogearbox.net>, <x86@kernel.org>, <netdev@vger.kernel.org>,
         <bpf@vger.kernel.org>, <kernel-team@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v4 bpf-next 15/20] bpf: Annotate context types
-Date:   Thu, 14 Nov 2019 10:57:15 -0800
-Message-ID: <20191114185720.1641606-16-ast@kernel.org>
+Subject: [PATCH v4 bpf-next 16/20] bpf: Compare BTF types of functions arguments with actual types
+Date:   Thu, 14 Nov 2019 10:57:16 -0800
+Message-ID: <20191114185720.1641606-17-ast@kernel.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191114185720.1641606-1-ast@kernel.org>
 References: <20191114185720.1641606-1-ast@kernel.org>
@@ -43,10 +43,10 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-14_05:2019-11-14,2019-11-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
- bulkscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501
- clxscore=1034 mlxlogscore=999 suspectscore=3 adultscore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
+ lowpriorityscore=0 suspectscore=3 clxscore=1015 impostorscore=0
+ bulkscore=0 phishscore=0 adultscore=0 priorityscore=1501 mlxlogscore=701
+ spamscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1911140157
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
@@ -54,367 +54,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Annotate BPF program context types with program-side type and kernel-side type.
-This type information is used by the verifier. btf_get_prog_ctx_type() is
-used in the later patches to verify that BTF type of ctx in BPF program matches to
-kernel expected ctx type. For example, the XDP program type is:
-BPF_PROG_TYPE(BPF_PROG_TYPE_XDP, xdp, struct xdp_md, struct xdp_buff)
-That means that XDP program should be written as:
-int xdp_prog(struct xdp_md *ctx) { ... }
+Make the verifier check that BTF types of function arguments match actual types
+passed into top-level BPF program and into BPF-to-BPF calls. If types match
+such BPF programs and sub-programs will have full support of BPF trampoline. If
+types mismatch the trampoline has to be conservative. It has to save/restore
+five program arguments and assume 64-bit scalars.
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 ---
- include/linux/bpf.h       |  11 +++-
- include/linux/bpf_types.h |  78 +++++++++++++++++---------
- kernel/bpf/btf.c          | 114 +++++++++++++++++++++++++++++++++++++-
- kernel/bpf/syscall.c      |   4 +-
- kernel/bpf/verifier.c     |   2 +-
- net/core/filter.c         |  10 ----
- 6 files changed, 176 insertions(+), 43 deletions(-)
+ include/linux/bpf.h          |  8 ++++
+ include/linux/bpf_verifier.h |  1 +
+ kernel/bpf/btf.c             | 82 ++++++++++++++++++++++++++++++++++++
+ kernel/bpf/syscall.c         |  1 +
+ kernel/bpf/verifier.c        | 18 ++++++--
+ 5 files changed, 107 insertions(+), 3 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index cb5a356381f5..9c48f11fe56e 100644
+index 9c48f11fe56e..c70bf04726b4 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -747,7 +747,7 @@ DECLARE_PER_CPU(int, bpf_prog_active);
- extern const struct file_operations bpf_map_fops;
- extern const struct file_operations bpf_prog_fops;
- 
--#define BPF_PROG_TYPE(_id, _name) \
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
- 	extern const struct bpf_prog_ops _name ## _prog_ops; \
- 	extern const struct bpf_verifier_ops _name ## _verifier_ops;
- #define BPF_MAP_TYPE(_id, _ops) \
-@@ -1213,6 +1213,15 @@ static inline u32 bpf_sock_convert_ctx_access(enum bpf_access_type type,
+@@ -480,6 +480,10 @@ static inline int bpf_trampoline_unlink_prog(struct bpf_prog *prog)
+ static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
  #endif
  
- #ifdef CONFIG_INET
-+struct sk_reuseport_kern {
-+	struct sk_buff *skb;
-+	struct sock *sk;
-+	struct sock *selected_sk;
-+	void *data_end;
-+	u32 hash;
-+	u32 reuseport_id;
-+	bool bind_inany;
++struct bpf_func_info_aux {
++	bool unreliable;
 +};
- bool bpf_tcp_sock_is_valid_access(int off, int size, enum bpf_access_type type,
- 				  struct bpf_insn_access_aux *info);
++
+ struct bpf_prog_aux {
+ 	atomic_t refcnt;
+ 	u32 used_map_cnt;
+@@ -494,6 +498,7 @@ struct bpf_prog_aux {
+ 	bool verifier_zext; /* Zero extensions has been inserted by verifier. */
+ 	bool offload_requested;
+ 	bool attach_btf_trace; /* true if attaching to BTF-enabled raw tp */
++	bool func_proto_unreliable;
+ 	enum bpf_tramp_prog_type trampoline_prog_type;
+ 	struct bpf_trampoline *trampoline;
+ 	struct hlist_node tramp_hlist;
+@@ -518,6 +523,7 @@ struct bpf_prog_aux {
+ 	struct bpf_prog_offload *offload;
+ 	struct btf *btf;
+ 	struct bpf_func_info *func_info;
++	struct bpf_func_info_aux *func_info_aux;
+ 	/* bpf_line_info loaded from userspace.  linfo->insn_off
+ 	 * has the xlated insn offset.
+ 	 * Both the main and sub prog share the same linfo.
+@@ -890,6 +896,8 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+ 			   const char *func_name,
+ 			   struct btf_func_model *m);
  
-diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-index de14872b01ba..93740b3614d7 100644
---- a/include/linux/bpf_types.h
-+++ b/include/linux/bpf_types.h
-@@ -2,42 +2,68 @@
- /* internal file - do not include directly */
++int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog);
++
+ #else /* !CONFIG_BPF_SYSCALL */
+ static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+ {
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 6e7284ea1468..cdd08bf0ec06 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -343,6 +343,7 @@ static inline bool bpf_verifier_log_needed(const struct bpf_verifier_log *log)
+ #define BPF_MAX_SUBPROGS 256
  
- #ifdef CONFIG_NET
--BPF_PROG_TYPE(BPF_PROG_TYPE_SOCKET_FILTER, sk_filter)
--BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_CLS, tc_cls_act)
--BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_ACT, tc_cls_act)
--BPF_PROG_TYPE(BPF_PROG_TYPE_XDP, xdp)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SOCKET_FILTER, sk_filter,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_CLS, tc_cls_act,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_ACT, tc_cls_act,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_XDP, xdp,
-+	      struct xdp_md, struct xdp_buff)
- #ifdef CONFIG_CGROUP_BPF
--BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SKB, cg_skb)
--BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCK, cg_sock)
--BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCK_ADDR, cg_sock_addr)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SKB, cg_skb,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCK, cg_sock,
-+	      struct bpf_sock, struct sock)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCK_ADDR, cg_sock_addr,
-+	      struct bpf_sock_addr, struct bpf_sock_addr_kern)
- #endif
--BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_IN, lwt_in)
--BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_OUT, lwt_out)
--BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_XMIT, lwt_xmit)
--BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_SEG6LOCAL, lwt_seg6local)
--BPF_PROG_TYPE(BPF_PROG_TYPE_SOCK_OPS, sock_ops)
--BPF_PROG_TYPE(BPF_PROG_TYPE_SK_SKB, sk_skb)
--BPF_PROG_TYPE(BPF_PROG_TYPE_SK_MSG, sk_msg)
--BPF_PROG_TYPE(BPF_PROG_TYPE_FLOW_DISSECTOR, flow_dissector)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_IN, lwt_in,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_OUT, lwt_out,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_XMIT, lwt_xmit,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_LWT_SEG6LOCAL, lwt_seg6local,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SOCK_OPS, sock_ops,
-+	      struct bpf_sock_ops, struct bpf_sock_ops_kern)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SK_SKB, sk_skb,
-+	      struct __sk_buff, struct sk_buff)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SK_MSG, sk_msg,
-+	      struct sk_msg_md, struct sk_msg)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_FLOW_DISSECTOR, flow_dissector,
-+	      struct __sk_buff, struct bpf_flow_dissector)
- #endif
- #ifdef CONFIG_BPF_EVENTS
--BPF_PROG_TYPE(BPF_PROG_TYPE_KPROBE, kprobe)
--BPF_PROG_TYPE(BPF_PROG_TYPE_TRACEPOINT, tracepoint)
--BPF_PROG_TYPE(BPF_PROG_TYPE_PERF_EVENT, perf_event)
--BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT, raw_tracepoint)
--BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE, raw_tracepoint_writable)
--BPF_PROG_TYPE(BPF_PROG_TYPE_TRACING, tracing)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_KPROBE, kprobe,
-+	      bpf_user_pt_regs_t, struct pt_regs)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_TRACEPOINT, tracepoint,
-+	      __u64, u64)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_PERF_EVENT, perf_event,
-+	      struct bpf_perf_event_data, struct bpf_perf_event_data_kern)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT, raw_tracepoint,
-+	      struct bpf_raw_tracepoint_args, u64)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE, raw_tracepoint_writable,
-+	      struct bpf_raw_tracepoint_args, u64)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_TRACING, tracing,
-+	      void *, void *)
- #endif
- #ifdef CONFIG_CGROUP_BPF
--BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_DEVICE, cg_dev)
--BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl)
--BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_DEVICE, cg_dev,
-+	      struct bpf_cgroup_dev_ctx, struct bpf_cgroup_dev_ctx)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl,
-+	      struct bpf_sysctl, struct bpf_sysctl_kern)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt,
-+	      struct bpf_sockopt, struct bpf_sockopt_kern)
- #endif
- #ifdef CONFIG_BPF_LIRC_MODE2
--BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2,
-+	      __u32, u32)
- #endif
- #ifdef CONFIG_INET
--BPF_PROG_TYPE(BPF_PROG_TYPE_SK_REUSEPORT, sk_reuseport)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_SK_REUSEPORT, sk_reuseport,
-+	      struct sk_reuseport_md, struct sk_reuseport_kern)
- #endif
- 
- BPF_MAP_TYPE(BPF_MAP_TYPE_ARRAY, array_map_ops)
+ struct bpf_subprog_info {
++	/* 'start' has to be the first field otherwise find_subprog() won't work */
+ 	u32 start; /* insn idx of function entry point */
+ 	u32 linfo_idx; /* The idx to the main_prog->aux->linfo */
+ 	u16 stack_depth; /* max. stack depth used by this function */
 diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 033d071eb59c..4b7c8bd423d6 100644
+index 4b7c8bd423d6..4620267b186e 100644
 --- a/kernel/bpf/btf.c
 +++ b/kernel/bpf/btf.c
-@@ -2,6 +2,8 @@
- /* Copyright (c) 2018 Facebook */
+@@ -3985,6 +3985,88 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
+ 	return 0;
+ }
  
- #include <uapi/linux/btf.h>
-+#include <uapi/linux/bpf.h>
-+#include <uapi/linux/bpf_perf_event.h>
- #include <uapi/linux/types.h>
- #include <linux/seq_file.h>
- #include <linux/compiler.h>
-@@ -16,6 +18,9 @@
- #include <linux/sort.h>
- #include <linux/bpf_verifier.h>
- #include <linux/btf.h>
-+#include <linux/skmsg.h>
-+#include <linux/perf_event.h>
-+#include <net/sock.h>
- 
- /* BTF (BPF Type Format) is the meta data format which describes
-  * the data types of BPF program/map.  Hence, it basically focus
-@@ -3439,13 +3444,98 @@ static struct btf *btf_parse(void __user *btf_data, u32 btf_data_size,
- 
- extern char __weak _binary__btf_vmlinux_bin_start[];
- extern char __weak _binary__btf_vmlinux_bin_end[];
-+extern struct btf *btf_vmlinux;
-+
-+#define BPF_MAP_TYPE(_id, _ops)
-+static union {
-+	struct bpf_ctx_convert {
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
-+	prog_ctx_type _id##_prog; \
-+	kern_ctx_type _id##_kern;
-+#include <linux/bpf_types.h>
-+#undef BPF_PROG_TYPE
-+	} *__t;
-+	/* 't' is written once under lock. Read many times. */
-+	const struct btf_type *t;
-+} bpf_ctx_convert;
-+enum {
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
-+	__ctx_convert##_id,
-+#include <linux/bpf_types.h>
-+#undef BPF_PROG_TYPE
-+};
-+static u8 bpf_ctx_convert_map[] = {
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
-+	[_id] = __ctx_convert##_id,
-+#include <linux/bpf_types.h>
-+#undef BPF_PROG_TYPE
-+};
-+#undef BPF_MAP_TYPE
-+
-+static const struct btf_member *
-+btf_get_prog_ctx_type(struct bpf_verifier_log *log, struct btf *btf,
-+		      const struct btf_type *t, enum bpf_prog_type prog_type)
++int btf_check_func_arg_match(struct bpf_verifier_env *env, int subprog)
 +{
-+	const struct btf_type *conv_struct;
-+	const struct btf_type *ctx_struct;
-+	const struct btf_member *ctx_type;
-+	const char *tname, *ctx_tname;
++	struct bpf_verifier_state *st = env->cur_state;
++	struct bpf_func_state *func = st->frame[st->curframe];
++	struct bpf_reg_state *reg = func->regs;
++	struct bpf_verifier_log *log = &env->log;
++	struct bpf_prog *prog = env->prog;
++	struct btf *btf = prog->aux->btf;
++	const struct btf_param *args;
++	const struct btf_type *t;
++	u32 i, nargs, btf_id;
++	const char *tname;
 +
-+	conv_struct = bpf_ctx_convert.t;
-+	if (!conv_struct) {
-+		bpf_log(log, "btf_vmlinux is malformed\n");
-+		return NULL;
-+	}
-+	t = btf_type_by_id(btf, t->type);
-+	while (btf_type_is_modifier(t))
-+		t = btf_type_by_id(btf, t->type);
-+	if (!btf_type_is_struct(t)) {
-+		/* Only pointer to struct is supported for now.
-+		 * That means that BPF_PROG_TYPE_TRACEPOINT with BTF
-+		 * is not supported yet.
-+		 * BPF_PROG_TYPE_RAW_TRACEPOINT is fine.
-+		 */
-+		bpf_log(log, "BPF program ctx type is not a struct\n");
-+		return NULL;
++	if (!prog->aux->func_info)
++		return 0;
++
++	btf_id = prog->aux->func_info[subprog].type_id;
++	if (!btf_id)
++		return 0;
++
++	if (prog->aux->func_info_aux[subprog].unreliable)
++		return 0;
++
++	t = btf_type_by_id(btf, btf_id);
++	if (!t || !btf_type_is_func(t)) {
++		bpf_log(log, "BTF of subprog %d doesn't point to KIND_FUNC\n",
++			subprog);
++		return -EINVAL;
 +	}
 +	tname = btf_name_by_offset(btf, t->name_off);
-+	if (!tname) {
-+		bpf_log(log, "BPF program ctx struct doesn't have a name\n");
-+		return NULL;
-+	}
-+	/* prog_type is valid bpf program type. No need for bounds check. */
-+	ctx_type = btf_type_member(conv_struct) + bpf_ctx_convert_map[prog_type] * 2;
-+	/* ctx_struct is a pointer to prog_ctx_type in vmlinux.
-+	 * Like 'struct __sk_buff'
-+	 */
-+	ctx_struct = btf_type_by_id(btf_vmlinux, ctx_type->type);
-+	if (!ctx_struct)
-+		/* should not happen */
-+		return NULL;
-+	ctx_tname = btf_name_by_offset(btf_vmlinux, ctx_struct->name_off);
-+	if (!ctx_tname) {
-+		/* should not happen */
-+		bpf_log(log, "Please fix kernel include/linux/bpf_types.h\n");
-+		return NULL;
-+	}
-+	/* only compare that prog's ctx type name is the same as
-+	 * kernel expects. No need to compare field by field.
-+	 * It's ok for bpf prog to do:
-+	 * struct __sk_buff {};
-+	 * int socket_filter_bpf_prog(struct __sk_buff *skb)
-+	 * { // no fields of skb are ever used }
-+	 */
-+	if (strcmp(ctx_tname, tname))
-+		return NULL;
-+	return ctx_type;
-+}
- 
- struct btf *btf_parse_vmlinux(void)
- {
- 	struct btf_verifier_env *env = NULL;
- 	struct bpf_verifier_log *log;
- 	struct btf *btf = NULL;
--	int err;
-+	int err, i;
- 
- 	env = kzalloc(sizeof(*env), GFP_KERNEL | __GFP_NOWARN);
- 	if (!env)
-@@ -3479,6 +3569,26 @@ struct btf *btf_parse_vmlinux(void)
- 	if (err)
- 		goto errout;
- 
-+	/* find struct bpf_ctx_convert for type checking later */
-+	for (i = 1; i <= btf->nr_types; i++) {
-+		const struct btf_type *t;
-+		const char *tname;
 +
-+		t = btf_type_by_id(btf, i);
-+		if (!__btf_type_is_struct(t))
-+			continue;
-+		tname = __btf_name_by_offset(btf, t->name_off);
-+		if (!strcmp(tname, "bpf_ctx_convert")) {
-+			/* btf_parse_vmlinux() runs under bpf_verifier_lock */
-+			bpf_ctx_convert.t = t;
-+			break;
++	t = btf_type_by_id(btf, t->type);
++	if (!t || !btf_type_is_func_proto(t)) {
++		bpf_log(log, "Invalid type of func %s\n", tname);
++		return -EINVAL;
++	}
++	args = (const struct btf_param *)(t + 1);
++	nargs = btf_type_vlen(t);
++	if (nargs > 5) {
++		bpf_log(log, "Function %s has %d > 5 args\n", tname, nargs);
++		goto out;
++	}
++	/* check that BTF function arguments match actual types that the
++	 * verifier sees.
++	 */
++	for (i = 0; i < nargs; i++) {
++		t = btf_type_by_id(btf, args[i].type);
++		while (btf_type_is_modifier(t))
++			t = btf_type_by_id(btf, t->type);
++		if (btf_type_is_int(t) || btf_type_is_enum(t)) {
++			if (reg[i + 1].type == SCALAR_VALUE)
++				continue;
++			bpf_log(log, "R%d is not a scalar\n", i + 1);
++			goto out;
 +		}
++		if (btf_type_is_ptr(t)) {
++			if (reg[i + 1].type == SCALAR_VALUE) {
++				bpf_log(log, "R%d is not a pointer\n", i + 1);
++				goto out;
++			}
++			/* If program is passing PTR_TO_CTX into subprogram
++			 * check that BTF type matches.
++			 */
++			if (reg[i + 1].type == PTR_TO_CTX &&
++			    !btf_get_prog_ctx_type(log, btf, t, prog->type))
++				goto out;
++			/* All other pointers are ok */
++			continue;
++		}
++		bpf_log(log, "Unrecognized argument type %s\n",
++			btf_kind_str[BTF_INFO_KIND(t->info)]);
++		goto out;
 +	}
-+	if (i > btf->nr_types) {
-+		err = -ENOENT;
-+		goto errout;
-+	}
++	return 0;
++out:
++	/* LLVM optimizations can remove arguments from static functions. */
++	bpf_log(log,
++		"Type info disagrees with actual arguments due to compiler optimizations\n");
++	prog->aux->func_info_aux[subprog].unreliable = true;
++	return 0;
++}
 +
- 	btf_verifier_env_free(env);
- 	refcount_set(&btf->refcnt, 1);
- 	return btf;
-@@ -3492,8 +3602,6 @@ struct btf *btf_parse_vmlinux(void)
- 	return ERR_PTR(err);
- }
- 
--extern struct btf *btf_vmlinux;
--
- bool btf_ctx_access(int off, int size, enum bpf_access_type type,
- 		    const struct bpf_prog *prog,
- 		    struct bpf_insn_access_aux *info)
+ void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
+ 		       struct seq_file *m)
+ {
 diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index e2e37bea86bc..05a0ee75eca0 100644
+index 05a0ee75eca0..43ba647de720 100644
 --- a/kernel/bpf/syscall.c
 +++ b/kernel/bpf/syscall.c
-@@ -43,7 +43,7 @@ static DEFINE_SPINLOCK(map_idr_lock);
- int sysctl_unprivileged_bpf_disabled __read_mostly;
+@@ -1328,6 +1328,7 @@ static void __bpf_prog_put_rcu(struct rcu_head *rcu)
+ 	struct bpf_prog_aux *aux = container_of(rcu, struct bpf_prog_aux, rcu);
  
- static const struct bpf_map_ops * const bpf_map_types[] = {
--#define BPF_PROG_TYPE(_id, _ops)
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type)
- #define BPF_MAP_TYPE(_id, _ops) \
- 	[_id] = &_ops,
- #include <linux/bpf_types.h>
-@@ -1189,7 +1189,7 @@ static int map_freeze(const union bpf_attr *attr)
- }
- 
- static const struct bpf_prog_ops * const bpf_prog_types[] = {
--#define BPF_PROG_TYPE(_id, _name) \
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
- 	[_id] = & _name ## _prog_ops,
- #define BPF_MAP_TYPE(_id, _ops)
- #include <linux/bpf_types.h>
+ 	kvfree(aux->func_info);
++	kfree(aux->func_info_aux);
+ 	free_used_maps(aux);
+ 	bpf_prog_uncharge_memlock(aux->prog);
+ 	security_bpf_prog_free(aux);
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index e78ec7990767..7395d6bebefd 100644
+index 7395d6bebefd..11910149ca2f 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -23,7 +23,7 @@
- #include "disasm.h"
+@@ -3970,6 +3970,9 @@ static int check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+ 	/* only increment it after check_reg_arg() finished */
+ 	state->curframe++;
  
- static const struct bpf_verifier_ops * const bpf_verifier_ops[] = {
--#define BPF_PROG_TYPE(_id, _name) \
-+#define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
- 	[_id] = & _name ## _verifier_ops,
- #define BPF_MAP_TYPE(_id, _ops)
- #include <linux/bpf_types.h>
-diff --git a/net/core/filter.c b/net/core/filter.c
-index f72face90659..49ded4a7588a 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8684,16 +8684,6 @@ int sk_get_filter(struct sock *sk, struct sock_filter __user *ubuf,
++	if (btf_check_func_arg_match(env, subprog))
++		return -EINVAL;
++
+ 	/* and go analyze first insn of the callee */
+ 	*insn_idx = target_insn;
+ 
+@@ -6564,6 +6567,7 @@ static int check_btf_func(struct bpf_verifier_env *env,
+ 	u32 i, nfuncs, urec_size, min_size;
+ 	u32 krec_size = sizeof(struct bpf_func_info);
+ 	struct bpf_func_info *krecord;
++	struct bpf_func_info_aux *info_aux = NULL;
+ 	const struct btf_type *type;
+ 	struct bpf_prog *prog;
+ 	const struct btf *btf;
+@@ -6597,6 +6601,9 @@ static int check_btf_func(struct bpf_verifier_env *env,
+ 	krecord = kvcalloc(nfuncs, krec_size, GFP_KERNEL | __GFP_NOWARN);
+ 	if (!krecord)
+ 		return -ENOMEM;
++	info_aux = kcalloc(nfuncs, sizeof(*info_aux), GFP_KERNEL | __GFP_NOWARN);
++	if (!info_aux)
++		goto err_free;
+ 
+ 	for (i = 0; i < nfuncs; i++) {
+ 		ret = bpf_check_uarg_tail_zero(urecord, krec_size, urec_size);
+@@ -6648,29 +6655,31 @@ static int check_btf_func(struct bpf_verifier_env *env,
+ 			ret = -EINVAL;
+ 			goto err_free;
+ 		}
+-
+ 		prev_offset = krecord[i].insn_off;
+ 		urecord += urec_size;
+ 	}
+ 
+ 	prog->aux->func_info = krecord;
+ 	prog->aux->func_info_cnt = nfuncs;
++	prog->aux->func_info_aux = info_aux;
+ 	return 0;
+ 
+ err_free:
+ 	kvfree(krecord);
++	kfree(info_aux);
+ 	return ret;
  }
  
- #ifdef CONFIG_INET
--struct sk_reuseport_kern {
--	struct sk_buff *skb;
--	struct sock *sk;
--	struct sock *selected_sk;
--	void *data_end;
--	u32 hash;
--	u32 reuseport_id;
--	bool bind_inany;
--};
--
- static void bpf_init_reuseport_kern(struct sk_reuseport_kern *reuse_kern,
- 				    struct sock_reuseport *reuse,
- 				    struct sock *sk, struct sk_buff *skb,
+ static void adjust_btf_func(struct bpf_verifier_env *env)
+ {
++	struct bpf_prog_aux *aux = env->prog->aux;
+ 	int i;
+ 
+-	if (!env->prog->aux->func_info)
++	if (!aux->func_info)
+ 		return;
+ 
+ 	for (i = 0; i < env->subprog_cnt; i++)
+-		env->prog->aux->func_info[i].insn_off = env->subprog_info[i].start;
++		aux->func_info[i].insn_off = env->subprog_info[i].start;
+ }
+ 
+ #define MIN_BPF_LINEINFO_SIZE	(offsetof(struct bpf_line_info, line_col) + \
+@@ -7651,6 +7660,9 @@ static int do_check(struct bpf_verifier_env *env)
+ 			0 /* frameno */,
+ 			0 /* subprogno, zero == main subprog */);
+ 
++	if (btf_check_func_arg_match(env, 0))
++		return -EINVAL;
++
+ 	for (;;) {
+ 		struct bpf_insn *insn;
+ 		u8 class;
 -- 
 2.23.0
 
