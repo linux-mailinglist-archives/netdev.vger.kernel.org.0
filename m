@@ -2,102 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8050DFC3DE
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 11:19:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D30FC3E7
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 11:19:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726923AbfKNKTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 05:19:10 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:50762 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726505AbfKNKTK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 05:19:10 -0500
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 6644B4C0066;
-        Thu, 14 Nov 2019 10:19:07 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 14 Nov
- 2019 10:18:59 +0000
-Subject: Re: [RFC PATCH bpf-next 2/4] bpf: introduce BPF dispatcher
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-CC:     Netdev <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@gmail.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <20191113204737.31623-1-bjorn.topel@gmail.com>
- <20191113204737.31623-3-bjorn.topel@gmail.com>
- <fa188bb2-6223-5aef-98e4-b5f7976ed485@solarflare.com>
- <CAJ+HfNiDa912Uwt41_KMv+Z-sGr8fU7s4ncBPiUSx4PPAMQQqQ@mail.gmail.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <96811723-ab08-b987-78c7-2c9f2a0a972c@solarflare.com>
-Date:   Thu, 14 Nov 2019 10:18:55 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNiDa912Uwt41_KMv+Z-sGr8fU7s4ncBPiUSx4PPAMQQqQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-25042.003
-X-TM-AS-Result: No-6.773600-8.000000-10
-X-TMASE-MatchedRID: oHOSwQSJZWjmLzc6AOD8DfHkpkyUphL9WDtrCb/B2hCL76yI7MxYJd3o
-        UtLnebnZ8PxmVvwArq1eKE5I5ZUPHP+j7mX1lKC+PE3khmVvHO4jmtmWxqcghfkuQv9PIVnNY9g
-        fdlvEXXSL9VH/M1mj8I8a4JkbB3qj8mSY8pCopWVFd2K6RlAKAalHaQwZyzDtgOlK2zN496l6xL
-        6D9mrQLn661BcNrPuogiJroqebj3V41hKqyBRVQUM/y5EMs/JmUb4EdIZGxuBJfyfUaPjAATwc8
-        MUw3x8i4HEFwUDiSZ4DTO7t0MJ81QgD4C8clR7Vggra2NOo2i1kAa0IkTbdiE+86maMM3aSd/X/
-        X8atqku5dS8rfLvDVLvTPBmQOKTatjezNnTwro6JUlmL3Uj0mDsY2/UEG7fkt17WNImWY5DDi9z
-        /5KX8tlcEwZrkbL18l+IrlvQnhmKvMyWwzFWyi51U1lojafr/fS0Ip2eEHnxlgn288nW9IAuTLp
-        o5HEc1joczmuoPCq2Y/rC/ht97wGv385DMLr8xy1ZMtZ0r+5Dc+hNhe9IxQOFfg3KapaFv
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--6.773600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-25042.003
-X-MDID: 1573726749-PPAhnXFB58cq
+        id S1726986AbfKNKTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 05:19:46 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:16896 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726979AbfKNKTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 05:19:45 -0500
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id xAEAIfE8112663
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 05:19:44 -0500
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2w91m7ejt5-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 05:19:42 -0500
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Thu, 14 Nov 2019 10:19:31 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 14 Nov 2019 10:19:29 -0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAEAJSkb30736468
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Nov 2019 10:19:28 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 48A80A4040;
+        Thu, 14 Nov 2019 10:19:28 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0BE3FA4053;
+        Thu, 14 Nov 2019 10:19:28 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 14 Nov 2019 10:19:27 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 00/11] s390/qeth: updates 2019-11-14
+Date:   Thu, 14 Nov 2019 11:19:13 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19111410-0008-0000-0000-0000032EF01F
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19111410-0009-0000-0000-00004A4DFDFB
+Message-Id: <20191114101924.29558-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-14_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=753 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1910280000 definitions=main-1911140095
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14/11/2019 06:29, Björn Töpel wrote:
-> On Wed, 13 Nov 2019 at 22:41, Edward Cree <ecree@solarflare.com> wrote:
->> On 13/11/2019 20:47, Björn Töpel wrote:
->> The first-come-first-served model for dispatcher slots might mean that
->>  a low-traffic user ends up getting priority while a higher-traffic
->>  user is stuck with the retpoline fallback.  Have you considered using
->>  a learning mechanism, like in my dynamic call RFC [1] earlier this
->>  year?  (Though I'm sure a better learning mechanism than the one I
->>  used there could be devised.)
-> My rationale was that this mechanism would almost exclusively be used
-> by physical HW NICs using XDP. My hunch was that the number of netdevs
-> would be ~4, and typically less using XDP, so a more sophisticated
-> mechanism didn't really make sense IMO.
-That seems reasonable in most cases, although I can imagine systems with
- a couple of four-port boards being a thing.  I suppose the netdevs are
- likely to all have the same XDP prog, though, and if I'm reading your
- code right it seems they'd share a slot in that case.
+Hi Dave,
 
-> However, your approach is more
-> generic and doesn't require any arch specific work. What was the push
-> back for your work?
-Mainly that I couldn't demonstrate a performance benefit from the few
- call sites I annotated, and others working in the area felt that
- manual annotation wouldn't scale — Nadav Amit had a different approach
- [2] that used a GCC plugin to apply a dispatcher on an opt-out basis
- to all the indirect calls in the kernel; the discussion on that got
- bogged down in interactions between text patching and perf tracing
- which all went *waaaay* over my head.  AFAICT the static_call series I
- was depending on never got merged, and I'm not sure if anyone's still
- working on it.
+please apply the following qeth patches to net-next.
+Along with the usual cleanups, this
+(1) reduces collateral packet loss in the RX path when dealing with
+    bad packets and/or allocation errors, and
+(2) simplifies how the L3 driver deals with mcast IP addresses.
 
--Ed
+Thanks,
+Julian
 
-[2] https://lkml.org/lkml/2018/12/31/19
+
+Julian Wiedmann (11):
+  s390/qeth: gather more detailed RX dropped/error statistics
+  s390/qeth: support per-frame invalidation
+  s390/qeth: drop unwanted packets earlier in RX path
+  s390/qeth: handle skb allocation error gracefully
+  s390/qeth: clean up error path in qeth_core_probe_device()
+  s390/qeth: fine-tune L3 mcast locking
+  s390/qeth: remove gratuitious RX modeset
+  s390/qeth: consolidate L3 mcast registration code
+  s390/qeth: remove VLAN tracking for L3 devices
+  s390/qeth: replace qeth_l3_get_addr_buffer()
+  s390/qeth: don't check drvdata in sysfs code
+
+ drivers/s390/net/qeth_core.h      |  10 +-
+ drivers/s390/net/qeth_core_main.c |  82 +++++++----
+ drivers/s390/net/qeth_core_mpc.h  |   1 +
+ drivers/s390/net/qeth_core_sys.c  |  80 +----------
+ drivers/s390/net/qeth_ethtool.c   |   2 +
+ drivers/s390/net/qeth_l2_main.c   |  26 ++--
+ drivers/s390/net/qeth_l2_sys.c    |  29 ----
+ drivers/s390/net/qeth_l3.h        |   1 +
+ drivers/s390/net/qeth_l3_main.c   | 226 ++++++++----------------------
+ drivers/s390/net/qeth_l3_sys.c    |  94 -------------
+ 10 files changed, 139 insertions(+), 412 deletions(-)
+
+-- 
+2.17.1
+
