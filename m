@@ -2,138 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A079FFC87A
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:11:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1CAFC8BC
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 15:20:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbfKNOLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 09:11:50 -0500
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:36991 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbfKNOLt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 09:11:49 -0500
-Received: by mail-vk1-f195.google.com with SMTP id l5so1491344vkb.4
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 06:11:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XSmwLWNo5Rh6fe+p8Uu7DFNnAFhXmFiTvhxWz1V+B8w=;
-        b=Zxy9Va/g5HeujT0G/Yr81ssNa+Mrn59GATo64imHO5v4yPYwyPPGs095S9yLGHZZct
-         1hxeTUWiuBZWvi+O1vf0npeqW5PjS6EDcNVV/BuKq+FHtrEOxZldeFAkfves+9/Zc/nA
-         Jfl+7lufr0kMeZAOu4jE2erwkVZzPMxG8lpE6MQdIaqDuXXS5sdJm3+y9FiWm52EK2l3
-         WwyGBsnQjzhGRAggZDE4omJqyKpHbyv37Af0YKrpFhQbUSYZTgpsAw3qsoRhd/fdwACE
-         5iSUjaPDvT/GCI+c4fijdDcGkjUJFX9Fldn0zizjgcTiajuBoo8z8CbjC/JqAxv7Pnw6
-         eStg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XSmwLWNo5Rh6fe+p8Uu7DFNnAFhXmFiTvhxWz1V+B8w=;
-        b=SdBl/DdZxOKkgyn/utdlAFnLaTKHr5Eb2slXohpusG3fEMbe23JY8bOtotY2b76tw8
-         QGU1IooN//ycevagRGHZffg4VNdrxyFQvP+fJ5dnBusf+XA9Svh+TzIZOZrRXTSKuGok
-         tyXqb+s/fw9Ke8JIVpzl80pTxUG+cP+baSO8xi9WRrM3MHrEoXc3biOV5o0as5CO9Fxt
-         eceifY37BF71fYTDIzeGkpbXrEv9WPJjWh6pvuNesEIC/z6PK2BHd/Prv6ZoZyT2PzM5
-         rw+CqsALAD/WfPELPZY6WPDV8EtQWwfYnORiVvr2T+vGbmm94dsagxFk6/l+K4Ang/dt
-         klAA==
-X-Gm-Message-State: APjAAAUfmfY9O8uv01ke6efkfPRH+kG0mL3NREje761B1voDphmaNFdN
-        JA2/nPRLzbpZQsExcjnaJ+GI8a4zgq3o/0M2swy7Xw==
-X-Google-Smtp-Source: APXvYqxNH6tQ6y7J3OfkNA5oBwmBY5VTe296JKBsrF2xLv130hd/N0da6UeuSUpnmtRg4fw9qbywtQvMfesNLW0c7dc=
-X-Received: by 2002:a1f:2f51:: with SMTP id v78mr5258686vkv.101.1573740707355;
- Thu, 14 Nov 2019 06:11:47 -0800 (PST)
+        id S1726956AbfKNOUb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 09:20:31 -0500
+Received: from ofcsgdbm.dwd.de ([141.38.3.245]:42145 "EHLO ofcsgdbm.dwd.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726318AbfKNOUb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Nov 2019 09:20:31 -0500
+X-Greylist: delayed 509 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 Nov 2019 09:20:28 EST
+Received: from localhost (localhost [127.0.0.1])
+        by ofcsg2dn3.dwd.de (Postfix) with ESMTP id 47DNhb1fwQz11XY
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 14:11:59 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at csg.dwd.de
+Received: from ofcsg2dn3.dwd.de ([127.0.0.1])
+        by localhost (ofcsg2dn3.dwd.de [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id gwgmMzMlALxa for <netdev@vger.kernel.org>;
+        Thu, 14 Nov 2019 14:11:59 +0000 (UTC)
+Received: from ofmailhub.dwd.de (oflxs446.dwd.de [141.38.40.78])
+        by ofcsg2dn3.dwd.de (Postfix) with ESMTP id 47DNhb0Jdtz11XS;
+        Thu, 14 Nov 2019 14:11:59 +0000 (UTC)
+Received: from praktifix.dwd.de (praktifix.dwd.de [141.38.42.142])
+        by ofmailhub.dwd.de (Postfix) with ESMTP id DED17195F9;
+        Thu, 14 Nov 2019 14:11:58 +0000 (UTC)
+Date:   Thu, 14 Nov 2019 14:11:58 +0000 (UTC)
+From:   Holger Kiehl <Holger.Kiehl@dwd.de>
+X-X-Sender: kiehl@praktifix.dwd.de
+To:     tariqt@mellanox.com, netdev@vger.kernel.org
+Subject: mlx4 kernel oops when rebooting system
+Message-ID: <alpine.LRH.2.21.1911141316340.16328@praktifix.dwd.de>
+User-Agent: Alpine 2.21 (LRH 202 2017-01-01)
 MIME-Version: 1.0
-References: <cover.1573122644.git.hns@goldelico.com> <17b12e91c878dcb74160e3df5f88bc8a9e3f7fce.1573122644.git.hns@goldelico.com>
-In-Reply-To: <17b12e91c878dcb74160e3df5f88bc8a9e3f7fce.1573122644.git.hns@goldelico.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 14 Nov 2019 15:11:11 +0100
-Message-ID: <CAPDyKFpGU+tXC8thz52BQfKHNerzYSUroSihh6GpZELFm-1gRQ@mail.gmail.com>
-Subject: Re: [PATCH v3 01/12] Documentation: dt: wireless: update wl1251 for sdio
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     =?UTF-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        David Sterba <dsterba@suse.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        kernel@pyra-handheld.com,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 7 Nov 2019 at 11:32, H. Nikolaus Schaller <hns@goldelico.com> wrote:
->
-> The standard method for sdio devices connected to
-> an sdio interface is to define them as a child node
-> like we can see with wlcore.
->
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> Acked-by: Kalle Valo <kvalo@codeaurora.org>
-> ---
->  .../bindings/net/wireless/ti,wl1251.txt       | 26 +++++++++++++++++++
->  1 file changed, 26 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt b/Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt
-> index bb2fcde6f7ff..f38950560982 100644
-> --- a/Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt
-> +++ b/Documentation/devicetree/bindings/net/wireless/ti,wl1251.txt
-> @@ -35,3 +35,29 @@ Examples:
->                 ti,power-gpio = <&gpio3 23 GPIO_ACTIVE_HIGH>; /* 87 */
->         };
->  };
-> +
-> +&mmc3 {
-> +       vmmc-supply = <&wlan_en>;
-> +
-> +       bus-width = <4>;
-> +       non-removable;
-> +       ti,non-removable;
-> +       cap-power-off-card;
-> +
-> +       pinctrl-names = "default";
-> +       pinctrl-0 = <&mmc3_pins>;
-> +
-> +       #address-cells = <1>;
-> +       #size-cells = <0>;
-> +
-> +       wlan: wifi@1 {
-> +               compatible = "ti,wl1251";
-> +
-> +               reg = <1>;
-> +
-> +               interrupt-parent = <&gpio1>;
-> +               interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;  /* GPIO_21 */
-> +
-> +               ti,wl1251-has-eeprom;
-> +       };
-> +};
+Hello,
 
-One minor thing, the "ti,power-gpio" is not required anymore, as it's
-not needed for the SDIO case for pandora.
+I have two systems each having two Mellanox ConnectX-3 Pro cards and
+every time the system is rebooted it gets a kernel oops. If I remember
+it correctly, this started when I upgraded to kernel 4.19.x. Before with
+4.14.x I did not get this. I tried with newer kernels, but that did
+not help. Here an oops with kernel 5.1.21:
 
-Please move it to an option section.
+ {1}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 1
+ {1}[Hardware Error]: event severity: fatal
+ {1}[Hardware Error]:  Error 0, type: fatal
+ {1}[Hardware Error]:   section_type: PCIe error
+ {1}[Hardware Error]:   port_type: 4, root port
+ {1}[Hardware Error]:   version: 1.16
+ {1}[Hardware Error]:   command: 0x6010, status: 0x0143
+ {1}[Hardware Error]:   device_id: 0000:80:03.0
+ {1}[Hardware Error]:   slot: 0
+ {1}[Hardware Error]:   secondary_bus: 0x88
+ {1}[Hardware Error]:   vendor_id: 0x8086, device_id: 0x2f08
+ {1}[Hardware Error]:   class_code: 040600
+ {1}[Hardware Error]:   bridge: secondary_status: 0x2000, control: 0x0003
+ {1}[Hardware Error]:  Error 1, type: fatal
+ {1}[Hardware Error]:   section_type: PCIe error
+ {1}[Hardware Error]:   port_type: 4, root port
+ {1}[Hardware Error]:   version: 1.16
+ {1}[Hardware Error]:   command: 0x6010, status: 0x0143
+ {1}[Hardware Error]:   device_id: 0000:80:03.0
+ {1}[Hardware Error]:   slot: 0
+ {1}[Hardware Error]:   secondary_bus: 0x88
+ {1}[Hardware Error]:   vendor_id: 0x8086, device_id: 0x2f08
+ {1}[Hardware Error]:   class_code: 040600
+ {1}[Hardware Error]:   bridge: secondary_status: 0x2000, control: 0x0003
+ Kernel panic - not syncing: Fatal hardware error!
+ CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.1.21 #1
+ Hardware name: HP ProLiant DL380 Gen9/ProLiant DL380 Gen9, BIOS P89 03/25/2019
+ Call Trace:
+  <NMI>
+  dump_stack+0x46/0x5b
+  panic+0xf7/0x291
+  __ghes_panic+0x63/0x6f
+  ghes_notify_nmi+0x1fd/0x290
+  nmi_handle+0x69/0x110
+  do_nmi+0x117/0x3a0
+  end_repeat_nmi+0x16/0x50
+ RIP: 0010:intel_idle+0x7d/0x120
+ Code: 04 25 00 4d 01 00 48 89 d1 0f 01 c8 48 8b 00 a8 08 75 17 e9 07 00 00 00 0f 00 2d 9e 6b 48 00 b9 01 00 00 00 48 89 e8 0f 01 c9 <65> 48 8b 04 25 00 4d 01 00 f0 80 60 02 df f0 83 44 24 fc 00 48 8b
+ RSP: 0018:ffffffff88003e40 EFLAGS: 00000046
+ RAX: 0000000000000020 RBX: 0000000000000004 RCX: 0000000000000001
+ RDX: 0000000000000000 RSI: ffffffff88097780 RDI: 0000000000000000
+ RBP: 0000000000000020 R08: 0000000000000002 R09: ffe813d0035074b0
+ R10: 0000000000000018 R11: 071c71c71c71c71c R12: 0000000000000004
+ R13: ffffffff88097918 R14: ffffffff88015780 R15: 0000000000000000
+  ? intel_idle+0x7d/0x120
+  ? intel_idle+0x7d/0x120
+  </NMI>
+  cpuidle_enter_state+0x7c/0x3a0
+  do_idle+0x1ad/0x230
+  cpu_startup_entry+0x14/0x20
+  start_kernel+0x502/0x522
+  ? set_init_arg+0x50/0x50
+  secondary_startup_64+0xa4/0xb0
+ Kernel Offset: 0x6000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
 
-Kind regards
-Uffe
+Not sure if it is related but on
+
+    https://docs.mellanox.com/display/MLNXOFEDv471001/Bug+Fixes
+
+I read under 1843020 "Server reboot may result in a system crash.".
+So could it be that Mellanox already fixed the problem but this did
+not get back ported to the kernel.org driver?
+
+Problem with this panic is that one can no longer poweroff the system
+safely because it then reboots.
+
+Please advice what I can do or provide other information to help fix
+the problem.
+
+Regards,
+Holger
+
+
+PS: Please CC me since I am not on netdev@vger.kernel.org
