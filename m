@@ -2,180 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66F55FCE19
-	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:45:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4B1BFCE1D
+	for <lists+netdev@lfdr.de>; Thu, 14 Nov 2019 19:48:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727239AbfKNSpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 13:45:33 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44946 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727210AbfKNSp3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:45:29 -0500
-Received: by mail-pl1-f195.google.com with SMTP id az9so3015393plb.11
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:45:28 -0800 (PST)
+        id S1726973AbfKNSsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 13:48:41 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:38991 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbfKNSsl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 13:48:41 -0500
+Received: by mail-pf1-f194.google.com with SMTP id x28so4879472pfo.6
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 10:48:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AHCtOmZ2GTslOfW4Um0mVrFAtc3tK3f23TYhKGTJCmE=;
-        b=Vl9798Ap678R+AQutazdpde2HDDM5L2YwL4kGCKMSBGWGHRI0eoXrWxYgQ1CZ6wxYB
-         hfVmR4cxyH+y+fPcFGomu8lp7zViUi+rBAS+XCnqUamo9I3XRDPL3L7hDIoARcCk4EYO
-         cjO3NOA0pq6TgYzRDnS4azdKZ9+CT910y1NHUDMOm+9batpVk3oqVEhzMDsN81+GvMu5
-         CiZ1isZEA5aqqfIqs9h32DN0qXBmXg8JOFD+vdHeRFShpupiTJoTuzOov7jaMVVcf3Cz
-         HJlUzgZxk2jEO1/Ti1WHlqXzJjVjZceqfbQIv7m/OvCa4947w7l3eldm27WjpoqNL4E1
-         oJKQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=gepp7D4X8EWuU2PgyCmGcalSG4D7hwX4SqFLNGRTKBw=;
+        b=NBrKJDwkMO2AVy05m5gUqtRlX3ZTdQu870pfu4hvKNk0eBI2BeHaaNAM5DxZ2BvNrs
+         Or9wAU0AHTaemRiMdB3g7F78OIuagi2srC2iRTsxzng/d86Aszj5PD29dqzNyzUGevgh
+         e8EIPFfESLUPexOnj8QKg9vpFQ81wcwFPOIPnnEYuK99UEFBBaYXIudJy5e5erzJJ3e9
+         w1CTHEie5Z7sQcRXFCYlQoGsPaWRw0TBMyTqgB4Y22Lj7jsRYgw0AKaL/pNtX062Q6d/
+         EMnINtT1ulNw5KpSD4RKdPJW8Nz8uFLb3FbKejd8cPn7eATS6T+7cQ4ODEDz0/O+xnjX
+         WBMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AHCtOmZ2GTslOfW4Um0mVrFAtc3tK3f23TYhKGTJCmE=;
-        b=WjJ0Hp3dMDybk4kU5a2FOZf6bS5nY3W3TcCzkMoN9FIi28bwTK5lzBwrTWeBeAVLce
-         dbY6knF/vVQpinIVs0OyoPNYoXqgBKm0XvUBl67zKhGXofLTnbKtQIX7jKS3Hjjor2Fd
-         Z4DEBIMjjg5U11qFK/58E5+aVLVmz3EZ6affTIeDUUo7RnXTnBjbbO0z5KDHBSFH52eh
-         NTNgZmoB+UHEZL4XPfXJvPXViw6EWosAG0Cglc6fZ2ykFOfPd25uejRecNISWIXLGF5E
-         zxwqAVmdezpUIBOUfSfcnfSjMGXFCxA1ZSDkP2BuR2kCqzrmJQPM3yACHyXYertRhBsK
-         xSQg==
-X-Gm-Message-State: APjAAAVigd305VxwKjeMp3Z+PfP6XtuJ7su7T6QvcbRjZQ4KwLmX1P7V
-        23LavyZRL03iB7Y4j2zO++LM//HF
-X-Google-Smtp-Source: APXvYqy3ALZfMdDzUs65O3O63qtslh17W7iZe49ML6Rpvfk3n1M3R4zU5I9Yl97hQoXKJEHZuOSt4Q==
-X-Received: by 2002:a17:902:b693:: with SMTP id c19mr10960511pls.89.1573757128105;
-        Thu, 14 Nov 2019 10:45:28 -0800 (PST)
-Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id 23sm6819507pgw.8.2019.11.14.10.45.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Nov 2019 10:45:27 -0800 (PST)
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     intel-wired-lan@lists.osuosl.org,
-        David Miller <davem@davemloft.net>,
-        Brandon Streiff <brandon.streiff@ni.com>,
-        Christopher Hall <christopher.s.hall@intel.com>,
-        Eugenia Emantayev <eugenia@mellanox.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>,
-        Feras Daoud <ferasda@mellanox.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jeffrey Kirsher <jeffrey.t.kirsher@intel.com>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>,
-        Stefan Sorensen <stefan.sorensen@spectralink.com>
-Subject: [PATCH net 13/13] ptp: Extend the test program to check the external time stamp flags.
-Date:   Thu, 14 Nov 2019 10:45:07 -0800
-Message-Id: <20191114184507.18937-14-richardcochran@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=gepp7D4X8EWuU2PgyCmGcalSG4D7hwX4SqFLNGRTKBw=;
+        b=SjOMCjk/JPSMvhZYLSMN3N2C9+VBY6Vu2FyGE8c9ZkczP7iPWYJsKIrZyUcwhtPHid
+         iIuYAtBRTZcv2II0cbpeL7svt2dF4kW3XpW6Wsg51D4xWy2aINv7zlb1A87L2OVWqaMJ
+         FjSwyed8FLCAvex3HZOhP03uZu7uHf3biOxw59gcWSFFcEDitWadL6MzB20h4vgGXo5G
+         6/V5l44KzxTWexlcCfzRMkgFxBePHgpFD5MZF/rcpe251UjPBhTo43MUijrDF4fA5EnH
+         4c5u309vX5Qq/hvjmVBbX9LpG4+JODbNAcqUAdZaBDPDUinaSpl24rcIlKvNk3xTqbg9
+         5Sqw==
+X-Gm-Message-State: APjAAAXOMy6eSXG+swMbNYvTGU7ImaOZrzj8yJiVtVUZlA1h3/Vgy/9m
+        pO75kSCcsdgBEicC8lzxvf5x7Bm9
+X-Google-Smtp-Source: APXvYqxVV8iSvkXk29iNaMYeR0qjDUIe0tDQ7IcSlS5HOnsGgh7+JprbUErXJVAvvag8SbsVvfjEJg==
+X-Received: by 2002:aa7:96e2:: with SMTP id i2mr10238024pfq.256.1573757319938;
+        Thu, 14 Nov 2019 10:48:39 -0800 (PST)
+Received: from [172.20.189.1] ([2620:10d:c090:180::dd67])
+        by smtp.gmail.com with ESMTPSA id b82sm7542930pfb.33.2019.11.14.10.48.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 10:48:39 -0800 (PST)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Lorenzo Bianconi" <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, lorenzo.bianconi@redhat.com,
+        davem@davemloft.net, thomas.petazzoni@bootlin.com,
+        brouer@redhat.com, ilias.apalodimas@linaro.org,
+        matteo.croce@redhat.com
+Subject: Re: [PATCH net-next 2/3] net: page_pool: add the possibility to sync
+ DMA memory for non-coherent devices
+Date:   Thu, 14 Nov 2019 10:48:38 -0800
+X-Mailer: MailMate (1.13r5655)
+Message-ID: <6BF4C165-2AA2-49CC-B452-756CD0830129@gmail.com>
+In-Reply-To: <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
+References: <cover.1573383212.git.lorenzo@kernel.org>
+ <68229f90060d01c1457ac945b2f6524e2aa27d05.1573383212.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Because each driver and hardware has different capabilities, the test
-cannot provide a simple pass/fail result, but it can at least show what
-combinations of flags are supported.
+On 10 Nov 2019, at 4:09, Lorenzo Bianconi wrote:
 
-Signed-off-by: Richard Cochran <richardcochran@gmail.com>
----
- tools/testing/selftests/ptp/testptp.c | 53 ++++++++++++++++++++++++++-
- 1 file changed, 51 insertions(+), 2 deletions(-)
+> Introduce the following parameters in order to add the possibility to 
+> sync
+> DMA memory area before putting allocated buffers in the page_pool 
+> caches:
+> - sync: set to 1 if device is non cache-coherent and needs to flush 
+> DMA
+>   area
+> - offset: DMA address offset where the DMA engine starts copying rx 
+> data
+> - max_len: maximum DMA memory size page_pool is allowed to flush. This
+>   is currently used in __page_pool_alloc_pages_slow routine when pages
+>   are allocated from page allocator
+> These parameters are supposed to be set by device drivers
+>
+> Tested-by: Matteo Croce <mcroce@redhat.com>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  include/net/page_pool.h | 11 +++++++----
+>  net/core/page_pool.c    | 39 +++++++++++++++++++++++++++++++++------
+>  2 files changed, 40 insertions(+), 10 deletions(-)
+>
+> diff --git a/include/net/page_pool.h b/include/net/page_pool.h
+> index 2cbcdbdec254..defbfd90ab46 100644
+> --- a/include/net/page_pool.h
+> +++ b/include/net/page_pool.h
+> @@ -65,6 +65,9 @@ struct page_pool_params {
+>  	int		nid;  /* Numa node id to allocate from pages from */
+>  	struct device	*dev; /* device, for DMA pre-mapping purposes */
+>  	enum dma_data_direction dma_dir; /* DMA mapping direction */
+> +	unsigned int	max_len; /* max DMA sync memory size */
+> +	unsigned int	offset;  /* DMA addr offset */
+> +	u8 sync;
+>  };
 
-diff --git a/tools/testing/selftests/ptp/testptp.c b/tools/testing/selftests/ptp/testptp.c
-index bd4a7247b44f..c0dd10257df5 100644
---- a/tools/testing/selftests/ptp/testptp.c
-+++ b/tools/testing/selftests/ptp/testptp.c
-@@ -44,6 +44,46 @@ static int clock_adjtime(clockid_t id, struct timex *tx)
- }
- #endif
- 
-+static void show_flag_test(int rq_index, unsigned int flags, int err)
-+{
-+	printf("PTP_EXTTS_REQUEST%c flags 0x%08x : (%d) %s\n",
-+	       rq_index ? '1' + rq_index : ' ',
-+	       flags, err, strerror(errno));
-+	/* sigh, uClibc ... */
-+	errno = 0;
-+}
-+
-+static void do_flag_test(int fd, unsigned int index)
-+{
-+	struct ptp_extts_request extts_request;
-+	unsigned long request[2] = {
-+		PTP_EXTTS_REQUEST,
-+		PTP_EXTTS_REQUEST2,
-+	};
-+	unsigned int enable_flags[5] = {
-+		PTP_ENABLE_FEATURE,
-+		PTP_ENABLE_FEATURE | PTP_RISING_EDGE,
-+		PTP_ENABLE_FEATURE | PTP_FALLING_EDGE,
-+		PTP_ENABLE_FEATURE | PTP_RISING_EDGE | PTP_FALLING_EDGE,
-+		PTP_ENABLE_FEATURE | (PTP_EXTTS_VALID_FLAGS + 1),
-+	};
-+	int err, i, j;
-+
-+	memset(&extts_request, 0, sizeof(extts_request));
-+	extts_request.index = index;
-+
-+	for (i = 0; i < 2; i++) {
-+		for (j = 0; j < 5; j++) {
-+			extts_request.flags = enable_flags[j];
-+			err = ioctl(fd, request[i], &extts_request);
-+			show_flag_test(i, extts_request.flags, err);
-+
-+			extts_request.flags = 0;
-+			err = ioctl(fd, request[i], &extts_request);
-+		}
-+	}
-+}
-+
- static clockid_t get_clockid(int fd)
- {
- #define CLOCKFD 3
-@@ -96,7 +136,8 @@ static void usage(char *progname)
- 		" -s         set the ptp clock time from the system time\n"
- 		" -S         set the system time from the ptp clock time\n"
- 		" -t val     shift the ptp clock time by 'val' seconds\n"
--		" -T val     set the ptp clock time to 'val' seconds\n",
-+		" -T val     set the ptp clock time to 'val' seconds\n"
-+		" -z         test combinations of rising/falling external time stamp flags\n",
- 		progname);
- }
- 
-@@ -122,6 +163,7 @@ int main(int argc, char *argv[])
- 	int adjtime = 0;
- 	int capabilities = 0;
- 	int extts = 0;
-+	int flagtest = 0;
- 	int gettime = 0;
- 	int index = 0;
- 	int list_pins = 0;
-@@ -138,7 +180,7 @@ int main(int argc, char *argv[])
- 
- 	progname = strrchr(argv[0], '/');
- 	progname = progname ? 1+progname : argv[0];
--	while (EOF != (c = getopt(argc, argv, "cd:e:f:ghi:k:lL:p:P:sSt:T:v"))) {
-+	while (EOF != (c = getopt(argc, argv, "cd:e:f:ghi:k:lL:p:P:sSt:T:z"))) {
- 		switch (c) {
- 		case 'c':
- 			capabilities = 1;
-@@ -191,6 +233,9 @@ int main(int argc, char *argv[])
- 			settime = 3;
- 			seconds = atoi(optarg);
- 			break;
-+		case 'z':
-+			flagtest = 1;
-+			break;
- 		case 'h':
- 			usage(progname);
- 			return 0;
-@@ -322,6 +367,10 @@ int main(int argc, char *argv[])
- 		}
- 	}
- 
-+	if (flagtest) {
-+		do_flag_test(fd, index);
-+	}
-+
- 	if (list_pins) {
- 		int n_pins = 0;
- 		if (ioctl(fd, PTP_CLOCK_GETCAPS, &caps)) {
+How about using PP_FLAG_DMA_SYNC instead of another flag word?
+(then it can also be gated on having DMA_MAP enabled)
 -- 
-2.20.1
+Jonathan
 
+>
+>  struct page_pool {
+> @@ -150,8 +153,8 @@ static inline void page_pool_destroy(struct 
+> page_pool *pool)
+>  }
+>
+>  /* Never call this directly, use helpers below */
+> -void __page_pool_put_page(struct page_pool *pool,
+> -			  struct page *page, bool allow_direct);
+> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> +			  unsigned int dma_sync_size, bool allow_direct);
+>
+>  static inline void page_pool_put_page(struct page_pool *pool,
+>  				      struct page *page, bool allow_direct)
+> @@ -160,14 +163,14 @@ static inline void page_pool_put_page(struct 
+> page_pool *pool,
+>  	 * allow registering MEM_TYPE_PAGE_POOL, but shield linker.
+>  	 */
+>  #ifdef CONFIG_PAGE_POOL
+> -	__page_pool_put_page(pool, page, allow_direct);
+> +	__page_pool_put_page(pool, page, 0, allow_direct);
+>  #endif
+>  }
+>  /* Very limited use-cases allow recycle direct */
+>  static inline void page_pool_recycle_direct(struct page_pool *pool,
+>  					    struct page *page)
+>  {
+> -	__page_pool_put_page(pool, page, true);
+> +	__page_pool_put_page(pool, page, 0, true);
+>  }
+>
+>  /* API user MUST have disconnected alloc-side (not allowed to call
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index 5bc65587f1c4..af9514c2d15b 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -112,6 +112,17 @@ static struct page *__page_pool_get_cached(struct 
+> page_pool *pool)
+>  	return page;
+>  }
+>
+> +/* Used for non-coherent devices */
+> +static void page_pool_dma_sync_for_device(struct page_pool *pool,
+> +					  struct page *page,
+> +					  unsigned int dma_sync_size)
+> +{
+> +	dma_sync_size = min(dma_sync_size, pool->p.max_len);
+> +	dma_sync_single_range_for_device(pool->p.dev, page->dma_addr,
+> +					 pool->p.offset, dma_sync_size,
+> +					 pool->p.dma_dir);
+> +}
+> +
+>  /* slow path */
+>  noinline
+>  static struct page *__page_pool_alloc_pages_slow(struct page_pool 
+> *pool,
+> @@ -156,6 +167,10 @@ static struct page 
+> *__page_pool_alloc_pages_slow(struct page_pool *pool,
+>  	}
+>  	page->dma_addr = dma;
+>
+> +	/* non-coherent devices - flush memory */
+> +	if (pool->p.sync)
+> +		page_pool_dma_sync_for_device(pool, page, pool->p.max_len);
+> +
+>  skip_dma_map:
+>  	/* Track how many pages are held 'in-flight' */
+>  	pool->pages_state_hold_cnt++;
+> @@ -255,7 +270,8 @@ static void __page_pool_return_page(struct 
+> page_pool *pool, struct page *page)
+>  }
+>
+>  static bool __page_pool_recycle_into_ring(struct page_pool *pool,
+> -				   struct page *page)
+> +					  struct page *page,
+> +					  unsigned int dma_sync_size)
+>  {
+>  	int ret;
+>  	/* BH protection not needed if current is serving softirq */
+> @@ -264,6 +280,10 @@ static bool __page_pool_recycle_into_ring(struct 
+> page_pool *pool,
+>  	else
+>  		ret = ptr_ring_produce_bh(&pool->ring, page);
+>
+> +	/* non-coherent devices - flush memory */
+> +	if (ret == 0 && pool->p.sync)
+> +		page_pool_dma_sync_for_device(pool, page, dma_sync_size);
+> +
+>  	return (ret == 0) ? true : false;
+>  }
+>
+> @@ -273,18 +293,23 @@ static bool __page_pool_recycle_into_ring(struct 
+> page_pool *pool,
+>   * Caller must provide appropriate safe context.
+>   */
+>  static bool __page_pool_recycle_direct(struct page *page,
+> -				       struct page_pool *pool)
+> +				       struct page_pool *pool,
+> +				       unsigned int dma_sync_size)
+>  {
+>  	if (unlikely(pool->alloc.count == PP_ALLOC_CACHE_SIZE))
+>  		return false;
+>
+>  	/* Caller MUST have verified/know (page_ref_count(page) == 1) */
+>  	pool->alloc.cache[pool->alloc.count++] = page;
+> +
+> +	/* non-coherent devices - flush memory */
+> +	if (pool->p.sync)
+> +		page_pool_dma_sync_for_device(pool, page, dma_sync_size);
+>  	return true;
+>  }
+>
+> -void __page_pool_put_page(struct page_pool *pool,
+> -			  struct page *page, bool allow_direct)
+> +void __page_pool_put_page(struct page_pool *pool, struct page *page,
+> +			  unsigned int dma_sync_size, bool allow_direct)
+>  {
+>  	/* This allocator is optimized for the XDP mode that uses
+>  	 * one-frame-per-page, but have fallbacks that act like the
+> @@ -296,10 +321,12 @@ void __page_pool_put_page(struct page_pool 
+> *pool,
+>  		/* Read barrier done in page_ref_count / READ_ONCE */
+>
+>  		if (allow_direct && in_serving_softirq())
+> -			if (__page_pool_recycle_direct(page, pool))
+> +			if (__page_pool_recycle_direct(page, pool,
+> +						       dma_sync_size))
+>  				return;
+>
+> -		if (!__page_pool_recycle_into_ring(pool, page)) {
+> +		if (!__page_pool_recycle_into_ring(pool, page,
+> +						   dma_sync_size)) {
+>  			/* Cache full, fallback to free pages */
+>  			__page_pool_return_page(pool, page);
+>  		}
+> -- 
+> 2.21.0
