@@ -2,302 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EDAAFD3A0
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 05:25:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DF35FD3A8
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 05:29:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbfKOEZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Nov 2019 23:25:11 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:36280 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726986AbfKOEZL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 23:25:11 -0500
-Received: by mail-pf1-f193.google.com with SMTP id b19so5781456pfd.3
-        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 20:25:11 -0800 (PST)
+        id S1726988AbfKOE3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Nov 2019 23:29:46 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:44302 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbfKOE3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Nov 2019 23:29:46 -0500
+Received: by mail-pg1-f195.google.com with SMTP id f19so5166385pgk.11;
+        Thu, 14 Nov 2019 20:29:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=tZVvvQ84aQcIMqaemf5cQ0xlNg70D/y9ZTT7aWGw/jI=;
-        b=b23QB/AgY+Ile8l8nJugu9Zap40iYKjO8lLQkJ1beKJVwpY+2qUULT66DEn6p0p7Dm
-         c+gM5v//r7L5YAlaSur9dwc6itsTgb/NvNU83LrbFZI6YUu2h/QWIl7BCnM8ltOt1AoV
-         ICt1UUeOb2CrWrM/CWRIzwK/hzcXnFOcqgDpIyzIUEsBUJ1k8x6iUOnDWZxF1i1CnmPt
-         E1k4uupnvj4DiWfOqgexVlAGCM8YKVK/dNg1DoHHyfpIAPrusIU71bchRLA4aaf/9VqG
-         TahKc0lReShZIhitCFJ8GB8yIJuXVYdZRcYPgVQM69mwsIHldIVt3ck14ClcWUSSXKgY
-         a5Wg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=yWWTL27YpOR9rROnC4ueooFH4+fm9f8C4aV1mOV1Cso=;
+        b=gOA89t2ACr6O7LIqqlZld6zX81E/PWI2W30YaxOdLU7z3nOkhRpyb+q/NTFznT/GvW
+         1Sk0VignDLDXQkfRUNeEWIZn2zI0U3Cyd3bbfTI54nkSKoXRx3tnTkMH5mfJrq9zlSYj
+         O5T2xF6wtdPPL6ufVKbXLeTxiwKu3EyV5HsSe44C2ekd37uJPD2GpOtHFfrtXzQUgEiZ
+         C4me/Kfbn4Os4BRBUby9cRMx7ek3J/+bfSlLW358Hk2m749tD90HoaUto/riZtXH8ryA
+         e/D5eXgdLOCP6F5qTT4YEEEdTlj5Yhlxu5ZLQv/ZvEw547dQTFEI23W1GXOGIoU/v1vr
+         Gt+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=tZVvvQ84aQcIMqaemf5cQ0xlNg70D/y9ZTT7aWGw/jI=;
-        b=Os17eaAAo82DNIGPULW0KK428DJm2T+q8RDSVbMSt3tFsCEz4DNLcUI8QpzWg7bnwT
-         5WFcK1Fc8bgAJr2URqc/AEr6Nzr/TBRapS1mWoUskKq4JxcQ5D9zeeOKLvNNvf6YpVpS
-         ZsOHt5bTjmmGB+hUPtzioZu1ogfVC+2Q2IaW1NJM6NQs65S78hFoJcq3KgC4OiGqwgov
-         uUYalJJD3cO0j48ItRkQQDTI6WH1AVVTWHEcdcdleFm7PapAEeNeDGQc9ZeBTAvhmWST
-         QiJy4qzPcxI5ilFflpgwe7UcEpXeOXzi4+JT9KE14xFqeZTqYV6NJ4rph3aSTXAkDqhU
-         y/ew==
-X-Gm-Message-State: APjAAAXrUIoTyJ86HWlBUKM0kii4iOBGT/0kvYooM40NrBkauWn9MWb4
-        UTdCW2HQwXNxnAXUKwennLH4Uh0O
-X-Google-Smtp-Source: APXvYqwgq6FfbFn8xdCCpbXPQQhVDZ3oNujSa1W3SaSsBoeDfjz54xX/XMDTTPBHd7DLCs83y1t98w==
-X-Received: by 2002:a62:7553:: with SMTP id q80mr15584863pfc.203.1573791910273;
-        Thu, 14 Nov 2019 20:25:10 -0800 (PST)
-Received: from localhost.localdomain ([112.79.83.185])
-        by smtp.gmail.com with ESMTPSA id 23sm7667516pgw.8.2019.11.14.20.25.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 14 Nov 2019 20:25:09 -0800 (PST)
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, corbet@lwn.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        scott.drennan@nokia.com, jbenc@redhat.com,
-        martin.varghese@nokia.com
-Subject: [PATCH v2 net-next 2/2] Special handling for IP & MPLS.
-Date:   Fri, 15 Nov 2019 09:54:59 +0530
-Message-Id: <24ec93937d65fa2afc636a2887c78ae48736a649.1573659466.git.martin.varghese@nokia.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <cover.1573659466.git.martin.varghese@nokia.com>
-References: <cover.1573659466.git.martin.varghese@nokia.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=yWWTL27YpOR9rROnC4ueooFH4+fm9f8C4aV1mOV1Cso=;
+        b=bQBX8KWAdC0w7xNT0+JJ5y8NfZyzaudCj1o/FPvuZPirNG+R5YctHU7+nAMWKo6zqN
+         D79ezNsZH8/Gmhp1ox6OHpWb0zZiZdQe9VS7j/b8SAEXipWV64GT19J/b3e+ZdmIF84j
+         /VjTAUUXziumEL5KcyPP1FrWh5yMfzTYfZLm0By6bKAZxqRdzoBvor+iOl0zoP81+uNi
+         mXLToXAFrs47aOIbgtB3a04PiHTNBaK5yKFupOITOOoriu66uYZWTIFb8zipoOP+gEb8
+         SvApVUnItbxzg+MNjEp7OxErf16SUppBYHUjcMyzf/eEeGoSmOZkOznp2gdq0BJy8XVi
+         Dy6w==
+X-Gm-Message-State: APjAAAV4BjyX0DeMg7eZhsav8m3dvhT/uwUn2k03YEF/ggGRUkZHaNAb
+        xfByx+ChKebuZ7MTE6M50LRNcuv8
+X-Google-Smtp-Source: APXvYqxeedN8VNsXvEJGzcmNCtvQLD00o8dv+9JAX5EhrSkNpWb4Kha0zRaDdiKsxfi4Pz1UMf46Gg==
+X-Received: by 2002:a17:90a:989:: with SMTP id 9mr17278212pjo.35.1573792184064;
+        Thu, 14 Nov 2019 20:29:44 -0800 (PST)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::a328])
+        by smtp.gmail.com with ESMTPSA id y6sm6519612pfm.12.2019.11.14.20.29.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Nov 2019 20:29:43 -0800 (PST)
+Date:   Thu, 14 Nov 2019 20:29:41 -0800
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH rfc bpf-next 8/8] bpf: constant map key tracking for prog
+ array pokes
+Message-ID: <20191115042939.ckt4fqvtfdi344y2@ast-mbp.dhcp.thefacebook.com>
+References: <cover.1573779287.git.daniel@iogearbox.net>
+ <fa3c2f6e2f4fbe45200d54a3c6d4c65c4f84f790.1573779287.git.daniel@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fa3c2f6e2f4fbe45200d54a3c6d4c65c4f84f790.1573779287.git.daniel@iogearbox.net>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Varghese <martin.varghese@nokia.com>
+On Fri, Nov 15, 2019 at 02:04:02AM +0100, Daniel Borkmann wrote:
+> Add tracking of constant keys into tail call maps. The signature of
+> bpf_tail_call_proto is that arg1 is ctx, arg2 map pointer and arg3
+> is a index key. The direct call approach for tail calls can be enabled
+> if the verifier asserted that for all branches leading to the tail call
+> helper invocation, the map pointer and index key were both constant
+> and the same. Tracking of map pointers we already do from prior work
+> via c93552c443eb ("bpf: properly enforce index mask to prevent out-of-bounds
+> speculation") and 09772d92cd5a ("bpf: avoid retpoline for lookup/update/
+> delete calls on maps"). Given the tail call map index key is not on
+> stack but directly in the register, we can add similar tracking approach
+> and later in fixup_bpf_calls() add a poke descriptor to the progs poke_tab
+> with the relevant information for the JITing phase. We internally reuse
+> insn->imm for the rewritten BPF_JMP | BPF_TAIL_CALL instruction in order
+> to point into the prog's poke_tab and keep insn->imm == 0 as indicator
+> that current indirect tail call emission must be used.
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  include/linux/bpf_verifier.h |  1 +
+>  kernel/bpf/verifier.c        | 98 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 99 insertions(+)
+> 
+> diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+> index cdd08bf0ec06..f494f0c9ac13 100644
+> --- a/include/linux/bpf_verifier.h
+> +++ b/include/linux/bpf_verifier.h
+> @@ -301,6 +301,7 @@ struct bpf_insn_aux_data {
+>  			u32 map_off;		/* offset from value base address */
+>  		};
+>  	};
+> +	u64 key_state; /* constant key tracking for maps */
 
-Special handling is needed in bareudp module for IP & MPLS as they support
-more than one ethertypes.
+may be map_key_state ?
+key_state is a bit ambiguous in the bpf_insn_aux_data.
 
-MPLS has 2 ethertypes. 0x8847 for MPLS unicast and 0x8848 for MPLS multicast.
-While decapsulating MPLS packet from UDP packet the tunnel destination IP
-address is checked to determine the ethertype. The ethertype of the packet
-will be set to 0x8848 if the  tunnel destination IP address is a multicast
-IP address. The ethertype of the packet will be set to 0x8847 if the
-tunnel destination IP address is a unicast IP address.
+> +static int
+> +record_func_key(struct bpf_verifier_env *env, struct bpf_call_arg_meta *meta,
+> +		int func_id, int insn_idx)
+> +{
+> +	struct bpf_insn_aux_data *aux = &env->insn_aux_data[insn_idx];
+> +	struct bpf_reg_state *regs = cur_regs(env), *reg;
+> +	struct tnum range = tnum_range(0, U32_MAX);
+> +	struct bpf_map *map = meta->map_ptr;
+> +	u64 val;
+> +
+> +	if (func_id != BPF_FUNC_tail_call)
+> +		return 0;
+> +	if (!map || map->map_type != BPF_MAP_TYPE_PROG_ARRAY) {
+> +		verbose(env, "kernel subsystem misconfigured verifier\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	reg = &regs[BPF_REG_3];
+> +	if (!register_is_const(reg) || !tnum_in(range, reg->var_off)) {
+> +		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
+> +		return 0;
+> +	}
+> +
+> +	val = reg->var_off.value;
+> +	if (bpf_map_key_unseen(aux))
+> +		bpf_map_key_store(aux, val);
+> +	else if (bpf_map_key_immediate(aux) != val)
+> +		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
+> +	return 0;
+> +}
 
-IP has 2 ethertypes.0x0800 for IPV4 and 0x86dd for IPv6. The version field
-of the IP header tunnelled will be checked to determine the ethertype.
-
-This special handling to tunnel additional ethertypes will be disabled by
-default and can be enabled using a flag called ext mode. This flag can be
-used only with ethertypes 0x8847 and 0x0800.
-
-Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
----
-Changes in v2:
-    - Fixed documentation errors.
-    - Changed commit message
-
- Documentation/networking/bareudp.rst | 18 ++++++++
- drivers/net/bareudp.c                | 82 +++++++++++++++++++++++++++++++++---
- include/net/bareudp.h                |  1 +
- include/uapi/linux/if_link.h         |  1 +
- 4 files changed, 95 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/networking/bareudp.rst b/Documentation/networking/bareudp.rst
-index 2828521..1f01dfd 100644
---- a/Documentation/networking/bareudp.rst
-+++ b/Documentation/networking/bareudp.rst
-@@ -12,6 +12,15 @@ The Bareudp tunnel module provides a generic L3 encapsulation tunnelling
- support for tunnelling different L3 protocols like MPLS, IP, NSH etc. inside
- a UDP tunnel.
- 
-+Special Handling
-+----------------
-+The bareudp device supports special handling for MPLS & IP as they can have
-+multiple ethertypes.
-+MPLS procotcol can have ethertypes ETH_P_MPLS_UC  (unicast) & ETH_P_MPLS_MC (multicast).
-+IP proctocol can have ethertypes ETH_P_IP (v4) & ETH_P_IPV6 (v6).
-+This special handling can be enabled only for ethertypes ETH_P_IP & ETH_P_MPLS_UC
-+with a flag called extended mode.
-+
- Usage
- ------
- 
-@@ -24,3 +33,12 @@ Usage
-        6635.The device will listen on UDP port 6635 to receive traffic.
- 
-     b) ip link delete bareudp0
-+
-+2) Device creation with extended mode enabled
-+
-+There are two ways to create a bareudp device for MPLS & IP with extended mode
-+enabled.
-+
-+    a) ip link add dev  bareudp0 type bareudp dstport 6635 ethertype 0x8847 extmode
-+
-+    b) ip link add dev  bareudp0 type bareudp dstport 6635 ethertype mpls
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 5a8e64a..636127a 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -50,6 +50,7 @@ struct bareudp_dev {
- 	struct net_device  *dev;        /* netdev for bareudp tunnel */
- 	__be16		   ethertype;
- 	u16	           sport_min;
-+	bool               ext_mode;
- 	struct bareudp_conf conf;
- 	struct bareudp_sock __rcu *sock;
- 	struct list_head   next;        /* bareudp node  on namespace list */
-@@ -81,15 +82,64 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
- 		goto drop;
- 
- 	bareudp = bs->bareudp;
--	proto = bareudp->ethertype;
-+	if (!bareudp)
-+		goto drop;
-+
-+	if (bareudp->ethertype == htons(ETH_P_IP)) {
-+		struct iphdr *iphdr;
-+
-+		iphdr = (struct iphdr *)(skb->data + BAREUDP_BASE_HLEN);
-+		if (iphdr->version == 4) {
-+			proto = bareudp->ethertype;
-+		} else if (bareudp->ext_mode && (iphdr->version == 6)) {
-+			proto = htons(ETH_P_IPV6);
-+		} else {
-+			bareudp->dev->stats.rx_dropped++;
-+			goto drop;
-+		}
-+	} else if (bareudp->ethertype == htons(ETH_P_MPLS_UC)) {
-+		struct iphdr *tunnel_hdr;
-+
-+		tunnel_hdr = (struct iphdr *)skb_network_header(skb);
-+		if (tunnel_hdr->version == 4) {
-+			if (!ipv4_is_multicast(tunnel_hdr->daddr)) {
-+				proto = bareudp->ethertype;
-+			} else if (bareudp->ext_mode &&
-+				   ipv4_is_multicast(tunnel_hdr->daddr)) {
-+				proto = htons(ETH_P_MPLS_MC);
-+			} else {
-+				bareudp->dev->stats.rx_dropped++;
-+				goto drop;
-+			}
-+		} else {
-+			int addr_type;
-+			struct ipv6hdr *tunnel_hdr_v6;
-+
-+			tunnel_hdr_v6 = (struct ipv6hdr *)skb_network_header(skb);
-+			addr_type =
-+			ipv6_addr_type((struct in6_addr *)&tunnel_hdr_v6->daddr);
-+			if (!(addr_type & IPV6_ADDR_MULTICAST)) {
-+				proto = bareudp->ethertype;
-+			} else if (bareudp->ext_mode &&
-+				   (addr_type & IPV6_ADDR_MULTICAST)) {
-+				proto = htons(ETH_P_MPLS_MC);
-+			} else {
-+				bareudp->dev->stats.rx_dropped++;
-+				goto drop;
-+			}
-+		}
-+	} else {
-+		proto = bareudp->ethertype;
-+	}
- 
- 	if (iptunnel_pull_header(skb, BAREUDP_BASE_HLEN,
--				 proto,
--				 !net_eq(bareudp->net,
--					 dev_net(bareudp->dev)))) {
-+				proto,
-+				!net_eq(bareudp->net,
-+					dev_net(bareudp->dev)))) {
- 		bareudp->dev->stats.rx_dropped++;
- 		goto drop;
- 	}
-+
- 	tun_dst = udp_tun_rx_dst(skb, bareudp_get_sk_family(bs), TUNNEL_KEY,
- 				 0, 0);
- 	if (!tun_dst) {
-@@ -421,10 +471,13 @@ static netdev_tx_t bareudp_xmit(struct sk_buff *skb, struct net_device *dev)
- 	int err;
- 
- 	if (skb->protocol != bareudp->ethertype) {
--		err = -EINVAL;
--		goto tx_error;
-+		if (!bareudp->ext_mode ||
-+		    (skb->protocol !=  htons(ETH_P_MPLS_MC) &&
-+		     skb->protocol !=  htons(ETH_P_IPV6))) {
-+			err = -EINVAL;
-+			goto tx_error;
-+		}
- 	}
--
- 	info = skb_tunnel_info(skb);
- 	if (unlikely(!info || !(info->mode & IP_TUNNEL_INFO_TX))) {
- 		err = -EINVAL;
-@@ -520,6 +573,7 @@ static int bareudp_change_mtu(struct net_device *dev, int new_mtu)
- 	[IFLA_BAREUDP_PORT]                = { .type = NLA_U16 },
- 	[IFLA_BAREUDP_ETHERTYPE]	   = { .type = NLA_U16 },
- 	[IFLA_BAREUDP_SRCPORT_MIN]         = { .type = NLA_U16 },
-+	[IFLA_BAREUDP_EXTMODE]             = { .type = NLA_FLAG },
- };
- 
- static int bareudp_validate(struct nlattr *tb[], struct nlattr *data[],
-@@ -602,9 +656,15 @@ static int bareudp_configure(struct net *net, struct net_device *dev,
- 	if (t)
- 		return -EBUSY;
- 
-+	if (conf->ext_mode &&
-+	    (conf->ethertype != htons(ETH_P_MPLS_UC) &&
-+	     conf->ethertype != htons(ETH_P_IP)))
-+		return -EINVAL;
-+
- 	bareudp->conf = *conf;
- 	bareudp->ethertype = conf->ethertype;
- 	bareudp->sport_min = conf->sport_min;
-+	bareudp->ext_mode = conf->ext_mode;
- 	err = register_netdevice(dev);
- 	if (err)
- 		return err;
-@@ -627,6 +687,11 @@ static int bareudp2info(struct nlattr *data[], struct bareudp_conf *conf)
- 	if (data[IFLA_BAREUDP_SRCPORT_MIN])
- 		conf->sport_min =  nla_get_u16(data[IFLA_BAREUDP_SRCPORT_MIN]);
- 
-+	if (data[IFLA_BAREUDP_EXTMODE])
-+		conf->ext_mode = true;
-+	else
-+		conf->ext_mode = false;
-+
- 	return 0;
- }
- 
-@@ -669,6 +734,7 @@ static size_t bareudp_get_size(const struct net_device *dev)
- 	return  nla_total_size(sizeof(__be16)) +  /* IFLA_BAREUDP_PORT */
- 		nla_total_size(sizeof(__be16)) +  /* IFLA_BAREUDP_ETHERTYPE */
- 		nla_total_size(sizeof(__u16))  +  /* IFLA_BAREUDP_SRCPORT_MIN */
-+		nla_total_size(0)              +  /* IFLA_BAREUDP_EXTMODE */
- 		0;
- }
- 
-@@ -682,6 +748,8 @@ static int bareudp_fill_info(struct sk_buff *skb, const struct net_device *dev)
- 		goto nla_put_failure;
- 	if (nla_put_u16(skb, IFLA_BAREUDP_SRCPORT_MIN, bareudp->conf.sport_min))
- 		goto nla_put_failure;
-+	if (bareudp->ext_mode && nla_put_flag(skb, IFLA_BAREUDP_EXTMODE))
-+		goto nla_put_failure;
- 
- 	return 0;
- 
-diff --git a/include/net/bareudp.h b/include/net/bareudp.h
-index 513fae6..2c121d8 100644
---- a/include/net/bareudp.h
-+++ b/include/net/bareudp.h
-@@ -10,6 +10,7 @@ struct bareudp_conf {
- 	__be16 ethertype;
- 	__be16 port;
- 	u16 sport_min;
-+	bool ext_mode;
- };
- 
- struct net_device *bareudp_dev_create(struct net *net, const char *name,
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 012f7e8..2b91c872 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -586,6 +586,7 @@ enum {
- 	IFLA_BAREUDP_PORT,
- 	IFLA_BAREUDP_ETHERTYPE,
- 	IFLA_BAREUDP_SRCPORT_MIN,
-+	IFLA_BAREUDP_EXTMODE,
- 	__IFLA_BAREUDP_MAX
- };
- 
--- 
-1.8.3.1
+I think this analysis is very useful in other cases as well. Could you
+generalize it for array map lookups ? The key used in bpf_map_lookup_elem() for
+arrays is often constant. In such cases we can optimize array_map_gen_lookup()
+into absolute pointer. It will be possible to do
+if (idx < max_entries) ptr += idx * elem_size;
+during verification instead of runtime and the whole
+bpf_map_lookup_elem(map, &key); will become single instruction that
+assigns &array[idx] into R0.
 
