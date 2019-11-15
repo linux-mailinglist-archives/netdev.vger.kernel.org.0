@@ -2,82 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7592FD6A6
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 07:59:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5820FD6C0
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 08:09:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727163AbfKOG7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 01:59:04 -0500
-Received: from smtp.codeaurora.org ([198.145.29.96]:57008 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726182AbfKOG7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 01:59:03 -0500
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id D8ACB60FCE; Fri, 15 Nov 2019 06:59:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1573801142;
-        bh=z5KxkEjc5934okYiimYZ65jjTiQWO34Ga0VC5decT1U=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=ow2MkMlRCBluA/rOacNYhpM2TDxIqBA+BXB8VEzBRVFx5mBR3kkRoMOBkK7X+Hzqr
-         s2kH1aiveG5VLN9a3ksA7aLPE1ALophRnCcPULJ7QGie9VUXxnv2B5cPuLlsPF9ixA
-         g2aVo2HU8PAN0nN2aAbibsgwiCAN2NfI++T/DAkc=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,MISSING_DATE,MISSING_MID,SPF_NONE autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8D9376013C;
-        Fri, 15 Nov 2019 06:59:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1573801142;
-        bh=z5KxkEjc5934okYiimYZ65jjTiQWO34Ga0VC5decT1U=;
-        h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=oYPi8lrU4ttup+FzvAoFqZG/KLYQBO7lzQKThBLCVv1mL6uNpQ6IIdDU1WCP40b4K
-         5cP9ZmE+2ZYHoWv8mNtvSWua+Nk3dEamDEZo8W4+oGg62N4sKEfwWym80sTo+LzwXq
-         O7QtZCc9R/RUVmEXjhW6GTfOOmVfMGD76PFbAc+8=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8D9376013C
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727097AbfKOHJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 02:09:27 -0500
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:39686 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725774AbfKOHJ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 02:09:27 -0500
+X-Greylist: delayed 1563 seconds by postgrey-1.27 at vger.kernel.org; Fri, 15 Nov 2019 02:09:26 EST
+Received: from relay12.mail.gandi.net (unknown [217.70.178.232])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 533663B621A
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 06:36:01 +0000 (UTC)
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id CD54E200007
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 06:36:00 +0000 (UTC)
+Received: by mail-vs1-f50.google.com with SMTP id x21so5656487vsp.6
+        for <netdev@vger.kernel.org>; Thu, 14 Nov 2019 22:36:00 -0800 (PST)
+X-Gm-Message-State: APjAAAXs+phjmMRNtAwXWY/AhikWw7vvqkRz0/FdwskFh5iF+bNDHNiB
+        QSqPvcOrR9pdpjGeMcFm9vGO1Ox9aF4uXKXv6cI=
+X-Google-Smtp-Source: APXvYqxR6doQX12+rkroxBMUFSFGC+P74BCkHojpyGcyF2bZf5OCQF1d8vBBtRClzjCF0MR1H2rxhlZLUe1cep4Fo0A=
+X-Received: by 2002:a67:6e05:: with SMTP id j5mr8703881vsc.66.1573799759479;
+ Thu, 14 Nov 2019 22:35:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] ath10k: qmi: Sleep for a while before assigning MSA memory
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20191113233558.4040259-1-bjorn.andersson@linaro.org>
-References: <20191113233558.4040259-1-bjorn.andersson@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, govinds@codeaurora.org
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20191115065902.D8ACB60FCE@smtp.codeaurora.org>
-Date:   Fri, 15 Nov 2019 06:59:02 +0000 (UTC)
+References: <1573746668-6920-1-git-send-email-xiangxia.m.yue@gmail.com>
+In-Reply-To: <1573746668-6920-1-git-send-email-xiangxia.m.yue@gmail.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Thu, 14 Nov 2019 22:35:50 -0800
+X-Gmail-Original-Message-ID: <CAOrHB_ABoBYR5yMCOBUGkb=JvzO2oBKZNoX1mpVBUfQWrC1pgQ@mail.gmail.com>
+Message-ID: <CAOrHB_ABoBYR5yMCOBUGkb=JvzO2oBKZNoX1mpVBUfQWrC1pgQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: openvswitch: don't call pad_packet if not necessary
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Greg Rose <gvrose8192@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>, Joe Stringer <joe@ovn.org>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+On Thu, Nov 14, 2019 at 7:51 AM <xiangxia.m.yue@gmail.com> wrote:
+>
+> From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> The nla_put_u16/nla_put_u32 makes sure that
+> *attrlen is align. The call tree is that:
+>
+> nla_put_u16/nla_put_u32
+>   -> nla_put            attrlen = sizeof(u16) or sizeof(u32)
+>   -> __nla_put          attrlen
+>   -> __nla_reserve      attrlen
+>   -> skb_put(skb, nla_total_size(attrlen))
+>
+> nla_total_size returns the total length of attribute
+> including padding.
+>
+> Cc: Joe Stringer <joe@ovn.org>
+> Cc: William Tu <u9012063@gmail.com>
+> Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> ---
 
-> Unless we sleep for a while before transitioning the MSA memory to WLAN
-> the MPSS.AT.4.0.c2-01184-SDM845_GEN_PACK-1 firmware triggers a security
-> violation fairly reliably. Unforutnately recovering from this failure
-> always results in the entire system freezing.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-
-Patch applied to ath-next branch of ath.git, thanks.
-
-b70b3a36ec33 ath10k: qmi: Sleep for a while before assigning MSA memory
-
--- 
-https://patchwork.kernel.org/patch/11242883/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
