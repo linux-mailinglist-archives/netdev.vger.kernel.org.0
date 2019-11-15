@@ -2,167 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 295C8FE8A9
-	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 00:31:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3486FE8AD
+	for <lists+netdev@lfdr.de>; Sat, 16 Nov 2019 00:32:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727296AbfKOXbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 18:31:35 -0500
-Received: from www62.your-server.de ([213.133.104.62]:56978 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727056AbfKOXbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 18:31:35 -0500
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iVl3s-0004BD-B3; Sat, 16 Nov 2019 00:31:32 +0100
-Received: from [178.197.248.45] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1iVl3r-0000RJ-Rs; Sat, 16 Nov 2019 00:31:31 +0100
-Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for
- BPF_MAP_TYPE_ARRAY
-To:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com
-Cc:     andrii.nakryiko@gmail.com, kernel-team@fb.com,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Rik van Riel <riel@surriel.com>
-References: <20191115040225.2147245-1-andriin@fb.com>
- <20191115040225.2147245-3-andriin@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <888858f7-97fb-4434-4440-a5c0ec5cbac8@iogearbox.net>
-Date:   Sat, 16 Nov 2019 00:31:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727365AbfKOXcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 18:32:25 -0500
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:45471 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727056AbfKOXcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 18:32:25 -0500
+Received: by mail-qv1-f66.google.com with SMTP id g12so4408389qvy.12;
+        Fri, 15 Nov 2019 15:32:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MsYoej1/MXzwT+7pP01oUl74JtlEBDH629NdgZhWFok=;
+        b=m8A0e+aVfikZnfdSgMgalD1RXQiYYUJvHtTBpdVybLdBL5Df55WDpq2X21a8ifkLWr
+         LEZs6dyUpLaybRmysUcKgAhRaxUU0ASCQ1JxYqjNDfiOV96CiOv2bjUxwz9kBqmnAJD/
+         tGzzA6E9VfSec7VTNBZG/fqqeephuvaj7hVo1e4lpum62Mmaz440dJ8jyR3sx/rriqOk
+         p/SVkSKDhs6qZddccJ8HKarI4bNTToAW5Jb56sarf9zvdeSHqLI52/I9+elDfJmi/opb
+         rKZYkazQl6mFnkNqOMhMF3MCBYKpQZNO1uTkSlUG/AeuQwNN4Y+2iMezKnmIB4dkKTtD
+         Avag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MsYoej1/MXzwT+7pP01oUl74JtlEBDH629NdgZhWFok=;
+        b=GbqRiflf+Zx1dm/sT+2y7WnA3VbNtzG6BZ0QY+p0Yjm4+BdTpis9gNjRXCLXO0VwAN
+         hXq7KCQfKzMj6mQPSWdgYVcp0y/QV1kWMOCtHOaM8+kYt2V+Ko+YAPSUxPLvUM0lWsLb
+         5uS45AzCninPiWpFFnnrATv/AA1xDr9zXvH9ZCTdCdS0zMcZfaHnGg9rMrElgLUTjlH7
+         xgcefusF3X9rpv96F3kgFTTdE/eXlYmIB6oFulDkB8xjasNCQSRxeFh6eRlenRyNPxzJ
+         GoOc7iPkczh6Y3e+cNoF3dV3DD8IF4PrXwDPRY2FItIsxu4IDwzWtMOb34/lOMN9fbBA
+         XHSQ==
+X-Gm-Message-State: APjAAAV28pcNihXKKXuYeezTPCbZfB5km3Atzp9EqvvFwWOhSCYAPeEI
+        XsQ6rvyArhef/117cYPuQ6iNNRu+RWmvr0L/PEof+ude
+X-Google-Smtp-Source: APXvYqz9hfEdg6/aNwmc7fjhDKXX9myO10aOeRCAfdTNq8fOcOVfkqSxH8SsuiJdllX86uAQm9IlH5xNVHDIeCXaRyo=
+X-Received: by 2002:a0c:baa5:: with SMTP id x37mr656469qvf.228.1573860744104;
+ Fri, 15 Nov 2019 15:32:24 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20191115040225.2147245-3-andriin@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25634/Fri Nov 15 10:44:37 2019)
+References: <cover.1573779287.git.daniel@iogearbox.net> <a89b60af47ea3fc87a7fceec10f70fabd9771d88.1573779287.git.daniel@iogearbox.net>
+In-Reply-To: <a89b60af47ea3fc87a7fceec10f70fabd9771d88.1573779287.git.daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 15 Nov 2019 15:32:13 -0800
+Message-ID: <CAEf4BzYF_fwxBd8Ofj-AcJ=Y=L1RgPUT6D15C1p7XtWQLA4K4w@mail.gmail.com>
+Subject: Re: [PATCH rfc bpf-next 3/8] bpf: move bpf_free_used_maps into
+ sleepable section
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11/15/19 5:02 AM, Andrii Nakryiko wrote:
-> Add ability to memory-map contents of BPF array map. This is extremely useful
-> for working with BPF global data from userspace programs. It allows to avoid
-> typical bpf_map_{lookup,update}_elem operations, improving both performance
-> and usability.
-> 
-> There had to be special considerations for map freezing, to avoid having
-> writable memory view into a frozen map. To solve this issue, map freezing and
-> mmap-ing is happening under mutex now:
->    - if map is already frozen, no writable mapping is allowed;
->    - if map has writable memory mappings active (accounted in map->writecnt),
->      map freezing will keep failing with -EBUSY;
->    - once number of writable memory mappings drops to zero, map freezing can be
->      performed again.
-> 
-> Only non-per-CPU plain arrays are supported right now. Maps with spinlocks
-> can't be memory mapped either.
-> 
-> For BPF_F_MMAPABLE array, memory allocation has to be done through vmalloc()
-> to be mmap()'able. We also need to make sure that array data memory is
-> page-sized and page-aligned, so we over-allocate memory in such a way that
-> struct bpf_array is at the end of a single page of memory with array->value
-> being aligned with the start of the second page. On deallocation we need to
-> accomodate this memory arrangement to free vmalloc()'ed memory correctly.
-> 
-> One important consideration regarding how memory-mapping subsystem functions.
-> Memory-mapping subsystem provides few optional callbacks, among them open()
-> and close().  close() is called for each memory region that is unmapped, so
-> that users can decrease their reference counters and free up resources, if
-> necessary. open() is *almost* symmetrical: it's called for each memory region
-> that is being mapped, **except** the very first one. So bpf_map_mmap does
-> initial refcnt bump, while open() will do any extra ones after that. Thus
-> number of close() calls is equal to number of open() calls plus one more.
-> 
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Cc: Rik van Riel <riel@surriel.com>
-> Acked-by: Song Liu <songliubraving@fb.com>
-> Acked-by: John Fastabend <john.fastabend@gmail.com>
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Thu, Nov 14, 2019 at 5:04 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> We later on are going to need a sleepable context as opposed to plain
+> RCU callback in order to untrack programs we need to poke at runtime
+> and tracking as well as image update is performed under mutex.
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+
+LGTM.
+
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+
+>  include/linux/bpf.h  |  4 ++++
+>  kernel/bpf/core.c    | 23 +++++++++++++++++++++++
+>  kernel/bpf/syscall.c | 20 --------------------
+>  3 files changed, 27 insertions(+), 20 deletions(-)
+>
 
 [...]
-> +/* called for any extra memory-mapped regions (except initial) */
-> +static void bpf_map_mmap_open(struct vm_area_struct *vma)
-> +{
-> +	struct bpf_map *map = vma->vm_file->private_data;
-> +
-> +	bpf_map_inc(map);
-
-This would also need to inc uref counter since it's technically a reference
-of this map into user space as otherwise if map->ops->map_release_uref would
-be used for maps supporting mmap, then the callback would trigger even if user
-space still has a reference to it.
-
-> +	if (vma->vm_flags & VM_WRITE) {
-> +		mutex_lock(&map->freeze_mutex);
-> +		map->writecnt++;
-> +		mutex_unlock(&map->freeze_mutex);
-> +	}
-> +}
-> +
-> +/* called for all unmapped memory region (including initial) */
-> +static void bpf_map_mmap_close(struct vm_area_struct *vma)
-> +{
-> +	struct bpf_map *map = vma->vm_file->private_data;
-> +
-> +	if (vma->vm_flags & VM_WRITE) {
-> +		mutex_lock(&map->freeze_mutex);
-> +		map->writecnt--;
-> +		mutex_unlock(&map->freeze_mutex);
-> +	}
-> +
-> +	bpf_map_put(map);
-
-Ditto.
-
-> +}
-> +
-> +static const struct vm_operations_struct bpf_map_default_vmops = {
-> +	.open		= bpf_map_mmap_open,
-> +	.close		= bpf_map_mmap_close,
-> +};
-> +
-> +static int bpf_map_mmap(struct file *filp, struct vm_area_struct *vma)
-> +{
-> +	struct bpf_map *map = filp->private_data;
-> +	int err;
-> +
-> +	if (!map->ops->map_mmap || map_value_has_spin_lock(map))
-> +		return -ENOTSUPP;
-> +
-> +	if (!(vma->vm_flags & VM_SHARED))
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&map->freeze_mutex);
-> +
-> +	if ((vma->vm_flags & VM_WRITE) && map->frozen) {
-> +		err = -EPERM;
-> +		goto out;
-> +	}
-> +
-> +	/* set default open/close callbacks */
-> +	vma->vm_ops = &bpf_map_default_vmops;
-> +	vma->vm_private_data = map;
-> +
-> +	err = map->ops->map_mmap(map, vma);
-> +	if (err)
-> +		goto out;
-> +
-> +	bpf_map_inc(map);
-
-Ditto.
-
-> +	if (vma->vm_flags & VM_WRITE)
-> +		map->writecnt++;
-> +out:
-> +	mutex_unlock(&map->freeze_mutex);
-> +	return err;
-> +}
-> +
