@@ -2,100 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E36F0FDC65
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 12:39:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C082EFDC84
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 12:48:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727385AbfKOLjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 06:39:42 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:13942 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727348AbfKOLjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 06:39:42 -0500
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAFBXBpg121780
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 06:39:41 -0500
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2w9nsjkynv-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 06:39:40 -0500
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Fri, 15 Nov 2019 11:39:38 -0000
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Fri, 15 Nov 2019 11:39:36 -0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id xAFBdZ6161800664
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Nov 2019 11:39:35 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 649E011C058;
-        Fri, 15 Nov 2019 11:39:35 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 28BC911C054;
-        Fri, 15 Nov 2019 11:39:35 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 15 Nov 2019 11:39:35 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net] net/smc: fix fastopen for non-blocking connect()
-Date:   Fri, 15 Nov 2019 12:39:30 +0100
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-x-cbid: 19111511-0012-0000-0000-00000363E023
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19111511-0013-0000-0000-0000219F5D68
-Message-Id: <20191115113930.38684-1-kgraul@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-15_03:2019-11-15,2019-11-15 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- bulkscore=0 lowpriorityscore=0 clxscore=1015 adultscore=0 impostorscore=0
- mlxlogscore=999 phishscore=0 suspectscore=1 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911150108
+        id S1727215AbfKOLsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 06:48:55 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:32834 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726983AbfKOLsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 06:48:54 -0500
+Received: by mail-oi1-f171.google.com with SMTP id m193so8389769oig.0
+        for <netdev@vger.kernel.org>; Fri, 15 Nov 2019 03:48:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9GPmR1RHoM5XEidlvhXl8DpCMhSSpVMr2s8LhTaetUo=;
+        b=caDlsscO5M4zQIh58q+dXUMxvXiuxQRJuU2wP18uYJ8cxeIS9f1jxwaI4xV8lQoPy4
+         xr1nk59+5ZbsSPfLBDb94VzuIXfQ/Udb5UPBWs3SntlUCHhqRHP3vylj2n1J2hgOLZHK
+         bSexU1qchwK6fgNCpnQ8dXzOTuQiIPgkMRAas=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9GPmR1RHoM5XEidlvhXl8DpCMhSSpVMr2s8LhTaetUo=;
+        b=J1K6YYDk1bf4GbqkBer6UoiVG1dNQWYPOxohyLiHQCVBbPBT/4/MTx4UmpL7avzCNt
+         OVtamCZOmvz/zpERJE4LJ3D5N0sf2Hw+y8pi3jxVflCbcrXIpkLxFhvA9k7SHX84HcQa
+         7MnY1CUdJi3xh8uT8iuTVCUzl/ifRYP6H0+TxtwhwzZZbQ5nM9sDWzpPpLFc8ZVratg7
+         r31PL0ehzzvc/jlPgTgH8pg/ZbxUD63h9xFUx6ZqCrYuu2W1ZiPzOQZ7qDlM7BsO7cqg
+         ePtgvKRwbmhOKrzoCaLxMgFDjjoroFqv6j7sXnjLhR9U3XyGcBpE4P8ViopUh9G/xl9w
+         MwmA==
+X-Gm-Message-State: APjAAAXRBIV8AwisETIEbAqEGSdleNQfdz3YhG7dIuMIurOob5OLBM0i
+        Y0azKBFHueRTFj81SFLosag8v2pG7RBvf3krR+qsAw==
+X-Google-Smtp-Source: APXvYqwHA7DX4s2fSU4j+a929BjylFpQuxPWMmBxeY+lV5DSTZLISTZYnV77TJnwW4DVSxPIfreJuOgk17CI3BrxZjc=
+X-Received: by 2002:aca:d803:: with SMTP id p3mr7623323oig.13.1573818533550;
+ Fri, 15 Nov 2019 03:48:53 -0800 (PST)
+MIME-Version: 1.0
+References: <20191010044156.2hno4sszysu3c35g@ast-mbp.dhcp.thefacebook.com>
+ <87v9srijxa.fsf@toke.dk> <5da4ab712043c_25f42addb7c085b83b@john-XPS-13-9370.notmuch>
+ <87eezfi2og.fsf@toke.dk> <f9d5f717-51fe-7d03-6348-dbaf0b9db434@solarflare.com>
+ <87r23egdua.fsf@toke.dk> <70142501-e2dd-1aed-992e-55acd5c30cfd@solarflare.com>
+ <874l07fu61.fsf@toke.dk> <aeae7b94-090a-a850-4740-0274ab8178d5@solarflare.com>
+ <87eez4odqp.fsf@toke.dk> <20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191112025112.bhzmrrh2pr76ssnh@ast-mbp.dhcp.thefacebook.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 15 Nov 2019 11:48:42 +0000
+Message-ID: <CACAyw98dcpu1b2nUf7ize2SJGJGd=mhqRK+PYQTx96gSBtbkNQ@mail.gmail.com>
+Subject: Re: static and dynamic linking. Was: [PATCH bpf-next v3 1/5] bpf:
+ Support chain calling multiple BPF
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Edward Cree <ecree@solarflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ursula Braun <ubraun@linux.ibm.com>
+On Tue, 12 Nov 2019 at 02:51, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> This is static linking. The existing kernel infrastructure already supports
+> such model and I think it's enough for a lot of use cases. In particular fb's
+> firewall+katran XDP style will fit right in. But bpf_tail_calls are
+> incompatible with bpf2bpf calls that static linking will use and I think
+> cloudlfare folks expressed the interest to use them for some reason even within
+> single firewall ? so we need to improve the model a bit.
 
-FASTOPEN does not work with SMC-sockets. Since SMC allows fallback to
-TCP native during connection start, the FASTOPEN setsockopts trigger
-this fallback, if the SMC-socket is still in state SMC_INIT.
-But if a FASTOPEN setsockopt is called after a non-blocking connect(),
-this is broken, and fallback does not make sense.
-This change complements
-commit cd2063604ea6 ("net/smc: avoid fallback in case of non-blocking connect")
-and fixes the syzbot reported problem "WARNING in smc_unhash_sk".
+We several components that we'd like to keep (logically) separate. At a high
+level, our rootlet would look like this:
 
-Reported-by: syzbot+8488cc4cf1c9e09b8b86@syzkaller.appspotmail.com
-Fixes: e1bbdd570474 ("net/smc: reduce sock_put() for fallback sockets")
-Signed-off-by: Ursula Braun <ubraun@linux.ibm.com>
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  sample_packets(ctx);
+  if (ddos_mitigate(ctx) != XDP_PASS) {
+     return XDP_DROP;
+  }
+  return l4lb(ctx);
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 8edf1619f0e4..737b49909a7a 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1732,7 +1732,7 @@ static int smc_setsockopt(struct socket *sock, int level, int optname,
- 	case TCP_FASTOPEN_KEY:
- 	case TCP_FASTOPEN_NO_COOKIE:
- 		/* option not supported by SMC */
--		if (sk->sk_state == SMC_INIT) {
-+		if (sk->sk_state == SMC_INIT && !smc->connect_nonblock) {
- 			smc_switch_to_fallback(smc);
- 			smc->fallback_rsn = SMC_CLC_DECL_OPTUNSUPP;
- 		} else {
+I think we could statically link ddos_mitigate() together from
+multiple separate .o.
+It depends on how complicated our rules become. Maybe we'd use dynamic linking,
+to reduce the overhead of re-verification.
+
+The rootlet would use dynamic linking, to be able to debug / inspect
+sampling, ddos
+mitigation and the l4lb separately. Combined with the ability to hook
+arbitrary BPF
+programs at entry / exit we could probably get rid of our tail_call
+use. I don't think
+you have to change the model for us to fit into it.
+
+> We can introduce dynamic linking. The second part of 'BPF trampoline' patches
+> allows tracing programs to attach to other BPF programs. The idea of dynamic
+> linking is to replace a program or subprogram instead of attaching to it.
+
+Reading the rest of the thread, I'm on board with type 2 of dynamic linking
+(load time linking?) However, type 1 (run time linking) I'm not so sure about.
+Specifically, the callee holding onto the caller instead of vice versa.
+
+Picking up your rootlet and fw1 example: fw1 holds the refcount on rootlet.
+This means user space needs to hold the refcount on fw1 to make sure
+the override is kept. This in turn means either: hold on to the file descriptor
+or pin the program into a bpffs. The former implies a persistent process,
+which doesn't work for tc. The latter makes  lifetime management of fw1 hard:
+there is no way to have the kernel automatically deallocate it when it no longer
+needed, aka when the rootlet refcount reaches zero. It also overloads close()
+to automatically detach the replaced / overridden BPF, which is contrary to how
+other BPF hook points work.
+
+I'd much prefer if the API didn't require attach_prog_fd and id at
+load time, and
+rather have an explicit replace_sub_prog(prog_fd, btf_id, sub_prog_fd).
+
+> [...] This rootlet.o
+> can be automatically generated by libxdp.so. If in the future we figure out how
+> to do two load-balancers libxdp.so will be able to accommodate that new policy.
+> This firewall1.o can be developed and tested independently of other xdp
+> programs. The key gotcha here is that the verifier needs to allow more than 512
+> stack usage for the rootlet.o. I think that's acceptable.
+
+How would the verifier know which programs are allowed to have larger stacks?
+
+Lorenz
+
 -- 
-2.17.1
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
+www.cloudflare.com
