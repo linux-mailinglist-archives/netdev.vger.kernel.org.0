@@ -2,144 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 009AEFD88B
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 10:12:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A820AFD8B1
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 10:21:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727180AbfKOJMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 04:12:16 -0500
-Received: from mail.dlink.ru ([178.170.168.18]:33776 "EHLO fd.dlink.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726996AbfKOJMQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 04:12:16 -0500
-Received: by fd.dlink.ru (Postfix, from userid 5000)
-        id 69EB41B21157; Fri, 15 Nov 2019 12:12:12 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru 69EB41B21157
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dlink.ru; s=mail;
-        t=1573809132; bh=CtxYuY+GbtGqv5wTXxa7arIIy/o1DNl/HAFZOiotkTU=;
-        h=From:To:Cc:Subject:Date;
-        b=V8uZqTp7MX2P/2kNdeX0wta4JIxkank0K0AVppscD0C9XbbHY17EAnzP3ZanbOIAP
-         fMFiB5bR6qvBMctPGnVBTmvUmMkBzoqjd/+1RDNgaxwd6OSG8byt3kgQJdNsBUCF0A
-         fTZbK4JUm+IIavyNjXYWRDZkfvKBOCSsBqYIQ+fo=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dlink.ru
-X-Spam-Level: 
-X-Spam-Status: No, score=-99.2 required=7.5 tests=BAYES_50,URIBL_BLOCKED,
-        USER_IN_WHITELIST autolearn=disabled version=3.4.2
-Received: from mail.rzn.dlink.ru (mail.rzn.dlink.ru [178.170.168.13])
-        by fd.dlink.ru (Postfix) with ESMTP id B5FE21B20B5F;
-        Fri, 15 Nov 2019 12:12:02 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fd.dlink.ru B5FE21B20B5F
-Received: from mail.rzn.dlink.ru (localhost [127.0.0.1])
-        by mail.rzn.dlink.ru (Postfix) with ESMTP id 6EF761B21209;
-        Fri, 15 Nov 2019 12:12:01 +0300 (MSK)
-Received: from localhost.localdomain (unknown [196.196.203.126])
-        by mail.rzn.dlink.ru (Postfix) with ESMTPA;
-        Fri, 15 Nov 2019 12:12:01 +0300 (MSK)
-From:   Alexander Lobakin <alobakin@dlink.ru>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Edward Cree <ecree@solarflare.com>, Jiri Pirko <jiri@mellanox.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Alexander Lobakin <alobakin@dlink.ru>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next] net: core: allow fast GRO for skbs with Ethernet header in head
-Date:   Fri, 15 Nov 2019 12:11:35 +0300
-Message-Id: <20191115091135.13487-1-alobakin@dlink.ru>
-X-Mailer: git-send-email 2.24.0
+        id S1727134AbfKOJVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 04:21:42 -0500
+Received: from mail-eopbgr150085.outbound.protection.outlook.com ([40.107.15.85]:23622
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726980AbfKOJVm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Nov 2019 04:21:42 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=MJDaHEbTynNdyxJQCOaq7ymuIr6YeFyjs2vFG8nRUB6+GFm4zDX8trVDCLXv6IJv1GajFudFZ7xo4Y4awxLDHsWcZAx9SAU4NLSfQ4VFd1pLs+j4bVs1e67lwdgTXlS/maW/6657hlH/SIzlbH/9QzCSBeW2/F2byYu8hSgC4wuI+L4ngLjqevezCcUVWcQFqBDvTYxN0lmBid3r3AyWRDaqjJRpGHpgM8rfkKacxlJVLLFhzHblVFZPJF6XPrhAnf41DzR4oDZD13EOkRAD8vhqEMY5fVSxzohExI2m/JfUhfHLeIlV6hn4bkFrfNII1uHxcIRT5okgFIXQzudgdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T9+ATYWqd1MKF2+L42TZX4ABv22y6qq2ZvwfzbnMGOw=;
+ b=loXC504A/JYBi2DapzDwnNLZZTai0gZdJ5YqW2WwApjKvmrHI5ztK5vJYkHSVP/RIkXufr/xkmYTwX4LOFuwye7VD/JBqsv6D+hPicFCNiWEqgMPB7cTaOOUcJPPYC6PdlzbiVhgZkn8Ap5MYdN8RzrgW4+Q/Fu2soQ5ZTnBoJIzUbW7PwrKP/bW9ZqAUg6PpVryYHx1cPIB+LUaWbPUlnks3fV40xpuFMB6xk+k4Ma52nHcmis5JD0IMyXB8LmL+VnCYrwvF3ikb8WQQ5B7v5Bimn/nr4riiZWus5lWyueqWGRHceLqqLHZk7U2HVC+T+duzfve4R/FL0q4YguaTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=T9+ATYWqd1MKF2+L42TZX4ABv22y6qq2ZvwfzbnMGOw=;
+ b=o0GCDEtSq02PEiZ/v0oF62IAIzjN2zq8zCLSfhaEK9ADfpLMs+JLD31wTaeb9duEzFcR9R2+yHROItf3fJEF2ElYJvte9MERwfY/J/4tMQy4moJXlUZiDQTViT6uykvJZahU+F0/d7tN755FhVQ318AcqsDW0uQ0QPZIQHb2XZM=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB5260.eurprd04.prod.outlook.com (20.176.237.25) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.22; Fri, 15 Nov 2019 09:20:58 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2451.029; Fri, 15 Nov 2019
+ 09:20:58 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Sean Nyekjaer <sean@geanix.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>
+CC:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 1/3] can: flexcan: fix deadlock when using self wakeup
+Thread-Topic: [PATCH 1/3] can: flexcan: fix deadlock when using self wakeup
+Thread-Index: AQHVm3IDm0rriooN3k2DjIsf/kbhcKeL8V8AgAADYIA=
+Date:   Fri, 15 Nov 2019 09:20:58 +0000
+Message-ID: <DB7PR04MB461887D626BFF7CAF387E708E6700@DB7PR04MB4618.eurprd04.prod.outlook.com>
+References: <20191115050032.25928-1-qiangqing.zhang@nxp.com>
+ <9870ec21-b664-522e-e0df-290ab56fbb32@geanix.com>
+In-Reply-To: <9870ec21-b664-522e-e0df-290ab56fbb32@geanix.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: ec2b718c-9fc6-4d9f-1451-08d769ad200d
+x-ms-traffictypediagnostic: DB7PR04MB5260:|DB7PR04MB5260:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB5260162D4404CA911FB660E9E6700@DB7PR04MB5260.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 02229A4115
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(396003)(366004)(136003)(13464003)(189003)(199004)(64756008)(8936002)(11346002)(486006)(66446008)(102836004)(26005)(66946007)(66476007)(66556008)(446003)(33656002)(476003)(186003)(110136005)(14444005)(2906002)(53546011)(6506007)(7696005)(99286004)(52536014)(76176011)(5660300002)(2501003)(66066001)(256004)(305945005)(55016002)(9686003)(71200400001)(71190400001)(478600001)(3846002)(76116006)(54906003)(81166006)(81156014)(25786009)(6116002)(4326008)(229853002)(74316002)(86362001)(316002)(6246003)(7736002)(14454004)(8676002)(6436002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5260;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: A4Icf/ZQ/hXfAXGfPHcJ52HQNVoKIwZlAPrfiz5AV7UxoaEMXPlFdA9YYg1YoUg+xvg09cpXBrBeNAJt0xRzyNqp0WMVNZrIjHaSGQt9BgStNecKUkGURTb4VMrR8eg/f99d/lV66gjQSwE5nzF90zX3Zs5FW3yxpdr5vqtDrF+vzmD4pOFR5IdTUuC7onTLf1n2hulz6mE73KcBVgU2by9z1GubiwZtxFHhii1i58ostqD9HdBCOOWWqKqz2Wgdkmg5NGGJvRG7GZOXm9RhrOt8UlzMOuKPshZYUKE076+opV3tVdHXkCG4/hpKlTBJfSz7ecj0BhXnJZUb569pYYiURmi91Q/7Ac0J+sR7Kb0OzZvcx4bbL02mVGeAWXjuvX30ekItSpCUPjLvUaVQcnBlJsUw1d5udqx/bA/UhRmQfQBKH7CCG8k0BqzdWY0h
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec2b718c-9fc6-4d9f-1451-08d769ad200d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2019 09:20:58.3611
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: iGUuk4IVbiJI5sHKJ6QUV8FgD5dqaEVZT2QuZ7fQMg9GbFC/+OvAqHHGpeLaSdYgRUtQRhLULkrY2BgDdOqyBA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5260
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 78d3fd0b7de8 ("gro: Only use skb_gro_header for completely
-non-linear packets") back in May'09 (v2.6.31-rc1) has changed the
-original condition '!skb_headlen(skb)' to
-'skb->mac_header == skb->tail' in gro_reset_offset() saying: "Since
-the drivers that need this optimisation all provide completely
-non-linear packets" (note that this condition has become the current
-'skb_mac_header(skb) == skb_tail_pointer(skb)' later with commmit
-ced14f6804a9 ("net: Correct comparisons and calculations using
-skb->tail and skb-transport_header") without any functional changes).
-
-For now, we have the following rough statistics for v5.4-rc7:
-1) napi_gro_frags: 14
-2) napi_gro_receive with skb->head containing (most of) payload: 83
-3) napi_gro_receive with skb->head containing all the headers: 20
-4) napi_gro_receive with skb->head containing only Ethernet header: 2
-
-With the current condition, fast GRO with the usage of
-NAPI_GRO_CB(skb)->frag0 is available only in the [1] case.
-Packets pushed by [2] and [3] go through the 'slow' path, but
-it's not a problem for them as they already contain all the needed
-headers in skb->head, so pskb_may_pull() only moves skb->data.
-
-The layout of skbs in the fourth [4] case at the moment of
-dev_gro_receive() is identical to skbs that have come through [1],
-as napi_frags_skb() pulls Ethernet header to skb->head. The only
-difference is that the mentioned condition is always false for them,
-because skb_put() and friends irreversibly alter the tail pointer.
-They also go through the 'slow' path, but now every single
-pskb_may_pull() in every single .gro_receive() will call the *really*
-slow __pskb_pull_tail() to pull headers to head. This significantly
-decreases the overall performance for no visible reasons.
-
-The only two users of method [4] is:
-* drivers/staging/qlge
-* drivers/net/wireless/iwlwifi (all three variants: dvm, mvm, mvm-mq)
-
-Note that in case with wireless drivers we can't use [1]
-(napi_gro_frags()) at least for now and mac80211 stack always
-performs pushes and pulls anyways, so performance hit is inavoidable.
-
-At the moment of v2.6.31 the mentioned change was necessary (that's
-why I don't add the "Fixes:" tag), but it became obsolete since
-skb_gro_mac_header() has gone in commit a50e233c50db ("net-gro:
-restore frag0 optimization"), so we can simply revert the condition
-in gro_reset_offset() to allow skbs from [4] go through the 'fast'
-path just like in case [1].
-
-This was tested on a 600 MHz MIPS CPU and a custom driver and this
-patch gave boosts up to 40 Mbps to method [4] in both directions
-comparing to net-next, which made overall performance relatively
-close to [1] (without it, [4] is the slowest).
-
-v2:
-- Add more references and explanations to commit message
-- Fix some typos ibid
-- No functional changes
-
-Signed-off-by: Alexander Lobakin <alobakin@dlink.ru>
----
- net/core/dev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1c799d486623..da78a433c10c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5611,8 +5611,7 @@ static void skb_gro_reset_offset(struct sk_buff *skb)
- 	NAPI_GRO_CB(skb)->frag0 = NULL;
- 	NAPI_GRO_CB(skb)->frag0_len = 0;
- 
--	if (skb_mac_header(skb) == skb_tail_pointer(skb) &&
--	    pinfo->nr_frags &&
-+	if (!skb_headlen(skb) && pinfo->nr_frags &&
- 	    !PageHighMem(skb_frag_page(frag0))) {
- 		NAPI_GRO_CB(skb)->frag0 = skb_frag_address(frag0);
- 		NAPI_GRO_CB(skb)->frag0_len = min_t(unsigned int,
--- 
-2.24.0
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IGxpbnV4LWNhbi1vd25lckB2
+Z2VyLmtlcm5lbC5vcmcgPGxpbnV4LWNhbi1vd25lckB2Z2VyLmtlcm5lbC5vcmc+DQo+IE9uIEJl
+aGFsZiBPZiBTZWFuIE55ZWtqYWVyDQo+IFNlbnQ6IDIwMTnlubQxMeaciDE15pelIDE3OjA4DQo+
+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsgbWtsQHBlbmd1dHJv
+bml4LmRlDQo+IENjOiBsaW51eC1jYW5Admdlci5rZXJuZWwub3JnOyBkbC1saW51eC1pbXggPGxp
+bnV4LWlteEBueHAuY29tPjsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZw0KPiBTdWJqZWN0OiBS
+ZTogW1BBVENIIDEvM10gY2FuOiBmbGV4Y2FuOiBmaXggZGVhZGxvY2sgd2hlbiB1c2luZyBzZWxm
+IHdha2V1cA0KPiANCj4gDQo+IA0KPiBPbiAxNS8xMS8yMDE5IDA2LjAzLCBKb2FraW0gWmhhbmcg
+d3JvdGU6DQo+ID4gRnJvbTogU2VhbiBOeWVramFlciA8c2VhbkBnZWFuaXguY29tPg0KPiA+DQo+
+ID4gV2hlbiBzdXNwZW5kaW5nLCB3aGVuIHRoZXJlIGlzIHN0aWxsIGNhbiB0cmFmZmljIG9uIHRo
+ZSBpbnRlcmZhY2VzIHRoZQ0KPiA+IGZsZXhjYW4gaW1tZWRpYXRlbHkgd2FrZXMgdGhlIHBsYXRm
+b3JtIGFnYWluLiBBcyBpdCBzaG91bGQgOi0pLiBCdXQgaXQNCj4gPiB0aHJvd3MgdGhpcyBlcnJv
+ciBtc2c6DQo+ID4gWyAzMTY5LjM3ODY2MV0gUE06IG5vaXJxIHN1c3BlbmQgb2YgZGV2aWNlcyBm
+YWlsZWQNCj4gPg0KPiA+IE9uIHRoZSB3YXkgZG93biB0byBzdXNwZW5kIHRoZSBpbnRlcmZhY2Ug
+dGhhdCB0aHJvd3MgdGhlIGVycm9yIG1lc3NhZ2UNCj4gPiBkb2VzIGNhbGwgZmxleGNhbl9zdXNw
+ZW5kIGJ1dCBmYWlscyB0byBjYWxsIGZsZXhjYW5fbm9pcnFfc3VzcGVuZC4NCj4gPiBUaGF0IG1l
+YW5zIHRoZSBmbGV4Y2FuX2VudGVyX3N0b3BfbW9kZSBpcyBjYWxsZWQsIGJ1dCBvbiB0aGUgd2F5
+IG91dA0KPiA+IG9mIHN1c3BlbmQgdGhlIGRyaXZlciBvbmx5IGNhbGxzIGZsZXhjYW5fcmVzdW1l
+IGFuZCBza2lwcw0KPiA+IGZsZXhjYW5fbm9pcnFfcmVzdW1lLCB0aHVzIGl0IGRvZXNuJ3QgY2Fs
+bCBmbGV4Y2FuX2V4aXRfc3RvcF9tb2RlLg0KPiA+IFRoaXMgbGVhdmVzIHRoZSBmbGV4Y2FuIGlu
+IHN0b3AgbW9kZSwgYW5kIHdpdGggdGhlIGN1cnJlbnQgZHJpdmVyIGl0DQo+ID4gY2FuJ3QgcmVj
+b3ZlciBmcm9tIHRoaXMgZXZlbiB3aXRoIGEgc29mdCByZWJvb3QsIGl0IHJlcXVpcmVzIGEgaGFy
+ZCByZWJvb3QuDQo+ID4NCj4gPiBUaGlzIHBhdGNoIGNhbiBmaXggZGVhZGxvY2sgd2hlbiB1c2lu
+ZyBzZWxmIHdha2V1cCwgaXQgaGFwcGVuZXMgdG8gYmUNCj4gPiBhYmxlIHRvIGZpeCBhbm90aGVy
+IGlzc3VlIHRoYXQgZnJhbWVzIG91dC1vZi1vcmRlciBpbiBmaXJzdCBJUlENCj4gPiBoYW5kbGVy
+IHJ1biBhZnRlciB3YWtldXAuDQo+ID4NCj4gPiBJbiB3YWtldXAgY2FzZSwgYWZ0ZXIgc3lzdGVt
+IHJlc3VtZSwgZnJhbWVzIHJlY2VpdmVkIG91dC1vZi1vcmRlcix0aGUNCj4gPiBwcm9ibGVtIGlz
+IHdha2V1cCBsYXRlbmN5IGZyb20gZnJhbWUgcmVjZXB0aW9uIHRvIElSUSBoYW5kbGVyIGlzIG11
+Y2gNCj4gPiBiaWdnZXIgdGhhbiB0aGUgY291bnRlciBvdmVyZmxvdy4gVGhpcyBtZWFucyBpdCdz
+IGltcG9zc2libGUgdG8gc29ydA0KPiA+IHRoZSBDQU4gZnJhbWVzIGJ5IHRpbWVzdGFtcC4gVGhl
+IHJlYXNvbiBpcyB0aGF0IGNvbnRyb2xsZXIgZXhpdHMgc3RvcA0KPiA+IG1vZGUgZHVyaW5nIG5v
+aXJxIHJlc3VtZSwgdGhlbiBpdCBjYW4gcmVjZWl2ZSB0aGUgZnJhbWUgaW1tZWRpYXRlbHkuDQo+
+ID4gSWYgbm9pcnEgcmV1c21lIHN0YWdlIGNvbnN1bWVzIG11Y2ggdGltZSwgaXQgd2lsbCBleHRl
+bmQgaW50ZXJydXB0DQo+ID4gcmVzcG9uc2UgdGltZS4NCj4gPg0KPiA+IEZpeGVzOiBkZTM1Nzhj
+MTk4YzYgKCJjYW46IGZsZXhjYW46IGFkZCBzZWxmIHdha2V1cCBzdXBwb3J0IikNCj4gPiBTaWdu
+ZWQtb2ZmLWJ5OiBTZWFuIE55ZWtqYWVyIDxzZWFuQGdlYW5peC5jb20+DQo+ID4gU2lnbmVkLW9m
+Zi1ieTogSm9ha2ltIFpoYW5nIDxxaWFuZ3FpbmcuemhhbmdAbnhwLmNvbT4NCj4gDQo+IEhpIEpv
+YWtpbSBhbmQgTWFyYw0KPiANCj4gV2UgaGF2ZSBxdWl0ZSBhIGZldyBkZXZpY2VzIGluIHRoZSBm
+aWVsZCB3aGVyZSBmbGV4Y2FuIGlzIHN0dWNrIGluIFN0b3AtTW9kZS4NCj4gV2UgZG8gbm90IGhh
+dmUgdGhlIHBvc3NpYmlsaXR5IHRvIGNvbGQgcmVib290IHRoZW0sIGFuZCBob3QgcmVib290IHdp
+bGwgbm90IGdldA0KPiBmbGV4Y2FuIG91dCBvZiBzdG9wLW1vZGUuDQo+IFNvIGZsZXhjYW4gY29t
+ZXMgdXAgd2l0aDoNCj4gWyAgMjc5LjQ0NDA3N10gZmxleGNhbjogcHJvYmUgb2YgMjA5MDAwMC5m
+bGV4Y2FuIGZhaWxlZCB3aXRoIGVycm9yIC0xMTANCj4gWyAgMjc5LjUwMTQwNV0gZmxleGNhbjog
+cHJvYmUgb2YgMjA5NDAwMC5mbGV4Y2FuIGZhaWxlZCB3aXRoIGVycm9yIC0xMTANCj4gDQo+IFRo
+ZXkgYXJlIG9uLCBkZTM1NzhjMTk4YzYgKCJjYW46IGZsZXhjYW46IGFkZCBzZWxmIHdha2V1cCBz
+dXBwb3J0IikNCj4gDQo+IFdvdWxkIGl0IGJlIGEgc29sdXRpb24gdG8gYWRkIGEgY2hlY2sgaW4g
+dGhlIHByb2JlIGZ1bmN0aW9uIHRvIHB1bGwgaXQgb3V0IG9mDQo+IHN0b3AtbW9kZT8NCg0KSGkg
+U2VhbiwNCg0KSSBhbSBub3Qgc3VyZSwgSSB3aWxsIHRyeSB0byBpbXBsZW1lbnQgaXQuDQoNCkJl
+c3QgUmVnYXJkcywNCkpvYWtpbSBaaGFuZw0KPiAvU2Vhbg0K
