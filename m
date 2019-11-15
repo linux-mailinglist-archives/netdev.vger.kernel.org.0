@@ -2,190 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22AD9FD3E1
-	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:03:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 319E0FD3E7
+	for <lists+netdev@lfdr.de>; Fri, 15 Nov 2019 06:05:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbfKOFDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Nov 2019 00:03:36 -0500
-Received: from mail-eopbgr80057.outbound.protection.outlook.com ([40.107.8.57]:27421
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726308AbfKOFDf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Nov 2019 00:03:35 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZC1KaqnJosKIjBnoruyPTPalOJdMmJ5Ud8aNkpAFZDQHZAHwzFjzXUdg2gpiiHdJQk64uaBFDAtwJGPsq2kfM8YLCE5BZS0L6Z+BONgQUExWMM/8OIXyzw6whykwiYBkVdk/n4SS5ra/qCbVU53u7bw7wqCQvcKSLBLYZL3/fujW+evcSvGnzp9FSv9tFCM0+4PiLUpS+GLY17tx5tidcGiHlXfcnb/6/PSgI4KOXn3mp/z+xvMmDQymtqLOgaVycOFGXoTJ1uDT/ogW/7F4hJx5KLs1nOeN9kaavV8/oy0KuWkRYo4EiLs+tY9OML6GPmdFNgTXf94OkU2IOcE8Mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BDX1aCtLY4UV6JFmFVWzkoNeYefhQNGCStdXnL9nFDA=;
- b=LyXhh8/Fp8gRRPNn8e+8T3xZzCbKCrn5cJo/ztTLmFNCCgl91dphoSlldBdKpu/0dDPLKljKFhxfZtLfXOWbYIcwN/v8JkRNbeYDrb3y2bD8eg9E+A39BNacTjDsnMs2nEo2FNQZ2/tcUT7KahY8eguaFEqiR8n5W0hgGlhJawe8nMqBkAbk5wu+EwBQ1vdIB3V1xDjOyi0mc+zkM4wmAT1q1h2mWIgC6ucMpqL3SxPaaNDJpH9ps7pootxIwpwUTIDoI9ye4ez24+MMxN0XtX6RVw5DWmW6nWVTF2jo4VZ2v0CpCG1UwmbUvA+m6vaED153jj0tFyUYHcPJnFHIZw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BDX1aCtLY4UV6JFmFVWzkoNeYefhQNGCStdXnL9nFDA=;
- b=rHrSWlFtPmXyRHQBw+6OQLq1dXgDgZR7AjgTg1B3XK9VqTdiOXYvuJxxFIwebZqaHOhDNdDKPnxp+sLH2dRCo+7/HRqJ3+8mu6oBDoGSp3TH/5aPatpzW8CE/bhkIsh5RlUP94PAeSz/G/8cXBTesZz7qT1cO24Mg62fpQzRLCw=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4620.eurprd04.prod.outlook.com (52.135.140.28) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2451.28; Fri, 15 Nov 2019 05:03:31 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::1c96:c591:7d51:64e6%4]) with mapi id 15.20.2451.029; Fri, 15 Nov 2019
- 05:03:31 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "sean@geanix.com" <sean@geanix.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     dl-linux-imx <linux-imx@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH 3/3] can: flexcan: add LPSR mode support
-Thread-Topic: [PATCH 3/3] can: flexcan: add LPSR mode support
-Thread-Index: AQHVm3IG7HG4bRi6skCt+Z1pOjBKzg==
-Date:   Fri, 15 Nov 2019 05:03:31 +0000
-Message-ID: <20191115050032.25928-3-qiangqing.zhang@nxp.com>
-References: <20191115050032.25928-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20191115050032.25928-1-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.17.1
-x-clientproxiedby: SG2PR06CA0143.apcprd06.prod.outlook.com
- (2603:1096:1:1f::21) To DB7PR04MB4618.eurprd04.prod.outlook.com
- (2603:10a6:5:38::23)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 28c95dd3-24b2-4845-b407-08d7698928b8
-x-ms-traffictypediagnostic: DB7PR04MB4620:|DB7PR04MB4620:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB462057AECA3E829730CC9843E6700@DB7PR04MB4620.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2276;
-x-forefront-prvs: 02229A4115
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(4636009)(396003)(136003)(39860400002)(346002)(366004)(376002)(199004)(189003)(52116002)(316002)(76176011)(305945005)(110136005)(8936002)(66066001)(478600001)(64756008)(66556008)(71190400001)(66946007)(66476007)(50226002)(256004)(66446008)(8676002)(6506007)(36756003)(3846002)(6116002)(14454004)(102836004)(54906003)(26005)(14444005)(71200400001)(2906002)(81156014)(81166006)(386003)(25786009)(99286004)(7736002)(186003)(2501003)(5660300002)(486006)(1076003)(2201001)(6486002)(86362001)(476003)(2616005)(6512007)(6436002)(11346002)(4326008)(446003)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4620;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UzUvqmKbMnXYoV/1NttfKXUOQQN7judX+KQThDFGpMTVPuHYEgaNWZJrtcKD2+NtD9ax+m3bi029ontU83Wo0FeUw7yIco2qHICr0cpOIWYQrQ9GpL+25NICWlndoKPksB8ScGOPCM7vNsn7PRK7duWpO9BgmJyD1YzrhbIzGCxfSfhp9WhU8wb9c/N/ciIYhseJ2WwheqDriZlXAX7Zhuz6fFMZvVtxtsZVsQMz2UsbkEQtCTWv2MttzUxdMO0msJ9Z5nMTgltr8PfVx9nNuqV2UQEQI5VVIL7Rt4P2t74N5tTIEpg8k8UYcOdSzUT2GltiyCMIcxTq4lQaqbmaM+uuYym3ihcilTJIaKQt+banfKsO5pzezUTIdr+/rwJon8UFqVOjvjr6GUCSvPd4L6CbIR4tCTUsqoB1s3CPjPT1Gz/l3ln/KHLqVkVcDjRS
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1727002AbfKOFFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Nov 2019 00:05:39 -0500
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:41322 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725773AbfKOFFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Nov 2019 00:05:38 -0500
+Received: by mail-qt1-f194.google.com with SMTP id o3so9545639qtj.8;
+        Thu, 14 Nov 2019 21:05:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EqDqma57lYvdyFUqFupKYh3YphOeT91M3cJ458AdZgk=;
+        b=U684VuoX8UT5ow5xKyPtDYmMy2Ks7QOcy8WoffMwQMNa3n0omZjgEUJS4e1xNazOva
+         AwwqKjjvKy/HYISxDuuRcIWIcLgGt9nzTsKxA/NMUdGNVzwaQijkPxUYtdVpt+g+83BK
+         TCvCRdacOf9ihN/9W105uEBLbVUmCkxvb9gUujGR4lF9g9NK9PxlEmVpRnN4jLXXo6KL
+         I5SQmnmIRFFnqh0HZpoGrvowB92LRC/VwibuKaRNGuLHPXELEw9IjV9C7dOQ5AZdmIqh
+         kr0kTdcgNAdOLNKx5dL+a7uYUgCkAVaeSCkCg9PkqNIvBLIgujhhiGUcq+4ZYmJASbVj
+         bSaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EqDqma57lYvdyFUqFupKYh3YphOeT91M3cJ458AdZgk=;
+        b=NhFq6YVpPFN7DG/BDpyDqPuLj4C/ToJ0lWqHVcnzN6khK+9v8Mv3WKeMCQergc0BCC
+         B5J4md4UNOv8VSbYpssN81YVPjdDKzUoZvRQVvVDIo3bKMXOUuPQy4W+r5fAX8HuaVTk
+         EKTiwrhE4Sn2Hi/QPxyQEtAaIUVb8eWdy3YqLr1Xf6DvNnK8DqeILgVeo5QYs4Y3Rccj
+         dR7ijs9DtYtpSLB+XriwoBu9mw73v+NCI3mW/EAj/h7RgN9ly/iq2W6qmCmVCn2u9fS9
+         R9qOWFLnktITCGzKeYUCfi58FdcCwuu82b/N0Q0K93ZtGmuV9BjBo/wGHY0xlvN4GnVc
+         XFSA==
+X-Gm-Message-State: APjAAAW6fNEj8jdzZDuQNkuj4JhOBBgXFxuxBqP061DiMnzE4V28oub0
+        kVllIgE576m/COs0tmoNQlf267xJT7xCzWSAba8=
+X-Google-Smtp-Source: APXvYqyvZ8osBMM5Qj57yS+cG4MJYrIidpej6k0hlDSLbYkdsL/7D3CdzQXsla9TMoyKVnB+AlMctefPbWrtCt4TZIA=
+X-Received: by 2002:ac8:199d:: with SMTP id u29mr11570093qtj.93.1573794337018;
+ Thu, 14 Nov 2019 21:05:37 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 28c95dd3-24b2-4845-b407-08d7698928b8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Nov 2019 05:03:31.2842
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gtF9WY7V9wrfAsz+2rv2ZdcI8zc5tO4fmNGYCOWQxKuMIm340+mzdC1pHAUaRDa2j6c+5UIcekqQ+4cvWPFeCQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4620
+References: <20191115040225.2147245-1-andriin@fb.com> <20191115040225.2147245-3-andriin@fb.com>
+ <20191115044518.sqh3y3bwtjfp5zex@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20191115044518.sqh3y3bwtjfp5zex@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 14 Nov 2019 21:05:26 -0800
+Message-ID: <CAEf4BzbE+1s_4=jpWEgNj+T0HyMXt1yjiRncq4sB3vfx6A3Sxw@mail.gmail.com>
+Subject: Re: [PATCH v4 bpf-next 2/4] bpf: add mmap() support for BPF_MAP_TYPE_ARRAY
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Rik van Riel <riel@surriel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For i.MX7D LPSR mode, the controller will lost power and got the
-configuration state lost after system resume back. (coming i.MX8QM/QXP
-will also completely power off the domain, the controller state will be
-lost and needs restore).
-So we need to set pinctrl state again and re-start chip to do
-re-configuration after resume.
+On Thu, Nov 14, 2019 at 8:45 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Thu, Nov 14, 2019 at 08:02:23PM -0800, Andrii Nakryiko wrote:
+> > Add ability to memory-map contents of BPF array map. This is extremely useful
+> > for working with BPF global data from userspace programs. It allows to avoid
+> > typical bpf_map_{lookup,update}_elem operations, improving both performance
+> > and usability.
+> >
+> > There had to be special considerations for map freezing, to avoid having
+> > writable memory view into a frozen map. To solve this issue, map freezing and
+> > mmap-ing is happening under mutex now:
+> >   - if map is already frozen, no writable mapping is allowed;
+> >   - if map has writable memory mappings active (accounted in map->writecnt),
+> >     map freezing will keep failing with -EBUSY;
+> >   - once number of writable memory mappings drops to zero, map freezing can be
+> >     performed again.
+> >
+> > Only non-per-CPU plain arrays are supported right now. Maps with spinlocks
+> > can't be memory mapped either.
+> >
+> > For BPF_F_MMAPABLE array, memory allocation has to be done through vmalloc()
+> > to be mmap()'able. We also need to make sure that array data memory is
+> > page-sized and page-aligned, so we over-allocate memory in such a way that
+> > struct bpf_array is at the end of a single page of memory with array->value
+> > being aligned with the start of the second page. On deallocation we need to
+> > accomodate this memory arrangement to free vmalloc()'ed memory correctly.
+> >
+> > One important consideration regarding how memory-mapping subsystem functions.
+> > Memory-mapping subsystem provides few optional callbacks, among them open()
+> > and close().  close() is called for each memory region that is unmapped, so
+> > that users can decrease their reference counters and free up resources, if
+> > necessary. open() is *almost* symmetrical: it's called for each memory region
+> > that is being mapped, **except** the very first one. So bpf_map_mmap does
+> > initial refcnt bump, while open() will do any extra ones after that. Thus
+> > number of close() calls is equal to number of open() calls plus one more.
+> >
+> > Cc: Johannes Weiner <hannes@cmpxchg.org>
+> > Cc: Rik van Riel <riel@surriel.com>
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> > Acked-by: John Fastabend <john.fastabend@gmail.com>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
+> >  include/linux/bpf.h            | 11 ++--
+> >  include/linux/vmalloc.h        |  1 +
+> >  include/uapi/linux/bpf.h       |  3 ++
+> >  kernel/bpf/arraymap.c          | 59 +++++++++++++++++---
+> >  kernel/bpf/syscall.c           | 99 ++++++++++++++++++++++++++++++++--
+> >  mm/vmalloc.c                   | 20 +++++++
+> >  tools/include/uapi/linux/bpf.h |  3 ++
+> >  7 files changed, 184 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 6fbe599fb977..8021fce98868 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -12,6 +12,7 @@
+> >  #include <linux/err.h>
+> >  #include <linux/rbtree_latch.h>
+> >  #include <linux/numa.h>
+> > +#include <linux/mm_types.h>
+> >  #include <linux/wait.h>
+> >  #include <linux/u64_stats_sync.h>
+> >
+> > @@ -66,6 +67,7 @@ struct bpf_map_ops {
+> >                                    u64 *imm, u32 off);
+> >       int (*map_direct_value_meta)(const struct bpf_map *map,
+> >                                    u64 imm, u32 *off);
+> > +     int (*map_mmap)(struct bpf_map *map, struct vm_area_struct *vma);
+> >  };
+> >
+> >  struct bpf_map_memory {
+> > @@ -94,9 +96,10 @@ struct bpf_map {
+> >       u32 btf_value_type_id;
+> >       struct btf *btf;
+> >       struct bpf_map_memory memory;
+> > +     char name[BPF_OBJ_NAME_LEN];
+> >       bool unpriv_array;
+> > -     bool frozen; /* write-once */
+> > -     /* 48 bytes hole */
+> > +     bool frozen; /* write-once; write-protected by freeze_mutex */
+> > +     /* 22 bytes hole */
+> >
+> >       /* The 3rd and 4th cacheline with misc members to avoid false sharing
+> >        * particularly with refcounting.
+> > @@ -104,7 +107,8 @@ struct bpf_map {
+> >       atomic64_t refcnt ____cacheline_aligned;
+> >       atomic64_t usercnt;
+> >       struct work_struct work;
+> > -     char name[BPF_OBJ_NAME_LEN];
+> > +     struct mutex freeze_mutex;
+> > +     u64 writecnt; /* writable mmap cnt; protected by freeze_mutex */
+> >  };
+>
+> Can the mutex be moved into bpf_array instead of being in bpf_map that is
+> shared across all map types?
 
-For wakeup case, it should not set pinctrl to sleep state by
-pinctrl_pm_select_sleep_state.
-For interface is not up before suspend case, we don't need
-re-configure as it will be configured by user later by interface up.
+No, freezing logic is common to all maps. Same for writecnt and
+mmap()-ing overall.
 
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
----
- drivers/net/can/flexcan.c | 21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index dd91d8d6b5a6..f75d8099a035 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -26,6 +26,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/regmap.h>
-=20
- #define DRV_NAME			"flexcan"
-@@ -1691,7 +1692,7 @@ static int __maybe_unused flexcan_suspend(struct devi=
-ce *device)
- {
- 	struct net_device *dev =3D dev_get_drvdata(device);
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
--	int err =3D 0;
-+	int err;
-=20
- 	if (netif_running(dev)) {
- 		/* if wakeup is enabled, enter stop mode
-@@ -1703,25 +1704,27 @@ static int __maybe_unused flexcan_suspend(struct de=
-vice *device)
- 			if (err)
- 				return err;
- 		} else {
--			err =3D flexcan_chip_disable(priv);
-+			flexcan_chip_stop(dev);
-+
-+			err =3D pm_runtime_force_suspend(device);
- 			if (err)
- 				return err;
-=20
--			err =3D pm_runtime_force_suspend(device);
-+			pinctrl_pm_select_sleep_state(device);
- 		}
- 		netif_stop_queue(dev);
- 		netif_device_detach(dev);
- 	}
- 	priv->can.state =3D CAN_STATE_SLEEPING;
-=20
--	return err;
-+	return 0;
- }
-=20
- static int __maybe_unused flexcan_resume(struct device *device)
- {
- 	struct net_device *dev =3D dev_get_drvdata(device);
- 	struct flexcan_priv *priv =3D netdev_priv(dev);
--	int err =3D 0;
-+	int err;
-=20
- 	priv->can.state =3D CAN_STATE_ERROR_ACTIVE;
- 	if (netif_running(dev)) {
-@@ -1733,15 +1736,19 @@ static int __maybe_unused flexcan_resume(struct dev=
-ice *device)
- 			if (err)
- 				return err;
- 		} else {
-+			pinctrl_pm_select_default_state(device);
-+
- 			err =3D pm_runtime_force_resume(device);
- 			if (err)
- 				return err;
-=20
--			err =3D flexcan_chip_enable(priv);
-+			err =3D flexcan_chip_start(dev);
-+			if (err)
-+				return err;
- 		}
- 	}
-=20
--	return err;
-+	return 0;
- }
-=20
- static int __maybe_unused flexcan_runtime_suspend(struct device *device)
---=20
-2.17.1
-
+> If so then can you reuse the mutex that Daniel is adding in his patch 6/8
+> of tail_call series? Not sure what would the right name for such mutex.
+> It will be used for your map_freeze logic and for Daniel's text_poke.
+>
